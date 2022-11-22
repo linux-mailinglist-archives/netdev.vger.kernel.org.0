@@ -2,133 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C6E2634B13
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 00:29:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3957634B24
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 00:35:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235075AbiKVX1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 18:27:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45854 "EHLO
+        id S234786AbiKVXfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 18:35:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235127AbiKVX1r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 18:27:47 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D39D12A82
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 15:27:47 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id b18-20020a170903229200b00186e357f3b9so12477024plh.6
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 15:27:47 -0800 (PST)
+        with ESMTP id S233625AbiKVXfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 18:35:24 -0500
+Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE4E748D0;
+        Tue, 22 Nov 2022 15:35:23 -0800 (PST)
+Received: by mail-oo1-xc32.google.com with SMTP id r10-20020a4aa2ca000000b0049dd7ad4128so2477609ool.13;
+        Tue, 22 Nov 2022 15:35:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NW0Mw/qHQ9FIGEA+rYwuphRFxEn0u6CmWZPIH+7Q52E=;
-        b=mWqj5WIGBem1iF+Uk/grB8x8EBaHVrCqMst6wuBLbGsWFpcwg+0fjzV9JQK2aDAN8W
-         xTMUgEpVk41qOs3xRDyaN7pEsURTZ6OAgqiq5vc7RvB7TqK5PdZ7Dcv06XWTDzisLGAg
-         2NL5ofiKWD4bNvZjZ8zmLfcgapnRv8QDEY0Ov3pgqB80koLDwTAc3ndTJURU2MxqDDHL
-         mrD5iMu6wziBSyEHRNKsL2krLSIIEbBF8MIjSQDABCHRVDlZa8lOUBfUNZhGZKEuj6Ai
-         CWWR+astAj3Rv2vb2LxH+ECOYl0y8PP3qDGAWkSVbhBqYX/f/SaUSAR2dtEU5c3kXdTx
-         KGEg==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=nmqO32R0xh7ZwtHhKj+PuIQgHP1cIE3l41h8BA/283E=;
+        b=MovYM6yqLsuCHsYDqEWpT0WYOSFrtK0W99CqSlrOfI0G/NuLEmyFKyp+YQ/gZPPYu6
+         7tcJ9t2KrBu0imDHTLqPWoLmLnWEq5r3C2kTttUSHsrCLZ+6z1USnqDXFVrUB8Y78he8
+         gcGdfQYusJC0A7ppRP9YXYiqgoSMbcKiDx5IGnJ11cPjB/VlsQlu1O9kBvQGOn6WxZxc
+         sSH3R0e+0KDgOadKRnq+hUlQyBfY7aYJXLri0Qd1Q4f1bUIiGgMqs7LjDU5lQ6DEO2VE
+         Kj9tJQbxDeTIbrHA/k20NbaK+aSb/N+BbWUu3CuPtijMM9i5WsBAcPoA7n4QhKwOKpRy
+         Rw4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NW0Mw/qHQ9FIGEA+rYwuphRFxEn0u6CmWZPIH+7Q52E=;
-        b=eQH9mD2ZKdy7agVOQh7gSOs2e9MFhBHELts2Ok/8ReHKowOX2tttWKHZy+BZ0gk2Tc
-         eBAq2dP/ffed2sHnrobYiQoSReXrUW1t1P/eTsEtW/fgjNeh6Pvzm5jOonfq6HI5Ogyx
-         vvrNAmKVKA8/x6jKe7pmljOtV+itS+MbS6W8GO5Jdb96fEHRHwwaeszO66TIDXNjiPWR
-         3L+7fqOywnDSa4vZ43KGKfVwwSA/GVrRTFLqwytuEZXCn1lOJ+zsKE3aYO2xYsxckRSw
-         VAy7M54GabiBRGUOXRpZQbZjEWZpa2JX0HS8vSKZVX6p/C7KWtQinaeh/Blf79feIzSU
-         CAqQ==
-X-Gm-Message-State: ANoB5pk6IDwJg95NAbxrWEhl18U84JMCVuDgGwWhIojae9fbtGCjIqfc
-        R1qd0F3NXML6Ho5IRZM+52RbU2o5KvYIbLA=
-X-Google-Smtp-Source: AA0mqf5ws0Bi8Bmoqt9MzThkL/Zhhqb69IDqQPANUYjbJwkBa5ieR+550EusAf+Wn0+TOvKHSktGDfImx4iRnjk=
-X-Received: from lixiaoyan-desktop.svl.corp.google.com ([2620:15c:2c4:201:d85f:1168:cf63:556b])
- (user=lixiaoyan job=sendgmr) by 2002:a05:6a00:301b:b0:56e:1ce2:c919 with SMTP
- id ay27-20020a056a00301b00b0056e1ce2c919mr11190807pfb.78.1669159666639; Tue,
- 22 Nov 2022 15:27:46 -0800 (PST)
-Date:   Tue, 22 Nov 2022 15:27:40 -0800
-In-Reply-To: <20221122232740.3180560-1-lixiaoyan@google.com>
-Mime-Version: 1.0
-References: <20221122232740.3180560-1-lixiaoyan@google.com>
-X-Mailer: git-send-email 2.38.1.584.g0f3c55d4c2-goog
-Message-ID: <20221122232740.3180560-2-lixiaoyan@google.com>
-Subject: [PATCH net-next 2/2] bnxt: Use generic HBH removal helper in tx path
-From:   Coco Li <lixiaoyan@google.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Coco Li <lixiaoyan@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HK_RANDOM_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL
-        autolearn=no autolearn_force=no version=3.4.6
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nmqO32R0xh7ZwtHhKj+PuIQgHP1cIE3l41h8BA/283E=;
+        b=qhF0KlbR3s44SNviPUd7R/b+WV6JTuOnrYU2vno+U7q5g9X1kt2piN5c9msN72PWdp
+         z6RA03D4OktQmHZWy08vyqFiyNG4Z5oNqoCiRwIVKBN+HFlpKsdU9ZpFNrXRQ6KBWOUw
+         TXvhFhEFaJNtddXfHbzCT5bgNjU5u9Kvi0wj8LQCuh/RjV8Zmahpjh1vva/y1hG9DBLI
+         k5u8L0mzQLydLCTmSN1+sdm3ZBfALfUrmF7hxKOYxjAP9O0Pa65gPL2Azt9aUwpJ83SO
+         wo1h96RtWxD1xMFNV/eOLMZJjB6GKK1WG6FqvJd/1VJRKhLvl7OMNJZm46mVNilfigf0
+         UbEA==
+X-Gm-Message-State: ANoB5plGMe/grTw2af8Gew75odG6t6XoTZEv5CBKkrmXxZPTA+6AJWgL
+        BJGmNvrVDT3rN5u8VldF+RM=
+X-Google-Smtp-Source: AA0mqf5TcQlIlH/YLkZZHxScJOAd259RNQYxCxwpMO7+XwHDSao/s0XMef9TTr40FypJydb3qxFWUQ==
+X-Received: by 2002:a4a:94a9:0:b0:480:8f4a:7062 with SMTP id k38-20020a4a94a9000000b004808f4a7062mr2778208ooi.57.1669160122267;
+        Tue, 22 Nov 2022 15:35:22 -0800 (PST)
+Received: from t14s.localdomain ([2001:1284:f016:5412:fa8e:2d33:bd7c:54c7])
+        by smtp.gmail.com with ESMTPSA id n20-20020a9d6f14000000b00661a3f4113bsm6638845otq.64.2022.11.22.15.35.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Nov 2022 15:35:21 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 9920C459A37; Tue, 22 Nov 2022 20:35:19 -0300 (-03)
+Date:   Tue, 22 Nov 2022 20:35:19 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
+Subject: Re: [PATCH net] sctp: fix memory leak in sctp_stream_outq_migrate()
+Message-ID: <Y31ct/lSXNTm9ev9@t14s.localdomain>
+References: <20221118085030.121297-1-shaozhengchao@huawei.com>
+ <CADvbK_frWVFTSLMwC_xYvE+jDuk917K7SqZHUON3srLz8TxotQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADvbK_frWVFTSLMwC_xYvE+jDuk917K7SqZHUON3srLz8TxotQ@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet implemented Big TCP that allowed bigger TSO/GRO packet sizes
-for IPv6 traffic. See patch series:
-'commit 89527be8d8d6 ("net: add IFLA_TSO_{MAX_SIZE|SEGS} attributes")'
+On Fri, Nov 18, 2022 at 10:15:50PM -0500, Xin Long wrote:
+> On Fri, Nov 18, 2022 at 3:48 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
+> >
+> > When sctp_stream_outq_migrate() is called to release stream out resources,
+> > the memory pointed to by prio_head in stream out is not released.
+> >
+> > The memory leak information is as follows:
+> > unreferenced object 0xffff88801fe79f80 (size 64):
+> >   comm "sctp_repo", pid 7957, jiffies 4294951704 (age 36.480s)
+> >   hex dump (first 32 bytes):
+> >     80 9f e7 1f 80 88 ff ff 80 9f e7 1f 80 88 ff ff  ................
+> >     90 9f e7 1f 80 88 ff ff 90 9f e7 1f 80 88 ff ff  ................
+> >   backtrace:
+> >     [<ffffffff81b215c6>] kmalloc_trace+0x26/0x60
+> >     [<ffffffff88ae517c>] sctp_sched_prio_set+0x4cc/0x770
+> >     [<ffffffff88ad64f2>] sctp_stream_init_ext+0xd2/0x1b0
+> >     [<ffffffff88aa2604>] sctp_sendmsg_to_asoc+0x1614/0x1a30
+> >     [<ffffffff88ab7ff1>] sctp_sendmsg+0xda1/0x1ef0
+> >     [<ffffffff87f765ed>] inet_sendmsg+0x9d/0xe0
+> >     [<ffffffff8754b5b3>] sock_sendmsg+0xd3/0x120
+> >     [<ffffffff8755446a>] __sys_sendto+0x23a/0x340
+> >     [<ffffffff87554651>] __x64_sys_sendto+0xe1/0x1b0
+> >     [<ffffffff89978b49>] do_syscall_64+0x39/0xb0
+> >     [<ffffffff89a0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> >
+> > Fixes: 637784ade221 ("sctp: introduce priority based stream scheduler")
+> > Reported-by: syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com
+> > Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> > ---
+> >  net/sctp/stream.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >
+> > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+> > index ef9fceadef8d..a17dc368876f 100644
+> > --- a/net/sctp/stream.c
+> > +++ b/net/sctp/stream.c
+> > @@ -70,6 +70,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
+> >                  * sctp_stream_update will swap ->out pointers.
+> >                  */
+> >                 for (i = 0; i < outcnt; i++) {
+> > +                       if (SCTP_SO(new, i)->ext)
+> > +                               kfree(SCTP_SO(new, i)->ext->prio_head);
+> > +
+> >                         kfree(SCTP_SO(new, i)->ext);
+> >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
+> >                         SCTP_SO(stream, i)->ext = NULL;
+> > @@ -77,6 +80,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
+> >         }
+> >
+> >         for (i = outcnt; i < stream->outcnt; i++) {
+> > +               if (SCTP_SO(stream, i)->ext)
+> > +                       kfree(SCTP_SO(stream, i)->ext->prio_head);
+> > +
+> >                 kfree(SCTP_SO(stream, i)->ext);
+> >                 SCTP_SO(stream, i)->ext = NULL;
+> >         }
+> > --
+> > 2.17.1
+> >
+> This is not a proper fix:
+> 1. you shouldn't access "prio_head" outside stream_sched_prio.c.
+> 2. the prio_head you freed might be used by other out streams, freeing
+> it unconditionally would cause either a double free or use after free.
+> 
+> I'm afraid we have to add a ".free_sid" in sctp_sched_ops, and
+> implement it for sctp_sched_prio, like:
+> 
+> +static void sctp_sched_prio_free_sid(struct sctp_stream *stream, __u16 sid)
+> +{
+> +       struct sctp_stream_priorities *prio = SCTP_SO(stream,
+> sid)->ext->prio_head;
+> +       int i;
+> +
+> +       if (!prio)
+> +               return;
+> +
+> +       SCTP_SO(stream, sid)->ext->prio_head = NULL;
+> +       for (i = 0; i < stream->outcnt; i++) {
 
-This reduces the number of packets traversing the networking stack and
-should usually improves performance. However, it also inserts a
-temporary Hop-by-hop IPv6 extension header.
+Instead of checking all streams, the for() can/should be replaced by
+(from sctp_sched_prio_free):
+	if (!list_empty(&prio->prio_sched))
+		return;
 
-Using the HBH header removal method in the previous path, the extra header
-be removed in bnxt drivers to allow it to send big TCP packets (bigger
-TSO packets) as well.
+> +               if (SCTP_SO(stream, i)->ext &&
+> +                   SCTP_SO(stream, i)->ext->prio_head == prio)
+> +                       return;
+> +       }
+> +       kfree(prio);
+> +}
+> +
+>  static void sctp_sched_prio_free(struct sctp_stream *stream)
+>  {
+>         struct sctp_stream_priorities *prio, *n;
+> @@ -323,6 +340,7 @@ static struct sctp_sched_ops sctp_sched_prio = {
+>         .get = sctp_sched_prio_get,
+>         .init = sctp_sched_prio_init,
+>         .init_sid = sctp_sched_prio_init_sid,
+> +       .free_sid = sctp_sched_prio_free_sid,
+>         .free = sctp_sched_prio_free,
+>         .enqueue = sctp_sched_prio_enqueue,
+>         .dequeue = sctp_sched_prio_dequeue,
+> 
+> then call it in sctp_stream_outq_migrate(), like:
+> 
+> +static void sctp_stream_free_ext(struct sctp_stream *stream, __u16 sid)
+> +{
+> +       struct sctp_sched_ops *sched = sctp_sched_ops_from_stream(stream);
+> +
+> +       sched->free_sid(stream, sid);
+> +       kfree(SCTP_SO(stream, sid)->ext);
+> +       SCTP_SO(stream, sid)->ext = NULL;
+> +}
+> +
+>  /* Migrates chunks from stream queues to new stream queues if needed,
+>   * but not across associations. Also, removes those chunks to streams
+>   * higher than the new max.
+> @@ -70,16 +79,14 @@ static void sctp_stream_outq_migrate(struct
+> sctp_stream *stream,
+>                  * sctp_stream_update will swap ->out pointers.
+>                  */
+>                 for (i = 0; i < outcnt; i++) {
+> -                       kfree(SCTP_SO(new, i)->ext);
+> +                       sctp_stream_free_ext(new, i);
+>                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
+>                         SCTP_SO(stream, i)->ext = NULL;
+>                 }
+>         }
+> 
+> -       for (i = outcnt; i < stream->outcnt; i++) {
+> -               kfree(SCTP_SO(stream, i)->ext);
+> -               SCTP_SO(stream, i)->ext = NULL;
+> -       }
+> +       for (i = outcnt; i < stream->outcnt; i++)
+> +               sctp_stream_free_ext(new, i);
+>  }
+> 
+> Marcelo, do you see a better solution?
 
-If bnxt folks could help with testing this patch on the driver (as I
-don't have access to one) that would be wonderful. Thank you!
+No. Your suggestion is the best I could think of too.
 
-Tested:
-Compiled locally
+Another approach would be to expose sched->free and do all the freeing
+at once, like sctp_stream_free() does. But the above is looks cleaner
+and makes it evident that freeing 'ext' is not trivial.
 
-To further test functional correctness, update the GSO/GRO limit on the
-physical NIC:
+With the proposal above, sctp_sched_prio_free() becomes an
+optimization, if we can call it that. With the for/if replacement
+above, not even that, and should be removed. Including sctp_sched_ops
+'free' pointer.
 
-ip link set eth0 gso_max_size 181000
-ip link set eth0 gro_max_size 181000
+sctp_stream_free() then should be updated to use the new
+sctp_stream_free_ext() instead, instead of mangling it directly.
 
-Note that if there are bonding or ipvan devices on top of the physical
-NIC, their GSO sizes need to be updated as well.
+Makes sense?
 
-Then, IPv6/TCP packets with sizes larger than 64k can be observed.
-
-Signed-off-by: Coco Li <lixiaoyan@google.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 0fe164b42c5d..2bfa5e9fb179 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -389,6 +389,9 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 			return NETDEV_TX_BUSY;
- 	}
- 
-+	if (unlikely(ipv6_hopopt_jumbo_remove(skb)))
-+		goto tx_free;
-+
- 	length = skb->len;
- 	len = skb_headlen(skb);
- 	last_frag = skb_shinfo(skb)->nr_frags;
-@@ -13657,6 +13660,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		dev->features &= ~NETIF_F_LRO;
- 	dev->priv_flags |= IFF_UNICAST_FLT;
- 
-+	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
- #ifdef CONFIG_BNXT_SRIOV
- 	init_waitqueue_head(&bp->sriov_cfg_wait);
- #endif
--- 
-2.38.1.584.g0f3c55d4c2-goog
-
+Thanks,
+Marcelo
