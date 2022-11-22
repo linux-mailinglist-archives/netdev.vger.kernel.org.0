@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73EE06342E2
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:46:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15A256342E3
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 18:46:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234568AbiKVRqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 12:46:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
+        id S234588AbiKVRqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 12:46:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233878AbiKVRpl (ORCPT
+        with ESMTP id S234281AbiKVRpl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 12:45:41 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4A27CB84;
-        Tue, 22 Nov 2022 09:45:03 -0800 (PST)
-Message-ID: <20221122173648.737720888@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624A77D501;
+        Tue, 22 Nov 2022 09:45:05 -0800 (PST)
+Message-ID: <20221122173648.793640919@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669139102;
+        s=2020; t=1669139104;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=y8/Vu8FUleXD3Q2rM81FfgxNTEn3ZV50/HwHiGfKzVY=;
-        b=FseicS90xmf4gF1/tgcarYUG2IWEALo5wjRDB5bPlMl5usMOp61n8lHSQXUIyyfy+AVZWt
-        iM/QqKgTQH8STr2H2lrM9Xq1hciVp6V5y8RujYnhgjUAsZdI3wCpwrpVzG88Oc9b1skgsr
-        odLIAshZxWvWhd8Jx5W1nb7nWzQh6x2BBkIp5R0L6DbPU8bNLhu0KgFqQBv1DOo45wOKAw
-        ZXnzBWLDK/DC85WTrCTi5cUnDvM3UFLDHRDYdXhfkArYoxZxp8w1+2JhIeTmpfWgRAsm29
-        z3xJzrfkUdt1RG7KN0QX7t5oh/oofsc3JWYZr+e5OPmrlxLj/mo7o8b6hyf6TA==
+         references:references; bh=EajXJEzifJO2k3UDHuOk2BYCYQZRqzlObtc+LJK0BY4=;
+        b=4qp6Ri4H+/fn2hAu4yl6rudwb18lvNrlDHP1RAa1J3h7fh8X3hnSoEEpTRSXuZsbGJD0cO
+        U+TTXU2Oosy7AA3wOXkhWY83jco6qccmDLHM0Q87uQDUzXSbubDb9JLaZIECZ8/+6CHDfY
+        I8S7c7yKbRvqStUVlThPnz/x+WzRq2dTVAUSkC56MiT0cyi6UpxhJZbLFfo6Qqo+9bjtYx
+        U180hmYUzyFzFk+3OZHhkKncuWBOCwGC333cReiWhLR8I4XCqnLZLLwBGpmaNtJVqTxgAC
+        GPVxGKu09LBmHZbaqIX6XVcdkx/wWn2neu3/aiZmud+unE0XGp6S8kNBt/4XKw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669139102;
+        s=2020e; t=1669139104;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=y8/Vu8FUleXD3Q2rM81FfgxNTEn3ZV50/HwHiGfKzVY=;
-        b=U3tuUlrXkU0PYik4DgaMpL9uwmedgy2Vu16MaSbtxwVzRVFHlkPCeYS3NdwrZUK+ht15f+
-        pjQXICn3DDkGOBCA==
+         references:references; bh=EajXJEzifJO2k3UDHuOk2BYCYQZRqzlObtc+LJK0BY4=;
+        b=JpNvIWeSy9xrBPNn4gfk7Ak7Gpwm4IyMV6VPS/4JjGs3JpEGB2IJHu29W7xv/tTc/XRnZA
+        VPZ+uOAvYzFPUyCQ==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
@@ -55,12 +53,11 @@ Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [patch V2 11/17] Documentation: Replace del_timer/del_timer_sync()
+Subject: [patch V2 12/17] timers: Silently ignore timers with a NULL function
 References: <20221122171312.191765396@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Date:   Tue, 22 Nov 2022 18:45:01 +0100 (CET)
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 22 Nov 2022 18:45:03 +0100 (CET)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -70,117 +67,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-QWRqdXN0IHRvIHRoZSBuZXcgcHJlZmVycmVkIGZ1bmN0aW9uIG5hbWVzLgoKU3VnZ2VzdGVkLWJ5
-OiBTdGV2ZW4gUm9zdGVkdCA8cm9zdGVkdEBnb29kbWlzLm9yZz4KU2lnbmVkLW9mZi1ieTogVGhv
-bWFzIEdsZWl4bmVyIDx0Z2x4QGxpbnV0cm9uaXguZGU+Ci0tLQogRG9jdW1lbnRhdGlvbi9SQ1Uv
-RGVzaWduL1JlcXVpcmVtZW50cy9SZXF1aXJlbWVudHMucnN0ICAgICAgfCAgICAyICstCiBEb2N1
-bWVudGF0aW9uL2NvcmUtYXBpL2xvY2FsX29wcy5yc3QgICAgICAgICAgICAgICAgICAgICAgICB8
-ICAgIDIgKy0KIERvY3VtZW50YXRpb24va2VybmVsLWhhY2tpbmcvbG9ja2luZy5yc3QgICAgICAg
-ICAgICAgICAgICAgIHwgICAxMSArKysrKy0tLS0tLQogRG9jdW1lbnRhdGlvbi90aW1lcnMvaHJ0
-aW1lcnMucnN0ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAyICstCiBEb2N1bWVudGF0
-aW9uL3RyYW5zbGF0aW9ucy9pdF9JVC9rZXJuZWwtaGFja2luZy9sb2NraW5nLnJzdCB8ICAgMTAg
-KysrKystLS0tLQogRG9jdW1lbnRhdGlvbi90cmFuc2xhdGlvbnMvemhfQ04vY29yZS1hcGkvbG9j
-YWxfb3BzLnJzdCAgICAgfCAgICAyICstCiA2IGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMo
-KyksIDE1IGRlbGV0aW9ucygtKQoKLS0tIGEvRG9jdW1lbnRhdGlvbi9SQ1UvRGVzaWduL1JlcXVp
-cmVtZW50cy9SZXF1aXJlbWVudHMucnN0CisrKyBiL0RvY3VtZW50YXRpb24vUkNVL0Rlc2lnbi9S
-ZXF1aXJlbWVudHMvUmVxdWlyZW1lbnRzLnJzdApAQCAtMTg1OCw3ICsxODU4LDcgQEAgdW5sb2Fk
-ZWQuIEFmdGVyIGEgZ2l2ZW4gbW9kdWxlIGhhcyBiZWVuCiBvbmUgb2YgaXRzIGZ1bmN0aW9ucyBy
-ZXN1bHRzIGluIGEgc2VnbWVudGF0aW9uIGZhdWx0LiBUaGUgbW9kdWxlLXVubG9hZAogZnVuY3Rp
-b25zIG11c3QgdGhlcmVmb3JlIGNhbmNlbCBhbnkgZGVsYXllZCBjYWxscyB0byBsb2FkYWJsZS1t
-b2R1bGUKIGZ1bmN0aW9ucywgZm9yIGV4YW1wbGUsIGFueSBvdXRzdGFuZGluZyBtb2RfdGltZXIo
-KSBtdXN0IGJlIGRlYWx0Ci13aXRoIHZpYSBkZWxfdGltZXJfc3luYygpIG9yIHNpbWlsYXIuCit3
-aXRoIHZpYSB0aW1lcl9kZWxldGVfc3luYygpIG9yIHNpbWlsYXIuCiAKIFVuZm9ydHVuYXRlbHks
-IHRoZXJlIGlzIG5vIHdheSB0byBjYW5jZWwgYW4gUkNVIGNhbGxiYWNrOyBvbmNlIHlvdQogaW52
-b2tlIGNhbGxfcmN1KCksIHRoZSBjYWxsYmFjayBmdW5jdGlvbiBpcyBldmVudHVhbGx5IGdvaW5n
-IHRvIGJlCi0tLSBhL0RvY3VtZW50YXRpb24vY29yZS1hcGkvbG9jYWxfb3BzLnJzdAorKysgYi9E
-b2N1bWVudGF0aW9uL2NvcmUtYXBpL2xvY2FsX29wcy5yc3QKQEAgLTE5MSw3ICsxOTEsNyBAQCBI
-ZXJlIGlzIGEgc2FtcGxlIG1vZHVsZSB3aGljaCBpbXBsZW1lbnRzCiAKICAgICBzdGF0aWMgdm9p
-ZCBfX2V4aXQgdGVzdF9leGl0KHZvaWQpCiAgICAgewotICAgICAgICAgICAgZGVsX3RpbWVyX3N5
-bmMoJnRlc3RfdGltZXIpOworICAgICAgICAgICAgdGltZXJfZGVsZXRlX3N5bmMoJnRlc3RfdGlt
-ZXIpOwogICAgIH0KIAogICAgIG1vZHVsZV9pbml0KHRlc3RfaW5pdCk7Ci0tLSBhL0RvY3VtZW50
-YXRpb24va2VybmVsLWhhY2tpbmcvbG9ja2luZy5yc3QKKysrIGIvRG9jdW1lbnRhdGlvbi9rZXJu
-ZWwtaGFja2luZy9sb2NraW5nLnJzdApAQCAtOTY3LDcgKzk2Nyw3IEBAIElmIHlvdSB3YW50IHRv
-IGRlc3Ryb3kgdGhlIGVudGlyZSBjb2xsZWMKIAogICAgICAgICAgICAgd2hpbGUgKGxpc3QpIHsK
-ICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGZvbyAqbmV4dCA9IGxpc3QtPm5leHQ7Ci0gICAg
-ICAgICAgICAgICAgICAgIGRlbF90aW1lcigmbGlzdC0+dGltZXIpOworICAgICAgICAgICAgICAg
-ICAgICB0aW1lcl9kZWxldGUoJmxpc3QtPnRpbWVyKTsKICAgICAgICAgICAgICAgICAgICAga2Zy
-ZWUobGlzdCk7CiAgICAgICAgICAgICAgICAgICAgIGxpc3QgPSBuZXh0OwogICAgICAgICAgICAg
-fQpAQCAtOTgxLDcgKzk4MSw3IEBAIHRoZSBsb2NrIGFmdGVyIHdlIHNwaW5fdW5sb2NrX2JoKCks
-IGFuZAogdGhlIGVsZW1lbnQgKHdoaWNoIGhhcyBhbHJlYWR5IGJlZW4gZnJlZWQhKS4KIAogVGhp
-cyBjYW4gYmUgYXZvaWRlZCBieSBjaGVja2luZyB0aGUgcmVzdWx0IG9mCi1kZWxfdGltZXIoKTog
-aWYgaXQgcmV0dXJucyAxLCB0aGUgdGltZXIgaGFzIGJlZW4gZGVsZXRlZC4KK3RpbWVyX2RlbGV0
-ZSgpOiBpZiBpdCByZXR1cm5zIDEsIHRoZSB0aW1lciBoYXMgYmVlbiBkZWxldGVkLgogSWYgMCwg
-aXQgbWVhbnMgKGluIHRoaXMgY2FzZSkgdGhhdCBpdCBpcyBjdXJyZW50bHkgcnVubmluZywgc28g
-d2UgY2FuCiBkbzo6CiAKQEAgLTk5MCw3ICs5OTAsNyBAQCBJZiAwLCBpdCBtZWFucyAoaW4gdGhp
-cyBjYXNlKSB0aGF0IGl0IGlzCiAKICAgICAgICAgICAgICAgICAgICAgd2hpbGUgKGxpc3QpIHsK
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgZm9vICpuZXh0ID0gbGlzdC0+bmV4
-dDsKLSAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZiAoIWRlbF90aW1lcigmbGlzdC0+dGlt
-ZXIpKSB7CisgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWYgKCF0aW1lcl9kZWxldGUoJmxp
-c3QtPnRpbWVyKSkgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLyogR2l2
-ZSB0aW1lciBhIGNoYW5jZSB0byBkZWxldGUgdGhpcyAqLwogICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgc3Bpbl91bmxvY2tfYmgoJmxpc3RfbG9jayk7CiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICBnb3RvIHJldHJ5OwpAQCAtMTAwNSw4ICsxMDA1LDcgQEAg
-SWYgMCwgaXQgbWVhbnMgKGluIHRoaXMgY2FzZSkgdGhhdCBpdCBpcwogQW5vdGhlciBjb21tb24g
-cHJvYmxlbSBpcyBkZWxldGluZyB0aW1lcnMgd2hpY2ggcmVzdGFydCB0aGVtc2VsdmVzIChieQog
-Y2FsbGluZyBhZGRfdGltZXIoKSBhdCB0aGUgZW5kIG9mIHRoZWlyIHRpbWVyIGZ1bmN0aW9uKS4K
-IEJlY2F1c2UgdGhpcyBpcyBhIGZhaXJseSBjb21tb24gY2FzZSB3aGljaCBpcyBwcm9uZSB0byBy
-YWNlcywgeW91IHNob3VsZAotdXNlIGRlbF90aW1lcl9zeW5jKCkgKGBgaW5jbHVkZS9saW51eC90
-aW1lci5oYGApIHRvCi1oYW5kbGUgdGhpcyBjYXNlLgordXNlIHRpbWVyX2RlbGV0ZV9zeW5jKCkg
-KGBgaW5jbHVkZS9saW51eC90aW1lci5oYGApIHRvIGhhbmRsZSB0aGlzIGNhc2UuCiAKIExvY2tp
-bmcgU3BlZWQKID09PT09PT09PT09PT0KQEAgLTEzMzQsNyArMTMzMyw3IEBAIGxvY2suCiAKIC0g
-IGtmcmVlKCkKIAotLSAgYWRkX3RpbWVyKCkgYW5kIGRlbF90aW1lcigpCistICBhZGRfdGltZXIo
-KSBhbmQgdGltZXJfZGVsZXRlKCkKIAogTXV0ZXggQVBJIHJlZmVyZW5jZQogPT09PT09PT09PT09
-PT09PT09PQotLS0gYS9Eb2N1bWVudGF0aW9uL3RpbWVycy9ocnRpbWVycy5yc3QKKysrIGIvRG9j
-dW1lbnRhdGlvbi90aW1lcnMvaHJ0aW1lcnMucnN0CkBAIC0xMTgsNyArMTE4LDcgQEAgZXhpc3Rp
-bmcgdGltZXIgd2hlZWwgY29kZSwgYXMgaXQgaXMgbWF0dQogd2FzIG5vdCByZWFsbHkgYSB3aW4s
-IGR1ZSB0byB0aGUgZGlmZmVyZW50IGRhdGEgc3RydWN0dXJlcy4gQWxzbywgdGhlCiBocnRpbWVy
-IGZ1bmN0aW9ucyBub3cgaGF2ZSBjbGVhcmVyIGJlaGF2aW9yIGFuZCBjbGVhcmVyIG5hbWVzIC0g
-c3VjaCBhcwogaHJ0aW1lcl90cnlfdG9fY2FuY2VsKCkgYW5kIGhydGltZXJfY2FuY2VsKCkgW3do
-aWNoIGFyZSByb3VnaGx5Ci1lcXVpdmFsZW50IHRvIGRlbF90aW1lcigpIGFuZCBkZWxfdGltZXJf
-c3luYygpXSAtIHNvIHRoZXJlJ3Mgbm8gZGlyZWN0CitlcXVpdmFsZW50IHRvIHRpbWVyX2RlbGV0
-ZSgpIGFuZCB0aW1lcl9kZWxldGVfc3luYygpXSAtIHNvIHRoZXJlJ3Mgbm8gZGlyZWN0CiAxOjEg
-bWFwcGluZyBiZXR3ZWVuIHRoZW0gb24gdGhlIGFsZ29yaXRobWljIGxldmVsLCBhbmQgdGh1cyBu
-byByZWFsCiBwb3RlbnRpYWwgZm9yIGNvZGUgc2hhcmluZyBlaXRoZXIuCiAKLS0tIGEvRG9jdW1l
-bnRhdGlvbi90cmFuc2xhdGlvbnMvaXRfSVQva2VybmVsLWhhY2tpbmcvbG9ja2luZy5yc3QKKysr
-IGIvRG9jdW1lbnRhdGlvbi90cmFuc2xhdGlvbnMvaXRfSVQva2VybmVsLWhhY2tpbmcvbG9ja2lu
-Zy5yc3QKQEAgLTk5MCw3ICs5OTAsNyBAQCBTZSB2b2xldGUgZWxpbWluYXJlIGwnaW50ZXJhIGNv
-bGxlemlvbmUKIAogICAgICAgICAgICAgd2hpbGUgKGxpc3QpIHsKICAgICAgICAgICAgICAgICAg
-ICAgc3RydWN0IGZvbyAqbmV4dCA9IGxpc3QtPm5leHQ7Ci0gICAgICAgICAgICAgICAgICAgIGRl
-bF90aW1lcigmbGlzdC0+dGltZXIpOworICAgICAgICAgICAgICAgICAgICB0aW1lcl9kZWxldGUo
-Jmxpc3QtPnRpbWVyKTsKICAgICAgICAgICAgICAgICAgICAga2ZyZWUobGlzdCk7CiAgICAgICAg
-ICAgICAgICAgICAgIGxpc3QgPSBuZXh0OwogICAgICAgICAgICAgfQpAQCAtMTAwMyw3ICsxMDAz
-LDcgQEAgZSBwcmVuZGVyw6AgaWwgKmxvY2sqIHNvbG8gZG9wbyBzcGluX3VubAogZGkgZWxpbWlu
-YXJlIGlsIHN1byBvZ2dldHRvIChjaGUgcGVyw7Igw6ggZ2nDoCBzdGF0byBlbGltaW5hdG8pLgog
-CiBRdWVzdG8gcHXDsiBlc3NlcmUgZXZpdGF0byBjb250cm9sbGFuZG8gaWwgdmFsb3JlIGRpIHJp
-dG9ybm8gZGkKLWRlbF90aW1lcigpOiBzZSByaXRvcm5hIDEsIGlsIHRlbXBvcml6emF0b3JlIMOo
-IHN0YXRvIGdpw6AKK3RpbWVyX2RlbGV0ZSgpOiBzZSByaXRvcm5hIDEsIGlsIHRlbXBvcml6emF0
-b3JlIMOoIHN0YXRvIGdpw6AKIHJpbW9zc28uIFNlIDAsIHNpZ25pZmljYSAoaW4gcXVlc3RvIGNh
-c28pIGNoZSBpbCB0ZW1wb3JpenphdG9yZSDDqCBpbgogZXNlY3V6aW9uZSwgcXVpbmRpIHBvc3Np
-YW1vIGZhcmUgY29tZSBzZWd1ZTo6CiAKQEAgLTEwMTIsNyArMTAxMiw3IEBAIHJpbW9zc28uIFNl
-IDAsIHNpZ25pZmljYSAoaW4gcXVlc3RvIGNhc28KIAogICAgICAgICAgICAgICAgICAgICB3aGls
-ZSAobGlzdCkgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBmb28gKm5leHQg
-PSBsaXN0LT5uZXh0OwotICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmICghZGVsX3RpbWVy
-KCZsaXN0LT50aW1lcikpIHsKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZiAoIXRpbWVy
-X2RlbGV0ZSgmbGlzdC0+dGltZXIpKSB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAvKiBHaXZlIHRpbWVyIGEgY2hhbmNlIHRvIGRlbGV0ZSB0aGlzICovCiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICBzcGluX3VubG9ja19iaCgmbGlzdF9sb2NrKTsKICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gcmV0cnk7CkBAIC0xMDI2LDcg
-KzEwMjYsNyBAQCByaW1vc3NvLiBTZSAwLCBzaWduaWZpY2EgKGluIHF1ZXN0byBjYXNvCiBVbiBh
-bHRybyBwcm9ibGVtYSDDqCBsJ2VsaW1pbmF6aW9uZSBkZWkgdGVtcG9yaXp6YXRvcmkgY2hlIHNp
-IHJpYXZ2aWFubwogZGEgc29saSAoY2hpYW1hbmRvIGFkZF90aW1lcigpIGFsbGEgZmluZSBkZWxs
-YSBsb3JvIGVzZWN1emlvbmUpLgogRGF0byBjaGUgcXVlc3RvIMOoIHVuIHByb2JsZW1hIGFiYmFz
-dGFuemEgY29tdW5lIGNvbiB1bmEgcHJvcGVuc2lvbmUKLWFsbGUgY29yc2UgY3JpdGljaGUsIGRv
-dnJlc3RlIHVzYXJlIGRlbF90aW1lcl9zeW5jKCkKK2FsbGUgY29yc2UgY3JpdGljaGUsIGRvdnJl
-c3RlIHVzYXJlIHRpbWVyX2RlbGV0ZV9zeW5jKCkKIChgYGluY2x1ZGUvbGludXgvdGltZXIuaGBg
-KSBwZXIgZ2VzdGlyZSBxdWVzdG8gY2Fzby4KIAogVmVsb2NpdMOgIGRlbGxhIHNpbmNyb25penph
-emlvbmUKQEAgLTEzNzIsNyArMTM3Miw3IEBAIGNvbnRlc3RvLCBvIHRyYXR0ZW5lbmRvIHVuIHF1
-YWxzaWFzaSAqbG8KIAogLSAga2ZyZWUoKQogCi0tICBhZGRfdGltZXIoKSBlIGRlbF90aW1lcigp
-CistICBhZGRfdGltZXIoKSBlIHRpbWVyX2RlbGV0ZSgpCiAKIFJpZmVyaW1lbnRvIHBlciBsJ0FQ
-SSBkZWkgTXV0ZXgKID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGEvRG9jdW1l
-bnRhdGlvbi90cmFuc2xhdGlvbnMvemhfQ04vY29yZS1hcGkvbG9jYWxfb3BzLnJzdAorKysgYi9E
-b2N1bWVudGF0aW9uL3RyYW5zbGF0aW9ucy96aF9DTi9jb3JlLWFwaS9sb2NhbF9vcHMucnN0CkBA
-IC0xODUsNyArMTg1LDcgQEAgVVDkuYvpl7TmsqHmnInkuI3lkIznmoTooYzkuLrvvIzlnKjkvaDv
-v70KIAogICAgIHN0YXRpYyB2b2lkIF9fZXhpdCB0ZXN0X2V4aXQodm9pZCkKICAgICB7Ci0gICAg
-ICAgICAgICBkZWxfdGltZXJfc3luYygmdGVzdF90aW1lcik7CisgICAgICAgICAgICB0aW1lcl9k
-ZWxldGVfc3luYygmdGVzdF90aW1lcik7CiAgICAgfQogCiAgICAgbW9kdWxlX2luaXQodGVzdF9p
-bml0KTsKCg==
+Tearing down timers which have circular dependencies to other
+functionality, e.g. workqueues, where the timer can schedule work and work
+can arm timers is not trivial.
+
+In those cases it is desired to shutdown the timer in a way which prevents
+rearming of the timer. The mechanism to do so it to set timer->function to
+NULL and use this as an indicator for the timer arming functions to ignore
+the (re)arm request.
+
+In preparation for that replace the warnings in the relevant code pathes
+with checks for timer->function == NULL and discard the rearm request
+silently.
+
+Add debug_assert_init() instead of the WARN_ON_ONCE(!timer->function)
+checks so that debug objects can warn about non-initialized timers.
+
+If developers fail to enable debug objects and then waste lots of time to
+figure out why their non-initialized timer is not firing, they deserve it.
+
+Co-developed-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/all/20220407161745.7d6754b3@gandalf.local.home
+Link: https://lore.kernel.org/all/20221110064101.429013735@goodmis.org
+---
+V2: Use continue instead of return and amend the return value docs (Steven)
+---
+ kernel/time/timer.c |   60 +++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 55 insertions(+), 5 deletions(-)
+
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1017,7 +1017,7 @@ static inline int
+ 	unsigned int idx = UINT_MAX;
+ 	int ret = 0;
+ 
+-	BUG_ON(!timer->function);
++	debug_assert_init(timer);
+ 
+ 	/*
+ 	 * This is a common optimization triggered by the networking code - if
+@@ -1044,6 +1044,14 @@ static inline int
+ 		 * dequeue/enqueue dance.
+ 		 */
+ 		base = lock_timer_base(timer, &flags);
++		/*
++		 * Has @timer been shutdown? This needs to be evaluated
++		 * while holding base lock to prevent a race against the
++		 * shutdown code.
++		 */
++		if (!timer->function)
++			goto out_unlock;
++
+ 		forward_timer_base(base);
+ 
+ 		if (timer_pending(timer) && (options & MOD_TIMER_REDUCE) &&
+@@ -1070,6 +1078,14 @@ static inline int
+ 		}
+ 	} else {
+ 		base = lock_timer_base(timer, &flags);
++		/*
++		 * Has @timer been shutdown? This needs to be evaluated
++		 * while holding base lock to prevent a race against the
++		 * shutdown code.
++		 */
++		if (!timer->function)
++			goto out_unlock;
++
+ 		forward_timer_base(base);
+ 	}
+ 
+@@ -1128,8 +1144,12 @@ static inline int
+  * mod_timer_pending() is the same for pending timers as mod_timer(), but
+  * will not activate inactive timers.
+  *
++ * If @timer->function == NULL then the start operation is silently
++ * discarded.
++ *
+  * Return:
+- * * %0 - The timer was inactive and not modified
++ * * %0 - The timer was inactive and not modified or was is in
++ *	  shutdown state and the operation was discarded
+  * * %1 - The timer was active and requeued to expire at @expires
+  */
+ int mod_timer_pending(struct timer_list *timer, unsigned long expires)
+@@ -1155,8 +1175,12 @@ EXPORT_SYMBOL(mod_timer_pending);
+  * same timer, then mod_timer() is the only safe way to modify the timeout,
+  * since add_timer() cannot modify an already running timer.
+  *
++ * If @timer->function == NULL then the start operation is silently
++ * discarded, the return value is 0 and meaningless.
++ *
+  * Return:
+- * * %0 - The timer was inactive and started
++ * * %0 - The timer was inactive and started or was is in shutdown
++ *	  state and the operation was discarded
+  * * %1 - The timer was active and requeued to expire at @expires or
+  *	  the timer was active and not modified because @expires did
+  *	  not change the effective expiry time
+@@ -1176,8 +1200,12 @@ EXPORT_SYMBOL(mod_timer);
+  * modify an enqueued timer if that would reduce the expiration time. If
+  * @timer is not enqueued it starts the timer.
+  *
++ * If @timer->function == NULL then the start operation is silently
++ * discarded.
++ *
+  * Return:
+- * * %0 - The timer was inactive and started
++ * * %0 - The timer was inactive and started or was is in shutdown
++ *	  state and the operation was discarded
+  * * %1 - The timer was active and requeued to expire at @expires or
+  *	  the timer was active and not modified because @expires
+  *	  did not change the effective expiry time such that the
+@@ -1202,6 +1230,9 @@ EXPORT_SYMBOL(timer_reduce);
+  *
+  * If @timer->expires is already in the past @timer will be queued to
+  * expire at the next timer tick.
++ *
++ * If @timer->function == NULL then the start operation is silently
++ * discarded.
+  */
+ void add_timer(struct timer_list *timer)
+ {
+@@ -1218,13 +1249,18 @@ EXPORT_SYMBOL(add_timer);
+  *
+  * This can only operate on an inactive timer. Attempts to invoke this on
+  * an active timer are rejected with a warning.
++ *
++ * If @timer->function == NULL then the start operation is silently
++ * discarded.
+  */
+ void add_timer_on(struct timer_list *timer, int cpu)
+ {
+ 	struct timer_base *new_base, *base;
+ 	unsigned long flags;
+ 
+-	if (WARN_ON_ONCE(timer_pending(timer) || !timer->function))
++	debug_assert_init(timer);
++
++	if (WARN_ON_ONCE(timer_pending(timer)))
+ 		return;
+ 
+ 	new_base = get_timer_cpu_base(timer->flags, cpu);
+@@ -1235,6 +1271,13 @@ void add_timer_on(struct timer_list *tim
+ 	 * wrong base locked.  See lock_timer_base().
+ 	 */
+ 	base = lock_timer_base(timer, &flags);
++	/*
++	 * Has @timer been shutdown? This needs to be evaluated while
++	 * holding base lock to prevent a race against the shutdown code.
++	 */
++	if (!timer->function)
++		goto out_unlock;
++
+ 	if (base != new_base) {
+ 		timer->flags |= TIMER_MIGRATING;
+ 
+@@ -1248,6 +1291,7 @@ void add_timer_on(struct timer_list *tim
+ 
+ 	debug_timer_activate(timer);
+ 	internal_add_timer(base, timer);
++out_unlock:
+ 	raw_spin_unlock_irqrestore(&base->lock, flags);
+ }
+ EXPORT_SYMBOL_GPL(add_timer_on);
+@@ -1537,6 +1581,12 @@ static void expire_timers(struct timer_b
+ 
+ 		fn = timer->function;
+ 
++		if (WARN_ON_ONCE(!fn)) {
++			/* Should never happen. Emphasis on should! */
++			base->running_timer = NULL;
++			continue;
++		}
++
+ 		if (timer->flags & TIMER_IRQSAFE) {
+ 			raw_spin_unlock(&base->lock);
+ 			call_timer_fn(timer, fn, baseclk);
+
