@@ -2,87 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D87DB63336B
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 03:38:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD3A0633397
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 03:55:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232059AbiKVCiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 21:38:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35710 "EHLO
+        id S231272AbiKVCzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 21:55:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231856AbiKVCiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:38:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890755CD1C;
-        Mon, 21 Nov 2022 18:38:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3709061543;
-        Tue, 22 Nov 2022 02:38:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3843FC433D6;
-        Tue, 22 Nov 2022 02:38:06 +0000 (UTC)
-Date:   Mon, 21 Nov 2022 21:38:02 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Anna-Maria Behnsen <anna-maria@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [patch 00/15] timers: Provide timer_shutdown[_sync]()
-Message-ID: <20221121213802.1cd09674@rorschach.local.home>
-In-Reply-To: <20221115195802.415956561@linutronix.de>
-References: <20221115195802.415956561@linutronix.de>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S230237AbiKVCzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 21:55:47 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395F7178B2
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 18:55:46 -0800 (PST)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NGTM12QSRzJnhG;
+        Tue, 22 Nov 2022 10:52:29 +0800 (CST)
+Received: from [10.67.110.176] (10.67.110.176) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 22 Nov 2022 10:55:43 +0800
+Subject: Re: [PATCH net] intel/igbvf: free irq on the error path in
+ igbvf_request_msix()
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+CC:     "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "alexander.h.duyck@intel.com" <alexander.h.duyck@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20221120061757.264242-1-cuigaosheng1@huawei.com>
+ <Y3u95fVsT/7zXQQp@boxer>
+From:   cuigaosheng <cuigaosheng1@huawei.com>
+Message-ID: <322f3167-d5e4-502a-ccb0-1f79ae254d3e@huawei.com>
+Date:   Tue, 22 Nov 2022 10:55:42 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <Y3u95fVsT/7zXQQp@boxer>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.67.110.176]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Nov 2022 21:28:32 +0100 (CET)
-Thomas Gleixner <tglx@linutronix.de> wrote:
+> s/free_irq1/free_irq_tx ?
+>
+>>   
+>>   	adapter->rx_ring->itr_register = E1000_EITR(vector);
+>>   	adapter->rx_ring->itr_val = adapter->current_itr;
+>> @@ -1083,10 +1083,14 @@ static int igbvf_request_msix(struct igbvf_adapter *adapter)
+>>   	err = request_irq(adapter->msix_entries[vector].vector,
+>>   			  igbvf_msix_other, 0, netdev->name, netdev);
+>>   	if (err)
+>> -		goto out;
+>> +		goto free_irq2;
+> s/free_irq2/free_irq_rx ?
+>
 
-> The patches have been split up into small pieces to make review easier and
-> I took the liberty to throw a bunch of overdue cleanups into the picture
-> instead of proliferating the existing state further.
+Thanks for taking time to review this patch, I have made a patch v2 and submit it.
 
-After applying all these patches, and then my updates to the rest of
-the kernel, as well as my update to the debug objects to require
-shutdown. It reported this was needed:
+link: https://patchwork.kernel.org/project/netdevbpf/patch/20221122022852.1384927-1-cuigaosheng1@huawei.com/
 
--- Steve
 
-diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 0fbb71950ca2..3e84a2621913 100644
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -2188,7 +2188,7 @@ signed long __sched schedule_timeout(signed long timeout)
- 	timer_setup_on_stack(&timer.timer, process_timeout, 0);
- 	__mod_timer(&timer.timer, expire, MOD_TIMER_NOTPENDING);
- 	schedule();
--	del_timer_sync(&timer.timer);
-+	timer_shutdown_sync(&timer.timer);
- 
- 	/* Remove the timer from the object tracker */
- 	destroy_timer_on_stack(&timer.timer);
+On 2022/11/22 2:05, Maciej Fijalkowski wrote:
+> On Sun, Nov 20, 2022 at 07:17:57AM +0100, Gaosheng Cui wrote:
+>> In igbvf_request_msix(), irqs have not been freed on the err path,
+>> we need to free it. Fix it.
+>>
+>> Fixes: d4e0fe01a38a ("igbvf: add new driver to support 82576 virtual functions")
+>> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+> Hi,
+>
+>> ---
+>>   drivers/net/ethernet/intel/igbvf/netdev.c | 8 ++++++--
+>>   1 file changed, 6 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c b/drivers/net/ethernet/intel/igbvf/netdev.c
+>> index 3a32809510fc..e212ca16df00 100644
+>> --- a/drivers/net/ethernet/intel/igbvf/netdev.c
+>> +++ b/drivers/net/ethernet/intel/igbvf/netdev.c
+>> @@ -1074,7 +1074,7 @@ static int igbvf_request_msix(struct igbvf_adapter *adapter)
+>>   			  igbvf_intr_msix_rx, 0, adapter->rx_ring->name,
+>>   			  netdev);
+>>   	if (err)
+>> -		goto out;
+>> +		goto free_irq1;
+> s/free_irq1/free_irq_tx ?
+>
+>>   
+>>   	adapter->rx_ring->itr_register = E1000_EITR(vector);
+>>   	adapter->rx_ring->itr_val = adapter->current_itr;
+>> @@ -1083,10 +1083,14 @@ static int igbvf_request_msix(struct igbvf_adapter *adapter)
+>>   	err = request_irq(adapter->msix_entries[vector].vector,
+>>   			  igbvf_msix_other, 0, netdev->name, netdev);
+>>   	if (err)
+>> -		goto out;
+>> +		goto free_irq2;
+> s/free_irq2/free_irq_rx ?
+>
+>>   
+>>   	igbvf_configure_msix(adapter);
+>>   	return 0;
+>> +free_irq2:
+>> +	free_irq(adapter->msix_entries[--vector].vector, netdev);
+>> +free_irq1:
+>> +	free_irq(adapter->msix_entries[--vector].vector, netdev);
+>>   out:
+>>   	return err;
+> Besides above suggestions, change LGTM.
+>
+> Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+>
+>>   }
+>> -- 
+>> 2.25.1
+>>
+> .
