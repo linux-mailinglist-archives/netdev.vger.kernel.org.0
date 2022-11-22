@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91199633455
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 05:07:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C1EE633463
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 05:19:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231830AbiKVEHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Nov 2022 23:07:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41626 "EHLO
+        id S229730AbiKVETj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Nov 2022 23:19:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232231AbiKVEHn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 23:07:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68D2DE8
-        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 20:07:42 -0800 (PST)
+        with ESMTP id S231640AbiKVETU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Nov 2022 23:19:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABBF13CE8
+        for <netdev@vger.kernel.org>; Mon, 21 Nov 2022 20:19:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0901D6153F
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 04:07:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43AC5C433D6;
-        Tue, 22 Nov 2022 04:07:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14D5D61516
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 04:19:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1DA4C433D6;
+        Tue, 22 Nov 2022 04:19:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669090061;
-        bh=kchhsUfl+ctN8yKDSC45Kn8LiGTcHiYQVnrc+Yy1tw0=;
+        s=k20201202; t=1669090759;
+        bh=HKlGIK/QEV1/cy7+Qe4uhlLUfMwxk79gwY7ck+rcOlU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Q0GSaI2DsZdhDd8ErZeGNj38GE4pMajTPnkiNXoA/HwG//ayGjvz991FxYYhii7p7
-         AHo6oTyKlibdQFomHdp8INts/oBLDm7jcMquNDQXxIkrjfEWvRQMFzeEqLZzCLprkO
-         8Yh1/LiIgiNYcypUe8M4Z197+4y0/4+MqKkTYLd5Dop8FWAgBg3Q59KSdKjbo4f9aY
-         Jn6GQiLQcPA7c9+16DcPwEPQOsFOGju+tpjW1JmB0lwNYemWJYcsrt6F/7rc8Y7qY0
-         vxKto6O7ePJ3PzWSf/NW45AqDSP80cyJ5GfdIh3KNh31msd6eaSoFr3ePOFZ3AMTxK
-         DtYBUw/g8DESA==
-Date:   Mon, 21 Nov 2022 20:07:40 -0800
+        b=kqcUm/rPt22k1sqpVY1uDRnnFZVpQjFfTiR15FfPpB7fmSNS7ZaUzbg6DXjKIvGWb
+         b4l9+7ICBMetXkpVdsnauTxQKlgszUQ47wIM3HreEstxHCl/T5jDzTkIi8HehKEu4U
+         INJphh+COikZthi4EuknXxUAfXyox10A3AHJgKcnJW9GB5lhx8ry50jzgEUcnxDKht
+         0kdEuiiMn/dtWmptpJiGDSwSNsu7zFrqypk/A8FVBS+vuI6Wquoph/DPtwYPP7iurN
+         oDE0/HigXmGLCgRmBUhftsVskVDOP5WQwfoySs+qk33oDM2L9PpwLU9PzXNd/kDY7W
+         TivgdB94vIPSA==
+Date:   Mon, 21 Nov 2022 20:19:17 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     <netdev@vger.kernel.org>, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 3/8] devlink: report extended error message in
- region_read_dumpit
-Message-ID: <20221121200740.0a0b6581@kernel.org>
-In-Reply-To: <f60f589d-930c-3f44-4872-eac6b83d67ef@intel.com>
-References: <20221117220803.2773887-1-jacob.e.keller@intel.com>
-        <20221117220803.2773887-4-jacob.e.keller@intel.com>
-        <20221118174012.5f4f5e21@kernel.org>
-        <243100a2-abb4-6df4-235e-42a773716309@intel.com>
-        <20221121112322.21bffb4b@kernel.org>
-        <f60f589d-930c-3f44-4872-eac6b83d67ef@intel.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        lorenzo.bianconi@redhat.com, sujuan.chen@mediatek.com,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net-next 5/5] net: ethernet: mtk_wed: add reset to
+ tx_ring_setup callback
+Message-ID: <20221121201917.080365ce@kernel.org>
+In-Reply-To: <Y3vrKcqlmxksq1rC@lore-desk>
+References: <cover.1669020847.git.lorenzo@kernel.org>
+        <9c4dded2b7a35a8e44b255a74e776a703359797b.1669020847.git.lorenzo@kernel.org>
+        <20221121121718.4cc2afe5@kernel.org>
+        <Y3vrKcqlmxksq1rC@lore-desk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,19 +59,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Nov 2022 13:18:37 -0800 Jacob Keller wrote:
-> > Ah damn, you're right, I thought I just missed it because it wasn't
-> > at the top of the function.  
+On Mon, 21 Nov 2022 22:18:33 +0100 Lorenzo Bianconi wrote:
+> > On Mon, 21 Nov 2022 09:59:25 +0100 Lorenzo Bianconi wrote:  
+> > > +#define mtk_wed_device_tx_ring_setup(_dev, _ring, _regs, _reset) \
+> > > +	(_dev)->ops->tx_ring_setup(_dev, _ring, _regs, _reset)  
+> > 
+> > FWIW I find the "op macros" quite painful when trying to read a driver
+> > I'm not familiar with. stmmac does this, too. Just letting you know,
+> > it is what it is.  
 > 
-> I also saw a few other cases where it might make sense to use a 
-> GENL_CB_REQ_ATTR_CHECK or similar.
-> 
-> Unfortunately there's at least one area where we check for attributes 
-> inside a function that is used in both flows which would get a bit 
-> problematic :( Will see what I can come up with.
+> ack, fine. I maintained the approach currently used in the driver.
+> Do you prefer to run the function pointer directly?
 
-Perhaps this series is not the right place to worry about the missing
-attr ext_ack for dumps. Go forward with v2, we can solve that later.
+That's a tiny bit better, yes, saves the reader one lookup.
 
-I think the info discrepancy falls under a larger problem of message
-building code between doit and dump.
+Are the ops here serving as a HAL or a way of breaking the dependency
+between the SoC/Eth and the WiFi drivers? 
