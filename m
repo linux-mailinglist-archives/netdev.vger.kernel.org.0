@@ -2,329 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F291063407E
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 16:44:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E7563408D
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 16:50:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233991AbiKVPoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 10:44:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51658 "EHLO
+        id S233643AbiKVPuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 10:50:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233970AbiKVPoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 10:44:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8168F1275D
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 07:43:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669131784;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=EA8n/mImoBrgJsm3K0x/vQ/UAIrAlDMF5YlwLReaHPI=;
-        b=caL3Izrw3bf7AgMocNerLKls5Uz9HuXAzim14RMQPtu23fA8mk4agApi6vYKMjWGDfQjaz
-        8iN0Emtc2X9LNPOeod/ogTjsbqOkODZjio7ZBS6oAk3T2SYdh1vqd01mIpNwWa0efp2Ana
-        An6evR4HDzlmpokKBz/ENbi0D/1p9Fk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-487-RnuIS3NBMPmP_Zq2pMUFCw-1; Tue, 22 Nov 2022 10:43:01 -0500
-X-MC-Unique: RnuIS3NBMPmP_Zq2pMUFCw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AE2C5887403;
-        Tue, 22 Nov 2022 15:43:00 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.193.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1ED8940C83AD;
-        Tue, 22 Nov 2022 15:42:58 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     Soheil Hassas Yeganeh <soheil@google.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Jason Baron <jbaron@akamai.com>,
-        Roman Penyaev <rpenyaev@suse.de>, netdev@vger.kernel.org,
-        Carlos Maiolino <cmaiolino@redhat.com>
-Subject: [REPOST PATCH] epoll: use refcount to reduce ep_mutex contention
-Date:   Tue, 22 Nov 2022 16:42:20 +0100
-Message-Id: <e102081e103d897cc0b76908acdac1bf0b65050d.1669130955.git.pabeni@redhat.com>
+        with ESMTP id S229449AbiKVPuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 10:50:04 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411BF63B84;
+        Tue, 22 Nov 2022 07:50:03 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id ci10so7391955pjb.1;
+        Tue, 22 Nov 2022 07:50:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=XzoAp9Plv3egb3kfLGSXnYMVJkluSY/7fd0B6sswIds=;
+        b=INdoxMR4pymr7XaCszMHSiwlodvYNMw0hTQ1XFdS3pyv1vqEJBHN3y8nUlf0UqgYCr
+         rx8nNbdWgidBnRcU0ojvgzjVKCnY5F6IvNu2XgqfdXCTM7EQvPkSk9McnvmGCN0NJfLB
+         pHMrYxvw+Q+U/FtheOSfmdsRwZ1aEdU+laEgbByMp5v/fkONQ4vzH1IzkJ1O/stgISAx
+         AzoU2eVklfrsW9psoTB83i0NzGmPIZ45gr2yJ5y9Qm4vNIyafOowwXgr7Blo7M0KcINV
+         Tux9ssO02KUiZJFaIf8YpNarnpL1c9BM8WmAFZW4t9P0h2nBJTcfy9w1vovvk8zdt85J
+         tDog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XzoAp9Plv3egb3kfLGSXnYMVJkluSY/7fd0B6sswIds=;
+        b=t19eMS1XRXCU5L834r2dzlLkc2ecPOIGVEfJePS7laiOTLo/MYTynqPM2qKAP9GZ+6
+         L8C7YWGF3YdBXObKLZRs8kayFjGx2lbga45KB9IlBIM5i8N8pCljJBWwYsVJ6CxRiWUK
+         s8oY2QFU1zDS9+uusLHUOqsgaB+gpQCvCcm8Q9IuWacoz9PeN0bGVCLOvXj45VAcnICj
+         26fZVJ78TTfus7fZpe6zMwS3kTNau7rRTE+FzgjjYZlUo80z3yZ+AlT0WhtK/RrsrI97
+         9TK8x4j4hw/00tFUcpSXEgHyPdeLNBq4X35EDWbWvlwSnYBSSAKADJkqAv8B2V3/WD+c
+         3k5A==
+X-Gm-Message-State: ANoB5plksHtzGd+Dgc8uXbnQj4vFxHmM3H7dBQDLz6fvrSoo0LPVib8v
+        WvLyUUcR7EXFhhM7OF5CbmA=
+X-Google-Smtp-Source: AA0mqf6C6yUIcGfIEM3SRjP8poGnNnss3uo6pxcf+6Njnbggm+vHaUZTQr5HIm/i0Lub8iGrBqGkLg==
+X-Received: by 2002:a17:902:c286:b0:176:a880:6d72 with SMTP id i6-20020a170902c28600b00176a8806d72mr6034538pld.127.1669132202607;
+        Tue, 22 Nov 2022 07:50:02 -0800 (PST)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id e12-20020a17090301cc00b001868981a18esm12251637plh.6.2022.11.22.07.50.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Nov 2022 07:50:02 -0800 (PST)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [RFC PATCH] net: devlink: devlink_nl_info_fill: populate default information
+Date:   Wed, 23 Nov 2022 00:49:34 +0900
+Message-Id: <20221122154934.13937-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.37.4
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are observing huge contention on the epmutex during an http
-connection/rate test:
+Some piece of information are common to the vast majority of the
+devices. Examples are:
 
- 83.17% 0.25%  nginx            [kernel.kallsyms]         [k] entry_SYSCALL_64_after_hwframe
-[...]
-           |--66.96%--__fput
-                      |--60.04%--eventpoll_release_file
-                                 |--58.41%--__mutex_lock.isra.6
-                                           |--56.56%--osq_lock
+  * the driver name.
+  * the serial number of a USB device.
 
-The application is multi-threaded, creates a new epoll entry for
-each incoming connection, and does not delete it before the
-connection shutdown - that is, before the connection's fd close().
+Modify devlink_nl_info_fill() to retrieve those information so that
+the drivers do not have to. Rationale: factorize code.
 
-Many different threads compete frequently for the epmutex lock,
-affecting the overall performance.
-
-To reduce the contention this patch introduces explicit reference counting
-for the eventpoll struct. Each registered event acquires a reference,
-and references are released at ep_remove() time. ep_free() doesn't touch
-anymore the event RB tree, it just unregisters the existing callbacks
-and drops a reference to the ep struct. The struct itself is freed when
-the reference count reaches 0. The reference count updates are protected
-by the mtx mutex so no additional atomic operations are needed.
-
-Since ep_free() can't compete anymore with eventpoll_release_file()
-for epitems removal, we can drop the epmutex usage at disposal time.
-
-With the patched kernel, in the same connection/rate scenario, the mutex
-operations disappear from the perf report, and the measured connections/rate
-grows by ~60%.
-
-Tested-by: Xiumei Mu <xmu@redhat.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
-This is just a repost reaching out for more recipents,
-as suggested by Carlos.
+I am sending this as an RFC because I just started to study devlink.
 
-Previous post at:
+I can see a parallel with ethtool for which the core will fill
+whatever it can. c.f.:
+commit f20a0a0519f3 ("ethtool: doc: clarify what drivers can implement in their get_drvinfo()")
+Link: https://git.kernel.org/netdev/net-next/c/f20a0a0519f3
 
-https://lore.kernel.org/linux-fsdevel/20221122102726.4jremle54zpcapia@andromeda/T/#m6f98d4ccbe0a385d10c04fd4018e782b793944e6
+I think that devlink should do the same.
+
+Right now, I identified two fields. If this RFC receive positive
+feedback, I will iron it up and try to see if there is more that can
+be filled by default.
+
+Thank you for your comments.
 ---
- fs/eventpoll.c | 113 ++++++++++++++++++++++++++++---------------------
- 1 file changed, 64 insertions(+), 49 deletions(-)
+ net/core/devlink.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-index 52954d4637b5..6e415287aeb8 100644
---- a/fs/eventpoll.c
-+++ b/fs/eventpoll.c
-@@ -226,6 +226,12 @@ struct eventpoll {
- 	/* tracks wakeup nests for lockdep validation */
- 	u8 nests;
- #endif
-+
-+	/*
-+	 * protected by mtx, used to avoid races between ep_free() and
-+	 * ep_eventpoll_release()
-+	 */
-+	unsigned int refcount;
- };
- 
- /* Wrapper struct used by poll queueing */
-@@ -240,9 +246,6 @@ struct ep_pqueue {
- /* Maximum number of epoll watched descriptors, per user */
- static long max_user_watches __read_mostly;
- 
--/*
-- * This mutex is used to serialize ep_free() and eventpoll_release_file().
-- */
- static DEFINE_MUTEX(epmutex);
- 
- static u64 loop_check_gen = 0;
-@@ -555,8 +558,7 @@ static void ep_remove_wait_queue(struct eppoll_entry *pwq)
- 
- /*
-  * This function unregisters poll callbacks from the associated file
-- * descriptor.  Must be called with "mtx" held (or "epmutex" if called from
-- * ep_free).
-+ * descriptor.  Must be called with "mtx" held.
-  */
- static void ep_unregister_pollwait(struct eventpoll *ep, struct epitem *epi)
- {
-@@ -679,11 +681,37 @@ static void epi_rcu_free(struct rcu_head *head)
- 	kmem_cache_free(epi_cache, epi);
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 7f789bbcbbd7..1908b360caf7 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -18,6 +18,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/spinlock.h>
+ #include <linux/refcount.h>
++#include <linux/usb.h>
+ #include <linux/workqueue.h>
+ #include <linux/u64_stats_sync.h>
+ #include <linux/timekeeping.h>
+@@ -6685,12 +6686,37 @@ int devlink_info_version_running_put_ext(struct devlink_info_req *req,
  }
+ EXPORT_SYMBOL_GPL(devlink_info_version_running_put_ext);
  
-+static void ep_get(struct eventpoll *ep)
++static int devlink_nl_driver_info_get(struct device_driver *drv,
++				      struct devlink_info_req *req)
 +{
-+	ep->refcount++;
++	if (!drv)
++		return 0;
++
++	if (drv->name[0])
++		return devlink_info_driver_name_put(req, drv->name);
++
++	return 0;
 +}
 +
-+/*
-+ * Returns true if the event poll can be disposed
-+ */
-+static bool ep_put(struct eventpoll *ep)
++static int devlink_nl_usb_info_get(struct usb_device *udev,
++				   struct devlink_info_req *req)
 +{
-+	if (--ep->refcount)
-+		return false;
++	if (!udev)
++		return 0;
 +
-+	WARN_ON_ONCE(!RB_EMPTY_ROOT(&ep->rbr.rb_root));
-+	return true;
++	if (udev->serial[0])
++		return devlink_info_serial_number_put(req, udev->serial);
++
++	return 0;
 +}
 +
-+static void ep_dispose(struct eventpoll *ep)
-+{
-+	mutex_destroy(&ep->mtx);
-+	free_uid(ep->user);
-+	wakeup_source_unregister(ep->ws);
-+	kfree(ep);
-+}
-+
- /*
-  * Removes a "struct epitem" from the eventpoll RB tree and deallocates
-  * all the associated resources. Must be called with "mtx" held.
-+ * Returns true if the eventpoll can be disposed.
-  */
--static int ep_remove(struct eventpoll *ep, struct epitem *epi)
-+static bool ep_remove(struct eventpoll *ep, struct epitem *epi)
+ static int
+ devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
+ 		     enum devlink_command cmd, u32 portid,
+ 		     u32 seq, int flags, struct netlink_ext_ack *extack)
  {
- 	struct file *file = epi->ffd.file;
- 	struct epitems_head *to_free;
-@@ -731,28 +759,20 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
- 	call_rcu(&epi->rcu, epi_rcu_free);
+ 	struct devlink_info_req req = {};
++	struct device *dev = devlink_to_dev(devlink);
+ 	void *hdr;
+ 	int err;
  
- 	percpu_counter_dec(&ep->user->epoll_watches);
--
--	return 0;
-+	return ep_put(ep);
- }
+@@ -6707,6 +6733,16 @@ devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
+ 	if (err)
+ 		goto err_cancel_msg;
  
- static void ep_free(struct eventpoll *ep)
- {
- 	struct rb_node *rbp;
- 	struct epitem *epi;
-+	bool dispose;
- 
- 	/* We need to release all tasks waiting for these file */
- 	if (waitqueue_active(&ep->poll_wait))
- 		ep_poll_safewake(ep, NULL);
- 
--	/*
--	 * We need to lock this because we could be hit by
--	 * eventpoll_release_file() while we're freeing the "struct eventpoll".
--	 * We do not need to hold "ep->mtx" here because the epoll file
--	 * is on the way to be removed and no one has references to it
--	 * anymore. The only hit might come from eventpoll_release_file() but
--	 * holding "epmutex" is sufficient here.
--	 */
--	mutex_lock(&epmutex);
-+	mutex_lock(&ep->mtx);
- 
- 	/*
- 	 * Walks through the whole tree by unregistering poll callbacks.
-@@ -765,26 +785,14 @@ static void ep_free(struct eventpoll *ep)
- 	}
- 
- 	/*
--	 * Walks through the whole tree by freeing each "struct epitem". At this
--	 * point we are sure no poll callbacks will be lingering around, and also by
--	 * holding "epmutex" we can be sure that no file cleanup code will hit
--	 * us during this operation. So we can avoid the lock on "ep->lock".
--	 * We do not need to lock ep->mtx, either, we only do it to prevent
--	 * a lockdep warning.
-+	 * epitems in the rb tree are freed either with EPOLL_CTL_DEL
-+	 * or at the relevant file close time by eventpoll_release_file()
- 	 */
--	mutex_lock(&ep->mtx);
--	while ((rbp = rb_first_cached(&ep->rbr)) != NULL) {
--		epi = rb_entry(rbp, struct epitem, rbn);
--		ep_remove(ep, epi);
--		cond_resched();
--	}
-+	dispose = ep_put(ep);
- 	mutex_unlock(&ep->mtx);
- 
--	mutex_unlock(&epmutex);
--	mutex_destroy(&ep->mtx);
--	free_uid(ep->user);
--	wakeup_source_unregister(ep->ws);
--	kfree(ep);
-+	if (dispose)
-+		ep_dispose(ep);
- }
- 
- static int ep_eventpoll_release(struct inode *inode, struct file *file)
-@@ -905,6 +913,7 @@ void eventpoll_release_file(struct file *file)
- 	struct eventpoll *ep;
- 	struct epitem *epi;
- 	struct hlist_node *next;
-+	bool dispose;
- 
- 	/*
- 	 * We don't want to get "file->f_lock" because it is not
-@@ -912,25 +921,18 @@ void eventpoll_release_file(struct file *file)
- 	 * cleanup path, and this means that no one is using this file anymore.
- 	 * So, for example, epoll_ctl() cannot hit here since if we reach this
- 	 * point, the file counter already went to zero and fget() would fail.
--	 * The only hit might come from ep_free() but by holding the mutex
--	 * will correctly serialize the operation. We do need to acquire
--	 * "ep->mtx" after "epmutex" because ep_remove() requires it when called
--	 * from anywhere but ep_free().
- 	 *
- 	 * Besides, ep_remove() acquires the lock, so we can't hold it here.
- 	 */
--	mutex_lock(&epmutex);
--	if (unlikely(!file->f_ep)) {
--		mutex_unlock(&epmutex);
--		return;
--	}
- 	hlist_for_each_entry_safe(epi, next, file->f_ep, fllink) {
- 		ep = epi->ep;
--		mutex_lock_nested(&ep->mtx, 0);
--		ep_remove(ep, epi);
-+		mutex_lock(&ep->mtx);
-+		dispose = ep_remove(ep, epi);
- 		mutex_unlock(&ep->mtx);
++	err = devlink_nl_driver_info_get(dev->driver, &req);
++	if (err)
++		goto err_cancel_msg;
 +
-+		if (dispose)
-+			ep_dispose(ep);
- 	}
--	mutex_unlock(&epmutex);
- }
- 
- static int ep_alloc(struct eventpoll **pep)
-@@ -953,6 +955,7 @@ static int ep_alloc(struct eventpoll **pep)
- 	ep->rbr = RB_ROOT_CACHED;
- 	ep->ovflist = EP_UNACTIVE_PTR;
- 	ep->user = user;
-+	ep->refcount = 1;
- 
- 	*pep = ep;
- 
-@@ -1494,6 +1497,12 @@ static int ep_insert(struct eventpoll *ep, const struct epoll_event *event,
- 	if (tep)
- 		mutex_unlock(&tep->mtx);
- 
-+	/*
-+	 * ep_remove() calls in the later error paths can't lead to ep_dispose()
-+	 * as overall will lead to no refcount changes
-+	 */
-+	ep_get(ep);
++	if (!strcmp(dev->parent->type->name, "usb_device")) {
++		err = devlink_nl_usb_info_get(to_usb_device(dev->parent), &req);
++		if (err)
++			goto err_cancel_msg;
++	}
 +
- 	/* now check if we've created too many backpaths */
- 	if (unlikely(full_check && reverse_path_check())) {
- 		ep_remove(ep, epi);
-@@ -2165,10 +2174,16 @@ int do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,
- 			error = -EEXIST;
- 		break;
- 	case EPOLL_CTL_DEL:
--		if (epi)
--			error = ep_remove(ep, epi);
--		else
-+		if (epi) {
-+			/*
-+			 * The eventpoll itself is still alive: the refcount
-+			 * can't go to zero here.
-+			 */
-+			WARN_ON_ONCE(ep_remove(ep, epi));
-+			error = 0;
-+		} else {
- 			error = -ENOENT;
-+		}
- 		break;
- 	case EPOLL_CTL_MOD:
- 		if (epi) {
+ 	genlmsg_end(msg, hdr);
+ 	return 0;
+ 
 -- 
-2.38.1
+2.37.4
 
