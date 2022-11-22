@@ -2,93 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBAED6338E9
-	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 10:47:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3BFB6338FC
+	for <lists+netdev@lfdr.de>; Tue, 22 Nov 2022 10:49:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233376AbiKVJrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 04:47:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47062 "EHLO
+        id S233366AbiKVJs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 04:48:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233083AbiKVJrO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 04:47:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B258414007;
-        Tue, 22 Nov 2022 01:47:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F049615F8;
-        Tue, 22 Nov 2022 09:47:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E5DEC433C1;
-        Tue, 22 Nov 2022 09:47:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669110432;
-        bh=UL5MzjRuYkiwDfixp0yElsuBzd8ef1l5k+fEAa+oJwM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EjRz0hp02xXIJwqJ0Kt2F7rWj+ZUVG4GmRJ8wdWkExkqrjSwOl84CUYYRumgzuXMO
-         WVYtwQaLxsSfJNClEbWgoGlkRzWFpvJ6vfWWQ6wBRXvuAyrITOJ4xWnFHLZc45jGgq
-         XKlE0lHiV+0KCCgb+JFR42CYU1DJpDpTy2AIMUTViIAzZ9Vah/yNewiqzLdiVovigZ
-         w2IKdAaKwvKm2TUfxNCyh8cAEur7ZweaDeVYIOqzgOQDP7qhxb7BkGG9g0eDv6jiy+
-         L3oB8M3t8XxHTb83A0+ZHzfEU5ZflgXOvNk89DT6rYOmf+rLGzlu3ax0VTS7ofstiM
-         4X1co1K+vXtAQ==
-Date:   Tue, 22 Nov 2022 11:47:09 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] sfc: fix potential memleak in
- __ef100_hard_start_xmit()
-Message-ID: <Y3yanROxeZDR+aNG@unreal>
-References: <1668671409-10909-1-git-send-email-zhangchangzhong@huawei.com>
- <Y3YctdnKDDvikQcl@unreal>
- <efedaa0e-33ce-24c6-bb9d-8f9b5c4a1c38@huawei.com>
- <Y3YxlxPIiw43QiKE@unreal>
- <Y3dNP6iEj2YyEwqJ@gmail.com>
- <Y3e8wEZme3OpMZKV@unreal>
- <0a568e890497f4066128b1ce957904e0c5540c16.camel@redhat.com>
+        with ESMTP id S233391AbiKVJsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 04:48:54 -0500
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7C0231215
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 01:48:49 -0800 (PST)
+Received: from fsav118.sakura.ne.jp (fsav118.sakura.ne.jp [27.133.134.245])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2AM9mlk7002154;
+        Tue, 22 Nov 2022 18:48:47 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav118.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav118.sakura.ne.jp);
+ Tue, 22 Nov 2022 18:48:47 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav118.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2AM9mlom002151
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 22 Nov 2022 18:48:47 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <f2fdb53a-4727-278d-ac1b-d6dbdac8d307@I-love.SAKURA.ne.jp>
+Date:   Tue, 22 Nov 2022 18:48:46 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0a568e890497f4066128b1ce957904e0c5540c16.camel@redhat.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net] l2tp: Don't sleep and disable BH under writer-side
+ sk_callback_lock
+Content-Language: en-US
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tom Parkin <tparkin@katalix.com>,
+        syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com,
+        syzbot+50680ced9e98a61f7698@syzkaller.appspotmail.com,
+        syzbot+de987172bb74a381879b@syzkaller.appspotmail.com
+References: <20221119130317.39158-1-jakub@cloudflare.com>
+ <f8e54710-6889-5c27-2b3c-333537495ecd@I-love.SAKURA.ne.jp>
+ <a850c224-f728-983c-45a0-96ebbaa943d7@I-love.SAKURA.ne.jp>
+ <87wn7o7k7r.fsf@cloudflare.com>
+ <ef09820a-ca97-0c50-e2d8-e1344137d473@I-love.SAKURA.ne.jp>
+ <87fseb7vbm.fsf@cloudflare.com>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <87fseb7vbm.fsf@cloudflare.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 09:28:42AM +0100, Paolo Abeni wrote:
-> Hello,
+On 2022/11/22 6:55, Jakub Sitnicki wrote:
+> First, let me say, that I get the impression that setup_udp_tunnel_sock
+> was not really meant to be used on pre-existing sockets created by
+> user-space. Even though l2tp and gtp seem to be doing that.
 > 
-> On Fri, 2022-11-18 at 19:11 +0200, Leon Romanovsky wrote:
-> > On Fri, Nov 18, 2022 at 09:15:43AM +0000, Martin Habets wrote:
-> > > On Thu, Nov 17, 2022 at 03:05:27PM +0200, Leon Romanovsky wrote:
-> > > > Please take a look __ef100_enqueue_skb() and see if it frees SKB on
-> > > > error or not. If not, please fix it.
-> > > 
-> > > That function looks ok to me, but I appreciate the extra eyes on it.
-> > 
-> > __ef100_enqueue_skb() has the following check in error path:
-> > 
-> >   498 err:
-> >   499         efx_enqueue_unwind(tx_queue, old_insert_count);
-> >   500         if (!IS_ERR_OR_NULL(skb))
-> >   501                 dev_kfree_skb_any(skb);
-> >   502
-> > 
-> > The issue is that skb is never error or null here and this "if" is
-> > actually always true and can be deleted.
+> That is because, I don't see how it could be used properly. Given that
+> we need to check-and-set sk_user_data under sk_callback_lock, which
+> setup_udp_tunnel_sock doesn't grab itself. At the same time it might
+> sleep. There is no way to apply it without resorting to tricks, like we
+> did here.
 > 
-> I think that such additional change could be suite for a different net-
-> next patch, while this -net patch could land as is, @Leon: do you
-> agree?
-> 
+> So - yeah - there may be other problems. But if there are, they are not
+> related to the faulty commit b68777d54fac ("l2tp: Serialize access to
+> sk_user_data with sk_callback_lock"), which we're trying to fix. There
+> was no locking present in l2tp_tunnel_register before that point.
 
-Sure, thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+https://syzkaller.appspot.com/bug?extid=94cc2a66fc228b23f360 is the one
+where changing lockdep class is concurrently done on pre-existing sockets.
+
+I think we need to always create a new socket inside l2tp_tunnel_register(),
+rather than trying to serialize setting of sk_user_data under sk_callback_lock.
+
+> However, that is also not related to the race to check-and-set
+> sk_user_data, which commit b68777d54fac is trying to fix.
+
+Therefore, I feel that reverting commit b68777d54fac "l2tp: Serialize access
+to sk_user_data with sk_callback_lock" might be the better choice.
+
