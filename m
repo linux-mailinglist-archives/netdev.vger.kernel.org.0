@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56C43636380
+	by mail.lfdr.de (Postfix) with ESMTP id A319C636381
 	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:27:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235097AbiKWP1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 10:27:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36118 "EHLO
+        id S237720AbiKWP1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 10:27:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238248AbiKWP0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:26:19 -0500
+        with ESMTP id S237852AbiKWP0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:26:47 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9699CF6A;
-        Wed, 23 Nov 2022 07:26:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523ACA6590;
+        Wed, 23 Nov 2022 07:26:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669217173; x=1700753173;
+  t=1669217190; x=1700753190;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TKg6z9yXyQb61xdfgwCuiBPWIQ4ZM4P9nYWrl7wtjag=;
-  b=UkiNFf7vjhhQTmCuJb6H51yWY35/W5842L5+8JvHE1ND3CSvhHBtDNjd
-   C76VOtgU3sWDxRu3Nc/UbavNzcHTNedT72L7h/HHVJ4rLVg7YCs0vU84r
-   LRUF4iFMaarV9a9qpd9GaxDkeafOO6KJwh1TsUcP6d0oUFA5oK77zyv0H
-   hCwVq+RlH89bDRMhLUOz3dV8Y8uFznulQUBgMWZv9H9f/p6Mlm/27Tpz9
-   +XA+uCD3zPuKejU0vzGSo7SZvPLhj4gEBLbfJaDtSNYB4aB/k+xe2G12C
-   58Vc0xhzcaBxwKM2hTTwFHug+oltomStmBNA2nd9bvH5E5r1b1IwVyO0a
+  bh=aWK/w3O8H43VBVicVuiR2cJT/wFQ8uPk13PWRF6aQ9M=;
+  b=IAd51jm1doyBzUtRUXL4G12lJ3RkisiBtZtpalUnWFYwRv5w9KM/JhoY
+   Xb7mgD9mxKXDK7GsWrcNAtbgJTI3b0lqOsQd+IgRIuQtyZGObS5IDau4m
+   y53TrO1BDhe0zXeIvXh3dTPkR1yjNuIY4dNRZnS/FE1cXJyxpQBEKAkFi
+   8JM4j1x2BN1sTG8YS1eLqUh+QqSsLR/vhD6GiS0B2InDYqyeER9F92SYn
+   tBYyw0ggiHfmE8817Y8g6ARfuh1sitCMSfMDGOBPkLmAWGXXA9XGsGcNM
+   ypzPh9kt6cvLO49gaBU1Cd77Q3iRoEgygjhd3pMS/PjIcdk8D1WkCGtBb
    A==;
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="184877216"
+   d="scan'208";a="184877312"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Nov 2022 08:26:12 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Nov 2022 08:26:29 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 23 Nov 2022 08:26:01 -0700
+ 15.1.2507.12; Wed, 23 Nov 2022 08:26:05 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 23 Nov 2022 08:25:58 -0700
+ 15.1.2507.12 via Frontend Transport; Wed, 23 Nov 2022 08:26:02 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -56,9 +56,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Daniel Machon <daniel.machon@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v2 3/4] net: microchip: sparx5: Support for displaying a list of keysets
-Date:   Wed, 23 Nov 2022 16:25:44 +0100
-Message-ID: <20221123152545.1997266-4-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v2 4/4] net: microchip: sparx5: Add VCAP filter keys KUNIT test
+Date:   Wed, 23 Nov 2022 16:25:45 +0100
+Message-ID: <20221123152545.1997266-5-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221123152545.1997266-1-steen.hegelund@microchip.com>
 References: <20221123152545.1997266-1-steen.hegelund@microchip.com>
@@ -75,261 +75,226 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This will display a list of keyset in case the type_id field in the VCAP
-rule has been wildcarded.
+This tests the filtering of keys, either dropping unsupported keys or
+dropping keys specified in a list.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- .../microchip/vcap/vcap_api_debugfs.c         | 98 +++++++++++--------
- .../microchip/vcap/vcap_api_debugfs_kunit.c   | 20 +++-
- 2 files changed, 74 insertions(+), 44 deletions(-)
+ .../ethernet/microchip/vcap/vcap_api_kunit.c  | 194 ++++++++++++++++++
+ 1 file changed, 194 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
-index d9c7ca988b76..5df00e940333 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
-@@ -192,22 +192,22 @@ static bool vcap_verify_keystream_keyset(struct vcap_control *vctrl,
- 	vcap_iter_init(&iter, vcap->sw_width, tgt, typefld->offset);
- 	vcap_decode_field(keystream, &iter, typefld->width, (u8 *)&value);
- 
--	return (value == info->type_id);
-+	return (value & mask) == (info->type_id & mask);
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+index 875068e484c9..76a31215ebfb 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+@@ -1954,6 +1954,198 @@ static void vcap_api_next_lookup_advanced_test(struct kunit *test)
+ 	KUNIT_EXPECT_EQ(test, true, ret);
  }
  
- /* Verify that the typegroup information, subword count, keyset and type id
-- * are in sync and correct, return the keyset
-+ * are in sync and correct, return the list of matching keysets
-  */
--static enum
--vcap_keyfield_set vcap_find_keystream_keyset(struct vcap_control *vctrl,
--					     enum vcap_type vt,
--					     u32 *keystream,
--					     u32 *mskstream,
--					     bool mask, int sw_max)
-+static int
-+vcap_find_keystream_keysets(struct vcap_control *vctrl,
-+			    enum vcap_type vt,
-+			    u32 *keystream,
-+			    u32 *mskstream,
-+			    bool mask, int sw_max,
-+			    struct vcap_keyset_list *kslist)
- {
- 	const struct vcap_set *keyfield_set;
- 	int sw_count, idx;
--	bool res;
- 
- 	sw_count = vcap_find_keystream_typegroup_sw(vctrl, vt, keystream, mask,
- 						    sw_max);
-@@ -219,11 +219,12 @@ vcap_keyfield_set vcap_find_keystream_keyset(struct vcap_control *vctrl,
- 		if (keyfield_set[idx].sw_per_item != sw_count)
- 			continue;
- 
--		res = vcap_verify_keystream_keyset(vctrl, vt, keystream,
--						   mskstream, idx);
--		if (res)
--			return idx;
-+		if (vcap_verify_keystream_keyset(vctrl, vt, keystream,
-+						 mskstream, idx))
-+			vcap_keyset_list_add(kslist, idx);
- 	}
-+	if (kslist->cnt > 0)
-+		return 0;
- 	return -EINVAL;
- }
- 
-@@ -296,13 +297,14 @@ vcap_find_actionstream_actionset(struct vcap_control *vctrl,
- 	return -EINVAL;
- }
- 
--/* Read key data from a VCAP address and discover if there is a rule keyset
-+/* Read key data from a VCAP address and discover if there are any rule keysets
-  * here
-  */
--static int vcap_addr_keyset(struct vcap_control *vctrl,
--			    struct net_device *ndev,
--			    struct vcap_admin *admin,
--			    int addr)
-+static int vcap_addr_keysets(struct vcap_control *vctrl,
-+			     struct net_device *ndev,
-+			     struct vcap_admin *admin,
-+			     int addr,
-+			     struct vcap_keyset_list *kslist)
- {
- 	enum vcap_type vt = admin->vtype;
- 	int keyset_sw_regs, idx;
-@@ -320,9 +322,10 @@ static int vcap_addr_keyset(struct vcap_control *vctrl,
- 	}
- 	if (key == 0 && mask == 0)
- 		return -EINVAL;
--	/* Decode and locate the keyset */
--	return vcap_find_keystream_keyset(vctrl, vt, admin->cache.keystream,
--					  admin->cache.maskstream, false, 0);
-+	/* Decode and locate the keysets */
-+	return vcap_find_keystream_keysets(vctrl, vt, admin->cache.keystream,
-+					   admin->cache.maskstream, false, 0,
-+					   kslist);
- }
- 
- static int vcap_read_rule(struct vcap_rule_internal *ri)
-@@ -471,9 +474,11 @@ static int vcap_debugfs_show_rule_keyset(struct vcap_rule_internal *ri,
- 	struct vcap_control *vctrl = ri->vctrl;
- 	struct vcap_stream_iter kiter, miter;
- 	struct vcap_admin *admin = ri->admin;
-+	enum vcap_keyfield_set keysets[10];
- 	const struct vcap_field *keyfield;
- 	enum vcap_type vt = admin->vtype;
- 	const struct vcap_typegroup *tgt;
-+	struct vcap_keyset_list matches;
- 	enum vcap_keyfield_set keyset;
- 	int idx, res, keyfield_count;
- 	u32 *maskstream;
-@@ -483,16 +488,22 @@ static int vcap_debugfs_show_rule_keyset(struct vcap_rule_internal *ri,
- 
- 	keystream = admin->cache.keystream;
- 	maskstream = admin->cache.maskstream;
--	res = vcap_find_keystream_keyset(vctrl, vt, keystream, maskstream,
--					 false, 0);
-+	matches.keysets = keysets;
-+	matches.cnt = 0;
-+	matches.max = ARRAY_SIZE(keysets);
-+	res = vcap_find_keystream_keysets(vctrl, vt, keystream, maskstream,
-+					  false, 0, &matches);
- 	if (res < 0) {
--		pr_err("%s:%d: could not find valid keyset: %d\n",
-+		pr_err("%s:%d: could not find valid keysets: %d\n",
- 		       __func__, __LINE__, res);
- 		return -EINVAL;
- 	}
--	keyset = res;
--	out->prf(out->dst, "  keyset: %s\n",
--		 vcap_keyset_name(vctrl, ri->data.keyset));
-+	keyset = matches.keysets[0];
-+	out->prf(out->dst, "  keysets:");
-+	for (idx = 0; idx < matches.cnt; ++idx)
-+		out->prf(out->dst, " %s",
-+			 vcap_keyset_name(vctrl, matches.keysets[idx]));
-+	out->prf(out->dst, "\n");
- 	out->prf(out->dst, "  keyset_sw: %d\n", ri->keyset_sw);
- 	out->prf(out->dst, "  keyset_sw_regs: %d\n", ri->keyset_sw_regs);
- 	keyfield_count = vcap_keyfield_count(vctrl, vt, keyset);
-@@ -647,11 +658,12 @@ static int vcap_show_admin_raw(struct vcap_control *vctrl,
- 			       struct vcap_admin *admin,
- 			       struct vcap_output_print *out)
- {
-+	enum vcap_keyfield_set keysets[10];
- 	enum vcap_type vt = admin->vtype;
-+	struct vcap_keyset_list kslist;
- 	struct vcap_rule_internal *ri;
- 	const struct vcap_set *info;
--	int keyset;
--	int addr;
-+	int addr, idx;
- 	int ret;
- 
- 	if (list_empty(&admin->rules))
-@@ -664,24 +676,32 @@ static int vcap_show_admin_raw(struct vcap_control *vctrl,
- 	ri = list_first_entry(&admin->rules, struct vcap_rule_internal, list);
- 
- 	/* Go from higher to lower addresses searching for a keyset */
-+	kslist.keysets = keysets;
-+	kslist.max = ARRAY_SIZE(keysets);
- 	for (addr = admin->last_valid_addr; addr >= admin->first_valid_addr;
- 	     --addr) {
--		keyset = vcap_addr_keyset(vctrl, ri->ndev, admin,  addr);
--		if (keyset < 0)
-+		kslist.cnt = 0;
-+		ret = vcap_addr_keysets(vctrl, ri->ndev, admin, addr, &kslist);
-+		if (ret < 0)
- 			continue;
--		info = vcap_keyfieldset(vctrl, vt, keyset);
-+		info = vcap_keyfieldset(vctrl, vt, kslist.keysets[0]);
- 		if (!info)
- 			continue;
--		if (addr % info->sw_per_item)
-+		if (addr % info->sw_per_item) {
- 			pr_info("addr: %d X%d error rule, keyset: %s\n",
- 				addr,
- 				info->sw_per_item,
--				vcap_keyset_name(vctrl, keyset));
--		else
--			out->prf(out->dst, "  addr: %d, X%d rule, keyset: %s\n",
--			   addr,
--			   info->sw_per_item,
--			   vcap_keyset_name(vctrl, keyset));
-+				vcap_keyset_name(vctrl, kslist.keysets[0]));
-+		} else {
-+			out->prf(out->dst, "  addr: %d, X%d rule, keysets:",
-+				 addr,
-+				 info->sw_per_item);
-+			for (idx = 0; idx < kslist.cnt; ++idx)
-+				out->prf(out->dst, " %s",
-+					 vcap_keyset_name(vctrl,
-+							  kslist.keysets[idx]));
-+			out->prf(out->dst, "\n");
++static void vcap_api_filter_unsupported_keys_test(struct kunit *test)
++{
++	struct vcap_admin admin = {
++		.vtype = VCAP_TYPE_IS2,
++	};
++	struct vcap_rule_internal ri = {
++		.admin = &admin,
++		.vctrl = &test_vctrl,
++		.data.keyset = VCAP_KFS_MAC_ETYPE,
++	};
++	enum vcap_key_field keylist[] = {
++		VCAP_KF_TYPE,
++		VCAP_KF_LOOKUP_FIRST_IS,
++		VCAP_KF_ARP_ADDR_SPACE_OK_IS,  /* arp keys are not in keyset */
++		VCAP_KF_ARP_PROTO_SPACE_OK_IS,
++		VCAP_KF_ARP_LEN_OK_IS,
++		VCAP_KF_ARP_TGT_MATCH_IS,
++		VCAP_KF_ARP_SENDER_MATCH_IS,
++		VCAP_KF_ARP_OPCODE_UNKNOWN_IS,
++		VCAP_KF_ARP_OPCODE,
++		VCAP_KF_8021Q_DEI_CLS,
++		VCAP_KF_8021Q_PCP_CLS,
++		VCAP_KF_8021Q_VID_CLS,
++		VCAP_KF_L2_MC_IS,
++		VCAP_KF_L2_BC_IS,
++	};
++	enum vcap_key_field expected[] = {
++		VCAP_KF_TYPE,
++		VCAP_KF_LOOKUP_FIRST_IS,
++		VCAP_KF_8021Q_DEI_CLS,
++		VCAP_KF_8021Q_PCP_CLS,
++		VCAP_KF_8021Q_VID_CLS,
++		VCAP_KF_L2_MC_IS,
++		VCAP_KF_L2_BC_IS,
++	};
++	struct vcap_client_keyfield *ckf, *next;
++	bool ret;
++	int idx;
++
++	/* Add all keys to the rule */
++	INIT_LIST_HEAD(&ri.data.keyfields);
++	for (idx = 0; idx < ARRAY_SIZE(keylist); idx++) {
++		ckf = kzalloc(sizeof(*ckf), GFP_KERNEL);
++		if (ckf) {
++			ckf->ctrl.key = keylist[idx];
++			list_add_tail(&ckf->ctrl.list, &ri.data.keyfields);
 +		}
- 	}
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-index ed455dad3a14..cf594668d5d9 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-@@ -316,24 +316,34 @@ static void vcap_api_addr_keyset_test(struct kunit *test)
- 			.actionstream = actdata,
- 		},
- 	};
-+	enum vcap_keyfield_set keysets[10];
-+	struct vcap_keyset_list matches;
- 	int ret, idx, addr;
- 
- 	vcap_test_api_init(&admin);
- 
- 	/* Go from higher to lower addresses searching for a keyset */
-+	matches.keysets = keysets;
-+	matches.cnt = 0;
-+	matches.max = ARRAY_SIZE(keysets);
- 	for (idx = ARRAY_SIZE(keydata) - 1, addr = 799; idx > 0;
- 	     --idx, --addr) {
- 		admin.cache.keystream = &keydata[idx];
- 		admin.cache.maskstream = &mskdata[idx];
--		ret = vcap_addr_keyset(&test_vctrl, &test_netdev, &admin, addr);
-+		ret = vcap_addr_keysets(&test_vctrl, &test_netdev, &admin,
-+					addr, &matches);
- 		KUNIT_EXPECT_EQ(test, -EINVAL, ret);
- 	}
- 
- 	/* Finally we hit the start of the rule */
- 	admin.cache.keystream = &keydata[idx];
- 	admin.cache.maskstream = &mskdata[idx];
--	ret = vcap_addr_keyset(&test_vctrl, &test_netdev, &admin,  addr);
--	KUNIT_EXPECT_EQ(test, VCAP_KFS_MAC_ETYPE, ret);
-+	matches.cnt = 0;
-+	ret = vcap_addr_keysets(&test_vctrl, &test_netdev, &admin,
-+				addr, &matches);
++	}
++
++	KUNIT_EXPECT_EQ(test, 14, ARRAY_SIZE(keylist));
++
++	/* Drop unsupported keys from the rule */
++	ret = vcap_filter_rule_keys(&ri.data, NULL, 0, true);
++
 +	KUNIT_EXPECT_EQ(test, 0, ret);
-+	KUNIT_EXPECT_EQ(test, matches.cnt, 1);
-+	KUNIT_EXPECT_EQ(test, matches.keysets[0], VCAP_KFS_MAC_ETYPE);
- }
++
++	/* Check remaining keys in the rule */
++	idx = 0;
++	list_for_each_entry_safe(ckf, next, &ri.data.keyfields, ctrl.list) {
++		KUNIT_EXPECT_EQ(test, expected[idx], ckf->ctrl.key);
++		list_del(&ckf->ctrl.list);
++		kfree(ckf);
++		++idx;
++	}
++	KUNIT_EXPECT_EQ(test, 7, idx);
++}
++
++static void vcap_api_filter_keylist_test(struct kunit *test)
++{
++	struct vcap_admin admin = {
++		.vtype = VCAP_TYPE_IS0,
++	};
++	struct vcap_rule_internal ri = {
++		.admin = &admin,
++		.vctrl = &test_vctrl,
++		.data.keyset = VCAP_KFS_NORMAL_7TUPLE,
++	};
++	enum vcap_key_field keylist[] = {
++		VCAP_KF_TYPE,
++		VCAP_KF_LOOKUP_FIRST_IS,
++		VCAP_KF_LOOKUP_GEN_IDX_SEL,
++		VCAP_KF_LOOKUP_GEN_IDX,
++		VCAP_KF_IF_IGR_PORT_MASK_SEL,
++		VCAP_KF_IF_IGR_PORT_MASK,
++		VCAP_KF_L2_MC_IS,
++		VCAP_KF_L2_BC_IS,
++		VCAP_KF_8021Q_VLAN_TAGS,
++		VCAP_KF_8021Q_TPID0,
++		VCAP_KF_8021Q_PCP0,
++		VCAP_KF_8021Q_DEI0,
++		VCAP_KF_8021Q_VID0,
++		VCAP_KF_8021Q_TPID1,
++		VCAP_KF_8021Q_PCP1,
++		VCAP_KF_8021Q_DEI1,
++		VCAP_KF_8021Q_VID1,
++		VCAP_KF_8021Q_TPID2,
++		VCAP_KF_8021Q_PCP2,
++		VCAP_KF_8021Q_DEI2,
++		VCAP_KF_8021Q_VID2,
++		VCAP_KF_L2_DMAC,
++		VCAP_KF_L2_SMAC,
++		VCAP_KF_IP_MC_IS,
++		VCAP_KF_ETYPE_LEN_IS,
++		VCAP_KF_ETYPE,
++		VCAP_KF_IP_SNAP_IS,
++		VCAP_KF_IP4_IS,
++		VCAP_KF_L3_FRAGMENT_TYPE,
++		VCAP_KF_L3_FRAG_INVLD_L4_LEN,
++		VCAP_KF_L3_OPTIONS_IS,
++		VCAP_KF_L3_DSCP,
++		VCAP_KF_L3_IP6_DIP,
++		VCAP_KF_L3_IP6_SIP,
++		VCAP_KF_TCP_UDP_IS,
++		VCAP_KF_TCP_IS,
++		VCAP_KF_L4_SPORT,
++		VCAP_KF_L4_RNG,
++	};
++	enum vcap_key_field droplist[] = {
++		VCAP_KF_8021Q_TPID1,
++		VCAP_KF_8021Q_PCP1,
++		VCAP_KF_8021Q_DEI1,
++		VCAP_KF_8021Q_VID1,
++		VCAP_KF_8021Q_TPID2,
++		VCAP_KF_8021Q_PCP2,
++		VCAP_KF_8021Q_DEI2,
++		VCAP_KF_8021Q_VID2,
++		VCAP_KF_L3_IP6_DIP,
++		VCAP_KF_L3_IP6_SIP,
++		VCAP_KF_L4_SPORT,
++		VCAP_KF_L4_RNG,
++	};
++	enum vcap_key_field expected[] = {
++		VCAP_KF_TYPE,
++		VCAP_KF_LOOKUP_FIRST_IS,
++		VCAP_KF_LOOKUP_GEN_IDX_SEL,
++		VCAP_KF_LOOKUP_GEN_IDX,
++		VCAP_KF_IF_IGR_PORT_MASK_SEL,
++		VCAP_KF_IF_IGR_PORT_MASK,
++		VCAP_KF_L2_MC_IS,
++		VCAP_KF_L2_BC_IS,
++		VCAP_KF_8021Q_VLAN_TAGS,
++		VCAP_KF_8021Q_TPID0,
++		VCAP_KF_8021Q_PCP0,
++		VCAP_KF_8021Q_DEI0,
++		VCAP_KF_8021Q_VID0,
++		VCAP_KF_L2_DMAC,
++		VCAP_KF_L2_SMAC,
++		VCAP_KF_IP_MC_IS,
++		VCAP_KF_ETYPE_LEN_IS,
++		VCAP_KF_ETYPE,
++		VCAP_KF_IP_SNAP_IS,
++		VCAP_KF_IP4_IS,
++		VCAP_KF_L3_FRAGMENT_TYPE,
++		VCAP_KF_L3_FRAG_INVLD_L4_LEN,
++		VCAP_KF_L3_OPTIONS_IS,
++		VCAP_KF_L3_DSCP,
++		VCAP_KF_TCP_UDP_IS,
++		VCAP_KF_TCP_IS,
++	};
++	struct vcap_client_keyfield *ckf, *next;
++	bool ret;
++	int idx;
++
++	/* Add all keys to the rule */
++	INIT_LIST_HEAD(&ri.data.keyfields);
++	for (idx = 0; idx < ARRAY_SIZE(keylist); idx++) {
++		ckf = kzalloc(sizeof(*ckf), GFP_KERNEL);
++		if (ckf) {
++			ckf->ctrl.key = keylist[idx];
++			list_add_tail(&ckf->ctrl.list, &ri.data.keyfields);
++		}
++	}
++
++	KUNIT_EXPECT_EQ(test, 38, ARRAY_SIZE(keylist));
++
++	/* Drop listed keys from the rule */
++	ret = vcap_filter_rule_keys(&ri.data, droplist, ARRAY_SIZE(droplist),
++				    false);
++
++	KUNIT_EXPECT_EQ(test, 0, ret);
++
++	/* Check remaining keys in the rule */
++	idx = 0;
++	list_for_each_entry_safe(ckf, next, &ri.data.keyfields, ctrl.list) {
++		KUNIT_EXPECT_EQ(test, expected[idx], ckf->ctrl.key);
++		list_del(&ckf->ctrl.list);
++		kfree(ckf);
++		++idx;
++	}
++	KUNIT_EXPECT_EQ(test, 26, idx);
++}
++
+ static struct kunit_suite vcap_api_rule_remove_test_suite = {
+ 	.name = "VCAP_API_Rule_Remove_Testsuite",
+ 	.test_cases = vcap_api_rule_remove_test_cases,
+@@ -1984,6 +2176,8 @@ static struct kunit_suite vcap_api_rule_counter_test_suite = {
+ static struct kunit_case vcap_api_support_test_cases[] = {
+ 	KUNIT_CASE(vcap_api_next_lookup_basic_test),
+ 	KUNIT_CASE(vcap_api_next_lookup_advanced_test),
++	KUNIT_CASE(vcap_api_filter_unsupported_keys_test),
++	KUNIT_CASE(vcap_api_filter_keylist_test),
+ 	{}
+ };
  
- static void vcap_api_show_admin_raw_test(struct kunit *test)
-@@ -362,7 +372,7 @@ static void vcap_api_show_admin_raw_test(struct kunit *test)
- 		.prf = (void *)test_prf,
- 	};
- 	const char *test_expected =
--		"  addr: 786, X6 rule, keyset: VCAP_KFS_MAC_ETYPE\n";
-+		"  addr: 786, X6 rule, keysets: VCAP_KFS_MAC_ETYPE\n";
- 	int ret;
- 
- 	vcap_test_api_init(&admin);
-@@ -442,7 +452,7 @@ static const char * const test_admin_expect[] = {
- 	"  chain_id: 0\n",
- 	"  user: 0\n",
- 	"  priority: 0\n",
--	"  keyset: VCAP_KFS_MAC_ETYPE\n",
-+	"  keysets: VCAP_KFS_MAC_ETYPE\n",
- 	"  keyset_sw: 6\n",
- 	"  keyset_sw_regs: 2\n",
- 	"    ETYPE_LEN_IS: W1: 1/1\n",
 -- 
 2.38.1
 
