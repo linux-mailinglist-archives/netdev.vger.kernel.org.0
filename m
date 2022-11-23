@@ -2,209 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F39A46365AD
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 17:25:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED7D96365C3
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 17:27:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239056AbiKWQZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 11:25:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
+        id S238610AbiKWQ0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 11:26:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237578AbiKWQZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 11:25:35 -0500
-X-Greylist: delayed 589 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Nov 2022 08:25:34 PST
-Received: from dispatch1-eu1.ppe-hosted.com (dispatch1-eu1.ppe-hosted.com [185.183.29.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713428CFD4
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 08:25:34 -0800 (PST)
-Received: from dispatch1-eu1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A149A214F6
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 16:15:45 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04lp2050.outbound.protection.outlook.com [104.47.12.50])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EE26D6C0067;
-        Wed, 23 Nov 2022 16:15:42 +0000 (UTC)
+        with ESMTP id S236692AbiKWQ0v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 11:26:51 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2073.outbound.protection.outlook.com [40.107.223.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5D68F3F2;
+        Wed, 23 Nov 2022 08:26:49 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ri0cal/e+pFIZrNvezplV3TuCsS+kuqfOfrCx4jLWMOuKMn8VF3KxwbGffBoe9ZYNl9jqmwQZVZhXJOXQxjJIWrAw+7ptQ3wDbb2o3UDIRzIyaJ1pYEoOOr2YFKVPxMvQwi8jwSPJPu4dO2VSYDoR4ERWqaQkhu/7N3poufepUzP5gt37wJ964O14R4nd59EQOQhPgt6seQA/Sjz4WBTCEV+U/qn6LNcClmL1E4bfMPvnGm1xhRM5/9sfS9Ll8a6gyZdULIp7uXk7mKiDibrjMhDa0hhI2cwB73fo2R4yCLwFa44se1/ZGdKoQ5N8GL9vk6wz90gL+YWMgI8zZcOIQ==
+ b=BMXcO2tFtfiQUktSwpWk+vcKPf+xuzJXz8FRWvSkD5utkyBqKal1SOc22bUJw54cLZL10k+VsqiDzVDp7OyLuCopf7jUVlwA2YW63j+2WByC288rD4h9yHmtoDGpc8nOvRqh6mPEc5n2voXVBNNr9nRbNlaG38TbEY915RJqiwa9ccY4e1h7VsQx9FHvmUSt+TrR2GlTHe9EHAnrOibx/fYvjMfAhJRqCvOzyrqbbQqn5xzoIqyQwrgZyNDR89y9Srj4pqkKCP83HRtzSFxVSUC7S+qReP9Ca0RibDrY0UUFFpbn5/ZZzBncfYoVYV7txn2aUxKtLxjZm1mzGvsH2Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IEPz0J8ZoW0qfP4k04ADvVwLVxwjXQ3R6SxV46fEmI0=;
- b=DpsbalOLc+0vrvohOM88lwm+x8MzWHM0ExnMZ0nEAzz0LM/eE866mMQAAyw4wgGjfAwp68GoklgXOhfxczezb+loY7ubvVQh9I9BhgQdCwzVvc8Cce77KlYgVKAgvWAm3Ng98MdPPhdYQ1zviIwYQZy/Pe1RIQwSm/FXzKwxRL9RrTBrpZVkdvK78gUZdNO8ma8HzALiavkLUNQ78mgKHkRez68tl0gaVYEMLJGnd44ppGlrsKjIMoldjBCyXwJN439Wrn0TAnjLn/0GcyLgsUQX7GukHtJFi4ZdXjguDZ4JDTCd347HePklsvJgWt42d3O9osspxgbwYLm1NbQBfA==
+ bh=yeBtRT+sdOMmzXgmOsBwnUXznzSKl/XNleLQXemqEGo=;
+ b=chDoIlgzuzMBwd5LlUYqsS4zWKqOfTO0CxyQNeHN+Ud5zaBQAo4mS8MGF3pcW2P0JR9HzjN7Kkmc29SdA1GdkQw85oGl7guwah+BTmIP5cCIywkJ8+ft8Lat8byy04bS74cNIk3n61fde8C86VzXjO69lAwNOVLraAPq2D8rz66ROV750UwLaOqsqfDMSRxKNwu4dZn38ZDxuptkKTFpt8WNlFYG8X+adnXbf5Loai8t0R9c22PEEaBptjeoGdOjCXTYQK+JBSyNuZ2XE4dV5F74PFdDEeMWub4TcfeDs+PTPQj/oaICiOd0fBnbhBDfzPt8gYoZJel+WFS5NxOF7w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=drivenets.com; dmarc=pass action=none
- header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IEPz0J8ZoW0qfP4k04ADvVwLVxwjXQ3R6SxV46fEmI0=;
- b=rRRIRspNGIrJ3hICfRfvaLaFk1P71Pr+RYrATAy/WoMBaXeGmwtgkPDq/kZT6Iy9d3MhcM7pEBzr2qufvnzgG3UsqfyT2fTXoWdUJXTd014cFZlB/Zu7Zx/UyurV/M44aGbYtfaVI06qB8pATK/ntO6tOujKT12WPzwyv0Q7tbk=
-Received: from AM6PR08MB4118.eurprd08.prod.outlook.com (2603:10a6:20b:aa::25)
- by DU0PR08MB9511.eurprd08.prod.outlook.com (2603:10a6:10:44d::12) with
+ bh=yeBtRT+sdOMmzXgmOsBwnUXznzSKl/XNleLQXemqEGo=;
+ b=O+hgXao9tEuWC2AgF6rqSpq0UFkE3Y1VoUd3cqHP5TNst5qoI/NxkoHy2R0MyylF4ZrhFosrjQWEIXRJ5vsW1rO70AICdTL7beZ6/jAwr0BkWZyVmYF/WAA1+tnGJ+nrGd8I+le2kFr1gTmKrhz5Q8WfHXHMvdGAlKZ9DAQx+ofxSXrob0sSJE9Vy3O153AVIP/sI6zLlJgyb8VC3kVgwj2+jAoGbtxbsPNw5cTepEx3Q33kJ8WLAS/wjJLfn93dkmnhaFkq3C8qNCn906TMcFl4A+M+Okmjk+Ze4iUCw2WtoOKSHJBhqEYsYNEUJUtyt2azx89Bzi0gRHMagSVQxA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN0PR12MB5979.namprd12.prod.outlook.com (2603:10b6:208:37e::15)
+ by SJ2PR12MB7964.namprd12.prod.outlook.com (2603:10b6:a03:4cf::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.17; Wed, 23 Nov
- 2022 16:15:41 +0000
-Received: from AM6PR08MB4118.eurprd08.prod.outlook.com
- ([fe80::978d:4c38:f2c9:e40f]) by AM6PR08MB4118.eurprd08.prod.outlook.com
- ([fe80::978d:4c38:f2c9:e40f%4]) with mapi id 15.20.5857.017; Wed, 23 Nov 2022
- 16:15:41 +0000
-From:   Gilad Naaman <gnaaman@drivenets.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Lahav Daniel Schlesinger <lschlesinger@drivenets.com>
-Subject: [PATCH iproute2] libnetlink: Fix memory leak in __rtnl_talk_iov()
-Thread-Topic: [PATCH iproute2] libnetlink: Fix memory leak in
- __rtnl_talk_iov()
-Thread-Index: AQHY/1bV8IwAL023KUKPSsqypkBN8Q==
-Date:   Wed, 23 Nov 2022 16:15:41 +0000
-Message-ID: <D239DD38-BC1F-42BE-B854-7DED97F11D91@drivenets.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.100.31)
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=drivenets.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AM6PR08MB4118:EE_|DU0PR08MB9511:EE_
-x-ms-office365-filtering-correlation-id: 5920f11d-abaa-46f3-7bf2-08dacd6df78a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fYkAvzv+74FnZAfGRaQJrtf47/WeVB8Y4R49poah7zm5TmlXBL3aN1zbemUkoNAKhL1PjWvTPwNfraM9RRMg0PNTP3JruTQmlC+obz6wg+Xp6dRmYuiRvoih/KriQr4tzTTSHL5ekJHwOz6yXf2BZLTnHY+Dh+4wRw5cUeJDIJmkbnGEZYDMNtqNYIN8yTXPGFQ8dJVCmIkWZ/CJ101mgOLgdwAmBd9EPuGkjYCSdB1QpCPfOt4ovc5xXxvKZXJpvazM5BUjC/ac7/2yuoGunxMJKlV5A9FUKZhfkkCn0td0sVDxJYuVYMpMxn/X8Y1DpyeoX/uUQ1W+e7Ps+lSfrVnY1OqCmnA+27J5Ilg803CPknyQpJweAjTDW56eKaIlQVrU0ZWO7MMhGHYch77QpXMFd0IlgpPfDCN7+PvSSCjOLLGYT9ojQgzrxz61sDC/Fp+flYFz0nmCC7FFVYt8Lq1DQeO+14XfZFokAUpz3ijtZIEWwQENT881EctE/MgF5BR6IZdbzXAMp55M4WoA5lsi2PUmb1uOyOnM7UYMzI15ZLUzg//ew8Jpk+pfG+zu6U3iV3ax2ME7s1tglu5m96+nwJzDUpE8tPBagX9avKO1pc8qMkhqFNPKSu9oTrrftq/BS71zoWjOFROOCKF+gnsALT48ZJnAiBXZ167OvDSx+gkMrrQoovbNj3blb3OjSHeCH32Dp9guJMgut02MLRXmNw5Ktw/dX8Jxwr8Ibsw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR08MB4118.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(366004)(376002)(39850400004)(136003)(451199015)(122000001)(54906003)(83380400001)(86362001)(2906002)(38070700005)(38100700002)(66556008)(8936002)(4326008)(64756008)(66446008)(66476007)(8676002)(41300700001)(66946007)(5660300002)(26005)(76116006)(91956017)(107886003)(6512007)(6506007)(71200400001)(6486002)(186003)(6916009)(316002)(2616005)(478600001)(36756003)(33656002)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?jd3P4+40PCx3uF00bi54nmu3XHsBgR5Z6GkwECeiZreV6hCpGabYUx1VzApo?=
- =?us-ascii?Q?jxyS5Xbit6PELceJK+/l2DcohCrJ29yMaaL+N10+tuqmGtuU0HbCBhhUijBi?=
- =?us-ascii?Q?wlegVO1BMULiTj7mPwGIF+xEFzwx3o4H0590RA1JeRptECQYHWPAb+DKW8+c?=
- =?us-ascii?Q?/drJIQOqohRy1tvJWOBaqARK7cMsl50Rh3fb3PmUvOhBgksKG5jzNKf/+Sl6?=
- =?us-ascii?Q?1mOc2A3D5Sd/WUi6PIY4l1R2g0DzH6mW+Sqbm7HxRJ3N6u2reYiWl6r/JqBn?=
- =?us-ascii?Q?KJCzCVMcoDT20Xy0y0JfSS/Ax02lgEz6jC9UNUTAm4031+o1Xbs97obqgt9j?=
- =?us-ascii?Q?3XQBgn5baUxxM1qYKosQn4JM2Q2vMbVtm74bKTCYxJGw0xs+N+exgeXjMJe6?=
- =?us-ascii?Q?ReosfTjNr5yBSbZqUH34wgp1Fp5iehrTx/NHRVpWockNrBS7sf7/c7ZU8QOQ?=
- =?us-ascii?Q?KATOFb6aNmyVndzhMA9wB+OUBjJWzRofV0M0RDBPDzJSCEgA5+X3JQuyzDeH?=
- =?us-ascii?Q?WALdbIHuatzGTzeUNCuhGIS3Lmwsl1+AmqWJ7ppTKPy1oB5a0cZYRuZxPFiD?=
- =?us-ascii?Q?7gju6v2HEHj3s9vo2sZQoecHazzWGyrhT40hnQIfti2bgCGTatZ8ELbhi2WI?=
- =?us-ascii?Q?sp1nT1K/F4XFm9EB2rCy6sm4JM8ujVpoC5V+PVU14ubUR5dPQLklvhLQIyyG?=
- =?us-ascii?Q?lMMC4FXlAUXdch4MsM8njJBR7ZVgIWG6ycRps68Ibo46H55HzMU/hGe1orur?=
- =?us-ascii?Q?5sOQOQSWwqBAc/5G2MXfIIrklSlABGVoAjcMKh2wmJ4cfQWAlojKXIs/bckG?=
- =?us-ascii?Q?hv9MwwqL2JSR3E1ekjGOboM0ddo3XHnV9A8UbVQ6J68o2AGpdmtvfB1MnDbY?=
- =?us-ascii?Q?XaYcHoHq/iNg14BSGHAmphnxRV8DSR8R2ku5c/q9SmMhTFApWhOuBrt6rgR+?=
- =?us-ascii?Q?6JScwXZhvIgwIEMCySehszI9IyKvR7s0Fg8JkfdIBYttc7IUCCbm8t7kQtyf?=
- =?us-ascii?Q?+qPjr3OVf+Rp4KuO6W7/pDiohCbA03dPorwMJOIxl8HEmMqwpGp1FSocFouV?=
- =?us-ascii?Q?Qz1QeROvU85ZteRu0LZOtnbZh5cPi2uoZykfbC0I/OTyZTt+c8vg8KeuOMyc?=
- =?us-ascii?Q?IE9wINr6VxvCwMOm023b3lf5zsVPPHXYE8u+TQ1/mhZ+xMiL6Wa/vO8X/fCz?=
- =?us-ascii?Q?0K1JcvTx2boqbKXba8c/2VtMZ+b3Iyl1rtVyk9bKFzKCfU/8Jgw0LQuCwadF?=
- =?us-ascii?Q?zHqddV6b53A3We+tL293TfhS9LTGmVvuvyCsdcKiNbF1civdVmOR7ad7XOPF?=
- =?us-ascii?Q?sLNEQZJOK2qNwccIBCQj1W+r98h29A1LkAVJcHQPd6DYcPP+CHE/OlLN1qFl?=
- =?us-ascii?Q?xjDOhNRaPA7Vkfy6Uy4L59QD7m8EfOYZM8ggGcPdrvARZTVbVD3Q8VLwCWK9?=
- =?us-ascii?Q?eZ5UKRNwK5NsAZoUz37Gr1ia1UkxTrIqtBlN10uOlu22RDpcJflwiZDaLFQk?=
- =?us-ascii?Q?3BST1gbieuUsKVJ85P8umSfRQLPNiG2ajF5lTKrSrimdSa08IhdjaRg24T1O?=
- =?us-ascii?Q?jtUHpxLc71Hqzz9Sv2ecEr4bI14N+zQhnWDN0fFvYBmXYGFFqA71knzE/0ot?=
- =?us-ascii?Q?kg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <DBA7C20E3CE8324BB8AF89DB1C21A6A7@eurprd08.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Wed, 23 Nov
+ 2022 16:26:47 +0000
+Received: from MN0PR12MB5979.namprd12.prod.outlook.com
+ ([fe80::62b2:b96:8fd1:19f5]) by MN0PR12MB5979.namprd12.prod.outlook.com
+ ([fe80::62b2:b96:8fd1:19f5%4]) with mapi id 15.20.5813.013; Wed, 23 Nov 2022
+ 16:26:47 +0000
+Date:   Wed, 23 Nov 2022 17:26:42 +0100
+From:   Jiri Pirko <jiri@nvidia.com>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] net: devlink: devlink_nl_info_fill: populate default
+ information
+Message-ID: <Y35JwvX2h/AXQkgc@nanopsycho>
+References: <20221122154934.13937-1-mailhol.vincent@wanadoo.fr>
+ <Y33sD/atEWBTPinG@nanopsycho>
+ <CAMZ6Rq+jG=iAHCfFED7SE3jP8EnSSCWc2LLFv+YDKAf0ABe0YA@mail.gmail.com>
+ <Y34NsilOe8BICA9Q@nanopsycho>
+ <CAMZ6RqKdDoDHB2TiTR9wkpWQ=p_bZC2NFQLFV43Us20OS0qq_Q@mail.gmail.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMZ6RqKdDoDHB2TiTR9wkpWQ=p_bZC2NFQLFV43Us20OS0qq_Q@mail.gmail.com>
+X-ClientProxiedBy: FR0P281CA0121.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:97::19) To MN0PR12MB5979.namprd12.prod.outlook.com
+ (2603:10b6:208:37e::15)
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: oG0xOHE8yScgz6qtGh9xTJTieVqqOYTgldX84X27tKbwE2pfKGjveMeYH8twY4Fo7jXksFgdUV3fu62xYs0KajWvZryY/M7k7+tFBGAJLs+wzqlkYZCWd2cKqlnXukfaNdJQvh7v4ms/Tzkh6nAHJkkz/m+ZR3Qt4kPvvuvyyY3GR9SwJsDzmmeMqxQ2HvYW62kfMJjkGlFx8vsvHLP3Q+K5kWD7o4V3V+Kzu7FP55f80txFy2NlV2vwFOJ48KtAAqEAYS2SpE7y7GH7g554rSRZ6KWov+TsZ1/7mSWPREinqRJzb5cMgfMpR2NXS2e8Q6OBeg8T5zAFGJYHFQezWvERohMMgpL2hAq+JeTRbqTI1AKmjdJ/GizQc1IMJbX9wW3WD3icX5LqfRxfmt7Be7rh7nVWbr4NEbJosC0zEFbd6QNZkEGbu0M106VqKVkH8twsanKw2R9lslAxPqWEUcdBAQGOIsC5NaxXPdvjB0RJ8L0NkcyuKWStGeMP8gRUmgUUbZCKYDCP3vNBGqglVZUVzoful0jYr3meWwCrfNuooEf/PBbSoQSchOo7f7MR6jY/5P2N5IgQ1pIYGQIJoqxo4JVW7JR0Zdlnyfm96QNXlOvcl+fYgl+UicRpJ3B2xX1S26qVK+zin5fH+GuKTAc7jpfYU5sBtO2fRwJTAR4z2IK+aZXfC57ZRuWvoJ6UR3vSrSzdmFn1Wdu/M0Jhkrj/dXUB/RpFp/o02bj+t9uNkeJoWfsO8nKkV27qnugo/09zYEDWj8juxKDDYjDDRuslnJq7n4IOnPXo+7v9siwkXkGpRVI5SEGhk7K6xXzJSP2Gre5r7s71kNbsWmg3yA==
-X-OriginatorOrg: drivenets.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5979:EE_|SJ2PR12MB7964:EE_
+X-MS-Office365-Filtering-Correlation-Id: b060d819-0745-4047-385e-08dacd6f8479
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: A2MUV26UI8+AHaz1yqMDK/YNZq/breobla0ZkUoC7Kghu/GwnsAiuttkgyvIJzU2VDOK87MzRIUR8iyJKU59EhvirptPUyeZUz7MRYnH4gFugGhqPGEn+ErYcYof7PI1t1Mctj/L5SDflZKKIiXGeQiQew7W4NTwZJ2n6vGc7H8gRZV33pdSnT3mV8XaVn/Nrj1Ugzj5yBq1VnB6XtsCcaqcHaJC0nCPYRC+7ubH86UjGtGRrPgM+TTkBBJxYHwlzcxZCnmyzciwIJPQHnv7fujoYulXYTDA84T5xy+B6P3sK3dQZA9/7MCoKUDdowO4cyKliFhpt01Rs4bvo0rZfi8INzV4XZtqfiY81Q1ABASeiim9Y630x0kw+jJRFOO3Vh1rVWtepFaYTO9jDbTuVSFhG1E2MTHE9cxvv+mxVluggMl6iKvTMoBxjVwlTuMJ7YZZ/xehXQSb4QQ0m860q79cCjKHdqRjFR9uWfxV3HM2rE7Zz9RU2AwQVdQtDoGTqTcTBABFs8Dw40RaKyez0dq/nLy7vawTy+AkEA+dbyB1HVHzVma+YcS/+B7pRG/CzEXJer90FefBYUBe5DFWQCs7DUfje4oioJvjIgwbgo0ujIOPyy91rzt2bwNh63WcS+yL3wIh68DLnc1NlhUb1YUxxBA5u8Gm8h4JYPZ5R8W6dADfMio/xhsqhNSXbrDH55d0sWJ3uPm0o9LR0TCdThPY9rWgC7j0igvArytYRitjzIdwQD3dW/lyq057bzArztAev/c2kWS7paLzrdECqw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5979.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(366004)(396003)(376002)(346002)(39860400002)(136003)(451199015)(26005)(2906002)(478600001)(6506007)(86362001)(6486002)(33716001)(6666004)(83380400001)(38100700002)(9686003)(6512007)(186003)(8936002)(8676002)(41300700001)(966005)(66556008)(66476007)(4326008)(6916009)(66946007)(5660300002)(316002)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?9WYTYSpRX9u7/W44rGmYDL9uEtgx4GQlDMXPvbvJqbgumcjn7Ay+9z9LJZ?=
+ =?iso-8859-1?Q?GEbszizGwYjIjZ/uaxmNJGM/TjQL8EN4JdXAaQY64bNG/ujycE8y9F8G13?=
+ =?iso-8859-1?Q?UL5wih2+NW3r6XYjcQI8KwFsvdJJ+69v3aec/sswf0MZeCQkbKeorrB6r/?=
+ =?iso-8859-1?Q?9CZNpjwA+21uAGjxBLJaw19CNikuhc1crOjvnejzdbTeXfaeebf3caVsZr?=
+ =?iso-8859-1?Q?99oTHDoXThTO22JpgP8R8SL2GbLXub/VvJcWY7QJlrTPaYZQJieQujLlxB?=
+ =?iso-8859-1?Q?rTYmLr0y3Qq53b40cpZrnCwYflMJfyGBzf/6PCV/WVq400O7+aDJu56jMm?=
+ =?iso-8859-1?Q?DYB/Qw3ooTR6KanuWnrFt8n5JVaxvAWvxd3JnEeEFSa2JdlzwEIZfoZsi3?=
+ =?iso-8859-1?Q?7zcXdPAyvSqXMqHAAMtORi9Pg6Nt9+daEmeWuWtLiVDGv9M7vwu7hOGeW/?=
+ =?iso-8859-1?Q?fbDJCWdCYfzaOWEZmpiMLWbTX1LePvN27Cw6VsECfDbVz/LGvMhtGiRWAb?=
+ =?iso-8859-1?Q?R2BJICOsfXcUEC9WaGcHcPDO0Wozu/HEK5YMxZWpwY8IFgfv64KX3JlnER?=
+ =?iso-8859-1?Q?SLVSkyPJu1zYYda8yhF1l2UAYaHqAYnbhQzU4eKQi1gkTJYzoVw1TwgDC/?=
+ =?iso-8859-1?Q?AruVNDkbzdANtJujCK2YjX3ptPRzCZpHhEjF+7+8XfjH67tL6djsWX7ufC?=
+ =?iso-8859-1?Q?LU7XyLCEsAOW1wPxUDCiKU6e2Ij61N4IoCMQHuDoS1E1+jHFEI04sXM0Yl?=
+ =?iso-8859-1?Q?iN5UoFVUkn87Qp3pwCUvBZOfl9+nwRVTfdbLQBh4XkgmxOkVf1bsvaMrQA?=
+ =?iso-8859-1?Q?IkJ7ljAqcFuhRcFC/k3iH/Bhw1c3yJy1sR75Ycop1wFOg9ByVmgPcCnTYv?=
+ =?iso-8859-1?Q?Ze1oU8b2ZO0Cx+hcNESl4PBJvHBS39ep8kAUMZ8UDzB5JGNaiWuu1DJOTN?=
+ =?iso-8859-1?Q?b89G+dZMdztYM6HwX6NTCDS1EsNffZ7HE5hpffm/7qzOAN+MJun0XSU11k?=
+ =?iso-8859-1?Q?iVwu6nhXK1B+pY3rHMz5McvF2rP4aVMSshvQJ+FDcvUEdEIwgRuRA8nh2L?=
+ =?iso-8859-1?Q?zTjEkB38Fau8VBcKirWDUAo+ZTeuojiW6fFp3+RaLvMt/JROcUyrK/huiW?=
+ =?iso-8859-1?Q?OGX7Hcm83ot/fAXglXvOz9o/q+n5y4DzYp+f6ZTWwJKKRAlpBjMagzpPo2?=
+ =?iso-8859-1?Q?1AVssBre+zDE+HrchGoebi5ylxZUBS7AvtKLCnBB9e1WDkCHe4II33KVi8?=
+ =?iso-8859-1?Q?QcLo7sgxXuKG6k5gYvimxnmdeBIwJ2WKoJECob4WzlIRb8NpWoqP+WHoJA?=
+ =?iso-8859-1?Q?zLDHB3z8UdWnLBveSKZxAjqyYqNQj48W4fe7hFboGAccCuhTU6JsOPeTZl?=
+ =?iso-8859-1?Q?ZFVdtEv4WJPW0whwL5sWARid1lPVVdV1OdCS6XkgVubNlwisOFo/iKF1+f?=
+ =?iso-8859-1?Q?uUpvvqn9jwPNoTqAXJ7/7HB4OKA09sBqHEYmaxWB72svi2ia2i7U7G9zD/?=
+ =?iso-8859-1?Q?QSRJ3Jf4UTC+6TYI0Ql+Hj3J6UYrYFW+TrbflKWeP/bp5gVqLYr5rpNG0G?=
+ =?iso-8859-1?Q?SVB1TW5DkTazGqzPxaPF7ieSgjgag1/MisdGJPoSEiS6L1GZRp+Mgr2Rrx?=
+ =?iso-8859-1?Q?BnMr4rLdKHRknAi2oRkp9d/+KtY24V2ol7?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b060d819-0745-4047-385e-08dacd6f8479
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5979.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR08MB4118.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5920f11d-abaa-46f3-7bf2-08dacd6df78a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2022 16:15:41.4367
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2022 16:26:47.5665
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 662f82da-cf45-4bdf-b295-33b083f5d229
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0BJganBxeTZ5kaZ3Qra67Zkcv4TEwQ4R8qc7BL4OLCXYt+k/JA3j6E1EMwu92cft+/vXU1Q3ZnW/fe7p3ReZjg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR08MB9511
-X-MDID: 1669220143-C_QedH9QaA-3
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pN1XqIAQZYVOvAZoY0deNLbQYKOLjoK6jrMJffiHNeykyx8u0X3uTMuw5iPEA1iG
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7964
+X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If `__rtnl_talk_iov()` fails then callers are not expected to free `answer`=
-.
+Wed, Nov 23, 2022 at 05:08:10PM CET, mailhol.vincent@wanadoo.fr wrote:
+>On Wed. 23 Nov. 2022 at 21:10, Jiri Pirko <jiri@nvidia.com> wrote:
+>> Wed, Nov 23, 2022 at 12:00:44PM CET, mailhol.vincent@wanadoo.fr wrote:
+>> >On Wed. 23 nov. 2022 à 18:46, Jiri Pirko <jiri@nvidia.com> wrote:
+>> >> Tue, Nov 22, 2022 at 04:49:34PM CET, mailhol.vincent@wanadoo.fr wrote:
+>> >> >Some piece of information are common to the vast majority of the
+>> >> >devices. Examples are:
+>> >> >
+>> >> >  * the driver name.
+>> >> >  * the serial number of a USB device.
+>> >> >
+>> >> >Modify devlink_nl_info_fill() to retrieve those information so that
+>> >> >the drivers do not have to. Rationale: factorize code.
+>> >> >
+>> >> >Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+>> >> >---
+>> >> >I am sending this as an RFC because I just started to study devlink.
+>> >> >
+>> >> >I can see a parallel with ethtool for which the core will fill
+>> >> >whatever it can. c.f.:
+>> >> >commit f20a0a0519f3 ("ethtool: doc: clarify what drivers can implement in their get_drvinfo()")
+>> >> >Link: https://git.kernel.org/netdev/net-next/c/f20a0a0519f3
+>> >> >
+>> >> >I think that devlink should do the same.
+>> >> >
+>> >> >Right now, I identified two fields. If this RFC receive positive
+>> >> >feedback, I will iron it up and try to see if there is more that can
+>> >> >be filled by default.
+>> >> >
+>> >> >Thank you for your comments.
+>> >> >---
+>> >> > net/core/devlink.c | 36 ++++++++++++++++++++++++++++++++++++
+>> >> > 1 file changed, 36 insertions(+)
+>> >> >
+>> >> >diff --git a/net/core/devlink.c b/net/core/devlink.c
+>> >> >index 7f789bbcbbd7..1908b360caf7 100644
+>> >> >--- a/net/core/devlink.c
+>> >> >+++ b/net/core/devlink.c
+>> >> >@@ -18,6 +18,7 @@
+>> >> > #include <linux/netdevice.h>
+>> >> > #include <linux/spinlock.h>
+>> >> > #include <linux/refcount.h>
+>> >> >+#include <linux/usb.h>
+>> >> > #include <linux/workqueue.h>
+>> >> > #include <linux/u64_stats_sync.h>
+>> >> > #include <linux/timekeeping.h>
+>> >> >@@ -6685,12 +6686,37 @@ int devlink_info_version_running_put_ext(struct devlink_info_req *req,
+>> >> > }
+>> >> > EXPORT_SYMBOL_GPL(devlink_info_version_running_put_ext);
+>> >> >
+>> >> >+static int devlink_nl_driver_info_get(struct device_driver *drv,
+>> >> >+                                    struct devlink_info_req *req)
+>> >> >+{
+>> >> >+      if (!drv)
+>> >> >+              return 0;
+>> >> >+
+>> >> >+      if (drv->name[0])
+>> >> >+              return devlink_info_driver_name_put(req, drv->name);
+>> >>
+>> >> Make sure that this provides the same value for all existing drivers
+>> >> using devlink.
+>> >
+>> >There are 21 drivers so far which reports the driver name through devlink. c.f.:
+>> >  $ git grep "devlink_info_driver_name_put(" drivers | wc -l
+>> >
+>> >Out of those 21, there is only one: the mlxsw which seems to report
+>> >something different than device_driver::name. Instead it reports some
+>> >bus_info:
+>> >  https://elixir.bootlin.com/linux/v6.1-rc1/source/drivers/net/ethernet/mellanox/mlxsw/core.c#L1462
+>> >  https://elixir.bootlin.com/linux/v6.1-rc1/source/drivers/net/ethernet/mellanox/mlxsw/core.h#L504
+>> >
+>> >I am not sure what the bus_info is here, but it looks like a misuse of
+>> >the field here.
+>>
+>> When you are not sure, look into the code to find out :) I see no misue.
+>> What exactly do you mean by that?
+>
+>I mean that device_kind, it does not sound like a field that would
+>hold the driver name.
+>
+>Looking deeper in the code, I got the confirmation.
+>bus_info::device_kind is initialized here (among other):
+>https://elixir.bootlin.com/linux/v6.1-rc1/source/drivers/net/ethernet/mellanox/mlxsw/i2c.c#L714
+>
+>and it uses ic2_client::name which indicate the type of the device
+>(e.g. chip name):
+>https://elixir.bootlin.com/linux/v6.1-rc1/source/include/linux/i2c.h#L317
+>
+>So I confirm that this is a misuse. This driver does not report the
+>driver's name.
 
-Currently if `NLMSG_ERROR` was received with an error then the netlink
-buffer was stored in `answer`, while still returning an error
-
-This leak can be observed by running this snippet over time.
-This triggers an `NLMSG_ERROR` because for each neighbour update, `ip`
-will try to query for the name of interface 9999 in the wrong netns.
-(which in itself is a separate bug)
-
-	set -e
-
-	ip netns del test-a || true
-	ip netns add test-a
-	ip netns del test-b || true
-	ip netns add test-b
-
-	ip -n test-a netns set test-b auto
-	ip -n test-a link add veth_a index 9999 type veth peer name veth_b netns t=
-est-b
-	ip -n test-b link set veth_b up
-
-	ip -n test-a monitor link address prefix neigh nsid label all-nsid > /dev/=
-null &
-	monitor_pid=3D$!
-	clean() {
-		kill $monitor_pid
-		ip netns del test-a
-		ip netns del test-b
-	}
-	trap clean EXIT
-
-	while true; do
-		ip -n test-b neigh add dev veth_b 1.2.3.4 lladdr AA:AA:AA:AA:AA:AA
-		ip -n test-b neigh del dev veth_b 1.2.3.4
-	done
-
-Fixes: 55870df ("Improve batch and dump times by caching link lookups")
-Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
-Signed-off-by: Gilad Naaman <gnaaman@drivenets.com>
----
-lib/libnetlink.c | 17 +++++++++++------
-1 file changed, 11 insertions(+), 6 deletions(-)
-
-diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-index 9af06232..001efc1d 100644
---- a/lib/libnetlink.c
-+++ b/lib/libnetlink.c
-@@ -1092,14 +1092,19 @@ next:
-						rtnl_talk_error(h, err, errfn);
-				}
-
--				if (answer)
--					*answer =3D (struct nlmsghdr *)buf;
--				else
-+				if (i < iovlen) {
-					free(buf);
--
--				if (i < iovlen)
-					goto next;
--				return error ? -i : 0;
-+				}
-+
-+				if (error) {
-+					free(buf);
-+					return -i;
-+				}
-+
-+				if (answer)
-+					*answer =3D (struct nlmsghdr *)buf;
-+				return 0;
-			}
-
-			if (answer) {
---
-2.37.1
+Okay, I think that is a bug of mlxsw_i2c implementation. You can fix it
+along the way.
 
 
+>
+>> >> >+
+>> >> >+      return 0;
+>> >> >+}
+>> >> >+
+>> >> >+static int devlink_nl_usb_info_get(struct usb_device *udev,
+>> >> >+                                 struct devlink_info_req *req)
+>> >> >+{
+>> >> >+      if (!udev)
+>> >> >+              return 0;
+>> >> >+
+>> >> >+      if (udev->serial[0])
+>> >> >+              return devlink_info_serial_number_put(req, udev->serial);
+>> >> >+
+>> >> >+      return 0;
+>> >> >+}
+>> >> >+
+>> >> > static int
+>> >> > devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
+>> >> >                    enum devlink_command cmd, u32 portid,
+>> >> >                    u32 seq, int flags, struct netlink_ext_ack *extack)
+>> >> > {
+>> >> >       struct devlink_info_req req = {};
+>> >> >+      struct device *dev = devlink_to_dev(devlink);
+>> >> >       void *hdr;
+>> >> >       int err;
+>> >> >
+>> >> >@@ -6707,6 +6733,16 @@ devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
+>> >> >       if (err)
+>> >> >               goto err_cancel_msg;
+>> >> >
+>> >> >+      err = devlink_nl_driver_info_get(dev->driver, &req);
+>> >> >+      if (err)
+>> >> >+              goto err_cancel_msg;
+>> >> >+
+>> >> >+      if (!strcmp(dev->parent->type->name, "usb_device")) {
+>> >>
+>> >> Comparing to string does not seem correct here.
+>> >
+>> >There is a is_usb_device() which does the check:
+>> >  https://elixir.bootlin.com/linux/v6.1-rc1/source/drivers/usb/core/usb.h#L152
+>> >
+>> >but this macro is not exposed outside of the usb core. The string
+>> >comparison was the only solution I found.
+>>
+>> Find a different one. String check here is wrong.
+>> >
+>> >Do you have any other ideas? If not and if this goes further than the
+>> >RFC stage, I will ask the USB folks if there is a better way.
+>> >
+>> >>
+>> >> >+              err = devlink_nl_usb_info_get(to_usb_device(dev->parent), &req);
+>> >>
+>> >> As Jakub pointed out, you have to make sure that driver does not put the
+>> >> same attrs again. You have to introduce this functionality with removing
+>> >> the fill-ups in drivers atomically, in a single patch.
+>> >
+>> >Either this, either track if the attribute is already set. I would
+>> >prefer to remove all drivers fill-ups but this is not feasible for the
+>> >serial number. c.f. my reply to Jacub in this thread:
+>> >  https://lore.kernel.org/netdev/CAMZ6RqJ8_=h1SS7WmBeEB=75wsvVUZrb-8ELCDtpZb0gSs=2+A@mail.gmail.com/
+>>
+>> Sure, but for the driver name it is. Let's start there.
+>
+>I will do a first patch only for the driver name and think again of
+>the USB serial later on.
+
+Yep, thanks!
+
+
+>
+>
+>Yours sincerely,
+>Vincent Mailhol
