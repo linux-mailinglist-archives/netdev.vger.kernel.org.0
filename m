@@ -2,306 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFB6F6368DF
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 19:31:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 817A863691B
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 19:39:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239672AbiKWSbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 13:31:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
+        id S238739AbiKWSim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 13:38:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239221AbiKWSaw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 13:30:52 -0500
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344B6627E;
-        Wed, 23 Nov 2022 10:30:51 -0800 (PST)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-142faa7a207so8981372fac.13;
-        Wed, 23 Nov 2022 10:30:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=yby3XAcpsjPZi0VSkOYnNY2Kmmja1GFipzDWM2IqziE=;
-        b=jZKFhSLS9GuPYdF9MXCnxBZftCycuW53+l/t8llBoFJLAZCmgLQbFJxiQxEew778zk
-         kOQytgRE+AziafxCJInbKfC2gof4HTASy9giKBi1bT/ge0tenEbiQYdl1dtXqI8bfNGJ
-         OiTgGzuTNa49lp50o7HZsmfewBC+c5WqMSZY3Ts0sb0+qD85+CnpF2ItjYAHXcklTm+/
-         GO9lQmkxWiGHW4LXpb7Yfxf98qG8zDPEx+Kj8RA6O+AhQ4gUQHlFaCXbKmJJQ7f4yw+U
-         R+DfYsFj1SgqPozNFfdKBFdNukA35JYngPN52xlce8NsrE5cFkkM6Rt2w5JrYPvOrk15
-         j+7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yby3XAcpsjPZi0VSkOYnNY2Kmmja1GFipzDWM2IqziE=;
-        b=IomWHgAt6eXQM9EcYCqzZxKu6xnZRHJpEc3FFkK5X6Te8+I3HxwTgsILNHGno82aN9
-         l4UCc3PwYUbu62c8grRu9n73NyWpPUxhaAv7yQKuKGzDw/ACY0rc6SqAvJNHmxhaR1of
-         nhnLmsK1Uayhal7GLFOJfzQ9EnD45pYMLwkJDf2+8xp+lqV0NSdtDr6lOcy+zA69oG/j
-         /8Es2XNRbeiMf33RQzlkzsHLG10uolsSIUnpqVlCJzdTOS1qnwk0iMETrg4IoThanVQ/
-         sFCz96lFkxtiizUza2hmH0EIHni5G8dg3U2roHIEo+lioWLQbh5XaYXBW+bqLakcygJ9
-         DM1g==
-X-Gm-Message-State: ANoB5pm9c30zmsArcqpsjcPOKi61jnaJQ8WutzhlIu12xoo/YBwnNBEH
-        Ozbymg4pyL6COXcLcvRuHRpv/ZamRAOEf3NFel8=
-X-Google-Smtp-Source: AA0mqf6pJyn7b2lFfRT7ugKtQxflgB/tJ1ehlGj0vaR1T39lzH8atG3MQ2cNDo2LSbDU8X2Ul+oh5vibw0ggwKmx/Bk=
-X-Received: by 2002:a05:6871:4494:b0:142:6cb4:8b3a with SMTP id
- ne20-20020a056871449400b001426cb48b3amr6754896oab.190.1669228250528; Wed, 23
- Nov 2022 10:30:50 -0800 (PST)
+        with ESMTP id S239254AbiKWSik (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 13:38:40 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E905DBA8
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 10:38:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669228719; x=1700764719;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=iBtIRbrg+ACPg7DAleEIf5Y3JxuErXGUbn4DiJ9PfPw=;
+  b=nIhaN7cEW4WMZXBQIj2Q0ZrlWmpev3oYBeCjvrgmbAJ7jBkLsfVX80e7
+   EpOQw6UtFLqVXr6H0SK3zN4RuqOkmBBPvhb1xMQ2ZhtpgmqiU7Ac4fw+X
+   gGsg37qBm3D6n9/tlMPSVfzfYBVM1aat1RE5BboQEOo4pnytLSyDXZ9JE
+   0qPFxlH82dw7aaZQqYq4gacyilI7GoOmE9f1CGhaHGPE4Dc2q/ISKtW28
+   B8SKsBxuNhdjcYIwBmtJRMX9OJ+N735AKVOJYPD/1nG/TU+0NqVVqKaVb
+   Wtx7QRPnT7lL22M/ceSKvzBhnxN0f+lbdogR8N6AabEZHelJv1GIfs6AH
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="301696443"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="301696443"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 10:38:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="710688157"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="710688157"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga004.fm.intel.com with ESMTP; 23 Nov 2022 10:38:37 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 23 Nov 2022 10:38:37 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Wed, 23 Nov 2022 10:38:37 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.176)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Wed, 23 Nov 2022 10:38:37 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YEDHKfQ6/6OH+RCgj9Jx5+zV0f+yPrSwqLClhWSeyiiaGE1bE9AlPdRTJ9FPB6/8mG/7zbJbux/22PaU81tAY2l9cQVvcK0SOlx9Jc72kRP3Xla4A2FHgkf/BMqGbGpzCA8c4kOOZjQot5PSJXbXXoyQcJQ9BU0yZqr7yarRVAboQKY5pEweJzWVvY5YyF4Ts5WPksBrI5Ba0yFlwsI3yTWFf9Pza8ygKEg0/OXAmAPFxJ7wm3I9OpbWMex8hzIw+SB5KfETBqIV1ChGZcniteSwGISCmsq04T9xELgJMHCa8lBfVGTuYA6U+MqaOWbgULOiR+UyBiiS78G9Wba9wg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Pe31VCLnHBALI4Ji6PFwHwVhUNO/7D1wSjLBHutouRU=;
+ b=oMHOXPQEL/sSEbz58x+N7k46uJinJrGb3s3DVVP0Y5OWbgcFfes+Sj0YkOugn1Y14j3xRLOkjQ9122EK7oYqObQTXLwEU+sZ5+x6m5xr5jlmnepM6mgDkMkqg0znxbe6HC9B/aoRwCc1qC0gsT5C8LtSJEgJ6ExjT2r1QFyPxUSC6EOIGNDgq/C+OIFmPh0xBT38Tfi18FvwM3G5CwHb4skFcJfdGS+FnqyX0abW6Td7PtqB+ZQlCuoox7ANKbpBu2/q5F5U1B+EsRoc8HQEsfoXyrtxacMPn6j+tYe53IbfPukk+X/+j2tUwu/1Ot97Nw3ZWat5h3fD8Rv8MyFQkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MW3PR11MB4764.namprd11.prod.outlook.com (2603:10b6:303:5a::16)
+ by SN7PR11MB7115.namprd11.prod.outlook.com (2603:10b6:806:29a::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Wed, 23 Nov
+ 2022 18:38:36 +0000
+Received: from MW3PR11MB4764.namprd11.prod.outlook.com
+ ([fe80::d585:716:9c72:fbab]) by MW3PR11MB4764.namprd11.prod.outlook.com
+ ([fe80::d585:716:9c72:fbab%6]) with mapi id 15.20.5834.015; Wed, 23 Nov 2022
+ 18:38:36 +0000
+Message-ID: <99629223-ac1b-0f82-50b8-ea307b3b0197@intel.com>
+Date:   Wed, 23 Nov 2022 10:38:32 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net-next 0/5] Remove uses of kmap_atomic()
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>
+References: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com>
+ <Y3yyf+mxwEfIi8Xm@unreal> <20221122105059.7ef304ff@kernel.org>
+ <b19e7bcb-e781-779c-0d2b-42b2e9b184fe@intel.com> <Y33NIiawcUn7xulO@unreal>
+Content-Language: en-US
+From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+In-Reply-To: <Y33NIiawcUn7xulO@unreal>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR11CA0048.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::25) To MW3PR11MB4764.namprd11.prod.outlook.com
+ (2603:10b6:303:5a::16)
 MIME-Version: 1.0
-References: <20221118085030.121297-1-shaozhengchao@huawei.com>
- <CADvbK_frWVFTSLMwC_xYvE+jDuk917K7SqZHUON3srLz8TxotQ@mail.gmail.com>
- <Y31ct/lSXNTm9ev9@t14s.localdomain> <CADvbK_cVBVL1KKPsONv3A3m_mPA2-41uNwxz+9eM-EuQeCSygw@mail.gmail.com>
- <Y35iJUx/Q/X01dNI@t14s.localdomain>
-In-Reply-To: <Y35iJUx/Q/X01dNI@t14s.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 23 Nov 2022 13:30:11 -0500
-Message-ID: <CADvbK_dDJpyY2xUmEyv+z2B77=N8fcUQsVyqZUORoE6UO7DAdw@mail.gmail.com>
-Subject: Re: [PATCH net] sctp: fix memory leak in sctp_stream_outq_migrate()
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW3PR11MB4764:EE_|SN7PR11MB7115:EE_
+X-MS-Office365-Filtering-Correlation-Id: 50fb1906-0d39-4080-44b7-08dacd81ed6e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Hke4aLSU/ZhhS56kDM3edgP2UkelTWUpj4ONQafqf7OEio5PJJE+PaT9fuXW31dOIX3bMzjs2VqUNO+84d+pDK9FQpWSZ1Zp7EuplYnihS6V7wCkumzCjPyTB6wyr7orL4T4+/McLB3Y8rVpcxmwG5PeW1d0LjaqfI+ElbBrAerbzxkP8To30X6fOEoYGpJZ1LVkGo0MTPA4xiJTka+hwoA+18F2A79ruhC+VeiSfqV1VEWyzi8NG2jMxI/tAyMD6NQufcFKn+E5hToUiG1OcA2WlZlfJG6uwX/tRcilAYjlJABDlXhA3q9AgHzM8QDV7EWyB7YmjdGeen8dd2tahZHLLlk8Rc9K93E7amEJR3Yqryt5hYNs8eOUdKjSdnlRrjtkJqy72aleqPSeMGO52QGtiRyDhZaQtgW6S8gpNlMPxbm+kGpJ6Mj1kOGZW0v3L6qHySoCrxWt+V/26L7Qgv9tVIaMKgVTjef7b3bdWQUBnFDRagxUqj1VpPY2CkHlwgD1ziLQhSP4RaIUacr/x0M1SMXV9sDLa07NM+P16ZS20clANA/1kjbJv9Y1Nv7taVEoz8F6RPJR2zIZA0mM2z5kq9gmzKIbdw8E0WSIXh7ssdHJNrkQgDuPpagkk5/lKGf+jZ972tUv/mJoedYvvQTb0vv4/B2+Zt4NEFncnG3Vgg4hANnDqrKwUjBaMfbPvyEViD29EUgqo8Tl+2YDT/ecux0d4VWz+uB6vm3ZbzM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4764.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39860400002)(366004)(346002)(376002)(396003)(136003)(451199015)(2616005)(83380400001)(26005)(6512007)(53546011)(82960400001)(186003)(38100700002)(5660300002)(44832011)(2906002)(6486002)(6506007)(8936002)(54906003)(66476007)(8676002)(4326008)(66556008)(41300700001)(316002)(478600001)(66946007)(6916009)(6666004)(86362001)(31696002)(31686004)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UGhRb3htd3pXSGVVQkVMc3RyQXVTeVlFd3hiZXkvMlVwcm12RllUY1k3bTVI?=
+ =?utf-8?B?ajlyOVNsdHUySFZpbTd5RUtnRzJ0SDJIRkp6UHVRZUs3UkY2RnFkUElwOU5F?=
+ =?utf-8?B?YlVvM29BaURNN0o1OEtXQU55a2tTRGNjdDZVdzhUcmg0SitOaHphK0FXS2E2?=
+ =?utf-8?B?MDMzSERiQnY0cysrbTNEVVRUcjd4aDBUZmRINmJKZnlYYUJHamd3THVrMVYw?=
+ =?utf-8?B?R2FKdXJYekxNTUsyRVBqMUs2ZjgrZTBxNGU0TUNMWExDc1V6VVN3SGZSVXN3?=
+ =?utf-8?B?NHdtelFWUWR5Zmx2MjQ5NlJ5RUtHbkh3QUIwbzJzTmlNcXhqaHltT0VwOUln?=
+ =?utf-8?B?RGNmYW1UcCtSWG5nOTBpbklZLzhNeUNtL1ZtblNoRzgxUDVFYmQ1aUhTVUlh?=
+ =?utf-8?B?WnZUbmZzQVNmNmdTR1RSVWtWZnNSV3JTMXNUYW1nZC93SnRvRTNOZW1TcVUz?=
+ =?utf-8?B?SXlaMDZrazlJTk5hV2Z5RHJzR29nYmQrWE0xM28zM3JIRTFiTmFMV09lOCt5?=
+ =?utf-8?B?SjVsU3VFV0UzS0ZESU5FM201TmxQSVBwMzhOcUwvUUVuVzNhdENQRDRGbG1q?=
+ =?utf-8?B?dC80M2h4K0RhYzJrWVo1V29LTzlkTXMwZkZBa1IwK1JDb0hsbEpZaElCQnds?=
+ =?utf-8?B?aktRUmxrVlF1UkhjZCtvcGJhZzM0WEt4Rk5XdXhGVE8rTGdwT0w3MkVzaith?=
+ =?utf-8?B?bEJEeEpUNkptRk5Welhrd0lKcFVqVmJUdFNVN2p2amxyRHZnYlpYRk00YjY1?=
+ =?utf-8?B?aGx1alRmeWpuTjBiRkNONHJtM3lPcGkwTm9BdjJIbE5EelZNOEtUUGtXWWp4?=
+ =?utf-8?B?Q2hwaGU3T1ZJV2k0R012a0l3cm5aMlZ5S1NuNVVIbWhyVWJRajhPczBnK0Y0?=
+ =?utf-8?B?RzFuOEpoSVd6cHNuMnlxcFh1dE8wVVNYbHBKYmpXMnZUQ3AxSGVKTWZqbUFz?=
+ =?utf-8?B?dzZuTVdoMmwrUWRja1BoQ2NGVUF3WE1XK1ljSGhlZjAwQUVmc1k1Vk9sVnNJ?=
+ =?utf-8?B?RzVXYnJaWDdyNEFQMGFodmphSzNxdjFCNmdYeXU2REN1RUxnSUdMcUZoMEhE?=
+ =?utf-8?B?cVlYYjNOQW5lVmNGb1RBL1VwenVxTTVPRGFpYW5KTExvS2FrQ3dxTGIvak8y?=
+ =?utf-8?B?UmxyWTl6dFVMY0paNi9LdmJJWUc5SmRxRFZJR3dVTElCbUVVT0xEYmhBblRO?=
+ =?utf-8?B?TkxFR28yeUc4TXJxUEtkSHY3SEhuM1RCVC9OYk5PVEh3Sno1bHRmREozbCsr?=
+ =?utf-8?B?NFF2QkZISXJZUzVRMkpiMFJlTEFuYTgzUnBZOWd1VHMwNEhidE5hNXJrZUhx?=
+ =?utf-8?B?VU1QWEVIdEc4MHJBWEpKcGs1NGtRNmJVTjdyRm9UVEZnTStvSUI0c0U5NFBJ?=
+ =?utf-8?B?WEY1Z0NPTHpITTNKZEhKT1VhS3JWOFFhNWc2RU9tSDNOelZybEw1V1E1QVkr?=
+ =?utf-8?B?K2Q0ZE96TWJSRGEwYlFFVkFZTGxrUkdtMkFKK3pyNTFQanZzdXVXYlI0MXQx?=
+ =?utf-8?B?VVhLWUgzMjUwMHRUU054ZXZWd3ZOc2tEOHZXZEM3NGplUkhETHA1V2MxcUZZ?=
+ =?utf-8?B?Z21FYWNYY01aVXNwN0xnaytiaDVtdFRJTE9ORnJTTDd4NjZNc2Q2ekNveWNJ?=
+ =?utf-8?B?MEpaTDI2THdhMHZVTmEwbzR2THdiQm1Hc0M4Sk10TGgxbFV6Zld6bzB2VDlI?=
+ =?utf-8?B?ckU5VDFBZXVvUy9LOUo3TjBKeXlLdkJMbkF1YnA0ZlgyU3hVUUhEVk1XOFRG?=
+ =?utf-8?B?clF4OFVkN1gralRUMVlSVC9IdkZLSGtSL0FabkhDWEdGdHlsdXF2VFIrWGtX?=
+ =?utf-8?B?TWIrZW1JTzYzbmVBM0VzTUt2M1JQWEQ0Wlg2MnNWN3RJVTRBTDZqREYzOHlh?=
+ =?utf-8?B?Mzk5dmU1MGlId0F2bXJQcUxSYi9yMU9nRXN1N2d0TC81dG9vWVN1Qmg2bTBD?=
+ =?utf-8?B?SlJ5dlA1V0VFa1g3L2lxUGZ2SHMxcTJQZXk2d2R3aUQ3MkNSV1JrYkM0NXJh?=
+ =?utf-8?B?RnlmcW01RGxBKzdxQzY1STVGYm9XUEdzYTZMNnVqQTI1bElncEo2bHllbmMr?=
+ =?utf-8?B?ZEJBL3dsWEhUK1FWUVkrd3hDOWhMMGxzM3lRODRBZzlQWXVhR0FxamNqV2hH?=
+ =?utf-8?B?elhVZEI2MXRZSnNKS2hsZ2pKOVlkaWtaVFZ5emdWcDY1U3RVZGRRc0twRms1?=
+ =?utf-8?Q?bB6FxvGmZXpbOmI0ZaZ+gbw=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50fb1906-0d39-4080-44b7-08dacd81ed6e
+X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4764.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2022 18:38:35.8933
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gJLQFS4EBj+LhMUU9LRgeSL8qbE7z837w2OcI4qIZ2IZbtI8rbfgekSNdxFHzRtYw5+Tb5EGChKZLr81CWpeey/W4F7L6fLEcmB4/gtK0WO+flhmMsZ+G9jOKv3mKEsE
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7115
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(
+On 11/22/2022 11:34 PM, Leon Romanovsky wrote:
+> On Tue, Nov 22, 2022 at 01:06:09PM -0800, Anirudh Venkataramanan wrote:
+>> On 11/22/2022 10:50 AM, Jakub Kicinski wrote:
+>>> On Tue, 22 Nov 2022 13:29:03 +0200 Leon Romanovsky wrote:
+>>>>>    drivers/net/ethernet/sun/cassini.c            | 40 ++++++-------------
+>>>>>    drivers/net/ethernet/sun/sunvnet_common.c     |  4 +-
+>>>>
+>>>> Dave, Jakub, Paolo
+>>>> I wonder if these drivers can be simply deleted.
+>>>
+>>> My thought as well. It's just a matter of digging thru the history,
+>>> platform code and the web to find potential users and contacting them.
+>>
+>> I did a little bit of digging on these two files. Here's what I found.
+>>
+>> For the cassini driver, I don't see any recent patches that fix an end user
+>> visible issue. There are clean ups, updates to use newer kernel APIs, and
+>> some build/memory leak fixes. I checked as far back as 2011. There are web
+>> references to some issues in kernel v2.6. I didn't see anything more recent.
+>>
+>> The code in sunvnet_common.c seems to be common code that's used by
+>>
+>> [1] "Sun4v LDOM Virtual Switch Driver" (ldmvsw.c, kconfig flag
+>> CONFIG_LDMVSW)
+>>
+>> [2] "Sun LDOM virtual network driver" (sunvnet.c, kconfig flag
+>> CONFIG_SUNVNET).
+>>
+>> These two seem to have had some feature updates around 2017, but otherwise
+>> the situation is the same as cassini.
+> 
+> If there is a pole to delete them, I vote for deletion. :)
 
-On Wed, Nov 23, 2022 at 1:10 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Wed, Nov 23, 2022 at 12:20:44PM -0500, Xin Long wrote:
-> > On Tue, Nov 22, 2022 at 6:35 PM Marcelo Ricardo Leitner
-> > <marcelo.leitner@gmail.com> wrote:
-> > >
-> > > On Fri, Nov 18, 2022 at 10:15:50PM -0500, Xin Long wrote:
-> > > > On Fri, Nov 18, 2022 at 3:48 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
-> > > > >
-> > > > > When sctp_stream_outq_migrate() is called to release stream out resources,
-> > > > > the memory pointed to by prio_head in stream out is not released.
-> > > > >
-> > > > > The memory leak information is as follows:
-> > > > > unreferenced object 0xffff88801fe79f80 (size 64):
-> > > > >   comm "sctp_repo", pid 7957, jiffies 4294951704 (age 36.480s)
-> > > > >   hex dump (first 32 bytes):
-> > > > >     80 9f e7 1f 80 88 ff ff 80 9f e7 1f 80 88 ff ff  ................
-> > > > >     90 9f e7 1f 80 88 ff ff 90 9f e7 1f 80 88 ff ff  ................
-> > > > >   backtrace:
-> > > > >     [<ffffffff81b215c6>] kmalloc_trace+0x26/0x60
-> > > > >     [<ffffffff88ae517c>] sctp_sched_prio_set+0x4cc/0x770
-> > > > >     [<ffffffff88ad64f2>] sctp_stream_init_ext+0xd2/0x1b0
-> > > > >     [<ffffffff88aa2604>] sctp_sendmsg_to_asoc+0x1614/0x1a30
-> > > > >     [<ffffffff88ab7ff1>] sctp_sendmsg+0xda1/0x1ef0
-> > > > >     [<ffffffff87f765ed>] inet_sendmsg+0x9d/0xe0
-> > > > >     [<ffffffff8754b5b3>] sock_sendmsg+0xd3/0x120
-> > > > >     [<ffffffff8755446a>] __sys_sendto+0x23a/0x340
-> > > > >     [<ffffffff87554651>] __x64_sys_sendto+0xe1/0x1b0
-> > > > >     [<ffffffff89978b49>] do_syscall_64+0x39/0xb0
-> > > > >     [<ffffffff89a0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > > > >
-> > > > > Fixes: 637784ade221 ("sctp: introduce priority based stream scheduler")
-> > > > > Reported-by: syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com
-> > > > > Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> > > > > ---
-> > > > >  net/sctp/stream.c | 6 ++++++
-> > > > >  1 file changed, 6 insertions(+)
-> > > > >
-> > > > > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-> > > > > index ef9fceadef8d..a17dc368876f 100644
-> > > > > --- a/net/sctp/stream.c
-> > > > > +++ b/net/sctp/stream.c
-> > > > > @@ -70,6 +70,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
-> > > > >                  * sctp_stream_update will swap ->out pointers.
-> > > > >                  */
-> > > > >                 for (i = 0; i < outcnt; i++) {
-> > > > > +                       if (SCTP_SO(new, i)->ext)
-> > > > > +                               kfree(SCTP_SO(new, i)->ext->prio_head);
-> > > > > +
-> > > > >                         kfree(SCTP_SO(new, i)->ext);
-> > > > >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
-> > > > >                         SCTP_SO(stream, i)->ext = NULL;
-> > > > > @@ -77,6 +80,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
-> > > > >         }
-> > > > >
-> > > > >         for (i = outcnt; i < stream->outcnt; i++) {
-> > > > > +               if (SCTP_SO(stream, i)->ext)
-> > > > > +                       kfree(SCTP_SO(stream, i)->ext->prio_head);
-> > > > > +
-> > > > >                 kfree(SCTP_SO(stream, i)->ext);
-> > > > >                 SCTP_SO(stream, i)->ext = NULL;
-> > > > >         }
-> > > > > --
-> > > > > 2.17.1
-> > > > >
-> > > > This is not a proper fix:
-> > > > 1. you shouldn't access "prio_head" outside stream_sched_prio.c.
-> > > > 2. the prio_head you freed might be used by other out streams, freeing
-> > > > it unconditionally would cause either a double free or use after free.
-> > > >
-> > > > I'm afraid we have to add a ".free_sid" in sctp_sched_ops, and
-> > > > implement it for sctp_sched_prio, like:
-> > > >
-> > > > +static void sctp_sched_prio_free_sid(struct sctp_stream *stream, __u16 sid)
-> > > > +{
-> > > > +       struct sctp_stream_priorities *prio = SCTP_SO(stream,
-> > > > sid)->ext->prio_head;
-> > > > +       int i;
-> > > > +
-> > > > +       if (!prio)
-> > > > +               return;
-> > > > +
-> > > > +       SCTP_SO(stream, sid)->ext->prio_head = NULL;
-> > > > +       for (i = 0; i < stream->outcnt; i++) {
-> > >
-> > > Instead of checking all streams, the for() can/should be replaced by
-> > > (from sctp_sched_prio_free):
-> > >         if (!list_empty(&prio->prio_sched))
-> > >                 return;
-> > sctp_stream_outq_migrate() is called after unsched_all() for "stream",
-> > list_empty(prio_sched) is expected to be true.
->
-> Good point. Am I missing something or the 'prio_head == prio' below
-> would always be false then as well?
->
-> Anyhow, as this is moving to something that can potentially be called
-> from other places afterwards, keeping the check doesn't hurt.
->
-> >
-> > Note that kfree(SCTP_SO(new, i)->ext) shouldn't have the reported
-> > problem, as at that moment, the "new" stream hasn't been set
-> > stream_sched yet. It means there's only one place that needs to
-> > call free_sid in sctp_stream_outq_migrate().
-> > (Maybe Zhengchao can help us confirm this?)
->
-> That's the case in Tetsuo's patch (earlier today) as well. Yet, if we
-> have an official way to free a stream, if it's not error handling
-> during initialization, it should use it.
-right.
+Perhaps I should put out a patchset that does this. That would give 
+users or anyone who cares another opportunity to chime in. If we hear 
+nothing, then we're good.
 
->
-> >
-> > >
-> > > > +               if (SCTP_SO(stream, i)->ext &&
-> > > > +                   SCTP_SO(stream, i)->ext->prio_head == prio)
-> > > > +                       return;
-> > > > +       }
-> > > > +       kfree(prio);
-> > > > +}
-> > > > +
-> > > >  static void sctp_sched_prio_free(struct sctp_stream *stream)
-> > > >  {
-> > > >         struct sctp_stream_priorities *prio, *n;
-> > > > @@ -323,6 +340,7 @@ static struct sctp_sched_ops sctp_sched_prio = {
-> > > >         .get = sctp_sched_prio_get,
-> > > >         .init = sctp_sched_prio_init,
-> > > >         .init_sid = sctp_sched_prio_init_sid,
-> > > > +       .free_sid = sctp_sched_prio_free_sid,
-> > > >         .free = sctp_sched_prio_free,
-> > > >         .enqueue = sctp_sched_prio_enqueue,
-> > > >         .dequeue = sctp_sched_prio_dequeue,
-> > > >
-> > > > then call it in sctp_stream_outq_migrate(), like:
-> > > >
-> > > > +static void sctp_stream_free_ext(struct sctp_stream *stream, __u16 sid)
-> > > > +{
-> > > > +       struct sctp_sched_ops *sched = sctp_sched_ops_from_stream(stream);
-> > > > +
-> > > > +       sched->free_sid(stream, sid);
-> > > > +       kfree(SCTP_SO(stream, sid)->ext);
-> > > > +       SCTP_SO(stream, sid)->ext = NULL;
-> > > > +}
-> > > > +
-> > > >  /* Migrates chunks from stream queues to new stream queues if needed,
-> > > >   * but not across associations. Also, removes those chunks to streams
-> > > >   * higher than the new max.
-> > > > @@ -70,16 +79,14 @@ static void sctp_stream_outq_migrate(struct
-> > > > sctp_stream *stream,
-> > > >                  * sctp_stream_update will swap ->out pointers.
-> > > >                  */
-> > > >                 for (i = 0; i < outcnt; i++) {
-> > > > -                       kfree(SCTP_SO(new, i)->ext);
-> > > > +                       sctp_stream_free_ext(new, i);
-> > > >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
-> > > >                         SCTP_SO(stream, i)->ext = NULL;
-> > > >                 }
-> > > >         }
-> > > >
-> > > > -       for (i = outcnt; i < stream->outcnt; i++) {
-> > > > -               kfree(SCTP_SO(stream, i)->ext);
-> > > > -               SCTP_SO(stream, i)->ext = NULL;
-> > > > -       }
-> > > > +       for (i = outcnt; i < stream->outcnt; i++)
-> > > > +               sctp_stream_free_ext(new, i);
-> > > >  }
-> > > >
-> > > > Marcelo, do you see a better solution?
-> > >
-> > > No. Your suggestion is the best I could think of too.
-> > >
-> > > Another approach would be to expose sched->free and do all the freeing
-> > > at once, like sctp_stream_free() does. But the above is looks cleaner
-> > > and makes it evident that freeing 'ext' is not trivial.
-> > >
-> > > With the proposal above, sctp_sched_prio_free() becomes an
-> > > optimization, if we can call it that. With the for/if replacement
-> > > above, not even that, and should be removed. Including sctp_sched_ops
-> > > 'free' pointer.
-> > Or we extract the common code to another function, like
-> > sctp_sched_prio_free_head(stream, prio), and pass prio as
-> > NULL in sctp_sched_prio_free() for freeing all.
-> >
-> > >
-> > > sctp_stream_free() then should be updated to use the new
-> > > sctp_stream_free_ext() instead, instead of mangling it directly.
-> > I thought about this, but there is ".free", which is more efficient
-> > to free all prio than calling ".free_sid" outcnt times.
->
-> How much more efficient, just by avoiding retpoline stuff on the
-> indirect functional call or something else?
+I am thinking I'll still include the conversions for cassini.c and 
+sunvnet_common.c in my v2 series. In case we don't end up deleting these 
+drivers for some reason, they'd at least not be using kmap_atomic() anymore.
 
-in sctp_stream_free():
-.free() will be called one time to free all prios
-while .free_sid will be called in a loop to  free all prios:
-        for (i = 0; i < stream->outcnt; i++)
-               .free_sid(stream, i);
-
-inside either() .free or . free_sid() there is another loop:
-for (i = 0; i < stream->outcnt; i++)
-    ...
-
-That's why I said using .free() in sctp_stream_free() will be more efficient.
-
->
-> >
-> > I may move free_sid() out of sctp_stream_free_ext(), then in
-> > sctp_stream_free() we can call sctp_stream_free_ext() without
-> > calling free_sid(), or just remove sctp_stream_free_ext().
->
-> It's easier to maintain it if we have symmetric paths for initializing
-> and for freeing it and less special cases. We already have
-> sctp_stream_init_ext(), so having sctp_stream_free_ext() is not off.
-didn't notice init_sid in sctp_stream_init_ext(), it makes sense to
-have free_sid in sctp_stream_free_ext().
-
-Thanks.
-
->
-> I'm happy to review any patch that also updates sctp_stream_free(),
-> one way or another.
->
-> >
-> > Thanks.
-> >
-> > >
-> > > Makes sense?
-> > >
-> > > Thanks,
-> > > Marcelo
+Ani
