@@ -2,104 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2AC163650C
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:56:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D32636521
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:59:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239031AbiKWP4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 10:56:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
+        id S238170AbiKWP7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 10:59:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238569AbiKWP4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:56:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B044C76BB;
-        Wed, 23 Nov 2022 07:55:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCB7A61DDD;
-        Wed, 23 Nov 2022 15:55:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1843C433D7;
-        Wed, 23 Nov 2022 15:55:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1669218956;
-        bh=ZuVdYwErHyT91Nxq7Ryx7NmqLgrFG/cDPHKGxFR2ZFY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U2jGkw8JTEW0C6phd70XCZqs+hQEYskiW31puxOmhSaxxbnL7VTHzxnHchF1UOEdz
-         kZEA4Q2n1FvfL3mMI7in0/8iFYeSD6mZwwj8tOnzA/0kxtA5tAoIYEDszzjvfm6lt4
-         Fko4yGV+Zoxg2s69SXNsjjvbx+oACotgEJLlBuRA=
-Date:   Wed, 23 Nov 2022 16:55:53 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        Ilja Van Sprundel <ivansprundel@ioactive.com>,
-        Joseph Tartaro <joseph.tartaro@ioactive.com>
-Subject: Re: [PATCH] USB: disable all RNDIS protocol drivers
-Message-ID: <Y35CiSPS+A0pHtwO@kroah.com>
-References: <04ea37cc-d97a-3e00-8a99-135ab38860f2@green-communications.fr>
+        with ESMTP id S237496AbiKWP7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:59:36 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1894112C;
+        Wed, 23 Nov 2022 07:59:34 -0800 (PST)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2ANFxL1o067298;
+        Wed, 23 Nov 2022 09:59:21 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1669219161;
+        bh=jpZuW9oHORo8S/7hQxhhY/cDw10zv0j955exyoygGXM=;
+        h=Date:To:CC:References:From:Subject:In-Reply-To;
+        b=rbHsk4lu5HCOC7TeS/xhfElLPA9MhGbPKNA6kYTjgySfeKRnp7APsegqliHNzyCNy
+         Rmr54liG+IYHFylcifIzJMr4BKlQR0RaetrL0WzV3IaO9NnLIlCLHJxfgUlOcnvRV3
+         YQh8q367KW9NeQyZz12FvE+VWZZwHwnSNA34sDgI=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2ANFxLos016741
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 23 Nov 2022 09:59:21 -0600
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 23
+ Nov 2022 09:59:21 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Wed, 23 Nov 2022 09:59:21 -0600
+Received: from [10.250.233.34] (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2ANFxFTG035291;
+        Wed, 23 Nov 2022 09:59:16 -0600
+Message-ID: <c3ded2b8-cf99-36ac-7152-5a23245a2e9c@ti.com>
+Date:   Wed, 23 Nov 2022 21:29:15 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <04ea37cc-d97a-3e00-8a99-135ab38860f2@green-communications.fr>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Content-Language: en-US
+To:     Nicolas Frayer <nfrayer@baylibre.com>, <nm@ti.com>,
+        <ssantosh@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <peter.ujfalusi@gmail.com>,
+        <vkoul@kernel.org>, <dmaengine@vger.kernel.org>,
+        <grygorii.strashko@ti.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <khilman@baylibre.com>, <glaroque@baylibre.com>
+References: <20221108181144.433087-1-nfrayer@baylibre.com>
+ <20221108181144.433087-5-nfrayer@baylibre.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH v4 4/4] net: ethernet: ti: davinci_mdio: Deferring probe
+ when soc_device_match() returns NULL
+In-Reply-To: <20221108181144.433087-5-nfrayer@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 04:40:33PM +0100, Nicolas Cavallari wrote:
-> On 23/11/2022 13:46, Greg Kroah-Hartman wrote:
-> > The Microsoft RNDIS protocol is, as designed, insecure and vulnerable on
-> > any system that uses it with untrusted hosts or devices.  Because the
-> > protocol is impossible to make secure, just disable all rndis drivers to
-> > prevent anyone from using them again.
-> > 
-> > Windows only needed this for XP and newer systems, Windows systems older
-> > than that can use the normal USB class protocols instead, which do not
-> > have these problems.
-> > 
-> > Android has had this disabled for many years so there should not be any
-> > real systems that still need this.
+Hi Nicolas,
+
+On 08/11/22 11:41 pm, Nicolas Frayer wrote:
+> When the k3 socinfo driver is built as a module, there is a possibility
+> that it will probe after the davinci mdio driver. By deferring the mdio
+> probe we allow the k3 socinfo to probe and register the
+> soc_device_attribute structure needed by the mdio driver.
 > 
-> I kind of disagree here. I have seen plenty of android devices that only
-> support rndis for connection sharing, including my android 11 phone released
-> in Q3 2020. I suspect the qualcomm's BSP still enable it by default.
+> Signed-off-by: Nicolas Frayer <nfrayer@baylibre.com>
+> ---
+>  drivers/net/ethernet/ti/davinci_mdio.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/ti/davinci_mdio.c b/drivers/net/ethernet/ti/davinci_mdio.c
+> index 946b9753ccfb..095198b6b7be 100644
+> --- a/drivers/net/ethernet/ti/davinci_mdio.c
+> +++ b/drivers/net/ethernet/ti/davinci_mdio.c
+> @@ -533,6 +533,10 @@ static int davinci_mdio_probe(struct platform_device *pdev)
+>  		const struct soc_device_attribute *soc_match_data;
+>  
+>  		soc_match_data = soc_device_match(k3_mdio_socinfo);
+> +
+> +		if (!soc_match_data)
+> +			return -EPROBE_DEFER;
 
-Qualcomm should not have it enabled, and if they do, they are adding
-code that Google says should not be enabled, and so Qualcom is
-responsible for supporting that mess.  Good luck to them.
+I dont think this is right way to detect if socinfo driver is probed.
+Per documentation of soc_device_match() , function will return NULL if
+it does not match any of the entries in k3_mdio_socinfo (ie if we are
+running on any platforms other that ones in the list)
 
-> There are also probably cellular dongles that uses rndis by default. Maybe
-> ask the ModemManager people ?
+Note that this driver is used on TI's 32 bit SoCs too that dont even
+have a k3-socinfo driver equivalent. In such case, this code will end up
+probe deferring indefinitely.
 
-That would be very very sad if it were the case, as they are totally
-unsafe.
-
-> I'm also curious if reimplementing it in userspace would solve the security
-> problem.
-
-The kernel would be happier, as all of the buffer overflows that are
-possible would only be happening in userspace.  But I doubt any library
-or userspace code that interacts with the protocol would really enjoy
-it.
-
-thanks,
-
-greg k-h
+> +
+>  		if (soc_match_data && soc_match_data->data) {
+>  			const struct k3_mdio_soc_data *socdata =
+>  						soc_match_data->data;
