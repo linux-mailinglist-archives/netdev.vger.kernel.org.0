@@ -2,153 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3F7635A90
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:52:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFCF7635A93
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:53:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236077AbiKWKwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 05:52:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51306 "EHLO
+        id S237006AbiKWKwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 05:52:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236364AbiKWKvn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:51:43 -0500
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABB125FF
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 02:37:32 -0800 (PST)
-Received: from fsav111.sakura.ne.jp (fsav111.sakura.ne.jp [27.133.134.238])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2ANAa7LC003433;
-        Wed, 23 Nov 2022 19:36:07 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav111.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav111.sakura.ne.jp);
- Wed, 23 Nov 2022 19:36:07 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav111.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2ANAa5pi003425
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 23 Nov 2022 19:36:06 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <c5ba2194-dbb6-586d-992d-9dfcd27062e7@I-love.SAKURA.ne.jp>
-Date:   Wed, 23 Nov 2022 19:36:00 +0900
+        with ESMTP id S237682AbiKWKwC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:52:02 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CDDA471;
+        Wed, 23 Nov 2022 02:39:03 -0800 (PST)
+Date:   Wed, 23 Nov 2022 11:39:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1669199942;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bWx+syrVkp3Bs5TQK0zJVwfz+f2QVugtV7Vnnswr1DY=;
+        b=KUZzCzQheoKwx9UCNhqqaf0xx6QqkOGpsWdU0nxl2HNAmA9rDPZfgWpo13JlhWHFIZKU1o
+        pxqYLnkC1PWOiRr8zbn0v7fWO+JkspD+ogXX6JE1waI8vy5hKkszeapiQyqw0IRAV8HBpA
+        muGFRmCS/htW9dvZjntjFOsWA0XQFHVvJCPPFcJMjb5DJLVqJ7gdwnYFiuTWezRB7qU6rk
+        hfI60jE3YWZ79eR+QmXw8Rjy6ANnzEbycSsj0BM3rHVRjw95lqkmbPIaozpHAlHP1Fk9H9
+        M+CSZxkD8y2Kvw++fVAnf7jXyRFNiDRSA/rsKmLMAbOPSqcf8a0NC0oTsxdYQw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1669199942;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bWx+syrVkp3Bs5TQK0zJVwfz+f2QVugtV7Vnnswr1DY=;
+        b=t4BSrZeM86Ma19HnfSro2jQz0o+kyPq6OWYx9UbNR58mdx5CpR0IaxKKZZZiwJp69uznkV
+        Sewrmksh9/wqZ1CQ==
+From:   Anna-Maria Behnsen <anna-maria@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [patch V2 12/17] timers: Silently ignore timers with a NULL
+ function
+In-Reply-To: <20221122173648.793640919@linutronix.de>
+Message-ID: <1f8f4b0-f9fe-c9c6-7620-862deff6b9d8@linutronix.de>
+References: <20221122171312.191765396@linutronix.de> <20221122173648.793640919@linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: [PATCH] sctp: relese sctp_stream_priorities at
- sctp_stream_outq_migrate()
-Content-Language: en-US
-To:     syzbot <syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com>,
-        syzkaller-bugs@googlegroups.com,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        linux-sctp@vger.kernel.org
-References: <000000000000e99e2705edb7d6cf@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <000000000000e99e2705edb7d6cf@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot is reporting memory leak on sctp_stream_priorities [1], for
-sctp_stream_outq_migrate() is resetting SCTP_SO(stream, i)->ext to NULL
-without clearing SCTP_SO(new, i)->ext->prio_head list allocated by
-sctp_sched_prio_new_head(). Since sctp_sched_prio_free() is too late to
-clear if stream->outcnt was already shrunk or SCTP_SO(stream, i)->ext
-was already NULL, add a callback for clearing that list before shrinking
-stream->outcnt and/or resetting SCTP_SO(stream, i)->ext.
+On Tue, 22 Nov 2022, Thomas Gleixner wrote:
 
-Link: https://syzkaller.appspot.com/bug?exrid=29c402e56c4760763cc0 [1]
-Reported-by: syzbot <syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
-I can observe that the reproducer no longer reports memory leak. But
-is this change correct and sufficient? Are there similar locations?
+> Tearing down timers which have circular dependencies to other
+> functionality, e.g. workqueues, where the timer can schedule work and work
+> can arm timers is not trivial.
+> 
+> In those cases it is desired to shutdown the timer in a way which prevents
+> rearming of the timer. The mechanism to do so it to set timer->function to
+> NULL and use this as an indicator for the timer arming functions to ignore
+> the (re)arm request.
+> 
+> In preparation for that replace the warnings in the relevant code pathes
+> with checks for timer->function == NULL and discard the rearm request
+> silently.
+> 
+> Add debug_assert_init() instead of the WARN_ON_ONCE(!timer->function)
+> checks so that debug objects can warn about non-initialized timers.
+> 
+> If developers fail to enable debug objects and then waste lots of time to
+> figure out why their non-initialized timer is not firing, they deserve it.
+> 
+> Co-developed-by: Steven Rostedt <rostedt@goodmis.org>
+> Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Tested-by: Guenter Roeck <linux@roeck-us.net>
+> Link: https://lore.kernel.org/all/20220407161745.7d6754b3@gandalf.local.home
+> Link: https://lore.kernel.org/all/20221110064101.429013735@goodmis.org
+> ---
+> V2: Use continue instead of return and amend the return value docs (Steven)
+> ---
+>  kernel/time/timer.c |   60 +++++++++++++++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 55 insertions(+), 5 deletions(-)
+> 
+> --- a/kernel/time/timer.c
+> +++ b/kernel/time/timer.c
+> @@ -1202,6 +1230,9 @@ EXPORT_SYMBOL(timer_reduce);
+>   *
+>   * If @timer->expires is already in the past @timer will be queued to
+>   * expire at the next timer tick.
+> + *
+> + * If @timer->function == NULL then the start operation is silently
+> + * discarded.
+>   */
+>  void add_timer(struct timer_list *timer)
+>  {
 
- include/net/sctp/stream_sched.h |  2 ++
- net/sctp/stream.c               |  3 +++
- net/sctp/stream_sched_prio.c    | 20 ++++++++++++++++++++
- 3 files changed, 25 insertions(+)
+Could you move the new paragraph after the paragraph where is is mentioned,
+that timer->function has to be set prior calling add_timer()?
 
-diff --git a/include/net/sctp/stream_sched.h b/include/net/sctp/stream_sched.h
-index 01a70b27e026..1a59d0f8ad79 100644
---- a/include/net/sctp/stream_sched.h
-+++ b/include/net/sctp/stream_sched.h
-@@ -28,6 +28,8 @@ struct sctp_sched_ops {
- 	int (*init_sid)(struct sctp_stream *stream, __u16 sid, gfp_t gfp);
- 	/* Frees the entire thing */
- 	void (*free)(struct sctp_stream *stream);
-+	/* Free one sid */
-+	void (*free_sid)(struct sctp_stream *stream, __u16 sid);
- 
- 	/* Enqueue a chunk */
- 	void (*enqueue)(struct sctp_outq *q, struct sctp_datamsg *msg);
-diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-index ef9fceadef8d..845a8173181e 100644
---- a/net/sctp/stream.c
-+++ b/net/sctp/stream.c
-@@ -60,6 +60,7 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
- 				     struct sctp_stream *new, __u16 outcnt)
- {
- 	int i;
-+	struct sctp_sched_ops *sched = sctp_sched_ops_from_stream(stream);
- 
- 	if (stream->outcnt > outcnt)
- 		sctp_stream_shrink_out(stream, outcnt);
-@@ -77,6 +78,8 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
- 	}
- 
- 	for (i = outcnt; i < stream->outcnt; i++) {
-+		if (sched->free_sid)
-+			sched->free_sid(stream, i);
- 		kfree(SCTP_SO(stream, i)->ext);
- 		SCTP_SO(stream, i)->ext = NULL;
- 	}
-diff --git a/net/sctp/stream_sched_prio.c b/net/sctp/stream_sched_prio.c
-index 80b5a2c4cbc7..bde5537984a9 100644
---- a/net/sctp/stream_sched_prio.c
-+++ b/net/sctp/stream_sched_prio.c
-@@ -230,6 +230,25 @@ static void sctp_sched_prio_free(struct sctp_stream *stream)
- 	}
- }
- 
-+static void sctp_sched_prio_free_sid(struct sctp_stream *stream, __u16 sid)
-+{
-+	struct sctp_stream_priorities *prio, *n;
-+	struct sctp_stream_out *sout = SCTP_SO(stream, sid);
-+	struct sctp_stream_out_ext *soute = sout->ext;
-+	LIST_HEAD(list);
-+
-+	if (!soute)
-+		return;
-+	prio = soute->prio_head;
-+	if (!prio || !list_empty(&prio->prio_sched))
-+		return;
-+	list_add(&prio->prio_sched, &list);
-+	list_for_each_entry_safe(prio, n, &list, prio_sched) {
-+		list_del_init(&prio->prio_sched);
-+		kfree(prio);
-+	}
-+}
-+
- static void sctp_sched_prio_enqueue(struct sctp_outq *q,
- 				    struct sctp_datamsg *msg)
- {
-@@ -323,6 +342,7 @@ static struct sctp_sched_ops sctp_sched_prio = {
- 	.get = sctp_sched_prio_get,
- 	.init = sctp_sched_prio_init,
- 	.init_sid = sctp_sched_prio_init_sid,
-+	.free_sid = sctp_sched_prio_free_sid,
- 	.free = sctp_sched_prio_free,
- 	.enqueue = sctp_sched_prio_enqueue,
- 	.dequeue = sctp_sched_prio_dequeue,
--- 
-2.34.1
+Thanks,
 
+       	Anna-Maria
