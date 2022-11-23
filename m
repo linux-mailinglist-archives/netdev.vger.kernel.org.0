@@ -2,63 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA6E9636B32
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:33:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C8F636B56
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:39:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239938AbiKWUbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 15:31:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56002 "EHLO
+        id S235454AbiKWUjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 15:39:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239147AbiKWUbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:31:08 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA3E13CEB;
-        Wed, 23 Nov 2022 12:27:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669235248; x=1700771248;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=dF7aDB2VwyWKLU0Vwp0ficgmb8OQHa7Dy9YaZOLlgUs=;
-  b=Of+h8KDoamw41twmAfwA89e5BfAuN19qh+0GGa8Jiy+c1EWFr3SK4VlJ
-   ceo89NhlifzWuSYNRZziDMO9piPEyHq+tLfH7IPQB82OltLLlcSCAAarN
-   dZ9dFq7wsW27RBWZedaMzD6H4ee2rsTHRIVq8e95G2k7RR/C/NJNcE7ja
-   WrrP76FPXKeUs/sIOoc7DibEu5GxO5iBkOCDFXXf12No4PGR3a64OF4JW
-   UbW/OkBNEu9qpbT8/xYKCyj/CdT/V/h4I3zM4vGEICvIcHbI0p7XtwmpO
-   4xjLa/4r/Px/fPnfpjtZbKdZowVwFzT4FHvNrHJLDRFaqN/R/TMXwZ0Gh
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="190333711"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Nov 2022 13:27:27 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 23 Nov 2022 13:27:27 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 23 Nov 2022 13:27:24 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <hawk@kernel.org>, <john.fastabend@gmail.com>,
-        <UNGLinuxDriver@microchip.com>, <alexandr.lobakin@intel.com>,
-        <maciej.fijalkowski@intel.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v5 7/7] net: lan966x: Add support for XDP_REDIRECT
-Date:   Wed, 23 Nov 2022 21:31:39 +0100
-Message-ID: <20221123203139.3828548-8-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
-In-Reply-To: <20221123203139.3828548-1-horatiu.vultur@microchip.com>
-References: <20221123203139.3828548-1-horatiu.vultur@microchip.com>
+        with ESMTP id S240249AbiKWUiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:38:15 -0500
+Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562D326FB;
+        Wed, 23 Nov 2022 12:38:14 -0800 (PST)
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42]) (authenticated)
+        by conssluserg-05.nifty.com with ESMTP id 2ANKbqXm003059;
+        Thu, 24 Nov 2022 05:37:52 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 2ANKbqXm003059
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1669235872;
+        bh=mVFr1xC2ioTgngdZFkHFtRlUINTf8FXweXN3/wsapu4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=BkpqQaWqqluKEXuWSDULXhY96Qu/GVqi3/DNuaMSpIN0Ly5wolN7OUDQjIPErIzRL
+         vAjbt4gheMINVwoP4W2ha8zD63CHrcJs9rgijnXBYyNsDHWMAv7nY/J5jeMYIGMpXV
+         4CT0rizpbhz6uRknujkF1czCt8i8UDht2oB8Jk3/Zs1AeXXyf02rcYmPW9SsyHpwEW
+         3ZNEApwuT5nzntHe3A9NZs42QjQEXD07pbeXCpMLpE8heYWcynSH1RUoKbL/NnpAQ5
+         5VGtHMx05iuUB8ysPSFsI6rIdcVbDJnUpjqNcAEZ3scosaD9Zp7KkZGhrZZiR9jkFQ
+         Vo6cAC7DU703g==
+X-Nifty-SrcIP: [209.85.210.42]
+Received: by mail-ot1-f42.google.com with SMTP id p10-20020a9d76ca000000b0066d6c6bce58so11936404otl.7;
+        Wed, 23 Nov 2022 12:37:52 -0800 (PST)
+X-Gm-Message-State: ANoB5plEzXPM/DuMbXpr2KcewdX0tecMXFVjFXJY7Cw/SNpYJsd98V9O
+        f6GCJJw1qad80OuzF4LoRp+tlWVIDA0ECsAzuY0=
+X-Google-Smtp-Source: AA0mqf6OYQzKu5L7stV7+3ooCq7DZutRQ4X9b53o9/X9yVdIG5HuEwCbKHgFCx5Umjc8Cixx4D/rObQbjBLc6jBTXtM=
+X-Received: by 2002:a05:6830:1b67:b0:661:8d9e:1959 with SMTP id
+ d7-20020a0568301b6700b006618d9e1959mr15509730ote.225.1669235871346; Wed, 23
+ Nov 2022 12:37:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+References: <20221119225650.1044591-1-alobakin@pm.me> <20221119225650.1044591-19-alobakin@pm.me>
+In-Reply-To: <20221119225650.1044591-19-alobakin@pm.me>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 24 Nov 2022 05:37:15 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAR30BJMghaJz9V6dY_gckZo=EOxh_ima7KjMgWSdhZgBA@mail.gmail.com>
+Message-ID: <CAK7LNAR30BJMghaJz9V6dY_gckZo=EOxh_ima7KjMgWSdhZgBA@mail.gmail.com>
+Subject: Re: [PATCH 18/18] net: cpsw: fix mixed module-builtin object
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     linux-kbuild@vger.kernel.org, Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,288 +75,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend lan966x XDP support with the action XDP_REDIRECT. This is similar
-with the XDP_TX, so a lot of functionality can be reused.
+On Sun, Nov 20, 2022 at 8:11 AM Alexander Lobakin <alobakin@pm.me> wrote:
+>
+> Apart from cpdma, there are 4 object files shared in one way or
+> another by 5 modules:
+>
+> > scripts/Makefile.build:252: ./drivers/net/ethernet/ti/Makefile:
+> > cpsw_ale.o is added to multiple modules: keystone_netcp
+> > keystone_netcp_ethss ti_cpsw ti_cpsw_new
+> > scripts/Makefile.build:252: ./drivers/net/ethernet/ti/Makefile:
+> > cpsw_ethtool.o is added to multiple modules: ti_cpsw ti_cpsw_new
+> > scripts/Makefile.build:252: ./drivers/net/ethernet/ti/Makefile:
+> > cpsw_priv.o is added to multiple modules: ti_cpsw ti_cpsw_new
+> > scripts/Makefile.build:252: ./drivers/net/ethernet/ti/Makefile:
+> > cpsw_sl.o is added to multiple modules: ti_cpsw ti_cpsw_new
+>
+> All of those five are tristate, that means with some of the
+> corresponding Kconfig options set to `m` and some to `y`, the same
+> objects are linked to a module and also to vmlinux even though the
+> expected CFLAGS are different between builtins and modules.
+> This is the same situation as fixed by
+> commit 637a642f5ca5 ("zstd: Fixing mixed module-builtin objects").
+> There's also no need to duplicate the same code 4 x 5 = roughly 20
+> times.
+>
+> Introduce the new module, ti_cpsw_core, to provide the common
+> functions used by all those modules.
+>
+> Fixes: 16f54164828b ("net: ethernet: ti: cpsw: drop CONFIG_TI_CPSW_ALE config option")
+> Fixes: a8577e131266 ("net: ethernet: ti: netcp_ethss: fix build")
+> Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
+> Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
+> Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
+> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> ---
+>  drivers/net/ethernet/ti/Kconfig          | 11 ++++++--
+>  drivers/net/ethernet/ti/Makefile         | 12 ++++----
+>  drivers/net/ethernet/ti/am65-cpsw-nuss.c |  2 ++
+>  drivers/net/ethernet/ti/cpsw.c           |  1 +
+>  drivers/net/ethernet/ti/cpsw_ale.c       | 20 +++++++++++++
+>  drivers/net/ethernet/ti/cpsw_ethtool.c   | 24 ++++++++++++++++
+>  drivers/net/ethernet/ti/cpsw_new.c       |  1 +
+>  drivers/net/ethernet/ti/cpsw_priv.c      | 36 ++++++++++++++++++++++++
+>  drivers/net/ethernet/ti/cpsw_sl.c        |  8 ++++++
+>  drivers/net/ethernet/ti/netcp_core.c     |  2 ++
+>  drivers/net/ethernet/ti/netcp_ethss.c    |  2 ++
+>  11 files changed, 112 insertions(+), 7 deletions(-)
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../ethernet/microchip/lan966x/lan966x_fdma.c | 79 ++++++++++++++++---
- .../ethernet/microchip/lan966x/lan966x_main.c |  1 +
- .../ethernet/microchip/lan966x/lan966x_main.h | 10 ++-
- .../ethernet/microchip/lan966x/lan966x_xdp.c  | 29 ++++++-
- 4 files changed, 104 insertions(+), 15 deletions(-)
+As I commented on 09/18,
+maybe 09/18 and 18/18 can be merged.
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index cd622310385bd..5314c064ceae7 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0+
- 
- #include <linux/bpf.h>
-+#include <linux/filter.h>
- 
- #include "lan966x_main.h"
- 
-@@ -390,11 +391,14 @@ static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
- {
- 	struct lan966x_tx *tx = &lan966x->tx;
- 	struct lan966x_tx_dcb_buf *dcb_buf;
-+	struct xdp_frame_bulk bq;
- 	struct lan966x_db *db;
- 	unsigned long flags;
- 	bool clear = false;
- 	int i;
- 
-+	xdp_frame_bulk_init(&bq);
-+
- 	spin_lock_irqsave(&lan966x->tx_lock, flags);
- 	for (i = 0; i < FDMA_DCB_MAX; ++i) {
- 		dcb_buf = &tx->dcbs_buf[i];
-@@ -419,12 +423,23 @@ static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
- 			if (!dcb_buf->ptp)
- 				napi_consume_skb(dcb_buf->data.skb, weight);
- 		} else {
--			xdp_return_frame_rx_napi(dcb_buf->data.xdpf);
-+			if (dcb_buf->xdp_ndo)
-+				dma_unmap_single(lan966x->dev,
-+						 dcb_buf->dma_addr,
-+						 dcb_buf->len,
-+						 DMA_TO_DEVICE);
-+
-+			if (dcb_buf->xdp_ndo)
-+				xdp_return_frame_bulk(dcb_buf->data.xdpf, &bq);
-+			else
-+				xdp_return_frame_rx_napi(dcb_buf->data.xdpf);
- 		}
- 
- 		clear = true;
- 	}
- 
-+	xdp_flush_frame_bulk(&bq);
-+
- 	if (clear)
- 		lan966x_fdma_wakeup_netdev(lan966x);
- 
-@@ -531,6 +546,7 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
- 	int dcb_reload = rx->dcb_index;
- 	struct lan966x_rx_dcb *old_dcb;
- 	struct lan966x_db *db;
-+	bool redirect = false;
- 	struct sk_buff *skb;
- 	struct page *page;
- 	int counter = 0;
-@@ -553,6 +569,9 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
- 			lan966x_fdma_rx_free_page(rx);
- 			lan966x_fdma_rx_advance_dcb(rx);
- 			goto allocate_new;
-+		case FDMA_REDIRECT:
-+			redirect = true;
-+			fallthrough;
- 		case FDMA_TX:
- 			lan966x_fdma_rx_advance_dcb(rx);
- 			continue;
-@@ -592,6 +611,9 @@ static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
- 	if (counter < weight && napi_complete_done(napi, counter))
- 		lan_wr(0xff, lan966x, FDMA_INTR_DB_ENA);
- 
-+	if (redirect)
-+		xdp_do_flush();
-+
- 	return counter;
- }
- 
-@@ -679,7 +701,8 @@ static void lan966x_fdma_tx_start(struct lan966x_tx *tx, int next_to_use)
- 
- int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
- 			   struct xdp_frame *xdpf,
--			   struct page *page)
-+			   struct page *page,
-+			   bool dma_map)
- {
- 	struct lan966x *lan966x = port->lan966x;
- 	struct lan966x_tx_dcb_buf *next_dcb_buf;
-@@ -700,24 +723,53 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
- 	}
- 
- 	/* Generate new IFH */
--	ifh = page_address(page) + XDP_PACKET_HEADROOM;
--	memset(ifh, 0x0, sizeof(__be32) * IFH_LEN);
--	lan966x_ifh_set_bypass(ifh, 1);
--	lan966x_ifh_set_port(ifh, BIT_ULL(port->chip_port));
-+	if (dma_map) {
-+		if (xdpf->headroom < IFH_LEN_BYTES) {
-+			ret = NETDEV_TX_OK;
-+			goto out;
-+		}
- 
--	dma_addr = page_pool_get_dma_addr(page);
--	dma_sync_single_for_device(lan966x->dev, dma_addr + XDP_PACKET_HEADROOM,
--				   xdpf->len + IFH_LEN_BYTES,
--				   DMA_TO_DEVICE);
-+		ifh = xdpf->data - IFH_LEN_BYTES;
-+		memset(ifh, 0x0, sizeof(__be32) * IFH_LEN);
-+		lan966x_ifh_set_bypass(ifh, 1);
-+		lan966x_ifh_set_port(ifh, BIT_ULL(port->chip_port));
-+
-+		dma_addr = dma_map_single(lan966x->dev,
-+					  xdpf->data - IFH_LEN_BYTES,
-+					  xdpf->len + IFH_LEN_BYTES,
-+					  DMA_TO_DEVICE);
-+		if (dma_mapping_error(lan966x->dev, dma_addr)) {
-+			ret = NETDEV_TX_OK;
-+			goto out;
-+		}
- 
--	/* Setup next dcb */
--	lan966x_fdma_tx_setup_dcb(tx, next_to_use, xdpf->len + IFH_LEN_BYTES,
--				  dma_addr + XDP_PACKET_HEADROOM);
-+		/* Setup next dcb */
-+		lan966x_fdma_tx_setup_dcb(tx, next_to_use,
-+					  xdpf->len + IFH_LEN_BYTES,
-+					  dma_addr);
-+	} else {
-+		ifh = page_address(page) + XDP_PACKET_HEADROOM;
-+		memset(ifh, 0x0, sizeof(__be32) * IFH_LEN);
-+		lan966x_ifh_set_bypass(ifh, 1);
-+		lan966x_ifh_set_port(ifh, BIT_ULL(port->chip_port));
-+
-+		dma_addr = page_pool_get_dma_addr(page);
-+		dma_sync_single_for_device(lan966x->dev,
-+					   dma_addr + XDP_PACKET_HEADROOM,
-+					   xdpf->len + IFH_LEN_BYTES,
-+					   DMA_TO_DEVICE);
-+
-+		/* Setup next dcb */
-+		lan966x_fdma_tx_setup_dcb(tx, next_to_use,
-+					  xdpf->len + IFH_LEN_BYTES,
-+					  dma_addr + XDP_PACKET_HEADROOM);
-+	}
- 
- 	/* Fill up the buffer */
- 	next_dcb_buf = &tx->dcbs_buf[next_to_use];
- 	next_dcb_buf->use_skb = false;
- 	next_dcb_buf->data.xdpf = xdpf;
-+	next_dcb_buf->xdp_ndo = dma_map;
- 	next_dcb_buf->len = xdpf->len + IFH_LEN_BYTES;
- 	next_dcb_buf->dma_addr = dma_addr;
- 	next_dcb_buf->used = true;
-@@ -790,6 +842,7 @@ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
- 	next_dcb_buf = &tx->dcbs_buf[next_to_use];
- 	next_dcb_buf->use_skb = true;
- 	next_dcb_buf->data.skb = skb;
-+	next_dcb_buf->xdp_ndo = false;
- 	next_dcb_buf->len = skb->len;
- 	next_dcb_buf->dma_addr = dma_addr;
- 	next_dcb_buf->used = true;
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 0b7707306da26..0aed244826d39 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -469,6 +469,7 @@ static const struct net_device_ops lan966x_port_netdev_ops = {
- 	.ndo_eth_ioctl			= lan966x_port_ioctl,
- 	.ndo_setup_tc			= lan966x_tc_setup,
- 	.ndo_bpf			= lan966x_xdp,
-+	.ndo_xdp_xmit			= lan966x_xdp_xmit,
- };
- 
- bool lan966x_netdevice_check(const struct net_device *dev)
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 3c18fcec51629..a0170a3fb9760 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -106,12 +106,14 @@ enum macaccess_entry_type {
-  * FDMA_ERROR, something went wrong, stop getting more frames
-  * FDMA_DROP, frame is dropped, but continue to get more frames
-  * FDMA_TX, frame is given to TX, but continue to get more frames
-+ * FDMA_REDIRECT, frame is given to TX, but continue to get more frames
-  */
- enum lan966x_fdma_action {
- 	FDMA_PASS = 0,
- 	FDMA_ERROR,
- 	FDMA_DROP,
- 	FDMA_TX,
-+	FDMA_REDIRECT,
- };
- 
- struct lan966x_port;
-@@ -185,6 +187,7 @@ struct lan966x_tx_dcb_buf {
- 	u32 used : 1;
- 	u32 ptp : 1;
- 	u32 use_skb : 1;
-+	u32 xdp_ndo : 1;
- };
- 
- struct lan966x_tx {
-@@ -470,7 +473,8 @@ int lan966x_ptp_gettime64(struct ptp_clock_info *ptp, struct timespec64 *ts);
- int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev);
- int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
- 			   struct xdp_frame *frame,
--			   struct page *page);
-+			   struct page *page,
-+			   bool dma_map);
- int lan966x_fdma_change_mtu(struct lan966x *lan966x);
- void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev);
- void lan966x_fdma_netdev_deinit(struct lan966x *lan966x, struct net_device *dev);
-@@ -568,6 +572,10 @@ int lan966x_xdp(struct net_device *dev, struct netdev_bpf *xdp);
- int lan966x_xdp_run(struct lan966x_port *port,
- 		    struct page *page,
- 		    u32 data_len);
-+int lan966x_xdp_xmit(struct net_device *dev,
-+		     int n,
-+		     struct xdp_frame **frames,
-+		     u32 flags);
- bool lan966x_xdp_present(struct lan966x *lan966x);
- static inline bool lan966x_xdp_port_present(struct lan966x_port *port)
- {
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-index 8996110a0846a..2e6f486ec67d7 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-@@ -50,6 +50,28 @@ int lan966x_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- 	}
- }
- 
-+int lan966x_xdp_xmit(struct net_device *dev,
-+		     int n,
-+		     struct xdp_frame **frames,
-+		     u32 flags)
-+{
-+	struct lan966x_port *port = netdev_priv(dev);
-+	int nxmit = 0;
-+
-+	for (int i = 0; i < n; ++i) {
-+		struct xdp_frame *xdpf = frames[i];
-+		int err;
-+
-+		err = lan966x_fdma_xmit_xdpf(port, xdpf, NULL, true);
-+		if (err)
-+			break;
-+
-+		nxmit++;
-+	}
-+
-+	return nxmit;
-+}
-+
- int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
- {
- 	struct bpf_prog *xdp_prog = port->xdp_prog;
-@@ -72,8 +94,13 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
- 		if (!xdpf)
- 			return FDMA_DROP;
- 
--		return lan966x_fdma_xmit_xdpf(port, xdpf, page) ?
-+		return lan966x_fdma_xmit_xdpf(port, xdpf, page, false) ?
- 		       FDMA_DROP : FDMA_TX;
-+	case XDP_REDIRECT:
-+		if (xdp_do_redirect(port->dev, &xdp, xdp_prog))
-+			return FDMA_DROP;
-+
-+		return FDMA_REDIRECT;
- 	default:
- 		bpf_warn_invalid_xdp_action(port->dev, xdp_prog, act);
- 		fallthrough;
+
+
+
+
 -- 
-2.38.0
-
+Best Regards
+Masahiro Yamada
