@@ -2,154 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5C2263590A
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:07:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3FA5635942
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:09:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236460AbiKWKHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 05:07:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33260 "EHLO
+        id S236893AbiKWKJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 05:09:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235978AbiKWKGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:06:19 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36A8A19E
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 01:56:49 -0800 (PST)
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669197406;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6TYM9OumVgRPKq+eX//pCt69s2IzXDIeTR3GIzFelbk=;
-        b=MZ7bhoybCnjbF1WD2av6eCkC8tYBgfBuTLOe4wgEmHdi5R5Boje0iZDHREinBNpw0z3jov
-        5KJIYA7KJSrr2Lespb+DrNwnsrKctImmH00P60W/U4dFEkf0Y4BZ7TLi6RM2RVPcco0XtM
-        8UtC9q3Im/wyRJK6xLBbvooJpCiOeS0HZG606qZIkn3fN1E0GYViGV3HVXoGdN3R87DvaD
-        jc0gGjfaZESffPoKR2wl5QPvr6i7jitJDwOEI4achuk/lpXFewP9uSP3RwYrstL+wzwiXu
-        rcl87fZrcRug83kkhw7CYuXOel7cizC0jafhYXFQ6covFBV8MdsfGk1BzXcg+Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669197406;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6TYM9OumVgRPKq+eX//pCt69s2IzXDIeTR3GIzFelbk=;
-        b=45RZ9w3N0VaZU3euwnj0We2ktCC7zlvwIE2CKH9o5/OKyrhIVhyg7E+zJEnHeAU3zebJ3l
-        9jB2a3+6ptenz9Cw==
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S236856AbiKWKIo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:08:44 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8047AE2E;
+        Wed, 23 Nov 2022 01:58:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=6uGEkYiiDNJdirEp88wlQrzHeOKWYnyUx0/Iz4Kx7zs=; b=aH9ewe1zvFWVb4tslzb7s84Um4
+        d7ns8MepdyUaAsbWXaxhzralIQRPE2yKshe1mJQHAUbBYjwf4pRPXOg7AjSc4eMYWtUf8PP9+k5ux
+        q4rkshNyg0LcPJ5s4z7P16utRWFLRIeidovjf4NK//Mu2Vn93gMxy5WUnqSFmRkmlDI4=;
+Received: from p200300daa7225c0894d890dd9e4669b3.dip0.t-ipconnect.de ([2003:da:a722:5c08:94d8:90dd:9e46:69b3] helo=Maecks.lan)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1oxmVv-003vzk-My; Wed, 23 Nov 2022 10:57:55 +0100
+From:   Felix Fietkau <nbd@nbd.name>
+To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v3 net 6/6] hsr: Synchronize sequence number updates.
-Date:   Wed, 23 Nov 2022 10:56:38 +0100
-Message-Id: <20221123095638.2838922-7-bigeasy@linutronix.de>
-In-Reply-To: <20221123095638.2838922-1-bigeasy@linutronix.de>
-References: <20221123095638.2838922-1-bigeasy@linutronix.de>
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/5] net: ethernet: mtk_eth_soc: account for vlan in rx header length
+Date:   Wed, 23 Nov 2022 10:57:50 +0100
+Message-Id: <20221123095754.36821-1-nbd@nbd.name>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hsr_register_frame_out() compares new sequence_nr vs the old one
-recorded in hsr_node::seq_out and if the new sequence_nr is higher then
-it will be written to hsr_node::seq_out as the new value.
+The network stack assumes that devices can handle an extra VLAN tag without
+increasing the MTU
 
-This operation isn't locked so it is possible that two frames with the
-same sequence number arrive (via the two slave devices) and are fed to
-hsr_register_frame_out() at the same time. Both will pass the check and
-update the sequence counter later to the same value. As a result the
-content of the same packet is fed into the stack twice.
-
-This was noticed by running ping and observing DUP being reported from
-time to time.
-
-Instead of using the hsr_priv::seqnr_lock for the whole receive path (as
-it is for sending in the master node) add an aditional lock that is only
-used for sequence number checks and updates.
-
-Add a per-node lock that is used during sequence number reads and
-updates.
-
-Fixes: f421436a591d3 ("net/hsr: Add support for the High-availability Seaml=
-ess Redundancy protocol (HSRv0)")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- net/hsr/hsr_framereg.c | 9 ++++++++-
- net/hsr/hsr_framereg.h | 1 +
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index f2dd846ff9038..39a6088080e93 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -157,6 +157,7 @@ static struct hsr_node *hsr_add_node(struct hsr_priv *h=
-sr,
- 		return NULL;
-=20
- 	ether_addr_copy(new_node->macaddress_A, addr);
-+	spin_lock_init(&new_node->seq_out_lock);
-=20
- 	/* We are only interested in time diffs here, so use current jiffies
- 	 * as initialization. (0 could trigger an spurious ring error warning).
-@@ -353,6 +354,7 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 	}
-=20
- 	ether_addr_copy(node_real->macaddress_B, ethhdr->h_source);
-+	spin_lock_bh(&node_real->seq_out_lock);
- 	for (i =3D 0; i < HSR_PT_PORTS; i++) {
- 		if (!node_curr->time_in_stale[i] &&
- 		    time_after(node_curr->time_in[i], node_real->time_in[i])) {
-@@ -363,6 +365,7 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 		if (seq_nr_after(node_curr->seq_out[i], node_real->seq_out[i]))
- 			node_real->seq_out[i] =3D node_curr->seq_out[i];
- 	}
-+	spin_unlock_bh(&node_real->seq_out_lock);
- 	node_real->addr_B_port =3D port_rcv->type;
-=20
- 	spin_lock_bh(&hsr->list_lock);
-@@ -456,13 +459,17 @@ void hsr_register_frame_in(struct hsr_node *node, str=
-uct hsr_port *port,
- int hsr_register_frame_out(struct hsr_port *port, struct hsr_node *node,
- 			   u16 sequence_nr)
- {
-+	spin_lock_bh(&node->seq_out_lock);
- 	if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]) &&
- 	    time_is_after_jiffies(node->time_out[port->type] +
--	    msecs_to_jiffies(HSR_ENTRY_FORGET_TIME)))
-+	    msecs_to_jiffies(HSR_ENTRY_FORGET_TIME))) {
-+		spin_unlock_bh(&node->seq_out_lock);
- 		return 1;
-+	}
-=20
- 	node->time_out[port->type] =3D jiffies;
- 	node->seq_out[port->type] =3D sequence_nr;
-+	spin_unlock_bh(&node->seq_out_lock);
- 	return 0;
- }
-=20
-diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
-index b5f902397bf1a..9a047ac5991d0 100644
---- a/net/hsr/hsr_framereg.h
-+++ b/net/hsr/hsr_framereg.h
-@@ -69,6 +69,7 @@ void prp_update_san_info(struct hsr_node *node, bool is_s=
-up);
-=20
- struct hsr_node {
- 	struct list_head	mac_list;
-+	spinlock_t		seq_out_lock;
- 	unsigned char		macaddress_A[ETH_ALEN];
- 	unsigned char		macaddress_B[ETH_ALEN];
- 	/* Local slave through which AddrB frames are received from this node */
---=20
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index 7ca806b4de10..a553265c10de 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -34,7 +34,7 @@
+ #define MTK_QDMA_RING_SIZE	2048
+ #define MTK_DMA_SIZE		512
+ #define MTK_MAC_COUNT		2
+-#define MTK_RX_ETH_HLEN		(ETH_HLEN + ETH_FCS_LEN)
++#define MTK_RX_ETH_HLEN		(VLAN_ETH_HLEN + ETH_FCS_LEN)
+ #define MTK_RX_HLEN		(NET_SKB_PAD + MTK_RX_ETH_HLEN + NET_IP_ALIGN)
+ #define MTK_DMA_DUMMY_DESC	0xffffffff
+ #define MTK_DEFAULT_MSG_ENABLE	(NETIF_MSG_DRV | \
+-- 
 2.38.1
 
