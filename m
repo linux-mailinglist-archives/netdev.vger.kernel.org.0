@@ -2,175 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEBA9636CD8
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 23:10:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 622CE636CDD
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 23:11:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229971AbiKWWIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 17:08:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        id S229483AbiKWWLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 17:11:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229854AbiKWWIY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 17:08:24 -0500
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050:0:465::102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452521571D;
-        Wed, 23 Nov 2022 14:08:17 -0800 (PST)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4NHZy72lqZz9sTC;
-        Wed, 23 Nov 2022 23:08:15 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1669241295;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AqECxmOSPT83qOwhM+GdKNJsI17VfZH7epaT9e6tcdI=;
-        b=rW1avn3NpXzn7sLiAsTnlSMg6PV6E/xIwdgcoC+gxGlnEOAghAxwNrU2qBwiUfl8eYxD4v
-        XoWt+3PAKmT0WkHWaogToi7Igt0omFM5i8erCkbZgX5vKIBn3G4gWRg4hW5dQ88nkyHMtY
-        FBgrOVXx77dWcMY4ZSaFeeHWeIWRd3bB3bSBWxZzguxKGADvxv4uG5gp0MC7Ix+JymFeA6
-        JzlhjlGgvwwvRJejF9zDXUcmmhV3XyXMK7DGdUUEdsZaHfnH8BN4isEz/y5iUwfcJ7dXFO
-        TLVV2UMap5AvLljh7E1ZJsy1i3CojSaA1pDT18pJYq6KtqJHEIrK+3SMKVq7dw==
-From:   Alexander Lobakin <alobakin@mailbox.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1669241293;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AqECxmOSPT83qOwhM+GdKNJsI17VfZH7epaT9e6tcdI=;
-        b=YPSIjDv9PN2kIm1grMjMSM6oVfCrHwNJYvSxrwtqNcfWlxjaH4IMw1nzvJ/vex/arwWZTk
-        7/S9jFl28DmQth8C65d4trHozT+sHbtpDc6iNIOjRwIg304wpxjd6aNQhBpp43nK1gpV2d
-        uL5tVbywOqZpaACZ2Uw/ZPG4xcdtAu5EC7GhAQ+uJcjaSp3+LQqAhZrZKlCe2FrHo637So
-        v2c5Zjyuhl5/yuDdnZe6jHaiIQQFJTLTeOhNsOlEz4VKgAjEVc7W+DbE9wr28/V8wzQgTI
-        XMO2UqJTAAcQnwNHgod3RIhetuu5UsW8I1lZVIF3qU7RkLcBXuUXJbKDy7uLow==
-To:     Salil Mehta <salil.mehta@huawei.com>
-Cc:     Alexander Lobakin <alobakin@mailbox.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Jens Axboe <axboe@kernel.dk>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 16/18] net: hns3: fix mixed module-builtin object
-Date:   Wed, 23 Nov 2022 23:07:53 +0100
-Message-Id: <20221123220753.65752-1-alobakin@mailbox.org>
-In-Reply-To: <1d2341cc5a1843538d55fb34bd8137d8@huawei.com>
-References: <20221119225650.1044591-1-alobakin@pm.me> <20221119225650.1044591-17-alobakin@pm.me> <1d2341cc5a1843538d55fb34bd8137d8@huawei.com>
+        with ESMTP id S229499AbiKWWLd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 17:11:33 -0500
+Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF41B1001C5;
+        Wed, 23 Nov 2022 14:10:23 -0800 (PST)
+Received: by mail-il1-f176.google.com with SMTP id q13so60326ild.3;
+        Wed, 23 Nov 2022 14:10:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nCaLtE08habEVniuFmPFJHMdD+Pf/zJZeM63tCW6jHM=;
+        b=5fI2iL6mc2nATc6lgr9V2NFiyXYwVujdZpyqjKrgFDeqbTCquV+0mgz7J7rnVhYqyc
+         8c6oL5XZbjpnHxHLiPePFicK2vQHw4UfRSwj5MSDitzrgybgDKZ3oIqrAhL5eZyhRUOW
+         JAkU3a4y2A7hsuMUtHK2OxpQ7uoFkzvmsJdtTj1O8W4o/N8lDQf+d9JERI0vfsKz7ZR9
+         3DaoC21TR8ZMhXrOb68Yvuhbbn/OKi5LtYy5JAN7lxegBUrx+HXHvL5ebI19UqNvVt0x
+         8XpSIf1MYW+6E+6ZHPxIsyOw0oPhSqPwGQY7AbdBaC8LGyeFZtBIcs2ivjZ2B7yW+RMv
+         ZBpA==
+X-Gm-Message-State: ANoB5pnCYbAwP6aaZTCRLfNx4CDxZA5eFVBDoovK6WqMLDqVZDxH24Iv
+        FFE0oOuulU2DxeM5iqLs3rlZvB/QeQ==
+X-Google-Smtp-Source: AA0mqf55gvn9mSnbj2YpBRikSZvZRRF+3G0E2+9mjPlS85JPCMjYBesXvKVZkN2rR6sPv5vzWUHxhw==
+X-Received: by 2002:a05:6e02:1d8c:b0:300:da4a:f8f6 with SMTP id h12-20020a056e021d8c00b00300da4af8f6mr5113975ila.99.1669241422955;
+        Wed, 23 Nov 2022 14:10:22 -0800 (PST)
+Received: from robh_at_kernel.org ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id y18-20020a92d212000000b002ffbf49a0d2sm6094613ily.84.2022.11.23.14.10.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Nov 2022 14:10:22 -0800 (PST)
+Received: (nullmailer pid 2594310 invoked by uid 1000);
+        Wed, 23 Nov 2022 22:10:23 -0000
+Date:   Wed, 23 Nov 2022 16:10:23 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        linux-kernel@vger.kernel.org,
+        Robert Marko <robert.marko@sartura.hr>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH 2/6] dt-bindings: net: marvell,dfx-server: Convert to yaml
+Message-ID: <20221123221023.GA2582938-robh@kernel.org>
+References: <20221117215557.1277033-1-miquel.raynal@bootlin.com>
+ <20221117215557.1277033-3-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MBO-RS-META: ztdyaxcwfktx8pns3qxr7yfku3y5xjd7
-X-MBO-RS-ID: 6b04d22ce6bbfd2fef5
-X-Rspamd-Queue-Id: 4NHZy72lqZz9sTC
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221117215557.1277033-3-miquel.raynal@bootlin.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Salil Mehta <salil.mehta@huawei.com>
-Date: Tue, 22 Nov 2022 12:39:04 +0000
+On Thu, Nov 17, 2022 at 10:55:53PM +0100, Miquel Raynal wrote:
+> Even though this description is not used anywhere upstream (no matching
+> driver), while on this file I decided I would try a conversion to yaml
+> in order to clarify the prestera family description.
+> 
+> I cannot keep the nodename dfx-server@xxxx so I switched to dfx-bus@xxxx
+> which matches simple-bus.yaml. Otherwise I took the example context from
+> the only user of this compatible: armada-xp-98dx3236.dtsi, which is a
+> rather old and not perfect DT.
+> 
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+> I am fine dropping this file entirely as well, if judged useless.
+> ---
+>  .../bindings/net/marvell,dfx-server.yaml      | 60 +++++++++++++++++++
+>  .../bindings/net/marvell,prestera.txt         | 18 ------
+>  2 files changed, 60 insertions(+), 18 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml b/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
+> new file mode 100644
+> index 000000000000..72151a78396f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
+> @@ -0,0 +1,60 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/marvell,dfx-server.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Marvell Prestera DFX server
+> +
+> +maintainers:
+> +  - Miquel Raynal <miquel.raynal@bootlin.com>
+> +
+> +select:
+> +  properties:
+> +    compatible:
+> +      contains:
+> +        const: marvell,dfx-server
+> +  required:
+> +    - compatible
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - const: marvell,dfx-server
+> +      - const: simple-bus
+> +
+> +  reg: true
 
-> Hi Alexander,
-> 
-> > From: Alexander Lobakin <alobakin@pm.me>
-> > Sent: Saturday, November 19, 2022 11:10 PM
-> > To: linux-kbuild@vger.kernel.org
+How many entries?
 
-[...]
+> +
+> +  ranges: true
+> +
+> +  '#address-cells':
+> +    const: 1
+> +
+> +  '#size-cells':
+> +    const: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - ranges
+> +
+> +# The DFX server may expose clocks described as subnodes
+> +additionalProperties: true
 
-> > diff --git a/drivers/net/ethernet/hisilicon/Kconfig
-> > b/drivers/net/ethernet/hisilicon/Kconfig
-> > index 3312e1d93c3b..9d2be93d0378 100644
-> > --- a/drivers/net/ethernet/hisilicon/Kconfig
-> > +++ b/drivers/net/ethernet/hisilicon/Kconfig
-> > @@ -100,11 +100,15 @@ config HNS3
-> > 
-> >  if HNS3
-> > 
-> > +config HNS3_HCLGE_COMMON
-> > +	tristate
-> > +
-> 
-> 
-> This change does not looks right to me. We do not intend to expose these
+addtionalProperties:
+  type: object
 
-...does not looks right to me -- because? The "wrong" line?
+So that only nodes can be added.
 
-> common files via kconfig and as a separate module. I would need time to
-> address this in a different way. 
-
-I'm curious how 40 Kb of shared code can be addressed differently :D
-This Kconfig opt is hidden, it can only be selected by some other
-symbol -- in this case, by the PF and VF HCLGE options. Nothing gets
-exposed in a way it shouldn't be.
-
-Lemme guess, some cross-OS "shared code" in the OOT nobody in the
-upstream cares about (for good), how familiar :D IIRC ZSTD folks
-also weren't happy at first.
-
-> 
-> Please do not merge this change into the mainline!
-> 
-> 
-> Thanks
-> Salil
-> 
-> 
-> 
-> >  config HNS3_HCLGE
-> >  	tristate "Hisilicon HNS3 HCLGE Acceleration Engine & Compatibility
-> > Layer Support"
-> >  	default m
-> >  	depends on PCI_MSI
-> >  	depends on PTP_1588_CLOCK_OPTIONAL
-> > +	select HNS3_HCLGE_COMMON
-
-[...]
-
-> > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > index 987271da6e9b..39a7ab51be31 100644
-> > --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > @@ -13133,6 +13133,8 @@ static void __exit hclge_exit(void)
-> >  module_init(hclge_init);
-> >  module_exit(hclge_exit);
-> > 
-> > +MODULE_IMPORT_NS(HNS3_HCLGE_COMMON);
-> 
-> 
-> No, we don't want this.
-
-I can export the common functions globally, without a namespace
-if you prefer ._.
-
-> 
-> 
-> 
-> > +
-> >  MODULE_LICENSE("GPL");
-> >  MODULE_AUTHOR("Huawei Tech. Co., Ltd.");
-> >  MODULE_DESCRIPTION("HCLGE Driver");
-
-Thanks,
-Olek
+> +
+> +examples:
+> +  - |
+> +
+> +    #define MBUS_ID(target,attributes) (((target) << 24) | ((attributes) << 16))
+> +    bus@0 {
+> +        reg = <0 0>;
+> +        #address-cells = <2>;
+> +        #size-cells = <1>;
+> +
+> +        dfx-bus@ac000000 {
+> +            compatible = "marvell,dfx-server", "simple-bus";
+> +            #address-cells = <1>;
+> +            #size-cells = <1>;
+> +            ranges = <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
+> +            reg = <MBUS_ID(0x08, 0x00) 0 0x100000>;
+> +        };
+> +    };
