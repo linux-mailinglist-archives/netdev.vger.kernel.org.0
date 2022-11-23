@@ -2,143 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62BE7636061
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:49:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 959AB636071
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:51:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237831AbiKWNtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 08:49:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60344 "EHLO
+        id S238084AbiKWNvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 08:51:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237822AbiKWNtb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:49:31 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744988D485
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 05:38:59 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id j4so28239210lfk.0
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 05:38:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wS8FATQNxWPdriQp0BbXocQzCpC+MIR+DcVNfDAhwFk=;
-        b=goY0xT6u7EULHQx2MRhg/J+3Xshao0AkK0Kw/Yhep2ABZQKNds0sD0jO44XqILT85D
-         GMpgwtt4t0RcnMdLfGn72E9O9T3qn7XUT2okgutwciPevDbju3FcMf/01ixtJfXX7Iiq
-         fDbqCLjRKHOzrt5uEOMdWfHgwoVRnlv2IfOnw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wS8FATQNxWPdriQp0BbXocQzCpC+MIR+DcVNfDAhwFk=;
-        b=I837qklgSWUwvUy9Gdqw0x7NxL5fMOGwkL2OfYpWfU5lAhe+RECrSZ+JseRPyJcZdu
-         loyqaosuosQvy8YXYFcrSr4Qyqk6khwu7hkKacdo5nAm1QeJjA5MLL5hejJauXhEW0rv
-         s0h9AlwGG/dY7OVr3yHRWLehxd2S8Ri42++VwBoHPM4C51FC07p8Im8vnzy2znC7uu/E
-         AY5ZQ98q9MYqkMUicD0ctGiYTh5JltLEOzQedOvWGdwfO4GDvvzk6A/7NbtA3tv5wo8r
-         L/9AicE6SOj+PwDnvKUGqdwLil6KSqf9kHp1tL3cirqdw6jxC0e/fNoMQc3Z9Ss5N93T
-         WeIQ==
-X-Gm-Message-State: ANoB5pkm4cmdYcjMJyqlpIrw2EOeQrPr7fVPEuMk7YxMRihydOqN1UaY
-        +AbAslf9D2o6YDNalNKJezBrdg==
-X-Google-Smtp-Source: AA0mqf4f1qphI9rYgYg/KQyHXOZ4X9v9VsEAFcQc3JIS1A5jOOVNZ/Gqskm/9D51RpT1s9TMN21moQ==
-X-Received: by 2002:ac2:4bc5:0:b0:4b4:c099:a994 with SMTP id o5-20020ac24bc5000000b004b4c099a994mr7840595lfq.193.1669210737739;
-        Wed, 23 Nov 2022 05:38:57 -0800 (PST)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id r9-20020a2e5749000000b002774e7267a7sm2224924ljd.25.2022.11.23.05.38.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 05:38:57 -0800 (PST)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: fec: don't reset irq coalesce settings to defaults on "ip link up"
-Date:   Wed, 23 Nov 2022 14:38:52 +0100
-Message-Id: <20221123133853.1822415-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S237248AbiKWNun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:50:43 -0500
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5945994A7C;
+        Wed, 23 Nov 2022 05:41:11 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VVXHTe6_1669210868;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VVXHTe6_1669210868)
+          by smtp.aliyun-inc.com;
+          Wed, 23 Nov 2022 21:41:09 +0800
+Date:   Wed, 23 Nov 2022 21:41:06 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Jan Karcher <jaka@linux.ibm.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>
+Subject: Re: [PATCH net] net/smc: Fix expected buffersizes and sync logic
+Message-ID: <Y34i8nmJIeIiFuOP@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20221123104907.14624-1-jaka@linux.ibm.com>
+ <Y34JxFWBdUxvLQb4@TonyMac-Alibaba>
+ <40428548-59b9-379c-857c-172db92afc0c@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <40428548-59b9-379c-857c-172db92afc0c@linux.ibm.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when a FEC device is brought up, the irq coalesce settings
-are reset to their default values (1000us, 200 frames). That's
-unexpected, and breaks for example use of an appropriate .link file to
-make systemd-udev apply the desired
-settings (https://www.freedesktop.org/software/systemd/man/systemd.link.html),
-or any other method that would do a one-time setup during early boot.
+On Wed, Nov 23, 2022 at 02:13:04PM +0100, Jan Karcher wrote:
+> 
+> 
+> On 23/11/2022 12:53, Tony Lu wrote:
+> > On Wed, Nov 23, 2022 at 11:49:07AM +0100, Jan Karcher wrote:
+> > > The fixed commit changed the expected behavior of buffersizes
+> > > set by the user using the setsockopt mechanism.
+> > > Before the fixed patch the logic for determining the buffersizes used
+> > > was the following:
+> > > 
+> > > default  = net.ipv4.tcp_{w|r}mem[1]
+> > > sockopt  = the setsockopt mechanism
+> > > val      = the value assigned in default or via setsockopt
+> > > sk_buf   = short for sk_{snd|rcv}buf
+> > > real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
+> > > 
+> > >    exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
+> > >              |                  |                |
+> > > +---------+ |                  | +------------+ | +-------------------+
+> > > | default |----------------------| sk_buf=val |---| real_buf=sk_buf/2 |
+> > > +---------+ |                  | +------------+ | +-------------------+
+> > >              |                  |                |    ^
+> > >              |                  |                |    |
+> > > +---------+ | +--------------+ |                |    |
+> > > | sockopt |---| sk_buf=val*2 |-----------------------|
+> > > +---------+ | +--------------+ |                |
+> > >              |                  |                |
+> > > 
+> > > The fixed patch introduced a dedicated sysctl for smc
+> > > and removed the /2 in smc_core.c resulting in the following flow:
+> > > 
+> > > default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
+> > > sockopt  = the setsockopt mechanism
+> > > val      = the value assigned in default or via setsockopt
+> > > sk_buf   = short for sk_{snd|rcv}buf
+> > > real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
+> > > 
+> > >    exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
+> > >              |                  |                |
+> > > +---------+ |                  | +------------+ | +-----------------+
+> > > | default |----------------------| sk_buf=val |---| real_buf=sk_buf |
+> > > +---------+ |                  | +------------+ | +-----------------+
+> > >              |                  |                |    ^
+> > >              |                  |                |    |
+> > > +---------+ | +--------------+ |                |    |
+> > > | sockopt |---| sk_buf=val*2 |-----------------------|
+> > > +---------+ | +--------------+ |                |
+> > >              |                  |                |
+> > > 
+> > > This would result in double of memory used for existing configurations
+> > > that are using setsockopt.
+> > 
+> > Firstly, thanks for your detailed diagrams :-)
+> > 
+> > And the original decision to use user-provided values rather than
+> > value/2 to follow the instructions of the socket manual [1].
+> > 
+> >    SO_RCVBUF
+> >           Sets or gets the maximum socket receive buffer in bytes.
+> >           The kernel doubles this value (to allow space for
+> >           bookkeeping overhead) when it is set using setsockopt(2),
+> >           and this doubled value is returned by getsockopt(2).  The
+> >           default value is set by the
+> >           /proc/sys/net/core/rmem_default file, and the maximum
+> >           allowed value is set by the /proc/sys/net/core/rmem_max
+> >           file.  The minimum (doubled) value for this option is 256.
+> > 
+> > [1] https://man7.org/linux/man-pages/man7/socket.7.html
+> > 
+> > The user of SMC should know that setsockopt() with SO_{RCV|SND}BUF will
+> 
+> I totally agree that an educated user of SMC should know about that behavior
+> if they decide to use it.
+> We do provide our users preload libraries where they can pass preferred
+> buffersizes via arguments and we handle the Sockopts for them.
+> 
+> > double the values in kernel, and getsockopt() will return the doubled
+> > values. So that they should use half of the values which are passed to
+> > setsockopt(). The original patch tries to make things easier in SMC and
+> > let user-space to handle them following the socket manual.
+> > 
+> > > SMC historically decided to use the explicit value given by the user
+> > > to allocate the memory. This is why we used the /2 in smc_core.c.
+> > > That logic was not applied to the default value.
+> > 
+> > Yep, let back to the patch which introduced smc_{w|r}mem knobs, it's a
+> > trade-off to follow original logic of SMC, or follow the socket manual.
+> > We decides to follow the instruction of manuals in the end.
+> 
+> I understand the point. I spend a lot of time trying to decide what to do.
+> 
+> Since it was an intentional decision to not follow the general socket
+> option, and we do not have anyone complaining we do not really have a reason
+> to change it.
+> Changing it means that users with existing configurations would have to
+> change their configs on an update or suddenly expect double the memory
+> consumption.
+> That's why we in the end preffered to stay with the current logic.
 
-Refactor the code so that fec_restart() instead uses
-fec_enet_itr_coal_set(), which simply applies the settings that are
-stored in the private data, and initialize that private data with the
-default values.
+I can't agree with you more with the points to follow the historic logic
+and not break the user-space applications.
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/net/ethernet/freescale/fec_main.c | 22 ++++++----------------
- 1 file changed, 6 insertions(+), 16 deletions(-)
+> I'm thinking that maybe - if we stay with the historic logic - we should
+> document that desicion somewhere. So that in the future, if a user that
+> expects the man page behavior, has a way to understand what SMC is doing.
+> What do oyu think?
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index f623c12eaf95..2ca2b61b451f 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -74,7 +74,7 @@
- #include "fec.h"
- 
- static void set_multicast_list(struct net_device *ndev);
--static void fec_enet_itr_coal_init(struct net_device *ndev);
-+static void fec_enet_itr_coal_set(struct net_device *ndev);
- 
- #define DRIVER_NAME	"fec"
- 
-@@ -1220,8 +1220,7 @@ fec_restart(struct net_device *ndev)
- 		writel(0, fep->hwp + FEC_IMASK);
- 
- 	/* Init the interrupt coalescing */
--	fec_enet_itr_coal_init(ndev);
--
-+	fec_enet_itr_coal_set(ndev);
- }
- 
- static int fec_enet_ipc_handle_init(struct fec_enet_private *fep)
-@@ -2856,19 +2855,6 @@ static int fec_enet_set_coalesce(struct net_device *ndev,
- 	return 0;
- }
- 
--static void fec_enet_itr_coal_init(struct net_device *ndev)
--{
--	struct ethtool_coalesce ec;
--
--	ec.rx_coalesce_usecs = FEC_ITR_ICTT_DEFAULT;
--	ec.rx_max_coalesced_frames = FEC_ITR_ICFT_DEFAULT;
--
--	ec.tx_coalesce_usecs = FEC_ITR_ICTT_DEFAULT;
--	ec.tx_max_coalesced_frames = FEC_ITR_ICFT_DEFAULT;
--
--	fec_enet_set_coalesce(ndev, &ec, NULL, NULL);
--}
--
- static int fec_enet_get_tunable(struct net_device *netdev,
- 				const struct ethtool_tunable *tuna,
- 				void *data)
-@@ -3623,6 +3609,10 @@ static int fec_enet_init(struct net_device *ndev)
- 	fep->rx_align = 0x3;
- 	fep->tx_align = 0x3;
- #endif
-+	fep->rx_pkts_itr = FEC_ITR_ICFT_DEFAULT;
-+	fep->tx_pkts_itr = FEC_ITR_ICFT_DEFAULT;
-+	fep->rx_time_itr = FEC_ITR_ICTT_DEFAULT;
-+	fep->tx_time_itr = FEC_ITR_ICTT_DEFAULT;
- 
- 	/* Check mask of the streaming and coherent API */
- 	ret = dma_set_mask_and_coherent(&fep->pdev->dev, DMA_BIT_MASK(32));
--- 
-2.37.2
+Yep, we _really_ need to document it if we change the convention.
+Actually, I spent a lot of time to find the history about the logic of
+buffer (/2 and *2) in SMC. So I'm really in favor of adding
+documentation, at least code comments to help others to understand them.
 
+Cheers,
+Tony Lu
+ 
+> - Jan
+> 
+> > 
+> > Cheers,
+> > Tony Lu
+> > 
+> > > Since we now have our own sysctl, which is also exposed to the user,
+> > > we should sync the logic in a way that both values are the real value
+> > > used by our code and shown by smc_stats. To achieve this this patch
+> > > changes the behavior to:
+> > > 
+> > > default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
+> > > sockopt  = the setsockopt mechanism
+> > > val      = the value assigned in default or via setsockopt
+> > > sk_buf   = short for sk_{snd|rcv}buf
+> > > real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
+> > > 
+> > >    exposed   | net/core/sock.c  |    af_smc.c     |  smc_core.c
+> > >              |                  |                 |
+> > > +---------+ |                  | +-------------+ | +-----------------+
+> > > | default |----------------------| sk_buf=val*2|---|real_buf=sk_buf/2|
+> > > +---------+ |                  | +-------------+ | +-----------------+
+> > >              |                  |                 |    ^
+> > >              |                  |                 |    |
+> > > +---------+ | +--------------+ |                 |    |
+> > > | sockopt |---| sk_buf=val*2 |------------------------|
+> > > +---------+ | +--------------+ |                 |
+> > >              |                  |                 |
+> > > 
+> > > This way both paths follow the same pattern and the expected behavior
+> > > is re-established.
+> > > 
+> > > Fixes: 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
+> > > Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
+> > > Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
+> > > ---
+> > >   net/smc/af_smc.c   | 9 +++++++--
+> > >   net/smc/smc_core.c | 8 ++++----
+> > >   2 files changed, 11 insertions(+), 6 deletions(-)
+> > > 
+> > > diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> > > index 036532cf39aa..a8c84e7bac99 100644
+> > > --- a/net/smc/af_smc.c
+> > > +++ b/net/smc/af_smc.c
+> > > @@ -366,6 +366,7 @@ static void smc_destruct(struct sock *sk)
+> > >   static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
+> > >   				   int protocol)
+> > >   {
+> > > +	int buffersize_without_overhead;
+> > >   	struct smc_sock *smc;
+> > >   	struct proto *prot;
+> > >   	struct sock *sk;
+> > > @@ -379,8 +380,12 @@ static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
+> > >   	sk->sk_state = SMC_INIT;
+> > >   	sk->sk_destruct = smc_destruct;
+> > >   	sk->sk_protocol = protocol;
+> > > -	WRITE_ONCE(sk->sk_sndbuf, READ_ONCE(net->smc.sysctl_wmem));
+> > > -	WRITE_ONCE(sk->sk_rcvbuf, READ_ONCE(net->smc.sysctl_rmem));
+> > > +	buffersize_without_overhead =
+> > > +		min_t(int, READ_ONCE(net->smc.sysctl_wmem), INT_MAX / 2);
+> > > +	WRITE_ONCE(sk->sk_sndbuf, buffersize_without_overhead * 2);
+> > > +	buffersize_without_overhead =
+> > > +		min_t(int, READ_ONCE(net->smc.sysctl_rmem), INT_MAX / 2);
+> > > +	WRITE_ONCE(sk->sk_rcvbuf, buffersize_without_overhead * 2);
+> > >   	smc = smc_sk(sk);
+> > >   	INIT_WORK(&smc->tcp_listen_work, smc_tcp_listen_work);
+> > >   	INIT_WORK(&smc->connect_work, smc_connect_work);
+> > > diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> > > index 00fb352c2765..36850a2ae167 100644
+> > > --- a/net/smc/smc_core.c
+> > > +++ b/net/smc/smc_core.c
+> > > @@ -2314,10 +2314,10 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+> > >   	if (is_rmb)
+> > >   		/* use socket recv buffer size (w/o overhead) as start value */
+> > > -		sk_buf_size = smc->sk.sk_rcvbuf;
+> > > +		sk_buf_size = smc->sk.sk_rcvbuf / 2;
+> > >   	else
+> > >   		/* use socket send buffer size (w/o overhead) as start value */
+> > > -		sk_buf_size = smc->sk.sk_sndbuf;
+> > > +		sk_buf_size = smc->sk.sk_sndbuf / 2;
+> > >   	for (bufsize_short = smc_compress_bufsize(sk_buf_size, is_smcd, is_rmb);
+> > >   	     bufsize_short >= 0; bufsize_short--) {
+> > > @@ -2376,7 +2376,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+> > >   	if (is_rmb) {
+> > >   		conn->rmb_desc = buf_desc;
+> > >   		conn->rmbe_size_short = bufsize_short;
+> > > -		smc->sk.sk_rcvbuf = bufsize;
+> > > +		smc->sk.sk_rcvbuf = bufsize * 2;
+> > >   		atomic_set(&conn->bytes_to_rcv, 0);
+> > >   		conn->rmbe_update_limit =
+> > >   			smc_rmb_wnd_update_limit(buf_desc->len);
+> > > @@ -2384,7 +2384,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+> > >   			smc_ism_set_conn(conn); /* map RMB/smcd_dev to conn */
+> > >   	} else {
+> > >   		conn->sndbuf_desc = buf_desc;
+> > > -		smc->sk.sk_sndbuf = bufsize;
+> > > +		smc->sk.sk_sndbuf = bufsize * 2;
+> > >   		atomic_set(&conn->sndbuf_space, bufsize);
+> > >   	}
+> > >   	return 0;
+> > > -- 
+> > > 2.34.1
