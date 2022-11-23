@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F93A6356A7
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 10:34:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F5176356BE
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 10:34:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237805AbiKWJdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 04:33:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52404 "EHLO
+        id S237937AbiKWJdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 04:33:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237768AbiKWJcU (ORCPT
+        with ESMTP id S237817AbiKWJcU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 04:32:20 -0500
 Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E641B9D6
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 01:31:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AEA11C120
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 01:31:22 -0800 (PST)
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 9387120536;
+        by a.mx.secunet.com (Postfix) with ESMTP id C93872049B;
         Wed, 23 Nov 2022 10:31:20 +0100 (CET)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 3R2mN5cPxYqf; Wed, 23 Nov 2022 10:31:19 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        with ESMTP id LnfW9s9fvyb7; Wed, 23 Nov 2022 10:31:20 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id D282D2049B;
+        by a.mx.secunet.com (Postfix) with ESMTPS id EECB520501;
         Wed, 23 Nov 2022 10:31:19 +0100 (CET)
 Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id CCC2880004A;
+        by mailout2.secunet.com (Postfix) with ESMTP id E7F8F80004A;
         Wed, 23 Nov 2022 10:31:19 +0100 (CET)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
@@ -38,16 +38,16 @@ Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 23 Nov
  2022 10:31:19 +0100
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 2EAC031829D8; Wed, 23 Nov 2022 10:31:19 +0100 (CET)
+        id 32D1C3182F94; Wed, 23 Nov 2022 10:31:19 +0100 (CET)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 1/6] xfrm: fix "disable_policy" on ipv4 early demux
-Date:   Wed, 23 Nov 2022 10:31:11 +0100
-Message-ID: <20221123093117.434274-2-steffen.klassert@secunet.com>
+Subject: [PATCH 2/6] xfrm: lwtunnel: squelch kernel warning in case XFRM encap type is not available
+Date:   Wed, 23 Nov 2022 10:31:12 +0100
+Message-ID: <20221123093117.434274-3-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221123093117.434274-1-steffen.klassert@secunet.com>
 References: <20221123093117.434274-1-steffen.klassert@secunet.com>
@@ -67,47 +67,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eyal Birger <eyal.birger@gmail.com>
 
-The commit in the "Fixes" tag tried to avoid a case where policy check
-is ignored due to dst caching in next hops.
+Ido reported that a kernel warning [1] can be triggered from
+user space when the kernel is compiled with CONFIG_MODULES=y and
+CONFIG_XFRM=n when adding an xfrm encap type route, e.g:
 
-However, when the traffic is locally consumed, the dst may be cached
-in a local TCP or UDP socket as part of early demux. In this case the
-"disable_policy" flag is not checked as ip_route_input_noref() was only
-called before caching, and thus, packets after the initial packet in a
-flow will be dropped if not matching policies.
+$ ip route add 198.51.100.0/24 dev dummy1 encap xfrm if_id 1
+Error: lwt encapsulation type not supported.
 
-Fix by checking the "disable_policy" flag also when a valid dst is
-already available.
+The reason for the warning is that the LWT infrastructure has an
+autoloading feature which is meant only for encap types that don't
+use a net device,  which is not the case in xfrm encap.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216557
-Reported-by: Monil Patel <monil191989@gmail.com>
-Fixes: e6175a2ed1f1 ("xfrm: fix "disable_policy" flag use when arriving from different devices")
+Mute this warning for xfrm encap as there's no encap module to autoload
+in this case.
+
+[1]
+ WARNING: CPU: 3 PID: 2746262 at net/core/lwtunnel.c:57 lwtunnel_valid_encap_type+0x4f/0x120
+[...]
+ Call Trace:
+  <TASK>
+  rtm_to_fib_config+0x211/0x350
+  inet_rtm_newroute+0x3a/0xa0
+  rtnetlink_rcv_msg+0x154/0x3c0
+  netlink_rcv_skb+0x49/0xf0
+  netlink_unicast+0x22f/0x350
+  netlink_sendmsg+0x208/0x440
+  ____sys_sendmsg+0x21f/0x250
+  ___sys_sendmsg+0x83/0xd0
+  __sys_sendmsg+0x54/0xa0
+  do_syscall_64+0x35/0x80
+  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Reported-by: Ido Schimmel <idosch@idosch.org>
+Fixes: 2c2493b9da91 ("xfrm: lwtunnel: add lwtunnel support for xfrm interfaces in collect_md mode")
 Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
-
-----
-
-v2: use dev instead of skb->dev
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- net/ipv4/ip_input.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/core/lwtunnel.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index 1b512390b3cf..e880ce77322a 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -366,6 +366,11 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
- 					   iph->tos, dev);
- 		if (unlikely(err))
- 			goto drop_error;
-+	} else {
-+		struct in_device *in_dev = __in_dev_get_rcu(dev);
-+
-+		if (in_dev && IN_DEV_ORCONF(in_dev, NOPOLICY))
-+			IPCB(skb)->flags |= IPSKB_NOPOLICY;
- 	}
- 
- #ifdef CONFIG_IP_ROUTE_CLASSID
+diff --git a/net/core/lwtunnel.c b/net/core/lwtunnel.c
+index 6fac2f0ef074..711cd3b4347a 100644
+--- a/net/core/lwtunnel.c
++++ b/net/core/lwtunnel.c
+@@ -48,9 +48,11 @@ static const char *lwtunnel_encap_str(enum lwtunnel_encap_types encap_type)
+ 		return "RPL";
+ 	case LWTUNNEL_ENCAP_IOAM6:
+ 		return "IOAM6";
++	case LWTUNNEL_ENCAP_XFRM:
++		/* module autoload not supported for encap type */
++		return NULL;
+ 	case LWTUNNEL_ENCAP_IP6:
+ 	case LWTUNNEL_ENCAP_IP:
+-	case LWTUNNEL_ENCAP_XFRM:
+ 	case LWTUNNEL_ENCAP_NONE:
+ 	case __LWTUNNEL_ENCAP_MAX:
+ 		/* should not have got here */
 -- 
 2.25.1
 
