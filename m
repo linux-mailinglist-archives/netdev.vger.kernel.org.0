@@ -2,109 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C80D63641D
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:40:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACFFD63642C
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:41:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238199AbiKWPjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 10:39:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53206 "EHLO
+        id S238633AbiKWPls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 10:41:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238047AbiKWPjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:39:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C71B23174;
-        Wed, 23 Nov 2022 07:39:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 064E0B8208E;
-        Wed, 23 Nov 2022 15:39:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A9DFC433D7;
-        Wed, 23 Nov 2022 15:39:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669217954;
-        bh=pCgyV6URGkswg9KKfkXhBda5Iki1k2lO8qrKykFSEt8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F3k9sXYZXMZbJL2KgSGmWiPRXMvHRdfTCIP9VQmjXd650/uUYXwTHEqUWxxttSOWT
-         hB9b2sL956S0bUti6tuHTy2XEt5HjAbHeCo+axvVAD2rZcRJx2sPwnWchFDK3MrGxa
-         yAlYOmKN8Mg4CXN+fkDD7QVG2+Cel0JnNA0akTveOPTARV97+qqsyEi6hpO6vdCsSE
-         LSyr4JBajkK5pYVRAYm5iecBZGybtYAXBVbkB+5aKcTmslEywj8Jzp0bx/0VpZMrY2
-         D5rI9GA2AAWuXzKpflAIq18/MHA6MmSTayBSrTtAwCYcKH0rMZJiTAzR77dwqComaB
-         rsQQ9HVyYiq1w==
-Date:   Wed, 23 Nov 2022 15:39:00 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 5/9] dt-bindings: drop redundant part of title (end,
- part two)
-Message-ID: <Y34+lGKAxewL8B1w@sirena.org.uk>
-References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
- <20221121110615.97962-6-krzysztof.kozlowski@linaro.org>
+        with ESMTP id S238621AbiKWPlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:41:24 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC14970AA;
+        Wed, 23 Nov 2022 07:41:22 -0800 (PST)
+Received: from [192.168.0.203] ([151.127.53.97]) by mrelayeu.kundenserver.de
+ (mreue011 [213.165.67.103]) with ESMTPSA (Nemesis) id
+ 1MVe5c-1oWOrt2qF2-00RWCH; Wed, 23 Nov 2022 16:40:57 +0100
+Message-ID: <04ea37cc-d97a-3e00-8a99-135ab38860f2@green-communications.fr>
+Date:   Wed, 23 Nov 2022 16:40:33 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3A/ckh57FM2wa6K8"
-Content-Disposition: inline
-In-Reply-To: <20221121110615.97962-6-krzysztof.kozlowski@linaro.org>
-X-Cookie: I'm rated PG-34!!
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH] USB: disable all RNDIS protocol drivers
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        =?UTF-8?Q?=c5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        Ilja Van Sprundel <ivansprundel@ioactive.com>,
+        Joseph Tartaro <joseph.tartaro@ioactive.com>
+Content-Language: fr, en-US
+From:   Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:pYmZKIjhwEar5+zrSn8EoxJrueGNr0TSCBf+WtXkAd8BvNef9B/
+ OHCKLrJsAjusLNEWTW5K3zYIvPXLKkK3ysJLxZ4ZsTdcy8zcz5be09kjSZM5EkCIPDAiLiR
+ YqrAqAbJftFEh4Pobn9RNqTAc9U49IAHZIiDhnI1i4EHK8Z5b9cF6vUn+Hkjp2JG9cvgMoC
+ 4kNZJnJZN07XQVk8+aYiQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:1iTK9Mme8R0=:x5r7JV6cEEzk0QklHUaWhl
+ U2yVwM1TcjlTm4kedfmfCqsnflLKj7JhV/9Xv/ERlfLEDD9ez6gcX27nQI91ZWxm9HXHwh9ou
+ frnQS2fY4MsLsXkK6LPYyzNo8BILMGz2WUpAgZcMH8NEcVpI762/xjdSSA+YhmR6q5j6zGd80
+ q8+a2h23HCYuPIUODbk0b8aUnOzLU6gLEN+OCrOAycztx3h73Ky7pmvr0ayhUG8I1H5OJrQ6q
+ cVfo2mTNnmQ64VKesrsDldFetT9Tk2HBEgp76d92frvqsXUcbopg3XpVR43xYHG6CiFUNNA7y
+ tD65EEG+Re1AB7jCiAuAP7GEUZ0jYIHSIXNtdKrdvptkb3mkVDL8eDpwb9jySLKGwLmFxP40I
+ 6VIBp6cY4DlqdtEeWRApYlwss8QIeUw40EBl4Tzkb//oMJvggojRV+B2cgDt/aFyYyZD32P1e
+ tj+VZp/8LLEo7dgAqesx0fPjPSw8MG2Fw1eYYLn6+7zyJosQFAig1A+XaZSSRy4YRzs5Q1oWn
+ ZIU+XSo1i1gmOYocclwsk6DjBSXLSXSp4tlqjHOfDoUYsFibEpirK7VQ8EFtTuZ4ULv0vhhrx
+ j0AKcYhK0hCDdbWDtidBKtZsACHtBRKxtgYJhuINhYpXrtMRLInoDsczyZVRDrBpaDfZ9EuDv
+ WWrwr5J08QFmJfWR89P+QRFUMfIRTtgEzXy+3GEXvPQZiCisTqhslH08ZR0+lIiZdT3yO46+v
+ Z+CgcsU0dZAM1IItB4lrzrnVVZyMie6gB00bUhZHC/gZiQ0IHn7Sxk/KOOzGWObxwXq1tWRTI
+ r4xR253irs4i81AzdKp0l8+h8JEP+rmrlJR7uZyVtW7wMCUCJo=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 23/11/2022 13:46, Greg Kroah-Hartman wrote:
+> The Microsoft RNDIS protocol is, as designed, insecure and vulnerable on
+> any system that uses it with untrusted hosts or devices.  Because the
+> protocol is impossible to make secure, just disable all rndis drivers to
+> prevent anyone from using them again.
+> 
+> Windows only needed this for XP and newer systems, Windows systems older
+> than that can use the normal USB class protocols instead, which do not
+> have these problems.
+> 
+> Android has had this disabled for many years so there should not be any
+> real systems that still need this.
 
---3A/ckh57FM2wa6K8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I kind of disagree here. I have seen plenty of android devices that only 
+support rndis for connection sharing, including my android 11 phone 
+released in Q3 2020. I suspect the qualcomm's BSP still enable it by 
+default.
 
-On Mon, Nov 21, 2022 at 12:06:11PM +0100, Krzysztof Kozlowski wrote:
-> The Devicetree bindings document does not have to say in the title that
-> it is a "binding", but instead just describe the hardware.
+There are also probably cellular dongles that uses rndis by default. 
+Maybe ask the ModemManager people ?
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
---3A/ckh57FM2wa6K8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmN+PpQACgkQJNaLcl1U
-h9D31gf/diT1M+7KeH7O9XMaZE9GvQx7EpNfWPd6EPxvzUkePN6w8u24ztB2s1gn
-LKqFnrfx5FQwvbCsjmuHqePIJ6kdBJHpd8zn0XYx/cJQJlR/lFm5FPbdjhDnfcCC
-lH4+dPqm7Tms/Dmlw8z49shzkjbAkN5O81QNFCdqvgYfp94E6kUVysgHobbu7DzT
-8dtk4IMR8dgd1gsVYd3RlfLDv7zlhti06pOwAYvL7I/+ELvcFRXtGgOq8p8EMd//
-e9dFGh61GX0//8+cYUSUG2Qb/npn7nA2mFko17JRUU21NrTgMn1qbJvntYvhfKqj
-AqDREqKbfhSeQVkKulAfyfkiBA4hNg==
-=SxY0
------END PGP SIGNATURE-----
-
---3A/ckh57FM2wa6K8--
+I'm also curious if reimplementing it in userspace would solve the 
+security problem.
