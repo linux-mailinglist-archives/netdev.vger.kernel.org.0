@@ -2,99 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5B5763631A
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCB53636342
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:21:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238481AbiKWPRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 10:17:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52784 "EHLO
+        id S238153AbiKWPVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 10:21:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238633AbiKWPQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:16:54 -0500
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7FD903B9
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 07:16:51 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 2911F32007F1;
-        Wed, 23 Nov 2022 10:16:49 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 23 Nov 2022 10:16:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1669216608; x=1669303008; bh=ozCnub5NuHlLqyVg7HCfim+VI2kK
-        +szqF0RKIgA9Kt4=; b=ikXPahXh0ieRC/i1/7e1wj7EsFEIdKvPJJGWiYzzvikZ
-        Utj8MJXLxGIWTQWIZiXzoZR2izGe/cVuEfjEpoZi8JPwUrN7H9EHP9NUHuxf4KZ/
-        4z2V8CuxZhPz/QliZQsUcv2FvJ8hzkbqFvb/3fOaKp6W+v4j9DGdkUAvTWXh+Lez
-        wfXKf5OAbaVTpm+4W0z4OlOp2fMKCxSgHXY282LC2/r7IZ8Sb03p9gi2DIiaT+5v
-        LBwkYSq0lPh/C52zz818Hqugf/7gRTDpYZOIJaPIRDJyhvt9opicrUqxltRMAg9t
-        7+2RjmpJwVQYa1Br9B2AnD6Ugp3OhhtKYvWRveWDbA==
-X-ME-Sender: <xms:YDl-Y1Sc2CHVD02eHf1_B7tkz1Zuf54G2PbAfrsBzRLuvFGz9kcqiQ>
-    <xme:YDl-Y-wjFENbwrrdD3S0t366WoYkwMTiItcvkWFNJNkgOZ1XBnVnD2dmMHn9PhOvz
-    MZ0EWxeQnB6xcI>
-X-ME-Received: <xmr:YDl-Y62ryWQZcQl7YVpz_ySJdc1QaBiIauePBEx5-3R_BvdHdXUaG5aJw2yNpHvlcBPQIVZM0YBe-9FU28QscwQ8-_Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedriedugdejvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
-    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:YDl-Y9Dyeqg-UXUsGDg7lwmViD9BpUzYgZMc-vbm2gmFAkVLly3hqg>
-    <xmx:YDl-Y-gGhKYaESeIs-ivAj8ewpajv8OoWozh64P88tV9Dpn2UcrKbg>
-    <xmx:YDl-Yxr9MZPK4LVb_c5MePs3ZyMfDisbVuLtsRgnv5C-W1iqmlsEpQ>
-    <xmx:YDl-Y2fb8GPC5M416l9nxpeMOoI1McgvuD4yWzAHyNmntUW3aDmIdg>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 23 Nov 2022 10:16:47 -0500 (EST)
-Date:   Wed, 23 Nov 2022 17:16:43 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Nikolay Borisov <nikolay.borisov@virtuozzo.com>
-Cc:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, kernel@virtuozzo.com
-Subject: Re: [PATCH net-next v2 1/3] drop_monitor: Implement namespace
- filtering/reporting for software drops
-Message-ID: <Y345WyXayWF/2eDJ@shredder>
-References: <20221123142817.2094993-1-nikolay.borisov@virtuozzo.com>
- <20221123142817.2094993-2-nikolay.borisov@virtuozzo.com>
+        with ESMTP id S238772AbiKWPVc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:21:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A98C920AB;
+        Wed, 23 Nov 2022 07:21:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84969B820DD;
+        Wed, 23 Nov 2022 15:21:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6CACC433C1;
+        Wed, 23 Nov 2022 15:21:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669216867;
+        bh=XQZ/g+Sw4U+xIS3JiKRjNmg5QYe4GG7CLFMNcWE+7dg=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=Xp+Pc2frUVEZdshdbKf7x6iMGbOpkBFfpY28RhPayp1ot+dsTqVpETaB/8g7/9X0M
+         1iSwoJBLwa8h/vIhH2Zb9YfpoeNF1QjyT8xs6fdfPeH2s2LxcGl8CUuiO9li8x7ce2
+         FcA/1M+uHvUp820PhCldzR4cOjtaRks1R+EW6aRscTIajm9EBwDFTK71YvBescokKt
+         +9WYLWtiTlBCsXUfWq/sNqf4dKjr0LyB8yVaqeZ2gND1Dh4pwJes9qIct1t0a8VRX1
+         66bMDwWlnBBlVKorhQyIdHUTPy0sowjK1lQXKve+7+KXqmY1hJ8Q1e8Awz1x53w0Sd
+         iJljBQ6lqT2jg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        Ilja Van Sprundel <ivansprundel@ioactive.com>,
+        Joseph Tartaro <joseph.tartaro@ioactive.com>
+Subject: Re: [PATCH] USB: disable all RNDIS protocol drivers
+References: <20221123124620.1387499-1-gregkh@linuxfoundation.org>
+Date:   Wed, 23 Nov 2022 17:21:01 +0200
+In-Reply-To: <20221123124620.1387499-1-gregkh@linuxfoundation.org> (Greg
+        Kroah-Hartman's message of "Wed, 23 Nov 2022 13:46:20 +0100")
+Message-ID: <87o7sxofxe.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221123142817.2094993-2-nikolay.borisov@virtuozzo.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 04:28:15PM +0200, Nikolay Borisov wrote:
->  static void trace_drop_common(struct sk_buff *skb, void *location)
->  {
->  	struct net_dm_alert_msg *msg;
-> @@ -219,7 +233,11 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
->  	int i;
->  	struct sk_buff *dskb;
->  	struct per_cpu_dm_data *data;
-> -	unsigned long flags;
-> +	unsigned long flags, ns_id = 0;
-> +
-> +	if (skb->dev && net_dm_ns &&
-> +	    dev_net(skb->dev)->ns.inum != net_dm_ns)
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
 
-I don't think this is going to work, unfortunately. 'skb->dev' is in a
-union with 'dev_scratch' so 'skb->dev' does not necessarily point to a
-valid netdev at all times. It can explode when dev_net() tries to
-dereference it.
+> The Microsoft RNDIS protocol is, as designed, insecure and vulnerable on
+> any system that uses it with untrusted hosts or devices.  Because the
+> protocol is impossible to make secure, just disable all rndis drivers to
+> prevent anyone from using them again.
+>
+> Windows only needed this for XP and newer systems, Windows systems older
+> than that can use the normal USB class protocols instead, which do not
+> have these problems.
+>
+> Android has had this disabled for many years so there should not be any
+> real systems that still need this.
+>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Oleksij Rempel <linux@rempel-privat.de>
+> Cc: "Maciej =C5=BBenczykowski" <maze@google.com>
+> Cc: Neil Armstrong <neil.armstrong@linaro.org>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
+> Cc: Jacopo Mondi <jacopo@jmondi.org>
+> Cc: "=C5=81ukasz Stelmach" <l.stelmach@samsung.com>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: linux-usb@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-wireless@vger.kernel.org
+> Reported-by: Ilja Van Sprundel <ivansprundel@ioactive.com>
+> Reported-by: Joseph Tartaro <joseph.tartaro@ioactive.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+> Note, I'll submit patches removing the individual drivers for later, but
+> that is more complex as unwinding the interaction between the CDC
+> networking and RNDIS drivers is tricky.  For now, let's just disable all
+> of this code as it is not secure.
+>
+> I can take this through the USB tree if the networking maintainers have
+> no objection.  I thought I had done this months ago, when the last round
+> of "there are bugs in the protocol!" reports happened at the end of
+> 2021, but forgot to do so, my fault.
+>
+>  drivers/net/usb/Kconfig           | 1 +
+>  drivers/net/wireless/Kconfig      | 1 +
 
-__skb_flow_dissect() is doing something similar, but I believe there the
-code paths were audited to make sure it is safe.
+For wireless:
 
-Did you consider achieving this functionality with a BPF program
-attached to skb::kfree_skb tracepoint? I believe BPF programs are run
-with page faults disabled, so it should be safe to attempt this there.
+Acked-by: Kalle Valo <kvalo@kernel.org>
+
+Feel free to take this via your tree.
+
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
