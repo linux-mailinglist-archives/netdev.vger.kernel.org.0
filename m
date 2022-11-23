@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79D4D635ED5
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:08:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2793E635EF9
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:08:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238684AbiKWNEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 08:04:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        id S238678AbiKWNEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 08:04:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238389AbiKWNER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:04:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C478CD94E;
-        Wed, 23 Nov 2022 04:48:57 -0800 (PST)
+        with ESMTP id S238334AbiKWNEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:04:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E34CB9D7;
+        Wed, 23 Nov 2022 04:48:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9C1861CA4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8352CB81F3E;
+        Wed, 23 Nov 2022 12:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8129C43144;
         Wed, 23 Nov 2022 12:48:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA94DC433D6;
-        Wed, 23 Nov 2022 12:48:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669207727;
-        bh=qfseqzA5QeFGbDcdL8jAeZcM/YWcdxti75h4w7j1dOE=;
+        s=k20201202; t=1669207730;
+        bh=YUV//X6HxHjXUQ1u7/m0WgbXNCSgLyJRZ3XKO02tN/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KROc2jcghXsp1CD8QCeI0ACMxuNR7zBqDg33kLt1gnAfuqONaLMfKKk2HeQIAYfdb
-         DHLcjD7qjcXn2otl3QBqlrs5SZawHhukr2GvSpkd/2E1A4/F7nmNGnqQnBeLI+wnOj
-         hnGTTWL3gbliKy8DCY6H5KjQEgsi59zOyzjQyqBwQ6ntPZe29lggwz7QKoApwVUmYJ
-         Au7GcRYE/FVr+yAxOc17A3CNrLpjKqStCpltoHMFcNwJ8LUWFfMEWY5AiV1LuGdJQK
-         9z69kTFl5iJlBqmb4SJAMy7I7T4Yg4QCrw/82NDqzTNMqyhCkAzUc7SOM1GBauK98s
-         k0vTkRv1GfIaA==
+        b=g0v7R7rJ7xps+mYWhyBQnnqnyjlAn0sB5pSuJGkWzZRAmqvkUmG0v93Njhv6VV7+N
+         LYWkAhSSYUHUvcMkrgsVtwB6b8dTl9wn8F+DN/OgFi3xW7zAf/eyRnOvmnxv7bIRaY
+         ONYK9aB+lxW6GU9wQfMEiJaAfMr5ox996EfxLCke9lYVNM3VECt7CiX2HdDViiH7ij
+         agHVghLqh7IfNMiMphMVYCuOhKmINpWK0HDe6ySILQK+Q5iNlP6+ys4ldETbSFYHsc
+         nHaFI9ftow2fUYdZYmdqVs3T6mdt1xS0DuyRpzRg/fhl5ZSCArfSVGCovo9vRC96Xd
+         uoQu9BFgXWSTA==
 From:   Roger Quadros <rogerq@kernel.org>
 To:     davem@davemloft.net, maciej.fijalkowski@intel.com, kuba@kernel.org
 Cc:     edumazet@google.com, pabeni@redhat.com, vigneshr@ti.com,
         linux-omap@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH v3 net-next 2/6] Revert "net: ethernet: ti: am65-cpsw: retain PORT_VLAN_REG after suspend/resume"
-Date:   Wed, 23 Nov 2022 14:48:31 +0200
-Message-Id: <20221123124835.18937-3-rogerq@kernel.org>
+Subject: [PATCH v3 net-next 3/6] Revert "net: ethernet: ti: am65-cpsw: Add suspend/resume support"
+Date:   Wed, 23 Nov 2022 14:48:32 +0200
+Message-Id: <20221123124835.18937-4-rogerq@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221123124835.18937-1-rogerq@kernel.org>
 References: <20221123124835.18937-1-rogerq@kernel.org>
@@ -51,80 +51,436 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 643cf0e3ab5ccee37b3c53c018bd476c45c4b70e.
+This reverts commit fd23df72f2be317d38d9fde0a8996b8e7454fd2a.
 
-This is to make it easier to revert the offending commit
-fd23df72f2be ("net: ethernet: ti: am65-cpsw: Add suspend/resume support")
+This commit broke set channel operation. Revert this and
+implement it with a different approach in a separate patch.
 
 Signed-off-by: Roger Quadros <rogerq@kernel.org>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 7 -------
- drivers/net/ethernet/ti/am65-cpsw-nuss.h | 4 ----
- 2 files changed, 11 deletions(-)
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 221 ++++++-----------------
+ 1 file changed, 55 insertions(+), 166 deletions(-)
 
 diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index b43dc75c2202..04e673902d53 100644
+index 04e673902d53..4836960b0dd8 100644
 --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
 +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -2876,9 +2876,7 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
- 	struct am65_cpsw_port *port;
- 	struct net_device *ndev;
- 	int i, ret;
--	struct am65_cpsw_host *host_p = am65_common_get_host(common);
+@@ -24,7 +24,6 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+-#include <linux/rtnetlink.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/sys_soc.h>
+ #include <linux/dma/ti-cppi5.h>
+@@ -133,11 +132,6 @@
+ 			 NETIF_MSG_IFUP	| NETIF_MSG_PROBE | NETIF_MSG_IFDOWN | \
+ 			 NETIF_MSG_RX_ERR | NETIF_MSG_TX_ERR)
  
--	host_p->vid_context = readl(host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
- 	for (i = 0; i < common->port_num; i++) {
- 		port = &common->ports[i];
- 		ndev = port->ndev;
-@@ -2886,7 +2884,6 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
- 		if (!ndev)
- 			continue;
+-static int am65_cpsw_nuss_init_tx_chns(struct am65_cpsw_common *common);
+-static int am65_cpsw_nuss_init_rx_chns(struct am65_cpsw_common *common);
+-static void am65_cpsw_nuss_free_tx_chns(struct am65_cpsw_common *common);
+-static void am65_cpsw_nuss_free_rx_chns(struct am65_cpsw_common *common);
+-
+ static void am65_cpsw_port_set_sl_mac(struct am65_cpsw_port *slave,
+ 				      const u8 *dev_addr)
+ {
+@@ -379,20 +373,6 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+ 	if (common->usage_count)
+ 		return 0;
  
--		port->vid_context = readl(port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
- 		netif_device_detach(ndev);
- 		if (netif_running(ndev)) {
- 			rtnl_lock();
-@@ -2910,7 +2907,6 @@ static int am65_cpsw_nuss_resume(struct device *dev)
- 	struct am65_cpsw_port *port;
- 	struct net_device *ndev;
- 	int i, ret;
--	struct am65_cpsw_host *host_p = am65_common_get_host(common);
+-	/* init tx/rx channels */
+-	ret = am65_cpsw_nuss_init_tx_chns(common);
+-	if (ret) {
+-		dev_err(common->dev, "init_tx_chns failed\n");
+-		return ret;
+-	}
+-
+-	ret = am65_cpsw_nuss_init_rx_chns(common);
+-	if (ret) {
+-		dev_err(common->dev, "init_rx_chns failed\n");
+-		am65_cpsw_nuss_free_tx_chns(common);
+-		return ret;
+-	}
+-
+ 	/* Control register */
+ 	writel(AM65_CPSW_CTL_P0_ENABLE | AM65_CPSW_CTL_P0_TX_CRC_REMOVE |
+ 	       AM65_CPSW_CTL_VLAN_AWARE | AM65_CPSW_CTL_P0_RX_PAD,
+@@ -421,7 +401,6 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+ 	/* disable priority elevation */
+ 	writel(0, common->cpsw_base + AM65_CPSW_REG_PTYPE);
  
- 	am65_cpts_resume(common->cpts);
+-	cpsw_ale_control_set(common->ale, 0, ALE_CLEAR, 1);
+ 	cpsw_ale_start(common->ale);
  
-@@ -2932,11 +2928,8 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+ 	/* limit to one RX flow only */
+@@ -453,8 +432,7 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+ 						  GFP_KERNEL);
+ 		if (!skb) {
+ 			dev_err(common->dev, "cannot allocate skb\n");
+-			ret = -ENOMEM;
+-			goto err;
++			return -ENOMEM;
  		}
  
- 		netif_device_attach(ndev);
--		writel(port->vid_context, port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+ 		ret = am65_cpsw_nuss_rx_push(common, skb);
+@@ -463,7 +441,7 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+ 				"cannot submit skb to channel rx, error %d\n",
+ 				ret);
+ 			kfree_skb(skb);
+-			goto err;
++			return ret;
+ 		}
+ 		kmemleak_not_leak(skb);
+ 	}
+@@ -472,7 +450,7 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+ 	for (i = 0; i < common->tx_ch_num; i++) {
+ 		ret = k3_udma_glue_enable_tx_chn(common->tx_chns[i].tx_chn);
+ 		if (ret)
+-			goto err;
++			return ret;
+ 		napi_enable(&common->tx_chns[i].napi_tx);
  	}
  
--	writel(host_p->vid_context, host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+@@ -484,12 +462,6 @@ static int am65_cpsw_nuss_common_open(struct am65_cpsw_common *common)
+ 
+ 	dev_dbg(common->dev, "cpsw_nuss started\n");
+ 	return 0;
 -
+-err:
+-	am65_cpsw_nuss_free_tx_chns(common);
+-	am65_cpsw_nuss_free_rx_chns(common);
+-
+-	return ret;
+ }
+ 
+ static void am65_cpsw_nuss_tx_cleanup(void *data, dma_addr_t desc_dma);
+@@ -543,9 +515,6 @@ static int am65_cpsw_nuss_common_stop(struct am65_cpsw_common *common)
+ 	writel(0, common->cpsw_base + AM65_CPSW_REG_CTL);
+ 	writel(0, common->cpsw_base + AM65_CPSW_REG_STAT_PORT_EN);
+ 
+-	am65_cpsw_nuss_free_tx_chns(common);
+-	am65_cpsw_nuss_free_rx_chns(common);
+-
+ 	dev_dbg(common->dev, "cpsw_nuss stopped\n");
  	return 0;
  }
- #endif /* CONFIG_PM_SLEEP */
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-index e95cc37a7286..2c9850fdfcb6 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-@@ -55,16 +55,12 @@ struct am65_cpsw_port {
- 	bool				rx_ts_enabled;
- 	struct am65_cpsw_qos		qos;
- 	struct devlink_port		devlink_port;
--	/* Only for suspend resume context */
--	u32				vid_context;
- };
+@@ -586,29 +555,11 @@ static int am65_cpsw_nuss_ndo_slave_open(struct net_device *ndev)
+ 	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
+ 	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
+ 	int ret, i;
+-	u32 reg;
+-	int tmo;
  
- struct am65_cpsw_host {
- 	struct am65_cpsw_common		*common;
- 	void __iomem			*port_base;
- 	void __iomem			*stat_base;
--	/* Only for suspend resume context */
--	u32				vid_context;
- };
+ 	ret = pm_runtime_resume_and_get(common->dev);
+ 	if (ret < 0)
+ 		return ret;
  
- struct am65_cpsw_tx_chn {
+-	/* Idle MAC port */
+-	cpsw_sl_ctl_set(port->slave.mac_sl, CPSW_SL_CTL_CMD_IDLE);
+-
+-	tmo = cpsw_sl_wait_for_idle(port->slave.mac_sl, 100);
+-	dev_info(common->dev, "down msc_sl %08x tmo %d\n",
+-		 cpsw_sl_reg_read(port->slave.mac_sl, CPSW_SL_MACSTATUS), tmo);
+-
+-	cpsw_sl_ctl_reset(port->slave.mac_sl);
+-
+-	/* soft reset MAC */
+-	cpsw_sl_reg_write(port->slave.mac_sl, CPSW_SL_SOFT_RESET, 1);
+-	mdelay(1);
+-	reg = cpsw_sl_reg_read(port->slave.mac_sl, CPSW_SL_SOFT_RESET);
+-	if (reg)
+-		dev_info(common->dev, "mac reset not yet done\n");
+-
+ 	/* Notify the stack of the actual queue counts. */
+ 	ret = netif_set_real_num_tx_queues(ndev, common->tx_ch_num);
+ 	if (ret) {
+@@ -1539,9 +1490,9 @@ static void am65_cpsw_nuss_slave_disable_unused(struct am65_cpsw_port *port)
+ 	cpsw_sl_ctl_reset(port->slave.mac_sl);
+ }
+ 
+-static void am65_cpsw_nuss_free_tx_chns(struct am65_cpsw_common *common)
++static void am65_cpsw_nuss_free_tx_chns(void *data)
+ {
+-	struct device *dev = common->dev;
++	struct am65_cpsw_common *common = data;
+ 	int i;
+ 
+ 	for (i = 0; i < common->tx_ch_num; i++) {
+@@ -1553,11 +1504,7 @@ static void am65_cpsw_nuss_free_tx_chns(struct am65_cpsw_common *common)
+ 		if (!IS_ERR_OR_NULL(tx_chn->tx_chn))
+ 			k3_udma_glue_release_tx_chn(tx_chn->tx_chn);
+ 
+-		/* Don't clear tx_chn memory as we need to preserve
+-		 * data between suspend/resume
+-		 */
+-		if (!(tx_chn->irq < 0))
+-			devm_free_irq(dev, tx_chn->irq, tx_chn);
++		memset(tx_chn, 0, sizeof(*tx_chn));
+ 	}
+ }
+ 
+@@ -1566,10 +1513,12 @@ void am65_cpsw_nuss_remove_tx_chns(struct am65_cpsw_common *common)
+ 	struct device *dev = common->dev;
+ 	int i;
+ 
++	devm_remove_action(dev, am65_cpsw_nuss_free_tx_chns, common);
++
+ 	for (i = 0; i < common->tx_ch_num; i++) {
+ 		struct am65_cpsw_tx_chn *tx_chn = &common->tx_chns[i];
+ 
+-		if (!(tx_chn->irq < 0))
++		if (tx_chn->irq)
+ 			devm_free_irq(dev, tx_chn->irq, tx_chn);
+ 
+ 		netif_napi_del(&tx_chn->napi_tx);
+@@ -1639,7 +1588,7 @@ static int am65_cpsw_nuss_init_tx_chns(struct am65_cpsw_common *common)
+ 		}
+ 
+ 		tx_chn->irq = k3_udma_glue_tx_get_irq(tx_chn->tx_chn);
+-		if (tx_chn->irq < 0) {
++		if (tx_chn->irq <= 0) {
+ 			dev_err(dev, "Failed to get tx dma irq %d\n",
+ 				tx_chn->irq);
+ 			goto err;
+@@ -1648,36 +1597,25 @@ static int am65_cpsw_nuss_init_tx_chns(struct am65_cpsw_common *common)
+ 		snprintf(tx_chn->tx_chn_name,
+ 			 sizeof(tx_chn->tx_chn_name), "%s-tx%d",
+ 			 dev_name(dev), tx_chn->id);
+-
+-		ret = devm_request_irq(dev, tx_chn->irq,
+-				       am65_cpsw_nuss_tx_irq,
+-				       IRQF_TRIGGER_HIGH,
+-				       tx_chn->tx_chn_name, tx_chn);
+-		if (ret) {
+-			dev_err(dev, "failure requesting tx%u irq %u, %d\n",
+-				tx_chn->id, tx_chn->irq, ret);
+-			tx_chn->irq = -EINVAL;
+-			goto err;
+-		}
+ 	}
+ 
+-	return 0;
+-
+ err:
+-	am65_cpsw_nuss_free_tx_chns(common);
++	i = devm_add_action(dev, am65_cpsw_nuss_free_tx_chns, common);
++	if (i) {
++		dev_err(dev, "Failed to add free_tx_chns action %d\n", i);
++		return i;
++	}
+ 
+ 	return ret;
+ }
+ 
+-static void am65_cpsw_nuss_free_rx_chns(struct am65_cpsw_common *common)
++static void am65_cpsw_nuss_free_rx_chns(void *data)
+ {
++	struct am65_cpsw_common *common = data;
+ 	struct am65_cpsw_rx_chn *rx_chn;
+ 
+ 	rx_chn = &common->rx_chns;
+ 
+-	if (!(rx_chn->irq < 0))
+-		devm_free_irq(common->dev, rx_chn->irq, common);
+-
+ 	if (!IS_ERR_OR_NULL(rx_chn->desc_pool))
+ 		k3_cppi_desc_pool_destroy(rx_chn->desc_pool);
+ 
+@@ -1700,7 +1638,7 @@ static int am65_cpsw_nuss_init_rx_chns(struct am65_cpsw_common *common)
+ 
+ 	rx_cfg.swdata_size = AM65_CPSW_NAV_SW_DATA_SIZE;
+ 	rx_cfg.flow_id_num = AM65_CPSW_MAX_RX_FLOWS;
+-	rx_cfg.flow_id_base = -1;
++	rx_cfg.flow_id_base = common->rx_flow_id_base;
+ 
+ 	/* init all flows */
+ 	rx_chn->dev = dev;
+@@ -1772,20 +1710,12 @@ static int am65_cpsw_nuss_init_rx_chns(struct am65_cpsw_common *common)
+ 		}
+ 	}
+ 
+-	ret = devm_request_irq(dev, rx_chn->irq,
+-			       am65_cpsw_nuss_rx_irq,
+-			       IRQF_TRIGGER_HIGH, dev_name(dev), common);
+-	if (ret) {
+-		dev_err(dev, "failure requesting rx irq %u, %d\n",
+-			rx_chn->irq, ret);
+-		rx_chn->irq = -EINVAL;
+-		goto err;
+-	}
+-
+-	return 0;
+-
+ err:
+-	am65_cpsw_nuss_free_rx_chns(common);
++	i = devm_add_action(dev, am65_cpsw_nuss_free_rx_chns, common);
++	if (i) {
++		dev_err(dev, "Failed to add free_rx_chns action %d\n", i);
++		return i;
++	}
+ 
+ 	return ret;
+ }
+@@ -2051,7 +1981,6 @@ am65_cpsw_nuss_init_port_ndev(struct am65_cpsw_common *common, u32 port_idx)
+ 	port->slave.phylink_config.dev = &port->ndev->dev;
+ 	port->slave.phylink_config.type = PHYLINK_NETDEV;
+ 	port->slave.phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100 | MAC_1000FD;
+-	port->slave.phylink_config.mac_managed_pm = true; /* MAC does PM */
+ 
+ 	if (phy_interface_mode_is_rgmii(port->slave.phy_if)) {
+ 		phy_interface_set_rgmii(port->slave.phylink_config.supported_interfaces);
+@@ -2113,16 +2042,28 @@ static int am65_cpsw_nuss_init_ndevs(struct am65_cpsw_common *common)
+ 
+ static int am65_cpsw_nuss_ndev_add_tx_napi(struct am65_cpsw_common *common)
+ {
+-	int i;
++	struct device *dev = common->dev;
++	int i, ret = 0;
+ 
+ 	for (i = 0; i < common->tx_ch_num; i++) {
+ 		struct am65_cpsw_tx_chn *tx_chn = &common->tx_chns[i];
+ 
+ 		netif_napi_add_tx(common->dma_ndev, &tx_chn->napi_tx,
+ 				  am65_cpsw_nuss_tx_poll);
++
++		ret = devm_request_irq(dev, tx_chn->irq,
++				       am65_cpsw_nuss_tx_irq,
++				       IRQF_TRIGGER_HIGH,
++				       tx_chn->tx_chn_name, tx_chn);
++		if (ret) {
++			dev_err(dev, "failure requesting tx%u irq %u, %d\n",
++				tx_chn->id, tx_chn->irq, ret);
++			goto err;
++		}
+ 	}
+ 
+-	return 0;
++err:
++	return ret;
+ }
+ 
+ static void am65_cpsw_nuss_cleanup_ndev(struct am65_cpsw_common *common)
+@@ -2591,6 +2532,15 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = devm_request_irq(dev, common->rx_chns.irq,
++			       am65_cpsw_nuss_rx_irq,
++			       IRQF_TRIGGER_HIGH, dev_name(dev), common);
++	if (ret) {
++		dev_err(dev, "failure requesting rx irq %u, %d\n",
++			common->rx_chns.irq, ret);
++		return ret;
++	}
++
+ 	ret = am65_cpsw_nuss_register_devlink(common);
+ 	if (ret)
+ 		return ret;
+@@ -2744,6 +2694,7 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
+ 	if (common->port_num < 1 || common->port_num > AM65_CPSW_MAX_PORTS)
+ 		return -ENOENT;
+ 
++	common->rx_flow_id_base = -1;
+ 	init_completion(&common->tdown_complete);
+ 	common->tx_ch_num = 1;
+ 	common->pf_p0_rx_ptype_rrobin = false;
+@@ -2785,6 +2736,14 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
+ 
+ 	am65_cpsw_nuss_get_ver(common);
+ 
++	/* init tx channels */
++	ret = am65_cpsw_nuss_init_tx_chns(common);
++	if (ret)
++		goto err_of_clear;
++	ret = am65_cpsw_nuss_init_rx_chns(common);
++	if (ret)
++		goto err_of_clear;
++
+ 	ret = am65_cpsw_nuss_init_host_p(common);
+ 	if (ret)
+ 		goto err_of_clear;
+@@ -2869,80 +2828,10 @@ static int am65_cpsw_nuss_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+-static int am65_cpsw_nuss_suspend(struct device *dev)
+-{
+-	struct am65_cpsw_common *common = dev_get_drvdata(dev);
+-	struct am65_cpsw_port *port;
+-	struct net_device *ndev;
+-	int i, ret;
+-
+-	for (i = 0; i < common->port_num; i++) {
+-		port = &common->ports[i];
+-		ndev = port->ndev;
+-
+-		if (!ndev)
+-			continue;
+-
+-		netif_device_detach(ndev);
+-		if (netif_running(ndev)) {
+-			rtnl_lock();
+-			ret = am65_cpsw_nuss_ndo_slave_stop(ndev);
+-			rtnl_unlock();
+-			if (ret < 0) {
+-				netdev_err(ndev, "failed to stop: %d", ret);
+-				return ret;
+-			}
+-		}
+-	}
+-
+-	am65_cpts_suspend(common->cpts);
+-
+-	return 0;
+-}
+-
+-static int am65_cpsw_nuss_resume(struct device *dev)
+-{
+-	struct am65_cpsw_common *common = dev_get_drvdata(dev);
+-	struct am65_cpsw_port *port;
+-	struct net_device *ndev;
+-	int i, ret;
+-
+-	am65_cpts_resume(common->cpts);
+-
+-	for (i = 0; i < common->port_num; i++) {
+-		port = &common->ports[i];
+-		ndev = port->ndev;
+-
+-		if (!ndev)
+-			continue;
+-
+-		if (netif_running(ndev)) {
+-			rtnl_lock();
+-			ret = am65_cpsw_nuss_ndo_slave_open(ndev);
+-			rtnl_unlock();
+-			if (ret < 0) {
+-				netdev_err(ndev, "failed to start: %d", ret);
+-				return ret;
+-			}
+-		}
+-
+-		netif_device_attach(ndev);
+-	}
+-
+-	return 0;
+-}
+-#endif /* CONFIG_PM_SLEEP */
+-
+-static const struct dev_pm_ops am65_cpsw_nuss_dev_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(am65_cpsw_nuss_suspend, am65_cpsw_nuss_resume)
+-};
+-
+ static struct platform_driver am65_cpsw_nuss_driver = {
+ 	.driver = {
+ 		.name	 = AM65_CPSW_DRV_NAME,
+ 		.of_match_table = am65_cpsw_nuss_of_mtable,
+-		.pm = &am65_cpsw_nuss_dev_pm_ops,
+ 	},
+ 	.probe = am65_cpsw_nuss_probe,
+ 	.remove = am65_cpsw_nuss_remove,
 -- 
 2.17.1
 
