@@ -2,412 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4780063637B
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:27:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60BAA63636E
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:26:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238664AbiKWP06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 10:26:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36064 "EHLO
+        id S237785AbiKWP0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 10:26:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236767AbiKWP0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:26:18 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CEC682235;
-        Wed, 23 Nov 2022 07:26:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669217172; x=1700753172;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=13nnEeD5/sqn4Q5vO902YKQTR+lPJMkEUpXmaLS9Ryc=;
-  b=D8GyBbh1jNjDkS+RzxfnZqfWCZ9gZ2PvpmUm3cm4Ldj1jPi9PNWVsWBi
-   X4vosrh/Vm3QkBWa31MMCb5jwOXt2512OwBc0kuK3k5IkeXCtuihbZKVa
-   ovvj9uI/puOS7jVZDH1JEg+8MwYz6TusNXrUD/6AJiFdMqR06K380ujN3
-   s7Cpk7Bx7ZWsy5LDdRfRNFzh6piiBfy6HgRhNtdo8HWOUf4O4+UOTSrxX
-   27o0DL5Uh6ZLdzSnbEaIF4wpeBye5dG6de4wFUcRrsmgOZ/B/ezJFag4l
-   ZgZIdU3DyG5suB0tT0EW+9On6hJiOFJ05ee/aTcNxQ7hPAXZ4i/9j00Zj
-   g==;
-X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="184877202"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Nov 2022 08:26:10 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 23 Nov 2022 08:25:58 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 23 Nov 2022 08:25:55 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Casper Andersson" <casper.casan@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        "Nathan Huckleberry" <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v2 2/4] net: microchip: sparx5: Support for TC protocol all
-Date:   Wed, 23 Nov 2022 16:25:43 +0100
-Message-ID: <20221123152545.1997266-3-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221123152545.1997266-1-steen.hegelund@microchip.com>
-References: <20221123152545.1997266-1-steen.hegelund@microchip.com>
+        with ESMTP id S237811AbiKWPZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:25:51 -0500
+Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2047.outbound.protection.outlook.com [40.107.249.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AC982235
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 07:25:49 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LQHyDKACRD6YELr2ZB5o/4hrkp+Rd6g/H0sVd+cwd3KfrD2hJFA9/NHUM1jyNqQ0F/lf4u8T2P9NPqC2JDJpwWbfRF3PkNK82Vkt4NoOnmPEyaXZeyIgjfjTk5I3oj3v+DdFh2+CpNhw4G8AkJV9ViywQgrmcrh8V4jn1PijnT2cVox+M4XphJXl8OjRxa2dDlvSlc7WgPeePv1hPjhn0fV0H6eGgPZIgx8Ia23sCltvFMOBg6v2+Wz2EVK8a9J9QB0OvAMKe3M5AU/TeSzpC2HQzMrQZPEYe2QJluZ/ZqWryZsuc4k0x48TKcSCW2mHumHlCgxwiL09UdPH+SQoXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QcQeCPItiN5k/nREidmDAXUFrA0qXeYI5Q710Lz2ctQ=;
+ b=lL5klPcQbOR3wNCU5Z0b5WMLdJN5HRPY/X9vGyy94bN2YZB4R12VXIDSH5MQTexum+C3Kw3caWZsICpqqYX63K1hAn85lmrI7DzKRLogkLAIUw0IVpSxFRg1Ll+Lh1KFMfWkbcd1z9ytVGjayWrioolIpfYtgS52uP/5aieVDvGgIhwYPakuvcZjrdEalEWDHPa2AdgGS4THhbiARPWdJ9/QE6tXWINowdp7k2aAZ+eAObyNrEJdq0c7vQq6E63h5T07FU/6KHVNJcZXM/rZ6YaIok9lvu5GIuv33K4t6jYDnrhVCgCCveu9FTrn9tKtrk6g43tpZ6BxT4VyXMzXLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QcQeCPItiN5k/nREidmDAXUFrA0qXeYI5Q710Lz2ctQ=;
+ b=kKfYIqhCihFBP6wIkFIovuqUIQJHjadzXMcqExe0T+K0MmCmtRnXaCc4Y8up/Kq6ovG7aEAqlHGceCAU7KIEf8wXDyCCIA98V9FYjbZX/ZunHhQ0cXJJV86OLSlTQYmnwnR84C9OCi8iGAW3V1+KZ1tRLnR3XmXsrHRWExMeoCs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DB8PR04MB6921.eurprd04.prod.outlook.com (2603:10a6:10:119::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.9; Wed, 23 Nov
+ 2022 15:25:46 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5834.015; Wed, 23 Nov 2022
+ 15:25:46 +0000
+Date:   Wed, 23 Nov 2022 17:25:43 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Steve Williams <steve.williams@getcruise.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        vinicius.gomes@intel.com, xiaoliang.yang_1@nxp.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [EXT] Re: [PATCH net-next] net/hanic: Add the hanic network
+ interface for high availability links
+Message-ID: <20221123152543.ekc5t7gp2hpmaaze@skbuf>
+References: <20221118232639.13743-1-steve.williams@getcruise.com>
+ <20221121195810.3f32d4fd@kernel.org>
+ <20221122113412.dg4diiu5ngmulih2@skbuf>
+ <CALHoRjcw8Du+4Px__x=vfDfjKnHVRnMmAhBBEznQ2CfHPZ9S0A@mail.gmail.com>
+ <20221123142558.akqff2gtvzrqtite@skbuf>
+ <Y34zoflZsC2pn9RO@nanopsycho>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y34zoflZsC2pn9RO@nanopsycho>
+X-ClientProxiedBy: AM0PR02CA0129.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28c::26) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,T_SPF_TEMPERROR autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DB8PR04MB6921:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5df08fd1-84f5-4b5f-24eb-08dacd66fe73
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TyujE0HR2QHGIozblYHCWS3vaft76ykKVt1e+Yao3DGXN5xDXTmCbS9g5FmVnt4QINVZBSvPKemZ4Sdm9yQFe+xjpBPQnzbyYdwRvLeFF/mmjtF/1eihHSxly5Bz0Z5snfv14iL9QvLrL9h5rY+djkKffkmxZHCXwvpm9+OGCXz/apVS/4vi6a5cH/l8fK7qyPigWeZ7QKsm/QboCufGMTioBTo890w2Vrf0IvF65g19x6Ng8Wm5dpmNDr+6KVTB69N0RC2N/Mm9fd7cQ0eQCv/Iiag5/yF/k/yJOd5IQMQ1OZR9tDn/lpO4WgvEuaB2pUwlH0m2n9YbPDRkFT0sbL5X25MB6yGppiH0OJPHcKhHQS4PhnascTy1oo7KGZHpMRKGMfbGS80ti0wPvTV6sCaBjwqUaVTuhI/obOKHnqzCWkaHxLjwo1jt/HkiM2hLkpbWb2EdHnvhOQ0IdtOt9Hh+iMHBqE+v6HAnw04df15LRdu2CqE1UiO72D0KY9yfqwrurczupdUAVOiskmtumq5BJY/UerdqNCkmztoafM8MsvKx1NmQS4PF4e/q1w3NnEsyUBFdFVuPhTm5cBDqmyov0FpZMeK9z2Cz5y0lBxk8D4AQ8TZ48Fh84XFpLQO358KkwuheHnEDgyxi9Q+VZg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(366004)(136003)(376002)(396003)(346002)(39860400002)(451199015)(2906002)(83380400001)(1076003)(66946007)(41300700001)(86362001)(66556008)(6486002)(33716001)(54906003)(6916009)(4326008)(6506007)(38100700002)(9686003)(8676002)(5660300002)(6666004)(186003)(66476007)(8936002)(44832011)(6512007)(26005)(316002)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KW0wi4KjKcyycaiobqmZl3PcV+zgEXn2jwxQvOl9Oi/wFO5HPpio2oO2Uk1a?=
+ =?us-ascii?Q?BGFyOH9NOKGMLwzQB0TSMX6uwhfSPxNtUfNcJ0gV534+T+S6YRfcgYY0iuMr?=
+ =?us-ascii?Q?gn122VqMolQInQ51W33102crIE0LiSVakip9FUnU2OS4X9hW9nk10RISmhOO?=
+ =?us-ascii?Q?uQpSGKHIeOiUO0zyEycOth3hqe0IIeA8IRMVmVwcQ+j/R3hgXEHGLO8aQuS4?=
+ =?us-ascii?Q?KOHFVsFtk7KzF8bd1O1+QDGzW/kuDJWNoHWxwRRv3D11qppVcO67Yu+SbWv5?=
+ =?us-ascii?Q?NuFRn5mhnzL59GfN+tvkbNWlHNXiRDBx9r1zm6GXqcE2Ty57BsJLf16CASWJ?=
+ =?us-ascii?Q?Q7357kJSaV6XZoDI4S6E0VRioSkOjvAtK6ls766GNBL30+ow/oLCFij2n374?=
+ =?us-ascii?Q?aRl2yCUUpNu0ZQf9C1zxT+CQH3vhphrLcNaR61PhGJNJnCIsPLy8z7ZC7wpM?=
+ =?us-ascii?Q?30ZxeNuB9QfbopruUivLQiyccwOzayHymNtAu3Dd0TxA6zi/fUBdQIO0f6dW?=
+ =?us-ascii?Q?3q2syftTvBh0JnzMZtGPH6+tzSHU1Y/yYkolFjGXNm+xTfdMvsDTjmxztTIg?=
+ =?us-ascii?Q?0DzDAf/pq77eYfuUKI0Ry995Az/XZ+ZEiEGizz6B6qZ/N3s1t0K1B4AGHK4X?=
+ =?us-ascii?Q?OXJJmIpwgRLHbOsJQnCzACJGVEnCkvbpwOwPontS2yVJV02bVQsff6i2N2UE?=
+ =?us-ascii?Q?ZNMzhgwKKEuRUwvgK91kXFG1i4sirL51XhwE0iCbOaO/aiKjM4eMLvYKX/vv?=
+ =?us-ascii?Q?inpGGHkk5kO/pEnexwcybNNiwIGfTk6R+3CheHnIuRsHVPlmjLkTF6moZ5l4?=
+ =?us-ascii?Q?I8cSF5++WzbQplQxtxmOzl9ZQfa8VsnMBc9IXruTYR4+L3zClYLIg2OgUqef?=
+ =?us-ascii?Q?D01DrzT//iRU3mOtAlY5Eoyz+8sLId6BTCB+tEfYB42Ul8GZJof2hdHaHlIW?=
+ =?us-ascii?Q?Jewm8RTuBo7Wu2lSOoAimsX/dXx17B1sTpqIPEqIxqeX0pswkCo8qdHBXdzH?=
+ =?us-ascii?Q?/HhgG97MOnjPpNLGoNojXxdZVX7tzi/8sXhK809wM79YcOvJuXqvl1f75udE?=
+ =?us-ascii?Q?JclXhS0pp1aroqpzBEZoH0bCuaps8OlIOiP1C29tVOZxMA8gZ6XybYsA5LLn?=
+ =?us-ascii?Q?269NoW4ydBrZ8fC82wUruM1Ff8oMNjgGSoGySh1lSXVBh7ZD5/hQpZQ5pOmn?=
+ =?us-ascii?Q?JV7RSS118wPkQIFJhtg2yY3prj4XKXUxen5keE/t3OvM9vhseylEdiniLBlr?=
+ =?us-ascii?Q?vX87xVpxzS4RSIN2rmuh5KPAboc4jOd/t6752n7NRQw4gCvpQWv4r5ReSnfL?=
+ =?us-ascii?Q?S21vU6hudVSvNmo845si0ph908HdoXUG5hyPLkIAIZJciXmCblM5ngmU6HJz?=
+ =?us-ascii?Q?EWQvbYhDhKOsPGofRLbuyVPvI4inkVw/LtQiZHqPwG1UpnShR4fxB5bBAKf3?=
+ =?us-ascii?Q?5dQQ4xLeK+mkWD0h4LLCYqS9lUIzBa6TaoklkKpgjAdm3S6LsN2B5q+DNmBM?=
+ =?us-ascii?Q?FtpVAppAaLq1h0OBZux2TmztELQwNtadhGa/R2LdMa6kjdb13Wf9vVRstG1J?=
+ =?us-ascii?Q?06PV70s4w8/iSMfJbFoxMoW4WWctKm4SmxQUoDJhtJkii4ic27n1SHaYdofK?=
+ =?us-ascii?Q?YQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5df08fd1-84f5-4b5f-24eb-08dacd66fe73
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2022 15:25:46.7226
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XmLeaL0dPAp4Wa+gUjHvemSf57hNtk0OHJeTXjd6xJqHNit6AX8Y8RydhaLr5m1thpc67JxH0PckgpqEafcQ/g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6921
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This allows support of TC protocol all for the Sparx5 IS2 VCAP.
+On Wed, Nov 23, 2022 at 03:52:17PM +0100, Jiri Pirko wrote:
+> >Reworded, why must the hanic functionality to be in the kernel?
+> 
+> I guess for the same reason other soft netdevice driver are in the
+> kernel. You can do bridge, bond, etc in a silimilar way you described
+> here...
 
-This is done by creating multiple rules that covers the rule size and
-traffic types in the IS2.
-Each rule size (e.g X16 and X6) may have multiple keysets and if there are
-more than one the type field in the VCAP rule will be wildcarded to support
-these keysets.
+You have to consider the value added to the kernel in each case
+(and also what were the best practices when those other drivers were
+introduced; you can't just use bonding as a precedent for anything).
 
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
----
- .../microchip/sparx5/sparx5_tc_flower.c       | 209 +++++++++++++++++-
- .../microchip/sparx5/sparx5_vcap_impl.c       |  18 +-
- .../microchip/sparx5/sparx5_vcap_impl.h       |  13 ++
- 3 files changed, 234 insertions(+), 6 deletions(-)
+I believe hanic does not even attempt to solve a generic enough problem
+to be the FRER endpoint driver for the Linux kernel. It assumes streams
+will be {MAC SA, VID} on RX, and {MAC DA, VID} on TX. That's already
+policy enforced by the kernel, when the kernel should just provide the
+mechanisms for user space to enforce one. This type of stream
+classification will not be the case for 802.1CB networks in general.
+According to some of my own research, you can also solve some of the
+problems Steve is addressing in other ways.
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-index bd6bd380ba34..1ed304a816cc 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-@@ -12,6 +12,20 @@
- #include "sparx5_main.h"
- #include "sparx5_vcap_impl.h"
- 
-+#define SPX5_MAX_RULE_SIZE 13 /* allows X1, X2, X4, X6 and X12 rules */
-+
-+/* Collect keysets and type ids for multiple rules per size */
-+struct sparx5_wildcard_rule {
-+	bool selected;
-+	u8 value;
-+	u8 mask;
-+	enum vcap_keyfield_set keyset;
-+};
-+
-+struct sparx5_multiple_rules {
-+	struct sparx5_wildcard_rule rule[SPX5_MAX_RULE_SIZE];
-+};
-+
- struct sparx5_tc_flower_parse_usage {
- 	struct flow_cls_offload *fco;
- 	struct flow_rule *frule;
-@@ -618,7 +632,7 @@ static int sparx5_tc_add_rule_counter(struct vcap_admin *admin,
- {
- 	int err;
- 
--	err = vcap_rule_add_action_u32(vrule, VCAP_AF_CNT_ID, vrule->id);
-+	err = vcap_rule_mod_action_u32(vrule, VCAP_AF_CNT_ID, vrule->id);
- 	if (err)
- 		return err;
- 
-@@ -626,11 +640,190 @@ static int sparx5_tc_add_rule_counter(struct vcap_admin *admin,
- 	return err;
- }
- 
-+/* Collect all port keysets and apply the first of them, possibly wildcarded */
-+static int sparx5_tc_select_protocol_keyset(struct net_device *ndev,
-+					    struct vcap_rule *vrule,
-+					    struct vcap_admin *admin,
-+					    u16 l3_proto,
-+					    struct sparx5_multiple_rules *multi)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct vcap_keyset_list portkeysetlist = {};
-+	enum vcap_keyfield_set portkeysets[10] = {};
-+	struct vcap_keyset_list matches = {};
-+	enum vcap_keyfield_set keysets[10];
-+	int idx, jdx, err = 0, count = 0;
-+	struct sparx5_wildcard_rule *mru;
-+	const struct vcap_set *kinfo;
-+	struct vcap_control *vctrl;
-+
-+	vctrl = port->sparx5->vcap_ctrl;
-+
-+	/* Find the keysets that the rule can use */
-+	matches.keysets = keysets;
-+	matches.max = ARRAY_SIZE(keysets);
-+	if (vcap_rule_find_keysets(vrule, &matches) == 0)
-+		return -EINVAL;
-+
-+	/* Find the keysets that the port configuration supports */
-+	portkeysetlist.max = ARRAY_SIZE(portkeysets);
-+	portkeysetlist.keysets = portkeysets;
-+	err = sparx5_vcap_get_port_keyset(ndev,
-+					  admin, vrule->vcap_chain_id,
-+					  l3_proto,
-+					  &portkeysetlist);
-+	if (err)
-+		return err;
-+
-+	/* Find the intersection of the two sets of keyset */
-+	for (idx = 0; idx < portkeysetlist.cnt; ++idx) {
-+		kinfo = vcap_keyfieldset(vctrl, admin->vtype,
-+					 portkeysetlist.keysets[idx]);
-+		if (!kinfo)
-+			continue;
-+
-+		/* Find a port keyset that matches the required keys
-+		 * If there are multiple keysets then compose a type id mask
-+		 */
-+		for (jdx = 0; jdx < matches.cnt; ++jdx) {
-+			if (portkeysetlist.keysets[idx] != matches.keysets[jdx])
-+				continue;
-+
-+			mru = &multi->rule[kinfo->sw_per_item];
-+			if (!mru->selected) {
-+				mru->selected = true;
-+				mru->keyset = portkeysetlist.keysets[idx];
-+				mru->value = kinfo->type_id;
-+			}
-+			mru->value &= kinfo->type_id;
-+			mru->mask |= kinfo->type_id;
-+			++count;
-+		}
-+	}
-+	if (count == 0)
-+		return -EPROTO;
-+
-+	if (l3_proto == ETH_P_ALL && count < portkeysetlist.cnt)
-+		return -ENOENT;
-+
-+	for (idx = 0; idx < SPX5_MAX_RULE_SIZE; ++idx) {
-+		mru = &multi->rule[idx];
-+		if (!mru->selected)
-+			continue;
-+
-+		/* Align the mask to the combined value */
-+		mru->mask ^= mru->value;
-+	}
-+
-+	/* Set the chosen keyset on the rule and set a wildcarded type if there
-+	 * are more than one keyset
-+	 */
-+	for (idx = 0; idx < SPX5_MAX_RULE_SIZE; ++idx) {
-+		mru = &multi->rule[idx];
-+		if (!mru->selected)
-+			continue;
-+
-+		vcap_set_rule_set_keyset(vrule, mru->keyset);
-+		if (count > 1)
-+			/* Some keysets do not have a type field */
-+			vcap_rule_mod_key_u32(vrule, VCAP_KF_TYPE,
-+					      mru->value,
-+					      ~mru->mask);
-+		mru->selected = false; /* mark as done */
-+		break; /* Stop here and add more rules later */
-+	}
-+	return err;
-+}
-+
-+static int sparx5_tc_add_rule_copy(struct vcap_control *vctrl,
-+				   struct flow_cls_offload *fco,
-+				   struct vcap_rule *erule,
-+				   struct vcap_admin *admin,
-+				   struct sparx5_wildcard_rule *rule)
-+{
-+	enum vcap_key_field keylist[] = {
-+		VCAP_KF_IF_IGR_PORT_MASK,
-+		VCAP_KF_IF_IGR_PORT_MASK_SEL,
-+		VCAP_KF_IF_IGR_PORT_MASK_RNG,
-+		VCAP_KF_LOOKUP_FIRST_IS,
-+		VCAP_KF_TYPE,
-+	};
-+	struct vcap_rule *vrule;
-+	int err;
-+
-+	/* Add an extra rule with a special user and the new keyset */
-+	erule->user = VCAP_USER_TC_EXTRA;
-+	vrule = vcap_copy_rule(erule);
-+	if (IS_ERR(vrule))
-+		return PTR_ERR(vrule);
-+
-+	/* Link the new rule to the existing rule with the cookie */
-+	vrule->cookie = erule->cookie;
-+	vcap_filter_rule_keys(vrule, keylist, ARRAY_SIZE(keylist), true);
-+	err = vcap_set_rule_set_keyset(vrule, rule->keyset);
-+	if (err) {
-+		pr_err("%s:%d: could not set keyset %s in rule: %u\n",
-+		       __func__, __LINE__,
-+		       vcap_keyset_name(vctrl, rule->keyset),
-+		       vrule->id);
-+		goto out;
-+	}
-+
-+	/* Some keysets do not have a type field, so ignore return value */
-+	vcap_rule_mod_key_u32(vrule, VCAP_KF_TYPE, rule->value, ~rule->mask);
-+
-+	err = vcap_set_rule_set_actionset(vrule, erule->actionset);
-+	if (err)
-+		goto out;
-+
-+	err = sparx5_tc_add_rule_counter(admin, vrule);
-+	if (err)
-+		goto out;
-+
-+	err = vcap_val_rule(vrule, ETH_P_ALL);
-+	if (err) {
-+		pr_err("%s:%d: could not validate rule: %u\n",
-+		       __func__, __LINE__, vrule->id);
-+		vcap_set_tc_exterr(fco, vrule);
-+		goto out;
-+	}
-+	err = vcap_add_rule(vrule);
-+	if (err) {
-+		pr_err("%s:%d: could not add rule: %u\n",
-+		       __func__, __LINE__, vrule->id);
-+		goto out;
-+	}
-+out:
-+	vcap_free_rule(vrule);
-+	return err;
-+}
-+
-+static int sparx5_tc_add_remaining_rules(struct vcap_control *vctrl,
-+					 struct flow_cls_offload *fco,
-+					 struct vcap_rule *erule,
-+					 struct vcap_admin *admin,
-+					 struct sparx5_multiple_rules *multi)
-+{
-+	int idx, err = 0;
-+
-+	for (idx = 0; idx < SPX5_MAX_RULE_SIZE; ++idx) {
-+		if (!multi->rule[idx].selected)
-+			continue;
-+
-+		err = sparx5_tc_add_rule_copy(vctrl, fco, erule, admin,
-+					      &multi->rule[idx]);
-+		if (err)
-+			break;
-+	}
-+	return err;
-+}
-+
- static int sparx5_tc_flower_replace(struct net_device *ndev,
- 				    struct flow_cls_offload *fco,
- 				    struct vcap_admin *admin)
- {
- 	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5_multiple_rules multi = {};
- 	struct flow_action_entry *act;
- 	struct vcap_control *vctrl;
- 	struct flow_rule *frule;
-@@ -700,6 +893,15 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
- 			goto out;
- 		}
- 	}
-+
-+	err = sparx5_tc_select_protocol_keyset(ndev, vrule, admin, l3_proto,
-+					       &multi);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(fco->common.extack,
-+				   "No matching port keyset for filter protocol and keys");
-+		goto out;
-+	}
-+
- 	/* provide the l3 protocol to guide the keyset selection */
- 	err = vcap_val_rule(vrule, l3_proto);
- 	if (err) {
-@@ -710,6 +912,11 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
- 	if (err)
- 		NL_SET_ERR_MSG_MOD(fco->common.extack,
- 				   "Could not add the filter");
-+
-+	if (l3_proto == ETH_P_ALL)
-+		err = sparx5_tc_add_remaining_rules(vctrl, fco, vrule, admin,
-+						    &multi);
-+
- out:
- 	vcap_free_rule(vrule);
- 	return err;
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-index 0c4d4e6d51e6..a0c126ba9a87 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-@@ -7,11 +7,6 @@
-  * https://github.com/microchip-ung/sparx-5_reginfo
-  */
- 
--#include <linux/types.h>
--#include <linux/list.h>
--
--#include "vcap_api.h"
--#include "vcap_api_client.h"
- #include "vcap_api_debugfs.h"
- #include "sparx5_main_regs.h"
- #include "sparx5_main.h"
-@@ -279,6 +274,19 @@ static int sparx5_vcap_is2_get_port_keysets(struct net_device *ndev,
- 	return 0;
- }
- 
-+/* Get the port keyset for the vcap lookup */
-+int sparx5_vcap_get_port_keyset(struct net_device *ndev,
-+				struct vcap_admin *admin,
-+				int cid,
-+				u16 l3_proto,
-+				struct vcap_keyset_list *kslist)
-+{
-+	int lookup;
-+
-+	lookup = sparx5_vcap_cid_to_lookup(cid);
-+	return sparx5_vcap_is2_get_port_keysets(ndev, lookup, kslist, l3_proto);
-+}
-+
- /* API callback used for validating a field keyset (check the port keysets) */
- static enum vcap_keyfield_set
- sparx5_vcap_validate_keyset(struct net_device *ndev,
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
-index 8a6b7e3d2618..0a0f2412c980 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
-@@ -10,6 +10,12 @@
- #ifndef __SPARX5_VCAP_IMPL_H__
- #define __SPARX5_VCAP_IMPL_H__
- 
-+#include <linux/types.h>
-+#include <linux/list.h>
-+
-+#include "vcap_api.h"
-+#include "vcap_api_client.h"
-+
- #define SPARX5_VCAP_CID_IS2_L0 VCAP_CID_INGRESS_STAGE2_L0 /* IS2 lookup 0 */
- #define SPARX5_VCAP_CID_IS2_L1 VCAP_CID_INGRESS_STAGE2_L1 /* IS2 lookup 1 */
- #define SPARX5_VCAP_CID_IS2_L2 VCAP_CID_INGRESS_STAGE2_L2 /* IS2 lookup 2 */
-@@ -65,4 +71,11 @@ enum vcap_is2_port_sel_arp {
- 	VCAP_IS2_PS_ARP_ARP,
- };
- 
-+/* Get the port keyset for the vcap lookup */
-+int sparx5_vcap_get_port_keyset(struct net_device *ndev,
-+				struct vcap_admin *admin,
-+				int cid,
-+				u16 l3_proto,
-+				struct vcap_keyset_list *kslist);
-+
- #endif /* __SPARX5_VCAP_IMPL_H__ */
--- 
-2.38.1
+For example, in order to make {MAC DA, VLAN} streams identify both the
+sender and the receiver, one can arrange that in a network, each sender
+has its own VLAN ID which identifies it as a sender. I know of at least
+one network where this is the case. But this would also be considered
+policy, and I'm not suggesting that hanic should use this approach
+rather than the other. 802.1CB simply does not recommend one mode of
+arranging streams over another.
 
+The fact that hanic needs 802.1Q uppers as termination points for
+{MAC, VLAN} addresses seemst to simply not scale for IP-based streams,
+or generic byte@offset pattern matching based streams.
+
+Additionally, the hanic driver will probably need a rewrite when Steve
+enables some options like CONFIG_PROVE_LOCKING or CONFIG_DEBUG_ATOMIC_SLEEP.
+It currently creates sysfs files for streams from the NET_TX softirq.
+It's not even clear to me that stream auto-discovery is something
+desirable generally. I'd rather pre-program my termination streams if
+I know what I'm doing, rather than let the kernel blindly trust possibly
+maliciously crafted 802.1CB tags.
+
+When I suggested a tap based solution, I was trying to take the Cruise
+hanic driver, as presented, at face value and to propose something which
+seems like a better fit for it. I wasn't necessarily trying to transform
+the hanic driver into something useful in general for the kernel, since
+I don't know if that's what Steve's goal is.
