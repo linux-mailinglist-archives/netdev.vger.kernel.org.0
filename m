@@ -2,313 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D74BD635FAC
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:31:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDA1C635FBB
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:33:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238574AbiKWNbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 08:31:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
+        id S238253AbiKWNbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 08:31:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236788AbiKWNbD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:31:03 -0500
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4AFDBC19;
-        Wed, 23 Nov 2022 05:12:46 -0800 (PST)
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 2ANDCQHs013863;
-        Wed, 23 Nov 2022 22:12:26 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 2ANDCQHs013863
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1669209147;
-        bh=8jg0eK856v6/vSmmCu8usTZtU3XubFgWRrcXjnjxrvs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=aM72sBXQYlXHf/WHgRbb4fu5gPatU3abKyqkxUBpFBfHp1r/xu1Ixw/v9yDG5Qa4m
-         qa3qtlMvPB9Do0bm3Rt8uR3C9sZDr270fvkrnQF0v+2/kTXyI37dObHmDPkptRhEm/
-         GKkTJG1SSwmyWbxE0XTbRjz+9ywbd2Ol895bBYYmPCTgDnPJym7/FYZblQlGlyXVpo
-         8xaJuvh4LYBAw6tdYfe0ybfXbI6U08zBrKND1/FfivlB2DZC/kaDcpo1ENjWtq8CHm
-         rds7JU+S9+ayqu2q9sawQnBuyyaZFrIAYmCZu3IB3L7YFG7GVK2T2+ofAcVeIHc1jp
-         S6f+v56eeC2sw==
-X-Nifty-SrcIP: [209.85.210.41]
-Received: by mail-ot1-f41.google.com with SMTP id p10-20020a9d76ca000000b0066d6c6bce58so11148551otl.7;
-        Wed, 23 Nov 2022 05:12:26 -0800 (PST)
-X-Gm-Message-State: ANoB5pk0ZvTPe6jvphrd2+2oRhbkI5g1+nf9l/NvWGx+88XGTKobRuCx
-        jjZUtwgPOMJmj3wm0pth5pVYPmAIZlfTbiu0Dog=
-X-Google-Smtp-Source: AA0mqf7QArILuryD7V3uLIADk1D3AWOAI60VZTu8+iCqdU1QcePp78CYOR6jKGnV43tqjC7qh5N1MAlKf9OQXNpxmPc=
-X-Received: by 2002:a9d:282:0:b0:66c:794e:f8c6 with SMTP id
- 2-20020a9d0282000000b0066c794ef8c6mr14811390otl.343.1669209145738; Wed, 23
- Nov 2022 05:12:25 -0800 (PST)
+        with ESMTP id S237787AbiKWNbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:31:18 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCB38D4BC;
+        Wed, 23 Nov 2022 05:13:21 -0800 (PST)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ANC0qdE031186;
+        Wed, 23 Nov 2022 13:13:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=PqwXsBBxhnxQ/5BOve1SzMXdJmZX9TnNhJjhFmxrrVA=;
+ b=DWgNX6KbH7IXvrVq8cmb3G+OmjnoBq2zxalxgrPiuLQCmfyugTkmlEtU68cmvP/5dC7i
+ pg6HfHPR4dMIa2WkU/UoUICoQTxOWyI/iYaHnD54h8UGyoU1GoXoEr2NLgfAPudgh+XA
+ EWuXhIonETldcv+MuCe+evrJeghv/k1dRwD3N7ujeYQRr+p9VPVKoAN21jWwk6W1Krbt
+ FwXJnz/0WXbVg46ZE6SYDJFl8wYe3DdUR9zqVMY1R8thD7iCYJHPYWVfpGzDIFv+qDkp
+ Qmj9eKZvphQYGKlO+8fU5Gw420Z1uMoUv4yuvcbUdibonB/ypaOnmrmK1NNeQdMczlRy +Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m0y4ws001-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Nov 2022 13:13:15 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2ANCEdQK009773;
+        Wed, 23 Nov 2022 13:13:15 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m0y4wryxc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Nov 2022 13:13:15 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2AND51Ng021114;
+        Wed, 23 Nov 2022 13:13:11 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04fra.de.ibm.com with ESMTP id 3kxps8v76m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Nov 2022 13:13:11 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2ANDDncs46793002
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Nov 2022 13:13:49 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 10D2A4C04A;
+        Wed, 23 Nov 2022 13:13:08 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 704544C046;
+        Wed, 23 Nov 2022 13:13:07 +0000 (GMT)
+Received: from [9.171.0.166] (unknown [9.171.0.166])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Nov 2022 13:13:07 +0000 (GMT)
+Message-ID: <40428548-59b9-379c-857c-172db92afc0c@linux.ibm.com>
+Date:   Wed, 23 Nov 2022 14:13:04 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net] net/smc: Fix expected buffersizes and sync logic
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>
+References: <20221123104907.14624-1-jaka@linux.ibm.com>
+ <Y34JxFWBdUxvLQb4@TonyMac-Alibaba>
+From:   Jan Karcher <jaka@linux.ibm.com>
+Organization: IBM - Network Linux on Z
+In-Reply-To: <Y34JxFWBdUxvLQb4@TonyMac-Alibaba>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Di88gUWys9j9NL3XACAGMDuuYZsa7Qzf
+X-Proofpoint-ORIG-GUID: 8NxSV5yzNow_CowmOHmsvqdx0jyzo2ev
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20221119225650.1044591-1-alobakin@pm.me> <20221119225650.1044591-13-alobakin@pm.me>
-In-Reply-To: <20221119225650.1044591-13-alobakin@pm.me>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 23 Nov 2022 22:11:49 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASni5uNFOtR-6VykBHX1Wgg-rOt=q0Lk+H2Vbn7pCsBDQ@mail.gmail.com>
-Message-ID: <CAK7LNASni5uNFOtR-6VykBHX1Wgg-rOt=q0Lk+H2Vbn7pCsBDQ@mail.gmail.com>
-Subject: Re: [PATCH 12/18] mtd: tests: fix object shared between several modules
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     linux-kbuild@vger.kernel.org, Nicolas Schier <nicolas@fjasle.eu>,
-        Jens Axboe <axboe@kernel.dk>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
-        autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-23_06,2022-11-23_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=999
+ phishscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0 mlxscore=0
+ adultscore=0 malwarescore=0 impostorscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211230097
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 20, 2022 at 8:08 AM Alexander Lobakin <alobakin@pm.me> wrote:
->
-> mtd_test.o is linked to 8(!) different test modules:
->
-> > scripts/Makefile.build:252: ./drivers/mtd/tests/Makefile: mtd_test.o
-> > is added to multiple modules: mtd_nandbiterrs mtd_oobtest mtd_pagetest
-> > mtd_readtest mtd_speedtest mtd_stresstest mtd_subpagetest mtd_torturetest
->
-> Although all of them share one Kconfig option
-> (CONFIG_MTD_TESTS), it's better to not link one object file into
-> several modules (and/or vmlinux).
-> Under certain circumstances, such can lead to the situation fixed by
-> commit 637a642f5ca5 ("zstd: Fixing mixed module-builtin objects").
-> In this particular case, there's also no need to duplicate the very
-> same object code 8 times.
->
-> Convert mtd_test.o to a standalone module which will export its
-> functions to the rest.
->
-> Fixes: a995c792280d ("mtd: tests: rename sources in order to link a helper object")
-> Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
-
-IMHO, Reported-by might be a better fit.
 
 
-I think they can become static inline functions in mtd_test.h
-(at least, mtdtest_relax() is a static inline there), but I am not sure.
+On 23/11/2022 12:53, Tony Lu wrote:
+> On Wed, Nov 23, 2022 at 11:49:07AM +0100, Jan Karcher wrote:
+>> The fixed commit changed the expected behavior of buffersizes
+>> set by the user using the setsockopt mechanism.
+>> Before the fixed patch the logic for determining the buffersizes used
+>> was the following:
+>>
+>> default  = net.ipv4.tcp_{w|r}mem[1]
+>> sockopt  = the setsockopt mechanism
+>> val      = the value assigned in default or via setsockopt
+>> sk_buf   = short for sk_{snd|rcv}buf
+>> real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
+>>
+>>    exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
+>>              |                  |                |
+>> +---------+ |                  | +------------+ | +-------------------+
+>> | default |----------------------| sk_buf=val |---| real_buf=sk_buf/2 |
+>> +---------+ |                  | +------------+ | +-------------------+
+>>              |                  |                |    ^
+>>              |                  |                |    |
+>> +---------+ | +--------------+ |                |    |
+>> | sockopt |---| sk_buf=val*2 |-----------------------|
+>> +---------+ | +--------------+ |                |
+>>              |                  |                |
+>>
+>> The fixed patch introduced a dedicated sysctl for smc
+>> and removed the /2 in smc_core.c resulting in the following flow:
+>>
+>> default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
+>> sockopt  = the setsockopt mechanism
+>> val      = the value assigned in default or via setsockopt
+>> sk_buf   = short for sk_{snd|rcv}buf
+>> real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
+>>
+>>    exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
+>>              |                  |                |
+>> +---------+ |                  | +------------+ | +-----------------+
+>> | default |----------------------| sk_buf=val |---| real_buf=sk_buf |
+>> +---------+ |                  | +------------+ | +-----------------+
+>>              |                  |                |    ^
+>>              |                  |                |    |
+>> +---------+ | +--------------+ |                |    |
+>> | sockopt |---| sk_buf=val*2 |-----------------------|
+>> +---------+ | +--------------+ |                |
+>>              |                  |                |
+>>
+>> This would result in double of memory used for existing configurations
+>> that are using setsockopt.
+> 
+> Firstly, thanks for your detailed diagrams :-)
+> 
+> And the original decision to use user-provided values rather than
+> value/2 to follow the instructions of the socket manual [1].
+> 
+>    SO_RCVBUF
+>           Sets or gets the maximum socket receive buffer in bytes.
+>           The kernel doubles this value (to allow space for
+>           bookkeeping overhead) when it is set using setsockopt(2),
+>           and this doubled value is returned by getsockopt(2).  The
+>           default value is set by the
+>           /proc/sys/net/core/rmem_default file, and the maximum
+>           allowed value is set by the /proc/sys/net/core/rmem_max
+>           file.  The minimum (doubled) value for this option is 256.
+> 
+> [1] https://man7.org/linux/man-pages/man7/socket.7.html
+> 
+> The user of SMC should know that setsockopt() with SO_{RCV|SND}BUF will
 
-Please send this to the MTD list, and consult the maintainer(s).
+I totally agree that an educated user of SMC should know about that 
+behavior if they decide to use it.
+We do provide our users preload libraries where they can pass preferred 
+buffersizes via arguments and we handle the Sockopts for them.
 
+> double the values in kernel, and getsockopt() will return the doubled
+> values. So that they should use half of the values which are passed to
+> setsockopt(). The original patch tries to make things easier in SMC and
+> let user-space to handle them following the socket manual.
+> 
+>> SMC historically decided to use the explicit value given by the user
+>> to allocate the memory. This is why we used the /2 in smc_core.c.
+>> That logic was not applied to the default value.
+> 
+> Yep, let back to the patch which introduced smc_{w|r}mem knobs, it's a
+> trade-off to follow original logic of SMC, or follow the socket manual.
+> We decides to follow the instruction of manuals in the end.
 
+I understand the point. I spend a lot of time trying to decide what to do.
 
+Since it was an intentional decision to not follow the general socket 
+option, and we do not have anyone complaining we do not really have a 
+reason to change it.
+Changing it means that users with existing configurations would have to 
+change their configs on an update or suddenly expect double the memory 
+consumption.
+That's why we in the end preffered to stay with the current logic.
 
+I'm thinking that maybe - if we stay with the historic logic - we should 
+document that desicion somewhere. So that in the future, if a user that 
+expects the man page behavior, has a way to understand what SMC is 
+doing. What do oyu think?
 
+- Jan
 
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> ---
->  drivers/mtd/tests/Makefile      | 17 +++++++++--------
->  drivers/mtd/tests/mtd_test.c    |  9 +++++++++
->  drivers/mtd/tests/nandbiterrs.c |  2 ++
->  drivers/mtd/tests/oobtest.c     |  2 ++
->  drivers/mtd/tests/pagetest.c    |  2 ++
->  drivers/mtd/tests/readtest.c    |  2 ++
->  drivers/mtd/tests/speedtest.c   |  2 ++
->  drivers/mtd/tests/stresstest.c  |  2 ++
->  drivers/mtd/tests/subpagetest.c |  2 ++
->  drivers/mtd/tests/torturetest.c |  2 ++
->  10 files changed, 34 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/mtd/tests/Makefile b/drivers/mtd/tests/Makefile
-> index 5de0378f90db..e3f86ed123ca 100644
-> --- a/drivers/mtd/tests/Makefile
-> +++ b/drivers/mtd/tests/Makefile
-> @@ -1,4 +1,5 @@
->  # SPDX-License-Identifier: GPL-2.0
-> +obj-$(CONFIG_MTD_TESTS) += mtd_test.o
->  obj-$(CONFIG_MTD_TESTS) += mtd_oobtest.o
->  obj-$(CONFIG_MTD_TESTS) += mtd_pagetest.o
->  obj-$(CONFIG_MTD_TESTS) += mtd_readtest.o
-> @@ -9,11 +10,11 @@ obj-$(CONFIG_MTD_TESTS) += mtd_torturetest.o
->  obj-$(CONFIG_MTD_TESTS) += mtd_nandecctest.o
->  obj-$(CONFIG_MTD_TESTS) += mtd_nandbiterrs.o
->
-> -mtd_oobtest-objs := oobtest.o mtd_test.o
-> -mtd_pagetest-objs := pagetest.o mtd_test.o
-> -mtd_readtest-objs := readtest.o mtd_test.o
-> -mtd_speedtest-objs := speedtest.o mtd_test.o
-> -mtd_stresstest-objs := stresstest.o mtd_test.o
-> -mtd_subpagetest-objs := subpagetest.o mtd_test.o
-> -mtd_torturetest-objs := torturetest.o mtd_test.o
-> -mtd_nandbiterrs-objs := nandbiterrs.o mtd_test.o
-> +mtd_oobtest-objs := oobtest.o
-> +mtd_pagetest-objs := pagetest.o
-> +mtd_readtest-objs := readtest.o
-> +mtd_speedtest-objs := speedtest.o
-> +mtd_stresstest-objs := stresstest.o
-> +mtd_subpagetest-objs := subpagetest.o
-> +mtd_torturetest-objs := torturetest.o
-> +mtd_nandbiterrs-objs := nandbiterrs.o
-> diff --git a/drivers/mtd/tests/mtd_test.c b/drivers/mtd/tests/mtd_test.c
-> index c84250beffdc..93920a714315 100644
-> --- a/drivers/mtd/tests/mtd_test.c
-> +++ b/drivers/mtd/tests/mtd_test.c
-> @@ -25,6 +25,7 @@ int mtdtest_erase_eraseblock(struct mtd_info *mtd, unsigned int ebnum)
->
->         return 0;
->  }
-> +EXPORT_SYMBOL_NS_GPL(mtdtest_erase_eraseblock, MTD_TESTS);
->
->  static int is_block_bad(struct mtd_info *mtd, unsigned int ebnum)
->  {
-> @@ -57,6 +58,7 @@ int mtdtest_scan_for_bad_eraseblocks(struct mtd_info *mtd, unsigned char *bbt,
->
->         return 0;
->  }
-> +EXPORT_SYMBOL_NS_GPL(mtdtest_scan_for_bad_eraseblocks, MTD_TESTS);
->
->  int mtdtest_erase_good_eraseblocks(struct mtd_info *mtd, unsigned char *bbt,
->                                 unsigned int eb, int ebcnt)
-> @@ -75,6 +77,7 @@ int mtdtest_erase_good_eraseblocks(struct mtd_info *mtd, unsigned char *bbt,
->
->         return 0;
->  }
-> +EXPORT_SYMBOL_NS_GPL(mtdtest_erase_good_eraseblocks, MTD_TESTS);
->
->  int mtdtest_read(struct mtd_info *mtd, loff_t addr, size_t size, void *buf)
->  {
-> @@ -92,6 +95,7 @@ int mtdtest_read(struct mtd_info *mtd, loff_t addr, size_t size, void *buf)
->
->         return err;
->  }
-> +EXPORT_SYMBOL_NS_GPL(mtdtest_read, MTD_TESTS);
->
->  int mtdtest_write(struct mtd_info *mtd, loff_t addr, size_t size,
->                 const void *buf)
-> @@ -107,3 +111,8 @@ int mtdtest_write(struct mtd_info *mtd, loff_t addr, size_t size,
->
->         return err;
->  }
-> +EXPORT_SYMBOL_NS_GPL(mtdtest_write, MTD_TESTS);
-> +
-> +MODULE_DESCRIPTION("MTD test common module");
-> +MODULE_AUTHOR("Adrian Hunter");
-> +MODULE_LICENSE("GPL");
-> diff --git a/drivers/mtd/tests/nandbiterrs.c b/drivers/mtd/tests/nandbiterrs.c
-> index 98d7508f95b1..acf44edfca53 100644
-> --- a/drivers/mtd/tests/nandbiterrs.c
-> +++ b/drivers/mtd/tests/nandbiterrs.c
-> @@ -414,6 +414,8 @@ static void __exit mtd_nandbiterrs_exit(void)
->  module_init(mtd_nandbiterrs_init);
->  module_exit(mtd_nandbiterrs_exit);
->
-> +MODULE_IMPORT_NS(MTD_TESTS);
-> +
->  MODULE_DESCRIPTION("NAND bit error recovery test");
->  MODULE_AUTHOR("Iwo Mergler");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/mtd/tests/oobtest.c b/drivers/mtd/tests/oobtest.c
-> index 13fed398937e..da4efcdd59b2 100644
-> --- a/drivers/mtd/tests/oobtest.c
-> +++ b/drivers/mtd/tests/oobtest.c
-> @@ -728,6 +728,8 @@ static void __exit mtd_oobtest_exit(void)
->  }
->  module_exit(mtd_oobtest_exit);
->
-> +MODULE_IMPORT_NS(MTD_TESTS);
-> +
->  MODULE_DESCRIPTION("Out-of-band test module");
->  MODULE_AUTHOR("Adrian Hunter");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/mtd/tests/pagetest.c b/drivers/mtd/tests/pagetest.c
-> index 8eb40b6e6dfa..ac2bcc76b402 100644
-> --- a/drivers/mtd/tests/pagetest.c
-> +++ b/drivers/mtd/tests/pagetest.c
-> @@ -456,6 +456,8 @@ static void __exit mtd_pagetest_exit(void)
->  }
->  module_exit(mtd_pagetest_exit);
->
-> +MODULE_IMPORT_NS(MTD_TESTS);
-> +
->  MODULE_DESCRIPTION("NAND page test");
->  MODULE_AUTHOR("Adrian Hunter");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/mtd/tests/readtest.c b/drivers/mtd/tests/readtest.c
-> index 99670ef91f2b..7e01dbc1e8ca 100644
-> --- a/drivers/mtd/tests/readtest.c
-> +++ b/drivers/mtd/tests/readtest.c
-> @@ -210,6 +210,8 @@ static void __exit mtd_readtest_exit(void)
->  }
->  module_exit(mtd_readtest_exit);
->
-> +MODULE_IMPORT_NS(MTD_TESTS);
-> +
->  MODULE_DESCRIPTION("Read test module");
->  MODULE_AUTHOR("Adrian Hunter");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/mtd/tests/speedtest.c b/drivers/mtd/tests/speedtest.c
-> index 075bce32caa5..58f3701d65f2 100644
-> --- a/drivers/mtd/tests/speedtest.c
-> +++ b/drivers/mtd/tests/speedtest.c
-> @@ -413,6 +413,8 @@ static void __exit mtd_speedtest_exit(void)
->  }
->  module_exit(mtd_speedtest_exit);
->
-> +MODULE_IMPORT_NS(MTD_TESTS);
-> +
->  MODULE_DESCRIPTION("Speed test module");
->  MODULE_AUTHOR("Adrian Hunter");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/mtd/tests/stresstest.c b/drivers/mtd/tests/stresstest.c
-> index 75b6ddc5dc4d..341d7cc86d89 100644
-> --- a/drivers/mtd/tests/stresstest.c
-> +++ b/drivers/mtd/tests/stresstest.c
-> @@ -227,6 +227,8 @@ static void __exit mtd_stresstest_exit(void)
->  }
->  module_exit(mtd_stresstest_exit);
->
-> +MODULE_IMPORT_NS(MTD_TESTS);
-> +
->  MODULE_DESCRIPTION("Stress test module");
->  MODULE_AUTHOR("Adrian Hunter");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/mtd/tests/subpagetest.c b/drivers/mtd/tests/subpagetest.c
-> index 05250a080139..87ee2a5c518a 100644
-> --- a/drivers/mtd/tests/subpagetest.c
-> +++ b/drivers/mtd/tests/subpagetest.c
-> @@ -432,6 +432,8 @@ static void __exit mtd_subpagetest_exit(void)
->  }
->  module_exit(mtd_subpagetest_exit);
->
-> +MODULE_IMPORT_NS(MTD_TESTS);
-> +
->  MODULE_DESCRIPTION("Subpage test module");
->  MODULE_AUTHOR("Adrian Hunter");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/mtd/tests/torturetest.c b/drivers/mtd/tests/torturetest.c
-> index 841689b4d86d..2de770f18724 100644
-> --- a/drivers/mtd/tests/torturetest.c
-> +++ b/drivers/mtd/tests/torturetest.c
-> @@ -475,6 +475,8 @@ static int countdiffs(unsigned char *buf, unsigned char *check_buf,
->         return first;
->  }
->
-> +MODULE_IMPORT_NS(MTD_TESTS);
-> +
->  MODULE_DESCRIPTION("Eraseblock torturing module");
->  MODULE_AUTHOR("Artem Bityutskiy, Jarkko Lavinen, Adrian Hunter");
->  MODULE_LICENSE("GPL");
-> --
-> 2.38.1
->
->
-
-
--- 
-Best Regards
-Masahiro Yamada
+> 
+> Cheers,
+> Tony Lu
+> 
+>> Since we now have our own sysctl, which is also exposed to the user,
+>> we should sync the logic in a way that both values are the real value
+>> used by our code and shown by smc_stats. To achieve this this patch
+>> changes the behavior to:
+>>
+>> default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
+>> sockopt  = the setsockopt mechanism
+>> val      = the value assigned in default or via setsockopt
+>> sk_buf   = short for sk_{snd|rcv}buf
+>> real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
+>>
+>>    exposed   | net/core/sock.c  |    af_smc.c     |  smc_core.c
+>>              |                  |                 |
+>> +---------+ |                  | +-------------+ | +-----------------+
+>> | default |----------------------| sk_buf=val*2|---|real_buf=sk_buf/2|
+>> +---------+ |                  | +-------------+ | +-----------------+
+>>              |                  |                 |    ^
+>>              |                  |                 |    |
+>> +---------+ | +--------------+ |                 |    |
+>> | sockopt |---| sk_buf=val*2 |------------------------|
+>> +---------+ | +--------------+ |                 |
+>>              |                  |                 |
+>>
+>> This way both paths follow the same pattern and the expected behavior
+>> is re-established.
+>>
+>> Fixes: 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
+>> Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
+>> Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
+>> ---
+>>   net/smc/af_smc.c   | 9 +++++++--
+>>   net/smc/smc_core.c | 8 ++++----
+>>   2 files changed, 11 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+>> index 036532cf39aa..a8c84e7bac99 100644
+>> --- a/net/smc/af_smc.c
+>> +++ b/net/smc/af_smc.c
+>> @@ -366,6 +366,7 @@ static void smc_destruct(struct sock *sk)
+>>   static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
+>>   				   int protocol)
+>>   {
+>> +	int buffersize_without_overhead;
+>>   	struct smc_sock *smc;
+>>   	struct proto *prot;
+>>   	struct sock *sk;
+>> @@ -379,8 +380,12 @@ static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
+>>   	sk->sk_state = SMC_INIT;
+>>   	sk->sk_destruct = smc_destruct;
+>>   	sk->sk_protocol = protocol;
+>> -	WRITE_ONCE(sk->sk_sndbuf, READ_ONCE(net->smc.sysctl_wmem));
+>> -	WRITE_ONCE(sk->sk_rcvbuf, READ_ONCE(net->smc.sysctl_rmem));
+>> +	buffersize_without_overhead =
+>> +		min_t(int, READ_ONCE(net->smc.sysctl_wmem), INT_MAX / 2);
+>> +	WRITE_ONCE(sk->sk_sndbuf, buffersize_without_overhead * 2);
+>> +	buffersize_without_overhead =
+>> +		min_t(int, READ_ONCE(net->smc.sysctl_rmem), INT_MAX / 2);
+>> +	WRITE_ONCE(sk->sk_rcvbuf, buffersize_without_overhead * 2);
+>>   	smc = smc_sk(sk);
+>>   	INIT_WORK(&smc->tcp_listen_work, smc_tcp_listen_work);
+>>   	INIT_WORK(&smc->connect_work, smc_connect_work);
+>> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+>> index 00fb352c2765..36850a2ae167 100644
+>> --- a/net/smc/smc_core.c
+>> +++ b/net/smc/smc_core.c
+>> @@ -2314,10 +2314,10 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+>>   
+>>   	if (is_rmb)
+>>   		/* use socket recv buffer size (w/o overhead) as start value */
+>> -		sk_buf_size = smc->sk.sk_rcvbuf;
+>> +		sk_buf_size = smc->sk.sk_rcvbuf / 2;
+>>   	else
+>>   		/* use socket send buffer size (w/o overhead) as start value */
+>> -		sk_buf_size = smc->sk.sk_sndbuf;
+>> +		sk_buf_size = smc->sk.sk_sndbuf / 2;
+>>   
+>>   	for (bufsize_short = smc_compress_bufsize(sk_buf_size, is_smcd, is_rmb);
+>>   	     bufsize_short >= 0; bufsize_short--) {
+>> @@ -2376,7 +2376,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+>>   	if (is_rmb) {
+>>   		conn->rmb_desc = buf_desc;
+>>   		conn->rmbe_size_short = bufsize_short;
+>> -		smc->sk.sk_rcvbuf = bufsize;
+>> +		smc->sk.sk_rcvbuf = bufsize * 2;
+>>   		atomic_set(&conn->bytes_to_rcv, 0);
+>>   		conn->rmbe_update_limit =
+>>   			smc_rmb_wnd_update_limit(buf_desc->len);
+>> @@ -2384,7 +2384,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+>>   			smc_ism_set_conn(conn); /* map RMB/smcd_dev to conn */
+>>   	} else {
+>>   		conn->sndbuf_desc = buf_desc;
+>> -		smc->sk.sk_sndbuf = bufsize;
+>> +		smc->sk.sk_sndbuf = bufsize * 2;
+>>   		atomic_set(&conn->sndbuf_space, bufsize);
+>>   	}
+>>   	return 0;
+>> -- 
+>> 2.34.1
