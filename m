@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57AC5634D3B
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 02:36:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F4D634D51
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 02:37:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234862AbiKWBgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 20:36:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
+        id S235495AbiKWBhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 20:37:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235490AbiKWBgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 20:36:16 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18012E0DCA;
-        Tue, 22 Nov 2022 17:36:15 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id 136so15575841pga.1;
-        Tue, 22 Nov 2022 17:36:15 -0800 (PST)
+        with ESMTP id S234070AbiKWBhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 20:37:24 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709879824F;
+        Tue, 22 Nov 2022 17:37:23 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id n17so15530466pgh.9;
+        Tue, 22 Nov 2022 17:37:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VnT85l1YGrgftRmY4cs0kf1GLdUSkFh5ZyBQMsB8/d8=;
-        b=oUgfZGpfTt3n+gdaAcgz00Mug4dCBCNB/xDdXlVP+K6uV0glmqUHVVcqvQO8b0rrYS
-         k3IzWT0SIbOyFZv/D/7QcoURlIYUwvOvNaTu7L+CZNAwJYt1nt0rIwdpZN55gZjFPVDI
-         QJECxzixlHdMg1q1pT9qIYI9+GhiFa1fqTUgbMKyAYcqpJDuaoCiKXQVuUOwTk0jlTjZ
-         3Uev4hAehD0PGurOWFjtKN6iyx6GnRSSpFJyRNen7Sb0J7XCDoK3YT/eXmH0m93Yr+Jz
-         aTw2wWkj5t9YMQ8PpTDjD/+uILOjduYoHPN5Xsw8eSbyvQHXUtHPQgtQs1cq8HHs6mn/
-         8jNA==
+        bh=57QTDQNjua4bD17eBQRGR4QYAKmDZiaeZv3y3ThjHNA=;
+        b=AJd4p4Y1GJ2PPHHqMJkt2vAn6ERqJlfv48oiJrZolP8/Sh1CAzdLzBPA6Y9SygNMOB
+         ZL09xzKfYY7O9Doh92VB3jb6Ja8HBaQeBTEaB8nC72ZjmyawK/usRw5XgujG3BFx/tAa
+         YQzpVS/GviFMu850709iF5BIFlEAro2HnvijgpS0DgkaoVdPf+crlJ8hgf6xE8Hefq+w
+         79hHmd2FIBoMnyNG0wJ0UGHjyN8DYJcXF/xPRlPXnE/3S7V0L3QNV1H73/xPNO9zBSaj
+         Pg4w7ZIQmKiJxfxA9pfQlebDCPWdCV3XIz9WLiDa5A8wWXQqx8dPEJlxFOfUf9f5WHlm
+         xytw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=VnT85l1YGrgftRmY4cs0kf1GLdUSkFh5ZyBQMsB8/d8=;
-        b=0APzdXLJc/TAu9t5pcAjRAs+VbqgYnLrrHXox67jtqoNDq97tkPfUNcCXuFA/U12Ew
-         TiBmlr+Wn2r6euYiSGuv/+3BObCtx5k/36SeZ7RKSu+zL28Te1JSEjECGBiJR0BOlf2/
-         R/pOlORiXzFdwlBX7H8QZqw2SCyG8MEzVjOPb/yp+6nznukM6PZfU4Y2i5sR+lx3TlmI
-         hbj3WSIuO1NPo7Qn/ObLW4Ri/WtI/PNSk2E+iOT/QVGd2UFzls26x7Tt3pqL7AdlPv4/
-         Edus0w23imZNLqG/G+LevRxBJfX9IQsm7p6qGHEnapIrVgrc3tPiV1jHRSL2EHpQnTDq
-         CT8g==
-X-Gm-Message-State: ANoB5pkJjbo95IT/uDKZ6bkTAY4Qm2t8V/YJPhwgvDjlO59yP2qbj6d3
-        xkCdNRr7KNuXPpn6abKCwa0=
-X-Google-Smtp-Source: AA0mqf78pgAVtMq8pq+tCGwJHeM7QPMfI1EDDft+2+fSPKOuH2O4/vhP5xQpLF4Y0UoxHBvM5RyLQA==
-X-Received: by 2002:a63:ff0b:0:b0:477:362d:85d3 with SMTP id k11-20020a63ff0b000000b00477362d85d3mr5493742pgi.395.1669167374414;
-        Tue, 22 Nov 2022 17:36:14 -0800 (PST)
+        bh=57QTDQNjua4bD17eBQRGR4QYAKmDZiaeZv3y3ThjHNA=;
+        b=Xp+xVKZiv7dMq3egI49uxxxbvYedqyTHuitrzxA6GyAq60sVbFtjCG2c9pZXqrKjCc
+         QB8BbTxH25GIuBQoQkh/uYV/OsJoh6g1ZgZ7HtuSt5tLXPIeu8wduJk1El4S4TO/ph5u
+         dsfB1siKCOyUh7fSNxpPWEnUva8PJPpHvEmCF+f9cagh5mFpSo/y4XDL2qUsi/PQ+3XV
+         SnpsELKi9fwYWASuLCDlAGTpNhP//pQFLr59VU/Wfu+RNpjYZFsO2sxjP8jNl7NoCG9C
+         HI/l9lAbg51TeW1lKP2aRR86wjGWnfejofeyGOf/l4niZDyvBOVe3dJiN8qct/30/Hpu
+         hSqQ==
+X-Gm-Message-State: ANoB5pkbuQpHHvRO7TmK28EVTEO7K1Y2EIuioOwe9RjrEmjKoDbQRsyV
+        WYdybXaTHipy/RRi5Bigbow=
+X-Google-Smtp-Source: AA0mqf547JrxZeSVmkQLdlrpalzLSYM74m3LOUHFPzZ3vcYEWkifg+t/S5X1eHUvslK9HNQURfIwrg==
+X-Received: by 2002:a63:de14:0:b0:477:4a61:eb99 with SMTP id f20-20020a63de14000000b004774a61eb99mr16322572pgg.48.1669167442801;
+        Tue, 22 Nov 2022 17:37:22 -0800 (PST)
 Received: from google.com ([2620:15c:9d:2:af8d:6047:29d5:446c])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170902b68500b00186b758c9fasm12680124pls.33.2022.11.22.17.36.11
+        by smtp.gmail.com with ESMTPSA id c4-20020a17090a674400b002189ab866bfsm204545pjm.5.2022.11.22.17.37.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 17:36:13 -0800 (PST)
-Date:   Tue, 22 Nov 2022 17:36:09 -0800
+        Tue, 22 Nov 2022 17:37:22 -0800 (PST)
+Date:   Tue, 22 Nov 2022 17:37:17 -0800
 From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -78,15 +78,14 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Guenter Roeck <linux@roeck-us.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 7/9] dt-bindings: drop redundant part of title
- (beginning)
-Message-ID: <Y315CQUTFYocBnfS@google.com>
+Subject: Re: [PATCH v2 9/9] dt-bindings: drop redundant part of title (manual)
+Message-ID: <Y315Ta+ST067iVmh@google.com>
 References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
- <20221121110615.97962-8-krzysztof.kozlowski@linaro.org>
+ <20221121110615.97962-10-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221121110615.97962-8-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221121110615.97962-10-krzysztof.kozlowski@linaro.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -97,9 +96,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 12:06:13PM +0100, Krzysztof Kozlowski wrote:
->  Documentation/devicetree/bindings/input/gpio-keys.yaml          | 2 +-
->  Documentation/devicetree/bindings/input/microchip,cap11xx.yaml  | 2 +-
+On Mon, Nov 21, 2022 at 12:06:15PM +0100, Krzysztof Kozlowski wrote:
+>  Documentation/devicetree/bindings/input/fsl,scu-key.yaml        | 2 +-
+>  Documentation/devicetree/bindings/input/matrix-keymap.yaml      | 2 +-
 
 Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
