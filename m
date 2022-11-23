@@ -2,96 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D191563574F
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 10:41:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5BAA635738
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 10:41:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237711AbiKWJjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 04:39:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56776 "EHLO
+        id S237945AbiKWJj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 04:39:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237780AbiKWJij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 04:38:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F1A112C4C
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 01:36:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D52E61B6B
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 09:36:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD10BC433B5;
-        Wed, 23 Nov 2022 09:36:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669196185;
-        bh=o3d3CDSxbvPLiKMAWmFXm0jXssJVWBegK4rnicq4WWw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p0AlX28wZwr6X9j6BUbMuXgmVfGEfpo/9bolshJFdpP4aqANKXHA8fCNBPLYPVrNu
-         P8mUp0rshL3TdmYJ4DiftLq0x99u9VPUjgi+wG7yiQ3k2mKZmmlnsQhJQlBK2MFTCC
-         JlhBUV6F/F6XgK6cosXyNPQIHLDOMQtqzp+f6BMi6FypHCKtS6EKdvtWkgbDiTkFGC
-         x+WxmLv89dsjVfZk1V29G3DxduCuPnFEf/spxmuug+jvlV+lMQqTMMulOVgxhU/5g/
-         9lBC66TiI5j2M6Kv7F3fsYNz+tU7qlBfVTco2Z4KvbRloYKysQzxQOpwBlfYJJimxn
-         L+IR4I8PwQFwg==
-Date:   Wed, 23 Nov 2022 11:36:19 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
-Message-ID: <Y33pk/3rUxFqbH2h@unreal>
-References: <20221121110926.GV704954@gauss3.secunet.de>
- <Y3td2OjeIL0GN7uO@unreal>
- <20221121112521.GX704954@gauss3.secunet.de>
- <Y3tiRnbfBcaH7bP0@unreal>
- <Y3to7FYBwfkBSZYA@unreal>
- <20221121124349.GZ704954@gauss3.secunet.de>
- <Y3t2tsHDpxjnBAb/@unreal>
- <20221122131002.GN704954@gauss3.secunet.de>
- <Y3zVVzfrR1YKL4Xd@unreal>
- <20221123083720.GM424616@gauss3.secunet.de>
+        with ESMTP id S237934AbiKWJjj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 04:39:39 -0500
+Received: from out199-3.us.a.mail.aliyun.com (out199-3.us.a.mail.aliyun.com [47.90.199.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D45810613D;
+        Wed, 23 Nov 2022 01:37:20 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R511e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VVWMaJV_1669196233;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VVWMaJV_1669196233)
+          by smtp.aliyun-inc.com;
+          Wed, 23 Nov 2022 17:37:17 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     tgraf@suug.ch
+Cc:     herbert@gondor.apana.org.au, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH v2] lib/test_rhashtable: Remove set but unused variable 'insert_retries'
+Date:   Wed, 23 Nov 2022 17:37:02 +0800
+Message-Id: <20221123093702.32219-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221123083720.GM424616@gauss3.secunet.de>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 09:37:20AM +0100, Steffen Klassert wrote:
-> On Tue, Nov 22, 2022 at 03:57:43PM +0200, Leon Romanovsky wrote:
-> > On Tue, Nov 22, 2022 at 02:10:02PM +0100, Steffen Klassert wrote:
-> > > On Mon, Nov 21, 2022 at 03:01:42PM +0200, Leon Romanovsky wrote:
-> > > > On Mon, Nov 21, 2022 at 01:43:49PM +0100, Steffen Klassert wrote:
-> > > > > On Mon, Nov 21, 2022 at 02:02:52PM +0200, Leon Romanovsky wrote:
-> > > > > 
-> > > > > If policy and state do not match here, this means the lookup
-> > > > > returned the wrong state. The correct state might still sit
-> > > > > in the database. At this point, you should either have found
-> > > > > a matching state, or no state at all.
-> > > > 
-> > > > I check for "x" because of "x = NULL" above.
-> > > 
-> > > This does not change the fact that the lookup returned the wrong state.
-> > 
-> > Steffen, but this is exactly why we added this check - to catch wrong
-> > states and configurations. 
-> 
-> No, you have to adjust the lookup so that this can't happen.
-> This is not a missconfiguration, The lookup found the wrong
-> SA, this is a difference.
-> 
-> Use the offload type and dev as a lookup key and don't consider
-> SAs that don't match this in the lookup.
-> 
-> This is really not too hard to do. The thing that could be a bit
-> more difficult is that the lookup should be only adjusted when
-> we really have HW policies installed. Otherwise this affects
-> even systems that don't use this kind of offload.
+Variable 'insert_retries' is not effectively used in the function, so
+delete it.
 
-Thanks for an explanation, trying it now.
+lib/test_rhashtable.c:437:18: warning: variable 'insert_retries' set but not used.
+
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3242
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+Changes in v2:
+  -The condition for modifying err is less than 0.
+
+ lib/test_rhashtable.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/lib/test_rhashtable.c b/lib/test_rhashtable.c
+index 6a8e445c8b55..c20f6cb4bf55 100644
+--- a/lib/test_rhashtable.c
++++ b/lib/test_rhashtable.c
+@@ -434,7 +434,7 @@ static int __init test_rhltable(unsigned int entries)
+ static int __init test_rhashtable_max(struct test_obj *array,
+ 				      unsigned int entries)
+ {
+-	unsigned int i, insert_retries = 0;
++	unsigned int i;
+ 	int err;
+ 
+ 	test_rht_params.max_size = roundup_pow_of_two(entries / 8);
+@@ -447,9 +447,7 @@ static int __init test_rhashtable_max(struct test_obj *array,
+ 
+ 		obj->value.id = i * 2;
+ 		err = insert_retry(&ht, obj, test_rht_params);
+-		if (err > 0)
+-			insert_retries += err;
+-		else if (err)
++		if (err < 0)
+ 			return err;
+ 	}
+ 
+-- 
+2.20.1.7.g153144c
+
