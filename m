@@ -2,190 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34C7A6357FC
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 10:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DEC7635810
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 10:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238163AbiKWJtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 04:49:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
+        id S238278AbiKWJuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 04:50:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238162AbiKWJsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 04:48:51 -0500
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C12BD14EA;
-        Wed, 23 Nov 2022 01:45:58 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1669196756;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=W7UAyIb+6WzyZxThrcENP/2tVOncA3VWyaK507FBvV4=;
-        b=W2BTzxko4l5/tZr/RDsZFc4wmrSc6ocE1r7G/mRW0+AW/JQ8TbSks4VSipXeM3IltEpLSc
-        sVn2/24MllnsPvPJo4YSzOqAZijl6Kli5UTma7JGoqgLqlLREYdqoB0KFcCl0c6p2FlWR9
-        8mfo5bCtbPAJHYJwl9XkTP/039TGLMQ=
-From:   Guoqing Jiang <guoqing.jiang@linux.dev>
-Subject: Re: [syzbot] unregister_netdevice: waiting for DEV to become free (7)
-To:     wangyufen <wangyufen@huawei.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+5e70d01ee8985ae62a3b@syzkaller.appspotmail.com>,
-        Leon Romanovsky <leon@kernel.org>, chenzhongjin@huawei.com,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>
-References: <00000000000060c7e305edbd296a@google.com>
- <CACT4Y+a=HbyJE3A_SnKm3Be-kcQytxXXF89gZ_cN1gwoAW-Zgw@mail.gmail.com>
- <Y3wwOPmH1WoRj0Uo@ziepe.ca> <ecc8b532-4e80-b7bd-3621-78cd55fd48fa@huawei.com>
-Message-ID: <2f54056f-0acf-e088-c6cc-9ffce77bbe24@linux.dev>
-Date:   Wed, 23 Nov 2022 17:45:53 +0800
+        with ESMTP id S238183AbiKWJty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 04:49:54 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2070.outbound.protection.outlook.com [40.107.220.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A54F266E;
+        Wed, 23 Nov 2022 01:47:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d1I1ygbIrm/TdZeI5xAtTH/QMD+gTj58Mlrshj9tMsgUiYZy49QpC11H+xeOl9dQYE6uYtSAqLmjc5x2BTUjBqHeY6C1UlagOLDT60TFR64UWiMXiHnBo04fjZdJ0k/X8+ad7mH+ASn9f5+jDrBgjgPAP1szb+Ujz9MKBeLbi+hntBpFEQavtxkVeNzLDE1tLxKDqj1cxy8bOHqxRH9FpUn9+XdU3VBBMvQJkreIZ1OscsO0xIYWhoS57RfZq3K3xACMCsH42UJkbgMACqWybK8sXnRTLPI/kgtCqS2iJNb1hRYTKO+ISJvRyfFYakz4jCpDR5bfpxfILmoXbXkfKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Z3MCHNVqz0pdaDzCky7cVHrrRKkLfcxDW995JqX6bX8=;
+ b=LWDDiNvDNxKbpMizwwbxMt87Mi2JrJu7ezIBDyF/OGZ5kY6hbNJP0uQLyJ8fCzSQBQPoTDnPTWXt3aRNf0k4M8ZT3xQfMkGqNz9i44/TSkh6udqI409R3NDSTGTKqIkserOQ+Z9trnh0G7y1HO/4hIcpELq7ifTAyITzN3qWMbnUo05sAG2V4fyLgJ5AopYtD8nJr2bLzW5fEGWiajihoBXKQ97YMqZgLIZ5/bMO7rV7Q5BKAmZgOVarEp8tz7LmKHkKKGRGlGVbKFkNDBZSoJgGach0RJCddevHw0CeQjeDxXFCoLTpnGBA8cCKhuCl0osHKd6vUQBZvEPESCbz2Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z3MCHNVqz0pdaDzCky7cVHrrRKkLfcxDW995JqX6bX8=;
+ b=CwUdsIwUlLUh1wAVR41Xm/HEU8/NZ9XPp0NrLUyi65bhq5Y27ZSa8YJz9Z4tqh5pDuFZOpFkzXpx5LEbFkO97rh9nMDTWPkgfwqOvXtxOpv4JWyEkURDuPbPNuujHoZUnmSruI/9t753c7kjFHaIm4jIXOB4rXF7rLF+kGAer25T2ia4z8km9z6D7DAdQhOMynLluvG1h2r11/YsoaT/G9XTjYc4Wjcnk54zfLbOUCKIWYZuWBqANUmy0RsJ5GF9iDlGhgWrDvPi4Bj2x5X68s6sc2fwbeSwhcPgRzEtyPNeULbX0QAlbYLE2CafhV7whssiezZq3WUo5+CGnCjBPA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN0PR12MB5979.namprd12.prod.outlook.com (2603:10b6:208:37e::15)
+ by IA1PR12MB6532.namprd12.prod.outlook.com (2603:10b6:208:3a3::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Wed, 23 Nov
+ 2022 09:47:01 +0000
+Received: from MN0PR12MB5979.namprd12.prod.outlook.com
+ ([fe80::62b2:b96:8fd1:19f5]) by MN0PR12MB5979.namprd12.prod.outlook.com
+ ([fe80::62b2:b96:8fd1:19f5%4]) with mapi id 15.20.5813.013; Wed, 23 Nov 2022
+ 09:47:01 +0000
+Date:   Wed, 23 Nov 2022 10:46:55 +0100
+From:   Jiri Pirko <jiri@nvidia.com>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] net: devlink: devlink_nl_info_fill: populate default
+ information
+Message-ID: <Y33sD/atEWBTPinG@nanopsycho>
+References: <20221122154934.13937-1-mailhol.vincent@wanadoo.fr>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221122154934.13937-1-mailhol.vincent@wanadoo.fr>
+X-ClientProxiedBy: FR0P281CA0116.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a8::18) To MN0PR12MB5979.namprd12.prod.outlook.com
+ (2603:10b6:208:37e::15)
 MIME-Version: 1.0
-In-Reply-To: <ecc8b532-4e80-b7bd-3621-78cd55fd48fa@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5979:EE_|IA1PR12MB6532:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1ae7fa92-296f-4b97-2922-08dacd37aafc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xX5W7PRXf1jDw0L6dX5AfxTltY+08Yrr11yEsgCS3pYKKmT1CmtZ4SAY58tAdoavzELrX4PHZMYEPe1btT6KSRFyyTaOsMVcRpjllWRtFRdazZZbjBQsEJ4dzvnms/lMjWx5sisxJ9VF1aqIjwmtK1K/hNdXRQcRjSnT6K+uRh/+ILEmHatPyBp8Tuk1uiKl3uNW3KMyH3ANaBe0sT/TZFfElrJPpFQ9L0JQAtf8tjNN7flBVhypjlf5xR42YVw8WUFv1MgB2bYXxJwA9NKV6H0KRCfvf1ZK7FHskhgEwKg5AtQqy+pjXmtE1hnO0FedOdeEgfKUHQPh1kj5328JVd4+KCKqup++4c0J5A1lIApasEkPXGb6/UkUtY00j3BxumhLnM1S2O8Ax95vZ5LYEtt0oV2ECqAO1gRgRlzpsVAcnVbNz+NPXVwsKDI3sdUbGnuCIks/uxkfE+FC9xOSyWj7Fbs5Fycr4cVPsNS84W1ecTOTLV1zFnCJkeCLHmsbhPKEYtHENk07KFvB2Vhvrl6ikrJaruv0EGnsSCsKoWMKeu4eE45slVN2MwZ2oybIm+3rhZZEqs2DpFtDy2ss/2c0IGKMHlwUvP+Njs6FQotnNBWqeO4CtSzrCGr6YnTweB4MVpGtQ8W7Jqryv0dlCk8dqpiUX9IVwLwCzsxcBez0Dnij9Dl+FFY+jk0+v7/Jl1RL25c8y4etSpPP3jtnnIXCPQU41XcZTOUZNvhry34=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5979.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(39860400002)(396003)(376002)(366004)(136003)(346002)(451199015)(83380400001)(26005)(6486002)(966005)(478600001)(2906002)(86362001)(33716001)(186003)(9686003)(38100700002)(66476007)(66946007)(66556008)(6506007)(6666004)(316002)(8676002)(4326008)(6512007)(41300700001)(6916009)(54906003)(5660300002)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QbOHd0ZAbxds9SHYgWy+tg9TAuK7ffC6iWgv9QtnX1JOGVStSMVJTH3s2Lef?=
+ =?us-ascii?Q?UUhxUZyMMIl+aRO10wSprrgpvjEOysjYv0MnhdF/urVa8lMxjAI7+EXLbMAP?=
+ =?us-ascii?Q?EtBzlmlsSHi0QPmMQ0sWsKWZFj+xz8tMOdMZwDf8mdksoEaT1Tpzoh+N7wwA?=
+ =?us-ascii?Q?9LWAoEuOLqcbDyBj+nKzxQPqQ5XqXJOdtpjEsyvM8Kk4FNmfO+o/sWTtBWlq?=
+ =?us-ascii?Q?wAKYKRROxdoE1OLxhFP9sjtg08ptPoBamYEYU/nb6EOaVikVxOmJSBtUT1xM?=
+ =?us-ascii?Q?0cCMae/GKZa0RL+x8Lk2R8PdpEYRXW/nAEUTBtDpzaTt4ocpvsS4tPhYkeeS?=
+ =?us-ascii?Q?YM3kPFeBx9XjsEKkaeNuBQSQXIF90hBrRlYEZ+YFKajacj41OHR+8gvLcbPU?=
+ =?us-ascii?Q?n1fTQ3iY6Z6mEUGUtO3N1IdHAXn9yc17MeL90q27CdAgYL9kKv3Uqyn7Hwou?=
+ =?us-ascii?Q?ERdnjInZTtoCygl2zbdDrjR/oW/eLgSzfjEwP6qrL7vHRAXs+xhtLbMOz6kg?=
+ =?us-ascii?Q?w4UKss64gpEaj+iFfMhQmP6RVjTcTeybzhg6twTXS2Nha8VJhCcuyMXUNpXK?=
+ =?us-ascii?Q?JfAvoeM/SewcXsuif7DP/KLhH6UBCnbfcnbso7ZZCDYket2BynklNyRshLUh?=
+ =?us-ascii?Q?UAXpcYQ7n1X3ltdIlmkirSHBf5Zg/yPda3NVXgclTtJAdXIjvUbO9wUJIfJm?=
+ =?us-ascii?Q?9nNzRSVxJm3HPUyqtZz31t8cWMoUTKz0Me4pinKUvJGJqSyih7Gk7UmiYR0C?=
+ =?us-ascii?Q?HStxjqiqjjEr5BF9hkIsYfkfZqHLGndhmAObln+s9qW2SHyhyQStPUZtU8Iu?=
+ =?us-ascii?Q?MPnOhCL9sm1j1hKoD5bbw3JZ7RT/EJs5288SDEi58cQKmUZ7vvji/vf24TwB?=
+ =?us-ascii?Q?BNUr5gz12W4gjLEzfCWJeyakri4sk9ado1K5qjFpu3NDwaFzooEl7WDs7T1T?=
+ =?us-ascii?Q?L3YqyKUFwr02mo1kXAurrOLLiN6Sq7T4AXhvgnUylJDQVrPHqzHOHHx1IM0e?=
+ =?us-ascii?Q?JZTQ+ml55O55rWgBB4+GkC/MqB81P/C2WdevMpY6Z1NojTN3ka7FeOVib9bk?=
+ =?us-ascii?Q?GF8O8zLnZBiTRiRoWYKbKB62Zk05dJHWo2wEMsb7Fv2a1FJGrFSm7d6fhBk7?=
+ =?us-ascii?Q?PiveRoBX4JnVFIr4Y96PYXbrA7oT+E+Ut4uk81aBqLEjfDE87LhDC5EzQ5lH?=
+ =?us-ascii?Q?bj8cU/e5PvQ8TjqLWoIY/2Dp/iHPB+UkeNRMjOJ1ZXNWR/lDKbB1z9GN6Yku?=
+ =?us-ascii?Q?SAbs8rTA25/c2tteOTDQmnw4SZr2Z239X1OhT2cE/ms9H2KQzupms3kIgdKT?=
+ =?us-ascii?Q?qHjtTUDRXbAWSRfWF6v83Gxk2TXcMUcKKwzbSoQCGDeJ8IYVHP7CmFb02+qJ?=
+ =?us-ascii?Q?qmpzg5A2rcIoVn3Ve5YhLlNLGbgdPxsWWqEZyXrmnxHL5qhVtzWE6p8CEGK1?=
+ =?us-ascii?Q?uivZAXIYSkq2/23T6rSOo9XHGzKoioNq7WCjNmSbkDxOrYlJqu1eZb6W3SK1?=
+ =?us-ascii?Q?0dZjY8sJcyujiTKfWuewjgU+GvVhYLar060ef2f9mfBtHDhkMhXx4RleSjAx?=
+ =?us-ascii?Q?UAcdDbiJeC8hijm6FIZGmTQV7UhTTs4mQhOE6TRf?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ae7fa92-296f-4b97-2922-08dacd37aafc
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5979.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2022 09:47:01.3623
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1iXcE2vsFkUSMtOmsJ7sd6SbnPCOA6aRkO3AI52O7YjosHqB8l4REg5YXCwwPzuJ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6532
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/22/22 11:28 AM, wangyufen wrote:
+Tue, Nov 22, 2022 at 04:49:34PM CET, mailhol.vincent@wanadoo.fr wrote:
+>Some piece of information are common to the vast majority of the
+>devices. Examples are:
 >
-> 在 2022/11/22 10:13, Jason Gunthorpe 写道:
->> On Fri, Nov 18, 2022 at 02:28:53PM +0100, Dmitry Vyukov wrote:
->>> On Fri, 18 Nov 2022 at 12:39, syzbot
->>> <syzbot+5e70d01ee8985ae62a3b@syzkaller.appspotmail.com> wrote:
->>>>
->>>> Hello,
->>>>
->>>> syzbot found the following issue on:
->>>>
->>>> HEAD commit:    9c8774e629a1 net: eql: Use kzalloc instead of 
->>>> kmalloc/memset
->>>> git tree:       net-next
->>>> console output: 
->>>> https://syzkaller.appspot.com/x/log.txt?x=17bf6cc8f00000
->>>> kernel config: 
->>>> https://syzkaller.appspot.com/x/.config?x=9eb259db6b1893cf
->>>> dashboard link: 
->>>> https://syzkaller.appspot.com/bug?extid=5e70d01ee8985ae62a3b
->>>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU 
->>>> Binutils for Debian) 2.35.2
->>>> syz repro: https://syzkaller.appspot.com/x/repro.syz?x=1136d592f00000
->>>> C reproducer: https://syzkaller.appspot.com/x/repro.c?x=1193ae64f00000
->>>>
->>>> Bisection is inconclusive: the issue happens on the oldest tested 
->>>> release.
->>>>
->>>> bisection log: 
->>>> https://syzkaller.appspot.com/x/bisect.txt?x=167c33a2f00000
->>>> final oops: 
->>>> https://syzkaller.appspot.com/x/report.txt?x=157c33a2f00000
->>>> console output: 
->>>> https://syzkaller.appspot.com/x/log.txt?x=117c33a2f00000
->>>>
->>>> IMPORTANT: if you fix the issue, please add the following tag to 
->>>> the commit:
->>>> Reported-by: syzbot+5e70d01ee8985ae62a3b@syzkaller.appspotmail.com
->>>>
->>>> iwpm_register_pid: Unable to send a nlmsg (client = 2)
->>>> infiniband syj1: RDMA CMA: cma_listen_on_dev, error -98
->>>> unregister_netdevice: waiting for vlan0 to become free. Usage count 
->>>> = 2
->>>
->>> +RDMA maintainers
->>>
->>> There are 4 reproducers and all contain:
->>>
->>> r0 = socket$nl_rdma(0x10, 0x3, 0x14)
->>> sendmsg$RDMA_NLDEV_CMD_NEWLINK(...)
->>>
->>> Also the preceding print looks related (a bug in the error handling
->>> path there?):
->>>
->>> infiniband syj1: RDMA CMA: cma_listen_on_dev, error -98
->>
->> I'm pretty sure it is an rxe bug
->>
->> ib_device_set_netdev() will hold the netdev until the caller destroys
->> the ib_device
->>
->> rxe calls it during rxe_register_device() because the user asked for a
->> stacked ib_device on top of the netdev
->>
->> Presumably rxe needs to have a notifier to also self destroy the rxe
->> device if the underlying net device is to be destroyed?
->>
->> Can someone from rxe check into this?
+>  * the driver name.
+>  * the serial number of a USB device.
 >
-> The following patch may fix the issue：
+>Modify devlink_nl_info_fill() to retrieve those information so that
+>the drivers do not have to. Rationale: factorize code.
 >
-> --- a/drivers/infiniband/core/cma.c
-> +++ b/drivers/infiniband/core/cma.c
-> @@ -4049,6 +4049,9 @@ int rdma_listen(struct rdma_cm_id *id, int backlog)
->         return 0;
->  err:
->         id_priv->backlog = 0;
-> +       if (id_priv->cma_dev)
-> +               cma_release_dev(id_priv);
-> +
->         /*
->          * All the failure paths that lead here will not allow the 
-> req_handler's
->          * to have run.
+>Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+>---
+>I am sending this as an RFC because I just started to study devlink.
 >
-
-But it is the caller's responsibility to destroy it since commit 
-dd37d2f59eb8.
-
-> The causes are as follows:
+>I can see a parallel with ethtool for which the core will fill
+>whatever it can. c.f.:
+>commit f20a0a0519f3 ("ethtool: doc: clarify what drivers can implement in their get_drvinfo()")
+>Link: https://git.kernel.org/netdev/net-next/c/f20a0a0519f3
 >
-> rdma_listen()
->   rdma_bind_addr()
->     cma_acquire_dev_by_src_ip()
->       cma_attach_to_dev()
->         _cma_attach_to_dev()
->           cma_dev_get()
+>I think that devlink should do the same.
+>
+>Right now, I identified two fields. If this RFC receive positive
+>feedback, I will iron it up and try to see if there is more that can
+>be filled by default.
+>
+>Thank you for your comments.
+>---
+> net/core/devlink.c | 36 ++++++++++++++++++++++++++++++++++++
+> 1 file changed, 36 insertions(+)
+>
+>diff --git a/net/core/devlink.c b/net/core/devlink.c
+>index 7f789bbcbbd7..1908b360caf7 100644
+>--- a/net/core/devlink.c
+>+++ b/net/core/devlink.c
+>@@ -18,6 +18,7 @@
+> #include <linux/netdevice.h>
+> #include <linux/spinlock.h>
+> #include <linux/refcount.h>
+>+#include <linux/usb.h>
+> #include <linux/workqueue.h>
+> #include <linux/u64_stats_sync.h>
+> #include <linux/timekeeping.h>
+>@@ -6685,12 +6686,37 @@ int devlink_info_version_running_put_ext(struct devlink_info_req *req,
+> }
+> EXPORT_SYMBOL_GPL(devlink_info_version_running_put_ext);
+> 
+>+static int devlink_nl_driver_info_get(struct device_driver *drv,
+>+				      struct devlink_info_req *req)
+>+{
+>+	if (!drv)
+>+		return 0;
+>+
+>+	if (drv->name[0])
+>+		return devlink_info_driver_name_put(req, drv->name);
 
-Thanks for the analysis.
+Make sure that this provides the same value for all existing drivers
+using devlink.
 
-And for the two callers of cma_listen_on_dev, looks they have
-different behaviors with regard to handling failure.
 
-1. cma_listen_on_all which calls both
-             list_del_init(&to_destroy->device_item)
-     and
-             rdma_destroy_id(&to_destroy->id)
+>+
+>+	return 0;
+>+}
+>+
+>+static int devlink_nl_usb_info_get(struct usb_device *udev,
+>+				   struct devlink_info_req *req)
+>+{
+>+	if (!udev)
+>+		return 0;
+>+
+>+	if (udev->serial[0])
+>+		return devlink_info_serial_number_put(req, udev->serial);
+>+
+>+	return 0;
+>+}
+>+
+> static int
+> devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
+> 		     enum devlink_command cmd, u32 portid,
+> 		     u32 seq, int flags, struct netlink_ext_ack *extack)
+> {
+> 	struct devlink_info_req req = {};
+>+	struct device *dev = devlink_to_dev(devlink);
+> 	void *hdr;
+> 	int err;
+> 
+>@@ -6707,6 +6733,16 @@ devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
+> 	if (err)
+> 		goto err_cancel_msg;
+> 
+>+	err = devlink_nl_driver_info_get(dev->driver, &req);
+>+	if (err)
+>+		goto err_cancel_msg;
+>+
+>+	if (!strcmp(dev->parent->type->name, "usb_device")) {
 
-2. cma_add_one invokes cma_process_remove to delete to_destroy,
-cma_process_remove call both list_del_init(&id_priv->listen_item)
-and list_del_init(&id_priv->device_item), but it doesn't call
-rdma_destroy_id(&dev_id_priv->id) which is also different with
-_cma_cancel_listens.
+Comparing to string does not seem correct here.
 
-I am wondering if this is needed.
 
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index cc2222b85c88..48e283d1389b 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -5231,6 +5231,7 @@ static void cma_process_remove(struct cma_device 
-*cma_dev)
-                 cma_id_get(id_priv);
-                 mutex_unlock(&lock);
+>+		err = devlink_nl_usb_info_get(to_usb_device(dev->parent), &req);
 
-+               rdma_destroy_id(&dev_id_priv->id);
-                 cma_send_device_removal_put(id_priv);
+As Jakub pointed out, you have to make sure that driver does not put the
+same attrs again. You have to introduce this functionality with removing
+the fill-ups in drivers atomically, in a single patch.
 
-                 mutex_lock(&lock);
 
-Thanks,
-Guoqing
+>+		if (err)
+>+			goto err_cancel_msg;
+>+	}
+>+
+> 	genlmsg_end(msg, hdr);
+> 	return 0;
+> 
+>-- 
+>2.37.4
+>
