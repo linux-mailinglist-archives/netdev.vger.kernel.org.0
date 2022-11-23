@@ -2,99 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1D55636E0B
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 00:05:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA1EA636E14
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 00:07:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229711AbiKWXEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 18:04:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
+        id S229472AbiKWXGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 18:06:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiKWXEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 18:04:16 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F131165A7
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 15:04:14 -0800 (PST)
+        with ESMTP id S229714AbiKWXGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 18:06:35 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C07D14FECF
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 15:06:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669244655; x=1700780655;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VFtu6hiWTWQjuHM2iflxAIC7PHHrrdb8OjLgeyef2iU=;
-  b=LgJonuRP+p0lX8lvOxDtQmfDoqB5Le2kq6MZZ3Gi2fcan9FIct6VFx4J
-   ih9M2+Wr3aRxF3QyHSTXqVYwvsFNY+5pVgvUxvzVvt0EOlpPSBjkiTGR8
-   KEvqABOKibCpjUEfaAISwquLkrSUF8XZwCKbbQvpNmnaxGNpVtGfHyA4G
-   Be48pkkt0OREyAjLMEokc42Ld7EOuyHhy0LGH6IOjgZk6Z6RIF7RQwJmi
-   HNBy01MnZCRAeoOPkdO03xO93FzGFD1fP745He+G87HJa27afqHslYDgF
-   nOAojrkruC7LSBhSna4Q7us4tgDawJZmS5lcP6i7o6oNqF71YcDLhqFs0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="297533746"
+  t=1669244790; x=1700780790;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9px5K1CWSb/VUFmv3oFN8H6YH8dBafr23DNshDJc0gQ=;
+  b=XL/jF3uf5oedYSFN3W/ayG2dfhS6Ocpuc80ypc6tYFolQO8/PzaLr9kP
+   r5oCnmTFsbAHwZJMvL83UKWX18jKuAHIkPBr+KfeX26QUAfGzXkS6KPp1
+   SF2kPqbT6UeBJHuycr2P85A6XvpqAwjjyC9V1jhaqgUDdq1VAGr7iFMt4
+   CaOMOaARkVIxc9L9LIt37ttkC2i5Yzb937d1aSdF3fHJqB2dHRdVtjnQI
+   uSX7sASp4iyRGjcd6EZoMY/g2xbGGacTYSZTuJd5SBm2LnDGlM1iiLwI+
+   qow4vx0Ej+9k1xwelEWzc5zkH7Kuw4mbYYkoigeD62C7SeaXakPClP4i5
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="376318622"
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="297533746"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 15:04:13 -0800
+   d="scan'208";a="376318622"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 15:06:29 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="887124334"
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="705531252"
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="887124334"
+   d="scan'208";a="705531252"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga006.fm.intel.com with ESMTP; 23 Nov 2022 15:04:13 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 23 Nov 2022 15:06:28 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Wang Hai <wanghai38@huawei.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, baijiaju1990@163.com,
-        Alexander Duyck <alexanderduyck@fb.com>
-Subject: [PATCH net 5/5] e100: Fix possible use after free in e100_xmit_prepare
-Date:   Wed, 23 Nov 2022 15:04:06 -0800
-Message-Id: <20221123230406.3562753-6-anthony.l.nguyen@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net-next v3 0/6][pull request] Intel Wired LAN Driver Updates 2022-11-23 (ice)
+Date:   Wed, 23 Nov 2022 15:06:15 -0800
+Message-Id: <20221123230621.3562805-1-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221123230406.3562753-1-anthony.l.nguyen@intel.com>
-References: <20221123230406.3562753-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+This series contains updates to ice driver only.
 
-In e100_xmit_prepare(), if we can't map the skb, then return -ENOMEM, so
-e100_xmit_frame() will return NETDEV_TX_BUSY and the upper layer will
-resend the skb. But the skb is already freed, which will cause UAF bug
-when the upper layer resends the skb.
+Karol adjusts check of PTP hardware to wait longer but check more often.
 
-Remove the harmful free.
+Brett removes use of driver defined link speed; instead using the values
+from ethtool.h, utilizing static tables for indexing.
 
-Fixes: 5e5d49422dfb ("e100: Release skb when DMA mapping is failed in e100_xmit_prepare")
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Ben adds tracking of stats in order to accumulate reported statistics that
+were previously reset by hardware.
+
+Marcin fixes issues setting RXDID when queues are asymmetric.
+
+Anatolii re-introduces use of define over magic number; ICE_RLAN_BASE_S.
 ---
- drivers/net/ethernet/intel/e100.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+v3:
+ - Dropped, previous, patch 2
+v2:
+Patch 5
+ - Convert some allocations to non-managed
+ - Remove combined error checking; add error checks for each call
+ - Remove excess NULL checks
+ - Remove unnecessary NULL sets and newlines
 
-diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
-index 560d1d442232..d3fdc290937f 100644
---- a/drivers/net/ethernet/intel/e100.c
-+++ b/drivers/net/ethernet/intel/e100.c
-@@ -1741,11 +1741,8 @@ static int e100_xmit_prepare(struct nic *nic, struct cb *cb,
- 	dma_addr = dma_map_single(&nic->pdev->dev, skb->data, skb->len,
- 				  DMA_TO_DEVICE);
- 	/* If we can't map the skb, have the upper layer try later */
--	if (dma_mapping_error(&nic->pdev->dev, dma_addr)) {
--		dev_kfree_skb_any(skb);
--		skb = NULL;
-+	if (dma_mapping_error(&nic->pdev->dev, dma_addr))
- 		return -ENOMEM;
--	}
- 
- 	/*
- 	 * Use the last 4 bytes of the SKB payload packet as the CRC, used for
+The following are changes since commit e80bd08fd75a644e2337fb535c1afdb6417357ff:
+  sfc: ensure type is valid before updating seen_gen
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Anatolii Gerasymenko (1):
+  ice: Use ICE_RLAN_BASE_S instead of magic number
+
+Benjamin Mikailenko (2):
+  ice: Accumulate HW and Netdev statistics over reset
+  ice: Accumulate ring statistics over reset
+
+Brett Creeley (1):
+  ice: Remove and replace ice speed defines with ethtool.h versions
+
+Karol Kolacinski (1):
+  ice: Check for PTP HW lock more frequently
+
+Marcin Szycik (1):
+  ice: Fix configuring VIRTCHNL_OP_CONFIG_VSI_QUEUES with unbalanced
+    queues
+
+ drivers/net/ethernet/intel/ice/ice.h          |   7 +
+ drivers/net/ethernet/intel/ice/ice_base.c     |   2 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  41 ++-
+ drivers/net/ethernet/intel/ice/ice_common.h   |   1 +
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   3 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  12 +-
+ .../net/ethernet/intel/ice/ice_lan_tx_rx.h    |  12 -
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 272 +++++++++++++++---
+ drivers/net/ethernet/intel/ice/ice_main.c     |  96 +++++--
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c   |  12 +-
+ drivers/net/ethernet/intel/ice/ice_repr.c     |  10 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  40 ++-
+ drivers/net/ethernet/intel/ice/ice_txrx.h     |  18 +-
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.c |   2 +-
+ drivers/net/ethernet/intel/ice/ice_vf_mbx.c   |  92 ++----
+ drivers/net/ethernet/intel/ice/ice_virtchnl.c |  37 ++-
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |  25 +-
+ 17 files changed, 482 insertions(+), 200 deletions(-)
+
 -- 
 2.35.1
 
