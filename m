@@ -2,86 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E37B56361B6
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 15:27:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEE556361A0
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 15:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237770AbiKWO1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 09:27:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48604 "EHLO
+        id S238347AbiKWO0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 09:26:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236380AbiKWO0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 09:26:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72FF8FE47
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:24:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669213468;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+HXGpPooIMe6sNdUgSAzfW/8NtY/urg9PVU34CjlakY=;
-        b=OBORLP989/dOAQ6smlajHowVC8lvpRL6wjZKpCCksfRLrFIUIX/YvR0/phep7PUmWv/GMd
-        vXwEpbY7XRbcCtLICuYVMTvxk2DtmQXCdT5Ek8hQ7kT7p/icUVj2kD5L6kKu8YpN55WfzS
-        n9muon6N1tamd7zD1WADJVsMA0ohv00=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-99-3SX68_FTPKOyntkq9caVxQ-1; Wed, 23 Nov 2022 09:24:26 -0500
-X-MC-Unique: 3SX68_FTPKOyntkq9caVxQ-1
-Received: by mail-ej1-f71.google.com with SMTP id jg27-20020a170907971b00b007ad9892f5f6so9993916ejc.7
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:24:26 -0800 (PST)
+        with ESMTP id S236841AbiKWO0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 09:26:04 -0500
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57896DCDB
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:25:02 -0800 (PST)
+Received: by mail-ot1-x32e.google.com with SMTP id w26-20020a056830061a00b0066c320f5b49so11292982oti.5
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:25:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=H/UsIvaRVE/k9ro7Rwgem4eqgMnyw8TWs9rPo/tEcqI=;
+        b=C4cVZHPXxp3KPdT/uU8avgCX5YdVqxg5I80A2QjzwxkBUmvugGK1LKK5rWTYHcusJQ
+         2UihLuhqvB0BDM1Z91LGtV86SZiqtdoSj6bHXJt4kfjktoFveGf6CGe9YmQznyYfRt+f
+         IsFt8hbP0goZvkIiPziPrjb9u4kqIDVHqAJ0ou5l9slDZkHaL7zt8uldItPSD7dd/PEI
+         n9A/jQq9gvCWtXxnGn1NpjgbBBIJtpC1pYgGOrNtU+iL+6RzYxUaYX/2zOn0CdS0NE0L
+         7dQh/Eyx92DqM7kECDZFEzd1ae0aBcahmQiEajFL35VB6bU0GWdlIA0FjF4kKP0Rlxek
+         R7KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+HXGpPooIMe6sNdUgSAzfW/8NtY/urg9PVU34CjlakY=;
-        b=ZIT3i5grooz2nHoO5WtC/O41S7pZs+WcChWVCuLOk1ORThFJstLab/NtyHTgmdlu1l
-         Cs0PMFLwLmpm3MhKaM6CJysEfGeoHL9ujOnzLDNGHylzUbzhDEMAfAya6QH813gNUt36
-         z3ZBbu2YjhhGA2+XoNmVFzCWeqpuToKv0jRlyVGTgWXyooZh7mHRCrv8xAwDxwDQRW7p
-         MYt2KrmYXl5YirsutKebYnUEk27mA0PeEDz/OnsLUleL1Q8pwtTwgbgiypY3d8rcZH6R
-         6TL6mKU25gzKOjbNS05WPN5Nq41OkCRLJYcZcbW8N+KO6MTCDrfG9LHPTnGl31mQiUin
-         GqMA==
-X-Gm-Message-State: ANoB5pl1d41aBG3trZTZM9eAtQOD1/Kt8/dBW/mXvw6eMS3b8RzcpD4a
-        oXLOIB9bD6TGVF1tFiPEEao5dXxwI4E9aBeznaXeYU1SP4FQzZ4MxauyHSBbY5mmntGMT0RyisI
-        WMU3576StXwWZMVkJ
-X-Received: by 2002:a17:906:b749:b0:7b6:6e0a:17dd with SMTP id fx9-20020a170906b74900b007b66e0a17ddmr8326449ejb.590.1669213465279;
-        Wed, 23 Nov 2022 06:24:25 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4TlTtotUdHzjVrM8lE5ZJ5PpqfjRzrePg1TyOkbZEtVq8E4QPMbh+AfzYYZrhKKTyMbjQLbQ==
-X-Received: by 2002:a17:906:b749:b0:7b6:6e0a:17dd with SMTP id fx9-20020a170906b74900b007b66e0a17ddmr8326415ejb.590.1669213464920;
-        Wed, 23 Nov 2022 06:24:24 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id ee47-20020a056402292f00b00468f7bb4895sm7369868edb.43.2022.11.23.06.24.24
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=H/UsIvaRVE/k9ro7Rwgem4eqgMnyw8TWs9rPo/tEcqI=;
+        b=4+aiLyHuHJIMkhUYmCsLCUXbRyL+iJlF0S7WNaRb1V1LwpifP2XgR/dJ7kzyIOA1vJ
+         dIYCP9iGEkNtno0LRKb2TyqB5kFExrVgPw5z0qSYphb0KpkJR+vjxrR5ORb+xJPgmLdF
+         Z+wQUTW5WUPixb+I/SBOV/ZGEW8lEJH7BSk1XaOLj16Ym6o9OUZmmXlt7JNMX2NM0L81
+         ZHMWo0lIVNcn8XFhzODQp+KyXKwun/MktY5sGhEiem4igQEQW7D8f2FTKLVqlHiX0In4
+         not1rxdcz65txhCIr2XVFhkUmVAhtcHAfIXygWed6m5nSWm0v6/jAikJOUG8RYCCZKCw
+         Pcvw==
+X-Gm-Message-State: ANoB5pkZW5QDTmdOUrE4Hlw5zcNju4xxx7uRhLLWCeoky5qLp4MUggcC
+        YpMXKBa5/xnt8eRGj1C6mAk=
+X-Google-Smtp-Source: AA0mqf4IsCNItNLCHNAAd5cvPY70Jvp5iH2KuLnEsxA/NIY2q84trtpvuMYNXg1kl+gytPX47/9A0w==
+X-Received: by 2002:a9d:7515:0:b0:66c:5407:98f7 with SMTP id r21-20020a9d7515000000b0066c540798f7mr14912017otk.85.1669213502188;
+        Wed, 23 Nov 2022 06:25:02 -0800 (PST)
+Received: from t14s.localdomain ([2001:1284:f016:5412:fa8e:2d33:bd7c:54c7])
+        by smtp.gmail.com with ESMTPSA id 7-20020a9d0807000000b00660fe564e12sm7301475oty.58.2022.11.23.06.25.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 06:24:24 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 81EF07D5114; Wed, 23 Nov 2022 15:24:23 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [xdp-hints] [PATCH bpf-next v2 2/8] bpf: XDP metadata RX kfuncs
-In-Reply-To: <20221121182552.2152891-3-sdf@google.com>
-References: <20221121182552.2152891-1-sdf@google.com>
- <20221121182552.2152891-3-sdf@google.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 23 Nov 2022 15:24:23 +0100
-Message-ID: <87a64hvje0.fsf@toke.dk>
+        Wed, 23 Nov 2022 06:25:01 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 8C6A2459CA2; Wed, 23 Nov 2022 11:24:59 -0300 (-03)
+Date:   Wed, 23 Nov 2022 11:24:59 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
+        ovs-dev@openvswitch.org, davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Aaron Conole <aconole@redhat.com>
+Subject: Re: [PATCHv2 net-next 2/5] openvswitch: return NF_ACCEPT when
+ OVS_CT_NAT is net set in info nat
+Message-ID: <Y34tO9GANkP3aSfe@t14s.localdomain>
+References: <cover.1669138256.git.lucien.xin@gmail.com>
+ <834a564cfccd63c3700003d3f9986136a3350d63.1669138256.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <834a564cfccd63c3700003d3f9986136a3350d63.1669138256.git.lucien.xin@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -89,24 +87,5 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
->  			    struct bpf_insn *insn_buf, int insn_idx, int *cnt)
->  {
-> @@ -15181,6 +15200,15 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
->  		return -EINVAL;
->  	}
->  
-> +	if (resolve_prog_type(env->prog) == BPF_PROG_TYPE_XDP) {
-> +		int imm = fixup_xdp_kfunc_call(env, insn->imm);
-> +
-> +		if (imm) {
-> +			insn->imm = imm;
-> +			return 0;
-
-This needs to also set *cnt = 0 before returning; otherwise the verifier
-can do some really weird instruction rewriting that leads to the JIT
-barfing on invalid instructions (as I just found out while trying to
-test this).
-
--Toke
+There's a typo in the subject here, s/is net/is not/ .
 
