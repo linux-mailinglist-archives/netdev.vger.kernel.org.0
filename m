@@ -2,50 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B883636E06
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 00:05:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E676636E09
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 00:05:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbiKWXEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229697AbiKWXEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 23 Nov 2022 18:04:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiKWXEN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 18:04:13 -0500
+        with ESMTP id S229508AbiKWXEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 18:04:14 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B3311606C
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 15:04:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA4E11606E
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 15:04:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669244652; x=1700780652;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=69RQs+q8AdKiK0ZmuMXyy7TXsymlkiTPUQ1ThwFyJCc=;
-  b=a/yv7949tDJEBcf9bPDLTVWxLUqjLL0FW+pcaNq6u5zXMPZCrYO5h584
-   NrcwzR2sry/9g1G/cXqaHNpECS+sdXkhD7Uw3k2hWFs0MvquZUda4oVMQ
-   9HZBUGubDLjtjW3535Gcn9arxc+gddSPzWcpzg/qalVn8RfcPj7irZOK3
-   qKX+3CXxp4B6SmHLlCYwcFrAlVPAAI642SFHWRGW03LuuFinKSHvxed6u
-   EQg1N+wcnr4jyy4fYkqFGkHAiCy5GB6B/OhsF+M3yDezMz7+bnDtWZoPE
-   rPGpjuLj9UOuZaPIuHq3WaP1QB8ufNEapMs/h94k3k+p5pu/odJKk0Emo
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="297533732"
+  t=1669244653; x=1700780653;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ilPlrh5zUMjoLXrP+JRbSAXsacU/ToBgJHdIgjGxTJ0=;
+  b=lFohgLHqwIa38l//z2De0wLsdG/o7s5ehhl+sknX/kKmk/WrMDk3L7L0
+   znCsqMhJlYOO888+euxgRIpYDsrG81a1+EIP1lVjIyGV9Tk2OY0GbvH/4
+   ZiQmt+t5Jbkbw1djWhIAeyC6fnhewMOFEPtkcK+HvPHcOvWa2ymOimm3l
+   bnepl04pQ6ca6HL9WI882TqfOljh6hPmRsi2NvXdclBetm59NUmp2bvfs
+   7JgHFaGTiOnIX/uWDBR5jtj029QAGI5H+c1fXkkXSZQlC+mE4vnGgZ27p
+   xNok1xM1Cz+FQ7HnPzBezTmiuPpSs84wCubQb0M2gkjUIobNlq+UA4lLS
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="297533735"
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="297533732"
+   d="scan'208";a="297533735"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 15:04:12 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="887124309"
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="887124312"
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="887124309"
+   d="scan'208";a="887124312"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga006.fm.intel.com with ESMTP; 23 Nov 2022 15:04:11 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
-Subject: [PATCH net 0/5][pull request] Intel Wired LAN Driver Updates 2022-11-23 (ixgbevf, i40e, fm10k, iavf, e100)
-Date:   Wed, 23 Nov 2022 15:04:01 -0800
-Message-Id: <20221123230406.3562753-1-anthony.l.nguyen@intel.com>
+Cc:     Shang XiaoJing <shangxiaojing@huawei.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, Saeed Mahameed <saeed@kernel.org>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net 1/5] ixgbevf: Fix resource leak in ixgbevf_init_module()
+Date:   Wed, 23 Nov 2022 15:04:02 -0800
+Message-Id: <20221123230406.3562753-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221123230406.3562753-1-anthony.l.nguyen@intel.com>
+References: <20221123230406.3562753-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -57,39 +61,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to various Intel drivers.
+From: Shang XiaoJing <shangxiaojing@huawei.com>
 
-Shang XiaoJing fixes init module error path stop to resource leaks for
-ixgbevf and i40e.
+ixgbevf_init_module() won't destroy the workqueue created by
+create_singlethread_workqueue() when pci_register_driver() failed. Add
+destroy_workqueue() in fail path to prevent the resource leak.
 
-Yuan Can also does the same for fm10k and iavf.
+Similar to the handling of u132_hcd_init in commit f276e002793c
+("usb: u132-hcd: fix resource leak")
 
-Wang Hai stops freeing of skb as it was causing use after free error for
-e100.
-
-The following are changes since commit 748064b54c99418f615aabff5755996cd9816969:
-  net/cdc_ncm: Fix multicast RX support for CDC NCM devices with ZLP
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 10GbE
-
-Shang XiaoJing (2):
-  ixgbevf: Fix resource leak in ixgbevf_init_module()
-  i40e: Fix error handling in i40e_init_module()
-
-Wang Hai (1):
-  e100: Fix possible use after free in e100_xmit_prepare
-
-Yuan Can (2):
-  fm10k: Fix error handling in fm10k_init_module()
-  iavf: Fix error handling in iavf_init_module()
-
- drivers/net/ethernet/intel/e100.c                 |  5 +----
- drivers/net/ethernet/intel/fm10k/fm10k_main.c     | 10 +++++++++-
- drivers/net/ethernet/intel/i40e/i40e_main.c       | 11 ++++++++++-
- drivers/net/ethernet/intel/iavf/iavf_main.c       |  9 ++++++++-
+Fixes: 40a13e2493c9 ("ixgbevf: Use a private workqueue to avoid certain possible hangs")
+Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
+Reviewed-by: Saeed Mahameed <saeed@kernel.org>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 10 +++++++++-
- 5 files changed, 37 insertions(+), 8 deletions(-)
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index 99933e89717a..e338fa572793 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -4869,6 +4869,8 @@ static struct pci_driver ixgbevf_driver = {
+  **/
+ static int __init ixgbevf_init_module(void)
+ {
++	int err;
++
+ 	pr_info("%s\n", ixgbevf_driver_string);
+ 	pr_info("%s\n", ixgbevf_copyright);
+ 	ixgbevf_wq = create_singlethread_workqueue(ixgbevf_driver_name);
+@@ -4877,7 +4879,13 @@ static int __init ixgbevf_init_module(void)
+ 		return -ENOMEM;
+ 	}
+ 
+-	return pci_register_driver(&ixgbevf_driver);
++	err = pci_register_driver(&ixgbevf_driver);
++	if (err) {
++		destroy_workqueue(ixgbevf_wq);
++		return err;
++	}
++
++	return 0;
+ }
+ 
+ module_init(ixgbevf_init_module);
 -- 
 2.35.1
 
