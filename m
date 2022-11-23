@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87533636ADE
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:23:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A4BF636AEE
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:23:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239484AbiKWUUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 15:20:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
+        id S239735AbiKWUU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 15:20:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238765AbiKWUUN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:20:13 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5094AB0C0;
-        Wed, 23 Nov 2022 12:18:42 -0800 (PST)
-Message-ID: <20221123201624.769128888@linutronix.de>
+        with ESMTP id S239563AbiKWUUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:20:16 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526DAB08D5;
+        Wed, 23 Nov 2022 12:18:43 -0800 (PST)
+Message-ID: <20221123201624.828703870@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669234719;
+        s=2020; t=1669234721;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=eCimoLuvktZLfB1uOtjhcgzwdNyr85jFqFSGejnZxME=;
-        b=CD7L6ldoiPUtWAt54rxE0W37G6sMJzvkUpu0CzeC2d09LvqtPSkoD8xTrpbN5utui5RVLx
-        wikpVoqxmsFwfAl3lvMMOY1yfmJKHCsKaMzvG7n5iAYhOGJddhR3f86fKB8R1c0CUJI8hZ
-        8NcI0p6p+XU8OV6yu98t/zR82Az7tIL1HSZQQU0UL/ki1z9vcaCGW2JY17u2Tz07o3XRIy
-        lnxNbLkht3CJ8veszSeR6zJtFkKsvSz31nUoMWwE3MPgmfxY1THUAqdN32kNeo1OzKdTjL
-        D9eK+z9nRVonc0WfshhEqTrBkLyLzWJkBQdm7QXaqomEGrNjcxkcxxTUYew4Og==
+         references:references; bh=uiKQn0I9nPUiUnxAwWbEhcHyWBaPF8UxjkEuTg9Q8Ns=;
+        b=cwf7N66VDL2NGoaywe8QW3t43NbMX+NabWic03FNJLQFjyZA5okJ6Zug+CF4mObp+qJP0P
+        t2SJw2LYtIt08/D4zxnb14TVpCS9AV6gXmbtvpLcRAyzIgu9TiaoM6hKOE9HqUz4QIxv3a
+        TvZE0tJN5djsSrMiKl9/lZ2RswuBUQBvvucukNV2icTeoIhmLcZTb0R5Eh+ecSvajA2Lva
+        iiWydGvIurUEX956u4wUQ332ychhfPoK1Hm/wodOfL63s4v1a089oaf4oLLLzvtfV6SzJV
+        hUd8gllFKgUDc4H7mL3Xc2IMw9gDh7RvTU4jHyvaF+q4x+PgmfK3FMOaJQhsmQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669234719;
+        s=2020e; t=1669234721;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=eCimoLuvktZLfB1uOtjhcgzwdNyr85jFqFSGejnZxME=;
-        b=BahGPyyTQcd2X5VjiZl2zwqvSBRDAeFNKqDQfbrS+8G+gM7ADytoXTQqiaPoAGO5628h/R
-        mcu8C9E6HfyYMqCA==
+         references:references; bh=uiKQn0I9nPUiUnxAwWbEhcHyWBaPF8UxjkEuTg9Q8Ns=;
+        b=SZ9Kj+mdCyw+TN/asfE6/oNIty1+yi0OZq0rsT5sKUeTTpKBDGEeTbJdVelS0YMtMmtAll
+        kSaSZdy+JR382zBg==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
@@ -54,11 +54,11 @@ Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [patch V3 06/17] timers: Replace BUG_ON()s
+Subject: [patch V3 07/17] timers: Update kernel-doc for various functions
 References: <20221123201306.823305113@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Wed, 23 Nov 2022 21:18:39 +0100 (CET)
+Date:   Wed, 23 Nov 2022 21:18:40 +0100 (CET)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -68,63 +68,256 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The timer code still has a few BUG_ON()s left which are crashing the kernel
-in situations where it still can recover or simply refuse to take an
-action.
-
-Remove the one in the hotplug callback which checks for the CPU being
-offline. If that happens then the whole hotplug machinery will explode in
-colourful ways.
-
-Replace the rest with WARN_ON_ONCE() and conditional returns where
-appropriate.
+The kernel-doc of timer related functions is partially uncomprehensible
+word salad. Rewrite it to make it useful.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Tested-by: Guenter Roeck <linux@roeck-us.net>
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- kernel/time/timer.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+V2: Refined comments (Steven)
+V3: Comment updates (Anna-Maria)
+---
+ kernel/time/timer.c |  152 +++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 92 insertions(+), 60 deletions(-)
 
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
-@@ -1193,7 +1193,8 @@ EXPORT_SYMBOL(timer_reduce);
+@@ -1121,14 +1121,16 @@ static inline int
+ }
+ 
+ /**
+- * mod_timer_pending - modify a pending timer's timeout
+- * @timer: the pending timer to be modified
+- * @expires: new timeout in jiffies
+- *
+- * mod_timer_pending() is the same for pending timers as mod_timer(),
+- * but will not re-activate and modify already deleted timers.
+- *
+- * It is useful for unserialized use of timers.
++ * mod_timer_pending - Modify a pending timer's timeout
++ * @timer:	The pending timer to be modified
++ * @expires:	New absolute timeout in jiffies
++ *
++ * mod_timer_pending() is the same for pending timers as mod_timer(), but
++ * will not activate inactive timers.
++ *
++ * Return:
++ * * %0 - The timer was inactive and not modified
++ * * %1 - The timer was active and requeued to expire at @expires
+  */
+ int mod_timer_pending(struct timer_list *timer, unsigned long expires)
+ {
+@@ -1137,24 +1139,27 @@ int mod_timer_pending(struct timer_list
+ EXPORT_SYMBOL(mod_timer_pending);
+ 
+ /**
+- * mod_timer - modify a timer's timeout
+- * @timer: the timer to be modified
+- * @expires: new timeout in jiffies
+- *
+- * mod_timer() is a more efficient way to update the expire field of an
+- * active timer (if the timer is inactive it will be activated)
++ * mod_timer - Modify a timer's timeout
++ * @timer:	The timer to be modified
++ * @expires:	New absolute timeout in jiffies
+  *
+  * mod_timer(timer, expires) is equivalent to:
+  *
+  *     del_timer(timer); timer->expires = expires; add_timer(timer);
+  *
++ * mod_timer() is more efficient than the above open coded sequence. In
++ * case that the timer is inactive, the del_timer() part is a NOP. The
++ * timer is in any case activated with the new expiry time @expires.
++ *
+  * Note that if there are multiple unserialized concurrent users of the
+  * same timer, then mod_timer() is the only safe way to modify the timeout,
+  * since add_timer() cannot modify an already running timer.
+  *
+- * The function returns whether it has modified a pending timer or not.
+- * (ie. mod_timer() of an inactive timer returns 0, mod_timer() of an
+- * active timer returns 1.)
++ * Return:
++ * * %0 - The timer was inactive and started
++ * * %1 - The timer was active and requeued to expire at @expires or
++ *	  the timer was active and not modified because @expires did
++ *	  not change the effective expiry time
+  */
+ int mod_timer(struct timer_list *timer, unsigned long expires)
+ {
+@@ -1165,11 +1170,18 @@ EXPORT_SYMBOL(mod_timer);
+ /**
+  * timer_reduce - Modify a timer's timeout if it would reduce the timeout
+  * @timer:	The timer to be modified
+- * @expires:	New timeout in jiffies
++ * @expires:	New absolute timeout in jiffies
+  *
+  * timer_reduce() is very similar to mod_timer(), except that it will only
+- * modify a running timer if that would reduce the expiration time (it will
+- * start a timer that isn't running).
++ * modify an enqueued timer if that would reduce the expiration time. If
++ * @timer is not enqueued it starts the timer.
++ *
++ * Return:
++ * * %0 - The timer was inactive and started
++ * * %1 - The timer was active and requeued to expire at @expires or
++ *	  the timer was active and not modified because @expires
++ *	  did not change the effective expiry time such that the
++ *	  timer would expire earlier than already scheduled
+  */
+ int timer_reduce(struct timer_list *timer, unsigned long expires)
+ {
+@@ -1178,18 +1190,21 @@ int timer_reduce(struct timer_list *time
+ EXPORT_SYMBOL(timer_reduce);
+ 
+ /**
+- * add_timer - start a timer
+- * @timer: the timer to be added
++ * add_timer - Start a timer
++ * @timer:	The timer to be started
+  *
+- * The kernel will do a ->function(@timer) callback from the
+- * timer interrupt at the ->expires point in the future. The
+- * current time is 'jiffies'.
++ * Start @timer to expire at @timer->expires in the future. @timer->expires
++ * is the absolute expiry time measured in 'jiffies'. When the timer expires
++ * timer->function(timer) will be invoked from soft interrupt context.
+  *
+- * The timer's ->expires, ->function fields must be set prior calling this
+- * function.
++ * The @timer->expires and @timer->function fields must be set prior
++ * to calling this function.
++ *
++ * If @timer->expires is already in the past @timer will be queued to
++ * expire at the next timer tick.
+  *
+- * Timers with an ->expires field in the past will be executed in the next
+- * timer tick.
++ * This can only operate on an inactive timer. Attempts to invoke this on
++ * an active timer are rejected with a warning.
   */
  void add_timer(struct timer_list *timer)
  {
--	BUG_ON(timer_pending(timer));
-+	if (WARN_ON_ONCE(timer_pending(timer)))
-+		return;
- 	__mod_timer(timer, timer->expires, MOD_TIMER_NOTPENDING);
- }
+@@ -1200,11 +1215,13 @@ void add_timer(struct timer_list *timer)
  EXPORT_SYMBOL(add_timer);
-@@ -1210,7 +1211,8 @@ void add_timer_on(struct timer_list *tim
- 	struct timer_base *new_base, *base;
- 	unsigned long flags;
  
--	BUG_ON(timer_pending(timer) || !timer->function);
-+	if (WARN_ON_ONCE(timer_pending(timer) || !timer->function))
-+		return;
+ /**
+- * add_timer_on - start a timer on a particular CPU
+- * @timer: the timer to be added
+- * @cpu: the CPU to start it on
++ * add_timer_on - Start a timer on a particular CPU
++ * @timer:	The timer to be started
++ * @cpu:	The CPU to start it on
++ *
++ * Same as add_timer() except that it starts the timer on the given CPU.
+  *
+- * This is not very scalable on SMP. Double adds are not possible.
++ * See add_timer() for further details.
+  */
+ void add_timer_on(struct timer_list *timer, int cpu)
+ {
+@@ -1240,15 +1257,18 @@ void add_timer_on(struct timer_list *tim
+ EXPORT_SYMBOL_GPL(add_timer_on);
  
- 	new_base = get_timer_cpu_base(timer->flags, cpu);
+ /**
+- * del_timer - deactivate a timer.
+- * @timer: the timer to be deactivated
++ * del_timer - Deactivate a timer.
++ * @timer:	The timer to be deactivated
+  *
+- * del_timer() deactivates a timer - this works on both active and inactive
+- * timers.
+- *
+- * The function returns whether it has deactivated a pending timer or not.
+- * (ie. del_timer() of an inactive timer returns 0, del_timer() of an
+- * active timer returns 1.)
++ * The function only deactivates a pending timer, but contrary to
++ * del_timer_sync() it does not take into account whether the timer's
++ * callback function is concurrently executed on a different CPU or not.
++ * It neither prevents rearming of the timer. If @timer can be rearmed
++ * concurrently then the return value of this function is meaningless.
++ *
++ * Return:
++ * * %0 - The timer was not pending
++ * * %1 - The timer was pending and deactivated
+  */
+ int del_timer(struct timer_list *timer)
+ {
+@@ -1270,10 +1290,19 @@ EXPORT_SYMBOL(del_timer);
  
-@@ -2017,8 +2019,6 @@ int timers_dead_cpu(unsigned int cpu)
- 	struct timer_base *new_base;
- 	int b, i;
+ /**
+  * try_to_del_timer_sync - Try to deactivate a timer
+- * @timer: timer to delete
++ * @timer:	Timer to deactivate
++ *
++ * This function tries to deactivate a timer. On success the timer is not
++ * queued and the timer callback function is not running on any CPU.
+  *
+- * This function tries to deactivate a timer. Upon successful (ret >= 0)
+- * exit the timer is not queued and the handler is not running on any CPU.
++ * This function does not guarantee that the timer cannot be rearmed right
++ * after dropping the base lock. That needs to be prevented by the calling
++ * code if necessary.
++ *
++ * Return:
++ * * %0  - The timer was not pending
++ * * %1  - The timer was pending and deactivated
++ * * %-1 - The timer callback function is running on a different CPU
+  */
+ int try_to_del_timer_sync(struct timer_list *timer)
+ {
+@@ -1369,23 +1398,19 @@ static inline void del_timer_wait_runnin
  
--	BUG_ON(cpu_online(cpu));
--
- 	for (b = 0; b < NR_BASES; b++) {
- 		old_base = per_cpu_ptr(&timer_bases[b], cpu);
- 		new_base = get_cpu_ptr(&timer_bases[b]);
-@@ -2035,7 +2035,8 @@ int timers_dead_cpu(unsigned int cpu)
- 		 */
- 		forward_timer_base(new_base);
- 
--		BUG_ON(old_base->running_timer);
-+		WARN_ON_ONCE(old_base->running_timer);
-+		old_base->running_timer = NULL;
- 
- 		for (i = 0; i < WHEEL_SIZE; i++)
- 			migrate_timer_list(new_base, old_base->vectors + i);
+ #if defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT)
+ /**
+- * del_timer_sync - deactivate a timer and wait for the handler to finish.
+- * @timer: the timer to be deactivated
+- *
+- * This function only differs from del_timer() on SMP: besides deactivating
+- * the timer it also makes sure the handler has finished executing on other
+- * CPUs.
++ * del_timer_sync - Deactivate a timer and wait for the handler to finish.
++ * @timer:	The timer to be deactivated
+  *
+  * Synchronization rules: Callers must prevent restarting of the timer,
+  * otherwise this function is meaningless. It must not be called from
+  * interrupt contexts unless the timer is an irqsafe one. The caller must
+- * not hold locks which would prevent completion of the timer's
+- * handler. The timer's handler must not call add_timer_on(). Upon exit the
+- * timer is not queued and the handler is not running on any CPU.
+- *
+- * Note: For !irqsafe timers, you must not hold locks that are held in
+- *   interrupt context while calling this function. Even if the lock has
+- *   nothing to do with the timer in question.  Here's why::
++ * not hold locks which would prevent completion of the timer's callback
++ * function. The timer's handler must not call add_timer_on(). Upon exit
++ * the timer is not queued and the handler is not running on any CPU.
++ *
++ * For !irqsafe timers, the caller must not hold locks that are held in
++ * interrupt context. Even if the lock has nothing to do with the timer in
++ * question.  Here's why::
+  *
+  *    CPU0                             CPU1
+  *    ----                             ----
+@@ -1399,10 +1424,17 @@ static inline void del_timer_wait_runnin
+  *    while (base->running_timer == mytimer);
+  *
+  * Now del_timer_sync() will never return and never release somelock.
+- * The interrupt on the other CPU is waiting to grab somelock but
+- * it has interrupted the softirq that CPU0 is waiting to finish.
++ * The interrupt on the other CPU is waiting to grab somelock but it has
++ * interrupted the softirq that CPU0 is waiting to finish.
+  *
+- * The function returns whether it has deactivated a pending timer or not.
++ * This function cannot guarantee that the timer is not rearmed again by
++ * some concurrent or preempting code, right after it dropped the base
++ * lock. If there is the possibility of a concurrent rearm then the return
++ * value of the function is meaningless.
++ *
++ * Return:
++ * * %0	- The timer was not pending
++ * * %1	- The timer was pending and deactivated
+  */
+ int del_timer_sync(struct timer_list *timer)
+ {
 
