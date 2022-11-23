@@ -2,87 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D4B0634F6E
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 06:17:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 032F3634FCB
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 06:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235745AbiKWFRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 00:17:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49088 "EHLO
+        id S235405AbiKWFvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 00:51:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235763AbiKWFRd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 00:17:33 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D886FC4
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 21:17:32 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id w15-20020a17090a380f00b0021873113cb4so902871pjb.0
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 21:17:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XuKBoivNS+XH/kfJTexdv6yWwsgRaDQWG1xYb7pLGuY=;
-        b=a8yZjIdYk3T1wfeZ+xCtDTXFB4Pzpki125Ph/ggjEarIJbbhcCwdYMpdVqgIq/F78x
-         YIhlS94Wj6ocNneeAWpWliv0M1Xeut8+IGiSiFtt72M6JLjttGLbNw6EcihE37OlgZ0+
-         WMyehxENHSt+I0WNRW6guzAtz1Jo/M+A7nyzM=
+        with ESMTP id S229486AbiKWFvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 00:51:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21FAF240B
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 21:50:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669182625;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JMYYiLCaB4GLtGxeCjzuDietMKLoY1I6jUe2ofSKrOo=;
+        b=elUT7esQ7gat9NqRO20eXE+pUm92SbeHujAPS216ya1tydquDIxurVKiH7GVU10p6IHDM6
+        y8AsU2oUgOL6Dz836NCI2n7ex1gkxXs4IBRenSIbPw0lQMAjD8kYmgRFc0Vjw3iA1LGMzP
+        YbJQhWZPQotHSLWgbrSbggdNIfgkrSs=
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com
+ [209.85.160.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-299-fQona7rPPUmYyYyMBlfjlQ-1; Wed, 23 Nov 2022 00:50:21 -0500
+X-MC-Unique: fQona7rPPUmYyYyMBlfjlQ-1
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-143248a54e5so993804fac.3
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 21:50:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XuKBoivNS+XH/kfJTexdv6yWwsgRaDQWG1xYb7pLGuY=;
-        b=jmBtyATnc2e24/tYnbnOV4Aw8sOHhw88OyTKxrl0DmEjWWgDOmnQPv2Rtg+ewb9KNG
-         br5lB9iwvuvqN2MK6qeok7Q/N5ANsgINTojdSctqBtBhUmsc4dyB5u2J6oFPmVphrzhr
-         tPxXBZlt4aB6jh4xFfFmhIE+rRLRuj0vd1wRvngqAANL9M3GZuibcgT+w8X3+Hs1QLOv
-         iAqYdNqpBcR4MH0iMxdLx/0CKKSeiQBT7/v6i0070Frq0tmwlMOvGu/tGBF+9Wp/L+Bt
-         5MH2cEbN+yi3HqqrkJZenpJ+QBuUHRDTMPRCjzgLQ8KQneisSNOePTDeiSVTIjM2n8AW
-         XhQA==
-X-Gm-Message-State: ANoB5pmt2JEEsU7lqs+n5ZQHFmdCNgTHiNIC6LYdAv8N2o5L477YKuQZ
-        seByv0hPj2tpuagq235cGrSokE1NEhtM5lZ9
-X-Google-Smtp-Source: AA0mqf5W5QTCCRpeYVTqXiKXUMW0ju8V0GuES8Vm7sqGsKifj0n7NQ88H9KpIUSRGrPTRzFxMijvow==
-X-Received: by 2002:a17:902:c7d1:b0:179:b756:5b60 with SMTP id r17-20020a170902c7d100b00179b7565b60mr10838554pla.22.1669180651819;
-        Tue, 22 Nov 2022 21:17:31 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p22-20020a170902a41600b001869079d083sm8068698plq.90.2022.11.22.21.17.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 21:17:31 -0800 (PST)
-Date:   Tue, 22 Nov 2022 21:17:30 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     edward.cree@amd.com
-Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, habetsm.xilinx@gmail.com,
-        Edward Cree <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH net-next] sfc: ensure type is valid before updating
- seen_gen
-Message-ID: <202211222117.40BF455@keescook>
-References: <20221121213708.13645-1-edward.cree@amd.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=JMYYiLCaB4GLtGxeCjzuDietMKLoY1I6jUe2ofSKrOo=;
+        b=LBA4inY+4GbfLW0QXOu9/Dg29MxlehjMvwBJpT4DEuYp+hBat0tux10tGO9Nkh5MgW
+         zVzIranMfEsxp+Xm1wUc50rdD84Yf161IWlHTE0JG8/OFHaaTpxK7nWcXSmukSg27EFX
+         UAZ+gLaOZf+F/k5aFOdxbBTvdU2Ir1vOEXXXIfFBRy0befXj/nmCqPOVNOvp5X49KNbQ
+         ZkC3QUTPezRu8VxsLBhQM4xRnCtn0RtFRp2o1ydDuleE6cEAIrplkfbEXt9Df40Rb4u6
+         hThU3chBWzfCkmSRz1Wx3Mmn7gmSrOo+JLEVaLRekSQLF1pL3aG64XFFp5bTDOzOnpwH
+         wRQA==
+X-Gm-Message-State: ANoB5pmYBH4G8ZUz5YOesWiAGe1Q6Dgcfsjb9qSCuA31SUnvDIqAfU29
+        9SvKoftxNdtQdk6zmkwCzqdOpv1/Z3ZkrfiKiDAK2Y2OVc5hGWDG8vgH04XL6TSO7bgVkgvQKLC
+        kqKVun5PaoSRW+GCdNJWwsEvyPZHPN37+
+X-Received: by 2002:a05:6808:220b:b0:359:f5eb:82ec with SMTP id bd11-20020a056808220b00b00359f5eb82ecmr3268509oib.280.1669182620983;
+        Tue, 22 Nov 2022 21:50:20 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4vUhvThjDXaYE0H+SpEJoxdmzmzDcZ/Xy2YPmdtfAXLakXiJ77qJrY4aA4PeK9ennZJJLXUGcaAYCvf5J5/sc=
+X-Received: by 2002:a05:6808:220b:b0:359:f5eb:82ec with SMTP id
+ bd11-20020a056808220b00b00359f5eb82ecmr3268502oib.280.1669182620811; Tue, 22
+ Nov 2022 21:50:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221121213708.13645-1-edward.cree@amd.com>
+References: <20221117033303.16870-1-jasowang@redhat.com> <f9b35219-ba26-1251-5c78-d96ac91b0995@kernel.org>
+In-Reply-To: <f9b35219-ba26-1251-5c78-d96ac91b0995@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 23 Nov 2022 13:50:09 +0800
+Message-ID: <CACGkMEv+LiT_pH9Km5_OW3EpdOoh7ifM85KwLog570hPAQBsqQ@mail.gmail.com>
+Subject: Re: [PATCH V2] vdpa: allow provisioning device features
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        si-wei.liu@oracle.com, mst@redhat.com, eperezma@redhat.com,
+        lingshan.zhu@intel.com, elic@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 09:37:08PM +0000, edward.cree@amd.com wrote:
-> From: Edward Cree <ecree.xilinx@gmail.com>
-> 
-> In the case of invalid or corrupted v2 counter update packets,
->  efx_tc_rx_version_2() returns EFX_TC_COUNTER_TYPE_MAX.  In this case
->  we should not attempt to update generation counts as this will write
->  beyond the end of the seen_gen array.
-> 
-> Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-> Addresses-Coverity-ID: 1527356 ("Memory - illegal accesses")
-> Fixes: 25730d8be5d8 ("sfc: add extra RX channel to receive MAE counter updates on ef100")
-> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
+On Wed, Nov 23, 2022 at 3:53 AM David Ahern <dsahern@kernel.org> wrote:
+>
+> On 11/16/22 8:33 PM, Jason Wang wrote:
+> > diff --git a/vdpa/include/uapi/linux/vdpa.h b/vdpa/include/uapi/linux/vdpa.h
+> > index 94e4dad1..7c961991 100644
+> > --- a/vdpa/include/uapi/linux/vdpa.h
+> > +++ b/vdpa/include/uapi/linux/vdpa.h
+> > @@ -51,6 +51,7 @@ enum vdpa_attr {
+> >       VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
+> >       VDPA_ATTR_DEV_VENDOR_ATTR_NAME,         /* string */
+> >       VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
+> > +     VDPA_ATTR_DEV_FEATURES,                 /* u64 */
+> >
+> >       /* new attributes must be added above here */
+> >       VDPA_ATTR_MAX,
+>
+> this header file already has:
+>         ...
+>         VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
+>         VDPA_ATTR_DEV_VENDOR_ATTR_NAME,         /* string */
+>         VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
+>
+>         VDPA_ATTR_DEV_FEATURES,                 /* u64 */
+>
+>         /* virtio features that are supported by the vDPA device */
+>         VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,  /* u64 */
+>
+>         /* new attributes must be added above here */
+>         VDPA_ATTR_MAX,
+>
+> in which case your diff is not needed. More importantly it raises
+> questions about the status of the uapi file (is it correct as is or is
+> an update needed) and which tree you are creating patches against?
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+I'm using git://git.kernel.org/pub/scm/network/iproute2/iproute2 main.
+But I don't pull the new codes before sending the patches. Will fix
+this.
 
--- 
-Kees Cook
+>
+> > @@ -615,8 +640,9 @@ static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
+> >  static void cmd_dev_help(void)
+> >  {
+> >       fprintf(stderr, "Usage: vdpa dev show [ DEV ]\n");
+> > -     fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ]\n");
+> > -     fprintf(stderr, "                                                    [ max_vqp MAX_VQ_PAIRS ]\n");
+> > +     fprintf(stderr, "       vdpa dev add name NAME mgmtdevMANAGEMENTDEV [ device_features DEVICE_FEATURES]\n");
+>
+> lost the space between mgmtdev and MANAGEMENTDEV
+
+Will fix it.
+
+Thanks
+
+>
+>
+> > +     fprintf(stderr, "                                                   [ mac MACADDR ] [ mtu MTU ]\n");
+> > +     fprintf(stderr, "                                                   [ max_vqp MAX_VQ_PAIRS ]\n");
+> >       fprintf(stderr, "       vdpa dev del DEV\n");
+> >       fprintf(stderr, "Usage: vdpa dev config COMMAND [ OPTIONS ]\n");
+> >       fprintf(stderr, "Usage: vdpa dev vstats COMMAND\n");
+>
+
