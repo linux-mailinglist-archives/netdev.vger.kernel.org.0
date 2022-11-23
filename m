@@ -2,466 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83455636B61
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:42:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07DAD636B6E
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238473AbiKWUju (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 15:39:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36750 "EHLO
+        id S237699AbiKWUme (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 15:42:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238443AbiKWUjR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:39:17 -0500
-Received: from smtpcmd0871.aruba.it (smtpcmd0871.aruba.it [62.149.156.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0AC2AA18C
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 12:39:10 -0800 (PST)
-Received: from [192.168.1.208] ([93.35.145.222])
-        by Aruba Outgoing Smtp  with ESMTPSA
-        id xwWQoXuiT9hDoxwWQoP6aw; Wed, 23 Nov 2022 21:39:08 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
-        t=1669235948; bh=M1NlsY+mWFaNLSnl5wgpzoRpydRDCOIihtx6ZdTOhJQ=;
-        h=Subject:From:To:Date:Content-Type:MIME-Version;
-        b=FyjnBTuhI/Mwp9ZVfWiyjnE9VoQJeJi+zexA4qGEdLjelwo9dU1BSceS3iRu/4Xfa
-         vnzqI/XH6CwXGFbbg5kN00pHbO0rfz+6BWLdJqxYswYaIiD+5VIQMnON6OP4dQx/qT
-         KM3jPgB2CfKWV7ClnN3fXpuzgchjNM8rRX3Kpr1kiegkJgYTWj9RLSFrABDz/rCijH
-         h7uBDN5PWqW5ei9BSIpFEi/8cVk2TYx3JWDhRkNoEctrmkzgoGZrwZsNN/H5ok80Uv
-         44do4WAe34DAwjg/WHpqvadE7/u+2k4GYRVbRk5ZD1S/rvoS1Ti28sk32OhwYZfEv7
-         3b/9t7GFor6jA==
-Message-ID: <cbdb85ce0025ac6002e1a6e7d3ea8e4e1c451def.camel@egluetechnologies.com>
-Subject: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
- was already claimed
-From:   Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        kbuild test robot <lkp@intel.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        David Jander <david@protonic.nl>, linux-kernel@vger.kernel.org,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        netdev@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        kernel@pengutronix.de, Robin van der Gracht <robin@protonic.nl>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org
-Date:   Wed, 23 Nov 2022 21:39:06 +0100
-In-Reply-To: <20221121051940.GA9293@pengutronix.de>
-References: <20221118060647.GE12278@pengutronix.de>
-         <7b575cface09a2817ac53485507985a7fef7b835.camel@egluetechnologies.com>
-         <20221118123013.GF12278@pengutronix.de>
-         <1fd663d232c7fba5f956faf1ad45fb410a675086.camel@egluetechnologies.com>
-         <20221118134447.GG12278@pengutronix.de>
-         <a01fe547c052e861d47089d6767aba639250adda.camel@egluetechnologies.com>
-         <20221119101211.GA7626@pengutronix.de>
-         <6c13c3072ca4c8c3217f9449f56921a8496c32eb.camel@egluetechnologies.com>
-         <20221120084509.GB7626@pengutronix.de>
-         <3da164b4269ac2ed9573560847c59aa1e54d2d9c.camel@egluetechnologies.com>
-         <20221121051940.GA9293@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4-0ubuntu1 
+        with ESMTP id S235278AbiKWUmb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:42:31 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B109D63D9
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 12:42:29 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id n20so45505387ejh.0
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 12:42:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=VTRsjPaFf5PtvRDvl4fmwh1nwjfRbHhEfbRBlJdgzfk=;
+        b=EjOKiggYZ9W+I3KGWOQc8Qc3tc6koi8E1duRELoQExhXEFOTueorZ83fLZX/BlHhdf
+         02Y9e2mH3LEY2lgOjV7wFeKF/Pz+C4gthIcg960DXwHOhXxOhaHOGolp6pt5OjhXnVBx
+         0NE4mYvXANBIlWz+WRqycJIpXvySd8Ib6vaks=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VTRsjPaFf5PtvRDvl4fmwh1nwjfRbHhEfbRBlJdgzfk=;
+        b=i5cKJt3IqOM/p6I5uXFEKUspaCV8Gnj/Rt6Vv+J/l0FO4fJvKwWsoSgGKtZOwikktS
+         gmMN3Ol2jnpyAI0a3F5Cpr3V9Ffe2ec7UqDJm6WPVJuYd5V4XQ3I8KcqMH/xVeKKzWaj
+         xeDVG5R1PytbJP6omTNz9uEvMj/bD9e4CbDG4GdJeyIjIhA2V/+X9MhVE7GM1IYEuTPt
+         h8ih+oG3Cw7SiwAWyonQouaPs6pZ2gRW44MdL1qfGeT+9OWg2cvbZDijYaMEmZohceQi
+         ZIbCrMJvwsCD/YFJv6Ir+8K3q9NMcM7nWGybbmceJqJTe+vv7F0z8L2jQVHHGpLGTOaL
+         uJWw==
+X-Gm-Message-State: ANoB5pklCOhpm2+yMsh1apBfmTNhG+7TWrC6+Q43ti20HA6xNr+QmZAZ
+        uE3w5v6i+clBWnbF3pPfIwspu+jb4mOMjCuC9+HxsA==
+X-Google-Smtp-Source: AA0mqf69yNdx9CrCRlqJ6He3JtviZ8KuNMKF0Z/DUd1d2xwVqC2Hkhu0/7KXBY5hFinOZ8T7+4YYJYNBJSRrwhVs0bk=
+X-Received: by 2002:a17:906:4e4e:b0:7ae:e6ac:2427 with SMTP id
+ g14-20020a1709064e4e00b007aee6ac2427mr25318494ejw.345.1669236147705; Wed, 23
+ Nov 2022 12:42:27 -0800 (PST)
 MIME-Version: 1.0
-X-CMAE-Envelope: MS4xfM2gN69HnoX/G8L2rUVGV6ZP7zqkieg+X4c54p1q0Xgh6ZveTiUC1SBqBaVZ/oMTiah7r0qsEVEo9YXjd99ByjfyJtwfgqdzdl1jUMafphGE/s5fcs0H
- T088wixfyUPbYkFRoQfyf6MA068lvE44/7CNg4bO5y/Sgw66RYVCsgivSflFn9lPXhObLz00lEp3PaISayZSvisDhx5sFdfbpyxtex7nqjXPaq4nreddxLil
- I3L6QQcTl2WbWy2rqqnbwCszdY49WEH+nQ5gaBe/alLnIbJCCXXB+dGz1QyJLUtqUi24PJuCIHWquttum6TvH28jFtgHPG4QV/0opkxrHYCSH1W5ym6+hZt+
- XoAByQ3wVjWmqiwhiuSG90pvJPTiAl7x+h82i06q3nwqaT+Fyfl0jPHdacY1nearrAyBcjNAMEGLXa3XDguVI1IsIcdfFAYj3+ovSnacdm8X081ltfNiGILO
- ijfzj1V1Ismt+3+4lNcfsmWjCjwf62F2wFSq0OKdpQ1eIOG7vcw2Uy1YPgSwHzWzntPvxu+x6hvA6PyJGFclP7DnLT47XavfREqhT1JaYZfWeaiy0YlmjsmJ
- kV1/ALZM/7KNv3XB/Fi4JXp3bGh5R6T8gZbYdhOcTCpT06vjtVOjw0401WJHHdUhznyVlYoUZyzbdKh71JlFKKn9YD9QlIMMQbzD0nXMzjozDlwpTJt5jbdE
- 6ZDpVpia/Tk=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221123191627.3442831-1-lixiaoyan@google.com>
+ <20221123191627.3442831-2-lixiaoyan@google.com> <CACKFLin=H_j6Jy+1jZJiG5xuE=C41joZ_dPS_BZmBwcf7W1rHA@mail.gmail.com>
+In-Reply-To: <CACKFLin=H_j6Jy+1jZJiG5xuE=C41joZ_dPS_BZmBwcf7W1rHA@mail.gmail.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Wed, 23 Nov 2022 12:42:15 -0800
+Message-ID: <CACKFLimobzAyN5gvLrQAhbhS4tL_ARN=Mo_rWRJN9g+D9rkpGw@mail.gmail.com>
+Subject: Re: [RFC net-next v2 2/2] bnxt: Use generic HBH removal helper in tx path
+To:     Coco Li <lixiaoyan@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Gospodarek <gospo@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000ac258905ee2953fd"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-11-21 at 06:19 +0100, Oleksij Rempel wrote:
-> On Sun, Nov 20, 2022 at 08:18:32PM +0100, Devid Antonio Filoni wrote:
-> > On Sun, 2022-11-20 at 09:45 +0100, Oleksij Rempel wrote:
-> > > On Sun, Nov 20, 2022 at 01:11:52AM +0100, Devid Antonio Filoni wrote:
-> > > > On Sat, 2022-11-19 at 11:12 +0100, Oleksij Rempel wrote:
-> > > > > On Fri, Nov 18, 2022 at 04:12:40PM +0100, Devid Antonio Filoni wr=
-ote:
-> > > > > > Hi Oleksij,
-> > > > > >=20
-> > > > > > honestly I would apply proposed patch because it is the easier =
-solution
-> > > > > > and makes the driver compliant with the standard for the follow=
-ing
-> > > > > > reasons:
-> > > > > > - on the first claim, the kernel will wait 250 ms as stated by =
-the
-> > > > > > standard
-> > > > > > + on successive claims with the same name, the kernel will not =
-wait
-> > > > > > 250ms, this implies:
-> > > > > >   - it will not wait after sending the address-claimed message =
-when the
-> > > > > > claimed address has been spoofed, but the standard does not exp=
-licitly
-> > > > > > states what to do in this case (see previous emails in this thr=
-ead), so
-> > > > > > it would be up to the application developer to decide how to ma=
-nage the
-> > > > > > conflict
-> > > > > >   - it will not wait after sending the address-claimed message =
-when a
-> > > > > > request for address-claimed message has been received as stated=
- by the
-> > > > > > standard
-> > > > >=20
-> > > > > Standard says:
-> > > > > 1. No CF _shall_ begin, or resume, transmission on the network un=
-til 250 ms
-> > > > >    after it has successfully claimed an address (Figure 4).
-> > > > > 2. This does not apply when responding to a request for address c=
-laimed.
-> > > > >=20
-> > > > > With current patch state: 1. is implemented and working as expect=
-ed, 2.
-> > > > > is not implemented.
-> > > > > With this patch: 1. is partially broken and 2. is partially fakin=
-g
-> > > > > needed behavior.
-> > > > >=20
-> > > > > It will not wait if remote ECU which rebooted for some reasons. W=
-ith this patch
-> > > > > we are breaking one case of the standard in favor to fake compati=
-bility to the
-> > > > > other case. We should avoid waiting only based on presence of RfA=
-C not based
-> > > > > on the old_addr =3D=3D new_addr.
-> > > >=20
-> > > > I'm sorry, I don't think I understood the point about reboot ("It w=
-ill
-> > > > not wait if remote ECU which rebooted for some reasons"). If anothe=
-r ECU
-> > > > rebooted, then *it* will have to perform the claim procedure again
-> > > > waiting 250 ms before beginning the transmission. Your ECU doesn't =
-have
-> > > > to check if the other ECUs respected the 250 ms wait.
-> > >=20
-> > > With proposed patch:
-> > > - local application which is sending to the remote NAME, will start o=
-r continue
-> > >   communication with ECU which should stay silent.
-> >=20
-> > And this is not forbidden by the standard, the standard states that the
-> > remote ECU shall not start or continue the communication but it can
-> > *receive* messages.
-> > For example, what would you do if:
-> > - during the 250 ms wait, another ECU sends a request-for-address-
-> > claimed message meant to the address you're claiming?
-> > From "4.5.3 Other requirements for initialization":
-> > A CF shall respond to a request-for-address-claimed message when the
-> > destination address is the same as the CF's address and shall transmit
-> > its response to the Global address (255).
-> > - during the 250 ms wait another ECU sends a normal message (non
-> > address-claim related) using the SA you're currently claiming?
-> >=20
-> > > - local application which was manually or automatically restarted (se=
-e
-> > >   application watchdogs), will bypass address claim procedure
-> > >   completion and start sending without 250ms delay.
-> >=20
-> > Then the application will be violating the standard, you're right,
-> > however please note that, as per driver implementation, each time the
-> > socket is closed and opened again (if bound with a name) you have to
-> > send the address-claimed message again.
-> > The standard also states how to treat this kind of violations on the
-> > remote ECU side.
-> >=20
-> > >=20
-> > > > Also, the ISO11783-5 standard, with "Figure 6 (Resolving address
-> > > > contention between two self-configurable-address CF)" of=C2=A0"4.5.=
-4.2 -
-> > > > Address-claim prioritization", shows that:
-> > > > - ECU1 claims the address (time: 0 ms)
-> > > > - ECU2 claims the same address (time: 0+x ms)
-> > > > - ECU1 NAME has the higher priority, so ECU1 sends again the addres=
-s
-> > > > claimed message as soon as it received the address-claim from ECU2
-> > > > (time: 0+x+y ms)
-> > > > - ECU1 starts normal transmission (time: 250 ms)
-> > > > With current implementation, the ECU1 would start the transmission =
-at
-> > > > time 0+x+y+250 ms, with proposed patch it would not.
-> > >=20
-> > > You are right, this should be fixed.
-> > > But proposed patch closes one issues and opens another, with this pat=
-ch it will
-> > > be enough to send at least two address claimed messages to bypass the=
- delay.
-> >=20
-> > No, because the timer associated with the first claim *is not stopped*.
-> >=20
-> > >=20
-> > > > Same is showed in "Figure 7 (Resolving address contention between a=
- non-
-> > > > configurable address CF and a self-configurable address CF)", the E=
-CU
-> > > > waits again 250 ms only when claiming a different address.
-> > >=20
-> > > Ack
-> > >=20
-> > > > Also, as previously discussed in this thread, the standard states i=
-n
-> > > > 4.4.4.3 - Address violation:
-> > > > If a CF receives a message, other than the address-claimed message,
-> > > > which uses the CF's own SA,
-> > > > then the CF:
-> > > > - shall send the address-claim message to the Global address;
-> > > > - shall activate a diagnostic trouble code with SPN =3D 2000+SA and=
- FMI =3D
-> > > > 31
-> > > > It is not *explicitly* stated that you have to wait 250 ms after th=
-e
-> > > > address-claim message has been sent.
-> > >=20
-> > > There is no need to explicitly state it. The requirement is clearly d=
-escribed
-> > > in the 4.5.2.d part 1 with clearly defined exception in  4.5.2.d part=
- 2.
-> > > If something is not explicitly stated, the stated requirement has alw=
-ays
-> > > priority.
-> > >=20
-> > > > Please note that the 250 ms wait is  mentioned only in "4.5 - Netwo=
-rk
-> > > > initialization"
-> > >=20
-> > > OK, we need to refer to the wording used in a specifications, in
-> > > general:
-> > > Shall =E2=80=93 Shall is used to designate a mandatory requirement.
-> > > Should =E2=80=93 Should is used for requirements that are considered =
-good and are
-> > >          recommended, but are not absolutely mandatory.
-> > > May =E2=80=93 May is used to for requirements that are optional.
-> > >=20
-> > > If a requirement with strong wording as "shall" is not strong enough =
-for
-> > > you and you are suing words as ".. mentioned only in .." then even a
-> > > statistical analysis of this spec will have no meaning. In all
-> > > cases we can just invalidate all arguments by using: it is only X or =
-Y.=20
-> > >=20
-> > > > while above statements come from "4.4 - Network-management procedur=
-es".
-> > > > Also in this case, the proposed patch is still standard compliant.
-> > >=20
-> > > If we remove 4.5.2.d from the spec, then yes.
-> > >=20
-> > > > So I'm sorry but I have to disagree with you, there are many things
-> > > > broken in the current implementation because it is forcing the 250 =
-wait
-> > > > to all cases but it should not.
-> > >=20
-> > > If we remove 4.5.2.d from the spec, then yes. Every construction is
-> > > logical if we adopt input variables to the construction.
-> >=20
-> > From "4.4.4.3 - Address violation":
-> > - *shall send the address-claim message* to the Global address
-> > From "4.5.2 Address claim requirements":
-> > - No CF shall begin, or resume, transmission on the network until 250 m=
-s
-> > after it has successfully *claimed an address*, except when responding
-> > to a request for address-claimed.
-> >=20
-> > Do you see any difference?
-> > With your interpretation of the standard, then above 4.5.2.d sentence
-> > shall be:
-> > - No CF shall begin, or resume, transmission on the network until 250 m=
-s
-> > after it has successfully *sent the address-claim message*, except when
-> > responding to a request for address-claimed.
-> >=20
-> > I think "it has successfully claimed an address" is valid for the whole
-> > claim procedure and not for the address-claimed message only.
-> >=20
-> > Please note that the ECU shall send the address-claim message also when
-> > it receives a request for a matching NAME ("4.4.3.2 NAME management (NM=
-)
-> > message"). This does not mean that is claiming again the address.
-> >=20
-> > >=20
-> > > > > Without words 2. part should be implemented without breaking 1.
-> > > > >=20
-> > > > > > Otherwise you will have to keep track of above cases and decide=
- if the
-> > > > > > wait is needed or not, but this is hard do accomplish because i=
-s the
-> > > > > > application in charge of sending the address-claimed message, s=
-o you
-> > > > > > would have to decide how much to keep track of the request for =
-address-
-> > > > > > claimed message thus adding more complexity to the code of the =
-driver.
-> > > > >=20
-> > > > > Current kernel already tracks all claims on the bus and knows all=
- registered
-> > > > > NAMEs. I do not see increased complicity in this case.
-> > > >=20
-> > > > The kernel tracks the claims but it does *not track* incoming reque=
-sts
-> > > > for address-claimed message, it would have to and it would have to
-> > >=20
-> > > yes
-> > >=20
-> > > > allow the application to answer to it *within a defined time window=
-*.
-> > >=20
-> > > yes.
-> > >=20
-> > > > But keep in mind that there are other cases when the 250 ms wait is=
- wrong
-> > > > or it is not explicitly stated by the standard.
-> > >=20
-> > > If it is not stated in the standard how can we decide if it is wrong?
-> > And how can we decide if it is right? :)
-> >=20
-> > > And if strongly worded statements have no value just because it is
-> > > stated only one time, how proper standard should look like?=20
-> > See above.
-> >=20
-> > >=20
-> > > > > IMHO, only missing part i a user space interface. Some thing like=
- "ip n"
-> > > > > will do.
-> > > > >=20
-> > > > > > Another solution is to let the driver send the address-claimed =
-message
-> > > > > > waiting or without waiting 250 ms for successive messages depen=
-ding on
-> > > > > > the case.
-> > > > >=20
-> > > > > You can send "address-claimed message" in any time you wont. Kern=
-el will
-> > > > > just not resolve the NAME to address until 1. part of the spec wi=
-ll
-> > > > > apply. Do not forget, the NAME cache is used for local _and_ remo=
-te
-> > > > > names. You can trick out local system, not remote.
-> > > > >=20
-> > > > > Even if you implement "smart" logic in user space and will know b=
-etter
-> > > > > then kernel, that this application is responding to RfAC. You wil=
-l newer
-> > > > > know if address-claimed message of remote system is a response to=
- RfAC.
-> > > > >=20
-> > > > > From this perspective, I do not know, how allowing the user space=
- break
-> > > > > the rules will help to solve the problem?
-> > > >=20
-> > > > I think you did not understand this last proposal: since the driver=
- is
-> > > > already implementing part of the standard, then it might as well se=
-nd
-> > > > the address-claimed message when needed and wait 250 ms or not depe=
-nding
-> > > > on the case.
-> > >=20
-> > > Let's try following test:
-> > > j1939acd -r 80 -c /tmp/1122334455667788.jacd 11223344556677 vcan0 &
-> > > while(true); do testj1939 -s8 vcan0:0x80 :0x90,0x12300; done
-> > >=20
-> > > And start candump with delta time stamps:
-> > > :~ candump -t d vcan0                                                =
-=20
-> > >  (000.000000)  vcan0  18EAFFFE   [3]  00 EE 00              =20
-> > >  (000.002437)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF <---- n=
-o 250ms delay
-> > >  (000.011458)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.011964)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.011712)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012585)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012891)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012082)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012604)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012357)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012790)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012765)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012483)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012680)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012144)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > > ... snip ...
-> > >  (000.012592)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012515)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.013183)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012653)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.011886)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012836)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.009494)  vcan0  18EEFF80   [8]  77 66 55 44 33 22 11 00 <---- S=
-A 0x80 address claimed=20
-> > >  (000.003362)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF <---- n=
-ext packet from SA 0x80 3 usecs after previous. No 250ms delay.
-> > >  (000.012351)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012983)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012602)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012594)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.012348)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >  (000.011922)  vcan0  19239080   [8]  01 23 45 67 89 AB CD EF
-> > >=20
-> > > As you can see, the j1939 stack do not forcing application to use NAM=
-Es and
-> > > do not preventing sending any message withing 250ms delay. The only t=
-hing
-> > > what has the 250 timer is NAME to address resolution which should be =
-fixed in
-> > > respect of 4.5.2.d without breaking every thing else.
-> >=20
-> > Yes this is clear, this is working because the socket used by testj1939
-> > is not bound to any name.
-> >=20
-> > Just to clarify: are you suggesting to applications developer to use on=
-e
-> > socket (bound with the name) to manage the address-claim and another on=
-e
-> > (bound without the name) for other transmissions? If so, then why that
-> > code exists in the driver?
-> > Honestly I would consider this proposal really bad since this would
-> > allow to completely violate the standard. I really hope you agree with
-> > me about this.
->=20
-> Hm... you are right.
->=20
-> Please add to your patch code comments with standard snippets and
-> clarification why it should be so. Commit comment will be often
-> overseen.
->=20
-> Regards,
-> Oleksij
+--000000000000ac258905ee2953fd
+Content-Type: text/plain; charset="UTF-8"
 
-Would the following comment be acceptable? Isn't it too long?
+On Wed, Nov 23, 2022 at 11:42 AM Michael Chan <michael.chan@broadcom.com> wrote:
+>
+> On Wed, Nov 23, 2022 at 11:16 AM Coco Li <lixiaoyan@google.com> wrote:
+> >
+> > @@ -13657,6 +13660,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+> >                 dev->features &= ~NETIF_F_LRO;
+> >         dev->priv_flags |= IFF_UNICAST_FLT;
+> >
+> > +       netif_set_tso_max_size(dev, GSO_MAX_SIZE);
+>
+> Our chips can only transmit TSO packets up to 64K bytes, so I think
+> this won't work.
 
-The ISO 11783-5 standard, in "4.5.2 - Address claim requirements",
-states:
-  d) No CF shall begin, or resume, transmission on the network until 250
-     ms after it has successfully claimed an address except when
-     responding to a request for address-claimed.
-But "Figure 6" and "Figure 7" in "4.5.4.2 - Address-claim
-prioritization" show that the CF begin the transmission after 250 ms
-from the first AC (address-claimed) message even if it sends another AC
-message during that time window to resolve the address contention with
-another CF.
-As stated in "4.4.2.3 - Address-claimed message":
-  In order to successfully claim an address, the CF sending an address
-  claimed message shall not receive a contending claim from another CF
-  for at least 250 ms.
-As stated in "4.4.3.2 - NAME management (NM) message":
-  1) A commanding CF can
-     d) request that a CF with a specified NAME transmit the address-
-        claimed message with its current NAME.
-  2) A target CF shall
-     d) send an address-claimed message in response to a request for a=20
-        matching NAME
-Taking the above arguments into account, the 250 ms wait is requested
-only during network initialization.
-Do not restart the timer on AC message if both the NAME and the address
-match and therefore if the address has already been claimed (timer has
-expired) or the AC message has been sent to resolve the contention with
-another CF (timer is still running).
+I wanted to double check with the hardware team but there's no one in
+the office today.  I will confirm early next week.  Thanks.
 
-Thank you,
-Devid
+--000000000000ac258905ee2953fd
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
+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
+OnaLEot1MoQO7BIe5S9H4AcCEXXcrJJiAtMCl47ARpyHmvQFQFFTrHgUYEd9V+9bOzY7MBIGSV1N
+/JfsT1sZw6HT0lJkSQefhPGpBniAob62DJP3qr11tu8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU31rAyTdZweIF0tJTFYwfOv2w
+L4QwDQYJKoZIhvcNAQELBQADggEBACcuyaGmk0NSZ7Kio7O7WSZ0j0f9xXcBnLbJvQXFYM7JI5uS
+kw5ozATEN5gfmNIe0AHzqwoYjAf3x8Dv2w7HgyrxWdpjTKQFv5jojxa3A5LVuM8mhPGZfR/L5jSk
+5xc3llsKqrWI4ov4JyW79p0E99gfPA6Waixoavxvv1CZBQ4Stu7N660kTu9sJrACf20E+hdKLoiU
+hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
+E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILCKoYe2iwSdTAc1NavZE24HgAotDXkY
+r3HCBaNJlul9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEy
+MzIwNDIyOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQAJL7H2/0MKmdOnkRHTYQw4gFLx9zoZgHUSDLSCtA05oH0TCuLe
+tPODOSUakJHc+qGTpH5rJ3OBJhdbYA2MO+ef03gMOji591vKnHhOlCxE7arhbBjplPQS6UHPeJ4T
+RijT8XrWMRVq3nWvqEZ3/2AuYxHLvYg+HqXIfqgaDUK+nstGiMNQ4zHE024qsZQKRs0Z6q/i8GGW
+DpYJonH9zp0mF/LldPSWJq+lD+NBMAUTi5CdRQHh2xl08vXMjbIXpbDhJvuRZAt2jybV+wyY7jr4
+1k4IJ3kqGiRIVA3hXL8xuo3D/+PKcSdGuXgGjVa5xiGnY1Gr0XzJ3S/16qd260Qy
+--000000000000ac258905ee2953fd--
