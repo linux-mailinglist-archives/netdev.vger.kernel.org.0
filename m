@@ -2,179 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43DCF636E78
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 00:34:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C22F636E7B
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 00:36:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbiKWXeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 18:34:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40252 "EHLO
+        id S229531AbiKWXgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 18:36:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbiKWXeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 18:34:20 -0500
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF522A727;
-        Wed, 23 Nov 2022 15:34:18 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DCA13240002;
-        Wed, 23 Nov 2022 23:34:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1669246457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QZEGkusolukN4rVJkkr+SmRPY0B0B9qmE32YQK4KN28=;
-        b=UIJ1/vnWuGxD2BugR4k5HWjkEduaRhQO2Ez84GdKl3yeBvpIR/+gyYyhdindqVR+idKU1Q
-        Zj9Qfu80ezmteY+Rfy8pwmWI5zNKpi7V79zGeoJwT1FC7djSbTYYCikW1GYdwI2tvDwHUf
-        L/uLSM1hwoff/7v40YIqqK1S7QRqi9VchP2aNJBzJB3d227qzjL328aGqLEtnBmaES/OHf
-        hsbnXO3LZQGuUDPWPDZejzkFwBNLNG7GiXpZIITCbPql8pboPZMclaLKWTlJ17S1c+NeZu
-        SfZtNCodFk643mcpal+Qy28lajsmM/XaHk0JEB10WVHojOH++2zdJWGtVkSiDA==
-Date:   Thu, 24 Nov 2022 00:34:13 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229493AbiKWXgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 18:36:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2352EF28
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 15:36:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55FA861F64
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 23:36:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0BA9C433C1;
+        Wed, 23 Nov 2022 23:36:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669246597;
+        bh=kpidxtStqJVnKne/HHtO4Bf4eSHT2A1RmQgGL7A7W7M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=f2ejHXKoJYpxTBYONVvQPsDZ8zwcVNlRsKrU8ek7No/7kDvDLVQzYFeGEU9u6QLGb
+         cGokjsI+NlqxDBJmHzAsH5ouSFO9J6IWWysMfA2DkRwQdPoaHUrC9Er6Sl/rwgOpyk
+         6/Eg/CqFqmLGWF/MirV0hgyf9IqUJW4zmkIaZ+vEJcAYJjZeJIHUAYbAkzsr3hI801
+         gtUP2oGtfgNdHuHry7Os1+uL++0QjwuR6ZcMD5O8F2ja+5XJYRzgdykURSXrYGRC2D
+         pbtI65Hxjy8mDTx6QzU0bfFgrt0VsdbKmXw7tBeY74kYBH76oNPY5pFdQOfVNEyfYD
+         J1kVITwrehkAw==
+Date:   Wed, 23 Nov 2022 15:36:36 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Robert Marko <robert.marko@sartura.hr>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH 2/6] dt-bindings: net: marvell,dfx-server: Convert to
- yaml
-Message-ID: <20221124003413.6a2c4518@xps-13>
-In-Reply-To: <20221123221023.GA2582938-robh@kernel.org>
-References: <20221117215557.1277033-1-miquel.raynal@bootlin.com>
-        <20221117215557.1277033-3-miquel.raynal@bootlin.com>
-        <20221123221023.GA2582938-robh@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>, Parav Pandit <parav@nvidia.com>
+Subject: Re: [net 03/14] net/mlx5: SF: Fix probing active SFs during driver
+ probe phase
+Message-ID: <Y36uhLebt0Kx26Nc@x130.lan>
+References: <20221122022559.89459-1-saeed@kernel.org>
+ <20221122022559.89459-4-saeed@kernel.org>
+ <Y3404H9uBoVqCQgb@boxer>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <Y3404H9uBoVqCQgb@boxer>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
+On 23 Nov 15:57, Maciej Fijalkowski wrote:
+>On Mon, Nov 21, 2022 at 06:25:48PM -0800, Saeed Mahameed wrote:
+>> From: Shay Drory <shayd@nvidia.com>
+>>
+>> When SF devices and SF port representors are located on different
+>> functions, unloading and reloading of SF parent driver doesn't recreate
+>> the existing SF present in the device.
+>> Fix it by querying SFs and probe active SFs during driver probe phase.
+>
+>Maybe shed some light on how it's actually being done? Have a few words
+>that you're adding a workqueue dedicated for that etc. There is also a
+>new mutex, I was always expecting that such mechanisms get a bit of
+>explanation/justification why there is a need for its introduction.
+>
 
-robh@kernel.org wrote on Wed, 23 Nov 2022 16:10:23 -0600:
+it's needed so we can synchronize the new sync operation on load with the
+pre-existing SF adding mechanism "device events" .. 
 
-> On Thu, Nov 17, 2022 at 10:55:53PM +0100, Miquel Raynal wrote:
-> > Even though this description is not used anywhere upstream (no matching
-> > driver), while on this file I decided I would try a conversion to yaml
-> > in order to clarify the prestera family description.
-> >=20
-> > I cannot keep the nodename dfx-server@xxxx so I switched to dfx-bus@xxxx
-> > which matches simple-bus.yaml. Otherwise I took the example context from
-> > the only user of this compatible: armada-xp-98dx3236.dtsi, which is a
-> > rather old and not perfect DT.
-> >=20
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> > I am fine dropping this file entirely as well, if judged useless.
-> > ---
-> >  .../bindings/net/marvell,dfx-server.yaml      | 60 +++++++++++++++++++
-> >  .../bindings/net/marvell,prestera.txt         | 18 ------
-> >  2 files changed, 60 insertions(+), 18 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/net/marvell,dfx-s=
-erver.yaml
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/net/marvell,dfx-server.y=
-aml b/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
-> > new file mode 100644
-> > index 000000000000..72151a78396f
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
-> > @@ -0,0 +1,60 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/marvell,dfx-server.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Marvell Prestera DFX server
-> > +
-> > +maintainers:
-> > +  - Miquel Raynal <miquel.raynal@bootlin.com>
-> > +
-> > +select:
-> > +  properties:
-> > +    compatible:
-> > +      contains:
-> > +        const: marvell,dfx-server
-> > +  required:
-> > +    - compatible
-> > +
-> > +properties:
-> > +  compatible:
-> > +    items:
-> > +      - const: marvell,dfx-server
-> > +      - const: simple-bus
-> > +
-> > +  reg: true =20
->=20
-> How many entries?
+But i don't believe it's a requirement to explain the code behind a
+commit, I think for this case it's self explanatory for someone who
+understand how the basic mechanism of adding SFs to a PF funciton works in
+mlx5. but yes I agree, some more information would've been useful, we will
+be more verbose for future patches.
 
-Right, there is a single one, I'll constrain reg properly in v2.
+>Not sure if including some example reproducer in here is mandatory or not
+>(and therefore splat, if any). General feeling is that commit message
+>could be beefed up.
+>
 
-> > +
-> > +  ranges: true
-> > +
-> > +  '#address-cells':
-> > +    const: 1
-> > +
-> > +  '#size-cells':
-> > +    const: 1
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - ranges
-> > +
-> > +# The DFX server may expose clocks described as subnodes
-> > +additionalProperties: true =20
->=20
-> addtionalProperties:
->   type: object
->=20
-> So that only nodes can be added.
+reproducer is really as simple as stated in the commit message, 
+a devlink reload when you have SFs loaded on a dual function system 
+(smart nic) where the switchdev SF admin is on a remote cpu function.
 
-Excellent, I never thought about this possibility, but of course that
-works. Thanks a lot!
-
->=20
-> > +
-> > +examples:
-> > +  - |
-> > +
-> > +    #define MBUS_ID(target,attributes) (((target) << 24) | ((attribute=
-s) << 16))
-> > +    bus@0 {
-> > +        reg =3D <0 0>;
-> > +        #address-cells =3D <2>;
-> > +        #size-cells =3D <1>;
-> > +
-> > +        dfx-bus@ac000000 {
-> > +            compatible =3D "marvell,dfx-server", "simple-bus";
-> > +            #address-cells =3D <1>;
-> > +            #size-cells =3D <1>;
-> > +            ranges =3D <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
-> > +            reg =3D <MBUS_ID(0x08, 0x00) 0 0x100000>;
-> > +        };
-> > +    }; =20
-
-
-Thanks,
-Miqu=C3=A8l
