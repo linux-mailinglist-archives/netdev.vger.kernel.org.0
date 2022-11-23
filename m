@@ -2,103 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E61A6352D3
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 09:37:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55A266352E0
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 09:39:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236574AbiKWIhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 03:37:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43430 "EHLO
+        id S236607AbiKWIjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 03:39:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiKWIhY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 03:37:24 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77531EA117
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 00:37:23 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 239F120299;
-        Wed, 23 Nov 2022 09:37:22 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id wvUohj_INyBY; Wed, 23 Nov 2022 09:37:21 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id A021320184;
-        Wed, 23 Nov 2022 09:37:21 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 9A59A80004A;
-        Wed, 23 Nov 2022 09:37:21 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 23 Nov 2022 09:37:21 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 23 Nov
- 2022 09:37:21 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id E0BC03182F8F; Wed, 23 Nov 2022 09:37:20 +0100 (CET)
-Date:   Wed, 23 Nov 2022 09:37:20 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
-Message-ID: <20221123083720.GM424616@gauss3.secunet.de>
-References: <Y3tSdcA9GgpOJjgP@unreal>
- <20221121110926.GV704954@gauss3.secunet.de>
- <Y3td2OjeIL0GN7uO@unreal>
- <20221121112521.GX704954@gauss3.secunet.de>
- <Y3tiRnbfBcaH7bP0@unreal>
- <Y3to7FYBwfkBSZYA@unreal>
- <20221121124349.GZ704954@gauss3.secunet.de>
- <Y3t2tsHDpxjnBAb/@unreal>
- <20221122131002.GN704954@gauss3.secunet.de>
- <Y3zVVzfrR1YKL4Xd@unreal>
+        with ESMTP id S236611AbiKWIi5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 03:38:57 -0500
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63587FC701
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 00:38:55 -0800 (PST)
+Received: by mail-lj1-x231.google.com with SMTP id x21so20551626ljg.10
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 00:38:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WWg6Ff6BH10NGuivQAe12p9c1TDwH/74TLSEqxl141E=;
+        b=G+Y0WU2FKvs6wUCeKCoe+WBbu6w5r3al4pGIeCTDsKyiEahu1kT86Q19qMqtnZ/4Zt
+         5ltUpKPWIvoMv8Ah9n0hMy/D0dZHormnBUfn5TDyKAW9DkYcZsb/QJJFKt/ZDGhWht2X
+         t2VwbS28jdu3pYPPxOYdt452TZgh2lpzIiQryuCCxpk0oqjC5zldfSvt6JZL8ZDwjDji
+         flxXKx9YaculyiHOiiVz2c3unz2qnhYkxntwncry9bOY0IBiJMP7xF21MCrNfuD/Ljvn
+         UFPR941foBk7PEEfkpAPPLi1udI0M3vnQXhIzWUbUDpWnvRFvgmn3G8++TApL9yqusaK
+         K9Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=WWg6Ff6BH10NGuivQAe12p9c1TDwH/74TLSEqxl141E=;
+        b=cqoyqwLS4h+8PBZ0AzTjEPTxaTncggP2UDja6mjvZY/a8qG17OcsJhnUw5q4IX91zM
+         CNuaCVRkRresSNuytmlgIA7vu4E4ln9fsdzFZUtB6F2XgRsQYQ/sl9lrNAnvOEGemcxP
+         dY/5h4sC8AIQ/61y5BEogMzpKLoaXs1F1FLylQE8Acj4Gd7eUJJXnq7buke/YwYjRnH7
+         FO+kb5DOsTK/rNViiLOb4XKoKiBwi/f0m+Oy6zljrhHh542EvVk9oG+5GtL10g2rYy5X
+         buE9VtoP1Ec0tM5eMdtVwRiy3T98x1f3KyEt4IVmTJKrXy3tKNm/x5x4jKqv4bjPN9pU
+         xgXg==
+X-Gm-Message-State: ANoB5pmhQ1UEBkTO17Ix3m8BaDmjZuQUf0XBQdQjozxQ9eACjXxINNO6
+        Q4qCBvwQMIjt24HhvZO9ZKnx1g==
+X-Google-Smtp-Source: AA0mqf5u75+G9Siks12lr8P8mRmKZeK2sOP85dyIcPznnELW5X7sGWzwPjD1FaHES5bhYZ/oab6Jsg==
+X-Received: by 2002:a05:651c:1105:b0:277:3dd:e32e with SMTP id e5-20020a05651c110500b0027703dde32emr8018766ljo.467.1669192733608;
+        Wed, 23 Nov 2022 00:38:53 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id c26-20020ac2415a000000b0048a8c907fe9sm2814452lfi.167.2022.11.23.00.38.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Nov 2022 00:38:52 -0800 (PST)
+Message-ID: <a141f08c-18e4-13b6-105f-b8e54bef61ba@linaro.org>
+Date:   Wed, 23 Nov 2022 09:38:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Y3zVVzfrR1YKL4Xd@unreal>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v3 2/2] arm64: dts: fsd: Add MCAN device node
+Content-Language: en-US
+To:     Vivek Yadav <vivek.2311@samsung.com>, rcsekar@samsung.com,
+        krzysztof.kozlowski+dt@linaro.org, wg@grandegger.com,
+        mkl@pengutronix.de, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, pankaj.dubey@samsung.com,
+        ravi.patel@samsung.com, alim.akhtar@samsung.com,
+        linux-fsd@tesla.com, robh+dt@kernel.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        aswani.reddy@samsung.com, sriranjani.p@samsung.com
+References: <20221122105455.39294-1-vivek.2311@samsung.com>
+ <CGME20221122105027epcas5p2237c5bc9ab02cf12f6e0f603c5bb90c4@epcas5p2.samsung.com>
+ <20221122105455.39294-3-vivek.2311@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221122105455.39294-3-vivek.2311@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 03:57:43PM +0200, Leon Romanovsky wrote:
-> On Tue, Nov 22, 2022 at 02:10:02PM +0100, Steffen Klassert wrote:
-> > On Mon, Nov 21, 2022 at 03:01:42PM +0200, Leon Romanovsky wrote:
-> > > On Mon, Nov 21, 2022 at 01:43:49PM +0100, Steffen Klassert wrote:
-> > > > On Mon, Nov 21, 2022 at 02:02:52PM +0200, Leon Romanovsky wrote:
-> > > > 
-> > > > If policy and state do not match here, this means the lookup
-> > > > returned the wrong state. The correct state might still sit
-> > > > in the database. At this point, you should either have found
-> > > > a matching state, or no state at all.
-> > > 
-> > > I check for "x" because of "x = NULL" above.
-> > 
-> > This does not change the fact that the lookup returned the wrong state.
+On 22/11/2022 11:54, Vivek Yadav wrote:
+> Add MCAN device node and enable the same for FSD platform.
+> This also adds the required pin configuration for the same.
 > 
-> Steffen, but this is exactly why we added this check - to catch wrong
-> states and configurations. 
+> Signed-off-by: Sriranjani P <sriranjani.p@samsung.com>
+> Signed-off-by: Vivek Yadav <vivek.2311@samsung.com>
 
-No, you have to adjust the lookup so that this can't happen.
-This is not a missconfiguration, The lookup found the wrong
-SA, this is a difference.
+Thank you for the patch.
 
-Use the offload type and dev as a lookup key and don't consider
-SAs that don't match this in the lookup.
+Looks OK. It is too late in the cycle for me to pick it up. I will take
+it after the merge window via Samsung SoC.
 
-This is really not too hard to do. The thing that could be a bit
-more difficult is that the lookup should be only adjusted when
-we really have HW policies installed. Otherwise this affects
-even systems that don't use this kind of offload.
+Note for networking maintainers: please do not pick up DTS via netdev tree.
+
+Best regards,
+Krzysztof
+
