@@ -2,102 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A63F636C50
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 22:22:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA003636C68
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 22:32:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237815AbiKWVWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 16:22:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        id S237302AbiKWVcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 16:32:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237809AbiKWVWI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 16:22:08 -0500
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D304E5E9F4
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 13:22:06 -0800 (PST)
-Received: by mail-qk1-x734.google.com with SMTP id k2so13357786qkk.7
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 13:22:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VHgVq5sX90/a/BhOqlHy581ALJwbQnSRnRpBrgLVdZ4=;
-        b=fELMiNAAnzjxMhrhiZt4CATnthWy6giZnkz2zXGp5/6n8EoC1LuU8oQfUfEcVQoLA/
-         QichA/k207xrB80yyoNaf6+Tc6xJWRMTitzk6yAa5opT9pLOQT8wvAuJEAXSJePCzD1w
-         P1cHz58W5dAAqh7AjcFl5B+evStoCtfUo/QXjnjllQ2Q64hRJfOI0JNS7wJdfKKTg9Xw
-         pIr4EV4lXRRTewtoWKmDfsV/KVTYBib80VzDNbshHWyjyAUJnzLjamQI1lZwjr3d5Oo3
-         LEr00TLTaUa5wfDOmxqWAXothKMITL8f1kDbUtzGHBJDRgCkI2aXdf/FUy+cJ5cKtYnu
-         K3mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VHgVq5sX90/a/BhOqlHy581ALJwbQnSRnRpBrgLVdZ4=;
-        b=ZGT5n3d8p6A5xj9PsWEsep5OwHhDla3Y0D8CJrlqRDExI3lp9ub9q1XmHCj2qNUG8k
-         dluzAK+Ucy5wQrUJbU8t6PWKoIxIkxM8URUZEDeZ3msXQW6f7+u74kcBKw1JX1vNLBFc
-         eNwFk6hSmuSVTjBiD1XVH2+9hXeCVDtoYSWjnO07lNZZtsyOGI0eZhVt8NZmMdiH9C1+
-         duQkqi2AFKo2dPppl7Yf8U+xmP6SYs5oqVO6FENOGgKx2ypC6clAjUBxraggSF/ozCKe
-         b/6PKNEdqoUug4I8cANGK5DDvPRfTG9iQhpgBqTBf6WMiT4ASrHHUN/th+/tFatySf8+
-         hLXA==
-X-Gm-Message-State: ANoB5pmQEfDxKa44vKwpiMjq8Lo0kS2c3e5+ux9F21/CCHgWRDJLmlNG
-        gLHKDqC/Utv1NxotiaQNGjSF/w==
-X-Google-Smtp-Source: AA0mqf6Fm5ciQ4wtKxYph7OV6JtS/phXFgRnDvE6jcyPWG1R+idx88hHtrCa8QNdTRhn8Fb+kIVYhg==
-X-Received: by 2002:a05:620a:10b4:b0:6fb:f17e:c8f8 with SMTP id h20-20020a05620a10b400b006fbf17ec8f8mr16670583qkk.404.1669238526028;
-        Wed, 23 Nov 2022 13:22:06 -0800 (PST)
-Received: from localhost ([2620:10d:c091:480::1:bc4])
-        by smtp.gmail.com with ESMTPSA id c12-20020ac8054c000000b003995f6513b9sm10148797qth.95.2022.11.23.13.22.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 13:22:05 -0800 (PST)
-Date:   Wed, 23 Nov 2022 16:22:31 -0500
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Ivan Babrou <ivan@cloudflare.com>, Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, cgroups@vger.kernel.org,
-        kernel-team <kernel-team@cloudflare.com>
-Subject: Re: Low TCP throughput due to vmpressure with swap enabled
-Message-ID: <Y36PF972kOK3ADvx@cmpxchg.org>
-References: <CABWYdi0G7cyNFbndM-ELTDAR3x4Ngm0AehEp5aP0tfNkXUE+Uw@mail.gmail.com>
- <CAOUHufYd-5cqLsQvPBwcmWeph2pQyQYFRWynyg0UVpzUBWKbxw@mail.gmail.com>
- <CAOUHufYSeTeO5ZMpnCR781esHV4QV5Th+pd=52UaM9cXNNKF9w@mail.gmail.com>
- <Y31s/K8T85jh05wH@google.com>
+        with ESMTP id S230195AbiKWVcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 16:32:23 -0500
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050:0:465::103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555C68FE73;
+        Wed, 23 Nov 2022 13:32:22 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [10.196.197.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4NHZ8d6r0zz9sQc;
+        Wed, 23 Nov 2022 22:32:17 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1669239138;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bdMp3iNsz89eWNqp8pGWZH/hHxCMtNpKUEDiIKQqEFc=;
+        b=cqy8UGBk3DYqtYjfvKqhJ4BNRCbidS6pSM34wLdHKu/xoN+pJ9Yywm9SiIsg0n59N2SWU3
+        apCZKU6EmFiCai9GWGT8u2CBcfJD4djI4yei5DszSMsPdKBpzwL5zL1NY6kroiLE2mUEvs
+        1pbWxeDTt75GcoasBgvaakDPOe30Mgdv1q/f2cUVv4J+lkJexP2FNVVLFMnB0hRCMul7ev
+        d1/gy/9xiV88YG3mYH/LIMbGTU2MFF6qg2eMuq354WFdNBma2xzVNGrb0mj+EboWfeVxTB
+        MNv2vWfaHy++zSxl7c5YKpgTAa0XAUwuftxFvBCSCrsyKqEebaU6ZQo8A+fCWQ==
+From:   Alexander Lobakin <alobakin@mailbox.org>
+To:     Colin Foster <colin.foster@in-advantage.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Alexander Lobakin <alobakin@maibox.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 14/18] dsa: ocelot: fix mixed module-builtin object
+Date:   Wed, 23 Nov 2022 22:31:44 +0100
+Message-Id: <20221123213144.58738-1-alobakin@mailbox.org>
+In-Reply-To: <Y3u/qwvLED4nE/jR@colin-ia-desktop>
+References: <20221119225650.1044591-1-alobakin@pm.me> <20221119225650.1044591-15-alobakin@pm.me> <20221121175504.qwuoyditr4xl6oew@skbuf> <Y3u/qwvLED4nE/jR@colin-ia-desktop>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y31s/K8T85jh05wH@google.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-MBO-RS-META: 6oaxuytjxjineax3hrw37r1bqtxy93ex
+X-MBO-RS-ID: 87f354797b3c031bd83
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 05:44:44PM -0700, Yu Zhao wrote:
-> Hi Johannes,
+From: Alexander Lobakin <alobakin@maibox.org>
+
+From: Colin Foster <colin.foster@in-advantage.com>
+Date: Mon, 21 Nov 2022 10:12:59 -0800
+
+> On Mon, Nov 21, 2022 at 07:55:04PM +0200, Vladimir Oltean wrote:
+> > On Sat, Nov 19, 2022 at 11:09:28PM +0000, Alexander Lobakin wrote:
+> > > With CONFIG_NET_DSA_MSCC_FELIX=m and CONFIG_NET_DSA_MSCC_SEVILLE=y
+> > > (or vice versa), felix.o are linked to a module and also to vmlinux
+> > > even though the expected CFLAGS are different between builtins and
+> > > modules.
+> > > This is the same situation as fixed by
+> > > commit 637a642f5ca5 ("zstd: Fixing mixed module-builtin objects").
+> > > There's also no need to duplicate relatively big piece of object
+> > > code into two modules.
+> > > 
+> > > Introduce the new module, mscc_core, to provide the common functions
+> > > to both mscc_felix and mscc_seville.
+> > > 
+> > > Fixes: d60bc62de4ae ("net: dsa: seville: build as separate module")
+> > > Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
+> > > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> > > ---
+> > 
+> > I don't disagree with the patch, but I dislike the name chosen.
+> > How about NET_DSA_OCELOT_LIB and mscc_ocelot_dsa_lib.o? The "core" of
+> > the hardware support is arguably mscc_ocelot_switch_lib.o, I don't think
+> > it would be good to use that word here, since the code you're moving is
+> > no more than a thin glue layer with some DSA specific code.
+
+Yes, sure. I'm totally open for renaming stuff -- usually I barely
+touch most of the code from the series, so the names can make no
+sense at all. _dsa_lib sounds good, I like it.
+
+> > 
+> > Adding Colin for a second opinion on the naming. I'm sure things could
+> > have been done better in the first place, just not sure how.
 > 
-> Do you think it makes sense to have the below for both the baseline and
-> MGLRU or it's some behavior change that the baseline doesn't want to
-> risk?
+> Good catch on this patch. "mscc_ocelot_dsa_lib" makes sense. The only
+> other option that might be considered would be along the lines of
+> "felix_lib". While I know "Felix" is the chip, in the dsa directory it
+> seems to represent the DSA lib in general.
 
-It looks good to me. Besides the new FMODE_NOREUSE, it's also a nice
-cleanup on the rmap side!
+The thing confused me is that one of the platforms is named Felix
+and the other is Seville, but the file they share is also felix,
+although Seville has no references to the name "felix" AFAICS :D
+I thought maybe Felix is a family and Seville is a chip from this
+family, dunno.
 
-It would just be good to keep the comment from folio_referenced_one() and
-move it to the vma_has_locality() check in invalid_folio_referenced_vma().
+> 
+> Either one seems fine for me. And thanks for the heads up, as I'll need
+> to make the same changes for ocelot_ext when it is ready.
+> 
 
-Otherwise,
+Ooh, something interesting is coming, nice <.<
 
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Thanks,
+Olek
