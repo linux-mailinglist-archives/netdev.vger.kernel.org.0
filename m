@@ -2,112 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBEED63654D
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 17:05:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C811636562
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 17:07:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238441AbiKWQF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 11:05:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
+        id S238790AbiKWQHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 11:07:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238512AbiKWQFy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 11:05:54 -0500
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B431F615;
-        Wed, 23 Nov 2022 08:05:52 -0800 (PST)
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 2ANG5TUq009845;
-        Thu, 24 Nov 2022 01:05:29 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 2ANG5TUq009845
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1669219530;
-        bh=svFtEHRXI+hcu/P5T8jGVN2TIA7Yepr3md/9hK9H4Os=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=hvOdANAjjXXWAB4WMsZdDYqo0cVfVOoPZXMvA5AzP+Bqbjqrag6EYSs9UxzKC+Dnb
-         wfyjYj7MZg3+gbt+18QK4OIJ/iJphcfQzYC7RSI962tkJ8j50pVCbOxRR0GgHpBh7s
-         P1/M0IzZC5UThIBzH6uvdxJ5WUkEaydSN+LyQfgSmzn32dJJ4imQDAEOW6S0dx3LOP
-         3F8NaLCcnlmlblM9rlg9GKqjA1P2ItrZZyKD3q+L01sAFL/jQphPgnMBuP6m6amq1d
-         AN/l4BdcUMVXQd1gIVg52jgLkMwE3kUhbFXankfuFat2LJYSrUXaigGjN7+u6k8NRX
-         +XrwbfrRUik8Q==
-X-Nifty-SrcIP: [209.85.160.41]
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-14286d5ebc3so17990322fac.3;
-        Wed, 23 Nov 2022 08:05:29 -0800 (PST)
-X-Gm-Message-State: ANoB5pl3TnU217L4Ves+m82DMV2KuoNgWkxt7/ueOe6SwvZbJEOiA6lm
-        yNc2BZTvNuyE7UZS1c7x2LKzNFeSG/YZYThgQSY=
-X-Google-Smtp-Source: AA0mqf6HGleRbj7Qe5GzuirX/Foa0/Aoh13Y8Sr/DxGsPHT5WruP6vhcbHKUWNwUxifsPORSdReCGgryqYEYNpGynPk=
-X-Received: by 2002:a05:6870:3b06:b0:13b:5d72:d2c6 with SMTP id
- gh6-20020a0568703b0600b0013b5d72d2c6mr5086727oab.287.1669219528697; Wed, 23
- Nov 2022 08:05:28 -0800 (PST)
+        with ESMTP id S238796AbiKWQHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 11:07:35 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA1FE8D
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 08:07:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669219652; x=1700755652;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=fQM35OTEAIiCS50ddnwzJMep7eV4oVjmAscYHWaAsUA=;
+  b=iIvE4h857K2vUTN1S5Ie7V8ScOB+eZX/4BCvdpKnm7AhfjKURmae8s9q
+   nk7BSbWvMcRmm4A++KGsqz4UayHJPaqtJczQWyyjy/Z3/M1fzejGzZIoN
+   fklT9iY8dfVAIyvP5Jmt1mJ5llBDl0irRXLuBC7aDtTUii6t+OaKv1gSy
+   Jp5SxSuWXZX+Q2J6SEkwYAV1w5rx0UNUa0v34eGP2PW0hlPXZhUJnLs7/
+   +FEp5kLV5iK2btUYEoCj5HspfjJpbZlAY+Cknku9AZXuUoHZM0s7S3gHx
+   WGHA1mRdgY1qNtKKU2rHcF0b85TZ3qrOHyTfzdgyxVrXhh7o+N/ZfHkXV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="297459379"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="297459379"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 08:07:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="705410681"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="705410681"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga008.fm.intel.com with ESMTP; 23 Nov 2022 08:07:28 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2ANG7RWO003894;
+        Wed, 23 Nov 2022 16:07:27 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Daniil Tatianin <d-tatianin@yandex-team.ru>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v2] net/ethtool/ioctl: ensure that we have phy ops before using them
+Date:   Wed, 23 Nov 2022 17:06:42 +0100
+Message-Id: <20221123160642.484567-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221122072143.53841-1-d-tatianin@yandex-team.ru>
+References: <20221122072143.53841-1-d-tatianin@yandex-team.ru>
 MIME-Version: 1.0
-References: <20221119225650.1044591-1-alobakin@pm.me> <20221119225650.1044591-10-alobakin@pm.me>
-In-Reply-To: <20221119225650.1044591-10-alobakin@pm.me>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 24 Nov 2022 01:04:52 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT4Oe1JRu5msSV6M2e5QRNTH9xuBUsOq+KrFS0H911=TQ@mail.gmail.com>
-Message-ID: <CAK7LNAT4Oe1JRu5msSV6M2e5QRNTH9xuBUsOq+KrFS0H911=TQ@mail.gmail.com>
-Subject: Re: [PATCH 09/18] net: emac, cpsw: fix mixed module-builtin object (davinci_cpdma)
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     linux-kbuild@vger.kernel.org, Nicolas Schier <nicolas@fjasle.eu>,
-        Jens Axboe <axboe@kernel.dk>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 20, 2022 at 8:07 AM Alexander Lobakin <alobakin@pm.me> wrote:
->
-> From: Masahiro Yamada <masahiroy@kernel.org>
->
-> CONFIG_TI_DAVINCI_EMAC, CONFIG_TI_CPSW and CONFIG_TI_CPSW_SWITCHDEV
-> are all tristate. This means that davinci_cpdma.o can be linked to
-> a module and also to vmlinux even though the expected CFLAGS are
-> different between builtins and modules.
->
-> This is the same situation as fixed by commit 637a642f5ca5 ("zstd:
-> Fixing mixed module-builtin objects").
->
-> Introduce the new module, ti_davinci_cpdma, to provide the common
-> functions to these three modules.
->
-> [ alobakin: add exports ]
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> Reviewed-by: Alexander Lobakin <alobakin@pm.me>
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+From: Daniil Tatianin <d-tatianin@yandex-team.ru>
+Date: Tue, 22 Nov 2022 10:21:43 +0300
+
+> ops->get_ethtool_phy_stats was getting called in an else branch
+> of ethtool_get_phy_stats() unconditionally without making sure
+> it was actually present.
+> 
+> Refactor the checks to avoid unnecessary nesting and make them more
+> readable. Add an extra WARN_ON_ONCE(1) to emit a warning when a driver
+> declares that it has phy stats without a way to retrieve them.
+> 
+> Found by Linux Verification Center (linuxtesting.org) with the SVACE
+> static analysis tool.
+> 
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
 > ---
+>  net/ethtool/ioctl.c | 31 ++++++++++++++++++-------------
+>  1 file changed, 18 insertions(+), 13 deletions(-)
+> 
+> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> index 57e7238a4136..04f9ba98b038 100644
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+> @@ -2100,23 +2100,28 @@ static int ethtool_get_phy_stats(struct net_device *dev, void __user *useraddr)
+>  
+>  	stats.n_stats = n_stats;
+>  
+> -	if (n_stats) {
+> -		data = vzalloc(array_size(n_stats, sizeof(u64)));
+> -		if (!data)
+> -			return -ENOMEM;
+> +	if (!n_stats) {
+> +		data = NULL;
+> +		goto copy_back;
+> +	}
+>  
+> -		if (phydev && !ops->get_ethtool_phy_stats &&
+> -		    phy_ops && phy_ops->get_stats) {
+> -			ret = phy_ops->get_stats(phydev, &stats, data);
+> -			if (ret < 0)
+> -				goto out;
+> -		} else {
+> -			ops->get_ethtool_phy_stats(dev, &stats, data);
+> -		}
+> +	data = vzalloc(array_size(n_stats, sizeof(u64)));
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	if (ops->get_ethtool_phy_stats) {
+> +		ops->get_ethtool_phy_stats(dev, &stats, data);
 
-Please take the authorship for this patch
-because I did not finish this patch
-(and I am not sure if this is the correct way to fix)
+I'd first check for the callback and only after allocate the array,
+otherwise there's no optimization in here.
+Also, I'd separate saving 1 level of indent from the functional
+changes.
 
-As 18/18 will touch this part again,
-perhaps davinci_cpdma.c can go into ti_cpsw_core.ko
+> +	} else if (phydev && phy_ops && phy_ops->get_stats) {
+> +		ret = phy_ops->get_stats(phydev, &stats, data);
+> +		if (ret < 0)
+> +			goto out;
+>  	} else {
+> -		data = NULL;
+> +		WARN_ON_ONCE(1);
+> +		n_stats = 0;
+> +		stats.n_stats = 0;
+>  	}
+>  
+> +copy_back:
+>  	ret = -EFAULT;
+>  	if (copy_to_user(useraddr, &stats, sizeof(stats)))
+>  		goto out;
+> -- 
+> 2.25.1
 
-Anyway, the maintainer may have a better insight.
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Thanks,
+Olek
