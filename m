@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CCD634C1B
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 02:08:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40232634C30
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 02:09:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235431AbiKWBIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 20:08:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
+        id S235483AbiKWBJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 20:09:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235443AbiKWBII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 20:08:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C238525F3;
-        Tue, 22 Nov 2022 17:08:07 -0800 (PST)
+        with ESMTP id S235433AbiKWBJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 20:09:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7E9C4C08;
+        Tue, 22 Nov 2022 17:09:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7BBF9B81DDD;
-        Wed, 23 Nov 2022 01:08:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33D46C433B5;
-        Wed, 23 Nov 2022 01:08:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0445C6198A;
+        Wed, 23 Nov 2022 01:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD44C43470;
+        Wed, 23 Nov 2022 01:09:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669165685;
-        bh=qTQ21cFsHNaq36zv0IktHLxNFPVLWU4zT0U5TeMVodI=;
+        s=k20201202; t=1669165741;
+        bh=VEr9KUTmQN7PdpRjdITbWK0f3twlzJs/jseGDOvy7aM=;
         h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=t1GF3SzcQqEax6YraA5cSidEEBrY+t9CKMvXX1RB2OIOQGszcdQKKFeS2makpGNNh
-         e4I4P34f0tkGChp7gb47xQ/AGIz3FYUjxTW2+uMyfIWKA/DqFQbQRgua2C8UYfCQ8H
-         LUD9FfLW3L0tpgSJxKD6isoQQEkiA79vLzeZkQWRdmvpXdYAjqtPxd49k0qPQ+Wp30
-         DhjwqykE7JWbCdDok81NTKOLoNJQevNoBRbcazCXpjtjCDJPo+kV+m2Jkl2prEKmAW
-         W2RbDr28IQOUcmdrWeOyl/WRLLZSR9ClBHGr6O6aJQnPsTDE9+nb7rS/f6xsjvKfLe
-         Zz4cyioi1Jocg==
+        b=eFQro6Mp3EnLI+pFGzvy/XrJMzJ19D4lXaGC7D+sepB+3Ys4lIikBt1z0H945eajn
+         m0gwo4bzLi1XYVKwHg2Osy5e538XrGq0w3K3n4++vzRj9kPhHoshbFU4zQ4iCH9VPZ
+         1csPlhlxe6vmZQ8utXIoFGo5suTnincXwEOoh7MAKEnWVM1OyR0OaxH/CTCnGJ900J
+         IAoadizYJel7a4w10cF/MjGJ4+xYr7gvX6wb5j6fHPX86NEoxhC/NVsOC+W1NmtBzi
+         shR6pi7sPMy8AxgPzgofsIL5/GAeJz2LLGVkOfequakNbABM2CgeK14raKuFEq4C2Y
+         SZiKz3tYDYQtg==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20221121110615.97962-4-krzysztof.kozlowski@linaro.org>
-References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org> <20221121110615.97962-4-krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v2 3/9] dt-bindings: clock: st,stm32mp1-rcc: add proper title
+In-Reply-To: <20221121110615.97962-2-krzysztof.kozlowski@linaro.org>
+References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org> <20221121110615.97962-2-krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v2 1/9] dt-bindings: drop redundant part of title of shared bindings
 From:   Stephen Boyd <sboyd@kernel.org>
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Guenter Roeck <linux@roeck-us.net>,
@@ -66,9 +67,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-watchdog@vger.kernel.org, netdev@vger.kernel.org,
         virtualization@lists.linux-foundation.org
-Date:   Tue, 22 Nov 2022 17:08:03 -0800
+Date:   Tue, 22 Nov 2022 17:08:59 -0800
 User-Agent: alot/0.10
-Message-Id: <20221123010805.33D46C433B5@smtp.kernel.org>
+Message-Id: <20221123010901.4AD44C43470@smtp.kernel.org>
 X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
         DKIM_SIGNED,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
@@ -78,12 +79,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Krzysztof Kozlowski (2022-11-21 03:06:09)
-> Add device name in the title, because "Reset Clock Controller" sounds
-> too generic.
+Quoting Krzysztof Kozlowski (2022-11-21 03:06:07)
+> The Devicetree bindings document does not have to say in the title that
+> it is a "binding", but instead just describe the hardware.  For shared
+> (re-usable) schemas, name them all as "common properties".
 >=20
 > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Acked-by: Guenter Roeck <linux@roeck-us.net> # watchdog
 > Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # IIO
+> Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
+>  Documentation/devicetree/bindings/clock/qcom,gcc.yaml           | 2 +-
+>=20
+> diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc.yaml b/Docu=
+mentation/devicetree/bindings/clock/qcom,gcc.yaml
+> index 1ab416c83c8d..7129fbcf2b6c 100644
+> --- a/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
+> +++ b/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
+> @@ -4,7 +4,7 @@
+>  $id: http://devicetree.org/schemas/clock/qcom,gcc.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+> =20
+> -title: Qualcomm Global Clock & Reset Controller Common Bindings
+> +title: Qualcomm Global Clock & Reset Controller Common Properties
+> =20
+>  maintainers:
+>    - Stephen Boyd <sboyd@kernel.org>
 
-Acked-by: Stephen Boyd <sboyd@kernel.org>
+Acked-by: Stephen Boyd <sboyd@kernel.org> # clk
