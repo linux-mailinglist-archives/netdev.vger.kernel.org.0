@@ -2,214 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B20B263605A
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62BE7636061
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:49:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238396AbiKWNsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 08:48:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33074 "EHLO
+        id S237831AbiKWNtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 08:49:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237677AbiKWNrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:47:32 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07ADE4387B;
-        Wed, 23 Nov 2022 05:37:16 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AND82aJ021801;
-        Wed, 23 Nov 2022 13:37:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=VeTRbnVSUNF7M1ilNOoDbMlUYlDy4KO21rFM4qDPcZQ=;
- b=Y/ub/ERd2gZgnrWARP1qO0nvgguTPr/EeVab9FEU2nw/4MJ3NrrR3N40zcz1ulIZQZon
- ZKS4eKSXepJU2v6bhk+avcBieHY+MAD3rdkrvjwcjq9RYWomn4watcBnFDbRT1izBf3p
- h/iv9l9sV8Uw4hkxiS3bHaKTt9dnKqpmLzcjDmLf4mTIVem6sxf7S9BnJuA1lF9Zic1i
- fbGfANyXVmgVVgNKQ+Zu8X6dqZcEiKG/sTmUYGoSLo/kMBNvHB/dtolEtc9CdTGYWzIR
- X/77CAzECdk2yyL0dKuEYGzSA7R4+h4qWS6LAGAWhMZrMueQTs4ifFKXIbBHy/47O3J5 kg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m1152vp5w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Nov 2022 13:37:12 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2ANDUV4n020308;
-        Wed, 23 Nov 2022 13:37:11 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m1152vp2m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Nov 2022 13:37:10 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2ANDZxhL025206;
-        Wed, 23 Nov 2022 13:37:03 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3kxps8v7pe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Nov 2022 13:37:03 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2ANDaxsh64291104
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Nov 2022 13:36:59 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8E40D4C046;
-        Wed, 23 Nov 2022 13:36:59 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F07D44C050;
-        Wed, 23 Nov 2022 13:36:58 +0000 (GMT)
-Received: from [9.171.0.166] (unknown [9.171.0.166])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 23 Nov 2022 13:36:58 +0000 (GMT)
-Message-ID: <21f0ecf6-6154-78c0-7866-bfb4212ead99@linux.ibm.com>
-Date:   Wed, 23 Nov 2022 14:36:56 +0100
+        with ESMTP id S237822AbiKWNtb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:49:31 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744988D485
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 05:38:59 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id j4so28239210lfk.0
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 05:38:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=wS8FATQNxWPdriQp0BbXocQzCpC+MIR+DcVNfDAhwFk=;
+        b=goY0xT6u7EULHQx2MRhg/J+3Xshao0AkK0Kw/Yhep2ABZQKNds0sD0jO44XqILT85D
+         GMpgwtt4t0RcnMdLfGn72E9O9T3qn7XUT2okgutwciPevDbju3FcMf/01ixtJfXX7Iiq
+         fDbqCLjRKHOzrt5uEOMdWfHgwoVRnlv2IfOnw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wS8FATQNxWPdriQp0BbXocQzCpC+MIR+DcVNfDAhwFk=;
+        b=I837qklgSWUwvUy9Gdqw0x7NxL5fMOGwkL2OfYpWfU5lAhe+RECrSZ+JseRPyJcZdu
+         loyqaosuosQvy8YXYFcrSr4Qyqk6khwu7hkKacdo5nAm1QeJjA5MLL5hejJauXhEW0rv
+         s0h9AlwGG/dY7OVr3yHRWLehxd2S8Ri42++VwBoHPM4C51FC07p8Im8vnzy2znC7uu/E
+         AY5ZQ98q9MYqkMUicD0ctGiYTh5JltLEOzQedOvWGdwfO4GDvvzk6A/7NbtA3tv5wo8r
+         L/9AicE6SOj+PwDnvKUGqdwLil6KSqf9kHp1tL3cirqdw6jxC0e/fNoMQc3Z9Ss5N93T
+         WeIQ==
+X-Gm-Message-State: ANoB5pkm4cmdYcjMJyqlpIrw2EOeQrPr7fVPEuMk7YxMRihydOqN1UaY
+        +AbAslf9D2o6YDNalNKJezBrdg==
+X-Google-Smtp-Source: AA0mqf4f1qphI9rYgYg/KQyHXOZ4X9v9VsEAFcQc3JIS1A5jOOVNZ/Gqskm/9D51RpT1s9TMN21moQ==
+X-Received: by 2002:ac2:4bc5:0:b0:4b4:c099:a994 with SMTP id o5-20020ac24bc5000000b004b4c099a994mr7840595lfq.193.1669210737739;
+        Wed, 23 Nov 2022 05:38:57 -0800 (PST)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id r9-20020a2e5749000000b002774e7267a7sm2224924ljd.25.2022.11.23.05.38.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Nov 2022 05:38:57 -0800 (PST)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: fec: don't reset irq coalesce settings to defaults on "ip link up"
+Date:   Wed, 23 Nov 2022 14:38:52 +0100
+Message-Id: <20221123133853.1822415-1-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next] net/smc: Unbind smc control from tcp control
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-References: <20221123105830.17167-1-jaka@linux.ibm.com>
- <Y34NFlco13Y3LpOc@TonyMac-Alibaba>
-From:   Jan Karcher <jaka@linux.ibm.com>
-Organization: IBM - Network Linux on Z
-In-Reply-To: <Y34NFlco13Y3LpOc@TonyMac-Alibaba>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: zKYzg-X8gg-8xp3teLg09iFwbMLk-Wit
-X-Proofpoint-GUID: 1A9AB9FzHlNhtLYk30H_g3bssSqbRBmN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-23_06,2022-11-23_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- malwarescore=0 impostorscore=0 lowpriorityscore=0 bulkscore=0 phishscore=0
- adultscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=999 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2211230097
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Currently, when a FEC device is brought up, the irq coalesce settings
+are reset to their default values (1000us, 200 frames). That's
+unexpected, and breaks for example use of an appropriate .link file to
+make systemd-udev apply the desired
+settings (https://www.freedesktop.org/software/systemd/man/systemd.link.html),
+or any other method that would do a one-time setup during early boot.
 
+Refactor the code so that fec_restart() instead uses
+fec_enet_itr_coal_set(), which simply applies the settings that are
+stored in the private data, and initialize that private data with the
+default values.
 
-On 23/11/2022 13:07, Tony Lu wrote:
-> On Wed, Nov 23, 2022 at 11:58:30AM +0100, Jan Karcher wrote:
->> In the past SMC used the values of tcp_{w|r}mem to create the send
->> buffer and RMB. We now have our own sysctl knobs to tune them without
->> influencing the TCP default.
->>
->> This patch removes the dependency on the TCP control by providing our
->> own initial values which aim for a low memory footprint.
->>
->> Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
->> Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
->> ---
->>   Documentation/networking/smc-sysctl.rst |  4 ++--
->>   net/smc/smc_core.h                      |  6 ++++--
->>   net/smc/smc_sysctl.c                    | 10 ++++++----
->>   3 files changed, 12 insertions(+), 8 deletions(-)
->>
->> diff --git a/Documentation/networking/smc-sysctl.rst b/Documentation/networking/smc-sysctl.rst
->> index 6d8acdbe9be1..a1c634d3690a 100644
->> --- a/Documentation/networking/smc-sysctl.rst
->> +++ b/Documentation/networking/smc-sysctl.rst
->> @@ -44,7 +44,7 @@ smcr_testlink_time - INTEGER
->>   
->>   wmem - INTEGER
->>   	Initial size of send buffer used by SMC sockets.
->> -	The default value inherits from net.ipv4.tcp_wmem[1].
->> +	The default value aims for a small memory footprint and is set to 16KiB.
->>   
->>   	The minimum value is 16KiB and there is no hard limit for max value, but
->>   	only allowed 512KiB for SMC-R and 1MiB for SMC-D.
->> @@ -53,7 +53,7 @@ wmem - INTEGER
->>   
->>   rmem - INTEGER
->>   	Initial size of receive buffer (RMB) used by SMC sockets.
->> -	The default value inherits from net.ipv4.tcp_rmem[1].
->> +	The default value aims for a small memory footprint and is set to 64KiB.
->>   
->>   	The minimum value is 16KiB and there is no hard limit for max value, but
->>   	only allowed 512KiB for SMC-R and 1MiB for SMC-D.
->> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
->> index 285f9bd8e232..67c3937f341d 100644
->> --- a/net/smc/smc_core.h
->> +++ b/net/smc/smc_core.h
->> @@ -206,8 +206,10 @@ struct smc_rtoken {				/* address/key of remote RMB */
->>   	u32			rkey;
->>   };
->>   
->> -#define SMC_BUF_MIN_SIZE	16384	/* minimum size of an RMB */
-> 
-> Hi Jan,
-> 
-> This patch inspired me that the min value of RMB and sndbuffer is 16KiB,
-> it means that every connection costs 32KiB at least. It's still a large
-> size for small environments, such as virtual machines or containers.
-> 
-> Also we have tested some cases with smaller buffer size (4KiB, with
-> hacked code), it also shows good performance compared with larger buffer
-> size.
-> 
-> So I am wondering that we could reduce the min value of RMB/send buffer,
-> such as 4KiB.
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 22 ++++++----------------
+ 1 file changed, 6 insertions(+), 16 deletions(-)
 
-That sounds interesting.
-We did not think about reducing the minimum value.
-One thing I'm wondering is if other OS like z/OS have own architectural 
-limits or limits in general that we would have to consider in any way.
-Let us look into it if we run into any trouble with lower memory.
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index f623c12eaf95..2ca2b61b451f 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -74,7 +74,7 @@
+ #include "fec.h"
+ 
+ static void set_multicast_list(struct net_device *ndev);
+-static void fec_enet_itr_coal_init(struct net_device *ndev);
++static void fec_enet_itr_coal_set(struct net_device *ndev);
+ 
+ #define DRIVER_NAME	"fec"
+ 
+@@ -1220,8 +1220,7 @@ fec_restart(struct net_device *ndev)
+ 		writel(0, fep->hwp + FEC_IMASK);
+ 
+ 	/* Init the interrupt coalescing */
+-	fec_enet_itr_coal_init(ndev);
+-
++	fec_enet_itr_coal_set(ndev);
+ }
+ 
+ static int fec_enet_ipc_handle_init(struct fec_enet_private *fep)
+@@ -2856,19 +2855,6 @@ static int fec_enet_set_coalesce(struct net_device *ndev,
+ 	return 0;
+ }
+ 
+-static void fec_enet_itr_coal_init(struct net_device *ndev)
+-{
+-	struct ethtool_coalesce ec;
+-
+-	ec.rx_coalesce_usecs = FEC_ITR_ICTT_DEFAULT;
+-	ec.rx_max_coalesced_frames = FEC_ITR_ICFT_DEFAULT;
+-
+-	ec.tx_coalesce_usecs = FEC_ITR_ICTT_DEFAULT;
+-	ec.tx_max_coalesced_frames = FEC_ITR_ICFT_DEFAULT;
+-
+-	fec_enet_set_coalesce(ndev, &ec, NULL, NULL);
+-}
+-
+ static int fec_enet_get_tunable(struct net_device *netdev,
+ 				const struct ethtool_tunable *tuna,
+ 				void *data)
+@@ -3623,6 +3609,10 @@ static int fec_enet_init(struct net_device *ndev)
+ 	fep->rx_align = 0x3;
+ 	fep->tx_align = 0x3;
+ #endif
++	fep->rx_pkts_itr = FEC_ITR_ICFT_DEFAULT;
++	fep->tx_pkts_itr = FEC_ITR_ICFT_DEFAULT;
++	fep->rx_time_itr = FEC_ITR_ICTT_DEFAULT;
++	fep->tx_time_itr = FEC_ITR_ICTT_DEFAULT;
+ 
+ 	/* Check mask of the streaming and coherent API */
+ 	ret = dma_set_mask_and_coherent(&fep->pdev->dev, DMA_BIT_MASK(32));
+-- 
+2.37.2
 
-- Jan
-
-> 
-> Cheers,
-> Tony Lu
-> 
->> -#define SMC_RMBE_SIZES		16	/* number of distinct RMBE sizes */
->> +#define SMC_SNDBUF_INIT_SIZE 16384 /* initial size of send buffer */
->> +#define SMC_RCVBUF_INIT_SIZE 65536 /* initial size of receive buffer */
->> +#define SMC_BUF_MIN_SIZE	 16384	/* minimum size of an RMB */
->> +#define SMC_RMBE_SIZES		 16	/* number of distinct RMBE sizes */
->>   /* theoretically, the RFC states that largest size would be 512K,
->>    * i.e. compressed 5 and thus 6 sizes (0..5), despite
->>    * struct smc_clc_msg_accept_confirm.rmbe_size being a 4 bit value (0..15)
->> diff --git a/net/smc/smc_sysctl.c b/net/smc/smc_sysctl.c
->> index b6f79fabb9d3..a63aa79d4856 100644
->> --- a/net/smc/smc_sysctl.c
->> +++ b/net/smc/smc_sysctl.c
->> @@ -19,8 +19,10 @@
->>   #include "smc_llc.h"
->>   #include "smc_sysctl.h"
->>   
->> -static int min_sndbuf = SMC_BUF_MIN_SIZE;
->> -static int min_rcvbuf = SMC_BUF_MIN_SIZE;
->> +static int initial_sndbuf	= SMC_SNDBUF_INIT_SIZE;
->> +static int initial_rcvbuf	= SMC_RCVBUF_INIT_SIZE;
->> +static int min_sndbuf		= SMC_BUF_MIN_SIZE;
->> +static int min_rcvbuf		= SMC_BUF_MIN_SIZE;
->>   
->>   static struct ctl_table smc_table[] = {
->>   	{
->> @@ -88,8 +90,8 @@ int __net_init smc_sysctl_net_init(struct net *net)
->>   	net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
->>   	net->smc.sysctl_smcr_buf_type = SMCR_PHYS_CONT_BUFS;
->>   	net->smc.sysctl_smcr_testlink_time = SMC_LLC_TESTLINK_DEFAULT_TIME;
->> -	WRITE_ONCE(net->smc.sysctl_wmem, READ_ONCE(net->ipv4.sysctl_tcp_wmem[1]));
->> -	WRITE_ONCE(net->smc.sysctl_rmem, READ_ONCE(net->ipv4.sysctl_tcp_rmem[1]));
->> +	WRITE_ONCE(net->smc.sysctl_wmem, initial_sndbuf);
->> +	WRITE_ONCE(net->smc.sysctl_rmem, initial_rcvbuf);
->>   
->>   	return 0;
->>   
->> -- 
->> 2.34.1
