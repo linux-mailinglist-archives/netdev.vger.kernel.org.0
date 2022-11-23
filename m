@@ -2,89 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 298E263623C
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 15:47:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96871636266
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 15:52:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236783AbiKWOrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 09:47:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46962 "EHLO
+        id S237791AbiKWOw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 09:52:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236666AbiKWOrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 09:47:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA98450AF
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:46:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669214810;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xz+km6/Hwl8oAosXhHMDgdK+wl//qFcWr7SigG5fMGI=;
-        b=Y5DufcHpV+ONscMG28HLaa99ZVhp3yYPakMBZlp1Sq5UTraWjgjJFuNKHgpHArL14k2g49
-        iD86qF9hFlsBqDcfMoVur0+OhodpT9VpGTR8N/ntRkWgt5izEIJkJvwVar2QIfPxF684YL
-        sa+1E0UzLowXRi8zB9MTOuzMoAUWdng=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-493-X90xQynyNL258bi5X5vwzA-1; Wed, 23 Nov 2022 09:46:49 -0500
-X-MC-Unique: X90xQynyNL258bi5X5vwzA-1
-Received: by mail-ej1-f71.google.com with SMTP id sh31-20020a1709076e9f00b007ae32b7eb51so9993337ejc.9
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:46:49 -0800 (PST)
+        with ESMTP id S237437AbiKWOwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 09:52:23 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76DB38D4B5
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:52:21 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id z63so6151733ede.1
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:52:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=c0cYYhuWeBZxggRjcWRK91TmoegYznBOAl9pXEZNzsI=;
+        b=nnwgpLhtjt+2gXNHSgiKT60egaIwEmVpQ8xKo9AcAfGpzIzu1bpFI9m2DgTHLd8d+r
+         SuJ9fQyzhNyQRngVCz3R/RlYHs4CAIPQAfxYCSzlZ5uj1zoQGBSiEDiXTd0m99L7cdfn
+         YuN3bxj4Qi+0L91OzuFSUmmc3FyOUtZ9hCebAiprpS08tz48FeZWe9PScasJDcXI2A0y
+         Vo5zVvqzVbt+4vLUyVP0l85ONI9gI8oRYAlVPHRGWhNs4D17jcRZEZJXS7zVIcaZgFsR
+         AoJxGZrb/jLSfdOTZME0ktCswc9rOqBHY3oKaDda55N7sUZwRmgJITjkz6RCGM38g6/E
+         oAtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xz+km6/Hwl8oAosXhHMDgdK+wl//qFcWr7SigG5fMGI=;
-        b=zXxLfGngfHfgzvABLrYgnFGW6HVoOo65qKbf/EP+kDIHJLHjY7aRKF5ji/QdsiRS6v
-         3foy71Qw+YW1xugq89XWba4FpvJIeoC1Pw27U/iWFLkxGkMOocgCaVMvO388+LvEBLdQ
-         IgB3vq63W+iZUBD1Z0nN0a0O4GwonTuP73UtZQtWiOb60rAoSWxfhqBCUrdog8TJ2rz3
-         Z+yqOyOWsxvnydt825kvi9h4lLDYIVHt/8tebngwKRFfMVqevgyiZu47QcixKW1J8uA6
-         fpKBwdyTldi6/SqmSO20mr310/l75pctMnwxxcOTFv30TO98w1csP3MYlqV9IbpN8R1l
-         trbQ==
-X-Gm-Message-State: ANoB5pn5pp7I9zgX4w3hP0GfFMCb8PU3nWzDRb1seP9m/GO0vMEDsCE1
-        7BZE/DgXIUqMmJPfPeHqthHYQ/5UP0YZpxGgX4Jr8TyQMUUpWr4aLwsplVAxOkkaWXCVpbJ/y48
-        3ilmJnp7pUCxTIf01
-X-Received: by 2002:a17:906:160b:b0:78d:dddb:3974 with SMTP id m11-20020a170906160b00b0078ddddb3974mr23674880ejd.411.1669214807924;
-        Wed, 23 Nov 2022 06:46:47 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7gzrrwlJ97t9gbAltHqOq94T5Eij3iYI7xoXgpdWePyqrT1+AnkNTuxRdJZ1WEi3DXUCAAxQ==
-X-Received: by 2002:a17:906:160b:b0:78d:dddb:3974 with SMTP id m11-20020a170906160b00b0078ddddb3974mr23674846ejd.411.1669214807480;
-        Wed, 23 Nov 2022 06:46:47 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id mm27-20020a170906cc5b00b007ae693cd265sm7266907ejb.150.2022.11.23.06.46.46
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c0cYYhuWeBZxggRjcWRK91TmoegYznBOAl9pXEZNzsI=;
+        b=hOI7bV8ojbaiig6PIb8Tq7wjAPXX7TVe5zQBvCyDx6g+mWkl1uwRT4xa22k0C8IXQR
+         ljrsn7Hy/xGr7Mpl0/7AsQypBEaOwwaR+Rr2afenFsydJFXmy5Jj9jsRbF7h8eLjiYpq
+         zNle3ZM+gvIzX0d1cJezfg4kXV6SqSMEXLfAMmolGZIHrk8XaXI/uwo7RWkjVd8BKeMI
+         vt4h++02g/s7An+LkCwJ+nVDxa6TtPHVBBDpCG170Qg3qPGbLlrvd3lAXkY45SwKrWg6
+         A4pW2vZn8pDyD6ISFQ+kdsXZvu4dysPoE0slqR8JulzKW9WJ1q0f6urTzCvJGwUPDCBL
+         aPNQ==
+X-Gm-Message-State: ANoB5pmG/8NSJ0rFlCdbGjq5Rdt9AkN6LS+HJbVzYZNEXXZ0z3rdZxxd
+        p78L4rKiqQ7aZNW91MlvzKnm6w==
+X-Google-Smtp-Source: AA0mqf5jd4dYN9C/+Elce1qts52eZrfgguAaFs5X117TB4jlH7uLstuiK0xjyFl0NqMXGcJ43gfbpA==
+X-Received: by 2002:a05:6402:5299:b0:461:7291:79c1 with SMTP id en25-20020a056402529900b00461729179c1mr16390906edb.68.1669215139860;
+        Wed, 23 Nov 2022 06:52:19 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id 14-20020a170906308e00b007b29a6bec24sm7224876ejv.32.2022.11.23.06.52.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 06:46:47 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 61E197D5122; Wed, 23 Nov 2022 15:46:46 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>,
-        Stanislav Fomichev <sdf@google.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf-next 2/2] mlx5: Support XDP RX metadata
-Date:   Wed, 23 Nov 2022 15:46:41 +0100
-Message-Id: <20221123144641.339138-2-toke@redhat.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221123144641.339138-1-toke@redhat.com>
-References: <20221121182552.2152891-1-sdf@google.com>
- <20221123144641.339138-1-toke@redhat.com>
+        Wed, 23 Nov 2022 06:52:19 -0800 (PST)
+Date:   Wed, 23 Nov 2022 15:52:17 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Steve Williams <steve.williams@getcruise.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        vinicius.gomes@intel.com, xiaoliang.yang_1@nxp.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [EXT] Re: [PATCH net-next] net/hanic: Add the hanic network
+ interface for high availability links
+Message-ID: <Y34zoflZsC2pn9RO@nanopsycho>
+References: <20221118232639.13743-1-steve.williams@getcruise.com>
+ <20221121195810.3f32d4fd@kernel.org>
+ <20221122113412.dg4diiu5ngmulih2@skbuf>
+ <CALHoRjcw8Du+4Px__x=vfDfjKnHVRnMmAhBBEznQ2CfHPZ9S0A@mail.gmail.com>
+ <20221123142558.akqff2gtvzrqtite@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221123142558.akqff2gtvzrqtite@skbuf>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -92,265 +76,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support RX hash and timestamp metadata kfuncs. We need to pass in the cqe
-pointer to the mlx5e_skb_from* functions so it can be retrieved from the
-XDP ctx to do this.
+Wed, Nov 23, 2022 at 03:26:14PM CET, vladimir.oltean@nxp.com wrote:
+>On Tue, Nov 22, 2022 at 12:51:53PM -0800, Steve Williams wrote:
+>> This driver provides a way for outbound traffic to be tagged and duplicated out
+>> multiple ports, and inbound R-TAG'ed packets to be deduplicated.
+>
+>> Hanic tries to make the R-TAG handling transparent,
+>
+>> Generic filtering and/or dynamic stream identification methods just seemed
+>> out of scope for this driver. Certainly out of scope for our needs.
+>
+>> Yes, hanic implements a practical subset of the standard, and I try to be
+>> clear about that in the documentation.
+>
+>I'm back with a more intelligent question, after looking a bit at the
+>code and at the problem it tries to solve.
+>
+>The question is: why don't you create a tap interface, and a user space
+>program which is given the physical ports and tap interface as command
+>line arguments, and does the following:
+>
+>- on reception from physical interfaces, handles 802.1CB traffic from
+>  physical ports, eliminates the duplicates and pops the R-TAG, then
+>  sends the packets to the tap interface
+>- handles packets transmitted to the tap, splits them and pushes
+>  whatever R-TAG is needed, then forwards them to the physical network
+>  interfaces
+>
+>Then your Cruise 802.1CB endpoint solution becomes a user space handler
+>for a tap interface. To users of your solution, it's the same thing,
+>except they open their socket on a tap interface and not on a hanic
+>interface.
+>
+>Reworded, why must the hanic functionality to be in the kernel?
 
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: David Ahern <dsahern@gmail.com>
-Cc: Martin KaFai Lau <martin.lau@linux.dev>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Willem de Bruijn <willemb@google.com>
-Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc: Maryam Tahhan <mtahhan@redhat.com>
-Cc: Stanislav Fomichev <sdf@google.com>
-Cc: xdp-hints@xdp-project.net
-Cc: netdev@vger.kernel.org
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
-This goes on top of Stanislav's series, obvioulsy. Verified that it works using
-the xdp_hw_metadata utility; going to do ome benchmarking and follow up with the
-results, but figured I'd send this out straight away in case others wanted to
-play with it.
-
-Stanislav, feel free to fold it into the next version of your series if you
-want!
-
--Toke
+I guess for the same reason other soft netdevice driver are in the
+kernel. You can do bridge, bond, etc in a silimilar way you described
+here...
 
 
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  7 +++-
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 32 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en/xdp.h  | 10 ++++++
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |  3 ++
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |  3 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  4 +++
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 19 +++++------
- 7 files changed, 65 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index ff5b302531d5..960404027f0b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -629,7 +629,7 @@ typedef struct sk_buff *
- 			       u16 cqe_bcnt, u32 head_offset, u32 page_idx);
- typedef struct sk_buff *
- (*mlx5e_fp_skb_from_cqe)(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
--			 u32 cqe_bcnt);
-+			 struct mlx5_cqe64 *cqe, u32 cqe_bcnt);
- typedef bool (*mlx5e_fp_post_rx_wqes)(struct mlx5e_rq *rq);
- typedef void (*mlx5e_fp_dealloc_wqe)(struct mlx5e_rq*, u16);
- typedef void (*mlx5e_fp_shampo_dealloc_hd)(struct mlx5e_rq*, u16, u16, bool);
-@@ -1035,6 +1035,11 @@ int mlx5e_vlan_rx_kill_vid(struct net_device *dev, __always_unused __be16 proto,
- 			   u16 vid);
- void mlx5e_timestamp_init(struct mlx5e_priv *priv);
- 
-+static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
-+{
-+	return config->rx_filter == HWTSTAMP_FILTER_ALL;
-+}
-+
- struct mlx5e_xsk_param;
- 
- struct mlx5e_rq_param;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index 20507ef2f956..604c8cdfde02 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -156,6 +156,38 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
- 	return true;
- }
- 
-+bool mlx5e_xdp_rx_timestamp_supported(const struct xdp_md *ctx)
-+{
-+	const struct xdp_buff *xdp = (void *)ctx;
-+	struct mlx5_xdp_ctx *mctx = xdp->drv_priv;
-+
-+	return mlx5e_rx_hw_stamp(mctx->rq->tstamp);
-+}
-+
-+u64 mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx)
-+{
-+	const struct xdp_buff *xdp = (void *)ctx;
-+	struct mlx5_xdp_ctx *mctx = xdp->drv_priv;
-+
-+	return mlx5e_cqe_ts_to_ns(mctx->rq->ptp_cyc2time,
-+				  mctx->rq->clock, get_cqe_ts(mctx->cqe));
-+}
-+
-+bool mlx5e_xdp_rx_hash_supported(const struct xdp_md *ctx)
-+{
-+	const struct xdp_buff *xdp = (void *)ctx;
-+
-+	return xdp->rxq->dev->features & NETIF_F_RXHASH;
-+}
-+
-+u32 mlx5e_xdp_rx_hash(const struct xdp_md *ctx)
-+{
-+	const struct xdp_buff *xdp = (void *)ctx;
-+	struct mlx5_xdp_ctx *mctx = xdp->drv_priv;
-+
-+	return be32_to_cpu(mctx->cqe->rss_hash_result);
-+}
-+
- /* returns true if packet was consumed by xdp */
- bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct page *page,
- 		      struct bpf_prog *prog, struct xdp_buff *xdp)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-index bc2d9034af5b..07d80d0446ff 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-@@ -44,6 +44,11 @@
- 	(MLX5E_XDP_INLINE_WQE_MAX_DS_CNT * MLX5_SEND_WQE_DS - \
- 	 sizeof(struct mlx5_wqe_inline_seg))
- 
-+struct mlx5_xdp_ctx {
-+	struct mlx5_cqe64 *cqe;
-+	struct mlx5e_rq *rq;
-+};
-+
- struct mlx5e_xsk_param;
- int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk);
- bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct page *page,
-@@ -56,6 +61,11 @@ void mlx5e_xdp_rx_poll_complete(struct mlx5e_rq *rq);
- int mlx5e_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
- 		   u32 flags);
- 
-+bool mlx5e_xdp_rx_hash_supported(const struct xdp_md *ctx);
-+u32 mlx5e_xdp_rx_hash(const struct xdp_md *ctx);
-+bool mlx5e_xdp_rx_timestamp_supported(const struct xdp_md *ctx);
-+u64 mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx);
-+
- INDIRECT_CALLABLE_DECLARE(bool mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq,
- 							  struct mlx5e_xmit_data *xdptxd,
- 							  struct skb_shared_info *sinfo,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-index c91b54d9ff27..c6715cb23d45 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-@@ -283,8 +283,10 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
- 
- struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- 					      struct mlx5e_wqe_frag_info *wi,
-+					      struct mlx5_cqe64 *cqe,
- 					      u32 cqe_bcnt)
- {
-+	struct mlx5_xdp_ctx mlctx = { .cqe = cqe, .rq = rq };
- 	struct xdp_buff *xdp = wi->au->xsk;
- 	struct bpf_prog *prog;
- 
-@@ -298,6 +300,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- 	xsk_buff_set_size(xdp, cqe_bcnt);
- 	xsk_buff_dma_sync_for_cpu(xdp, rq->xsk_pool);
- 	net_prefetch(xdp->data);
-+	xdp->drv_priv = &mlctx;
- 
- 	prog = rcu_dereference(rq->xdp_prog);
- 	if (likely(prog && mlx5e_xdp_handle(rq, NULL, prog, xdp)))
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-index 087c943bd8e9..9198f137f48f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-@@ -18,6 +18,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
- 						    u32 page_idx);
- struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- 					      struct mlx5e_wqe_frag_info *wi,
--					      u32 cqe_bcnt);
-+                                              struct mlx5_cqe64 *cqe,
-+                                              u32 cqe_bcnt);
- 
- #endif /* __MLX5_EN_XSK_RX_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 14bd86e368d5..015bfe891458 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4890,6 +4890,10 @@ const struct net_device_ops mlx5e_netdev_ops = {
- 	.ndo_tx_timeout          = mlx5e_tx_timeout,
- 	.ndo_bpf		 = mlx5e_xdp,
- 	.ndo_xdp_xmit            = mlx5e_xdp_xmit,
-+	.ndo_xdp_rx_timestamp_supported = mlx5e_xdp_rx_timestamp_supported,
-+	.ndo_xdp_rx_timestamp    = mlx5e_xdp_rx_timestamp,
-+	.ndo_xdp_rx_hash_supported = mlx5e_xdp_rx_hash_supported,
-+	.ndo_xdp_rx_hash         = mlx5e_xdp_rx_hash,
- 	.ndo_xsk_wakeup          = mlx5e_xsk_wakeup,
- #ifdef CONFIG_MLX5_EN_ARFS
- 	.ndo_rx_flow_steer	 = mlx5e_rx_flow_steer,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index b1ea0b995d9c..1d6600441e74 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -76,11 +76,6 @@ const struct mlx5e_rx_handlers mlx5e_rx_handlers_nic = {
- 	.handle_rx_cqe_mpwqe_shampo = mlx5e_handle_rx_cqe_mpwrq_shampo,
- };
- 
--static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
--{
--	return config->rx_filter == HWTSTAMP_FILTER_ALL;
--}
--
- static inline void mlx5e_read_cqe_slot(struct mlx5_cqwq *wq,
- 				       u32 cqcc, void *data)
- {
-@@ -1573,7 +1568,7 @@ static void mlx5e_fill_xdp_buff(struct mlx5e_rq *rq, void *va, u16 headroom,
- 
- static struct sk_buff *
- mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
--			  u32 cqe_bcnt)
-+			  struct mlx5_cqe64 *cqe, u32 cqe_bcnt)
- {
- 	union mlx5e_alloc_unit *au = wi->au;
- 	u16 rx_headroom = rq->buff.headroom;
-@@ -1595,7 +1590,8 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
- 
- 	prog = rcu_dereference(rq->xdp_prog);
- 	if (prog) {
--		struct xdp_buff xdp;
-+		struct mlx5_xdp_ctx mlctx = { .cqe = cqe, .rq = rq };
-+		struct xdp_buff xdp = { .drv_priv = &mlctx };
- 
- 		net_prefetchw(va); /* xdp_frame data area */
- 		mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &xdp);
-@@ -1619,16 +1615,17 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
- 
- static struct sk_buff *
- mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi,
--			     u32 cqe_bcnt)
-+			     struct mlx5_cqe64 *cqe, u32 cqe_bcnt)
- {
- 	struct mlx5e_rq_frag_info *frag_info = &rq->wqe.info.arr[0];
-+	struct mlx5_xdp_ctx mlctx = { .cqe = cqe, .rq = rq };
-+	struct xdp_buff xdp = { .drv_priv = &mlctx };
- 	struct mlx5e_wqe_frag_info *head_wi = wi;
- 	union mlx5e_alloc_unit *au = wi->au;
- 	u16 rx_headroom = rq->buff.headroom;
- 	struct skb_shared_info *sinfo;
- 	u32 frag_consumed_bytes;
- 	struct bpf_prog *prog;
--	struct xdp_buff xdp;
- 	struct sk_buff *skb;
- 	dma_addr_t addr;
- 	u32 truesize;
-@@ -1766,7 +1763,7 @@ static void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
- 			      mlx5e_skb_from_cqe_linear,
- 			      mlx5e_skb_from_cqe_nonlinear,
- 			      mlx5e_xsk_skb_from_cqe_linear,
--			      rq, wi, cqe_bcnt);
-+			      rq, wi, cqe, cqe_bcnt);
- 	if (!skb) {
- 		/* probably for XDP */
- 		if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)) {
-@@ -2575,7 +2572,7 @@ static void mlx5e_trap_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe
- 		goto free_wqe;
- 	}
- 
--	skb = mlx5e_skb_from_cqe_nonlinear(rq, wi, cqe_bcnt);
-+	skb = mlx5e_skb_from_cqe_nonlinear(rq, wi, cqe, cqe_bcnt);
- 	if (!skb)
- 		goto free_wqe;
- 
--- 
-2.38.1
-
+>
+>Thank you.
