@@ -2,126 +2,347 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C1E635557
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 10:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F76F635579
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 10:20:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237316AbiKWJRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 04:17:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58330 "EHLO
+        id S237351AbiKWJTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 04:19:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237309AbiKWJQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 04:16:47 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEAD10B410;
-        Wed, 23 Nov 2022 01:16:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669194977; x=1700730977;
-  h=from:to:cc:subject:date:message-id;
-  bh=W3JPMcfxADxcaQcKNXuih5D3EZGPzDYcLZU7qgIXdnw=;
-  b=lFE32huPZns4grkjukiTZap3TFXDgR7xHxg6beK8Vy+fng3OLQ3SXaRB
-   FQhEETH+Rb+5HniKzQDiRQmfSFclicsSZgA8pBJxF6DEWse5S4DtX3TYa
-   1MU61t0bevtozXrI40mFcqNkMry/EIBeL8yrbR+/nsNrmS0kjIkvsFWt3
-   /8CtvOLrkIxAJ/AjKEx7cw8AH9WTDLWRVS81cZQImx4yoogLc7ZciuSQ4
-   uBRC4WKvecJ8IsEIwGps0UPAjjN/v7nrsJx9RkyMVyNhy/IUzc+P4jyKx
-   ix3TMGiK3X5ZX8svIlLbZaail2+6zaaT2BMkayhqCrHky4VrNqgBU2B8M
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="315174364"
-X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="315174364"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 01:16:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="672805025"
-X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="672805025"
-Received: from p12ill01gohweish.png.intel.com ([10.88.229.16])
-  by orsmga008.jf.intel.com with ESMTP; 23 Nov 2022 01:16:10 -0800
-From:   "Goh, Wei Sheng" <wei.sheng.goh@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        Ahmad Tarmizi Noor Azura <noor.azura.ahmad.tarmizi@intel.com>,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Goh Wei Sheng <wei.sheng.goh@intel.com>
-Subject: [PATCH net v3] net: stmmac: Set MAC's flow control register to reflect current settings
-Date:   Wed, 23 Nov 2022 17:15:29 +0800
-Message-Id: <20221123091529.22018-1-wei.sheng.goh@intel.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-1.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S237417AbiKWJS6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 04:18:58 -0500
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174F52B19F;
+        Wed, 23 Nov 2022 01:18:53 -0800 (PST)
+Received: from ([60.208.111.195])
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id SMQ00046;
+        Wed, 23 Nov 2022 17:18:46 +0800
+Received: from localhost.localdomain (10.180.206.146) by
+ jtjnmail201609.home.langchao.com (10.100.2.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 23 Nov 2022 17:18:47 +0800
+From:   wangchuanlei <wangchuanlei@inspur.com>
+To:     <pabeni@redhat.com>, <echaudro@redhat.com>, <pshelar@ovn.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>
+CC:     <wangpeihui@inspur.com>, <netdev@vger.kernel.org>,
+        <dev@openvswitch.org>, <linux-kernel@vger.kernel.org>,
+        wangchuanlei <wangchuanlei@inspur.com>
+Subject: [PATCH] [openvswitch v4] openvswitch: Add support to count upcall packets
+Date:   Wed, 23 Nov 2022 04:18:43 -0500
+Message-ID: <20221123091843.3414856-1-wangchuanlei@inspur.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.180.206.146]
+X-ClientProxiedBy: Jtjnmail201613.home.langchao.com (10.100.2.13) To
+ jtjnmail201609.home.langchao.com (10.100.2.9)
+tUid:   202211231718465fdb574ffc84504ad08634999ef00940
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, pause frame register GMAC_RX_FLOW_CTRL_RFE is not updated
-correctly when 'ethtool -A <IFACE> autoneg off rx off tx off' command
-is issued. This fix ensures the flow control change is reflected directly
-in the GMAC_RX_FLOW_CTRL_RFE register.
+Add support to count upall packets, when kmod of openvswitch
+upcall to userspace , here count the number of packets for
+upcall succeed and failed, which is a better way to see how
+many packets upcalled to userspace(ovs-vswitchd) on every
+interfaces.
 
-Fixes: 46f69ded988d ("net: stmmac: Use resolved link config in mac_link_up()")
-Cc: <stable@vger.kernel.org> # 5.10.x
-Signed-off-by: Goh, Wei Sheng <wei.sheng.goh@intel.com>
-Signed-off-by: Noor Azura Ahmad Tarmizi <noor.azura.ahmad.tarmizi@intel.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Here optimize the function used by comments of v3.
+
+Changes since v3:
+- use nested NLA_NESTED attribute in netlink message
+
+Changes since v2:
+- add count of upcall failed packets
+
+Changes since v1:
+- add count of upcall succeed packets
+
+Signed-off-by: wangchuanlei <wangchuanlei@inspur.com>
 ---
-V2 -> V3: Removed value assign for 'flow' in else statement based on review comments
-V1 -> V2: Removed needless condition based on review comments
+ include/uapi/linux/openvswitch.h | 19 ++++++++++++
+ net/openvswitch/datapath.c       | 52 ++++++++++++++++++++++++++++++++
+ net/openvswitch/datapath.h       | 12 ++++++++
+ net/openvswitch/vport.c          | 48 +++++++++++++++++++++++++++++
+ net/openvswitch/vport.h          |  6 ++++
+ 5 files changed, 137 insertions(+)
 
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |  2 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 ++++++++++--
- 2 files changed, 13 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index c25bfecb4a2d..369db308b1dd 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -748,6 +748,8 @@ static void dwmac4_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
- 	if (fc & FLOW_RX) {
- 		pr_debug("\tReceive Flow-Control ON\n");
- 		flow |= GMAC_RX_FLOW_CTRL_RFE;
-+	} else {
-+		pr_debug("\tReceive Flow-Control OFF\n");
- 	}
- 	writel(flow, ioaddr + GMAC_RX_FLOW_CTRL);
+diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+index 94066f87e9ee..fa13bce15fae 100644
+--- a/include/uapi/linux/openvswitch.h
++++ b/include/uapi/linux/openvswitch.h
+@@ -126,6 +126,11 @@ struct ovs_vport_stats {
+ 	__u64   tx_dropped;		/* no space available in linux  */
+ };
  
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 8273e6a175c8..ab7f48f32f5b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1061,8 +1061,16 @@ static void stmmac_mac_link_up(struct phylink_config *config,
- 		ctrl |= priv->hw->link.duplex;
- 
- 	/* Flow Control operation */
--	if (tx_pause && rx_pause)
--		stmmac_mac_flow_ctrl(priv, duplex);
-+	if (rx_pause && tx_pause)
-+		priv->flow_ctrl = FLOW_AUTO;
-+	else if (rx_pause && !tx_pause)
-+		priv->flow_ctrl = FLOW_RX;
-+	else if (!rx_pause && tx_pause)
-+		priv->flow_ctrl = FLOW_TX;
-+	else
-+		priv->flow_ctrl = FLOW_OFF;
++struct ovs_vport_upcall_stats {
++	uint64_t   upcall_success;	/* total packets upcalls succeed */
++	uint64_t   upcall_fail;		/* total packets upcalls failed  */
++};
 +
-+	stmmac_mac_flow_ctrl(priv, duplex);
+ /* Allow last Netlink attribute to be unaligned */
+ #define OVS_DP_F_UNALIGNED	(1 << 0)
  
- 	if (ctrl != old_ctrl)
- 		writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
+@@ -277,11 +282,25 @@ enum ovs_vport_attr {
+ 	OVS_VPORT_ATTR_PAD,
+ 	OVS_VPORT_ATTR_IFINDEX,
+ 	OVS_VPORT_ATTR_NETNSID,
++	OVS_VPORT_ATTR_UPCALL_STATS, /* struct ovs_vport_upcall_stats */
+ 	__OVS_VPORT_ATTR_MAX
+ };
+ 
+ #define OVS_VPORT_ATTR_MAX (__OVS_VPORT_ATTR_MAX - 1)
+ 
++/**
++ * enum ovs_vport_upcall_attr - attributes for %OVS_VPORT_UPCALL* commands
++ * @OVS_VPORT_UPCALL_SUCCESS: 64-bit upcall success packets.
++ * @OVS_VPORT_UPCALL_FAIL: 64-bit upcall fail packets.
++ */
++enum ovs_vport_upcall_attr {
++	OVS_VPORT_UPCALL_SUCCESS, /* 64-bit upcall success packets */
++	OVS_VPORT_UPCALL_FAIL, /* 64-bit upcall fail packets */
++	__OVS_VPORT_UPCALL_MAX
++};
++
++#define OVS_VPORT_UPCALL_MAX (__OVS_VPORT_UPCALL_MAX-1)
++
+ enum {
+ 	OVS_VXLAN_EXT_UNSPEC,
+ 	OVS_VXLAN_EXT_GBP,	/* Flag or __u32 */
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index c8a9075ddd0a..5254c51cfa60 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -209,6 +209,25 @@ static struct vport *new_vport(const struct vport_parms *parms)
+ 	return vport;
+ }
+ 
++static void ovs_vport_upcalls(struct sk_buff *skb,
++			      const struct dp_upcall_info *upcall_info,
++			      bool upcall_success)
++{
++	if (upcall_info->cmd == OVS_PACKET_CMD_MISS ||
++	    upcall_info->cmd == OVS_PACKET_CMD_ACTION) {
++		const struct vport *p = OVS_CB(skb)->input_vport;
++		struct vport_upcall_stats_percpu *vport_stats;
++
++		vport_stats = this_cpu_ptr(p->vport_upcall_stats_percpu);
++		u64_stats_update_begin(&vport_stats->syncp);
++		if (upcall_success)
++			u64_stats_inc(&vport_stats->n_upcall_success);
++		else
++			u64_stats_inc(&vport_stats->n_upcall_fail);
++		u64_stats_update_end(&vport_stats->syncp);
++	}
++}
++
+ void ovs_dp_detach_port(struct vport *p)
+ {
+ 	ASSERT_OVSL();
+@@ -216,6 +235,9 @@ void ovs_dp_detach_port(struct vport *p)
+ 	/* First drop references to device. */
+ 	hlist_del_rcu(&p->dp_hash_node);
+ 
++	/* Free percpu memory */
++	free_percpu(p->vport_upcall_stats_percpu);
++
+ 	/* Then destroy it. */
+ 	ovs_vport_del(p);
+ }
+@@ -305,6 +327,8 @@ int ovs_dp_upcall(struct datapath *dp, struct sk_buff *skb,
+ 		err = queue_userspace_packet(dp, skb, key, upcall_info, cutlen);
+ 	else
+ 		err = queue_gso_packets(dp, skb, key, upcall_info, cutlen);
++
++	ovs_vport_upcalls(skb, upcall_info, !err);
+ 	if (err)
+ 		goto err;
+ 
+@@ -1825,6 +1849,13 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 		goto err_destroy_portids;
+ 	}
+ 
++	vport->vport_upcall_stats_percpu =
++				netdev_alloc_pcpu_stats(struct vport_upcall_stats_percpu);
++	if (!vport->vport_upcall_stats_percpu) {
++		err = -ENOMEM;
++		goto err_destroy_upcall_stats;
++	}
++
+ 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+ 				   info->snd_seq, 0, OVS_DP_CMD_NEW);
+ 	BUG_ON(err < 0);
+@@ -1837,6 +1868,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	ovs_notify(&dp_datapath_genl_family, reply, info);
+ 	return 0;
+ 
++err_destroy_upcall_stats:
+ err_destroy_portids:
+ 	kfree(rcu_dereference_raw(dp->upcall_portids));
+ err_unlock_and_destroy_meters:
+@@ -2068,6 +2100,8 @@ static int ovs_vport_cmd_fill_info(struct vport *vport, struct sk_buff *skb,
+ {
+ 	struct ovs_header *ovs_header;
+ 	struct ovs_vport_stats vport_stats;
++	struct ovs_vport_upcall_stats stat;
++	struct nlattr *nla;
+ 	int err;
+ 
+ 	ovs_header = genlmsg_put(skb, portid, seq, &dp_vport_genl_family,
+@@ -2097,6 +2131,15 @@ static int ovs_vport_cmd_fill_info(struct vport *vport, struct sk_buff *skb,
+ 			  OVS_VPORT_ATTR_PAD))
+ 		goto nla_put_failure;
+ 
++	nla = nla_nest_start_noflag(skb, OVS_VPORT_ATTR_UPCALL_STATS);
++	if (!nla)
++		goto nla_put_failure;
++
++	ovs_vport_get_upcall_stats(vport, &stat);
++	if (ovs_vport_put_upcall_stats(skb, &stat))
++		goto nla_put_failure;
++	nla_nest_end(skb, nla);
++
+ 	if (ovs_vport_get_upcall_portids(vport, skb))
+ 		goto nla_put_failure;
+ 
+@@ -2278,6 +2321,14 @@ static int ovs_vport_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 		goto exit_unlock_free;
+ 	}
+ 
++	vport->vport_upcall_stats_percpu =
++		netdev_alloc_pcpu_stats(struct vport_upcall_stats_percpu);
++
++	if (!vport->vport_upcall_stats_percpu) {
++		err = -ENOMEM;
++		goto exit_unlock_free;
++	}
++
+ 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
+ 				      info->snd_portid, info->snd_seq, 0,
+ 				      OVS_VPORT_CMD_NEW, GFP_KERNEL);
+@@ -2507,6 +2558,7 @@ static const struct nla_policy vport_policy[OVS_VPORT_ATTR_MAX + 1] = {
+ 	[OVS_VPORT_ATTR_OPTIONS] = { .type = NLA_NESTED },
+ 	[OVS_VPORT_ATTR_IFINDEX] = { .type = NLA_U32 },
+ 	[OVS_VPORT_ATTR_NETNSID] = { .type = NLA_S32 },
++	[OVS_VPORT_ATTR_UPCALL_STATS] = { .type = NLA_NESTED },
+ };
+ 
+ static const struct genl_small_ops dp_vport_genl_ops[] = {
+diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
+index 0cd29971a907..933dec5e4175 100644
+--- a/net/openvswitch/datapath.h
++++ b/net/openvswitch/datapath.h
+@@ -50,6 +50,18 @@ struct dp_stats_percpu {
+ 	struct u64_stats_sync syncp;
+ };
+ 
++/**
++ * struct vport_upcall_stats_percpu - per-cpu packet upcall statistics for
++ * a given vport.
++ * @n_upcall_success: Number of packets that upcall to userspace succeed.
++ * @n_upcall_fail:    Number of packets that upcall to userspace failed.
++ */
++struct vport_upcall_stats_percpu {
++	u64_stats_t n_upcall_success;
++	u64_stats_t n_upcall_fail;
++	struct u64_stats_sync syncp;
++};
++
+ /**
+  * struct dp_nlsk_pids - array of netlink portids of for a datapath.
+  *                       This is used when OVS_DP_F_DISPATCH_UPCALL_PER_CPU
+diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
+index 82a74f998966..a69c9356b57c 100644
+--- a/net/openvswitch/vport.c
++++ b/net/openvswitch/vport.c
+@@ -284,6 +284,54 @@ void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
+ 	stats->tx_packets = dev_stats->tx_packets;
+ }
+ 
++/**
++ *	ovs_vport_get_upcall_stats - retrieve upcall stats
++ *
++ * @vport: vport from which to retrieve the stats
++ * @ovs_vport_upcall_stats: location to store stats
++ *
++ * Retrieves upcall stats for the given device.
++ *
++ * Must be called with ovs_mutex or rcu_read_lock.
++ */
++void ovs_vport_get_upcall_stats(struct vport *vport, struct ovs_vport_upcall_stats *stats)
++{
++	int i;
++
++	stats->upcall_success = 0;
++	stats->upcall_fail = 0;
++
++	for_each_possible_cpu(i) {
++		const struct vport_upcall_stats_percpu *percpu_upcall_stats;
++		unsigned int start;
++
++		percpu_upcall_stats = per_cpu_ptr(vport->vport_upcall_stats_percpu, i);
++		do {
++			start = u64_stats_fetch_begin(&percpu_upcall_stats->syncp);
++			stats->upcall_success +=
++				u64_stats_read(&percpu_upcall_stats->n_upcall_success);
++			stats->upcall_fail += u64_stats_read(&percpu_upcall_stats->n_upcall_fail);
++		} while (u64_stats_fetch_retry(&percpu_upcall_stats->syncp, start));
++	}
++}
++
++int ovs_vport_put_upcall_stats(struct sk_buff *skb,
++			       struct ovs_vport_upcall_stats *stats)
++{
++	if (nla_put_u64_64bit(skb, OVS_VPORT_UPCALL_SUCCESS, stats->upcall_success,
++			      OVS_VPORT_ATTR_PAD))
++		goto nla_put_failure;
++
++	if (nla_put_u64_64bit(skb, OVS_VPORT_UPCALL_FAIL, stats->upcall_fail,
++			      OVS_VPORT_ATTR_PAD))
++		goto nla_put_failure;
++
++	return 0;
++
++nla_put_failure:
++	return -EMSGSIZE;
++}
++
+ /**
+  *	ovs_vport_get_options - retrieve device options
+  *
+diff --git a/net/openvswitch/vport.h b/net/openvswitch/vport.h
+index 7d276f60c000..02cf8c589588 100644
+--- a/net/openvswitch/vport.h
++++ b/net/openvswitch/vport.h
+@@ -32,6 +32,11 @@ struct vport *ovs_vport_locate(const struct net *net, const char *name);
+ 
+ void ovs_vport_get_stats(struct vport *, struct ovs_vport_stats *);
+ 
++void ovs_vport_get_upcall_stats(struct vport *vport,
++				struct ovs_vport_upcall_stats *stats);
++int ovs_vport_put_upcall_stats(struct sk_buff *skb,
++			       struct ovs_vport_upcall_stats *stats);
++
+ int ovs_vport_set_options(struct vport *, struct nlattr *options);
+ int ovs_vport_get_options(const struct vport *, struct sk_buff *);
+ 
+@@ -78,6 +83,7 @@ struct vport {
+ 	struct hlist_node hash_node;
+ 	struct hlist_node dp_hash_node;
+ 	const struct vport_ops *ops;
++	struct vport_upcall_stats_percpu __percpu *vport_upcall_stats_percpu;
+ 
+ 	struct list_head detach_list;
+ 	struct rcu_head rcu;
 -- 
-2.17.1
+2.27.0
 
