@@ -2,74 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FBA8634E2F
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 04:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14CE9634E30
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 04:03:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235093AbiKWDDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 22:03:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60746 "EHLO
+        id S235137AbiKWDDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 22:03:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235109AbiKWDDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 22:03:12 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEE515A18;
-        Tue, 22 Nov 2022 19:02:55 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id w15-20020a17090a380f00b0021873113cb4so705355pjb.0;
-        Tue, 22 Nov 2022 19:02:55 -0800 (PST)
+        with ESMTP id S235493AbiKWDDQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 22:03:16 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C380013F83
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 19:02:59 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id y10so14280055plp.3
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 19:02:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=24WunCmiRAIHsa1eYZgoUGPlmQj4xZgQ++rzPlnyZi8=;
-        b=ZHocrwD2he/2VTFZlzVfaSknBzrZPFc2mHTDITo519gpQz9xqsxzOWic2Vn1GqLCI+
-         nIY0cZQXI0ZsmOzU9mRZPxDEo1/7hnCGGEOKY0SjK1qi5U9SnzZ1sTRpbTWeYf7FKSoA
-         xw0u7lKlmyrkJPcI5BeX8sLn3524waMlIGMjfvUSEVzVccWCiziN18U1U/gGCGIVrpOz
-         qyLr+0ZQLkjF/BhpbtG4zTa+RBhqDo+CacAQfFmXUsccRFu41IrMNbPpWIuO4UjpZOk3
-         UJ4em53WsCbCrnJBLjx37+Bi9c9snE9jlzI2uXSRhhv0IcarU3V8yO4o1pFhmnIG7DUp
-         hXoQ==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=TP7s9Y9Q2KQLZ/1+LnRi+cOoQZPAG76X0n534nrf4IE=;
+        b=UI78rJmTRMKEo+3UdGlo5iwGgHPFWMdcIGEv14yfM8JLJCQIjzjC86pP5iCdDDx/Mw
+         doXtNM/Lz994Ghjh0Sry2RFlmzXHJnMB8rsMZDhEGNRQR5aSY0/Ad25icHuwO4ny1kZ4
+         +wunorTqBK21TNy7jC6swEO/ef6QRxoH+HnkZ6S7mzSA9RbD0nSuaIMcpif8Yp2SRcY6
+         cvraYxMdqWm4B0mnn12Huj/PPWfbsMDAqXhaLAYgujOXBCVRrbFKLPUfAuWt21GvdkBt
+         JsCXJ/TnOpa+TDEqQRKBhHB4RSFRlJjqjDvaHJeNitVUTyGjsIUVUpQImqIS8CA0pt8C
+         WZZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=24WunCmiRAIHsa1eYZgoUGPlmQj4xZgQ++rzPlnyZi8=;
-        b=f+K8Q+1WRzp4RNqQx85BeV25h50ZWs5bmy+dt8lDZyHY12YdelW+osWJrmA5GvdarB
-         z5jGpXccrWA8it1FGdm4tvv4uEbaKnkzsHk6D5DKj7o6+y4ZzsQ/tmYwexnFo4lNQFEM
-         mtGTcNBXP5XVxqNEhc0WyFfdZmGbYVxRel52YZgxhNsgHyzEBPplvN0IpflIKSxno9wL
-         JNj1iqGe5DjITPmibGt8cub+WhHnsh1nGRDJt1l2rEyBUqgs8/NALLVYBhsddoWCFj4p
-         qJHejQ9HSMfR9b1HQBtawBJMt3iCS80KNXDk9v+orH8PNWC4goWlxcb1fpk6UKQjfCAj
-         DYBg==
-X-Gm-Message-State: ANoB5pkpTjVwc1bl+c17DMgTF3E7xl/uMS1tzQ4rZoW/sg/qIdOdkqZr
-        h1ot2/hWF/u747GsaF7mPyBSrKH0hhM=
-X-Google-Smtp-Source: AA0mqf6IwWzndjnrlPkiujh6dKKIE25cfDKE07nO/G975cK3nMhBwg30irzupX23q+g3xiDy4io4yQ==
-X-Received: by 2002:a17:903:1206:b0:188:cd12:c2e1 with SMTP id l6-20020a170903120600b00188cd12c2e1mr9401069plh.171.1669172575142;
-        Tue, 22 Nov 2022 19:02:55 -0800 (PST)
-Received: from localhost ([129.95.226.125])
-        by smtp.gmail.com with ESMTPSA id d12-20020a170902654c00b00168dadc7354sm8215682pln.78.2022.11.22.19.02.54
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TP7s9Y9Q2KQLZ/1+LnRi+cOoQZPAG76X0n534nrf4IE=;
+        b=Je3ScS/0yVgtMbvN1FI7/CURBqwNWYfZ7mmj7VDnLFga8FA5RTyKJ+m1WQIr2bfERK
+         HjJeJeVjHSuIl1FGm7F9760m5jIhZ5V6f01BcwjGhEH5XNSy53WmZ/yAytnH/ks5ED17
+         yQBfrNyVHwdXAtTcVb4jso1i4rl18lMW4+x/D0tF8/q+BApuXrcWMEs9SomNEiYfOgt4
+         05tWFghZYexkiTGHJarXZdBr4e5fM5Pm6ytfvdKGbFy5N3teltYfWD9tOduu5H3JKapo
+         qP5Zrw93jDxawxmHWj8OEXSbRJhYqeDbgPDnwjxn3sJaL+R5jBl3OygZU9NqG1Y4sDhC
+         IppA==
+X-Gm-Message-State: ANoB5pkIEcQ81P3ZBAViLX8zkVbVxIRHFX/3iLYJRR4k2F1KRWov+ZyD
+        Qt3eQB9DEwKav4LQpIlfqXiTid1bx+9+JKR0
+X-Google-Smtp-Source: AA0mqf6d2axTO36wBTqurwSIKZeHIgC0onIwBz6kwbxaphmjWljl6Oaz4ScVp+URWQJv1iwGvxQMXw==
+X-Received: by 2002:a17:903:2441:b0:189:3d5e:1b0 with SMTP id l1-20020a170903244100b001893d5e01b0mr2614138pls.34.1669172578710;
+        Tue, 22 Nov 2022 19:02:58 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id s2-20020a170902a50200b00187022627d7sm12736252plq.36.2022.11.22.19.02.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 19:02:54 -0800 (PST)
-Date:   Tue, 22 Nov 2022 19:02:51 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Pengcheng Yang <yangpc@wangsu.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Pengcheng Yang <yangpc@wangsu.com>
-Message-ID: <637d8d5bd4e27_2b649208eb@john.notmuch>
-In-Reply-To: <1669082309-2546-3-git-send-email-yangpc@wangsu.com>
-References: <1669082309-2546-1-git-send-email-yangpc@wangsu.com>
- <1669082309-2546-3-git-send-email-yangpc@wangsu.com>
-Subject: RE: [PATCH RESEND bpf 2/4] bpf, sockmap: Fix missing BPF_F_INGRESS
- flag when using apply_bytes
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Tue, 22 Nov 2022 19:02:57 -0800 (PST)
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH iproute2] remove #if 0 code
+Date:   Tue, 22 Nov 2022 19:02:56 -0800
+Message-Id: <20221123030256.63229-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,71 +66,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pengcheng Yang wrote:
-> When redirecting, we use sk_msg_to_ingress() to get the BPF_F_INGRESS
-> flag from the msg->flags. If apply_bytes is used and it is larger than
-> the current data being processed, sk_psock_msg_verdict() will not be
-> called when sendmsg() is called again. At this time, the msg->flags is 0,
-> and we lost the BPF_F_INGRESS flag.
-> 
-> So we need to save the BPF_F_INGRESS flag in sk_psock and assign it to
-> msg->flags before redirection.
-> 
-> Fixes: 8934ce2fd081 ("bpf: sockmap redirect ingress support")
-> Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-> ---
->  include/linux/skmsg.h | 1 +
->  net/core/skmsg.c      | 1 +
->  net/ipv4/tcp_bpf.c    | 1 +
->  net/tls/tls_sw.c      | 1 +
->  4 files changed, 4 insertions(+)
-> 
-> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-> index 48f4b64..e1d463f 100644
-> --- a/include/linux/skmsg.h
-> +++ b/include/linux/skmsg.h
-> @@ -82,6 +82,7 @@ struct sk_psock {
->  	u32				apply_bytes;
->  	u32				cork_bytes;
->  	u32				eval;
-> +	u32				flags;
->  	struct sk_msg			*cork;
->  	struct sk_psock_progs		progs;
->  #if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
-> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> index 188f855..ab2f8f3 100644
-> --- a/net/core/skmsg.c
-> +++ b/net/core/skmsg.c
-> @@ -888,6 +888,7 @@ int sk_psock_msg_verdict(struct sock *sk, struct sk_psock *psock,
->  		if (psock->sk_redir)
->  			sock_put(psock->sk_redir);
->  		psock->sk_redir = msg->sk_redir;
-> +		psock->flags = msg->flags;
->  		if (!psock->sk_redir) {
->  			ret = __SK_DROP;
->  			goto out;
-> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-> index ef5de4f..1390d72 100644
-> --- a/net/ipv4/tcp_bpf.c
-> +++ b/net/ipv4/tcp_bpf.c
-> @@ -323,6 +323,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
->  		break;
->  	case __SK_REDIRECT:
->  		sk_redir = psock->sk_redir;
-> +		msg->flags = psock->flags;
->  		sk_msg_apply_bytes(psock, tosend);
->  		if (!psock->apply_bytes) {
->  			/* Clean up before releasing the sock lock. */
-                 ^^^^^^^^^^^^^^^
-In this block reposted here with the rest of the block
+Let's not keep unused code. The YAGNI means that this dead
+code doesn't work now, and if it did it would have to change.
 
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+ ip/ipmroute.c   | 12 +-----------
+ ip/xfrm_state.c | 11 -----------
+ tc/p_icmp.c     | 24 ------------------------
+ tc/q_gred.c     |  3 +--
+ tc/tc_class.c   |  4 ----
+ 5 files changed, 2 insertions(+), 52 deletions(-)
 
-		if (!psock->apply_bytes) {
-			/* Clean up before releasing the sock lock. */
-			eval = psock->eval;
-			psock->eval = __SK_NONE;
-			psock->sk_redir = NULL;
-		}
+diff --git a/ip/ipmroute.c b/ip/ipmroute.c
+index 981baf2acd94..32019c944c52 100644
+--- a/ip/ipmroute.c
++++ b/ip/ipmroute.c
+@@ -39,9 +39,6 @@ static void usage(void)
+ 		"Usage: ip mroute show [ [ to ] PREFIX ] [ from PREFIX ] [ iif DEVICE ]\n"
+ 		"                      [ table TABLE_ID ]\n"
+ 		"TABLE_ID := [ local | main | default | all | NUMBER ]\n"
+-#if 0
+-	"Usage: ip mroute [ add | del ] DESTINATION from SOURCE [ iif DEVICE ] [ oif DEVICE ]\n"
+-#endif
+ 	);
+ 	exit(-1);
+ }
+@@ -322,14 +319,7 @@ int do_multiroute(int argc, char **argv)
+ {
+ 	if (argc < 1)
+ 		return mroute_list(0, NULL);
+-#if 0
+-	if (matches(*argv, "add") == 0)
+-		return mroute_modify(RTM_NEWADDR, argc-1, argv+1);
+-	if (matches(*argv, "delete") == 0)
+-		return mroute_modify(RTM_DELADDR, argc-1, argv+1);
+-	if (matches(*argv, "get") == 0)
+-		return mroute_get(argc-1, argv+1);
+-#endif
++
+ 	if (matches(*argv, "list") == 0 || matches(*argv, "show") == 0
+ 	    || matches(*argv, "lst") == 0)
+ 		return mroute_list(argc-1, argv+1);
+diff --git a/ip/xfrm_state.c b/ip/xfrm_state.c
+index 6fee7efd18c7..b2294d9fe58f 100644
+--- a/ip/xfrm_state.c
++++ b/ip/xfrm_state.c
+@@ -124,11 +124,6 @@ static int xfrm_algo_parse(struct xfrm_algo *alg, enum xfrm_attr_type_t type,
+ 	int len;
+ 	int slen = strlen(key);
+ 
+-#if 0
+-	/* XXX: verifying both name and key is required! */
+-	fprintf(stderr, "warning: ALGO-NAME/ALGO-KEYMAT values will be sent to the kernel promiscuously! (verifying them isn't implemented yet)\n");
+-#endif
+-
+ 	strlcpy(alg->alg_name, name, sizeof(alg->alg_name));
+ 
+ 	if (slen > 2 && strncmp(key, "0x", 2) == 0) {
+@@ -791,12 +786,6 @@ static int xfrm_state_allocspi(int argc, char **argv)
+ 		.n.nlmsg_flags = NLM_F_REQUEST,
+ 		.n.nlmsg_type = XFRM_MSG_ALLOCSPI,
+ 		.xspi.info.family = preferred_family,
+-#if 0
+-		.xspi.lft.soft_byte_limit = XFRM_INF,
+-		.xspi.lft.hard_byte_limit = XFRM_INF,
+-		.xspi.lft.soft_packet_limit = XFRM_INF,
+-		.xspi.lft.hard_packet_limit = XFRM_INF,
+-#endif
+ 	};
+ 	char *idp = NULL;
+ 	char *minp = NULL;
+diff --git a/tc/p_icmp.c b/tc/p_icmp.c
+index 15ce32309e39..933ca8a5ff1e 100644
+--- a/tc/p_icmp.c
++++ b/tc/p_icmp.c
+@@ -27,31 +27,7 @@ static int
+ parse_icmp(int *argc_p, char ***argv_p,
+ 	   struct m_pedit_sel *sel, struct m_pedit_key *tkey)
+ {
+-	int res = -1;
+-#if 0
+-	int argc = *argc_p;
+-	char **argv = *argv_p;
+-
+-	if (argc < 2)
+-		return -1;
+-
+-	if (strcmp(*argv, "type") == 0) {
+-		NEXT_ARG();
+-		res = parse_u8(&argc, &argv, 0);
+-		goto done;
+-	}
+-	if (strcmp(*argv, "code") == 0) {
+-		NEXT_ARG();
+-		res = parse_u8(&argc, &argv, 1);
+-		goto done;
+-	}
+ 	return -1;
+-
+-done:
+-	*argc_p = argc;
+-	*argv_p = argv;
+-#endif
+-	return res;
+ }
+ 
+ struct m_pedit_util p_pedit_icmp = {
+diff --git a/tc/q_gred.c b/tc/q_gred.c
+index 89aeb086038f..01f12eeeffad 100644
+--- a/tc/q_gred.c
++++ b/tc/q_gred.c
+@@ -27,8 +27,7 @@
+ 
+ #include "tc_red.h"
+ 
+-
+-#if 0
++#ifdef DEBUG
+ #define DPRINTF(format, args...) fprintf(stderr, format, ##args)
+ #else
+ #define DPRINTF(format, args...)
+diff --git a/tc/tc_class.c b/tc/tc_class.c
+index 39bea9712dda..b3e7c92491e0 100644
+--- a/tc/tc_class.c
++++ b/tc/tc_class.c
+@@ -474,10 +474,6 @@ int do_class(int argc, char **argv)
+ 		return tc_class_modify(RTM_NEWTCLASS, NLM_F_CREATE, argc-1, argv+1);
+ 	if (matches(*argv, "delete") == 0)
+ 		return tc_class_modify(RTM_DELTCLASS, 0,  argc-1, argv+1);
+-#if 0
+-	if (matches(*argv, "get") == 0)
+-		return tc_class_get(RTM_GETTCLASS, 0,  argc-1, argv+1);
+-#endif
+ 	if (matches(*argv, "list") == 0 || matches(*argv, "show") == 0
+ 	    || matches(*argv, "lst") == 0)
+ 		return tc_class_list(argc-1, argv+1);
+-- 
+2.35.1
 
-Now that we have a psock->flags we should clera that as
-well right?
