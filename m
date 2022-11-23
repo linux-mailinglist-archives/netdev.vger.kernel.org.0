@@ -2,113 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8FA863641E
+	by mail.lfdr.de (Postfix) with ESMTP id 6C80D63641D
 	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:40:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238537AbiKWPj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 10:39:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52284 "EHLO
+        id S238199AbiKWPjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 10:39:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237248AbiKWPjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:39:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C95F389
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 07:38:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669217921;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bnE2eJkcAqKQ4xiDRecul9dskC/kiQ0F0H9HqP0ouMw=;
-        b=Rg+rrpEwWRfrF0Ipo7DY2fPcgogRyeBvIpy9p0m9KpH3h+L+TJTyNctya+/WE+w0qdEo1F
-        V//1I6mTo1rO2AZDZfEQuMgt2XlvO3DBnhfa3ZYSYRusz4k9AHGTlXafB5TIsbeYq79vU8
-        JZcfhRK/jPabiIz4r8rDnscigDamtNM=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-186-cyvL6cAhMCunS3H6zxplcA-1; Wed, 23 Nov 2022 10:38:40 -0500
-X-MC-Unique: cyvL6cAhMCunS3H6zxplcA-1
-Received: by mail-wm1-f69.google.com with SMTP id u9-20020a05600c00c900b003cfb12839d6so927364wmm.5
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 07:38:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=bnE2eJkcAqKQ4xiDRecul9dskC/kiQ0F0H9HqP0ouMw=;
-        b=wTbDweQVONKFDUpX/HCBH3s9OwokaWz90jzgWHEp7OupsQMXyL7f7pmbq9kznlhF2M
-         Oty8z7HvfZznUlv9U3jqXu7N7LI/6jHihdivM5e8JleBsKF0Eb5vvn8Z2ea9WbG1XuxU
-         o2rELugyPAs6ef6kQgtuGxO1sUCwKl9U1997o9FXlmFLOS47zPQsm4bSYk4tCul+mcNV
-         lng0ZEE/fDv7wPHZgmHUKdSbiIvqwxLbepyb9oalM+uc4vc4AP82aEikqvnXbZWOo3Ho
-         rGRybRipxGOllHzr1CkD26sbdWPBK1JfdEQc1AsuV6JCTu/AwbUtGwlILVDqCghoRU7N
-         ZJsg==
-X-Gm-Message-State: ANoB5plaU3WFRsFp/SW4cQ/nA1jQJa9TY6s/OvokZSs/mulWqSVwKhnl
-        HzhjvKiI58fmbGnDHIHBDdnJczp4/7CORdOMpsAo/FTlOGAEsELXfgjNBIdvGvAxJiWiIDWQqNS
-        NqTvrKdearn6liY5k
-X-Received: by 2002:a5d:4d8f:0:b0:22f:8603:24c5 with SMTP id b15-20020a5d4d8f000000b0022f860324c5mr7495541wru.245.1669217918993;
-        Wed, 23 Nov 2022 07:38:38 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5FmAvih45CnQ02JA4tQfmkCHvQ8SoiSQ5PVemZeqphN4qr8WAeqEjQ6KJwsXkYfK1KCt3Ktw==
-X-Received: by 2002:a5d:4d8f:0:b0:22f:8603:24c5 with SMTP id b15-20020a5d4d8f000000b0022f860324c5mr7495525wru.245.1669217918787;
-        Wed, 23 Nov 2022 07:38:38 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id e2-20020adfdbc2000000b00241b95cae91sm16950249wrj.58.2022.11.23.07.38.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 07:38:38 -0800 (PST)
-Message-ID: <73f71d4e6f867a90538b48894249be3902eb38e4.camel@redhat.com>
-Subject: Re: [PATCH v1 net] af_unix: Call sk_diag_fill() under the bucket
- lock.
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>, harperchen1110@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        kuni1840@gmail.com, netdev@vger.kernel.org,
-        syzkaller@googlegroups.com
-Date:   Wed, 23 Nov 2022 16:38:37 +0100
-In-Reply-To: <20221123152205.79232-1-kuniyu@amazon.com>
-References: <CAO4mrfcuDa5hKFksJtBLskA3AAuHUTP_wO9JOfD9Kq0ZvEPPCA@mail.gmail.com>
-         <20221123152205.79232-1-kuniyu@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S238047AbiKWPjb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:39:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C71B23174;
+        Wed, 23 Nov 2022 07:39:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 064E0B8208E;
+        Wed, 23 Nov 2022 15:39:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A9DFC433D7;
+        Wed, 23 Nov 2022 15:39:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669217954;
+        bh=pCgyV6URGkswg9KKfkXhBda5Iki1k2lO8qrKykFSEt8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=F3k9sXYZXMZbJL2KgSGmWiPRXMvHRdfTCIP9VQmjXd650/uUYXwTHEqUWxxttSOWT
+         hB9b2sL956S0bUti6tuHTy2XEt5HjAbHeCo+axvVAD2rZcRJx2sPwnWchFDK3MrGxa
+         yAlYOmKN8Mg4CXN+fkDD7QVG2+Cel0JnNA0akTveOPTARV97+qqsyEi6hpO6vdCsSE
+         LSyr4JBajkK5pYVRAYm5iecBZGybtYAXBVbkB+5aKcTmslEywj8Jzp0bx/0VpZMrY2
+         D5rI9GA2AAWuXzKpflAIq18/MHA6MmSTayBSrTtAwCYcKH0rMZJiTAzR77dwqComaB
+         rsQQ9HVyYiq1w==
+Date:   Wed, 23 Nov 2022 15:39:00 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2 5/9] dt-bindings: drop redundant part of title (end,
+ part two)
+Message-ID: <Y34+lGKAxewL8B1w@sirena.org.uk>
+References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
+ <20221121110615.97962-6-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3A/ckh57FM2wa6K8"
+Content-Disposition: inline
+In-Reply-To: <20221121110615.97962-6-krzysztof.kozlowski@linaro.org>
+X-Cookie: I'm rated PG-34!!
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-11-23 at 07:22 -0800, Kuniyuki Iwashima wrote:
-> From:   Wei Chen <harperchen1110@gmail.com>
-> Date:   Wed, 23 Nov 2022 23:09:53 +0800
-> > Dear Paolo,
-> > 
-> > Could you explain the meaning of modified "ss" version to reproduce
-> > the bug? I'd like to learn how to reproduce the bug in the user space
-> > to facilitate the bug fix.
-> 
-> I think it means to drop NLM_F_DUMP and modify args as needed because
-> ss dumps all sockets, not exactly a single socket.
 
-Exactly! Additionally 'ss' must fill udiag_ino and udiag_cookie with
-values matching a live unix socket. And before that you have to add
-more code to allow 'ss' dumping such values (or fetch them with some
-bpf/perf probe).
+--3A/ckh57FM2wa6K8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> 
-> Ah, I misunderstood that the found sk is passed to sk_user_ns(), but it's
-> skb->sk.
+On Mon, Nov 21, 2022 at 12:06:11PM +0100, Krzysztof Kozlowski wrote:
+> The Devicetree bindings document does not have to say in the title that
+> it is a "binding", but instead just describe the hardware.
 
-I did not double check the race you outlined in this patch. That could
-still possibly be a valid/existing one.
+Acked-by: Mark Brown <broonie@kernel.org>
 
-> P.S.  I'm leaving for Japan today and will be bit slow this and next week
-> for vacation.
+--3A/ckh57FM2wa6K8
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Have a nice trip ;)
+-----BEGIN PGP SIGNATURE-----
 
-/P
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmN+PpQACgkQJNaLcl1U
+h9D31gf/diT1M+7KeH7O9XMaZE9GvQx7EpNfWPd6EPxvzUkePN6w8u24ztB2s1gn
+LKqFnrfx5FQwvbCsjmuHqePIJ6kdBJHpd8zn0XYx/cJQJlR/lFm5FPbdjhDnfcCC
+lH4+dPqm7Tms/Dmlw8z49shzkjbAkN5O81QNFCdqvgYfp94E6kUVysgHobbu7DzT
+8dtk4IMR8dgd1gsVYd3RlfLDv7zlhti06pOwAYvL7I/+ELvcFRXtGgOq8p8EMd//
+e9dFGh61GX0//8+cYUSUG2Qb/npn7nA2mFko17JRUU21NrTgMn1qbJvntYvhfKqj
+AqDREqKbfhSeQVkKulAfyfkiBA4hNg==
+=SxY0
+-----END PGP SIGNATURE-----
 
+--3A/ckh57FM2wa6K8--
