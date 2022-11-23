@@ -2,88 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AF73636E88
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 00:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8A94636E8B
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 00:48:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229452AbiKWXqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 18:46:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
+        id S229686AbiKWXsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 18:48:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiKWXqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 18:46:21 -0500
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E477FAF0BC
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 15:46:20 -0800 (PST)
-Received: from fsav314.sakura.ne.jp (fsav314.sakura.ne.jp [153.120.85.145])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2ANNjQJX038859;
-        Thu, 24 Nov 2022 08:45:26 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav314.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp);
- Thu, 24 Nov 2022 08:45:26 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2ANNjQkd038852
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 24 Nov 2022 08:45:26 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <a21b646a-385f-2907-fe9f-84ef341b22fb@I-love.SAKURA.ne.jp>
-Date:   Thu, 24 Nov 2022 08:45:25 +0900
+        with ESMTP id S229479AbiKWXsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 18:48:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CC25EFA1
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 15:48:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F5EA61F64
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 23:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D603DC433C1;
+        Wed, 23 Nov 2022 23:48:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669247289;
+        bh=VE8XHUGXRTyM1DwDaLuWpsY9tTcMgvaTUVsiqTEXXtY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Icgdpf5ITWBRk+8PT32qawFRIB0QodoOMkGV8jOsDhsYWlMMwy0jsl9UjNRye0yJb
+         VaPfcQQqy5clBuyC4zLham/c1rSWpqe3vnQM7qthHtu8RO0eWmS59xKunS7a4j25me
+         1qLdUG7aMe9MIqCq+HmmWSLBhrR+fjrsZaKRZrprPQntNhNZCn9He2NFVwFxdEbVN2
+         YQH4ERSqXQgx5a5v8vfHmkSv09itytPc9zIV+IdJCuYyhr3fVQKvk9GbDEsSMC15RP
+         YD5FJWvOSiAujAmG24dQLdnVrsxf4z/GFSeSRpscmU++5AffxfrvDjV7JDUkX0UykT
+         FrRzWlHtRJ0nQ==
+Date:   Wed, 23 Nov 2022 15:48:07 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>
+Subject: Re: [net 04/14] net/mlx5: cmdif, Print info on any firmware cmd
+ failure to tracepoint
+Message-ID: <Y36xN31vRfajwzgb@x130.lan>
+References: <20221122022559.89459-1-saeed@kernel.org>
+ <20221122022559.89459-5-saeed@kernel.org>
+ <Y343E18Hoy24Jolg@boxer>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH] sctp: relese sctp_stream_priorities at
- sctp_stream_outq_migrate()
-Content-Language: en-US
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     syzbot <syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com>,
-        syzkaller-bugs@googlegroups.com,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        linux-sctp@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com
-References: <000000000000e99e2705edb7d6cf@google.com>
- <c5ba2194-dbb6-586d-992d-9dfcd27062e7@I-love.SAKURA.ne.jp>
- <Y34mxTlLaRcR9d4z@t14s.localdomain>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <Y34mxTlLaRcR9d4z@t14s.localdomain>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <Y343E18Hoy24Jolg@boxer>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/11/23 22:57, Marcelo Ricardo Leitner wrote:
-> On Wed, Nov 23, 2022 at 07:36:00PM +0900, Tetsuo Handa wrote:
->> syzbot is reporting memory leak on sctp_stream_priorities [1], for
->> sctp_stream_outq_migrate() is resetting SCTP_SO(stream, i)->ext to NULL
->> without clearing SCTP_SO(new, i)->ext->prio_head list allocated by
->> sctp_sched_prio_new_head(). Since sctp_sched_prio_free() is too late to
->> clear if stream->outcnt was already shrunk or SCTP_SO(stream, i)->ext
->> was already NULL, add a callback for clearing that list before shrinking
->> stream->outcnt and/or resetting SCTP_SO(stream, i)->ext.
+On 23 Nov 16:06, Maciej Fijalkowski wrote:
+>On Mon, Nov 21, 2022 at 06:25:49PM -0800, Saeed Mahameed wrote:
+>> From: Moshe Shemesh <moshe@nvidia.com>
 >>
->> Link: https://syzkaller.appspot.com/bug?exrid=29c402e56c4760763cc0 [1]
->> Reported-by: syzbot <syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com>
->> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
->> ---
->> I can observe that the reproducer no longer reports memory leak. But
->> is this change correct and sufficient? Are there similar locations?
-> 
-> Thanks, but please see my email from yesterday. This is on the right
-> way but a cleanup then is possible:
-> https://lore.kernel.org/linux-sctp/Y31ct%2FlSXNTm9ev9@t14s.localdomain/
+>> While moving to new CMD API (quiet API), some pre-existing flows may call the new API
+>> function that in case of error, returns the error instead of printing it as previously done.
+>> For such flows we bring back the print but to tracepoint this time for sys admins to
+>> have the ability to check for errors especially for commands using the new quiet API.
+>>
+>
+>WARNING: Possible unwrapped commit description (prefer a maximum 75 chars
+>per line)
+>
 
-Oops, duplicated work again. Googling with this address did not hit, and
-a thread at syzkaller-bugs group did not have your patch.
+we don't enforce this in netdev, especially when you want to share output,
+etc .. 
 
-Please consider including syzbot+XXXXXXXXXXXXXXXXXXXX@syzkaller.appspotmail.com
-and syzkaller-bugs@googlegroups.com into the Cc: list so that we can google for
-your patch.
+also for future reference in mlx5 we allow up to 95 chars per code line, we
+got wide screens :P, so also please ignore these warnings.
+
+chkpatch = "!./scripts/checkpatch.pl --max-line-length=95 --strict --show-types --ignore COMMIT_LOG_LONG_LINE,FILE_PATH_CHANGES,MACRO_ARG_REUSE,MACRO_ARG_PRECEDENCE"
 
