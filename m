@@ -2,131 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF0C635130
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 08:41:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5FD635134
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 08:44:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235866AbiKWHlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 02:41:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
+        id S236074AbiKWHoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 02:44:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235819AbiKWHli (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 02:41:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22CBF6082
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 23:41:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 410CBB81ECD
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 07:41:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E48C433D6;
-        Wed, 23 Nov 2022 07:41:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669189292;
-        bh=Qva04oLyBFng31pmDphEPFtjB3P1zGwSDSsZvlND0x0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=a+XR8/34wc2lNYYkx6Ts9f9yfEpGcZXewHpAxkFhuQteBFc7v+x++K8Yz6jk5mnaH
-         YQ59mM211p+Hnitpvg7XqtZ77hmEuMMligL6hCxgQ9aOrGGumofrTJdiCTij5qs5q8
-         a7uBL4XUzdtOgFh2sD0uKiIL6kQ23vaJb6Oi51SOLs509VeimUZrefTGbUJFW2H9Fq
-         k/Mny/VHV4zXzYFwWAkitLC30di/dThu7Ew+3woaNU3mMU2O7TUkGfEYyLD8ib4393
-         8Jt2L9Ac0QhSD964O74AJdgihD4GNverYeZ8k20Q8bERNLKwF2H2VjMVw1x/v4Spbn
-         EYcol5Ck0poog==
-Date:   Wed, 23 Nov 2022 09:41:24 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        jiri@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com
-Subject: Re: [PATCH net] net: devlink: fix UAF in
- devlink_compat_running_version()
-Message-ID: <Y33OpMvLcAcnJ1oj@unreal>
-References: <20221122121048.776643-1-yangyingliang@huawei.com>
- <Y3zdaX1I0Y8rdSLn@unreal>
- <e311b567-8130-15de-8dbb-06878339c523@huawei.com>
- <Y30dPRzO045Od2FA@unreal>
- <20221122122740.4b10d67d@kernel.org>
- <405f703b-b97e-afdd-8d5f-48b8f99d045d@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <405f703b-b97e-afdd-8d5f-48b8f99d045d@huawei.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S235633AbiKWHoA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 02:44:00 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA2BF72C5;
+        Tue, 22 Nov 2022 23:43:59 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id z63so4704733ede.1;
+        Tue, 22 Nov 2022 23:43:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4tVlprrrNke5mFJD3/iYHZS4yaa+3ERCi6F/wJGiXeM=;
+        b=D8LMubMYRPyqtEe2Gjzyr9EplHp0q3MLWskKwHjRMUwgenyPDDpRZEkg8Io47uLz1X
+         vcDl6SbtlYIBMpNRSnRXNaG6xdLiHpuZBb5MKQUnhy7unO6dCUU15hjW4lMJ3hHSknhn
+         m7pALpuyQWFpm2NGNum+Be3YrFprtZqo+ZF+r83Jav+Ke+wO1ArwqZ9M22vAymcDhCY1
+         FSiZqhzOXyltmOD+/oVmZe1MihCKzQXP9XXC6AGCNDr4yBvuP6LXERTEGZ2XxNEVuHKw
+         VVasILyvML6eAY7oPF8Lw0LPUa9EC+aqfIwJNVY2nmBzCRHTFjbaYE81cNDezVY7xOon
+         6U9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4tVlprrrNke5mFJD3/iYHZS4yaa+3ERCi6F/wJGiXeM=;
+        b=U+BMeXhMX9ETXdS9W5PlRtf4flq+iLXxbX8O8k0jdW1FVD4rC3IK+mGlhRNLLNcP3M
+         m6R7q0szv5UmYuVT1ab0yxPRJicQ0lL7xwxR11KdtNLg+2T1XkAPNB3DNQ9CDCJNv1w5
+         3FdBmxGgGOw/UC8JxClxL/4dloR9zM57DfKuMTEp5ngG8dX8AnHCBZYkIQl3ym8DOU5l
+         CiaYhTDfmzO1//gMzECUQF1FHWZWS7Z+uL/VJEhnUd3+TDzHU1tPUPB0RLN1IkJCBkWp
+         E+6ENP21CHzvkdUEiQVkLkAfAzn/xBuomUau5SXRlUuohMpn1KVidkK4CWBZephJ/MoX
+         RYmw==
+X-Gm-Message-State: ANoB5plcx5N2f1kdk78BDYJFK28Jo5fnHiKvhhsS9yA4IKZp/1M1VHyY
+        T1rylr7cY550EmEp7cNyI5k=
+X-Google-Smtp-Source: AA0mqf4cajyyEnqd7ZFPlV8ZMXO0wtZID40H63DrcO87cf5SlOZ8JsQQKIBnpLBDkPeYd4KYwGnFGg==
+X-Received: by 2002:a50:f602:0:b0:469:4e4f:4827 with SMTP id c2-20020a50f602000000b004694e4f4827mr16435104edn.214.1669189438290;
+        Tue, 22 Nov 2022 23:43:58 -0800 (PST)
+Received: from felia.fritz.box (200116b826997500d517ac74edd630a9.dip.versatel-1u1.de. [2001:16b8:2699:7500:d517:ac74:edd6:30a9])
+        by smtp.gmail.com with ESMTPSA id fi17-20020a056402551100b00459012e5145sm7284446edb.70.2022.11.22.23.43.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Nov 2022 23:43:57 -0800 (PST)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] can: etas_es58x: repair conditional for a verbose debug message
+Date:   Wed, 23 Nov 2022 08:42:14 +0100
+Message-Id: <20221123074214.21538-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 02:40:24PM +0800, Yang Yingliang wrote:
-> 
-> On 2022/11/23 4:27, Jakub Kicinski wrote:
-> > On Tue, 22 Nov 2022 21:04:29 +0200 Leon Romanovsky wrote:
-> > > > > Please fix nsim instead of devlink.
-> > > > I think if devlink is not registered, it can not be get and used, but there
-> > > > is no API for driver to check this, can I introduce a new helper name
-> > > > devlink_is_registered() for driver using.
-> > > There is no need in such API as driver calls to devlink_register() and
-> > > as such it knows when devlink is registered.
-> > > 
-> > > This UAF is nsim specific issue. Real devices have single .probe()
-> > > routine with serialized registration flow. None of them will use
-> > > devlink_is_registered() call.
-> > Agreed, the fix is to move the register call back.
-> > Something along the lines of the untested patch below?
-> > Yang Yingliang would you be able to turn that into a real patch?
-> > 
-> > diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-> > index e14686594a71..26602d5fe0a2 100644
-> > --- a/drivers/net/netdevsim/dev.c
-> > +++ b/drivers/net/netdevsim/dev.c
-> > @@ -1566,12 +1566,15 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
-> >   	err = devlink_params_register(devlink, nsim_devlink_params,
-> >   				      ARRAY_SIZE(nsim_devlink_params));
-> >   	if (err)
-> > -		goto err_dl_unregister;
-> > +		goto err_resource_unregister;
-> >   	nsim_devlink_set_params_init_values(nsim_dev, devlink);
-> > +	/* here, because params API still expect devlink to be unregistered */
-> > +	devl_register(devlink);
-> > +
-> devlink_set_features() called at last in probe() also needs devlink is not
-> registered.
-> >   	err = nsim_dev_dummy_region_init(nsim_dev, devlink);
-> >   	if (err)
-> > -		goto err_params_unregister;
-> > +		goto err_dl_unregister;
-> >   	err = nsim_dev_traps_init(devlink);
-> >   	if (err)
-> > @@ -1610,7 +1613,6 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
-> >   	nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_LEGACY;
-> >   	devlink_set_features(devlink, DEVLINK_F_RELOAD);
-> >   	devl_unlock(devlink);
-> > -	devlink_register(devlink);
-> >   	return 0;
-> >   err_hwstats_exit:
-> > @@ -1629,10 +1631,11 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
-> >   	nsim_dev_traps_exit(devlink);
-> >   err_dummy_region_exit:
-> >   	nsim_dev_dummy_region_exit(nsim_dev);
-> > -err_params_unregister:
-> > +err_dl_unregister:
-> > +	devl_unregister(devlink);
-> It races with dev_ethtool():
-> dev_ethtool
->   devlink_try_get()
->                                 nsim_drv_probe
->                                 devl_lock()
->     devl_lock()
->                                 devlink_unregister()
->                                   devlink_put()
->                                   wait_for_completion() <- the refcount is
-> got in dev_ethtool, it causes ABBA deadlock
+The definition of VERBOSE_DEBUG for detailled debugging is set simply by
+adding "#define VERBOSE_DEBUG" in the source code. It is not a kernel
+configuration that is prefixed by CONFIG.
 
-But all these races are nsim specific ones.
-Can you please explain why devlink.[c|h] MUST be changed and nsim can't
-be fixed?
+As the netdev_vdbg() macro is already defined conditional on
+defined(VERBOSE_DEBUG), there is really no need to duplicate the check
+before calling netdev_vdbg().
 
-Thanks
+Repair the conditional for a verbose debug message.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 25f863b4f5f0..2708909fb851 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -989,7 +989,7 @@ int es58x_rx_cmd_ret_u32(struct net_device *netdev,
+ 			break;
+ 
+ 		case ES58X_RET_TYPE_TX_MSG:
+-			if (IS_ENABLED(CONFIG_VERBOSE_DEBUG) && net_ratelimit())
++			if (net_ratelimit())
+ 				netdev_vdbg(netdev, "%s: OK\n", ret_desc);
+ 			break;
+ 
+-- 
+2.17.1
+
