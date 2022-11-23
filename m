@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63CB3636AEB
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:23:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AC7F636AD3
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:23:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233896AbiKWUUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 15:20:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41752 "EHLO
+        id S239695AbiKWUUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 15:20:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239249AbiKWUTs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:19:48 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E3E94A72;
-        Wed, 23 Nov 2022 12:18:38 -0800 (PST)
-Message-ID: <20221123201624.634354813@linutronix.de>
+        with ESMTP id S239487AbiKWUUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:20:13 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4C3A7C33;
+        Wed, 23 Nov 2022 12:18:42 -0800 (PST)
+Message-ID: <20221123201624.706987932@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669234716;
+        s=2020; t=1669234718;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=jQ2gZORL07is72DtXlAGRimkkLqHHcn1aa3jaD5TFbQ=;
-        b=f36afwovLdkt/bqf4IRU0BGDoE5fzvo/VDvwL6PJu2Mh+s99D7wlaMav0MGn+5d2rkaaFc
-        z78cNFGDfmXIVjUDu58QL17rDAHtDmwUnW3j4FcU5qowBNK3yTdRwbbCvIXotFrKZqr3jC
-        hxokt0BKqQTEnEEgA+UV6h4ySRzoyYWlXHiwWDQjEsOkbhj1W5yIYfKPY0Lvn0AcFg8bK1
-        +vuJoiBcYHufuJQQu/Uj1DpF146Zdd6f/nyBEiq5FrlAnyHa8BTWam9FXeuFsd/OeQM1UX
-        HH4sMAVPw8HzyiJSRDICBS21jomaJ14QdRlOM1fGnycywsiEGQaO65HT9R7jpQ==
+         references:references; bh=L6OLvdTrTjp+y8rajFPzsnTIgo8oUnw4e56M5qzb6Hk=;
+        b=SqTuXeT5/K63F/GnNVrYmrRtHC4JHzs2kIQhv6uKTdadPmbZ2KwYcbImFcTKnFXfgkqj6W
+        r2r0c8P3CfjjgNx1HS8EhXeodAc44v8FU/EiH3bVHdr+mgcpFrQSXjT0U8Clc69eGxjI8/
+        JPhW2GQv6UR/l84OjSVHMD7ifS2oIXwBHfwrKoKkrnpn2PIqHDHwovn0RTTR4xxalxnaxa
+        zK3X0wIzE4GVxbwh4as6HsundaNn+fpmqcCJo+NcmwZaZmkiObupUznUjglwtdltWCazbd
+        l8JFgFpzYSyI8RsBZ1xgkgdAvnVb9hfO77zZIH0BYAMpDu+4gRe7AoSHERRzOg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669234716;
+        s=2020e; t=1669234718;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=jQ2gZORL07is72DtXlAGRimkkLqHHcn1aa3jaD5TFbQ=;
-        b=Wtyc63rpuXDakzL82wrwab0u5haPiE3yO5Q30MQKacKsZ25IQ7kTiMswpqhBiDs3Bmecf+
-        k/JTjeTf1LKh8FAg==
+         references:references; bh=L6OLvdTrTjp+y8rajFPzsnTIgo8oUnw4e56M5qzb6Hk=;
+        b=K2mgbma7mgCmvgxL/IrXqyYXQ52uUPOSjuhQ/egNjJvRBNZbLWeMguNKexJ3bTLX8kaPbY
+        qrUdRArbBlUZrTCA==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
@@ -54,12 +54,11 @@ Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [patch V3 04/17] clocksource/drivers/sp804: Do not use timer
- namespace for timer_shutdown() function
+Subject: [patch V3 05/17] timers: Get rid of del_singleshot_timer_sync()
 References: <20221123201306.823305113@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Wed, 23 Nov 2022 21:18:36 +0100 (CET)
+Date:   Wed, 23 Nov 2022 21:18:37 +0100 (CET)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -69,59 +68,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+del_singleshot_timer_sync() used to be an optimization for deleting timers
+which are not rearmed from the timer callback function.
 
-A new "shutdown" timer state is being added to the generic timer code. One
-of the functions to change the timer into the state is called
-"timer_shutdown()". This means that there can not be other functions
-called "timer_shutdown()" as the timer code owns the "timer_*" name space.
+This optimization turned out to be broken and got mapped to
+del_timer_sync() about 17 years ago.
 
-Rename timer_shutdown() to evt_timer_shutdown() to avoid this conflict.
+Get rid of the undocumented indirection and use del_timer_sync() directly.
 
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+No functional change.
+
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Tested-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Link: https://lkml.kernel.org/r/20221106212702.182883323@goodmis.org
-Link: https://lore.kernel.org/all/20221105060155.592778858@goodmis.org/
-Link: https://lore.kernel.org/r/20221110064147.158230501@goodmis.org
-
-
 ---
- drivers/clocksource/timer-sp804.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/char/tpm/tpm-dev-common.c     |    4 ++--
+ drivers/staging/wlan-ng/hfa384x_usb.c |    4 ++--
+ drivers/staging/wlan-ng/prism2usb.c   |    6 +++---
+ include/linux/timer.h                 |    2 --
+ kernel/time/timer.c                   |    2 +-
+ net/sunrpc/xprt.c                     |    2 +-
+ 6 files changed, 9 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
-index e6a87f4af2b5..cd1916c05325 100644
---- a/drivers/clocksource/timer-sp804.c
-+++ b/drivers/clocksource/timer-sp804.c
-@@ -155,14 +155,14 @@ static irqreturn_t sp804_timer_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static inline void timer_shutdown(struct clock_event_device *evt)
-+static inline void evt_timer_shutdown(struct clock_event_device *evt)
+--- a/drivers/char/tpm/tpm-dev-common.c
++++ b/drivers/char/tpm/tpm-dev-common.c
+@@ -155,7 +155,7 @@ ssize_t tpm_common_read(struct file *fil
+ out:
+ 	if (!priv->response_length) {
+ 		*off = 0;
+-		del_singleshot_timer_sync(&priv->user_read_timer);
++		del_timer_sync(&priv->user_read_timer);
+ 		flush_work(&priv->timeout_work);
+ 	}
+ 	mutex_unlock(&priv->buffer_mutex);
+@@ -262,7 +262,7 @@ ssize_t tpm_common_write(struct file *fi
+ void tpm_common_release(struct file *file, struct file_priv *priv)
  {
- 	writel(0, common_clkevt->ctrl);
- }
+ 	flush_work(&priv->async_work);
+-	del_singleshot_timer_sync(&priv->user_read_timer);
++	del_timer_sync(&priv->user_read_timer);
+ 	flush_work(&priv->timeout_work);
+ 	file->private_data = NULL;
+ 	priv->response_length = 0;
+--- a/drivers/staging/wlan-ng/hfa384x_usb.c
++++ b/drivers/staging/wlan-ng/hfa384x_usb.c
+@@ -1116,8 +1116,8 @@ static int hfa384x_usbctlx_complete_sync
+ 		if (ctlx == get_active_ctlx(hw)) {
+ 			spin_unlock_irqrestore(&hw->ctlxq.lock, flags);
  
- static int sp804_shutdown(struct clock_event_device *evt)
- {
--	timer_shutdown(evt);
-+	evt_timer_shutdown(evt);
+-			del_singleshot_timer_sync(&hw->reqtimer);
+-			del_singleshot_timer_sync(&hw->resptimer);
++			del_timer_sync(&hw->reqtimer);
++			del_timer_sync(&hw->resptimer);
+ 			hw->req_timer_done = 1;
+ 			hw->resp_timer_done = 1;
+ 			usb_kill_urb(&hw->ctlx_urb);
+--- a/drivers/staging/wlan-ng/prism2usb.c
++++ b/drivers/staging/wlan-ng/prism2usb.c
+@@ -170,9 +170,9 @@ static void prism2sta_disconnect_usb(str
+ 		 */
+ 		prism2sta_ifstate(wlandev, P80211ENUM_ifstate_disable);
+ 
+-		del_singleshot_timer_sync(&hw->throttle);
+-		del_singleshot_timer_sync(&hw->reqtimer);
+-		del_singleshot_timer_sync(&hw->resptimer);
++		del_timer_sync(&hw->throttle);
++		del_timer_sync(&hw->reqtimer);
++		del_timer_sync(&hw->resptimer);
+ 
+ 		/* Unlink all the URBs. This "removes the wheels"
+ 		 * from the entire CTLX handling mechanism.
+--- a/include/linux/timer.h
++++ b/include/linux/timer.h
+@@ -190,8 +190,6 @@ extern int try_to_del_timer_sync(struct
+ # define del_timer_sync(t)		del_timer(t)
+ #endif
+ 
+-#define del_singleshot_timer_sync(t) del_timer_sync(t)
+-
+ extern void init_timers(void);
+ struct hrtimer;
+ extern enum hrtimer_restart it_real_fn(struct hrtimer *);
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1933,7 +1933,7 @@ signed long __sched schedule_timeout(sig
+ 	timer_setup_on_stack(&timer.timer, process_timeout, 0);
+ 	__mod_timer(&timer.timer, expire, MOD_TIMER_NOTPENDING);
+ 	schedule();
+-	del_singleshot_timer_sync(&timer.timer);
++	del_timer_sync(&timer.timer);
+ 
+ 	/* Remove the timer from the object tracker */
+ 	destroy_timer_on_stack(&timer.timer);
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -1164,7 +1164,7 @@ xprt_request_enqueue_receive(struct rpc_
+ 	spin_unlock(&xprt->queue_lock);
+ 
+ 	/* Turn off autodisconnect */
+-	del_singleshot_timer_sync(&xprt->timer);
++	del_timer_sync(&xprt->timer);
  	return 0;
  }
  
-@@ -171,7 +171,7 @@ static int sp804_set_periodic(struct clock_event_device *evt)
- 	unsigned long ctrl = TIMER_CTRL_32BIT | TIMER_CTRL_IE |
- 			     TIMER_CTRL_PERIODIC | TIMER_CTRL_ENABLE;
- 
--	timer_shutdown(evt);
-+	evt_timer_shutdown(evt);
- 	writel(common_clkevt->reload, common_clkevt->load);
- 	writel(ctrl, common_clkevt->ctrl);
- 	return 0;
--- 
-2.35.1
 
