@@ -2,150 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E491E636D38
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 23:35:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F898636D3A
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 23:36:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229714AbiKWWee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 17:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50524 "EHLO
+        id S229698AbiKWWgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 17:36:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbiKWWea (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 17:34:30 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948A211DA18
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 14:34:28 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oxyJq-00014w-Us; Wed, 23 Nov 2022 23:34:15 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:2e2e:9f36:4c74:dde5])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 9F6EA127BAB;
-        Wed, 23 Nov 2022 22:34:12 +0000 (UTC)
-Date:   Wed, 23 Nov 2022 23:34:10 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Yasushi SHOJI <yasushi.shoji@gmail.com>,
-        Remigiusz =?utf-8?B?S2/FgsWCxIV0YWo=?= 
-        <remigiusz.kollataj@mobica.com>
-Cc:     Yasushi SHOJI <yashi@spacecubics.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] can: mcba_usb: Fix termination command argument
-Message-ID: <20221123223410.sg2ixkaqg4dpe7ew@pengutronix.de>
-References: <20221123194406.80575-1-yashi@spacecubics.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="33zoh2sobjkt3oh7"
+        with ESMTP id S229646AbiKWWgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 17:36:36 -0500
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130045.outbound.protection.outlook.com [40.107.13.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F7A11E713;
+        Wed, 23 Nov 2022 14:36:35 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UdSWFCl2V+yT7SmoU/xbf7QyTFl4U8fx0hMtdObCwSLdR1fMycQD/GWPn9bZfX1tPKjpsH/y7RiA3iNWK/MJpBu8H2UScMKfxFKBf1a94RJq2GAhIbhsEQ+VD1ReA2BSVnTAfItDId6XlyrzP3Kk2jl4Iwc3+c6wLlNeQM9aCQJfusABdpeGjysrIgNKS5aEPVPwRse4L95yQ64sASzIUswDOszbm4mYsuhMcMvqtbrjCNF2K8358yvMRDglKJIGgIuMlEFbbRja9Ovvgs4c7X5GTOb/+gceXpgOBtPZB4YHnSGlgnQAq86ZOFe6hqrR9XXMMMBmDEh3WKqBE2qnKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QXXvw+sy9v9xmt0DHrwEk1bahk4Cayww55aEDaIekfw=;
+ b=oBau4eSBqGzib2hOKei4nDWKKUB6rvXC3eoAxNoUEHxn4M+f0MIccK9FpOuT4KGy8aV+n3+xrwLjHFRbE4dyy+aQSi6SqLxfuodg8C/tcAsMfSJlnw2BFgDXSlOZnym3CgdadWNg/W978BLr1T/0rS9fPKCvdq1XFRsNSNjcMhO0pkjaeSG8QDeqZQOZmHaamBg2G/O08a6yIN5dLOIpZ8XzVogPgrq14hN77PJ5vtvaYyj1m84lcLftx/tIVFTe/0JeXn6Nv4Hh8eHsLOknFd+HkrmuAiFDtbRhEt2WVdTCMisrCb5sAEv4DEufaLTs8X7S5MwbvkM+kQjL7n52FA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QXXvw+sy9v9xmt0DHrwEk1bahk4Cayww55aEDaIekfw=;
+ b=sxJBT+0sQHeNGiyez5PcQl+RJr9LJN0AX7mo5kHyiwU2h5RODdHgoKdBesX9q3GMPSzL555Ra/CrygFJ4bCFrvrayKKASHNf6kFrCQjurvU9CxafZABFK1nc8URiYRr/jR/3xEDKGoIcSEkdAXOzWzUJHCMeQFtdE387TBSrXBo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM8PR04MB7281.eurprd04.prod.outlook.com (2603:10a6:20b:1d4::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.11; Wed, 23 Nov
+ 2022 22:36:31 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5834.015; Wed, 23 Nov 2022
+ 22:36:31 +0000
+Date:   Thu, 24 Nov 2022 00:36:26 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Alexander Lobakin <alobakin@mailbox.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 14/18] dsa: ocelot: fix mixed module-builtin object
+Message-ID: <20221123223626.xpztd3jlnfv7isq4@skbuf>
+References: <20221119225650.1044591-1-alobakin@pm.me>
+ <20221119225650.1044591-15-alobakin@pm.me>
+ <20221121175504.qwuoyditr4xl6oew@skbuf>
+ <Y3u/qwvLED4nE/jR@colin-ia-desktop>
+ <20221123214746.62207-1-alobakin@mailbox.org>
+ <Y36cGl7wLM3aGeI2@colin-ia-desktop>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221123194406.80575-1-yashi@spacecubics.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <Y36cGl7wLM3aGeI2@colin-ia-desktop>
+X-ClientProxiedBy: AM3PR05CA0088.eurprd05.prod.outlook.com
+ (2603:10a6:207:1::14) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM8PR04MB7281:EE_
+X-MS-Office365-Filtering-Correlation-Id: 880cff13-c1d5-4f98-2f0c-08dacda32ad2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vJKFivw5OqTfQQExnOcFPRXrbRsfEt5js4mLMpCCGTiW7547C5AFb5jTIYWcXvzkNWvCSOECdVWRWSIQ2+/iYRdI2qFkIt0X93rOxbL16O2EJZBE0tJ+xplcyKILG2BixNRiCpFiiPoxPFEOX+S72xvcqUkWxHZDYwqjoTz5fc0tDZAOjyYxguFsEipNRygSGrr+nGwkNpiKf4ypKcWYts68pmaEiuiVwBQLszcXi4jhoTkor8hdHdpOCA6XePebn9Y2vvNmy0FnYUojsWLr3C+IQCamDlXmzKh10zhi7Gui5AJ1j7VHLN9FKf/+Gc7oOalfQguYLdPiRGeQ9vCjnJ+ncJ7Jw7ktVIfarII+RRNU2b4zxFcXsKxI8JUdbKapqs16cVTpfxJTxNrRiL/zat3ca8Z1GSpEdfsUkKlupZEgm2bensAWgZ8Qgoh987NwmGWhDhv5R+aOfhPQYgSA3Bs5Y4Ty9LHup+6mzPtZhkr/+gy4hgLbAtF173idy2nu1M2z9zcBDP1R/4WuEBKWTeOyobQV7ls3Qj6a7duwAj8VYpCVHBfC5sMMzd3yG/Rqo+8kftR6uqAMnYdvYqbJmhH/NGOBURydbIoEzG8v7qBCsVhIWK8tdpwR1Ir2aCG/Lts0jA2n9d+TCeu9NfpbHg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(366004)(396003)(39860400002)(376002)(346002)(136003)(451199015)(6666004)(41300700001)(478600001)(6486002)(4326008)(66476007)(8676002)(316002)(9686003)(1076003)(8936002)(26005)(66556008)(33716001)(66946007)(7416002)(186003)(5660300002)(54906003)(44832011)(6916009)(6506007)(83380400001)(2906002)(86362001)(6512007)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bHztFamZv9S1DTLdd50j4798Fx++x8CIkvJtNJ0Mk5T0G6p44P0VqAjuc9/R?=
+ =?us-ascii?Q?HrD1LTtNtPt2H550Sg16XPOpl4iEhlmTlWLh/0J2zZjm6n5mmFdjxd27QLuU?=
+ =?us-ascii?Q?ESm/OTvvkG9TLAEOzrwcH7mfjXsG4MhV1tqM1XNwFixzoZCnjmbklSnU2mwj?=
+ =?us-ascii?Q?98etUTy4bILY68ra3fHL77vQiGcmrHkeIrT0bce6bxNNbbNxF8kx4qMVnvwF?=
+ =?us-ascii?Q?mvvr/nXG2wzawVTfgkpxUWbEIOttM0U3b0adzr4FahPg+iYyEujk/TDu280H?=
+ =?us-ascii?Q?0Y2iIRh4ogcoDVh4S+scZ5QJzZ00nt8zzY7P5i8kbcfre/rUAtkvWJ66JCno?=
+ =?us-ascii?Q?OlC6EPRNX4slqgASNSnkUJhAuFNVOHjIpYsRSadqky85aV5Yk0AlXrKYavNv?=
+ =?us-ascii?Q?7gx0pARMczB3YapyiK7F0mZy8gq22hctP0NutKEfH5IQr9IP0a5wxwqYnhO7?=
+ =?us-ascii?Q?y7mxeCbIkvitcP/VF941VKsvjBOfYEZNcQiFN/MCFe6V0RYQH/PgRnD31knZ?=
+ =?us-ascii?Q?9ZhkVCKziUvcBxp/HfJDwGFaFab3q7aDpzx+PIUe3Q3mKmk6GKEcJuvhZnUX?=
+ =?us-ascii?Q?S6Yz0kQ5aOt3wPdMbWXgUSxZEzYU0GqUC9JYBjOn1SbLbsNPs5et5x8U+r5c?=
+ =?us-ascii?Q?z343C2d8MnEgb7xoTv1k4HFz0RdM0stRLJ0aHWuJ3zEwOj4pjOuMOJ7CdwZl?=
+ =?us-ascii?Q?y9mXgab16J6T7R94GZKRZzcUBz7vrTmNoowZr/4L+NjmLbe21zBsIJSH31As?=
+ =?us-ascii?Q?jVDB5nyf5cRbhLMhD+jvNUUDesYbLwWOruwksls06CLY4lh/VW+2d8ahLu1e?=
+ =?us-ascii?Q?6j9AXF9iG4+iA/o7fQ3D6fvCE4KmEQ0IBKu/f0Um+pYdXrGx1IogIAr7FD6r?=
+ =?us-ascii?Q?gzmbGStvXkbAdcaYZEwNSJ6Nig+YIugIh9QE4PWdvlPUN+P+CJBRj2K8/mVH?=
+ =?us-ascii?Q?M5iQFecChshXod9/I+WiH9T2OKMEv33Kjpv0K07q0BWrpPEcgvREp/H9unTR?=
+ =?us-ascii?Q?+dGLjqGvsMJ6u0OeCygyWILKLMhb9Od6EQ/Wn+LP1vNEh3FXm4F07RPjVY4N?=
+ =?us-ascii?Q?hhi6wOXjupeeGmLnxrArCJYKVgu+S8eIgUX7JKJHdQpiA+JU3hX6wzMr+IVS?=
+ =?us-ascii?Q?ZjsW4lIyWlc1eOBgOmJ7BaedlKNqLHDwKg4+pImskFIZTK6CRFKaqXv9sxyz?=
+ =?us-ascii?Q?IV4ElvfBcucFxq0cPO4eBaWYSxqNghoU6nvPgWbTylR+BJfC6ok+cVWjdBjm?=
+ =?us-ascii?Q?1YqaMuBay2wOfHNkwaIuq1XefUfnszXYOZzSKXCc9z/LUwb0Cf9Fv3nxchL+?=
+ =?us-ascii?Q?UYjMYUB67pshdk0+ZCZb0PjuaLcTlt+Nc+EQmhPBYGOa1UiqPUp6LPV/1GXj?=
+ =?us-ascii?Q?cRqHvONa/nuxXd5gQgetrwNEQZycC0gp3ppoxU+ZGLRvIaz1RLnl2EIzcz/k?=
+ =?us-ascii?Q?hHuJI4FHeLTtaR/R2SG/+a5h+M3oqolSbnNTL2c2BNTmZxTTFL2U52TKCYEA?=
+ =?us-ascii?Q?hUMQ6n69y+01R48FN1qEzFU02vkkQEGu3VMFA9fegUod0oGRK3byBAzGcfMb?=
+ =?us-ascii?Q?b9L++92F0tawxzTmumSlWq0cS+qy8CTp/WPE+dMVAN6h0j+JPkBidEvOqIsj?=
+ =?us-ascii?Q?iw=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 880cff13-c1d5-4f98-2f0c-08dacda32ad2
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2022 22:36:30.9377
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8Kt3b73nlQdW0O54/DhlAiwIuOLQJczTVGdgXxPc71VqXr7xoy8ABW6i4hlHjTnOkW/7tO7fo1vcdMBS5D+l7Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7281
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Nov 23, 2022 at 02:18:02PM -0800, Colin Foster wrote:
+> > The thing confused me is that one chip is named Felix and the other
+> > one is Seville, but the shared code is named felix as well. So at
+> > first I thought maybe Felix is a family of chips and Seville is a
+> > chip from that family, dunno :D
+> 
+> Not important, but in case anyone is curious:
+> 
+> Ocelot is a family of switches. Linux support exists for the internal
+> MIPS on some of those devices. My understanding is the switching
+> hardware is licensed out to other chips that can be controlled
+> externally (e.g. PCIe). Felix was the first chip to do so with full
+> Linux support. When Seville came along, it utilized a lot of common
+> code from Felix. Thus, Felix is a "chip" as well as a "library" -
+> specifically the DSA implementation of Ocelot. At least in my mind.
+> 
+> (Note: I haven't verified this timeline back to the early days of
+> Felix... I'm mostly speculating)
 
---33zoh2sobjkt3oh7
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'm not sure marketing would agree that Ocelot, Felix, Seville are part
+of the same "family". They're all Vitesse switch designs which share the
+same core architecture, even if some are sold by other companies.
 
-Let's take the original driver author into the loop.
+The Ocelot switchdev driver came first to Linux. The Felix switch was
+very similar, except it was DSA and not switchdev. So when it got added,
+Ocelot became the name of a library for sharing code between a switchdev
+front-end and a DSA front-end, as well as the name of a driver proper.
 
-On 24.11.2022 04:44:06, Yasushi SHOJI wrote:
-> Microchip USB Analyzer can be set with termination setting ON or OFF.
-> As I've observed, both with my oscilloscope and USB packet capture
-> below, you must send "0" to turn it ON, and "1" to turn it OFF.
->=20
-> Reverse the argument value to fix this.
->=20
-> These are the two commands sequence, ON then OFF.
->=20
-> > No.     Time           Source                Destination           Prot=
-ocol Length Info
-> >       1 0.000000       host                  1.3.1                 USB =
-     46     URB_BULK out
-> >
-> > Frame 1: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
-> > USB URB
-> > Leftover Capture Data: a80000000000000000000000000000000000a8
-> >
-> > No.     Time           Source                Destination           Prot=
-ocol Length Info
-> >       2 4.372547       host                  1.3.1                 USB =
-     46     URB_BULK out
-> >
-> > Frame 2: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
-> > USB URB
-> > Leftover Capture Data: a80100000000000000000000000000000000a9
+The Seville hardware is actually much older than both Ocelot and Felix.
+It comes from the same family as Serval. It's integrated into old
+Freescale PowerPC SoCs. It only got Linux support late in its life,
+when it became super easy to do it, basically after Felix paved the way.
+When that happened, Felix also got split up into a library (for the DSA
+aspects of interfacing with the ocelot library) and a driver proper.
 
-Is this the USB data after applying the patch?
+Colin is now working on a switch which marketing really would say that
+it's part of the Ocelot family. Except it's DSA, so it has to use the
+Felix library.
 
-Can you measure the resistance between CAN-H and CAN-L to verify that
-your patch fixes the problem?
+Anyway, TL;DR: name of common code is given by the first supported
+hardware, it's quite a common pattern really.
 
-> Signed-off-by: Yasushi SHOJI <yashi@spacecubics.com>
-> ---
->  drivers/net/can/usb/mcba_usb.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_us=
-b.c
-> index 218b098b261d..67beff1a3876 100644
-> --- a/drivers/net/can/usb/mcba_usb.c
-> +++ b/drivers/net/can/usb/mcba_usb.c
-> @@ -785,9 +785,9 @@ static int mcba_set_termination(struct net_device *ne=
-tdev, u16 term)
->  	};
-> =20
->  	if (term =3D=3D MCBA_TERMINATION_ENABLED)
-> -		usb_msg.termination =3D 1;
-> -	else
->  		usb_msg.termination =3D 0;
-> +	else
-> +		usb_msg.termination =3D 1;
-> =20
->  	mcba_usb_xmit_cmd(priv, (struct mcba_usb_msg *)&usb_msg);
-
-What about the static void mcba_usb_process_ka_usb() function? Do you
-need to convert this, too?
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---33zoh2sobjkt3oh7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmN+n98ACgkQrX5LkNig
-012L1QgAoWGeBydYaNVMgeqAWNQXxd2DUQMDWZsXHQ5Iaq583nK4EiBy1DrOGY8p
-93zFNw0Dha9KFuCcYVonIom9M4H6CFfm/0IabGGoltcjFoEby+4bsllBkQshr4vL
-1mBTJDYcgTgCVkex86uyYRChmVZGgqyLg2vnCjkXZb2Dyj7A5ssmnIxESfCWKlI3
-ANV8ZmP6+Xcw3Ws163IDXWy3+mcF0gXn0nNuvVSfyopsZcgVUX9Cv+1rI97i/7Ew
-MYs2oTlmylZWAIj6fN0Zv4bfP5Q1bvawp49BDMPOeeJphlFQhvroR4gBIC2s+wBn
-/rW7EnUI9rCUhLBzQ3ENFrNHqPO6iw==
-=oknD
------END PGP SIGNATURE-----
-
---33zoh2sobjkt3oh7--
+What's more interesting to me is the strange humour of somebody at
+Vitesse (now Microchip) who gave the feline code names for these
+switches (Ocelot, Serval, Jaguar). Felix is none other than Felix the Cat.
