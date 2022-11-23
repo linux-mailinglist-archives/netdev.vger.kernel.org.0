@@ -2,241 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB2FB635AB7
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C63A2635ADC
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 12:01:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236371AbiKWK52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 05:57:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58924 "EHLO
+        id S236926AbiKWK7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 05:59:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237358AbiKWK5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:57:05 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65105F2C28;
-        Wed, 23 Nov 2022 02:50:01 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AN8UFL8010187;
-        Wed, 23 Nov 2022 10:49:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=mXiiolj1vyMDqNLNcOvBqyT7McpywFknUHRx0axon80=;
- b=Fc/bdz03SPpDg182pzk7w7sA2MdaSJJ4QY7+UL15/nyt+cca7TMNWBVbwYenN7RDKxx1
- JTgxT2RKOnAZTppL6ZZT7I7XabG5eYe2iOyY2WKfXiHqDTKB5RwJll9wVIEIT/BQQ4iB
- KW6CxNlLdRWP2TKJiCPW6Mo/DJsOeqOPfFPDGEY93OiKlpqvOxLx0Q5W5eIRbn2HaAmA
- Kp5A6IcxpJRFSuDNRyafvJPnsRAuohuKXpA2CoNY4R4ZfROQ5XbvrbBT9KbTWmVqsS8h
- tZpY07BPbGi/znvElthTx9hSDxF/w/JMZCA3s1AWjJzMFcF12yFFczu2FEn7gIqRqvIp ug== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m10bm9q6s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Nov 2022 10:49:52 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2ANAfYaF001797;
-        Wed, 23 Nov 2022 10:49:52 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m10bm9q66-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Nov 2022 10:49:51 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2ANAb27W001428;
-        Wed, 23 Nov 2022 10:49:49 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3kxps8wj5b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Nov 2022 10:49:49 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2ANAoRfS43647358
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Nov 2022 10:50:27 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3043F5204F;
-        Wed, 23 Nov 2022 10:49:46 +0000 (GMT)
-Received: from LAPTOP-8S6R7U4L.localdomain (unknown [9.171.0.166])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 6240652050;
-        Wed, 23 Nov 2022 10:49:45 +0000 (GMT)
-From:   Jan Karcher <jaka@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Jan Karcher <jaka@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Subject: [PATCH net] net/smc: Fix expected buffersizes and sync logic
-Date:   Wed, 23 Nov 2022 11:49:07 +0100
-Message-Id: <20221123104907.14624-1-jaka@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: KPfWBkxcK3dGgQDX4ql8805QeBciClmx
-X-Proofpoint-GUID: ODtQyDf4S08fxcYZfwWLsMOrrd7BXWcS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-23_05,2022-11-23_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- priorityscore=1501 impostorscore=0 suspectscore=0 clxscore=1011
- lowpriorityscore=0 malwarescore=0 phishscore=0 spamscore=0 mlxscore=0
- adultscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2210170000 definitions=main-2211230079
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S236924AbiKWK6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:58:34 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71581CD;
+        Wed, 23 Nov 2022 02:51:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669200718; x=1700736718;
+  h=from:to:cc:subject:date:message-id;
+  bh=6iGjfHGImnQA/ryUfPU7pulSh2j0yD9AxLZ5NGkr2kQ=;
+  b=Lea1g6qPwXgmFe2iceq3WySE50RDe4CbHDGA2O4wHfgi+XMWbRYLlS1U
+   FlXlP//toEF1wPsn1mp1aCNwfINtJRomQW7xjHzx9lZ1z5d4vQBRTGsCl
+   IbT/bi3KG5SXAcc1E5y1Z2JKRFq0N3LyQh5g/tybZHbOr4Lt3mv2fVwcH
+   GPadzMci7qHzw/txGR1RhA+xvasyW41Tl1yA/8aJKWb6iGp+xpyGSUT8P
+   DVf3tXsXme4n9HqSS1dXm5sLBSNCNxS7Q3sWxew94Mgw2jHUdvzpnRPTh
+   YsyPGs11s83vylKcGG661is2Q5MHpVn01lbiWK9/ArNn7lmZDHgA8RHkn
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="297399779"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="297399779"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 02:51:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="672837333"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="672837333"
+Received: from p12ill01gohweish.png.intel.com ([10.88.229.16])
+  by orsmga008.jf.intel.com with ESMTP; 23 Nov 2022 02:51:53 -0800
+From:   "Goh, Wei Sheng" <wei.sheng.goh@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        Ahmad Tarmizi Noor Azura <noor.azura.ahmad.tarmizi@intel.com>,
+        Looi Hong Aun <hong.aun.looi@intel.com>,
+        Goh Wei Sheng <wei.sheng.goh@intel.com>
+Subject: [PATCH net v4] net: stmmac: Set MAC's flow control register to reflect current settings
+Date:   Wed, 23 Nov 2022 18:51:10 +0800
+Message-Id: <20221123105110.23617-1-wei.sheng.goh@intel.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=0.9 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The fixed commit changed the expected behavior of buffersizes
-set by the user using the setsockopt mechanism.
-Before the fixed patch the logic for determining the buffersizes used
-was the following:
+Currently, pause frame register GMAC_RX_FLOW_CTRL_RFE is not updated
+correctly when 'ethtool -A <IFACE> autoneg off rx off tx off' command
+is issued. This fix ensures the flow control change is reflected directly
+in the GMAC_RX_FLOW_CTRL_RFE register.
 
-default  = net.ipv4.tcp_{w|r}mem[1]
-sockopt  = the setsockopt mechanism
-val      = the value assigned in default or via setsockopt
-sk_buf   = short for sk_{snd|rcv}buf
-real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
-
-  exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
-            |                  |                |
-+---------+ |                  | +------------+ | +-------------------+
-| default |----------------------| sk_buf=val |---| real_buf=sk_buf/2 |
-+---------+ |                  | +------------+ | +-------------------+
-            |                  |                |    ^
-            |                  |                |    |
-+---------+ | +--------------+ |                |    |
-| sockopt |---| sk_buf=val*2 |-----------------------|
-+---------+ | +--------------+ |                |
-            |                  |                |
-
-The fixed patch introduced a dedicated sysctl for smc
-and removed the /2 in smc_core.c resulting in the following flow:
-
-default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
-sockopt  = the setsockopt mechanism
-val      = the value assigned in default or via setsockopt
-sk_buf   = short for sk_{snd|rcv}buf
-real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
-
-  exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
-            |                  |                |
-+---------+ |                  | +------------+ | +-----------------+
-| default |----------------------| sk_buf=val |---| real_buf=sk_buf |
-+---------+ |                  | +------------+ | +-----------------+
-            |                  |                |    ^
-            |                  |                |    |
-+---------+ | +--------------+ |                |    |
-| sockopt |---| sk_buf=val*2 |-----------------------|
-+---------+ | +--------------+ |                |
-            |                  |                |
-
-This would result in double of memory used for existing configurations
-that are using setsockopt.
-
-SMC historically decided to use the explicit value given by the user
-to allocate the memory. This is why we used the /2 in smc_core.c.
-That logic was not applied to the default value.
-Since we now have our own sysctl, which is also exposed to the user,
-we should sync the logic in a way that both values are the real value
-used by our code and shown by smc_stats. To achieve this this patch
-changes the behavior to:
-
-default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
-sockopt  = the setsockopt mechanism
-val      = the value assigned in default or via setsockopt
-sk_buf   = short for sk_{snd|rcv}buf
-real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
-
-  exposed   | net/core/sock.c  |    af_smc.c     |  smc_core.c
-            |                  |                 |
-+---------+ |                  | +-------------+ | +-----------------+
-| default |----------------------| sk_buf=val*2|---|real_buf=sk_buf/2|
-+---------+ |                  | +-------------+ | +-----------------+
-            |                  |                 |    ^
-            |                  |                 |    |
-+---------+ | +--------------+ |                 |    |
-| sockopt |---| sk_buf=val*2 |------------------------|
-+---------+ | +--------------+ |                 |
-            |                  |                 |
-
-This way both paths follow the same pattern and the expected behavior
-is re-established.
-
-Fixes: 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
-Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
-Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
+Fixes: 46f69ded988d ("net: stmmac: Use resolved link config in mac_link_up()")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Signed-off-by: Goh, Wei Sheng <wei.sheng.goh@intel.com>
+Signed-off-by: Noor Azura Ahmad Tarmizi <noor.azura.ahmad.tarmizi@intel.com>
 ---
- net/smc/af_smc.c   | 9 +++++++--
- net/smc/smc_core.c | 8 ++++----
- 2 files changed, 11 insertions(+), 6 deletions(-)
+V3 -> V4: Fix commit message and incorrect insertions(+) value
+V2 -> V3: Removed value assign for 'flow' in else statement based on review comments
+V1 -> V2: Removed needless condition based on review comments
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 036532cf39aa..a8c84e7bac99 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -366,6 +366,7 @@ static void smc_destruct(struct sock *sk)
- static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
- 				   int protocol)
- {
-+	int buffersize_without_overhead;
- 	struct smc_sock *smc;
- 	struct proto *prot;
- 	struct sock *sk;
-@@ -379,8 +380,12 @@ static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
- 	sk->sk_state = SMC_INIT;
- 	sk->sk_destruct = smc_destruct;
- 	sk->sk_protocol = protocol;
--	WRITE_ONCE(sk->sk_sndbuf, READ_ONCE(net->smc.sysctl_wmem));
--	WRITE_ONCE(sk->sk_rcvbuf, READ_ONCE(net->smc.sysctl_rmem));
-+	buffersize_without_overhead =
-+		min_t(int, READ_ONCE(net->smc.sysctl_wmem), INT_MAX / 2);
-+	WRITE_ONCE(sk->sk_sndbuf, buffersize_without_overhead * 2);
-+	buffersize_without_overhead =
-+		min_t(int, READ_ONCE(net->smc.sysctl_rmem), INT_MAX / 2);
-+	WRITE_ONCE(sk->sk_rcvbuf, buffersize_without_overhead * 2);
- 	smc = smc_sk(sk);
- 	INIT_WORK(&smc->tcp_listen_work, smc_tcp_listen_work);
- 	INIT_WORK(&smc->connect_work, smc_connect_work);
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 00fb352c2765..36850a2ae167 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -2314,10 +2314,10 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 
- 	if (is_rmb)
- 		/* use socket recv buffer size (w/o overhead) as start value */
--		sk_buf_size = smc->sk.sk_rcvbuf;
-+		sk_buf_size = smc->sk.sk_rcvbuf / 2;
- 	else
- 		/* use socket send buffer size (w/o overhead) as start value */
--		sk_buf_size = smc->sk.sk_sndbuf;
-+		sk_buf_size = smc->sk.sk_sndbuf / 2;
- 
- 	for (bufsize_short = smc_compress_bufsize(sk_buf_size, is_smcd, is_rmb);
- 	     bufsize_short >= 0; bufsize_short--) {
-@@ -2376,7 +2376,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 	if (is_rmb) {
- 		conn->rmb_desc = buf_desc;
- 		conn->rmbe_size_short = bufsize_short;
--		smc->sk.sk_rcvbuf = bufsize;
-+		smc->sk.sk_rcvbuf = bufsize * 2;
- 		atomic_set(&conn->bytes_to_rcv, 0);
- 		conn->rmbe_update_limit =
- 			smc_rmb_wnd_update_limit(buf_desc->len);
-@@ -2384,7 +2384,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 			smc_ism_set_conn(conn); /* map RMB/smcd_dev to conn */
- 	} else {
- 		conn->sndbuf_desc = buf_desc;
--		smc->sk.sk_sndbuf = bufsize;
-+		smc->sk.sk_sndbuf = bufsize * 2;
- 		atomic_set(&conn->sndbuf_space, bufsize);
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |  2 ++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 ++++++++++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+index c25bfecb4a2d..369db308b1dd 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+@@ -748,6 +748,8 @@ static void dwmac4_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
+ 	if (fc & FLOW_RX) {
+ 		pr_debug("\tReceive Flow-Control ON\n");
+ 		flow |= GMAC_RX_FLOW_CTRL_RFE;
++	} else {
++		pr_debug("\tReceive Flow-Control OFF\n");
  	}
- 	return 0;
+ 	writel(flow, ioaddr + GMAC_RX_FLOW_CTRL);
+ 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 8273e6a175c8..ab7f48f32f5b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1061,8 +1061,16 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+ 		ctrl |= priv->hw->link.duplex;
+ 
+ 	/* Flow Control operation */
+-	if (tx_pause && rx_pause)
+-		stmmac_mac_flow_ctrl(priv, duplex);
++	if (rx_pause && tx_pause)
++		priv->flow_ctrl = FLOW_AUTO;
++	else if (rx_pause && !tx_pause)
++		priv->flow_ctrl = FLOW_RX;
++	else if (!rx_pause && tx_pause)
++		priv->flow_ctrl = FLOW_TX;
++	else
++		priv->flow_ctrl = FLOW_OFF;
++
++	stmmac_mac_flow_ctrl(priv, duplex);
+ 
+ 	if (ctrl != old_ctrl)
+ 		writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
 -- 
-2.34.1
+2.17.1
 
