@@ -2,76 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14901635B38
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 12:11:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D23D9635B6A
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 12:17:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237185AbiKWLKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 06:10:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39460 "EHLO
+        id S236535AbiKWLP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 06:15:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236676AbiKWLIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 06:08:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55812EA1;
-        Wed, 23 Nov 2022 03:08:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF11E61BD6;
-        Wed, 23 Nov 2022 11:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 756D7C433D7;
-        Wed, 23 Nov 2022 11:08:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669201722;
-        bh=DawtEQRaLys4ndNs0wAfEL55EBLaTd8iBsWdNmensMU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Yt1eTFqw8F/qCDrGv8Xd8AYJLVuWcTXSYUGOWKR2n5YcnhscY9OG50o0ydhHLBgux
-         6/1BvZ0NSLstMlNPttpy2OJvmr8ctcxIR9BBvoVjwif+B3qAIQsVcpvxLuDi1BIJYg
-         vV8rkVmd5DElHyAx2Hz1B/6q0YYHbF19nkbqrXx+Egr2clYjMj7jfNiOvOnRbXmN+9
-         FcX5g35cBHVzwgqpXai9DQW37ENEAEwcdWvWkqtmHdsvWtiSEQlwoghsh+3kQMPTjG
-         gHDbqGnDkHbuF6nvzGgIwUdHC+jrUPFjeuJdhiDEAgL8IZFFJsuEgpbDauYu4obmn2
-         /KfJWDPYd3z5Q==
-Date:   Wed, 23 Nov 2022 13:08:37 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Suman Ghosh <sumang@marvell.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, sgoutham@marvell.com, sbhatta@marvell.com,
-        jerinj@marvell.com, gakula@marvell.com, hkelam@marvell.com,
-        lcherian@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net PATCH V2] octeontx2-pf: Fix pfc_alloc_status array overflow
-Message-ID: <Y33/NWTHNznMetWB@unreal>
-References: <20221123105938.2824933-1-sumang@marvell.com>
+        with ESMTP id S235505AbiKWLPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 06:15:36 -0500
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED8510CEA2;
+        Wed, 23 Nov 2022 03:13:52 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R551e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VVWuMiC_1669202028;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VVWuMiC_1669202028)
+          by smtp.aliyun-inc.com;
+          Wed, 23 Nov 2022 19:13:50 +0800
+Date:   Wed, 23 Nov 2022 19:13:47 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Jan Karcher <jaka@linux.ibm.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>
+Subject: Re: [PATCH net-next] net/smc: Unbind smc control from tcp control
+Message-ID: <Y34Aa3MXGqyd+nlQ@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20221123105830.17167-1-jaka@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221123105938.2824933-1-sumang@marvell.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221123105830.17167-1-jaka@linux.ibm.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 04:29:38PM +0530, Suman Ghosh wrote:
-> This patch addresses pfc_alloc_status array overflow occurring for
-> send queue index value greater than PFC priority. Queue index can be
-> greater than supported PFC priority for multiple scenarios (e.g. QoS,
-> during non zero SMQ allocation for a PF/VF).
-> In those scenarios the API should return default tx scheduler '0'.
-> This is causing mbox errors as otx2_get_smq_idx returing invalid smq value.
+On Wed, Nov 23, 2022 at 11:58:30AM +0100, Jan Karcher wrote:
+> In the past SMC used the values of tcp_{w|r}mem to create the send
+> buffer and RMB. We now have our own sysctl knobs to tune them without
+> influencing the TCP default.
 > 
-> Fixes: 99c969a83d82 ("octeontx2-pf: Add egress PFC support")
-> Signed-off-by: Suman Ghosh <sumang@marvell.com>
-> ---
-> Changes since v1:
-> - Updated commit message.
-> 
->  drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+> This patch removes the dependency on the TCP control by providing our
+> own initial values which aim for a low memory footprint.
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
++1, before introducing sysctl knobs of SMC, we were going to get rid of
+TCP and have SMC own values. Now this does it, So I very much agree with
+this.
+
+> 
+> Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
+> Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
+> ---
+>  Documentation/networking/smc-sysctl.rst |  4 ++--
+>  net/smc/smc_core.h                      |  6 ++++--
+>  net/smc/smc_sysctl.c                    | 10 ++++++----
+>  3 files changed, 12 insertions(+), 8 deletions(-)
+> 
+> diff --git a/Documentation/networking/smc-sysctl.rst b/Documentation/networking/smc-sysctl.rst
+> index 6d8acdbe9be1..a1c634d3690a 100644
+> --- a/Documentation/networking/smc-sysctl.rst
+> +++ b/Documentation/networking/smc-sysctl.rst
+> @@ -44,7 +44,7 @@ smcr_testlink_time - INTEGER
+>  
+>  wmem - INTEGER
+>  	Initial size of send buffer used by SMC sockets.
+> -	The default value inherits from net.ipv4.tcp_wmem[1].
+> +	The default value aims for a small memory footprint and is set to 16KiB.
+>  
+>  	The minimum value is 16KiB and there is no hard limit for max value, but
+>  	only allowed 512KiB for SMC-R and 1MiB for SMC-D.
+> @@ -53,7 +53,7 @@ wmem - INTEGER
+>  
+>  rmem - INTEGER
+>  	Initial size of receive buffer (RMB) used by SMC sockets.
+> -	The default value inherits from net.ipv4.tcp_rmem[1].
+> +	The default value aims for a small memory footprint and is set to 64KiB.
+>  
+>  	The minimum value is 16KiB and there is no hard limit for max value, but
+>  	only allowed 512KiB for SMC-R and 1MiB for SMC-D.
+> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+> index 285f9bd8e232..67c3937f341d 100644
+> --- a/net/smc/smc_core.h
+> +++ b/net/smc/smc_core.h
+> @@ -206,8 +206,10 @@ struct smc_rtoken {				/* address/key of remote RMB */
+>  	u32			rkey;
+>  };
+>  
+> -#define SMC_BUF_MIN_SIZE	16384	/* minimum size of an RMB */
+> -#define SMC_RMBE_SIZES		16	/* number of distinct RMBE sizes */
+> +#define SMC_SNDBUF_INIT_SIZE 16384 /* initial size of send buffer */
+> +#define SMC_RCVBUF_INIT_SIZE 65536 /* initial size of receive buffer */
+> +#define SMC_BUF_MIN_SIZE	 16384	/* minimum size of an RMB */
+> +#define SMC_RMBE_SIZES		 16	/* number of distinct RMBE sizes */
+>  /* theoretically, the RFC states that largest size would be 512K,
+>   * i.e. compressed 5 and thus 6 sizes (0..5), despite
+>   * struct smc_clc_msg_accept_confirm.rmbe_size being a 4 bit value (0..15)
+> diff --git a/net/smc/smc_sysctl.c b/net/smc/smc_sysctl.c
+> index b6f79fabb9d3..a63aa79d4856 100644
+> --- a/net/smc/smc_sysctl.c
+> +++ b/net/smc/smc_sysctl.c
+> @@ -19,8 +19,10 @@
+>  #include "smc_llc.h"
+>  #include "smc_sysctl.h"
+>  
+> -static int min_sndbuf = SMC_BUF_MIN_SIZE;
+> -static int min_rcvbuf = SMC_BUF_MIN_SIZE;
+> +static int initial_sndbuf	= SMC_SNDBUF_INIT_SIZE;
+> +static int initial_rcvbuf	= SMC_RCVBUF_INIT_SIZE;
+> +static int min_sndbuf		= SMC_BUF_MIN_SIZE;
+> +static int min_rcvbuf		= SMC_BUF_MIN_SIZE;
+>  
+>  static struct ctl_table smc_table[] = {
+>  	{
+> @@ -88,8 +90,8 @@ int __net_init smc_sysctl_net_init(struct net *net)
+>  	net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
+>  	net->smc.sysctl_smcr_buf_type = SMCR_PHYS_CONT_BUFS;
+>  	net->smc.sysctl_smcr_testlink_time = SMC_LLC_TESTLINK_DEFAULT_TIME;
+> -	WRITE_ONCE(net->smc.sysctl_wmem, READ_ONCE(net->ipv4.sysctl_tcp_wmem[1]));
+> -	WRITE_ONCE(net->smc.sysctl_rmem, READ_ONCE(net->ipv4.sysctl_tcp_rmem[1]));
+> +	WRITE_ONCE(net->smc.sysctl_wmem, initial_sndbuf);
+> +	WRITE_ONCE(net->smc.sysctl_rmem, initial_rcvbuf);
+
+Maybe we can use SMC_{SND|RCV}BUF_INIT_SIZE macro directly, instead of
+new variables.
+
+Cheers,
+Tony Lu
+
+>  
+>  	return 0;
+>  
+> -- 
+> 2.34.1
