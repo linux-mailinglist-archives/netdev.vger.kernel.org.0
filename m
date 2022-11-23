@@ -2,346 +2,339 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21132636A44
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 20:56:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB52A636A48
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 20:56:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239534AbiKWTzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 14:55:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41398 "EHLO
+        id S238764AbiKWT4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 14:56:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238951AbiKWTzX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 14:55:23 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EF4B57
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 11:54:27 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id EFD3E1F8B4;
-        Wed, 23 Nov 2022 19:54:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1669233265; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/SIuTSW6AIk5ukBRSB7KR0brKThwfaAQ7iR/WpsuQL8=;
-        b=uL3oBdBdXkrIcrmH1DIaXdmWdn3Bhg/zDDvjJ4B35eE+8euzSs0mTBu5UIYv3O4S2an3+9
-        I66R0iKJmsyRjKJ+TXB068zLbnrZ7IrZ4pTdJjpAAtV54X80/C5yxChoalZPe4Q1v6xG0M
-        7tbV48A3hiQg+JpiBnLU8vv0WBlATKw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1669233265;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/SIuTSW6AIk5ukBRSB7KR0brKThwfaAQ7iR/WpsuQL8=;
-        b=ynCTbmM/tNCtYFIVnSXHgq8JFZ/SJr8zawzKzJkbGNT+aLPSPQujz1/ddF76KI4Lt9r2Xu
-        Pvc0h+AuUyO3ToDg==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DCD252C141;
-        Wed, 23 Nov 2022 19:54:25 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id AD8D160954; Wed, 23 Nov 2022 20:54:22 +0100 (CET)
-Date:   Wed, 23 Nov 2022 20:54:22 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, andrew@lunn.ch,
-        corbet@lwn.net, sridhar.samudrala@intel.com,
-        anthony.l.nguyen@intel.com
-Subject: Re: [PATCH net-next v5] ethtool: add netlink based get rss support
-Message-ID: <20221123195422.bjvm7y7i3pmtbhag@lion.mk-sys.cz>
-References: <20221123184846.161964-1-sudheer.mogilappagari@intel.com>
+        with ESMTP id S234925AbiKWT4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 14:56:22 -0500
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B10D6D4B7
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 11:55:46 -0800 (PST)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-142306beb9aso21996794fac.11
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 11:55:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=AhyYhQDcvLRvWZakSp/AsZKx0OFDkurdwrIarjTj7f8=;
+        b=j3B3jll2CN2K0+lFOTufIQhJE3XzG9rTsaFJ73+Yj2fzYb9DZyNcjNQKAMeI2HL1HH
+         nJhy2ah0Y0ISfv2NkrPSsE+jBbaeOAufoAT6QYK0O/y/s1+KNz90Ggnurt86HcJjoNI7
+         niSWTUhqqHyKkbg9w/3iRpocFmhgvkednwkO2PhlFGybv+cTwSauoa4UgA0b1v5wZ40Y
+         5zzkOSmowHIlFMRbl9NPa8NRj20imfQfx99jdzUtrI09obemR4uftqALub97fY5vcIhL
+         b/QHE/iwDa9KV92ZoGmhKWye9iM7ZeEFIbazh0idhNBJF5JR9CroT/BnmHVexxL5tpWT
+         ZGwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AhyYhQDcvLRvWZakSp/AsZKx0OFDkurdwrIarjTj7f8=;
+        b=Dr1QqIG5II/NU0TZQ7VSW3hZZ8POc//RrWewN37x/x9i6LmSzF/OHtrabuaWUMmGZe
+         xyWmBvj64R4jNKIhqzygilLpDwmce3dwypVFBg4U7kCgSwrtwEzqlbU2lvID9ZGikJZr
+         XoBe6UHNOTp3EHWVlExytfEJ/lSIiZ8NBCrEmrKGFQlnZL/T9tuJkZ3/tNRqrCOIgErP
+         36i7oCvjam6smjVKXwD+xe63HEJGk3VPgDkrV4eHJcLxUh3dqbapUl2s9ZYYQxEzJYFn
+         XZ6Opk0TKSKrcSjsB4/jo72nVzIGDByr7QIYvB8hVp/qN9hNinG9jlLWcpVJotA7SDEZ
+         Thqg==
+X-Gm-Message-State: ANoB5ploveYuP/zFZ5blAiLaKmVc4FaYl4y9JoU2O+QVtEiNaheHaG3g
+        oRZ1m0k5peZRWZ7CreFKgBf9tlxLNytHigZLdkM=
+X-Google-Smtp-Source: AA0mqf7KnXy8Dac2ig3EJx2swTMJOs3y8jorhvXsKc6NDvPLIKwahxppTQuJ/bH28bMlg04dlcZgIje9tFFgMWt6GC8=
+X-Received: by 2002:a05:6871:4494:b0:142:6cb4:8b3a with SMTP id
+ ne20-20020a056871449400b001426cb48b3amr6941439oab.190.1669233345436; Wed, 23
+ Nov 2022 11:55:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="vhmygxsypnrnvrfq"
-Content-Disposition: inline
-In-Reply-To: <20221123184846.161964-1-sudheer.mogilappagari@intel.com>
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_SOFTFAIL autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1669138256.git.lucien.xin@gmail.com> <bf19487f4dfc8cd91a4395672d9905b10917128d.1669138256.git.lucien.xin@gmail.com>
+ <Y343wyO20XUvwuvg@t14s.localdomain> <20221123151335.ssrnv7jfrdugmcgg@t14s.localdomain>
+ <CADvbK_eYRZxaNreBmvXmAQzH+JLbiK-9UhKqzH2CM2sHt1bvQQ@mail.gmail.com>
+ <Y35q4NVXC2D4mgPc@t14s.localdomain> <CADvbK_e+tgefsiB1N-7CHUR35P-sDfaOqRVp281VhrQO2ot_hQ@mail.gmail.com>
+ <Y35xs4Saj8coBmUH@t14s.localdomain>
+In-Reply-To: <Y35xs4Saj8coBmUH@t14s.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 23 Nov 2022 14:55:05 -0500
+Message-ID: <CADvbK_c9WpRSaqNkC5MrK9=xXGSE+or-R6=hSwCyeSqm7GO-nw@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCHv2 net-next 5/5] net: move the nat function to
+ nf_nat_ovs for ovs and tc
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     dev@openvswitch.org, ovs-dev@openvswitch.org,
+        Davide Caratti <dcaratti@redhat.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        network dev <netdev@vger.kernel.org>,
+        Paul Blakey <paulb@nvidia.com>,
+        Florian Westphal <fw@strlen.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>, kuba@kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Nov 23, 2022 at 2:17 PM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Wed, Nov 23, 2022 at 01:54:41PM -0500, Xin Long wrote:
+> > On Wed, Nov 23, 2022 at 1:48 PM Marcelo Ricardo Leitner
+> > <marcelo.leitner@gmail.com> wrote:
+> > >
+> > > On Wed, Nov 23, 2022 at 12:31:38PM -0500, Xin Long wrote:
+> > > > On Wed, Nov 23, 2022 at 10:13 AM Marcelo Ricardo Leitner
+> > > > <marcelo.leitner@gmail.com> wrote:
+> > > > >
+> > > > > On Wed, Nov 23, 2022 at 12:09:55PM -0300, Marcelo Ricardo Leitner wrote:
+> > > > > > On Tue, Nov 22, 2022 at 12:32:21PM -0500, Xin Long wrote:
+> > > > > > > +int nf_ct_nat(struct sk_buff *skb, struct nf_conn *ct,
+> > > > > > > +         enum ip_conntrack_info ctinfo, int *action,
+> > > > > > > +         const struct nf_nat_range2 *range, bool commit)
+> > > > > > > +{
+> > > > > > > +   enum nf_nat_manip_type maniptype;
+> > > > > > > +   int err, ct_action = *action;
+> > > > > > > +
+> > > > > > > +   *action = 0;
+> > > > > > > +
+> > > > > > > +   /* Add NAT extension if not confirmed yet. */
+> > > > > > > +   if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
+> > > > > > > +           return NF_ACCEPT;   /* Can't NAT. */
+> > > > > > > +
+> > > > > > > +   if (ctinfo != IP_CT_NEW && (ct->status & IPS_NAT_MASK) &&
+> > > > > > > +       (ctinfo != IP_CT_RELATED || commit)) {
+> > > > > > > +           /* NAT an established or related connection like before. */
+> > > > > > > +           if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY)
+> > > > > > > +                   /* This is the REPLY direction for a connection
+> > > > > > > +                    * for which NAT was applied in the forward
+> > > > > > > +                    * direction.  Do the reverse NAT.
+> > > > > > > +                    */
+> > > > > > > +                   maniptype = ct->status & IPS_SRC_NAT
+> > > > > > > +                           ? NF_NAT_MANIP_DST : NF_NAT_MANIP_SRC;
+> > > > > > > +           else
+> > > > > > > +                   maniptype = ct->status & IPS_SRC_NAT
+> > > > > > > +                           ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST;
+> > > > > > > +   } else if (ct_action & (1 << NF_NAT_MANIP_SRC)) {
+> > > > > > > +           maniptype = NF_NAT_MANIP_SRC;
+> > > > > > > +   } else if (ct_action & (1 << NF_NAT_MANIP_DST)) {
+> > > > > > > +           maniptype = NF_NAT_MANIP_DST;
+> > > > > > > +   } else {
+> > > > > > > +           return NF_ACCEPT;
+> > > > > > > +   }
+> > > > > > > +
+> > > > > > > +   err = nf_ct_nat_execute(skb, ct, ctinfo, action, range, maniptype);
+> > > > > > > +   if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
+> > > > > > > +           if (ct->status & IPS_SRC_NAT) {
+> > > > > > > +                   if (maniptype == NF_NAT_MANIP_SRC)
+> > > > > > > +                           maniptype = NF_NAT_MANIP_DST;
+> > > > > > > +                   else
+> > > > > > > +                           maniptype = NF_NAT_MANIP_SRC;
+> > > > > > > +
+> > > > > > > +                   err = nf_ct_nat_execute(skb, ct, ctinfo, action, range,
+> > > > > > > +                                           maniptype);
+> > > > > > > +           } else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
+> > > > > > > +                   err = nf_ct_nat_execute(skb, ct, ctinfo, action, NULL,
+> > > > > > > +                                           NF_NAT_MANIP_SRC);
+> > > > > > > +           }
+> > > > > > > +   }
+> > > > > > > +   return err;
+> > > > > > > +}
+> > > > > > > +EXPORT_SYMBOL_GPL(nf_ct_nat);
+> > > > > > > diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+> > > > > > > index cc643a556ea1..d03c75165663 100644
+> > > > > > > --- a/net/openvswitch/conntrack.c
+> > > > > > > +++ b/net/openvswitch/conntrack.c
+> > > > > > > @@ -726,144 +726,27 @@ static void ovs_nat_update_key(struct sw_flow_key *key,
+> > > > > > >     }
+> > > > > > >  }
+> > > > > > >
+> > > > > > > -/* Modelled after nf_nat_ipv[46]_fn().
+> > > > > > > - * range is only used for new, uninitialized NAT state.
+> > > > > > > - * Returns either NF_ACCEPT or NF_DROP.
+> > > > > > > - */
+> > > > > > > -static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+> > > > > > > -                         enum ip_conntrack_info ctinfo,
+> > > > > > > -                         const struct nf_nat_range2 *range,
+> > > > > > > -                         enum nf_nat_manip_type maniptype, struct sw_flow_key *key)
+> > > > > > > -{
+> > > > > > > -   int hooknum, err = NF_ACCEPT;
+> > > > > > > -
+> > > > > > > -   /* See HOOK2MANIP(). */
+> > > > > > > -   if (maniptype == NF_NAT_MANIP_SRC)
+> > > > > > > -           hooknum = NF_INET_LOCAL_IN; /* Source NAT */
+> > > > > > > -   else
+> > > > > > > -           hooknum = NF_INET_LOCAL_OUT; /* Destination NAT */
+> > > > > > > -
+> > > > > > > -   switch (ctinfo) {
+> > > > > > > -   case IP_CT_RELATED:
+> > > > > > > -   case IP_CT_RELATED_REPLY:
+> > > > > > > -           if (IS_ENABLED(CONFIG_NF_NAT) &&
+> > > > > > > -               skb->protocol == htons(ETH_P_IP) &&
+> > > > > > > -               ip_hdr(skb)->protocol == IPPROTO_ICMP) {
+> > > > > > > -                   if (!nf_nat_icmp_reply_translation(skb, ct, ctinfo,
+> > > > > > > -                                                      hooknum))
+> > > > > > > -                           err = NF_DROP;
+> > > > > > > -                   goto out;
+> > > > > > > -           } else if (IS_ENABLED(CONFIG_IPV6) &&
+> > > > > > > -                      skb->protocol == htons(ETH_P_IPV6)) {
+> > > > > > > -                   __be16 frag_off;
+> > > > > > > -                   u8 nexthdr = ipv6_hdr(skb)->nexthdr;
+> > > > > > > -                   int hdrlen = ipv6_skip_exthdr(skb,
+> > > > > > > -                                                 sizeof(struct ipv6hdr),
+> > > > > > > -                                                 &nexthdr, &frag_off);
+> > > > > > > -
+> > > > > > > -                   if (hdrlen >= 0 && nexthdr == IPPROTO_ICMPV6) {
+> > > > > > > -                           if (!nf_nat_icmpv6_reply_translation(skb, ct,
+> > > > > > > -                                                                ctinfo,
+> > > > > > > -                                                                hooknum,
+> > > > > > > -                                                                hdrlen))
+> > > > > > > -                                   err = NF_DROP;
+> > > > > > > -                           goto out;
+> > > > > > > -                   }
+> > > > > > > -           }
+> > > > > > > -           /* Non-ICMP, fall thru to initialize if needed. */
+> > > > > > > -           fallthrough;
+> > > > > > > -   case IP_CT_NEW:
+> > > > > > > -           /* Seen it before?  This can happen for loopback, retrans,
+> > > > > > > -            * or local packets.
+> > > > > > > -            */
+> > > > > > > -           if (!nf_nat_initialized(ct, maniptype)) {
+> > > > > > > -                   /* Initialize according to the NAT action. */
+> > > > > > > -                   err = (range && range->flags & NF_NAT_RANGE_MAP_IPS)
+> > > > > > > -                           /* Action is set up to establish a new
+> > > > > > > -                            * mapping.
+> > > > > > > -                            */
+> > > > > > > -                           ? nf_nat_setup_info(ct, range, maniptype)
+> > > > > > > -                           : nf_nat_alloc_null_binding(ct, hooknum);
+> > > > > > > -                   if (err != NF_ACCEPT)
+> > > > > > > -                           goto out;
+> > > > > > > -           }
+> > > > > > > -           break;
+> > > > > > > -
+> > > > > > > -   case IP_CT_ESTABLISHED:
+> > > > > > > -   case IP_CT_ESTABLISHED_REPLY:
+> > > > > > > -           break;
+> > > > > > > -
+> > > > > > > -   default:
+> > > > > > > -           err = NF_DROP;
+> > > > > > > -           goto out;
+> > > > > > > -   }
+> > > > > > > -
+> > > > > > > -   err = nf_nat_packet(ct, ctinfo, hooknum, skb);
+> > > > > > > -out:
+> > > > > > > -   /* Update the flow key if NAT successful. */
+> > > > > > > -   if (err == NF_ACCEPT)
+> > > > > > > -           ovs_nat_update_key(key, skb, maniptype);
+> > > > > > > -
+> > > > > > > -   return err;
+> > > > > > > -}
+> > > > > > > -
+> > > > > > >  /* Returns NF_DROP if the packet should be dropped, NF_ACCEPT otherwise. */
+> > > > > > >  static int ovs_ct_nat(struct net *net, struct sw_flow_key *key,
+> > > > > > >                   const struct ovs_conntrack_info *info,
+> > > > > > >                   struct sk_buff *skb, struct nf_conn *ct,
+> > > > > > >                   enum ip_conntrack_info ctinfo)
+> > > > > > >  {
+> > > > > > > -   enum nf_nat_manip_type maniptype;
+> > > > > > > -   int err;
+> > > > > > > +   int err, action = 0;
+> > > > > > >
+> > > > > > >     if (!(info->nat & OVS_CT_NAT))
+> > > > > > >             return NF_ACCEPT;
+> > > > > > > +   if (info->nat & OVS_CT_SRC_NAT)
+> > > > > > > +           action |= (1 << NF_NAT_MANIP_SRC);
+> > > > > > > +   if (info->nat & OVS_CT_DST_NAT)
+> > > > > > > +           action |= (1 << NF_NAT_MANIP_DST);
+> > > > > >
+> > > > > > I'm wondering why this dance at this level with supporting multiple
+> > > > > > MANIPs while actually only one can be used at a time.
+> > > > > >
+> > > > > > act_ct will reject an action using both:
+> > > > > >         if ((p->ct_action & TCA_CT_ACT_NAT_SRC) &&
+> > > > > >             (p->ct_action & TCA_CT_ACT_NAT_DST)) {
+> > > > > >                 NL_SET_ERR_MSG_MOD(extack, "dnat and snat can't be enabled at the same time");
+> > > > > >                 return -EOPNOTSUPP;
+> > > > > >
+> > > > > > I couldn't find this kind of check in ovs code right now (didn't look much, I
+> > > > > > confess :)), but even the code here was already doing:
+> > > > > >
+> > > > > > -     } else if (info->nat & OVS_CT_SRC_NAT) {
+> > > > > > -             maniptype = NF_NAT_MANIP_SRC;
+> > > > > > -     } else if (info->nat & OVS_CT_DST_NAT) {
+> > > > > > -             maniptype = NF_NAT_MANIP_DST;
+> > > > > >
+> > > > > > And in case of tuple conflict, maniptype will be forcibly updated in
+> > > > > > [*] below.
+> > > > >
+> > > > > Ahh.. just found why.. in case of typle conflict, nf_ct_nat() now may
+> > > > > set both.
+> > > > Right.
+> > > > BTW. The tuple conflict processing actually has provided the
+> > > > code to do full nat (snat and dnat at the same time), which I
+> > > > think is more efficient than doing full nat in two zones. All
+> > > > we have to do is adjust a few lines of code for that.
+> > >
+> > > In this part, yes. But it needs some surgery all around for full
+> > > support. The code in ovs kernel for using only one type starts here:
+> > >
+> > > static int parse_nat(const struct nlattr *attr,
+> > >                      struct ovs_conntrack_info *info, bool log)
+> > > {
+> > > ...
+> > >                 switch (type) {
+> > >                 case OVS_NAT_ATTR_SRC:
+> > >                 case OVS_NAT_ATTR_DST:
+> > >                         if (info->nat) {
+> > >                                 OVS_NLERR(log, "Only one type of NAT may be specified");
+> > >                                 return -ERANGE;
+> > >                         }
+> > > ...
+> > > }
+> > >
+> > > So vswitchd also doesn't support it. And then tc, iproute and drivers
+> > > that offload it as well. Not sure if it has impacts on openflow too.
+> > >
+> > not in one single action, but two actions:
+>
+> Oh.
+>
+> >
+> > "table=1, in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new
+> > actions=ct(nat(dst=7.7.16.3)),ct(commit, nat(src=7.7.16.1),
+> > alg=ftp),veth2"
+> >
+> > as long as it allows the 1st one doesn't commit, which is a simple
+> > check in parse_nat().
+> > I tested it, TC already supports it. I'm not sure about drivers, but I
+>
+> There's an outstanding issue with act_ct that it may reuse an old
+> CT cache. Fixing it could (I'm not sure) impact this use case:
+>
+> https://bugzilla.redhat.com/show_bug.cgi?id=2099220
+> same issue in ovs was fixed in
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2061ecfdf2350994e5b61c43e50e98a7a70e95ee
+>
+> (please don't ask me who would NAT and then overwrite IP addresses and
+> then NAT it again :D)
+I thought only traditional NAT would change IP, I'm too naive.
 
---vhmygxsypnrnvrfq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+nftables names this as "stateless NAT."
+With two CTs in the same zone for full nat is more close to the
+netfilter's NAT processing (the same CT goes from prerouting to
+postrouting).
+Now I'm wondering how nftables handles the stateful NAT and stateless
+NAT at the same time.
 
-On Wed, Nov 23, 2022 at 10:48:46AM -0800, Sudheer Mogilappagari wrote:
-> Add netlink based support for "ethtool -x <dev> [context x]"
-> command by implementing ETHTOOL_MSG_RSS_GET netlink message.
-> This is equivalent to functionality provided via ETHTOOL_GRSSH
-> in ioctl path. It fetches RSS table, hash key and hash function
-> of an interface to user space. In addition ETHTOOL_A_RSS_RINGS
-> attribute is added to return queue/rings count to user space.
-> This simplifies user space implementation while maintaining
-> backward compatibility of output.
->=20
-> This patch implements existing functionality available
-> in ioctl path and enables addition of new RSS context
-> based parameters in future.
->=20
-> Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-> ---
-> v5:
-> -Updated documentation about ETHTOOL_A_RSS_RINGS attribute.
->=20
-> v4:
-> -Don't make context parameter mandatory.
-> -Remove start/done ethtool_genl_ops for RSS_GET.
-> -Add rings attribute to RSS_GET netlink message.
-> -Fix documentation.
->=20
-> v3:
-> -Define parse_request and make use of ethnl_default_parse.
-> -Have indir table and hask hey as seprate attributes.
-> -Remove dumpit op for RSS_GET.
-> -Use RSS instead of RXFH.
->=20
-> v2: Fix cleanup in error path instead of returning.
-> ---
->  Documentation/networking/ethtool-netlink.rst |  29 +++-
->  include/uapi/linux/ethtool_netlink.h         |  15 ++
->  net/ethtool/Makefile                         |   2 +-
->  net/ethtool/netlink.c                        |   7 +
->  net/ethtool/netlink.h                        |   2 +
->  net/ethtool/rss.c                            | 169 +++++++++++++++++++
->  6 files changed, 222 insertions(+), 2 deletions(-)
->  create mode 100644 net/ethtool/rss.c
->=20
-> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation=
-/networking/ethtool-netlink.rst
-> index bede24ef44fd..883555b8876b 100644
-> --- a/Documentation/networking/ethtool-netlink.rst
-> +++ b/Documentation/networking/ethtool-netlink.rst
-[...]
-> @@ -1687,6 +1689,31 @@ to control PoDL PSE Admin functions. This option i=
-s implementing
->  ``IEEE 802.3-2018`` 30.15.1.2.1 acPoDLPSEAdminControl. See
->  ``ETHTOOL_A_PODL_PSE_ADMIN_STATE`` for supported values.
-> =20
-> +RSS_GET
-> +=3D=3D=3D=3D=3D=3D=3D
-> +
-> +Get indirection table, hash key and hash function info associated with a
-> +RSS context of an interface similar to ``ETHTOOL_GRSSH`` ioctl request.
-> +In addition ring count information is also returned to user space.
-> +
-> +Request contents:
-> +
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +  ``ETHTOOL_A_RSS_HEADER``             nested  request header
-> +  ``ETHTOOL_A_RSS_CONTEXT``            u32     context number
-> + =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +Kernel response contents:
-> +
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +  ``ETHTOOL_A_RSS_HEADER``             nested  reply header
-> +  ``ETHTOOL_A_RSS_CONTEXT``            u32     RSS context number
-> +  ``ETHTOOL_A_RSS_HFUNC``              u32     RSS hash func
-> +  ``ETHTOOL_A_RSS_RINGS``              u32     Ring count
-> +  ``ETHTOOL_A_RSS_INDIR``              binary  Indir table bytes
-> +  ``ETHTOOL_A_RSS_HKEY``               binary  Hash key bytes
-> + =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-
-It would be helpful to have some basic information about the attributes
-here, e.g. a mention that ETHTOOL_A_RSS_CONTEXT is optional, the format
-of ETHTOOL_A_RSS_INDIR and ETHTOOL_A_RSS_HKEY or which constants are
-returned in ETHTOOL_A_RSS_HFUNC.
-
-> +
->  Request translation
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =20
-> @@ -1768,7 +1795,7 @@ are netlink only.
->    ``ETHTOOL_GMODULEEEPROM``           ``ETHTOOL_MSG_MODULE_EEPROM_GET``
->    ``ETHTOOL_GEEE``                    ``ETHTOOL_MSG_EEE_GET``
->    ``ETHTOOL_SEEE``                    ``ETHTOOL_MSG_EEE_SET``
-> -  ``ETHTOOL_GRSSH``                   n/a
-> +  ``ETHTOOL_GRSSH``                   ``ETHTOOL_MSG_RSS_GET``
->    ``ETHTOOL_SRSSH``                   n/a
->    ``ETHTOOL_GTUNABLE``                n/a
->    ``ETHTOOL_STUNABLE``                n/a
-
-Now that ETHTOOL_MSG_RSS_GET returns also the number of Rx rings,
-ETHTOOL_GRXRINGS should also map to it.
-
-> diff --git a/net/ethtool/rss.c b/net/ethtool/rss.c
-> new file mode 100644
-> index 000000000000..86b9e0de954c
-> --- /dev/null
-> +++ b/net/ethtool/rss.c
-[...]
-> +static int
-> +rss_parse_request(struct ethnl_req_info *req_info, struct nlattr **tb,
-> +		  struct netlink_ext_ack *extack)
-> +{
-> +	struct rss_req_info *request =3D RSS_REQINFO(req_info);
-> +
-> +	if (!tb[ETHTOOL_A_RSS_CONTEXT]) {
-> +		request->rss_context =3D 0;
-> +		return 0;
-> +	}
-> +
-> +	request->rss_context =3D nla_get_u32(tb[ETHTOOL_A_RSS_CONTEXT]);
-> +	return 0;
-> +}
-
-Just a note: the request structure is guaranteed to be zeroed so that
-
-	if (tb[ETHTOOL_A_RSS_CONTEXT])
-		request->rss_context =3D nla_get_u32(tb[ETHTOOL_A_RSS_CONTEXT]);
-	return 0;
-
-would suffice. But it can stay like this if you prefer.
-
-> +
-> +static int
-> +rss_prepare_data(const struct ethnl_req_info *req_base,
-> +		 struct ethnl_reply_data *reply_base, struct genl_info *info)
-> +{
-> +	struct rss_reply_data *data =3D RSS_REPDATA(reply_base);
-> +	struct rss_req_info *request =3D RSS_REQINFO(req_base);
-> +	struct net_device *dev =3D reply_base->dev;
-> +	struct ethtool_rxnfc rings;
-> +	const struct ethtool_ops *ops;
-> +	u32 total_size, indir_bytes;
-> +	u8 dev_hfunc =3D 0;
-> +	u8 *rss_config;
-> +	int ret;
-> +
-> +	ops =3D dev->ethtool_ops;
-> +	if (!ops->get_rxfh)
-> +		return -EOPNOTSUPP;
-> +
-> +	/* Some drivers don't handle rss_context */
-> +	if (request->rss_context && !ops->get_rxfh_context)
-> +		return -EOPNOTSUPP;
-> +
-> +	data->rss_context =3D request->rss_context;
-> +
-> +	ret =3D ethnl_ops_begin(dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->indir_size =3D 0;
-> +	data->hkey_size =3D 0;
-> +	if (ops->get_rxfh_indir_size)
-> +		data->indir_size =3D ops->get_rxfh_indir_size(dev);
-> +	if (ops->get_rxfh_key_size)
-> +		data->hkey_size =3D ops->get_rxfh_key_size(dev);
-> +
-> +	indir_bytes =3D data->indir_size * sizeof(u32);
-> +	total_size =3D indir_bytes + data->hkey_size;
-> +	rss_config =3D kzalloc(total_size, GFP_KERNEL);
-> +	if (!rss_config) {
-> +		ret =3D -ENOMEM;
-> +		goto out_ops;
-> +	}
-> +
-> +	if (data->indir_size)
-> +		data->indir_table =3D (u32 *)rss_config;
-> +
-> +	if (data->hkey_size)
-> +		data->hkey =3D rss_config + indir_bytes;
-> +
-> +	if (data->rss_context)
-> +		ret =3D ops->get_rxfh_context(dev, data->indir_table, data->hkey,
-> +					    &dev_hfunc, data->rss_context);
-> +	else
-> +		ret =3D ops->get_rxfh(dev, data->indir_table, data->hkey,
-> +				    &dev_hfunc);
-> +
-> +	if (ret)
-> +		goto out_ops;
-> +
-> +	data->hfunc =3D dev_hfunc;
-> +	rings.cmd =3D ETHTOOL_GRXRINGS;
-> +	ops->get_rxnfc(dev, &rings, NULL);
-> +	data->rings =3D rings.data;
-
-ops->get_rxnfc is not checked for null.
-
-> +
-> +out_ops:
-> +	ethnl_ops_complete(dev);
-> +	return ret;
-> +}
-> +
-> +static int
-> +rss_reply_size(const struct ethnl_req_info *req_base,
-> +	       const struct ethnl_reply_data *reply_base)
-> +{
-> +	const struct rss_reply_data *data =3D RSS_REPDATA(reply_base);
-> +	int len;
-> +
-> +	len =3D  nla_total_size(sizeof(u32)) +	/* _RSS_CONTEXT */
-> +	       nla_total_size(sizeof(u32)) +	/* _RSS_HFUNC */
-> +	       nla_total_size(sizeof(u32)) +	/* _RSS_RINGS */
-> +	       nla_total_size(sizeof(u32)) * data->indir_size + /* _RSS_INDIR */
-
-As discussed before, nla_total_size() counts also the netlink attribute
-header so that nla_total_size(sizeof(u32)) is 8, not 4. Therefore we
-need
-
-  nla_total_size(sizeof(u32) * data->indir_size)
-
-instead. Fortunately it's incorrect "in the good direction"
-(overestimating the length) but I would still prefer to have the correct
-estimate.
-
-> +	       data->hkey_size;			/* _RSS_HKEY */
-
-This should be nla_total_size(data->hkey_size) to count the attribute
-header and potential padding.
-
-> +
-> +	return len;
-> +}
-> +
-> +static int
-> +rss_fill_reply(struct sk_buff *skb, const struct ethnl_req_info *req_bas=
-e,
-> +	       const struct ethnl_reply_data *reply_base)
-> +{
-> +	const struct rss_reply_data *data =3D RSS_REPDATA(reply_base);
-> +
-> +	if (nla_put_u32(skb, ETHTOOL_A_RSS_CONTEXT, data->rss_context) ||
-> +	    nla_put_u32(skb, ETHTOOL_A_RSS_HFUNC, data->hfunc) ||
-> +	    nla_put_u32(skb, ETHTOOL_A_RSS_RINGS, data->rings) ||
-> +	    nla_put(skb, ETHTOOL_A_RSS_INDIR,
-> +		    sizeof(u32) * data->indir_size, data->indir_table) ||
-> +	    nla_put(skb, ETHTOOL_A_RSS_HKEY, data->hkey_size, data->hkey))
-> +		return -EMSGSIZE;
-
-The optional attributes should be only added if they are to be returned.
-
-Michal
-
---vhmygxsypnrnvrfq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmN+emgACgkQ538sG/LR
-dpUjGwf8CIoUoAdwU4lgaw0evJRS3ZqK+w88zHIDh6j9ubW8xH1w1V1q11nvfZi0
-sT0/8X0tFULNvds0v6ekiCs7t5kY+rl9gRH2F0xwW7MlpUgEubhNkLscnwHtZgdj
-SUAPh8wq+/sGdGGsovZUU2POR0AD0ZfqcCr2cm0baN9+mIK6BziEBznR7WdN8l3A
-Q/IYF04TA+vd4V+Cjva92/X6jxQvjIHEBDKbOi2ao14ghvsv9RqGUJxo3E+iPgMs
-0XnDZekxGEMXssbq8avmYiJoJU1eOWxSAuBjPWGqTMJVjuQbavUGJbAZR6gmfGKE
-AnMfEWTb2t5j2TSVnq17btib4HGElQ==
-=XmF9
------END PGP SIGNATURE-----
-
---vhmygxsypnrnvrfq--
+>
+> > think it should be, as with two actions.
+>
+> mlx5 at least currently doesn't support it. Good that tc already
+> supports it, then. Maybe drivers can get up to speed later on.
+So because mlx5 currently only supports one ct action in one tc rule
+or something?
