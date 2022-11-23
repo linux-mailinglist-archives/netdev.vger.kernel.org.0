@@ -2,84 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E89634BC4
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 01:44:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B975B634BE1
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 01:59:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235312AbiKWAov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 19:44:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57904 "EHLO
+        id S235353AbiKWA7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 19:59:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233443AbiKWAou (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 19:44:50 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE4AC6943
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 16:44:49 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id z9so7883149ilu.10
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 16:44:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qt0Oia7FwaxA/+PML2ZHZEDGbQNkFk0tG08XyL42aso=;
-        b=HgwUhGpb33lLR5Ugn3ck6loKESVPF+muFD2n7g9xAqGCgk+iXjDli12LYoWqeAOrci
-         V58UVErhfmJkb8fexsEJtvDKBMIDN/PQ6yaxPgykccn9xBnGZuEq8Cp9Pw2Yd+QziERV
-         wIQbQOKm76lQJ3jfzJ4yFwXwu64V78qH60+vy6tsE66sT9S7WzbfLhKvBNuRIydbFuWA
-         Ikb3/PR4Ep2k2UqCFkwnebgWeZqPXNQ/NBN4ksDtHEw+UafQjqlMfyoU5g+kHkGpb4j2
-         4D7vwm/J9pjdkou6LGgJK6qBvATodfaV4bKkEUA7oIIdcKra4IihOLjatPFywDAkQGml
-         YPOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qt0Oia7FwaxA/+PML2ZHZEDGbQNkFk0tG08XyL42aso=;
-        b=BpceeJ0nbiPi1i/dBGt//JViEdKzDrLQKdjxkW9tvaGwqg/7TCK/7qfw471qGjJhwt
-         rNQVWNh6UpMP4ikQWnyryTvJDQBX7Qrnd00qRUbN0OqXBN69MSjwONw/y/XhILHPow7f
-         0Er0mpe+cT4yLNS3S7En7mGerfnYhKN+xDLJSjxqsczUE9IJzUoDIfpbg9sBhrRi2Iqp
-         QztCJr8SsuTqwVHwDjGsoLs8faGisEP0J8aSg3JnrJgyPImZ9nK15gGoatdKQ+HN8KmT
-         kjCoULBbUlIrvt2N+cQ3Ua4yxPxMF52ffY/83LSURGzl9fw/x5i3WknjmDFbBMqOywtd
-         BY9g==
-X-Gm-Message-State: ANoB5pkS0HkZa3A30X41TAzWoqvGZ45WAi+Uw8u4jwV4xWIi5JZkV1Ah
-        7ATl7fDoe/1tIi1WiGgeX0yg6xKoRmMCSQ==
-X-Google-Smtp-Source: AA0mqf6zhajD41LQHGsku1D72fTtdOapRkc5Le4GLeMD3oRGuOLOFO0UH1PgSQNqMi55bgnDU0xwRw==
-X-Received: by 2002:a05:6e02:50a:b0:302:a672:a25a with SMTP id d10-20020a056e02050a00b00302a672a25amr2836612ils.68.1669164288366;
-        Tue, 22 Nov 2022 16:44:48 -0800 (PST)
-Received: from google.com ([2620:15c:183:200:5e97:e61d:2d36:6a3f])
-        by smtp.gmail.com with ESMTPSA id d15-20020a0566022bef00b006cecd92164esm5807898ioy.34.2022.11.22.16.44.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 16:44:47 -0800 (PST)
-Date:   Tue, 22 Nov 2022 17:44:44 -0700
-From:   Yu Zhao <yuzhao@google.com>
-To:     Ivan Babrou <ivan@cloudflare.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, cgroups@vger.kernel.org,
-        kernel-team <kernel-team@cloudflare.com>
-Subject: Re: Low TCP throughput due to vmpressure with swap enabled
-Message-ID: <Y31s/K8T85jh05wH@google.com>
-References: <CABWYdi0G7cyNFbndM-ELTDAR3x4Ngm0AehEp5aP0tfNkXUE+Uw@mail.gmail.com>
- <CAOUHufYd-5cqLsQvPBwcmWeph2pQyQYFRWynyg0UVpzUBWKbxw@mail.gmail.com>
- <CAOUHufYSeTeO5ZMpnCR781esHV4QV5Th+pd=52UaM9cXNNKF9w@mail.gmail.com>
+        with ESMTP id S234091AbiKWA7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 19:59:04 -0500
+Received: from na01-obe.outbound.protection.outlook.com (mail-westus2azon11020027.outbound.protection.outlook.com [52.101.46.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3773DC75B5;
+        Tue, 22 Nov 2022 16:59:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bfWU+egp/2rA/XbQfSVku53Ss+PUQxuh1uQypldsfrldpJlPv+xwxp7kp1CLJG03avGyD1+9RpJ3QWrFeROS/p48nKDfKM3Z22rK+4aMDgXFxd6tY9rt/gn9hMf8tER7GmYt3E5IIji+vbmJmhynMF22FxBfnwTPBsOPMNB/OVWC4M0klmlib510LGSfmsDxbFI1x1u6djFvxuGZUhOWuDDVg5t/2PuD1J/EeuAZgzceUkJUuI3gMA6yRj37HmDAri2nwHW7F4w+FEdN0uuH9OArAX9L+E4dFBlbwtaOu4N5LgnaJAW2YMhCZVoGmGI0qG4UnDUG4fIYRy2yW9fbzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nXR+ZT1qAU0qhPQdw/Z1PKwejImDz/G/M2AZkPZFlq4=;
+ b=W/RB8druWL/0rm1vAcpLOVG9HfAv18ZrDbgFG8ZgrlyHPCUoktjPFOiWcOA+yOKxtqJLhB2itsid7KsYPaJAp5xcy622j+mulQ+pSRdAL89mMXxCoTu3Qa//A9F6ouMhuJ1eF6mhWrCJf4eKtVRgG2hQEO8fNP4Pnvr0hkGdZGxxxTR+5fnbRnEUylu0MlUI1QMwM1ZMC11DRrCzHIuceVGJqbGyE8sawpDkeZfF9QH1oXD4h0WOGS1ivX5dhbhEJfmJwr2Gkj74bG82EHuKEwXdMI+w7b1YtsmAzoEMk8Ii/2WqtcaHs5BsyNVl9ZeIS2TTrTE+IT8nV501iX2esQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nXR+ZT1qAU0qhPQdw/Z1PKwejImDz/G/M2AZkPZFlq4=;
+ b=VMbMElFUNVQ+2WLIoyefHI+xP5oJlYaZ+8gutiOJ2Rb+4wcThhT4u5KdhblYgVZHe/aQO6QEQQnL/TUZJscSMwOujxWKLoNDjSx/Gh1C9jH0NGD4lw+PkKN8hjGrvMrL8PItkojX+HXP07NX/ePn5z3YDKlU1U7yCfNaW8+/zXI=
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
+ by MW4PR21MB1908.namprd21.prod.outlook.com (2603:10b6:303:7b::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.2; Wed, 23 Nov
+ 2022 00:59:00 +0000
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::1e50:78ec:6954:d6dd]) by BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::1e50:78ec:6954:d6dd%4]) with mapi id 15.20.5880.002; Wed, 23 Nov 2022
+ 00:59:00 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     Borislav Petkov <bp@alien8.de>
+CC:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use standard
+ coco mechanisms
+Thread-Topic: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
+ standard coco mechanisms
+Thread-Index: AQHY+es2O4adbWIH8UyWtCwRyUnUyq5JgOOAgAHDpcCAAEhFgIAAJ7oQ
+Date:   Wed, 23 Nov 2022 00:59:00 +0000
+Message-ID: <BYAPR21MB16886FF8B35F51964A515CD5D70C9@BYAPR21MB1688.namprd21.prod.outlook.com>
+References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
+ <Y3uTK3rBV6eXSJnC@zn.tnic>
+ <BYAPR21MB16886AF404739449CA467B1AD70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y31Kqacbp9R5A1PF@zn.tnic>
+In-Reply-To: <Y31Kqacbp9R5A1PF@zn.tnic>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=fd4d8306-d27a-476f-b22e-64e344b7a1f4;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-23T00:40:28Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|MW4PR21MB1908:EE_
+x-ms-office365-filtering-correlation-id: fa6b4a9c-0b6b-4202-a5b6-08daccede867
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xGQNPY0oUM8EwhRxDncl3kjtYoaBjbfkCgKOmPRILFuPUyw5ejgh/N2qlXoG4WNPzW9uZ6WFnrDc75PCH0A0jgi6oouHrtilZ9wxwcCkDbAoIa8HXcEeUvl2i8MZwNcxfDbrHMzyGpysCmnYEs9N3N9rpe5HfwjjNiDYhP0TE1HsonD7fWDbRUvsed5ZE0shDCQT9vPYgTEGGVirUsE5S98K9457ZcT3IfpVszB+NTqNG3zsQ1p+JAPl7kB/liM8bpt5ojPcL2lJT75QuMXVegRte70Yf6m3psMs48LHMZLKotHtvmWzO+9Toswpr2+zzqkK2eiFhmC1g5MkqbUqCp9/eh/hU0TGKmQJTG+LTF17FGqe9EvwLyzQTsArjvbVfZiDNZY2C+JsOw9WHIcLPfeyrxokjk+QUES9pl3OrA0ncVPauo4ImEZYC+KulDVEtTe6N02kQXRDMgXXu+1RxGXXQH4+HhAbLI0Sk9VxVZ8SSViILrq2X8fgzEqYqc3whL9lKi3bUZWSsZ91bZFpG7ktAmR+npwJUGYMDBpSBT1FbOWvQhOmHRP51iNT2EwEls484t0bGKnETYLZ8JTKJMywtqvTmL9L8eK1g6iqdySF7YfP6H+gtyzW8cH3F/h/yE1rkyf6I0k4vWXGxfnoaGLhYkad/l1hYSL0iGo8cUYLggVocVyyaXB52kfURkVClOzrhP1IGjg4TchNaM3FEE6Nn6+Al/EtkyyBDCbjxpFrDG/Ng2dljYi/O0q/K6GS
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(396003)(136003)(346002)(39860400002)(451199015)(66899015)(33656002)(82960400001)(2906002)(8936002)(52536014)(8676002)(38070700005)(7406005)(7416002)(82950400001)(83380400001)(122000001)(86362001)(38100700002)(54906003)(316002)(6916009)(10290500003)(186003)(76116006)(4326008)(478600001)(5660300002)(66946007)(66556008)(66476007)(66446008)(64756008)(55016003)(7696005)(41300700001)(26005)(6506007)(71200400001)(9686003)(8990500004);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?aWUxCvdQTp1dso9jZEg5tpBbY1VulWPalFnKENjo8IB4JFe0WDjLMW2RCF9u?=
+ =?us-ascii?Q?CG3U/doxvxP+5fT/xf1+iAV9m8nYAlHXSqg6t2MBf5LuvJAsCMYPgaLZPdK8?=
+ =?us-ascii?Q?7xaREsQs/KvVHvxWcbU3xE9RgPdaohAyR7lECiCGCYrmDi+xOjjjEGIEGITE?=
+ =?us-ascii?Q?BiqIs4QF/LuzkDZ4/vt0zovbKM+6+pp+8C9uI2rIXtzlAoUpzbXQn7demZdM?=
+ =?us-ascii?Q?4+VnbLpQrxDbOTptS4+qi9gD3/93eYdmm2Tsr0xs69vi0xvEJo81KOY0sxm2?=
+ =?us-ascii?Q?64rShLh27ph8DMMiM4DuNRrCL3uPKzvNFVNqnpKtrSL5cGxkUr44bn0suTDC?=
+ =?us-ascii?Q?DtF2jC+y1M0D/Scy3XnpZkFH6SpQmi5+S8MG+5lYf147fQG4jdwalqhBxuEn?=
+ =?us-ascii?Q?oQ32Jr1tQEcfu8KO4w1GDS/KkzTWVp0YbVfoJaXZ4QkGjLQuVV+MvRF8CVHN?=
+ =?us-ascii?Q?b5j8UaRfpkYg9QCUJNQ7G/n104LGjv1/6elWhM45EsABqSsKNbG954hpGOgm?=
+ =?us-ascii?Q?eFDZanUuXvm52YVSEN5HQLmoZ81Wz0aADLPbr6TSoNnW1mjwEWmV9Zu4qmvG?=
+ =?us-ascii?Q?CM9UxNUIi/2BaOGeY1WwTFkvYPVBLWlQlHdVOa5ERuA6d04eHjjJVpDf7xFF?=
+ =?us-ascii?Q?meiDgt8BryjAWq7V5SZgDt2ehG5eVNI7LEsSjGgbN9qq2ekhfdq89pu6GfGJ?=
+ =?us-ascii?Q?ROp56gJhzOAXLzSGtt0OQH5kCx9zP4OAP72cfrgJlB9qY/ZOXIRjv71F5E+z?=
+ =?us-ascii?Q?0GgMshRRk4FQ9Eu0UNy/oI02zp1kKj2DSLV2ybRxPKdDHFmEJqs6vlmjEc6q?=
+ =?us-ascii?Q?pIi3+VlJ/Rayo3VbIh0arMiWjhhUQJ179QtUwbi7BgCSHcDItou8vqDXdEki?=
+ =?us-ascii?Q?M7TEjNc0rZ24257YaWdlDbsI+xeKZRL9uwidJYXN48r6lD/3PtJt7NM6McIK?=
+ =?us-ascii?Q?k6VJBmhdjN9retMckC930wrqX+t1wHR1G3x6ImTVhc23RQAEykknojTlJ4cf?=
+ =?us-ascii?Q?ZaQRZhmXTJrJaCvZimZwUvIwJiK0w144vGvxv5hByx00dBCS429xMxzSUfqy?=
+ =?us-ascii?Q?brbyV0y4G2roGpbK1/eg/GT5A7Rgs+T11BfMKZyLHC+e1hc7XdeMqXvmQGws?=
+ =?us-ascii?Q?NuffGEC/CiBXgvCKujlBNV2tOXrSO/0gkemrrIRsZQjenrx758fJ7Lxon5g4?=
+ =?us-ascii?Q?vX+tWUCBGrlZ4aVHP2vGwv9duug8/M2OAmwDWTQzj7dCmJxH5e1PK7Shx8D2?=
+ =?us-ascii?Q?adnfLdglH3v+H+IxoSeh/uzV8HkrNw03/0uVBkz8IEpGuHDZfpJL9RePwhFZ?=
+ =?us-ascii?Q?JqrDUTvda9lgd+vapacgK28347gh7TiDI7j0/pN9FL0nJNCjH0VFzh3E+V94?=
+ =?us-ascii?Q?+eliv/6g1SKvbeTVVLh9g/2By3wws1ubCcBPMy4MvYa7lx9Vv7hddaBibpaW?=
+ =?us-ascii?Q?TeWF5NMI2IPWM4x1wv75OvKrX15A7SFR5RR1n5raryYU/nU+HOnf63XPAN6F?=
+ =?us-ascii?Q?XvDq+D3Tk562OZZzh7+ddSUinp+MKF+kJEgXrp0Z3oTwD8tZWRb4PdrHboJp?=
+ =?us-ascii?Q?dYsSpFpWSFyAk3BSYmuHZes8IR6m9bDFr2zIcdqtelT41KA4Wk9mTVpe2qIY?=
+ =?us-ascii?Q?Rw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOUHufYSeTeO5ZMpnCR781esHV4QV5Th+pd=52UaM9cXNNKF9w@mail.gmail.com>
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa6b4a9c-0b6b-4202-a5b6-08daccede867
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2022 00:59:00.4456
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: i+J9hYyrrvNbvqxjQ5aIklchHmjSRi3CvQbgwn96hvf9zsqxNGQqvVzPWKls8cDYzUukw8QxQgPHcMlLB4lYlbwC2O+PKZROrbzZhaNlqbE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1908
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,253 +161,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 01:05:32PM -0700, Yu Zhao wrote:
-> On Tue, Nov 22, 2022 at 12:46 PM Yu Zhao <yuzhao@google.com> wrote:
+From: Borislav Petkov <bp@alien8.de> Sent: Tuesday, November 22, 2022 2:18 =
+PM
+>=20
+> On Tue, Nov 22, 2022 at 06:22:46PM +0000, Michael Kelley (LINUX) wrote:
+> > I think the core problem here is the naming and meaning of
+> > CC_VENDOR_HYPERV. The name was created originally when the
+> > Hyper-V vTOM handling code was a lot of special cases.   With the
+> > changes in this patch series that make the vTOM functionality more
+> > mainstream, the name would be better as CC_VENDOR_AMD_VTOM.
+>=20
+> No, if CC_VENDOR_HYPERV means different things depending on what kind of
+> guests you're doing, then you should not use a CC_VENDOR at all.
+
+Agreed.   My proposal is to drop CC_VENDOR_HYPERV entirely.
+Replace it with CC_VENDOR_AMD_VTOM (or something like that) that
+is set *only* by Linux guests that are running on AMD SEV-SNP processors
+and using the vTOM scheme instead of the AMD C-bit scheme.
+
+>=20
+> > vTOM is part of the AMD SEV-SNP spec, and it's a different way of
+> > doing the encryption from the "C-bit" based approach. As much as
+> > possible, I'm trying to not make it be Hyper-V specific, though
+> > currently we have N=3D1 for hypervisors that offer the vTOM option, so
+> > it's a little hard to generalize.
+>=20
+> Actually, it is very simple to generalize: vTOM and the paravisor and
+> VMPL are all part of the effort to support unenlightened, unmodified
+> guests with SNP.
+>=20
+> So, if KVM wants to run Windows NT 4.0 guests as SNP guests, then it
+> probably would need the same contraptions.
+
+Yes, agreed.  My point about generalization is that Hyper-V is the only
+actual implementation today.  Edge cases, like whether the IO-APIC is
+accessed as encrypted or as decrypted don't have a pattern yet.  But
+that's not a blocker.  Such cases can be resolved or special-cased later
+when/if N > 1.
+
+>=20
+> > With the thinking oriented that way, a Linux guest on Hyper-V using
+> > TDX will run with CC_VENDOR_INTEL.  A Linux guest on Hyper-V that
+> > is fully enlightened to use the "C-bit" will run with CC_VENDOR_AMD.
+>=20
+> Right.
+
+Good. We're in agreement.  :-)
+
+>=20
+> > Dexuan Cui just posted a patch set for initial TDX support on Hyper-V,
+> > and I think that runs with CC_VENDOR_INTEL (Dexuan -- correct me if
+> > I'm wrong about that -- I haven't reviewed your patches yet).
+
+I confirmed with Dexuan that his new patch set for TDX guests on Hyper-V
+has the guest running with CC_VENDOR_INTEL, which is what we want.
+
+> > Tianyu Lan
+> > has a patch set out for Hyper-V guests using the "C-bit".  That patch s=
+et
+> > still uses CC_VENDOR_HYPERV.  Tianyu and I need to work through
+> > whether his patch set can run with CC_VENDOR_AMD like everyone
+> > else using the "C-bit" approach.
+
+I haven't followed up with Tianyu yet.
+
+>=20
+> So I'm not sure the vendor is the right approach here. I guess we need
+> to specify the *type* of guest being supported.
+
+Yes, calling it the "vendor" turns out to not quite be right because in
+the AMD case, the technology/architecture/scheme/"type" (or
+whatever you want to call it) is not 1:1 with the vendor.   Intel has just
+one (TDX) while AMD has two (C-bit and vTOM).   "vendor" is just a label,
+but we should get the label right to avoid future confusion.  The key point
+is that we'll have three top-level types:
+
+* TDX
+* AMD with C-bit  (and this has some sub-types)
+* AMD with vTOM
+
+The CC_ATTR_* values are then derived from the "type".
+
+>=20
+> > Yes, the polarity of the AMD vTOM bit matches the polarity of the
+> > TDX GPA.SHARED bit, and is the opposite polarity of the AMD "C-bit".
+> > I'll add a comment to that effect.
 > >
-> > On Mon, Nov 21, 2022 at 5:53 PM Ivan Babrou <ivan@cloudflare.com> wrote:
-> > >
-> > > Hello,
-> > >
-> > > We have observed a negative TCP throughput behavior from the following commit:
-> > >
-> > > * 8e8ae645249b mm: memcontrol: hook up vmpressure to socket pressure
-> > >
-> > > It landed back in 2016 in v4.5, so it's not exactly a new issue.
-> > >
-> > > The crux of the issue is that in some cases with swap present the
-> > > workload can be unfairly throttled in terms of TCP throughput.
-> > >
-> > > I am able to reproduce this issue in a VM locally on v6.1-rc6 with 8
-> > > GiB of RAM with zram enabled.
-> > >
-> > > The setup is fairly simple:
-> > >
-> > > 1. Run the following go proxy in one cgroup (it has some memory
-> > > ballast to simulate useful memory usage):
-> > >
-> > > * https://gist.github.com/bobrik/2c1a8a19b921fefe22caac21fda1be82
-> > >
-> > > sudo systemd-run --scope -p MemoryLimit=6G go run main.go
-> > >
-> > > 2. Run the following fio config in another cgroup to simulate mmapped
-> > > page cache usage:
-> > >
-> > > [global]
-> > > size=8g
-> > > bs=256k
-> > > iodepth=256
-> > > direct=0
-> > > ioengine=mmap
-> > > group_reporting
-> > > time_based
-> > > runtime=86400
-> > > numjobs=8
-> > > name=randread
-> > > rw=randread
-> >
-> > Is it practical for your workload to apply some madvise/fadvise hint?
-> > For the above repro, it would be fadvise_hint=1 which is mapped into
-> > MADV_RANDOM automatically. The kernel also supports MADV_SEQUENTIAL,
-> > but not POSIX_FADV_NOREUSE at the moment.
-> 
-> Actually fadvise_hint already defaults to 1. At least with MGLRU, the
-> page cache should be thrown away without causing you any problem. It
-> might be mapped to POSIX_FADV_RANDOM rather than MADV_RANDOM.
-> POSIX_FADV_RANDOM is ignored at the moment.
-> 
-> Sorry for all the noise. Let me dig into this and get back to you later today.
-> 
-> 
-> > We actually have similar issues but unfortunately I haven't been able
-> > to come up with any solution beyond recommending the above flags.
-> > The problem is that harvesting the accessed bit from mmapped memory is
-> > costly, and when random accesses happen fast enough, the cost of doing
-> > that prevents LRU from collecting more information to make better
-> > decisions. In a nutshell, LRU can't tell whether there is genuine
-> > memory locality with your test case.
-> >
-> > It's a very difficult problem to solve from LRU's POV. I'd like to
-> > hear more about your workloads and see whether there are workarounds
-> > other than tackling the problem head-on, if applying hints is not
-> > practical or preferrable.
+> > Anyway, that's where I think this should go. Does it make sense?
+> > Other thoughts?
+>=20
+> I think all that polarity doesn't matter as long as we abstract it away
+> with, "mark encrypted" and "mark decrypted".
 
-Apparently MADV_RANDOM isn't properly handled in MGLRU. (I think I broke
-it at some point but have yet to find out when.)
+Agreed.
 
-I tried the patch below with a test case similar to yours and it shows
-improvements for both the baseline and MGLRU. It should fix the problem
-for your repro but not your production unless it also does madvise. So
-no worries if you don't care to try.
-
-
-Hi Johannes,
-
-Do you think it makes sense to have the below for both the baseline and
-MGLRU or it's some behavior change that the baseline doesn't want to
-risk?
-
-Thanks.
-
-
-diff --git a/include/linux/fs.h b/include/linux/fs.h
-index e654435f1651..632e0f462df9 100644
---- a/include/linux/fs.h
-+++ b/include/linux/fs.h
-@@ -166,6 +166,8 @@ typedef int (dio_iodone_t)(struct kiocb *iocb, loff_t offset,
- /* File supports DIRECT IO */
- #define	FMODE_CAN_ODIRECT	((__force fmode_t)0x400000)
- 
-+#define	FMODE_NOREUSE		((__force fmode_t)0x800000)
-+
- /* File was opened by fanotify and shouldn't generate fanotify events */
- #define FMODE_NONOTIFY		((__force fmode_t)0x4000000)
- 
-diff --git a/include/linux/mm_inline.h b/include/linux/mm_inline.h
-index 2f53c31216de..4122a4db5b49 100644
---- a/include/linux/mm_inline.h
-+++ b/include/linux/mm_inline.h
-@@ -595,4 +595,15 @@ pte_install_uffd_wp_if_needed(struct vm_area_struct *vma, unsigned long addr,
- #endif
- }
- 
-+static inline bool vma_has_locality(struct vm_area_struct *vma)
-+{
-+	if (vma->vm_flags & (VM_SEQ_READ | VM_RAND_READ))
-+		return false;
-+
-+	if (vma->vm_file && (vma->vm_file->f_mode & FMODE_NOREUSE))
-+		return false;
-+
-+	return true;
-+}
-+
- #endif
-diff --git a/mm/fadvise.c b/mm/fadvise.c
-index c76ee665355a..2ba24d865bf5 100644
---- a/mm/fadvise.c
-+++ b/mm/fadvise.c
-@@ -80,7 +80,7 @@ int generic_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
- 	case POSIX_FADV_NORMAL:
- 		file->f_ra.ra_pages = bdi->ra_pages;
- 		spin_lock(&file->f_lock);
--		file->f_mode &= ~FMODE_RANDOM;
-+		file->f_mode &= ~(FMODE_RANDOM | FMODE_NOREUSE);
- 		spin_unlock(&file->f_lock);
- 		break;
- 	case POSIX_FADV_RANDOM:
-@@ -107,6 +107,9 @@ int generic_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
- 		force_page_cache_readahead(mapping, file, start_index, nrpages);
- 		break;
- 	case POSIX_FADV_NOREUSE:
-+		spin_lock(&file->f_lock);
-+		file->f_mode |= FMODE_NOREUSE;
-+		spin_unlock(&file->f_lock);
- 		break;
- 	case POSIX_FADV_DONTNEED:
- 		__filemap_fdatawrite_range(mapping, offset, endbyte,
-diff --git a/mm/memory.c b/mm/memory.c
-index f88c351aecd4..69fba1d58eb2 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -1448,8 +1448,7 @@ static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 					force_flush = 1;
- 					set_page_dirty(page);
- 				}
--				if (pte_young(ptent) &&
--				    likely(!(vma->vm_flags & VM_SEQ_READ)))
-+				if (pte_young(ptent) && likely(vma_has_locality(vma)))
- 					mark_page_accessed(page);
- 			}
- 			rss[mm_counter(page)]--;
-@@ -5161,8 +5160,7 @@ static inline void mm_account_fault(struct pt_regs *regs,
- #ifdef CONFIG_LRU_GEN
- static void lru_gen_enter_fault(struct vm_area_struct *vma)
- {
--	/* the LRU algorithm doesn't apply to sequential or random reads */
--	current->in_lru_fault = !(vma->vm_flags & (VM_SEQ_READ | VM_RAND_READ));
-+	current->in_lru_fault = vma_has_locality(vma);
- }
- 
- static void lru_gen_exit_fault(void)
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 2ec925e5fa6a..b1bb492115ae 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -823,25 +823,14 @@ static bool folio_referenced_one(struct folio *folio,
- 		}
- 
- 		if (pvmw.pte) {
--			if (lru_gen_enabled() && pte_young(*pvmw.pte) &&
--			    !(vma->vm_flags & (VM_SEQ_READ | VM_RAND_READ))) {
-+			if (lru_gen_enabled() && pte_young(*pvmw.pte)) {
- 				lru_gen_look_around(&pvmw);
- 				referenced++;
- 			}
- 
- 			if (ptep_clear_flush_young_notify(vma, address,
--						pvmw.pte)) {
--				/*
--				 * Don't treat a reference through
--				 * a sequentially read mapping as such.
--				 * If the folio has been used in another mapping,
--				 * we will catch it; if this other mapping is
--				 * already gone, the unmap path will have set
--				 * the referenced flag or activated the folio.
--				 */
--				if (likely(!(vma->vm_flags & VM_SEQ_READ)))
--					referenced++;
--			}
-+						pvmw.pte))
-+				referenced++;
- 		} else if (IS_ENABLED(CONFIG_TRANSPARENT_HUGEPAGE)) {
- 			if (pmdp_clear_flush_young_notify(vma, address,
- 						pvmw.pmd))
-@@ -875,7 +864,15 @@ static bool invalid_folio_referenced_vma(struct vm_area_struct *vma, void *arg)
- 	struct folio_referenced_arg *pra = arg;
- 	struct mem_cgroup *memcg = pra->memcg;
- 
--	if (!mm_match_cgroup(vma->vm_mm, memcg))
-+	if (!vma_has_locality(vma))
-+		return true;
-+
-+	/*
-+	 * If we are reclaiming on behalf of a cgroup, skip
-+	 * counting on behalf of references from different
-+	 * cgroups
-+	 */
-+	if (memcg && !mm_match_cgroup(vma->vm_mm, memcg))
- 		return true;
- 
- 	return false;
-@@ -921,14 +918,7 @@ int folio_referenced(struct folio *folio, int is_locked,
- 			return 1;
- 	}
- 
--	/*
--	 * If we are reclaiming on behalf of a cgroup, skip
--	 * counting on behalf of references from different
--	 * cgroups
--	 */
--	if (memcg) {
--		rwc.invalid_vma = invalid_folio_referenced_vma;
--	}
-+	rwc.invalid_vma = invalid_folio_referenced_vma;
- 
- 	rmap_walk(folio, &rwc);
- 	*vm_flags = pra.vm_flags;
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 7d3cc787b840..97ce5d37d67c 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -3742,7 +3742,10 @@ static int should_skip_vma(unsigned long start, unsigned long end, struct mm_wal
- 	if (is_vm_hugetlb_page(vma))
- 		return true;
- 
--	if (vma->vm_flags & (VM_LOCKED | VM_SPECIAL | VM_SEQ_READ | VM_RAND_READ))
-+	if (!vma_has_locality(vma))
-+		return true;
-+
-+	if (vma->vm_flags & (VM_LOCKED | VM_SPECIAL))
- 		return true;
- 
- 	if (vma == get_gate_vma(vma->vm_mm))
+Michael
