@@ -2,192 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1307F635F09
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:12:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEAA4635EDD
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:08:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238232AbiKWNJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 08:09:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48790 "EHLO
+        id S238498AbiKWNAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 08:00:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238092AbiKWNJO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:09:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CF6E873C;
-        Wed, 23 Nov 2022 04:51:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0384161CAC;
-        Wed, 23 Nov 2022 12:46:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1CDDC433C1;
-        Wed, 23 Nov 2022 12:46:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1669207585;
-        bh=YNrEhQcdM4+aQIN7dSgQ3r+Lcln3gNBhYT/74CZveGo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jgZKZJ1adcojLzUIXTyxsPVZjnl5hgtl/gXp7AMhuMIejh+dUvi0cwObyOKpUvzjd
-         z26NMZcCJCCn/Cs3L7a/aFBXjl1xveEGJjQWM+QG8BaIrWW2F1mAE1SJyQYg2u01K5
-         FhNdRHBloE3UBfDMN+Ztc0J+t8YnXNw/4sibriP0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        Ilja Van Sprundel <ivansprundel@ioactive.com>,
-        Joseph Tartaro <joseph.tartaro@ioactive.com>
-Subject: [PATCH] USB: disable all RNDIS protocol drivers
-Date:   Wed, 23 Nov 2022 13:46:20 +0100
-Message-Id: <20221123124620.1387499-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S238398AbiKWNAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:00:12 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B42928E18
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 04:46:47 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id e11so16308792wru.8
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 04:46:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=jvGO2Nvm32xK/MsUMocJs8mKLG8Z4xnEcLo3bEc2a5I=;
+        b=fwzEZbMAifCV7S2eSSZ2rdll/ICww1DQrbnNsQP/BXjenBpF9TvFi+5niAy30WNKbQ
+         813O8N21rniHzJB4NH3zugxWuv5cpsTmVhynv2a+UF/UUco8ZQpPEK6Uk4/sru8RasbW
+         KOcO4pzcsNsDA+/qM0dfqo/ZmY6X71Nsje0kQmAh83HqWm7EQguczkdv2AvU4+7JjLet
+         FSaZ9xMx7K5EBpLwl9Yz2bmlN0qkDpLY2R9nWUklVXnXlBNJPW7G3T0lYSZg7WCuNlCd
+         /o+HjLpU6fV5AE4TP6GiwyvyXpMaBxMaon6c5PfUnH4q+BdqSW70qSfYp8G82DCM1hL0
+         lGZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jvGO2Nvm32xK/MsUMocJs8mKLG8Z4xnEcLo3bEc2a5I=;
+        b=QyZnOaHpsSfO3Pc5b05b0PMaFF3bpIwjIfbsrnhRwnWFMvp7nIdg6q6++T9cHQ51Cg
+         dqrCklhWx/YkQFjpMRiuc0iKXPVF2VBy7OY+Q4jLghrYo581i+x33YoTFYrgeyRmGzWl
+         AnkQFMuCCm/UwAYEnRX0gFB0bTHJU39qsa/oO0jwIzrAPRBJRksZi4qpm8bBe6jj1+ee
+         mQniQdjKBZ4UUBryBD8lBXZTtHOa1/ybu1O/e+sf6rmScaNTuZHQ8oobTXh42ZHSwtXh
+         qCVAzc9WGxrmpo1driSRm5z/suOecJ1hR5oYtTwaY8rQJ64l05DWp2jbkmCcsTbC+eYR
+         pixA==
+X-Gm-Message-State: ANoB5pm2x5wQ1ThV+fh6szQLAo8x+ALK/ch2zwjJZ2mJobViD9fF/KSC
+        J35Fk5Jy9SpxwDr5Uap/9bDauA==
+X-Google-Smtp-Source: AA0mqf78aCRpqupBoiMb4uq39Ygx8qtHSS9STQ71HwarXTsmzdF8ePVKAHAry9DElPCCy8l7q9f9Og==
+X-Received: by 2002:a5d:6602:0:b0:236:651d:60cb with SMTP id n2-20020a5d6602000000b00236651d60cbmr7390660wru.474.1669207605356;
+        Wed, 23 Nov 2022 04:46:45 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id v192-20020a1cacc9000000b003b49bd61b19sm2174132wme.15.2022.11.23.04.46.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Nov 2022 04:46:44 -0800 (PST)
+Date:   Wed, 23 Nov 2022 13:46:43 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Steve Williams <steve.williams@getcruise.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [EXT] Re: [PATCH net-next] net/hanic: Add the hanic network
+ interface for high availability links
+Message-ID: <Y34WM8PkVvZ3Yb9y@nanopsycho>
+References: <20221118232639.13743-1-steve.williams@getcruise.com>
+ <Y3zFYh55h7y/TQXB@nanopsycho>
+ <20221122135529.u2sq7qsrgrhddz6u@skbuf>
+ <CALHoRjdOPdipZ8kgBCxZ_45DXiurE57YFocvgnrugGt6ugG-Dw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4394; i=gregkh@linuxfoundation.org; h=from:subject; bh=YNrEhQcdM4+aQIN7dSgQ3r+Lcln3gNBhYT/74CZveGo=; b=owGbwMvMwCRo6H6F97bub03G02pJDMl1YtKFdnaejBseHIq6stZHZZX4ix4R+dipc073OiT7TZz+ TfdDRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAEzkcRHD/IxvSivOKu1syeG8MrvyW1 rn+ntGvgwLrvqU7JzFxGUbG+p/zHGhc7SfYnkkAA==
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CALHoRjdOPdipZ8kgBCxZ_45DXiurE57YFocvgnrugGt6ugG-Dw@mail.gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Microsoft RNDIS protocol is, as designed, insecure and vulnerable on
-any system that uses it with untrusted hosts or devices.  Because the
-protocol is impossible to make secure, just disable all rndis drivers to
-prevent anyone from using them again.
+Tue, Nov 22, 2022 at 09:57:46PM CET, steve.williams@getcruise.com wrote:
+>On Tue, Nov 22, 2022 at 5:55 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+>> Neither bond nor team have forwarding between ports built in, right?
+>> Forwarding is pretty fundamental to 802.1CB (at least to the use cases
+>> I know of).
+>
+>This driver also does not forward between ports. My intent wasn't to
+>implement a bridge,
+>but an endpoint. If forwarding between ports is desired, then perhaps
+>you want a bridge?
+>I think some other 802.1cb offerings on this list took that approach,
+>but didn't seem to
+>handle the endpoint case well.
 
-Windows only needed this for XP and newer systems, Windows systems older
-than that can use the normal USB class protocols instead, which do not
-have these problems.
+Okay, could you then reply to my question asked earlier in this thread
+why don't you implement this a part of bond/team instead of a new driver?
 
-Android has had this disabled for many years so there should not be any
-real systems that still need this.
+Thanks!
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: Oleksij Rempel <linux@rempel-privat.de>
-Cc: "Maciej ≈ªenczykowski" <maze@google.com>
-Cc: Neil Armstrong <neil.armstrong@linaro.org>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
-Cc: Jacopo Mondi <jacopo@jmondi.org>
-Cc: "≈Åukasz Stelmach" <l.stelmach@samsung.com>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: linux-usb@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-wireless@vger.kernel.org
-Reported-by: Ilja Van Sprundel <ivansprundel@ioactive.com>
-Reported-by: Joseph Tartaro <joseph.tartaro@ioactive.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
-Note, I'll submit patches removing the individual drivers for later, but
-that is more complex as unwinding the interaction between the CDC
-networking and RNDIS drivers is tricky.  For now, let's just disable all
-of this code as it is not secure.
 
-I can take this through the USB tree if the networking maintainers have
-no objection.  I thought I had done this months ago, when the last round
-of "there are bugs in the protocol!" reports happened at the end of
-2021, but forgot to do so, my fault.
-
- drivers/net/usb/Kconfig           | 1 +
- drivers/net/wireless/Kconfig      | 1 +
- drivers/usb/gadget/Kconfig        | 4 +---
- drivers/usb/gadget/legacy/Kconfig | 3 +++
- 4 files changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
-index 4402eedb3d1a..83f9c0632642 100644
---- a/drivers/net/usb/Kconfig
-+++ b/drivers/net/usb/Kconfig
-@@ -401,6 +401,7 @@ config USB_NET_MCS7830
- config USB_NET_RNDIS_HOST
- 	tristate "Host for RNDIS and ActiveSync devices"
- 	depends on USB_USBNET
-+	depends on BROKEN
- 	select USB_NET_CDCETHER
- 	help
- 	  This option enables hosting "Remote NDIS" USB networking links,
-diff --git a/drivers/net/wireless/Kconfig b/drivers/net/wireless/Kconfig
-index cb1c15012dd0..f162b25123d7 100644
---- a/drivers/net/wireless/Kconfig
-+++ b/drivers/net/wireless/Kconfig
-@@ -81,6 +81,7 @@ config USB_NET_RNDIS_WLAN
- 	tristate "Wireless RNDIS USB support"
- 	depends on USB
- 	depends on CFG80211
-+	depends on BROKEN
- 	select USB_NET_DRIVERS
- 	select USB_USBNET
- 	select USB_NET_CDCETHER
-diff --git a/drivers/usb/gadget/Kconfig b/drivers/usb/gadget/Kconfig
-index 4fa2ddf322b4..2c99d4313064 100644
---- a/drivers/usb/gadget/Kconfig
-+++ b/drivers/usb/gadget/Kconfig
-@@ -183,9 +183,6 @@ config USB_F_EEM
- config USB_F_SUBSET
- 	tristate
- 
--config USB_F_RNDIS
--	tristate
--
- config USB_F_MASS_STORAGE
- 	tristate
- 
-@@ -297,6 +294,7 @@ config USB_CONFIGFS_RNDIS
- 	bool "RNDIS"
- 	depends on USB_CONFIGFS
- 	depends on NET
-+	depends on BROKEN
- 	select USB_U_ETHER
- 	select USB_F_RNDIS
- 	help
-diff --git a/drivers/usb/gadget/legacy/Kconfig b/drivers/usb/gadget/legacy/Kconfig
-index 0a7b382fbe27..03d6da63edf7 100644
---- a/drivers/usb/gadget/legacy/Kconfig
-+++ b/drivers/usb/gadget/legacy/Kconfig
-@@ -153,6 +153,7 @@ config USB_ETH
- config USB_ETH_RNDIS
- 	bool "RNDIS support"
- 	depends on USB_ETH
-+	depends on BROKEN
- 	select USB_LIBCOMPOSITE
- 	select USB_F_RNDIS
- 	default y
-@@ -247,6 +248,7 @@ config USB_FUNCTIONFS_ETH
- config USB_FUNCTIONFS_RNDIS
- 	bool "Include configuration with RNDIS (Ethernet)"
- 	depends on USB_FUNCTIONFS && NET
-+	depends on BROKEN
- 	select USB_U_ETHER
- 	select USB_F_RNDIS
- 	help
-@@ -427,6 +429,7 @@ config USB_G_MULTI
- config USB_G_MULTI_RNDIS
- 	bool "RNDIS + CDC Serial + Storage configuration"
- 	depends on USB_G_MULTI
-+	depends on BROKEN
- 	select USB_F_RNDIS
- 	default y
- 	help
--- 
-2.38.1
-
+>
+>-- 
+>
+>Stephen Williams
+>
+>Senior Software Engineer
+>
+>Cruise
+>
+>-- 
+>
+>
+>*Confidentiality†Note:*†We care about protecting our proprietary 
+>information,†confidential†material, and trade secrets.†This message may 
+>contain some or all of those things. Cruise will suffer material harm if 
+>anyone other than the intended recipient disseminates or takes any action 
+>based on this message. If you have received this message (including any 
+>attachments) in error, please delete it immediately and notify the sender 
+>promptly.
