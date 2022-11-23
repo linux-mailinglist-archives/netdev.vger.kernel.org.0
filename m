@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAB3D636B99
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:52:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1E3F636B9C
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 21:52:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236541AbiKWUvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 15:51:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46844 "EHLO
+        id S235286AbiKWUvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 15:51:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235607AbiKWUvQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:51:16 -0500
+        with ESMTP id S236489AbiKWUvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 15:51:17 -0500
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1546DCEA
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE996E56F
         for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 12:51:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1669236675; x=1700772675;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Wea0u3J/7G3sxaeH3i5jFr/osYZe+X53rRQ2eZZBWH8=;
-  b=MTBmpnRxbQoJTry3gdgfm07AB5ZyuscqqQ1OQJGauWByCEik1cGg/w1i
-   IQLHM1Ydgqt9Ja4jSH9eIrXXKlHut6gEXWu04fD5GPq+IgeGrNGNxEF40
-   pAIpwXCixij9c7a3AFF2XQIfOvXW3MzPeX4ZrxWVp/cW2ot/leUin9lQh
-   Qvwn9BIILp/1OVNtP5RyDryIEYVSN2SaKB5OHi5ac9PWDSzo3+HwDY6hY
-   2A5ergEz9yV0xOARuBhy3D2uZ0RHD3nf9/658FiTMB9tu3JqvYk6STAgC
-   rZ4XxGxo9VmwJv4Ws4JHE+aIX/ODQBMo9UFLLhNRZOux9OOGEC1jcjG9O
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="293862673"
+  bh=cPmSHyeg9PEnSRGKlGTB4o3UvpFAudqSfNc2Iz7sJJc=;
+  b=Q0DS8//QB0OHurw0DaLMsrBZPxnA70B85ljXhEOojYuKOyprvT6+LNby
+   lbY+9A+n+CNvzNs5ju1ByAFdHznRfZiNTzyvmeD2c6Zr4Xqf9j0K1ZTe6
+   hHOCWVHua4d6iBRHgDN+NI/nc2W2YxhLW0fyKio0wot4UHK3B3y0y5FqM
+   bLXPo3KQ/8/lXQZlwqL/IrLF/1Vo6BDhK6FC+GOYLzd6+gB1Fjow98KaS
+   olh3uBNLOXDeTvoedmTIGtoZxMqJhGNr7670fozIv4C2TgdvM0rccE/As
+   oKC11aIK5FJ1raTv6qHk5eAdrPC0/3mGcW3/37BiHuiGQr8fqarkK0p7w
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="293862675"
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="293862673"
+   d="scan'208";a="293862675"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 12:51:13 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="747947705"
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="747947708"
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="747947705"
+   d="scan'208";a="747947708"
 Received: from avenkata-desk0.sc.intel.com ([172.25.112.42])
   by fmsmga002.fm.intel.com with ESMTP; 23 Nov 2022 12:51:13 -0800
 From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Ira Weiny <ira.weiny@intel.com>,
         "Fabio M . De Francesco" <fmdefrancesco@gmail.com>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Subject: [PATCH v2 net-next 5/6] sunvnet: Use kmap_local_page() instead of kmap_atomic()
-Date:   Wed, 23 Nov 2022 12:52:18 -0800
-Message-Id: <20221123205219.31748-6-anirudh.venkataramanan@intel.com>
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        Michael Jamet <michael.jamet@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>
+Subject: [PATCH v2 net-next 6/6] net: thunderbolt: Use kmap_local_page() instead of kmap_atomic()
+Date:   Wed, 23 Nov 2022 12:52:19 -0800
+Message-Id: <20221123205219.31748-7-anirudh.venkataramanan@intel.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221123205219.31748-1-anirudh.venkataramanan@intel.com>
 References: <20221123205219.31748-1-anirudh.venkataramanan@intel.com>
@@ -78,35 +81,56 @@ kmap_local_page() is used as opposed to page_address().
 
 I don't have hardware, so this change has only been compile tested.
 
+Cc: Michael Jamet <michael.jamet@intel.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Yehezkel Bernat <YehezkelShB@gmail.com>
 Cc: Ira Weiny <ira.weiny@intel.com>
 Cc: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 ---
-v1 -> v2: Update commit message
----
- drivers/net/ethernet/sun/sunvnet_common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/thunderbolt.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/sun/sunvnet_common.c b/drivers/net/ethernet/sun/sunvnet_common.c
-index 80fde5f..a6211b9 100644
---- a/drivers/net/ethernet/sun/sunvnet_common.c
-+++ b/drivers/net/ethernet/sun/sunvnet_common.c
-@@ -1085,13 +1085,13 @@ static inline int vnet_skb_map(struct ldc_channel *lp, struct sk_buff *skb,
- 		u8 *vaddr;
+diff --git a/drivers/net/thunderbolt.c b/drivers/net/thunderbolt.c
+index a52ee2b..b20cd37 100644
+--- a/drivers/net/thunderbolt.c
++++ b/drivers/net/thunderbolt.c
+@@ -1051,7 +1051,7 @@ static void *tbnet_kmap_frag(struct sk_buff *skb, unsigned int frag_num,
+ 	const skb_frag_t *frag = &skb_shinfo(skb)->frags[frag_num];
  
- 		if (nc < ncookies) {
--			vaddr = kmap_atomic(skb_frag_page(f));
-+			vaddr = kmap_local_page(skb_frag_page(f));
- 			blen = skb_frag_size(f);
- 			blen += 8 - (blen & 7);
- 			err = ldc_map_single(lp, vaddr + skb_frag_off(f),
- 					     blen, cookies + nc, ncookies - nc,
- 					     map_perm);
--			kunmap_atomic(vaddr);
-+			kunmap_local(vaddr);
- 		} else {
- 			err = -EMSGSIZE;
+ 	*len = skb_frag_size(frag);
+-	return kmap_atomic(skb_frag_page(frag)) + skb_frag_off(frag);
++	return kmap_local_page(skb_frag_page(frag)) + skb_frag_off(frag);
+ }
+ 
+ static netdev_tx_t tbnet_start_xmit(struct sk_buff *skb,
+@@ -1109,7 +1109,7 @@ static netdev_tx_t tbnet_start_xmit(struct sk_buff *skb,
+ 			dest += len;
+ 
+ 			if (unmap) {
+-				kunmap_atomic(src);
++				kunmap_local(src);
+ 				unmap = false;
+ 			}
+ 
+@@ -1147,7 +1147,7 @@ static netdev_tx_t tbnet_start_xmit(struct sk_buff *skb,
+ 		dest += len;
+ 
+ 		if (unmap) {
+-			kunmap_atomic(src);
++			kunmap_local(src);
+ 			unmap = false;
  		}
+ 
+@@ -1162,7 +1162,7 @@ static netdev_tx_t tbnet_start_xmit(struct sk_buff *skb,
+ 	memcpy(dest, src, data_len);
+ 
+ 	if (unmap)
+-		kunmap_atomic(src);
++		kunmap_local(src);
+ 
+ 	if (!tbnet_xmit_csum_and_map(net, skb, frames, frame_index + 1))
+ 		goto err_drop;
 -- 
 2.37.2
 
