@@ -2,63 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFA626366E2
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 18:21:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4398D63674B
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 18:32:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236717AbiKWRV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 12:21:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
+        id S239100AbiKWRco (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 12:32:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236038AbiKWRVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 12:21:25 -0500
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5B8742E7;
-        Wed, 23 Nov 2022 09:21:24 -0800 (PST)
-Received: by mail-ot1-x32f.google.com with SMTP id t19-20020a9d7753000000b0066d77a3d474so11610217otl.10;
-        Wed, 23 Nov 2022 09:21:24 -0800 (PST)
+        with ESMTP id S239174AbiKWRcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 12:32:20 -0500
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9266D9A260
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 09:32:18 -0800 (PST)
+Received: by mail-oi1-x229.google.com with SMTP id v81so19743647oie.5
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 09:32:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=fDEMS5yeehB25qFHdTGxrrgDnBxGLxhe75Cpq64CCpI=;
-        b=X7Gd7zgCawPhlCOdJNevGyE2PGQrjm8Mq7mrmiJATmi6Oi0ZCby+/rjFxgcsPdAYEL
-         3pT78nLz0gMbw5K5Ry9U5zyQ2MsMKxPifhdEedZAUpzd2byr4ipmGI6S1A334tZ/A57D
-         Fk9uq57BYG6Y+DRaJsKi55m4PeVq/GID12Ie8SKuENTsW6nkpCXEr1JTr0+YsOk6SVMN
-         sCFwJk/jgSmGn/lwtFBEN3+B+onRIKZhLTgeCzTmjXMRqVvN1xCB8OQqeA4BIOlcqGJK
-         GbMn/Gr+2kAdcKilRoJYTHtj47JHNclMkuEoWmxvrOLlZMeS4CsPXNfQzXNNjFcgJh5w
-         5+8g==
+        bh=BWFWWxNzDwqhm8FkIyKor91hXo5Wv61x5JurdSlH9rA=;
+        b=MJ+RFqL1QYjeZTgLEvoUW1AuldH6Onc3n+/IbApXVonNq8ibfDnTILLcu95at6wD5/
+         l8wKSQRersPp3ut+NUdKiWW5egMbHfQ/MuMqaH5Q23mDJDqtbs+Hc3sBdSZ6oQJJq3/C
+         zHOpPG4eb6ON4cduTeTy2pVf6nXAM1a+xaXSNnaz/HmHShdJyTkwB2fNHn+wGSZR/sVJ
+         I39+zPHNA89rmx4QkEoaB1VVu7kx98t9f6cflSRSxYb3tDfsw47O/Fp3Bk06JuQQPa3D
+         5OAXH07i+CFUyjvuYzNWfj+fIO+murYDdsqP0/0uWb+QAuzMUeRWvkZXL0gmKyFMjxLq
+         3cDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=fDEMS5yeehB25qFHdTGxrrgDnBxGLxhe75Cpq64CCpI=;
-        b=6qJx0s9NNgJcXuy1wo6cxpIA0Q+5TfVKKgBlpvhtMP8HODx/TVoQv+0y5pUaCxxDId
-         0uDYD1IM1H1+yZqOU5e579MyIMHPd3zn2qKtniGSyjUcX0Y6+CyN3J1GarnsBSkV8l1X
-         pim2VsVZCOCx6hmLFR2lRqpcTNc27GY92BhsYih+YQ/adFETAuQc18Hu7a4/3DHfeguF
-         zZvqgvk6RXbFk4OwmGozlEylYLhPCW3lWqjlKoW6zq3tffEKT/JcYgS9FO6GYnh2YQTR
-         or0Ko2lvq0fGRagdCuG+ggey4byEkKmhiCaxae6QckNsUBtH8DXH0ZCulUSu+5SsTxwd
-         Rrww==
-X-Gm-Message-State: ANoB5pkwYlD36rI4t7qHLlwRx6fnyrXamSwyjkq5jSJJNPJ0sp5wJz12
-        pcpMutPsHW9mQH1Fs+RKMY/AnfLB49OZfKpMzS8=
-X-Google-Smtp-Source: AA0mqf6aJgsq+AjIEX6trEV8qyD+3o6n78fJCJWtHba1TO5MEIGuMweHL/hAFzKgOB6Bo3SHrH4OZbyzrWv/+C+bPaU=
-X-Received: by 2002:a05:6830:4b:b0:66c:50ce:2a2f with SMTP id
- d11-20020a056830004b00b0066c50ce2a2fmr15909329otp.46.1669224083983; Wed, 23
- Nov 2022 09:21:23 -0800 (PST)
+        bh=BWFWWxNzDwqhm8FkIyKor91hXo5Wv61x5JurdSlH9rA=;
+        b=EqOsm+FjSdjAh2q3xD0aA1G9ys81kIM5emQ0uyB3+UsurnhjeB/xnWQnZE/qjPeXAD
+         vMtYRVGqZiCEBNpb9ApMgzdAO3V6FkcuxCZaKApfrI1OF2lLXc4jD6BhpBItQYyIT4UF
+         OVtf+CztnAlk2DIW5TcDOIxct+FLKoiqNfSdWhbOjyl9hPjIbJ63M7jGM12wcPoG7rBx
+         zuoQ/bLM6JdZfDqUnVrbqIPH4nK6PvsS2eFmQRuL0nxiFxH92/qX7zyH9HxAXqQAreEQ
+         muuz7sNBwARELe/fLl1ut0B43YQVBrOoZEOsIeZggHAIUKxDpnp35d4PNu9dDkFlVJkY
+         u2ag==
+X-Gm-Message-State: ANoB5plLn9fgfwi1GdxG2usXsUl+q0uyePJII77a+JWl/9LjLJbxmMwK
+        usi3PnBDquk5hm8weHCJnZhlC0Ipi9iU0TE9p3w=
+X-Google-Smtp-Source: AA0mqf42Hb+CIOoukGKMxjOTTYPZiujGExoqbHQ0KBOBE1WqAIOo3rZsBCecdNatU18+olZJyEciqqAFFJg0N91y4e0=
+X-Received: by 2002:a54:4883:0:b0:35b:7f7e:7b82 with SMTP id
+ r3-20020a544883000000b0035b7f7e7b82mr1196924oic.129.1669224737747; Wed, 23
+ Nov 2022 09:32:17 -0800 (PST)
 MIME-Version: 1.0
-References: <20221118085030.121297-1-shaozhengchao@huawei.com>
- <CADvbK_frWVFTSLMwC_xYvE+jDuk917K7SqZHUON3srLz8TxotQ@mail.gmail.com> <Y31ct/lSXNTm9ev9@t14s.localdomain>
-In-Reply-To: <Y31ct/lSXNTm9ev9@t14s.localdomain>
+References: <cover.1669138256.git.lucien.xin@gmail.com> <bf19487f4dfc8cd91a4395672d9905b10917128d.1669138256.git.lucien.xin@gmail.com>
+ <Y343wyO20XUvwuvg@t14s.localdomain> <20221123151335.ssrnv7jfrdugmcgg@t14s.localdomain>
+In-Reply-To: <20221123151335.ssrnv7jfrdugmcgg@t14s.localdomain>
 From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 23 Nov 2022 12:20:44 -0500
-Message-ID: <CADvbK_cVBVL1KKPsONv3A3m_mPA2-41uNwxz+9eM-EuQeCSygw@mail.gmail.com>
-Subject: Re: [PATCH net] sctp: fix memory leak in sctp_stream_outq_migrate()
+Date:   Wed, 23 Nov 2022 12:31:38 -0500
+Message-ID: <CADvbK_eYRZxaNreBmvXmAQzH+JLbiK-9UhKqzH2CM2sHt1bvQQ@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCHv2 net-next 5/5] net: move the nat function to
+ nf_nat_ovs for ovs and tc
 To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com
+Cc:     dev@openvswitch.org, ovs-dev@openvswitch.org,
+        Davide Caratti <dcaratti@redhat.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        network dev <netdev@vger.kernel.org>,
+        Paul Blakey <paulb@nvidia.com>,
+        Florian Westphal <fw@strlen.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>, kuba@kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        Pablo Neira Ayuso <pablo@netfilter.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -70,185 +78,429 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 6:35 PM Marcelo Ricardo Leitner
+On Wed, Nov 23, 2022 at 10:13 AM Marcelo Ricardo Leitner
 <marcelo.leitner@gmail.com> wrote:
 >
-> On Fri, Nov 18, 2022 at 10:15:50PM -0500, Xin Long wrote:
-> > On Fri, Nov 18, 2022 at 3:48 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
-> > >
-> > > When sctp_stream_outq_migrate() is called to release stream out resources,
-> > > the memory pointed to by prio_head in stream out is not released.
-> > >
-> > > The memory leak information is as follows:
-> > > unreferenced object 0xffff88801fe79f80 (size 64):
-> > >   comm "sctp_repo", pid 7957, jiffies 4294951704 (age 36.480s)
-> > >   hex dump (first 32 bytes):
-> > >     80 9f e7 1f 80 88 ff ff 80 9f e7 1f 80 88 ff ff  ................
-> > >     90 9f e7 1f 80 88 ff ff 90 9f e7 1f 80 88 ff ff  ................
-> > >   backtrace:
-> > >     [<ffffffff81b215c6>] kmalloc_trace+0x26/0x60
-> > >     [<ffffffff88ae517c>] sctp_sched_prio_set+0x4cc/0x770
-> > >     [<ffffffff88ad64f2>] sctp_stream_init_ext+0xd2/0x1b0
-> > >     [<ffffffff88aa2604>] sctp_sendmsg_to_asoc+0x1614/0x1a30
-> > >     [<ffffffff88ab7ff1>] sctp_sendmsg+0xda1/0x1ef0
-> > >     [<ffffffff87f765ed>] inet_sendmsg+0x9d/0xe0
-> > >     [<ffffffff8754b5b3>] sock_sendmsg+0xd3/0x120
-> > >     [<ffffffff8755446a>] __sys_sendto+0x23a/0x340
-> > >     [<ffffffff87554651>] __x64_sys_sendto+0xe1/0x1b0
-> > >     [<ffffffff89978b49>] do_syscall_64+0x39/0xb0
-> > >     [<ffffffff89a0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > >
-> > > Fixes: 637784ade221 ("sctp: introduce priority based stream scheduler")
-> > > Reported-by: syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com
-> > > Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> > > ---
-> > >  net/sctp/stream.c | 6 ++++++
-> > >  1 file changed, 6 insertions(+)
-> > >
-> > > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-> > > index ef9fceadef8d..a17dc368876f 100644
-> > > --- a/net/sctp/stream.c
-> > > +++ b/net/sctp/stream.c
-> > > @@ -70,6 +70,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
-> > >                  * sctp_stream_update will swap ->out pointers.
-> > >                  */
-> > >                 for (i = 0; i < outcnt; i++) {
-> > > +                       if (SCTP_SO(new, i)->ext)
-> > > +                               kfree(SCTP_SO(new, i)->ext->prio_head);
+> On Wed, Nov 23, 2022 at 12:09:55PM -0300, Marcelo Ricardo Leitner wrote:
+> > On Tue, Nov 22, 2022 at 12:32:21PM -0500, Xin Long wrote:
+> > > +int nf_ct_nat(struct sk_buff *skb, struct nf_conn *ct,
+> > > +         enum ip_conntrack_info ctinfo, int *action,
+> > > +         const struct nf_nat_range2 *range, bool commit)
+> > > +{
+> > > +   enum nf_nat_manip_type maniptype;
+> > > +   int err, ct_action = *action;
 > > > +
-> > >                         kfree(SCTP_SO(new, i)->ext);
-> > >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
-> > >                         SCTP_SO(stream, i)->ext = NULL;
-> > > @@ -77,6 +80,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
-> > >         }
-> > >
-> > >         for (i = outcnt; i < stream->outcnt; i++) {
-> > > +               if (SCTP_SO(stream, i)->ext)
-> > > +                       kfree(SCTP_SO(stream, i)->ext->prio_head);
+> > > +   *action = 0;
 > > > +
-> > >                 kfree(SCTP_SO(stream, i)->ext);
-> > >                 SCTP_SO(stream, i)->ext = NULL;
-> > >         }
-> > > --
-> > > 2.17.1
+> > > +   /* Add NAT extension if not confirmed yet. */
+> > > +   if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
+> > > +           return NF_ACCEPT;   /* Can't NAT. */
+> > > +
+> > > +   if (ctinfo != IP_CT_NEW && (ct->status & IPS_NAT_MASK) &&
+> > > +       (ctinfo != IP_CT_RELATED || commit)) {
+> > > +           /* NAT an established or related connection like before. */
+> > > +           if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY)
+> > > +                   /* This is the REPLY direction for a connection
+> > > +                    * for which NAT was applied in the forward
+> > > +                    * direction.  Do the reverse NAT.
+> > > +                    */
+> > > +                   maniptype = ct->status & IPS_SRC_NAT
+> > > +                           ? NF_NAT_MANIP_DST : NF_NAT_MANIP_SRC;
+> > > +           else
+> > > +                   maniptype = ct->status & IPS_SRC_NAT
+> > > +                           ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST;
+> > > +   } else if (ct_action & (1 << NF_NAT_MANIP_SRC)) {
+> > > +           maniptype = NF_NAT_MANIP_SRC;
+> > > +   } else if (ct_action & (1 << NF_NAT_MANIP_DST)) {
+> > > +           maniptype = NF_NAT_MANIP_DST;
+> > > +   } else {
+> > > +           return NF_ACCEPT;
+> > > +   }
+> > > +
+> > > +   err = nf_ct_nat_execute(skb, ct, ctinfo, action, range, maniptype);
+> > > +   if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
+> > > +           if (ct->status & IPS_SRC_NAT) {
+> > > +                   if (maniptype == NF_NAT_MANIP_SRC)
+> > > +                           maniptype = NF_NAT_MANIP_DST;
+> > > +                   else
+> > > +                           maniptype = NF_NAT_MANIP_SRC;
+> > > +
+> > > +                   err = nf_ct_nat_execute(skb, ct, ctinfo, action, range,
+> > > +                                           maniptype);
+> > > +           } else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
+> > > +                   err = nf_ct_nat_execute(skb, ct, ctinfo, action, NULL,
+> > > +                                           NF_NAT_MANIP_SRC);
+> > > +           }
+> > > +   }
+> > > +   return err;
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(nf_ct_nat);
+> > > diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+> > > index cc643a556ea1..d03c75165663 100644
+> > > --- a/net/openvswitch/conntrack.c
+> > > +++ b/net/openvswitch/conntrack.c
+> > > @@ -726,144 +726,27 @@ static void ovs_nat_update_key(struct sw_flow_key *key,
+> > >     }
+> > >  }
 > > >
-> > This is not a proper fix:
-> > 1. you shouldn't access "prio_head" outside stream_sched_prio.c.
-> > 2. the prio_head you freed might be used by other out streams, freeing
-> > it unconditionally would cause either a double free or use after free.
+> > > -/* Modelled after nf_nat_ipv[46]_fn().
+> > > - * range is only used for new, uninitialized NAT state.
+> > > - * Returns either NF_ACCEPT or NF_DROP.
+> > > - */
+> > > -static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+> > > -                         enum ip_conntrack_info ctinfo,
+> > > -                         const struct nf_nat_range2 *range,
+> > > -                         enum nf_nat_manip_type maniptype, struct sw_flow_key *key)
+> > > -{
+> > > -   int hooknum, err = NF_ACCEPT;
+> > > -
+> > > -   /* See HOOK2MANIP(). */
+> > > -   if (maniptype == NF_NAT_MANIP_SRC)
+> > > -           hooknum = NF_INET_LOCAL_IN; /* Source NAT */
+> > > -   else
+> > > -           hooknum = NF_INET_LOCAL_OUT; /* Destination NAT */
+> > > -
+> > > -   switch (ctinfo) {
+> > > -   case IP_CT_RELATED:
+> > > -   case IP_CT_RELATED_REPLY:
+> > > -           if (IS_ENABLED(CONFIG_NF_NAT) &&
+> > > -               skb->protocol == htons(ETH_P_IP) &&
+> > > -               ip_hdr(skb)->protocol == IPPROTO_ICMP) {
+> > > -                   if (!nf_nat_icmp_reply_translation(skb, ct, ctinfo,
+> > > -                                                      hooknum))
+> > > -                           err = NF_DROP;
+> > > -                   goto out;
+> > > -           } else if (IS_ENABLED(CONFIG_IPV6) &&
+> > > -                      skb->protocol == htons(ETH_P_IPV6)) {
+> > > -                   __be16 frag_off;
+> > > -                   u8 nexthdr = ipv6_hdr(skb)->nexthdr;
+> > > -                   int hdrlen = ipv6_skip_exthdr(skb,
+> > > -                                                 sizeof(struct ipv6hdr),
+> > > -                                                 &nexthdr, &frag_off);
+> > > -
+> > > -                   if (hdrlen >= 0 && nexthdr == IPPROTO_ICMPV6) {
+> > > -                           if (!nf_nat_icmpv6_reply_translation(skb, ct,
+> > > -                                                                ctinfo,
+> > > -                                                                hooknum,
+> > > -                                                                hdrlen))
+> > > -                                   err = NF_DROP;
+> > > -                           goto out;
+> > > -                   }
+> > > -           }
+> > > -           /* Non-ICMP, fall thru to initialize if needed. */
+> > > -           fallthrough;
+> > > -   case IP_CT_NEW:
+> > > -           /* Seen it before?  This can happen for loopback, retrans,
+> > > -            * or local packets.
+> > > -            */
+> > > -           if (!nf_nat_initialized(ct, maniptype)) {
+> > > -                   /* Initialize according to the NAT action. */
+> > > -                   err = (range && range->flags & NF_NAT_RANGE_MAP_IPS)
+> > > -                           /* Action is set up to establish a new
+> > > -                            * mapping.
+> > > -                            */
+> > > -                           ? nf_nat_setup_info(ct, range, maniptype)
+> > > -                           : nf_nat_alloc_null_binding(ct, hooknum);
+> > > -                   if (err != NF_ACCEPT)
+> > > -                           goto out;
+> > > -           }
+> > > -           break;
+> > > -
+> > > -   case IP_CT_ESTABLISHED:
+> > > -   case IP_CT_ESTABLISHED_REPLY:
+> > > -           break;
+> > > -
+> > > -   default:
+> > > -           err = NF_DROP;
+> > > -           goto out;
+> > > -   }
+> > > -
+> > > -   err = nf_nat_packet(ct, ctinfo, hooknum, skb);
+> > > -out:
+> > > -   /* Update the flow key if NAT successful. */
+> > > -   if (err == NF_ACCEPT)
+> > > -           ovs_nat_update_key(key, skb, maniptype);
+> > > -
+> > > -   return err;
+> > > -}
+> > > -
+> > >  /* Returns NF_DROP if the packet should be dropped, NF_ACCEPT otherwise. */
+> > >  static int ovs_ct_nat(struct net *net, struct sw_flow_key *key,
+> > >                   const struct ovs_conntrack_info *info,
+> > >                   struct sk_buff *skb, struct nf_conn *ct,
+> > >                   enum ip_conntrack_info ctinfo)
+> > >  {
+> > > -   enum nf_nat_manip_type maniptype;
+> > > -   int err;
+> > > +   int err, action = 0;
+> > >
+> > >     if (!(info->nat & OVS_CT_NAT))
+> > >             return NF_ACCEPT;
+> > > +   if (info->nat & OVS_CT_SRC_NAT)
+> > > +           action |= (1 << NF_NAT_MANIP_SRC);
+> > > +   if (info->nat & OVS_CT_DST_NAT)
+> > > +           action |= (1 << NF_NAT_MANIP_DST);
 > >
-> > I'm afraid we have to add a ".free_sid" in sctp_sched_ops, and
-> > implement it for sctp_sched_prio, like:
+> > I'm wondering why this dance at this level with supporting multiple
+> > MANIPs while actually only one can be used at a time.
 > >
-> > +static void sctp_sched_prio_free_sid(struct sctp_stream *stream, __u16 sid)
-> > +{
-> > +       struct sctp_stream_priorities *prio = SCTP_SO(stream,
-> > sid)->ext->prio_head;
-> > +       int i;
-> > +
-> > +       if (!prio)
-> > +               return;
-> > +
-> > +       SCTP_SO(stream, sid)->ext->prio_head = NULL;
-> > +       for (i = 0; i < stream->outcnt; i++) {
+> > act_ct will reject an action using both:
+> >         if ((p->ct_action & TCA_CT_ACT_NAT_SRC) &&
+> >             (p->ct_action & TCA_CT_ACT_NAT_DST)) {
+> >                 NL_SET_ERR_MSG_MOD(extack, "dnat and snat can't be enabled at the same time");
+> >                 return -EOPNOTSUPP;
+> >
+> > I couldn't find this kind of check in ovs code right now (didn't look much, I
+> > confess :)), but even the code here was already doing:
+> >
+> > -     } else if (info->nat & OVS_CT_SRC_NAT) {
+> > -             maniptype = NF_NAT_MANIP_SRC;
+> > -     } else if (info->nat & OVS_CT_DST_NAT) {
+> > -             maniptype = NF_NAT_MANIP_DST;
+> >
+> > And in case of tuple conflict, maniptype will be forcibly updated in
+> > [*] below.
 >
-> Instead of checking all streams, the for() can/should be replaced by
-> (from sctp_sched_prio_free):
->         if (!list_empty(&prio->prio_sched))
->                 return;
-sctp_stream_outq_migrate() is called after unsched_all() for "stream",
-list_empty(prio_sched) is expected to be true.
+> Ahh.. just found why.. in case of typle conflict, nf_ct_nat() now may
+> set both.
+Right.
+BTW. The tuple conflict processing actually has provided the
+code to do full nat (snat and dnat at the same time), which I
+think is more efficient than doing full nat in two zones. All
+we have to do is adjust a few lines of code for that.
 
-Note that kfree(SCTP_SO(new, i)->ext) shouldn't have the reported
-problem, as at that moment, the "new" stream hasn't been set
-stream_sched yet. It means there's only one place that needs to
-call free_sid in sctp_stream_outq_migrate().
-(Maybe Zhengchao can help us confirm this?)
-
 >
-> > +               if (SCTP_SO(stream, i)->ext &&
-> > +                   SCTP_SO(stream, i)->ext->prio_head == prio)
-> > +                       return;
-> > +       }
-> > +       kfree(prio);
-> > +}
-> > +
-> >  static void sctp_sched_prio_free(struct sctp_stream *stream)
-> >  {
-> >         struct sctp_stream_priorities *prio, *n;
-> > @@ -323,6 +340,7 @@ static struct sctp_sched_ops sctp_sched_prio = {
-> >         .get = sctp_sched_prio_get,
-> >         .init = sctp_sched_prio_init,
-> >         .init_sid = sctp_sched_prio_init_sid,
-> > +       .free_sid = sctp_sched_prio_free_sid,
-> >         .free = sctp_sched_prio_free,
-> >         .enqueue = sctp_sched_prio_enqueue,
-> >         .dequeue = sctp_sched_prio_dequeue,
 > >
-> > then call it in sctp_stream_outq_migrate(), like:
-> >
-> > +static void sctp_stream_free_ext(struct sctp_stream *stream, __u16 sid)
-> > +{
-> > +       struct sctp_sched_ops *sched = sctp_sched_ops_from_stream(stream);
-> > +
-> > +       sched->free_sid(stream, sid);
-> > +       kfree(SCTP_SO(stream, sid)->ext);
-> > +       SCTP_SO(stream, sid)->ext = NULL;
-> > +}
-> > +
-> >  /* Migrates chunks from stream queues to new stream queues if needed,
-> >   * but not across associations. Also, removes those chunks to streams
-> >   * higher than the new max.
-> > @@ -70,16 +79,14 @@ static void sctp_stream_outq_migrate(struct
-> > sctp_stream *stream,
-> >                  * sctp_stream_update will swap ->out pointers.
-> >                  */
-> >                 for (i = 0; i < outcnt; i++) {
-> > -                       kfree(SCTP_SO(new, i)->ext);
-> > +                       sctp_stream_free_ext(new, i);
-> >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
-> >                         SCTP_SO(stream, i)->ext = NULL;
-> >                 }
-> >         }
-> >
-> > -       for (i = outcnt; i < stream->outcnt; i++) {
-> > -               kfree(SCTP_SO(stream, i)->ext);
-> > -               SCTP_SO(stream, i)->ext = NULL;
-> > -       }
-> > +       for (i = outcnt; i < stream->outcnt; i++)
-> > +               sctp_stream_free_ext(new, i);
-> >  }
-> >
-> > Marcelo, do you see a better solution?
->
-> No. Your suggestion is the best I could think of too.
->
-> Another approach would be to expose sched->free and do all the freeing
-> at once, like sctp_stream_free() does. But the above is looks cleaner
-> and makes it evident that freeing 'ext' is not trivial.
->
-> With the proposal above, sctp_sched_prio_free() becomes an
-> optimization, if we can call it that. With the for/if replacement
-> above, not even that, and should be removed. Including sctp_sched_ops
-> 'free' pointer.
-Or we extract the common code to another function, like
-sctp_sched_prio_free_head(stream, prio), and pass prio as
-NULL in sctp_sched_prio_free() for freeing all.
-
->
-> sctp_stream_free() then should be updated to use the new
-> sctp_stream_free_ext() instead, instead of mangling it directly.
-I thought about this, but there is ".free", which is more efficient
-to free all prio than calling ".free_sid" outcnt times.
-
-I may move free_sid() out of sctp_stream_free_ext(), then in
-sctp_stream_free() we can call sctp_stream_free_ext() without
-calling free_sid(), or just remove sctp_stream_free_ext().
-
+> > Anyhow, if really needed, it would be nice to use BIT(NF_NAT_MANIP_..)
+> > instead.
+BIT() looks a good one, will use it.
 Thanks.
 
 >
-> Makes sense?
+> But still this.
 >
-> Thanks,
-> Marcelo
+> >
+> > >
+> > > -   /* Add NAT extension if not confirmed yet. */
+> > > -   if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
+> > > -           return NF_ACCEPT;   /* Can't NAT. */
+> > > +   err = nf_ct_nat(skb, ct, ctinfo, &action, &info->range, info->commit);
+> > >
+> > > -   /* Determine NAT type.
+> > > -    * Check if the NAT type can be deduced from the tracked connection.
+> > > -    * Make sure new expected connections (IP_CT_RELATED) are NATted only
+> > > -    * when committing.
+> > > -    */
+> > > -   if (ctinfo != IP_CT_NEW && ct->status & IPS_NAT_MASK &&
+> > > -       (ctinfo != IP_CT_RELATED || info->commit)) {
+> > > -           /* NAT an established or related connection like before. */
+> > > -           if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY)
+> > > -                   /* This is the REPLY direction for a connection
+> > > -                    * for which NAT was applied in the forward
+> > > -                    * direction.  Do the reverse NAT.
+> > > -                    */
+> > > -                   maniptype = ct->status & IPS_SRC_NAT
+> > > -                           ? NF_NAT_MANIP_DST : NF_NAT_MANIP_SRC;
+> > > -           else
+> > > -                   maniptype = ct->status & IPS_SRC_NAT
+> > > -                           ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST;
+> > > -   } else if (info->nat & OVS_CT_SRC_NAT) {
+> > > -           maniptype = NF_NAT_MANIP_SRC;
+> > > -   } else if (info->nat & OVS_CT_DST_NAT) {
+> > > -           maniptype = NF_NAT_MANIP_DST;
+> > > -   } else {
+> > > -           return NF_ACCEPT; /* Connection is not NATed. */
+> > > -   }
+> > > -   err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range, maniptype, key);
+> > > -
+> > > -   if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
+> > > -           if (ct->status & IPS_SRC_NAT) {
+> > > -                   if (maniptype == NF_NAT_MANIP_SRC)
+> > > -                           maniptype = NF_NAT_MANIP_DST;
+> > > -                   else
+> > > -                           maniptype = NF_NAT_MANIP_SRC;
+> >
+> > [*]
+> >
+> > > -
+> > > -                   err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range,
+> > > -                                            maniptype, key);
+> > > -           } else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
+> > > -                   err = ovs_ct_nat_execute(skb, ct, ctinfo, NULL,
+> > > -                                            NF_NAT_MANIP_SRC, key);
+> > > -           }
+> > > -   }
+> > > +   if (action & (1 << NF_NAT_MANIP_SRC))
+> > > +           ovs_nat_update_key(key, skb, NF_NAT_MANIP_SRC);
+> > > +   if (action & (1 << NF_NAT_MANIP_DST))
+> > > +           ovs_nat_update_key(key, skb, NF_NAT_MANIP_DST);
+> > >
+> > >     return err;
+> > >  }
+> > > diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+> > > index c7782c9a6ab6..0c410220239f 100644
+> > > --- a/net/sched/act_ct.c
+> > > +++ b/net/sched/act_ct.c
+> > > @@ -863,90 +863,6 @@ static void tcf_ct_params_free_rcu(struct rcu_head *head)
+> > >     tcf_ct_params_free(params);
+> > >  }
+> > >
+> > > -#if IS_ENABLED(CONFIG_NF_NAT)
+> > > -/* Modelled after nf_nat_ipv[46]_fn().
+> > > - * range is only used for new, uninitialized NAT state.
+> > > - * Returns either NF_ACCEPT or NF_DROP.
+> > > - */
+> > > -static int ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+> > > -                     enum ip_conntrack_info ctinfo,
+> > > -                     const struct nf_nat_range2 *range,
+> > > -                     enum nf_nat_manip_type maniptype)
+> > > -{
+> > > -   __be16 proto = skb_protocol(skb, true);
+> > > -   int hooknum, err = NF_ACCEPT;
+> > > -
+> > > -   /* See HOOK2MANIP(). */
+> > > -   if (maniptype == NF_NAT_MANIP_SRC)
+> > > -           hooknum = NF_INET_LOCAL_IN; /* Source NAT */
+> > > -   else
+> > > -           hooknum = NF_INET_LOCAL_OUT; /* Destination NAT */
+> > > -
+> > > -   switch (ctinfo) {
+> > > -   case IP_CT_RELATED:
+> > > -   case IP_CT_RELATED_REPLY:
+> > > -           if (proto == htons(ETH_P_IP) &&
+> > > -               ip_hdr(skb)->protocol == IPPROTO_ICMP) {
+> > > -                   if (!nf_nat_icmp_reply_translation(skb, ct, ctinfo,
+> > > -                                                      hooknum))
+> > > -                           err = NF_DROP;
+> > > -                   goto out;
+> > > -           } else if (IS_ENABLED(CONFIG_IPV6) && proto == htons(ETH_P_IPV6)) {
+> > > -                   __be16 frag_off;
+> > > -                   u8 nexthdr = ipv6_hdr(skb)->nexthdr;
+> > > -                   int hdrlen = ipv6_skip_exthdr(skb,
+> > > -                                                 sizeof(struct ipv6hdr),
+> > > -                                                 &nexthdr, &frag_off);
+> > > -
+> > > -                   if (hdrlen >= 0 && nexthdr == IPPROTO_ICMPV6) {
+> > > -                           if (!nf_nat_icmpv6_reply_translation(skb, ct,
+> > > -                                                                ctinfo,
+> > > -                                                                hooknum,
+> > > -                                                                hdrlen))
+> > > -                                   err = NF_DROP;
+> > > -                           goto out;
+> > > -                   }
+> > > -           }
+> > > -           /* Non-ICMP, fall thru to initialize if needed. */
+> > > -           fallthrough;
+> > > -   case IP_CT_NEW:
+> > > -           /* Seen it before?  This can happen for loopback, retrans,
+> > > -            * or local packets.
+> > > -            */
+> > > -           if (!nf_nat_initialized(ct, maniptype)) {
+> > > -                   /* Initialize according to the NAT action. */
+> > > -                   err = (range && range->flags & NF_NAT_RANGE_MAP_IPS)
+> > > -                           /* Action is set up to establish a new
+> > > -                            * mapping.
+> > > -                            */
+> > > -                           ? nf_nat_setup_info(ct, range, maniptype)
+> > > -                           : nf_nat_alloc_null_binding(ct, hooknum);
+> > > -                   if (err != NF_ACCEPT)
+> > > -                           goto out;
+> > > -           }
+> > > -           break;
+> > > -
+> > > -   case IP_CT_ESTABLISHED:
+> > > -   case IP_CT_ESTABLISHED_REPLY:
+> > > -           break;
+> > > -
+> > > -   default:
+> > > -           err = NF_DROP;
+> > > -           goto out;
+> > > -   }
+> > > -
+> > > -   err = nf_nat_packet(ct, ctinfo, hooknum, skb);
+> > > -out:
+> > > -   if (err == NF_ACCEPT) {
+> > > -           if (maniptype == NF_NAT_MANIP_SRC)
+> > > -                   tc_skb_cb(skb)->post_ct_snat = 1;
+> > > -           if (maniptype == NF_NAT_MANIP_DST)
+> > > -                   tc_skb_cb(skb)->post_ct_dnat = 1;
+> > > -   }
+> > > -   return err;
+> > > -}
+> > > -#endif /* CONFIG_NF_NAT */
+> > > -
+> > >  static void tcf_ct_act_set_mark(struct nf_conn *ct, u32 mark, u32 mask)
+> > >  {
+> > >  #if IS_ENABLED(CONFIG_NF_CONNTRACK_MARK)
+> > > @@ -986,52 +902,22 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
+> > >                       bool commit)
+> > >  {
+> > >  #if IS_ENABLED(CONFIG_NF_NAT)
+> > > -   int err;
+> > > -   enum nf_nat_manip_type maniptype;
+> > > +   int err, action = 0;
+> > >
+> > >     if (!(ct_action & TCA_CT_ACT_NAT))
+> > >             return NF_ACCEPT;
+> > > +   if (ct_action & TCA_CT_ACT_NAT_SRC)
+> > > +           action |= (1 << NF_NAT_MANIP_SRC);
+> > > +   if (ct_action & TCA_CT_ACT_NAT_DST)
+> > > +           action |= (1 << NF_NAT_MANIP_DST);
+> > >
+> > > -   /* Add NAT extension if not confirmed yet. */
+> > > -   if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
+> > > -           return NF_ACCEPT;   /* Can't NAT. */
+> > > -
+> > > -   if (ctinfo != IP_CT_NEW && (ct->status & IPS_NAT_MASK) &&
+> > > -       (ctinfo != IP_CT_RELATED || commit)) {
+> > > -           /* NAT an established or related connection like before. */
+> > > -           if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY)
+> > > -                   /* This is the REPLY direction for a connection
+> > > -                    * for which NAT was applied in the forward
+> > > -                    * direction.  Do the reverse NAT.
+> > > -                    */
+> > > -                   maniptype = ct->status & IPS_SRC_NAT
+> > > -                           ? NF_NAT_MANIP_DST : NF_NAT_MANIP_SRC;
+> > > -           else
+> > > -                   maniptype = ct->status & IPS_SRC_NAT
+> > > -                           ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST;
+> > > -   } else if (ct_action & TCA_CT_ACT_NAT_SRC) {
+> > > -           maniptype = NF_NAT_MANIP_SRC;
+> > > -   } else if (ct_action & TCA_CT_ACT_NAT_DST) {
+> > > -           maniptype = NF_NAT_MANIP_DST;
+> > > -   } else {
+> > > -           return NF_ACCEPT;
+> > > -   }
+> > > +   err = nf_ct_nat(skb, ct, ctinfo, &action, range, commit);
+> > > +
+> > > +   if (action & (1 << NF_NAT_MANIP_SRC))
+> > > +           tc_skb_cb(skb)->post_ct_snat = 1;
+> > > +   if (action & (1 << NF_NAT_MANIP_DST))
+> > > +           tc_skb_cb(skb)->post_ct_dnat = 1;
+> > >
+> > > -   err = ct_nat_execute(skb, ct, ctinfo, range, maniptype);
+> > > -   if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
+> > > -           if (ct->status & IPS_SRC_NAT) {
+> > > -                   if (maniptype == NF_NAT_MANIP_SRC)
+> > > -                           maniptype = NF_NAT_MANIP_DST;
+> > > -                   else
+> > > -                           maniptype = NF_NAT_MANIP_SRC;
+> > > -
+> > > -                   err = ct_nat_execute(skb, ct, ctinfo, range,
+> > > -                                        maniptype);
+> > > -           } else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
+> > > -                   err = ct_nat_execute(skb, ct, ctinfo, NULL,
+> > > -                                        NF_NAT_MANIP_SRC);
+> > > -           }
+> > > -   }
+> > >     return err;
+> > >  #else
+> > >     return NF_ACCEPT;
+> > > --
+> > > 2.31.1
+> > >
+> > _______________________________________________
+> > dev mailing list
+> > dev@openvswitch.org
+> > https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+> >
