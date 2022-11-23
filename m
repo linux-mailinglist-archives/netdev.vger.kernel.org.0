@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C925634F38
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 05:55:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33C1B634F3E
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 05:55:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235655AbiKWEzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 23:55:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36462 "EHLO
+        id S235667AbiKWEzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 23:55:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235519AbiKWEzN (ORCPT
+        with ESMTP id S235573AbiKWEzN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 23:55:13 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E10BDE068F
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 20:55:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538A9E06B3
+        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 20:55:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C06760916
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E42F861A3F
         for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 04:55:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E614C43470;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09043C4347C;
         Wed, 23 Nov 2022 04:55:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669179311;
-        bh=YO1B1vvLQCKlGZqqWnnewwVruNF83ffLcKOx7qcLWwI=;
+        s=k20201202; t=1669179312;
+        bh=cRQgY2bqdUW8NFj+TM+0XvwMdI4vnBTlX+HZzyx2STg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ehgC0sXmDGz37Z8wyxEW7eu9RFDTN9BDm6cGob8NwEkzGRMAXAmm2mIyCYWDnERkg
-         vO3JB38RP4vB5QEpEkWzAUQUXUJW0RvYKYIpMB1g/POjzLb13GyOL2tC3nKkC2ffWE
-         uqM+FMMvK3Y9tSd/U7mlVi+q7FWk9cgcSchh9e0+miwaWsvLXFBQcFooXcJLYYn7p/
-         mXcUcqUHJw9qW8t6tdRBJXMCBi+CauMV9qFecMhHHuy4INA4VbM/sxdvpZitRiDpXf
-         Dgk9abPhwXQnzXJpQdROj57qk/JCalgdBwugvOCdfjIdldrfn+UihRYS2XkwoFEbVz
-         X/v4lj9XSCANA==
+        b=QnO4dMKArT2zgCoJ4rj3HzPb8bIAcMg49rfkpaCxG45aIuAffFe7+DZoI+OoUOT8R
+         xKFGS4aWAy5WSVkAem9Te5d7MaghLkKpvn2zGc5ik1aYorrpMyNoQ9POgPgNw/74gb
+         HR+GgWpKX9TNiU3Muf5pwPeMO0o7wpJayzXyAZYXNScceXW/vYn2M+FZPo4MdWvrht
+         bJ5i7aby8aICT56OtHalsWQvbvGIqOQVisu8QdE8euLLajfqREoAFHmVPrWMkDntTc
+         uKJqZE1EHpj/hNy6EEsxu8tdRJ3snOVrXFDkt9j24LkwpbMGPOoY72kpHycPRLQxRt
+         ON3sCXb/eUjYA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         uwe@kleine-koenig.org,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH net-next v2 01/12] net: dsa: lan9303: Convert to i2c's .probe_new()
-Date:   Tue, 22 Nov 2022 20:54:56 -0800
-Message-Id: <20221123045507.2091409-2-kuba@kernel.org>
+Subject: [PATCH net-next v2 02/12] net: dsa: microchip: ksz9477: Convert to i2c's .probe_new()
+Date:   Tue, 22 Nov 2022 20:54:57 -0800
+Message-Id: <20221123045507.2091409-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221123045507.2091409-1-kuba@kernel.org>
 References: <20221123045507.2091409-1-kuba@kernel.org>
@@ -62,32 +62,32 @@ can be trivially converted.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/net/dsa/lan9303_i2c.c | 5 ++---
+ drivers/net/dsa/microchip/ksz9477_i2c.c | 5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/lan9303_i2c.c b/drivers/net/dsa/lan9303_i2c.c
-index 7d746cd9ca1b..1cb41c36bd47 100644
---- a/drivers/net/dsa/lan9303_i2c.c
-+++ b/drivers/net/dsa/lan9303_i2c.c
-@@ -29,8 +29,7 @@ static const struct regmap_config lan9303_i2c_regmap_config = {
- 	.cache_type = REGCACHE_NONE,
- };
+diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
+index db4aec0a51dc..c1a633ca1e6d 100644
+--- a/drivers/net/dsa/microchip/ksz9477_i2c.c
++++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
+@@ -14,8 +14,7 @@
  
--static int lan9303_i2c_probe(struct i2c_client *client,
--			     const struct i2c_device_id *id)
-+static int lan9303_i2c_probe(struct i2c_client *client)
+ KSZ_REGMAP_TABLE(ksz9477, not_used, 16, 0, 0);
+ 
+-static int ksz9477_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *i2c_id)
++static int ksz9477_i2c_probe(struct i2c_client *i2c)
  {
- 	struct lan9303_i2c *sw_dev;
- 	int ret;
-@@ -106,7 +105,7 @@ static struct i2c_driver lan9303_i2c_driver = {
- 		.name = "LAN9303_I2C",
- 		.of_match_table = of_match_ptr(lan9303_i2c_of_match),
+ 	struct regmap_config rc;
+ 	struct ksz_device *dev;
+@@ -120,7 +119,7 @@ static struct i2c_driver ksz9477_i2c_driver = {
+ 		.name	= "ksz9477-switch",
+ 		.of_match_table = of_match_ptr(ksz9477_dt_ids),
  	},
--	.probe = lan9303_i2c_probe,
-+	.probe_new = lan9303_i2c_probe,
- 	.remove = lan9303_i2c_remove,
- 	.shutdown = lan9303_i2c_shutdown,
- 	.id_table = lan9303_i2c_id,
+-	.probe	= ksz9477_i2c_probe,
++	.probe_new = ksz9477_i2c_probe,
+ 	.remove	= ksz9477_i2c_remove,
+ 	.shutdown = ksz9477_i2c_shutdown,
+ 	.id_table = ksz9477_i2c_id,
 -- 
 2.38.1
 
