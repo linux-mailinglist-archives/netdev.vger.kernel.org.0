@@ -2,73 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 977AE63687C
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 19:16:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EEE4636869
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 19:16:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239659AbiKWSOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 13:14:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
+        id S239674AbiKWSOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 13:14:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239379AbiKWSNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 13:13:50 -0500
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6BEC697F
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 10:10:21 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id E276C5C006C;
-        Wed, 23 Nov 2022 13:10:18 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 23 Nov 2022 13:10:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1669227018; x=
-        1669313418; bh=DpdO/3xOyV2ft6CakRajjajX4b/UNb4Jfcv5jd+O74Q=; b=P
-        0K/ETe45xT0lCw7InimYJB1HkGEx5690IY+wX+dCIhP/j7L2wzfOCQNYjpGNGYvE
-        M5HvvQ/YTqAgLjn8Z4k0x90l/e6qFKf6VDx8shmNudQDbj3Z5tMeDwmlhn+ERe/O
-        MgCkFJ4TjwCUxnleCvtDD5rNSvKqo1nzWjScy6+hdonuZw59ommZTXNTbu1SlrWG
-        kCbsBQDjgXzFiaxlj0/WJ8i8u1sADny/33DOtxHNG+1tYUHQkfRgHvf1J/AsjCJ0
-        iLGPgMLOHkol9PgHk4sc8SNv+78qE+1f9hK04GEQ6t+QmAKeyOc6f+lWXnLRpUWU
-        OU6ffxwfmVlK9z83Gwk7Q==
-X-ME-Sender: <xms:CmJ-Y83_KLkZBHnwNtS1joDQwW3wDxT2CcjCmXFpchLRMCLx6HLiQQ>
-    <xme:CmJ-Y3E0OYsz0iqadZIP7OWo5emtbyJsAjZIPFjXJDmCHX3CEequSXiTcY8fnvUWP
-    wqn3eOLbDzN3cA>
-X-ME-Received: <xmr:CmJ-Y04yBfqXkSenmd8FPJZ8rRMzNLymMfuVQoHe7fjZC2iVV4UHfv4mUhY8fETX3E52bO0_kk3N4xqR9XrBLjrFpOo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedriedugddutdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtugfgjgesth
-    ekredttddtjeenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehi
-    ughoshgthhdrohhrgheqnecuggftrfgrthhtvghrnhepkeeggfeghfeuvdegtedtgedvue
-    dvhfdujedvvdejteelvdeutdehheellefhhfdunecuvehluhhsthgvrhfuihiivgeptden
-    ucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:CmJ-Y13rM2gRbPkOp4abSMiZCMARWH7DR4zK3aJ-BMfGUwyYYgycEQ>
-    <xmx:CmJ-Y_GIkN-hmz_zulGZTOTV9TvHIYyKwRk-L1aiJgx4erQdYEcNvQ>
-    <xmx:CmJ-Y-9wpciYm8dRzPqxgTaQKUyRl6tz1GhW2pc6sNzH3z5enF1d0w>
-    <xmx:CmJ-Yzhw8PzYGwAk8ycnPb80sEAM8OCzBun4r3u_Tn41hwv9DJLXWg>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 23 Nov 2022 13:10:17 -0500 (EST)
-Date:   Wed, 23 Nov 2022 20:10:14 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     nb <nikolay.borisov@virtuozzo.com>
-Cc:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, kernel@virtuozzo.com
-Subject: Re: [PATCH net-next v2 1/3] drop_monitor: Implement namespace
- filtering/reporting for software drops
-Message-ID: <Y35iBgeq5iKyTmfT@shredder>
-References: <20221123142817.2094993-1-nikolay.borisov@virtuozzo.com>
- <20221123142817.2094993-2-nikolay.borisov@virtuozzo.com>
- <Y345WyXayWF/2eDJ@shredder>
- <7a8bf56c-3db8-63c2-8440-7bbbfb4901ac@virtuozzo.com>
+        with ESMTP id S238849AbiKWSNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 13:13:54 -0500
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E828A11A0F;
+        Wed, 23 Nov 2022 10:10:48 -0800 (PST)
+Received: by mail-ot1-x32f.google.com with SMTP id a13-20020a9d6e8d000000b00668d65fc44fso11706585otr.9;
+        Wed, 23 Nov 2022 10:10:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=j6r0CC9TisfV7wm8BdBdWohmuoxOFNGRQTl2jwbJACo=;
+        b=CgPoGiIG3pBrp7eujX56xc48VPf1EZn44oEbSpWQyQSdv6uFHhdJWy4d+cfIsMU9dU
+         +y3T0Pg6+qapLPHu9jFJ9nROcc3eZrxISUrnnPwjkUYWQxJFwbmmghk3FwLikwLzRnKL
+         pQYu4e7kBKSTt4JTTfd9iErXaDWaUCP6iiosBRzimlXDgsWO0pfTvOuM4rI7MFEv8w86
+         nJQdeL7tfcOiPTJxMCTlMrJgpg0/f4T2OY+LO7rPuu4fiptcf/7VmR/OFUT8yS55XZ2l
+         PJpDI0PwXC5+2u4eNtY62MG+cfRG+hP1RJKwacLydlFgrRfwyRiEb8rjZe0q7y6c7pQE
+         CS+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=j6r0CC9TisfV7wm8BdBdWohmuoxOFNGRQTl2jwbJACo=;
+        b=nZ8G4FmeYFPH4XxI9VL1g5w0ugEoQqgwDBWpn5gycyRT3zB6IaAk7/CCtHT9r1h3/x
+         TnndBhbrw5LMHtGFjSox2ORF+znD/F0AcZ/xNuqObwzx/XL7s1Dujfg4wv3Ujy2Yzmet
+         sPTYn5aQzHYe8no8d9R0H8kB4YdradyGlAb34ZvgWFOzZdYfny5XDTapaQFsbwdEPK3h
+         mJ//Ney/1OoUrVnwOlos4pgXrDrOShLUr0ShNU5isCfIEQJqf3eT4t1UyWm5vwV8G8TG
+         jcK4NZOSW8qpAwiWZ6sfKdlo/uUinnYcZrEl/Cy3YdEZxqVsN5w0SwrimQdHEOddhYHI
+         Uvyg==
+X-Gm-Message-State: ANoB5pmDJaB2B2rysBJpp3AragMPCTm5dZN4kyDXxLPJnuVC+H+b59ek
+        PPnifwTe51nFKgUdZ3FUjzQ=
+X-Google-Smtp-Source: AA0mqf6/xIwU3vxvBKYK1+Ir4kN0laorPiDEZZHCpbZxLCoUhRYxgSVWtrEKrNn/KFz2Jdkbdg5cog==
+X-Received: by 2002:a05:6830:13c9:b0:66c:a3a8:3870 with SMTP id e9-20020a05683013c900b0066ca3a83870mr5537218otq.54.1669227048082;
+        Wed, 23 Nov 2022 10:10:48 -0800 (PST)
+Received: from t14s.localdomain ([2001:1284:f016:5412:fa8e:2d33:bd7c:54c7])
+        by smtp.gmail.com with ESMTPSA id q8-20020aca4308000000b0035b7002af8csm1665966oia.56.2022.11.23.10.10.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Nov 2022 10:10:47 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 633ED459D27; Wed, 23 Nov 2022 15:10:45 -0300 (-03)
+Date:   Wed, 23 Nov 2022 15:10:45 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Subject: Re: [PATCH net] sctp: fix memory leak in sctp_stream_outq_migrate()
+Message-ID: <Y35iJUx/Q/X01dNI@t14s.localdomain>
+References: <20221118085030.121297-1-shaozhengchao@huawei.com>
+ <CADvbK_frWVFTSLMwC_xYvE+jDuk917K7SqZHUON3srLz8TxotQ@mail.gmail.com>
+ <Y31ct/lSXNTm9ev9@t14s.localdomain>
+ <CADvbK_cVBVL1KKPsONv3A3m_mPA2-41uNwxz+9eM-EuQeCSygw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7a8bf56c-3db8-63c2-8440-7bbbfb4901ac@virtuozzo.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+In-Reply-To: <CADvbK_cVBVL1KKPsONv3A3m_mPA2-41uNwxz+9eM-EuQeCSygw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,51 +79,210 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 05:21:23PM +0200, nb wrote:
-> 
-> 
-> On 23.11.22 г. 17:16 ч., Ido Schimmel wrote:
-> > On Wed, Nov 23, 2022 at 04:28:15PM +0200, Nikolay Borisov wrote:
-> > >   static void trace_drop_common(struct sk_buff *skb, void *location)
-> > >   {
-> > >   	struct net_dm_alert_msg *msg;
-> > > @@ -219,7 +233,11 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
-> > >   	int i;
-> > >   	struct sk_buff *dskb;
-> > >   	struct per_cpu_dm_data *data;
-> > > -	unsigned long flags;
-> > > +	unsigned long flags, ns_id = 0;
+On Wed, Nov 23, 2022 at 12:20:44PM -0500, Xin Long wrote:
+> On Tue, Nov 22, 2022 at 6:35 PM Marcelo Ricardo Leitner
+> <marcelo.leitner@gmail.com> wrote:
+> >
+> > On Fri, Nov 18, 2022 at 10:15:50PM -0500, Xin Long wrote:
+> > > On Fri, Nov 18, 2022 at 3:48 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
+> > > >
+> > > > When sctp_stream_outq_migrate() is called to release stream out resources,
+> > > > the memory pointed to by prio_head in stream out is not released.
+> > > >
+> > > > The memory leak information is as follows:
+> > > > unreferenced object 0xffff88801fe79f80 (size 64):
+> > > >   comm "sctp_repo", pid 7957, jiffies 4294951704 (age 36.480s)
+> > > >   hex dump (first 32 bytes):
+> > > >     80 9f e7 1f 80 88 ff ff 80 9f e7 1f 80 88 ff ff  ................
+> > > >     90 9f e7 1f 80 88 ff ff 90 9f e7 1f 80 88 ff ff  ................
+> > > >   backtrace:
+> > > >     [<ffffffff81b215c6>] kmalloc_trace+0x26/0x60
+> > > >     [<ffffffff88ae517c>] sctp_sched_prio_set+0x4cc/0x770
+> > > >     [<ffffffff88ad64f2>] sctp_stream_init_ext+0xd2/0x1b0
+> > > >     [<ffffffff88aa2604>] sctp_sendmsg_to_asoc+0x1614/0x1a30
+> > > >     [<ffffffff88ab7ff1>] sctp_sendmsg+0xda1/0x1ef0
+> > > >     [<ffffffff87f765ed>] inet_sendmsg+0x9d/0xe0
+> > > >     [<ffffffff8754b5b3>] sock_sendmsg+0xd3/0x120
+> > > >     [<ffffffff8755446a>] __sys_sendto+0x23a/0x340
+> > > >     [<ffffffff87554651>] __x64_sys_sendto+0xe1/0x1b0
+> > > >     [<ffffffff89978b49>] do_syscall_64+0x39/0xb0
+> > > >     [<ffffffff89a0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > > >
+> > > > Fixes: 637784ade221 ("sctp: introduce priority based stream scheduler")
+> > > > Reported-by: syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com
+> > > > Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> > > > ---
+> > > >  net/sctp/stream.c | 6 ++++++
+> > > >  1 file changed, 6 insertions(+)
+> > > >
+> > > > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+> > > > index ef9fceadef8d..a17dc368876f 100644
+> > > > --- a/net/sctp/stream.c
+> > > > +++ b/net/sctp/stream.c
+> > > > @@ -70,6 +70,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
+> > > >                  * sctp_stream_update will swap ->out pointers.
+> > > >                  */
+> > > >                 for (i = 0; i < outcnt; i++) {
+> > > > +                       if (SCTP_SO(new, i)->ext)
+> > > > +                               kfree(SCTP_SO(new, i)->ext->prio_head);
+> > > > +
+> > > >                         kfree(SCTP_SO(new, i)->ext);
+> > > >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
+> > > >                         SCTP_SO(stream, i)->ext = NULL;
+> > > > @@ -77,6 +80,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
+> > > >         }
+> > > >
+> > > >         for (i = outcnt; i < stream->outcnt; i++) {
+> > > > +               if (SCTP_SO(stream, i)->ext)
+> > > > +                       kfree(SCTP_SO(stream, i)->ext->prio_head);
+> > > > +
+> > > >                 kfree(SCTP_SO(stream, i)->ext);
+> > > >                 SCTP_SO(stream, i)->ext = NULL;
+> > > >         }
+> > > > --
+> > > > 2.17.1
+> > > >
+> > > This is not a proper fix:
+> > > 1. you shouldn't access "prio_head" outside stream_sched_prio.c.
+> > > 2. the prio_head you freed might be used by other out streams, freeing
+> > > it unconditionally would cause either a double free or use after free.
+> > >
+> > > I'm afraid we have to add a ".free_sid" in sctp_sched_ops, and
+> > > implement it for sctp_sched_prio, like:
+> > >
+> > > +static void sctp_sched_prio_free_sid(struct sctp_stream *stream, __u16 sid)
+> > > +{
+> > > +       struct sctp_stream_priorities *prio = SCTP_SO(stream,
+> > > sid)->ext->prio_head;
+> > > +       int i;
 > > > +
-> > > +	if (skb->dev && net_dm_ns &&
-> > > +	    dev_net(skb->dev)->ns.inum != net_dm_ns)
-> > 
-> > I don't think this is going to work, unfortunately. 'skb->dev' is in a
-> > union with 'dev_scratch' so 'skb->dev' does not necessarily point to a
-> > valid netdev at all times. It can explode when dev_net() tries to
-> > dereference it.
-> > 
-> > __skb_flow_dissect() is doing something similar, but I believe there the
-> > code paths were audited to make sure it is safe.
-> > 
-> > Did you consider achieving this functionality with a BPF program
-> > attached to skb::kfree_skb tracepoint? I believe BPF programs are run
-> > with page faults disabled, so it should be safe to attempt this there.
+> > > +       if (!prio)
+> > > +               return;
+> > > +
+> > > +       SCTP_SO(stream, sid)->ext->prio_head = NULL;
+> > > +       for (i = 0; i < stream->outcnt; i++) {
+> >
+> > Instead of checking all streams, the for() can/should be replaced by
+> > (from sctp_sched_prio_free):
+> >         if (!list_empty(&prio->prio_sched))
+> >                 return;
+> sctp_stream_outq_migrate() is called after unsched_all() for "stream",
+> list_empty(prio_sched) is expected to be true.
+
+Good point. Am I missing something or the 'prio_head == prio' below
+would always be false then as well?
+
+Anyhow, as this is moving to something that can potentially be called
+from other places afterwards, keeping the check doesn't hurt.
+
 > 
-> How would that be different than the trace_drop_common which is called as
-> part of the trace_kfree_skb, as it's really passed as trace point probe via:
+> Note that kfree(SCTP_SO(new, i)->ext) shouldn't have the reported
+> problem, as at that moment, the "new" stream hasn't been set
+> stream_sched yet. It means there's only one place that needs to
+> call free_sid in sctp_stream_outq_migrate().
+> (Maybe Zhengchao can help us confirm this?)
 
-Consider this call path:
+That's the case in Tetsuo's patch (earlier today) as well. Yet, if we
+have an official way to free a stream, if it's not error handling
+during initialization, it should use it.
 
-__udp_queue_rcv_skb()
-    __udp_enqueue_schedule_skb()
-        udp_set_dev_scratch() // skb->dev is not NULL, but not a pointer to a netdev either
-	// error is returned
-    kfree_skb_reason() // probe is called
+> 
+> >
+> > > +               if (SCTP_SO(stream, i)->ext &&
+> > > +                   SCTP_SO(stream, i)->ext->prio_head == prio)
+> > > +                       return;
+> > > +       }
+> > > +       kfree(prio);
+> > > +}
+> > > +
+> > >  static void sctp_sched_prio_free(struct sctp_stream *stream)
+> > >  {
+> > >         struct sctp_stream_priorities *prio, *n;
+> > > @@ -323,6 +340,7 @@ static struct sctp_sched_ops sctp_sched_prio = {
+> > >         .get = sctp_sched_prio_get,
+> > >         .init = sctp_sched_prio_init,
+> > >         .init_sid = sctp_sched_prio_init_sid,
+> > > +       .free_sid = sctp_sched_prio_free_sid,
+> > >         .free = sctp_sched_prio_free,
+> > >         .enqueue = sctp_sched_prio_enqueue,
+> > >         .dequeue = sctp_sched_prio_dequeue,
+> > >
+> > > then call it in sctp_stream_outq_migrate(), like:
+> > >
+> > > +static void sctp_stream_free_ext(struct sctp_stream *stream, __u16 sid)
+> > > +{
+> > > +       struct sctp_sched_ops *sched = sctp_sched_ops_from_stream(stream);
+> > > +
+> > > +       sched->free_sid(stream, sid);
+> > > +       kfree(SCTP_SO(stream, sid)->ext);
+> > > +       SCTP_SO(stream, sid)->ext = NULL;
+> > > +}
+> > > +
+> > >  /* Migrates chunks from stream queues to new stream queues if needed,
+> > >   * but not across associations. Also, removes those chunks to streams
+> > >   * higher than the new max.
+> > > @@ -70,16 +79,14 @@ static void sctp_stream_outq_migrate(struct
+> > > sctp_stream *stream,
+> > >                  * sctp_stream_update will swap ->out pointers.
+> > >                  */
+> > >                 for (i = 0; i < outcnt; i++) {
+> > > -                       kfree(SCTP_SO(new, i)->ext);
+> > > +                       sctp_stream_free_ext(new, i);
+> > >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
+> > >                         SCTP_SO(stream, i)->ext = NULL;
+> > >                 }
+> > >         }
+> > >
+> > > -       for (i = outcnt; i < stream->outcnt; i++) {
+> > > -               kfree(SCTP_SO(stream, i)->ext);
+> > > -               SCTP_SO(stream, i)->ext = NULL;
+> > > -       }
+> > > +       for (i = outcnt; i < stream->outcnt; i++)
+> > > +               sctp_stream_free_ext(new, i);
+> > >  }
+> > >
+> > > Marcelo, do you see a better solution?
+> >
+> > No. Your suggestion is the best I could think of too.
+> >
+> > Another approach would be to expose sched->free and do all the freeing
+> > at once, like sctp_stream_free() does. But the above is looks cleaner
+> > and makes it evident that freeing 'ext' is not trivial.
+> >
+> > With the proposal above, sctp_sched_prio_free() becomes an
+> > optimization, if we can call it that. With the for/if replacement
+> > above, not even that, and should be removed. Including sctp_sched_ops
+> > 'free' pointer.
+> Or we extract the common code to another function, like
+> sctp_sched_prio_free_head(stream, prio), and pass prio as
+> NULL in sctp_sched_prio_free() for freeing all.
+> 
+> >
+> > sctp_stream_free() then should be updated to use the new
+> > sctp_stream_free_ext() instead, instead of mangling it directly.
+> I thought about this, but there is ".free", which is more efficient
+> to free all prio than calling ".free_sid" outcnt times.
 
-dev_net(skb->dev) in the probe will try to dereference skb->dev and
-crash.
+How much more efficient, just by avoiding retpoline stuff on the
+indirect functional call or something else?
 
-On the other hand, a BPF program that is registered as another probe on
-the tracepoint will access the memory via bpf_probe_read_kernel(), which
-will try to safely read the memory and return an error if it can't. You
-can do that today without any kernel changes.
+> 
+> I may move free_sid() out of sctp_stream_free_ext(), then in
+> sctp_stream_free() we can call sctp_stream_free_ext() without
+> calling free_sid(), or just remove sctp_stream_free_ext().
+
+It's easier to maintain it if we have symmetric paths for initializing
+and for freeing it and less special cases. We already have
+sctp_stream_init_ext(), so having sctp_stream_free_ext() is not off.
+
+I'm happy to review any patch that also updates sctp_stream_free(),
+one way or another.
+
+> 
+> Thanks.
+> 
+> >
+> > Makes sense?
+> >
+> > Thanks,
+> > Marcelo
