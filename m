@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87188635ECE
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:08:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79D4D635ED5
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 14:08:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238290AbiKWNEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 08:04:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43088 "EHLO
+        id S238684AbiKWNEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 08:04:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238241AbiKWNEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:04:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A2CCB942;
-        Wed, 23 Nov 2022 04:48:52 -0800 (PST)
+        with ESMTP id S238389AbiKWNER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 08:04:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C478CD94E;
+        Wed, 23 Nov 2022 04:48:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF60AB81F6F;
-        Wed, 23 Nov 2022 12:48:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06104C433C1;
-        Wed, 23 Nov 2022 12:48:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9C1861CA4;
+        Wed, 23 Nov 2022 12:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA94DC433D6;
+        Wed, 23 Nov 2022 12:48:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669207724;
-        bh=VSOHmo7sDplewfab+OwnRAyCOu/HX80NiUna1LwAweg=;
+        s=k20201202; t=1669207727;
+        bh=qfseqzA5QeFGbDcdL8jAeZcM/YWcdxti75h4w7j1dOE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sjxs0OeT1QyRSn0QYyeQ+hztPPyni+GUrHrFs6UY6zD1rGhqVliq61xgK5VEVmKMT
-         Cu9kXusPyTVaYCfGc6PwPD4p2tyc6hwJt6Ticav0EFJ1eDYFcnh91jlIJaMkWJlMTT
-         sB63mubxbPNy0bUPfQveIzGZiMb5v9lC5FybmrUgUZTtCDX6BYn0al9dpnGX2EtuvU
-         V1bnQ6Yb/zd262vAXL2ifZLn50fvpAcAECkxJhx754GyeT5QgXjyh6sGHllA4/BROa
-         A8GX7PztRZFCjwiRxgV1dbk3SUzb9SKf0SwKpDFW1qUIHOPTMD1X83uO5NZ7f6GLsx
-         dS2caVcoORLKw==
+        b=KROc2jcghXsp1CD8QCeI0ACMxuNR7zBqDg33kLt1gnAfuqONaLMfKKk2HeQIAYfdb
+         DHLcjD7qjcXn2otl3QBqlrs5SZawHhukr2GvSpkd/2E1A4/F7nmNGnqQnBeLI+wnOj
+         hnGTTWL3gbliKy8DCY6H5KjQEgsi59zOyzjQyqBwQ6ntPZe29lggwz7QKoApwVUmYJ
+         Au7GcRYE/FVr+yAxOc17A3CNrLpjKqStCpltoHMFcNwJ8LUWFfMEWY5AiV1LuGdJQK
+         9z69kTFl5iJlBqmb4SJAMy7I7T4Yg4QCrw/82NDqzTNMqyhCkAzUc7SOM1GBauK98s
+         k0vTkRv1GfIaA==
 From:   Roger Quadros <rogerq@kernel.org>
 To:     davem@davemloft.net, maciej.fijalkowski@intel.com, kuba@kernel.org
 Cc:     edumazet@google.com, pabeni@redhat.com, vigneshr@ti.com,
         linux-omap@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH v3 net-next 1/6] Revert "net: ethernet: ti: am65-cpsw: Fix hardware switch mode on suspend/resume"
-Date:   Wed, 23 Nov 2022 14:48:30 +0200
-Message-Id: <20221123124835.18937-2-rogerq@kernel.org>
+Subject: [PATCH v3 net-next 2/6] Revert "net: ethernet: ti: am65-cpsw: retain PORT_VLAN_REG after suspend/resume"
+Date:   Wed, 23 Nov 2022 14:48:31 +0200
+Message-Id: <20221123124835.18937-3-rogerq@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221123124835.18937-1-rogerq@kernel.org>
 References: <20221123124835.18937-1-rogerq@kernel.org>
@@ -51,7 +51,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 1af3cb3702d02167926a2bd18580cecb2d64fd94.
+This reverts commit 643cf0e3ab5ccee37b3c53c018bd476c45c4b70e.
 
 This is to make it easier to revert the offending commit
 fd23df72f2be ("net: ethernet: ti: am65-cpsw: Add suspend/resume support")
@@ -59,61 +59,72 @@ fd23df72f2be ("net: ethernet: ti: am65-cpsw: Add suspend/resume support")
 Signed-off-by: Roger Quadros <rogerq@kernel.org>
 ---
  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 7 -------
- drivers/net/ethernet/ti/am65-cpsw-nuss.h | 2 --
- 2 files changed, 9 deletions(-)
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h | 4 ----
+ 2 files changed, 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 6b0458df613a..b43dc75c2202 100644
+index b43dc75c2202..04e673902d53 100644
 --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
 +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -2714,7 +2714,6 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
- 	struct clk *clk;
- 	u64 id_temp;
- 	int ret, i;
--	int ale_entries;
- 
- 	common = devm_kzalloc(dev, sizeof(struct am65_cpsw_common), GFP_KERNEL);
- 	if (!common)
-@@ -2809,10 +2808,6 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
- 		goto err_of_clear;
- 	}
- 
--	ale_entries = common->ale->params.ale_entries;
--	common->ale_context = devm_kzalloc(dev,
--					   ale_entries * ALE_ENTRY_WORDS * sizeof(u32),
--					   GFP_KERNEL);
- 	ret = am65_cpsw_init_cpts(common);
- 	if (ret)
- 		goto err_of_clear;
-@@ -2883,7 +2878,6 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
+@@ -2876,9 +2876,7 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
+ 	struct am65_cpsw_port *port;
+ 	struct net_device *ndev;
  	int i, ret;
- 	struct am65_cpsw_host *host_p = am65_common_get_host(common);
+-	struct am65_cpsw_host *host_p = am65_common_get_host(common);
  
--	cpsw_ale_dump(common->ale, common->ale_context);
- 	host_p->vid_context = readl(host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+-	host_p->vid_context = readl(host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
  	for (i = 0; i < common->port_num; i++) {
  		port = &common->ports[i];
-@@ -2942,7 +2936,6 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+ 		ndev = port->ndev;
+@@ -2886,7 +2884,6 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
+ 		if (!ndev)
+ 			continue;
+ 
+-		port->vid_context = readl(port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+ 		netif_device_detach(ndev);
+ 		if (netif_running(ndev)) {
+ 			rtnl_lock();
+@@ -2910,7 +2907,6 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+ 	struct am65_cpsw_port *port;
+ 	struct net_device *ndev;
+ 	int i, ret;
+-	struct am65_cpsw_host *host_p = am65_common_get_host(common);
+ 
+ 	am65_cpts_resume(common->cpts);
+ 
+@@ -2932,11 +2928,8 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+ 		}
+ 
+ 		netif_device_attach(ndev);
+-		writel(port->vid_context, port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
  	}
  
- 	writel(host_p->vid_context, host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
--	cpsw_ale_restore(common->ale, common->ale_context);
- 
+-	writel(host_p->vid_context, host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+-
  	return 0;
  }
+ #endif /* CONFIG_PM_SLEEP */
 diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-index 4b75620f8d28..e95cc37a7286 100644
+index e95cc37a7286..2c9850fdfcb6 100644
 --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
 +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-@@ -149,8 +149,6 @@ struct am65_cpsw_common {
- 	struct net_device *hw_bridge_dev;
- 	struct notifier_block am65_cpsw_netdevice_nb;
- 	unsigned char switch_id[MAX_PHYS_ITEM_ID_LEN];
--	/* only for suspend/resume context restore */
--	u32			*ale_context;
+@@ -55,16 +55,12 @@ struct am65_cpsw_port {
+ 	bool				rx_ts_enabled;
+ 	struct am65_cpsw_qos		qos;
+ 	struct devlink_port		devlink_port;
+-	/* Only for suspend resume context */
+-	u32				vid_context;
  };
  
- struct am65_cpsw_ndev_stats {
+ struct am65_cpsw_host {
+ 	struct am65_cpsw_common		*common;
+ 	void __iomem			*port_base;
+ 	void __iomem			*stat_base;
+-	/* Only for suspend resume context */
+-	u32				vid_context;
+ };
+ 
+ struct am65_cpsw_tx_chn {
 -- 
 2.17.1
 
