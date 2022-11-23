@@ -2,166 +2,334 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60BAA63636E
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:26:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C43636380
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:27:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237785AbiKWP0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 10:26:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35724 "EHLO
+        id S235097AbiKWP1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 10:27:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237811AbiKWPZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:25:51 -0500
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2047.outbound.protection.outlook.com [40.107.249.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AC982235
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 07:25:49 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LQHyDKACRD6YELr2ZB5o/4hrkp+Rd6g/H0sVd+cwd3KfrD2hJFA9/NHUM1jyNqQ0F/lf4u8T2P9NPqC2JDJpwWbfRF3PkNK82Vkt4NoOnmPEyaXZeyIgjfjTk5I3oj3v+DdFh2+CpNhw4G8AkJV9ViywQgrmcrh8V4jn1PijnT2cVox+M4XphJXl8OjRxa2dDlvSlc7WgPeePv1hPjhn0fV0H6eGgPZIgx8Ia23sCltvFMOBg6v2+Wz2EVK8a9J9QB0OvAMKe3M5AU/TeSzpC2HQzMrQZPEYe2QJluZ/ZqWryZsuc4k0x48TKcSCW2mHumHlCgxwiL09UdPH+SQoXA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QcQeCPItiN5k/nREidmDAXUFrA0qXeYI5Q710Lz2ctQ=;
- b=lL5klPcQbOR3wNCU5Z0b5WMLdJN5HRPY/X9vGyy94bN2YZB4R12VXIDSH5MQTexum+C3Kw3caWZsICpqqYX63K1hAn85lmrI7DzKRLogkLAIUw0IVpSxFRg1Ll+Lh1KFMfWkbcd1z9ytVGjayWrioolIpfYtgS52uP/5aieVDvGgIhwYPakuvcZjrdEalEWDHPa2AdgGS4THhbiARPWdJ9/QE6tXWINowdp7k2aAZ+eAObyNrEJdq0c7vQq6E63h5T07FU/6KHVNJcZXM/rZ6YaIok9lvu5GIuv33K4t6jYDnrhVCgCCveu9FTrn9tKtrk6g43tpZ6BxT4VyXMzXLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QcQeCPItiN5k/nREidmDAXUFrA0qXeYI5Q710Lz2ctQ=;
- b=kKfYIqhCihFBP6wIkFIovuqUIQJHjadzXMcqExe0T+K0MmCmtRnXaCc4Y8up/Kq6ovG7aEAqlHGceCAU7KIEf8wXDyCCIA98V9FYjbZX/ZunHhQ0cXJJV86OLSlTQYmnwnR84C9OCi8iGAW3V1+KZ1tRLnR3XmXsrHRWExMeoCs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB8PR04MB6921.eurprd04.prod.outlook.com (2603:10a6:10:119::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.9; Wed, 23 Nov
- 2022 15:25:46 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5834.015; Wed, 23 Nov 2022
- 15:25:46 +0000
-Date:   Wed, 23 Nov 2022 17:25:43 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Steve Williams <steve.williams@getcruise.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        vinicius.gomes@intel.com, xiaoliang.yang_1@nxp.com,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [EXT] Re: [PATCH net-next] net/hanic: Add the hanic network
- interface for high availability links
-Message-ID: <20221123152543.ekc5t7gp2hpmaaze@skbuf>
-References: <20221118232639.13743-1-steve.williams@getcruise.com>
- <20221121195810.3f32d4fd@kernel.org>
- <20221122113412.dg4diiu5ngmulih2@skbuf>
- <CALHoRjcw8Du+4Px__x=vfDfjKnHVRnMmAhBBEznQ2CfHPZ9S0A@mail.gmail.com>
- <20221123142558.akqff2gtvzrqtite@skbuf>
- <Y34zoflZsC2pn9RO@nanopsycho>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y34zoflZsC2pn9RO@nanopsycho>
-X-ClientProxiedBy: AM0PR02CA0129.eurprd02.prod.outlook.com
- (2603:10a6:20b:28c::26) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S238248AbiKWP0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:26:19 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9699CF6A;
+        Wed, 23 Nov 2022 07:26:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1669217173; x=1700753173;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=TKg6z9yXyQb61xdfgwCuiBPWIQ4ZM4P9nYWrl7wtjag=;
+  b=UkiNFf7vjhhQTmCuJb6H51yWY35/W5842L5+8JvHE1ND3CSvhHBtDNjd
+   C76VOtgU3sWDxRu3Nc/UbavNzcHTNedT72L7h/HHVJ4rLVg7YCs0vU84r
+   LRUF4iFMaarV9a9qpd9GaxDkeafOO6KJwh1TsUcP6d0oUFA5oK77zyv0H
+   hCwVq+RlH89bDRMhLUOz3dV8Y8uFznulQUBgMWZv9H9f/p6Mlm/27Tpz9
+   +XA+uCD3zPuKejU0vzGSo7SZvPLhj4gEBLbfJaDtSNYB4aB/k+xe2G12C
+   58Vc0xhzcaBxwKM2hTTwFHug+oltomStmBNA2nd9bvH5E5r1b1IwVyO0a
+   A==;
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="184877216"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Nov 2022 08:26:12 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 23 Nov 2022 08:26:01 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 23 Nov 2022 08:25:58 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Casper Andersson" <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        "Nathan Huckleberry" <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Subject: [PATCH net-next v2 3/4] net: microchip: sparx5: Support for displaying a list of keysets
+Date:   Wed, 23 Nov 2022 16:25:44 +0100
+Message-ID: <20221123152545.1997266-4-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221123152545.1997266-1-steen.hegelund@microchip.com>
+References: <20221123152545.1997266-1-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DB8PR04MB6921:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5df08fd1-84f5-4b5f-24eb-08dacd66fe73
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TyujE0HR2QHGIozblYHCWS3vaft76ykKVt1e+Yao3DGXN5xDXTmCbS9g5FmVnt4QINVZBSvPKemZ4Sdm9yQFe+xjpBPQnzbyYdwRvLeFF/mmjtF/1eihHSxly5Bz0Z5snfv14iL9QvLrL9h5rY+djkKffkmxZHCXwvpm9+OGCXz/apVS/4vi6a5cH/l8fK7qyPigWeZ7QKsm/QboCufGMTioBTo890w2Vrf0IvF65g19x6Ng8Wm5dpmNDr+6KVTB69N0RC2N/Mm9fd7cQ0eQCv/Iiag5/yF/k/yJOd5IQMQ1OZR9tDn/lpO4WgvEuaB2pUwlH0m2n9YbPDRkFT0sbL5X25MB6yGppiH0OJPHcKhHQS4PhnascTy1oo7KGZHpMRKGMfbGS80ti0wPvTV6sCaBjwqUaVTuhI/obOKHnqzCWkaHxLjwo1jt/HkiM2hLkpbWb2EdHnvhOQ0IdtOt9Hh+iMHBqE+v6HAnw04df15LRdu2CqE1UiO72D0KY9yfqwrurczupdUAVOiskmtumq5BJY/UerdqNCkmztoafM8MsvKx1NmQS4PF4e/q1w3NnEsyUBFdFVuPhTm5cBDqmyov0FpZMeK9z2Cz5y0lBxk8D4AQ8TZ48Fh84XFpLQO358KkwuheHnEDgyxi9Q+VZg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(366004)(136003)(376002)(396003)(346002)(39860400002)(451199015)(2906002)(83380400001)(1076003)(66946007)(41300700001)(86362001)(66556008)(6486002)(33716001)(54906003)(6916009)(4326008)(6506007)(38100700002)(9686003)(8676002)(5660300002)(6666004)(186003)(66476007)(8936002)(44832011)(6512007)(26005)(316002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KW0wi4KjKcyycaiobqmZl3PcV+zgEXn2jwxQvOl9Oi/wFO5HPpio2oO2Uk1a?=
- =?us-ascii?Q?BGFyOH9NOKGMLwzQB0TSMX6uwhfSPxNtUfNcJ0gV534+T+S6YRfcgYY0iuMr?=
- =?us-ascii?Q?gn122VqMolQInQ51W33102crIE0LiSVakip9FUnU2OS4X9hW9nk10RISmhOO?=
- =?us-ascii?Q?uQpSGKHIeOiUO0zyEycOth3hqe0IIeA8IRMVmVwcQ+j/R3hgXEHGLO8aQuS4?=
- =?us-ascii?Q?KOHFVsFtk7KzF8bd1O1+QDGzW/kuDJWNoHWxwRRv3D11qppVcO67Yu+SbWv5?=
- =?us-ascii?Q?NuFRn5mhnzL59GfN+tvkbNWlHNXiRDBx9r1zm6GXqcE2Ty57BsJLf16CASWJ?=
- =?us-ascii?Q?Q7357kJSaV6XZoDI4S6E0VRioSkOjvAtK6ls766GNBL30+ow/oLCFij2n374?=
- =?us-ascii?Q?aRl2yCUUpNu0ZQf9C1zxT+CQH3vhphrLcNaR61PhGJNJnCIsPLy8z7ZC7wpM?=
- =?us-ascii?Q?30ZxeNuB9QfbopruUivLQiyccwOzayHymNtAu3Dd0TxA6zi/fUBdQIO0f6dW?=
- =?us-ascii?Q?3q2syftTvBh0JnzMZtGPH6+tzSHU1Y/yYkolFjGXNm+xTfdMvsDTjmxztTIg?=
- =?us-ascii?Q?0DzDAf/pq77eYfuUKI0Ry995Az/XZ+ZEiEGizz6B6qZ/N3s1t0K1B4AGHK4X?=
- =?us-ascii?Q?OXJJmIpwgRLHbOsJQnCzACJGVEnCkvbpwOwPontS2yVJV02bVQsff6i2N2UE?=
- =?us-ascii?Q?ZNMzhgwKKEuRUwvgK91kXFG1i4sirL51XhwE0iCbOaO/aiKjM4eMLvYKX/vv?=
- =?us-ascii?Q?inpGGHkk5kO/pEnexwcybNNiwIGfTk6R+3CheHnIuRsHVPlmjLkTF6moZ5l4?=
- =?us-ascii?Q?I8cSF5++WzbQplQxtxmOzl9ZQfa8VsnMBc9IXruTYR4+L3zClYLIg2OgUqef?=
- =?us-ascii?Q?D01DrzT//iRU3mOtAlY5Eoyz+8sLId6BTCB+tEfYB42Ul8GZJof2hdHaHlIW?=
- =?us-ascii?Q?Jewm8RTuBo7Wu2lSOoAimsX/dXx17B1sTpqIPEqIxqeX0pswkCo8qdHBXdzH?=
- =?us-ascii?Q?/HhgG97MOnjPpNLGoNojXxdZVX7tzi/8sXhK809wM79YcOvJuXqvl1f75udE?=
- =?us-ascii?Q?JclXhS0pp1aroqpzBEZoH0bCuaps8OlIOiP1C29tVOZxMA8gZ6XybYsA5LLn?=
- =?us-ascii?Q?269NoW4ydBrZ8fC82wUruM1Ff8oMNjgGSoGySh1lSXVBh7ZD5/hQpZQ5pOmn?=
- =?us-ascii?Q?JV7RSS118wPkQIFJhtg2yY3prj4XKXUxen5keE/t3OvM9vhseylEdiniLBlr?=
- =?us-ascii?Q?vX87xVpxzS4RSIN2rmuh5KPAboc4jOd/t6752n7NRQw4gCvpQWv4r5ReSnfL?=
- =?us-ascii?Q?S21vU6hudVSvNmo845si0ph908HdoXUG5hyPLkIAIZJciXmCblM5ngmU6HJz?=
- =?us-ascii?Q?EWQvbYhDhKOsPGofRLbuyVPvI4inkVw/LtQiZHqPwG1UpnShR4fxB5bBAKf3?=
- =?us-ascii?Q?5dQQ4xLeK+mkWD0h4LLCYqS9lUIzBa6TaoklkKpgjAdm3S6LsN2B5q+DNmBM?=
- =?us-ascii?Q?FtpVAppAaLq1h0OBZux2TmztELQwNtadhGa/R2LdMa6kjdb13Wf9vVRstG1J?=
- =?us-ascii?Q?06PV70s4w8/iSMfJbFoxMoW4WWctKm4SmxQUoDJhtJkii4ic27n1SHaYdofK?=
- =?us-ascii?Q?YQ=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5df08fd1-84f5-4b5f-24eb-08dacd66fe73
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2022 15:25:46.7226
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XmLeaL0dPAp4Wa+gUjHvemSf57hNtk0OHJeTXjd6xJqHNit6AX8Y8RydhaLr5m1thpc67JxH0PckgpqEafcQ/g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6921
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,T_SPF_TEMPERROR autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 03:52:17PM +0100, Jiri Pirko wrote:
-> >Reworded, why must the hanic functionality to be in the kernel?
-> 
-> I guess for the same reason other soft netdevice driver are in the
-> kernel. You can do bridge, bond, etc in a silimilar way you described
-> here...
+This will display a list of keyset in case the type_id field in the VCAP
+rule has been wildcarded.
 
-You have to consider the value added to the kernel in each case
-(and also what were the best practices when those other drivers were
-introduced; you can't just use bonding as a precedent for anything).
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+---
+ .../microchip/vcap/vcap_api_debugfs.c         | 98 +++++++++++--------
+ .../microchip/vcap/vcap_api_debugfs_kunit.c   | 20 +++-
+ 2 files changed, 74 insertions(+), 44 deletions(-)
 
-I believe hanic does not even attempt to solve a generic enough problem
-to be the FRER endpoint driver for the Linux kernel. It assumes streams
-will be {MAC SA, VID} on RX, and {MAC DA, VID} on TX. That's already
-policy enforced by the kernel, when the kernel should just provide the
-mechanisms for user space to enforce one. This type of stream
-classification will not be the case for 802.1CB networks in general.
-According to some of my own research, you can also solve some of the
-problems Steve is addressing in other ways.
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
+index d9c7ca988b76..5df00e940333 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
+@@ -192,22 +192,22 @@ static bool vcap_verify_keystream_keyset(struct vcap_control *vctrl,
+ 	vcap_iter_init(&iter, vcap->sw_width, tgt, typefld->offset);
+ 	vcap_decode_field(keystream, &iter, typefld->width, (u8 *)&value);
+ 
+-	return (value == info->type_id);
++	return (value & mask) == (info->type_id & mask);
+ }
+ 
+ /* Verify that the typegroup information, subword count, keyset and type id
+- * are in sync and correct, return the keyset
++ * are in sync and correct, return the list of matching keysets
+  */
+-static enum
+-vcap_keyfield_set vcap_find_keystream_keyset(struct vcap_control *vctrl,
+-					     enum vcap_type vt,
+-					     u32 *keystream,
+-					     u32 *mskstream,
+-					     bool mask, int sw_max)
++static int
++vcap_find_keystream_keysets(struct vcap_control *vctrl,
++			    enum vcap_type vt,
++			    u32 *keystream,
++			    u32 *mskstream,
++			    bool mask, int sw_max,
++			    struct vcap_keyset_list *kslist)
+ {
+ 	const struct vcap_set *keyfield_set;
+ 	int sw_count, idx;
+-	bool res;
+ 
+ 	sw_count = vcap_find_keystream_typegroup_sw(vctrl, vt, keystream, mask,
+ 						    sw_max);
+@@ -219,11 +219,12 @@ vcap_keyfield_set vcap_find_keystream_keyset(struct vcap_control *vctrl,
+ 		if (keyfield_set[idx].sw_per_item != sw_count)
+ 			continue;
+ 
+-		res = vcap_verify_keystream_keyset(vctrl, vt, keystream,
+-						   mskstream, idx);
+-		if (res)
+-			return idx;
++		if (vcap_verify_keystream_keyset(vctrl, vt, keystream,
++						 mskstream, idx))
++			vcap_keyset_list_add(kslist, idx);
+ 	}
++	if (kslist->cnt > 0)
++		return 0;
+ 	return -EINVAL;
+ }
+ 
+@@ -296,13 +297,14 @@ vcap_find_actionstream_actionset(struct vcap_control *vctrl,
+ 	return -EINVAL;
+ }
+ 
+-/* Read key data from a VCAP address and discover if there is a rule keyset
++/* Read key data from a VCAP address and discover if there are any rule keysets
+  * here
+  */
+-static int vcap_addr_keyset(struct vcap_control *vctrl,
+-			    struct net_device *ndev,
+-			    struct vcap_admin *admin,
+-			    int addr)
++static int vcap_addr_keysets(struct vcap_control *vctrl,
++			     struct net_device *ndev,
++			     struct vcap_admin *admin,
++			     int addr,
++			     struct vcap_keyset_list *kslist)
+ {
+ 	enum vcap_type vt = admin->vtype;
+ 	int keyset_sw_regs, idx;
+@@ -320,9 +322,10 @@ static int vcap_addr_keyset(struct vcap_control *vctrl,
+ 	}
+ 	if (key == 0 && mask == 0)
+ 		return -EINVAL;
+-	/* Decode and locate the keyset */
+-	return vcap_find_keystream_keyset(vctrl, vt, admin->cache.keystream,
+-					  admin->cache.maskstream, false, 0);
++	/* Decode and locate the keysets */
++	return vcap_find_keystream_keysets(vctrl, vt, admin->cache.keystream,
++					   admin->cache.maskstream, false, 0,
++					   kslist);
+ }
+ 
+ static int vcap_read_rule(struct vcap_rule_internal *ri)
+@@ -471,9 +474,11 @@ static int vcap_debugfs_show_rule_keyset(struct vcap_rule_internal *ri,
+ 	struct vcap_control *vctrl = ri->vctrl;
+ 	struct vcap_stream_iter kiter, miter;
+ 	struct vcap_admin *admin = ri->admin;
++	enum vcap_keyfield_set keysets[10];
+ 	const struct vcap_field *keyfield;
+ 	enum vcap_type vt = admin->vtype;
+ 	const struct vcap_typegroup *tgt;
++	struct vcap_keyset_list matches;
+ 	enum vcap_keyfield_set keyset;
+ 	int idx, res, keyfield_count;
+ 	u32 *maskstream;
+@@ -483,16 +488,22 @@ static int vcap_debugfs_show_rule_keyset(struct vcap_rule_internal *ri,
+ 
+ 	keystream = admin->cache.keystream;
+ 	maskstream = admin->cache.maskstream;
+-	res = vcap_find_keystream_keyset(vctrl, vt, keystream, maskstream,
+-					 false, 0);
++	matches.keysets = keysets;
++	matches.cnt = 0;
++	matches.max = ARRAY_SIZE(keysets);
++	res = vcap_find_keystream_keysets(vctrl, vt, keystream, maskstream,
++					  false, 0, &matches);
+ 	if (res < 0) {
+-		pr_err("%s:%d: could not find valid keyset: %d\n",
++		pr_err("%s:%d: could not find valid keysets: %d\n",
+ 		       __func__, __LINE__, res);
+ 		return -EINVAL;
+ 	}
+-	keyset = res;
+-	out->prf(out->dst, "  keyset: %s\n",
+-		 vcap_keyset_name(vctrl, ri->data.keyset));
++	keyset = matches.keysets[0];
++	out->prf(out->dst, "  keysets:");
++	for (idx = 0; idx < matches.cnt; ++idx)
++		out->prf(out->dst, " %s",
++			 vcap_keyset_name(vctrl, matches.keysets[idx]));
++	out->prf(out->dst, "\n");
+ 	out->prf(out->dst, "  keyset_sw: %d\n", ri->keyset_sw);
+ 	out->prf(out->dst, "  keyset_sw_regs: %d\n", ri->keyset_sw_regs);
+ 	keyfield_count = vcap_keyfield_count(vctrl, vt, keyset);
+@@ -647,11 +658,12 @@ static int vcap_show_admin_raw(struct vcap_control *vctrl,
+ 			       struct vcap_admin *admin,
+ 			       struct vcap_output_print *out)
+ {
++	enum vcap_keyfield_set keysets[10];
+ 	enum vcap_type vt = admin->vtype;
++	struct vcap_keyset_list kslist;
+ 	struct vcap_rule_internal *ri;
+ 	const struct vcap_set *info;
+-	int keyset;
+-	int addr;
++	int addr, idx;
+ 	int ret;
+ 
+ 	if (list_empty(&admin->rules))
+@@ -664,24 +676,32 @@ static int vcap_show_admin_raw(struct vcap_control *vctrl,
+ 	ri = list_first_entry(&admin->rules, struct vcap_rule_internal, list);
+ 
+ 	/* Go from higher to lower addresses searching for a keyset */
++	kslist.keysets = keysets;
++	kslist.max = ARRAY_SIZE(keysets);
+ 	for (addr = admin->last_valid_addr; addr >= admin->first_valid_addr;
+ 	     --addr) {
+-		keyset = vcap_addr_keyset(vctrl, ri->ndev, admin,  addr);
+-		if (keyset < 0)
++		kslist.cnt = 0;
++		ret = vcap_addr_keysets(vctrl, ri->ndev, admin, addr, &kslist);
++		if (ret < 0)
+ 			continue;
+-		info = vcap_keyfieldset(vctrl, vt, keyset);
++		info = vcap_keyfieldset(vctrl, vt, kslist.keysets[0]);
+ 		if (!info)
+ 			continue;
+-		if (addr % info->sw_per_item)
++		if (addr % info->sw_per_item) {
+ 			pr_info("addr: %d X%d error rule, keyset: %s\n",
+ 				addr,
+ 				info->sw_per_item,
+-				vcap_keyset_name(vctrl, keyset));
+-		else
+-			out->prf(out->dst, "  addr: %d, X%d rule, keyset: %s\n",
+-			   addr,
+-			   info->sw_per_item,
+-			   vcap_keyset_name(vctrl, keyset));
++				vcap_keyset_name(vctrl, kslist.keysets[0]));
++		} else {
++			out->prf(out->dst, "  addr: %d, X%d rule, keysets:",
++				 addr,
++				 info->sw_per_item);
++			for (idx = 0; idx < kslist.cnt; ++idx)
++				out->prf(out->dst, " %s",
++					 vcap_keyset_name(vctrl,
++							  kslist.keysets[idx]));
++			out->prf(out->dst, "\n");
++		}
+ 	}
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
+index ed455dad3a14..cf594668d5d9 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
+@@ -316,24 +316,34 @@ static void vcap_api_addr_keyset_test(struct kunit *test)
+ 			.actionstream = actdata,
+ 		},
+ 	};
++	enum vcap_keyfield_set keysets[10];
++	struct vcap_keyset_list matches;
+ 	int ret, idx, addr;
+ 
+ 	vcap_test_api_init(&admin);
+ 
+ 	/* Go from higher to lower addresses searching for a keyset */
++	matches.keysets = keysets;
++	matches.cnt = 0;
++	matches.max = ARRAY_SIZE(keysets);
+ 	for (idx = ARRAY_SIZE(keydata) - 1, addr = 799; idx > 0;
+ 	     --idx, --addr) {
+ 		admin.cache.keystream = &keydata[idx];
+ 		admin.cache.maskstream = &mskdata[idx];
+-		ret = vcap_addr_keyset(&test_vctrl, &test_netdev, &admin, addr);
++		ret = vcap_addr_keysets(&test_vctrl, &test_netdev, &admin,
++					addr, &matches);
+ 		KUNIT_EXPECT_EQ(test, -EINVAL, ret);
+ 	}
+ 
+ 	/* Finally we hit the start of the rule */
+ 	admin.cache.keystream = &keydata[idx];
+ 	admin.cache.maskstream = &mskdata[idx];
+-	ret = vcap_addr_keyset(&test_vctrl, &test_netdev, &admin,  addr);
+-	KUNIT_EXPECT_EQ(test, VCAP_KFS_MAC_ETYPE, ret);
++	matches.cnt = 0;
++	ret = vcap_addr_keysets(&test_vctrl, &test_netdev, &admin,
++				addr, &matches);
++	KUNIT_EXPECT_EQ(test, 0, ret);
++	KUNIT_EXPECT_EQ(test, matches.cnt, 1);
++	KUNIT_EXPECT_EQ(test, matches.keysets[0], VCAP_KFS_MAC_ETYPE);
+ }
+ 
+ static void vcap_api_show_admin_raw_test(struct kunit *test)
+@@ -362,7 +372,7 @@ static void vcap_api_show_admin_raw_test(struct kunit *test)
+ 		.prf = (void *)test_prf,
+ 	};
+ 	const char *test_expected =
+-		"  addr: 786, X6 rule, keyset: VCAP_KFS_MAC_ETYPE\n";
++		"  addr: 786, X6 rule, keysets: VCAP_KFS_MAC_ETYPE\n";
+ 	int ret;
+ 
+ 	vcap_test_api_init(&admin);
+@@ -442,7 +452,7 @@ static const char * const test_admin_expect[] = {
+ 	"  chain_id: 0\n",
+ 	"  user: 0\n",
+ 	"  priority: 0\n",
+-	"  keyset: VCAP_KFS_MAC_ETYPE\n",
++	"  keysets: VCAP_KFS_MAC_ETYPE\n",
+ 	"  keyset_sw: 6\n",
+ 	"  keyset_sw_regs: 2\n",
+ 	"    ETYPE_LEN_IS: W1: 1/1\n",
+-- 
+2.38.1
 
-For example, in order to make {MAC DA, VLAN} streams identify both the
-sender and the receiver, one can arrange that in a network, each sender
-has its own VLAN ID which identifies it as a sender. I know of at least
-one network where this is the case. But this would also be considered
-policy, and I'm not suggesting that hanic should use this approach
-rather than the other. 802.1CB simply does not recommend one mode of
-arranging streams over another.
-
-The fact that hanic needs 802.1Q uppers as termination points for
-{MAC, VLAN} addresses seemst to simply not scale for IP-based streams,
-or generic byte@offset pattern matching based streams.
-
-Additionally, the hanic driver will probably need a rewrite when Steve
-enables some options like CONFIG_PROVE_LOCKING or CONFIG_DEBUG_ATOMIC_SLEEP.
-It currently creates sysfs files for streams from the NET_TX softirq.
-It's not even clear to me that stream auto-discovery is something
-desirable generally. I'd rather pre-program my termination streams if
-I know what I'm doing, rather than let the kernel blindly trust possibly
-maliciously crafted 802.1CB tags.
-
-When I suggested a tap based solution, I was trying to take the Cruise
-hanic driver, as presented, at face value and to propose something which
-seems like a better fit for it. I wasn't necessarily trying to transform
-the hanic driver into something useful in general for the kernel, since
-I don't know if that's what Steve's goal is.
