@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FA18634F4F
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 06:00:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB8FF634F53
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 06:02:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234375AbiKWFA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 00:00:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39134 "EHLO
+        id S235666AbiKWFCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 00:02:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiKWFAY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 00:00:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92782E2B76
-        for <netdev@vger.kernel.org>; Tue, 22 Nov 2022 21:00:22 -0800 (PST)
+        with ESMTP id S234936AbiKWFB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 00:01:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E88DE0CA4;
+        Tue, 22 Nov 2022 21:01:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F07AB81E9B
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 05:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ECE6FC4314A;
-        Wed, 23 Nov 2022 05:00:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A42F60916;
+        Wed, 23 Nov 2022 05:01:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5863CC433C1;
+        Wed, 23 Nov 2022 05:01:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669179620;
-        bh=YQhjGoeHQS0CDc9pIt9Ahl4IVc/2e+gZDTJaANifVo4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gcVkClUGwEivllQs8kB4K40mTR9xtFGJ4tCuHFM/xS2/TtH391N99Y/e/aL9KXZrb
-         Ji5PPD25JoYb3nPY8HbU312yehMmrccXdJCPh+rfufA4aWxRy0/lytFYmqMUvJw6Pp
-         Dvd0ZX+c5fzHCIk8Koz8XqezUMg8hEWkYio4pp7VrCPE00gGWReJkJE4gfvIEgzUDb
-         5UVv17f4IN3dhl3kzpVoYdry/rDIgjMM7m/iau6EUUbO6znUefpD5dVPeTfTon5pWe
-         E5v5lL0YEAT/v4ovvu4KczibN0CDK/CZRsEuSxf3GRVkBk/uT0hZj54KSIPdq1LSxN
-         DMFvLXEgrEXqA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C4F2AE50D6E;
-        Wed, 23 Nov 2022 05:00:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1669179716;
+        bh=k68a/G3GQ9o75GfUB0XKtfTQYyzWUYZ7VncGWLyMn+4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J15I9YzfSPGmQJabHFmjxRWahHZU+uEd7LFbrn8bk5NCJeC3HqEwo8MjukRLjDIlv
+         UGLnkSFipvRuX3GrcZyEj7PimvtVEsD0Ok9nfnnl+h7TKPHgh5BYH1oTSMZYuYsIEd
+         hb5E8XxGTNgyFaJm2HKWOjpgqJlkUHLrHF/D4Mq1NRXM5JiPFAbrv8BvL8djFLour5
+         4c317QQsVdJSnKTQi+2ZAO5vA0rTA2mEb6VhufWqci96m6ItOdUqz9xprx76Xpgrd1
+         XABamSmKi81g2QZDxPIkTuKNLG0ad2pdnyCvX52N+gpNFdkuYBXhyAxhfnWd7BclWx
+         EqWv4SigX5Nxw==
+Date:   Tue, 22 Nov 2022 21:01:55 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        moshe@nvidia.com, ogerlitz@mellanox.com, eli@mellanox.com,
+        jackm@dev.mellanox.co.il, roland@purestorage.com,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net/mlx5: Fix uninitialized variable bug in
+ outlen_write()
+Message-ID: <Y32pQ8p+3lb2y5SP@x130.lan>
+References: <20221121112204.24456-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3 0/2] net: ethernet: mtk_eth_soc: fix memory leak in
- error path
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166917961980.4515.18210373992348311213.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Nov 2022 05:00:19 +0000
-References: <20221120055259.224555-1-nalanzeyu@gmail.com>
-In-Reply-To: <20221120055259.224555-1-nalanzeyu@gmail.com>
-To:     Yan Cangang <nalanzeyu@gmail.com>
-Cc:     leon@kernel.org, kuba@kernel.org, Mark-MC.Lee@mediatek.com,
-        john@phrozen.org, nbd@nbd.name, sean.wang@mediatek.com,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20221121112204.24456-1-yuehaibing@huawei.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,30 +57,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 21 Nov 19:22, YueHaibing wrote:
+>If sscanf() return 0, outlen is uninitialized and used in kzalloc(),
+>this is unexpected. We should return -EINVAL if the string is invalid.
+>
+>Fixes: e126ba97dba9 ("mlx5: Add driver for Mellanox Connect-IB adapters")
+>Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>
 
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sun, 20 Nov 2022 13:52:57 +0800 you wrote:
-> v1: https://lore.kernel.org/netdev/20221112233239.824389-1-nalanzeyu@gmail.com/T/
-> v2:
->   - clean up commit message
->   - new mtk_ppe_deinit() function, call it before calling mtk_mdio_cleanup()
-> v3:
->   - split into two patches
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,v3,1/2] net: ethernet: mtk_eth_soc: fix resource leak in error path
-    https://git.kernel.org/netdev/net/c/8110437e5961
-  - [net,v3,2/2] net: ethernet: mtk_eth_soc: fix memory leak in error path
-    https://git.kernel.org/netdev/net/c/603ea5e7ffa7
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+applied to net-mlx5, thanks !
 
