@@ -2,254 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8EB16361DF
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 15:31:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C176361EA
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 15:34:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238413AbiKWObN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 09:31:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57008 "EHLO
+        id S238408AbiKWOet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 09:34:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238392AbiKWOad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 09:30:33 -0500
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AD919C0F
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:29:41 -0800 (PST)
-Received: from [192.168.16.157] (helo=fisk.sw.ru)
-        by relay.virtuozzo.com with esmtp (Exim 4.95)
-        (envelope-from <nikolay.borisov@virtuozzo.com>)
-        id 1oxqjh-001EZF-D8;
-        Wed, 23 Nov 2022 15:28:25 +0100
-From:   Nikolay Borisov <nikolay.borisov@virtuozzo.com>
-To:     nhorman@tuxdriver.com
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, kernel@virtuozzo.com,
-        Nikolay Borisov <nikolay.borisov@virtuozzo.com>
-Subject: [PATCH net-next v2 3/3] selftests: net: Add drop monitor tests for namespace filtering functionality
-Date:   Wed, 23 Nov 2022 16:28:17 +0200
-Message-Id: <20221123142817.2094993-4-nikolay.borisov@virtuozzo.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221123142817.2094993-1-nikolay.borisov@virtuozzo.com>
-References: <20221123142817.2094993-1-nikolay.borisov@virtuozzo.com>
+        with ESMTP id S238107AbiKWOes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 09:34:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8531F18B21
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:33:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669214031;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VEC/ljsECl0xwOwNuuFj4J2VWL3DFQIVZWJ6dvR2khs=;
+        b=C9vFwQEbkehORiQkhkuDd6jbj1pJJD5GTz1hlCK4houkRU0hjw/p+GBLHz0jh/Q0mvcK5B
+        ffMtksegjZjM70KD/hnYcwmctRsEhcBLBBKP3ZWE7ZMfDgdqyq6XKLR7pVdWJ3WSQTpyyl
+        liBiuuf9jVo5yOx0goFrS/kPxJTV9fY=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-212-NZmXO0IJMsGqsqibqthnMw-1; Wed, 23 Nov 2022 09:33:50 -0500
+X-MC-Unique: NZmXO0IJMsGqsqibqthnMw-1
+Received: by mail-ej1-f71.google.com with SMTP id xh12-20020a170906da8c00b007413144e87fso10015930ejb.14
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:33:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VEC/ljsECl0xwOwNuuFj4J2VWL3DFQIVZWJ6dvR2khs=;
+        b=mDaDveWJsg234PzASWo8EQd+wq4nQT1fPxft4s+7DQhgeFqo8+96/oRfSaJNtMeCSq
+         vbdnp41NpiX0uI8rC2wSIBr+WqaWJs/C8VL4i3Qlq/Sc1pzZtPUxrzOBQn2IuJESICIK
+         j6+pUf7lULuOnF7HGeEwMS4Ri9J5LgDA32cWJRo4xo7F9weUJCa6PhjYQocsg690g1yo
+         hlACkQwUrPWiNuDmdcdq7QunoQN54P8K6Nvz+fEtBBS1XWTeOFQfHAatIlqpqisDApu6
+         TCWzQJonTg8r/ORvGtLJ7zcIQTjoYbBRiS9HNAO4pQME6TyS4D9C99GZkQystFeTKAI6
+         Xt+w==
+X-Gm-Message-State: ANoB5plsb2c4n/MbNOO8TZl+yi6juDOVKpODRcOjmQeIoZ4KmrYNKXnn
+        bdtbyoXa/6zUYdURuMaQjzpMoTZiDWxHFzADcZU5YZEIyb5/zp7/nOVmXOhACsmGSQy6wWbqbK2
+        f9NXLIwqE84ZAuvXn
+X-Received: by 2002:a17:906:ce35:b0:7ae:215:2dd5 with SMTP id sd21-20020a170906ce3500b007ae02152dd5mr8205298ejb.208.1669214029127;
+        Wed, 23 Nov 2022 06:33:49 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6Br7EfMXN8zzJJucIbAC1NA/3UEE3+EzuxBZef9EsnddC7aq3JapzaQq+3gcmcLf6jmsIGvw==
+X-Received: by 2002:a17:906:ce35:b0:7ae:215:2dd5 with SMTP id sd21-20020a170906ce3500b007ae02152dd5mr8205265ejb.208.1669214028772;
+        Wed, 23 Nov 2022 06:33:48 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id es8-20020a056402380800b00459148fbb3csm7642794edb.86.2022.11.23.06.33.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Nov 2022 06:33:48 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 63FC87D511B; Wed, 23 Nov 2022 15:33:47 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [xdp-hints] [PATCH bpf-next v2 6/8] mlx4: Introduce
+ mlx4_xdp_buff wrapper for xdp_buff
+In-Reply-To: <20221121182552.2152891-7-sdf@google.com>
+References: <20221121182552.2152891-1-sdf@google.com>
+ <20221121182552.2152891-7-sdf@google.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 23 Nov 2022 15:33:47 +0100
+Message-ID: <874jupviyc.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the current set of tests with new ones covering the updated
-functionality allowing to filter events based on the net namespace they
-originated from. The new set of tests:
+Stanislav Fomichev <sdf@google.com> writes:
 
-Software drops test
-    TEST: No filtering                                                  [ OK ]
-    TEST: Filter everything                                             [ OK ]
-    TEST: NS2 packet drop filtered                                      [ OK ]
-    TEST: Filtering reset                                               [ OK ]
-    TEST: Filtering disabled                                            [ OK ]
+> No functional changes. Boilerplate to allow stuffing more data after xdp_buff.
+>
+> Cc: Tariq Toukan <tariqt@nvidia.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: David Ahern <dsahern@gmail.com>
+> Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+> Cc: Maryam Tahhan <mtahhan@redhat.com>
+> Cc: xdp-hints@xdp-project.net
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx4/en_rx.c | 26 +++++++++++++---------
+>  1 file changed, 15 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> index 8f762fc170b3..467356633172 100644
+> --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> @@ -661,17 +661,21 @@ static int check_csum(struct mlx4_cqe *cqe, struct sk_buff *skb, void *va,
+>  #define MLX4_CQE_STATUS_IP_ANY (MLX4_CQE_STATUS_IPV4)
+>  #endif
+>  
+> +struct mlx4_xdp_buff {
+> +	struct xdp_buff xdp;
+> +};
 
-Hardware drops test
-    TEST: No filtering                                                  [ OK ]
-    TEST: Filter everything                                             [ OK ]
-    TEST: NS2 packet drop filtered                                      [ OK ]
-    TEST: Filtering reset                                               [ OK ]
-    TEST: Filtering disabled                                            [ OK ]
+This embedding trick works for drivers that put xdp_buff on the stack,
+but mlx5 supports XSK zerocopy, which uses the xsk_buff_pool for
+allocating them. This makes it a bit awkward to do the same thing there;
+and since it's probably going to be fairly common to do something like
+this, how about we just add a 'void *drv_priv' pointer to struct
+xdp_buff that the drivers can use? The xdp_buff already takes up a full
+cache line anyway, so any data stuffed after it will spill over to a new
+one; so I don't think there's much difference performance-wise.
 
-Signed-off-by: Nikolay Borisov <nikolay.borisov@virtuozzo.com>
----
- .../selftests/net/drop_monitor_tests.sh       | 127 +++++++++++++++---
- 1 file changed, 108 insertions(+), 19 deletions(-)
+I'll send my patch to add support to mlx5 (using the drv_priv pointer
+approach) separately.
 
-diff --git a/tools/testing/selftests/net/drop_monitor_tests.sh b/tools/testing/selftests/net/drop_monitor_tests.sh
-index b7650e30d18b..776aabc036f1 100755
---- a/tools/testing/selftests/net/drop_monitor_tests.sh
-+++ b/tools/testing/selftests/net/drop_monitor_tests.sh
-@@ -13,14 +13,13 @@ TESTS="
- 	hw_drops
- "
- 
--IP="ip -netns ns1"
--TC="tc -netns ns1"
--DEVLINK="devlink -N ns1"
--NS_EXEC="ip netns exec ns1"
- NETDEVSIM_PATH=/sys/bus/netdevsim/
--DEV_ADDR=1337
--DEV=netdevsim${DEV_ADDR}
--DEVLINK_DEV=netdevsim/${DEV}
-+DEV1_ADDR=1336
-+DEV2_ADDR=1337
-+DEV1=netdevsim${DEV1_ADDR}
-+DEV2=netdevsim${DEV2_ADDR}
-+DEVLINK_DEV1=netdevsim/${DEV1}
-+DEVLINK_DEV2=netdevsim/${DEV2}
- 
- log_test()
- {
-@@ -44,20 +43,29 @@ setup()
- 
- 	set -e
- 	ip netns add ns1
--	$IP link add dummy10 up type dummy
--
--	$NS_EXEC echo "$DEV_ADDR 1" > ${NETDEVSIM_PATH}/new_device
-+	ip netns add ns2
-+	NS1INUM=$(findmnt -t nsfs | grep -m1 ns1 | sed -rn 's/.*net:\[([[:digit:]]+)\].*/\1/p')
-+	NS2INUM=$(findmnt -t nsfs | grep -m1 ns2 | sed -rn 's/.*net:\[([[:digit:]]+)\].*/\1/p')
-+	ip -netns ns1 link add dummy10 up type dummy
-+	ip -netns ns2 link add dummy10 up type dummy
-+
-+	ip netns exec ns1 echo "$DEV1_ADDR 1" > ${NETDEVSIM_PATH}/new_device
-+	ip netns exec ns2 echo "$DEV2_ADDR 1" > ${NETDEVSIM_PATH}/new_device
- 	udevadm settle
--	local netdev=$($NS_EXEC ls ${NETDEVSIM_PATH}/devices/${DEV}/net/)
--	$IP link set dev $netdev up
-+	local netdev=$(ip netns exec ns1 ls ${NETDEVSIM_PATH}/devices/${DEV1}/net/)
-+	ip -netns ns1 link set dev $netdev up
-+	netdev=$(ip netns exec ns2 ls ${NETDEVSIM_PATH}/devices/${DEV2}/net/)
-+	ip -netns ns2 link set dev $netdev up
- 
- 	set +e
- }
- 
- cleanup()
- {
--	$NS_EXEC echo "$DEV_ADDR" > ${NETDEVSIM_PATH}/del_device
-+	ip netns exec ns1 echo "$DEV1_ADDR" > ${NETDEVSIM_PATH}/del_device
-+	ip netns exec ns2 echo "$DEV2_ADDR" > ${NETDEVSIM_PATH}/del_device
- 	ip netns del ns1
-+	ip netns del ns2
- }
- 
- sw_drops_test()
-@@ -69,13 +77,53 @@ sw_drops_test()
- 
- 	local dir=$(mktemp -d)
- 
--	$TC qdisc add dev dummy10 clsact
--	$TC filter add dev dummy10 egress pref 1 handle 101 proto ip \
-+	tc -netns ns1 qdisc add dev dummy10 clsact
-+	tc -netns ns2 qdisc add dev dummy10 clsact
-+	tc -netns ns1 filter add dev dummy10 egress pref 1 handle 101 proto ip \
-+		flower dst_ip 192.0.2.10 action drop
-+	tc -netns ns2 filter add dev dummy10 egress pref 1 handle 101 proto ip \
- 		flower dst_ip 192.0.2.10 action drop
- 
--	$NS_EXEC mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
-+	ip netns exec ns1 mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
- 		-A 192.0.2.1 -B 192.0.2.10 -t udp sp=12345,dp=54321 -c 0 -q \
- 		-d 100msec &
-+	ip netns exec ns2 mausezahn dummy10 -a 00:11:22:33:44:55 -b 00:aa:bb:cc:dd:ee \
-+		-A 192.0.2.1 -B 192.0.2.10 -t udp sp=12345,dp=54321 -c 0 -q \
-+		-d 100msec &
-+
-+	# Test that if we set to 0 we get all packets
-+	echo -e  "set alertmode summary\nset ns 0\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q $NS1INUM $dir/output.txt
-+	local ret1=$?
-+	grep -q $NS2INUM $dir/output.txt
-+	local ret2=$?
-+	(( ret1 == 0 && ret2 == 0 ))
-+	log_test $? 0 "No filtering"
-+
-+	# Set filter to a non-existant ns and we should see nothing
-+	echo -e  "set alertmode summary\nset ns -1\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q drops $dir/output.txt
-+	log_test $? 1 "Filter everything"
-+
-+	# Set filter to NS1 so we shouldn't see NS2
-+	echo -e  "set ns $NS1INUM\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q $NS2INUM $dir/output.txt
-+	log_test $? 1 "NS2 packet drop filtered"
-+
-+	# Return filter to 0 and ensure everything is fine
-+	echo -e  "set ns 0\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q $NS1INUM $dir/output.txt
-+	ret1=$?
-+	grep -q $NS2INUM $dir/output.txt
-+	ret2=$?
-+	(( ret1 == 0 && ret2 == 0 ))
-+	log_test $? 0 "Filtering reset"
-+
-+	# disable ns capability at all
-+	echo -e  "set ns off\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q ns: $dir/output.txt
-+	log_test $? 1 "Filtering disabled"
-+
- 	timeout 5 dwdump -o sw -w ${dir}/packets.pcap
- 	(( $(tshark -r ${dir}/packets.pcap \
- 		-Y 'ip.dst == 192.0.2.10' 2> /dev/null | wc -l) != 0))
-@@ -83,7 +131,8 @@ sw_drops_test()
- 
- 	rm ${dir}/packets.pcap
- 
--	{ kill %% && wait %%; } 2>/dev/null
-+	{ kill $(jobs -p) && wait $(jobs -p); } 2> /dev/null
-+
- 	timeout 5 dwdump -o sw -w ${dir}/packets.pcap
- 	(( $(tshark -r ${dir}/packets.pcap \
- 		-Y 'ip.dst == 192.0.2.10' 2> /dev/null | wc -l) == 0))
-@@ -103,16 +152,56 @@ hw_drops_test()
- 
- 	local dir=$(mktemp -d)
- 
--	$DEVLINK trap set $DEVLINK_DEV trap blackhole_route action trap
-+	devlink -N ns1 trap set $DEVLINK_DEV1 trap blackhole_route action trap
-+	devlink -N ns2 trap set $DEVLINK_DEV2 trap blackhole_route action trap
-+
-+	# Test that if we set to 0 we get all packets
-+	echo -e  "set alertmode summary\nset ns 0\nset hw true\nstart" \
-+		| timeout -s 2 5 dropwatch &> $dir/output.txt
-+	#echo -e  "set hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS1INUM\]" $dir/output.txt
-+	local ret1=$?
-+	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS2INUM\]" $dir/output.txt
-+	local ret2=$?
-+	(( ret1 == 0 && ret2 == 0 ))
-+	log_test $? 0 "No filtering"
-+
-+	# Set filter to a non-existant ns and we should see nothing
-+	echo -e  "set ns -1\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q "\[hardware\]" $dir/output.txt
-+	log_test $? 1 "Filter everything"
-+
-+	# Set filter to NS1 so we shouldn't see NS2
-+	echo -e  "set ns $NS1INUM\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q $NS2INUM $dir/output.txt
-+	log_test $? 1 "NS2 packet drop filtered"
-+
-+	# Return filter to 0 and ensure everything is fine
-+	echo -e  "set ns 0\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS1INUM\]" $dir/output.txt
-+	local ret1=$?
-+	grep -Eq ".*blackhole_route \[hardware\] \[ns: $NS2INUM\]" $dir/output.txt
-+	local ret2=$?
-+	(( ret1 == 0 && ret2 == 0 ))
-+	log_test $? 0 "Filtering reset"
-+
-+	# disable ns capability at all
-+	echo -e  "set ns off\nset hw true\nstart" | timeout -s 2 5 dropwatch &> $dir/output.txt
-+	grep -q ns: $dir/output.txt
-+	log_test $? 1 "Filtering disabled"
-+
- 	timeout 5 dwdump -o hw -w ${dir}/packets.pcap
- 	(( $(tshark -r ${dir}/packets.pcap \
- 		-Y 'net_dm.hw_trap_name== blackhole_route' 2> /dev/null \
- 		| wc -l) != 0))
- 	log_test $? 0 "Capturing active hardware drops"
- 
-+	cp ${dir}/packets.pcap /root/host/
- 	rm ${dir}/packets.pcap
- 
--	$DEVLINK trap set $DEVLINK_DEV trap blackhole_route action drop
-+	devlink -N ns1 trap set $DEVLINK_DEV1 trap blackhole_route action drop
-+	devlink -N ns2 trap set $DEVLINK_DEV2 trap blackhole_route action drop
-+
- 	timeout 5 dwdump -o hw -w ${dir}/packets.pcap
- 	(( $(tshark -r ${dir}/packets.pcap \
- 		-Y 'net_dm.hw_trap_name== blackhole_route' 2> /dev/null \
--- 
-2.34.1
+-Toke
 
