@@ -2,203 +2,393 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 817A863691B
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 19:39:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5408363691D
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 19:39:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238739AbiKWSim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 13:38:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42394 "EHLO
+        id S239284AbiKWSit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 13:38:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239254AbiKWSik (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 13:38:40 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E905DBA8
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 10:38:39 -0800 (PST)
+        with ESMTP id S238995AbiKWSin (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 13:38:43 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8849A59FCA;
+        Wed, 23 Nov 2022 10:38:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669228719; x=1700764719;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=iBtIRbrg+ACPg7DAleEIf5Y3JxuErXGUbn4DiJ9PfPw=;
-  b=nIhaN7cEW4WMZXBQIj2Q0ZrlWmpev3oYBeCjvrgmbAJ7jBkLsfVX80e7
-   EpOQw6UtFLqVXr6H0SK3zN4RuqOkmBBPvhb1xMQ2ZhtpgmqiU7Ac4fw+X
-   gGsg37qBm3D6n9/tlMPSVfzfYBVM1aat1RE5BboQEOo4pnytLSyDXZ9JE
-   0qPFxlH82dw7aaZQqYq4gacyilI7GoOmE9f1CGhaHGPE4Dc2q/ISKtW28
-   B8SKsBxuNhdjcYIwBmtJRMX9OJ+N735AKVOJYPD/1nG/TU+0NqVVqKaVb
-   Wtx7QRPnT7lL22M/ceSKvzBhnxN0f+lbdogR8N6AabEZHelJv1GIfs6AH
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="301696443"
+  t=1669228722; x=1700764722;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=PrECQPqdLE0ZYRqQmQCc6XOHXU9mzomT8nw/PVSmjns=;
+  b=bEwWj7xZuJJ+bgsgPeEkizVgTH7NlFPxN09RLC06VYNnvltU/jv7S5+H
+   l+1RUsRS9AvLeAIrSoV0CSMSJV+plvs02HF5EgU2OMVze43uB1fb7SfnX
+   J2+WpfuQmag3Vb6k5Jruakg2O89UllidXqW5j7Nkqz3EHojmm7Gzk0UsI
+   /sBSFWYidBu0e8Z5k6M8Kb3168TxBcrLoQI0aoZfJoKxKW96plpcHyGEu
+   p0JjHO/m9+5mg9B6xQBdO6llX6mzL1x6PNB6oSRAijibWdCKLwhcg1Fba
+   hDmoQzLN5sTe9Cj1ebSoUK7GFnJizVkvrJUoUdKUPpdoLrt28LUh7a0oY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="378393974"
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="301696443"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 10:38:38 -0800
+   d="scan'208";a="378393974"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 10:38:40 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="710688157"
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="766821814"
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="710688157"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga004.fm.intel.com with ESMTP; 23 Nov 2022 10:38:37 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 23 Nov 2022 10:38:37 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Wed, 23 Nov 2022 10:38:37 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.176)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Wed, 23 Nov 2022 10:38:37 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YEDHKfQ6/6OH+RCgj9Jx5+zV0f+yPrSwqLClhWSeyiiaGE1bE9AlPdRTJ9FPB6/8mG/7zbJbux/22PaU81tAY2l9cQVvcK0SOlx9Jc72kRP3Xla4A2FHgkf/BMqGbGpzCA8c4kOOZjQot5PSJXbXXoyQcJQ9BU0yZqr7yarRVAboQKY5pEweJzWVvY5YyF4Ts5WPksBrI5Ba0yFlwsI3yTWFf9Pza8ygKEg0/OXAmAPFxJ7wm3I9OpbWMex8hzIw+SB5KfETBqIV1ChGZcniteSwGISCmsq04T9xELgJMHCa8lBfVGTuYA6U+MqaOWbgULOiR+UyBiiS78G9Wba9wg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Pe31VCLnHBALI4Ji6PFwHwVhUNO/7D1wSjLBHutouRU=;
- b=oMHOXPQEL/sSEbz58x+N7k46uJinJrGb3s3DVVP0Y5OWbgcFfes+Sj0YkOugn1Y14j3xRLOkjQ9122EK7oYqObQTXLwEU+sZ5+x6m5xr5jlmnepM6mgDkMkqg0znxbe6HC9B/aoRwCc1qC0gsT5C8LtSJEgJ6ExjT2r1QFyPxUSC6EOIGNDgq/C+OIFmPh0xBT38Tfi18FvwM3G5CwHb4skFcJfdGS+FnqyX0abW6Td7PtqB+ZQlCuoox7ANKbpBu2/q5F5U1B+EsRoc8HQEsfoXyrtxacMPn6j+tYe53IbfPukk+X/+j2tUwu/1Ot97Nw3ZWat5h3fD8Rv8MyFQkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com (2603:10b6:303:5a::16)
- by SN7PR11MB7115.namprd11.prod.outlook.com (2603:10b6:806:29a::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Wed, 23 Nov
- 2022 18:38:36 +0000
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::d585:716:9c72:fbab]) by MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::d585:716:9c72:fbab%6]) with mapi id 15.20.5834.015; Wed, 23 Nov 2022
- 18:38:36 +0000
-Message-ID: <99629223-ac1b-0f82-50b8-ea307b3b0197@intel.com>
-Date:   Wed, 23 Nov 2022 10:38:32 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 0/5] Remove uses of kmap_atomic()
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>
-References: <20221117222557.2196195-1-anirudh.venkataramanan@intel.com>
- <Y3yyf+mxwEfIi8Xm@unreal> <20221122105059.7ef304ff@kernel.org>
- <b19e7bcb-e781-779c-0d2b-42b2e9b184fe@intel.com> <Y33NIiawcUn7xulO@unreal>
-Content-Language: en-US
-From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-In-Reply-To: <Y33NIiawcUn7xulO@unreal>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR11CA0048.namprd11.prod.outlook.com
- (2603:10b6:a03:80::25) To MW3PR11MB4764.namprd11.prod.outlook.com
- (2603:10b6:303:5a::16)
+   d="scan'208";a="766821814"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 23 Nov 2022 10:38:38 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2ANIcabI004421;
+        Wed, 23 Nov 2022 18:38:37 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     wangchuanlei <wangchuanlei@inspur.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>, pabeni@redhat.com,
+        echaudro@redhat.com, pshelar@ovn.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, wangpeihui@inspur.com,
+        netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [openvswitch v4] openvswitch: Add support to count upcall packets
+Date:   Wed, 23 Nov 2022 19:38:34 +0100
+Message-Id: <20221123183834.489456-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221123091843.3414856-1-wangchuanlei@inspur.com>
+References: <20221123091843.3414856-1-wangchuanlei@inspur.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW3PR11MB4764:EE_|SN7PR11MB7115:EE_
-X-MS-Office365-Filtering-Correlation-Id: 50fb1906-0d39-4080-44b7-08dacd81ed6e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Hke4aLSU/ZhhS56kDM3edgP2UkelTWUpj4ONQafqf7OEio5PJJE+PaT9fuXW31dOIX3bMzjs2VqUNO+84d+pDK9FQpWSZ1Zp7EuplYnihS6V7wCkumzCjPyTB6wyr7orL4T4+/McLB3Y8rVpcxmwG5PeW1d0LjaqfI+ElbBrAerbzxkP8To30X6fOEoYGpJZ1LVkGo0MTPA4xiJTka+hwoA+18F2A79ruhC+VeiSfqV1VEWyzi8NG2jMxI/tAyMD6NQufcFKn+E5hToUiG1OcA2WlZlfJG6uwX/tRcilAYjlJABDlXhA3q9AgHzM8QDV7EWyB7YmjdGeen8dd2tahZHLLlk8Rc9K93E7amEJR3Yqryt5hYNs8eOUdKjSdnlRrjtkJqy72aleqPSeMGO52QGtiRyDhZaQtgW6S8gpNlMPxbm+kGpJ6Mj1kOGZW0v3L6qHySoCrxWt+V/26L7Qgv9tVIaMKgVTjef7b3bdWQUBnFDRagxUqj1VpPY2CkHlwgD1ziLQhSP4RaIUacr/x0M1SMXV9sDLa07NM+P16ZS20clANA/1kjbJv9Y1Nv7taVEoz8F6RPJR2zIZA0mM2z5kq9gmzKIbdw8E0WSIXh7ssdHJNrkQgDuPpagkk5/lKGf+jZ972tUv/mJoedYvvQTb0vv4/B2+Zt4NEFncnG3Vgg4hANnDqrKwUjBaMfbPvyEViD29EUgqo8Tl+2YDT/ecux0d4VWz+uB6vm3ZbzM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4764.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39860400002)(366004)(346002)(376002)(396003)(136003)(451199015)(2616005)(83380400001)(26005)(6512007)(53546011)(82960400001)(186003)(38100700002)(5660300002)(44832011)(2906002)(6486002)(6506007)(8936002)(54906003)(66476007)(8676002)(4326008)(66556008)(41300700001)(316002)(478600001)(66946007)(6916009)(6666004)(86362001)(31696002)(31686004)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UGhRb3htd3pXSGVVQkVMc3RyQXVTeVlFd3hiZXkvMlVwcm12RllUY1k3bTVI?=
- =?utf-8?B?ajlyOVNsdHUySFZpbTd5RUtnRzJ0SDJIRkp6UHVRZUs3UkY2RnFkUElwOU5F?=
- =?utf-8?B?YlVvM29BaURNN0o1OEtXQU55a2tTRGNjdDZVdzhUcmg0SitOaHphK0FXS2E2?=
- =?utf-8?B?MDMzSERiQnY0cysrbTNEVVRUcjd4aDBUZmRINmJKZnlYYUJHamd3THVrMVYw?=
- =?utf-8?B?R2FKdXJYekxNTUsyRVBqMUs2ZjgrZTBxNGU0TUNMWExDc1V6VVN3SGZSVXN3?=
- =?utf-8?B?NHdtelFWUWR5Zmx2MjQ5NlJ5RUtHbkh3QUIwbzJzTmlNcXhqaHltT0VwOUln?=
- =?utf-8?B?RGNmYW1UcCtSWG5nOTBpbklZLzhNeUNtL1ZtblNoRzgxUDVFYmQ1aUhTVUlh?=
- =?utf-8?B?WnZUbmZzQVNmNmdTR1RSVWtWZnNSV3JTMXNUYW1nZC93SnRvRTNOZW1TcVUz?=
- =?utf-8?B?SXlaMDZrazlJTk5hV2Z5RHJzR29nYmQrWE0xM28zM3JIRTFiTmFMV09lOCt5?=
- =?utf-8?B?SjVsU3VFV0UzS0ZESU5FM201TmxQSVBwMzhOcUwvUUVuVzNhdENQRDRGbG1q?=
- =?utf-8?B?dC80M2h4K0RhYzJrWVo1V29LTzlkTXMwZkZBa1IwK1JDb0hsbEpZaElCQnds?=
- =?utf-8?B?aktRUmxrVlF1UkhjZCtvcGJhZzM0WEt4Rk5XdXhGVE8rTGdwT0w3MkVzaith?=
- =?utf-8?B?bEJEeEpUNkptRk5Welhrd0lKcFVqVmJUdFNVN2p2amxyRHZnYlpYRk00YjY1?=
- =?utf-8?B?aGx1alRmeWpuTjBiRkNONHJtM3lPcGkwTm9BdjJIbE5EelZNOEtUUGtXWWp4?=
- =?utf-8?B?Q2hwaGU3T1ZJV2k0R012a0l3cm5aMlZ5S1NuNVVIbWhyVWJRajhPczBnK0Y0?=
- =?utf-8?B?RzFuOEpoSVd6cHNuMnlxcFh1dE8wVVNYbHBKYmpXMnZUQ3AxSGVKTWZqbUFz?=
- =?utf-8?B?dzZuTVdoMmwrUWRja1BoQ2NGVUF3WE1XK1ljSGhlZjAwQUVmc1k1Vk9sVnNJ?=
- =?utf-8?B?RzVXYnJaWDdyNEFQMGFodmphSzNxdjFCNmdYeXU2REN1RUxnSUdMcUZoMEhE?=
- =?utf-8?B?cVlYYjNOQW5lVmNGb1RBL1VwenVxTTVPRGFpYW5KTExvS2FrQ3dxTGIvak8y?=
- =?utf-8?B?UmxyWTl6dFVMY0paNi9LdmJJWUc5SmRxRFZJR3dVTElCbUVVT0xEYmhBblRO?=
- =?utf-8?B?TkxFR28yeUc4TXJxUEtkSHY3SEhuM1RCVC9OYk5PVEh3Sno1bHRmREozbCsr?=
- =?utf-8?B?NFF2QkZISXJZUzVRMkpiMFJlTEFuYTgzUnBZOWd1VHMwNEhidE5hNXJrZUhx?=
- =?utf-8?B?VU1QWEVIdEc4MHJBWEpKcGs1NGtRNmJVTjdyRm9UVEZnTStvSUI0c0U5NFBJ?=
- =?utf-8?B?WEY1Z0NPTHpITTNKZEhKT1VhS3JWOFFhNWc2RU9tSDNOelZybEw1V1E1QVkr?=
- =?utf-8?B?K2Q0ZE96TWJSRGEwYlFFVkFZTGxrUkdtMkFKK3pyNTFQanZzdXVXYlI0MXQx?=
- =?utf-8?B?VVhLWUgzMjUwMHRUU054ZXZWd3ZOc2tEOHZXZEM3NGplUkhETHA1V2MxcUZZ?=
- =?utf-8?B?Z21FYWNYY01aVXNwN0xnaytiaDVtdFRJTE9ORnJTTDd4NjZNc2Q2ekNveWNJ?=
- =?utf-8?B?MEpaTDI2THdhMHZVTmEwbzR2THdiQm1Hc0M4Sk10TGgxbFV6Zld6bzB2VDlI?=
- =?utf-8?B?ckU5VDFBZXVvUy9LOUo3TjBKeXlLdkJMbkF1YnA0ZlgyU3hVUUhEVk1XOFRG?=
- =?utf-8?B?clF4OFVkN1gralRUMVlSVC9IdkZLSGtSL0FabkhDWEdGdHlsdXF2VFIrWGtX?=
- =?utf-8?B?TWIrZW1JTzYzbmVBM0VzTUt2M1JQWEQ0Wlg2MnNWN3RJVTRBTDZqREYzOHlh?=
- =?utf-8?B?Mzk5dmU1MGlId0F2bXJQcUxSYi9yMU9nRXN1N2d0TC81dG9vWVN1Qmg2bTBD?=
- =?utf-8?B?SlJ5dlA1V0VFa1g3L2lxUGZ2SHMxcTJQZXk2d2R3aUQ3MkNSV1JrYkM0NXJh?=
- =?utf-8?B?RnlmcW01RGxBKzdxQzY1STVGYm9XUEdzYTZMNnVqQTI1bElncEo2bHllbmMr?=
- =?utf-8?B?ZEJBL3dsWEhUK1FWUVkrd3hDOWhMMGxzM3lRODRBZzlQWXVhR0FxamNqV2hH?=
- =?utf-8?B?elhVZEI2MXRZSnNKS2hsZ2pKOVlkaWtaVFZ5emdWcDY1U3RVZGRRc0twRms1?=
- =?utf-8?Q?bB6FxvGmZXpbOmI0ZaZ+gbw=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 50fb1906-0d39-4080-44b7-08dacd81ed6e
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4764.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2022 18:38:35.8933
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gJLQFS4EBj+LhMUU9LRgeSL8qbE7z837w2OcI4qIZ2IZbtI8rbfgekSNdxFHzRtYw5+Tb5EGChKZLr81CWpeey/W4F7L6fLEcmB4/gtK0WO+flhmMsZ+G9jOKv3mKEsE
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7115
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/22/2022 11:34 PM, Leon Romanovsky wrote:
-> On Tue, Nov 22, 2022 at 01:06:09PM -0800, Anirudh Venkataramanan wrote:
->> On 11/22/2022 10:50 AM, Jakub Kicinski wrote:
->>> On Tue, 22 Nov 2022 13:29:03 +0200 Leon Romanovsky wrote:
->>>>>    drivers/net/ethernet/sun/cassini.c            | 40 ++++++-------------
->>>>>    drivers/net/ethernet/sun/sunvnet_common.c     |  4 +-
->>>>
->>>> Dave, Jakub, Paolo
->>>> I wonder if these drivers can be simply deleted.
->>>
->>> My thought as well. It's just a matter of digging thru the history,
->>> platform code and the web to find potential users and contacting them.
->>
->> I did a little bit of digging on these two files. Here's what I found.
->>
->> For the cassini driver, I don't see any recent patches that fix an end user
->> visible issue. There are clean ups, updates to use newer kernel APIs, and
->> some build/memory leak fixes. I checked as far back as 2011. There are web
->> references to some issues in kernel v2.6. I didn't see anything more recent.
->>
->> The code in sunvnet_common.c seems to be common code that's used by
->>
->> [1] "Sun4v LDOM Virtual Switch Driver" (ldmvsw.c, kconfig flag
->> CONFIG_LDMVSW)
->>
->> [2] "Sun LDOM virtual network driver" (sunvnet.c, kconfig flag
->> CONFIG_SUNVNET).
->>
->> These two seem to have had some feature updates around 2017, but otherwise
->> the situation is the same as cassini.
+From: wangchuanlei <wangchuanlei@inspur.com>
+Date: Wed, 23 Nov 2022 04:18:43 -0500
+
+> Add support to count upall packets, when kmod of openvswitch
+> upcall to userspace , here count the number of packets for
+> upcall succeed and failed, which is a better way to see how
+> many packets upcalled to userspace(ovs-vswitchd) on every
+> interfaces.
 > 
-> If there is a pole to delete them, I vote for deletion. :)
+> Here optimize the function used by comments of v3.
+> 
+> Changes since v3:
+> - use nested NLA_NESTED attribute in netlink message
+> 
+> Changes since v2:
+> - add count of upcall failed packets
+> 
+> Changes since v1:
+> - add count of upcall succeed packets
+> 
+> Signed-off-by: wangchuanlei <wangchuanlei@inspur.com>
+> ---
+>  include/uapi/linux/openvswitch.h | 19 ++++++++++++
+>  net/openvswitch/datapath.c       | 52 ++++++++++++++++++++++++++++++++
+>  net/openvswitch/datapath.h       | 12 ++++++++
+>  net/openvswitch/vport.c          | 48 +++++++++++++++++++++++++++++
+>  net/openvswitch/vport.h          |  6 ++++
+>  5 files changed, 137 insertions(+)
+> 
+> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> index 94066f87e9ee..fa13bce15fae 100644
+> --- a/include/uapi/linux/openvswitch.h
+> +++ b/include/uapi/linux/openvswitch.h
+> @@ -126,6 +126,11 @@ struct ovs_vport_stats {
+>  	__u64   tx_dropped;		/* no space available in linux  */
+>  };
+>  
+> +struct ovs_vport_upcall_stats {
+> +	uint64_t   upcall_success;	/* total packets upcalls succeed */
+> +	uint64_t   upcall_fail;		/* total packets upcalls failed  */
 
-Perhaps I should put out a patchset that does this. That would give 
-users or anyone who cares another opportunity to chime in. If we hear 
-nothing, then we're good.
+Please no uint64_t int the UAPI headers. __u64 as above.
 
-I am thinking I'll still include the conversions for cassini.c and 
-sunvnet_common.c in my v2 series. In case we don't end up deleting these 
-drivers for some reason, they'd at least not be using kmap_atomic() anymore.
+> +};
+> +
+>  /* Allow last Netlink attribute to be unaligned */
+>  #define OVS_DP_F_UNALIGNED	(1 << 0)
+>  
+> @@ -277,11 +282,25 @@ enum ovs_vport_attr {
+>  	OVS_VPORT_ATTR_PAD,
+>  	OVS_VPORT_ATTR_IFINDEX,
+>  	OVS_VPORT_ATTR_NETNSID,
+> +	OVS_VPORT_ATTR_UPCALL_STATS, /* struct ovs_vport_upcall_stats */
+>  	__OVS_VPORT_ATTR_MAX
+>  };
+>  
+>  #define OVS_VPORT_ATTR_MAX (__OVS_VPORT_ATTR_MAX - 1)
+>  
+> +/**
+> + * enum ovs_vport_upcall_attr - attributes for %OVS_VPORT_UPCALL* commands
+> + * @OVS_VPORT_UPCALL_SUCCESS: 64-bit upcall success packets.
+> + * @OVS_VPORT_UPCALL_FAIL: 64-bit upcall fail packets.
+> + */
+> +enum ovs_vport_upcall_attr {
+> +	OVS_VPORT_UPCALL_SUCCESS, /* 64-bit upcall success packets */
+> +	OVS_VPORT_UPCALL_FAIL, /* 64-bit upcall fail packets */
+> +	__OVS_VPORT_UPCALL_MAX
+> +};
+> +
+> +#define OVS_VPORT_UPCALL_MAX (__OVS_VPORT_UPCALL_MAX-1)
 
-Ani
+Spaces around arithm operator ('-').
+
+> +
+>  enum {
+>  	OVS_VXLAN_EXT_UNSPEC,
+>  	OVS_VXLAN_EXT_GBP,	/* Flag or __u32 */
+> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> index c8a9075ddd0a..5254c51cfa60 100644
+> --- a/net/openvswitch/datapath.c
+> +++ b/net/openvswitch/datapath.c
+> @@ -209,6 +209,25 @@ static struct vport *new_vport(const struct vport_parms *parms)
+>  	return vport;
+>  }
+>  
+> +static void ovs_vport_upcalls(struct sk_buff *skb,
+> +			      const struct dp_upcall_info *upcall_info,
+> +			      bool upcall_success)
+
+                              ^^^^^^^^^^^^^^^^^^^
+
+Just `bool success`? It's clear that is's about upcalls, I don't see
+a need to repeat it in every argument's name.
+
+> +{
+> +	if (upcall_info->cmd == OVS_PACKET_CMD_MISS ||
+> +	    upcall_info->cmd == OVS_PACKET_CMD_ACTION) {
+
+	if (cmd != MISS && cmd != ACTION)
+		return;
+
+Saves 1 indent level.
+
+> +		const struct vport *p = OVS_CB(skb)->input_vport;
+> +		struct vport_upcall_stats_percpu *vport_stats;
+> +
+> +		vport_stats = this_cpu_ptr(p->vport_upcall_stats_percpu);
+
+Why make a separate structure? You can just expand dp_stats_percpu,
+this function would then be just a couple lines in ovs_dp_upcall().
+
+> +		u64_stats_update_begin(&vport_stats->syncp);
+> +		if (upcall_success)
+> +			u64_stats_inc(&vport_stats->n_upcall_success);
+> +		else
+> +			u64_stats_inc(&vport_stats->n_upcall_fail);
+> +		u64_stats_update_end(&vport_stats->syncp);
+> +	}
+> +}
+> +
+>  void ovs_dp_detach_port(struct vport *p)
+>  {
+>  	ASSERT_OVSL();
+> @@ -216,6 +235,9 @@ void ovs_dp_detach_port(struct vport *p)
+>  	/* First drop references to device. */
+>  	hlist_del_rcu(&p->dp_hash_node);
+>  
+> +	/* Free percpu memory */
+> +	free_percpu(p->vport_upcall_stats_percpu);
+> +
+>  	/* Then destroy it. */
+>  	ovs_vport_del(p);
+>  }
+> @@ -305,6 +327,8 @@ int ovs_dp_upcall(struct datapath *dp, struct sk_buff *skb,
+>  		err = queue_userspace_packet(dp, skb, key, upcall_info, cutlen);
+>  	else
+>  		err = queue_gso_packets(dp, skb, key, upcall_info, cutlen);
+> +
+> +	ovs_vport_upcalls(skb, upcall_info, !err);
+>  	if (err)
+>  		goto err;
+
+Also, as you may see, your ::upcall_fail counter will be always
+exactly the same as stats->n_lost. So there's no point introducing
+a new one.
+However, you can expand the structure dp_stats_percpu and add a new
+field there which would store the number of successfull upcalls.
+...but I don't see a reason for this to be honest. From my PoV,
+it's better to count the number of successfully processed packets
+at the end of queue_userspace_packet() right before the 'out:'
+label[0]. But please make sure then you don't duplicate some other
+counter (I'm not deep into OvS, so can't say for sure if there's
+anything similar to what you want).
+
+>  
+> @@ -1825,6 +1849,13 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+>  		goto err_destroy_portids;
+>  	}
+>  
+> +	vport->vport_upcall_stats_percpu =
+
+This can be at least twice shorter, e.g. 'upcall_stats'. Don't try
+to describe every detail in symbol names.
+
+> +				netdev_alloc_pcpu_stats(struct vport_upcall_stats_percpu);
+> +	if (!vport->vport_upcall_stats_percpu) {
+> +		err = -ENOMEM;
+> +		goto err_destroy_upcall_stats;
+
+I know you followed the previous label logics, but you actually
+aren't destroying the stats under this label. Here you should
+have `goto err_destroy_portids` as that's what you're actually doing
+on that error path.
+
+> +	}
+> +
+>  	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+>  				   info->snd_seq, 0, OVS_DP_CMD_NEW);
+>  	BUG_ON(err < 0);
+
+[...]
+
+> @@ -2278,6 +2321,14 @@ static int ovs_vport_cmd_new(struct sk_buff *skb, struct genl_info *info)
+>  		goto exit_unlock_free;
+>  	}
+>  
+> +	vport->vport_upcall_stats_percpu =
+> +		netdev_alloc_pcpu_stats(struct vport_upcall_stats_percpu);
+> +
+> +	if (!vport->vport_upcall_stats_percpu) {
+> +		err = -ENOMEM;
+> +		goto exit_unlock_free;
+> +	}
+
+Why do you allocate them twice?
+
+> +
+>  	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
+>  				      info->snd_portid, info->snd_seq, 0,
+>  				      OVS_VPORT_CMD_NEW, GFP_KERNEL);
+
+[...]
+
+> @@ -50,6 +50,18 @@ struct dp_stats_percpu {
+>  	struct u64_stats_sync syncp;
+>  };
+>  
+> +/**
+> + * struct vport_upcall_stats_percpu - per-cpu packet upcall statistics for
+> + * a given vport.
+> + * @n_upcall_success: Number of packets that upcall to userspace succeed.
+> + * @n_upcall_fail:    Number of packets that upcall to userspace failed.
+> + */
+> +struct vport_upcall_stats_percpu {
+> +	u64_stats_t n_upcall_success;
+> +	u64_stats_t n_upcall_fail;
+> +	struct u64_stats_sync syncp;
+
+Nit: syncp would feel better at the start. You could then sort the
+structure by the field hit probability and reduce cache misses %)
+
+> +};
+> +
+>  /**
+>   * struct dp_nlsk_pids - array of netlink portids of for a datapath.
+>   *                       This is used when OVS_DP_F_DISPATCH_UPCALL_PER_CPU
+> diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
+> index 82a74f998966..a69c9356b57c 100644
+> --- a/net/openvswitch/vport.c
+> +++ b/net/openvswitch/vport.c
+> @@ -284,6 +284,54 @@ void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
+>  	stats->tx_packets = dev_stats->tx_packets;
+>  }
+>  
+> +/**
+> + *	ovs_vport_get_upcall_stats - retrieve upcall stats
+> + *
+> + * @vport: vport from which to retrieve the stats
+> + * @ovs_vport_upcall_stats: location to store stats
+> + *
+> + * Retrieves upcall stats for the given device.
+> + *
+> + * Must be called with ovs_mutex or rcu_read_lock.
+> + */
+> +void ovs_vport_get_upcall_stats(struct vport *vport, struct ovs_vport_upcall_stats *stats)
+> +{
+> +	int i;
+> +
+> +	stats->upcall_success = 0;
+> +	stats->upcall_fail = 0;
+> +
+> +	for_each_possible_cpu(i) {
+> +		const struct vport_upcall_stats_percpu *percpu_upcall_stats;
+
+You wouldn't need to linewrap the lines below if you didn't make its
+name so huge.
+
+> +		unsigned int start;
+> +
+> +		percpu_upcall_stats = per_cpu_ptr(vport->vport_upcall_stats_percpu, i);
+> +		do {
+> +			start = u64_stats_fetch_begin(&percpu_upcall_stats->syncp);
+> +			stats->upcall_success +=
+> +				u64_stats_read(&percpu_upcall_stats->n_upcall_success);
+> +			stats->upcall_fail += u64_stats_read(&percpu_upcall_stats->n_upcall_fail);
+> +		} while (u64_stats_fetch_retry(&percpu_upcall_stats->syncp, start));
+> +	}
+> +}
+> +
+> +int ovs_vport_put_upcall_stats(struct sk_buff *skb,
+> +			       struct ovs_vport_upcall_stats *stats)
+> +{
+> +	if (nla_put_u64_64bit(skb, OVS_VPORT_UPCALL_SUCCESS, stats->upcall_success,
+> +			      OVS_VPORT_ATTR_PAD))
+> +		goto nla_put_failure;
+> +
+> +	if (nla_put_u64_64bit(skb, OVS_VPORT_UPCALL_FAIL, stats->upcall_fail,
+> +			      OVS_VPORT_ATTR_PAD))
+> +		goto nla_put_failure;
+> +
+> +	return 0;
+> +
+> +nla_put_failure:
+> +	return -EMSGSIZE;
+
+goto with only one action makes no sense, just exit directly.
+
+> +}
+> +
+>  /**
+>   *	ovs_vport_get_options - retrieve device options
+>   *
+> diff --git a/net/openvswitch/vport.h b/net/openvswitch/vport.h
+> index 7d276f60c000..02cf8c589588 100644
+> --- a/net/openvswitch/vport.h
+> +++ b/net/openvswitch/vport.h
+> @@ -32,6 +32,11 @@ struct vport *ovs_vport_locate(const struct net *net, const char *name);
+>  
+>  void ovs_vport_get_stats(struct vport *, struct ovs_vport_stats *);
+>  
+> +void ovs_vport_get_upcall_stats(struct vport *vport,
+> +				struct ovs_vport_upcall_stats *stats);
+> +int ovs_vport_put_upcall_stats(struct sk_buff *skb,
+> +			       struct ovs_vport_upcall_stats *stats);
+> +
+>  int ovs_vport_set_options(struct vport *, struct nlattr *options);
+>  int ovs_vport_get_options(const struct vport *, struct sk_buff *);
+>  
+> @@ -78,6 +83,7 @@ struct vport {
+>  	struct hlist_node hash_node;
+>  	struct hlist_node dp_hash_node;
+>  	const struct vport_ops *ops;
+> +	struct vport_upcall_stats_percpu __percpu *vport_upcall_stats_percpu;
+
+Almost 80 columns in one field definition :D
+
+>  
+>  	struct list_head detach_list;
+>  	struct rcu_head rcu;
+> -- 
+> 2.27.0
+
+[0] https://elixir.bootlin.com/linux/v6.1-rc6/source/net/openvswitch/datapath.c#L557
+
+Thanks,
+Olek
