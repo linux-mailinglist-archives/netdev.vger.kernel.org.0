@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 352C7635925
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:07:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6528D635908
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:07:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235705AbiKWKHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 05:07:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        id S236672AbiKWKHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 05:07:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235770AbiKWKGR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:06:17 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138A1116058
+        with ESMTP id S235874AbiKWKGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:06:18 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1378B114BA3
         for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 01:56:46 -0800 (PST)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669197404;
+        s=2020; t=1669197405;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VNq+vGNG0CTlw3VW3ZdooZgvUjXykmOxQ/6FpJtmkoU=;
-        b=x7/9VklKCsMaRpVDCGNhcPuD/eiUzdqn8tMLBFpPEAnlyLBgB0Z3l9Wrkm1c5Zy2sYhzFg
-        w7zCrGfSYGbGRMwnmSbv8GmN+wGCI1pCL1/E7vCBvzAPfgpnwty37kJJv/SCXu+M5wsMNz
-        R3KR/4dvw2qBr37tUVqAQmwZk1j/PHH8HpVoPO+bF3yUkFmtYaAcJgHibsSJOAoG8MMvpa
-        quRiYjDeNSfKrjlVDJx/T/Moeu9GAQ8D6Y66pZj0xL2F6YmWXDpncgW8QQpu6JNtbw9oeR
-        pzU9G+oBX32dRUPmWkqW+iJafPfgFsNM9wCfJOl2U8EIgDFA91OmvA6I4jDESg==
+        bh=x7EazyHGHCpeTiiHucwroXGYdDx6pSWXMjFRJN0efiU=;
+        b=W1UIEfROOYezoFdcuMrKjptJkQdRB2e1OtImPlzPNT37h8OIJ/G4dzANci+xJSuxL6MxbU
+        RzMb39ANiFKGhTF+Cj+H9IdwW1JjSkDBcC19LJNE6O4AALrBUejnWWB3/hI+nKcpicHgzF
+        lYSAFpZZ10fbu7z4IhDKyiFDTk6RIDJp3kcS6HM9OEUA0NBdwWpqP7SqkGT0PLLyA98gxN
+        8kkmJJPa9wSKQkof7/FWm2BDEBF0qYZ64/ndYJKsJL8KxbNhwdGsVzMLA6Sd6BGRZKeybW
+        ba6dG8I06zNUNELFMcEEnV2GPEFr2WChYaRZNikgAwKHE7pdyTq251qZrJl0JQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669197404;
+        s=2020e; t=1669197405;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VNq+vGNG0CTlw3VW3ZdooZgvUjXykmOxQ/6FpJtmkoU=;
-        b=Rwfly40ZBvv31dwSsGSCZcBxXWyMzNGBZJaDI7lLdwjSW5/I11xH/Tv9V0cSUEMnbertUn
-        GWXwTDZO8XBvOEAA==
+        bh=x7EazyHGHCpeTiiHucwroXGYdDx6pSWXMjFRJN0efiU=;
+        b=1qttiztw8lJByJD1kKdxBWJ6Otzq0lML/N96VKUilau2E44BDnjsTzzVOuSfDR5eJ6Pz+F
+        t7jZMxwydkws8eBA==
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -44,9 +44,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Thomas Gleixner <tglx@linutronix.de>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v3 net 2/6] hsr: Add a rcu-read lock to hsr_forward_skb().
-Date:   Wed, 23 Nov 2022 10:56:34 +0100
-Message-Id: <20221123095638.2838922-3-bigeasy@linutronix.de>
+Subject: [PATCH v3 net 3/6] hsr: Avoid double remove of a node.
+Date:   Wed, 23 Nov 2022 10:56:35 +0100
+Message-Id: <20221123095638.2838922-4-bigeasy@linutronix.de>
 In-Reply-To: <20221123095638.2838922-1-bigeasy@linutronix.de>
 References: <20221123095638.2838922-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -60,49 +60,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hsr_forward_skb() a skb and keeps information in an on-stack
-hsr_frame_info. hsr_get_node() assigns hsr_frame_info::node_src which is
-from a RCU list. This pointer is used later in hsr_forward_do().
-I don't see a reason why this pointer can't vanish midway since there is
-no guarantee that hsr_forward_skb() is invoked from an RCU read section.
+Due to the hashed-MAC optimisation one problem become visible:
+hsr_handle_sup_frame() walks over the list of available nodes and merges
+two node entries into one if based on the information in the supervision
+both MAC addresses belong to one node. The list-walk happens on a RCU
+protected list and delete operation happens under a lock.
 
-Use rcu_read_lock() to protect hsr_frame_info::node_src from its
-assigment until it is no longer used.
+If the supervision arrives on both slave interfaces at the same time
+then this delete operation can occur simultaneously on two CPUs. The
+result is the first-CPU deletes the from the list and the second CPUs
+BUGs while attempting to dereference a poisoned list-entry. This happens
+more likely with the optimisation because a new node for the mac_B entry
+is created once a packet has been received and removed (merged) once the
+supervision frame has been received.
+
+Avoid removing/ cleaning up a hsr_node twice by adding a `removed' field
+which is set to true after the removal and checked before the removal.
 
 Fixes: f266a683a4804 ("net/hsr: Better frame dispatch")
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- net/hsr/hsr_forward.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/hsr/hsr_framereg.c | 16 +++++++++++-----
+ net/hsr/hsr_framereg.h |  1 +
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-index 9894962847d97..3a97b00b6d978 100644
---- a/net/hsr/hsr_forward.c
-+++ b/net/hsr/hsr_forward.c
-@@ -613,11 +613,13 @@ void hsr_forward_skb(struct sk_buff *skb, struct hsr_=
-port *port)
- {
- 	struct hsr_frame_info frame;
+diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+index 9b8eaebce2549..f2dd846ff9038 100644
+--- a/net/hsr/hsr_framereg.c
++++ b/net/hsr/hsr_framereg.c
+@@ -366,9 +366,12 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
+ 	node_real->addr_B_port =3D port_rcv->type;
 =20
-+	rcu_read_lock();
- 	if (fill_frame_info(&frame, skb, port) < 0)
- 		goto out_drop;
+ 	spin_lock_bh(&hsr->list_lock);
+-	list_del_rcu(&node_curr->mac_list);
++	if (!node_curr->removed) {
++		list_del_rcu(&node_curr->mac_list);
++		node_curr->removed =3D true;
++		kfree_rcu(node_curr, rcu_head);
++	}
+ 	spin_unlock_bh(&hsr->list_lock);
+-	kfree_rcu(node_curr, rcu_head);
 =20
- 	hsr_register_frame_in(frame.node_src, port, frame.sequence_nr);
- 	hsr_forward_do(&frame);
-+	rcu_read_unlock();
- 	/* Gets called for ingress frames as well as egress from master port.
- 	 * So check and increment stats for master port only here.
- 	 */
-@@ -632,6 +634,7 @@ void hsr_forward_skb(struct sk_buff *skb, struct hsr_po=
-rt *port)
- 	return;
+ done:
+ 	/* Push back here */
+@@ -539,9 +542,12 @@ void hsr_prune_nodes(struct timer_list *t)
+ 		if (time_is_before_jiffies(timestamp +
+ 				msecs_to_jiffies(HSR_NODE_FORGET_TIME))) {
+ 			hsr_nl_nodedown(hsr, node->macaddress_A);
+-			list_del_rcu(&node->mac_list);
+-			/* Note that we need to free this entry later: */
+-			kfree_rcu(node, rcu_head);
++			if (!node->removed) {
++				list_del_rcu(&node->mac_list);
++				node->removed =3D true;
++				/* Note that we need to free this entry later: */
++				kfree_rcu(node, rcu_head);
++			}
+ 		}
+ 	}
+ 	spin_unlock_bh(&hsr->list_lock);
+diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
+index bdbb8c822ba1a..b5f902397bf1a 100644
+--- a/net/hsr/hsr_framereg.h
++++ b/net/hsr/hsr_framereg.h
+@@ -80,6 +80,7 @@ struct hsr_node {
+ 	bool			san_a;
+ 	bool			san_b;
+ 	u16			seq_out[HSR_PT_PORTS];
++	bool			removed;
+ 	struct rcu_head		rcu_head;
+ };
 =20
- out_drop:
-+	rcu_read_unlock();
- 	port->dev->stats.tx_dropped++;
- 	kfree_skb(skb);
- }
 --=20
 2.38.1
 
