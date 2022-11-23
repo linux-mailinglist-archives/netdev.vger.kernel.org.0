@@ -2,316 +2,436 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F29AA63693C
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 19:48:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE32E636943
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 19:50:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239425AbiKWSso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 13:48:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50592 "EHLO
+        id S238842AbiKWSul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 13:50:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239569AbiKWSsn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 13:48:43 -0500
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E900F2BB2A;
-        Wed, 23 Nov 2022 10:48:41 -0800 (PST)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-142306beb9aso21790498fac.11;
-        Wed, 23 Nov 2022 10:48:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+GlwfF3jPlSJzzggDPr2N8WLiIPM3Bn9QI9dWfoz3og=;
-        b=h0kdPojWroe/gx4lmKfdoyoPp1GcwXZkdct6tD/9iA8/bx6stGEOFevq0N0JiYCAWZ
-         tMLGxw0QXLq7huWZGN3ZLidP1jL2fcyLeerdwVKwNCfLdosRZb+PK1c+DPy520QO0HXK
-         SYnXESezhmDO31bTcYGu3dYWxW7OEBnqJ8nbQQt8y9wDt48qUBpwQQOKSK51HBslEXwW
-         Zv9Qny3WfZTl/XHnP+Mr1cRt+dZqqp++TMo3s/j8kQkFZX4EL72Odkl0/kz6yNtDIfcl
-         jwAK0fTTdXSl7OgbKQxeq8TM7z1AMWWSHor6I3EleBK+QS+py/oBokNuP4bw2bsi7QGV
-         0xvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+GlwfF3jPlSJzzggDPr2N8WLiIPM3Bn9QI9dWfoz3og=;
-        b=BfowDR6b3Wcu60i34DfW378Y4N/zS3isf9CrGSQNRoKrlnB5k1iFJuIASkS2UttHct
-         eZbzq8K3s0Jm/2ZjQyazIZlStZNWOnmedW5jaxjC5Ueqh64+dQJClEBX/mxjxGByTjSB
-         bOha2ikvW8Y3z4ez2LhZYgmarMmC+mLqXXgPIDXrEkd/nx5uM2cvsTZYO9E8C5ZgCv2G
-         3bNd9JdbyVvp9jFadbB3D854Y99/xsdrMCjqvPWfSXXb//QzD7L4erbvsEqFt6pgRWle
-         9lisJcRZMJh7Z8wpTJYzJOGOHgKvBsl8zN74TkXqVV7JJ8yAe8Kzj1jsmmzAk0T7iZWL
-         Zt+Q==
-X-Gm-Message-State: ANoB5pmNfIdXh672rfU7s1GEJtMCZLQxv6NGlR5TJPnG6nUgftUU6nkE
-        G8kWEXX6YP2unvsiD77rNhAxbf+uySWXygfwXCI=
-X-Google-Smtp-Source: AA0mqf4CbqwBePIdEqoNsU/kOUG+hcPo5N3xRihmbBat1gdMvW2FEGJw8B440QqRWM4pYEOSSJPIZ4/uJ7SQ03XRWpQ=
-X-Received: by 2002:a05:6870:b426:b0:142:c277:2e94 with SMTP id
- x38-20020a056870b42600b00142c2772e94mr5827601oap.129.1669229321227; Wed, 23
- Nov 2022 10:48:41 -0800 (PST)
+        with ESMTP id S237068AbiKWSuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 13:50:39 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8678DA43
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 10:50:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669229438; x=1700765438;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=b9T+czNyCawvsCx34V0GEQLZ0NOE8T6tG6nZD3Wdv90=;
+  b=WJnvZyZAD/5J68NV+jcrKTbJKpXKfSHgf94a0RGWKeB/in3/tqmJJjtz
+   Bjk58OemjX/dibuYWV9fdMO7uxZEPJXYRDYyfNxYNhhU0fWWd63tpAZNn
+   9HLSqZZ3jsXqPP0m0J4Uke23b2HD0IYwmXnvkkuTYV0Duek0jXmoDVzaC
+   mebCZhBig+Z8A+TmI8mC6GziWSUJpZ+fJOwSwsUxKjhszj0oTZwhQgrpg
+   evUbPRCTn2nN4czUSAYqRIa6uIEEygvjjpJBT/+PZDAA1qrYbL5ibY5Nx
+   0SChAjY38pWKx6D4IrhQ4BV4axTc3rlcBj09ZIXxeT5Hac2iWJuSLIzfA
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="312837101"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="312837101"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 10:50:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="644214809"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="644214809"
+Received: from msu-dell.jf.intel.com ([10.166.233.5])
+  by fmsmga007.fm.intel.com with ESMTP; 23 Nov 2022 10:50:17 -0800
+From:   Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, mkubecek@suse.cz, andrew@lunn.ch, corbet@lwn.net,
+        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
+Subject: [PATCH net-next v5] ethtool: add netlink based get rss support
+Date:   Wed, 23 Nov 2022 10:48:46 -0800
+Message-Id: <20221123184846.161964-1-sudheer.mogilappagari@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20221118085030.121297-1-shaozhengchao@huawei.com>
- <CADvbK_frWVFTSLMwC_xYvE+jDuk917K7SqZHUON3srLz8TxotQ@mail.gmail.com>
- <Y31ct/lSXNTm9ev9@t14s.localdomain> <CADvbK_cVBVL1KKPsONv3A3m_mPA2-41uNwxz+9eM-EuQeCSygw@mail.gmail.com>
- <Y35iJUx/Q/X01dNI@t14s.localdomain> <CADvbK_dDJpyY2xUmEyv+z2B77=N8fcUQsVyqZUORoE6UO7DAdw@mail.gmail.com>
-In-Reply-To: <CADvbK_dDJpyY2xUmEyv+z2B77=N8fcUQsVyqZUORoE6UO7DAdw@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 23 Nov 2022 13:48:01 -0500
-Message-ID: <CADvbK_eZKwyLqNB4ruta5jbY+PgUVq3R9n9ohvW5i-j6DLA9hQ@mail.gmail.com>
-Subject: Re: [PATCH net] sctp: fix memory leak in sctp_stream_outq_migrate()
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 1:30 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> (
->
-> On Wed, Nov 23, 2022 at 1:10 PM Marcelo Ricardo Leitner
-> <marcelo.leitner@gmail.com> wrote:
-> >
-> > On Wed, Nov 23, 2022 at 12:20:44PM -0500, Xin Long wrote:
-> > > On Tue, Nov 22, 2022 at 6:35 PM Marcelo Ricardo Leitner
-> > > <marcelo.leitner@gmail.com> wrote:
-> > > >
-> > > > On Fri, Nov 18, 2022 at 10:15:50PM -0500, Xin Long wrote:
-> > > > > On Fri, Nov 18, 2022 at 3:48 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
-> > > > > >
-> > > > > > When sctp_stream_outq_migrate() is called to release stream out resources,
-> > > > > > the memory pointed to by prio_head in stream out is not released.
-> > > > > >
-> > > > > > The memory leak information is as follows:
-> > > > > > unreferenced object 0xffff88801fe79f80 (size 64):
-> > > > > >   comm "sctp_repo", pid 7957, jiffies 4294951704 (age 36.480s)
-> > > > > >   hex dump (first 32 bytes):
-> > > > > >     80 9f e7 1f 80 88 ff ff 80 9f e7 1f 80 88 ff ff  ................
-> > > > > >     90 9f e7 1f 80 88 ff ff 90 9f e7 1f 80 88 ff ff  ................
-> > > > > >   backtrace:
-> > > > > >     [<ffffffff81b215c6>] kmalloc_trace+0x26/0x60
-> > > > > >     [<ffffffff88ae517c>] sctp_sched_prio_set+0x4cc/0x770
-> > > > > >     [<ffffffff88ad64f2>] sctp_stream_init_ext+0xd2/0x1b0
-> > > > > >     [<ffffffff88aa2604>] sctp_sendmsg_to_asoc+0x1614/0x1a30
-> > > > > >     [<ffffffff88ab7ff1>] sctp_sendmsg+0xda1/0x1ef0
-> > > > > >     [<ffffffff87f765ed>] inet_sendmsg+0x9d/0xe0
-> > > > > >     [<ffffffff8754b5b3>] sock_sendmsg+0xd3/0x120
-> > > > > >     [<ffffffff8755446a>] __sys_sendto+0x23a/0x340
-> > > > > >     [<ffffffff87554651>] __x64_sys_sendto+0xe1/0x1b0
-> > > > > >     [<ffffffff89978b49>] do_syscall_64+0x39/0xb0
-> > > > > >     [<ffffffff89a0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > > > > >
-> > > > > > Fixes: 637784ade221 ("sctp: introduce priority based stream scheduler")
-> > > > > > Reported-by: syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com
-> > > > > > Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> > > > > > ---
-> > > > > >  net/sctp/stream.c | 6 ++++++
-> > > > > >  1 file changed, 6 insertions(+)
-> > > > > >
-> > > > > > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-> > > > > > index ef9fceadef8d..a17dc368876f 100644
-> > > > > > --- a/net/sctp/stream.c
-> > > > > > +++ b/net/sctp/stream.c
-> > > > > > @@ -70,6 +70,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
-> > > > > >                  * sctp_stream_update will swap ->out pointers.
-> > > > > >                  */
-> > > > > >                 for (i = 0; i < outcnt; i++) {
-> > > > > > +                       if (SCTP_SO(new, i)->ext)
-> > > > > > +                               kfree(SCTP_SO(new, i)->ext->prio_head);
-> > > > > > +
-> > > > > >                         kfree(SCTP_SO(new, i)->ext);
-> > > > > >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
-> > > > > >                         SCTP_SO(stream, i)->ext = NULL;
-> > > > > > @@ -77,6 +80,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
-> > > > > >         }
-> > > > > >
-> > > > > >         for (i = outcnt; i < stream->outcnt; i++) {
-> > > > > > +               if (SCTP_SO(stream, i)->ext)
-> > > > > > +                       kfree(SCTP_SO(stream, i)->ext->prio_head);
-> > > > > > +
-> > > > > >                 kfree(SCTP_SO(stream, i)->ext);
-> > > > > >                 SCTP_SO(stream, i)->ext = NULL;
-> > > > > >         }
-> > > > > > --
-> > > > > > 2.17.1
-> > > > > >
-> > > > > This is not a proper fix:
-> > > > > 1. you shouldn't access "prio_head" outside stream_sched_prio.c.
-> > > > > 2. the prio_head you freed might be used by other out streams, freeing
-> > > > > it unconditionally would cause either a double free or use after free.
-> > > > >
-> > > > > I'm afraid we have to add a ".free_sid" in sctp_sched_ops, and
-> > > > > implement it for sctp_sched_prio, like:
-> > > > >
-> > > > > +static void sctp_sched_prio_free_sid(struct sctp_stream *stream, __u16 sid)
-> > > > > +{
-> > > > > +       struct sctp_stream_priorities *prio = SCTP_SO(stream,
-> > > > > sid)->ext->prio_head;
-> > > > > +       int i;
-> > > > > +
-> > > > > +       if (!prio)
-> > > > > +               return;
-> > > > > +
-> > > > > +       SCTP_SO(stream, sid)->ext->prio_head = NULL;
-> > > > > +       for (i = 0; i < stream->outcnt; i++) {
-> > > >
-> > > > Instead of checking all streams, the for() can/should be replaced by
-> > > > (from sctp_sched_prio_free):
-> > > >         if (!list_empty(&prio->prio_sched))
-> > > >                 return;
-> > > sctp_stream_outq_migrate() is called after unsched_all() for "stream",
-> > > list_empty(prio_sched) is expected to be true.
-> >
-> > Good point. Am I missing something or the 'prio_head == prio' below
-> > would always be false then as well?
-sorry, forgot to reply to this one :D
+Add netlink based support for "ethtool -x <dev> [context x]"
+command by implementing ETHTOOL_MSG_RSS_GET netlink message.
+This is equivalent to functionality provided via ETHTOOL_GRSSH
+in ioctl path. It fetches RSS table, hash key and hash function
+of an interface to user space. In addition ETHTOOL_A_RSS_RINGS
+attribute is added to return queue/rings count to user space.
+This simplifies user space implementation while maintaining
+backward compatibility of output.
 
-after .unsched_all, multiple outstreams may have the same prio_head,
-which are not on any list (like stream->prio_list).
+This patch implements existing functionality available
+in ioctl path and enables addition of new RSS context
+based parameters in future.
 
-so when freeing one outstream ext, it will need to go over all outstreams' exts
-and check if this outstream ext's prio is equal to that of any other outstreams.
+Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+---
+v5:
+-Updated documentation about ETHTOOL_A_RSS_RINGS attribute.
 
-> >
-> > Anyhow, as this is moving to something that can potentially be called
-> > from other places afterwards, keeping the check doesn't hurt.
-> >
-> > >
-> > > Note that kfree(SCTP_SO(new, i)->ext) shouldn't have the reported
-> > > problem, as at that moment, the "new" stream hasn't been set
-> > > stream_sched yet. It means there's only one place that needs to
-> > > call free_sid in sctp_stream_outq_migrate().
-> > > (Maybe Zhengchao can help us confirm this?)
-> >
-> > That's the case in Tetsuo's patch (earlier today) as well. Yet, if we
-> > have an official way to free a stream, if it's not error handling
-> > during initialization, it should use it.
-> right.
->
-> >
-> > >
-> > > >
-> > > > > +               if (SCTP_SO(stream, i)->ext &&
-> > > > > +                   SCTP_SO(stream, i)->ext->prio_head == prio)
-> > > > > +                       return;
-> > > > > +       }
-> > > > > +       kfree(prio);
-> > > > > +}
-> > > > > +
-> > > > >  static void sctp_sched_prio_free(struct sctp_stream *stream)
-> > > > >  {
-> > > > >         struct sctp_stream_priorities *prio, *n;
-> > > > > @@ -323,6 +340,7 @@ static struct sctp_sched_ops sctp_sched_prio = {
-> > > > >         .get = sctp_sched_prio_get,
-> > > > >         .init = sctp_sched_prio_init,
-> > > > >         .init_sid = sctp_sched_prio_init_sid,
-> > > > > +       .free_sid = sctp_sched_prio_free_sid,
-> > > > >         .free = sctp_sched_prio_free,
-> > > > >         .enqueue = sctp_sched_prio_enqueue,
-> > > > >         .dequeue = sctp_sched_prio_dequeue,
-> > > > >
-> > > > > then call it in sctp_stream_outq_migrate(), like:
-> > > > >
-> > > > > +static void sctp_stream_free_ext(struct sctp_stream *stream, __u16 sid)
-> > > > > +{
-> > > > > +       struct sctp_sched_ops *sched = sctp_sched_ops_from_stream(stream);
-> > > > > +
-> > > > > +       sched->free_sid(stream, sid);
-> > > > > +       kfree(SCTP_SO(stream, sid)->ext);
-> > > > > +       SCTP_SO(stream, sid)->ext = NULL;
-> > > > > +}
-> > > > > +
-> > > > >  /* Migrates chunks from stream queues to new stream queues if needed,
-> > > > >   * but not across associations. Also, removes those chunks to streams
-> > > > >   * higher than the new max.
-> > > > > @@ -70,16 +79,14 @@ static void sctp_stream_outq_migrate(struct
-> > > > > sctp_stream *stream,
-> > > > >                  * sctp_stream_update will swap ->out pointers.
-> > > > >                  */
-> > > > >                 for (i = 0; i < outcnt; i++) {
-> > > > > -                       kfree(SCTP_SO(new, i)->ext);
-> > > > > +                       sctp_stream_free_ext(new, i);
-> > > > >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
-> > > > >                         SCTP_SO(stream, i)->ext = NULL;
-> > > > >                 }
-> > > > >         }
-> > > > >
-> > > > > -       for (i = outcnt; i < stream->outcnt; i++) {
-> > > > > -               kfree(SCTP_SO(stream, i)->ext);
-> > > > > -               SCTP_SO(stream, i)->ext = NULL;
-> > > > > -       }
-> > > > > +       for (i = outcnt; i < stream->outcnt; i++)
-> > > > > +               sctp_stream_free_ext(new, i);
-> > > > >  }
-> > > > >
-> > > > > Marcelo, do you see a better solution?
-> > > >
-> > > > No. Your suggestion is the best I could think of too.
-> > > >
-> > > > Another approach would be to expose sched->free and do all the freeing
-> > > > at once, like sctp_stream_free() does. But the above is looks cleaner
-> > > > and makes it evident that freeing 'ext' is not trivial.
-> > > >
-> > > > With the proposal above, sctp_sched_prio_free() becomes an
-> > > > optimization, if we can call it that. With the for/if replacement
-> > > > above, not even that, and should be removed. Including sctp_sched_ops
-> > > > 'free' pointer.
-> > > Or we extract the common code to another function, like
-> > > sctp_sched_prio_free_head(stream, prio), and pass prio as
-> > > NULL in sctp_sched_prio_free() for freeing all.
-> > >
-> > > >
-> > > > sctp_stream_free() then should be updated to use the new
-> > > > sctp_stream_free_ext() instead, instead of mangling it directly.
-> > > I thought about this, but there is ".free", which is more efficient
-> > > to free all prio than calling ".free_sid" outcnt times.
-> >
-> > How much more efficient, just by avoiding retpoline stuff on the
-> > indirect functional call or something else?
->
-> in sctp_stream_free():
-> .free() will be called one time to free all prios
-> while .free_sid will be called in a loop to  free all prios:
->         for (i = 0; i < stream->outcnt; i++)
->                .free_sid(stream, i);
->
-> inside either() .free or . free_sid() there is another loop:
-> for (i = 0; i < stream->outcnt; i++)
->     ...
->
-> That's why I said using .free() in sctp_stream_free() will be more efficient.
->
-> >
-> > >
-> > > I may move free_sid() out of sctp_stream_free_ext(), then in
-> > > sctp_stream_free() we can call sctp_stream_free_ext() without
-> > > calling free_sid(), or just remove sctp_stream_free_ext().
-> >
-> > It's easier to maintain it if we have symmetric paths for initializing
-> > and for freeing it and less special cases. We already have
-> > sctp_stream_init_ext(), so having sctp_stream_free_ext() is not off.
-> didn't notice init_sid in sctp_stream_init_ext(), it makes sense to
-> have free_sid in sctp_stream_free_ext().
->
-> Thanks.
->
-> >
-> > I'm happy to review any patch that also updates sctp_stream_free(),
-> > one way or another.
-> >
-> > >
-> > > Thanks.
-> > >
-> > > >
-> > > > Makes sense?
-> > > >
-> > > > Thanks,
-> > > > Marcelo
+v4:
+-Don't make context parameter mandatory.
+-Remove start/done ethtool_genl_ops for RSS_GET.
+-Add rings attribute to RSS_GET netlink message.
+-Fix documentation.
+
+v3:
+-Define parse_request and make use of ethnl_default_parse.
+-Have indir table and hask hey as seprate attributes.
+-Remove dumpit op for RSS_GET.
+-Use RSS instead of RXFH.
+
+v2: Fix cleanup in error path instead of returning.
+---
+ Documentation/networking/ethtool-netlink.rst |  29 +++-
+ include/uapi/linux/ethtool_netlink.h         |  15 ++
+ net/ethtool/Makefile                         |   2 +-
+ net/ethtool/netlink.c                        |   7 +
+ net/ethtool/netlink.h                        |   2 +
+ net/ethtool/rss.c                            | 169 +++++++++++++++++++
+ 6 files changed, 222 insertions(+), 2 deletions(-)
+ create mode 100644 net/ethtool/rss.c
+
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index bede24ef44fd..883555b8876b 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -222,6 +222,7 @@ Userspace to kernel:
+   ``ETHTOOL_MSG_MODULE_GET``            get transceiver module parameters
+   ``ETHTOOL_MSG_PSE_SET``               set PSE parameters
+   ``ETHTOOL_MSG_PSE_GET``               get PSE parameters
++  ``ETHTOOL_MSG_RSS_GET``               get RSS settings
+   ===================================== =================================
+ 
+ Kernel to userspace:
+@@ -263,6 +264,7 @@ Kernel to userspace:
+   ``ETHTOOL_MSG_PHC_VCLOCKS_GET_REPLY``    PHC virtual clocks info
+   ``ETHTOOL_MSG_MODULE_GET_REPLY``         transceiver module parameters
+   ``ETHTOOL_MSG_PSE_GET_REPLY``            PSE parameters
++  ``ETHTOOL_MSG_RSS_GET_REPLY``            RSS settings
+   ======================================== =================================
+ 
+ ``GET`` requests are sent by userspace applications to retrieve device
+@@ -1687,6 +1689,31 @@ to control PoDL PSE Admin functions. This option is implementing
+ ``IEEE 802.3-2018`` 30.15.1.2.1 acPoDLPSEAdminControl. See
+ ``ETHTOOL_A_PODL_PSE_ADMIN_STATE`` for supported values.
+ 
++RSS_GET
++=======
++
++Get indirection table, hash key and hash function info associated with a
++RSS context of an interface similar to ``ETHTOOL_GRSSH`` ioctl request.
++In addition ring count information is also returned to user space.
++
++Request contents:
++
++=====================================  ======  ==========================
++  ``ETHTOOL_A_RSS_HEADER``             nested  request header
++  ``ETHTOOL_A_RSS_CONTEXT``            u32     context number
++ ====================================  ======  ==========================
++
++Kernel response contents:
++
++=====================================  ======  ==========================
++  ``ETHTOOL_A_RSS_HEADER``             nested  reply header
++  ``ETHTOOL_A_RSS_CONTEXT``            u32     RSS context number
++  ``ETHTOOL_A_RSS_HFUNC``              u32     RSS hash func
++  ``ETHTOOL_A_RSS_RINGS``              u32     Ring count
++  ``ETHTOOL_A_RSS_INDIR``              binary  Indir table bytes
++  ``ETHTOOL_A_RSS_HKEY``               binary  Hash key bytes
++ ====================================  ======  ==========================
++
+ Request translation
+ ===================
+ 
+@@ -1768,7 +1795,7 @@ are netlink only.
+   ``ETHTOOL_GMODULEEEPROM``           ``ETHTOOL_MSG_MODULE_EEPROM_GET``
+   ``ETHTOOL_GEEE``                    ``ETHTOOL_MSG_EEE_GET``
+   ``ETHTOOL_SEEE``                    ``ETHTOOL_MSG_EEE_SET``
+-  ``ETHTOOL_GRSSH``                   n/a
++  ``ETHTOOL_GRSSH``                   ``ETHTOOL_MSG_RSS_GET``
+   ``ETHTOOL_SRSSH``                   n/a
+   ``ETHTOOL_GTUNABLE``                n/a
+   ``ETHTOOL_STUNABLE``                n/a
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index aaf7c6963d61..26764dbdf510 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -51,6 +51,7 @@ enum {
+ 	ETHTOOL_MSG_MODULE_SET,
+ 	ETHTOOL_MSG_PSE_GET,
+ 	ETHTOOL_MSG_PSE_SET,
++	ETHTOOL_MSG_RSS_GET,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_USER_CNT,
+@@ -97,6 +98,7 @@ enum {
+ 	ETHTOOL_MSG_MODULE_GET_REPLY,
+ 	ETHTOOL_MSG_MODULE_NTF,
+ 	ETHTOOL_MSG_PSE_GET_REPLY,
++	ETHTOOL_MSG_RSS_GET_REPLY,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_KERNEL_CNT,
+@@ -880,6 +882,19 @@ enum {
+ 	ETHTOOL_A_PSE_MAX = (__ETHTOOL_A_PSE_CNT - 1)
+ };
+ 
++enum {
++	ETHTOOL_A_RSS_UNSPEC,
++	ETHTOOL_A_RSS_HEADER,
++	ETHTOOL_A_RSS_CONTEXT,		/* u32 */
++	ETHTOOL_A_RSS_HFUNC,		/* u32 */
++	ETHTOOL_A_RSS_RINGS,		/* u32 */
++	ETHTOOL_A_RSS_INDIR,		/* binary */
++	ETHTOOL_A_RSS_HKEY,		/* binary */
++
++	__ETHTOOL_A_RSS_CNT,
++	ETHTOOL_A_RSS_MAX = (__ETHTOOL_A_RSS_CNT - 1),
++};
++
+ /* generic netlink info */
+ #define ETHTOOL_GENL_NAME "ethtool"
+ #define ETHTOOL_GENL_VERSION 1
+diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
+index 72ab0944262a..228f13df2e18 100644
+--- a/net/ethtool/Makefile
++++ b/net/ethtool/Makefile
+@@ -4,7 +4,7 @@ obj-y				+= ioctl.o common.o
+ 
+ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
+ 
+-ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
++ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o rss.o \
+ 		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
+ 		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
+ 		   tunnels.o fec.o eeprom.o stats.o phc_vclocks.o module.o \
+diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+index 1a4c11356c96..aee98be6237f 100644
+--- a/net/ethtool/netlink.c
++++ b/net/ethtool/netlink.c
+@@ -287,6 +287,7 @@ ethnl_default_requests[__ETHTOOL_MSG_USER_CNT] = {
+ 	[ETHTOOL_MSG_PHC_VCLOCKS_GET]	= &ethnl_phc_vclocks_request_ops,
+ 	[ETHTOOL_MSG_MODULE_GET]	= &ethnl_module_request_ops,
+ 	[ETHTOOL_MSG_PSE_GET]		= &ethnl_pse_request_ops,
++	[ETHTOOL_MSG_RSS_GET]		= &ethnl_rss_request_ops,
+ };
+ 
+ static struct ethnl_dump_ctx *ethnl_dump_context(struct netlink_callback *cb)
+@@ -1040,6 +1041,12 @@ static const struct genl_ops ethtool_genl_ops[] = {
+ 		.policy = ethnl_pse_set_policy,
+ 		.maxattr = ARRAY_SIZE(ethnl_pse_set_policy) - 1,
+ 	},
++	{
++		.cmd	= ETHTOOL_MSG_RSS_GET,
++		.doit	= ethnl_default_doit,
++		.policy = ethnl_rss_get_policy,
++		.maxattr = ARRAY_SIZE(ethnl_rss_get_policy) - 1,
++	},
+ };
+ 
+ static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index 1bfd374f9718..3753787ba233 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -346,6 +346,7 @@ extern const struct ethnl_request_ops ethnl_stats_request_ops;
+ extern const struct ethnl_request_ops ethnl_phc_vclocks_request_ops;
+ extern const struct ethnl_request_ops ethnl_module_request_ops;
+ extern const struct ethnl_request_ops ethnl_pse_request_ops;
++extern const struct ethnl_request_ops ethnl_rss_request_ops;
+ 
+ extern const struct nla_policy ethnl_header_policy[ETHTOOL_A_HEADER_FLAGS + 1];
+ extern const struct nla_policy ethnl_header_policy_stats[ETHTOOL_A_HEADER_FLAGS + 1];
+@@ -386,6 +387,7 @@ extern const struct nla_policy ethnl_module_get_policy[ETHTOOL_A_MODULE_HEADER +
+ extern const struct nla_policy ethnl_module_set_policy[ETHTOOL_A_MODULE_POWER_MODE_POLICY + 1];
+ extern const struct nla_policy ethnl_pse_get_policy[ETHTOOL_A_PSE_HEADER + 1];
+ extern const struct nla_policy ethnl_pse_set_policy[ETHTOOL_A_PSE_MAX + 1];
++extern const struct nla_policy ethnl_rss_get_policy[ETHTOOL_A_RSS_CONTEXT + 1];
+ 
+ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
+ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info);
+diff --git a/net/ethtool/rss.c b/net/ethtool/rss.c
+new file mode 100644
+index 000000000000..86b9e0de954c
+--- /dev/null
++++ b/net/ethtool/rss.c
+@@ -0,0 +1,169 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include "netlink.h"
++#include "common.h"
++
++struct rss_req_info {
++	struct ethnl_req_info		base;
++	u32				rss_context;
++};
++
++struct rss_reply_data {
++	struct ethnl_reply_data		base;
++	u32				rss_context;
++	u32				indir_size;
++	u32				hkey_size;
++	u32				hfunc;
++	u32				rings;
++	u32				*indir_table;
++	u8				*hkey;
++};
++
++#define RSS_REQINFO(__req_base) \
++	container_of(__req_base, struct rss_req_info, base)
++
++#define RSS_REPDATA(__reply_base) \
++	container_of(__reply_base, struct rss_reply_data, base)
++
++const struct nla_policy ethnl_rss_get_policy[] = {
++	[ETHTOOL_A_RSS_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
++	[ETHTOOL_A_RSS_CONTEXT] = { .type = NLA_U32 },
++};
++
++static int
++rss_parse_request(struct ethnl_req_info *req_info, struct nlattr **tb,
++		  struct netlink_ext_ack *extack)
++{
++	struct rss_req_info *request = RSS_REQINFO(req_info);
++
++	if (!tb[ETHTOOL_A_RSS_CONTEXT]) {
++		request->rss_context = 0;
++		return 0;
++	}
++
++	request->rss_context = nla_get_u32(tb[ETHTOOL_A_RSS_CONTEXT]);
++	return 0;
++}
++
++static int
++rss_prepare_data(const struct ethnl_req_info *req_base,
++		 struct ethnl_reply_data *reply_base, struct genl_info *info)
++{
++	struct rss_reply_data *data = RSS_REPDATA(reply_base);
++	struct rss_req_info *request = RSS_REQINFO(req_base);
++	struct net_device *dev = reply_base->dev;
++	struct ethtool_rxnfc rings;
++	const struct ethtool_ops *ops;
++	u32 total_size, indir_bytes;
++	u8 dev_hfunc = 0;
++	u8 *rss_config;
++	int ret;
++
++	ops = dev->ethtool_ops;
++	if (!ops->get_rxfh)
++		return -EOPNOTSUPP;
++
++	/* Some drivers don't handle rss_context */
++	if (request->rss_context && !ops->get_rxfh_context)
++		return -EOPNOTSUPP;
++
++	data->rss_context = request->rss_context;
++
++	ret = ethnl_ops_begin(dev);
++	if (ret < 0)
++		return ret;
++
++	data->indir_size = 0;
++	data->hkey_size = 0;
++	if (ops->get_rxfh_indir_size)
++		data->indir_size = ops->get_rxfh_indir_size(dev);
++	if (ops->get_rxfh_key_size)
++		data->hkey_size = ops->get_rxfh_key_size(dev);
++
++	indir_bytes = data->indir_size * sizeof(u32);
++	total_size = indir_bytes + data->hkey_size;
++	rss_config = kzalloc(total_size, GFP_KERNEL);
++	if (!rss_config) {
++		ret = -ENOMEM;
++		goto out_ops;
++	}
++
++	if (data->indir_size)
++		data->indir_table = (u32 *)rss_config;
++
++	if (data->hkey_size)
++		data->hkey = rss_config + indir_bytes;
++
++	if (data->rss_context)
++		ret = ops->get_rxfh_context(dev, data->indir_table, data->hkey,
++					    &dev_hfunc, data->rss_context);
++	else
++		ret = ops->get_rxfh(dev, data->indir_table, data->hkey,
++				    &dev_hfunc);
++
++	if (ret)
++		goto out_ops;
++
++	data->hfunc = dev_hfunc;
++	rings.cmd = ETHTOOL_GRXRINGS;
++	ops->get_rxnfc(dev, &rings, NULL);
++	data->rings = rings.data;
++
++out_ops:
++	ethnl_ops_complete(dev);
++	return ret;
++}
++
++static int
++rss_reply_size(const struct ethnl_req_info *req_base,
++	       const struct ethnl_reply_data *reply_base)
++{
++	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
++	int len;
++
++	len =  nla_total_size(sizeof(u32)) +	/* _RSS_CONTEXT */
++	       nla_total_size(sizeof(u32)) +	/* _RSS_HFUNC */
++	       nla_total_size(sizeof(u32)) +	/* _RSS_RINGS */
++	       nla_total_size(sizeof(u32)) * data->indir_size + /* _RSS_INDIR */
++	       data->hkey_size;			/* _RSS_HKEY */
++
++	return len;
++}
++
++static int
++rss_fill_reply(struct sk_buff *skb, const struct ethnl_req_info *req_base,
++	       const struct ethnl_reply_data *reply_base)
++{
++	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
++
++	if (nla_put_u32(skb, ETHTOOL_A_RSS_CONTEXT, data->rss_context) ||
++	    nla_put_u32(skb, ETHTOOL_A_RSS_HFUNC, data->hfunc) ||
++	    nla_put_u32(skb, ETHTOOL_A_RSS_RINGS, data->rings) ||
++	    nla_put(skb, ETHTOOL_A_RSS_INDIR,
++		    sizeof(u32) * data->indir_size, data->indir_table) ||
++	    nla_put(skb, ETHTOOL_A_RSS_HKEY, data->hkey_size, data->hkey))
++		return -EMSGSIZE;
++
++	return 0;
++}
++
++static void rss_cleanup_data(struct ethnl_reply_data *reply_base)
++{
++	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
++
++	kfree(data->indir_table);
++}
++
++const struct ethnl_request_ops ethnl_rss_request_ops = {
++	.request_cmd		= ETHTOOL_MSG_RSS_GET,
++	.reply_cmd		= ETHTOOL_MSG_RSS_GET_REPLY,
++	.hdr_attr		= ETHTOOL_A_RSS_HEADER,
++	.req_info_size		= sizeof(struct rss_req_info),
++	.reply_data_size	= sizeof(struct rss_reply_data),
++
++	.parse_request		= rss_parse_request,
++	.prepare_data		= rss_prepare_data,
++	.reply_size		= rss_reply_size,
++	.fill_reply		= rss_fill_reply,
++	.cleanup_data		= rss_cleanup_data,
++};
+-- 
+2.31.1
+
