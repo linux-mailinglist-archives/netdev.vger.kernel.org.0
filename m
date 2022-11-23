@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56EA863590F
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:07:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5C2263590A
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:07:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237090AbiKWKHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 05:07:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
+        id S236460AbiKWKHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 05:07:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235464AbiKWKGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:06:20 -0500
+        with ESMTP id S235978AbiKWKGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:06:19 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E69F627B
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36A8A19E
         for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 01:56:49 -0800 (PST)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669197405;
+        s=2020; t=1669197406;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Se3VUV4VgV2Dm3+vYvjmbnzZL1Rh4a37GClYgreafSU=;
-        b=0O8JtOjG0mVIzGbbGiR+EYUTfljzRGxAoN8zOshKU6V/gIm3oRtJyTmHEOkbuRm/CY5EIB
-        9eHfE8uU8LQxVyFjCkoFoAqguHaWjMlxeyzhRgKzCgVo9T5moJHroWiwPG6U3ix5Zbress
-        KLN3gPh3NiSp8qZ1koz+EvV0xjN31npW7DoF+JvpYHylKGIqYxs9vT9Ha4AY6ziifIvZd1
-        uUeGsTn0QVGGakyDwV0XrlpRqzOqNXWoJTddNPeRiG1AfSJDmGZwaL7zei1c1shmVblyry
-        9nQuYk+X4V4M99/gD0d+R7zW1UumbUMpq3FbsPCLAwJGNRY0jDt9L8deqp98VA==
+        bh=6TYM9OumVgRPKq+eX//pCt69s2IzXDIeTR3GIzFelbk=;
+        b=MZ7bhoybCnjbF1WD2av6eCkC8tYBgfBuTLOe4wgEmHdi5R5Boje0iZDHREinBNpw0z3jov
+        5KJIYA7KJSrr2Lespb+DrNwnsrKctImmH00P60W/U4dFEkf0Y4BZ7TLi6RM2RVPcco0XtM
+        8UtC9q3Im/wyRJK6xLBbvooJpCiOeS0HZG606qZIkn3fN1E0GYViGV3HVXoGdN3R87DvaD
+        jc0gGjfaZESffPoKR2wl5QPvr6i7jitJDwOEI4achuk/lpXFewP9uSP3RwYrstL+wzwiXu
+        rcl87fZrcRug83kkhw7CYuXOel7cizC0jafhYXFQ6covFBV8MdsfGk1BzXcg+Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669197405;
+        s=2020e; t=1669197406;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Se3VUV4VgV2Dm3+vYvjmbnzZL1Rh4a37GClYgreafSU=;
-        b=dmsMCecGbzY3xeMF2fpZT9M3Gsq8wHuFWrGK77jSKenXemmniDkP4ldZBxLaspcBD50OTW
-        28kvFTLxrzs4NDCw==
+        bh=6TYM9OumVgRPKq+eX//pCt69s2IzXDIeTR3GIzFelbk=;
+        b=45RZ9w3N0VaZU3euwnj0We2ktCC7zlvwIE2CKH9o5/OKyrhIVhyg7E+zJEnHeAU3zebJ3l
+        9jB2a3+6ptenz9Cw==
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -44,9 +44,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Thomas Gleixner <tglx@linutronix.de>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v3 net 5/6] hsr: Synchronize sending frames to have always incremented outgoing seq nr.
-Date:   Wed, 23 Nov 2022 10:56:37 +0100
-Message-Id: <20221123095638.2838922-6-bigeasy@linutronix.de>
+Subject: [PATCH v3 net 6/6] hsr: Synchronize sequence number updates.
+Date:   Wed, 23 Nov 2022 10:56:38 +0100
+Message-Id: <20221123095638.2838922-7-bigeasy@linutronix.de>
 In-Reply-To: <20221123095638.2838922-1-bigeasy@linutronix.de>
 References: <20221123095638.2838922-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -60,134 +60,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sending frames via the hsr (master) device requires a sequence number
-which is tracked in hsr_priv::sequence_nr and protected by
-hsr_priv::seqnr_lock. Each time a new frame is sent, it will obtain a
-new id and then send it via the slave devices.
-Each time a packet is sent (via hsr_forward_do()) the sequence number is
-checked via hsr_register_frame_out() to ensure that a frame is not
-handled twice. This make sense for the receiving side to ensure that the
-frame is not injected into the stack twice after it has been received
-from both slave ports.
+hsr_register_frame_out() compares new sequence_nr vs the old one
+recorded in hsr_node::seq_out and if the new sequence_nr is higher then
+it will be written to hsr_node::seq_out as the new value.
 
-There is no locking to cover the sending path which means the following
-scenario is possible:
+This operation isn't locked so it is possible that two frames with the
+same sequence number arrive (via the two slave devices) and are fed to
+hsr_register_frame_out() at the same time. Both will pass the check and
+update the sequence counter later to the same value. As a result the
+content of the same packet is fed into the stack twice.
 
-  CPU0				CPU1
-  hsr_dev_xmit(skb1)		hsr_dev_xmit(skb2)
-   fill_frame_info()             fill_frame_info()
-    hsr_fill_frame_info()         hsr_fill_frame_info()
-     handle_std_frame()            handle_std_frame()
-      skb1's sequence_nr =3D 1
-                                    skb2's sequence_nr =3D 2
-   hsr_forward_do()              hsr_forward_do()
+This was noticed by running ping and observing DUP being reported from
+time to time.
 
-                                   hsr_register_frame_out(, 2)  // okay, se=
-nd)
+Instead of using the hsr_priv::seqnr_lock for the whole receive path (as
+it is for sending in the master node) add an aditional lock that is only
+used for sequence number checks and updates.
 
-    hsr_register_frame_out(, 1) // stop, lower seq duplicate
-
-Both skbs (or their struct hsr_frame_info) received an unique id.
-However since skb2 was sent before skb1, the higher sequence number was
-recorded in hsr_register_frame_out() and the late arriving skb1 was
-dropped and never sent.
-
-This scenario has been observed in a three node HSR setup, with node1 +
-node2 having ping and iperf running in parallel. From time to time ping
-reported a missing packet. Based on tracing that missing ping packet did
-not leave the system.
-
-It might be possible (didn't check) to drop the sequence number check on
-the sending side. But if the higher sequence number leaves on wire
-before the lower does and the destination receives them in that order
-and it will drop the packet with the lower sequence number and never
-inject into the stack.
-Therefore it seems the only way is to lock the whole path from obtaining
-the sequence number and sending via dev_queue_xmit() and assuming the
-packets leave on wire in the same order (and don't get reordered by the
-NIC).
-
-Cover the whole path for the master interface from obtaining the ID
-until after it has been forwarded via hsr_forward_skb() to ensure the
-skbs are sent to the NIC in the order of the assigned sequence numbers.
+Add a per-node lock that is used during sequence number reads and
+updates.
 
 Fixes: f421436a591d3 ("net/hsr: Add support for the High-availability Seaml=
 ess Redundancy protocol (HSRv0)")
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- net/hsr/hsr_device.c  | 12 +++++++-----
- net/hsr/hsr_forward.c |  3 +--
- 2 files changed, 8 insertions(+), 7 deletions(-)
+ net/hsr/hsr_framereg.c | 9 ++++++++-
+ net/hsr/hsr_framereg.h | 1 +
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-index 84fba2a402a5b..b1e86a7265b32 100644
---- a/net/hsr/hsr_device.c
-+++ b/net/hsr/hsr_device.c
-@@ -219,7 +219,9 @@ static netdev_tx_t hsr_dev_xmit(struct sk_buff *skb, st=
-ruct net_device *dev)
- 		skb->dev =3D master->dev;
- 		skb_reset_mac_header(skb);
- 		skb_reset_mac_len(skb);
-+		spin_lock_bh(&hsr->seqnr_lock);
- 		hsr_forward_skb(skb, master);
-+		spin_unlock_bh(&hsr->seqnr_lock);
- 	} else {
- 		dev_core_stats_tx_dropped_inc(dev);
- 		dev_kfree_skb_any(skb);
-@@ -306,7 +308,6 @@ static void send_hsr_supervision_frame(struct hsr_port =
-*master,
- 		hsr_stag->sequence_nr =3D htons(hsr->sequence_nr);
- 		hsr->sequence_nr++;
+diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+index f2dd846ff9038..39a6088080e93 100644
+--- a/net/hsr/hsr_framereg.c
++++ b/net/hsr/hsr_framereg.c
+@@ -157,6 +157,7 @@ static struct hsr_node *hsr_add_node(struct hsr_priv *h=
+sr,
+ 		return NULL;
+=20
+ 	ether_addr_copy(new_node->macaddress_A, addr);
++	spin_lock_init(&new_node->seq_out_lock);
+=20
+ 	/* We are only interested in time diffs here, so use current jiffies
+ 	 * as initialization. (0 could trigger an spurious ring error warning).
+@@ -353,6 +354,7 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
  	}
--	spin_unlock_bh(&hsr->seqnr_lock);
 =20
- 	hsr_stag->tlv.HSR_TLV_type =3D type;
- 	/* TODO: Why 12 in HSRv0? */
-@@ -317,11 +318,13 @@ static void send_hsr_supervision_frame(struct hsr_por=
-t *master,
- 	hsr_sp =3D skb_put(skb, sizeof(struct hsr_sup_payload));
- 	ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
+ 	ether_addr_copy(node_real->macaddress_B, ethhdr->h_source);
++	spin_lock_bh(&node_real->seq_out_lock);
+ 	for (i =3D 0; i < HSR_PT_PORTS; i++) {
+ 		if (!node_curr->time_in_stale[i] &&
+ 		    time_after(node_curr->time_in[i], node_real->time_in[i])) {
+@@ -363,6 +365,7 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
+ 		if (seq_nr_after(node_curr->seq_out[i], node_real->seq_out[i]))
+ 			node_real->seq_out[i] =3D node_curr->seq_out[i];
+ 	}
++	spin_unlock_bh(&node_real->seq_out_lock);
+ 	node_real->addr_B_port =3D port_rcv->type;
 =20
--	if (skb_put_padto(skb, ETH_ZLEN))
-+	if (skb_put_padto(skb, ETH_ZLEN)) {
-+		spin_unlock_bh(&hsr->seqnr_lock);
- 		return;
+ 	spin_lock_bh(&hsr->list_lock);
+@@ -456,13 +459,17 @@ void hsr_register_frame_in(struct hsr_node *node, str=
+uct hsr_port *port,
+ int hsr_register_frame_out(struct hsr_port *port, struct hsr_node *node,
+ 			   u16 sequence_nr)
+ {
++	spin_lock_bh(&node->seq_out_lock);
+ 	if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]) &&
+ 	    time_is_after_jiffies(node->time_out[port->type] +
+-	    msecs_to_jiffies(HSR_ENTRY_FORGET_TIME)))
++	    msecs_to_jiffies(HSR_ENTRY_FORGET_TIME))) {
++		spin_unlock_bh(&node->seq_out_lock);
+ 		return 1;
 +	}
 =20
- 	hsr_forward_skb(skb, master);
--
-+	spin_unlock_bh(&hsr->seqnr_lock);
- 	return;
+ 	node->time_out[port->type] =3D jiffies;
+ 	node->seq_out[port->type] =3D sequence_nr;
++	spin_unlock_bh(&node->seq_out_lock);
+ 	return 0;
  }
 =20
-@@ -360,9 +363,8 @@ static void send_prp_supervision_frame(struct hsr_port =
-*master,
- 		return;
- 	}
+diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
+index b5f902397bf1a..9a047ac5991d0 100644
+--- a/net/hsr/hsr_framereg.h
++++ b/net/hsr/hsr_framereg.h
+@@ -69,6 +69,7 @@ void prp_update_san_info(struct hsr_node *node, bool is_s=
+up);
 =20
--	spin_unlock_bh(&hsr->seqnr_lock);
--
- 	hsr_forward_skb(skb, master);
-+	spin_unlock_bh(&hsr->seqnr_lock);
- }
-=20
- /* Announce (supervision frame) timer function
-diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-index 0cb8f4040bfd1..b67e52af8967f 100644
---- a/net/hsr/hsr_forward.c
-+++ b/net/hsr/hsr_forward.c
-@@ -508,10 +508,9 @@ static void handle_std_frame(struct sk_buff *skb,
- 		frame->is_from_san =3D true;
- 	} else {
- 		/* Sequence nr for the master node */
--		spin_lock_bh(&hsr->seqnr_lock);
-+		lockdep_assert_held(&hsr->seqnr_lock);
- 		frame->sequence_nr =3D hsr->sequence_nr;
- 		hsr->sequence_nr++;
--		spin_unlock_bh(&hsr->seqnr_lock);
- 	}
- }
-=20
+ struct hsr_node {
+ 	struct list_head	mac_list;
++	spinlock_t		seq_out_lock;
+ 	unsigned char		macaddress_A[ETH_ALEN];
+ 	unsigned char		macaddress_B[ETH_ALEN];
+ 	/* Local slave through which AddrB frames are received from this node */
 --=20
 2.38.1
 
