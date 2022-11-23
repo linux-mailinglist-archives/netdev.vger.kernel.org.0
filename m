@@ -2,84 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E61463509B
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 07:41:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61DC86350BF
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 07:59:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236113AbiKWGl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 01:41:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
+        id S236170AbiKWG7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 01:59:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236114AbiKWGlS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 01:41:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6CDF6099;
-        Tue, 22 Nov 2022 22:41:07 -0800 (PST)
+        with ESMTP id S236165AbiKWG7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 01:59:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8A382BC0;
+        Tue, 22 Nov 2022 22:59:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C4FDB81ECB;
-        Wed, 23 Nov 2022 06:41:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF754C433D6;
-        Wed, 23 Nov 2022 06:41:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4431261AA5;
+        Wed, 23 Nov 2022 06:59:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD02C433C1;
+        Wed, 23 Nov 2022 06:58:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669185664;
-        bh=BqF+fMKmQdlgBmpTypjbrHnI9gIDVaSpZN4o3tTBEtI=;
+        s=k20201202; t=1669186740;
+        bh=zIbIy/PtmE2LjDQ6u0ycesYy6M+OQfQCW7bQkpgh7Wk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HGluntDqwOHuKBVKwnocM18xZ5/GHfwov2XKMBY6dMhb/gq7Cgm5bsj4kfoA8VZvk
-         u79YMc8/VQLS81gIsUc6qNnCQavEmjIVc3yWZd4C1abPzZ6QGpTmly5evPvnXCJiCj
-         jM1HYdDTMY7aQ2egWzYYlukc8pA0fjHntlYzfVZSfMkP+Vj7BhCsYE9//faaA3FGYp
-         ocMtnANd1XrCDF26gMYSRfNhD6fL1a8dn3bJ+hX7AZDJOzmc4c6ABV1iR22/GJ1hdl
-         T/lPTSAgKy+25GG08yQxLGrVJ8Rc+uLJUONXi/yOF8nEzQeqJgIcaixg2Z70d9LQsz
-         J2ms+4nC+LnHQ==
-Date:   Wed, 23 Nov 2022 08:40:57 +0200
+        b=bzgzCfjQd1alk5/e+Spa+hdB0/oWpYut0+k/MsWjFCwQ7L+rdhlvDdNiPab4PBrXI
+         1HArTIHZwB4Er/kcirALZN/UcNcB/AlutbbLSHLsWt8f4fW2GH+VayFQeqoxzgU+Jj
+         +WpqJXCWUj0yZbpxtkjIm6aA3UsNsKdSpwMmsk605B+KVsldgdYgXeDEqhJJaO/cjP
+         1pnH1mFaTORk4pTX6HDFo62VluvlVE00/MmG8ylJj5b0mNC4pZo9fGZYylrfFiR7Vo
+         ji9o0JpZKxLm+OD30GBRvLjBfBYIUNnYYIxcSRH2dWn+gYMgSuQjdzxPxlqI9w9COc
+         O3kE3Uy26wQZQ==
+Date:   Wed, 23 Nov 2022 08:58:53 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Peter Kosyh <pkosyh@yandex.ru>, Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lvc-project@linuxtesting.org
-Subject: Re: [PATCH] mlx4: use snprintf() instead of sprintf() for safety
-Message-ID: <Y33AeQzuXFjnr+t/@unreal>
-References: <20221122130453.730657-1-pkosyh@yandex.ru>
- <Y3zhL0/OItHF1R03@unreal>
- <20221122121223.265d6d97@kernel.org>
+To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
+Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, jgg@ziepe.ca, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        michael.chan@broadcom.com, netdev@vger.kernel.org,
+        pabeni@redhat.com, selvin.xavier@broadcom.com
+Subject: Re: [PATCH v4 0/6] Add Auxiliary driver support
+Message-ID: <Y33ErZHAsX76y34Z@unreal>
+References: <20221109184244.7032-1-ajit.khaparde@broadcom.com>
+ <Y2zYPOUKgoArq7mM@unreal>
+ <CACZ4nhu_2FoOTmXPuq+amRYAipusq1XcobavytN0cFK=TSE5mQ@mail.gmail.com>
+ <Y3Tj/BrskSJPuTFw@unreal>
+ <CACZ4nhsv4zyzANrGh90WGKORz0Su=i7+Jmsk6nWoOq4or7Y0=Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221122121223.265d6d97@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+In-Reply-To: <CACZ4nhsv4zyzANrGh90WGKORz0Su=i7+Jmsk6nWoOq4or7Y0=Q@mail.gmail.com>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 12:12:23PM -0800, Jakub Kicinski wrote:
-> On Tue, 22 Nov 2022 16:48:15 +0200 Leon Romanovsky wrote:
-> > On Tue, Nov 22, 2022 at 04:04:53PM +0300, Peter Kosyh wrote:
-> > > Use snprintf() to avoid the potential buffer overflow. Although in the
-> > > current code this is hardly possible, the safety is unclean.  
-> > 
-> > Let's fix the tools instead. The kernel code is correct.
+On Tue, Nov 22, 2022 at 07:02:45AM -0800, Ajit Khaparde wrote:
+> On Wed, Nov 16, 2022 at 5:22 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> ::snip::
+> > > > All PCI management logic and interfaces are needed to be inside eth part
+> > > > of your driver and only that part should implement SR-IOV config. Once
+> > > > user enabled SR-IOV, the PCI driver should create auxiliary devices for
+> > > > each VF. These device will have RDMA capabilities and it will trigger RDMA
+> > > > driver to bind to them.
+> > > I agree and once the PF creates the auxiliary devices for the VF, the RoCE
+> > > Vf indeed get probed and created. But the twist in bnxt_en/bnxt_re
+> > > design is that
+> > > the RoCE driver is responsible for making adjustments to the RoCE resources.
+> >
+> > You can still do these adjustments by checking type of function that
+> > called to RDMA .probe. PCI core exposes some functions to help distinguish between
+> > PF and VFs.
+> >
+> > >
+> > > So once the VF's are created and the bnxt_en driver enables SRIOV adjusts the
+> > > NIC resources for the VF,  and such, it tries to call into the bnxt_re
+> > > driver for the
+> > > same purpose.
+> >
+> > If I read code correctly, all these resources are for one PCI function.
+> >
+> > Something like this:
+> >
+> > bnxt_re_probe()
+> > {
+> >   ...
+> >         if (is_virtfn(p))
+> >                  bnxt_re_sriov_config(p);
+> >   ...
+> > }
+> I understand what you are suggesting.
+> But what I want is a way to do this in the context of the PF
+> preferably before the VFs are probed. 
+
+I don't understand the last sentence. You call to this sriov_config in
+bnxt_re driver without any protection from VFs being probed,
+
+> So we are trying to call the
+> bnxt_re_sriov_config in the context of handling the PF's
+> sriov_configure implementation.  Having the ulp_ops is allowing us to
+> avoid resource wastage and assumptions in the bnxt_re driver.
+
+To which resource wastage are you referring?
+
+There are no differences if same limits will be in bnxt_en driver when
+RDMA bnxt device is created or in bnxt_re which will be called once RDMA
+device is created.
+
+Thanks
+
 > 
-> I'm guessing the code is correct because port can't be a high value?
+> ::snip::
 
-Yes, port value is provided as input to mlx4_init_port_info() and it is
-capped by MLX4_MAX_PORTS, which is 2.
 
-> Otherwise, if I'm counting right, large enough port representation
-> (e.g. 99999999) could overflow the string. If that's the case - how
-> would they "fix the tool" to know the port is always a single digit?
-
-I may admit that I don't know how hard or easy to implement it, but it
-will be great if tool would be able to understand that dev->caps.num_ports
-are not really dynamic values, but constant ones.
-
-However, I don't mind if we merge it.
-
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
