@@ -2,98 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 333B3635D0E
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 13:41:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63484635D74
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 13:46:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236148AbiKWMjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 07:39:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
+        id S237755AbiKWMpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 07:45:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235950AbiKWMjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 07:39:31 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB2A65E62
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 04:39:30 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id a7-20020a056830008700b0066c82848060so11118660oto.4
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 04:39:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SziUpUBMpjw+UaQ7xC8676TMLbh0qm8Ns8XnOq6kTlM=;
-        b=XnBarXAp7UiOAQLARwVD1vLf/Ue9JYvVP4CunY0+N6NJVh1c4y4I7XYJX5K1ahrlKl
-         BrSA7knSxZ3Gc8usldf3XENHVYyPaG8YR5xcevytKtYFbLcLObzmRsfkPurgiUhNw8/j
-         OQhsyMjLRyE2ODXgLFK5Vl4jdv6bIKy1ZhdNp6Rl+JNjaHlfD3FMG71RaFl5z8WdR/8P
-         c8jacJQd5TdjdXo60PT3FomfRttbdDDdCxbrw5vE49SE573kI5te7ynT8mxl+vUbLwrx
-         UG64ls3Uj9DNkC/mtxo6hf3OVwIiTR+9CUi+yxn1FtPUjtC0KYpjcrxtLw6MNtW6RR/q
-         nhMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SziUpUBMpjw+UaQ7xC8676TMLbh0qm8Ns8XnOq6kTlM=;
-        b=wmB0CJpUyJtHgCu2OXSMEpmW04PHnsC3bf+s5Cy0aFF7MWgbYKzhk5xPEAIwhWvBhY
-         ud/mLBpmNaGhtO/PZBxybu+RPe8/YAJ3dsiLhGlWq2/Jj2VAwU5PmOG8ihPIpsgOSqkW
-         Rhripv45sVHViuuyi5chbtpcJKBf/O/mmUSY4Nv+o68WrHvYdNPMiYL/ej3UxnTr34CB
-         L99uAsxxzhoga92UoFuaZedbTS9WplxNwXt3GlGBlOSyYHyBEffY9vk28Im4GRfpOtqa
-         xYMvOso/0PUAYPgXqAlfznboYGkGOx3HJ+32uy42iyWCYss785DHq//omfxWTKXiHTpg
-         3lEg==
-X-Gm-Message-State: ANoB5pkrUmcnps9IibVyiC06+wPc9oQxjorOPCcB3cbhfoons4US21eb
-        5oz+hahYLjYq6pf8W8gOCv0=
-X-Google-Smtp-Source: AA0mqf7QTN322C9+VJcYEopl++6csZqV2LF3fwc0aCLFlWqiAj1Jp1hxQf9YB5bJDoQCvbbscdiHZQ==
-X-Received: by 2002:a9d:4b08:0:b0:66e:1f02:1201 with SMTP id q8-20020a9d4b08000000b0066e1f021201mr531503otf.81.1669207169881;
-        Wed, 23 Nov 2022 04:39:29 -0800 (PST)
-Received: from t14s.localdomain ([2001:1284:f016:5412:fa8e:2d33:bd7c:54c7])
-        by smtp.gmail.com with ESMTPSA id f16-20020a056871071000b0013ae5246449sm9062314oap.22.2022.11.23.04.39.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 04:39:29 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 6F984459C18; Wed, 23 Nov 2022 09:39:27 -0300 (-03)
-Date:   Wed, 23 Nov 2022 09:39:27 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
-        ovs-dev@openvswitch.org, davem@davemloft.net, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Aaron Conole <aconole@redhat.com>
-Subject: Re: [PATCHv2 net-next 0/5] net: eliminate the duplicate code in the
- ct nat functions of ovs and tc
-Message-ID: <Y34Uf5lUYQ/wozOO@t14s.localdomain>
-References: <cover.1669138256.git.lucien.xin@gmail.com>
+        with ESMTP id S237667AbiKWMoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 07:44:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AF66B3AC;
+        Wed, 23 Nov 2022 04:42:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD5E861C41;
+        Wed, 23 Nov 2022 12:42:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBF08C433D7;
+        Wed, 23 Nov 2022 12:42:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669207338;
+        bh=BinOJNivN5SwYSDGbsBMM1OMdyiz7O09D9xZ1yr0N9U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QE+irGG7QGIGFyRTXOzvTaPyDVsYNeuDPfMflKZkBO81DQ2wjcCWXpfOpYg2G0OUh
+         AKHQExa0kEqGb7WSwZvcVg7aPVS3MoZcV+mTjF/rSO+KBUgeCDw+3IptKiCgBF1naz
+         Wmey5QeTIGSJiiQLIkZvx7ljJU0IGsqS/R1Hvry9K3dUNK2jiAHYdfiFkB1pLo99pE
+         JTeGdRNGSSrcFTSmG/uvhTmuqBBnpEdqBkxCJgAJ9P08Paui4+e55OZYsEeIc3TnZg
+         CBt0Ys02+ZBmJUdULTyClMYqjQmosgxfQ9vPLuWoysZsuSOEyMPz3TxbzFLYjIrnNZ
+         sNXiCPkP/F+6g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Gleb Mazovetskiy <glex.spb@gmail.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.0 34/44] tcp: configurable source port perturb table size
+Date:   Wed, 23 Nov 2022 07:40:43 -0500
+Message-Id: <20221123124057.264822-34-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221123124057.264822-1-sashal@kernel.org>
+References: <20221123124057.264822-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1669138256.git.lucien.xin@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 12:32:16PM -0500, Xin Long wrote:
-> The changes in the patchset:
-> 
->   "net: add helper support in tc act_ct for ovs offloading"
-> 
-> had moved some common ct code used by both OVS and TC into netfilter.
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
 
-Please give me today to review this patchset.
+[ Upstream commit aeac4ec8f46d610a10adbaeff5e2edf6a88ffc62 ]
 
-Thanks,
-Marcelo
+On embedded systems with little memory and no relevant
+security concerns, it is beneficial to reduce the size
+of the table.
+
+Reducing the size from 2^16 to 2^8 saves 255 KiB
+of kernel RAM.
+
+Makes the table size configurable as an expert option.
+
+The size was previously increased from 2^8 to 2^16
+in commit 4c2c8f03a5ab ("tcp: increase source port perturb table to
+2^16").
+
+Signed-off-by: Gleb Mazovetskiy <glex.spb@gmail.com>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv4/Kconfig           | 10 ++++++++++
+ net/ipv4/inet_hashtables.c | 10 +++++-----
+ 2 files changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
+index e983bb0c5012..2dfb12230f08 100644
+--- a/net/ipv4/Kconfig
++++ b/net/ipv4/Kconfig
+@@ -402,6 +402,16 @@ config INET_IPCOMP
+ 
+ 	  If unsure, say Y.
+ 
++config INET_TABLE_PERTURB_ORDER
++	int "INET: Source port perturbation table size (as power of 2)" if EXPERT
++	default 16
++	help
++	  Source port perturbation table size (as power of 2) for
++	  RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm.
++
++	  The default is almost always what you want.
++	  Only change this if you know what you are doing.
++
+ config INET_XFRM_TUNNEL
+ 	tristate
+ 	select INET_TUNNEL
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index f5950a7172d6..1e45fe6276f7 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -679,13 +679,13 @@ EXPORT_SYMBOL_GPL(inet_unhash);
+  * Note that we use 32bit integers (vs RFC 'short integers')
+  * because 2^16 is not a multiple of num_ephemeral and this
+  * property might be used by clever attacker.
++ *
+  * RFC claims using TABLE_LENGTH=10 buckets gives an improvement, though
+- * attacks were since demonstrated, thus we use 65536 instead to really
+- * give more isolation and privacy, at the expense of 256kB of kernel
+- * memory.
++ * attacks were since demonstrated, thus we use 65536 by default instead
++ * to really give more isolation and privacy, at the expense of 256kB
++ * of kernel memory.
+  */
+-#define INET_TABLE_PERTURB_SHIFT 16
+-#define INET_TABLE_PERTURB_SIZE (1 << INET_TABLE_PERTURB_SHIFT)
++#define INET_TABLE_PERTURB_SIZE (1 << CONFIG_INET_TABLE_PERTURB_ORDER)
+ static u32 *table_perturb;
+ 
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+-- 
+2.35.1
+
