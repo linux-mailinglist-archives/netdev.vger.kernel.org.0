@@ -2,112 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 668D5636CB5
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 23:02:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEBA9636CD8
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 23:10:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbiKWWCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 17:02:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38342 "EHLO
+        id S229971AbiKWWIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 17:08:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231441AbiKWWCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 17:02:06 -0500
-Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E1710CEB6;
-        Wed, 23 Nov 2022 14:02:03 -0800 (PST)
-Received: by mail-io1-f46.google.com with SMTP id p141so92244iod.6;
-        Wed, 23 Nov 2022 14:02:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=STB2mpiXWoHyu3qbKXIUYJxB6xfOqYOUoTsYwbynqro=;
-        b=a9r5BKgnsZhYx5DRwPiPHkZPWaPsPwI2b4dTJz7jv7hWp+TjmYWue9XLywDkcq4sId
-         9DtZLtbg/Ub1NYx9q7hu9TgD8JOZmuBy1OTRI1fk433KX1HO3TEIKeVHjlBxCjXmxBv0
-         VsZV7U/cz2XlOmVtfieM1FkjVzLw5Y/KAic5jUUqt7Dq811k7Ku9+xu6xQU2u3ugX5dk
-         BC8cjjDusTT9nhNM/8BoiQq6ZELKLeZMRMGHsuZGi7IoMSYRVIYqoUc65zSNqZWcQCXU
-         rxTwOD36QSc9F7V6nv15C2QWvOeCS9/Ob7182E+t6ACdZu+xIPCICd84z/ikFx18PG36
-         lRsg==
-X-Gm-Message-State: ANoB5pnjAjC6H01SWDAy0HFxxTYmykF+njUeCuf9kRgPQqvhWobQ3yB+
-        jsH8Chk8xPgPM7BJeJVLcA==
-X-Google-Smtp-Source: AA0mqf4oK7Q0wkwY83HR3Uk7yKxopDWV3Qaeu3P0nOmLzagVjbYiHXwZ0BOsVAw9+CBXmridrNHqEw==
-X-Received: by 2002:a05:6602:d6:b0:6bc:2cc3:cbeb with SMTP id z22-20020a05660200d600b006bc2cc3cbebmr5035484ioe.110.1669240922905;
-        Wed, 23 Nov 2022 14:02:02 -0800 (PST)
-Received: from robh_at_kernel.org ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id x9-20020a029489000000b00388b6508ec8sm13349jah.115.2022.11.23.14.02.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 14:02:02 -0800 (PST)
-Received: (nullmailer pid 2582827 invoked by uid 1000);
-        Wed, 23 Nov 2022 22:02:03 -0000
-Date:   Wed, 23 Nov 2022 16:02:03 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Luka Perkov <luka.perkov@sartura.hr>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH 1/6] Revert "dt-bindings: marvell,prestera: Add
- description for device-tree bindings"
-Message-ID: <166924092234.2582728.15149777135659209160.robh@kernel.org>
-References: <20221117215557.1277033-1-miquel.raynal@bootlin.com>
- <20221117215557.1277033-2-miquel.raynal@bootlin.com>
+        with ESMTP id S229854AbiKWWIY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 17:08:24 -0500
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050:0:465::102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452521571D;
+        Wed, 23 Nov 2022 14:08:17 -0800 (PST)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4NHZy72lqZz9sTC;
+        Wed, 23 Nov 2022 23:08:15 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1669241295;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AqECxmOSPT83qOwhM+GdKNJsI17VfZH7epaT9e6tcdI=;
+        b=rW1avn3NpXzn7sLiAsTnlSMg6PV6E/xIwdgcoC+gxGlnEOAghAxwNrU2qBwiUfl8eYxD4v
+        XoWt+3PAKmT0WkHWaogToi7Igt0omFM5i8erCkbZgX5vKIBn3G4gWRg4hW5dQ88nkyHMtY
+        FBgrOVXx77dWcMY4ZSaFeeHWeIWRd3bB3bSBWxZzguxKGADvxv4uG5gp0MC7Ix+JymFeA6
+        JzlhjlGgvwwvRJejF9zDXUcmmhV3XyXMK7DGdUUEdsZaHfnH8BN4isEz/y5iUwfcJ7dXFO
+        TLVV2UMap5AvLljh7E1ZJsy1i3CojSaA1pDT18pJYq6KtqJHEIrK+3SMKVq7dw==
+From:   Alexander Lobakin <alobakin@mailbox.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1669241293;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AqECxmOSPT83qOwhM+GdKNJsI17VfZH7epaT9e6tcdI=;
+        b=YPSIjDv9PN2kIm1grMjMSM6oVfCrHwNJYvSxrwtqNcfWlxjaH4IMw1nzvJ/vex/arwWZTk
+        7/S9jFl28DmQth8C65d4trHozT+sHbtpDc6iNIOjRwIg304wpxjd6aNQhBpp43nK1gpV2d
+        uL5tVbywOqZpaACZ2Uw/ZPG4xcdtAu5EC7GhAQ+uJcjaSp3+LQqAhZrZKlCe2FrHo637So
+        v2c5Zjyuhl5/yuDdnZe6jHaiIQQFJTLTeOhNsOlEz4VKgAjEVc7W+DbE9wr28/V8wzQgTI
+        XMO2UqJTAAcQnwNHgod3RIhetuu5UsW8I1lZVIF3qU7RkLcBXuUXJbKDy7uLow==
+To:     Salil Mehta <salil.mehta@huawei.com>
+Cc:     Alexander Lobakin <alobakin@mailbox.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 16/18] net: hns3: fix mixed module-builtin object
+Date:   Wed, 23 Nov 2022 23:07:53 +0100
+Message-Id: <20221123220753.65752-1-alobakin@mailbox.org>
+In-Reply-To: <1d2341cc5a1843538d55fb34bd8137d8@huawei.com>
+References: <20221119225650.1044591-1-alobakin@pm.me> <20221119225650.1044591-17-alobakin@pm.me> <1d2341cc5a1843538d55fb34bd8137d8@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221117215557.1277033-2-miquel.raynal@bootlin.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-MBO-RS-META: ztdyaxcwfktx8pns3qxr7yfku3y5xjd7
+X-MBO-RS-ID: 6b04d22ce6bbfd2fef5
+X-Rspamd-Queue-Id: 4NHZy72lqZz9sTC
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Salil Mehta <salil.mehta@huawei.com>
+Date: Tue, 22 Nov 2022 12:39:04 +0000
 
-On Thu, 17 Nov 2022 22:55:52 +0100, Miquel Raynal wrote:
-> This reverts commit 40acc05271abc2852c32622edbebd75698736b9b.
+> Hi Alexander,
 > 
-> marvell,prestera.txt is an old file describing the old Alleycat3
-> standalone switches. The commit mentioned above actually hacked these
-> bindings to add support for a device tree property for a more modern
-> version of the IP connected over PCI, using only the generic compatible
-> in order to retrieve the device node from the prestera driver to read
-> one static property.
-> 
-> The problematic property discussed here is "base-mac-provider". The
-> original intent was to point to a nvmem device which could produce the
-> relevant nvmem-cell. This property has never been acked by DT
-> maintainers and fails all the layering that has been brought with the nvmem
-> bindings by pointing at a nvmem producer, bypassing the existing nvmem
-> bindings, rather than a nvmem cell directly. Furthermore, the property
-> cannot even be used upstream because it expected the ONIE tlv driver to
-> produce a specific cell, driver which used nacked bindings and thus was
-> never merged, replaced by a more integrated concept: the nvmem-layout.
-> 
-> So let's forget about this temporary addition, safely avoiding the need
-> for any backward compatibility handling. A new (yaml) binding file will
-> be brought with the prestera bindings, and there we will actually
-> include a description of the modern IP over PCI, including the right way
-> to point to a nvmem cell.
-> 
-> Cc: Vadym Kochan <vadym.kochan@plvision.eu>
-> Cc: Taras Chornyi <tchornyi@marvell.com>
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->  .../bindings/net/marvell,prestera.txt         | 34 -------------------
->  1 file changed, 34 deletions(-)
-> 
+> > From: Alexander Lobakin <alobakin@pm.me>
+> > Sent: Saturday, November 19, 2022 11:10 PM
+> > To: linux-kbuild@vger.kernel.org
 
-Acked-by: Rob Herring <robh@kernel.org>
+[...]
+
+> > diff --git a/drivers/net/ethernet/hisilicon/Kconfig
+> > b/drivers/net/ethernet/hisilicon/Kconfig
+> > index 3312e1d93c3b..9d2be93d0378 100644
+> > --- a/drivers/net/ethernet/hisilicon/Kconfig
+> > +++ b/drivers/net/ethernet/hisilicon/Kconfig
+> > @@ -100,11 +100,15 @@ config HNS3
+> > 
+> >  if HNS3
+> > 
+> > +config HNS3_HCLGE_COMMON
+> > +	tristate
+> > +
+> 
+> 
+> This change does not looks right to me. We do not intend to expose these
+
+...does not looks right to me -- because? The "wrong" line?
+
+> common files via kconfig and as a separate module. I would need time to
+> address this in a different way. 
+
+I'm curious how 40 Kb of shared code can be addressed differently :D
+This Kconfig opt is hidden, it can only be selected by some other
+symbol -- in this case, by the PF and VF HCLGE options. Nothing gets
+exposed in a way it shouldn't be.
+
+Lemme guess, some cross-OS "shared code" in the OOT nobody in the
+upstream cares about (for good), how familiar :D IIRC ZSTD folks
+also weren't happy at first.
+
+> 
+> Please do not merge this change into the mainline!
+> 
+> 
+> Thanks
+> Salil
+> 
+> 
+> 
+> >  config HNS3_HCLGE
+> >  	tristate "Hisilicon HNS3 HCLGE Acceleration Engine & Compatibility
+> > Layer Support"
+> >  	default m
+> >  	depends on PCI_MSI
+> >  	depends on PTP_1588_CLOCK_OPTIONAL
+> > +	select HNS3_HCLGE_COMMON
+
+[...]
+
+> > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> > b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> > index 987271da6e9b..39a7ab51be31 100644
+> > --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> > @@ -13133,6 +13133,8 @@ static void __exit hclge_exit(void)
+> >  module_init(hclge_init);
+> >  module_exit(hclge_exit);
+> > 
+> > +MODULE_IMPORT_NS(HNS3_HCLGE_COMMON);
+> 
+> 
+> No, we don't want this.
+
+I can export the common functions globally, without a namespace
+if you prefer ._.
+
+> 
+> 
+> 
+> > +
+> >  MODULE_LICENSE("GPL");
+> >  MODULE_AUTHOR("Huawei Tech. Co., Ltd.");
+> >  MODULE_DESCRIPTION("HCLGE Driver");
+
+Thanks,
+Olek
