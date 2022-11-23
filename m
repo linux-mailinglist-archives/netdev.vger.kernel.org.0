@@ -2,118 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96871636266
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 15:52:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 550DE6362A1
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:02:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237791AbiKWOw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 09:52:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
+        id S236848AbiKWPBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 10:01:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237437AbiKWOwX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 09:52:23 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76DB38D4B5
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:52:21 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id z63so6151733ede.1
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 06:52:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=c0cYYhuWeBZxggRjcWRK91TmoegYznBOAl9pXEZNzsI=;
-        b=nnwgpLhtjt+2gXNHSgiKT60egaIwEmVpQ8xKo9AcAfGpzIzu1bpFI9m2DgTHLd8d+r
-         SuJ9fQyzhNyQRngVCz3R/RlYHs4CAIPQAfxYCSzlZ5uj1zoQGBSiEDiXTd0m99L7cdfn
-         YuN3bxj4Qi+0L91OzuFSUmmc3FyOUtZ9hCebAiprpS08tz48FeZWe9PScasJDcXI2A0y
-         Vo5zVvqzVbt+4vLUyVP0l85ONI9gI8oRYAlVPHRGWhNs4D17jcRZEZJXS7zVIcaZgFsR
-         AoJxGZrb/jLSfdOTZME0ktCswc9rOqBHY3oKaDda55N7sUZwRmgJITjkz6RCGM38g6/E
-         oAtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=c0cYYhuWeBZxggRjcWRK91TmoegYznBOAl9pXEZNzsI=;
-        b=hOI7bV8ojbaiig6PIb8Tq7wjAPXX7TVe5zQBvCyDx6g+mWkl1uwRT4xa22k0C8IXQR
-         ljrsn7Hy/xGr7Mpl0/7AsQypBEaOwwaR+Rr2afenFsydJFXmy5Jj9jsRbF7h8eLjiYpq
-         zNle3ZM+gvIzX0d1cJezfg4kXV6SqSMEXLfAMmolGZIHrk8XaXI/uwo7RWkjVd8BKeMI
-         vt4h++02g/s7An+LkCwJ+nVDxa6TtPHVBBDpCG170Qg3qPGbLlrvd3lAXkY45SwKrWg6
-         A4pW2vZn8pDyD6ISFQ+kdsXZvu4dysPoE0slqR8JulzKW9WJ1q0f6urTzCvJGwUPDCBL
-         aPNQ==
-X-Gm-Message-State: ANoB5pmG/8NSJ0rFlCdbGjq5Rdt9AkN6LS+HJbVzYZNEXXZ0z3rdZxxd
-        p78L4rKiqQ7aZNW91MlvzKnm6w==
-X-Google-Smtp-Source: AA0mqf5jd4dYN9C/+Elce1qts52eZrfgguAaFs5X117TB4jlH7uLstuiK0xjyFl0NqMXGcJ43gfbpA==
-X-Received: by 2002:a05:6402:5299:b0:461:7291:79c1 with SMTP id en25-20020a056402529900b00461729179c1mr16390906edb.68.1669215139860;
-        Wed, 23 Nov 2022 06:52:19 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id 14-20020a170906308e00b007b29a6bec24sm7224876ejv.32.2022.11.23.06.52.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 06:52:19 -0800 (PST)
-Date:   Wed, 23 Nov 2022 15:52:17 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Steve Williams <steve.williams@getcruise.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        vinicius.gomes@intel.com, xiaoliang.yang_1@nxp.com,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [EXT] Re: [PATCH net-next] net/hanic: Add the hanic network
- interface for high availability links
-Message-ID: <Y34zoflZsC2pn9RO@nanopsycho>
-References: <20221118232639.13743-1-steve.williams@getcruise.com>
- <20221121195810.3f32d4fd@kernel.org>
- <20221122113412.dg4diiu5ngmulih2@skbuf>
- <CALHoRjcw8Du+4Px__x=vfDfjKnHVRnMmAhBBEznQ2CfHPZ9S0A@mail.gmail.com>
- <20221123142558.akqff2gtvzrqtite@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        with ESMTP id S237533AbiKWPBr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:01:47 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F289B23168
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 07:01:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669215706; x=1700751706;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=i5gq/xV/3iT9yl7BVz+QS0Imn7dVxqcU0eQoQZ0Ny84=;
+  b=ZgkCuu0KrH2+IrMZPlovS//oWTtieOMxVp08fihUKSJbmw2YCzLKIXHZ
+   JpxYBvx4i2gaSFDeDsN0TnDjZEuKgtigK0gtW/b5DjuKVrHE+JTzitaq4
+   XiXctYd7jdKGs//snFVNc0aUCwmoxGM/JcCvPn4Cx7aM0AOO0smzZ2Ezv
+   nz+ssitvgnUc2f6oYtGRdC4lZfkwXvZzKVMITU7E/0DZwZKSoNWujKThL
+   be24ApoivkgYCuGnc5PahYEXm+6D5Jr9qfPyUwsyTefS0V9FqwIYzOaQl
+   q42Y54nIJjK+/OGMyVIa6orT6qUZ6T5H8Q6y44w1zqOVd1VOj2VlHsVg9
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="301643002"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="301643002"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 07:01:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="644142608"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="644142608"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga007.fm.intel.com with ESMTP; 23 Nov 2022 07:01:29 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 23 Nov 2022 07:01:28 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Wed, 23 Nov 2022 07:01:28 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Wed, 23 Nov 2022 07:01:17 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QdYksgMIWiCn5VJM4M5O0ZYO5cUazvqKAmlJbGOoVdOXGsLMho++3GPLwV8JM/HcZmEuVg0ka74n7v4OOuKMbMLVVMfyMccPQdthXGNPYZ1+3A1DwJwpGIKbu0IzpIAKs3E+D2OJw7N0pTGzRmXLOq5ynIwp2rYN04aHnJ9cP5l497pa0sywOIFZXColDOiwQ5pmf8bmFEybLwgj919wvof75rojDQUtdZbopsSg2I/PI1ABkMdffhqm2V3kN77fzQNuJcbsWV05AE3Df7KXjm1Q69rNMrPRAD6N2s+TaIUpgv99s/knlufa+8DFAbaHxNQU1h2lULeSrfQ2jjFIgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ueGModDdW6dtHGz/7/oYFBfqrYq57Jigr28pVFyqDg4=;
+ b=ZDUBluCkIZiO2x4vPzAjTBVsUaYCBxbnUMVbn8kLElwZfORtEG6SdqN5u3if+yis+ZYag5oeuPFwSSi0GE+47FArz7BGnIGztyPWzU96+VEn1PazPW4ikPszqKNQHZ0nRkT7FUXjDS9kvwRGFWdCpolhYm9AHDrIkPYsKNnKQzfV/f9CoEPV9uls9FjupOoU5NfDI5rJ9zojuyWve1T4sp+IzO3FXh7PBIEzbayMvauHjL+AdN/27uxxkuokPjECRzZkrpg0l5Lnm5qbaAQ0swm+kRrK4v5JNDt/vnEuKOx/Q7OUTUFEOPTyTBj9IHUKOPr01Sq24h7zTG39VRpFSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ BL3PR11MB6506.namprd11.prod.outlook.com (2603:10b6:208:38d::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5834.11; Wed, 23 Nov 2022 15:01:15 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5f39:1ef:13a5:38b6]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5f39:1ef:13a5:38b6%6]) with mapi id 15.20.5834.009; Wed, 23 Nov 2022
+ 15:01:15 +0000
+Date:   Wed, 23 Nov 2022 15:57:36 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Saeed Mahameed" <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>, Parav Pandit <parav@nvidia.com>
+Subject: Re: [net 03/14] net/mlx5: SF: Fix probing active SFs during driver
+ probe phase
+Message-ID: <Y3404H9uBoVqCQgb@boxer>
+References: <20221122022559.89459-1-saeed@kernel.org>
+ <20221122022559.89459-4-saeed@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20221123142558.akqff2gtvzrqtite@skbuf>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20221122022559.89459-4-saeed@kernel.org>
+X-ClientProxiedBy: FR2P281CA0113.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9d::8) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|BL3PR11MB6506:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7be070f8-0ddb-400f-09a6-08dacd639167
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: OWzHKQmbXTHWP/ZOuDZAgZSt4EUJGlQZ16R4D8T/1af3MalFFyQVdWdSXlk+Inl0OMggjDI15oLetpebRN3+KuEPWPOUrQ9mmKRAoND3Sjr64ZFRQN7+3IwqZ90357LxZOgy+AEWyUv6mSg9XBlv/VSqBxV6J31VG8K1JrWXiUu7eEXG8sbFQJFhJMwIK5fZHzrLmnBoe+u1mLsltIpV2bCgenBlYYFBKGcUuUmPYxwKHFXE7bjRwX7LUy3eZ1947nZ2/ug8/Onc2/iu7fzTcX/5/z0NWljnU/nOuUePw+XYN2ilHo9KQ+W+984Q5Kxn4dxg+fP0wGQX+53jZCTc2EkylFgt4/KGo9o1dyVUIvFF7yZHHcwNrlVR+SuY61ud0jf0UCX4k+qcC5PcpiTLJd7aiGb0UZsPzHihWe/pvCzqIkASE9OIPetDIdNJZZgNr+8PXiJTsoEgbpo151HRZySGWABKgcxCWWGJYl6YQNd0T+6GQxyvw28dvco1FSbZsCKYqFYL2lEJCQAf9EcHUhHcFwGSbt0cJKfIETX+QX5l7A4+EobqFjA4wfDu4aCv4uoD8r0Gvep9V1kXc05DJ3CvRM1LfBzBLuSt9gUiOWVWnqiVAL/KRvXyVVm+PidlIk8jzbzLiHajYldlnSBzSA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(366004)(396003)(376002)(136003)(346002)(39860400002)(451199015)(86362001)(478600001)(6506007)(26005)(2906002)(83380400001)(6486002)(33716001)(38100700002)(6512007)(9686003)(66946007)(82960400001)(6666004)(66556008)(186003)(5660300002)(8676002)(4326008)(66476007)(8936002)(7416002)(6916009)(44832011)(41300700001)(54906003)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cm2N0D5UgMI3VyJSs5byekZ4k/6onABOoq04eEZiVC1COX5u31dAdmS0STnD?=
+ =?us-ascii?Q?qWAr46GMOIRl9voVKeG1amUriwgfSyHG5PNHgcaaWFTqxCEd4ikf/1C3imF2?=
+ =?us-ascii?Q?GHdZkvQmOkjE+UEMWBympHX7eIe9Gppv7whNzXNTBfeUga3O+miRI0kvVIVC?=
+ =?us-ascii?Q?9WSZPdxy30KGJXBaOwAYszA4MtHWMm/mm3aRHcnb20omtIXEZ7QuZPzQiMGA?=
+ =?us-ascii?Q?Wdyo4pUBQdWGMqdEiwkQXguG8aNlZopJXKW9kmCrI+l2e4bz76TCMnxbmADt?=
+ =?us-ascii?Q?1UYa1IShBAG5im/vsTmoAjvivXIU9/D+mNodsuTEv1BZ0mxppead6ZC39ifK?=
+ =?us-ascii?Q?milbOqrEecqEAQreUg/1wj6c5nzl+nJC7f6Plq2hnUApr3nxSY9Es74AvyMX?=
+ =?us-ascii?Q?EesPLfcmG83Pd4LuWRJJIQiCNew1XlZe5qp7waE9u74F2gyU1Yey0oQH7XFu?=
+ =?us-ascii?Q?H7bxdavOMrXrwn265VGAoHSGH+bKPk4VKNFoLIZ08yWppzLVjIPHsWAOAjPa?=
+ =?us-ascii?Q?2dSQiuK6AxGxgsD2/al81Ybe03jO5u9TQU0Fhir1dxL+y4ovW0ruvxgmSUt4?=
+ =?us-ascii?Q?N/rQbze9GLMORWtLXb+TYBAwMvQPaVA6mf5WuYHQafkIUVBwl5KR3+JXI5WZ?=
+ =?us-ascii?Q?D4h6RcuCBngWVgLpm/XXlpx2VKVkyChlJvnWiDztIVFTN9KPAYYnksZGZPJR?=
+ =?us-ascii?Q?VnFA52zfl2MoecggxiLkoswkd63LGKfYsW1/xuX6EH2e8C8qr9kAAKeWbwHT?=
+ =?us-ascii?Q?I0HgLnLMlXmEN8enpjpnviEGovpe+wESLQiP3z4g9nz7SIAcRH53Q0GH2i9d?=
+ =?us-ascii?Q?BvPQ+BC8G6xjssS/lkeg1O7HxTgIVdbNdGqBfyEhe/fGvSkB4Vz9HXy1UGtO?=
+ =?us-ascii?Q?I7ZSmUgOhubBfA/9JloccTEPa4W0C/6fDvMQc3ZTOnNchlxWgBHKh3obmm/D?=
+ =?us-ascii?Q?CNJDzyk605XiBvToIaEav5CDlwLZaGuySTc7KFgYFfdOZSrB/qSQBNmSRTmV?=
+ =?us-ascii?Q?ucfxrbEK3EABILMnfOmHKOrg5OQP+YQHdg3WejI9WCDAuwUG83wad+MMlxTy?=
+ =?us-ascii?Q?wdpQERbIRNXgxZTjImUSNfCW5epJnQGSe7YOIbrtPNKd+dPXsnh545/3ESCv?=
+ =?us-ascii?Q?nBRf+u1pYoXlznn2ehzB1xcK3UUx5afAlrS61aqMa9qGaasyxv1cz2M2WIyk?=
+ =?us-ascii?Q?vo9S/t3ioQKP+kQwapWiFjCub0urdIevJ0z8CYWUJEbOdkm+JuoE2ZxY9X5K?=
+ =?us-ascii?Q?1Ice7iNi3orcr3R4QwOT4NBGQZ+qBKWob7kiccDVqAM6esHTP6ypA4rP3V+o?=
+ =?us-ascii?Q?sjena0j83gqlwoX3G0/Uj2Fgxi8HaEr8yCnyFk9xcokseAL3k+1IC8qlbqvK?=
+ =?us-ascii?Q?LDQdrT2hntnv1/2pV/W4EAJpC64pMeUISMqm1Jnb/qKx99KZM0LUwrCdQ/6s?=
+ =?us-ascii?Q?jbAxQ7YVeZP77iVPfMvcVDwGJoK8ZHjjGhCRP7eBr5+YMRxw6l3DYkFrLUr5?=
+ =?us-ascii?Q?+dBS7Nn+2aDc+KdWz1BTg9Q95gUXG19LP6qctODS03yEnu76s3EKmZIhi2dS?=
+ =?us-ascii?Q?u2eZv1GXTX93zASR7Fis29f2AbA5V3Ek+0HiKOtgbFYuRJbo266sV198HvJf?=
+ =?us-ascii?Q?Lg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7be070f8-0ddb-400f-09a6-08dacd639167
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2022 15:01:15.2656
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AkZ86t2Yla0v/H21dAm8pmEx9iiMByNx/fmCnhgTmf4NJ0NtX4ZgkBv2RVAgO6y2C1mCR8hof224DzWYPsg5nAhR0zDsex4K5vEaeUBAbBY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR11MB6506
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Nov 23, 2022 at 03:26:14PM CET, vladimir.oltean@nxp.com wrote:
->On Tue, Nov 22, 2022 at 12:51:53PM -0800, Steve Williams wrote:
->> This driver provides a way for outbound traffic to be tagged and duplicated out
->> multiple ports, and inbound R-TAG'ed packets to be deduplicated.
->
->> Hanic tries to make the R-TAG handling transparent,
->
->> Generic filtering and/or dynamic stream identification methods just seemed
->> out of scope for this driver. Certainly out of scope for our needs.
->
->> Yes, hanic implements a practical subset of the standard, and I try to be
->> clear about that in the documentation.
->
->I'm back with a more intelligent question, after looking a bit at the
->code and at the problem it tries to solve.
->
->The question is: why don't you create a tap interface, and a user space
->program which is given the physical ports and tap interface as command
->line arguments, and does the following:
->
->- on reception from physical interfaces, handles 802.1CB traffic from
->  physical ports, eliminates the duplicates and pops the R-TAG, then
->  sends the packets to the tap interface
->- handles packets transmitted to the tap, splits them and pushes
->  whatever R-TAG is needed, then forwards them to the physical network
->  interfaces
->
->Then your Cruise 802.1CB endpoint solution becomes a user space handler
->for a tap interface. To users of your solution, it's the same thing,
->except they open their socket on a tap interface and not on a hanic
->interface.
->
->Reworded, why must the hanic functionality to be in the kernel?
+On Mon, Nov 21, 2022 at 06:25:48PM -0800, Saeed Mahameed wrote:
+> From: Shay Drory <shayd@nvidia.com>
+> 
+> When SF devices and SF port representors are located on different
+> functions, unloading and reloading of SF parent driver doesn't recreate
+> the existing SF present in the device.
+> Fix it by querying SFs and probe active SFs during driver probe phase.
 
-I guess for the same reason other soft netdevice driver are in the
-kernel. You can do bridge, bond, etc in a silimilar way you described
-here...
+Maybe shed some light on how it's actually being done? Have a few words
+that you're adding a workqueue dedicated for that etc. There is also a
+new mutex, I was always expecting that such mechanisms get a bit of
+explanation/justification why there is a need for its introduction.
 
+Not sure if including some example reproducer in here is mandatory or not
+(and therefore splat, if any). General feeling is that commit message
+could be beefed up.
 
->
->Thank you.
+> 
+> Fixes: 90d010b8634b ("net/mlx5: SF, Add auxiliary device support")
+> Signed-off-by: Shay Drory <shayd@nvidia.com>
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> ---
+>  .../ethernet/mellanox/mlx5/core/sf/dev/dev.c  | 88 +++++++++++++++++++
+>  1 file changed, 88 insertions(+)
+> 
