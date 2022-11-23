@@ -2,148 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C383635A4D
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:39:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4411635A64
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:43:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237641AbiKWKjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 05:39:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43530 "EHLO
+        id S236143AbiKWKnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 05:43:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236687AbiKWKjH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:39:07 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11663EA126;
-        Wed, 23 Nov 2022 02:23:21 -0800 (PST)
-Date:   Wed, 23 Nov 2022 11:23:18 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669198999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pCNbF4SuwWPa50jU17KKs3SR5/H3opMA3Pjr70EBkKY=;
-        b=RyyL/kUIfO69KG2ebYhWMU9yRzcCB+OUddjvlP3+8Lzk0x91j1CrFxIfylL+JBIFA2ipQw
-        QC8EvK1gXVHT/9Il0lnsrSaLjRdbmu0ucJy8bKtAzwK1p8nRBSuBR8lqHTQdwB/jCnDpI5
-        0id74nNRF4/PgxZ7EX8MjHVLiRxoFDVXlQKPEm3Cm23yXfBEHNwD1L1lpPzHR2v6GMGWGC
-        1QxLmgBWeZNgEApWLRK77ix/rfcPyEvn42LJZe4FDFwEbej3k8ZoGNpV7U84x1VHvICZXJ
-        dPDamAj8glb6roQxZOorLCefZSAeu3lUQg9GIFtJ9nNn38rEDL9rNOC20dR6xA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669198999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pCNbF4SuwWPa50jU17KKs3SR5/H3opMA3Pjr70EBkKY=;
-        b=Q5HeSF3VEAhUCLuKNJi+gLlPLLnK9ykcngKERUFjUseshebHXLmdxSj87dJvh4qANAFMr8
-        JMuniKC4+2QG8BAQ==
-From:   Anna-Maria Behnsen <anna-maria@linutronix.de>
-To:     Thomas Gleixner <tglx@linutronix.de>
-cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org,
+        with ESMTP id S237007AbiKWKlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:41:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DEC4F193
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 02:25:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3A2161B40
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 10:25:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CB3C433D7;
+        Wed, 23 Nov 2022 10:25:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669199141;
+        bh=d9ne0YAilJ+2H0dTuSrwE1dvHOn6U+SptYbF8zwKHOQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=e3sqTZWhBd9Q8a/jn8Z05TGamtgh9bPGYr2RJiDcOZqAaD5We2sz4nLqnI1zolNOt
+         1HWEJlByVXEa+l8atbB1X0Oix3jUSGw1pAHJSg9HClEapWF0al5z/FUV5ZR0qYfhEM
+         LgJyGi2HEmGkUC00hNNqzGzDlW4idyRZJXio49RwZCRgzK4ks0M0Gdf7yd9jVjDvbo
+         QepI8vafdHNUbKJznIePgengrhrFzi+L15yCVm+rD6xjAl6jPjx09wZheiuqqkSAzw
+         HrJpZwseYoHKsKcP49wawZipV+bD25kM7cz2zLsh3086HRh2Ru1ZgaKB3ASzzF/yvP
+         fRss1luNOHzHA==
+Date:   Wed, 23 Nov 2022 12:25:34 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [patch V2 07/17] timers: Update kernel-doc for various
- functions
-In-Reply-To: <20221122173648.501792201@linutronix.de>
-Message-ID: <c3e79ef-a9c4-bee8-cf4-1bea9ad85920@linutronix.de>
-References: <20221122171312.191765396@linutronix.de> <20221122173648.501792201@linutronix.de>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH xfrm-next v7 6/8] xfrm: speed-up lookup of HW policies
+Message-ID: <Y331Hli5YG5XtRgc@unreal>
+References: <Y3td2OjeIL0GN7uO@unreal>
+ <20221121112521.GX704954@gauss3.secunet.de>
+ <Y3tiRnbfBcaH7bP0@unreal>
+ <20221121121040.GY704954@gauss3.secunet.de>
+ <Y3t7aSUBPXPoR8VD@unreal>
+ <Y3xQGEZ7izv/JAAX@gondor.apana.org.au>
+ <Y3xr5DkA+EZXEfkZ@unreal>
+ <20221122130002.GM704954@gauss3.secunet.de>
+ <Y3zUosZQhPyoE53C@unreal>
+ <20221123082358.GL424616@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221123082358.GL424616@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Nov 2022, Thomas Gleixner wrote:
-
-> The kernel-doc of timer related functions is partially uncomprehensible
-> word salad. Rewrite it to make it useful.
+On Wed, Nov 23, 2022 at 09:23:58AM +0100, Steffen Klassert wrote:
+> On Tue, Nov 22, 2022 at 03:54:42PM +0200, Leon Romanovsky wrote:
+> > On Tue, Nov 22, 2022 at 02:00:02PM +0100, Steffen Klassert wrote:
+> > > On Tue, Nov 22, 2022 at 08:27:48AM +0200, Leon Romanovsky wrote:
+> > > > On Tue, Nov 22, 2022 at 12:29:12PM +0800, Herbert Xu wrote:
+> > > > > On Mon, Nov 21, 2022 at 03:21:45PM +0200, Leon Romanovsky wrote:
+> > > 
+> > > Can you please explain why we need host interaction for
+> > > transport, but not for tunnel mode?
+> > 
+> > The main difference is that in transport mode, you must bring packet
+> > to the kernel in which you configured SA/policy. It means that we must
+> > ensure that such packets won't be checked again in SW because all packets
+> > (encrypted and not) pass XFRM logic.
+> > 
+> >  - wire -> RX NIC -> kernel -> XFRM stack (we need HW DB here to skip this stage) -> ....
+> >  ... -> kernel -> XFRM stack (skip for HW SA/policies) -> TX NIC -> wire.
+> > 
+> > In tunnel mode, we arrive to XFRM when nothing IPsec related is configured.
+> > 
+> >  - wire -> RX PF NIC -> eswitch NIC logic -> TX uplink NIC -> RX
+> >    representors -> XFRM stack in VM (nothing configured here) -> kernel
 > 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Tested-by: Guenter Roeck <linux@roeck-us.net>
-> ---
-> V2: Refined comments (Steven)
-> ---
->  kernel/time/timer.c |  148 ++++++++++++++++++++++++++++++----------------------
->  1 file changed, 88 insertions(+), 60 deletions(-)
+> Forget about eswitch, VM, etc. for a moment. I'm interested how the
+> simplest possible tunnel mode cases will work.
 > 
-> --- a/kernel/time/timer.c
-> +++ b/kernel/time/timer.c
-> @@ -1200,11 +1212,12 @@ void add_timer(struct timer_list *timer)
->  EXPORT_SYMBOL(add_timer);
->  
->  /**
-> - * add_timer_on - start a timer on a particular CPU
-> - * @timer: the timer to be added
-> - * @cpu: the CPU to start it on
-> + * add_timer_on - Start a timer on a particular CPU
-> + * @timer:	The timer to be started
-> + * @cpu:	The CPU to start it on
->   *
-> - * This is not very scalable on SMP. Double adds are not possible.
-> + * This can only operate on an inactive timer. Attempts to invoke this on
-> + * an active timer are rejected with a warning.
+> Forwarding:
+> 
+> wire -> random NIC RX -> kernel -> IPsec tunnel offload NIC TX -> wire
+> wire -> IPsec tunnel offload NIC RX -> kernel -> random NIC TX -> wire
+> 
+> Local endpoints:
+> 
+> Application -> kernel -> IPsec tunnel offload NIC TX -> wire
+> wire -> IPsec tunnel offload NIC RX -> kernel -> Application
+> 
+> These two must work, so how are these cases handled?
 
-This is also true for add_timer(). Is it possible to add this to
-add_timer() function description and just referencing to add_timer()
-function description in add_timer_on()? They behave the same, only
-difference is the CPU where the timer is enqueued.
+These two cases conceptually no different from transport modes.
+The difference is how HW handles IP packets.
 
->   */
->  void add_timer_on(struct timer_list *timer, int cpu)
->  {
-> @@ -1240,15 +1253,18 @@ void add_timer_on(struct timer_list *tim
->  EXPORT_SYMBOL_GPL(add_timer_on);
->  
->  /**
-> - * del_timer - deactivate a timer.
-> - * @timer: the timer to be deactivated
-> - *
-> - * del_timer() deactivates a timer - this works on both active and inactive
-> - * timers.
-> + * del_timer - Deactivate a timer.
-> + * @timer:	The timer to be deactivated
->   *
-> - * The function returns whether it has deactivated a pending timer or not.
-> - * (ie. del_timer() of an inactive timer returns 0, del_timer() of an
-> - * active timer returns 1.)
-> + * The function only deactivates a pending timer, but contrary to
-> + * del_timer_sync() it does not take into account whether the timers
+If packet comes from RX, it will be received as plain packet in the
+kernel. If packet goes to TX, it must be skipped in the XFRM.
 
-timer's callback function or timer callback function (if the latter one is
-used, please replace it in description for del_timer_sync() as well).
+For all "wire -> IPsec tunnel offload NIC RX ...", everything works
+as you would expect. HW handles everything, and feeds the kernel with
+plain packet. These packets will have CRYPTO_DONE and status so they
+can skip all XFRM logic.
 
-> + * callback function is concurrently executed on a different CPU or not.
-> + * It neither prevents rearming of the timer.  If @timer can be rearmed
+All this complexity is For "... kernel -> IPsec tunnel offload NIC TX -> wire"
+flow. You need a way to say to the kernel that XFRM should be skipped.
 
-NIT                                             ^ two whitespaces
 
-> + * concurrently then the return value of this function is meaningless.
-> + *
-> + * Return:
-> + * * %0 - The timer was not pending
-> + * * %1 - The timer was pending and deactivated
->   */
->  int del_timer(struct timer_list *timer)
->  {
+In TX path, we will need to perform neighbor resolution to fill proper
+MAC address for outer IP header.
+In RX path, once the packet is decrypted, there is a need to change MAC
+address for the inner IP header. This will be done by kernel as HW
+doesn't have such knowledge.
 
-Thanks,
+Of course, there are many possible implementations of how to have right
+MAC address (static during SA creations, or dynamic if we listen to ARP
+events), but it is not XFRM related.
 
-	Anna-Maria
+Thanks
+
+> 
+> If you can do more fancy things with tunnel mode and special NICs
+> at TX and RX, that's fine but not absolutely required.
