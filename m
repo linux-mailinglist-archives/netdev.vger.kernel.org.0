@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 775F2634D26
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 02:35:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57AC5634D3B
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 02:36:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235478AbiKWBfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Nov 2022 20:35:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
+        id S234862AbiKWBgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Nov 2022 20:36:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235398AbiKWBfh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 20:35:37 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A34CEBA6;
-        Tue, 22 Nov 2022 17:35:35 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id j12so15320490plj.5;
-        Tue, 22 Nov 2022 17:35:35 -0800 (PST)
+        with ESMTP id S235490AbiKWBgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Nov 2022 20:36:16 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18012E0DCA;
+        Tue, 22 Nov 2022 17:36:15 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id 136so15575841pga.1;
+        Tue, 22 Nov 2022 17:36:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=aMXbvTa4szYt2+pP730kENx9BC6mONDNIAJzOhCO5eY=;
-        b=HP7scXWGWUuUAQpBHAbYGT9Ro4FSzBvlteLDZXmRtKIZTW83yQz3QCmZa2e1V2+0x2
-         Pw8YRUKvoQ4DiaSm/YAu6wmnyNScBLJZbD3KIrABeA6kImnOgusYWOUmR/kcS0XT8B9P
-         1cL+hQNaxyuve1DQLJxDEdiV3tM0KQavM9pnRQl5dkjJUDRmOiJmgk/Snwqtq9fbneJ6
-         501XaE1hYWbuRd4jlIvX1PvZl9pGuG5KgjbXC0nzOtGgAQfzAquf1FCtOSuDF4D8vTiR
-         HsFLOv794pyzG5OBIwR2N/Q8Yj34VkSutSr3XEu/KkJ6LoDgNdzwSB8kRI/bCqRFYG1b
-         9wQA==
+        bh=VnT85l1YGrgftRmY4cs0kf1GLdUSkFh5ZyBQMsB8/d8=;
+        b=oUgfZGpfTt3n+gdaAcgz00Mug4dCBCNB/xDdXlVP+K6uV0glmqUHVVcqvQO8b0rrYS
+         k3IzWT0SIbOyFZv/D/7QcoURlIYUwvOvNaTu7L+CZNAwJYt1nt0rIwdpZN55gZjFPVDI
+         QJECxzixlHdMg1q1pT9qIYI9+GhiFa1fqTUgbMKyAYcqpJDuaoCiKXQVuUOwTk0jlTjZ
+         3Uev4hAehD0PGurOWFjtKN6iyx6GnRSSpFJyRNen7Sb0J7XCDoK3YT/eXmH0m93Yr+Jz
+         aTw2wWkj5t9YMQ8PpTDjD/+uILOjduYoHPN5Xsw8eSbyvQHXUtHPQgtQs1cq8HHs6mn/
+         8jNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=aMXbvTa4szYt2+pP730kENx9BC6mONDNIAJzOhCO5eY=;
-        b=YlUPdXzbgZYqF1RcSosrSg4MfBXlfGprXal93ClY7Me1E2ssWrnI5XN8VyF95S5Z6+
-         X8UfD/Kgm8SbeStM/lcF83hZRfrWTpNnWT7Lu9O/1MFSJxQyFxTnt51WtSFzstjdFEuF
-         BGCwQ6nshnPf1eL8UUsEWm1q25vPktaOpAGDfNzU9szYX5MU2/ctqK73WeFpTiR2SItB
-         YfvJTr1fTMOMwtP32IDuc7+0FyDcFB6MwEsmtfK2fseF+vSwngSuluc38nKYER+Rt5lb
-         D35erwDZxkZ3/5EBQnKQbDBbyxM+dKdsZzbCo5RJvenXdVeB6K1JuOyP4KV5G3IXnmcx
-         iG1Q==
-X-Gm-Message-State: ANoB5plE5kuIIpuHVdoYYjAXH81OF9pDFoXOdLQI2ValWlCaZj+glU7q
-        u982P24odlkIVKtp1kqyUMY=
-X-Google-Smtp-Source: AA0mqf6x4fc4IKvIExC1o1e46QIsOPFQfVNfDh9OQF6vDoU8m9LQB2uyX84qmPAg+ZnqxdiG9ViVXg==
-X-Received: by 2002:a17:902:f391:b0:186:ac81:2aa9 with SMTP id f17-20020a170902f39100b00186ac812aa9mr6832869ple.95.1669167334579;
-        Tue, 22 Nov 2022 17:35:34 -0800 (PST)
+        bh=VnT85l1YGrgftRmY4cs0kf1GLdUSkFh5ZyBQMsB8/d8=;
+        b=0APzdXLJc/TAu9t5pcAjRAs+VbqgYnLrrHXox67jtqoNDq97tkPfUNcCXuFA/U12Ew
+         TiBmlr+Wn2r6euYiSGuv/+3BObCtx5k/36SeZ7RKSu+zL28Te1JSEjECGBiJR0BOlf2/
+         R/pOlORiXzFdwlBX7H8QZqw2SCyG8MEzVjOPb/yp+6nznukM6PZfU4Y2i5sR+lx3TlmI
+         hbj3WSIuO1NPo7Qn/ObLW4Ri/WtI/PNSk2E+iOT/QVGd2UFzls26x7Tt3pqL7AdlPv4/
+         Edus0w23imZNLqG/G+LevRxBJfX9IQsm7p6qGHEnapIrVgrc3tPiV1jHRSL2EHpQnTDq
+         CT8g==
+X-Gm-Message-State: ANoB5pkJjbo95IT/uDKZ6bkTAY4Qm2t8V/YJPhwgvDjlO59yP2qbj6d3
+        xkCdNRr7KNuXPpn6abKCwa0=
+X-Google-Smtp-Source: AA0mqf78pgAVtMq8pq+tCGwJHeM7QPMfI1EDDft+2+fSPKOuH2O4/vhP5xQpLF4Y0UoxHBvM5RyLQA==
+X-Received: by 2002:a63:ff0b:0:b0:477:362d:85d3 with SMTP id k11-20020a63ff0b000000b00477362d85d3mr5493742pgi.395.1669167374414;
+        Tue, 22 Nov 2022 17:36:14 -0800 (PST)
 Received: from google.com ([2620:15c:9d:2:af8d:6047:29d5:446c])
-        by smtp.gmail.com with ESMTPSA id d7-20020a17090abf8700b00218e5959bfbsm52591pjs.20.2022.11.22.17.35.31
+        by smtp.gmail.com with ESMTPSA id c5-20020a170902b68500b00186b758c9fasm12680124pls.33.2022.11.22.17.36.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Nov 2022 17:35:33 -0800 (PST)
-Date:   Tue, 22 Nov 2022 17:35:29 -0800
+        Tue, 22 Nov 2022 17:36:13 -0800 (PST)
+Date:   Tue, 22 Nov 2022 17:36:09 -0800
 From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -76,16 +76,17 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Sebastian Reichel <sre@kernel.org>,
         Mark Brown <broonie@kernel.org>,
         Guenter Roeck <linux@roeck-us.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [PATCH v2 6/9] dt-bindings: drop redundant part of title (end,
- part three)
-Message-ID: <Y3144aAtCaejFDAC@google.com>
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2 7/9] dt-bindings: drop redundant part of title
+ (beginning)
+Message-ID: <Y315CQUTFYocBnfS@google.com>
 References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
- <20221121110615.97962-7-krzysztof.kozlowski@linaro.org>
+ <20221121110615.97962-8-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221121110615.97962-7-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221121110615.97962-8-krzysztof.kozlowski@linaro.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -96,19 +97,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 21, 2022 at 12:06:12PM +0100, Krzysztof Kozlowski wrote:
->  .../bindings/input/touchscreen/cypress,cy8ctma140.yaml          | 2 +-
->  .../bindings/input/touchscreen/cypress,cy8ctma340.yaml          | 2 +-
->  .../devicetree/bindings/input/touchscreen/edt-ft5x06.yaml       | 2 +-
->  Documentation/devicetree/bindings/input/touchscreen/goodix.yaml | 2 +-
->  .../devicetree/bindings/input/touchscreen/himax,hx83112b.yaml   | 2 +-
->  .../devicetree/bindings/input/touchscreen/hycon,hy46xx.yaml     | 2 +-
->  .../devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml  | 2 +-
->  .../devicetree/bindings/input/touchscreen/melfas,mms114.yaml    | 2 +-
->  .../devicetree/bindings/input/touchscreen/mstar,msg2638.yaml    | 2 +-
->  .../devicetree/bindings/input/touchscreen/ti,tsc2005.yaml       | 2 +-
->  .../devicetree/bindings/input/touchscreen/touchscreen.yaml      | 2 +-
->  .../devicetree/bindings/input/touchscreen/zinitix,bt400.yaml    | 2 +-
+On Mon, Nov 21, 2022 at 12:06:13PM +0100, Krzysztof Kozlowski wrote:
+>  Documentation/devicetree/bindings/input/gpio-keys.yaml          | 2 +-
+>  Documentation/devicetree/bindings/input/microchip,cap11xx.yaml  | 2 +-
 
 Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
