@@ -2,73 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E5A636955
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 19:55:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB8EF636974
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 20:02:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238867AbiKWSz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 13:55:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54232 "EHLO
+        id S238506AbiKWTCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 14:02:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238111AbiKWSzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 13:55:24 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DFA87A6B
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 10:55:21 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id s206so20007179oie.3
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 10:55:21 -0800 (PST)
+        with ESMTP id S239417AbiKWTBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 14:01:40 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A132792092;
+        Wed, 23 Nov 2022 11:01:23 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id q186so19993133oia.9;
+        Wed, 23 Nov 2022 11:01:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=tFsfU78/vdpVwt+hocnqmezql03tOUO5BUeEannITlQ=;
-        b=inpkEL3ibb5s9wEfg9xq3arPVAqGCmNebucnlTTUuKEbF5+PbbRsWb4bglYLTGBoJU
-         coPD3NCabz5w4EXJf0MWntreAvPYTPHvIsT4bZ8gIuXtbEBUZEE7tWyIis2G2Pz5sHSw
-         61jUwZGPKvM6VA28MpaDU4yPaXdkLHARXEB8v9H478Ne+nUw6nDkI2iL6Ibwzw/c2joc
-         3HZouuOFEiu/WJqwhrewNeb9PVD8jNShffr5PYoUdBNu3DJAdgGRhlhmkp9P8qX64LZK
-         UHkAegJl3k5DJSRxFMbvy9EsZ9K+OdwAPYSstjpx3zy8dLepH7G4lruLpA7duX/RoW3L
-         AdeA==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=dK9UpEbjoehNEVUDOqyuKoc0ysO4TvuSBj7hWcw3U/g=;
+        b=JzBanZyy+4wdHpvPpRz59Ppi7R4DCGMOAQ5FVtClkubuHo0A8bhbntSkNheykbQYb3
+         J1x+qZcjNJga6uQlrLGDgCFlS/YxxW5TjVqFb0oAKQ4w3DOsEvAR8A6hH7hFK2wiYqS1
+         NcznBCRba7BlSuWTSKyu/acUCfM4VNKdKm7ol7qV1qM9U0OOikFQLqa4VI6YWxkqTMBG
+         hqYiv0gHQKxN55I2h/7abFTsTcS7Tgar1ZS7XmEZ9si5xBxMGXMeG+Em3hgZs6ctWAB9
+         SAtag+/vwSsrKlFUotBfHwmrgbxaZR8xVzemlJN8svlR111FwWGEtdV/x+APyG/Ceu6g
+         mCbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tFsfU78/vdpVwt+hocnqmezql03tOUO5BUeEannITlQ=;
-        b=Ox8ecL5m1qOjDCxFAEfxahRMkyoIPduMxSbaiGDAmgNY87LeIjtglL84LsaeBBTmbu
-         5CZMwo1Ei0sO2zEdcpKdcJTxoOtHMihBbhi0gHYXmI9n7ty3XbT3+/C1GhHiWypn5dFu
-         Wtca5BzmM3IktNEBhjV7ogcW90pyuanWpKPaMsjuXSzYIdSqtkopdRcubpwIKPT6svMJ
-         843DMe11jNHbQLR6t05hryQxzVCgJdmPM8BxTipSNfR+rBwVJFt7msemfXyJrvHreHnM
-         BFh2AlIkBzABiXOaplOmrYc33oduKvyfdB4qao3yPWwARU30UBYG9VlBwZUwvbhnyUS/
-         00Qw==
-X-Gm-Message-State: ANoB5pkbY9De2QtYGGI5x30PP/im+856aFaHXMNFFxO0j6axYWiL9wGW
-        joeJlpljINqCGFdpQKQpf9Km3WvzW5YsCoxeOWI=
-X-Google-Smtp-Source: AA0mqf73mHbWYP4QB7glWE0upcyDXL3uh+ofJ7qFkuYYzn/jnNm5Hl15AkXdFnNXgQkErfyg4XieYPwhIOM6lOpHBeY=
-X-Received: by 2002:aca:2801:0:b0:35a:13f4:d875 with SMTP id
- 1-20020aca2801000000b0035a13f4d875mr17299866oix.190.1669229720790; Wed, 23
- Nov 2022 10:55:20 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dK9UpEbjoehNEVUDOqyuKoc0ysO4TvuSBj7hWcw3U/g=;
+        b=r0KRySSq7J5DpxjdwlTAO6EGJWEL6S1wVlJWQl+97GwrvTgBovLJDabv67hAElSBfs
+         lMgWvH5hDJQaC2V143u8IMJ/s/cgzN+ojMmpWyjCru9iIuLO5pKTGxaI7TWfNWPIhwX6
+         D3LdvHXv3EJKl2EDwpRf03Tz4n/HWay0yg1e+NUFD1J/f+SREXmQ+m+nqszZOm+uFgno
+         GkOm72B83bLFtNYvW4VBe7GMF03J86W3meY+9I8Jdk4PKEDiIC68LuIQB787oEXZaPHW
+         lS49UcVXmqL/s4KCsJnDGwMx7elxjGsqrv/I0U2DLsQvbdMupcbz5ImCCQQAYCvcDTyY
+         ROxw==
+X-Gm-Message-State: ANoB5pkdH70TQhxjkdz2ecagk6fMQ9MwsYErJIH/Zwz1xDSJ9KZGgjq1
+        1ErhhTqfx+BFeCq0XxEFIJw=
+X-Google-Smtp-Source: AA0mqf4uaA/K5o6L7jHxC28xwKf91m7d4twUNgamo/+6d3Awb1dl7hy37Pta9WBnWhlhz9mVVUgoUA==
+X-Received: by 2002:aca:bc05:0:b0:35a:7141:8e93 with SMTP id m5-20020acabc05000000b0035a71418e93mr17583325oif.124.1669230082332;
+        Wed, 23 Nov 2022 11:01:22 -0800 (PST)
+Received: from t14s.localdomain ([2001:1284:f016:5412:fa8e:2d33:bd7c:54c7])
+        by smtp.gmail.com with ESMTPSA id k4-20020a05687015c400b00130d060ce80sm9700166oad.31.2022.11.23.11.01.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Nov 2022 11:01:21 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id CA2A9459D40; Wed, 23 Nov 2022 16:01:19 -0300 (-03)
+Date:   Wed, 23 Nov 2022 16:01:19 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Subject: Re: [PATCH net] sctp: fix memory leak in sctp_stream_outq_migrate()
+Message-ID: <Y35t//htf9N0i+e6@t14s.localdomain>
+References: <20221118085030.121297-1-shaozhengchao@huawei.com>
+ <CADvbK_frWVFTSLMwC_xYvE+jDuk917K7SqZHUON3srLz8TxotQ@mail.gmail.com>
+ <Y31ct/lSXNTm9ev9@t14s.localdomain>
+ <CADvbK_cVBVL1KKPsONv3A3m_mPA2-41uNwxz+9eM-EuQeCSygw@mail.gmail.com>
+ <Y35iJUx/Q/X01dNI@t14s.localdomain>
+ <CADvbK_dDJpyY2xUmEyv+z2B77=N8fcUQsVyqZUORoE6UO7DAdw@mail.gmail.com>
+ <CADvbK_eZKwyLqNB4ruta5jbY+PgUVq3R9n9ohvW5i-j6DLA9hQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <cover.1669138256.git.lucien.xin@gmail.com> <bf19487f4dfc8cd91a4395672d9905b10917128d.1669138256.git.lucien.xin@gmail.com>
- <Y343wyO20XUvwuvg@t14s.localdomain> <20221123151335.ssrnv7jfrdugmcgg@t14s.localdomain>
- <CADvbK_eYRZxaNreBmvXmAQzH+JLbiK-9UhKqzH2CM2sHt1bvQQ@mail.gmail.com> <Y35q4NVXC2D4mgPc@t14s.localdomain>
-In-Reply-To: <Y35q4NVXC2D4mgPc@t14s.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 23 Nov 2022 13:54:41 -0500
-Message-ID: <CADvbK_e+tgefsiB1N-7CHUR35P-sDfaOqRVp281VhrQO2ot_hQ@mail.gmail.com>
-Subject: Re: [ovs-dev] [PATCHv2 net-next 5/5] net: move the nat function to
- nf_nat_ovs for ovs and tc
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     dev@openvswitch.org, ovs-dev@openvswitch.org,
-        Davide Caratti <dcaratti@redhat.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        network dev <netdev@vger.kernel.org>,
-        Paul Blakey <paulb@nvidia.com>,
-        Florian Westphal <fw@strlen.de>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>, kuba@kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADvbK_eZKwyLqNB4ruta5jbY+PgUVq3R9n9ohvW5i-j6DLA9hQ@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -79,228 +82,254 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 1:48 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Wed, Nov 23, 2022 at 12:31:38PM -0500, Xin Long wrote:
-> > On Wed, Nov 23, 2022 at 10:13 AM Marcelo Ricardo Leitner
+On Wed, Nov 23, 2022 at 01:48:01PM -0500, Xin Long wrote:
+> On Wed, Nov 23, 2022 at 1:30 PM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > (
+> >
+> > On Wed, Nov 23, 2022 at 1:10 PM Marcelo Ricardo Leitner
 > > <marcelo.leitner@gmail.com> wrote:
 > > >
-> > > On Wed, Nov 23, 2022 at 12:09:55PM -0300, Marcelo Ricardo Leitner wrote:
-> > > > On Tue, Nov 22, 2022 at 12:32:21PM -0500, Xin Long wrote:
-> > > > > +int nf_ct_nat(struct sk_buff *skb, struct nf_conn *ct,
-> > > > > +         enum ip_conntrack_info ctinfo, int *action,
-> > > > > +         const struct nf_nat_range2 *range, bool commit)
-> > > > > +{
-> > > > > +   enum nf_nat_manip_type maniptype;
-> > > > > +   int err, ct_action = *action;
-> > > > > +
-> > > > > +   *action = 0;
-> > > > > +
-> > > > > +   /* Add NAT extension if not confirmed yet. */
-> > > > > +   if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
-> > > > > +           return NF_ACCEPT;   /* Can't NAT. */
-> > > > > +
-> > > > > +   if (ctinfo != IP_CT_NEW && (ct->status & IPS_NAT_MASK) &&
-> > > > > +       (ctinfo != IP_CT_RELATED || commit)) {
-> > > > > +           /* NAT an established or related connection like before. */
-> > > > > +           if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY)
-> > > > > +                   /* This is the REPLY direction for a connection
-> > > > > +                    * for which NAT was applied in the forward
-> > > > > +                    * direction.  Do the reverse NAT.
-> > > > > +                    */
-> > > > > +                   maniptype = ct->status & IPS_SRC_NAT
-> > > > > +                           ? NF_NAT_MANIP_DST : NF_NAT_MANIP_SRC;
-> > > > > +           else
-> > > > > +                   maniptype = ct->status & IPS_SRC_NAT
-> > > > > +                           ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST;
-> > > > > +   } else if (ct_action & (1 << NF_NAT_MANIP_SRC)) {
-> > > > > +           maniptype = NF_NAT_MANIP_SRC;
-> > > > > +   } else if (ct_action & (1 << NF_NAT_MANIP_DST)) {
-> > > > > +           maniptype = NF_NAT_MANIP_DST;
-> > > > > +   } else {
-> > > > > +           return NF_ACCEPT;
-> > > > > +   }
-> > > > > +
-> > > > > +   err = nf_ct_nat_execute(skb, ct, ctinfo, action, range, maniptype);
-> > > > > +   if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
-> > > > > +           if (ct->status & IPS_SRC_NAT) {
-> > > > > +                   if (maniptype == NF_NAT_MANIP_SRC)
-> > > > > +                           maniptype = NF_NAT_MANIP_DST;
-> > > > > +                   else
-> > > > > +                           maniptype = NF_NAT_MANIP_SRC;
-> > > > > +
-> > > > > +                   err = nf_ct_nat_execute(skb, ct, ctinfo, action, range,
-> > > > > +                                           maniptype);
-> > > > > +           } else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
-> > > > > +                   err = nf_ct_nat_execute(skb, ct, ctinfo, action, NULL,
-> > > > > +                                           NF_NAT_MANIP_SRC);
-> > > > > +           }
-> > > > > +   }
-> > > > > +   return err;
-> > > > > +}
-> > > > > +EXPORT_SYMBOL_GPL(nf_ct_nat);
-> > > > > diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-> > > > > index cc643a556ea1..d03c75165663 100644
-> > > > > --- a/net/openvswitch/conntrack.c
-> > > > > +++ b/net/openvswitch/conntrack.c
-> > > > > @@ -726,144 +726,27 @@ static void ovs_nat_update_key(struct sw_flow_key *key,
-> > > > >     }
-> > > > >  }
+> > > On Wed, Nov 23, 2022 at 12:20:44PM -0500, Xin Long wrote:
+> > > > On Tue, Nov 22, 2022 at 6:35 PM Marcelo Ricardo Leitner
+> > > > <marcelo.leitner@gmail.com> wrote:
 > > > > >
-> > > > > -/* Modelled after nf_nat_ipv[46]_fn().
-> > > > > - * range is only used for new, uninitialized NAT state.
-> > > > > - * Returns either NF_ACCEPT or NF_DROP.
-> > > > > - */
-> > > > > -static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
-> > > > > -                         enum ip_conntrack_info ctinfo,
-> > > > > -                         const struct nf_nat_range2 *range,
-> > > > > -                         enum nf_nat_manip_type maniptype, struct sw_flow_key *key)
-> > > > > -{
-> > > > > -   int hooknum, err = NF_ACCEPT;
-> > > > > -
-> > > > > -   /* See HOOK2MANIP(). */
-> > > > > -   if (maniptype == NF_NAT_MANIP_SRC)
-> > > > > -           hooknum = NF_INET_LOCAL_IN; /* Source NAT */
-> > > > > -   else
-> > > > > -           hooknum = NF_INET_LOCAL_OUT; /* Destination NAT */
-> > > > > -
-> > > > > -   switch (ctinfo) {
-> > > > > -   case IP_CT_RELATED:
-> > > > > -   case IP_CT_RELATED_REPLY:
-> > > > > -           if (IS_ENABLED(CONFIG_NF_NAT) &&
-> > > > > -               skb->protocol == htons(ETH_P_IP) &&
-> > > > > -               ip_hdr(skb)->protocol == IPPROTO_ICMP) {
-> > > > > -                   if (!nf_nat_icmp_reply_translation(skb, ct, ctinfo,
-> > > > > -                                                      hooknum))
-> > > > > -                           err = NF_DROP;
-> > > > > -                   goto out;
-> > > > > -           } else if (IS_ENABLED(CONFIG_IPV6) &&
-> > > > > -                      skb->protocol == htons(ETH_P_IPV6)) {
-> > > > > -                   __be16 frag_off;
-> > > > > -                   u8 nexthdr = ipv6_hdr(skb)->nexthdr;
-> > > > > -                   int hdrlen = ipv6_skip_exthdr(skb,
-> > > > > -                                                 sizeof(struct ipv6hdr),
-> > > > > -                                                 &nexthdr, &frag_off);
-> > > > > -
-> > > > > -                   if (hdrlen >= 0 && nexthdr == IPPROTO_ICMPV6) {
-> > > > > -                           if (!nf_nat_icmpv6_reply_translation(skb, ct,
-> > > > > -                                                                ctinfo,
-> > > > > -                                                                hooknum,
-> > > > > -                                                                hdrlen))
-> > > > > -                                   err = NF_DROP;
-> > > > > -                           goto out;
-> > > > > -                   }
-> > > > > -           }
-> > > > > -           /* Non-ICMP, fall thru to initialize if needed. */
-> > > > > -           fallthrough;
-> > > > > -   case IP_CT_NEW:
-> > > > > -           /* Seen it before?  This can happen for loopback, retrans,
-> > > > > -            * or local packets.
-> > > > > -            */
-> > > > > -           if (!nf_nat_initialized(ct, maniptype)) {
-> > > > > -                   /* Initialize according to the NAT action. */
-> > > > > -                   err = (range && range->flags & NF_NAT_RANGE_MAP_IPS)
-> > > > > -                           /* Action is set up to establish a new
-> > > > > -                            * mapping.
-> > > > > -                            */
-> > > > > -                           ? nf_nat_setup_info(ct, range, maniptype)
-> > > > > -                           : nf_nat_alloc_null_binding(ct, hooknum);
-> > > > > -                   if (err != NF_ACCEPT)
-> > > > > -                           goto out;
-> > > > > -           }
-> > > > > -           break;
-> > > > > -
-> > > > > -   case IP_CT_ESTABLISHED:
-> > > > > -   case IP_CT_ESTABLISHED_REPLY:
-> > > > > -           break;
-> > > > > -
-> > > > > -   default:
-> > > > > -           err = NF_DROP;
-> > > > > -           goto out;
-> > > > > -   }
-> > > > > -
-> > > > > -   err = nf_nat_packet(ct, ctinfo, hooknum, skb);
-> > > > > -out:
-> > > > > -   /* Update the flow key if NAT successful. */
-> > > > > -   if (err == NF_ACCEPT)
-> > > > > -           ovs_nat_update_key(key, skb, maniptype);
-> > > > > -
-> > > > > -   return err;
-> > > > > -}
-> > > > > -
-> > > > >  /* Returns NF_DROP if the packet should be dropped, NF_ACCEPT otherwise. */
-> > > > >  static int ovs_ct_nat(struct net *net, struct sw_flow_key *key,
-> > > > >                   const struct ovs_conntrack_info *info,
-> > > > >                   struct sk_buff *skb, struct nf_conn *ct,
-> > > > >                   enum ip_conntrack_info ctinfo)
-> > > > >  {
-> > > > > -   enum nf_nat_manip_type maniptype;
-> > > > > -   int err;
-> > > > > +   int err, action = 0;
+> > > > > On Fri, Nov 18, 2022 at 10:15:50PM -0500, Xin Long wrote:
+> > > > > > On Fri, Nov 18, 2022 at 3:48 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
+> > > > > > >
+> > > > > > > When sctp_stream_outq_migrate() is called to release stream out resources,
+> > > > > > > the memory pointed to by prio_head in stream out is not released.
+> > > > > > >
+> > > > > > > The memory leak information is as follows:
+> > > > > > > unreferenced object 0xffff88801fe79f80 (size 64):
+> > > > > > >   comm "sctp_repo", pid 7957, jiffies 4294951704 (age 36.480s)
+> > > > > > >   hex dump (first 32 bytes):
+> > > > > > >     80 9f e7 1f 80 88 ff ff 80 9f e7 1f 80 88 ff ff  ................
+> > > > > > >     90 9f e7 1f 80 88 ff ff 90 9f e7 1f 80 88 ff ff  ................
+> > > > > > >   backtrace:
+> > > > > > >     [<ffffffff81b215c6>] kmalloc_trace+0x26/0x60
+> > > > > > >     [<ffffffff88ae517c>] sctp_sched_prio_set+0x4cc/0x770
+> > > > > > >     [<ffffffff88ad64f2>] sctp_stream_init_ext+0xd2/0x1b0
+> > > > > > >     [<ffffffff88aa2604>] sctp_sendmsg_to_asoc+0x1614/0x1a30
+> > > > > > >     [<ffffffff88ab7ff1>] sctp_sendmsg+0xda1/0x1ef0
+> > > > > > >     [<ffffffff87f765ed>] inet_sendmsg+0x9d/0xe0
+> > > > > > >     [<ffffffff8754b5b3>] sock_sendmsg+0xd3/0x120
+> > > > > > >     [<ffffffff8755446a>] __sys_sendto+0x23a/0x340
+> > > > > > >     [<ffffffff87554651>] __x64_sys_sendto+0xe1/0x1b0
+> > > > > > >     [<ffffffff89978b49>] do_syscall_64+0x39/0xb0
+> > > > > > >     [<ffffffff89a0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > > > > > >
+> > > > > > > Fixes: 637784ade221 ("sctp: introduce priority based stream scheduler")
+> > > > > > > Reported-by: syzbot+29c402e56c4760763cc0@syzkaller.appspotmail.com
+> > > > > > > Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> > > > > > > ---
+> > > > > > >  net/sctp/stream.c | 6 ++++++
+> > > > > > >  1 file changed, 6 insertions(+)
+> > > > > > >
+> > > > > > > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+> > > > > > > index ef9fceadef8d..a17dc368876f 100644
+> > > > > > > --- a/net/sctp/stream.c
+> > > > > > > +++ b/net/sctp/stream.c
+> > > > > > > @@ -70,6 +70,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
+> > > > > > >                  * sctp_stream_update will swap ->out pointers.
+> > > > > > >                  */
+> > > > > > >                 for (i = 0; i < outcnt; i++) {
+> > > > > > > +                       if (SCTP_SO(new, i)->ext)
+> > > > > > > +                               kfree(SCTP_SO(new, i)->ext->prio_head);
+> > > > > > > +
+> > > > > > >                         kfree(SCTP_SO(new, i)->ext);
+> > > > > > >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
+> > > > > > >                         SCTP_SO(stream, i)->ext = NULL;
+> > > > > > > @@ -77,6 +80,9 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
+> > > > > > >         }
+> > > > > > >
+> > > > > > >         for (i = outcnt; i < stream->outcnt; i++) {
+> > > > > > > +               if (SCTP_SO(stream, i)->ext)
+> > > > > > > +                       kfree(SCTP_SO(stream, i)->ext->prio_head);
+> > > > > > > +
+> > > > > > >                 kfree(SCTP_SO(stream, i)->ext);
+> > > > > > >                 SCTP_SO(stream, i)->ext = NULL;
+> > > > > > >         }
+> > > > > > > --
+> > > > > > > 2.17.1
+> > > > > > >
+> > > > > > This is not a proper fix:
+> > > > > > 1. you shouldn't access "prio_head" outside stream_sched_prio.c.
+> > > > > > 2. the prio_head you freed might be used by other out streams, freeing
+> > > > > > it unconditionally would cause either a double free or use after free.
+> > > > > >
+> > > > > > I'm afraid we have to add a ".free_sid" in sctp_sched_ops, and
+> > > > > > implement it for sctp_sched_prio, like:
+> > > > > >
+> > > > > > +static void sctp_sched_prio_free_sid(struct sctp_stream *stream, __u16 sid)
+> > > > > > +{
+> > > > > > +       struct sctp_stream_priorities *prio = SCTP_SO(stream,
+> > > > > > sid)->ext->prio_head;
+> > > > > > +       int i;
+> > > > > > +
+> > > > > > +       if (!prio)
+> > > > > > +               return;
+> > > > > > +
+> > > > > > +       SCTP_SO(stream, sid)->ext->prio_head = NULL;
+> > > > > > +       for (i = 0; i < stream->outcnt; i++) {
 > > > > >
-> > > > >     if (!(info->nat & OVS_CT_NAT))
-> > > > >             return NF_ACCEPT;
-> > > > > +   if (info->nat & OVS_CT_SRC_NAT)
-> > > > > +           action |= (1 << NF_NAT_MANIP_SRC);
-> > > > > +   if (info->nat & OVS_CT_DST_NAT)
-> > > > > +           action |= (1 << NF_NAT_MANIP_DST);
-> > > >
-> > > > I'm wondering why this dance at this level with supporting multiple
-> > > > MANIPs while actually only one can be used at a time.
-> > > >
-> > > > act_ct will reject an action using both:
-> > > >         if ((p->ct_action & TCA_CT_ACT_NAT_SRC) &&
-> > > >             (p->ct_action & TCA_CT_ACT_NAT_DST)) {
-> > > >                 NL_SET_ERR_MSG_MOD(extack, "dnat and snat can't be enabled at the same time");
-> > > >                 return -EOPNOTSUPP;
-> > > >
-> > > > I couldn't find this kind of check in ovs code right now (didn't look much, I
-> > > > confess :)), but even the code here was already doing:
-> > > >
-> > > > -     } else if (info->nat & OVS_CT_SRC_NAT) {
-> > > > -             maniptype = NF_NAT_MANIP_SRC;
-> > > > -     } else if (info->nat & OVS_CT_DST_NAT) {
-> > > > -             maniptype = NF_NAT_MANIP_DST;
-> > > >
-> > > > And in case of tuple conflict, maniptype will be forcibly updated in
-> > > > [*] below.
+> > > > > Instead of checking all streams, the for() can/should be replaced by
+> > > > > (from sctp_sched_prio_free):
+> > > > >         if (!list_empty(&prio->prio_sched))
+> > > > >                 return;
+> > > > sctp_stream_outq_migrate() is called after unsched_all() for "stream",
+> > > > list_empty(prio_sched) is expected to be true.
 > > >
-> > > Ahh.. just found why.. in case of typle conflict, nf_ct_nat() now may
-> > > set both.
-> > Right.
-> > BTW. The tuple conflict processing actually has provided the
-> > code to do full nat (snat and dnat at the same time), which I
-> > think is more efficient than doing full nat in two zones. All
-> > we have to do is adjust a few lines of code for that.
->
-> In this part, yes. But it needs some surgery all around for full
-> support. The code in ovs kernel for using only one type starts here:
->
-> static int parse_nat(const struct nlattr *attr,
->                      struct ovs_conntrack_info *info, bool log)
-> {
-> ...
->                 switch (type) {
->                 case OVS_NAT_ATTR_SRC:
->                 case OVS_NAT_ATTR_DST:
->                         if (info->nat) {
->                                 OVS_NLERR(log, "Only one type of NAT may be specified");
->                                 return -ERANGE;
->                         }
-> ...
-> }
->
-> So vswitchd also doesn't support it. And then tc, iproute and drivers
-> that offload it as well. Not sure if it has impacts on openflow too.
->
-not in one single action, but two actions:
+> > > Good point. Am I missing something or the 'prio_head == prio' below
+> > > would always be false then as well?
+> sorry, forgot to reply to this one :D
 
-"table=1, in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new
-actions=ct(nat(dst=7.7.16.3)),ct(commit, nat(src=7.7.16.1),
-alg=ftp),veth2"
+:D
 
-as long as it allows the 1st one doesn't commit, which is a simple
-check in parse_nat().
-I tested it, TC already supports it. I'm not sure about drivers, but I
-think it should be, as with two actions.
+> 
+> after .unsched_all, multiple outstreams may have the same prio_head,
+> which are not on any list (like stream->prio_list).
+> 
+> so when freeing one outstream ext, it will need to go over all outstreams' exts
+> and check if this outstream ext's prio is equal to that of any other outstreams.
+
+Understood. The check in sctp_sched_prio_free() is actually checking
+if the prio_head is not yet scheduled for freeing instead, right.
+Thanks. Hmm. This for() can be quite expensive then. :-(
+
+> 
+> > >
+> > > Anyhow, as this is moving to something that can potentially be called
+> > > from other places afterwards, keeping the check doesn't hurt.
+> > >
+> > > >
+> > > > Note that kfree(SCTP_SO(new, i)->ext) shouldn't have the reported
+> > > > problem, as at that moment, the "new" stream hasn't been set
+> > > > stream_sched yet. It means there's only one place that needs to
+> > > > call free_sid in sctp_stream_outq_migrate().
+> > > > (Maybe Zhengchao can help us confirm this?)
+> > >
+> > > That's the case in Tetsuo's patch (earlier today) as well. Yet, if we
+> > > have an official way to free a stream, if it's not error handling
+> > > during initialization, it should use it.
+> > right.
+> >
+> > >
+> > > >
+> > > > >
+> > > > > > +               if (SCTP_SO(stream, i)->ext &&
+> > > > > > +                   SCTP_SO(stream, i)->ext->prio_head == prio)
+> > > > > > +                       return;
+> > > > > > +       }
+> > > > > > +       kfree(prio);
+> > > > > > +}
+> > > > > > +
+> > > > > >  static void sctp_sched_prio_free(struct sctp_stream *stream)
+> > > > > >  {
+> > > > > >         struct sctp_stream_priorities *prio, *n;
+> > > > > > @@ -323,6 +340,7 @@ static struct sctp_sched_ops sctp_sched_prio = {
+> > > > > >         .get = sctp_sched_prio_get,
+> > > > > >         .init = sctp_sched_prio_init,
+> > > > > >         .init_sid = sctp_sched_prio_init_sid,
+> > > > > > +       .free_sid = sctp_sched_prio_free_sid,
+> > > > > >         .free = sctp_sched_prio_free,
+> > > > > >         .enqueue = sctp_sched_prio_enqueue,
+> > > > > >         .dequeue = sctp_sched_prio_dequeue,
+> > > > > >
+> > > > > > then call it in sctp_stream_outq_migrate(), like:
+> > > > > >
+> > > > > > +static void sctp_stream_free_ext(struct sctp_stream *stream, __u16 sid)
+> > > > > > +{
+> > > > > > +       struct sctp_sched_ops *sched = sctp_sched_ops_from_stream(stream);
+> > > > > > +
+> > > > > > +       sched->free_sid(stream, sid);
+> > > > > > +       kfree(SCTP_SO(stream, sid)->ext);
+> > > > > > +       SCTP_SO(stream, sid)->ext = NULL;
+> > > > > > +}
+> > > > > > +
+> > > > > >  /* Migrates chunks from stream queues to new stream queues if needed,
+> > > > > >   * but not across associations. Also, removes those chunks to streams
+> > > > > >   * higher than the new max.
+> > > > > > @@ -70,16 +79,14 @@ static void sctp_stream_outq_migrate(struct
+> > > > > > sctp_stream *stream,
+> > > > > >                  * sctp_stream_update will swap ->out pointers.
+> > > > > >                  */
+> > > > > >                 for (i = 0; i < outcnt; i++) {
+> > > > > > -                       kfree(SCTP_SO(new, i)->ext);
+> > > > > > +                       sctp_stream_free_ext(new, i);
+> > > > > >                         SCTP_SO(new, i)->ext = SCTP_SO(stream, i)->ext;
+> > > > > >                         SCTP_SO(stream, i)->ext = NULL;
+> > > > > >                 }
+> > > > > >         }
+> > > > > >
+> > > > > > -       for (i = outcnt; i < stream->outcnt; i++) {
+> > > > > > -               kfree(SCTP_SO(stream, i)->ext);
+> > > > > > -               SCTP_SO(stream, i)->ext = NULL;
+> > > > > > -       }
+> > > > > > +       for (i = outcnt; i < stream->outcnt; i++)
+> > > > > > +               sctp_stream_free_ext(new, i);
+> > > > > >  }
+> > > > > >
+> > > > > > Marcelo, do you see a better solution?
+> > > > >
+> > > > > No. Your suggestion is the best I could think of too.
+> > > > >
+> > > > > Another approach would be to expose sched->free and do all the freeing
+> > > > > at once, like sctp_stream_free() does. But the above is looks cleaner
+> > > > > and makes it evident that freeing 'ext' is not trivial.
+> > > > >
+> > > > > With the proposal above, sctp_sched_prio_free() becomes an
+> > > > > optimization, if we can call it that. With the for/if replacement
+> > > > > above, not even that, and should be removed. Including sctp_sched_ops
+> > > > > 'free' pointer.
+> > > > Or we extract the common code to another function, like
+> > > > sctp_sched_prio_free_head(stream, prio), and pass prio as
+> > > > NULL in sctp_sched_prio_free() for freeing all.
+> > > >
+> > > > >
+> > > > > sctp_stream_free() then should be updated to use the new
+> > > > > sctp_stream_free_ext() instead, instead of mangling it directly.
+> > > > I thought about this, but there is ".free", which is more efficient
+> > > > to free all prio than calling ".free_sid" outcnt times.
+> > >
+> > > How much more efficient, just by avoiding retpoline stuff on the
+> > > indirect functional call or something else?
+> >
+> > in sctp_stream_free():
+> > .free() will be called one time to free all prios
+> > while .free_sid will be called in a loop to  free all prios:
+> >         for (i = 0; i < stream->outcnt; i++)
+> >                .free_sid(stream, i);
+> >
+> > inside either() .free or . free_sid() there is another loop:
+> > for (i = 0; i < stream->outcnt; i++)
+> >     ...
+> >
+> > That's why I said using .free() in sctp_stream_free() will be more efficient.
+> >
+> > >
+> > > >
+> > > > I may move free_sid() out of sctp_stream_free_ext(), then in
+> > > > sctp_stream_free() we can call sctp_stream_free_ext() without
+> > > > calling free_sid(), or just remove sctp_stream_free_ext().
+> > >
+> > > It's easier to maintain it if we have symmetric paths for initializing
+> > > and for freeing it and less special cases. We already have
+> > > sctp_stream_init_ext(), so having sctp_stream_free_ext() is not off.
+> > didn't notice init_sid in sctp_stream_init_ext(), it makes sense to
+> > have free_sid in sctp_stream_free_ext().
+> >
+> > Thanks.
+> >
+> > >
+> > > I'm happy to review any patch that also updates sctp_stream_free(),
+> > > one way or another.
+> > >
+> > > >
+> > > > Thanks.
+> > > >
+> > > > >
+> > > > > Makes sense?
+> > > > >
+> > > > > Thanks,
+> > > > > Marcelo
