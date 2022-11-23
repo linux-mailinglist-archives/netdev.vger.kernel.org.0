@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C01F636682
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 18:05:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79E86636685
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 18:06:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238417AbiKWRFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 12:05:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
+        id S238629AbiKWRGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 12:06:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237966AbiKWRFd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 12:05:33 -0500
+        with ESMTP id S237966AbiKWRGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 12:06:09 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423489A248;
-        Wed, 23 Nov 2022 09:05:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF666D481;
+        Wed, 23 Nov 2022 09:06:08 -0800 (PST)
 From:   Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669223129;
+        s=2020; t=1669223167;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=PgTWXneFnRsaQL5l6FFuRIiOLzxe0QUbUHjo5FawPdA=;
-        b=fObtseNro5mWffM0T0jcbNZso48gwULpGcWrN2f+WryYNTx1jd/eZZjqG+eVmwhFUBU06o
-        t/iknouVlvMyS4fiDuC+1vFBMwwSObGdYJkyBTy41y88PtU47dMuSBSsPL0H5aKuprG5hU
-        l+JcK3nhz5jWFbSdTIUnvH/XRwX1ugFCPQIUL2dAdGWiDOc+y7zIF32gj8lFcjamlUAJsQ
-        AcHIOAJ3RNufAKN/4Chca1p1vAcLmEkn6LcyHOQtfUOtJ4FUw+AOdSnXzTAhCxR0OB7eQ6
-        dv0UlmS3fwKc/i8fVpPN7Z/2rQ4HRN/WSEAEvpJb7GGPLKOxF5MtKOvPZCXdZg==
+        bh=3suul+1WiPGqw/3Olh9Iqz0TaLAlIdZ9odbSxdL1Q4M=;
+        b=rnBo0Myc2Gjm6q/jpnyflSc8oIGL5i6WyHEarFGWBwRWD/QQMoDbOHMaXBTh9RyQjh88+w
+        asPdF79F0YZELl1Y6dlHvNpRmA5fv5uLH6MPGBfrI9Ejh1S87AE0+nqlb+JslZa4WNfoGt
+        klx1mJJE1xSapPwT94C7duVBg7GXXCJqP7b7MToNqY6asSt0A9Xzc3Q48ZfsI3cXe6X2G2
+        qWidx0ga3PmGSsIKa1zzgWclgOQWo3Y+UStcCGkp5QIAkc3KgUlHxecwYIgZ1w3S3/0GzZ
+        jtZLW9AZIgtXv0QmkKJcc5fs4FHJ7iUjJ4YPY0ZEY37fFyZ86OYvP1M2n41Ibw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669223129;
+        s=2020e; t=1669223167;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=PgTWXneFnRsaQL5l6FFuRIiOLzxe0QUbUHjo5FawPdA=;
-        b=WTXkGIx/5p9xTP5fplTXmKHFCaCwwqD7NPh0QPEc1ilTHJLUJo12hxO98fg48Q0bA8Gjyk
-        lrcNlmfSLqUFIPCg==
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
+        bh=3suul+1WiPGqw/3Olh9Iqz0TaLAlIdZ9odbSxdL1Q4M=;
+        b=wH98igTiSxrUIz+HH4ZvhHQGAjBEGgLlg+9Zda3gyemIFAYGyzcppO6V/aVc8ojRimjt6u
+        /VBvutQLk/TMJqDA==
+To:     Anna-Maria Behnsen <anna-maria@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
         Steven Rostedt <rostedt@goodmis.org>,
-        Anna-Maria Behnsen <anna-maria@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
         Stephen Boyd <sboyd@kernel.org>,
         Guenter Roeck <linux@roeck-us.net>,
@@ -55,14 +54,13 @@ Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [patch V2 13/17] timers: Split [try_to_]del_timer[_sync]() to
- prepare for shutdown mode
-In-Reply-To: <74922e6d-73d5-62cc-3679-96ea447a1cb4@intel.com>
+Subject: Re: [patch V2 15/17] timers: Provide timer_shutdown[_sync]()
+In-Reply-To: <3779da12-6da5-8f6b-ec93-f8d52e38a40@linutronix.de>
 References: <20221122171312.191765396@linutronix.de>
- <20221122173648.849454220@linutronix.de>
- <74922e6d-73d5-62cc-3679-96ea447a1cb4@intel.com>
-Date:   Wed, 23 Nov 2022 18:05:28 +0100
-Message-ID: <87k03leh47.ffs@tglx>
+ <20221122173648.962476045@linutronix.de>
+ <3779da12-6da5-8f6b-ec93-f8d52e38a40@linutronix.de>
+Date:   Wed, 23 Nov 2022 18:06:06 +0100
+Message-ID: <87h6ypeh35.ffs@tglx>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,28 +72,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 22 2022 at 15:04, Jacob Keller wrote:
-> On 11/22/2022 9:45 AM, Thomas Gleixner wrote:
->> +int try_to_del_timer_sync(struct timer_list *timer)
->> +{
->> +	return __try_to_del_timer_sync(timer);
->> +}
->>   EXPORT_SYMBOL(try_to_del_timer_sync);
->>   
+On Wed, Nov 23 2022 at 13:02, Anna-Maria Behnsen wrote:
+>> + * This obviously requires that the timer is not required to be functional
+>> + * for the rest of the shutdown operation.
 >
->
-> Its a bit odd to me that some patches refactor and replace functions 
-> with new variants all under timer_* namespace, but then we've left some 
-> of them available without that.
->
-> Any reasoning behind this? I guess "try_*" is pretty clear and unlikely 
-> to get stolen by other code..?
+> NIT... Maybe the first requires could be replaced by
+> assumes/expects/presupposes to prevent double use of required?
 
-Kinda. I renamed del_timer*() because that's the ones which we want to
-substitute with timer_shutdown*() where possible and reasonable.
-
-A larger timer namespace cleanup is subject to a follow up series.
-
-Thanks,
-
-        tglx
+Yes.
