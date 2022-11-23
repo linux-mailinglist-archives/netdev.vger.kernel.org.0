@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72FB1635A16
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:35:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E67DB635A0F
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 11:35:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237236AbiKWKcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 05:32:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60968 "EHLO
+        id S237000AbiKWKcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 05:32:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237586AbiKWKcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:32:21 -0500
+        with ESMTP id S237591AbiKWKcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 05:32:22 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B858831EC9
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 02:15:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DA774CDC
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 02:15:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669198545;
+        s=mimecast20190719; t=1669198552;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=C0iGbjr1Snxz2vmUoCId62jqc3nozqstD1buYT2uPTI=;
-        b=JZx4M4J9BC1eKn1/d6qhN1qAJYq8hUb9MjYWAYMZXypQEc+yk1jkJASdug0GaUovlVtlPx
-        aLM27+B7ixjL7ZLimtBlopXSAu+xZP6sFT44doCOhJypgdUXOZSwQy3QbMdK93OieUryyk
-        SrztLIM3SPRscPdVPhWHP9rBLLtsyIc=
+        bh=GGu50IfOP3uDpsakvUjFOBzb1krbEknOtWGgn5noUQc=;
+        b=CwBvNOAMX5kY+G9HRFOs2xBmboLdhZc6Gi0ULKeR3uc2kvKqMonsRoAAPgkwyzm907OPsQ
+        jZlM6IpOTLT0rNFoQGoUt1sQhc/nD+EbEhFJMg4AF2AaG1xoC7BvrVWPkNDJdjnhNr45JQ
+        LmKM1kG2+IJ10xrgVup/3uTh3989WMw=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-128-9MPgUjCAPcGGzDodbEgv4Q-1; Wed, 23 Nov 2022 05:15:40 -0500
-X-MC-Unique: 9MPgUjCAPcGGzDodbEgv4Q-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-466-fiB68FoeN0ewS0Gqfh0A0Q-1; Wed, 23 Nov 2022 05:15:49 -0500
+X-MC-Unique: fiB68FoeN0ewS0Gqfh0A0Q-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1B906811E7A;
-        Wed, 23 Nov 2022 10:15:40 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AC4B7185A78B;
+        Wed, 23 Nov 2022 10:15:48 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5D7C5492B07;
-        Wed, 23 Nov 2022 10:15:39 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D466C1731B;
+        Wed, 23 Nov 2022 10:15:47 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 09/17] rxrpc: Implement a mechanism to send an event
- notification to a call
+Subject: [PATCH net-next 10/17] rxrpc: Move DATA transmission into call
+ processor work item
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Wed, 23 Nov 2022 10:15:38 +0000
-Message-ID: <166919853874.1258552.7742669866983317595.stgit@warthog.procyon.org.uk>
+Date:   Wed, 23 Nov 2022 10:15:45 +0000
+Message-ID: <166919854525.1258552.15607680997413621299.stgit@warthog.procyon.org.uk>
 In-Reply-To: <166919846440.1258552.9618708344491052554.stgit@warthog.procyon.org.uk>
 References: <166919846440.1258552.9618708344491052554.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -67,285 +67,458 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide a means by which an event notification can be sent to a call such
-that the I/O thread can process it rather than it being done in a separate
-workqueue.  This will allow a lot of locking to be removed.
+Move DATA transmission into the call processor work item.  In a future
+patch, this will be called from the I/O thread rather than being itsown
+work item.
+
+This will allow DATA transmission to be driven directly by incoming ACKs,
+pokes and timers as those are processed.
+
+The Tx queue is also split: The queue of packets prepared by sendmsg is now
+places in call->tx_sendmsg and the packet dispatcher decants the packets
+into call->tx_buffer as space becomes available in the transmission
+window.  This allows sendmsg to run ahead of the available space to try and
+prevent an underflow in transmission.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- include/trace/events/rxrpc.h |   52 ++++++++++++++++++++++++++++++++++++++++++
- net/rxrpc/ar-internal.h      |    5 +++-
- net/rxrpc/call_object.c      |   25 +++++++++++++++++++-
- net/rxrpc/input.c            |    3 +-
- net/rxrpc/io_thread.c        |   20 +++++++++++++++-
- net/rxrpc/local_object.c     |    1 +
- 6 files changed, 100 insertions(+), 6 deletions(-)
+ include/trace/events/rxrpc.h |    6 +++
+ net/rxrpc/ar-internal.h      |    5 ++-
+ net/rxrpc/call_event.c       |   76 +++++++++++++++++++++++++++++++++++---
+ net/rxrpc/call_object.c      |    6 +++
+ net/rxrpc/output.c           |   48 ++++++++++++++++++++++++
+ net/rxrpc/sendmsg.c          |   83 +++++++-----------------------------------
+ net/rxrpc/txbuf.c            |    2 +
+ 7 files changed, 147 insertions(+), 79 deletions(-)
 
 diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index b54af1920d0d..4cab522da17b 100644
+index 4cab522da17b..8dbd17ebea7f 100644
 --- a/include/trace/events/rxrpc.h
 +++ b/include/trace/events/rxrpc.h
-@@ -16,6 +16,13 @@
- /*
-  * Declare tracing information enums and their string mappings for display.
-  */
-+#define rxrpc_call_poke_traces \
-+	EM(rxrpc_call_poke_error,		"Error")	\
-+	EM(rxrpc_call_poke_idle,		"Idle")		\
-+	EM(rxrpc_call_poke_start,		"Start")	\
-+	EM(rxrpc_call_poke_timer,		"Timer")	\
-+	E_(rxrpc_call_poke_timer_now,		"Timer-now")
-+
- #define rxrpc_skb_traces \
- 	EM(rxrpc_skb_eaten_by_unshare,		"ETN unshare  ") \
- 	EM(rxrpc_skb_eaten_by_unshare_nomem,	"ETN unshar-nm") \
-@@ -151,6 +158,7 @@
- 	EM(rxrpc_call_get_input,		"GET input   ") \
- 	EM(rxrpc_call_get_kernel_service,	"GET krnl-srv") \
- 	EM(rxrpc_call_get_notify_socket,	"GET notify  ") \
-+	EM(rxrpc_call_get_poke,			"GET poke    ") \
- 	EM(rxrpc_call_get_recvmsg,		"GET recvmsg ") \
- 	EM(rxrpc_call_get_release_sock,		"GET rel-sock") \
- 	EM(rxrpc_call_get_retrans,		"GET retrans ") \
-@@ -164,6 +172,7 @@
- 	EM(rxrpc_call_put_discard_prealloc,	"PUT disc-pre") \
- 	EM(rxrpc_call_put_input,		"PUT input   ") \
- 	EM(rxrpc_call_put_kernel,		"PUT kernel  ") \
-+	EM(rxrpc_call_put_poke,			"PUT poke    ") \
- 	EM(rxrpc_call_put_recvmsg,		"PUT recvmsg ") \
- 	EM(rxrpc_call_put_release_sock,		"PUT rls-sock") \
- 	EM(rxrpc_call_put_release_sock_tba,	"PUT rls-sk-a") \
-@@ -384,6 +393,7 @@
- #define E_(a, b) a
+@@ -187,6 +187,7 @@
+ 	EM(rxrpc_call_queue_requeue,		"QUE requeue ") \
+ 	EM(rxrpc_call_queue_resend,		"QUE resend  ") \
+ 	EM(rxrpc_call_queue_timer,		"QUE timer   ") \
++	EM(rxrpc_call_queue_tx_data,		"QUE tx-data ") \
+ 	EM(rxrpc_call_see_accept,		"SEE accept  ") \
+ 	EM(rxrpc_call_see_activate_client,	"SEE act-clnt") \
+ 	EM(rxrpc_call_see_connect_failed,	"SEE con-fail") \
+@@ -741,6 +742,7 @@ TRACE_EVENT(rxrpc_txqueue,
+ 		    __field(rxrpc_seq_t,		acks_hard_ack	)
+ 		    __field(rxrpc_seq_t,		tx_bottom	)
+ 		    __field(rxrpc_seq_t,		tx_top		)
++		    __field(rxrpc_seq_t,		tx_prepared	)
+ 		    __field(int,			tx_winsize	)
+ 			     ),
  
- enum rxrpc_bundle_trace		{ rxrpc_bundle_traces } __mode(byte);
-+enum rxrpc_call_poke_trace	{ rxrpc_call_poke_traces } __mode(byte);
- enum rxrpc_call_trace		{ rxrpc_call_traces } __mode(byte);
- enum rxrpc_client_trace		{ rxrpc_client_traces } __mode(byte);
- enum rxrpc_congest_change	{ rxrpc_congest_changes } __mode(byte);
-@@ -414,6 +424,7 @@ enum rxrpc_txqueue_trace	{ rxrpc_txqueue_traces } __mode(byte);
- #define E_(a, b) TRACE_DEFINE_ENUM(a);
+@@ -750,16 +752,18 @@ TRACE_EVENT(rxrpc_txqueue,
+ 		    __entry->acks_hard_ack = call->acks_hard_ack;
+ 		    __entry->tx_bottom = call->tx_bottom;
+ 		    __entry->tx_top = call->tx_top;
++		    __entry->tx_prepared = call->tx_prepared;
+ 		    __entry->tx_winsize = call->tx_winsize;
+ 			   ),
  
- rxrpc_bundle_traces;
-+rxrpc_call_poke_traces;
- rxrpc_call_traces;
- rxrpc_client_traces;
- rxrpc_congest_changes;
-@@ -1753,6 +1764,47 @@ TRACE_EVENT(rxrpc_txbuf,
- 		      __entry->ref)
+-	    TP_printk("c=%08x %s f=%08x h=%08x n=%u/%u/%u",
++	    TP_printk("c=%08x %s f=%08x h=%08x n=%u/%u/%u/%u",
+ 		      __entry->call,
+ 		      __print_symbolic(__entry->why, rxrpc_txqueue_traces),
+ 		      __entry->tx_bottom,
+ 		      __entry->acks_hard_ack,
+ 		      __entry->tx_top - __entry->tx_bottom,
+ 		      __entry->tx_top - __entry->acks_hard_ack,
++		      __entry->tx_prepared - __entry->tx_bottom,
+ 		      __entry->tx_winsize)
  	    );
  
-+TRACE_EVENT(rxrpc_poke_call,
-+	    TP_PROTO(struct rxrpc_call *call, bool busy,
-+		     enum rxrpc_call_poke_trace what),
-+
-+	    TP_ARGS(call, busy, what),
-+
-+	    TP_STRUCT__entry(
-+		    __field(unsigned int,		call_debug_id	)
-+		    __field(bool,			busy		)
-+		    __field(enum rxrpc_call_poke_trace,	what		)
-+			     ),
-+
-+	    TP_fast_assign(
-+		    __entry->call_debug_id = call->debug_id;
-+		    __entry->busy = busy;
-+		    __entry->what = what;
-+			   ),
-+
-+	    TP_printk("c=%08x %s%s",
-+		      __entry->call_debug_id,
-+		      __print_symbolic(__entry->what, rxrpc_call_poke_traces),
-+		      __entry->busy ? "!" : "")
-+	    );
-+
-+TRACE_EVENT(rxrpc_call_poked,
-+	    TP_PROTO(struct rxrpc_call *call),
-+
-+	    TP_ARGS(call),
-+
-+	    TP_STRUCT__entry(
-+		    __field(unsigned int,		call_debug_id	)
-+			     ),
-+
-+	    TP_fast_assign(
-+		    __entry->call_debug_id = call->debug_id;
-+			   ),
-+
-+	    TP_printk("c=%08x",
-+		      __entry->call_debug_id)
-+	    );
-+
- #undef EM
- #undef E_
- #endif /* _TRACE_RXRPC_H */
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 641fc9e1dc27..8bf8651a69b5 100644
+index 8bf8651a69b5..7f67be01fd12 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -292,6 +292,7 @@ struct rxrpc_local {
- 	struct sk_buff_head	reject_queue;	/* packets awaiting rejection */
- 	struct sk_buff_head	event_queue;	/* endpoint event packets awaiting processing */
- 	struct sk_buff_head	rx_queue;	/* Received packets */
-+	struct list_head	call_attend_q;	/* Calls requiring immediate attention */
- 	struct rb_root		client_bundles;	/* Client connection bundles by socket params */
- 	spinlock_t		client_bundles_lock; /* Lock for client_bundles */
- 	spinlock_t		lock;		/* access lock */
-@@ -612,6 +613,7 @@ struct rxrpc_call {
- 	struct list_head	recvmsg_link;	/* Link in rx->recvmsg_q */
- 	struct list_head	sock_link;	/* Link in rx->sock_calls */
- 	struct rb_node		sock_node;	/* Node in rx->calls */
-+	struct list_head	attend_link;	/* Link in local->call_attend_q */
- 	struct rxrpc_txbuf	*tx_pending;	/* Tx buffer being filled */
- 	wait_queue_head_t	waitq;		/* Wait queue for channel or Tx */
- 	s64			tx_total_len;	/* Total length left to be transmitted (or -1) */
-@@ -841,6 +843,7 @@ extern const char *const rxrpc_call_states[];
- extern const char *const rxrpc_call_completions[];
- extern struct kmem_cache *rxrpc_call_jar;
+@@ -638,9 +638,11 @@ struct rxrpc_call {
  
-+void rxrpc_poke_call(struct rxrpc_call *call, enum rxrpc_call_poke_trace what);
- struct rxrpc_call *rxrpc_find_call_by_user_ID(struct rxrpc_sock *, unsigned long);
- struct rxrpc_call *rxrpc_alloc_call(struct rxrpc_sock *, gfp_t, unsigned int);
- struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *,
-@@ -962,7 +965,7 @@ void rxrpc_unpublish_service_conn(struct rxrpc_connection *);
- /*
-  * input.c
+ 	/* Transmitted data tracking. */
+ 	spinlock_t		tx_lock;	/* Transmit queue lock */
++	struct list_head	tx_sendmsg;	/* Sendmsg prepared packets */
+ 	struct list_head	tx_buffer;	/* Buffer of transmissible packets */
+ 	rxrpc_seq_t		tx_bottom;	/* First packet in buffer */
+ 	rxrpc_seq_t		tx_transmitted;	/* Highest packet transmitted */
++	rxrpc_seq_t		tx_prepared;	/* Highest Tx slot prepared. */
+ 	rxrpc_seq_t		tx_top;		/* Highest Tx slot allocated. */
+ 	u16			tx_backoff;	/* Delay to insert due to Tx failure */
+ 	u8			tx_winsize;	/* Maximum size of Tx window */
+@@ -758,7 +760,7 @@ struct rxrpc_send_params {
   */
--void rxrpc_input_call_packet(struct rxrpc_call *, struct sk_buff *);
-+void rxrpc_input_call_event(struct rxrpc_call *, struct sk_buff *);
- void rxrpc_input_implicit_end_call(struct rxrpc_sock *, struct rxrpc_connection *,
- 				   struct rxrpc_call *);
+ struct rxrpc_txbuf {
+ 	struct rcu_head		rcu;
+-	struct list_head	call_link;	/* Link in call->tx_queue */
++	struct list_head	call_link;	/* Link in call->tx_sendmsg/tx_buffer */
+ 	struct list_head	tx_link;	/* Link in live Enc queue or Tx queue */
+ 	struct rxrpc_call	*call;		/* Call to which belongs */
+ 	ktime_t			last_sent;	/* Time at which last transmitted */
+@@ -1074,6 +1076,7 @@ int rxrpc_send_abort_packet(struct rxrpc_call *);
+ int rxrpc_send_data_packet(struct rxrpc_call *, struct rxrpc_txbuf *);
+ void rxrpc_reject_packets(struct rxrpc_local *);
+ void rxrpc_send_keepalive(struct rxrpc_peer *);
++void rxrpc_transmit_one(struct rxrpc_call *call, struct rxrpc_txbuf *txb);
  
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 8abb6a785697..aa44e7a9a3f8 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -45,6 +45,29 @@ static struct semaphore rxrpc_call_limiter =
- static struct semaphore rxrpc_kernel_call_limiter =
- 	__SEMAPHORE_INITIALIZER(rxrpc_kernel_call_limiter, 1000);
+ /*
+  * peer_event.c
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 618f0ba3163a..c6c6b805f3b1 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -292,6 +292,65 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+ 	_leave("");
+ }
  
-+void rxrpc_poke_call(struct rxrpc_call *call, enum rxrpc_call_poke_trace what)
++static unsigned int rxrpc_tx_window_space(struct rxrpc_call *call)
 +{
-+	struct rxrpc_local *local;
-+	struct rxrpc_peer *peer = call->peer;
-+	bool busy;
++	unsigned int winsize = min_t(unsigned int, call->tx_winsize,
++				     call->cong_cwnd + call->cong_extra);
++	rxrpc_seq_t wtop = call->acks_hard_ack + winsize;
 +
-+	if (WARN_ON_ONCE(!peer))
-+		return;
-+	local = peer->local;
++	return after_eq(call->tx_top, wtop) ? 0 : wtop - call->tx_top;
++}
 +
-+	if (call->state < RXRPC_CALL_COMPLETE) {
-+		spin_lock_bh(&local->lock);
-+		busy = !list_empty(&call->attend_link);
-+		trace_rxrpc_poke_call(call, busy, what);
-+		if (!busy) {
-+			rxrpc_get_call(call, rxrpc_call_get_poke);
-+			list_add_tail(&call->attend_link, &local->call_attend_q);
-+		}
-+		spin_unlock_bh(&local->lock);
-+		rxrpc_wake_up_io_thread(local);
++/*
++ * Decant some if the sendmsg prepared queue into the transmission buffer.
++ */
++static void rxrpc_decant_prepared_tx(struct rxrpc_call *call)
++{
++	struct rxrpc_txbuf *txb;
++
++	if (rxrpc_is_client_call(call) &&
++	    !test_bit(RXRPC_CALL_EXPOSED, &call->flags))
++		rxrpc_expose_client_call(call);
++
++	while ((txb = list_first_entry_or_null(&call->tx_sendmsg,
++					       struct rxrpc_txbuf, call_link))) {
++		spin_lock(&call->tx_lock);
++		list_del(&txb->call_link);
++		spin_unlock(&call->tx_lock);
++
++		call->tx_top = txb->seq;
++		list_add_tail(&txb->call_link, &call->tx_buffer);
++
++		rxrpc_transmit_one(call, txb);
++
++		if (rxrpc_tx_window_space(call) == 0)
++			break;
 +	}
 +}
 +
- static void rxrpc_call_timer_expired(struct timer_list *t)
- {
- 	struct rxrpc_call *call = from_timer(call, t, timer);
-@@ -145,6 +168,7 @@ struct rxrpc_call *rxrpc_alloc_call(struct rxrpc_sock *rx, gfp_t gfp,
- 	INIT_LIST_HEAD(&call->accept_link);
++static void rxrpc_transmit_some_data(struct rxrpc_call *call)
++{
++	switch (call->state) {
++	case RXRPC_CALL_SERVER_ACK_REQUEST:
++		if (list_empty(&call->tx_sendmsg))
++			return;
++		fallthrough;
++
++	case RXRPC_CALL_SERVER_SEND_REPLY:
++	case RXRPC_CALL_SERVER_AWAIT_ACK:
++	case RXRPC_CALL_CLIENT_SEND_REQUEST:
++	case RXRPC_CALL_CLIENT_AWAIT_REPLY:
++		if (rxrpc_tx_window_space(call) == 0)
++			return;
++		if (list_empty(&call->tx_sendmsg))
++			return;
++		rxrpc_decant_prepared_tx(call);
++		break;
++	default:
++		return;
++	}
++}
++
+ /*
+  * Handle retransmission and deferred ACK/abort generation.
+  */
+@@ -310,19 +369,22 @@ void rxrpc_process_call(struct work_struct *work)
+ 	       call->debug_id, rxrpc_call_states[call->state], call->events);
+ 
+ recheck_state:
++	if (call->acks_hard_ack != call->tx_bottom)
++		rxrpc_shrink_call_tx_buffer(call);
++
+ 	/* Limit the number of times we do this before returning to the manager */
+-	iterations++;
+-	if (iterations > 5)
+-		goto requeue;
++	if (rxrpc_tx_window_space(call) == 0 ||
++	    list_empty(&call->tx_sendmsg)) {
++		iterations++;
++		if (iterations > 5)
++			goto requeue;
++	}
+ 
+ 	if (test_and_clear_bit(RXRPC_CALL_EV_ABORT, &call->events)) {
+ 		rxrpc_send_abort_packet(call);
+ 		goto recheck_state;
+ 	}
+ 
+-	if (READ_ONCE(call->acks_hard_ack) != call->tx_bottom)
+-		rxrpc_shrink_call_tx_buffer(call);
+-
+ 	if (call->state == RXRPC_CALL_COMPLETE) {
+ 		rxrpc_delete_call_timer(call);
+ 		goto out_put;
+@@ -388,6 +450,8 @@ void rxrpc_process_call(struct work_struct *work)
+ 		set_bit(RXRPC_CALL_EV_RESEND, &call->events);
+ 	}
+ 
++	rxrpc_transmit_some_data(call);
++
+ 	/* Process events */
+ 	if (test_and_clear_bit(RXRPC_CALL_EV_EXPIRED, &call->events)) {
+ 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index aa44e7a9a3f8..f1071f9ed115 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -169,6 +169,7 @@ struct rxrpc_call *rxrpc_alloc_call(struct rxrpc_sock *rx, gfp_t gfp,
  	INIT_LIST_HEAD(&call->recvmsg_link);
  	INIT_LIST_HEAD(&call->sock_link);
-+	INIT_LIST_HEAD(&call->attend_link);
+ 	INIT_LIST_HEAD(&call->attend_link);
++	INIT_LIST_HEAD(&call->tx_sendmsg);
  	INIT_LIST_HEAD(&call->tx_buffer);
  	skb_queue_head_init(&call->recvmsg_queue);
  	skb_queue_head_init(&call->rx_oos_queue);
-@@ -645,7 +669,6 @@ void rxrpc_cleanup_call(struct rxrpc_call *call)
- 	}
- 	rxrpc_put_txbuf(call->tx_pending, rxrpc_txbuf_put_cleaned);
- 	rxrpc_free_skb(call->acks_soft_tbl, rxrpc_skb_put_ack);
--	rxrpc_delete_call_timer(call);
+@@ -662,6 +663,11 @@ void rxrpc_cleanup_call(struct rxrpc_call *call)
+ 	rxrpc_delete_call_timer(call);
  
- 	rxrpc_put_connection(call->conn, rxrpc_conn_put_call);
- 	rxrpc_put_peer(call->peer, rxrpc_peer_put_call);
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 1b9da9078315..6b3f21d081cf 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -1017,8 +1017,7 @@ static void rxrpc_input_abort(struct rxrpc_call *call, struct sk_buff *skb)
- /*
-  * Process an incoming call packet.
-  */
--void rxrpc_input_call_packet(struct rxrpc_call *call,
--				    struct sk_buff *skb)
-+void rxrpc_input_call_event(struct rxrpc_call *call, struct sk_buff *skb)
- {
- 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
- 	unsigned long timo;
-diff --git a/net/rxrpc/io_thread.c b/net/rxrpc/io_thread.c
-index 416c6101cf78..cc249bc6b8cd 100644
---- a/net/rxrpc/io_thread.c
-+++ b/net/rxrpc/io_thread.c
-@@ -366,7 +366,7 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff *skb)
- 	/* Process a call packet; this either discards or passes on the ref
- 	 * elsewhere.
- 	 */
--	rxrpc_input_call_packet(call, skb);
-+	rxrpc_input_call_event(call, skb);
- 	goto out;
+ 	rxrpc_cleanup_ring(call);
++	while ((txb = list_first_entry_or_null(&call->tx_sendmsg,
++					       struct rxrpc_txbuf, call_link))) {
++		list_del(&txb->call_link);
++		rxrpc_put_txbuf(txb, rxrpc_txbuf_put_cleaned);
++	}
+ 	while ((txb = list_first_entry_or_null(&call->tx_buffer,
+ 					       struct rxrpc_txbuf, call_link))) {
+ 		list_del(&txb->call_link);
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index 68511069873a..e2880e01624e 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -465,6 +465,14 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
  
- discard:
-@@ -413,6 +413,7 @@ int rxrpc_io_thread(void *data)
- {
- 	struct sk_buff_head rx_queue;
- 	struct rxrpc_local *local = data;
-+	struct rxrpc_call *call;
- 	struct sk_buff *skb;
- 
- 	skb_queue_head_init(&rx_queue);
-@@ -422,6 +423,20 @@ int rxrpc_io_thread(void *data)
- 	for (;;) {
- 		rxrpc_inc_stat(local->rxnet, stat_io_loop);
- 
-+		/* Deal with calls that want immediate attention. */
-+		if ((call = list_first_entry_or_null(&local->call_attend_q,
-+						     struct rxrpc_call,
-+						     attend_link))) {
-+			spin_lock_bh(&local->lock);
-+			list_del_init(&call->attend_link);
-+			spin_unlock_bh(&local->lock);
+ 	trace_rxrpc_tx_data(call, txb->seq, serial, txb->wire.flags,
+ 			    test_bit(RXRPC_TXBUF_RESENT, &txb->flags), false);
 +
-+			trace_rxrpc_call_poked(call);
-+			rxrpc_input_call_event(call, NULL);
-+			rxrpc_put_call(call, rxrpc_call_put_poke);
-+			continue;
++	/* Track what we've attempted to transmit at least once so that the
++	 * retransmission algorithm doesn't try to resend what we haven't sent
++	 * yet.  However, this can race as we can receive an ACK before we get
++	 * to this point.  But, OTOH, if we won't get an ACK mentioning this
++	 * packet unless the far side received it (though it could have
++	 * discarded it anyway and NAK'd it).
++	 */
+ 	cmpxchg(&call->tx_transmitted, txb->seq - 1, txb->seq);
+ 
+ 	/* send the packet with the don't fragment bit set if we currently
+@@ -712,3 +720,43 @@ void rxrpc_send_keepalive(struct rxrpc_peer *peer)
+ 	peer->last_tx_at = ktime_get_seconds();
+ 	_leave("");
+ }
++
++/*
++ * Schedule an instant Tx resend.
++ */
++static inline void rxrpc_instant_resend(struct rxrpc_call *call,
++					struct rxrpc_txbuf *txb)
++{
++	if (call->state < RXRPC_CALL_COMPLETE)
++		kdebug("resend");
++}
++
++/*
++ * Transmit one packet.
++ */
++void rxrpc_transmit_one(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
++{
++	int ret;
++
++	ret = rxrpc_send_data_packet(call, txb);
++	if (ret < 0) {
++		switch (ret) {
++		case -ENETUNREACH:
++		case -EHOSTUNREACH:
++		case -ECONNREFUSED:
++			rxrpc_set_call_completion(call, RXRPC_CALL_LOCAL_ERROR,
++						  0, ret);
++			break;
++		default:
++			_debug("need instant resend %d", ret);
++			rxrpc_instant_resend(call, txb);
 +		}
++	} else {
++		unsigned long now = jiffies;
++		unsigned long resend_at = now + call->peer->rto_j;
 +
- 		/* Process received packets and errors. */
- 		if ((skb = __skb_dequeue(&rx_queue))) {
- 			switch (skb->mark) {
-@@ -450,7 +465,8 @@ int rxrpc_io_thread(void *data)
- 		}
++		WRITE_ONCE(call->resend_at, resend_at);
++		rxrpc_reduce_call_timer(call, resend_at, now,
++					rxrpc_timer_set_for_send);
++	}
++}
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 7183c7f76f46..ee202e49e8a0 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -22,30 +22,9 @@
+  */
+ static bool rxrpc_check_tx_space(struct rxrpc_call *call, rxrpc_seq_t *_tx_win)
+ {
+-	unsigned int win_size;
+-	rxrpc_seq_t tx_win = smp_load_acquire(&call->acks_hard_ack);
+-
+-	/* If we haven't transmitted anything for >1RTT, we should reset the
+-	 * congestion management state.
+-	 */
+-	if (ktime_before(ktime_add_us(call->tx_last_sent,
+-				      call->peer->srtt_us >> 3),
+-			 ktime_get_real())) {
+-		if (RXRPC_TX_SMSS > 2190)
+-			win_size = 2;
+-		else if (RXRPC_TX_SMSS > 1095)
+-			win_size = 3;
+-		else
+-			win_size = 4;
+-		win_size += call->cong_extra;
+-	} else {
+-		win_size = min_t(unsigned int, call->tx_winsize,
+-				 call->cong_cwnd + call->cong_extra);
+-	}
+-
+ 	if (_tx_win)
+-		*_tx_win = tx_win;
+-	return call->tx_top - tx_win < win_size;
++		*_tx_win = call->tx_bottom;
++	return call->tx_prepared - call->tx_bottom < 256;
+ }
  
- 		set_current_state(TASK_INTERRUPTIBLE);
--		if (!skb_queue_empty(&local->rx_queue)) {
-+		if (!skb_queue_empty(&local->rx_queue) ||
-+		    !list_empty(&local->call_attend_q)) {
- 			__set_current_state(TASK_RUNNING);
- 			continue;
- 		}
-diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index 6b4d77219f36..03f491cc23ef 100644
---- a/net/rxrpc/local_object.c
-+++ b/net/rxrpc/local_object.c
-@@ -104,6 +104,7 @@ static struct rxrpc_local *rxrpc_alloc_local(struct rxrpc_net *rxnet,
- 		skb_queue_head_init(&local->reject_queue);
- 		skb_queue_head_init(&local->event_queue);
- 		skb_queue_head_init(&local->rx_queue);
-+		INIT_LIST_HEAD(&local->call_attend_q);
- 		local->client_bundles = RB_ROOT;
- 		spin_lock_init(&local->client_bundles_lock);
- 		spin_lock_init(&local->lock);
+ /*
+@@ -66,11 +45,6 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
+ 		if (signal_pending(current))
+ 			return sock_intr_errno(*timeo);
+ 
+-		if (READ_ONCE(call->acks_hard_ack) != call->tx_bottom) {
+-			rxrpc_shrink_call_tx_buffer(call);
+-			continue;
+-		}
+-
+ 		trace_rxrpc_txqueue(call, rxrpc_txqueue_wait);
+ 		*timeo = schedule_timeout(*timeo);
+ 	}
+@@ -107,11 +81,6 @@ static int rxrpc_wait_for_tx_window_waitall(struct rxrpc_sock *rx,
+ 		    tx_win == tx_start && signal_pending(current))
+ 			return -EINTR;
+ 
+-		if (READ_ONCE(call->acks_hard_ack) != call->tx_bottom) {
+-			rxrpc_shrink_call_tx_buffer(call);
+-			continue;
+-		}
+-
+ 		if (tx_win != tx_start) {
+ 			timeout = rtt;
+ 			tx_start = tx_win;
+@@ -137,11 +106,6 @@ static int rxrpc_wait_for_tx_window_nonintr(struct rxrpc_sock *rx,
+ 		if (call->state >= RXRPC_CALL_COMPLETE)
+ 			return call->error;
+ 
+-		if (READ_ONCE(call->acks_hard_ack) != call->tx_bottom) {
+-			rxrpc_shrink_call_tx_buffer(call);
+-			continue;
+-		}
+-
+ 		trace_rxrpc_txqueue(call, rxrpc_txqueue_wait);
+ 		*timeo = schedule_timeout(*timeo);
+ 	}
+@@ -207,29 +171,27 @@ static void rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
+ 	unsigned long now;
+ 	rxrpc_seq_t seq = txb->seq;
+ 	bool last = test_bit(RXRPC_TXBUF_LAST, &txb->flags);
+-	int ret;
+ 
+ 	rxrpc_inc_stat(call->rxnet, stat_tx_data);
+ 
+-	ASSERTCMP(seq, ==, call->tx_top + 1);
++	ASSERTCMP(txb->seq, ==, call->tx_prepared + 1);
+ 
+ 	/* We have to set the timestamp before queueing as the retransmit
+ 	 * algorithm can see the packet as soon as we queue it.
+ 	 */
+ 	txb->last_sent = ktime_get_real();
+ 
+-	/* Add the packet to the call's output buffer */
+-	rxrpc_get_txbuf(txb, rxrpc_txbuf_get_buffer);
+-	spin_lock(&call->tx_lock);
+-	list_add_tail(&txb->call_link, &call->tx_buffer);
+-	call->tx_top = seq;
+-	spin_unlock(&call->tx_lock);
+-
+ 	if (last)
+ 		trace_rxrpc_txqueue(call, rxrpc_txqueue_queue_last);
+ 	else
+ 		trace_rxrpc_txqueue(call, rxrpc_txqueue_queue);
+ 
++	/* Add the packet to the call's output buffer */
++	spin_lock(&call->tx_lock);
++	list_add_tail(&txb->call_link, &call->tx_sendmsg);
++	call->tx_prepared = seq;
++	spin_unlock(&call->tx_lock);
++
+ 	if (last || call->state == RXRPC_CALL_SERVER_ACK_REQUEST) {
+ 		_debug("________awaiting reply/ACK__________");
+ 		write_lock(&call->state_lock);
+@@ -258,30 +220,11 @@ static void rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
+ 		write_unlock(&call->state_lock);
+ 	}
+ 
+-	if (seq == 1 && rxrpc_is_client_call(call))
+-		rxrpc_expose_client_call(call);
+-
+-	ret = rxrpc_send_data_packet(call, txb);
+-	if (ret < 0) {
+-		switch (ret) {
+-		case -ENETUNREACH:
+-		case -EHOSTUNREACH:
+-		case -ECONNREFUSED:
+-			rxrpc_set_call_completion(call, RXRPC_CALL_LOCAL_ERROR,
+-						  0, ret);
+-			goto out;
+-		}
+-	} else {
+-		unsigned long now = jiffies;
+-		unsigned long resend_at = now + call->peer->rto_j;
+ 
+-		WRITE_ONCE(call->resend_at, resend_at);
+-		rxrpc_reduce_call_timer(call, resend_at, now,
+-					rxrpc_timer_set_for_send);
+-	}
+-
+-out:
+-	rxrpc_put_txbuf(txb, rxrpc_txbuf_put_trans);
++	/* Stick the packet on the crypto queue or the transmission queue as
++	 * appropriate.
++	 */
++	rxrpc_queue_call(call, rxrpc_call_queue_tx_data);
+ }
+ 
+ /*
+diff --git a/net/rxrpc/txbuf.c b/net/rxrpc/txbuf.c
+index 96bfee89927b..6721c64c3d1a 100644
+--- a/net/rxrpc/txbuf.c
++++ b/net/rxrpc/txbuf.c
+@@ -34,7 +34,7 @@ struct rxrpc_txbuf *rxrpc_alloc_txbuf(struct rxrpc_call *call, u8 packet_type,
+ 		txb->offset		= 0;
+ 		txb->flags		= 0;
+ 		txb->ack_why		= 0;
+-		txb->seq		= call->tx_top + 1;
++		txb->seq		= call->tx_prepared + 1;
+ 		txb->wire.epoch		= htonl(call->conn->proto.epoch);
+ 		txb->wire.cid		= htonl(call->cid);
+ 		txb->wire.callNumber	= htonl(call->call_id);
 
 
