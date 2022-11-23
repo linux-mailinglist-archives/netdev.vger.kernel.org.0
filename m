@@ -2,85 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2498C636663
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 18:00:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C01F636682
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 18:05:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239239AbiKWRAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 12:00:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50668 "EHLO
+        id S238417AbiKWRFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 12:05:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238881AbiKWRAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 12:00:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10ADBF5B6
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 09:00:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40C9FB821D3
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 17:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ED35CC433C1;
-        Wed, 23 Nov 2022 17:00:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669222818;
-        bh=FGNg3KBDg177aMn+56oMu6XaujZtVbSBCX1alvq5YJ4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=I7IzPxIMfvTf4jrYp1gornPm28FRvdcrl6sUdHXhZCHJQnW/b+69pCO5VPdRy0bQO
-         LL0STyeUJZL6/75yMZdWky+PvO8FwcZGD1T0d0vZ6kER4d8RI8r97bv655PrlLae4f
-         QhxWZDBm4kc8/hb+dHjQpIv1Xw6iNn5rRLWr+2apoAEzECrdJEPZxuNPOHr4N4DdvQ
-         jNxDqEtiUU/6ywtWy+cqWDyVhn5x/CV8z2rtinc/VeWyBI+h0aisOIcBZrQ9TfooPx
-         ppi2B+z41Ipdjd07Rgmoe0sWyUwLIipPa6ZLmAdJF2i3phrRolb43tXK2IxNbRDpiL
-         k4CZSFfA3ZHcQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CFB50E21EFD;
-        Wed, 23 Nov 2022 17:00:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S237966AbiKWRFd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 12:05:33 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423489A248;
+        Wed, 23 Nov 2022 09:05:31 -0800 (PST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1669223129;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PgTWXneFnRsaQL5l6FFuRIiOLzxe0QUbUHjo5FawPdA=;
+        b=fObtseNro5mWffM0T0jcbNZso48gwULpGcWrN2f+WryYNTx1jd/eZZjqG+eVmwhFUBU06o
+        t/iknouVlvMyS4fiDuC+1vFBMwwSObGdYJkyBTy41y88PtU47dMuSBSsPL0H5aKuprG5hU
+        l+JcK3nhz5jWFbSdTIUnvH/XRwX1ugFCPQIUL2dAdGWiDOc+y7zIF32gj8lFcjamlUAJsQ
+        AcHIOAJ3RNufAKN/4Chca1p1vAcLmEkn6LcyHOQtfUOtJ4FUw+AOdSnXzTAhCxR0OB7eQ6
+        dv0UlmS3fwKc/i8fVpPN7Z/2rQ4HRN/WSEAEvpJb7GGPLKOxF5MtKOvPZCXdZg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1669223129;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PgTWXneFnRsaQL5l6FFuRIiOLzxe0QUbUHjo5FawPdA=;
+        b=WTXkGIx/5p9xTP5fplTXmKHFCaCwwqD7NPh0QPEc1ilTHJLUJo12hxO98fg48Q0bA8Gjyk
+        lrcNlmfSLqUFIPCg==
+To:     Jacob Keller <jacob.e.keller@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Anna-Maria Behnsen <anna-maria@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [patch V2 13/17] timers: Split [try_to_]del_timer[_sync]() to
+ prepare for shutdown mode
+In-Reply-To: <74922e6d-73d5-62cc-3679-96ea447a1cb4@intel.com>
+References: <20221122171312.191765396@linutronix.de>
+ <20221122173648.849454220@linutronix.de>
+ <74922e6d-73d5-62cc-3679-96ea447a1cb4@intel.com>
+Date:   Wed, 23 Nov 2022 18:05:28 +0100
+Message-ID: <87k03leh47.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2-next v1] tc_util: Fix no error return when large
- parent id used
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166922281684.9414.17456612951830729390.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Nov 2022 17:00:16 +0000
-References: <1668663197-22115-1-git-send-email-jun.ann.lai@intel.com>
-In-Reply-To: <1668663197-22115-1-git-send-email-jun.ann.lai@intel.com>
-To:     Lai Peter Jun Ann <jun.ann.lai@intel.com>
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org,
-        stephen@networkplumber.org, vinicius.gomes@intel.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        muhammad.husaini.zulkifli@intel.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Nov 22 2022 at 15:04, Jacob Keller wrote:
+> On 11/22/2022 9:45 AM, Thomas Gleixner wrote:
+>> +int try_to_del_timer_sync(struct timer_list *timer)
+>> +{
+>> +	return __try_to_del_timer_sync(timer);
+>> +}
+>>   EXPORT_SYMBOL(try_to_del_timer_sync);
+>>   
+>
+>
+> Its a bit odd to me that some patches refactor and replace functions 
+> with new variants all under timer_* namespace, but then we've left some 
+> of them available without that.
+>
+> Any reasoning behind this? I guess "try_*" is pretty clear and unlikely 
+> to get stolen by other code..?
 
-This patch was applied to iproute2/iproute2.git (main)
-by Stephen Hemminger <stephen@networkplumber.org>:
+Kinda. I renamed del_timer*() because that's the ones which we want to
+substitute with timer_shutdown*() where possible and reasonable.
 
-On Thu, 17 Nov 2022 13:33:17 +0800 you wrote:
-> This patch is to fix the issue where there is no error return
-> when large value of parent ID is being used. The return value by
-> stroul() is unsigned long int. Hence the datatype for maj and min
-> should defined as unsigned long to avoid overflow issue.
-> 
-> Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-> Signed-off-by: Lai Peter Jun Ann <jun.ann.lai@intel.com>
-> 
-> [...]
+A larger timer namespace cleanup is subject to a follow up series.
 
-Here is the summary with links:
-  - [iproute2-next,v1] tc_util: Fix no error return when large parent id used
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=e0ecee3a33af
+Thanks,
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+        tglx
