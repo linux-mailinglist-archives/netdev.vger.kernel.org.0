@@ -2,107 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45053635B06
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 12:07:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14901635B38
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 12:11:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236840AbiKWLHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 06:07:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
+        id S237185AbiKWLKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 06:10:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237133AbiKWLGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 06:06:40 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FEFD7A;
-        Wed, 23 Nov 2022 03:06:15 -0800 (PST)
-Date:   Wed, 23 Nov 2022 12:06:13 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669201574;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0+upg52BtLT9oHrczBXFvaIQMySCLIal3hm8l0NDLnQ=;
-        b=l6P32vFF870ypZx6vCoBcNNgylnWvrBUmEtcYRcXy0kC4LhfNZoPFwgNttx+vj4z5wSKMs
-        vn0R0rCHUKYgVmCz92vdsSe961Z3VtAs7dzNEsbFtTOO8XqYz4W8PAMnYdRRVSJ4AFv1Wa
-        ft7/SCUlKy2Jmg2zEGahbi/Vxb9wOE1B1ouYh1jYSbFG/bIN3M24g8kmbQXEIxFzWZA8I9
-        AUncV4boGStW+ocIgtThmc2wweNnOlhxDOGwTfw6KkdaXTbMt0pQfqBCyBuvSaou/mE4Pe
-        JP34yBeyRtHZe8ual+wzjM9X206u7+vlPqIllWbycEFVneffF9kaG4Bi9JrbzQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669201574;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0+upg52BtLT9oHrczBXFvaIQMySCLIal3hm8l0NDLnQ=;
-        b=SxPe9D9BGzUbhvSxqQS4b3uIXz2O6cBpEgHoPX1lNKZsBn8VsZihEBpiNn1TJIoH4DHOj/
-        3ujtJx8+O88t8zAQ==
-From:   Anna-Maria Behnsen <anna-maria@linutronix.de>
-To:     Thomas Gleixner <tglx@linutronix.de>
-cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [patch V2 12/17] timers: Silently ignore timers with a NULL
- function
-In-Reply-To: <20221122173648.793640919@linutronix.de>
-Message-ID: <165dcea1-2713-218b-fecf-5bf80452229@linutronix.de>
-References: <20221122171312.191765396@linutronix.de> <20221122173648.793640919@linutronix.de>
+        with ESMTP id S236676AbiKWLIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 06:08:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55812EA1;
+        Wed, 23 Nov 2022 03:08:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF11E61BD6;
+        Wed, 23 Nov 2022 11:08:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 756D7C433D7;
+        Wed, 23 Nov 2022 11:08:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669201722;
+        bh=DawtEQRaLys4ndNs0wAfEL55EBLaTd8iBsWdNmensMU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Yt1eTFqw8F/qCDrGv8Xd8AYJLVuWcTXSYUGOWKR2n5YcnhscY9OG50o0ydhHLBgux
+         6/1BvZ0NSLstMlNPttpy2OJvmr8ctcxIR9BBvoVjwif+B3qAIQsVcpvxLuDi1BIJYg
+         vV8rkVmd5DElHyAx2Hz1B/6q0YYHbF19nkbqrXx+Egr2clYjMj7jfNiOvOnRbXmN+9
+         FcX5g35cBHVzwgqpXai9DQW37ENEAEwcdWvWkqtmHdsvWtiSEQlwoghsh+3kQMPTjG
+         gHDbqGnDkHbuF6nvzGgIwUdHC+jrUPFjeuJdhiDEAgL8IZFFJsuEgpbDauYu4obmn2
+         /KfJWDPYd3z5Q==
+Date:   Wed, 23 Nov 2022 13:08:37 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Suman Ghosh <sumang@marvell.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, sgoutham@marvell.com, sbhatta@marvell.com,
+        jerinj@marvell.com, gakula@marvell.com, hkelam@marvell.com,
+        lcherian@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net PATCH V2] octeontx2-pf: Fix pfc_alloc_status array overflow
+Message-ID: <Y33/NWTHNznMetWB@unreal>
+References: <20221123105938.2824933-1-sumang@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221123105938.2824933-1-sumang@marvell.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Nov 2022, Thomas Gleixner wrote:
-
-> Tearing down timers which have circular dependencies to other
-> functionality, e.g. workqueues, where the timer can schedule work and work
-> can arm timers is not trivial.
+On Wed, Nov 23, 2022 at 04:29:38PM +0530, Suman Ghosh wrote:
+> This patch addresses pfc_alloc_status array overflow occurring for
+> send queue index value greater than PFC priority. Queue index can be
+> greater than supported PFC priority for multiple scenarios (e.g. QoS,
+> during non zero SMQ allocation for a PF/VF).
+> In those scenarios the API should return default tx scheduler '0'.
+> This is causing mbox errors as otx2_get_smq_idx returing invalid smq value.
 > 
-> In those cases it is desired to shutdown the timer in a way which prevents
-> rearming of the timer. The mechanism to do so it to set timer->function to
-> NULL and use this as an indicator for the timer arming functions to ignore
-> the (re)arm request.
+> Fixes: 99c969a83d82 ("octeontx2-pf: Add egress PFC support")
+> Signed-off-by: Suman Ghosh <sumang@marvell.com>
+> ---
+> Changes since v1:
+> - Updated commit message.
 > 
-> In preparation for that replace the warnings in the relevant code pathes
-> with checks for timer->function == NULL and discard the rearm request
-> silently.
+>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Add debug_assert_init() instead of the WARN_ON_ONCE(!timer->function)
-> checks so that debug objects can warn about non-initialized timers.
-
-Could you expand this paragraph, so that is is not missleading when a
-reader is not aware of the details of debug objects? Otherwise it seems to
-the reader that debug objects will warn when timer->function == NULL.
-
-  The warning of debug objects does not cover the original
-  WARN_ON_ONCE(!timer->function). It warns when timer was not initialized
-  using timer_setup[_on_stack]() or via DEFINE_TIMER().
-
-
-> If developers fail to enable debug objects and then waste lots of time to
-> figure out why their non-initialized timer is not firing, they deserve it.
-
 
 Thanks,
-
-	Anna-Maria
-
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
