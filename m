@@ -2,299 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A319C636381
-	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:27:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29AE26363CA
+	for <lists+netdev@lfdr.de>; Wed, 23 Nov 2022 16:33:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237720AbiKWP1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 10:27:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
+        id S238618AbiKWPdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 10:33:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237852AbiKWP0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:26:47 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523ACA6590;
-        Wed, 23 Nov 2022 07:26:29 -0800 (PST)
+        with ESMTP id S236921AbiKWPdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 10:33:43 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17BD663EE
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 07:33:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669217190; x=1700753190;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669217621; x=1700753621;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=aWK/w3O8H43VBVicVuiR2cJT/wFQ8uPk13PWRF6aQ9M=;
-  b=IAd51jm1doyBzUtRUXL4G12lJ3RkisiBtZtpalUnWFYwRv5w9KM/JhoY
-   Xb7mgD9mxKXDK7GsWrcNAtbgJTI3b0lqOsQd+IgRIuQtyZGObS5IDau4m
-   y53TrO1BDhe0zXeIvXh3dTPkR1yjNuIY4dNRZnS/FE1cXJyxpQBEKAkFi
-   8JM4j1x2BN1sTG8YS1eLqUh+QqSsLR/vhD6GiS0B2InDYqyeER9F92SYn
-   tBYyw0ggiHfmE8817Y8g6ARfuh1sitCMSfMDGOBPkLmAWGXXA9XGsGcNM
-   ypzPh9kt6cvLO49gaBU1Cd77Q3iRoEgygjhd3pMS/PjIcdk8D1WkCGtBb
-   A==;
+  bh=m/aVgymTos4Ftb+Gh6/eAJ99Blu1RvFuNxuPztTJziI=;
+  b=ja8KsEnSA7TSH6AmtEI1ut6Jh059Kl6DXpIE9C8eT8ihyBj20E1iLeKR
+   k6/pycJHDOe55raA5Tz3/UeAU1s0rcvW0Y9tnePdZCB+4JvLDfa0dMKzj
+   8JtV7139dVQuZQfUa/Dc8SPT8pUBN615etcwzJ6bCsMf+dgzXConluzgV
+   YTY39SLSXK3Mo6d0/9sNdIyHbz34VV+gkMDZzLcIREXk+heh5LKBFELcJ
+   wW/WNPt3UfJUo5vZ2IjXtRXIUNAAl+S0EfnszERCImtwSl1x5ujU4XZWf
+   RFCYcQbzgoelLl9wqGFcANBdCUFoKJn8smBh7/xF9KrBnHTPml73l9ZRV
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="294480257"
 X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="184877312"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Nov 2022 08:26:29 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 23 Nov 2022 08:26:05 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 23 Nov 2022 08:26:02 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Casper Andersson" <casper.casan@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        "Nathan Huckleberry" <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v2 4/4] net: microchip: sparx5: Add VCAP filter keys KUNIT test
-Date:   Wed, 23 Nov 2022 16:25:45 +0100
-Message-ID: <20221123152545.1997266-5-steen.hegelund@microchip.com>
+   d="scan'208";a="294480257"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 07:33:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="730817888"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="730817888"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by FMSMGA003.fm.intel.com with ESMTP; 23 Nov 2022 07:33:39 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2ANFXcjP028901;
+        Wed, 23 Nov 2022 15:33:38 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Nikolay Borisov <nikolay.borisov@virtuozzo.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, kernel@virtuozzo.com
+Subject: Re: [PATCH net-next v2 1/3] drop_monitor: Implement namespace filtering/reporting for software drops
+Date:   Wed, 23 Nov 2022 16:33:14 +0100
+Message-Id: <20221123153314.483642-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221123152545.1997266-1-steen.hegelund@microchip.com>
-References: <20221123152545.1997266-1-steen.hegelund@microchip.com>
+In-Reply-To: <20221123142817.2094993-2-nikolay.borisov@virtuozzo.com>
+References: <20221123142817.2094993-1-nikolay.borisov@virtuozzo.com> <20221123142817.2094993-2-nikolay.borisov@virtuozzo.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,T_SPF_TEMPERROR autolearn=ham autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This tests the filtering of keys, either dropping unsupported keys or
-dropping keys specified in a list.
+From: Nikolay Borisov <nikolay.borisov@virtuozzo.com>
+Date: Wed, 23 Nov 2022 16:28:15 +0200
 
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
----
- .../ethernet/microchip/vcap/vcap_api_kunit.c  | 194 ++++++++++++++++++
- 1 file changed, 194 insertions(+)
+> On hosts running multiple containers it's helpful to be able to see
+> in which net namespace a particular drop occured. Additionally, it's
+> also useful to limit drop point filtering to a single namespace,
+> especially for hosts which are dropping skb's at a high rate.
+> 
+> Signed-off-by: Nikolay Borisov <nikolay.borisov@virtuozzo.com>
+> ---
+>  include/uapi/linux/net_dropmon.h |  2 ++
+>  net/core/drop_monitor.c          | 36 ++++++++++++++++++++++++++++++--
+>  2 files changed, 36 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+> index 84f622a66a7a..81eb2bd184e8 100644
+> --- a/include/uapi/linux/net_dropmon.h
+> +++ b/include/uapi/linux/net_dropmon.h
+> @@ -8,6 +8,7 @@
+>  struct net_dm_drop_point {
+>  	__u8 pc[8];
+>  	__u32 count;
+> +	__u32 ns_id;
+>  };
+>  
+>  #define is_drop_point_hw(x) do {\
+> @@ -94,6 +95,7 @@ enum net_dm_attr {
+>  	NET_DM_ATTR_HW_DROPS,			/* flag */
+>  	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
+>  	NET_DM_ATTR_REASON,			/* string */
+> +	NET_DM_ATTR_NS,				/* u32 */
+>  
+>  	__NET_DM_ATTR_MAX,
+>  	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+> diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+> index f084a4a6b7ab..680f54d21f38 100644
+> --- a/net/core/drop_monitor.c
+> +++ b/net/core/drop_monitor.c
+> @@ -103,6 +103,7 @@ static unsigned long dm_hw_check_delta = 2*HZ;
+>  static enum net_dm_alert_mode net_dm_alert_mode = NET_DM_ALERT_MODE_SUMMARY;
+>  static u32 net_dm_trunc_len;
+>  static u32 net_dm_queue_len = 1000;
+> +static u32 net_dm_ns;
+>  
+>  struct net_dm_alert_ops {
+>  	void (*kfree_skb_probe)(void *ignore, struct sk_buff *skb,
+> @@ -210,6 +211,19 @@ static void sched_send_work(struct timer_list *t)
+>  	schedule_work(&data->dm_alert_work);
+>  }
+>  
+> +static bool drop_point_matches(struct net_dm_drop_point *point, void *location,
+> +			       unsigned long ns_id)
+> +{
+> +	if (net_dm_ns && point->ns_id == net_dm_ns &&
+> +	    !memcmp(&location, &point->pc, sizeof(void *)))
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-index 875068e484c9..76a31215ebfb 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-@@ -1954,6 +1954,198 @@ static void vcap_api_next_lookup_advanced_test(struct kunit *test)
- 	KUNIT_EXPECT_EQ(test, true, ret);
- }
- 
-+static void vcap_api_filter_unsupported_keys_test(struct kunit *test)
-+{
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.vctrl = &test_vctrl,
-+		.data.keyset = VCAP_KFS_MAC_ETYPE,
-+	};
-+	enum vcap_key_field keylist[] = {
-+		VCAP_KF_TYPE,
-+		VCAP_KF_LOOKUP_FIRST_IS,
-+		VCAP_KF_ARP_ADDR_SPACE_OK_IS,  /* arp keys are not in keyset */
-+		VCAP_KF_ARP_PROTO_SPACE_OK_IS,
-+		VCAP_KF_ARP_LEN_OK_IS,
-+		VCAP_KF_ARP_TGT_MATCH_IS,
-+		VCAP_KF_ARP_SENDER_MATCH_IS,
-+		VCAP_KF_ARP_OPCODE_UNKNOWN_IS,
-+		VCAP_KF_ARP_OPCODE,
-+		VCAP_KF_8021Q_DEI_CLS,
-+		VCAP_KF_8021Q_PCP_CLS,
-+		VCAP_KF_8021Q_VID_CLS,
-+		VCAP_KF_L2_MC_IS,
-+		VCAP_KF_L2_BC_IS,
-+	};
-+	enum vcap_key_field expected[] = {
-+		VCAP_KF_TYPE,
-+		VCAP_KF_LOOKUP_FIRST_IS,
-+		VCAP_KF_8021Q_DEI_CLS,
-+		VCAP_KF_8021Q_PCP_CLS,
-+		VCAP_KF_8021Q_VID_CLS,
-+		VCAP_KF_L2_MC_IS,
-+		VCAP_KF_L2_BC_IS,
-+	};
-+	struct vcap_client_keyfield *ckf, *next;
-+	bool ret;
-+	int idx;
-+
-+	/* Add all keys to the rule */
-+	INIT_LIST_HEAD(&ri.data.keyfields);
-+	for (idx = 0; idx < ARRAY_SIZE(keylist); idx++) {
-+		ckf = kzalloc(sizeof(*ckf), GFP_KERNEL);
-+		if (ckf) {
-+			ckf->ctrl.key = keylist[idx];
-+			list_add_tail(&ckf->ctrl.list, &ri.data.keyfields);
-+		}
-+	}
-+
-+	KUNIT_EXPECT_EQ(test, 14, ARRAY_SIZE(keylist));
-+
-+	/* Drop unsupported keys from the rule */
-+	ret = vcap_filter_rule_keys(&ri.data, NULL, 0, true);
-+
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+
-+	/* Check remaining keys in the rule */
-+	idx = 0;
-+	list_for_each_entry_safe(ckf, next, &ri.data.keyfields, ctrl.list) {
-+		KUNIT_EXPECT_EQ(test, expected[idx], ckf->ctrl.key);
-+		list_del(&ckf->ctrl.list);
-+		kfree(ckf);
-+		++idx;
-+	}
-+	KUNIT_EXPECT_EQ(test, 7, idx);
-+}
-+
-+static void vcap_api_filter_keylist_test(struct kunit *test)
-+{
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS0,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.vctrl = &test_vctrl,
-+		.data.keyset = VCAP_KFS_NORMAL_7TUPLE,
-+	};
-+	enum vcap_key_field keylist[] = {
-+		VCAP_KF_TYPE,
-+		VCAP_KF_LOOKUP_FIRST_IS,
-+		VCAP_KF_LOOKUP_GEN_IDX_SEL,
-+		VCAP_KF_LOOKUP_GEN_IDX,
-+		VCAP_KF_IF_IGR_PORT_MASK_SEL,
-+		VCAP_KF_IF_IGR_PORT_MASK,
-+		VCAP_KF_L2_MC_IS,
-+		VCAP_KF_L2_BC_IS,
-+		VCAP_KF_8021Q_VLAN_TAGS,
-+		VCAP_KF_8021Q_TPID0,
-+		VCAP_KF_8021Q_PCP0,
-+		VCAP_KF_8021Q_DEI0,
-+		VCAP_KF_8021Q_VID0,
-+		VCAP_KF_8021Q_TPID1,
-+		VCAP_KF_8021Q_PCP1,
-+		VCAP_KF_8021Q_DEI1,
-+		VCAP_KF_8021Q_VID1,
-+		VCAP_KF_8021Q_TPID2,
-+		VCAP_KF_8021Q_PCP2,
-+		VCAP_KF_8021Q_DEI2,
-+		VCAP_KF_8021Q_VID2,
-+		VCAP_KF_L2_DMAC,
-+		VCAP_KF_L2_SMAC,
-+		VCAP_KF_IP_MC_IS,
-+		VCAP_KF_ETYPE_LEN_IS,
-+		VCAP_KF_ETYPE,
-+		VCAP_KF_IP_SNAP_IS,
-+		VCAP_KF_IP4_IS,
-+		VCAP_KF_L3_FRAGMENT_TYPE,
-+		VCAP_KF_L3_FRAG_INVLD_L4_LEN,
-+		VCAP_KF_L3_OPTIONS_IS,
-+		VCAP_KF_L3_DSCP,
-+		VCAP_KF_L3_IP6_DIP,
-+		VCAP_KF_L3_IP6_SIP,
-+		VCAP_KF_TCP_UDP_IS,
-+		VCAP_KF_TCP_IS,
-+		VCAP_KF_L4_SPORT,
-+		VCAP_KF_L4_RNG,
-+	};
-+	enum vcap_key_field droplist[] = {
-+		VCAP_KF_8021Q_TPID1,
-+		VCAP_KF_8021Q_PCP1,
-+		VCAP_KF_8021Q_DEI1,
-+		VCAP_KF_8021Q_VID1,
-+		VCAP_KF_8021Q_TPID2,
-+		VCAP_KF_8021Q_PCP2,
-+		VCAP_KF_8021Q_DEI2,
-+		VCAP_KF_8021Q_VID2,
-+		VCAP_KF_L3_IP6_DIP,
-+		VCAP_KF_L3_IP6_SIP,
-+		VCAP_KF_L4_SPORT,
-+		VCAP_KF_L4_RNG,
-+	};
-+	enum vcap_key_field expected[] = {
-+		VCAP_KF_TYPE,
-+		VCAP_KF_LOOKUP_FIRST_IS,
-+		VCAP_KF_LOOKUP_GEN_IDX_SEL,
-+		VCAP_KF_LOOKUP_GEN_IDX,
-+		VCAP_KF_IF_IGR_PORT_MASK_SEL,
-+		VCAP_KF_IF_IGR_PORT_MASK,
-+		VCAP_KF_L2_MC_IS,
-+		VCAP_KF_L2_BC_IS,
-+		VCAP_KF_8021Q_VLAN_TAGS,
-+		VCAP_KF_8021Q_TPID0,
-+		VCAP_KF_8021Q_PCP0,
-+		VCAP_KF_8021Q_DEI0,
-+		VCAP_KF_8021Q_VID0,
-+		VCAP_KF_L2_DMAC,
-+		VCAP_KF_L2_SMAC,
-+		VCAP_KF_IP_MC_IS,
-+		VCAP_KF_ETYPE_LEN_IS,
-+		VCAP_KF_ETYPE,
-+		VCAP_KF_IP_SNAP_IS,
-+		VCAP_KF_IP4_IS,
-+		VCAP_KF_L3_FRAGMENT_TYPE,
-+		VCAP_KF_L3_FRAG_INVLD_L4_LEN,
-+		VCAP_KF_L3_OPTIONS_IS,
-+		VCAP_KF_L3_DSCP,
-+		VCAP_KF_TCP_UDP_IS,
-+		VCAP_KF_TCP_IS,
-+	};
-+	struct vcap_client_keyfield *ckf, *next;
-+	bool ret;
-+	int idx;
-+
-+	/* Add all keys to the rule */
-+	INIT_LIST_HEAD(&ri.data.keyfields);
-+	for (idx = 0; idx < ARRAY_SIZE(keylist); idx++) {
-+		ckf = kzalloc(sizeof(*ckf), GFP_KERNEL);
-+		if (ckf) {
-+			ckf->ctrl.key = keylist[idx];
-+			list_add_tail(&ckf->ctrl.list, &ri.data.keyfields);
-+		}
-+	}
-+
-+	KUNIT_EXPECT_EQ(test, 38, ARRAY_SIZE(keylist));
-+
-+	/* Drop listed keys from the rule */
-+	ret = vcap_filter_rule_keys(&ri.data, droplist, ARRAY_SIZE(droplist),
-+				    false);
-+
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+
-+	/* Check remaining keys in the rule */
-+	idx = 0;
-+	list_for_each_entry_safe(ckf, next, &ri.data.keyfields, ctrl.list) {
-+		KUNIT_EXPECT_EQ(test, expected[idx], ckf->ctrl.key);
-+		list_del(&ckf->ctrl.list);
-+		kfree(ckf);
-+		++idx;
-+	}
-+	KUNIT_EXPECT_EQ(test, 26, idx);
-+}
-+
- static struct kunit_suite vcap_api_rule_remove_test_suite = {
- 	.name = "VCAP_API_Rule_Remove_Testsuite",
- 	.test_cases = vcap_api_rule_remove_test_cases,
-@@ -1984,6 +2176,8 @@ static struct kunit_suite vcap_api_rule_counter_test_suite = {
- static struct kunit_case vcap_api_support_test_cases[] = {
- 	KUNIT_CASE(vcap_api_next_lookup_basic_test),
- 	KUNIT_CASE(vcap_api_next_lookup_advanced_test),
-+	KUNIT_CASE(vcap_api_filter_unsupported_keys_test),
-+	KUNIT_CASE(vcap_api_filter_keylist_test),
- 	{}
- };
- 
--- 
-2.38.1
+                                           ^^^^^^^^^^^^^^
 
+Nit: sizeof(location)?
+
+> +		return true;
+> +	else if (net_dm_ns == 0 && point->ns_id == ns_id &&
+
+                 ^^^^^^^^^^^^^^
+
+Just `!net_dm_ns` is preferred.
+
+> +		 !memcmp(&location, &point->pc, sizeof(void *)))
+> +		return true;
+> +	else
+> +		return false;
+
+I think the dup of the last condition can be avoided with oring
+`(net_dm_ns && ...) || (!net_dm_ns && ...)`. Then, true/false
+becomes redundant:
+
+	return ((net_dm_ns && point->ns_id == net_dm_ns) ||
+		(!net_dm_ns && point->ns_id == ns_id)) &&
+	       !memcmp(&location, &point->pc, sizeof(location));
+
+> +}
+> +
+>  static void trace_drop_common(struct sk_buff *skb, void *location)
+>  {
+>  	struct net_dm_alert_msg *msg;
+> @@ -219,7 +233,11 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+>  	int i;
+>  	struct sk_buff *dskb;
+>  	struct per_cpu_dm_data *data;
+> -	unsigned long flags;
+> +	unsigned long flags, ns_id = 0;
+
+With that line extension, it breaks RCT style. Yeah, it's already
+broken a line above, but let's not introduce more style issues %)
+
+> +
+> +	if (skb->dev && net_dm_ns &&
+
+It's faster to test net_dm_ns at first and then skb->dev. The former
+is static on the BSS and the latter is dynamic. Plus the former will
+be zeroed much more often than the latter.
+
+> +	    dev_net(skb->dev)->ns.inum != net_dm_ns)
+> +		return;
+>  
+>  	local_irq_save(flags);
+>  	data = this_cpu_ptr(&dm_cpu_data);
+> @@ -233,8 +251,10 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+>  	nla = genlmsg_data(nlmsg_data(nlh));
+>  	msg = nla_data(nla);
+>  	point = msg->points;
+> +	if (skb->dev)
+> +		ns_id = dev_net(skb->dev)->ns.inum;
+>  	for (i = 0; i < msg->entries; i++) {
+> -		if (!memcmp(&location, &point->pc, sizeof(void *))) {
+> +		if (drop_point_matches(point, location, ns_id)) {
+>  			point->count++;
+>  			goto out;
+>  		}
+> @@ -249,6 +269,7 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+>  	nla->nla_len += NLA_ALIGN(sizeof(struct net_dm_drop_point));
+>  	memcpy(point->pc, &location, sizeof(void *));
+>  	point->count = 1;
+> +	point->ns_id = ns_id;
+>  	msg->entries++;
+>  
+>  	if (!timer_pending(&data->send_timer)) {
+> @@ -1283,6 +1304,14 @@ static void net_dm_trunc_len_set(struct genl_info *info)
+>  	net_dm_trunc_len = nla_get_u32(info->attrs[NET_DM_ATTR_TRUNC_LEN]);
+>  }
+>  
+> +static void net_dm_ns_set(struct genl_info *info)
+> +{
+> +	if (!info->attrs[NET_DM_ATTR_NS])
+> +		return;
+> +
+> +	net_dm_ns = nla_get_u32(info->attrs[NET_DM_ATTR_NS]);
+
+So, if I got it correctly, it can limit the scope to only one netns.
+Isn't that not flexible enough? What about a white- or black- list
+of NSes to filter or filter-out?
+
+> +}
+> +
+>  static void net_dm_queue_len_set(struct genl_info *info)
+>  {
+>  	if (!info->attrs[NET_DM_ATTR_QUEUE_LEN])
+> @@ -1310,6 +1339,8 @@ static int net_dm_cmd_config(struct sk_buff *skb,
+>  
+>  	net_dm_queue_len_set(info);
+>  
+> +	net_dm_ns_set(info);
+> +
+>  	return 0;
+>  }
+>  
+> @@ -1589,6 +1620,7 @@ static const struct nla_policy net_dm_nl_policy[NET_DM_ATTR_MAX + 1] = {
+>  	[NET_DM_ATTR_ALERT_MODE] = { .type = NLA_U8 },
+>  	[NET_DM_ATTR_TRUNC_LEN] = { .type = NLA_U32 },
+>  	[NET_DM_ATTR_QUEUE_LEN] = { .type = NLA_U32 },
+> +	[NET_DM_ATTR_NS]	= { .type = NLA_U32 },
+>  	[NET_DM_ATTR_SW_DROPS]	= {. type = NLA_FLAG },
+>  	[NET_DM_ATTR_HW_DROPS]	= {. type = NLA_FLAG },
+>  };
+> -- 
+> 2.34.1
+
+Thanks,
+Olek
