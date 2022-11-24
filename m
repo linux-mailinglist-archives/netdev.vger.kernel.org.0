@@ -2,246 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 815EC63725C
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 07:30:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82F4C637268
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 07:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbiKXGaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 01:30:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
+        id S229640AbiKXGhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 01:37:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiKXGaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 01:30:06 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2084.outbound.protection.outlook.com [40.107.20.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76850942DE;
-        Wed, 23 Nov 2022 22:30:00 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mVkEps824w/De5gW0Yubv9ufwYsSV0T9mesgfZS01oRf910X3QvRs7Ax5xSx4YDt6OuJvbz4XRLNzQn36ooUykfIKnQa+oyStZDlsYTH/JToG7ICK587DJnFRdHRhn+fL4oWnfJ6Vqm9ZEuZOAdowOW3kNoOZbRQYADjUe451grTlNK13wGJwfTM58doNb+WYouhab4KV2R5oZPjnPBIHPMnKhEJYKR1Pc7TWzfTYvGAzLrpYgloVI1ZaiiFrHSB/gXIiJOQbiVdyR0tlutMnVOuI1KrlW8QpvKz+5ZxOS7v+8F7hKBShVknO8u/cISYr7wZgpkKCphNxSDK9z5/Lg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yRJoHx2IinM8ItMff9jCO5ySEY41CZ+XBF0eIC0xJDE=;
- b=fwBdPjRlDvpU9p8pNEz16YAjNGvXC8zXxT27YuuONCug0yInFEz8rshSdRVxY9WN8hRiuox3h3AgYWyHc4fH2URxG/4XGtrjKiZBaJpH8acS369Y3Lyt0tgotf6IYhKoPuvf19bEp3ewn+WyZ8xFRadSKtjF8BdYRk6CJA4pOzveRG23wq9ciERJo6fdxtGZjz5sIqlBp8+OFvTfF8MNAY0yjJSNeu2xmg81evc6ThgpG0pl2f9KVqJ/X/SguMRk7FnK90pY8IE1QY9n5zmRaGWUUEZosCodr8ZnOJGChGaPNR4BCa4KeTxiBLj80rgtGvP0MCTVTcmm6kv1s3YUoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yRJoHx2IinM8ItMff9jCO5ySEY41CZ+XBF0eIC0xJDE=;
- b=v8mVYDWMyJaBA5N0gslBO/Exs4I1q3gHUVO4ViY46A4Md5M2pqiYxKrr7WOdfPbUkAekkjPg5XK2uMzAnZv0FYCR/ACcTwr+Jr1wCeOxtWc1XlYDTrl4yyWtm40Lhr/Cm7pICePJFgpZ92RbFXCjgjSA7AoVNADpEfsDULJtGQ4JFkKPjDpHVJ/1WLBbbfuYmgUObwMyJRUndDlp/z2tHtEoIJ3JBaY+U/2V88vL9JApdxhrzbReyfNQUBSnLDTwMt/VOIHAY7uAX8FgI/hnU6LaJBzWU1ZTn8KFGVB2yE0UOAmAWNRlTnxOTR3m9cSXoGnxsdf/tTqDdgjjj9R+ig==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from AS8PR04MB9009.eurprd04.prod.outlook.com (2603:10a6:20b:42d::19)
- by AS8PR04MB8561.eurprd04.prod.outlook.com (2603:10a6:20b:420::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.9; Thu, 24 Nov
- 2022 06:29:58 +0000
-Received: from AS8PR04MB9009.eurprd04.prod.outlook.com
- ([fe80::696b:5418:b458:196a]) by AS8PR04MB9009.eurprd04.prod.outlook.com
- ([fe80::696b:5418:b458:196a%3]) with mapi id 15.20.5857.017; Thu, 24 Nov 2022
- 06:29:58 +0000
-Date:   Thu, 24 Nov 2022 14:29:38 +0800
-From:   Firo Yang <firo.yang@suse.com>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, mkubecek@suse.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        firogm@gmail.com
-Subject: Re: [PATCH 1/1] sctp: sysctl: referring the correct net namespace
-Message-ID: <Y38PUmjeFWApHnrh@suse.com>
-References: <20221123094406.32654-1-firo.yang@suse.com>
- <Y34ZVEeSryB0UTFD@t14s.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Y34ZVEeSryB0UTFD@t14s.localdomain>
-X-ClientProxiedBy: TYCP286CA0047.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:2b5::18) To AS8PR04MB9009.eurprd04.prod.outlook.com
- (2603:10a6:20b:42d::19)
+        with ESMTP id S229748AbiKXGhE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 01:37:04 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E0AC6BF5;
+        Wed, 23 Nov 2022 22:36:30 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ANKMCPS031354;
+        Wed, 23 Nov 2022 22:36:21 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=6X6je5OPwRrTxSTNAH6J16bP62LAgGN9chs2ksNVsHE=;
+ b=V5eRtCGZHQqn5i9Yfiz+G42/cc3ZDmgyWgQmQL4GpT8CxM8BG0zI5YlaXvp8olb5FStC
+ Ibm3ZjvPo+v49R2XGc4nfKvU3WvZd6hE5up1Z4KfrF3F5CSgR7WSDEk1mMO8MXSiMXu4
+ LZA4+zMuMRKEENLNhWtudHPgicbUwNqxQWN9BeQQLZLq1uYLDFGZtog2wG6xWvjT8Ylc
+ iCghwfWc7HVq6wCErRyunROcM5YxwR/HJnS4MGy0dDIfD4C2syNEAcmN77DDqDu4NuWt
+ yVYVkX3IFomW8aOjVGSuwJWEVKS5xSG6BUd2kWR46NowGPBzPAQtNQxYJrdG0D8ehDD+ eA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3m1g7jbuh0-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 23 Nov 2022 22:36:21 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 23 Nov
+ 2022 22:35:54 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 23 Nov 2022 22:35:54 -0800
+Received: from localhost.localdomain (unknown [10.28.36.166])
+        by maili.marvell.com (Postfix) with ESMTP id BEF763F7097;
+        Wed, 23 Nov 2022 22:35:50 -0800 (PST)
+From:   Suman Ghosh <sumang@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <sgoutham@marvell.com>, <sbhatta@marvell.com>,
+        <jerinj@marvell.com>, <gakula@marvell.com>, <hkelam@marvell.com>,
+        <lcherian@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Suman Ghosh <sumang@marvell.com>
+Subject: [net-next PATCH V3] octeontx2-pf: Add support to filter packet based on IP fragment
+Date:   Thu, 24 Nov 2022 12:05:48 +0530
+Message-ID: <20221124063548.2831912-1-sumang@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS8PR04MB9009:EE_|AS8PR04MB8561:EE_
-X-MS-Office365-Filtering-Correlation-Id: a846dca4-e81c-47c5-4cea-08dacde54ec8
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JMMaxiTJ61Si8OOTKY3Q+5yc4SuxgtiD9SlWLmud6r4uw6lERCNaHqhhbX/Co/MjYSX8pHZDek+lniem8ule6SzWkoxAasVAbGgAsALbumnfbMbBZ8uXJCzVcZeqn2CJsLYNunPuI8iTfaKaVZd1RxJc0+eMI5yIKiCwiOFheyLNPEYjnJhO4lqT5D4cCw6H+Cj3RV7i2U4WbMymI2SHmYv/evuy2/blcj/6uVCRIFnp7sR1umnYNRHu4d4luZg7D86tID51rfGYukVaLtD27+LDFbJuro/e6hZBSNnCFHn5TBlGtErA7tn3kfcO/vb9gn1FbBn0VeWbBXl1+sbgaER8p0q76YfVic7wt/UoaUgsphCLHm799N4xyeYIhWgWEMQQU1cqyDJpcPGqdiRbMU2YRKiLYEQ1bZNhs6YA5RkE63NO1FyWUO2EVcymoHLznsgWKEfe6zxsVGi8kWHKLh3gL4pR8tHxMfTYWWXrp7twaAQiuR4P7NVgTbdbyNvsEKuoM9KLteYAycnX2mjpGJ0HLeP8+xToIqPa06FYeyR2tnrx87wctvr+lqerj5zMW7qnnRLaUR0GZ0mtmYjPuTnp4qm3xJ5UST9iZgXaNKdLrFjy+WtJVz/QIDu90uGITiHZjKOobnb4b72G4iyAIw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB9009.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(376002)(346002)(366004)(396003)(39860400002)(451199015)(316002)(6916009)(6486002)(6666004)(6506007)(6512007)(4326008)(66946007)(8676002)(66556008)(478600001)(66476007)(5660300002)(7416002)(44832011)(186003)(8936002)(2906002)(83380400001)(36756003)(2616005)(41300700001)(38100700002)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bjFEcU40bXJkQzFTNE1KVU9sMWpJNDk2NzNVOFFqdlVXZE1RdmdhVFpLMU1q?=
- =?utf-8?B?UTE3L0pzSWdVYnRDOTdsbStnTTB6WmcwOVR2UzFBcU1yVlVtVmx5UXNrZDQr?=
- =?utf-8?B?SC9oNmE4cUlQOWx0SjVhRmFNd2VEcEZhaXh5RjVaMk5aYjZNcTJNeW0zRkhB?=
- =?utf-8?B?THYxN203WmxBOFVBbXdDaU1uNGxLVE5iK3o1amhRTHExTXBSOTRVei9XMUFM?=
- =?utf-8?B?akNBQjJZQnpzTWlmK2UrclhBTHgyZEdDUDNEbVVPeWh0Y0cvQUFDM3c4eUQ2?=
- =?utf-8?B?OXFTR1FPaGpqRHA4VG9aVVpqNDVZSXphQStQTTJ0TnQ3VWRPNW9XMHMxVWZh?=
- =?utf-8?B?UUdzemZ3NThHcVE0WEpGT1ZZQ1FKUDNKaEpqWWkyUDdzSTJVREVBSXdjZGZr?=
- =?utf-8?B?cjhBbk5FL0MvZVo0eEZYODF6aHlIZVhaMng1bENHRGgxY1orQnJJK1RqNTNs?=
- =?utf-8?B?Y3kxKzVwRDFmdnpXRFQwdXlqRXlCSXVkdFIvSzAzZThQZWRYRW05aFhXTUM2?=
- =?utf-8?B?YjEyRktmZnhCNXgxaTVZcjFtZzJaeTk3bjc2YUJsdDh3cGFzVXFnOGNKUi9U?=
- =?utf-8?B?NVpDSVV6Q08xZlpQcDdWak9wc014WTVPeEd1Z3pvdnFzNFlQeGE1KzEyWGIx?=
- =?utf-8?B?SDRnVXRrcXlUSHlsQjk0TlpNcGRER3U5U0NGd2laTk5WTmxlVE1PTWRhQ1E2?=
- =?utf-8?B?VmUrU1E3OEhOODhSZnRRaVVMcFcvcVpIVm8zVHIwcDhpUVdWTUFKZjViTENJ?=
- =?utf-8?B?djBPTGt6VFVnZHNtR2podS9DVGxkYlNYdkZZNWdmamdjWHlwaGEzS2FxQ01O?=
- =?utf-8?B?dE5Ld2VpSVEvbFROZm5GN2RhN0RKM29BSDFiN0VFN2MyajlsLyt4bE9wM1FJ?=
- =?utf-8?B?TzAvL0dEY2hLVmJBZ2hrR3IyRG1wY0MzL2RsUHpsUnNXUnpMcTJFNTNlR3Qv?=
- =?utf-8?B?ZnBzQUxwZXBHQjdHRHZVbElJQW50d1cwTFF1b1cvVnlmV29nQVlrZXZVRXR6?=
- =?utf-8?B?TDVHNFp4RkUvdHA2eTgrUlJWWFd2T2FkZmppcCtIM0h0RVZUa2RPY2RwMFhT?=
- =?utf-8?B?NUdJbXRGdDhtK2tMSnZ5S0ZYVFIrRi90ODJNUHg1YUM4Rm5mVVhndXBqRXhh?=
- =?utf-8?B?L2ZZelpPR2w1MUNnSnJheWMxTDFMMCt3bmZVMEFkakZGREFTQmc4MmFPejhR?=
- =?utf-8?B?ZHBsMGF5RmdBalN6cnZ3ZTZOQWd0MmFlaTRDT1pkMjZwWko2eGQvREdFb3lU?=
- =?utf-8?B?WWNtMVc0NktJZjFPNmN1Q3RUb1pnc0JzY0hocGdKT1liNDNYaExpYW9uLzE5?=
- =?utf-8?B?YXBMNzByeHk0NlZqakpiZXZYNW0wb3Z5T1ptWDd1VkJMM1BHUzFyd2l2RlVP?=
- =?utf-8?B?Rms5Yng1TUVveHVJMkhZSXFMejVyWXl5aFl4WWd4TitWZzZtN0N2dmd6N29C?=
- =?utf-8?B?bXVHVDRSTCtiQk5JanpPaWhmQ3FBSndzWWdPRGlOa2x1WlpHd2xJT0JpNDZ3?=
- =?utf-8?B?SXI5V2JtYms5UkJ0RVpocDFIL2tIRDNEcWp5R2R4QjNoMWtoWHgwZHpPR1h6?=
- =?utf-8?B?OTAzODVsUkVlbDh6OUJwMUMyNWUzTGM3dXllV29RZlZRczN0VTlFWVE3V2c1?=
- =?utf-8?B?YlFPYnl5UDBkTEpTd2F1QnVRRjNBWDViUWdUa0hsQ3Z0blB5bjdQdWU1MzM2?=
- =?utf-8?B?Uis1S2RCUnpWd3hZTnBnaE1zRHBINkFua3g0SHV4WjgzaDVXbGw4T3ZTWU53?=
- =?utf-8?B?YjFqU014ZzhoRHlZQTRJTjQ1QW9WQ2lhVC8vRGpLYTNPeGl4bHhOUXM1djg3?=
- =?utf-8?B?M2taM2REVFU5REc2akpVYTB1WlJKS1Z2allTMmN4b2xUTk4yWGUydzdnODdK?=
- =?utf-8?B?RVVUS2ozLzMrNnQwanpvemhPQ2dXQ1AvSkxSQjVOWEVubUUxNVBPbzRFSDlx?=
- =?utf-8?B?M2tvL0RTYllabG53NzhWdnRaTWNrVURoOWV1emRvbkdLQnpqNVRGdGxyZGxJ?=
- =?utf-8?B?RHlWaHlGNUFHVTRiZmZKdGI5NG1raVljR05SVWVRaXF4WmhjeDNFNWozbVlU?=
- =?utf-8?B?NDVHUFJPVWUvY3BqOUNJamdHOGVpRFltWmJFcDd0ajlvTW9yOGlWakF5eTJW?=
- =?utf-8?B?UlJDN2djWG9YMU8wRzJ1OXVJT1lHNjExOGFpNzhnSzZDTWROdkxWMnRWN3BH?=
- =?utf-8?Q?Pc6qqLjCDGqDNEMZHCblkxN4fexq7PUq8UTEWSBYG0wh?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a846dca4-e81c-47c5-4cea-08dacde54ec8
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB9009.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2022 06:29:58.3831
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6RRJ1N7BFotvFTSUktsAm2RnJVhGw29/f1VpIXQojMnshe4QuDK5j7VPgz7Qq3oosBmHUIHgPAPXA5L7OCAV2A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8561
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: vKQpjn2BKh9GA1f5McJcFSWczlHBHKo-
+X-Proofpoint-GUID: vKQpjn2BKh9GA1f5McJcFSWczlHBHKo-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-24_04,2022-11-23_01,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/23/2022 10:00, Marcelo Ricardo Leitner wrote:
-> On Wed, Nov 23, 2022 at 05:44:06PM +0800, Firo Yang wrote:
-> > Recently, a customer reported that from their container whose
-> > net namespace is different to the host's init_net, they can't set
-> > the container's net.sctp.rto_max to any value smaller than
-> > init_net.sctp.rto_min.
-> > 
-> > For instance,
-> > Host:
-> > sudo sysctl net.sctp.rto_min
-> > net.sctp.rto_min = 1000
-> > 
-> > Container:
-> > echo 100 > /mnt/proc-net/sctp/rto_min
-> > echo 400 > /mnt/proc-net/sctp/rto_max
-> > echo: write error: Invalid argument
-> > 
-> > This is caused by the check made from this'commit 4f3fdf3bc59c
-> > ("sctp: add check rto_min and rto_max in sysctl")'
-> > When validating the input value, it's always referring the boundary
-> > value set for the init_net namespace.
-> > 
-> > Having container's rto_max smaller than host's init_net.sctp.rto_min
-> > does make sense. Considering that the rto between two containers on the
-> > same host is very likely smaller than it for two hosts.
-> 
-> Makes sense. And also, here, it is not using the init_net as
-> boundaries for the values themselves. I mean, rto_min in init_net
-> won't be the minimum allowed for rto_min in other netns. Ditto for
-> rto_max.
-> 
-> More below.
-> 
-> > 
-> > So to fix this problem, just referring the boundary value from the net
-> > namespace where the new input value came from shold be enough.
-> > 
-> > Signed-off-by: Firo Yang <firo.yang@suse.com>
-> > ---
-> >  net/sctp/sysctl.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/net/sctp/sysctl.c b/net/sctp/sysctl.c
-> > index b46a416787ec..e167df4dc60b 100644
-> > --- a/net/sctp/sysctl.c
-> > +++ b/net/sctp/sysctl.c
-> > @@ -429,6 +429,9 @@ static int proc_sctp_do_rto_min(struct ctl_table *ctl, int write,
-> >  	else
-> >  		tbl.data = &net->sctp.rto_min;
-> >  
-> > +	if (net != &init_net)
-> > +		max = net->sctp.rto_max;
-> 
-> This also affects other sysctls:
-> 
-> $ grep -e procname -e extra sysctl.c | grep -B1 extra.*init_net
->                 .extra1         = SYSCTL_ONE,
->                 .extra2         = &init_net.sctp.rto_max
->                 .procname       = "rto_max",
->                 .extra1         = &init_net.sctp.rto_min,
-> --
->                 .extra1         = SYSCTL_ZERO,
->                 .extra2         = &init_net.sctp.ps_retrans,
->                 .procname       = "ps_retrans",
->                 .extra1         = &init_net.sctp.pf_retrans,
-> 
-> And apparently, SCTP is the only one doing such dynamic limits. At
-> least in networking.
-> 
-> While the issue you reported is fixable this way, for ps/pf_retrans,
-> it is not, as it is using proc_dointvec_minmax() and it will simply
-> consume those values (with no netns translation).
-> 
-> So what about patching sctp_sysctl_net_register() instead, to update
-> these pointers during netns creation? Right after where it update the
-> 'data' one in there:
-> 
->         for (i = 0; table[i].data; i++)
->                 table[i].data += (char *)(&net->sctp) - (char *)&init_net.sctp;
+1. Added support to filter packets based on IP fragment.
+For IPv4 packets check for ip_flag == 0x20 (more fragment bit set).
+For IPv6 packets check for next_header == 0x2c (next_header set to
+'fragment header for IPv6')
+2. Added configuration support from both "ethtool ntuple" and "tc flower".
 
-Thanks Marcelo. It's better. So you mean something like the following?
+Signed-off-by: Suman Ghosh <sumang@marvell.com>
+---
+Changes since v2:
+- Fixed minor review comments.
 
---- a/net/sctp/sysctl.c
-+++ b/net/sctp/sysctl.c
-@@ -586,6 +586,11 @@ int sctp_sysctl_net_register(struct net *net)
-        for (i = 0; table[i].data; i++)
-                table[i].data += (char *)(&net->sctp) - (char *)&init_net.sctp;
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  4 +++
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |  2 ++
+ .../marvell/octeontx2/af/rvu_debugfs.c        |  8 ++++++
+ .../marvell/octeontx2/af/rvu_npc_fs.c         |  8 ++++++
+ .../marvell/octeontx2/nic/otx2_common.h       |  3 +++
+ .../marvell/octeontx2/nic/otx2_flows.c        | 25 ++++++++++++++++---
+ .../ethernet/marvell/octeontx2/nic/otx2_tc.c  | 25 +++++++++++++++++++
+ 7 files changed, 71 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index c7c92c7510fa..d2584ebb7a70 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -1440,6 +1440,10 @@ struct flow_msg {
+ 	u8 tc;
+ 	__be16 sport;
+ 	__be16 dport;
++	union {
++		u8 ip_flag;
++		u8 next_header;
++	};
+ };
  
-+#define SCTP_RTO_MIN_IDX 1
-+#define SCTP_RTO_MAX_IDX 2
-+       table[SCTP_RTO_MIN_IDX].extra2 = &net->sctp.rto_max;
-+       table[SCTP_RTO_MAX_IDX].extra1 = &net->sctp.rto_min;
+ struct npc_install_flow_req {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc.h b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
+index d027c23b8ef8..9beeead56d7b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/npc.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
+@@ -185,8 +185,10 @@ enum key_fields {
+ 	NPC_VLAN_ETYPE_STAG, /* 0x88A8 */
+ 	NPC_OUTER_VID,
+ 	NPC_TOS,
++	NPC_IPFRAG_IPV4,
+ 	NPC_SIP_IPV4,
+ 	NPC_DIP_IPV4,
++	NPC_IPFRAG_IPV6,
+ 	NPC_SIP_IPV6,
+ 	NPC_DIP_IPV6,
+ 	NPC_IPPROTO_TCP,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index 642e58a04da0..cdb2e6d8ffb8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -2799,6 +2799,14 @@ static void rvu_dbg_npc_mcam_show_flows(struct seq_file *s,
+ 			seq_printf(s, "%pI6 ", rule->packet.ip6dst);
+ 			seq_printf(s, "mask %pI6\n", rule->mask.ip6dst);
+ 			break;
++		case NPC_IPFRAG_IPV6:
++			seq_printf(s, "0x%x ", rule->packet.next_header);
++			seq_printf(s, "mask 0x%x\n", rule->mask.next_header);
++			break;
++		case NPC_IPFRAG_IPV4:
++			seq_printf(s, "0x%x ", rule->packet.ip_flag);
++			seq_printf(s, "mask 0x%x\n", rule->mask.ip_flag);
++			break;
+ 		case NPC_SPORT_TCP:
+ 		case NPC_SPORT_UDP:
+ 		case NPC_SPORT_SCTP:
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+index f3fecd2a4015..006beb5cf98d 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+@@ -26,8 +26,10 @@ static const char * const npc_flow_names[] = {
+ 	[NPC_VLAN_ETYPE_STAG] = "vlan ether type stag",
+ 	[NPC_OUTER_VID]	= "outer vlan id",
+ 	[NPC_TOS]	= "tos",
++	[NPC_IPFRAG_IPV4] = "fragmented IPv4 header ",
+ 	[NPC_SIP_IPV4]	= "ipv4 source ip",
+ 	[NPC_DIP_IPV4]	= "ipv4 destination ip",
++	[NPC_IPFRAG_IPV6] = "fragmented IPv6 header ",
+ 	[NPC_SIP_IPV6]	= "ipv6 source ip",
+ 	[NPC_DIP_IPV6]	= "ipv6 destination ip",
+ 	[NPC_IPPROTO_TCP] = "ip proto tcp",
+@@ -484,8 +486,10 @@ do {									       \
+ 	 * Example: Source IP is 4 bytes and starts at 12th byte of IP header
+ 	 */
+ 	NPC_SCAN_HDR(NPC_TOS, NPC_LID_LC, NPC_LT_LC_IP, 1, 1);
++	NPC_SCAN_HDR(NPC_IPFRAG_IPV4, NPC_LID_LC, NPC_LT_LC_IP, 6, 1);
+ 	NPC_SCAN_HDR(NPC_SIP_IPV4, NPC_LID_LC, NPC_LT_LC_IP, 12, 4);
+ 	NPC_SCAN_HDR(NPC_DIP_IPV4, NPC_LID_LC, NPC_LT_LC_IP, 16, 4);
++	NPC_SCAN_HDR(NPC_IPFRAG_IPV6, NPC_LID_LC, NPC_LT_LC_IP6_EXT, 6, 1);
+ 	NPC_SCAN_HDR(NPC_SIP_IPV6, NPC_LID_LC, NPC_LT_LC_IP6, 8, 16);
+ 	NPC_SCAN_HDR(NPC_DIP_IPV6, NPC_LID_LC, NPC_LT_LC_IP6, 24, 16);
+ 	NPC_SCAN_HDR(NPC_SPORT_UDP, NPC_LID_LD, NPC_LT_LD_UDP, 0, 2);
+@@ -899,6 +903,8 @@ do {									      \
+ 	NPC_WRITE_FLOW(NPC_ETYPE, etype, ntohs(pkt->etype), 0,
+ 		       ntohs(mask->etype), 0);
+ 	NPC_WRITE_FLOW(NPC_TOS, tos, pkt->tos, 0, mask->tos, 0);
++	NPC_WRITE_FLOW(NPC_IPFRAG_IPV4, ip_flag, pkt->ip_flag, 0,
++		       mask->ip_flag, 0);
+ 	NPC_WRITE_FLOW(NPC_SIP_IPV4, ip4src, ntohl(pkt->ip4src), 0,
+ 		       ntohl(mask->ip4src), 0);
+ 	NPC_WRITE_FLOW(NPC_DIP_IPV4, ip4dst, ntohl(pkt->ip4dst), 0,
+@@ -919,6 +925,8 @@ do {									      \
+ 	NPC_WRITE_FLOW(NPC_OUTER_VID, vlan_tci, ntohs(pkt->vlan_tci), 0,
+ 		       ntohs(mask->vlan_tci), 0);
+ 
++	NPC_WRITE_FLOW(NPC_IPFRAG_IPV6, next_header, pkt->next_header, 0,
++		       mask->next_header, 0);
+ 	npc_update_ipv6_flow(rvu, entry, features, pkt, mask, output, intf);
+ 	npc_update_vlan_features(rvu, entry, features, intf);
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 282db6fe3b08..99d0da7ba750 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -28,6 +28,9 @@
+ #include "otx2_devlink.h"
+ #include <rvu_trace.h>
+ 
++/* IPv4 flag more fragment bit */
++#define IPV4_FLAG_MORE				0x20
 +
-        net->sctp.sysctl_header = register_net_sysctl(net, "net/sctp", table);
-        if (net->sctp.sysctl_header == NULL) {
-                kfree(table);
+ /* PCI device IDs */
+ #define PCI_DEVID_OCTEONTX2_RVU_PF              0xA063
+ #define PCI_DEVID_OCTEONTX2_RVU_VF		0xA064
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+index 13aa79efee03..684cb8ec9f21 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+@@ -711,6 +711,11 @@ static int otx2_prepare_ipv6_flow(struct ethtool_rx_flow_spec *fsp,
+ 			       sizeof(pmask->ip6dst));
+ 			req->features |= BIT_ULL(NPC_DIP_IPV6);
+ 		}
++		if (ipv6_usr_hdr->l4_proto == IPPROTO_FRAGMENT) {
++			pkt->next_header = ipv6_usr_hdr->l4_proto;
++			pmask->next_header = ipv6_usr_mask->l4_proto;
++			req->features |= BIT_ULL(NPC_IPFRAG_IPV6);
++		}
+ 		pkt->etype = cpu_to_be16(ETH_P_IPV6);
+ 		pmask->etype = cpu_to_be16(0xFFFF);
+ 		req->features |= BIT_ULL(NPC_ETYPE);
+@@ -891,10 +896,22 @@ static int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
+ 			req->features |= BIT_ULL(NPC_OUTER_VID);
+ 		}
+ 
+-		/* Not Drop/Direct to queue but use action in default entry */
+-		if (fsp->m_ext.data[1] &&
+-		    fsp->h_ext.data[1] == cpu_to_be32(OTX2_DEFAULT_ACTION))
+-			req->op = NIX_RX_ACTION_DEFAULT;
++		if (fsp->m_ext.data[1]) {
++			if (flow_type == IP_USER_FLOW) {
++				if (be32_to_cpu(fsp->h_ext.data[1]) != IPV4_FLAG_MORE)
++					return -EINVAL;
++
++				pkt->ip_flag = be32_to_cpu(fsp->h_ext.data[1]);
++				pmask->ip_flag = be32_to_cpu(fsp->m_ext.data[1]);
++				req->features |= BIT_ULL(NPC_IPFRAG_IPV4);
++			} else if (fsp->h_ext.data[1] ==
++					cpu_to_be32(OTX2_DEFAULT_ACTION)) {
++				/* Not Drop/Direct to queue but use action
++				 * in default entry
++				 */
++				req->op = NIX_RX_ACTION_DEFAULT;
++			}
++		}
+ 	}
+ 
+ 	if (fsp->flow_type & FLOW_MAC_EXT &&
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
+index e64318c110fd..e421714524c2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
+@@ -532,6 +532,31 @@ static int otx2_tc_prepare_flow(struct otx2_nic *nic, struct otx2_tc_flow *node,
+ 			req->features |= BIT_ULL(NPC_IPPROTO_ICMP6);
+ 	}
+ 
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
++		struct flow_match_control match;
++
++		flow_rule_match_control(rule, &match);
++		if (match.mask->flags & FLOW_DIS_FIRST_FRAG) {
++			NL_SET_ERR_MSG_MOD(extack, "HW doesn't support frag first/later");
++			return -EOPNOTSUPP;
++		}
++
++		if (match.mask->flags & FLOW_DIS_IS_FRAGMENT) {
++			if (ntohs(flow_spec->etype) == ETH_P_IP) {
++				flow_spec->ip_flag = IPV4_FLAG_MORE;
++				flow_mask->ip_flag = 0xff;
++				req->features |= BIT_ULL(NPC_IPFRAG_IPV4);
++			} else if (ntohs(flow_spec->etype) == ETH_P_IPV6) {
++				flow_spec->next_header = IPPROTO_FRAGMENT;
++				flow_mask->next_header = 0xff;
++				req->features |= BIT_ULL(NPC_IPFRAG_IPV6);
++			} else {
++				NL_SET_ERR_MSG_MOD(extack, "flow-type should be either IPv4 and IPv6");
++				return -EOPNOTSUPP;
++			}
++		}
++	}
++
+ 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
+ 		struct flow_match_eth_addrs match;
+ 
+-- 
+2.25.1
 
-
-> 
-> Thanks,
-> Marcelo
-> 
-> > +
-> >  	ret = proc_dointvec(&tbl, write, buffer, lenp, ppos);
-> >  	if (write && ret == 0) {
-> >  		if (new_value > max || new_value < min)
-> > @@ -457,6 +460,9 @@ static int proc_sctp_do_rto_max(struct ctl_table *ctl, int write,
-> >  	else
-> >  		tbl.data = &net->sctp.rto_max;
-> >  
-> > +	if (net != &init_net)
-> > +		min = net->sctp.rto_min;
-> > +
-> >  	ret = proc_dointvec(&tbl, write, buffer, lenp, ppos);
-> >  	if (write && ret == 0) {
-> >  		if (new_value > max || new_value < min)
-> > -- 
-> > 2.26.2
-> > 
