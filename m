@@ -2,248 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C10663740E
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:35:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38058637425
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:37:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbiKXIft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 03:35:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58778 "EHLO
+        id S229790AbiKXIhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 03:37:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229906AbiKXIfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:35:48 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F659D1C14;
-        Thu, 24 Nov 2022 00:35:45 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AO7KI6F014283;
-        Thu, 24 Nov 2022 08:35:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=xe2Lmn7xfYMXtTGnCdTB8Ubg/Bmgko6jgQwiTauVbiM=;
- b=E6YTwIGrEZ5yJxMVt0rSkXkMAauODuhoxIQ+g22+FjNiQ6se8nV0dVqM4NAdfX1x8UyF
- pBybGh/hd2Ze3/8vjJFb08X1DnIgJICr7SORVaIdmQD9ZeulVhhimtQISW8YLx+SEVHO
- /izQQCEvpUHb7Hud+ns2E/YnFZ4K3jNjr1qD5WdVZxU7LOv48H+2S0en8+113qg6rcpn
- BVHGe1oiBKvmcRF9WwfKCIkLbCs1SfjKP2SqCxC/SCSM6FvA+/dlYAY00wUyUZLMAiTb
- 2a7sd7ZUz86k5041ldmyP42N8L0/ZZKs/+8ZrLot8kYLu+syCzTrFktxFwXwOMB20vxO DQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m1153m90q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Nov 2022 08:35:40 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2AO8ZeVv031231;
-        Thu, 24 Nov 2022 08:35:40 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m1153m8ya-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Nov 2022 08:35:40 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2AO8ZNTt000909;
-        Thu, 24 Nov 2022 08:35:38 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04fra.de.ibm.com with ESMTP id 3kxps8wpby-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Nov 2022 08:35:37 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2AO8ZYR354919666
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Nov 2022 08:35:34 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9596711C04A;
-        Thu, 24 Nov 2022 08:35:34 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2B22111C050;
-        Thu, 24 Nov 2022 08:35:34 +0000 (GMT)
-Received: from [9.171.82.62] (unknown [9.171.82.62])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 24 Nov 2022 08:35:34 +0000 (GMT)
-Message-ID: <5930673b-3d1f-b0d1-7cc5-b4e3bbd3bcd2@linux.ibm.com>
-Date:   Thu, 24 Nov 2022 09:35:33 +0100
+        with ESMTP id S229536AbiKXIhS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:37:18 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69DDF72DA
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 00:37:11 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1oy7j6-0008NG-9d; Thu, 24 Nov 2022 09:36:56 +0100
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1oy7j5-0006W1-Tq; Thu, 24 Nov 2022 09:36:55 +0100
+Date:   Thu, 24 Nov 2022 09:36:55 +0100
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     Bernie Huang <phhuang@realtek.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Viktor Petrenko <g0000ga@gmail.com>,
+        Neo Jou <neojou@gmail.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Alexander Hochbaum <alex@appudo.com>,
+        Da Xue <da@libre.computer>
+Subject: Re: [PATCH v3 00/11] RTW88: Add support for USB variants
+Message-ID: <20221124083655.GF29978@pengutronix.de>
+References: <20221122145226.4065843-1-s.hauer@pengutronix.de>
+ <20221122145527.GA29978@pengutronix.de>
+ <015051d9a5b94bbca5135c58d2cfebf3@realtek.com>
+ <20221124082158.GE29978@pengutronix.de>
+ <be8781b95e934617b33f338c84665677@realtek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next v5 00/10] optimize the parallelism of SMC-R
- connections
-To:     "D.Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1669218890-115854-1-git-send-email-alibuda@linux.alibaba.com>
-From:   Jan Karcher <jaka@linux.ibm.com>
-Organization: IBM - Network Linux on Z
-In-Reply-To: <1669218890-115854-1-git-send-email-alibuda@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: EvBJ7KAYXt069-6uT2yu8DiLeXPmdSGC
-X-Proofpoint-GUID: di6WJ6bs7f4PgY-6Gkp7DWNLG5Ls_6_u
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-24_05,2022-11-23_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- malwarescore=0 impostorscore=0 lowpriorityscore=0 bulkscore=0 phishscore=0
- adultscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=999 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2211240067
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be8781b95e934617b33f338c84665677@realtek.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Nov 24, 2022 at 08:26:23AM +0000, Ping-Ke Shih wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Sascha Hauer <s.hauer@pengutronix.de>
+> > Sent: Thursday, November 24, 2022 4:22 PM
+> > To: Ping-Ke Shih <pkshih@realtek.com>
+> > Cc: Bernie Huang <phhuang@realtek.com>; linux-wireless@vger.kernel.org; Hans Ulli Kroll
+> > <linux@ulli-kroll.de>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>; netdev@vger.kernel.org;
+> > Kalle Valo <kvalo@kernel.org>; Yan-Hsuan Chuang <tony0620emma@gmail.com>; linux-kernel@vger.kernel.org;
+> > Viktor Petrenko <g0000ga@gmail.com>; Neo Jou <neojou@gmail.com>; kernel@pengutronix.de; Johannes Berg
+> > <johannes@sipsolutions.net>; Alexander Hochbaum <alex@appudo.com>; Da Xue <da@libre.computer>
+> > Subject: Re: [PATCH v3 00/11] RTW88: Add support for USB variants
+> > 
+> > On Thu, Nov 24, 2022 at 06:48:23AM +0000, Ping-Ke Shih wrote:
+> > >
+> > > > -----Original Message-----
+> > > > From: Sascha Hauer <s.hauer@pengutronix.de>
+> > > > Sent: Tuesday, November 22, 2022 10:55 PM
+> > > > To: Bernie Huang <phhuang@realtek.com>
+> > > > Cc: linux-wireless@vger.kernel.org; Ping-Ke Shih <pkshih@realtek.com>; Hans Ulli Kroll
+> > > > <linux@ulli-kroll.de>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>;
+> > netdev@vger.kernel.org;
+> > > > Kalle Valo <kvalo@kernel.org>; Yan-Hsuan Chuang <tony0620emma@gmail.com>;
+> > linux-kernel@vger.kernel.org;
+> > > > Viktor Petrenko <g0000ga@gmail.com>; Neo Jou <neojou@gmail.com>; Bernie Huang <phhuang@realtek.com>;
+> > > > kernel@pengutronix.de; Johannes Berg <johannes@sipsolutions.net>; Alexander Hochbaum
+> > <alex@appudo.com>;
+> > > > Da Xue <da@libre.computer>
+> > > > Subject: Re: [PATCH v3 00/11] RTW88: Add support for USB variants
+> > > >
+> > > > On Tue, Nov 22, 2022 at 03:52:15PM +0100, Sascha Hauer wrote:
+> > > > > This is the third round of adding support for the USB variants to the
+> > > > > RTW88 driver. There are a few changes to the last version which make it
+> > > > > worth looking at this version.
+> > > > >
+> > > > > First of all RTL8723du and RTL8821cu are tested working now. The issue
+> > > > > here was that the txdesc checksum calculation was wrong. I found the
+> > > > > correct calculation in various downstream drivers found on github.
+> > > > >
+> > > > > The second big issue was that TX packet aggregation was wrong. When
+> > > > > aggregating packets each packet start has to be aligned to eight bytes.
+> > > > > The necessary alignment was added to the total URB length before
+> > > > > checking if there is another packet to aggregate, so the URB length
+> > > > > included that padding after the last packet, which is wrong.  Fixing
+> > > > > this makes the driver work much more reliably.
+> > > > >
+> > > > > I added all people to Cc: who showed interest in this driver and I want
+> > > > > to welcome you for testing and reviewing.
+> > > >
+> > > > There still is a problem with the RTL8822cu chipset I have here.  When
+> > > > using NetworkManager I immediately lose the connection to the AP after
+> > > > it has been connected:
+> > > >
+> > > > [  376.213846] wlan0: authenticate with 76:83:c2:ce:81:b1
+> > > > [  380.085463] wlan0: send auth to 76:83:c2:ce:81:b1 (try 1/3)
+> > > > [  380.091446] wlan0: authenticated
+> > > > [  380.108864] wlan0: associate with 76:83:c2:ce:81:b1 (try 1/3)
+> > > > [  380.136448] wlan0: RX AssocResp from 76:83:c2:ce:81:b1 (capab=0x1411 status=0 aid=2)
+> > > > [  380.202955] wlan0: associated
+> > > > [  380.268140] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+> > > > [  380.275328] wlan0: Connection to AP 76:83:c2:ce:81:b1 lost
+> > > >
+> > > > That doesn't happen when using plain wpa_supplicant. This seems to go
+> > > > down to cd96e22bc1da ("rtw88: add beacon filter support"). After being
+> > > > connected I get a BCN_FILTER_CONNECTION_LOSS beacon. Plain
+> > > > wpa_supplicant seems to go another code patch and doesn't activate
+> > > > connection quality monitoring.
+> > > >
+> > > > The connection to the AP works fluently also with NetworkManager though
+> > > > when I just ignore the BCN_FILTER_CONNECTION_LOSS beacon.
+> > > >
+> > > > Any idea what may be wrong here?
+> > > >
+> > >
+> > > Please reference to below patch to see if it can work to you.
+> > >
+> > > https://lore.kernel.org/linux-wireless/20221124064442.28042-1-pkshih@realtek.com/T/#u
+> > 
+> > Great! That solves this issue \o/
+> > 
+> 
+> Do you mind to add "Tested-by:" tag to the patch?  :-)
 
+You should already find it in your inbox. Thank you very much for the
+fast response :)
 
-On 23/11/2022 16:54, D.Wythe wrote:
-> From: "D.Wythe" <alibuda@linux.alibaba.com>
-> 
-> This patch set attempts to optimize the parallelism of SMC-R connections,
-> mainly to reduce unnecessary blocking on locks, and to fix exceptions that
-> occur after thoses optimization.
-> 
-> According to Off-CPU graph, SMC worker's off-CPU as that:
-> 
-> smc_close_passive_work                  (1.09%)
->          smcr_buf_unuse                  (1.08%)
->                  smc_llc_flow_initiate   (1.02%)
-> 
-> smc_listen_work                         (48.17%)
->          __mutex_lock.isra.11            (47.96%)
-> 
-> 
-> An ideal SMC-R connection process should only block on the IO events
-> of the network, but it's quite clear that the SMC-R connection now is
-> queued on the lock most of the time.
-> 
-> The goal of this patchset is to achieve our ideal situation where
-> network IO events are blocked for the majority of the connection lifetime.
-> 
-> There are three big locks here:
-> 
-> 1. smc_client_lgr_pending & smc_server_lgr_pending
-> 
-> 2. llc_conf_mutex
-> 
-> 3. rmbs_lock & sndbufs_lock
-> 
-> And an implementation issue:
-> 
-> 1. confirm/delete rkey msg can't be sent concurrently while
-> protocol allows indeed.
-> 
-> Unfortunately,The above problems together affect the parallelism of
-> SMC-R connection. If any of them are not solved. our goal cannot
-> be achieved.
-> 
-> After this patch set, we can get a quite ideal off-CPU graph as
-> following:
-> 
-> smc_close_passive_work                                  (41.58%)
->          smcr_buf_unuse                                  (41.57%)
->                  smc_llc_do_delete_rkey                  (41.57%)
-> 
-> smc_listen_work                                         (39.10%)
->          smc_clc_wait_msg                                (13.18%)
->                  tcp_recvmsg_locked                      (13.18)
->          smc_listen_find_device                          (25.87%)
->                  smcr_lgr_reg_rmbs                       (25.87%)
->                          smc_llc_do_confirm_rkey         (25.87%)
-> 
-> We can see that most of the waiting times are waiting for network IO
-> events. This also has a certain performance improvement on our
-> short-lived conenction wrk/nginx benchmark test:
-> 
-> +--------------+------+------+-------+--------+------+--------+
-> |conns/qps     |c4    | c8   |  c16  |  c32   | c64  |  c200  |
-> +--------------+------+------+-------+--------+------+--------+
-> |SMC-R before  |9.7k  | 10k  |  10k  |  9.9k  | 9.1k |  8.9k  |
-> +--------------+------+------+-------+--------+------+--------+
-> |SMC-R now     |13k   | 19k  |  18k  |  16k   | 15k  |  12k   |
-> +--------------+------+------+-------+--------+------+--------+
-> |TCP           |15k   | 35k  |  51k  |  80k   | 100k |  162k  |
-> +--------------+------+------+-------+--------+------+--------+
-> 
-> The reason why the benefit is not obvious after the number of connections
-> has increased dues to workqueue. If we try to change workqueue to UNBOUND,
-> we can obtain at least 4-5 times performance improvement, reach up to half
-> of TCP. However, this is not an elegant solution, the optimization of it
-> will be much more complicated. But in any case, we will submit relevant
-> optimization patches as soon as possible.
-> 
-> Please note that the premise here is that the lock related problem
-> must be solved first, otherwise, no matter how we optimize the workqueue,
-> there won't be much improvement.
-> 
-> Because there are a lot of related changes to the code, if you have
-> any questions or suggestions, please let me know.
-> 
-> Thanks
-> D. Wythe
+Sascha
 
-Thank you for your submission.
-
-I'm going to test the new patch. Please give us some time to do so.
-
-Thank you
-- Jan
-> 
-> v1 -> v2:
-> 
-> 1. Fix panic in SMC-D scenario
-> 2. Fix lnkc related hashfn calculation exception, caused by operator
-> priority
-> 3. Only wake up one connection if the lnk is not active
-> 4. Delete obsolete unlock logic in smc_listen_work()
-> 5. PATCH format, do Reverse Christmas tree
-> 6. PATCH format, change all xxx_lnk_xxx function to xxx_link_xxx
-> 7. PATCH format, add correct fix tag for the patches for fixes.
-> 8. PATCH format, fix some spelling error
-> 9. PATCH format, rename slow to do_slow
-> 
-> v2 -> v3:
-> 
-> 1. add SMC-D support, remove the concept of link cluster since SMC-D has
-> no link at all. Replace it by lgr decision maker, who provides suggestions
-> to SMC-D and SMC-R on whether to create new link group.
-> 
-> 2. Fix the corruption problem described by PATCH 'fix application
-> data exception' on SMC-D.
-> 
-> v3 -> v4:
-> 
-> 1. Fix panic caused by uninitialization map.
-> 
-> v4 -> v5:
-> 
-> 1. Make SMC-D buf creation be serial to avoid Potential error
-> 2. Add a flag to synchronize the success of the first contact
-> with the ready of the link group, including SMC-D and SMC-R.
-> 3. Fixed possible reference count leak in smc_llc_flow_start().
-> 4. reorder the patch, make bugfix PATCH be ahead.
-> 
-> D. Wythe (10):
->    net/smc: Fix potential panic dues to unprotected
->      smc_llc_srv_add_link()
->    net/smc: fix application data exception
->    net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
->    net/smc: remove locks smc_client_lgr_pending and
->      smc_server_lgr_pending
->    net/smc: allow confirm/delete rkey response deliver multiplex
->    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
->    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
->    net/smc: use read semaphores to reduce unnecessary blocking in
->      smc_buf_create() & smcr_buf_unuse()
->    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
->    net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
-> 
->   net/smc/af_smc.c   |  74 ++++----
->   net/smc/smc_core.c | 541 +++++++++++++++++++++++++++++++++++++++++++++++------
->   net/smc/smc_core.h |  53 +++++-
->   net/smc/smc_llc.c  | 285 ++++++++++++++++++++--------
->   net/smc/smc_llc.h  |   6 +
->   net/smc/smc_wr.c   |  10 -
->   net/smc/smc_wr.h   |  10 +
->   7 files changed, 801 insertions(+), 178 deletions(-)
-> 
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
