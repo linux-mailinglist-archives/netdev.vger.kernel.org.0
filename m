@@ -2,171 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA3E637B8D
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 15:40:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F1E9637B90
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 15:40:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbiKXOkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 09:40:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44192 "EHLO
+        id S229590AbiKXOkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 09:40:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiKXOkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 09:40:18 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330AFC5B60
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 06:40:17 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oyDOR-0001xM-ET; Thu, 24 Nov 2022 15:39:59 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:5507:4aba:5e0a:4c27])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 9705A12864A;
-        Thu, 24 Nov 2022 14:39:58 +0000 (UTC)
-Date:   Thu, 24 Nov 2022 15:39:57 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     haibo.chen@nxp.com
-Cc:     wg@grandegger.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/3] can: flexcan: add auto stop mode for IMX93 to
- support wakeup
-Message-ID: <20221124143957.fr5fojvu3fa5vhnj@pengutronix.de>
-References: <1669116752-4260-1-git-send-email-haibo.chen@nxp.com>
+        with ESMTP id S229576AbiKXOkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 09:40:33 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E602A6AEFF
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 06:40:31 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id io19so1612918plb.8
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 06:40:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=eoWCpd+4bmCnUHawZ6JSeu6lu/h4p5oZ56Z1Bd/uZb8=;
+        b=oXKS7j8hbZb6hCU/pQEueRPPUe+DtbMLZtT/BWR2w3do0Rv0RB+fymNQuuhFRtxSMz
+         lwlbql/f4CR1HBcptJzl4wpZhlt4ifTjD7xkSUXEUDRym4D5XEGExW8i1g0mhK772mps
+         Lmvsy3zEd80VjGYA2vxVrktV+nSn+jovwXNX0ZoKMQ2koI0Y23xDGof1R2Q8a2ss9aBv
+         UACvpKq+qUQMyhtLaNshFBBEmcIILe2nh4ErAMXkX7azxuw2cRUske8nHSPML4EeFbXX
+         vVqu2yO7ILyE8OgxF/46l0bB1f3irHnGax97ZAQb07RXdF5CgOaTzlDXPoOEBAO9IbCB
+         rzgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eoWCpd+4bmCnUHawZ6JSeu6lu/h4p5oZ56Z1Bd/uZb8=;
+        b=Z9YS+ul7R6qR/2EpYBuPxPWeAFV4fwU6ccuku5EYnqNnoqLr3tTmBHw1iy1vYP5RJS
+         47nAA/5mQdqhf1F1nWq2Z6ftaiISMigyx8NTo5mB1zxckE5I+r0PkwMDTQV7/j20DHa9
+         BWqKIZgivpsZ5wFcO6Wdf48yg4Z6eq3wIFvtdYXFTXyg2x8P8jo9Tqxmultt2mx7E2EB
+         1Y1e1+P6AHIaxmzRaZj7AaLghLDjwjznHGRyDXwYnaQy8tPKxaleUOZuOGq379e+eFV0
+         2Y2N9bso3RfGwS+HWtQ034i2Cmh3gs5zehvgI1CIEPo5an+bo68sYv8/77D+//fRFKoo
+         aYdw==
+X-Gm-Message-State: ANoB5pmEg6Est0AWBcxn6nn1YNSVmn9JwRiEvyZZ9Y20JReWBcfnpFQR
+        QnoC2tRmzbATNSJPEEaBqrvmW5V+dFwrf8gJRiJbbUqigbM=
+X-Google-Smtp-Source: AA0mqf40FDaGfPRo3E/QOrmOz4zPhPFQiyv9Q+ZvjZOdsk1ej/1kmtd+erScnn7n5c8HOW29BvbiK068PfReSsYJ/oo=
+X-Received: by 2002:a17:902:ce90:b0:186:b46d:da5e with SMTP id
+ f16-20020a170902ce9000b00186b46dda5emr14115417plg.92.1669300831310; Thu, 24
+ Nov 2022 06:40:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="yhn2qnplluft6atz"
-Content-Disposition: inline
-In-Reply-To: <1669116752-4260-1-git-send-email-haibo.chen@nxp.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <CAOiHx==ddZr6mvvbzgoAwwhJW76qGNVOcNsTG-6m79Ch+=aA5Q@mail.gmail.com>
+ <Y39me56NhhPYewYK@shredder> <CAOiHx=kRew115+43rkPioe=wWNg1TNx5u9F3+frNkOK1M9PySw@mail.gmail.com>
+In-Reply-To: <CAOiHx=kRew115+43rkPioe=wWNg1TNx5u9F3+frNkOK1M9PySw@mail.gmail.com>
+From:   Jonas Gorski <jonas.gorski@gmail.com>
+Date:   Thu, 24 Nov 2022 15:40:19 +0100
+Message-ID: <CAOiHx=n2O1m24ZbMRbfD1=PCs-yYajpjNWR1y1oBP8Rz-8wA5A@mail.gmail.com>
+Subject: Re: RTM_DELROUTE not sent anymore when deleting (last) nexthop of
+ routes in 6.1
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 24 Nov 2022 at 15:15, Jonas Gorski <jonas.gorski@gmail.com> wrote:
+>
+> Hi Ido,
+>
+> On Thu, 24 Nov 2022 at 13:41, Ido Schimmel <idosch@idosch.org> wrote:
+> >
+> > On Thu, Nov 24, 2022 at 10:20:00AM +0100, Jonas Gorski wrote:
+> > > Hello,
+> > >
+> > > when an IPv4 route gets removed because its nexthop was deleted, the
+> > > kernel does not send a RTM_DELROUTE netlink notifications anymore in
+> > > 6.1. A bisect lead me to 61b91eb33a69 ("ipv4: Handle attempt to delete
+> > > multipath route when fib_info contains an nh reference"), and
+> > > reverting it makes it work again.
+> > >
+> >
+> > Are you running an upstream kernel?
+>
+> Okay, after having a second look, you are right, and I got myself
+> confused by IPv6 generating RTM_DELROUTE notifications, but which is
+> besides the point.
+>
+> The point where it fails is that FRR tries to delete its route(s), and
+> fails to do so with this commit applied (=> RTM_DELROUTE goes
+> missing), then does the RTM_DELNEXTHOP.
+>
+> So while there is indeed no RTM_DELROUTE generated in response to the
+> kernel, it was generated when FRR was successfully deleting its routes
+> before.
+>
+> Not sure if this already qualifies as breaking userspace though, but
+> it's definitely something that used to work with 6.0 and before, and
+> does not work anymore now.
+>
+> The error in FRR log is:
+>
+> [YXPF5-B2CE0] netlink_route_multipath_msg_encode: RTM_DELROUTE
+> 10.0.1.0/24 vrf 0(254)
+> [HYEHE-CQZ9G] nl_batch_send: netlink-dp (NS 0), batch size=44, msg cnt=1
+> [XS99C-X3KS5] netlink-dp (NS 0): error: No such process
+> type=RTM_DELROUTE(25), seq=22, pid=2419702167
+>
+> with the revert it succeeds.
+>
+> I'll see if I can get a better idea of the actual netlink message sent.
 
---yhn2qnplluft6atz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Okay, found the knob:
 
-On 22.11.2022 19:32:30, haibo.chen@nxp.com wrote:
-> From: Haibo Chen <haibo.chen@nxp.com>
->=20
-> IMX93 do not contain a GPR to config the stop mode, it will set
-> the flexcan into stop mode automatically once the ARM core go
-> into low power mode (WFI instruct) and gate off the flexcan
-> related clock automatically. But to let these logic work as
-> expect, before ARM core go into low power mode, need to make
-> sure the flexcan related clock keep on.
->=20
-> To support stop mode and wakeup feature on imx93, this patch
-> add a new fsl_imx93_devtype_data to separate from imx8mp.
->=20
-> Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-> ---
->  drivers/net/can/flexcan/flexcan-core.c | 37 +++++++++++++++++++++++---
->  drivers/net/can/flexcan/flexcan.h      |  2 ++
->  2 files changed, 36 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/net/can/flexcan/flexcan-core.c b/drivers/net/can/fle=
-xcan/flexcan-core.c
-> index 9bdadd716f4e..0aeff34e5ae1 100644
-> --- a/drivers/net/can/flexcan/flexcan-core.c
-> +++ b/drivers/net/can/flexcan/flexcan-core.c
-> @@ -345,6 +345,15 @@ static struct flexcan_devtype_data fsl_imx8mp_devtyp=
-e_data =3D {
->  		FLEXCAN_QUIRK_SUPPORT_RX_MAILBOX_RTR,
->  };
-> =20
-> +static struct flexcan_devtype_data fsl_imx93_devtype_data =3D {
-> +	.quirks =3D FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS=
- |
-> +		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
-> +		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_AUTO_STOP_MODE |
-> +		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SUPPORT_ECC |
-> +		FLEXCAN_QUIRK_SUPPORT_RX_MAILBOX |
-> +		FLEXCAN_QUIRK_SUPPORT_RX_MAILBOX_RTR,
-> +};
-> +
->  static const struct flexcan_devtype_data fsl_vf610_devtype_data =3D {
->  	.quirks =3D FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS=
- |
->  		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
-> @@ -532,9 +541,14 @@ static inline int flexcan_enter_stop_mode(struct fle=
-xcan_priv *priv)
->  		ret =3D flexcan_stop_mode_enable_scfw(priv, true);
->  		if (ret < 0)
->  			return ret;
-> -	} else {
-> +	} else if (priv->devtype_data.quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_GP=
-R) {
->  		regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
->  				   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
-> +	} else if (priv->devtype_data.quirks & FLEXCAN_QUIRK_AUTO_STOP_MODE) {
-> +		/* For the auto stop mode, software do nothing, hardware will cover
-> +		 * all the operation automatically after system go into low power mode.
-> +		 */
-> +		return 0;
->  	}
-> =20
->  	return flexcan_low_power_enter_ack(priv);
-> @@ -551,7 +565,7 @@ static inline int flexcan_exit_stop_mode(struct flexc=
-an_priv *priv)
->  		ret =3D flexcan_stop_mode_enable_scfw(priv, false);
->  		if (ret < 0)
->  			return ret;
-> -	} else {
-> +	} else if (priv->devtype_data.quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_GP=
-R) {
->  		regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
->  				   1 << priv->stm.req_bit, 0);
->  	}
-> @@ -560,6 +574,12 @@ static inline int flexcan_exit_stop_mode(struct flex=
-can_priv *priv)
->  	reg_mcr &=3D ~FLEXCAN_MCR_SLF_WAK;
->  	priv->write(reg_mcr, &regs->mcr);
-> =20
-> +	/* For the auto stop mode, hardware will exist stop mode
-                                                 ^^^^^
-                                                 exit?
+nlmsghdr [len=44 type=(25) DELROUTE flags=(0x0401)
+{REQUEST,(ATOMIC|CREATE)} seq=22 pid=2185212923]
+  rtmsg [family=(2) AF_INET dstlen=24 srclen=0 tos=0 table=254
+protocol=(186) UNKNOWN scope=(0) UNIVERSE type=(0) UNSPEC flags=0x0000
+{}]
+    rta [len=8 (payload=4) type=(1) DST]
+      10.0.1.0
+    rta [len=8 (payload=4) type=(6) PRIORITY]
+      20
+netlink-dp (NS 0): error: No such process type=RTM_DELROUTE(25),
+seq=22, pid=2185212923
 
-No need to resend.
+The route was created via
 
-Marc
+nlmsghdr [len=52 type=(24) NEWROUTE flags=(0x0501)
+{REQUEST,DUMP,(ROOT|REPLACE|CAPPED),(ATOMIC|CREATE)} seq=18
+pid=2185212923]
+ rtmsg [family=(2) AF_INET dstlen=24 srclen=0 tos=0 table=254
+protocol=(186) UNKNOWN scope=(0) UNIVERSE type=(1) UNICAST
+flags=0x0000 {}]
+    rta [len=8 (payload=4) type=(1) DST]
+      10.0.1.0
+    rta [len=8 (payload=4) type=(6) PRIORITY]
+       20
+     rta [len=8 (payload=4) type=(30) NH_ID]
+     18
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+and for completion the nexthop is created via:
 
---yhn2qnplluft6atz
-Content-Type: application/pgp-signature; name="signature.asc"
+nlmsghdr [len=48 type=(104) NEWNEXTHOP flags=(0x0501)
+{REQUEST,DUMP,(ROOT|REPLACE|CAPPED),(ATOMIC|CREATE)} seq=17
+pid=2185212923]
+   nhm [family=(2) AF_INET scope=(0) UNIVERSE protocol=(11) ZEBRA
+flags=0x00000000 {}]
+    rta [len=8 (payload=4) type=(1) ID]
+      18
+    rta [len=8 (payload=4) type=(6) GATEWAY]
+      10.0.0.1
+    rta [len=8 (payload=4) type=(5) OIF]
+      62
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmN/gjoACgkQrX5LkNig
-011sXQf+MCoRIn0fsXC1+erxc4xdoDvO1PaSDE7V5RT0iSFDX8tNKFew3uSnzPTi
-SPTuiIiEGy0SsJB108lLBxw+sS7x4+3ybV10clPL9Q4jEOgTJPthr2Iz8g8YQem6
-17gmmNv0kVyVSwGw1frreiuaxQ2fOaccMrr0Cgns2K8CzFpnyxQkIHDPM75L9IGw
-W6uOh1lFWYwW7W3RqZWruGb2QtBMVJFjKc0MTJO8Mqfiuo+EXAogIjbEAdKpJM9r
-9zHXgJrrN8m9xPwXF3zBYd1SnY/c0Fzy5xvVllbjVGKFIPfG2F5CCCLc6B/fYgml
-Cucg2bGPSmkvT9RDnHppJ7qyGfBScQ==
-=31C3
------END PGP SIGNATURE-----
-
---yhn2qnplluft6atz--
+Regards
+Jonas
