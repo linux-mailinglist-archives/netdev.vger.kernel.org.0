@@ -2,70 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D02C96373D0
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:22:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 647D96373D8
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:27:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbiKXIWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 03:22:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48760 "EHLO
+        id S229626AbiKXI1C convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 24 Nov 2022 03:27:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiKXIWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:22:40 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D26CE25;
-        Thu, 24 Nov 2022 00:22:38 -0800 (PST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669278157;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=s+nIC3djla2eCKjxSXpIFMphkhy9KsLIp+C+/UiDTis=;
-        b=WnnDkWqesDTvoW0XJWpjXbyMRQFAJEH0gsTD+Vx8b1Veh8xDVHTxzRy23zLdxjs62rP2q+
-        aproFYAw5kBxG/hlnkTjE/1pKUe6sb+MIJIp9SeTtpSQc8QSs8HrlJNYxJ0DartOx91aW6
-        Hm1e5Std3/+gkfZrVxCE6p+qcOXqmRMEYHIgXk1OCe+32RJnxT3njZOn8pW/TCVZ6W0JU4
-        EBYgElc67FYlN1woXMHsxmeS7Vq+n7FRNRallduWcfiBM4PckOrDFFJHrSVRFKdWdua9O3
-        mFYlNUTiMm5ZYNseMfjsylX0PIjnLbgfdXakYNH3Es3GDkNGDLkZzvty7BklwQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669278157;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=s+nIC3djla2eCKjxSXpIFMphkhy9KsLIp+C+/UiDTis=;
-        b=KLKAKLpPJ0MEuWXdektcZAmtHEhsjdXjfi0MPD+kxV+TF5H5O7xH61chkV/YtffDHzfx6T
-        IrK1S6d26MYxYxAg==
-To:     Anna-Maria Behnsen <anna-maria@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: [patch V3.1 12/17] timers: Silently ignore timers with a NULL function
-In-Reply-To: <87zgcgdau1.ffs@tglx>
-References: <20221123201306.823305113@linutronix.de>
- <20221123201625.135055320@linutronix.de>
- <644695b9-f343-7fb7-ed8e-763e5fe3d158@linutronix.de> <87zgcgdau1.ffs@tglx>
-Date:   Thu, 24 Nov 2022 09:22:36 +0100
-Message-ID: <87wn7kdann.ffs@tglx>
+        with ESMTP id S229480AbiKXI1B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:27:01 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38F10DDFBE;
+        Thu, 24 Nov 2022 00:27:00 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2AO8Pe8Z2026323, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2AO8Pe8Z2026323
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 24 Nov 2022 16:25:40 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Thu, 24 Nov 2022 16:26:23 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 24 Nov 2022 16:26:23 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Thu, 24 Nov 2022 16:26:23 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Sascha Hauer <s.hauer@pengutronix.de>
+CC:     Bernie Huang <phhuang@realtek.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Viktor Petrenko" <g0000ga@gmail.com>, Neo Jou <neojou@gmail.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Alexander Hochbaum <alex@appudo.com>,
+        Da Xue <da@libre.computer>
+Subject: RE: [PATCH v3 00/11] RTW88: Add support for USB variants
+Thread-Topic: [PATCH v3 00/11] RTW88: Add support for USB variants
+Thread-Index: AQHY/oI6X+HeQwQE6E+5y32AEGOa3q5KgcmAgAMh88D//5TGAIAAhqEg
+Date:   Thu, 24 Nov 2022 08:26:23 +0000
+Message-ID: <be8781b95e934617b33f338c84665677@realtek.com>
+References: <20221122145226.4065843-1-s.hauer@pengutronix.de>
+ <20221122145527.GA29978@pengutronix.de>
+ <015051d9a5b94bbca5135c58d2cfebf3@realtek.com>
+ <20221124082158.GE29978@pengutronix.de>
+In-Reply-To: <20221124082158.GE29978@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/11/24_=3F=3F_06:24:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,179 +82,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tearing down timers which have circular dependencies to other
-functionality, e.g. workqueues, where the timer can schedule work and work
-can arm timers, is not trivial.
 
-In those cases it is desired to shutdown the timer in a way which prevents
-rearming of the timer. The mechanism to do so is to set timer->function to
-NULL and use this as an indicator for the timer arming functions to ignore
-the (re)arm request.
 
-In preparation for that replace the warnings in the relevant code paths
-with checks for timer->function == NULL. If the pointer is NULL, then
-discard the rearm request silently.
+> -----Original Message-----
+> From: Sascha Hauer <s.hauer@pengutronix.de>
+> Sent: Thursday, November 24, 2022 4:22 PM
+> To: Ping-Ke Shih <pkshih@realtek.com>
+> Cc: Bernie Huang <phhuang@realtek.com>; linux-wireless@vger.kernel.org; Hans Ulli Kroll
+> <linux@ulli-kroll.de>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>; netdev@vger.kernel.org;
+> Kalle Valo <kvalo@kernel.org>; Yan-Hsuan Chuang <tony0620emma@gmail.com>; linux-kernel@vger.kernel.org;
+> Viktor Petrenko <g0000ga@gmail.com>; Neo Jou <neojou@gmail.com>; kernel@pengutronix.de; Johannes Berg
+> <johannes@sipsolutions.net>; Alexander Hochbaum <alex@appudo.com>; Da Xue <da@libre.computer>
+> Subject: Re: [PATCH v3 00/11] RTW88: Add support for USB variants
+> 
+> On Thu, Nov 24, 2022 at 06:48:23AM +0000, Ping-Ke Shih wrote:
+> >
+> > > -----Original Message-----
+> > > From: Sascha Hauer <s.hauer@pengutronix.de>
+> > > Sent: Tuesday, November 22, 2022 10:55 PM
+> > > To: Bernie Huang <phhuang@realtek.com>
+> > > Cc: linux-wireless@vger.kernel.org; Ping-Ke Shih <pkshih@realtek.com>; Hans Ulli Kroll
+> > > <linux@ulli-kroll.de>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>;
+> netdev@vger.kernel.org;
+> > > Kalle Valo <kvalo@kernel.org>; Yan-Hsuan Chuang <tony0620emma@gmail.com>;
+> linux-kernel@vger.kernel.org;
+> > > Viktor Petrenko <g0000ga@gmail.com>; Neo Jou <neojou@gmail.com>; Bernie Huang <phhuang@realtek.com>;
+> > > kernel@pengutronix.de; Johannes Berg <johannes@sipsolutions.net>; Alexander Hochbaum
+> <alex@appudo.com>;
+> > > Da Xue <da@libre.computer>
+> > > Subject: Re: [PATCH v3 00/11] RTW88: Add support for USB variants
+> > >
+> > > On Tue, Nov 22, 2022 at 03:52:15PM +0100, Sascha Hauer wrote:
+> > > > This is the third round of adding support for the USB variants to the
+> > > > RTW88 driver. There are a few changes to the last version which make it
+> > > > worth looking at this version.
+> > > >
+> > > > First of all RTL8723du and RTL8821cu are tested working now. The issue
+> > > > here was that the txdesc checksum calculation was wrong. I found the
+> > > > correct calculation in various downstream drivers found on github.
+> > > >
+> > > > The second big issue was that TX packet aggregation was wrong. When
+> > > > aggregating packets each packet start has to be aligned to eight bytes.
+> > > > The necessary alignment was added to the total URB length before
+> > > > checking if there is another packet to aggregate, so the URB length
+> > > > included that padding after the last packet, which is wrong.  Fixing
+> > > > this makes the driver work much more reliably.
+> > > >
+> > > > I added all people to Cc: who showed interest in this driver and I want
+> > > > to welcome you for testing and reviewing.
+> > >
+> > > There still is a problem with the RTL8822cu chipset I have here.  When
+> > > using NetworkManager I immediately lose the connection to the AP after
+> > > it has been connected:
+> > >
+> > > [  376.213846] wlan0: authenticate with 76:83:c2:ce:81:b1
+> > > [  380.085463] wlan0: send auth to 76:83:c2:ce:81:b1 (try 1/3)
+> > > [  380.091446] wlan0: authenticated
+> > > [  380.108864] wlan0: associate with 76:83:c2:ce:81:b1 (try 1/3)
+> > > [  380.136448] wlan0: RX AssocResp from 76:83:c2:ce:81:b1 (capab=0x1411 status=0 aid=2)
+> > > [  380.202955] wlan0: associated
+> > > [  380.268140] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+> > > [  380.275328] wlan0: Connection to AP 76:83:c2:ce:81:b1 lost
+> > >
+> > > That doesn't happen when using plain wpa_supplicant. This seems to go
+> > > down to cd96e22bc1da ("rtw88: add beacon filter support"). After being
+> > > connected I get a BCN_FILTER_CONNECTION_LOSS beacon. Plain
+> > > wpa_supplicant seems to go another code patch and doesn't activate
+> > > connection quality monitoring.
+> > >
+> > > The connection to the AP works fluently also with NetworkManager though
+> > > when I just ignore the BCN_FILTER_CONNECTION_LOSS beacon.
+> > >
+> > > Any idea what may be wrong here?
+> > >
+> >
+> > Please reference to below patch to see if it can work to you.
+> >
+> > https://lore.kernel.org/linux-wireless/20221124064442.28042-1-pkshih@realtek.com/T/#u
+> 
+> Great! That solves this issue \o/
+> 
 
-Add debug_assert_init() instead of the WARN_ON_ONCE(!timer->function)
-checks so that debug objects can warn about non-initialized timers.
+Do you mind to add "Tested-by:" tag to the patch?  :-)
 
-The warning of debug objects does not warn if timer->function == NULL.  It
-warns when timer was not initialized using timer_setup[_on_stack]() or via
-DEFINE_TIMER(). If developers fail to enable debug objects and then waste
-lots of time to figure out why their non-initialized timer is not firing,
-they deserve it. Same for initializing a timer with a NULL function.
+Ping-Ke
 
-Co-developed-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Link: https://lore.kernel.org/all/20220407161745.7d6754b3@gandalf.local.home
-Link: https://lore.kernel.org/all/20221110064101.429013735@goodmis.org
----
-V2: Use continue instead of return and amend the return value docs (Steven)
-V3: Changelog and comment updates (Anna-Maria)
-V3.1: Fix it for real
----
- kernel/time/timer.c |   57 +++++++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 52 insertions(+), 5 deletions(-)
 
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -1017,7 +1017,7 @@ static inline int
- 	unsigned int idx = UINT_MAX;
- 	int ret = 0;
- 
--	BUG_ON(!timer->function);
-+	debug_assert_init(timer);
- 
- 	/*
- 	 * This is a common optimization triggered by the networking code - if
-@@ -1044,6 +1044,14 @@ static inline int
- 		 * dequeue/enqueue dance.
- 		 */
- 		base = lock_timer_base(timer, &flags);
-+		/*
-+		 * Has @timer been shutdown? This needs to be evaluated
-+		 * while holding base lock to prevent a race against the
-+		 * shutdown code.
-+		 */
-+		if (!timer->function)
-+			goto out_unlock;
-+
- 		forward_timer_base(base);
- 
- 		if (timer_pending(timer) && (options & MOD_TIMER_REDUCE) &&
-@@ -1070,6 +1078,14 @@ static inline int
- 		}
- 	} else {
- 		base = lock_timer_base(timer, &flags);
-+		/*
-+		 * Has @timer been shutdown? This needs to be evaluated
-+		 * while holding base lock to prevent a race against the
-+		 * shutdown code.
-+		 */
-+		if (!timer->function)
-+			goto out_unlock;
-+
- 		forward_timer_base(base);
- 	}
- 
-@@ -1128,8 +1144,12 @@ static inline int
-  * mod_timer_pending() is the same for pending timers as mod_timer(), but
-  * will not activate inactive timers.
-  *
-+ * If @timer->function == NULL then the start operation is silently
-+ * discarded.
-+ *
-  * Return:
-- * * %0 - The timer was inactive and not modified
-+ * * %0 - The timer was inactive and not modified or was in
-+ *	  shutdown state and the operation was discarded
-  * * %1 - The timer was active and requeued to expire at @expires
-  */
- int mod_timer_pending(struct timer_list *timer, unsigned long expires)
-@@ -1155,8 +1175,12 @@ EXPORT_SYMBOL(mod_timer_pending);
-  * same timer, then mod_timer() is the only safe way to modify the timeout,
-  * since add_timer() cannot modify an already running timer.
-  *
-+ * If @timer->function == NULL then the start operation is silently
-+ * discarded. In this case the return value is 0 and meaningless.
-+ *
-  * Return:
-- * * %0 - The timer was inactive and started
-+ * * %0 - The timer was inactive and started or was in shutdown
-+ *	  state and the operation was discarded
-  * * %1 - The timer was active and requeued to expire at @expires or
-  *	  the timer was active and not modified because @expires did
-  *	  not change the effective expiry time
-@@ -1176,8 +1200,12 @@ EXPORT_SYMBOL(mod_timer);
-  * modify an enqueued timer if that would reduce the expiration time. If
-  * @timer is not enqueued it starts the timer.
-  *
-+ * If @timer->function == NULL then the start operation is silently
-+ * discarded.
-+ *
-  * Return:
-- * * %0 - The timer was inactive and started
-+ * * %0 - The timer was inactive and started or was in shutdown
-+ *	  state and the operation was discarded
-  * * %1 - The timer was active and requeued to expire at @expires or
-  *	  the timer was active and not modified because @expires
-  *	  did not change the effective expiry time such that the
-@@ -1200,6 +1228,9 @@ EXPORT_SYMBOL(timer_reduce);
-  * The @timer->expires and @timer->function fields must be set prior
-  * to calling this function.
-  *
-+ * If @timer->function == NULL then the start operation is silently
-+ * discarded.
-+ *
-  * If @timer->expires is already in the past @timer will be queued to
-  * expire at the next timer tick.
-  *
-@@ -1228,7 +1259,9 @@ void add_timer_on(struct timer_list *tim
- 	struct timer_base *new_base, *base;
- 	unsigned long flags;
- 
--	if (WARN_ON_ONCE(timer_pending(timer) || !timer->function))
-+	debug_assert_init(timer);
-+
-+	if (WARN_ON_ONCE(timer_pending(timer)))
- 		return;
- 
- 	new_base = get_timer_cpu_base(timer->flags, cpu);
-@@ -1239,6 +1272,13 @@ void add_timer_on(struct timer_list *tim
- 	 * wrong base locked.  See lock_timer_base().
- 	 */
- 	base = lock_timer_base(timer, &flags);
-+	/*
-+	 * Has @timer been shutdown? This needs to be evaluated while
-+	 * holding base lock to prevent a race against the shutdown code.
-+	 */
-+	if (!timer->function)
-+		goto out_unlock;
-+
- 	if (base != new_base) {
- 		timer->flags |= TIMER_MIGRATING;
- 
-@@ -1252,6 +1292,7 @@ void add_timer_on(struct timer_list *tim
- 
- 	debug_timer_activate(timer);
- 	internal_add_timer(base, timer);
-+out_unlock:
- 	raw_spin_unlock_irqrestore(&base->lock, flags);
- }
- EXPORT_SYMBOL_GPL(add_timer_on);
-@@ -1541,6 +1582,12 @@ static void expire_timers(struct timer_b
- 
- 		fn = timer->function;
- 
-+		if (WARN_ON_ONCE(!fn)) {
-+			/* Should never happen. Emphasis on should! */
-+			base->running_timer = NULL;
-+			continue;
-+		}
-+
- 		if (timer->flags & TIMER_IRQSAFE) {
- 			raw_spin_unlock(&base->lock);
- 			call_timer_fn(timer, fn, baseclk);
