@@ -2,111 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CBE6372DF
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 08:28:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C30E86372F2
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 08:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229475AbiKXHSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 02:18:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
+        id S229563AbiKXHhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 02:37:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiKXHSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 02:18:30 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FE1AE7B
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 23:28:41 -0800 (PST)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NHqN817fLz15Mq9;
-        Thu, 24 Nov 2022 15:28:08 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 24 Nov 2022 15:28:40 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 24 Nov 2022 15:28:39 +0800
-Subject: Re: [PATCH net] net: devlink: fix UAF in
- devlink_compat_running_version()
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Leon Romanovsky <leon@kernel.org>, <netdev@vger.kernel.org>,
-        <jiri@nvidia.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <pabeni@redhat.com>
-References: <20221122121048.776643-1-yangyingliang@huawei.com>
- <Y3zdaX1I0Y8rdSLn@unreal> <e311b567-8130-15de-8dbb-06878339c523@huawei.com>
- <Y30dPRzO045Od2FA@unreal> <20221122122740.4b10d67d@kernel.org>
- <405f703b-b97e-afdd-8d5f-48b8f99d045d@huawei.com>
- <20221123184738.29718806@kernel.org>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <36f320f3-f4e6-7388-6292-83f240bcd28c@huawei.com>
-Date:   Thu, 24 Nov 2022 15:28:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S229539AbiKXHhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 02:37:38 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B05F95AC;
+        Wed, 23 Nov 2022 23:37:34 -0800 (PST)
+Date:   Thu, 24 Nov 2022 08:37:27 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1669275452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=R7IPR3D+2Uj3z9wyAmJvuyCVbX35tyzgdGaPWhfMVFU=;
+        b=cyK3yXtZPH/MmeCGW9/Y7sa0S8j3U4V3cbZvcG7kljTMBRfM0Y0QkdauTW+7DBjoQjZtTr
+        Smv7dXzSJykzTNJSGc8sLgPdzbbDlfoTKd/C8NOokzgmUYyb8tklUcrtDDn4C15je2/t5S
+        qZ1JQCGr47d8HQHaAaN8lAer6OE19hnNpyB1jgifOrlEnW6D7thcZgBd7eWn+yIeCGQbN8
+        JAwvmeLK9L9DAYhNk5u69q40Gq9krI/dQFO6xIn3O7kgU2+P46t20owVpLaEAWKInjhFqR
+        wlWQJvdR2QKQazhoXmXtNlH26Ho7CMc2H6AHQCb4EHtFSJuPBzjiNZwLJTi/Yg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1669275452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=R7IPR3D+2Uj3z9wyAmJvuyCVbX35tyzgdGaPWhfMVFU=;
+        b=upalo9fPCSzAMl+wEAxT8iWIYDUFQBY6xP1a37mssQ+s+quUZB6ymRcbfF4PbBXUAt2ltk
+        VvbgJt/W+r7rfFDQ==
+From:   Anna-Maria Behnsen <anna-maria@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: Re: [patch V3 12/17] timers: Silently ignore timers with a NULL
+ function
+In-Reply-To: <20221123201625.135055320@linutronix.de>
+Message-ID: <644695b9-f343-7fb7-ed8e-763e5fe3d158@linutronix.de>
+References: <20221123201306.823305113@linutronix.de> <20221123201625.135055320@linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20221123184738.29718806@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 23 Nov 2022, Thomas Gleixner wrote:
 
-On 2022/11/24 10:47, Jakub Kicinski wrote:
-> On Wed, 23 Nov 2022 14:40:24 +0800 Yang Yingliang wrote:
->>> +err_dl_unregister:
->>> +	devl_unregister(devlink);
->> It races with dev_ethtool():
->> dev_ethtool
->>     devlink_try_get()
->>                                   nsim_drv_probe
->>                                   devl_lock()
->>       devl_lock()
->>                                   devlink_unregister()
->>                                     devlink_put()
->>                                     wait_for_completion() <- the refcount
->> is got in dev_ethtool, it causes ABBA deadlock
-> Yeah.. so my original design for the locking had a "devlink_is_alive()"
-> check for this exact reason:
->
-> https://lore.kernel.org/netdev/20211030231254.2477599-3-kuba@kernel.org/
->
-> and the devlink structure was properly refcounted (devlink_put() calls
-> devlink_free() when the last reference is released).
->
-> Pure references then need to check if the instance is still alive
-> after locking it. Which is fine, it should only happen in core code.
->
-> I think we should go back to that idea.
-But Leon disagree to change devlink code.
+> Tearing down timers which have circular dependencies to other
+> functionality, e.g. workqueues, where the timer can schedule work and work
+> can arm timers, is not trivial.
+> 
+> In those cases it is desired to shutdown the timer in a way which prevents
+> rearming of the timer. The mechanism to do so is to set timer->function to
+> NULL and use this as an indicator for the timer arming functions to ignore
+> the (re)arm request.
+> 
+> In preparation for that replace the warnings in the relevant code paths
+> with checks for timer->function == NULL. If the pointer is NULLL, then
 
-I think this problem occurs in the drivers that have multiple ports(netdev):
+s/NULLL/NULL
 
-In some drivers (e.g. mlx5) , one net device uses one devlink 
-instance(see mlx5e_probe()),
-the instance can not be get until the device is register, in this case, 
-it won't cause UAF.
+> discard the rearm request silently.
+> 
+> Add debug_assert_init() instead of the WARN_ON_ONCE(!timer->function)
+> checks so that debug objects can warn about non-initialized timers.
+> 
+> The warning of debug objects does warn if timer->function == NULL.  It
 
-But in some other drivers(e.g. netdevsim, funeth) multiple ports(net 
-devices) use one
-devlink instance. If first one is register successful, the instance is 
-visible and can be get
-through netdev, meanwhile, the second port register failed and goto free 
-the devlink
-that used by first port(netdevice). So can we fix this in every single 
-driver.
+does NOT warn
+
+> warns when timer was not initialized using timer_setup[_on_stack]() or via
+> DEFINE_TIMER(). If developers fail to enable debug objects and then waste
+> lots of time to figure out why their non-initialized timer is not firing,
+> they deserve it. Same for initializing a timer with a NULL function.
+> 
+> Co-developed-by: Steven Rostedt <rostedt@goodmis.org>
+> Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Tested-by: Guenter Roeck <linux@roeck-us.net>
+> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+> Link: https://lore.kernel.org/all/20220407161745.7d6754b3@gandalf.local.home
+> Link: https://lore.kernel.org/all/20221110064101.429013735@goodmis.org
+> ---
+> V2: Use continue instead of return and amend the return value docs (Steven)
+> V3: Changelog and comment updates (Anna-Maria)
+> ---
+>  kernel/time/timer.c |   57 +++++++++++++++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 52 insertions(+), 5 deletions(-)
+> 
+> --- a/kernel/time/timer.c
+> +++ b/kernel/time/timer.c
+> @@ -1128,8 +1144,12 @@ static inline int
+>   * mod_timer_pending() is the same for pending timers as mod_timer(), but
+>   * will not activate inactive timers.
+>   *
+> + * If @timer->function == NULL then the start operation is silently
+> + * discarded.
+> + *
+>   * Return:
+> - * * %0 - The timer was inactive and not modified
+> + * * %0 - The timer was inactive and not modified or was is in
+> + *	  shutdown state and the operation was discarded
+
+You forgot to update this "was is" mistake. All other places are fine.
+
+>   * * %1 - The timer was active and requeued to expire at @expires
+>   */
+>  int mod_timer_pending(struct timer_list *timer, unsigned long expires)
 
 Thanks,
-Yang
->
-> The waiting for references is a nightmare in the netdev code.
->
-> .
+
+	Anna-Maria
+
