@@ -2,131 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52B24637B8A
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 15:38:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 872EC637B8F
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 15:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbiKXOir (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 09:38:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        id S229585AbiKXOkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 09:40:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbiKXOip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 09:38:45 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1086AEFF
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 06:38:44 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oyDMy-0001tx-6I; Thu, 24 Nov 2022 15:38:28 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:5507:4aba:5e0a:4c27])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id DE8E7128645;
-        Thu, 24 Nov 2022 14:38:25 +0000 (UTC)
-Date:   Thu, 24 Nov 2022 15:38:24 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Yasushi SHOJI <yasushi.shoji@gmail.com>
-Cc:     Vincent Mailhol <vincent.mailhol@gmail.com>,
-        Yasushi SHOJI <yashi@spacecubics.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] can: mcba_usb: Fix termination command argument
-Message-ID: <20221124143824.u5lyi3rektjxft7o@pengutronix.de>
-References: <20221123194406.80575-1-yashi@spacecubics.com>
- <CAMZ6RqJ2L6YntT23rsYEEUK=YDF2LrhB8hXwvYjciu3vzjx2hQ@mail.gmail.com>
- <CAELBRWLOKW8NCLpV=MG0_=XY4N3BaozsZCacfgaXEs-tyfzoAA@mail.gmail.com>
+        with ESMTP id S229576AbiKXOkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 09:40:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF1E6AEFF
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 06:39:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669300765;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8mJnFbVs40A7D4ZzDs8Lc+Kdvts8cL8H9xlqZ07soV0=;
+        b=QCW9Ld48vhFwgpLQ9XOjQJHhkxatOIo0cYIxUumo0dXYyrVkcgInIXczEEncVrBJVBpoH0
+        +o5OaSJ6gfKeJXNT0yWR6QVfz39YBtFY/dYzWio0HTYgXLyNykF1e00e15c/7OtlU9f7CZ
+        xYwYOlxbsSm+WUOO5QBaFafkhRtMXVk=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-353-WUhY8VXiPH2BEDPsbvD03g-1; Thu, 24 Nov 2022 09:39:23 -0500
+X-MC-Unique: WUhY8VXiPH2BEDPsbvD03g-1
+Received: by mail-ed1-f71.google.com with SMTP id q13-20020a056402518d00b00462b0599644so1042722edd.20
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 06:39:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8mJnFbVs40A7D4ZzDs8Lc+Kdvts8cL8H9xlqZ07soV0=;
+        b=dmjiYxi0mk/TMScWmMm4AUWLZgdL2Ie1d1kQBqZVJmYAcKCjN3IxyW4SUttwIl/Pki
+         TAppddW69CJw02+zUTcGfVzPDkE2XYsYv9f+omfPvB+j2dDbrVOStH80KK7RphbcA6Ar
+         uVUlg6/oNdu9hi00PaQtMqjNdXSOlNjWwdBZ23h5z/Qk9X0RvRQxGqAd0TJRa1ok7uF9
+         8Eo+g2KCKoXgwz7UnoM50Z1+jzL53edFqIMquINJcEAOXKSpPtfOfjYhIDbxn+ojSkYq
+         eR8NcEsalHYqrroyDHWp6MLa1IW6dcTlwuB+g3I3MhFBiTUOCJq/3+P3/tHSICvT36y0
+         eoOw==
+X-Gm-Message-State: ANoB5pmG9bMHaZ0GeLT8LMmNPZUZ9oX2gxHC9bNRAyOfHmaU6m55Kc+p
+        puFdK+fOHM1mfDt/errZiaEr0BXru51RrVeYuvm0oQMbUTgjTY9ouxsccrCcfh0v0fY81gioqK+
+        loGwVRIZjapRpCCMU
+X-Received: by 2002:a17:906:c56:b0:78d:b8ab:9a5a with SMTP id t22-20020a1709060c5600b0078db8ab9a5amr28088755ejf.454.1669300762369;
+        Thu, 24 Nov 2022 06:39:22 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6fZ5Oxr0fBQt/B7kIaDLbn9fUvoou028z3SN62lTwDvqwBr2BEhV/Zkmc3Y7kmH1EV/wI24Q==
+X-Received: by 2002:a17:906:c56:b0:78d:b8ab:9a5a with SMTP id t22-20020a1709060c5600b0078db8ab9a5amr28088733ejf.454.1669300762035;
+        Thu, 24 Nov 2022 06:39:22 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id 11-20020a170906300b00b00781e7d364ebsm483760ejz.144.2022.11.24.06.39.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Nov 2022 06:39:21 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C14317EB634; Thu, 24 Nov 2022 15:39:20 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     sdf@google.com, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next v2 6/8] mlx4: Introduce
+ mlx4_xdp_buff wrapper for xdp_buff
+In-Reply-To: <20221123174746.418920e5@kernel.org>
+References: <20221121182552.2152891-1-sdf@google.com>
+ <20221121182552.2152891-7-sdf@google.com> <874jupviyc.fsf@toke.dk>
+ <CAKH8qBuF_1UoUPzh_X6FMrJ61zCNDroqSuc-Pp2uH7Q4azmN8Q@mail.gmail.com>
+ <20221123111431.7b54668e@kernel.org> <Y3557Ecr80Y9ZD2z@google.com>
+ <871qptuyie.fsf@toke.dk> <20221123174746.418920e5@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 24 Nov 2022 15:39:20 +0100
+Message-ID: <87edts2z8n.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2b5oymuqicmyslax"
-Content-Disposition: inline
-In-Reply-To: <CAELBRWLOKW8NCLpV=MG0_=XY4N3BaozsZCacfgaXEs-tyfzoAA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Jakub Kicinski <kuba@kernel.org> writes:
 
---2b5oymuqicmyslax
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Wed, 23 Nov 2022 22:55:21 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> > Good idea, prototyped below, lmk if it that's not what you had in mind.
+>> >
+>> > struct xdp_buff_xsk {
+>> > 	struct xdp_buff            xdp;                  /*     0    56 */
+>> > 	u8                         cb[16];               /*    56    16 */
+>> > 	/* --- cacheline 1 boundary (64 bytes) was 8 bytes ago --- */=20=20
+>>=20
+>> As pahole helpfully says here, xdp_buff is actually only 8 bytes from
+>> being a full cache line. I thought about adding a 'cb' field like this
+>> to xdp_buff itself, but figured that since there's only room for a
+>> single pointer, why not just add that and let the driver point it to
+>> where it wants to store the extra context data?
+>
+> What if the driver wants to store multiple pointers or an integer or
+> whatever else? The single pointer seems quite arbitrary and not
+> strictly necessary.
 
-On 24.11.2022 18:52:14, Yasushi SHOJI wrote:
-> On Thu, Nov 24, 2022 at 9:53 AM Vincent Mailhol
-> <vincent.mailhol@gmail.com> wrote:
-> > > diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcb=
-a_usb.c
-> > > index 218b098b261d..67beff1a3876 100644
-> > > --- a/drivers/net/can/usb/mcba_usb.c
-> > > +++ b/drivers/net/can/usb/mcba_usb.c
-> > > @@ -785,9 +785,9 @@ static int mcba_set_termination(struct net_device=
- *netdev, u16 term)
-> > >         };
-> > >
-> > >         if (term =3D=3D MCBA_TERMINATION_ENABLED)
-> > > -               usb_msg.termination =3D 1;
-> > > -       else
-> > >                 usb_msg.termination =3D 0;
-> > > +       else
-> > > +               usb_msg.termination =3D 1;
-> > >
-> > >         mcba_usb_xmit_cmd(priv, (struct mcba_usb_msg *)&usb_msg);
-> >
-> > Nitpick: does it make sense to rename the field to something like
-> > usb_msg.termination_disable or usb_msg.termination_off? This would
-> > make it more explicit that this is a "reverse" boolean.
->=20
-> I'd rather define the values like
->=20
-> #define TERMINATION_ON (0)
-> #define TERMINATION_OFF (1)
->=20
-> So the block becomes
->=20
-> if (term =3D=3D MCBA_TERMINATION_ENABLED)
->     usb_msg.termination =3D TERMINATION_ON;
-> else
->     usb_msg.termination =3D TERMINATION_OFF;
+Well, then you allocate a separate struct and point to that? Like I did
+in mlx5:
 
-Please send a v2 patch, using git send-email, as you did with the first
-version. (No compressed attached patches please.)
 
-Marc
++	struct mlx5_xdp_ctx mlctx =3D { .cqe =3D cqe, .rq =3D rq };
++	struct xdp_buff xdp =3D { .drv_priv =3D &mlctx };
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+but yeah, this does give an extra pointer deref on access. I'm not
+really opposed to the cb field either, I just think it's a bit odd to
+put it in struct xdp_buff_xsk; that basically requires the driver to
+keep the layouts in sync.
 
---2b5oymuqicmyslax
-Content-Type: application/pgp-signature; name="signature.asc"
+Instead, why not but a cb field into xdp_buff itself so it can be used
+for both the XSK and the non-XSK paths? Then the driver can just
+typecast the xdp_buff into its own struct that has whatever data it
+wants in place of the cb field?
 
------BEGIN PGP SIGNATURE-----
+-Toke
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmN/gd0ACgkQrX5LkNig
-0133OwgAlfuDYqc4mfHIa8P9QiLu3aGHzuezoaoZjCyBFGYcA7asa4LMdpf1pjz7
-ldCGajT5dJImf+BS5XnUPFpCU5NOvE9lEw8O8am7jF2386YFJz0f5Mb9aQ7ithOy
-S6h6t0ltrfbHLEErAk6mWKYtMZAy53yyeVS0goe+SK0KVvPiuMnkoOm6v8pEON/F
-y5ob4OD/kiBWfqgt3PT6Cwjc0pRuj/iLvIpgNYOV0zcybjyFubNY0tBinvnXWqPN
-ChuBpKD5d/Rpl3faA0enZ+MdfrEEff+NdUvdVSUzmcCZb8740yr76UMBInYys2gu
-CIBZm0t5ldgG4XZ440/i/iLs9czdUw==
-=Vfvz
------END PGP SIGNATURE-----
-
---2b5oymuqicmyslax--
