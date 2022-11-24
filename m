@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B13D6637FE9
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 20:57:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E805637FEE
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 20:58:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229698AbiKXT51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 14:57:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
+        id S229690AbiKXT6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 14:58:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiKXT5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 14:57:19 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293E291536
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 11:57:17 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oyILT-0004gr-I1
-        for netdev@vger.kernel.org; Thu, 24 Nov 2022 20:57:15 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id B495312898D
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 19:57:13 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 51EB512894F;
-        Thu, 24 Nov 2022 19:57:10 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 1f879c7b;
-        Thu, 24 Nov 2022 19:57:09 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Yasushi SHOJI <yasushi.shoji@gmail.com>,
-        Yasushi SHOJI <yashi@spacecubics.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 8/8] can: mcba_usb: Fix termination command argument
-Date:   Thu, 24 Nov 2022 20:57:08 +0100
-Message-Id: <20221124195708.1473369-9-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221124195708.1473369-1-mkl@pengutronix.de>
-References: <20221124195708.1473369-1-mkl@pengutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        with ESMTP id S229677AbiKXT6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 14:58:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B55391D6;
+        Thu, 24 Nov 2022 11:58:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2886BB828FD;
+        Thu, 24 Nov 2022 19:58:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CB423C433D6;
+        Thu, 24 Nov 2022 19:58:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669319927;
+        bh=mymdoExkjq+5y4hBgN2w5HMQUK6B/z/2e3XyoFCd5Q0=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=AGfbcy9XisZdfAoeQfgbDXkSo9S78za+Rq47nSoY/DXVDV1ZpKEv0evjb5F3sFGO2
+         2oYDFX0jAoHLspFJjOB6XaS1r8WOSnE8YwypyMFHfPPB5y9l9hnArbutrqMnuPq1Vr
+         2YShb6VWMMm+TLwmzAMDX8j1s1mrBs1sGY2YDDozE/L6LoT80EksXb7Ujx9syPw6PM
+         QxR+iD9mORAA0oeq7/EOsVRCR0GsvqKSXM8p40CBKaXlqwSlvxt2ONnnqZR13nY/pf
+         /qjgvs2OBv2KKv4JYbNaEisThdLvPfaxZzYKSbD0L5zoYj128UOksp5srXI39yFfgj
+         nraXVpvr6y07g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B90DAE21EFD;
+        Thu, 24 Nov 2022 19:58:47 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 6.1-rc7
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20221124112557.17960-1-pabeni@redhat.com>
+References: <20221124112557.17960-1-pabeni@redhat.com>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20221124112557.17960-1-pabeni@redhat.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc7
+X-PR-Tracked-Commit-Id: 661e5ebbafd26d9d2e3c749f5cf591e55c7364f5
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 08ad43d554bacb9769c6a69d5f771f02f5ba411c
+Message-Id: <166931992774.6133.798666579816786723.pr-tracker-bot@kernel.org>
+Date:   Thu, 24 Nov 2022 19:58:47 +0000
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,78 +60,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yasushi SHOJI <yasushi.shoji@gmail.com>
+The pull request you sent on Thu, 24 Nov 2022 12:25:57 +0100:
 
-Microchip USB Analyzer can activate the internal termination resistors
-by setting the "termination" option ON, or OFF to to deactivate them.
-As I've observed, both with my oscilloscope and captured USB packets
-below, you must send "0" to turn it ON, and "1" to turn it OFF.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc7
 
-From the schematics in the user's guide, I can confirm that you must
-drive the CAN_RES signal LOW "0" to activate the resistors.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/08ad43d554bacb9769c6a69d5f771f02f5ba411c
 
-Reverse the argument value of usb_msg.termination to fix this.
+Thank you!
 
-These are the two commands sequence, ON then OFF.
-
-> No.     Time           Source                Destination           Protocol Length Info
->       1 0.000000       host                  1.3.1                 USB      46     URB_BULK out
->
-> Frame 1: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
-> USB URB
-> Leftover Capture Data: a80000000000000000000000000000000000a8
->
-> No.     Time           Source                Destination           Protocol Length Info
->       2 4.372547       host                  1.3.1                 USB      46     URB_BULK out
->
-> Frame 2: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
-> USB URB
-> Leftover Capture Data: a80100000000000000000000000000000000a9
-
-Signed-off-by: Yasushi SHOJI <yashi@spacecubics.com>
-Link: https://lore.kernel.org/all/20221124152504.125994-1-yashi@spacecubics.com
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/usb/mcba_usb.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
-index 218b098b261d..47619e9cb005 100644
---- a/drivers/net/can/usb/mcba_usb.c
-+++ b/drivers/net/can/usb/mcba_usb.c
-@@ -47,6 +47,10 @@
- #define MCBA_VER_REQ_USB 1
- #define MCBA_VER_REQ_CAN 2
- 
-+/* Drive the CAN_RES signal LOW "0" to activate R24 and R25 */
-+#define MCBA_VER_TERMINATION_ON 0
-+#define MCBA_VER_TERMINATION_OFF 1
-+
- #define MCBA_SIDL_EXID_MASK 0x8
- #define MCBA_DLC_MASK 0xf
- #define MCBA_DLC_RTR_MASK 0x40
-@@ -463,7 +467,7 @@ static void mcba_usb_process_ka_usb(struct mcba_priv *priv,
- 		priv->usb_ka_first_pass = false;
- 	}
- 
--	if (msg->termination_state)
-+	if (msg->termination_state == MCBA_VER_TERMINATION_ON)
- 		priv->can.termination = MCBA_TERMINATION_ENABLED;
- 	else
- 		priv->can.termination = MCBA_TERMINATION_DISABLED;
-@@ -785,9 +789,9 @@ static int mcba_set_termination(struct net_device *netdev, u16 term)
- 	};
- 
- 	if (term == MCBA_TERMINATION_ENABLED)
--		usb_msg.termination = 1;
-+		usb_msg.termination = MCBA_VER_TERMINATION_ON;
- 	else
--		usb_msg.termination = 0;
-+		usb_msg.termination = MCBA_VER_TERMINATION_OFF;
- 
- 	mcba_usb_xmit_cmd(priv, (struct mcba_usb_msg *)&usb_msg);
- 
 -- 
-2.35.1
-
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
