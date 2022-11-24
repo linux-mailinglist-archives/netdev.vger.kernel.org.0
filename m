@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 088AC637F61
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 20:08:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62C28637FD6
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 20:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbiKXTIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 14:08:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49654 "EHLO
+        id S229633AbiKXTxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 14:53:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiKXTIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 14:08:05 -0500
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A7120347;
-        Thu, 24 Nov 2022 11:08:00 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R541e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VVc1Eth_1669316876;
-Received: from 30.120.174.82(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VVc1Eth_1669316876)
+        with ESMTP id S229452AbiKXTxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 14:53:43 -0500
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399AF18B28;
+        Thu, 24 Nov 2022 11:53:40 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R611e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VVc68Ih_1669319617;
+Received: from 30.120.174.82(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VVc68Ih_1669319617)
           by smtp.aliyun-inc.com;
-          Fri, 25 Nov 2022 03:07:58 +0800
-Message-ID: <f0836a87-b5d3-9916-4f9c-9a24e45797f8@linux.alibaba.com>
-Date:   Fri, 25 Nov 2022 03:07:56 +0800
+          Fri, 25 Nov 2022 03:53:38 +0800
+Message-ID: <4f6d8e70-b3f2-93cd-ae83-77ee733cf716@linux.alibaba.com>
+Date:   Fri, 25 Nov 2022 03:53:36 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.13.1
@@ -131,7 +131,17 @@ On 11/24/22 9:30 PM, Jan Karcher wrote:
 
 Hi Jan,
 
-Sorry to have this troubles. I'll send v6 right away.
+It's quite weird, it seems that my patch did based on the latest net-next tree.
+And I try apply it the latest net tree, it's seems work to me too. Maybe there
+is something wrong with the mirror I use. Can you show me the conflict described
+in the .rej file？
 
-Thanks
+Thanks.
 D. Wythe
+
+
+
+
+
+
+
