@@ -2,132 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE581636EE7
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 01:22:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02915636F7A
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 01:54:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiKXAWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 19:22:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
+        id S229613AbiKXAyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 19:54:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbiKXAWj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 19:22:39 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E371183A
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 16:22:37 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id j26so107031qki.10
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 16:22:37 -0800 (PST)
+        with ESMTP id S229520AbiKXAyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 19:54:13 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E591001C8;
+        Wed, 23 Nov 2022 16:53:45 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id w15-20020a17090a380f00b0021873113cb4so258418pjb.0;
+        Wed, 23 Nov 2022 16:53:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Nu3y1oldhrXGGz2CE0ALsd3V0V6fQ+XFV1XvQvd+KMs=;
-        b=WkjX+6VBX5SNz1lYR27kfvaZwL5tyeJMjwuWHCxXs/VVzQmg+2hmBla07bAlzboOD+
-         Q7iWGBAv6XYVfhe2Y/pzT+/0SennWzJAYtMKUJEbqS5NaNkpSMOoOAQRefKxvVJuHVl4
-         v1h+S/cgjjxL2tKfcEP1ildeQqz0SYT2GJSSl1lCpBJiSnQZSoG381zaUgzbBOQgusQC
-         wQU2pfW1xYTrwvuj6KvF2lTtDcogqx9YntPA5ivhqCU7aHt7g/5XgUZCBJPElamnVRGs
-         +hn4i2Zq0moEyT536cCURtCSO0kkZQ2P//pS1MPKBIKQBww7UCWHOqlu/XAHrKKlHvpm
-         ISzQ==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=uvTvGGE10qkBNf1EjI/GOTQGcFbzt2y9YPcUQhnAxto=;
+        b=p8HFJSTLZxXMPaf6jdCtqe3OWMhloUXlcQOA3FugQGC2H2gPuh6L5a1QJYvaA/kRni
+         A/VyQxbyWuILc6mSZ+wTUB6Evcl1mNoRIMozf4cnfUwEAcZd5rInmP5JrgZ2X7NHALZD
+         UAl1A+w0GgR8QqL5hvj4Rg82Xue3ajwfCSeTYqrRXRPudyhAdc4UrHy8ExkUDEWVVgHC
+         zhIFSH47mtPAF5qFdd+tQ5BXqd1wf9Cehz2b3pfqvAETEmES9CUWIu73l8ZG3THmkoOJ
+         5ywVzbjCEElzvJfmEtDz5NLReolxU5OEZEPyxfUkjruMEXCu+U9Lo+Ry4D+SgZ0MwWzu
+         /JJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Nu3y1oldhrXGGz2CE0ALsd3V0V6fQ+XFV1XvQvd+KMs=;
-        b=TPJbWptNKMdTu4/ceQoSsXLFmT28Zw7wyqE41KSTeHTGXn7q8zgcohtUym9TZciGxA
-         ywnA7un/aFuNAJKYuUPlu9Nqt6aaHS+B11gTrL0ewmE7G4X1WFwlK/KOVUlqu4l7m0sj
-         nkRptkW6yCA8MRz0oFsgPfac+QNqPoslTDzacCt87sOsuGx/m2osWehWxLoXBbIdin45
-         e6nwyxmcfiuqRbmBod2FN195tq0pLVLz3pDBmu4DMZwmAUHY8w9A3Y3fMjV9o9wbjsXf
-         yL+09/ZKIhIgbZWd1Wg9T3E/099MRudymMTr9HsC90m/REs1+DDNFBBCviF9UrYtwThR
-         +SYA==
-X-Gm-Message-State: ANoB5pkI0m7rw0ajFTY8tdsEsC6K6nB2NDi4C1Pt6WqtWz3H6sLHFYkn
-        SqlHdhil14zPeYLpOKFIsa13bw==
-X-Google-Smtp-Source: AA0mqf7FO7iMH/gayxVExvVO7VRIeDKAdeX2kAYpzMWARz8tjTV2SgcnrNcNqKklVV0Olg/odoMjZw==
-X-Received: by 2002:a37:444b:0:b0:6e1:b888:bbf9 with SMTP id r72-20020a37444b000000b006e1b888bbf9mr26362956qka.680.1669249356807;
-        Wed, 23 Nov 2022 16:22:36 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-47-55-122-23.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.122.23])
-        by smtp.gmail.com with ESMTPSA id j3-20020a05620a288300b006fc2cee4486sm1918240qkp.62.2022.11.23.16.22.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 16:22:35 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1oy00h-00BxJy-5K;
-        Wed, 23 Nov 2022 20:22:35 -0400
-Date:   Wed, 23 Nov 2022 20:22:35 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Bernard Metzler <bmt@zurich.ibm.com>
-Cc:     wangyufen <wangyufen@huawei.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+5e70d01ee8985ae62a3b@syzkaller.appspotmail.com>,
-        Leon Romanovsky <leon@kernel.org>, chenzhongjin@huawei.com,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>
-Subject: Re: [syzbot] unregister_netdevice: waiting for DEV to become free (7)
-Message-ID: <Y365S5s5qRQvm8m0@ziepe.ca>
-References: <00000000000060c7e305edbd296a@google.com>
- <CACT4Y+a=HbyJE3A_SnKm3Be-kcQytxXXF89gZ_cN1gwoAW-Zgw@mail.gmail.com>
- <Y3wwOPmH1WoRj0Uo@ziepe.ca>
- <ecc8b532-4e80-b7bd-3621-78cd55fd48fa@huawei.com>
- <2f54056f-0acf-e088-c6cc-9ffce77bbe24@linux.dev>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=uvTvGGE10qkBNf1EjI/GOTQGcFbzt2y9YPcUQhnAxto=;
+        b=dxtK4mUFbP+S0kOBngDyWVsXbbp2VY9PuYSUe4Ekg4B1BApVMPqaIE+p9ILt3pvPbO
+         XEzpiYN/jfGmXNaLKW3lqK4Nds1dhYb936Dt5ZJHlxvQJSBcPmYvjsn/C/+jfsObRHsm
+         TXIUBHYqKvwsTBolUi/TJsDEWdXAMDC5MjW1zYrqHUNlDGTB5piLNkKpzRzRxgAgS/Fo
+         g5cVj9Hok0zEtS/nu6IJ7Cfs58K76gKaWVfHbl9VI0vm8pSBJ4fzGjvfiqwdI8Oob2qH
+         S1gapG4d/IUvg3XheR8miB2Gt+v2sil2qC5+8uwTf1gyvtMuzNV/q3rvwNkcNoFu9X+q
+         GJlQ==
+X-Gm-Message-State: ANoB5ple6S9IFC6OMBAURr561pPTcXWcveB8IufqktXhnXIRQsDmGOmi
+        2tnKeLEoHXC+NqOyLze0XTqw6Eh5/ziNk1SnKgo=
+X-Google-Smtp-Source: AA0mqf5agaCkmCkO37T5I0l8CJiyP/ibgHjk5TGO1i0JjfQlFnjjShOCzxP3KRYfboqu5CSNMtMSby6ouJCnBKLb1Gw=
+X-Received: by 2002:a17:90a:8a07:b0:20a:c032:da66 with SMTP id
+ w7-20020a17090a8a0700b0020ac032da66mr38086548pjn.19.1669251224773; Wed, 23
+ Nov 2022 16:53:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2f54056f-0acf-e088-c6cc-9ffce77bbe24@linux.dev>
+References: <20221123194406.80575-1-yashi@spacecubics.com>
+In-Reply-To: <20221123194406.80575-1-yashi@spacecubics.com>
+From:   Vincent Mailhol <vincent.mailhol@gmail.com>
+Date:   Thu, 24 Nov 2022 09:53:33 +0900
+Message-ID: <CAMZ6RqJ2L6YntT23rsYEEUK=YDF2LrhB8hXwvYjciu3vzjx2hQ@mail.gmail.com>
+Subject: Re: [PATCH] can: mcba_usb: Fix termination command argument
+To:     Yasushi SHOJI <yasushi.shoji@gmail.com>
+Cc:     Yasushi SHOJI <yashi@spacecubics.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 05:45:53PM +0800, Guoqing Jiang wrote:
-> But it is the caller's responsibility to destroy it since commit
-> dd37d2f59eb8.
-> 
-> > The causes are as follows:
-> > 
-> > rdma_listen()
-> >   rdma_bind_addr()
-> >     cma_acquire_dev_by_src_ip()
-> >       cma_attach_to_dev()
-> >         _cma_attach_to_dev()
-> >           cma_dev_get()
-> 
-> Thanks for the analysis.
-> 
-> And for the two callers of cma_listen_on_dev, looks they have
-> different behaviors with regard to handling failure.
+On Thu. 24 Nov. 2022 at 04:53, Yasushi SHOJI <yasushi.shoji@gmail.com> wrote:
+> Microchip USB Analyzer can be set with termination setting ON or OFF.
+> As I've observed, both with my oscilloscope and USB packet capture
+> below, you must send "0" to turn it ON, and "1" to turn it OFF.
+>
+> Reverse the argument value to fix this.
+>
+> These are the two commands sequence, ON then OFF.
+>
+> > No.     Time           Source                Destination           Protocol Length Info
+> >       1 0.000000       host                  1.3.1                 USB      46     URB_BULK out
+> >
+> > Frame 1: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
+> > USB URB
+> > Leftover Capture Data: a80000000000000000000000000000000000a8
+> >
+> > No.     Time           Source                Destination           Protocol Length Info
+> >       2 4.372547       host                  1.3.1                 USB      46     URB_BULK out
+> >
+> > Frame 2: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
+> > USB URB
+> > Leftover Capture Data: a80100000000000000000000000000000000a9
+>
+> Signed-off-by: Yasushi SHOJI <yashi@spacecubics.com>
+> ---
+>  drivers/net/can/usb/mcba_usb.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
+> index 218b098b261d..67beff1a3876 100644
+> --- a/drivers/net/can/usb/mcba_usb.c
+> +++ b/drivers/net/can/usb/mcba_usb.c
+> @@ -785,9 +785,9 @@ static int mcba_set_termination(struct net_device *netdev, u16 term)
+>         };
+>
+>         if (term == MCBA_TERMINATION_ENABLED)
+> -               usb_msg.termination = 1;
+> -       else
+>                 usb_msg.termination = 0;
+> +       else
+> +               usb_msg.termination = 1;
+>
+>         mcba_usb_xmit_cmd(priv, (struct mcba_usb_msg *)&usb_msg);
 
-Yes, the CM is not the problem, and that print from it is unrelated
-
-I patched in netdevice_tracker and get this:
-
-[  237.475070][ T7541] unregister_netdevice: waiting for vlan0 to become free. Usage count = 2
-[  237.477311][ T7541] leaked reference.
-[  237.478378][ T7541]  ib_device_set_netdev+0x266/0x730
-[  237.479848][ T7541]  siw_newlink+0x4e0/0xfd0
-[  237.481100][ T7541]  nldev_newlink+0x35c/0x5c0
-[  237.482121][ T7541]  rdma_nl_rcv_msg+0x36d/0x690
-[  237.483312][ T7541]  rdma_nl_rcv+0x2ee/0x430
-[  237.484483][ T7541]  netlink_unicast+0x543/0x7f0
-[  237.485746][ T7541]  netlink_sendmsg+0x918/0xe20
-[  237.486866][ T7541]  sock_sendmsg+0xcf/0x120
-[  237.488006][ T7541]  ____sys_sendmsg+0x70d/0x8b0
-[  237.489294][ T7541]  ___sys_sendmsg+0x11d/0x1b0
-[  237.490404][ T7541]  __sys_sendmsg+0xfa/0x1d0
-[  237.491451][ T7541]  do_syscall_64+0x35/0xb0
-[  237.492566][ T7541]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Which seems to confirm my original prediction, except this is siw not
-rxe..
-
-Maybe rxe was the wrong guess, or maybe it is troubled too in other
-reports?
-
-Jason
+Nitpick: does it make sense to rename the field to something like
+usb_msg.termination_disable or usb_msg.termination_off? This would
+make it more explicit that this is a "reverse" boolean.
