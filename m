@@ -2,156 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 572736375ED
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 11:07:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E779637606
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 11:15:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbiKXKHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 05:07:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53388 "EHLO
+        id S229995AbiKXKPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 05:15:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbiKXKHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 05:07:53 -0500
-Received: from mail.katalix.com (mail.katalix.com [3.9.82.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7DA1286FA
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 02:07:52 -0800 (PST)
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id EB3707DACC;
-        Thu, 24 Nov 2022 10:07:51 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1669284472; bh=dpSC8SCYIaor6R/RST2fo2VXoP/UpFIlng0KL5Wk/Wo=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Thu,=2024=20Nov=202022=2010:07:51=20+0000|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20Guillaume=20Nault=20<gnault@re
-         dhat.com>|Cc:=20Tetsuo=20Handa=20<penguin-kernel@i-love.sakura.ne.
-         jp>,=0D=0A=09Jakub=20Sitnicki=20<jakub@cloudflare.com>,=20netdev@v
-         ger.kernel.org,=0D=0A=09"David=20S.=20Miller"=20<davem@davemloft.n
-         et>,=0D=0A=09Eric=20Dumazet=20<edumazet@google.com>,=0D=0A=09Jakub
-         =20Kicinski=20<kuba@kernel.org>,=20Paolo=20Abeni=20<pabeni@redhat.
-         com>,=0D=0A=09syzbot+703d9e154b3b58277261@syzkaller.appspotmail.co
-         m,=0D=0A=09syzbot+50680ced9e98a61f7698@syzkaller.appspotmail.com,=
-         0D=0A=09syzbot+de987172bb74a381879b@syzkaller.appspotmail.com|Subj
-         ect:=20Re:=20[PATCH=20net]=20l2tp:=20Don't=20sleep=20and=20disable
-         =20BH=20under=20writer-side=0D=0A=20sk_callback_lock|Message-ID:=2
-         0<20221124100751.GA6671@katalix.com>|References:=20<a850c224-f728-
-         983c-45a0-96ebbaa943d7@I-love.SAKURA.ne.jp>=0D=0A=20<87wn7o7k7r.fs
-         f@cloudflare.com>=0D=0A=20<ef09820a-ca97-0c50-e2d8-e1344137d473@I-
-         love.SAKURA.ne.jp>=0D=0A=20<87fseb7vbm.fsf@cloudflare.com>=0D=0A=2
-         0<f2fdb53a-4727-278d-ac1b-d6dbdac8d307@I-love.SAKURA.ne.jp>=0D=0A=
-         20<871qpvmfab.fsf@cloudflare.com>=0D=0A=20<a3b7d8cd-0c72-8e6b-78f2
-         -71b92e70360f@I-love.SAKURA.ne.jp>=0D=0A=20<20221122141011.GA3303@
-         pc-4.home>=0D=0A=20<c50bb326-7946-82b9-418a-95638818aa84@I-love.SA
-         KURA.ne.jp>=0D=0A=20<20221123152400.GA18177@pc-4.home>|MIME-Versio
-         n:=201.0|Content-Disposition:=20inline|In-Reply-To:=20<20221123152
-         400.GA18177@pc-4.home>;
-        b=X8xYMO+5J/gb+LrJAn2x/KJ4ajnPeX9Ad7MGWSVK4APgl80/MseDNQjdzK6kRBTPc
-         huqaH+QH20j6LeUXkpf/2vsbwGfqIZE+ka5k/4Yh8I9FAoXM25Rile52e8uDVgc9Y6
-         hLhC93/Wu1LFyGPlbxKHLeDLV+Z1EO5AInr7LbWwVfwnekERxfve6Xupod+3iGq4qQ
-         MgL14er5fr2XxDvX3rjYVciZlE/9u3IBXqx7emdzLWKLFRyIe8bKxlqlubOsm37NfU
-         vqHC1F1vr+ONKrzruQlZUXfHPqsyZiCpIFk5YPjy7tq6IAwfcKxagPosh47ZDDS2uo
-         Scu1ngqWBeQJg==
-Date:   Thu, 24 Nov 2022 10:07:51 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
+        with ESMTP id S229933AbiKXKPO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 05:15:14 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BF1C1F73
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 02:15:14 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oy9G4-0004ID-1x; Thu, 24 Nov 2022 11:15:04 +0100
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oy9Fz-0000jI-BP; Thu, 24 Nov 2022 11:15:00 +0100
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oy9Fz-00E4WF-JQ; Thu, 24 Nov 2022 11:14:59 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com,
-        syzbot+50680ced9e98a61f7698@syzkaller.appspotmail.com,
-        syzbot+de987172bb74a381879b@syzkaller.appspotmail.com
-Subject: Re: [PATCH net] l2tp: Don't sleep and disable BH under writer-side
- sk_callback_lock
-Message-ID: <20221124100751.GA6671@katalix.com>
-References: <a850c224-f728-983c-45a0-96ebbaa943d7@I-love.SAKURA.ne.jp>
- <87wn7o7k7r.fsf@cloudflare.com>
- <ef09820a-ca97-0c50-e2d8-e1344137d473@I-love.SAKURA.ne.jp>
- <87fseb7vbm.fsf@cloudflare.com>
- <f2fdb53a-4727-278d-ac1b-d6dbdac8d307@I-love.SAKURA.ne.jp>
- <871qpvmfab.fsf@cloudflare.com>
- <a3b7d8cd-0c72-8e6b-78f2-71b92e70360f@I-love.SAKURA.ne.jp>
- <20221122141011.GA3303@pc-4.home>
- <c50bb326-7946-82b9-418a-95638818aa84@I-love.SAKURA.ne.jp>
- <20221123152400.GA18177@pc-4.home>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com
+Subject: [PATCH net-next v6 0/6] net: dsa: microchip: add MTU support for KSZ8 series 
+Date:   Thu, 24 Nov 2022 11:14:52 +0100
+Message-Id: <20221124101458.3353902-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rwEMma7ioTxnRzrJ"
-Content-Disposition: inline
-In-Reply-To: <20221123152400.GA18177@pc-4.home>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+changes v6:
+- move dsa configuration to ksz8_setup 
 
---rwEMma7ioTxnRzrJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+changes v5:
+- add mtu normalization patch
 
-On  Wed, Nov 23, 2022 at 16:24:00 +0100, Guillaume Nault wrote:
-> On Tue, Nov 22, 2022 at 11:28:45PM +0900, Tetsuo Handa wrote:
-> > That's what I thought at https://lkml.kernel.org/r/c64284f4-2c2a-ecb9-a=
-08e-9e49d49c720b@I-love.SAKURA.ne.jp .
-> >=20
-> > But the problem is not that setup_udp_tunnel_sock() can sleep. The prob=
-lem is that lockdep
-> > gets confused due to changing lockdep class after the socket is already=
- published. We need
-> > to avoid calling lockdep_set_class_and_name() on a socket retrieved via=
- sockfd_lookup().
->=20
-> This is a second problem. The problem of setting sk_user_data under
-> sk_callback_lock write protection (while still calling
-> udp_tunnel_encap_enable() from sleepable context) still remains.
->=20
-> For lockdep_set_class_and_name(), maybe we could store the necessary
-> socket information (addresses, ports and checksum configuration) in the
-> l2tp_tunnel structure, thus avoiding the need to read them from the
-> socket. This way, we could stop locking the user space socket in
-> l2tp_xmit_core() and drop the lockdep_set_class_and_name() call.
-> I think either you or Jakub proposed something like this in another
-> thread.
+changes v4:
+- remove per port max_frame cache
+- remove port variable for ksz88* variants
+- add KSZ9563_CHIP_ID
+- not start a new line with an operator
 
-I note that l2tp_xmit_core calls ip_queue_xmit which expects a socket
-atomic context*.
+changes v3:
+- rename KSZ8863_LEGAL_PACKET_SIZE -> KSZ8_LEGAL_PACKET_SIZE
 
-It also accesses struct inet_sock corking data which may also need locks
-to safely access.
+changes v2:
+- add ksz_rmw8() helper
+- merge all max MTUs to one location
 
-Possibly we could somehow work around that, but on the face of it we'd
-need to do a bit more work to avoid the socket lock in the tx path.
+Oleksij Rempel (6):
+  net: dsa: microchip: move max mtu to one location
+  net: dsa: microchip: do not store max MTU for all ports
+  net: dsa: microchip: add ksz_rmw8() function
+  net: dsa: microchip: ksz8: add MTU configuration support
+  net: dsa: microchip: enable MTU normalization for KSZ8795 and KSZ9477
+    compatible switches
+  net: dsa: microchip: ksz8: move all DSA configurations to one location
 
-* davem fixed locking in the l2tp xmit path in:
+ drivers/net/dsa/microchip/ksz8.h        |  1 +
+ drivers/net/dsa/microchip/ksz8795.c     | 75 +++++++++++++++++++++----
+ drivers/net/dsa/microchip/ksz8795_reg.h |  3 +
+ drivers/net/dsa/microchip/ksz9477.c     | 21 +++----
+ drivers/net/dsa/microchip/ksz9477.h     |  1 -
+ drivers/net/dsa/microchip/ksz9477_reg.h |  2 -
+ drivers/net/dsa/microchip/ksz_common.c  | 29 ++++++++--
+ drivers/net/dsa/microchip/ksz_common.h  | 13 ++++-
+ 8 files changed, 109 insertions(+), 36 deletions(-)
 
-6af88da14ee2 ("l2tp: Fix locking in l2tp_core.c")
---=20
-Tom Parkin
-Katalix Systems Ltd
-https://katalix.com
-Catalysts for your Embedded Linux software development
+-- 
+2.30.2
 
---rwEMma7ioTxnRzrJ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmN/QnMACgkQlIwGZQq6
-i9A6Nwf/exjZ9k78BOqCIAbnGfl5l54ORpYoydj4mzrWGIbAJr2ndQUwLG4Ck7rC
-i4HdKMW3XvHetM706wl31oBazMTmDnEKr4beXF7xc9a1hf1TavdWSFGp3MGhbgl/
-4EaHHDdqIKCK9juX/Htk0JROx7c+GLZlSmngxRaJ9ndKa1kTsrY3/IWT6/+vURgQ
-eu1kZ+S6/IP60nsyNjJx7mrJJ38ud494vbyDyjjgSl7P9bDxjrKRue2LFCNSpBie
-i/aPSu8x9tRICbWVDTKLMx4rhsPOOPxRoWvgnWV6jP2oE0j0T/4qZfzWz1qRjVz0
-pVPQ31mXQe6fIL2XeRCt/sQ7MjUe9w==
-=J7gW
------END PGP SIGNATURE-----
-
---rwEMma7ioTxnRzrJ--
