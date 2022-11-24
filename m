@@ -2,188 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 091486375B7
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 10:58:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A19596375C8
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 11:00:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiKXJ6p convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 24 Nov 2022 04:58:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
+        id S229606AbiKXKAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 05:00:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiKXJ63 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 04:58:29 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDD610B49;
-        Thu, 24 Nov 2022 01:58:28 -0800 (PST)
-Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4NHtfL4WQMz6HJZj;
-        Thu, 24 Nov 2022 17:55:38 +0800 (CST)
-Received: from lhrpeml100006.china.huawei.com (7.191.160.224) by
- fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 24 Nov 2022 10:58:24 +0100
-Received: from lhrpeml500001.china.huawei.com (7.191.163.213) by
- lhrpeml100006.china.huawei.com (7.191.160.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 24 Nov 2022 09:58:24 +0000
-Received: from lhrpeml500001.china.huawei.com ([7.191.163.213]) by
- lhrpeml500001.china.huawei.com ([7.191.163.213]) with mapi id 15.01.2375.031;
- Thu, 24 Nov 2022 09:58:24 +0000
-From:   Salil Mehta <salil.mehta@huawei.com>
-To:     Alexander Lobakin <alobakin@mailbox.org>
-CC:     Alexander Lobakin <alobakin@pm.me>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Jens Axboe <axboe@kernel.dk>,
-        "Boris Brezillon" <bbrezillon@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 16/18] net: hns3: fix mixed module-builtin object
-Thread-Topic: [PATCH 16/18] net: hns3: fix mixed module-builtin object
-Thread-Index: AQHY/Gwia2IZVsHg6EO9Omjroyk7sK5K47QQgAIzhICAAKYBcA==
-Date:   Thu, 24 Nov 2022 09:58:24 +0000
-Message-ID: <1916b5a0d76e493e88ba568f9bae3f63@huawei.com>
-References: <20221119225650.1044591-1-alobakin@pm.me>
- <20221119225650.1044591-17-alobakin@pm.me>
- <1d2341cc5a1843538d55fb34bd8137d8@huawei.com>
- <20221123220753.65752-1-alobakin@mailbox.org>
-In-Reply-To: <20221123220753.65752-1-alobakin@mailbox.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.170.198]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S229669AbiKXKAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 05:00:51 -0500
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F9DF175A7
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 02:00:50 -0800 (PST)
+Date:   Thu, 24 Nov 2022 11:00:45 +0100
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Xin Long <lucien.xin@gmail.com>, dev@openvswitch.org,
+        ovs-dev@openvswitch.org, Davide Caratti <dcaratti@redhat.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        network dev <netdev@vger.kernel.org>,
+        Paul Blakey <paulb@nvidia.com>,
+        Florian Westphal <fw@strlen.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>, kuba@kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net
+Subject: Re: [ovs-dev] [PATCHv2 net-next 5/5] net: move the nat function to
+ nf_nat_ovs for ovs and tc
+Message-ID: <Y39AzcHNCbeTePjK@salvia>
+References: <cover.1669138256.git.lucien.xin@gmail.com>
+ <bf19487f4dfc8cd91a4395672d9905b10917128d.1669138256.git.lucien.xin@gmail.com>
+ <Y343wyO20XUvwuvg@t14s.localdomain>
+ <20221123151335.ssrnv7jfrdugmcgg@t14s.localdomain>
+ <CADvbK_eYRZxaNreBmvXmAQzH+JLbiK-9UhKqzH2CM2sHt1bvQQ@mail.gmail.com>
+ <Y35q4NVXC2D4mgPc@t14s.localdomain>
+ <CADvbK_e+tgefsiB1N-7CHUR35P-sDfaOqRVp281VhrQO2ot_hQ@mail.gmail.com>
+ <Y35xs4Saj8coBmUH@t14s.localdomain>
+ <CADvbK_c9WpRSaqNkC5MrK9=xXGSE+or-R6=hSwCyeSqm7GO-nw@mail.gmail.com>
+ <Y36Oy1gT2KwQH07Y@t14s.localdomain>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Y36Oy1gT2KwQH07Y@t14s.localdomain>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
-
-> From: Alexander Lobakin <alobakin@mailbox.org>
-> Sent: Wednesday, November 23, 2022 10:08 PM
-> To: Salil Mehta <salil.mehta@huawei.com>
-> 
-> From: Salil Mehta <salil.mehta@huawei.com>
-> Date: Tue, 22 Nov 2022 12:39:04 +0000
-> 
-> > Hi Alexander,
-> >
-> > > From: Alexander Lobakin <alobakin@pm.me>
-> > > Sent: Saturday, November 19, 2022 11:10 PM
-> > > To: linux-kbuild@vger.kernel.org
-> 
-> [...]
-> 
-> > > diff --git a/drivers/net/ethernet/hisilicon/Kconfig
-> > > b/drivers/net/ethernet/hisilicon/Kconfig
-> > > index 3312e1d93c3b..9d2be93d0378 100644
-> > > --- a/drivers/net/ethernet/hisilicon/Kconfig
-> > > +++ b/drivers/net/ethernet/hisilicon/Kconfig
-> > > @@ -100,11 +100,15 @@ config HNS3
+On Wed, Nov 23, 2022 at 06:21:15PM -0300, Marcelo Ricardo Leitner wrote:
+> On Wed, Nov 23, 2022 at 02:55:05PM -0500, Xin Long wrote:
+> > On Wed, Nov 23, 2022 at 2:17 PM Marcelo Ricardo Leitner
+> > <marcelo.leitner@gmail.com> wrote:
+[...]
+> > > > "table=1, in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new
+> > > > actions=ct(nat(dst=7.7.16.3)),ct(commit, nat(src=7.7.16.1),
+> > > > alg=ftp),veth2"
+> > > >
+> > > > as long as it allows the 1st one doesn't commit, which is a simple
+> > > > check in parse_nat().
+> > > > I tested it, TC already supports it. I'm not sure about drivers, but I
 > > >
-> > >  if HNS3
+> > > There's an outstanding issue with act_ct that it may reuse an old
+> > > CT cache. Fixing it could (I'm not sure) impact this use case:
 > > >
-> > > +config HNS3_HCLGE_COMMON
-> > > +	tristate
-> > > +
-> >
-> >
-> > This change does not looks right to me. We do not intend to expose these
-> 
-> ...does not looks right to me -- because? The "wrong" line?
-
-
-Agreed. Not very helpful. Sorry about that :(
-
-
-> > common files via kconfig and as a separate module. I would need time to
-> > address this in a different way.
-> 
-> I'm curious how 40 Kb of shared code can be addressed differently :D
-> This Kconfig opt is hidden, it can only be selected by some other
-> symbol -- in this case, by the PF and VF HCLGE options. Nothing gets
-> exposed in a way it shouldn't be.
-
-
-There is a discussion to unify the VF and PF HCLGE driver for HNS3.
-This is to reduce the overhead of adding/maintaining features in 
-both of the drivers.
-
-
-> Lemme guess, some cross-OS "shared code" in the OOT nobody in the
-> upstream cares about (for good), how familiar :D IIRC ZSTD folks
-> also weren't happy at first.
-
-
-We have HNAE interfacing layer above HCLGE, if any such out-of-tree
-code maintains the sanctity of that interface then there should not be
-an issue at HCLGE. These functions are never going to get directly
-used by such out-of-tree code. This is by design.
-
-
-> > Please do not merge this change into the mainline!
-> >
-> >
-> > Thanks
-> > Salil
-> >
-> >
-> >
-> > >  config HNS3_HCLGE
-> > >  	tristate "Hisilicon HNS3 HCLGE Acceleration Engine & Compatibility
-> > > Layer Support"
-> > >  	default m
-> > >  	depends on PCI_MSI
-> > >  	depends on PTP_1588_CLOCK_OPTIONAL
-> > > +	select HNS3_HCLGE_COMMON
-> 
-> [...]
-> 
-> > > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > > b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > > index 987271da6e9b..39a7ab51be31 100644
-> > > --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > > @@ -13133,6 +13133,8 @@ static void __exit hclge_exit(void)
-> > >  module_init(hclge_init);
-> > >  module_exit(hclge_exit);
+> > > https://bugzilla.redhat.com/show_bug.cgi?id=2099220
+> > > same issue in ovs was fixed in
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2061ecfdf2350994e5b61c43e50e98a7a70e95ee
 > > >
-> > > +MODULE_IMPORT_NS(HNS3_HCLGE_COMMON);
-> >
-> >
-> > No, we don't want this.
+> > > (please don't ask me who would NAT and then overwrite IP addresses and
+> > > then NAT it again :D)
+> > I thought only traditional NAT would change IP, I'm too naive.
+> > 
+> > nftables names this as "stateless NAT."
+> > With two CTs in the same zone for full nat is more close to the
+> > netfilter's NAT processing (the same CT goes from prerouting to
+> > postrouting).
+> > Now I'm wondering how nftables handles the stateful NAT and stateless
+> > NAT at the same time.
 > 
-> I can export the common functions globally, without a namespace
-> if you prefer ._.
+> Me too.
 
-
-I was wondering if we could detect below condition in the Makefile
-itself and not depend upon separate namespace?
-
-"With CONFIG_HNS3_HCLGE=y and CONFIG_HNS3_HCLGEVF=m "
-
-
-Thanks
-Salil.
+There is a 'notrack' action to skip connection tracking for the flows
+where the user needs stateless NAT.
