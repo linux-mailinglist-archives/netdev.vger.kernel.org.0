@@ -2,72 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88640637BD3
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 15:51:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DCAE637BE5
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 15:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229866AbiKXOvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 09:51:09 -0500
+        id S229828AbiKXOxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 09:53:43 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbiKXOuw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 09:50:52 -0500
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4334D13F488
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 06:50:46 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id F0A745C00CE;
-        Thu, 24 Nov 2022 09:50:42 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 24 Nov 2022 09:50:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1669301442; x=1669387842; bh=rUOnuzlGDJa8ettx+Lmo48fYOj8l
-        xj1yyuiOUeOeEf0=; b=mTa3TnKP4YTL0NUQnnwMJv//s+lM+aWDv0nuayj6noxd
-        rfIaYoaoeQpa3ieYXho68ILqcvzCHQjC6/k2wKH6gNgghFynxz+rSH8kfM1Um131
-        +B65SFOL5o0V+oFvsxrQYAyq35goNJd6YlgN2nupZIJmU1rT6Slbz/hQIgPWal9L
-        Bf/jD/+sR6JNLH1KDwVKN+1D4Vw32Ul21J2cKCc1x7284H0NQdDgWjVdV8Nj/dYR
-        jSyOkNV2iqSq/yLGaJzzO35ps+jkGwVuesiJ0y/fepzVkjIUCrewukm0ZzIZ7/fC
-        YOH9/iz57J1zmzxzlox8DWowasff1R0F98g2maFTpQ==
-X-ME-Sender: <xms:woR_Yx18-IjfJ49JLt8dWLQKJ207_P3afofAtpWuqeh4e1Ft00nqxQ>
-    <xme:woR_Y4ECAWpAh8bXVv7zP4UexSSXmofM8nE1j13ccOkupO-eh2NR4KZ9QHBhpCReH
-    fnv2xKWy7795GU>
-X-ME-Received: <xmr:woR_Yx5P-i7NA8R5FB4L9X_Vcm8jrTfYiav_l5KmTTXAuTXxi0dmR8hg1iP-uAzu1jqo076fpvBUo33iswTQjePB87c>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrieefgdeilecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpefhffejgefhjeehjeevheevhfetveevfefgueduueeivdeijeeihfegheeljefg
-    ueenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:woR_Y-0PNBwy7ucqXv9gpqzlzKncHKIRdOjOVlAp59dxq_Gwsp0aYw>
-    <xmx:woR_Y0F6OTlOJjQQySe0PdU7kHptWcD3eqbHhJ2BCmU1cwU-Ho_q7A>
-    <xmx:woR_Y_8PIpTchbkgCI3RYtkYHLn_sCCH8LLDXa5QH1YAyosASD6g4A>
-    <xmx:woR_Y_PxCr-ZXgI5QnnzyjsH1gOYqlH_fBpSZ2wQUR9N-y-lGQf7ug>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 24 Nov 2022 09:50:42 -0500 (EST)
-Date:   Thu, 24 Nov 2022 16:50:37 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jonas Gorski <jonas.gorski@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: RTM_DELROUTE not sent anymore when deleting (last) nexthop of
- routes in 6.1
-Message-ID: <Y3+Evdg9ODFVM9/w@shredder>
-References: <CAOiHx==ddZr6mvvbzgoAwwhJW76qGNVOcNsTG-6m79Ch+=aA5Q@mail.gmail.com>
- <Y39me56NhhPYewYK@shredder>
- <CAOiHx=kRew115+43rkPioe=wWNg1TNx5u9F3+frNkOK1M9PySw@mail.gmail.com>
- <CAOiHx=n2O1m24ZbMRbfD1=PCs-yYajpjNWR1y1oBP8Rz-8wA5A@mail.gmail.com>
+        with ESMTP id S229886AbiKXOx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 09:53:28 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A3863CED;
+        Thu, 24 Nov 2022 06:52:53 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id w129so1805303pfb.5;
+        Thu, 24 Nov 2022 06:52:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=nVlVHt+rR1A/mnk2+jRjQKtqfAREMkBc59LU4VGb4YI=;
+        b=dpGIad4wwM4Ko4bgzazYPSDTevzuPXHWxDTLCA8Vn9qYhSmYGCH3TKfYwnVKnkA7Na
+         KA4lka8l6q3FxKDk2zZ6+tqcD/MuDaFwJXLNcPTH8ORHd47VRWHrDAGG8eeDHjwGbDe6
+         ZKvh/HclcB1C9ahqVqrz07i4i5wpX1fpnlkiY/vvu8B8b97UVHSAjPdI0COnbrX7zVy8
+         aqVL5vSCK1vNtP+d0UYE6F2fDo8/FUYcIe5A1PcpD2azH97QoP5fr+dLQmiFIAY7+KRG
+         0tll/7s/HHppZiOCEyeKfok0WzWjVARBVS17i4gKf0wK/HRYW2ttTfTrKOJjuQnG1UmR
+         xiCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nVlVHt+rR1A/mnk2+jRjQKtqfAREMkBc59LU4VGb4YI=;
+        b=ewh5uoHDR9iMbm0cgg4ljrlFgtgXli4/D5e/9BOR2t8IIxGHW1PAr59a8gvuPFK8BM
+         RwFVO3++cS8qPaFqw84xLU+qlI5qlgbOELk7pTcSZJTOA0Xwd0oVNVrFHGsJVFhBIWdG
+         43KORkPXAY1nt4mqlOyzzXX67ZSBokcTm0IIkBgVHBxdAgulZY2Sa8UywneMcpTXzCvk
+         iTOSVpC42SXqWlAcZU6B7fNNhjMhnAbrarnu+4f5S56ZCOJxWj87ElEOxPqBlfvG+tiH
+         hgdPTTli5NYq8pP2hv/532GB7rhMX1vp/6CLjFOQpLmCmlvYguZALEH2YKcPuFibcbHV
+         Bu3g==
+X-Gm-Message-State: ANoB5plWYrSf67zB+y2Mrh6Ch4BX/4UE0Y1coGgcYT3BKekoiuVbmuz4
+        I0QUK3XlmR8HPM+79KDkPe8=
+X-Google-Smtp-Source: AA0mqf6ksphTgejqw7AwvHkgzVLNNLHOOATIP9RvebA8dRm5a/YiyHsRQ3HGt2gx6tG+NpB9s5ZWlw==
+X-Received: by 2002:a63:1345:0:b0:476:f92f:69f0 with SMTP id 5-20020a631345000000b00476f92f69f0mr30631067pgt.463.1669301572765;
+        Thu, 24 Nov 2022 06:52:52 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id q5-20020a17090311c500b00182a9c27acfsm1401826plh.227.2022.11.24.06.52.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Nov 2022 06:52:52 -0800 (PST)
+Date:   Thu, 24 Nov 2022 06:52:49 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Arun.Ramadoss@microchip.com
+Cc:     andrew@lunn.ch, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
+        olteanv@gmail.com, linux@armlinux.org.uk,
+        Tristram.Ha@microchip.com, f.fainelli@gmail.com, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        Woojung.Huh@microchip.com, davem@davemloft.net
+Subject: Re: [RFC Patch net-next v2 1/8] net: ptp: add helper for one-step
+ P2P clocks
+Message-ID: <Y3+FQeOoE+N7X0hC@hoboy.vegasvil.org>
+References: <20221121154150.9573-1-arun.ramadoss@microchip.com>
+ <20221121154150.9573-2-arun.ramadoss@microchip.com>
+ <Y3zd4s7c3TPKd/Rb@hoboy.vegasvil.org>
+ <8de1953d8297c506b58d960fc56edee135d7d8c5.camel@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAOiHx=n2O1m24ZbMRbfD1=PCs-yYajpjNWR1y1oBP8Rz-8wA5A@mail.gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+In-Reply-To: <8de1953d8297c506b58d960fc56edee135d7d8c5.camel@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,108 +78,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 24, 2022 at 03:40:19PM +0100, Jonas Gorski wrote:
-> On Thu, 24 Nov 2022 at 15:15, Jonas Gorski <jonas.gorski@gmail.com> wrote:
-> >
-> > Hi Ido,
-> >
-> > On Thu, 24 Nov 2022 at 13:41, Ido Schimmel <idosch@idosch.org> wrote:
-> > >
-> > > On Thu, Nov 24, 2022 at 10:20:00AM +0100, Jonas Gorski wrote:
-> > > > Hello,
-> > > >
-> > > > when an IPv4 route gets removed because its nexthop was deleted, the
-> > > > kernel does not send a RTM_DELROUTE netlink notifications anymore in
-> > > > 6.1. A bisect lead me to 61b91eb33a69 ("ipv4: Handle attempt to delete
-> > > > multipath route when fib_info contains an nh reference"), and
-> > > > reverting it makes it work again.
-> > > >
-> > >
-> > > Are you running an upstream kernel?
-> >
-> > Okay, after having a second look, you are right, and I got myself
-> > confused by IPv6 generating RTM_DELROUTE notifications, but which is
-> > besides the point.
-> >
-> > The point where it fails is that FRR tries to delete its route(s), and
-> > fails to do so with this commit applied (=> RTM_DELROUTE goes
-> > missing), then does the RTM_DELNEXTHOP.
-> >
-> > So while there is indeed no RTM_DELROUTE generated in response to the
-> > kernel, it was generated when FRR was successfully deleting its routes
-> > before.
-> >
-> > Not sure if this already qualifies as breaking userspace though, but
-> > it's definitely something that used to work with 6.0 and before, and
-> > does not work anymore now.
-> >
-> > The error in FRR log is:
-> >
-> > [YXPF5-B2CE0] netlink_route_multipath_msg_encode: RTM_DELROUTE
-> > 10.0.1.0/24 vrf 0(254)
-> > [HYEHE-CQZ9G] nl_batch_send: netlink-dp (NS 0), batch size=44, msg cnt=1
-> > [XS99C-X3KS5] netlink-dp (NS 0): error: No such process
-> > type=RTM_DELROUTE(25), seq=22, pid=2419702167
-> >
-> > with the revert it succeeds.
-> >
-> > I'll see if I can get a better idea of the actual netlink message sent.
+On Wed, Nov 23, 2022 at 07:10:58AM +0000, Arun.Ramadoss@microchip.com wrote:
+> This patch series is extension of PTP support for KSZ9563 patch series
+> submitted two years back which is not mainlined.
+> In that patch review feedback, it was suggested to make this function
+> generic and so it was moved from ksz_common.h to ptp_classify.h
 > 
-> Okay, found the knob:
+> Link: 
+> https://lore.kernel.org/netdev/20201022113243.4shddtywgvpcqq6c@skbuf/
 > 
-> nlmsghdr [len=44 type=(25) DELROUTE flags=(0x0401)
-> {REQUEST,(ATOMIC|CREATE)} seq=22 pid=2185212923]
->   rtmsg [family=(2) AF_INET dstlen=24 srclen=0 tos=0 table=254
-> protocol=(186) UNKNOWN scope=(0) UNIVERSE type=(0) UNSPEC flags=0x0000
-> {}]
->     rta [len=8 (payload=4) type=(1) DST]
->       10.0.1.0
->     rta [len=8 (payload=4) type=(6) PRIORITY]
->       20
+> 
+> https://lore.kernel.org/netdev/20201022143429.GA9743@hoboy.vegasvil.org/
 
-The route is deleted with only prefix information (NH_ID not specified).
-Matches this comment and the code:
-https://github.com/FRRouting/frr/blob/master/zebra/rt_netlink.c#L2091
+okay
 
-> netlink-dp (NS 0): error: No such process type=RTM_DELROUTE(25),
-> seq=22, pid=2185212923
-> 
-> The route was created via
-> 
-> nlmsghdr [len=52 type=(24) NEWROUTE flags=(0x0501)
-> {REQUEST,DUMP,(ROOT|REPLACE|CAPPED),(ATOMIC|CREATE)} seq=18
-> pid=2185212923]
->  rtmsg [family=(2) AF_INET dstlen=24 srclen=0 tos=0 table=254
-> protocol=(186) UNKNOWN scope=(0) UNIVERSE type=(1) UNICAST
-> flags=0x0000 {}]
->     rta [len=8 (payload=4) type=(1) DST]
->       10.0.1.0
->     rta [len=8 (payload=4) type=(6) PRIORITY]
->        20
->      rta [len=8 (payload=4) type=(30) NH_ID]
->      18
-
-Here the nexthop ID is obviously present.
-
-Let me try to fix it and add a test for this flow.
-
-Thanks for all the details!
-
-> 
-> and for completion the nexthop is created via:
-> 
-> nlmsghdr [len=48 type=(104) NEWNEXTHOP flags=(0x0501)
-> {REQUEST,DUMP,(ROOT|REPLACE|CAPPED),(ATOMIC|CREATE)} seq=17
-> pid=2185212923]
->    nhm [family=(2) AF_INET scope=(0) UNIVERSE protocol=(11) ZEBRA
-> flags=0x00000000 {}]
->     rta [len=8 (payload=4) type=(1) ID]
->       18
->     rta [len=8 (payload=4) type=(6) GATEWAY]
->       10.0.0.1
->     rta [len=8 (payload=4) type=(5) OIF]
->       62
-> 
-> 
-> Regards
-> Jonas
+Thanks,
+Richard
