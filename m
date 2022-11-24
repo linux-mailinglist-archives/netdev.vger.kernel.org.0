@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B992B6376A0
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 11:39:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A35063769C
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 11:38:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229677AbiKXKjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 05:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
+        id S229737AbiKXKiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 05:38:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiKXKjJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 05:39:09 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226AF205E8
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 02:39:09 -0800 (PST)
+        with ESMTP id S229762AbiKXKiT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 05:38:19 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC9524BED
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 02:38:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669286349; x=1700822349;
+  t=1669286297; x=1700822297;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=gK9lJEPQhoeKGmn0SLkYFb/fwQG86BGbl4bBaAYLIFs=;
-  b=Z8FRdpPqhu8Ymu3l9Aarq44o/ozQItYfL8vwZheeD1DlrbsoYTDg1Zp0
-   WPvG+1zqbvcR8P+ME2gfLrJ5x035uVebrkESpu9fEk5j+wPPIxSVrO813
-   SuJF3ACkbVIDpL7WSP95cWpZ0RkX/NVTUWf0BTm1/3/kMIDT00aX4znyp
-   JBkDyaKsS9e+cNLpawrLC2qo/3EnJDysbALCu1w04idzv3XPtjH4axtBX
-   AXPlw1liU+TesvLn7K1CoAFANLnV3yTWsffDIrjTJIkJ/qnKBnIv7/VPR
-   KyBnlPsIhlaSum1UyNx9JeuM0eidIoL0FJlAhiF6/JdRqYKqCFnxY2DrW
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="400566435"
+  bh=xNsnGsArlsExxKFda04bwU7zhM+RVjgJNREPsBG45lU=;
+  b=f8p+Nj+19TZJ2xgcJ6AWqdnwLcGF0boHAUE+iu/L+Cahv4d6g8c/f5I+
+   p70UaFn0+bM9R14CPU8AaTuINuIiFY/lJrbWajtrTOi/cQgMfpK8b+4Do
+   Pw1Ez8I+iC07QPVshPwMilbKb8TZmkeFm+owv5iX8zeVLt4fSZTl0ESSj
+   MI4YDZnIdfExSOGE0VjqN0Jv11pWCOFgCE2D6+u5YISQ+US6HMBaIEa7P
+   wXnY/FHNn6KqJHS/NROQN5QiMv8TN596mk4iDrl3MbXjR9O3daOsDCmck
+   FwyGPGu1bHj83hWXmtK5J3I7aykdFE9MJn8FE7KrXHX+zALxZlyWT3s5U
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="312974982"
 X-IronPort-AV: E=Sophos;i="5.96,190,1665471600"; 
-   d="scan'208";a="400566435"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2022 02:37:57 -0800
+   d="scan'208";a="312974982"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2022 02:38:17 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="887327832"
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="971207486"
 X-IronPort-AV: E=Sophos;i="5.96,190,1665471600"; 
-   d="scan'208";a="887327832"
+   d="scan'208";a="971207486"
 Received: from bswcg005.iind.intel.com ([10.224.174.166])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Nov 2022 02:37:54 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 24 Nov 2022 02:38:09 -0800
 From:   m.chetan.kumar@linux.intel.com
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
         m.chetan.kumar@intel.com, linuxwwan@intel.com, edumazet@google.com,
-        pabeni@redhat.com, M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v2 net 1/4] net: wwan: iosm: fix kernel test robot reported error
-Date:   Thu, 24 Nov 2022 16:07:46 +0530
-Message-Id: <20221124103746.1445987-1-m.chetan.kumar@linux.intel.com>
+        pabeni@redhat.com, didi.debian@cknow.org,
+        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
+        Bonaccorso Salvatore <carnil@debian.org>
+Subject: [PATCH v2 net 2/4] net: wwan: iosm: fix dma_alloc_coherent incompatible pointer type
+Date:   Thu, 24 Nov 2022 16:08:03 +0530
+Message-Id: <20221124103803.1446000-1-m.chetan.kumar@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -62,34 +63,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 
-sparse warnings - iosm_ipc_mux_codec.c:1474 using plain
-integer as NULL pointer.
+Fix build error reported on armhf while preparing 6.1-rc5
+for Debian.
 
-Use skb_trim() to reset skb tail & len.
+iosm_ipc_protocol.c:244:36: error: passing argument 3 of
+'dma_alloc_coherent' from incompatible pointer type.
 
-Fixes: 9413491e20e1 ("net: iosm: encode or decode datagram")
-Reported-by: kernel test robot <lkp@intel.com>
+Change phy_ap_shm type from phys_addr_t to dma_addr_t.
+
+Fixes: faed4c6f6f48 ("net: iosm: shared memory protocol")
+Reported-by: Bonaccorso Salvatore <carnil@debian.org>
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 --
 v2: No Change.
 ---
- drivers/net/wwan/iosm/iosm_ipc_mux_codec.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/wwan/iosm/iosm_ipc_protocol.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c b/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
-index d41e373f9c0a..c16365123660 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
-@@ -1471,8 +1471,7 @@ void ipc_mux_ul_encoded_process(struct iosm_mux *ipc_mux, struct sk_buff *skb)
- 			ipc_mux->ul_data_pend_bytes);
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol.h b/drivers/net/wwan/iosm/iosm_ipc_protocol.h
+index 9b3a6d86ece7..289397c4ea6c 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_protocol.h
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol.h
+@@ -122,7 +122,7 @@ struct iosm_protocol {
+ 	struct iosm_imem *imem;
+ 	struct ipc_rsp *rsp_ring[IPC_MEM_MSG_ENTRIES];
+ 	struct device *dev;
+-	phys_addr_t phy_ap_shm;
++	dma_addr_t phy_ap_shm;
+ 	u32 old_msg_tail;
+ };
  
- 	/* Reset the skb settings. */
--	skb->tail = 0;
--	skb->len = 0;
-+	skb_trim(skb, 0);
- 
- 	/* Add the consumed ADB to the free list. */
- 	skb_queue_tail((&ipc_mux->ul_adb.free_list), skb);
 -- 
 2.34.1
 
