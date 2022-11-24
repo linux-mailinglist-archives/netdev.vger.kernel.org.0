@@ -2,70 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 952A16375A1
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 10:54:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 091486375B7
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 10:58:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbiKXJyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 04:54:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40022 "EHLO
+        id S229729AbiKXJ6p convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 24 Nov 2022 04:58:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbiKXJyi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 04:54:38 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3CE12F414;
-        Thu, 24 Nov 2022 01:54:37 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id p12so1051632plq.4;
-        Thu, 24 Nov 2022 01:54:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=XIgPTakbw0hwKBNbkmD4l8Qc3Gi4AwORlTsSds71r68=;
-        b=BsVxydxBs9aa9qznlYR6MOpRqa+u8uFxiB2ZSUV2ZqJJjea+BTD88tv/TydzWSYKZw
-         y61O5a77M6UpIz2D9skWnej+1q1TaK6Zzhfs4Nqp9dqXsIvn6jTPCfPMz5F4BfWwkJK2
-         FizNA4s251QUQ7nrTbCLROW9StO58D5bf7zWydMwLqoHWVXDz38gZEdFBq7DRzd9Nqxe
-         ZwjTvLpTuFUMhWP77QE3zbk6KlUUH2Aqaw9cirjp+FcXcZj8zSSIBrsGUzjcdf+iXr6n
-         JggchEHjCJhbJuIErHC2MZrm2njvRWCWE6naWrbPWnKGiioXtO76e5o8s3V4Z9wEnLkE
-         XWPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XIgPTakbw0hwKBNbkmD4l8Qc3Gi4AwORlTsSds71r68=;
-        b=b27iAqbR+CUYM6Empx1RdCjmaMz948mmMBpdFd5INf3/NgOsjhK9vENxPemmwY++4G
-         jZc0s1ejPOXBXlO1zPZhR1A4tUzDY8hHZFngsx/dyI84+qJEf24LsiQ4huD149BcYWNK
-         cr/WT1QStEhnFfUeQweWzOPEaIdNscb2eTi4DJRDkls4Oyge+ZPIRwSwop2JLnK1BaC0
-         h7vNXDy2rTit9Tn9D0rK7/u+x4K54TKG3d8MlaIvh1zv2ZL2w1tmg6oHpxeMF2b7h3Fq
-         21CjYBGSZPbSBz+qpMYyohmLlqF7DCPHgHjSNsVldoFbkoTDAJ+2XvD+UV4eVOvRa+Kw
-         zimw==
-X-Gm-Message-State: ANoB5plB7Exk42BTR+S+C7wKHPOOtfdHAUh6VX0apADZyoGQDzHaSRqC
-        k5sjpbKN/VT7mniDHYpzEmOWH5ZYx9PnzAAF8cqNN0kBIjk=
-X-Google-Smtp-Source: AA0mqf4fbm1xuFTG/tN/aKXkrNjqCIFMW6GMVvWfx1PI3bE9KWxnr1m3qJg+KAhUu7XhrDR1mYl5f3bwltqE49y0F8A=
-X-Received: by 2002:a17:902:aa04:b0:17f:6fee:3334 with SMTP id
- be4-20020a170902aa0400b0017f6fee3334mr12975525plb.10.1669283676615; Thu, 24
- Nov 2022 01:54:36 -0800 (PST)
+        with ESMTP id S229525AbiKXJ63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 04:58:29 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDD610B49;
+        Thu, 24 Nov 2022 01:58:28 -0800 (PST)
+Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4NHtfL4WQMz6HJZj;
+        Thu, 24 Nov 2022 17:55:38 +0800 (CST)
+Received: from lhrpeml100006.china.huawei.com (7.191.160.224) by
+ fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 24 Nov 2022 10:58:24 +0100
+Received: from lhrpeml500001.china.huawei.com (7.191.163.213) by
+ lhrpeml100006.china.huawei.com (7.191.160.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 24 Nov 2022 09:58:24 +0000
+Received: from lhrpeml500001.china.huawei.com ([7.191.163.213]) by
+ lhrpeml500001.china.huawei.com ([7.191.163.213]) with mapi id 15.01.2375.031;
+ Thu, 24 Nov 2022 09:58:24 +0000
+From:   Salil Mehta <salil.mehta@huawei.com>
+To:     Alexander Lobakin <alobakin@mailbox.org>
+CC:     Alexander Lobakin <alobakin@pm.me>,
+        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        "Boris Brezillon" <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 16/18] net: hns3: fix mixed module-builtin object
+Thread-Topic: [PATCH 16/18] net: hns3: fix mixed module-builtin object
+Thread-Index: AQHY/Gwia2IZVsHg6EO9Omjroyk7sK5K47QQgAIzhICAAKYBcA==
+Date:   Thu, 24 Nov 2022 09:58:24 +0000
+Message-ID: <1916b5a0d76e493e88ba568f9bae3f63@huawei.com>
+References: <20221119225650.1044591-1-alobakin@pm.me>
+ <20221119225650.1044591-17-alobakin@pm.me>
+ <1d2341cc5a1843538d55fb34bd8137d8@huawei.com>
+ <20221123220753.65752-1-alobakin@mailbox.org>
+In-Reply-To: <20221123220753.65752-1-alobakin@mailbox.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.126.170.198]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20221123194406.80575-1-yashi@spacecubics.com> <CAMZ6RqJ2L6YntT23rsYEEUK=YDF2LrhB8hXwvYjciu3vzjx2hQ@mail.gmail.com>
- <CAELBRWLOKW8NCLpV=MG0_=XY4N3BaozsZCacfgaXEs-tyfzoAA@mail.gmail.com>
-In-Reply-To: <CAELBRWLOKW8NCLpV=MG0_=XY4N3BaozsZCacfgaXEs-tyfzoAA@mail.gmail.com>
-From:   Vincent Mailhol <vincent.mailhol@gmail.com>
-Date:   Thu, 24 Nov 2022 18:54:25 +0900
-Message-ID: <CAMZ6Rq+-ya9VxSGUD4aP=N58gZ1CmDbFFGQ9Oys0aTKm1rWN0A@mail.gmail.com>
-Subject: Re: [PATCH] can: mcba_usb: Fix termination command argument
-To:     Yasushi SHOJI <yasushi.shoji@gmail.com>
-Cc:     Yasushi SHOJI <yashi@spacecubics.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,39 +79,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu. 24 Nov. 2022 at 18:52, Yasushi SHOJI <yasushi.shoji@gmail.com> wrote:
-> On Thu, Nov 24, 2022 at 9:53 AM Vincent Mailhol
-> <vincent.mailhol@gmail.com> wrote:
-> > > diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
-> > > index 218b098b261d..67beff1a3876 100644
-> > > --- a/drivers/net/can/usb/mcba_usb.c
-> > > +++ b/drivers/net/can/usb/mcba_usb.c
-> > > @@ -785,9 +785,9 @@ static int mcba_set_termination(struct net_device *netdev, u16 term)
-> > >         };
-> > >
-> > >         if (term == MCBA_TERMINATION_ENABLED)
-> > > -               usb_msg.termination = 1;
-> > > -       else
-> > >                 usb_msg.termination = 0;
-> > > +       else
-> > > +               usb_msg.termination = 1;
-> > >
-> > >         mcba_usb_xmit_cmd(priv, (struct mcba_usb_msg *)&usb_msg);
-> >
-> > Nitpick: does it make sense to rename the field to something like
-> > usb_msg.termination_disable or usb_msg.termination_off? This would
-> > make it more explicit that this is a "reverse" boolean.
->
-> I'd rather define the values like
->
-> #define TERMINATION_ON (0)
-> #define TERMINATION_OFF (1)
->
-> So the block becomes
->
-> if (term == MCBA_TERMINATION_ENABLED)
->     usb_msg.termination = TERMINATION_ON;
-> else
->     usb_msg.termination = TERMINATION_OFF;
+Hi Alexander,
 
-That also works! Thank you.
+> From: Alexander Lobakin <alobakin@mailbox.org>
+> Sent: Wednesday, November 23, 2022 10:08 PM
+> To: Salil Mehta <salil.mehta@huawei.com>
+> 
+> From: Salil Mehta <salil.mehta@huawei.com>
+> Date: Tue, 22 Nov 2022 12:39:04 +0000
+> 
+> > Hi Alexander,
+> >
+> > > From: Alexander Lobakin <alobakin@pm.me>
+> > > Sent: Saturday, November 19, 2022 11:10 PM
+> > > To: linux-kbuild@vger.kernel.org
+> 
+> [...]
+> 
+> > > diff --git a/drivers/net/ethernet/hisilicon/Kconfig
+> > > b/drivers/net/ethernet/hisilicon/Kconfig
+> > > index 3312e1d93c3b..9d2be93d0378 100644
+> > > --- a/drivers/net/ethernet/hisilicon/Kconfig
+> > > +++ b/drivers/net/ethernet/hisilicon/Kconfig
+> > > @@ -100,11 +100,15 @@ config HNS3
+> > >
+> > >  if HNS3
+> > >
+> > > +config HNS3_HCLGE_COMMON
+> > > +	tristate
+> > > +
+> >
+> >
+> > This change does not looks right to me. We do not intend to expose these
+> 
+> ...does not looks right to me -- because? The "wrong" line?
+
+
+Agreed. Not very helpful. Sorry about that :(
+
+
+> > common files via kconfig and as a separate module. I would need time to
+> > address this in a different way.
+> 
+> I'm curious how 40 Kb of shared code can be addressed differently :D
+> This Kconfig opt is hidden, it can only be selected by some other
+> symbol -- in this case, by the PF and VF HCLGE options. Nothing gets
+> exposed in a way it shouldn't be.
+
+
+There is a discussion to unify the VF and PF HCLGE driver for HNS3.
+This is to reduce the overhead of adding/maintaining features in 
+both of the drivers.
+
+
+> Lemme guess, some cross-OS "shared code" in the OOT nobody in the
+> upstream cares about (for good), how familiar :D IIRC ZSTD folks
+> also weren't happy at first.
+
+
+We have HNAE interfacing layer above HCLGE, if any such out-of-tree
+code maintains the sanctity of that interface then there should not be
+an issue at HCLGE. These functions are never going to get directly
+used by such out-of-tree code. This is by design.
+
+
+> > Please do not merge this change into the mainline!
+> >
+> >
+> > Thanks
+> > Salil
+> >
+> >
+> >
+> > >  config HNS3_HCLGE
+> > >  	tristate "Hisilicon HNS3 HCLGE Acceleration Engine & Compatibility
+> > > Layer Support"
+> > >  	default m
+> > >  	depends on PCI_MSI
+> > >  	depends on PTP_1588_CLOCK_OPTIONAL
+> > > +	select HNS3_HCLGE_COMMON
+> 
+> [...]
+> 
+> > > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> > > b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> > > index 987271da6e9b..39a7ab51be31 100644
+> > > --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> > > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> > > @@ -13133,6 +13133,8 @@ static void __exit hclge_exit(void)
+> > >  module_init(hclge_init);
+> > >  module_exit(hclge_exit);
+> > >
+> > > +MODULE_IMPORT_NS(HNS3_HCLGE_COMMON);
+> >
+> >
+> > No, we don't want this.
+> 
+> I can export the common functions globally, without a namespace
+> if you prefer ._.
+
+
+I was wondering if we could detect below condition in the Makefile
+itself and not depend upon separate namespace?
+
+"With CONFIG_HNS3_HCLGE=y and CONFIG_HNS3_HCLGEVF=m "
+
+
+Thanks
+Salil.
