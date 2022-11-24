@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85DE3637CB4
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 16:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8506637CC3
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 16:19:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229989AbiKXPSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 10:18:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
+        id S230034AbiKXPTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 10:19:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiKXPSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 10:18:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D5416F0C0
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 07:16:25 -0800 (PST)
+        with ESMTP id S230024AbiKXPTD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 10:19:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5290516903F
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 07:16:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669302984;
+        s=mimecast20190719; t=1669302987;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=a63w9CoIFkndcfzkV+UlHKPl/w2rk67fLhqjC6Ra/nQ=;
-        b=HmsAvzJG7707Wwv/iqLX4lNEui/lBHrycjwvScZtZRshLry8vodwoFHEaCMAeE/57o4p/h
-        9k5K08VaTm+oxfBSVXyzePKSFDV7VssYBgEky4gacG+dOjWHkFBT/2JyD/6S4qiEpWLX9X
-        WJEceEdGHnnvGbjgnXLsuDogspQ1FcY=
+        bh=nnQks2BxOzRnMOP9aelQae29VWIgWtLn+Wzeg2Waiik=;
+        b=Ny9X8hiue12weqebCo23/JefHEReeXXsVgTGrwiL6hCLMDbwC2s1yjxm+LO2xolKLtqF6W
+        /5C1WHw5FblvVHqcoc0FI4FXLBTzpapkyxSzafcA4v0vTnZ0/gZeJeuzO9UqrptJW2J61l
+        A4xlpUQupgNOFWyajhJB1qE2yzWHVqs=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-136-tAQIrwjqPDig82dTfIdrlw-1; Thu, 24 Nov 2022 10:16:20 -0500
-X-MC-Unique: tAQIrwjqPDig82dTfIdrlw-1
+ us-mta-541-Oec3o72EPpGcjuQUJS90Cg-1; Thu, 24 Nov 2022 10:16:22 -0500
+X-MC-Unique: Oec3o72EPpGcjuQUJS90Cg-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A6B41185A78B;
-        Thu, 24 Nov 2022 15:16:19 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9EE8E185A79C;
+        Thu, 24 Nov 2022 15:16:21 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.193.200])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CB78040C2064;
-        Thu, 24 Nov 2022 15:16:17 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E0CB140C2064;
+        Thu, 24 Nov 2022 15:16:19 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -48,9 +48,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [RFC hid v1 05/10] HID: add report descriptor override for the X-Keys XK24
-Date:   Thu, 24 Nov 2022 16:15:58 +0100
-Message-Id: <20221124151603.807536-6-benjamin.tissoires@redhat.com>
+Subject: [RFC hid v1 06/10] selftests: hid: add vmtest.sh
+Date:   Thu, 24 Nov 2022 16:15:59 +0100
+Message-Id: <20221124151603.807536-7-benjamin.tissoires@redhat.com>
 In-Reply-To: <20221124151603.807536-1-benjamin.tissoires@redhat.com>
 References: <20221124151603.807536-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -58,7 +58,7 @@ Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,UPPERCASE_50_75 autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,458 +66,575 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current report descriptor of the XK-24 is hiding all programmable
-buttons. However, we can export them as such, so userspace do not need
-to reprogram the device itself and can have some handling depending on
-the application.
-
-Also add the compiled files as a demonstration of the output, but
-hopefully these outputs should be generated automatically when running
-make at the root of the kernel sources.
+Similar-ish in many points from the script in selftests/bpf, with a few
+differences:
+- relies on boot2container instead of a plain qemu image (meaning that
+  we can take any container in a registry as a base)
+- runs in the hid selftest dir, and such uses the test program from there
 
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 ---
- .../bpf/progs/b0003g0001v05F3p0405-xk24.bpf.c | 106 +++++++
- .../progs/b0003g0001v05F3p0405-xk24.hidbpf.h  | 292 ++++++++++++++++++
- drivers/hid/bpf/progs/hid_bpf_progs.h         |   5 +-
- 3 files changed, 401 insertions(+), 2 deletions(-)
- create mode 100644 drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.bpf.c
- create mode 100644 drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.hidbpf.h
+ tools/testing/selftests/hid/.gitignore    |   1 +
+ tools/testing/selftests/hid/config.common | 241 +++++++++++++++++++
+ tools/testing/selftests/hid/config.x86_64 |   4 +
+ tools/testing/selftests/hid/vmtest.sh     | 280 ++++++++++++++++++++++
+ 4 files changed, 526 insertions(+)
+ create mode 100644 tools/testing/selftests/hid/config.common
+ create mode 100644 tools/testing/selftests/hid/config.x86_64
+ create mode 100755 tools/testing/selftests/hid/vmtest.sh
 
-diff --git a/drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.bpf.c b/drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.bpf.c
+diff --git a/tools/testing/selftests/hid/.gitignore b/tools/testing/selftests/hid/.gitignore
+index a462ca6ab2c0..995af0670f69 100644
+--- a/tools/testing/selftests/hid/.gitignore
++++ b/tools/testing/selftests/hid/.gitignore
+@@ -2,3 +2,4 @@ bpftool
+ *.skel.h
+ /tools
+ hid_bpf
++results
+diff --git a/tools/testing/selftests/hid/config.common b/tools/testing/selftests/hid/config.common
 new file mode 100644
-index 000000000000..736861988a94
+index 000000000000..0617275d93cc
 --- /dev/null
-+++ b/drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.bpf.c
-@@ -0,0 +1,106 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022 Benjamin Tissoires
-+ */
++++ b/tools/testing/selftests/hid/config.common
+@@ -0,0 +1,241 @@
++CONFIG_9P_FS_POSIX_ACL=y
++CONFIG_9P_FS_SECURITY=y
++CONFIG_9P_FS=y
++CONFIG_AUDIT=y
++CONFIG_BINFMT_MISC=y
++CONFIG_BLK_CGROUP_IOLATENCY=y
++CONFIG_BLK_CGROUP=y
++CONFIG_BLK_DEV_BSGLIB=y
++CONFIG_BLK_DEV_IO_TRACE=y
++CONFIG_BLK_DEV_RAM_SIZE=16384
++CONFIG_BLK_DEV_RAM=y
++CONFIG_BLK_DEV_THROTTLING=y
++CONFIG_BONDING=y
++CONFIG_BOOTPARAM_HARDLOCKUP_PANIC=y
++CONFIG_BOOTTIME_TRACING=y
++CONFIG_BSD_DISKLABEL=y
++CONFIG_BSD_PROCESS_ACCT=y
++CONFIG_CFS_BANDWIDTH=y
++CONFIG_CGROUP_CPUACCT=y
++CONFIG_CGROUP_DEBUG=y
++CONFIG_CGROUP_DEVICE=y
++CONFIG_CGROUP_FREEZER=y
++CONFIG_CGROUP_HUGETLB=y
++CONFIG_CGROUP_NET_CLASSID=y
++CONFIG_CGROUP_NET_PRIO=y
++CONFIG_CGROUP_PERF=y
++CONFIG_CGROUP_PIDS=y
++CONFIG_CGROUP_RDMA=y
++CONFIG_CGROUP_SCHED=y
++CONFIG_CGROUPS=y
++CONFIG_CGROUP_WRITEBACK=y
++CONFIG_CMA_AREAS=7
++CONFIG_CMA=y
++CONFIG_COMPAT_32BIT_TIME=y
++CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=y
++CONFIG_CPU_FREQ_GOV_CONSERVATIVE=y
++CONFIG_CPU_FREQ_GOV_ONDEMAND=y
++CONFIG_CPU_FREQ_GOV_USERSPACE=y
++CONFIG_CPU_FREQ_STAT=y
++CONFIG_CPU_IDLE_GOV_LADDER=y
++CONFIG_CPUSETS=y
++CONFIG_CRC_T10DIF=y
++CONFIG_CRYPTO_BLAKE2B=y
++CONFIG_CRYPTO_DEV_VIRTIO=y
++CONFIG_CRYPTO_SEQIV=y
++CONFIG_CRYPTO_XXHASH=y
++CONFIG_DCB=y
++CONFIG_DEBUG_ATOMIC_SLEEP=y
++CONFIG_DEBUG_CREDENTIALS=y
++CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
++CONFIG_DEBUG_MEMORY_INIT=y
++CONFIG_DEFAULT_FQ_CODEL=y
++CONFIG_DEFAULT_RENO=y
++CONFIG_DEFAULT_SECURITY_DAC=y
++CONFIG_DEVTMPFS_MOUNT=y
++CONFIG_DEVTMPFS=y
++CONFIG_DMA_CMA=y
++CONFIG_DNS_RESOLVER=y
++CONFIG_EFI_STUB=y
++CONFIG_EFI=y
++CONFIG_EXPERT=y
++CONFIG_EXT4_FS_POSIX_ACL=y
++CONFIG_EXT4_FS_SECURITY=y
++CONFIG_EXT4_FS=y
++CONFIG_FAIL_FUNCTION=y
++CONFIG_FAULT_INJECTION_DEBUG_FS=y
++CONFIG_FAULT_INJECTION=y
++CONFIG_FB_MODE_HELPERS=y
++CONFIG_FB_TILEBLITTING=y
++CONFIG_FB_VESA=y
++CONFIG_FB=y
++CONFIG_FONT_8x16=y
++CONFIG_FONT_MINI_4x6=y
++CONFIG_FONTS=y
++CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
++CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
++CONFIG_FRAMEBUFFER_CONSOLE=y
++CONFIG_FUSE_FS=y
++CONFIG_FW_LOADER_USER_HELPER=y
++CONFIG_GART_IOMMU=y
++CONFIG_GENERIC_PHY=y
++CONFIG_HARDLOCKUP_DETECTOR=y
++CONFIG_HIGH_RES_TIMERS=y
++CONFIG_HPET=y
++CONFIG_HUGETLBFS=y
++CONFIG_HUGETLB_PAGE=y
++CONFIG_HWPOISON_INJECT=y
++CONFIG_HZ_1000=y
++CONFIG_INET=y
++CONFIG_INTEL_POWERCLAMP=y
++CONFIG_IP6_NF_FILTER=y
++CONFIG_IP6_NF_IPTABLES=y
++CONFIG_IP6_NF_NAT=y
++CONFIG_IP6_NF_TARGET_MASQUERADE=y
++CONFIG_IP_ADVANCED_ROUTER=y
++CONFIG_IP_MROUTE=y
++CONFIG_IP_MULTICAST=y
++CONFIG_IP_MULTIPLE_TABLES=y
++CONFIG_IP_NF_FILTER=y
++CONFIG_IP_NF_IPTABLES=y
++CONFIG_IP_NF_NAT=y
++CONFIG_IP_NF_TARGET_MASQUERADE=y
++CONFIG_IP_PIMSM_V1=y
++CONFIG_IP_PIMSM_V2=y
++CONFIG_IP_ROUTE_MULTIPATH=y
++CONFIG_IP_ROUTE_VERBOSE=y
++CONFIG_IPV6_MIP6=y
++CONFIG_IPV6_ROUTE_INFO=y
++CONFIG_IPV6_ROUTER_PREF=y
++CONFIG_IPV6_SEG6_LWTUNNEL=y
++CONFIG_IPV6_SUBTREES=y
++CONFIG_IRQ_POLL=y
++CONFIG_JUMP_LABEL=y
++CONFIG_KARMA_PARTITION=y
++CONFIG_KEXEC=y
++CONFIG_KPROBES=y
++CONFIG_KSM=y
++CONFIG_LEGACY_VSYSCALL_NONE=y
++CONFIG_LOG_BUF_SHIFT=21
++CONFIG_LOG_CPU_MAX_BUF_SHIFT=0
++CONFIG_LOGO=y
++CONFIG_LSM="selinux,bpf,integrity"
++CONFIG_MAC_PARTITION=y
++CONFIG_MAGIC_SYSRQ=y
++CONFIG_MCORE2=y
++CONFIG_MEMCG=y
++CONFIG_MEMORY_FAILURE=y
++CONFIG_MINIX_SUBPARTITION=y
++CONFIG_MODULES=y
++CONFIG_NAMESPACES=y
++CONFIG_NET_9P_VIRTIO=y
++CONFIG_NET_9P=y
++CONFIG_NET_ACT_BPF=y
++CONFIG_NET_CLS_CGROUP=y
++CONFIG_NETDEVICES=y
++CONFIG_NET_EMATCH=y
++CONFIG_NETFILTER_NETLINK_LOG=y
++CONFIG_NETFILTER_NETLINK_QUEUE=y
++CONFIG_NETFILTER_XTABLES=y
++CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y
++CONFIG_NETFILTER_XT_MATCH_BPF=y
++CONFIG_NETFILTER_XT_MATCH_COMMENT=y
++CONFIG_NETFILTER_XT_MATCH_CONNTRACK=y
++CONFIG_NETFILTER_XT_MATCH_MARK=y
++CONFIG_NETFILTER_XT_MATCH_MULTIPORT=y
++CONFIG_NETFILTER_XT_MATCH_STATISTIC=y
++CONFIG_NETFILTER_XT_NAT=y
++CONFIG_NETFILTER_XT_TARGET_MASQUERADE=y
++CONFIG_NET_IPGRE_BROADCAST=y
++CONFIG_NET_L3_MASTER_DEV=y
++CONFIG_NETLABEL=y
++CONFIG_NET_SCH_DEFAULT=y
++CONFIG_NET_SCHED=y
++CONFIG_NET_SCH_FQ_CODEL=y
++CONFIG_NET_TC_SKB_EXT=y
++CONFIG_NET_VRF=y
++CONFIG_NET=y
++CONFIG_NF_CONNTRACK=y
++CONFIG_NF_NAT_MASQUERADE=y
++CONFIG_NF_NAT=y
++CONFIG_NLS_ASCII=y
++CONFIG_NLS_CODEPAGE_437=y
++CONFIG_NLS_DEFAULT="utf8"
++CONFIG_NO_HZ=y
++CONFIG_NR_CPUS=128
++CONFIG_NUMA_BALANCING=y
++CONFIG_NUMA=y
++CONFIG_NVMEM=y
++CONFIG_OSF_PARTITION=y
++CONFIG_OVERLAY_FS_INDEX=y
++CONFIG_OVERLAY_FS_METACOPY=y
++CONFIG_OVERLAY_FS_XINO_AUTO=y
++CONFIG_OVERLAY_FS=y
++CONFIG_PACKET=y
++CONFIG_PANIC_ON_OOPS=y
++CONFIG_PARTITION_ADVANCED=y
++CONFIG_PCIEPORTBUS=y
++CONFIG_PCI_IOV=y
++CONFIG_PCI_MSI=y
++CONFIG_PCI=y
++CONFIG_PHYSICAL_ALIGN=0x1000000
++CONFIG_POSIX_MQUEUE=y
++CONFIG_POWER_SUPPLY=y
++CONFIG_PREEMPT=y
++CONFIG_PRINTK_TIME=y
++CONFIG_PROC_KCORE=y
++CONFIG_PROFILING=y
++CONFIG_PROVE_LOCKING=y
++CONFIG_PTP_1588_CLOCK=y
++CONFIG_RC_DEVICES=y
++CONFIG_RC_LOOPBACK=y
++CONFIG_RCU_CPU_STALL_TIMEOUT=60
++CONFIG_SCHED_STACK_END_CHECK=y
++CONFIG_SCHEDSTATS=y
++CONFIG_SECURITY_NETWORK=y
++CONFIG_SECURITY_SELINUX=y
++CONFIG_SERIAL_8250_CONSOLE=y
++CONFIG_SERIAL_8250_DETECT_IRQ=y
++CONFIG_SERIAL_8250_EXTENDED=y
++CONFIG_SERIAL_8250_MANY_PORTS=y
++CONFIG_SERIAL_8250_NR_UARTS=32
++CONFIG_SERIAL_8250_RSA=y
++CONFIG_SERIAL_8250_SHARE_IRQ=y
++CONFIG_SERIAL_8250=y
++CONFIG_SERIAL_NONSTANDARD=y
++CONFIG_SERIO_LIBPS2=y
++CONFIG_SGI_PARTITION=y
++CONFIG_SMP=y
++CONFIG_SOCK_CGROUP_DATA=y
++CONFIG_SOLARIS_X86_PARTITION=y
++CONFIG_SUN_PARTITION=y
++CONFIG_SYNC_FILE=y
++CONFIG_SYSVIPC=y
++CONFIG_TASK_DELAY_ACCT=y
++CONFIG_TASK_IO_ACCOUNTING=y
++CONFIG_TASKSTATS=y
++CONFIG_TASK_XACCT=y
++CONFIG_TCP_CONG_ADVANCED=y
++CONFIG_TCP_MD5SIG=y
++CONFIG_TLS=y
++CONFIG_TMPFS_POSIX_ACL=y
++CONFIG_TMPFS=y
++CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
++CONFIG_TRANSPARENT_HUGEPAGE=y
++CONFIG_TUN=y
++CONFIG_UNIXWARE_DISKLABEL=y
++CONFIG_UNIX=y
++CONFIG_USER_NS=y
++CONFIG_VALIDATE_FS_PARSER=y
++CONFIG_VETH=y
++CONFIG_VIRT_DRIVERS=y
++CONFIG_VIRTIO_BALLOON=y
++CONFIG_VIRTIO_BLK=y
++CONFIG_VIRTIO_CONSOLE=y
++CONFIG_VIRTIO_FS=y
++CONFIG_VIRTIO_NET=y
++CONFIG_VIRTIO_PCI=y
++CONFIG_VLAN_8021Q=y
++CONFIG_XFRM_SUB_POLICY=y
++CONFIG_XFRM_USER=y
++CONFIG_ZEROPLUS_FF=y
+diff --git a/tools/testing/selftests/hid/config.x86_64 b/tools/testing/selftests/hid/config.x86_64
+new file mode 100644
+index 000000000000..a8721f403c21
+--- /dev/null
++++ b/tools/testing/selftests/hid/config.x86_64
+@@ -0,0 +1,4 @@
++CONFIG_X86_ACPI_CPUFREQ=y
++CONFIG_X86_CPUID=y
++CONFIG_X86_MSR=y
++CONFIG_X86_POWERNOW_K8=y
+diff --git a/tools/testing/selftests/hid/vmtest.sh b/tools/testing/selftests/hid/vmtest.sh
+new file mode 100755
+index 000000000000..f124cf6b0d0f
+--- /dev/null
++++ b/tools/testing/selftests/hid/vmtest.sh
+@@ -0,0 +1,280 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
-+#include "vmlinux.h"
-+#include "hid_bpf_helpers.h"
-+#include <bpf/bpf_tracing.h>
++set -u
++set -e
 +
-+static const __u8 fixed_rdesc[] = {
-+	0x05, 0x0c,                    // Usage Page (Consumer Devices)
-+	0x09, 0x01,                    // Usage (Consumer Control)
-+	0xa1, 0x01,                    // Collection (Application)
++# This script currently only works for x86_64
++ARCH="$(uname -m)"
++case "${ARCH}" in
++x86_64)
++	QEMU_BINARY=qemu-system-x86_64
++	BZIMAGE="arch/x86/boot/bzImage"
++	;;
++*)
++	echo "Unsupported architecture"
++	exit 1
++	;;
++esac
++DEFAULT_COMMAND="./hid_bpf"
++OUTPUT_DIR="$PWD/results"
++KCONFIG_REL_PATHS=("tools/testing/selftests/hid/config" "tools/testing/selftests/hid/config.common" "tools/testing/selftests/hid/config.${ARCH}")
++B2C_URL="https://gitlab.freedesktop.org/mupuf/boot2container/-/raw/master/vm2c.py"
++NUM_COMPILE_JOBS="$(nproc)"
++LOG_FILE_BASE="$(date +"hid_selftests.%Y-%m-%d_%H-%M-%S")"
++LOG_FILE="${LOG_FILE_BASE}.log"
++EXIT_STATUS_FILE="${LOG_FILE_BASE}.exit_status"
 +
-+	0xa1, 0x02,                    //  Collection (Logical)
-+	0x05, 0x08,                    //   Usage Page (LEDs)
-+	0x09, 0x4b,                    //   Usage (Generic Indicator)
-+	0x75, 0x08,                    //   Report Size (8)
-+	0x95, 0x23,                    //   Report Count (35)
-+	0x91, 0x02,                    //   Output (Data,Var,Abs)
-+	0xc0,                          //  End Collection
-+
-+	0xa1, 0x02,                    //  Collection (Logical)
-+	0x09, 0x00,                    //   Usage (Undefined)
-+	0x75, 0x08,                    //   Report Size (8)
-+	0x95, 0x01,                    //   Report Count (1)
-+	0x81, 0x03,                    //   Input (Cnst,Var,Abs)
-+	0x05, 0x09,                    //   Usage Page (Button)
-+	0x09, 0xff,                    //   Usage (Vendor Usage 0xff)
-+	0x75, 0x01,                    //   Report Size (1)
-+	0x95, 0x01,                    //   Report Count (1)
-+	0x81, 0x02,                    //   Input (Data,Var,Abs)
-+	0x95, 0x07,                    //   Report Count (7)
-+	0x81, 0x03,                    //   Input (Cnst,Var,Abs)
-+
-+	0x05, 0x0c,                    //   Usage Page (Consumer Devices)
-+	0x09, 0x03,                    //   Usage (Programmable Buttons)
-+	0xa1, 0x04,                    //   Collection (Named_array)
-+	0x05, 0x09,                    //   Usage Page (Button)
-+
-+	0x19, 0x01,                    //   Usage Minimum (1)
-+	0x29, 0x06,                    //   Usage Maximum (6)
-+	0x95, 0x06,                    //   Report Count (6)
-+	0x81, 0x02,                    //   Input (Data,Var,Abs)
-+	0x95, 0x02,                    //   Report Count (2)
-+	0x81, 0x03,                    //   Input (Cnst,Var,Abs)
-+
-+	0x19, 0x07,                    //   Usage Minimum (7)
-+	0x29, 0x0c,                    //   Usage Maximum (12)
-+	0x95, 0x06,                    //   Report Count (6)
-+	0x81, 0x02,                    //   Input (Data,Var,Abs)
-+	0x95, 0x02,                    //   Report Count (2)
-+	0x81, 0x03,                    //   Input (Cnst,Var,Abs)
-+
-+	0x19, 0x0d,                    //   Usage Minimum (13)
-+	0x29, 0x12,                    //   Usage Maximum (18)
-+	0x95, 0x06,                    //   Report Count (6)
-+	0x81, 0x02,                    //   Input (Data,Var,Abs)
-+	0x95, 0x02,                    //   Report Count (2)
-+	0x81, 0x03,                    //   Input (Cnst,Var,Abs)
-+
-+	0x19, 0x13,                    //   Usage Minimum (19)
-+	0x29, 0x19,                    //   Usage Maximum (24)
-+	0x95, 0x06,                    //   Report Count (6)
-+	0x81, 0x02,                    //   Input (Data,Var,Abs)
-+	0x95, 0x02,                    //   Report Count (2)
-+	0x81, 0x03,                    //   Input (Cnst,Var,Abs)
-+
-+	0xc0,                          //   End Collection
-+
-+	0x75, 0x08,                    //   Report Size (8)
-+	0x95, 0x1a,                    //   Report Count (26)
-+	0x81, 0x03,                    //   Input (Cnst,Var,Abs)
-+	0xc0,                          //  End Collection
-+	0xc0,                          // End Collection
-+};
-+
-+SEC("fmod_ret/hid_bpf_rdesc_fixup")
-+int BPF_PROG(hid_fix_rdesc, struct hid_bpf_ctx *hctx)
++usage()
 +{
-+	s16 y;
-+	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 4096 /* size */);
++	cat <<EOF
++Usage: $0 [-i] [-s] [-d <output_dir>] -- [<command>]
 +
-+	if (!data)
-+		return 0; /* EPERM check */
++<command> is the command you would normally run when you are in
++tools/testing/selftests/bpf. e.g:
 +
-+	__builtin_memcpy(data, fixed_rdesc, sizeof(fixed_rdesc));
++	$0 -- ./hid_bpf
 +
-+	return sizeof(fixed_rdesc);
++If no command is specified and a debug shell (-s) is not requested,
++"${DEFAULT_COMMAND}" will be run by default.
 +
-+	return 0;
++If you build your kernel using KBUILD_OUTPUT= or O= options, these
++can be passed as environment variables to the script:
++
++  O=<kernel_build_path> $0 -- ./hid_bpf
++
++or
++
++  KBUILD_OUTPUT=<kernel_build_path> $0 -- ./hid_bpf
++
++Options:
++
++	-u)		Update the boot2container script to a newer version.
++	-d)		Update the output directory (default: ${OUTPUT_DIR})
++	-j)		Number of jobs for compilation, similar to -j in make
++			(default: ${NUM_COMPILE_JOBS})
++	-s)		Instead of powering off the VM, start an interactive
++			shell. If <command> is specified, the shell runs after
++			the command finishes executing
++EOF
 +}
 +
-+SEC("syscall")
-+int probe(struct hid_bpf_probe_args *ctx)
++download()
 +{
-+	/*
-+	 * The device exports 3 interfaces.
-+	 */
-+	ctx->retval = ctx->rdesc_size != 33;
-+	if (ctx->retval)
-+		ctx->retval = -22;
++	local file="$1"
 +
-+	return 0;
++	echo "Downloading $file..." >&2
++	curl -Lsf "$file" -o "${@:2}"
 +}
 +
-+char _license[] SEC("license") = "GPL";
-diff --git a/drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.hidbpf.h b/drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.hidbpf.h
-new file mode 100644
-index 000000000000..f193d4dea6fd
---- /dev/null
-+++ b/drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.hidbpf.h
-@@ -0,0 +1,292 @@
-+/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-+/* THIS FILE IS AUTOGENERATED BY build_progs_list.py ! */
-+
-+#ifndef __B0003G0001V05F3P0405_XK24_HIDBPF_H__
-+#define __B0003G0001V05F3P0405_XK24_HIDBPF_H__
-+
++recompile_kernel()
 +{
-+	.id = {
-+		.bus = 0x0003,
-+		.group = 0x0001,
-+		.vendor = 0x05F3,
-+		.product = 0x0405,
-+	},
-+	.map_cnt = 1,
-+	.prog_cnt = 2,
-+	.probe = 1,
-+	.rodata = 0,
-+	.maps = {
-+		{
-+			.size = 108,
-+			.mmap_sz = 4096,
-+			.data = "\
-+\x05\x0c\x09\x01\xa1\x01\xa1\x02\x05\x08\x09\x4b\x75\x08\x95\x23\x91\x02\xc0\
-+\xa1\x02\x09\0\x75\x08\x95\x01\x81\x03\x05\x09\x09\xff\x75\x01\x95\x01\x81\x02\
-+\x95\x07\x81\x03\x05\x0c\x09\x03\xa1\x04\x05\x09\x19\x01\x29\x06\x95\x06\x81\
-+\x02\x95\x02\x81\x03\x19\x07\x29\x0c\x95\x06\x81\x02\x95\x02\x81\x03\x19\x0d\
-+\x29\x12\x95\x06\x81\x02\x95\x02\x81\x03\x19\x13\x29\x19\x95\x06\x81\x02\x95\
-+\x02\x81\x03\xc0\x75\x08\x95\x1a\x81\x03\xc0\xc0",
-+		},
-+	},
-+	.data_sz = 5088,
-+	.data = "\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x9f\xeb\x01\0\
-+\x18\0\0\0\0\0\0\0\x28\x03\0\0\x28\x03\0\0\x4c\x03\0\0\0\0\0\0\0\0\0\x02\x02\0\
-+\0\0\x01\0\0\0\0\0\0\x01\x08\0\0\0\x40\0\0\0\0\0\0\0\x01\0\0\x0d\x04\0\0\0\x14\
-+\0\0\0\x01\0\0\0\x18\0\0\0\0\0\0\x01\x04\0\0\0\x20\0\0\x01\x1c\0\0\0\x01\0\0\
-+\x0c\x03\0\0\0\0\0\0\0\x03\0\0\x0d\x07\0\0\0\x41\x03\0\0\x0a\0\0\0\x41\x03\0\0\
-+\x0d\0\0\0\x41\x03\0\0\x13\0\0\0\0\0\0\0\0\0\0\x02\x08\0\0\0\x58\x01\0\0\0\0\0\
-+\x08\x09\0\0\0\x5d\x01\0\0\0\0\0\x01\x01\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\x02\x0b\
-+\0\0\0\x6b\x01\0\0\x05\0\0\x04\x20\0\0\0\x77\x01\0\0\x0c\0\0\0\0\0\0\0\x7d\x01\
-+\0\0\x0e\0\0\0\x40\0\0\0\x81\x01\0\0\x0c\0\0\0\x80\0\0\0\x90\x01\0\0\x10\0\0\0\
-+\xa0\0\0\0\0\0\0\0\x11\0\0\0\xc0\0\0\0\x9c\x01\0\0\0\0\0\x08\x0d\0\0\0\xa2\x01\
-+\0\0\0\0\0\x01\x04\0\0\0\x20\0\0\0\0\0\0\0\0\0\0\x02\x0f\0\0\0\0\0\0\0\0\0\0\
-+\x0a\x28\0\0\0\xaf\x01\0\0\x04\0\0\x06\x04\0\0\0\xbf\x01\0\0\0\0\0\0\xd0\x01\0\
-+\0\x01\0\0\0\xe2\x01\0\0\x02\0\0\0\xf5\x01\0\0\x03\0\0\0\0\0\0\0\x02\0\0\x05\
-+\x04\0\0\0\x06\x02\0\0\x12\0\0\0\0\0\0\0\x0d\x02\0\0\x12\0\0\0\0\0\0\0\x12\x02\
-+\0\0\0\0\0\x08\x04\0\0\0\0\0\0\0\0\0\0\x0a\x14\0\0\0\x18\x02\0\0\0\0\0\x08\x15\
-+\0\0\0\x1f\x02\0\0\0\0\0\x08\x16\0\0\0\x2f\x02\0\0\0\0\0\x08\x17\0\0\0\x40\x02\
-+\0\0\0\0\0\x01\x08\0\0\0\x40\0\0\0\x4e\x02\0\0\x01\0\0\x0c\x06\0\0\0\0\0\0\0\0\
-+\0\0\x02\x1a\0\0\0\x5f\x02\0\0\x04\0\0\x04\x0c\x10\0\0\x7d\x01\0\0\x0d\0\0\0\0\
-+\0\0\0\x72\x02\0\0\x0d\0\0\0\x20\0\0\0\x7d\x02\0\0\x1b\0\0\0\x40\0\0\0\x06\x02\
-+\0\0\x04\0\0\0\x40\x80\0\0\0\0\0\0\0\0\0\x03\0\0\0\0\x09\0\0\0\x1c\0\0\0\0\x10\
-+\0\0\x83\x02\0\0\0\0\0\x01\x04\0\0\0\x20\0\0\0\0\0\0\0\x01\0\0\x0d\x04\0\0\0\
-+\x14\0\0\0\x19\0\0\0\x97\x02\0\0\x01\0\0\x0c\x1d\0\0\0\x05\x03\0\0\0\0\0\x01\
-+\x01\0\0\0\x08\0\0\x01\0\0\0\0\0\0\0\x03\0\0\0\0\x1f\0\0\0\x1c\0\0\0\x04\0\0\0\
-+\x0a\x03\0\0\0\0\0\x0e\x20\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\x0a\x08\0\0\0\0\0\0\0\
-+\0\0\0\x03\0\0\0\0\x22\0\0\0\x1c\0\0\0\x6c\0\0\0\x13\x03\0\0\0\0\0\x0e\x23\0\0\
-+\0\0\0\0\0\x1f\x03\0\0\x01\0\0\x0f\x04\0\0\0\x29\0\0\0\0\0\0\0\x04\0\0\0\x26\
-+\x03\0\0\x01\0\0\x0f\x6c\0\0\0\x24\0\0\0\0\0\0\0\x6c\0\0\0\x2e\x03\0\0\x01\0\0\
-+\x0f\x04\0\0\0\x21\0\0\0\0\0\0\0\x04\0\0\0\x36\x03\0\0\0\0\0\x07\0\0\0\0\x41\
-+\x03\0\0\0\0\0\x0e\x04\0\0\0\x01\0\0\0\0\x75\x6e\x73\x69\x67\x6e\x65\x64\x20\
-+\x6c\x6f\x6e\x67\x20\x6c\x6f\x6e\x67\0\x63\x74\x78\0\x69\x6e\x74\0\x68\x69\x64\
-+\x5f\x66\x69\x78\x5f\x72\x64\x65\x73\x63\0\x66\x6d\x6f\x64\x5f\x72\x65\x74\x2f\
-+\x68\x69\x64\x5f\x62\x70\x66\x5f\x72\x64\x65\x73\x63\x5f\x66\x69\x78\x75\x70\0\
-+\x2f\x68\x6f\x6d\x65\x2f\x62\x74\x69\x73\x73\x6f\x69\x72\x2f\x53\x72\x63\x2f\
-+\x68\x69\x64\x2f\x64\x72\x69\x76\x65\x72\x73\x2f\x68\x69\x64\x2f\x62\x70\x66\
-+\x2f\x70\x72\x6f\x67\x73\x2f\x62\x30\x30\x30\x33\x67\x30\x30\x30\x31\x76\x30\
-+\x35\x46\x33\x70\x30\x34\x30\x35\x2d\x78\x6b\x32\x34\x2e\x62\x70\x66\x2e\x63\0\
-+\x69\x6e\x74\x20\x42\x50\x46\x5f\x50\x52\x4f\x47\x28\x68\x69\x64\x5f\x66\x69\
-+\x78\x5f\x72\x64\x65\x73\x63\x2c\x20\x73\x74\x72\x75\x63\x74\x20\x68\x69\x64\
-+\x5f\x62\x70\x66\x5f\x63\x74\x78\x20\x2a\x68\x63\x74\x78\x29\0\x09\x5f\x5f\x75\
-+\x38\x20\x2a\x64\x61\x74\x61\x20\x3d\x20\x68\x69\x64\x5f\x62\x70\x66\x5f\x67\
-+\x65\x74\x5f\x64\x61\x74\x61\x28\x68\x63\x74\x78\x2c\x20\x30\x20\x2f\x2a\x20\
-+\x6f\x66\x66\x73\x65\x74\x20\x2a\x2f\x2c\x20\x34\x30\x39\x36\x20\x2f\x2a\x20\
-+\x73\x69\x7a\x65\x20\x2a\x2f\x29\x3b\0\x09\x69\x66\x20\x28\x21\x64\x61\x74\x61\
-+\x29\0\x09\x5f\x5f\x62\x75\x69\x6c\x74\x69\x6e\x5f\x6d\x65\x6d\x63\x70\x79\x28\
-+\x64\x61\x74\x61\x2c\x20\x66\x69\x78\x65\x64\x5f\x72\x64\x65\x73\x63\x2c\x20\
-+\x73\x69\x7a\x65\x6f\x66\x28\x66\x69\x78\x65\x64\x5f\x72\x64\x65\x73\x63\x29\
-+\x29\x3b\0\x5f\x5f\x75\x38\0\x75\x6e\x73\x69\x67\x6e\x65\x64\x20\x63\x68\x61\
-+\x72\0\x68\x69\x64\x5f\x62\x70\x66\x5f\x63\x74\x78\0\x69\x6e\x64\x65\x78\0\x68\
-+\x69\x64\0\x61\x6c\x6c\x6f\x63\x61\x74\x65\x64\x5f\x73\x69\x7a\x65\0\x72\x65\
-+\x70\x6f\x72\x74\x5f\x74\x79\x70\x65\0\x5f\x5f\x75\x33\x32\0\x75\x6e\x73\x69\
-+\x67\x6e\x65\x64\x20\x69\x6e\x74\0\x68\x69\x64\x5f\x72\x65\x70\x6f\x72\x74\x5f\
-+\x74\x79\x70\x65\0\x48\x49\x44\x5f\x49\x4e\x50\x55\x54\x5f\x52\x45\x50\x4f\x52\
-+\x54\0\x48\x49\x44\x5f\x4f\x55\x54\x50\x55\x54\x5f\x52\x45\x50\x4f\x52\x54\0\
-+\x48\x49\x44\x5f\x46\x45\x41\x54\x55\x52\x45\x5f\x52\x45\x50\x4f\x52\x54\0\x48\
-+\x49\x44\x5f\x52\x45\x50\x4f\x52\x54\x5f\x54\x59\x50\x45\x53\0\x72\x65\x74\x76\
-+\x61\x6c\0\x73\x69\x7a\x65\0\x5f\x5f\x73\x33\x32\0\x73\x69\x7a\x65\x5f\x74\0\
-+\x5f\x5f\x6b\x65\x72\x6e\x65\x6c\x5f\x73\x69\x7a\x65\x5f\x74\0\x5f\x5f\x6b\x65\
-+\x72\x6e\x65\x6c\x5f\x75\x6c\x6f\x6e\x67\x5f\x74\0\x75\x6e\x73\x69\x67\x6e\x65\
-+\x64\x20\x6c\x6f\x6e\x67\0\x68\x69\x64\x5f\x62\x70\x66\x5f\x67\x65\x74\x5f\x64\
-+\x61\x74\x61\0\x68\x69\x64\x5f\x62\x70\x66\x5f\x70\x72\x6f\x62\x65\x5f\x61\x72\
-+\x67\x73\0\x72\x64\x65\x73\x63\x5f\x73\x69\x7a\x65\0\x72\x64\x65\x73\x63\0\x5f\
-+\x5f\x41\x52\x52\x41\x59\x5f\x53\x49\x5a\x45\x5f\x54\x59\x50\x45\x5f\x5f\0\x70\
-+\x72\x6f\x62\x65\0\x73\x79\x73\x63\x61\x6c\x6c\0\x30\x3a\x31\0\x09\x63\x74\x78\
-+\x2d\x3e\x72\x65\x74\x76\x61\x6c\x20\x3d\x20\x63\x74\x78\x2d\x3e\x72\x64\x65\
-+\x73\x63\x5f\x73\x69\x7a\x65\x20\x21\x3d\x20\x33\x33\x3b\0\x30\x3a\x33\0\x09\
-+\x69\x66\x20\x28\x63\x74\x78\x2d\x3e\x72\x65\x74\x76\x61\x6c\x29\0\x09\x09\x63\
-+\x74\x78\x2d\x3e\x72\x65\x74\x76\x61\x6c\x20\x3d\x20\x2d\x32\x32\x3b\0\x09\x72\
-+\x65\x74\x75\x72\x6e\x20\x30\x3b\0\x63\x68\x61\x72\0\x5f\x6c\x69\x63\x65\x6e\
-+\x73\x65\0\x66\x69\x78\x65\x64\x5f\x72\x64\x65\x73\x63\0\x2e\x6b\x73\x79\x6d\
-+\x73\0\x2e\x72\x6f\x64\x61\x74\x61\0\x6c\x69\x63\x65\x6e\x73\x65\0\x68\x69\x64\
-+\x5f\x64\x65\x76\x69\x63\x65\0\x64\x75\x6d\x6d\x79\x5f\x6b\x73\x79\x6d\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x8c\x06\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x02\0\0\
-+\0\x04\0\0\0\x6c\0\0\0\x01\0\0\0\x80\x04\0\0\0\0\0\0\0\0\0\0\x62\x30\x30\x30\
-+\x33\x67\x30\x30\x2e\x72\x6f\x64\x61\x74\x61\0\0\0\0\0\0\0\0\0\0\0\0\0\x26\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\x05\x0c\x09\x01\xa1\x01\xa1\x02\x05\x08\x09\x4b\x75\
-+\x08\x95\x23\x91\x02\xc0\xa1\x02\x09\0\x75\x08\x95\x01\x81\x03\x05\x09\x09\xff\
-+\x75\x01\x95\x01\x81\x02\x95\x07\x81\x03\x05\x0c\x09\x03\xa1\x04\x05\x09\x19\
-+\x01\x29\x06\x95\x06\x81\x02\x95\x02\x81\x03\x19\x07\x29\x0c\x95\x06\x81\x02\
-+\x95\x02\x81\x03\x19\x0d\x29\x12\x95\x06\x81\x02\x95\x02\x81\x03\x19\x13\x29\
-+\x19\x95\x06\x81\x02\x95\x02\x81\x03\xc0\x75\x08\x95\x1a\x81\x03\xc0\xc0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\x47\x50\x4c\0\0\0\0\0\x79\x11\0\0\0\0\0\0\xb7\x06\0\0\0\0\
-+\0\0\xb7\x02\0\0\0\0\0\0\xb7\x03\0\0\0\x10\0\0\x85\x20\0\0\0\0\0\0\x15\0\x87\0\
-+\0\0\0\0\xb7\x01\0\0\x1a\0\0\0\x73\x10\x67\0\0\0\0\0\xb7\x01\0\0\x13\0\0\0\x73\
-+\x10\x58\0\0\0\0\0\xb7\x01\0\0\x12\0\0\0\x73\x10\x4e\0\0\0\0\0\xb7\x01\0\0\x0d\
-+\0\0\0\x73\x10\x4c\0\0\0\0\0\xb7\x01\0\0\x06\0\0\0\x73\x10\x5c\0\0\0\0\0\x73\
-+\x10\x50\0\0\0\0\0\x73\x10\x44\0\0\0\0\0\x73\x10\x38\0\0\0\0\0\x73\x10\x36\0\0\
-+\0\0\0\xb7\x01\0\0\x29\0\0\0\x73\x10\x59\0\0\0\0\0\x73\x10\x4d\0\0\0\0\0\x73\
-+\x10\x41\0\0\0\0\0\x73\x10\x35\0\0\0\0\0\xb7\x01\0\0\x19\0\0\0\x73\x10\x5a\0\0\
-+\0\0\0\x73\x10\x57\0\0\0\0\0\x73\x10\x4b\0\0\0\0\0\x73\x10\x3f\0\0\0\0\0\x73\
-+\x10\x33\0\0\0\0\0\xb7\x01\0\0\x04\0\0\0\x73\x10\x30\0\0\0\0\0\xb7\x01\0\0\x07\
-+\0\0\0\x73\x10\x40\0\0\0\0\0\x73\x10\x28\0\0\0\0\0\xb7\x01\0\0\xff\0\0\0\x73\
-+\x10\x20\0\0\0\0\0\xb7\x01\0\0\x03\0\0\0\x73\x10\x69\0\0\0\0\0\x73\x10\x62\0\0\
-+\0\0\0\x73\x10\x56\0\0\0\0\0\x73\x10\x4a\0\0\0\0\0\x73\x10\x3e\0\0\0\0\0\x73\
-+\x10\x2e\0\0\0\0\0\x73\x10\x2a\0\0\0\0\0\x73\x10\x1c\0\0\0\0\0\xb7\x01\0\0\x81\
-+\0\0\0\x73\x10\x68\0\0\0\0\0\x73\x10\x61\0\0\0\0\0\x73\x10\x5d\0\0\0\0\0\x73\
-+\x10\x55\0\0\0\0\0\x73\x10\x51\0\0\0\0\0\x73\x10\x49\0\0\0\0\0\x73\x10\x45\0\0\
-+\0\0\0\x73\x10\x3d\0\0\0\0\0\x73\x10\x39\0\0\0\0\0\x73\x10\x29\0\0\0\0\0\x73\
-+\x10\x25\0\0\0\0\0\x73\x10\x1b\0\0\0\0\0\xb7\x01\0\0\0\0\0\0\x73\x10\x16\0\0\0\
-+\0\0\xb7\x01\0\0\xc0\0\0\0\x73\x10\x6b\0\0\0\0\0\x73\x10\x6a\0\0\0\0\0\x73\x10\
-+\x63\0\0\0\0\0\x73\x10\x12\0\0\0\0\0\xb7\x01\0\0\x91\0\0\0\x73\x10\x10\0\0\0\0\
-+\0\xb7\x01\0\0\x23\0\0\0\x73\x10\x0f\0\0\0\0\0\xb7\x01\0\0\x95\0\0\0\x73\x10\
-+\x66\0\0\0\0\0\x73\x10\x5f\0\0\0\0\0\x73\x10\x5b\0\0\0\0\0\x73\x10\x53\0\0\0\0\
-+\0\x73\x10\x4f\0\0\0\0\0\x73\x10\x47\0\0\0\0\0\x73\x10\x43\0\0\0\0\0\x73\x10\
-+\x3b\0\0\0\0\0\x73\x10\x37\0\0\0\0\0\x73\x10\x27\0\0\0\0\0\x73\x10\x23\0\0\0\0\
-+\0\x73\x10\x19\0\0\0\0\0\x73\x10\x0e\0\0\0\0\0\xb7\x01\0\0\x75\0\0\0\x73\x10\
-+\x64\0\0\0\0\0\x73\x10\x21\0\0\0\0\0\x73\x10\x17\0\0\0\0\0\x73\x10\x0c\0\0\0\0\
-+\0\xb7\x01\0\0\x4b\0\0\0\x73\x10\x0b\0\0\0\0\0\xb7\x01\0\0\x08\0\0\0\x73\x10\
-+\x65\0\0\0\0\0\x73\x10\x18\0\0\0\0\0\x73\x10\x0d\0\0\0\0\0\x73\x10\x09\0\0\0\0\
-+\0\xb7\x01\0\0\x02\0\0\0\x73\x10\x60\0\0\0\0\0\x73\x10\x5e\0\0\0\0\0\x73\x10\
-+\x54\0\0\0\0\0\x73\x10\x52\0\0\0\0\0\x73\x10\x48\0\0\0\0\0\x73\x10\x46\0\0\0\0\
-+\0\x73\x10\x3c\0\0\0\0\0\x73\x10\x3a\0\0\0\0\0\x73\x10\x26\0\0\0\0\0\x73\x10\
-+\x14\0\0\0\0\0\x73\x10\x11\0\0\0\0\0\x73\x10\x07\0\0\0\0\0\xb7\x01\0\0\xa1\0\0\
-+\0\x73\x10\x2f\0\0\0\0\0\x73\x10\x13\0\0\0\0\0\x73\x10\x06\0\0\0\0\0\x73\x10\
-+\x04\0\0\0\0\0\xb7\x01\0\0\x01\0\0\0\x73\x10\x34\0\0\0\0\0\x73\x10\x24\0\0\0\0\
-+\0\x73\x10\x22\0\0\0\0\0\x73\x10\x1a\0\0\0\0\0\x73\x10\x05\0\0\0\0\0\x73\x10\
-+\x03\0\0\0\0\0\xb7\x01\0\0\x09\0\0\0\x73\x10\x32\0\0\0\0\0\x73\x10\x2d\0\0\0\0\
-+\0\x73\x10\x1f\0\0\0\0\0\x73\x10\x1e\0\0\0\0\0\x73\x10\x15\0\0\0\0\0\x73\x10\
-+\x0a\0\0\0\0\0\x73\x10\x02\0\0\0\0\0\xb7\x01\0\0\x0c\0\0\0\x73\x10\x42\0\0\0\0\
-+\0\x73\x10\x2c\0\0\0\0\0\x73\x10\x01\0\0\0\0\0\xb7\x01\0\0\x05\0\0\0\x73\x10\
-+\x31\0\0\0\0\0\x73\x10\x2b\0\0\0\0\0\x73\x10\x1d\0\0\0\0\0\x73\x10\x08\0\0\0\0\
-+\0\x73\x10\0\0\0\0\0\0\xb7\x06\0\0\x6c\0\0\0\xbf\x60\0\0\0\0\0\0\x95\0\0\0\0\0\
-+\0\0\0\0\0\0\x05\0\0\0\0\0\0\0\x47\0\0\0\x94\0\0\0\x05\x38\x01\0\x02\0\0\0\x47\
-+\0\0\0\xca\0\0\0\x0f\x44\x01\0\x05\0\0\0\x47\0\0\0\x11\x01\0\0\x06\x4c\x01\0\
-+\x07\0\0\0\x47\0\0\0\x1d\x01\0\0\x02\x58\x01\0\x8d\0\0\0\x47\0\0\0\x94\0\0\0\
-+\x05\x38\x01\0\x1a\0\0\0\x8f\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x68\x69\x64\x5f\x66\x69\x78\x5f\x72\x64\
-+\x65\x73\x63\0\0\0\0\0\0\0\x1a\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\
-+\0\x10\0\0\0\0\0\0\0\0\0\0\0\x05\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\x10\0\0\0\0\0\0\0\x68\x69\x64\x5f\x62\x70\x66\x5f\x72\x64\
-+\x65\x73\x63\x5f\x66\x69\x78\x75\x70\0\0\0\0\0\x68\x69\x64\x5f\x62\x70\x66\x5f\
-+\x67\x65\x74\x5f\x64\x61\x74\x61\0\0\0\0\0\0\0\0\x47\x50\x4c\0\0\0\0\0\x61\x13\
-+\x04\0\0\0\0\0\xb7\x02\0\0\x01\0\0\0\x55\x03\x01\0\x21\0\0\0\xb7\x02\0\0\0\0\0\
-+\0\x63\x21\x08\x10\0\0\0\0\x61\x12\x08\x10\0\0\0\0\x15\x02\x03\0\0\0\0\0\x18\
-+\x02\0\0\xea\xff\xff\xff\0\0\0\0\0\0\0\0\x63\x21\x08\x10\0\0\0\0\xb7\0\0\0\0\0\
-+\0\0\x95\0\0\0\0\0\0\0\0\0\0\0\x1e\0\0\0\0\0\0\0\x47\0\0\0\xa9\x02\0\0\x15\x8c\
-+\x01\0\x02\0\0\0\x47\0\0\0\xa9\x02\0\0\x20\x8c\x01\0\x04\0\0\0\x47\0\0\0\xa9\
-+\x02\0\0\x0e\x8c\x01\0\x05\0\0\0\x47\0\0\0\xd3\x02\0\0\x0b\x90\x01\0\x06\0\0\0\
-+\x47\0\0\0\xd3\x02\0\0\x06\x90\x01\0\x09\0\0\0\x47\0\0\0\xe5\x02\0\0\x0f\x94\
-+\x01\0\x0a\0\0\0\x47\0\0\0\xfa\x02\0\0\x02\x9c\x01\0\0\0\0\0\x1a\0\0\0\xa5\x02\
-+\0\0\0\0\0\0\x20\0\0\0\x1a\0\0\0\xcf\x02\0\0\0\0\0\0\x28\0\0\0\x1a\0\0\0\xcf\
-+\x02\0\0\0\0\0\0\x48\0\0\0\x1a\0\0\0\xcf\x02\0\0\0\0\0\0\x1f\0\0\0\x0c\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x10\0\0\
-+\0\x70\x72\x6f\x62\x65\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x08\0\0\0\
-+\0\0\0\0\0\0\0\0\x01\0\0\0\x10\0\0\0\0\0\0\0\0\0\0\0\x07\0\0\0\0\0\0\0\0\0\0\0\
-+\x04\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x10\0\0\0\0\0\0\0",
-+	.insns_sz = 2304,
-+	.insns = "\
-+\xbf\x16\0\0\0\0\0\0\xbf\xa1\0\0\0\0\0\0\x07\x01\0\0\x78\xff\xff\xff\xb7\x02\0\
-+\0\x88\0\0\0\xb7\x03\0\0\0\0\0\0\x85\0\0\0\x71\0\0\0\x05\0\x14\0\0\0\0\0\x61\
-+\xa1\x78\xff\0\0\0\0\xd5\x01\x01\0\0\0\0\0\x85\0\0\0\xa8\0\0\0\x61\xa1\x7c\xff\
-+\0\0\0\0\xd5\x01\x01\0\0\0\0\0\x85\0\0\0\xa8\0\0\0\x61\xa1\x80\xff\0\0\0\0\xd5\
-+\x01\x01\0\0\0\0\0\x85\0\0\0\xa8\0\0\0\x61\xa1\x84\xff\0\0\0\0\xd5\x01\x01\0\0\
-+\0\0\0\x85\0\0\0\xa8\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x61\x01\0\0\0\0\
-+\0\0\xd5\x01\x02\0\0\0\0\0\xbf\x19\0\0\0\0\0\0\x85\0\0\0\xa8\0\0\0\xbf\x70\0\0\
-+\0\0\0\0\x95\0\0\0\0\0\0\0\x61\x60\x08\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\
-+\xa8\x0b\0\0\x63\x01\0\0\0\0\0\0\x61\x60\x0c\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\
-+\0\0\xa4\x0b\0\0\x63\x01\0\0\0\0\0\0\x79\x60\x10\0\0\0\0\0\x18\x61\0\0\0\0\0\0\
-+\0\0\0\0\x98\x0b\0\0\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\0\x05\0\0\
-+\x18\x61\0\0\0\0\0\0\0\0\0\0\x90\x0b\0\0\x7b\x01\0\0\0\0\0\0\xb7\x01\0\0\x12\0\
-+\0\0\x18\x62\0\0\0\0\0\0\0\0\0\0\x90\x0b\0\0\xb7\x03\0\0\x1c\0\0\0\x85\0\0\0\
-+\xa6\0\0\0\xbf\x07\0\0\0\0\0\0\xc5\x07\xd4\xff\0\0\0\0\x63\x7a\x78\xff\0\0\0\0\
-+\x61\xa0\x78\xff\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\xe0\x0b\0\0\x63\x01\0\0\0\
-+\0\0\0\x61\x60\x1c\0\0\0\0\0\x15\0\x03\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\
-+\xbc\x0b\0\0\x63\x01\0\0\0\0\0\0\xb7\x01\0\0\0\0\0\0\x18\x62\0\0\0\0\0\0\0\0\0\
-+\0\xb0\x0b\0\0\xb7\x03\0\0\x48\0\0\0\x85\0\0\0\xa6\0\0\0\xbf\x07\0\0\0\0\0\0\
-+\xc5\x07\xc3\xff\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x63\x71\0\0\0\0\0\
-+\0\x79\x63\x20\0\0\0\0\0\x15\x03\x08\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\xf8\
-+\x0b\0\0\xb7\x02\0\0\x6c\0\0\0\x61\x60\x04\0\0\0\0\0\x45\0\x02\0\x01\0\0\0\x85\
-+\0\0\0\x94\0\0\0\x05\0\x01\0\0\0\0\0\x85\0\0\0\x71\0\0\0\x18\x62\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\x61\x20\0\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x70\x0c\0\0\x63\
-+\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\x68\x0c\0\0\x18\x61\0\0\0\0\0\0\0\
-+\0\0\0\x78\x0c\0\0\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\xf8\x0b\0\0\
-+\x18\x61\0\0\0\0\0\0\0\0\0\0\x80\x0c\0\0\x7b\x01\0\0\0\0\0\0\xb7\x01\0\0\x02\0\
-+\0\0\x18\x62\0\0\0\0\0\0\0\0\0\0\x70\x0c\0\0\xb7\x03\0\0\x20\0\0\0\x85\0\0\0\
-+\xa6\0\0\0\xbf\x07\0\0\0\0\0\0\xc5\x07\x9f\xff\0\0\0\0\x18\x62\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\x61\x20\0\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x90\x0c\0\0\x63\
-+\x01\0\0\0\0\0\0\xb7\x01\0\0\x16\0\0\0\x18\x62\0\0\0\0\0\0\0\0\0\0\x90\x0c\0\0\
-+\xb7\x03\0\0\x04\0\0\0\x85\0\0\0\xa6\0\0\0\xbf\x07\0\0\0\0\0\0\xc5\x07\x92\xff\
-+\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\x98\x0c\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\
-+\x80\x11\0\0\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\xa0\x0c\0\0\x18\
-+\x61\0\0\0\0\0\0\0\0\0\0\x78\x11\0\0\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\
-+\0\0\0\x18\x11\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\xc0\x11\0\0\x7b\x01\0\0\0\0\0\0\
-+\x18\x60\0\0\0\0\0\0\0\0\0\0\x20\x11\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\xd0\x11\0\
-+\0\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\x70\x11\0\0\x18\x61\0\0\0\0\
-+\0\0\0\0\0\0\xf0\x11\0\0\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\x18\x61\0\0\0\0\0\0\0\0\0\0\xe8\x11\0\0\x7b\x01\0\0\0\0\0\0\x61\x60\x08\0\0\
-+\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x88\x11\0\0\x63\x01\0\0\0\0\0\0\x61\x60\x0c\
-+\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x8c\x11\0\0\x63\x01\0\0\0\0\0\0\x79\x60\
-+\x10\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x90\x11\0\0\x7b\x01\0\0\0\0\0\0\x61\
-+\xa0\x78\xff\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\xb8\x11\0\0\x63\x01\0\0\0\0\0\
-+\0\x18\x61\0\0\0\0\0\0\0\0\0\0\0\x12\0\0\xb7\x02\0\0\x14\0\0\0\xb7\x03\0\0\x0c\
-+\0\0\0\xb7\x04\0\0\0\0\0\0\x85\0\0\0\xa7\0\0\0\xbf\x07\0\0\0\0\0\0\xc5\x07\x5c\
-+\xff\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\x70\x11\0\0\x63\x70\x6c\0\0\0\0\0\x77\
-+\x07\0\0\x20\0\0\0\x63\x70\x70\0\0\0\0\0\x18\x68\0\0\0\0\0\0\0\0\0\0\xc0\x0c\0\
-+\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x18\x12\0\0\xb7\x02\0\0\x11\0\0\0\xb7\x03\0\0\
-+\x0c\0\0\0\xb7\x04\0\0\0\0\0\0\x85\0\0\0\xa7\0\0\0\xbf\x07\0\0\0\0\0\0\xc5\x07\
-+\x4d\xff\0\0\0\0\x75\x07\x03\0\0\0\0\0\x62\x08\x04\0\0\0\0\0\x6a\x08\x02\0\0\0\
-+\0\0\x05\0\x0a\0\0\0\0\0\x63\x78\x04\0\0\0\0\0\xbf\x79\0\0\0\0\0\0\x77\x09\0\0\
-+\x20\0\0\0\x55\x09\x02\0\0\0\0\0\x6a\x08\x02\0\0\0\0\0\x05\0\x04\0\0\0\0\0\x18\
-+\x60\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\x63\x90\0\0\0\0\0\0\x6a\x08\x02\0\x40\0\0\0\
-+\xb7\x01\0\0\x05\0\0\0\x18\x62\0\0\0\0\0\0\0\0\0\0\x70\x11\0\0\xb7\x03\0\0\x8c\
-+\0\0\0\x85\0\0\0\xa6\0\0\0\xbf\x07\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\0\
-+\x01\0\0\x61\x01\0\0\0\0\0\0\xd5\x01\x02\0\0\0\0\0\xbf\x19\0\0\0\0\0\0\x85\0\0\
-+\0\xa8\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\xe0\x11\0\0\x61\x01\0\0\0\0\0\0\xd5\
-+\x01\x02\0\0\0\0\0\xbf\x19\0\0\0\0\0\0\x85\0\0\0\xa8\0\0\0\xc5\x07\x2c\xff\0\0\
-+\0\0\x63\x7a\x80\xff\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\x30\x12\0\0\x18\x61\0\
-+\0\0\0\0\0\0\0\0\0\x60\x13\0\0\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\
-+\x38\x12\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x58\x13\0\0\x7b\x01\0\0\0\0\0\0\x18\
-+\x60\0\0\0\0\0\0\0\0\0\0\x98\x12\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\xa0\x13\0\0\
-+\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\xa0\x12\0\0\x18\x61\0\0\0\0\0\
-+\0\0\0\0\0\xb0\x13\0\0\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\0\0\0\0\0\0\0\x10\x13\
-+\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\xd0\x13\0\0\x7b\x01\0\0\0\0\0\0\x18\x60\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\xc8\x13\0\0\x7b\x01\0\0\0\0\
-+\0\0\x61\x60\x08\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x68\x13\0\0\x63\x01\0\0\
-+\0\0\0\0\x61\x60\x0c\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x6c\x13\0\0\x63\x01\
-+\0\0\0\0\0\0\x79\x60\x10\0\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x70\x13\0\0\x7b\
-+\x01\0\0\0\0\0\0\x61\xa0\x78\xff\0\0\0\0\x18\x61\0\0\0\0\0\0\0\0\0\0\x98\x13\0\
-+\0\x63\x01\0\0\0\0\0\0\xb7\x01\0\0\x05\0\0\0\x18\x62\0\0\0\0\0\0\0\0\0\0\x50\
-+\x13\0\0\xb7\x03\0\0\x8c\0\0\0\x85\0\0\0\xa6\0\0\0\xbf\x07\0\0\0\0\0\0\xc5\x07\
-+\xf6\xfe\0\0\0\0\x63\x7a\x84\xff\0\0\0\0\x61\xa1\x78\xff\0\0\0\0\xd5\x01\x02\0\
-+\0\0\0\0\xbf\x19\0\0\0\0\0\0\x85\0\0\0\xa8\0\0\0\x61\xa0\x80\xff\0\0\0\0\x63\
-+\x06\x28\0\0\0\0\0\x61\xa0\x84\xff\0\0\0\0\x63\x06\x2c\0\0\0\0\0\x18\x61\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\x61\x10\0\0\0\0\0\0\x63\x06\x18\0\0\0\0\0\xb7\0\0\0\0\0\
-+\0\0\x95\0\0\0\0\0\0\0",
-+},
++	local kernel_checkout="$1"
++	local make_command="$2"
 +
-+#endif /* __B0003G0001V05F3P0405_XK24_HIDBPF_H__ */
-diff --git a/drivers/hid/bpf/progs/hid_bpf_progs.h b/drivers/hid/bpf/progs/hid_bpf_progs.h
-index 430e0fb47484..be911c3c725b 100644
---- a/drivers/hid/bpf/progs/hid_bpf_progs.h
-+++ b/drivers/hid/bpf/progs/hid_bpf_progs.h
-@@ -28,9 +28,9 @@ struct hid_bpf_prog {
- struct hid_bpf_object {
- 	struct hid_device_id id;
- 	unsigned int map_cnt;
--	struct hid_bpf_map maps[0];
-+	struct hid_bpf_map maps[1];
- 	unsigned int prog_cnt;
--	struct hid_bpf_prog progs[0];
-+	struct hid_bpf_prog progs[2];
- 	unsigned int probe;
- 	unsigned int rodata;
- 	unsigned int data_sz;
-@@ -41,6 +41,7 @@ struct hid_bpf_object {
- 
- static struct hid_bpf_object hid_objects[] = {
- 
-+#include "b0003g0001v05F3p0405-xk24.hidbpf.h"
- 
- 	{ },
- };
++	cd "${kernel_checkout}"
++
++	${make_command} olddefconfig
++	${make_command}
++}
++
++update_selftests()
++{
++	local kernel_checkout="$1"
++	local selftests_dir="${kernel_checkout}/tools/testing/selftests/hid"
++
++	cd "${selftests_dir}"
++	${make_command}
++}
++
++run_vm()
++{
++	local b2c="$1"
++	local kernel_bzimage="$2"
++	local command="$3"
++	local post_command=""
++
++	if ! which "${QEMU_BINARY}" &> /dev/null; then
++		cat <<EOF
++Could not find ${QEMU_BINARY}
++Please install qemu or set the QEMU_BINARY environment variable.
++EOF
++		exit 1
++	fi
++
++	# alpine (used in post-container requires the PATH to have /bin
++	export PATH=$PATH:/bin
++
++	if [[ "${debug_shell}" != "yes" ]]
++	then
++		touch ${OUTPUT_DIR}/${LOG_FILE}
++		command="set -o pipefail ; ${command} 2>&1 | tee ${OUTPUT_DIR}/${LOG_FILE}"
++		post_command="cat ${OUTPUT_DIR}/${LOG_FILE}"
++	fi
++
++	set +e
++	$b2c --command "${command}" \
++	     --kernel ${kernel_bzimage} \
++	     --workdir ${OUTPUT_DIR} \
++	     --image registry.fedoraproject.org/fedora:36
++
++	echo $? > ${OUTPUT_DIR}/${EXIT_STATUS_FILE}
++
++	set -e
++
++	${post_command}
++}
++
++is_rel_path()
++{
++	local path="$1"
++
++	[[ ${path:0:1} != "/" ]]
++}
++
++do_update_kconfig()
++{
++	local kernel_checkout="$1"
++	local kconfig_file="$2"
++
++	rm -f "$kconfig_file" 2> /dev/null
++
++	for config in "${KCONFIG_REL_PATHS[@]}"; do
++		local kconfig_src="${kernel_checkout}/${config}"
++		cat "$kconfig_src" >> "$kconfig_file"
++	done
++}
++
++update_kconfig()
++{
++	local kernel_checkout="$1"
++	local kconfig_file="$2"
++
++	if [[ -f "${kconfig_file}" ]]; then
++		local local_modified="$(stat -c %Y "${kconfig_file}")"
++
++		for config in "${KCONFIG_REL_PATHS[@]}"; do
++			local kconfig_src="${kernel_checkout}/${config}"
++			local src_modified="$(stat -c %Y "${kconfig_src}")"
++			# Only update the config if it has been updated after the
++			# previously cached config was created. This avoids
++			# unnecessarily compiling the kernel and selftests.
++			if [[ "${src_modified}" -gt "${local_modified}" ]]; then
++				do_update_kconfig "$kernel_checkout" "$kconfig_file"
++				# Once we have found one outdated configuration
++				# there is no need to check other ones.
++				break
++			fi
++		done
++	else
++		do_update_kconfig "$kernel_checkout" "$kconfig_file"
++	fi
++}
++
++main()
++{
++	local script_dir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
++	local kernel_checkout=$(realpath "${script_dir}"/../../../../)
++	# By default the script searches for the kernel in the checkout directory but
++	# it also obeys environment variables O= and KBUILD_OUTPUT=
++	local kernel_bzimage="${kernel_checkout}/${BZIMAGE}"
++	local command="${DEFAULT_COMMAND}"
++	local update_b2c="no"
++	local debug_shell="no"
++
++	while getopts ':hsud:j:' opt; do
++		case ${opt} in
++		u)
++			update_b2c="yes"
++			;;
++		d)
++			OUTPUT_DIR="$OPTARG"
++			;;
++		j)
++			NUM_COMPILE_JOBS="$OPTARG"
++			;;
++		s)
++			command="/bin/sh"
++			debug_shell="yes"
++			;;
++		h)
++			usage
++			exit 0
++			;;
++		\? )
++			echo "Invalid Option: -$OPTARG"
++			usage
++			exit 1
++			;;
++		: )
++			echo "Invalid Option: -$OPTARG requires an argument"
++			usage
++			exit 1
++			;;
++		esac
++	done
++	shift $((OPTIND -1))
++
++	# trap 'catch "$?"' EXIT
++
++	if [[ "${debug_shell}" == "no" ]]; then
++		if [[ $# -eq 0 ]]; then
++			echo "No command specified, will run ${DEFAULT_COMMAND} in the vm"
++		else
++			command="$@"
++
++			if [[ "${command}" == "/bin/bash" || "${command}" == "bash" ]]
++			then
++				debug_shell="yes"
++			fi
++		fi
++	fi
++
++	local kconfig_file="${OUTPUT_DIR}/latest.config"
++	local make_command="make -j ${NUM_COMPILE_JOBS} KCONFIG_CONFIG=${kconfig_file}"
++
++	# Figure out where the kernel is being built.
++	# O takes precedence over KBUILD_OUTPUT.
++	if [[ "${O:=""}" != "" ]]; then
++		if is_rel_path "${O}"; then
++			O="$(realpath "${PWD}/${O}")"
++		fi
++		kernel_bzimage="${O}/${BZIMAGE}"
++		make_command="${make_command} O=${O}"
++	elif [[ "${KBUILD_OUTPUT:=""}" != "" ]]; then
++		if is_rel_path "${KBUILD_OUTPUT}"; then
++			KBUILD_OUTPUT="$(realpath "${PWD}/${KBUILD_OUTPUT}")"
++		fi
++		kernel_bzimage="${KBUILD_OUTPUT}/${BZIMAGE}"
++		make_command="${make_command} KBUILD_OUTPUT=${KBUILD_OUTPUT}"
++	fi
++
++	local b2c="${OUTPUT_DIR}/vm2c.py"
++
++	echo "Output directory: ${OUTPUT_DIR}"
++
++	mkdir -p "${OUTPUT_DIR}"
++	update_kconfig "${kernel_checkout}" "${kconfig_file}"
++
++	recompile_kernel "${kernel_checkout}" "${make_command}"
++
++	if [[ "${update_b2c}" == "no" && ! -f "${b2c}" ]]; then
++		echo "vm2c script not found in ${b2c}"
++		update_b2c="yes"
++	fi
++
++	if [[ "${update_b2c}" == "yes" ]]; then
++		download $B2C_URL $b2c
++		chmod +x $b2c
++	fi
++
++	update_selftests "${kernel_checkout}" "${make_command}"
++	run_vm $b2c "${kernel_bzimage}" "${command}"
++	if [[ "${debug_shell}" != "yes" ]]; then
++		echo "Logs saved in ${OUTPUT_DIR}/${LOG_FILE}"
++	fi
++
++	exit $(cat ${OUTPUT_DIR}/${EXIT_STATUS_FILE})
++}
++
++main "$@"
 -- 
 2.38.1
 
