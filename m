@@ -2,55 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A772963733D
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:00:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AF46637359
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:10:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbiKXIAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 03:00:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
+        id S229695AbiKXIKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 03:10:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiKXIAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:00:20 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C5FC6064;
-        Thu, 24 Nov 2022 00:00:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BD21ECE298C;
-        Thu, 24 Nov 2022 08:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AB2C6C433B5;
-        Thu, 24 Nov 2022 08:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669276815;
-        bh=/qNBsDTaHcljjq9Gf7eJCqP+uBYQ5t64e+CpE/i6I5M=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ghBksp+74vVxbhckgvG5nHjA+GjvFODlr+2daLfaRTto6cTD9As/y6m515dAlXv8o
-         yI48mc6EeVA4AA7mE5YMzc8JfSRqI2QXkZZydrO8sLxXdOSjVySvMaCC42Dlj+HqxK
-         NH5zo1xVyZKU7CS+Z9lDZmg2Dq3kw035OWrzJkcBVJ+dwC0eKWBkiVVVvKuHCn73bd
-         hDt30jwiajc1os9lRrCFtNOs1LNlnpqbUIOVI/Jb1GOvad6DhvcUP+INIYE073mVsW
-         o/UAdJ7o4EjOcLcb7d7mRnkmDegkTsrZTiCZSYjPsj2v8iUpaijaXbpr7Yr9QaRa1A
-         IH2TQv/wJjgIA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 877CFE29F53;
-        Thu, 24 Nov 2022 08:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229491AbiKXIKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:10:20 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26998C6234;
+        Thu, 24 Nov 2022 00:10:17 -0800 (PST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NHrJ81PZ5zRpRG;
+        Thu, 24 Nov 2022 16:09:44 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 24 Nov 2022 16:10:15 +0800
+Received: from huawei.com (10.175.113.133) by kwepemm600001.china.huawei.com
+ (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 24 Nov
+ 2022 16:10:14 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <ericvh@gmail.com>, <lucho@ionkov.net>, <asmadeus@codewreck.org>,
+        <linux_oss@crudebyte.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <viro@zeniv.linux.org.uk>
+CC:     <v9fs-developer@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH net] net/9p: Fix a potential socket leak in p9_socket_open
+Date:   Thu, 24 Nov 2022 16:10:05 +0800
+Message-ID: <20221124081005.66579-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] octeontx2-pf: Add check for devm_kcalloc
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166927681554.9063.5857727937448326747.git-patchwork-notify@kernel.org>
-Date:   Thu, 24 Nov 2022 08:00:15 +0000
-References: <20221122055449.31247-1-jiasheng@iscas.ac.cn>
-In-Reply-To: <20221122055449.31247-1-jiasheng@iscas.ac.cn>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
-        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,28 +50,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Both p9_fd_create_tcp() and p9_fd_create_unix() will call
+p9_socket_open(). If the creation of p9_trans_fd fails,
+p9_fd_create_tcp() and p9_fd_create_unix() will return an
+error directly instead of releasing the cscoket, which will
+result in a socket leak.
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+This patch adds sock_release() to fix the leak issue.
 
-On Tue, 22 Nov 2022 13:54:49 +0800 you wrote:
-> As the devm_kcalloc may return NULL pointer,
-> it should be better to add check for the return
-> value, as same as the others.
-> 
-> Fixes: e8e095b3b370 ("octeontx2-af: cn10k: Bandwidth profiles config support")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> 
-> [...]
+Fixes: 6b18662e239a ("9p connect fixes")
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ net/9p/trans_fd.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Here is the summary with links:
-  - octeontx2-pf: Add check for devm_kcalloc
-    https://git.kernel.org/netdev/net/c/cd07eadd5147
-
-You are awesome, thank you!
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 56a186768750..f834726d21ea 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -860,8 +860,10 @@ static int p9_socket_open(struct p9_client *client, struct socket *csocket)
+ 	struct file *file;
+ 
+ 	p = kzalloc(sizeof(struct p9_trans_fd), GFP_KERNEL);
+-	if (!p)
++	if (!p) {
++		sock_release(csocket);
+ 		return -ENOMEM;
++	}
+ 
+ 	csocket->sk->sk_allocation = GFP_NOIO;
+ 	file = sock_alloc_file(csocket, 0, NULL);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.17.1
 
