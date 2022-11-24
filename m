@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33EFA637752
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 12:16:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DFC6637755
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 12:16:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbiKXLQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 06:16:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        id S230092AbiKXLQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 06:16:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbiKXLQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 06:16:10 -0500
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5954F6F801;
-        Thu, 24 Nov 2022 03:16:09 -0800 (PST)
+        with ESMTP id S229829AbiKXLQW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 06:16:22 -0500
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376976F81C;
+        Thu, 24 Nov 2022 03:16:12 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 846881C0015;
-        Thu, 24 Nov 2022 11:16:03 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4F01A1C000C;
+        Thu, 24 Nov 2022 11:16:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1669288568;
+        t=1669288571;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wAx8VtTdz4qwIpgQj6QKnIjD5MlND5gXjXhbAzs+LZw=;
-        b=lRbAy1VF1dKDs7kpuf9TWgf81sL6Qv/MZQY4zGhvLdtm0UyHfC8hdVSrKp+rRF2NIgbHJB
-        jyngQajMS8US3CAO8hW/8m3OhXZKPmKIbnGWB/7kBmeZYJ1/YmkTg1/Hi7ctdu26z/aMhE
-        rnnvlt3nqcrV0xQse4qWGRra4CLes0m9vLvcXKkmSjZimxTCOaIDHS1pmpKN7TeXk/JDIk
-        h2TakiF23+yU9Xpi6k/+IwxlOeB/isqLDtxD+17M4hgQQ87pjfD7duNzOjDpmI25M/NDtT
-        WTrHN0dSrBhJH4XzOzN1TNAmPVAvPl+mLQZmgguqbEbVRnFsiM6rojT4A1idpQ==
+        bh=sUfwpaNCeRDasVfwxiSSAgBGz0/j+6MbKDlN0Gk1jzI=;
+        b=HO58oGdHOAg9lX5BowudmuZ//+s888cX7mOBEa1VhxMukX/lHVi47Rga+mhU+E/WOITEfV
+        sLTE2qjZb4WpN+iAXQbEkxINel/1zirQ7WUnzjXNU3I9Bo5KAiaDfBj4Zc4RjgvKn1DzlP
+        RKXy+bElNQD0pfQqLxvkClibmAmbizA3XigLuOn4YV3s/prfYKsyM13hCa8BJ2uBnwqn4o
+        X5GuVc4HihEMyr23fuVf3ymkhx7yo7+GtH3ldT7qrrl454azGm3IcdGFva7y6LVcmwmb8J
+        q7gUm7pNTfYA9y5FRlJgwm+k83RyXblO7xfn/3NngPUAPrVPO4qbRiRHGxqrmw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -44,10 +44,11 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         Vadym Kochan <vadym.kochan@plvision.eu>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH net-next v2 2/7] dt-bindings: net: marvell,dfx-server: Convert to yaml
-Date:   Thu, 24 Nov 2022 12:15:51 +0100
-Message-Id: <20221124111556.264647-3-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH net-next v2 3/7] dt-bindings: net: marvell,prestera: Convert to yaml
+Date:   Thu, 24 Nov 2022 12:15:52 +0100
+Message-Id: <20221124111556.264647-4-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221124111556.264647-1-miquel.raynal@bootlin.com>
 References: <20221124111556.264647-1-miquel.raynal@bootlin.com>
@@ -62,116 +63,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Even though this description is not used anywhere upstream (no matching
-driver), while on this file I decided I would try a conversion to yaml
-in order to clarify the prestera family description.
-
-I cannot keep the nodename dfx-server@xxxx so I switched to dfx-bus@xxxx
-which matches simple-bus.yaml. Otherwise I took the example context from
-the only user of this compatible: armada-xp-98dx3236.dtsi, which is a
-rather old and not perfect DT.
+The currently described switch family is named AlleyCat3, it is a memory
+mapped switch found on Armada XP boards.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../bindings/net/marvell,dfx-server.yaml      | 62 +++++++++++++++++++
- .../bindings/net/marvell,prestera.txt         | 18 ------
- 2 files changed, 62 insertions(+), 18 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
+ .../bindings/net/marvell,prestera.txt         | 29 ------------
+ .../bindings/net/marvell,prestera.yaml        | 45 +++++++++++++++++++
+ 2 files changed, 45 insertions(+), 29 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/marvell,prestera.txt
+ create mode 100644 Documentation/devicetree/bindings/net/marvell,prestera.yaml
 
-diff --git a/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml b/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
+diff --git a/Documentation/devicetree/bindings/net/marvell,prestera.txt b/Documentation/devicetree/bindings/net/marvell,prestera.txt
+deleted file mode 100644
+index 8868d774da67..000000000000
+--- a/Documentation/devicetree/bindings/net/marvell,prestera.txt
++++ /dev/null
+@@ -1,29 +0,0 @@
+-Marvell Prestera Switch Chip bindings
+--------------------------------------
+-
+-Required properties:
+-- compatible: must be "marvell,prestera" and one of the following
+-	"marvell,prestera-98dx3236",
+-	"marvell,prestera-98dx3336",
+-	"marvell,prestera-98dx4251",
+-- reg: address and length of the register set for the device.
+-- interrupts: interrupt for the device
+-
+-Optional properties:
+-- dfx: phandle reference to the "DFX Server" node
+-
+-Example:
+-
+-switch {
+-	compatible = "simple-bus";
+-	#address-cells = <1>;
+-	#size-cells = <1>;
+-	ranges = <0 MBUS_ID(0x03, 0x00) 0 0x100000>;
+-
+-	packet-processor@0 {
+-		compatible = "marvell,prestera-98dx3236", "marvell,prestera";
+-		reg = <0 0x4000000>;
+-		interrupts = <33>, <34>, <35>;
+-		dfx = <&dfx>;
+-	};
+-};
+diff --git a/Documentation/devicetree/bindings/net/marvell,prestera.yaml b/Documentation/devicetree/bindings/net/marvell,prestera.yaml
 new file mode 100644
-index 000000000000..8a14c919e3f7
+index 000000000000..b0a3ecca406e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/net/marvell,dfx-server.yaml
-@@ -0,0 +1,62 @@
++++ b/Documentation/devicetree/bindings/net/marvell,prestera.yaml
+@@ -0,0 +1,45 @@
 +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/net/marvell,dfx-server.yaml#
++$id: http://devicetree.org/schemas/net/marvell,prestera.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Marvell Prestera DFX server
++title: Marvell Prestera AlleyCat3 switch
 +
 +maintainers:
 +  - Miquel Raynal <miquel.raynal@bootlin.com>
 +
-+select:
-+  properties:
-+    compatible:
-+      contains:
-+        const: marvell,dfx-server
-+  required:
-+    - compatible
-+
 +properties:
 +  compatible:
 +    items:
-+      - const: marvell,dfx-server
-+      - const: simple-bus
++      - enum:
++          - marvell,prestera-98dx3236
++          - marvell,prestera-98dx3336
++          - marvell,prestera-98dx4251
++      - const: marvell,prestera
 +
 +  reg:
 +    maxItems: 1
 +
-+  ranges: true
++  interrupts:
++    maxItems: 3
 +
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 1
++  dfx:
++    description: Reference to the DFX Server bus node.
++    $ref: /schemas/types.yaml#/definitions/phandle
 +
 +required:
 +  - compatible
 +  - reg
-+  - ranges
++  - interrupts
 +
-+# The DFX server may expose clocks described as subnodes
-+additionalProperties:
-+  type: object
++additionalProperties: false
 +
 +examples:
 +  - |
-+
-+    #define MBUS_ID(target,attributes) (((target) << 24) | ((attributes) << 16))
-+    bus@0 {
-+        reg = <0 0>;
-+        #address-cells = <2>;
-+        #size-cells = <1>;
-+
-+        dfx-bus@ac000000 {
-+            compatible = "marvell,dfx-server", "simple-bus";
-+            #address-cells = <1>;
-+            #size-cells = <1>;
-+            ranges = <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
-+            reg = <MBUS_ID(0x08, 0x00) 0 0x100000>;
-+        };
++    packet-processor@0 {
++        compatible = "marvell,prestera-98dx3236", "marvell,prestera";
++        reg = <0 0x4000000>;
++        interrupts = <33>, <34>, <35>;
++        dfx = <&dfx>;
 +    };
-diff --git a/Documentation/devicetree/bindings/net/marvell,prestera.txt b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-index 83370ebf5b89..8868d774da67 100644
---- a/Documentation/devicetree/bindings/net/marvell,prestera.txt
-+++ b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-@@ -27,21 +27,3 @@ switch {
- 		dfx = <&dfx>;
- 	};
- };
--
--DFX Server bindings
---------------------
--
--Required properties:
--- compatible: must be "marvell,dfx-server", "simple-bus"
--- ranges: describes the address mapping of a memory-mapped bus.
--- reg: address and length of the register set for the device.
--
--Example:
--
--dfx-server {
--	compatible = "marvell,dfx-server", "simple-bus";
--	#address-cells = <1>;
--	#size-cells = <1>;
--	ranges = <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
--	reg = <MBUS_ID(0x08, 0x00) 0 0x100000>;
--};
 -- 
 2.34.1
 
