@@ -2,84 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D8E637470
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0622463747C
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:53:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbiKXIuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 03:50:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
+        id S229789AbiKXIxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 03:53:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiKXIuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:50:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54723CFA47
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 00:50:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 150BAB826E2
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 08:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ABEF0C433D6;
-        Thu, 24 Nov 2022 08:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669279816;
-        bh=rN6lYpGR4hfGZqKJBXgNgvEij7tmj9gxLS6jiQFHzAk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=G/AuN604yGUTsdNfzFX4g/+3/Q4UUXpT3KlFwKqXQzqoEnheWSmdg/FqG7OMxuz+3
-         mgA2ooygtNgS0vv0KI/AGcBFlEXVpmPAlUtmmn037qhIhm0KXcoFktOvvy74on8AtS
-         EWd+igmkG0IkBrPeyjneHtxXWFIAdiykZbe6QqA+EPVIEXY9zZHBLnQuxPy4T853/H
-         JtWhOMNuj1lzQ+kXvEqOw2I1Mm3ri3QVEO7llL4BNo5JdRIU0+N9rX8bn13E6Y2ofb
-         ocbbnQZ/yvpl6wwKhHApasBhkfLKdo9I2i+QLLS+cfhwWzjW0WwEI33fY5sRHkhRgX
-         vCcpBVwuB8TyQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9985EC5C7C6;
-        Thu, 24 Nov 2022 08:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229379AbiKXIxj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:53:39 -0500
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CF79A261;
+        Thu, 24 Nov 2022 00:53:37 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VVaPyCe_1669280014;
+Received: from 30.221.149.133(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VVaPyCe_1669280014)
+          by smtp.aliyun-inc.com;
+          Thu, 24 Nov 2022 16:53:35 +0800
+Message-ID: <1f87a8c2-7a47-119a-1141-250d05678546@linux.alibaba.com>
+Date:   Thu, 24 Nov 2022 16:53:33 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: [PATCH net-next v5 00/10] optimize the parallelism of SMC-R
+ connections
+Content-Language: en-US
+To:     Jan Karcher <jaka@linux.ibm.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1669218890-115854-1-git-send-email-alibuda@linux.alibaba.com>
+ <c98a8f04-c696-c9e0-4d7e-bc31109a0e04@linux.alibaba.com>
+ <352b1e15-3c6d-a398-3fe6-0f438e0e8406@linux.ibm.com>
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <352b1e15-3c6d-a398-3fe6-0f438e0e8406@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: altera_tse: release phylink resources in
- tse_shutdown()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166927981662.5759.16238482370653534273.git-patchwork-notify@kernel.org>
-Date:   Thu, 24 Nov 2022 08:50:16 +0000
-References: <20221123011617.332302-1-liujian56@huawei.com>
-In-Reply-To: <20221123011617.332302-1-liujian56@huawei.com>
-To:     Liu Jian <liujian56@huawei.com>
-Cc:     joyce.ooi@intel.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk,
-        maxime.chevallier@bootlin.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
 
-On Wed, 23 Nov 2022 09:16:17 +0800 you wrote:
-> Call phylink_disconnect_phy() in tse_shutdown() to release the
-> resources occupied by phylink_of_phy_connect() in the tse_open().
+On 11/24/22 4:33 PM, Jan Karcher wrote:
 > 
-> Fixes: fef2998203e1 ("net: altera: tse: convert to phylink")
-> Signed-off-by: Liu Jian <liujian56@huawei.com>
-> ---
-> Compile tested only.
->  drivers/net/ethernet/altera/altera_tse_main.c | 1 +
->  1 file changed, 1 insertion(+)
+> 
+> On 24/11/2022 06:55, D. Wythe wrote:
+>>
+>>
+>> On 11/23/22 11:54 PM, D.Wythe wrote:
+>>> From: "D.Wythe" <alibuda@linux.alibaba.com>
+>>>
+>>> This patch set attempts to optimize the parallelism of SMC-R connections,
+>>> mainly to reduce unnecessary blocking on locks, and to fix exceptions that
+>>> occur after thoses optimization.
+>>>
+>>
+>>> D. Wythe (10):
+>>>    net/smc: Fix potential panic dues to unprotected
+>>>      smc_llc_srv_add_link()
+>>>    net/smc: fix application data exception
+>>>    net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
+>>>    net/smc: remove locks smc_client_lgr_pending and
+>>>      smc_server_lgr_pending
+>>>    net/smc: allow confirm/delete rkey response deliver multiplex
+>>>    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
+>>>    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
+>>>    net/smc: use read semaphores to reduce unnecessary blocking in
+>>>      smc_buf_create() & smcr_buf_unuse()
+>>>    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
+>>>    net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
+>>>
+>>>   net/smc/af_smc.c   |  74 ++++----
+>>>   net/smc/smc_core.c | 541 +++++++++++++++++++++++++++++++++++++++++++++++------
+>>>   net/smc/smc_core.h |  53 +++++-
+>>>   net/smc/smc_llc.c  | 285 ++++++++++++++++++++--------
+>>>   net/smc/smc_llc.h  |   6 +
+>>>   net/smc/smc_wr.c   |  10 -
+>>>   net/smc/smc_wr.h   |  10 +
+>>>   7 files changed, 801 insertions(+), 178 deletions(-)
+>>>
+>>
+>> Hi Jan and Wenjia,
+>>
+>> I'm wondering whether the bug fix patches need to be put together in this series. I'm considering
+>> sending these bug fix patches separately now, which may be better, in case that our patch
+>> might have other problems. These bug fix patches are mainly independent, even without my other
+>> patches, they may be triggered theoretically.
+> 
+> Hi D.
+> 
+> Wenjia and i just talked about that. For us it would be better separating the fixes and the new logic.
+> If the fixes are independent feel free to post them to net.
 
-Here is the summary with links:
-  - [net] net: altera_tse: release phylink resources in tse_shutdown()
-    https://git.kernel.org/netdev/net/c/6aae1bcb41c7
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Got it, I will remove those bug fix patches in the next series and send them separately.
+And thanks a lot for your test, no matter what the final test results are, I will send a new series
+to separate them after your test finished.
+
+Thanks
+D. Wythe
+
 
 
