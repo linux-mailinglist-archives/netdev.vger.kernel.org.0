@@ -2,545 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE7E637C72
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 16:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A17CF637C77
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 16:05:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229669AbiKXPDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 10:03:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47260 "EHLO
+        id S229678AbiKXPFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 10:05:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbiKXPDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 10:03:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33D21025D3;
-        Thu, 24 Nov 2022 07:03:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EB7D6219C;
-        Thu, 24 Nov 2022 15:03:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62E78C433D7;
-        Thu, 24 Nov 2022 15:03:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669302210;
-        bh=WEp+jDmYygg4BKht0oSBWsr2zvVnkEYtlZsd10oYCJU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VSwuAfDab/LLOAKJOtVgXAFIS0d4UIRdyOBT6aFE0Mm6vS3TTOVFw6VGDbXK8Vq8y
-         k8W6OsIfjjBjix4cDS930cAQjaszkTq7GFYbLq63Hhfn31qoxyfSRjhbGHTMORb0w8
-         lXZLYsN/mm9uy0BbWgR10XHyIu2aZAfzr5kk0riGCu3XzSAwo2UfzQwq7qOc8OaKA8
-         TTG6YW3UTLyiEodv+CwsWJE+mkXfm3Wbln4tdG3HvFxscxZzD33fDUm7edfi7HDIL0
-         ad8LaNG9pB0Ms/aW0XZKu9QLlrErBHlbJy+jGTDh2ijn5s8XBSbg2f9igsgYrYbL5U
-         HhkcXbP+kQZlw==
-Received: by mercury (Postfix, from userid 1000)
-        id CE982106092A; Thu, 24 Nov 2022 16:03:27 +0100 (CET)
-Date:   Thu, 24 Nov 2022 16:03:27 +0100
-From:   Sebastian Reichel <sre@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Russ Weight <russell.h.weight@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Johan Hovold <johan@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Raed Salem <raeds@nvidia.com>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Avihai Horon <avihaih@nvidia.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Colin Ian King <colin.i.king@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Wang Yufen <wangyufen@huawei.com>, linux-block@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/5] driver core: make struct class.dev_uevent() take a
- const *
-Message-ID: <20221124150327.cfkyaiqia7rnzede@mercury.elektranox.org>
-References: <20221123122523.1332370-1-gregkh@linuxfoundation.org>
+        with ESMTP id S229599AbiKXPFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 10:05:35 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975DDDDFB8;
+        Thu, 24 Nov 2022 07:05:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1669302331; x=1700838331;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=4LSZgY+1sHzL28oxsekdrqvBocnLw11yAZVuJiOsKn8=;
+  b=Dbd2cj/kYDThmlRlzZZVIZITQ15Ht0gyvfklgre8PFYIOBHyw5UJEiNy
+   c1KTK02iQ+H/I4q4vjuJ5m8EdfHlB5MOwbcJM+5ghey426KV7UqcL8mk5
+   TaD/6h8oadOU/5cQEG+1advVIwNeJtKhH3hURbaQmeUlDLFqgbYbe53lp
+   8fWyz+9P3DTMpCT5L59zMf8m8nUEH1/2b/sH4fuI7D3DMogt2zpdZL89W
+   OsN3bwDsl4QrHrgHn6TxcxZ8JbHHj/8X9KPzBT4J1zzGjceY/H5SWqAw1
+   kP9jKxRl0jycy/7yn7UBlnw6tN5ZhG6Zv/F9Kfm/qFZ5We31z7aBM8qXa
+   w==;
+X-IronPort-AV: E=Sophos;i="5.96,190,1665471600"; 
+   d="scan'208";a="185048570"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Nov 2022 08:05:30 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 24 Nov 2022 08:05:30 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
+ Transport; Thu, 24 Nov 2022 08:05:30 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Gg686foG4j84llaAUhdyqpoTGYQhjcV6J8aLVO7rak+i+uNXEUZYn5qkD8mmDCTFlp1IZMAiv3ordy/jcPNSbLY/kkzHjlZjLPrau2Zo9JhUJ6gL40v2WJbs4VW6v0m/emcGOAcb6c9EFrd7QlqStiuzCb4fkDrq6U/ZYby1j5jnjRBZeEjTaWJ7FsA2JTviQeLer7O4QLOaMFgs/YuORVhDWyWbz8bXYOwOHNGQ6Gg9B/8Ujw7iQqo/eVMlkfdnpi9tKsTrMk9CgHsIUxaUJ85ogpkRa0DS//8tYKJPwgYp29zhIZ8t0/2gRrUdYw3M5rAWJjRL25Hs6+yAnyFtjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4LSZgY+1sHzL28oxsekdrqvBocnLw11yAZVuJiOsKn8=;
+ b=K1UkfVjqJHKXbRvc/0y3Rt4gBVUeFlqjapVkKv6kwr14EV83Rj0D/ZN/xoipnxUKvFXr9KtBdRiIPYTefhYhZcPB7O58byVVXgzZcEt1j/uOFPdW3NWqmlWoePfZfil/lnxusWiWYSi36C4HNT2IO04f60xebKyhAnDPO1EvBzLhFwqTC9podjUg9cJHcULsGUsR7nzXAEZ+k6yZotsU8UnhUhbnjuvT0i/9VTGq/zFcKfS9U61nX890w++g8/+BVyeq/t5EcIjdhNLuFtm4oaYI1FOM3TdRxxfUEI10OuLFcJAnOmKGyT8chjzhLp9Fqk1QwHL/kNIMD/ilIhhdPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4LSZgY+1sHzL28oxsekdrqvBocnLw11yAZVuJiOsKn8=;
+ b=SbZGV3H6eW3pFOXZfUBrW3rMyMrl3JT4Nz7QMDXJoeaEBbggbw1f/BqfyOm/ODEVfQJAn0aRycdBdcaqfmYINE20p5PeW97psxLEacdoCy4quWKYL6AFneb9jTmgMLRrp2T/FUCaR2fuQsAIi3L/uEoeJLJZm0ipQhvWMf7cOMg=
+Received: from DM5PR11MB0076.namprd11.prod.outlook.com (2603:10b6:4:6b::28) by
+ PH0PR11MB5030.namprd11.prod.outlook.com (2603:10b6:510:41::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5857.17; Thu, 24 Nov 2022 15:05:28 +0000
+Received: from DM5PR11MB0076.namprd11.prod.outlook.com
+ ([fe80::9b7a:7604:7a30:1953]) by DM5PR11MB0076.namprd11.prod.outlook.com
+ ([fe80::9b7a:7604:7a30:1953%7]) with mapi id 15.20.5857.018; Thu, 24 Nov 2022
+ 15:05:27 +0000
+From:   <Arun.Ramadoss@microchip.com>
+To:     <olteanv@gmail.com>, <UNGLinuxDriver@microchip.com>,
+        <vivien.didelot@gmail.com>, <andrew@lunn.ch>,
+        <f.fainelli@gmail.com>, <kuba@kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <o.rempel@pengutronix.de>,
+        <Woojung.Huh@microchip.com>, <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <kernel@pengutronix.de>
+Subject: Re: [PATCH net-next v6 6/6] net: dsa: microchip: ksz8: move all DSA
+ configurations to one location
+Thread-Topic: [PATCH net-next v6 6/6] net: dsa: microchip: ksz8: move all DSA
+ configurations to one location
+Thread-Index: AQHY/+3FigeduKl0pEWlWfqldCou765OLIIA
+Date:   Thu, 24 Nov 2022 15:05:27 +0000
+Message-ID: <e270aedb761cad689ee969285ac07578848e2ae5.camel@microchip.com>
+References: <20221124101458.3353902-1-o.rempel@pengutronix.de>
+         <20221124101458.3353902-7-o.rempel@pengutronix.de>
+In-Reply-To: <20221124101458.3353902-7-o.rempel@pengutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM5PR11MB0076:EE_|PH0PR11MB5030:EE_
+x-ms-office365-filtering-correlation-id: f67fdb50-75a2-473a-8a4b-08dace2d525f
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: H3kfn0zdXuvyxHuSzfpoClDhWo+6yUtUklM2zYO5ALrBrpJy2nd44GQ2Ji6y7BYH1tuABKcyg9Rj5h0w3USigGscu7R2WqqpOStj6wWTCjc5CGjYiTq0umo7Pi6s0WXaVEbFj7bh9G5h03AeFgYLXrpSRknHy77gbhUxr2w7dKM4iZm8zaCu1HgNpmdv2T2J41fGuz0vktBAIo9oRROJT2j1bngd6GVWfmutTh2b1gyNHDOo/TtYpqWo+T3XFJcu8qNdL32dg+tRrUQ+94K2ZFLVsVY7SEjoFpq8psF9/NNyK1NMSK62zuntu/GvFCzOD9xUeyrIfAdZbh8AtSnPWDkP5RYdmifmFyJFcIec0Hcqt9CyCNdjTL9sR9GxakzudCGzZ2ZkcgfUEZ2W9zBpiPng+3VejouuEqIo3Czr+Nx7fgkCSHt7aDcGOqsz6v95Zy9/bXjM7127mekPg1f5wN7InmZteprDVxS8RDr6VMJ1D15Xk8t0qxcmLba+J4TGJ1y38RRVL/c9qxqnZLwN+OVEmRJF8i0BeZ4pGQOMpNFY8fO4bLZskyhthQf8ptJJ7bvAdixGsIXL+rtxmgzP2mMwUqJAqssBWhkjqWQSkEeAGq6xHkxASeGjq8XyAAlBAMZ389uSeYC0eEeGcUPeKiwVdWrrIrPVNr5B8PkxTZYSeYwfQqe1trmBSVltY6h5dgD9JK31+vKHdHfZKu4TGS1WtXsf4ITNO2f+ag8GlI4kJNbtNYo7O85xEKLOUH2J
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB0076.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(376002)(396003)(39860400002)(366004)(136003)(451199015)(921005)(4001150100001)(5660300002)(7416002)(2906002)(8936002)(6512007)(38070700005)(6506007)(122000001)(38100700002)(316002)(71200400001)(54906003)(110136005)(36756003)(4326008)(66476007)(64756008)(66556008)(66446008)(8676002)(86362001)(41300700001)(6486002)(83380400001)(76116006)(91956017)(186003)(66946007)(478600001)(2616005)(99106002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZlprdUJTMGQxNUswM1BRazRzTDhEZndDNEdZVldrOUlHdVZycnpTc2hKaHdu?=
+ =?utf-8?B?VWZPeHlma29uc2UzLzMvTmF0L1VZRVZucGNPZGRBRXo0TkpTK3NsYTBCb2Yy?=
+ =?utf-8?B?ZG9QdVNMNWp1RUIveUcrVXJWUTlkWXBBaFA3Skp3cHZBcTU0dFdqQm9aYXVY?=
+ =?utf-8?B?c3ZkR2t2NWpzWFdhZnFWZGs0bjhPcSt2enBMZllVQVpIVEUxSmlJSUdmd2kz?=
+ =?utf-8?B?WVRFS3hadGZOTlYxenJwS1FsWnMxL215R0lrZUdsSUg2SXc5SVN0Q3ZLS0tj?=
+ =?utf-8?B?SGVLbk1Tbm5xWEVtY0ZPUEd2Mzl6bE1OSGw3K3UyVFpUMEhpeWVnZmd2WDUv?=
+ =?utf-8?B?TWlOb2xBUkF3a05zOHMxY215OTNGNmRReVVxTE9TdzV0ZjU4dWpSK1liMEp3?=
+ =?utf-8?B?ZGNWK3lMbFBLN2xTOW56WGFrY2FSZkFUMTNYWkpnR1hjWDhPQnhoSU1DVXdv?=
+ =?utf-8?B?eVlDKzJBZmpuMmpvWS80dHlwak1xMnpiUlFua1FMSjJ4N0pEbWI4eUdNOTl3?=
+ =?utf-8?B?d2trL2dsSitpaHJRZkFweDNjVXFGWUdPUmtTTHZEZUt2WXdGdjNDRHhpbG9p?=
+ =?utf-8?B?TzJzbGEybXJKWmNwZ0RMeExmQ2laWm5EY2JiUGYxUmZBc3VPejAwOEhQdUk5?=
+ =?utf-8?B?dTZNbGNNT2RDOForY2FVUDRVTUtaMUU5Vlgrc0MzdzRHbjBoZTJtZnNsbHUw?=
+ =?utf-8?B?RW1JclFNejluTzJxK1pFTW4wdDRTQlhxVk4rUUZQUjNXWDAzNUt6OFRhUnE1?=
+ =?utf-8?B?UkdzU1BFMUQ5UDFWUFdGNktvVENBNlp0azdrczNQdElhNkZaT1lqSXFIRE1y?=
+ =?utf-8?B?czduNlpjZmhtam5xb1BUbDZtcDFJMDRTbzhIOTYxTTBRQU9BcFM0RnJqOUdl?=
+ =?utf-8?B?TDk3N3dGc0JuVnRUb042ZmxXd0UvdmF6bUhzdnBPNnRvWE0rRDRQYUxnd3FR?=
+ =?utf-8?B?TnpOSXBkekhqSTVha2s2dU9yUHkxQWlIOURIeGtsWTZFSUJJYmdvTUJwaDhi?=
+ =?utf-8?B?REozN01pVFhwSWU2dkNHT0RaSHpVdDYvY0s5UW5DNDlOdkdtVDNNZzBPUEhG?=
+ =?utf-8?B?dTR5SllYV3lObndiZ1Nvbm45b1NaejB5bDhNbXAreFQvNC9QdWViSDRvVGgr?=
+ =?utf-8?B?ZFVHaWFMNW9OOXRrUmVSelNnUjlCN0FaNmp0YTBpaU4xMk1pQlJvK1B4SFVa?=
+ =?utf-8?B?ZW1mdWxRMUpYNW91Y3NoZVBjTGRaencyVzRJV2lqNjNjSTBpR1UrRStMQk9B?=
+ =?utf-8?B?QW0waDQ1YjN0UmMzY251M09GbHJUbDBwZmNyVTNrNG5ZWHdTbXJmd09xOWFE?=
+ =?utf-8?B?aERDY1JYTFJWR2JYUDRKVUN4aGpzWkh3ejlZR09RaXR5cC9hZ0VaSjFsNVha?=
+ =?utf-8?B?UUViaUpOUE5YZk55aStMeSt1eFRrYi9MTlU1NVVna0JEYis0eklTUHo5TEtO?=
+ =?utf-8?B?VTQ3UlI2TTUvMEJ5RERqNVphVENWREFtVnFzMzZmMmZ2aHovaklvYm4zWTB6?=
+ =?utf-8?B?S1RZZmtMZ1pwY1k1MU5vcDZhd2JNTUwyQnozK1hybUorOHRhZmhJSDY5UGQ0?=
+ =?utf-8?B?VnEwemkzUSsxQng1dms5YTdOcWQzZ0Qzc0tjbEYxL0Z4WmNPcWlad2VTRVhV?=
+ =?utf-8?B?cjdOK3BLNnBmdjgzeUh4b09wdlY5RFdXeDhZSUxUSFU4RjFla0h4SUVwQ1pR?=
+ =?utf-8?B?NDFDZ25qeVpQaVhCR29QMm1YU3RqRUUzU3VlajJyYVRqcE5KcVoyMjBJRW9K?=
+ =?utf-8?B?OUtLa0FITGoycU1EanhNM3ZILzZoUjJlN3BJaWVDeXI4M2J6Rk5OSXlORmNy?=
+ =?utf-8?B?M3pScG5WajRUTUJId1dmbDVNUFpQOGUvRkpYMitnRzAvUTN3MVJOeE1CODRl?=
+ =?utf-8?B?elcrdVh0dlJ2MlV2bkwza3BTSmZJK0N5ZkU4RUEyNGs2UUh0ZTM0d2c5STho?=
+ =?utf-8?B?Y0dKbVdXQnhnS0F6S2kvM3l4MjdyeEg0VUZndk1vNC9RRXA5VzZjanBaVjAw?=
+ =?utf-8?B?a3lqOUtBS0w3UFVzRHljMUx0SEJGam1MdzJOYjJFWVRIN2QzM09TSE5ZaTkv?=
+ =?utf-8?B?b2s4WWpTVTBvbHJRa3VEaU9lZGxLUUFMVm5FSFZkWkRZMmR6emVqcW9WWTdE?=
+ =?utf-8?B?TDYzakRzTi9XYVZlM2ltRFJqYzRVdFYzdnc1cjVQdFlNWDhJRUNYMEJFZm1Q?=
+ =?utf-8?B?TjVQdG5NNFhwZERSY1VleSt5aW1udUN0ejNPR0xQK2xlOE56YVI1Q210YjVD?=
+ =?utf-8?Q?luWpiQFUr/xD+SjN4p6IailmbK70OCGpxMYdQDGRkA=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <80498BE5EC4F7145B2EF134251AC35F3@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="bs7hk5wyocggvlcf"
-Content-Disposition: inline
-In-Reply-To: <20221123122523.1332370-1-gregkh@linuxfoundation.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB0076.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f67fdb50-75a2-473a-8a4b-08dace2d525f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2022 15:05:27.6877
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: w46RFepGtMvui88mzbX7xojien2k4qxmzyQ9qQ9VhnDlKBAaWAjoCVTv5It5gto4e5EC6iXVg/aFtHF1Shl/dpV01OZV87bbCTGGiFkE25g=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5030
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---bs7hk5wyocggvlcf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Wed, Nov 23, 2022 at 01:25:19PM +0100, Greg Kroah-Hartman wrote:
-> The dev_uevent() in struct class should not be modifying the device that
-> is passed into it, so mark it as a const * and propagate the function
-> signature changes out into all relevant subsystems that use this
-> callback.
->=20
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: Russ Weight <russell.h.weight@intel.com>
-> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: Johan Hovold <johan@kernel.org>
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Leon Romanovsky <leon@kernel.org>
-> Cc: Karsten Keil <isdn@linux-pingi.de>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Keith Busch <kbusch@kernel.org>
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Sagi Grimberg <sagi@grimberg.me>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Johannes Berg <johannes@sipsolutions.net>
-> Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> Cc: Raed Salem <raeds@nvidia.com>
-> Cc: Chen Zhongjin <chenzhongjin@huawei.com>
-> Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Cc: Avihai Horon <avihaih@nvidia.com>
-> Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-> Cc: Alan Stern <stern@rowland.harvard.edu>
-> Cc: Colin Ian King <colin.i.king@gmail.com>
-> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-> Cc: Jakob Koschel <jakobkoschel@gmail.com>
-> Cc: Antoine Tenart <atenart@kernel.org>
-> Cc: Frederic Weisbecker <frederic@kernel.org>
-> Cc: Wang Yufen <wangyufen@huawei.com>
-> Cc: linux-block@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-media@vger.kernel.org
-> Cc: linux-nvme@lists.infradead.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: linux-rdma@vger.kernel.org
-> Cc: linux-usb@vger.kernel.org
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
-
-Acked-by: Sebastian Reichel <sre@kernel.org>
-
--- Sebastian
-
->  block/genhd.c                             | 4 ++--
->  drivers/base/firmware_loader/sysfs.c      | 6 +++---
->  drivers/base/firmware_loader/sysfs.h      | 2 +-
->  drivers/firmware/dmi-id.c                 | 2 +-
->  drivers/gnss/core.c                       | 6 +++---
->  drivers/infiniband/core/device.c          | 2 +-
->  drivers/isdn/mISDN/core.c                 | 4 ++--
->  drivers/media/dvb-core/dvbdev.c           | 4 ++--
->  drivers/nvme/host/core.c                  | 4 ++--
->  drivers/pcmcia/cs.c                       | 4 ++--
->  drivers/power/supply/power_supply.h       | 2 +-
->  drivers/power/supply/power_supply_sysfs.c | 8 ++++----
->  drivers/usb/gadget/udc/core.c             | 4 ++--
->  include/linux/device/class.h              | 2 +-
->  include/linux/mISDNif.h                   | 2 +-
->  net/atm/atm_sysfs.c                       | 4 ++--
->  net/core/net-sysfs.c                      | 4 ++--
->  net/rfkill/core.c                         | 2 +-
->  18 files changed, 33 insertions(+), 33 deletions(-)
->=20
-> diff --git a/block/genhd.c b/block/genhd.c
-> index 0f9769db2de8..3f1124713442 100644
-> --- a/block/genhd.c
-> +++ b/block/genhd.c
-> @@ -1181,9 +1181,9 @@ static void disk_release(struct device *dev)
->  	iput(disk->part0->bd_inode);	/* frees the disk */
->  }
-> =20
-> -static int block_uevent(struct device *dev, struct kobj_uevent_env *env)
-> +static int block_uevent(const struct device *dev, struct kobj_uevent_env=
- *env)
->  {
-> -	struct gendisk *disk =3D dev_to_disk(dev);
-> +	const struct gendisk *disk =3D dev_to_disk(dev);
-> =20
->  	return add_uevent_var(env, "DISKSEQ=3D%llu", disk->diskseq);
->  }
-> diff --git a/drivers/base/firmware_loader/sysfs.c b/drivers/base/firmware=
-_loader/sysfs.c
-> index 5b66b3d1fa16..56911d75b90a 100644
-> --- a/drivers/base/firmware_loader/sysfs.c
-> +++ b/drivers/base/firmware_loader/sysfs.c
-> @@ -64,7 +64,7 @@ static struct attribute *firmware_class_attrs[] =3D {
->  };
->  ATTRIBUTE_GROUPS(firmware_class);
-> =20
-> -static int do_firmware_uevent(struct fw_sysfs *fw_sysfs, struct kobj_uev=
-ent_env *env)
-> +static int do_firmware_uevent(const struct fw_sysfs *fw_sysfs, struct ko=
-bj_uevent_env *env)
->  {
->  	if (add_uevent_var(env, "FIRMWARE=3D%s", fw_sysfs->fw_priv->fw_name))
->  		return -ENOMEM;
-> @@ -76,9 +76,9 @@ static int do_firmware_uevent(struct fw_sysfs *fw_sysfs=
-, struct kobj_uevent_env
->  	return 0;
->  }
-> =20
-> -static int firmware_uevent(struct device *dev, struct kobj_uevent_env *e=
-nv)
-> +static int firmware_uevent(const struct device *dev, struct kobj_uevent_=
-env *env)
->  {
-> -	struct fw_sysfs *fw_sysfs =3D to_fw_sysfs(dev);
-> +	const struct fw_sysfs *fw_sysfs =3D to_fw_sysfs(dev);
->  	int err =3D 0;
-> =20
->  	mutex_lock(&fw_lock);
-> diff --git a/drivers/base/firmware_loader/sysfs.h b/drivers/base/firmware=
-_loader/sysfs.h
-> index df1d5add698f..fd0b4ad9bdbb 100644
-> --- a/drivers/base/firmware_loader/sysfs.h
-> +++ b/drivers/base/firmware_loader/sysfs.h
-> @@ -81,7 +81,7 @@ struct fw_sysfs {
->  	void *fw_upload_priv;
->  };
-> =20
-> -static inline struct fw_sysfs *to_fw_sysfs(struct device *dev)
-> +static inline struct fw_sysfs *to_fw_sysfs(const struct device *dev)
->  {
->  	return container_of(dev, struct fw_sysfs, dev);
->  }
-> diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
-> index 940ddf916202..5f3a3e913d28 100644
-> --- a/drivers/firmware/dmi-id.c
-> +++ b/drivers/firmware/dmi-id.c
-> @@ -155,7 +155,7 @@ static const struct attribute_group* sys_dmi_attribut=
-e_groups[] =3D {
->  	NULL
->  };
-> =20
-> -static int dmi_dev_uevent(struct device *dev, struct kobj_uevent_env *en=
-v)
-> +static int dmi_dev_uevent(const struct device *dev, struct kobj_uevent_e=
-nv *env)
->  {
->  	ssize_t len;
-> =20
-> diff --git a/drivers/gnss/core.c b/drivers/gnss/core.c
-> index 1e82b7967570..77a4b280c552 100644
-> --- a/drivers/gnss/core.c
-> +++ b/drivers/gnss/core.c
-> @@ -337,7 +337,7 @@ static const char * const gnss_type_names[GNSS_TYPE_C=
-OUNT] =3D {
->  	[GNSS_TYPE_MTK]		=3D "MTK",
->  };
-> =20
-> -static const char *gnss_type_name(struct gnss_device *gdev)
-> +static const char *gnss_type_name(const struct gnss_device *gdev)
->  {
->  	const char *name =3D NULL;
-> =20
-> @@ -365,9 +365,9 @@ static struct attribute *gnss_attrs[] =3D {
->  };
->  ATTRIBUTE_GROUPS(gnss);
-> =20
-> -static int gnss_uevent(struct device *dev, struct kobj_uevent_env *env)
-> +static int gnss_uevent(const struct device *dev, struct kobj_uevent_env =
-*env)
->  {
-> -	struct gnss_device *gdev =3D to_gnss_device(dev);
-> +	const struct gnss_device *gdev =3D to_gnss_device(dev);
->  	int ret;
-> =20
->  	ret =3D add_uevent_var(env, "GNSS_TYPE=3D%s", gnss_type_name(gdev));
-> diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/d=
-evice.c
-> index fa65c5d3d395..4186dbf9377f 100644
-> --- a/drivers/infiniband/core/device.c
-> +++ b/drivers/infiniband/core/device.c
-> @@ -511,7 +511,7 @@ static void ib_device_release(struct device *device)
->  	kfree_rcu(dev, rcu_head);
->  }
-> =20
-> -static int ib_device_uevent(struct device *device,
-> +static int ib_device_uevent(const struct device *device,
->  			    struct kobj_uevent_env *env)
->  {
->  	if (add_uevent_var(env, "NAME=3D%s", dev_name(device)))
-> diff --git a/drivers/isdn/mISDN/core.c b/drivers/isdn/mISDN/core.c
-> index 90ee56d07a6e..9120be590325 100644
-> --- a/drivers/isdn/mISDN/core.c
-> +++ b/drivers/isdn/mISDN/core.c
-> @@ -139,9 +139,9 @@ static struct attribute *mISDN_attrs[] =3D {
->  };
->  ATTRIBUTE_GROUPS(mISDN);
-> =20
-> -static int mISDN_uevent(struct device *dev, struct kobj_uevent_env *env)
-> +static int mISDN_uevent(const struct device *dev, struct kobj_uevent_env=
- *env)
->  {
-> -	struct mISDNdevice *mdev =3D dev_to_mISDN(dev);
-> +	const struct mISDNdevice *mdev =3D dev_to_mISDN(dev);
-> =20
->  	if (!mdev)
->  		return 0;
-> diff --git a/drivers/media/dvb-core/dvbdev.c b/drivers/media/dvb-core/dvb=
-dev.c
-> index 675d877a67b2..6ef18bab9648 100644
-> --- a/drivers/media/dvb-core/dvbdev.c
-> +++ b/drivers/media/dvb-core/dvbdev.c
-> @@ -1008,9 +1008,9 @@ void dvb_module_release(struct i2c_client *client)
->  EXPORT_SYMBOL_GPL(dvb_module_release);
->  #endif
-> =20
-> -static int dvb_uevent(struct device *dev, struct kobj_uevent_env *env)
-> +static int dvb_uevent(const struct device *dev, struct kobj_uevent_env *=
-env)
->  {
-> -	struct dvb_device *dvbdev =3D dev_get_drvdata(dev);
-> +	const struct dvb_device *dvbdev =3D dev_get_drvdata(dev);
-> =20
->  	add_uevent_var(env, "DVB_ADAPTER_NUM=3D%d", dvbdev->adapter->num);
->  	add_uevent_var(env, "DVB_DEVICE_TYPE=3D%s", dnames[dvbdev->type]);
-> diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-> index da55ce45ac70..b4778b970dd4 100644
-> --- a/drivers/nvme/host/core.c
-> +++ b/drivers/nvme/host/core.c
-> @@ -4580,9 +4580,9 @@ void nvme_remove_namespaces(struct nvme_ctrl *ctrl)
->  }
->  EXPORT_SYMBOL_GPL(nvme_remove_namespaces);
-> =20
-> -static int nvme_class_uevent(struct device *dev, struct kobj_uevent_env =
-*env)
-> +static int nvme_class_uevent(const struct device *dev, struct kobj_ueven=
-t_env *env)
->  {
-> -	struct nvme_ctrl *ctrl =3D
-> +	const struct nvme_ctrl *ctrl =3D
->  		container_of(dev, struct nvme_ctrl, ctrl_device);
->  	struct nvmf_ctrl_options *opts =3D ctrl->opts;
->  	int ret;
-> diff --git a/drivers/pcmcia/cs.c b/drivers/pcmcia/cs.c
-> index f70197154a36..e3224e49c43f 100644
-> --- a/drivers/pcmcia/cs.c
-> +++ b/drivers/pcmcia/cs.c
-> @@ -810,10 +810,10 @@ int pcmcia_reset_card(struct pcmcia_socket *skt)
->  EXPORT_SYMBOL(pcmcia_reset_card);
-> =20
-> =20
-> -static int pcmcia_socket_uevent(struct device *dev,
-> +static int pcmcia_socket_uevent(const struct device *dev,
->  				struct kobj_uevent_env *env)
->  {
-> -	struct pcmcia_socket *s =3D container_of(dev, struct pcmcia_socket, dev=
-);
-> +	const struct pcmcia_socket *s =3D container_of(dev, struct pcmcia_socke=
-t, dev);
-> =20
->  	if (add_uevent_var(env, "SOCKET_NO=3D%u", s->sock))
->  		return -ENOMEM;
-> diff --git a/drivers/power/supply/power_supply.h b/drivers/power/supply/p=
-ower_supply.h
-> index c310d4f36c10..645eee4d6b6a 100644
-> --- a/drivers/power/supply/power_supply.h
-> +++ b/drivers/power/supply/power_supply.h
-> @@ -16,7 +16,7 @@ struct power_supply;
->  #ifdef CONFIG_SYSFS
-> =20
->  extern void power_supply_init_attrs(struct device_type *dev_type);
-> -extern int power_supply_uevent(struct device *dev, struct kobj_uevent_en=
-v *env);
-> +extern int power_supply_uevent(const struct device *dev, struct kobj_uev=
-ent_env *env);
-> =20
->  #else
-> =20
-> diff --git a/drivers/power/supply/power_supply_sysfs.c b/drivers/power/su=
-pply/power_supply_sysfs.c
-> index 5369abaceb5c..6ca7d3985a40 100644
-> --- a/drivers/power/supply/power_supply_sysfs.c
-> +++ b/drivers/power/supply/power_supply_sysfs.c
-> @@ -427,7 +427,7 @@ void power_supply_init_attrs(struct device_type *dev_=
-type)
->  	}
->  }
-> =20
-> -static int add_prop_uevent(struct device *dev, struct kobj_uevent_env *e=
-nv,
-> +static int add_prop_uevent(const struct device *dev, struct kobj_uevent_=
-env *env,
->  			   enum power_supply_property prop, char *prop_buf)
->  {
->  	int ret =3D 0;
-> @@ -438,7 +438,7 @@ static int add_prop_uevent(struct device *dev, struct=
- kobj_uevent_env *env,
->  	pwr_attr =3D &power_supply_attrs[prop];
->  	dev_attr =3D &pwr_attr->dev_attr;
-> =20
-> -	ret =3D power_supply_show_property(dev, dev_attr, prop_buf);
-> +	ret =3D power_supply_show_property((struct device *)dev, dev_attr, prop=
-_buf);
->  	if (ret =3D=3D -ENODEV || ret =3D=3D -ENODATA) {
->  		/*
->  		 * When a battery is absent, we expect -ENODEV. Don't abort;
-> @@ -458,9 +458,9 @@ static int add_prop_uevent(struct device *dev, struct=
- kobj_uevent_env *env,
->  			      pwr_attr->prop_name, prop_buf);
->  }
-> =20
-> -int power_supply_uevent(struct device *dev, struct kobj_uevent_env *env)
-> +int power_supply_uevent(const struct device *dev, struct kobj_uevent_env=
- *env)
->  {
-> -	struct power_supply *psy =3D dev_get_drvdata(dev);
-> +	const struct power_supply *psy =3D dev_get_drvdata(dev);
->  	int ret =3D 0, j;
->  	char *prop_buf;
-> =20
-> diff --git a/drivers/usb/gadget/udc/core.c b/drivers/usb/gadget/udc/core.c
-> index c63c0c2cf649..b5994a0604f6 100644
-> --- a/drivers/usb/gadget/udc/core.c
-> +++ b/drivers/usb/gadget/udc/core.c
-> @@ -1723,9 +1723,9 @@ static const struct attribute_group *usb_udc_attr_g=
-roups[] =3D {
->  	NULL,
->  };
-> =20
-> -static int usb_udc_uevent(struct device *dev, struct kobj_uevent_env *en=
-v)
-> +static int usb_udc_uevent(const struct device *dev, struct kobj_uevent_e=
-nv *env)
->  {
-> -	struct usb_udc		*udc =3D container_of(dev, struct usb_udc, dev);
-> +	const struct usb_udc	*udc =3D container_of(dev, struct usb_udc, dev);
->  	int			ret;
-> =20
->  	ret =3D add_uevent_var(env, "USB_UDC_NAME=3D%s", udc->gadget->name);
-> diff --git a/include/linux/device/class.h b/include/linux/device/class.h
-> index 20103e0b03c3..94b1107258e5 100644
-> --- a/include/linux/device/class.h
-> +++ b/include/linux/device/class.h
-> @@ -59,7 +59,7 @@ struct class {
->  	const struct attribute_group	**dev_groups;
->  	struct kobject			*dev_kobj;
-> =20
-> -	int (*dev_uevent)(struct device *dev, struct kobj_uevent_env *env);
-> +	int (*dev_uevent)(const struct device *dev, struct kobj_uevent_env *env=
-);
->  	char *(*devnode)(struct device *dev, umode_t *mode);
-> =20
->  	void (*class_release)(struct class *class);
-> diff --git a/include/linux/mISDNif.h b/include/linux/mISDNif.h
-> index 7dd1f01ec4f9..7aab4a769736 100644
-> --- a/include/linux/mISDNif.h
-> +++ b/include/linux/mISDNif.h
-> @@ -586,7 +586,7 @@ extern struct mISDNclock *mISDN_register_clock(char *=
-, int, clockctl_func_t *,
->  						void *);
->  extern void	mISDN_unregister_clock(struct mISDNclock *);
-> =20
-> -static inline struct mISDNdevice *dev_to_mISDN(struct device *dev)
-> +static inline struct mISDNdevice *dev_to_mISDN(const struct device *dev)
->  {
->  	if (dev)
->  		return dev_get_drvdata(dev);
-> diff --git a/net/atm/atm_sysfs.c b/net/atm/atm_sysfs.c
-> index 0fdbdfd19474..466353b3dde4 100644
-> --- a/net/atm/atm_sysfs.c
-> +++ b/net/atm/atm_sysfs.c
-> @@ -108,9 +108,9 @@ static struct device_attribute *atm_attrs[] =3D {
->  };
-> =20
-> =20
-> -static int atm_uevent(struct device *cdev, struct kobj_uevent_env *env)
-> +static int atm_uevent(const struct device *cdev, struct kobj_uevent_env =
-*env)
->  {
-> -	struct atm_dev *adev;
-> +	const struct atm_dev *adev;
-> =20
->  	if (!cdev)
->  		return -ENODEV;
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index 9cfc80b8ed25..03a61d1dffbd 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -1873,9 +1873,9 @@ const struct kobj_ns_type_operations net_ns_type_op=
-erations =3D {
->  };
->  EXPORT_SYMBOL_GPL(net_ns_type_operations);
-> =20
-> -static int netdev_uevent(struct device *d, struct kobj_uevent_env *env)
-> +static int netdev_uevent(const struct device *d, struct kobj_uevent_env =
-*env)
->  {
-> -	struct net_device *dev =3D to_net_dev(d);
-> +	const struct net_device *dev =3D to_net_dev(d);
->  	int retval;
-> =20
->  	/* pass interface to uevent. */
-> diff --git a/net/rfkill/core.c b/net/rfkill/core.c
-> index dac4fdc7488a..b390ff245d5e 100644
-> --- a/net/rfkill/core.c
-> +++ b/net/rfkill/core.c
-> @@ -832,7 +832,7 @@ static void rfkill_release(struct device *dev)
->  	kfree(rfkill);
->  }
-> =20
-> -static int rfkill_dev_uevent(struct device *dev, struct kobj_uevent_env =
-*env)
-> +static int rfkill_dev_uevent(const struct device *dev, struct kobj_ueven=
-t_env *env)
->  {
->  	struct rfkill *rfkill =3D to_rfkill(dev);
->  	unsigned long flags;
-> --=20
-> 2.38.1
->=20
-
---bs7hk5wyocggvlcf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmN/h78ACgkQ2O7X88g7
-+pprAxAAkqAcA9NSStrxx2tLRglpsPq5nYSSACe864aQHi6FGUtxei/0LKoSAU4x
-Nh853Go7v6b1AYoUh5N/Sc6iybWr69R6NbHrGtIZtIhjFJ6bY3gQgfWDuy0WS0o+
-/GvGc5+iBJ2NW7XYJwFIebODPDvvHyJ5+pXT8go7aQl/VmUCyrRpNmoH2XS+omU/
-Wk0fZYRlw5E8hmpt3UcNb6vL1idMJj83pqnPGQy+Nq9q+6Zlz1qW5yl9XOnlkqt7
-CcdutSSQZ5bHxS7y1+fZ1Y8BoEaQdvIGqtA0LUvMPEtgY0zpCBZyLMGCQraV/3Y2
-pwd6Gh5g64Bg7BUuh2R1p+FwiZm3nEab+/P7XiSV5qAOOWbASDJ8ntEPKI6IgLic
-tdO9lybotG3V3DAPCJ78zlw0HUJcA28OZsi0+EIYNjSQL9bJ14rOQZ0HkXfO4/ry
-cw8/T+y2A6IG2ufSmNJ9iYd4QQ8jmqKjnLdzdDg08cYmDU7RI7+g/DgcwuTVOzpJ
-yr+DLizj5BJvNl80rrZTOPGcsJw3zdVHBMn/EmWYKZnvYssx3N+auxcXy9cwN64x
-sx+fYHRC75JWnyy+AAmLGJT1bxbBBifZ8oX+v33k7/iLfvNuikQZu2MIopaCoCMD
-zY7N5iWTh5ry09muYmzbkR7C5xX+hXZoAcGmk0zwuws8v2xeTPg=
-=X62i
------END PGP SIGNATURE-----
-
---bs7hk5wyocggvlcf--
+SGkgT2xla3NpaiwNCk9uIFRodSwgMjAyMi0xMS0yNCBhdCAxMToxNCArMDEwMCwgT2xla3NpaiBS
+ZW1wZWwgd3JvdGU6DQo+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3Bl
+biBhdHRhY2htZW50cyB1bmxlc3MgeW91DQo+IGtub3cgdGhlIGNvbnRlbnQgaXMgc2FmZQ0KPiAN
+Cj4gVG8gbWFrZSB0aGUgY29kZSBtb3JlIGNvbXBhcmFibGUgdG8gS1NaOTQ3NyBjb2RlLCBtb3Zl
+IERTQQ0KPiBjb25maWd1cmF0aW9ucyB0byB0aGUgc2FtZSBsb2NhdGlvbi4NCj4gDQo+IFNpZ25l
+ZC1vZmYtYnk6IE9sZWtzaWogUmVtcGVsIDxvLnJlbXBlbEBwZW5ndXRyb25peC5kZT4NCj4gLS0t
+DQo+ICBkcml2ZXJzL25ldC9kc2EvbWljcm9jaGlwL2tzejg3OTUuYyB8IDIwICsrKysrKysrKyst
+LS0tLS0tLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMTAgaW5zZXJ0aW9ucygrKSwgMTAgZGVsZXRp
+b25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3o4
+Nzk1LmMNCj4gYi9kcml2ZXJzL25ldC9kc2EvbWljcm9jaGlwL2tzejg3OTUuYw0KPiBpbmRleCAw
+NjBlNDFiOWI2ZWYuLjAwM2IwYWMyODU0YyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZHNh
+L21pY3JvY2hpcC9rc3o4Nzk1LmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9r
+c3o4Nzk1LmMNCj4gQEAgLTEzNTksNiArMTM1OSwxNiBAQCBpbnQga3N6OF9zZXR1cChzdHJ1Y3Qg
+ZHNhX3N3aXRjaCAqZHMpDQo+IA0KPiAgICAgICAgIGRzLT5tdHVfZW5mb3JjZW1lbnRfaW5ncmVz
+cyA9IHRydWU7DQo+IA0KPiArICAgICAgIC8qIFdlIHJlbHkgb24gc29mdHdhcmUgdW50YWdnaW5n
+IG9uIHRoZSBDUFUgcG9ydCwgc28gdGhhdCB3ZQ0KPiArICAgICAgICAqIGNhbiBzdXBwb3J0IGJv
+dGggdGFnZ2VkIGFuZCB1bnRhZ2dlZCBWTEFOcw0KPiArICAgICAgICAqLw0KPiArICAgICAgIGRz
+LT51bnRhZ19icmlkZ2VfcHZpZCA9IHRydWU7DQo+ICsNCj4gKyAgICAgICAvKiBWTEFOIGZpbHRl
+cmluZyBpcyBwYXJ0bHkgY29udHJvbGxlZCBieSB0aGUgZ2xvYmFsIFZMQU4NCj4gKyAgICAgICAg
+KiBFbmFibGUgZmxhZw0KPiArICAgICAgICAqLw0KPiArICAgICAgIGRzLT52bGFuX2ZpbHRlcmlu
+Z19pc19nbG9iYWwgPSB0cnVlOw0KPiArDQo+ICAgICAgICAga3N6X2NmZyhkZXYsIFNfUkVQTEFD
+RV9WSURfQ1RSTCwgU1dfRkxPV19DVFJMLCB0cnVlKTsNCj4gDQo+ICAgICAgICAgLyogRW5hYmxl
+IGF1dG9tYXRpYyBmYXN0IGFnaW5nIHdoZW4gbGluayBjaGFuZ2VkIGRldGVjdGVkLiAqLw0KPiBA
+QCAtMTQxOCwxNiArMTQyOCw2IEBAIGludCBrc3o4X3N3aXRjaF9pbml0KHN0cnVjdCBrc3pfZGV2
+aWNlICpkZXYpDQo+ICAgICAgICAgZGV2LT5waHlfcG9ydF9jbnQgPSBkZXYtPmluZm8tPnBvcnRf
+Y250IC0gMTsNCj4gICAgICAgICBkZXYtPnBvcnRfbWFzayA9IChCSVQoZGV2LT5waHlfcG9ydF9j
+bnQpIC0gMSkgfCBkZXYtPmluZm8tDQo+ID5jcHVfcG9ydHM7DQoNClNpbmNlIHlvdSBtb3ZlZCBk
+c2EgcmVsYXRlZCBpdGVtcyB0byBrc3o4X3NldHVwLCByZW1haW5pbmcgaXRlbXMgaW4NCmtzejhf
+c3dpdGNoX2luaXQgYXJlDQotIGRldi0+Y3B1X3BvcnQgLSBVc2VkIGluIGtzel9zZXR1cCBidXQg
+Y2FsbGVkIGFmdGVyIHRoZSBpbmRpdmlkdWFsDQpzd2l0Y2ggc2V0dXAgZnVuY3Rpb24uIFdlIGNh
+biBtb3ZlIGl0IGtzejhfc2V0dXAuDQotIGRldi0+cGh5X3BvcnRfY250IC0gVXNlZCBpbiBrc3o4
+X3ZsYW5fZmlsdGVyaW5nIGFuZA0Ka3N6OF9jb25maWdfY3B1cG9ydC4gV2UgY2FuIG1vdmUuDQot
+IGRldi0+cG9ydF9tYXNrIC0gdXNlZCBpbiBrc3pfc3dpdGNoX3JlZ2lzdGVyLiBTbyB3ZSBjYW5u
+b3QgbW92ZS4NCg0KVG8gbWFrZSB0aGUga3N6OF9zd2l0Y2hfaW5pdCBhbmQga3N6OTQ3N19zd2l0
+Y2hfaW5pdCBmdW5jdGlvbiBzaW1pbGFyLA0Kd2UgY2FuIG1vdmUgZGV2LT5jcHVfcG9ydCBhbmQg
+ZGV2LT5waHlfcG9ydF9jbnQgZnJvbSBrc3o4X3N3aXRjaF9pbml0DQp0byBrc3o4X3NldHVwDQoN
+Cj4gDQo+IC0gICAgICAgLyogV2UgcmVseSBvbiBzb2Z0d2FyZSB1bnRhZ2dpbmcgb24gdGhlIENQ
+VSBwb3J0LCBzbyB0aGF0IHdlDQo+IC0gICAgICAgICogY2FuIHN1cHBvcnQgYm90aCB0YWdnZWQg
+YW5kIHVudGFnZ2VkIFZMQU5zDQo+IC0gICAgICAgICovDQo+IC0gICAgICAgZGV2LT5kcy0+dW50
+YWdfYnJpZGdlX3B2aWQgPSB0cnVlOw0KPiAtDQo+IC0gICAgICAgLyogVkxBTiBmaWx0ZXJpbmcg
+aXMgcGFydGx5IGNvbnRyb2xsZWQgYnkgdGhlIGdsb2JhbCBWTEFODQo+IC0gICAgICAgICogRW5h
+YmxlIGZsYWcNCj4gLSAgICAgICAgKi8NCj4gLSAgICAgICBkZXYtPmRzLT52bGFuX2ZpbHRlcmlu
+Z19pc19nbG9iYWwgPSB0cnVlOw0KPiAtDQo+ICAgICAgICAgcmV0dXJuIDA7DQo+ICB9DQo+IA0K
+PiAtLQ0KPiAyLjMwLjINCj4gDQo=
