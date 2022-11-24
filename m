@@ -2,163 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18EE6637EA0
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 18:53:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8563B637EA8
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 18:55:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbiKXRxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 12:53:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
+        id S229787AbiKXRzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 12:55:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbiKXRwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 12:52:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5EB109599
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 09:51:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669312312;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=fSdsuSrgjDopfALOvm1rrQFXbKKGllyvaK04VepISNM=;
-        b=ROZhYJSnMBkW7V74pFqn0WJV7L9KGyDe5wMJ2rwgPLq3obJDQKZHMQkEXL3GIYM3eyl8Xl
-        fDqPFEs7poIT1o0Ix44Nw08To1A4xu58VjQQ5TZ//9bQWtGDmnZLjBHmTMTjMKb0OvquHk
-        vZwuAvEmG5GxKPeYY4mVQ4tBMgKfyJc=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-422-fWR4Wk77M6OhsPKpPyEpTA-1; Thu, 24 Nov 2022 12:51:50 -0500
-X-MC-Unique: fWR4Wk77M6OhsPKpPyEpTA-1
-Received: by mail-pj1-f69.google.com with SMTP id x8-20020a17090a6b4800b00218ae9b2a47so1425553pjl.6
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 09:51:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=fSdsuSrgjDopfALOvm1rrQFXbKKGllyvaK04VepISNM=;
-        b=c+B2Ug+VYBicaJbJyvWUEDMYT7IQODgNMEGgq4zL/5nWh9P3ILXcAqFT/4jd818zmj
-         E8H2oqY0Qn/+NUHUPIt4OLL5vtjcaVStz/DtyqrB2D3hLGByAFnMbDl7jGdG7cZ2JRek
-         EanlyhhacNXp7/mlZfQU12Iaj6Hz0KqTxGcP9sPvu9gDJLedTMjezqV7ZsXzYXUh/E16
-         G81Rao+okU0rsMkP0Lvo/+OT6ChOgo1zIgGo0CVBib9BqTz+LkOuQ7faI4POAM2YMpMK
-         fOR/g/wmjOx740bI/kW4rLjcWiy5dXbJ87bk7twMcsooRAahNR1bHuDXpQqZfq4LZr6M
-         avyA==
-X-Gm-Message-State: ANoB5pm/BjiNT8WwSDRC/SbrfjBotemOwA0yA4EbvCOTBXiEVozIRvXu
-        ECEtDPIje8idPTHCfcbRnnTcyZZL1aqXSFw1SmaYx2G67y2iz/dLDcvUzvW82YwVBiJs3J7/VK3
-        N9Z6LSpr04OYeFk+q
-X-Received: by 2002:a17:902:ce0e:b0:172:86a2:8e68 with SMTP id k14-20020a170902ce0e00b0017286a28e68mr15973645plg.27.1669312309285;
-        Thu, 24 Nov 2022 09:51:49 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7QJlepYjWsZ1z1GX6KIUy8Kfes+LstjyEEIEoRwJESdyt5NKcP15Q7qZbt8DdJt0ShoBwspw==
-X-Received: by 2002:a17:902:ce0e:b0:172:86a2:8e68 with SMTP id k14-20020a170902ce0e00b0017286a28e68mr15973615plg.27.1669312308591;
-        Thu, 24 Nov 2022 09:51:48 -0800 (PST)
-Received: from ryzen.. ([240d:1a:c0d:9f00:fc9c:8ee9:e32c:2d9])
-        by smtp.gmail.com with ESMTPSA id y75-20020a62644e000000b0056ee49d6e95sm1484968pfb.86.2022.11.24.09.51.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Nov 2022 09:51:48 -0800 (PST)
-From:   Shigeru Yoshida <syoshida@redhat.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, jasowang@redhat.com,
-        Shigeru Yoshida <syoshida@redhat.com>,
-        syzbot+106f9b687cd64ee70cd1@syzkaller.appspotmail.com
-Subject: [PATCH v3] net: tun: Fix use-after-free in tun_detach()
-Date:   Fri, 25 Nov 2022 02:51:34 +0900
-Message-Id: <20221124175134.1589053-1-syoshida@redhat.com>
+        with ESMTP id S229754AbiKXRyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 12:54:55 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A5C12D39;
+        Thu, 24 Nov 2022 09:54:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669312458; x=1700848458;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=sXnKN/YXOdlrt4gQi4aLdKbmQKzlc0Sj2MoBA1aMjMg=;
+  b=YwyNlSxmNLWmFxuwYCI9dVUAwwQwoe+yLi8a6K4Aqr6kuLg7ur+LjaCv
+   YphQQFd3YbRcTjGlW9zN9Iv6+2UTBIXUHQZTS0/xCNX9L3mJf9uR8p2j2
+   BauOe3r6wFgBCmGppi8amxLyPOkRux0dcUTsLnKtorqrrowfpOyAt7wI1
+   yYp+8Ukf000l2VWu9ZAcEj/2mauXwNZdYze7FR3i7/rMFlgfhhT8VWEeA
+   l9C592lYpPjxvBKIYX65C3YbDmfEuoGloqUP9FhD0uKOL3wmxYg1+pjOs
+   OgDhNTcU+51HRWhPQUMVzb0Xl+CqDrH2v7rBXqtJrDaLmD5oFFlCEJmbx
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10541"; a="316166681"
+X-IronPort-AV: E=Sophos;i="5.96,190,1665471600"; 
+   d="scan'208";a="316166681"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2022 09:54:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10541"; a="767146960"
+X-IronPort-AV: E=Sophos;i="5.96,190,1665471600"; 
+   d="scan'208";a="767146960"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 24 Nov 2022 09:54:15 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2AOHsDbM003592;
+        Thu, 24 Nov 2022 17:54:13 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/5] net: ethernet: mtk_eth_soc: work around issue with sending small fragments
+Date:   Thu, 24 Nov 2022 18:54:10 +0100
+Message-Id: <20221124175410.5684-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221123095754.36821-3-nbd@nbd.name>
+References: <20221123095754.36821-1-nbd@nbd.name> <20221123095754.36821-3-nbd@nbd.name>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported use-after-free in tun_detach() [1].  This causes call
-trace like below:
+From: Felix Fietkau <nbd@nbd.name>
+Date: Wed, 23 Nov 2022 10:57:52 +0100
 
-==================================================================
-BUG: KASAN: use-after-free in notifier_call_chain+0x1ee/0x200 kernel/notifier.c:75
-Read of size 8 at addr ffff88807324e2a8 by task syz-executor.0/3673
+> When frames are sent with very small fragments, the DMA engine appears to
+> lock up and transmit attempts time out. Fix this by detecting the presence
+> of small fragments and use skb_gso_segment + skb_linearize to deal with
+> them
 
-CPU: 0 PID: 3673 Comm: syz-executor.0 Not tainted 6.1.0-rc5-syzkaller-00044-gcc675d22e422 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:284 [inline]
- print_report+0x15e/0x461 mm/kasan/report.c:395
- kasan_report+0xbf/0x1f0 mm/kasan/report.c:495
- notifier_call_chain+0x1ee/0x200 kernel/notifier.c:75
- call_netdevice_notifiers_info+0x86/0x130 net/core/dev.c:1942
- call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
- call_netdevice_notifiers net/core/dev.c:1997 [inline]
- netdev_wait_allrefs_any net/core/dev.c:10237 [inline]
- netdev_run_todo+0xbc6/0x1100 net/core/dev.c:10351
- tun_detach drivers/net/tun.c:704 [inline]
- tun_chr_close+0xe4/0x190 drivers/net/tun.c:3467
- __fput+0x27c/0xa90 fs/file_table.c:320
- task_work_run+0x16f/0x270 kernel/task_work.c:179
- exit_task_work include/linux/task_work.h:38 [inline]
- do_exit+0xb3d/0x2a30 kernel/exit.c:820
- do_group_exit+0xd4/0x2a0 kernel/exit.c:950
- get_signal+0x21b1/0x2440 kernel/signal.c:2858
- arch_do_signal_or_restart+0x86/0x2300 arch/x86/kernel/signal.c:869
- exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
- exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:203
- __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
- syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
- do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Nit: all of your commit messages don't have a trailing dot (.), not
+sure if it's important, but my eye is missing it definitely :D
 
-The cause of the issue is that sock_put() from __tun_detach() drops
-last reference count for struct net, and then notifier_call_chain()
-from netdev_state_change() accesses that struct net.
+skb_gso_segment() and skb_linearize() are slow as hell. I think you
+can do it differently. I guess only the first (head) and the last
+frag can be so small, right?
 
-This patch fixes the issue by calling sock_put() from tun_detach()
-after all necessary accesses for the struct net has done.
+So, if a frag from shinfo->frags is less than 16, get a new frag of
+the minimum acceptable size via netdev_alloc_frag(), copy the data
+to it and pad the rest with zeroes. Then increase skb->len and
+skb->data_len, skb_frag_unref() the current, "invalid" frag and
+replace the pointer to the new frag. I didn't miss anything I
+believe... Zero padding the tail is usual thing for NICs. skb frag
+substitution is less common, but should be legit.
 
-Fixes: 83c1f36f9880 ("tun: send netlink notification when the device is modified")
-Reported-by: syzbot+106f9b687cd64ee70cd1@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?id=96eb7f1ce75ef933697f24eeab928c4a716edefe [1]
-Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
----
-v3:
-- Remove redundant synchronize_rcu()
-v2:
-- Include symbolic stack trace
-- Add Fixes and Reported-by tags
-v1: https://lore.kernel.org/all/20221119075615.723290-1-syoshida@redhat.com/
----
- drivers/net/tun.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+If skb_headlen() is less than 16, try doing pskb_may_pull() +
+__skb_pull() at first. The argument would be `16 - headlen`. If
+pskb_may_pull() returns false, then yeah, you have no choice other
+than segmenting and linearizing ._.
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 7a3ab3427369..24001112c323 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -686,7 +686,6 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
- 		if (tun)
- 			xdp_rxq_info_unreg(&tfile->xdp_rxq);
- 		ptr_ring_cleanup(&tfile->tx_ring, tun_ptr_free);
--		sock_put(&tfile->sk);
- 	}
- }
- 
-@@ -702,6 +701,9 @@ static void tun_detach(struct tun_file *tfile, bool clean)
- 	if (dev)
- 		netdev_state_change(dev);
- 	rtnl_unlock();
-+
-+	if (clean)
-+		sock_put(&tfile->sk);
- }
- 
- static void tun_detach_all(struct net_device *dev)
--- 
-2.38.1
+> 
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> ---
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 36 +++++++++++++++++++--
+>  1 file changed, 34 insertions(+), 2 deletions(-)
 
+[...]
+
+>  	if (unlikely(atomic_read(&ring->free_count) <= ring->thresh))
+>  		netif_tx_stop_all_queues(dev);
+> -- 
+> 2.38.1
+
+Thanks,
+Olek
