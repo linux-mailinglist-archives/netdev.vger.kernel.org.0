@@ -2,76 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FE20637645
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 11:23:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64190637668
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 11:28:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbiKXKXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 05:23:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
+        id S229500AbiKXK2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 05:28:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230048AbiKXKXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 05:23:05 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D3A2D2;
-        Thu, 24 Nov 2022 02:22:26 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id ha10so3175348ejb.3;
-        Thu, 24 Nov 2022 02:22:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=stdCwGhL1mHRmXy8gxhkkhvFFywWZf8vqJUMKC2QRIs=;
-        b=oGLkjrrOidE3YmS32GPKlogmQTBiN4XUIyC8I7bF0OYljNVDivq/a+3FS5nq0Y8TUn
-         bTCI1iktkkjR1XbWWU9uZ/3boh3GzIZc8xFp2b5CQKuNU1eIy/55g+Ul9bha3C8IyhLk
-         vbq+x2veJFR7JYWOf+kB058CSQx0GaF8YDf2r/ZpsE/k9Rp8bHO0qVXhMa3MEB1rtoGi
-         qbf9EN/0iC5fCxgfd8VMdEqC/R9tHwTjIIdJ3PjAjvziFn0WGerYhdk6ePXjo707Se6a
-         +vqPijI8JRtTErRffXO4wE4C9thHmzhywQrgzmU90EsrJglOhFTitTAMtlA4IV0nNfNd
-         l0HQ==
+        with ESMTP id S229815AbiKXK2n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 05:28:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE2626577
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 02:27:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669285662;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pn7rCC3CWcfcfwcb+CXJIb0K1hMCjk7+sCKEh7DDk+Y=;
+        b=XVkrY4zyMKnFPqt4IcCC7/nqueAyt2nPR4Uz5e3iTdr/Pel/oU0XZiZomEX0WUK4LYd9MV
+        TQspx8X2GIkBXpW6+04chQZ3pUeHhaNf9N/4lc01ihRsenTqeqIdnI5Dbs8YyXjULERDQj
+        vD4jpZkCTxSobrM0oCHZJlSDbD0cBh4=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-624-ImZynyo-Ntm-G5cIMtHZiQ-1; Thu, 24 Nov 2022 05:27:39 -0500
+X-MC-Unique: ImZynyo-Ntm-G5cIMtHZiQ-1
+Received: by mail-wm1-f72.google.com with SMTP id az40-20020a05600c602800b003cfa26c40easo2685846wmb.1
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 02:27:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=stdCwGhL1mHRmXy8gxhkkhvFFywWZf8vqJUMKC2QRIs=;
-        b=p4Fd01cCmjpVmtmfXYCoVVHVhvSTA34huw4BqNuwrGSP/Ce0C72SA9uuTOMVFcV8/4
-         XmFVlYBwH3t3raHY8TP7y4xvLVVB9mknRxZUtOBgj9Ix7GOawDdb5jw21fH6IW+nvodW
-         FHilbSjoX0otoACndZrQFU0K4bSzXLVJkZx/AzaEvCxNCKpdk/ySM7JVMKhGACQAUuMQ
-         pF6vS/id5W1wr89K5aGaRW9uN3Uiq6xLKCOG57DfQlsscn1+DyUBwxC+6zvYTfWJ3LLY
-         nHMqFRu8hv1flZ68auemExOu8BCqCoJYN+M0LB53LNaP+qgG9zxP4wqxnH69f1VLk9dt
-         jmjw==
-X-Gm-Message-State: ANoB5pm5nzvJRKY2NdStGQMsJfK7OMqaxLq9YQ72zR7QGBRsHmXfveqd
-        9c7p5YGdAUvolF30XE2vgXg=
-X-Google-Smtp-Source: AA0mqf7C/mX/HsawCOYBF9Yqmbq+WucHlUwatJgrzcc90no4pq+9Q3VhTkrYD3eMm1WDnyO9OPW+/w==
-X-Received: by 2002:a17:906:2e86:b0:7a5:f8a5:6f86 with SMTP id o6-20020a1709062e8600b007a5f8a56f86mr26183204eji.610.1669285344892;
-        Thu, 24 Nov 2022 02:22:24 -0800 (PST)
-Received: from skbuf ([188.26.57.184])
-        by smtp.gmail.com with ESMTPSA id o26-20020a170906289a00b0077d37a5d401sm278357ejd.33.2022.11.24.02.22.23
+        bh=pn7rCC3CWcfcfwcb+CXJIb0K1hMCjk7+sCKEh7DDk+Y=;
+        b=GB70wLGcwO+CmEUyZqmpy8ae70HbCx9W1rUQpIMGQT3EXrXXR292QSo2rAS4iusHVO
+         RxW5PNOtuS7ZC2+1xJROAQfLjDe/bh4jmWVRHVA4WxiXVTfuMo4B76C75r/lMRpyy37C
+         4vRi66vU0XdRIugDHgsJD9y8II+ic/sTGxzOExfkIcWmjaXbJfGTDsEj2Rd/KIQQ3lAH
+         QGkLOTE87rZF9sDEYTKAvnDHLqK1eQWVjdcW8KLZzb4tBESt3i4R8LeDK8GOZ/Fva0qk
+         JvzF2zs5nKapVGQiU3mbIa1Gdv5HUbKd6IbAKXo9ITjqoWAjOAlXi0Snql7+zU2OInBW
+         BOfA==
+X-Gm-Message-State: ANoB5plt8pBoZe7GS974y/1RJnOQFCSw6UJIN45ZRvk1igD8wTBad3sG
+        PH+FvHPnQWxaOrRYsihzRf3qACeiZrjt3LFUlV7DIUQOepsD46d3oB26iu8zHhLk8rpmFMGfsz6
+        cFkcxDxVNBH3zHQ2m
+X-Received: by 2002:a7b:ce8c:0:b0:3cf:8b2d:8cbc with SMTP id q12-20020a7bce8c000000b003cf8b2d8cbcmr12318202wmj.89.1669285658312;
+        Thu, 24 Nov 2022 02:27:38 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6h5IPDk9Fg4jVKKL8T7WTgKp+hIPWxes19NBdIZgo96iVZvVlCARdlGYbWsGP8h22yr9b/LA==
+X-Received: by 2002:a7b:ce8c:0:b0:3cf:8b2d:8cbc with SMTP id q12-20020a7bce8c000000b003cf8b2d8cbcmr12318184wmj.89.1669285658131;
+        Thu, 24 Nov 2022 02:27:38 -0800 (PST)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id n6-20020a1ca406000000b003d005aab31asm5061563wme.40.2022.11.24.02.27.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Nov 2022 02:22:24 -0800 (PST)
-Date:   Thu, 24 Nov 2022 12:22:21 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun.Ramadoss@microchip.com
-Cc:     andrew@lunn.ch, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        linux@armlinux.org.uk, Tristram.Ha@microchip.com,
-        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org, Woojung.Huh@microchip.com,
-        davem@davemloft.net
-Subject: Re: [RFC Patch net-next v2 3/8] net: dsa: microchip: Initial
- hardware time stamping support
-Message-ID: <20221124102221.2xldwevfmjbekx43@skbuf>
-References: <20221121154150.9573-1-arun.ramadoss@microchip.com>
- <20221121154150.9573-4-arun.ramadoss@microchip.com>
- <20221121231314.kabhej6ae6bl3qtj@skbuf>
- <298f4117872301da3e4fe4fed221f51e9faab5d0.camel@microchip.com>
+        Thu, 24 Nov 2022 02:27:37 -0800 (PST)
+Date:   Thu, 24 Nov 2022 11:27:35 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Tom Parkin <tparkin@katalix.com>
+Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot+703d9e154b3b58277261@syzkaller.appspotmail.com,
+        syzbot+50680ced9e98a61f7698@syzkaller.appspotmail.com,
+        syzbot+de987172bb74a381879b@syzkaller.appspotmail.com
+Subject: Re: [PATCH net] l2tp: Don't sleep and disable BH under writer-side
+ sk_callback_lock
+Message-ID: <20221124102735.GA4647@pc-4.home>
+References: <87wn7o7k7r.fsf@cloudflare.com>
+ <ef09820a-ca97-0c50-e2d8-e1344137d473@I-love.SAKURA.ne.jp>
+ <87fseb7vbm.fsf@cloudflare.com>
+ <f2fdb53a-4727-278d-ac1b-d6dbdac8d307@I-love.SAKURA.ne.jp>
+ <871qpvmfab.fsf@cloudflare.com>
+ <a3b7d8cd-0c72-8e6b-78f2-71b92e70360f@I-love.SAKURA.ne.jp>
+ <20221122141011.GA3303@pc-4.home>
+ <c50bb326-7946-82b9-418a-95638818aa84@I-love.SAKURA.ne.jp>
+ <20221123152400.GA18177@pc-4.home>
+ <20221124100751.GA6671@katalix.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <298f4117872301da3e4fe4fed221f51e9faab5d0.camel@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <20221124100751.GA6671@katalix.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,25 +93,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 01:57:47PM +0000, Arun.Ramadoss@microchip.com wrote:
-> > What's your excuse which such a horrible code pattern? What will happen
-> > so bad with the packet if it's flagged with a TX timestamp request in
-> > KSZ_SKB_CB(skb) at the same time as REG_PTP_MSG_CONF1 is written to?
+On Thu, Nov 24, 2022 at 10:07:51AM +0000, Tom Parkin wrote:
+> On  Wed, Nov 23, 2022 at 16:24:00 +0100, Guillaume Nault wrote:
+> > On Tue, Nov 22, 2022 at 11:28:45PM +0900, Tetsuo Handa wrote:
+> > > That's what I thought at https://lkml.kernel.org/r/c64284f4-2c2a-ecb9-a08e-9e49d49c720b@I-love.SAKURA.ne.jp .
+> > > 
+> > > But the problem is not that setup_udp_tunnel_sock() can sleep. The problem is that lockdep
+> > > gets confused due to changing lockdep class after the socket is already published. We need
+> > > to avoid calling lockdep_set_class_and_name() on a socket retrieved via sockfd_lookup().
 > > 
-> > Also, doesn't dev->ports[port].hwts_tx_en serve as a guard against
-> > flagging packets for TX timestamps when you shouldn't?
+> > This is a second problem. The problem of setting sk_user_data under
+> > sk_callback_lock write protection (while still calling
+> > udp_tunnel_encap_enable() from sleepable context) still remains.
 > > 
+> > For lockdep_set_class_and_name(), maybe we could store the necessary
+> > socket information (addresses, ports and checksum configuration) in the
+> > l2tp_tunnel structure, thus avoiding the need to read them from the
+> > socket. This way, we could stop locking the user space socket in
+> > l2tp_xmit_core() and drop the lockdep_set_class_and_name() call.
+> > I think either you or Jakub proposed something like this in another
+> > thread.
 > 
-> I took this configuration template routine from other driver.
-
-Not really a good excuse. The sja1105 driver has more hardware-specific
-issues to deal with, not necessarily the same as ksz.
-
-> Can I replace above snippet with
+> I note that l2tp_xmit_core calls ip_queue_xmit which expects a socket
+> atomic context*.
 > 
-> tagger_data->hwtstamp_set_state(dev->ds, rx_on);
-> ret = ksz_ptp_enable_mode(dev, rx_on);
-> if (ret)
->     return ret;
+> It also accesses struct inet_sock corking data which may also need locks
+> to safely access.
+> 
+> Possibly we could somehow work around that, but on the face of it we'd
+> need to do a bit more work to avoid the socket lock in the tx path.
 
-Why do you need to call hwtstamp_set_state anyway?
+I was thinking of avoiding using the socket entirely, which indeed
+means replacing ip_queue_xmit(). We should probably use the different
+variants of udp_tunnel_xmit_skb() instead.
+
+> * davem fixed locking in the l2tp xmit path in:
+> 
+> 6af88da14ee2 ("l2tp: Fix locking in l2tp_core.c")
+> -- 
+> Tom Parkin
+> Katalix Systems Ltd
+> https://katalix.com
+> Catalysts for your Embedded Linux software development
+
