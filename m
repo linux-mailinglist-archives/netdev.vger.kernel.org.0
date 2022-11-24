@@ -2,76 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E218E637545
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 10:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FBF4637558
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 10:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229700AbiKXJgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 04:36:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45356 "EHLO
+        id S229450AbiKXJhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 04:37:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiKXJga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 04:36:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A84C6D2C
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 01:35:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669282533;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3lD3X1Z3DwL6oHpIWZE9wQ9xBbUQb4Md6bY08DZINX4=;
-        b=e0eV8NRIO9AQ+hyf0CBPiEZ0nrBNmA0zTePbCkX/XI3ToVLFrhdBJxXwdC7VQLuU5WLBJd
-        JiVfSfFsuGXMYIPtvPNLxI15uOnuOVmZ5oeE/R8bqQh+m2+6U48+wE9BqwXRyXxNClyrRn
-        Hz8v/ijdwScFJ3ln8hjCZrKj/pHBaEA=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-626--FIFEsL_Oje7RdwA7cf1YA-1; Thu, 24 Nov 2022 04:35:30 -0500
-X-MC-Unique: -FIFEsL_Oje7RdwA7cf1YA-1
-Received: by mail-qk1-f199.google.com with SMTP id bl21-20020a05620a1a9500b006fa35db066aso1409993qkb.19
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 01:35:30 -0800 (PST)
+        with ESMTP id S229459AbiKXJhk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 04:37:40 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF90211C38
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 01:37:38 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id i10so2885554ejg.6
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 01:37:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hnCN7ZuWHtgfJvUjcdMFMiyMnm264/VkK0BZtAHklho=;
+        b=UmqVAJjNNAbVC1ffphGUaISsdvC/D9ZTQe4teRtQAo0jD01nf9e8It1FObPWGc+u2H
+         PjbY911Kv4MBk0/hPoZMjt+dzWr69WE9379jFK0W19qNUld22ieMm1yUGFvomW8CHGma
+         nK3i5Hyn673+mmdU5ZGKkKwgBj1AUHMMyAZqqe7Grv/uKcPyCBLyv4a5tAITkw8fCx/b
+         x37uE6Owyajsic3BgkLSBF6Kl0ki2wmLWIbGbLQReb+z9Eefw9MhrZ7TjinUYysWg4a7
+         CAaJKFy9MWEglAAbzRfVtTGlZDS91zVD2wTne58U3KcZ9speDjdUkI0Da7qEEAH9meEN
+         nHDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3lD3X1Z3DwL6oHpIWZE9wQ9xBbUQb4Md6bY08DZINX4=;
-        b=4WJ9MeWVCu0f44DNxc9WGeFLhfKfnrMGpB1gzPTq7XB11nACQO11AYU3OJvhHWRMrZ
-         fCNFw1/cfraumiVboglVThG96SjIhK/AtMYq48Mqyno6zOE/E7k7sGG2rxG2sp13+Xt3
-         DAdb59spJVkObuo0MgGiysmQixw2Fk1ZCfIgFje2LP5gBX+u+ZJTtusPfxlx2aC73SeR
-         83vit2K8qgoezrXJ3Iwdyr52YNLAkneXhEC1zSG6IBJj9adqi38YTlrfPxZuISkeY3Vb
-         afp0AHEs9zgVWfJp/YP1RjJkrVs22mbKLPV7nyZ15+zts+UwS/Oe4vyMIABop3pF7byd
-         kuRA==
-X-Gm-Message-State: ANoB5pkRzOJJvT6kfriStHME7eM7QFxwl/TAKQDW+QPsaCj6bpYAnMLG
-        ZJ19X4oovgk0cX6C9JsqTnXtSivCiz14IfPRMdJoRsS9pSZGJgnWsfVnCNkkAjUom3gqY7TwSdj
-        tiSugGeFiaKrc2Dk1
-X-Received: by 2002:a05:620a:1905:b0:6fa:6636:a7b0 with SMTP id bj5-20020a05620a190500b006fa6636a7b0mr11659589qkb.55.1669282529665;
-        Thu, 24 Nov 2022 01:35:29 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6UkOX2dmUYou/ibDwcHju3ZGcCFxTzlbvTEeEtb3pXW+tGL8BHSEyyBgVEQel0np7r58qmIw==
-X-Received: by 2002:a05:620a:1905:b0:6fa:6636:a7b0 with SMTP id bj5-20020a05620a190500b006fa6636a7b0mr11659581qkb.55.1669282529361;
-        Thu, 24 Nov 2022 01:35:29 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id s3-20020ae9de03000000b006ce1bfbd603sm543050qkf.124.2022.11.24.01.35.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Nov 2022 01:35:29 -0800 (PST)
-Message-ID: <59bcf09d5eabf36eda1f940b755e3bca218f9df0.camel@redhat.com>
-Subject: Re: [PATCH v2] net: usb: cdc_ether: add u-blox 0x1343 composition
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Davide Tronchin <davide.tronchin.94@gmail.com>, kuba@kernel.org
-Cc:     bjorn@mork.no, marco.demarco@posteo.net, netdev@vger.kernel.org,
-        Oliver Neukum <oliver@neukum.org>, linux-usb@vger.kernel.org
-Date:   Thu, 24 Nov 2022 10:35:25 +0100
-In-Reply-To: <20221123084924.3369-1-davide.tronchin.94@gmail.com>
-References: <20221122204438.25442c0c@kernel.org>
-         <20221123084924.3369-1-davide.tronchin.94@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hnCN7ZuWHtgfJvUjcdMFMiyMnm264/VkK0BZtAHklho=;
+        b=sBg0qGI6EuZf9qU+9yPR7WtK5uEZrxS2W9rF/sJYQVSqozqfYNkdBqZb9m3g/uzYL/
+         dJeqU6U6DSBPRyek+4H8dkcGw/wQ3oGzXc1mdYvLqpi6Tjmzvhe6IVvBF6bR8fzgVgWI
+         TItyQnIEZjHK0yqwCOcr7bZ64LYrKp4RKN68QSs2HwKS7E4c92dlLqtHvJ99LPvVhm+I
+         TTDoe8oG6MTlTvqzQ88hQKQ5Kbt2AhOOSol0aB3p8a61vrr/MiyVD+f8RZSlpXLoT562
+         ocUzIkCxOCi7KG+CLo34bfQSnJmL8dWWlZa727m9kaZeA9nIDXWRubhjW157MWW6gLUW
+         PJ6w==
+X-Gm-Message-State: ANoB5pnuOKoF+2K73RsfLj1JkbXDJMxbyYdFs6x5/rrw6PpgxyTxJWft
+        JVL2rNltpmr0RxiqQw+Gp2nSyMLPC0jHuS7TyzM=
+X-Google-Smtp-Source: AA0mqf46DAzQuaBbghctdquMul3HjgkCsvIQtBUK3Xe0MyKG7RDVW5eCl+0kRxREC7XB2ebPtuU2apIuWfn5HdWec94=
+X-Received: by 2002:a17:906:ce4a:b0:7ae:5ad1:e834 with SMTP id
+ se10-20020a170906ce4a00b007ae5ad1e834mr26943331ejb.312.1669282656862; Thu, 24
+ Nov 2022 01:37:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <CAO4mrfcuDa5hKFksJtBLskA3AAuHUTP_wO9JOfD9Kq0ZvEPPCA@mail.gmail.com>
+ <20221123152205.79232-1-kuniyu@amazon.com> <73f71d4e6f867a90538b48894249be3902eb38e4.camel@redhat.com>
+In-Reply-To: <73f71d4e6f867a90538b48894249be3902eb38e4.camel@redhat.com>
+From:   Wei Chen <harperchen1110@gmail.com>
+Date:   Thu, 24 Nov 2022 17:37:04 +0800
+Message-ID: <CAO4mrffDLiqo3hWRC=uP_E-3VQSV4O=1BiOaS0Z1J0GHLVgzVQ@mail.gmail.com>
+Subject: Re: [PATCH v1 net] af_unix: Call sk_diag_fill() under the bucket lock.
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, kuni1840@gmail.com,
+        netdev@vger.kernel.org, syzkaller@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,328 +68,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-11-23 at 09:49 +0100, Davide Tronchin wrote:
-> Add CDC-ECM support for LARA-L6.
-> 
-> LARA-L6 module can be configured (by AT interface) in three different
-> USB modes:
-> * Default mode (Vendor ID: 0x1546 Product ID: 0x1341) with 4 serial
-> interfaces
-> * RmNet mode (Vendor ID: 0x1546 Product ID: 0x1342) with 4 serial
-> interfaces and 1 RmNet virtual network interface
-> * CDC-ECM mode (Vendor ID: 0x1546 Product ID: 0x1343) with 4 serial
-> interface and 1 CDC-ECM virtual network interface
-> 
-> In CDC-ECM mode LARA-L6 exposes the following interfaces:
-> If 0: Diagnostic
-> If 1: AT parser
-> If 2: AT parser
-> If 3: AT parset/alternative functions
-> If 4: CDC-ECM interface
-> 
-> Signed-off-by: Davide Tronchin <davide.tronchin.94@gmail.com>
-> ---
-> 
-> V1 -> V2 add missing Signed-off
-> 
-> lsusb verbose output:
-> 
-> $ lsusb -v -d 1546:1343
-> 
-> Bus 001 Device 045: ID 1546:1343 U-Blox AG u-blox Modem
-> Device Descriptor:
->   bLength                18
->   bDescriptorType         1
->   bcdUSB               2.00
->   bDeviceClass          239 Miscellaneous Device
->   bDeviceSubClass         2 
->   bDeviceProtocol         1 Interface Association
->   bMaxPacketSize0        64
->   idVendor           0x1546 U-Blox AG
->   idProduct          0x1343 
->   bcdDevice            0.00
->   iManufacturer           4 u-blox
->   iProduct                3 u-blox Modem
->   iSerial                 5 d6da37e3
->   bNumConfigurations      1
->   Configuration Descriptor:
->     bLength                 9
->     bDescriptorType         2
->     wTotalLength       0x00c9
->     bNumInterfaces          6
->     bConfigurationValue     1
->     iConfiguration          2 u-blox Configuration
->     bmAttributes         0xc0
->       Self Powered
->     MaxPower              500mA
->     Interface Descriptor:
->       bLength                 9
->       bDescriptorType         4
->       bInterfaceNumber        0
->       bAlternateSetting       0
->       bNumEndpoints           2
->       bInterfaceClass       255 Vendor Specific Class
->       bInterfaceSubClass    255 Vendor Specific Subclass
->       bInterfaceProtocol     48 
->       iInterface              0 
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x81  EP 1 IN
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x01  EP 1 OUT
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
->     Interface Descriptor:
->       bLength                 9
->       bDescriptorType         4
->       bInterfaceNumber        1
->       bAlternateSetting       0
->       bNumEndpoints           3
->       bInterfaceClass       255 Vendor Specific Class
->       bInterfaceSubClass    255 Vendor Specific Subclass
->       bInterfaceProtocol    255 Vendor Specific Protocol
->       iInterface              0 
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x82  EP 2 IN
->         bmAttributes            3
->           Transfer Type            Interrupt
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0040  1x 64 bytes
->         bInterval               5
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x83  EP 3 IN
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x02  EP 2 OUT
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
->     Interface Descriptor:
->       bLength                 9
->       bDescriptorType         4
->       bInterfaceNumber        2
->       bAlternateSetting       0
->       bNumEndpoints           3
->       bInterfaceClass       255 Vendor Specific Class
->       bInterfaceSubClass    254 
->       bInterfaceProtocol    255 
->       iInterface              0 
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x84  EP 4 IN
->         bmAttributes            3
->           Transfer Type            Interrupt
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0040  1x 64 bytes
->         bInterval               5
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x85  EP 5 IN
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x03  EP 3 OUT
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
->     Interface Descriptor:
->       bLength                 9
->       bDescriptorType         4
->       bInterfaceNumber        3
->       bAlternateSetting       0
->       bNumEndpoints           3
->       bInterfaceClass       255 Vendor Specific Class
->       bInterfaceSubClass    255 Vendor Specific Subclass
->       bInterfaceProtocol    255 Vendor Specific Protocol
->       iInterface              0 
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x86  EP 6 IN
->         bmAttributes            3
->           Transfer Type            Interrupt
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0040  1x 64 bytes
->         bInterval               5
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x87  EP 7 IN
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x04  EP 4 OUT
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
->     Interface Association:
->       bLength                 8
->       bDescriptorType        11
->       bFirstInterface         4
->       bInterfaceCount         2
->       bFunctionClass          2 Communications
->       bFunctionSubClass       0 
->       bFunctionProtocol       0 
->       iFunction               0 
->     Interface Descriptor:
->       bLength                 9
->       bDescriptorType         4
->       bInterfaceNumber        4
->       bAlternateSetting       0
->       bNumEndpoints           1
->       bInterfaceClass         2 Communications
->       bInterfaceSubClass      6 Ethernet Networking
->       bInterfaceProtocol      0 
->       iInterface              0 
->       CDC Header:
->         bcdCDC               1.10
->       CDC Ethernet:
->         iMacAddress                      1 00A0C6A37E30
->         bmEthernetStatistics    0x00000000
->         wMaxSegmentSize              16384
->         wNumberMCFilters            0x0001
->         bNumberPowerFilters              0
->       CDC Union:
->         bMasterInterface        4
->         bSlaveInterface         5 
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x88  EP 8 IN
->         bmAttributes            3
->           Transfer Type            Interrupt
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0040  1x 64 bytes
->         bInterval               5
->     Interface Descriptor:
->       bLength                 9
->       bDescriptorType         4
->       bInterfaceNumber        5
->       bAlternateSetting       0
->       bNumEndpoints           0
->       bInterfaceClass        10 CDC Data
->       bInterfaceSubClass      0 
->       bInterfaceProtocol      0 
->       iInterface              0 
->     Interface Descriptor:
->       bLength                 9
->       bDescriptorType         4
->       bInterfaceNumber        5
->       bAlternateSetting       1
->       bNumEndpoints           2
->       bInterfaceClass        10 CDC Data
->       bInterfaceSubClass      0 
->       bInterfaceProtocol      0 
->       iInterface              0 
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x89  EP 9 IN
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
->       Endpoint Descriptor:
->         bLength                 7
->         bDescriptorType         5
->         bEndpointAddress     0x05  EP 5 OUT
->         bmAttributes            2
->           Transfer Type            Bulk
->           Synch Type               None
->           Usage Type               Data
->         wMaxPacketSize     0x0200  1x 512 bytes
->         bInterval               0
-> Device Qualifier (for other device speed):
->   bLength                10
->   bDescriptorType         6
->   bcdUSB               2.00
->   bDeviceClass          239 Miscellaneous Device
->   bDeviceSubClass         2 
->   bDeviceProtocol         1 Interface Association
->   bMaxPacketSize0        64
->   bNumConfigurations      1
-> Device Status:     0x0000
->   (Bus Powered)
-> 
-> ---
->  drivers/net/usb/cdc_ether.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
-> index e11f70911acc..8911cd2ed534 100644
-> --- a/drivers/net/usb/cdc_ether.c
-> +++ b/drivers/net/usb/cdc_ether.c
-> @@ -989,6 +989,12 @@ static const struct usb_device_id	products[] = {
->  				      USB_CDC_SUBCLASS_ETHERNET,
->  				      USB_CDC_PROTO_NONE),
->  	.driver_info = (unsigned long)&wwan_info,
-> +}, {
-> +	/* U-blox LARA-L6 */
-> +	USB_DEVICE_AND_INTERFACE_INFO(UBLOX_VENDOR_ID, 0x1343, USB_CLASS_COMM,
-> +				      USB_CDC_SUBCLASS_ETHERNET,
-> +				      USB_CDC_PROTO_NONE),
-> +	.driver_info = (unsigned long)&wwan_info,
->  }, {
->  	/* Cinterion PLS8 modem by GEMALTO */
->  	USB_DEVICE_AND_INTERFACE_INFO(0x1e2d, 0x0061, USB_CLASS_COMM,
+Dear Linux developers,
 
-CC: Oliver, linux-usb 
+My step tracing over Linux found the following C program would trigger
+the reported crash. I hope it is helpful for bug fix.
 
-@Davide: the patch LGTM, please include all the relevant recipients.
-This kind of patches should at least land on the usb ML, thanks!
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <linux/netlink.h>
+#include <linux/rtnetlink.h>
+#include <linux/sock_diag.h>
+#include <linux/unix_diag.h>
+#include <linux/stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
-Paolo
+int main(void) {
+    int fd1 = socket(AF_UNIX, SOCK_STREAM, 0);
+    struct stat file_stat;
+    fstat(fd1, &file_stat);
+    int fd2 = socket(AF_NETLINK, SOCK_RAW, NETLINK_SOCK_DIAG);
 
+    struct sockaddr_nl nladdr = {
+        .nl_family = AF_NETLINK
+    };
+    struct {
+        struct nlmsghdr nlh;
+        struct unix_diag_req udr;
+    } req = {
+        .nlh = {
+            .nlmsg_len = sizeof(req),
+            .nlmsg_type = SOCK_DIAG_BY_FAMILY,
+            .nlmsg_flags = NLM_F_REQUEST
+        },
+        .udr = {
+            .sdiag_family = AF_UNIX,
+            .udiag_states = -1,
+            .udiag_ino = file_stat.st_ino,
+            .udiag_show = 0x40
+        }
+    };
+    struct iovec iov = {
+        .iov_base = &req,
+        .iov_len = sizeof(req)
+    };
+    struct msghdr msg = {
+        .msg_name = &nladdr,
+        .msg_namelen = sizeof(nladdr),
+        .msg_iov = &iov,
+        .msg_iovlen = 1
+    };
+
+    sendmsg(fd2, &msg, 0);
+    return 0;
+}
+
+Best,
+Wei
+
+On Wed, 23 Nov 2022 at 23:38, Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Wed, 2022-11-23 at 07:22 -0800, Kuniyuki Iwashima wrote:
+> > From:   Wei Chen <harperchen1110@gmail.com>
+> > Date:   Wed, 23 Nov 2022 23:09:53 +0800
+> > > Dear Paolo,
+> > >
+> > > Could you explain the meaning of modified "ss" version to reproduce
+> > > the bug? I'd like to learn how to reproduce the bug in the user space
+> > > to facilitate the bug fix.
+> >
+> > I think it means to drop NLM_F_DUMP and modify args as needed because
+> > ss dumps all sockets, not exactly a single socket.
+>
+> Exactly! Additionally 'ss' must fill udiag_ino and udiag_cookie with
+> values matching a live unix socket. And before that you have to add
+> more code to allow 'ss' dumping such values (or fetch them with some
+> bpf/perf probe).
+>
+> >
+> > Ah, I misunderstood that the found sk is passed to sk_user_ns(), but it's
+> > skb->sk.
+>
+> I did not double check the race you outlined in this patch. That could
+> still possibly be a valid/existing one.
+>
+> > P.S.  I'm leaving for Japan today and will be bit slow this and next week
+> > for vacation.
+>
+> Have a nice trip ;)
+>
+> /P
+>
