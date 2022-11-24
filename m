@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B13BD6372BE
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 08:22:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62CBE6372DF
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 08:28:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbiKXHM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 02:12:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44346 "EHLO
+        id S229475AbiKXHSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 02:18:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiKXHMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 02:12:14 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470FBCFB9A
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 23:16:36 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id b4so884829pfb.9
-        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 23:16:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9beI1qbDaBEZGBMzOodYXezAJNnkCn943LXJypsps08=;
-        b=jN9Iu2JG6Jbf9f/Vtx6/x8W99mbfvmkmA5JpUTuuOhHuX9hE65G+zwT360z98Yxh2l
-         i6PqDF91yJmzwCKNYEVFuLVfqGCqoHx9I7wNV8pa819eMDoiMR27SZF1GHdGnGDHcMWz
-         pqI4i03rsZDpQ60ONyvQHuYR+N3femATVqrSC4hLc3ih0MmJpf23tjAqEmigk+Q4lN5p
-         TjriD73VK+kqD8Wil5LA1NXQ4waHtGM3IZBFIczk95hCWTGki63dLVXFv0wvyqKSahPp
-         nd3iHhwTtHF7fG/CtXcp1E5PNjqsgHvp71L23Lt4pdmYQDMtQS6xnA3gM9hUIGynee9E
-         kaMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9beI1qbDaBEZGBMzOodYXezAJNnkCn943LXJypsps08=;
-        b=I1fVum5Yy+sYlHyFVoepsyTee1hGB1UFAdCgGbA/HeEHx6/NR4poOOq4bqOQc2Uvju
-         wBnV/GyR4Q6az/ZMlvseHzoYIQSMSn0ahjvouDzkr+6TXzBkm1GKGnggWwcMkWQ/ei2q
-         yUu5L4lASS0hKeZRuppYz7V1vQrfcbZcDxW57Rk7e9CLsBPZVHu5l5/opU0dLWo8pVyU
-         nssiXeFXId0UR1n/6VNVY0lQafXAvHi8wp7rbeyYlTV4a1lP4RfR3RYuVko3VTBcnhAj
-         HgwsJs16yzw/wU3KsgdJPpCtST6EqX/KxNhLx/j3XlF9NUG5Eb1Q5cLY0YNzHulLoH41
-         JD6g==
-X-Gm-Message-State: ANoB5plFDLJhNPAkjlx6zrldB3ri4QA3s/YZKc5d4q3CjYzgdY5hil0+
-        C5G+AJavgeiGHklJKo9dFEh2tQ==
-X-Google-Smtp-Source: AA0mqf539xW7yp+XmSaeh7QyKEx/uI4+Px0TRaTKiiPa7cXAYmK2DoSN46/6FwkQRO+vECyNwcPwTg==
-X-Received: by 2002:aa7:8c19:0:b0:573:620a:3b1c with SMTP id c25-20020aa78c19000000b00573620a3b1cmr13160104pfd.50.1669274195379;
-        Wed, 23 Nov 2022 23:16:35 -0800 (PST)
-Received: from localhost ([122.172.85.60])
-        by smtp.gmail.com with ESMTPSA id k4-20020a170902c40400b001867fdec154sm414181plk.224.2022.11.23.23.16.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 23:16:34 -0800 (PST)
-Date:   Thu, 24 Nov 2022 12:46:32 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2 0/9] dt-bindings: cleanup titles
-Message-ID: <20221124071632.5cadtc6pbdvdv3xb@vireshk-i7>
-References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
+        with ESMTP id S229450AbiKXHSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 02:18:30 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FE1AE7B
+        for <netdev@vger.kernel.org>; Wed, 23 Nov 2022 23:28:41 -0800 (PST)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NHqN817fLz15Mq9;
+        Thu, 24 Nov 2022 15:28:08 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 24 Nov 2022 15:28:40 +0800
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 24 Nov 2022 15:28:39 +0800
+Subject: Re: [PATCH net] net: devlink: fix UAF in
+ devlink_compat_running_version()
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Leon Romanovsky <leon@kernel.org>, <netdev@vger.kernel.org>,
+        <jiri@nvidia.com>, <davem@davemloft.net>, <edumazet@google.com>,
+        <pabeni@redhat.com>
+References: <20221122121048.776643-1-yangyingliang@huawei.com>
+ <Y3zdaX1I0Y8rdSLn@unreal> <e311b567-8130-15de-8dbb-06878339c523@huawei.com>
+ <Y30dPRzO045Od2FA@unreal> <20221122122740.4b10d67d@kernel.org>
+ <405f703b-b97e-afdd-8d5f-48b8f99d045d@huawei.com>
+ <20221123184738.29718806@kernel.org>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <36f320f3-f4e6-7388-6292-83f240bcd28c@huawei.com>
+Date:   Thu, 24 Nov 2022 15:28:38 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20221123184738.29718806@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21-11-22, 12:06, Krzysztof Kozlowski wrote:
->  .../devicetree/bindings/cpufreq/cpufreq-mediatek-hw.yaml        | 2 +-
->  .../devicetree/bindings/cpufreq/qcom-cpufreq-nvmem.yaml         | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v1.yaml               | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v2-base.yaml          | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml      | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v2-qcom-level.yaml    | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v2.yaml               | 2 +-
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+On 2022/11/24 10:47, Jakub Kicinski wrote:
+> On Wed, 23 Nov 2022 14:40:24 +0800 Yang Yingliang wrote:
+>>> +err_dl_unregister:
+>>> +	devl_unregister(devlink);
+>> It races with dev_ethtool():
+>> dev_ethtool
+>>     devlink_try_get()
+>>                                   nsim_drv_probe
+>>                                   devl_lock()
+>>       devl_lock()
+>>                                   devlink_unregister()
+>>                                     devlink_put()
+>>                                     wait_for_completion() <- the refcount
+>> is got in dev_ethtool, it causes ABBA deadlock
+> Yeah.. so my original design for the locking had a "devlink_is_alive()"
+> check for this exact reason:
+>
+> https://lore.kernel.org/netdev/20211030231254.2477599-3-kuba@kernel.org/
+>
+> and the devlink structure was properly refcounted (devlink_put() calls
+> devlink_free() when the last reference is released).
+>
+> Pure references then need to check if the instance is still alive
+> after locking it. Which is fine, it should only happen in core code.
+>
+> I think we should go back to that idea.
+But Leon disagree to change devlink code.
 
--- 
-viresh
+I think this problem occurs in the drivers that have multiple ports(netdev):
+
+In some drivers (e.g. mlx5) , one net device uses one devlink 
+instance(see mlx5e_probe()),
+the instance can not be get until the device is register, in this case, 
+it won't cause UAF.
+
+But in some other drivers(e.g. netdevsim, funeth) multiple ports(net 
+devices) use one
+devlink instance. If first one is register successful, the instance is 
+visible and can be get
+through netdev, meanwhile, the second port register failed and goto free 
+the devlink
+that used by first port(netdevice). So can we fix this in every single 
+driver.
+
+Thanks,
+Yang
+>
+> The waiting for references is a nightmare in the netdev code.
+>
+> .
