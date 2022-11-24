@@ -2,88 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8097637779
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 12:19:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDE88637784
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 12:22:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbiKXLTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 06:19:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51134 "EHLO
+        id S229590AbiKXLWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 06:22:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbiKXLTh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 06:19:37 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42F627B3C;
-        Thu, 24 Nov 2022 03:19:36 -0800 (PST)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NHwQf3D89zqSgZ;
-        Thu, 24 Nov 2022 19:15:38 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 24 Nov 2022 19:19:34 +0800
-Received: from [10.174.176.245] (10.174.176.245) by
- kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 24 Nov 2022 19:19:33 +0800
-Message-ID: <4d464258-de80-7d9c-bb8d-363d743396e7@huawei.com>
-Date:   Thu, 24 Nov 2022 19:19:32 +0800
+        with ESMTP id S229606AbiKXLWo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 06:22:44 -0500
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EAA011478;
+        Thu, 24 Nov 2022 03:22:42 -0800 (PST)
+Received: by mail-ej1-f52.google.com with SMTP id e27so3416616ejc.12;
+        Thu, 24 Nov 2022 03:22:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TQJAcBaQ4iWBQtMTkg02XF1PTNjJUIHH8kGGgI0Jy94=;
+        b=I1mxj9FyD0I1zXVD4592+OKpvxOiaMFhOAkNCetf1ZXYlMEa1foyN2p/cDGypaacMM
+         iXBoEjbGbDhE9g/65VJjxABVO94M2+vZ2kwhz96xnkBDlN/zvbTSNec/zQto7Aqdoa7i
+         TDrinTWdc7JIEV07F1tfp9ZdER5w3XBmVPw22+eO1UGWnuzBHfsvOarD/8FQwTd67i+n
+         yI+OifTARGIKWtV4/KC+2bE6p+3N78STIc2y9AKR0jT2CdepGd2pvJLP4LtY98ZZ7XK7
+         4Z3+cYJ2V2nDzzyT6/7D0+0INBbZsEPizEFuNFLzyIRa8lbdvlTV7miprzwjTHwN4jpE
+         8GSQ==
+X-Gm-Message-State: ANoB5pm5THL5p6jd626az8yhCTZDsdFl1MKvgNLt+u3mOCNSPSKbaDm9
+        WOofMyBtmnXwlQp91T1IFo8=
+X-Google-Smtp-Source: AA0mqf6A3y6EKamNPmbP7DEbCyDPEnE34oMCCxkxUPu+0/nPEKln4QgRTaneT1bEOihsQTW//c8lFA==
+X-Received: by 2002:a17:906:e2cb:b0:7ad:c35a:ad76 with SMTP id gr11-20020a170906e2cb00b007adc35aad76mr27578205ejb.705.1669288960912;
+        Thu, 24 Nov 2022 03:22:40 -0800 (PST)
+Received: from localhost (fwdproxy-cln-017.fbsv.net. [2a03:2880:31ff:11::face:b00c])
+        by smtp.gmail.com with ESMTPSA id e19-20020a170906315300b007803083a36asm318771eje.115.2022.11.24.03.22.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Nov 2022 03:22:40 -0800 (PST)
+From:   Breno Leitao <leitao@debian.org>
+To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, leit@fb.com, yoshfuji@linux-ipv6.org,
+        pabeni@redhat.com, dsahern@kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND net-next] tcp: socket-specific version of WARN_ON_ONCE()
+Date:   Thu, 24 Nov 2022 03:22:29 -0800
+Message-Id: <20221124112229.789975-1-leitao@debian.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net] net/9p: Fix a potential socket leak in p9_socket_open
-To:     <asmadeus@codewreck.org>
-CC:     <ericvh@gmail.com>, <lucho@ionkov.net>, <linux_oss@crudebyte.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <viro@zeniv.linux.org.uk>,
-        <v9fs-developer@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <20221124081005.66579-1-wanghai38@huawei.com>
- <Y382Spkkzt+i86e8@codewreck.org>
-From:   "wanghai (M)" <wanghai38@huawei.com>
-In-Reply-To: <Y382Spkkzt+i86e8@codewreck.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.245]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There are cases where we need information about the socket during a
+warning, so, it could help us to find bugs that happens and do not have
+an easy repro.
 
-在 2022/11/24 17:15, asmadeus@codewreck.org 写道:
-> Wang Hai wrote on Thu, Nov 24, 2022 at 04:10:05PM +0800:
->> Both p9_fd_create_tcp() and p9_fd_create_unix() will call
->> p9_socket_open(). If the creation of p9_trans_fd fails,
->> p9_fd_create_tcp() and p9_fd_create_unix() will return an
->> error directly instead of releasing the cscoket, which will
-> (typo, socket or csocket -- I'll fix this on applying)
-Hi, Dominique.
-Thanks for reviewing.
+This diff creates a TCP socket-specific version of WARN_ON_ONCE(), which
+dumps more information about the TCP socket.
 
-Here is a typo, it should be csocket.
->> result in a socket leak.
->>
->> This patch adds sock_release() to fix the leak issue.
-> Thanks, it looks good to me.
-> A bit confusing that sock_alloc_files() calls sock_release() itself on
-> failure, but that means this one's safe at least...
-Yes, this mechanism was introduced by commit 8e1611e23579 ("make 
-sock_alloc_file() do sock_release() on failures")
->
->> Fixes: 6b18662e239a ("9p connect fixes")
-> (the leak was present before that commit so I guess that's not really
-> correct -- but it might help figure out up to which point stable folks
-> will be able to backport so I guess it's useful either way)
-Yes, there was already a leak before this patch, and this patch also 
-introduces a leak
+This new warning is not only useful to give more insight about kernel bugs, but,
+it is also helpful to expose information that might be coming from buggy
+BPF applications, such as BPF applications that sets invalid
+tcp_sock->snd_cwnd values.
 
+Signed-off-by: Breno Leitao <leitao@debian.org>
+---
+ include/net/tcp.h       |  3 ++-
+ include/net/tcp_debug.h | 10 ++++++++++
+ net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
+ 3 files changed, 42 insertions(+), 1 deletion(-)
+ create mode 100644 include/net/tcp_debug.h
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 14d45661a84d..e490af8e6fdc 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -40,6 +40,7 @@
+ #include <net/inet_ecn.h>
+ #include <net/dst.h>
+ #include <net/mptcp.h>
++#include <net/tcp_debug.h>
+ 
+ #include <linux/seq_file.h>
+ #include <linux/memcontrol.h>
+@@ -1229,7 +1230,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
+ 
+ static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
+ {
+-	WARN_ON_ONCE((int)val <= 0);
++	TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
+ 	tp->snd_cwnd = val;
+ }
+ 
+diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
+new file mode 100644
+index 000000000000..50e96d87d335
+--- /dev/null
++++ b/include/net/tcp_debug.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_TCP_DEBUG_H
++#define _LINUX_TCP_DEBUG_H
++
++void tcp_sock_warn(const struct tcp_sock *tp);
++
++#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
++		DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
++
++#endif  /* _LINUX_TCP_DEBUG_H */
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 54836a6b81d6..dd682f60c7cb 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4705,6 +4705,36 @@ int tcp_abort(struct sock *sk, int err)
+ }
+ EXPORT_SYMBOL_GPL(tcp_abort);
+ 
++void tcp_sock_warn(const struct tcp_sock *tp)
++{
++	const struct sock *sk = (const struct sock *)tp;
++	struct inet_sock *inet = inet_sk(sk);
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
++	WARN_ON(1);
++
++	if (!tp)
++		return;
++
++	pr_warn("Socket Info: family=%u state=%d sport=%u dport=%u ccname=%s cwnd=%u",
++		sk->sk_family, sk->sk_state, ntohs(inet->inet_sport),
++		ntohs(inet->inet_dport), icsk->icsk_ca_ops->name, tcp_snd_cwnd(tp));
++
++	switch (sk->sk_family) {
++	case AF_INET:
++		pr_warn("saddr=%pI4 daddr=%pI4", &inet->inet_saddr,
++			&inet->inet_daddr);
++		break;
++#if IS_ENABLED(CONFIG_IPV6)
++	case AF_INET6:
++		pr_warn("saddr=%pI6 daddr=%pI6", &sk->sk_v6_rcv_saddr,
++			&sk->sk_v6_daddr);
++		break;
++#endif
++	}
++}
++EXPORT_SYMBOL_GPL(tcp_sock_warn);
++
+ extern struct tcp_congestion_ops tcp_reno;
+ 
+ static __initdata unsigned long thash_entries;
 -- 
-Wang Hai
+2.30.2
 
