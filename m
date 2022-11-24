@@ -2,120 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02915636F7A
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 01:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 273D2636F89
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 01:59:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbiKXAyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 19:54:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52184 "EHLO
+        id S229661AbiKXA7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 19:59:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiKXAyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 19:54:13 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E591001C8;
-        Wed, 23 Nov 2022 16:53:45 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id w15-20020a17090a380f00b0021873113cb4so258418pjb.0;
-        Wed, 23 Nov 2022 16:53:45 -0800 (PST)
+        with ESMTP id S229531AbiKXA7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 19:59:04 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF10786D2;
+        Wed, 23 Nov 2022 16:59:03 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id x13-20020a17090a46cd00b00218f611b6e9so248257pjg.1;
+        Wed, 23 Nov 2022 16:59:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=uvTvGGE10qkBNf1EjI/GOTQGcFbzt2y9YPcUQhnAxto=;
-        b=p8HFJSTLZxXMPaf6jdCtqe3OWMhloUXlcQOA3FugQGC2H2gPuh6L5a1QJYvaA/kRni
-         A/VyQxbyWuILc6mSZ+wTUB6Evcl1mNoRIMozf4cnfUwEAcZd5rInmP5JrgZ2X7NHALZD
-         UAl1A+w0GgR8QqL5hvj4Rg82Xue3ajwfCSeTYqrRXRPudyhAdc4UrHy8ExkUDEWVVgHC
-         zhIFSH47mtPAF5qFdd+tQ5BXqd1wf9Cehz2b3pfqvAETEmES9CUWIu73l8ZG3THmkoOJ
-         5ywVzbjCEElzvJfmEtDz5NLReolxU5OEZEPyxfUkjruMEXCu+U9Lo+Ry4D+SgZ0MwWzu
-         /JJQ==
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wNgqx4nOvBacXRcfWNIQEwnOw2cT8o68pm9m7IwR/gg=;
+        b=X3BErgYpy3+uysZbtcDsNZ7XGMi6VDJ4M2UpEJYTm2ZIcAzzgdUC31pzHYDnTPm5hl
+         xa+LgejTMwdOrl77sTGNP1dKTS7ltBeMIH2JfPfx36d0ToxxDblWx8abnihFZH4tGIyB
+         9vOcAavA+bj2hLk+vQG/JmsWoFwMIawmWdh6Ieu/+vfctje3iQhwdHGadmXzWxI6dmnK
+         pwBsMIzYxOMSCcZb2QTykFPIdahII9cFshRZFCmPfo5Ab+Vu2MFcC0rD3dYZdGoinLXL
+         vc7Emew/hGDDJN/jGoia7AnARhpwR5maKxMJ2ObUKvej1siq+om/ymzlZZRxFyti6hAO
+         hP7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uvTvGGE10qkBNf1EjI/GOTQGcFbzt2y9YPcUQhnAxto=;
-        b=dxtK4mUFbP+S0kOBngDyWVsXbbp2VY9PuYSUe4Ekg4B1BApVMPqaIE+p9ILt3pvPbO
-         XEzpiYN/jfGmXNaLKW3lqK4Nds1dhYb936Dt5ZJHlxvQJSBcPmYvjsn/C/+jfsObRHsm
-         TXIUBHYqKvwsTBolUi/TJsDEWdXAMDC5MjW1zYrqHUNlDGTB5piLNkKpzRzRxgAgS/Fo
-         g5cVj9Hok0zEtS/nu6IJ7Cfs58K76gKaWVfHbl9VI0vm8pSBJ4fzGjvfiqwdI8Oob2qH
-         S1gapG4d/IUvg3XheR8miB2Gt+v2sil2qC5+8uwTf1gyvtMuzNV/q3rvwNkcNoFu9X+q
-         GJlQ==
-X-Gm-Message-State: ANoB5ple6S9IFC6OMBAURr561pPTcXWcveB8IufqktXhnXIRQsDmGOmi
-        2tnKeLEoHXC+NqOyLze0XTqw6Eh5/ziNk1SnKgo=
-X-Google-Smtp-Source: AA0mqf5agaCkmCkO37T5I0l8CJiyP/ibgHjk5TGO1i0JjfQlFnjjShOCzxP3KRYfboqu5CSNMtMSby6ouJCnBKLb1Gw=
-X-Received: by 2002:a17:90a:8a07:b0:20a:c032:da66 with SMTP id
- w7-20020a17090a8a0700b0020ac032da66mr38086548pjn.19.1669251224773; Wed, 23
- Nov 2022 16:53:44 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wNgqx4nOvBacXRcfWNIQEwnOw2cT8o68pm9m7IwR/gg=;
+        b=G9lA+4wO/kZgTv59waDAGXf8C/ZaFRr8CO7hMi+c3PS1VYhn2u236L3CMjFgnh6nQh
+         8sryjP0nvqDuLi1mjsNXVzgU8qbZdKEzGavHSe0E7zP8+BEAT5XEIMZJL1zZtl4kYkl/
+         zTSSwqxldaltQzzE7DwoiNKE4mA28phBO40x9rnRpp5hZCy0gRJfbL61+qR2z2JXsver
+         2VF2szWbWyjKk7RxGt4xG98b1vL5aQXhfc/GoyZV6TRCVreCtbLV1Csq3x5VcHyeiDb3
+         2oZf6rXSxdpXl6oQ/HBnYbj2PPIiHG9llXemRJD4KrfcKu66X/ip/9b2TMkSsFMBYRC7
+         jk4A==
+X-Gm-Message-State: ANoB5pk3GydgTR0rn+i+BEbFGHEA2umduVoJf9uBGmuwkFMsqmKcOJ83
+        BnfxGRzy6I3GAqg7ZjaGosE=
+X-Google-Smtp-Source: AA0mqf4daN8aZClSbe8nBcobYR0Zu0b8N4WjefmWi2EiezYKHFju1/+LYi14eFnabt/fV8Egy3TuZA==
+X-Received: by 2002:a17:90b:3944:b0:214:1df0:fe53 with SMTP id oe4-20020a17090b394400b002141df0fe53mr38368187pjb.214.1669251543001;
+        Wed, 23 Nov 2022 16:59:03 -0800 (PST)
+Received: from [192.168.1.5] ([159.192.254.122])
+        by smtp.googlemail.com with ESMTPSA id d7-20020a17090abf8700b00218e5959bfbsm1897336pjs.20.2022.11.23.16.58.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Nov 2022 16:59:02 -0800 (PST)
+Message-ID: <360394e3-91c0-9a47-4046-1f7635ebf312@gmail.com>
+Date:   Thu, 24 Nov 2022 07:58:54 +0700
 MIME-Version: 1.0
-References: <20221123194406.80575-1-yashi@spacecubics.com>
-In-Reply-To: <20221123194406.80575-1-yashi@spacecubics.com>
-From:   Vincent Mailhol <vincent.mailhol@gmail.com>
-Date:   Thu, 24 Nov 2022 09:53:33 +0900
-Message-ID: <CAMZ6RqJ2L6YntT23rsYEEUK=YDF2LrhB8hXwvYjciu3vzjx2hQ@mail.gmail.com>
-Subject: Re: [PATCH] can: mcba_usb: Fix termination command argument
-To:     Yasushi SHOJI <yasushi.shoji@gmail.com>
-Cc:     Yasushi SHOJI <yashi@spacecubics.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH] USB: disable all RNDIS protocol drivers
+To:     Nicolas Cavallari <nicolas.cavallari@green-communications.fr>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        =?UTF-8?Q?=c5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        Ilja Van Sprundel <ivansprundel@ioactive.com>,
+        Joseph Tartaro <joseph.tartaro@ioactive.com>
+References: <04ea37cc-d97a-3e00-8a99-135ab38860f2@green-communications.fr>
+Content-Language: en-US
+From:   Lars Melin <larsm17@gmail.com>
+In-Reply-To: <04ea37cc-d97a-3e00-8a99-135ab38860f2@green-communications.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu. 24 Nov. 2022 at 04:53, Yasushi SHOJI <yasushi.shoji@gmail.com> wrote:
-> Microchip USB Analyzer can be set with termination setting ON or OFF.
-> As I've observed, both with my oscilloscope and USB packet capture
-> below, you must send "0" to turn it ON, and "1" to turn it OFF.
->
-> Reverse the argument value to fix this.
->
-> These are the two commands sequence, ON then OFF.
->
-> > No.     Time           Source                Destination           Protocol Length Info
-> >       1 0.000000       host                  1.3.1                 USB      46     URB_BULK out
-> >
-> > Frame 1: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
-> > USB URB
-> > Leftover Capture Data: a80000000000000000000000000000000000a8
-> >
-> > No.     Time           Source                Destination           Protocol Length Info
-> >       2 4.372547       host                  1.3.1                 USB      46     URB_BULK out
-> >
-> > Frame 2: 46 bytes on wire (368 bits), 46 bytes captured (368 bits)
-> > USB URB
-> > Leftover Capture Data: a80100000000000000000000000000000000a9
->
-> Signed-off-by: Yasushi SHOJI <yashi@spacecubics.com>
-> ---
->  drivers/net/can/usb/mcba_usb.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
-> index 218b098b261d..67beff1a3876 100644
-> --- a/drivers/net/can/usb/mcba_usb.c
-> +++ b/drivers/net/can/usb/mcba_usb.c
-> @@ -785,9 +785,9 @@ static int mcba_set_termination(struct net_device *netdev, u16 term)
->         };
->
->         if (term == MCBA_TERMINATION_ENABLED)
-> -               usb_msg.termination = 1;
-> -       else
->                 usb_msg.termination = 0;
-> +       else
-> +               usb_msg.termination = 1;
->
->         mcba_usb_xmit_cmd(priv, (struct mcba_usb_msg *)&usb_msg);
+On 11/23/2022 22:40, Nicolas Cavallari wrote:
+> There are also probably cellular dongles that uses rndis by default.
 
-Nitpick: does it make sense to rename the field to something like
-usb_msg.termination_disable or usb_msg.termination_off? This would
-make it more explicit that this is a "reverse" boolean.
+Yes, there is a whole bunch of them and new ones are still coming out.
+Some USB dongle mfgr prefer to implement RNDIS instead of MBIM because 
+the same dongle can then be used for both old and new WIN versions.
+I do agree that the RNDIS protocol is crap but removing RNDIS_HOST will 
+be a regression for many linux users.
+
+/Lars
+
