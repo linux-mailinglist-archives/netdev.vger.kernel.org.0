@@ -2,163 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38058637425
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:37:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 380CF637431
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 09:40:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiKXIhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 03:37:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
+        id S229888AbiKXIkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 03:40:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiKXIhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:37:18 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69DDF72DA
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 00:37:11 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1oy7j6-0008NG-9d; Thu, 24 Nov 2022 09:36:56 +0100
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1oy7j5-0006W1-Tq; Thu, 24 Nov 2022 09:36:55 +0100
-Date:   Thu, 24 Nov 2022 09:36:55 +0100
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Ping-Ke Shih <pkshih@realtek.com>
-Cc:     Bernie Huang <phhuang@realtek.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Viktor Petrenko <g0000ga@gmail.com>,
-        Neo Jou <neojou@gmail.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Alexander Hochbaum <alex@appudo.com>,
-        Da Xue <da@libre.computer>
-Subject: Re: [PATCH v3 00/11] RTW88: Add support for USB variants
-Message-ID: <20221124083655.GF29978@pengutronix.de>
-References: <20221122145226.4065843-1-s.hauer@pengutronix.de>
- <20221122145527.GA29978@pengutronix.de>
- <015051d9a5b94bbca5135c58d2cfebf3@realtek.com>
- <20221124082158.GE29978@pengutronix.de>
- <be8781b95e934617b33f338c84665677@realtek.com>
+        with ESMTP id S229952AbiKXIkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 03:40:19 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A107E65AE
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 00:40:18 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id v1so1371352wrt.11
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 00:40:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=DUryxKPyqOqeo18ci5P62LBH5soC6UqETa6+VQzSiKg=;
+        b=z/aE6+CINXrTH9IX5jaupdZA2Hgs8eKRnkwEhY6vjvc5mlzhOLNZZk6tSaURGYXGxc
+         QjeWYFTlczWQE4b9vzlhQL35Wh4A0l/6mOFgl4sNEfsl/NKwBb2k0NDdJS+MoYtzd4yo
+         WZKbFvEUZCOIMIHH8T37ucH6dLZCW/Zk5fs2N3Jtg44SPQ41I8g4O0WmYIPdwvbYS3G5
+         2JRkg1w2gaIqd+H5UfJHppoQxgF50xxbBi0laLvon568pS7xX6UWEXXT7O7gL9D5bmOd
+         AD5gLTBUDXUhzGuB4hQuxc3t6fL4BXgB/xdYTp8f73lhlQUHGVqYKwf+AsJFtCSLpNZ1
+         l/2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DUryxKPyqOqeo18ci5P62LBH5soC6UqETa6+VQzSiKg=;
+        b=AHlFLKbhiZNZ1URazy0nRLi83CEAq3Ph2ndhBjIDO9trwIjG3GqXd4BHcqlMwMonTr
+         ktZbVTw9UhZPFDGh/QeFKz1KCugMS85gkQbzy+hEZSe8vVlr+LLAT3ON8Zv5O8oX7Vfd
+         zCToR/YwZPGO9C2RzoP9fU/YFnCA2QioPp0g8llsq8+1GxvL4Bal9eDGVy1mcD1u4vCJ
+         RyQolj+gBaFyPaW7dujiFJEWZj1Adu4vxArG1M+iEGUE2b61qUjAPkeOSnCFvgNWRDdu
+         BmJDgd3F9GTo/WAiDV6BvZlGJHFQA646tieftiITrbJ+JJtCsqOSIX98Zt87Qvt1ZHyr
+         lw3Q==
+X-Gm-Message-State: ANoB5plcZEn3ZhSHwvFHyFgK8Uy4W31Q5kpgHFvQM3MqPAgWJQIr8u9Y
+        IiIbfGXp0Nic31UuIjXofzD8odA70quSftQj
+X-Google-Smtp-Source: AA0mqf4wt+to3Gzef5sGRhdNvwYhEPZCk77ZLrBWI5ldqygdJAz7yDGQgXiKB2x8MgMBGklSDZFnhQ==
+X-Received: by 2002:adf:e844:0:b0:241:bfc9:5975 with SMTP id d4-20020adfe844000000b00241bfc95975mr11977281wrn.605.1669279217003;
+        Thu, 24 Nov 2022 00:40:17 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id g11-20020a05600c310b00b003cfd4e6400csm1037573wmo.19.2022.11.24.00.40.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Nov 2022 00:40:16 -0800 (PST)
+Date:   Thu, 24 Nov 2022 09:40:15 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v2 1/9] devlink: use min_t to calculate data_size
+Message-ID: <Y38t77Bu2gwKuZjM@nanopsycho>
+References: <20221123203834.738606-1-jacob.e.keller@intel.com>
+ <20221123203834.738606-2-jacob.e.keller@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <be8781b95e934617b33f338c84665677@realtek.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20221123203834.738606-2-jacob.e.keller@intel.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 24, 2022 at 08:26:23AM +0000, Ping-Ke Shih wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Sascha Hauer <s.hauer@pengutronix.de>
-> > Sent: Thursday, November 24, 2022 4:22 PM
-> > To: Ping-Ke Shih <pkshih@realtek.com>
-> > Cc: Bernie Huang <phhuang@realtek.com>; linux-wireless@vger.kernel.org; Hans Ulli Kroll
-> > <linux@ulli-kroll.de>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>; netdev@vger.kernel.org;
-> > Kalle Valo <kvalo@kernel.org>; Yan-Hsuan Chuang <tony0620emma@gmail.com>; linux-kernel@vger.kernel.org;
-> > Viktor Petrenko <g0000ga@gmail.com>; Neo Jou <neojou@gmail.com>; kernel@pengutronix.de; Johannes Berg
-> > <johannes@sipsolutions.net>; Alexander Hochbaum <alex@appudo.com>; Da Xue <da@libre.computer>
-> > Subject: Re: [PATCH v3 00/11] RTW88: Add support for USB variants
-> > 
-> > On Thu, Nov 24, 2022 at 06:48:23AM +0000, Ping-Ke Shih wrote:
-> > >
-> > > > -----Original Message-----
-> > > > From: Sascha Hauer <s.hauer@pengutronix.de>
-> > > > Sent: Tuesday, November 22, 2022 10:55 PM
-> > > > To: Bernie Huang <phhuang@realtek.com>
-> > > > Cc: linux-wireless@vger.kernel.org; Ping-Ke Shih <pkshih@realtek.com>; Hans Ulli Kroll
-> > > > <linux@ulli-kroll.de>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>;
-> > netdev@vger.kernel.org;
-> > > > Kalle Valo <kvalo@kernel.org>; Yan-Hsuan Chuang <tony0620emma@gmail.com>;
-> > linux-kernel@vger.kernel.org;
-> > > > Viktor Petrenko <g0000ga@gmail.com>; Neo Jou <neojou@gmail.com>; Bernie Huang <phhuang@realtek.com>;
-> > > > kernel@pengutronix.de; Johannes Berg <johannes@sipsolutions.net>; Alexander Hochbaum
-> > <alex@appudo.com>;
-> > > > Da Xue <da@libre.computer>
-> > > > Subject: Re: [PATCH v3 00/11] RTW88: Add support for USB variants
-> > > >
-> > > > On Tue, Nov 22, 2022 at 03:52:15PM +0100, Sascha Hauer wrote:
-> > > > > This is the third round of adding support for the USB variants to the
-> > > > > RTW88 driver. There are a few changes to the last version which make it
-> > > > > worth looking at this version.
-> > > > >
-> > > > > First of all RTL8723du and RTL8821cu are tested working now. The issue
-> > > > > here was that the txdesc checksum calculation was wrong. I found the
-> > > > > correct calculation in various downstream drivers found on github.
-> > > > >
-> > > > > The second big issue was that TX packet aggregation was wrong. When
-> > > > > aggregating packets each packet start has to be aligned to eight bytes.
-> > > > > The necessary alignment was added to the total URB length before
-> > > > > checking if there is another packet to aggregate, so the URB length
-> > > > > included that padding after the last packet, which is wrong.  Fixing
-> > > > > this makes the driver work much more reliably.
-> > > > >
-> > > > > I added all people to Cc: who showed interest in this driver and I want
-> > > > > to welcome you for testing and reviewing.
-> > > >
-> > > > There still is a problem with the RTL8822cu chipset I have here.  When
-> > > > using NetworkManager I immediately lose the connection to the AP after
-> > > > it has been connected:
-> > > >
-> > > > [  376.213846] wlan0: authenticate with 76:83:c2:ce:81:b1
-> > > > [  380.085463] wlan0: send auth to 76:83:c2:ce:81:b1 (try 1/3)
-> > > > [  380.091446] wlan0: authenticated
-> > > > [  380.108864] wlan0: associate with 76:83:c2:ce:81:b1 (try 1/3)
-> > > > [  380.136448] wlan0: RX AssocResp from 76:83:c2:ce:81:b1 (capab=0x1411 status=0 aid=2)
-> > > > [  380.202955] wlan0: associated
-> > > > [  380.268140] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
-> > > > [  380.275328] wlan0: Connection to AP 76:83:c2:ce:81:b1 lost
-> > > >
-> > > > That doesn't happen when using plain wpa_supplicant. This seems to go
-> > > > down to cd96e22bc1da ("rtw88: add beacon filter support"). After being
-> > > > connected I get a BCN_FILTER_CONNECTION_LOSS beacon. Plain
-> > > > wpa_supplicant seems to go another code patch and doesn't activate
-> > > > connection quality monitoring.
-> > > >
-> > > > The connection to the AP works fluently also with NetworkManager though
-> > > > when I just ignore the BCN_FILTER_CONNECTION_LOSS beacon.
-> > > >
-> > > > Any idea what may be wrong here?
-> > > >
-> > >
-> > > Please reference to below patch to see if it can work to you.
-> > >
-> > > https://lore.kernel.org/linux-wireless/20221124064442.28042-1-pkshih@realtek.com/T/#u
-> > 
-> > Great! That solves this issue \o/
-> > 
-> 
-> Do you mind to add "Tested-by:" tag to the patch?  :-)
+Wed, Nov 23, 2022 at 09:38:26PM CET, jacob.e.keller@intel.com wrote:
+>The calculation for the data_size in the devlink_nl_read_snapshot_fill
+>function uses an if statement that is better expressed using the min_t
+>macro.
+>
+>Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-You should already find it in your inbox. Thank you very much for the
-fast response :)
-
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
