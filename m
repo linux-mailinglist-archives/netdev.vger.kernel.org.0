@@ -2,276 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82F4C637268
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 07:37:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6DFC637287
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 07:49:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbiKXGhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 01:37:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
+        id S229629AbiKXGtO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 24 Nov 2022 01:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229748AbiKXGhE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 01:37:04 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E0AC6BF5;
-        Wed, 23 Nov 2022 22:36:30 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ANKMCPS031354;
-        Wed, 23 Nov 2022 22:36:21 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=6X6je5OPwRrTxSTNAH6J16bP62LAgGN9chs2ksNVsHE=;
- b=V5eRtCGZHQqn5i9Yfiz+G42/cc3ZDmgyWgQmQL4GpT8CxM8BG0zI5YlaXvp8olb5FStC
- Ibm3ZjvPo+v49R2XGc4nfKvU3WvZd6hE5up1Z4KfrF3F5CSgR7WSDEk1mMO8MXSiMXu4
- LZA4+zMuMRKEENLNhWtudHPgicbUwNqxQWN9BeQQLZLq1uYLDFGZtog2wG6xWvjT8Ylc
- iCghwfWc7HVq6wCErRyunROcM5YxwR/HJnS4MGy0dDIfD4C2syNEAcmN77DDqDu4NuWt
- yVYVkX3IFomW8aOjVGSuwJWEVKS5xSG6BUd2kWR46NowGPBzPAQtNQxYJrdG0D8ehDD+ eA== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3m1g7jbuh0-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 23 Nov 2022 22:36:21 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 23 Nov
- 2022 22:35:54 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 23 Nov 2022 22:35:54 -0800
-Received: from localhost.localdomain (unknown [10.28.36.166])
-        by maili.marvell.com (Postfix) with ESMTP id BEF763F7097;
-        Wed, 23 Nov 2022 22:35:50 -0800 (PST)
-From:   Suman Ghosh <sumang@marvell.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <sgoutham@marvell.com>, <sbhatta@marvell.com>,
-        <jerinj@marvell.com>, <gakula@marvell.com>, <hkelam@marvell.com>,
-        <lcherian@marvell.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Suman Ghosh <sumang@marvell.com>
-Subject: [net-next PATCH V3] octeontx2-pf: Add support to filter packet based on IP fragment
-Date:   Thu, 24 Nov 2022 12:05:48 +0530
-Message-ID: <20221124063548.2831912-1-sumang@marvell.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229620AbiKXGtO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 01:49:14 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21A42E01D;
+        Wed, 23 Nov 2022 22:49:12 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2AO6leCM3001394, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2AO6leCM3001394
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 24 Nov 2022 14:47:40 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Thu, 24 Nov 2022 14:48:23 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 24 Nov 2022 14:48:23 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Thu, 24 Nov 2022 14:48:23 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Sascha Hauer <s.hauer@pengutronix.de>,
+        Bernie Huang <phhuang@realtek.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "Hans Ulli Kroll" <linux@ulli-kroll.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Viktor Petrenko <g0000ga@gmail.com>,
+        Neo Jou <neojou@gmail.com>, Bernie Huang <phhuang@realtek.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Alexander Hochbaum <alex@appudo.com>,
+        Da Xue <da@libre.computer>
+Subject: RE: [PATCH v3 00/11] RTW88: Add support for USB variants
+Thread-Topic: [PATCH v3 00/11] RTW88: Add support for USB variants
+Thread-Index: AQHY/oI6X+HeQwQE6E+5y32AEGOa3q5KgcmAgAMh88A=
+Date:   Thu, 24 Nov 2022 06:48:23 +0000
+Message-ID: <015051d9a5b94bbca5135c58d2cfebf3@realtek.com>
+References: <20221122145226.4065843-1-s.hauer@pengutronix.de>
+ <20221122145527.GA29978@pengutronix.de>
+In-Reply-To: <20221122145527.GA29978@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/11/24_=3F=3F_04:46:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: vKQpjn2BKh9GA1f5McJcFSWczlHBHKo-
-X-Proofpoint-GUID: vKQpjn2BKh9GA1f5McJcFSWczlHBHKo-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-24_04,2022-11-23_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. Added support to filter packets based on IP fragment.
-For IPv4 packets check for ip_flag == 0x20 (more fragment bit set).
-For IPv6 packets check for next_header == 0x2c (next_header set to
-'fragment header for IPv6')
-2. Added configuration support from both "ethtool ntuple" and "tc flower".
 
-Signed-off-by: Suman Ghosh <sumang@marvell.com>
----
-Changes since v2:
-- Fixed minor review comments.
+> -----Original Message-----
+> From: Sascha Hauer <s.hauer@pengutronix.de>
+> Sent: Tuesday, November 22, 2022 10:55 PM
+> To: Bernie Huang <phhuang@realtek.com>
+> Cc: linux-wireless@vger.kernel.org; Ping-Ke Shih <pkshih@realtek.com>; Hans Ulli Kroll
+> <linux@ulli-kroll.de>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>; netdev@vger.kernel.org;
+> Kalle Valo <kvalo@kernel.org>; Yan-Hsuan Chuang <tony0620emma@gmail.com>; linux-kernel@vger.kernel.org;
+> Viktor Petrenko <g0000ga@gmail.com>; Neo Jou <neojou@gmail.com>; Bernie Huang <phhuang@realtek.com>;
+> kernel@pengutronix.de; Johannes Berg <johannes@sipsolutions.net>; Alexander Hochbaum <alex@appudo.com>;
+> Da Xue <da@libre.computer>
+> Subject: Re: [PATCH v3 00/11] RTW88: Add support for USB variants
+> 
+> On Tue, Nov 22, 2022 at 03:52:15PM +0100, Sascha Hauer wrote:
+> > This is the third round of adding support for the USB variants to the
+> > RTW88 driver. There are a few changes to the last version which make it
+> > worth looking at this version.
+> >
+> > First of all RTL8723du and RTL8821cu are tested working now. The issue
+> > here was that the txdesc checksum calculation was wrong. I found the
+> > correct calculation in various downstream drivers found on github.
+> >
+> > The second big issue was that TX packet aggregation was wrong. When
+> > aggregating packets each packet start has to be aligned to eight bytes.
+> > The necessary alignment was added to the total URB length before
+> > checking if there is another packet to aggregate, so the URB length
+> > included that padding after the last packet, which is wrong.  Fixing
+> > this makes the driver work much more reliably.
+> >
+> > I added all people to Cc: who showed interest in this driver and I want
+> > to welcome you for testing and reviewing.
+> 
+> There still is a problem with the RTL8822cu chipset I have here.  When
+> using NetworkManager I immediately lose the connection to the AP after
+> it has been connected:
+> 
+> [  376.213846] wlan0: authenticate with 76:83:c2:ce:81:b1
+> [  380.085463] wlan0: send auth to 76:83:c2:ce:81:b1 (try 1/3)
+> [  380.091446] wlan0: authenticated
+> [  380.108864] wlan0: associate with 76:83:c2:ce:81:b1 (try 1/3)
+> [  380.136448] wlan0: RX AssocResp from 76:83:c2:ce:81:b1 (capab=0x1411 status=0 aid=2)
+> [  380.202955] wlan0: associated
+> [  380.268140] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+> [  380.275328] wlan0: Connection to AP 76:83:c2:ce:81:b1 lost
+> 
+> That doesn't happen when using plain wpa_supplicant. This seems to go
+> down to cd96e22bc1da ("rtw88: add beacon filter support"). After being
+> connected I get a BCN_FILTER_CONNECTION_LOSS beacon. Plain
+> wpa_supplicant seems to go another code patch and doesn't activate
+> connection quality monitoring.
+> 
+> The connection to the AP works fluently also with NetworkManager though
+> when I just ignore the BCN_FILTER_CONNECTION_LOSS beacon.
+> 
+> Any idea what may be wrong here?
+> 
 
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  4 +++
- .../net/ethernet/marvell/octeontx2/af/npc.h   |  2 ++
- .../marvell/octeontx2/af/rvu_debugfs.c        |  8 ++++++
- .../marvell/octeontx2/af/rvu_npc_fs.c         |  8 ++++++
- .../marvell/octeontx2/nic/otx2_common.h       |  3 +++
- .../marvell/octeontx2/nic/otx2_flows.c        | 25 ++++++++++++++++---
- .../ethernet/marvell/octeontx2/nic/otx2_tc.c  | 25 +++++++++++++++++++
- 7 files changed, 71 insertions(+), 4 deletions(-)
+Please reference to below patch to see if it can work to you.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index c7c92c7510fa..d2584ebb7a70 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -1440,6 +1440,10 @@ struct flow_msg {
- 	u8 tc;
- 	__be16 sport;
- 	__be16 dport;
-+	union {
-+		u8 ip_flag;
-+		u8 next_header;
-+	};
- };
- 
- struct npc_install_flow_req {
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc.h b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
-index d027c23b8ef8..9beeead56d7b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/npc.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
-@@ -185,8 +185,10 @@ enum key_fields {
- 	NPC_VLAN_ETYPE_STAG, /* 0x88A8 */
- 	NPC_OUTER_VID,
- 	NPC_TOS,
-+	NPC_IPFRAG_IPV4,
- 	NPC_SIP_IPV4,
- 	NPC_DIP_IPV4,
-+	NPC_IPFRAG_IPV6,
- 	NPC_SIP_IPV6,
- 	NPC_DIP_IPV6,
- 	NPC_IPPROTO_TCP,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index 642e58a04da0..cdb2e6d8ffb8 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -2799,6 +2799,14 @@ static void rvu_dbg_npc_mcam_show_flows(struct seq_file *s,
- 			seq_printf(s, "%pI6 ", rule->packet.ip6dst);
- 			seq_printf(s, "mask %pI6\n", rule->mask.ip6dst);
- 			break;
-+		case NPC_IPFRAG_IPV6:
-+			seq_printf(s, "0x%x ", rule->packet.next_header);
-+			seq_printf(s, "mask 0x%x\n", rule->mask.next_header);
-+			break;
-+		case NPC_IPFRAG_IPV4:
-+			seq_printf(s, "0x%x ", rule->packet.ip_flag);
-+			seq_printf(s, "mask 0x%x\n", rule->mask.ip_flag);
-+			break;
- 		case NPC_SPORT_TCP:
- 		case NPC_SPORT_UDP:
- 		case NPC_SPORT_SCTP:
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-index f3fecd2a4015..006beb5cf98d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-@@ -26,8 +26,10 @@ static const char * const npc_flow_names[] = {
- 	[NPC_VLAN_ETYPE_STAG] = "vlan ether type stag",
- 	[NPC_OUTER_VID]	= "outer vlan id",
- 	[NPC_TOS]	= "tos",
-+	[NPC_IPFRAG_IPV4] = "fragmented IPv4 header ",
- 	[NPC_SIP_IPV4]	= "ipv4 source ip",
- 	[NPC_DIP_IPV4]	= "ipv4 destination ip",
-+	[NPC_IPFRAG_IPV6] = "fragmented IPv6 header ",
- 	[NPC_SIP_IPV6]	= "ipv6 source ip",
- 	[NPC_DIP_IPV6]	= "ipv6 destination ip",
- 	[NPC_IPPROTO_TCP] = "ip proto tcp",
-@@ -484,8 +486,10 @@ do {									       \
- 	 * Example: Source IP is 4 bytes and starts at 12th byte of IP header
- 	 */
- 	NPC_SCAN_HDR(NPC_TOS, NPC_LID_LC, NPC_LT_LC_IP, 1, 1);
-+	NPC_SCAN_HDR(NPC_IPFRAG_IPV4, NPC_LID_LC, NPC_LT_LC_IP, 6, 1);
- 	NPC_SCAN_HDR(NPC_SIP_IPV4, NPC_LID_LC, NPC_LT_LC_IP, 12, 4);
- 	NPC_SCAN_HDR(NPC_DIP_IPV4, NPC_LID_LC, NPC_LT_LC_IP, 16, 4);
-+	NPC_SCAN_HDR(NPC_IPFRAG_IPV6, NPC_LID_LC, NPC_LT_LC_IP6_EXT, 6, 1);
- 	NPC_SCAN_HDR(NPC_SIP_IPV6, NPC_LID_LC, NPC_LT_LC_IP6, 8, 16);
- 	NPC_SCAN_HDR(NPC_DIP_IPV6, NPC_LID_LC, NPC_LT_LC_IP6, 24, 16);
- 	NPC_SCAN_HDR(NPC_SPORT_UDP, NPC_LID_LD, NPC_LT_LD_UDP, 0, 2);
-@@ -899,6 +903,8 @@ do {									      \
- 	NPC_WRITE_FLOW(NPC_ETYPE, etype, ntohs(pkt->etype), 0,
- 		       ntohs(mask->etype), 0);
- 	NPC_WRITE_FLOW(NPC_TOS, tos, pkt->tos, 0, mask->tos, 0);
-+	NPC_WRITE_FLOW(NPC_IPFRAG_IPV4, ip_flag, pkt->ip_flag, 0,
-+		       mask->ip_flag, 0);
- 	NPC_WRITE_FLOW(NPC_SIP_IPV4, ip4src, ntohl(pkt->ip4src), 0,
- 		       ntohl(mask->ip4src), 0);
- 	NPC_WRITE_FLOW(NPC_DIP_IPV4, ip4dst, ntohl(pkt->ip4dst), 0,
-@@ -919,6 +925,8 @@ do {									      \
- 	NPC_WRITE_FLOW(NPC_OUTER_VID, vlan_tci, ntohs(pkt->vlan_tci), 0,
- 		       ntohs(mask->vlan_tci), 0);
- 
-+	NPC_WRITE_FLOW(NPC_IPFRAG_IPV6, next_header, pkt->next_header, 0,
-+		       mask->next_header, 0);
- 	npc_update_ipv6_flow(rvu, entry, features, pkt, mask, output, intf);
- 	npc_update_vlan_features(rvu, entry, features, intf);
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 282db6fe3b08..99d0da7ba750 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -28,6 +28,9 @@
- #include "otx2_devlink.h"
- #include <rvu_trace.h>
- 
-+/* IPv4 flag more fragment bit */
-+#define IPV4_FLAG_MORE				0x20
-+
- /* PCI device IDs */
- #define PCI_DEVID_OCTEONTX2_RVU_PF              0xA063
- #define PCI_DEVID_OCTEONTX2_RVU_VF		0xA064
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index 13aa79efee03..684cb8ec9f21 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -711,6 +711,11 @@ static int otx2_prepare_ipv6_flow(struct ethtool_rx_flow_spec *fsp,
- 			       sizeof(pmask->ip6dst));
- 			req->features |= BIT_ULL(NPC_DIP_IPV6);
- 		}
-+		if (ipv6_usr_hdr->l4_proto == IPPROTO_FRAGMENT) {
-+			pkt->next_header = ipv6_usr_hdr->l4_proto;
-+			pmask->next_header = ipv6_usr_mask->l4_proto;
-+			req->features |= BIT_ULL(NPC_IPFRAG_IPV6);
-+		}
- 		pkt->etype = cpu_to_be16(ETH_P_IPV6);
- 		pmask->etype = cpu_to_be16(0xFFFF);
- 		req->features |= BIT_ULL(NPC_ETYPE);
-@@ -891,10 +896,22 @@ static int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
- 			req->features |= BIT_ULL(NPC_OUTER_VID);
- 		}
- 
--		/* Not Drop/Direct to queue but use action in default entry */
--		if (fsp->m_ext.data[1] &&
--		    fsp->h_ext.data[1] == cpu_to_be32(OTX2_DEFAULT_ACTION))
--			req->op = NIX_RX_ACTION_DEFAULT;
-+		if (fsp->m_ext.data[1]) {
-+			if (flow_type == IP_USER_FLOW) {
-+				if (be32_to_cpu(fsp->h_ext.data[1]) != IPV4_FLAG_MORE)
-+					return -EINVAL;
-+
-+				pkt->ip_flag = be32_to_cpu(fsp->h_ext.data[1]);
-+				pmask->ip_flag = be32_to_cpu(fsp->m_ext.data[1]);
-+				req->features |= BIT_ULL(NPC_IPFRAG_IPV4);
-+			} else if (fsp->h_ext.data[1] ==
-+					cpu_to_be32(OTX2_DEFAULT_ACTION)) {
-+				/* Not Drop/Direct to queue but use action
-+				 * in default entry
-+				 */
-+				req->op = NIX_RX_ACTION_DEFAULT;
-+			}
-+		}
- 	}
- 
- 	if (fsp->flow_type & FLOW_MAC_EXT &&
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-index e64318c110fd..e421714524c2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-@@ -532,6 +532,31 @@ static int otx2_tc_prepare_flow(struct otx2_nic *nic, struct otx2_tc_flow *node,
- 			req->features |= BIT_ULL(NPC_IPPROTO_ICMP6);
- 	}
- 
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
-+		struct flow_match_control match;
-+
-+		flow_rule_match_control(rule, &match);
-+		if (match.mask->flags & FLOW_DIS_FIRST_FRAG) {
-+			NL_SET_ERR_MSG_MOD(extack, "HW doesn't support frag first/later");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		if (match.mask->flags & FLOW_DIS_IS_FRAGMENT) {
-+			if (ntohs(flow_spec->etype) == ETH_P_IP) {
-+				flow_spec->ip_flag = IPV4_FLAG_MORE;
-+				flow_mask->ip_flag = 0xff;
-+				req->features |= BIT_ULL(NPC_IPFRAG_IPV4);
-+			} else if (ntohs(flow_spec->etype) == ETH_P_IPV6) {
-+				flow_spec->next_header = IPPROTO_FRAGMENT;
-+				flow_mask->next_header = 0xff;
-+				req->features |= BIT_ULL(NPC_IPFRAG_IPV6);
-+			} else {
-+				NL_SET_ERR_MSG_MOD(extack, "flow-type should be either IPv4 and IPv6");
-+				return -EOPNOTSUPP;
-+			}
-+		}
-+	}
-+
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
- 		struct flow_match_eth_addrs match;
- 
--- 
-2.25.1
+https://lore.kernel.org/linux-wireless/20221124064442.28042-1-pkshih@realtek.com/T/#u
+
+Ping-Ke
 
