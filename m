@@ -2,188 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0683637C95
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 16:13:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D169637CA0
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 16:17:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbiKXPNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 10:13:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56456 "EHLO
+        id S229757AbiKXPRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 10:17:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiKXPNy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 10:13:54 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302A315AAB4;
-        Thu, 24 Nov 2022 07:13:53 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id bp15so2933603lfb.13;
-        Thu, 24 Nov 2022 07:13:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XPUoBYfcFjyl7FwxKw5AFCfnK5DVVfvD4huQjq4ERM0=;
-        b=AkPWvGH7j6VUvs4P98n6tnaY9J6JAvXPdd/8I4dDqfahyZkB9/YF9YbpwSTldp2f3X
-         jP6cM8a7DgYWkMkvFtxggc6GWfTNC4vjntqRqniI6jqUqUqENSM/mvV5VCGA25hKBIsu
-         AFQVcKd4OGc5b9LF6tF+BLmlbMhvqku4+CLbq4eJg8SJcXZ9olxRuk1PwX5UectHJU6h
-         hMuzXIJIXfjKwB91kTU6RVFs7gcA5CmrgQvbXdN1mi4g3ri55lsaoKb0479D2z+fSdDJ
-         ne4NwNnw/tBB0jh+CbdKrYYRDVZgIWRnBgOxL23yIyGAOMZurS5GWwZ9F9NYyYHPLgdx
-         Rpow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XPUoBYfcFjyl7FwxKw5AFCfnK5DVVfvD4huQjq4ERM0=;
-        b=5uJC2YQNPyR8TFBcuQZBAR8T6/qU8BL9dQaoSP6enIpcApyGZA76xzYJuzpw3v6SWW
-         fzOPHemahlrPPWEmYvToFIMfonCTH7AHSnZeos10rdQqqzBdC0/IZyWc7eN3oH6Siza/
-         +l0UlyeR2UWIW3kVHRNKwHLQwQNVg2HhHOfkYIqFWkfpHW4f2w2NrVcUA9PJz2eHBQiu
-         LCn/XG7GiI+NvJ+6iZmnxAoSwpjXPimJPpi8cqyZa7kOqh+mhNR8+aSlmzS3gvGxHtxw
-         VqscaRcxMX5LrE+Qyraow8T9hIZN51s3fM50w9jTFEESr0AzMz9d3zyuAtPgk1dP5CWN
-         RVxQ==
-X-Gm-Message-State: ANoB5pnjSw63WHTbWrm8ytmGWmynIyNcklnCRBCNHbElBAK5s79qvX5M
-        ZTdH1nbr+El3VXW42lTlP/RdIAcTxq5lU9X6
-X-Google-Smtp-Source: AA0mqf4k0uXoT2d9p9bR4yGYvChWpenmHBP0KZLaPEZf8Nogjyhp2jYojmpP1532YnbY3Tqz7QTaNg==
-X-Received: by 2002:ac2:5331:0:b0:4ab:35a8:2fa0 with SMTP id f17-20020ac25331000000b004ab35a82fa0mr8789857lfh.233.1669302831294;
-        Thu, 24 Nov 2022 07:13:51 -0800 (PST)
-Received: from [192.168.0.103] ([77.220.140.242])
-        by smtp.gmail.com with ESMTPSA id u25-20020ac25199000000b00494a8fecacesm145435lfi.192.2022.11.24.07.13.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Nov 2022 07:13:50 -0800 (PST)
-Message-ID: <03d74a68-91a3-04dd-613b-33e232937cbc@gmail.com>
-Date:   Thu, 24 Nov 2022 18:13:49 +0300
+        with ESMTP id S229468AbiKXPRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 10:17:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2BB1609FD
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 07:16:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669302971;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=LUgA74J/++itggE2ifC+Q/hNt3kstw8hLv1rp9ic5GM=;
+        b=BzN4PPbuKDKjxQZzl4YYD1jjP6k6hKE47DObe0prerpQf99Ozk4QkZkUy3ERy0wMq/ObX+
+        RDWvy0tTj+QTiHdmCmkZYjyOxBya2EFA7JjmQpKKB/USR79ulqtT8jBexuOOuWTv4nWJUF
+        pgC1hkrUTSW4Nnaj+Lai3bV0k+dNmQM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-590-ui-rpmSPOeqhXlg0WUIVrw-1; Thu, 24 Nov 2022 10:16:10 -0500
+X-MC-Unique: ui-rpmSPOeqhXlg0WUIVrw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 93C5E2A2AD7C;
+        Thu, 24 Nov 2022 15:16:09 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.193.200])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A517340C2064;
+        Thu, 24 Nov 2022 15:16:07 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [RFC hid v1 00/10] HID-BPF: add support for in-tree BPF programs
+Date:   Thu, 24 Nov 2022 16:15:53 +0100
+Message-Id: <20221124151603.807536-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v4] virtio/vsock: replace virtio_vsock_pkt with sk_buff
-Content-Language: en-US
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>
-Cc:     Bobby Eshleman <bobbyeshleman@gmail.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, AVKrasnov@sberdevices.ru
-References: <20221124060750.48223-1-bobby.eshleman@bytedance.com>
- <20221124150005.vchk6ieoacrcu2gb@sgarzare-redhat>
-From:   Arseniy Krasnov <oxffffaa@gmail.com>
-In-Reply-To: <20221124150005.vchk6ieoacrcu2gb@sgarzare-redhat>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Stefano
+Hi all,
 
-On 24.11.2022 18:00, Stefano Garzarella wrote:
-> This is a net-next material, please remember to use net-next tag:
-> https://www.kernel.org/doc/html/v6.0/process/maintainer-netdev.html#netdev-faq
-> 
-> On Wed, Nov 23, 2022 at 10:07:49PM -0800, Bobby Eshleman wrote:
->> This commit changes virtio/vsock to use sk_buff instead of
->> virtio_vsock_pkt. Beyond better conforming to other net code, using
->> sk_buff allows vsock to use sk_buff-dependent features in the future
->> (such as sockmap) and improves throughput.
->>
->> This patch introduces the following performance changes:
->>
->> Tool/Config: uperf w/ 64 threads, SOCK_STREAM
->> Test Runs: 5, mean of results
->> Before: commit 95ec6bce2a0b ("Merge branch 'net-ipa-more-endpoints'")
->>
->> Test: 64KB, g2h
->> Before: 21.63 Gb/s
->> After: 25.59 Gb/s (+18%)
->>
->> Test: 16B, g2h
->> Before: 11.86 Mb/s
->> After: 17.41 Mb/s (+46%)
->>
->> Test: 64KB, h2g
->> Before: 2.15 Gb/s
->> After: 3.6 Gb/s (+67%)
->>
->> Test: 16B, h2g
->> Before: 14.38 Mb/s
->> After: 18.43 Mb/s (+28%)
->>
->> Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
->> ---
-> 
-> The patch LGTM. I run several tests (iperf3, vsock_test,
-> vsock_diag_test, vhost-user-vsock, tcpdump) and IMO we are okay.
-> 
-> I found the following problems that I would like to report:
-> 
-> - vhost-user-vsock [1] is failing, but it is not an issue of this patch,
->   but a spec violation in the rust-vmm/vm-virtio/virtio-vsock crate as I
->   reported here [2]. We will fix it there, this patch is fine, indeed
->   trying a guest with the new layout (1 descriptor for both header and
->   data) with vhost-vsock in Linux 6.0, everything works perfectly.
-> 
-> - the new "SOCK_SEQPACKET msg bounds" [3] reworked by Arseniy fails
->   intermittently with this patch.
-> 
->   Using the tests currently in the kernel tree everything is fine, so
->   I don't understand if it's a problem in the new test or in this
->   patch. I've looked at the code again and don't seem to see any
->   criticisms.
-> 
->   @Arseniy @Bobby can you take a look?
-Seems i've found this problem here:
+sending this as an RFC because it's not complete, but I'd like to start
+the discussion:
 
-https://lkml.org/lkml/2022/11/24/708
+While presenting HID-BPF, I always mentioned that device fixes should be
+integrated in the kernel. And I am trying to do that in this series.
 
-Being fixed - all tests passes
+Load a generic bpf from the kernel:
+===================================
 
-Thank You!
-> 
->   I'll try to take a closer look too, and before I give my R-b I'd like
->   to make sure it's a problem in the test and not in this patch.
-> 
->   This is what I have (some times, not always) with both host and guest
->   with this patch and the series of [3] applied:
-> 
->   host$ ./vsock_test --control-host=192.168.133.3 --control-port=12345 \
->                      --mode=client --peer-cid=4
->   Control socket connected to 192.168.133.3:12345.
->   0 - SOCK_STREAM connection reset...ok
->   1 - SOCK_STREAM bind only...ok
->   2 - SOCK_STREAM client close...ok
->   3 - SOCK_STREAM server close...ok
->   4 - SOCK_STREAM multiple connections...ok
->   5 - SOCK_STREAM MSG_PEEK...ok
->   6 - SOCK_SEQPACKET msg bounds...ok
->   7 - SOCK_SEQPACKET MSG_TRUNC flag...recv: Connection reset by peer
-> 
->   guest$ ./vsock_test --control-port=12345 --mode=server --peer-cid=2
->   Control socket listening on 0.0.0.0:12345
->   Control socket connection accepted...
->   0 - SOCK_STREAM connection reset...ok
->   1 - SOCK_STREAM bind only...ok
->   2 - SOCK_STREAM client close...ok
->   3 - SOCK_STREAM server close...ok
->   4 - SOCK_STREAM multiple connections...ok
->   5 - SOCK_STREAM MSG_PEEK...ok
->   6 - SOCK_SEQPACKET msg bounds...Message bounds broken
-> 
-> Thanks,
-> Stefano
-> 
-> [1] https://github.com/rust-vmm/vhost-device/tree/main/crates/vsock
-> [2] https://github.com/rust-vmm/vm-virtio/issues/204
-> [3] https://lore.kernel.org/lkml/c991dffd-1dbc-e1d1-b682-a3c71f6ce51c@sberdevices.ru/
-> 
+The first step is to be able to load that bpf program without knowing
+its interface. So I studied the output of the light skeletons and
+squized them into a simple C array. Then I wrote a BPF loader based on
+that same skeleton, and now I can iterate over an array of BPF programs
+and load the ones that match the device.
+
+The step 0 in that translation was to generate a json instead of a
+proper C header for the light skeleton. The idea is that I can then
+transform that json into whatever I want, without having to mess up with
+bpftool. IIRC this was briefly discussed at plumbers, so I hope this is
+not too weird.
+
+Pin the program to the bpffs:
+=============================
+
+AFAICT, the infrastructure is not completely ready to pin programs from
+the kernel itself (outside of bpf_preload).
+
+I encountered a few hiccups and I'd like to know if I am on the correct
+path:
+- to be able to pin to the bpffs, it first needs to be mounted by
+  userspace. Should I add some sort of list of already available
+  programs that would be picked up by the kernel when bpffs is mounted?
+
+- I am not sure the way I added the pinned program is correct: I am
+  reusing the skeleton of bpf_iter_link_pin_kernel(), but using
+  kernel_path_create() in the same way bpf_obj_pin_user() does seems
+  better, though I always get -ENOENT even with bpffs mounted.
+
+- I also need to be able to add a hierarchy of directories in bpffs from
+  the kernel, and this requires some more code digging... :)
+
+Produce the actual "compiled" bpf program:
+==========================================
+
+The current code here relies on the user to run `make` in the
+drivers/hid/bpf/progs directory to regenerate the files.
+Leaving aside the fact that I need to check on how to make this step
+integrated by the generic root-level make, I wonder if using python to
+generate that file is OK.
+
+I am not very happy to add a requirement to build the whole kernel, but
+OTOH, writing the same tool in C is desperately annoying. I would rather
+have a tool written in rust TBH, if rust is now part of the required
+toolchain.
+
+Ship the "compiled" bpf programs:
+=================================
+
+In this version, the bpf program is embedded in vmlinux, for no other
+reasons that splitting that out in a module would require some more
+effort before submitting that RFC (and subject to concurrency races when
+a device has several interfaces at once).
+
+However, I wonder what should be the final "product":
+
+- In a first pass, I can keep the current form and have a dedicated
+  kernel module that contains all of the bpf fixes. The kernel would
+  load it, check for any match, pin the programs, and unload this kernel
+  module.
+
+  This works but isn't very modular as we just enable/ship all of the
+  fixes or nothing.
+
+- another idea I had, was to rely on the firmware kernel interface. Now
+  that I have a simple "bpf module" format (or even the json file), I
+  could "compile" it into a binary and then have the kernel request the
+  firmware on a device plug. This way we don't load/unload a module at
+  each plug, and we rely on the existing firmware capabilities.
+
+  I really like this idea, but then I wonder how I can ship those
+  firmwares. I'd like them to be tied to the currently running kernel,
+  so should I namespace them in the firmware directory on install? Is
+  there any other way to be able to have 2 or more firmwares depending
+  on the kernel version?
+
+I think that's it. Again, this series is just a PoC on top of
+hid.git/for-6.2/hid-bpf, and I can change everything if I am not headed
+to the correct direction.
+
+Cheers,
+Benjamin
+
+Benjamin Tissoires (10):
+  bpftool: generate json output of skeletons
+  WIP: bpf: allow to pin programs from the kernel when bpffs is mounted
+  HID: add a tool to convert a bpf source into a generic bpf loader
+  HID: add the bpf loader that can attach a generic hid-bpf program
+  HID: add report descriptor override for the X-Keys XK24
+  selftests: hid: add vmtest.sh
+  selftests: hid: Add a variant parameter so we can emulate specific
+    devices
+  selftests: hid: add XK-24 tests
+  selftests: hid: ensure the program is correctly pinned
+  wip: vmtest aarch64
+
+ MAINTAINERS                                   |   1 +
+ drivers/hid/bpf/Makefile                      |   3 +-
+ drivers/hid/bpf/hid_bpf_dispatch.c            |   3 +-
+ drivers/hid/bpf/hid_bpf_loader.c              | 243 +++++++++++++++
+ drivers/hid/bpf/progs/Makefile                | 105 +++++++
+ .../bpf/progs/b0003g0001v05F3p0405-xk24.bpf.c | 106 +++++++
+ .../progs/b0003g0001v05F3p0405-xk24.hidbpf.h  | 292 ++++++++++++++++++
+ drivers/hid/bpf/progs/hid_bpf.h               |  15 +
+ drivers/hid/bpf/progs/hid_bpf_helpers.h       |  22 ++
+ drivers/hid/bpf/progs/hid_bpf_progs.h         |  50 +++
+ drivers/hid/hid-core.c                        |   2 +
+ include/linux/bpf.h                           |   1 +
+ include/linux/hid_bpf.h                       |   2 +
+ kernel/bpf/inode.c                            |  41 ++-
+ tools/bpf/bpftool/gen.c                       |  95 ++++++
+ tools/hid/build_progs_list.py                 | 231 ++++++++++++++
+ tools/testing/selftests/hid/.gitignore        |   1 +
+ tools/testing/selftests/hid/config.aarch64    |  39 +++
+ tools/testing/selftests/hid/config.common     | 241 +++++++++++++++
+ tools/testing/selftests/hid/config.x86_64     |   4 +
+ tools/testing/selftests/hid/hid_bpf.c         | 150 +++++++--
+ tools/testing/selftests/hid/vmtest.sh         | 286 +++++++++++++++++
+ 22 files changed, 1907 insertions(+), 26 deletions(-)
+ create mode 100644 drivers/hid/bpf/hid_bpf_loader.c
+ create mode 100644 drivers/hid/bpf/progs/Makefile
+ create mode 100644 drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.bpf.c
+ create mode 100644 drivers/hid/bpf/progs/b0003g0001v05F3p0405-xk24.hidbpf.h
+ create mode 100644 drivers/hid/bpf/progs/hid_bpf.h
+ create mode 100644 drivers/hid/bpf/progs/hid_bpf_helpers.h
+ create mode 100644 drivers/hid/bpf/progs/hid_bpf_progs.h
+ create mode 100755 tools/hid/build_progs_list.py
+ create mode 100644 tools/testing/selftests/hid/config.aarch64
+ create mode 100644 tools/testing/selftests/hid/config.common
+ create mode 100644 tools/testing/selftests/hid/config.x86_64
+ create mode 100755 tools/testing/selftests/hid/vmtest.sh
+
+-- 
+2.38.1
+
