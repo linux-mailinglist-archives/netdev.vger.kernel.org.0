@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA8F563705E
-	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 03:24:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C964C637070
+	for <lists+netdev@lfdr.de>; Thu, 24 Nov 2022 03:30:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229675AbiKXCY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Nov 2022 21:24:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47814 "EHLO
+        id S229764AbiKXCaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Nov 2022 21:30:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiKXCY0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 21:24:26 -0500
+        with ESMTP id S229585AbiKXCaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Nov 2022 21:30:12 -0500
 Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FFFE1218;
-        Wed, 23 Nov 2022 18:24:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B576176A;
+        Wed, 23 Nov 2022 18:30:10 -0800 (PST)
 Received: from ([60.208.111.195])
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id SDW00119;
-        Thu, 24 Nov 2022 10:24:19 +0800
+        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id SDC00007;
+        Thu, 24 Nov 2022 10:30:07 +0800
 Received: from localhost.localdomain (10.180.206.146) by
  jtjnmail201612.home.langchao.com (10.100.2.12) with Microsoft SMTP Server id
- 15.1.2507.12; Thu, 24 Nov 2022 10:24:18 +0800
+ 15.1.2507.12; Thu, 24 Nov 2022 10:30:06 +0800
 From:   wangchuanlei <wangchuanlei@inspur.com>
-To:     <alexandr.lobakin@intel.com>, <pabeni@redhat.com>,
-        <echaudro@redhat.com>, <pshelar@ovn.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>
-CC:     <wangpeihui@inspur.com>, <netdev@vger.kernel.org>,
-        <dev@openvswitch.org>, <linux-kernel@vger.kernel.org>
+To:     <alexandr.lobakin@intel.com>
+CC:     <pabeni@redhat.com>, <echaudro@redhat.com>, <pshelar@ovn.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <wangpeihui@inspur.com>, <netdev@vger.kernel.org>,
+        <dev@openvswitch.org>, <linux-kernel@vger.kernel.org>,
+        <wangchuanlei@inspur.com>
 Subject: Re: [PATCH] [openvswitch v4] openvswitch: Add support to count upcall packets
-Date:   Wed, 23 Nov 2022 21:24:16 -0500
-Message-ID: <20221124022416.4045660-1-wangchuanlei@inspur.com>
+Date:   Wed, 23 Nov 2022 21:30:04 -0500
+Message-ID: <20221124023004.4069800-1-wangchuanlei@inspur.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20221123183834.489456-1-alexandr.lobakin@intel.com>
-References: <20221123183834.489456-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="y"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.180.206.146]
-tUid:   202211241024193b05bc1b7cc9004ab5d07439d7d2a1aa
+tUid:   20221124103007867cfd7017fca77fd1b724ba94a5219b
 X-Abuse-Reports-To: service@corp-email.com
 Abuse-Reports-To: service@corp-email.com
 X-Complaints-To: service@corp-email.com
