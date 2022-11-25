@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4D663923B
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 00:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 404D5639243
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 00:36:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230076AbiKYXdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 18:33:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
+        id S230077AbiKYXgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 18:36:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbiKYXdJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 18:33:09 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730771F2F1;
-        Fri, 25 Nov 2022 15:33:07 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id z18so8149929edb.9;
-        Fri, 25 Nov 2022 15:33:07 -0800 (PST)
+        with ESMTP id S229601AbiKYXgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 18:36:48 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B4C218A8;
+        Fri, 25 Nov 2022 15:36:47 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id ha10so13324818ejb.3;
+        Fri, 25 Nov 2022 15:36:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ul41aLivPpoStmBIkSe3PwxjiFmKEfN8civiUwQkxa0=;
-        b=TsTP7xsKiWaL4D0DEw5NERyXETDLlo76uN/V9q+MEzuJornm/EOwKNzZhQq73S9955
-         o8QCJhKYktAb++vUDJVobm7vqLP487mpTmUv5onvf0U9k7xDb1mZmMMmB4LH9Q0LuHDE
-         eN2XwwIwocdxmZgm3YZGIIQt7kbNoQe0LIyIPk7B4vsvRs+vSgqORcDt/P+hjTxKeBtA
-         lvPrf+XjMkFNPwZNHHNLysXxG3Nn8CZp9A/B0ZxbbSPuVCbKxpdxpmY3taLw27V4g7uT
-         tqa0ulf6ccJUIzp8j7nHUHCqmkMiUcWnbIkpzrx5DON5WiCnhXQv1E52fFDeGGn8I5qE
-         dcWQ==
+        bh=53pASLo6U2zzYHdiGPJru2sei7EMeIsybEcbugHJMGw=;
+        b=aNmO4iy1jEBOxe4hLQffwUBwh9RXL7ogbj5yuKyKDk+Xzpa9rmxmLXt65tfNv5wpIX
+         zCIgP3UXxPHLUlvesV043w+pnVAvv6aeeguf3WSjGGxzBGh+aGFCYvAO2eYViSso1InR
+         eOGZh6VgaeO+Dmvu0OMjrZ0zg4rQqCRarVo3050M4z3zqJJCa0+ynj6CUT3S+u+xB6b0
+         vn0mNPQGaf68AAHuzsCi7zOUJm60aMjynS55gdF+ou7JUayNoM4xyAM+nJwCMhQWg9XQ
+         JoCTXbY/uWDqaBgF7oYHso/i7h9fojytw30ODsNPAnbkRuWDT8FHy4rdPIF3rXMBPTMf
+         AFlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ul41aLivPpoStmBIkSe3PwxjiFmKEfN8civiUwQkxa0=;
-        b=nSbgdqYKKqNxiGRo8xR7FxwBfcu47+o9PqeWGgUZSdTX5HjQVgUEDEgPvsj3lAqAjw
-         bTEr/CjljTOOEkXxVV22IM1/qfgqf9vn56qvlbfRX8ZqOfz/wcoxqXAdqTw1t57MYWZU
-         kp0+i5KC5EVa7o6Zl0QQ8sPTBJPWppIAFZBqvQayTK2eH+6pfPhLXdlZ/Ep4rhVz+P5U
-         83aD1N5uuNVLlnOXAUZfUAF5hwEqxz+5jKjoJJNXrpQiWVjA9rgVjgTWMcpJfcD1QHq4
-         EpN1LwRj4R+HJalTMVYHKyQmMrdNb5j9h+66QUn3vPmXeHGaS/by7WxI3RrFMdaim7oX
-         Wp4g==
-X-Gm-Message-State: ANoB5pm2y91DfeJuEoulnBIoSz/bio4xILUEE0S49tOwJf56zysJa9vo
-        QvZJpzjaxr5/KsdGES5b8wZB/rKQ57ec3T5sqPA=
-X-Google-Smtp-Source: AA0mqf5un8E+VJYr8xkakEy/VtUbHh82LR9urvSYcLJYttWK02ci8Lrk7k46XZMqWxXRiTAywc/PrXQ5qe1vMXdN+kw=
-X-Received: by 2002:a05:6402:2404:b0:467:67e1:ca61 with SMTP id
- t4-20020a056402240400b0046767e1ca61mr4218659eda.27.1669419186903; Fri, 25 Nov
- 2022 15:33:06 -0800 (PST)
+        bh=53pASLo6U2zzYHdiGPJru2sei7EMeIsybEcbugHJMGw=;
+        b=WIRDxrmoBezLK0KNCXAEA4ASMhgbZpyMo/ocEBVcTVY7OQfYcx0Pcc3CRoOQpePLLd
+         0U+TmAV8GolW0AbMt57HmUIbaMu+El5GlMeYWjR65l3yJUuTzf1x3CkvDsSlWmnwIQ3v
+         JeYGwrJ9Y4LE1y1aquTDCpUvtSLIMjNjgEmFE406DHs+U3S698kEesPFDCnG+pX2xfyu
+         Sjf5ST1u3NF+0PUdRby2A2a+DabA3mh5FCmJJ+rWVIgoIBl1hNGBEn+DtZE77B7WL5qb
+         HKwYRO2OgNzpVyGrZnZRgigECQPDlrJq2L6C8bIIHaJir+wwvJ1WKGAGlRVbEZITxe/0
+         1H0w==
+X-Gm-Message-State: ANoB5pn/JLzzcrXZbPeJ4i9cUGe2BaMXPbHycYlo/BZwC89LIRE0CBO6
+        FLmU2C12g4FxYRbW2S8SubM4EKtRyfXXCu35GMI=
+X-Google-Smtp-Source: AA0mqf45bdEJiOxhbUnLhIigBT0GjU47GsHYZmyiWPQnPoGEsgOfGs0TvhtmfqACF3pOoGPbacknnLPg3TD8cSTM64A=
+X-Received: by 2002:a17:907:a709:b0:79f:cd7c:e861 with SMTP id
+ vw9-20020a170907a70900b0079fcd7ce861mr33399680ejc.339.1669419406346; Fri, 25
+ Nov 2022 15:36:46 -0800 (PST)
 MIME-Version: 1.0
 References: <20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org>
- <20221117-b4-amlogic-bindings-convert-v1-4-3f025599b968@linaro.org>
-In-Reply-To: <20221117-b4-amlogic-bindings-convert-v1-4-3f025599b968@linaro.org>
+ <20221117-b4-amlogic-bindings-convert-v1-6-3f025599b968@linaro.org>
+In-Reply-To: <20221117-b4-amlogic-bindings-convert-v1-6-3f025599b968@linaro.org>
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sat, 26 Nov 2022 00:32:55 +0100
-Message-ID: <CAFBinCDNqyb+AydSyN19ddJsUMo3RXKVJh=8sZgy3nYEc+vcxQ@mail.gmail.com>
-Subject: Re: [PATCH 04/12] dt-bindings: watchdog: convert meson-wdt.txt to dt-schema
+Date:   Sat, 26 Nov 2022 00:36:35 +0100
+Message-ID: <CAFBinCAmV7wuPq8y+g0YKxZ0W1G8_=WgY+E3OT9WT62eDkxXqw@mail.gmail.com>
+Subject: Re: [PATCH 06/12] dt-bindings: rtc: convert rtc-meson.txt to dt-schema
 To:     Neil Armstrong <neil.armstrong@linaro.org>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
@@ -97,22 +97,24 @@ Hi Neil,
 
 On Fri, Nov 18, 2022 at 3:33 PM Neil Armstrong
 <neil.armstrong@linaro.org> wrote:
-[...]
-> +unevaluatedProperties: false
-Could you please also add an "interrupts" property?
-This watchdog IP can generate an interrupt instead of resetting the
-SoC. We don't support this in the driver yet, but still it's w
-Somehow the interrupt made it into the .dtsi but not the bindings.
+>
+> Convert the Amlogic Meson6 RTC bindings to dt-schema.
+>
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+With the comment below addressed please add my:
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
 [...]
-> -- compatible : depending on the SoC this should be one of:
-> -       "amlogic,meson6-wdt" on Meson6 SoCs
-> -       "amlogic,meson8-wdt" and "amlogic,meson6-wdt" on Meson8 SoCs
-> -       "amlogic,meson8b-wdt" on Meson8b SoCs
-> -       "amlogic,meson8m2-wdt" and "amlogic,meson8b-wdt" on Meson8m2 SoCs
-The last part did not quite make it into the new schema.
-arch/arm/boot/dts/meson8m2.dtsi currently has:
-  compatible = "amlogic,meson8m2-wdt", "amlogic,meson8b-wdt";
+> +        mac@0 {
+> +            reg = <0 6>;
+> +        };
+My understanding is that here you want to showcase the nvmem integration.
+This IP block only supports 4 bytes of NVMEM. Instead of using MAC
+(which is not what's stored here, the suspend firmware uses it
+instead) I'd just use something like:
+data@0 {
+  reg = <0x0 4>;
+};
 
 
 Best regards,
