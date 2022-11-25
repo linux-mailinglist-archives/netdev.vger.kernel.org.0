@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30A54638F4A
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 18:46:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E29E2638F56
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 18:52:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbiKYRqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 12:46:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42162 "EHLO
+        id S229507AbiKYRwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 12:52:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiKYRqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 12:46:48 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A342854775
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 09:46:46 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id z6so2913053qtv.5
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 09:46:46 -0800 (PST)
+        with ESMTP id S229676AbiKYRwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 12:52:35 -0500
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C2C10D5
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 09:52:32 -0800 (PST)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-1433ef3b61fso5906723fac.10
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 09:52:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=/0RT1UDB+rgQuo3hDD+sJfqCPq7Bq2PrPiWHxsUI7y4=;
-        b=nrOjTkdMJy0wE9hFRFfnykbcMYiYgVdW7p46tkcwkh+gg3L7cCD9/fUHVO9iULzS6r
-         eOcC0DrhOS467QOI3SI4vsK/kn6bokFVFomQNfDSFgqUUxJ3e7YM0D91bC067ZnRudak
-         QrmhJMXbJYyJS8D4z8fTsW/3ruFU1Mt/+aKs5ON0EH4Kh7nzjrnNLpiJIS+r0XX+nX7H
-         QesTkUtqKTB3zlGzP05U7fVlLWQKJ9l3a8P6N6N8FOID7tygNJKRLZbneuVu577VfKcU
-         Egyc87XiW4TlEAtmi+ew5jcGOTaHyraiCspcMuSc4CUAYuo9BxEXaCc52LEPS/v4u1pV
-         TcyA==
+        bh=FGqHMepnRV/zsTIwnNjU+rrqQbn4zQ/yRsy6ha/dfKc=;
+        b=OhraSyOyUhOwpGIBkiYekujbggbbfFwgQwEsC9L4NIULgJI3qjCCr6YNzLzs9DvFfz
+         Ql4nZprb/Z0qbSCCQpXmzToc38wJos01o+/ofhIf1CsVBrMI6WfYGGOiLiTmMvJGeZFH
+         hHT8r8oNq1Ej021b9QScTkZFEx8J5saTGDL+cczOQdjxDaDkQVcCKA/3vOdYV+ofBJiB
+         ZTxarUMZCe2XClfkwLOvz29Fj2uE2MNeCtQkigOfikPuDDn5RfaivyzWchaa7mDIyUW8
+         LEmB3KHRdz2BhMTRD7ccK16dBNYiGIymFIkVkf5mxeZdLhRj7piG+uvPRfZK8zdN3gjA
+         dmog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=/0RT1UDB+rgQuo3hDD+sJfqCPq7Bq2PrPiWHxsUI7y4=;
-        b=i9HP/5//TFhGo/2FYm72RECMpir6jROfWajTIUItUtn1w39NEH+r5iuwfCHmhen8oN
-         Uf5EOOzE1tiU5U8MawYzp/FAM3xnPeNDw/hAsKPetWufTCtqTIDJmu1bMt3I6y1nqkZT
-         vdUUQ8LCndOZtSp7oWdVc3jGMDzOm7R8B0LfKmU+KI0AQ6wX4xnUsEEnRJIvk3kC7uOL
-         SqnGL8RM4oYbkgRYoamp6O6/s8iQOZfoTV/4Dl9LcS5nKoztcmYaam97pjRJbpwR5c9s
-         glIDW6AsgqPk5X4s/bVp/cQdo9rv+uSmQGIrx+IiwerGxnxKi/fTkM/ymqBmu79uMd6k
-         bxxA==
-X-Gm-Message-State: ANoB5plj6BrB6Qd7jOxMcfMisPZeXhaIF9LdVsOO7YWP1aQ/oj9HzcSD
-        FTcVgOaiJ4vt4Z9s+mU/6rCZTXibHMdKZg==
-X-Google-Smtp-Source: AA0mqf6WvpMmG6oaHXAtotWJGzFacckzwsPlrUVXrInoTQWP1OAj8J3h364toGXpNAi8pp/g0nCsgA==
-X-Received: by 2002:ac8:1019:0:b0:3a5:42b9:d7aa with SMTP id z25-20020ac81019000000b003a542b9d7aamr36057618qti.58.1669398405405;
-        Fri, 25 Nov 2022 09:46:45 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id w21-20020a05620a0e9500b006faa88ba2b5sm3064121qkm.7.2022.11.25.09.46.44
+        bh=FGqHMepnRV/zsTIwnNjU+rrqQbn4zQ/yRsy6ha/dfKc=;
+        b=qI1ILr2NjDsqK03iZmQ1ax3uDP1rEhcZZ6dRcvpNIzxOnpS21fJ6P9jZGQ7fSMUbg+
+         7+7nb4CTFrL85za/d704eWSrwAHNPG2FLwBdiRRqKv/f94u1fMnaL2H9Y6imsJ9KuIk3
+         XPUycyKzyxjS6uCQMvX53YO8U8kEZW2KET1ZheL1nlcSt8nEN5iDQu2Lt/nmgLlAmvfq
+         p7vKFYeXRwpD60nmvPBO2FRfeaFJo8o9SnndB5IRfZlIWbuat876OrnJczgZzdOFSDrJ
+         xYmv43aWx7CzFH+oQcmsuu/RDA5IGKT7hLQFXJvXf1rfZLBAG+l+u72OQzTWNzUP1rxB
+         BjrA==
+X-Gm-Message-State: ANoB5pmTwoLu/GDTPSeAIvkBQLW0JsJIXcv1Isgd3PXSl7VA5UPkfUmc
+        h/o7TdzNmUJXPeK4s5BUMuMPnxRlqrzKZmi+
+X-Google-Smtp-Source: AA0mqf7u08MJv7QEFUAOSPyNyO5Lpm6voHmXGEsq1g9CvtF9Mq9U35vHznqompa2g+zSHEmsgCg9aw==
+X-Received: by 2002:a05:6870:41c9:b0:142:6216:64bd with SMTP id z9-20020a05687041c900b00142621664bdmr12684312oac.232.1669398751303;
+        Fri, 25 Nov 2022 09:52:31 -0800 (PST)
+Received: from localhost.localdomain ([2804:14d:5c5e:4698:e90:8a20:11c9:921b])
+        by smtp.gmail.com with ESMTPSA id j44-20020a4a946f000000b0049fcedf1899sm1771570ooi.3.2022.11.25.09.52.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Nov 2022 09:46:44 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        Shuang Li <shuali@redhat.com>
-Subject: [PATCH net] tipc: re-fetch skb cb after tipc_msg_validate
-Date:   Fri, 25 Nov 2022 12:46:43 -0500
-Message-Id: <1b1cdba762915325bd8ef9a98d0276eb673df2a5.1669398403.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        Fri, 25 Nov 2022 09:52:30 -0800 (PST)
+From:   Pedro Tammela <pctammela@gmail.com>
+X-Google-Original-From: Pedro Tammela <pctammela@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, Pedro Tammela <pctammela@mojatatu.com>
+Subject: [PATCH RFC net-next 0/3] net/sched: retpoline wrappers for tc
+Date:   Fri, 25 Nov 2022 14:52:04 -0300
+Message-Id: <20221125175207.473866-1-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -72,56 +70,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the call trace shows, the original skb was freed in tipc_msg_validate(),
-and dereferencing the old skb cb would cause an use-after-free crash.
+In tc all qdics, classifiers and actions can be compiled as modules.
+This results today in indirect calls in all transitions in the tc hierarchy.
+Due to CONFIG_RETPOLINE, CPUs with mitigations=on might pay an extra cost on
+indirect calls. For newer Intel cpus with IBRS the extra cost is
+nonexistent, but AMD Zen cpus and older x86 cpus still go through the
+retpoline thunk.
 
-  BUG: KASAN: use-after-free in tipc_crypto_rcv_complete+0x1835/0x2240 [tipc]
-  Call Trace:
-   <IRQ>
-   tipc_crypto_rcv_complete+0x1835/0x2240 [tipc]
-   tipc_crypto_rcv+0xd32/0x1ec0 [tipc]
-   tipc_rcv+0x744/0x1150 [tipc]
-  ...
-  Allocated by task 47078:
-   kmem_cache_alloc_node+0x158/0x4d0
-   __alloc_skb+0x1c1/0x270
-   tipc_buf_acquire+0x1e/0xe0 [tipc]
-   tipc_msg_create+0x33/0x1c0 [tipc]
-   tipc_link_build_proto_msg+0x38a/0x2100 [tipc]
-   tipc_link_timeout+0x8b8/0xef0 [tipc]
-   tipc_node_timeout+0x2a1/0x960 [tipc]
-   call_timer_fn+0x2d/0x1c0
-  ...
-  Freed by task 47078:
-   tipc_msg_validate+0x7b/0x440 [tipc]
-   tipc_crypto_rcv_complete+0x4b5/0x2240 [tipc]
-   tipc_crypto_rcv+0xd32/0x1ec0 [tipc]
-   tipc_rcv+0x744/0x1150 [tipc]
+Known built-in symbols can be optimized into direct calls, thus
+avoiding the retpoline thunk. So far, tc has not been leveraging this
+build information and leaving out a performance optimization for some
+CPUs. In this series we wire up 'tcf_classify()' and 'tcf_action_exec()'
+with direct calls when known modules are compiled as built-in as an
+opt-in optimization.
 
-This patch fixes it by re-fetching the skb cb from the new allocated skb
-after calling tipc_msg_validate().
+We measured these changes in one AMD Zen 3 cpu (Retpoline), one Intel 10th
+Gen CPU (IBRS), one Intel 3rd Gen cpu (Retpoline) and one Intel Xeon CPU (IBRS)
+using pktgen with 64b udp packets. Our test setup is a dummy device with
+clsact and matchall in a kernel compiled with every tc module as built-in.
+We observed a 6-10% speed up on the retpoline CPUs, when going through 1
+tc filter, and a 60-100% speed up when going through 100 filters.
+For the IBRS cpus we observed a 1-2% degradation in both scenarios, we believe
+the extra branches checks introduced a small overhead therefore we added
+a Kconfig option to make these changes opt-in even in CONFIG_RETPOLINE kernels.
 
-Fixes: fc1b6d6de220 ("tipc: introduce TIPC encryption & authentication")
-Reported-by: Shuang Li <shuali@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/tipc/crypto.c | 3 +++
- 1 file changed, 3 insertions(+)
+We are continuing to test on other hardware variants as we find them:
 
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index f09316a9035f..d67440de011e 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -1971,6 +1971,9 @@ static void tipc_crypto_rcv_complete(struct net *net, struct tipc_aead *aead,
- 	/* Ok, everything's fine, try to synch own keys according to peers' */
- 	tipc_crypto_key_synch(rx, *skb);
- 
-+	/* Re-fetch skb cb as skb might be changed in tipc_msg_validate */
-+	skb_cb = TIPC_SKB_CB(*skb);
-+
- 	/* Mark skb decrypted */
- 	skb_cb->decrypted = 1;
- 
+1 filter:
+CPU        | before (pps) | after (pps) | diff
+R9 5950X   | 4237838      | 4412241     | +4.1%
+R9 5950X   | 4265287      | 4413757     | +3.4%   [*]
+i5-3337U   | 1580565      | 1682406     | +6.4%
+i5-10210U  | 3006074      | 3006857     | +0.0%
+i5-10210U  | 3160245      | 3179945     | +0.6%   [*]
+Xeon 6230R | 3196906      | 3197059     | +0.0%
+Xeon 6230R | 3190392      | 3196153     | +0.01%  [*]
+
+100 filters:
+CPU        | before (pps) | after (pps) | diff
+R9 5950X   | 313469       | 633303      | +102.03%
+R9 5950X   | 313797       | 633150      | +101.77% [*]
+i5-3337U   | 127454       | 211210      | +65.71%
+i5-10210U  | 389259       | 381765      | -1.9%
+i5-10210U  | 408812       | 412730      | +0.9%    [*]
+Xeon 6230R | 415420       | 406612      | -2.1%
+Xeon 6230R | 416705       | 405869      | -2.6%    [*]
+
+[*] In these tests we ran pktgen with clone set to 1000.
+
+Pedro Tammela (3):
+  net/sched: add retpoline wrapper for tc
+  net/sched: avoid indirect act functions on retpoline kernels
+  net/sched: avoid indirect classify functions on retpoline kernels
+
+ include/net/tc_wrapper.h   | 274 +++++++++++++++++++++++++++++++++++++
+ net/sched/Kconfig          |  13 ++
+ net/sched/act_api.c        |   3 +-
+ net/sched/act_bpf.c        |   6 +-
+ net/sched/act_connmark.c   |   6 +-
+ net/sched/act_csum.c       |   6 +-
+ net/sched/act_ct.c         |   4 +-
+ net/sched/act_ctinfo.c     |   6 +-
+ net/sched/act_gact.c       |   6 +-
+ net/sched/act_gate.c       |   6 +-
+ net/sched/act_ife.c        |   6 +-
+ net/sched/act_ipt.c        |   6 +-
+ net/sched/act_mirred.c     |   6 +-
+ net/sched/act_mpls.c       |   6 +-
+ net/sched/act_nat.c        |   7 +-
+ net/sched/act_pedit.c      |   6 +-
+ net/sched/act_police.c     |   6 +-
+ net/sched/act_sample.c     |   6 +-
+ net/sched/act_simple.c     |   6 +-
+ net/sched/act_skbedit.c    |   6 +-
+ net/sched/act_skbmod.c     |   6 +-
+ net/sched/act_tunnel_key.c |   6 +-
+ net/sched/act_vlan.c       |   6 +-
+ net/sched/cls_api.c        |   3 +-
+ net/sched/cls_basic.c      |   6 +-
+ net/sched/cls_bpf.c        |   6 +-
+ net/sched/cls_cgroup.c     |   6 +-
+ net/sched/cls_flow.c       |   6 +-
+ net/sched/cls_flower.c     |   6 +-
+ net/sched/cls_fw.c         |   6 +-
+ net/sched/cls_matchall.c   |   6 +-
+ net/sched/cls_route.c      |   6 +-
+ net/sched/cls_rsvp.c       |   2 +
+ net/sched/cls_rsvp.h       |   7 +-
+ net/sched/cls_rsvp6.c      |   2 +
+ net/sched/cls_tcindex.c    |   7 +-
+ net/sched/cls_u32.c        |   6 +-
+ 37 files changed, 417 insertions(+), 67 deletions(-)
+ create mode 100644 include/net/tc_wrapper.h
+
 -- 
-2.31.1
+2.34.1
 
