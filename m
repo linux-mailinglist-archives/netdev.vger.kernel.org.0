@@ -2,225 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 276C6638CB6
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 15:49:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D0CA638B7E
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 14:46:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230150AbiKYOty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 09:49:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48344 "EHLO
+        id S229796AbiKYNq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 08:46:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiKYOtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 09:49:53 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4BF2229D;
-        Fri, 25 Nov 2022 06:49:52 -0800 (PST)
+        with ESMTP id S229582AbiKYNq2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 08:46:28 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C955829353;
+        Fri, 25 Nov 2022 05:46:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669387792; x=1700923792;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=axkc8ZKi2ibEnEjw8mPtPP+Z+HfmEOOyMRB+MfnR/gM=;
-  b=IgH6+RpSSJJ2/l6j01ab49UQzERzqRUAkWVLBJAODreOYivjbA2qEmE2
-   oNB7vd++aCIFdcx+33wtShioZxwwbySnkr7+O6PDQI/edQ4rIAb8zyRfR
-   AKj0P/pdg2/wGcqeTJ0i1a6FAqkiAGL+VEnKU9HQC+Vz7ubPb8TBLil4O
-   fgFSwTsIHUJLM9yzTm5MRr9Q/ZPKsuEe5GB/pzlrra50b4uwEwoq9R7Hj
-   +1ghW8ZbtSataBoz0kDsIarTNa8wj6kKrEoJxo/3FVIc4Ud3VCZVhqQYL
-   Zp+52umMuskGDqC777r6+/DTKYISQZAaRf8OMB6KnSzer7oK/ekeslh9d
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10542"; a="316316008"
+  t=1669383987; x=1700919987;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=tWvxhlNhwroqvmwcmjSaNR/RQPcM+kkPTKaFHDPMtQI=;
+  b=an9NFAFE7vfNnpIa/YDTaijalb8riFEhBJM74i3Q/UD5WWnyYl1wGkP6
+   3/JGx+zJ6aNk55yXqN3SwMndqpLsSvidRD0tSDSEur4ziWJETj4lG5nBd
+   vFsBoy1EuS3hQ+CuFIY2IQbnTkrZ2uTC/+ZoY0Ca80NMieIi353zzBxKW
+   cveUNZCQgs7yythIA5qUij5DCtVTyXIBIfIG5VJ2uiXArZQXQ3zAVU0pi
+   rs9qe8CANyytgQbKVHQCmRQJ4Q8MXfgzgdgq0wZKe5QPxG5xCi+zPJ3hN
+   +/lossSNPAcVMsc0znZCEb3RvXBshxzk0mNqMOfBbB2zyiWaURt0RUoCH
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10541"; a="341388519"
 X-IronPort-AV: E=Sophos;i="5.96,193,1665471600"; 
-   d="scan'208";a="316316008"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2022 06:49:52 -0800
+   d="scan'208";a="341388519"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2022 05:46:27 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10542"; a="767390535"
+X-IronPort-AV: E=McAfee;i="6500,9779,10541"; a="731447190"
 X-IronPort-AV: E=Sophos;i="5.96,193,1665471600"; 
-   d="scan'208";a="767390535"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga004.jf.intel.com with ESMTP; 25 Nov 2022 06:49:48 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+   d="scan'208";a="731447190"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by FMSMGA003.fm.intel.com with ESMTP; 25 Nov 2022 05:46:27 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 25 Nov 2022 06:49:43 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ 15.1.2507.16; Fri, 25 Nov 2022 05:46:27 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Fri, 25 Nov 2022 06:49:43 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2507.16; Fri, 25 Nov 2022 05:46:27 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Fri, 25 Nov 2022 05:46:27 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Fri, 25 Nov 2022 05:44:43 -0800
+ 15.1.2375.31; Fri, 25 Nov 2022 05:46:26 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hEAf/RMuPLOUNMHc67reUTQrGA3b1QpHvYK5LTjlYclB8vEVrYHC9FRn01r3b3VbksPvQWeqkkbPrLLBLe8dHCKbZPiBdn/n/VWH/xM7ZPX3Cxwl1JbHU+QAq68HlaXlN2HkcKEs2PKXUntVOivEu7vEOOWBN44z+L7tqhVZYtfRpWUnRCxLMCCVkl0Nn0k+951WZfX5nmPGFflW1qP7PyRAST0b3/YKjtQwo4JGWwD1ppkAiVb0FHgbHmqvkHq+UfOw2pGhOMnl8tJFD6ZlGHuZ3urXJSCJYhdGQnLcEKsIL5NlVHUuV/P6XxygUnt3pRuo1EChNvgCkXUB8Wkhvg==
+ b=X+UGB8wJw8hn0CdlYYgNMwedcaqoI/V2FQ+Uki02b1XM0E7FYikfRjiSMRFMNzRDwbPXFocu+GgdHwkRRKWierl52HZI4b+H0WkweTmB6Q2mf+DyWI+SgPKKbXHoCVC0cJIJWEfgArN9aKpFgfgjThybaPLMDx5r0jkv2LHjOCRM8ZsZctDF/lijEkPnaNoJNPo/FjbZNgE1T7UdgVEe0PMjhJ53CgWXrhjCM2a9CJI0B7nQbZfUszLBa7mrrM/72MliyhaeYZeTGTE2v5BAVVZpeXZn9kHgnHrUY7ROlTIXly2mwVuCv8/czWDsiuyf70jwq5CP/IXNeIE340L76g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=F7epFhYKaCmytFo1LYzTXAEOGMdtJCd4kZImQAAKP4M=;
- b=UaMJ/VyBKQAaK5MGCMWVtv8xSGKcLTJ7Wf65eZ054a7wiY1Omo0NcJNaSFXRKIMw2vkG1RpMT0M9RiGVCJJ0Mjh1zqxJP6UtmORmKIGniwoPSgHZMxIdhmVCZndjCtAItE3dr2B/N94barHAdLvXCr5+UL4PYyi6m90JGX8BuCYC6VUZVprP3e/M0RrYmVc5bfo94QqJosWmS6Ap1PrxPYd2vmsxBa+jvj5MxbrJYAHwWD+KMdPMbmYgvdEW4j7604L1HxCLRvPp6Tut/WhFlQLJnttZ8wi3tUXypLltRjbsFDFrwA1BIDjgLyGz3Sbw0njehwb92+TIZbIkbif18w==
+ bh=TG6ENHXCuEu1SZ6bHkrXTjjwK0w2uzke5AxAHC2UCXo=;
+ b=YyS/2RBw+S1vf/IdNJ5eF4M/lE50+XqkEwrqi3+F1wQixff1Dt8aVG6vC3ovHil7XUwMUoiuWiMZbVcAtJnYBCje1fOFAxyqmUADVc5vhC2jOc6B8rV8mfuD88y19taBUQnehnCn/www1gkHQvd++Y5ead99GDfNj7lZGmiI86xkInOjRDHt5Odn92o0Z7R0oyWJoom/Md6Zml9Fe8wzzUgbhN4KXslAuLNh+w/QBXuD9LEE56k7yjEyYPtB6YF0k9QVt0VoD4TSGPt1hkVLgpJpysxV1qKkLj6Aspoq5CUv1f+W7/fq5tQM7b8h8IBWUhdsJwNiOBdfqyLt0q6kzw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BY5PR11MB4449.namprd11.prod.outlook.com (2603:10b6:a03:1cc::23)
- by IA1PR11MB7175.namprd11.prod.outlook.com (2603:10b6:208:419::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.20; Fri, 25 Nov
- 2022 13:44:41 +0000
-Received: from BY5PR11MB4449.namprd11.prod.outlook.com
- ([fe80::b289:7d0f:1d94:cd52]) by BY5PR11MB4449.namprd11.prod.outlook.com
- ([fe80::b289:7d0f:1d94:cd52%5]) with mapi id 15.20.5857.020; Fri, 25 Nov 2022
- 13:44:41 +0000
-Message-ID: <d6555f27-95bf-5474-3006-6f8d399ab556@intel.com>
-Date:   Fri, 25 Nov 2022 21:44:29 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.5.0
-Subject: Re: [PATCH bpf v2] selftests/bpf: Fix "missing ENDBR" BUG for
- destructor kfunc
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Jiri Olsa <olsajiri@gmail.com>
-CC:     <jpoimboe@kernel.org>, <memxor@gmail.com>, <bpf@vger.kernel.org>,
-        "Pengfei Xu" <pengfei.xu@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Martin KaFai Lau" <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        "Chen, Hu1" <hu1.chen@intel.com>
-References: <20221122073244.21279-1-hu1.chen@intel.com>
- <Y3zTF0CjQFt/dR2M@krava> <Y3zZQpHNQ8cRjKQY@hirez.programming.kicks-ass.net>
-From:   "Chen, Hu1" <hu1.chen@intel.com>
-In-Reply-To: <Y3zZQpHNQ8cRjKQY@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR02CA0044.apcprd02.prod.outlook.com
- (2603:1096:3:18::32) To BY5PR11MB4449.namprd11.prod.outlook.com
- (2603:10b6:a03:1cc::23)
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ BL3PR11MB6316.namprd11.prod.outlook.com (2603:10b6:208:3b3::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5857.19; Fri, 25 Nov 2022 13:46:19 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5f39:1ef:13a5:38b6]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5f39:1ef:13a5:38b6%6]) with mapi id 15.20.5834.009; Fri, 25 Nov 2022
+ 13:46:19 +0000
+Date:   Fri, 25 Nov 2022 14:46:05 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+CC:     <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <naveenm@marvell.com>,
+        <rsaladi2@marvell.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net 1/2] octeontx2-pf: Fix possible memory leak in
+ otx2_probe()
+Message-ID: <Y4DHHUUbGl5wWGQ+@boxer>
+References: <cover.1669253985.git.william.xuanziyang@huawei.com>
+ <e024450cf08f469fb1e0153b78a04a54829dfddb.1669253985.git.william.xuanziyang@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <e024450cf08f469fb1e0153b78a04a54829dfddb.1669253985.git.william.xuanziyang@huawei.com>
+X-ClientProxiedBy: FR2P281CA0164.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:99::14) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY5PR11MB4449:EE_|IA1PR11MB7175:EE_
-X-MS-Office365-Filtering-Correlation-Id: 88694d8d-54fc-4505-1dc9-08daceeb3418
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|BL3PR11MB6316:EE_
+X-MS-Office365-Filtering-Correlation-Id: cc0e8c3f-9e8c-4624-2b95-08daceeb6e32
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xVgpx5fn9wnfGRq8s+Kgfo3YBO5c3z5NbJO79AJebWtx+hbEiBz/mxZTKbjvYuhbFKw5mNYuD7e+hqbyxlhiT39Mbe2vycvsoZix7LEKb1IZN2wvWm0z/LqJqjn+HtqAIPoOUZZsNfsFTrx0xcamyI6YeCOrZjcp1ToOzC1mg7iyzQDc4AmtpYloCXxK25NHMyrcHbOkvSv3P2/A2giRnJp+8c19h6fl39KB8Efhgxk2kc6tkIzgpN1zF37MNSEjRB2ERKx6NO4spsSluC16WylToi/RmwMpGQ9u8Ji7A2Ra4xRZWbYmpAQJT3dC42+MHnJ8HB3WQV9cfaX15rMzKHxG9pMLlMNPoOafctA41EER9+0FAP9hgPGvoCzq+Fj9I8wuT+VqvWvgSIo9aGLQDk0l2ij1FxlE+NXPYYSLUzfyNnF/naZOLwtxRZX7wsBPW4AOSHfkx9AjozllM6Gn1bUxHhJZHVn/BLmzpIbDzzwqQ18CMpcFxMTrSemiHOcushfqlCkr4DKcZfgwU/VLphtHpqaVJ3rtMS7000jncyF5hZSg6T120hftzVFwnSXP/TueLHDcIRlKhrMtXIYD/MyuACHLyOVsRapmAAmUCJaBsDL4p2LsVWYGrXytJv2etuL7HMdB0KFOroLRca4BkbJq8lcp4tnq8/LHXdxaFvU8E69WL58++x68Ed7cXaeAGgZoARZqTuXZ6y4/JKhMaOtO0X90vaJeh0+XUwRi6Wc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR11MB4449.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(39860400002)(136003)(376002)(396003)(366004)(451199015)(31686004)(86362001)(31696002)(110136005)(53546011)(107886003)(54906003)(6506007)(6486002)(36756003)(38100700002)(82960400001)(6512007)(186003)(2616005)(7416002)(8936002)(26005)(6666004)(478600001)(66946007)(8676002)(2906002)(66556008)(66476007)(41300700001)(5660300002)(4326008)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: iqE24ayZUtHncx19w3jVUVN+apULLCNc4KrlKlr9pPzx0p9VEyIkPKSEeeonCNUoro/lt+sZqwfPfdlWa4vmm1uyj2qlFhazJf7sd2YRD37nVhroGrDEuf58wEtnIDqxJev62B0yHScxZlePKLNT2Sqcra3lYEd9wLjQgIceASwhrXdmKvKSvmcdeYbNmBpxSrq/H0aecRvkgPqtAt+ttgNBRrjJZkbQMDCl4IwZTV3yrQWMu/RzFohE1HwCxg6BXX+Y8f/8HrH15cXCdiVg0SXmkJsrLsSSBMJgDAeSqqw0wn2F3H83I2K8Sx8EX5ntjOxEAHps18xTGLS9IyFMfoUsGoj1/ehLTvK3wTE04YUof2hJyEkAoy81Uei9jhBtZzz1uRKNxVTnFiUNRPulA6z8713vHgTYamH49ZLEyWdZT+WfX2fuZ3DX+l4ypURHSB3L3X4EyB8bsRBKGG7y/iyGaVKFrK720qBPAUYU0tNSaY+IEefm12XO41XciIyIsVXwvlYLiHHXI2rH/7IIZNj9Zvy2NkH8NhSjIdE/J2Q46ZPBWfOPZ2er9ApUZLzRfnhEeVuL1soUs8hThFk9lbIZlcRsydB+J271Zd9q9I9JJMe1JJYntdXlKblEMpAzlMzpV6Tqtw67mx9I26RkhA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(39860400002)(346002)(396003)(376002)(136003)(366004)(451199015)(86362001)(44832011)(5660300002)(82960400001)(38100700002)(8936002)(83380400001)(6512007)(6506007)(9686003)(6666004)(41300700001)(26005)(478600001)(6916009)(6486002)(66556008)(66476007)(66946007)(4326008)(8676002)(7416002)(186003)(33716001)(316002)(2906002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eHRMREVHMklVeVB1RStLM0txazRDbGV0cS9HWnM5UE05Q055ZzB6REFMRm9v?=
- =?utf-8?B?SHE1cEFGZW5DKzBNby8vZisxZXVhMmc3NHRiK2hEUjFLelJ3bXZCdXR4Snp6?=
- =?utf-8?B?YWVpWjdqMzFZZW4zQWV6Zm9obFNCbEFTTTF4QWgvQ1NTWEFqSlBoaHp4djkw?=
- =?utf-8?B?WThxNkRhZTJwN3pvYnU4QmhkWmZ6KzJFeVFlTkV4RFI2Nm1XejBrT2VBaTE3?=
- =?utf-8?B?UGd6eitRWUpCNEhBTThhdFRpR0xoNXJtZmJQL0RnY09kS3IwZlJwVkRBalFM?=
- =?utf-8?B?Zng5Zkc5UVE1b3cyV2hBQUhGMVQyeXRXNEpabFNTOUVYcHNSRFpvSjhsdTN2?=
- =?utf-8?B?SUVOY3BRM01Yc1Q0RlFWenY1NEdXL1NxUFhLWk5MeVhDUXVwU0NrdlI5Rldh?=
- =?utf-8?B?dXhtR1A5anNRZ0ZGYnV4NlZTWFpTWXJkNElKZENab2VYd2VUM04rTk5GaHN6?=
- =?utf-8?B?cGN0Z0xKZ0UxQVRITHRXRVJlSXlvM1FNU0pGTHJ3azFnLzh6NWljYW0vd1p2?=
- =?utf-8?B?ZVlUb0xqbWluRDRaUjBWdmZXMnpXK2JJOG1vdTBtZGNyOXlnbk1Ha2x6VFhs?=
- =?utf-8?B?M2JodkF0S0FJdTBzdEJMUEVveitKWFFyVjBhNkNGT2hjZVQ4N1VvSlM3RUVn?=
- =?utf-8?B?TmtHeVoyNmg1N0s2S3dLbTF4ZnpjNkpJSTBTKzY2RHJzcW5rSEQ0Sll6NEkw?=
- =?utf-8?B?TEdORVp1U2tudzVkYTRpTEhWV0RIWFVFckNseXFwRGZ0WXNGd09Db2M2UkJ4?=
- =?utf-8?B?NlQyNHBuTkZiREZyaXBDUUNFMEt2SU1BZlFRZjNZT0RoRU12czNpR0padTd1?=
- =?utf-8?B?RVNCeFB4SFdOSGdmSWxVcWlNOWRWTXhJUzR4MXltcHdoYmZDU2tjRzVOcStH?=
- =?utf-8?B?YnZhdFdGejBjblhxN0RtZU8vRVpOdExLR1Fiejd3TzZkQW4rSU82bS9OVkZq?=
- =?utf-8?B?QTVkSDZ5TngzTGx2WHdLSzNWMVpKZGJBOStua2oxa3hPMTAzU20rRGRzSnAz?=
- =?utf-8?B?RUc3RkNXZkxxalFJOEFoTGk2TjIxU2tQSG1ENFNhWlBtWWk5N2lUc2VtK05r?=
- =?utf-8?B?TlB3SFhxR0JzTFJTUUhZd0NjMW9nZmJxcmZmUGhKeGt0SllUSzlkdFR0TzU3?=
- =?utf-8?B?OHY0Rk1lYUdJbzFkZGlGeDNvVlBHZUZMZ0RZRmkxOFJENUVSS1B1VU9oVlRM?=
- =?utf-8?B?aGpzTEMrYnd0SEt2VUVGMnlJdURwcE1BMHlOQ1FldXUvbDBnZGxLTmllZ0s3?=
- =?utf-8?B?NE5XemNDYmZFTU1GTTV6K1MxcVZZZFgrQW9Ma1dzRTFIRktCK3FMSlVaUmVm?=
- =?utf-8?B?ZndqeXVvSzIwSGEvTi9EZUhReDRsS25aWFR2VkNGK0YvbktSbzdmSllXQUdK?=
- =?utf-8?B?VVdRejRMOTFvcDJWMnFZRDlOUUl1R1FJcUNDcWJQbnZCdzVRTHZlR2VQdkhv?=
- =?utf-8?B?bVFhVzBLVGVPaGJNa1gwVDBISHFWSWJZRUdsVzY1WkhZRlQ0VlljNUMyZDVE?=
- =?utf-8?B?Wko3Q0dvbTY5bU9DUW0zVkhKNERlcFp2Q2k5azZ1SXhEc1JVV042NWNmUCtr?=
- =?utf-8?B?aFdGcDA2TzE5eFoyL2o0cDkwQXU2UzhvWjRVZDZpbllKSGFlTDZST0N4WC9z?=
- =?utf-8?B?c0xDdWVEZEc4Rk04eEhIV0JDTVRURDBBQnFrNm5IdWNmdGxvaC9NWitLbER2?=
- =?utf-8?B?OEdjWXBENTdpYXFDY0NsNmNCOTI3V2x0R0dUVG5TQWxsR1RtekVCVVE4MnBj?=
- =?utf-8?B?dlJ6aUlHTWVCTUR1VzNTNXJiQ1JzenpiOXc5WGJFbkpyVU96Nm5NOHArc3Jz?=
- =?utf-8?B?WElCRUVQL3hybXNpYVhELy8xZ1RLcGxtdnc3REo4Nk9HNDZwRUVLc3hYUVo0?=
- =?utf-8?B?UlQ4ckRyVXFLaS9sbnlQNzZoNWdJaFJSbTA5OU5QTW1mNHNlUzEySDZ2Ym5l?=
- =?utf-8?B?cXRTYVZudzFja3MxUHpZcGlmVk96RVJoWkVqdGtNY1BmbTd1MkpsVE83R1hu?=
- =?utf-8?B?Y3I4RTNyREJuSHpPZVZkR01jUUZxNmVPR2JGSlBlVlVMVUc5bDYyanZ1TFdy?=
- =?utf-8?B?cTdkdE95SlIwVXlmbzB1czYvRjFqeXpaTU9vMWozbFlZU1BTSlphbkRDSkRn?=
- =?utf-8?Q?9e9LBEZQiQ+UkMeoaLxzfexMq?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88694d8d-54fc-4505-1dc9-08daceeb3418
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR11MB4449.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2022B6jzl5hXjbWRDb8a8EGDVkrkIb7rveDrRrJttTc9bqkXn2Dc5Zlbs3ft?=
+ =?us-ascii?Q?T6LtX/5WaXtoDr6QGrn6D8oNoMtFf9Tg/Gk75yegqgOSVt7AD4rqkUYK0en0?=
+ =?us-ascii?Q?pU+i1BWtPxFVfxl8ck+fCRB3glJ2OiQeXii1KgaQj6mKyFjDc9uW9gW4eAJX?=
+ =?us-ascii?Q?2VCt4KCnRLzQ3zmY0Z27vzgqFIPBIGtWTZ/ezyQAOEOnfcRuYPapofKsGNNl?=
+ =?us-ascii?Q?WVoDgzFXCVEb9udlsekyUbchPuooWP87vrteKT1GIpmjR0l6MqVum90x89W+?=
+ =?us-ascii?Q?n6He9+o2hP6Pxp8rJbE4ytBgxE9uEmqzTjngf0TyPWH80z0F9Tiz1/zZZ7gd?=
+ =?us-ascii?Q?g9rk9E8XHBAmI57VBKZx0gTl3yqkIQs+TxGS6psFUNo/dTD0tGXNwmW6JrEi?=
+ =?us-ascii?Q?UYMv85CinuJfzsgJs0Xkn5IzI9TPRoEAGY1vGXqQPWKPm5ram9gfq/W+GiN/?=
+ =?us-ascii?Q?5OEflBB6EYeSi7s+/wvcFD94dpMCaYCjYQY09qKxq6ghTz2Qz4p8gVKprcMW?=
+ =?us-ascii?Q?mUVrACQCyV8mZ1gJ2MdlXkY3rralugDN2rUQkrCBRQU58U4D5Fz6MH8CyZY2?=
+ =?us-ascii?Q?Bjyt8e639SZHS35wPeoyCfQr2c2v0pUw7v6bi8tQ9MHIhQFptQdV8SA8+b/L?=
+ =?us-ascii?Q?4QMPT1XNFvkhkgiKGoYequzemrYSa8i/vvOiIO5wZRRTdwkgIRNztEo9uU3/?=
+ =?us-ascii?Q?i7DPUEiCopzACw1KKssPn3CSBG/H5QZpMcuzUXPiO4w4saU6NMygB7Hrk09Y?=
+ =?us-ascii?Q?5s+e0QvWaXsCwu9wZVfPz6bqkQ+gbQmJXO+8DBp2/HrkpeoYxOguOn3BqhnM?=
+ =?us-ascii?Q?xZFjH6vPCseiR1vrWpqD2+BXJ4RmUWp8LAhVpvKcc1RjOYVD2Upk9l1+zJVE?=
+ =?us-ascii?Q?SvMnmMiznDxLslwzpgLnqBrmdM9QFUlt+60TRkcAY73UZ35gxBuNrPtosHpl?=
+ =?us-ascii?Q?sjBNjz8GaWja7xoUxR7hSe7pUwvaR7R3b45kGTCZjW4PBkWu3u3U+Tc6r3jW?=
+ =?us-ascii?Q?wupJ26I1zwt1RsQrPP2MXzfI/Ryjizuw0hJiVnFDAweO6TuCf7PE3xDPxmH0?=
+ =?us-ascii?Q?+UVY1PotmsNdMkk1GyMSOIQSUg89Ry6v+8fFiFZcm2oE+sBrMkEoOS6WEIkA?=
+ =?us-ascii?Q?59DXi+qY1yb1sbS+FTDCFHjjf+/yIwVMSBwmE+pGOhHQv5gmyMrWO3e2TjkR?=
+ =?us-ascii?Q?aMcBJms6/nJS4OT3pv9egdPuwRsE64cXcvrNHSA6nf+gaLbEUFJMhLsZwF6f?=
+ =?us-ascii?Q?N754UkzwojzxSll63svb3wGcNNHakhTtUYUIHf05pJC1H9uX63xmRDJoZvd4?=
+ =?us-ascii?Q?GqqNlVdv6BUnZMxyf816i2DoJYwdeyMNGSks7reHcDnaGWSZqHrTevnq95Df?=
+ =?us-ascii?Q?xdSE8g/uo/9SAXwXhsjQFc2Fu0ZEaJpMscm01wASP4SrHyyeY1+ssQjnKEEu?=
+ =?us-ascii?Q?udxo3qwZJLqN1z9/vN/uZnhzqRisj75upqL56ACuk7MKpzdvdbo07jRzJtuk?=
+ =?us-ascii?Q?2FOstR1CHXtMfeVlIt5EtlQJX50gy1MJLULM3hSa1JdXASgxv+p4phX8QQin?=
+ =?us-ascii?Q?zUAkHbqHIaVVojYTwNgjXmK9tqL6eDnqH9nfMgSKF/z2dN1fi5JpdKaAlQw6?=
+ =?us-ascii?Q?Hw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc0e8c3f-9e8c-4624-2b95-08daceeb6e32
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2022 13:44:41.5478
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2022 13:46:19.1982
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: B4ehlrhFr5SJ9PvV/YLe0taMkyDrHUfeC+1LBzlCO5aBcJ75UNodqP9KpLRlbanVeRk4r6WFr9eK1iHMX7DH4w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7175
+X-MS-Exchange-CrossTenant-UserPrincipalName: CIvAen1WOxXh3q325WNN4IplNCuBJHlEnM1Ed4IRgCniD63Ox99bfPUm3RtXQRkf+0k1MQnyWfD7zaxwpl8WQCqZcSE5swyk9jO2vdtXD4M=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR11MB6316
 X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/22/2022 10:14 PM, Peter Zijlstra wrote:
-> On Tue, Nov 22, 2022 at 02:48:07PM +0100, Jiri Olsa wrote:
->> On Mon, Nov 21, 2022 at 11:32:43PM -0800, Chen Hu wrote:
->>> With CONFIG_X86_KERNEL_IBT enabled, the test_verifier triggers the
->>> following BUG:
->>>
->>>   traps: Missing ENDBR: bpf_kfunc_call_test_release+0x0/0x30
->>>   ------------[ cut here ]------------
->>>   kernel BUG at arch/x86/kernel/traps.c:254!
->>>   invalid opcode: 0000 [#1] PREEMPT SMP
->>>   <TASK>
->>>    asm_exc_control_protection+0x26/0x50
->>>   RIP: 0010:bpf_kfunc_call_test_release+0x0/0x30
->>>   Code: 00 48 c7 c7 18 f2 e1 b4 e8 0d ca 8c ff 48 c7 c0 00 f2 e1 b4 c3
->>> 	0f 1f 44 00 00 66 0f 1f 00 0f 1f 44 00 00 0f 0b 31 c0 c3 66 90
->>>        <66> 0f 1f 00 0f 1f 44 00 00 48 85 ff 74 13 4c 8d 47 18 b8 ff ff ff
->>>    bpf_map_free_kptrs+0x2e/0x70
->>>    array_map_free+0x57/0x140
->>>    process_one_work+0x194/0x3a0
->>>    worker_thread+0x54/0x3a0
->>>    ? rescuer_thread+0x390/0x390
->>>    kthread+0xe9/0x110
->>>    ? kthread_complete_and_exit+0x20/0x20
->>>
->>> This is because there are no compile-time references to the destructor
->>> kfuncs, bpf_kfunc_call_test_release() for example. So objtool marked
->>> them sealable and ENDBR in the functions were sealed (converted to NOP)
->>> by apply_ibt_endbr().
+On Thu, Nov 24, 2022 at 09:56:43AM +0800, Ziyang Xuan wrote:
+> In otx2_probe(), there are several possible memory leak bugs
+> in exception paths as follows:
+> 1. Do not release pf->otx2_wq when excute otx2_init_tc() failed.
+> 2. Do not shutdown tc when excute otx2_register_dl() failed.
+> 3. Do not unregister devlink when initialize SR-IOV failed.
 > 
-> If there is no compile time reference to it, what stops an LTO linker
-> from throwing it out in the first place?
->
+> Fixes: 1d4d9e42c240 ("octeontx2-pf: Add tc flower hardware offload on ingress traffic")
+> Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> index 303930499a4c..8d7f2c3b0cfd 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> @@ -2900,7 +2900,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  
+>  	err = otx2_register_dl(pf);
+>  	if (err)
+> -		goto err_mcam_flow_del;
+> +		goto err_register_dl;
+>  
+>  	/* Initialize SR-IOV resources */
+>  	err = otx2_sriov_vfcfg_init(pf);
+> @@ -2919,8 +2919,11 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  	return 0;
 
-Ah, my stupid.
+If otx2_dcbnl_set_ops() fails at the end then shouldn't we also call
+otx2_sriov_vfcfg_cleanup() ?
 
-The only references to this function from kernel space are:
-    $ grep -r bpf_kfunc_call_test_release
-    net/bpf/test_run.c:noinline void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p)
-    net/bpf/test_run.c:BTF_ID_FLAGS(func, bpf_kfunc_call_test_release, KF_RELEASE)
-    net/bpf/test_run.c:BTF_ID(func, bpf_kfunc_call_test_release)
-
-Macro BTF_ID_... puts the function names to .BTF_ids section. It looks
-like:
-__BTF_ID__func__bpf_kfunc_call_test_release__692
-
-When running, it uses kallsyms_lookup_name() to find the function
-address via names in .BTF_ids section.
-
-
-Hi jirka,
-Please kindly correct me if my understanding of BTF_ids is wrong.
+>  
+>  err_pf_sriov_init:
+> +	otx2_unregister_dl(pf);
+> +err_register_dl:
+>  	otx2_shutdown_tc(pf);
+>  err_mcam_flow_del:
+> +	destroy_workqueue(pf->otx2_wq);
+>  	otx2_mcam_flow_del(pf);
+>  err_unreg_netdev:
+>  	unregister_netdev(netdev);
+> -- 
+> 2.25.1
+> 
