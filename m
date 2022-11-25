@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7DAA639225
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 00:19:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D61639230
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 00:25:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230022AbiKYXTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 18:19:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
+        id S230047AbiKYXZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 18:25:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229923AbiKYXTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 18:19:19 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2505B537F6;
-        Fri, 25 Nov 2022 15:19:18 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id z63so8169053ede.1;
-        Fri, 25 Nov 2022 15:19:18 -0800 (PST)
+        with ESMTP id S229570AbiKYXZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 18:25:31 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1B1537F6;
+        Fri, 25 Nov 2022 15:25:30 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id f18so13258629ejz.5;
+        Fri, 25 Nov 2022 15:25:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=SVELpdKFSXD3c/9YMUBWzdfVkz3skoAI+P1PdlwZ1ss=;
-        b=YSHAbUBSvo9r6T1r9rnau1eANbw67fxthr/a4DBDvymBqEJFvDqj/w+5NQAdr2dJ8l
-         82TzhSK/JnFmfyY2OX1lLZwCEcufyALIBwO8HDFhEEtgongMozj7XQ2E4U+mjweAEbrF
-         Z1yMXWPUeTZuy3eFmzIFTMUCXrOs223UNE0O2hAVhNwkzEHRclze5qPUQVN0BJ5LnO/1
-         XvSUttB1eO7QS7wEz5/JswGPOzphjNv7JuEVV+mqiIjuD4gIbA9EWNbRda9+Gm7giS78
-         llOVgdJ4hikn3/tWyHxx7FrEfHipN2AXXg6zkcBhzSdsHWPHsH3iaWUJ6+JhB7DOQJ8Z
-         mEmg==
+        bh=tCTtF6fAWhMLt7sZbiPuunRpHFkZ2q0bqUFL/SjTMsw=;
+        b=XO5fYO1oOwtpueIZWfSn0cCi0laQdhB3hXs3PtHdd4OHe23GYCorc0y8Plc2H8qhYv
+         LH9Um4yafmwcg0CwYKDPPynP/ma2fvcmVr/dI+jLh3VXEEYqfRxf55tsTOHgkANnUVdk
+         YYNgNvWH9oeYbutAzNf78VU2xm5n8CzkJQ1sYSm06g9m7ahaQFRQtoF8zTjxoIptgdRX
+         GFvQGOfDC6UouP3xpg6y8h18RDmHkGu6d6J42lQritKDbeS4o5k1bR5+NSYQVUYvst69
+         CT0ftvSz4BZ3AvUuRXFcsEitCTsNAlvScg9LFgPAGVyOscN277hzZtrcGIP99iABJqXZ
+         1zyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=SVELpdKFSXD3c/9YMUBWzdfVkz3skoAI+P1PdlwZ1ss=;
-        b=EeMkXvTvmdP7x0dPGVTXNzu7Zv1caRmU0POXqEhPfgKCpZ4ctwaSxGo2ZbbEO7kRJs
-         EshlTXN1R1L2D6LaxY0yiqoSbM/4b4SDzoreqkuWqTOw+jEeGvcLdMwf+D9Fkgw1fNE/
-         dEsG0CobeN4TJ7VYxjN+og8+o/ncHus4SFwpFrzpGx8zHVDLIkfx4mkdRNQ92rFhily4
-         z6qCMDEPfNglzYy72z561gDTtQ4E7vfUPwlFlQmWXZTFuGCY3OT3BHgo1e3B2mtkpVw+
-         ja8opbExOCoo3dvhlVh/BiggvDW4bRSAmOXlGJMqRg2xwVUE1B/Wy3aNMXChqqgZhZRU
-         42lw==
-X-Gm-Message-State: ANoB5pmUOg1kvylWdnLOX0b6CqSsZBXHq3MXKE37Zmeax7GDWr0MHWmd
-        r4CpFlatAvyJusKhXrcgFIT6iE7JRgVtW28MyGw=
-X-Google-Smtp-Source: AA0mqf4OqxkdoB0Ayiso+cMz67UQ77gNB96oROCtdv1hhdodGHiM13wZPNLLJ+nWz1FxwjqEbKw549M2HtAULGuy9LQ=
-X-Received: by 2002:a05:6402:cb0:b0:46a:5df2:8d56 with SMTP id
- cn16-20020a0564020cb000b0046a5df28d56mr12461892edb.238.1669418356538; Fri, 25
- Nov 2022 15:19:16 -0800 (PST)
+        bh=tCTtF6fAWhMLt7sZbiPuunRpHFkZ2q0bqUFL/SjTMsw=;
+        b=4hqBDWgkXfSnNKIGBeTFDfvb/KAvKMgcD87bOsCQzVoDx6hp+mj8VErY3OqoeuwheV
+         xZu/mvnOSrWDDu+fa2gvfQhk1H67er2hDxvJkdaq1vUqp01Hyt1og2e/tcdj6wRSQo70
+         rpLv/rcCk1FsimPbODdyGLILUW78KFCKKG7S/HS9zQZ+ofdO/nLRH8em8AF+ic3WuZ5E
+         qMngHxyPw7eXl3Tvud8bRf3HMBheXqJE7pZkgznl7395fUdlfhpTVfX6tZm17vXN5vYj
+         Uj7c+2948h/R+2Hmydn7MJJlG+FpLNO40FOIbt4ajkQMXcimIRm9gjGqqd8SkCVsn/Mg
+         CTPA==
+X-Gm-Message-State: ANoB5pkxxo8vnTuxuX+Q8XkMKHvJ+LjbDQqxKHNHm4mzIvdW/6keypPr
+        /rmuowUtohIKIue/kchv3+l7BwAx2hc/2nTj7Co=
+X-Google-Smtp-Source: AA0mqf6r8ZGoAmftNYWkAPDE8cV+ClfDfHNDigYfV7F4RFfaaXo6kES5wXG//eSV5jPV/Jc+P7ogrsCm0bmN17yrNT4=
+X-Received: by 2002:a17:906:6bd8:b0:78b:a8d:e76a with SMTP id
+ t24-20020a1709066bd800b0078b0a8de76amr35243355ejs.725.1669418728706; Fri, 25
+ Nov 2022 15:25:28 -0800 (PST)
 MIME-Version: 1.0
 References: <20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org>
- <20221117-b4-amlogic-bindings-convert-v1-11-3f025599b968@linaro.org>
-In-Reply-To: <20221117-b4-amlogic-bindings-convert-v1-11-3f025599b968@linaro.org>
+ <20221117-b4-amlogic-bindings-convert-v1-5-3f025599b968@linaro.org>
+In-Reply-To: <20221117-b4-amlogic-bindings-convert-v1-5-3f025599b968@linaro.org>
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sat, 26 Nov 2022 00:19:05 +0100
-Message-ID: <CAFBinCC+XNkyCoTNu881FVVZDSMerzTuEk5CDBXg7o2R595QhQ@mail.gmail.com>
-Subject: Re: [PATCH 11/12] dt-bindings: pcie: convert amlogic,meson-pcie.txt
- to dt-schema
+Date:   Sat, 26 Nov 2022 00:25:17 +0100
+Message-ID: <CAFBinCC_hGBNTwAfLAZmyNz7vjedWyQ0vhPT_vAKXQ5LKhA3Tg@mail.gmail.com>
+Subject: Re: [PATCH 05/12] dt-bindings: media: convert meson-ir.txt to dt-schema
 To:     Neil Armstrong <neil.armstrong@linaro.org>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
@@ -98,17 +97,13 @@ Hi Neil,
 
 On Fri, Nov 18, 2022 at 3:33 PM Neil Armstrong
 <neil.armstrong@linaro.org> wrote:
-[...]
-> +  phy-names:
-> +    const: pcie
-At least SM1 has a PCIe power domain
-So we need to allow this property as well
+>
+> Convert the Amlogic Meson IR remote control receiver bindings to
+> dt-schema.
+>
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[...]
-> +required:
-> +  - compatible
-clocks and clock-names are missing (you have them in your example though)
-
-
-Best regards,
-Martin
+Before this is applied we need an additional patch removing the
+un-documented "amlogic,meson-gx-ir" compatible string from
+arch/arm64/boot/dts/amlogic/meson-gx.dtsi though.
