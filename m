@@ -2,100 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2B7638EBC
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 18:03:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E822638EBF
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 18:05:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229960AbiKYRDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 12:03:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41880 "EHLO
+        id S230006AbiKYRFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 12:05:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiKYRDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 12:03:11 -0500
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A073A26AC8;
-        Fri, 25 Nov 2022 09:03:09 -0800 (PST)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 0D0AA5FD0B;
-        Fri, 25 Nov 2022 20:03:08 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1669395788;
-        bh=hIsvyQKroiddHpaTVR2wY29J7IQ5VqM86kcghxyeuSM=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=ggMFBYROTK0lyPJPUDAbCu1X+1e9Jl/HQMoliWUPNJ9lwXOXNhitBph374CaykvuH
-         ZRMqCFhCoB+56aaTIZHL3KF0ePPKNERNkUQWsJM2+OQxn07+H490NxHzR164UTUTv3
-         EyQP9n2Sz0hl76z4HTBPDhuc3jI7LcaPWgwdaQBCmQiqi0tntWgOOk2olsN0+fsBX+
-         TXTMSAk0YLxVxPQj9doIYlVU879LRh01P1kYS6gRnui5LnVEGlEN7wUwk6URQ8BiX7
-         jaKSY1/LyXv/rAPnP9k/SH4nHGBP+seWTTHqlcIB7lPZtpCyMNearrL9nV2N1eKKNV
-         uO0j+weZ1Rv7A==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 25 Nov 2022 20:03:06 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
+        with ESMTP id S229908AbiKYRE7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 12:04:59 -0500
+Received: from smtpcmd04132.aruba.it (smtpcmd04132.aruba.it [62.149.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29A92450AB
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 09:04:55 -0800 (PST)
+Received: from localhost.localdomain ([213.215.163.55])
+        by Aruba Outgoing Smtp  with ESMTPSA
+        id yc8CoJAAQ1Dzayc8Copz80; Fri, 25 Nov 2022 18:04:53 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
+        t=1669395893; bh=Ruox3c8DuEPJyscLBAL5O8SkKZpRA5XxQK1g0luVTkQ=;
+        h=From:To:Subject:Date:MIME-Version;
+        b=Ro4Ea+xpHqfA0dz24jIbsTkYxUVyD+w3Pmg4SX6YzTxFEfAsY5Lnwo+6H7vfceWte
+         n6+v5isRP9k63pNfDiQZl0ZYuPCqi8fE7B8ci7sYtrNwY6sR4n7aLTsSyJHKMl4c9q
+         6YFBDhvX12N16ij05FNNyoKwV4X3NUuYtE7xyY7mjThftuKdQw2F6m9DZVdzqdqHtJ
+         5bLjRQkr/Y+etMxcHgVMrFCnoUHpncSFL9NYWys1s+Z2iR+T0s7CPmOfnJ746X3Fby
+         F26ySHYSFSig/d2fMiSvjpQoboMlDmRmuUxgl2A97dlt8X2Xruf50EOgmDKpCD2Eqf
+         i5kTSk0bxknZg==
+From:   Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
+To:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>
+Cc:     kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        "Dexuan Cui" <decui@microsoft.com>,
-        Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        "Krasnov Arseniy" <oxffffaa@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: [RFC PATCH v2 1/6] vsock: return errors other than -ENOMEM to socket
-Thread-Topic: [RFC PATCH v2 1/6] vsock: return errors other than -ENOMEM to
- socket
-Thread-Index: AQHZAO/JdW+nx2oM60ahOLF9t/m+FQ==
-Date:   Fri, 25 Nov 2022 17:03:06 +0000
-Message-ID: <84f44358-dd8b-de8f-b782-7b6f03e0a759@sberdevices.ru>
-In-Reply-To: <9d96f6c6-1d4f-8197-b3bc-8957124c8933@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <816FF44AD1235C4FAB598C4AD43152C1@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
+Subject: [PATCH v2] can: j1939: do not wait 250 ms if the same addr was already claimed
+Date:   Fri, 25 Nov 2022 18:04:18 +0100
+Message-Id: <20221125170418.34575-1-devid.filoni@egluetechnologies.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221124051611.GA7870@pengutronix.de>
+References: <20221124051611.GA7870@pengutronix.de>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/11/25 14:59:00 #20610704
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CMAE-Envelope: MS4xfFEaFPauQmK2803lOGjEUc87ul6NLMLbpjRcBHK2EHDv229v8Ags4nY/0EvXEnGKIRnHH2HzaXQJHDwYJEmVPHUCkO9dRM8khSYpc/8sRjq6+XWA2WRy
+ Nf5W6YiAc3OCVoTyWxPnCs6laxucqmMxr5lrrydZA8FFtZP052vFafFKeiKYnNzwohI8FWI851TBX1+98QlMX3cUac4TRY0iO6PAq6gUjH486PpdDbq4GJzr
+ WEomIMaWSaRtb6uryMExxlzfqIb8Ky6WVZNz/9TaiY1iy4BcCs40MAj+wV3nwz1LC8k6V/SqJCZxaBGQk2JyQIo93Jhgklj1IDNGgmMzg3mM231JR8IcRyhJ
+ GQXrFVa0CkqrvcHUU5XcF1Ie+z9D5VRSMxi64j1Oi60BLa7uhHr/XXwLvKbk6VlwkRIVaer6+X4Z1Gx1kspn78rPS3h/a081mZhGOuuMo0QGLFLT12AeWZEB
+ i6X1UeFw3ZcmvyVnG7RHwPhZussE4Rd7+Gs3bcFHHpzaKwB8yj+CgipB869umUNHaOE+U29NtjZqXAb/7SDkR1irTX6K1pSHGKW6L402wD5NxtqWRiOFsAS7
+ y1Wt9i9gkYXlAVJvOGrbzpBusPgccACOlPYUPIzk8E3DdA==
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQm9iYnkgRXNobGVtYW4gPGJvYmJ5LmVzaGxlbWFuQGJ5dGVkYW5jZS5jb20+DQoNClRo
-aXMgcmVtb3ZlcyBiZWhhdmlvdXIsIHdoZXJlIGVycm9yIGNvZGUgcmV0dXJuZWQgZnJvbSBhbnkN
-CnRyYW5zcG9ydCB3YXMgYWx3YXlzIHN3aXRjaGVkIHRvIEVOT01FTS4NCg0KU2lnbmVkLW9mZi1i
-eTogQm9iYnkgRXNobGVtYW4gPGJvYmJ5LmVzaGxlbWFuQGJ5dGVkYW5jZS5jb20+DQpTaWduZWQt
-b2ZmLWJ5OiBBcnNlbml5IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2aWNlcy5ydT4NCi0tLQ0K
-IG5ldC92bXdfdnNvY2svYWZfdnNvY2suYyB8IDMgKystDQogMSBmaWxlIGNoYW5nZWQsIDIgaW5z
-ZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KDQpkaWZmIC0tZ2l0IGEvbmV0L3Ztd192c29jay9h
-Zl92c29jay5jIGIvbmV0L3Ztd192c29jay9hZl92c29jay5jDQppbmRleCA4ODRlY2E3ZjY3NDMu
-LjYxZGRhYjY2NGMzMyAxMDA2NDQNCi0tLSBhL25ldC92bXdfdnNvY2svYWZfdnNvY2suYw0KKysr
-IGIvbmV0L3Ztd192c29jay9hZl92c29jay5jDQpAQCAtMTg2Miw4ICsxODYyLDkgQEAgc3RhdGlj
-IGludCB2c29ja19jb25uZWN0aWJsZV9zZW5kbXNnKHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0cnVj
-dCBtc2doZHIgKm1zZywNCiAJCQl3cml0dGVuID0gdHJhbnNwb3J0LT5zdHJlYW1fZW5xdWV1ZSh2
-c2ssDQogCQkJCQltc2csIGxlbiAtIHRvdGFsX3dyaXR0ZW4pOw0KIAkJfQ0KKw0KIAkJaWYgKHdy
-aXR0ZW4gPCAwKSB7DQotCQkJZXJyID0gLUVOT01FTTsNCisJCQllcnIgPSB3cml0dGVuOw0KIAkJ
-CWdvdG8gb3V0X2VycjsNCiAJCX0NCiANCi0tIA0KMi4yNS4xDQo=
+The ISO 11783-5 standard, in "4.5.2 - Address claim requirements", states:
+  d) No CF shall begin, or resume, transmission on the network until 250
+     ms after it has successfully claimed an address except when
+     responding to a request for address-claimed.
+
+But "Figure 6" and "Figure 7" in "4.5.4.2 - Address-claim
+prioritization" show that the CF begins the transmission after 250 ms
+from the first AC (address-claimed) message even if it sends another AC
+message during that time window to resolve the address contention with
+another CF.
+
+As stated in "4.4.2.3 - Address-claimed message":
+  In order to successfully claim an address, the CF sending an address
+  claimed message shall not receive a contending claim from another CF
+  for at least 250 ms.
+
+As stated in "4.4.3.2 - NAME management (NM) message":
+  1) A commanding CF can
+     d) request that a CF with a specified NAME transmit the address-
+        claimed message with its current NAME.
+  2) A target CF shall
+     d) send an address-claimed message in response to a request for a
+        matching NAME
+
+Taking the above arguments into account, the 250 ms wait is requested
+only during network initialization.
+
+Do not restart the timer on AC message if both the NAME and the address
+match and so if the address has already been claimed (timer has expired)
+or the AC message has been sent to resolve the contention with another
+CF (timer is still running).
+
+Signed-off-by: Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
+---
+ v1 -> v2: Added ISO 11783-5 standard references
+
+ net/can/j1939/address-claim.c | 40 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+
+diff --git a/net/can/j1939/address-claim.c b/net/can/j1939/address-claim.c
+index f33c47327927..ca4ad6cdd5cb 100644
+--- a/net/can/j1939/address-claim.c
++++ b/net/can/j1939/address-claim.c
+@@ -165,6 +165,46 @@ static void j1939_ac_process(struct j1939_priv *priv, struct sk_buff *skb)
+ 	 * leaving this function.
+ 	 */
+ 	ecu = j1939_ecu_get_by_name_locked(priv, name);
++
++	if (ecu && ecu->addr == skcb->addr.sa) {
++		/* The ISO 11783-5 standard, in "4.5.2 - Address claim
++		 * requirements", states:
++		 *   d) No CF shall begin, or resume, transmission on the
++		 *      network until 250 ms after it has successfully claimed
++		 *      an address except when responding to a request for
++		 *      address-claimed.
++		 *
++		 * But "Figure 6" and "Figure 7" in "4.5.4.2 - Address-claim
++		 * prioritization" show that the CF begins the transmission
++		 * after 250 ms from the first AC (address-claimed) message
++		 * even if it sends another AC message during that time window
++		 * to resolve the address contention with another CF.
++		 *
++		 * As stated in "4.4.2.3 - Address-claimed message":
++		 *   In order to successfully claim an address, the CF sending
++		 *   an address claimed message shall not receive a contending
++		 *   claim from another CF for at least 250 ms.
++		 *
++		 * As stated in "4.4.3.2 - NAME management (NM) message":
++		 *   1) A commanding CF can
++		 *      d) request that a CF with a specified NAME transmit
++		 *         the address-claimed message with its current NAME.
++		 *   2) A target CF shall
++		 *      d) send an address-claimed message in response to a
++		 *         request for a matching NAME
++		 *
++		 * Taking the above arguments into account, the 250 ms wait is
++		 * requested only during network initialization.
++		 *
++		 * Do not restart the timer on AC message if both the NAME and
++		 * the address match and so if the address has already been
++		 * claimed (timer has expired) or the AC message has been sent
++		 * to resolve the contention with another CF (timer is still
++		 * running).
++		 */
++		goto out_ecu_put;
++	}
++
+ 	if (!ecu && j1939_address_is_unicast(skcb->addr.sa))
+ 		ecu = j1939_ecu_create_locked(priv, name);
+ 
+-- 
+2.34.1
+
