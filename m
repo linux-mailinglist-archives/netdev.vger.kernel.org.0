@@ -2,343 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0542B63843A
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 08:05:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E717963843B
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 08:06:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbiKYHFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 02:05:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
+        id S229527AbiKYHGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 02:06:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiKYHFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 02:05:34 -0500
-Received: from out199-10.us.a.mail.aliyun.com (out199-10.us.a.mail.aliyun.com [47.90.199.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713CFCED;
-        Thu, 24 Nov 2022 23:05:31 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VVe7A-X_1669359926;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VVe7A-X_1669359926)
-          by smtp.aliyun-inc.com;
-          Fri, 25 Nov 2022 15:05:27 +0800
-Date:   Fri, 25 Nov 2022 15:05:25 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Jan Karcher <jaka@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Subject: Re: [PATCH net] net/smc: Fix expected buffersizes and sync logic
-Message-ID: <Y4BpNfg7yxRiYQuU@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20221123104907.14624-1-jaka@linux.ibm.com>
- <Y34JxFWBdUxvLQb4@TonyMac-Alibaba>
- <40428548-59b9-379c-857c-172db92afc0c@linux.ibm.com>
- <Y34i8nmJIeIiFuOP@TonyMac-Alibaba>
- <f5237afd-d57b-f317-4263-31b4bb3d0d17@linux.ibm.com>
- <1a36b6ba-e7bb-6f2a-c460-cf158cb64b1d@linux.ibm.com>
- <a6e57be8-48e3-acf7-8474-fc9b81cd6615@linux.ibm.com>
+        with ESMTP id S229455AbiKYHGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 02:06:16 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B95CED;
+        Thu, 24 Nov 2022 23:06:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1669359972; x=1700895972;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=Lab8dBA+m2TXraYpBPH3JB9+6QuiiAsHK4ljhyfffsw=;
+  b=ODkT6IEfR0TZ90aQoHIIlj4ZXUZe2dIrTGTJNQ0TgLtemgL+bBL7BZS/
+   UgUhdco9JE1ZjwA6gbW2hqQx4H1CYx2kbJ1IGlI0JtTeOB8Lz0kJeV5Kz
+   qD2xBkeoGmF2Kf38MaM9k6S/NWGrhRngAGv25KcTx/JpG29QnahFRsUJw
+   6MZJx5L+uM/Ts0ychoiU6rn3CYxb6LtUxjIFy2VynPYMV+6r1vWlVuaTE
+   D9Q2Mp2wf35Gatq99pclgTpfwrg9IX7/SCxyUrw0dfm5mm0WMjXE/xVOp
+   b4PKyxHdm26rt5EIM0cHs/xys9NUaeDZKhEkOOhO4i5IFMHqEutHeWUy3
+   A==;
+X-IronPort-AV: E=Sophos;i="5.96,192,1665471600"; 
+   d="scan'208";a="188612467"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Nov 2022 00:06:11 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 25 Nov 2022 00:06:09 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
+ Transport; Fri, 25 Nov 2022 00:06:09 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JOsF5CFL/DqmqQYeofhz0Tfbcy2svJ//Tjkzf4RE/XqTQensAs+w/CcfLcfTE0d2Sl9UkNZLsE9Lgkd5JC+GddcxSjBWbN7jeHJKSKphdSUGfAQiA1SqqflqyjvSBRI20hSq9dZcsF8fC4kc06IHtNR2kLNjY5Sg9xrpnHtgoRByllYpdPfF0yFn/FtQdAFl/E3ZhlKDOVo+Wgn9Qda9ErSfsAQ1SA73P70kfGtn59Pj7e0CaXHxFly/sqX3YT+NmQM6l0Is63sIGRQ+CaTjvQhoVSYEO76fHnmg/wJsCpVnSOvCtGEcHhKPW9AcOujpQ2qjAn1+3q0Y0KsurGatWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Lab8dBA+m2TXraYpBPH3JB9+6QuiiAsHK4ljhyfffsw=;
+ b=lEDpnbWq1s0m2Ai6la79Uod/zF2u7HIY0eQZRefOMro5MlwKzzXAKRHldSiEFiXH3oQbx4qCvZBHPJIfDWhLf9IoQRB+NKzB38P4k/CGFKmWSV7Y3dCksmRZc3+den8C5eiFtJJR+N14o92JjWJjNjYS90aKKsimzGrWEFkU5sNsyjtKICaoEXczE79BiIpjkz7gmVDC4M93QYvvr9dFfeMaFuzEwcUqSBUToFCDY1K23oZNdVXLDb/oSPYVUMPF2CY++CQ9seBRprcfRLtC6or3z2Otcu87Pz2ZDsT00lPGCKh9DRY146BUKmQPtwnC0B+HMryRjaFEH4jgCvWqbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lab8dBA+m2TXraYpBPH3JB9+6QuiiAsHK4ljhyfffsw=;
+ b=cRw4xtdzZtcMnq8aL/LOeGjX175Gx21jKsCH7YcsmOoD6hmwSdCA8kAoWh6kJBoEhi+99B8utwpA6OULxc+44ewQej8zKACQzPmxQ5XFWtfAXbS4mBdyKyr2WMaKr+BKt34/U/VDpSbA5kEdfeP+tD5ywVJwQZSACax8idyJYsg=
+Received: from DM5PR11MB0076.namprd11.prod.outlook.com (2603:10b6:4:6b::28) by
+ BN9PR11MB5483.namprd11.prod.outlook.com (2603:10b6:408:104::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.19; Fri, 25 Nov
+ 2022 07:06:07 +0000
+Received: from DM5PR11MB0076.namprd11.prod.outlook.com
+ ([fe80::9b7a:7604:7a30:1953]) by DM5PR11MB0076.namprd11.prod.outlook.com
+ ([fe80::9b7a:7604:7a30:1953%7]) with mapi id 15.20.5857.018; Fri, 25 Nov 2022
+ 07:06:07 +0000
+From:   <Arun.Ramadoss@microchip.com>
+To:     <olteanv@gmail.com>
+CC:     <andrew@lunn.ch>, <linux-kernel@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <vivien.didelot@gmail.com>,
+        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
+        <f.fainelli@gmail.com>, <kuba@kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>,
+        <netdev@vger.kernel.org>, <Woojung.Huh@microchip.com>,
+        <davem@davemloft.net>
+Subject: Re: [RFC Patch net-next v2 3/8] net: dsa: microchip: Initial hardware
+ time stamping support
+Thread-Topic: [RFC Patch net-next v2 3/8] net: dsa: microchip: Initial
+ hardware time stamping support
+Thread-Index: AQHY/b/imAgaAgzTi0Cq9JpLcCQfmK5KAikAgAKJeACAAVYlgIAACH0AgAA4fgCAARqFAA==
+Date:   Fri, 25 Nov 2022 07:06:07 +0000
+Message-ID: <4b2408602ce29c421250102c5165564d7dafda77.camel@microchip.com>
+References: <20221121154150.9573-1-arun.ramadoss@microchip.com>
+         <20221121154150.9573-4-arun.ramadoss@microchip.com>
+         <20221121231314.kabhej6ae6bl3qtj@skbuf>
+         <298f4117872301da3e4fe4fed221f51e9faab5d0.camel@microchip.com>
+         <20221124102221.2xldwevfmjbekx43@skbuf>
+         <0d7df00d4c3a5228571fd408ea7ca3d71885bf6f.camel@microchip.com>
+         <20221124141456.ruxxiu7bfmsihz35@skbuf>
+In-Reply-To: <20221124141456.ruxxiu7bfmsihz35@skbuf>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM5PR11MB0076:EE_|BN9PR11MB5483:EE_
+x-ms-office365-filtering-correlation-id: 9925d1aa-fcb2-4d6a-df8e-08daceb38629
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: pD8/fDcBparV5ZxiljRXzlgKGRuFj4q/smRAsyGV3LmbBGBVFuGR54JE6fP82CLDiimJcqW9YK9yXOjOHfYnUlu96LadazTg9Zj9GKOGEcOZYadM2Qgu41AzqS6PjRGDXSJthdLJoY/ZC/Ioe23JM8rtzTazADHpF/MLVo2S9M1vXeZMeuF+KuxIHv5qxP3wfucu+HSBdeJ9dhjbXIXRLyB/HLOoCKxNQwZkaApKja5IqWggLOz0PJAD+Z9TlbN4DkFzrhnTJc+Prw5zIKdmWqQM7fdQpv+nuU9PpamxydNFb347e49P8ESsuhwNFLtz0iEuNdV97Z4FDNJp5pbawmrniRu92KpOCXX+/NBbthKifbxpaaQXItTeexwHcJvFqAfpG8tBI0IgkuExaqZ+rvFCjR6FWebvUtWTifGsILNaZzrhtSbzuy7UDFPkNDvg5gjbRuaac+1LoFpnGuiqScOmdV2wOoZFquHF91MoBztw1vjj/OlekkcQ/N6MFnpZ0t4Ocuwe4x2mhJqmbpXdqSH6+fUu4R7d5BqZevmLKPmVCV5M+z/e36FioYuLyJURtDD55G/HxKmhHvwpk73o0w+e+uo4EGvSpVFYlMhCaPiFppyc8M6wc8CcfGtl1coW3vFwT3G9re4TMcMQ9DG7QBO3nKRjqmJdRYWrDzreTBIE4eoAo4T0HphoF2wutbK7739lBu6DVymHuvleWeWaShswfNOJBceMyb88L89ug9osupKSxiH7B0xVv+UifHbw
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB0076.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(366004)(39860400002)(376002)(136003)(346002)(451199015)(66946007)(38100700002)(86362001)(64756008)(4326008)(8676002)(66476007)(76116006)(41300700001)(66446008)(66556008)(54906003)(966005)(91956017)(8936002)(6486002)(6916009)(316002)(7416002)(5660300002)(4001150100001)(83380400001)(2906002)(122000001)(38070700005)(71200400001)(6506007)(478600001)(2616005)(186003)(6512007)(26005)(36756003)(99106002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?em9TT1ZiSWVSemtTUHd1Q01mVUxrMGJMQnlnczBpZlE2WTJnaXd4OHJzZVVm?=
+ =?utf-8?B?RHNyYk9yN1Z5MXY1Y0hjc3JtMWFjYjArcG55WDhYRytDQ2RPWVpnbnlOenhn?=
+ =?utf-8?B?NGF1ZGZjWkhLZjhjSTFIUE13RGhreGFQRUNFTXNvWDhKRURRUmVrU1JoaEc3?=
+ =?utf-8?B?YTZsSDBCM251YWREZWZvN0JZVVRhRVJIekR5a2ZLVmRxN09YV3luclAxR3Zi?=
+ =?utf-8?B?Y0kySWFqaHRHeFczZERhbG5aWjF5NjdYY0pXa2tsUlNjV3VGaGJJV1J6N2d5?=
+ =?utf-8?B?ZzRDc2ZlSllZUHYrNStodzl2VzlZU210MlREd1pabjJxOUpINVBMeWJNZ0M1?=
+ =?utf-8?B?aFhOeWN4b2xWSFNYRFpLOWM1OXM2aUwvUGhGQURVQ2ZwWEFuUWIzQ3dUYm1q?=
+ =?utf-8?B?Mm96QmRacU1QVjdwWlRodVJZbWQxOFowMFJyRXdsekZuQ3FkVnVLZk1ZNmZ6?=
+ =?utf-8?B?QTBqRU1kNG1uaTRycnU3emFnbHNPbVFrS1Vqdmo2YW9XcldvcTZIUHM4NHZB?=
+ =?utf-8?B?WC8vemxrdnhXdk9uNm5zVW9oZWR1OW1zNTNxMzBsRXBvYXlhSXc4UksyUnlL?=
+ =?utf-8?B?Lzc1c3RCWUlRbU1pODlvKzlTVzdNTVE2WjBJSVA1djNnb0JmR1g2clVyNDFP?=
+ =?utf-8?B?SzB1NlBHMmF6QjU0L2IwVmsyVTAvUERVM3g4MTRTSkc0Uzl6V29YeDI2YkJp?=
+ =?utf-8?B?WVFRRGZNQmtac05JaFNRZEFNdEs5V2tLdEFCL2EvY0NMZ0FBK2RSSlErVWdH?=
+ =?utf-8?B?MTZoczF4aDkvQUhLQ0xJSTNhSlZ5ZHo1Mm1XbVl5V1RuR0l6bXlCS2pxZHU0?=
+ =?utf-8?B?RjRzY0V3OFlGSmRsblcwazFldW5aTndwWTFxemk4QUdqS0U4RjRiWU94dTZo?=
+ =?utf-8?B?UVNoaE0wTXZsZm9PRk9lOUtrZVhLaEY3Nk5jUU85Y0FQUSs5SXg5ZkpYNjJ1?=
+ =?utf-8?B?K0NNNnB1QWlybEtjbTlyYjEyOGgwVDJyd0FIdENHK1V2ZHlWaXo2NW5BUnJ4?=
+ =?utf-8?B?OGNpU3UvTG1iSnhpdTlVeHQzRkc3T1RKTjR2RW51NlhFM1JkdXNLSnJ4VzQ0?=
+ =?utf-8?B?dDJYS0ZZZDZ4ZjJGOU1oZVlHSTRmUkplYThHQmdVa1lrdmYySUVNS0d4TlRE?=
+ =?utf-8?B?QmtsMU9kSzhUelM3U1NCK0JYU0V6Q3RtVmtCd0kxck95OVRvZXMwWDVrMkdt?=
+ =?utf-8?B?R2pTVDN2Zngra0NVbHQ5ZEZHVEdpVjU4Mit2ek1YYnJoUDNyUTIvRThpWUg2?=
+ =?utf-8?B?KzhKQXg2dkV1QWlpVjhRVEtPZzd6YWV5VmgrdngzVjM3NEk4RWRtM2wrU29z?=
+ =?utf-8?B?SzV1YnU5aUdGSDBEWjlOalRzR0RXd3BBM05KS3YxSG13SHBzWStHWWlrTjNN?=
+ =?utf-8?B?U0NqcDhkTUV5d1BITkRtUW1nWHpQdFYzaDBxd1p2OG9Oc05FUm1tNDlHdHpU?=
+ =?utf-8?B?MWR6VWFZQXBOVkhEaWxUYlR2NE56eStwMTNwQ0Y2UlJhZmFWdnVqWHVqYUNz?=
+ =?utf-8?B?aitlbG12bzAzQnFHVzlrVG9wSnRMMDllWEdJZzhKeDliQVQ4VnI4Yyt2T29R?=
+ =?utf-8?B?K2haaFRIeE1LTkVFNzFnemlwMW5iK2NrY1p4OHZGQTA5WUE0VDc5cTkzeUVG?=
+ =?utf-8?B?MmJtdDAxUHQxeVg1SFZJSDUvRjkwODdxK2xxZFBLbFJHVnpzY2xrdFpJczlt?=
+ =?utf-8?B?Zmx5bHU0MlI4dUk5WlliMGp0WlM5U0t6VWN1b0xZV3dxd2Vvd0dEd3J4TVcv?=
+ =?utf-8?B?dzVFcHB6VlpGVmM0YURIYWg3eHhXby9kbkhrVTNTUkJQZmowbHhlNTQ4SHJ2?=
+ =?utf-8?B?M09Ycis3NzB4NWNKN3VxZjQ2ZzNPMWdvc2JPMTQ4N3JlT3VualErWFc5MWJT?=
+ =?utf-8?B?Wkl4NEdYcSs3bEh0aVRNUndSTisrTGZTZmhRdEVUN25WNHU0d3oxdlNreGRX?=
+ =?utf-8?B?NEhzaHpoM2hHS1pSczh4ZzFOU0t0dFdSUnRCUTUzeU1yR0hLM3YvdDZiZERp?=
+ =?utf-8?B?TitNdlRDSGlIQStRKzQvNkU5bzhydmZpc24zaEZsanZVSXRJME9aS0llUjZ1?=
+ =?utf-8?B?VEx2QnVidGRHUWtYZDIrMjRPNTMxa1lVY3pwS0xyRElqNVlzNTIrZGN6d0hj?=
+ =?utf-8?B?WGEzNjVYb2hqS3RyZ2VLM2tTbTlFNzhqTlhaZVhXYkVrWmhXSFdYdkNyamlM?=
+ =?utf-8?Q?7lUr487X5yCK9KJjiAs6zFE=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A470B0737C25774099410C6C0A33FBAC@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a6e57be8-48e3-acf7-8474-fc9b81cd6615@linux.ibm.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB0076.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9925d1aa-fcb2-4d6a-df8e-08daceb38629
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Nov 2022 07:06:07.1236
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gQgDrrvABdDs0X/b0gaY6Yx0rJ1CY/AjTscPGG5wPXKNKN/2AOnM3Gc1ewiTYf1jrbqEO5K/aAGA1GuFFlSVVcZS4MQXpnOSRFe+XzVo1TY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5483
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 25, 2022 at 07:15:33AM +0100, Jan Karcher wrote:
-> 
-> 
-> On 24/11/2022 15:07, Alexandra Winter wrote:
-> > 
-> > 
-> > On 24.11.22 14:00, Alexandra Winter wrote:
-> > > 
-> > > 
-> [ ... ]>>>>> On Wed, Nov 23, 2022 at 11:49:07AM +0100, Jan Karcher wrote:
-> > > > > > > The fixed commit changed the expected behavior of buffersizes
-> > > > > > > set by the user using the setsockopt mechanism.
-> > > > > > > Before the fixed patch the logic for determining the buffersizes used
-> > > > > > > was the following:
-> > > > > > > 
-> > > > > > > default  = net.ipv4.tcp_{w|r}mem[1]
-> > Jan, you explained to me: "the minima is 16Kib. This is enforced in smc_compress_bufsize
-> > which would move any value <= 16Kib into bucket 0 - which is 16KiB "
-> > net.ipv4.tcp_wmem[1] defaults to 8Kib. So in the default case (unchanged net.ipv4.tcp_wmem[1])
-> > the default for the send path is not net.ipv4.tcp_wmem[1]. Should be clarified here.
-> 
-> The default value is still set to the net.ipv4.tcp_{w|r}mem[1]. This is a
-> *very* top level overview about what is happening and *not* a documentation.
-> I don't really want to explain the full code flow here.
-> 
-> What we still should do - as Tony aggreed on - is documenting the SMC
-> behavior. This is a follow up on my list.
-
-Hello Jan and Alexandra,
-
-It looks like the misalignment of information is causing some trouble,
-which is introduced by my patch. Maybe we could have an off-maillist and
-online meeting to discussion?
-
-We have some progress updates of scalability, and we are really like the
-extension of SMC-D. Also we have some ideas for SMC, in case of
-misalignment of information, we'd like to put them on the table and
-discuss them earlier. Maybe an online meeting is an efficient way. What
-do you think?
-
-If possible, I would prepared the meetings and topics and send them to
-everyone first.
-
-Cheers,
-Tony Lu
-
-> 
-> > > > > > > sockopt  = the setsockopt mechanism
-> > > > > > > val      = the value assigned in default or via setsockopt
-> > > > > > > sk_buf   = short for sk_{snd|rcv}buf
-> > > > > > > real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
-> > > > > > > 
-> > > > > > >     exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
-> > > > > > >               |                  |                |
-> > > > > > > +---------+ |                  | +------------+ | +-------------------+
-> > > > > > > | default |----------------------| sk_buf=val |---| real_buf=sk_buf/2 |
-> > > > > > > +---------+ |                  | +------------+ | +-------------------+
-> > > > > > >               |                  |                |    ^
-> > > > > > >               |                  |                |    |
-> > > > > > > +---------+ | +--------------+ |                |    |
-> > > > > > > | sockopt |---| sk_buf=val*2 |-----------------------|
-> > > > > > > +---------+ | +--------------+ |                |
-> > > > > > >               |                  |                |
-> > > > > > > 
-> > > > > > > The fixed patch introduced a dedicated sysctl for smc
-> > > > > > > and removed the /2 in smc_core.c resulting in the following flow:
-> > > > > > > 
-> > > > > > > default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
-> > > > > > > sockopt  = the setsockopt mechanism
-> > > > > > > val      = the value assigned in default or via setsockopt
-> > > > > > > sk_buf   = short for sk_{snd|rcv}buf
-> > > > > > > real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
-> > > > > > > 
-> > > > > > >     exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
-> > > > > > >               |                  |                |
-> > > > > > > +---------+ |                  | +------------+ | +-----------------+
-> > > > > > > | default |----------------------| sk_buf=val |---| real_buf=sk_buf |
-> > > > > > > +---------+ |                  | +------------+ | +-----------------+
-> > > > > > >               |                  |                |    ^
-> > > > > > >               |                  |                |    |
-> > > > > > > +---------+ | +--------------+ |                |    |
-> > > > > > > | sockopt |---| sk_buf=val*2 |-----------------------|
-> > > > > > > +---------+ | +--------------+ |                |
-> > > > > > >               |                  |                |
-> > > > > > > 
-> > > > > > > This would result in double of memory used for existing configurations
-> > > > > > > that are using setsockopt.
-> > > > > > 
-> > > > > > Firstly, thanks for your detailed diagrams :-)
-> > > > > > 
-> > > > > > And the original decision to use user-provided values rather than
-> > > > > > value/2 to follow the instructions of the socket manual [1].
-> > > > > > 
-> > > > > >     SO_RCVBUF
-> > > > > >            Sets or gets the maximum socket receive buffer in bytes.
-> > > > > >            The kernel doubles this value (to allow space for
-> > > > > >            bookkeeping overhead) when it is set using setsockopt(2),
-> > > > > >            and this doubled value is returned by getsockopt(2).  The
-> > > > > >            default value is set by the
-> > > > > >            /proc/sys/net/core/rmem_default file, and the maximum
-> > > > > >            allowed value is set by the /proc/sys/net/core/rmem_max
-> > > > > >            file.  The minimum (doubled) value for this option is 256.
-> > > > > > 
-> > > > > > [1] https://man7.org/linux/man-pages/man7/socket.7.html
-> > > > > > 
-> > > > > > The user of SMC should know that setsockopt() with SO_{RCV|SND}BUF will
-> > > > > 
-> > > > > I totally agree that an educated user of SMC should know about that behavior
-> > > > > if they decide to use it.
-> > > > > We do provide our users preload libraries where they can pass preferred
-> > > > > buffersizes via arguments and we handle the Sockopts for them.
-> > > > > 
-> > > > > > double the values in kernel, and getsockopt() will return the doubled
-> > > > > > values. So that they should use half of the values which are passed to
-> > > > > > setsockopt(). The original patch tries to make things easier in SMC and
-> > > > > > let user-space to handle them following the socket manual.
-> > > > > > 
-> > > > > > > SMC historically decided to use the explicit value given by the user
-> > > > > > > to allocate the memory. This is why we used the /2 in smc_core.c.
-> > > > > > > That logic was not applied to the default value.
-> > > > > > 
-> > > > > > Yep, let back to the patch which introduced smc_{w|r}mem knobs, it's a
-> > > > > > trade-off to follow original logic of SMC, or follow the socket manual.
-> > > > > > We decides to follow the instruction of manuals in the end.
-> > > > > 
-> > > > > I understand the point. I spend a lot of time trying to decide what to do.
-> > > > > 
-> > > > > Since it was an intentional decision to not follow the general socket
-> > > > > option, and we do not have anyone complaining we do not really have a reason
-> > > > > to change it.
-> > > > > Changing it means that users with existing configurations would have to
-> > > > > change their configs on an update or suddenly expect double the memory
-> > > > > consumption.
-> > > > > That's why we in the end preffered to stay with the current logic.
-> > > > 
-> > > > I can't agree with you more with the points to follow the historic logic
-> > > > and not break the user-space applications.
-> > > > 
-> > > > > I'm thinking that maybe - if we stay with the historic logic - we should
-> > > > > document that desicion somewhere. So that in the future, if a user that
-> > > > > expects the man page behavior, has a way to understand what SMC is doing.
-> > > > > What do oyu think?
-> > > > 
-> > > > Yep, we _really_ need to document it if we change the convention.
-> > > > Actually, I spent a lot of time to find the history about the logic of
-> > > > buffer (/2 and *2) in SMC. So I'm really in favor of adding
-> > > > documentation, at least code comments to help others to understand them.
-> > > > 
-> > > > Cheers,
-> > > > Tony Lu
-> > > Iiuc you are changing the default values in this a patch and your other patch:
-> > > Default values for real_buf for send and receive:
-> > > 
-> > > before 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
-> > >      real_buf=net.ipv4.tcp_{w|r}mem[1]/2   send: 8k  recv: 64k
-> >        see above: 			    send: 16k recv: 64k
-> > > after 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
-> > > real_buf=net.ipv4.tcp_{w|r}mem[1]   send: 16k (16*1024) recv: 128k (131072)
-> > > 
-> > > after net/smc: Fix expected buffersizes and sync logic
-> > > real_buf=net.ipv4.tcp_{w|r}mem[1]   send: 16k (16*1024) recv: 128k (131072)
-> > > 
-> > > after net/smc: Unbind smc control from tcp control
-> > > real_buf=SMC_*BUF_INIT_SIZE   send: 16k (16384) recv: 64k (65536)
-> > > 
-> > > If my understanding is correct, then I nack this.
-> > > Defaults should be restored to the values before 0227f058aa29.
-> > > Otherwise users will notice a change in memory usage that needs to
-> > > be avoided or announced more explicitely. (and don't change them twice)
-> > See above, I stand corrected. However this patch fixes/restores the buffersize
-> > for setsockopt, but not for the default recieve path.
-> > Could you please clarify that in the title and description?
-> > 
-> 
-> I am trying to keep the commit title as crisp as possible while providing
-> enough information and set the context in the commit message:
-> 
-> "The fixed commit changed the expected behavior of buffersizes set by the
-> user using the setsockopt mechanism."
-> 
->  + There is now a whole e-mail thread to consult in case of any further
-> questions.
-> 
-> Thank you for your comments
-> - Jan
-> 
-> > Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
-> > > > > - Jan
-> > > > > 
-> > > > > > 
-> > > > > > Cheers,
-> > > > > > Tony Lu
-> > > > > > 
-> > > > > > > Since we now have our own sysctl, which is also exposed to the user,
-> > > > > > > we should sync the logic in a way that both values are the real value
-> > > > > > > used by our code and shown by smc_stats. To achieve this this patch
-> > > > > > > changes the behavior to:
-> > > > > > > 
-> > > > > > > default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
-> > > > > > > sockopt  = the setsockopt mechanism
-> > > > > > > val      = the value assigned in default or via setsockopt
-> > > > > > > sk_buf   = short for sk_{snd|rcv}buf
-> > > > > > > real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
-> > > > > > > 
-> > > > > > >     exposed   | net/core/sock.c  |    af_smc.c     |  smc_core.c
-> > > > > > >               |                  |                 |
-> > > > > > > +---------+ |                  | +-------------+ | +-----------------+
-> > > > > > > | default |----------------------| sk_buf=val*2|---|real_buf=sk_buf/2|
-> > > > > > > +---------+ |                  | +-------------+ | +-----------------+
-> > > > > > >               |                  |                 |    ^
-> > > > > > >               |                  |                 |    |
-> > > > > > > +---------+ | +--------------+ |                 |    |
-> > > > > > > | sockopt |---| sk_buf=val*2 |------------------------|
-> > > > > > > +---------+ | +--------------+ |                 |
-> > > > > > >               |                  |                 |
-> > > > > > > 
-> > > > > > > This way both paths follow the same pattern and the expected behavior
-> > > > > > > is re-established.
-> > > > > > > 
-> > > > > > > Fixes: 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
-> > > > > > > Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
-> > > > > > > Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
-> > > > > > > ---
-> > > > > > >    net/smc/af_smc.c   | 9 +++++++--
-> > > > > > >    net/smc/smc_core.c | 8 ++++----
-> > > > > > >    2 files changed, 11 insertions(+), 6 deletions(-)
-> > > > > > > 
-> > > > > > > diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> > > > > > > index 036532cf39aa..a8c84e7bac99 100644
-> > > > > > > --- a/net/smc/af_smc.c
-> > > > > > > +++ b/net/smc/af_smc.c
-> > > > > > > @@ -366,6 +366,7 @@ static void smc_destruct(struct sock *sk)
-> > > > > > >    static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
-> > > > > > >    				   int protocol)
-> > > > > > >    {
-> > > > > > > +	int buffersize_without_overhead;
-> > > > > > >    	struct smc_sock *smc;
-> > > > > > >    	struct proto *prot;
-> > > > > > >    	struct sock *sk;
-> > > > > > > @@ -379,8 +380,12 @@ static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
-> > > > > > >    	sk->sk_state = SMC_INIT;
-> > > > > > >    	sk->sk_destruct = smc_destruct;
-> > > > > > >    	sk->sk_protocol = protocol;
-> > > > > > > -	WRITE_ONCE(sk->sk_sndbuf, READ_ONCE(net->smc.sysctl_wmem));
-> > > > > > > -	WRITE_ONCE(sk->sk_rcvbuf, READ_ONCE(net->smc.sysctl_rmem));
-> > > > > > > +	buffersize_without_overhead =
-> > > > > > > +		min_t(int, READ_ONCE(net->smc.sysctl_wmem), INT_MAX / 2);
-> > > > > > > +	WRITE_ONCE(sk->sk_sndbuf, buffersize_without_overhead * 2);
-> > > > > > > +	buffersize_without_overhead =
-> > > > > > > +		min_t(int, READ_ONCE(net->smc.sysctl_rmem), INT_MAX / 2);
-> > > > > > > +	WRITE_ONCE(sk->sk_rcvbuf, buffersize_without_overhead * 2);
-> > > > > > >    	smc = smc_sk(sk);
-> > > > > > >    	INIT_WORK(&smc->tcp_listen_work, smc_tcp_listen_work);
-> > > > > > >    	INIT_WORK(&smc->connect_work, smc_connect_work);
-> > > > > > > diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> > > > > > > index 00fb352c2765..36850a2ae167 100644
-> > > > > > > --- a/net/smc/smc_core.c
-> > > > > > > +++ b/net/smc/smc_core.c
-> > > > > > > @@ -2314,10 +2314,10 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
-> > > > > > >    	if (is_rmb)
-> > > > > > >    		/* use socket recv buffer size (w/o overhead) as start value */
-> > > > > > > -		sk_buf_size = smc->sk.sk_rcvbuf;
-> > > > > > > +		sk_buf_size = smc->sk.sk_rcvbuf / 2;
-> > > > > > >    	else
-> > > > > > >    		/* use socket send buffer size (w/o overhead) as start value */
-> > > > > > > -		sk_buf_size = smc->sk.sk_sndbuf;
-> > > > > > > +		sk_buf_size = smc->sk.sk_sndbuf / 2;
-> > > > > > >    	for (bufsize_short = smc_compress_bufsize(sk_buf_size, is_smcd, is_rmb);
-> > > > > > >    	     bufsize_short >= 0; bufsize_short--) {
-> > > > > > > @@ -2376,7 +2376,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
-> > > > > > >    	if (is_rmb) {
-> > > > > > >    		conn->rmb_desc = buf_desc;
-> > > > > > >    		conn->rmbe_size_short = bufsize_short;
-> > > > > > > -		smc->sk.sk_rcvbuf = bufsize;
-> > > > > > > +		smc->sk.sk_rcvbuf = bufsize * 2;
-> > > > > > >    		atomic_set(&conn->bytes_to_rcv, 0);
-> > > > > > >    		conn->rmbe_update_limit =
-> > > > > > >    			smc_rmb_wnd_update_limit(buf_desc->len);
-> > > > > > > @@ -2384,7 +2384,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
-> > > > > > >    			smc_ism_set_conn(conn); /* map RMB/smcd_dev to conn */
-> > > > > > >    	} else {
-> > > > > > >    		conn->sndbuf_desc = buf_desc;
-> > > > > > > -		smc->sk.sk_sndbuf = bufsize;
-> > > > > > > +		smc->sk.sk_sndbuf = bufsize * 2;
-> > > > > > >    		atomic_set(&conn->sndbuf_space, bufsize);
-> > > > > > >    	}
-> > > > > > >    	return 0;
-> > > > > > > -- 
-> > > > > > > 2.34.1
+SGkgVmxhZGltaXIsDQoNCk9uIFRodSwgMjAyMi0xMS0yNCBhdCAxNjoxNCArMDIwMCwgVmxhZGlt
+aXIgT2x0ZWFuIHdyb3RlOg0KPiBFWFRFUk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9y
+IG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdQ0KPiBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUN
+Cj4gDQo+IE9uIFRodSwgTm92IDI0LCAyMDIyIGF0IDEwOjUyOjQ2QU0gKzAwMDAsIEFydW4uUmFt
+YWRvc3NAbWljcm9jaGlwLmNvbQ0KPiAgd3JvdGU6DQo+ID4gTWlzdGFrZSBoZXJlLiBJdCBpcyBj
+YXJyaWVkIGZvcndhcmRlZCBmcm9tIENocmlzdGlhbiBFZ2dlcnMgcGF0Y2guDQo+IA0KPiBTdGls
+bCB0YWtlbiBmcm9tIHNqYTExMDVfaHd0c3RhbXBfc2V0KCkuIEFueXdheSwgZG9lc24ndCBtYXR0
+ZXIgd2hlcmUNCj4gaXQncyB0YWtlbiBmcm9tLCBhcyBsb25nIGFzIGl0IGhhcyBhIGp1c3RpZmlj
+YXRpb24gZm9yIGJlaW5nIHRoZXJlLg0KPiANCj4gPiA+IFdoeSBkbyB5b3UgbmVlZCB0byBjYWxs
+IGh3dHN0YW1wX3NldF9zdGF0ZSBhbnl3YXk/DQo+ID4gDQo+ID4gSW4gdGFnX2tzei5jLCB4bWl0
+IGZ1bmN0aW9uIHF1ZXJ5IHRoaXMgc3RhdGUsIHRvIGRldGVybWluZSB3aGV0aGVyDQo+ID4gdG8N
+Cj4gPiBhbGxvY2F0ZSB0aGUgNCBQVFAgdGltZXN0YW1wIGJ5dGVzIGluIHRoZSBza2JfYnVmZmVy
+IG9yIG5vdC4gVXNpbmcNCj4gPiB0aGlzDQo+ID4gdGFnZ2VyX2RhdGEgc2V0IHN0YXRlLCBwdHAg
+ZW5hYmxlIGFuZCBkaXNhYmxlIGlzIGNvbW11bmljYXRlZA0KPiA+IGJldHdlZW4NCj4gPiBrc3pf
+cHRwLmMgYW5kIHRhZ19rc3ouYw0KPiANCj4gV2h5IGRvIHlvdSBuZWVkIHRvIHF1ZXJ5IHRoaXMg
+c3RhdGUgaW4gcGFydGljdWxhciwgY29uc2lkZXJpbmcgdGhhdA0KPiB0aGUNCj4gc2tiIGdvZXMg
+Zmlyc3QgdGhyb3VnaCB0aGUgcG9ydF90eHRzdGFtcCgpIGRzYV9zd2l0Y2hfb3BzIGZ1bmN0aW9u
+Pw0KPiBDYW4ndCB5b3UganVzdCBjaGVjayB0aGVyZSBpZiBUWCB0aW1lc3RhbXBpbmcgaXMgZW5h
+YmxlZCwgYW5kIGxlYXZlIGENCj4gbWFyayBpbiBLU1pfU0tCX0NCKCk/DQpLU1ogc3dpdGNoZXMg
+bmVlZCBhIGFkZGl0aW9uYWwgNCBieXRlcyBpbiB0YWlsIHRhZyBpZiB0aGUgUFRQIGlzDQplbmFi
+bGVkIGluIGhhcmR3YXJlLiBJZiB0aGUgUFRQIGlzIGVuYWJsZWQgYW5kIGlmIHdlIGRpZG4ndCBh
+ZGQgNA0KYWRkaXRpb25hbCBieXRlcyBpbiB0aGUgdGFpbCB0YWcgdGhlbiBwYWNrZXRzIGFyZSBj
+b3JydXB0ZWQuDQoNClRyaXN0cmFtIGV4cGxhaW5lZCB0aGlzIGluIHRoZSBwYXRjaCBjb252ZXJz
+YXRpb24NCg0KaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbmV0ZGV2LzIwMjAxMTE4MjAzMDEzLjUw
+NzctMS1jZWdnZXJzQGFycmkuZGUvVC8jbWIzZWJhNDkxOGJkYTM1MWE0MDUxNjhlN2EyMTQwZDI5
+MjYyZjRjNjMNCg0KSSBkaWQgdGhlIGZvbGx3aW5nIGV4cGVyaW1lbnQgdG9kYXksIA0KKiBSZW1v
+dmVkIHRoZSBwdHAgdGltZSBzdGFtcCBjaGVjayBpbiB0YWdfa3N6LmMuIEluIHRoZSBrc3pfeG1p
+dA0KZnVuY3Rpb24sIDQgYWRkaXRpb25hbCBieXRlcyBhcmUgYWRkZWQgb25seSBpZiBLU1pfU0tC
+X0NCLT50c19lbiBiaXQgaXMNCnNldC4NCiogU2V0dXAgdGhlIGJvYXJkLCBwaW5nIHR3byBib2Fy
+ZHMuIFBpbmcgaXMgc3VjY2Vzc2Z1bC4NCiogUnVuIHRoZSBwdHBsIGluIHRoZSBiYWNrZ3JvdW5k
+DQoqIE5vdyBpZiBJIHJ1biB0aGUgcGluZywgcGluZyBpcyBub3Qgc3VjY2Vzc2Z1bC4gQW5kIGFs
+c28gaW4gdGhlIHB0cDRsDQpsb2cgbWVzc2FnZSBpdCBzaG93cyBhcyBiYWQgbWVzc2FnZSByZWNl
+aXZlZC4NCg0KV2UgbmVlZCBhIG1lY2hhbmlzbSB0byBpbmZvcm0gdGFnX2tzei5jIHRvIGFkZCA0
+IGFkZGl0aW9uYWwgYnl0ZXMgaW4NCnRhaWxfdGFnIGZvciBhbGwgdGhlIHBhY2tldHMgaWYgdGhl
+IHB0cCBpcyBlbmFibGVkIGluIHRoZSBoYXJkd2FyZS4NCg==
