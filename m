@@ -2,99 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5B4863864F
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 10:30:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80069638653
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 10:30:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbiKYJaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 04:30:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45740 "EHLO
+        id S229619AbiKYJat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 04:30:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiKYJ3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 04:29:53 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D1340470
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 01:29:24 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id bj12so8944960ejb.13
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 01:29:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :message-id:subject:to:from:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=p3aGB9s9xSZ5WYEncDSqeNINaDxaO73J3UsKw5XG3VI=;
-        b=f6JdPurxQ4c7NqhzZXqDZqgwf8UfodoLYc0TRRpm0+EaJ9F/Jlz+4xSykhY7/Xj53Z
-         ttbfN55w1B7FyHkkT8a0Ia83qJOKw8IMViS+Whf/3Q9WArTJZ0nECUB8hfvmEbHOCTq3
-         r6WGMMP4dBwwc4f2f7tzC91Hb5AO09bUehVvHQh3q0g+z+NnwznH3354b3a3y1dOyd87
-         2Qwos4X0hkSt0p2Fpve+4lkwt9VcwTug7DWg/ioR20BQegpNuhGaPMeOW0yLegLDjt/Y
-         DSqmS0XLmEbnOcB70vAd/ZrsxIAf6kgYrTDcOKedcSpk4/T3O7y4DjKqX3YZjK5iFXMA
-         Nxjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :message-id:subject:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=p3aGB9s9xSZ5WYEncDSqeNINaDxaO73J3UsKw5XG3VI=;
-        b=PL2I57S4gneMuFRpPk/q/FVsoP1tjGc6CyLDVtDajFU/XTlDCDeDf+kgCFJUql3pt8
-         3Gn62fgVSM2vq+OufZ8hgI4wFsEiPeELv5DIlh0B4Z+UpZo+vekmKu4mkh8b6LLsGxMG
-         e8O9SJmVMi7DxWsESFGt+o4lJBOwpr/l1E6k+F25dGPdQ3hgL0rmcL1I66fgcNUCt8kn
-         lHjaNHoE+ZkzOEasth9bFYqLSf75xuZpKvpN/u8WFByfZ0vztvYzYMBHh5ncB+ZiS+kJ
-         F3i2uXQVwpopDXWACcMR54GOvdCChrbTUjmBIy42yKSSoMVhhyasDcGULZ8sDgCTncm4
-         0ocw==
-X-Gm-Message-State: ANoB5pmeAvZ4BZkrKr4DhY6ItsOMqYyYf9hWw6+8yjoXm2Xy+TA9f8CX
-        4PmsXjDepIY1xgVYOonJOyldoKMQ3UsAwVtC
-X-Google-Smtp-Source: AA0mqf6p+Ks+9aZKz35t5itaYFuwL0CrZUFnEOTMNOcYOPwK/IcDnSfaKrlVvBemswFD8qFUGWEsVA==
-X-Received: by 2002:a17:906:3e41:b0:78d:bc9f:33da with SMTP id t1-20020a1709063e4100b0078dbc9f33damr30580065eji.80.1669368558432;
-        Fri, 25 Nov 2022 01:29:18 -0800 (PST)
-Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
-        by smtp.gmail.com with ESMTPSA id 1-20020a170906200100b007b839689adesm1328969ejo.166.2022.11.25.01.29.17
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Nov 2022 01:29:17 -0800 (PST)
-Date:   Fri, 25 Nov 2022 10:29:22 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     netdev@vger.kernel.org
-Subject: stmmac compile error
-Message-ID: <Y4CK8n8AiwOOTRFJ@gvm01>
+        with ESMTP id S229919AbiKYJag (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 04:30:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0B93AC0F
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 01:30:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ACC462325
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 09:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6160DC433D7;
+        Fri, 25 Nov 2022 09:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669368616;
+        bh=mVx3nEYt4lHxkJfJwVsoodBCCUvtnKLWyXQVISxc1dI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=e6I/0ipmht3Gn0DoKAfx5z0/rXqkJvRqWIxbgsdyiH0HIkyU9pswc4Nk/rIJJBcJB
+         P20k+Xy1xQ8oJJ3E7SotvOcZ/ocFpKb7ALgC/pncFuFkmn+aQNyLmZi98S/mmkJ6hU
+         NbJ+spUNbKtJMXgEz44VtVZK0H4po1vnZIwQ4wAq0Bd3sTmLVQJ+wghgxyujR8zMXB
+         HWwlnZxIn/v90XyTqS38/hh4KyO2KIDZ6pSgpObN69B3kv4UEcLKEharRLl45Usoma
+         wtxOSiptgRaoj7NeMT6DoYwvJS5oXmFt/ExW+Yg2F8AM523l+0n/cpHt5dGTqirVYv
+         v3nn2FUW6+wUw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 472D1E29F3C;
+        Fri, 25 Nov 2022 09:30:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net] aquantia: Do not purge addresses when setting the number
+ of rings
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166936861628.29074.4364525643484358603.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Nov 2022 09:30:16 +0000
+References: <20221123101008.224389-1-ibakolla@redhat.com>
+In-Reply-To: <20221123101008.224389-1-ibakolla@redhat.com>
+To:     Izabela Bakollari <ibakolla@redhat.com>
+Cc:     irusskikh@marvell.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-I've just checked-out the latest changes from
-git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/master
-commit b084f6cc3563faf4f4d16c98852c0c734fe18914
+Hello:
 
-When compiling, I got the following error:
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function ‘stmmac_cmdline_opt’:
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:7583:28: error: too many arguments to function ‘sysfs_streq’
- 7583 |                 } else if (sysfs_streq(opt, "pause:", 6)) {
-      |                            ^~~~~~~~~~~
-In file included from ./include/linux/bitmap.h:11,
-                 from ./include/linux/cpumask.h:12,
-                 from ./include/linux/smp.h:13,
-                 from ./include/linux/lockdep.h:14,
-                 from ./include/linux/mutex.h:17,
-                 from ./include/linux/notifier.h:14,
-                 from ./include/linux/clk.h:14,
-                 from drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:17:
-./include/linux/string.h:185:13: note: declared here
-  185 | extern bool sysfs_streq(const char *s1, const char *s2);
-      |             ^~~~~~~~~~~
-make[6]: *** [scripts/Makefile.build:250: drivers/net/ethernet/stmicro/stmmac/stmmac_main.o] Error 1
+On Wed, 23 Nov 2022 11:10:08 +0100 you wrote:
+> IPV6 addresses are purged when setting the number of rx/tx
+> rings using ethtool -G. The function aq_set_ringparam
+> calls dev_close, which removes the addresses. As a solution,
+> call an internal function (aq_ndev_close).
+> 
+> Fixes: c1af5427954b ("net: aquantia: Ethtool based ring size configuration")
+> 
+> [...]
 
-NOTE: I did not make any changes, it is a clean build.
-Anyone knows what this could be?
+Here is the summary with links:
+  - [net] aquantia: Do not purge addresses when setting the number of rings
+    https://git.kernel.org/netdev/net/c/2a8389113051
 
-Thank you,
-Piergiorgio
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
