@@ -2,89 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F89A63909D
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 21:20:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD29A639119
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 22:32:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229990AbiKYUUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 15:20:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50644 "EHLO
+        id S229637AbiKYVcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 16:32:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiKYUUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 15:20:16 -0500
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB3B55ABC;
-        Fri, 25 Nov 2022 12:20:15 -0800 (PST)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id BF1645C0065;
-        Fri, 25 Nov 2022 15:20:14 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Fri, 25 Nov 2022 15:20:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1669407614; x=1669494014; bh=lO
-        fNHybtknTjw+K3iU0INR/sKAaWBha0aC/eE2fjc4A=; b=qIXgTqGROEliLPq3Gk
-        vbkiYULLGQi4/wMiLekhCC9EqrT+qFMUu14ljQffjBiwSBFBmxFPHcKNS2InAtZY
-        bKwfuSgOZB/U9Nrr3rAeJ8+mA1FQqJBZpb62U5mLPw8zx4vNdXWsKHyScgjA5Dk3
-        JRCkd1+Qg3ywQKpkEXQXLCkg80yX2wT2Opy9wUlCZIiYpdgKIrPpo5iDVTFx0eqW
-        r+ounTV6TVri53jTJkjqseu2ZEve48zuV2H375cTBwZqvOeBTbpJa7SOa9HgIfBf
-        Z+Eh0WSHzF2a3sCDaMil0rwL9rhYNb9zVQn8NnIZ6IFcK0lZoLdmu8iTABtH9AzV
-        9m+w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1669407614; x=1669494014; bh=lOfNHybtknTjw
-        +K3iU0INR/sKAaWBha0aC/eE2fjc4A=; b=XKKkFCmagehapuhX9kHF3e1BO/xTP
-        U13n7WmfBnakSp06JRWgN2U6RgYPJNSbatvI51VbkSLTWMkCIpvfeYebQC+FhDQK
-        I1OCYDyBomSAQZwyUWc+vUkMsfw1FqpjL0xIfpfzkOR+IFBCdOzZUPSLyPhxJeh4
-        Hw0Gp3BP/WfU6bxHmgd/llHqzBL+f+nT56OermQ0JJ2aeUPhbcyVDJh4/sQu9CPU
-        Vr6+Xm1CvMlaxJ5Xq1BNGalK+Dpr0T4x1/rA7nT2mbdIDR/G03zUzikxWeqw/7/X
-        Fik9859AxurwXa5k+ENE4AyLtaAssX2pGk0LmPuTeHRg7VGXjm5twvMqQ==
-X-ME-Sender: <xms:fiOBY36olIWoaiUYfvIeBcWf_fd4DmZgcZgOVGSqgkuzPMT9MDzYUQ>
-    <xme:fiOBY84Ny0_YpN-PmtNVjV2unC0PGe3Ia02JxNM1VDmlyCZdDuXOcNSgIfqhr47dr
-    inUV6xx0rP_YnH_kA>
-X-ME-Received: <xmr:fiOBY-dMJL3Z2aYCeLn5XlCGAVh1rYI3WgjN9ZUlcn-toS-fp9Yk0uQnpLcB8tDXhsbcdHKMuqfWFZ0BZYy9NSapQ8eV5ZpqWZX8dYShBC_09-FIyVd48YL5Jnh7zwgNSJO64g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrieehgddufeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufgrmhhu
-    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepudekteeuudehtdelteevgfduvddvjefhfedulefgudevgeeghefg
-    udefiedtveetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:fiOBY4K0Y6E0VGCUkHkNNOu0qLRYH6OyRVknWTrrfm9gkZECyTxn_Q>
-    <xmx:fiOBY7JrvKtROgkHy68CQppiXYjFuuU4wm8bF7g4Thi4HcH41T7Pgw>
-    <xmx:fiOBYxxj-oyQFjRiLTbLep_iYR8tv-7N-r2XHBDYC1zzN4WQ8NHh7A>
-    <xmx:fiOBY9hZ5lQZ6Uyeq2E6K00I5g97pvueTF25FTiWWcRsbKqSMOJh7w>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 25 Nov 2022 15:20:13 -0500 (EST)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        LABBE Corentin <clabbe.montjoie@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
-Subject: [PATCH 3/3] dt-bindings: net: sun8i-emac: Add phy-supply property
-Date:   Fri, 25 Nov 2022 14:20:08 -0600
-Message-Id: <20221125202008.64595-4-samuel@sholland.org>
-X-Mailer: git-send-email 2.37.4
-In-Reply-To: <20221125202008.64595-1-samuel@sholland.org>
-References: <20221125202008.64595-1-samuel@sholland.org>
+        with ESMTP id S229582AbiKYVb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 16:31:59 -0500
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C6C167D6;
+        Fri, 25 Nov 2022 13:31:58 -0800 (PST)
+Received: from [10.7.7.5] (unknown [182.253.183.240])
+        by gnuweeb.org (Postfix) with ESMTPSA id C9F9C810FE;
+        Fri, 25 Nov 2022 21:31:55 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1669411918;
+        bh=8CDJq028QJu4WvKMTC4XAxY7Or8lU48ysbXG0xj5lVM=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=KCwMQf8GXUIlanGvSTebAleX0dZUsn3/NmqK0GcSzzFwRMs3PhA+aMJwfs/G8/e7b
+         Ghxsc6u8DAkbv6WD7tZrNPz9H1T4SJQONMPhB1dyiLiAwZbH0nopfB9CrCvhFjwXXU
+         q5QCv9RVJ3Xevs9e333rvahQZHbLSpCg+7rbNj6bfSPr1818Dapqhr4STbAqag/+qO
+         1UpChf188+w3fGZqQk/U2L/DrNVBD3WtJV0gC0xe5F3pMBd4t1qwETebkQjfc1opJa
+         gZbygC/269FGFoyaRI2JGwV6UIUKvDqgzsBSWtWUOI0bzOQ+rkYOnCNtVSqOwK9PyS
+         7xc1hdZfIte5A==
+Message-ID: <df3bffca-17a4-d6fd-be56-46ff6c68b503@gnuweeb.org>
+Date:   Sat, 26 Nov 2022 04:31:53 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Content-Language: en-US
+To:     Stefan Roesch <shr@devkernel.io>
+Cc:     Facebook Kernel Team <kernel-team@fb.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Olivier Langlois <olivier@trillion01.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev Mailing List <netdev@vger.kernel.org>,
+        io-uring Mailing List <io-uring@vger.kernel.org>
+References: <20221121191459.998388-1-shr@devkernel.io>
+ <20221121191459.998388-4-shr@devkernel.io>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: Re: [PATCH v5 3/4] liburing: add example programs for napi busy poll
+In-Reply-To: <20221121191459.998388-4-shr@devkernel.io>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -92,37 +57,201 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This property has always been supported by the Linux driver; see
-commit 9f93ac8d4085 ("net-next: stmmac: Add dwmac-sun8i"). In fact, the
-original driver submission includes the phy-supply code but no mention
-of it in the binding, so the omission appears to be accidental. In
-addition, the property is documented in the binding for the previous
-hardware generation, allwinner,sun7i-a20-gmac.
+On 11/22/22 2:14 AM, Stefan Roesch wrote:
+> This adds two example programs to test the napi busy poll functionality.
+> It consists of a client program and a server program. To get a napi id,
+> the client and the server program need to be run on different hosts.
+> 
+> To test the napi busy poll timeout, the -t needs to be specified. A
+> reasonable value for the busy poll timeout is 100. By specifying the
+> busy poll timeout on the server and the client the best results are
+> accomplished.
+> 
+> Signed-off-by: Stefan Roesch <shr@devkernel.io>
 
-Document phy-supply in the binding to fix devicetree validation for the
-25+ boards that already use this property.
+Since commit:
 
-Fixes: 0441bde003be ("dt-bindings: net-next: Add DT bindings documentation for Allwinner dwmac-sun8i")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+     fd6b571b0b03aeeb529f235c5c9c0a7c3256340c ("github: Add -Wmissing-prototypes for GitHub CI bot")
 
- .../devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml     | 3 +++
- 1 file changed, 3 insertions(+)
+liburing GitHub CI robot enforces functions and global variables that
+are not used outside the translation unit to be marked as static.
 
-diff --git a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
-index 34a47922296d..4f671478b288 100644
---- a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
-+++ b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
-@@ -42,6 +42,9 @@ properties:
-   clock-names:
-     const: stmmaceth
- 
-+  phy-supply:
-+    description: PHY regulator
-+
-   syscon:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
+This patch fails the build.
+
+GitHub CI says:
+
+   clang -Werror -D_GNU_SOURCE -I../src/include/ -g -O3 -Wall -Wextra -Werror -Wmissing-prototypes -o napi-busy-poll-client napi-busy-poll-client.c -L../src/ -luring
+   clang -Werror -D_GNU_SOURCE -I../src/include/ -g -O3 -Wall -Wextra -Werror -Wmissing-prototypes -o napi-busy-poll-server napi-busy-poll-server.c -L../src/ -luring
+   napi-busy-poll-client.c:78:6: error: no previous prototype for function 'printUsage' [-Werror,-Wmissing-prototypes]
+   void printUsage(const char *name)
+        ^
+   napi-busy-poll-client.c:78:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void printUsage(const char *name)
+   ^
+   static
+   napi-busy-poll-client.c:102:6: error: no previous prototype for function 'printError' [-Werror,-Wmissing-prototypes]
+   void printError(const char *msg, int opt)
+        ^
+   napi-busy-poll-client.c:102:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void printError(const char *msg, int opt)
+   ^
+   static
+   napi-busy-poll-client.c:108:6: error: no previous prototype for function 'setProcessScheduler' [-Werror,-Wmissing-prototypes]
+   void setProcessScheduler(void)
+        ^
+   napi-busy-poll-client.c:108:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void setProcessScheduler(void)
+   ^
+   static
+   napi-busy-poll-client.c:118:8: error: no previous prototype for function 'diffTimespec' [-Werror,-Wmissing-prototypes]
+   double diffTimespec(const struct timespec *time1, const struct timespec *time0)
+          ^
+   napi-busy-poll-client.c:118:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   double diffTimespec(const struct timespec *time1, const struct timespec *time0)
+   ^
+   static
+   napi-busy-poll-client.c:124:10: error: no previous prototype for function 'encodeUserData' [-Werror,-Wmissing-prototypes]
+   uint64_t encodeUserData(char type, int fd)
+            ^
+   napi-busy-poll-client.c:124:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   uint64_t encodeUserData(char type, int fd)
+   ^
+   static
+   napi-busy-poll-client.c:129:6: error: no previous prototype for function 'decodeUserData' [-Werror,-Wmissing-prototypes]
+   void decodeUserData(uint64_t data, char *type, int *fd)
+        ^
+   napi-busy-poll-client.c:129:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void decodeUserData(uint64_t data, char *type, int *fd)
+   ^
+   static
+   napi-busy-poll-client.c:135:13: error: no previous prototype for function 'opTypeToStr' [-Werror,-Wmissing-prototypes]
+   const char *opTypeToStr(char type)
+               ^
+   napi-busy-poll-client.c:135:7: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   const char *opTypeToStr(char type)
+         ^
+   static
+   napi-busy-poll-client.c:159:6: error: no previous prototype for function 'reportNapi' [-Werror,-Wmissing-prototypes]
+   void reportNapi(struct ctx *ctx)
+        ^
+   napi-busy-poll-client.c:159:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void reportNapi(struct ctx *ctx)
+   ^
+   static
+   napi-busy-poll-client.c:173:6: error: no previous prototype for function 'sendPing' [-Werror,-Wmissing-prototypes]
+   void sendPing(struct ctx *ctx)
+        ^
+   napi-busy-poll-client.c:173:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void sendPing(struct ctx *ctx)
+   ^
+   static
+   napi-busy-poll-client.c:183:6: error: no previous prototype for function 'receivePing' [-Werror,-Wmissing-prototypes]
+   void receivePing(struct ctx *ctx)
+        ^
+   napi-busy-poll-client.c:183:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void receivePing(struct ctx *ctx)
+   ^
+   static
+   napi-busy-poll-client.c:191:6: error: no previous prototype for function 'recordRTT' [-Werror,-Wmissing-prototypes]
+   void recordRTT(struct ctx *ctx)
+        ^
+   napi-busy-poll-client.c:191:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void recordRTT(struct ctx *ctx)
+   ^
+   static
+   napi-busy-poll-client.c:203:6: error: no previous prototype for function 'printStats' [-Werror,-Wmissing-prototypes]
+   void printStats(struct ctx *ctx)
+        ^
+   napi-busy-poll-client.c:203:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void printStats(struct ctx *ctx)
+   ^
+   static
+   napi-busy-poll-client.c:230:5: error: no previous prototype for function 'completion' [-Werror,-Wmissing-prototypes]
+   int completion(struct ctx *ctx, struct io_uring_cqe *cqe)
+       ^
+   napi-busy-poll-client.c:230:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int completion(struct ctx *ctx, struct io_uring_cqe *cqe)
+   ^
+   static
+   13 errors generated.
+   make[1]: *** [Makefile:38: napi-busy-poll-client] Error 1
+   make[1]: *** Waiting for unfinished jobs....
+   napi-busy-poll-server.c:78:6: error: no previous prototype for function 'printUsage' [-Werror,-Wmissing-prototypes]
+   void printUsage(const char *name)
+        ^
+   napi-busy-poll-server.c:78:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void printUsage(const char *name)
+   ^
+   static
+   napi-busy-poll-server.c:104:6: error: no previous prototype for function 'printError' [-Werror,-Wmissing-prototypes]
+   void printError(const char *msg, int opt)
+        ^
+   napi-busy-poll-server.c:104:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void printError(const char *msg, int opt)
+   ^
+   static
+   napi-busy-poll-server.c:110:6: error: no previous prototype for function 'setProcessScheduler' [-Werror,-Wmissing-prototypes]
+   void setProcessScheduler()
+        ^
+   napi-busy-poll-server.c:110:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void setProcessScheduler()
+   ^
+   static
+   napi-busy-poll-server.c:120:10: error: no previous prototype for function 'encodeUserData' [-Werror,-Wmissing-prototypes]
+   uint64_t encodeUserData(char type, int fd)
+            ^
+   napi-busy-poll-server.c:120:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   uint64_t encodeUserData(char type, int fd)
+   ^
+   static
+   napi-busy-poll-server.c:125:6: error: no previous prototype for function 'decodeUserData' [-Werror,-Wmissing-prototypes]
+   void decodeUserData(uint64_t data, char *type, int *fd)
+        ^
+   napi-busy-poll-server.c:125:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void decodeUserData(uint64_t data, char *type, int *fd)
+   ^
+   static
+   napi-busy-poll-server.c:131:13: error: no previous prototype for function 'opTypeToStr' [-Werror,-Wmissing-prototypes]
+   const char *opTypeToStr(char type)
+               ^
+   napi-busy-poll-server.c:131:7: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   const char *opTypeToStr(char type)
+         ^
+   static
+   napi-busy-poll-server.c:155:6: error: no previous prototype for function 'reportNapi' [-Werror,-Wmissing-prototypes]
+   void reportNapi(struct ctx *ctx)
+        ^
+   napi-busy-poll-server.c:155:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void reportNapi(struct ctx *ctx)
+   ^
+   static
+   napi-busy-poll-server.c:169:6: error: no previous prototype for function 'sendPing' [-Werror,-Wmissing-prototypes]
+   void sendPing(struct ctx *ctx)
+        ^
+   napi-busy-poll-server.c:169:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void sendPing(struct ctx *ctx)
+   ^
+   static
+   napi-busy-poll-server.c:178:6: error: no previous prototype for function 'receivePing' [-Werror,-Wmissing-prototypes]
+   void receivePing(struct ctx *ctx)
+        ^
+   napi-busy-poll-server.c:178:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void receivePing(struct ctx *ctx)
+   ^
+   static
+   napi-busy-poll-server.c:193:6: error: no previous prototype for function 'completion' [-Werror,-Wmissing-prototypes]
+   void completion(struct ctx *ctx, struct io_uring_cqe *cqe)
+        ^
+   napi-busy-poll-server.c:193:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void completion(struct ctx *ctx, struct io_uring_cqe *cqe)
+   ^
+   static
+   10 errors generated.
+   make[1]: *** [Makefile:38: napi-busy-poll-server] Error 1
+   make: *** [Makefile:12: all] Error 2
+   make[1]: Leaving directory '/home/runner/work/liburing/liburing/examples'
+   Error: Process completed with exit code 2.
+
 -- 
-2.37.4
+Ammar Faizi
 
