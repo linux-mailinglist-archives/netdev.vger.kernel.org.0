@@ -2,64 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FA556386F5
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 11:03:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B236763870B
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 11:07:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229804AbiKYKDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 05:03:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
+        id S229798AbiKYKHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 05:07:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbiKYKDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 05:03:05 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7210F2792D
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 02:02:59 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id vv4so9234324ejc.2
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 02:02:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=aSYZPs3esc05WctlmmpPJtr+26/4G4F/VwmkQh7mckM=;
-        b=heZgOGMOET/No+eErEgjX40wyRbMv/7i56Z8AfPf1RHe9M2FebckFCbl+SGj1ZInAP
-         X435MhBiUKbno/PJju0BHtX9CPy7wh5jnMTBgNGIIyfePUabrNCekfQLuQPntJ6LGnmD
-         uOplOtyPX7QpXqShgZtOw1JAuiZYLh5bG1J2bqZ2t3fOTqo2f7g0ZQe/veGDeZUR3UpO
-         zKgM8iuA5LK+uBjkEOhNTw+I/hWky7lYjlJKRaSprsw8n/SxHWB2l7MDsQia2BgavNLm
-         Dg18qG6P/t/Uxu3ZvhOfycZEloF21wUCywYufrAcs5whAC+6iXLdGjkEo4aI7pYqNdRp
-         +b5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aSYZPs3esc05WctlmmpPJtr+26/4G4F/VwmkQh7mckM=;
-        b=P8mnKgEx8tLZpCi27TX0sXGjam5t3Oh339HlcrKMxmPzl8j6jIynmiXCVgSbfkc4rF
-         mP8KI1XvQA6o75TVh47l0k3dDkFM8RiXP5QOTO/EqKsZs1F4UA+HvphZfHVQBXtcrdmn
-         vPkXEefUypQZSyXUjUrGHytGYmHRwksy/Kei91BAF7glG7Ls5/pVcFLkB1qbWTirj2Uy
-         UdXmgMP3pVXmgUN7TTG6Q57J916Zv+eWfZffAoOJ/nrGJkdPqhomp1EJluH5k6R5eidi
-         NxsTgt11xz4jqsO2E/8nDjVM1zuphMv2oLCPu4ALbjzxv37ldThk4VcCs7TqZiwDqWD9
-         oXww==
-X-Gm-Message-State: ANoB5pmGjxtYbhwy90atyXy54e2YmfrcI9M7lG8Pe2EhRSsh0NV+D60m
-        A7PQbNXjN8MlmhHHVX1usaQbQHNTwrY6q/qI
-X-Google-Smtp-Source: AA0mqf4FeXs9hLa2AJCBW7ZFnKtXZdzckPP4TuhhqbwvgtPwGUGf7mt6lvLCpDschO9H5iNwOpF3jA==
-X-Received: by 2002:a17:906:564c:b0:7b2:4a9c:37e5 with SMTP id v12-20020a170906564c00b007b24a9c37e5mr32802312ejr.268.1669370578289;
-        Fri, 25 Nov 2022 02:02:58 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id n10-20020a170906088a00b0074136cac2e7sm1371380eje.81.2022.11.25.02.02.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Nov 2022 02:02:57 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, idosch@idosch.org
-Subject: [patch net-next] net: devlink: add WARN_ON_ONCE to check return value of unregister_netdevice_notifier_net() call
-Date:   Fri, 25 Nov 2022 11:02:55 +0100
-Message-Id: <20221125100255.1786741-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S229568AbiKYKHU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 05:07:20 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE4E27FD5;
+        Fri, 25 Nov 2022 02:07:19 -0800 (PST)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oyVc4-0007KE-Kv; Fri, 25 Nov 2022 11:07:16 +0100
+Message-ID: <fb66eabd-d0e5-ea15-5705-c2f95a98c3ac@leemhuis.info>
+Date:   Fri, 25 Nov 2022 11:07:15 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH net] ipv4: Fix route deletion when nexthop info is not
+ specified
+Content-Language: en-US, de-DE
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, dsahern@gmail.com, razor@blackwall.org,
+        jonas.gorski@gmail.com, mlxsw@nvidia.com, stable@vger.kernel.org
+References: <20221124210932.2470010-1-idosch@nvidia.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <20221124210932.2470010-1-idosch@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1669370839;68fbbcc8;
+X-HE-SMSGID: 1oyVc4-0007KE-Kv
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,32 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+Hi, this is your Linux kernel regression tracker.
 
-As the return value is not 0 only in case there is no such notifier
-block registered, add a WARN_ON_ONCE() to yell about it.
+On 24.11.22 22:09, Ido Schimmel wrote:
+> When the kernel receives a route deletion request from user space it
+> tries to delete a route that matches the route attributes specified in
+> the request.
+> [...]
+ > Cc: stable@vger.kernel.org
+> Reported-by: Jonas Gorski <jonas.gorski@gmail.com>
 
-Suggested-by: Ido Schimmel <idosch@idosch.org>
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- net/core/devlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Many thx for taking care of this. There is one small thing to improve,
+please add the following tags here:
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index cea154ddce7a..0e10a8a68c5e 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -9907,8 +9907,8 @@ void devlink_free(struct devlink *devlink)
- 
- 	xa_destroy(&devlink->snapshot_ids);
- 
--	unregister_netdevice_notifier_net(devlink_net(devlink),
--					  &devlink->netdevice_nb);
-+	WARN_ON_ONCE(unregister_netdevice_notifier_net(devlink_net(devlink),
-+						       &devlink->netdevice_nb));
- 
- 	xa_erase(&devlinks, devlink->index);
- 
--- 
-2.37.3
+Link:
+https://lore.kernel.org/r/CAOiHx==ddZr6mvvbzgoAwwhJW76qGNVOcNsTG-6m79Ch%2B=aA5Q@mail.gmail.com/
 
+To explain: Linus[1] and others considered proper link tags in cases
+like important, as they allow anyone to look into the backstory weeks or
+years from now. That why they should be placed here, as outlined by the
+documentation[2]. I care personally, because these tags make my
+regression tracking efforts a whole lot easier, as they allow my
+tracking bot 'regzbot' to automatically connect reports with patches
+posted or committed to fix tracked regressions.
+
+Apropos regzbot, let me tell regzbot to monitor this thread:
+
+#regzbot ^backmonitor:
+https://lore.kernel.org/r/CAOiHx==ddZr6mvvbzgoAwwhJW76qGNVOcNsTG-6m79Ch%2B=aA5Q@mail.gmail.com/
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
+
+[1] for details, see:
+https://lore.kernel.org/all/CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com/
+https://lore.kernel.org/all/CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com/
+https://lore.kernel.org/all/CAHk-=wjxzafG-=J8oT30s7upn4RhBs6TX-uVFZ5rME+L5_DoJA@mail.gmail.com/
+
+[2] see Documentation/process/submitting-patches.rst
+(http://docs.kernel.org/process/submitting-patches.html) and
+Documentation/process/5.Posting.rst
+(https://docs.kernel.org/process/5.Posting.html)
