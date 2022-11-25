@@ -2,116 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CB76387BE
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 11:43:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 552D76387DA
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 11:50:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbiKYKnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 05:43:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
+        id S230262AbiKYKu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 05:50:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbiKYKni (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 05:43:38 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F44F1F9E9;
-        Fri, 25 Nov 2022 02:43:36 -0800 (PST)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NJWfY1fYNz15MsX;
-        Fri, 25 Nov 2022 18:43:01 +0800 (CST)
-Received: from [10.174.179.215] (10.174.179.215) by
- canpemm500007.china.huawei.com (7.192.104.62) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 25 Nov 2022 18:43:33 +0800
-Subject: Re: [PATCH 5.10 000/149] 5.10.156-rc1 review
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     <stable@vger.kernel.org>, <patches@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>, <shuah@kernel.org>,
-        <patches@kernelci.org>, <lkft-triage@lists.linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        <srw@sladewatkins.net>, <rwarsow@gmx.de>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>
-References: <20221123084557.945845710@linuxfoundation.org>
- <CA+G9fYvKfbJHcMZtybf_0Ru3+6fKPg9HwWTOhdCLrOBXMaeG1A@mail.gmail.com>
- <CA+G9fYvgaNKbr_EhWsh9hjnzCeVXGJoXX4to72ytdvZi8W0svA@mail.gmail.com>
- <Y4BuUU5yMI6PqCbb@kroah.com>
- <CA+G9fYsXomPXcecPDzDydO3=i2qHDM2RTtGxr0p2YOS6=YcWng@mail.gmail.com>
- <a1652617-9da5-4a29-9711-9d3b3cf66597@app.fastmail.com>
- <23b0fa9c-d041-8c56-ec4b-04991fa340d4@huawei.com>
- <78fc17ac-bdce-4835-953d-d50d0a467146@app.fastmail.com>
-From:   YueHaibing <yuehaibing@huawei.com>
-Message-ID: <a6b5e0f5-815c-6fd0-9195-80cfd0819912@huawei.com>
-Date:   Fri, 25 Nov 2022 18:43:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
-MIME-Version: 1.0
-In-Reply-To: <78fc17ac-bdce-4835-953d-d50d0a467146@app.fastmail.com>
+        with ESMTP id S230219AbiKYKuY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 05:50:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863A648424;
+        Fri, 25 Nov 2022 02:50:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36D4EB82A73;
+        Fri, 25 Nov 2022 10:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CB485C4314B;
+        Fri, 25 Nov 2022 10:50:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669373419;
+        bh=a0thxUE/wj+BKyAY4Yj0/YxnDdRFpXDPSQVJAA5bU3Y=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QiyBzLOh/XO4RrMezigI7GgKICfQZXgrOaopgzCFQEHrWb+Zai5AglOfOXCy8mdX9
+         OS089UYpwFbfN6fLIQBV8TruJFtEID8V2SbJSBCcTx8Rzxa53dszhPBSn1z/45U85r
+         pMoCNQCO2OXciYlXtPduOVDMo/e+BLbkZDQcWiDe5sx/c1wqQoGt1wImyakVbmOx32
+         uqNanv4fKRzYODBgQ7LC0ZpYHSzIPc/b1ckGjXlk41ohfz4JqTNBA+TsgPgprv+M8s
+         NQVAvEkVop5eBGDz0geUUyYCXw5W4sITNi1+PARzQ9udT1fbpppEBKPQtx0AzwNwZ7
+         Ss9rsErKJ6SBA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 737EEE5250B;
+        Fri, 25 Nov 2022 10:50:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v5 0/7] net: lan966x: Extend xdp support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166937341945.11224.81925006983586457.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Nov 2022 10:50:19 +0000
+References: <20221123203139.3828548-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20221123203139.3828548-1-horatiu.vultur@microchip.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        UNGLinuxDriver@microchip.com, alexandr.lobakin@intel.com,
+        maciej.fijalkowski@intel.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/11/25 18:32, Arnd Bergmann wrote:
-> On Fri, Nov 25, 2022, at 11:25, YueHaibing wrote:
->> On 2022/11/25 18:02, Arnd Bergmann wrote:
->>> On Fri, Nov 25, 2022, at 09:05, Naresh Kamboju wrote:
->>>> On Fri, 25 Nov 2022 at 12:57, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
->>>>> On Thu, Nov 24, 2022 at 09:17:36PM +0530, Naresh Kamboju wrote:
->>>>>>
->>>>>> Daniel bisected this reported problem and found the first bad commit,
->>>>>>
->>>>>> YueHaibing <yuehaibing@huawei.com>
->>>>>>     net: broadcom: Fix BCMGENET Kconfig
->>>>>
->>>>> But that is in 5.10.155, 5.15.79, 6.0.9, and 6.1-rc5.  It is not new to
->>>>> this -rc release.
->>>>
->>>> It started from 5.10.155 and this is only seen on 5.10 and other
->>>> branches 5.15, 6.0 and mainline are looking good.
->>>
->>> I think the original patch is wrong and should be fixed upstream.
->>> The backported patch in question is a one-line Kconfig change doing
->>
->> It seems lts 5.10 do not contain commit e5f31552674e ("ethernet: fix 
->> PTP_1588_CLOCK dependencies"),
->> there is not PTP_1588_CLOCK_OPTIONAL option.
-> 
-> Ok, so there is a second problem then.
-> 
-> Greg, please just revert fbb4e8e6dc7b ("net: broadcom: Fix BCMGENET Kconfig")
-> in stable/linux-5.10.y: it depends on e5f31552674e ("ethernet: fix
-> PTP_1588_CLOCK dependencies"), which we probably don't want backported
-> from 5.15 to 5.10.
-> 
-> YueHaibing, do you agree with my suggestion for improving the
-> upstream 8d820bc9d12b ("net: broadcom: Fix BCMGENET Kconfig")
-> commit? Can you send a follow-up fix, or should I?
+Hello:
 
-Ok, I will take care this.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
+On Wed, 23 Nov 2022 21:31:32 +0100 you wrote:
+> Extend the current support of XDP in lan966x with the action XDP_TX and
+> XDP_REDIRECT.
+> The first patches just prepare the things such that it would be easier
+> to add XDP_TX and XDP_REDIRECT actions. Like adding XDP_PACKET_HEADROOM,
+> introduce helper functions, use the correct dma_dir for the page pool
+> The last 2 patches introduce the XDP actions XDP_TX and XDP_REDIRECT.
 > 
->       Arnd
-> .
-> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v5,1/7] net: lan966x: Add XDP_PACKET_HEADROOM
+    https://git.kernel.org/netdev/net-next/c/7292bb064d62
+  - [net-next,v5,2/7] net: lan966x: Introduce helper functions
+    https://git.kernel.org/netdev/net-next/c/3d66bc578655
+  - [net-next,v5,3/7] net: lan966x: Add len field to lan966x_tx_dcb_buf
+    https://git.kernel.org/netdev/net-next/c/49f5eea8c4f5
+  - [net-next,v5,4/7] net: lan966x: Update rxq memory model
+    https://git.kernel.org/netdev/net-next/c/77ddda44411c
+  - [net-next,v5,5/7] net: lan966x: Update dma_dir of page_pool_params
+    https://git.kernel.org/netdev/net-next/c/560c7223d6e4
+  - [net-next,v5,6/7] net: lan966x: Add support for XDP_TX
+    https://git.kernel.org/netdev/net-next/c/19c6f534f636
+  - [net-next,v5,7/7] net: lan966x: Add support for XDP_REDIRECT
+    https://git.kernel.org/netdev/net-next/c/a825b611c7c1
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
