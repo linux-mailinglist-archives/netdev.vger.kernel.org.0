@@ -2,149 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E79F638D72
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 16:30:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33503638D81
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 16:34:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229481AbiKYPab (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 10:30:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
+        id S229493AbiKYPem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 10:34:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiKYPaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 10:30:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044F325E8A
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 07:29:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669390175;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=m1BChkWM80kgyYM0SCDcwv+2ZPer/HomIwTgropL0ac=;
-        b=UD1zdeXXbKFNTy/j3j7doEZ5Msw4/MWHh1FKraO8zrE7ORcWdWw8jUTdExdFYskM99BgCa
-        AHRdIdiRYOh9XBKJKBh1781EhMb7dOQvBIkDOYYzB6hHpAl7vwc71Kd4hoIDbwDZOx9xLj
-        DvpGGHUXCOmmfrKarsSH4/degN8EWJk=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-213-auJMlzNqM9GX3SbH5PeicQ-1; Fri, 25 Nov 2022 10:29:33 -0500
-X-MC-Unique: auJMlzNqM9GX3SbH5PeicQ-1
-Received: by mail-qk1-f199.google.com with SMTP id y22-20020a05620a25d600b006fc49e06062so4226504qko.4
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 07:29:33 -0800 (PST)
+        with ESMTP id S229481AbiKYPek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 10:34:40 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BE72AE24
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 07:34:39 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id n3so7298054wrp.5
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 07:34:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3OkjTnMrO+Hlw0n0ax0HVp3QpXu8VFdtWL/kNK02uXU=;
+        b=JlrjqaFyq9HofgWdPAPlt5KVfChQp3Jdc25lcz9CiZee4rqbCe7ze+UzW9ZnA07Nrc
+         M01QjudoiSDJWtf8wHxJhWjwTRgXHozF9fipu95Uc9yJVTKJVLgjJZaBFLQOf4zHzLGr
+         zjXQVa9XcRsfBx1B5d6wjvFR7KGdyRW5DXMN8oKO2uei3o2rRrAcAsL8r0QvaT5TncLQ
+         qIZ/EvNW0kNpdY48ylczit5H9AIy6pkZtnZ4LSMfzDtbFQd180yUbdkav0rbIL8bRl5U
+         udej+8xCXBodlijkk5nj21MlLok0M2R1F2ti2FYqOK6r67G5P9uWTdkXGGlfFjRxMLKs
+         dU0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=m1BChkWM80kgyYM0SCDcwv+2ZPer/HomIwTgropL0ac=;
-        b=NRrpfJJL1U3w/ZMMcvbrGlH4Jh28k0J0sr/Xl4UdCPDCihzOV6wec/hyU+qswhZKpF
-         R+pA75rPqYPc38EZy+/xrNxkwmwnCfVW3idGTkSLbcIs1eoidMJDjhQWVqtz8pXMc0GN
-         5N3l8BHyC9iFhCcO6Pd2CrnPdIBsYZCCOO+G7Ms7aeYQb5hqEsMuGHaBZeJJcbov2IwK
-         kec1iWEnrUrs4W+YrVfGOrpmsNEaBd0XwDhsFa4YBedkrVAcE6soCasm+dCz6upJCech
-         qXJOZKfd+NRRZIBVnU9NAZuBWK5Y2CD0/hL4snl7McY/BriUzQE/umqy/+3tF7EtnsqJ
-         8EVw==
-X-Gm-Message-State: ANoB5pnizg97nocoHtPsA8QNtfNfM5nUIUmsdNj2M/qwRIHIGmCAAAcj
-        zMN0hUAZ23FhFqhR2aRLfx6d1FMnXvAltp3AR8Wg43XXOyXRdz12fvvhkEbDuiWNSUhgo6do0zj
-        m5SiQcHkgFCWVjamk
-X-Received: by 2002:a37:8e05:0:b0:6fc:53ae:a979 with SMTP id q5-20020a378e05000000b006fc53aea979mr3317497qkd.735.1669390173395;
-        Fri, 25 Nov 2022 07:29:33 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7QqsBor66MxTzYPMb3it/9mbW0UcvGZ8swgbJR9AuZEedlRi01xoZpxj56zdIsD6rMTkp1UQ==
-X-Received: by 2002:a37:8e05:0:b0:6fc:53ae:a979 with SMTP id q5-20020a378e05000000b006fc53aea979mr3317469qkd.735.1669390173123;
-        Fri, 25 Nov 2022 07:29:33 -0800 (PST)
-Received: from [192.168.0.146] ([139.47.72.25])
-        by smtp.gmail.com with ESMTPSA id u12-20020a05620a430c00b006fa4cac54a5sm2932849qko.72.2022.11.25.07.29.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Nov 2022 07:29:32 -0800 (PST)
-Message-ID: <83a0b3e4-1327-c1c4-4eb4-9a25ff533d1d@redhat.com>
-Date:   Fri, 25 Nov 2022 16:29:29 +0100
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3OkjTnMrO+Hlw0n0ax0HVp3QpXu8VFdtWL/kNK02uXU=;
+        b=oreVRxVY6xbZ8dynTOI4tpIdlFILAlCyUUfVKjFkKabQ3K+bqhfoep8sqOpPWvhwKz
+         P7gWTZeWTIDSFHYiR9oQ0fXgLSEQXE5y8Y7M49tv7SvCS2LIZdIbMYFOu4LZO8sJtfhf
+         uUtt185rUkU4tyFrFD0N4mRcd1hEzMPm0qLN9NHPUVG9F21k7sZFrtcEVXSNREaCqJZx
+         /7ri3KaQFqttvGFIK+0Ofc6Ig6t7DOdbH73VF0vU7LiQFEIhzBxdXcLhqPOhV36qQWWM
+         TQ2XWMkIEX2fVIScLNj/UnKtVLDmOyDTD9s8YP9n/lY8uOOkEZ5TjBRlzmONFSyu7Zhd
+         oltQ==
+X-Gm-Message-State: ANoB5pnZ+SSapfOu4ALQkZ8sjcfGEOXRU02I55ZL3b9RgAlWg43VIYTb
+        hPUwYPRKCixVGogrxvNSvAwKvkCrYyE=
+X-Google-Smtp-Source: AA0mqf78XhYr243mBZE16nF9dmVOtdeSCJo0azlvRrRgl9LtdW2MLczVKcNx5PFgoxoS9OK2n0ag3w==
+X-Received: by 2002:a5d:48c3:0:b0:241:784b:1b7f with SMTP id p3-20020a5d48c3000000b00241784b1b7fmr24547532wrs.38.1669390477590;
+        Fri, 25 Nov 2022 07:34:37 -0800 (PST)
+Received: from suse.localnet (host-79-55-110-244.retail.telecomitalia.it. [79.55.110.244])
+        by smtp.gmail.com with ESMTPSA id x10-20020a05600c21ca00b003a6125562e1sm5057622wmj.46.2022.11.25.07.34.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Nov 2022 07:34:36 -0800 (PST)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     netdev@vger.kernel.org,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        Ayush Sawal <ayush.sawal@chelsio.com>
+Subject: Re: [PATCH v2 net-next 1/6] ch_ktls: Use memcpy_from_page() instead of k[un]map_atomic()
+Date:   Fri, 25 Nov 2022 16:34:35 +0100
+Message-ID: <5779845.MhkbZ0Pkbq@suse>
+In-Reply-To: <20221123205219.31748-2-anirudh.venkataramanan@intel.com>
+References: <20221123205219.31748-1-anirudh.venkataramanan@intel.com> <20221123205219.31748-2-anirudh.venkataramanan@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [ovs-dev] [RFC net-next 1/6] openvswitch: exclude kernel flow key
- from upcalls
-Content-Language: en-US
-To:     Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>, netdev@vger.kernel.org
-Cc:     dev@openvswitch.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kselftest@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20221122140307.705112-1-aconole@redhat.com>
- <20221122140307.705112-2-aconole@redhat.com>
- <c04242ee-f125-6d95-e263-65470222d3cf@ovn.org>
-From:   Adrian Moreno <amorenoz@redhat.com>
-In-Reply-To: <c04242ee-f125-6d95-e263-65470222d3cf@ovn.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On mercoled=EC 23 novembre 2022 21:52:14 CET Anirudh Venkataramanan wrote:
+> kmap_atomic() is being deprecated in favor of kmap_local_page(). Replace
+> the map-memcpy-unmap usage pattern (done using k[un]map_atomic()) with
+> memcpy_from_page(), which internally uses kmap_local_page() and
+> kunmap_local(). This renders the variables 'data' and 'vaddr' unnecessary,
+> and so remove these too.
+>=20
+> Note that kmap_atomic() disables preemption and page-fault processing, but
+> kmap_local_page() doesn't. When converting uses of kmap_atomic(), one has
+> to check if the code being executed between the map/unmap implicitly
+> depends on page-faults and/or preemption being disabled. If yes, then code
+> to disable page-faults and/or preemption should also be added for
+> functional correctness. That however doesn't appear to be the case here,
+> so just memcpy_from_page() is used.
+
+Just two marginal notes:
+
+It looks like you are explaining your mental process and teaching how =20
+developers should approach these kinds of conversions. Although I'm OK with=
+=20
+this exposition, a plain assurance that the code being executed between the=
+=20
+map / unmap did not depend on page-faults and/or preemption being disabled=
+=20
+would have sufficed. :-)
+
+Ira were suggesting to not use "it appears" and replace with stronger and=20
+clearer assertions like "it is" or "I can confirm that" (or whatever else l=
+ike =20
+these).
+
+As said, no problems at all with regard to the overall goodness of this and=
+=20
+the other patches.
+
+>=20
+> Also note that the page being mapped is not allocated by the driver, and =
+so
+> the driver doesn't know if the page is in normal memory. This is the reas=
+on
+> kmap_local_page() is used (via memcpy_from_page()) as opposed to
+> page_address().
+>=20
+> I don't have hardware, so this change has only been compile tested.
+>=20
+> Cc: Ayush Sawal <ayush.sawal@chelsio.com>
+> Cc: Ira Weiny <ira.weiny@intel.com>
+> Cc: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> Suggested-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+> ---
+> v1 -> v2:
+>  Use memcpy_from_page() as suggested by Fabio
+>  Add a "Suggested-by" tag
+>  Rework commit message
+>  Some emails cc'd in v1 are defunct. Drop them. The MAINTAINERS file for
+>  Chelsio drivers likely needs an update
+> ---
+>  .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 26 +++++++++----------
+>  1 file changed, 12 insertions(+), 14 deletions(-)
+
+It looks good to me.
+
+Reviewed-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+
+Thanks,
+
+=46abio
+
+> diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls=
+=2Ec
+> b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c index
+> da9973b..1a5fdd7 100644
+> --- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+> +++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+> @@ -1839,9 +1839,7 @@ static int chcr_short_record_handler(struct
+> chcr_ktls_info *tx_info, */
+>  		if (prior_data_len) {
+>  			int i =3D 0;
+> -			u8 *data =3D NULL;
+>  			skb_frag_t *f;
+> -			u8 *vaddr;
+>  			int frag_size =3D 0, frag_delta =3D 0;
+>=20
+>  			while (remaining > 0) {
+> @@ -1853,24 +1851,24 @@ static int chcr_short_record_handler(struct
+> chcr_ktls_info *tx_info, i++;
+>  			}
+>  			f =3D &record->frags[i];
+> -			vaddr =3D kmap_atomic(skb_frag_page(f));
+> -
+> -			data =3D vaddr + skb_frag_off(f)  + remaining;
+>  			frag_delta =3D skb_frag_size(f) - remaining;
+>=20
+>  			if (frag_delta >=3D prior_data_len) {
+> -				memcpy(prior_data, data,=20
+prior_data_len);
+> -				kunmap_atomic(vaddr);
+> +				memcpy_from_page(prior_data,=20
+skb_frag_page(f),
+> +						 skb_frag_off(f) +=20
+remaining,
+> +						 prior_data_len);
+>  			} else {
+> -				memcpy(prior_data, data, frag_delta);
+> -				kunmap_atomic(vaddr);
+> +				memcpy_from_page(prior_data,=20
+skb_frag_page(f),
+> +						 skb_frag_off(f) +=20
+remaining,
+> +						 frag_delta);
+> +
+>  				/* get the next page */
+>  				f =3D &record->frags[i + 1];
+> -				vaddr =3D kmap_atomic(skb_frag_page(f));
+> -				data =3D vaddr + skb_frag_off(f);
+> -				memcpy(prior_data + frag_delta,
+> -				       data, (prior_data_len -=20
+frag_delta));
+> -				kunmap_atomic(vaddr);
+> +
+> +				memcpy_from_page(prior_data +=20
+frag_delta,
+> +						 skb_frag_page(f),
+> +						 skb_frag_off(f),
+> +						 prior_data_len -=20
+frag_delta);
+>  			}
+>  			/* reset tcp_seq as per the prior_data_required=20
+len */
+>  			tcp_seq -=3D prior_data_len;
+> --
+> 2.37.2
 
 
-On 11/23/22 22:22, Ilya Maximets wrote:
-> On 11/22/22 15:03, Aaron Conole wrote:
->> When processing upcall commands, two groups of data are available to
->> userspace for processing: the actual packet data and the kernel
->> sw flow key data.  The inclusion of the flow key allows the userspace
->> avoid running through the dissection again.
->>
->> However, the userspace can choose to ignore the flow key data, as is
->> the case in some ovs-vswitchd upcall processing.  For these messages,
->> having the flow key data merely adds additional data to the upcall
->> pipeline without any actual gain.  Userspace simply throws the data
->> away anyway.
-> 
-> Hi, Aaron.  While it's true that OVS in userpsace is re-parsing the
-> packet from scratch and using the newly parsed key for the OpenFlow
-> translation, the kernel-porvided key is still used in a few important
-> places.  Mainly for the compatibility checking.  The use is described
-> here in more details:
->    https://docs.kernel.org/networking/openvswitch.html#flow-key-compatibility
-> 
-> We need to compare the key generated in userspace with the key
-> generated by the kernel to know if it's safe to install the new flow
-> to the kernel, i.e. if the kernel and OVS userpsace are parsing the
-> packet in the same way.
-> 
-
-Hi Ilya,
-
-Do we need to do that for every packet?
-Could we send a bitmask of supported fields to userspace at feature negotiation 
-and let OVS slowpath flows that it knows the kernel won't be able to handle 
-properly?
-
-
-> On the other hand, OVS today doesn't check the data, it only checks
-> which fields are present.  So, if we can generate and pass the bitmap
-> of fields present in the key or something similar without sending the
-> full key, that might still save some CPU cycles and memory in the
-> socket buffer while preserving the ability to check for forward and
-> backward compatibility.  What do you think?
-> 
-> 
-> The rest of the patch set seems useful even without patch #1 though.
-> 
-> Nit: This patch #1 should probably be merged with the patch #6 and be
-> at the end of a patch set, so the selftest and the main code are updated
-> at the same time.
-> 
-> Best regards, Ilya Maximets.
-> _______________________________________________
-> dev mailing list
-> dev@openvswitch.org
-> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
-> 
-
-Thanks
--- 
-Adrián Moreno
 
