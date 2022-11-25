@@ -2,120 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 404D5639243
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 00:36:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B603639270
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 00:51:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbiKYXgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 18:36:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55914 "EHLO
+        id S229957AbiKYXvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 18:51:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiKYXgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 18:36:48 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B4C218A8;
-        Fri, 25 Nov 2022 15:36:47 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id ha10so13324818ejb.3;
-        Fri, 25 Nov 2022 15:36:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=53pASLo6U2zzYHdiGPJru2sei7EMeIsybEcbugHJMGw=;
-        b=aNmO4iy1jEBOxe4hLQffwUBwh9RXL7ogbj5yuKyKDk+Xzpa9rmxmLXt65tfNv5wpIX
-         zCIgP3UXxPHLUlvesV043w+pnVAvv6aeeguf3WSjGGxzBGh+aGFCYvAO2eYViSso1InR
-         eOGZh6VgaeO+Dmvu0OMjrZ0zg4rQqCRarVo3050M4z3zqJJCa0+ynj6CUT3S+u+xB6b0
-         vn0mNPQGaf68AAHuzsCi7zOUJm60aMjynS55gdF+ou7JUayNoM4xyAM+nJwCMhQWg9XQ
-         JoCTXbY/uWDqaBgF7oYHso/i7h9fojytw30ODsNPAnbkRuWDT8FHy4rdPIF3rXMBPTMf
-         AFlw==
+        with ESMTP id S229514AbiKYXvS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 18:51:18 -0500
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8895E18E;
+        Fri, 25 Nov 2022 15:51:17 -0800 (PST)
+Received: by mail-pj1-f43.google.com with SMTP id k2-20020a17090a4c8200b002187cce2f92so8907494pjh.2;
+        Fri, 25 Nov 2022 15:51:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=53pASLo6U2zzYHdiGPJru2sei7EMeIsybEcbugHJMGw=;
-        b=WIRDxrmoBezLK0KNCXAEA4ASMhgbZpyMo/ocEBVcTVY7OQfYcx0Pcc3CRoOQpePLLd
-         0U+TmAV8GolW0AbMt57HmUIbaMu+El5GlMeYWjR65l3yJUuTzf1x3CkvDsSlWmnwIQ3v
-         JeYGwrJ9Y4LE1y1aquTDCpUvtSLIMjNjgEmFE406DHs+U3S698kEesPFDCnG+pX2xfyu
-         Sjf5ST1u3NF+0PUdRby2A2a+DabA3mh5FCmJJ+rWVIgoIBl1hNGBEn+DtZE77B7WL5qb
-         HKwYRO2OgNzpVyGrZnZRgigECQPDlrJq2L6C8bIIHaJir+wwvJ1WKGAGlRVbEZITxe/0
-         1H0w==
-X-Gm-Message-State: ANoB5pn/JLzzcrXZbPeJ4i9cUGe2BaMXPbHycYlo/BZwC89LIRE0CBO6
-        FLmU2C12g4FxYRbW2S8SubM4EKtRyfXXCu35GMI=
-X-Google-Smtp-Source: AA0mqf45bdEJiOxhbUnLhIigBT0GjU47GsHYZmyiWPQnPoGEsgOfGs0TvhtmfqACF3pOoGPbacknnLPg3TD8cSTM64A=
-X-Received: by 2002:a17:907:a709:b0:79f:cd7c:e861 with SMTP id
- vw9-20020a170907a70900b0079fcd7ce861mr33399680ejc.339.1669419406346; Fri, 25
- Nov 2022 15:36:46 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UBCy9qp7TSwSwGwI/krp6oqH0EI9xTeC+ExI/AlQHzg=;
+        b=1OQZpXZ9Ed1f3U724rkw+MtCYUcdJtTOkQ3OJ37kYyDX/+ASIHd6vmK9sV2RyiKbDR
+         ffkPd2ZaEPqioDrIqq60oCchjlF1lDAjF6VQHiegOBVIjzBfg9O5LIsr17MGXVrhfHJ1
+         EpSV4AkvHA61ahLrikQ2SE8nCgoDrWzsdzSJlEvmLg0VS+Mfjt+DoY/n7vJxRMSDT0yY
+         M+5bSNwfcAKFZcSNTjEgcGXAitcGRLhVqwn8PT38U/J8WQuqXeGpHSbYU7jTEST9os7J
+         lhcWIDCR0gTByg9ebWcdcGzslqg1QCVb16SGCkSxfiJymBuUdmuTNnhxFpy5HCr5kqjH
+         8B4w==
+X-Gm-Message-State: ANoB5pmSedKMG6RkTCcAwZoIvPyhtzK5azH+FU+4AfjKzrZo/Eipmx+E
+        RQuM+oZM4QaEN5RqE01/84Q=
+X-Google-Smtp-Source: AA0mqf40CELg5Cd4cKADSnuQ7zDvszL+QjMGY2dYDbM8qR4FVWtlF2gM/wXRLECZg2wkT9gOazTizw==
+X-Received: by 2002:a17:90a:b88c:b0:218:e1c1:b4f3 with SMTP id o12-20020a17090ab88c00b00218e1c1b4f3mr15351878pjr.201.1669420276891;
+        Fri, 25 Nov 2022 15:51:16 -0800 (PST)
+Received: from [192.168.3.219] ([98.51.102.78])
+        by smtp.gmail.com with ESMTPSA id q6-20020a17090311c600b001865c298588sm3937409plh.258.2022.11.25.15.51.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Nov 2022 15:51:15 -0800 (PST)
+Message-ID: <d448b944-708a-32d4-37d7-0be16ee5f73c@acm.org>
+Date:   Fri, 25 Nov 2022 15:51:11 -0800
 MIME-Version: 1.0
-References: <20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org>
- <20221117-b4-amlogic-bindings-convert-v1-6-3f025599b968@linaro.org>
-In-Reply-To: <20221117-b4-amlogic-bindings-convert-v1-6-3f025599b968@linaro.org>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sat, 26 Nov 2022 00:36:35 +0100
-Message-ID: <CAFBinCAmV7wuPq8y+g0YKxZ0W1G8_=WgY+E3OT9WT62eDkxXqw@mail.gmail.com>
-Subject: Re: [PATCH 06/12] dt-bindings: rtc: convert rtc-meson.txt to dt-schema
-To:     Neil Armstrong <neil.armstrong@linaro.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Eric Dumazet <edumazet@google.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH 1/5] driver core: make struct class.dev_uevent() take a
+ const *
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     Jens Axboe <axboe@kernel.dk>, Luis Chamberlain <mcgrof@kernel.org>,
+        Russ Weight <russell.h.weight@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Johan Hovold <johan@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Karsten Keil <isdn@linux-pingi.de>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sebastian Reichel <sre@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-amlogic@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Raed Salem <raeds@nvidia.com>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Avihai Horon <avihaih@nvidia.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Colin Ian King <colin.i.king@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Wang Yufen <wangyufen@huawei.com>, linux-block@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20221123122523.1332370-1-gregkh@linuxfoundation.org>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20221123122523.1332370-1-gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Neil,
+On 11/23/22 04:25, Greg Kroah-Hartman wrote:
+> diff --git a/include/linux/mISDNif.h b/include/linux/mISDNif.h
+> index 7dd1f01ec4f9..7aab4a769736 100644
+> --- a/include/linux/mISDNif.h
+> +++ b/include/linux/mISDNif.h
+> @@ -586,7 +586,7 @@ extern struct mISDNclock *mISDN_register_clock(char *, int, clockctl_func_t *,
+>   						void *);
+>   extern void	mISDN_unregister_clock(struct mISDNclock *);
+>   
+> -static inline struct mISDNdevice *dev_to_mISDN(struct device *dev)
+> +static inline struct mISDNdevice *dev_to_mISDN(const struct device *dev)
+>   {
+>   	if (dev)
+>   		return dev_get_drvdata(dev);
 
-On Fri, Nov 18, 2022 at 3:33 PM Neil Armstrong
-<neil.armstrong@linaro.org> wrote:
->
-> Convert the Amlogic Meson6 RTC bindings to dt-schema.
->
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-With the comment below addressed please add my:
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Why does the dev_to_mISDN() function drop constness? I haven't found an 
+explanation for this in the cover letter.
 
-[...]
-> +        mac@0 {
-> +            reg = <0 6>;
-> +        };
-My understanding is that here you want to showcase the nvmem integration.
-This IP block only supports 4 bytes of NVMEM. Instead of using MAC
-(which is not what's stored here, the suspend firmware uses it
-instead) I'd just use something like:
-data@0 {
-  reg = <0x0 4>;
-};
+Thanks,
 
+Bart.
 
-Best regards,
-Martin
