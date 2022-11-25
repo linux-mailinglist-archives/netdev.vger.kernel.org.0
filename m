@@ -2,134 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2D94638DA7
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 16:48:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 248F3638DD8
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 16:53:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229493AbiKYPsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 10:48:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36560 "EHLO
+        id S229774AbiKYPxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 10:53:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiKYPsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 10:48:01 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19B41901C
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 07:47:58 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id b12so7374527wrn.2
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 07:47:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=enlI4vPPBNimbpu3uWHLv5u1ZdCpL4iqYpp5/6FLkLI=;
-        b=Keo7eS1kLOyu/5/z+bFjtnIOirhkdoFJoh0Vt/S9blFvLbZ8icDVIMhQEKpQ3QPzFO
-         aiA35c5pGkmBvW4Gflh0LcG27Srv+dvQXXeDEQPrCFKA9Esxr4q9LYJINJD84zqUKMF9
-         Ss2s5pksVJvpXjtCBEiEzh8ct08dvWpuwtmBEmQSILE84UDWg8VeJ9ZCgaZGP0PBoIU7
-         HkgzXpyjU+7WziOaRQr6tS9Z+T0Y6knQ5HJihyqF1tw1E2o/u1NBpXHOQ0FB9qU0Af6A
-         g1Z7ZGTP7uNKF6feFpKYJQ9khmrf3b0uRpkQLk+oaeUWdqHw8vc1zUC89/J3RpeVARDa
-         rDJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=enlI4vPPBNimbpu3uWHLv5u1ZdCpL4iqYpp5/6FLkLI=;
-        b=EhmgeG6oOKW0VivmvUgSVlafU8AxqCzUKgJn6RKLNVE8MZFVJpiL3tIDpKPIuCPZ0y
-         v2XTvDW1y0XsLQ78lUfJfSeL0AQKIvoVeJg630W0xOWYD6HSxJqwMGTk3N6BCtINetjc
-         izxV2E6Krap7lb7xE9RYWNf559uQ47mV/chCIA0Z5kz5Tg2m5/LMBerDNNb3L2mbcLoh
-         bq5Cizeh56cHeU8y2T6JHW5VwQ9aJJWhw0Rj5bPy2ltWn2jLXX7tHrtn3Oz+yMux8eUz
-         b9cy2X08mOM5z5Wj1oX8xRioXX10+gr/gAjjyLKczVzg6bN9iKx3dQOaxpRT7JbvvyTh
-         N2EQ==
-X-Gm-Message-State: ANoB5pn0RdpRqnOuprwIyo9r6TVifpy84vJJIS+3+tFLMiMcJbo9dFk5
-        sg2Vx0Ufq+6eC5exu6TeQwSEx4NdJIQ=
-X-Google-Smtp-Source: AA0mqf75zf+eXp5e3IwscXcTGLfo5bkFv7C7hrSBhPS5EAiJ/ThApBluLHhK4K+SZX3cU+bz0kAiBA==
-X-Received: by 2002:adf:e508:0:b0:236:588f:b5d with SMTP id j8-20020adfe508000000b00236588f0b5dmr12331461wrm.255.1669391277137;
-        Fri, 25 Nov 2022 07:47:57 -0800 (PST)
-Received: from suse.localnet (host-79-55-110-244.retail.telecomitalia.it. [79.55.110.244])
-        by smtp.gmail.com with ESMTPSA id x8-20020adff0c8000000b00241f632c90fsm4543736wro.117.2022.11.25.07.47.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Nov 2022 07:47:56 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     netdev@vger.kernel.org,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Subject: Re: [PATCH v2 net-next 0/6] Remove uses of kmap_atomic()
-Date:   Fri, 25 Nov 2022 16:47:55 +0100
-Message-ID: <2325231.NG923GbCHz@suse>
-In-Reply-To: <20221123205219.31748-1-anirudh.venkataramanan@intel.com>
-References: <20221123205219.31748-1-anirudh.venkataramanan@intel.com>
+        with ESMTP id S229814AbiKYPx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 10:53:28 -0500
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B78C490B1;
+        Fri, 25 Nov 2022 07:53:16 -0800 (PST)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3B44324000F;
+        Fri, 25 Nov 2022 15:51:13 +0000 (UTC)
+Message-ID: <bf975714-7edc-efdd-de84-56194aa6eb60@ovn.org>
+Date:   Fri, 25 Nov 2022 16:51:25 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Cc:     i.maximets@ovn.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        linux-kselftest@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Language: en-US
+To:     Adrian Moreno <amorenoz@redhat.com>,
+        Aaron Conole <aconole@redhat.com>, netdev@vger.kernel.org
+References: <20221122140307.705112-1-aconole@redhat.com>
+ <20221122140307.705112-2-aconole@redhat.com>
+ <c04242ee-f125-6d95-e263-65470222d3cf@ovn.org>
+ <83a0b3e4-1327-c1c4-4eb4-9a25ff533d1d@redhat.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [RFC net-next 1/6] openvswitch: exclude kernel flow key
+ from upcalls
+In-Reply-To: <83a0b3e4-1327-c1c4-4eb4-9a25ff533d1d@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On mercoled=EC 23 novembre 2022 21:52:13 CET Anirudh Venkataramanan wrote:
-> kmap_atomic() is being deprecated. This little series replaces the last
-> few uses of kmap_atomic() in the networking subsystem.
->=20
-> This series triggered a suggestion [1] that perhaps the Sun Cassini,
-> LDOM Virtual Switch Driver and the LDOM virtual network drivers should be
-> removed completely. I plan to do this in a follow up patchset. For
-> completeness, this series still includes kmap_atomic() conversions that
-> apply to the above referenced drivers. If for some reason we choose to not
-> remove these drivers, at least they won't be using kmap_atomic() anymore.
->=20
-> Also, the following maintainer entries for the Chelsio driver seem to be
-> defunct:
->=20
->   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
->   Rohit Maheshwari <rohitm@chelsio.com>
->=20
-> I can submit a follow up patch to remove these entries, but thought
-> maybe the folks over at Chelsio would want to look into this first.
->=20
-> Changes v1 -> v2:
->   Use memcpy_from_page() in patches 2/6 and 4/6
->   Add new patch for the thunderbolt driver
->   Update commit messages and cover letter
->=20
-> [1]
-> https://lore.kernel.org/netdev/99629223-ac1b-0f82-50b8-ea307b3b0197@intel=
-=2Ecom
-> /T/#m3da3759652a48f958ab852fa5499009b43ff8fdd
->=20
-> Anirudh Venkataramanan (6):
->   ch_ktls: Use memcpy_from_page() instead of k[un]map_atomic()
->   sfc: Use kmap_local_page() instead of kmap_atomic()
->   cassini: Use page_address() instead of kmap_atomic()
->   cassini: Use memcpy_from_page() instead of k[un]map_atomic()
->   sunvnet: Use kmap_local_page() instead of kmap_atomic()
->   net: thunderbolt: Use kmap_local_page() instead of kmap_atomic()
->=20
->  .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 26 +++++-----
->  drivers/net/ethernet/sfc/tx.c                 |  4 +-
->  drivers/net/ethernet/sun/cassini.c            | 48 ++++++-------------
->  drivers/net/ethernet/sun/sunvnet_common.c     |  4 +-
->  drivers/net/thunderbolt.c                     |  8 ++--
->  5 files changed, 35 insertions(+), 55 deletions(-)
->=20
->=20
-> base-commit: e80bd08fd75a644e2337fb535c1afdb6417357ff
-> --
-> 2.37.2
+On 11/25/22 16:29, Adrian Moreno wrote:
+> 
+> 
+> On 11/23/22 22:22, Ilya Maximets wrote:
+>> On 11/22/22 15:03, Aaron Conole wrote:
+>>> When processing upcall commands, two groups of data are available to
+>>> userspace for processing: the actual packet data and the kernel
+>>> sw flow key data.  The inclusion of the flow key allows the userspace
+>>> avoid running through the dissection again.
+>>>
+>>> However, the userspace can choose to ignore the flow key data, as is
+>>> the case in some ovs-vswitchd upcall processing.  For these messages,
+>>> having the flow key data merely adds additional data to the upcall
+>>> pipeline without any actual gain.  Userspace simply throws the data
+>>> away anyway.
+>>
+>> Hi, Aaron.  While it's true that OVS in userpsace is re-parsing the
+>> packet from scratch and using the newly parsed key for the OpenFlow
+>> translation, the kernel-porvided key is still used in a few important
+>> places.  Mainly for the compatibility checking.  The use is described
+>> here in more details:
+>>    https://docs.kernel.org/networking/openvswitch.html#flow-key-compatibility
+>>
+>> We need to compare the key generated in userspace with the key
+>> generated by the kernel to know if it's safe to install the new flow
+>> to the kernel, i.e. if the kernel and OVS userpsace are parsing the
+>> packet in the same way.
+>>
+> 
+> Hi Ilya,
+> 
+> Do we need to do that for every packet?
+> Could we send a bitmask of supported fields to userspace at feature
+> negotiation and let OVS slowpath flows that it knows the kernel won't
+> be able to handle properly?
 
-I noticed too late that your patches were already applied. The message from=
-=20
-the patchwork bot was the latest. I'm sorry for the noise: my tags were=20
-unnecessary but I didn't yet know :-(
+It's not that simple, because supported fields in a packet depend
+on previous fields in that same packet.  For example, parsing TCP
+header is generally supported, but it won't be parsed for IPv6
+fragments (even the first one), number of vlan headers will affect
+the parsing as we do not parse deeper than 2 vlan headers, etc.
+So, I'm afraid we have to have a per-packet information, unless we
+can somehow probe all the possible valid combinations of packet
+headers.
 
-However, again thanks for helping with these conversions,
-
-=46abio
-
-
+> 
+> 
+>> On the other hand, OVS today doesn't check the data, it only checks
+>> which fields are present.  So, if we can generate and pass the bitmap
+>> of fields present in the key or something similar without sending the
+>> full key, that might still save some CPU cycles and memory in the
+>> socket buffer while preserving the ability to check for forward and
+>> backward compatibility.  What do you think?
+>>
+>>
+>> The rest of the patch set seems useful even without patch #1 though.
+>>
+>> Nit: This patch #1 should probably be merged with the patch #6 and be
+>> at the end of a patch set, so the selftest and the main code are updated
+>> at the same time.
+>>
+>> Best regards, Ilya Maximets.
+>> _______________________________________________
+>> dev mailing list
+>> dev@openvswitch.org
+>> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+>>
+> 
+> Thanks
 
