@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BF32638EA4
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 17:56:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02308638EAC
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 17:56:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbiKYQ4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 11:56:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
+        id S229980AbiKYQ4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 11:56:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiKYQ4R (ORCPT
+        with ESMTP id S229863AbiKYQ4R (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 11:56:17 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFD32D741
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6D024F0D
         for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 08:56:16 -0800 (PST)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669395374;
+        s=2020; t=1669395375;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=x7EazyHGHCpeTiiHucwroXGYdDx6pSWXMjFRJN0efiU=;
-        b=knOES9mo1PyxLFDtRo/deu7QHMV40F84XJqJNEvMAg9E6mB4sZSB2L2K/huiBtYVMprP0z
-        zPoclEj+CrQDLfVKU8RQMJuNWB20Q+zzr/F2EbOCcLgW/LElJ1iuB9eCS9gQd+KQwHynt0
-        jrEj8g9fSwIeSSsi0VBXvKJIiMqkbMwv6ZrX/JxD5WGEilvhboyhcUoWvqYf0Qyu7XagsO
-        2/wQ3nmIsKCTq6Cbkfd+eMMy7UoWNb+S3AEDiJ0HwbaZVONsVyXAkZBJFWRkQNg7aiWv4a
-        fRP//h+sPONLl0Twz9Z+vj0GG2n80x6Pg+4ksJjsceV6SU4uKvEwKsAPpg2JbQ==
+        bh=sp8CnyT8+d8v5Q3zWHZkcsCanTyrIjAXUbUopvzz0Q0=;
+        b=DU8Ck/Df+rhNx2CBXRFdaZbg0x1NN3A7l84AEeAJYgiEbDMc0PsN+Ka4mjhAmE2Q1RIhoY
+        XaAdGIy3wPSOHPAIDXCx6D1or9BZ9dRy7uPcnSgn8WbLHPwjljf95mDQVL5dflqUSvXw5w
+        nCIroLf+nmhWH0kd4PBVVHi+k9nXckh05sW/KAmIJZ5qQFFbCc/shOgUx5VBw7FzspPmq2
+        /LqrPBvugmGmytISYG8hLC8d94im76YwheYnCGmpArxoOQFw3lFiCX13XR3w/LCarLABM4
+        jA8H24IaCJM32rDDGIjg035fRg7oSm4MSWASUdBwZ8BwKNhHxcfOffBK4PYW0Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669395374;
+        s=2020e; t=1669395375;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=x7EazyHGHCpeTiiHucwroXGYdDx6pSWXMjFRJN0efiU=;
-        b=JJ6NPGPgyHXIYXfnqe0mIDM5PuO+Dd9CqXHK1128mjv6NAUKeMOyVRgP82W8vaNjZZnwBB
-        +XTMKJx35mY846Cg==
+        bh=sp8CnyT8+d8v5Q3zWHZkcsCanTyrIjAXUbUopvzz0Q0=;
+        b=ZfFo14C/Mu9yWtJADekausM8yKiv5JtAm4p5FV1FU6B/FeVJsfT4mZJXiMrTMzp81iCwjb
+        j/TpOw1FNV6qYnAQ==
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -44,12 +44,13 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Thomas Gleixner <tglx@linutronix.de>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v4 net-next 3/8] hsr: Avoid double remove of a node.
-Date:   Fri, 25 Nov 2022 17:56:05 +0100
-Message-Id: <20221125165610.3802446-4-bigeasy@linutronix.de>
+Subject: [PATCH v4 net-next 4/8] hsr: Disable netpoll.
+Date:   Fri, 25 Nov 2022 17:56:06 +0100
+Message-Id: <20221125165610.3802446-5-bigeasy@linutronix.de>
 In-Reply-To: <20221125165610.3802446-1-bigeasy@linutronix.de>
 References: <20221125165610.3802446-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
@@ -60,76 +61,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Due to the hashed-MAC optimisation one problem become visible:
-hsr_handle_sup_frame() walks over the list of available nodes and merges
-two node entries into one if based on the information in the supervision
-both MAC addresses belong to one node. The list-walk happens on a RCU
-protected list and delete operation happens under a lock.
+The hsr device is a software device. Its
+net_device_ops::ndo_start_xmit() routine will process the packet and
+then pass the resulting skb to dev_queue_xmit().
+During processing, hsr acquires a lock with spin_lock_bh()
+(hsr_add_node()) which needs to be promoted to the _irq() suffix in
+order to avoid a potential deadlock.
+Then there are the warnings in dev_queue_xmit() (due to
+local_bh_disable() with disabled interrupts) left.
 
-If the supervision arrives on both slave interfaces at the same time
-then this delete operation can occur simultaneously on two CPUs. The
-result is the first-CPU deletes the from the list and the second CPUs
-BUGs while attempting to dereference a poisoned list-entry. This happens
-more likely with the optimisation because a new node for the mac_B entry
-is created once a packet has been received and removed (merged) once the
-supervision frame has been received.
+Instead trying to address those (there is qdisc and=E2=80=A6) for netpoll s=
+ake,
+just disable netpoll on hsr.
 
-Avoid removing/ cleaning up a hsr_node twice by adding a `removed' field
-which is set to true after the removal and checked before the removal.
+Disable netpoll on hsr and replace the _irqsave() locking with _bh().
 
-Fixes: f266a683a4804 ("net/hsr: Better frame dispatch")
+Fixes: f421436a591d3 ("net/hsr: Add support for the High-availability Seaml=
+ess Redundancy protocol (HSRv0)")
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- net/hsr/hsr_framereg.c | 16 +++++++++++-----
- net/hsr/hsr_framereg.h |  1 +
- 2 files changed, 12 insertions(+), 5 deletions(-)
+ net/hsr/hsr_device.c  | 14 ++++++--------
+ net/hsr/hsr_forward.c |  5 ++---
+ 2 files changed, 8 insertions(+), 11 deletions(-)
 
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index 9b8eaebce2549..f2dd846ff9038 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -366,9 +366,12 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 	node_real->addr_B_port =3D port_rcv->type;
+diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+index 7518f7e930431..84fba2a402a5b 100644
+--- a/net/hsr/hsr_device.c
++++ b/net/hsr/hsr_device.c
+@@ -278,7 +278,6 @@ static void send_hsr_supervision_frame(struct hsr_port =
+*master,
+ 	__u8 type =3D HSR_TLV_LIFE_CHECK;
+ 	struct hsr_sup_payload *hsr_sp;
+ 	struct hsr_sup_tag *hsr_stag;
+-	unsigned long irqflags;
+ 	struct sk_buff *skb;
 =20
- 	spin_lock_bh(&hsr->list_lock);
--	list_del_rcu(&node_curr->mac_list);
-+	if (!node_curr->removed) {
-+		list_del_rcu(&node_curr->mac_list);
-+		node_curr->removed =3D true;
-+		kfree_rcu(node_curr, rcu_head);
-+	}
- 	spin_unlock_bh(&hsr->list_lock);
--	kfree_rcu(node_curr, rcu_head);
+ 	*interval =3D msecs_to_jiffies(HSR_LIFE_CHECK_INTERVAL);
+@@ -299,7 +298,7 @@ static void send_hsr_supervision_frame(struct hsr_port =
+*master,
+ 	set_hsr_stag_HSR_ver(hsr_stag, hsr->prot_version);
 =20
- done:
- 	/* Push back here */
-@@ -539,9 +542,12 @@ void hsr_prune_nodes(struct timer_list *t)
- 		if (time_is_before_jiffies(timestamp +
- 				msecs_to_jiffies(HSR_NODE_FORGET_TIME))) {
- 			hsr_nl_nodedown(hsr, node->macaddress_A);
--			list_del_rcu(&node->mac_list);
--			/* Note that we need to free this entry later: */
--			kfree_rcu(node, rcu_head);
-+			if (!node->removed) {
-+				list_del_rcu(&node->mac_list);
-+				node->removed =3D true;
-+				/* Note that we need to free this entry later: */
-+				kfree_rcu(node, rcu_head);
-+			}
- 		}
+ 	/* From HSRv1 on we have separate supervision sequence numbers. */
+-	spin_lock_irqsave(&master->hsr->seqnr_lock, irqflags);
++	spin_lock_bh(&hsr->seqnr_lock);
+ 	if (hsr->prot_version > 0) {
+ 		hsr_stag->sequence_nr =3D htons(hsr->sup_sequence_nr);
+ 		hsr->sup_sequence_nr++;
+@@ -307,7 +306,7 @@ static void send_hsr_supervision_frame(struct hsr_port =
+*master,
+ 		hsr_stag->sequence_nr =3D htons(hsr->sequence_nr);
+ 		hsr->sequence_nr++;
  	}
- 	spin_unlock_bh(&hsr->list_lock);
-diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
-index bdbb8c822ba1a..b5f902397bf1a 100644
---- a/net/hsr/hsr_framereg.h
-+++ b/net/hsr/hsr_framereg.h
-@@ -80,6 +80,7 @@ struct hsr_node {
- 	bool			san_a;
- 	bool			san_b;
- 	u16			seq_out[HSR_PT_PORTS];
-+	bool			removed;
- 	struct rcu_head		rcu_head;
- };
+-	spin_unlock_irqrestore(&master->hsr->seqnr_lock, irqflags);
++	spin_unlock_bh(&hsr->seqnr_lock);
+=20
+ 	hsr_stag->tlv.HSR_TLV_type =3D type;
+ 	/* TODO: Why 12 in HSRv0? */
+@@ -332,7 +331,6 @@ static void send_prp_supervision_frame(struct hsr_port =
+*master,
+ 	struct hsr_priv *hsr =3D master->hsr;
+ 	struct hsr_sup_payload *hsr_sp;
+ 	struct hsr_sup_tag *hsr_stag;
+-	unsigned long irqflags;
+ 	struct sk_buff *skb;
+=20
+ 	skb =3D hsr_init_skb(master);
+@@ -347,7 +345,7 @@ static void send_prp_supervision_frame(struct hsr_port =
+*master,
+ 	set_hsr_stag_HSR_ver(hsr_stag, (hsr->prot_version ? 1 : 0));
+=20
+ 	/* From HSRv1 on we have separate supervision sequence numbers. */
+-	spin_lock_irqsave(&master->hsr->seqnr_lock, irqflags);
++	spin_lock_bh(&hsr->seqnr_lock);
+ 	hsr_stag->sequence_nr =3D htons(hsr->sup_sequence_nr);
+ 	hsr->sup_sequence_nr++;
+ 	hsr_stag->tlv.HSR_TLV_type =3D PRP_TLV_LIFE_CHECK_DD;
+@@ -358,11 +356,11 @@ static void send_prp_supervision_frame(struct hsr_por=
+t *master,
+ 	ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
+=20
+ 	if (skb_put_padto(skb, ETH_ZLEN)) {
+-		spin_unlock_irqrestore(&master->hsr->seqnr_lock, irqflags);
++		spin_unlock_bh(&hsr->seqnr_lock);
+ 		return;
+ 	}
+=20
+-	spin_unlock_irqrestore(&master->hsr->seqnr_lock, irqflags);
++	spin_unlock_bh(&hsr->seqnr_lock);
+=20
+ 	hsr_forward_skb(skb, master);
+ }
+@@ -444,7 +442,7 @@ void hsr_dev_setup(struct net_device *dev)
+ 	dev->header_ops =3D &hsr_header_ops;
+ 	dev->netdev_ops =3D &hsr_device_ops;
+ 	SET_NETDEV_DEVTYPE(dev, &hsr_type);
+-	dev->priv_flags |=3D IFF_NO_QUEUE;
++	dev->priv_flags |=3D IFF_NO_QUEUE | IFF_DISABLE_NETPOLL;
+=20
+ 	dev->needs_free_netdev =3D true;
+=20
+diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
+index 3a97b00b6d978..0cb8f4040bfd1 100644
+--- a/net/hsr/hsr_forward.c
++++ b/net/hsr/hsr_forward.c
+@@ -499,7 +499,6 @@ static void handle_std_frame(struct sk_buff *skb,
+ {
+ 	struct hsr_port *port =3D frame->port_rcv;
+ 	struct hsr_priv *hsr =3D port->hsr;
+-	unsigned long irqflags;
+=20
+ 	frame->skb_hsr =3D NULL;
+ 	frame->skb_prp =3D NULL;
+@@ -509,10 +508,10 @@ static void handle_std_frame(struct sk_buff *skb,
+ 		frame->is_from_san =3D true;
+ 	} else {
+ 		/* Sequence nr for the master node */
+-		spin_lock_irqsave(&hsr->seqnr_lock, irqflags);
++		spin_lock_bh(&hsr->seqnr_lock);
+ 		frame->sequence_nr =3D hsr->sequence_nr;
+ 		hsr->sequence_nr++;
+-		spin_unlock_irqrestore(&hsr->seqnr_lock, irqflags);
++		spin_unlock_bh(&hsr->seqnr_lock);
+ 	}
+ }
 =20
 --=20
 2.38.1
