@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9811F63825C
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 03:24:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DD2A638268
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 03:32:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbiKYCYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 21:24:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34944 "EHLO
+        id S229696AbiKYCcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 21:32:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbiKYCYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 21:24:31 -0500
+        with ESMTP id S229459AbiKYCcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 21:32:03 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966A024F23
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 18:23:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6847913D65
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 18:31:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669343016;
+        s=mimecast20190719; t=1669343465;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=u9r9NHOb4ra+Mf5QnW792ruIJGFPU0f/l9NNTHPvhbU=;
-        b=ZJoZDa23tWWfLiT6o7gmZqeTEyICSKc/KoAvJ61rz/oqM5SMRdpp31+ft9rLMhWKz0fVCQ
-        rsD8QF1u/Bco+pnRSvcTA+CXyXgHZnzduX6t++4QrwsO/rTBUNNQcGI84h0OrDIDhLqabR
-        8tPSWoaXi926JppnSquc8gqx6OwJ52Q=
+        bh=TPhqQvzp7+vTWf7DLXTpXvjBtnzoyoWNsTDksErqOjk=;
+        b=cVvXHmZhXnO4U0AdBAPoFKTYh7tdqnHBqWdgdXo8EVWSHsSkW7KSfP8hh0y2sqG64jgXKH
+        i2bBwACwu0s82C0VvtbKJ8qT6KihkHP/WGTRElayNK8acXize92HAVmZY9aj8oqNTSj5gU
+        qRkX/hBpjup9gjkrOB7YC6LwbxqivdQ=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-597-4tZ2cEygMSyJFltOmf9FTg-1; Thu, 24 Nov 2022 21:23:29 -0500
-X-MC-Unique: 4tZ2cEygMSyJFltOmf9FTg-1
+ us-mta-53-ZjLd_kyjM9absemzuZ3fNA-1; Thu, 24 Nov 2022 21:31:04 -0500
+X-MC-Unique: ZjLd_kyjM9absemzuZ3fNA-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 17138803481;
-        Fri, 25 Nov 2022 02:23:29 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 804BC85A588;
+        Fri, 25 Nov 2022 02:31:03 +0000 (UTC)
 Received: from server.redhat.com (ovpn-12-152.pek2.redhat.com [10.72.12.152])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C482A1415114;
-        Fri, 25 Nov 2022 02:23:25 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B53731415114;
+        Fri, 25 Nov 2022 02:30:48 +0000 (UTC)
 From:   Cindy Lu <lulu@redhat.com>
 To:     lulu@redhat.com, jasowang@redhat.com, mst@redhat.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Cc:     stable@vger.kernel.org
-Subject: [PATCH v2] vhost_vdpa: fix the crash in unmap a large memory
-Date:   Fri, 25 Nov 2022 10:23:17 +0800
-Message-Id: <20221125022317.2157263-1-lulu@redhat.com>
+Subject: [PATCH v3] vhost_vdpa: fix the crash in unmap a large memory
+Date:   Fri, 25 Nov 2022 10:30:45 +0800
+Message-Id: <20221125023045.2158413-1-lulu@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -119,6 +119,7 @@ Call Trace:
 [  647.897348] CR2: 00007f02c27a3a20 CR3: 0000000101b0c006 CR4: 0000000000372ee0
 [  647.898719] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 
+Cc: stable@vger.kernel.org
 Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
 Signed-off-by: Cindy Lu <lulu@redhat.com>
 ---
