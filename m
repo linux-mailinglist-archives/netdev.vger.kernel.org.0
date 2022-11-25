@@ -2,255 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F323563822B
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 02:49:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9811F63825C
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 03:24:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229502AbiKYBt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Nov 2022 20:49:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35960 "EHLO
+        id S229676AbiKYCYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Nov 2022 21:24:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiKYBt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 20:49:27 -0500
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABACB382
-        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 17:49:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1669340966; x=1700876966;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=V6hRe+lw7TrFeuA/E5iAbYWM1waB+/VodsZz3s36HwY=;
-  b=temTl6RbfYhlFAb/u74aMycpqTyx2Ikzj72db5IrRmO+wSn7++0QDIXX
-   G0iI/jS3QX04eFiMf5+7Y7/mUaUYtIsIqh0ZMMtb4VqdB4xJfMpIPX9N2
-   ldcHCzXkArUSHbd+Q/z5DPgaFFnSKLFbcrZNTKHKfpu6xKWG5MrE+8SSN
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.96,191,1665446400"; 
-   d="scan'208";a="283772769"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-9fe6ad2f.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2022 01:49:21 +0000
-Received: from EX13MTAUWC002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-m6i4x-9fe6ad2f.us-east-1.amazon.com (Postfix) with ESMTPS id B384A824B1;
-        Fri, 25 Nov 2022 01:49:18 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWC002.ant.amazon.com (10.43.162.240) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Fri, 25 Nov 2022 01:49:17 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.134) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Fri, 25 Nov 2022 01:49:13 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <harperchen1110@gmail.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <syzkaller@googlegroups.com>
-Subject: Re: [PATCH v1 net] af_unix: Call sk_diag_fill() under the bucket lock.
-Date:   Fri, 25 Nov 2022 10:49:04 +0900
-Message-ID: <20221125014905.98714-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CAO4mrffDLiqo3hWRC=uP_E-3VQSV4O=1BiOaS0Z1J0GHLVgzVQ@mail.gmail.com>
-References: <CAO4mrffDLiqo3hWRC=uP_E-3VQSV4O=1BiOaS0Z1J0GHLVgzVQ@mail.gmail.com>
+        with ESMTP id S229661AbiKYCYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Nov 2022 21:24:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966A024F23
+        for <netdev@vger.kernel.org>; Thu, 24 Nov 2022 18:23:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669343016;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=u9r9NHOb4ra+Mf5QnW792ruIJGFPU0f/l9NNTHPvhbU=;
+        b=ZJoZDa23tWWfLiT6o7gmZqeTEyICSKc/KoAvJ61rz/oqM5SMRdpp31+ft9rLMhWKz0fVCQ
+        rsD8QF1u/Bco+pnRSvcTA+CXyXgHZnzduX6t++4QrwsO/rTBUNNQcGI84h0OrDIDhLqabR
+        8tPSWoaXi926JppnSquc8gqx6OwJ52Q=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-597-4tZ2cEygMSyJFltOmf9FTg-1; Thu, 24 Nov 2022 21:23:29 -0500
+X-MC-Unique: 4tZ2cEygMSyJFltOmf9FTg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 17138803481;
+        Fri, 25 Nov 2022 02:23:29 +0000 (UTC)
+Received: from server.redhat.com (ovpn-12-152.pek2.redhat.com [10.72.12.152])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C482A1415114;
+        Fri, 25 Nov 2022 02:23:25 +0000 (UTC)
+From:   Cindy Lu <lulu@redhat.com>
+To:     lulu@redhat.com, jasowang@redhat.com, mst@redhat.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Subject: [PATCH v2] vhost_vdpa: fix the crash in unmap a large memory
+Date:   Fri, 25 Nov 2022 10:23:17 +0800
+Message-Id: <20221125022317.2157263-1-lulu@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.134]
-X-ClientProxiedBy: EX13D31UWC002.ant.amazon.com (10.43.162.220) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Wei Chen <harperchen1110@gmail.com>
-Date:   Thu, 24 Nov 2022 17:37:04 +0800
-> Dear Linux developers,
-> 
-> My step tracing over Linux found the following C program would trigger
-> the reported crash. I hope it is helpful for bug fix.
+While testing in vIOMMU, sometimes guest will unmap very large memory,
+which will cause the crash. To fix this,Move the iommu_unmap to
+vhost_vdpa_pa_unmap/vhost_vdpa_va_unmap and only unmap the memory
+that saved in iotlb.
 
-Thank you, Wei.
+Call Trace:
+[  647.820144] ------------[ cut here ]------------
+[  647.820848] kernel BUG at drivers/iommu/intel/iommu.c:1174!
+[  647.821486] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+[  647.822082] CPU: 10 PID: 1181 Comm: qemu-system-x86 Not tainted 6.0.0-rc1home_lulu_2452_lulu7_vhost+ #62
+[  647.823139] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.15.0-29-g6a62e0cb0dfe-prebuilt.qem4
+[  647.824365] RIP: 0010:domain_unmap+0x48/0x110
+[  647.825424] Code: 48 89 fb 8d 4c f6 1e 39 c1 0f 4f c8 83 e9 0c 83 f9 3f 7f 18 48 89 e8 48 d3 e8 48 85 c0 75 59
+[  647.828064] RSP: 0018:ffffae5340c0bbf0 EFLAGS: 00010202
+[  647.828973] RAX: 0000000000000001 RBX: ffff921793d10540 RCX: 000000000000001b
+[  647.830083] RDX: 00000000080000ff RSI: 0000000000000001 RDI: ffff921793d10540
+[  647.831214] RBP: 0000000007fc0100 R08: ffffae5340c0bcd0 R09: 0000000000000003
+[  647.832388] R10: 0000007fc0100000 R11: 0000000000100000 R12: 00000000080000ff
+[  647.833668] R13: ffffae5340c0bcd0 R14: ffff921793d10590 R15: 0000008000100000
+[  647.834782] FS:  00007f772ec90640(0000) GS:ffff921ce7a80000(0000) knlGS:0000000000000000
+[  647.836004] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  647.836990] CR2: 00007f02c27a3a20 CR3: 0000000101b0c006 CR4: 0000000000372ee0
+[  647.838107] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  647.839283] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  647.840666] Call Trace:
+[  647.841437]  <TASK>
+[  647.842107]  intel_iommu_unmap_pages+0x93/0x140
+[  647.843112]  __iommu_unmap+0x91/0x1b0
+[  647.844003]  iommu_unmap+0x6a/0x95
+[  647.844885]  vhost_vdpa_unmap+0x1de/0x1f0 [vhost_vdpa]
+[  647.845985]  vhost_vdpa_process_iotlb_msg+0xf0/0x90b [vhost_vdpa]
+[  647.847235]  ? _raw_spin_unlock+0x15/0x30
+[  647.848181]  ? _copy_from_iter+0x8c/0x580
+[  647.849137]  vhost_chr_write_iter+0xb3/0x430 [vhost]
+[  647.850126]  vfs_write+0x1e4/0x3a0
+[  647.850897]  ksys_write+0x53/0xd0
+[  647.851688]  do_syscall_64+0x3a/0x90
+[  647.852508]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+[  647.853457] RIP: 0033:0x7f7734ef9f4f
+[  647.854408] Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 29 76 f8 ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c8
+[  647.857217] RSP: 002b:00007f772ec8f040 EFLAGS: 00000293 ORIG_RAX: 0000000000000001
+[  647.858486] RAX: ffffffffffffffda RBX: 00000000fef00000 RCX: 00007f7734ef9f4f
+[  647.859713] RDX: 0000000000000048 RSI: 00007f772ec8f090 RDI: 0000000000000010
+[  647.860942] RBP: 00007f772ec8f1a0 R08: 0000000000000000 R09: 0000000000000000
+[  647.862206] R10: 0000000000000001 R11: 0000000000000293 R12: 0000000000000010
+[  647.863446] R13: 0000000000000002 R14: 0000000000000000 R15: ffffffff01100000
+[  647.864692]  </TASK>
+[  647.865458] Modules linked in: rpcsec_gss_krb5 auth_rpcgss nfsv4 dns_resolver nfs lockd grace fscache netfs v]
+[  647.874688] ---[ end trace 0000000000000000 ]---
+[  647.876013] RIP: 0010:domain_unmap+0x48/0x110
+[  647.878306] Code: 48 89 fb 8d 4c f6 1e 39 c1 0f 4f c8 83 e9 0c 83 f9 3f 7f 18 48 89 e8 48 d3 e8 48 85 c0 75 59
+[  647.884581] RSP: 0018:ffffae5340c0bbf0 EFLAGS: 00010202
+[  647.886308] RAX: 0000000000000001 RBX: ffff921793d10540 RCX: 000000000000001b
+[  647.888775] RDX: 00000000080000ff RSI: 0000000000000001 RDI: ffff921793d10540
+[  647.890295] RBP: 0000000007fc0100 R08: ffffae5340c0bcd0 R09: 0000000000000003
+[  647.891660] R10: 0000007fc0100000 R11: 0000000000100000 R12: 00000000080000ff
+[  647.893019] R13: ffffae5340c0bcd0 R14: ffff921793d10590 R15: 0000008000100000
+[  647.894506] FS:  00007f772ec90640(0000) GS:ffff921ce7a80000(0000) knlGS:0000000000000000
+[  647.895963] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  647.897348] CR2: 00007f02c27a3a20 CR3: 0000000101b0c006 CR4: 0000000000372ee0
+[  647.898719] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 
-I guess you commented out the sock_diag_check_cookie() validation ?
-Otherwise you would have to set req.udr.udiag_cookie.
+Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+Signed-off-by: Cindy Lu <lulu@redhat.com>
+---
+ drivers/vhost/vdpa.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-For the record, my repro:
-
----8<---
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/un.h>
-#include <linux/netlink.h>
-#include <linux/rtnetlink.h>
-#include <linux/sock_diag.h>
-#include <linux/unix_diag.h>
-
-void main(void)
-{
-	struct sockaddr_nl nladdr = {
-		.nl_family = AF_NETLINK
-	};
-	struct {
-		struct nlmsghdr nlh;
-		struct unix_diag_req udr;
-	} req = {
-		.nlh = {
-			.nlmsg_len = sizeof(req),
-			.nlmsg_type = SOCK_DIAG_BY_FAMILY,
-			.nlmsg_flags = NLM_F_REQUEST
-		},
-		.udr = {
-			.sdiag_family = AF_UNIX,
-			.udiag_show = UDIAG_SHOW_UID,
-		}
-	};
-	struct iovec iov = {
-		.iov_base = &req,
-		.iov_len = sizeof(req)
-	};
-	struct msghdr msg = {
-		.msg_name = &nladdr,
-		.msg_namelen = sizeof(nladdr),
-		.msg_iov = &iov,
-		.msg_iovlen = 1
-	};
-	int netlink_fd, unix_fd, ret;
-	struct stat file_stat;
-	socklen_t optlen;
-	__u64 cookie;
-
-	unix_fd = socket(AF_UNIX, SOCK_STREAM, 0);
-	fstat(unix_fd, &file_stat);
-	optlen = sizeof(cookie);
-	getsockopt(unix_fd, SOL_SOCKET, SO_COOKIE, &cookie, &optlen);
-
-	req.udr.udiag_ino = file_stat.st_ino;
-	req.udr.udiag_cookie[0] = (__u32)cookie;
-	req.udr.udiag_cookie[1] = (__u32)(cookie >> 32);
-
-	netlink_fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_SOCK_DIAG);
-	sendmsg(netlink_fd, &msg, 0);
-
-	close(netlink_fd);
-	close(unix_fd);
-}
----8<---
-
-
-Interestingly, I only see the NULL deref with this patch applied.
-Anyway, I'll post a fix later :)
-
----8<---
-diff --git a/net/unix/diag.c b/net/unix/diag.c
-index 105f522a89fe..f1c8f565af77 100644
---- a/net/unix/diag.c
-+++ b/net/unix/diag.c
-@@ -117,6 +117,7 @@ static int sk_diag_show_rqlen(struct sock *sk, struct sk_buff *nlskb)
- static int sk_diag_dump_uid(struct sock *sk, struct sk_buff *nlskb)
- {
- 	uid_t uid = from_kuid_munged(sk_user_ns(nlskb->sk), sock_i_uid(sk));
-+	printk(KERN_ERR "sk_diag_dump_uid: sk: %px\tskb->sk: %px, %px\n", sk, nlskb->sk, sk_user_ns(nlskb->sk));
- 	return nla_put(nlskb, UNIX_DIAG_UID, sizeof(uid_t), &uid);
- }
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 166044642fd5..e5a07751bf45 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -692,6 +692,8 @@ static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v,
+ 	struct vhost_iotlb_map *map;
+ 	struct page *page;
+ 	unsigned long pfn, pinned;
++	struct vdpa_device *vdpa = v->vdpa;
++	const struct vdpa_config_ops *ops = vdpa->config;
  
----8<---
+ 	while ((map = vhost_iotlb_itree_first(iotlb, start, last)) != NULL) {
+ 		pinned = PFN_DOWN(map->size);
+@@ -703,6 +705,8 @@ static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v,
+ 			unpin_user_page(page);
+ 		}
+ 		atomic64_sub(PFN_DOWN(map->size), &dev->mm->pinned_vm);
++		if ((ops->dma_map == NULL) && (ops->set_map == NULL))
++			iommu_unmap(v->domain, map->start, map->size);
+ 		vhost_iotlb_map_free(iotlb, map);
+ 	}
+ }
+@@ -713,11 +717,15 @@ static void vhost_vdpa_va_unmap(struct vhost_vdpa *v,
+ {
+ 	struct vhost_iotlb_map *map;
+ 	struct vdpa_map_file *map_file;
++	struct vdpa_device *vdpa = v->vdpa;
++	const struct vdpa_config_ops *ops = vdpa->config;
+ 
+ 	while ((map = vhost_iotlb_itree_first(iotlb, start, last)) != NULL) {
+ 		map_file = (struct vdpa_map_file *)map->opaque;
+ 		fput(map_file->file);
+ 		kfree(map_file);
++		if (ops->set_map == NULL)
++			iommu_unmap(v->domain, map->start, map->size);
+ 		vhost_iotlb_map_free(iotlb, map);
+ 	}
+ }
+@@ -805,8 +813,6 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v,
+ 	} else if (ops->set_map) {
+ 		if (!v->in_batch)
+ 			ops->set_map(vdpa, asid, iotlb);
+-	} else {
+-		iommu_unmap(v->domain, iova, size);
+ 	}
+ 
+ 	/* If we are in the middle of batch processing, delay the free
+-- 
+2.34.3
 
-
-> 
-> #include <errno.h>
-> #include <stdio.h>
-> #include <string.h>
-> #include <unistd.h>
-> #include <sys/socket.h>
-> #include <sys/un.h>
-> #include <linux/netlink.h>
-> #include <linux/rtnetlink.h>
-> #include <linux/sock_diag.h>
-> #include <linux/unix_diag.h>
-> #include <linux/stat.h>
-> #include <sys/types.h>
-> #include <sys/stat.h>
-> 
-> int main(void) {
->     int fd1 = socket(AF_UNIX, SOCK_STREAM, 0);
->     struct stat file_stat;
->     fstat(fd1, &file_stat);
->     int fd2 = socket(AF_NETLINK, SOCK_RAW, NETLINK_SOCK_DIAG);
-> 
->     struct sockaddr_nl nladdr = {
->         .nl_family = AF_NETLINK
->     };
->     struct {
->         struct nlmsghdr nlh;
->         struct unix_diag_req udr;
->     } req = {
->         .nlh = {
->             .nlmsg_len = sizeof(req),
->             .nlmsg_type = SOCK_DIAG_BY_FAMILY,
->             .nlmsg_flags = NLM_F_REQUEST
->         },
->         .udr = {
->             .sdiag_family = AF_UNIX,
->             .udiag_states = -1,
->             .udiag_ino = file_stat.st_ino,
->             .udiag_show = 0x40
->         }
->     };
->     struct iovec iov = {
->         .iov_base = &req,
->         .iov_len = sizeof(req)
->     };
->     struct msghdr msg = {
->         .msg_name = &nladdr,
->         .msg_namelen = sizeof(nladdr),
->         .msg_iov = &iov,
->         .msg_iovlen = 1
->     };
-> 
->     sendmsg(fd2, &msg, 0);
->     return 0;
-> }
-> 
-> Best,
-> Wei
-> 
-> On Wed, 23 Nov 2022 at 23:38, Paolo Abeni <pabeni@redhat.com> wrote:
-> >
-> > On Wed, 2022-11-23 at 07:22 -0800, Kuniyuki Iwashima wrote:
-> > > From:   Wei Chen <harperchen1110@gmail.com>
-> > > Date:   Wed, 23 Nov 2022 23:09:53 +0800
-> > > > Dear Paolo,
-> > > >
-> > > > Could you explain the meaning of modified "ss" version to reproduce
-> > > > the bug? I'd like to learn how to reproduce the bug in the user space
-> > > > to facilitate the bug fix.
-> > >
-> > > I think it means to drop NLM_F_DUMP and modify args as needed because
-> > > ss dumps all sockets, not exactly a single socket.
-> >
-> > Exactly! Additionally 'ss' must fill udiag_ino and udiag_cookie with
-> > values matching a live unix socket. And before that you have to add
-> > more code to allow 'ss' dumping such values (or fetch them with some
-> > bpf/perf probe).
-> >
-> > >
-> > > Ah, I misunderstood that the found sk is passed to sk_user_ns(), but it's
-> > > skb->sk.
-> >
-> > I did not double check the race you outlined in this patch. That could
-> > still possibly be a valid/existing one.
-> >
-> > > P.S.  I'm leaving for Japan today and will be bit slow this and next week
-> > > for vacation.
-> >
-> > Have a nice trip ;)
-> >
-> > /P
