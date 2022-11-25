@@ -2,40 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35390638554
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 09:37:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D45D263855F
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 09:42:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229770AbiKYIg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 03:36:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
+        id S229619AbiKYImQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 03:42:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbiKYIgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 03:36:46 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EEB3317CE
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 00:36:40 -0800 (PST)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oyUCN-0003O2-7n; Fri, 25 Nov 2022 09:36:39 +0100
-Message-ID: <7206722a-f97e-5222-bea6-e327b22e4b5b@leemhuis.info>
-Date:   Fri, 25 Nov 2022 09:36:38 +0100
+        with ESMTP id S229468AbiKYImP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 03:42:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C8623EAC;
+        Fri, 25 Nov 2022 00:42:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF870B8297E;
+        Fri, 25 Nov 2022 08:42:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA784C433D6;
+        Fri, 25 Nov 2022 08:42:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669365728;
+        bh=wNK5p2ICZvmDUo5ht1Bd/UZayoyWfUcZHgC5WWokmFc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=JjgMYWb2d03U7t8XE3LAWDfXT3leoe5w1RvlMgUox4xqkUB5pYaUf+dmSrPiJwuh6
+         ddNJWtrf2mI/zL+KrxLS9nrEKgkSejVshTEL6T8GPeS770FQ3Am01t0g7t2Aky7puP
+         R/zUT18zrtFZghuodvIcp/dvzPcHmmjIXmnuGMZ2ZhQbO/UuBYyMn7lqWwfNxy1Q4y
+         cGWC+W8cc2y9VuzcICxd2FNMNzDuNxwQifa7Y9J0o2zTkXAQHyi9Px3A3dkvfkuDev
+         kB6cM/hAOyMsojHp07cHF6LaIHHAfFQ4WkuBWGS4mcQDzVYplHZxFAllWxJP38VHqJ
+         3nE7yzVpV59Ag==
+Message-ID: <6dc36b74-6982-7fcf-a396-8977f1146c05@kernel.org>
+Date:   Fri, 25 Nov 2022 10:41:58 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: RTM_DELROUTE not sent anymore when deleting (last) nexthop of
- routes in 6.1 #forregzbot
-Content-Language: en-US, de-DE
-To:     Network Development <netdev@vger.kernel.org>
-Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <CAOiHx==ddZr6mvvbzgoAwwhJW76qGNVOcNsTG-6m79Ch+=aA5Q@mail.gmail.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <CAOiHx==ddZr6mvvbzgoAwwhJW76qGNVOcNsTG-6m79Ch+=aA5Q@mail.gmail.com>
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v3 net-next 4/6] net: ethernet: ti: am65-cpsw: Add
+ suspend/resume support
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, maciej.fijalkowski@intel.com, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, vigneshr@ti.com,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20221123124835.18937-1-rogerq@kernel.org>
+ <20221123124835.18937-5-rogerq@kernel.org> <Y35bahTL2cMgXM1F@lunn.ch>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <Y35bahTL2cMgXM1F@lunn.ch>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1669365400;54b58b53;
-X-HE-SMSGID: 1oyUCN-0003O2-7n
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -43,51 +60,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Note: this mail is primarily send for documentation purposes and/or for
-regzbot, my Linux kernel regression tracking bot. That's why I removed
-most or all folks from the list of recipients, but left any that looked
-like a mailing lists. These mails usually contain '#forregzbot' in the
-subject, to make them easy to spot and filter out.]
-
-[TLDR: I'm adding this regression report to the list of tracked
-regressions; all text from me you find below is based on a few templates
-paragraphs you might have encountered already already in similar form.]
-
-Hi, this is your Linux kernel regression tracker.
-
-On 24.11.22 10:20, Jonas Gorski wrote:
-> Hello,
+On 23/11/2022 19:42, Andrew Lunn wrote:
+>> +static int am65_cpsw_nuss_ndev_add_tx_napi(struct am65_cpsw_common *common);
+>> +
 > 
-> when an IPv4 route gets removed because its nexthop was deleted, the
-> kernel does not send a RTM_DELROUTE netlink notifications anymore in
-> 6.1. A bisect lead me to 61b91eb33a69 ("ipv4: Handle attempt to delete
-> multipath route when fib_info contains an nh reference"), and
-> reverting it makes it work again.
+> Please move the code around so you don't need this. Ideally as a patch
+> which only does the move. It is then trivial to review.
 
-Thanks for the report. To be sure below issue doesn't fall through the
-cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
-tracking bot:
+OK.
 
-#regzbot ^introduced 61b91eb33a69
-#regzbot title net: RTM_DELROUTE not sent anymore when deleting (last)
-nexthop of routes
-#regzbot ignore-activity
+> 
+>>  static void am65_cpsw_port_set_sl_mac(struct am65_cpsw_port *slave,
+>>  				      const u8 *dev_addr)
+>>  {
+>> @@ -555,11 +558,24 @@ static int am65_cpsw_nuss_ndo_slave_open(struct net_device *ndev)
+>>  	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
+>>  	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
+>>  	int ret, i;
+>> +	u32 reg;
+>>  
+>>  	ret = pm_runtime_resume_and_get(common->dev);
+>>  	if (ret < 0)
+>>  		return ret;
+>>  
+>> +	/* Idle MAC port */
+>> +	cpsw_sl_ctl_set(port->slave.mac_sl, CPSW_SL_CTL_CMD_IDLE);
+>> +	cpsw_sl_wait_for_idle(port->slave.mac_sl, 100);
+>> +	cpsw_sl_ctl_reset(port->slave.mac_sl);
+>> +
+>> +	/* soft reset MAC */
+>> +	cpsw_sl_reg_write(port->slave.mac_sl, CPSW_SL_SOFT_RESET, 1);
+>> +	mdelay(1);
+>> +	reg = cpsw_sl_reg_read(port->slave.mac_sl, CPSW_SL_SOFT_RESET);
+>> +	if (reg)
+>> +		dev_info(common->dev, "mac reset not yet done\n");
+> 
+> Should that be dev_info()? dev_dbg()
 
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply -- ideally with also
-telling regzbot about it, as explained here:
-https://linux-regtracking.leemhuis.info/tracked-regression/
+Do you think we should error out here as this might indicate some
+hardware malfunction and it is unlikely to work?
+In that case dev_err() seems more appropriate?
 
-Reminder for developers: When fixing the issue, add 'Link:' tags
-pointing to the report (the mail this one replies to), as explained for
-in the Linux kernel's documentation; above webpage explains why this is
-important for tracked regressions.
+> 
+>        Andrew
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
+cheers,
+-roger
