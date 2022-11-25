@@ -2,102 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9395D638A8B
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 13:50:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CD0F638AEC
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 14:12:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229463AbiKYMuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 07:50:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
+        id S229580AbiKYNMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 08:12:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiKYMuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 07:50:06 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2073.outbound.protection.outlook.com [40.107.243.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1198C1C101
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 04:50:05 -0800 (PST)
+        with ESMTP id S229462AbiKYNMf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 08:12:35 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2075.outbound.protection.outlook.com [40.107.92.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9AC13DC8
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 05:12:33 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AYZKAcuX+kenTG/vPpFy/C2qzvoPBqlpm9vW2en9wvmtyMz3tgZnGDybacwN/wyvG+JqAUWINXuUq1qOS/G4ecvRgQwoB2vyL7A4MybQz7n3yz2C/nrbD9arLGwKE4emCvEbRX77jd0lKlnfvIWqOxrofVWXqWVt9v8Nhqc+/2eZhAXjioeV7elXkurMQsLCYx287rkvql8/hn6WTBDDkuFZ50Gk29jDtrXKPkvu0UDttKUKIk4d12moVg1C/+w7R3MgAR1nvOEuy7HzYg/hE0+m1SRqDPCxTx5spRtfSWWFhiE8MMlLEZnEv68iP6hiTbRfAoq15bIm0C2726PUpA==
+ b=b7LqcMaR8CoD5ns3yT12Gg9NjjDPkNwlJG2ylqJ6DcQPzLHt9jDQVxfccdFC5RtH0oMjQM2DMjVNzMk2cMPJqyw3TQpBbR7DFq1nxrjypkbGVjFBQuprzv2q3QwOv1OmEYk0BkSNCVxqtQtq8b+ZWl8L2LJAoHqQF/VDmxxzXmBJNpoAJc13fBSz+TiaJ5cBIba/ubRR6GGZ/Y5LHXflctoXofl/zbgGESrtgBxPJJcL36jq9yIYc3s/XzYM5Z1QTym/vMOWjVD/dkw4nHi8KVzwY1ft3lYtDyrSyKEd/7VuylFnnzGu3E7n+MPi64kSwMcjlGZfszVGVIsPb9bwDw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gLUDcRXIeRlLM8nFqj0C1koMKsAnZKhZMxZGwdPSY9I=;
- b=bNwAGflBDCyPWDW/DP7AzmDT6YeWs1Os+8g98ZKB7bYdEDXfq/xKSP5EQlTbrJ5x/GsjqgRAmXNlq0t+9ED4vnTEwAZhVV2zV3c+xbVtQwyZAR6QCm3rXXC8uOa0hve/J/jBqqSE+RXa1cJQZLAmxDXThdpbj17JzpolZvMVwEmX/2aghi90NyBZn49Fo5Aj95nIJMwbiwhwu4cKcDh9CoyET7AT/DZIZoHAVPhxRU++v08jmSiKQ2kcqN11YKpwkes9yfF8OjtQJ8xwn7LwVfQ4w1ZqCuT9BuGjBkZ4gGBc55Bui9CIwA9GvIsA3WfCHhXhmylKwmF8q3mksEfeTw==
+ bh=Px+VlkTr3SbCmjpqDoVO+pUwjWOLBHmwtrgFxjdKewg=;
+ b=S7AljSt54SaSapB3+mSbiJ3ghm3W5/7i+G3zW0uiM8xLV+ryrfJ6bBKhaJ5NsqIyAlL3Y4WE2ZU5CljOYqckfK4RZ8ceJCKJteg78/at4FkcZRfVu68sgJzxdoCzkx8XJ2y7GJxnDLWGZV/nRLIHX9RLcduxTDeAdZ4MKwwkR2e3WL8irzmnQ5QlCtw1btAlm+alWR5eAJot9KB6o/VKcDI10N+XN18Srigv8uVEqAYoe/ajRt4kK07PSgjqkYUJC5nFbpAPQoeR/oTyYH1MdbPPpM2s0nGWe+Re5xWymaWfxc2DutJ4FzFjhDNmleLa4AYyKgksq0kR4RrkJW1hgQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gLUDcRXIeRlLM8nFqj0C1koMKsAnZKhZMxZGwdPSY9I=;
- b=cYDfJytVRyaLtaeyA1dMMAmQr8Inkwf7n0ybEr7L6hkDxQWsZKFJhZvXyvQDpl6cosPUuvCXN30q+q07jwAT7U2bKIY+B3vFV0a6TDo6QL9DsJK1V8/ly7zGs30U3EcQREtmsFpb6bP0qfbL2F3LdjaS8eZR2VoLrWEQ3vylPshyC4wZXNgev7VCr1AuBkPd2RGujATGN3IwkRFp8p8T6kXOcFoFSZVxGugDr7KJLI8iR2Ih90IxAGJdIKpn99P3Jwo/KK26pEHgDdiaK55DOITK4QSiBY8WGvOsj8FgmwAqXOW/BdtHgvMMvo3nAlEFSLWGfKd4w7SLQGajMuXuRQ==
-Received: from MW4PR03CA0077.namprd03.prod.outlook.com (2603:10b6:303:b6::22)
- by PH7PR12MB6659.namprd12.prod.outlook.com (2603:10b6:510:210::5) with
+ bh=Px+VlkTr3SbCmjpqDoVO+pUwjWOLBHmwtrgFxjdKewg=;
+ b=pFHw54BSkcIHTA+6NPLUyaI9x7n7MK1QAHiiQckCAXMLfr192F6eOWitlwoiKvvGpnwfsVv4ltBxMQ5HaS3RR0RgxUefDAYsMl3p+Ok4R+W2FV3AjVSCkr71mjw5mZSuOuvcjIv/TMZLGtXvNQi+Rfcwt5fdYZ+xEegeYc6ZSX1eOzFjVHfho7+5+rbK9nRcJaBcimCrbetToYuEY97FTrsbG9tC80+oU5yI2sYT+EtlrZnVNCjNGlB3lYSK1bR0FLz9PNgKzyBlQPYNAY1E0M8K1kIb3nYCpL014VnIw/VUZ9UM7bgQjURIZJeMCsPIlE4W7r0ZE9SZlRovd6apVQ==
+Received: from BN9PR03CA0397.namprd03.prod.outlook.com (2603:10b6:408:111::12)
+ by BL1PR12MB5730.namprd12.prod.outlook.com (2603:10b6:208:385::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.18; Fri, 25 Nov
- 2022 12:50:01 +0000
-Received: from CO1NAM11FT043.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b6:cafe::45) by MW4PR03CA0077.outlook.office365.com
- (2603:10b6:303:b6::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.19 via Frontend
- Transport; Fri, 25 Nov 2022 12:50:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.19; Fri, 25 Nov
+ 2022 13:12:32 +0000
+Received: from BN8NAM11FT021.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:111:cafe::bc) by BN9PR03CA0397.outlook.office365.com
+ (2603:10b6:408:111::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.20 via Frontend
+ Transport; Fri, 25 Nov 2022 13:12:32 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- CO1NAM11FT043.mail.protection.outlook.com (10.13.174.193) with Microsoft SMTP
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT021.mail.protection.outlook.com (10.13.177.114) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5857.20 via Frontend Transport; Fri, 25 Nov 2022 12:50:01 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.5834.8 via Frontend Transport; Fri, 25 Nov 2022 13:12:31 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 25 Nov
- 2022 04:49:50 -0800
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Fri, 25 Nov 2022 04:49:50 -0800
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.36 via Frontend
- Transport; Fri, 25 Nov 2022 04:49:46 -0800
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     <tianyu.yuan@corigine.com>
-CC:     <jhs@mojatatu.com>, <simon.horman@corigine.com>,
-        <netdev@vger.kernel.org>, <xiyou.wangcong@gmail.com>,
-        <dcaratti@redhat.com>, <edward.cree@amd.com>,
-        <echaudro@redhat.com>, <i.maximets@ovn.org>, <mleitner@redhat.com>,
-        <ozsh@nvidia.com>, <paulb@nvidia.com>, <dev@openvswitch.org>,
-        <oss-drivers@corigine.com>, <ziyang.chen@corigine.com>,
-        <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH] tc: allow gact pipe action offload
-Date:   Fri, 25 Nov 2022 13:49:32 +0100
-Message-ID: <20221125124932.2877006-1-vladbu@nvidia.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <87y1rzqkgf.fsf@nvidia.com>
-References: <87y1rzqkgf.fsf@nvidia.com>
+ 2022 05:12:31 -0800
+Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 25 Nov
+ 2022 05:12:29 -0800
+References: <20221122104112.144293-1-daniel.machon@microchip.com>
+ <20221122104112.144293-3-daniel.machon@microchip.com>
+ <87o7swi9ay.fsf@nvidia.com> <Y4CJWeNMMacAwHiL@DEN-LT-70577>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     <Daniel.Machon@microchip.com>
+CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>, <dsahern@kernel.org>,
+        <stephen@networkplumber.org>, <maxime.chevallier@bootlin.com>,
+        <vladimir.oltean@nxp.com>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next 2/2] dcb: add new subcommand for apptrust
+Date:   Fri, 25 Nov 2022 14:06:36 +0100
+In-Reply-To: <Y4CJWeNMMacAwHiL@DEN-LT-70577>
+Message-ID: <87fse7i3et.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT043:EE_|PH7PR12MB6659:EE_
-X-MS-Office365-Filtering-Correlation-Id: 835819b4-6155-4a79-0230-08dacee39103
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT021:EE_|BL1PR12MB5730:EE_
+X-MS-Office365-Filtering-Correlation-Id: cd078e0b-90e0-4097-c036-08dacee6b62d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MKSpYkALmY9cpXedINZHahhGY7V3IknaB3seuvS6qsyFkva7Bd8ZBcEjEK83q6xS7AiYysSexwdrAMMFkYZvmEDEEI7BO+xZGayWmVuVVB3izRjb1Fqpy4H/mf6N0NEr44K05qe1r0nhLAHNezgQXIBK5ApYTjj3zOG+lalNj+HQPHWWN7JbxfxC1DpzSqKaOzZWPSr7iRA2eCOtmDFbBld3fpy4NEs9pnsw/3tbYPFa9izTbUGDcLc6apuLmFe74i6fDUSNp5ZFi8vFQS0x2JblngTQrbYXRGVhAl7dzy430eUOql0+OyNYzCgRGfnJ+oo24rKVRt6cMwdSLYeqDyImvPDF9HtNcyeN2ww2uRhQE7QJizcKoxuQYvAX7F5f0E4/UgbUj8I8U76XG0djIdPQzrUEaB0RIK2uT4UZjcQVQjucqmnw+1KMaWBRTG9YQkjpIMu49B85V5Mc5vN7Uz7/gwH0DdaKola6QvgHs+W0pbYynfIcweHaPmbuZHs++IuxbM2NjdADq+uz6mWLaG99n9WbZZteMtwDL+/0q1BpHQBKQtxiOsRYd00/dMoX6Nzzm6R3T9X2hGyx8gWsdD9HuM71zhUJ3aIFhK71ZBGoMK0PF0Gb9ArfBgLn0XOnRvkB0eMH3e3r345K9pgpIE2imvoB+lFugsvUvX1s1pTSmptLTN6PfxvqtE1tqjePW5xr2KvA8em9aRLjmKjaWg==
-X-Forefront-Antispam-Report: CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(39860400002)(346002)(376002)(451199015)(36840700001)(46966006)(40470700004)(7636003)(2616005)(40480700001)(6916009)(6666004)(86362001)(54906003)(356005)(316002)(426003)(4326008)(36756003)(40460700003)(7696005)(8676002)(70206006)(47076005)(26005)(70586007)(107886003)(41300700001)(82310400005)(83380400001)(2906002)(336012)(186003)(8936002)(1076003)(5660300002)(7416002)(82740400003)(36860700001)(478600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 5LGcr0+M+JhLY4ka1CWkgK+mSzF4QW5xCdJTzHGqGFKTgeng1h0VOCmm5UPf3j40r1RXvm5aSjV1RMl8dkb7S0UG3sqeh62Ey3nPwp1mtuWdyufH0AnM62U6sHHK9Aw5z0nbB/vrcGzjDqXOCqs+8osdfD3dB7DeKxcIYsfqcACR5OXYaFQhp3LJ1XhE4cErsgjccK8xeELSfsi+LVH92WfF3XYfDx9no9HEEsL+SXpuFEZXbBkB0h/YeNU8iz62QB1ZknuW8pKfQ8s5iEGwilntTQBtxsN20/0hsfoBHqcMUGjdvQQL7w1eqMMy7iFaF21eW/+5ZtElvbGh733LvOAP3roVfKLs+e8RZWkI2Kg/gW+2lZKSSrxmlyGe2kDd1q9iBgVIvpFbi3J3L63eO4t4Cjm1uvBVvWkogLBCCqGmtTYfQf6LRqB4CSGcUDbiA0JRudZBKAMZR0XyQ/diK5BqLT4ZJnotjX97iOT/YD6x/66hcFhxwsHDpQB+tI0idHgkcEHjjn1JDSm2CDnsal3fvwM/n6uLUkcmM4v1mZ9VTmgwQ4KB7QbQUU4e2QGaXZbcRh9TTjeDNqPVJSK/3Jk/AjHz69ZULn/5aVlF6D97jsfa42nnxLLN7ZgTy47OlDoOpDcesaqzRTjMapEGFXyyJzdUvJgO8aqUd2fkfhdlyWTYmexNQCwr//rE9FwMHsFLKJIw3SBE6nB7NnbVag==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(396003)(39860400002)(376002)(136003)(451199015)(36840700001)(40470700004)(46966006)(5660300002)(6916009)(54906003)(4326008)(82310400005)(316002)(47076005)(26005)(8936002)(336012)(2616005)(40460700003)(16526019)(426003)(186003)(6666004)(478600001)(8676002)(70586007)(70206006)(41300700001)(86362001)(36756003)(36860700001)(2906002)(83380400001)(7636003)(356005)(82740400003)(40480700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2022 12:50:01.1200
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2022 13:12:31.8566
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 835819b4-6155-4a79-0230-08dacee39103
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd078e0b-90e0-4097-c036-08dacee6b62d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT043.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT021.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6659
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5730
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -108,129 +105,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Flow action infrastructure and mlx5 only.
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
----
- .../net/ethernet/mellanox/mlx5/core/Makefile  |  3 +-
- .../mellanox/mlx5/core/en/tc/act/act.c        |  2 ++
- .../mellanox/mlx5/core/en/tc/act/act.h        |  1 +
- .../mellanox/mlx5/core/en/tc/act/pipe.c       | 28 +++++++++++++++++++
- net/sched/act_gact.c                          |  7 +++--
- 5 files changed, 37 insertions(+), 4 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/pipe.c
+<Daniel.Machon@microchip.com> writes:
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index a22c32aabf11..566a03e80cf8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -55,7 +55,8 @@ mlx5_core-$(CONFIG_MLX5_CLS_ACT)     += en/tc/act/act.o en/tc/act/drop.o en/tc/a
- 					en/tc/act/vlan.o en/tc/act/vlan_mangle.o en/tc/act/mpls.o \
- 					en/tc/act/mirred.o en/tc/act/mirred_nic.o \
- 					en/tc/act/ct.o en/tc/act/sample.o en/tc/act/ptype.o \
--					en/tc/act/redirect_ingress.o en/tc/act/police.o
-+					en/tc/act/redirect_ingress.o en/tc/act/police.o \
-+					en/tc/act/pipe.o
- 
- ifneq ($(CONFIG_MLX5_TC_CT),)
- 	mlx5_core-y			     += en/tc_ct.o en/tc/ct_fs_dmfs.o
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-index 3337241cfd84..e8fcc18c7074 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-@@ -28,6 +28,7 @@ static struct mlx5e_tc_act *tc_acts_fdb[NUM_FLOW_ACTIONS] = {
- 	[FLOW_ACTION_CT] = &mlx5e_tc_act_ct,
- 	[FLOW_ACTION_MPLS_PUSH] = &mlx5e_tc_act_mpls_push,
- 	[FLOW_ACTION_MPLS_POP] = &mlx5e_tc_act_mpls_pop,
-+	[FLOW_ACTION_PIPE] = &mlx5e_tc_act_pipe,
- 	[FLOW_ACTION_VLAN_PUSH_ETH] = &mlx5e_tc_act_vlan,
- 	[FLOW_ACTION_VLAN_POP_ETH] = &mlx5e_tc_act_vlan,
- };
-@@ -42,6 +43,7 @@ static struct mlx5e_tc_act *tc_acts_nic[NUM_FLOW_ACTIONS] = {
- 	[FLOW_ACTION_CSUM] = &mlx5e_tc_act_csum,
- 	[FLOW_ACTION_MARK] = &mlx5e_tc_act_mark,
- 	[FLOW_ACTION_CT] = &mlx5e_tc_act_ct,
-+	[FLOW_ACTION_PIPE] = &mlx5e_tc_act_pipe,
- };
- 
- /**
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-index e1570ff056ae..dd863e84a925 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-@@ -87,6 +87,7 @@ extern struct mlx5e_tc_act mlx5e_tc_act_sample;
- extern struct mlx5e_tc_act mlx5e_tc_act_ptype;
- extern struct mlx5e_tc_act mlx5e_tc_act_redirect_ingress;
- extern struct mlx5e_tc_act mlx5e_tc_act_police;
-+extern struct mlx5e_tc_act mlx5e_tc_act_pipe;
- 
- struct mlx5e_tc_act *
- mlx5e_tc_act_get(enum flow_action_id act_id,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/pipe.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/pipe.c
-new file mode 100644
-index 000000000000..75207b57bec2
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/pipe.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+// Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-+
-+#include "act.h"
-+#include "en/tc_priv.h"
-+
-+static bool
-+tc_act_can_offload_pipe(struct mlx5e_tc_act_parse_state *parse_state,
-+			const struct flow_action_entry *act,
-+			int act_index,
-+			struct mlx5_flow_attr *attr)
-+{
-+	return true;
-+}
-+
-+static int
-+tc_act_parse_pipe(struct mlx5e_tc_act_parse_state *parse_state,
-+		  const struct flow_action_entry *act,
-+		  struct mlx5e_priv *priv,
-+		  struct mlx5_flow_attr *attr)
-+{
-+	return 0;
-+}
-+
-+struct mlx5e_tc_act mlx5e_tc_act_pipe = {
-+	.can_offload = tc_act_can_offload_pipe,
-+	.parse_action = tc_act_parse_pipe,
-+};
-diff --git a/net/sched/act_gact.c b/net/sched/act_gact.c
-index 62d682b96b88..82d1371e251e 100644
---- a/net/sched/act_gact.c
-+++ b/net/sched/act_gact.c
-@@ -250,15 +250,14 @@ static int tcf_gact_offload_act_setup(struct tc_action *act, void *entry_data,
- 		} else if (is_tcf_gact_goto_chain(act)) {
- 			entry->id = FLOW_ACTION_GOTO;
- 			entry->chain_index = tcf_gact_goto_chain_index(act);
-+		} else if (is_tcf_gact_pipe(act)) {
-+			entry->id = FLOW_ACTION_PIPE;
- 		} else if (is_tcf_gact_continue(act)) {
- 			NL_SET_ERR_MSG_MOD(extack, "Offload of \"continue\" action is not supported");
- 			return -EOPNOTSUPP;
- 		} else if (is_tcf_gact_reclassify(act)) {
- 			NL_SET_ERR_MSG_MOD(extack, "Offload of \"reclassify\" action is not supported");
- 			return -EOPNOTSUPP;
--		} else if (is_tcf_gact_pipe(act)) {
--			NL_SET_ERR_MSG_MOD(extack, "Offload of \"pipe\" action is not supported");
--			return -EOPNOTSUPP;
- 		} else {
- 			NL_SET_ERR_MSG_MOD(extack, "Unsupported generic action offload");
- 			return -EOPNOTSUPP;
-@@ -275,6 +274,8 @@ static int tcf_gact_offload_act_setup(struct tc_action *act, void *entry_data,
- 			fl_action->id = FLOW_ACTION_TRAP;
- 		else if (is_tcf_gact_goto_chain(act))
- 			fl_action->id = FLOW_ACTION_GOTO;
-+		else if (is_tcf_gact_pipe(act))
-+			fl_action->id = FLOW_ACTION_PIPE;
- 		else
- 			return -EOPNOTSUPP;
- 	}
--- 
-2.37.2
+>> > +static int dcb_apptrust_parse_selector_list(int *argcp, char ***argvp,
+>> > +                                         struct dcb_apptrust_table *table)
+>> > +{
+>> > +     char **argv = *argvp;
+>> > +     int argc = *argcp;
+>> > +     __u8 selector;
+>> > +     int ret;
+>> > +
+>> > +     NEXT_ARG_FWD();
+>> > +
+>> > +     /* No trusted selectors ? */
+>> > +     if (argc == 0)
+>> > +             goto out;
+>> > +
+>> > +     while (argc > 0) {
+>> > +             selector = parse_one_of("order", *argv, selector_names,
+>> > +                                     ARRAY_SIZE(selector_names), &ret);
+>> > +             if (ret < 0)
+>> > +                     return -EINVAL;
+>> 
+>> I think this should legitimately conclude the parsing, because it could
+>> be one of the higher-level keywords. Currently there's only one,
+>> "order", but nonetheless. I think it should goto out, and be plonked by
+>> the caller with "what is X?". Similar to how the first argument that
+>> doesn't parse as e.g. DSCP:PRIO bails out and is attempted as a keyword
+>> higher up, and either parsed, or plonked with "what is X".
+>
+> I dont quite follow you on this one. We are parsing the selector list
+> here. Any offending selector is printed, as well as the entire list of
+> valid ones. How could it be one of the higher-level keywords? Am I
+> missing something here? :-)
 
+Imagine there's more to specify than order. Say, per-selector rewrite
+enablement or something. Then the command-line to specify both at the
+same time could look like this:
+
+# dcb apptrust set dev eth0 order dscp pcp rewrite dscp:on pcp:off
+
+I think that currently the "rewrite" keyword will trigger the -EINVAL
+return above and the whole command line will be rejected.
+
+Right now it's all the same, because there's only one thing to
+configure, but it would be cleaner to handle this case as if there could
+be more things to configure.
