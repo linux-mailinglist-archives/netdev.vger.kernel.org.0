@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A35F639212
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 00:11:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3923063921C
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 00:13:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbiKYXLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 18:11:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
+        id S230001AbiKYXNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 18:13:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiKYXK6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 18:10:58 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA80753EDE;
-        Fri, 25 Nov 2022 15:10:57 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id n20so13301230ejh.0;
-        Fri, 25 Nov 2022 15:10:57 -0800 (PST)
+        with ESMTP id S229454AbiKYXNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 18:13:06 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235132FFDD;
+        Fri, 25 Nov 2022 15:13:05 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id e13so8135276edj.7;
+        Fri, 25 Nov 2022 15:13:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q7U7G5CiQhnzMThzAFGcx2s+uHerZTRaEXypLXgixeA=;
-        b=UVMyss+7rEYxSPmb8p82Mv6D8rx8V5naJGOde7hXp+cosnBNL9xoyXahQ1mQYKYnNd
-         Lua1xFxAK17/ooO492vC49X+luSzix/pD+lVfTH2ZK+c5u+IK34+v7gvt/Gh/vGINusx
-         2jxFPSUsb2U4kcU5SkxVPIuki3NalU3fcOHSzoM2QDNCbTs2WLohr8vDm6HLl9GjBMmI
-         Pl8IQrfN7F93OROvLZjI1vbx+ClSjlx2dEQIyhxhXEvmRIOxHN0wXhJWdDYp+jKFQW4O
-         O0ZItoUA0e4H4dX6/MjXpenaKHNs9WOF5SYidalNj8S367LHiqHHRo4NucIfStWJ+G+W
-         Z9mw==
+        bh=YRXgY3Jj45tR352JHVnAGEWNDK4+LNF88JlctEC+BmA=;
+        b=j3YfXXi2BK/0UmIyMEYU4Gb2t3KZRjWodKFfA0jiYv1dUB5lmqNn0PDEGb4yYPU93g
+         pOnB9z7lPCqSCmdIDRrz7HPfJM+Pmllr7qI1szglZRA6i+NorVrK5ayHVx3EdC+JQ9dW
+         q34It7p07BHIvQ1PqQSW/o5aYE7AKR7bi9USit5/aXNEB/0QLnz7dG7sr98f53TlP4W/
+         RC3Ae2ve6tReSFOXusxBgVMtqNG9oae4pkLWd3JM9V7JOkTO7ojuFe66esG6PJZa7KUi
+         +sHUexpTzevypIqqnWkuVjqyYrDP3kkAN0IEYD1aDEyBRuKfvKyWrTdHMBalPS2vGkHR
+         Wuow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Q7U7G5CiQhnzMThzAFGcx2s+uHerZTRaEXypLXgixeA=;
-        b=54FwdKytzyK5ol8LnwDmOEyV5T11KNqvFfckVwWXxvH1HCABwP6PPAZhrOwMOjl3dc
-         6i8OYuTIIN7EY0ZCIEQ+gnYh0OVstYOf3ordNfY5OsQtCHv+/uV4Y2ayBP4Kq0bcneHK
-         ntMjTDSe7ivCX444y7fgmCsqJFCJxPgsE0Ik4e6c0/M+4l21rpJiVqd9a86lRtFjEwlh
-         Hm5LY9yGfPmiHMI0aiZfqAxGOXSBGQNO1RVs/3m7p5uswCQ7rcm10Kp3jXnxRIR1a2gT
-         lvPFaKmLKcH3l8afoNhG+PVoEMccBpQWqkXGF/DDmw8ziQRulnAfhHw7r6GFJccRs3wT
-         Lipg==
-X-Gm-Message-State: ANoB5plLtk6GV2O7bpXYawSMg3YuA7DWM/rtxHykksfACFkEGDmr8raV
-        MY3tiqpaAYCHffmVUXfY7zm27pI/Vkz7jXkdWkI=
-X-Google-Smtp-Source: AA0mqf4eckeBj0/Wph7U7qMN8zegn2m4M80Mi8LIoBZHcXLcZcwyhvtCy2QiSp7o9N+U4CA/QRN9W/V0xDqjX61QtAY=
-X-Received: by 2002:a17:906:6bd8:b0:78b:a8d:e76a with SMTP id
- t24-20020a1709066bd800b0078b0a8de76amr35199024ejs.725.1669417856212; Fri, 25
- Nov 2022 15:10:56 -0800 (PST)
+        bh=YRXgY3Jj45tR352JHVnAGEWNDK4+LNF88JlctEC+BmA=;
+        b=yTg7worR0Js3mFmhtHv5gWqYjVvBp7DSTUnwgPLh3URRD1LYiJKqZKwroFV0LDus80
+         F5uY1LigWLE7UJqDL3xkqSNXfm14ymLRIYKqiuKUZ2NonGDUnQiNjbUKxGLP3Zr16CQh
+         tvpAGyps7NrJAyR1GiQENlvKBeqvjGoHgAzHY0lv5kpSpYj/lPx05gM3QzpQbJps6CZe
+         1BpETFi3NwJYT/yczXn4cHGXEEKrZGQQ+wPLt9t/1vPxSn6fmE3YxuEtzq1duZEpzaHR
+         f7xbgoJlu/8UJkAmbbdpgoBUIawuZnydGWfkdH36wuyL+4ccRx03PwUv7/mDg+QKtD4E
+         QWmg==
+X-Gm-Message-State: ANoB5pkpvMveEILg+D3XKGdo1BSbZprWmFuGeEFWUR99W6DqmF6x+enV
+        +38DnZ1FBIY3zywYkwFI2iMGkxBS1KXJK+OIgxA=
+X-Google-Smtp-Source: AA0mqf6z19L+80cdJdpiBrZekD7zi3b7v//rvam5MbPAwZbpIOcjE6QLP7tSIYyKnEp307OqAF+z+mpMYDtlI5ZbDxA=
+X-Received: by 2002:a05:6402:3893:b0:461:b033:90ac with SMTP id
+ fd19-20020a056402389300b00461b03390acmr25846123edb.257.1669417983555; Fri, 25
+ Nov 2022 15:13:03 -0800 (PST)
 MIME-Version: 1.0
 References: <20221117-b4-amlogic-bindings-convert-v1-0-3f025599b968@linaro.org>
- <20221117-b4-amlogic-bindings-convert-v1-9-3f025599b968@linaro.org>
-In-Reply-To: <20221117-b4-amlogic-bindings-convert-v1-9-3f025599b968@linaro.org>
+ <20221117-b4-amlogic-bindings-convert-v1-12-3f025599b968@linaro.org>
+In-Reply-To: <20221117-b4-amlogic-bindings-convert-v1-12-3f025599b968@linaro.org>
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sat, 26 Nov 2022 00:10:45 +0100
-Message-ID: <CAFBinCBQi21vKuT_eScmswTx2rP1DsH_uEL=+Lp9a5EfgfFUTQ@mail.gmail.com>
-Subject: Re: [PATCH 09/12] dt-bindings: phy: convert meson-gxl-usb2-phy.txt to dt-schema
+Date:   Sat, 26 Nov 2022 00:12:52 +0100
+Message-ID: <CAFBinCC+v-301V2DV5TCMEOW8_q2-+NJCvY+4vCg-05ki+ETUQ@mail.gmail.com>
+Subject: Re: [PATCH 12/12] dt-bindings: net: convert mdio-mux-meson-g12a.txt
+ to dt-schema
 To:     Neil Armstrong <neil.armstrong@linaro.org>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
@@ -96,7 +97,8 @@ X-Mailing-List: netdev@vger.kernel.org
 On Fri, Nov 18, 2022 at 3:33 PM Neil Armstrong
 <neil.armstrong@linaro.org> wrote:
 >
-> Convert the Amlogic Meson GXL USB2 PHY bindings to dt-schema.
+> Convert MDIO bus multiplexer/glue of Amlogic G12a SoC family bindings
+> to dt-schema.
 >
 > Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
