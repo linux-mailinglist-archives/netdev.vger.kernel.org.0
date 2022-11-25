@@ -2,64 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB1AA638EB3
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 17:58:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85818638EB7
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 18:00:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230019AbiKYQ55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 11:57:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37908 "EHLO
+        id S229930AbiKYRAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 12:00:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbiKYQ54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 11:57:56 -0500
+        with ESMTP id S229477AbiKYRAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 12:00:36 -0500
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287AF1006E;
-        Fri, 25 Nov 2022 08:57:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DB921E1E;
+        Fri, 25 Nov 2022 09:00:34 -0800 (PST)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id EB50E5FD0B;
-        Fri, 25 Nov 2022 19:57:47 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 205995FD0D;
+        Fri, 25 Nov 2022 20:00:33 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1669395468;
+        s=mail; t=1669395633;
         bh=Vy7tglWDZchkmeNCXURGl6jAA6MukTO4JV60RU6e8rs=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=Fb5ydY1IYs9wP/Vd4fADkzkufqF979KMOKHYam+ApRdl5DyG2sIycrxT2aL3F3AjW
-         s7w+aNjYs0gqAvqfv9rZ5sEa8UHK1w3pQ576BHACpt88wa/bmz2q1I2SE5tOKTiW7m
-         BVwqH8QFvokNGeZ6DGPmtGkv6P49UOB2O+qZs9etpC2ru2OMEdkYgDNEJEF4CTcMMF
-         fX9cntk7DmkpcnkCF8/GZGyoEHD3E08Do5xfmC8aNAhgq1K0F5sj5IK6bI0xPQWvMx
-         lI4+Bu4Vqx5Skb/2lb1zml9Ugnj7wfb8F6hIBh9ZZit5shkcIfPj6jcrbAB8uxScDI
-         nFHjbJE8Bqq6g==
+        b=ZBx3e+YVjbQtbi46YKkDQWvBmqPT20z0EnWtlbTjKyLN3gfeUylNxhzHdIe8RYt/g
+         6hG5pXusrmzrn8lzCayTiUC5GISrJdu/a3YJwgerBXOVkGKfAes1R4GVKtbOF/kz2Q
+         eZBh5CONIO4ytCeCgZNtO0sdzKnzm+fY1wxts2NDEXVb470sCBMVR0AHUmvAHla0KA
+         hMY3c4L+auQZYmthTf/Q9nQvj3/0xSUb6xTI/HLaXDlnVAokkHjJE6nNJdqMMb6e8g
+         gOG1xBp6BEo6lVJtoTaMiflEBZlyRJfXW+uN/utAc4U08oiKU4ysxonp6L/60qrrh5
+         9je7u4SVF5ULw==
 Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 25 Nov 2022 19:57:44 +0300 (MSK)
+        Fri, 25 Nov 2022 20:00:31 +0300 (MSK)
 From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 To:     Stefano Garzarella <sgarzare@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         "edumazet@google.com" <edumazet@google.com>,
         "Jakub Kicinski" <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
         "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
         "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
+        "Dexuan Cui" <decui@microsoft.com>,
         Bryan Tan <bryantan@vmware.com>,
         Vishnu Dasa <vdasa@vmware.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>
+        Bobby Eshleman <bobby.eshleman@gmail.com>,
+        "Arseniy Krasnov" <AVKrasnov@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
 CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "virtualization@lists.linux-foundation.org" 
         <virtualization@lists.linux-foundation.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
 Subject: [RFC PATCH v2 0/6] vsock: update tools and error handling
 Thread-Topic: [RFC PATCH v2 0/6] vsock: update tools and error handling
-Thread-Index: AQHZAO8JyU/7zSpXzE6uLaX3hejkZQ==
-Date:   Fri, 25 Nov 2022 16:57:44 +0000
-Message-ID: <b3c3148c-cf26-ee85-5b3d-950fa77f7a24@sberdevices.ru>
+Thread-Index: AQHZAO9tLgclKwOwKEaUfQ8774hEhw==
+Date:   Fri, 25 Nov 2022 17:00:31 +0000
+Message-ID: <9d96f6c6-1d4f-8197-b3bc-8957124c8933@sberdevices.ru>
 Accept-Language: en-US, ru-RU
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-originating-ip: [172.16.1.12]
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <D9BD81952029D44EA392605995704CF4@sberdevices.ru>
+Content-ID: <22F201B3173A6F4898FFFF72891F788A@sberdevices.ru>
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-KSMG-Rule-ID: 4
