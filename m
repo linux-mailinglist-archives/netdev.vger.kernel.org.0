@@ -2,107 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E95FC638954
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 13:00:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 842E863896D
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 13:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229539AbiKYMAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 07:00:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
+        id S229609AbiKYMLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 07:11:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiKYMAJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 07:00:09 -0500
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1062C65E;
-        Fri, 25 Nov 2022 04:00:08 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 5F9F05C010F;
-        Fri, 25 Nov 2022 07:00:05 -0500 (EST)
-Received: from imap51 ([10.202.2.101])
-  by compute3.internal (MEProxy); Fri, 25 Nov 2022 07:00:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1669377605; x=1669464005; bh=ORhbw5an4G
-        KOiycsFaYqr6B7NvcZliSQjROA9jUxxDQ=; b=SX3HhB2VU0akjfNzf1Zjg3a/E/
-        WMXIeswGBRQdbDbwf7BDfohblR9XpFpj6zaI9zO31143qWlt4oq8tio5c/tA8DYr
-        /dsxgEO+BGRv4k+uYBAybNhuYoBjtVqC+AvVQhTdBHi1vGu0dkPs8S+/VEHjYBTc
-        NCk5sObJZOh5PywusTWdp9W8XLSNipo02ImL7YyIJPcFB5rAqStowiZ56+Hh8Fcg
-        k30lRJq42LxThw98Lnb2RrbeWjPIpZJId2zG+9cYJ1BZzBFrahPUTkBWIVj2s/x5
-        3eNW6Qq8gXTMYglbUtHo3/ha1mOh4O2kdM0pN3F9GTnB+xPT/ZYfyEYiufnw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1669377605; x=1669464005; bh=ORhbw5an4GKOiycsFaYqr6B7NvcZ
-        liSQjROA9jUxxDQ=; b=ZoKlCL5YPv32N0RUcpxX3a7QvEHwfmqOW61w0eFQcxI8
-        euGHCkRQpIyTmDq/RSB5o+/Nm4HYRPslxu05jMYBuERy6kf97/BH0QEHCoWh4c5+
-        4v8OT+laiPrqzXRAskS12VGUsnYlZkhz4LMGGVbt/RoVQz+KhrR+06qiy0D9DHHN
-        XL5kMRKJ9J2gT3CzgPN0fmaZ6kgCF8q+Vy3IKosLtd/ORh1dwpT+ut8ry7LhK5OP
-        5G3MfCZ3spqMdMrOaiw0P21kSZa1OTFC0NbpWCnF07DvsLcM28RnpbC9q/dGdwp2
-        hYIC0XYdpydBe/b+o69nGHcwoKcR5bfQvhulJRC6/A==
-X-ME-Sender: <xms:Ra6AY9HtGXENshMown2z-nLMpSjYeMpr9U9BWEDQKRh1n9bv8ElXNA>
-    <xme:Ra6AYyUkVjaBnLfZbfmbU1Of_q9zTD_4bT9etK8FVpBYxrHO_0_qRLPamrtfQ1x2J
-    slANLQ16Rp99zqAmwA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrieehgdefhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
-    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
-    gvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedtkeet
-    ffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrh
-    hnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:Ra6AY_L5ouZKpCDJx89DpbzqttGSqUlX19fpuOYdKhQSFEfN1sfKGA>
-    <xmx:Ra6AYzFE7yvr-5avfIo59jRUYy6G_yQl6HlLmQzQQoVSWJA23JUd2A>
-    <xmx:Ra6AYzXTk0O97UnKHdY6fIXqHQiIZkIJ-TF4EeLUsHmch16zVJAxkA>
-    <xmx:Ra6AY6EBVauUH7dPJEDvicc4Tmo-_8-PBKrqPuYB5YRj-9v1mckffQ>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id EEE29B60086; Fri, 25 Nov 2022 07:00:04 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1115-g8b801eadce-fm-20221102.001-g8b801ead
-Mime-Version: 1.0
-Message-Id: <cfd1324c-ca40-4af5-a469-2e9ba897dfcc@app.fastmail.com>
-In-Reply-To: <20221125115003.30308-1-yuehaibing@huawei.com>
-References: <20221125115003.30308-1-yuehaibing@huawei.com>
-Date:   Fri, 25 Nov 2022 12:59:44 +0100
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     YueHaibing <yuehaibing@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, f.fainelli@broadcom.com,
-        "Naresh Kamboju" <naresh.kamboju@linaro.org>
-Cc:     Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] net: broadcom: Add PTP_1588_CLOCK_OPTIONAL dependency for BCMGENET
- under ARCH_BCM2835
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229553AbiKYMK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 07:10:59 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9F7421AC
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 04:10:58 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id a29so6595618lfj.9
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 04:10:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FwheS7W3PJSUlRY8b47wc0KETioQqU6W+QumFAOe5GA=;
+        b=Ie4PK9vVTrfbphdAEVAsnpNCCVym61AlASjuuKkW3Airp2tY5blaHGxlNXSh9vrMs4
+         SL3Ei4Kd7oEwHXIBW7eCV6ojFK4QoAq1BryS07BKqcjxb8Rq9tvW5Xo3r9QyMDF9tEJR
+         H4XgGtewIWdY4AXNJ7Kxunfv3U1xWSZxnwbSlNKWVwbHPS6vAj4YV6tfrXJ2ndfkjRQg
+         CFEcUY61ni9v3BwNcBOUPYklByQ7CpkD2jx09+MrD9GsW+je4D0MLJM7nM6vTgvX+/Lt
+         TGs8sDsi+W2zKCRJgn0RmC9HZInzq0gjEKBSkhdr/kwNId44yIkVn4Eos3WFaOjino6B
+         C3EA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FwheS7W3PJSUlRY8b47wc0KETioQqU6W+QumFAOe5GA=;
+        b=stn5ekd1XW48jWEIgX/RO2ZuZ6muAtcfX33+ozPrNgq/ebEEXHb17Pse6rLshvKcYr
+         uQcV8eWRpwAmkscTPUOS4mx8PXD94aiJEfBv61wc6CLckodq5bVeIEcdVghqFO6uMnvA
+         WnR1ipO4q1j+cbsyMmipuEZNmTw+ExazPVRvLxZ7J+auDUw12r3x+qVkhedAdTqYfXns
+         Nfu4B1qTgVm3WmsGojhtASLQXAYhJ+Z60G+MsrA3jn9Qb+qRD4exEwKGk6y8KJFC3Ahd
+         nS3fkXHKwpPpeQelqivWB9MrACt8IaS5KMBbrKNLTSs9Px13jnZEn2Zp63cjQzWvQpAO
+         fYjw==
+X-Gm-Message-State: ANoB5pmazcwehwiHB14p0UHVWcpF+VzIZrAjBgQoT0aAgb3Sipc/KD0C
+        nWtgFSCAhZE8cmtrAj6yzRAAMw==
+X-Google-Smtp-Source: AA0mqf68tOvuTcSzyAPy6oW4Sx+ZczsMO12qtp1bc9Pp+m0Ch6uGXznDzBePxRQy+8SCkSWGbeTijg==
+X-Received: by 2002:a05:6512:1184:b0:4af:a588:e8bd with SMTP id g4-20020a056512118400b004afa588e8bdmr12064931lfr.173.1669378256311;
+        Fri, 25 Nov 2022 04:10:56 -0800 (PST)
+Received: from [192.168.1.101] (95.49.32.48.neoplus.adsl.tpnet.pl. [95.49.32.48])
+        by smtp.gmail.com with ESMTPSA id b23-20020ac247f7000000b004aa95889063sm509219lfp.43.2022.11.25.04.10.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Nov 2022 04:10:55 -0800 (PST)
+Message-ID: <fc2812b1-db96-caa6-2ecb-c5bb2c33246a@linaro.org>
+Date:   Fri, 25 Nov 2022 13:10:53 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
+Content-Language: en-US
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>,
+        Hector Martin <marcan@marcan.st>,
+        "~postmarketos/upstreaming@lists.sr.ht" 
+        <~postmarketos/upstreaming@lists.sr.ht>,
+        "martin.botka@somainline.org" <martin.botka@somainline.org>,
+        "angelogioacchino.delregno@somainline.org" 
+        <angelogioacchino.delregno@somainline.org>,
+        "marijn.suijten@somainline.org" <marijn.suijten@somainline.org>,
+        "jamipkettunen@somainline.org" <jamipkettunen@somainline.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Marek Vasut <marex@denx.de>,
+        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Soon Tak Lee <soontak.lee@cypress.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
+ <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st>
+ <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
+ <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st>
+ <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
+ <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com>
+ <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk> <87sfke32pc.fsf@kernel.org>
+ <4592f87a-bb61-1c28-13f0-d041a6e7d3bf@linaro.org>
+ <CACRpkdax-3VVDd29iH51mfumakqM7jyEc8Pbb=AQwAgp2WsqFQ@mail.gmail.com>
+ <d03bd4d4-e4ef-681b-b4a5-02822e1eee75@linaro.org> <87fse76yig.fsf@kernel.org>
+From:   Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <87fse76yig.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 25, 2022, at 12:50, YueHaibing wrote:
-> commit 8d820bc9d12b ("net: broadcom: Fix BCMGENET Kconfig") fixes the build
-> that contain 99addbe31f55 ("net: broadcom: Select BROADCOM_PHY for BCMGENET")
-> and enable BCMGENET=y but PTP_1588_CLOCK_OPTIONAL=m, which otherwise
-> leads to a link failure. However this may trigger a runtime failure.
->
-> Fix the original issue by propagating the PTP_1588_CLOCK_OPTIONAL dependency
-> of BROADCOM_PHY down to BCMGENET.
->
-> Fixes: 8d820bc9d12b ("net: broadcom: Fix BCMGENET Kconfig")
-> Fixes: 99addbe31f55 ("net: broadcom: Select BROADCOM_PHY for BCMGENET")
-> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> Suggested-by: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Thanks for fixing this,
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+On 25.11.2022 12:53, Kalle Valo wrote:
+> Konrad Dybcio <konrad.dybcio@linaro.org> writes:
+> 
+>> On 21.11.2022 14:56, Linus Walleij wrote:
+>>> On Fri, Nov 18, 2022 at 5:47 PM Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
+>>>
+>>>> I can think of a couple of hacky ways to force use of 43596 fw, but I
+>>>> don't think any would be really upstreamable..
+>>>
+>>> If it is only known to affect the Sony Xperias mentioned then
+>>> a thing such as:
+>>>
+>>> if (of_machine_is_compatible("sony,xyz") ||
+>>>     of_machine_is_compatible("sony,zzz")... ) {
+>>>    // Enforce FW version
+>>> }
+>>>
+>>> would be completely acceptable in my book. It hammers the
+>>> problem from the top instead of trying to figure out itsy witsy
+>>> details about firmware revisions.
+>>>
+>>> Yours,
+>>> Linus Walleij
+>>
+>> Actually, I think I came up with a better approach by pulling a page
+>> out of Asahi folks' book - please take a look and tell me what you
+>> think about this:
+>>
+>> [1]
+>> https://github.com/SoMainline/linux/commit/4b6fccc995cd79109b0dae4e4ab2e48db97695e7
+>> [2]
+>> https://github.com/SoMainline/linux/commit/e3ea1dc739634f734104f37fdbed046873921af7
+> 
+> Instead of a directory path ("brcm/brcmfmac43596-pcie") why not provide
+> just the chipset name ("brcmfmac43596-pcie")? IMHO it's unnecessary to
+> have directory names in Device Tree.
+I think it's common practice to include a full $FIRMWARE_DIR-relative
+path when specifying firmware in DT, though here I left out the board
+name bit as that's assigned dynamically anyway. That said, if you don't
+like it, I can change it.
+
+Konrad
+> 
