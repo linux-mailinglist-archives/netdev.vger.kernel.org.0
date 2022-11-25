@@ -2,70 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE38B63875F
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 11:22:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D744638779
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 11:25:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230137AbiKYKWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 05:22:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48524 "EHLO
+        id S230099AbiKYKZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 05:25:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbiKYKWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 05:22:36 -0500
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E64FBC32
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 02:22:32 -0800 (PST)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-142b72a728fso4631419fac.9
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 02:22:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=dFk4/TyXFVH4omq0MKPCZJW7VRN5MWFd1VLeZHQ4myQ=;
-        b=O13X7eQnbmmZ5OZqc1v+Nq5wiHmRFlOakztg4v4kVKzbkp9A2YhxSxn700wHfwQgHj
-         jtL4ZvMsa4P4eCx3kHERQVZdyN5zMzG56fIXBLxVYZQ4xAUnftJ8E2hMwey7QHEHYTBy
-         wp9WzqOq0Gq/2vaXu/AjhjkkuOFzNZ1N/QzaxJ4OEbwT0srBV76yrEy8VyGdoNUgoBlZ
-         UAj99FE9mas+xMxsdohu26gc/ZjZ2KrH/RfUmuZznSQM71QlIJCwRGw9Cc54yyF3L140
-         9OyC6ojt8/4ZJ28HRhAXVPwy3kxFwYw3Sp6rS36NcIB8kLmQbASBByv40OmbsOI0KC6F
-         AfVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dFk4/TyXFVH4omq0MKPCZJW7VRN5MWFd1VLeZHQ4myQ=;
-        b=X/J1z16C6Ptb8Lgth2LVYq+yImv/ABI1eACzoztVdlqErjTddOBH91CRDx20XqVg7P
-         ZRXrqG3rQfqkEjKUIBiv7DxA0UaStBYxBvnXyCQrgnHU7WXrzQ/aTzUGxWOodWyrLlzm
-         XsifTOj6CR+MPX5nqBp0WBxNF6G3GybBiw3RHVH0zwbxoeKPKFcLY0woba/Z+j4h39XK
-         9biCybe76z7ZlomJ7aXxRZC2th3gZNXw3Z5f47Nxk/8eP+TxD8jezdm376ox49dGa9XG
-         yUdd2xsYau6UQZMzlnGsm7MlABfU8mnijsxXYXxPANjM3VGzxX8g0QuB5pMr+wnbi2Qm
-         NDCA==
-X-Gm-Message-State: ANoB5pkCoDdaz/Khewp5MgfXh0sDNFRhzYCYsbhc08g04iQT+Pw+4joz
-        LYDW1bxvEICa0bXfdVdPu9nC0kHnk4/uwF42FF6Tyg==
-X-Google-Smtp-Source: AA0mqf4iZUnbBKSrM1flPegAiAXqzZPEmIYY3e6KEyG/6IvzCjm2R7eG2INLEOUcWbubEOlM2BPZ3p+zihoAbed/kJI=
-X-Received: by 2002:a05:6870:b689:b0:13c:7d1c:5108 with SMTP id
- cy9-20020a056870b68900b0013c7d1c5108mr11030408oab.282.1669371751235; Fri, 25
- Nov 2022 02:22:31 -0800 (PST)
+        with ESMTP id S229753AbiKYKZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 05:25:18 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C745F209AE;
+        Fri, 25 Nov 2022 02:25:17 -0800 (PST)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NJWBF3vkKzJnw0;
+        Fri, 25 Nov 2022 18:21:57 +0800 (CST)
+Received: from [10.174.179.215] (10.174.179.215) by
+ canpemm500007.china.huawei.com (7.192.104.62) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 25 Nov 2022 18:25:14 +0800
+Subject: Re: [PATCH 5.10 000/149] 5.10.156-rc1 review
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     <stable@vger.kernel.org>, <patches@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>, <shuah@kernel.org>,
+        <patches@kernelci.org>, <lkft-triage@lists.linaro.org>,
+        Pavel Machek <pavel@denx.de>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        <srw@sladewatkins.net>, <rwarsow@gmx.de>,
+        Netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>
+References: <20221123084557.945845710@linuxfoundation.org>
+ <CA+G9fYvKfbJHcMZtybf_0Ru3+6fKPg9HwWTOhdCLrOBXMaeG1A@mail.gmail.com>
+ <CA+G9fYvgaNKbr_EhWsh9hjnzCeVXGJoXX4to72ytdvZi8W0svA@mail.gmail.com>
+ <Y4BuUU5yMI6PqCbb@kroah.com>
+ <CA+G9fYsXomPXcecPDzDydO3=i2qHDM2RTtGxr0p2YOS6=YcWng@mail.gmail.com>
+ <a1652617-9da5-4a29-9711-9d3b3cf66597@app.fastmail.com>
+From:   YueHaibing <yuehaibing@huawei.com>
+Message-ID: <23b0fa9c-d041-8c56-ec4b-04991fa340d4@huawei.com>
+Date:   Fri, 25 Nov 2022 18:25:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-References: <000000000000706e6f05edfb4ce0@google.com> <Y3uULqIZ31at0aIX@hog>
- <20221121171513.GB704954@gauss3.secunet.de> <Y3vwpcJcUgqn22Fw@hog> <20221122062657.GE704954@gauss3.secunet.de>
-In-Reply-To: <20221122062657.GE704954@gauss3.secunet.de>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 25 Nov 2022 11:22:20 +0100
-Message-ID: <CACT4Y+b4xCFFjNKQ51q_JsvbkVNFpG3YBnK4iarcD+u0-Nsobg@mail.gmail.com>
-Subject: Re: [syzbot] linux-next test error: general protection fault in xfrm_policy_lookup_bytype
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        syzbot <syzbot+bfb2bee01b9c01fff864@syzkaller.appspotmail.com>,
-        davem@davemloft.net, edumazet@google.com,
-        herbert@gondor.apana.org.au, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, sfr@canb.auug.org.au,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+In-Reply-To: <a1652617-9da5-4a29-9711-9d3b3cf66597@app.fastmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,66 +71,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Nov 2022 at 07:27, Steffen Klassert
-<steffen.klassert@secunet.com> wrote:
->
-> On Mon, Nov 21, 2022 at 10:41:57PM +0100, Sabrina Dubroca wrote:
-> > 2022-11-21, 18:15:13 +0100, Steffen Klassert wrote:
-> > > On Mon, Nov 21, 2022 at 04:07:26PM +0100, Sabrina Dubroca wrote:
-> > > > 2022-11-21, 05:47:38 -0800, syzbot wrote:
-> > > > > Hello,
-> > > > >
-> > > > > syzbot found the following issue on:
-> > > > >
-> > > > > HEAD commit:    e4cd8d3ff7f9 Add linux-next specific files for 20221121
-> > > > > git tree:       linux-next
-> > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=1472370d880000
-> > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=a0ebedc6917bacc1
-> > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=bfb2bee01b9c01fff864
-> > > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > > >
-> > > > > Downloadable assets:
-> > > > > disk image: https://storage.googleapis.com/syzbot-assets/b59eb967701d/disk-e4cd8d3f.raw.xz
-> > > > > vmlinux: https://storage.googleapis.com/syzbot-assets/37a7b43e6e84/vmlinux-e4cd8d3f.xz
-> > > > > kernel image: https://storage.googleapis.com/syzbot-assets/ebfb0438e6a2/bzImage-e4cd8d3f.xz
-> > > > >
-> > > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > > > Reported-by: syzbot+bfb2bee01b9c01fff864@syzkaller.appspotmail.com
-> > > > >
-> > > > > general protection fault, probably for non-canonical address 0xdffffc0000000019: 0000 [#1] PREEMPT SMP KASAN
-> > > > > KASAN: null-ptr-deref in range [0x00000000000000c8-0x00000000000000cf]
-> > > > > CPU: 0 PID: 5295 Comm: kworker/0:3 Not tainted 6.1.0-rc5-next-20221121-syzkaller #0
-> > > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-> > > > > Workqueue: ipv6_addrconf addrconf_dad_work
-> > > > > RIP: 0010:xfrm_policy_lookup_bytype.cold+0x1c/0x54 net/xfrm/xfrm_policy.c:2139
-> > > >
-> > > > That's the printk at the end of the function, when
-> > > > xfrm_policy_lookup_bytype returns NULL. It seems to have snuck into
-> > > > commit c39f95aaf6d1 ("xfrm: Fix oops in __xfrm_state_delete()"), we
-> > > > can just remove it:
-> > > >
-> > > > diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-> > > > index 3a203c59a11b..e392d8d05e0c 100644
-> > > > --- a/net/xfrm/xfrm_policy.c
-> > > > +++ b/net/xfrm/xfrm_policy.c
-> > > > @@ -2135,9 +2135,6 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
-> > > >  fail:
-> > > >   rcu_read_unlock();
-> > > >
-> > > > - if (!IS_ERR(ret))
-> > > > -         printk("xfrm_policy_lookup_bytype: policy if_id %d, wanted if_id  %d\n", ret->if_id, if_id);
-> > > > -
-> > > >   return ret;
-> > >
-> > > Hm, this was not in the original patch. Maybe my tree was not
-> > > clean when I applied it. Do you want to send a patch, or should
-> > > I just remove it?
-> >
-> > Go ahead, I guess it's more convenient for you.
->
-> I just did a forced push to remove that hunk.
+On 2022/11/25 18:02, Arnd Bergmann wrote:
+> On Fri, Nov 25, 2022, at 09:05, Naresh Kamboju wrote:
+>> On Fri, 25 Nov 2022 at 12:57, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+>>> On Thu, Nov 24, 2022 at 09:17:36PM +0530, Naresh Kamboju wrote:
+>>>>
+>>>> Daniel bisected this reported problem and found the first bad commit,
+>>>>
+>>>> YueHaibing <yuehaibing@huawei.com>
+>>>>     net: broadcom: Fix BCMGENET Kconfig
+>>>
+>>> But that is in 5.10.155, 5.15.79, 6.0.9, and 6.1-rc5.  It is not new to
+>>> this -rc release.
+>>
+>> It started from 5.10.155 and this is only seen on 5.10 and other
+>> branches 5.15, 6.0 and mainline are looking good.
+> 
+> I think the original patch is wrong and should be fixed upstream.
+> The backported patch in question is a one-line Kconfig change doing
 
-Let's tell syzbot about the fix, so that it reports similarly looking
-crashes in future:
+It seems lts 5.10 do not contain commit e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies"),
+there is not PTP_1588_CLOCK_OPTIONAL option.
 
-#syz fix: xfrm: Fix oops in __xfrm_state_delete()
+> 
+> diff --git a/drivers/net/ethernet/broadcom/Kconfig b/drivers/net/ethernet/broadcom/Kconfig
+> index f4e1ca68d831..55dfdb34e37b 100644
+> --- a/drivers/net/ethernet/broadcom/Kconfig
+> +++ b/drivers/net/ethernet/broadcom/Kconfig
+> @@ -77,7 +77,7 @@ config BCMGENET
+>         select BCM7XXX_PHY
+>         select MDIO_BCM_UNIMAC
+>         select DIMLIB
+> -       select BROADCOM_PHY if ARCH_BCM2835
+> +       select BROADCOM_PHY if (ARCH_BCM2835 && PTP_1588_CLOCK_OPTIONAL)
+>         help
+>           This driver supports the built-in Ethernet MACs found in the
+>           Broadcom BCM7xxx Set Top Box family chipset.
+> 
+> which fixes the build on kernels that contain 99addbe31f55 ("net:
+> broadcom: Select BROADCOM_PHY for BCMGENET") and enable
+> BCMGENET=y but PTP_1588_CLOCK_OPTIONAL=m, which otherwise
+> leads to a link failure.
+> 
+> The patch unfortunately solves it by replacing it with a runtime
+> failure by no longer linking in the PHY driver (as found by Naresh).
+> 
+> I think the correct fix would be to propagate the dependency down
+> to BCMGENET:
+> 
+> diff --git a/drivers/net/ethernet/broadcom/Kconfig b/drivers/net/ethernet/broadcom/Kconfig
+> index f4e1ca68d831..f4ca0c6c0f51 100644
+> --- a/drivers/net/ethernet/broadcom/Kconfig
+> +++ b/drivers/net/ethernet/broadcom/Kconfig
+> @@ -71,6 +71,7 @@ config BCM63XX_ENET
+>  config BCMGENET
+>  	tristate "Broadcom GENET internal MAC support"
+>  	depends on HAS_IOMEM
+> +	depends on PTP_1588_CLOCK_OPTIONAL || !ARCH_BCM2835
+>  	select MII
+>  	select PHYLIB
+>  	select FIXED_PHY
+> 
+> With this change, the broken config is no longer possible, instead
+> forcing BCMGENET to be =m when building for ARCH_BCM2835 with
+> PTP_1588_CLOCK=m.
+> 
+>      Arnd
+> .
+> 
