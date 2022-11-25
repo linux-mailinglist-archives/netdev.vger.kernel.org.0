@@ -2,82 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5D26639020
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 20:00:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB2C0639023
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 20:03:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbiKYTAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 14:00:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
+        id S229685AbiKYTC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 14:02:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiKYTAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 14:00:20 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31F022BE2
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 11:00:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 25D70CE2F72
-        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 19:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 53FA5C433C1;
-        Fri, 25 Nov 2022 19:00:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669402816;
-        bh=9GyC/ls2FlOYcleKnFfjRbuo9bM8VVJ0neSQhaJZ0EU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MHqXaYSwGBQIaJzOjENH12Xa0v8REGQUagsx7bC/F6XMHCCImQq3FEIVC4jY6CaVT
-         zScrkU4E67LXu7H/lw0Z4k1S0x/GF6wIZYlZd0G8fkOdQPpWgMW1VyoVYTe2dolzE+
-         4Yr1dqKNLc8wcJEtbm10BEQFMQqkBg2TWyPwTh2buM2X0vqHiUWFgW9A4UHvAj/Qb0
-         k9RbJuq9/7J8PhZLmTRR6sYRTFZ+6rBOFCAiiNBC5y5Vl2WJ4gIfRngxg0YhO+y5ne
-         bVDSPxV8EfQAhQvPr6wbCZ6PutGqQApFJ83C1bgJ5xdkT0oziUKVmveBgDvPTsne3X
-         j9q8k5vJlGJoA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3CECBC395EC;
-        Fri, 25 Nov 2022 19:00:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229475AbiKYTC5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 14:02:57 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83CCD2F009
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 11:02:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=6T/Q4WFoXHQ6RmYERX27lAjeGjyEHdN7GJcOWISil5U=; b=AtG1+5QYrSlZKVqdCeh26qrfLr
+        Le4UmmfSJjnxeYbpQFNThB++faM8fGUD7vOS/YqdS5kmBmkXpGQ0Cu1E+T4NG+/SLKuQqxjoQQII9
+        fucRVWTVWayiLLIHYDVZnMDljl8qlFwx9AOWvGe2DE7q3GgBQ9l7DOWbcuHnL0C//t9s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oydyM-003SSg-9H; Fri, 25 Nov 2022 20:02:50 +0100
+Date:   Fri, 25 Nov 2022 20:02:50 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Daniil Tatianin <d-tatianin@yandex-team.ru>
+Cc:     netdev@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
+        yc-core@yandex-team.ru, lvc-project@linuxtesting.org
+Subject: Re: [PATCH v1 1/3] net/ethtool/ioctl: return -EOPNOTSUPP if we have
+ no phy stats
+Message-ID: <Y4ERWsV1vo1o7F2d@lunn.ch>
+References: <20221125164913.360082-1-d-tatianin@yandex-team.ru>
+ <20221125164913.360082-2-d-tatianin@yandex-team.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [patch iproute2-main REPOST] devlink: load ifname map on demand from
- ifname_map_rev_lookup() as well
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166940281624.5064.12531965928739571935.git-patchwork-notify@kernel.org>
-Date:   Fri, 25 Nov 2022 19:00:16 +0000
-References: <20221125091251.1782079-1-jiri@resnulli.us>
-In-Reply-To: <20221125091251.1782079-1-jiri@resnulli.us>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        dsahern@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221125164913.360082-2-d-tatianin@yandex-team.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to iproute2/iproute2.git (main)
-by Stephen Hemminger <stephen@networkplumber.org>:
-
-On Fri, 25 Nov 2022 10:12:51 +0100 you wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
+On Fri, Nov 25, 2022 at 07:49:11PM +0300, Daniil Tatianin wrote:
+> It's not very useful to copy back an empty ethtool_stats struct and
+> return 0 if we didn't actually have any stats. This also allows for
+> further simplification of this function in the future commits.
 > 
-> Commit 5cddbb274eab ("devlink: load port-ifname map on demand") changed
-> the ifname map to be loaded on demand from ifname_map_lookup(). However,
-> it didn't put this on-demand loading into ifname_map_rev_lookup() which
-> causes ifname_map_rev_lookup() to return -ENOENT all the time.
+> Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
+> ---
+>  net/ethtool/ioctl.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> [...]
+> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> index 57e7238a4136..071e9bf16007 100644
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+> @@ -2089,11 +2089,15 @@ static int ethtool_get_phy_stats(struct net_device *dev, void __user *useraddr)
+>  		n_stats = phy_ops->get_sset_count(phydev);
+>  	else
+>  		n_stats = ops->get_sset_count(dev, ETH_SS_PHY_STATS);
+> +
+>  	if (n_stats < 0)
 
-Here is the summary with links:
-  - [iproute2-main,REPOST] devlink: load ifname map on demand from ifname_map_rev_lookup() as well
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=63d84b1fc98d
+Please don't make unneeded white space changes. It just distracts from
+the real change being made here.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>  		return n_stats;
+>  	if (n_stats > S32_MAX / sizeof(u64))
+>  		return -ENOMEM;
+> -	WARN_ON_ONCE(!n_stats);
+> +	if (!n_stats) {
+> +		WARN_ON_ONCE(1);
+> +		return -EOPNOTSUPP;
+> +	}
 
+WARN_ON_ONCE() returns the result of the comparison being made. so you can do:
+
+	if (WARN_ON_ONCE(!n_stats))
+		return -EOPNOTSUPP;
+
+	Andrew		
 
