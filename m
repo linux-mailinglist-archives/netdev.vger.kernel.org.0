@@ -2,191 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A49EB638669
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 10:42:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C5B6386C1
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 10:51:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229657AbiKYJmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 04:42:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
+        id S230161AbiKYJv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 04:51:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiKYJmN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 04:42:13 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1324530F5F;
-        Fri, 25 Nov 2022 01:42:12 -0800 (PST)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NJVDX0Q6QzJnrf;
-        Fri, 25 Nov 2022 17:38:52 +0800 (CST)
-Received: from [10.174.179.215] (10.174.179.215) by
- canpemm500007.china.huawei.com (7.192.104.62) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 25 Nov 2022 17:42:09 +0800
-Subject: Re: [PATCH 5.10 000/149] 5.10.156-rc1 review
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     <stable@vger.kernel.org>, <patches@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, <torvalds@linux-foundation.org>,
-        <akpm@linux-foundation.org>, <linux@roeck-us.net>,
-        <shuah@kernel.org>, <patches@kernelci.org>,
-        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
-        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-        <sudipm.mukherjee@gmail.com>, <srw@sladewatkins.net>,
-        <rwarsow@gmx.de>, Netdev <netdev@vger.kernel.org>,
+        with ESMTP id S229865AbiKYJvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 04:51:15 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D31D46678
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 01:48:44 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id t17so3262628pjo.3
+        for <netdev@vger.kernel.org>; Fri, 25 Nov 2022 01:48:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fh9lKt/Ex1PEWTAeH6nLeKPXEkO8R8rkyg+dYswqgEE=;
+        b=vDysZeeLfQomwf6B75nRI+HaGjwrhHZIUs5fdZIrRPKP/VbWvL7yQ0ALrxn4dZl7j9
+         n+kpaP41Wst0rPmTeoFnCi1nUcqjnbvqBwdn69zyBwUV/DX4wxKIvJ/vlrfJ8V/DUNmg
+         Je7abb6o1fqWw+0Owl7vUd5QNv/AEvpp0VaHOT+SOBNUcA8KkJzgDrlQyWWRtEjH6YMb
+         id+oeuDWgcYSLAEolbcBqs864ZePbxbPDZZmCwSYUqNYf8Dqrw1ah3nxPAIp87+ybaEc
+         OMNm7FyX6fB7gDrl5TTgsNRtySjRrC+DRrN1m5r/w9nqR06/zETDgWY+DnOLP/hj/z9L
+         dRJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fh9lKt/Ex1PEWTAeH6nLeKPXEkO8R8rkyg+dYswqgEE=;
+        b=jvEQP+us8SdiHXYUj07REzEY9BRDiPqkiwhmSlpUXYoVrTYL5sLL4e+9J93c93CppU
+         mVaMgY4elCEyWggqvlqzVyB33+SywLJX6NtDrEL7BgvMQahS/Ude5RkQUL9kytXR/u8e
+         hjQQpwm67pFbgpvOqgxtlRNIBdeBPBQ5BRtHVzoKBSb6Pr0fpmPHs/jdS5x9+OMFWSW3
+         1cEQYdYcVYeEbrqL0fC/3yS2zgWSbv1HMDPVMqKY7uLkU0UiNNO/sAMhp9Ic//imD6dq
+         mSOy8fGwPnc7Iitetl5brQMBkWHss49iSnCSTtXtbVEFxFfFR7cPoWIQ4dySBXk4VH1N
+         yRnQ==
+X-Gm-Message-State: ANoB5pknCdpqHoAE9c3DxrnD3v7TuTyVqIeSvdKisdQvjdcn18f0EZ55
+        bbf+cLOgb0QAReT1Dp6lI9ktvQ==
+X-Google-Smtp-Source: AA0mqf7lZaeE4yg7AW0Zyy+PHMsdV0xTaeowycIugKV0CyHIEnPfVIYVEXLDovr2cbvx7/bzEry1XA==
+X-Received: by 2002:a17:903:40c4:b0:188:4f86:e4ea with SMTP id t4-20020a17090340c400b001884f86e4eamr18503460pld.59.1669369723802;
+        Fri, 25 Nov 2022 01:48:43 -0800 (PST)
+Received: from ?IPV6:2400:4050:c360:8200:8ae8:3c4:c0da:7419? ([2400:4050:c360:8200:8ae8:3c4:c0da:7419])
+        by smtp.gmail.com with ESMTPSA id r17-20020a63ce51000000b0045751ef6423sm2273887pgi.87.2022.11.25.01.48.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Nov 2022 01:48:43 -0800 (PST)
+Message-ID: <4a2d4e3e-5b15-2c58-dc49-92908ab80ad0@daynix.com>
+Date:   Fri, 25 Nov 2022 18:48:38 +0900
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v3] igb: Allocate MSI-X vector when testing
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>
-References: <20221123084557.945845710@linuxfoundation.org>
- <CA+G9fYvKfbJHcMZtybf_0Ru3+6fKPg9HwWTOhdCLrOBXMaeG1A@mail.gmail.com>
- <CA+G9fYvgaNKbr_EhWsh9hjnzCeVXGJoXX4to72ytdvZi8W0svA@mail.gmail.com>
- <Y4BuUU5yMI6PqCbb@kroah.com>
- <CA+G9fYsXomPXcecPDzDydO3=i2qHDM2RTtGxr0p2YOS6=YcWng@mail.gmail.com>
-From:   YueHaibing <yuehaibing@huawei.com>
-Message-ID: <595e0f35-a6a0-eb6e-3a2b-d8bef120f037@huawei.com>
-Date:   Fri, 25 Nov 2022 17:42:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
-MIME-Version: 1.0
-In-Reply-To: <CA+G9fYsXomPXcecPDzDydO3=i2qHDM2RTtGxr0p2YOS6=YcWng@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+        Yan Vugenfirer <yan@daynix.com>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>
+References: <20221123010926.7924-1-akihiko.odaki@daynix.com>
+ <Y34/LDxCnYd6VGJ2@boxer>
 Content-Language: en-US
+From:   Akihiko Odaki <akihiko.odaki@daynix.com>
+In-Reply-To: <Y34/LDxCnYd6VGJ2@boxer>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/11/25 16:05, Naresh Kamboju wrote:
-> On Fri, 25 Nov 2022 at 12:57, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
+
+
+On 2022/11/24 0:41, Maciej Fijalkowski wrote:
+> On Wed, Nov 23, 2022 at 10:09:26AM +0900, Akihiko Odaki wrote:
+>> Without this change, the interrupt test fail with MSI-X environment:
 >>
->> On Thu, Nov 24, 2022 at 09:17:36PM +0530, Naresh Kamboju wrote:
->>> On Wed, 23 Nov 2022 at 19:30, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
->>>>
->>>> On Wed, 23 Nov 2022 at 14:50, Greg Kroah-Hartman
->>>> <gregkh@linuxfoundation.org> wrote:
->>>>>
->>>>> This is the start of the stable review cycle for the 5.10.156 release.
->>>>> There are 149 patches in this series, all will be posted as a response
->>>>> to this one.  If anyone has any issues with these being applied, please
->>>>> let me know.
->>>>>
->>>>> Responses should be made by Fri, 25 Nov 2022 08:45:20 +0000.
->>>>> Anything received after that time might be too late.
->>>>>
->>>>> The whole patch series can be found in one patch at:
->>>>>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.156-rc1.gz
->>>>> or in the git tree and branch at:
->>>>>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
->>>>> and the diffstat can be found below.
->>>>>
->>>>> thanks,
->>>>>
->>>>> greg k-h
->>>>
->>>>
->>>> With stable rc 5.10.156-rc1 Raspberry Pi 4 Model B failed to boot due to
->>>> following warnings / errors [1]. The NFS mount failed and failed to boot.
->>>>
->>>> I have to bisect this problem.
->>>
->>> Daniel bisected this reported problem and found the first bad commit,
->>>
->>> YueHaibing <yuehaibing@huawei.com>
->>>     net: broadcom: Fix BCMGENET Kconfig
+>> $ sudo ethtool -t enp0s2 offline
+>> [   43.921783] igb 0000:00:02.0: offline testing starting
+>> [   44.855824] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Down
+>> [   44.961249] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX
+>> [   51.272202] igb 0000:00:02.0: testing shared interrupt
+>> [   56.996975] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX
+>> The test result is FAIL
+>> The test extra info:
+>> Register test  (offline)	 0
+>> Eeprom test    (offline)	 0
+>> Interrupt test (offline)	 4
+>> Loopback test  (offline)	 0
+>> Link test   (on/offline)	 0
 >>
->> But that is in 5.10.155, 5.15.79, 6.0.9, and 6.1-rc5.  It is not new to
->> this -rc release.
+>> Here, "4" means an expected interrupt was not delivered.
+>>
+>> To fix this, route IRQs correctly to the first MSI-X vector by setting
+>> IVAR_MISC. Also, set bit 0 of EIMS so that the vector will not be
+>> masked. The interrupt test now runs properly with this change:
 > 
-> It started from 5.10.155 and this is only seen on 5.10 and other
-> branches 5.15, 6.0 and mainline are looking good.
+> Much better!
 > 
 >>
->> What config options are being set because of this that cause the
->> problem?
+>> $ sudo ethtool -t enp0s2 offline
+>> [   42.762985] igb 0000:00:02.0: offline testing starting
+>> [   50.141967] igb 0000:00:02.0: testing shared interrupt
+>> [   56.163957] igb 0000:00:02.0 enp0s2: igb: enp0s2 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX
+>> The test result is PASS
+>> The test extra info:
+>> Register test  (offline)	 0
+>> Eeprom test    (offline)	 0
+>> Interrupt test (offline)	 0
+>> Loopback test  (offline)	 0
+>> Link test   (on/offline)	 0
+>>
+>> Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
 > 
-> LKFT is built with arm64 defconfig + distro configs as described below.
-> 
->>   Should it just be reverted for 5.10.y, and not the other
->> branches?  Or for everywhere including Linus's tree?
-> 
-> Reverting for 5.10 works for Rpi-4 to boot.
-> 
-> Due to the problematic commit
->       # CONFIG_BROADCOM_PHY is not set
-> and Raspberry Pi 4 boot failed only on 5.10.155 and later.
+> Same comment as on other patch - justify why there is no fixes tag and
+> specify the tree in subject.
 
-BROADCOM_PHY is needed by ARCH_BCM2835,  but BROADCOM_PHY depends on PTP_1588_CLOCK_OPTIONAL now
-see commit 39db6be781cd ("net: phy: broadcom: Add PTP support for some Broadcom PHYs.")
+I couldn't identify what commit introduced the problem. Please see:
+https://lore.kernel.org/netdev/f2457229-865a-57a0-94a1-c5c63b2f30a5@daynix.com/
 
-config BROADCOM_PHY
-        tristate "Broadcom 54XX PHYs"
-        select BCM_NET_PHYLIB
-        select BCM_NET_PHYPTP if NETWORK_PHY_TIMESTAMPING
-        depends on PTP_1588_CLOCK_OPTIONAL
-
-Your config don't enable PTP_1588_CLOCK_OPTIONAL, maybe PTP_1588_CLOCK_OPTIONAL should be enabled
-or BROADCOM_PHY does not depends on PTP_1588_CLOCK_OPTIONAL?
+Regards,
+Akihiko Odaki
 
 > 
-> --
-> 
-> diff -Narub good-config bad-config
-> --- good-config 2022-11-09 14:19:58.000000000 +0530
-> +++ bad-config 2022-11-16 15:50:36.000000000 +0530
-> @@ -1,6 +1,6 @@
->  #
->  # Automatically generated file; DO NOT EDIT.
-> -# Linux/arm64 5.10.154-rc2 Kernel Configuration
-> +# Linux/arm64 5.10.155 Kernel Configuration
->  #
->  CONFIG_CC_VERSION_TEXT="aarch64-linux-gnu-gcc (Debian 11.3.0-6) 11.3.0"
->  CONFIG_CC_IS_GCC=y
-> @@ -2611,7 +2611,7 @@
->  # CONFIG_ADIN_PHY is not set
->  CONFIG_AQUANTIA_PHY=y
->  # CONFIG_AX88796B_PHY is not set
-> -CONFIG_BROADCOM_PHY=y
-> +# CONFIG_BROADCOM_PHY is not set
->  # CONFIG_BCM54140_PHY is not set
->  CONFIG_BCM7XXX_PHY=y
->  # CONFIG_BCM84881_PHY is not set
-> 
-> ---
-> 
-> # To install tuxmake on your system globally:
-> # sudo pip3 install -U tuxmake
-> #
-> # See https://docs.tuxmake.org/ for complete documentation.
-> # Original tuxmake command with fragments listed below.
-> # tuxmake --runtime podman --target-arch arm64 --toolchain gcc-11
-> --kconfig defconfig --kconfig-add
-> https://raw.githubusercontent.com/Linaro/meta-lkft/kirkstone/meta/recipes-kernel/linux/files/lkft.config
-> --kconfig-add https://raw.githubusercontent.com/Linaro/meta-lkft/kirkstone/meta/recipes-kernel/linux/files/lkft-crypto.config
-> --kconfig-add https://raw.githubusercontent.com/Linaro/meta-lkft/kirkstone/meta/recipes-kernel/linux/files/distro-overrides.config
-> --kconfig-add https://raw.githubusercontent.com/Linaro/meta-lkft/kirkstone/meta/recipes-kernel/linux/files/systemd.config
-> --kconfig-add https://raw.githubusercontent.com/Linaro/meta-lkft/kirkstone/meta/recipes-kernel/linux/files/virtio.config
-> --kconfig-add CONFIG_ARM64_MODULE_PLTS=y --kconfig-add
-> CONFIG_SYN_COOKIES=y --kconfig-add CONFIG_SCHEDSTATS=y
-> CROSS_COMPILE_COMPAT=arm-linux-gnueabihf-
-> 
-> Bad config link,
-> https://builds.tuxbuild.com/2HcnnvEDD3gSr1zmS5DHzqPG2cJ/config
-> 
+>> ---
+>>   drivers/net/ethernet/intel/igb/igb_ethtool.c | 2 ++
+>>   1 file changed, 2 insertions(+)
 >>
->> thanks,
+>> diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+>> index e5f3e7680dc6..ff911af16a4b 100644
+>> --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
+>> +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+>> @@ -1413,6 +1413,8 @@ static int igb_intr_test(struct igb_adapter *adapter, u64 *data)
+>>   			*data = 1;
+>>   			return -1;
+>>   		}
+>> +		wr32(E1000_IVAR_MISC, E1000_IVAR_VALID << 8);
+>> +		wr32(E1000_EIMS, BIT(0));
+>>   	} else if (adapter->flags & IGB_FLAG_HAS_MSI) {
+>>   		shared_int = false;
+>>   		if (request_irq(irq,
+>> -- 
+>> 2.38.1
 >>
->> greg k-h
-> 
-> - Naresh
-> .
-> 
