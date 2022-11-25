@@ -2,108 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EB266384DE
-	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 09:00:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E86E6384E2
+	for <lists+netdev@lfdr.de>; Fri, 25 Nov 2022 09:00:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbiKYIAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 03:00:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
+        id S229805AbiKYIAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 03:00:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiKYIAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 03:00:06 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9028A303D5;
-        Fri, 25 Nov 2022 00:00:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=8TV2H+mw2roghON9dZi8tjqa2D9zCsxjBsOv5fUqu44=; b=eiEI5OIfZpN2baAb5xqupaNWdT
-        JusrNhWE3n/ggnWuzCJ0ElAOkkeZys1s0HHQe8iya1t/nqFkX4Ggn9NKO7MNAAM24Ci2iVd7kr9VK
-        zqlsaAr+HyUUG4z+h+HLLIGa2FgQAUj4iqzSOQ/op2e3jHvABBy5AkcPUuOrF4fqCpxt8wU0qKV/f
-        DQYw+9pyIv1yPSc+RO0O/VsImNwJG8GQ/ZQFdqpYLgu02+26haD97bFJ1Vij2izaVZoFF3Dmpsobp
-        R8ON4Jf/rimYfwsPEpOKVH7m1y/mUxx1wiX8Z+ESCvx56NRqdfHE8+RHMMZgHOW6GUy6enZ8XI2UH
-        Yt+Ynigw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oyTcl-009Phg-38; Fri, 25 Nov 2022 07:59:51 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B703B300282;
-        Fri, 25 Nov 2022 08:59:42 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 95BC62D52AC8A; Fri, 25 Nov 2022 08:59:42 +0100 (CET)
-Date:   Fri, 25 Nov 2022 08:59:42 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dmitry Safonov <dima@arista.com>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Baron <jbaron@akamai.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v6 1/5] jump_label: Prevent key->enabled int overflow
-Message-ID: <Y4B17nBArWS1Iywo@hirez.programming.kicks-ass.net>
-References: <20221123173859.473629-1-dima@arista.com>
- <20221123173859.473629-2-dima@arista.com>
+        with ESMTP id S229810AbiKYIAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 03:00:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDFC2FFF4;
+        Fri, 25 Nov 2022 00:00:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08959622D7;
+        Fri, 25 Nov 2022 08:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 61E4CC433B5;
+        Fri, 25 Nov 2022 08:00:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669363217;
+        bh=ruBqTWcWxHPaHlIDNK66y1xdcEMgPYn9mLhg1dwyEKM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Q+MYzveXuflfbpKh8a5IopVyfg783+H0dsZOXDZ4HFHsTJ4CfUATpaGBja5H8lfTQ
+         eA6fkQmDIVic2efTQN3C6MLpVQLL/RS4LdMgr6e/0qlzYcPQlHfyYa+IrdAtSuCUVM
+         ITO0zSAtTmv3Z1gMLsaKW+6b+tMOs/UB+zRW5zGu/eVupTKslbFQLpfkZGUA26HGCV
+         HnK8T8IvMXN0LtzHrmxnu204QTJYDCpvTzjcAX7ShB9tlZ5WP0bfOSbr4zel3YzTgm
+         X2QlNUyNav15xwQCXxLjAQh+0UoXr/NzbaA9Y9ujN5ien34sT7ZWMEN6DfyhRFGUUH
+         X5kBEZ7ai4oTg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4D438E29F3C;
+        Fri, 25 Nov 2022 08:00:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221123173859.473629-2-dima@arista.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 1/8] can: can327: can327_feed_frame_to_netdev(): fix
+ potential skb leak when netdev is down
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166936321731.29613.6776566910480934923.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Nov 2022 08:00:17 +0000
+References: <20221124195708.1473369-2-mkl@pengutronix.de>
+In-Reply-To: <20221124195708.1473369-2-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        william.xuanziyang@huawei.com, max@enpas.org,
+        stable@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 05:38:55PM +0000, Dmitry Safonov wrote:
-> 1. With CONFIG_JUMP_LABEL=n static_key_slow_inc() doesn't have any
->    protection against key->enabled refcounter overflow.
-> 2. With CONFIG_JUMP_LABEL=y static_key_slow_inc_cpuslocked()
->    still may turn the refcounter negative as (v + 1) may overflow.
-> 
-> key->enabled is indeed a ref-counter as it's documented in multiple
-> places: top comment in jump_label.h, Documentation/staging/static-keys.rst,
-> etc.
-> 
-> As -1 is reserved for static key that's in process of being enabled,
-> functions would break with negative key->enabled refcount:
-> - for CONFIG_JUMP_LABEL=n negative return of static_key_count()
->   breaks static_key_false(), static_key_true()
-> - the ref counter may become 0 from negative side by too many
->   static_key_slow_inc() calls and lead to use-after-free issues.
-> 
-> These flaws result in that some users have to introduce an additional
-> mutex and prevent the reference counter from overflowing themselves,
-> see bpf_enable_runtime_stats() checking the counter against INT_MAX / 2.
-> 
-> Prevent the reference counter overflow by checking if (v + 1) > 0.
-> Change functions API to return whether the increment was successful.
-> 
-> Signed-off-by: Dmitry Safonov <dima@arista.com>
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
+Hello:
 
-This looks good to me:
+This series was applied to netdev/net.git (master)
+by Marc Kleine-Budde <mkl@pengutronix.de>:
 
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+On Thu, 24 Nov 2022 20:57:01 +0100 you wrote:
+> From: Ziyang Xuan <william.xuanziyang@huawei.com>
+> 
+> In can327_feed_frame_to_netdev(), it did not free the skb when netdev
+> is down, and all callers of can327_feed_frame_to_netdev() did not free
+> allocated skb too. That would trigger skb leak.
+> 
+> Fix it by adding kfree_skb() in can327_feed_frame_to_netdev() when netdev
+> is down. Not tested, just compiled.
+> 
+> [...]
 
-What is the plan for merging this? I'm assuming it would want to go
-through the network tree, but as already noted earlier it depends on a
-patch I have in tip/locking/core.
+Here is the summary with links:
+  - [net,1/8] can: can327: can327_feed_frame_to_netdev(): fix potential skb leak when netdev is down
+    https://git.kernel.org/netdev/net/c/8fa452cfafed
+  - [net,2/8] can: sja1000: fix size of OCR_MODE_MASK define
+    https://git.kernel.org/netdev/net/c/26e8f6a75248
+  - [net,3/8] can: sja1000_isa: sja1000_isa_probe(): add missing free_sja1000dev()
+    https://git.kernel.org/netdev/net/c/92dfd9310a71
+  - [net,4/8] can: cc770: cc770_isa_probe(): add missing free_cc770dev()
+    https://git.kernel.org/netdev/net/c/62ec89e74099
+  - [net,5/8] can: etas_es58x: es58x_init_netdev(): free netdev when register_candev()
+    https://git.kernel.org/netdev/net/c/709cb2f9ed20
+  - [net,6/8] can: m_can: pci: add missing m_can_class_free_dev() in probe/remove methods
+    https://git.kernel.org/netdev/net/c/1eca1d4cc21b
+  - [net,7/8] can: m_can: Add check for devm_clk_get
+    https://git.kernel.org/netdev/net/c/68b4f9e0bdd0
+  - [net,8/8] can: mcba_usb: Fix termination command argument
+    https://git.kernel.org/netdev/net/c/1a8e3bd25f1e
 
-Now I checked, tip/locking/core is *just* that one patch, so it might be
-possible to merge that branch and this series into the network tree and
-note that during the pull request to Linus.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
