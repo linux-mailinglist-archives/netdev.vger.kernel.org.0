@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2086D639599
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 12:03:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB938639598
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 12:03:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbiKZLDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 06:03:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44622 "EHLO
+        id S229694AbiKZLDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 06:03:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiKZLDM (ORCPT
+        with ESMTP id S229628AbiKZLDM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 06:03:12 -0500
 Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47DB19008
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C262118E20
         for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 03:03:10 -0800 (PST)
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 565E92035C;
+        by a.mx.secunet.com (Postfix) with ESMTP id 10CF820501;
         Sat, 26 Nov 2022 12:03:09 +0100 (CET)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id YLNoe5_h4eKm; Sat, 26 Nov 2022 12:03:08 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        with ESMTP id l63CdphWmWWR; Sat, 26 Nov 2022 12:03:08 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id CB02F20533;
+        by a.mx.secunet.com (Postfix) with ESMTPS id AD1732035C;
         Sat, 26 Nov 2022 12:03:07 +0100 (CET)
 Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id C636180004A;
+        by mailout2.secunet.com (Postfix) with ESMTP id A816C80004A;
         Sat, 26 Nov 2022 12:03:07 +0100 (CET)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
@@ -38,23 +38,23 @@ Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 26 Nov
  2022 12:03:06 +0100
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 3B7BC3183C53; Sat, 26 Nov 2022 12:03:06 +0100 (CET)
+        id 40A083183C54; Sat, 26 Nov 2022 12:03:06 +0100 (CET)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 08/10] xfrm: add extack to xfrm_do_migrate
-Date:   Sat, 26 Nov 2022 12:03:01 +0100
-Message-ID: <20221126110303.1859238-9-steffen.klassert@secunet.com>
+Subject: [PATCH 09/10] xfrm: add extack to xfrm_alloc_userspi
+Date:   Sat, 26 Nov 2022 12:03:02 +0100
+Message-ID: <20221126110303.1859238-10-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221126110303.1859238-1-steffen.klassert@secunet.com>
 References: <20221126110303.1859238-1-steffen.klassert@secunet.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
  mbx-essen-01.secunet.de (10.53.40.197)
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -70,196 +70,149 @@ From: Sabrina Dubroca <sd@queasysnail.net>
 Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- include/net/xfrm.h     |  3 ++-
- net/key/af_key.c       |  2 +-
- net/xfrm/xfrm_policy.c | 28 ++++++++++++++++++++--------
- net/xfrm/xfrm_user.c   | 16 +++++++++++-----
- 4 files changed, 34 insertions(+), 15 deletions(-)
+ include/net/xfrm.h    |  5 +++--
+ net/key/af_key.c      |  4 ++--
+ net/xfrm/xfrm_state.c | 21 ++++++++++++++++-----
+ net/xfrm/xfrm_user.c  |  8 +++++---
+ 4 files changed, 26 insertions(+), 12 deletions(-)
 
 diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index dbc81f5eb553..576566bd0be9 100644
+index 576566bd0be9..e0cc6791c001 100644
 --- a/include/net/xfrm.h
 +++ b/include/net/xfrm.h
-@@ -1703,7 +1703,8 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
- int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
- 		 struct xfrm_migrate *m, int num_bundles,
- 		 struct xfrm_kmaddress *k, struct net *net,
--		 struct xfrm_encap_tmpl *encap, u32 if_id);
-+		 struct xfrm_encap_tmpl *encap, u32 if_id,
-+		 struct netlink_ext_ack *extack);
- #endif
- 
- int km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport);
+@@ -1681,8 +1681,9 @@ struct xfrm_policy *xfrm_policy_byid(struct net *net,
+ int xfrm_policy_flush(struct net *net, u8 type, bool task_valid);
+ void xfrm_policy_hash_rebuild(struct net *net);
+ u32 xfrm_get_acqseq(void);
+-int verify_spi_info(u8 proto, u32 min, u32 max);
+-int xfrm_alloc_spi(struct xfrm_state *x, u32 minspi, u32 maxspi);
++int verify_spi_info(u8 proto, u32 min, u32 max, struct netlink_ext_ack *extack);
++int xfrm_alloc_spi(struct xfrm_state *x, u32 minspi, u32 maxspi,
++		   struct netlink_ext_ack *extack);
+ struct xfrm_state *xfrm_find_acq(struct net *net, const struct xfrm_mark *mark,
+ 				 u8 mode, u32 reqid, u32 if_id, u8 proto,
+ 				 const xfrm_address_t *daddr,
 diff --git a/net/key/af_key.c b/net/key/af_key.c
-index c85df5b958d2..7f4ff5fe2257 100644
+index 7f4ff5fe2257..e1d2155605aa 100644
 --- a/net/key/af_key.c
 +++ b/net/key/af_key.c
-@@ -2626,7 +2626,7 @@ static int pfkey_migrate(struct sock *sk, struct sk_buff *skb,
+@@ -1377,13 +1377,13 @@ static int pfkey_getspi(struct sock *sk, struct sk_buff *skb, const struct sadb_
+ 		max_spi = range->sadb_spirange_max;
  	}
  
- 	return xfrm_migrate(&sel, dir, XFRM_POLICY_TYPE_MAIN, m, i,
--			    kma ? &k : NULL, net, NULL, 0);
-+			    kma ? &k : NULL, net, NULL, 0, NULL);
- 
-  out:
- 	return err;
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index a049f91d4446..9b9e2765363d 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -4333,7 +4333,8 @@ static int migrate_tmpl_match(const struct xfrm_migrate *m, const struct xfrm_tm
- 
- /* update endpoint address(es) of template(s) */
- static int xfrm_policy_migrate(struct xfrm_policy *pol,
--			       struct xfrm_migrate *m, int num_migrate)
-+			       struct xfrm_migrate *m, int num_migrate,
-+			       struct netlink_ext_ack *extack)
- {
- 	struct xfrm_migrate *mp;
- 	int i, j, n = 0;
-@@ -4341,6 +4342,7 @@ static int xfrm_policy_migrate(struct xfrm_policy *pol,
- 	write_lock_bh(&pol->lock);
- 	if (unlikely(pol->walk.dead)) {
- 		/* target policy has been deleted */
-+		NL_SET_ERR_MSG(extack, "Target policy not found");
- 		write_unlock_bh(&pol->lock);
- 		return -ENOENT;
+-	err = verify_spi_info(x->id.proto, min_spi, max_spi);
++	err = verify_spi_info(x->id.proto, min_spi, max_spi, NULL);
+ 	if (err) {
+ 		xfrm_state_put(x);
+ 		return err;
  	}
-@@ -4372,17 +4374,22 @@ static int xfrm_policy_migrate(struct xfrm_policy *pol,
- 	return 0;
+ 
+-	err = xfrm_alloc_spi(x, min_spi, max_spi);
++	err = xfrm_alloc_spi(x, min_spi, max_spi, NULL);
+ 	resp_skb = err ? ERR_PTR(err) : pfkey_xfrm_state2msg(x);
+ 
+ 	if (IS_ERR(resp_skb)) {
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 81df34b3da6e..d0ae17e3bb38 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2017,7 +2017,7 @@ u32 xfrm_get_acqseq(void)
  }
+ EXPORT_SYMBOL(xfrm_get_acqseq);
  
--static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate)
-+static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate,
-+			      struct netlink_ext_ack *extack)
+-int verify_spi_info(u8 proto, u32 min, u32 max)
++int verify_spi_info(u8 proto, u32 min, u32 max, struct netlink_ext_ack *extack)
  {
- 	int i, j;
+ 	switch (proto) {
+ 	case IPPROTO_AH:
+@@ -2026,22 +2026,28 @@ int verify_spi_info(u8 proto, u32 min, u32 max)
  
--	if (num_migrate < 1 || num_migrate > XFRM_MAX_DEPTH)
-+	if (num_migrate < 1 || num_migrate > XFRM_MAX_DEPTH) {
-+		NL_SET_ERR_MSG(extack, "Invalid number of SAs to migrate, must be 0 < num <= XFRM_MAX_DEPTH (6)");
- 		return -EINVAL;
-+	}
- 
- 	for (i = 0; i < num_migrate; i++) {
- 		if (xfrm_addr_any(&m[i].new_daddr, m[i].new_family) ||
--		    xfrm_addr_any(&m[i].new_saddr, m[i].new_family))
-+		    xfrm_addr_any(&m[i].new_saddr, m[i].new_family)) {
-+			NL_SET_ERR_MSG(extack, "Addresses in the MIGRATE attribute's list cannot be null");
+ 	case IPPROTO_COMP:
+ 		/* IPCOMP spi is 16-bits. */
+-		if (max >= 0x10000)
++		if (max >= 0x10000) {
++			NL_SET_ERR_MSG(extack, "IPCOMP SPI must be <= 65535");
  			return -EINVAL;
 +		}
+ 		break;
  
- 		/* check if there is any duplicated entry */
- 		for (j = i + 1; j < num_migrate; j++) {
-@@ -4393,8 +4400,10 @@ static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate)
- 			    m[i].proto == m[j].proto &&
- 			    m[i].mode == m[j].mode &&
- 			    m[i].reqid == m[j].reqid &&
--			    m[i].old_family == m[j].old_family)
-+			    m[i].old_family == m[j].old_family) {
-+				NL_SET_ERR_MSG(extack, "Entries in the MIGRATE attribute's list must be unique");
- 				return -EINVAL;
-+			}
- 		}
+ 	default:
++		NL_SET_ERR_MSG(extack, "Invalid protocol, must be one of AH, ESP, IPCOMP");
+ 		return -EINVAL;
  	}
  
-@@ -4404,7 +4413,8 @@ static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate)
- int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
- 		 struct xfrm_migrate *m, int num_migrate,
- 		 struct xfrm_kmaddress *k, struct net *net,
--		 struct xfrm_encap_tmpl *encap, u32 if_id)
-+		 struct xfrm_encap_tmpl *encap, u32 if_id,
-+		 struct netlink_ext_ack *extack)
+-	if (min > max)
++	if (min > max) {
++		NL_SET_ERR_MSG(extack, "Invalid SPI range: min > max");
+ 		return -EINVAL;
++	}
+ 
+ 	return 0;
+ }
+ EXPORT_SYMBOL(verify_spi_info);
+ 
+-int xfrm_alloc_spi(struct xfrm_state *x, u32 low, u32 high)
++int xfrm_alloc_spi(struct xfrm_state *x, u32 low, u32 high,
++		   struct netlink_ext_ack *extack)
  {
- 	int i, err, nx_cur = 0, nx_new = 0;
- 	struct xfrm_policy *pol = NULL;
-@@ -4414,11 +4424,12 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
- 	struct xfrm_migrate *mp;
+ 	struct net *net = xs_net(x);
+ 	unsigned int h;
+@@ -2053,8 +2059,10 @@ int xfrm_alloc_spi(struct xfrm_state *x, u32 low, u32 high)
+ 	u32 mark = x->mark.v & x->mark.m;
  
- 	/* Stage 0 - sanity checks */
--	err = xfrm_migrate_check(m, num_migrate);
-+	err = xfrm_migrate_check(m, num_migrate, extack);
- 	if (err < 0)
- 		goto out;
+ 	spin_lock_bh(&x->lock);
+-	if (x->km.state == XFRM_STATE_DEAD)
++	if (x->km.state == XFRM_STATE_DEAD) {
++		NL_SET_ERR_MSG(extack, "Target ACQUIRE is in DEAD state");
+ 		goto unlock;
++	}
  
- 	if (dir >= XFRM_POLICY_MAX) {
-+		NL_SET_ERR_MSG(extack, "Invalid policy direction");
- 		err = -EINVAL;
- 		goto out;
+ 	err = 0;
+ 	if (x->id.spi)
+@@ -2065,6 +2073,7 @@ int xfrm_alloc_spi(struct xfrm_state *x, u32 low, u32 high)
+ 	if (minspi == maxspi) {
+ 		x0 = xfrm_state_lookup(net, mark, &x->id.daddr, minspi, x->id.proto, x->props.family);
+ 		if (x0) {
++			NL_SET_ERR_MSG(extack, "Requested SPI is already in use");
+ 			xfrm_state_put(x0);
+ 			goto unlock;
+ 		}
+@@ -2089,6 +2098,8 @@ int xfrm_alloc_spi(struct xfrm_state *x, u32 low, u32 high)
+ 		spin_unlock_bh(&net->xfrm.xfrm_state_lock);
+ 
+ 		err = 0;
++	} else {
++		NL_SET_ERR_MSG(extack, "No SPI available in the requested range");
  	}
-@@ -4426,6 +4437,7 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
- 	/* Stage 1 - find policy */
- 	pol = xfrm_migrate_policy_find(sel, dir, type, net, if_id);
- 	if (!pol) {
-+		NL_SET_ERR_MSG(extack, "Target policy not found");
- 		err = -ENOENT;
- 		goto out;
- 	}
-@@ -4447,7 +4459,7 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
- 	}
  
- 	/* Stage 3 - update policy */
--	err = xfrm_policy_migrate(pol, m, num_migrate);
-+	err = xfrm_policy_migrate(pol, m, num_migrate, extack);
- 	if (err < 0)
- 		goto restore_state;
- 
+ unlock:
 diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 13607df4f30d..c5d6a92d73cb 100644
+index c5d6a92d73cb..5c280e04e02c 100644
 --- a/net/xfrm/xfrm_user.c
 +++ b/net/xfrm/xfrm_user.c
-@@ -2687,7 +2687,8 @@ static int xfrm_add_acquire(struct sk_buff *skb, struct nlmsghdr *nlh,
- #ifdef CONFIG_XFRM_MIGRATE
- static int copy_from_user_migrate(struct xfrm_migrate *ma,
- 				  struct xfrm_kmaddress *k,
--				  struct nlattr **attrs, int *num)
-+				  struct nlattr **attrs, int *num,
-+				  struct netlink_ext_ack *extack)
- {
- 	struct nlattr *rt = attrs[XFRMA_MIGRATE];
- 	struct xfrm_user_migrate *um;
-@@ -2706,8 +2707,10 @@ static int copy_from_user_migrate(struct xfrm_migrate *ma,
- 	um = nla_data(rt);
- 	num_migrate = nla_len(rt) / sizeof(*um);
- 
--	if (num_migrate <= 0 || num_migrate > XFRM_MAX_DEPTH)
-+	if (num_migrate <= 0 || num_migrate > XFRM_MAX_DEPTH) {
-+		NL_SET_ERR_MSG(extack, "Invalid number of SAs to migrate, must be 0 < num <= XFRM_MAX_DEPTH (6)");
- 		return -EINVAL;
-+	}
- 
- 	for (i = 0; i < num_migrate; i++, um++, ma++) {
- 		memcpy(&ma->old_daddr, &um->old_daddr, sizeof(ma->old_daddr));
-@@ -2740,8 +2743,10 @@ static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	struct xfrm_encap_tmpl  *encap = NULL;
+@@ -1523,7 +1523,7 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
  	u32 if_id = 0;
  
--	if (!attrs[XFRMA_MIGRATE])
-+	if (!attrs[XFRMA_MIGRATE]) {
-+		NL_SET_ERR_MSG(extack, "Missing required MIGRATE attribute");
- 		return -EINVAL;
+ 	p = nlmsg_data(nlh);
+-	err = verify_spi_info(p->info.id.proto, p->min, p->max);
++	err = verify_spi_info(p->info.id.proto, p->min, p->max, extack);
+ 	if (err)
+ 		goto out_noput;
+ 
+@@ -1551,10 +1551,12 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 				  &p->info.saddr, 1,
+ 				  family);
+ 	err = -ENOENT;
+-	if (!x)
++	if (!x) {
++		NL_SET_ERR_MSG(extack, "Target ACQUIRE not found");
+ 		goto out_noput;
 +	}
  
- 	kmp = attrs[XFRMA_KMADDRESS] ? &km : NULL;
- 
-@@ -2749,7 +2754,7 @@ static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
+-	err = xfrm_alloc_spi(x, p->min, p->max);
++	err = xfrm_alloc_spi(x, p->min, p->max, extack);
  	if (err)
- 		return err;
- 
--	err = copy_from_user_migrate(m, kmp, attrs, &n);
-+	err = copy_from_user_migrate(m, kmp, attrs, &n, extack);
- 	if (err)
- 		return err;
- 
-@@ -2766,7 +2771,8 @@ static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (attrs[XFRMA_IF_ID])
- 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
- 
--	err = xfrm_migrate(&pi->sel, pi->dir, type, m, n, kmp, net, encap, if_id);
-+	err = xfrm_migrate(&pi->sel, pi->dir, type, m, n, kmp, net, encap,
-+			   if_id, extack);
- 
- 	kfree(encap);
+ 		goto out;
  
 -- 
 2.25.1
