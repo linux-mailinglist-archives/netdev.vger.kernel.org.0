@@ -2,122 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2FE86396A4
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 15:48:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EDFE6396E7
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 16:44:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbiKZOsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 09:48:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51342 "EHLO
+        id S229750AbiKZPoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 10:44:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiKZOsl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 09:48:41 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F841B9FA
-        for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 06:48:36 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id g7so10932715lfv.5
-        for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 06:48:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NCkEcXssRQbmgG+L+8GoHzRRDs8zdXaeqWwBNyHJxUs=;
-        b=SuypPEb1ok0pZ47WzmQfbMraruPLcGJ+eF2/bqoCL8998ndLQCEOWHg8W+zb31ZOxo
-         chldLp4jpNjwvi5D2OhgfAksJZIAu5uBt5Wg5LDYWEGwhj/W3K5eT48Mp7N+swJJnLE/
-         jtfeiGTuhIriPBNI5BsN6cQCAYV8zdi+2/OXJ+RjuZqwObjpwRilb2h5ncnwPzXqn2oH
-         QEeVL8j0SHJ+uSSl9BF+9JkCRQpfsEVpJ/uI1Dwjzr+uk45W3bt+bBtwXGTEyNDKov6G
-         3FkC4cBtvq9FCH7Ni7+OVz1kSz9D0ekCr7cawlBwKES/N0wh2+YE8ovFhWmaOJJOFNQQ
-         AmCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NCkEcXssRQbmgG+L+8GoHzRRDs8zdXaeqWwBNyHJxUs=;
-        b=6Mfe/EryhIY3MMAuU4ZwxY5NjxAapROPtFpQusk2C1k1Kcs+K3JRskoZ1iyj5M/jHD
-         cNkans2eAo+FFJqdOHTpo6IVhZl0M6XaKUWVurLX+fL0Mxg8MBZJPQwq/F5EA71n1xd4
-         ltaXEaVeZC5LmuKl4mWZJVzmSwI6VGFpnBqM60S7rJIuWBmsWzywFnsFZ/o/5cdjd32T
-         auRKQLbQE7HjxJFl/+ecgbDpq1cHrpi9eNLDegan0dFk7k6bhXihlMYspaTU/Fv9dH5e
-         D212ALwK+bzQAW3Xup0UzjsFr3QSId/RoZcHouVmaivoaX6jISJ+3mzqZxfw5H7rPYyX
-         WBsQ==
-X-Gm-Message-State: ANoB5pm5KXgJJ37UQo5vQJ5eD5zkjgntfCDl/2KfWklZJwcPpgXm15K2
-        HwMjQszDB9wk9t92mI2AU0zsWw==
-X-Google-Smtp-Source: AA0mqf53IjUhz0NUpmCvDHwNUZVIhvLBfrBuGuqctcLItqr8LzS5CanyELMQHPrj/HKH131QMnFrZA==
-X-Received: by 2002:a19:c506:0:b0:4b1:c15c:126c with SMTP id w6-20020a19c506000000b004b1c15c126cmr9044037lfe.8.1669474115345;
-        Sat, 26 Nov 2022 06:48:35 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id bj35-20020a2eaaa3000000b0026bf43a4d72sm212966ljb.115.2022.11.26.06.48.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Nov 2022 06:48:34 -0800 (PST)
-Message-ID: <99c3e666-ec26-07a0-be40-0177dd449d84@linaro.org>
-Date:   Sat, 26 Nov 2022 15:48:33 +0100
+        with ESMTP id S229521AbiKZPoI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 10:44:08 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E0EF7A;
+        Sat, 26 Nov 2022 07:44:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669477447; x=1701013447;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=TYZva1qhZaDDzx7ssD6565IlpCg24ayIFbcaC7tY8Tc=;
+  b=afaV5wieNPUjxu0caJC6JdakAXQOqaG+mJP11E9sBOfdvxW/FCdDmoSq
+   uszGkpjb5nf3De548PRwyr8tA0gjYkdzZijT5eCkTI9MaUL7wuDEK5FNd
+   DHxxEedinEuG50v1wryTy8tuS2GfxLpPE0gycyCpJAkwIvhrwC+gn8YZP
+   vqGEDAZKZz5uKM+4zWczaOB+RJUrHWVl1v9DiPG/G1MsaoSG/5NPhScuG
+   JcNKVf2MOUenZM/iTJdfierEPIRgcSWgA7CVeokYeMdRvPe3t3BpDN/xD
+   57LDEQ+dPBOukc9S9pF7aZDWoHCdzdL+VmK/32YN6VaBwDrOJGpoZ9vaZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10543"; a="376747252"
+X-IronPort-AV: E=Sophos;i="5.96,196,1665471600"; 
+   d="scan'208";a="376747252"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2022 07:44:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10543"; a="620587303"
+X-IronPort-AV: E=Sophos;i="5.96,196,1665471600"; 
+   d="scan'208";a="620587303"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006.jf.intel.com with ESMTP; 26 Nov 2022 07:43:54 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1oyxLL-000Bco-1n;
+        Sat, 26 Nov 2022 17:43:51 +0200
+Date:   Sat, 26 Nov 2022 17:43:51 +0200
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
+        alsa-devel@alsa-project.org, linux-staging@lists.linux.dev,
+        linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-leds@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-pm@vger.kernel.org,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        linux-serial@vger.kernel.org, linux-input@vger.kernel.org,
+        Grant Likely <grant.likely@linaro.org>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, chrome-platform@lists.linux.dev,
+        linux-actions@lists.infradead.org, linux-gpio@vger.kernel.org,
+        Angel Iglesias <ang.iglesiasg@gmail.com>,
+        gregkh@linuxfoundation.org, linux-rpi-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Purism Kernel Team <kernel@puri.sm>,
+        patches@opensource.cirrus.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        Wolfram Sang <wsa@kernel.org>, linux-crypto@vger.kernel.org,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 000/606] i2c: Complete conversion to i2c_probe_new
+Message-ID: <Y4I0N3KpU/LSJYpd@smile.fi.intel.com>
+References: <20221118224540.619276-1-uwe@kleine-koenig.org>
+ <20221122185818.3740200d@jic23-huawei>
+ <20221122201654.5rdaisqho33buibj@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH 2/3] dt-bindings: net: sun8i-emac: Fix snps,dwmac.yaml
- inheritance
-Content-Language: en-US
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        LABBE Corentin <clabbe.montjoie@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
-References: <20221125202008.64595-1-samuel@sholland.org>
- <20221125202008.64595-3-samuel@sholland.org>
- <5b05317d-28cc-bfc8-f415-e6acf453dc7c@linaro.org>
- <20221126142735.47dcca6d@slackpad.lan>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221126142735.47dcca6d@slackpad.lan>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221122201654.5rdaisqho33buibj@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/11/2022 15:28, Andre Przywara wrote:
-> On Sat, 26 Nov 2022 14:26:25 +0100
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> 
-> Hi,
-> 
->> On 25/11/2022 21:20, Samuel Holland wrote:
->>> The sun8i-emac binding extends snps,dwmac.yaml, and should accept all
->>> properties defined there, including "mdio", "resets", and "reset-names".
->>> However, validation currently fails for these properties because the  
->>
->> validation does not fail:
->> make dt_binding_check -> no problems
->>
->> Maybe you meant that DTS do not pass dtbs_check?
-> 
-> Yes, that's what he meant: If a board actually doesn't have Ethernet
-> configured, dt-validate complains. I saw this before, but didn't find
-> any solution.
-> An example is: $ dt-validate ... sun50i-a64-pinephone-1.2.dtb
-> arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dtb:
->   ethernet@1c30000: Unevaluated properties are not allowed ('resets', 'reset-names', 'mdio' were unexpected)
->   From schema: Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
-> 
-> Why exactly is beyond me, but this patch removes this message.
+On Tue, Nov 22, 2022 at 09:16:54PM +0100, Uwe Kleine-König wrote:
+> On Tue, Nov 22, 2022 at 06:58:18PM +0000, Jonathan Cameron wrote:
 
-I don't think this should be fixed like this. That's the problem of
-dtschema (not ignoring fully disabled nodes) and such patch only moves
-from one correct syntax to another correct syntax, which fixes dtschema
-problem, but changes nothing here.
+> > Queued all of the below:
+> > with one tweaked as per your suggestion and the highlighted one dropped on basis
+> > I was already carrying the equivalent - as you pointed out.
+> > 
+> > I was already carrying the required dependency.
+> > 
+> > Includes the IIO ones in staging.
+> > 
 
-Best regards,
-Krzysztof
+> > p.s. I perhaps foolishly did this in a highly manual way so as to
+> > also pick up Andy's RB.  So might have dropped one...
+> 
+> You could have done:
+> 
+> 	H=$(git rev-parse @)
+> 	b4 am -P 49-190 20221118224540.619276-1-uwe@kleine-koenig.org
+> 	git am ...
+> 	git filter-branch -f --msg-filter "grep -v 'Signed-off-by: Jonathan'; echo 'Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>'; echo 'Signed-off-by: Jonathan Cameron <jic23@kernel.org>'" $H..
+> 
+> (untested, but you get the idea).
+
+That's, for example (just last from the history as is), how I usually do it
+(tested):
+
+ git filter-branch --msg-filter 'sed -e "/Signed-off-by: Andy Shevchenko/ a Tested-by: Daniel Scally <dan.scally@ideasonboard.com>"' -f HEAD~4..HEAD
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
