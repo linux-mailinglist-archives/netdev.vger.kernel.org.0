@@ -2,75 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CAE2639368
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 03:30:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85BE06392FD
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 02:05:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbiKZCaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Nov 2022 21:30:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58470 "EHLO
+        id S229793AbiKZBFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Nov 2022 20:05:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbiKZCaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 21:30:03 -0500
-X-Greylist: delayed 1043 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Nov 2022 18:30:01 PST
-Received: from mail.rrk.ir (mail.rrk.ir [46.209.19.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE393136D;
-        Fri, 25 Nov 2022 18:30:01 -0800 (PST)
-Received: from localhost (mail.rrk.ir [127.0.0.1])
-        by mail.rrk.ir (Postfix) with ESMTP id EA9C439713E;
-        Sat, 26 Nov 2022 05:42:33 +0330 (+0330)
-X-Virus-Scanned: Debian amavisd-new at mail.rrk.ir
-Received: from mail.rrk.ir ([127.0.0.1])
-        by localhost (mail.rrk.ir [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id IzeIoOj2fku4; Sat, 26 Nov 2022 05:42:24 +0330 (+0330)
-Content-Type: text/plain; charset="iso-8859-1"
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=rrk.ir; s=rrk;
-        t=1669401265; bh=Tek/QbFshVvW3DxuEJIWlwCvxszEYuMod+HhVGwXvdw=;
-        h=Subject:To:From:Date:Reply-To:From;
-        b=XsaGpSI2+BPsPsnjXM4yFUsvvZtG2D3G4mu7WrXewlWGtdJtiw/lhxot1OPNVFGVf
-         KfOjnF6/wtoPXS4GV7gMJGL7wUBB61LKZzEz3ekcgyUmTkcWAb6+q2MbfNaI8W7y8D
-         FAhONqYUnRm167ahaXs6fewXFePk7acVbtylF5Z4=
+        with ESMTP id S229570AbiKZBFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Nov 2022 20:05:38 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C7C209AC;
+        Fri, 25 Nov 2022 17:05:33 -0800 (PST)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NJtmL2JZmzHwCt;
+        Sat, 26 Nov 2022 09:04:18 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sat, 26 Nov 2022 09:04:56 +0800
+Subject: Re: [PATCH net 1/2] octeontx2-pf: Fix possible memory leak in
+ otx2_probe()
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        <sunil.kovvuri@gmail.com>, <sgoutham@marvell.com>
+CC:     <gakula@marvell.com>, <sbhatta@marvell.com>, <hkelam@marvell.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <naveenm@marvell.com>, <rsaladi2@marvell.com>,
+        <linux-kernel@vger.kernel.org>
+References: <cover.1669253985.git.william.xuanziyang@huawei.com>
+ <e024450cf08f469fb1e0153b78a04a54829dfddb.1669253985.git.william.xuanziyang@huawei.com>
+ <Y4DHHUUbGl5wWGQ+@boxer>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <f4bb4aa5-08cc-4a4d-76cf-46bda5c6de59@huawei.com>
+Date:   Sat, 26 Nov 2022 09:04:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Re: Liaison Officer Needed In Your State...  
-To:     Recipients <firewall@rrk.ir>
-From:   "Ms. Kelvin Lin " <firewall@rrk.ir>
-Date:   Fri, 25 Nov 2022 10:34:12 -0800
-Reply-To: mail@gukaimail.com
-Message-Id: <20221126021233.EA9C439713E@mail.rrk.ir>
-X-Spam-Status: Yes, score=5.0 required=5.0 tests=BAYES_99,BAYES_999,
-        DATE_IN_PAST_06_12,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        SPF_HELO_PASS,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.2 BAYES_999 BODY: Bayes spam probability is 99.9 to 100%
-        *      [score: 1.0000]
-        *  3.5 BAYES_99 BODY: Bayes spam probability is 99 to 100%
-        *      [score: 1.0000]
-        * -0.0 SPF_HELO_PASS SPF: HELO matches SPF record
-        *  1.5 DATE_IN_PAST_06_12 Date: is 6 to 12 hours before Received: date
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-X-Spam-Level: *****
+In-Reply-To: <Y4DHHUUbGl5wWGQ+@boxer>
+Content-Type: text/plain; charset="gbk"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> On Thu, Nov 24, 2022 at 09:56:43AM +0800, Ziyang Xuan wrote:
+>> In otx2_probe(), there are several possible memory leak bugs
+>> in exception paths as follows:
+>> 1. Do not release pf->otx2_wq when excute otx2_init_tc() failed.
+>> 2. Do not shutdown tc when excute otx2_register_dl() failed.
+>> 3. Do not unregister devlink when initialize SR-IOV failed.
+>>
+>> Fixes: 1d4d9e42c240 ("octeontx2-pf: Add tc flower hardware offload on ingress traffic")
+>> Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
+>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+>> ---
+>>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 5 ++++-
+>>  1 file changed, 4 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+>> index 303930499a4c..8d7f2c3b0cfd 100644
+>> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+>> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+>> @@ -2900,7 +2900,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>>  
+>>  	err = otx2_register_dl(pf);
+>>  	if (err)
+>> -		goto err_mcam_flow_del;
+>> +		goto err_register_dl;
+>>  
+>>  	/* Initialize SR-IOV resources */
+>>  	err = otx2_sriov_vfcfg_init(pf);
+>> @@ -2919,8 +2919,11 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>>  	return 0;
+> 
+> If otx2_dcbnl_set_ops() fails at the end then shouldn't we also call
+> otx2_sriov_vfcfg_cleanup() ?
 
+I think it does not need. This is the probe process. PF and VF are all not ready to work,
+so pf->vf_configs[i].link_event_work does not scheduled. And pf->vf_configs memory resource will
+be freed by devm subsystem if probe failed. There are not memory leak and other problems.
 
-A reputable pharmaceutical company from Vietnam is in need of a reliable in=
-dividual or corporate entity in your state to act as their Liaison; this wi=
-ll not affect your current job or business operations in anyway.  If intere=
-sted, reply for more information.
+@Sunil Goutham, Please help to confirm.
 
+Thanks.
 
-Sincerely,
-Ms. Kelvin Lin
-CC
+> 
+>>  
+>>  err_pf_sriov_init:
+>> +	otx2_unregister_dl(pf);
+>> +err_register_dl:
+>>  	otx2_shutdown_tc(pf);
+>>  err_mcam_flow_del:
+>> +	destroy_workqueue(pf->otx2_wq);
+>>  	otx2_mcam_flow_del(pf);
+>>  err_unreg_netdev:
+>>  	unregister_netdev(netdev);
+>> -- 
+>> 2.25.1
+>>
+> .
+> 
