@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A518763978C
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 19:08:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F62663976D
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 18:16:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbiKZSIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 13:08:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
+        id S229551AbiKZRQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 12:16:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiKZSIP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 13:08:15 -0500
-Received: from mail.rrk.ir (mail.rrk.ir [46.209.19.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE46BFAC2;
-        Sat, 26 Nov 2022 10:08:12 -0800 (PST)
-Received: from localhost (mail.rrk.ir [127.0.0.1])
-        by mail.rrk.ir (Postfix) with ESMTP id C481838D9A0;
-        Sat, 26 Nov 2022 21:37:32 +0330 (+0330)
-X-Virus-Scanned: Debian amavisd-new at mail.rrk.ir
-Received: from mail.rrk.ir ([127.0.0.1])
-        by localhost (mail.rrk.ir [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id CFIx55AsO790; Sat, 26 Nov 2022 21:37:23 +0330 (+0330)
-Content-Type: text/plain; charset="iso-8859-1"
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=rrk.ir; s=rrk;
-        t=1669467275; bh=Tek/QbFshVvW3DxuEJIWlwCvxszEYuMod+HhVGwXvdw=;
-        h=Subject:To:From:Date:Reply-To:From;
-        b=Hw71v4y9yrE004yZ9eO4Q5oLsq2KSFaUs3uITrAj3aH3Y7KiChIF39JN6SAdFE8Fn
-         aFN6s97jJf7VIV4J5nT99w5wPNm29NTFKzGZ94dc8La0EW7gko3G2HFC7VDWxOPBXx
-         PBGobfMl+j0fgqkpYxFwq3H1avFzM++/Vo2C/kEE=
+        with ESMTP id S229450AbiKZRQh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 12:16:37 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E301B795;
+        Sat, 26 Nov 2022 09:16:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=5Hw31AgKId+3OPnZUDNl0zoIziLgXdVSUBBYyPkaxJA=; b=OCNEu2IqIwoJjsrj84rge722+P
+        RCBQrmpgb9mdXI9VD8F20jmskv9EXiEWZ3OLgbZYVlvfihZ72zXFj7kP7fbl7nxFMxoE32dnB/PAz
+        UZBIVukz0RCsu8ib0W6SZacXCPcG89vQXQnM/l9dZ/rJC19xnv7kYY4Uh20Emz0SSUPk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oyyn2-003WW5-Gn; Sat, 26 Nov 2022 18:16:32 +0100
+Date:   Sat, 26 Nov 2022 18:16:32 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Saeed Mahameed <saeed@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Lukas Magel <lukas.magel@posteo.net>
+Subject: Re: [PATCH v4 3/6] can: etas_es58x: export product information
+ through devlink_ops::info_get()
+Message-ID: <Y4JJ8Dyz7urLz/IM@lunn.ch>
+References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
+ <20221126162211.93322-1-mailhol.vincent@wanadoo.fr>
+ <20221126162211.93322-4-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Re: Liaison Officer Needed In Your State...  
-To:     Recipients <firewall@rrk.ir>
-From:   "Ms. Kelvin Lin " <firewall@rrk.ir>
-Date:   Sat, 26 Nov 2022 04:54:23 -0800
-Reply-To: mail@gukaimail.com
-Message-Id: <20221126180732.C481838D9A0@mail.rrk.ir>
-X-Spam-Status: Yes, score=5.1 required=5.0 tests=BAYES_99,BAYES_999,
-        DATE_IN_PAST_03_06,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        SPF_HELO_PASS,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.2 BAYES_999 BODY: Bayes spam probability is 99.9 to 100%
-        *      [score: 0.9999]
-        *  3.5 BAYES_99 BODY: Bayes spam probability is 99 to 100%
-        *      [score: 0.9999]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  1.6 DATE_IN_PAST_03_06 Date: is 3 to 6 hours before Received: date
-        * -0.0 SPF_HELO_PASS SPF: HELO matches SPF record
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221126162211.93322-4-mailhol.vincent@wanadoo.fr>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> +struct es58x_sw_version {
+> +	u8 major;
+> +	u8 minor;
+> +	u8 revision;
+> +};
 
+> +static int es58x_devlink_info_get(struct devlink *devlink,
+> +				  struct devlink_info_req *req,
+> +				  struct netlink_ext_ack *extack)
+> +{
+> +	struct es58x_device *es58x_dev = devlink_priv(devlink);
+> +	struct es58x_sw_version *fw_ver = &es58x_dev->firmware_version;
+> +	struct es58x_sw_version *bl_ver = &es58x_dev->bootloader_version;
+> +	struct es58x_hw_revision *hw_rev = &es58x_dev->hardware_revision;
+> +	char buf[max(sizeof("xx.xx.xx"), sizeof("axxx/xxx"))];
+> +	int ret = 0;
+> +
+> +	if (es58x_sw_version_is_set(fw_ver)) {
+> +		snprintf(buf, sizeof(buf), "%02u.%02u.%02u",
+> +			 fw_ver->major, fw_ver->minor, fw_ver->revision);
 
-A reputable pharmaceutical company from Vietnam is in need of a reliable in=
-dividual or corporate entity in your state to act as their Liaison; this wi=
-ll not affect your current job or business operations in anyway.  If intere=
-sted, reply for more information.
+I see you have been very careful here, but i wonder if you might still
+get some compiler/static code analyser warnings here. As far as i
+remember %02u does not limit it to two characters. If the number is
+bigger than 99, it will take three characters. And your types are u8,
+so the compiler could consider these to be 3 characters each. So you
+end up truncating. Which you look to of done correctly, but i wonder
+if some over zealous checker will report it? Maybe consider
+"xxx.xxx.xxx"?
 
+Nice paranoid code by the way. I'm not the best at spotting potential
+buffer overflows, but this code looks good. The only question i had
+left was how well sscanf() deals with UTF-8.
 
-Sincerely,
-Ms. Kelvin Lin
-CC
+     Andrew
+
