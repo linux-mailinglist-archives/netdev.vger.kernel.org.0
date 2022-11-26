@@ -2,74 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C02563959D
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 12:08:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EEB8639616
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 14:25:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229485AbiKZLH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 06:07:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47410 "EHLO
+        id S229586AbiKZNZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 08:25:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiKZLH6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 06:07:58 -0500
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18B910B6B
-        for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 03:07:56 -0800 (PST)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-12c8312131fso7874581fac.4
-        for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 03:07:56 -0800 (PST)
+        with ESMTP id S229553AbiKZNZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 08:25:15 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAE4E0EB
+        for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 05:25:15 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id z4so8051530ljq.6
+        for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 05:25:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=t7wrZvAkKeCjMLmhReJxhxYIm3R/2GcWH+genrPm1HQ=;
-        b=JJ5IJZwW9HpECy3HtL1LYQ4b2IKV1nA6R9aIXw4BacTunEeolIL83NEJZ29RG1yELs
-         C++iAX7EP0/nNyvGWyOnzNgV6MPLe3ifgqRWl0aAnHFBE57kj3TEYkWM+MKfTsykXo4h
-         jiBwEV6l4rqBDCqJdMHjWRiYHAHdycDRiMKi271XfkPBMZLtmkqGRKcrKRpx/8DvWobs
-         Qo20xbM1NDDC5xcyG08hyj+YsZdr7nDHHVPyDpLywFWjkekkiIXxjfslWcd6UznnWb4u
-         ghK9k5GPNSUl0aEN+RHyzDf2oWYZequW7JtIdMWzAvvxUXmWb06Kh6AuzE6MTIEm+DdP
-         wOrw==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Na6FyrdsS1wwt6jy4jKZXGg53Il9zjDGwsbPs6Y7vs8=;
+        b=ojwqnhX4HWIRw/01nosPbAo+kI1IeXq4oX6pTqV7VqEAjHwiSgIMn8vz/cI9OG/fvZ
+         lwRlXt2Ob7aRq1D+/MBJQlUvc4cdmFsC+8i8jq2hfEqaFNwyITvTyja+ZySaXx9WiPbL
+         AhxTVSiyyTcurXiBz5+0uBt7dQP2fvzP+amc9BH1XQhwhtDeXAwKn7v4GVWaKeRG5FTr
+         oQoSF9ZqxnDo9qt2+F1geCe7WYPySfPEui0AKJe39HxvhG82a6QOUpxX1koK/CYvMMrt
+         Dx6zVKKQ94b/YCeYD/fQxWKOP128ad71EABMwSJxRnV/iRgWeHcxDGDX9EKfRqgK7Ofn
+         UnEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=t7wrZvAkKeCjMLmhReJxhxYIm3R/2GcWH+genrPm1HQ=;
-        b=JqjGHjRaqaR07cbUFzhkDTyT9c0s0VGgRhX2Qkxx9clfuVdFpLHWWY4eflkuRwSDCd
-         m9OcgdypHs2Z0koSpGtke6keAabUlLtdr1dWDn/64Jr6GTphQ/iaScWVgdT4hrcXTgTh
-         StbRd/wPf9hOx6BczoRCXrkX8eRdqTs6sfHm/zK3IhkKXZckCVGLIRmEkXwhyjOJD2so
-         UNMDX+d8F6zjxmiJb7VH5+GqijEvyBbrw2jQKiLwz9ULBvy0XRTvouObcgxIpH4a5sEI
-         I37WMcyYYqnXEyQoNg3JJJaAkpy65sCStPdzifBJvfwXcst/GlRZpdO7JANOJTBCsjBI
-         CaHw==
-X-Gm-Message-State: ANoB5pmvHR9giIyGKeFdGyhDKPHCCjdU1YVyVdPZz9lVIn27D1f3XKsO
-        Iso+k0a1GyjnyjWyw3QRAVJYlPtMr7Ge/OJVwmI=
-X-Google-Smtp-Source: AA0mqf6Y63WJ9AANoy6dxYgqn+wOHkDIrIQgMDLYKlEcjY7dzoH0AubPDQFGL/VFNvW7Pkx4ERhS0IMF3Dnxx7BiiuU=
-X-Received: by 2002:a05:6870:7d84:b0:143:4e3e:b8e7 with SMTP id
- oq4-20020a0568707d8400b001434e3eb8e7mr7336636oab.162.1669460876203; Sat, 26
- Nov 2022 03:07:56 -0800 (PST)
+        bh=Na6FyrdsS1wwt6jy4jKZXGg53Il9zjDGwsbPs6Y7vs8=;
+        b=s1xVR01m4JG2f/PQ/lLUXB6mNr/ljXg+tCLkUgePZsuEGppC0zYpc4hBkmaDJhYrLz
+         +f6MLkFCansHNzY5dBAew33J8q9KUVyU96Z6FZp5lOgNg9VsmLeZOUmDs9uepMRb7SKP
+         Jw+bcvPMFPOpbLaUGJa5/4/iWglbXbI28sVMXb2xKF3Ee21X+HDcWqNuZX8PHqRjlclu
+         jcvNTQqmD4FDHltF05ERcUQ41d7LBRWbtTV7h5SU3p3Gonl+PjhhPARxv/+686AEVoXV
+         FtAA5SzqxoB0wg3Ic3y7EPVPYQanmu1vo4ZLfk+Bv+tREi10r7cnUSqDAUcSejlQkHHt
+         J0xw==
+X-Gm-Message-State: ANoB5pmLuFq11yxyjiJy5vU0CYFEohM0lfNJWN59DoF6MprXpmRPObYn
+        qDLw4TuCpBbfFFlkc/xE+fblSQ==
+X-Google-Smtp-Source: AA0mqf4Hn5l8emZqaUsEMB85V+2yCjIoYVk6ezOS+6dfnBzhS/2LGcz8sUEWDiUDm0/4MtMTl8wmbA==
+X-Received: by 2002:a2e:aa14:0:b0:277:63f7:492c with SMTP id bf20-20020a2eaa14000000b0027763f7492cmr8428769ljb.259.1669469113410;
+        Sat, 26 Nov 2022 05:25:13 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id t6-20020a199106000000b004b4b5d59cbcsm922230lfd.265.2022.11.26.05.25.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 26 Nov 2022 05:25:12 -0800 (PST)
+Message-ID: <d84ff258-d3e1-45e0-4473-7cd0707ae17f@linaro.org>
+Date:   Sat, 26 Nov 2022 14:25:11 +0100
 MIME-Version: 1.0
-Received: by 2002:a05:6358:9485:b0:dc:ea6c:b582 with HTTP; Sat, 26 Nov 2022
- 03:07:55 -0800 (PST)
-Reply-To: ninacoulibaly03@myself.com
-From:   Nina Coulibaly <regionalmanager.nina@gmail.com>
-Date:   Sat, 26 Nov 2022 11:07:55 +0000
-Message-ID: <CAHTAA8qLr3R_oBqq0dk3kYuQyP72ePr1v_zd7hqXF_Fg3rtUmQ@mail.gmail.com>
-Subject: from nina coulibaly
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH 1/3] dt-bindings: net: sun7i-gmac: Fix snps,dwmac.yaml
+ inheritance
+Content-Language: en-US
+To:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     LABBE Corentin <clabbe.montjoie@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
+References: <20221125202008.64595-1-samuel@sholland.org>
+ <20221125202008.64595-2-samuel@sholland.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221125202008.64595-2-samuel@sholland.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear,
+On 25/11/2022 21:20, Samuel Holland wrote:
+> The sun7i-gmac binding extends snps,dwmac.yaml, and should accept all
+> properties defined there, including "mdio", "resets", and "reset-names".
+> However, validation currently fails for these properties because the
+> local binding sets "unevaluatedProperties: false", and snps,dwmac.yaml
+> is only included inside an allOf block. Fix this by referencing
+> snps,dwmac.yaml at the top level.
+> 
 
-Please grant me permission to share a very crucial discussion with
-you.I am looking forward to hearing from you at your earliest
-convenience.
+I don't understand where is the problem and how does your patch solve
+it. The old syntax is correct and your change does nothing, no fixing,
+no impact. It actually looks like noop with big explanation :(
 
-Mrs. Nina Coulibaly
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> ---
+
+
+Best regards,
+Krzysztof
+
