@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 897E56394FB
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 10:48:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57F9D639506
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 10:49:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229551AbiKZJsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 04:48:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54772 "EHLO
+        id S229625AbiKZJtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 04:49:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiKZJsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 04:48:38 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CAF20348;
-        Sat, 26 Nov 2022 01:48:34 -0800 (PST)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NK6NY2zKKzmWBq;
-        Sat, 26 Nov 2022 17:47:57 +0800 (CST)
+        with ESMTP id S229574AbiKZJsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 04:48:52 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B852983B;
+        Sat, 26 Nov 2022 01:48:46 -0800 (PST)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NK6Np2J4jzRpYP;
+        Sat, 26 Nov 2022 17:48:10 +0800 (CST)
 Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 26 Nov 2022 17:48:32 +0800
+ 15.1.2375.31; Sat, 26 Nov 2022 17:48:33 +0800
 Received: from ubuntu1804.huawei.com (10.67.174.61) by
  kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 26 Nov 2022 17:48:31 +0800
+ 15.1.2375.31; Sat, 26 Nov 2022 17:48:32 +0800
 From:   Yang Jihong <yangjihong1@huawei.com>
 To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
@@ -39,9 +39,9 @@ To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>
 CC:     <yangjihong1@huawei.com>
-Subject: [PATCH bpf-next v3 1/4] bpf: Adapt 32-bit return value kfunc for 32-bit ARM when zext extension
-Date:   Sat, 26 Nov 2022 17:45:27 +0800
-Message-ID: <20221126094530.226629-2-yangjihong1@huawei.com>
+Subject: [PATCH bpf-next v3 2/4] bpf: Add kernel function call support in 32-bit ARM for EABI
+Date:   Sat, 26 Nov 2022 17:45:28 +0800
+Message-ID: <20221126094530.226629-3-yangjihong1@huawei.com>
 X-Mailer: git-send-email 2.30.GIT
 In-Reply-To: <20221126094530.226629-1-yangjihong1@huawei.com>
 References: <20221126094530.226629-1-yangjihong1@huawei.com>
@@ -60,102 +60,180 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For ARM32 architecture, if data width of kfunc return value is 32 bits,
-need to do explicit zero extension for high 32-bit, insn_def_regno should
-return dst_reg for BPF_JMP type of BPF_PSEUDO_KFUNC_CALL. Otherwise,
-opt_subreg_zext_lo32_rnd_hi32 returns -EFAULT, resulting in BPF failure.
+This patch adds kernel function call support to 32-bit ARM bpf jit for
+EABI.
 
 Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
 ---
- kernel/bpf/verifier.c | 44 ++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 41 insertions(+), 3 deletions(-)
+ arch/arm/net/bpf_jit_32.c | 137 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 137 insertions(+)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 264b3dc714cc..193ea927aa69 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -1927,6 +1927,21 @@ find_kfunc_desc(const struct bpf_prog *prog, u32 func_id, u16 offset)
- 		       sizeof(tab->descs[0]), kfunc_desc_cmp_by_id_off);
+diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
+index 6a1c9fca5260..ae3a36d909f4 100644
+--- a/arch/arm/net/bpf_jit_32.c
++++ b/arch/arm/net/bpf_jit_32.c
+@@ -1337,6 +1337,125 @@ static void build_epilogue(struct jit_ctx *ctx)
+ #endif
  }
  
-+static int kfunc_desc_cmp_by_imm(const void *a, const void *b);
-+
-+static const struct bpf_kfunc_desc *
-+find_kfunc_desc_by_imm(const struct bpf_prog *prog, s32 imm)
++/*
++ * Input parameters of function in 32-bit ARM architecture:
++ * The first four word-sized parameters passed to a function will be
++ * transferred in registers R0-R3. Sub-word sized arguments, for example,
++ * char, will still use a whole register.
++ * Arguments larger than a word will be passed in multiple registers.
++ * If more arguments are passed, the fifth and subsequent words will be passed
++ * on the stack.
++ *
++ * The first for args of a function will be considered for
++ * putting into the 32bit register R1, R2, R3 and R4.
++ *
++ * Two 32bit registers are used to pass a 64bit arg.
++ *
++ * For example,
++ * void foo(u32 a, u32 b, u32 c, u32 d, u32 e):
++ *      u32 a: R0
++ *      u32 b: R1
++ *      u32 c: R2
++ *      u32 d: R3
++ *      u32 e: stack
++ *
++ * void foo(u64 a, u32 b, u32 c, u32 d):
++ *      u64 a: R0 (lo32) R1 (hi32)
++ *      u32 b: R2
++ *      u32 c: R3
++ *      u32 d: stack
++ *
++ * void foo(u32 a, u64 b, u32 c, u32 d):
++ *       u32 a: R0
++ *       u64 b: R2 (lo32) R3 (hi32)
++ *       u32 c: stack
++ *       u32 d: stack
++ *
++ * void foo(u32 a, u32 b, u64 c, u32 d):
++ *       u32 a: R0
++ *       u32 b: R1
++ *       u64 c: R2 (lo32) R3 (hi32)
++ *       u32 d: stack
++ *
++ * void foo(u64 a, u64 b):
++ *       u64 a: R0 (lo32) R1 (hi32)
++ *       u64 b: R2 (lo32) R3 (hi32)
++ *
++ * The return value will be stored in the R0 (and R1 for 64bit value).
++ *
++ * For example,
++ * u32 foo(u32 a, u32 b, u32 c):
++ *      return value: R0
++ *
++ * u64 foo(u32 a, u32 b, u32 c):
++ *      return value: R0 (lo32) R1 (hi32)
++ *
++ * The above is for AEABI only, OABI does not support this function.
++ */
++static int emit_kfunc_call(const struct bpf_insn *insn, struct jit_ctx *ctx, const u32 func)
 +{
-+	struct bpf_kfunc_desc desc = {
-+		.imm = imm,
-+	};
-+	struct bpf_kfunc_desc_tab *tab;
++	int i;
++	const struct btf_func_model *fm;
++	const s8 *tmp = bpf2a32[TMP_REG_1];
++	const u8 arg_regs[] = { ARM_R0, ARM_R1, ARM_R2, ARM_R3 };
++	int nr_arg_regs = ARRAY_SIZE(arg_regs);
++	int arg_regs_idx = 0, stack_off = 0;
++	const s8 *rd;
++	s8 rt;
 +
-+	tab = prog->aux->kfunc_tab;
-+	return bsearch(&desc, tab->descs, tab->nr_descs,
-+		       sizeof(tab->descs[0]), kfunc_desc_cmp_by_imm);
++	fm = bpf_jit_find_kfunc_model(ctx->prog, insn);
++	if (!fm)
++		return -EINVAL;
++
++	for (i = 0; i < fm->nr_args; i++) {
++		if (fm->arg_size[i] > sizeof(u32)) {
++			rd = arm_bpf_get_reg64(bpf2a32[BPF_REG_1 + i], tmp, ctx);
++
++			if (arg_regs_idx + 1 < nr_arg_regs) {
++				/*
++				 * AAPCS states:
++				 * A double-word sized type is passed in two
++				 * consecutive registers (e.g., r0 and r1, or
++				 * r2 and r3). The content of the registers is
++				 * as if the value had been loaded from memory
++				 * representation with a single LDM instruction.
++				 */
++				if (arg_regs_idx & 1)
++					arg_regs_idx++;
++
++				emit(ARM_MOV_R(arg_regs[arg_regs_idx++], rd[1]), ctx);
++				emit(ARM_MOV_R(arg_regs[arg_regs_idx++], rd[0]), ctx);
++			} else {
++				stack_off = ALIGN(stack_off, STACK_ALIGNMENT);
++
++				if (__LINUX_ARM_ARCH__ >= 6 ||
++				    ctx->cpu_architecture >= CPU_ARCH_ARMv5TE) {
++					emit(ARM_STRD_I(rd[1], ARM_SP, stack_off), ctx);
++				} else {
++					emit(ARM_STR_I(rd[1], ARM_SP, stack_off), ctx);
++					emit(ARM_STR_I(rd[0], ARM_SP, stack_off), ctx);
++				}
++
++				stack_off += 8;
++			}
++		} else {
++			rt = arm_bpf_get_reg32(bpf2a32[BPF_REG_1 + i][1], tmp[1], ctx);
++
++			if (arg_regs_idx  < nr_arg_regs) {
++				emit(ARM_MOV_R(arg_regs[arg_regs_idx++], rt), ctx);
++			} else {
++				emit(ARM_STR_I(rt, ARM_SP, stack_off), ctx);
++				stack_off += 4;
++			}
++		}
++	}
++
++	emit_a32_mov_i(tmp[1], func, ctx);
++	emit_blx_r(tmp[1], ctx);
++
++	return 0;
 +}
 +
- static struct btf *__find_kfunc_desc_btf(struct bpf_verifier_env *env,
- 					 s16 offset)
- {
-@@ -2342,6 +2357,13 @@ static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
- 			 */
- 			if (insn->src_reg == BPF_PSEUDO_CALL)
- 				return false;
+ /*
+  * Convert an eBPF instruction to native instruction, i.e
+  * JITs an eBPF instruction.
+@@ -1603,6 +1722,10 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 	case BPF_LDX | BPF_MEM | BPF_H:
+ 	case BPF_LDX | BPF_MEM | BPF_B:
+ 	case BPF_LDX | BPF_MEM | BPF_DW:
++	case BPF_LDX | BPF_PROBE_MEM | BPF_W:
++	case BPF_LDX | BPF_PROBE_MEM | BPF_H:
++	case BPF_LDX | BPF_PROBE_MEM | BPF_B:
++	case BPF_LDX | BPF_PROBE_MEM | BPF_DW:
+ 		rn = arm_bpf_get_reg32(src_lo, tmp2[1], ctx);
+ 		emit_ldx_r(dst, rn, off, ctx, BPF_SIZE(code));
+ 		break;
+@@ -1785,6 +1908,16 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 		const s8 *r5 = bpf2a32[BPF_REG_5];
+ 		const u32 func = (u32)__bpf_call_base + (u32)imm;
+ 
++		if (insn->src_reg == BPF_PSEUDO_KFUNC_CALL) {
++			int err;
 +
-+			/* Kfunc call will reach here because of insn_has_def32,
-+			 * conservatively return TRUE.
-+			 */
-+			if (insn->src_reg == BPF_PSEUDO_KFUNC_CALL)
-+				return true;
++			err = emit_kfunc_call(insn, ctx, func);
 +
- 			/* Helper call will reach here because of arg type
- 			 * check, conservatively return TRUE.
- 			 */
-@@ -2405,10 +2427,26 @@ static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
++			if (err)
++				return err;
++			break;
++		}
++
+ 		emit_a32_mov_r64(true, r0, r1, ctx);
+ 		emit_a32_mov_r64(true, r1, r2, ctx);
+ 		emit_push_r64(r5, ctx);
+@@ -2022,3 +2155,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	return prog;
  }
  
- /* Return the regno defined by the insn, or -1. */
--static int insn_def_regno(const struct bpf_insn *insn)
-+static int insn_def_regno(struct bpf_verifier_env *env, const struct bpf_insn *insn)
- {
- 	switch (BPF_CLASS(insn->code)) {
- 	case BPF_JMP:
-+		if (insn->src_reg == BPF_PSEUDO_KFUNC_CALL) {
-+			const struct bpf_kfunc_desc *desc;
-+
-+			/* The value of desc cannot be NULL */
-+			desc = find_kfunc_desc_by_imm(env->prog, insn->imm);
-+
-+			/* A kfunc can return void.
-+			 * The btf type of the kfunc's return value needs
-+			 * to be checked against "void" first
-+			 */
-+			if (desc->func_model.ret_size == 0)
-+				return -1;
-+			else
-+				return insn->dst_reg;
-+		}
-+		fallthrough;
- 	case BPF_JMP32:
- 	case BPF_ST:
- 		return -1;
-@@ -2430,7 +2468,7 @@ static int insn_def_regno(const struct bpf_insn *insn)
- /* Return TRUE if INSN has defined any 32-bit value explicitly. */
- static bool insn_has_def32(struct bpf_verifier_env *env, struct bpf_insn *insn)
- {
--	int dst_reg = insn_def_regno(insn);
-+	int dst_reg = insn_def_regno(env, insn);
- 
- 	if (dst_reg == -1)
- 		return false;
-@@ -13335,7 +13373,7 @@ static int opt_subreg_zext_lo32_rnd_hi32(struct bpf_verifier_env *env,
- 		int load_reg;
- 
- 		insn = insns[adj_idx];
--		load_reg = insn_def_regno(&insn);
-+		load_reg = insn_def_regno(env, &insn);
- 		if (!aux[adj_idx].zext_dst) {
- 			u8 code, class;
- 			u32 imm_rnd;
++bool bpf_jit_supports_kfunc_call(void)
++{
++	return IS_ENABLED(CONFIG_AEABI);
++}
 -- 
 2.30.GIT
 
