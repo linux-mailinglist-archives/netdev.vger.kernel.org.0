@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C9A86394FF
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 10:49:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE86C639504
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 10:49:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbiKZJs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 04:48:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54948 "EHLO
+        id S229589AbiKZJtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 04:49:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiKZJsw (ORCPT
+        with ESMTP id S229575AbiKZJsw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 04:48:52 -0500
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F8429C99;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82D01B1DD;
         Sat, 26 Nov 2022 01:48:46 -0800 (PST)
 Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NK6Np2y30zRpYR;
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NK6Np3YBVzRpXy;
         Sat, 26 Nov 2022 17:48:10 +0800 (CST)
 Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
@@ -24,7 +24,7 @@ Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
 Received: from ubuntu1804.huawei.com (10.67.174.61) by
  kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 26 Nov 2022 17:48:33 +0800
+ 15.1.2375.31; Sat, 26 Nov 2022 17:48:34 +0800
 From:   Yang Jihong <yangjihong1@huawei.com>
 To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
@@ -39,9 +39,9 @@ To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>
 CC:     <yangjihong1@huawei.com>
-Subject: [PATCH bpf-next v3 3/4] bpf:selftests: Add kfunc_call test for mixing 32-bit and 64-bit parameters
-Date:   Sat, 26 Nov 2022 17:45:29 +0800
-Message-ID: <20221126094530.226629-4-yangjihong1@huawei.com>
+Subject: [PATCH bpf-next v3 4/4] bpf: Fix comment error in fixup_kfunc_call function
+Date:   Sat, 26 Nov 2022 17:45:30 +0800
+Message-ID: <20221126094530.226629-5-yangjihong1@huawei.com>
 X-Mailer: git-send-email 2.30.GIT
 In-Reply-To: <20221126094530.226629-1-yangjihong1@huawei.com>
 References: <20221126094530.226629-1-yangjihong1@huawei.com>
@@ -60,136 +60,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-32-bit ARM has four registers to save function parameters,
-add test cases to cover additional scenarios.
+insn->imm for kfunc is the relative address of __bpf_call_base,
+instead of __bpf_base_call, Fix the comment error.
 
 Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
 ---
- net/bpf/test_run.c                            | 18 +++++++
- .../selftests/bpf/prog_tests/kfunc_call.c     |  3 ++
- .../selftests/bpf/progs/kfunc_call_test.c     | 52 +++++++++++++++++++
- 3 files changed, 73 insertions(+)
+ kernel/bpf/verifier.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index fcb3e6c5e03c..5e8895027f0d 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -551,6 +551,21 @@ struct sock * noinline bpf_kfunc_call_test3(struct sock *sk)
- 	return sk;
- }
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 193ea927aa69..eb58fea645ca 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -13927,7 +13927,7 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env,
+ 	}
  
-+u64 noinline bpf_kfunc_call_test4(struct sock *sk, u64 a, u64 b, u32 c, u32 d)
-+{
-+	return a + b + c + d;
-+}
-+
-+u64 noinline bpf_kfunc_call_test5(u64 a, u64 b)
-+{
-+	return a + b;
-+}
-+
-+u64 noinline bpf_kfunc_call_test6(u32 a, u32 b, u32 c, u32 d, u32 e)
-+{
-+	return a + b + c + d + e;
-+}
-+
- struct prog_test_member1 {
- 	int a;
- };
-@@ -739,6 +754,9 @@ BTF_SET8_START(test_sk_check_kfunc_ids)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test1)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test2)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test3)
-+BTF_ID_FLAGS(func, bpf_kfunc_call_test4)
-+BTF_ID_FLAGS(func, bpf_kfunc_call_test5)
-+BTF_ID_FLAGS(func, bpf_kfunc_call_test6)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_acquire, KF_ACQUIRE | KF_RET_NULL)
- BTF_ID_FLAGS(func, bpf_kfunc_call_memb_acquire, KF_ACQUIRE | KF_RET_NULL)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_release, KF_RELEASE)
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-index 5af1ee8f0e6e..6a6822e99071 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-@@ -72,6 +72,9 @@ static struct kfunc_test_params kfunc_tests[] = {
- 	/* success cases */
- 	TC_TEST(kfunc_call_test1, 12),
- 	TC_TEST(kfunc_call_test2, 3),
-+	TC_TEST(kfunc_call_test4, 16),
-+	TC_TEST(kfunc_call_test5, 7),
-+	TC_TEST(kfunc_call_test6, 15),
- 	TC_TEST(kfunc_call_test_ref_btf_id, 0),
- 	TC_TEST(kfunc_call_test_get_mem, 42),
- 	SYSCALL_TEST(kfunc_syscall_test, 0),
-diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-index f636e50be259..0385ce2d4c6e 100644
---- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-+++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-@@ -6,6 +6,11 @@
- extern int bpf_kfunc_call_test2(struct sock *sk, __u32 a, __u32 b) __ksym;
- extern __u64 bpf_kfunc_call_test1(struct sock *sk, __u32 a, __u64 b,
- 				  __u32 c, __u64 d) __ksym;
-+extern __u64 bpf_kfunc_call_test4(struct sock *sk, __u64 a, __u64 b,
-+				  __u32 c, __u32 d) __ksym;
-+extern __u64 bpf_kfunc_call_test5(__u64 a, __u64 b) __ksym;
-+extern __u64 bpf_kfunc_call_test6(__u32 a, __u32 b, __u32 c, __u32 d,
-+				  __u32 e) __ksym;
- 
- extern struct prog_test_ref_kfunc *bpf_kfunc_call_test_acquire(unsigned long *sp) __ksym;
- extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
-@@ -17,6 +22,53 @@ extern void bpf_kfunc_call_test_mem_len_fail2(__u64 *mem, int len) __ksym;
- extern int *bpf_kfunc_call_test_get_rdwr_mem(struct prog_test_ref_kfunc *p, const int rdwr_buf_size) __ksym;
- extern int *bpf_kfunc_call_test_get_rdonly_mem(struct prog_test_ref_kfunc *p, const int rdonly_buf_size) __ksym;
- 
-+SEC("tc")
-+int kfunc_call_test6(struct __sk_buff *skb)
-+{
-+	__u64 a = 1ULL << 32;
-+	__u32 ret;
-+
-+	a = bpf_kfunc_call_test6(1, 2, 3, 4, 5);
-+	ret = a >> 32;   /* ret should be 0 */
-+	ret += (__u32)a; /* ret should be 15 */
-+
-+	return ret;
-+}
-+
-+SEC("tc")
-+int kfunc_call_test5(struct __sk_buff *skb)
-+{
-+	__u64 a = 1ULL << 32;
-+	__u32 ret;
-+
-+	a = bpf_kfunc_call_test5(a | 2, a | 3);
-+	ret = a >> 32;   /* ret should be 2 */
-+	ret += (__u32)a; /* ret should be 7 */
-+
-+	return ret;
-+}
-+
-+SEC("tc")
-+int kfunc_call_test4(struct __sk_buff *skb)
-+{
-+	struct bpf_sock *sk = skb->sk;
-+	__u64 a = 1ULL << 32;
-+	__u32 ret;
-+
-+	if (!sk)
-+		return -1;
-+
-+	sk = bpf_sk_fullsock(sk);
-+	if (!sk)
-+		return -1;
-+
-+	a = bpf_kfunc_call_test4((struct sock *)sk, a | 2, a | 3, 4, 5);
-+	ret = a >> 32;   /* ret should be 2 */
-+	ret += (__u32)a; /* ret should be 16 */
-+
-+	return ret;
-+}
-+
- SEC("tc")
- int kfunc_call_test2(struct __sk_buff *skb)
- {
+ 	/* insn->imm has the btf func_id. Replace it with
+-	 * an address (relative to __bpf_base_call).
++	 * an address (relative to __bpf_call_base).
+ 	 */
+ 	desc = find_kfunc_desc(env->prog, insn->imm, insn->off);
+ 	if (!desc) {
 -- 
 2.30.GIT
 
