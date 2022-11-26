@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEDCF639714
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 17:22:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BDB563971B
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 17:22:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229673AbiKZQWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 11:22:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36456 "EHLO
+        id S229694AbiKZQWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 11:22:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiKZQWi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 11:22:38 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251F5E02C;
-        Sat, 26 Nov 2022 08:22:37 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id f9so6266574pgf.7;
-        Sat, 26 Nov 2022 08:22:37 -0800 (PST)
+        with ESMTP id S229514AbiKZQWl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 11:22:41 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5017D133;
+        Sat, 26 Nov 2022 08:22:39 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id z17so1849424pff.1;
+        Sat, 26 Nov 2022 08:22:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vkA/imn3R47+/xWfnmkBBzHVEaOv5ORTLT0XDNYcHEQ=;
-        b=ON/gRuzSyPH7S6hT2zLZ5P/N1rDVq2AAs/J1IG1Q4wK//8xSZJmYCo3ea9cghVmONi
-         AkbwjnPARZ+CkiUZ1LcufjhMuu5TCWGFytab6j4pCw09Pe+EsD0sklq1HTHm7PBws6Iz
-         +ugY8jxmIC6aMemQ0OQnE0iQaY7+iFXo8633ASE+Oq3HJ2I88uE+/E05poH811GWXP1P
-         TPO56OLkdAIcW1kRz/IcXL4WtzrQrIzs1NTFxpiXF/m1QfGdHdMrDmTGW2vtdskJx4WF
-         bFEM0wwUHW5zPbQ24ozWVwi8RORyqG2XoP6tWmb7GLESbClu5TvNTvz4EV0fnivfvbJ7
-         wyDg==
+        bh=FmB9Jwaiin8tKBRiu/35E9rAp2jafIlqnhIKGIJ7dMk=;
+        b=khULKVn7mhBorIgJ9/uSv1GtI9gWeAf7IdoCqRohNUR3WBjwfEG8IRQpjhUFMcy/pF
+         bZUfl5luaKyGxgWulR/VhNJE06b6pbsTiAcTuWh2zfW7cBzfeQBnyllksrnct6RuRZbs
+         4YejzBFsRwKBoUC8ir9dG4ru0k8JluVmTAqU/ZbCPGwzdPGccBSn+wZNcxsDGhM7lQZG
+         k+PbJtI0sAUGEBZsMCTP6WaSfg7Vbkl4umo6qg8T7mEz9QkwpvT1PWDyfkwycKKLOTh/
+         MjJqiibil70zUkopTYedSZ7NMce7bCMAFfPTkiA7JQ4guX5sFdEcB4GQ/kspK0PkWaZ5
+         JwvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=vkA/imn3R47+/xWfnmkBBzHVEaOv5ORTLT0XDNYcHEQ=;
-        b=QizfY/Mr4EAamKhov6itfyASzG37bg+1l4kBJ6BxM+xljSuuRSxf2/TefHgc4evp+9
-         iJSwS46q6U8+N1hA0A2mlrGybZbOGmc79inHlyf24VHRsHbZqK+RJ7LopgKaIXxi03Qv
-         /AH4sOgDGOg47scG4A1wyZtpD4oWi6nkkq3bbtioWIyMHLq70qTi743C1ovsGTRa8KzW
-         7oo7JHkFr603ZBMwwDIsEU1BDNqCG8okDrXCHQJg/X+EQ26uJQ7Wi0yT/RHiZx4qxtuV
-         fWGbVEm9tUD6qYKxyabdb/NYJQoSQ5Ss5sGCGnz+vEVANOfE67tPzIPxDL8+xHvWfxqQ
-         US9Q==
-X-Gm-Message-State: ANoB5pkjOJ8/B8lFlostNkH8kjbqr7Gn06K1uQ6a4r8T8meJ+RPBmJlO
-        mZE7fc81KCp1ce5iflJxG2xooIiNb6QfRA==
-X-Google-Smtp-Source: AA0mqf7fmuTWhI65nOvLLpZtsmkmtKCw1vpCYxAHCFZqF3ekFRZw15D0ehZglhBEjFK5l6ObgCydrg==
-X-Received: by 2002:a65:4948:0:b0:46e:be03:d9b5 with SMTP id q8-20020a654948000000b0046ebe03d9b5mr19928275pgs.495.1669479756374;
-        Sat, 26 Nov 2022 08:22:36 -0800 (PST)
+        bh=FmB9Jwaiin8tKBRiu/35E9rAp2jafIlqnhIKGIJ7dMk=;
+        b=1EOziRpsfVc7Cr3G+akDuRslHTKyyYDmQYrYgzu2OY3c3PbZVuQ8ma4SUgiD1c5A3i
+         lRU4gMFmmtAM4m5k52FF6Yn/wZxJHlrNTn9mixzLJ6yr8zN8d4bYIHQUs1dt1nKlO71b
+         v8B7C65XknCtOQHPu1WMd45aCDY2Z/11vMiImElDd4JdLHmH4qibnarqZBgDczgSjQ/V
+         s3+9IzgLDiL4bTMv5MCAUJEGhD8ft21z99VDZQzVjW931o3CBE3xrzk4QWa9RypbC9Xq
+         AbPjY0SFuE06PRNQShLL5KrbBPFTwi+XzdhpNmFUzmTxAORVMULFSFcOrvY4aHEVE4bS
+         okUA==
+X-Gm-Message-State: ANoB5pl6voL9R3Z7EW5stRWpdivMddQlOrmQCGlxs3Zaepq/zjf3adEI
+        WGCrP5dSA/3w0i1eISZ9ayQvjDGOF+REdw==
+X-Google-Smtp-Source: AA0mqf7akjIjMCphTmSxxnnBmxi9wciY15SqpAYixyIBB/XT6sXM2NQhkloK/fTYG/BtfblF55IISw==
+X-Received: by 2002:a63:1f63:0:b0:460:ec46:3645 with SMTP id q35-20020a631f63000000b00460ec463645mr40054183pgm.92.1669479758992;
+        Sat, 26 Nov 2022 08:22:38 -0800 (PST)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id y14-20020a63e24e000000b00460ea630c1bsm4169601pgj.46.2022.11.26.08.22.33
+        by smtp.gmail.com with ESMTPSA id y14-20020a63e24e000000b00460ea630c1bsm4169601pgj.46.2022.11.26.08.22.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Nov 2022 08:22:36 -0800 (PST)
+        Sat, 26 Nov 2022 08:22:38 -0800 (PST)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     linux-can@vger.kernel.org
@@ -60,9 +60,9 @@ Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
         Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@nvidia.com>,
         Lukas Magel <lukas.magel@posteo.net>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v4 1/6] USB: core: export usb_cache_string()
-Date:   Sun, 27 Nov 2022 01:22:06 +0900
-Message-Id: <20221126162211.93322-2-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v4 2/6] can: etas_es58x: add devlink support
+Date:   Sun, 27 Nov 2022 01:22:07 +0900
+Message-Id: <20221126162211.93322-3-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.37.4
 In-Reply-To: <20221126162211.93322-1-mailhol.vincent@wanadoo.fr>
 References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
@@ -79,55 +79,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-usb_cache_string() can also be useful for the drivers so export it.
+Add basic support for devlink. The callbacks of struct devlink_ops
+will be implemented next.
 
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-For reference, acked by Greg here:
-https://lore.kernel.org/linux-usb/Y3zyCz5HbGdsxmRT@kroah.com/
----
- drivers/usb/core/message.c | 1 +
- drivers/usb/core/usb.h     | 1 -
- include/linux/usb.h        | 1 +
- 3 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/can/usb/Kconfig                    |  1 +
+ drivers/net/can/usb/etas_es58x/Makefile        |  2 +-
+ drivers/net/can/usb/etas_es58x/es58x_core.c    | 13 ++++++++++---
+ drivers/net/can/usb/etas_es58x/es58x_core.h    |  6 ++++++
+ drivers/net/can/usb/etas_es58x/es58x_devlink.c | 13 +++++++++++++
+ 5 files changed, 31 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/net/can/usb/etas_es58x/es58x_devlink.c
 
-diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
-index 4d59d927ae3e..127fac1af676 100644
---- a/drivers/usb/core/message.c
-+++ b/drivers/usb/core/message.c
-@@ -1037,6 +1037,7 @@ char *usb_cache_string(struct usb_device *udev, int index)
+diff --git a/drivers/net/can/usb/Kconfig b/drivers/net/can/usb/Kconfig
+index 8c6fea661530..445504ababce 100644
+--- a/drivers/net/can/usb/Kconfig
++++ b/drivers/net/can/usb/Kconfig
+@@ -30,6 +30,7 @@ config CAN_ESD_USB
+ config CAN_ETAS_ES58X
+ 	tristate "ETAS ES58X CAN/USB interfaces"
+ 	select CRC16
++	select NET_DEVLINK
+ 	help
+ 	  This driver supports the ES581.4, ES582.1 and ES584.1 interfaces
+ 	  from ETAS GmbH (https://www.etas.com/en/products/es58x.php).
+diff --git a/drivers/net/can/usb/etas_es58x/Makefile b/drivers/net/can/usb/etas_es58x/Makefile
+index a129b4aa0215..d6667ebe259f 100644
+--- a/drivers/net/can/usb/etas_es58x/Makefile
++++ b/drivers/net/can/usb/etas_es58x/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_CAN_ETAS_ES58X) += etas_es58x.o
+-etas_es58x-y = es58x_core.o es581_4.o es58x_fd.o
++etas_es58x-y = es58x_core.o es58x_devlink.o es581_4.o es58x_fd.o
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 4c97102202bf..c6e598e4800c 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -16,6 +16,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/usb.h>
++#include <net/devlink.h>
+ 
+ #include "es58x_core.h"
+ 
+@@ -2174,6 +2175,7 @@ static struct es58x_device *es58x_init_es58x_dev(struct usb_interface *intf,
+ {
+ 	struct device *dev = &intf->dev;
+ 	struct es58x_device *es58x_dev;
++	struct devlink *devlink;
+ 	const struct es58x_parameters *param;
+ 	const struct es58x_operators *ops;
+ 	struct usb_device *udev = interface_to_usbdev(intf);
+@@ -2196,11 +2198,12 @@ static struct es58x_device *es58x_init_es58x_dev(struct usb_interface *intf,
+ 		ops = &es581_4_ops;
  	}
- 	return smallbuf;
+ 
+-	es58x_dev = devm_kzalloc(dev, es58x_sizeof_es58x_device(param),
+-				 GFP_KERNEL);
+-	if (!es58x_dev)
++	devlink = devlink_alloc(&es58x_dl_ops, es58x_sizeof_es58x_device(param),
++				dev);
++	if (!devlink)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	es58x_dev = devlink_priv(devlink);
+ 	es58x_dev->param = param;
+ 	es58x_dev->ops = ops;
+ 	es58x_dev->dev = dev;
+@@ -2247,6 +2250,8 @@ static int es58x_probe(struct usb_interface *intf,
+ 	if (ret)
+ 		return ret;
+ 
++	devlink_register(priv_to_devlink(es58x_dev));
++
+ 	for (ch_idx = 0; ch_idx < es58x_dev->num_can_ch; ch_idx++) {
+ 		ret = es58x_init_netdev(es58x_dev, ch_idx);
+ 		if (ret) {
+@@ -2272,8 +2277,10 @@ static void es58x_disconnect(struct usb_interface *intf)
+ 	dev_info(&intf->dev, "Disconnecting %s %s\n",
+ 		 es58x_dev->udev->manufacturer, es58x_dev->udev->product);
+ 
++	devlink_unregister(priv_to_devlink(es58x_dev));
+ 	es58x_free_netdevs(es58x_dev);
+ 	es58x_free_urbs(es58x_dev);
++	devlink_free(priv_to_devlink(es58x_dev));
+ 	usb_set_intfdata(intf, NULL);
  }
-+EXPORT_SYMBOL_GPL(usb_cache_string);
  
- /*
-  * usb_get_device_descriptor - (re)reads the device descriptor (usbcore)
-diff --git a/drivers/usb/core/usb.h b/drivers/usb/core/usb.h
-index 82538daac8b8..0eac7d4285d1 100644
---- a/drivers/usb/core/usb.h
-+++ b/drivers/usb/core/usb.h
-@@ -47,7 +47,6 @@ extern int usb_get_device_descriptor(struct usb_device *dev,
- extern int usb_set_isoch_delay(struct usb_device *dev);
- extern int usb_get_bos_descriptor(struct usb_device *dev);
- extern void usb_release_bos_descriptor(struct usb_device *dev);
--extern char *usb_cache_string(struct usb_device *udev, int index);
- extern int usb_set_configuration(struct usb_device *dev, int configuration);
- extern int usb_choose_configuration(struct usb_device *udev);
- extern int usb_generic_driver_probe(struct usb_device *udev);
-diff --git a/include/linux/usb.h b/include/linux/usb.h
-index 9ff1ad4dfad1..d2d2f41052c0 100644
---- a/include/linux/usb.h
-+++ b/include/linux/usb.h
-@@ -1829,6 +1829,7 @@ static inline int usb_get_ptm_status(struct usb_device *dev, void *data)
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.h b/drivers/net/can/usb/etas_es58x/es58x_core.h
+index 4a082fd69e6f..bf24375580e5 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.h
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.h
+@@ -674,6 +674,7 @@ static inline enum es58x_flag es58x_get_flags(const struct sk_buff *skb)
+ 	return es58x_flags;
+ }
  
- extern int usb_string(struct usb_device *dev, int index,
- 	char *buf, size_t size);
-+extern char *usb_cache_string(struct usb_device *udev, int index);
++/* es58x_core.c. */
+ int es58x_can_get_echo_skb(struct net_device *netdev, u32 packet_idx,
+ 			   u64 *tstamps, unsigned int pkts);
+ int es58x_tx_ack_msg(struct net_device *netdev, u16 tx_free_entries,
+@@ -691,9 +692,14 @@ int es58x_rx_cmd_ret_u32(struct net_device *netdev,
+ int es58x_send_msg(struct es58x_device *es58x_dev, u8 cmd_type, u8 cmd_id,
+ 		   const void *msg, u16 cmd_len, int channel_idx);
  
- /* wrappers that also update important state inside usbcore */
- extern int usb_clear_halt(struct usb_device *dev, int pipe);
++/* es58x_devlink.c. */
++extern const struct devlink_ops es58x_dl_ops;
++
++/* es581_4.c. */
+ extern const struct es58x_parameters es581_4_param;
+ extern const struct es58x_operators es581_4_ops;
+ 
++/* es58x_fd.c. */
+ extern const struct es58x_parameters es58x_fd_param;
+ extern const struct es58x_operators es58x_fd_ops;
+ 
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_devlink.c b/drivers/net/can/usb/etas_es58x/es58x_devlink.c
+new file mode 100644
+index 000000000000..af6ca7ada23f
+--- /dev/null
++++ b/drivers/net/can/usb/etas_es58x/es58x_devlink.c
+@@ -0,0 +1,13 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/* Driver for ETAS GmbH ES58X USB CAN(-FD) Bus Interfaces.
++ *
++ * File es58x_devlink.c: report the product information using devlink.
++ *
++ * Copyright (c) 2022 Vincent Mailhol <mailhol.vincent@wanadoo.fr>
++ */
++
++#include <net/devlink.h>
++
++const struct devlink_ops es58x_dl_ops = {
++};
 -- 
 2.37.4
 
