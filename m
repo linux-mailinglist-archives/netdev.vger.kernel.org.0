@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63261639511
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 10:55:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46FD6639514
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 10:58:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229514AbiKZJzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 04:55:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59858 "EHLO
+        id S229551AbiKZJ6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 04:58:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiKZJzv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 04:55:51 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB792188F
-        for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 01:55:50 -0800 (PST)
+        with ESMTP id S229475AbiKZJ6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 04:58:22 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9C7183BC;
+        Sat, 26 Nov 2022 01:58:21 -0800 (PST)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669456547;
+        s=2020; t=1669456700;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=oetK6LrR35eqq4wXETgSlPnmU3zBYbTG+xwQBon69N4=;
-        b=0XqN6+Gf0HKWbz+ayO/POLzlXMo6XvcRvtdUQYq37kmZmbz/wV76FK7fcTYoYLatK5V+ZH
-        L4SRWGedxO2VBom/pKSin3IRaQakMBShdOZo3W3uhO0Tk8CK6iRLmv0h3qSw7dd/sFMEzD
-        PDgFIWy86PtjGpO5VIpHvox9kA6roqY175BRZd9pKjP32lj3b7AV2VbF+lISTs5SeGuydx
-        Hw2h+9ClHuMR6tamZ8/Vb8hQJhQRZXm48GhLhM4qRzo49wWVfTaYhRv+tYEN8ntq8UrFNf
-        AWHHraXyFm/msyb2OBeV4h7r87mFFq4l9Qt+UoO64o7nyQfgBs7grhgj448h7A==
+        bh=Wi8dyZVc9G68XjdhvfH69E6KNFmTjqXlbORVLEosFQc=;
+        b=LJKKvsBWN7LXHT5nzOA2v68vVqlrTAkX03Brma48/LtxbfnSZl/oj/iNuDHQZ+UUXtxHoz
+        Vd/ejCgFAkLL6VDgcUCP3sGNZkxRqTkLaQLUgZ5HHFWDg4CA8+5DPQlnYTpCYJgX45MIda
+        y01qSF3Gj8BAxOkLjVwm1w1FPvBX3MRnwv58uyAF9WJsdVN6TL48azd41ogOE3ybY2BKKw
+        a+jvWhSdk5FhobeWNntT6+F2eszXtqEnQDXfw7sVeuGvjb60A0Y9RH69CDsYgB3fGgPaGP
+        W0w1s0mbbW+Dju09yWVVWAmYPRyDPNGTrXe8tRlWl+XPXhz91rtzgjcerWuYgA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669456547;
+        s=2020e; t=1669456700;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=oetK6LrR35eqq4wXETgSlPnmU3zBYbTG+xwQBon69N4=;
-        b=dB8MumKj0YRbl3KBxDWFyCv3jocVWH5kImKxiGKYY+Yfbt63GVZCcvzGMagisV4mrVqYRP
-        F2JwHmCw3jxt0UDQ==
+        bh=Wi8dyZVc9G68XjdhvfH69E6KNFmTjqXlbORVLEosFQc=;
+        b=h23byget21rMZ+xhpsHEnPCkPlduNa+YELBut/oVhy8qugde9/hK1A81ucR76p2ISiNjBG
+        yweu3H01ToG779AA==
 To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -41,13 +41,14 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v4 net-next 7/8] hsr: Use a single struct for self_node.
-In-Reply-To: <20221125165610.3802446-8-bigeasy@linutronix.de>
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 8/8] selftests: Add a basic HSR test.
+In-Reply-To: <20221125165610.3802446-9-bigeasy@linutronix.de>
 References: <20221125165610.3802446-1-bigeasy@linutronix.de>
- <20221125165610.3802446-8-bigeasy@linutronix.de>
-Date:   Sat, 26 Nov 2022 10:55:45 +0100
-Message-ID: <87a64edopq.fsf@kurt>
+ <20221125165610.3802446-9-bigeasy@linutronix.de>
+Date:   Sat, 26 Nov 2022 10:58:18 +0100
+Message-ID: <877czidolh.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
         micalg=pgp-sha512; protocol="application/pgp-signature"
@@ -64,18 +65,16 @@ X-Mailing-List: netdev@vger.kernel.org
 Content-Type: text/plain
 
 On Fri Nov 25 2022, Sebastian Andrzej Siewior wrote:
-> self_node_db is a list_head with one entry of struct hsr_node. The
-> purpose is to hold the two MAC addresses of the node itself.
-> It is convenient to recycle the structure. However having a list_head
-> and fetching always the first entry is not really optimal.
+> This test adds a basic HSRv0 network with 3 nodes. In its current shape
+> it sends and forwards packets, announcements and so merges nodes based
+> on MAC A/B information.
+> It is able to detect duplicate packets and packetloss should any occur.
 >
-> Created a new data strucure contaning the two MAC addresses named
-> hsr_self_node. Access that structure like an RCU protected pointer so
-> it can be replaced on the fly without blocking the reader.
->
+> Cc: Shuah Khan <shuah@kernel.org>
+> Cc: linux-kselftest@vger.kernel.org
 > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Looks better. Thanks.
+I guess, support for version 1 and PRP can be added later.
 
 Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 
@@ -84,19 +83,19 @@ Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmOB4qETHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgqAOD/4wgdN40EUKqR/CpmCtD/A5pCOloy+X
-hnZzq/BZ/L8uNh6CnwDuTeHMOvdwbL4Ekk0BQhb3RjIt5P40vWUWTC77y3Or5Zo/
-rdEk/DlEvhXjXEie9A/WSwesgMjsf09cC2t5ELKuJ1QHvBb5RFssqF+y/DlD1CiD
-J7R4Z1k9adQarExA8LOftkkVvb+Q+TJHyC4IM1y7we1el/tffOFk6mTzFB3wKhpL
-edchjWUlVj/+MKFkARcdNkg+oAOSQiVc95QJHFXEjSG3iSsCo2AbzbTZEQzd00Me
-9Gz2Nfk4jRUPpWcqzI34t2gkQTn6yfDJXMcv6u2rTuSWwUActkKdnDXrdrF6ekDC
-WzXJfO6T4v6U29zABxl9JXc91F4BVQx6Cj/JG4RTveStmjYsjPk8alp73v+ZUEjP
-aiwNJ6Yye9pxNXiNFeHa9YklDeAByEdsKLfaX1YTX+8uusWePLMmrh2Pmjp5zg/H
-PcWGtuB3Uq7G+tsaRii7DF2oiWjGAUKhpxUjT5cOqlwVXB88MAURzowSU57xqxua
-em1dVEXvoX5Xn4E2vMNT6A8ZRzqyiqCFZlaAeAAz3zoNZUYbyp5l1n/PqiY0r52b
-YNfLrM6eibQAc06/nsp8g3oFfwqIN3s4KvdX50bLPy4vZLNp/NDhlyOwaFUbnD1i
-enuAm/niXZYwrA==
-=bhcf
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmOB4zoTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgoVVD/43y204sbfWj+CZzQriGx+rszYBWcuy
+4kRUBBf1AFjch+HqVv+fRKn38vZ21CLyp+FI+8ZHzV+5MRCdtLmyNf66Oagt5hvg
+vtDD1aM3hgI+bQZJAADXYaSTbuftbqLPKli4aRseg/ESzSye6Oyr2PgoxKL6Qja1
+D2VKhkaGar2LMiD1aDjZCUJ7BCy5azNdpYiG4q0MmI9P7rY1XLwzH+fkVdvTJnSS
+mDF8pOf9ClFn9GzsuGQi5IKew0ovlJ49z5eO/dUeaTzG96K/GpVPBi3j+1UWJTav
+qa/Y9p4e3gHwe8eiRcwN23uqbTM0w3Lb55loEYrsezDvdgPIG/O1kw/s7laVaDMo
+JC1qA/sD6b4Cts7QnliKwl6QXg4tbYXczglwQY0+tRNizE60z1TT30PSa07pSlAF
+FzVJV3R45DFSIP5EXoOmOq/8/IU6EVC0jGZFWnij38d6XbfUNbRrgfnI7cnKX20Y
+/qlbwrcL4ckG3PVYCy/4gSIac9EE/TVnBiKZgXcuKJc5KD6H8YiPKNUb4jlXX61x
+rHYkHmjMsP6FkicLqZtESN/Cj4Px85bseevGDjHnR1k9wQ7GhniWpSWSBtfR8n6z
+f6wYnyQvEXjDq+D08kuMBUuyeBrxHGup+1bpl5kCYWAYrMTKZRP5Ps0Fb/EHg+pq
+7+RdlRzoCq+FtQ==
+=Ghnb
 -----END PGP SIGNATURE-----
 --=-=-=--
