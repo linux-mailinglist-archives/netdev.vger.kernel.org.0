@@ -2,338 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48BF06394E3
-	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 10:04:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC0766394E6
+	for <lists+netdev@lfdr.de>; Sat, 26 Nov 2022 10:08:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbiKZJEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 04:04:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
+        id S229515AbiKZJIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 04:08:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiKZJD5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 04:03:57 -0500
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071E62A720;
-        Sat, 26 Nov 2022 01:03:55 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VViBjU._1669453432;
-Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VViBjU._1669453432)
+        with ESMTP id S229469AbiKZJIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 04:08:35 -0500
+Received: from out199-1.us.a.mail.aliyun.com (out199-1.us.a.mail.aliyun.com [47.90.199.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFC02B1B2;
+        Sat, 26 Nov 2022 01:08:32 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VViIOpl_1669453707;
+Received: from 30.236.51.231(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VViIOpl_1669453707)
           by smtp.aliyun-inc.com;
-          Sat, 26 Nov 2022 17:03:53 +0800
-From:   "D.Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com
+          Sat, 26 Nov 2022 17:08:28 +0800
+Message-ID: <029f80b3-1392-b307-ddbd-2db536431a23@linux.alibaba.com>
+Date:   Sat, 26 Nov 2022 17:08:27 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.1
+Subject: Re: [PATCH net-next v5 00/10] optimize the parallelism of SMC-R
+ connections
+To:     Jan Karcher <jaka@linux.ibm.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com
 Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
         linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH net-next v6 7/7] net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
-Date:   Sat, 26 Nov 2022 17:03:42 +0800
-Message-Id: <1669453422-38152-8-git-send-email-alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1669453422-38152-1-git-send-email-alibuda@linux.alibaba.com>
-References: <1669453422-38152-1-git-send-email-alibuda@linux.alibaba.com>
+References: <1669218890-115854-1-git-send-email-alibuda@linux.alibaba.com>
+ <c98a8f04-c696-c9e0-4d7e-bc31109a0e04@linux.alibaba.com>
+ <352b1e15-3c6d-a398-3fe6-0f438e0e8406@linux.ibm.com>
+ <1f87a8c2-7a47-119a-1141-250d05678546@linux.alibaba.com>
+ <11182feb-0f41-e9a4-e866-8f917c745a48@linux.ibm.com>
+ <4f6d8e70-b3f2-93cd-ae83-77ee733cf716@linux.alibaba.com>
+ <22f468cb-106b-1797-0496-e9108773ab9d@linux.ibm.com>
+Content-Language: en-US
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <22f468cb-106b-1797-0496-e9108773ab9d@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-It's clear that rmbs_lock and sndbufs_lock are aims to protect the
-rmbs list or the sndbufs list.
 
-During connection establieshment, smc_buf_get_slot() will always
-be invoked, and it only performs read semantics in rmbs list and
-sndbufs list.
+On 11/25/22 2:54 PM, Jan Karcher wrote:
+> 
+> 
+> On 24/11/2022 20:53, D. Wythe wrote:
+>>
+>>
+>> On 11/24/22 9:30 PM, Jan Karcher wrote:
+>>>
+>>>
+>>> On 24/11/2022 09:53, D. Wythe wrote:
+>>>>
+>>>>
+>>>> On 11/24/22 4:33 PM, Jan Karcher wrote:
+>>>>>
+>>>>>
+>>>>> On 24/11/2022 06:55, D. Wythe wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 11/23/22 11:54 PM, D.Wythe wrote:
+>>>>>>> From: "D.Wythe" <alibuda@linux.alibaba.com>
+>>>>>>>
+>>>>>>> This patch set attempts to optimize the parallelism of SMC-R connections,
+>>>>>>> mainly to reduce unnecessary blocking on locks, and to fix exceptions that
+>>>>>>> occur after thoses optimization.
+>>>>>>>
+>>>>>>
+>>>>>>> D. Wythe (10):
+>>>>>>>    net/smc: Fix potential panic dues to unprotected
+>>>>>>>      smc_llc_srv_add_link()
+>>>>>>>    net/smc: fix application data exception
+>>>>>>>    net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
+>>>>>>>    net/smc: remove locks smc_client_lgr_pending and
+>>>>>>>      smc_server_lgr_pending
+>>>>>>>    net/smc: allow confirm/delete rkey response deliver multiplex
+>>>>>>>    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
+>>>>>>>    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
+>>>>>>>    net/smc: use read semaphores to reduce unnecessary blocking in
+>>>>>>>      smc_buf_create() & smcr_buf_unuse()
+>>>>>>>    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
+>>>>>>>    net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
+>>>>>>>
+>>>>>>>   net/smc/af_smc.c   |  74 ++++----
+>>>>>>>   net/smc/smc_core.c | 541 +++++++++++++++++++++++++++++++++++++++++++++++------
+>>>>>>>   net/smc/smc_core.h |  53 +++++-
+>>>>>>>   net/smc/smc_llc.c  | 285 ++++++++++++++++++++--------
+>>>>>>>   net/smc/smc_llc.h  |   6 +
+>>>>>>>   net/smc/smc_wr.c   |  10 -
+>>>>>>>   net/smc/smc_wr.h   |  10 +
+>>>>>>>   7 files changed, 801 insertions(+), 178 deletions(-)
+>>>>>>>
+>>>>>>
+>>>>>> Hi Jan and Wenjia,
+>>>>>>
+>>>>>> I'm wondering whether the bug fix patches need to be put together in this series. I'm considering
+>>>>>> sending these bug fix patches separately now, which may be better, in case that our patch
+>>>>>> might have other problems. These bug fix patches are mainly independent, even without my other
+>>>>>> patches, they may be triggered theoretically.
+>>>>>
+>>>>> Hi D.
+>>>>>
+>>>>> Wenjia and i just talked about that. For us it would be better separating the fixes and the new logic.
+>>>>> If the fixes are independent feel free to post them to net.
+>>>>
+>>>>
+>>>> Got it, I will remove those bug fix patches in the next series and send them separately.
+>>>> And thanks a lot for your test, no matter what the final test results are, I will send a new series
+>>>> to separate them after your test finished.
+>>>
+>>> Hi D.,
+>>>
+>>> I have some troubles applying your patches.
+>>>
+>>>      error: sha1 information is lacking or useless (net/smc/smc_core.c).
+>>>      error: could not build fake ancestor
+>>>      Patch failed at 0001 optimize the parallelism of SMC-R connections
+>>>
+>>> Before merging them by hand could you please send the v6 with the fixes separated and verify that you are basing on the latest net / net-next tree?
+>>>
+>>> That would make it easier for us to test them.
+>>>
+>>> Thank you
+>>> - Jan
+>>>
+>>
+>> Hi Jan,
+>>
+>> It's quite weird, it seems that my patch did based on the latest net-next tree.
+>> And I try apply it the latest net tree, it's seems work to me too. Maybe there
+>> is something wrong with the mirror I use. Can you show me the conflict described
+>> in the .rej file？
+> 
+> Hi D.,
+> 
+> sorry for the delayed reply:
+> I just re-tried it with path instead of git am and i think i messed it up yesterday.
+> Mea culpa. With patch your changes *can* be applied to the latest net-next.
+> I'm very sorry for the inconvenience. Could you still please send the v6. That way i can verify the fixes separate and we can - if the tests succeed - already apply them.
+> 
+> Sorry and thank you
+> - Jan
 
-Based on the above considerations, we replace mutex with rw_semaphore.
-Only smc_buf_get_slot() use down_read() to allow smc_buf_get_slot()
-run concurrently, other part use down_write() to keep exclusive
-semantics.
 
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
----
- net/smc/smc_core.c | 55 +++++++++++++++++++++++++++---------------------------
- net/smc/smc_core.h |  4 ++--
- net/smc/smc_llc.c  | 16 ++++++++--------
- 3 files changed, 38 insertions(+), 37 deletions(-)
+Hi Jan,
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 2f261c3..3f6e70e 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1129,8 +1129,8 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
- 	lgr->freeing = 0;
- 	lgr->vlan_id = ini->vlan_id;
- 	refcount_set(&lgr->refcnt, 1); /* set lgr refcnt to 1 */
--	mutex_init(&lgr->sndbufs_lock);
--	mutex_init(&lgr->rmbs_lock);
-+	init_rwsem(&lgr->sndbufs_lock);
-+	init_rwsem(&lgr->rmbs_lock);
- 	rwlock_init(&lgr->conns_lock);
- 	for (i = 0; i < SMC_RMBE_SIZES; i++) {
- 		INIT_LIST_HEAD(&lgr->sndbufs[i]);
-@@ -1377,7 +1377,7 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
- static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
- 			   struct smc_link_group *lgr)
- {
--	struct mutex *lock;	/* lock buffer list */
-+	struct rw_semaphore *lock;	/* lock buffer list */
- 	int rc;
- 
- 	if (is_rmb && buf_desc->is_conf_rkey && !list_empty(&lgr->list)) {
-@@ -1397,9 +1397,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
- 		/* buf registration failed, reuse not possible */
- 		lock = is_rmb ? &lgr->rmbs_lock :
- 				&lgr->sndbufs_lock;
--		mutex_lock(lock);
-+		down_write(lock);
- 		list_del(&buf_desc->list);
--		mutex_unlock(lock);
-+		up_write(lock);
- 
- 		smc_buf_free(lgr, is_rmb, buf_desc);
- 	} else {
-@@ -1503,15 +1503,16 @@ static void smcr_buf_unmap_lgr(struct smc_link *lnk)
- 	int i;
- 
- 	for (i = 0; i < SMC_RMBE_SIZES; i++) {
--		mutex_lock(&lgr->rmbs_lock);
-+		down_write(&lgr->rmbs_lock);
- 		list_for_each_entry_safe(buf_desc, bf, &lgr->rmbs[i], list)
- 			smcr_buf_unmap_link(buf_desc, true, lnk);
--		mutex_unlock(&lgr->rmbs_lock);
--		mutex_lock(&lgr->sndbufs_lock);
-+		up_write(&lgr->rmbs_lock);
-+
-+		down_write(&lgr->sndbufs_lock);
- 		list_for_each_entry_safe(buf_desc, bf, &lgr->sndbufs[i],
- 					 list)
- 			smcr_buf_unmap_link(buf_desc, false, lnk);
--		mutex_unlock(&lgr->sndbufs_lock);
-+		up_write(&lgr->sndbufs_lock);
- 	}
- }
- 
-@@ -2393,19 +2394,19 @@ int smc_uncompress_bufsize(u8 compressed)
-  * buffer size; if not available, return NULL
-  */
- static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
--					     struct mutex *lock,
-+					     struct rw_semaphore *lock,
- 					     struct list_head *buf_list)
- {
- 	struct smc_buf_desc *buf_slot;
- 
--	mutex_lock(lock);
-+	down_read(lock);
- 	list_for_each_entry(buf_slot, buf_list, list) {
- 		if (cmpxchg(&buf_slot->used, 0, 1) == 0) {
--			mutex_unlock(lock);
-+			up_read(lock);
- 			return buf_slot;
- 		}
- 	}
--	mutex_unlock(lock);
-+	up_read(lock);
- 	return NULL;
- }
- 
-@@ -2514,13 +2515,13 @@ int smcr_link_reg_buf(struct smc_link *link, struct smc_buf_desc *buf_desc)
- 	return 0;
- }
- 
--static int _smcr_buf_map_lgr(struct smc_link *lnk, struct mutex *lock,
-+static int _smcr_buf_map_lgr(struct smc_link *lnk, struct rw_semaphore *lock,
- 			     struct list_head *lst, bool is_rmb)
- {
- 	struct smc_buf_desc *buf_desc, *bf;
- 	int rc = 0;
- 
--	mutex_lock(lock);
-+	down_write(lock);
- 	list_for_each_entry_safe(buf_desc, bf, lst, list) {
- 		if (!buf_desc->used)
- 			continue;
-@@ -2529,7 +2530,7 @@ static int _smcr_buf_map_lgr(struct smc_link *lnk, struct mutex *lock,
- 			goto out;
- 	}
- out:
--	mutex_unlock(lock);
-+	up_write(lock);
- 	return rc;
- }
- 
-@@ -2562,37 +2563,37 @@ int smcr_buf_reg_lgr(struct smc_link *lnk)
- 	int i, rc = 0;
- 
- 	/* reg all RMBs for a new link */
--	mutex_lock(&lgr->rmbs_lock);
-+	down_write(&lgr->rmbs_lock);
- 	for (i = 0; i < SMC_RMBE_SIZES; i++) {
- 		list_for_each_entry_safe(buf_desc, bf, &lgr->rmbs[i], list) {
- 			if (!buf_desc->used)
- 				continue;
- 			rc = smcr_link_reg_buf(lnk, buf_desc);
- 			if (rc) {
--				mutex_unlock(&lgr->rmbs_lock);
-+				up_write(&lgr->rmbs_lock);
- 				return rc;
- 			}
- 		}
- 	}
--	mutex_unlock(&lgr->rmbs_lock);
-+	up_write(&lgr->rmbs_lock);
- 
- 	if (lgr->buf_type == SMCR_PHYS_CONT_BUFS)
- 		return rc;
- 
- 	/* reg all vzalloced sndbufs for a new link */
--	mutex_lock(&lgr->sndbufs_lock);
-+	down_write(&lgr->sndbufs_lock);
- 	for (i = 0; i < SMC_RMBE_SIZES; i++) {
- 		list_for_each_entry_safe(buf_desc, bf, &lgr->sndbufs[i], list) {
- 			if (!buf_desc->used || !buf_desc->is_vm)
- 				continue;
- 			rc = smcr_link_reg_buf(lnk, buf_desc);
- 			if (rc) {
--				mutex_unlock(&lgr->sndbufs_lock);
-+				up_write(&lgr->sndbufs_lock);
- 				return rc;
- 			}
- 		}
- 	}
--	mutex_unlock(&lgr->sndbufs_lock);
-+	up_write(&lgr->sndbufs_lock);
- 	return rc;
- }
- 
-@@ -2712,8 +2713,8 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 	struct smc_link_group *lgr = conn->lgr;
- 	struct list_head *buf_list;
- 	int bufsize, bufsize_short;
-+	struct rw_semaphore *lock;	/* lock buffer list */
- 	bool is_dgraded = false;
--	struct mutex *lock;	/* lock buffer list */
- 	int sk_buf_size;
- 
- 	if (is_rmb)
-@@ -2761,9 +2762,9 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 		SMC_STAT_RMB_ALLOC(smc, is_smcd, is_rmb);
- 		SMC_STAT_RMB_SIZE(smc, is_smcd, is_rmb, bufsize);
- 		buf_desc->used = 1;
--		mutex_lock(lock);
-+		down_write(lock);
- 		list_add(&buf_desc->list, buf_list);
--		mutex_unlock(lock);
-+		up_write(lock);
- 		break; /* found */
- 	}
- 
-@@ -2837,9 +2838,9 @@ int smc_buf_create(struct smc_sock *smc, bool is_smcd)
- 	/* create rmb */
- 	rc = __smc_buf_create(smc, is_smcd, true);
- 	if (rc) {
--		mutex_lock(&smc->conn.lgr->sndbufs_lock);
-+		down_write(&smc->conn.lgr->sndbufs_lock);
- 		list_del(&smc->conn.sndbuf_desc->list);
--		mutex_unlock(&smc->conn.lgr->sndbufs_lock);
-+		up_write(&smc->conn.lgr->sndbufs_lock);
- 		smc_buf_free(smc->conn.lgr, false, smc->conn.sndbuf_desc);
- 		smc->conn.sndbuf_desc = NULL;
- 	}
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index f7ec04a..756ed6e 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -260,9 +260,9 @@ struct smc_link_group {
- 	unsigned short		vlan_id;	/* vlan id of link group */
- 
- 	struct list_head	sndbufs[SMC_RMBE_SIZES];/* tx buffers */
--	struct mutex		sndbufs_lock;	/* protects tx buffers */
-+	struct rw_semaphore	sndbufs_lock;	/* protects tx buffers */
- 	struct list_head	rmbs[SMC_RMBE_SIZES];	/* rx buffers */
--	struct mutex		rmbs_lock;	/* protects rx buffers */
-+	struct rw_semaphore	rmbs_lock;	/* protects rx buffers */
- 	u8			first_contact_done; /* if first contact succeed */
- 
- 	u8			id[SMC_LGR_ID_SIZE];	/* unique lgr id */
-diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index 221ffdc..47146ff 100644
---- a/net/smc/smc_llc.c
-+++ b/net/smc/smc_llc.c
-@@ -650,7 +650,7 @@ static int smc_llc_fill_ext_v2(struct smc_llc_msg_add_link_v2_ext *ext,
- 
- 	prim_lnk_idx = link->link_idx;
- 	lnk_idx = link_new->link_idx;
--	mutex_lock(&lgr->rmbs_lock);
-+	down_write(&lgr->rmbs_lock);
- 	ext->num_rkeys = lgr->conns_num;
- 	if (!ext->num_rkeys)
- 		goto out;
-@@ -670,7 +670,7 @@ static int smc_llc_fill_ext_v2(struct smc_llc_msg_add_link_v2_ext *ext,
- 	}
- 	len += i * sizeof(ext->rt[0]);
- out:
--	mutex_unlock(&lgr->rmbs_lock);
-+	up_write(&lgr->rmbs_lock);
- 	return len;
- }
- 
-@@ -931,7 +931,7 @@ static int smc_llc_cli_rkey_exchange(struct smc_link *link,
- 	int rc = 0;
- 	int i;
- 
--	mutex_lock(&lgr->rmbs_lock);
-+	down_write(&lgr->rmbs_lock);
- 	num_rkeys_send = lgr->conns_num;
- 	buf_pos = smc_llc_get_first_rmb(lgr, &buf_lst);
- 	do {
-@@ -958,7 +958,7 @@ static int smc_llc_cli_rkey_exchange(struct smc_link *link,
- 			break;
- 	} while (num_rkeys_send || num_rkeys_recv);
- 
--	mutex_unlock(&lgr->rmbs_lock);
-+	up_write(&lgr->rmbs_lock);
- 	return rc;
- }
- 
-@@ -1041,14 +1041,14 @@ static void smc_llc_save_add_link_rkeys(struct smc_link *link,
- 	ext = (struct smc_llc_msg_add_link_v2_ext *)((u8 *)lgr->wr_rx_buf_v2 +
- 						     SMC_WR_TX_SIZE);
- 	max = min_t(u8, ext->num_rkeys, SMC_LLC_RKEYS_PER_MSG_V2);
--	mutex_lock(&lgr->rmbs_lock);
-+	down_write(&lgr->rmbs_lock);
- 	for (i = 0; i < max; i++) {
- 		smc_rtoken_set(lgr, link->link_idx, link_new->link_idx,
- 			       ext->rt[i].rmb_key,
- 			       ext->rt[i].rmb_vaddr_new,
- 			       ext->rt[i].rmb_key_new);
- 	}
--	mutex_unlock(&lgr->rmbs_lock);
-+	up_write(&lgr->rmbs_lock);
- }
- 
- static void smc_llc_save_add_link_info(struct smc_link *link,
-@@ -1355,7 +1355,7 @@ static int smc_llc_srv_rkey_exchange(struct smc_link *link,
- 	int rc = 0;
- 	int i;
- 
--	mutex_lock(&lgr->rmbs_lock);
-+	down_write(&lgr->rmbs_lock);
- 	num_rkeys_send = lgr->conns_num;
- 	buf_pos = smc_llc_get_first_rmb(lgr, &buf_lst);
- 	do {
-@@ -1380,7 +1380,7 @@ static int smc_llc_srv_rkey_exchange(struct smc_link *link,
- 		smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
- 	} while (num_rkeys_send || num_rkeys_recv);
- out:
--	mutex_unlock(&lgr->rmbs_lock);
-+	up_write(&lgr->rmbs_lock);
- 	return rc;
- }
- 
--- 
-1.8.3.1
+I have sent the v6 with the fixes patches separated, if you have any suggestion or
+advise, please let us know.
+
+Thanks.
+D. Wythe
+
 
