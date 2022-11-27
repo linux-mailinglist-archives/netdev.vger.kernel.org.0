@@ -2,237 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B64C96399B8
-	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 09:18:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A87B66399BC
+	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 09:44:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229707AbiK0ISz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 03:18:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49052 "EHLO
+        id S229495AbiK0ImD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 03:42:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiK0IRk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 03:17:40 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0EC13F06;
-        Sun, 27 Nov 2022 00:17:11 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id u15-20020a17090a3fcf00b002191825cf02so3313098pjm.2;
-        Sun, 27 Nov 2022 00:17:11 -0800 (PST)
+        with ESMTP id S229487AbiK0ImC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 03:42:02 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7CF10579
+        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 00:41:57 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id v3-20020a17090ac90300b00218441ac0f6so10407604pjt.0
+        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 00:41:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Wa4XaW+1zFy7m2UqkW+jljIO+eXfIIcKkAfn67qndy0=;
-        b=gJ901gCKJQ/u/46XSpx0gsFigjhjTIx2OCUIqZb1puMm0hUpCJDoAKMAPYXqchSe7Z
-         ztSHzcluSUWvjmcnWlVqaUrEeQe+yU8FZaNIkx821qFXVZkQLkzPtl0l7z4hdtyrnQP6
-         Jc9CJVhx3FRDEJIC3Ll7BCw3oK9/f1SHcq2mHryaZIgPtK6Ekw5JuSnSKUd2J2VV+WW+
-         axUt7HoyeaX4MHUz9Rnj5nSezf2VP5hlKZ7pqPqkeknbllCEr1tHOlUJdU0yzLzDHK12
-         y0xxEvZL5zG78lBDSvgpaE1mMckYgBkexx+4SDgnkJS7huVaEwd5HcASnMddw/oEohtN
-         w++A==
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=+7MBpQKLL8OmJu5cggvE3gGtXKaySkUPtB/3mMasiDQ=;
+        b=aXSaaUWp8lXUvO0FFlfQfU25w2fpRBRKXlVPyFwf+kBUgE4KOEZLDZh/ZeXQ6BI+Xd
+         alFttZGSWabaS7fOeidz5llZjOZBnquQzzKJW7uvFyNn046BrUQ1X+gz29bmY17NG+Oc
+         k+gwDY1Ac5XInkwm9QsEX4jwinjpBRls8W02dX0pv8GEG1Tlk11oXRI+ZDlEG/w9Y6li
+         FVUlm8ahubdHS3qM6m+Xp9wg/4MTfFE2zIETS9FyLr+bcqhVKSpBsFJtTrXeJIBWBFv5
+         GonRRzPyY8yLmFRvE2vH2sWaN5DZC4ZINggi+Du+4wG6TzrHcaT/HX20+eookZqRpD/A
+         m8ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Wa4XaW+1zFy7m2UqkW+jljIO+eXfIIcKkAfn67qndy0=;
-        b=Sz9P5yh3H5IkhdmfjxclPqMIxFsKC7am2p6T2BtvbuZLbxlv5lfdlRu91qMOjrTaBt
-         e3A7NaY+uisMml6vqqG+jadBkWkdfnfWEeFlaDWNtWL4WZpRCmW+rdFgGemE5DtdBrkf
-         EcdcIr9yInIl2olTF72lUVvkuhklIAR4+ct8uf4z3/qBfSldNHDH5MgTpfkplth5NnzL
-         GycxE01s/4oV29Qo6rr7e3JPqWdU/PvJxbFqdGePY9zVddefN69PiYiA0kGflc5tKfOe
-         KAjyCaI30M/b7Bu4b/3L+bduvbrlDDLnqBY5gU6gFYdX1ah4uU9pGF73LLzSP0tOT3MG
-         PtAg==
-X-Gm-Message-State: ANoB5pn+E0Mc2BcM9jjSXwYnbyowNdjPRe5oPwoQBtt7ZGpren9Jg18l
-        MZZMbtzr+nXMtfcVFv0t4TkSsFpf+quMrA==
-X-Google-Smtp-Source: AA0mqf4rvxZSLx94xt8O0hrAYSsnP59wsDAZFSxDBKEQ/j+L4D0HtYyX3yRdaNZhIgGbImFJPSQqeg==
-X-Received: by 2002:a17:903:251:b0:189:78d9:fe3c with SMTP id j17-20020a170903025100b0018978d9fe3cmr5123764plh.101.1669537031297;
-        Sun, 27 Nov 2022 00:17:11 -0800 (PST)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id a3-20020aa794a3000000b00572c12a1e91sm5799915pfl.48.2022.11.27.00.17.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Nov 2022 00:17:11 -0800 (PST)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Arnaud Ebalard <arno@natisbad.org>,
-        Srujana Challa <schalla@marvell.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Dimitris Michailidis <dmichail@fungible.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
-        Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Vadim Fedorenko <vadfed@fb.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vadim Pasternak <vadimp@mellanox.com>,
-        Shalom Toledo <shalomt@mellanox.com>,
-        linux-crypto@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, oss-drivers@corigine.com,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH net-next v2 5/5] net: devlink: make the devlink_ops::info_get() callback optional
-Date:   Sun, 27 Nov 2022 17:16:04 +0900
-Message-Id: <20221127081604.5242-6-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.37.4
-In-Reply-To: <20221127081604.5242-1-mailhol.vincent@wanadoo.fr>
-References: <20221122154934.13937-1-mailhol.vincent@wanadoo.fr>
- <20221127081604.5242-1-mailhol.vincent@wanadoo.fr>
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+7MBpQKLL8OmJu5cggvE3gGtXKaySkUPtB/3mMasiDQ=;
+        b=ToVzigl4+TU8lSUI0SPb55G7BfrAut/gdF3WCr3KDlnbyHHsK89oKIN15vtUvp8TZQ
+         vUDZEH4B2nMD4U2vqjQ/LSqqwvI2AJrOq80rUjelQRA0H555nzyNdiyLL3oyNw2/EamU
+         +VTd3kZx073mgbr+HksIyaagMOD8TX+wVGVAZ39JHf55grHnpJFmirww3Z34VhNG5Nkm
+         7Lz/+v+eR6EIhQgPdf41g1zdB6AmcAldoQhZYupAncAuIl/lyL676urKB9OzaYOB7l51
+         JVlBUz0I1fA3cM5I1o7bci5s9RsUQ5YsuuwzkOK4lHjQGx/GgttMjYflGcy5dbVv3R5i
+         7+Ww==
+X-Gm-Message-State: ANoB5plCuDcIXSxf63aJ643O+jztWge6uNugNvTYNPlbxDcoGLaPNQof
+        mbJf5xsj8En8qWfkCL1NdNXgT0UL0shsArIAwyA=
+X-Google-Smtp-Source: AA0mqf59SU80ovi+6BhoYWNT5F0JovNNhPwoRrcoUzofFaJajtfPMqaeuEWlJoY+H2UTgf3EcVoCPjQKpwmFDbozFfk=
+X-Received: by 2002:a17:902:f707:b0:176:b0ce:3472 with SMTP id
+ h7-20020a170902f70700b00176b0ce3472mr38901504plo.169.1669538516970; Sun, 27
+ Nov 2022 00:41:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Sender: hassantamboura55@gmail.com
+Received: by 2002:a05:6a20:29a9:b0:a4:a110:4f4e with HTTP; Sun, 27 Nov 2022
+ 00:41:56 -0800 (PST)
+From:   "helen.carlsen" <idrissuleiman01010@gmail.com>
+Date:   Sun, 27 Nov 2022 09:41:56 +0100
+X-Google-Sender-Auth: 55OiThJIWmWSiiJdU3tHktFXPY4
+Message-ID: <CACRr12BqP-yMy+Tn4oBT=MVoA=1fSwaTaMYVOQTNdCCz_3vzDg@mail.gmail.com>
+Subject: Dearest One,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=6.1 required=5.0 tests=ADVANCE_FEE_5_NEW_FRM_MNY,
+        BAYES_50,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FILL_THIS_FORM,FILL_THIS_FORM_LONG,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FORM,MONEY_FRAUD_8,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_MONEY_PERCENT,UNDISC_MONEY
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:1043 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5765]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [idrissuleiman01010[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [hassantamboura55[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.0 T_MONEY_PERCENT X% of a lot of money for you
+        *  0.0 FILL_THIS_FORM Fill in a form with personal information
+        *  2.0 FILL_THIS_FORM_LONG Fill in a form with personal information
+        *  0.0 MONEY_FORM Lots of money if you fill out a form
+        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
+        *  0.0 ADVANCE_FEE_5_NEW_FRM_MNY Advance Fee fraud form and lots of
+        *      money
+        *  3.2 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some drivers only reported the driver name in their
-devlink_ops::info_get() callback. Now that the core provides this
-information, the callback became empty. For such drivers, just
-removing the callback would prevent the core from executing
-devlink_nl_info_fill() meaning that "devlink dev info" would not
-return anything.
+Dearest One,
 
-Make the callback function optional by executing
-devlink_nl_info_fill() even if devlink_ops::info_get() is NULL.
+With due respect to your personality and much sincerity of this
+purpose, I make this contact with you believing that you can be of
+great assistance to me. My name is Mr. Idris Ibrahim, from Burkina
+Faso, I'm the Director of Foreign Remittance Department of African
+Development Bank (ADB) Burkina Faso, Please see this as a confidential
+message and do not reveal it to another person because it=E2=80=99s a top
+secret.
 
-Remove all the empty devlink_ops::info_get() functions from the
-drivers.
+It is with trust that I wish to contact you on this matter concerning
+the transfer of US$17.4 Million Dollars. This money came out from
+Contract that was awarded to a foreign company for Maintenance of OIL
+REFINERY PLANT in Burkina Faso years back. Contract
+No;SONABHY/EPR/104/PED/2004, The contract was over-invoiced by me to
+the tune of US$17.4 million Only, and this fund is in our bank here in
+Burkina Faso and that is why I contacted you to seek for your
+assistance in helping me to claim the fund from our bank as the
+beneficiary of the contract sum as the intermediary company so that
+they'll transfer the funds to your bank account, i will give you 40%
+for you and 60% for me ok.
 
-N.B.: the drivers with devlink support which previously did not
-implement devlink_ops::info_get() will now also be able to report
-the driver name.
+(1) my  full name: Mr.Idris Ibrahim
+(2) my  age: 52 years
+(3) my occupation: Banker
+(4) my marital status: Married with 4children
+(5) my  full residential address and country: Pascal Zagr=C3=A9 Avenue 01,
+BP 1603 OUAGA 2000 Ouagadougou, Burkina Faso.
+(6) my direct phone whatsapp +226 77 88 3617.
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- .../net/ethernet/fungible/funeth/funeth_devlink.c   |  7 -------
- .../net/ethernet/marvell/octeontx2/af/rvu_devlink.c |  7 -------
- .../ethernet/marvell/octeontx2/nic/otx2_devlink.c   |  8 --------
- net/core/devlink.c                                  | 13 ++++++-------
- 4 files changed, 6 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ethernet/fungible/funeth/funeth_devlink.c b/drivers/net/ethernet/fungible/funeth/funeth_devlink.c
-index 6668375edff6..4fbeb3fd71a8 100644
---- a/drivers/net/ethernet/fungible/funeth/funeth_devlink.c
-+++ b/drivers/net/ethernet/fungible/funeth/funeth_devlink.c
-@@ -3,14 +3,7 @@
- #include "funeth.h"
- #include "funeth_devlink.h"
- 
--static int fun_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
--			   struct netlink_ext_ack *extack)
--{
--	return 0;
--}
--
- static const struct devlink_ops fun_dl_ops = {
--	.info_get = fun_dl_info_get,
- };
- 
- struct devlink *fun_devlink_alloc(struct device *dev)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-index f15439d26d21..bda1a6fa2ec4 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-@@ -1547,14 +1547,7 @@ static int rvu_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
- 	return 0;
- }
- 
--static int rvu_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
--				struct netlink_ext_ack *extack)
--{
--	return 0;
--}
--
- static const struct devlink_ops rvu_devlink_ops = {
--	.info_get = rvu_devlink_info_get,
- 	.eswitch_mode_get = rvu_devlink_eswitch_mode_get,
- 	.eswitch_mode_set = rvu_devlink_eswitch_mode_set,
- };
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-index 5cc6416cf1a6..63ef7c41d18d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-@@ -77,15 +77,7 @@ static const struct devlink_param otx2_dl_params[] = {
- 			     otx2_dl_mcam_count_validate),
- };
- 
--static int otx2_devlink_info_get(struct devlink *devlink,
--				 struct devlink_info_req *req,
--				 struct netlink_ext_ack *extack)
--{
--	return 0;
--}
--
- static const struct devlink_ops otx2_devlink_ops = {
--	.info_get = otx2_devlink_info_get,
- };
- 
- int otx2_register_dl(struct otx2_nic *pfvf)
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 3babc16eeb6b..817d978bb729 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6773,9 +6773,11 @@ devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
- 		goto err_cancel_msg;
- 
- 	req.msg = msg;
--	err = devlink->ops->info_get(devlink, &req, extack);
--	if (err)
--		goto err_cancel_msg;
-+	if (devlink->ops->info_get) {
-+		err = devlink->ops->info_get(devlink, &req, extack);
-+		if (err)
-+			goto err_cancel_msg;
-+	}
- 
- 	err = devlink_nl_driver_info_get(dev->driver, &req);
- 	if (err)
-@@ -6796,9 +6798,6 @@ static int devlink_nl_cmd_info_get_doit(struct sk_buff *skb,
- 	struct sk_buff *msg;
- 	int err;
- 
--	if (!devlink->ops->info_get)
--		return -EOPNOTSUPP;
--
- 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
- 	if (!msg)
- 		return -ENOMEM;
-@@ -6824,7 +6823,7 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
- 	int err = 0;
- 
- 	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
--		if (idx < start || !devlink->ops->info_get)
-+		if (idx < start)
- 			goto inc;
- 
- 		devl_lock(devlink);
--- 
-2.37.4
+Meanwhile I shall also expect to receive your personal information as
+well as I requested below.
 
+
+(1) Your complete names/company names
+(2) Your age
+(3)Your occupation
+(4)Your marital status
+(5)Your full residential address
+(6)Your direct phone numbers
+
+note that this transaction needs utmost Confidentiality pending when
+the money is credited into your account. I'm looking forward to your
+favorable response in this matter
+
+
+Thank you for understanding,
+I am waiting for your positive response,
+Mr.Idris
