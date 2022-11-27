@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06E816399A3
-	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 09:16:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D548D6399A7
+	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 09:16:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229529AbiK0IQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 03:16:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        id S229610AbiK0IQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 03:16:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiK0IQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 03:16:31 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417A2F598;
-        Sun, 27 Nov 2022 00:16:30 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id w23so7485702ply.12;
-        Sun, 27 Nov 2022 00:16:30 -0800 (PST)
+        with ESMTP id S229575AbiK0IQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 03:16:44 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7C910063;
+        Sun, 27 Nov 2022 00:16:38 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id mv18so6905458pjb.0;
+        Sun, 27 Nov 2022 00:16:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jtFXWEJ1f4pp6qiyXKj5arMcKw9TkHekZMlzR/UCnY4=;
-        b=A85/oNogWnVHeGFDcwnBsCBzVg6EgoXg2fl7K2Y4LWxkT5hu0+sQAS9UC6D2YFRGj/
-         B8NK1gr/KBZeTPQNSoKFdeCRAiru+jO71sox5JO7qXStGpCaesPOHHDgqlFrfUNOZSFE
-         jcWWXJm4LHm8lxGdWyWDLFzFmmrbaercTYyaThYaYhJ/XZ4R/IMASvEKymKu3RcKhHRl
-         uV8+ApBTEmWL3wypN7BpatPMiJ7MoE4QC/faAXPleW0bwkdTfDzeWDlAQgf2XglOw1PM
-         h5/kqnhknOYQ6qYtVbfsKvzkqNNI3v9tkIg+bndLjOysIXsLnl0YiSs6GkQoctSZrcPc
-         u/rQ==
+        bh=O3+WXaZIvwYScbYyJSTwVsoviigX0ePJBx5g3Z25JEw=;
+        b=SzYATP/WvbrMPMeCmP13X7/vxMj9pdZXQOcaUDB61TKbTZD2j/3L/fcK89A5FdCNDB
+         beyDVDaBw/Orpqr9oVtEOHrXHffe1lMYorIUUfNX5wisADjYBwBjvKLDRWltJ3iM7hGt
+         j6Ur3plBe2qiKKzLGyyDNF+6c69LNJtw7woa6EkXwcKvuIrhq7Y4ppByK3LgaRHtOElv
+         bhvswFat/v3oISyh03365opnwQRRkaFlOyEuoXaVpXik0GGSz4BDtvTVsiq4VpaIJhnp
+         lwY7CoBZ/q3hW/AwPaE6a+gzbEea+cRSlAljPpT4rOCTjblu21Mg12GI2G+XlzIforVh
+         Ya3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=jtFXWEJ1f4pp6qiyXKj5arMcKw9TkHekZMlzR/UCnY4=;
-        b=Xv4FnG/8MKnxlT+8tfWjMrZvNXlu+443rMMdjbbjZ6MeG4SiBXyIOpw4VlxoYoY1Ch
-         crf+5eBA6lPW/OVCuNmCrH1niFPrPa6iq8BuyhDrp5y9+OPt680VGuvRMV8N3PyUbhLO
-         dR//nBV9gHxVEK19/EETPhVmOiS0gJD7sKrElsSLmnXB/1f49JdtA/wulgw08f1+uKZ8
-         fAHMDt3AmDDJx1nm7xCWcN1MotjY6eYzSDYRR7acjlvt0hDBSC1zl8BU/6YM1ZZWReVL
-         YtOdpaCRUx03N5yMYtrQ1K5Ui+wN60FtIEE2kyUCvAf4pSeSZNkjvNUD7b6t8pFugKMe
-         bZtw==
-X-Gm-Message-State: ANoB5pkV+TQWlFeCdHhnIMe3RjKHoeQikssXUXjQl3n1inY/PzZyN+iE
-        +IXaUK0akzd4l0pDA3r/Bwc=
-X-Google-Smtp-Source: AA0mqf7E33SagQ9eCqtOUMPlG3tjkVYgrg25yhdp/y54PDogJWizI4UPgacnqj4NzSjZynYVWcB90Q==
-X-Received: by 2002:a17:90a:9313:b0:213:2168:1c78 with SMTP id p19-20020a17090a931300b0021321681c78mr49467293pjo.72.1669536989682;
-        Sun, 27 Nov 2022 00:16:29 -0800 (PST)
+        bh=O3+WXaZIvwYScbYyJSTwVsoviigX0ePJBx5g3Z25JEw=;
+        b=JaQRNdoRDHX9YVF/fr2WYwtOFYjttsd8viXfZu3lbI5V1FEE0gOfL/mTWgfm4Dy788
+         GRwDsgJPkEbuN/H4/TZfSft+6OVmtt4NtgqwgeSvoMzCTPxmzXMo33bmmNiakHw48gGR
+         v9VHyZeO4nVF1XoQ+w2V+x/svSjERK6XOtjfKwozTZEgOv59CcfpnZJMf4ZTCHD4Qsc2
+         K2rWaDZAQDMJXFaLi0vfXyEjcQl+1Y/hbSuUon5PVCLXvnygfIz2KrviC5B4fhmNGyLG
+         o9LRSm5H6jr9kvQ6ENR2V6vDhMwsPjvl0akn/avcKoF1TzNRYS4g41e37RFxhV4jm4Uh
+         Vj0w==
+X-Gm-Message-State: ANoB5pltArZasdi7IVBgooZOXU/oiRedPso7B0P8osUWhDQACAlXNcIf
+        bBV6zsJSwPxXpCrompALhL8=
+X-Google-Smtp-Source: AA0mqf72PtiKgQCQ5U/TWFIjiYeil/wnUg9CH++1HBOr4Nodobp5EzgkVDru4n4Du1IhGRoQuwhBwQ==
+X-Received: by 2002:a17:902:a601:b0:189:8001:b54f with SMTP id u1-20020a170902a60100b001898001b54fmr3122555plq.37.1669536998039;
+        Sun, 27 Nov 2022 00:16:38 -0800 (PST)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id a3-20020aa794a3000000b00572c12a1e91sm5799915pfl.48.2022.11.27.00.16.21
+        by smtp.gmail.com with ESMTPSA id a3-20020aa794a3000000b00572c12a1e91sm5799915pfl.48.2022.11.27.00.16.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Nov 2022 00:16:29 -0800 (PST)
+        Sun, 27 Nov 2022 00:16:37 -0800 (PST)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
@@ -92,13 +92,15 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Shalom Toledo <shalomt@mellanox.com>,
         linux-crypto@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
         linux-rdma@vger.kernel.org, oss-drivers@corigine.com,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH net-next v2 0/5] net: devlink: return the driver name in devlink_nl_info_fill
-Date:   Sun, 27 Nov 2022 17:15:59 +0900
-Message-Id: <20221127081604.5242-1-mailhol.vincent@wanadoo.fr>
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v2 1/5] mlxsw: minimal: fix mlxsw_m_module_get_drvinfo() to correctly report driver name
+Date:   Sun, 27 Nov 2022 17:16:00 +0900
+Message-Id: <20221127081604.5242-2-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.37.4
-In-Reply-To: <20221122154934.13937-1-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20221127081604.5242-1-mailhol.vincent@wanadoo.fr>
 References: <20221122154934.13937-1-mailhol.vincent@wanadoo.fr>
+ <20221127081604.5242-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -111,78 +113,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver name is available in device_driver::name. Right now,
-drivers still have to report this piece of information themselves in
-their devlink_ops::info_get callback function.
+Currently, mlxsw_m_module_get_drvinfo() reports the device_kind. The
+device_kind is not necessarily the same as the device_name. For
+example, the mlxsw_i2c implementation sets up the device_kind as
+ic2_client::name in [1] which indicates the type of the device
+(e.g. chip name), not the actual driver name.
 
-The goal of this series is to have the devlink core to report this
-information instead of the drivers.
+Fix it so that it correctly reports the driver name.
 
-The first two patches clean up the mlxsw driver for both the ethtool
-and the devlink (both are supposed to return the same information so
-the ethtool got included as well). This is split in two patches
-because of the different Fixes tag.
+[1] https://elixir.bootlin.com/linux/v6.1-rc1/source/drivers/net/ethernet/mellanox/mlxsw/i2c.c#L714
 
-The third patch fulfills the actual goal of this series: modify
-devlink core to report the driver name and clean-up all drivers. Both
-as to be done in an atomic change to avoid attribute duplication.
-
-The fourth patch removes the devlink_info_driver_name_put() function
-to prevent future drivers from reporting the driver name themselves.
-
-Finally, the fifth and last patch allows the core to call
-devlink_nl_info_fill() even if the devlink_ops::info_get() callback is
-NULL. This allows to do further more clean up in the drivers.
+Fixes: 9bbd7efbc055 ("mlxsw: i2c: Extend initialization with querying firmware info")
+CC: Shalom Toledo <shalomt@mellanox.com>
+CC: Ido Schimmel <idosch@mellanox.com>
+CC: Vadim Pasternak <vadimp@mellanox.com>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
-* Changelog *
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-RFC v1 -> v2
-
-  * drop the RFC tag
-
-  * big rework following the discussion on RFC:
-    https://lore.kernel.org/netdev/20221122154934.13937-1-mailhol.vincent@wanadoo.fr/
-    Went from one patch to a series of five patches:
-
-  * drop the idea to report the USB serial number following Greg's
-    comment:
-    https://lore.kernel.org/linux-usb/Y3+VfNdt%2FK7UtRcw@kroah.com/
-
-Vincent Mailhol (5):
-  mlxsw: minimal: fix mlxsw_m_module_get_drvinfo() to correctly report
-    driver name
-  mlxsw: core: fix mlxsw_devlink_info_get() to correctly report driver
-    name
-  net: devlink: let the core report the driver name instead of the
-    drivers
-  net: devlink: remove devlink_info_driver_name_put()
-  net: devlink: make the devlink_ops::info_get() callback optional
-
- .../marvell/octeontx2/otx2_cpt_devlink.c      |  4 ---
- drivers/net/dsa/hirschmann/hellcreek.c        |  5 ---
- drivers/net/dsa/mv88e6xxx/devlink.c           |  5 ---
- drivers/net/dsa/sja1105/sja1105_devlink.c     | 12 ++-----
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  4 ---
- .../freescale/dpaa2/dpaa2-eth-devlink.c       | 11 +-----
- .../ethernet/fungible/funeth/funeth_devlink.c |  7 ----
- .../hisilicon/hns3/hns3pf/hclge_devlink.c     |  5 ---
- .../hisilicon/hns3/hns3vf/hclgevf_devlink.c   |  5 ---
- drivers/net/ethernet/intel/ice/ice_devlink.c  |  6 ----
- .../marvell/octeontx2/af/rvu_devlink.c        |  7 ----
- .../marvell/octeontx2/nic/otx2_devlink.c      | 15 --------
- .../marvell/prestera/prestera_devlink.c       |  5 ---
- .../net/ethernet/mellanox/mlx5/core/devlink.c |  4 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c    |  3 +-
- drivers/net/ethernet/mellanox/mlxsw/minimal.c |  2 +-
- .../net/ethernet/netronome/nfp/nfp_devlink.c  |  4 ---
- .../ethernet/pensando/ionic/ionic_devlink.c   |  4 ---
- drivers/net/ethernet/qlogic/qed/qed_devlink.c |  4 ---
- drivers/net/netdevsim/dev.c                   |  3 --
- drivers/ptp/ptp_ocp.c                         |  4 ---
- include/net/devlink.h                         |  2 --
- net/core/devlink.c                            | 35 ++++++++++++-------
- 23 files changed, 29 insertions(+), 127 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+index 6b56eadd736e..9b37ddbe0cba 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+@@ -92,7 +92,7 @@ static void mlxsw_m_module_get_drvinfo(struct net_device *dev,
+ 	struct mlxsw_m_port *mlxsw_m_port = netdev_priv(dev);
+ 	struct mlxsw_m *mlxsw_m = mlxsw_m_port->mlxsw_m;
+ 
+-	strscpy(drvinfo->driver, mlxsw_m->bus_info->device_kind,
++	strscpy(drvinfo->driver, dev_driver_string(dev->dev.parent),
+ 		sizeof(drvinfo->driver));
+ 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+ 		 "%d.%d.%d",
 -- 
 2.37.4
 
