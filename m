@@ -2,33 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5009639C8A
-	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 20:18:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AC9F639C8D
+	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 20:18:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229582AbiK0TSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 14:18:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
+        id S229610AbiK0TSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 14:18:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiK0TSm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 14:18:42 -0500
-X-Greylist: delayed 905 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Nov 2022 11:18:39 PST
+        with ESMTP id S229597AbiK0TSq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 14:18:46 -0500
 Received: from fritzc.com (mail.fritzc.com [IPv6:2a00:17d8:100::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D583A0;
-        Sun, 27 Nov 2022 11:18:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EAFFDFEF;
+        Sun, 27 Nov 2022 11:18:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
         s=dkim; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=4e0iHFbEGY3EtXZ64Kag7bjeqDn+/ViV93p9+8ED/ss=; b=CXns89WK0t1Pe6jS5ZDr4nj/Cx
-        hMJtswiO7CuX/nhOyrOU1u76yvW7plb6OcYOKrQLZ69SqKWQUndXqX0hK2hTDlSqIQ6pRsXBqpm1A
-        vdgcNG3PhtGBTnuDnvZVJwJAQnbBZ4V7FOZYNWnPo7UmDNP3lxVnfcb7/1mgBKiDxyqY=;
+        bh=C/vENORAh9FTRnO+WBV63DAMfi0IBlkeZpSgVUwP8Vc=; b=L9zthdNTNF7Omfx30tZyp7qmOH
+        olQ9qIAJCYxrrfaxU2A3PPvTZlVH4Jfxs61Hj0HGSchDrhANRKn/ORZK+IfqR5ZQZu/a0si2HUg7r
+        ZEqzFn4azZxHT1MKLuObVHBy44gDLrC7u0b3dqZyVdVQR/OGmutpN3id+xLY7Sf+dm4o=;
 Received: from 127.0.0.1
         by fritzc.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim latest)
         (envelope-from <christoph.fritz@hexdev.de>)
-        id 1ozMvj-000XD6-DQ; Sun, 27 Nov 2022 20:03:08 +0100
+        id 1ozMvl-000XD6-WF; Sun, 27 Nov 2022 20:03:10 +0100
 From:   Christoph Fritz <christoph.fritz@hexdev.de>
 To:     Oliver Hartkopp <socketcan@hartkopp.net>,
         Pavel Pisa <pisa@cmp.felk.cvut.cz>,
@@ -43,9 +42,9 @@ To:     Oliver Hartkopp <socketcan@hartkopp.net>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] [RFC] can: Introduce LIN bus as CANFD abstraction
-Date:   Sun, 27 Nov 2022 20:02:43 +0100
-Message-Id: <20221127190244.888414-2-christoph.fritz@hexdev.de>
+Subject: [PATCH 2/2] [RFC] can: Add LIN proto skeleton
+Date:   Sun, 27 Nov 2022 20:02:44 +0100
+Message-Id: <20221127190244.888414-3-christoph.fritz@hexdev.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221127190244.888414-1-christoph.fritz@hexdev.de>
 References: <20221127190244.888414-1-christoph.fritz@hexdev.de>
@@ -62,302 +61,303 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a LIN bus abstraction ontop of CANFD. It is a glue
-driver adapting CAN on one side while offering LIN abstraction on the
-other side. So that upcoming LIN device drivers can make use of it.
+From: Richard Weinberger <richard@nod.at>
 
-Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- drivers/net/can/Kconfig          |  10 ++
- drivers/net/can/Makefile         |   1 +
- drivers/net/can/lin.c            | 181 +++++++++++++++++++++++++++++++
- include/net/lin.h                |  30 +++++
- include/uapi/linux/can.h         |   1 +
- include/uapi/linux/can/netlink.h |   1 +
- 6 files changed, 224 insertions(+)
- create mode 100644 drivers/net/can/lin.c
- create mode 100644 include/net/lin.h
+ include/uapi/linux/can.h     |   7 +-
+ include/uapi/linux/can/lin.h |  15 +++
+ net/can/Kconfig              |   5 +
+ net/can/Makefile             |   3 +
+ net/can/lin.c                | 207 +++++++++++++++++++++++++++++++++++
+ 5 files changed, 236 insertions(+), 1 deletion(-)
+ create mode 100644 include/uapi/linux/can/lin.h
+ create mode 100644 net/can/lin.c
 
-diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
-index 3048ad77edb3..d091994ea4fe 100644
---- a/drivers/net/can/Kconfig
-+++ b/drivers/net/can/Kconfig
-@@ -152,6 +152,16 @@ config CAN_KVASER_PCIEFD
- 	    Kvaser Mini PCI Express HS v2
- 	    Kvaser Mini PCI Express 2xHS v2
+diff --git a/include/uapi/linux/can.h b/include/uapi/linux/can.h
+index 8596f9b23c68..73526805dc5f 100644
+--- a/include/uapi/linux/can.h
++++ b/include/uapi/linux/can.h
+@@ -178,7 +178,8 @@ struct canfd_frame {
+ #define CAN_MCNET	5 /* Bosch MCNet */
+ #define CAN_ISOTP	6 /* ISO 15765-2 Transport Protocol */
+ #define CAN_J1939	7 /* SAE J1939 */
+-#define CAN_NPROTO	8
++#define CAN_LIN		8 /* LIN Bus */
++#define CAN_NPROTO	9
+ 
+ #define SOL_CAN_BASE 100
+ 
+@@ -212,6 +213,10 @@ struct sockaddr_can {
+ 			__u8 addr;
+ 		} j1939;
+ 
++		struct {
++			__u8 addr; //Dummy for now
++		} lin;
++
+ 		/* reserved for future CAN protocols address information */
+ 	} can_addr;
+ };
+diff --git a/include/uapi/linux/can/lin.h b/include/uapi/linux/can/lin.h
+new file mode 100644
+index 000000000000..7e9f44992b7d
+--- /dev/null
++++ b/include/uapi/linux/can/lin.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: (GPL-2.0-only WITH Linux-syscall-note) */
++/*
++ * linux/can/lin.h
++ * TODO
++ */
++
++#ifndef _UAPI_CAN_LIN_H
++#define _UAPI_CAN_LIN_H
++
++#include <linux/types.h>
++#include <linux/can.h>
++
++#define SOL_CAN_LIN (SOL_CAN_BASE + CAN_LIN)
++
++#endif /* !_UAPI_CAN_LIN_H */
+diff --git a/net/can/Kconfig b/net/can/Kconfig
+index cb56be8e3862..d05e3fa813e2 100644
+--- a/net/can/Kconfig
++++ b/net/can/Kconfig
+@@ -70,4 +70,9 @@ config CAN_ISOTP
+ 	  If you want to perform automotive vehicle diagnostic services (UDS),
+ 	  say 'y'.
  
 +config CAN_LIN
-+	tristate "LIN mode support"
-+	  help
-+	  This is a glue driver for LIN-BUS support.
++	tristate "Support for LIN bus"
++	help
++	  TODO
 +
-+	  The local interconnect (LIN) bus is a simple bus with a feature
-+	  subset of CAN. It is often combined with CAN for simple controls.
+ endif
+diff --git a/net/can/Makefile b/net/can/Makefile
+index 58f2c31c1ef3..5db51a56a78a 100644
+--- a/net/can/Makefile
++++ b/net/can/Makefile
+@@ -20,3 +20,6 @@ obj-$(CONFIG_CAN_J1939)	+= j1939/
+ 
+ obj-$(CONFIG_CAN_ISOTP)	+= can-isotp.o
+ can-isotp-y		:= isotp.o
 +
-+	  Actual device drivers need to be enabled too.
-+
- config CAN_SLCAN
- 	tristate "Serial / USB serial CAN Adaptors (slcan)"
- 	depends on TTY
-diff --git a/drivers/net/can/Makefile b/drivers/net/can/Makefile
-index 61c75ce9d500..9114d9e97c0c 100644
---- a/drivers/net/can/Makefile
-+++ b/drivers/net/can/Makefile
-@@ -23,6 +23,7 @@ obj-$(CONFIG_CAN_GRCAN)		+= grcan.o
- obj-$(CONFIG_CAN_IFI_CANFD)	+= ifi_canfd/
- obj-$(CONFIG_CAN_JANZ_ICAN3)	+= janz-ican3.o
- obj-$(CONFIG_CAN_KVASER_PCIEFD)	+= kvaser_pciefd.o
-+obj-$(CONFIG_CAN_LIN)		+= lin.o
- obj-$(CONFIG_CAN_MSCAN)		+= mscan/
- obj-$(CONFIG_CAN_M_CAN)		+= m_can/
- obj-$(CONFIG_CAN_PEAK_PCIEFD)	+= peak_canfd/
-diff --git a/drivers/net/can/lin.c b/drivers/net/can/lin.c
++obj-$(CONFIG_CAN_LIN)	+= can-lin.o
++can-lin-y		:= lin.o
+diff --git a/net/can/lin.c b/net/can/lin.c
 new file mode 100644
-index 000000000000..25eaccc18ab6
+index 000000000000..f8c8217efc8c
 --- /dev/null
-+++ b/drivers/net/can/lin.c
-@@ -0,0 +1,181 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (C) 2022 hexDEV GmbH
-+ */
-+#include <linux/can/core.h>
-+#include <linux/can/dev.h>
++++ b/net/can/lin.c
+@@ -0,0 +1,207 @@
++// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
++
++//TODO copyright
++
 +#include <linux/module.h>
-+#include <linux/netdevice.h>
 +#include <linux/init.h>
-+#include <linux/kernel.h>
-+#include <net/lin.h>
++#include <linux/interrupt.h>
++#include <linux/spinlock.h>
++#include <linux/hrtimer.h>
++#include <linux/wait.h>
++#include <linux/uio.h>
++#include <linux/net.h>
++#include <linux/netdevice.h>
++#include <linux/socket.h>
++#include <linux/if_arp.h>
++#include <linux/skbuff.h>
++#include <linux/can.h>
++#include <linux/can/core.h>
++#include <linux/can/skb.h>
++#include <linux/can/lin.h>
++#include <linux/slab.h>
++#include <net/sock.h>
++#include <net/net_namespace.h>
 +
-+static void lin_tx_work_handler(struct work_struct *ws)
-+{
-+	struct lin_device *priv = container_of(ws, struct lin_device,
-+						tx_work);
-+	struct net_device *net = priv->net;
-+	struct device *dev = priv->dev;
-+	struct canfd_frame *frame;
-+	u8 id, n;
++MODULE_DESCRIPTION("PF_CAN LIN protocol");
++MODULE_LICENSE("GPLv2");
++MODULE_ALIAS("can-proto-8");
 +
-+	priv->tx_busy = true;
-+
-+	frame = (struct canfd_frame *)priv->tx_skb->data;
-+	id = (u8)frame->can_id & 0xff;
-+	n = frame->len;
-+
-+	priv->lindev_ops->ldo_tx(dev, id, n, frame->data);
-+	priv->tx_busy = false;
-+	netif_wake_queue(net);
-+}
-+
-+static netdev_tx_t lin_start_xmit(struct sk_buff *skb,
-+				  struct net_device *netdev)
-+{
-+	struct lin_device *priv = netdev_priv(netdev);
-+
-+	if (priv->tx_busy)
-+		return NETDEV_TX_BUSY;
-+
-+	netif_stop_queue(netdev);
-+	priv->tx_skb = skb;
-+	queue_work(priv->wq, &priv->tx_work);
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+static int lin_open(struct net_device *netdev)
-+{
-+	struct lin_device *priv = netdev_priv(netdev);
-+	int ret;
-+
-+	priv->tx_busy = false;
-+
-+	ret = open_candev(netdev);
-+	if (ret)
-+		return ret;
-+
-+	netif_wake_queue(netdev);
-+
-+	return 0;
-+}
-+
-+static int lin_stop(struct net_device *net)
-+{
-+	close_candev(net);
-+
-+	return 0;
-+}
-+
-+static const struct net_device_ops lin_netdev_ops = {
-+	.ndo_open = lin_open,
-+	.ndo_stop = lin_stop,
-+	.ndo_start_xmit = lin_start_xmit,
-+	.ndo_change_mtu = can_change_mtu,
++struct lin_sock {
++	struct sock sk;
 +};
 +
-+int lin_rx(struct lin_device *priv, u8 id, u8 n, u8 *data, u8 checksum)
++static inline struct lin_sock *lin_sk(const struct sock *sk)
 +{
-+	struct net_device *ndev = priv->net;
-+	struct net_device_stats *stats = &ndev->stats;
-+	struct canfd_frame *cfd;
-+	struct sk_buff *skb;
++	return (struct lin_sock *)sk;
++}
 +
-+	skb = alloc_canfd_skb(ndev, &cfd);
-+	if (unlikely(!skb)) {
-+		stats->rx_dropped++;
-+		return -ENOMEM;
-+	}
++static int lin_release(struct socket *sock)
++{
++	struct sock *sk = sock->sk;
++	struct lin_sock *so;
++	struct net *net;
 +
-+	cfd->flags = CANFD_LIN;
-+	cfd->can_id = id;
-+	cfd->len = n + 1;	/* n of data + checksum */
-+	memcpy(cfd->data, data, n);
-+	cfd->data[n] = checksum;
++	if (!sk)
++		return 0;
 +
-+	stats->rx_bytes += cfd->len;
-+	stats->rx_packets++;
++	so = lin_sk(sk);
++	net = sock_net(sk);
 +
-+	netif_receive_skb(skb);
++	// Nothing do to so far
++
++	sock_orphan(sk);
++	sock->sk = NULL;
++
++	release_sock(sk);
++	sock_put(sk);
 +
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(lin_rx);
 +
-+static int lin_set_bittiming(struct net_device *netdev)
++static int lin_bind(struct socket *sock, struct sockaddr *uaddr, int len)
 +{
-+	struct lin_device *priv = netdev_priv(netdev);
-+	struct device *dev = priv->dev;
-+	int ret;
++	struct sockaddr_can *addr = (struct sockaddr_can *)uaddr;
++	struct sock *sk = sock->sk;
++	struct net *net = sock_net(sk);
++	struct net_device *dev;
++	int err = 0;
 +
-+	ret = priv->lindev_ops->update_bitrate(dev, priv->can.bittiming.bitrate);
++	//TODO
++	dev = dev_get_by_index(net, addr->can_ifindex);
++	if (!dev) {
++		err = -ENODEV;
++		goto out;
++	}
++	if (dev->type != ARPHRD_CAN) {
++		dev_put(dev);
++		err = -ENODEV;
++		goto out;
++	}
++
++out:
++	return err;
++}
++
++static int lin_setsockopt_locked(struct socket *sock, int level, int optname,
++			    sockptr_t optval, unsigned int optlen)
++{
++	struct sock *sk = sock->sk;
++	struct lin_sock *so = lin_sk(sk);
++	int ret = 0;
++
++	(void)so;
++
++	switch (optname) {
++	// Nothing to do so far
++	default:
++		ret = -ENOPROTOOPT;
++	}
 +
 +	return ret;
 +}
 +
-+static const u32 lin_bitrate[] = { 2400, 4800, 9600, 19200 };
++static int lin_setsockopt(struct socket *sock, int level, int optname,
++			    sockptr_t optval, unsigned int optlen)
 +
-+struct lin_device *register_lin(struct device *dev,
-+				const struct lin_device_ops *ldops)
 +{
-+	struct net_device *ndev;
-+	struct lin_device *priv;
++	struct sock *sk = sock->sk;
 +	int ret;
 +
-+	ndev = alloc_candev(sizeof(struct lin_device), 1);
-+	if (!ndev)
-+		return NULL;
++	if (level != SOL_CAN_LIN)
++		return -EINVAL;
 +
-+	ndev->netdev_ops = &lin_netdev_ops;
-+	ndev->flags |= IFF_ECHO;
-+	ndev->mtu = CANFD_MTU;
-+
-+	priv = netdev_priv(ndev);
-+	priv->lindev_ops = ldops;
-+	priv->can.bittiming.bitrate = 9600;
-+	priv->can.ctrlmode_supported = CAN_CTRLMODE_LIN;
-+	priv->can.bitrate_const = lin_bitrate;
-+	priv->can.bitrate_const_cnt = ARRAY_SIZE(lin_bitrate);
-+	priv->can.do_set_bittiming = lin_set_bittiming;
-+	priv->net = ndev;
-+	priv->dev = dev;
-+
-+	SET_NETDEV_DEV(ndev, dev);
-+
-+	ret = register_candev(ndev);
-+	if (ret)
-+		goto exit_free;
-+
-+	priv->wq = alloc_workqueue(dev_name(dev), WQ_FREEZABLE | WQ_MEM_RECLAIM,
-+				   0);
-+	if (!priv->wq) {
-+		ret = -ENOMEM;
-+		goto exit_free;
-+	}
-+	INIT_WORK(&priv->tx_work, lin_tx_work_handler);
-+
-+	netdev_info(ndev, "LIN initialized.\n");
-+
-+	return priv;
-+
-+exit_free:
-+	free_candev(ndev);
-+	return NULL;
++	lock_sock(sk);
++	ret = lin_setsockopt_locked(sock, level, optname, optval, optlen);
++	release_sock(sk);
++	return ret;
 +}
-+EXPORT_SYMBOL_GPL(register_lin);
 +
-+void unregister_lin(struct lin_device *priv)
++static int lin_getsockopt(struct socket *sock, int level, int optname,
++			    char __user *optval, int __user *optlen)
 +{
-+	unregister_candev(priv->net);
++	struct sock *sk = sock->sk;
++	struct lin_sock *so = lin_sk(sk);
++	int len;
++	void *val;
 +
-+	destroy_workqueue(priv->wq);
-+	priv->wq = NULL;
++	(void)so;
 +
-+	free_candev(priv->net);
++	if (level != SOL_CAN_LIN)
++		return -EINVAL;
++	if (get_user(len, optlen))
++		return -EFAULT;
++	if (len < 0)
++		return -EINVAL;
++
++	switch (optname) {
++	//Nothing to do so far.
++	default:
++		return -ENOPROTOOPT;
++	}
++
++	if (put_user(len, optlen))
++		return -EFAULT;
++	if (copy_to_user(optval, val, len))
++		return -EFAULT;
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(unregister_lin);
 +
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Christoph Fritz <christoph.fritz@hexdev.de>");
-+MODULE_DESCRIPTION("LIN bus to CAN glue driver");
-diff --git a/include/net/lin.h b/include/net/lin.h
-new file mode 100644
-index 000000000000..d3264844ce16
---- /dev/null
-+++ b/include/net/lin.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+#ifndef _NET_LIN_H_
-+#define _NET_LIN_H_
++static int lin_init(struct sock *sk)
++{
++	struct lin_sock *so = lin_sk(sk);
 +
-+#include <linux/can/dev.h>
-+#include <linux/device.h>
++	(void)so;
++	// Nothing to do so far
 +
-+struct lin_device_ops {
-+	int (*ldo_tx)(struct device *dev, u8 id, u8 n, u8 *data);
-+	int (*update_bitrate)(struct device *dev, u16 bitrate);
++	return 0;
++}
++
++static const struct proto_ops lin_ops = {
++	.family = PF_CAN,
++	.release = lin_release,
++	.bind = lin_bind,
++	.connect = sock_no_connect,
++	.socketpair = sock_no_socketpair,
++	.accept = sock_no_accept,
++	.getname = sock_no_getname,
++	.poll = datagram_poll,
++	.ioctl = sock_no_ioctl,
++	.gettstamp = sock_gettstamp,
++	.listen = sock_no_listen,
++	.shutdown = sock_no_shutdown,
++	.setsockopt = lin_setsockopt,
++	.getsockopt = lin_getsockopt,
++	.sendmsg = sock_no_sendmsg,
++	.recvmsg = sock_no_recvmsg,
++	.mmap = sock_no_mmap,
++	.sendpage = sock_no_sendpage,
 +};
 +
-+struct lin_device {
-+	struct can_priv can;
-+	struct net_device *net;
-+	const struct lin_device_ops *lindev_ops;
-+	struct device *dev;
-+	struct workqueue_struct *wq;
-+	struct work_struct tx_work;
-+	bool tx_busy;
-+	struct sk_buff *tx_skb;
++static struct proto lin_proto __read_mostly = {
++	.name = "CAN_LIN",
++	.owner = THIS_MODULE,
++	.obj_size = sizeof(struct lin_sock),
++	.init = lin_init,
 +};
 +
-+int lin_rx(struct lin_device *dev, u8 id, u8 n, u8 *bytes, u8 checksum);
++static const struct can_proto lin_can_proto = {
++	.type = SOCK_DGRAM,
++	.protocol = CAN_LIN,
++	.ops = &lin_ops,
++	.prot = &lin_proto,
++};
 +
-+struct lin_device *register_lin(struct device *dev,
-+				const struct lin_device_ops *ldops);
-+void unregister_lin(struct lin_device *lbd);
++static __init int lin_module_init(void)
++{
++	pr_info("can: lin protocol\n");
 +
-+#endif /* _NET_LIN_H_ */
-diff --git a/include/uapi/linux/can.h b/include/uapi/linux/can.h
-index 90801ada2bbe..8596f9b23c68 100644
---- a/include/uapi/linux/can.h
-+++ b/include/uapi/linux/can.h
-@@ -147,6 +147,7 @@ struct can_frame {
- #define CANFD_BRS 0x01 /* bit rate switch (second bitrate for payload data) */
- #define CANFD_ESI 0x02 /* error state indicator of the transmitting node */
- #define CANFD_FDF 0x04 /* mark CAN FD for dual use of struct canfd_frame */
-+#define CANFD_LIN 0x08 /* indicate LIN mode */
- 
- /**
-  * struct canfd_frame - CAN flexible data rate frame structure
-diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
-index 02ec32d69474..d65a24b2aa3c 100644
---- a/include/uapi/linux/can/netlink.h
-+++ b/include/uapi/linux/can/netlink.h
-@@ -103,6 +103,7 @@ struct can_ctrlmode {
- #define CAN_CTRLMODE_CC_LEN8_DLC	0x100	/* Classic CAN DLC option */
- #define CAN_CTRLMODE_TDC_AUTO		0x200	/* CAN transiver automatically calculates TDCV */
- #define CAN_CTRLMODE_TDC_MANUAL		0x400	/* TDCV is manually set up by user */
-+#define CAN_CTRLMODE_LIN		0x800	/* LIN BUS mode */
- 
- /*
-  * CAN device statistics
++	return can_proto_register(&lin_can_proto);
++}
++
++static __exit void lin_module_exit(void)
++{
++	can_proto_unregister(&lin_can_proto);
++}
++
++module_init(lin_module_init);
++module_exit(lin_module_exit);
 -- 
 2.30.2
 
