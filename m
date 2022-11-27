@@ -2,243 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CF73639AE3
-	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 14:11:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30057639B2E
+	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 14:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbiK0NLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 08:11:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
+        id S229597AbiK0Ny5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 08:54:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbiK0NLL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 08:11:11 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA75B55B9;
-        Sun, 27 Nov 2022 05:10:35 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id 9so8065764pfx.11;
-        Sun, 27 Nov 2022 05:10:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Wa4XaW+1zFy7m2UqkW+jljIO+eXfIIcKkAfn67qndy0=;
-        b=Fz4YmgLubHYugBiEpKCkEQVsqC0p6oTmC1aSPxRe0425jPACuV0TaRwy23+2inMQ5D
-         hAkOlDFItx2njgVA7lFGT8MjQmmlpGxy+0cDMBDXCPHvJAeATGQuIdSydK6VsfFYra3C
-         SbRVk7PjhEAWy3/35XVnnQvuwxpTkyQePnx8oNo+uBGTNFh3FHbSkUbqp7gx34+8vvCD
-         zn3480b4Aqb5RP2H3pQvjaIm/+iGl074IAWcw30FW6cTlRIMKNPHpYsyBH+0uTlgKdwC
-         8nq/+E7TJ41/4r+m6xQInNdndeyZl1y8nXuom0L1pXNb3y82aD/fH1yhhSnvTsOeMpDo
-         Rabg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Wa4XaW+1zFy7m2UqkW+jljIO+eXfIIcKkAfn67qndy0=;
-        b=67NWS9vKc2+LfVI8f1jaaJVTTPLdH0XoCl6/b4BNbrixu6bLo++eiekJreKK9t8vWK
-         SypFDTHmdNAfLGZfaq8Z5EcGqLNeQpQMdRsO9TQ8fmxTg9p4ADwpPdr8HGK02q7bcagH
-         VL/MAgLoFCk14LnEzTgZ+a41ibgz0aq1dXfDr9Ah9KVT0zFevd4YjQbQ8epSi3JrJCPC
-         ApMoX+N+U5Rkezx5kNUfnRnSOyOs8HWPr4WvlhdzWCzAd2yJCPHGkdqnReQiEYKS+w9X
-         /35cWVZrHPWyL4wi8zMCnXarQSoZdJQXcXNlso8XvlCvfOePpCuvGnA3kx9Gzc6884E5
-         ko4Q==
-X-Gm-Message-State: ANoB5pm7w2Iy2IbOV9rsac1ewtZXTgE3E+6VnM9NTSjVbk0NrIE8A9h4
-        5wyMMGqYMWdg+UQBKy1N5DA=
-X-Google-Smtp-Source: AA0mqf7kLDoeeNLlfufAXNlhL55OdaR+IG9ZLnQYsm7lgFdEW+DqYVZhNIldFwkJG2XMVMOj5Fm4Ig==
-X-Received: by 2002:aa7:8c19:0:b0:573:620a:3b1c with SMTP id c25-20020aa78c19000000b00573620a3b1cmr28111061pfd.50.1669554635218;
-        Sun, 27 Nov 2022 05:10:35 -0800 (PST)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id q17-20020a170902eb9100b00188a908cbddsm6710225plg.302.2022.11.27.05.10.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Nov 2022 05:10:34 -0800 (PST)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Arnaud Ebalard <arno@natisbad.org>,
-        Srujana Challa <schalla@marvell.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Dimitris Michailidis <dmichail@fungible.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        with ESMTP id S229450AbiK0Nyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 08:54:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03880B86E;
+        Sun, 27 Nov 2022 05:54:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A4C860D28;
+        Sun, 27 Nov 2022 13:54:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68D01C433D6;
+        Sun, 27 Nov 2022 13:54:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1669557294;
+        bh=yBXFwdf6dHy6NKqLSbFuwY2ODTarq/fHEqUCJbDArGc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Nk7s5lWEAiKkbiHApH4KVdNYo+dE77wMv9el27gVNLV6vJ8bqio04oPle12nog6/N
+         QZJnMGnTpuchNmx+393MIhVm5To4LYwv2fgwAWxLOKa3Wbo2x7CZmTxpFABdw+u3gk
+         BKlc2ytv29xRY3fdiySvnZCwugu9Z2Y1dflPI6q8=
+Date:   Sun, 27 Nov 2022 14:45:36 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Russ Weight <russell.h.weight@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Johan Hovold <johan@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
         Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
-        Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Vadim Fedorenko <vadfed@fb.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vadim Pasternak <vadimp@mellanox.com>,
-        Shalom Toledo <shalomt@mellanox.com>,
-        linux-crypto@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, oss-drivers@corigine.com,
-        Jiri Pirko <jiri@mellanox.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hao Chen <chenhao288@hisilicon.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Shijith Thotton <sthotton@marvell.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH net-next v3 5/5] net: devlink: make the devlink_ops::info_get() callback optional
-Date:   Sun, 27 Nov 2022 22:09:19 +0900
-Message-Id: <20221127130919.638324-6-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.37.4
-In-Reply-To: <20221127130919.638324-1-mailhol.vincent@wanadoo.fr>
-References: <20221122154934.13937-1-mailhol.vincent@wanadoo.fr>
- <20221127130919.638324-1-mailhol.vincent@wanadoo.fr>
+        Karsten Keil <isdn@linux-pingi.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sebastian Reichel <sre@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Raed Salem <raeds@nvidia.com>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Avihai Horon <avihaih@nvidia.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Colin Ian King <colin.i.king@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Wang Yufen <wangyufen@huawei.com>, linux-block@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/5] driver core: make struct class.dev_uevent() take a
+ const *
+Message-ID: <Y4NqAJW5V0tAP8ax@kroah.com>
+References: <20221123122523.1332370-1-gregkh@linuxfoundation.org>
+ <d448b944-708a-32d4-37d7-0be16ee5f73c@acm.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d448b944-708a-32d4-37d7-0be16ee5f73c@acm.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some drivers only reported the driver name in their
-devlink_ops::info_get() callback. Now that the core provides this
-information, the callback became empty. For such drivers, just
-removing the callback would prevent the core from executing
-devlink_nl_info_fill() meaning that "devlink dev info" would not
-return anything.
+On Fri, Nov 25, 2022 at 03:51:11PM -0800, Bart Van Assche wrote:
+> On 11/23/22 04:25, Greg Kroah-Hartman wrote:
+> > diff --git a/include/linux/mISDNif.h b/include/linux/mISDNif.h
+> > index 7dd1f01ec4f9..7aab4a769736 100644
+> > --- a/include/linux/mISDNif.h
+> > +++ b/include/linux/mISDNif.h
+> > @@ -586,7 +586,7 @@ extern struct mISDNclock *mISDN_register_clock(char *, int, clockctl_func_t *,
+> >   						void *);
+> >   extern void	mISDN_unregister_clock(struct mISDNclock *);
+> > -static inline struct mISDNdevice *dev_to_mISDN(struct device *dev)
+> > +static inline struct mISDNdevice *dev_to_mISDN(const struct device *dev)
+> >   {
+> >   	if (dev)
+> >   		return dev_get_drvdata(dev);
+> 
+> Why does the dev_to_mISDN() function drop constness? I haven't found an
+> explanation for this in the cover letter.
 
-Make the callback function optional by executing
-devlink_nl_info_fill() even if devlink_ops::info_get() is NULL.
+I agree, this is going to be fixed up, see the thread starting here:
+	https://lore.kernel.org/r/Y34+V2bCDdqujBDk@kroah.com
 
-Remove all the empty devlink_ops::info_get() functions from the
-drivers.
+I'll work on making a const / non const version for these so that we
+don't loose the marking.
 
-N.B.: the drivers with devlink support which previously did not
-implement devlink_ops::info_get() will now also be able to report
-the driver name.
+Oh wait, no, this function is fine, it's not modifying the device
+structure at all, and only returning the pointer in the private data
+stored in the device.  There is no loss of const-ness here.
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- .../net/ethernet/fungible/funeth/funeth_devlink.c   |  7 -------
- .../net/ethernet/marvell/octeontx2/af/rvu_devlink.c |  7 -------
- .../ethernet/marvell/octeontx2/nic/otx2_devlink.c   |  8 --------
- net/core/devlink.c                                  | 13 ++++++-------
- 4 files changed, 6 insertions(+), 29 deletions(-)
+thanks,
 
-diff --git a/drivers/net/ethernet/fungible/funeth/funeth_devlink.c b/drivers/net/ethernet/fungible/funeth/funeth_devlink.c
-index 6668375edff6..4fbeb3fd71a8 100644
---- a/drivers/net/ethernet/fungible/funeth/funeth_devlink.c
-+++ b/drivers/net/ethernet/fungible/funeth/funeth_devlink.c
-@@ -3,14 +3,7 @@
- #include "funeth.h"
- #include "funeth_devlink.h"
- 
--static int fun_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
--			   struct netlink_ext_ack *extack)
--{
--	return 0;
--}
--
- static const struct devlink_ops fun_dl_ops = {
--	.info_get = fun_dl_info_get,
- };
- 
- struct devlink *fun_devlink_alloc(struct device *dev)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-index f15439d26d21..bda1a6fa2ec4 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-@@ -1547,14 +1547,7 @@ static int rvu_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
- 	return 0;
- }
- 
--static int rvu_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
--				struct netlink_ext_ack *extack)
--{
--	return 0;
--}
--
- static const struct devlink_ops rvu_devlink_ops = {
--	.info_get = rvu_devlink_info_get,
- 	.eswitch_mode_get = rvu_devlink_eswitch_mode_get,
- 	.eswitch_mode_set = rvu_devlink_eswitch_mode_set,
- };
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-index 5cc6416cf1a6..63ef7c41d18d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-@@ -77,15 +77,7 @@ static const struct devlink_param otx2_dl_params[] = {
- 			     otx2_dl_mcam_count_validate),
- };
- 
--static int otx2_devlink_info_get(struct devlink *devlink,
--				 struct devlink_info_req *req,
--				 struct netlink_ext_ack *extack)
--{
--	return 0;
--}
--
- static const struct devlink_ops otx2_devlink_ops = {
--	.info_get = otx2_devlink_info_get,
- };
- 
- int otx2_register_dl(struct otx2_nic *pfvf)
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 3babc16eeb6b..817d978bb729 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6773,9 +6773,11 @@ devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
- 		goto err_cancel_msg;
- 
- 	req.msg = msg;
--	err = devlink->ops->info_get(devlink, &req, extack);
--	if (err)
--		goto err_cancel_msg;
-+	if (devlink->ops->info_get) {
-+		err = devlink->ops->info_get(devlink, &req, extack);
-+		if (err)
-+			goto err_cancel_msg;
-+	}
- 
- 	err = devlink_nl_driver_info_get(dev->driver, &req);
- 	if (err)
-@@ -6796,9 +6798,6 @@ static int devlink_nl_cmd_info_get_doit(struct sk_buff *skb,
- 	struct sk_buff *msg;
- 	int err;
- 
--	if (!devlink->ops->info_get)
--		return -EOPNOTSUPP;
--
- 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
- 	if (!msg)
- 		return -ENOMEM;
-@@ -6824,7 +6823,7 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
- 	int err = 0;
- 
- 	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
--		if (idx < start || !devlink->ops->info_get)
-+		if (idx < start)
- 			goto inc;
- 
- 		devl_lock(devlink);
--- 
-2.37.4
-
+greg k-h
