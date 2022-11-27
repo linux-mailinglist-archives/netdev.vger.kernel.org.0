@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85CE96398F0
-	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 00:36:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1B3863991F
+	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 02:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbiKZXgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Nov 2022 18:36:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
+        id S229498AbiK0BYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Nov 2022 20:24:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiKZXgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 18:36:20 -0500
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C33E0BB
-        for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 15:36:18 -0800 (PST)
+        with ESMTP id S229459AbiK0BYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Nov 2022 20:24:34 -0500
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B6F1582D
+        for <netdev@vger.kernel.org>; Sat, 26 Nov 2022 17:24:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1669505779; x=1701041779;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=99vsZ679A2Zq3mEmyTVRLSSRWrDd7DGiUIs4xKOMrMs=;
-  b=BmJD/ASZXLvEZCZtQDcHuT9ALXb4P6e324KjXCBT5ybnQQoO5B8p0VuR
-   vUNBHhTOomgRfCxn+FaFeWMwAzF6KVfdK7eC5+yyncXJIMkQy4+hjL763
-   MFTkgfIA37/tN0AtnV2rCStnLaYlt1dXF67PwszHBw0uUYGhJiRXhy2DK
-   s=;
+  t=1669512273; x=1701048273;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DzChjuEM7ExahJpYAezcaXTl6ZmFK3iNLJhLn/ZNAGA=;
+  b=YZM3ThrVxR8gNf+scT+8d4S5S31kU3bndo9rQ7SPCspKa7jUSwPskxDl
+   nhL5bAEm0hJXzj4++yuhucpSVJgYai2n4CSHWBLDqZn6KmgpJK4g1jxMM
+   TUnI8g77Er/4BDmkXF7vBnH1FGkfkSmpq3SWpQF5H39omBkc013FDAxGe
+   0=;
 X-IronPort-AV: E=Sophos;i="5.96,197,1665446400"; 
-   d="scan'208";a="271084951"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-e7094f15.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2022 23:36:16 +0000
+   d="scan'208";a="1077725348"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-d47337e0.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 01:24:28 +0000
 Received: from EX13MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2c-m6i4x-e7094f15.us-west-2.amazon.com (Postfix) with ESMTPS id 44EE741874;
-        Sat, 26 Nov 2022 23:36:15 +0000 (UTC)
+        by email-inbound-relay-pdx-2a-m6i4x-d47337e0.us-west-2.amazon.com (Postfix) with ESMTPS id 37E1660B13;
+        Sun, 27 Nov 2022 01:24:28 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Sat, 26 Nov 2022 23:36:14 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.134) by
+ id 15.0.1497.42; Sun, 27 Nov 2022 01:24:27 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.161.14) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
- Sat, 26 Nov 2022 23:36:11 +0000
+ Sun, 27 Nov 2022 01:24:24 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <tkhai@ya.ru>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>
-Subject: Re: [PATCH net v2] unix: Fix race in SOCK_SEQPACKET's unix_dgram_sendmsg()
-Date:   Sun, 27 Nov 2022 08:35:59 +0900
-Message-ID: <20221126233559.31979-1-kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Felipe Gasper <felipe@felipegasper.com>,
+        Wei Chen <harperchen1110@gmail.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "Kuniyuki Iwashima" <kuni1840@gmail.com>, <netdev@vger.kernel.org>
+Subject: [PATCH v2 net 0/2] af_unix: Fix a NULL deref in sk_diag_dump_uid().
+Date:   Sun, 27 Nov 2022 10:24:10 +0900
+Message-ID: <20221127012412.37969-1-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <bd4d533b-15d2-6c0a-7667-70fd95dbea20@ya.ru>
-References: <bd4d533b-15d2-6c0a-7667-70fd95dbea20@ya.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.162.134]
-X-ClientProxiedBy: EX13D37UWA001.ant.amazon.com (10.43.160.61) To
+X-Originating-IP: [10.43.161.14]
+X-ClientProxiedBy: EX13D27UWB002.ant.amazon.com (10.43.161.167) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
@@ -64,77 +67,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Kirill Tkhai <tkhai@ya.ru>
-Date:   Sun, 27 Nov 2022 01:46:51 +0300
-> There is a race resulting in alive SOCK_SEQPACKET socket
-> may change its state from TCP_ESTABLISHED to TCP_CLOSE:
-> 
-> unix_release_sock(peer)                  unix_dgram_sendmsg(sk)
->   sock_orphan(peer)
->     sock_set_flag(peer, SOCK_DEAD)
->                                            sock_alloc_send_pskb()
->                                              if !(sk->sk_shutdown & SEND_SHUTDOWN)
->                                                OK
->                                            if sock_flag(peer, SOCK_DEAD)
->                                              sk->sk_state = TCP_CLOSE
->   sk->sk_shutdown = SHUTDOWN_MASK
-> 
-> 
-> After that socket sk remains almost normal: it is able to connect, listen, accept
-> and recvmsg, while it can't sendmsg.
-> 
-> Since this is the only possibility for alive SOCK_SEQPACKET to change
-> the state in such way, we should better fix this strange and potentially
-> danger corner case.
-> 
-> Also, move TCP_CLOSE assignment for SOCK_DGRAM sockets under state lock
-> to fix race with unix_dgram_connect():
-> 
-> unix_dgram_connect(other)            unix_dgram_sendmsg(sk)
->                                        unix_peer(sk) = NULL
->                                        unix_state_unlock(sk)
->   unix_state_double_lock(sk, other)
->   sk->sk_state  = TCP_ESTABLISHED
->   unix_peer(sk) = other
->   unix_state_double_unlock(sk, other)
->                                        sk->sk_state  = TCP_CLOSED
-> 
-> This patch fixes both of these races.
-> 
-> Fixes: 83301b5367a9 ("af_unix: Set TCP_ESTABLISHED for datagram sockets too")
-> Suggested-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-
-Thank you, Kirill.
+The first patch fixes a NULL deref when we dump a AF_UNIX socket's UID,
+and the second patch adds a repro/test for such a case.
 
 
-> ---
-> v2: Disconnect from peer right there.
-> 
->  net/unix/af_unix.c |    7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index b3545fc68097..be40023a61fb 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -2001,11 +2001,14 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
->  		err = 0;
->  		if (unix_peer(sk) == other) {
->  			unix_peer(sk) = NULL;
-> -			unix_dgram_peer_wake_disconnect_wakeup(sk, other);
-> +
-> +			if (sk->sk_type == SOCK_DGRAM) {
-> +				unix_dgram_peer_wake_disconnect_wakeup(sk, other);
-> +				sk->sk_state = TCP_CLOSE;
-> +			}
->  
->  			unix_state_unlock(sk);
->  
-> -			sk->sk_state = TCP_CLOSE;
->  			unix_dgram_disconnected(sk, other);
->  			sock_put(other);
->  			err = -ECONNREFUSED;
+Changes:
+  v2:
+    * Get user_ns from NETLINK_CB(in_skb).sk.
+    * Add test.
+
+  v1: https://lore.kernel.org/netdev/20221122205811.20910-1-kuniyu@amazon.com/
+
+
+Kuniyuki Iwashima (2):
+  af_unix: Get user_ns from in_skb in unix_diag_get_exact().
+  af_unix: Add test for sock_diag and UDIAG_SHOW_UID.
+
+ net/unix/diag.c                               |  20 +-
+ tools/testing/selftests/net/.gitignore        |   1 +
+ tools/testing/selftests/net/af_unix/Makefile  |   2 +-
+ .../testing/selftests/net/af_unix/diag_uid.c  | 178 ++++++++++++++++++
+ 4 files changed, 192 insertions(+), 9 deletions(-)
+ create mode 100644 tools/testing/selftests/net/af_unix/diag_uid.c
+
+-- 
+2.30.2
 
