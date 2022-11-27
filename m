@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17FCA639A0F
-	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 12:19:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC001639A11
+	for <lists+netdev@lfdr.de>; Sun, 27 Nov 2022 12:19:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbiK0LTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 06:19:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        id S229506AbiK0LTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 06:19:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiK0LSr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 06:18:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C7C61261B
-        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 03:18:46 -0800 (PST)
+        with ESMTP id S229641AbiK0LTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 06:19:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488311274C
+        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 03:18:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE10560C6E
-        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 11:18:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E989FC4347C;
-        Sun, 27 Nov 2022 11:18:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF66CB80AE1
+        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 11:18:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56DBDC433D6;
+        Sun, 27 Nov 2022 11:18:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669547925;
-        bh=zzv++98ppJBhfH0+pOLfZ3z1r19f30LfTQjKfdlHGn8=;
+        s=k20201202; t=1669547928;
+        bh=KGjlDCPoCaU7NXrV0iVKv3hrvMdNrWVtthiirnmuEEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dXGGCT1QR3j0YgUZQhQwWIiYg0IqjokYpjZvNAf06fyw+ZEmiB9D3fRGjEQHFoydC
-         2DQB8CQ8F10l0OJiV7bfT4SVjZzTVRxX8Rx+iRRY+kmbkfK6mW2czN7Lvn4r8CF1re
-         ci9tNIYLAi4wnW5DVMfdSXzcCSTd+YYSA7xkbBHLXWWXDJU8KDgL9aqfDytHIAH34x
-         AN9hpYqAjQ06sUn8bzlzb8uvm538lmXgwpdFDkHnG6vET3XLSyKK+RMudGkuAwUuGv
-         iY5zVJB5YxthReL9l/ulVQSKA6zflMI18PzrjZa86Zzd7IK6QmDgbMIlHWS+k59bDh
-         L12WlUMsBsr4w==
+        b=KKI1/FaRCod4kl/wfAlhkKeMGEyGTRsCsRMesyhTKmSwjkV/wXB6dv2/giR1ymKHR
+         HXoL7iE1MkKw4fTsHnQFMABP/gk8ywO+koyorAEYEsX9H9Us5Co9dRTJOUSMXYxcJv
+         u8qakJ86BCLs/lq0wCGeiw6SnzG9Q9HiHeporteVYB4NxjYf3lp8rXs0OGwwm0aqiN
+         c8kL5yvbsxxbrKpVubMj6DwzDIGq6/cduYC7NpeMAQtjP8Z/Icwv2RD8DgVhBd9TUR
+         j81Z/dy5dgu3mJkndRSsZI/FzlCwvJ8ipES6G8f9lnC09WhPhkzxfu5PQJpUrBVE32
+         hWWL74EQPNeZg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -39,9 +39,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Bharat Bhushan <bbhushan2@marvell.com>
-Subject: [PATCH xfrm-next v9 7/8] xfrm: add support to HW update soft and hard limits
-Date:   Sun, 27 Nov 2022 13:18:17 +0200
-Message-Id: <80a7760106e6b79829f69f5de4c45fed3790be72.1669547603.git.leonro@nvidia.com>
+Subject: [PATCH xfrm-next v9 8/8] xfrm: document IPsec packet offload mode
+Date:   Sun, 27 Nov 2022 13:18:18 +0200
+Message-Id: <4ed9580413214d7be8f2d0c8396e37851a8debc6.1669547603.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <cover.1669547603.git.leonro@nvidia.com>
 References: <cover.1669547603.git.leonro@nvidia.com>
@@ -58,86 +58,143 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Both in RX and TX, the traffic that performs IPsec packet offload
-transformation is accounted by HW. It is needed to properly handle
-hard limits that require to drop the packet.
-
-It means that XFRM core needs to update internal counters with the one
-that accounted by the HW, so new callbacks are introduced in this patch.
-
-In case of soft or hard limit is occurred, the driver should call to
-xfrm_state_check_expire() that will perform key rekeying exactly as
-done by XFRM core.
+Extend XFRM device offload API description with newly
+added packet offload mode.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/linux/netdevice.h |  1 +
- include/net/xfrm.h        | 17 +++++++++++++++++
- net/xfrm/xfrm_state.c     |  4 ++++
- 3 files changed, 22 insertions(+)
+ Documentation/networking/xfrm_device.rst | 62 ++++++++++++++++++++----
+ 1 file changed, 53 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 40dff55fad25..f5bba23f2aae 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1040,6 +1040,7 @@ struct xfrmdev_ops {
+diff --git a/Documentation/networking/xfrm_device.rst b/Documentation/networking/xfrm_device.rst
+index 01391dfd37d9..c43ace79e320 100644
+--- a/Documentation/networking/xfrm_device.rst
++++ b/Documentation/networking/xfrm_device.rst
+@@ -5,6 +5,7 @@ XFRM device - offloading the IPsec computations
+ ===============================================
+ 
+ Shannon Nelson <shannon.nelson@oracle.com>
++Leon Romanovsky <leonro@nvidia.com>
+ 
+ 
+ Overview
+@@ -18,10 +19,21 @@ can radically increase throughput and decrease CPU utilization.  The XFRM
+ Device interface allows NIC drivers to offer to the stack access to the
+ hardware offload.
+ 
++Right now, there are two types of hardware offload that kernel supports.
++ * IPsec crypto offload:
++   * NIC performs encrypt/decrypt
++   * Kernel does everything else
++ * IPsec packet offload:
++   * NIC performs encrypt/decrypt
++   * NIC does encapsulation
++   * Kernel and NIC have SA and policy in-sync
++   * NIC handles the SA and policies states
++   * The Kernel talks to the keymanager
++
+ Userland access to the offload is typically through a system such as
+ libreswan or KAME/raccoon, but the iproute2 'ip xfrm' command set can
+ be handy when experimenting.  An example command might look something
+-like this::
++like this for crypto offload:
+ 
+   ip x s add proto esp dst 14.0.0.70 src 14.0.0.52 spi 0x07 mode transport \
+      reqid 0x07 replay-window 32 \
+@@ -29,6 +41,17 @@ like this::
+      sel src 14.0.0.52/24 dst 14.0.0.70/24 proto tcp \
+      offload dev eth4 dir in
+ 
++and for packet offload
++
++  ip x s add proto esp dst 14.0.0.70 src 14.0.0.52 spi 0x07 mode transport \
++     reqid 0x07 replay-window 32 \
++     aead 'rfc4106(gcm(aes))' 0x44434241343332312423222114131211f4f3f2f1 128 \
++     sel src 14.0.0.52/24 dst 14.0.0.70/24 proto tcp \
++     offload packet dev eth4 dir in
++
++  ip x p add src 14.0.0.70 dst 14.0.0.52 offload packet dev eth4 dir in
++  tmpl src 14.0.0.70 dst 14.0.0.52 proto esp reqid 10000 mode transport
++
+ Yes, that's ugly, but that's what shell scripts and/or libreswan are for.
+ 
+ 
+@@ -40,17 +63,24 @@ Callbacks to implement
+ 
+   /* from include/linux/netdevice.h */
+   struct xfrmdev_ops {
++        /* Crypto and Packet offload callbacks */
+ 	int	(*xdo_dev_state_add) (struct xfrm_state *x);
+ 	void	(*xdo_dev_state_delete) (struct xfrm_state *x);
+ 	void	(*xdo_dev_state_free) (struct xfrm_state *x);
  	bool	(*xdo_dev_offload_ok) (struct sk_buff *skb,
  				       struct xfrm_state *x);
- 	void	(*xdo_dev_state_advance_esn) (struct xfrm_state *x);
-+	void	(*xdo_dev_state_update_curlft) (struct xfrm_state *x);
- 	int	(*xdo_dev_policy_add) (struct xfrm_policy *x);
- 	void	(*xdo_dev_policy_delete) (struct xfrm_policy *x);
- 	void	(*xdo_dev_policy_free) (struct xfrm_policy *x);
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 00ce7a68bf3c..3982c43117d0 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1571,6 +1571,23 @@ struct xfrm_state *xfrm_stateonly_find(struct net *net, u32 mark, u32 if_id,
- struct xfrm_state *xfrm_state_lookup_byspi(struct net *net, __be32 spi,
- 					      unsigned short family);
- int xfrm_state_check_expire(struct xfrm_state *x);
-+#ifdef CONFIG_XFRM_OFFLOAD
-+static inline void xfrm_dev_state_update_curlft(struct xfrm_state *x)
-+{
-+	struct xfrm_dev_offload *xdo = &x->xso;
-+	struct net_device *dev = xdo->dev;
+ 	void    (*xdo_dev_state_advance_esn) (struct xfrm_state *x);
 +
-+	if (x->xso.type != XFRM_DEV_OFFLOAD_PACKET)
-+		return;
-+
-+	if (dev && dev->xfrmdev_ops &&
-+	    dev->xfrmdev_ops->xdo_dev_state_update_curlft)
-+		dev->xfrmdev_ops->xdo_dev_state_update_curlft(x);
-+
-+}
-+#else
-+static inline void xfrm_dev_state_update_curlft(struct xfrm_state *x) {}
-+#endif
- void xfrm_state_insert(struct xfrm_state *x);
- int xfrm_state_add(struct xfrm_state *x);
- int xfrm_state_update(struct xfrm_state *x);
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index b4adf4df9d08..9c2adab0e719 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -570,6 +570,8 @@ static enum hrtimer_restart xfrm_timer_handler(struct hrtimer *me)
- 	int err = 0;
++        /* Solely packet offload callbacks */
++	void    (*xdo_dev_state_update_curlft) (struct xfrm_state *x);
++	int	(*xdo_dev_policy_add) (struct xfrm_policy *x);
++	void	(*xdo_dev_policy_delete) (struct xfrm_policy *x);
++	void	(*xdo_dev_policy_free) (struct xfrm_policy *x);
+   };
  
- 	spin_lock(&x->lock);
-+	xfrm_dev_state_update_curlft(x);
-+
- 	if (x->km.state == XFRM_STATE_DEAD)
- 		goto out;
- 	if (x->km.state == XFRM_STATE_EXPIRED)
-@@ -1935,6 +1937,8 @@ EXPORT_SYMBOL(xfrm_state_update);
+-The NIC driver offering ipsec offload will need to implement these
+-callbacks to make the offload available to the network stack's
+-XFRM subsystem.  Additionally, the feature bits NETIF_F_HW_ESP and
++The NIC driver offering ipsec offload will need to implement callbacks
++relevant to supported offload to make the offload available to the network
++stack's XFRM subsystem. Additionally, the feature bits NETIF_F_HW_ESP and
+ NETIF_F_HW_ESP_TX_CSUM will signal the availability of the offload.
  
- int xfrm_state_check_expire(struct xfrm_state *x)
- {
-+	xfrm_dev_state_update_curlft(x);
-+
- 	if (!x->curlft.use_time)
- 		x->curlft.use_time = ktime_get_real_seconds();
  
+@@ -79,7 +109,8 @@ and an indication of whether it is for Rx or Tx.  The driver should
+ 
+ 		===========   ===================================
+ 		0             success
+-		-EOPNETSUPP   offload not supported, try SW IPsec
++		-EOPNETSUPP   offload not supported, try SW IPsec,
++                              not applicable for packet offload mode
+ 		other         fail the request
+ 		===========   ===================================
+ 
+@@ -96,6 +127,7 @@ will serviceable.  This can check the packet information to be sure the
+ offload can be supported (e.g. IPv4 or IPv6, no IPv4 options, etc) and
+ return true of false to signify its support.
+ 
++Crypto offload mode:
+ When ready to send, the driver needs to inspect the Tx packet for the
+ offload information, including the opaque context, and set up the packet
+ send accordingly::
+@@ -139,13 +171,25 @@ the stack in xfrm_input().
+ In ESN mode, xdo_dev_state_advance_esn() is called from xfrm_replay_advance_esn().
+ Driver will check packet seq number and update HW ESN state machine if needed.
+ 
++Packet offload mode:
++HW adds and deletes XFRM headers. So in RX path, XFRM stack is bypassed if HW
++reported success. In TX path, the packet lefts kernel without extra header
++and not encrypted, the HW is responsible to perform it.
++
+ When the SA is removed by the user, the driver's xdo_dev_state_delete()
+-is asked to disable the offload.  Later, xdo_dev_state_free() is called
+-from a garbage collection routine after all reference counts to the state
++and xdo_dev_policy_delete() are asked to disable the offload.  Later,
++xdo_dev_state_free() and xdo_dev_policy_free() are called from a garbage
++collection routine after all reference counts to the state and policy
+ have been removed and any remaining resources can be cleared for the
+ offload state.  How these are used by the driver will depend on specific
+ hardware needs.
+ 
+ As a netdev is set to DOWN the XFRM stack's netdev listener will call
+-xdo_dev_state_delete() and xdo_dev_state_free() on any remaining offloaded
+-states.
++xdo_dev_state_delete(), xdo_dev_policy_delete(), xdo_dev_state_free() and
++xdo_dev_policy_free() on any remaining offloaded states.
++
++Outcome of HW handling packets, the XFRM core can't count hard, soft limits.
++The HW/driver are responsible to perform it and provide accurate data when
++xdo_dev_state_update_curlft() is called. In case of one of these limits
++occuried, the driver needs to call to xfrm_state_check_expire() to make sure
++that XFRM performs rekeying sequence.
 -- 
 2.38.1
 
