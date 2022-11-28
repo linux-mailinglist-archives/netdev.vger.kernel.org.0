@@ -2,201 +2,370 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D0D63B435
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 22:28:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E2E763B465
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 22:46:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232683AbiK1V25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 16:28:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
+        id S233980AbiK1Vqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 16:46:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232648AbiK1V2z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 16:28:55 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208EF3893
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 13:28:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669670935; x=1701206935;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=NyxQUbcKv4L8qqG81p1I5ZHPaOaLvsrkkUyGoaobWr0=;
-  b=mqCLoRg7/kQoGqdoeWv/yMEg9Ewyda4mAfPOKtwd0iJwVpej5u7Rr/63
-   FJrbOOSgx4UlY8gAF8eV8GhUATLfh3p+g2urp8j6KR9CBjOda2dJIiaao
-   BkDcISjGZacs361eQ07v+5xjjK7hsQalMiw9AEWR4MCqsUchCUeskTpf6
-   atsvdktg55Zm+jc0Saq2W27tLNigi6PHTtvMUY+wRBhJIe38yeFBvThOP
-   6nVZZp/E/jtAggNeVORbujAWYJwLfvZtskCHFJgf4lezmVZRk3FFQ0O09
-   3tyxyYeDz4GuW2dWFbd03SSmglx5htWewNErNfWcgs6EOewoI7hACB1o3
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="312578549"
-X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
-   d="scan'208";a="312578549"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 13:28:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="785791391"
-X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
-   d="scan'208";a="785791391"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Nov 2022 13:28:34 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 28 Nov 2022 13:28:34 -0800
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 28 Nov 2022 13:28:33 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Mon, 28 Nov 2022 13:28:33 -0800
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.49) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Mon, 28 Nov 2022 13:28:32 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CiNm5My6v1IxwYpX0UuwofDAqMLOMFZgi3M8ijH3SE9gdfiuYPu8Kg22MQZTJJGv7ocEzTshLnuv3hxpX3hYkOxKK/0j7QSmkkAIR3L/slsJqjI1ZHj0Q9BZ7uPvFTHAiHggq4MaVMqSsWbd0pNzpSf8ICDatod8KI/knAOHe4WengHf5oDNSPbfn+ItmnQ7mmNwYBIbOGCD3CBbGklDfq4G5CYeKEqG04qhZqA0cBpuN6G4UqQ/KpLua4Ju+iZr9RvqeCexDUU3XGT0sLVJEYbgkLDCcjioM32/9ojsO97A9ql8S8TPZKt5QUb+Y7eBGWCTkbfkbOIxReu4FtYtbA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dQA9txgzay3ST3jnt3V+dasrTtgctU+xwYoctINZmPs=;
- b=Ar3OoRPNNrrABc1YEMCXfqIXClm2vBCHbcCEe5M2BQRUm0IvH+8L+EZsM6HweJYLBupcrEQXiMEI5bEt9YcEVGLgpSwsGUCYSBogsQfA/YbdOQ+uVGTHzCF76WiRB5+VyWpVIW/LGh/2XY8DSf9vu4FtviOOpG7T9Le/D1Ql0VaIHKfbr4D9SpsW4kVB36DkAgO1yim43upH8ikAfFeTBMA1e9m1NNPt27eWQY62hJpm8HrpR6gIXGC20OFmxKpblle8gY7OYLq/sTVJD9ude4XBXk+ESGn7I3BAi2SgyubICxR0DrUIjviEwKgS5v9LkTZ82PZaNVSw6QHiYDtwNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
- by IA1PR11MB7248.namprd11.prod.outlook.com (2603:10b6:208:42c::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
- 2022 21:28:28 +0000
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::933:90f8:7128:f1c5]) by SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::933:90f8:7128:f1c5%5]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
- 21:28:28 +0000
-Message-ID: <db083841-d71d-4d17-f870-e773c361fee6@intel.com>
-Date:   Mon, 28 Nov 2022 13:28:25 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net resend] ixgbe: fix pci device refcount leak
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        <netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>
-CC:     <jesse.brandeburg@intel.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <stephend@silicom-usa.com>, <jeffrey.t.kirsher@intel.com>,
-        <andrew@lunn.ch>, <f.fainelli@gmail.com>
-References: <20221122060816.1187260-1-yangyingliang@huawei.com>
-Content-Language: en-US
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-In-Reply-To: <20221122060816.1187260-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR20CA0032.namprd20.prod.outlook.com
- (2603:10b6:a03:1f4::45) To SN6PR11MB3229.namprd11.prod.outlook.com
- (2603:10b6:805:ba::28)
+        with ESMTP id S233481AbiK1Vqi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 16:46:38 -0500
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABAD2F01C
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 13:46:36 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id d19-20020a056e020c1300b00300b5a12c44so10098499ile.15
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 13:46:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=u5DU+rzhU6BRejes6nCyeDncj5tiUDzgBpX3RJNYjxM=;
+        b=ynYHIl+77Y4u5vMzlJw797Il9/H8EKfzFXde2nWQJLUPGKxfRBqACfvke6naNscW64
+         wfh3BG/xb8GdNLKwfWGG3rCl2+/LX9PjhcAcaR5JH8Ad3HcnhsST2mu0ATlmGRjAV2op
+         TkoShs4S5Dwmpd8EmT/EPMxKwtcvMJxfVTq6Y01ssAOu3E6KqrhXyLbIJt3m0kSBzX/J
+         IW504tdjTpNPStbLB2tonXtz0s/NIm99PROdboSFXSPf9QIbK3v0s9uA5FSJCPvd2+ve
+         09vNt8g3CT79HhnM0ZP0+wI5VtIgKfoeebZiNQ3g5FWTflirknk2H7pmu72b2NJ1SDQJ
+         RIQg==
+X-Gm-Message-State: ANoB5pmyJecHC9rZ3z1b2sj+v4/uGJ3ePSMN+TzOLPUXW64lO9SHdIji
+        rz77pMRxtM8llQBisSV8jxGlC0kw/U3og6++Z33pbD79zbyw
+X-Google-Smtp-Source: AA0mqf7pm9yecEFQSHKmrVw9h0hSv4T1TEqYZIAdpYdA6hfwuqh2aK2hQrT+ghZ9JYinOOvkdY4gysc6kojakW3kJtPBFhfAYg0m
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN6PR11MB3229:EE_|IA1PR11MB7248:EE_
-X-MS-Office365-Filtering-Correlation-Id: d5774737-33c0-44b8-6632-08dad1877d70
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6fYKMCqtfPZUVwHq+CoYbj/MxQof8/uGaJIejG8wkr6wILO/uTO0qXnMZiwpRlHhgQT35YHKOu2SMLHDNotonBMnRvnG9H/oBi726xgZ31OhTWixtdvbPnBXGX3ntchT0hiEmfeWVOq8569W+RJXNCwUG7osqyGxr/3ctE6apJftB/AGTrCDleS1rqdVPY+XxsIYZO3YMw0wzm04/KTvsMsktMlvmotnm3e5eprdNTHPyukcJa+hf3tpk7+j7Jd+VsTzmKFR52qv8XUVDhjRnsrTuoDwdCS27miUkQjH6n+nw577y6Z0zyIHvMG0C+WqLNLux/GuH9yXvkij/OXs4TmRWW3YxJAgz1oQUO0029lWlgfLAyChDeKIVR5H/HAc992SM6edfcqL2ZqfyfyLO6piW3EuyuaP5kJFHIgEASbwDqehrLrv692iEpJhZRQMhV94KzU8fuu1laIp9JKaAinXvpTJLguwf0TZxe+UPzO6Tq1PZzaNk7GRk6kAsBhE/hjwHAvnmNAzmPo3a+W/vI21H91nJ43i+vjpCst6zPRJ3nTfzi6KBMimI726IWOuD7KAgW7JRfWqHjCYYb7q6Qm2O/LmfncN3CuZy7sf4QuMjVq7RR2Z4I0yUg+F0cQLKEPdoVOwUkcnuuQWdpjLC8Ufgx1VpmiLAp7/9Tqllm8kuiuB0tEhkAfmiMjvgY72v3WqWvjE+PSIQb+nGk/6BGkLvj6mzbnXrrrMIwC11Ak=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(346002)(366004)(39860400002)(396003)(376002)(451199015)(2906002)(31686004)(4326008)(41300700001)(66476007)(36756003)(66556008)(186003)(66946007)(8676002)(316002)(8936002)(5660300002)(26005)(2616005)(6512007)(86362001)(6486002)(6666004)(7416002)(478600001)(6506007)(53546011)(31696002)(38100700002)(82960400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SC8xSUZqbDFFcTVUb2ErTUM5Zlc0eTRlVG14RDFTZk1DSWdtYmZ2VmY1N1M4?=
- =?utf-8?B?bnlUcVliYjlteXhvTkIyMXpaOU1lbnFFT21xK0ozQ1ZRejRXelFoYm1Xdm83?=
- =?utf-8?B?anEyN0d5M0tSRWV2dnpCd1hMZC9JdEJ5RFNoT1poUEdvVTJZbWM3MWxhbTJH?=
- =?utf-8?B?N25sTkZGamRyZVc5MHVsT1BNdHJ1aGpLaHlyQm9qYTl6Vk5mZzRZL3VPdXZR?=
- =?utf-8?B?bUdqTnpFQXNSTHVma2xtQnBjOXBMK0dYOU9jY3BvL1hkU2FrRzh4MG4rdzg1?=
- =?utf-8?B?YjR2ak5yNVIweXQxMU1hTU5BZmVML0tUT05QOXdrWExReGRkR2MzZTNJUjlw?=
- =?utf-8?B?R3U4dFZYNnE2SGM4Q3lmV1FodVlPNCtqZXErYzFrREJMWjE0S2xXcHFlMmlD?=
- =?utf-8?B?U0IwUzBoNkdOQklmOVFlYWdnMCtoZHU5WTljOUE3elE5cXZoRmVvY2VuU01T?=
- =?utf-8?B?aUF1K3Z4QzFKaU1ldnozd1RSRHRWTVE4amFnK1JRckI4YzloSWg5dWJaeEI5?=
- =?utf-8?B?ejFMUllXZGZ3Y1ZiSHpPVmZIZDR0NEZTcFRWVzMzdGZodWtYZ01yeE40VUhP?=
- =?utf-8?B?d0dBY0lqLzk3U3MvU3VsY01nVWF5ZG0vdHA2cUpIeGlKdDNDendyYVZGYTdZ?=
- =?utf-8?B?c25tZXdodi8yWmVWTVZtZDYvd0pmU3dCSHl6T2pwUXZEVUNPbUJ3ZGZhbjc5?=
- =?utf-8?B?SUg4T0o2bTdQNmpOWWlXMEExc0pmd2R5cU80VnBoRU5sSlZEQVhaS2k1TTZt?=
- =?utf-8?B?WVVjeXoxYnJUQWRsTEIzdm1uRGptZVprVi9zNE5sU2xwYlk4R25qVXhWd3lz?=
- =?utf-8?B?RWpEclJ3eSs4anY3MDFVYWk1dXBhN3N4bVNrZmlZWFJXekZDa0NhdXNZRHRw?=
- =?utf-8?B?TDNMclFqNTQ4OGdOeUJrSXluMktrWktSNG01TDJCY3hxOHBkSHNkL3luL2F3?=
- =?utf-8?B?NkUrTjJaM3JBaGRKc1dVSHZjZ0JGMmk1WlBWaEYzQWVtY0JuSmVvZ2o0ZklW?=
- =?utf-8?B?b0RoUGMwb3ZBYTNiNVZ2VUxpaFNRclBUSGhzNTQ1cEhPTmFnaXM3Ym03M2Zz?=
- =?utf-8?B?TEM4cElqbElXZWZDYkZvUXFKdmNjOS84ZXFHUkpReGVDY3lEbmNmdFZrcEZr?=
- =?utf-8?B?MlIyMTIyNmg1cGM5b3A2bmpEQ3NadmlCd0gwakRqN2h5eVp0ODFFTVpFVVRs?=
- =?utf-8?B?azlXM0c4cTZDSGlMSWl1bU1DZm1EOHpQVk11K0F6MFhIV1ZaeVk4L1l5eGg1?=
- =?utf-8?B?THVablJSQmxNb3NtQUxYZ2pzOWRHUGRkclRnSmQ2QTlPU1NWdlBNVGViVVBI?=
- =?utf-8?B?T2owZEtRbmpVUUFmcGJINDVtalVHN3V6eVZwRUdqM3JHdDRLaEJOSThFQmRC?=
- =?utf-8?B?TTFYUk9uWHlKN0NSMnR6OE9iUGs1bTJ1cVpucUo1K1JyZTRFZlJFbkpROXhV?=
- =?utf-8?B?aGRsbktuM3dNa1YzNUo4cFcxeEFBU0dPSFdDL3g1SS84Z0xFaSs0U0RESS9X?=
- =?utf-8?B?NHlpakdjUzI0VXdxb2djUHVOdnRkRHArVmtTL0RFT3BXTzNUbnVMMllHU3p2?=
- =?utf-8?B?TkhEWnRuNTJMS25sdWQ1UWdnWkVleHArNmlRUGloZFF1NHlMUkl0VGxNOGJx?=
- =?utf-8?B?WXA0QlFmSGZwM1pVcG51Tk9iL1c2MHVnTzlmWmJPMFV5dFBTQThEWWtIS0sr?=
- =?utf-8?B?WmlaOHVteml0aStlS2tjMks0YTVubEVHSGEzeW1UaXFyWlVXUFpJWEQyTDBQ?=
- =?utf-8?B?NWx4OUwwRXVmZExYdm1kUW1FMmVRcXgybkJaRXFUWEtTSVU3bFc1REZabHh0?=
- =?utf-8?B?OVhrN0ZNRDFGd3N1clh6OCthUWF1azlIOXZONVd6aWVQWXJ3d25rTldJNkFU?=
- =?utf-8?B?MkpkNElJejNxNGF6ZWMyb1RkYTFoUjUyaXo5OTFXMGYyWW9uT2RkUlNCalJU?=
- =?utf-8?B?Smc2aHB3SnV1aEE2K1JvbEVMYjlLV3Zjb2FsL2I1SUhFVnVXVDhzbDVjTVBs?=
- =?utf-8?B?VnNYVHUreEVndDhib1pFQmUxRm9pMDFXaSt4b3JteU5vc0plUk9pSlJpM0hk?=
- =?utf-8?B?ZVhlM3hjQWpIRUZodWtkcVBSTjVCWnI5bXFhR1M1cm1yNGJ1cXNTRVNqci9H?=
- =?utf-8?B?WFJTTU9JSTRHbEtBVklvNVdYNDBzOEFWcWZpbnBXZUtON1F5c3N2MUp3WG1V?=
- =?utf-8?B?OUE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5774737-33c0-44b8-6632-08dad1877d70
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 21:28:28.3529
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: waun3Hi1zKAUvDC11+S6e5IoZezT4eYnV+nk2KLtIybeWh9JiBdfHYUVE+5VIqB2kQAFEMSJbYLGoTZV/N+74WAVyEPi+sJDsb56waVfb+g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7248
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a6b:8d87:0:b0:6dd:f2f4:b335 with SMTP id
+ p129-20020a6b8d87000000b006ddf2f4b335mr15352834iod.99.1669671995941; Mon, 28
+ Nov 2022 13:46:35 -0800 (PST)
+Date:   Mon, 28 Nov 2022 13:46:35 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000035aa0505ee8ece19@google.com>
+Subject: [syzbot] INFO: task hung in nfnetlink_rcv_msg (3)
+From:   syzbot <syzbot+9204e7399656300bf271@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, edumazet@google.com,
+        fw@strlen.de, kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pabeni@redhat.com,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/21/2022 10:08 PM, Yang Yingliang wrote:
-> As comment of pci_get_domain_bus_and_slot() says, it returns
-> a pci device with refcount increment, when finish using it,
-> the caller must decrement the reference count by calling
-> pci_dev_put().
-> 
-> In ixgbe_get_first_secondary_devfn() and ixgbe_x550em_a_has_mii(),
-> pci_dev_put() is called to avoid leak.
-> 
-> Fixes: 8fa10ef01260 ("ixgbe: register a mdiobus")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
+Hello,
 
-<snip>
+syzbot found the following issue on:
 
-> @@ -882,6 +884,7 @@ static bool ixgbe_x550em_a_has_mii(struct ixgbe_hw *hw)
->   	 * of those two root ports
->   	 */
->   	func0_pdev = ixgbe_get_first_secondary_devfn(PCI_DEVFN(0x16, 0));
-> +	pci_dev_put(func0_pdev);
->   	if (func0_pdev) {
->   		if (func0_pdev == pdev)
->   			return true;
-> @@ -889,6 +892,7 @@ static bool ixgbe_x550em_a_has_mii(struct ixgbe_hw *hw)
->   			return false;
->   	}
->   	func0_pdev = ixgbe_get_first_secondary_devfn(PCI_DEVFN(0x17, 0));
-> +	pci_dev_put(func0_pdev);
->   	if (func0_pdev == pdev)
->   		return true;
+HEAD commit:    08e8a949f684 net: wwan: t7xx: Fix the ACPI memory leak
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=15cc5b2d880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=60808f80d41c27e5
+dashboard link: https://syzkaller.appspot.com/bug?extid=9204e7399656300bf271
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15569dc5880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1437f803880000
 
-It would probably be better to defer these puts until after the checks 
-and values are set. I'd think some local vars and gotos may be cleaner 
-than placing puts before all the returns.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/49fbc1a069d4/disk-08e8a949.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/0aadd1f9073a/vmlinux-08e8a949.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/b75d62dbd582/bzImage-08e8a949.xz
 
-Thanks,
-Tony
+The issue was bisected to:
+
+commit 5f7b51bf09baca8e4f80cbe879536842bafb5f31
+Author: Jozsef Kadlecsik <kadlec@netfilter.org>
+Date:   Wed Jul 28 15:01:15 2021 +0000
+
+    netfilter: ipset: Limit the maximal range of consecutive elements to add/delete
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15e630e3880000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=17e630e3880000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13e630e3880000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9204e7399656300bf271@syzkaller.appspotmail.com
+Fixes: 5f7b51bf09ba ("netfilter: ipset: Limit the maximal range of consecutive elements to add/delete")
+
+INFO: task syz-executor291:3680 blocked for more than 143 seconds.
+      Not tainted 6.1.0-rc5-syzkaller-00204-g08e8a949f684 #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor291 state:D stack:27192 pid:3680  ppid:3668   flags:0x00004004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5191 [inline]
+ __schedule+0xae9/0x53f0 kernel/sched/core.c:6503
+ schedule+0xde/0x1b0 kernel/sched/core.c:6579
+ schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:6638
+ __mutex_lock_common kernel/locking/mutex.c:679 [inline]
+ __mutex_lock+0xa48/0x1360 kernel/locking/mutex.c:747
+ nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+ netlink_rcv_skb+0x157/0x430 net/netlink/af_netlink.c:2540
+ nfnetlink_rcv+0x1b0/0x420 net/netfilter/nfnetlink.c:659
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ ____sys_sendmsg+0x712/0x8c0 net/socket.c:2482
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
+ __sys_sendmsg+0xf7/0x1c0 net/socket.c:2565
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f2298c5e0e9
+RSP: 002b:00007ffc1c6fdb38 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000000f4240 RCX: 00007f2298c5e0e9
+RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 00007ffc1c6fd5b0 R11: 0000000000000246 R12: 000000000007689b
+R13: 00007ffc1c6fdb4c R14: 00007ffc1c6fdb60 R15: 00007ffc1c6fdb50
+ </TASK>
+INFO: task syz-executor291:3681 blocked for more than 143 seconds.
+      Not tainted 6.1.0-rc5-syzkaller-00204-g08e8a949f684 #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor291 state:D stack:27952 pid:3681  ppid:3662   flags:0x00004004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5191 [inline]
+ __schedule+0xae9/0x53f0 kernel/sched/core.c:6503
+ schedule+0xde/0x1b0 kernel/sched/core.c:6579
+ schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:6638
+ __mutex_lock_common kernel/locking/mutex.c:679 [inline]
+ __mutex_lock+0xa48/0x1360 kernel/locking/mutex.c:747
+ nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+ netlink_rcv_skb+0x157/0x430 net/netlink/af_netlink.c:2540
+ nfnetlink_rcv+0x1b0/0x420 net/netfilter/nfnetlink.c:659
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ ____sys_sendmsg+0x712/0x8c0 net/socket.c:2482
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
+ __sys_sendmsg+0xf7/0x1c0 net/socket.c:2565
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f2298c5e0e9
+RSP: 002b:00007ffc1c6fdb38 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000000f4240 RCX: 00007f2298c5e0e9
+RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 00007ffc1c6fd5b0 R11: 0000000000000246 R12: 0000000000076893
+R13: 00007ffc1c6fdb4c R14: 00007ffc1c6fdb60 R15: 00007ffc1c6fdb50
+ </TASK>
+INFO: task syz-executor291:3682 blocked for more than 144 seconds.
+      Not tainted 6.1.0-rc5-syzkaller-00204-g08e8a949f684 #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor291 state:D stack:26400 pid:3682  ppid:3663   flags:0x00004004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5191 [inline]
+ __schedule+0xae9/0x53f0 kernel/sched/core.c:6503
+ schedule+0xde/0x1b0 kernel/sched/core.c:6579
+ schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:6638
+ __mutex_lock_common kernel/locking/mutex.c:679 [inline]
+ __mutex_lock+0xa48/0x1360 kernel/locking/mutex.c:747
+ nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+ netlink_rcv_skb+0x157/0x430 net/netlink/af_netlink.c:2540
+ nfnetlink_rcv+0x1b0/0x420 net/netfilter/nfnetlink.c:659
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ ____sys_sendmsg+0x712/0x8c0 net/socket.c:2482
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
+ __sys_sendmsg+0xf7/0x1c0 net/socket.c:2565
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f2298c5e0e9
+RSP: 002b:00007ffc1c6fdb38 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000000f4240 RCX: 00007f2298c5e0e9
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000004
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000076898
+R13: 00007ffc1c6fdb4c R14: 00007ffc1c6fdb60 R15: 00007ffc1c6fdb50
+ </TASK>
+INFO: task syz-executor291:3684 blocked for more than 144 seconds.
+      Not tainted 6.1.0-rc5-syzkaller-00204-g08e8a949f684 #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor291 state:D stack:27000 pid:3684  ppid:3666   flags:0x00000004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5191 [inline]
+ __schedule+0xae9/0x53f0 kernel/sched/core.c:6503
+ schedule+0xde/0x1b0 kernel/sched/core.c:6579
+ schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:6638
+ __mutex_lock_common kernel/locking/mutex.c:679 [inline]
+ __mutex_lock+0xa48/0x1360 kernel/locking/mutex.c:747
+ nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+ netlink_rcv_skb+0x157/0x430 net/netlink/af_netlink.c:2540
+ nfnetlink_rcv+0x1b0/0x420 net/netfilter/nfnetlink.c:659
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ ____sys_sendmsg+0x712/0x8c0 net/socket.c:2482
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
+ __sys_sendmsg+0xf7/0x1c0 net/socket.c:2565
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f2298c5e0e9
+RSP: 002b:00007ffc1c6fdb38 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000000f4240 RCX: 00007f2298c5e0e9
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000004
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000001 R11: 0000000000000246 R12: 000000000007689e
+R13: 00007ffc1c6fdb4c R14: 00007ffc1c6fdb60 R15: 00007ffc1c6fdb50
+ </TASK>
+INFO: task syz-executor291:3685 blocked for more than 144 seconds.
+      Not tainted 6.1.0-rc5-syzkaller-00204-g08e8a949f684 #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor291 state:D stack:27952 pid:3685  ppid:3667   flags:0x00004004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5191 [inline]
+ __schedule+0xae9/0x53f0 kernel/sched/core.c:6503
+ schedule+0xde/0x1b0 kernel/sched/core.c:6579
+ schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:6638
+ __mutex_lock_common kernel/locking/mutex.c:679 [inline]
+ __mutex_lock+0xa48/0x1360 kernel/locking/mutex.c:747
+ nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+ netlink_rcv_skb+0x157/0x430 net/netlink/af_netlink.c:2540
+ nfnetlink_rcv+0x1b0/0x420 net/netfilter/nfnetlink.c:659
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ ____sys_sendmsg+0x712/0x8c0 net/socket.c:2482
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
+ __sys_sendmsg+0xf7/0x1c0 net/socket.c:2565
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f2298c5e0e9
+RSP: 002b:00007ffc1c6fdb38 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000000f4240 RCX: 00007f2298c5e0e9
+RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 00007ffc1c6fd5b0 R11: 0000000000000246 R12: 0000000000076899
+R13: 00007ffc1c6fdb4c R14: 00007ffc1c6fdb60 R15: 00007ffc1c6fdb50
+ </TASK>
+
+Showing all locks held in the system:
+1 lock held by rcu_tasks_kthre/12:
+ #0: ffffffff8c58f0f0 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x26/0xc70 kernel/rcu/tasks.h:507
+1 lock held by rcu_tasks_trace/13:
+ #0: ffffffff8c58edf0 (rcu_tasks_trace.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x26/0xc70 kernel/rcu/tasks.h:507
+1 lock held by khungtaskd/28:
+ #0: ffffffff8c58fc40 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x57/0x264 kernel/locking/lockdep.c:6494
+2 locks held by getty/3309:
+ #0: ffff88814afa0098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x26/0x80 drivers/tty/tty_ldisc.c:244
+ #1: ffffc900031262f0 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xef4/0x13e0 drivers/tty/n_tty.c:2177
+1 lock held by syz-executor291/3680:
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+1 lock held by syz-executor291/3681:
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+1 lock held by syz-executor291/3682:
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+1 lock held by syz-executor291/3683:
+1 lock held by syz-executor291/3684:
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+1 lock held by syz-executor291/3685:
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnl_lock net/netfilter/nfnetlink.c:97 [inline]
+ #0: ffffffff91d48cf8 (nfnl_subsys_ipset){+.+.}-{3:3}, at: nfnetlink_rcv_msg+0xaae/0x1430 net/netfilter/nfnetlink.c:294
+
+=============================================
+
+NMI backtrace for cpu 0
+CPU: 0 PID: 28 Comm: khungtaskd Not tainted 6.1.0-rc5-syzkaller-00204-g08e8a949f684 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+ nmi_cpu_backtrace.cold+0x24/0x18a lib/nmi_backtrace.c:111
+ nmi_trigger_cpumask_backtrace+0x333/0x3c0 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:148 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:220 [inline]
+ watchdog+0xc75/0xfc0 kernel/hung_task.c:377
+ kthread+0x2e8/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 PID: 3683 Comm: syz-executor291 Not tainted 6.1.0-rc5-syzkaller-00204-g08e8a949f684 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+RIP: 0010:ip_set_hostmask include/linux/netfilter/ipset/pfxlen.h:28 [inline]
+RIP: 0010:ip_set_range_to_cidr+0x4c/0x160 net/netfilter/ipset/pfxlen.c:178
+Code: 01 00 00 00 53 bb 00 00 00 80 48 83 ec 10 89 74 24 04 48 89 54 24 08 eb 25 e8 70 ed 67 f9 4c 89 e0 48 c1 e8 03 42 0f b6 04 30 <84> c0 74 08 3c 03 0f 8e dd 00 00 00 41 8b 1c 24 49 83 c4 10 e8 4b
+RSP: 0018:ffffc90003dcf008 EFLAGS: 00000a06
+RAX: 0000000000000000 RBX: 00000000fffc0000 RCX: 0000000000000000
+RDX: ffff8880783a57c0 RSI: ffffffff88182c10 RDI: 0000000000000001
+RBP: 000000000000000f R08: 0000000000000001 R09: 0000000000000020
+R10: 000000000000000f R11: 0000000000000000 R12: ffffffff8b638fb0
+R13: 000000001aff8de1 R14: dffffc0000000000 R15: 000000001afc0000
+FS:  0000555555f42300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000555555f422c0 CR3: 0000000077d7d000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ hash_net4_uadt+0x50c/0x9d0 net/netfilter/ipset/ip_set_hash_net.c:193
+ call_ad.constprop.0+0x101/0x760 net/netfilter/ipset/ip_set_core.c:1698
+ ip_set_ad.constprop.0.isra.0+0x4c7/0xac0 net/netfilter/ipset/ip_set_core.c:1787
+ nfnetlink_rcv_msg+0xbca/0x1430 net/netfilter/nfnetlink.c:301
+ netlink_rcv_skb+0x157/0x430 net/netlink/af_netlink.c:2540
+ nfnetlink_rcv+0x1b0/0x420 net/netfilter/nfnetlink.c:659
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ ____sys_sendmsg+0x712/0x8c0 net/socket.c:2482
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
+ __sys_sendmsg+0xf7/0x1c0 net/socket.c:2565
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f2298c5e0e9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc1c6fdb38 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000000f4240 RCX: 00007f2298c5e0e9
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000004
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000001 R11: 0000000000000246 R12: 000000000007689c
+R13: 00007ffc1c6fdb4c R14: 00007ffc1c6fdb60 R15: 00007ffc1c6fdb50
+ </TASK>
+INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 1.969 msecs
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
