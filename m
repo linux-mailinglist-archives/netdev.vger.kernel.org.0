@@ -2,117 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2160663A5E1
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 11:16:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CF8963A649
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 11:43:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbiK1KQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 05:16:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
+        id S230299AbiK1KnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 05:43:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbiK1KQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 05:16:28 -0500
-Received: from fritzc.com (mail.fritzc.com [IPv6:2a00:17d8:100::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E4A13E35;
-        Mon, 28 Nov 2022 02:16:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
-        s=dkim; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
-        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=JGFyuaNpearh4I2bkKpI3Yx2+bxxpkCL2JVRRmilW+M=; b=IEmONJxAPPyIdo+IxEmTA2iS8t
-        FNntZqbM6YxPJtgwAFsuhkxNjZsfCEoDiwYyXLkng/f+jLhWFk2wEUhc90F2uXeGLOOnkoFQUSrzi
-        qunS5i5HnqySi9KjBws1E3bIY8ahh/z7UlT51WccrgBb3jYlidt8rxs+SyrFDSjZFsyY=;
-Received: from 127.0.0.1
-        by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim latest)
-        (envelope-from <christoph.fritz@hexdev.de>)
-        id 1ozbBH-000ZNN-IW; Mon, 28 Nov 2022 11:16:11 +0100
-Date:   Mon, 28 Nov 2022 11:16:05 +0100
-From:   Christoph Fritz <christoph.fritz@hexdev.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Richard Weinberger <richard@nod.at>,
-        Andreas Lauser <andreas.lauser@mbition.io>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC][PATCH 0/2] LIN support for Linux
-Message-ID: <Y4SKZb9woV5XE1bU@mars>
-References: <20221127190244.888414-1-christoph.fritz@hexdev.de>
- <58a773bd-0db4-bade-f8a2-46e850df9b0b@hartkopp.net>
+        with ESMTP id S229971AbiK1KnP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 05:43:15 -0500
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Nov 2022 02:43:13 PST
+Received: from mail.rosalinux.ru (mail.rosalinux.ru [195.19.76.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7890DF1D;
+        Mon, 28 Nov 2022 02:43:13 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.rosalinux.ru (Postfix) with ESMTP id 5BDD218FF2A5;
+        Mon, 28 Nov 2022 13:26:51 +0300 (MSK)
+Received: from mail.rosalinux.ru ([127.0.0.1])
+        by localhost (mail.rosalinux.ru [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id RD-LcpDkVy8X; Mon, 28 Nov 2022 13:26:51 +0300 (MSK)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.rosalinux.ru (Postfix) with ESMTP id 251BC1C969EF;
+        Mon, 28 Nov 2022 13:26:51 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.rosalinux.ru 251BC1C969EF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rosalinux.ru;
+        s=1D4BB666-A0F1-11EB-A1A2-F53579C7F503; t=1669631211;
+        bh=DarpytoYn3kYclkB5n7ZONEDXs6eBEyuuiBCU4Eg+Lc=;
+        h=From:To:Date:Message-Id:MIME-Version;
+        b=k1BeX7vo4cVZMlrEiZ+3/Qvnlx2qHOxG0cAqETkanCDABZe49Qr77n8At8Fs6w70x
+         AJ4hhllONcOOrcdJR9V5F7s7va8jQhzyc4szZBAMGxakeEgwS6usg9Z+ClMG4m8l2T
+         W9cGblJHvO809Rcg2r3VuO8V4v7D3vLpcpGuxHY3upL2l8TwdcD+yRjQ6EQV5+J0Rb
+         o3EeXGsxiEB60q6xO59MRNXugFuX6VeQdcibXmA/HTzBLy77Ftxy5b48F2cPF4nV/7
+         PgqxQPfTlCipeYTnQrQmRaT1CML60b8uIyGVir6czYlo9Q6Ir1LpmgfBCK8b8KxjDm
+         beUkodERTZczg==
+X-Virus-Scanned: amavisd-new at rosalinux.ru
+Received: from mail.rosalinux.ru ([127.0.0.1])
+        by localhost (mail.rosalinux.ru [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 5O0AoDT4in66; Mon, 28 Nov 2022 13:26:50 +0300 (MSK)
+Received: from ubuntu.localdomain (unknown [144.206.93.23])
+        by mail.rosalinux.ru (Postfix) with ESMTPSA id 91C1618FF2A5;
+        Mon, 28 Nov 2022 13:26:50 +0300 (MSK)
+From:   Aleksandr Burakov <a.burakov@rosalinux.ru>
+To:     Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>
+Cc:     Aleksandr Burakov <a.burakov@rosalinux.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: [PATCH] liquidio: avoid NULL pointer dereference in lio_vf_rep_copy_packet()
+Date:   Mon, 28 Nov 2022 13:26:59 +0300
+Message-Id: <20221128102659.4946-1-a.burakov@rosalinux.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <58a773bd-0db4-bade-f8a2-46e850df9b0b@hartkopp.net>
-X-Spam_score: -1.0
-X-Spam_bar: -
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Oliver
+lio_vf_rep_copy_packet() passes pg_info->page to skb_add_rx_frag()
+that dereferences it without any check. So, it does not make sense
+to call skb_add_rx_frag() when pg_info->page is NULL to avoid an segfault=
+.
 
-> are you already aware of this LIN project that uses the Linux SocketCAN
-> infrastructure and implements the LIN protocol based on a serial tty
-> adaption (which the serial LIN protocol mainly is)?
-> 
-> https://github.com/lin-bus
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Sure, that's why I initially added Pavel Pisa to the recipients of this
-RFC patch series. When there is an internal kernel API for LIN, his
-sllin (tty-line-discipline driver for LIN) could be adjusted and finally
-go mainline.
+Signed-off-by: Aleksandr Burakov <a.burakov@rosalinux.ru>
+Fixes: 1f233f327913 ("liquidio: switchdev support for LiquidIO NIC")
+---
+ drivers/net/ethernet/cavium/liquidio/lio_vf_rep.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-Adding LIN only as a tty-line-discipline does not fit all the currently
-available hardware. Another argument against a tty-line-discipline only
-approach as a LIN-API is, that there is no off the shelf standard
-computer UART with LIN-break-detection (necessary to meet timing
-constraints), so it always needs specially crafted hardware like USB
-adapters or PCIe-cards.
-
-For the handful of specialized embedded UARTs with LIN-break-detection I
-guess it could make more sense to go the RS485-kind-of-path and
-integrate LIN support into the tty-driver while not using a
-tty-line-discipline there at all.
-
-> IIRC the implementation of the master/slave timings was the biggest
-
-Currently sllin only supports master mode, I guess because of the tight
-timing constraints.
-
-> challenge and your approach seems to offload this problem to your
-> USB-attached hardware right?
-
-The hexLIN USB adapter processes slave mode answer table on its own,
-just to meet timing constraints.  For master mode, it is currently not
-offloaded (but could be if really necessary).
-
-The amount of offloading (if any at all) is totally up to the device and
-its device-driver (the entity actually processing data). So sllin does
-not do offloading but can only work in relaxed timing constrained
-environments.
-An UART with built in LIN-break-detection (there are a few) might be
-able to fully meet timing constraints without offloading (as well as
-e.g. a PCIe card).
-
-> Can I assume there will be a similar CAN-controlled programming interface to
-> create real time master/slave protocol frames like in a usual CAN/LIN
-> adapter (e.g. https://www.peak-system.com/PCAN-LIN.213.0.html) ??
-
-I already did some tests letting hexLIN and PCAN talk to each other in a
-real time manner. Please see my preliminary PDF docu at
-https://hexdev.de/hexlin/
-
-Thanks
- -- Christoph
+diff --git a/drivers/net/ethernet/cavium/liquidio/lio_vf_rep.c b/drivers/=
+net/ethernet/cavium/liquidio/lio_vf_rep.c
+index 600de587d7a9..e70b9ccca380 100644
+--- a/drivers/net/ethernet/cavium/liquidio/lio_vf_rep.c
++++ b/drivers/net/ethernet/cavium/liquidio/lio_vf_rep.c
+@@ -272,13 +272,12 @@ lio_vf_rep_copy_packet(struct octeon_device *oct,
+ 				pg_info->page_offset;
+ 			memcpy(skb->data, va, MIN_SKB_SIZE);
+ 			skb_put(skb, MIN_SKB_SIZE);
++			skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++					pg_info->page,
++					pg_info->page_offset + MIN_SKB_SIZE,
++					len - MIN_SKB_SIZE,
++					LIO_RXBUFFER_SZ);
+ 		}
+-
+-		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+-				pg_info->page,
+-				pg_info->page_offset + MIN_SKB_SIZE,
+-				len - MIN_SKB_SIZE,
+-				LIO_RXBUFFER_SZ);
+ 	} else {
+ 		struct octeon_skb_page_info *pg_info =3D
+ 			((struct octeon_skb_page_info *)(skb->cb));
+--=20
+2.25.1
