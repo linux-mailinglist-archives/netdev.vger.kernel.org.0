@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EE7E63A7B3
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6A163A7D4
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231223AbiK1MCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 07:02:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
+        id S231420AbiK1MCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 07:02:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231517AbiK1MAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:48 -0500
+        with ESMTP id S231543AbiK1MAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:52 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5C41A222
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A14218E2C
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:50 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoQ-0005HX-VO; Mon, 28 Nov 2022 13:00:39 +0100
+        id 1ozcoU-0005Mc-1I; Mon, 28 Nov 2022 13:00:42 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoP-000oAy-AG; Mon, 28 Nov 2022 13:00:38 +0100
+        id 1ozcoS-000oBr-CU; Mon, 28 Nov 2022 13:00:41 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoO-00H6Q3-86; Mon, 28 Nov 2022 13:00:36 +0100
+        id 1ozcoO-00H6QS-BE; Mon, 28 Nov 2022 13:00:36 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH v1 16/26] net: dsa: microchip: ksz8_r_dyn_mac_table(): use ret instead of rc
-Date:   Mon, 28 Nov 2022 13:00:24 +0100
-Message-Id: <20221128120034.4075562-17-o.rempel@pengutronix.de>
+Subject: [PATCH v1 17/26] net: dsa: microchip: ksz8_r_dyn_mac_table(): ksz: do not return EAGAIN on timeout
+Date:   Mon, 28 Nov 2022 13:00:25 +0100
+Message-Id: <20221128120034.4075562-18-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221128120034.4075562-1-o.rempel@pengutronix.de>
 References: <20221128120034.4075562-1-o.rempel@pengutronix.de>
@@ -60,57 +60,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Other parts of this file use ret. So, unify it.
+EAGAIN was not used by previous code and not used by  current code. So,
+remove it and use proper error value.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8795.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 2674fd553851..1677f61b138a 100644
+index 1677f61b138a..1b067e0cacd5 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -405,7 +405,7 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
- 	u64 buf = 0;
- 	u8 data;
- 	int cnt;
--	int rc;
-+	int ret;
+@@ -382,7 +382,7 @@ static int ksz8_valid_dyn_entry(struct ksz_device *dev, u8 *data)
  
- 	shifts = dev->info->shifts;
- 	masks = dev->info->masks;
-@@ -416,12 +416,12 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
- 	mutex_lock(&dev->alu_mutex);
+ 	/* Entry is not ready for accessing. */
+ 	if (*data & masks[DYNAMIC_MAC_TABLE_NOT_READY]) {
+-		return -EAGAIN;
++		return -ETIMEDOUT;
+ 	/* Entry is ready for accessing. */
+ 	} else {
+ 		ksz_read8(dev, regs[REG_IND_DATA_8], data);
+@@ -417,15 +417,14 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
  	ksz_write16(dev, regs[REG_IND_CTRL_0], ctrl_addr);
  
--	rc = ksz8_valid_dyn_entry(dev, &data);
--	if (rc == -EAGAIN) {
-+	ret = ksz8_valid_dyn_entry(dev, &data);
-+	if (ret == -EAGAIN) {
- 		if (addr == 0)
- 			*entries = 0;
- 		goto unlock_alu;
--	} else if (rc == -ENXIO) {
-+	} else if (ret == -ENXIO) {
+ 	ret = ksz8_valid_dyn_entry(dev, &data);
+-	if (ret == -EAGAIN) {
+-		if (addr == 0)
+-			*entries = 0;
+-		goto unlock_alu;
+-	} else if (ret == -ENXIO) {
++	if (ret == -ENXIO) {
  		*entries = 0;
  		goto unlock_alu;
  	}
-@@ -447,12 +447,12 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
  
- 	mac_addr[1] = (u8)data_hi;
- 	mac_addr[0] = (u8)(data_hi >> 8);
--	rc = 0;
-+	ret = 0;
- 
- unlock_alu:
- 	mutex_unlock(&dev->alu_mutex);
- 
--	return rc;
-+	return ret;
- }
- 
- int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
++	if (ret)
++		goto unlock_alu;
++
+ 	ksz_read64(dev, regs[REG_IND_DATA_HI], &buf);
+ 	data_hi = (u32)(buf >> 32);
+ 	data_lo = (u32)buf;
 -- 
 2.30.2
 
