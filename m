@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 944BA63AFD8
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:46:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB1363AFFD
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:48:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233582AbiK1RqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 12:46:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
+        id S233578AbiK1RsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 12:48:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233540AbiK1Rpo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:45:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D1E2CE17;
-        Mon, 28 Nov 2022 09:41:21 -0800 (PST)
+        with ESMTP id S233155AbiK1Rqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:46:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11FF2D751;
+        Mon, 28 Nov 2022 09:41:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3D0AB80E9F;
-        Mon, 28 Nov 2022 17:41:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7113FC43148;
-        Mon, 28 Nov 2022 17:41:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2DD561307;
+        Mon, 28 Nov 2022 17:41:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B73F7C433D7;
+        Mon, 28 Nov 2022 17:41:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669657278;
-        bh=xcTAaAZ8vGEWaRJppBzJCoGpeZG0IL4L9Rdnd8i+H3g=;
+        s=k20201202; t=1669657303;
+        bh=incXVb5OeDnPjf8v58URtG3XXnk0WJCxSIRPnAveTqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GhwEv22KN23VVA/Qi0HViNyg8NAhZWO2rkGfgzIaRtEWNlU2Vnu5sZqNvbYu/BBDy
-         OB/pwfhKnw9PVJleu9LLz9WVA61RYBvi0bL51HUdEQgxYiZAWiKbH8kzenZMouNAdc
-         UiISgceEPvFv6G94R0K4w1ckh+uhBAiPyklK/t/KWh3fRpeYMK5zqEfWXBTjb7z1qO
-         XWbVgsIVLaXJRzR+5qAoUwk6/HIYRWugOpMJI+qHnaQRSI6VZ7f/TOIoXkSgyCoZAw
-         k6d2fgWBEJPsT2Pb0jZfxZnzUp+njxaxT3uXKkoq3oCKbJx0PinO8Nzh5zNf4eztF8
-         e50i5Sg41x5Uw==
+        b=ffkTQpM4l7cVRuA+1gwr9mj4hYz+5pLtLiMaIVHWigoAJcadnGH6jNmPp2g1ou8wI
+         fTntwdZEnzp4FG89jNrs75SCXtBzDhadbRqvHh+0ad2e1ls6Cgn6qcQQir6QPVQTqJ
+         l+UgZaZMc9dysw8KZjms3tF8WYXIA9FKwuX72aLqSg+3pYLxtp94I9G9UrITSbqyUg
+         CtZW1bd5XN/AoAJ281ij29VaT7+ty0yQVCLjcuXYa0eWRv6UJFRGJ20rKNdAQvOjVV
+         jxZfrFlEdrn/OqB2uk6mW11aAY53B6Z8QE49Io0HEpQazNEPZRg8vpbdAMuIql0eIH
+         Jlg3H5eyq00zw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Davide Tronchin <davide.tronchin.94@gmail.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 24/24] net: usb: qmi_wwan: add u-blox 0x1342 composition
-Date:   Mon, 28 Nov 2022 12:40:24 -0500
-Message-Id: <20221128174027.1441921-24-sashal@kernel.org>
+Cc:     GUO Zihua <guozihua@huawei.com>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Sasha Levin <sashal@kernel.org>, ericvh@gmail.com,
+        lucho@ionkov.net, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 10/19] 9p/fd: Use P9_HDRSZ for header size
+Date:   Mon, 28 Nov 2022 12:41:10 -0500
+Message-Id: <20221128174120.1442235-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221128174027.1441921-1-sashal@kernel.org>
-References: <20221128174027.1441921-1-sashal@kernel.org>
+In-Reply-To: <20221128174120.1442235-1-sashal@kernel.org>
+References: <20221128174120.1442235-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,48 +59,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Davide Tronchin <davide.tronchin.94@gmail.com>
+From: GUO Zihua <guozihua@huawei.com>
 
-[ Upstream commit a487069e11b6527373f7c6f435d8998051d0b5d9 ]
+[ Upstream commit 6854fadbeee10891ed74246bdc05031906b6c8cf ]
 
-Add RmNet support for LARA-L6.
+Cleanup hardcoded header sizes to use P9_HDRSZ instead of '7'
 
-LARA-L6 module can be configured (by AT interface) in three different
-USB modes:
-* Default mode (Vendor ID: 0x1546 Product ID: 0x1341) with 4 serial
-interfaces
-* RmNet mode (Vendor ID: 0x1546 Product ID: 0x1342) with 4 serial
-interfaces and 1 RmNet virtual network interface
-* CDC-ECM mode (Vendor ID: 0x1546 Product ID: 0x1343) with 4 serial
-interface and 1 CDC-ECM virtual network interface
-
-In RmNet mode LARA-L6 exposes the following interfaces:
-If 0: Diagnostic
-If 1: AT parser
-If 2: AT parser
-If 3: AT parset/alternative functions
-If 4: RMNET interface
-
-Signed-off-by: Davide Tronchin <davide.tronchin.94@gmail.com>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lkml.kernel.org/r/20221117091159.31533-4-guozihua@huawei.com
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+[Dominique: commit message adjusted to make sense after offset size
+adjustment got removed]
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/9p/trans_fd.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 6bf5c75f519d..bb31eca28d6c 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1412,6 +1412,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
- 	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM support*/
- 	{QMI_FIXED_INTF(0x2692, 0x9025, 4)},    /* Cellient MPL200 (rebranded Qualcomm 05c6:9025) */
-+	{QMI_QUIRK_SET_DTR(0x1546, 0x1342, 4)},	/* u-blox LARA-L6 */
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index fec6c800c898..4fccefb50a7d 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -118,7 +118,7 @@ struct p9_conn {
+ 	struct list_head unsent_req_list;
+ 	struct p9_req_t *rreq;
+ 	struct p9_req_t *wreq;
+-	char tmp_buf[7];
++	char tmp_buf[P9_HDRSZ];
+ 	struct p9_fcall rc;
+ 	int wpos;
+ 	int wsize;
+@@ -289,7 +289,7 @@ static void p9_read_work(struct work_struct *work)
+ 	if (!m->rc.sdata) {
+ 		m->rc.sdata = m->tmp_buf;
+ 		m->rc.offset = 0;
+-		m->rc.capacity = 7; /* start by reading header */
++		m->rc.capacity = P9_HDRSZ; /* start by reading header */
+ 	}
  
- 	/* 4. Gobi 1000 devices */
- 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
+ 	clear_bit(Rpending, &m->wsched);
+@@ -312,7 +312,7 @@ static void p9_read_work(struct work_struct *work)
+ 		p9_debug(P9_DEBUG_TRANS, "got new header\n");
+ 
+ 		/* Header size */
+-		m->rc.size = 7;
++		m->rc.size = P9_HDRSZ;
+ 		err = p9_parse_header(&m->rc, &m->rc.size, NULL, NULL, 0);
+ 		if (err) {
+ 			p9_debug(P9_DEBUG_ERROR,
 -- 
 2.35.1
 
