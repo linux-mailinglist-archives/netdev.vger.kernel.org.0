@@ -2,104 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D35B63B473
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 22:48:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A158863B488
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 22:55:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234308AbiK1Vsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 16:48:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
+        id S233860AbiK1VzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 16:55:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234149AbiK1Vsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 16:48:38 -0500
-Received: from fritzc.com (mail.fritzc.com [IPv6:2a00:17d8:100::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8AF92F391;
-        Mon, 28 Nov 2022 13:48:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
-        s=dkim; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
-        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=LYB25Fvn7CGwTHKU/acIvDCx4DwFl3MWCqKj8wShNt4=; b=pQdNiJ/spdN4Pd+sUAsg/yCloS
-        JrK1bF6nV4L6s3xSW7/B9R51576cN4zE/KAAGmJ7hPFGZetTJJwH+nvj9W2HoZd5RaNXy92TEEGBR
-        j+FQmjcZPuSDrz0NzRIlX/UhJIoZ2aFphVeXMiwV+LHTbqhqJZdlHNJs6lQhSh8jIryg=;
-Received: from 127.0.0.1
-        by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim latest)
-        (envelope-from <christoph.fritz@hexdev.de>)
-        id 1ozlyz-000cJ6-JF; Mon, 28 Nov 2022 22:48:10 +0100
-Date:   Mon, 28 Nov 2022 22:48:07 +0100
-From:   Christoph Fritz <christoph.fritz@hexdev.de>
-To:     Ryan Edwards <ryan.edwards@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Andreas Lauser <andreas.lauser@mbition.io>,
-        Richard Weinberger <richard@nod.at>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC][PATCH 0/2] LIN support for Linux
-Message-ID: <Y4UslxhfRPVGXzS/@mars>
-References: <20221127190244.888414-1-christoph.fritz@hexdev.de>
- <202211281549.47092.pisa@cmp.felk.cvut.cz>
- <CAEVdEgBWVgVFF2utm4w5W0_trYYJQVeKrcGN+T0yJ1Qa615bcQ@mail.gmail.com>
- <202211281852.30067.pisa@cmp.felk.cvut.cz>
- <CAEVdEgBtikDjQ-cVOq-MkoS_0q_hGJRVSS=9L=htHhh7YvSUgA@mail.gmail.com>
+        with ESMTP id S232280AbiK1VzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 16:55:17 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7150A2C646
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 13:55:16 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id o5-20020a17090a678500b00218cd5a21c9so11459890pjj.4
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 13:55:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=nFnq7S59RvAf9bn6VMcv33Zg5Tx9QlFPyh/eu90+/lE=;
+        b=a0aJ8qvXTborh1V67PE27J3eNNxykmZPHSYjLt3kdwyaSwKGzMeoTlPGEwM9CIRroF
+         J3MsznxRKvSapsKnCUDV8qLM17mGjmDYevjMS1uWKuvrA3pdKOJQCYsA8aDGb3/8n4Tz
+         REJWEOSvJ+9j9w9yiyaLdnJEQg3xIborW3+wfnq39cGy78TNlzPAjRfD3V9oUttctwRs
+         xso6EnH0zmX9CBPQue+ppJ6Ap8yIgWGFNjvCCiP8bTPI99BlvyXqemyN2lSb8ah+DskT
+         jH+gFSIqwwNLXfz8bQGsThktSxI2R43O9UMOyxqmvvi/tS27fkQ9Ced9mAQM+etjP+Wg
+         gJXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nFnq7S59RvAf9bn6VMcv33Zg5Tx9QlFPyh/eu90+/lE=;
+        b=i9lg62aAs0hh4jtzZKbL1Linj/b4600pm03svWeLO6R90uRucYTjvAQsQDZGvgJyE4
+         hkJ2OizWvuKPTC4YFjg76oKLfGeiIVrwx39UPUDS7C2rVMM8OYb9YBFwE13nG33W/59v
+         IorWY1pCsl5r8I4tgPATBt3Ab5HDJbIPexx5+dIckZnkJbfhyy3aAIYphMm6a2PXPAlT
+         MgI6RC3XMsPorB3QxD/5o75Y8zorMaM7C4zvhj2YnL01OX4hfhzRLS+gHLI/mZ4H9Zws
+         KsP9dDxenNZ6txrOoQxfBZH/2HLqQq/Y+ItsVPZHsyxwO8J4+zj/jfOoiybaJw+edG7v
+         lLWw==
+X-Gm-Message-State: ANoB5pkrEL6GpmbGDWiLAU20iYDWAmn5K44CnFnBtjyJmrQCd6Zc2h3U
+        K7VDayOcCKbR1VvmDEW4UdBKf8wKdRL0ckyi2BO63A==
+X-Google-Smtp-Source: AA0mqf7uGzelzNgC1aauEvGPyqbPQTw7kQZX1IqZnMh2ssjInwBuX1wbBhjOUUrfkM+Pp1RSw6rMnSR79BoWvQuoqqY=
+X-Received: by 2002:a17:902:ef44:b0:189:6793:644f with SMTP id
+ e4-20020a170902ef4400b001896793644fmr17984656plx.38.1669672515651; Mon, 28
+ Nov 2022 13:55:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAEVdEgBtikDjQ-cVOq-MkoS_0q_hGJRVSS=9L=htHhh7YvSUgA@mail.gmail.com>
-X-Spam_score: -1.0
-X-Spam_bar: -
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20221121100521.56601-1-xiangxia.m.yue@gmail.com>
+ <20221121100521.56601-2-xiangxia.m.yue@gmail.com> <7ed2f531-79a3-61fe-f1c2-b004b752c3f7@huawei.com>
+ <CAMDZJNUiPOcnpNg8tM4xCoJABJz_3=AaXLTm5ofQg64mGDkB_A@mail.gmail.com>
+ <9278cf3f-dfb6-78eb-8862-553545dac7ed@huawei.com> <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
+ <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com>
+ <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com> <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
+In-Reply-To: <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Mon, 28 Nov 2022 13:55:04 -0800
+Message-ID: <CA+khW7jgsyFgBqU7hCzZiSSANE7f=A+M-0XbcKApz6Nr-ZnZDg@mail.gmail.com>
+Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Hou Tao <houtao1@huawei.com>, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for all the participation and feedback. Here is my attempt at a
-summary of what we have discussed so far:
+On Sun, Nov 27, 2022 at 7:15 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+>
 
-- Common goal: A solid LIN UAPI and API
-  - LIN fits CAN well and could be embedded into Linux CAN infrastructure
-  - LIN support cannot be a tty-line-discipline driver for all devices
-    out there
+Hi Tonghao,
 
-  - slLIN should become a user of this API
-    - slLIN itself needs some more options in the line-discipline
-      configuraion (to tweak UART FIFO settings and e.g. enable
-      LIN-break-detection for supported UARTs) _or_ tty-LIN support
-      becomes something more like RS485 and get integrated into
-      tty-drivers directly.
+With a quick look at the htab_lock_bucket() and your problem
+statement, I agree with Hou Tao that using hash &
+min(HASHTAB_MAP_LOCK_MASK, n_bucket - 1) to index in map_locked seems
+to fix the potential deadlock. Can you actually send your changes as
+v2 so we can take a look and better help you? Also, can you explain
+your solution in your commit message? Right now, your commit message
+has only a problem statement and is not very clear. Please include
+more details on what you do to fix the issue.
 
-  - LIN devices with off loading capabilities are a bit special.
-    - one approach is to have a kfifo for the slavetable (64 entries a 8
-      bytes + checksum and some extra flags for some LIN special cases)
-      while updating it from userland through CAN or a simple sysfs
-      interface
-    - when we agree that "dumb" UARTs have no need for an
-      in-kernel-off-load slavetable (because of RT-Linux), then there
-      are only devices left (e.g. some USB adapters) maintaining their
-      own table, so a simple e.g. sysfs update mechanism would be
-      enough (without the need for an in-kernel kfifo buffer).
+Hao
 
-  - LIN slavetable might need another name
-
-  - LIN needs rx, tx, set bitrate, set checksum variant and maybe update
-    a slavetable (or whatever it is called then...)
-
-What do you think? Any objections, corrections, enhancements?
-
-My question is: Which approach of an API is favored: Patch 1 or 2 of
-this RFC series or something completely different?
-
-Thanks
-  -- Christoph
+> Hi
+> only a warning from lockdep.
+> 1. the kernel .config
+> #
+> # Debug Oops, Lockups and Hangs
+> #
+> CONFIG_PANIC_ON_OOPS=y
+> CONFIG_PANIC_ON_OOPS_VALUE=1
+> CONFIG_PANIC_TIMEOUT=0
+> CONFIG_LOCKUP_DETECTOR=y
+> CONFIG_SOFTLOCKUP_DETECTOR=y
+> # CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
+> CONFIG_HARDLOCKUP_DETECTOR_PERF=y
+> CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
+> CONFIG_HARDLOCKUP_DETECTOR=y
+> CONFIG_BOOTPARAM_HARDLOCKUP_PANIC=y
+> CONFIG_DETECT_HUNG_TASK=y
+> CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=120
+> # CONFIG_BOOTPARAM_HUNG_TASK_PANIC is not set
+> # CONFIG_WQ_WATCHDOG is not set
+> # CONFIG_TEST_LOCKUP is not set
+> # end of Debug Oops, Lockups and Hangs
+>
+> 2. bpf.c, the map size is 2.
+> struct {
+> __uint(type, BPF_MAP_TYPE_HASH);
+> __uint(max_entries, 2);
+> __uint(key_size, sizeof(unsigned int));
+> __uint(value_size, sizeof(unsigned int));
+> } map1 SEC(".maps");
+>
+> static int bpf_update_data()
+> {
+> unsigned int val = 1, key = 0;
+>
+> return bpf_map_update_elem(&map1, &key, &val, BPF_ANY);
+> }
+>
+> SEC("kprobe/ip_rcv")
+> int bpf_prog1(struct pt_regs *regs)
+> {
+> bpf_update_data();
+> return 0;
+> }
+>
+> SEC("tracepoint/nmi/nmi_handler")
+> int bpf_prog2(struct pt_regs *regs)
+> {
+> bpf_update_data();
+> return 0;
+> }
+>
+> char _license[] SEC("license") = "GPL";
+> unsigned int _version SEC("version") = LINUX_VERSION_CODE;
+>
+> 3. bpf loader.
+> #include "kprobe-example.skel.h"
+>
+> #include <unistd.h>
+> #include <errno.h>
+>
+> #include <bpf/bpf.h>
+>
+> int main()
+> {
+> struct kprobe_example *skel;
+> int map_fd, prog_fd;
+> int i;
+> int err = 0;
+>
+> skel = kprobe_example__open_and_load();
+> if (!skel)
+> return -1;
+>
+> err = kprobe_example__attach(skel);
+> if (err)
+> goto cleanup;
+>
+> /* all libbpf APIs are usable */
+> prog_fd = bpf_program__fd(skel->progs.bpf_prog1);
+> map_fd = bpf_map__fd(skel->maps.map1);
+>
+> printf("map_fd: %d\n", map_fd);
+>
+> unsigned int val = 0, key = 0;
+>
+> while (1) {
+> bpf_map_delete_elem(map_fd, &key);
+> bpf_map_update_elem(map_fd, &key, &val, BPF_ANY);
+> }
+>
+> cleanup:
+> kprobe_example__destroy(skel);
+> return err;
+> }
+>
+> 4. run the bpf loader and perf record for nmi interrupts.  the warming occurs
+>
+> --
+> Best regards, Tonghao
