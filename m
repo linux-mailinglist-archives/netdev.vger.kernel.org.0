@@ -2,210 +2,371 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A704763A096
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 05:27:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4685263A09E
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 05:33:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbiK1E1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 23:27:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60018 "EHLO
+        id S229611AbiK1Eds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 23:33:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiK1E1d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 23:27:33 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D83237
-        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 20:27:30 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id b73so11874444yba.4
-        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 20:27:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=cfr7pc/eOt9k35NkvADhjaZQkinzLe0alHxjMy7DV1c=;
-        b=SwzD3Sf+UZWdabl345ZPkTmTrtO8b5nO883y1Y00cKVBveeRTrrHMPm81e+yGRHWk2
-         Hk1SqX+a4DD7hsAKIkMfsV0P8+vbttptM7XffnCnJFVI+Y0TdE14gmXSblaIvwl0Wwpr
-         KqzUadhrmU3yEJpf83j6OvW5i1NCXiafLBzfM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=cfr7pc/eOt9k35NkvADhjaZQkinzLe0alHxjMy7DV1c=;
-        b=67L3iH4OGcZBgRbcWi5QDU1YXoAYANLplef2+QkKBAjFpvxW7ThAgw3/27y7Lu0GZ+
-         FhYMkqDqwlyE3tSBgDbpp9yCx4j1YUOzFfHZ7+OSGUMAbkOOJ8e4GbbHduh+yGmAlriD
-         MiFPSE8ldGnUoedrQdJkjR4gKQ9mrxo5h3+vQ3o8vDK3BQ17nazdaV/oOvjogACdBn0r
-         OJ0sAphEXXyW27EvBGTc+KESmfuI2Wfu7nMjQR63Idk8eN+aIydEq87aVX+znRdjEwqv
-         hgP6u4CWWKq0km4Ihd6ER3BhQRCwVulfdLKiUbcLgaHKDNsq81uMT+YUPjlvU/Nw4bzC
-         WnwQ==
-X-Gm-Message-State: ANoB5pkJh8dB2zCxH/hMIBSVlcBtYL2rqvlA5Y8wej+LzoJPQFr+Nw7X
-        uucIvHfZ1ugTVe27+/zNfC39twQsdw7eTkrI34pEGQ==
-X-Google-Smtp-Source: AA0mqf59XMMMqkBWO5nHeMbYxZUC46G9klb7UZK5FyAbdczsaT+ZptSo3fPojjXk/O7e9XaQASx0nsKSOxhyXi7P3nk=
-X-Received: by 2002:a25:9e8a:0:b0:6cc:54cb:71ff with SMTP id
- p10-20020a259e8a000000b006cc54cb71ffmr46817941ybq.339.1669609649937; Sun, 27
- Nov 2022 20:27:29 -0800 (PST)
+        with ESMTP id S229504AbiK1Edq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 23:33:46 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13AE6376;
+        Sun, 27 Nov 2022 20:33:42 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VVnfHB4_1669610019;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VVnfHB4_1669610019)
+          by smtp.aliyun-inc.com;
+          Mon, 28 Nov 2022 12:33:40 +0800
+Date:   Mon, 28 Nov 2022 12:33:36 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Alexandra Winter <wintera@linux.ibm.com>,
+        Jan Karcher <jaka@linux.ibm.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>
+Subject: Re: [PATCH net] net/smc: Fix expected buffersizes and sync logic
+Message-ID: <Y4Q6IKPF4qw4EDBd@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20221123104907.14624-1-jaka@linux.ibm.com>
+ <Y34JxFWBdUxvLQb4@TonyMac-Alibaba>
+ <40428548-59b9-379c-857c-172db92afc0c@linux.ibm.com>
+ <Y34i8nmJIeIiFuOP@TonyMac-Alibaba>
+ <f5237afd-d57b-f317-4263-31b4bb3d0d17@linux.ibm.com>
+ <1a36b6ba-e7bb-6f2a-c460-cf158cb64b1d@linux.ibm.com>
+ <a6e57be8-48e3-acf7-8474-fc9b81cd6615@linux.ibm.com>
+ <Y4BpNfg7yxRiYQuU@TonyMac-Alibaba>
+ <7e0baa06-74e3-e00a-861a-afa8fe1fbdff@linux.ibm.com>
 MIME-Version: 1.0
-References: <7779439b2678fffe7d3e4e0d94bbb1b1eb850f5e.1669565797.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <7779439b2678fffe7d3e4e0d94bbb1b1eb850f5e.1669565797.git.christophe.jaillet@wanadoo.fr>
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Mon, 28 Nov 2022 09:57:18 +0530
-Message-ID: <CALs4sv1x5kqHVu=q=kifSPXc=yhobowRvQhjkhG-3UwW2ZzbPg@mail.gmail.com>
-Subject: Re: [PATCH] net/mlx5e: Remove unneeded io-mapping.h #include
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001f583c05ee804a20"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7e0baa06-74e3-e00a-861a-afa8fe1fbdff@linux.ibm.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001f583c05ee804a20
-Content-Type: text/plain; charset="UTF-8"
+On Fri, Nov 25, 2022 at 11:59:46AM +0100, Alexandra Winter wrote:
+> 
+> 
+> On 25.11.22 08:05, Tony Lu wrote:
+> > On Fri, Nov 25, 2022 at 07:15:33AM +0100, Jan Karcher wrote:
+> >>
+> >>
+> >> On 24/11/2022 15:07, Alexandra Winter wrote:
+> >>>
+> >>>
+> >>> On 24.11.22 14:00, Alexandra Winter wrote:
+> >>>>
+> >>>>
+> >> [ ... ]>>>>> On Wed, Nov 23, 2022 at 11:49:07AM +0100, Jan Karcher wrote:
+> >>>>>>>> The fixed commit changed the expected behavior of buffersizes
+> >>>>>>>> set by the user using the setsockopt mechanism.
+> >>>>>>>> Before the fixed patch the logic for determining the buffersizes used
+> >>>>>>>> was the following:
+> >>>>>>>>
+> >>>>>>>> default  = net.ipv4.tcp_{w|r}mem[1]
+> >>> Jan, you explained to me: "the minima is 16Kib. This is enforced in smc_compress_bufsize
+> >>> which would move any value <= 16Kib into bucket 0 - which is 16KiB "
+> >>> net.ipv4.tcp_wmem[1] defaults to 8Kib. So in the default case (unchanged net.ipv4.tcp_wmem[1])
+> >>> the default for the send path is not net.ipv4.tcp_wmem[1]. Should be clarified here.
+> >>
+> >> The default value is still set to the net.ipv4.tcp_{w|r}mem[1]. This is a
+> >> *very* top level overview about what is happening and *not* a documentation.
+> >> I don't really want to explain the full code flow here.
+> >>
+> >> What we still should do - as Tony aggreed on - is documenting the SMC
+> >> behavior. This is a follow up on my list.
+> > 
+> > Hello Jan and Alexandra,
+> > 
+> > It looks like the misalignment of information is causing some trouble,
+> > which is introduced by my patch. Maybe we could have an off-maillist and
+> > online meeting to discussion?
+> > 
+> > We have some progress updates of scalability, and we are really like the
+> > extension of SMC-D. Also we have some ideas for SMC, in case of
+> > misalignment of information, we'd like to put them on the table and
+> > discuss them earlier. Maybe an online meeting is an efficient way. What
+> > do you think?
+> > 
+> > If possible, I would prepared the meetings and topics and send them to
+> > everyone first.
+> > 
+> > Cheers,
+> > Tony Lu
+> > 
+> 
+> Thanks a lot for your constructive proposals Tony. Yes, we should have a discussion off-mailinglist
+> about future topics.
 
-On Sun, Nov 27, 2022 at 9:47 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> The mlx5 net files don't use io_mapping functionalities. So there is no
-> point in including <linux/io-mapping.h>.
-> Remove it.
->
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/cmd.c  | 1 -
->  drivers/net/ethernet/mellanox/mlx5/core/main.c | 1 -
->  drivers/net/ethernet/mellanox/mlx5/core/uar.c  | 1 -
->  3 files changed, 3 deletions(-)
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-> index 74bd05e5dda2..597907fd63f5 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-> @@ -37,7 +37,6 @@
->  #include <linux/slab.h>
->  #include <linux/delay.h>
->  #include <linux/random.h>
-> -#include <linux/io-mapping.h>
->  #include <linux/mlx5/driver.h>
->  #include <linux/mlx5/eq.h>
->  #include <linux/debugfs.h>
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> index 70e8dc305bec..25e87e5d9270 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> @@ -37,7 +37,6 @@
->  #include <linux/pci.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/slab.h>
-> -#include <linux/io-mapping.h>
->  #include <linux/interrupt.h>
->  #include <linux/delay.h>
->  #include <linux/mlx5/driver.h>
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/uar.c b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
-> index 8455e79bc44a..1513112ecec8 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/uar.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
-> @@ -31,7 +31,6 @@
->   */
->
->  #include <linux/kernel.h>
-> -#include <linux/io-mapping.h>
->  #include <linux/mlx5/driver.h>
->  #include "mlx5_core.h"
->
-> --
-> 2.34.1
->
+I will prepare the discussion off-maillinglist ASAP. The email will be
+sent out when it's ready. And Jan, What about your opinion?
 
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Cheers,
+Tony Lu
 
---0000000000001f583c05ee804a20
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKv/x47NItwPlwgIsE0KKXI1tb3y5qpU
-brO4wpgqn7h7MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEy
-ODA0MjczMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCN6JV+ulzreKGAotqvQRu287Lc1aLKtN12oNXANxsN7E4A4ftY
-ADz9dn5kYNrMhdt5ba0RdO5jBmsYNsx977zHLytsL3YyO0hko8GHFVfl71PYF1Bf80sOUHgSSmDa
-f8vNxnyE8fdoLxbVsE54JNhAtmjhPElf5dqi/1vm65b/HMo2lbX6aGPARbjgqx5hgsam4g+lS9or
-DMiII3drT2z+nw0Zqun4UDV4/nf/1mcrt3EdoAPEJZTKeE8WZ8xl+keo2e3T75zMXrT+y0XC+GzA
-aFQJ0ZRkPgDlcY/7kDN2CCeJDmoh2sHOhxteNB4nP/dkRzRFxkZfZzqfLRPjIu7G
---0000000000001f583c05ee804a20--
+> 
+> My remaining concern for this fix is the default values (user does not use setsockopt, nor 
+> changes the new sysfs parameters, nor changes tcp defaults):
+> >>>> before 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
+> 	    send: 16k recv: 64k
+> >>>> after net/smc: Fix expected buffersizes and sync logic   (this patch)
+> >>>>       send: 16k recv: 128k
+> 
+> @Jan, as this is the only patch you want to send to net, please change the default size of
+> the receive buffers back to 64k (I don't care how).
+> 
+> 
+> >>
+> >>>>>>>> sockopt  = the setsockopt mechanism
+> >>>>>>>> val      = the value assigned in default or via setsockopt
+> >>>>>>>> sk_buf   = short for sk_{snd|rcv}buf
+> >>>>>>>> real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
+> >>>>>>>>
+> >>>>>>>>     exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
+> >>>>>>>>               |                  |                |
+> >>>>>>>> +---------+ |                  | +------------+ | +-------------------+
+> >>>>>>>> | default |----------------------| sk_buf=val |---| real_buf=sk_buf/2 |
+> >>>>>>>> +---------+ |                  | +------------+ | +-------------------+
+> >>>>>>>>               |                  |                |    ^
+> >>>>>>>>               |                  |                |    |
+> >>>>>>>> +---------+ | +--------------+ |                |    |
+> >>>>>>>> | sockopt |---| sk_buf=val*2 |-----------------------|
+> >>>>>>>> +---------+ | +--------------+ |                |
+> >>>>>>>>               |                  |                |
+> >>>>>>>>
+> >>>>>>>> The fixed patch introduced a dedicated sysctl for smc
+> >>>>>>>> and removed the /2 in smc_core.c resulting in the following flow:
+> >>>>>>>>
+> >>>>>>>> default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
+> >>>>>>>> sockopt  = the setsockopt mechanism
+> >>>>>>>> val      = the value assigned in default or via setsockopt
+> >>>>>>>> sk_buf   = short for sk_{snd|rcv}buf
+> >>>>>>>> real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
+> >>>>>>>>
+> >>>>>>>>     exposed   | net/core/sock.c  |    af_smc.c    |  smc_core.c
+> >>>>>>>>               |                  |                |
+> >>>>>>>> +---------+ |                  | +------------+ | +-----------------+
+> >>>>>>>> | default |----------------------| sk_buf=val |---| real_buf=sk_buf |
+> >>>>>>>> +---------+ |                  | +------------+ | +-----------------+
+> >>>>>>>>               |                  |                |    ^
+> >>>>>>>>               |                  |                |    |
+> >>>>>>>> +---------+ | +--------------+ |                |    |
+> >>>>>>>> | sockopt |---| sk_buf=val*2 |-----------------------|
+> >>>>>>>> +---------+ | +--------------+ |                |
+> >>>>>>>>               |                  |                |
+> >>>>>>>>
+> >>>>>>>> This would result in double of memory used for existing configurations
+> >>>>>>>> that are using setsockopt.
+> >>>>>>>
+> >>>>>>> Firstly, thanks for your detailed diagrams :-)
+> >>>>>>>
+> >>>>>>> And the original decision to use user-provided values rather than
+> >>>>>>> value/2 to follow the instructions of the socket manual [1].
+> >>>>>>>
+> >>>>>>>     SO_RCVBUF
+> >>>>>>>            Sets or gets the maximum socket receive buffer in bytes.
+> >>>>>>>            The kernel doubles this value (to allow space for
+> >>>>>>>            bookkeeping overhead) when it is set using setsockopt(2),
+> >>>>>>>            and this doubled value is returned by getsockopt(2).  The
+> >>>>>>>            default value is set by the
+> >>>>>>>            /proc/sys/net/core/rmem_default file, and the maximum
+> >>>>>>>            allowed value is set by the /proc/sys/net/core/rmem_max
+> >>>>>>>            file.  The minimum (doubled) value for this option is 256.
+> >>>>>>>
+> >>>>>>> [1] https://man7.org/linux/man-pages/man7/socket.7.html
+> >>>>>>>
+> >>>>>>> The user of SMC should know that setsockopt() with SO_{RCV|SND}BUF will
+> >>>>>>
+> >>>>>> I totally agree that an educated user of SMC should know about that behavior
+> >>>>>> if they decide to use it.
+> >>>>>> We do provide our users preload libraries where they can pass preferred
+> >>>>>> buffersizes via arguments and we handle the Sockopts for them.
+> >>>>>>
+> >>>>>>> double the values in kernel, and getsockopt() will return the doubled
+> >>>>>>> values. So that they should use half of the values which are passed to
+> >>>>>>> setsockopt(). The original patch tries to make things easier in SMC and
+> >>>>>>> let user-space to handle them following the socket manual.
+> >>>>>>>
+> >>>>>>>> SMC historically decided to use the explicit value given by the user
+> >>>>>>>> to allocate the memory. This is why we used the /2 in smc_core.c.
+> >>>>>>>> That logic was not applied to the default value.
+> >>>>>>>
+> >>>>>>> Yep, let back to the patch which introduced smc_{w|r}mem knobs, it's a
+> >>>>>>> trade-off to follow original logic of SMC, or follow the socket manual.
+> >>>>>>> We decides to follow the instruction of manuals in the end.
+> >>>>>>
+> >>>>>> I understand the point. I spend a lot of time trying to decide what to do.
+> >>>>>>
+> >>>>>> Since it was an intentional decision to not follow the general socket
+> >>>>>> option, and we do not have anyone complaining we do not really have a reason
+> >>>>>> to change it.
+> >>>>>> Changing it means that users with existing configurations would have to
+> >>>>>> change their configs on an update or suddenly expect double the memory
+> >>>>>> consumption.
+> >>>>>> That's why we in the end preffered to stay with the current logic.
+> >>>>>
+> >>>>> I can't agree with you more with the points to follow the historic logic
+> >>>>> and not break the user-space applications.
+> >>>>>
+> >>>>>> I'm thinking that maybe - if we stay with the historic logic - we should
+> >>>>>> document that desicion somewhere. So that in the future, if a user that
+> >>>>>> expects the man page behavior, has a way to understand what SMC is doing.
+> >>>>>> What do oyu think?
+> >>>>>
+> >>>>> Yep, we _really_ need to document it if we change the convention.
+> >>>>> Actually, I spent a lot of time to find the history about the logic of
+> >>>>> buffer (/2 and *2) in SMC. So I'm really in favor of adding
+> >>>>> documentation, at least code comments to help others to understand them.
+> >>>>>
+> >>>>> Cheers,
+> >>>>> Tony Lu
+> >>>> Iiuc you are changing the default values in this a patch and your other patch:
+> >>>> Default values for real_buf for send and receive:
+> >>>>
+> >>>> before 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
+> >>>>      real_buf=net.ipv4.tcp_{w|r}mem[1]/2   send: 8k  recv: 64k
+> >>>        see above: 			    send: 16k recv: 64k
+> >>>> after 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
+> >>>> real_buf=net.ipv4.tcp_{w|r}mem[1]   send: 16k (16*1024) recv: 128k (131072)
+> >>>>
+> >>>> after net/smc: Fix expected buffersizes and sync logic
+> >>>> real_buf=net.ipv4.tcp_{w|r}mem[1]   send: 16k (16*1024) recv: 128k (131072)
+> >>>>
+> >>>> after net/smc: Unbind smc control from tcp control
+> >>>> real_buf=SMC_*BUF_INIT_SIZE   send: 16k (16384) recv: 64k (65536)
+> >>>>
+> >>>> If my understanding is correct, then I nack this.
+> >>>> Defaults should be restored to the values before 0227f058aa29.
+> >>>> Otherwise users will notice a change in memory usage that needs to
+> >>>> be avoided or announced more explicitely. (and don't change them twice)
+> >>> See above, I stand corrected. However this patch fixes/restores the buffersize
+> >>> for setsockopt, but not for the default recieve path.
+> >>> Could you please clarify that in the title and description?
+> >>>
+> >>
+> >> I am trying to keep the commit title as crisp as possible while providing
+> >> enough information and set the context in the commit message:
+> >>
+> >> "The fixed commit changed the expected behavior of buffersizes set by the
+> >> user using the setsockopt mechanism."
+> >>
+> >>  + There is now a whole e-mail thread to consult in case of any further
+> >> questions.
+> >>
+> >> Thank you for your comments
+> >> - Jan
+> >>
+> >>> Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
+> >>>>>> - Jan
+> >>>>>>
+> >>>>>>>
+> >>>>>>> Cheers,
+> >>>>>>> Tony Lu
+> >>>>>>>
+> >>>>>>>> Since we now have our own sysctl, which is also exposed to the user,
+> >>>>>>>> we should sync the logic in a way that both values are the real value
+> >>>>>>>> used by our code and shown by smc_stats. To achieve this this patch
+> >>>>>>>> changes the behavior to:
+> >>>>>>>>
+> >>>>>>>> default  = net.smc.{w|r}mem (which defaults to net.ipv4.tcp_{w|r}mem[1])
+> >>>>>>>> sockopt  = the setsockopt mechanism
+> >>>>>>>> val      = the value assigned in default or via setsockopt
+> >>>>>>>> sk_buf   = short for sk_{snd|rcv}buf
+> >>>>>>>> real_buf = the real size of the buffer (sk_buf_size in __smc_buf_create)
+> >>>>>>>>
+> >>>>>>>>     exposed   | net/core/sock.c  |    af_smc.c     |  smc_core.c
+> >>>>>>>>               |                  |                 |
+> >>>>>>>> +---------+ |                  | +-------------+ | +-----------------+
+> >>>>>>>> | default |----------------------| sk_buf=val*2|---|real_buf=sk_buf/2|
+> >>>>>>>> +---------+ |                  | +-------------+ | +-----------------+
+> >>>>>>>>               |                  |                 |    ^
+> >>>>>>>>               |                  |                 |    |
+> >>>>>>>> +---------+ | +--------------+ |                 |    |
+> >>>>>>>> | sockopt |---| sk_buf=val*2 |------------------------|
+> >>>>>>>> +---------+ | +--------------+ |                 |
+> >>>>>>>>               |                  |                 |
+> >>>>>>>>
+> >>>>>>>> This way both paths follow the same pattern and the expected behavior
+> >>>>>>>> is re-established.
+> >>>>>>>>
+> >>>>>>>> Fixes: 0227f058aa29 ("net/smc: Unbind r/w buffer size from clcsock and make them tunable")
+> >>>>>>>> Signed-off-by: Jan Karcher <jaka@linux.ibm.com>
+> >>>>>>>> Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
+> >>>>>>>> ---
+> >>>>>>>>    net/smc/af_smc.c   | 9 +++++++--
+> >>>>>>>>    net/smc/smc_core.c | 8 ++++----
+> >>>>>>>>    2 files changed, 11 insertions(+), 6 deletions(-)
+> >>>>>>>>
+> >>>>>>>> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> >>>>>>>> index 036532cf39aa..a8c84e7bac99 100644
+> >>>>>>>> --- a/net/smc/af_smc.c
+> >>>>>>>> +++ b/net/smc/af_smc.c
+> >>>>>>>> @@ -366,6 +366,7 @@ static void smc_destruct(struct sock *sk)
+> >>>>>>>>    static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
+> >>>>>>>>    				   int protocol)
+> >>>>>>>>    {
+> >>>>>>>> +	int buffersize_without_overhead;
+> >>>>>>>>    	struct smc_sock *smc;
+> >>>>>>>>    	struct proto *prot;
+> >>>>>>>>    	struct sock *sk;
+> >>>>>>>> @@ -379,8 +380,12 @@ static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
+> >>>>>>>>    	sk->sk_state = SMC_INIT;
+> >>>>>>>>    	sk->sk_destruct = smc_destruct;
+> >>>>>>>>    	sk->sk_protocol = protocol;
+> >>>>>>>> -	WRITE_ONCE(sk->sk_sndbuf, READ_ONCE(net->smc.sysctl_wmem));
+> >>>>>>>> -	WRITE_ONCE(sk->sk_rcvbuf, READ_ONCE(net->smc.sysctl_rmem));
+> >>>>>>>> +	buffersize_without_overhead =
+> >>>>>>>> +		min_t(int, READ_ONCE(net->smc.sysctl_wmem), INT_MAX / 2);
+> >>>>>>>> +	WRITE_ONCE(sk->sk_sndbuf, buffersize_without_overhead * 2);
+> >>>>>>>> +	buffersize_without_overhead =
+> >>>>>>>> +		min_t(int, READ_ONCE(net->smc.sysctl_rmem), INT_MAX / 2);
+> >>>>>>>> +	WRITE_ONCE(sk->sk_rcvbuf, buffersize_without_overhead * 2);
+> >>>>>>>>    	smc = smc_sk(sk);
+> >>>>>>>>    	INIT_WORK(&smc->tcp_listen_work, smc_tcp_listen_work);
+> >>>>>>>>    	INIT_WORK(&smc->connect_work, smc_connect_work);
+> >>>>>>>> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> >>>>>>>> index 00fb352c2765..36850a2ae167 100644
+> >>>>>>>> --- a/net/smc/smc_core.c
+> >>>>>>>> +++ b/net/smc/smc_core.c
+> >>>>>>>> @@ -2314,10 +2314,10 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+> >>>>>>>>    	if (is_rmb)
+> >>>>>>>>    		/* use socket recv buffer size (w/o overhead) as start value */
+> >>>>>>>> -		sk_buf_size = smc->sk.sk_rcvbuf;
+> >>>>>>>> +		sk_buf_size = smc->sk.sk_rcvbuf / 2;
+> >>>>>>>>    	else
+> >>>>>>>>    		/* use socket send buffer size (w/o overhead) as start value */
+> >>>>>>>> -		sk_buf_size = smc->sk.sk_sndbuf;
+> >>>>>>>> +		sk_buf_size = smc->sk.sk_sndbuf / 2;
+> >>>>>>>>    	for (bufsize_short = smc_compress_bufsize(sk_buf_size, is_smcd, is_rmb);
+> >>>>>>>>    	     bufsize_short >= 0; bufsize_short--) {
+> >>>>>>>> @@ -2376,7 +2376,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+> >>>>>>>>    	if (is_rmb) {
+> >>>>>>>>    		conn->rmb_desc = buf_desc;
+> >>>>>>>>    		conn->rmbe_size_short = bufsize_short;
+> >>>>>>>> -		smc->sk.sk_rcvbuf = bufsize;
+> >>>>>>>> +		smc->sk.sk_rcvbuf = bufsize * 2;
+> >>>>>>>>    		atomic_set(&conn->bytes_to_rcv, 0);
+> >>>>>>>>    		conn->rmbe_update_limit =
+> >>>>>>>>    			smc_rmb_wnd_update_limit(buf_desc->len);
+> >>>>>>>> @@ -2384,7 +2384,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+> >>>>>>>>    			smc_ism_set_conn(conn); /* map RMB/smcd_dev to conn */
+> >>>>>>>>    	} else {
+> >>>>>>>>    		conn->sndbuf_desc = buf_desc;
+> >>>>>>>> -		smc->sk.sk_sndbuf = bufsize;
+> >>>>>>>> +		smc->sk.sk_sndbuf = bufsize * 2;
+> >>>>>>>>    		atomic_set(&conn->sndbuf_space, bufsize);
+> >>>>>>>>    	}
+> >>>>>>>>    	return 0;
+> >>>>>>>> -- 
+> >>>>>>>> 2.34.1
