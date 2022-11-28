@@ -2,149 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B931E639F82
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 03:38:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27058639F83
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 03:39:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbiK1Cir (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 21:38:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42338 "EHLO
+        id S229739AbiK1CjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 21:39:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiK1Cip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 21:38:45 -0500
-Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68C3A1B1;
-        Sun, 27 Nov 2022 18:38:44 -0800 (PST)
-Received: by mail-pg1-f181.google.com with SMTP id s196so8734766pgs.3;
-        Sun, 27 Nov 2022 18:38:44 -0800 (PST)
+        with ESMTP id S229741AbiK1Ci7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 21:38:59 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE10211460
+        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 18:38:56 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id z9so4438828ilu.10
+        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 18:38:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cuFF8JiuUF+OouyKLi5o1bz927z4lwXxfm9JO6gCJp8=;
+        b=ewIVRk+dAVCbJqcEdLW5nyqbkWkOQ5e5HkT3I469Uz+93hUI+5sAw/nCLdl3l1sCT2
+         FfxRoVThmsy3LhdQVYvgcivWJ+KQYrflPDR6JfsBWl5Nulnb+ilBtbZJL063SBqCefPE
+         dkxdhzefkerikyrHVvZ3etH3AlQ7v3X6kEtmxoNJHE0FguSOaaWxr6LFLL0p88xf2b7l
+         +ZkotCyU6YgLekspHsTksebuSW6mEck7wNUq0sXMzfR+/X0A1xbAZ68gyg7+j84w3IgH
+         Yt7CXUApv0D4XgWawOB5fGsgunflTc3b6RWH8qrItF2Fc4FsXGYgWXzL9vBIvBG2O5Db
+         Jetg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1kG9z2qzxuFG+VRjNYAaaunJxmRkVIHKxHuUo9QjcyE=;
-        b=xpq/ddy9z30TTL8jOYYx+QH71jompOnAITlXG+/Q1SiCODz5cYlaf0vjWFE3f52vzr
-         GNw2vsAdcRB1jcqVSY4MynR3K4RQC/qab86MHxqkjpf3O+MEi5RwS2oeepxt2mh8z1ks
-         fdqFtgnoMBOu/QS+Ns8Ubtev3NmPGrlAklOmb/1Vr4lIT2UgGvYY3UFeIoIBuZ5gnug2
-         VWDAEZn/tPz+Anpr5vpw82wIqmBk7fYCidUVF1iMPh+Kmgmfr+Edx8IKulMIqborvP29
-         sFKWqMP3EYOcj5T+vQ4Vzx/KLwGzSL6O/qihDYlmy1obapyz6JY9h00JJHczDJ3ZLwWb
-         jxvg==
-X-Gm-Message-State: ANoB5pkdOvMNP2ETKz5fRr4ZM1ZIuWMlFE/Vh+llRsp5BAReHGwXftCV
-        iMqCyh/pUNi8vV9n5bbxd7o=
-X-Google-Smtp-Source: AA0mqf5vmCbco6ZHPjAXXxhwtD8PwFo1rRkGl5sk/L6YEIBylIo5gFL0rkxaBBXNXZfCI6rD4vcBjA==
-X-Received: by 2002:a63:388:0:b0:477:c828:dd2d with SMTP id 130-20020a630388000000b00477c828dd2dmr18012978pgd.105.1669603124285;
-        Sun, 27 Nov 2022 18:38:44 -0800 (PST)
-Received: from [192.168.3.219] ([98.51.102.78])
-        by smtp.gmail.com with ESMTPSA id j8-20020a170902da8800b00176ea6ce0efsm7507123plx.109.2022.11.27.18.38.40
+        bh=cuFF8JiuUF+OouyKLi5o1bz927z4lwXxfm9JO6gCJp8=;
+        b=LqKs1+VXwIr8CotquXejb4gmJV0j91R3Vtjw929eZUeEhSxV50gtEQuf0TA8LUQgAL
+         xSmmGpkxe7zcr4jn4VyeObbkD+QoWVZ2FVXSeqTBQVJrYX1VpVVqa5X2HgKu8gzGWz69
+         PCGUbLXUYgL79LvTrdrSuBouvtX2dSLKS6iG6P/vDQqdTMSnt7ZAZOCAcRmgszA9KMwV
+         GTuZr20HS+hG8fIbm/XIbrN3/bHXuq6Q4oZrWDzvV0KRsQBRFKdHeR1JZgX/qAr26ITs
+         7fLfnemN6K8AkAeqt7Mm2D1iBORvI2LGzQfTzvcDQQxdtiIEqDIeteyiEPLe7RCjt0Qh
+         VzvA==
+X-Gm-Message-State: ANoB5pm6cXk2zYhbY6+mpoYYVirUpjug8I/lRO6Qe4C8chw+viuDC2XS
+        gUMSq2l/8EV1bp/zzNFWeq8=
+X-Google-Smtp-Source: AA0mqf6RWVQQzFlaDKFIuNCVziuU5EQDR4ZhfkwYMlY6akusrOCUD18/D54pdAe6Im6R6pIZ1USJtw==
+X-Received: by 2002:a05:6e02:108:b0:302:b8e6:deb7 with SMTP id t8-20020a056e02010800b00302b8e6deb7mr14441905ilm.247.1669603136370;
+        Sun, 27 Nov 2022 18:38:56 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:e10a:56f2:3d71:c68c? ([2601:282:800:dc80:e10a:56f2:3d71:c68c])
+        by smtp.googlemail.com with ESMTPSA id a17-20020a027351000000b00374fe4f0bc3sm3826349jae.158.2022.11.27.18.38.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Nov 2022 18:38:43 -0800 (PST)
-Message-ID: <5b14cdea-1bbe-1900-0004-a218ba97bbcb@acm.org>
-Date:   Sun, 27 Nov 2022 18:38:39 -0800
+        Sun, 27 Nov 2022 18:38:55 -0800 (PST)
+Message-ID: <0f75a656-97f8-5f90-ab86-258fadc7ae63@gmail.com>
+Date:   Sun, 27 Nov 2022 19:38:54 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH 1/5] driver core: make struct class.dev_uevent() take a
- const *
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: [PATCH iproute2-next 1/5] devlink: Fix setting parent for 'rate
+ add'
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Russ Weight <russell.h.weight@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Johan Hovold <johan@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sebastian Reichel <sre@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Raed Salem <raeds@nvidia.com>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Avihai Horon <avihaih@nvidia.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Colin Ian King <colin.i.king@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Wang Yufen <wangyufen@huawei.com>, linux-block@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+To:     Michal Wilczynski <michal.wilczynski@intel.com>,
         netdev@vger.kernel.org
-References: <20221123122523.1332370-1-gregkh@linuxfoundation.org>
- <d448b944-708a-32d4-37d7-0be16ee5f73c@acm.org> <Y4NqAJW5V0tAP8ax@kroah.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <Y4NqAJW5V0tAP8ax@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Cc:     alexandr.lobakin@intel.com, przemyslaw.kitszel@intel.com,
+        jiri@resnulli.us, wojciech.drewek@intel.com,
+        stephen@networkplumber.org
+References: <20221125123421.36297-1-michal.wilczynski@intel.com>
+ <20221125123421.36297-2-michal.wilczynski@intel.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20221125123421.36297-2-michal.wilczynski@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/27/22 05:45, Greg Kroah-Hartman wrote:
-> On Fri, Nov 25, 2022 at 03:51:11PM -0800, Bart Van Assche wrote:
->> On 11/23/22 04:25, Greg Kroah-Hartman wrote:
->>> diff --git a/include/linux/mISDNif.h b/include/linux/mISDNif.h
->>> index 7dd1f01ec4f9..7aab4a769736 100644
->>> --- a/include/linux/mISDNif.h
->>> +++ b/include/linux/mISDNif.h
->>> @@ -586,7 +586,7 @@ extern struct mISDNclock *mISDN_register_clock(char *, int, clockctl_func_t *,
->>>    						void *);
->>>    extern void	mISDN_unregister_clock(struct mISDNclock *);
->>> -static inline struct mISDNdevice *dev_to_mISDN(struct device *dev)
->>> +static inline struct mISDNdevice *dev_to_mISDN(const struct device *dev)
->>>    {
->>>    	if (dev)
->>>    		return dev_get_drvdata(dev);
->>
->> Why does the dev_to_mISDN() function drop constness? I haven't found an
->> explanation for this in the cover letter.
+On 11/25/22 5:34 AM, Michal Wilczynski wrote:
+> Setting a parent during creation of the node doesn't work, despite
+> documentation [1] clearly saying that it should.
 > 
-> I agree, this is going to be fixed up, see the thread starting here:
-> 	https://lore.kernel.org/r/Y34+V2bCDdqujBDk@kroah.com
+> [1] man/man8/devlink-rate.8
 > 
-> I'll work on making a const / non const version for these so that we
-> don't loose the marking.
+> Example:
+> $ devlink port function rate add pci/0000:4b:00.0/node_custom parent node_0
+>   Unknown option "parent"
 > 
-> Oh wait, no, this function is fine, it's not modifying the device
-> structure at all, and only returning the pointer in the private data
-> stored in the device.  There is no loss of const-ness here.
+> Fix this by passing DL_OPT_PORT_FN_RATE_PARENT as an argument to
+> dl_argv_parse() when it gets called from cmd_port_fn_rate_add().
+> 
+> Fixes: 6c70aca76ef2 ("devlink: Add port func rate support")
 
-Hi Greg,
+so this is a bug fix that needs to go in main branch first?
 
-This is what I found in include/linux/mISDNif.h:
 
-struct mISDNdevice {
-	struct mISDNchannel	D;
-	u_int			id;
-	u_int			Dprotocols;
-	u_int			Bprotocols;
-	u_int			nrbchan;
-	u_char			channelmap[MISDN_CHMAP_SIZE];
-	struct list_head	bchannels;
-	struct mISDNchannel	*teimgr;
-	struct device		dev;
-};
+> Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
+> Reviewed-by: Wojciech Drewek <wojciech.drewek@intel.com>
+> ---
+>  devlink/devlink.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/devlink/devlink.c b/devlink/devlink.c
+> index 8aefa101b2f8..5cff018a2471 100644
+> --- a/devlink/devlink.c
+> +++ b/devlink/devlink.c
+> @@ -5030,7 +5030,8 @@ static int cmd_port_fn_rate_add(struct dl *dl)
+>  	int err;
+>  
+>  	err = dl_argv_parse(dl, DL_OPT_PORT_FN_RATE_NODE_NAME,
+> -			    DL_OPT_PORT_FN_RATE_TX_SHARE | DL_OPT_PORT_FN_RATE_TX_MAX);
+> +			    DL_OPT_PORT_FN_RATE_TX_SHARE | DL_OPT_PORT_FN_RATE_TX_MAX |
+> +			    DL_OPT_PORT_FN_RATE_PARENT);
+>  	if (err)
+>  		return err;
+>  
 
-As one can see 'dev' is a member of struct mISDNdevice. I still think 
-that dev_to_mISDN() drops constness. Did I perhaps overlook something?
-
-Bart.
