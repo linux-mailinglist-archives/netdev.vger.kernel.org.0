@@ -2,106 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA353639E2D
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 00:15:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BE16639EC7
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 02:21:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229597AbiK0XPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 18:15:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
+        id S229659AbiK1BVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 20:21:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiK0XPK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 18:15:10 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7508BBCAC;
-        Sun, 27 Nov 2022 15:15:08 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4NL4FP6tp0z4wgv;
-        Mon, 28 Nov 2022 10:15:05 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1669590907;
-        bh=6MBVX6G8b2iypkuU8entZg2WxIYYBFbCNnJtJX4Qqog=;
-        h=Date:From:To:Cc:Subject:From;
-        b=BpDKYnlXQRK9S6wZf7BsMLpeiLZHD59RHxrMILRKl352FLzZj1ydGiocbWeLiK42R
-         Qxu/XFoH6zrQLmXlP4XOdki+F+mrKLU+MtGGWN/XIwxmRggR5iYyL11qyhE0cdIt2x
-         TXGGOJ/Jq2TeeNa1136vv8je0SkRRHmRn55x9uX0HqLZLp4kBqEHb3RLI4csQl8SfQ
-         vizywxcEPvaC3mO5pP7P4d2We0KRzEUHGSKyizP3wRS/Kj/ehqUEs7ShmLSh8gzxvj
-         SwHVjpqNisNWiMR8kutiLvW6xokey0Rf5TEwRACnizU+ZXmgM5WRGI2Q9wZ4/WfOC0
-         I9aUSksf+1ztg==
-Date:   Mon, 28 Nov 2022 10:15:04 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Xu Panda <xu.panda@zte.com.cn>, Yang Yang <yang.yang29@zte.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20221128101504.622a7554@canb.auug.org.au>
+        with ESMTP id S229504AbiK1BVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 20:21:40 -0500
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DEB1215;
+        Sun, 27 Nov 2022 17:21:39 -0800 (PST)
+Received: by mail-pl1-f170.google.com with SMTP id j12so8745297plj.5;
+        Sun, 27 Nov 2022 17:21:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gJyNVXZ0Nag03x8wF+5JRQFWFO/c5LE8KY9nLBrkk88=;
+        b=bLMyj4V5AWVB0OeRG/09OtV3gMmpTuJLlGhu6nz7ssByxfqschyx0S/n3XnkS1gFHu
+         XBhI25l1OTaVevG8WDxxQ2dXXGLC/GT+WbI7bsNMDIhp/wG5F0ILl5LQHK8i6b9mhtnV
+         vy8Fvv78MAU0eQXUUARcKM+ZgI+54eazUdTw3g0pUh89o7xFg4w+5OpBqz2a7Y5cb8T3
+         jRmVVAYdRvwbjifbvjmw70BIMsEOoGGg17xmpHTSrEDaHwvYz6FJLlf2CFynyl3F9M+Q
+         gH00e42S+H5AMWMe6cnfjtJ1i/bOe2dUG32lMRkQeomRhwPtcrnKeY+Q78WgkjH7ReDb
+         eLNA==
+X-Gm-Message-State: ANoB5pk3XxOjnKyJ3wPBIPCH1x5Kiad3zHT65tyJSy/sIuVepfgHV3r9
+        r9CQ8jw9kJ35dsc6/5dmODpMs1uqKzsQlzkD/is=
+X-Google-Smtp-Source: AA0mqf7lEZw8GreOflw9skrfxDXGuWTHslnxVt2egNsAVVjovt9K+mRepQD3N6d/JgviTgcqpE/ngSCFrCHerqBYZtc=
+X-Received: by 2002:a17:902:b608:b0:189:7a8b:537d with SMTP id
+ b8-20020a170902b60800b001897a8b537dmr7566610pls.95.1669598498489; Sun, 27 Nov
+ 2022 17:21:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/9lTsoQCQ9orwTVYE7.vaBW7";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
+ <20221126162211.93322-1-mailhol.vincent@wanadoo.fr> <20221126162211.93322-4-mailhol.vincent@wanadoo.fr>
+ <Y4JJ8Dyz7urLz/IM@lunn.ch> <CAMZ6Rq+K+6gbaZ35SOJcR9qQaTJ7KR0jW=XoDKFkobjhj8CHhw@mail.gmail.com>
+ <Y4N9IAlQVsdyIJ9Q@lunn.ch>
+In-Reply-To: <Y4N9IAlQVsdyIJ9Q@lunn.ch>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Mon, 28 Nov 2022 10:21:27 +0900
+Message-ID: <CAMZ6RqJHFyeG0ZMaAAfJ_30t-oucJVm05Et-H9DEgzbWj-K6vA@mail.gmail.com>
+Subject: Re: [PATCH v4 3/6] can: etas_es58x: export product information
+ through devlink_ops::info_get()
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Saeed Mahameed <saeed@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Lukas Magel <lukas.magel@posteo.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/9lTsoQCQ9orwTVYE7.vaBW7
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Mon. 28 Nov. 2022 at 00:08, Andrew Lunn <andrew@lunn.ch> wrote:
+> > I checked, none of gcc and clang would trigger a warning even for a
+> > 'make W=12'. More generally speaking, I made sure that my driver is
+> > free of any W=12.
+>
+> That is good enough for me.
+>
+> > I do not care any more as long as it does not result in
+> > undefined behaviour.
+>
+> Agreed. Hopefully sscanf cannot go completely wrong and go off the end
+> of the buffer. That i would care about. Bit i guess the USB fuzzers
+> would of hit such problems already.
 
-Hi all,
+On the surface, the sscanf() seems OK. It will break the while loop
+when reaching the end of the format:
+  https://elixir.bootlin.com/linux/v6.1-rc6/source/lib/vsprintf.c#L3429
+or the end of the string:
+  https://elixir.bootlin.com/linux/v6.1-rc6/source/lib/vsprintf.c#L3501
+(I am skipping details here, there are other branches that will break
+the while loop and all of them look good).
 
-After merging the net-next tree, today's linux-next build (arm
-multi_v7_defconfig) failed like this:
+And me not being the first person using sscanf(), I hope that if a bug
+existed, it would have already been spotted by some static
+analysis/fuzzing/code review :)
 
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_cmdl=
-ine_opt':
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:7591:28: error: too many =
-arguments to function 'sysfs_streq'
- 7591 |                 } else if (sysfs_streq(opt, "pause:", 6)) {
-      |                            ^~~~~~~~~~~
-In file included from include/linux/bitmap.h:11,
-                 from include/linux/cpumask.h:12,
-                 from include/linux/smp.h:13,
-                 from include/linux/lockdep.h:14,
-                 from include/linux/mutex.h:17,
-                 from include/linux/notifier.h:14,
-                 from include/linux/clk.h:14,
-                 from drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:17:
-include/linux/string.h:185:13: note: declared here
-  185 | extern bool sysfs_streq(const char *s1, const char *s2);
-      |             ^~~~~~~~~~~
+That said, I think I answered all your comments. Can I get your
+reviewed-by or ack tag? Thank you!
 
-Caused by commit
 
-  f72cd76b05ea ("net: stmmac: use sysfs_streq() instead of strncmp()")
-
-I have used the net-next tree from next-20221125 for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/9lTsoQCQ9orwTVYE7.vaBW7
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmOD73gACgkQAVBC80lX
-0GynYgf/U/KlN8hTzmaFn2LDze81b1HpgFXUzTIK8J8Vr5Ww8oFzTsf75idnrTU/
-ySazh/S0WcxjVKXIExxamLshXKX4oYTAr1xGpWLpCDflNULNvbDcyyknjyw94aZh
-y86gEgQ9JXcDqhyNHfbcR9L9GMzsGgCMFo1cXD73qV2WfAHd1hLdLgxjymTeTn9K
-QFfmL0z341y3umVwpAu9tKHPBQqV+9ku1uNLIBymh+2KNtZkQiQkYwkIXVXtNyEQ
-D+yD5wSgvS3Ns3JD2uhSShJDrw+xuYkhMjWOYZ/noHzcSNTuJ6B3/7k9hLdqUPiA
-XLN/71waw38O/4YoWgwPC2MiPbj7EA==
-=Ncfm
------END PGP SIGNATURE-----
-
---Sig_/9lTsoQCQ9orwTVYE7.vaBW7--
+Yours sincerely,
+Vincent Mailhol
