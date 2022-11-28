@@ -2,221 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D88263A5B6
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 11:07:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07AB463A5C8
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 11:12:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiK1KHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 05:07:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47988 "EHLO
+        id S230158AbiK1KMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 05:12:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbiK1KHk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 05:07:40 -0500
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED502BFE
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 02:07:35 -0800 (PST)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-142faa7a207so12331598fac.13
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 02:07:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=2iZJVoc7675ssfCNuJNy1f8+4/MFSblSBo6DzIyzGW8=;
-        b=YD0UkDV9DmuOOVSBy88tYRqL/1jk9URzA9XQHleB1MPAqpNoQBvUfK5x7dNUuDs/5d
-         DmHxIJTcnAEq36GFdJ52rkdDhtImiLTT7/+yJa8gmdj1b+8ae73mfsWaUXr0ek/YYfY2
-         nhhCMPqRWtSWIV3oEwV2Mdny26dINNvoCwzUp46V6zeXcCXYe1GCAluqIUNg/04EE/v9
-         aEhuOXCn5bvffMNifUSgNDhkj1ymCuuSHEpOQ/LttrGZkZcmtZ0VxFuNohymVFNtWaeo
-         QjInWz3K7IqGH0SVH/4pietFjUSzwSg/oFYJfkftNKwP/q21GWe+Y/j1arziOZr9ib4P
-         0ndA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2iZJVoc7675ssfCNuJNy1f8+4/MFSblSBo6DzIyzGW8=;
-        b=zwHHxJrArxJzMkOr/9VZo00Lg1F+UwFaSrVNuYeYgJ/hItkTSpq1hNxwu/HikCO1zQ
-         kUVyUSER9pk70ktI5w+GOHWZOdbH6gH0YTIIjpn0OTdlQyarCR0G5CN+QmLTRjFpKXh0
-         hVpyP9/0edrDJsP0ZiYqOVGn5140rfIlHQh3fc3pJ8JDvqx4XER0koWQlEDd+zMtro01
-         1a5xgP9W7CVoVPS4y6UTYPlvwfIBtIaA8ztmP+Uji+VhmV0gYYhPmt4wniIUW6x5rQMg
-         PsTRgzRJX0LubhCXViCKVqyH7jbk0URHRE8ofwDbXRMBgL9WEJcwZShDa59Rtonb4A5w
-         AuZg==
-X-Gm-Message-State: ANoB5pnlk7tloHd7KcGDMS/GPYqJnmH7kA40g+yQ7KYcJ/427B18hzZ/
-        MQWDdLqUeKUmI2Hk9lE4wmzIpZ/rW1GNd/rKnJRSFQ==
-X-Google-Smtp-Source: AA0mqf5PsnP9Qgx0RNkcHYxe/3rgeyAmwamGmQDXMIOvkOohFjjMUw1QLuA4biVAI5TJD7fv1UHNtEugeKgy0BhgmAM=
-X-Received: by 2002:a05:6871:4609:b0:143:955d:ed7 with SMTP id
- nf9-20020a056871460900b00143955d0ed7mr4434805oab.233.1669630054629; Mon, 28
- Nov 2022 02:07:34 -0800 (PST)
+        with ESMTP id S230162AbiK1KMg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 05:12:36 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7A5F45;
+        Mon, 28 Nov 2022 02:12:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669630354; x=1701166354;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=kTay5PkspGrQwnYxWuD+Ru2F83hd7Hmk8HzATrxn/r8=;
+  b=ny/dgkjm1CDGY0Wan7b8I7N7m1OMvJqAFwTwh8XVQy36tVlczV428t8C
+   MU+cMizUdJrGsffNLyUmcpilI/mApaCtjVweuJnarWUMlGZuia5j2x66u
+   nEeAPIN59SCi7So08WOlzGPR8g3HTGgaONljJU9yaiqdOTgKv9XhCtb4z
+   P1vHL56u9mUucicptVItS5BsE8DYtB18OpNjglgBYNO+idtsh+InLfEOm
+   g2U+S8bgBn9AAHa77fwEE+JwsG5z1jxJ1EOMtMnssVLeab0o9dpBuwW1u
+   Dqv4jdeV68YSZKdRsUAxddIEUoyqivlcc4PDScUI9k8Wlf5Wt17YiwhPc
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="298151816"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="298151816"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 02:11:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="888360188"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="888360188"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga006.fm.intel.com with ESMTP; 28 Nov 2022 02:11:39 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 28 Nov 2022 02:11:39 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 28 Nov 2022 02:11:39 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.105)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Mon, 28 Nov 2022 02:11:38 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bhOWelea+77W8FkgqqtfIusO7wCCdDhhotxR785dv8a9MQ/M52a3Y3BlO2dq3PyZMGwuvKamvbAa9y9WwGG+KLSF36gAQ0XFTBQ0Y1SGVLiRDTgjyL5mXGdWBVnIOi2SYA4O6KUieBRCCVSh8hIk3Vy6OI4T8xUaatsN+I+IasO1e4Dw+gjoa6gdkrnFOR8nxEuCmwQwNil1eSIX7L0LHrxJaZIV3nscMP/XFWNSOn+Nwrw2823KE/JYkmflejTkNE8wsD0qf1VWkgbeYwpS64xTVSWXdb8Ys00+yUL4wPtQtDNwmKOopMDV2q1qeX6azIkYpbfbsn8OjTwQresUDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hmnLixmv6mIFKs+zEHz5vyq1LDtYBJaefrOYxerS5eA=;
+ b=b4KhSKVXLkqAhS23MKS1KEmbiiectXFHGtJ0A4fg5J5ePjqBR5dfPdbeiZ0DmgViPBNnVXVxRRKLCGn2p3EZb0E0a7h2+FLHF/LQn2be5NLQSBcVPVOD3t/v1ahCu9Fzc+Rai3kPTARQs7CF/Lj9Pa2VH97ROKUnwADV2lkNEu80l1iSrEkY8J9SQN/0Goyc88JibQuNDpQZpSwmeoj+MXFQHrY0FZPDkom49fWsvHnqdZBfb0uOkZD1gCmw+Po59slS4DZFCzm2iizR7LaSpjPaNXsrPq7+BlaUuwEbUD4gs8wDqxBiP/HgZbaDdntYBnkj1BBZteibuh8W7NAg5Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ SN7PR11MB7708.namprd11.prod.outlook.com (2603:10b6:806:352::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.22; Mon, 28 Nov
+ 2022 10:11:37 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5f39:1ef:13a5:38b6]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5f39:1ef:13a5:38b6%7]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
+ 10:11:37 +0000
+Date:   Mon, 28 Nov 2022 11:11:30 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Roger Quadros <rogerq@kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <vigneshr@ti.com>,
+        <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 net-next 5/6] net: ethernet: ti: am65-cpsw: retain
+ PORT_VLAN_REG after suspend/resume
+Message-ID: <Y4SJUgm5KXA5BdAE@boxer>
+References: <20221123124835.18937-1-rogerq@kernel.org>
+ <20221123124835.18937-6-rogerq@kernel.org>
+ <Y4DBTbVxUpbJ5sEl@boxer>
+ <d20d3b73-38b4-fb06-2daa-125f446aeb44@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <d20d3b73-38b4-fb06-2daa-125f446aeb44@kernel.org>
+X-ClientProxiedBy: FRYP281CA0018.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::28)
+ To DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19)
 MIME-Version: 1.0
-References: <000000000000790da005ee3175a8@google.com> <26b9771db88198ff982476e3e24f411277cd213b.camel@sipsolutions.net>
- <0ee688ac-5c34-1592-23d3-fe100cadc570@linaro.org>
-In-Reply-To: <0ee688ac-5c34-1592-23d3-fe100cadc570@linaro.org>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 28 Nov 2022 11:07:23 +0100
-Message-ID: <CACT4Y+bxoaskRKAwFGLh7zVNKY7TszJNhLyAo4MrKaWSzyA8wg@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in rfkill_blocked
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        syzbot <syzbot+0299462c067009827b2a@syzkaller.appspotmail.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|SN7PR11MB7708:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7d356995-92d5-44e7-a377-08dad128ef47
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PoiMrCQnkMjpASTwILTeUUUroPAaZog9QjM3bEY1LG04wZEReTpOVLoE+CcuYfC/Oq12a4J8dh/pgW0PbXZtbQhjBTO8qvbR23EzOiEEyFn+0Pkb4Qgvx/TmiqKLXYmfmOMItzYrTDRDfHDHiYf8WwAM8+BjEvKNK2/JIRb5EgCgWvPShflIxg1MTngKFOC4BXbMzHJdkhZq+5+dkJlUbrNw1UxQE8I0FswL2GmGLmIhBrgPgf9EqfTKM0oVOEHouUKO9oScqkZf0zdnLuAsxjqYHd1YxmAPJXyPNBpyqPEymmqiYkM+r7YO3R1nZPhtShsrevwvRO6A1ki/rbPtug8vxHan5fJ3/PF8fU8D8XI6zeKFdwTiG9tFlZOIQtBKAe6XZ24dWCNY1QdVr7IGwsbwQNqWRQckX8lP2fgzEUVWDaOa/AYUypRrtFr8UY2cJOKNukk4ly3Hdwf0rhxuz2eT48EYznqQPAwMhQ1cQXfiX4cRIDIh6UOdscEVLuHzXNCc2khVcrfRgGz+xouChDaErIFyhwc9zyYrY4bvlt2YciSq2rCNlSGFg0V0XGJMvOKsM+CLXQwx4XwZK+HfaZbdv9lo+DxtaRoJlNjQkIQhvlSz+Clk73MuvGS8xmu0
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(396003)(136003)(39860400002)(346002)(376002)(366004)(451199015)(2906002)(15650500001)(8936002)(44832011)(5660300002)(6916009)(41300700001)(316002)(478600001)(83380400001)(4326008)(8676002)(66556008)(66946007)(6486002)(66476007)(33716001)(26005)(186003)(6666004)(6506007)(6512007)(9686003)(86362001)(82960400001)(38100700002)(53546011);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?P5BqC9+DUWw4QvA94lJmyhbikfBQYAWqJ3541euwFeGf7yBsRwSxKpZcFhAv?=
+ =?us-ascii?Q?b/BeXdYJZzDCYaGxq9ikm1T61q0yg30cLVp37y/7kD2myzQZIu6RZNNKLBnL?=
+ =?us-ascii?Q?d6VceyhSauCOSmCas6y49f6lffOZnzIwYE5nySUdMl5O5XUyKglWvnYauUjW?=
+ =?us-ascii?Q?hBjjnCuJgVkgc8abcj89pMOaj/dCJ88I0axdZN9wRGfZDi39Di9lsz1hJ8QR?=
+ =?us-ascii?Q?txDUGRy6GOazcaqYX7d8g56XNIgEqtoex7By0rUUTsessztWjK5X7rNkKI2G?=
+ =?us-ascii?Q?OvD32JkJMoYzTjmNg7Vazms36w4ojcyc+yog4VoaSk40ODZUa9OWH9sRKSA0?=
+ =?us-ascii?Q?XfKk05qSfcS30AqoClGY+mUMf14D796NkIx7rbbQ1YLTS+58T3f+px3/X6NE?=
+ =?us-ascii?Q?I/YPB0WSkXy6YQkXHtDjgNPVfo8+PFxwyndSqw3BOYG76uXheLeDuMemGbJ8?=
+ =?us-ascii?Q?fkv00RkDpBZA7/OvN+RZ/QvXCYJxKC4wDkSvPx79E+yi7pc9DuDKd0pKktIL?=
+ =?us-ascii?Q?x7ml+W1b/+GXriWZbxkjAQuP/6z8CGYexJdp0FdVjdzQ7lT1HTT0jh/rtCAF?=
+ =?us-ascii?Q?VT3w/X3tgbD2DZdC869UNIEZUVTd3NpQ3D2t3lf6auMp+2e9IZZJ1vcXhrLC?=
+ =?us-ascii?Q?ijXIKix7n7vTyMYZ1WFaWHInes1h8y6OGPRkz5wLge3CW47oNZR/mi4WTHsW?=
+ =?us-ascii?Q?Q7RZhb5rp10vG1pyc1XmWtcW7nE4ySAJ03GGHtJYNCAh7ijmkknU5GlvRTRQ?=
+ =?us-ascii?Q?BHMc8pfveKJeC3g2xZ1i7THt/IaMT5FfAvoMZzRRNj4/7jNe9LxaHYp6qqTO?=
+ =?us-ascii?Q?I7aSo3ZyViwT6B7mzvbfzMc4LUKLVA/d1v9TbjeD1qx+0g8+IRYrpa2BrTiR?=
+ =?us-ascii?Q?1rVf4gyXFlyf1J78LQMWmTOiPS827RlxEMcGleMLnuknB4p29gqbidK+nVwp?=
+ =?us-ascii?Q?C5EI1M3e9CO5SS5muTNRw83xxtfml+JcDmPqh66gs6G8Yyp8owTCl8VRZ4P0?=
+ =?us-ascii?Q?8++0+AR18Mx0oXz8KkHogiX6oL3+nz4qdEvKk3ep8d0eO09MxhseAVf4iiDI?=
+ =?us-ascii?Q?egUC8sIEpg5iosJdfGVgEsLHCZIutxA7IY+3tBUPRZbGpqQf1XZuIsDWT7Kh?=
+ =?us-ascii?Q?85Q1XavZrnYcg8jUTDVPLU5rGXpR9pCHKn64F4COUAh97a1lENMzjIy/1gX0?=
+ =?us-ascii?Q?h956ef44jv6nl9mLMShdKSnOW5XyqDjo3YuWyhFuSpbO5KtTyYOtlKXAMwy3?=
+ =?us-ascii?Q?0yYPoN9mdthmWrGtjiGI6QpK/nBbyXJQjGXl3GB+D7C7JzqwJhYyCWtyG9xq?=
+ =?us-ascii?Q?LjSx1GbD+rA2a3r9Nc08mkMN/HIz0zyqFIbfHt6StFlkJUTr1ZcEg/6fytGE?=
+ =?us-ascii?Q?bii3Q5LvQQOVB/fMtlcSas7dgmmKke0zoY8I/Al1q/jlgsaisVhUx2M7309d?=
+ =?us-ascii?Q?RTmV+MOvupuKREsmL+HpwpYAUnwmOR1PyrdKf0gdTP/94ZoGh+v8cWKPRuex?=
+ =?us-ascii?Q?2ibCj6Usmoi5Dglqb1n9NqWhTPCxn2PUbrQ9UMbZ8OJQ7l8VWcB96m1hgRgT?=
+ =?us-ascii?Q?ZDbEPDFjvadsHTf9qgHn3G/VXcxbWNqAROUw2ksOsq6yKGRp8Ay/bCPvkxtU?=
+ =?us-ascii?Q?FA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d356995-92d5-44e7-a377-08dad128ef47
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 10:11:37.1411
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: q3Tx5jP2tBcZwL4OQiS0648jD1wlLgYPQzSRZAiAAEQAHDmKE541ebo77G7h6Rf0nx879c/W39rySxePUdNMzqJs/N7KgCguEc8t+r4TbA4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7708
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 27 Nov 2022 at 20:59, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 25/11/2022 10:09, Johannes Berg wrote:
-> > Looks like an NFC issue to me, Krzysztof?
-> >
-> > I mean, rfkill got allocated by nfc_register_device(), freed by
-> > nfc_unregister_device(), and then used by nfc_dev_up(). Seems like the
-> > last bit shouldn't be possible after nfc_unregister_device()?
-> >
-> > johannes
-> >
-> > On Wed, 2022-11-23 at 22:24 -0800, syzbot wrote:
-> >> Hello,
+On Mon, Nov 28, 2022 at 11:21:40AM +0200, Roger Quadros wrote:
+> On 25/11/2022 15:21, Maciej Fijalkowski wrote:
+> > On Wed, Nov 23, 2022 at 02:48:34PM +0200, Roger Quadros wrote:
+> >> During suspend resume the context of PORT_VLAN_REG is lost so
+> >> save it during suspend and restore it during resume for
+> >> host port and slave ports.
 > >>
-> >> syzbot found the following issue on:
+> >> Signed-off-by: Roger Quadros <rogerq@kernel.org>
+> >> Signed-off-by: David S. Miller <davem@davemloft.net>
+> >> ---
+> >>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 7 +++++++
+> >>  drivers/net/ethernet/ti/am65-cpsw-nuss.h | 4 ++++
+> >>  2 files changed, 11 insertions(+)
 > >>
-> >> HEAD commit:    0966d385830d riscv: Fix auipc+jalr relocation range checks
-> >> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
-> >> console output: https://syzkaller.appspot.com/x/log.txt?x=11196d0d880000
-> >> kernel config:  https://syzkaller.appspot.com/x/.config?x=6295d67591064921
-> >> dashboard link: https://syzkaller.appspot.com/bug?extid=0299462c067009827b2a
-> >> compiler:       riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> >> userspace arch: riscv64
-> >>
-> >> Unfortunately, I don't have any reproducer for this issue yet.
-> >>
-> >> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> >> Reported-by: syzbot+0299462c067009827b2a@syzkaller.appspotmail.com
-> >>
-> >> ==================================================================
-> >> BUG: KASAN: use-after-free in __lock_acquire+0x8ee/0x333e kernel/locking/lockdep.c:4897
-> >> Read of size 8 at addr ffffaf8024249018 by task syz-executor.0/7946
-> >>
-> >> CPU: 0 PID: 7946 Comm: syz-executor.0 Not tainted 5.17.0-rc1-syzkaller-00002-g0966d385830d #0
-> >> Hardware name: riscv-virtio,qemu (DT)
-> >> Call Trace:
-> >> [<ffffffff8000a228>] dump_backtrace+0x2e/0x3c arch/riscv/kernel/stacktrace.c:113
-> >> [<ffffffff831668cc>] show_stack+0x34/0x40 arch/riscv/kernel/stacktrace.c:119
-> >> [<ffffffff831756ba>] __dump_stack lib/dump_stack.c:88 [inline]
-> >> [<ffffffff831756ba>] dump_stack_lvl+0xe4/0x150 lib/dump_stack.c:106
-> >> [<ffffffff8047479e>] print_address_description.constprop.0+0x2a/0x330 mm/kasan/report.c:255
-> >> [<ffffffff80474d4c>] __kasan_report mm/kasan/report.c:442 [inline]
-> >> [<ffffffff80474d4c>] kasan_report+0x184/0x1e0 mm/kasan/report.c:459
-> >> [<ffffffff80475b20>] check_region_inline mm/kasan/generic.c:183 [inline]
-> >> [<ffffffff80475b20>] __asan_load8+0x6e/0x96 mm/kasan/generic.c:256
-> >> [<ffffffff80112b70>] __lock_acquire+0x8ee/0x333e kernel/locking/lockdep.c:4897
-> >> [<ffffffff80116582>] lock_acquire.part.0+0x1d0/0x424 kernel/locking/lockdep.c:5639
-> >> [<ffffffff8011682a>] lock_acquire+0x54/0x6a kernel/locking/lockdep.c:5612
-> >> [<ffffffff831afa2c>] __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-> >> [<ffffffff831afa2c>] _raw_spin_lock_irqsave+0x3e/0x62 kernel/locking/spinlock.c:162
-> >> [<ffffffff83034f0a>] rfkill_blocked+0x22/0x62 net/rfkill/core.c:941
-> >> [<ffffffff830b8862>] nfc_dev_up+0x8e/0x26c net/nfc/core.c:102
-> >> [<ffffffff830bb742>] nfc_genl_dev_up+0x5e/0x8a net/nfc/netlink.c:770
-> >> [<ffffffff8296f9ae>] genl_family_rcv_msg_doit+0x19a/0x23c net/netlink/genetlink.c:731
-> >> [<ffffffff82970420>] genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
-> >> [<ffffffff82970420>] genl_rcv_msg+0x236/0x3ba net/netlink/genetlink.c:792
-> >> [<ffffffff8296ded2>] netlink_rcv_skb+0xf8/0x2be net/netlink/af_netlink.c:2494
-> >> [<ffffffff8296ecb2>] genl_rcv+0x36/0x4c net/netlink/genetlink.c:803
-> >> [<ffffffff8296cbcc>] netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
-> >> [<ffffffff8296cbcc>] netlink_unicast+0x40e/0x5fe net/netlink/af_netlink.c:1343
-> >> [<ffffffff8296d29c>] netlink_sendmsg+0x4e0/0x994 net/netlink/af_netlink.c:1919
-> >> [<ffffffff826d264e>] sock_sendmsg_nosec net/socket.c:705 [inline]
-> >> [<ffffffff826d264e>] sock_sendmsg+0xa0/0xc4 net/socket.c:725
-> >> [<ffffffff826d4dd4>] ____sys_sendmsg+0x46e/0x484 net/socket.c:2413
-> >> [<ffffffff826d8bca>] ___sys_sendmsg+0x16c/0x1f6 net/socket.c:2467
-> >> [<ffffffff826d8e78>] __sys_sendmsg+0xba/0x150 net/socket.c:2496
-> >> [<ffffffff826d8f3a>] __do_sys_sendmsg net/socket.c:2505 [inline]
-> >> [<ffffffff826d8f3a>] sys_sendmsg+0x2c/0x3a net/socket.c:2503
-> >> [<ffffffff80005716>] ret_from_syscall+0x0/0x2
-> >>
-> >> Allocated by task 7946:
-> >>  stack_trace_save+0xa6/0xd8 kernel/stacktrace.c:122
-> >>  kasan_save_stack+0x2c/0x58 mm/kasan/common.c:38
-> >>  kasan_set_track mm/kasan/common.c:45 [inline]
-> >>  set_alloc_info mm/kasan/common.c:436 [inline]
-> >>  ____kasan_kmalloc mm/kasan/common.c:515 [inline]
-> >>  ____kasan_kmalloc mm/kasan/common.c:474 [inline]
-> >>  __kasan_kmalloc+0x80/0xb2 mm/kasan/common.c:524
-> >>  kasan_kmalloc include/linux/kasan.h:270 [inline]
-> >>  __kmalloc+0x190/0x318 mm/slub.c:4424
-> >>  kmalloc include/linux/slab.h:586 [inline]
-> >>  kzalloc include/linux/slab.h:715 [inline]
-> >>  rfkill_alloc+0x96/0x1aa net/rfkill/core.c:983
-> >>  nfc_register_device+0xe4/0x29e net/nfc/core.c:1129
-> >>  nci_register_device+0x538/0x612 net/nfc/nci/core.c:1252
-> >>  virtual_ncidev_open+0x82/0x12c drivers/nfc/virtual_ncidev.c:143
-> >>  misc_open+0x272/0x2c8 drivers/char/misc.c:141
-> >>  chrdev_open+0x1d4/0x478 fs/char_dev.c:414
-> >>  do_dentry_open+0x2a4/0x7d4 fs/open.c:824
-> >>  vfs_open+0x52/0x5e fs/open.c:959
-> >>  do_open fs/namei.c:3476 [inline]
-> >>  path_openat+0x12b6/0x189e fs/namei.c:3609
-> >>  do_filp_open+0x10e/0x22a fs/namei.c:3636
-> >>  do_sys_openat2+0x174/0x31e fs/open.c:1214
-> >>  do_sys_open fs/open.c:1230 [inline]
-> >>  __do_sys_openat fs/open.c:1246 [inline]
-> >>  sys_openat+0xdc/0x164 fs/open.c:1241
-> >>  ret_from_syscall+0x0/0x2
-> >>
-> >> Freed by task 7944:
-> >>  stack_trace_save+0xa6/0xd8 kernel/stacktrace.c:122
-> >>  kasan_save_stack+0x2c/0x58 mm/kasan/common.c:38
-> >>  kasan_set_track+0x1a/0x26 mm/kasan/common.c:45
-> >>  kasan_set_free_info+0x1e/0x3a mm/kasan/generic.c:370
-> >>  ____kasan_slab_free mm/kasan/common.c:366 [inline]
-> >>  ____kasan_slab_free+0x15e/0x180 mm/kasan/common.c:328
-> >>  __kasan_slab_free+0x10/0x18 mm/kasan/common.c:374
-> >>  kasan_slab_free include/linux/kasan.h:236 [inline]
-> >>  slab_free_hook mm/slub.c:1728 [inline]
-> >>  slab_free_freelist_hook+0x8e/0x1cc mm/slub.c:1754
-> >>  slab_free mm/slub.c:3509 [inline]
-> >>  kfree+0xe0/0x3e4 mm/slub.c:4562
-> >>  rfkill_release+0x20/0x2a net/rfkill/core.c:831
-> >>  device_release+0x66/0x148 drivers/base/core.c:2229
-> >>  kobject_cleanup lib/kobject.c:705 [inline]
-> >>  kobject_release lib/kobject.c:736 [inline]
-> >>  kref_put include/linux/kref.h:65 [inline]
-> >>  kobject_put+0x1bc/0x38e lib/kobject.c:753
-> >>  put_device+0x28/0x3a drivers/base/core.c:3512
-> >>  rfkill_destroy+0x2a/0x3c net/rfkill/core.c:1142
-> >>  nfc_unregister_device+0xac/0x232 net/nfc/core.c:1167
-> >>  nci_unregister_device+0x168/0x182 net/nfc/nci/core.c:1298
-> >>  virtual_ncidev_close+0x9c/0xbc drivers/nfc/virtual_ncidev.c:163
->
-> There were several issues found recently in virtual NCI driver, so this
-> might be one of them. There is no reproducer, though...
+> >> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >> index 0b59088e3728..f5357afde527 100644
+> >> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >> @@ -2875,7 +2875,9 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
+> >>  	struct am65_cpsw_port *port;
+> >>  	struct net_device *ndev;
+> >>  	int i, ret;
+> >> +	struct am65_cpsw_host *host_p = am65_common_get_host(common);
+> > 
+> > Nit: I see that retrieving host pointer depends on getting the common
+> > pointer first from dev_get_drvdata(dev) so pure RCT is not possible to
+> > maintain here but nonetheless I would move this line just below the common
+> > pointer:
+> > 
+> > 	struct am65_cpsw_common *common = dev_get_drvdata(dev);
+> > 	struct am65_cpsw_host *host = am65_common_get_host(common);
+> > 	struct am65_cpsw_port *port;
+> > 	struct net_device *ndev;
+> > 	int i, ret;
+> 
+> OK.
+> 
+> > 
+> > Also I think plain 'host' for variable name is just fine, no need for _p
+> > suffix to indicate it is a pointer. in that case you should go with
+> > common_p etc.
+> 
+> host_p is the naming convention used throughout the driver.
+> Do think it is a good idea to change it at this one place?
 
+No, maybe think of a refactor throughout whole codebase, changing it in a
+single place would be odd.
 
-Hi Krzysztof,
-
-Do you think it's related specifically to the virtual driver?
-
-I would assume it's a bug in the NCI core itself related to dynamic
-device destructions. This should affect e.g. USB devices as well.
-
-It's an issue only in the virtual driver. It means that the virtual
-driver uses the NCI core incorrectly, not the way all real drivers use
-it. If so the question is: what is the difference? We need to fix it.
-It's not useful to have unrealistic test drivers -- we both get false
-positives and don't get true positives.
-
-I think the issue may be localized from the KASAN report itself w/o a
-reproducer.
-Is there proper synchronization between
-nfc_unregister_device/rfkill_destroy and nfc_dev_up/rfkill_blocked?
-Something that prevents rfkill_blocked to be called after
-rfkill_destroy? If not, then that's the issue.
+> 
+> > 
+> >>  
+> >> +	host_p->vid_context = readl(host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+> >>  	for (i = 0; i < common->port_num; i++) {
+> >>  		port = &common->ports[i];
+> >>  		ndev = port->ndev;
+> >> @@ -2883,6 +2885,7 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
+> >>  		if (!ndev)
+> >>  			continue;
+> >>  
+> >> +		port->vid_context = readl(port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+> >>  		netif_device_detach(ndev);
+> >>  		if (netif_running(ndev)) {
+> >>  			rtnl_lock();
+> >> @@ -2909,6 +2912,7 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+> >>  	struct am65_cpsw_port *port;
+> >>  	struct net_device *ndev;
+> >>  	int i, ret;
+> >> +	struct am65_cpsw_host *host_p = am65_common_get_host(common);
+> >>  
+> >>  	ret = am65_cpsw_nuss_init_tx_chns(common);
+> >>  	if (ret)
+> >> @@ -2941,8 +2945,11 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+> >>  		}
+> >>  
+> >>  		netif_device_attach(ndev);
+> >> +		writel(port->vid_context, port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+> >>  	}
+> >>  
+> >> +	writel(host_p->vid_context, host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+> >> +
+> >>  	return 0;
+> >>  }
+> >>  #endif /* CONFIG_PM_SLEEP */
+> >> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+> >> index 2c9850fdfcb6..e95cc37a7286 100644
+> >> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+> >> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+> >> @@ -55,12 +55,16 @@ struct am65_cpsw_port {
+> >>  	bool				rx_ts_enabled;
+> >>  	struct am65_cpsw_qos		qos;
+> >>  	struct devlink_port		devlink_port;
+> >> +	/* Only for suspend resume context */
+> >> +	u32				vid_context;
+> >>  };
+> >>  
+> >>  struct am65_cpsw_host {
+> >>  	struct am65_cpsw_common		*common;
+> >>  	void __iomem			*port_base;
+> >>  	void __iomem			*stat_base;
+> >> +	/* Only for suspend resume context */
+> >> +	u32				vid_context;
+> >>  };
+> >>  
+> >>  struct am65_cpsw_tx_chn {
+> >> -- 
+> >> 2.17.1
+> >>
+> 
+> --
+> cheers,
+> -roger
