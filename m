@@ -2,142 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 977D9639F5B
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 03:14:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B931E639F82
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 03:38:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229686AbiK1COG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 27 Nov 2022 21:14:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
+        id S229723AbiK1Cir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 21:38:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiK1COF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 21:14:05 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D929CFA;
-        Sun, 27 Nov 2022 18:14:04 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2AS2CoT62031913, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2AS2CoT62031913
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 28 Nov 2022 10:12:50 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Mon, 28 Nov 2022 10:13:34 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Mon, 28 Nov 2022 10:13:34 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Mon, 28 Nov 2022 10:13:33 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Sascha Hauer <s.hauer@pengutronix.de>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Martin Blumenstingl" <martin.blumenstingl@googlemail.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Alexander Hochbaum <alex@appudo.com>,
-        Da Xue <da@libre.computer>,
-        "Bernie Huang" <phhuang@realtek.com>,
-        Viktor Petrenko <g0000ga@gmail.com>
-Subject: RE: [PATCH v3 08/11] rtw88: Add rtw8821cu chipset support
-Thread-Topic: [PATCH v3 08/11] rtw88: Add rtw8821cu chipset support
-Thread-Index: AQHY/oJxlcE4AN1s7Ue+AOL9SzW7Xa5Tn5gw
-Date:   Mon, 28 Nov 2022 02:13:33 +0000
-Message-ID: <64d0d2c40be0404498cf09650d267320@realtek.com>
-References: <20221122145226.4065843-1-s.hauer@pengutronix.de>
- <20221122145226.4065843-9-s.hauer@pengutronix.de>
-In-Reply-To: <20221122145226.4065843-9-s.hauer@pengutronix.de>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/11/27_=3F=3F_10:48:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S229504AbiK1Cip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 21:38:45 -0500
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68C3A1B1;
+        Sun, 27 Nov 2022 18:38:44 -0800 (PST)
+Received: by mail-pg1-f181.google.com with SMTP id s196so8734766pgs.3;
+        Sun, 27 Nov 2022 18:38:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1kG9z2qzxuFG+VRjNYAaaunJxmRkVIHKxHuUo9QjcyE=;
+        b=xpq/ddy9z30TTL8jOYYx+QH71jompOnAITlXG+/Q1SiCODz5cYlaf0vjWFE3f52vzr
+         GNw2vsAdcRB1jcqVSY4MynR3K4RQC/qab86MHxqkjpf3O+MEi5RwS2oeepxt2mh8z1ks
+         fdqFtgnoMBOu/QS+Ns8Ubtev3NmPGrlAklOmb/1Vr4lIT2UgGvYY3UFeIoIBuZ5gnug2
+         VWDAEZn/tPz+Anpr5vpw82wIqmBk7fYCidUVF1iMPh+Kmgmfr+Edx8IKulMIqborvP29
+         sFKWqMP3EYOcj5T+vQ4Vzx/KLwGzSL6O/qihDYlmy1obapyz6JY9h00JJHczDJ3ZLwWb
+         jxvg==
+X-Gm-Message-State: ANoB5pkdOvMNP2ETKz5fRr4ZM1ZIuWMlFE/Vh+llRsp5BAReHGwXftCV
+        iMqCyh/pUNi8vV9n5bbxd7o=
+X-Google-Smtp-Source: AA0mqf5vmCbco6ZHPjAXXxhwtD8PwFo1rRkGl5sk/L6YEIBylIo5gFL0rkxaBBXNXZfCI6rD4vcBjA==
+X-Received: by 2002:a63:388:0:b0:477:c828:dd2d with SMTP id 130-20020a630388000000b00477c828dd2dmr18012978pgd.105.1669603124285;
+        Sun, 27 Nov 2022 18:38:44 -0800 (PST)
+Received: from [192.168.3.219] ([98.51.102.78])
+        by smtp.gmail.com with ESMTPSA id j8-20020a170902da8800b00176ea6ce0efsm7507123plx.109.2022.11.27.18.38.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Nov 2022 18:38:43 -0800 (PST)
+Message-ID: <5b14cdea-1bbe-1900-0004-a218ba97bbcb@acm.org>
+Date:   Sun, 27 Nov 2022 18:38:39 -0800
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH 1/5] driver core: make struct class.dev_uevent() take a
+ const *
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Russ Weight <russell.h.weight@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Johan Hovold <johan@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sebastian Reichel <sre@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Raed Salem <raeds@nvidia.com>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Avihai Horon <avihaih@nvidia.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Colin Ian King <colin.i.king@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Wang Yufen <wangyufen@huawei.com>, linux-block@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20221123122523.1332370-1-gregkh@linuxfoundation.org>
+ <d448b944-708a-32d4-37d7-0be16ee5f73c@acm.org> <Y4NqAJW5V0tAP8ax@kroah.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <Y4NqAJW5V0tAP8ax@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Sascha Hauer <s.hauer@pengutronix.de>
-> Sent: Tuesday, November 22, 2022 10:52 PM
-> To: linux-wireless@vger.kernel.org
-> Cc: Neo Jou <neojou@gmail.com>; Hans Ulli Kroll <linux@ulli-kroll.de>; Ping-Ke Shih <pkshih@realtek.com>;
-> Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org; Martin Blumenstingl <martin.blumenstingl@googlemail.com>;
-> kernel@pengutronix.de; Johannes Berg <johannes@sipsolutions.net>; Alexander Hochbaum <alex@appudo.com>;
-> Da Xue <da@libre.computer>; Bernie Huang <phhuang@realtek.com>; Viktor Petrenko <g0000ga@gmail.com>;
-> Sascha Hauer <s.hauer@pengutronix.de>
-> Subject: [PATCH v3 08/11] rtw88: Add rtw8821cu chipset support
+On 11/27/22 05:45, Greg Kroah-Hartman wrote:
+> On Fri, Nov 25, 2022 at 03:51:11PM -0800, Bart Van Assche wrote:
+>> On 11/23/22 04:25, Greg Kroah-Hartman wrote:
+>>> diff --git a/include/linux/mISDNif.h b/include/linux/mISDNif.h
+>>> index 7dd1f01ec4f9..7aab4a769736 100644
+>>> --- a/include/linux/mISDNif.h
+>>> +++ b/include/linux/mISDNif.h
+>>> @@ -586,7 +586,7 @@ extern struct mISDNclock *mISDN_register_clock(char *, int, clockctl_func_t *,
+>>>    						void *);
+>>>    extern void	mISDN_unregister_clock(struct mISDNclock *);
+>>> -static inline struct mISDNdevice *dev_to_mISDN(struct device *dev)
+>>> +static inline struct mISDNdevice *dev_to_mISDN(const struct device *dev)
+>>>    {
+>>>    	if (dev)
+>>>    		return dev_get_drvdata(dev);
+>>
+>> Why does the dev_to_mISDN() function drop constness? I haven't found an
+>> explanation for this in the cover letter.
 > 
-> Add support for the rtw8821cu chipset based on
-> https://github.com/ulli-kroll/rtw88-usb.git
+> I agree, this is going to be fixed up, see the thread starting here:
+> 	https://lore.kernel.org/r/Y34+V2bCDdqujBDk@kroah.com
 > 
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> ---
+> I'll work on making a const / non const version for these so that we
+> don't loose the marking.
 > 
-> Notes:
->     Changes since v2:
->     - Fix txdesc checksum calculation. The checksum must be calculated over
->       a fixed number of words.
-> 
->  drivers/net/wireless/realtek/rtw88/Kconfig    | 11 ++++
->  drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
->  drivers/net/wireless/realtek/rtw88/rtw8821c.c | 18 +++++++
->  drivers/net/wireless/realtek/rtw88/rtw8821c.h | 21 ++++++++
->  .../net/wireless/realtek/rtw88/rtw8821cu.c    | 50 +++++++++++++++++++
->  .../net/wireless/realtek/rtw88/rtw8821cu.h    | 10 ++++
->  6 files changed, 113 insertions(+)
->  create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.c
->  create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.h
-> 
+> Oh wait, no, this function is fine, it's not modifying the device
+> structure at all, and only returning the pointer in the private data
+> stored in the device.  There is no loss of const-ness here.
 
-[...]
+Hi Greg,
 
-> --- /dev/null
-> +++ b/drivers/net/wireless/realtek/rtw88/rtw8821cu.h
-> @@ -0,0 +1,10 @@
-> +/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-> +/* Copyright(c) 2018-2019  Realtek Corporation
-> + */
-> +
-> +#ifndef __RTW_8821CU_H_
-> +#define __RTW_8821CU_H_
-> +
-> +extern struct rtw_chip_info rtw8821c_hw_spec;
+This is what I found in include/linux/mISDNif.h:
 
-This has been moved to rtw8821c.h by
-89d8f53ff6e ("wifi: rtw88: Fix Sparse warning for rtw8821c_hw_spec")
+struct mISDNdevice {
+	struct mISDNchannel	D;
+	u_int			id;
+	u_int			Dprotocols;
+	u_int			Bprotocols;
+	u_int			nrbchan;
+	u_char			channelmap[MISDN_CHMAP_SIZE];
+	struct list_head	bchannels;
+	struct mISDNchannel	*teimgr;
+	struct device		dev;
+};
 
-So, we don't need rtw8821cu.h anymore. 
-Please apply this rule to other chips.
+As one can see 'dev' is a member of struct mISDNdevice. I still think 
+that dev_to_mISDN() drops constness. Did I perhaps overlook something?
 
-> +
-> +#endif
-> --
-> 2.30.2
-
+Bart.
