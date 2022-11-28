@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 649E563A79E
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:01:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A82D863A7AE
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:01:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231453AbiK1MBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 07:01:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
+        id S231614AbiK1MBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 07:01:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231417AbiK1MAU (ORCPT
+        with ESMTP id S231418AbiK1MAU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:20 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6663619C15
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4D118B24
         for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:18 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcns-0003nH-Bh; Mon, 28 Nov 2022 13:00:04 +0100
+        id 1ozcnr-0003n1-NO; Mon, 28 Nov 2022 13:00:03 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcnq-000o90-KV; Mon, 28 Nov 2022 13:00:03 +0100
+        id 1ozcnp-000o8M-AM; Mon, 28 Nov 2022 13:00:02 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcnn-00Gzd2-OL; Mon, 28 Nov 2022 12:59:59 +0100
+        id 1ozcnn-00GzdB-Op; Mon, 28 Nov 2022 12:59:59 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH v1 04/26] net: dsa: microchip: ksz8: ksz8_fdb_dump: fix time stamp extraction
-Date:   Mon, 28 Nov 2022 12:59:36 +0100
-Message-Id: <20221128115958.4049431-5-o.rempel@pengutronix.de>
+Subject: [PATCH v1 05/26] net: dsa: microchip: ksz8: ksz8_fdb_dump: do not extract ghost entry from empty table
+Date:   Mon, 28 Nov 2022 12:59:37 +0100
+Message-Id: <20221128115958.4049431-6-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221128115958.4049431-1-o.rempel@pengutronix.de>
 References: <20221128115958.4049431-1-o.rempel@pengutronix.de>
@@ -60,8 +60,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-FDB fix time stamp extraction. We are using wrong offset, so we will get
-not a time stamp.
+If the dynamic MAC table is empty, we will still extract one outdated
+entry. Fix it by using correct bit offset.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
@@ -69,18 +69,18 @@ Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 43d94131417b..7c28dc1edaa1 100644
+index 7c28dc1edaa1..afb846c18b57 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -414,7 +414,7 @@ static u8 ksz8863_shifts[] = {
- 	[DYNAMIC_MAC_ENTRIES_H]		= 8,
- 	[DYNAMIC_MAC_ENTRIES]		= 24,
- 	[DYNAMIC_MAC_FID]		= 16,
--	[DYNAMIC_MAC_TIMESTAMP]		= 24,
-+	[DYNAMIC_MAC_TIMESTAMP]		= 22,
- 	[DYNAMIC_MAC_SRC_PORT]		= 20,
- };
- 
+@@ -399,7 +399,7 @@ static const u32 ksz8863_masks[] = {
+ 	[STATIC_MAC_TABLE_OVERRIDE]	= BIT(20),
+ 	[STATIC_MAC_TABLE_FWD_PORTS]	= GENMASK(18, 16),
+ 	[DYNAMIC_MAC_TABLE_ENTRIES_H]	= GENMASK(1, 0),
+-	[DYNAMIC_MAC_TABLE_MAC_EMPTY]	= BIT(7),
++	[DYNAMIC_MAC_TABLE_MAC_EMPTY]	= BIT(2),
+ 	[DYNAMIC_MAC_TABLE_NOT_READY]	= BIT(7),
+ 	[DYNAMIC_MAC_TABLE_ENTRIES]	= GENMASK(31, 24),
+ 	[DYNAMIC_MAC_TABLE_FID]		= GENMASK(19, 16),
 -- 
 2.30.2
 
