@@ -2,195 +2,400 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EADF2639F1C
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 02:58:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D089C639F2C
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 03:02:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbiK1B6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 20:58:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55686 "EHLO
+        id S229746AbiK1CB7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 27 Nov 2022 21:01:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiK1B6D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 20:58:03 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E535588;
-        Sun, 27 Nov 2022 17:58:02 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id a16so8668390pfg.4;
-        Sun, 27 Nov 2022 17:58:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Qe5hs8FVwx45grj4bepS5YGWgIaIZzpvoky/dPKEgAk=;
-        b=TpscOfhnmXx5pu5TdPhBFc7zRC07xeXebnx+Y9ppmhZYFRHkldn7qCe6ojvHTNGJU5
-         yfZ7a6rAKyzM8l7JTHp78PAiMDBaKEImvd0GA8o6MpXL0KeLnoofdor7TKoUGqrDeja3
-         r49Fy2JPrJgz7U/hjsabD6BCnoo2AQPT2GZ1NAZhu3jxsM5endb1hglbbJ0qGhYYM7bX
-         e5803Ljb5Bc5BfiXqGccsVhBt8Y4VCS0mguJkq/odVAnUtzgI98Ie1YfixHOEUPgINjB
-         1T8qW/hDnDEdIhI5Lw1KMSl39i8klSdYMYCBmpZ1zX6pFJ0DaP0hGP+VUFFYrSdt0Z94
-         5VgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Qe5hs8FVwx45grj4bepS5YGWgIaIZzpvoky/dPKEgAk=;
-        b=eN5b64gW4TKo3rfoTUTClnwxFTX14p/55DWS616YQILse13lgjtmF3Gs76/DuGxOSr
-         7PocdpsyQT2hle+g6IGwV9fBKviNANs6k15vn71/tnTPPi7S1SSecNSq5yfeIKULrsfs
-         3MOtNGqiHQ9Qr6jaeiT9Ei3Nmyf66AHw6QwLSsw/WNReE/sRITN+1GQHpJ1bhbBy8r4f
-         W+H5jP46ufO1dX7Y/B/GGG24B2l/cJZfxnM5urkkfb1kHlpT/M7s7FdAOytY/ZoxVG8/
-         i7Ej+KSzvhKX6MA8Wj+6UDKKRAmZ4B8sNt2ea0y4hxz844YvWYYAzA9ducBivfNpJhy7
-         3QJg==
-X-Gm-Message-State: ANoB5pmA4gA4LydD2QNN6kxbFQgV6wmanh5IkUTt53jLqygVOGovIKR/
-        QqVU/0W+uMPeQCLPzboSZwA=
-X-Google-Smtp-Source: AA0mqf6LnCWalB/CHpLF1Wy9qOn4snB2bh4yLi18Y4L4ZAcXtWAV8uvGpIw9WL/CvXIIWkiMytzgmw==
-X-Received: by 2002:a63:902:0:b0:46e:9bb2:f0f7 with SMTP id 2-20020a630902000000b0046e9bb2f0f7mr26810278pgj.203.1669600681853;
-        Sun, 27 Nov 2022 17:58:01 -0800 (PST)
-Received: from MacBook-Pro-5.local ([2620:10d:c090:500::7:8561])
-        by smtp.gmail.com with ESMTPSA id w9-20020a170902904900b00187033cac81sm7452217plz.145.2022.11.27.17.57.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Nov 2022 17:58:01 -0800 (PST)
-Date:   Sun, 27 Nov 2022 17:57:58 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Yang Jihong <yangjihong1@huawei.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, illusionist.neo@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, mykolal@fb.com,
-        shuah@kernel.org, benjamin.tissoires@redhat.com, memxor@gmail.com,
-        colin.i.king@gmail.com, asavkov@redhat.com, delyank@fb.com,
-        bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 1/4] bpf: Adapt 32-bit return value kfunc for
- 32-bit ARM when zext extension
-Message-ID: <20221128015758.aekybr3qlahfopwq@MacBook-Pro-5.local>
-References: <20221126094530.226629-1-yangjihong1@huawei.com>
- <20221126094530.226629-2-yangjihong1@huawei.com>
+        with ESMTP id S229504AbiK1CB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 21:01:58 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1484FD2F9;
+        Sun, 27 Nov 2022 18:01:53 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2AS20BzQ4022829, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2AS20BzQ4022829
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 28 Nov 2022 10:00:11 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Mon, 28 Nov 2022 10:00:56 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 28 Nov 2022 10:00:55 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Mon, 28 Nov 2022 10:00:55 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Sascha Hauer <s.hauer@pengutronix.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Martin Blumenstingl" <martin.blumenstingl@googlemail.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Alexander Hochbaum <alex@appudo.com>,
+        Da Xue <da@libre.computer>,
+        "Bernie Huang" <phhuang@realtek.com>,
+        Viktor Petrenko <g0000ga@gmail.com>,
+        neo_jou <neo_jou@realtek.com>
+Subject: RE: [PATCH v3 07/11] rtw88: Add common USB chip support
+Thread-Topic: [PATCH v3 07/11] rtw88: Add common USB chip support
+Thread-Index: AQHY/oI8ptr99hEq8k+LqRAzoG392a5PWSHw
+Date:   Mon, 28 Nov 2022 02:00:54 +0000
+Message-ID: <1f7aa964766c4f65b836f7e1d716a1e3@realtek.com>
+References: <20221122145226.4065843-1-s.hauer@pengutronix.de>
+ <20221122145226.4065843-8-s.hauer@pengutronix.de>
+In-Reply-To: <20221122145226.4065843-8-s.hauer@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/11/27_=3F=3F_10:48:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221126094530.226629-2-yangjihong1@huawei.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 26, 2022 at 05:45:27PM +0800, Yang Jihong wrote:
-> For ARM32 architecture, if data width of kfunc return value is 32 bits,
-> need to do explicit zero extension for high 32-bit, insn_def_regno should
-> return dst_reg for BPF_JMP type of BPF_PSEUDO_KFUNC_CALL. Otherwise,
-> opt_subreg_zext_lo32_rnd_hi32 returns -EFAULT, resulting in BPF failure.
+
+
+> -----Original Message-----
+> From: Sascha Hauer <s.hauer@pengutronix.de>
+> Sent: Tuesday, November 22, 2022 10:52 PM
+> To: linux-wireless@vger.kernel.org
+> Cc: Neo Jou <neojou@gmail.com>; Hans Ulli Kroll <linux@ulli-kroll.de>; Ping-Ke Shih <pkshih@realtek.com>;
+> Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; Martin Blumenstingl <martin.blumenstingl@googlemail.com>;
+> kernel@pengutronix.de; Johannes Berg <johannes@sipsolutions.net>; Alexander Hochbaum <alex@appudo.com>;
+> Da Xue <da@libre.computer>; Bernie Huang <phhuang@realtek.com>; Viktor Petrenko <g0000ga@gmail.com>;
+> Sascha Hauer <s.hauer@pengutronix.de>; neo_jou <neo_jou@realtek.com>
+> Subject: [PATCH v3 07/11] rtw88: Add common USB chip support
 > 
-> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+> Add the common bits and pieces to add USB support to the RTW88 driver.
+> This is based on https://github.com/ulli-kroll/rtw88-usb.git which
+> itself is first written by Neo Jou.
+> 
+> Signed-off-by: neo_jou <neo_jou@realtek.com>
+> Signed-off-by: Hans Ulli Kroll <linux@ulli-kroll.de>
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 > ---
->  kernel/bpf/verifier.c | 44 ++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 41 insertions(+), 3 deletions(-)
 > 
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 264b3dc714cc..193ea927aa69 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -1927,6 +1927,21 @@ find_kfunc_desc(const struct bpf_prog *prog, u32 func_id, u16 offset)
->  		       sizeof(tab->descs[0]), kfunc_desc_cmp_by_id_off);
->  }
->  
-> +static int kfunc_desc_cmp_by_imm(const void *a, const void *b);
+> Notes:
+>     Changes since v2:
+>     - Fix buffer length for aggregated tx packets
+>     - Increase maximum transmit buffer size to 20KiB as found in downstream drivers
+>     - Change register write functions to synchronous accesses instead of just firing
+>       a URB without waiting for its completion
+>     - requeue rx URBs directly in completion handler rather than having a workqueue
+>       for it.
+> 
+>     Changes since v1:
+>     - Make checkpatch.pl clean
+>     - Drop WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL flag
+>     - Use 'ret' as variable name for return values
+>     - Sort variable declarations in reverse Xmas tree order
+>     - Change potentially endless loop to a limited loop
+>     - Change locking to be more obviously correct
+>     - drop unnecessary check for !rtwdev
+>     - make sure the refill workqueue is not restarted again after we have
+>       cancelled it
+> 
+>  drivers/net/wireless/realtek/rtw88/Kconfig  |   3 +
+>  drivers/net/wireless/realtek/rtw88/Makefile |   2 +
+>  drivers/net/wireless/realtek/rtw88/mac.c    |   3 +
+>  drivers/net/wireless/realtek/rtw88/main.c   |   4 +
+>  drivers/net/wireless/realtek/rtw88/main.h   |   4 +
+>  drivers/net/wireless/realtek/rtw88/reg.h    |   1 +
+>  drivers/net/wireless/realtek/rtw88/tx.h     |  31 +
+>  drivers/net/wireless/realtek/rtw88/usb.c    | 918 ++++++++++++++++++++
+>  drivers/net/wireless/realtek/rtw88/usb.h    | 107 +++
+>  9 files changed, 1073 insertions(+)
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/usb.c
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/usb.h
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/Kconfig b/drivers/net/wireless/realtek/rtw88/Kconfig
+> index e3d7cb6c12902..1624c5db69bac 100644
+> --- a/drivers/net/wireless/realtek/rtw88/Kconfig
+> +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
+> @@ -16,6 +16,9 @@ config RTW88_CORE
+>  config RTW88_PCI
+>  	tristate
+> 
+> +config RTW88_USB
+> +	tristate
 > +
-> +static const struct bpf_kfunc_desc *
-> +find_kfunc_desc_by_imm(const struct bpf_prog *prog, s32 imm)
+>  config RTW88_8822B
+>  	tristate
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/Makefile b/drivers/net/wireless/realtek/rtw88/Makefile
+> index 834c66ec0af9e..9e095f8181483 100644
+> --- a/drivers/net/wireless/realtek/rtw88/Makefile
+> +++ b/drivers/net/wireless/realtek/rtw88/Makefile
+> @@ -45,4 +45,6 @@ obj-$(CONFIG_RTW88_8821CE)	+= rtw88_8821ce.o
+>  rtw88_8821ce-objs		:= rtw8821ce.o
+> 
+>  obj-$(CONFIG_RTW88_PCI)		+= rtw88_pci.o
+> +obj-$(CONFIG_RTW88_USB)		+= rtw88_usb.o
+>  rtw88_pci-objs			:= pci.o
+> +rtw88_usb-objs			:= usb.o
+
+nit: I prefer not interleaving with PCI.
+
+
+[...]
+
+> diff --git a/drivers/net/wireless/realtek/rtw88/usb.c b/drivers/net/wireless/realtek/rtw88/usb.c
+> new file mode 100644
+> index 0000000000000..4a12934d20712
+> --- /dev/null
+> +++ b/drivers/net/wireless/realtek/rtw88/usb.c
+
+[...]
+
+> +static u32 rtw_usb_read(struct rtw_dev *rtwdev, u32 addr, u16 len)
 > +{
-> +	struct bpf_kfunc_desc desc = {
-> +		.imm = imm,
-> +	};
-> +	struct bpf_kfunc_desc_tab *tab;
+> +	struct rtw_usb *rtwusb = rtw_get_usb_priv(rtwdev);
+> +	struct usb_device *udev = rtwusb->udev;
+> +	__le32 *data;
+> +	unsigned long flags;
+> +	int ret;
+> +	static int count;
 > +
-> +	tab = prog->aux->kfunc_tab;
-> +	return bsearch(&desc, tab->descs, tab->nr_descs,
-> +		       sizeof(tab->descs[0]), kfunc_desc_cmp_by_imm);
+> +	spin_lock_irqsave(&rtwusb->usb_lock, flags);
+> +
+> +	rtwusb->usb_data_index++;
+> +	rtwusb->usb_data_index &= (RTW_USB_MAX_RXTX_COUNT - 1);
+> +
+> +	spin_unlock_irqrestore(&rtwusb->usb_lock, flags);
+> +
+> +	data = &rtwusb->usb_data[rtwusb->usb_data_index];
+
+Don't you need to hold &rtwusb->usb_lock to access rtwusb->usb_data_index?
+rtw_usb_write() has similar code.
+
+> +
+> +	ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
+> +			      RTW_USB_CMD_REQ, RTW_USB_CMD_READ, addr,
+> +			      RTW_USB_VENQT_CMD_IDX, data, len, 1000);
+> +	if (ret < 0 && ret != -ENODEV && count++ < 4)
+> +		rtw_err(rtwdev, "read register 0x%x failed with %d\n",
+> +			addr, ret);
+> +
+> +	return le32_to_cpu(*data);
 > +}
 > +
->  static struct btf *__find_kfunc_desc_btf(struct bpf_verifier_env *env,
->  					 s16 offset)
->  {
-> @@ -2342,6 +2357,13 @@ static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
->  			 */
->  			if (insn->src_reg == BPF_PSEUDO_CALL)
->  				return false;
+
+[...]
+
 > +
-> +			/* Kfunc call will reach here because of insn_has_def32,
-> +			 * conservatively return TRUE.
-> +			 */
-> +			if (insn->src_reg == BPF_PSEUDO_KFUNC_CALL)
-> +				return true;
+> +static void rtw_usb_write_port_tx_complete(struct urb *urb)
+> +{
+> +	struct rtw_usb_txcb *txcb = urb->context;
+> +	struct rtw_dev *rtwdev = txcb->rtwdev;
+> +	struct ieee80211_hw *hw = rtwdev->hw;
 > +
->  			/* Helper call will reach here because of arg type
->  			 * check, conservatively return TRUE.
->  			 */
-> @@ -2405,10 +2427,26 @@ static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
->  }
->  
->  /* Return the regno defined by the insn, or -1. */
-> -static int insn_def_regno(const struct bpf_insn *insn)
-> +static int insn_def_regno(struct bpf_verifier_env *env, const struct bpf_insn *insn)
->  {
->  	switch (BPF_CLASS(insn->code)) {
->  	case BPF_JMP:
-> +		if (insn->src_reg == BPF_PSEUDO_KFUNC_CALL) {
-> +			const struct bpf_kfunc_desc *desc;
+> +	while (true) {
+
+Is it possible to have a hard limit to prevent unexpected infinite loop?
+
+> +		struct sk_buff *skb = skb_dequeue(&txcb->tx_ack_queue);
+> +		struct ieee80211_tx_info *info;
+> +		struct rtw_usb_tx_data *tx_data;
 > +
-> +			/* The value of desc cannot be NULL */
-> +			desc = find_kfunc_desc_by_imm(env->prog, insn->imm);
+> +		if (!skb)
+> +			break;
 > +
-> +			/* A kfunc can return void.
-> +			 * The btf type of the kfunc's return value needs
-> +			 * to be checked against "void" first
-> +			 */
-> +			if (desc->func_model.ret_size == 0)
-> +				return -1;
-> +			else
-> +				return insn->dst_reg;
+> +		info = IEEE80211_SKB_CB(skb);
+> +		tx_data = rtw_usb_get_tx_data(skb);
+> +
+> +		/* enqueue to wait for tx report */
+> +		if (info->flags & IEEE80211_TX_CTL_REQ_TX_STATUS) {
+> +			rtw_tx_report_enqueue(rtwdev, skb, tx_data->sn);
+> +			continue;
 > +		}
-> +		fallthrough;
+> +
+> +		/* always ACK for others, then they won't be marked as drop */
+> +		ieee80211_tx_info_clear_status(info);
+> +		if (info->flags & IEEE80211_TX_CTL_NO_ACK)
+> +			info->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
+> +		else
+> +			info->flags |= IEEE80211_TX_STAT_ACK;
+> +
+> +		ieee80211_tx_status_irqsafe(hw, skb);
+> +	}
+> +
+> +	kfree(txcb);
+> +}
+> +
 
-I cannot make any sense of this patch.
-insn->dst_reg above is 0.
-The kfunc call doesn't define a register from insn_def_regno() pov.
+[...]
 
-Are you hacking insn_def_regno() to return 0 so that
-if (WARN_ON(load_reg == -1)) {
-  verbose(env, "verifier bug. zext_dst is set, but no reg is defined\n");
-  return -EFAULT;
-}
-in opt_subreg_zext_lo32_rnd_hi32() doesn't trigger ?
+> +
+> +static bool rtw_usb_tx_agg_skb(struct rtw_usb *rtwusb, struct sk_buff_head *list)
+> +{
+> +	struct rtw_dev *rtwdev = rtwusb->rtwdev;
+> +	struct rtw_usb_txcb *txcb;
+> +	struct sk_buff *skb_head;
+> +	struct sk_buff *skb_iter;
+> +	u8 *data_ptr;
+> +	int agg_num = 0;
+> +	unsigned int align_next = 0;
+> +
+> +	if (skb_queue_empty(list))
+> +		return false;
+> +
+> +	txcb = kmalloc(sizeof(*txcb), GFP_ATOMIC);
+> +	if (!txcb)
+> +		return false;
+> +
+> +	txcb->rtwdev = rtwdev;
+> +	skb_queue_head_init(&txcb->tx_ack_queue);
+> +
+> +	skb_iter = skb_dequeue(list);
+> +
+> +	if (skb_queue_empty(list)) {
+> +		skb_head = skb_iter;
+> +		goto queue;
+> +	}
+> +
+> +	skb_head = dev_alloc_skb(RTW_USB_MAX_XMITBUF_SZ);
+> +	if (!skb_head) {
+> +		skb_head = skb_iter;
+> +		goto queue;
+> +	}
+> +
+> +	data_ptr = skb_head->data;
+> +
+> +	while (skb_iter) {
+> +		unsigned long flags;
+> +
+> +		memcpy(data_ptr, skb_iter->data, skb_iter->len);
+> +		skb_put(skb_head, skb_iter->len + align_next);
 
-But this verifier message should have been a hint that you need
-to analyze why zext_dst is set on this kfunc call.
-Maybe it shouldn't ?
-Did you analyze the logic of mark_btf_func_reg_size() ?
+skb_put(skb_head, align_next);
+skb_put_data(skb_head, skb_iter->data, skb_iter->len);
 
-Before producing any patches please understand the logic fully.
-Your commit log
-"insn_def_regno should
- return dst_reg for BPF_JMP type of BPF_PSEUDO_KFUNC_CALL."
+Then, don't need to maintain 'data_ptr'.
 
-Makes no sense to me, since dst_reg is unused in JMP insn.
-There is no concept of a src or dst register in a JMP insn.
+> +
+> +		align_next = ALIGN(skb_iter->len, 8) - skb_iter->len;
+> +		data_ptr += skb_iter->len + align_next;
+> +
+> +		agg_num++;
+> +
+> +		skb_queue_tail(&txcb->tx_ack_queue, skb_iter);
+> +
+> +		spin_lock_irqsave(&list->lock, flags);
+> +
+> +		skb_iter = skb_peek(list);
+> +
+> +		if (skb_iter && skb_iter->len + skb_head->len <= RTW_USB_MAX_XMITBUF_SZ)
+> +			__skb_unlink(skb_iter, list);
+> +		else
+> +			skb_iter = NULL;
+> +		spin_unlock_irqrestore(&list->lock, flags);
+> +	}
+> +
+> +	if (agg_num > 1)
+> +		rtw_usb_fill_tx_checksum(rtwusb, skb_head, agg_num);
+> +
+> +queue:
+> +	skb_queue_tail(&txcb->tx_ack_queue, skb_head);
+> +
+> +	rtw_usb_write_port(rtwdev, GET_TX_DESC_QSEL(skb_head->data), skb_head,
+> +			   rtw_usb_write_port_tx_complete, txcb);
+> +
+> +	return true;
+> +}
+> +
 
-32-bit x86 supports calling kfuncs. See emit_kfunc_call().
-And we don't have this "verifier bug. zext_dst is set" issue there, right?
-But what you're saying in the commit log:
-"if data width of kfunc return value is 32 bits"
-should have been applicable to x86-32 as well.
-So please start with a test that demonstrates the issue on x86-32 and
-then we can discuss the way to fix it.
+[...]
 
-The patch 2 sort-of makes sense.
+> +
+> +static void rtw_usb_rx_resubmit(struct rtw_usb *rtwusb, struct rx_usb_ctrl_block *rxcb)
+> +{
+> +	struct rtw_dev *rtwdev = rtwusb->rtwdev;
+> +	int error;
+> +
+> +	rxcb->rx_skb = alloc_skb(RTW_USB_MAX_RECVBUF_SZ, GFP_ATOMIC);
+> +	if (!rxcb->rx_skb)
+> +		return;
+> +
+> +	usb_fill_bulk_urb(rxcb->rx_urb, rtwusb->udev,
+> +			  usb_rcvbulkpipe(rtwusb->udev, rtwusb->pipe_in),
+> +			  rxcb->rx_skb->data, RTW_USB_MAX_RECVBUF_SZ,
+> +			  rtw_usb_read_port_complete, rxcb);
+> +
+> +	error = usb_submit_urb(rxcb->rx_urb, GFP_ATOMIC);
+> +	if (error) {
+> +		kfree_skb(rxcb->rx_skb);
+> +		if (error != -ENODEV)
+> +			rtw_err(rtwdev, "Err sending rx data urb %d\n",
+> +				error);
 
-For patch 3 pls add new test funcs to bpf_testmod.
-We will move all of them from net/bpf/test_run.c to bpf_testmod eventually.
+nit: straighten rtw_err()
+
+> +	}
+> +}
+> +
+
+[...]
+
+> diff --git a/drivers/net/wireless/realtek/rtw88/usb.h b/drivers/net/wireless/realtek/rtw88/usb.h
+> new file mode 100644
+> index 0000000000000..e26f8afb09f29
+> --- /dev/null
+> +++ b/drivers/net/wireless/realtek/rtw88/usb.h
+
+[...]
+
+> +
+> +static inline struct rtw_usb_tx_data *rtw_usb_get_tx_data(struct sk_buff *skb)
+> +{
+> +	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
+> +
+> +	BUILD_BUG_ON(sizeof(struct rtw_usb_tx_data) >
+> +		sizeof(info->status.status_driver_data));
+
+coding style: 
+
+align the open parenthesis 
+
+	BUILD_BUG_ON(sizeof(struct rtw_usb_tx_data) >
+		     sizeof(info->status.status_driver_data));
+
+> +
+> +	return (struct rtw_usb_tx_data *)info->status.status_driver_data;
+> +}
+> +
+> +int rtw_usb_probe(struct usb_interface *intf, const struct usb_device_id *id);
+> +void rtw_usb_disconnect(struct usb_interface *intf);
+> +
+> +#endif
+> --
+> 2.30.2
+
