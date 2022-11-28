@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE6F963A7BD
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C705263A7C1
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231629AbiK1MBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 07:01:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
+        id S230249AbiK1MBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 07:01:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231493AbiK1MAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:47 -0500
+        with ESMTP id S231506AbiK1MAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:48 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715DD1A078
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423D6186EC
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:47 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoQ-0005HU-Q9; Mon, 28 Nov 2022 13:00:38 +0100
+        id 1ozcoS-0005Jb-19; Mon, 28 Nov 2022 13:00:40 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoP-000oAu-51; Mon, 28 Nov 2022 13:00:37 +0100
+        id 1ozcoQ-000oBM-Gl; Mon, 28 Nov 2022 13:00:39 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoN-00H6NG-Db; Mon, 28 Nov 2022 13:00:35 +0100
+        id 1ozcoN-00H6Na-Gn; Mon, 28 Nov 2022 13:00:35 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH v1 06/26] net: dsa: microchip: ksz8863_smi: fix bulk access
-Date:   Mon, 28 Nov 2022 13:00:14 +0100
-Message-Id: <20221128120034.4075562-7-o.rempel@pengutronix.de>
+Subject: [PATCH v1 07/26] net: dsa: microchip: ksz8_r_dyn_mac_table(): remove timestamp support
+Date:   Mon, 28 Nov 2022 13:00:15 +0100
+Message-Id: <20221128120034.4075562-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221128120034.4075562-1-o.rempel@pengutronix.de>
 References: <20221128120034.4075562-1-o.rempel@pengutronix.de>
@@ -60,88 +60,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current regmap bulk access is broken, resulting to wrong reads/writes
-if ksz_read64/ksz_write64 functions are used.
-Mostly this issue was visible by using ksz8_fdb_dump(), which returned
-corrupt MAC address.
-
-The reason is that regmap was configured to have max_raw_read/write,
-even if ksz8863_mdio_read/write functions are able to handle unlimited
-read/write accesses. On ksz_read64 function we are using multiple 32bit
-accesses by incrementing each access by 1 instead of 4. Resulting buffer
-had 01234567.12345678 instead of 01234567.89abcdef.
-
-We have multiple ways to fix it:
-- enable 4 byte alignment for 32bit accesses. Since the HW do not have
-  this requirement. It will break driver.
-- disable max_raw_* limit.
-
-This patch is removing max_raw_* limit for regmap accesses in ksz8863_smi.
+We do not use FDB timestamps. So, drop it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8863_smi.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ drivers/net/dsa/microchip/ksz8.h    | 2 +-
+ drivers/net/dsa/microchip/ksz8795.c | 7 ++-----
+ 2 files changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
-index 2f4623f3bd85..2516c9db7fec 100644
---- a/drivers/net/dsa/microchip/ksz8863_smi.c
-+++ b/drivers/net/dsa/microchip/ksz8863_smi.c
-@@ -70,6 +70,7 @@ static int ksz8863_mdio_write(void *ctx, const void *data, size_t count)
- 				      tmp, val[i]);
- 		if (ret < 0)
- 			goto out;
-+
- 	}
+diff --git a/drivers/net/dsa/microchip/ksz8.h b/drivers/net/dsa/microchip/ksz8.h
+index ea05abfbd51d..ad8e69051347 100644
+--- a/drivers/net/dsa/microchip/ksz8.h
++++ b/drivers/net/dsa/microchip/ksz8.h
+@@ -20,7 +20,7 @@ void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port);
+ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
+ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val);
+ int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
+-			 u8 *fid, u8 *src_port, u8 *timestamp, u16 *entries);
++			 u8 *fid, u8 *src_port, u16 *entries);
+ int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
+ 			 struct alu_struct *alu);
+ void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index e0530bc3bec0..d0cfe74d5b13 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -395,7 +395,7 @@ static int ksz8_valid_dyn_entry(struct ksz_device *dev, u8 *data)
+ }
  
-  out:
-@@ -82,22 +83,16 @@ static const struct regmap_bus regmap_smi[] = {
- 	{
- 		.read = ksz8863_mdio_read,
- 		.write = ksz8863_mdio_write,
--		.max_raw_read = 1,
--		.max_raw_write = 1,
- 	},
- 	{
- 		.read = ksz8863_mdio_read,
- 		.write = ksz8863_mdio_write,
- 		.val_format_endian_default = REGMAP_ENDIAN_BIG,
--		.max_raw_read = 2,
--		.max_raw_write = 2,
- 	},
- 	{
- 		.read = ksz8863_mdio_read,
- 		.write = ksz8863_mdio_write,
- 		.val_format_endian_default = REGMAP_ENDIAN_BIG,
--		.max_raw_read = 4,
--		.max_raw_write = 4,
- 	}
- };
+ int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
+-			 u8 *fid, u8 *src_port, u8 *timestamp, u16 *entries)
++			 u8 *fid, u8 *src_port, u16 *entries)
+ {
+ 	u32 data_hi, data_lo;
+ 	const u8 *shifts;
+@@ -440,8 +440,6 @@ int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
+ 			shifts[DYNAMIC_MAC_FID];
+ 		*src_port = (data_hi & masks[DYNAMIC_MAC_TABLE_SRC_PORT]) >>
+ 			shifts[DYNAMIC_MAC_SRC_PORT];
+-		*timestamp = (data_hi & masks[DYNAMIC_MAC_TABLE_TIMESTAMP]) >>
+-			shifts[DYNAMIC_MAC_TIMESTAMP];
  
-@@ -108,7 +103,6 @@ static const struct regmap_config ksz8863_regmap_config[] = {
- 		.pad_bits = 24,
- 		.val_bits = 8,
- 		.cache_type = REGCACHE_NONE,
--		.use_single_read = 1,
- 		.lock = ksz_regmap_lock,
- 		.unlock = ksz_regmap_unlock,
- 	},
-@@ -118,7 +112,6 @@ static const struct regmap_config ksz8863_regmap_config[] = {
- 		.pad_bits = 24,
- 		.val_bits = 16,
- 		.cache_type = REGCACHE_NONE,
--		.use_single_read = 1,
- 		.lock = ksz_regmap_lock,
- 		.unlock = ksz_regmap_unlock,
- 	},
-@@ -128,7 +121,6 @@ static const struct regmap_config ksz8863_regmap_config[] = {
- 		.pad_bits = 24,
- 		.val_bits = 32,
- 		.cache_type = REGCACHE_NONE,
--		.use_single_read = 1,
- 		.lock = ksz_regmap_lock,
- 		.unlock = ksz_regmap_unlock,
- 	}
+ 		mac_addr[5] = (u8)data_lo;
+ 		mac_addr[4] = (u8)(data_lo >> 8);
+@@ -956,14 +954,13 @@ int ksz8_fdb_dump(struct ksz_device *dev, int port,
+ 	int ret = 0;
+ 	u16 i = 0;
+ 	u16 entries = 0;
+-	u8 timestamp = 0;
+ 	u8 fid;
+ 	u8 src_port;
+ 	u8 mac[ETH_ALEN];
+ 
+ 	do {
+ 		ret = ksz8_r_dyn_mac_table(dev, i, mac, &fid, &src_port,
+-					   &timestamp, &entries);
++					   &entries);
+ 		if (!ret && port == src_port) {
+ 			ret = cb(mac, 0, false, data);
+ 			if (ret)
 -- 
 2.30.2
 
