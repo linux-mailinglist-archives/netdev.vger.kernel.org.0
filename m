@@ -2,419 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87EAE63ACDB
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 16:45:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE8763ACDF
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 16:45:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232151AbiK1Ppz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 10:45:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
+        id S232210AbiK1Pp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 10:45:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232140AbiK1Ppr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 10:45:47 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7C8205D0
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 07:45:46 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id r76so11969271oie.13
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 07:45:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=C7mjVftQT57FMamoBB7aHpDd7AGPL21J2I0ruYvCLHM=;
-        b=ihIz9bkcZDQkdzdlKYWkUNQv66kibfdSYzSFM3yCMJxGu3ZqA22V2bV2KzKENumY5Z
-         Uz1svwmvv6xwmjJago4OQkUh2dnVUYKX2Mfa2owuXhWN4Q9y0pa7gNsBB9bmEkzYT3eD
-         SMPt1bM5YgQicU+0Lodo/ZFMKnemCnXrVt5vS+tdBtdIkowv6UiPDyX+3dC4XAuHz285
-         /nSPDBne7X+89IQyPnztSGdPrYVE7Xlb1S5cTlzRiQqZ/ToM8zJH1rLgVT7NBrs0npQq
-         uF0dP+k2R+Ck2/IgJAz+ca10zSQFnBF2CERn86jxL4jni2FY0wSBBXU5u3gqJC/ATZVx
-         tmRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=C7mjVftQT57FMamoBB7aHpDd7AGPL21J2I0ruYvCLHM=;
-        b=B8S1oSAVFbgrPPJ24/Tt7gQIkT0IzBmPfeTcQy+JTQlHWLqv2ObGg0H+bCQ2MAqXsF
-         bE0WIdC+T0BYkzm878zrbBVSNDBO/0Kv0/fJSBbnlnBlJffuJ2MO5cmlD8KfIXXHgShZ
-         u4SuUrmw6N8wHg17ukZ3rzEUC1ptOrBH1HRc9SGqEIbI06YFXmMp823JX1K5mWfaURrS
-         MxWD1OA9T1pf6YkKyzjQwDjlQ5mcJQVJu/2/gDQgNPf+cst7VlC3gvrUGt8Kf4946XBt
-         fcp9HUa7RgeG/zrlsQ2frGQGnsmquzdIOFRSDwbzT30q1yGNtW2k5DYNx8QckllSr+r0
-         kZbA==
-X-Gm-Message-State: ANoB5pmRHJG92NrC2GbuZhPCI700ajMBiqHgPj0euL1KBhi1gpb51tls
-        Psz4DDlll727XPOOBS3yHOIZ5+jroX1exw==
-X-Google-Smtp-Source: AA0mqf54YNiQOc0sstcZ++tWF+tL1gN2LIk/STBADWlhX1Bd5wsu0uzf8Ho+jKftmf6WTuUEUCBrhQ==
-X-Received: by 2002:a05:6808:b25:b0:35a:8a2b:e900 with SMTP id t5-20020a0568080b2500b0035a8a2be900mr26772361oij.140.1669650345592;
-        Mon, 28 Nov 2022 07:45:45 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:562:c37c:87b7:acb4])
-        by smtp.gmail.com with ESMTPSA id bx19-20020a056830601300b0066c55e23a16sm4885012otb.2.2022.11.28.07.45.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Nov 2022 07:45:45 -0800 (PST)
-From:   Pedro Tammela <pctammela@gmail.com>
-X-Google-Original-From: Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, kuniyu@amazon.com,
-        Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v2 3/3] net/sched: avoid indirect classify functions on retpoline kernels
-Date:   Mon, 28 Nov 2022 12:44:56 -0300
-Message-Id: <20221128154456.689326-4-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221128154456.689326-1-pctammela@mojatatu.com>
-References: <20221128154456.689326-1-pctammela@mojatatu.com>
+        with ESMTP id S232160AbiK1Ppt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 10:45:49 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FC8222BB;
+        Mon, 28 Nov 2022 07:45:48 -0800 (PST)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 166621EC01A9;
+        Mon, 28 Nov 2022 16:45:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1669650347;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=iioGKCFJMZT/5gejig6GxY5Ze8xPsQovHxxD/i23AQg=;
+        b=MxEbuMHOtz+1KChAjvy7/PsrxmtXLm6tlHY8yLpAxmTLsQohcs8n6qbe1xjjbSrk/43sGk
+        Xp6zuxW6rn1wPSAyhsiiJgIiVVg5AIdU7U48fiU0v6Dg1YC1xqLdkehunZ9CoakSLjysbg
+        8SeUS2+CgMKqKlRL/0chNt0OSVW+Z/c=
+Date:   Mon, 28 Nov 2022 16:45:41 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     Wei Liu <wei.liu@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v4 1/1] x86/ioremap: Fix page aligned size calculation in
+ __ioremap_caller()
+Message-ID: <Y4TXpW6vN4j9bULs@zn.tnic>
+References: <1669138842-30100-1-git-send-email-mikelley@microsoft.com>
+ <Y4DdCD7555d2SpkZ@liuwe-devbox-debian-v2>
+ <BYAPR21MB1688F9B7FC41946DBD9F8784D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <BYAPR21MB1688F9B7FC41946DBD9F8784D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose the necessary tc classifier functions and wire up cls_api to use
-direct calls in retpoline kernels.
+On Mon, Nov 28, 2022 at 02:43:28PM +0000, Michael Kelley (LINUX) wrote:
+> Boris -- you were going to pick up this patch separately
+> though urgent.  Can you go ahead and do that?
 
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- net/sched/cls_api.c      | 3 ++-
- net/sched/cls_basic.c    | 6 ++++--
- net/sched/cls_bpf.c      | 6 ++++--
- net/sched/cls_cgroup.c   | 6 ++++--
- net/sched/cls_flow.c     | 6 ++++--
- net/sched/cls_flower.c   | 6 ++++--
- net/sched/cls_fw.c       | 6 ++++--
- net/sched/cls_matchall.c | 6 ++++--
- net/sched/cls_route.c    | 6 ++++--
- net/sched/cls_rsvp.c     | 2 ++
- net/sched/cls_rsvp.h     | 6 +++---
- net/sched/cls_rsvp6.c    | 2 ++
- net/sched/cls_tcindex.c  | 7 ++++---
- net/sched/cls_u32.c      | 6 ++++--
- 14 files changed, 49 insertions(+), 25 deletions(-)
+Did you not get the tip-bot notification?
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 23d1cfa4f58c..3f86616f1abb 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -40,6 +40,7 @@
- #include <net/tc_act/tc_mpls.h>
- #include <net/tc_act/tc_gate.h>
- #include <net/flow_offload.h>
-+#include <net/tc_wrapper.h>
- 
- extern const struct nla_policy rtm_tca_policy[TCA_MAX + 1];
- 
-@@ -1564,7 +1565,7 @@ static inline int __tcf_classify(struct sk_buff *skb,
- 		    tp->protocol != htons(ETH_P_ALL))
- 			continue;
- 
--		err = tp->classify(skb, tp, res);
-+		err = __tc_classify(skb, tp, res);
- #ifdef CONFIG_NET_CLS_ACT
- 		if (unlikely(err == TC_ACT_RECLASSIFY && !compat_mode)) {
- 			first_tp = orig_tp;
-diff --git a/net/sched/cls_basic.c b/net/sched/cls_basic.c
-index d229ce99e554..1b92c33b5f81 100644
---- a/net/sched/cls_basic.c
-+++ b/net/sched/cls_basic.c
-@@ -18,6 +18,7 @@
- #include <net/netlink.h>
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- struct basic_head {
- 	struct list_head	flist;
-@@ -36,8 +37,9 @@ struct basic_filter {
- 	struct rcu_work		rwork;
- };
- 
--static int basic_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			  struct tcf_result *res)
-+TC_INDIRECT_SCOPE int basic_classify(struct sk_buff *skb,
-+				     const struct tcf_proto *tp,
-+				     struct tcf_result *res)
- {
- 	int r;
- 	struct basic_head *head = rcu_dereference_bh(tp->root);
-diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-index bc317b3eac12..466c26df853a 100644
---- a/net/sched/cls_bpf.c
-+++ b/net/sched/cls_bpf.c
-@@ -19,6 +19,7 @@
- #include <net/rtnetlink.h>
- #include <net/pkt_cls.h>
- #include <net/sock.h>
-+#include <net/tc_wrapper.h>
- 
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Daniel Borkmann <dborkman@redhat.com>");
-@@ -77,8 +78,9 @@ static int cls_bpf_exec_opcode(int code)
- 	}
- }
- 
--static int cls_bpf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			    struct tcf_result *res)
-+TC_INDIRECT_SCOPE int cls_bpf_classify(struct sk_buff *skb,
-+				       const struct tcf_proto *tp,
-+				       struct tcf_result *res)
- {
- 	struct cls_bpf_head *head = rcu_dereference_bh(tp->root);
- 	bool at_ingress = skb_at_tc_ingress(skb);
-diff --git a/net/sched/cls_cgroup.c b/net/sched/cls_cgroup.c
-index ed00001b528a..bd9322d71910 100644
---- a/net/sched/cls_cgroup.c
-+++ b/net/sched/cls_cgroup.c
-@@ -13,6 +13,7 @@
- #include <net/pkt_cls.h>
- #include <net/sock.h>
- #include <net/cls_cgroup.h>
-+#include <net/tc_wrapper.h>
- 
- struct cls_cgroup_head {
- 	u32			handle;
-@@ -22,8 +23,9 @@ struct cls_cgroup_head {
- 	struct rcu_work		rwork;
- };
- 
--static int cls_cgroup_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			       struct tcf_result *res)
-+TC_INDIRECT_SCOPE int cls_cgroup_classify(struct sk_buff *skb,
-+					  const struct tcf_proto *tp,
-+					  struct tcf_result *res)
- {
- 	struct cls_cgroup_head *head = rcu_dereference_bh(tp->root);
- 	u32 classid = task_get_classid(skb);
-diff --git a/net/sched/cls_flow.c b/net/sched/cls_flow.c
-index 014cd3de7b5d..535668e1f748 100644
---- a/net/sched/cls_flow.c
-+++ b/net/sched/cls_flow.c
-@@ -24,6 +24,7 @@
- #include <net/ip.h>
- #include <net/route.h>
- #include <net/flow_dissector.h>
-+#include <net/tc_wrapper.h>
- 
- #if IS_ENABLED(CONFIG_NF_CONNTRACK)
- #include <net/netfilter/nf_conntrack.h>
-@@ -292,8 +293,9 @@ static u32 flow_key_get(struct sk_buff *skb, int key, struct flow_keys *flow)
- 			  (1 << FLOW_KEY_NFCT_PROTO_SRC) |	\
- 			  (1 << FLOW_KEY_NFCT_PROTO_DST))
- 
--static int flow_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			 struct tcf_result *res)
-+TC_INDIRECT_SCOPE int flow_classify(struct sk_buff *skb,
-+				    const struct tcf_proto *tp,
-+				    struct tcf_result *res)
- {
- 	struct flow_head *head = rcu_dereference_bh(tp->root);
- 	struct flow_filter *f;
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 25bc57ee6ea1..0b15698b3531 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -27,6 +27,7 @@
- #include <net/vxlan.h>
- #include <net/erspan.h>
- #include <net/gtp.h>
-+#include <net/tc_wrapper.h>
- 
- #include <net/dst.h>
- #include <net/dst_metadata.h>
-@@ -305,8 +306,9 @@ static u16 fl_ct_info_to_flower_map[] = {
- 					TCA_FLOWER_KEY_CT_FLAGS_NEW,
- };
- 
--static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--		       struct tcf_result *res)
-+TC_INDIRECT_SCOPE int fl_classify(struct sk_buff *skb,
-+				  const struct tcf_proto *tp,
-+				  struct tcf_result *res)
- {
- 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
- 	bool post_ct = tc_skb_cb(skb)->post_ct;
-diff --git a/net/sched/cls_fw.c b/net/sched/cls_fw.c
-index a32351da968c..ae9439a6c56c 100644
---- a/net/sched/cls_fw.c
-+++ b/net/sched/cls_fw.c
-@@ -21,6 +21,7 @@
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
- #include <net/sch_generic.h>
-+#include <net/tc_wrapper.h>
- 
- #define HTSIZE 256
- 
-@@ -47,8 +48,9 @@ static u32 fw_hash(u32 handle)
- 	return handle % HTSIZE;
- }
- 
--static int fw_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--		       struct tcf_result *res)
-+TC_INDIRECT_SCOPE int fw_classify(struct sk_buff *skb,
-+				  const struct tcf_proto *tp,
-+				  struct tcf_result *res)
- {
- 	struct fw_head *head = rcu_dereference_bh(tp->root);
- 	struct fw_filter *f;
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index 39a5d9c170de..705f63da2c21 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -12,6 +12,7 @@
- 
- #include <net/sch_generic.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- struct cls_mall_head {
- 	struct tcf_exts exts;
-@@ -24,8 +25,9 @@ struct cls_mall_head {
- 	bool deleting;
- };
- 
--static int mall_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			 struct tcf_result *res)
-+TC_INDIRECT_SCOPE int mall_classify(struct sk_buff *skb,
-+				    const struct tcf_proto *tp,
-+				    struct tcf_result *res)
- {
- 	struct cls_mall_head *head = rcu_dereference_bh(tp->root);
- 
-diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
-index 9e43b929d4ca..d0c53724d3e8 100644
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -17,6 +17,7 @@
- #include <net/netlink.h>
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- /*
-  * 1. For now we assume that route tags < 256.
-@@ -121,8 +122,9 @@ static inline int route4_hash_wild(void)
- 	return 0;						\
- }
- 
--static int route4_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			   struct tcf_result *res)
-+TC_INDIRECT_SCOPE int route4_classify(struct sk_buff *skb,
-+				      const struct tcf_proto *tp,
-+				      struct tcf_result *res)
- {
- 	struct route4_head *head = rcu_dereference_bh(tp->root);
- 	struct dst_entry *dst;
-diff --git a/net/sched/cls_rsvp.c b/net/sched/cls_rsvp.c
-index de1c1d4da597..03d8619bd9c6 100644
---- a/net/sched/cls_rsvp.c
-+++ b/net/sched/cls_rsvp.c
-@@ -15,10 +15,12 @@
- #include <net/netlink.h>
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- #define RSVP_DST_LEN	1
- #define RSVP_ID		"rsvp"
- #define RSVP_OPS	cls_rsvp_ops
-+#define RSVP_CLS	rsvp_classify
- 
- #include "cls_rsvp.h"
- MODULE_LICENSE("GPL");
-diff --git a/net/sched/cls_rsvp.h b/net/sched/cls_rsvp.h
-index b00a7dbd0587..869efba9f834 100644
---- a/net/sched/cls_rsvp.h
-+++ b/net/sched/cls_rsvp.h
-@@ -124,8 +124,8 @@ static inline unsigned int hash_src(__be32 *src)
- 		return r;				\
- }
- 
--static int rsvp_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			 struct tcf_result *res)
-+TC_INDIRECT_SCOPE int RSVP_CLS(struct sk_buff *skb, const struct tcf_proto *tp,
-+			       struct tcf_result *res)
- {
- 	struct rsvp_head *head = rcu_dereference_bh(tp->root);
- 	struct rsvp_session *s;
-@@ -738,7 +738,7 @@ static void rsvp_bind_class(void *fh, u32 classid, unsigned long cl, void *q,
- 
- static struct tcf_proto_ops RSVP_OPS __read_mostly = {
- 	.kind		=	RSVP_ID,
--	.classify	=	rsvp_classify,
-+	.classify	=	RSVP_CLS,
- 	.init		=	rsvp_init,
- 	.destroy	=	rsvp_destroy,
- 	.get		=	rsvp_get,
-diff --git a/net/sched/cls_rsvp6.c b/net/sched/cls_rsvp6.c
-index 64078846000e..e627cc32d633 100644
---- a/net/sched/cls_rsvp6.c
-+++ b/net/sched/cls_rsvp6.c
-@@ -15,10 +15,12 @@
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
- #include <net/netlink.h>
-+#include <net/tc_wrapper.h>
- 
- #define RSVP_DST_LEN	4
- #define RSVP_ID		"rsvp6"
- #define RSVP_OPS	cls_rsvp6_ops
-+#define RSVP_CLS rsvp6_classify
- 
- #include "cls_rsvp.h"
- MODULE_LICENSE("GPL");
-diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-index 1c9eeb98d826..eb0e9458e722 100644
---- a/net/sched/cls_tcindex.c
-+++ b/net/sched/cls_tcindex.c
-@@ -16,6 +16,7 @@
- #include <net/netlink.h>
- #include <net/pkt_cls.h>
- #include <net/sch_generic.h>
-+#include <net/tc_wrapper.h>
- 
- /*
-  * Passing parameters to the root seems to be done more awkwardly than really
-@@ -98,9 +99,9 @@ static struct tcindex_filter_result *tcindex_lookup(struct tcindex_data *p,
- 	return NULL;
- }
- 
--
--static int tcindex_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			    struct tcf_result *res)
-+TC_INDIRECT_SCOPE int tcindex_classify(struct sk_buff *skb,
-+				       const struct tcf_proto *tp,
-+				       struct tcf_result *res)
- {
- 	struct tcindex_data *p = rcu_dereference_bh(tp->root);
- 	struct tcindex_filter_result *f;
-diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-index 34d25f7a0687..4e2e269f121f 100644
---- a/net/sched/cls_u32.c
-+++ b/net/sched/cls_u32.c
-@@ -39,6 +39,7 @@
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
- #include <linux/idr.h>
-+#include <net/tc_wrapper.h>
- 
- struct tc_u_knode {
- 	struct tc_u_knode __rcu	*next;
-@@ -100,8 +101,9 @@ static inline unsigned int u32_hash_fold(__be32 key,
- 	return h;
- }
- 
--static int u32_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			struct tcf_result *res)
-+TC_INDIRECT_SCOPE int u32_classify(struct sk_buff *skb,
-+				   const struct tcf_proto *tp,
-+				   struct tcf_result *res)
- {
- 	struct {
- 		struct tc_u_knode *knode;
+https://lore.kernel.org/r/166911713030.4906.16935727667401525991.tip-bot2@tip-bot2
+
+you're on Cc there too.
+
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
