@@ -2,423 +2,432 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5CB663B0DB
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:15:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E3C63B0F2
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:18:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232521AbiK1SPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 13:15:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50232 "EHLO
+        id S231502AbiK1SST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 13:18:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232741AbiK1SOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:14:55 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4E1317E5
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 09:57:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669658249; x=1701194249;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1waFHuywTwtNFbqRC0oRhHOMjx7+1PQVH5/kcZCItxA=;
-  b=T4qsnpF6d0iQVZIHOBeTvjTqdcmV9xE06YlxyNSR+DmxSG0ki29Lyo6b
-   h0ARbCMnvxtj0iOZZMW531stxssPb1cPqRnIg7fkrmeE57tAi3aqJ9IvT
-   /KLVscnLeWhZv2vDLZaIhkiuLJpgzmNFGElg04XM+fe+/Xa9wSldh2BA+
-   47Ykf0zvjedgrMZgMJjX6wlMRTb7jHfAvQBXtvbl71/bBgGViOxrLwAxG
-   38FgMffnCb4m32duw+VelcMxxYmSnR4XWYP+ibGuf6wk5gxys9lY9u3HY
-   kf/EOZkhgg7M7cD+rKNTO2Pij0F/P4+MGBwe830xPFUhLZBMjTL6TJdDI
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="377051882"
-X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
-   d="scan'208";a="377051882"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 09:57:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="732232764"
-X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
-   d="scan'208";a="732232764"
-Received: from msu-dell.jf.intel.com ([10.166.233.5])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Nov 2022 09:57:27 -0800
-From:   Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, mkubecek@suse.cz, andrew@lunn.ch, corbet@lwn.net,
-        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
-Subject: [PATCH net-next v6] ethtool: add netlink based get rss support
-Date:   Mon, 28 Nov 2022 09:55:56 -0800
-Message-Id: <20221128175556.49354-1-sudheer.mogilappagari@intel.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S234129AbiK1SRr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:17:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758142D769
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 10:00:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669658429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oScjHgUsfPCUpHvSbXmtkG9Jiz96znMS7UbDYb2DUKs=;
+        b=e+GodBQruRnM7V3ter1vjcImBwJpDjlZPLWXuIHuxfhQBhsM9vMb/4TGM4I1biw83LSpnY
+        FC5UlXs2I6YPUE8PU0Z7/8izFC9xQOwvisB6GENhnXcTsFMeBaqNB+02ozMmTvU8UHBhx6
+        PFbtInQ82KIqyNWNLW1YdjSZzxAjxjk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-627-NMjeBuW-NqybOW6x25rqjA-1; Mon, 28 Nov 2022 13:00:25 -0500
+X-MC-Unique: NMjeBuW-NqybOW6x25rqjA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3E67529AA3BC;
+        Mon, 28 Nov 2022 18:00:25 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.192.141])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5541940C6EC2;
+        Mon, 28 Nov 2022 18:00:23 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     Soheil Hassas Yeganeh <soheil@google.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Jason Baron <jbaron@akamai.com>, netdev@vger.kernel.org,
+        Carlos Maiolino <cmaiolino@redhat.com>,
+        Eric Biggers <ebiggers@kernel.org>
+Subject: [PATCH v3] epoll: use refcount to reduce ep_mutex contention
+Date:   Mon, 28 Nov 2022 19:00:10 +0100
+Message-Id: <1aedd7e87097bc4352ba658ac948c585a655785a.1669657846.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Spam-Status: No, score=-0.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLACK autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add netlink based support for "ethtool -x <dev> [context x]"
-command by implementing ETHTOOL_MSG_RSS_GET netlink message.
-This is equivalent to functionality provided via ETHTOOL_GRSSH
-in ioctl path. It sends RSS table, hash key and hash function
-of an interface to user space.
+We are observing huge contention on the epmutex during an http
+connection/rate test:
 
-This patch implements existing functionality available
-in ioctl path and enables addition of new RSS context
-based parameters in future.
+ 83.17% 0.25%  nginx            [kernel.kallsyms]         [k] entry_SYSCALL_64_after_hwframe
+[...]
+           |--66.96%--__fput
+                      |--60.04%--eventpoll_release_file
+                                 |--58.41%--__mutex_lock.isra.6
+                                           |--56.56%--osq_lock
 
-Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+The application is multi-threaded, creates a new epoll entry for
+each incoming connection, and does not delete it before the
+connection shutdown - that is, before the connection's fd close().
+
+Many different threads compete frequently for the epmutex lock,
+affecting the overall performance.
+
+To reduce the contention this patch introduces explicit reference counting
+for the eventpoll struct. Each registered event acquires a reference,
+and references are released at ep_remove() time.
+
+Additionally, this introduces a new 'dying' flag to prevent races between
+ep_free() and eventpoll_release_file(): the latter marks, under f_lock
+spinlock, each epitem as before removing it, while ep_free() does not
+touch dying epitems.
+
+The eventpoll struct is released by whoever - among ep_free() and
+eventpoll_release_file() drops its last reference.
+
+With all the above in place, we can drop the epmutex usage at disposal time.
+
+Overall this produces a significant performance improvement in the
+mentioned connection/rate scenario: the mutex operations disappear from
+the topmost offenders in the perf report, and the measured connections/rate
+grows by ~60%.
+
+Tested-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
-v6:
-- Removed rings attribute.
-- Removed returning of rss context attribute back to userspace.
-- Fix length returned in reply_size. Other review comments.
+v3: (addresses comments from Eric Biggers)
+- introduce the 'dying' flag, use it to dispose immediately struct eventpoll
+  at ep_free() time
+- update a leftover comments still referring to old epmutex usage
 
-v5:
--Updated documentation about ETHTOOL_A_RSS_RINGS attribute.
+v2 at:
+https://lore.kernel.org/linux-fsdevel/f35e58ed5af8131f0f402c3dc6c3033fa96d1843.1669312208.git.pabeni@redhat.com/
 
-v4:
--Don't make context parameter mandatory.
--Remove start/done ethtool_genl_ops for RSS_GET.
--Add rings attribute to RSS_GET netlink message.
--Fix documentation.
+v1 at:
+https://lore.kernel.org/linux-fsdevel/f35e58ed5af8131f0f402c3dc6c3033fa96d1843.1669312208.git.pabeni@redhat.com/
 
-v3:
--Define parse_request and make use of ethnl_default_parse.
--Have indir table and hask hey as seprate attributes.
--Remove dumpit op for RSS_GET.
--Use RSS instead of RXFH.
-
-v2: Fix cleanup in error path instead of returning.
+Previous related effort at:
+https://lore.kernel.org/linux-fsdevel/20190727113542.162213-1-cj.chengjian@huawei.com/
+https://lkml.org/lkml/2017/10/28/81
 ---
- Documentation/networking/ethtool-netlink.rst |  31 +++-
- include/uapi/linux/ethtool_netlink.h         |  14 ++
- net/ethtool/Makefile                         |   2 +-
- net/ethtool/netlink.c                        |   7 +
- net/ethtool/netlink.h                        |   2 +
- net/ethtool/rss.c                            | 153 +++++++++++++++++++
- 6 files changed, 207 insertions(+), 2 deletions(-)
- create mode 100644 net/ethtool/rss.c
+ fs/eventpoll.c | 171 +++++++++++++++++++++++++++++++------------------
+ 1 file changed, 109 insertions(+), 62 deletions(-)
 
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index bede24ef44fd..79060c785380 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -222,6 +222,7 @@ Userspace to kernel:
-   ``ETHTOOL_MSG_MODULE_GET``            get transceiver module parameters
-   ``ETHTOOL_MSG_PSE_SET``               set PSE parameters
-   ``ETHTOOL_MSG_PSE_GET``               get PSE parameters
-+  ``ETHTOOL_MSG_RSS_GET``               get RSS settings
-   ===================================== =================================
+diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+index 52954d4637b5..af22e5e6f683 100644
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@ -57,13 +57,7 @@
+  * we need a lock that will allow us to sleep. This lock is a
+  * mutex (ep->mtx). It is acquired during the event transfer loop,
+  * during epoll_ctl(EPOLL_CTL_DEL) and during eventpoll_release_file().
+- * Then we also need a global mutex to serialize eventpoll_release_file()
+- * and ep_free().
+- * This mutex is acquired by ep_free() during the epoll file
+- * cleanup path and it is also acquired by eventpoll_release_file()
+- * if a file has been pushed inside an epoll set and it is then
+- * close()d without a previous call to epoll_ctl(EPOLL_CTL_DEL).
+- * It is also acquired when inserting an epoll fd onto another epoll
++ * The epmutex is acquired when inserting an epoll fd onto another epoll
+  * fd. We do this so that we walk the epoll tree and ensure that this
+  * insertion does not create a cycle of epoll file descriptors, which
+  * could lead to deadlock. We need a global mutex to prevent two
+@@ -153,6 +147,13 @@ struct epitem {
+ 	/* The file descriptor information this item refers to */
+ 	struct epoll_filefd ffd;
  
- Kernel to userspace:
-@@ -263,6 +264,7 @@ Kernel to userspace:
-   ``ETHTOOL_MSG_PHC_VCLOCKS_GET_REPLY``    PHC virtual clocks info
-   ``ETHTOOL_MSG_MODULE_GET_REPLY``         transceiver module parameters
-   ``ETHTOOL_MSG_PSE_GET_REPLY``            PSE parameters
-+  ``ETHTOOL_MSG_RSS_GET_REPLY``            RSS settings
-   ======================================== =================================
++	/*
++	 * Protected by file->f_lock, true for to-be-released epitem already
++	 * removed from the "struct file" items list; together with
++	 * eventpoll->refcount orchestrates "struct eventpoll" disposal
++	 */
++	bool dying;
++
+ 	/* List containing poll wait queues */
+ 	struct eppoll_entry *pwqlist;
  
- ``GET`` requests are sent by userspace applications to retrieve device
-@@ -1687,6 +1689,33 @@ to control PoDL PSE Admin functions. This option is implementing
- ``IEEE 802.3-2018`` 30.15.1.2.1 acPoDLPSEAdminControl. See
- ``ETHTOOL_A_PODL_PSE_ADMIN_STATE`` for supported values.
+@@ -217,6 +218,12 @@ struct eventpoll {
+ 	u64 gen;
+ 	struct hlist_head refs;
  
-+RSS_GET
-+=======
++	/*
++	 * usage count, protected by mtx, used together with epitem->dying to
++	 * orchestrate the disposal of this struct
++	 */
++	unsigned int refcount;
 +
-+Get indirection table, hash key and hash function info associated with a
-+RSS context of an interface similar to ``ETHTOOL_GRSSH`` ioctl request.
-+
-+Request contents:
-+
-+=====================================  ======  ==========================
-+  ``ETHTOOL_A_RSS_HEADER``             nested  request header
-+  ``ETHTOOL_A_RSS_CONTEXT``            u32     context number
-+ ====================================  ======  ==========================
-+
-+Kernel response contents:
-+
-+=====================================  ======  ==========================
-+  ``ETHTOOL_A_RSS_HEADER``             nested  reply header
-+  ``ETHTOOL_A_RSS_HFUNC``              u32     RSS hash func
-+  ``ETHTOOL_A_RSS_INDIR``              binary  Indir table bytes
-+  ``ETHTOOL_A_RSS_HKEY``               binary  Hash key bytes
-+ ====================================  ======  ==========================
-+
-+ETHTOOL_A_RSS_HFUNC attribute is bitmap indicating the hash function
-+being used. Current supported options are toeplitz, xor or crc32.
-+ETHTOOL_A_RSS_INDIR attribute returns RSS indrection table where each byte
-+indicates queue number.
-+
- Request translation
- ===================
+ #ifdef CONFIG_NET_RX_BUSY_POLL
+ 	/* used to track busy poll napi_id */
+ 	unsigned int napi_id;
+@@ -240,9 +247,7 @@ struct ep_pqueue {
+ /* Maximum number of epoll watched descriptors, per user */
+ static long max_user_watches __read_mostly;
  
-@@ -1768,7 +1797,7 @@ are netlink only.
-   ``ETHTOOL_GMODULEEEPROM``           ``ETHTOOL_MSG_MODULE_EEPROM_GET``
-   ``ETHTOOL_GEEE``                    ``ETHTOOL_MSG_EEE_GET``
-   ``ETHTOOL_SEEE``                    ``ETHTOOL_MSG_EEE_SET``
--  ``ETHTOOL_GRSSH``                   n/a
-+  ``ETHTOOL_GRSSH``                   ``ETHTOOL_MSG_RSS_GET``
-   ``ETHTOOL_SRSSH``                   n/a
-   ``ETHTOOL_GTUNABLE``                n/a
-   ``ETHTOOL_STUNABLE``                n/a
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index aaf7c6963d61..5799a9db034e 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -51,6 +51,7 @@ enum {
- 	ETHTOOL_MSG_MODULE_SET,
- 	ETHTOOL_MSG_PSE_GET,
- 	ETHTOOL_MSG_PSE_SET,
-+	ETHTOOL_MSG_RSS_GET,
+-/*
+- * This mutex is used to serialize ep_free() and eventpoll_release_file().
+- */
++/* Used for cycles detection */
+ static DEFINE_MUTEX(epmutex);
  
- 	/* add new constants above here */
- 	__ETHTOOL_MSG_USER_CNT,
-@@ -97,6 +98,7 @@ enum {
- 	ETHTOOL_MSG_MODULE_GET_REPLY,
- 	ETHTOOL_MSG_MODULE_NTF,
- 	ETHTOOL_MSG_PSE_GET_REPLY,
-+	ETHTOOL_MSG_RSS_GET_REPLY,
+ static u64 loop_check_gen = 0;
+@@ -555,8 +560,7 @@ static void ep_remove_wait_queue(struct eppoll_entry *pwq)
  
- 	/* add new constants above here */
- 	__ETHTOOL_MSG_KERNEL_CNT,
-@@ -880,6 +882,18 @@ enum {
- 	ETHTOOL_A_PSE_MAX = (__ETHTOOL_A_PSE_CNT - 1)
- };
+ /*
+  * This function unregisters poll callbacks from the associated file
+- * descriptor.  Must be called with "mtx" held (or "epmutex" if called from
+- * ep_free).
++ * descriptor.  Must be called with "mtx" held.
+  */
+ static void ep_unregister_pollwait(struct eventpoll *ep, struct epitem *epi)
+ {
+@@ -679,11 +683,38 @@ static void epi_rcu_free(struct rcu_head *head)
+ 	kmem_cache_free(epi_cache, epi);
+ }
  
-+enum {
-+	ETHTOOL_A_RSS_UNSPEC,
-+	ETHTOOL_A_RSS_HEADER,
-+	ETHTOOL_A_RSS_CONTEXT,		/* u32 */
-+	ETHTOOL_A_RSS_HFUNC,		/* u32 */
-+	ETHTOOL_A_RSS_INDIR,		/* binary */
-+	ETHTOOL_A_RSS_HKEY,		/* binary */
-+
-+	__ETHTOOL_A_RSS_CNT,
-+	ETHTOOL_A_RSS_MAX = (__ETHTOOL_A_RSS_CNT - 1),
-+};
-+
- /* generic netlink info */
- #define ETHTOOL_GENL_NAME "ethtool"
- #define ETHTOOL_GENL_VERSION 1
-diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
-index 72ab0944262a..228f13df2e18 100644
---- a/net/ethtool/Makefile
-+++ b/net/ethtool/Makefile
-@@ -4,7 +4,7 @@ obj-y				+= ioctl.o common.o
- 
- obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
- 
--ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
-+ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o rss.o \
- 		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
- 		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
- 		   tunnels.o fec.o eeprom.o stats.o phc_vclocks.o module.o \
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index 1a4c11356c96..aee98be6237f 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -287,6 +287,7 @@ ethnl_default_requests[__ETHTOOL_MSG_USER_CNT] = {
- 	[ETHTOOL_MSG_PHC_VCLOCKS_GET]	= &ethnl_phc_vclocks_request_ops,
- 	[ETHTOOL_MSG_MODULE_GET]	= &ethnl_module_request_ops,
- 	[ETHTOOL_MSG_PSE_GET]		= &ethnl_pse_request_ops,
-+	[ETHTOOL_MSG_RSS_GET]		= &ethnl_rss_request_ops,
- };
- 
- static struct ethnl_dump_ctx *ethnl_dump_context(struct netlink_callback *cb)
-@@ -1040,6 +1041,12 @@ static const struct genl_ops ethtool_genl_ops[] = {
- 		.policy = ethnl_pse_set_policy,
- 		.maxattr = ARRAY_SIZE(ethnl_pse_set_policy) - 1,
- 	},
-+	{
-+		.cmd	= ETHTOOL_MSG_RSS_GET,
-+		.doit	= ethnl_default_doit,
-+		.policy = ethnl_rss_get_policy,
-+		.maxattr = ARRAY_SIZE(ethnl_rss_get_policy) - 1,
-+	},
- };
- 
- static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index 1bfd374f9718..3753787ba233 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -346,6 +346,7 @@ extern const struct ethnl_request_ops ethnl_stats_request_ops;
- extern const struct ethnl_request_ops ethnl_phc_vclocks_request_ops;
- extern const struct ethnl_request_ops ethnl_module_request_ops;
- extern const struct ethnl_request_ops ethnl_pse_request_ops;
-+extern const struct ethnl_request_ops ethnl_rss_request_ops;
- 
- extern const struct nla_policy ethnl_header_policy[ETHTOOL_A_HEADER_FLAGS + 1];
- extern const struct nla_policy ethnl_header_policy_stats[ETHTOOL_A_HEADER_FLAGS + 1];
-@@ -386,6 +387,7 @@ extern const struct nla_policy ethnl_module_get_policy[ETHTOOL_A_MODULE_HEADER +
- extern const struct nla_policy ethnl_module_set_policy[ETHTOOL_A_MODULE_POWER_MODE_POLICY + 1];
- extern const struct nla_policy ethnl_pse_get_policy[ETHTOOL_A_PSE_HEADER + 1];
- extern const struct nla_policy ethnl_pse_set_policy[ETHTOOL_A_PSE_MAX + 1];
-+extern const struct nla_policy ethnl_rss_get_policy[ETHTOOL_A_RSS_CONTEXT + 1];
- 
- int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info);
-diff --git a/net/ethtool/rss.c b/net/ethtool/rss.c
-new file mode 100644
-index 000000000000..9a489ad82861
---- /dev/null
-+++ b/net/ethtool/rss.c
-@@ -0,0 +1,153 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include "netlink.h"
-+#include "common.h"
-+
-+struct rss_req_info {
-+	struct ethnl_req_info		base;
-+	u32				rss_context;
-+};
-+
-+struct rss_reply_data {
-+	struct ethnl_reply_data		base;
-+	u32				indir_size;
-+	u32				hkey_size;
-+	u32				hfunc;
-+	u32				*indir_table;
-+	u8				*hkey;
-+};
-+
-+#define RSS_REQINFO(__req_base) \
-+	container_of(__req_base, struct rss_req_info, base)
-+
-+#define RSS_REPDATA(__reply_base) \
-+	container_of(__reply_base, struct rss_reply_data, base)
-+
-+const struct nla_policy ethnl_rss_get_policy[] = {
-+	[ETHTOOL_A_RSS_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
-+	[ETHTOOL_A_RSS_CONTEXT] = { .type = NLA_U32 },
-+};
-+
-+static int
-+rss_parse_request(struct ethnl_req_info *req_info, struct nlattr **tb,
-+		  struct netlink_ext_ack *extack)
++static void ep_get(struct eventpoll *ep)
 +{
-+	struct rss_req_info *request = RSS_REQINFO(req_info);
-+
-+	if (tb[ETHTOOL_A_RSS_CONTEXT])
-+		request->rss_context = nla_get_u32(tb[ETHTOOL_A_RSS_CONTEXT]);
-+
-+	return 0;
++	ep->refcount++;
 +}
 +
-+static int
-+rss_prepare_data(const struct ethnl_req_info *req_base,
-+		 struct ethnl_reply_data *reply_base, struct genl_info *info)
++/*
++ * Returns true if the event poll can be disposed
++ */
++static bool ep_put(struct eventpoll *ep)
 +{
-+	struct rss_reply_data *data = RSS_REPDATA(reply_base);
-+	struct rss_req_info *request = RSS_REQINFO(req_base);
-+	struct net_device *dev = reply_base->dev;
-+	const struct ethtool_ops *ops;
-+	u32 total_size, indir_bytes;
-+	u8 dev_hfunc = 0;
-+	u8 *rss_config;
-+	int ret;
++	if (--ep->refcount)
++		return false;
 +
-+	ops = dev->ethtool_ops;
-+	if (!ops->get_rxfh)
-+		return -EOPNOTSUPP;
++	WARN_ON_ONCE(!RB_EMPTY_ROOT(&ep->rbr.rb_root));
++	return true;
++}
 +
-+	/* Some drivers don't handle rss_context */
-+	if (request->rss_context && !ops->get_rxfh_context)
-+		return -EOPNOTSUPP;
++static void ep_dispose(struct eventpoll *ep)
++{
++	mutex_destroy(&ep->mtx);
++	free_uid(ep->user);
++	wakeup_source_unregister(ep->ws);
++	kfree(ep);
++}
 +
-+	ret = ethnl_ops_begin(dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->indir_size = 0;
-+	data->hkey_size = 0;
-+	if (ops->get_rxfh_indir_size)
-+		data->indir_size = ops->get_rxfh_indir_size(dev);
-+	if (ops->get_rxfh_key_size)
-+		data->hkey_size = ops->get_rxfh_key_size(dev);
-+
-+	indir_bytes = data->indir_size * sizeof(u32);
-+	total_size = indir_bytes + data->hkey_size;
-+	rss_config = kzalloc(total_size, GFP_KERNEL);
-+	if (!rss_config) {
-+		ret = -ENOMEM;
-+		goto out_ops;
+ /*
+  * Removes a "struct epitem" from the eventpoll RB tree and deallocates
+  * all the associated resources. Must be called with "mtx" held.
++ * If the dying flag is set, do the removal only if force is true.
++ * Returns true if the eventpoll can be disposed.
+  */
+-static int ep_remove(struct eventpoll *ep, struct epitem *epi)
++static bool __ep_remove(struct eventpoll *ep, struct epitem *epi, bool force)
+ {
+ 	struct file *file = epi->ffd.file;
+ 	struct epitems_head *to_free;
+@@ -698,6 +729,11 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
+ 
+ 	/* Remove the current item from the list of epoll hooks */
+ 	spin_lock(&file->f_lock);
++	if (epi->dying && !force) {
++		spin_unlock(&file->f_lock);
++		return false;
 +	}
 +
-+	if (data->indir_size)
-+		data->indir_table = (u32 *)rss_config;
-+
-+	if (data->hkey_size)
-+		data->hkey = rss_config + indir_bytes;
-+
-+	if (request->rss_context)
-+		ret = ops->get_rxfh_context(dev, data->indir_table, data->hkey,
-+					    &dev_hfunc, request->rss_context);
-+	else
-+		ret = ops->get_rxfh(dev, data->indir_table, data->hkey,
-+				    &dev_hfunc);
-+
-+	if (ret)
-+		goto out_ops;
-+
-+	data->hfunc = dev_hfunc;
-+out_ops:
-+	ethnl_ops_complete(dev);
-+	return ret;
+ 	to_free = NULL;
+ 	head = file->f_ep;
+ 	if (head->first == &epi->fllink && !epi->fllink.next) {
+@@ -731,28 +767,28 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
+ 	call_rcu(&epi->rcu, epi_rcu_free);
+ 
+ 	percpu_counter_dec(&ep->user->epoll_watches);
++	return ep_put(ep);
 +}
-+
-+static int
-+rss_reply_size(const struct ethnl_req_info *req_base,
-+	       const struct ethnl_reply_data *reply_base)
+ 
+-	return 0;
++/*
++ * ep_remove variant for callers owing an additional reference to the ep
++ */
++static void ep_remove_safe(struct eventpoll *ep, struct epitem *epi)
 +{
-+	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
-+	int len;
++	WARN_ON_ONCE(__ep_remove(ep, epi, false));
+ }
+ 
+ static void ep_free(struct eventpoll *ep)
+ {
+ 	struct rb_node *rbp;
+ 	struct epitem *epi;
++	bool dispose;
+ 
+ 	/* We need to release all tasks waiting for these file */
+ 	if (waitqueue_active(&ep->poll_wait))
+ 		ep_poll_safewake(ep, NULL);
+ 
+-	/*
+-	 * We need to lock this because we could be hit by
+-	 * eventpoll_release_file() while we're freeing the "struct eventpoll".
+-	 * We do not need to hold "ep->mtx" here because the epoll file
+-	 * is on the way to be removed and no one has references to it
+-	 * anymore. The only hit might come from eventpoll_release_file() but
+-	 * holding "epmutex" is sufficient here.
+-	 */
+-	mutex_lock(&epmutex);
++	mutex_lock(&ep->mtx);
+ 
+ 	/*
+ 	 * Walks through the whole tree by unregistering poll callbacks.
+@@ -766,25 +802,21 @@ static void ep_free(struct eventpoll *ep)
+ 
+ 	/*
+ 	 * Walks through the whole tree by freeing each "struct epitem". At this
+-	 * point we are sure no poll callbacks will be lingering around, and also by
+-	 * holding "epmutex" we can be sure that no file cleanup code will hit
+-	 * us during this operation. So we can avoid the lock on "ep->lock".
+-	 * We do not need to lock ep->mtx, either, we only do it to prevent
+-	 * a lockdep warning.
++	 * point we are sure no poll callbacks will be lingering around.
++	 * Since we still own a reference to the eventpoll struct, the loop can't
++	 * dispose it.
+ 	 */
+-	mutex_lock(&ep->mtx);
+ 	while ((rbp = rb_first_cached(&ep->rbr)) != NULL) {
+ 		epi = rb_entry(rbp, struct epitem, rbn);
+-		ep_remove(ep, epi);
++		ep_remove_safe(ep, epi);
+ 		cond_resched();
+ 	}
 +
-+	len =  nla_total_size(sizeof(u32)) +	/* _RSS_HFUNC */
-+	       nla_total_size(sizeof(u32) * data->indir_size) + /* _RSS_INDIR */
-+	       nla_total_size(data->hkey_size);	/* _RSS_HKEY */
++	dispose = ep_put(ep);
+ 	mutex_unlock(&ep->mtx);
+ 
+-	mutex_unlock(&epmutex);
+-	mutex_destroy(&ep->mtx);
+-	free_uid(ep->user);
+-	wakeup_source_unregister(ep->ws);
+-	kfree(ep);
++	if (dispose)
++		ep_dispose(ep);
+ }
+ 
+ static int ep_eventpoll_release(struct inode *inode, struct file *file)
+@@ -904,33 +936,35 @@ void eventpoll_release_file(struct file *file)
+ {
+ 	struct eventpoll *ep;
+ 	struct epitem *epi;
+-	struct hlist_node *next;
++	bool dispose;
+ 
+ 	/*
+-	 * We don't want to get "file->f_lock" because it is not
+-	 * necessary. It is not necessary because we're in the "struct file"
+-	 * cleanup path, and this means that no one is using this file anymore.
+-	 * So, for example, epoll_ctl() cannot hit here since if we reach this
+-	 * point, the file counter already went to zero and fget() would fail.
+-	 * The only hit might come from ep_free() but by holding the mutex
+-	 * will correctly serialize the operation. We do need to acquire
+-	 * "ep->mtx" after "epmutex" because ep_remove() requires it when called
+-	 * from anywhere but ep_free().
+-	 *
+-	 * Besides, ep_remove() acquires the lock, so we can't hold it here.
++	 * Use the 'dying' flag to prevent a concurrent ep_free() from touching
++	 * the epitems list before eventpoll_release_file() can access the
++	 * ep->mtx.
+ 	 */
+-	mutex_lock(&epmutex);
+-	if (unlikely(!file->f_ep)) {
+-		mutex_unlock(&epmutex);
+-		return;
+-	}
+-	hlist_for_each_entry_safe(epi, next, file->f_ep, fllink) {
++again:
++	spin_lock(&file->f_lock);
++	if (file->f_ep && file->f_ep->first) {
++		/* detach from ep tree */
++		epi = hlist_entry(file->f_ep->first, struct epitem, fllink);
++		epi->dying = true;
++		spin_unlock(&file->f_lock);
 +
-+	return len;
-+}
++		/*
++		 * ep access is safe as we still own a reference to the ep
++		 * struct
++		 */
+ 		ep = epi->ep;
+-		mutex_lock_nested(&ep->mtx, 0);
+-		ep_remove(ep, epi);
++		mutex_lock(&ep->mtx);
++		dispose = __ep_remove(ep, epi, true);
+ 		mutex_unlock(&ep->mtx);
 +
-+static int
-+rss_fill_reply(struct sk_buff *skb, const struct ethnl_req_info *req_base,
-+	       const struct ethnl_reply_data *reply_base)
-+{
-+	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
++		if (dispose)
++			ep_dispose(ep);
++		goto again;
+ 	}
+-	mutex_unlock(&epmutex);
++	spin_unlock(&file->f_lock);
+ }
+ 
+ static int ep_alloc(struct eventpoll **pep)
+@@ -953,6 +987,7 @@ static int ep_alloc(struct eventpoll **pep)
+ 	ep->rbr = RB_ROOT_CACHED;
+ 	ep->ovflist = EP_UNACTIVE_PTR;
+ 	ep->user = user;
++	ep->refcount = 1;
+ 
+ 	*pep = ep;
+ 
+@@ -1494,16 +1529,22 @@ static int ep_insert(struct eventpoll *ep, const struct epoll_event *event,
+ 	if (tep)
+ 		mutex_unlock(&tep->mtx);
+ 
++	/*
++	 * ep_remove() calls in the later error paths can't lead to ep_dispose()
++	 * as overall will lead to no refcount changes
++	 */
++	ep_get(ep);
 +
-+	if (nla_put_u32(skb, ETHTOOL_A_RSS_HFUNC, data->hfunc) ||
-+	    nla_put(skb, ETHTOOL_A_RSS_INDIR,
-+		    sizeof(u32) * data->indir_size, data->indir_table) ||
-+	    nla_put(skb, ETHTOOL_A_RSS_HKEY, data->hkey_size, data->hkey))
-+		return -EMSGSIZE;
-+
-+	return 0;
-+}
-+
-+static void rss_cleanup_data(struct ethnl_reply_data *reply_base)
-+{
-+	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
-+
-+	kfree(data->indir_table);
-+}
-+
-+const struct ethnl_request_ops ethnl_rss_request_ops = {
-+	.request_cmd		= ETHTOOL_MSG_RSS_GET,
-+	.reply_cmd		= ETHTOOL_MSG_RSS_GET_REPLY,
-+	.hdr_attr		= ETHTOOL_A_RSS_HEADER,
-+	.req_info_size		= sizeof(struct rss_req_info),
-+	.reply_data_size	= sizeof(struct rss_reply_data),
-+
-+	.parse_request		= rss_parse_request,
-+	.prepare_data		= rss_prepare_data,
-+	.reply_size		= rss_reply_size,
-+	.fill_reply		= rss_fill_reply,
-+	.cleanup_data		= rss_cleanup_data,
-+};
+ 	/* now check if we've created too many backpaths */
+ 	if (unlikely(full_check && reverse_path_check())) {
+-		ep_remove(ep, epi);
++		ep_remove_safe(ep, epi);
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (epi->event.events & EPOLLWAKEUP) {
+ 		error = ep_create_wakeup_source(epi);
+ 		if (error) {
+-			ep_remove(ep, epi);
++			ep_remove_safe(ep, epi);
+ 			return error;
+ 		}
+ 	}
+@@ -1527,7 +1568,7 @@ static int ep_insert(struct eventpoll *ep, const struct epoll_event *event,
+ 	 * high memory pressure.
+ 	 */
+ 	if (unlikely(!epq.epi)) {
+-		ep_remove(ep, epi);
++		ep_remove_safe(ep, epi);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -2165,10 +2206,16 @@ int do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,
+ 			error = -EEXIST;
+ 		break;
+ 	case EPOLL_CTL_DEL:
+-		if (epi)
+-			error = ep_remove(ep, epi);
+-		else
++		if (epi) {
++			/*
++			 * The eventpoll itself is still alive: the refcount
++			 * can't go to zero here.
++			 */
++			ep_remove_safe(ep, epi);
++			error = 0;
++		} else {
+ 			error = -ENOENT;
++		}
+ 		break;
+ 	case EPOLL_CTL_MOD:
+ 		if (epi) {
 -- 
-2.31.1
+2.38.1
 
