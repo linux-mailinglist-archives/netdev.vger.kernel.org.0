@@ -2,75 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1778763B2BA
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 21:04:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 526D963B2DE
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 21:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232141AbiK1UE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 15:04:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52956 "EHLO
+        id S233170AbiK1URk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 15:17:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbiK1UE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 15:04:28 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527AFBF4A;
-        Mon, 28 Nov 2022 12:04:28 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id 130so11563434pfu.8;
-        Mon, 28 Nov 2022 12:04:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nq2obDql/SvoqdGDGhq2FSglDN+k+dj8tWzgIrUSRGQ=;
-        b=PvHd88p2dkeNSPDNwv2LNFENr8gU5q9YJnjR/ZadgGPvSVk3tEhnn0RzxNaU0xUslI
-         FOKbEZ0xIF46XOj4JzS6+YAeG5Ve89E6kD032+dNpmvT/RdOwodT7rsWL2FclK5mK0FR
-         vcrWO5TQ8H4ds8g/pzjuLzGX7RBg9Bdj/hcLM9pdmSnl6kwW2WzpWBXnEFnmJlTkV/On
-         GSTeFVyBq65IqqF2F4F8EFVhlqLqwPIzdE16jD/XaHdFxdRin8VlDeOLQTQs324uecE2
-         6DnZ/d4we8clbQcMwsnHjhdp4KxjZUcr0Y9H6BOcH5Y9DXp4FDMGG2zIi2wInrF10kVJ
-         42cQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nq2obDql/SvoqdGDGhq2FSglDN+k+dj8tWzgIrUSRGQ=;
-        b=cVwpV9UjSGpAvKoeKcCxuuE6lZyshecLJHMfNxYktr+LfNOjds8eD3q+JEjrq/U7Rg
-         dgv61F7Vlh8kk5TwcIC9If41GcD68fN7C162hADjFKH5f03gKTpJETYfH2rOvDQKfHvA
-         Q8uxRd1i7udAQzCzC/PIs9a+zgRoMB0h7pHTmUWWtFzVIOVqkPsWGUytbxnoF9S+Kp4/
-         GG6innYVm/kdGeHkCVVvfpqQEY3+M1duKb7rYlOAM3oOlFME7TkUrC1T4myHJgK4owVf
-         0h0zmZ8ZYtioI6bVkySh0//KD5HKqpR1CiOTraGddeyUB2+6LKbzz1si3BJ+ufr7b1CY
-         hmoQ==
-X-Gm-Message-State: ANoB5pmDkimpSQr2c3VIIEBabqbAzJkd/H8TTd6tQ7bWiSyJrNhppwUl
-        5VK1Cn1jnjdy994WxDcQeXa7LrmIzq4=
-X-Google-Smtp-Source: AA0mqf47DIQHjZ7ptCb74TWFe8jUseUyRUs5/iybM/ApKWJ151EahpRGq1HvLkuxuNxFJIrMenod6w==
-X-Received: by 2002:a63:e411:0:b0:45f:b2a7:2659 with SMTP id a17-20020a63e411000000b0045fb2a72659mr29450315pgi.132.1669665867643;
-        Mon, 28 Nov 2022 12:04:27 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id oj2-20020a17090b4d8200b001fde655225fsm67357pjb.2.2022.11.28.12.04.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Nov 2022 12:04:27 -0800 (PST)
-Message-ID: <9619489a-1325-4124-d2c8-3dddab1fc625@gmail.com>
-Date:   Mon, 28 Nov 2022 12:04:22 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [net PATCH] dsa: lan9303: Correct stat name
-Content-Language: en-US
-To:     Jerry Ray <jerry.ray@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        with ESMTP id S232957AbiK1URg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 15:17:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BCC27CEB
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 12:16:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669666599;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/vxuWycgxhs4B4hXKEVHWapGna4khbto9eLKu/wcG74=;
+        b=DLycO/QA7n8+lUBAMLZtHcIn0cm+6A0wFMujd37Jm65Acy2JuuY4G1Y5GBjf5eALmtjNJo
+        8jJQupiT8weR7aIOas3gL5RgpMoyyhKV6IVtbqrDArMYr/VGDl6y9q0VKXIKmeeabGMhOH
+        aewWBB9XqnKi4chWD4eIJ838Eqx9vHc=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-403-hZNQgtIYPb6B-U2mb9KebQ-1; Mon, 28 Nov 2022 15:16:38 -0500
+X-MC-Unique: hZNQgtIYPb6B-U2mb9KebQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0425B1C08780;
+        Mon, 28 Nov 2022 20:16:38 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.14])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 415A517582;
+        Mon, 28 Nov 2022 20:16:37 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20221128104853.25665813@kernel.org>
+References: <20221128104853.25665813@kernel.org> <20221123192335.119335ac@kernel.org> <166919798040.1256245.11495568684139066955.stgit@warthog.procyon.org.uk> <1869061.1669273688@warthog.procyon.org.uk>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org,
+        Marc Dionne <marc.dionne@auristor.com>,
         linux-kernel@vger.kernel.org
-References: <20221128193559.6572-1-jerry.ray@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221128193559.6572-1-jerry.ray@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Subject: Re: [PATCH net-next 00/13] rxrpc: Increasing SACK size and moving away from softirq, part 2
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3477286.1669666594.1@warthog.procyon.org.uk>
+Date:   Mon, 28 Nov 2022 20:16:34 +0000
+Message-ID: <3477287.1669666594@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,42 +65,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/28/22 11:35, Jerry Ray wrote:
-> Fixes: a1292595e006 ("net: dsa: add new DSA switch driver for the SMSC-LAN9303")
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-The Fixes: tag is supposed to come above your Signed-off-by, I don't 
-know if the maintainers will fix that up manually or not, but in any case:
+> On Thu, 24 Nov 2022 07:08:08 +0000 David Howells wrote:
+> > What's the best way to base on a fix commit that's in net for patches in
+> > net-next?  Here I tried basing on a merge between them.  Should I include
+> > the fix patch on my net-next branch instead? Or will net be merged into
+> > net-next at some point and I should wait for that?
+> 
+> We merge net -> net-next each Thursday afternoon (LT / Linus Time)
+> so if the wait is for something in net then we generally ask for folks
+> to just hold off posting until the merge. If the dependency is the
+> other way then just post based on what's in tree and provide the
+> conflict resolution in the cover letter.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Ok.  I guess last Thursday was skipped because of Thanksgiving.
 
-> 
-> This patch changes the reported ethtool statistics for the lan9303
-> family of parts covered by this driver.
-> 
-> The TxUnderRun statistic label is renamed to RxShort to accurately
-> reflect what stat the device is reporting.  I did not reorder the
-> statistics as that might cause problems with existing user code that
-> are expecting the stats at a certain offset.
-> 
-> Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
-> ---
->   drivers/net/dsa/lan9303-core.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-> index 438e46af03e9..80f07bd20593 100644
-> --- a/drivers/net/dsa/lan9303-core.c
-> +++ b/drivers/net/dsa/lan9303-core.c
-> @@ -961,7 +961,7 @@ static const struct lan9303_mib_desc lan9303_mib[] = {
->   	{ .offset = LAN9303_MAC_TX_BRDCST_CNT_0, .name = "TxBroad", },
->   	{ .offset = LAN9303_MAC_TX_PAUSE_CNT_0, .name = "TxPause", },
->   	{ .offset = LAN9303_MAC_TX_MULCST_CNT_0, .name = "TxMulti", },
-> -	{ .offset = LAN9303_MAC_RX_UNDSZE_CNT_0, .name = "TxUnderRun", },
-> +	{ .offset = LAN9303_MAC_RX_UNDSZE_CNT_0, .name = "RxShort", },
->   	{ .offset = LAN9303_MAC_TX_64_CNT_0, .name = "Tx64Byte", },
->   	{ .offset = LAN9303_MAC_TX_127_CNT_0, .name = "Tx128Byte", },
->   	{ .offset = LAN9303_MAC_TX_255_CNT_0, .name = "Tx256Byte", },
-
--- 
-Florian
+David
 
