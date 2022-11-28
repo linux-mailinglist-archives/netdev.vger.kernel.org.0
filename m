@@ -2,118 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8237C63AB48
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 15:41:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 660A263AB50
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 15:42:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232419AbiK1Oky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 09:40:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33304 "EHLO
+        id S230101AbiK1Ol5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 09:41:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232593AbiK1Okm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 09:40:42 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047622182A;
-        Mon, 28 Nov 2022 06:40:40 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id ha10so26387126ejb.3;
-        Mon, 28 Nov 2022 06:40:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5gVpZoIcGzhQvJrBd72tFluMZzAXososa0NIa3yIeww=;
-        b=HGxnq78O0ylf3Z/QIR752ISXM6JxXW8pyS4nmT0j/g5RAnLNiI9PiIHky8CTBCzeb8
-         qOnVERJiAs3qfDHF2swRjb5doPU6F+tjmaCyd7aVBN8jcb/hexmNQvShNn2eNmIRBwL9
-         jL6cL1r/F+7MZugkrtARLSrszjUbdK4zOUiiipWD3IA4ngmpMsIMvqC2aA9asswE8cBE
-         ZQQrs3DSn+d/BqGA0FqICwUKhhDfuE2wmGuDhW+uGFPv1LiYSJEBVbJLTCgeIcBZeQil
-         f+y4kTHuapeWeFo4aJLcc0Iyb1QzRI1layd0U0vUj0MlgiCdZN9cIYJykQ8lvo2UwjJ7
-         52og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5gVpZoIcGzhQvJrBd72tFluMZzAXososa0NIa3yIeww=;
-        b=1xZaP2ekNjeEV7XViEK14MQ4CN5Fu2hmxdLCJ+LocwBMYZWhj+fy5ekPbbnzxhbDhC
-         DhNpUCm1b+Pq7JsNes5wu0cEbu6JF5ge+/k+Lhdoco128J7C4yQ9WxJM+tslJZ4ITvhf
-         txRjDkP2OLY338pa3q6f7nVdkifbu1PEsbdY7Z2+U4C8bzUq/wnLl69A6QSdyMGvkeml
-         0Vjp7TB9ceBemVnR3je+3qiMkoAQ+Nd8X1H5w46IRKu3bMFhJSH/mx6CrAMG4vQamgXv
-         Xn8bbtJO78ADkUGWaIf2RD9kmqKVzYu6ncYwvkdsJQkNSgoxWiLTolgMZZonq6rIiaie
-         pByw==
-X-Gm-Message-State: ANoB5pkPrnfS7QtZwRSKJqOfqQZCHfJsgHH5ESc2JVWwYro/v3iNQAyE
-        Yb6Fyju9KpmVtliNtQjyZ4A=
-X-Google-Smtp-Source: AA0mqf7w/3u9b/oG77g/S/1w96g1gNRDWPHsRK05PycFQ953Yv7FWkqgPjUwwIAnv7RdCAEG6RiLJQ==
-X-Received: by 2002:a17:906:3505:b0:7c0:390:d35b with SMTP id r5-20020a170906350500b007c00390d35bmr3947742eja.570.1669646439085;
-        Mon, 28 Nov 2022 06:40:39 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id er12-20020a056402448c00b0045bd14e241csm4043471edb.76.2022.11.28.06.40.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Nov 2022 06:40:38 -0800 (PST)
-Date:   Mon, 28 Nov 2022 17:40:35 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next v2] bonding: uninitialized variable in
- bond_miimon_inspect()
-Message-ID: <Y4TIYx37CiNGDSc5@kadam>
-References: <Y4SWJlh3ohJ6EPTL@kili>
- <CALs4sv3xJXJvWwcGk8N_s1mW9Y7GpEz6Bqv-DJO_q7hPi2yTLA@mail.gmail.com>
- <Y4THeSrc0lOJP/AJ@kadam>
+        with ESMTP id S232409AbiK1Ola (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 09:41:30 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1369E1D315;
+        Mon, 28 Nov 2022 06:41:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669646490; x=1701182490;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=MSh9uVp2zwjD3iNzMDF4CLgvmRLyaxXitI4MRNVQLcs=;
+  b=cQAIenddmwOgdR9zR3Fg4R5Xoc7sfxmFsFFhja+JoqO/3EpUkJbeLns4
+   3bb09KjihnWx5oHAHcpGJV9aeem2yvmbFJMbFfwDbN7Cw7Wa+zn6Dt4Uf
+   eoxzwK6eZIryPueprC0vqHoYHjPJBSrJGDZxJawvlTIHVp5PeKFGY58FR
+   E393OmLTluOLVlpd1EilQ5CNDIPx7suuqfPhJLH0S3ngDAKXO9lR+L7/5
+   mEqKF+f++c75+YAqYlH+tcikghD/Cc03RJAKN91N2P+oDnB6emFccpxIe
+   SzOKMCH8R6G5wyKMy0CfAvtN/akP78MaraUAVt8AiFZ9OfnMiMnwz1jZL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="376988503"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="376988503"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 06:41:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="749411853"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="749411853"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga002.fm.intel.com with ESMTP; 28 Nov 2022 06:41:26 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2ASEfPu2018253;
+        Mon, 28 Nov 2022 14:41:25 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        daniel.machon@microchip.com, UNGLinuxDriver@microchip.com,
+        casper.casan@gmail.com
+Subject: Re: [PATCH net-next] net: microchip: vcap: Change how the rule id is generated
+Date:   Mon, 28 Nov 2022 15:40:42 +0100
+Message-Id: <20221128144042.2097491-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221128142959.8325-1-horatiu.vultur@microchip.com>
+References: <20221128142959.8325-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y4THeSrc0lOJP/AJ@kadam>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 28, 2022 at 05:36:41PM +0300, Dan Carpenter wrote:
-> On Mon, Nov 28, 2022 at 07:15:39PM +0530, Pavan Chebbi wrote:
-> > On Mon, Nov 28, 2022 at 4:36 PM Dan Carpenter <error27@gmail.com> wrote:
-> > >
-> > > The "ignore_updelay" variable needs to be initialized to false.
-> > >
-> > > Fixes: f8a65ab2f3ff ("bonding: fix link recovery in mode 2 when updelay is nonzero")
-> > > Signed-off-by: Dan Carpenter <error27@gmail.com>
-> > > ---
-> > > v2: Re-order so the declarations are in reverse Christmas tree order
-> > >
-> > Thanks,
-> > Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-> > 
-> > > Don't forget about:
-> > > drivers/net/bonding/bond_main.c:5071 bond_update_slave_arr() warn: missing error code here? 'bond_3ad_get_active_agg_info()' failed. 'ret' = '0'
-> > >
-> > 
-> > I think that warning can be ignored, as bond_update_slave_arr() does
-> > consider the return value of bond_3ad_get_active_agg_info() but
-> > chooses to not bubble it up. Though the author of the function is the
-> > best person to answer it, at this point, it looks OK to me. Maybe a
-> > separate patch to address it would help to get the attention of the
-> > author.
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date: Mon, 28 Nov 2022 15:29:59 +0100
+
+> Currently whenever a new rule id is generated, it picks up the next
+> number bigger than previous id. So it would always be 1, 2, 3, etc.
+> When the rule with id 1 will be deleted and a new rule will be added,
+> it will have the id 4 and not id 1.
+> In theory this can be a problem if at some point a rule will be added
+> and removed ~0 times. Then no more rules can be added because there
+> are no more ids.
 > 
-> Heh...  That's slightly vague.
+> Change this such that when a new rule is added, search for an empty
+> rule id starting with value of 1 as value 0 is reserved.
 > 
-> You're wrong to say that none of the callers care about the error code.
-> It is checked in bond_slave_arr_handler().
+> Fixes: c9da1ac1c212 ("net: microchip: sparx5: Adding initial tc flower support for VCAP API")
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
+>  drivers/net/ethernet/microchip/vcap/vcap_api.c | 7 +------
+>  drivers/net/ethernet/microchip/vcap/vcap_api.h | 1 -
+>  2 files changed, 1 insertion(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> index b50d002b646dc..b65819f3a927f 100644
+> --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> @@ -974,17 +974,12 @@ static u32 vcap_next_rule_addr(u32 addr, struct vcap_rule_internal *ri)
+>  /* Assign a unique rule id and autogenerate one if id == 0 */
+>  static u32 vcap_set_rule_id(struct vcap_rule_internal *ri)
+>  {
+> -	u32 next_id;
+> -
+>  	if (ri->data.id != 0)
+>  		return ri->data.id;
+>  
+> -	next_id = ri->vctrl->rule_id + 1;
+> -
+> -	for (next_id = ri->vctrl->rule_id + 1; next_id < ~0; ++next_id) {
+> +	for (u32 next_id = 1; next_id < ~0; ++next_id) {
+>  		if (!vcap_lookup_rule(ri->vctrl, next_id)) {
 
-If you don't know that's fine also...  All the maintainers are CC'd.  If
-they really care they can take a look otherwise there are so many other
-obvious bugs to care about and this is very minor.
+Or you can simply use IDA/IDR/XArray which takes care of all this :)
 
-regards,
-dan carpenter
 
+>  			ri->data.id = next_id;
+> -			ri->vctrl->rule_id = next_id;
+>  			break;
+>  		}
+>  	}
+> diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.h b/drivers/net/ethernet/microchip/vcap/vcap_api.h
+> index ca4499838306f..689c7270f2a89 100644
+> --- a/drivers/net/ethernet/microchip/vcap/vcap_api.h
+> +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.h
+> @@ -268,7 +268,6 @@ struct vcap_operations {
+>  
+>  /* VCAP API Client control interface */
+>  struct vcap_control {
+> -	u32 rule_id; /* last used rule id (unique across VCAP instances) */
+>  	struct vcap_operations *ops;  /* client supplied operations */
+>  	const struct vcap_info *vcaps; /* client supplied vcap models */
+>  	const struct vcap_statistics *stats; /* client supplied vcap stats */
+> -- 
+> 2.38.0
+
+Thanks,
+Olek
