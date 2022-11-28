@@ -2,326 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2494363B5C5
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 00:23:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1373163B5C9
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 00:23:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234661AbiK1XXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 18:23:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
+        id S234601AbiK1XXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 18:23:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234460AbiK1XXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 18:23:07 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3C7DFCE;
-        Mon, 28 Nov 2022 15:23:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=lBGNBrRxKEGZ085fldSHbll+54ktYNBZy8fzs9T2aOc=; b=XQb5jy7is03lw9m92hSma01us9
-        nqU4g7+VML5CameXc+hrKUc3a708xyyS5a2DziYwQDMxBOGs5om802a8ehDDRhtbC5jdx5SYMtJ5E
-        DbAxYpWvQq/hNR+jl0Gqlva8xjXrdy1WmM1IJW4sN9GUfT+1eQNtIssI0C9et1rEDm6ovqYa/Ie6W
-        +Cwmbq3W1eKmDD1jUJ1f/KN9YesWKce1iT5iKkS42qPeRKvp80Z4Erv8hNUxZXbXNZd6ng75x83yo
-        PGA0ErlssgYvskle0v1wsgz3q6Yh0YDaM2A/5KvyXcHlf6prHREpqq6xk3n7oN/+qZEJuXCpWg3du
-        rWtfZW/g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35464)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oznSl-00009l-2e; Mon, 28 Nov 2022 23:22:59 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oznSh-0000xa-MG; Mon, 28 Nov 2022 23:22:55 +0000
-Date:   Mon, 28 Nov 2022 23:22:55 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        with ESMTP id S234672AbiK1XXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 18:23:35 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40409286F7
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 15:23:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669677814; x=1701213814;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=rKEFwfWNWH9ft+CByMSP5u+UYW01WYeG/4HQFi8LNgA=;
+  b=il/mqVBUf68uWHE7oMYIAAzXQSy+10NrUbri6+w9FkRlZquSMO/+yWgE
+   jwDIoGeNhLQtcZTXb08XpOisoT19z0MwHqp3LP+JfrQuk89N1Hoj9eHaG
+   uQBxOr93uAH5nepEqkjJBgUy7Z5mHbxH440EoQUl7NYxzjJetUvpbC6Vm
+   2ceB+HXyQ6lwze3m27lqrKoSBXcjhLfhKqjBbqIfFtgD+gwGSf2YL1n47
+   aXgBZE4wVHdAYjmjwSZSadu9+MOJZKA0z+853bClls6nW8kmJzsrwkBgg
+   7MfD/V96mIhMC1OMZtcM27ZkgSDcgHHWRiPoiWJkr9qXI9LhS3IgAVPey
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="379232538"
+X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
+   d="scan'208";a="379232538"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 15:23:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="645678516"
+X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
+   d="scan'208";a="645678516"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga007.fm.intel.com with ESMTP; 28 Nov 2022 15:23:32 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 28 Nov 2022 15:23:32 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 28 Nov 2022 15:23:32 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.107)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Mon, 28 Nov 2022 15:23:31 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lA2f5vjgJ7By7rWCyNtTaTXYz24BkAW6+RCBpYy9Yom0HMC6MEpT+yosWSsaJy/uJy+83/Fbt46/ey/J4fA6QNXpy+qw8ztdMVG5mUJBBIn8B9P2sGB4tp7V7ucmHJmwCnhZbfu2D89wu8V8XF4c2lY60h1YQUJHHfHdxdUfd1Ca1RTNLiZqABXU5gQ2YdK9fq9EA+xLiGrEPiawtTpxSIHn+dmHNfs4A9MgkP8Tm26hNew5mdg/AW06i6HBNUh31pGWLPh0pfDHlHs+pqRmz2Uu1dp+h9MYjJhIfvI+9lFXPjEXYbiNqiithSr2yZPWebMi47FY9JtEyUyJBhYSzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WftufR16FcD+VU5Z/wPD24GxVcGiAV07PiWMKbw6cpE=;
+ b=Ca/FVIv2oQvIr83odzmu43YVq0b/mgLFAOB2ExoCcI+UICq1smVgZaOxTMYuNQICZqpR6G+D8vTd/31c2hxR7c9oIDsT3zQSl3/Rz9f6kjDiD+QW7u9PVySJIgT1LqMP4/+D1IXYrEv3uX3NeZN4BUlXv/y5/t+NDWCdcPz+OHf5CjRJqfL/ldQxddifZnijLq5XNzvej1fLT0Kv1KnyYZUSHkKye78Rg6NlvvJfg2JTHEKtemRORCJrZ53mhh0nMNXII5oj+nET05YKuTfGUZZ7nCoM4aR7qwZGmuTqyxW6mYQEODZ3yhbWef7QNNJXN8LZw6w4AgnLoY0WWeEsGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by DS0PR11MB6399.namprd11.prod.outlook.com (2603:10b6:8:c8::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5857.22; Mon, 28 Nov 2022 23:23:30 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::3862:3b51:be36:e6f3]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::3862:3b51:be36:e6f3%6]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
+ 23:23:30 +0000
+Message-ID: <f0f7f0c1-e7c5-1083-2511-c94bde3814a0@intel.com>
+Date:   Mon, 28 Nov 2022 15:23:27 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [net 03/15] net/mlx5: E-switch, Fix duplicate lag creation
+Content-Language: en-US
+To:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net v2 2/2] phy: aquantia: Determine rate adaptation
- support from registers
-Message-ID: <Y4VCz2i+kkK0z+XY@shell.armlinux.org.uk>
-References: <20221128195409.100873-1-sean.anderson@seco.com>
- <20221128195409.100873-2-sean.anderson@seco.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+CC:     Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>, Chris Mi <cmi@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+References: <20221124081040.171790-1-saeed@kernel.org>
+ <20221124081040.171790-4-saeed@kernel.org>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <20221124081040.171790-4-saeed@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR05CA0158.namprd05.prod.outlook.com
+ (2603:10b6:a03:339::13) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221128195409.100873-2-sean.anderson@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|DS0PR11MB6399:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2c845865-d924-4392-b08e-08dad1978f5e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kAR6qlgp3IT/OkFXiTH3mK2CiYMJIE4ye0U42/nvcspZsPIzLtz6B3xftC4tPggqv4PssVkQ5Cb1FpYZhlMRmfASUXxrDpPQfh7fJg0zjgRgBwPB+AZ/re2wsYi6c+z8QsOwJpCYg+EZBg7rd0BVTVpVvv6c+xOz7lVlVSd42w1OPVEu1FFGSHr5vuu5+JhxUC91qmIFOY1c8dEO+UhlppiJxm8sL5brQ1OLEzu9FiB/CXIPoklBLoxiCt4gko5OI3Q3BRvzQMlWwVxQ6cAC+KEoKjZN/3eSL0g1M98Y9RkknZtNGF9O2rmLCniOg1qypZij/NTjDEADghByjKRTQAgCaAUpcLQiCNQYK2wQkEV69JoMkAXgnq7BFbq5uSD+utZQhspT6gVoKMipZJZt63FuPTyiqc1EvCYOaWOWpVls8JLm0VjtN53a+NCWh/bwsRKSVDt+1TBNCteTMX2nMo/7tLNhjO1vaJw4Ve9Wp0+e6SuQg/9ldFvYniAEE1GDT5nK8NeD2w7QL3fGMCdoewrymQ8U+Uejj108ybEbvgBwrFOVwASRZfbmOm+844pdHn451b3bIO9k3H8bbY7joznCbfGKNNGO/FGqcUeFk3GIhwmO3Z9/nvnSr12U9nzYQyhVPbozh/Mpvl/b3FdfWtTVnaOrJD1X2Fv6UpqrDT0U/3SBJhNTNHz9n7VsmTFoepg4q/huAI9RLw6vsIbrfcEeDhhy/mRyDtmAeTzo32o=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(396003)(39860400002)(366004)(346002)(376002)(451199015)(8936002)(5660300002)(41300700001)(31696002)(8676002)(36756003)(4326008)(66556008)(86362001)(66946007)(7416002)(66476007)(83380400001)(6506007)(26005)(2616005)(186003)(53546011)(6666004)(6512007)(54906003)(316002)(478600001)(6486002)(82960400001)(38100700002)(110136005)(2906002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bTNEWGJ4SjJoaGt6Qk9obnhhODloTis5a00vVUQyQjJReHlic1NLQlFhcmU5?=
+ =?utf-8?B?K3lqYk1hMUxCQ2xnbGE0VnVpUTBNb3RQdVB5OThUY3l1ZlZab3oxQzBpY3hq?=
+ =?utf-8?B?ckVETTZVMDlZR0hSNXNHSzlGcWhtMVZIT0YwWjF1cFhFS3BKVmFQYWVoaklh?=
+ =?utf-8?B?L0M1Y0RRMzM0TE1SalNQZG5GOVd6SnhkWXk4azJjVGFUL1pDSkVjenBvZklH?=
+ =?utf-8?B?VmtRWE9OS2pMRU1hSG12eXNqNXpTVVdNR3UxajRjK1VnUmxpZ0ozcDl1Yksz?=
+ =?utf-8?B?Qk1XMS8xOHdKUElSRkJqbUtsNlYvUUVrdXRidkRNeHZNenlDbVZrSDlSdFg0?=
+ =?utf-8?B?RndZbFVYMHh3UEkrZ2MrRUtlVW1EVm83eHd1QjBYZEhrSkI4dnk0SHlHcWVQ?=
+ =?utf-8?B?UDR3VlQvaGNxRVlMdzBjNGJuM2FkdVZVWmlKRDBqc01HNmZKTzFBcGF2N2s0?=
+ =?utf-8?B?ODZpVFFQQTJidGsydmd4bWpmMnRwdW8wUDJJb1JkaWRORXBEdFRJd0NGQW5T?=
+ =?utf-8?B?OC9makJNRVQ5NGppTFhOd3llSk0vN0NKY0F0Zlc3QTRQZTc3ODhwWU1rdmFF?=
+ =?utf-8?B?Y0laMElhSDVVU1p5Mmkxb1ZXcUhlL2NBRzVpSlE4RXFWanI2R2ZaZlZzNTN3?=
+ =?utf-8?B?K0tFMFN3OVpWL0tZazZXRENoSmh1eXliREoyOUNBRHpGcFVIbFowMjMyeVpi?=
+ =?utf-8?B?cUE5K3pnVGErL0dVYjVZK2pSOFdOWjhpa240ZmU2cFZ0ZlR3NnJUdDlMZlIw?=
+ =?utf-8?B?bURIdWd4R0dGYncwRkRRNkRpSEVWT1hnWE0vcUZZY0NZdUxaNDdLYTF3NVdn?=
+ =?utf-8?B?cVROQjAyb2hWeFZTOFlmbHZOUTdhL0NTVUZpa2tzbWVleUtIVDBZOFF5MlNp?=
+ =?utf-8?B?R3pwSEdWRkJKUGZJd2pmY0p1REQzNXhQdFM2R2MydFZDUkVzWGZFMU83OUh2?=
+ =?utf-8?B?VXRtYmh2M3NCdlNxSHlGanlFK081NXNMVVFicTF5YUV1ZElmdjNObHV3Ymsy?=
+ =?utf-8?B?U0dxQ2UvWjdyZ2pmZ0ZSYmJSUi9qd29LbVZaTFB3NzJneXprWXM5ZzRTdllB?=
+ =?utf-8?B?QVkxZnZ5TCt4TW1vblFTRFN4OU1LUHhVRWFCRWRsNVBpVmdmUWQ2RmVFRDdz?=
+ =?utf-8?B?czE1ZEVTcHRYWkIvYzlrelEwNlVsc2JNVlBpOW0vT3FFb2l6OEdEL1RiM0s3?=
+ =?utf-8?B?RGovYXBkSUtoTFN0WWFMcFQ2TFJNZ0xqSWVFeXJ4SG1QbkN0MXBXZVZDRDh0?=
+ =?utf-8?B?QkUxU3lqNkZSTWlwOHZnRktaYnNJSUVlUk9ITVRrM0ZGMGVuRkZCc2dSNDF2?=
+ =?utf-8?B?SnhMOTAvajFoV3MvdEFNeFlyaDdDZFFoSHhJYXJZc3U2ZnFwTFlObmxRb1Bw?=
+ =?utf-8?B?K1NEZDZxZGhSUFNmTDZIRzhpcHJkRlBjaEw2SE8waDhXUmVTQVI4WlNwaUx5?=
+ =?utf-8?B?N25Ya1RueXBaMHJlMkZ6UVgrUXd6Nk9ZUFJnVUVTS3Zwb3p5MzNmeXlpQ1ZZ?=
+ =?utf-8?B?NUxFSUVmMXNOTVVZSWtFdkhocmw4RFF1Mm5wRXE0SlVTdzZZdkc4QlU5RGhR?=
+ =?utf-8?B?dTBoZWljYVR4L2hubEZaOTRVbzhiSVdBWUpTMHNGMlpNQUMxek5pdGdRY1RG?=
+ =?utf-8?B?cEdkU2tXaHo0VU91UUNLb29kVVhkTzhnVkh4QTFkd3VvVVJ6VFFGMWN5QTB4?=
+ =?utf-8?B?SDEyeElaUlJqQThEU3dLYndtR2ZXb2JVNlQ4ZFI2WDlkOGN5YTRrWGVNSDZS?=
+ =?utf-8?B?VEN4R09tekRxWWNLdTBFbDRHMnNvY1ZKYlBtTDBVaWZZSzNTTmV0TFBId2Ni?=
+ =?utf-8?B?R3BSZU9CUjBYUFk0K1V3aTI2c3hWR3RDU0o3SjJSUytEVUNpVmdiYUVXd0Fn?=
+ =?utf-8?B?a1ExMlorTndneTdKa1Zicy9UZlBJQXZwb3VsZk8zQStYOTgvL2g0MmFYT1Uv?=
+ =?utf-8?B?MEkxWEJKeEVOclJsWVorUWtUNE53Zk9GM1AwOURnbVV6bzdOWnFNckIrZXJQ?=
+ =?utf-8?B?TG8yMVY0K2FKTzFPK1lBQUlPeGxLeFI1d0ViT0d3VmFJRlh0QXJzQWhtbSto?=
+ =?utf-8?B?QjFVMHBWM3NyRmFqZExCTmJ2Z2NWbHRJMWV3Tis3bXhYc3JCMEVIVTJaVENM?=
+ =?utf-8?B?c09BSiswKytDQzl3R2JCaTN4am1lVGMvSUYyTEtpQldIQUc5bHFvSFB0Sjhs?=
+ =?utf-8?B?MFE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c845865-d924-4392-b08e-08dad1978f5e
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 23:23:30.3380
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3KnU0pbgXWcpsrO4e50iueXLWuhP6F9IoUostM8/wyPmybli246JXNpWDELNuBVhHOZLb4NHPmC9bwaz3L/tbS6BR+7vz1tkAt99UIrgWqU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6399
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 28, 2022 at 02:54:09PM -0500, Sean Anderson wrote:
-> When autonegotiation completes, the phy interface will be set based on
-> the global config register for that speed. If the SERDES mode is set to
-> something which the MAC does not support, then the link will not come
-> up. To avoid this, validate each combination of interface speed and link
-> speed which might be configured. This way, we ensure that we only
-> consider rate adaptation in our advertisement when we can actually use
-> it.
-> 
-> The API for get_rate_matching requires that PHY_INTERFACE_MODE_NA be
-> handled properly. To do this, we adopt a structure similar to
-> phylink_validate.
 
-Note that this has all but gone away except for a few legacy cases with
-the advent of the supported_interfaces bitmap.
 
-Also note that phy_get_rate_matching() will not be called by phylink
-with PHY_INTERFACE_MODE_NA since my recent commit (7642cc28fd37 "net:
-phylink: fix PHY validation with rate adaption"), and phylink is
-currently the only user of this interface.
-
-> At the top-level, we either validate a particular
-> interface speed or all of them. Below that, we validate each combination
-> of serdes speed and link speed.
+On 11/24/2022 12:10 AM, Saeed Mahameed wrote:
+> From: Chris Mi <cmi@nvidia.com>
 > 
-> For some firmwares, not all speeds are supported. In this case, the
-> global config register for that speed will be initialized to zero
-> (indicating that rate adaptation is not supported). We can detect this
-> by reading the PMA/PMD speed register to determine which speeds are
-> supported. This register is read once in probe and cached for later.
+> If creating bond first and then enabling sriov in switchdev mode,
+> will hit the following syndrome:
 > 
-> Fixes: 3c42563b3041 ("net: phy: aquantia: Add support for rate matching")
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> mlx5_core 0000:08:00.0: mlx5_cmd_out_err:778:(pid 25543): CREATE_LAG(0x840) op_mod(0x0) failed, status bad parameter(0x3), syndrome (0x7d49cb), err(-22)
+> 
+> The reason is because the offending patch removes eswitch mode
+> none. In vf lag, the checking of eswitch mode none is replaced
+> by checking if sriov is enabled. But when driver enables sriov,
+> it triggers the bond workqueue task first and then setting sriov
+> number in pci_enable_sriov(). So the check fails.
+> 
+> Fix it by checking if sriov is enabled using eswitch internal
+> counter that is set before triggering the bond workqueue task.
+> 
+> Fixes: f019679ea5f2 ("net/mlx5: E-switch, Remove dependency between sriov and eswitch mode")
+> Signed-off-by: Chris Mi <cmi@nvidia.com>
+> Reviewed-by: Roi Dayan <roid@nvidia.com>
+> Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+> Reviewed-by: Vlad Buslov <vladbu@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 > ---
-> This commit should not get backported until it soaks in master for a
-> while.
-
-You will have to monitor the emails from stable to achieve that - as you
-have a Fixes tag, that will trigger it to be picked up fairly quicky.
-
->  #define VEND1_GLOBAL_CFG_RATE_ADAPT_NONE	0
->  #define VEND1_GLOBAL_CFG_RATE_ADAPT_USX		1
->  #define VEND1_GLOBAL_CFG_RATE_ADAPT_PAUSE	2
-> +#define VEND1_GLOBAL_CFG_SERDES_MODE		GENMASK(2, 0)
-> +#define VEND1_GLOBAL_CFG_SERDES_MODE_XFI	0
-> +#define VEND1_GLOBAL_CFG_SERDES_MODE_SGMII	3
-> +#define VEND1_GLOBAL_CFG_SERDES_MODE_OCSGMII	4
-> +#define VEND1_GLOBAL_CFG_SERDES_MODE_XFI5G	6
-> +#define VEND1_GLOBAL_CFG_SERDES_MODE_XFI20G	7
->  
->  #define VEND1_GLOBAL_RSVD_STAT1			0xc885
->  #define VEND1_GLOBAL_RSVD_STAT1_FW_BUILD_ID	GENMASK(7, 4)
-> @@ -173,6 +179,7 @@ static const struct aqr107_hw_stat aqr107_hw_stats[] = {
->  
->  struct aqr107_priv {
->  	u64 sgmii_stats[AQR107_SGMII_STAT_SZ];
-> +	int supported_speeds;
->  };
->  
->  static int aqr107_get_sset_count(struct phy_device *phydev)
-> @@ -675,13 +682,141 @@ static int aqr107_wait_processor_intensive_op(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +/**
-> + * aqr107_rate_adapt_ok_one() - Validate rate adaptation for one configuration
-> + * @phydev: The phy to act on
-> + * @serdes_speed: The speed of the serdes (aka the phy interface)
-> + * @link_speed: The speed of the link
-> + *
-> + * This function validates whether rate adaptation will work for a particular
-> + * combination of @serdes_speed and @link_speed.
-> + *
-> + * Return: %true if the global config register for @link_speed is configured for
-> + * rate adaptation, %true if @link_speed will not be advertised, %false
-> + * otherwise.
-> + */
-> +static bool aqr107_rate_adapt_ok_one(struct phy_device *phydev, int serdes_speed,
-> +				     int link_speed)
+>   drivers/net/ethernet/mellanox/mlx5/core/eswitch.h | 8 ++++++++
+>   drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c | 5 +++--
+>   2 files changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+> index f68dc2d0dbe6..3029bc1c0dd0 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+> @@ -736,6 +736,14 @@ void mlx5_eswitch_offloads_destroy_single_fdb(struct mlx5_eswitch *master_esw,
+>   					      struct mlx5_eswitch *slave_esw);
+>   int mlx5_eswitch_reload_reps(struct mlx5_eswitch *esw);
+>   
+> +static inline int mlx5_eswitch_num_vfs(struct mlx5_eswitch *esw)
 > +{
-> +	struct aqr107_priv *priv = phydev->priv;
-> +	int val, speed_bit;
-> +	u32 reg;
+> +	if (mlx5_esw_allowed(esw))
+> +		return esw->esw_funcs.num_vfs;
 > +
-> +	phydev_dbg(phydev, "validating link_speed=%d serdes_speed=%d\n",
-> +		   link_speed, serdes_speed);
-> +
-> +	switch (link_speed) {
-> +	case SPEED_10000:
-> +		reg = VEND1_GLOBAL_CFG_10G;
-> +		speed_bit = MDIO_SPEED_10G;
-> +		break;
-> +	case SPEED_5000:
-> +		reg = VEND1_GLOBAL_CFG_5G;
-> +		speed_bit = MDIO_PCS_SPEED_5G;
-> +		break;
-> +	case SPEED_2500:
-> +		reg = VEND1_GLOBAL_CFG_2_5G;
-> +		speed_bit = MDIO_PCS_SPEED_2_5G;
-> +		break;
-> +	case SPEED_1000:
-> +		reg = VEND1_GLOBAL_CFG_1G;
-> +		speed_bit = MDIO_PMA_SPEED_1000;
-> +		break;
-> +	case SPEED_100:
-> +		reg = VEND1_GLOBAL_CFG_100M;
-> +		speed_bit = MDIO_PMA_SPEED_100;
-> +		break;
-> +	case SPEED_10:
-> +		reg = VEND1_GLOBAL_CFG_10M;
-> +		speed_bit = MDIO_PMA_SPEED_10;
-> +		break;
-> +	default:
-> +		WARN_ON_ONCE(1);
-> +		return false;
-> +	}
-> +
-> +	/* Vacuously OK, since we won't advertise it anyway */
-> +	if (!(priv->supported_speeds & speed_bit))
-> +		return true;
-
-This doesn't make any sense. priv->supported_speeds is the set of speeds
-read from the PMAPMD. The only bits that are valid for this are the
-MDIO_PMA_SPEED_* definitions, but teh above switch makes use of the
-MDIO_PCS_SPEED_* definitions. To see why this is wrong, look at these
-two definitions:
-
-#define MDIO_PMA_SPEED_10               0x0040  /* 10M capable */
-#define MDIO_PCS_SPEED_2_5G             0x0040  /* 2.5G capable */
-
-Note that they are the same value, yet above, you're testing for bit 6
-being clear effectively for both 10M and 2.5G speeds. I suspect this
-is *not* what you want.
-
-MDIO_PMA_SPEED_* are only valid for the PMAPMD MMD (MMD 1).
-MDIO_PCS_SPEED_* are only valid for the PCS MMD (MMD 3).
-
-> +
-> +	val = phy_read_mmd(phydev, MDIO_MMD_VEND1, reg);
-> +	if (val < 0) {
-> +		phydev_warn(phydev, "could not read register %x:%.04x (err = %d)\n",
-> +			    MDIO_MMD_VEND1, reg, val);
-> +		return false;
-> +	}
-> +
-> +	phydev_dbg(phydev, "%x:%.04x = %.04x\n", MDIO_MMD_VEND1, reg, val);
-> +	if (FIELD_GET(VEND1_GLOBAL_CFG_RATE_ADAPT, val) !=
-> +		VEND1_GLOBAL_CFG_RATE_ADAPT_PAUSE)
-> +		return false;
-> +
-> +	switch (FIELD_GET(VEND1_GLOBAL_CFG_SERDES_MODE, val)) {
-> +	case VEND1_GLOBAL_CFG_SERDES_MODE_XFI20G:
-> +		return serdes_speed == SPEED_20000;
-> +	case VEND1_GLOBAL_CFG_SERDES_MODE_XFI:
-> +		return serdes_speed == SPEED_10000;
-> +	case VEND1_GLOBAL_CFG_SERDES_MODE_XFI5G:
-> +		return serdes_speed == SPEED_5000;
-> +	case VEND1_GLOBAL_CFG_SERDES_MODE_OCSGMII:
-> +		return serdes_speed == SPEED_2500;
-> +	case VEND1_GLOBAL_CFG_SERDES_MODE_SGMII:
-> +		return serdes_speed == SPEED_1000;
-> +	default:
-> +		return false;
-> +	}
+> +	return 0;
 > +}
 > +
-> +/**
-> + * aqr107_rate_adapt_ok() - Validate rate adaptation for an interface speed
-> + * @phydev: The phy device
-> + * @speed: The serdes (phy interface) speed
-> + *
-> + * This validates whether rate adaptation will work for a particular @speed.
-> + * All link speeds less than or equal to @speed are validate to ensure they are
-> + * configured properly.
-> + *
-> + * Return: %true if rate adaptation is supported for @speed, %false otherwise.
-> + */
-> +static bool aqr107_rate_adapt_ok(struct phy_device *phydev, int speed)
-> +{
-	static int speeds[] = {
-		SPEED_10,
-		SPEED_100,
-		SPEED_1000,
-		SPEED_2500,
-		SPEED_5000,
-		SPEED_10000,
-	};
-	int i;
+>   #else  /* CONFIG_MLX5_ESWITCH */
+>   /* eswitch API stubs */
+>   static inline int  mlx5_eswitch_init(struct mlx5_core_dev *dev) { return 0; }
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+> index be1307a63e6d..4070dc1d17cb 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+> @@ -701,8 +701,9 @@ static bool mlx5_lag_check_prereq(struct mlx5_lag *ldev)
+>   
+>   #ifdef CONFIG_MLX5_ESWITCH
+>   	dev = ldev->pf[MLX5_LAG_P1].dev;
+> -	if ((mlx5_sriov_is_enabled(dev)) && !is_mdev_switchdev_mode(dev))
+> -		return false;
+> +	for (i = 0; i  < ldev->ports; i++)
+> +		if (mlx5_eswitch_num_vfs(dev->priv.eswitch) && !is_mdev_switchdev_mode(dev))
+> +			return false;
+>   
 
-	for (i = 0; i < ARRAY_SIZE(speeds) && speeds[i] <= speed; i++)
-		if (!aqr107_rate_adapt_ok_one(phydev, speed, speeds[i]))
-			return false;
+Am I missing something? whats with the for loop iterator here? i isn't 
+used or passed into these functions?
 
-	/* speed must be in speeds[] */
-	if (i == ARRAY_SIZE(speeds) || speeds[i] != speed)
-		return false;
+Do you need to check multiple times or do these functions have some side 
+effect? But looking at their implementation neither of them appear to 
+have side effects?
 
-	return true;
+What am I missing?
 
-would be more concise code?
-
-> +}
-> +
->  static int aqr107_get_rate_matching(struct phy_device *phydev,
->  				    phy_interface_t iface)
->  {
-> -	if (iface == PHY_INTERFACE_MODE_10GBASER ||
-> -	    iface == PHY_INTERFACE_MODE_2500BASEX ||
-> -	    iface == PHY_INTERFACE_MODE_NA)
-> +	if (iface != PHY_INTERFACE_MODE_NA) {
-> +		if (aqr107_rate_adapt_ok(phydev,
-> +					 phy_interface_max_speed(iface)))
-> +			return RATE_MATCH_PAUSE;
-> +		else
-> +			return RATE_MATCH_NONE;
-> +	}
-> +
-> +	if (aqr107_rate_adapt_ok(phydev, SPEED_10000) ||
-> +	    aqr107_rate_adapt_ok(phydev, SPEED_2500) ||
-> +	    aqr107_rate_adapt_ok(phydev, SPEED_1000))
->  		return RATE_MATCH_PAUSE;
-> +
->  	return RATE_MATCH_NONE;
->  }
->  
-> @@ -711,10 +846,19 @@ static int aqr107_resume(struct phy_device *phydev)
->  
->  static int aqr107_probe(struct phy_device *phydev)
->  {
-> -	phydev->priv = devm_kzalloc(&phydev->mdio.dev,
-> -				    sizeof(struct aqr107_priv), GFP_KERNEL);
-> -	if (!phydev->priv)
-> +	struct aqr107_priv *priv;
-> +
-> +	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
->  		return -ENOMEM;
-> +	phydev->priv = priv;
-> +
-> +	priv->supported_speeds = phy_read_mmd(phydev, MDIO_MMD_PMAPMD,
-> +					      MDIO_SPEED);
-> +	if (priv->supported_speeds < 0) {
-
-Given the above confusion about the MDIO_SPEED register, I'd suggest
-this isn't simply named "supported_speeds" but "pmapmd_speeds" to
-indicate that it's the pmapmd mmd speed register.
-
-> +		phydev_err(phydev, "could not determine supported speeds\n");
-> +		return priv->supported_speeds;
-> +	};
->  
->  	return aqr_hwmon_probe(phydev);
->  }
-> -- 
-> 2.35.1.1320.gc452695387.dirty
-> 
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Shouldn't this just be:
+>> -	if ((mlx5_sriov_is_enabled(dev)) && !is_mdev_switchdev_mode(dev) >> +	if (mlx5_eswitch_num_vfs(dev->priv.eswitch) && 
+!is_mdev_switchdev_mode(dev))
+>>  		return false;
