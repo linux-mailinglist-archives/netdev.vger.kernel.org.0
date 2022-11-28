@@ -2,70 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C35A063B4D5
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 23:29:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6DEB63B4FA
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 23:50:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiK1W3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 17:29:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35842 "EHLO
+        id S234546AbiK1Wu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 17:50:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232683AbiK1W3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 17:29:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF5B24B;
-        Mon, 28 Nov 2022 14:29:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CB78614AE;
-        Mon, 28 Nov 2022 22:29:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7452CC433D6;
-        Mon, 28 Nov 2022 22:29:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669674546;
-        bh=xcQxXnrPCAnUx0UIMRQ0AyINld9piSgUJcX2QXwJ60M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EoqthV20Y+l4UTWI1AZtrRV93JG3GOnbQKy2tYKNI12ewckkMKp+2P/Cm8MeGeH2G
-         ROHIqS+lMvigJpRr/gPxtQ+kfdmGpcXXNEJE3M6LqhodE2bsF6noOk+AR9iryZxG5c
-         bxcitNTGsr2z8yoXyxBv6+1ovCAqAJnk14s/wucUjVtH0uc1+2Y3K8CykaUib6YVjH
-         7Oizk9UGfSwou8kEYjTYF4C+8JG3PZ4f/QUl6s1iRQOD6Vpy0vHhjHUtJE5i4NRj1z
-         nzhI473FyyEKF+jOfUg4uLh3FLJAOxGolaSIs4uBDJeCT3+r4dNFI90DvNGCnekYK4
-         ci98NqGWiIQuw==
-Date:   Mon, 28 Nov 2022 14:29:05 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Saeed Mahameed <saeed@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@nvidia.com>,
-        Lukas Magel <lukas.magel@posteo.net>
-Subject: Re: [PATCH v4 5/6] can: etas_es58x: report the firmware version
- through ethtool
-Message-ID: <20221128142857.07cb5d88@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20221126162211.93322-6-mailhol.vincent@wanadoo.fr>
-References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
-        <20221126162211.93322-1-mailhol.vincent@wanadoo.fr>
-        <20221126162211.93322-6-mailhol.vincent@wanadoo.fr>
+        with ESMTP id S234535AbiK1WuZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 17:50:25 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A105A2A713;
+        Mon, 28 Nov 2022 14:50:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=T9rYwEbRiQBED+qpRhzaD06PSzyyE+bp9qase0iwt68=; b=0talWK4KaQCdH5rTWh68JNXh5E
+        FvGJmHuEORZ7f0M1LHuoHTeISlWVoRfrrwhKmJ1WJDZR8ifUE4CoqwY7ueglSZmvD7NgZ2MRtdgCn
+        vekVek73CuvjTGvK2JQKLnE7SY6KWvSPqmIi7Ipzrl6DE3ZDvT5CsOv6cFWRxpRNYD4c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ozmuq-003nlP-MO; Mon, 28 Nov 2022 23:47:56 +0100
+Date:   Mon, 28 Nov 2022 23:47:56 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Christoph Fritz <christoph.fritz@hexdev.de>
+Cc:     Ryan Edwards <ryan.edwards@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Andreas Lauser <andreas.lauser@mbition.io>,
+        Richard Weinberger <richard@nod.at>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC][PATCH 0/2] LIN support for Linux
+Message-ID: <Y4U6nC4/ZUqkSbVq@lunn.ch>
+References: <20221127190244.888414-1-christoph.fritz@hexdev.de>
+ <202211281549.47092.pisa@cmp.felk.cvut.cz>
+ <CAEVdEgBWVgVFF2utm4w5W0_trYYJQVeKrcGN+T0yJ1Qa615bcQ@mail.gmail.com>
+ <202211281852.30067.pisa@cmp.felk.cvut.cz>
+ <CAEVdEgBtikDjQ-cVOq-MkoS_0q_hGJRVSS=9L=htHhh7YvSUgA@mail.gmail.com>
+ <Y4UslxhfRPVGXzS/@mars>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y4UslxhfRPVGXzS/@mars>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 27 Nov 2022 01:22:10 +0900 Vincent Mailhol wrote:
-> Implement ethtool_ops::get_drvinfo() in order to report the firmware
-> version.
-> 
-> Firmware version 0.0.0 has a special meaning and just means that we
-> could not parse the product information string. In such case, do
-> nothing (i.e. leave the .fw_version string empty).
+>   - LIN devices with off loading capabilities are a bit special.
 
-devlink_compat_running_version() does not work?
+For networking in general, we try very hard to make offload to
+hardware not special at all. It should just transparently work.
+
+One example of this is Ethernet switches which Linux controls. The
+ports of the switch are just normal Linux interfaces. You can put an
+IP address onto the ports in the normal way, you can add a port to a
+linux bridge in the normal way. If the switch can perform bridging in
+hardware, the linux bridge will offload it to the hardware. But for
+the user, its just a port added to a bridge, nothing special. And
+there are a lot more examples like this.
+
+I don't know CAN at all, but please try to avoid doing anything
+special for hardware offload. We don't want one way for software, and
+then 42 different ways for 42 different offload engines. Just one uAPI
+which works for everything.
+
+    Andrew
