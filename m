@@ -2,147 +2,324 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86D3863A53F
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:40:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB67863A551
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:45:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbiK1Jj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 04:39:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58960 "EHLO
+        id S229811AbiK1Jpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 04:45:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbiK1Jj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:39:57 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2121.outbound.protection.outlook.com [40.107.6.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D60D5FB5;
-        Mon, 28 Nov 2022 01:39:56 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TkkveLrPcOIJdtWGNeJUJQfB1uZMKTH/S20MAFmzAQsbv51pgFM7ePp1CNNQX10DHvtZpDc654Dz+FxZ9IeeX31gYhyTQrYtpxpOM+999IZRJx1f0d+LaJteOh5EYnHusu4R8FIFLH0QLkEZNY3knVpfn4baAl3LFM2EPXkCD7WDN9skMZqdYnwJptCFbzvGq0Q0CfeXbQE6pdlHioMESnFfBei6OVDCOPJ0bKQ5w5dUVcTdxWddKaF1qvjUzsJP30IIE+DI17vdP58Q3vgRx3UclRkuDdvjDDGxyM1JgOBAG/83KP16KjDoobymatI0aip6b5CQh+Q3oZyD/ZHKzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GluQEbU/av3q4h2demcIKUkq0KP63uEi/8uX973dtbo=;
- b=kZFmQaSblDn0z0icW+N5oZ2ZcsohyKfjaiiDyZaMx47bqlPICtpw3TByoMgqFPP/SHitRB1WK8hO3n6jZGNpriX6VOHiF0CKL/cOYT53RgMGua3GMd4dAVqcOl4xcE+Gt2Lyt2+Euwgww2FPf7cQkbKevNR2Ytic2l9vFarKsQaGgiSEZV8UY6xClfDCuquhmigVaELj20enHbdRXPiRGcWS7C1sQSf3uEpz9elKFIKZi5ZkbE1UWcGDwlbLA30zhgjuuoSkj6q8Nto9yKYTpG+/vR8D5yVnCKUI1r8FlZPdWoSOp6mlKSBPE1+//9C6ujkNOhpE0/Cml27gafkfAw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GluQEbU/av3q4h2demcIKUkq0KP63uEi/8uX973dtbo=;
- b=LNrEuf3HONpExvG+WvlmEld/liPgtBCeu8Xz2KBi0xoYd+Nq4p4BHjWfT8Yz/iH65Lu+mSEbvj1sDHsuvj5xGMRKjt+M9ckS+YtAng8irwKRjsJlTTMVC23gI9qk9VeEhr9ozzhru8eQRlxHS8f9yK+esy8PulEhIYTyJwabrfM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0317.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:38::26)
- by DBAP190MB0854.EURP190.PROD.OUTLOOK.COM (2603:10a6:10:1b0::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
- 2022 09:39:54 +0000
-Received: from VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
- ([fe80::5912:e2b4:985e:265a]) by VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
- ([fe80::5912:e2b4:985e:265a%3]) with mapi id 15.20.5857.021; Mon, 28 Nov 2022
- 09:39:54 +0000
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Elad Nachman <enachman@marvell.com>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>
-Subject: [PATCH v2] MAINTAINERS: Update maintainer for Marvell Prestera Ethernet Switch driver
-Date:   Mon, 28 Nov 2022 11:39:34 +0200
-Message-Id: <20221128093934.1631570-1-vadym.kochan@plvision.eu>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: FR2P281CA0185.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9f::18) To VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:38::26)
+        with ESMTP id S229612AbiK1Jpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:45:43 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF5719033
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:45:39 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id bf14-20020a056602368e00b006ce86e80414so5509655iob.7
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:45:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Ym/OUSXcSo5j7eGB/rVFvkIyqO8xk7T9lTybvL0yzJY=;
+        b=X7FXPX/qa8b6j7BNlMvWblLKHD2XgW06u8d7DJp0fB0htOdHvZncnph8bseHunJ760
+         lmcLhO5Qev+ZMGCwEOJzQQSjXcNJUqDIBUOF89QLyiw3YpWNuYGHSUnBStTjZgzrstdC
+         HgWL/OnuzdKV+5H4FVqciMCP2WhFBxkAtbthwjdf6MVXZVPH56UjgQvQnp39yCPvabnL
+         nsX4+sWq5MUK9Y/UUqKqmjrptTC1XThUleaL78jrPKIOFSe7PrQmJftpWaVmwR52Uwat
+         kMEuCn2pbxbonkdjiyMtvCcS1K5uZxjeD4tbz1OtyecAY8Wx8PUPpRROTj44al6DI5+5
+         382g==
+X-Gm-Message-State: ANoB5pkBnyCMfCk2Qr3B7rEKti7eGGWO/SEy/Kve4fBaaJ2u2hSohHw6
+        +6uWejH31slgKusaHhAroIfLPAEslw/tmE33ea19szMV8R0Y
+X-Google-Smtp-Source: AA0mqf7g+BbAKhTFYouvOLM5l0TGyBqGOq2srTjREwc7lZRt0sFsgBV64ia/9Ymk1H03h2PGF4V/1juC3r29hVx5JcfiqfSWsIn0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1P190MB0317:EE_|DBAP190MB0854:EE_
-X-MS-Office365-Filtering-Correlation-Id: 13aa830c-794d-4c99-fbc4-08dad12480eb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BR8gQkbfmeUsRpcna79OAxh3kyYJ6qhSTC30SrfvPzRnMLKbKAokG+HBqYtDClM67qOeHvCNZeZ/93SRyTpqV9+UZA+/LZQh72xyIHZVs8Vd0jSX6QXtYTiZOiCB/lXleBAT8tLuelQIAnBEubbzqu3vc+AF1HiaQhJ/EWGFMumE1iuyZF9HrVE7nYswWDOuVb4JP8oBmfAorsRMjXIWzAtkd1YetT5QC/a2YUzuTtlwgkaj7fXqic4nDG7hst1XWuew2H6B1RkHTo6AhnqdjnlhoRo9Bw/jMOe1NGKh7qoQgjWUx0guF1MfKprnvZ5qeSKNSeZs/6LlW/lsn8Af3qptpKj43i55WSqGH4kkTrcN7R8s6Gj+qLjz93J5vkdeMREeLukdtBZAJf3P3AUOtfiCmR1xdr8zVHZp669YOOS/nMNIv3u2DMiGbQ1W4n5QpTkZsMF/b//57fMQmuyU6mHZofbJ90iXVlC26EkiUuwH5AIROyFOlMal9fAQkaB7ZBrT9ahvBEk5oYfrRdte1W8OveZgmSY1dLb0TMpbkdjvEbsrHYUqZQxKk1jKOyIP3clqEG/Si6hS6v5OCiU1OZOBWTN6I/Lc3fY1oZZgINtqOQSTLsBzyORNqXJ7cT4U5kThBtt11NPMBZTcQv14uZvfRW1FDJL0zbHsq58W9DUUv0tGz9/RlfGOvs2aVJqocLSsqX2d9FYqCHILcM9J7XOn5tNfOf0181f5E60xkG0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0317.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(39830400003)(376002)(346002)(136003)(451199015)(966005)(107886003)(6506007)(6486002)(6666004)(83380400001)(86362001)(478600001)(52116002)(26005)(110136005)(6512007)(316002)(54906003)(2616005)(41300700001)(4744005)(5660300002)(44832011)(38350700002)(2906002)(38100700002)(4326008)(8676002)(15650500001)(186003)(1076003)(8936002)(66946007)(66556008)(66476007)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AMLZCRVyR918ZHJ1KoHOAtDIEPXXtLEE4sSq/JOn1DZemZfZ9jnrvMsZV4c7?=
- =?us-ascii?Q?BTDt9Oc7PI4ixbMmbvfCcGx1cpWIW8ikS168QW/vpScM8g3wVZA1IHSHxCsF?=
- =?us-ascii?Q?MIjR1nBgDZgd3HQoMIprCTpUa7cKOL9qtoQpFxqOWKa+BpvEtCYQUWL9bNAh?=
- =?us-ascii?Q?i18x1SYYIxgHU/X6m3XwIFBDvOqx2wfzJDROtxKV+YTmbE8FGsRJ2kqGosHl?=
- =?us-ascii?Q?Bt7oRt6DXajbq/T6i4UID37J7S0irP2CYJGQLxzLN4r6kYBUFnaAkRPQInrI?=
- =?us-ascii?Q?qy3aZTdul3rnZV2EhJIXsUKd1kjmNxze22/ocbXdU2lDVzC827+KW+N4sQGe?=
- =?us-ascii?Q?iAPqLM5BqjJAxncOTUw1yaYN4Y2oz/o4g6kLEQrUsvVXfUf9UHY79GP1dXiD?=
- =?us-ascii?Q?STyLR031OHOp5INMdUqdNPfVGjzUXenP5fcXziCQrQR/SI2qqpUrUtpxkKx9?=
- =?us-ascii?Q?YRPSLkh7GW0asXcdscm4g2iJri1rAau7ZIefp5rzdo425qo2ibIH1LNKghfk?=
- =?us-ascii?Q?TE+ab50h7hJtlE8ky5dNv4WSJW6yyk3OuA2s0cT6c1GqncPMq/ug8R4LUrAj?=
- =?us-ascii?Q?owqhcBsBNXQA5ByLn3iIULOOl+Ww8jmGKv7N8QpvRGDR/5hbp/yRjmX9xtg2?=
- =?us-ascii?Q?lAIXKdsW6X3zd8xSVUfEFKg9EQSzxHHhT+yex1pDsVUpV8N0t5FAuOROze2z?=
- =?us-ascii?Q?8BJ5ib6Mr6UZu5U7mfmmb+kD5tbNIpiXiBAd5wll5fY7tUFoCpakas782W5P?=
- =?us-ascii?Q?vwdD9/+mSXjWCbhuVAruEWE0X7wOcOfZP6jZVcveN/ao+ArjrKQv/GJU1Iy+?=
- =?us-ascii?Q?+ysTz0Iu2WZGOKVFH0fma3NQ0M3nXJp8Vaw31KBMuT29WaF1VaItZ09+S9rQ?=
- =?us-ascii?Q?Nd0+lezo73htZQ1uao5+fb/WttnHdSvdUH2FU9rZz6tGVVcmB97oGRsm2chf?=
- =?us-ascii?Q?fYbgn5bNPU+ok411JvG4du2zewN7gqIaUqqEPkZvIHPeC4ZhbuuWhkpNXoKY?=
- =?us-ascii?Q?ghQtLpSq7eUwN5JdqMThgVcOmW82Em/QQFJjwk5sEm7U2UV+7ZjFuzGYpLEC?=
- =?us-ascii?Q?tgI3SwLE4KGpRNJ9/idQawAlUQ+hR08eKOMS8q+Tpf3uxZWxV7RZkVmtK0QD?=
- =?us-ascii?Q?YXGm3+EzHmhgDTc9Yyey9wt5klu63D0auwJ/Py27OCKVzRQ7/HgKQIKv7Yb3?=
- =?us-ascii?Q?pz62cl5RO4JmlI8jwMKzqayhHfaWZnBcflF1ojqIAmQdNqlvgXFXXey2X/hz?=
- =?us-ascii?Q?gOSs4iL04KA+7FaMPH0v1rI7shLEcMq9TV2XkAIAXkCNO1p9z8RQ3llCvFD2?=
- =?us-ascii?Q?Jjx37VGkSrsvtFbskNDwIX7uha+ZVIf2mqSQb56nTTH3wekhWGCnRBGNu5Fj?=
- =?us-ascii?Q?7iA4FnHeNRq502uw7AOWnX31YfM95CTGKYovbXZnfJdp6c8JawQHZFIE3LX8?=
- =?us-ascii?Q?/AH2cK6ut3MtwOfThEm0NSxOb4PfP6cM/kE4Py4EvwoWiql2Ot+SledeH2P/?=
- =?us-ascii?Q?M0AVGsTT2WYQGeXEglq+Xhk/hGuS0+mmYypZCDJjEjIE84xtTwFIl7knzGqV?=
- =?us-ascii?Q?NkwP0zOOK6NQnk/usFtvygyFQqQ4f5Oyf81Q9f53XJ18WM6H+tOdIrBUTID8?=
- =?us-ascii?Q?IA=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 13aa830c-794d-4c99-fbc4-08dad12480eb
-X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 09:39:53.9885
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WAEVVzXzMCg5sZ6Uat80uplMEHTeY/1FmvPrbV+MibiyqxY0GrkMIBHVvl1TmU04XMC+0y1/QFM4ZpVodzRhC4FRbAko8LqkJZt0QABZ65w=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAP190MB0854
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a92:de48:0:b0:302:feee:c5c1 with SMTP id
+ e8-20020a92de48000000b00302feeec5c1mr5622946ilr.257.1669628738943; Mon, 28
+ Nov 2022 01:45:38 -0800 (PST)
+Date:   Mon, 28 Nov 2022 01:45:38 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e444a205ee84bb27@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in ip6_fragment (2)
+From:   syzbot <syzbot+8c0ac31aa9681abb9e2d@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taras Chornyi <tchornyi@marvell.com>
+Hello,
 
-Add Elad Nachman as maintainer for Marvell Prestera Ethernet Switch driver.
+syzbot found the following issue on:
 
-Change Taras Chornyi mailbox to plvision.
+HEAD commit:    4312098baf37 Merge tag 'spi-fix-v6.1-rc6' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11625bb5880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=436ee340148d5197
+dashboard link: https://syzkaller.appspot.com/bug?extid=8c0ac31aa9681abb9e2d
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
-Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/74c2f7e0e278/disk-4312098b.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/e596ae25a228/vmlinux-4312098b.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/35c136c2ae23/bzImage-4312098b.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8c0ac31aa9681abb9e2d@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: use-after-free in ip6_dst_idev include/net/ip6_fib.h:245 [inline]
+BUG: KASAN: use-after-free in ip6_fragment+0x2724/0x2770 net/ipv6/ip6_output.c:951
+Read of size 8 at addr ffff88801d403e80 by task syz-executor.3/7618
+
+CPU: 1 PID: 7618 Comm: syz-executor.3 Not tainted 6.1.0-rc6-syzkaller-00012-g4312098baf37 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:284 [inline]
+ print_report+0x15e/0x45d mm/kasan/report.c:395
+ kasan_report+0xbf/0x1f0 mm/kasan/report.c:495
+ ip6_dst_idev include/net/ip6_fib.h:245 [inline]
+ ip6_fragment+0x2724/0x2770 net/ipv6/ip6_output.c:951
+ __ip6_finish_output net/ipv6/ip6_output.c:193 [inline]
+ ip6_finish_output+0x9a3/0x1170 net/ipv6/ip6_output.c:206
+ NF_HOOK_COND include/linux/netfilter.h:291 [inline]
+ ip6_output+0x1f1/0x540 net/ipv6/ip6_output.c:227
+ dst_output include/net/dst.h:445 [inline]
+ ip6_local_out+0xb3/0x1a0 net/ipv6/output_core.c:161
+ ip6_send_skb+0xbb/0x340 net/ipv6/ip6_output.c:1966
+ udp_v6_send_skb+0x82a/0x18a0 net/ipv6/udp.c:1286
+ udp_v6_push_pending_frames+0x140/0x200 net/ipv6/udp.c:1313
+ udpv6_sendmsg+0x18da/0x2c80 net/ipv6/udp.c:1606
+ inet6_sendmsg+0x9d/0xe0 net/ipv6/af_inet6.c:665
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ sock_write_iter+0x295/0x3d0 net/socket.c:1108
+ call_write_iter include/linux/fs.h:2191 [inline]
+ new_sync_write fs/read_write.c:491 [inline]
+ vfs_write+0x9ed/0xdd0 fs/read_write.c:584
+ ksys_write+0x1ec/0x250 fs/read_write.c:637
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fde3588c0d9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fde365b6168 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007fde359ac050 RCX: 00007fde3588c0d9
+RDX: 000000000000ffdc RSI: 00000000200000c0 RDI: 000000000000000a
+RBP: 00007fde358e7ae9 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fde35acfb1f R14: 00007fde365b6300 R15: 0000000000022000
+ </TASK>
+
+Allocated by task 7618:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ __kasan_slab_alloc+0x82/0x90 mm/kasan/common.c:325
+ kasan_slab_alloc include/linux/kasan.h:201 [inline]
+ slab_post_alloc_hook mm/slab.h:737 [inline]
+ slab_alloc_node mm/slub.c:3398 [inline]
+ slab_alloc mm/slub.c:3406 [inline]
+ __kmem_cache_alloc_lru mm/slub.c:3413 [inline]
+ kmem_cache_alloc+0x2b4/0x3d0 mm/slub.c:3422
+ dst_alloc+0x14a/0x1f0 net/core/dst.c:92
+ ip6_dst_alloc+0x32/0xa0 net/ipv6/route.c:344
+ ip6_rt_pcpu_alloc net/ipv6/route.c:1369 [inline]
+ rt6_make_pcpu_route net/ipv6/route.c:1417 [inline]
+ ip6_pol_route+0x901/0x1190 net/ipv6/route.c:2254
+ pol_lookup_func include/net/ip6_fib.h:582 [inline]
+ fib6_rule_lookup+0x52e/0x6f0 net/ipv6/fib6_rules.c:121
+ ip6_route_output_flags_noref+0x2e6/0x380 net/ipv6/route.c:2625
+ ip6_route_output_flags+0x76/0x320 net/ipv6/route.c:2638
+ ip6_route_output include/net/ip6_route.h:98 [inline]
+ ip6_dst_lookup_tail+0x5ab/0x1620 net/ipv6/ip6_output.c:1092
+ ip6_dst_lookup_flow+0x90/0x1d0 net/ipv6/ip6_output.c:1222
+ ip6_sk_dst_lookup_flow+0x553/0x980 net/ipv6/ip6_output.c:1260
+ udpv6_sendmsg+0x151d/0x2c80 net/ipv6/udp.c:1554
+ inet6_sendmsg+0x9d/0xe0 net/ipv6/af_inet6.c:665
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ __sys_sendto+0x23a/0x340 net/socket.c:2117
+ __do_sys_sendto net/socket.c:2129 [inline]
+ __se_sys_sendto net/socket.c:2125 [inline]
+ __x64_sys_sendto+0xe1/0x1b0 net/socket.c:2125
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Freed by task 7599:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ kasan_save_free_info+0x2e/0x40 mm/kasan/generic.c:511
+ ____kasan_slab_free mm/kasan/common.c:236 [inline]
+ ____kasan_slab_free+0x160/0x1c0 mm/kasan/common.c:200
+ kasan_slab_free include/linux/kasan.h:177 [inline]
+ slab_free_hook mm/slub.c:1724 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1750
+ slab_free mm/slub.c:3661 [inline]
+ kmem_cache_free+0xee/0x5c0 mm/slub.c:3683
+ dst_destroy+0x2ea/0x400 net/core/dst.c:127
+ rcu_do_batch kernel/rcu/tree.c:2250 [inline]
+ rcu_core+0x81f/0x1980 kernel/rcu/tree.c:2510
+ __do_softirq+0x1fb/0xadc kernel/softirq.c:571
+
+Last potentially related work creation:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ __kasan_record_aux_stack+0xbc/0xd0 mm/kasan/generic.c:481
+ call_rcu+0x9d/0x820 kernel/rcu/tree.c:2798
+ dst_release net/core/dst.c:177 [inline]
+ dst_release+0x7d/0xe0 net/core/dst.c:167
+ refdst_drop include/net/dst.h:256 [inline]
+ skb_dst_drop include/net/dst.h:268 [inline]
+ skb_release_head_state+0x250/0x2a0 net/core/skbuff.c:838
+ skb_release_all net/core/skbuff.c:852 [inline]
+ __kfree_skb net/core/skbuff.c:868 [inline]
+ kfree_skb_reason+0x151/0x4b0 net/core/skbuff.c:891
+ kfree_skb_list_reason+0x4b/0x70 net/core/skbuff.c:901
+ kfree_skb_list include/linux/skbuff.h:1227 [inline]
+ ip6_fragment+0x2026/0x2770 net/ipv6/ip6_output.c:949
+ __ip6_finish_output net/ipv6/ip6_output.c:193 [inline]
+ ip6_finish_output+0x9a3/0x1170 net/ipv6/ip6_output.c:206
+ NF_HOOK_COND include/linux/netfilter.h:291 [inline]
+ ip6_output+0x1f1/0x540 net/ipv6/ip6_output.c:227
+ dst_output include/net/dst.h:445 [inline]
+ ip6_local_out+0xb3/0x1a0 net/ipv6/output_core.c:161
+ ip6_send_skb+0xbb/0x340 net/ipv6/ip6_output.c:1966
+ udp_v6_send_skb+0x82a/0x18a0 net/ipv6/udp.c:1286
+ udp_v6_push_pending_frames+0x140/0x200 net/ipv6/udp.c:1313
+ udpv6_sendmsg+0x18da/0x2c80 net/ipv6/udp.c:1606
+ inet6_sendmsg+0x9d/0xe0 net/ipv6/af_inet6.c:665
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ sock_write_iter+0x295/0x3d0 net/socket.c:1108
+ call_write_iter include/linux/fs.h:2191 [inline]
+ new_sync_write fs/read_write.c:491 [inline]
+ vfs_write+0x9ed/0xdd0 fs/read_write.c:584
+ ksys_write+0x1ec/0x250 fs/read_write.c:637
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Second to last potentially related work creation:
+ kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+ __kasan_record_aux_stack+0xbc/0xd0 mm/kasan/generic.c:481
+ call_rcu+0x9d/0x820 kernel/rcu/tree.c:2798
+ dst_release net/core/dst.c:177 [inline]
+ dst_release+0x7d/0xe0 net/core/dst.c:167
+ refdst_drop include/net/dst.h:256 [inline]
+ skb_dst_drop include/net/dst.h:268 [inline]
+ __dev_queue_xmit+0x1b9d/0x3ba0 net/core/dev.c:4211
+ dev_queue_xmit include/linux/netdevice.h:3008 [inline]
+ neigh_resolve_output net/core/neighbour.c:1552 [inline]
+ neigh_resolve_output+0x51b/0x840 net/core/neighbour.c:1532
+ neigh_output include/net/neighbour.h:546 [inline]
+ ip6_finish_output2+0x56c/0x1530 net/ipv6/ip6_output.c:134
+ __ip6_finish_output net/ipv6/ip6_output.c:195 [inline]
+ ip6_finish_output+0x694/0x1170 net/ipv6/ip6_output.c:206
+ NF_HOOK_COND include/linux/netfilter.h:291 [inline]
+ ip6_output+0x1f1/0x540 net/ipv6/ip6_output.c:227
+ dst_output include/net/dst.h:445 [inline]
+ NF_HOOK include/linux/netfilter.h:302 [inline]
+ NF_HOOK include/linux/netfilter.h:296 [inline]
+ mld_sendpack+0xa09/0xe70 net/ipv6/mcast.c:1820
+ mld_send_cr net/ipv6/mcast.c:2121 [inline]
+ mld_ifc_work+0x720/0xdc0 net/ipv6/mcast.c:2653
+ process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
+ worker_thread+0x669/0x1090 kernel/workqueue.c:2436
+ kthread+0x2e8/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+
+The buggy address belongs to the object at ffff88801d403dc0
+ which belongs to the cache ip6_dst_cache of size 240
+The buggy address is located 192 bytes inside of
+ 240-byte region [ffff88801d403dc0, ffff88801d403eb0)
+
+The buggy address belongs to the physical page:
+page:ffffea00007500c0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1d403
+memcg:ffff888022f49c81
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 ffffea0001ef6580 dead000000000002 ffff88814addf640
+raw: 0000000000000000 00000000800c000c 00000001ffffffff ffff888022f49c81
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112a20(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_HARDWALL), pid 3719, tgid 3719 (kworker/0:6), ts 136223432244, free_ts 136222971441
+ prep_new_page mm/page_alloc.c:2539 [inline]
+ get_page_from_freelist+0x10b5/0x2d50 mm/page_alloc.c:4288
+ __alloc_pages+0x1cb/0x5b0 mm/page_alloc.c:5555
+ alloc_pages+0x1aa/0x270 mm/mempolicy.c:2285
+ alloc_slab_page mm/slub.c:1794 [inline]
+ allocate_slab+0x213/0x300 mm/slub.c:1939
+ new_slab mm/slub.c:1992 [inline]
+ ___slab_alloc+0xa91/0x1400 mm/slub.c:3180
+ __slab_alloc.constprop.0+0x56/0xa0 mm/slub.c:3279
+ slab_alloc_node mm/slub.c:3364 [inline]
+ slab_alloc mm/slub.c:3406 [inline]
+ __kmem_cache_alloc_lru mm/slub.c:3413 [inline]
+ kmem_cache_alloc+0x31a/0x3d0 mm/slub.c:3422
+ dst_alloc+0x14a/0x1f0 net/core/dst.c:92
+ ip6_dst_alloc+0x32/0xa0 net/ipv6/route.c:344
+ icmp6_dst_alloc+0x71/0x680 net/ipv6/route.c:3261
+ mld_sendpack+0x5de/0xe70 net/ipv6/mcast.c:1809
+ mld_send_cr net/ipv6/mcast.c:2121 [inline]
+ mld_ifc_work+0x720/0xdc0 net/ipv6/mcast.c:2653
+ process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
+ worker_thread+0x669/0x1090 kernel/workqueue.c:2436
+ kthread+0x2e8/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1459 [inline]
+ free_pcp_prepare+0x65c/0xd90 mm/page_alloc.c:1509
+ free_unref_page_prepare mm/page_alloc.c:3387 [inline]
+ free_unref_page+0x1d/0x4d0 mm/page_alloc.c:3483
+ __unfreeze_partials+0x17c/0x1a0 mm/slub.c:2586
+ qlink_free mm/kasan/quarantine.c:168 [inline]
+ qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:187
+ kasan_quarantine_reduce+0x184/0x210 mm/kasan/quarantine.c:294
+ __kasan_slab_alloc+0x66/0x90 mm/kasan/common.c:302
+ kasan_slab_alloc include/linux/kasan.h:201 [inline]
+ slab_post_alloc_hook mm/slab.h:737 [inline]
+ slab_alloc_node mm/slub.c:3398 [inline]
+ kmem_cache_alloc_node+0x304/0x410 mm/slub.c:3443
+ __alloc_skb+0x214/0x300 net/core/skbuff.c:497
+ alloc_skb include/linux/skbuff.h:1267 [inline]
+ netlink_alloc_large_skb net/netlink/af_netlink.c:1191 [inline]
+ netlink_sendmsg+0x9a6/0xe10 net/netlink/af_netlink.c:1896
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xd3/0x120 net/socket.c:734
+ __sys_sendto+0x23a/0x340 net/socket.c:2117
+ __do_sys_sendto net/socket.c:2129 [inline]
+ __se_sys_sendto net/socket.c:2125 [inline]
+ __x64_sys_sendto+0xe1/0x1b0 net/socket.c:2125
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Memory state around the buggy address:
+ ffff88801d403d80: fc fc fc fc fc fc fc fc fa fb fb fb fb fb fb fb
+ ffff88801d403e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88801d403e80: fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc
+                   ^
+ ffff88801d403f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88801d403f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
+
+
 ---
- MAINTAINERS | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 61fe86968111..a2bae5fa66f2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12366,7 +12366,8 @@ F:	Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
- F:	drivers/net/ethernet/marvell/octeontx2/af/
- 
- MARVELL PRESTERA ETHERNET SWITCH DRIVER
--M:	Taras Chornyi <tchornyi@marvell.com>
-+M:	Taras Chornyi <taras.chornyi@plvision.eu>
-+M:	Elad Nachman <enachman@marvell.com>
- S:	Supported
- W:	https://github.com/Marvell-switching/switchdev-prestera
- F:	drivers/net/ethernet/marvell/prestera/
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
