@@ -2,135 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A9263A0C5
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 06:32:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D87463A0E8
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 06:49:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbiK1Fcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 00:32:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
+        id S229731AbiK1Ftm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 00:49:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiK1Fci (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 00:32:38 -0500
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B899BEA;
-        Sun, 27 Nov 2022 21:32:35 -0800 (PST)
-Received: by mail-pf1-f179.google.com with SMTP id w79so9429023pfc.2;
-        Sun, 27 Nov 2022 21:32:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2Aa6IZglYvctadBEzqWZe9EXgU7WiR6HNZzFHtL5DNo=;
-        b=n3LbE2po45L7UEA/e4z8Dn0mvYkvs0+qS7CNVLew7hNwlobQvNu60t2fH8EEsjnxnK
-         Mxu4DhwaYd9+T6tHBoC7O2B5Fd25zBO3HsaXd6ssdjpW8j6QFkPf8NYeEwof6vk713W9
-         V9SrwoixJzFpiOAxl9DRFErzIycIatZR5H9aQNfAVKJz2IwVjzZf+rjKDw7fVCZyGe3n
-         /TUe23dZ42envD/Gvb7kQpySEMyQLOf4/SMBR5MjC4pBLChOeWb7XekNeljNUe4EUS9n
-         eCEjQyq+VXTLiHS11mL7a6pz3lzRVWY0VQKD49Qk/QYIE6U9sjYIxvCB1pjwsAGt8PrW
-         vjIA==
-X-Gm-Message-State: ANoB5pl6fr2M/gUTETuhxrZqQigxE+WgGHCJouz9ilnk2Tm8NTIEL//N
-        hNvs1yT+Rmg4NJAqiwRNqchLR7wC0ekj2ZHVyEs=
-X-Google-Smtp-Source: AA0mqf4DsMKAlgvZVcNPpcG6bvgBwfljvVj8E/qqpGfmBCUsqDrL33BR5G5S4PYVxNZ8B7TexHAsaA0JeMi81NOV8sY=
-X-Received: by 2002:a63:1803:0:b0:477:6e5d:4e25 with SMTP id
- y3-20020a631803000000b004776e5d4e25mr31802247pgl.70.1669613554816; Sun, 27
- Nov 2022 21:32:34 -0800 (PST)
+        with ESMTP id S229711AbiK1Ftl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 00:49:41 -0500
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Nov 2022 21:49:33 PST
+Received: from feh.colobox.com (feh.colobox.com [IPv6:2607:f188:0:20::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB406B853;
+        Sun, 27 Nov 2022 21:49:33 -0800 (PST)
+Received: from [IPV6:2600:6c51:483f:c100:f0c5:c187:a91c:cebb] (unknown [IPv6:2600:6c51:483f:c100:f0c5:c187:a91c:cebb])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by feh.colobox.com (Postfix) with ESMTPSA id 4638B761F26;
+        Mon, 28 Nov 2022 05:39:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=finnie.org; s=mail;
+        t=1669613973; bh=zx+ut35DVq/7ZsKQ3zxcMjVSrpDd86XtF0rFa+b4jKU=;
+        h=Date:To:Cc:References:Subject:From:In-Reply-To:From;
+        b=EalYKxseawCGL2KKSXACWzL65JfNAyfc/wGr4iD6uDP4zebnBfQt9abb9xHEdIR/e
+         5Kk3OtCgReYZRLf25pH8UeLWh2WTazgwQU3ByrArWM6ljI6gU2ORS+h2fqSdIHCA//
+         Et9fVuAMmF7Rpr2jQLsN69QSGhS/CvsrmvrPiOiQzh/VBLn0ywMeLb8DUzsZAL9lOB
+         ZJp7PEc1cfMaLrV8dwkS26AoBvTJWQkXoevJRffCs3AYe2D55OuVuO0l1DpyOrHVdI
+         1X0fZ+g2ao66dEvT76LFyCSpo2aSN9jvSclkFitk7sWP9e6NkXLoejL4VnJdTL5il2
+         OGus7HH8RM1kQ==
+Message-ID: <2e833d1a-e1d1-cf32-3dea-c4ef2995e452@finnie.org>
+Date:   Sun, 27 Nov 2022 21:39:32 -0800
 MIME-Version: 1.0
-References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
- <20221126162211.93322-1-mailhol.vincent@wanadoo.fr> <20221126162211.93322-3-mailhol.vincent@wanadoo.fr>
- <Y4JEGYMtIWX9clxo@lunn.ch> <CAMZ6RqK6AQVsRufw5Jr5aKpPQcy+05jq3TjrKqbaqk7NVgK+_Q@mail.gmail.com>
- <Y4OD70GD4KnoRk0k@rowland.harvard.edu> <CAMZ6Rq+Gi+rcLqSj2-kug7c1G_nNuj6peh5nH1DNoo8B3aSxzw@mail.gmail.com>
-In-Reply-To: <CAMZ6Rq+Gi+rcLqSj2-kug7c1G_nNuj6peh5nH1DNoo8B3aSxzw@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Mon, 28 Nov 2022 14:32:23 +0900
-Message-ID: <CAMZ6RqKS0sUFZWQfmRU6q2ivWEUFD06uiQekDr=u94L3uij3yQ@mail.gmail.com>
-Subject: Re: [PATCH v4 2/6] can: etas_es58x: add devlink support
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Andrew Lunn <andrew@lunn.ch>, linux-can@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Lukas Magel <lukas.magel@posteo.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+To:     s.hauer@pengutronix.de
+Cc:     alex@appudo.com, da@libre.computer, g0000ga@gmail.com,
+        johannes@sipsolutions.net, kernel@pengutronix.de, kvalo@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux@ulli-kroll.de, martin.blumenstingl@googlemail.com,
+        neojou@gmail.com, netdev@vger.kernel.org, phhuang@realtek.com,
+        pkshih@realtek.com, tony0620emma@gmail.com
+References: <20221122145226.4065843-10-s.hauer@pengutronix.de>
+Subject: Re: [PATCH v3 09/11] rtw88: Add rtw8822bu chipset support
+Content-Language: en-US
+From:   Ryan Finnie <ryan@finnie.org>
+In-Reply-To: <20221122145226.4065843-10-s.hauer@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.6 at feh
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon. 28 Nov. 2022 at 10:34, Vincent MAILHOL
-<mailhol.vincent@wanadoo.fr> wrote:
-> On Mon. 28 Nov. 2022 at 00:41, Alan Stern <stern@rowland.harvard.edu> wrote:
-> > On Sun, Nov 27, 2022 at 02:10:32PM +0900, Vincent MAILHOL wrote:
-> > > > Should devlink_free() be after usb_set_inftdata()?
-> > >
-> > > A look at
-> > >   $ git grep -W "usb_set_intfdata(.*NULL)"
-> > >
-> > > shows that the two patterns (freeing before or after
-> > > usb_set_intfdata()) coexist.
-> > >
-> > > You are raising an important question here. usb_set_intfdata() does
-> > > not have documentation that freeing before it is risky. And the
-> > > documentation of usb_driver::disconnect says that:
-> > >   "@disconnect: Called when the interface is no longer accessible,
-> > >    usually because its device has been (or is being) disconnected
-> > >    or the driver module is being unloaded."
-> > >   Ref: https://elixir.bootlin.com/linux/v6.1-rc6/source/include/linux/usb.h#L1130
-> > >
-> > > So the interface no longer being accessible makes me assume that the
-> > > order does not matter. If it indeed matters, then this is a foot gun
-> > > and there is some clean-up work waiting for us on many drivers.
-> > >
-> > > @Greg, any thoughts on whether or not the order of usb_set_intfdata()
-> > > and resource freeing matters or not?
-> >
-> > In fact, drivers don't have to call usb_set_intfdata(NULL) at all; the
-> > USB core does it for them after the ->disconnect() callback returns.
->
-> Interesting. This fact is widely unknown, cf:
->   $ git grep "usb_set_intfdata(.*NULL)" | wc -l
->   215
->
-> I will do some clean-up later on, at least for the CAN USB drivers.
->
-> > But if a driver does make the call, it should be careful to ensure that
-> > the call happens _after_ the driver is finished using the interface-data
-> > pointer.  For example, after all outstanding URBs have completed, if the
-> > completion handlers will need to call usb_get_intfdata().
->
-> ACK. I understand that it should be called *after* the completion of
-> any ongoing task.
->
-> My question was more on:
->
->         devlink_free(priv_to_devlink(es58x_dev));
->         usb_set_intfdata(intf, NULL);
->
-> VS.
->
->         usb_set_intfdata(intf, NULL);
->         devlink_free(priv_to_devlink(es58x_dev));
->
-> From your comments, I understand that both are fine.
+> +	{ USB_DEVICE_AND_INTERFACE_INFO(0x2357, 0x012e, 0xff, 0xff, 0xff),
+> +	  .driver_info = (kernel_ulong_t)&(rtw8822b_hw_spec) }, /* TP-LINK */
 
-Do we agree that the usb-skeleton is doing it wrong?
-  https://elixir.bootlin.com/linux/latest/source/drivers/usb/usb-skeleton.c#L567
-usb_set_intfdata(interface, NULL) is called before deregistering the
-interface and terminating the outstanding URBs!
+This device is confirmed in the wild as "TP-LINK Archer T3U Nano", and
+is a miniaturized version of 0x012d.
 
-> > Remember, the interface-data pointer is owned by the driver.  Nothing
-> > else in the kernel uses it.  So the driver merely has to be careful not
-> > to clear the pointer while it is still using it.
->
-> Thanks for your comments!
->
->
-> Yours sincerely,
-> Vincent Mailhol
+(I have not personally tested this patchset, but have verified against
+the DKMS tree at https://github.com/cilynx/rtl88x2bu with 0x012e added.)
+
+Thank you,
+Ryan Finnie
