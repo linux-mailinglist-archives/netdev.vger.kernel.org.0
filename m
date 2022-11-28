@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F011B63A7C2
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B35963A7C0
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbiK1MCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 07:02:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36182 "EHLO
+        id S230043AbiK1MC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 07:02:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231539AbiK1MAu (ORCPT
+        with ESMTP id S231536AbiK1MAu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:50 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E545718B3D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4222618B3F
         for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:49 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoT-0005Lj-Dm; Mon, 28 Nov 2022 13:00:41 +0100
+        id 1ozcoU-0005Mj-1A; Mon, 28 Nov 2022 13:00:42 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoR-000oBY-P1; Mon, 28 Nov 2022 13:00:40 +0100
+        id 1ozcoS-000oBt-EU; Mon, 28 Nov 2022 13:00:41 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoO-00H6Sp-U8; Mon, 28 Nov 2022 13:00:36 +0100
+        id 1ozcoP-00H6TM-03; Mon, 28 Nov 2022 13:00:37 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH v1 24/26] net: dsa: microchip: ksz8_w_sta_mac_table(): make use of error values provided by read/write functions
-Date:   Mon, 28 Nov 2022 13:00:32 +0100
-Message-Id: <20221128120034.4075562-25-o.rempel@pengutronix.de>
+Subject: [PATCH v1 25/26] net: dsa: microchip: remove ksz_port:on variable
+Date:   Mon, 28 Nov 2022 13:00:33 +0100
+Message-Id: <20221128120034.4075562-26-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221128120034.4075562-1-o.rempel@pengutronix.de>
 References: <20221128120034.4075562-1-o.rempel@pengutronix.de>
@@ -60,109 +60,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Read/write operations may fail. So, make use of return values.
+The only place where this variable would be set to false is the
+ksz8_config_cpu_port() function. But it is done in a bogus way:
+
+ 	for (i = 0; i < dev->phy_port_cnt; i++) {
+		if (i == dev->phy_port_cnt) <--- will be never executed.
+			break;
+		p->on = 1;
+
+So, we never have a situation where p->on = 0. In this case, we can just
+remove it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8795.c | 33 ++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 15 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 20 +-------------------
+ drivers/net/dsa/microchip/ksz_common.h |  1 -
+ 2 files changed, 1 insertion(+), 20 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 9c1450782314..ea08bdea193e 100644
+index ea08bdea193e..618366fadfb5 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -358,19 +358,26 @@ static int ksz8_r_table(struct ksz_device *dev, int table, u16 addr, u64 *data)
- 	return ret;
- }
- 
--static void ksz8_w_table(struct ksz_device *dev, int table, u16 addr, u64 data)
-+static int ksz8_w_table(struct ksz_device *dev, int table, u16 addr, u64 data)
+@@ -952,7 +952,6 @@ void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
  {
+ 	u8 learn[DSA_MAX_PORTS];
+ 	int first, index, cnt;
+-	struct ksz_port *p;
  	const u16 *regs;
- 	u16 ctrl_addr;
-+	int ret;
  
  	regs = dev->info->regs;
- 
- 	ctrl_addr = IND_ACC_TABLE(table) | addr;
- 
- 	mutex_lock(&dev->alu_mutex);
--	ksz_write64(dev, regs[REG_IND_DATA_HI], data);
--	ksz_write16(dev, regs[REG_IND_CTRL_0], ctrl_addr);
-+	ret = ksz_write64(dev, regs[REG_IND_DATA_HI], data);
-+	if (ret)
-+		goto unlock_alu;
-+
-+	ret = ksz_write16(dev, regs[REG_IND_CTRL_0], ctrl_addr);
-+unlock_alu:
- 	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
- }
- 
- static int ksz8_valid_dyn_entry(struct ksz_device *dev, u8 *data)
-@@ -509,8 +516,8 @@ static int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
- 	return 0;
- }
- 
--static void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
--				 struct alu_struct *alu)
-+static int ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
-+				struct alu_struct *alu)
- {
- 	u32 data_hi, data_lo;
- 	const u8 *shifts;
-@@ -538,7 +545,8 @@ static void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
- 		data_hi &= ~masks[STATIC_MAC_TABLE_OVERRIDE];
- 
- 	data = (u64)data_hi << 32 | data_lo;
--	ksz8_w_table(dev, TABLE_STATIC_MAC, addr, data);
-+
-+	return ksz8_w_table(dev, TABLE_STATIC_MAC, addr, data);
- }
- 
- static void ksz8_from_vlan(struct ksz_device *dev, u32 vlan, u8 *fid,
-@@ -1065,9 +1073,8 @@ static int ksz8_add_sta_mac(struct ksz_device *dev, int port,
- 		/* Need a way to map VID to FID. */
- 		alu.fid = vid;
+@@ -966,9 +965,6 @@ void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ 		cnt = dev->info->port_cnt;
  	}
--	ksz8_w_sta_mac_table(dev, index, &alu);
+ 	for (index = first; index < cnt; index++) {
+-		p = &dev->ports[index];
+-		if (!p->on)
+-			continue;
+ 		ksz_pread8(dev, index, regs[P_STP_CTRL], &learn[index]);
+ 		if (!(learn[index] & PORT_LEARN_DISABLE))
+ 			ksz_pwrite8(dev, index, regs[P_STP_CTRL],
+@@ -976,9 +972,6 @@ void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ 	}
+ 	ksz_cfg(dev, S_FLUSH_TABLE_CTRL, SW_FLUSH_DYN_MAC_TABLE, true);
+ 	for (index = first; index < cnt; index++) {
+-		p = &dev->ports[index];
+-		if (!p->on)
+-			continue;
+ 		if (!(learn[index] & PORT_LEARN_DISABLE))
+ 			ksz_pwrite8(dev, index, regs[P_STP_CTRL], learn[index]);
+ 	}
+@@ -1368,25 +1361,14 @@ void ksz8_config_cpu_port(struct dsa_switch *ds)
  
--	return 0;
-+	return ksz8_w_sta_mac_table(dev, index, &alu);
- }
+ 	ksz_cfg(dev, regs[S_TAIL_TAG_CTRL], masks[SW_TAIL_TAG_ENABLE], true);
  
- static int ksz8_del_sta_mac(struct ksz_device *dev, int port,
-@@ -1091,16 +1098,14 @@ static int ksz8_del_sta_mac(struct ksz_device *dev, int port,
- 
- 	/* no available entry */
- 	if (index == dev->info->num_statics)
--		goto exit;
-+		return 0;
- 
- 	/* clear port */
- 	alu.port_forward &= ~BIT(port);
- 	if (!alu.port_forward)
- 		alu.is_static = false;
--	ksz8_w_sta_mac_table(dev, index, &alu);
- 
--exit:
--	return 0;
-+	return ksz8_w_sta_mac_table(dev, index, &alu);
- }
- 
- int ksz8_mdb_add(struct ksz_device *dev, int port,
-@@ -1424,9 +1429,7 @@ int ksz8_enable_stp_addr(struct ksz_device *dev)
- 	alu.is_override = true;
- 	alu.port_forward = dev->info->cpu_ports;
- 
--	ksz8_w_sta_mac_table(dev, 0, &alu);
+-	p = &dev->ports[dev->cpu_port];
+-	p->on = 1;
 -
--	return 0;
-+	return ksz8_w_sta_mac_table(dev, 0, &alu);
- }
+ 	ksz8_port_setup(dev, dev->cpu_port, true);
  
- int ksz8_setup(struct dsa_switch *ds)
+ 	for (i = 0; i < dev->phy_port_cnt; i++) {
+-		p = &dev->ports[i];
+-
+ 		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
+-
+-		/* Last port may be disabled. */
+-		if (i == dev->phy_port_cnt)
+-			break;
+-		p->on = 1;
+ 	}
+ 	for (i = 0; i < dev->phy_port_cnt; i++) {
+ 		p = &dev->ports[i];
+-		if (!p->on)
+-			continue;
++
+ 		if (!ksz_is_ksz88x3(dev)) {
+ 			ksz_pread8(dev, i, regs[P_REMOTE_STATUS], &remote);
+ 			if (remote & KSZ8_PORT_FIBER_MODE)
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 055d61ff3fb8..504ad07842a0 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -87,7 +87,6 @@ struct ksz_port {
+ 	int stp_state;
+ 	struct phy_device phydev;
+ 
+-	u32 on:1;			/* port is not disabled by hardware */
+ 	u32 fiber:1;			/* port is fiber */
+ 	u32 force:1;
+ 	u32 read:1;			/* read MIB counters in background */
 -- 
 2.30.2
 
