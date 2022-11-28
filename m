@@ -2,129 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CDAC63AAD4
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 15:27:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C44F63AAEB
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 15:29:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231733AbiK1O1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 09:27:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50222 "EHLO
+        id S232516AbiK1O3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 09:29:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232476AbiK1O1v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 09:27:51 -0500
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2F2BE10;
-        Mon, 28 Nov 2022 06:27:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=6y8qtBVWyVYV+kHOTmBodkRQ5Mtx1AgXX7cehonYoLI=; b=MnC6Hi29ZLGxJmlJOrpukroGFu
-        Gx+zUdlvsgFJXJnbdbA/MDiHDgEv99YPt72TJOxn00O8JogVMcbmKx50sjdJxj6qBedQyMgH2hYyi
-        OsUxLmAz5qct429ffXgYRWfTb6LlqBriGYBWqkDVZlwVYPjslEb35+3gyd+6cGSkw7fOwpqUK7aTP
-        pLcdtXpgoxq8yIu84pEAzwuPtlngHNQ83jMe0g/FOR8AOSo8QWTAhqS8NNMVFldMUvlsFzAILbbsv
-        +3+Pt8oYGB8ouP5Gni5ql3iACYHNnBQDWO1uuVUHyXt/lpq0ZT9WU4OToD7H7bP/dFj7p0Gf01dM6
-        Q/83nsFfNKvPKfLCRnabao9+cQApCUC6Rajzq8ySmdCQVYqKaiun8A1OAPT69fS+/5kBgt91lCZ01
-        a6htQUJw/PQytt9gNExLtjAkHoDGj5eLZYsAcUvZV9wG7FXMJWdbU1Off/e3CtqEoDHOcooX9dN4W
-        1PyZjyU2Nd8WxJ6HBLO0vvH5wmpAMESfkiCJpOFghmM9dDQQ+rk0Z30lJS8qtAnRfJMfW4/di8vtz
-        fpVfMaog+ZGC3J55w9uVSh55VtBDmVfvE6tTp5CTRUrSKx0YIHYQE0y8iRcgqFdv9UUYfTuut0Eg7
-        YA1FND8HIdKagQiNtjiLdB3Q+XyIns4lvnvVlHoqA=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     mst@redhat.com, jasowang@redhat.com, pbonzini@redhat.com,
-        stefanha@redhat.com, axboe@kernel.dk, kraxel@redhat.com,
-        david@redhat.com, ericvh@gmail.com, lucho@ionkov.net,
-        asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, rusty@rustcorp.com.au,
-        Li Zetao <lizetao1@huawei.com>
-Cc:     lizetao1@huawei.com, virtualization@lists.linux-foundation.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/4] 9p: Fix probe failed when modprobe 9pnet_virtio
-Date:   Mon, 28 Nov 2022 15:27:16 +0100
-Message-ID: <12013317.ToeGUHxLYt@silver>
-In-Reply-To: <20221128021005.232105-2-lizetao1@huawei.com>
-References: <20221128021005.232105-1-lizetao1@huawei.com>
- <20221128021005.232105-2-lizetao1@huawei.com>
+        with ESMTP id S232502AbiK1O30 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 09:29:26 -0500
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C393A1F63A;
+        Mon, 28 Nov 2022 06:29:24 -0800 (PST)
+Received: by mail-pj1-f42.google.com with SMTP id t17so9635280pjo.3;
+        Mon, 28 Nov 2022 06:29:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=shIIJU9mUgqVvo7u+uZBJemwke0hUUcMwXAy+fLCBZg=;
+        b=clea3xd9sSvB/Y917+W1DUpsu9JjgVpy74IadlgPmJ0L7feaeCpnaAumZyWPQUCDRi
+         vZ+o962LTHEkI1v65HsiVehDuYRpJDwsMOMASMxKAnRtHpWTnOESc76JbMYSlnMuk6O1
+         zr3evS7eVU3s8pBkWorauXy2/qIiIupIaVbAXkKpS7kCH2E/s0c1nkZr/TkWMrnJpoQK
+         nKNhAkkvT94Jqgalagt63BMEeBjed4M0IammBsCOREMAEMkSe5uPv5MPUo1FJhGnperN
+         GKY6KBw/+/uDjAQYQ3cSl1CAPa+6o/L/gzHEstZOW4qjY5pPE6LZLnL/99XU1aSeK/NA
+         ZlGg==
+X-Gm-Message-State: ANoB5plN00SkYar7LGIWYgyybhhzTzAAxq2Nxc+yczHwRKPKsvvAV5H/
+        49JLZH1BHuC50Tl6xXrfzfrmIyThMfURVsndoYY=
+X-Google-Smtp-Source: AA0mqf62r3HiorKL8UciX0wkuqNuN1kQtduso5//lD7W9O9LDyvNYuzbBuZDf4H4qWMJ/+nYMt1mvnM06PCZFcZjotU=
+X-Received: by 2002:a17:902:b608:b0:189:7a8b:537d with SMTP id
+ b8-20020a170902b60800b001897a8b537dmr10252626pls.95.1669645763894; Mon, 28
+ Nov 2022 06:29:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
+ <20221126162211.93322-1-mailhol.vincent@wanadoo.fr> <20221126162211.93322-3-mailhol.vincent@wanadoo.fr>
+ <Y4JEGYMtIWX9clxo@lunn.ch> <CAMZ6RqK6AQVsRufw5Jr5aKpPQcy+05jq3TjrKqbaqk7NVgK+_Q@mail.gmail.com>
+ <Y4OD70GD4KnoRk0k@rowland.harvard.edu> <CAMZ6Rq+Gi+rcLqSj2-kug7c1G_nNuj6peh5nH1DNoo8B3aSxzw@mail.gmail.com>
+ <Y4S6wnM33Vs56vr5@lunn.ch>
+In-Reply-To: <Y4S6wnM33Vs56vr5@lunn.ch>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Mon, 28 Nov 2022 23:29:12 +0900
+Message-ID: <CAMZ6RqLnfg=UG_Pisa9M0zYkWEvScZmGbytWmAQPVXLeacRffw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/6] can: etas_es58x: add devlink support
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Alan Stern <stern@rowland.harvard.edu>, linux-can@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Saeed Mahameed <saeed@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Lukas Magel <lukas.magel@posteo.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday, November 28, 2022 3:10:02 AM CET Li Zetao wrote:
-> When doing the following test steps, an error was found:
->   step 1: modprobe 9pnet_virtio succeeded
->     # modprobe 9pnet_virtio      <-- OK
-> 
->   step 2: fault injection in sysfs_create_file()
->     # modprobe -r 9pnet_virtio   <-- OK
->     # ...
->       FAULT_INJECTION: forcing a failure.
->       name failslab, interval 1, probability 0, space 0, times 0
->       CPU: 0 PID: 3790 Comm: modprobe Tainted: G        W
->       6.1.0-rc6-00285-g6a1e40c4b995-dirty #108
->       Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
->       Call Trace:
->        <TASK>
->        ...
->        should_failslab+0xa/0x20
->        ...
->        sysfs_create_file_ns+0x130/0x1d0
->        p9_virtio_probe+0x662/0xb30 [9pnet_virtio]
->        virtio_dev_probe+0x608/0xae0
->        ...
->        </TASK>
->       9pnet_virtio: probe of virtio3 failed with error -12
-> 
->   step 3: modprobe virtio_net failed
->     # modprobe 9pnet_virtio       <-- failed
->       9pnet_virtio: probe of virtio3 failed with error -2
-> 
-> The root cause of the problem is that the virtqueues are not
-> stopped on the error handling path when sysfs_create_file()
-> fails in p9_virtio_probe(), resulting in an error "-ENOENT"
-> returned in the next modprobe call in setup_vq().
-> 
-> virtio_pci_modern_device uses virtqueues to send or
-> receive message, and "queue_enable" records whether the
-> queues are available. In vp_modern_find_vqs(), all queues
-> will be selected and activated, but once queues are enabled
-> there is no way to go back except reset.
-> 
-> Fix it by reset virtio device on error handling path. After
-> virtio_find_single_vq() succeeded, all virtqueues should be
-> stopped on error handling path.
-> 
-> Fixes: 1fcf0512c9c8 ("virtio_pci: modern driver")
-> Signed-off-by: Li Zetao <lizetao1@huawei.com>
-> ---
+On Mon. 28 Nov. 2022 at 22:45, Andrew Lunn <andrew@lunn.ch> wrote:
+> > > But if a driver does make the call, it should be careful to ensure that
+> > > the call happens _after_ the driver is finished using the interface-data
+> > > pointer.  For example, after all outstanding URBs have completed, if the
+> > > completion handlers will need to call usb_get_intfdata().
+> >
+> > ACK. I understand that it should be called *after* the completion of
+> > any ongoing task.
+>
+> What sometimes gets people is /sys, /proc. etc. A process can have
+> such a file open when the device is unplugged. If the read needs to
+> make use of your private data structure, you need to guarantee it
+> still exists.  Ideally the core needs to wait and not call the
+> disconnect until all such files are closed. Probably the USB core
+> does, it is such an obvious issue, but i have no knowledge of USB.
 
-As others said, comment should probably be adjusted, apart from that:
+For USB drivers, the parallel of what you are describing are the URBs
+(USB request Buffers). The URB are sent asynchronously to the device.
+Each URB has a completion handler:
+  https://elixir.bootlin.com/linux/v6.0/source/include/linux/usb.h#L1443
+It is important to wait for all outstanding URB to complete before
+releasing your resources. But once you are able to guarantee that any
+ongoing actions were completed, the order in which you kfree() or
+usb_set_intfdata() to NULL matters less.
 
-Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-
->  net/9p/trans_virtio.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-> index e757f0601304..39933187284b 100644
-> --- a/net/9p/trans_virtio.c
-> +++ b/net/9p/trans_virtio.c
-> @@ -668,6 +668,7 @@ static int p9_virtio_probe(struct virtio_device *vdev)
->  out_free_tag:
->  	kfree(tag);
->  out_free_vq:
-> +	virtio_reset_device(vdev);
->  	vdev->config->del_vqs(vdev);
->  out_free_chan:
->  	kfree(chan);
-> 
-
-
-
-
+Of course, the USB drivers could also have some /sys/ or /proc/ files
+opened, but this is not the case of the etas_es58x. By the way, the
+handling of outstanding URBs is done by es58x_free_urbs():
+  https://elixir.bootlin.com/linux/v6.0/source/drivers/net/can/usb/etas_es58x/es58x_core.c#L1745
+which is called just before the devlink_free() and the usb_set_intfdata().
