@@ -2,57 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0E3C63B0F2
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:18:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE23263B116
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:20:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231502AbiK1SST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 13:18:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        id S234259AbiK1SU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 13:20:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234129AbiK1SRr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:17:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758142D769
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 10:00:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669658429;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oScjHgUsfPCUpHvSbXmtkG9Jiz96znMS7UbDYb2DUKs=;
-        b=e+GodBQruRnM7V3ter1vjcImBwJpDjlZPLWXuIHuxfhQBhsM9vMb/4TGM4I1biw83LSpnY
-        FC5UlXs2I6YPUE8PU0Z7/8izFC9xQOwvisB6GENhnXcTsFMeBaqNB+02ozMmTvU8UHBhx6
-        PFbtInQ82KIqyNWNLW1YdjSZzxAjxjk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-627-NMjeBuW-NqybOW6x25rqjA-1; Mon, 28 Nov 2022 13:00:25 -0500
-X-MC-Unique: NMjeBuW-NqybOW6x25rqjA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3E67529AA3BC;
-        Mon, 28 Nov 2022 18:00:25 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.192.141])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5541940C6EC2;
-        Mon, 28 Nov 2022 18:00:23 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     Soheil Hassas Yeganeh <soheil@google.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Jason Baron <jbaron@akamai.com>, netdev@vger.kernel.org,
-        Carlos Maiolino <cmaiolino@redhat.com>,
-        Eric Biggers <ebiggers@kernel.org>
-Subject: [PATCH v3] epoll: use refcount to reduce ep_mutex contention
-Date:   Mon, 28 Nov 2022 19:00:10 +0100
-Message-Id: <1aedd7e87097bc4352ba658ac948c585a655785a.1669657846.git.pabeni@redhat.com>
+        with ESMTP id S234232AbiK1STn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:19:43 -0500
+Received: from BN6PR00CU002-vft-obe.outbound.protection.outlook.com (mail-eastus2azon11021019.outbound.protection.outlook.com [52.101.57.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F66A2AC7E;
+        Mon, 28 Nov 2022 10:06:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dR6WJk0FQaWwgFfMcxFZMWNHhZJtuxMfgpevwW+v9ZEzkEz7/FKrqzFBSTbkaHQveNvy6DIGv8oYMcYoInP0j3YB+W09NQpf7WG0wtFkxnIrjd6FgTIuyL5qDVJ40xJeRsabVfWERkd/si+1GrSbLZGFCFYIVReeoxKwUccvZAkyDcqzgN4lUxOGReMAIKZWW4NV0LVq8SDfCdxcskIiA7z/xjhYb4wV624RLQZ6t0HYB0zOimwKf3XdZD8Ahumz/oM1K+RTJ0NU8b8NbhLLivLsRBBuZlrgABKtLq3b9cSvjXv0MLVIG5jDWODFEOenLvScM/I73qWntLUxSofYkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SxxPwB2akai3saP/93ma8ag5k74qZK0TqXBTmZHmBRw=;
+ b=JTe3jPwUWRMSP7yfu1gU65lcqO5FkZxUyoaCHo91i0M9dninkzepQu9cPiBIFX7W0Xd/+ZNuYMqUNJImTEIsLxuZMz0kXYCBcQpZEXf/BvtVOXSS7Xg+uOe0VtjL0OiCR8chv1YbEYkpmk1agrVz+xizTmeq+bw5dRXZIGyK2t3Jdi1qesO3hOy7Ad1u8dYCNSJDaa6/4Uom7/gKFfAyGdanOjYpeXmQVt04XvAH5azTYtgebqKokZZapeNqsd22HouXZe3cP5JlnoPhe4yviBZJcb4Tw701+qosRmxjDhWZpzZZGMwEFDiXJ5d3BR+cyp2n9kZzqCt4qoWyibU1nA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+Received: from SA1PR21MB1335.namprd21.prod.outlook.com (2603:10b6:806:1f2::11)
+ by CD1PPF08B6E7A8B.namprd21.prod.outlook.com (2603:10b6:340:1:0:2:0:4) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8; Mon, 28 Nov
+ 2022 18:06:26 +0000
+Received: from SA1PR21MB1335.namprd21.prod.outlook.com
+ ([fe80::ac9b:6fe1:dca5:b817]) by SA1PR21MB1335.namprd21.prod.outlook.com
+ ([fe80::ac9b:6fe1:dca5:b817%6]) with mapi id 15.20.5880.008; Mon, 28 Nov 2022
+ 18:06:24 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Tom Lendacky <thomas.lendacky@amd.com>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [Patch v3 05/14] x86/mm: Handle decryption/re-encryption of
+ bss_decrypted consistently
+Thread-Topic: [Patch v3 05/14] x86/mm: Handle decryption/re-encryption of
+ bss_decrypted consistently
+Thread-Index: AQHY+s4ztxnVbL+L5UCX76A2RK98j65D/NUAgA+0gRCAAMDsAIAAP/RQ
+Date:   Mon, 28 Nov 2022 18:06:24 +0000
+Message-ID: <SA1PR21MB1335D3133B884CA4221BB16DBF139@SA1PR21MB1335.namprd21.prod.outlook.com>
+References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-6-git-send-email-mikelley@microsoft.com>
+ <01d7c7cc-bd4e-ee9b-f5b2-73ea367e602f@linux.intel.com>
+ <BYAPR21MB1688A31ED795ED1B5ACB6D26D7099@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <SA1PR21MB133512D4B7B78DB38765EBFEBF139@SA1PR21MB1335.namprd21.prod.outlook.com>
+ <fbf2cdcc-4ff7-b466-a6af-7a147f3bc94d@amd.com>
+In-Reply-To: <fbf2cdcc-4ff7-b466-a6af-7a147f3bc94d@amd.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=f2833e17-622b-4296-b903-afed3f98bbc2;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-28T18:04:51Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SA1PR21MB1335:EE_|CD1PPF08B6E7A8B:EE_
+x-ms-office365-filtering-correlation-id: 32abef16-6f50-43c0-f816-08dad16b4332
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HSGs1Y5//Apu12L8w2j6Bclmyq0UzVBX6nPAdyZyWLMgfIST6DjH6cC+bYpggyBUe6Kw5jLFlLQnz6Mq+kZfErmbisviythZmSHITyN0AQ9gavB0bvz1v3D0kwa+72/pXr1Kj+eOj6exSHemg9REKoVqRUJrJXut6vyYqwUHFjYVvltgGDFuSTOYb3kUlHG3wLAMXqAJK1Wddv6TGPGeynUe92aZoSSgyNI6qA2334qoxLdU1rNqzjLzv3J1spOMCLCKDYzSyWcuxxARL3hMRZ+bL4DrT0dBe8vhvOvoaymoRA/q/bWysRak7IuCRJiPjQUUx89yXxXuJZfPLSU9gnjVTI3MfFtFu9nE7LVw7ABMf1OIF8gyG1jDYQg+NFd07x0Lw2GSYaUwZkYZhJUYeq/90P0GjqEUOSGiJjdamO1nmOo2O/NVxfQFAj+69EBwhSnC+vUaAPrmHuZCEI61yAbtZp2TaK5ZiHjA9kftV4x+KxzvmWu/SOarllKCBwZa6uOZlFSIWuZHq05Zke0Kc2Z2fpSWaU4+MFCQJbHcq5glZCLT0+S+phHuchuEpmrpG0h03R+/MmWShObTnszakvF29cGx12JnJVd6P3XCe5UGFgtgvqV/hQUWGWiUa2KWOJ3HiMF+vkP78Q0FlS7lKddpa1NW3T+QuAvZd0eikQ5iQcU1lUCFiEHT8CLV/RjKfGTi5A97UnqCoCBccwiy9vQTItkbmdBp0ArPVdj6pOx6QSCCFprBeTGpPGHHyxHkKKiMchg3TXDPivx5ptxHOg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR21MB1335.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(366004)(136003)(396003)(376002)(451199015)(2906002)(26005)(9686003)(83380400001)(52536014)(5660300002)(4744005)(8936002)(7416002)(7406005)(41300700001)(316002)(110136005)(66946007)(64756008)(8676002)(66446008)(66556008)(66476007)(76116006)(10290500003)(8990500004)(71200400001)(478600001)(7696005)(6506007)(86362001)(55016003)(33656002)(82950400001)(82960400001)(921005)(38100700002)(186003)(122000001)(38070700005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OGMzV3NtRWYyelpsOVBIcjRUdHc1OXQrc0FOUE54YVc2amZnSEtnUVN6bmZX?=
+ =?utf-8?B?QWpiQU9kY2JFU2JOOFQ1U1MxRHpJcDVhMVlSZ3ozSFo4UTZmbE9sY1dLVFlm?=
+ =?utf-8?B?R1p5dXlSTDNoenRzdlpUWmliY29wYUFsWFVTSmo4d1F2bTIveElQaDlOSGJR?=
+ =?utf-8?B?SVdKWVBEdjVaUHVwSjNlNXN1VTc4OE9JSkNEM1JtaXAyNm9rTURXQU9zdlkr?=
+ =?utf-8?B?Y2cvQTU5bzk4M0ZMWE14UXl3K2p1enJ1by90ckNHaytZdE1QVFBOVHlHSWt3?=
+ =?utf-8?B?dlZLME8rR2ZXd09maUhRSlBuNStxV3dwbFBWSktxM25aWG11d0lUYTJSTHd4?=
+ =?utf-8?B?U3FPemhiZDV1NkhMbnhESTZOejRjdVp4bnZQNU9tdVd2VlJYNHNCZHMxT3J6?=
+ =?utf-8?B?ellEb1IxTU13RlNrSnlCZ3pwdEpsNDQvSDk2Nm9YMThXZ1pMUDEzSzV5RlFR?=
+ =?utf-8?B?UDZFandzUitHTmNmaGpkMkFCeElRVFA4TUI5ejh0R3kzS3pTZHFOQlpyRWVF?=
+ =?utf-8?B?VzRTejhzVW5jdGExT3RHK2hpaGtWZGgzYnA0QnAzRUhUL0RsaUxhejFGYWda?=
+ =?utf-8?B?bCtpZG41dmdsWHdGY0I0ZGl5NVo3TzFuUmlObU9UQXN4NG91ZG94amc0Mndk?=
+ =?utf-8?B?OFpPdDJBdDFmWkJDRmREeDdGUTQxRDREQnE2RGJFaDNsV3JEeDdzZWw4Tk1k?=
+ =?utf-8?B?MVBROC9mQnZ6MllIWlVTRnNMdGxKQnFvMzV4LzQwNUVpT2pvTzJrTEcrU2kr?=
+ =?utf-8?B?bURFdEdnY2h1b3dLektwbHFHeTNjZEF1KzVWU1Vpbmk1cUVWaTM0U2lMV1lG?=
+ =?utf-8?B?TVJGRmNoZmNya2dMdkZtQ2VPSElaVUlEV29uZk8ybnVlbS9taHZvUWg4QzRP?=
+ =?utf-8?B?citGU2hrQ1orclhHc3pNbHVKLzhzZnV4NGxoVG9TSU1xZFc5VHJ0MDZ2dk12?=
+ =?utf-8?B?SU9zZUQxYXZPclFoUmNieUJDdmZOcVFGcTZ0OERHRGRFVG5sQ0NlYlhNdkNB?=
+ =?utf-8?B?QmlwVVNwRHpUR1ZwY3Fsc1hzQXA5M1k0b2ttQTN3N2cxeWczZ2MrbkdGUHJY?=
+ =?utf-8?B?THVwTE5VQWw5WWx0NURsUXFQZ2Y1Tml1SHcrd01DWUwxRDRjdjNwaXZHc25B?=
+ =?utf-8?B?VUR5RFZjdjBtYWFxMTZwQzVKWXhsaXJKTk1PdUg2eGZCOTFBSVpGZWQ1Q3lr?=
+ =?utf-8?B?bVQ4Rk90Q2FiV0NhdG0rWkJObzVEWVBiTnhhbGpGVGh5ZHNiY1VvNUdaTkE2?=
+ =?utf-8?B?ZUxiRy9Ia0JUOWUwYUY5VzJtRGxJM3k2WjFYdlVYczl5cVJVSDJQT0tNZFBr?=
+ =?utf-8?B?VFdQS0ZNVU5sSWVDN1BLbjFvK2RtejlndWRLN250dU5GWnNyS3pJWjI5Wk1Y?=
+ =?utf-8?B?WFBSOVF0UFFSUHdXSDZBZHFCc1piSDJoeWhMRmZ0Y3RWRVB1dTRVcW95L3Jh?=
+ =?utf-8?B?eVN5VEd5YXBuM1lTNVEvSXNWd2FhRElsMjllOEg4ZW9SOGxZNXhNQWpWWUsz?=
+ =?utf-8?B?djMwYlVQelRzZmNPeWFtalBCRUpCbDlrR3FVRG91T0huc0kvZHNaVkJpK0JF?=
+ =?utf-8?B?OUcwVnZxSG50M1F4NnRKTDlkbjJWMksvM1BSYVhGMmhVRXh6cTRXa2VDVzhr?=
+ =?utf-8?B?Mkh3OTYyaGN4Sy9veGtzMlc3eFhpQitqOHhWOE14M3krREJyblVYb1RTKzRN?=
+ =?utf-8?B?MmFua1hNQWp4d09GcE8zU1J6bW9TTUZwU1pqMExPU2JhR2w4cE55dk9zaGhB?=
+ =?utf-8?B?djdPUERLTFZSRHFBREtvaG5NeldXdW5kRXNLaTlMOUM0ZFRlZjJRZkx3aWlx?=
+ =?utf-8?B?Zm1qWnhreEZ2TytuUjJxdTlHWWx2d2t2L1NPUDQ5bzlFQlJyUUdGeGo2a3hm?=
+ =?utf-8?B?c1k4VUNycEtPdjNEMHc4ZXB5WCtKZmdJVGEyeVNzbTNCUGVPcVhaMERucGd4?=
+ =?utf-8?B?WnZlNGlnc1k4UVovTUkwNFhGWEg3RWgzY2VQenhldzBiREczMXh5QjRiWWZM?=
+ =?utf-8?B?WnlIV3lCYXlBTjFOb2VHeWgrMjdTYmNUR0luRlYrVGcydzVuc3pCandraGFH?=
+ =?utf-8?B?eDJDYXA4VjZPellzMXpWcmZGLzdmeEJpcVZWSFpWRU43L3RjM3pCcGRrNDlv?=
+ =?utf-8?Q?ScbBbVr94ThmmSpiunYypb2eg?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
-X-Spam-Status: No, score=-0.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLACK autolearn=no
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR21MB1335.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32abef16-6f50-43c0-f816-08dad16b4332
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 18:06:24.5152
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: oS4YbM3Xx1bSkr5HU78Xpb0WZY8WfuLjq1a5TZTrRim7uyvZxPzkmhCEPnPqvCO+K847bDhU/d0OkgQ9fiXyvA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CD1PPF08B6E7A8B
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,374 +164,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are observing huge contention on the epmutex during an http
-connection/rate test:
-
- 83.17% 0.25%  nginx            [kernel.kallsyms]         [k] entry_SYSCALL_64_after_hwframe
-[...]
-           |--66.96%--__fput
-                      |--60.04%--eventpoll_release_file
-                                 |--58.41%--__mutex_lock.isra.6
-                                           |--56.56%--osq_lock
-
-The application is multi-threaded, creates a new epoll entry for
-each incoming connection, and does not delete it before the
-connection shutdown - that is, before the connection's fd close().
-
-Many different threads compete frequently for the epmutex lock,
-affecting the overall performance.
-
-To reduce the contention this patch introduces explicit reference counting
-for the eventpoll struct. Each registered event acquires a reference,
-and references are released at ep_remove() time.
-
-Additionally, this introduces a new 'dying' flag to prevent races between
-ep_free() and eventpoll_release_file(): the latter marks, under f_lock
-spinlock, each epitem as before removing it, while ep_free() does not
-touch dying epitems.
-
-The eventpoll struct is released by whoever - among ep_free() and
-eventpoll_release_file() drops its last reference.
-
-With all the above in place, we can drop the epmutex usage at disposal time.
-
-Overall this produces a significant performance improvement in the
-mentioned connection/rate scenario: the mutex operations disappear from
-the topmost offenders in the perf report, and the measured connections/rate
-grows by ~60%.
-
-Tested-by: Xiumei Mu <xmu@redhat.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
-v3: (addresses comments from Eric Biggers)
-- introduce the 'dying' flag, use it to dispose immediately struct eventpoll
-  at ep_free() time
-- update a leftover comments still referring to old epmutex usage
-
-v2 at:
-https://lore.kernel.org/linux-fsdevel/f35e58ed5af8131f0f402c3dc6c3033fa96d1843.1669312208.git.pabeni@redhat.com/
-
-v1 at:
-https://lore.kernel.org/linux-fsdevel/f35e58ed5af8131f0f402c3dc6c3033fa96d1843.1669312208.git.pabeni@redhat.com/
-
-Previous related effort at:
-https://lore.kernel.org/linux-fsdevel/20190727113542.162213-1-cj.chengjian@huawei.com/
-https://lkml.org/lkml/2017/10/28/81
----
- fs/eventpoll.c | 171 +++++++++++++++++++++++++++++++------------------
- 1 file changed, 109 insertions(+), 62 deletions(-)
-
-diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-index 52954d4637b5..af22e5e6f683 100644
---- a/fs/eventpoll.c
-+++ b/fs/eventpoll.c
-@@ -57,13 +57,7 @@
-  * we need a lock that will allow us to sleep. This lock is a
-  * mutex (ep->mtx). It is acquired during the event transfer loop,
-  * during epoll_ctl(EPOLL_CTL_DEL) and during eventpoll_release_file().
-- * Then we also need a global mutex to serialize eventpoll_release_file()
-- * and ep_free().
-- * This mutex is acquired by ep_free() during the epoll file
-- * cleanup path and it is also acquired by eventpoll_release_file()
-- * if a file has been pushed inside an epoll set and it is then
-- * close()d without a previous call to epoll_ctl(EPOLL_CTL_DEL).
-- * It is also acquired when inserting an epoll fd onto another epoll
-+ * The epmutex is acquired when inserting an epoll fd onto another epoll
-  * fd. We do this so that we walk the epoll tree and ensure that this
-  * insertion does not create a cycle of epoll file descriptors, which
-  * could lead to deadlock. We need a global mutex to prevent two
-@@ -153,6 +147,13 @@ struct epitem {
- 	/* The file descriptor information this item refers to */
- 	struct epoll_filefd ffd;
- 
-+	/*
-+	 * Protected by file->f_lock, true for to-be-released epitem already
-+	 * removed from the "struct file" items list; together with
-+	 * eventpoll->refcount orchestrates "struct eventpoll" disposal
-+	 */
-+	bool dying;
-+
- 	/* List containing poll wait queues */
- 	struct eppoll_entry *pwqlist;
- 
-@@ -217,6 +218,12 @@ struct eventpoll {
- 	u64 gen;
- 	struct hlist_head refs;
- 
-+	/*
-+	 * usage count, protected by mtx, used together with epitem->dying to
-+	 * orchestrate the disposal of this struct
-+	 */
-+	unsigned int refcount;
-+
- #ifdef CONFIG_NET_RX_BUSY_POLL
- 	/* used to track busy poll napi_id */
- 	unsigned int napi_id;
-@@ -240,9 +247,7 @@ struct ep_pqueue {
- /* Maximum number of epoll watched descriptors, per user */
- static long max_user_watches __read_mostly;
- 
--/*
-- * This mutex is used to serialize ep_free() and eventpoll_release_file().
-- */
-+/* Used for cycles detection */
- static DEFINE_MUTEX(epmutex);
- 
- static u64 loop_check_gen = 0;
-@@ -555,8 +560,7 @@ static void ep_remove_wait_queue(struct eppoll_entry *pwq)
- 
- /*
-  * This function unregisters poll callbacks from the associated file
-- * descriptor.  Must be called with "mtx" held (or "epmutex" if called from
-- * ep_free).
-+ * descriptor.  Must be called with "mtx" held.
-  */
- static void ep_unregister_pollwait(struct eventpoll *ep, struct epitem *epi)
- {
-@@ -679,11 +683,38 @@ static void epi_rcu_free(struct rcu_head *head)
- 	kmem_cache_free(epi_cache, epi);
- }
- 
-+static void ep_get(struct eventpoll *ep)
-+{
-+	ep->refcount++;
-+}
-+
-+/*
-+ * Returns true if the event poll can be disposed
-+ */
-+static bool ep_put(struct eventpoll *ep)
-+{
-+	if (--ep->refcount)
-+		return false;
-+
-+	WARN_ON_ONCE(!RB_EMPTY_ROOT(&ep->rbr.rb_root));
-+	return true;
-+}
-+
-+static void ep_dispose(struct eventpoll *ep)
-+{
-+	mutex_destroy(&ep->mtx);
-+	free_uid(ep->user);
-+	wakeup_source_unregister(ep->ws);
-+	kfree(ep);
-+}
-+
- /*
-  * Removes a "struct epitem" from the eventpoll RB tree and deallocates
-  * all the associated resources. Must be called with "mtx" held.
-+ * If the dying flag is set, do the removal only if force is true.
-+ * Returns true if the eventpoll can be disposed.
-  */
--static int ep_remove(struct eventpoll *ep, struct epitem *epi)
-+static bool __ep_remove(struct eventpoll *ep, struct epitem *epi, bool force)
- {
- 	struct file *file = epi->ffd.file;
- 	struct epitems_head *to_free;
-@@ -698,6 +729,11 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
- 
- 	/* Remove the current item from the list of epoll hooks */
- 	spin_lock(&file->f_lock);
-+	if (epi->dying && !force) {
-+		spin_unlock(&file->f_lock);
-+		return false;
-+	}
-+
- 	to_free = NULL;
- 	head = file->f_ep;
- 	if (head->first == &epi->fllink && !epi->fllink.next) {
-@@ -731,28 +767,28 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
- 	call_rcu(&epi->rcu, epi_rcu_free);
- 
- 	percpu_counter_dec(&ep->user->epoll_watches);
-+	return ep_put(ep);
-+}
- 
--	return 0;
-+/*
-+ * ep_remove variant for callers owing an additional reference to the ep
-+ */
-+static void ep_remove_safe(struct eventpoll *ep, struct epitem *epi)
-+{
-+	WARN_ON_ONCE(__ep_remove(ep, epi, false));
- }
- 
- static void ep_free(struct eventpoll *ep)
- {
- 	struct rb_node *rbp;
- 	struct epitem *epi;
-+	bool dispose;
- 
- 	/* We need to release all tasks waiting for these file */
- 	if (waitqueue_active(&ep->poll_wait))
- 		ep_poll_safewake(ep, NULL);
- 
--	/*
--	 * We need to lock this because we could be hit by
--	 * eventpoll_release_file() while we're freeing the "struct eventpoll".
--	 * We do not need to hold "ep->mtx" here because the epoll file
--	 * is on the way to be removed and no one has references to it
--	 * anymore. The only hit might come from eventpoll_release_file() but
--	 * holding "epmutex" is sufficient here.
--	 */
--	mutex_lock(&epmutex);
-+	mutex_lock(&ep->mtx);
- 
- 	/*
- 	 * Walks through the whole tree by unregistering poll callbacks.
-@@ -766,25 +802,21 @@ static void ep_free(struct eventpoll *ep)
- 
- 	/*
- 	 * Walks through the whole tree by freeing each "struct epitem". At this
--	 * point we are sure no poll callbacks will be lingering around, and also by
--	 * holding "epmutex" we can be sure that no file cleanup code will hit
--	 * us during this operation. So we can avoid the lock on "ep->lock".
--	 * We do not need to lock ep->mtx, either, we only do it to prevent
--	 * a lockdep warning.
-+	 * point we are sure no poll callbacks will be lingering around.
-+	 * Since we still own a reference to the eventpoll struct, the loop can't
-+	 * dispose it.
- 	 */
--	mutex_lock(&ep->mtx);
- 	while ((rbp = rb_first_cached(&ep->rbr)) != NULL) {
- 		epi = rb_entry(rbp, struct epitem, rbn);
--		ep_remove(ep, epi);
-+		ep_remove_safe(ep, epi);
- 		cond_resched();
- 	}
-+
-+	dispose = ep_put(ep);
- 	mutex_unlock(&ep->mtx);
- 
--	mutex_unlock(&epmutex);
--	mutex_destroy(&ep->mtx);
--	free_uid(ep->user);
--	wakeup_source_unregister(ep->ws);
--	kfree(ep);
-+	if (dispose)
-+		ep_dispose(ep);
- }
- 
- static int ep_eventpoll_release(struct inode *inode, struct file *file)
-@@ -904,33 +936,35 @@ void eventpoll_release_file(struct file *file)
- {
- 	struct eventpoll *ep;
- 	struct epitem *epi;
--	struct hlist_node *next;
-+	bool dispose;
- 
- 	/*
--	 * We don't want to get "file->f_lock" because it is not
--	 * necessary. It is not necessary because we're in the "struct file"
--	 * cleanup path, and this means that no one is using this file anymore.
--	 * So, for example, epoll_ctl() cannot hit here since if we reach this
--	 * point, the file counter already went to zero and fget() would fail.
--	 * The only hit might come from ep_free() but by holding the mutex
--	 * will correctly serialize the operation. We do need to acquire
--	 * "ep->mtx" after "epmutex" because ep_remove() requires it when called
--	 * from anywhere but ep_free().
--	 *
--	 * Besides, ep_remove() acquires the lock, so we can't hold it here.
-+	 * Use the 'dying' flag to prevent a concurrent ep_free() from touching
-+	 * the epitems list before eventpoll_release_file() can access the
-+	 * ep->mtx.
- 	 */
--	mutex_lock(&epmutex);
--	if (unlikely(!file->f_ep)) {
--		mutex_unlock(&epmutex);
--		return;
--	}
--	hlist_for_each_entry_safe(epi, next, file->f_ep, fllink) {
-+again:
-+	spin_lock(&file->f_lock);
-+	if (file->f_ep && file->f_ep->first) {
-+		/* detach from ep tree */
-+		epi = hlist_entry(file->f_ep->first, struct epitem, fllink);
-+		epi->dying = true;
-+		spin_unlock(&file->f_lock);
-+
-+		/*
-+		 * ep access is safe as we still own a reference to the ep
-+		 * struct
-+		 */
- 		ep = epi->ep;
--		mutex_lock_nested(&ep->mtx, 0);
--		ep_remove(ep, epi);
-+		mutex_lock(&ep->mtx);
-+		dispose = __ep_remove(ep, epi, true);
- 		mutex_unlock(&ep->mtx);
-+
-+		if (dispose)
-+			ep_dispose(ep);
-+		goto again;
- 	}
--	mutex_unlock(&epmutex);
-+	spin_unlock(&file->f_lock);
- }
- 
- static int ep_alloc(struct eventpoll **pep)
-@@ -953,6 +987,7 @@ static int ep_alloc(struct eventpoll **pep)
- 	ep->rbr = RB_ROOT_CACHED;
- 	ep->ovflist = EP_UNACTIVE_PTR;
- 	ep->user = user;
-+	ep->refcount = 1;
- 
- 	*pep = ep;
- 
-@@ -1494,16 +1529,22 @@ static int ep_insert(struct eventpoll *ep, const struct epoll_event *event,
- 	if (tep)
- 		mutex_unlock(&tep->mtx);
- 
-+	/*
-+	 * ep_remove() calls in the later error paths can't lead to ep_dispose()
-+	 * as overall will lead to no refcount changes
-+	 */
-+	ep_get(ep);
-+
- 	/* now check if we've created too many backpaths */
- 	if (unlikely(full_check && reverse_path_check())) {
--		ep_remove(ep, epi);
-+		ep_remove_safe(ep, epi);
- 		return -EINVAL;
- 	}
- 
- 	if (epi->event.events & EPOLLWAKEUP) {
- 		error = ep_create_wakeup_source(epi);
- 		if (error) {
--			ep_remove(ep, epi);
-+			ep_remove_safe(ep, epi);
- 			return error;
- 		}
- 	}
-@@ -1527,7 +1568,7 @@ static int ep_insert(struct eventpoll *ep, const struct epoll_event *event,
- 	 * high memory pressure.
- 	 */
- 	if (unlikely(!epq.epi)) {
--		ep_remove(ep, epi);
-+		ep_remove_safe(ep, epi);
- 		return -ENOMEM;
- 	}
- 
-@@ -2165,10 +2206,16 @@ int do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,
- 			error = -EEXIST;
- 		break;
- 	case EPOLL_CTL_DEL:
--		if (epi)
--			error = ep_remove(ep, epi);
--		else
-+		if (epi) {
-+			/*
-+			 * The eventpoll itself is still alive: the refcount
-+			 * can't go to zero here.
-+			 */
-+			ep_remove_safe(ep, epi);
-+			error = 0;
-+		} else {
- 			error = -ENOENT;
-+		}
- 		break;
- 	case EPOLL_CTL_MOD:
- 		if (epi) {
--- 
-2.38.1
-
+PiBGcm9tOiBUb20gTGVuZGFja3kgPHRob21hcy5sZW5kYWNreUBhbWQuY29tPg0KPiBTZW50OiBN
+b25kYXksIE5vdmVtYmVyIDI4LCAyMDIyIDY6MTYgQU0NCj4gPiBbLi4uXQ0KPiA+IE9uIGEgVERY
+IHN5c3RlbSAqd2l0aCogQ09ORklHX0FNRF9NRU1fRU5DUllQVCwgdGhlIHVudXNlZA0KPiA+IG1l
+bW9yeSBpbiB0aGUgYnNzX2RlY3J5cHRlZCBzZWN0aW9uIGFsc28gbmV2ZXIgZ2V0cyBmcmVlZCBk
+dWUgdG8gdGhlDQo+ID4gYmVsb3cgInJldHVybjsiDQo+ID4NCj4gPiBJJ2Qgc3VnZ2VzdCBhIEZp
+eGVzIHRhZyBzaG91bGQgYmUgYWRkZWQgdG8gbWFrZSBzdXJlIHRoZSBkaXN0cm8gdmVuZG9ycw0K
+PiA+IG5vdGljZSB0aGUgcGF0Y2ggYW5kIGJhY2twb3J0IGl0IDotKQ0KPiA+IFsuLi5dDQo+ID4g
+Rml4ZXM6IGIzZjA5MDdjNzFlMCAoIng4Ni9tbTogQWRkIC5ic3MuLmRlY3J5cHRlZCBzZWN0aW9u
+IHRvIGhvbGQgc2hhcmVkDQo+IHZhcmlhYmxlcyIpDQo+IA0KPiBJIHRoaW5rIHRoZSBGaXhlczog
+dGFnIHNob3VsZCByZWFsbHkgYmU6DQo+IA0KPiBlOWQxZDJiYjc1YjIgKCJ0cmVld2lkZTogUmVw
+bGFjZSB0aGUgdXNlIG9mIG1lbV9lbmNyeXB0X2FjdGl2ZSgpIHdpdGgNCj4gY2NfcGxhdGZvcm1f
+aGFzKCkiKQ0KDQpZZXMsIHlvdSdyZSBjb3JyZWN0Lg0K
