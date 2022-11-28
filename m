@@ -2,185 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0946363AECA
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:24:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1397063AED8
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:25:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232946AbiK1RYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 12:24:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40760 "EHLO
+        id S232775AbiK1RZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 12:25:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232926AbiK1RYp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:24:45 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592A318B07;
-        Mon, 28 Nov 2022 09:24:44 -0800 (PST)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+        with ESMTP id S232984AbiK1RZR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:25:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D61B20349;
+        Mon, 28 Nov 2022 09:25:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 984241EC04AD;
-        Mon, 28 Nov 2022 18:24:42 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1669656282;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=ofHbYnVy9pKGLSG0CBINcLO5iWDquzjR2O+Lfhp2bVE=;
-        b=lhtKPFxwjXRviivf+ftwO4wDLoSdBCc7ijyJe8F/HpUJE4ImtI4M4kjomQFSbCxWEEbXiE
-        5fXt2Xrz/OWphZ0Pn9/KMZBNi1UW19mtA9Q5KaKTr8fnxJrxoIyFz0aKgV/RScSFs4ni4t
-        ZeRfT/y2iGQovaYjAuBpE0EmeFOHEZA=
-Date:   Mon, 28 Nov 2022 18:24:38 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Message-ID: <Y4Tu1tx6E1CfnrJi@zn.tnic>
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
- <Y3uTK3rBV6eXSJnC@zn.tnic>
- <BYAPR21MB16886AF404739449CA467B1AD70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y31Kqacbp9R5A1PF@zn.tnic>
- <BYAPR21MB16886FF8B35F51964A515CD5D70C9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <BYAPR21MB1688AF2F106CDC14E4F97DB4D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y4Ti4UTBRGmbi0hD@zn.tnic>
- <BYAPR21MB1688466C7766148C6B3B4684D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6D92B80E90;
+        Mon, 28 Nov 2022 17:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 002F2C433D6;
+        Mon, 28 Nov 2022 17:25:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1669656311;
+        bh=wZlmYJl8LMxMeefdCbrE5viQuX+AZVgF+lHUSAzV8mA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jklUVBk1mHdNx5UwNOVAyoL9FcfwZD4B7KDGLSBvRl5IAv16CCb++ynZ+TPs/2xnW
+         Y09yfkYWX7Zusj8ufWXnQv3O5+iO2GnPgg5dqoMaQRFD7eFKipOag5+WZBxv2B/3hS
+         npOJ5H5324elD5m0VsViiZtApWHVqoGlQ7+jDW9I=
+Date:   Mon, 28 Nov 2022 18:25:09 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Russ Weight <russell.h.weight@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Johan Hovold <johan@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sebastian Reichel <sre@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Raed Salem <raeds@nvidia.com>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Avihai Horon <avihaih@nvidia.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Colin Ian King <colin.i.king@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Wang Yufen <wangyufen@huawei.com>, linux-block@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/5] driver core: make struct class.dev_uevent() take a
+ const *
+Message-ID: <Y4Tu9UUGGiEdFcVw@kroah.com>
+References: <20221123122523.1332370-1-gregkh@linuxfoundation.org>
+ <d448b944-708a-32d4-37d7-0be16ee5f73c@acm.org>
+ <Y4NqAJW5V0tAP8ax@kroah.com>
+ <5b14cdea-1bbe-1900-0004-a218ba97bbcb@acm.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BYAPR21MB1688466C7766148C6B3B4684D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <5b14cdea-1bbe-1900-0004-a218ba97bbcb@acm.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 28, 2022 at 04:59:27PM +0000, Michael Kelley (LINUX) wrote:
-> 2) The Linux guest must set the vTOM flag in a PTE to access a page
-> as unencrypted.
-
-What exactly do you call the "vTOM flag in the PTE"?
-
-I see this here:
-
-"When bit 1 (vTOM) of SEV_FEATURES is set in the VMSA of an SNP-active
-VM, the VIRTUAL_TOM field is used to determine the C-bit for data
-accesses instead of the guest page table contents. All data accesses
-below VIRTUAL_TOM are accessed with an effective C-bit of 1 and all
-addresses at or above VIRTUAL_TOM are accessed with an effective C-bit
-of 0."
-
-Now you say
-
-"vTOM is the dividing line where the uppermost bit of the physical
-address space is set; e.g., with 47 bits of guest physical address
-space, vTOM is 0x40000000000 (bit 46 is set)."
-
-So on your guests, is VIRTUAL_TOM == 0x400000000000?
-
-Btw, that 0x4000.. does not have bit 46 set but bit 42. Bit 46 set is
-
-	0x400000000000
-
-which means one more '0' at the end.
-
-So before we discuss this further, let's agree on the basics first.
-
-> What Windows guests do isn't really relevant.  Again, the code in this patch
-> series all runs directly in the Linux guest, not the paravisor.  And the Linux
-> guest isn't unmodified.  We've added changes to understand vTOM and
-> the need to communicate with the hypervisor about page changes
-> between private and shared.  But there are other changes for a fully
-> enlightened guest that we don't have to make when using AMD vTOM,
-> because the paravisor transparently (to the guest -- Linux or Windows)
-> handles those issues.
-
-So this is some other type of guest you wanna run.
-
-Where is the documentation of that thing?
-
-I'd like to know what exactly it is going to use in the kernel.
-
-> Again, no.  What I have proposed as CC_VENDOR_AMD_VTOM is
-
-There's no vendor AMD_VTOM!
-
-We did the vendor thing to denote Intel or AMD wrt to confidential
-computing.
-
-Now you're coming up with something special. It can't be HYPERV because
-Hyper-V does other types of confidential solutions too, apparently.
-
-Now before this goes any further I'd like for "something special" to be
-defined properly and not just be a one-off Hyper-V thing.
-
-> specific to AMD's virtual-Top-of-Memory architecture.  The TDX
-> architecture doesn't really have a way to use a paravisor.
+On Sun, Nov 27, 2022 at 06:38:39PM -0800, Bart Van Assche wrote:
+> On 11/27/22 05:45, Greg Kroah-Hartman wrote:
+> > On Fri, Nov 25, 2022 at 03:51:11PM -0800, Bart Van Assche wrote:
+> > > On 11/23/22 04:25, Greg Kroah-Hartman wrote:
+> > > > diff --git a/include/linux/mISDNif.h b/include/linux/mISDNif.h
+> > > > index 7dd1f01ec4f9..7aab4a769736 100644
+> > > > --- a/include/linux/mISDNif.h
+> > > > +++ b/include/linux/mISDNif.h
+> > > > @@ -586,7 +586,7 @@ extern struct mISDNclock *mISDN_register_clock(char *, int, clockctl_func_t *,
+> > > >    						void *);
+> > > >    extern void	mISDN_unregister_clock(struct mISDNclock *);
+> > > > -static inline struct mISDNdevice *dev_to_mISDN(struct device *dev)
+> > > > +static inline struct mISDNdevice *dev_to_mISDN(const struct device *dev)
+> > > >    {
+> > > >    	if (dev)
+> > > >    		return dev_get_drvdata(dev);
+> > > 
+> > > Why does the dev_to_mISDN() function drop constness? I haven't found an
+> > > explanation for this in the cover letter.
+> > 
+> > I agree, this is going to be fixed up, see the thread starting here:
+> > 	https://lore.kernel.org/r/Y34+V2bCDdqujBDk@kroah.com
+> > 
+> > I'll work on making a const / non const version for these so that we
+> > don't loose the marking.
+> > 
+> > Oh wait, no, this function is fine, it's not modifying the device
+> > structure at all, and only returning the pointer in the private data
+> > stored in the device.  There is no loss of const-ness here.
 > 
-> To summarize, the code in this patch series is about a 3rd encryption
-> scheme that is used by the guest.
+> Hi Greg,
+> 
+> This is what I found in include/linux/mISDNif.h:
+> 
+> struct mISDNdevice {
+> 	struct mISDNchannel	D;
+> 	u_int			id;
+> 	u_int			Dprotocols;
+> 	u_int			Bprotocols;
+> 	u_int			nrbchan;
+> 	u_char			channelmap[MISDN_CHMAP_SIZE];
+> 	struct list_head	bchannels;
+> 	struct mISDNchannel	*teimgr;
+> 	struct device		dev;
+> };
+> 
+> As one can see 'dev' is a member of struct mISDNdevice. I still think that
+> dev_to_mISDN() drops constness. Did I perhaps overlook something?
 
-Yes, can that third thing be used by other hypervisors or is this
-Hyper-V special?
+I think you are missing that dev_to_mISDN() is doing something different
+than most dev_to_FOO() functions do (i.e. there is no container_of()
+call here at all):
 
-> It is completely parallel to the AMD C-bit encryption scheme and
-> the Intel TDX encryption scheme. With the AMD vTOM scheme, there is
-> a paravisor that transparently emulates some things for the guest
-> so there are fewer code changes needed in the guest, but this patch
-> series is not about that paravisor code.
+static inline struct mISDNdevice *dev_to_mISDN(struct device *dev)
+{
+	if (dev)
+		return dev_get_drvdata(dev);
+	else
+		return NULL;
+}
 
-Would other hypervisors want to support such a scheme?
+See, no pointer mess or anything else here, all that happens is the
+driver data pointer in struct device is returned.
 
-Is this architecture documented somewhere? If so, where?
+If this was a "normal" dev_to_FOO() function, then yes, the const-ness
+of the pointer would be called into question as the thread I linked to
+discusses.
 
-What would it mean for the kernel to support it.
+thanks,
 
-And so on and so on.
-
-Thanks.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+greg k-h
