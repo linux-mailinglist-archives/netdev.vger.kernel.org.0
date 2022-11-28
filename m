@@ -2,247 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A126063A757
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 12:47:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8908663A75A
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 12:49:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230521AbiK1LrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 06:47:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
+        id S230449AbiK1Lta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 06:49:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231240AbiK1LrB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 06:47:01 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A2F62FD;
-        Mon, 28 Nov 2022 03:46:59 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ASBjxv2017399;
-        Mon, 28 Nov 2022 11:46:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=WrcMnrXS+2PfWvsWUTG8vxeyMDLCDRem5QfUw94Abws=;
- b=hwlvBdoFQyVNOkRFsLRpIpEx3Dm8Gc/Y2MjdzZd1NVKveTkdlv+BXbWOdpS/hgeV9KkI
- pNC99yuvpnbksrqX8RRFJ3j/HNtC1cmdU/+CqZl94uWIkHfDPXfiG4IWNB9aqJPRHr39
- R4f3pG8phoGcY7lYWOAdVEGumH2G/pbvTFZoVdjnhXJWyHCSSUL7ysKxpUv0Zpr9h6CG
- vn+XyHIbGraatIXYtV060UM/qHdx7+ZaFTTTFwl6Mqq8LQ4kGKK+ZNWHaMGAmNsdQWPa
- t/sXqYNOolG3CzPqHoikNl1h3dRbiMD3s3sZNkLrG0OH/+NoF2btlEW/jLQg0hXg75Nb OQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m3vn75yx7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Nov 2022 11:46:54 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2ASBkIfL018880;
-        Mon, 28 Nov 2022 11:46:54 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m3vn75ywj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Nov 2022 11:46:53 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2ASBbu3k021646;
-        Mon, 28 Nov 2022 11:46:51 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3m3ae9ae54-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Nov 2022 11:46:51 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2ASBlVBb60752294
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Nov 2022 11:47:31 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CC0D34C044;
-        Mon, 28 Nov 2022 11:46:48 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 632034C040;
-        Mon, 28 Nov 2022 11:46:48 +0000 (GMT)
-Received: from [9.179.3.171] (unknown [9.179.3.171])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 28 Nov 2022 11:46:48 +0000 (GMT)
-Message-ID: <4ff2d5a0-5586-90be-7f7c-05f43b0deb1f@linux.ibm.com>
-Date:   Mon, 28 Nov 2022 12:46:42 +0100
+        with ESMTP id S229653AbiK1Lt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 06:49:29 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2081.outbound.protection.outlook.com [40.107.94.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C6B1CD;
+        Mon, 28 Nov 2022 03:49:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iNUsK/l3//RjLsLmOo5Hb3NYL2ezJvn6jmjH/pTW8aM3RZ9XngFimpRbR4AJ1zyevy/ZAZGfk/M8b/kwlz2FQLZqSc4ahBMXyCSLJ6Il+ILvguxVgNZxk42yNe/tr3NcFUIfUjfyzI3IZPmtVDQW5/I5+0LTrLCJfgnnMHtImA/eb1OjccQq2Z4mbKx6BKSy7oNjy36TQDBNoWPkWkYV3rF5PEtbmL0z/HTxA1/e+IaW5uCrEM7msiuRhpzUf2VHH5Ayl5x8debh+xaOoGZTMMEB8IPcLq3D/cHwX0uXsrw9ih6CIq+kFjaRP4hzaB+fxp164Be9Bi2MPLc0T2wp0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZZl2+uleKRrEEo/mJ3KJnoUxr/VBX/3HuvUCnbefNuc=;
+ b=MhHDNpln443IGhFzKAd9DdjN2XVSS3xxwN+rZ6wLhZpv4vnN9OHjozJK0XA6LPnBftfv9cMllSS1jfrVMUlX4TIe9RymtFksXIStysMQlM96i5gPRz/TDHF2kKy1rZPQJV+5vlZceIZXeh8sh+B4KaNcUTgOKjU+Hpe6VTr+h4qzKCPHVli74XGwGY8m/De+l8BYuTjxUm1K0G6pyPk3ND94tG4AUbfVpoqu9vhWUVZpQxzCxLRzn3fcbZa0sdyJkzkdqW0Ph+L9TfWYYwMgc5FXUOtl39upKZterxHzh6wG9F+xXr6zg+LtIW8l1LTJ0wjQa3YP3h5QEa4BBTxXKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZZl2+uleKRrEEo/mJ3KJnoUxr/VBX/3HuvUCnbefNuc=;
+ b=JKQnL1v4hUy08+zD//s+TaZMAtnueFR6iIRe69KowHvABpY1B/zHUSSVL8Q6EDNCWQ1nrF9LIl13wtiRDc3HasQk4dqnGmasQAJ0nOj/Imkxe8pWNCoejCppMFY10Cq2GekWDH1wGkie11M51A0zk4ly1izp+beSZxbOi3tdftCQmeQgSTrm/1vYNBd21v/PPnsSL9eknWY08kaEf6n7Q9WCWpJtN3RE9VtlabKU/m07xWwNAE0nFasUQeHrgRE+qHH2UOi5XOnNyZFI+13iil3zO1DYWj8UywzMfiakZt7VXLFTmCxU5LzZfEMrr+Isp8+1TQAAEEExbtfpmNQW8Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by PH7PR12MB5808.namprd12.prod.outlook.com (2603:10b6:510:1d4::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
+ 2022 11:49:22 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a600:9252:615:d31a]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a600:9252:615:d31a%3]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
+ 11:49:22 +0000
+Date:   Mon, 28 Nov 2022 13:49:16 +0200
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Arnaud Ebalard <arno@natisbad.org>,
+        Srujana Challa <schalla@marvell.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Dimitris Michailidis <dmichail@fungible.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Petr Machata <petrm@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
+        Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Vadim Fedorenko <vadfed@fb.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vadim Pasternak <vadimp@mellanox.com>,
+        Shalom Toledo <shalomt@mellanox.com>,
+        linux-crypto@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-rdma@vger.kernel.org, oss-drivers@corigine.com,
+        Jiri Pirko <jiri@mellanox.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Shijith Thotton <sthotton@marvell.com>
+Subject: Re: [PATCH net-next v4 1/3] net: devlink: let the core report the
+ driver name instead of the drivers
+Message-ID: <Y4SgPF7ON6aD6yaZ@shredder>
+References: <20221122154934.13937-1-mailhol.vincent@wanadoo.fr>
+ <20221128041545.3170897-1-mailhol.vincent@wanadoo.fr>
+ <20221128041545.3170897-2-mailhol.vincent@wanadoo.fr>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221128041545.3170897-2-mailhol.vincent@wanadoo.fr>
+X-ClientProxiedBy: LO2P123CA0083.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:138::16) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next v5 00/10] optimize the parallelism of SMC-R
- connections
-To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1669218890-115854-1-git-send-email-alibuda@linux.alibaba.com>
- <c98a8f04-c696-c9e0-4d7e-bc31109a0e04@linux.alibaba.com>
- <352b1e15-3c6d-a398-3fe6-0f438e0e8406@linux.ibm.com>
- <1f87a8c2-7a47-119a-1141-250d05678546@linux.alibaba.com>
- <11182feb-0f41-e9a4-e866-8f917c745a48@linux.ibm.com>
- <4f6d8e70-b3f2-93cd-ae83-77ee733cf716@linux.alibaba.com>
- <22f468cb-106b-1797-0496-e9108773ab9d@linux.ibm.com>
- <029f80b3-1392-b307-ddbd-2db536431a23@linux.alibaba.com>
-From:   Jan Karcher <jaka@linux.ibm.com>
-Organization: IBM - Network Linux on Z
-In-Reply-To: <029f80b3-1392-b307-ddbd-2db536431a23@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Q2PTJkX-w8ZD7ZIZWmXrAhfeHSijaBt5
-X-Proofpoint-ORIG-GUID: DPJvul1SLMsrWBY14YIWI3HqNHYoLH34
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-28_09,2022-11-28_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- suspectscore=0 adultscore=0 priorityscore=1501 lowpriorityscore=0
- mlxlogscore=999 phishscore=0 clxscore=1015 bulkscore=0 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2211280089
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|PH7PR12MB5808:EE_
+X-MS-Office365-Filtering-Correlation-Id: bbe331d5-a54a-4659-fa85-08dad13696e1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1c5dHBBPv6mXxo1IAYsbh1pUxh1CrifYPmuGPbZz43vLHG1wM9sJSUvywNhvhGY5lHcyZ4dZptbGCPFb464HAjuxFZU+06GlbOMpxC5Y3DGU51SsEaByrwR5KNslQdnqkkGagfieV+FSGOgUMGAMtJ3zdvMim8BUr/UoSc3Hnzkh+8Lt78zfu/x86gwZBCNoTuDjwZjA/L6Jb7SCHt0SjYFmIyAL0mmeXlmSEr4a6UN3SZPzk8QMonJjWukYz/p34qpi/SGHTVUXuxXrXAhUulCBGIttbKiTZVUDrhveEy6M72Msol7A3OerbnLMsaYvbAGD7JA0nbyvkTOlm+H5/MHqNCiYmbHW2BZ0HubZsuNlXAfUk45JbgCNgoFCAmeV3t5z5zuNNx62oPFTfTWZ3JfCUP2fM1kT1r0lRrmaQEo22i5n0Mz7DawuThm4I7UFPgJZtj81eQnrzT7pKouwR/chq6P1IKxYJHB4ELIS4/JY9MGIPhRlCrOp0Qrcby7hhzwJ+gMorA7LTVhatItfqMW6atMGRNUvgj/BJ1sse9QpUEnM3RfqKp00fLJLK/QuSkSqOajtZEiesZEpX7SvSxroc1i1e+z79snGSmRzkSkQH2MBF+QBiYbtCylAQkxFdWyLb5HkxB6XiQubtcbwRPYaRTCp+wR4i1NcKpsmpPX4GGqrYAM64ythzGXjafChnGWH8iWTCFJ3UZIJfLQ5ZA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(136003)(39860400002)(376002)(366004)(396003)(346002)(451199015)(2906002)(4744005)(4326008)(41300700001)(6916009)(54906003)(66476007)(8676002)(186003)(66946007)(66556008)(316002)(8936002)(5660300002)(33716001)(9686003)(26005)(6512007)(86362001)(6666004)(6486002)(478600001)(966005)(7416002)(7406005)(6506007)(83380400001)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+jSj31mA+BRgbpALn7R0YuSpv13BLIyv3UIxo+rW9Hee0keHjQ8brNZWQCic?=
+ =?us-ascii?Q?izI3Lt94ONRGF7rI8o0X1BHVIFxJ/XzL5b0llvCZk5R1VSZds718FWutpS1r?=
+ =?us-ascii?Q?8tlN2WgY+tLsm4DnSDwL/gnWvJqw/WIiCGQ+qqb37HVNf7+Ee0f15jU1wIQz?=
+ =?us-ascii?Q?x6CNBOQg0hibfNDH6oVIJYDqmnBTBL6CWr0rXAB3kTkMbIRRF55DaQOr4m/n?=
+ =?us-ascii?Q?B9qnjOISU0QjVJRvOAYztCHRmKlJdJ7iGBgecq1S9o0AiBw3bTjAf0FZL+j+?=
+ =?us-ascii?Q?TkLwusgXGHxCyo0bEAMy4dI9LqUYJtBh8Ty/RIfsr89xAJ/uhqfiog8uxdH/?=
+ =?us-ascii?Q?XI/v98A7Q+IEOt35m8rIF9J+H7DLBDer+3hfPJIq6m/fCIvElhmJGgQF/dzu?=
+ =?us-ascii?Q?2estnQhaOn2k8LDMgp9pG3AYjwq4jKJ51nznhwef+NFCxjPm1tKkuVwOZSMg?=
+ =?us-ascii?Q?bAx94AwakjcP2hpq4vLC1HOkEI928jndQQex4M44pWB28QGkxYcW+NNkxc/V?=
+ =?us-ascii?Q?8n6+qmbrp2sn8i3j+tyaKKwI0aUxD9q8SSMbzsi9pZWYusPzYXZg5O+yBy8e?=
+ =?us-ascii?Q?y3GX/DQyHkExyzi2V1CvVgfalvHPspTWGcGNf2H/lbw5YAgBa+CrVm4Xkld7?=
+ =?us-ascii?Q?Zf4ku3Wd11jxB6rhuEtRZcNQy362gj87NDdUiUsu9SdgLfdIA7XQznR70RIm?=
+ =?us-ascii?Q?kAvDQwvSFrVVuQDViE5t5gGwpRbGmGe1CzbKdZP9Ep/J5OdAaX4AzIBucbsd?=
+ =?us-ascii?Q?pBVgP5IuS6lvGvUmgv9M/RH8mOPNwBMPUcrHEIqO96MCWNzU2rDbrKeOWsjZ?=
+ =?us-ascii?Q?Fm+Me8036TUboSYN6GnzN+qkM89MI9XTFP5sOqvG3VkibouMT/W1BGOWSyL0?=
+ =?us-ascii?Q?OOD77QcPrzqQSfv5/fexkz/GiSf7o+BTS/N/Eefw3WtYwrN64xPFqLToA95c?=
+ =?us-ascii?Q?iA93RsohTvdusifrv8dKJKK7XDBOw+Q2teIRZxJ2uJWDOslKSIMyZE7NNHN0?=
+ =?us-ascii?Q?oGMiXOySgmV0DG8Wo4fyior2azfzvJbRf8w0GWu5pXAkodz76o6Zi0IWxRN7?=
+ =?us-ascii?Q?zRFfN/1tjG3IluPjYAISD1tLb+wKSlDaQUImKNhDHXzU/RMMiaWNi4MZ0UeB?=
+ =?us-ascii?Q?8wKaiqXkrYrKGfmM42Z6NdXo5tsj8J9xvVEo7Lye0jUCDPODDgI0jHkK1DRv?=
+ =?us-ascii?Q?QoSaa5SCNL5Hwdrsk4Ewgnq2ywRBilXUd75e4PnVn6wRbhA9dV8DJ7VZrKKy?=
+ =?us-ascii?Q?Lvfr2gzxA6eW3NWTdQ8Vq55j/fAsxK9jBYbIA96SHWP3AlDkszE+VP+Motvn?=
+ =?us-ascii?Q?KcnZ1c0y/dNBkDC2PrhfG4IdyjZGkUhTa0wbrwGrGx/0jzEuU3jGKZiNumSF?=
+ =?us-ascii?Q?y6+bIahY61rYknTCofABZeWMUw3kdQL/rtLtDXpWuInerul5OBWN7fNHu0Bj?=
+ =?us-ascii?Q?1r/vxmiez0su8sQEHu0ruuH6sMjQAuZsgKQMobq37wCp+y5GGaWIkmjdfBZu?=
+ =?us-ascii?Q?vNJHx4OWmyc4gS2Q6FJ8KebkFkK4T56YGeErKSdN1ZJEluFGqGW3JItZ2N0I?=
+ =?us-ascii?Q?LDSd8RKg3AAwN+MtOaO3abRmGp6YF2obq98//R2E?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bbe331d5-a54a-4659-fa85-08dad13696e1
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 11:49:21.9614
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: syMOhfqvXDnx7yG37k8UKA67vOGA0MO+eA/3sJ0k+/Lujqz4oEv0rcBiSW7vTYz/pF9VtMU27tM0jnS8cbF2kA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5808
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Nov 28, 2022 at 01:15:43PM +0900, Vincent Mailhol wrote:
+> The driver name is available in device_driver::name. Right now,
+> drivers still have to report this piece of information themselves in
+> their devlink_ops::info_get callback function.
+> 
+> In order to factorize code, make devlink_nl_info_fill() add the driver
+> name attribute.
+> 
+> nla_put() does not check if an attribute already exists and
+> unconditionally reserves new space, c.f. [1]. To avoid attribute
+> duplication, clean-up all the drivers which are currently reporting
+> the driver name in their callback.
+> 
+> [1] __nla_put() from lib/nlattr.c
+> Link: https://elixir.bootlin.com/linux/v6.0/source/lib/nlattr.c#L993
+> 
+> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
+For mlxsw:
 
-On 26/11/2022 10:08, D. Wythe wrote:
-> 
-> 
-> On 11/25/22 2:54 PM, Jan Karcher wrote:
->>
->>
->> On 24/11/2022 20:53, D. Wythe wrote:
->>>
->>>
->>> On 11/24/22 9:30 PM, Jan Karcher wrote:
->>>>
->>>>
->>>> On 24/11/2022 09:53, D. Wythe wrote:
->>>>>
->>>>>
->>>>> On 11/24/22 4:33 PM, Jan Karcher wrote:
->>>>>>
->>>>>>
->>>>>> On 24/11/2022 06:55, D. Wythe wrote:
->>>>>>>
->>>>>>>
->>>>>>> On 11/23/22 11:54 PM, D.Wythe wrote:
->>>>>>>> From: "D.Wythe" <alibuda@linux.alibaba.com>
->>>>>>>>
->>>>>>>> This patch set attempts to optimize the parallelism of SMC-R 
->>>>>>>> connections,
->>>>>>>> mainly to reduce unnecessary blocking on locks, and to fix 
->>>>>>>> exceptions that
->>>>>>>> occur after thoses optimization.
->>>>>>>>
->>>>>>>
->>>>>>>> D. Wythe (10):
->>>>>>>>    net/smc: Fix potential panic dues to unprotected
->>>>>>>>      smc_llc_srv_add_link()
->>>>>>>>    net/smc: fix application data exception
->>>>>>>>    net/smc: fix SMC_CLC_DECL_ERR_REGRMB without 
->>>>>>>> smc_server_lgr_pending
->>>>>>>>    net/smc: remove locks smc_client_lgr_pending and
->>>>>>>>      smc_server_lgr_pending
->>>>>>>>    net/smc: allow confirm/delete rkey response deliver multiplex
->>>>>>>>    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
->>>>>>>>    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
->>>>>>>>    net/smc: use read semaphores to reduce unnecessary blocking in
->>>>>>>>      smc_buf_create() & smcr_buf_unuse()
->>>>>>>>    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
->>>>>>>>    net/smc: replace mutex rmbs_lock and sndbufs_lock with 
->>>>>>>> rw_semaphore
->>>>>>>>
->>>>>>>>   net/smc/af_smc.c   |  74 ++++----
->>>>>>>>   net/smc/smc_core.c | 541 
->>>>>>>> +++++++++++++++++++++++++++++++++++++++++++++++------
->>>>>>>>   net/smc/smc_core.h |  53 +++++-
->>>>>>>>   net/smc/smc_llc.c  | 285 ++++++++++++++++++++--------
->>>>>>>>   net/smc/smc_llc.h  |   6 +
->>>>>>>>   net/smc/smc_wr.c   |  10 -
->>>>>>>>   net/smc/smc_wr.h   |  10 +
->>>>>>>>   7 files changed, 801 insertions(+), 178 deletions(-)
->>>>>>>>
->>>>>>>
->>>>>>> Hi Jan and Wenjia,
->>>>>>>
->>>>>>> I'm wondering whether the bug fix patches need to be put together 
->>>>>>> in this series. I'm considering
->>>>>>> sending these bug fix patches separately now, which may be 
->>>>>>> better, in case that our patch
->>>>>>> might have other problems. These bug fix patches are mainly 
->>>>>>> independent, even without my other
->>>>>>> patches, they may be triggered theoretically.
->>>>>>
->>>>>> Hi D.
->>>>>>
->>>>>> Wenjia and i just talked about that. For us it would be better 
->>>>>> separating the fixes and the new logic.
->>>>>> If the fixes are independent feel free to post them to net.
->>>>>
->>>>>
->>>>> Got it, I will remove those bug fix patches in the next series and 
->>>>> send them separately.
->>>>> And thanks a lot for your test, no matter what the final test 
->>>>> results are, I will send a new series
->>>>> to separate them after your test finished.
->>>>
->>>> Hi D.,
->>>>
->>>> I have some troubles applying your patches.
->>>>
->>>>      error: sha1 information is lacking or useless 
->>>> (net/smc/smc_core.c).
->>>>      error: could not build fake ancestor
->>>>      Patch failed at 0001 optimize the parallelism of SMC-R connections
->>>>
->>>> Before merging them by hand could you please send the v6 with the 
->>>> fixes separated and verify that you are basing on the latest net / 
->>>> net-next tree?
->>>>
->>>> That would make it easier for us to test them.
->>>>
->>>> Thank you
->>>> - Jan
->>>>
->>>
->>> Hi Jan,
->>>
->>> It's quite weird, it seems that my patch did based on the latest 
->>> net-next tree.
->>> And I try apply it the latest net tree, it's seems work to me too. 
->>> Maybe there
->>> is something wrong with the mirror I use. Can you show me the 
->>> conflict described
->>> in the .rej file？
->>
->> Hi D.,
->>
->> sorry for the delayed reply:
->> I just re-tried it with path instead of git am and i think i messed it 
->> up yesterday.
->> Mea culpa. With patch your changes *can* be applied to the latest 
->> net-next.
->> I'm very sorry for the inconvenience. Could you still please send the 
->> v6. That way i can verify the fixes separate and we can - if the tests 
->> succeed - already apply them.
->>
->> Sorry and thank you
->> - Jan
-> 
-> 
-> Hi Jan,
-> 
-> I have sent the v6 with the fixes patches separated, if you have any 
-> suggestion or
-> advise, please let us know.
-Hi D.,
+Tested-by: Ido Schimmel <idosch@nvidia.com>
 
-we are reviewing and testing the fixes and the series.
-
-Thank you
-- Jan
-
-> 
-> Thanks.
-> D. Wythe
-> 
-> 
+I don't see a difference in "devlink dev info" output before and after
+the patchset. Tested with mlxsw_spectrum and mlxsw_minimal.
