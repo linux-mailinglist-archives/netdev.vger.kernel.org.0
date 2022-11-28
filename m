@@ -2,96 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C44F63AAEB
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 15:29:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3992663AACB
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 15:25:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbiK1O3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 09:29:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
+        id S232327AbiK1OZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 09:25:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232502AbiK1O30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 09:29:26 -0500
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C393A1F63A;
-        Mon, 28 Nov 2022 06:29:24 -0800 (PST)
-Received: by mail-pj1-f42.google.com with SMTP id t17so9635280pjo.3;
-        Mon, 28 Nov 2022 06:29:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=shIIJU9mUgqVvo7u+uZBJemwke0hUUcMwXAy+fLCBZg=;
-        b=clea3xd9sSvB/Y917+W1DUpsu9JjgVpy74IadlgPmJ0L7feaeCpnaAumZyWPQUCDRi
-         vZ+o962LTHEkI1v65HsiVehDuYRpJDwsMOMASMxKAnRtHpWTnOESc76JbMYSlnMuk6O1
-         zr3evS7eVU3s8pBkWorauXy2/qIiIupIaVbAXkKpS7kCH2E/s0c1nkZr/TkWMrnJpoQK
-         nKNhAkkvT94Jqgalagt63BMEeBjed4M0IammBsCOREMAEMkSe5uPv5MPUo1FJhGnperN
-         GKY6KBw/+/uDjAQYQ3cSl1CAPa+6o/L/gzHEstZOW4qjY5pPE6LZLnL/99XU1aSeK/NA
-         ZlGg==
-X-Gm-Message-State: ANoB5plN00SkYar7LGIWYgyybhhzTzAAxq2Nxc+yczHwRKPKsvvAV5H/
-        49JLZH1BHuC50Tl6xXrfzfrmIyThMfURVsndoYY=
-X-Google-Smtp-Source: AA0mqf62r3HiorKL8UciX0wkuqNuN1kQtduso5//lD7W9O9LDyvNYuzbBuZDf4H4qWMJ/+nYMt1mvnM06PCZFcZjotU=
-X-Received: by 2002:a17:902:b608:b0:189:7a8b:537d with SMTP id
- b8-20020a170902b60800b001897a8b537dmr10252626pls.95.1669645763894; Mon, 28
- Nov 2022 06:29:23 -0800 (PST)
+        with ESMTP id S230224AbiK1OZt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 09:25:49 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAC02AEF;
+        Mon, 28 Nov 2022 06:25:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1669645547; x=1701181547;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xfwC3aiQPGwe4e2msPr9Ryy3fEIzoLV82RQR4LmlxKU=;
+  b=VMZeeZxHYn02vlRVMQqfSXS2k00/17rWEl2WsKDODQoMugG3haTEy/Ou
+   AMDJSaH8brGpDmK8OanSbXo334VBrcUmMG5l3t0IbXvQ6cW4YyP4yHzQi
+   oWj9aX6dBSeEO/zC3sTgHumk88NPwHf28Fx72NS9W78uL3fluej+thYQK
+   HEZz97zNdriGZ8pykxhArHRo4tMxziGh2LLWJXzlT6t/3QJvv8fHI3B1a
+   yz3MzQtuJPv4jO4m2F+caTOcojBqY0cQHocf9UJXHDeLUZd1ceTSxf8lU
+   UXLOcyJzRcvI3MrU+2WQXRLGrPezVwxF0zzToD49C+qIVRNPoFW+G6j8A
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="188964067"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Nov 2022 07:25:44 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 28 Nov 2022 07:25:39 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Mon, 28 Nov 2022 07:25:37 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
+        <Steen.Hegelund@microchip.com>, <daniel.machon@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <casper.casan@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: microchip: vcap: Change how the rule id is generated
+Date:   Mon, 28 Nov 2022 15:29:59 +0100
+Message-ID: <20221128142959.8325-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
- <20221126162211.93322-1-mailhol.vincent@wanadoo.fr> <20221126162211.93322-3-mailhol.vincent@wanadoo.fr>
- <Y4JEGYMtIWX9clxo@lunn.ch> <CAMZ6RqK6AQVsRufw5Jr5aKpPQcy+05jq3TjrKqbaqk7NVgK+_Q@mail.gmail.com>
- <Y4OD70GD4KnoRk0k@rowland.harvard.edu> <CAMZ6Rq+Gi+rcLqSj2-kug7c1G_nNuj6peh5nH1DNoo8B3aSxzw@mail.gmail.com>
- <Y4S6wnM33Vs56vr5@lunn.ch>
-In-Reply-To: <Y4S6wnM33Vs56vr5@lunn.ch>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Mon, 28 Nov 2022 23:29:12 +0900
-Message-ID: <CAMZ6RqLnfg=UG_Pisa9M0zYkWEvScZmGbytWmAQPVXLeacRffw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/6] can: etas_es58x: add devlink support
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Alan Stern <stern@rowland.harvard.edu>, linux-can@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Lukas Magel <lukas.magel@posteo.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon. 28 Nov. 2022 at 22:45, Andrew Lunn <andrew@lunn.ch> wrote:
-> > > But if a driver does make the call, it should be careful to ensure that
-> > > the call happens _after_ the driver is finished using the interface-data
-> > > pointer.  For example, after all outstanding URBs have completed, if the
-> > > completion handlers will need to call usb_get_intfdata().
-> >
-> > ACK. I understand that it should be called *after* the completion of
-> > any ongoing task.
->
-> What sometimes gets people is /sys, /proc. etc. A process can have
-> such a file open when the device is unplugged. If the read needs to
-> make use of your private data structure, you need to guarantee it
-> still exists.  Ideally the core needs to wait and not call the
-> disconnect until all such files are closed. Probably the USB core
-> does, it is such an obvious issue, but i have no knowledge of USB.
+Currently whenever a new rule id is generated, it picks up the next
+number bigger than previous id. So it would always be 1, 2, 3, etc.
+When the rule with id 1 will be deleted and a new rule will be added,
+it will have the id 4 and not id 1.
+In theory this can be a problem if at some point a rule will be added
+and removed ~0 times. Then no more rules can be added because there
+are no more ids.
 
-For USB drivers, the parallel of what you are describing are the URBs
-(USB request Buffers). The URB are sent asynchronously to the device.
-Each URB has a completion handler:
-  https://elixir.bootlin.com/linux/v6.0/source/include/linux/usb.h#L1443
-It is important to wait for all outstanding URB to complete before
-releasing your resources. But once you are able to guarantee that any
-ongoing actions were completed, the order in which you kfree() or
-usb_set_intfdata() to NULL matters less.
+Change this such that when a new rule is added, search for an empty
+rule id starting with value of 1 as value 0 is reserved.
 
-Of course, the USB drivers could also have some /sys/ or /proc/ files
-opened, but this is not the case of the etas_es58x. By the way, the
-handling of outstanding URBs is done by es58x_free_urbs():
-  https://elixir.bootlin.com/linux/v6.0/source/drivers/net/can/usb/etas_es58x/es58x_core.c#L1745
-which is called just before the devlink_free() and the usb_set_intfdata().
+Fixes: c9da1ac1c212 ("net: microchip: sparx5: Adding initial tc flower support for VCAP API")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/net/ethernet/microchip/vcap/vcap_api.c | 7 +------
+ drivers/net/ethernet/microchip/vcap/vcap_api.h | 1 -
+ 2 files changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+index b50d002b646dc..b65819f3a927f 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+@@ -974,17 +974,12 @@ static u32 vcap_next_rule_addr(u32 addr, struct vcap_rule_internal *ri)
+ /* Assign a unique rule id and autogenerate one if id == 0 */
+ static u32 vcap_set_rule_id(struct vcap_rule_internal *ri)
+ {
+-	u32 next_id;
+-
+ 	if (ri->data.id != 0)
+ 		return ri->data.id;
+ 
+-	next_id = ri->vctrl->rule_id + 1;
+-
+-	for (next_id = ri->vctrl->rule_id + 1; next_id < ~0; ++next_id) {
++	for (u32 next_id = 1; next_id < ~0; ++next_id) {
+ 		if (!vcap_lookup_rule(ri->vctrl, next_id)) {
+ 			ri->data.id = next_id;
+-			ri->vctrl->rule_id = next_id;
+ 			break;
+ 		}
+ 	}
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.h b/drivers/net/ethernet/microchip/vcap/vcap_api.h
+index ca4499838306f..689c7270f2a89 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.h
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.h
+@@ -268,7 +268,6 @@ struct vcap_operations {
+ 
+ /* VCAP API Client control interface */
+ struct vcap_control {
+-	u32 rule_id; /* last used rule id (unique across VCAP instances) */
+ 	struct vcap_operations *ops;  /* client supplied operations */
+ 	const struct vcap_info *vcaps; /* client supplied vcap models */
+ 	const struct vcap_statistics *stats; /* client supplied vcap stats */
+-- 
+2.38.0
+
