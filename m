@@ -2,299 +2,423 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F2163B0D7
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5CB663B0DB
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:15:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234156AbiK1SNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 13:13:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
+        id S232521AbiK1SPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 13:15:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232157AbiK1SNU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:13:20 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2123.outbound.protection.outlook.com [40.107.223.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191B661776;
-        Mon, 28 Nov 2022 09:55:33 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kyijFl4DCJlx1X9yJ1a9lqUCV87VQtxADMA1Opi2PrjbnGEWeXFzSWfuQpigGWbzMAypwcnhiWhQMM+847Y8E4K7Jiis4gUv/QW42Ht77Zb9bRqYP50jEDnwa9VtaHEuVvbcc7cmapP7LGVQCNV5DvYfrnbJyGyYCVc3ewzYQlxYXaKGWGaLC1U/u3FqUHKV7scadpwCwjm62aQHlQuPub2dRp9ot4LNYbxw7K5g1w2B55F2uv7otxV+tkBOepXFrhWUUBpyS3U2mTGlAOBI4p+5fTYFyHA4YXu4VDNgRLds/HOjRF3sPHT3SHZoi61c/4PvlidXhRvk0dQARy0Mzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pZt157AVu0UU8Xii48dq5NXW5NR2Rrm7ClkH8MI0fkw=;
- b=Zei0ggoI0GBLG/KWm/xCzQ4cZnB40qAn83VfwM3itHy09sfIa+3zwcIWEM9W51yNZJusgaDGiatO8PepOOnWZkl/vHRGsPu4nAwIkBMmmaqwjc4Ha732sSBG9M54nCHCouV8EELI/8/dUalYwCTRgSHEDebzIUeR9G84SNMnuzYyk5TEn90ZWpaFH1tdSpM3yOvhPVFryFAKZcl1iFTwBRKV7HZiA7vFnkIxKoOgei78Zgd9XsJ+ntfpzb9xtTai7lK0oWJJ9eZjM7rbp/JMwII99UfpxXWRLekSpY3NjkiFKfrfIoE6Y28SLhh4AsfYA3iSCMIaiMa7vbm1Zkc/Qw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pZt157AVu0UU8Xii48dq5NXW5NR2Rrm7ClkH8MI0fkw=;
- b=XJgFFw+BfXUTOWAPmpKiebwr7awXGXizGyF+WSQsBMTOuQHn0AMsafg6BLHALa9Zj71mou3Oy7VoO+Y2OqmrPqKOClm8cJvUTnkcgd2mXX0YPObZLQicEo55YlV9N67m+B8dmw7cSXIkQMgTaOAYGh8dND9+4Gl6IuLv04nl9us=
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
- by IA1PR21MB3401.namprd21.prod.outlook.com (2603:10b6:208:3e2::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8; Mon, 28 Nov
- 2022 17:55:11 +0000
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::1e50:78ec:6954:d6dd]) by BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::1e50:78ec:6954:d6dd%6]) with mapi id 15.20.5880.008; Mon, 28 Nov 2022
- 17:55:11 +0000
-From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To:     Borislav Petkov <bp@alien8.de>
-CC:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: RE: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use standard
- coco mechanisms
-Thread-Topic: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Thread-Index: AQHY+es2O4adbWIH8UyWtCwRyUnUyq5JgOOAgAHDpcCAAEhFgIAAJ7oQgAjDHRCAACLagIAAALfwgAANigCAAAHQEA==
-Date:   Mon, 28 Nov 2022 17:55:11 +0000
-Message-ID: <BYAPR21MB1688BCC5DF4636DBF4DEA525D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
- <Y3uTK3rBV6eXSJnC@zn.tnic>
- <BYAPR21MB16886AF404739449CA467B1AD70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y31Kqacbp9R5A1PF@zn.tnic>
- <BYAPR21MB16886FF8B35F51964A515CD5D70C9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <BYAPR21MB1688AF2F106CDC14E4F97DB4D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y4Ti4UTBRGmbi0hD@zn.tnic>
- <BYAPR21MB1688466C7766148C6B3B4684D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y4Tu1tx6E1CfnrJi@zn.tnic>
-In-Reply-To: <Y4Tu1tx6E1CfnrJi@zn.tnic>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=9b9758f3-9d09-4647-8da9-ef2639e3b5bd;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-28T17:31:07Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|IA1PR21MB3401:EE_
-x-ms-office365-filtering-correlation-id: 77eca875-7ea3-4d5e-a8c5-08dad169b1c9
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gVPmxIKOJS/TQRaopT8JnlLUqTM+szRqRjOUhJI2Sbp8/dKs5LbEycKTVR3hGGuxAA8QLAN2XdiY0lPIxZtpxjLdScrrqMznsSOLjZOWdaM3MVhUn5b8FMM6gDfi18TeTqw2FtueSPQbzWo4ks7ik9Ct/I/uc/3vOoqXXKLjdgrRRKbCxyEcdI2McUvQpPoM/qErs9c2hjMNDWlO47b3SY4K8PaAG1rqm23CI4+blRJ9b74KKHGzN86QF2wKoeVnkGM5mXUJ21pJ9e2Fcws3+qzVlF/kjGkYhMrezAjAaNWGgZtfOcFyRc7xmsiGdjgFzquapc4sm05lvcXPLvA80v8X+uJ6saHDsj1DyS/AduHYuPnHfwWa2r2OaN39f9WDR5qhU/nWTqAbw5IjRFwlIS1n/8M9p4nVv5JcYLQmxdruYQacZ8TNUrk5T2HlVjZbF++EgmgM294CkGextZTi4W8ulgKRVRQ2v5iAAL9yQWA/GPCyCIBHzNrXNNWmKpxkNLz6pPWPB3HRIQ5Q3etHQlwrmyPSSEYlrPfmmvhVsp5AQyzGZ1cAlJErf8YF+FVEnc9kot8vFHxEeHOi2d1+YTHpf3lAt5RI/Vw6e2qwyJbwkfE3qNQ1klAjuE01vHdSjurzrB04f0fu25J+U2+HHlbyHspcn+o2NzfUSCeI8o/Ozbe1DfIon+dF7/FEuIB+Gi4XMyIUnv89thtEVyHxnvByqZ9xjRcahQjm6+KJmTrThN/0L+keTB8tc26EHqHevQmJk6Sw0pNxKS+gJEHYX/awA8d6/ahOP67hEDiKfdtXrBr/DfZKD7jtnG7hQv3Z
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(396003)(366004)(346002)(39860400002)(451199015)(5660300002)(7406005)(7416002)(41300700001)(52536014)(8936002)(66899015)(4326008)(66476007)(64756008)(66446008)(66556008)(8676002)(966005)(54906003)(6916009)(8990500004)(71200400001)(10290500003)(76116006)(316002)(478600001)(66946007)(2906002)(86362001)(7696005)(9686003)(6506007)(26005)(33656002)(38070700005)(186003)(83380400001)(38100700002)(82960400001)(82950400001)(122000001)(55016003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?N/MShVtR8njTthfFNMCdqawvkp80ynmJWNYthUn7H3Ni6t84oPTKRAcPU3Ev?=
- =?us-ascii?Q?2WCoRS+rxZWcO3oJsiFm394zOmWRyKKQkB8wwfOhF9g3/Nu/lG5bMngIbrbo?=
- =?us-ascii?Q?dcTIElFhp9ffmQ5NBNfwYHykDQEbzCCXf0G5p0nNOgurgEEer5g11wiE5vja?=
- =?us-ascii?Q?N+zOHHEc8r9VHgwTS+oWbv7W4tWNrUx/pUmrZIkWNpIc1Fw2NULCa11mNN5+?=
- =?us-ascii?Q?zq7aimufZyudtj2y/ekhK+D6R/hnuBlZ5CPOD0xwVTO3SRlKmivuD8cE8JdJ?=
- =?us-ascii?Q?OGqLtoV7hKcI4/0q16ZyT5lDm8RMJC5JvYS5mSfwX2wXeb491vYHuzIu/tPn?=
- =?us-ascii?Q?5bzNKMhVESspjT+aU5sP873nbVNMrC73ORZ57iKmiJh0b6rDPPo+IhN+42FW?=
- =?us-ascii?Q?emrLVvGCaWk8jaNJg4Zltbz9CV/tSbZa+6m54EkzbXKU6C0lfhpCYx1jtXGD?=
- =?us-ascii?Q?XT8rQiXiITGFuPdEscj1mepwy5sf958BhAVRqu/ryXfmD5OU+eaHTUHUtLRd?=
- =?us-ascii?Q?f4RxH+FJ3bW2I84vq+YqovBJ+WwoOLCMsMMkV08S2/0g9qlNxalRhbonI9FL?=
- =?us-ascii?Q?AyJoagYc0oSLaynNVAD2qb/rjwW4JxqOkPlBXE7Hi8O4Bnl06vzod8azNHYE?=
- =?us-ascii?Q?XzQZdv9pk7JPzrR0D2lJ4zfhxjUGTaDRihhqiz2H6mix3+3i6AWIfpbe9/jX?=
- =?us-ascii?Q?zzq0XpdxtIQl0er8nVBoi7D3gy3SJccJ8t0E6qDWYRXXCff81OFp33yE8vDi?=
- =?us-ascii?Q?Tw5QUKtrU+Ox6MIk4TGSAQA6ZLzqTn4ZTP4mqgbdbJY62SGHBlMZ1GJWcl44?=
- =?us-ascii?Q?XbMa6T2e85viT8AD/BVhyjc3YvWoyU9to0xo2jz5+xZUuHBpVFIVl/JN5eIp?=
- =?us-ascii?Q?jTLIZ0t2vzkUp9RjUAgOLHjWdQPGiGY8ZwAdjcSgwn9Drxuaj4WLbTrmT3ua?=
- =?us-ascii?Q?Dij3XQTttreGsF+Y+ov54dKKwIqK2pmqmBbPhOhB8l9wEnyVDg/FYAGVQPSn?=
- =?us-ascii?Q?5Lkt8dHWFRIaRrEmA08jCqqwjhyJ1UrSC5s+e8AbxTqdOos6AENLrWmzvH/L?=
- =?us-ascii?Q?1a12iAr7kMdfF3/OUal0YRGY4P39qFF/Y+cZjhX1xHXiTcXkv2/26AJ7v1s8?=
- =?us-ascii?Q?O/1/NOto1XxkqojMrevctd4MOw9uSWRoxo8DvT0znA9S6zUI4teTIJ9iJnM+?=
- =?us-ascii?Q?nJ1q7h/E8b7KslN6YP8rDHP662Sz1EHthCGcWO0pqWJE/9NXFkSIFHqKtFIZ?=
- =?us-ascii?Q?VYEGh1syxb2o7nEvUlEyj2Bhw08GW4F+PMEnVmbgyJAIW9WdGihzz/j9kPOj?=
- =?us-ascii?Q?mWtSbsr9fbZ5y/4lViidaQqrHCcCFsShVzbFaxY4KfGqvs1GCYuS835S3vrM?=
- =?us-ascii?Q?skbYJee5Qte3pouLmE3YguO2h4U/Aoql+n0VbEqvffijo1tC3zPE6EOHURri?=
- =?us-ascii?Q?4xANcjb5UOIKSSoPiWW1jaD/a2OJ/uFB0OoOLihuKYUxuNUDNHyDVWp7yZCK?=
- =?us-ascii?Q?1C57dOPg7wplRoDUXjWdDcbrvftOrNKz8XU8FOPLuCjwePxDvnX3soAfuMYu?=
- =?us-ascii?Q?Fc71qZzw7AsAPIrraYkwFC2xabZ8nBrbgoLkIagKvPlL/D2WI/IN6DSOPg52?=
- =?us-ascii?Q?KQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S232741AbiK1SOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:14:55 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4E1317E5
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 09:57:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669658249; x=1701194249;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1waFHuywTwtNFbqRC0oRhHOMjx7+1PQVH5/kcZCItxA=;
+  b=T4qsnpF6d0iQVZIHOBeTvjTqdcmV9xE06YlxyNSR+DmxSG0ki29Lyo6b
+   h0ARbCMnvxtj0iOZZMW531stxssPb1cPqRnIg7fkrmeE57tAi3aqJ9IvT
+   /KLVscnLeWhZv2vDLZaIhkiuLJpgzmNFGElg04XM+fe+/Xa9wSldh2BA+
+   47Ykf0zvjedgrMZgMJjX6wlMRTb7jHfAvQBXtvbl71/bBgGViOxrLwAxG
+   38FgMffnCb4m32duw+VelcMxxYmSnR4XWYP+ibGuf6wk5gxys9lY9u3HY
+   kf/EOZkhgg7M7cD+rKNTO2Pij0F/P4+MGBwe830xPFUhLZBMjTL6TJdDI
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="377051882"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="377051882"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 09:57:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="732232764"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="732232764"
+Received: from msu-dell.jf.intel.com ([10.166.233.5])
+  by FMSMGA003.fm.intel.com with ESMTP; 28 Nov 2022 09:57:27 -0800
+From:   Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, mkubecek@suse.cz, andrew@lunn.ch, corbet@lwn.net,
+        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
+Subject: [PATCH net-next v6] ethtool: add netlink based get rss support
+Date:   Mon, 28 Nov 2022 09:55:56 -0800
+Message-Id: <20221128175556.49354-1-sudheer.mogilappagari@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77eca875-7ea3-4d5e-a8c5-08dad169b1c9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 17:55:11.0744
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hYxU3hQD6A86w9ouE1FqdeZe6tQHqmB5x5D+IpEcQOcE9e/C6IyVz9Wv2CzgGodLxOZN8H0+YAEmzXMwjQ2/RDmFSgBSE+ngCdyrhn5Lvpg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR21MB3401
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Borislav Petkov <bp@alien8.de> Sent: Monday, November 28, 2022 9:25 A=
-M
->=20
-> On Mon, Nov 28, 2022 at 04:59:27PM +0000, Michael Kelley (LINUX) wrote:
-> > 2) The Linux guest must set the vTOM flag in a PTE to access a page
-> > as unencrypted.
->=20
-> What exactly do you call the "vTOM flag in the PTE"?
->=20
-> I see this here:
->=20
-> "When bit 1 (vTOM) of SEV_FEATURES is set in the VMSA of an SNP-active
-> VM, the VIRTUAL_TOM field is used to determine the C-bit for data
-> accesses instead of the guest page table contents. All data accesses
-> below VIRTUAL_TOM are accessed with an effective C-bit of 1 and all
-> addresses at or above VIRTUAL_TOM are accessed with an effective C-bit
-> of 0."
->=20
-> Now you say
->=20
-> "vTOM is the dividing line where the uppermost bit of the physical
-> address space is set; e.g., with 47 bits of guest physical address
-> space, vTOM is 0x40000000000 (bit 46 is set)."
->=20
-> So on your guests, is VIRTUAL_TOM =3D=3D 0x400000000000?
->=20
-> Btw, that 0x4000.. does not have bit 46 set but bit 42. Bit 46 set is
->=20
-> 	0x400000000000
->=20
-> which means one more '0' at the end.
+Add netlink based support for "ethtool -x <dev> [context x]"
+command by implementing ETHTOOL_MSG_RSS_GET netlink message.
+This is equivalent to functionality provided via ETHTOOL_GRSSH
+in ioctl path. It sends RSS table, hash key and hash function
+of an interface to user space.
 
-Yeah, looks like I dropped a '0' in my comment text.  Will fix.
+This patch implements existing functionality available
+in ioctl path and enables addition of new RSS context
+based parameters in future.
 
->=20
-> So before we discuss this further, let's agree on the basics first.
->=20
-> > What Windows guests do isn't really relevant.  Again, the code in this =
-patch
-> > series all runs directly in the Linux guest, not the paravisor.  And th=
-e Linux
-> > guest isn't unmodified.  We've added changes to understand vTOM and
-> > the need to communicate with the hypervisor about page changes
-> > between private and shared.  But there are other changes for a fully
-> > enlightened guest that we don't have to make when using AMD vTOM,
-> > because the paravisor transparently (to the guest -- Linux or Windows)
-> > handles those issues.
->=20
-> So this is some other type of guest you wanna run.
->=20
-> Where is the documentation of that thing?
->=20
-> I'd like to know what exactly it is going to use in the kernel.
+Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+---
+v6:
+- Removed rings attribute.
+- Removed returning of rss context attribute back to userspace.
+- Fix length returned in reply_size. Other review comments.
 
-Standard Linux is the guest.  It's fully functional for running general
-Purpose workloads that want "confidential computing" where guest
-memory is encrypted and the data in the guest is not visible to the
-host hypervisor.  It's a standard Linux kernel.  I'm not sure what you
-mean by "some other type of guest".
+v5:
+-Updated documentation about ETHTOOL_A_RSS_RINGS attribute.
 
->=20
-> > Again, no.  What I have proposed as CC_VENDOR_AMD_VTOM is
->=20
-> There's no vendor AMD_VTOM!
->=20
-> We did the vendor thing to denote Intel or AMD wrt to confidential
-> computing.
+v4:
+-Don't make context parameter mandatory.
+-Remove start/done ethtool_genl_ops for RSS_GET.
+-Add rings attribute to RSS_GET netlink message.
+-Fix documentation.
 
-But vendor AMD effectively offers two different encryption schemes that
-could be seen by the guest VM.  The hypervisor chooses which scheme a
-particular guest will see.  Hyper-V has chosen to present the vTOM scheme
-to guest VMs, including normal Linux and Windows guests, that have been
-modestly updated to understand vTOM.
+v3:
+-Define parse_request and make use of ethnl_default_parse.
+-Have indir table and hask hey as seprate attributes.
+-Remove dumpit op for RSS_GET.
+-Use RSS instead of RXFH.
 
->=20
-> Now you're coming up with something special. It can't be HYPERV because
-> Hyper-V does other types of confidential solutions too, apparently.
+v2: Fix cleanup in error path instead of returning.
+---
+ Documentation/networking/ethtool-netlink.rst |  31 +++-
+ include/uapi/linux/ethtool_netlink.h         |  14 ++
+ net/ethtool/Makefile                         |   2 +-
+ net/ethtool/netlink.c                        |   7 +
+ net/ethtool/netlink.h                        |   2 +
+ net/ethtool/rss.c                            | 153 +++++++++++++++++++
+ 6 files changed, 207 insertions(+), 2 deletions(-)
+ create mode 100644 net/ethtool/rss.c
 
-In the future, Hyper-V may also choose to present original AMD C-bit scheme
-in some guest VMs, depending on the use case.  And it will present the Inte=
-l
-TDX scheme when running on that hardware.
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index bede24ef44fd..79060c785380 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -222,6 +222,7 @@ Userspace to kernel:
+   ``ETHTOOL_MSG_MODULE_GET``            get transceiver module parameters
+   ``ETHTOOL_MSG_PSE_SET``               set PSE parameters
+   ``ETHTOOL_MSG_PSE_GET``               get PSE parameters
++  ``ETHTOOL_MSG_RSS_GET``               get RSS settings
+   ===================================== =================================
+ 
+ Kernel to userspace:
+@@ -263,6 +264,7 @@ Kernel to userspace:
+   ``ETHTOOL_MSG_PHC_VCLOCKS_GET_REPLY``    PHC virtual clocks info
+   ``ETHTOOL_MSG_MODULE_GET_REPLY``         transceiver module parameters
+   ``ETHTOOL_MSG_PSE_GET_REPLY``            PSE parameters
++  ``ETHTOOL_MSG_RSS_GET_REPLY``            RSS settings
+   ======================================== =================================
+ 
+ ``GET`` requests are sent by userspace applications to retrieve device
+@@ -1687,6 +1689,33 @@ to control PoDL PSE Admin functions. This option is implementing
+ ``IEEE 802.3-2018`` 30.15.1.2.1 acPoDLPSEAdminControl. See
+ ``ETHTOOL_A_PODL_PSE_ADMIN_STATE`` for supported values.
+ 
++RSS_GET
++=======
++
++Get indirection table, hash key and hash function info associated with a
++RSS context of an interface similar to ``ETHTOOL_GRSSH`` ioctl request.
++
++Request contents:
++
++=====================================  ======  ==========================
++  ``ETHTOOL_A_RSS_HEADER``             nested  request header
++  ``ETHTOOL_A_RSS_CONTEXT``            u32     context number
++ ====================================  ======  ==========================
++
++Kernel response contents:
++
++=====================================  ======  ==========================
++  ``ETHTOOL_A_RSS_HEADER``             nested  reply header
++  ``ETHTOOL_A_RSS_HFUNC``              u32     RSS hash func
++  ``ETHTOOL_A_RSS_INDIR``              binary  Indir table bytes
++  ``ETHTOOL_A_RSS_HKEY``               binary  Hash key bytes
++ ====================================  ======  ==========================
++
++ETHTOOL_A_RSS_HFUNC attribute is bitmap indicating the hash function
++being used. Current supported options are toeplitz, xor or crc32.
++ETHTOOL_A_RSS_INDIR attribute returns RSS indrection table where each byte
++indicates queue number.
++
+ Request translation
+ ===================
+ 
+@@ -1768,7 +1797,7 @@ are netlink only.
+   ``ETHTOOL_GMODULEEEPROM``           ``ETHTOOL_MSG_MODULE_EEPROM_GET``
+   ``ETHTOOL_GEEE``                    ``ETHTOOL_MSG_EEE_GET``
+   ``ETHTOOL_SEEE``                    ``ETHTOOL_MSG_EEE_SET``
+-  ``ETHTOOL_GRSSH``                   n/a
++  ``ETHTOOL_GRSSH``                   ``ETHTOOL_MSG_RSS_GET``
+   ``ETHTOOL_SRSSH``                   n/a
+   ``ETHTOOL_GTUNABLE``                n/a
+   ``ETHTOOL_STUNABLE``                n/a
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index aaf7c6963d61..5799a9db034e 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -51,6 +51,7 @@ enum {
+ 	ETHTOOL_MSG_MODULE_SET,
+ 	ETHTOOL_MSG_PSE_GET,
+ 	ETHTOOL_MSG_PSE_SET,
++	ETHTOOL_MSG_RSS_GET,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_USER_CNT,
+@@ -97,6 +98,7 @@ enum {
+ 	ETHTOOL_MSG_MODULE_GET_REPLY,
+ 	ETHTOOL_MSG_MODULE_NTF,
+ 	ETHTOOL_MSG_PSE_GET_REPLY,
++	ETHTOOL_MSG_RSS_GET_REPLY,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_KERNEL_CNT,
+@@ -880,6 +882,18 @@ enum {
+ 	ETHTOOL_A_PSE_MAX = (__ETHTOOL_A_PSE_CNT - 1)
+ };
+ 
++enum {
++	ETHTOOL_A_RSS_UNSPEC,
++	ETHTOOL_A_RSS_HEADER,
++	ETHTOOL_A_RSS_CONTEXT,		/* u32 */
++	ETHTOOL_A_RSS_HFUNC,		/* u32 */
++	ETHTOOL_A_RSS_INDIR,		/* binary */
++	ETHTOOL_A_RSS_HKEY,		/* binary */
++
++	__ETHTOOL_A_RSS_CNT,
++	ETHTOOL_A_RSS_MAX = (__ETHTOOL_A_RSS_CNT - 1),
++};
++
+ /* generic netlink info */
+ #define ETHTOOL_GENL_NAME "ethtool"
+ #define ETHTOOL_GENL_VERSION 1
+diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
+index 72ab0944262a..228f13df2e18 100644
+--- a/net/ethtool/Makefile
++++ b/net/ethtool/Makefile
+@@ -4,7 +4,7 @@ obj-y				+= ioctl.o common.o
+ 
+ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
+ 
+-ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
++ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o rss.o \
+ 		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
+ 		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
+ 		   tunnels.o fec.o eeprom.o stats.o phc_vclocks.o module.o \
+diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+index 1a4c11356c96..aee98be6237f 100644
+--- a/net/ethtool/netlink.c
++++ b/net/ethtool/netlink.c
+@@ -287,6 +287,7 @@ ethnl_default_requests[__ETHTOOL_MSG_USER_CNT] = {
+ 	[ETHTOOL_MSG_PHC_VCLOCKS_GET]	= &ethnl_phc_vclocks_request_ops,
+ 	[ETHTOOL_MSG_MODULE_GET]	= &ethnl_module_request_ops,
+ 	[ETHTOOL_MSG_PSE_GET]		= &ethnl_pse_request_ops,
++	[ETHTOOL_MSG_RSS_GET]		= &ethnl_rss_request_ops,
+ };
+ 
+ static struct ethnl_dump_ctx *ethnl_dump_context(struct netlink_callback *cb)
+@@ -1040,6 +1041,12 @@ static const struct genl_ops ethtool_genl_ops[] = {
+ 		.policy = ethnl_pse_set_policy,
+ 		.maxattr = ARRAY_SIZE(ethnl_pse_set_policy) - 1,
+ 	},
++	{
++		.cmd	= ETHTOOL_MSG_RSS_GET,
++		.doit	= ethnl_default_doit,
++		.policy = ethnl_rss_get_policy,
++		.maxattr = ARRAY_SIZE(ethnl_rss_get_policy) - 1,
++	},
+ };
+ 
+ static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index 1bfd374f9718..3753787ba233 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -346,6 +346,7 @@ extern const struct ethnl_request_ops ethnl_stats_request_ops;
+ extern const struct ethnl_request_ops ethnl_phc_vclocks_request_ops;
+ extern const struct ethnl_request_ops ethnl_module_request_ops;
+ extern const struct ethnl_request_ops ethnl_pse_request_ops;
++extern const struct ethnl_request_ops ethnl_rss_request_ops;
+ 
+ extern const struct nla_policy ethnl_header_policy[ETHTOOL_A_HEADER_FLAGS + 1];
+ extern const struct nla_policy ethnl_header_policy_stats[ETHTOOL_A_HEADER_FLAGS + 1];
+@@ -386,6 +387,7 @@ extern const struct nla_policy ethnl_module_get_policy[ETHTOOL_A_MODULE_HEADER +
+ extern const struct nla_policy ethnl_module_set_policy[ETHTOOL_A_MODULE_POWER_MODE_POLICY + 1];
+ extern const struct nla_policy ethnl_pse_get_policy[ETHTOOL_A_PSE_HEADER + 1];
+ extern const struct nla_policy ethnl_pse_set_policy[ETHTOOL_A_PSE_MAX + 1];
++extern const struct nla_policy ethnl_rss_get_policy[ETHTOOL_A_RSS_CONTEXT + 1];
+ 
+ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
+ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info);
+diff --git a/net/ethtool/rss.c b/net/ethtool/rss.c
+new file mode 100644
+index 000000000000..9a489ad82861
+--- /dev/null
++++ b/net/ethtool/rss.c
+@@ -0,0 +1,153 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include "netlink.h"
++#include "common.h"
++
++struct rss_req_info {
++	struct ethnl_req_info		base;
++	u32				rss_context;
++};
++
++struct rss_reply_data {
++	struct ethnl_reply_data		base;
++	u32				indir_size;
++	u32				hkey_size;
++	u32				hfunc;
++	u32				*indir_table;
++	u8				*hkey;
++};
++
++#define RSS_REQINFO(__req_base) \
++	container_of(__req_base, struct rss_req_info, base)
++
++#define RSS_REPDATA(__reply_base) \
++	container_of(__reply_base, struct rss_reply_data, base)
++
++const struct nla_policy ethnl_rss_get_policy[] = {
++	[ETHTOOL_A_RSS_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
++	[ETHTOOL_A_RSS_CONTEXT] = { .type = NLA_U32 },
++};
++
++static int
++rss_parse_request(struct ethnl_req_info *req_info, struct nlattr **tb,
++		  struct netlink_ext_ack *extack)
++{
++	struct rss_req_info *request = RSS_REQINFO(req_info);
++
++	if (tb[ETHTOOL_A_RSS_CONTEXT])
++		request->rss_context = nla_get_u32(tb[ETHTOOL_A_RSS_CONTEXT]);
++
++	return 0;
++}
++
++static int
++rss_prepare_data(const struct ethnl_req_info *req_base,
++		 struct ethnl_reply_data *reply_base, struct genl_info *info)
++{
++	struct rss_reply_data *data = RSS_REPDATA(reply_base);
++	struct rss_req_info *request = RSS_REQINFO(req_base);
++	struct net_device *dev = reply_base->dev;
++	const struct ethtool_ops *ops;
++	u32 total_size, indir_bytes;
++	u8 dev_hfunc = 0;
++	u8 *rss_config;
++	int ret;
++
++	ops = dev->ethtool_ops;
++	if (!ops->get_rxfh)
++		return -EOPNOTSUPP;
++
++	/* Some drivers don't handle rss_context */
++	if (request->rss_context && !ops->get_rxfh_context)
++		return -EOPNOTSUPP;
++
++	ret = ethnl_ops_begin(dev);
++	if (ret < 0)
++		return ret;
++
++	data->indir_size = 0;
++	data->hkey_size = 0;
++	if (ops->get_rxfh_indir_size)
++		data->indir_size = ops->get_rxfh_indir_size(dev);
++	if (ops->get_rxfh_key_size)
++		data->hkey_size = ops->get_rxfh_key_size(dev);
++
++	indir_bytes = data->indir_size * sizeof(u32);
++	total_size = indir_bytes + data->hkey_size;
++	rss_config = kzalloc(total_size, GFP_KERNEL);
++	if (!rss_config) {
++		ret = -ENOMEM;
++		goto out_ops;
++	}
++
++	if (data->indir_size)
++		data->indir_table = (u32 *)rss_config;
++
++	if (data->hkey_size)
++		data->hkey = rss_config + indir_bytes;
++
++	if (request->rss_context)
++		ret = ops->get_rxfh_context(dev, data->indir_table, data->hkey,
++					    &dev_hfunc, request->rss_context);
++	else
++		ret = ops->get_rxfh(dev, data->indir_table, data->hkey,
++				    &dev_hfunc);
++
++	if (ret)
++		goto out_ops;
++
++	data->hfunc = dev_hfunc;
++out_ops:
++	ethnl_ops_complete(dev);
++	return ret;
++}
++
++static int
++rss_reply_size(const struct ethnl_req_info *req_base,
++	       const struct ethnl_reply_data *reply_base)
++{
++	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
++	int len;
++
++	len =  nla_total_size(sizeof(u32)) +	/* _RSS_HFUNC */
++	       nla_total_size(sizeof(u32) * data->indir_size) + /* _RSS_INDIR */
++	       nla_total_size(data->hkey_size);	/* _RSS_HKEY */
++
++	return len;
++}
++
++static int
++rss_fill_reply(struct sk_buff *skb, const struct ethnl_req_info *req_base,
++	       const struct ethnl_reply_data *reply_base)
++{
++	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
++
++	if (nla_put_u32(skb, ETHTOOL_A_RSS_HFUNC, data->hfunc) ||
++	    nla_put(skb, ETHTOOL_A_RSS_INDIR,
++		    sizeof(u32) * data->indir_size, data->indir_table) ||
++	    nla_put(skb, ETHTOOL_A_RSS_HKEY, data->hkey_size, data->hkey))
++		return -EMSGSIZE;
++
++	return 0;
++}
++
++static void rss_cleanup_data(struct ethnl_reply_data *reply_base)
++{
++	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
++
++	kfree(data->indir_table);
++}
++
++const struct ethnl_request_ops ethnl_rss_request_ops = {
++	.request_cmd		= ETHTOOL_MSG_RSS_GET,
++	.reply_cmd		= ETHTOOL_MSG_RSS_GET_REPLY,
++	.hdr_attr		= ETHTOOL_A_RSS_HEADER,
++	.req_info_size		= sizeof(struct rss_req_info),
++	.reply_data_size	= sizeof(struct rss_reply_data),
++
++	.parse_request		= rss_parse_request,
++	.prepare_data		= rss_prepare_data,
++	.reply_size		= rss_reply_size,
++	.fill_reply		= rss_fill_reply,
++	.cleanup_data		= rss_cleanup_data,
++};
+-- 
+2.31.1
 
->=20
-> Now before this goes any further I'd like for "something special" to be
-> defined properly and not just be a one-off Hyper-V thing.
->=20
-> > specific to AMD's virtual-Top-of-Memory architecture.  The TDX
-> > architecture doesn't really have a way to use a paravisor.
-> >
-> > To summarize, the code in this patch series is about a 3rd encryption
-> > scheme that is used by the guest.
->=20
-> Yes, can that third thing be used by other hypervisors or is this
-> Hyper-V special?
-
-This third thing is part of the AMD SEV-SNP architecture and could be used
-by any hypervisor.
-
->=20
-> > It is completely parallel to the AMD C-bit encryption scheme and
-> > the Intel TDX encryption scheme. With the AMD vTOM scheme, there is
-> > a paravisor that transparently emulates some things for the guest
-> > so there are fewer code changes needed in the guest, but this patch
-> > series is not about that paravisor code.
->=20
-> Would other hypervisors want to support such a scheme?
->=20
-> Is this architecture documented somewhere? If so, where?
-
-The AMD vTOM scheme is documented in the AMD SEV-SNP
-architecture specs.
-
->=20
-> What would it mean for the kernel to support it.
-
-The Linux kernel running as a guest already supports it, at least when
-running on Hyper-V.   The code went into the 5.15 kernel [1][2] about
-a year ago.  But that code is more Hyper-V specific than is desirable.=20
-This patch set makes the AMD vTOM support more parallel to the Intel
-TDX and AMD C-bit support.
-
-To my knowledge, KVM does not support the AMD vTOM scheme.
-Someone from AMD may have a better sense whether adding that
-support is likely in the future.
-
-[1] https://lore.kernel.org/all/20211025122116.264793-1-ltykernel@gmail.com=
-/
-[2] https://lore.kernel.org/all/20211213071407.314309-1-ltykernel@gmail.com=
-/
-
-Michael
