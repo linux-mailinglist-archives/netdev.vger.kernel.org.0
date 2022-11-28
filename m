@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7BE763AFCD
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:45:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2F5E63AFE5
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:46:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233545AbiK1Rpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 12:45:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        id S233496AbiK1Rqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 12:46:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233510AbiK1RpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:45:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139742CDD0;
-        Mon, 28 Nov 2022 09:41:10 -0800 (PST)
+        with ESMTP id S233495AbiK1RqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:46:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962F463EB;
+        Mon, 28 Nov 2022 09:41:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D8A061307;
-        Mon, 28 Nov 2022 17:41:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83FA4C4347C;
-        Mon, 28 Nov 2022 17:41:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 493A7B80D1A;
+        Mon, 28 Nov 2022 17:41:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B132DC433C1;
+        Mon, 28 Nov 2022 17:41:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669657266;
-        bh=1q6LV/XCGJkICRHPhOXZv9+sukcew2TPlUBl0//TvHc=;
+        s=k20201202; t=1669657277;
+        bh=98R2X8ZYPzq4wEbFiNA0pQr80g8MRGbuyxnUktVmNEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jQAdD8RvdcNdkJKKEDAgXowvhZVA0vcfH5qKaKwrXqs8qgg0NCNaZV4UHgPAPhqKR
-         S4CYNcKEtIYryzuIkNRRtwzCLBRfex/K4i98p6gWTbm+Dtqnvb/YaTKPClZgZmd01a
-         AbkS3+j2OQDMp5ZRBMqrHdfRwUTnWnXL0X0Sm6cNJD0kdkveOP8Vlw7z7D9GvWdlZp
-         EWr3HeECdYwBIMFjMkgzqkm2hP5X+1sYD6AZJ25ohIO4rsYlgjkB0iW++m219rCQYb
-         rSD2/hsQvIHCFtRkMV1WVz8OUtGvi3kBzCSJJ005nC/jdxCeu9HnWWnW6oqM6E1DdK
-         t/z4Zh2b/NdzQ==
+        b=r48a4MlxsDAOBO2sp/vdr9d98J+wCOXhyry3d+GeB/la0ZTaM2eLvAvNK2XhKeMHp
+         PA6pU+hezf0v7eTu+W3m91LGKXgkcparSvuJ555jDCy4dRSO2Om6bFr8B8LgKut/w7
+         03mwVBm4pK/yrh2akPxmQZy1H61Lee8AtvkK5OKxMbvLoBT4SdxIMbD6Ey5jgehCWr
+         oTTzjpqtL77Mqkb0EZzaMPJYeuZeu/ywv54Hp0j7Wmg3FBIA7D3RlIHh+rIgyzg80S
+         tnHMcTca4xqTkNLUtbOHjxikDilkKWo1oMZo3qKgBPy5bVUsl6Fb06DDQ2WpnrzC63
+         obhFZL0J1k+/A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Daniel=20D=C3=ADaz?= <daniel.diaz@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, shuah@kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 17/24] selftests/net: Find nettest in current directory
-Date:   Mon, 28 Nov 2022 12:40:17 -0500
-Message-Id: <20221128174027.1441921-17-sashal@kernel.org>
+Cc:     Dominique Martinet <asmadeus@codewreck.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Sasha Levin <sashal@kernel.org>, ericvh@gmail.com,
+        lucho@ionkov.net, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 23/24] 9p/xen: check logical size for buffer size
+Date:   Mon, 28 Nov 2022 12:40:23 -0500
+Message-Id: <20221128174027.1441921-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221128174027.1441921-1-sashal@kernel.org>
 References: <20221128174027.1441921-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,88 +59,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Díaz <daniel.diaz@linaro.org>
+From: Dominique Martinet <asmadeus@codewreck.org>
 
-[ Upstream commit bd5e1e42826f18147afb0ba07e6a815f52cf8bcb ]
+[ Upstream commit 391c18cf776eb4569ecda1f7794f360fe0a45a26 ]
 
-The `nettest` binary, built from `selftests/net/nettest.c`,
-was expected to be found in the path during test execution of
-`fcnal-test.sh` and `pmtu.sh`, leading to tests getting
-skipped when the binary is not installed in the system, as can
-be seen in these logs found in the wild [1]:
+trans_xen did not check the data fits into the buffer before copying
+from the xen ring, but we probably should.
+Add a check that just skips the request and return an error to
+userspace if it did not fit
 
-  # TEST: vti4: PMTU exceptions                                         [SKIP]
-  [  350.600250] IPv6: ADDRCONF(NETDEV_CHANGE): veth_b: link becomes ready
-  [  350.607421] IPv6: ADDRCONF(NETDEV_CHANGE): veth_a: link becomes ready
-  # 'nettest' command not found; skipping tests
-  #   xfrm6udp not supported
-  # TEST: vti6: PMTU exceptions (ESP-in-UDP)                            [SKIP]
-  [  351.605102] IPv6: ADDRCONF(NETDEV_CHANGE): veth_b: link becomes ready
-  [  351.612243] IPv6: ADDRCONF(NETDEV_CHANGE): veth_a: link becomes ready
-  # 'nettest' command not found; skipping tests
-  #   xfrm4udp not supported
-
-The `unicast_extensions.sh` tests also rely on `nettest`, but
-it runs fine there because it looks for the binary in the
-current working directory [2]:
-
-The same mechanism that works for the Unicast extensions tests
-is here copied over to the PMTU and functional tests.
-
-[1] https://lkft.validation.linaro.org/scheduler/job/5839508#L6221
-[2] https://lkft.validation.linaro.org/scheduler/job/5839508#L7958
-
-Signed-off-by: Daniel Díaz <daniel.diaz@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Tested-by: Stefano Stabellini <sstabellini@kernel.org>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+Link: https://lkml.kernel.org/r/20221118135542.63400-1-asmadeus@codewreck.org
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 11 +++++++----
- tools/testing/selftests/net/pmtu.sh       | 10 ++++++----
- 2 files changed, 13 insertions(+), 8 deletions(-)
+ net/9p/trans_xen.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 91f54112167f..364c82b797c1 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -4072,10 +4072,13 @@ elif [ "$TESTS" = "ipv6" ]; then
- 	TESTS="$TESTS_IPV6"
- fi
+diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
+index 427f6caefa29..4255f2a3bea4 100644
+--- a/net/9p/trans_xen.c
++++ b/net/9p/trans_xen.c
+@@ -231,6 +231,14 @@ static void p9_xen_response(struct work_struct *work)
+ 			continue;
+ 		}
  
--which nettest >/dev/null
--if [ $? -ne 0 ]; then
--	echo "'nettest' command not found; skipping tests"
--	exit $ksft_skip
-+# nettest can be run from PATH or from same directory as this selftest
-+if ! which nettest >/dev/null; then
-+	PATH=$PWD:$PATH
-+	if ! which nettest >/dev/null; then
-+		echo "'nettest' command not found; skipping tests"
-+		exit $ksft_skip
-+	fi
- fi
++		if (h.size > req->rc.capacity) {
++			dev_warn(&priv->dev->dev,
++				 "requested packet size too big: %d for tag %d with capacity %zd\n",
++				 h.size, h.tag, req->rc.capacity);
++			req->status = REQ_STATUS_ERROR;
++			goto recv_error;
++		}
++
+ 		memcpy(&req->rc, &h, sizeof(h));
+ 		req->rc.offset = 0;
  
- declare -i nfail=0
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index 694732e4b344..da6ab300207c 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -671,10 +671,12 @@ setup_xfrm() {
- }
+@@ -240,6 +248,7 @@ static void p9_xen_response(struct work_struct *work)
+ 				     masked_prod, &masked_cons,
+ 				     XEN_9PFS_RING_SIZE(ring));
  
- setup_nettest_xfrm() {
--	which nettest >/dev/null
--	if [ $? -ne 0 ]; then
--		echo "'nettest' command not found; skipping tests"
--	        return 1
-+	if ! which nettest >/dev/null; then
-+		PATH=$PWD:$PATH
-+		if ! which nettest >/dev/null; then
-+			echo "'nettest' command not found; skipping tests"
-+			return 1
-+		fi
- 	fi
- 
- 	[ ${1} -eq 6 ] && proto="-6" || proto=""
++recv_error:
+ 		virt_mb();
+ 		cons += h.size;
+ 		ring->intf->in_cons = cons;
 -- 
 2.35.1
 
