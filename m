@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DB1363AFFD
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:48:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2733263AFF6
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:48:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233578AbiK1RsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 12:48:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33456 "EHLO
+        id S233449AbiK1RsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 12:48:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233155AbiK1Rqz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:46:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11FF2D751;
-        Mon, 28 Nov 2022 09:41:43 -0800 (PST)
+        with ESMTP id S233758AbiK1RrN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:47:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAB32DA9A;
+        Mon, 28 Nov 2022 09:41:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2DD561307;
-        Mon, 28 Nov 2022 17:41:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B73F7C433D7;
-        Mon, 28 Nov 2022 17:41:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD14C612E9;
+        Mon, 28 Nov 2022 17:41:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE4C5C433C1;
+        Mon, 28 Nov 2022 17:41:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669657303;
-        bh=incXVb5OeDnPjf8v58URtG3XXnk0WJCxSIRPnAveTqQ=;
+        s=k20201202; t=1669657317;
+        bh=uOCUYdXoD0VJBu4LImfvEZCjl2bDaUvrFCK0aez+zKs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffkTQpM4l7cVRuA+1gwr9mj4hYz+5pLtLiMaIVHWigoAJcadnGH6jNmPp2g1ou8wI
-         fTntwdZEnzp4FG89jNrs75SCXtBzDhadbRqvHh+0ad2e1ls6Cgn6qcQQir6QPVQTqJ
-         l+UgZaZMc9dysw8KZjms3tF8WYXIA9FKwuX72aLqSg+3pYLxtp94I9G9UrITSbqyUg
-         CtZW1bd5XN/AoAJ281ij29VaT7+ty0yQVCLjcuXYa0eWRv6UJFRGJ20rKNdAQvOjVV
-         jxZfrFlEdrn/OqB2uk6mW11aAY53B6Z8QE49Io0HEpQazNEPZRg8vpbdAMuIql0eIH
-         Jlg3H5eyq00zw==
+        b=GLMkTHGUkjAPmgsUzfAyNPCUFg4Aj6c9x91KxH29eSvZaiDwTh6mdcr2/M+XYVtRx
+         NRd+ubunJWm06Go/Q7iP9nfNGgoI3Gx2F+N+L78nbo+iutuRtMV/DQdYX2YyVS3UU5
+         pH3AIsy7OrZADvRojlwBELSGgjeILV3ZKpKdfKp/wt4wQ0H+bPujXMY0tkUb5kD9Xq
+         p0neku5u993nMO1RlCL3Bkz8edLwyd7eFK2CBccosdsgrBde0L9hlNVWPjB0v2j6Ge
+         iKlNJuTPqyIIAwRHtKMzoTq9FaUoUIO+P4I2WVF73XxRbiX0l7e7kjswyZDqvPlegO
+         GwTe7LdTbzy6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     GUO Zihua <guozihua@huawei.com>,
+Cc:     Dominique Martinet <asmadeus@codewreck.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
         Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Dominique Martinet <asmadeus@codewreck.org>,
         Sasha Levin <sashal@kernel.org>, ericvh@gmail.com,
         lucho@ionkov.net, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com,
         v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 10/19] 9p/fd: Use P9_HDRSZ for header size
-Date:   Mon, 28 Nov 2022 12:41:10 -0500
-Message-Id: <20221128174120.1442235-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 18/19] 9p/xen: check logical size for buffer size
+Date:   Mon, 28 Nov 2022 12:41:18 -0500
+Message-Id: <20221128174120.1442235-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221128174120.1442235-1-sashal@kernel.org>
 References: <20221128174120.1442235-1-sashal@kernel.org>
@@ -59,54 +59,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: GUO Zihua <guozihua@huawei.com>
+From: Dominique Martinet <asmadeus@codewreck.org>
 
-[ Upstream commit 6854fadbeee10891ed74246bdc05031906b6c8cf ]
+[ Upstream commit 391c18cf776eb4569ecda1f7794f360fe0a45a26 ]
 
-Cleanup hardcoded header sizes to use P9_HDRSZ instead of '7'
+trans_xen did not check the data fits into the buffer before copying
+from the xen ring, but we probably should.
+Add a check that just skips the request and return an error to
+userspace if it did not fit
 
-Link: https://lkml.kernel.org/r/20221117091159.31533-4-guozihua@huawei.com
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
+Tested-by: Stefano Stabellini <sstabellini@kernel.org>
 Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-[Dominique: commit message adjusted to make sense after offset size
-adjustment got removed]
+Link: https://lkml.kernel.org/r/20221118135542.63400-1-asmadeus@codewreck.org
 Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/9p/trans_fd.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/9p/trans_xen.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index fec6c800c898..4fccefb50a7d 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -118,7 +118,7 @@ struct p9_conn {
- 	struct list_head unsent_req_list;
- 	struct p9_req_t *rreq;
- 	struct p9_req_t *wreq;
--	char tmp_buf[7];
-+	char tmp_buf[P9_HDRSZ];
- 	struct p9_fcall rc;
- 	int wpos;
- 	int wsize;
-@@ -289,7 +289,7 @@ static void p9_read_work(struct work_struct *work)
- 	if (!m->rc.sdata) {
- 		m->rc.sdata = m->tmp_buf;
- 		m->rc.offset = 0;
--		m->rc.capacity = 7; /* start by reading header */
-+		m->rc.capacity = P9_HDRSZ; /* start by reading header */
- 	}
+diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
+index 432ac5a16f2e..6c8a33f98f09 100644
+--- a/net/9p/trans_xen.c
++++ b/net/9p/trans_xen.c
+@@ -231,6 +231,14 @@ static void p9_xen_response(struct work_struct *work)
+ 			continue;
+ 		}
  
- 	clear_bit(Rpending, &m->wsched);
-@@ -312,7 +312,7 @@ static void p9_read_work(struct work_struct *work)
- 		p9_debug(P9_DEBUG_TRANS, "got new header\n");
++		if (h.size > req->rc.capacity) {
++			dev_warn(&priv->dev->dev,
++				 "requested packet size too big: %d for tag %d with capacity %zd\n",
++				 h.size, h.tag, req->rc.capacity);
++			req->status = REQ_STATUS_ERROR;
++			goto recv_error;
++		}
++
+ 		memcpy(&req->rc, &h, sizeof(h));
+ 		req->rc.offset = 0;
  
- 		/* Header size */
--		m->rc.size = 7;
-+		m->rc.size = P9_HDRSZ;
- 		err = p9_parse_header(&m->rc, &m->rc.size, NULL, NULL, 0);
- 		if (err) {
- 			p9_debug(P9_DEBUG_ERROR,
+@@ -240,6 +248,7 @@ static void p9_xen_response(struct work_struct *work)
+ 				     masked_prod, &masked_cons,
+ 				     XEN_9PFS_RING_SIZE(ring));
+ 
++recv_error:
+ 		virt_mb();
+ 		cons += h.size;
+ 		ring->intf->in_cons = cons;
 -- 
 2.35.1
 
