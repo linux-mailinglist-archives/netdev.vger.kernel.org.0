@@ -2,590 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BDC863A008
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 04:15:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3EC063A00D
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 04:19:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbiK1DPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 22:15:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34766 "EHLO
+        id S229735AbiK1DTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 22:19:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbiK1DPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 22:15:45 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6381262E;
-        Sun, 27 Nov 2022 19:15:43 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id b12so14748886wrn.2;
-        Sun, 27 Nov 2022 19:15:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=PLRj14WitOwfJ/9iFJHglS5XUKHhoH3E1HNGUaJzwNQ=;
-        b=H4wBIPQBS/lNs+zHyQCVy0OVUS37KgqsfWOitysJz+72Ajqoc7LeuRorCrUCaS3zMP
-         JSNNLoygKtuvkviihdFmw/Q3CVcn/LK43gN/2+50gC9B6Qjxi2uSryXRELK5U/SnZegy
-         a6aC8lUGGAm0CPqKDcU6m3Vvr0KNI27emMuw4TzKn0FUQkeqI4Ki3x4GxDxGtVqT9lbJ
-         jsfAwzis5JhwdByy6CmIgZ5JMCtHN9c4velHgdRltA7sI+OmTQVaV+4R7LbjVPUD66X+
-         XbD2Uh9jZfV2vE8R9gK5Ue1ppma4EEdam8G3hzgHL9v60om8Y8XQVC6Eo5kU9JWBDTYm
-         FlCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=PLRj14WitOwfJ/9iFJHglS5XUKHhoH3E1HNGUaJzwNQ=;
-        b=20WnLGWF7swimMxqN6xVi9GmCKXfUx4cLGdgEDcyWiFGhoQtciMi3takPYMzndTAyf
-         Ax/U4OsUVZZa79p/kBYoMsPYJNb7bvP+Svrf+TKFMWAfUIy9Unt1dihvVyNUP/PGA8wm
-         d5aIvgHS/VolZLwjM+2Fi+S5XZMllqGyY75EFMxPVQNUabV7TIlKhTHDtqXCDVMZWeLW
-         8vUb08KVC4/89vWNKiyco5LE7I8BNunfd1HnxwJh198nNZd012Ervfo3IS8eFxE7NK30
-         YPLQaDAZE6hx0Km9XZtqieSbJWGZ55wvFPzK8cM39kP/XvD27vX9CtvRpYjP0CQ2rmjY
-         KC7w==
-X-Gm-Message-State: ANoB5plG43AXs6pelLdfPNjPV3ehIpU7bzvhXmVZl3Qi6O8czDjlboM2
-        6mXdyYXO5HNQ/nWRY36QF1M72gWtycKbGjkXJl8=
-X-Google-Smtp-Source: AA0mqf6YwtHFhMXaAU3DDCRxDNszc2JcR00M1r+59NGsu0LqVP0THQHn60ZkbjfwVMe9X7Nx+69+i/arY2YaHFM/fPo=
-X-Received: by 2002:adf:d231:0:b0:241:e2d1:ec92 with SMTP id
- k17-20020adfd231000000b00241e2d1ec92mr17033231wrh.408.1669605341970; Sun, 27
- Nov 2022 19:15:41 -0800 (PST)
+        with ESMTP id S229597AbiK1DTG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 22:19:06 -0500
+Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A2B12775;
+        Sun, 27 Nov 2022 19:19:05 -0800 (PST)
+Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AS2fuuW029505;
+        Sun, 27 Nov 2022 19:18:36 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=message-id : date
+ : subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=PPS06212021;
+ bh=F6FwZhW4/p6eL2+utBGUwnMNV7n8h8HA0kavMKwuOKU=;
+ b=bjwW3yHYimSZTSLwp3S7wSt3kjZ7BdXMm6k2MTBtjKWichp1JHfghwwFgbKEQlj2AvvP
+ 5audKk7wowfzkSbAHLkRRXpk2LzJtuiiIR0QcWpW+sEdtUAavuUWWv7+T3lBYmf+Lr4n
+ volkroHoI0XpLQ0a8SASOqhCTcl3abglJq0F4YmRZ8Aefe6qXS5dCTi0vE/cYxDb7aJA
+ gNXqVZ0lW1ySC8GWJ0t0fNzzHktluBjE6pj40Xh4Mm7ylz6hdOhQepfMV1DRyM4pE+Lr
+ rVgiL9mnipdZbHt+3w5i9YhP3UW2wqxuD6eVDMZZrjYQeTgMhg0I+JJ3KrlNkwnaMJE/ qQ== 
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2175.outbound.protection.outlook.com [104.47.55.175])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3m3k6r8wyk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 27 Nov 2022 19:18:36 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i17VoukbyVZz7lgEzV93ge4VoPfYjlUrL1aq1uzxtXkyMEtLWoCE9KkgWfbdCJWbIQ/uJPkCkxDzLkwCSZIlyHKAM+F5re6+lFuuBBeymg7JytwTDkMncJ6uyFaAMZxChY8nMvN/nA7F549DJRe98mhDnAf9ndLugC1ti4mHChEwFnbJM1Gc22W+YtV3oEfMX0jBDcoGDxWre5lWf9hWUHgTMKXDNbpz2gP5RXWuxzyJKsJZ34ZUJxQgaxogBkL2KMY/iAK5GLm0Cg7FIzTlwY2UFIBDagB4gH0KTMDw8xOkUE7NBqif/xa5wZPqsm3PzV7U54V2V6e2CXOQPWSdXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=F6FwZhW4/p6eL2+utBGUwnMNV7n8h8HA0kavMKwuOKU=;
+ b=Ds2nBHt0X84wI5s5e5Y6KgBIxjXnlJYDVoFSbEGogh00mmNYUzYuXxWcBGYNsfqkDAFitChfpWV5SWD7be06WZcyW38sTC866U0NpF5IV+50aTmX3IAFhxAz/tRLxCmI+w0Mgs62VkmBHwd7FoKD+5XIgD3+zShwI9cFDcENRv/7ClFmDHr9zjPwKnj3GAaAAKnTFaLpbB+ZeRsgxsWUwtRkDATOsR+heuCGJYCJVZacVRHVnWFlVGWk9RELz4GtxJ57YCzlZX28ewLlCqpu2yVm6gUu/kRYlDuSmuuhOjaSEFQpyffk3I9gEKuf11V6sgiWjXpsopUXVsvPOBbBng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+Received: from MW5PR11MB5764.namprd11.prod.outlook.com (2603:10b6:303:197::8)
+ by IA1PR11MB7198.namprd11.prod.outlook.com (2603:10b6:208:419::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.21; Mon, 28 Nov
+ 2022 03:18:31 +0000
+Received: from MW5PR11MB5764.namprd11.prod.outlook.com
+ ([fe80::601c:88b4:f579:677b]) by MW5PR11MB5764.namprd11.prod.outlook.com
+ ([fe80::601c:88b4:f579:677b%3]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
+ 03:18:31 +0000
+Message-ID: <e51628d6-8baa-274d-32bb-75f922ea7a0f@windriver.com>
+Date:   Mon, 28 Nov 2022 11:18:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [v2][PATCH 1/1] net: phy: Add link between phy dev and mac dev
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221125041206.1883833-1-xiaolei.wang@windriver.com>
+ <20221125041206.1883833-2-xiaolei.wang@windriver.com>
+ <Y4E3EOTXTE0PuY6B@lunn.ch>
+ <6b50524f-4f24-d14e-9d3f-f03f25ca549b@windriver.com>
+ <45a8283b-64ee-599d-3ec6-abe2b2f96920@gmail.com>
+From:   "Wang, Xiaolei" <xiaolei.wang@windriver.com>
+In-Reply-To: <45a8283b-64ee-599d-3ec6-abe2b2f96920@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SL2P216CA0222.KORP216.PROD.OUTLOOK.COM
+ (2603:1096:101:18::7) To MW5PR11MB5764.namprd11.prod.outlook.com
+ (2603:10b6:303:197::8)
 MIME-Version: 1.0
-References: <20221121100521.56601-1-xiangxia.m.yue@gmail.com>
- <20221121100521.56601-2-xiangxia.m.yue@gmail.com> <7ed2f531-79a3-61fe-f1c2-b004b752c3f7@huawei.com>
- <CAMDZJNUiPOcnpNg8tM4xCoJABJz_3=AaXLTm5ofQg64mGDkB_A@mail.gmail.com>
- <9278cf3f-dfb6-78eb-8862-553545dac7ed@huawei.com> <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
- <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com> <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com>
-In-Reply-To: <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Mon, 28 Nov 2022 11:15:03 +0800
-Message-ID: <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
-Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW5PR11MB5764:EE_|IA1PR11MB7198:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9299082d-4b6f-42bf-a9bc-08dad0ef39d0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NhVUDTVP6fGWi9ddXz1j+SwfjH4NPwDaotXbijQIGdUMURaLz/AFZit1Jlh9qFT5KC+CbROzIjA72FP7EoesdVqWAendERhVZbt68YrlBIoBxmSOdnC5dlIRXlmqdaIaDuX/TlWTSbBOvixBqHPfxYsSk2wvQRRAuGjbNqUHgnSJKhOfkjyxQpewh40UNEIhsmnyEe+mpkQ2/ijCRQot7YAnVQO14cta4lPY/KnNb2H7PoAKcjYKyNwfzWutVo2MjVRP146EaMTRZ6wm8lOTxbJUXtWKJpEgDKJ00Qe1R7140tdgEIYwmhxT94mvKkAKWMjQNJa6+gL1kYS5Y+uzPKFkdo67ZXFbgTMP7LcYOoc9YFK43mq/JZeB9IBah1QBHPA7g6QdeS6n16NSUhiFSXj3ZqCon2p7dS1O4WQ7I3N+cjZ/sGRBPlXxwatQzgbclaHrRe5VeSJq/g2m1n7eOZi5jKpvMQl7FFRrPoeGLw7vSyonwsyxrVeVW7pf6jXe9hL6EcerEFDnslt7W14KLZSkXRtrFuroNIY6tjXiBxiK6qzO4FAfqV3eOft1Xw1VaQWKwW4WDIYFaxIa5jePNtihcO1IprggC+fV+6Jw8gK8W1JRHp0OGw1SRoh83cm6DbObZyqarcfKj5jkRIuv2WDukLp1PgLW6YHw3Z+s/ZCsvhLzIH/k1VPt3d7apSt4vLhfoDXPc1vzm5EuJbCBClcrWeGC7ci3YpmJQU0I04lcT8WimOQ8bT5jujICGqUf+0aIxH4eq/DPgAJQP53bpQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5764.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(346002)(396003)(376002)(39840400004)(451199015)(45080400002)(52116002)(6506007)(53546011)(6486002)(6512007)(478600001)(26005)(316002)(110136005)(66946007)(8676002)(4326008)(66556008)(66476007)(31686004)(6666004)(41300700001)(5660300002)(7416002)(186003)(8936002)(2906002)(36756003)(2616005)(83380400001)(38350700002)(38100700002)(86362001)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dmVtMmlQYWFtSUhzL2d5bWRsVWh2VG5VZHFJa2pMUTRuRmNsUWdmUkM1Q0Zs?=
+ =?utf-8?B?RjJQSTdYaitpdDB6TVJqSmVDYSswMFdodTRHajJXQlpnbWNQR3Z0aDhad2Yx?=
+ =?utf-8?B?VUFFT25rSisrUUh0c3NuWkM1bHFEd3NCNEpkOHpoOG91ZHlZWHNKdTUwY3Nj?=
+ =?utf-8?B?NGx4UlQ1MjhRMjN1aFN5bXMvWk93S25uNDByT1ZmRU4rMDNZMTZoTkZOKzVj?=
+ =?utf-8?B?MkE0MmE2Z2FEWGRWN2JoT1YydGlHL0VTYnVJekhRNmpJSGRuTTJhNjREbXpS?=
+ =?utf-8?B?c3hGWXFSN3dBU2dSb24ybXMxRVBQYW83OVRmL2VuRWpRVWNvSHZoMER5Yldx?=
+ =?utf-8?B?ZDdIOVExb0lnMU9iV3UzNVVwU0VCTmxhMU1DU2trQXgzU0NuSENPUEpTeHpW?=
+ =?utf-8?B?eVhxL1NBcmNzV2wzRDF4RjdiVEFod3pUTEZZTmdMemJNcmZOSWE4RUlsc1Ir?=
+ =?utf-8?B?NVlZL2l1VHMzS29YNVdBa3FvQjFQdGJzWkNjd0RjVzdzazNTRHIwc3hzVGFT?=
+ =?utf-8?B?MnpqM0VEd04xMVVxVnF3N0QwRTNwSDJ6Z012NXlzTnpBQ2VzajJ4SFBDd09F?=
+ =?utf-8?B?SWZERmlYQ1hQQ3RSU05hRkp6S2huQ3ZTeGlIRDNyLzFOWE01MlBueVFvNVNa?=
+ =?utf-8?B?RnRxLzh5RkRwV1E2UzI1V0YvcTB1Y2ZLOTA5SGJZZVFsNGZDWlhTcmtoN3NT?=
+ =?utf-8?B?THV6U1E1anNZSElvTXFWb3Y3MWh6dys2ZmtIOENFWWRkZVc0TFJmeXJwN1cw?=
+ =?utf-8?B?YkdHNUxJazUzQ2d4aXFEUGdFVm5JNlR4Rkl2ekxiQTZQRzlGckN0aU85SW1L?=
+ =?utf-8?B?b1NZU1BIWFNpY2lURkh0R3JPNytvd1VDOFZoRThJcGlOMzkxN0tuVXYwZkVr?=
+ =?utf-8?B?RmozUFc0bW4zZ0hCV3VkU1NkaGpGZEgvd054WkJUQ1pHYnZ0N3VvU3BVYUs3?=
+ =?utf-8?B?SDB3MkxGcTc4eHQ1NVdQbVVSdFdFVnlVTnltSmZOWEZueE5yeW1jZG9EeDVh?=
+ =?utf-8?B?bDlSdElSR2hBZ0V0WkhwSUc3dUlFZzB0VmF3TzNpNHJlbGF1UkhmRFR4d0Za?=
+ =?utf-8?B?K0JpUTUzSytFQ1lUdWlacE9kTUs4TW9iNm1iZnh0KzZMOTRUTUd3MDR1RXBo?=
+ =?utf-8?B?K2FXTXphWkllNHhOODlBTlBtbzBQV3UwaUpwZ1BTWE1zTFBQaGVmNllFa1Bv?=
+ =?utf-8?B?d090RXhxSDVIa0tmS3BTUGs2TEtYeU9hVlVmaEdja0xVZmhnc0hVekI3ZkdP?=
+ =?utf-8?B?VGtCR2tZR1o2SFRkRENsRUorWmQ3NjVvZEErbGlYNnlVRjJ1VDNMVksrOFlM?=
+ =?utf-8?B?d2c5OFpCTTE5UEtZbTBHeXBNeVVZWEtOaDNxRU4xT1d4dDVkSVVha1MzaGxH?=
+ =?utf-8?B?eEdocjVlcTBTcGR1emgzWGxpS2xPVEtwb01ZRmd2Ry9iRDVheS9YSDkwL3pT?=
+ =?utf-8?B?TTBtTXdLejJuMDBJUlBrWjk1Q1JRRHhsY2pDUmtnRkRqZWFwN0hBd050cjNQ?=
+ =?utf-8?B?allMR3l4ZS9iZWZFU3RWOVVMSkV5a0tpUDBHNzJWME5kRHlVSWQ0UFArTXlm?=
+ =?utf-8?B?cHBEZ1VtczR0cmZKb1VRNDdqajljUXZpWVcreW96TUVVR0grbmhjZGdnMVEy?=
+ =?utf-8?B?N3lMTlhsS3lVUENQcml3OVplSHVQaXhNK3NYRWk0a2tLVDM2Vm1PSUZzalJ2?=
+ =?utf-8?B?dVZ6R05kNmdUdG9oTlAzWW95cnNXclFpTmxmNVBNaVYvMGdPTkF2MXJoRmdZ?=
+ =?utf-8?B?NFhzRUtNejV4Z0Y0QTJ2N01veHRoR3UzRFpTakR6UkhkVkxBN2tiekxRRVB0?=
+ =?utf-8?B?SmpyNkY5VGlPYTZ2MFhMTng5ZW9GVFFMc1kxKzM4UG9ZK0tVNGhuYkdHTWJC?=
+ =?utf-8?B?UVdZRU1FSmltRWR0NEJlMFFnU1pra0lVbFo2RVBPMFNialNVdVpEWmQ4ZjRF?=
+ =?utf-8?B?VnJMNUc1cmZTelVWdWZ3VXFOM0U2bzhqOHAxcGZjQWoxb3VZdGNwd3BObXZO?=
+ =?utf-8?B?dzdCZUEzc3pueG1iMklQZ2UxL1pacFJJeHk3SHZ3ck1zUVkrcmh1UEFaajVM?=
+ =?utf-8?B?bkVWbnJRczREWmpHdDZ4ZnYyTG1tbURzakd2TkpFeGIvUG5PRXY4eG1lcDJU?=
+ =?utf-8?B?S2pBaHlKOEk3Rzd6N3lDK3ZjOWhiMUlmc3d2ZW8yUSsyOEcwNEhPTnF0Y0lh?=
+ =?utf-8?B?ZFE9PQ==?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9299082d-4b6f-42bf-a9bc-08dad0ef39d0
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5764.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 03:18:31.4740
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tC6GFuBEM19MEK7CTVbAlE6Ve1XxLYQSpWaoUyoj2lO7zu76+3M+hG4R8zGSGT84DrOXc3fAA27BRkZNgvZO39Um8H/E4vVZwK82nBPYD4A=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7198
+X-Proofpoint-ORIG-GUID: u0DLRfxc_jTr_XDOTdzWpIupNVBN1coS
+X-Proofpoint-GUID: u0DLRfxc_jTr_XDOTdzWpIupNVBN1coS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-28_02,2022-11-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
+ clxscore=1015 priorityscore=1501 spamscore=0 lowpriorityscore=0
+ impostorscore=0 mlxlogscore=599 suspectscore=0 bulkscore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211280024
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 24, 2022 at 10:13 PM Hou Tao <houtao1@huawei.com> wrote:
+
+On 11/28/2022 4:30 AM, Florian Fainelli wrote:
+> CAUTION: This email comes from a non Wind River email account!
+> Do not click links or open attachments unless you recognize the sender 
+> and know the content is safe.
 >
-> Hi,
+> On 11/25/2022 5:41 PM, Wang, Xiaolei wrote:
+>> add Florian
+>>
+>> thanks
+>>
+>> xiaolei
+>>
+>> On 11/26/2022 5:43 AM, Andrew Lunn wrote:
+>>> CAUTION: This email comes from a non Wind River email account!
+>>> Do not click links or open attachments unless you recognize the sender
+>>> and know the content is safe.
+>>>
+>>> On Fri, Nov 25, 2022 at 12:12:06PM +0800, Xiaolei Wang wrote:
+>>>> If the external phy used by current mac interface is
+>>>> managed by another mac interface, it means that this
+>>>> network port cannot work independently, especially
+>>>> when the system suspend and resume, the following
+>>>> trace may appear, so we should create a device link
+>>>> between phy dev and mac dev.
+>>>>
+>>>>    WARNING: CPU: 0 PID: 24 at drivers/net/phy/phy.c:983
+>>>> phy_error+0x20/0x68
+>>>>    Modules linked in:
+>>>>    CPU: 0 PID: 24 Comm: kworker/0:2 Not tainted
+>>>> 6.1.0-rc3-00011-g5aaef24b5c6d-dirty #34
+>>>>    Hardware name: Freescale i.MX6 SoloX (Device Tree)
+>>>>    Workqueue: events_power_efficient phy_state_machine
+>>>>    unwind_backtrace from show_stack+0x10/0x14
+>>>>    show_stack from dump_stack_lvl+0x68/0x90
+>>>>    dump_stack_lvl from __warn+0xb4/0x24c
+>>>>    __warn from warn_slowpath_fmt+0x5c/0xd8
+>>>>    warn_slowpath_fmt from phy_error+0x20/0x68
+>>>>    phy_error from phy_state_machine+0x22c/0x23c
+>>>>    phy_state_machine from process_one_work+0x288/0x744
+>>>>    process_one_work from worker_thread+0x3c/0x500
+>>>>    worker_thread from kthread+0xf0/0x114
+>>>>    kthread from ret_from_fork+0x14/0x28
+>>>>    Exception stack(0xf0951fb0 to 0xf0951ff8)
+>>>>
+>>>> Signed-off-by: Xiaolei Wang <xiaolei.wang@windriver.com>
+>>> This needs Florians review, since for v1 he thinks it will cause
+>>> regressions.
 >
-> On 11/24/2022 8:57 PM, Tonghao Zhang wrote:
-> > On Tue, Nov 22, 2022 at 12:06 PM Hou Tao <houtao1@huawei.com> wrote:
-> >> Hi,
-> >>
-> >> On 11/22/2022 12:01 PM, Hou Tao wrote:
-> >>> Hi,
-> >>>
-> >>> On 11/22/2022 11:12 AM, Tonghao Zhang wrote:
-> >>>> .
-> >>>>
-> >>>> On Tue, Nov 22, 2022 at 9:16 AM Hou Tao <houtao1@huawei.com> wrote:
-> >>>>> Hi,
-> >>>>>
-> >>>>> On 11/21/2022 6:05 PM, xiangxia.m.yue@gmail.com wrote:
-> >>>>>> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >>>>>>
-> >>>>>> The commit 20b6cc34ea74 ("bpf: Avoid hashtab deadlock with map_locked"),
-> >>>>>> try to fix deadlock, but in some case, the deadlock occurs:
-> >>>>>>
-> >>>>>> * CPUn in task context with K1, and taking lock.
-> >>>>>> * CPUn interrupted by NMI context, with K2.
-> >>>>>> * They are using the same bucket, but different map_locked.
-> >>>>> It is possible when n_buckets is less than HASHTAB_MAP_LOCK_COUNT (e.g.,
-> >>>>> n_bucket=4). If using hash & min(HASHTAB_MAP_LOCK_MASK, n_bucket - 1) as the
-> >>>>> index of map_locked, I think the deadlock will be gone.
-> >>>> Yes, but for saving memory, HASHTAB_MAP_LOCK_MASK should not be too
-> >>>> large(now this value is 8-1).
-> >>>> if user define n_bucket ,e.g 8192, the part of bucket only are
-> >>>> selected via hash & min(HASHTAB_MAP_LOCK_MASK, n_bucket - 1).
-> >> I don't mean to extend map_locked. Using hash & min(HASHTAB_MAP_LOCK_MASK,
-> >> n_bucket - 1) as index of map_locked  can guarantee the same map_locked will be
-> >> used if different update processes are using the same bucket lock.
-> > Thanks, I got it. but I tried it using the hash = hash &
-> > min(HASHTAB_MAP_LOCK_MASK, htab->n_buckets -1) in
-> > htab_lock_bucket/htab_unlock_bucket.
-> > But the warning occur again.
-> Does the deadlock happen ? Or just get the warning from lockdep. Maybe it is
-> just a false alarm from lockdep. I will check tomorrow. Could you share the
-> steps on how to reproduce the problem, specially the size of the hash table ?
+> Please give me until Tuesday to give this patch some proper testing, 
+> thanks!
+
 Hi
-only a warning from lockdep.
-1. the kernel .config
-#
-# Debug Oops, Lockups and Hangs
-#
-CONFIG_PANIC_ON_OOPS=y
-CONFIG_PANIC_ON_OOPS_VALUE=1
-CONFIG_PANIC_TIMEOUT=0
-CONFIG_LOCKUP_DETECTOR=y
-CONFIG_SOFTLOCKUP_DETECTOR=y
-# CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
-CONFIG_HARDLOCKUP_DETECTOR_PERF=y
-CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
-CONFIG_HARDLOCKUP_DETECTOR=y
-CONFIG_BOOTPARAM_HARDLOCKUP_PANIC=y
-CONFIG_DETECT_HUNG_TASK=y
-CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=120
-# CONFIG_BOOTPARAM_HUNG_TASK_PANIC is not set
-# CONFIG_WQ_WATCHDOG is not set
-# CONFIG_TEST_LOCKUP is not set
-# end of Debug Oops, Lockups and Hangs
 
-2. bpf.c, the map size is 2.
-struct {
-__uint(type, BPF_MAP_TYPE_HASH);
-__uint(max_entries, 2);
-__uint(key_size, sizeof(unsigned int));
-__uint(value_size, sizeof(unsigned int));
-} map1 SEC(".maps");
+Test on imx6sx
+Before adding the patch:
 
-static int bpf_update_data()
-{
-unsigned int val = 1, key = 0;
+ifconfig eth1 up
+echo enabled > /sys/class/tty/ttymxc0/power/wakeup
+echo mem > /sys/power/state
 
-return bpf_map_update_elem(&map1, &key, &val, BPF_ANY);
-}
+The following problems arise:
 
-SEC("kprobe/ip_rcv")
-int bpf_prog1(struct pt_regs *regs)
-{
-bpf_update_data();
-return 0;
-}
+WARNING: CPU: 0 PID: 24 at drivers/net/phy/phy.c:983
+phy_error+0x20/0x68
+    Modules linked in:
+    CPU: 0 PID: 24 Comm: kworker/0:2 Not tainted
+6.1.0-rc3-00011-g5aaef24b5c6d-dirty #34
+    Hardware name: Freescale i.MX6 SoloX (Device Tree)
+    Workqueue: events_power_efficient phy_state_machine
+    unwind_backtrace from show_stack+0x10/0x14
+    show_stack from dump_stack_lvl+0x68/0x90
+    dump_stack_lvl from __warn+0xb4/0x24c
+    __warn from warn_slowpath_fmt+0x5c/0xd8
+    warn_slowpath_fmt from phy_error+0x20/0x68
+    phy_error from phy_state_machine+0x22c/0x23c
+    phy_state_machine from process_one_work+0x288/0x744
+    process_one_work from worker_thread+0x3c/0x500
+    worker_thread from kthread+0xf0/0x114
+    kthread from ret_from_fork+0x14/0x28
+    Exception stack (0xf0951fb0 to 0xf0951ff8)
 
-SEC("tracepoint/nmi/nmi_handler")
-int bpf_prog2(struct pt_regs *regs)
-{
-bpf_update_data();
-return 0;
-}
+After applying the patch:
 
-char _license[] SEC("license") = "GPL";
-unsigned int _version SEC("version") = LINUX_VERSION_CODE;
+ifconfig eth1 up
 
-3. bpf loader.
-#include "kprobe-example.skel.h"
+echo enabled > /sys/class/tty/ttymxc0/power/wakeup
+echo mem > /sys/power/state
 
-#include <unistd.h>
-#include <errno.h>
+eth1 will link normally
 
-#include <bpf/bpf.h>
+Since I don't have more boards here, I haven't tested and analyzed the 
+different situations of other boards. If you need more test records, 
+please wait, I will collect some hardware to verify different situations.
 
-int main()
-{
-struct kprobe_example *skel;
-int map_fd, prog_fd;
-int i;
-int err = 0;
+thanks
 
-skel = kprobe_example__open_and_load();
-if (!skel)
-return -1;
-
-err = kprobe_example__attach(skel);
-if (err)
-goto cleanup;
-
-/* all libbpf APIs are usable */
-prog_fd = bpf_program__fd(skel->progs.bpf_prog1);
-map_fd = bpf_map__fd(skel->maps.map1);
-
-printf("map_fd: %d\n", map_fd);
-
-unsigned int val = 0, key = 0;
-
-while (1) {
-bpf_map_delete_elem(map_fd, &key);
-bpf_map_update_elem(map_fd, &key, &val, BPF_ANY);
-}
-
-cleanup:
-kprobe_example__destroy(skel);
-return err;
-}
-
-4. run the bpf loader and perf record for nmi interrupts.  the warming occurs
-
-> >   > > SNIP
-> >>>>>> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> >>>>>> index 22855d6ff6d3..429acd97c869 100644
-> >>>>>> --- a/kernel/bpf/hashtab.c
-> >>>>>> +++ b/kernel/bpf/hashtab.c
-> >>>>>> @@ -80,9 +80,6 @@ struct bucket {
-> >>>>>>       raw_spinlock_t raw_lock;
-> >>>>>>  };
-> >>>>>>
-> >>>>>> -#define HASHTAB_MAP_LOCK_COUNT 8
-> >>>>>> -#define HASHTAB_MAP_LOCK_MASK (HASHTAB_MAP_LOCK_COUNT - 1)
-> >>>>>> -
-> >>>>>>  struct bpf_htab {
-> >>>>>>       struct bpf_map map;
-> >>>>>>       struct bpf_mem_alloc ma;
-> >>>>>> @@ -104,7 +101,6 @@ struct bpf_htab {
-> >>>>>>       u32 elem_size;  /* size of each element in bytes */
-> >>>>>>       u32 hashrnd;
-> >>>>>>       struct lock_class_key lockdep_key;
-> >>>>>> -     int __percpu *map_locked[HASHTAB_MAP_LOCK_COUNT];
-> >>>>>>  };
-> >>>>>>
-> >>>>>>  /* each htab element is struct htab_elem + key + value */
-> >>>>>> @@ -146,35 +142,26 @@ static void htab_init_buckets(struct bpf_htab *htab)
-> >>>>>>       }
-> >>>>>>  }
-> >>>>>>
-> >>>>>> -static inline int htab_lock_bucket(const struct bpf_htab *htab,
-> >>>>>> -                                struct bucket *b, u32 hash,
-> >>>>>> +static inline int htab_lock_bucket(struct bucket *b,
-> >>>>>>                                  unsigned long *pflags)
-> >>>>>>  {
-> >>>>>>       unsigned long flags;
-> >>>>>>
-> >>>>>> -     hash = hash & HASHTAB_MAP_LOCK_MASK;
-> >>>>>> -
-> >>>>>> -     preempt_disable();
-> >>>>>> -     if (unlikely(__this_cpu_inc_return(*(htab->map_locked[hash])) != 1)) {
-> >>>>>> -             __this_cpu_dec(*(htab->map_locked[hash]));
-> >>>>>> -             preempt_enable();
-> >>>>>> -             return -EBUSY;
-> >>>>>> +     if (in_nmi()) {
-> >>>>>> +             if (!raw_spin_trylock_irqsave(&b->raw_lock, flags))
-> >>>>>> +                     return -EBUSY;
-> >>>>>> +     } else {
-> >>>>>> +             raw_spin_lock_irqsave(&b->raw_lock, flags);
-> >>>>>>       }
-> >>>>>>
-> >>>>>> -     raw_spin_lock_irqsave(&b->raw_lock, flags);
-> >>>>>>       *pflags = flags;
-> >>>>>> -
-> >>>>>>       return 0;
-> >>>>>>  }
-> >>>>> map_locked is also used to prevent the re-entrance of htab_lock_bucket() on the
-> >>>>> same CPU, so only check in_nmi() is not enough.
-> >>>> NMI, IRQ, and preempt may interrupt the task context.
-> >>>> In htab_lock_bucket, raw_spin_lock_irqsave disable the preempt and
-> >>>> irq. so only NMI may interrupt the codes, right ?
-> >>> The re-entrance here means the nesting of bpf programs as show below:
-> >>>
-> >>> bpf_prog A
-> >>> update map X
-> >>>     htab_lock_bucket
-> >>>         raw_spin_lock_irqsave()
-> >>>     lookup_elem_raw()
-> >>>         // bpf prog B is attached on lookup_elem_raw()
-> > I am confused, bpf_prog A disables preempt and irq with
-> > raw_spin_lock_irqsave. Why bpf prog B run here?
-> Because program B (e.g., fentry program) has been attached on lookup_elem_raw(),
-> calling lookup_elem_raw() will call the fentry program first. I had written a
-> test case for the similar scenario in bpf selftests. The path of the test case
-> is tools/testing/selftests/bpf/prog_tests/htab_update.c, you can use ./test_prog
-> -t htab_update/reenter_update to run the test case.
-> >>>         bpf prog B
-> >>>             update map X again and update the element
-> >>>                 htab_lock_bucket()
-> >>>                     // dead-lock
-> >>>                     raw_spinlock_irqsave()
-> >>> .
-> >>>
-> >>>>>> -static inline void htab_unlock_bucket(const struct bpf_htab *htab,
-> >>>>>> -                                   struct bucket *b, u32 hash,
-> >>>>>> +static inline void htab_unlock_bucket(struct bucket *b,
-> >>>>>>                                     unsigned long flags)
-> >>>>>>  {
-> >>>>>> -     hash = hash & HASHTAB_MAP_LOCK_MASK;
-> >>>>>>       raw_spin_unlock_irqrestore(&b->raw_lock, flags);
-> >>>>>> -     __this_cpu_dec(*(htab->map_locked[hash]));
-> >>>>>> -     preempt_enable();
-> >>>>>>  }
-> >>>>>>
-> >>>>>>  static bool htab_lru_map_delete_node(void *arg, struct bpf_lru_node *node);
-> >>>>>> @@ -467,7 +454,7 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
-> >>>>>>       bool percpu_lru = (attr->map_flags & BPF_F_NO_COMMON_LRU);
-> >>>>>>       bool prealloc = !(attr->map_flags & BPF_F_NO_PREALLOC);
-> >>>>>>       struct bpf_htab *htab;
-> >>>>>> -     int err, i;
-> >>>>>> +     int err;
-> >>>>>>
-> >>>>>>       htab = bpf_map_area_alloc(sizeof(*htab), NUMA_NO_NODE);
-> >>>>>>       if (!htab)
-> >>>>>> @@ -513,15 +500,6 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
-> >>>>>>       if (!htab->buckets)
-> >>>>>>               goto free_htab;
-> >>>>>>
-> >>>>>> -     for (i = 0; i < HASHTAB_MAP_LOCK_COUNT; i++) {
-> >>>>>> -             htab->map_locked[i] = bpf_map_alloc_percpu(&htab->map,
-> >>>>>> -                                                        sizeof(int),
-> >>>>>> -                                                        sizeof(int),
-> >>>>>> -                                                        GFP_USER);
-> >>>>>> -             if (!htab->map_locked[i])
-> >>>>>> -                     goto free_map_locked;
-> >>>>>> -     }
-> >>>>>> -
-> >>>>>>       if (htab->map.map_flags & BPF_F_ZERO_SEED)
-> >>>>>>               htab->hashrnd = 0;
-> >>>>>>       else
-> >>>>>> @@ -549,13 +527,13 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
-> >>>>>>       if (htab->use_percpu_counter) {
-> >>>>>>               err = percpu_counter_init(&htab->pcount, 0, GFP_KERNEL);
-> >>>>>>               if (err)
-> >>>>>> -                     goto free_map_locked;
-> >>>>>> +                     goto free_buckets;
-> >>>>>>       }
-> >>>>>>
-> >>>>>>       if (prealloc) {
-> >>>>>>               err = prealloc_init(htab);
-> >>>>>>               if (err)
-> >>>>>> -                     goto free_map_locked;
-> >>>>>> +                     goto free_buckets;
-> >>>>>>
-> >>>>>>               if (!percpu && !lru) {
-> >>>>>>                       /* lru itself can remove the least used element, so
-> >>>>>> @@ -568,12 +546,12 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
-> >>>>>>       } else {
-> >>>>>>               err = bpf_mem_alloc_init(&htab->ma, htab->elem_size, false);
-> >>>>>>               if (err)
-> >>>>>> -                     goto free_map_locked;
-> >>>>>> +                     goto free_buckets;
-> >>>>>>               if (percpu) {
-> >>>>>>                       err = bpf_mem_alloc_init(&htab->pcpu_ma,
-> >>>>>>                                                round_up(htab->map.value_size, 8), true);
-> >>>>>>                       if (err)
-> >>>>>> -                             goto free_map_locked;
-> >>>>>> +                             goto free_buckets;
-> >>>>>>               }
-> >>>>>>       }
-> >>>>>>
-> >>>>>> @@ -581,11 +559,10 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
-> >>>>>>
-> >>>>>>  free_prealloc:
-> >>>>>>       prealloc_destroy(htab);
-> >>>>>> -free_map_locked:
-> >>>>>> +free_buckets:
-> >>>>>>       if (htab->use_percpu_counter)
-> >>>>>>               percpu_counter_destroy(&htab->pcount);
-> >>>>>> -     for (i = 0; i < HASHTAB_MAP_LOCK_COUNT; i++)
-> >>>>>> -             free_percpu(htab->map_locked[i]);
-> >>>>>> +
-> >>>>>>       bpf_map_area_free(htab->buckets);
-> >>>>>>       bpf_mem_alloc_destroy(&htab->pcpu_ma);
-> >>>>>>       bpf_mem_alloc_destroy(&htab->ma);
-> >>>>>> @@ -782,7 +759,7 @@ static bool htab_lru_map_delete_node(void *arg, struct bpf_lru_node *node)
-> >>>>>>       b = __select_bucket(htab, tgt_l->hash);
-> >>>>>>       head = &b->head;
-> >>>>>>
-> >>>>>> -     ret = htab_lock_bucket(htab, b, tgt_l->hash, &flags);
-> >>>>>> +     ret = htab_lock_bucket(b, &flags);
-> >>>>>>       if (ret)
-> >>>>>>               return false;
-> >>>>>>
-> >>>>>> @@ -793,7 +770,7 @@ static bool htab_lru_map_delete_node(void *arg, struct bpf_lru_node *node)
-> >>>>>>                       break;
-> >>>>>>               }
-> >>>>>>
-> >>>>>> -     htab_unlock_bucket(htab, b, tgt_l->hash, flags);
-> >>>>>> +     htab_unlock_bucket(b, flags);
-> >>>>>>
-> >>>>>>       return l == tgt_l;
-> >>>>>>  }
-> >>>>>> @@ -1107,7 +1084,7 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
-> >>>>>>                */
-> >>>>>>       }
-> >>>>>>
-> >>>>>> -     ret = htab_lock_bucket(htab, b, hash, &flags);
-> >>>>>> +     ret = htab_lock_bucket(b, &flags);
-> >>>>>>       if (ret)
-> >>>>>>               return ret;
-> >>>>>>
-> >>>>>> @@ -1152,7 +1129,7 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
-> >>>>>>       }
-> >>>>>>       ret = 0;
-> >>>>>>  err:
-> >>>>>> -     htab_unlock_bucket(htab, b, hash, flags);
-> >>>>>> +     htab_unlock_bucket(b, flags);
-> >>>>>>       return ret;
-> >>>>>>  }
-> >>>>>>
-> >>>>>> @@ -1198,7 +1175,7 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
-> >>>>>>       copy_map_value(&htab->map,
-> >>>>>>                      l_new->key + round_up(map->key_size, 8), value);
-> >>>>>>
-> >>>>>> -     ret = htab_lock_bucket(htab, b, hash, &flags);
-> >>>>>> +     ret = htab_lock_bucket(b, &flags);
-> >>>>>>       if (ret)
-> >>>>>>               return ret;
-> >>>>>>
-> >>>>>> @@ -1219,7 +1196,7 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
-> >>>>>>       ret = 0;
-> >>>>>>
-> >>>>>>  err:
-> >>>>>> -     htab_unlock_bucket(htab, b, hash, flags);
-> >>>>>> +     htab_unlock_bucket(b, flags);
-> >>>>>>
-> >>>>>>       if (ret)
-> >>>>>>               htab_lru_push_free(htab, l_new);
-> >>>>>> @@ -1255,7 +1232,7 @@ static int __htab_percpu_map_update_elem(struct bpf_map *map, void *key,
-> >>>>>>       b = __select_bucket(htab, hash);
-> >>>>>>       head = &b->head;
-> >>>>>>
-> >>>>>> -     ret = htab_lock_bucket(htab, b, hash, &flags);
-> >>>>>> +     ret = htab_lock_bucket(b, &flags);
-> >>>>>>       if (ret)
-> >>>>>>               return ret;
-> >>>>>>
-> >>>>>> @@ -1280,7 +1257,7 @@ static int __htab_percpu_map_update_elem(struct bpf_map *map, void *key,
-> >>>>>>       }
-> >>>>>>       ret = 0;
-> >>>>>>  err:
-> >>>>>> -     htab_unlock_bucket(htab, b, hash, flags);
-> >>>>>> +     htab_unlock_bucket(b, flags);
-> >>>>>>       return ret;
-> >>>>>>  }
-> >>>>>>
-> >>>>>> @@ -1321,7 +1298,7 @@ static int __htab_lru_percpu_map_update_elem(struct bpf_map *map, void *key,
-> >>>>>>                       return -ENOMEM;
-> >>>>>>       }
-> >>>>>>
-> >>>>>> -     ret = htab_lock_bucket(htab, b, hash, &flags);
-> >>>>>> +     ret = htab_lock_bucket(b, &flags);
-> >>>>>>       if (ret)
-> >>>>>>               return ret;
-> >>>>>>
-> >>>>>> @@ -1345,7 +1322,7 @@ static int __htab_lru_percpu_map_update_elem(struct bpf_map *map, void *key,
-> >>>>>>       }
-> >>>>>>       ret = 0;
-> >>>>>>  err:
-> >>>>>> -     htab_unlock_bucket(htab, b, hash, flags);
-> >>>>>> +     htab_unlock_bucket(b, flags);
-> >>>>>>       if (l_new)
-> >>>>>>               bpf_lru_push_free(&htab->lru, &l_new->lru_node);
-> >>>>>>       return ret;
-> >>>>>> @@ -1384,7 +1361,7 @@ static int htab_map_delete_elem(struct bpf_map *map, void *key)
-> >>>>>>       b = __select_bucket(htab, hash);
-> >>>>>>       head = &b->head;
-> >>>>>>
-> >>>>>> -     ret = htab_lock_bucket(htab, b, hash, &flags);
-> >>>>>> +     ret = htab_lock_bucket(b, &flags);
-> >>>>>>       if (ret)
-> >>>>>>               return ret;
-> >>>>>>
-> >>>>>> @@ -1397,7 +1374,7 @@ static int htab_map_delete_elem(struct bpf_map *map, void *key)
-> >>>>>>               ret = -ENOENT;
-> >>>>>>       }
-> >>>>>>
-> >>>>>> -     htab_unlock_bucket(htab, b, hash, flags);
-> >>>>>> +     htab_unlock_bucket(b, flags);
-> >>>>>>       return ret;
-> >>>>>>  }
-> >>>>>>
-> >>>>>> @@ -1420,7 +1397,7 @@ static int htab_lru_map_delete_elem(struct bpf_map *map, void *key)
-> >>>>>>       b = __select_bucket(htab, hash);
-> >>>>>>       head = &b->head;
-> >>>>>>
-> >>>>>> -     ret = htab_lock_bucket(htab, b, hash, &flags);
-> >>>>>> +     ret = htab_lock_bucket(b, &flags);
-> >>>>>>       if (ret)
-> >>>>>>               return ret;
-> >>>>>>
-> >>>>>> @@ -1431,7 +1408,7 @@ static int htab_lru_map_delete_elem(struct bpf_map *map, void *key)
-> >>>>>>       else
-> >>>>>>               ret = -ENOENT;
-> >>>>>>
-> >>>>>> -     htab_unlock_bucket(htab, b, hash, flags);
-> >>>>>> +     htab_unlock_bucket(b, flags);
-> >>>>>>       if (l)
-> >>>>>>               htab_lru_push_free(htab, l);
-> >>>>>>       return ret;
-> >>>>>> @@ -1494,7 +1471,6 @@ static void htab_map_free_timers(struct bpf_map *map)
-> >>>>>>  static void htab_map_free(struct bpf_map *map)
-> >>>>>>  {
-> >>>>>>       struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
-> >>>>>> -     int i;
-> >>>>>>
-> >>>>>>       /* bpf_free_used_maps() or close(map_fd) will trigger this map_free callback.
-> >>>>>>        * bpf_free_used_maps() is called after bpf prog is no longer executing.
-> >>>>>> @@ -1517,10 +1493,10 @@ static void htab_map_free(struct bpf_map *map)
-> >>>>>>       bpf_map_area_free(htab->buckets);
-> >>>>>>       bpf_mem_alloc_destroy(&htab->pcpu_ma);
-> >>>>>>       bpf_mem_alloc_destroy(&htab->ma);
-> >>>>>> +
-> >>>>>>       if (htab->use_percpu_counter)
-> >>>>>>               percpu_counter_destroy(&htab->pcount);
-> >>>>>> -     for (i = 0; i < HASHTAB_MAP_LOCK_COUNT; i++)
-> >>>>>> -             free_percpu(htab->map_locked[i]);
-> >>>>>> +
-> >>>>>>       lockdep_unregister_key(&htab->lockdep_key);
-> >>>>>>       bpf_map_area_free(htab);
-> >>>>>>  }
-> >>>>>> @@ -1564,7 +1540,7 @@ static int __htab_map_lookup_and_delete_elem(struct bpf_map *map, void *key,
-> >>>>>>       b = __select_bucket(htab, hash);
-> >>>>>>       head = &b->head;
-> >>>>>>
-> >>>>>> -     ret = htab_lock_bucket(htab, b, hash, &bflags);
-> >>>>>> +     ret = htab_lock_bucket(b, &bflags);
-> >>>>>>       if (ret)
-> >>>>>>               return ret;
-> >>>>>>
-> >>>>>> @@ -1602,7 +1578,7 @@ static int __htab_map_lookup_and_delete_elem(struct bpf_map *map, void *key,
-> >>>>>>                       free_htab_elem(htab, l);
-> >>>>>>       }
-> >>>>>>
-> >>>>>> -     htab_unlock_bucket(htab, b, hash, bflags);
-> >>>>>> +     htab_unlock_bucket(b, bflags);
-> >>>>>>
-> >>>>>>       if (is_lru_map && l)
-> >>>>>>               htab_lru_push_free(htab, l);
-> >>>>>> @@ -1720,7 +1696,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
-> >>>>>>       head = &b->head;
-> >>>>>>       /* do not grab the lock unless need it (bucket_cnt > 0). */
-> >>>>>>       if (locked) {
-> >>>>>> -             ret = htab_lock_bucket(htab, b, batch, &flags);
-> >>>>>> +             ret = htab_lock_bucket(b, &flags);
-> >>>>>>               if (ret) {
-> >>>>>>                       rcu_read_unlock();
-> >>>>>>                       bpf_enable_instrumentation();
-> >>>>>> @@ -1743,7 +1719,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
-> >>>>>>               /* Note that since bucket_cnt > 0 here, it is implicit
-> >>>>>>                * that the locked was grabbed, so release it.
-> >>>>>>                */
-> >>>>>> -             htab_unlock_bucket(htab, b, batch, flags);
-> >>>>>> +             htab_unlock_bucket(b, flags);
-> >>>>>>               rcu_read_unlock();
-> >>>>>>               bpf_enable_instrumentation();
-> >>>>>>               goto after_loop;
-> >>>>>> @@ -1754,7 +1730,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
-> >>>>>>               /* Note that since bucket_cnt > 0 here, it is implicit
-> >>>>>>                * that the locked was grabbed, so release it.
-> >>>>>>                */
-> >>>>>> -             htab_unlock_bucket(htab, b, batch, flags);
-> >>>>>> +             htab_unlock_bucket(b, flags);
-> >>>>>>               rcu_read_unlock();
-> >>>>>>               bpf_enable_instrumentation();
-> >>>>>>               kvfree(keys);
-> >>>>>> @@ -1815,7 +1791,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
-> >>>>>>               dst_val += value_size;
-> >>>>>>       }
-> >>>>>>
-> >>>>>> -     htab_unlock_bucket(htab, b, batch, flags);
-> >>>>>> +     htab_unlock_bucket(b, flags);
-> >>>>>>       locked = false;
-> >>>>>>
-> >>>>>>       while (node_to_free) {
-> >>> .
-> >
->
+xiaolei
 
 
--- 
-Best regards, Tonghao
+> -- 
+> Florian
