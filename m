@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBBD363B363
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 21:37:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EC2763B364
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 21:37:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234198AbiK1UhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 15:37:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46234 "EHLO
+        id S234203AbiK1UhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 15:37:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiK1UhE (ORCPT
+        with ESMTP id S234198AbiK1UhE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 15:37:04 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4012E9D4
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ACFC2E9C3
         for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 12:37:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1669667823; x=1701203823;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ihbR/Rqrw0+FFdAwRfX3T9m6bb7Ui3ibEQ0AOHTCMNo=;
-  b=KV3Rh3oYdLCNXX+PfNXH21gPc6+VgVYD5Irk9Gt8mKkWKFVgeb+gJTQF
-   LCguo4rkqjKdvuHhu/KI+17HcUeik6cfzrHLB59+gg1i0euW5t2pTZ1jq
-   EJmuQisCjtkRYoB2FbpaV+VnLxfFYnFF5aqiBoTWmV8tPieRo4UQuQvje
-   6Q1C5baTpQCpFitntxEmShR8ncQI9gtPzumhHx8DyOihehCfrUUZE1grD
-   Rwie9BbeX5kNmuSUVU8LfRTttuB52Uou2nI+LLqvfVnLM11in0VliQzmi
-   KZsUrA/EdovSqQHnkVieAbU2YgdS+JY4U7EiTtK4yz+hW77AYJ3bi/Uv0
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="379205399"
+  bh=qvGEbQNEVi2QQZXMSo/YiGLVOkVye7E+5saqT1o9g2w=;
+  b=iSn+JbgjafV9t9QSmT5aSIl3a1JTyNPN046izT80HkWMZaUJauUzOApC
+   LomVGe1tZFRDJDY6g/QBGM3JcDH03xy/cR1vmQvvoYB74NnnqIjbt6ORz
+   fBt2MW34rcWrO4oa+7TZMmWwae9qTJEAxcNm2G1vx2CNk7Fre4TxPNYse
+   eBieREMswjQi4iDECW02VjX4b5FQ2QjMxsDXG3vc1OyvjdewnavM1F7ej
+   rsc4eLUWWNe555g1A4i8KnYUKUlyT0GI5M3OJaLEhMhJUZpXVW9gEWYTo
+   WO293vONJTui2hjhzJumIJ1R708xpP48fOyFM40vdEvqomPJajgs/FV1I
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="379205400"
 X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
-   d="scan'208";a="379205399"
+   d="scan'208";a="379205400"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 12:36:59 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="732286360"
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="732286363"
 X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
-   d="scan'208";a="732286360"
+   d="scan'208";a="732286363"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
   by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 12:36:59 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3 7/9] ice: use same function to snapshot both NVM and Shadow RAM
-Date:   Mon, 28 Nov 2022 12:36:45 -0800
-Message-Id: <20221128203647.1198669-8-jacob.e.keller@intel.com>
+Subject: [PATCH net-next v3 8/9] ice: document 'shadow-ram' devlink region
+Date:   Mon, 28 Nov 2022 12:36:46 -0800
+Message-Id: <20221128203647.1198669-9-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.38.1.420.g319605f8f00e
 In-Reply-To: <20221128203647.1198669-1-jacob.e.keller@intel.com>
 References: <20221128203647.1198669-1-jacob.e.keller@intel.com>
@@ -58,183 +58,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ice driver supports a region for both the flat NVM contents as well as
-the Shadow RAM which is a layer built on top of the flash during device
-initialization.
-
-These regions use an almost identical read function, except that the NVM
-needs to set the direct flag when reading, while Shadow RAM needs to read
-without the direct flag set. They each call ice_read_flat_nvm with the only
-difference being whether to set the direct flash flag.
-
-The NVM region read function also was fixed to read the NVM in blocks to
-avoid a situation where the firmware reclaims the lock due to taking too
-long.
-
-Note that the region snapshot function takes the ops pointer so the
-function can easily determine which region to read. Make use of this and
-re-use the NVM snapshot function for both the NVM and Shadow RAM regions.
-This makes Shadow RAM benefit from the same block approach as the NVM
-region. It also reduces code in the ice driver.
+78ad87da9978 ("ice: devlink: add shadow-ram region to snapshot Shadow RAM")
+added support for the 'shadow-ram' devlink region, but did not document it
+in the ice devlink documentation. Fix this.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Acked-by: Jakub Kicinski <kuba@kernel.org>
 ---
 No changes since v2.
 
- drivers/net/ethernet/intel/ice/ice_devlink.c | 95 +++++---------------
- 1 file changed, 23 insertions(+), 72 deletions(-)
+ Documentation/networking/devlink/ice.rst | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index 1d638216484d..9d3500291d2e 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -1596,21 +1596,22 @@ void ice_devlink_destroy_vf_port(struct ice_vf *vf)
- 
- #define ICE_DEVLINK_READ_BLK_SIZE (1024 * 1024)
- 
-+static const struct devlink_region_ops ice_nvm_region_ops;
-+static const struct devlink_region_ops ice_sram_region_ops;
-+
- /**
-  * ice_devlink_nvm_snapshot - Capture a snapshot of the NVM flash contents
-  * @devlink: the devlink instance
-- * @ops: the devlink region being snapshotted
-+ * @ops: the devlink region to snapshot
-  * @extack: extended ACK response structure
-  * @data: on exit points to snapshot data buffer
-  *
-- * This function is called in response to the DEVLINK_CMD_REGION_TRIGGER for
-- * the nvm-flash devlink region. It captures a snapshot of the full NVM flash
-- * contents, including both banks of flash. This snapshot can later be viewed
-- * via the devlink-region interface.
-+ * This function is called in response to a DEVLINK_CMD_REGION_NEW for either
-+ * the nvm-flash or shadow-ram region.
-  *
-- * It captures the flash using the FLASH_ONLY bit set when reading via
-- * firmware, so it does not read the current Shadow RAM contents. For that,
-- * use the shadow-ram region.
-+ * It captures a snapshot of the NVM or Shadow RAM flash contents. This
-+ * snapshot can then later be viewed via the DEVLINK_CMD_REGION_READ netlink
-+ * interface.
-  *
-  * @returns zero on success, and updates the data pointer. Returns a non-zero
-  * error code on failure.
-@@ -1622,17 +1623,27 @@ static int ice_devlink_nvm_snapshot(struct devlink *devlink,
- 	struct ice_pf *pf = devlink_priv(devlink);
- 	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_hw *hw = &pf->hw;
-+	bool read_shadow_ram;
- 	u8 *nvm_data, *tmp, i;
- 	u32 nvm_size, left;
- 	s8 num_blks;
- 	int status;
- 
--	nvm_size = hw->flash.flash_size;
-+	if (ops == &ice_nvm_region_ops) {
-+		read_shadow_ram = false;
-+		nvm_size = hw->flash.flash_size;
-+	} else if (ops == &ice_sram_region_ops) {
-+		read_shadow_ram = true;
-+		nvm_size = hw->flash.sr_words * 2u;
-+	} else {
-+		NL_SET_ERR_MSG_MOD(extack, "Unexpected region in snapshot function");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	nvm_data = vzalloc(nvm_size);
- 	if (!nvm_data)
- 		return -ENOMEM;
- 
--
- 	num_blks = DIV_ROUND_UP(nvm_size, ICE_DEVLINK_READ_BLK_SIZE);
- 	tmp = nvm_data;
- 	left = nvm_size;
-@@ -1656,7 +1667,7 @@ static int ice_devlink_nvm_snapshot(struct devlink *devlink,
- 		}
- 
- 		status = ice_read_flat_nvm(hw, i * ICE_DEVLINK_READ_BLK_SIZE,
--					   &read_sz, tmp, false);
-+					   &read_sz, tmp, read_shadow_ram);
- 		if (status) {
- 			dev_dbg(dev, "ice_read_flat_nvm failed after reading %u bytes, err %d aq_err %d\n",
- 				read_sz, status, hw->adminq.sq_last_status);
-@@ -1676,66 +1687,6 @@ static int ice_devlink_nvm_snapshot(struct devlink *devlink,
- 	return 0;
- }
- 
--/**
-- * ice_devlink_sram_snapshot - Capture a snapshot of the Shadow RAM contents
-- * @devlink: the devlink instance
-- * @ops: the devlink region being snapshotted
-- * @extack: extended ACK response structure
-- * @data: on exit points to snapshot data buffer
-- *
-- * This function is called in response to the DEVLINK_CMD_REGION_TRIGGER for
-- * the shadow-ram devlink region. It captures a snapshot of the shadow ram
-- * contents. This snapshot can later be viewed via the devlink-region
-- * interface.
-- *
-- * @returns zero on success, and updates the data pointer. Returns a non-zero
-- * error code on failure.
-- */
--static int
--ice_devlink_sram_snapshot(struct devlink *devlink,
--			  const struct devlink_region_ops __always_unused *ops,
--			  struct netlink_ext_ack *extack, u8 **data)
--{
--	struct ice_pf *pf = devlink_priv(devlink);
--	struct device *dev = ice_pf_to_dev(pf);
--	struct ice_hw *hw = &pf->hw;
--	u8 *sram_data;
--	u32 sram_size;
--	int err;
--
--	sram_size = hw->flash.sr_words * 2u;
--	sram_data = vzalloc(sram_size);
--	if (!sram_data)
--		return -ENOMEM;
--
--	err = ice_acquire_nvm(hw, ICE_RES_READ);
--	if (err) {
--		dev_dbg(dev, "ice_acquire_nvm failed, err %d aq_err %d\n",
--			err, hw->adminq.sq_last_status);
--		NL_SET_ERR_MSG_MOD(extack, "Failed to acquire NVM semaphore");
--		vfree(sram_data);
--		return err;
--	}
--
--	/* Read from the Shadow RAM, rather than directly from NVM */
--	err = ice_read_flat_nvm(hw, 0, &sram_size, sram_data, true);
--	if (err) {
--		dev_dbg(dev, "ice_read_flat_nvm failed after reading %u bytes, err %d aq_err %d\n",
--			sram_size, err, hw->adminq.sq_last_status);
--		NL_SET_ERR_MSG_MOD(extack,
--				   "Failed to read Shadow RAM contents");
--		ice_release_nvm(hw);
--		vfree(sram_data);
--		return err;
--	}
--
--	ice_release_nvm(hw);
--
--	*data = sram_data;
--
--	return 0;
--}
--
- /**
-  * ice_devlink_devcaps_snapshot - Capture snapshot of device capabilities
-  * @devlink: the devlink instance
-@@ -1789,7 +1740,7 @@ static const struct devlink_region_ops ice_nvm_region_ops = {
- static const struct devlink_region_ops ice_sram_region_ops = {
- 	.name = "shadow-ram",
- 	.destructor = vfree,
--	.snapshot = ice_devlink_sram_snapshot,
-+	.snapshot = ice_devlink_nvm_snapshot,
- };
- 
- static const struct devlink_region_ops ice_devcaps_region_ops = {
+diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
+index 890062da7820..bcd4839fbf79 100644
+--- a/Documentation/networking/devlink/ice.rst
++++ b/Documentation/networking/devlink/ice.rst
+@@ -189,6 +189,11 @@ device data.
+     * - ``nvm-flash``
+       - The contents of the entire flash chip, sometimes referred to as
+         the device's Non Volatile Memory.
++    * - ``shadow-ram``
++      - The contents of the Shadow RAM, which is loaded from the beginning
++        of the flash. Although the contents are primarily from the flash,
++        this area also contains data generated during device boot which is
++        not stored in flash.
+     * - ``device-caps``
+       - The contents of the device firmware's capabilities buffer. Useful to
+         determine the current state and configuration of the device.
 -- 
 2.38.1.420.g319605f8f00e
 
