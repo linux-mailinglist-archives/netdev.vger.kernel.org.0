@@ -2,217 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFDC663B2EA
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 21:22:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 093F863B2EF
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 21:23:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233421AbiK1UW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 15:22:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
+        id S233506AbiK1UXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 15:23:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233055AbiK1UWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 15:22:55 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80721181F
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 12:22:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669666974; x=1701202974;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=dlxTfx3MDuVNYsZHGv42AlenF78/lErzm0wqoM9rw/M=;
-  b=El9UVYBAFsco9J/cVDmgTzr5eJJKY9z5qGcYZmhTT1jJR2dKuodY/FY/
-   pVegY4dKp+Jyi4iEjQx00DQxHwpPU+Mj1GQZ6ZR37x1Bp6DGVCLK61dns
-   BM3x6i1syiRw+o4dxtbya0Ulhgo8Xp+vQfREgoFJ+/kMB+ZBSW/sg1LHU
-   5jeEp2r2XC+rjdEJcDUd5z/JhiNZ8ZNi3pmqYo1modroC5FXFkBCnVXE8
-   xpUwzvDJUXPOUzRsmFK+ERFQeIXDP7VqPWjc0rusFHDUKqG5bxs8y6rfI
-   J0R8c9R5lEGUxuGpaaMaVEenZtLYpkXI28cM0epOa2wp4l2Jax3HWTf1X
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="377087778"
-X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
-   d="scan'208";a="377087778"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 12:22:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="594003035"
-X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
-   d="scan'208";a="594003035"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga003.jf.intel.com with ESMTP; 28 Nov 2022 12:22:45 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 28 Nov 2022 12:22:45 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 28 Nov 2022 12:22:45 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Mon, 28 Nov 2022 12:22:45 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Mon, 28 Nov 2022 12:22:44 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q3t1hf0Evp/+7RmMltcYrRWpuRjwq1Ud6YKL78tTfjb/IXamIDM0BaOWJXEe34A59PKSF7VRu62B8iI/RrGiPqLKpmQzlegKR1RnsLipvB2b/Z+y0+uw+vjP4kE2Om2fOEr4tgdw4QpUQv5mGenLf56Uer0WPSDDqyzBX9HjmgfGXf0sHpHoKs4DMBs8jBLa6IbcKMPYn3UFzLGcpU2cBSn39DR46EUebFzDfig2ozEN5pCeA6Bnaw1CkIsi+uigWtLCUp2PzH6QCXdi4sh9D41n7VjRuVFT1ZpzTozl6ZWljxR+8QVUXydUZLIzRvD+JPf5DjEoWKpu0ZoUoISWaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zSsZhZROS/k3etjwMWa1ybZ/CTKWTrCz2fomJI9EHeY=;
- b=LkP7g8kyhOtK5N99RUMbV310pvm7LBEiUrLPLrLWqTBrKmbeo9BullB7ouC4cuNu7daOGT1OANm8JvPxt2umysC89VGQ9aIvbHapfwD2o6rWPiQewRfG20Xo6oFAFtyKcCC8G0kRvQXxX1SrpEXeRpNZ0UawAK02ee6wdP1JyeZtPHJQTlv9DZ9x1ms7wu2Ie4CMWp4x0AIn1J5eusvGZCd4qXZswr83O0sdAPBL2YqpOPSQVaHJIsrS/gW0sNc+AJShqNyqORhC+nRF2G9DtvoqOuYPgAUD4rpVjZPP7YHPfPf2wavgQu6zZsiG8VJez9uMrjDFHDAgVzoY/7rQ5g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com (2603:10b6:303:5a::16)
- by IA1PR11MB6123.namprd11.prod.outlook.com (2603:10b6:208:3ed::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
- 2022 20:22:43 +0000
-Received: from MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::d585:716:9c72:fbab]) by MW3PR11MB4764.namprd11.prod.outlook.com
- ([fe80::d585:716:9c72:fbab%6]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
- 20:22:43 +0000
-Message-ID: <3d1d16b8-72c8-ef49-fc58-52bcae2ad42e@intel.com>
-Date:   Mon, 28 Nov 2022 12:22:40 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v2 net-next 1/6] ch_ktls: Use memcpy_from_page() instead
- of k[un]map_atomic()
-Content-Language: en-US
-To:     Ayush Sawal <ayush.sawal@chelsio.com>, <netdev@vger.kernel.org>
-CC:     Ira Weiny <ira.weiny@intel.com>,
-        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>
-References: <20221123205219.31748-1-anirudh.venkataramanan@intel.com>
- <20221123205219.31748-2-anirudh.venkataramanan@intel.com>
- <84b22219-20e1-4b18-cbab-0b77b47f9051@chelsio.com>
-From:   Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-In-Reply-To: <84b22219-20e1-4b18-cbab-0b77b47f9051@chelsio.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BY3PR05CA0028.namprd05.prod.outlook.com
- (2603:10b6:a03:254::33) To MW3PR11MB4764.namprd11.prod.outlook.com
- (2603:10b6:303:5a::16)
+        with ESMTP id S233485AbiK1UXB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 15:23:01 -0500
+Received: from smtp-8fac.mail.infomaniak.ch (smtp-8fac.mail.infomaniak.ch [IPv6:2001:1600:4:17::8fac])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93AB17889
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 12:22:59 -0800 (PST)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NLcNH3mYZzMq31x;
+        Mon, 28 Nov 2022 21:22:55 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4NLcNG5nn5zMpr8S;
+        Mon, 28 Nov 2022 21:22:54 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1669666975;
+        bh=ycBcDca4fx/vos/2FxtUX6s4HweUMUxNNjrwbPanxmw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=uAk08fYF5VW7jGRTdMF6Q78dOs/SzBLpUfxUE0+SU/KEt6I8OzgA79dcufGOU9SDh
+         efZYPp9Xkei0VzjNKGnpmOQRaLgdQJPqXYR2C3g+j0ut0Y2UTGyHFVLQU169LggIBu
+         pQvgTjp8Ny95WvDQWgRO9Q468CXUxN3fd8pY5LF4=
+Message-ID: <700956d7-9831-da1d-c397-d1fb45aaf5d7@digikod.net>
+Date:   Mon, 28 Nov 2022 21:22:54 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW3PR11MB4764:EE_|IA1PR11MB6123:EE_
-X-MS-Office365-Filtering-Correlation-Id: a5cf6c27-f7f4-4f41-08b8-08dad17e4dd5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9uw9fFbh85TAK+3R9DowplOHMzy1UBd9A76rFBewlxRhvTQn0iMB79eKidn6gij8GBrMkTBaI84OPQHvVcKwMJ/PDPmSIWXqA6JhjVVwxhJ69JKS1+joI0hh3QwSvagcP6NybFD4iJG6Hvi77K9OvHExobBxWZd68NX9vHTN5eCbJSrjQffoHdlWAtEBNJWmpFF0yvagjWZLkhVEI5OWiUs0tofs/EqrDWPW8C0Fhhn3wauF8/unZZ1eYetm53Pt6qWz/iCAyYZ886Mfbj/aUsPwgnbjKKkD+ubxleG5Fe9HRU1fFxr5ek6o+4uEOdOxg44PqPh4jjDzCSkirWLARU0ZRkgCYLArgBue3g+Rjooxf7BF0UAb0OFAJtdGYs/e5MLrTsG4mZatseEWuHMgSSGa9n4Dxhz60eUKxVj2YUbkuVqbWHuWdGwa22yRFo9+tj7C0LNdAg6lLORGQmLi7B2a8bwPTE10tAEB3fDDFP2dykkeMblMaJgOsnOdZWrIoyZj4ceYLTUxHYcf4h5qLOdIIepVLYrEPB+6JYMVAh9Imy+2JwVmglhsffloU5AKGNYU+XX/53hwKICZobwyOYyXq88iuPAxTfZ62cqWllwwosgSs+hKnaPV4q9xci7sR+YXY4xbnOQlYE2Wy/uGT7QOvM3Tb5qT8U3NTtNysC4/4W0jBixLUXUy1Pux+nhCppsgOC3hklD8cQyJcDDet4I2K6Axa4Jr5cxvN7vTBQQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4764.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(376002)(346002)(39860400002)(366004)(136003)(451199015)(82960400001)(36756003)(86362001)(31696002)(316002)(54906003)(478600001)(6486002)(2906002)(44832011)(41300700001)(66556008)(66946007)(8676002)(66476007)(8936002)(5660300002)(4326008)(83380400001)(38100700002)(6512007)(6506007)(26005)(53546011)(186003)(2616005)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WTRNTDNaaUxERExhWDJOeW9SK0lIaTc3ekFSd2QyUlN6OWFyRlJzaSsxM05M?=
- =?utf-8?B?QkxCeHh5VTF6eDZDS0tNRldjck9qSnNHWlh3aURpdXFTc29XV1VFbzVabzNs?=
- =?utf-8?B?YldyOUNyOGhnQUkrV3E0d1pLSkM5REVEbklTTXlzajgxQVVWWlR0WFQ4TWI0?=
- =?utf-8?B?eE9CK3ZQVzcvWlBqdCtDRHYySUU0S3hsQnBsSUV5TmQzVUh1bDhJS0xSK2ZT?=
- =?utf-8?B?ZVU0OEp6VmpxZ3VwaWZvd0h3ckNNbUtwOHEvWk03NWZMSjBwS0Z3WVdYMEdV?=
- =?utf-8?B?YjMxTStFaE1zY1BFLzFWMVVvN1BBN3ZMQ2xpZjBDZXFsQUxlOERrd2xXN0ZO?=
- =?utf-8?B?cUNzOFZnN3pkZ0UyZU4xVXR0a0hnYmRjYWJDMXVsUmpMUEpLN0R0VVk5Y0gw?=
- =?utf-8?B?NG02RFVlck0zd3paWVdtNVUwdjBEK0VkN0d2ZzE0V296Mkh5RWs4aVAxbW5K?=
- =?utf-8?B?N25ocnlPN0gxRk55NFl6eVVDYVNZNXA2R29jOUxCV091alVtZzB3eFd5V3Jv?=
- =?utf-8?B?dzUyMmh2SVN3MWhFMDhqSHJ0ZHE4Q1Y5cHhKejg0MGJTcWx0Y0VQeHlUOHpt?=
- =?utf-8?B?V2lWZjZoMVpFQ3BBTnpoYUZnRTdyMU8rd1hnUGVkKzJuZkhTTkhTaTRwTjVv?=
- =?utf-8?B?bzdvT2dUTXd5WUtMbTdZRHlJUGhBd3pkYnBDNjdSTnZlOHhneEZqejhVRFlC?=
- =?utf-8?B?T20vNllRQWsydlVpQ250ZWJnZnRxRmpHazZoZjJFZGlnVTJISVQyWGxWeTVB?=
- =?utf-8?B?d0JTVFUwS3VMNjRCRXBRNTg4QzVjdzFnRVRXSWJqcW03MVdMNm00QndxbUZL?=
- =?utf-8?B?eHZNZFFQSUU2M2I1SXBZUi96bzYrLzNBMXZ0N2w5WDBoVkt1N216WkFCRmFN?=
- =?utf-8?B?WTZEN2I0Q0ZoRkxQVWxCajlnc0t3My9RMVlxeVVCSTRRSkkwUnJHS1RuQUtB?=
- =?utf-8?B?MitSc0xCdGUwQm90SWNhdHNYR0dkM0NpMXJaV0dnOERZa0NPN2FvOUFWemJJ?=
- =?utf-8?B?VHg4V0RYOVpLbGl2TGI4NHdjTjNaL01SUzJFdDFDQXVTNjB3eUM5a0xwUDNn?=
- =?utf-8?B?WjJXZ2JLemMvdlQ0cWVLTHlnVDFzWnljM2c5K0FNYWVYOVVzY3hqS1F5V1lD?=
- =?utf-8?B?YmkybWNwVVE2eXZEUk9KSks3UjZPUXErZkJ6UzdheEhZY3F3S2Q4SDlQbS8x?=
- =?utf-8?B?OWpxb0NHYW5RMGVEbkN6dXhva2xPTFVKUnpFTGRYdkRwVlBHOUVQdE5Tejlm?=
- =?utf-8?B?R3I3SWVndWxDV3h2S0hSM2dkL0pjOExNNEFDbkVpeVNwY0RIbXZxeTZSSnlN?=
- =?utf-8?B?QWplN2tuY3RHcVNvRGtpTmNBNnpQSThJcEtxMEU4VnJxdlFqZU45V0JKeGxB?=
- =?utf-8?B?UGVCb25yN3h0bCtlano4bjhwa21IZkYwTVQ3OHNKSC9CTVZZT08yaGNRcllH?=
- =?utf-8?B?S0lFU1RqbXR2NFNFdUkrc1dwSnhPemM5QVByUFRpVUhlcVdmU3g0Mzc4cy9s?=
- =?utf-8?B?TzYwWWgzbUtaRW1LbWxUMDZ5bS9DSHpUdGx2VmhzQnNkVCthTGhVTFVBYXBq?=
- =?utf-8?B?MHpIbWhQZWNLWVNQTXY1ZEs1VGVmcTlhdEJWKy8vUUJuTUF6b21pZlZ0R0Nm?=
- =?utf-8?B?T1VxNVp1QWVTNTNyTVhtOWxxVWs2cytSbk82NUFqODJ5Q1RaQUo5ZmhKVVlq?=
- =?utf-8?B?dHllVlIxUXJSTFdXczROd0tZOVN0WGx3V1UzNmJ1N0dLQ05RaHlGbEUyUUhG?=
- =?utf-8?B?bXllWDYzZFkzNE8rTS9MQU1YakJNeHNKdVlQTFJxVm4zYjlHTXdLM3paZUI4?=
- =?utf-8?B?MnM4ZkdGaUNhYzRWQk9HU1RnbmQ4Ny9HTXQwSmhuMmVhMWdVTWVLR2M3eFBj?=
- =?utf-8?B?Mm1hSjVoZURPQlZKT1JGMVFJcS9tMmVjWjRlRDJzWTVFek1vSjhkOUpRSmxM?=
- =?utf-8?B?N2NpeDVobHlJeko3bCtrd0w3Ym1RR2VQcHhJMXBPWlVUYVRGcjk0R3BzOExr?=
- =?utf-8?B?eHg3NEpoVXdNRXpkQVJNVjRRQnExbVZGT0NnVmRGOHdpSWx6UzAwSTczMlBa?=
- =?utf-8?B?Qm9DUzZZcFdTaEFCYXhpVncxUStVTUhIRUJaNCs4RytDNUt2MHM4c1lGUFJP?=
- =?utf-8?B?cUQrNHJhd2taM0ZtRkVmQXB0Y25Ed1JJd0J5WnhZSGFjVTc1cTNpQ1VWWFVT?=
- =?utf-8?Q?zhoPqS/FoB3jEc816Mfd32w=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5cf6c27-f7f4-4f41-08b8-08dad17e4dd5
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4764.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 20:22:42.9800
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7w+J4kwYI5wOzogTIuxtSTblcYClcLWIYJGZZdmWX6SC7P9AbkLOqVRoa3p01peAQ00lgkOLFPtZjJ080ZRP9h30xTkOgYlB/PNoPa/rmu8T1MUiOvTLpNOTMIJzmElp
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6123
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: 
+Subject: Re: [PATCH v8 01/12] landlock: Make ruleset's access masks more
+ generic
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, artem.kuzin@huawei.com
+References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
+ <20221021152644.155136-2-konstantin.meskhidze@huawei.com>
+ <94ed4212-c093-9c5c-089f-e9e4097e5bd6@digikod.net>
+ <3f9fc69d-1604-d879-d341-8a831beabeea@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <3f9fc69d-1604-d879-d341-8a831beabeea@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/24/2022 2:56 AM, Ayush Sawal wrote:
-> 
-> On 11/24/2022 2:22 AM, Anirudh Venkataramanan wrote:
->> kmap_atomic() is being deprecated in favor of kmap_local_page(). Replace
->> the map-memcpy-unmap usage pattern (done using k[un]map_atomic()) with
->> memcpy_from_page(), which internally uses kmap_local_page() and
->> kunmap_local(). This renders the variables 'data' and 'vaddr' 
->> unnecessary,
->> and so remove these too.
->>
->> Note that kmap_atomic() disables preemption and page-fault processing, 
->> but
->> kmap_local_page() doesn't. When converting uses of kmap_atomic(), one has
->> to check if the code being executed between the map/unmap implicitly
->> depends on page-faults and/or preemption being disabled. If yes, then 
->> code
->> to disable page-faults and/or preemption should also be added for
->> functional correctness. That however doesn't appear to be the case here,
->> so just memcpy_from_page() is used.
->>
->> Also note that the page being mapped is not allocated by the driver, 
->> and so
->> the driver doesn't know if the page is in normal memory. This is the 
->> reason
->> kmap_local_page() is used (via memcpy_from_page()) as opposed to
->> page_address().
->>
->> I don't have hardware, so this change has only been compile tested.
->>
->> Cc: Ayush Sawal <ayush.sawal@chelsio.com>
->> Cc: Ira Weiny <ira.weiny@intel.com>
->> Cc: Fabio M. De Francesco <fmdefrancesco@gmail.com>
->> Suggested-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
->> Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
->> ---
->> v1 -> v2:
->>   Use memcpy_from_page() as suggested by Fabio
->>   Add a "Suggested-by" tag
->>   Rework commit message
->>   Some emails cc'd in v1 are defunct. Drop them. The MAINTAINERS file for
->>   Chelsio drivers likely needs an update
->> ---
-> 
-> 
-> Thanks for the patch.
-> 
-> Acked-by: Ayush Sawal <ayush.sawal@chelsio.com>
 
-Thanks Ayush.
+On 28/11/2022 03:53, Konstantin Meskhidze (A) wrote:
+> 
+> 
+> 11/17/2022 9:41 PM, Mickaël Salaün пишет:
+>>
+>> On 21/10/2022 17:26, Konstantin Meskhidze wrote:
+>>> To support network type rules, this modification renames ruleset's
+>>> access masks and modifies it's type to access_masks_t. This patch
+>>> adds filesystem helper functions to add and get filesystem mask.
+>>>
+>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>> ---
+>>>
+>>> Changes since v7:
+>>> * Refactors commit message.
+>>>
+>>> Changes since v6:
+>>> * Adds a new access_masks_t for struct ruleset.
+>>> * Renames landlock_set_fs_access_mask() to landlock_add_fs_access_mask()
+>>>     because it OR values.
+>>> * Makes landlock_add_fs_access_mask() more resilient incorrect values.
+>>> * Refactors landlock_get_fs_access_mask().
+>>>
+>>> Changes since v6:
+>>> * Adds a new access_masks_t for struct ruleset.
+>>> * Renames landlock_set_fs_access_mask() to landlock_add_fs_access_mask()
+>>>     because it OR values.
+>>> * Makes landlock_add_fs_access_mask() more resilient incorrect values.
+>>> * Refactors landlock_get_fs_access_mask().
+>>>
+>>> Changes since v5:
+>>> * Changes access_mask_t to u32.
+>>> * Formats code with clang-format-14.
+>>>
+>>> Changes since v4:
+>>> * Deletes struct landlock_access_mask.
+>>>
+>>> Changes since v3:
+>>> * Splits commit.
+>>> * Adds get_mask, set_mask helpers for filesystem.
+>>> * Adds new struct landlock_access_mask.
+>>>
+>>> ---
+>>>    security/landlock/fs.c       | 10 +++++-----
+>>>    security/landlock/limits.h   |  1 +
+>>>    security/landlock/ruleset.c  | 17 +++++++++--------
+>>>    security/landlock/ruleset.h  | 35 +++++++++++++++++++++++++++++++----
+>>>    security/landlock/syscalls.c |  7 ++++---
+>>>    5 files changed, 50 insertions(+), 20 deletions(-)
+>>>
+>>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>>> index adcea0fe7e68..0d57c6479d29 100644
+>>> --- a/security/landlock/fs.c
+>>> +++ b/security/landlock/fs.c
+>>> @@ -178,9 +178,9 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+>>>    		return -EINVAL;
+>>>
+>>>    	/* Transforms relative access rights to absolute ones. */
+>>> -	access_rights |=
+>>> -		LANDLOCK_MASK_ACCESS_FS &
+>>> -		~(ruleset->fs_access_masks[0] | ACCESS_INITIALLY_DENIED);
+>>> +	access_rights |= LANDLOCK_MASK_ACCESS_FS &
+>>> +			 ~(landlock_get_fs_access_mask(ruleset, 0) |
+>>> +			   ACCESS_INITIALLY_DENIED);
+>>>    	object = get_inode_object(d_backing_inode(path->dentry));
+>>>    	if (IS_ERR(object))
+>>>    		return PTR_ERR(object);
+>>> @@ -294,7 +294,7 @@ get_handled_accesses(const struct landlock_ruleset *const domain)
+>>>    	size_t layer_level;
+>>>
+>>>    	for (layer_level = 0; layer_level < domain->num_layers; layer_level++)
+>>> -		access_dom |= domain->fs_access_masks[layer_level];
+>>> +		access_dom |= landlock_get_fs_access_mask(domain, layer_level);
+>>>    	return access_dom & LANDLOCK_MASK_ACCESS_FS;
+>>
+>> You can remove `& LANDLOCK_MASK_ACCESS_FS` here because it is now part
+>> of landlock_get_fs_access_mask().
+> 
+>     Ok. I got it. Thanks.
+>>
+>>
+>>>    }
+>>>
+>>> @@ -336,7 +336,7 @@ init_layer_masks(const struct landlock_ruleset *const domain,
+>>>    			 * access rights.
+>>>    			 */
+>>>    			if (BIT_ULL(access_bit) &
+>>> -			    (domain->fs_access_masks[layer_level] |
+>>> +			    (landlock_get_fs_access_mask(domain, layer_level) |
+>>>    			     ACCESS_INITIALLY_DENIED)) {
+>>>    				(*layer_masks)[access_bit] |=
+>>>    					BIT_ULL(layer_level);
+>>> diff --git a/security/landlock/limits.h b/security/landlock/limits.h
+>>> index 82288f0e9e5e..bafb3b8dc677 100644
+>>> --- a/security/landlock/limits.h
+>>> +++ b/security/landlock/limits.h
+>>> @@ -21,6 +21,7 @@
+>>>    #define LANDLOCK_LAST_ACCESS_FS		LANDLOCK_ACCESS_FS_TRUNCATE
+>>>    #define LANDLOCK_MASK_ACCESS_FS		((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
+>>>    #define LANDLOCK_NUM_ACCESS_FS		__const_hweight64(LANDLOCK_MASK_ACCESS_FS)
+>>> +#define LANDLOCK_SHIFT_ACCESS_FS	0
+>>>
+>>>    /* clang-format on */
+>>>
+>>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>>> index 996484f98bfd..1f3188b4e313 100644
+>>> --- a/security/landlock/ruleset.c
+>>> +++ b/security/landlock/ruleset.c
+>>> @@ -29,7 +29,7 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
+>>>    	struct landlock_ruleset *new_ruleset;
+>>>
+>>>    	new_ruleset =
+>>> -		kzalloc(struct_size(new_ruleset, fs_access_masks, num_layers),
+>>> +		kzalloc(struct_size(new_ruleset, access_masks, num_layers),
+>>>    			GFP_KERNEL_ACCOUNT);
+>>>    	if (!new_ruleset)
+>>>    		return ERR_PTR(-ENOMEM);
+>>> @@ -40,7 +40,7 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
+>>>    	/*
+>>>    	 * hierarchy = NULL
+>>>    	 * num_rules = 0
+>>> -	 * fs_access_masks[] = 0
+>>> +	 * access_masks[] = 0
+>>>    	 */
+>>>    	return new_ruleset;
+>>>    }
+>>> @@ -55,7 +55,7 @@ landlock_create_ruleset(const access_mask_t fs_access_mask)
+>>>    		return ERR_PTR(-ENOMSG);
+>>>    	new_ruleset = create_ruleset(1);
+>>>    	if (!IS_ERR(new_ruleset))
+>>> -		new_ruleset->fs_access_masks[0] = fs_access_mask;
+>>> +		landlock_add_fs_access_mask(new_ruleset, fs_access_mask, 0);
+>>>    	return new_ruleset;
+>>>    }
+>>>
+>>> @@ -117,11 +117,12 @@ static void build_check_ruleset(void)
+>>>    		.num_rules = ~0,
+>>>    		.num_layers = ~0,
+>>>    	};
+>>> -	typeof(ruleset.fs_access_masks[0]) fs_access_mask = ~0;
+>>> +	typeof(ruleset.access_masks[0]) access_masks = ~0;
+>>>
+>>>    	BUILD_BUG_ON(ruleset.num_rules < LANDLOCK_MAX_NUM_RULES);
+>>>    	BUILD_BUG_ON(ruleset.num_layers < LANDLOCK_MAX_NUM_LAYERS);
+>>> -	BUILD_BUG_ON(fs_access_mask < LANDLOCK_MASK_ACCESS_FS);
+>>> +	BUILD_BUG_ON(access_masks <
+>>> +		     (LANDLOCK_MASK_ACCESS_FS << LANDLOCK_SHIFT_ACCESS_FS));
+>>>    }
+>>>
+>>>    /**
+>>> @@ -281,7 +282,7 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
+>>>    		err = -EINVAL;
+>>>    		goto out_unlock;
+>>>    	}
+>>> -	dst->fs_access_masks[dst->num_layers - 1] = src->fs_access_masks[0];
+>>> +	dst->access_masks[dst->num_layers - 1] = src->access_masks[0];
+>>>
+>>>    	/* Merges the @src tree. */
+>>>    	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule, &src->root,
+>>> @@ -340,8 +341,8 @@ static int inherit_ruleset(struct landlock_ruleset *const parent,
+>>>    		goto out_unlock;
+>>>    	}
+>>>    	/* Copies the parent layer stack and leaves a space for the new layer. */
+>>> -	memcpy(child->fs_access_masks, parent->fs_access_masks,
+>>> -	       flex_array_size(parent, fs_access_masks, parent->num_layers));
+>>> +	memcpy(child->access_masks, parent->access_masks,
+>>> +	       flex_array_size(parent, access_masks, parent->num_layers));
+>>>
+>>>    	if (WARN_ON_ONCE(!parent->hierarchy)) {
+>>>    		err = -EINVAL;
+>>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>>> index d43231b783e4..f2ad932d396c 100644
+>>> --- a/security/landlock/ruleset.h
+>>> +++ b/security/landlock/ruleset.h
+>>> @@ -25,6 +25,11 @@ static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
+>>>    /* Makes sure for_each_set_bit() and for_each_clear_bit() calls are OK. */
+>>>    static_assert(sizeof(unsigned long) >= sizeof(access_mask_t));
+>>>
+>>> +/* Ruleset access masks. */
+>>> +typedef u16 access_masks_t;
+>>> +/* Makes sure all ruleset access rights can be stored. */
+>>> +static_assert(BITS_PER_TYPE(access_masks_t) >= LANDLOCK_NUM_ACCESS_FS);
+>>> +
+>>>    typedef u16 layer_mask_t;
+>>>    /* Makes sure all layers can be checked. */
+>>>    static_assert(BITS_PER_TYPE(layer_mask_t) >= LANDLOCK_MAX_NUM_LAYERS);
+>>> @@ -110,7 +115,7 @@ struct landlock_ruleset {
+>>>    		 * section.  This is only used by
+>>>    		 * landlock_put_ruleset_deferred() when @usage reaches zero.
+>>>    		 * The fields @lock, @usage, @num_rules, @num_layers and
+>>> -		 * @fs_access_masks are then unused.
+>>> +		 * @access_masks are then unused.
+>>>    		 */
+>>>    		struct work_struct work_free;
+>>>    		struct {
+>>> @@ -137,7 +142,7 @@ struct landlock_ruleset {
+>>>    			 */
+>>>    			u32 num_layers;
+>>>    			/**
+>>> -			 * @fs_access_masks: Contains the subset of filesystem
+>>> +			 * @access_masks: Contains the subset of filesystem
+>>>    			 * actions that are restricted by a ruleset.  A domain
+>>>    			 * saves all layers of merged rulesets in a stack
+>>>    			 * (FAM), starting from the first layer to the last
+>>> @@ -148,13 +153,13 @@ struct landlock_ruleset {
+>>>    			 * layers are set once and never changed for the
+>>>    			 * lifetime of the ruleset.
+>>>    			 */
+>>> -			access_mask_t fs_access_masks[];
+>>> +			access_masks_t access_masks[];
+>>>    		};
+>>>    	};
+>>>    };
+>>>
+>>>    struct landlock_ruleset *
+>>> -landlock_create_ruleset(const access_mask_t fs_access_mask);
+>>> +landlock_create_ruleset(const access_mask_t access_mask);
+>>>
+>>>    void landlock_put_ruleset(struct landlock_ruleset *const ruleset);
+>>>    void landlock_put_ruleset_deferred(struct landlock_ruleset *const ruleset);
+>>> @@ -177,4 +182,26 @@ static inline void landlock_get_ruleset(struct landlock_ruleset *const ruleset)
+>>>    		refcount_inc(&ruleset->usage);
+>>>    }
+>>>
+>>> +static inline void
+>>> +landlock_add_fs_access_mask(struct landlock_ruleset *const ruleset,
+>>> +			    const access_mask_t fs_access_mask,
+>>> +			    const u16 layer_level)
+>>> +{
+>>> +	access_mask_t fs_mask = fs_access_mask & LANDLOCK_MASK_ACCESS_FS;
+>>> +
+>>> +	/* Should already be checked in sys_landlock_create_ruleset(). */
+>>> +	WARN_ON_ONCE(fs_access_mask != fs_mask);
+>>> +	// TODO: Add tests to check "|=" and not "="
+>>
+>> This todo should be done and removed. No more todos must remain.
+>>
+>     I delete it in 10/12 Patch when add network seltests.
 
-Please update the maintainers file for Chelsio drivers?
-
-Ani
+You can delete it in this patch then. I'm reviewing the tests.
