@@ -2,118 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEA8F63B2F2
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 21:23:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B89A963B2F7
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 21:23:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233849AbiK1UXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 15:23:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36452 "EHLO
+        id S234010AbiK1UX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 15:23:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234003AbiK1UXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 15:23:18 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281A51CB37;
-        Mon, 28 Nov 2022 12:23:12 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id 82so3501982pgc.0;
-        Mon, 28 Nov 2022 12:23:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=My8u4kRmGK+Yn8/6QhVO+EnqDs3urMiLBxUcHmmyiGk=;
-        b=UcFlC9OhsKqP3QUePtkbMS7mo/ibRjDzrbPHmpCZ8njlXrOFkM2hBoVx05wMHJqoq0
-         rMls6J6TkFWss4JvG614aHONu5Z5C/3ZqZZ4ylzMnbYmPkh+L0c9pp8FjcewgBY+qiAq
-         YPHdtSYtlZUAyWvCNkd/B1tBANSJrTuHuQbT0jKDaEeJStOXyBrGNyl7L63Zxv0Ix0YU
-         8HlAQI9uyd5hFst8Hpv3xxaOcq4Bq0hVXW+0AMB37o4IFQIvwEorhLQNE6C0g5REhGRV
-         PuCBHD5y2JqM156Lklpq5p8zM58NJsaihK5z10jRDNVcC/8rWTfiMx5NleoBG8/1Icei
-         W6pQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=My8u4kRmGK+Yn8/6QhVO+EnqDs3urMiLBxUcHmmyiGk=;
-        b=mk5BBEho/dXcKJR6h5WLogYoweVXdbMiNNfnm+vGAJ4bUqiJ1p03Qe9V0b9aGw2juf
-         WpvVaONGxdYJSpjMNqPa3eDvd+ywAJHl4R9FFdGJfQZcrXCDu1Gm+zwsLjkkm2AiZQ1G
-         bKPPrRmlDATFGnCqj5Silw+2iT3YaMZj3TwY69jTuZ1CObDo8J2I2JHo2b17vTfj619X
-         pkfFoVsADZpdA3w1IqPK3Hi3jMJv0TU4uXp9t/mMEHuRZ/r7TfBCoz1YsFYF7etQrt2c
-         1IHc+nHA+0AUobXwbP52/daUPCtRtPQdxHk18MD+6QVKGgStcyxt7AhljOju937E+hdK
-         2n6w==
-X-Gm-Message-State: ANoB5plw6qKIrODmaypSL/qxFMnLFcpnVKRWL1f7i5vCjWXuW9mEs9XC
-        /e7RO4jqzi0Fr2DKV8a4CSA=
-X-Google-Smtp-Source: AA0mqf4oImiJC3pygvUY6NUG2A7aDmbpiDXe7PORw+aNCo2Foi05c3TORWEg7Yh4zqDkFEQEZkJB6Q==
-X-Received: by 2002:a05:6a00:1bcb:b0:574:ba25:1e43 with SMTP id o11-20020a056a001bcb00b00574ba251e43mr18146677pfw.63.1669666991536;
-        Mon, 28 Nov 2022 12:23:11 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id u4-20020a63ef04000000b00476b165ff8bsm7189694pgh.57.2022.11.28.12.23.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Nov 2022 12:23:10 -0800 (PST)
-Message-ID: <3249e731-e7bd-e9f5-1c76-3ac41def3565@gmail.com>
-Date:   Mon, 28 Nov 2022 12:23:03 -0800
+        with ESMTP id S233729AbiK1UXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 15:23:20 -0500
+Received: from smtp-bc0e.mail.infomaniak.ch (smtp-bc0e.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC51619C33
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 12:23:18 -0800 (PST)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4NLcNh6VNszMq3ZY;
+        Mon, 28 Nov 2022 21:23:16 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4NLcNh1vR1zMpr8Y;
+        Mon, 28 Nov 2022 21:23:15 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1669666996;
+        bh=i3j6PaslUJfw8oSWQiVXBsUnYf8vlCfXtdZyNu8S33Y=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=odPzlqNwFm38oA5v/ru5Tt1PORIqJopgNV0anJw1tmXnU2Mb+O+jAlK3g+8/o9DXX
+         6w7ps3nVDVT0bzxReBZ9f/CDFXBN83uGKcnWbaxZn7OLOAJp9+sxJa4K8R5r1i3zf1
+         hiJ+GDV1IVNrskayo88OW8KUYJzz91y9ELVj1mlk=
+Message-ID: <fd4c0396-af56-732b-808b-887c150e5e6b@digikod.net>
+Date:   Mon, 28 Nov 2022 21:23:15 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v3 net-next 01/10] dt-bindings: net: dsa: sf2: fix
- brcm,use-bcm-hdr documentation
+User-Agent: 
+Subject: Re: [PATCH] landlock: Allow filesystem layout changes for domains
+ without such rule type
 Content-Language: en-US
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
-Cc:     John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        =?UTF-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>,
-        Rob Herring <robh@kernel.org>
-References: <20221127224734.885526-1-colin.foster@in-advantage.com>
- <20221127224734.885526-2-colin.foster@in-advantage.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221127224734.885526-2-colin.foster@in-advantage.com>
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     artem.kuzin@huawei.com, gnoack3000@gmail.com,
+        willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+References: <5c6c99f7-4218-1f79-477e-5d943c9809fd@digikod.net>
+ <20221117185509.702361-1-mic@digikod.net>
+ <fb9a288a-aa86-9192-e6d7-d6678d740297@digikod.net>
+ <4b23de18-2ae9-e7e3-52a3-53151e8802f9@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <4b23de18-2ae9-e7e3-52a3-53151e8802f9@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/27/22 14:47, Colin Foster wrote:
-> The property use-bcm-hdr was documented as an entry under the ports node
-> for the bcm_sf2 DSA switch. This property is actually evaluated for each
-> port. Correct the documentation to match the actual behavior and properly
-> reference dsa-port.yaml for additional properties of the node.
+
+On 28/11/2022 04:04, Konstantin Meskhidze (A) wrote:
 > 
-> Suggested-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> 
+> 11/18/2022 12:16 PM, Mickaël Salaün пишет:
+>> Konstantin, this patch should apply cleanly just after "01/12 landlock:
+>> Make ruleset's access masks more generic". You can easily get this patch
+>> with https://git.kernel.org/pub/scm/utils/b4/b4.git/
+>> Some adjustments are needed for the following patches. Feel free to
+>> review this patch.
+     Do you have this patch online? Can I fetch it from your repo?
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
-
+You can cherry-pick from here: https://git.kernel.org/mic/c/439ea2d31e662
