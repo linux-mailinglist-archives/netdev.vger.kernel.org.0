@@ -2,80 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C263763A4B2
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C51A263A4BC
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:22:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbiK1JU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 04:20:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47332 "EHLO
+        id S230353AbiK1JWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 04:22:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbiK1JU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:20:57 -0500
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB484140F1
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:20:56 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 59CAD5C0175;
-        Mon, 28 Nov 2022 04:20:56 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 28 Nov 2022 04:20:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1669627256; x=1669713656; bh=95h1/F9yyQ0vuDfCCc00fzXWpItq
-        op4IGd1n6LsJBWw=; b=A1y84baYTmJaLx8aPEcFXfjZXRWqH/7tU3aFz7qbYENs
-        DI4tPmx1idA5bLRbFIvlU3+8ZfxugK7LoNoWql6oTrJLLBzZDFtkKQiPxK5WhCF6
-        CCkcUXAGKenBsWuuHCu2MiAjDzTtgN1C44Ep2SItwYn+DjjK5vSqmaOUiVATmaB3
-        ayi5HKFQQDxeo5LByFyVPnnr9hqpxAtudRv6XtGp+KwKwprqoPKoLQ9Jc/QwXNwi
-        woPXaGcS6NOWEOSAMhscyzqFOZRAHBiAcQTBuglsWYd3VV6wmg51fQZ6f1EjmaQO
-        /w3LHnArw3GaBYEem62hJoXjwCzbviILjbKRNVng0g==
-X-ME-Sender: <xms:eH2EYwcI1-336D9UDLZsITmAtaZxW23NSbo25Oz27CrHi4ng9j0tHQ>
-    <xme:eH2EYyPRLjZXffVWP39YaHp7QO-hSpg9rXnuQcyFRNWa43_oiMP9rtRgeO74y1aWQ
-    duEU-XenUSlxLc>
-X-ME-Received: <xmr:eH2EYxjWeD9nKH60wZv7uMSJDmVfZs1wIsBqxAsnjT1U7hGCYq52iAcyg8lQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrjedvgddtfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeehhfdtjedviefffeduuddvffegteeiieeguefgudffvdfftdefheeijedthfej
-    keenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:eH2EY18k0AmqR5XT3cTNTP-9UxvVi3-av_ybYZKJmSuhBYx2BpRzzw>
-    <xmx:eH2EY8uaJFRww7oHOwWtoB-Eoq5ziCAzMX1GuAvzcHP8Xk68oQmclA>
-    <xmx:eH2EY8HmsvRsufV5HM395jdTZdlkOukExKmUUXUh78IYTdG2oLH1Xw>
-    <xmx:eH2EY2WXw7SAdmkcvDZ6cCNS__T2Zakdvf-Avj_GY24W93C3W50nQw>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 28 Nov 2022 04:20:55 -0500 (EST)
-Date:   Mon, 28 Nov 2022 11:20:53 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        jiri@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com
-Subject: Re: [PATCH net] net: devlink: fix UAF in
- devlink_compat_running_version()
-Message-ID: <Y4R9dT4QXgybUzdO@shredder>
-References: <20221122121048.776643-1-yangyingliang@huawei.com>
- <Y3zdaX1I0Y8rdSLn@unreal>
- <e311b567-8130-15de-8dbb-06878339c523@huawei.com>
- <Y30dPRzO045Od2FA@unreal>
- <20221122122740.4b10d67d@kernel.org>
- <405f703b-b97e-afdd-8d5f-48b8f99d045d@huawei.com>
- <Y33OpMvLcAcnJ1oj@unreal>
- <fa1ab2fb-37ce-a810-8a3f-b71d902e8ff0@huawei.com>
- <Y35x9oawn/i+nuV3@shredder>
- <20221123181800.1e41e8c8@kernel.org>
+        with ESMTP id S229708AbiK1JVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:21:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941F31571D;
+        Mon, 28 Nov 2022 01:21:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E445AB80CB4;
+        Mon, 28 Nov 2022 09:21:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BEFC433D6;
+        Mon, 28 Nov 2022 09:21:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669627306;
+        bh=SMcxKZiuICKO5Xo60+6v/dsm1MJeGWQRQxX6Iq8mnT8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Zl+I07p1A7NJAXcqB53dHyPNMujV5O6kRtnRpqFROBuODpCqFvBJRSajUwVViMmhp
+         8GQdjE+8rNGyd+KUB5448+/yUpBuH5ZkMR5RZ7vtRk4R5AzBlhr45lmI9HnPbcXCfU
+         nGXLQeiWY2LBIBACLpONxEttMcYcMueOUBEWbXe5D6ePSW+h8CZs8bvhgsv7CyfvUu
+         vdBcCZvvy1zs0ubdjF8BiOFVLny+on/l6VCOyrXeLNwC1wguJdoB1N5Np3acDfMkla
+         3WzFADIuqtmD28U9E8/J+mMp4nh8j6o0kIxxRp+Mi5eFCcgiri+ZQo8/es0JtQks9x
+         VLB9JfaUFspXw==
+Message-ID: <d20d3b73-38b4-fb06-2daa-125f446aeb44@kernel.org>
+Date:   Mon, 28 Nov 2022 11:21:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221123181800.1e41e8c8@kernel.org>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v3 net-next 5/6] net: ethernet: ti: am65-cpsw: retain
+ PORT_VLAN_REG after suspend/resume
+Content-Language: en-US
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, vigneshr@ti.com, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221123124835.18937-1-rogerq@kernel.org>
+ <20221123124835.18937-6-rogerq@kernel.org> <Y4DBTbVxUpbJ5sEl@boxer>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <Y4DBTbVxUpbJ5sEl@boxer>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,62 +59,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 06:18:00PM -0800, Jakub Kicinski wrote:
-> On Wed, 23 Nov 2022 21:18:14 +0200 Ido Schimmel wrote:
-> > > I used the fix code proposed by Jakub, but it didn't work correctly, so
-> > > I tried to correct and improve it, and need some devlink helper.
-> > > 
-> > > Anyway, it is a nsim problem, if we want fix this without touch devlink,
-> > > I think we can add a 'registered' field in struct nsim_dev, and it can be
-> > > checked in nsim_get_devlink_port() like this:  
-> > 
-> > I read the discussion and it's not clear to me why this is a netdevsim
-> > specific problem. The fundamental problem seems to be that it is
-> > possible to hold a reference on a devlink instance before it's
-> > registered and that devlink_free() will free the instance regardless of
-> > its current reference count because it expects devlink_unregister() to
-> > block. In this case, the instance was never registered, so
-> > devlink_unregister() is not called.
-> > 
-> > ethtool was able to get a reference on the devlink instance before it
-> > was registered because netdevsim registers its netdevs before
-> > registering its devlink instance. However, netdevsim is not the only one
-> > doing this: funeth, ice, prestera, mlx4, mlxsw, nfp and potentially
-> > others do the same thing.
-> > 
-> > When you think about it, it's strange that it's even possible for
-> > ethtool to reach the driver when the netdev used in the request is long
-> > gone, but it's not holding a reference on the netdev (it's holding a
-> > reference on the devlink instance instead) and
-> > devlink_compat_running_version() is called without RTNL.
+On 25/11/2022 15:21, Maciej Fijalkowski wrote:
+> On Wed, Nov 23, 2022 at 02:48:34PM +0200, Roger Quadros wrote:
+>> During suspend resume the context of PORT_VLAN_REG is lost so
+>> save it during suspend and restore it during resume for
+>> host port and slave ports.
+>>
+>> Signed-off-by: Roger Quadros <rogerq@kernel.org>
+>> Signed-off-by: David S. Miller <davem@davemloft.net>
+>> ---
+>>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 7 +++++++
+>>  drivers/net/ethernet/ti/am65-cpsw-nuss.h | 4 ++++
+>>  2 files changed, 11 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>> index 0b59088e3728..f5357afde527 100644
+>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>> @@ -2875,7 +2875,9 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
+>>  	struct am65_cpsw_port *port;
+>>  	struct net_device *ndev;
+>>  	int i, ret;
+>> +	struct am65_cpsw_host *host_p = am65_common_get_host(common);
 > 
-> Indeed. We did a bit of a flip-flop with the devlink locking rules
-> and the fact that the instance is reachable before it is registered 
-> is a leftover from a previous restructuring :(
+> Nit: I see that retrieving host pointer depends on getting the common
+> pointer first from dev_get_drvdata(dev) so pure RCT is not possible to
+> maintain here but nonetheless I would move this line just below the common
+> pointer:
 > 
-> Hence my preference to get rid of the ordering at the driver level 
-> than to try to patch it up in the code. Dunno if that's convincing.
+> 	struct am65_cpsw_common *common = dev_get_drvdata(dev);
+> 	struct am65_cpsw_host *host = am65_common_get_host(common);
+> 	struct am65_cpsw_port *port;
+> 	struct net_device *ndev;
+> 	int i, ret;
 
-I don't have a good solution, but changing all the drivers to register
-their netdevs after the devlink instance is going to be quite painful
-and too big for 'net'. I feel like the main motivation for this is the
-ethtool compat stuff, which is not very convincing IMO. I'm quite happy
-with the current flow where drivers call devlink_register() at the end
-of their probe.
+OK.
 
-Regarding a solution for the current crash, assuming we agree it's not a
-netdevsim specific problem, I think the current fix [1] is OK. Note that
-while it fixes the crash, it potentially creates other (less severe)
-problems. After user space receives RTM_NEWLINK notification it will
-need to wait for a certain period of time before issuing
-'ETHTOOL_GDRVINFO' as otherwise it will not get the firmware version. I
-guess it's not a big deal for drivers that only register one netdev
-since they will very quickly follow with devlink_register(), but the
-race window is larger for drivers that need to register many netdevs,
-for either physical switch or eswitch ports.
+> 
+> Also I think plain 'host' for variable name is just fine, no need for _p
+> suffix to indicate it is a pointer. in that case you should go with
+> common_p etc.
 
-Long term, we either need to find a way to make the ethtool compat stuff
-work correctly or just get rid of it and have affected drivers implement
-the relevant ethtool operations instead of relying on devlink.
+host_p is the naming convention used throughout the driver.
+Do think it is a good idea to change it at this one place?
 
-[1] https://lore.kernel.org/netdev/20221122121048.776643-1-yangyingliang@huawei.com/
+> 
+>>  
+>> +	host_p->vid_context = readl(host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+>>  	for (i = 0; i < common->port_num; i++) {
+>>  		port = &common->ports[i];
+>>  		ndev = port->ndev;
+>> @@ -2883,6 +2885,7 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
+>>  		if (!ndev)
+>>  			continue;
+>>  
+>> +		port->vid_context = readl(port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+>>  		netif_device_detach(ndev);
+>>  		if (netif_running(ndev)) {
+>>  			rtnl_lock();
+>> @@ -2909,6 +2912,7 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+>>  	struct am65_cpsw_port *port;
+>>  	struct net_device *ndev;
+>>  	int i, ret;
+>> +	struct am65_cpsw_host *host_p = am65_common_get_host(common);
+>>  
+>>  	ret = am65_cpsw_nuss_init_tx_chns(common);
+>>  	if (ret)
+>> @@ -2941,8 +2945,11 @@ static int am65_cpsw_nuss_resume(struct device *dev)
+>>  		}
+>>  
+>>  		netif_device_attach(ndev);
+>> +		writel(port->vid_context, port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+>>  	}
+>>  
+>> +	writel(host_p->vid_context, host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
+>> +
+>>  	return 0;
+>>  }
+>>  #endif /* CONFIG_PM_SLEEP */
+>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+>> index 2c9850fdfcb6..e95cc37a7286 100644
+>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+>> @@ -55,12 +55,16 @@ struct am65_cpsw_port {
+>>  	bool				rx_ts_enabled;
+>>  	struct am65_cpsw_qos		qos;
+>>  	struct devlink_port		devlink_port;
+>> +	/* Only for suspend resume context */
+>> +	u32				vid_context;
+>>  };
+>>  
+>>  struct am65_cpsw_host {
+>>  	struct am65_cpsw_common		*common;
+>>  	void __iomem			*port_base;
+>>  	void __iomem			*stat_base;
+>> +	/* Only for suspend resume context */
+>> +	u32				vid_context;
+>>  };
+>>  
+>>  struct am65_cpsw_tx_chn {
+>> -- 
+>> 2.17.1
+>>
+
+--
+cheers,
+-roger
