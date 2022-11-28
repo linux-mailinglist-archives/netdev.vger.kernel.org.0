@@ -2,225 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E67E63B13B
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:25:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A8AE63B142
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:26:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234297AbiK1SZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 13:25:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33260 "EHLO
+        id S234237AbiK1S0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 13:26:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234296AbiK1SZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:25:22 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B278EB1
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 10:17:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669659441; x=1701195441;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Ai3FiTEeRL6jNBTjBJwxzZCqnJRJejagGdqrQBvte/k=;
-  b=JwJBxAiwnHKztSZp7AOJmO9ELsNXBac0QZZhAL/TUS9X5G9fdBDPWm3f
-   glq7UCwnkNNfglsmMHeSFzXL0g6FiwViq32vXRe4mGJe166pCtWkQCws/
-   4ZQ8D6zjS8ubAcnrhCJojpoJirc8wA8U+d7uczrdLA7M6h1WFPwzt76EI
-   iwQn/c68WL+tGGXB605Aoq/iQrGC+xKxjabglotyDJ8kq0QftHVRlzYAv
-   UYavQnwpG0LvCV/F4+yYgPYCOsYAr7km5f26sXFXeZ6u9MOIt3JY7TaVQ
-   /KVP8QP1utcFkIc/z4sJ8b1/2zl7nmudwAvyPxkqg5WfE2V7CGHlOKnIJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="298265863"
-X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
-   d="scan'208";a="298265863"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 10:16:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="637314242"
-X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
-   d="scan'208";a="637314242"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga007.jf.intel.com with ESMTP; 28 Nov 2022 10:16:31 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 28 Nov 2022 10:16:31 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 28 Nov 2022 10:16:31 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Mon, 28 Nov 2022 10:16:31 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.109)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Mon, 28 Nov 2022 10:16:30 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VblSRLZhnHhN3gJ8DEwPEE4fm/DtVNOq/dlUMgzg/Erifdnrx66OmHs2zd2VaCASar529dvG/Wgozh5ns0qTpYKhx9CENeG3DAM/OHY0WTKw7KRYp810ZCE3TO/jDpEGL5+lZmS5hM4h29XXZGdQUxgcXHZhVVse/H1dlhJ+ETNbgUkWP6C3VaIDgac3Aux+crWkbdfg01vRmnDAEUmSTTgZRfR/fv8JhMzD4/FJOoIn0pu5IBk89LmTce6IPx4EmqwswuzvDKEdap55t682r9HYR+WKpAIF+wW6KDLSextYmwQkKwgWuGaUswp96YDQVkKRp0t0WCMAXi9AjPPvTg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w+WTwqMr4esQBbGZtBV0L+6vqpoIUS28cGp70iUrv2Q=;
- b=mFPc+a//XY46CqyP5J5vcxfnWYNGMOn1mJ5k7uvwlPd+TdwheFeqzENBN0FF8QwoPAzRDCwbay68L5j6M9XSEu5prAuUWF3433nHXEb+u0aORZVYCq80QORuIxiYyk+ZQsNixFjqTuRBdLX6xBqnaVa0j7rRtk89lz7Kw3wan814jeRlPF0IcMOY3DR2BUSpSuGegtxxUAtoB9QD+k4nrgZLzXvK6YbbflLy4CQPRMKr4TGzL9BdB1hYcgzVgMASXwdXdCzIl3CB/4xq7hxkNxZt4HRav5IQ2AJwBuYdFgG/wKRjoHAcdsGyvBhSWocmBjcfCm31VZciFMhwdjnP4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by DM4PR11MB5392.namprd11.prod.outlook.com (2603:10b6:5:397::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
- 2022 18:16:28 +0000
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::3862:3b51:be36:e6f3]) by CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::3862:3b51:be36:e6f3%6]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
- 18:16:28 +0000
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: RE: [PATCH net-next v2 2/9] devlink: report extended error message in
- region_read_dumpit
-Thread-Topic: [PATCH net-next v2 2/9] devlink: report extended error message
- in region_read_dumpit
-Thread-Index: AQHY/3uWJJs8+HbM4k27dRv5WjUsvq5Nw4iAgAboVrA=
-Date:   Mon, 28 Nov 2022 18:16:28 +0000
-Message-ID: <CO1PR11MB508953E890CF3EC111E1B325D6139@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20221123203834.738606-1-jacob.e.keller@intel.com>
- <20221123203834.738606-3-jacob.e.keller@intel.com>
- <Y38vZ/AuQNI0uPjl@nanopsycho>
-In-Reply-To: <Y38vZ/AuQNI0uPjl@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CO1PR11MB5089:EE_|DM4PR11MB5392:EE_
-x-ms-office365-filtering-correlation-id: 3bbc829d-2ff3-46c4-d712-08dad16cab5f
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CkA2AaXGAruAhlSjzJqvu7Xu6G4sXaZwCOM5r8vRyarmXwSnRd9ZRYGkYo+N3jTZxMWOJ+KVurC+i2GAcwQkSACuEg38q/ijCtrOTUkBQlEX6LDKK1LKwXKA1owJs8Mx1HQaHO+pqHOcQfzR2IwYiaC1vJZ6O79t1Wh06PKmJO1KwV99KNcZJeyTMoUkRAkF0vpHiUphNK9blV7uQIKgfCUs81zK09ib1OxKnxUtFWc8qc33HY00Xc35leNXIv6K7kTbT9yAQNblWTmA/9jmFRA6SwiBq7pvE99eMkVSZukL394bxRbHtgAXAKs/en9lfc8oNTKB0BLUcR0csrY8RRmlbS3W1MoCZd70alkz9slEaBmtzN9hrEyJo605zaI5Pc9u5Hxutlwb/yVXk80AU89SixyrzI2ZUUGAOjeL0SpDeh97ej6oJ2n4R2KLIFUdJs4hCdhgj9u793Gq3C9jerfdMHKwE0tPGdvV1HfWRA/IWKy3yTqx04BimhZmVehgiJ65gdgESxoiQB9WZi+NkbMS6H8X55IsP5Qr2/u2/h795b3RnKB6zngQNlM4e3TBKmlTFyTZSzLAySyh8CXquYbt0OaS5wr3htpe+DELehGQ6ZT+sLbtJvILF9uWaOBZOaqlydkd0/4Ge7Mqn2xct0AN6Em69WReU5YbDg5bxkBFlw4Rul6AoI3/Bzbc7198
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(346002)(376002)(136003)(39860400002)(396003)(451199015)(478600001)(53546011)(83380400001)(2906002)(71200400001)(66946007)(15650500001)(6916009)(54906003)(38100700002)(5660300002)(38070700005)(122000001)(8936002)(52536014)(6506007)(4326008)(41300700001)(7696005)(66476007)(66556008)(86362001)(64756008)(66446008)(82960400001)(8676002)(26005)(9686003)(76116006)(316002)(33656002)(55016003)(186003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?PLqLYZxb9AmoEXKJ1nHE9FtJLfY0rRF/YUL8DOcdWo2yitmPsPR3p6WnJOsZ?=
- =?us-ascii?Q?Qu84TXKdZxiH3Ug3GfZn0G2cWlJim5/zyQWvwvNrHtFry6Vi9tnvzz5vGIkQ?=
- =?us-ascii?Q?iqUqi90lx8A/CjA2j7o04UAaviW2RC//8gEGL9DII/nhEtoAgXAyocDcM1JT?=
- =?us-ascii?Q?+6QOCcqTN90pf3QDlcYEOXueLzf4q70OL9banYcMFU+3FwvBC38016Ri2N3I?=
- =?us-ascii?Q?tdmEhD7W8Nb4kqWE/GwxCEQQVEYQMZ1ri3TKkzzrI8AScEIYE2LldaI9WuaE?=
- =?us-ascii?Q?Vp29TnsuPl8axreH7PoNdCFZSQmn5Hv0GQ4FtbzTnka0uS6Gr+RFJ1zoqOQz?=
- =?us-ascii?Q?I6oBUQa13b3BrA3aesqBZs/7NF5xVjgzI72WknQMydFs0pvOQEHQ3hH5t1kY?=
- =?us-ascii?Q?RoxyOMusEk/dkGSTkrgWlD8Go5IFuY0Sqmj8UF7ECps0YQ6sS+jbcZTM1zng?=
- =?us-ascii?Q?6AGJeC+TaBpzVUFMVVb+GGS7pfXqdpNN4e047/oz+BPk0O2z3Vf9Ve1AGbTk?=
- =?us-ascii?Q?Sp0WNfny8iqsNQcp6qrRgwE3LFjO3DnlxNN9b7zp4lUu99M17BPGO0/cccxH?=
- =?us-ascii?Q?mTAvaWOToMARUr6uN04yZgL9tRF3aSYAmu/sgDvspQkqm/vbqEw2BuSBG5Gi?=
- =?us-ascii?Q?vC8O6N1YXT/oQ4KdaOpg1fPFTuljofsvdU9Iih6X3RMrhi9MbbhXci8bEOLV?=
- =?us-ascii?Q?e5t7L4uKkzAqILYJm6//VX3oRO+SYQ7fdVs712JXEE5GwPFUmCbxKp4+zSQz?=
- =?us-ascii?Q?skUpP1X0TTsXCwsoXz38PDtU3Y9r90oJHNFBz0xQz40hY8B1a4l+Xhr5P+ee?=
- =?us-ascii?Q?x79sssptRKA+DOShvkPVcpqc9/Ox7u0RuYnHIEG0StbthRI456R+1Vcbr+bx?=
- =?us-ascii?Q?wvWcO8PHBoK4cqCqRwlNYnEDbWQX6r10VGOenr8yChQCtyhxR9yqikPPKNnZ?=
- =?us-ascii?Q?ghMr/XWKWKdasIgdkm18n0SyF0pvVA8WG5yLd6tpBPsx2WZViHmuUnLtvFor?=
- =?us-ascii?Q?ZtuHCTSBdo3L933+FCYESZkGNYepj7c1SKz0pLnIgx9TP6oB0Pt2+fSkmJRb?=
- =?us-ascii?Q?VFUZ72iFZSpryoZBFlel0wH61zgohOTIsTRtBSKBUcHqRCMYlu/qIrvpzHFv?=
- =?us-ascii?Q?RGjCxXL+diJZskd2ZS31BBWh4FXXUBJo18HiJSw7imXa36ZfBmAemp4IGbmR?=
- =?us-ascii?Q?S9FrTqGFX0wUGvD3V0+YqNaJKezu+9kirJSwXL+VMvVTV298fKUIGpLsA9/E?=
- =?us-ascii?Q?WKYYTxSBDHxHo7A/3XhE6hptSXnhOAnKrApeN/dw+qDAXj1pjwJNnSez5vUi?=
- =?us-ascii?Q?OcTTQHK4IO9Ru1hFen3xyYWGVo0865YIOkb0/VetTD4QAd0zM1agvyenNmb2?=
- =?us-ascii?Q?w4xzpKPMfHeQryFkP6nY0UXD6bRhBM5sQH1D+5DuE2I03uBkhvjfcozOso/y?=
- =?us-ascii?Q?gwS9UvAfMwNkre8h+8IiP4rVh/+rqyQ+mRtxXpn5ZoOiPne784ME5Y6H/ldd?=
- =?us-ascii?Q?E7lzqxrIO2qaxO6Bp3WiiU2tVz6D6k/K6/HqtaCmWOgcQg8SQNiTXxil6q/j?=
- =?us-ascii?Q?Fbet97AHWAWGYi6w4KYQapEmzY9Ou+4OE+yaRjEW?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bbc829d-2ff3-46c4-d712-08dad16cab5f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 18:16:28.7892
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QAMOVVl5rZ19Rb58tMbF/mXA44+uU3s3SUM3lT05thN2ZCjVgdj1G67ceW+obXmJVe3T1YDNQN+xi1oekdEZWJ6z9KDDWwABLfIbahz73sg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5392
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231502AbiK1S0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:26:17 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3052A722;
+        Mon, 28 Nov 2022 10:18:37 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id q1so10655367pgl.11;
+        Mon, 28 Nov 2022 10:18:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Jl9LwyzvZGZ+R8ZUT6uj3txcdq+TRbDdiFqFW3GqqXs=;
+        b=DRQhAljFH7gaI7GHMcW092eFfDr099fwQ42CbREAtfmOskpRzjuBYvGT5cz2wCb+3Q
+         xgjKPZJqwhD2EjUraea10Sn3RR//okjrTmuO6/ozeCQih6N1RhC/GkIr2hn+maOYU/LX
+         BErTSL38j9/N668vm2mL0QdIMsZibv6cLVV98m4TvrgvWNKw7jsmSh+lKBKGB04zrqU7
+         /9HizJq3Z6e+QCN99Vd173Xdpm0dq/hI77XkGsMg7gdtgSMV9AT7pZoOfgN2t8ilhbeX
+         h6Ui8RAiyJpsgGG3+/dT1Z2eduBhWOy79OiRXNikmemVJge0WRuD0PwG07aacCZ+yt8p
+         AF2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Jl9LwyzvZGZ+R8ZUT6uj3txcdq+TRbDdiFqFW3GqqXs=;
+        b=jwGYboa0wkLQqYsKoWgZjUS+1HSqI04LqBsriBgEaXI4kEfIGegKxwaEhroQGJ3gzU
+         mx8+DrsKOAmj9B87zZCzVJ5isTIxgKhE2YkvW2hxBrL3I3S8nuGdEOAojtXf2ldxq33v
+         EGszm6Klcx+OzxkDO8Je+5iWiFmMZTDdD6pUUqmOZFOOkmR+KcsM2t8E47xgFNthZZRn
+         fd56eXdcnTZiFa1A0Iv5xZgULnpuJJnXBfEKuL9mvWCNVDDVEyNIcKxLe2M8N+XaJ2ht
+         Ov2nD/OQKUClGzcyrZLtcN7naXwY9+7poYs8NsUtDQPCvlx74yVCwKQtFXoZINPDZ/uX
+         l2Vw==
+X-Gm-Message-State: ANoB5pkzAZQ4zW0j67Bdg7dBq4bj8ebaWlwinH+UsBwam8uqrqdmjFvz
+        sPxzrd10mU5cx7v19qwYibzzMQSa2bk=
+X-Google-Smtp-Source: AA0mqf65GLsr7aElacw+Ek+fcYL8sVgCAt5lX9pGnAKQ65xdyTGCopW6DvDftmzjwjlY/ayNFhjthA==
+X-Received: by 2002:a63:d556:0:b0:46b:158f:6265 with SMTP id v22-20020a63d556000000b0046b158f6265mr28357549pgi.193.1669659517079;
+        Mon, 28 Nov 2022 10:18:37 -0800 (PST)
+Received: from localhost ([2605:59c8:6f:2810:7d97:f259:85c:a462])
+        by smtp.gmail.com with ESMTPSA id i15-20020a62870f000000b005754f96f89fsm1543443pfe.76.2022.11.28.10.18.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Nov 2022 10:18:36 -0800 (PST)
+Date:   Mon, 28 Nov 2022 10:18:33 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Pengcheng Yang <yangpc@wangsu.com>
+Cc:     'John Fastabend' <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, 'Daniel Borkmann' <daniel@iogearbox.net>,
+        'Lorenz Bauer' <lmb@cloudflare.com>
+Message-ID: <6384fb79f28f0_59da0208e7@john.notmuch>
+In-Reply-To: <87cz97cnz8.fsf@cloudflare.com>
+References: <1669082309-2546-1-git-send-email-yangpc@wangsu.com>
+ <1669082309-2546-3-git-send-email-yangpc@wangsu.com>
+ <637d8d5bd4e27_2b649208eb@john.notmuch>
+ <000001d8ff01$053529d0$0f9f7d70$@wangsu.com>
+ <87cz97cnz8.fsf@cloudflare.com>
+Subject: Re: [PATCH RESEND bpf 2/4] bpf, sockmap: Fix missing BPF_F_INGRESS
+ flag when using apply_bytes
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Jakub Sitnicki wrote:
+> On Wed, Nov 23, 2022 at 02:01 PM +08, Pengcheng Yang wrote:
+> > John Fastabend <john.fastabend@gmail.com> wrote:
+> >> 
+> >> Pengcheng Yang wrote:
+> >> > When redirecting, we use sk_msg_to_ingress() to get the BPF_F_INGRESS
+> >> > flag from the msg->flags. If apply_bytes is used and it is larger than
+> >> > the current data being processed, sk_psock_msg_verdict() will not be
+> >> > called when sendmsg() is called again. At this time, the msg->flags is 0,
+> >> > and we lost the BPF_F_INGRESS flag.
+> >> >
+> >> > So we need to save the BPF_F_INGRESS flag in sk_psock and assign it to
+> >> > msg->flags before redirection.
+> >> >
+> >> > Fixes: 8934ce2fd081 ("bpf: sockmap redirect ingress support")
+> >> > Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+> >> > ---
+> >> >  include/linux/skmsg.h | 1 +
+> >> >  net/core/skmsg.c      | 1 +
+> >> >  net/ipv4/tcp_bpf.c    | 1 +
+> >> >  net/tls/tls_sw.c      | 1 +
+> >> >  4 files changed, 4 insertions(+)
+> >> >
+> >> > diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> >> > index 48f4b64..e1d463f 100644
+> >> > --- a/include/linux/skmsg.h
+> >> > +++ b/include/linux/skmsg.h
+> >> > @@ -82,6 +82,7 @@ struct sk_psock {
+> >> >  	u32				apply_bytes;
+> >> >  	u32				cork_bytes;
+> >> >  	u32				eval;
+> >> > +	u32				flags;
+> >> >  	struct sk_msg			*cork;
+> >> >  	struct sk_psock_progs		progs;
+> >> >  #if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
+> >> > diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> >> > index 188f855..ab2f8f3 100644
+> >> > --- a/net/core/skmsg.c
+> >> > +++ b/net/core/skmsg.c
+> >> > @@ -888,6 +888,7 @@ int sk_psock_msg_verdict(struct sock *sk, struct sk_psock *psock,
+> >> >  		if (psock->sk_redir)
+> >> >  			sock_put(psock->sk_redir);
+> >> >  		psock->sk_redir = msg->sk_redir;
+> >> > +		psock->flags = msg->flags;
+> >> >  		if (!psock->sk_redir) {
+> >> >  			ret = __SK_DROP;
+> >> >  			goto out;
+> >> > diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+> >> > index ef5de4f..1390d72 100644
+> >> > --- a/net/ipv4/tcp_bpf.c
+> >> > +++ b/net/ipv4/tcp_bpf.c
+> >> > @@ -323,6 +323,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+> >> >  		break;
+> >> >  	case __SK_REDIRECT:
+> >> >  		sk_redir = psock->sk_redir;
+> >> > +		msg->flags = psock->flags;
+> >> >  		sk_msg_apply_bytes(psock, tosend);
+> >> >  		if (!psock->apply_bytes) {
+> >> >  			/* Clean up before releasing the sock lock. */
+> >>                  ^^^^^^^^^^^^^^^
+> >> In this block reposted here with the rest of the block
+> >> 
+> >> 
+> >> 		if (!psock->apply_bytes) {
+> >> 			/* Clean up before releasing the sock lock. */
+> >> 			eval = psock->eval;
+> >> 			psock->eval = __SK_NONE;
+> >> 			psock->sk_redir = NULL;
+> >> 		}
+> >> 
+> >> Now that we have a psock->flags we should clera that as
+> >> well right?
+> >
+> > According to my understanding, it is not necessary (but can) to clear
+> > psock->flags here, because psock->flags will be overwritten by msg->flags
+> > at the beginning of each redirection (in sk_psock_msg_verdict()).
+> 
+> 1. We should at least document that psock->flags value can be garbage
+>    (undefined) if psock->sk_redir is null.
 
+Per v2 I think we should not have garbage flags. Just zero the flags
+field no point in saving a single insn here IMO.
 
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-> Sent: Thursday, November 24, 2022 12:47 AM
-> To: Keller, Jacob E <jacob.e.keller@intel.com>
-> Cc: netdev@vger.kernel.org; Jiri Pirko <jiri@nvidia.com>; Jakub Kicinski
-> <kuba@kernel.org>
-> Subject: Re: [PATCH net-next v2 2/9] devlink: report extended error messa=
-ge in
-> region_read_dumpit
->=20
-> Wed, Nov 23, 2022 at 09:38:27PM CET, jacob.e.keller@intel.com wrote:
->=20
-> [...]
->=20
->=20
-> >@@ -6525,8 +6525,14 @@ static int
-> devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
-> >
-> > 	devl_lock(devlink);
-> >
-> >-	if (!attrs[DEVLINK_ATTR_REGION_NAME] ||
-> >-	    !attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
-> >+	if (!attrs[DEVLINK_ATTR_REGION_NAME]) {
-> >+		NL_SET_ERR_MSG(cb->extack, "No region name provided");
-> >+		err =3D -EINVAL;
-> >+		goto out_unlock;
-> >+	}
-> >+
-> >+	if (!attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
-> >+		NL_SET_ERR_MSG(cb->extack, "No snapshot id provided");
-> > 		err =3D -EINVAL;
-> > 		goto out_unlock;
-> > 	}
-> >@@ -6541,7 +6547,8 @@ static int devlink_nl_cmd_region_read_dumpit(struc=
-t
-> sk_buff *skb,
-> > 		}
-> > 	}
-> >
-> >-	region_name =3D nla_data(attrs[DEVLINK_ATTR_REGION_NAME]);
-> >+	region_attr =3D attrs[DEVLINK_ATTR_REGION_NAME];
-> >+	region_name =3D nla_data(region_attr);
-> >
-> > 	if (port)
-> > 		region =3D devlink_port_region_get_by_name(port, region_name);
-> >@@ -6549,6 +6556,7 @@ static int devlink_nl_cmd_region_read_dumpit(struc=
-t
-> sk_buff *skb,
-> > 		region =3D devlink_region_get_by_name(devlink, region_name);
-> >
-> > 	if (!region) {
-> >+		NL_SET_ERR_MSG_ATTR(cb->extack, region_attr, "requested
-> region does not exist");
->=20
-> Any reason why don't start the message with uppercase? It would be
-> consistent with the other 2 messages you just introduced.
-> Same goes to the message in the next patch (perhaps some others too)
->=20
->=20
+> 
+> 2. 'flags' is amiguous (flags for what?). I'd suggest to rename to
+>    something like redir_flags.
+> 
+>    Also, since we don't care about all flags, but just the ingress bit,
+>    we should store just that. It's not about size. Less state passed
+>    around is easier to reason about. See patch below.
 
-No particular reason. I'll fix these.
+rename makes sense to me.
 
-> > 		err =3D -EINVAL;
-> > 		goto out_unlock;
-> > 	}
-> >--
-> >2.38.1.420.g319605f8f00e
-> >
+> 
+> 3. Alternatively, I'd turn psock->sk_redir into a tagged pointer, like
+>    skb->_sk_redir is. This way all state (pointer & flags) is bundled
+>    and managed together. It would be a bigger change. Would have to be
+>    split out from this patch set.
+> 
+> --8<--
+> 
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index 70d6cb94e580..84f787416a54 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -82,6 +82,7 @@ struct sk_psock {
+>  	u32				apply_bytes;
+>  	u32				cork_bytes;
+>  	u32				eval;
+> +	bool				redir_ingress; /* undefined if sk_redir is null */
+>  	struct sk_msg			*cork;
+>  	struct sk_psock_progs		progs;
+>  #if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 14d45661a84d..5b70b241ce71 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -2291,8 +2291,8 @@ int tcp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore);
+>  void tcp_bpf_clone(const struct sock *sk, struct sock *newsk);
+>  #endif /* CONFIG_BPF_SYSCALL */
+>  
+> -int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg, u32 bytes,
+> -			  int flags);
+> +int tcp_bpf_sendmsg_redir(struct sock *sk, bool ingress,
+> +			  struct sk_msg *msg, u32 bytes, int flags);
+>  #endif /* CONFIG_NET_SOCK_MSG */
+>  
+>  #if !defined(CONFIG_BPF_SYSCALL) || !defined(CONFIG_NET_SOCK_MSG)
+> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> index e6b9ced3eda8..53d0251788aa 100644
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
+> @@ -886,13 +886,16 @@ int sk_psock_msg_verdict(struct sock *sk, struct sk_psock *psock,
+>  	ret = sk_psock_map_verd(ret, msg->sk_redir);
+>  	psock->apply_bytes = msg->apply_bytes;
+>  	if (ret == __SK_REDIRECT) {
+> -		if (psock->sk_redir)
+> +		if (psock->sk_redir) {
+>  			sock_put(psock->sk_redir);
+> -		psock->sk_redir = msg->sk_redir;
+> -		if (!psock->sk_redir) {
+> +			psock->sk_redir = NULL;
+> +		}
+> +		if (!msg->sk_redir) {
+>  			ret = __SK_DROP;
+>  			goto out;
+>  		}
+> +		psock->redir_ingress = sk_msg_to_ingress(msg);
+> +		psock->sk_redir = msg->sk_redir;
+>  		sock_hold(psock->sk_redir);
+>  	}
+>  out:
+> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+> index cf9c3e8f7ccb..490b359dc814 100644
+> --- a/net/ipv4/tcp_bpf.c
+> +++ b/net/ipv4/tcp_bpf.c
+> @@ -131,10 +131,9 @@ static int tcp_bpf_push_locked(struct sock *sk, struct sk_msg *msg,
+>  	return ret;
+>  }
+>  
+> -int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
+> -			  u32 bytes, int flags)
+> +int tcp_bpf_sendmsg_redir(struct sock *sk, bool ingress,
+> +			  struct sk_msg *msg, u32 bytes, int flags)
+>  {
+> -	bool ingress = sk_msg_to_ingress(msg);
+>  	struct sk_psock *psock = sk_psock_get(sk);
+>  	int ret;
+>  
+> @@ -337,7 +336,8 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+>  		release_sock(sk);
+>  
+>  		origsize = msg->sg.size;
+> -		ret = tcp_bpf_sendmsg_redir(sk_redir, msg, tosend, flags);
+> +		ret = tcp_bpf_sendmsg_redir(sk_redir, psock->redir_ingress,
+> +					    msg, tosend, flags);
+>  		sent = origsize - msg->sg.size;
+>  
+>  		if (eval == __SK_REDIRECT)
+> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+> index 264cf367e265..b22d97610b9a 100644
+> --- a/net/tls/tls_sw.c
+> +++ b/net/tls/tls_sw.c
+> @@ -846,7 +846,8 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
+>  		sk_msg_return_zero(sk, msg, send);
+>  		msg->sg.size -= send;
+>  		release_sock(sk);
+> -		err = tcp_bpf_sendmsg_redir(sk_redir, &msg_redir, send, flags);
+> +		err = tcp_bpf_sendmsg_redir(sk_redir, psock->redir_ingress,
+> +					    &msg_redir, send, flags);
+>  		lock_sock(sk);
+>  		if (err < 0) {
+>  			*copied -= sk_msg_free_nocharge(sk, &msg_redir);
+
 
