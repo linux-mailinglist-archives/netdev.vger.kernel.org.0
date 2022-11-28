@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0844F63A7D5
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A0C63A7C3
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231543AbiK1MCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 07:02:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
+        id S231681AbiK1MBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 07:01:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231544AbiK1MAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:52 -0500
+        with ESMTP id S231510AbiK1MAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:48 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09F118E2B
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C988B1A20F
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:47 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoU-0005O5-Cx; Mon, 28 Nov 2022 13:00:42 +0100
+        id 1ozcoT-0005Lk-C9; Mon, 28 Nov 2022 13:00:41 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoS-000oCB-RO; Mon, 28 Nov 2022 13:00:41 +0100
+        id 1ozcoR-000oBZ-Pt; Mon, 28 Nov 2022 13:00:40 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoO-00H6Rs-OU; Mon, 28 Nov 2022 13:00:36 +0100
+        id 1ozcoO-00H6SK-Ra; Mon, 28 Nov 2022 13:00:36 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH v1 22/26] net: dsa: microchip: ksz8_r_sta_mac_table(): make use of error values provided by read/write functions
-Date:   Mon, 28 Nov 2022 13:00:30 +0100
-Message-Id: <20221128120034.4075562-23-o.rempel@pengutronix.de>
+Subject: [PATCH v1 23/26] net: dsa: microchip: make ksz8_w_sta_mac_table() static
+Date:   Mon, 28 Nov 2022 13:00:31 +0100
+Message-Id: <20221128120034.4075562-24-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221128120034.4075562-1-o.rempel@pengutronix.de>
 References: <20221128120034.4075562-1-o.rempel@pengutronix.de>
@@ -60,64 +60,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Read/write operations may fail. So, make use of return values.
+ksz8_w_sta_mac_table() is used only in ksz8795.c. So, make it static.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8795.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/net/dsa/microchip/ksz8.h    | 2 --
+ drivers/net/dsa/microchip/ksz8795.c | 4 ++--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/net/dsa/microchip/ksz8.h b/drivers/net/dsa/microchip/ksz8.h
+index ed72ec626593..e3d1bbde008a 100644
+--- a/drivers/net/dsa/microchip/ksz8.h
++++ b/drivers/net/dsa/microchip/ksz8.h
+@@ -19,8 +19,6 @@ void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port);
+ void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port);
+ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
+ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val);
+-void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
+-			  struct alu_struct *alu);
+ void ksz8_r_mib_cnt(struct ksz_device *dev, int port, u16 addr, u64 *cnt);
+ void ksz8_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
+ 		    u64 *dropped, u64 *cnt);
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index b7487be91f67..1de33ceb50de 100644
+index 1de33ceb50de..9c1450782314 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -336,19 +336,26 @@ void ksz8_port_init_cnt(struct ksz_device *dev, int port)
- 	}
+@@ -509,8 +509,8 @@ static int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
+ 	return 0;
  }
  
--static void ksz8_r_table(struct ksz_device *dev, int table, u16 addr, u64 *data)
-+static int ksz8_r_table(struct ksz_device *dev, int table, u16 addr, u64 *data)
+-void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
+-			  struct alu_struct *alu)
++static void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
++				 struct alu_struct *alu)
  {
- 	const u16 *regs;
- 	u16 ctrl_addr;
-+	int ret;
- 
- 	regs = dev->info->regs;
- 
- 	ctrl_addr = IND_ACC_TABLE(table | TABLE_READ) | addr;
- 
- 	mutex_lock(&dev->alu_mutex);
--	ksz_write16(dev, regs[REG_IND_CTRL_0], ctrl_addr);
--	ksz_read64(dev, regs[REG_IND_DATA_HI], data);
-+	ret = ksz_write16(dev, regs[REG_IND_CTRL_0], ctrl_addr);
-+	if (ret)
-+		goto unlock_alu;
-+
-+	ret = ksz_read64(dev, regs[REG_IND_DATA_HI], data);
-+unlock_alu:
- 	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
- }
- 
- static void ksz8_w_table(struct ksz_device *dev, int table, u16 addr, u64 data)
-@@ -463,11 +470,15 @@ static int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
+ 	u32 data_hi, data_lo;
  	const u8 *shifts;
- 	const u32 *masks;
- 	u64 data;
-+	int ret;
- 
- 	shifts = dev->info->shifts;
- 	masks = dev->info->masks;
- 
--	ksz8_r_table(dev, TABLE_STATIC_MAC, addr, &data);
-+	ret = ksz8_r_table(dev, TABLE_STATIC_MAC, addr, &data);
-+	if (ret)
-+		return ret;
-+
- 	data_hi = data >> 32;
- 	data_lo = (u32)data;
- 
 -- 
 2.30.2
 
