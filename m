@@ -2,75 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0096D63A254
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 08:55:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A5E63A2B9
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 09:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbiK1Hy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 02:54:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52842 "EHLO
+        id S230140AbiK1IVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 03:21:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiK1Hy5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 02:54:57 -0500
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BE3B1582E
-        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 23:54:56 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8F9AD5C00BF;
-        Mon, 28 Nov 2022 02:54:55 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Mon, 28 Nov 2022 02:54:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1669622095; x=
-        1669708495; bh=A/mwzHs/0UYBA4v/5ce7hr1N+4vVioIhSVJO0ZkTGYE=; b=V
-        ddhyVbU7kgm01kFR3nUj8ZECizDULgP7OjiyjZ5YlWPjXMDIKevyAMMExjzMTJg1
-        Nx19galzXaChbmwbiWt7jlqmiQNrqt7kUzIFlE3rd7eNThZzNzi9L2dSUcSbGev+
-        T3J4TQQaSjszSfEMLjUl9+0WPxyx13YJAmkDIoK6ZgyoiiVJZ2wy2rKmWzfzeynx
-        GOFrwUEUFdYYjzgRv590gIGARsWJR1jNPdojaLBsBZDQZZoj1mqrPlgfjvelky9u
-        d9T7sDt3zLoii65E7a7zjFwJ3HYIuAwuiz+pz5H6cu/uYXS8bgPz6I4ywuTftDqB
-        ZAaVsGJNFeOFw8Huj6dDg==
-X-ME-Sender: <xms:T2mEY6bekqa_1EpZPv9oLMc7b8BYrOqsjz1zeOhTPCWkbc0hdgcXPg>
-    <xme:T2mEY9YMkF0t9IxvbkO_Fd1uAJ04BCXlHUf3Br9vuYFWtq7HpQQKsFBUMuZxJNEZj
-    v3YBtaiE5degMI>
-X-ME-Received: <xmr:T2mEY08ThqK_VAJ-MOAhTlr7IFOk63QKQgugNXHR63_BpDnSwYSFDGh4cWW->
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrjedugdduudeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtugfgjgesth
-    ekredttddtjeenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehi
-    ughoshgthhdrohhrgheqnecuggftrfgrthhtvghrnhepkeeggfeghfeuvdegtedtgedvue
-    dvhfdujedvvdejteelvdeutdehheellefhhfdunecuvehluhhsthgvrhfuihiivgeptden
-    ucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:T2mEY8qeJjzvh1iw5G5tJXddEJWOaGLsG__EVLWSVpmBZRg0hSyj9g>
-    <xmx:T2mEY1rclhlBRHHMpnYsclJLO6E5KWYpdEeuzoEpzz1C8v53vJoAiw>
-    <xmx:T2mEY6RKEx80SD2xFlGHZ_B9XAEw6nwywB0evRm1XfIOKGhzfYIGRg>
-    <xmx:T2mEY2lRpGQpY4YX_c8G_WlrvznaTR9IWkpsIX0VfSJvUapeBeG34w>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 28 Nov 2022 02:54:54 -0500 (EST)
-Date:   Mon, 28 Nov 2022 09:54:52 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     nb <nikolay.borisov@virtuozzo.com>
-Cc:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, kernel@openvz.org
-Subject: Re: [PATCH net-next v2 1/3] drop_monitor: Implement namespace
- filtering/reporting for software drops
-Message-ID: <Y4RpTM8141eTNhsD@shredder>
-References: <20221123142817.2094993-1-nikolay.borisov@virtuozzo.com>
- <20221123142817.2094993-2-nikolay.borisov@virtuozzo.com>
- <Y345WyXayWF/2eDJ@shredder>
- <7a8bf56c-3db8-63c2-8440-7bbbfb4901ac@virtuozzo.com>
- <Y35iBgeq5iKyTmfT@shredder>
- <8c6aee78-2247-bcd5-ea48-b76652745301@virtuozzo.com>
+        with ESMTP id S230190AbiK1IUp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 03:20:45 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E6A1704E;
+        Mon, 28 Nov 2022 00:20:33 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id n3so15482136wrp.5;
+        Mon, 28 Nov 2022 00:20:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qSIbdQeQLc1B6fZDwz85ioJ0LOXvlrrzDAmnKikBfF0=;
+        b=NwL/5dEuggm86DTrBCWMUdvqPs2+LVBGByIglS7sm3G0+vlGhXnMVLgQrf8n8EFyJC
+         HW5izUDuVo/Sq6ThdRlec5rYWst/HjY5vtsWolt3M3JVTB27AZJuNM6TtVqBnRgS6rTQ
+         HmSIab1PZAKykrqYD4ljI3cxsiLZRsxeXFNnz1smkj6MY2iCRbAJNKfYZELFXBijBUoI
+         L7m5Dg4lpXDHLgtRTpyzQCapdmbRQ1PZz2yxqZJnDAlwHUbCmHyw2bveWsWkOyr1OHPu
+         MnJ4lut9Avqwa0WvfSUn0ZY8HYd8bStxGwFYrVIaA5OiqesPm4iWyj//W8r6jAqSajZJ
+         SWaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qSIbdQeQLc1B6fZDwz85ioJ0LOXvlrrzDAmnKikBfF0=;
+        b=4rdMMjukxHieo+2C5t38ZPwosKmK3TrlLsqzLdhr+VreZQtibM+Vdo+HtrFZ9WJD5a
+         XDaDMGnQ1lhJmyy8nfyn2C1j0aYeX8Ehcvo1AuqVQHupRoYmba4lmnjYANLK07ukOjlx
+         CqWRkmvCCNfXOatDTxH7eKXWv3Iuf7JXS/IiCiiVfTryulOVZkTPjyl7jPrNWyTmCI1v
+         Q1KuGwzzHDEOrxFHVPAa4cn3nzBEgrhiCInazOvAcucGgS0yYdE4LZXd49QGvyCAdTTG
+         pwkK8gKPVkV0l5spzKzFgpgoJ46Qq9ozxN7ln3gMoPgJJGHP0RIsNMgY4l/gAx7xVg98
+         DyGg==
+X-Gm-Message-State: ANoB5pmYDAditaigdW/J4znrssLwA/BhlctpMnuyc27P3trb7Ksg7pxO
+        0eXtrLAlUDe8O2b/TNXBbFI=
+X-Google-Smtp-Source: AA0mqf6aji4/cGcIbRAqRw4P6sBoRN0HKEiHun0VEl6pEwIos6LTLsQdy30HlrAYjW1M8L4Nz7R9zQ==
+X-Received: by 2002:adf:ea44:0:b0:242:19b2:f1fc with SMTP id j4-20020adfea44000000b0024219b2f1fcmr1221218wrn.593.1669623631507;
+        Mon, 28 Nov 2022 00:20:31 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id r6-20020a05600c458600b003cfd4a50d5asm18664171wmo.34.2022.11.28.00.20.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Nov 2022 00:20:31 -0800 (PST)
+Date:   Mon, 28 Nov 2022 11:20:27 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>
+Cc:     Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] bonding: uninitialized variable in
+ bond_miimon_inspect()
+Message-ID: <Y4RvS7Bns4Q8MorG@kili>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8c6aee78-2247-bcd5-ea48-b76652745301@virtuozzo.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,66 +75,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 24, 2022 at 01:41:38PM +0200, nb wrote:
-> 
-> 
-> On 23.11.22 г. 20:10 ч., Ido Schimmel wrote:
-> > On Wed, Nov 23, 2022 at 05:21:23PM +0200, nb wrote:
-> > > 
-> > > 
-> > > On 23.11.22 г. 17:16 ч., Ido Schimmel wrote:
-> > > > On Wed, Nov 23, 2022 at 04:28:15PM +0200, Nikolay Borisov wrote:
-> > > > >    static void trace_drop_common(struct sk_buff *skb, void *location)
-> > > > >    {
-> > > > >    	struct net_dm_alert_msg *msg;
-> > > > > @@ -219,7 +233,11 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
-> > > > >    	int i;
-> > > > >    	struct sk_buff *dskb;
-> > > > >    	struct per_cpu_dm_data *data;
-> > > > > -	unsigned long flags;
-> > > > > +	unsigned long flags, ns_id = 0;
-> > > > > +
-> > > > > +	if (skb->dev && net_dm_ns &&
-> > > > > +	    dev_net(skb->dev)->ns.inum != net_dm_ns)
-> > > > 
-> > > > I don't think this is going to work, unfortunately. 'skb->dev' is in a
-> > > > union with 'dev_scratch' so 'skb->dev' does not necessarily point to a
-> > > > valid netdev at all times. It can explode when dev_net() tries to
-> > > > dereference it.
-> > > > 
-> > > > __skb_flow_dissect() is doing something similar, but I believe there the
-> > > > code paths were audited to make sure it is safe.
-> > > > 
-> > > > Did you consider achieving this functionality with a BPF program
-> > > > attached to skb::kfree_skb tracepoint? I believe BPF programs are run
-> > > > with page faults disabled, so it should be safe to attempt this there.
-> > > 
-> > > How would that be different than the trace_drop_common which is called as
-> > > part of the trace_kfree_skb, as it's really passed as trace point probe via:
-> > 
-> > Consider this call path:
-> > 
-> > __udp_queue_rcv_skb()
-> >      __udp_enqueue_schedule_skb()
-> >          udp_set_dev_scratch() // skb->dev is not NULL, but not a pointer to a netdev either
-> > 	// error is returned
-> >      kfree_skb_reason() // probe is called
-> > 
-> > dev_net(skb->dev) in the probe will try to dereference skb->dev and
-> > crash.
-> 
-> This can easily be rectified by using is_kernel() .
+The "ignore_updelay" variable needs to be initialized to false to
+prevent an uninitialized variable bug.
 
-The layout of 'struct udp_dev_scratch' is not fixed and it can be
-arranged to contain values that make it seem like a valid kernel
-address, but does not actually point to a 'struct net_device'.
+Fixes: f8a65ab2f3ff ("bonding: fix link recovery in mode 2 when updelay is nonzero")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
+---
 
-> 
-> > 
-> > On the other hand, a BPF program that is registered as another probe on
-> > the tracepoint will access the memory via bpf_probe_read_kernel(), which
-> > will try to safely read the memory and return an error if it can't. You
-> > can do that today without any kernel changes.
-> 
-> I did a PoC for this and indeed it works, however I'd still like to pursue
-> this code provided there is upstream interest.
+This was found by Smatch.  Another Smatch warning that might be worth
+investigating is:
+
+drivers/net/bonding/bond_main.c:5071 bond_update_slave_arr() warn: missing error code here? 'bond_3ad_get_active_agg_info()' failed. 'ret' = '0'
+
+I don't know the code well enough to say if that's a real bug.
+
+ drivers/net/bonding/bond_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index c87481033995..8a57a5681461 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2527,7 +2527,7 @@ static int bond_miimon_inspect(struct bonding *bond)
+ 	int link_state, commit = 0;
+ 	struct list_head *iter;
+ 	struct slave *slave;
+-	bool ignore_updelay;
++	bool ignore_updelay = false;
+ 
+ 	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP) {
+ 		ignore_updelay = !rcu_dereference(bond->curr_active_slave);
+-- 
+2.35.1
+
