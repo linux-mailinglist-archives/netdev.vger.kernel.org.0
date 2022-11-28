@@ -2,57 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEAFB63B255
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 20:32:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62A9963B257
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 20:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233778AbiK1TcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 14:32:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
+        id S232512AbiK1TgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 14:36:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234100AbiK1TcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 14:32:08 -0500
-Received: from EX-PRD-EDGE02.vmware.com (ex-prd-edge02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D85D2D745;
-        Mon, 28 Nov 2022 11:32:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
-      content-type;
-    bh=nYRUByL212OTBMMVhix0t+KY0BEqukc/TQnKhzG1llA=;
-    b=Cq/q2Qk5VVP899fyhfKg5mE7eTON3Sk1X+WokPRY9NHx+N/OF/lFtqiQbQwYzq
-      8bljwrYUjKUNTRTBlVAOfcSYBt28Mdvw9CSEJXVAue6+mpbf/lJv1MGwOpSFIa
-      jlX/7NUV4nGkkRJbv1D1KqSNHRDwc2fqoSfhXDiGmE6CnlY=
-Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
- EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Mon, 28 Nov 2022 11:31:52 -0800
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 8580A20294;
-        Mon, 28 Nov 2022 11:32:06 -0800 (PST)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 80B25AE1B0; Mon, 28 Nov 2022 11:32:06 -0800 (PST)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        with ESMTP id S230241AbiK1TgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 14:36:07 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272C2289;
+        Mon, 28 Nov 2022 11:36:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1669664162; x=1701200162;
+  h=from:to:subject:date:message-id:mime-version;
+  bh=wD2M8s3Cr8kF2HD+rXY4pLjxb8HYCtk76CEYAlmGrcg=;
+  b=AvlJNj/KzJi2qwKj/TAJ77qSbNBf0r0jH3OGi1oCE5lM92UodAx40Maz
+   tI7CI4RBbUpww8iZppPvaAV5PSMgS8Xq4xpz0y8iNi4s675YMhjOuC4vv
+   vjr3TOW7MlIvDsXRZkmCRTnD4vO4C5N5+EMva4xTs8UDkXZWTaQIse+m1
+   zbUjekx5ZzEis9pLGU/gP/ADTSm1gjf+9T7TGK3ppZFhRO2FXeBs9nKTm
+   ZZjznQ43anYrTShYIWYVhLD7GQkyaqM49uE81Oa/NH53ysIiJ8RqHSM8d
+   THDgtKhgceAigUUSX679ffdpUnrKTXJ5fgIOf5YudKTiHc7TR5uXwH6Cc
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="190878452"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Nov 2022 12:36:02 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 28 Nov 2022 12:36:02 -0700
+Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Mon, 28 Nov 2022 12:36:00 -0700
+From:   Jerry Ray <jerry.ray@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Guolin Yang <gyang@vmware.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 net  2/2] vmxnet3: use correct intrConf reference when using extended queues
-Date:   Mon, 28 Nov 2022 11:32:04 -0800
-Message-ID: <20221128193205.3820-3-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20221128193205.3820-1-doshir@vmware.com>
-References: <20221128193205.3820-1-doshir@vmware.com>
+        "Paolo Abeni" <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Jerry Ray <jerry.ray@microchip.com>
+Subject: [net PATCH] dsa: lan9303: Correct stat name
+Date:   Mon, 28 Nov 2022 13:35:59 -0600
+Message-ID: <20221128193559.6572-1-jerry.ray@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,55 +62,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'Commit 39f9895a00f4 ("vmxnet3: add support for 32 Tx/Rx queues")'
-added support for 32Tx/Rx queues. As a part of this patch, intrConf
-structure was extended to incorporate increased queues.
+Fixes: a1292595e006 ("net: dsa: add new DSA switch driver for the SMSC-LAN9303")
 
-This patch fixes the issue where incorrect reference is being used.
+This patch changes the reported ethtool statistics for the lan9303
+family of parts covered by this driver.
 
-Fixes: 39f9895a00f4 ("vmxnet3: add support for 32 Tx/Rx queues")
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
+The TxUnderRun statistic label is renamed to RxShort to accurately
+reflect what stat the device is reporting.  I did not reorder the
+statistics as that might cause problems with existing user code that
+are expecting the stats at a certain offset.
+
+Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/net/dsa/lan9303-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 611e8a85de17..39a7e90d4254 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -75,8 +75,14 @@ vmxnet3_enable_all_intrs(struct vmxnet3_adapter *adapter)
- 
- 	for (i = 0; i < adapter->intr.num_intrs; i++)
- 		vmxnet3_enable_intr(adapter, i);
--	adapter->shared->devRead.intrConf.intrCtrl &=
-+	if (!VMXNET3_VERSION_GE_6(adapter) ||
-+	    !adapter->queuesExtEnabled) {
-+		adapter->shared->devRead.intrConf.intrCtrl &=
- 					cpu_to_le32(~VMXNET3_IC_DISABLE_ALL);
-+	} else {
-+		adapter->shared->devReadExt.intrConfExt.intrCtrl &=
-+					cpu_to_le32(~VMXNET3_IC_DISABLE_ALL);
-+	}
- }
- 
- 
-@@ -85,8 +91,14 @@ vmxnet3_disable_all_intrs(struct vmxnet3_adapter *adapter)
- {
- 	int i;
- 
--	adapter->shared->devRead.intrConf.intrCtrl |=
-+	if (!VMXNET3_VERSION_GE_6(adapter) ||
-+	    !adapter->queuesExtEnabled) {
-+		adapter->shared->devRead.intrConf.intrCtrl |=
- 					cpu_to_le32(VMXNET3_IC_DISABLE_ALL);
-+	} else {
-+		adapter->shared->devReadExt.intrConfExt.intrCtrl |=
-+					cpu_to_le32(VMXNET3_IC_DISABLE_ALL);
-+	}
- 	for (i = 0; i < adapter->intr.num_intrs; i++)
- 		vmxnet3_disable_intr(adapter, i);
- }
+diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+index 438e46af03e9..80f07bd20593 100644
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -961,7 +961,7 @@ static const struct lan9303_mib_desc lan9303_mib[] = {
+ 	{ .offset = LAN9303_MAC_TX_BRDCST_CNT_0, .name = "TxBroad", },
+ 	{ .offset = LAN9303_MAC_TX_PAUSE_CNT_0, .name = "TxPause", },
+ 	{ .offset = LAN9303_MAC_TX_MULCST_CNT_0, .name = "TxMulti", },
+-	{ .offset = LAN9303_MAC_RX_UNDSZE_CNT_0, .name = "TxUnderRun", },
++	{ .offset = LAN9303_MAC_RX_UNDSZE_CNT_0, .name = "RxShort", },
+ 	{ .offset = LAN9303_MAC_TX_64_CNT_0, .name = "Tx64Byte", },
+ 	{ .offset = LAN9303_MAC_TX_127_CNT_0, .name = "Tx128Byte", },
+ 	{ .offset = LAN9303_MAC_TX_255_CNT_0, .name = "Tx256Byte", },
 -- 
-2.11.0
+2.17.1
 
