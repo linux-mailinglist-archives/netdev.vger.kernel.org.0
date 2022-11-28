@@ -2,196 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CECD63ABA9
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 15:56:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 392DB63ABEC
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 16:05:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232195AbiK1O4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 09:56:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46244 "EHLO
+        id S231256AbiK1PFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 10:05:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbiK1O4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 09:56:37 -0500
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2127.outbound.protection.outlook.com [40.107.104.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491401F9DA;
-        Mon, 28 Nov 2022 06:56:34 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kIjGhtCYBF0ZOQKUUA3FmKUDXrlyXC8EL8Mz8Zq05qy583MvrnOl5xVugQkMGoZRjHDYLSHtG7ATMidfVpmh5pwJhJAIWcwdR0qnntAmsCYA3ofEgnT9QtDMUJ0mvm9h+2Yekk4FlqNkfrjxYHugcEjD1F0bEvH5F/ivENyuTtWOcTst4L08Cpwh7gta8kPLXj3yVz09NoqgFxpixKWSMo4dy6SUNI0KhInzy/19EAoQLfkRppWo2KxA8mF8PPa/hqmkKrgSshxqgoemayq5sPuXkpj2NjBfWeVyUi9ibAqAvLRmru+a4J6BH3u122KlCMq0Hnn7upM4+cuaTs4EYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fLZ6DNP1ktx/hPYmzo5z4YhkL6IZRM49lF+iYUWdR7s=;
- b=NjcUOxRfwKH+lANPn2/f42VqTDLThy2rT09UJj2DA/kkOd8VYt3OXcw74N/l2HmEMprzByG0+84uJNSpproUrpwVnxpxZ1nbYvK/55D02KpIvlt8g45SXAAifYAOp9bpfA/zwgRJovb6r9ypugrJuikqXgetxYYk6/pD0owOJde9PFekqi/4pGt5ncY1wLrP3MLSoFz+s4VZn7OALoiARRFby69Uxcfvm0+OUKexeG2mYzPeQcoDE6Z5aqaA3lIUK3GAE/fxm0qiwFlyM7Th1x5io3PnDTVpKAR10jhWaoUVb5j0sDt15WOMAs/6EBuHG0+bC1JpkI2X03i+JaQ8Cg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 217.111.95.7) smtp.rcpttodomain=microchip.com smtp.mailfrom=arri.de;
- dmarc=none action=none header.from=arri.de; dkim=none (message not signed);
- arc=none
+        with ESMTP id S230101AbiK1PFd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 10:05:33 -0500
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C3B1C416
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 07:05:32 -0800 (PST)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-3b5d9050e48so105829177b3.2
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 07:05:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=arrigroup.onmicrosoft.com; s=selector1-arrigroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fLZ6DNP1ktx/hPYmzo5z4YhkL6IZRM49lF+iYUWdR7s=;
- b=j443V07Iz4wN2fxEL+TCFtY4MJS9o81Fz83MhqGU1n341Fp7iqjBRzMD5vNt9rFbek4f743SqnTjIamLBtGC1ipZlIAHoGH7lZN0dXSjhZJODcThCLkdL29IgTy8to6w1uGHrZI+EzeGewmTE1j0Y0FyyIXg+BhRj51sYJdyprY=
-Received: from AS9P250CA0013.EURP250.PROD.OUTLOOK.COM (2603:10a6:20b:532::24)
- by DB5PR07MB9454.eurprd07.prod.outlook.com (2603:10a6:10:48e::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.27; Mon, 28 Nov
- 2022 14:56:32 +0000
-Received: from AM0EUR02FT027.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:532:cafe::23) by AS9P250CA0013.outlook.office365.com
- (2603:10a6:20b:532::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.19 via Frontend
- Transport; Mon, 28 Nov 2022 14:56:32 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 217.111.95.7)
- smtp.mailfrom=arri.de; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arri.de;
-Received-SPF: Fail (protection.outlook.com: domain of arri.de does not
- designate 217.111.95.7 as permitted sender) receiver=protection.outlook.com;
- client-ip=217.111.95.7; helo=mta.arri.de;
-Received: from mta.arri.de (217.111.95.7) by
- AM0EUR02FT027.mail.protection.outlook.com (10.13.54.153) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5834.15 via Frontend Transport; Mon, 28 Nov 2022 14:56:31 +0000
-Received: from n95hx1g2.localnet (192.168.54.110) by mta.arri.de (10.10.18.5)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 28 Nov
- 2022 15:56:30 +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
-        <richardcochran@gmail.com>
-Subject: Re: [Patch net-next v1 01/12] net: dsa: microchip: ptp: add the posix clock support
-Date:   Mon, 28 Nov 2022 15:56:30 +0100
-Message-ID: <5639053.DvuYhMxLoT@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <CALs4sv19Efi0oKVqRqRFtF2SCr6Phejh4RFvuRN1UCkdvcKJeg@mail.gmail.com>
-References: <20221128103227.23171-1-arun.ramadoss@microchip.com> <20221128103227.23171-2-arun.ramadoss@microchip.com> <CALs4sv19Efi0oKVqRqRFtF2SCr6Phejh4RFvuRN1UCkdvcKJeg@mail.gmail.com>
+        d=broadcom.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=wSo9b7NLSXOXvP2qgb8Loli+iVfYwiIniiCh93xMB8I=;
+        b=BNYBXm2L79CXDdOEa99smS8eFa7kskUcirTsxKmhy81WiZYUK6Qfo+Jx6Mh2qaiaZ9
+         Tf5LLsz/Rowx3bOXBUZyq1HNJ7fyYUTywB3bm7Mbed2wNDzYlYf03irqGCj6rQBXeSzE
+         wG3wWGoV28tDcyiN5+Ozf28Hj05EaMmAaDDwM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wSo9b7NLSXOXvP2qgb8Loli+iVfYwiIniiCh93xMB8I=;
+        b=0I9r6AV2GpUGkPLdHIEyR+40bl9BEh7+/BzWAizD7EEJn3afUAobQcUSeTczfmbQZ3
+         /1ovHbwbzsrKzN08+PZ02n2wrRdNbhtzC9p/2zhZbGmfwkObO2yq85ubVaHj0+nC0ELq
+         1aNVV6Oizy8Daa/MLutyh8cYdXTjaZKDEV/zdQwZH34MbXqzKKcOwS01e3GngBScX54A
+         viBbhy4x4f1omGUDtX0b8Fj7c+29CbcNyMJyuV41G/ND4GA6Lz5uTvrWV71Wezt+Ehv1
+         TPWgFR+BDHa/zt43JbtLbiOJxcJXnZZf+ODExeTN17Ohtn84Ey7pOtXa4dTDRh8mdHbZ
+         Oa/g==
+X-Gm-Message-State: ANoB5plhaiD1pq9qUjsiiZPWsscF/NDuGbravRoHOu2YC9JPgxFLCkqg
+        sEsRNEWuZL1RnZKRe7RM7amKcaOK380uOQ4zhGvdmg==
+X-Google-Smtp-Source: AA0mqf7REO/gM8RSsTDUXoXw26ul7cg8OtactsAYOBJoG7aCrvURcd4dbif3cOVgO8H4nRr6+koysUlWjZERrurcfKY=
+X-Received: by 2002:a81:1781:0:b0:3cc:919:6196 with SMTP id
+ 123-20020a811781000000b003cc09196196mr2114216ywx.154.1669647931113; Mon, 28
+ Nov 2022 07:05:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.110]
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0EUR02FT027:EE_|DB5PR07MB9454:EE_
-X-MS-Office365-Filtering-Correlation-Id: 63361fa4-f5f3-45f9-f8b6-08dad150bca2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TwTVnFj4KE2dDNB5EWjjEa6fLNyw2quX5RZ5FdW/NRERWf/uPY2pogWWm1/kkJ7pnweom4YJukVAWpT3ggdHaMOfenJYBEAZYEXbIYquBbNlyd+2DSJFsqG87TnbbDCCgGwObFgW8Fi4JThyj00y+yRIOe1qTtL/cDQyHVTtWN8ksArbV8B7liBgCOGNKsvCw7pdajFlOKHMdoGWrfjaMaUQHoPFCaH59EHvF/j/c/6u4GJ3aBSdq5ciXSaGTdOrY3SOulshEJnh40AzosBYuk8khfJYg8QrXMZcZMe5EKgp+yyCrngYWPZkPBqPMaPpBLNTtIAMFymnAtMil6vZ+g1/0ViVWOMnFJGUPWiXm4xXx8Zee7xBQXDNCGi5SbCkkwRU5uJRF925MswLMLhUKmxauxxwKOYyPzEFtnFupV0bDFWHU4vUPo8ndbiHRRVVH2x3NBRJZ5wYBr3NO1brTaWDt7kRYPIEsgG8+P3cV4+f9BdWv3mHioEULAEuMsV8Yz3OvusFhMt9gD29FUb/YanQMpNwUYsDAgm8JyF880NINCoIwrexwGpLEBaukfZ8u4mZ2xn2pIlYBrV5Mppno4NYKgxIf9YV2CG9jy40E2yE4n4yIlkS85eCY9/5XZWXLZG+IU9xVZfbE8angaql1jZbvr4ybcvmmeqfhBS017gevItpx5cHvwD9hpFsSlOqF9iNwFvdg2CJcCHK/8aOkDO+9FmU2YTEYAX3VLIG6wCgqQQ7tEhvP2PC7NIoaku1
-X-Forefront-Antispam-Report: CIP:217.111.95.7;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mta.arri.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(396003)(39850400004)(136003)(451199015)(36840700001)(46966006)(110136005)(26005)(8936002)(2906002)(70206006)(336012)(426003)(82740400003)(47076005)(5660300002)(7416002)(186003)(36860700001)(54906003)(41300700001)(8676002)(16526019)(53546011)(478600001)(33716001)(4326008)(83380400001)(40480700001)(9576002)(316002)(70586007)(82310400005)(9686003)(36916002)(81166007)(356005)(86362001)(36900700001);DIR:OUT;SFP:1102;
-X-OriginatorOrg: arri.de
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 14:56:31.8419
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 63361fa4-f5f3-45f9-f8b6-08dad150bca2
-X-MS-Exchange-CrossTenant-Id: e6a73a5a-614d-4c51-b3e3-53b660a9433a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e6a73a5a-614d-4c51-b3e3-53b660a9433a;Ip=[217.111.95.7];Helo=[mta.arri.de]
-X-MS-Exchange-CrossTenant-AuthSource: AM0EUR02FT027.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB5PR07MB9454
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <Y4SWJlh3ohJ6EPTL@kili> <CALs4sv3xJXJvWwcGk8N_s1mW9Y7GpEz6Bqv-DJO_q7hPi2yTLA@mail.gmail.com>
+ <Y4THeSrc0lOJP/AJ@kadam> <Y4TIYx37CiNGDSc5@kadam>
+In-Reply-To: <Y4TIYx37CiNGDSc5@kadam>
+From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
+Date:   Mon, 28 Nov 2022 20:35:20 +0530
+Message-ID: <CALs4sv3z8Q0BjunwtoKcSJ8hD8AePtU+sVwgJJEr5gjOGDSd9w@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] bonding: uninitialized variable in bond_miimon_inspect()
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000dc846505ee8933ba"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday, 28 November 2022, 15:49:33 CET, Pavan Chebbi wrote:
-> On Mon, Nov 28, 2022 at 4:03 PM Arun Ramadoss
-> <arun.ramadoss@microchip.com> wrote:
-> 
-> > diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-> > new file mode 100644
-> > index 000000000000..e578a0006ecf
-> > --- /dev/null
-> > +++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-> > @@ -0,0 +1,57 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/* Microchip KSZ PTP register definitions
-> > + * Copyright (C) 2022 Microchip Technology Inc.
-> > + */
-> > +
-> > +#ifndef __KSZ_PTP_REGS_H
-> > +#define __KSZ_PTP_REGS_H
-> > +
-> > +/* 5 - PTP Clock */
-> > +#define REG_PTP_CLK_CTRL               0x0500
-> > +
-> > +#define PTP_STEP_ADJ                   BIT(6)
-> > +#define PTP_STEP_DIR                   BIT(5)
-> > +#define PTP_READ_TIME                  BIT(4)
-> > +#define PTP_LOAD_TIME                  BIT(3)
-> 
-> PTP_WRITE_TIME sounds more intuitive than PTP_LOAD_TIME?
-PTP_LOAD_TIME has been derived from the data sheet:
+--000000000000dc846505ee8933ba
+Content-Type: text/plain; charset="UTF-8"
 
--------------8<--------------
-PTP Clock Load
---------------
-Setting this bit will cause the PTP clock to be loaded with the time value in
-registers 0x0502 to 0x050B.
-------------->8--------------
-
-I would also prefer PTP_WRITE_TIME. But is it ok to deviate from data sheet?
-
-> Also I see that all the #defines are introduced in this patch, some of
-> which are used later. It is a good idea to introduce the #defines in
-> the same patches where they are being used for the first time.
-> I will be looking at the entire series but am responding to this now.
-> 
-> > +#define PTP_CLK_ADJ_ENABLE             BIT(2)
-> > +#define PTP_CLK_ENABLE                 BIT(1)
-> > +#define PTP_CLK_RESET                  BIT(0)
-> > +
-> > +#define REG_PTP_RTC_SUB_NANOSEC__2     0x0502
-> > +
-> > +#define PTP_RTC_SUB_NANOSEC_M          0x0007
-> > +#define PTP_RTC_0NS                    0x00
-> > +
-> > +#define REG_PTP_RTC_NANOSEC            0x0504
-> > +#define REG_PTP_RTC_NANOSEC_H          0x0504
-> > +#define REG_PTP_RTC_NANOSEC_L          0x0506
-> > +
-> > +#define REG_PTP_RTC_SEC                        0x0508
-> > +#define REG_PTP_RTC_SEC_H              0x0508
-> > +#define REG_PTP_RTC_SEC_L              0x050A
-> > +
-> > +#define REG_PTP_SUBNANOSEC_RATE                0x050C
-> > +#define REG_PTP_SUBNANOSEC_RATE_H      0x050C
-> > +#define PTP_SUBNANOSEC_M               0x3FFFFFFF
-> > +
-> > +#define PTP_RATE_DIR                   BIT(31)
-> > +#define PTP_TMP_RATE_ENABLE            BIT(30)
-> > +
-> > +#define REG_PTP_SUBNANOSEC_RATE_L      0x050E
-> > +
-> > +#define REG_PTP_RATE_DURATION          0x0510
-> > +#define REG_PTP_RATE_DURATION_H                0x0510
-> > +#define REG_PTP_RATE_DURATION_L                0x0512
-> > +
-> > +#define REG_PTP_MSG_CONF1              0x0514
-> > +
-> > +#define PTP_802_1AS                    BIT(7)
-> > +#define PTP_ENABLE                     BIT(6)
-> > +#define PTP_ETH_ENABLE                 BIT(5)
-> > +#define PTP_IPV4_UDP_ENABLE            BIT(4)
-> > +#define PTP_IPV6_UDP_ENABLE            BIT(3)
-> > +#define PTP_TC_P2P                     BIT(2)
-> > +#define PTP_MASTER                     BIT(1)
-> > +#define PTP_1STEP                      BIT(0)
-> > +
-> > +#endif
-> > --
-> > 2.36.1
+On Mon, Nov 28, 2022 at 8:10 PM Dan Carpenter <error27@gmail.com> wrote:
+>
+> On Mon, Nov 28, 2022 at 05:36:41PM +0300, Dan Carpenter wrote:
+> > On Mon, Nov 28, 2022 at 07:15:39PM +0530, Pavan Chebbi wrote:
+> > > On Mon, Nov 28, 2022 at 4:36 PM Dan Carpenter <error27@gmail.com> wrote:
+> > > >
+> > > > The "ignore_updelay" variable needs to be initialized to false.
+> > > >
+> > > > Fixes: f8a65ab2f3ff ("bonding: fix link recovery in mode 2 when updelay is nonzero")
+> > > > Signed-off-by: Dan Carpenter <error27@gmail.com>
+> > > > ---
+> > > > v2: Re-order so the declarations are in reverse Christmas tree order
+> > > >
+> > > Thanks,
+> > > Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+> > >
+> > > > Don't forget about:
+> > > > drivers/net/bonding/bond_main.c:5071 bond_update_slave_arr() warn: missing error code here? 'bond_3ad_get_active_agg_info()' failed. 'ret' = '0'
+> > > >
+> > >
+> > > I think that warning can be ignored, as bond_update_slave_arr() does
+> > > consider the return value of bond_3ad_get_active_agg_info() but
+> > > chooses to not bubble it up. Though the author of the function is the
+> > > best person to answer it, at this point, it looks OK to me. Maybe a
+> > > separate patch to address it would help to get the attention of the
+> > > author.
 > >
-> 
+> > Heh...  That's slightly vague.
+> >
+> > You're wrong to say that none of the callers care about the error code.
+> > It is checked in bond_slave_arr_handler().
+>
+> If you don't know that's fine also...  All the maintainers are CC'd.  If
+> they really care they can take a look otherwise there are so many other
+> obvious bugs to care about and this is very minor.
+>
 
+No, I did not say nobody cares about the error code. I just said that
+bond_update_slave_arr() does care about
+bond_3ad_get_active_agg_info()'s return value, takes appropriate
+action and returns success to its caller. I think this is the scope
+and context of the warning message.
+To me this looks OK, but again, the maintainer/author is the best judge.
 
+> regards,
+> dan carpenter
+>
 
+--000000000000dc846505ee8933ba
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
+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
+OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
+dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
+fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
+9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
+pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
+25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
+Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINyj553eIiVi7CVksID5tmdioFbWCBsD
++Qnl9NjmESbQMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEy
+ODE1MDUzMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQBFao2gCEYQBJzBY92diLDkrBryaI1bwVbfLYuzSFq2JQl4vKzy
+MLvtKNMgClB3x4j2r4dxUL0p31s7sE2MGoysNMblX/l8wMpcKkEzgvljBy/bHb7A+op4O8vqT76E
+/atTrTL2hhvNVmhaKJHqxRAuEbSJ40u9f4HQbcrEOYwUqaRX0YPzYT3ar3PNEDAzM+/ixHJPGB7O
+ClPq0nHYWeu9/ubzn8r3RF9joQQoBSWFJaOEFIpEH+sxJN0zIQM0PFRkQfE3NlFtB4QumH0YA+Y5
+9yFgjNTH+SOCfjUZMI3nIdk+AjKp+BGc++vgpoRxoxk3r6vmnB68gk30mnjrNeg3
+--000000000000dc846505ee8933ba--
