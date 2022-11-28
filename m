@@ -2,30 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E2563A7D0
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B6E563A80F
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:19:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231470AbiK1MCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 07:02:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36782 "EHLO
+        id S231429AbiK1MTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 07:19:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230064AbiK1MAu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:50 -0500
+        with ESMTP id S230492AbiK1MSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:18:40 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCB718E05
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:49 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1521C127
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:10:29 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoU-0005NI-8C; Mon, 28 Nov 2022 13:00:42 +0100
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        id 1ozcxo-0000U9-Ib; Mon, 28 Nov 2022 13:10:20 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoS-000oBx-Jr; Mon, 28 Nov 2022 13:00:41 +0100
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ozcoP-00H6Th-3L; Mon, 28 Nov 2022 13:00:37 +0100
+        id 1ozcxn-0006XW-MB; Mon, 28 Nov 2022 13:10:19 +0100
+Date:   Mon, 28 Nov 2022 13:10:19 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -36,18 +33,21 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com
-Subject: [PATCH v1 26/26] net: dsa: microchip: ksz8: do not force flow control by default
-Date:   Mon, 28 Nov 2022 13:00:34 +0100
-Message-Id: <20221128120034.4075562-27-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221128120034.4075562-1-o.rempel@pengutronix.de>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Arun.Ramadoss@microchip.com
+Subject: Re: [PATCH v1 00/26] net: dsa: microchip: stats64, fdb, error
+Message-ID: <20221128121019.GA23860@pengutronix.de>
 References: <20221128120034.4075562-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20221128120034.4075562-1-o.rempel@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
@@ -60,113 +60,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make flow control configurable by moving it to ksz8_phylink_mac_link_up()
+On Mon, Nov 28, 2022 at 01:00:08PM +0100, Oleksij Rempel wrote:
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/microchip/ksz8.h       |  4 ++
- drivers/net/dsa/microchip/ksz8795.c    | 54 ++++++++++++++++++++++----
- drivers/net/dsa/microchip/ksz_common.c |  1 +
- 3 files changed, 51 insertions(+), 8 deletions(-)
+Sorry, I double send this series by accident. Please ignore the second
+one.
 
-diff --git a/drivers/net/dsa/microchip/ksz8.h b/drivers/net/dsa/microchip/ksz8.h
-index e3d1bbde008a..77439d9c5fc2 100644
---- a/drivers/net/dsa/microchip/ksz8.h
-+++ b/drivers/net/dsa/microchip/ksz8.h
-@@ -56,5 +56,9 @@ int ksz8_switch_detect(struct ksz_device *dev);
- int ksz8_switch_init(struct ksz_device *dev);
- void ksz8_switch_exit(struct ksz_device *dev);
- int ksz8_change_mtu(struct ksz_device *dev, int port, int mtu);
-+void ksz8_phylink_mac_link_up(struct ksz_device *dev, int port,
-+			      unsigned int mode, phy_interface_t interface,
-+			      struct phy_device *phydev, int speed, int duplex,
-+			      bool tx_pause, bool rx_pause);
- 
- #endif
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 618366fadfb5..4782747b7b61 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1374,12 +1374,52 @@ void ksz8_config_cpu_port(struct dsa_switch *ds)
- 			if (remote & KSZ8_PORT_FIBER_MODE)
- 				p->fiber = 1;
- 		}
--		if (p->fiber)
--			ksz_port_cfg(dev, i, regs[P_STP_CTRL],
--				     PORT_FORCE_FLOW_CTRL, true);
--		else
--			ksz_port_cfg(dev, i, regs[P_STP_CTRL],
--				     PORT_FORCE_FLOW_CTRL, false);
-+	}
-+}
-+
-+void ksz8_phylink_mac_link_up(struct ksz_device *dev, int port,
-+			      unsigned int mode, phy_interface_t interface,
-+			      struct phy_device *phydev, int speed, int duplex,
-+			      bool tx_pause, bool rx_pause)
-+{
-+	struct dsa_switch *ds = dev->ds;
-+	struct ksz_port *p;
-+	u8 ctrl = 0;
-+
-+	p = &dev->ports[port];
-+
-+	if (dsa_upstream_port(ds, port)) {
-+		u8 mask = SW_HALF_DUPLEX_FLOW_CTRL | SW_HALF_DUPLEX |
-+			SW_FLOW_CTRL | SW_10_MBIT;
-+
-+		if (duplex) {
-+			if (tx_pause && rx_pause)
-+				ctrl |= SW_FLOW_CTRL;
-+		} else {
-+			ctrl |= SW_HALF_DUPLEX;
-+			if (tx_pause && rx_pause)
-+				ctrl |= SW_HALF_DUPLEX_FLOW_CTRL;
-+		}
-+
-+		if (speed == SPEED_10)
-+			ctrl |= SW_10_MBIT;
-+
-+		ksz_rmw8(dev, REG_SW_CTRL_4, mask, ctrl);
-+
-+		p->phydev.speed = speed;
-+	} else {
-+		const u16 *regs = dev->info->regs;
-+
-+		if (duplex) {
-+			if (tx_pause && rx_pause)
-+				ctrl |= PORT_FORCE_FLOW_CTRL;
-+		} else {
-+			if (tx_pause && rx_pause)
-+				ctrl |= PORT_BACK_PRESSURE;
-+		}
-+
-+		ksz_rmw8(dev, regs[P_STP_CTRL], PORT_FORCE_FLOW_CTRL |
-+			 PORT_BACK_PRESSURE, ctrl);
- 	}
- }
- 
-@@ -1431,8 +1471,6 @@ int ksz8_setup(struct dsa_switch *ds)
- 	 */
- 	ds->vlan_filtering_is_global = true;
- 
--	ksz_cfg(dev, S_REPLACE_VID_CTRL, SW_FLOW_CTRL, true);
--
- 	/* Enable automatic fast aging when link changed detected. */
- 	ksz_cfg(dev, S_LINK_AGING_CTRL, SW_LINK_AUTO_AGING, true);
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 171cb0063fbf..bfdb4f4f36cc 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -207,6 +207,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.mirror_add = ksz8_port_mirror_add,
- 	.mirror_del = ksz8_port_mirror_del,
- 	.get_caps = ksz8_get_caps,
-+	.phylink_mac_link_up = ksz8_phylink_mac_link_up,
- 	.config_cpu_port = ksz8_config_cpu_port,
- 	.enable_stp_addr = ksz8_enable_stp_addr,
- 	.reset = ksz8_reset_switch,
+> This patch series is a result of maintaining work on ksz8 part of
+> microchip driver. It includes stats64 and fdb support. Error handling.
+> Loopback fix and so on...
+> 
+> Oleksij Rempel (26):
+>   net: dsa: microchip: add stats64 support for ksz8 series of switches
+>   net: dsa: microchip: ksz8: ksz8_fdb_dump: fix port validation and VID
+>     information
+>   net: dsa: microchip: ksz8: ksz8_fdb_dump: fix not complete fdb
+>     extraction
+>   net: dsa: microchip: ksz8: ksz8_fdb_dump: fix time stamp extraction
+>   net: dsa: microchip: ksz8: ksz8_fdb_dump: do not extract ghost entry
+>     from empty table
+>   net: dsa: microchip: ksz8863_smi: fix bulk access
+>   net: dsa: microchip: ksz8_r_dyn_mac_table(): remove timestamp support
+>   net: dsa: microchip: make ksz8_r_dyn_mac_table() static
+>   net: dsa: microchip: ksz8_r_dyn_mac_table(): remove fid support
+>   net: dsa: microchip: ksz8: refactor ksz8_fdb_dump()
+>   net: dsa: microchip: ksz8: ksz8_fdb_dump: dump static MAC table
+>   net: dsa: microchip: ksz8: move static mac table operations to a
+>     separate functions
+>   net: dsa: microchip: ksz8: add fdb_add/del support
+>   net: dsa: microchip: KSZ88x3 fix loopback support
+>   net: dsa: microchip: ksz8_r_dyn_mac_table(): move main part of the
+>     code out of if statement
+>   net: dsa: microchip: ksz8_r_dyn_mac_table(): use ret instead of rc
+>   net: dsa: microchip: ksz8_r_dyn_mac_table(): ksz: do not return EAGAIN
+>     on timeout
+>   net: dsa: microchip: ksz8_r_dyn_mac_table(): return read/write error
+>     if we got any
+>   net: dsa: microchip: ksz8_r_dyn_mac_table(): use entries variable to
+>     signal 0 entries
+>   net: dsa: microchip: make ksz8_r_sta_mac_table() static
+>   net: dsa: microchip: ksz8_r_sta_mac_table(): do not use error code for
+>     empty entries
+>   net: dsa: microchip: ksz8_r_sta_mac_table(): make use of error values
+>     provided by read/write functions
+>   net: dsa: microchip: make ksz8_w_sta_mac_table() static
+>   net: dsa: microchip: ksz8_w_sta_mac_table(): make use of error values
+>     provided by read/write functions
+>   net: dsa: microchip: remove ksz_port:on variable
+>   net: dsa: microchip: ksz8: do not force flow control by default
+> 
+>  drivers/net/dsa/microchip/ksz8.h        |  14 +-
+>  drivers/net/dsa/microchip/ksz8795.c     | 440 +++++++++++++++---------
+>  drivers/net/dsa/microchip/ksz8795_reg.h |   2 +
+>  drivers/net/dsa/microchip/ksz8863_smi.c |  10 +-
+>  drivers/net/dsa/microchip/ksz_common.c  | 100 +++++-
+>  drivers/net/dsa/microchip/ksz_common.h  |   2 +-
+>  6 files changed, 377 insertions(+), 191 deletions(-)
+> 
+> -- 
+> 2.30.2
+> 
+> 
+
 -- 
-2.30.2
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
