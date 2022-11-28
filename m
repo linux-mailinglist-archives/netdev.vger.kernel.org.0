@@ -2,324 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB67863A551
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:45:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D4163A568
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:51:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbiK1Jpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 04:45:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60970 "EHLO
+        id S229712AbiK1JvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 04:51:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbiK1Jpn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:45:43 -0500
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF5719033
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:45:39 -0800 (PST)
-Received: by mail-io1-f70.google.com with SMTP id bf14-20020a056602368e00b006ce86e80414so5509655iob.7
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:45:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ym/OUSXcSo5j7eGB/rVFvkIyqO8xk7T9lTybvL0yzJY=;
-        b=X7FXPX/qa8b6j7BNlMvWblLKHD2XgW06u8d7DJp0fB0htOdHvZncnph8bseHunJ760
-         lmcLhO5Qev+ZMGCwEOJzQQSjXcNJUqDIBUOF89QLyiw3YpWNuYGHSUnBStTjZgzrstdC
-         HgWL/OnuzdKV+5H4FVqciMCP2WhFBxkAtbthwjdf6MVXZVPH56UjgQvQnp39yCPvabnL
-         nsX4+sWq5MUK9Y/UUqKqmjrptTC1XThUleaL78jrPKIOFSe7PrQmJftpWaVmwR52Uwat
-         kMEuCn2pbxbonkdjiyMtvCcS1K5uZxjeD4tbz1OtyecAY8Wx8PUPpRROTj44al6DI5+5
-         382g==
-X-Gm-Message-State: ANoB5pkBnyCMfCk2Qr3B7rEKti7eGGWO/SEy/Kve4fBaaJ2u2hSohHw6
-        +6uWejH31slgKusaHhAroIfLPAEslw/tmE33ea19szMV8R0Y
-X-Google-Smtp-Source: AA0mqf7g+BbAKhTFYouvOLM5l0TGyBqGOq2srTjREwc7lZRt0sFsgBV64ia/9Ymk1H03h2PGF4V/1juC3r29hVx5JcfiqfSWsIn0
-MIME-Version: 1.0
-X-Received: by 2002:a92:de48:0:b0:302:feee:c5c1 with SMTP id
- e8-20020a92de48000000b00302feeec5c1mr5622946ilr.257.1669628738943; Mon, 28
- Nov 2022 01:45:38 -0800 (PST)
-Date:   Mon, 28 Nov 2022 01:45:38 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e444a205ee84bb27@google.com>
-Subject: [syzbot] KASAN: use-after-free Read in ip6_fragment (2)
-From:   syzbot <syzbot+8c0ac31aa9681abb9e2d@syzkaller.appspotmail.com>
-To:     bpf@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+        with ESMTP id S229918AbiK1JvN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:51:13 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EC8192AE
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:51:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669629073; x=1701165073;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=zDxur/ilwCCaFjrTiuPXcyZF08oW/MIS06de/T4zge0=;
+  b=I/NOirNUZ9Jq819mi6NXXrYhpuohG2TuJgsBkZS2NMaI6GUlNGlWY1xo
+   Geg7OPCyn368NjFvaWpRpW8lxlgjlk5ULKt3LAAW9uQ/Fs0OMeD239H0q
+   jbkCSgHjjaug5c5lOWS69Q/H43AVSBaFl9Zrz3RXsSderIuyTJL+PLysy
+   rKGwyXW0L6ILcbniQrDYhIAsRKKYbu4u2bPlxp71RnqrAvIIQ5Iqg5kt/
+   ur43ebZvcC/J6QYbqMbvydF21lAPMZy8eOfDWDPmInvk56IDN8QhD0c09
+   9wV/gRwAUIpPG/irbGad1poo6AXccG0V5LLQ9B5jYhaEdNsU4JSUtjzcl
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="315948744"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="315948744"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 01:51:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="888354896"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="888354896"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga006.fm.intel.com with ESMTP; 28 Nov 2022 01:51:12 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 28 Nov 2022 01:51:11 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 28 Nov 2022 01:51:10 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 28 Nov 2022 01:51:10 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Mon, 28 Nov 2022 01:51:10 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l994nZt+5Vv78wfBVcuz/ZpqwUD70RMeS8H7kX4TgCmwZ0skhPmmjt6G2a82qfCSUB/2meJz0ZTvUF20X23RhqBuYKQoFha8JUlO2VAjV9H6D9OoLRir/2psENVTm1gIkAFjlGKp5jZkwWjKNm0hJwzCyed1Z5opwDjEK61jALQKEqfzqGVWKOdPOc1vw3q0YXcU0sdW2VsJunBJ+wEO8lBzfAQkgFej/9gz7UaOsxK/Lry4Fe1K9gU/Q+hNxuvhHmOudZKRB+thyVfQ46IP/IoEJ0IlFtf6Ct3+m1U8AN0gMFRuC3fapm4urGreuoKfHmW6KFnn3hynbrSIZDP/og==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IBUYUy0lH8D+/DXvayKDo6bNDeXdo4PFoGIzwcJfiyw=;
+ b=WBnESaZ3J9UUAm+zKsYt2CdbQAt+75V+jSkU+slul3bnLxGlP42PdyyCFXO6AvUCc3SCbcWiZyQxB5HVn/1GvnneGU/jZ7dZ3tV0pilHInFZuQ8wtAfucxoKmbMfoW6v1g0ZVRg9HfBboZuERiuarC9DFZLLfwzgaeuZ25jbelazWC1M1Y5h/asoEo/C5vjSOmCm2+lOKd0OMwbgG7SASyU/ZMvlAcNQI7ERjWKe++m7kxC8J1PRfnH1kOtLVR2DqZWo0B03uILtW9+k+eYeriwOuLZvNIo4o5eVTe7YA3ymcrHvYU+syfAZR+kif8viHK/0XHj3n/3CaEW+9ccKCw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO6PR11MB5603.namprd11.prod.outlook.com (2603:10b6:5:35c::12)
+ by MN2PR11MB4728.namprd11.prod.outlook.com (2603:10b6:208:261::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
+ 2022 09:51:08 +0000
+Received: from CO6PR11MB5603.namprd11.prod.outlook.com
+ ([fe80::57ba:a303:f12f:95e9]) by CO6PR11MB5603.namprd11.prod.outlook.com
+ ([fe80::57ba:a303:f12f:95e9%3]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
+ 09:51:07 +0000
+Message-ID: <1ef2766b-10d8-344b-da1d-c8ddc5a9023e@intel.com>
+Date:   Mon, 28 Nov 2022 10:51:01 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH iproute2-next 1/5] devlink: Fix setting parent for 'rate
+ add'
+Content-Language: en-US
+To:     David Ahern <dsahern@gmail.com>, <netdev@vger.kernel.org>
+CC:     <alexandr.lobakin@intel.com>, <przemyslaw.kitszel@intel.com>,
+        <jiri@resnulli.us>, <wojciech.drewek@intel.com>,
+        <stephen@networkplumber.org>
+References: <20221125123421.36297-1-michal.wilczynski@intel.com>
+ <20221125123421.36297-2-michal.wilczynski@intel.com>
+ <0f75a656-97f8-5f90-ab86-258fadc7ae63@gmail.com>
+From:   "Wilczynski, Michal" <michal.wilczynski@intel.com>
+In-Reply-To: <0f75a656-97f8-5f90-ab86-258fadc7ae63@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR3P281CA0144.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:95::15) To CO6PR11MB5603.namprd11.prod.outlook.com
+ (2603:10b6:5:35c::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO6PR11MB5603:EE_|MN2PR11MB4728:EE_
+X-MS-Office365-Filtering-Correlation-Id: 24b53753-c4a5-46b5-8164-08dad126127e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gXwubbwYfB4Uv2c6a3zXrdoTv1TzaEfaQkMu8MYoU4GhfqNOb1N9H1MSFDaNxlL9bOycJ0V5npDVrc6t6R+jYRyG5ExTjiLg0Rzuol6SGF8rOxTgkNRBmZKWcjVu1fwVzV9rl95ooaU2UCNyBRsQd2cCIAuBCIcVmeMl5Sny6qN7ntHGZGUQmb4dMMh9stYUI34ie4LxgQjgFvyLUzQn8nBhHadzzMKhIgM4iKqEt+Am4TN3/yObcC7bl70rh0/2xFX5QFiq3Jq2qcl3IMoQLASJAJ4k/7p7k9f+sr9Lwy90udsJbmcImw6Owshmk3kREK25SZ0yk2tr47rUAdR5VTfMIUtFbeawpdfedvfAPoiWfdwziy5uya5QnzQ3+v3HWJQJsQuKgu5xH3y3FaR7xZ86Po3tdvkuy3IERDNTrFK9CmyYYu37cwg9WpyJkp6ykmRBbXHTU1wM9SgW0h1VHhwCSiJcUcXdH4BNz6aDFzf7M7qKUUgpIf6ba4t2x9yWlhgmxCXQFm8DGE9ezYceq4TESnSAmUbUwKtUmjYTJiVAyHsqN9t8psuV0Tste4ISiNZB2iBdT7NOQltZcGwG8NC2TdW+non6gpFnDVdKgtiuqxQoMUPj6LXXcFwWut7SF4/j/NFyMto29g998HotW9ZAww7AtuYBeGvjJ/C/9Hyoz5pHdMCbaVMUbTyZMyLpDBlmzC8pwKnxa1wTKxhMkc4+tqt9PQhxvP7I5a8m928=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(396003)(39860400002)(346002)(366004)(376002)(451199015)(83380400001)(86362001)(31696002)(82960400001)(2906002)(38100700002)(41300700001)(5660300002)(8936002)(4326008)(6506007)(53546011)(6512007)(6666004)(26005)(186003)(316002)(2616005)(66476007)(66556008)(66946007)(8676002)(6486002)(478600001)(36756003)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SHV3Q0twRE8zV0ppVy9oMUphdXVQMEROQ3RXOWhFLzJoWjRteEo1cktEbnQv?=
+ =?utf-8?B?Ky82WUZzamxVS0pOWGMxeG5xM1plbnZUN2dzT0NmVGJ6R0FSSU5pbG5raWww?=
+ =?utf-8?B?SllOM0Qwc1BaZFpEdFNWTVU4VXZJaHQzb1BieW53TzFBWVMzTTFrOWFoY3BP?=
+ =?utf-8?B?ZmlkU3NkOVd1Um00eTBET085YVZLNTd1SVhETndNZFh4WmFwd2dES2hIMVlm?=
+ =?utf-8?B?eTVxNkNjb1N0Sm5ibEpRZFFQMnVRRnU0YkNwbDRtQWppUjJYMStqenVITHli?=
+ =?utf-8?B?L0VvZ2lFckZFNnFaYVFwTE0zeitMTGxndGhLM3JSTVFKTFV1cWpIdEEydGNw?=
+ =?utf-8?B?b3VUSkNTb21Ic2l1cWkyamltUEFiQ1ZSSnUvRCtveXBnMzl2WHRzOFlNRk1Q?=
+ =?utf-8?B?T0FaSEwvTTNHNFNGZlkxS2RncFNyYUw2ZXl2YW85ZGdmV2p5YmNaS2wyamdJ?=
+ =?utf-8?B?YUhRSG1nbzk3M2ZWNW9ITXBscEZBZlFqZ281YzlDbkIyQjhDQ283NkZtOWh4?=
+ =?utf-8?B?c0U2VSthamRQVUFyVDdza2dmNUROc1QyKzZHWlprRWo3WFR4Y2FZVE5VdWs3?=
+ =?utf-8?B?VUJwYkJnY242dng2d0lVdTYvVTdEVU04L2xBSXBpaHNHWmRBd3lWeDRJaTBN?=
+ =?utf-8?B?azA0WWF1UVZJTWw5dzcraG5Sd1lmTTVzbHl3Qitna2lFUVF6K2lBYmlNRHZB?=
+ =?utf-8?B?d1R1dG5qODQxcVY3YkpmaUk1TlE0bGtpYzY3QUdkR04wQ2hkcHhJTVNTWGJh?=
+ =?utf-8?B?NE95ZERBNnpYdlJxaXkvU0NPelVhZ3N2cnRwVDV0ZWw4MkgwdzJzcnNmOFRu?=
+ =?utf-8?B?V1lFdHlERDZlMFFVbjduOURnRTRrc3BzV2g4bllSVFJYZ1hXNEhQZDRSMXJk?=
+ =?utf-8?B?MCtmMkpTdWlUcHJXNW45Zk1sR0hRaTU4QmFvSE9yTURoWXE1N1lTQTNPUUtE?=
+ =?utf-8?B?aE5CQzNzTENZMm9ER1FTdVRadEZtS3JvLzRVUVJ6OVJTb2NhbjVoeCs5bmlR?=
+ =?utf-8?B?QlUxWSt0YlJadHRNbnVId3dxSlJiTFdFQmpSK2RBZGM3UUozbUVqWTBtbXFl?=
+ =?utf-8?B?WjVDWkZJL1BKNWZHSE9xQmRpRTA3N3BuSlcvU0c1VUhiM3RrNGpqU0k0aHJD?=
+ =?utf-8?B?bTI3VG9lc2ZTTURqRHZHWHJ6VkltdXBnM1RJcTRPbjZESWNxSGY2Yisrd011?=
+ =?utf-8?B?NUd6UHJUbXdYRFdEa0hiQk1rWUY5bmxKQUpDekJheFYrbDNrQjdLaVo1MHo5?=
+ =?utf-8?B?S2FoaGxoUVlndi8yVFYxMVVOQkVBNElodnNuTzhDNGdEZGlqS0VOUG5iRHlY?=
+ =?utf-8?B?QlJNRmVXU0xuT2hzOWNhQUFERlFHaTdzMTBJaVJuQ29laEtqOW1VMzFBYmlX?=
+ =?utf-8?B?SmNzU2RTSTBrYjFlZXpWbHAzWWExdXJnVlhMUEVrTmlNVE1FZVhIaG1ZMk5t?=
+ =?utf-8?B?clI1ZVVJUll6Tm54L1l3VHZvVnVMbmphOEtERkZURThhenloZS9jNDBSWFhz?=
+ =?utf-8?B?blNHRSt5cmVoeHRHWXdZK0xEc2ZUVWVjZ0RURlhlT3hWV3VCeWVONlAySmJY?=
+ =?utf-8?B?TWFPNWVveGczNlAyUVNNbDNsUVU3dndIdXVQZ0E4V281cnJ0dmhjVGVQU21W?=
+ =?utf-8?B?K3RzL2pYdU5iMEN0THc2bWRvYXZBMUZJZ0dTb0FsOE1DYkNUbTJtUkdDRzk3?=
+ =?utf-8?B?R293aXJuK2k5cFZCQk5DeDNZNmxrY2Y3dDVHaEFrUzBGbUJvUzY3T1NaWU1N?=
+ =?utf-8?B?eXhZWGVSYlRpam85aEgwSXhla3Y0WU1sVHFibmFObFQ2Z2RWUldMYkk4TWJP?=
+ =?utf-8?B?NWxJb0lzV2t1eVNVM0hsSUQrQW85bm43TnlEV0NESHVwaTJPQ0p1c0NjVHhH?=
+ =?utf-8?B?bEM3WVFRd0MvU1dQc0YyZGJwc0RhTWdVZFBVcW5YWEkzTWlrNjNhNTFUaWpU?=
+ =?utf-8?B?bWdBZFZzeUljbGg1TWo2QVB3YlVFUGUvSnZVUURzNk8ydDd0MjMwRjRGcnNO?=
+ =?utf-8?B?NURyaWJQSHkwVG1ESUpJRk4zbU1RdTY4LzlDTXBUMjZPZ3hkMXBaSTVKUzNW?=
+ =?utf-8?B?QWw2VndlUldNNlFSaHlaakxkZXEzWXFpVXVpai8xSGVpbkh2YWMxNUZCNUdo?=
+ =?utf-8?B?OWNhMGNOa3U1dVozdWgrdDBYTVFKRWFYMkYzV2FhcWFja3MxcXdKTHNoZ01l?=
+ =?utf-8?B?Z0E9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24b53753-c4a5-46b5-8164-08dad126127e
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 09:51:07.7944
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AOKQCUJsxPCeY2CAMEEzuWm8Sw6b8Zh9BXHvFT7lAeqD+In/YoFBEdqC44ep3UQDX41StMq0Y6jM5Mhp9tVFYXum4BBOnbAfGLRPdw9Es2k=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4728
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    4312098baf37 Merge tag 'spi-fix-v6.1-rc6' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11625bb5880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=436ee340148d5197
-dashboard link: https://syzkaller.appspot.com/bug?extid=8c0ac31aa9681abb9e2d
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/74c2f7e0e278/disk-4312098b.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/e596ae25a228/vmlinux-4312098b.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/35c136c2ae23/bzImage-4312098b.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8c0ac31aa9681abb9e2d@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: use-after-free in ip6_dst_idev include/net/ip6_fib.h:245 [inline]
-BUG: KASAN: use-after-free in ip6_fragment+0x2724/0x2770 net/ipv6/ip6_output.c:951
-Read of size 8 at addr ffff88801d403e80 by task syz-executor.3/7618
-
-CPU: 1 PID: 7618 Comm: syz-executor.3 Not tainted 6.1.0-rc6-syzkaller-00012-g4312098baf37 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:284 [inline]
- print_report+0x15e/0x45d mm/kasan/report.c:395
- kasan_report+0xbf/0x1f0 mm/kasan/report.c:495
- ip6_dst_idev include/net/ip6_fib.h:245 [inline]
- ip6_fragment+0x2724/0x2770 net/ipv6/ip6_output.c:951
- __ip6_finish_output net/ipv6/ip6_output.c:193 [inline]
- ip6_finish_output+0x9a3/0x1170 net/ipv6/ip6_output.c:206
- NF_HOOK_COND include/linux/netfilter.h:291 [inline]
- ip6_output+0x1f1/0x540 net/ipv6/ip6_output.c:227
- dst_output include/net/dst.h:445 [inline]
- ip6_local_out+0xb3/0x1a0 net/ipv6/output_core.c:161
- ip6_send_skb+0xbb/0x340 net/ipv6/ip6_output.c:1966
- udp_v6_send_skb+0x82a/0x18a0 net/ipv6/udp.c:1286
- udp_v6_push_pending_frames+0x140/0x200 net/ipv6/udp.c:1313
- udpv6_sendmsg+0x18da/0x2c80 net/ipv6/udp.c:1606
- inet6_sendmsg+0x9d/0xe0 net/ipv6/af_inet6.c:665
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xd3/0x120 net/socket.c:734
- sock_write_iter+0x295/0x3d0 net/socket.c:1108
- call_write_iter include/linux/fs.h:2191 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x9ed/0xdd0 fs/read_write.c:584
- ksys_write+0x1ec/0x250 fs/read_write.c:637
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fde3588c0d9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fde365b6168 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00007fde359ac050 RCX: 00007fde3588c0d9
-RDX: 000000000000ffdc RSI: 00000000200000c0 RDI: 000000000000000a
-RBP: 00007fde358e7ae9 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fde35acfb1f R14: 00007fde365b6300 R15: 0000000000022000
- </TASK>
-
-Allocated by task 7618:
- kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
- kasan_set_track+0x25/0x30 mm/kasan/common.c:52
- __kasan_slab_alloc+0x82/0x90 mm/kasan/common.c:325
- kasan_slab_alloc include/linux/kasan.h:201 [inline]
- slab_post_alloc_hook mm/slab.h:737 [inline]
- slab_alloc_node mm/slub.c:3398 [inline]
- slab_alloc mm/slub.c:3406 [inline]
- __kmem_cache_alloc_lru mm/slub.c:3413 [inline]
- kmem_cache_alloc+0x2b4/0x3d0 mm/slub.c:3422
- dst_alloc+0x14a/0x1f0 net/core/dst.c:92
- ip6_dst_alloc+0x32/0xa0 net/ipv6/route.c:344
- ip6_rt_pcpu_alloc net/ipv6/route.c:1369 [inline]
- rt6_make_pcpu_route net/ipv6/route.c:1417 [inline]
- ip6_pol_route+0x901/0x1190 net/ipv6/route.c:2254
- pol_lookup_func include/net/ip6_fib.h:582 [inline]
- fib6_rule_lookup+0x52e/0x6f0 net/ipv6/fib6_rules.c:121
- ip6_route_output_flags_noref+0x2e6/0x380 net/ipv6/route.c:2625
- ip6_route_output_flags+0x76/0x320 net/ipv6/route.c:2638
- ip6_route_output include/net/ip6_route.h:98 [inline]
- ip6_dst_lookup_tail+0x5ab/0x1620 net/ipv6/ip6_output.c:1092
- ip6_dst_lookup_flow+0x90/0x1d0 net/ipv6/ip6_output.c:1222
- ip6_sk_dst_lookup_flow+0x553/0x980 net/ipv6/ip6_output.c:1260
- udpv6_sendmsg+0x151d/0x2c80 net/ipv6/udp.c:1554
- inet6_sendmsg+0x9d/0xe0 net/ipv6/af_inet6.c:665
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xd3/0x120 net/socket.c:734
- __sys_sendto+0x23a/0x340 net/socket.c:2117
- __do_sys_sendto net/socket.c:2129 [inline]
- __se_sys_sendto net/socket.c:2125 [inline]
- __x64_sys_sendto+0xe1/0x1b0 net/socket.c:2125
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Freed by task 7599:
- kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
- kasan_set_track+0x25/0x30 mm/kasan/common.c:52
- kasan_save_free_info+0x2e/0x40 mm/kasan/generic.c:511
- ____kasan_slab_free mm/kasan/common.c:236 [inline]
- ____kasan_slab_free+0x160/0x1c0 mm/kasan/common.c:200
- kasan_slab_free include/linux/kasan.h:177 [inline]
- slab_free_hook mm/slub.c:1724 [inline]
- slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1750
- slab_free mm/slub.c:3661 [inline]
- kmem_cache_free+0xee/0x5c0 mm/slub.c:3683
- dst_destroy+0x2ea/0x400 net/core/dst.c:127
- rcu_do_batch kernel/rcu/tree.c:2250 [inline]
- rcu_core+0x81f/0x1980 kernel/rcu/tree.c:2510
- __do_softirq+0x1fb/0xadc kernel/softirq.c:571
-
-Last potentially related work creation:
- kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
- __kasan_record_aux_stack+0xbc/0xd0 mm/kasan/generic.c:481
- call_rcu+0x9d/0x820 kernel/rcu/tree.c:2798
- dst_release net/core/dst.c:177 [inline]
- dst_release+0x7d/0xe0 net/core/dst.c:167
- refdst_drop include/net/dst.h:256 [inline]
- skb_dst_drop include/net/dst.h:268 [inline]
- skb_release_head_state+0x250/0x2a0 net/core/skbuff.c:838
- skb_release_all net/core/skbuff.c:852 [inline]
- __kfree_skb net/core/skbuff.c:868 [inline]
- kfree_skb_reason+0x151/0x4b0 net/core/skbuff.c:891
- kfree_skb_list_reason+0x4b/0x70 net/core/skbuff.c:901
- kfree_skb_list include/linux/skbuff.h:1227 [inline]
- ip6_fragment+0x2026/0x2770 net/ipv6/ip6_output.c:949
- __ip6_finish_output net/ipv6/ip6_output.c:193 [inline]
- ip6_finish_output+0x9a3/0x1170 net/ipv6/ip6_output.c:206
- NF_HOOK_COND include/linux/netfilter.h:291 [inline]
- ip6_output+0x1f1/0x540 net/ipv6/ip6_output.c:227
- dst_output include/net/dst.h:445 [inline]
- ip6_local_out+0xb3/0x1a0 net/ipv6/output_core.c:161
- ip6_send_skb+0xbb/0x340 net/ipv6/ip6_output.c:1966
- udp_v6_send_skb+0x82a/0x18a0 net/ipv6/udp.c:1286
- udp_v6_push_pending_frames+0x140/0x200 net/ipv6/udp.c:1313
- udpv6_sendmsg+0x18da/0x2c80 net/ipv6/udp.c:1606
- inet6_sendmsg+0x9d/0xe0 net/ipv6/af_inet6.c:665
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xd3/0x120 net/socket.c:734
- sock_write_iter+0x295/0x3d0 net/socket.c:1108
- call_write_iter include/linux/fs.h:2191 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x9ed/0xdd0 fs/read_write.c:584
- ksys_write+0x1ec/0x250 fs/read_write.c:637
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Second to last potentially related work creation:
- kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
- __kasan_record_aux_stack+0xbc/0xd0 mm/kasan/generic.c:481
- call_rcu+0x9d/0x820 kernel/rcu/tree.c:2798
- dst_release net/core/dst.c:177 [inline]
- dst_release+0x7d/0xe0 net/core/dst.c:167
- refdst_drop include/net/dst.h:256 [inline]
- skb_dst_drop include/net/dst.h:268 [inline]
- __dev_queue_xmit+0x1b9d/0x3ba0 net/core/dev.c:4211
- dev_queue_xmit include/linux/netdevice.h:3008 [inline]
- neigh_resolve_output net/core/neighbour.c:1552 [inline]
- neigh_resolve_output+0x51b/0x840 net/core/neighbour.c:1532
- neigh_output include/net/neighbour.h:546 [inline]
- ip6_finish_output2+0x56c/0x1530 net/ipv6/ip6_output.c:134
- __ip6_finish_output net/ipv6/ip6_output.c:195 [inline]
- ip6_finish_output+0x694/0x1170 net/ipv6/ip6_output.c:206
- NF_HOOK_COND include/linux/netfilter.h:291 [inline]
- ip6_output+0x1f1/0x540 net/ipv6/ip6_output.c:227
- dst_output include/net/dst.h:445 [inline]
- NF_HOOK include/linux/netfilter.h:302 [inline]
- NF_HOOK include/linux/netfilter.h:296 [inline]
- mld_sendpack+0xa09/0xe70 net/ipv6/mcast.c:1820
- mld_send_cr net/ipv6/mcast.c:2121 [inline]
- mld_ifc_work+0x720/0xdc0 net/ipv6/mcast.c:2653
- process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
- worker_thread+0x669/0x1090 kernel/workqueue.c:2436
- kthread+0x2e8/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-
-The buggy address belongs to the object at ffff88801d403dc0
- which belongs to the cache ip6_dst_cache of size 240
-The buggy address is located 192 bytes inside of
- 240-byte region [ffff88801d403dc0, ffff88801d403eb0)
-
-The buggy address belongs to the physical page:
-page:ffffea00007500c0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1d403
-memcg:ffff888022f49c81
-flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000200 ffffea0001ef6580 dead000000000002 ffff88814addf640
-raw: 0000000000000000 00000000800c000c 00000001ffffffff ffff888022f49c81
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112a20(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_HARDWALL), pid 3719, tgid 3719 (kworker/0:6), ts 136223432244, free_ts 136222971441
- prep_new_page mm/page_alloc.c:2539 [inline]
- get_page_from_freelist+0x10b5/0x2d50 mm/page_alloc.c:4288
- __alloc_pages+0x1cb/0x5b0 mm/page_alloc.c:5555
- alloc_pages+0x1aa/0x270 mm/mempolicy.c:2285
- alloc_slab_page mm/slub.c:1794 [inline]
- allocate_slab+0x213/0x300 mm/slub.c:1939
- new_slab mm/slub.c:1992 [inline]
- ___slab_alloc+0xa91/0x1400 mm/slub.c:3180
- __slab_alloc.constprop.0+0x56/0xa0 mm/slub.c:3279
- slab_alloc_node mm/slub.c:3364 [inline]
- slab_alloc mm/slub.c:3406 [inline]
- __kmem_cache_alloc_lru mm/slub.c:3413 [inline]
- kmem_cache_alloc+0x31a/0x3d0 mm/slub.c:3422
- dst_alloc+0x14a/0x1f0 net/core/dst.c:92
- ip6_dst_alloc+0x32/0xa0 net/ipv6/route.c:344
- icmp6_dst_alloc+0x71/0x680 net/ipv6/route.c:3261
- mld_sendpack+0x5de/0xe70 net/ipv6/mcast.c:1809
- mld_send_cr net/ipv6/mcast.c:2121 [inline]
- mld_ifc_work+0x720/0xdc0 net/ipv6/mcast.c:2653
- process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
- worker_thread+0x669/0x1090 kernel/workqueue.c:2436
- kthread+0x2e8/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1459 [inline]
- free_pcp_prepare+0x65c/0xd90 mm/page_alloc.c:1509
- free_unref_page_prepare mm/page_alloc.c:3387 [inline]
- free_unref_page+0x1d/0x4d0 mm/page_alloc.c:3483
- __unfreeze_partials+0x17c/0x1a0 mm/slub.c:2586
- qlink_free mm/kasan/quarantine.c:168 [inline]
- qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:187
- kasan_quarantine_reduce+0x184/0x210 mm/kasan/quarantine.c:294
- __kasan_slab_alloc+0x66/0x90 mm/kasan/common.c:302
- kasan_slab_alloc include/linux/kasan.h:201 [inline]
- slab_post_alloc_hook mm/slab.h:737 [inline]
- slab_alloc_node mm/slub.c:3398 [inline]
- kmem_cache_alloc_node+0x304/0x410 mm/slub.c:3443
- __alloc_skb+0x214/0x300 net/core/skbuff.c:497
- alloc_skb include/linux/skbuff.h:1267 [inline]
- netlink_alloc_large_skb net/netlink/af_netlink.c:1191 [inline]
- netlink_sendmsg+0x9a6/0xe10 net/netlink/af_netlink.c:1896
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xd3/0x120 net/socket.c:734
- __sys_sendto+0x23a/0x340 net/socket.c:2117
- __do_sys_sendto net/socket.c:2129 [inline]
- __se_sys_sendto net/socket.c:2125 [inline]
- __x64_sys_sendto+0xe1/0x1b0 net/socket.c:2125
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Memory state around the buggy address:
- ffff88801d403d80: fc fc fc fc fc fc fc fc fa fb fb fb fb fb fb fb
- ffff88801d403e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88801d403e80: fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc
-                   ^
- ffff88801d403f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88801d403f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 11/28/2022 3:38 AM, David Ahern wrote:
+> On 11/25/22 5:34 AM, Michal Wilczynski wrote:
+>> Setting a parent during creation of the node doesn't work, despite
+>> documentation [1] clearly saying that it should.
+>>
+>> [1] man/man8/devlink-rate.8
+>>
+>> Example:
+>> $ devlink port function rate add pci/0000:4b:00.0/node_custom parent node_0
+>>   Unknown option "parent"
+>>
+>> Fix this by passing DL_OPT_PORT_FN_RATE_PARENT as an argument to
+>> dl_argv_parse() when it gets called from cmd_port_fn_rate_add().
+>>
+>> Fixes: 6c70aca76ef2 ("devlink: Add port func rate support")
+> so this is a bug fix that needs to go in main branch first?
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+I'm fine with this going to main branch first.
+Would you like me to re-send this patch separately targeting iproute2 instead
+of iproute2-next ?
+
+Thanks,
+Michał
+
+>
+>
+>> Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
+>> Reviewed-by: Wojciech Drewek <wojciech.drewek@intel.com>
+>> ---
+>>  devlink/devlink.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/devlink/devlink.c b/devlink/devlink.c
+>> index 8aefa101b2f8..5cff018a2471 100644
+>> --- a/devlink/devlink.c
+>> +++ b/devlink/devlink.c
+>> @@ -5030,7 +5030,8 @@ static int cmd_port_fn_rate_add(struct dl *dl)
+>>  	int err;
+>>  
+>>  	err = dl_argv_parse(dl, DL_OPT_PORT_FN_RATE_NODE_NAME,
+>> -			    DL_OPT_PORT_FN_RATE_TX_SHARE | DL_OPT_PORT_FN_RATE_TX_MAX);
+>> +			    DL_OPT_PORT_FN_RATE_TX_SHARE | DL_OPT_PORT_FN_RATE_TX_MAX |
+>> +			    DL_OPT_PORT_FN_RATE_PARENT);
+>>  	if (err)
+>>  		return err;
+>>  
+
