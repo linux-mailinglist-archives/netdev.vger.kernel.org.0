@@ -2,110 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60D6063A230
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 08:40:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30A8F63A23A
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 08:41:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbiK1HkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 02:40:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43498 "EHLO
+        id S229998AbiK1Hln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 02:41:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbiK1Hju (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 02:39:50 -0500
-Received: from out199-7.us.a.mail.aliyun.com (out199-7.us.a.mail.aliyun.com [47.90.199.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F9315807;
-        Sun, 27 Nov 2022 23:39:43 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VVqYS-k_1669621178;
-Received: from 30.27.90.133(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0VVqYS-k_1669621178)
-          by smtp.aliyun-inc.com;
-          Mon, 28 Nov 2022 15:39:40 +0800
-Message-ID: <aa008510-2c12-03ba-cd61-1ad450c43588@linux.alibaba.com>
-Date:   Mon, 28 Nov 2022 15:39:38 +0800
+        with ESMTP id S230167AbiK1Hl2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 02:41:28 -0500
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412F61704F
+        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 23:41:04 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 6077A32005CA;
+        Mon, 28 Nov 2022 02:40:49 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Mon, 28 Nov 2022 02:40:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1669621248; x=1669707648; bh=TqmvkL9ckXURKfWpZhcGQ8ZaGaQK
+        +bl4JICBgoKFatQ=; b=aCaHexoZA7xQq/M3X6djNsnwBhamy2PW9enNk2kRMkKh
+        HpVZLuoGMNH23Bz0R+LZa7EmSvE9l10nUB66hUQNFJSwoBvUUiSrZuF34MfbhNU5
+        o9fT5cnUwbLbUy5mliIGm9UEILGYegLVgCOki9Nn77t6KUIvXOhi+byZazm2Lxtb
+        WIn8j+yAk7pQfkTLzr/ujSbhLWdlZlF6Qvetk3OzOLMBK0IW7cDJeDn8BArrdte3
+        wbvdSAWoxlUHwf70AAEkdW/oMU50g7xiHTbEDK5ROsauyV6QItb21ng/b4HzQKjr
+        b7Tph93JgZtf9P4xgA04+GR9Z1Qr7ZqzdpbdTatlFg==
+X-ME-Sender: <xms:AGaEYxe0sLvh8PnZkJ69ZH7yIZwfRicZ3iIRStOU80naArzxi6LuCw>
+    <xme:AGaEY_NzM-uj7q9jkZ0jlECSorvnQcsyrR--gOlJW12IrRwi2u5_QDu332MJFlFY2
+    sQyeXQySyqYZeI>
+X-ME-Received: <xmr:AGaEY6gIefTvrk6wqDFlfA2egP6XhHbUH55iIJZfKdeoGM0qQXjm5Yz3-LHJ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrjedugdduudefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhephefhtdejvdeiffefudduvdffgeetieeigeeugfduffdvffdtfeehieejtdfh
+    jeeknecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:AGaEY68LE8U2Nm7azlndd9E6WjviQEagScSIJ_xDqLn0lQ986lkYXQ>
+    <xmx:AGaEY9v3MslJj2PIebwZ1b3VGkPnU33_ihVIGg5PvVHLAckX46PFvg>
+    <xmx:AGaEY5HmLF5OEwa0lNjwovAB9eqZIGF4joYF4OIGrMH3JI7nTOvrqg>
+    <xmx:AGaEY1Itm07wd3b9ttZja1GIcAc26VCSsMMSj31NDmT_eZeG1CqM7A>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 28 Nov 2022 02:40:48 -0500 (EST)
+Date:   Mon, 28 Nov 2022 09:40:45 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>, stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH iproute2] ip: fix return value for rtnl_talk failures
+Message-ID: <Y4Rl/fhdhgWwccwv@shredder>
+References: <20221108124344.192326-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.1
-Subject: Re: [PATCH] selftests/tls: Fix tls selftests dependency to correct
- algorithm
-Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20221125121905.88292-1-tianjia.zhang@linux.alibaba.com>
- <Y4NVcV1D/MhFJpOc@Laptop-X1>
- <4f84f23e-2835-c1b7-93f5-2730ec8b94fc@linux.alibaba.com>
- <Y4RiaNlXlaHK55Ih@Laptop-X1>
-From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-In-Reply-To: <Y4RiaNlXlaHK55Ih@Laptop-X1>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.2 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221108124344.192326-1-liuhangbin@gmail.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/28/22 3:25 PM, Hangbin Liu wrote:
-> On Mon, Nov 28, 2022 at 03:14:16PM +0800, Tianjia Zhang wrote:
->> Hi Hangbin,
->>
->> On 11/27/22 8:17 PM, Hangbin Liu wrote:
->>> On Fri, Nov 25, 2022 at 08:19:05PM +0800, Tianjia Zhang wrote:
->>>> Commit d2825fa9365d ("crypto: sm3,sm4 - move into crypto directory") moves
->>>> the SM3 and SM4 stand-alone library and the algorithm implementation for
->>>> the Crypto API into the same directory, and the corresponding relationship
->>>> of Kconfig is modified, CONFIG_CRYPTO_SM3/4 corresponds to the stand-alone
->>>> library of SM3/4, and CONFIG_CRYPTO_SM3/4_GENERIC corresponds to the
->>>> algorithm implementation for the Crypto API. Therefore, it is necessary
->>>> for this module to depend on the correct algorithm.
->>>>
->>>> Fixes: d2825fa9365d ("crypto: sm3,sm4 - move into crypto directory")
->>>> Cc: Jason A. Donenfeld <Jason@zx2c4.com>
->>>> Cc: stable@vger.kernel.org # v5.19+
->>>> Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
->>>> ---
->>>>    tools/testing/selftests/net/config | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
->>>> index ead7963b9bf0..bd89198cd817 100644
->>>> --- a/tools/testing/selftests/net/config
->>>> +++ b/tools/testing/selftests/net/config
->>>> @@ -43,5 +43,5 @@ CONFIG_NET_ACT_TUNNEL_KEY=m
->>>>    CONFIG_NET_ACT_MIRRED=m
->>>>    CONFIG_BAREUDP=m
->>>>    CONFIG_IPV6_IOAM6_LWTUNNEL=y
->>>> -CONFIG_CRYPTO_SM4=y
->>>> +CONFIG_CRYPTO_SM4_GENERIC=y
->>>>    CONFIG_AMT=m
->>>> -- 
->>>> 2.24.3 (Apple Git-128)
->>>>
->>>
->>> Looks the issue in this discuss
->>> https://lore.kernel.org/netdev/Y3c9zMbKsR+tcLHk@Laptop-X1/
->>> related to your fix.
->>>
->>
->> Thanks for your information, it is indeed the same issue.I don’t know if
->> there is a patch to fix it. If not, can this patch solve this issue? If
->> so, can I add Reported-by or Tested-by tag?
->>
+On Tue, Nov 08, 2022 at 08:43:44PM +0800, Hangbin Liu wrote:
+> Since my last commit "rtnetlink: add new function rtnl_echo_talk()" we
+> return the kernel rtnl exit code directly, which breaks some kernel
+> selftest checking. As there are still a lot of tests checking -2 as the
+> error return value, to keep backward compatibility, let's keep using
+> -2 for all the rtnl return values.
 > 
-> Feel free to add Reported-by flag. I can't test this unless the patch merged
-> to upstream.
-> 
+> Reported-by: Ido Schimmel <idosch@idosch.org>
+> Fixes: 6c09257f1bf6 ("rtnetlink: add new function rtnl_echo_talk()")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-Thanks, I will send a v2 patch as soon as possible.
+Stephen, I believe this patch was missed. It appears as "New, archived"
+in patchwork:
+https://patchwork.kernel.org/project/netdevbpf/patch/20221108124344.192326-1-liuhangbin@gmail.com/
 
-Tianjia
+Can you please apply it? It fixes regressions in kernel selftests that
+use iproute2 with blamed commit. See:
+
+https://lore.kernel.org/netdev/Y2oWDRIIR6gjkM4a@shredder/
+
+Thanks
