@@ -2,95 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B98863B148
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:28:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 958E363B152
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 19:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232665AbiK1S2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 13:28:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
+        id S231699AbiK1Sbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 13:31:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234301AbiK1S2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:28:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B77E2ED5D
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 10:20:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8359B80F93
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 18:20:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C9F3C433C1;
-        Mon, 28 Nov 2022 18:20:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669659644;
-        bh=6NWe//DH5gMILrpdNMRZ55ZhUDROvGwx2g3+voHsX9I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EWcxEm9PfM20Nyd32H7fe+CImzYdw+lqal8skhE22P8ww4wGxOjkbRjd8m6K7kTKr
-         acPxohMkVinVnEQNL0M+spQ2Y9iK2nvbImDTTggQqFFWa5jA6vabhmZeY/BRfEOQle
-         z6ElYMbCV0gBhIWZ3Qu8gohrsixV1mDWMzdkhtZu4h5awc9SZ+xOxLrR1wQzzYvjEY
-         OAa/afslVs+rDnMOmffJkoaCn93kwKenvWg8O1B88hxTc/8KYV1qaboY86uZS5cxFI
-         R8HOZAZOKut6ZrVmz/oDoMFNg5bq3eJbCMmpPK50/8MvTnHxZEoZfWfkHuOmOU03gv
-         vmLiJZieuqoUA==
-Date:   Mon, 28 Nov 2022 10:20:43 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        jiri@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com
-Subject: Re: [PATCH net] net: devlink: fix UAF in
- devlink_compat_running_version()
-Message-ID: <20221128102043.35c1b9c1@kernel.org>
-In-Reply-To: <Y4SGYr6VBkIMTEpj@nanopsycho>
-References: <Y3zdaX1I0Y8rdSLn@unreal>
-        <e311b567-8130-15de-8dbb-06878339c523@huawei.com>
-        <Y30dPRzO045Od2FA@unreal>
-        <20221122122740.4b10d67d@kernel.org>
-        <405f703b-b97e-afdd-8d5f-48b8f99d045d@huawei.com>
-        <Y33OpMvLcAcnJ1oj@unreal>
-        <fa1ab2fb-37ce-a810-8a3f-b71d902e8ff0@huawei.com>
-        <Y35x9oawn/i+nuV3@shredder>
-        <20221123181800.1e41e8c8@kernel.org>
-        <Y4R9dT4QXgybUzdO@shredder>
-        <Y4SGYr6VBkIMTEpj@nanopsycho>
+        with ESMTP id S230401AbiK1SbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 13:31:21 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C99EB51
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 10:26:44 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id j196so14446844ybj.2
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 10:26:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hrg3QkvwjAdRDqmvitVvxLjgPruGdgXxRmrfg+kNiw4=;
+        b=ZF45eOfjgGbhKRdBYvn10a6SHeAzUtkaGX8V1L3sn1g1wLEpyt+U6JCp8o/9B4zfQ+
+         MaQsFsfOBuhvUBFPjysMAG6uKUEwuQSoB2TS4zX8nRvF3BjaoS4ggOk30NybaTVfi1cA
+         jDok9uvKNtUd7gVb2sDZoMzDALv90rL0eB+amSyXpcj+Ws9HEGn8gkjWTSckHrB1rcYV
+         s0HZYQj6CGzoOdkiYYnpgrHZu5nP0tfaFw2fS3UfL8cte+tmBPWS5ChHFAzyctH1DDkG
+         KGDmapGHhj/Q2yDhfNn/Q+idrzDfKtyPJBU0HL7ry+iGHR3u+KPosIHHyqkBa5U4bhA1
+         qj+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hrg3QkvwjAdRDqmvitVvxLjgPruGdgXxRmrfg+kNiw4=;
+        b=kbq5p1JTUQ/E+UFQkLfBbPhDlwZROdD4RJlOo8jpmTzEGWh4yJrEdk6CHTIvwVS83f
+         qpWPFmfuKw21r/7RKgLQ+pAa/4wIgYM488uXUzdGQiZU8ZDTvZ23zNkLEz7uzapAyr4B
+         m4gbyAXY6aNNNZCG6cVTf5nr6+3d5e0HUgJ+G2pv7J/zQk0yHALTs56WuqngdVb9fVaV
+         uY4ipdMEyk7FbwsosZggLWVUaW8JV24rEW0hV7XXrUR5G9MjeVo7sznWWvCKc/+mn0no
+         t4bbsjKoZLCTC3hlmRA29zC6zT9Lspin4yiLMZ98mAd3ZDLTdy5rbpcHYC51IH+bG6XV
+         W3WA==
+X-Gm-Message-State: ANoB5pk7DPOmwAhlY/OI24k/X3HxdEI2IIsg1RLw7WRTU25VZkw9znNF
+        HmTDRTtbokRY3dFv3dDjmfvoulehFquGNgwZkWTUWy77zWg=
+X-Google-Smtp-Source: AA0mqf4vk+jwLzncu2kS9xf/0x6W8CQcS/bnNXvvtN/5x0VPYRI/uBKdu5VpIFPJ+UUFYiGfaO/p7oY7fEYwMhoqZWY=
+X-Received: by 2002:a25:2591:0:b0:6ee:c506:7338 with SMTP id
+ l139-20020a252591000000b006eec5067338mr29487012ybl.509.1669660003744; Mon, 28
+ Nov 2022 10:26:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221125175207.473866-1-pctammela@mojatatu.com>
+In-Reply-To: <20221125175207.473866-1-pctammela@mojatatu.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Mon, 28 Nov 2022 13:26:32 -0500
+Message-ID: <CAM0EoM=9CdeZoHnFDAGjtmm07B=QBrrTNzoZVWUXf6+1Y4LdYg@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next 0/3] net/sched: retpoline wrappers for tc
+To:     Pedro Tammela <pctammela@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, Pedro Tammela <pctammela@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Nov 2022 10:58:58 +0100 Jiri Pirko wrote:
-> >Long term, we either need to find a way to make the ethtool compat stuff
-> >work correctly or just get rid of it and have affected drivers implement
-> >the relevant ethtool operations instead of relying on devlink.
-> >
-> >[1] https://lore.kernel.org/netdev/20221122121048.776643-1-yangyingliang@huawei.com/  
-> 
-> I just had a call with Ido. We both think that this might be a good
-> solution for -net to avoid the use after free.
-> 
-> For net-next, we eventually should change driver init flows to register
-> devlink instance first and only after that register devlink_port and
-> related netdevice. The ordering is important for the userspace app. For
-> example the init flow:
-> <- RTnetlink new netdev event
-> app sees devlink_port handle in IFLA_DEVLINK_PORT
-> -> query devlink instance using this handle  
-> <- ENODEV
-> 
-> The instance is not registered yet.
-> 
-> So we need to make sure all devlink_port_register() calls are happening
-> after devlink_register(). This is aligned with the original flow before
-> devlink_register() was moved by Leon. Also it is aligned with devlink
-> reload and devlink port split flows.
+You forgot to add the RFC tag. Also add my reviewed-by:
 
-Cool. Do you also agree with doing proper refcounting for the devlink
-instance struct and the liveness check after locking the instance?
+cheers,
+jamal
+
+On Fri, Nov 25, 2022 at 12:52 PM Pedro Tammela <pctammela@gmail.com> wrote:
+>
+> In tc all qdics, classifiers and actions can be compiled as modules.
+> This results today in indirect calls in all transitions in the tc hierarchy.
+> Due to CONFIG_RETPOLINE, CPUs with mitigations=on might pay an extra cost on
+> indirect calls. For newer Intel cpus with IBRS the extra cost is
+> nonexistent, but AMD Zen cpus and older x86 cpus still go through the
+> retpoline thunk.
+>
+> Known built-in symbols can be optimized into direct calls, thus
+> avoiding the retpoline thunk. So far, tc has not been leveraging this
+> build information and leaving out a performance optimization for some
+> CPUs. In this series we wire up 'tcf_classify()' and 'tcf_action_exec()'
+> with direct calls when known modules are compiled as built-in as an
+> opt-in optimization.
+>
+> We measured these changes in one AMD Zen 3 cpu (Retpoline), one Intel 10th
+> Gen CPU (IBRS), one Intel 3rd Gen cpu (Retpoline) and one Intel Xeon CPU (IBRS)
+> using pktgen with 64b udp packets. Our test setup is a dummy device with
+> clsact and matchall in a kernel compiled with every tc module as built-in.
+> We observed a 6-10% speed up on the retpoline CPUs, when going through 1
+> tc filter, and a 60-100% speed up when going through 100 filters.
+> For the IBRS cpus we observed a 1-2% degradation in both scenarios, we believe
+> the extra branches checks introduced a small overhead therefore we added
+> a Kconfig option to make these changes opt-in even in CONFIG_RETPOLINE kernels.
+>
+> We are continuing to test on other hardware variants as we find them:
+>
+> 1 filter:
+> CPU        | before (pps) | after (pps) | diff
+> R9 5950X   | 4237838      | 4412241     | +4.1%
+> R9 5950X   | 4265287      | 4413757     | +3.4%   [*]
+> i5-3337U   | 1580565      | 1682406     | +6.4%
+> i5-10210U  | 3006074      | 3006857     | +0.0%
+> i5-10210U  | 3160245      | 3179945     | +0.6%   [*]
+> Xeon 6230R | 3196906      | 3197059     | +0.0%
+> Xeon 6230R | 3190392      | 3196153     | +0.01%  [*]
+>
+> 100 filters:
+> CPU        | before (pps) | after (pps) | diff
+> R9 5950X   | 313469       | 633303      | +102.03%
+> R9 5950X   | 313797       | 633150      | +101.77% [*]
+> i5-3337U   | 127454       | 211210      | +65.71%
+> i5-10210U  | 389259       | 381765      | -1.9%
+> i5-10210U  | 408812       | 412730      | +0.9%    [*]
+> Xeon 6230R | 415420       | 406612      | -2.1%
+> Xeon 6230R | 416705       | 405869      | -2.6%    [*]
+>
+> [*] In these tests we ran pktgen with clone set to 1000.
+>
+> Pedro Tammela (3):
+>   net/sched: add retpoline wrapper for tc
+>   net/sched: avoid indirect act functions on retpoline kernels
+>   net/sched: avoid indirect classify functions on retpoline kernels
+>
+>  include/net/tc_wrapper.h   | 274 +++++++++++++++++++++++++++++++++++++
+>  net/sched/Kconfig          |  13 ++
+>  net/sched/act_api.c        |   3 +-
+>  net/sched/act_bpf.c        |   6 +-
+>  net/sched/act_connmark.c   |   6 +-
+>  net/sched/act_csum.c       |   6 +-
+>  net/sched/act_ct.c         |   4 +-
+>  net/sched/act_ctinfo.c     |   6 +-
+>  net/sched/act_gact.c       |   6 +-
+>  net/sched/act_gate.c       |   6 +-
+>  net/sched/act_ife.c        |   6 +-
+>  net/sched/act_ipt.c        |   6 +-
+>  net/sched/act_mirred.c     |   6 +-
+>  net/sched/act_mpls.c       |   6 +-
+>  net/sched/act_nat.c        |   7 +-
+>  net/sched/act_pedit.c      |   6 +-
+>  net/sched/act_police.c     |   6 +-
+>  net/sched/act_sample.c     |   6 +-
+>  net/sched/act_simple.c     |   6 +-
+>  net/sched/act_skbedit.c    |   6 +-
+>  net/sched/act_skbmod.c     |   6 +-
+>  net/sched/act_tunnel_key.c |   6 +-
+>  net/sched/act_vlan.c       |   6 +-
+>  net/sched/cls_api.c        |   3 +-
+>  net/sched/cls_basic.c      |   6 +-
+>  net/sched/cls_bpf.c        |   6 +-
+>  net/sched/cls_cgroup.c     |   6 +-
+>  net/sched/cls_flow.c       |   6 +-
+>  net/sched/cls_flower.c     |   6 +-
+>  net/sched/cls_fw.c         |   6 +-
+>  net/sched/cls_matchall.c   |   6 +-
+>  net/sched/cls_route.c      |   6 +-
+>  net/sched/cls_rsvp.c       |   2 +
+>  net/sched/cls_rsvp.h       |   7 +-
+>  net/sched/cls_rsvp6.c      |   2 +
+>  net/sched/cls_tcindex.c    |   7 +-
+>  net/sched/cls_u32.c        |   6 +-
+>  37 files changed, 417 insertions(+), 67 deletions(-)
+>  create mode 100644 include/net/tc_wrapper.h
+>
+> --
+> 2.34.1
+>
