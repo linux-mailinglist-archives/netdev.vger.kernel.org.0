@@ -2,56 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F93D63B069
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:51:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6FF063B096
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:58:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233973AbiK1RvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 12:51:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
+        id S233988AbiK1R6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 12:58:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233604AbiK1RtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:49:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D912ED4C;
-        Mon, 28 Nov 2022 09:43:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4D7E612ED;
-        Mon, 28 Nov 2022 17:43:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50AFDC433B5;
-        Mon, 28 Nov 2022 17:43:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669657403;
-        bh=PRKdFnmpU+XR40rumZNN2itbimYUsoHXd9bKcM5jFi0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XI4m3h1uFS6V+0y2iKNQuu9/+Ufmh01ypVrG6WwsboD+ebkOdeFgskNy3m48OCdT+
-         LQO+mk8RaID62tX1pN6pJwYWnxQwYOp32ADn3gFoMtPcDmEZ1CCL88rzWaX5dZimuz
-         YAIgbIt7c1kB0ZPiVRxPqJfyFDoz1rU3xWIQomGdXvC7LafF3zJVXPsJMdc9En0F7B
-         BD5LKNzf79c5NOmSeIept/2znPPO6AggvHvvwRKXuRM/0xrWZgf5/AiUJvV7dTYTgp
-         qkyyd1tvyjZSIH3EuIPSryvtjLisvHvanJpvvBI+pQV8n6uVjSUVC0S/nQgEmnMWtV
-         SfvnDCmAzr0bA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Davide Tronchin <davide.tronchin.94@gmail.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 9/9] net: usb: qmi_wwan: add u-blox 0x1342 composition
-Date:   Mon, 28 Nov 2022 12:43:02 -0500
-Message-Id: <20221128174303.1443008-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221128174303.1443008-1-sashal@kernel.org>
-References: <20221128174303.1443008-1-sashal@kernel.org>
+        with ESMTP id S234442AbiK1R5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:57:40 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F872CE02
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 09:46:14 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id c1so18560368lfi.7
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 09:46:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sEOQc33dh/AvjD98uU08ScRRQgB0t4Sl60gjFCfdd8U=;
+        b=yhQe2+hZGfKl6Eo7WYzGcxfG3vjSEekJKA7nkO4rCuvo1+vY9HSx7lTw++LjKu/T/q
+         oGUXqhJeeq5zkrNXRdMIXEFvx25L9KApHsNm/KXgY0St375VrGNtLItCRFyN29hplOG6
+         9gc1TkStI7/j15OBs11Mxh9rYZyPpUVHBhF5knolHECXFL5+3duh5oHFGVTX0TJZqCY2
+         0BJY2g5+4peU0+TLiFM8tpUkUUinQ3YyvZAY2e5+mZWFJ+hkAWMBIXi4Dwl0uIXDo4R2
+         C9RP3oO6WQ6L7MTO7JCOcqg4KnvKi2GPBqUPL+ljPwNKtpXPJ7tbsnyXLpyeNVrQ1Nxu
+         pXgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sEOQc33dh/AvjD98uU08ScRRQgB0t4Sl60gjFCfdd8U=;
+        b=JNaVkTQ/9JSwK9K/rNvt9+MM0b5cFLPSGM+utnD0E6Y/MvD8B8b6KoPsQRGgRguNgz
+         DkbSxBVkE4BQeELpVAP+rsCpDHYu6xkW7clpye51uH0psdgpcIFm6vaT+9/d9B8FOZhU
+         ooBEDPvRbJ7DgdawkqQRy+glJdFxK63iK/hMFZjxGpR+RJxq2YtUmauutpWVhWllneal
+         NWbEwMqln0/eyiigxccO9N2e5XpvOAUCYnZHL9/NO0Fa9Bz5CpDsjeVScmfW8tMrTdMW
+         bCDubKDs0+4/EASjDWahJ3wcQJbjbr/b7r1tH2oRk3HiD8rm1h+32PueT2d96VY9aXMT
+         aXLQ==
+X-Gm-Message-State: ANoB5plE91TlXfGoey2Rsys0QUChel8Cry5AZXxr5WMzcij5YLBHEZCG
+        kAOIvDVSXoRnxnf/sE/B3Solgg==
+X-Google-Smtp-Source: AA0mqf7Y8q4j5Qp8K52/Qdd96mqJajrlcpd3UQv1lIPTFAuR7uwCLpQ1Ju2x51BwH5f5CeII2zXU/A==
+X-Received: by 2002:a19:4901:0:b0:4b4:e3b8:c6af with SMTP id w1-20020a194901000000b004b4e3b8c6afmr11777772lfa.291.1669657569898;
+        Mon, 28 Nov 2022 09:46:09 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id b12-20020a05651c032c00b0027741daec09sm1252772ljp.107.2022.11.28.09.46.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Nov 2022 09:46:09 -0800 (PST)
+Message-ID: <dbf8082b-679a-b2d5-6568-3f9a93e52501@linaro.org>
+Date:   Mon, 28 Nov 2022 18:46:08 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [RESEND PATCH 1/2] dt-bindings: nfc: nxp,nci: Document NQ310
+ compatible
+Content-Language: en-US
+To:     Luca Weiss <luca@z3ntu.xyz>, linux-arm-msm@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221128173744.833018-1-luca@z3ntu.xyz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221128173744.833018-1-luca@z3ntu.xyz>
 Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,48 +79,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Davide Tronchin <davide.tronchin.94@gmail.com>
+On 28/11/2022 18:37, Luca Weiss wrote:
+> The NQ310 is another NFC chip from NXP, document the compatible in the
+> bindings.
+> 
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> ---
+> RESEND to fix Cc
 
-[ Upstream commit a487069e11b6527373f7c6f435d8998051d0b5d9 ]
 
-Add RmNet support for LARA-L6.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-LARA-L6 module can be configured (by AT interface) in three different
-USB modes:
-* Default mode (Vendor ID: 0x1546 Product ID: 0x1341) with 4 serial
-interfaces
-* RmNet mode (Vendor ID: 0x1546 Product ID: 0x1342) with 4 serial
-interfaces and 1 RmNet virtual network interface
-* CDC-ECM mode (Vendor ID: 0x1546 Product ID: 0x1343) with 4 serial
-interface and 1 CDC-ECM virtual network interface
-
-In RmNet mode LARA-L6 exposes the following interfaces:
-If 0: Diagnostic
-If 1: AT parser
-If 2: AT parser
-If 3: AT parset/alternative functions
-If 4: RMNET interface
-
-Signed-off-by: Davide Tronchin <davide.tronchin.94@gmail.com>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 66c6b7111a3a..643aef6f206a 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1365,6 +1365,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
- 	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM support*/
- 	{QMI_FIXED_INTF(0x2692, 0x9025, 4)},    /* Cellient MPL200 (rebranded Qualcomm 05c6:9025) */
-+	{QMI_QUIRK_SET_DTR(0x1546, 0x1342, 4)},	/* u-blox LARA-L6 */
- 
- 	/* 4. Gobi 1000 devices */
- 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
--- 
-2.35.1
+Best regards,
+Krzysztof
 
