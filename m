@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5AD263B296
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 20:55:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 755EC63B295
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 20:55:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbiK1Tz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 14:55:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45940 "EHLO
+        id S233266AbiK1Tz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 14:55:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232931AbiK1TzY (ORCPT
+        with ESMTP id S232908AbiK1TzY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 14:55:24 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2045.outbound.protection.outlook.com [40.107.7.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A888205E1;
-        Mon, 28 Nov 2022 11:55:23 -0800 (PST)
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2077.outbound.protection.outlook.com [40.107.104.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1B7205C6;
+        Mon, 28 Nov 2022 11:55:21 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KAq/qIIfHZEwy3okBU0GmyDFmLuF0cM2ls1q9UwMfNupuvh1wcXISUDYTNf2KsEwM+w0dcIF9fzfpn+zTw+Doi1d4kE+OMi11Z2UhRvdI2cIuMChkNOrgWXQEE3wLzFfdIOccHLMbSNNKzCktZ0cIE7zlPxocH1Bc7eTCWW8hkikl5CFGeqvvtVm95Yem+YSOXBPq+Ct+kmbmYuXlgQqvJ99466/IBk63trqhJrwQ2krggAYCm43FYw7DQ2yLBvU26hB44QFh8RWwxQ8xtXWRzNXPxHM0mXfpo0TUiel7X46B8N2h7sE1VJgVTPwXIKyoAyjHMKg/omygBlK+aoaPA==
+ b=RAiKfKOYRqNPeySEGVbCu33DE3K3bKHrkvsg3lbCYyzR9kfvybxJJ7J6CSPa8Mv8p49Gi0360ZwUxuq9XYcvNssggvKeerqXXUNVQkcs9xTKZFn4PG9yBwATb6g2s3T6sz0VQRMpdlszsA4J2eEvz+Xvxi+5sV4Ux9wQbP0ipG24xq9++FRvXXBT2GGvA9IuF1iR4rvA7Zt0xPH/TASEN4tBopw/Jg/W/OY1iM3g114M9cR+wr9Yys7XxNa7J/6tzHItu7vynJkizNFXcoP8X5aJqHUjQDNuKJxl4KmfrDEdXnIzO1nRhsGHYPwMs/6WgYErmXlz9DXAHoYBf3SNsg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B1ow1JDImsxrurO/ZmlXekwKK0WwkV5Xup+3WG6T+LU=;
- b=A2DyoT3zRXsjsqODl2uyTWZLj4L10O8N3ntf/MZYBlup6wXfI+YOT0TQPv1zJPWZ/YMKgU7Iji+6+tN9aBJpjl2u0nc4/198ztwkmnKlmM+VZaHduwj9LQ/SOL8E12zrYzk7toycb+84mwG7FByMugnd4Bmfr8HNIQtIWPoRcII55qH0QmA1oo5BKUqIeR8LjdQecpe+VDbE6olTBg+sCXvN0aVYBObRCCJ14HeGD4oq/p6+P5O+fu1L4+DuP8ydYTzI4SQMFM/xfS1lz/wldG2sSYnZ9L4mMGhHOYsVVy4PxKGCUIpsk1VgJuS3dsR28YZvUWvQPZ5az2iVB27PHA==
+ bh=5L37gLRUNy+4DYV+QAGu8WfoshKXJKlyp7itX/sEkRQ=;
+ b=c+dVsoGXwGwqKhTQ7cyjS/CceKIoIZPeG7HI1STyt++LiMlPJfUYhAdTjjmKmnBVU1SaKW0FTisEm1p7jZaieg9VZ/8Nvmfa/R8Jnpni7UW+79NdQustk/2VXLqE/8VV1MYq7sIcEqDTIzBQtjZZPGLACtuiIO8N8CesANNmeZspWTwQIkeIofzDxzk8wGlDCA9PwqPaZO7AHuXCEkkMspePqVASBIivuemTf7I0eGPpHUR4wJk2KHBZMF8R9PQiRimFXtgN78j1ZqBzrQD2RHp2ywU1EFk06esFJVBcoXQHlhAG8xSZbF94+5puco1i3q2uKiHivvBeNx+Sl/IAdA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B1ow1JDImsxrurO/ZmlXekwKK0WwkV5Xup+3WG6T+LU=;
- b=Bqgoxv0M6pB43FkkM7/G6ovpjAaByqJynM4LgK+s3SToBNvF/W70sYUfY7LHuOcWYPTgJgeOiQZ5ZQ2OfB8Y2huqGIf55L30cAlHiM8m5v8M0kdwCzFL28Qlpibw/43ozd6YXbOOlbm+UWe68OCic0UxBlZ2ZCo2WVbbyJBL9z3a725wkPio9pRJ0ZTD4+u8FUOhsaELMcVawcy6I7tR/GYBN0EtFG4GpAFxQdvBlLnfJ7cZQJKhMvgdRZ8ReEydIWoNJbH+ENOp5sAUU8qy6qPhhXms/VZPzAsWvKuscReROW1xATpatAuWHcsKo2/+px1frsmbpFXSZxTb8nKDkg==
+ bh=5L37gLRUNy+4DYV+QAGu8WfoshKXJKlyp7itX/sEkRQ=;
+ b=e7Tuh5iCuYKX5wgN2jmfYIEBMwtTaCUlbUtmL38p2T58kpJEl3lH+lm+yWdCj57Vf84iWtT4+4xJ6ZohTSUm44oIuccqarJdgXfUHRrqYc/7nweoGL7TAWJjaBPOCb2QAjRUwfyTKG9lDbzGkhTvJKkkLTwpw+3xvJNfBhPuHTtIDV1L6Myp6uODlbNDKPKssgYCVF/plZw+wRhRNH9xrEXnphesMI/uK62WfJv3RDlkfNDmvkHXwdvorf4UG/Lo59N8fpM9OOE4vWMqhFgHJluLREWl0dQ+FbUG53a0phKjcFJd+acQ5eVPQ07E9PQdfR+6NTyxcejU5P+qUmiIJg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from AS8PR03MB8832.eurprd03.prod.outlook.com (2603:10a6:20b:56e::11)
- by GV1PR03MB8816.eurprd03.prod.outlook.com (2603:10a6:150:a2::21) with
+ by PR3PR03MB6364.eurprd03.prod.outlook.com (2603:10a6:102:73::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.21; Mon, 28 Nov
- 2022 19:55:17 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
+ 2022 19:55:18 +0000
 Received: from AS8PR03MB8832.eurprd03.prod.outlook.com
  ([fe80::bad2:a53e:f389:6347]) by AS8PR03MB8832.eurprd03.prod.outlook.com
  ([fe80::bad2:a53e:f389:6347%4]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
- 19:55:17 +0000
+ 19:55:18 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -50,10 +50,12 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Tim Harvey <tharvey@gateworks.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net v2 1/2] net: phy: Move/rename phylink_interface_max_speed
-Date:   Mon, 28 Nov 2022 14:54:08 -0500
-Message-Id: <20221128195409.100873-1-sean.anderson@seco.com>
+Subject: [PATCH net v2 2/2] phy: aquantia: Determine rate adaptation support from registers
+Date:   Mon, 28 Nov 2022 14:54:09 -0500
+Message-Id: <20221128195409.100873-2-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
+In-Reply-To: <20221128195409.100873-1-sean.anderson@seco.com>
+References: <20221128195409.100873-1-sean.anderson@seco.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: BLAPR05CA0031.namprd05.prod.outlook.com
@@ -61,56 +63,56 @@ X-ClientProxiedBy: BLAPR05CA0031.namprd05.prod.outlook.com
  (2603:10a6:20b:56e::11)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS8PR03MB8832:EE_|GV1PR03MB8816:EE_
-X-MS-Office365-Filtering-Correlation-Id: a2111223-2354-4534-fb65-08dad17a77eb
+X-MS-TrafficTypeDiagnostic: AS8PR03MB8832:EE_|PR3PR03MB6364:EE_
+X-MS-Office365-Filtering-Correlation-Id: 45eed58c-8bc8-4c18-5447-08dad17a79d2
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9PtGTJT0GWjPwLhA5W7zJ6veas1AqwKGQ+j60VBjxqcRCpuzWlFhXISA87d9AsqTy4GDBk/pnAbJcGyybUSFTwaF9G9UaloBnWKqtZ3bOxLjZ2GNN0kIWxerJcIr+Q0tIWoHro997HvFKHkjTmBCAg+PRkylNj31QrHzpRltSxnR6ZnJmhWnBSoY2YbRg1I81+zjxWhJT6lbHlCrz6owahqnjtMC+4yb33FpM+AYwGjA+znd/w5nS1lEhIoyeWzyBFQyp7vPj45KDGLyajFkQErQzrrVpfJHdyLeouU7lRwUBbPS4Ve/2BrGwBolJRFdH4icsH/T04IgJXT3TKRPbs3N9C1MJ5vLexOd3g5nYdJQUu14Atg/pIvHzR1i9keQ+awlq4xheyRg3jSnKf4lVTOz0Br0dl/go6IBKmURy948zNsukkhcj5VR3rN2sMpKXSJrPxkyhBj6AaA8v929I+Xj54l4XFSyyAs9pqowhjoI+SMRLB1cj0OsDSoxAHcGfLL+Ba9ipEC8mPks7+4dyDk5oL8wlEES6TYYG2qpjjUfmuLPcNxuVZmjF4hKjv5AdkCi/khd5hMMCUoSm2HgImVXGC7mDSTgBEIlaarPAIaIdUZEUi/fhd+g7jJgnLKUQtP1Pe2p4jaWWgbXN2O+qWRF2CsAs29/FmLmgFPE3kgNorbD3lIJIIqQmrlRDGvj
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR03MB8832.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(136003)(366004)(346002)(39850400004)(376002)(451199015)(38350700002)(38100700002)(316002)(6486002)(54906003)(478600001)(110136005)(83380400001)(41300700001)(26005)(6512007)(2616005)(8936002)(2906002)(86362001)(186003)(66476007)(66556008)(4326008)(8676002)(7416002)(1076003)(52116002)(66946007)(44832011)(36756003)(6506007)(5660300002)(6666004)(107886003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: dpotk0nE97WWOSZmrcLP8TrRyqoQy6ozagJ3CjduP6Uw+k2Ct2T7SnChIt80NJtvNjI/eDlcw1y7PhVHmsWppL04OriNIW99KA2rVcWz6lU3+Z4RR4t7bXUiWGsrYgugUBcd8uBtuqaYDh2PbkXkiv2t6MNVmQlIwHKro8qDBs/KCFo5zfamwZ/7qFq1nl+XjdSrDdQUVJuGH9u+P5NNQmre/BsDt6gUgW7XNM9K3W3g/V/LSSI4QIVZrylNVRK91e79dFW7yQwnhPw12aFEYJy7KUvIie5Y91/4Oj5EhnCx1ZL6oEjcF+nB7JL7G9/jJytYf8sgiUdxha4seGMmLuQzvxiQq/XHc/5hv/pIrhQAmG4d8ti1LTGyMFK/V9yLf8YCYCuHfqMnAZmu+t6Z++hYdWUfMSB8arFcnMYb2L6+yiIkwDW2d3CKsRCl/4uXpCXWqxdcYyW8iWu8Gw0/2/mbtWOLynAlVJHjtpBhAJ3aRRFaTO4zQJXBH1OlcsU8FidcDaCRY+fymToazNqfe72TwqY5A0LCQATWUJ/NDm3SPQ6M2sPrVx8Gz1YwySXXANXTD2yapni/gQtcY1CHKBBQmzo8dXpvouUklk3qcg1LDxvt2bjGBi1AWIlbdaktooqkQGFnkhwpX5TUDdeUge1Br7FAxgljJKVRCPDERJBToai5t+vRdN88zmTTAhwo
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR03MB8832.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(39850400004)(136003)(346002)(396003)(366004)(451199015)(52116002)(478600001)(6486002)(83380400001)(2906002)(6666004)(107886003)(110136005)(38350700002)(38100700002)(7416002)(5660300002)(44832011)(36756003)(1076003)(8936002)(6506007)(41300700001)(2616005)(8676002)(4326008)(86362001)(66476007)(66946007)(66556008)(26005)(54906003)(6512007)(186003)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?phg9P5Md4oo+R0Gll/8U1EzaLcm59YO3h10n0jJD/jOTw55CKH3jLHMJ34hl?=
- =?us-ascii?Q?XPNfsG2VT7m0PR5HFqTKp54Ey+MSROxuggLsjvJakxZz1sTmk93sszSpzEhI?=
- =?us-ascii?Q?9CQAMKsrDccIuS6yGtDtkMOwtw2xMSjU/EznJgnGxsHd//CvhdkueViGQS7j?=
- =?us-ascii?Q?iekfpgRYOzIckwjETYalINouJm8rqSecaMuy0ERDa0hFs9kQSD2C9F75lSd+?=
- =?us-ascii?Q?YNFHet7qStU0dqjkVc9K19LTckCCDzXmV7ObR9puFqPiACJNo1jhfSPjmTGu?=
- =?us-ascii?Q?ibSywa/nOtISNyF4+1IfG7FmqT9EUhHdAGLa3IWJdeE8+wy3DBNEuN+Rc9Aw?=
- =?us-ascii?Q?BGVBHzAvzywPzsXUqLxVBmJcdbiuf3iqyxUf+tB1jRoCfBXRS/oK0d7ePf39?=
- =?us-ascii?Q?ICAajs5Yk1Ffze3ZjSqviU1FtH84/qGO03YbPzp1Viyiv/orsSJ096cj5cAH?=
- =?us-ascii?Q?D8cAVe3J1jxgB2zzPnlhE/Sh44Zpr17VfSA2YXwLbPZKEZN+gn5NeCNK8DC6?=
- =?us-ascii?Q?TBUFOUR91vA743z8BiWxlGKV1B09NSWTsDV26bZyvaJYzMzMWwV7QAV4f3kA?=
- =?us-ascii?Q?SVexmnfaUOVnVPRXzadpaI0HwS28dXR1K+hvwohIJQOm6kbBOWy2kzx53qbh?=
- =?us-ascii?Q?cGRDD/nTxKVxkNSZ1SKZ2yBs+BXxx+AqBoZMhDG+zqBWexnLTKLLBDMgNAos?=
- =?us-ascii?Q?royDd5VpttPR4MP5aNVINQ1Jgjjd6UJdEi2mVU3V96BkmJGPPwBNBnHO3y93?=
- =?us-ascii?Q?UapK2tnRulOovBmN4EqRD36U7dX4lihwQf7x1rRQhmjUqDhhXXNAkxxVe2Kg?=
- =?us-ascii?Q?1d5i43waD1iH10eNLPfyfQUgiwvx6OVqk5Zazl77Su5orUKjbZ6QsN5I/xgG?=
- =?us-ascii?Q?w4Ygzaoo+yzcJHo8C2b8E8M/bXBaxRRU0V3YxgRf7hJBqzhW5yxaoLVlr0sF?=
- =?us-ascii?Q?8T7R9Qv6e12NhLpK2FVghggNo6aLQI7RPcsrdkSQX0eaTHQgT9DNWhYPMd+/?=
- =?us-ascii?Q?Dl/ZrpBa7/Q2SzmI0lY95MHUGQX33XiNlGlkBLdtux8kzbn+hU3Tg/veqNFB?=
- =?us-ascii?Q?gt8cAAUKc6Qs6B8RmaRuQjfv19IM5jUyKGI71510hsWqD6Apba5MTh+9owi3?=
- =?us-ascii?Q?NaIf1GgmSE5Pauay34wEQY1JK2S8yuqN2JAI3dXTiHL8KKgvSppcAbWVDFPN?=
- =?us-ascii?Q?1KjL6jWh/xdyFas/rrFHy0FmeYD3ZACQFHsLraaWEGU14uMQhU6Rvu2vWOBq?=
- =?us-ascii?Q?CUkktOXhcqUQd3O2qQwvawUuabpnEdfVpxDOSmMZ2yH6+H4+3SUZ3VGL5Ly1?=
- =?us-ascii?Q?FfgKyFnfQDdJ8xXXAfpVvz+lPLJlgfn29VPoAxX4r8Ws17tQnBYo95FRN6RU?=
- =?us-ascii?Q?CHDKGLX8GOmA7jJaV5uKFe0XguCiCoEaBLjl2/Z2MJPdYL0SSqqPH2g4zrSS?=
- =?us-ascii?Q?fb2AVEZXtU8bZF0xF37wDTkD01NRoJjMIGdQAzWs0Hjlra4iANYa2B3l+ULA?=
- =?us-ascii?Q?Yxu5N8Q0cIgStOnNPbQmccjAIq2mTp4XQMsdXhUEnMzDq93aODkZ3uRW63P0?=
- =?us-ascii?Q?AsWCLRV/J57aPP55BQuo3sP0kiMR6DBLQD8SjpB1jrsJWrFYNoMDeWo0bR/l?=
- =?us-ascii?Q?EQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?t4KcndyrocRXugwVQ2WuizQ54YTfjG92wIgpvl39uKQ7pmmkLWm7dtTpjPUJ?=
+ =?us-ascii?Q?gO+VNyIowDIHB/mImG5B1a3V8FE1LkEVu8Uf89xJYAb11zjBNW/BjcMsb7QU?=
+ =?us-ascii?Q?Zf1GAr4OGOmb4xP6ZnjipkKii8yw65lN9xQcqTFKEu/BC8kNBTSczMEpg1g6?=
+ =?us-ascii?Q?Dk+Urf9VeQQ2rverTo9qst/X73LLenjB/QMXbEybOA9TV4h5ilDtYCuBHDSc?=
+ =?us-ascii?Q?D1lyKO2IA+VYr6aUTTfGgOopsYn+4sgF2w1KqJ4XO1CMhNywF1yutW/XDRKF?=
+ =?us-ascii?Q?DbFpJ/xunMXe8J2T7/AsoIWqZ9R65nyBN/IgTbM5DLPO8ZjsTjltifbGy0gs?=
+ =?us-ascii?Q?+KMNL4yeeps2wzUfqJkzvo1fHbwXmL3zue3Fiq/ici0Iazqm1HOHpvfc04Pj?=
+ =?us-ascii?Q?oFqsbcN4D9qPLwOnbYHX/S6iWa6kNUn2vmjmdWnyBkTBj8z8hQqcEVpJCWGH?=
+ =?us-ascii?Q?HoxC93BKR7YHHWyAmdbiC//AylXQ/oX8ihaJCgucSWZycnwsdB+dzMGYr7Qw?=
+ =?us-ascii?Q?aLhrrUy2U/oF9WKVwmL7tg25XoVPlVYyWW0u6s+q+Y5E7MhF11KeZWMIBNZs?=
+ =?us-ascii?Q?qaOgEpRVIZ9vzFuMI7NfxR14HT8Ja/FkOo94XHNkRx2p9EHs5yCGhumSDowK?=
+ =?us-ascii?Q?BLkdXAEbkWKa+YUZ5/q2BBrY4Er7Xl+RyjtfolRq+LAu9HeAYIRs141BdRNV?=
+ =?us-ascii?Q?tdzWohwdhUaZCUuWy5Fswts5Prf4zd+ZxPjM+1KNS+YvkZv+rw2Xkmii9ZCN?=
+ =?us-ascii?Q?p8lPVv9MgRudAwcwhAYwqipG/4xGz9UgnnAmxSIlYvwsurpmt1XvlcKOpccX?=
+ =?us-ascii?Q?1sL5AI1Ah5bq0mI7AvW+x32qo1zHRvWckX+sP16KLssq4p6nk6sdYNetWV6t?=
+ =?us-ascii?Q?rlD153DGW0O2cwzWRS2aLuveO/ZMeKjhAwUOcVOC5qLEO+GsLH2s0mEow28u?=
+ =?us-ascii?Q?t9+nLJo/INO/HXTm7cTuQuk3yMXfbu4CPU1XKq5FuciJs53jQhpiwL/6VKQQ?=
+ =?us-ascii?Q?peavPAjmmLLLMxLzZ/UsGsKUqbqFE6kGfXgblXHcARA82pk2AHSn8LKXNtrL?=
+ =?us-ascii?Q?nAGdrm+lWX3t9MuvQ8t0cqv454oNXC17QCmQ+R0HuSBIp1tucoRY0ISwWwe6?=
+ =?us-ascii?Q?ljU+YDQ2W0F0L2NDOOhHeOV3BlVTDA6wiNNEa36eq9f3tz26OooNccT/fTvm?=
+ =?us-ascii?Q?81GGVYgEb3EezrU+w0CON9DacVNrCVFAdnzzM7jAZ700hWKOYtRvG8YfX47q?=
+ =?us-ascii?Q?msjp247qStvntGXRlwXqXtahKKGc47NzGP0evcU75zt25SaDBk2Od6EegZEH?=
+ =?us-ascii?Q?K84lrBZ01BUHu58M2bZtUMXQNSfG8eRtaOvO2iYv3Nc5T0WrhhUDBagA56vx?=
+ =?us-ascii?Q?caswJMG9zs1Kg1KEHT8KTtVdF4on9v3VAP8e0YCuJQNY+dpzKVlTc1kMIFRQ?=
+ =?us-ascii?Q?1o1+Dk/dTPUsIcJJMGYcsXugViCJJa7Uc5887ieCxomX2mn2kk+vCa2t9m18?=
+ =?us-ascii?Q?52Fh01IBSAJrOHnROO2Y0NiePuvQwBnEEPQPxZojORKj8NYklyGBC0+tIKY3?=
+ =?us-ascii?Q?H8AAY1yVzt/+eeBu8/bBgjwcxeZBRFIC2cnCcOl/7lvA02DHVvT97SNfcoke?=
+ =?us-ascii?Q?Cg=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2111223-2354-4534-fb65-08dad17a77eb
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45eed58c-8bc8-4c18-5447-08dad17a79d2
 X-MS-Exchange-CrossTenant-AuthSource: AS8PR03MB8832.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 19:55:16.9504
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 19:55:18.7327
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: c/s8ZNUtWxrhRCZZgOoPuXULQ3Rh2JSheP9NqRgADkHyEcF0LXgKzEUtZAzFz/+A3VpzPy0wel/HNS3T4rW+RQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR03MB8816
+X-MS-Exchange-CrossTenant-UserPrincipalName: m/FEnE30ww3AJXQlHj/JE6BecRO/KiOpZE3mTb1VKfkJDK+KBd1ekhU5u3ZzV9+Ebd84lo5bnUwF1MkmcoxGDg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR03MB6364
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -118,220 +120,235 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is really a core phy function like phy_interface_num_ports. Move it
-to drivers/net/phy/phy-core.c and rename it accordingly.
+When autonegotiation completes, the phy interface will be set based on
+the global config register for that speed. If the SERDES mode is set to
+something which the MAC does not support, then the link will not come
+up. To avoid this, validate each combination of interface speed and link
+speed which might be configured. This way, we ensure that we only
+consider rate adaptation in our advertisement when we can actually use
+it.
 
+The API for get_rate_matching requires that PHY_INTERFACE_MODE_NA be
+handled properly. To do this, we adopt a structure similar to
+phylink_validate. At the top-level, we either validate a particular
+interface speed or all of them. Below that, we validate each combination
+of serdes speed and link speed.
+
+For some firmwares, not all speeds are supported. In this case, the
+global config register for that speed will be initialized to zero
+(indicating that rate adaptation is not supported). We can detect this
+by reading the PMA/PMD speed register to determine which speeds are
+supported. This register is read once in probe and cached for later.
+
+Fixes: 3c42563b3041 ("net: phy: aquantia: Add support for rate matching")
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
+This commit should not get backported until it soaks in master for a
+while.
+
+The names for the bits in MDIO_SPEED are pretty ugly. IMO
+they should all use the MDIO_PMA_SPEED_ prefix, but I think since they
+are in uapi we are stuck with these names...
 
 Changes in v2:
-- New
+- Rework to just validate things instead of modifying registers
 
- drivers/net/phy/phy-core.c | 70 +++++++++++++++++++++++++++++++++++
- drivers/net/phy/phylink.c  | 75 ++------------------------------------
- include/linux/phy.h        |  1 +
- 3 files changed, 74 insertions(+), 72 deletions(-)
+ drivers/net/phy/aquantia_main.c | 156 ++++++++++++++++++++++++++++++--
+ 1 file changed, 150 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 2c8bf438ea61..a60ab7946bba 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -148,6 +148,76 @@ int phy_interface_num_ports(phy_interface_t interface)
+diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
+index 47a76df36b74..998cdbb59ae3 100644
+--- a/drivers/net/phy/aquantia_main.c
++++ b/drivers/net/phy/aquantia_main.c
+@@ -109,6 +109,12 @@
+ #define VEND1_GLOBAL_CFG_RATE_ADAPT_NONE	0
+ #define VEND1_GLOBAL_CFG_RATE_ADAPT_USX		1
+ #define VEND1_GLOBAL_CFG_RATE_ADAPT_PAUSE	2
++#define VEND1_GLOBAL_CFG_SERDES_MODE		GENMASK(2, 0)
++#define VEND1_GLOBAL_CFG_SERDES_MODE_XFI	0
++#define VEND1_GLOBAL_CFG_SERDES_MODE_SGMII	3
++#define VEND1_GLOBAL_CFG_SERDES_MODE_OCSGMII	4
++#define VEND1_GLOBAL_CFG_SERDES_MODE_XFI5G	6
++#define VEND1_GLOBAL_CFG_SERDES_MODE_XFI20G	7
+ 
+ #define VEND1_GLOBAL_RSVD_STAT1			0xc885
+ #define VEND1_GLOBAL_RSVD_STAT1_FW_BUILD_ID	GENMASK(7, 4)
+@@ -173,6 +179,7 @@ static const struct aqr107_hw_stat aqr107_hw_stats[] = {
+ 
+ struct aqr107_priv {
+ 	u64 sgmii_stats[AQR107_SGMII_STAT_SZ];
++	int supported_speeds;
+ };
+ 
+ static int aqr107_get_sset_count(struct phy_device *phydev)
+@@ -675,13 +682,141 @@ static int aqr107_wait_processor_intensive_op(struct phy_device *phydev)
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(phy_interface_num_ports);
  
 +/**
-+ * phy_interface_max_speed() - get the maximum speed of a phy interface
-+ * @interface: phy interface mode defined by &typedef phy_interface_t
++ * aqr107_rate_adapt_ok_one() - Validate rate adaptation for one configuration
++ * @phydev: The phy to act on
++ * @serdes_speed: The speed of the serdes (aka the phy interface)
++ * @link_speed: The speed of the link
 + *
-+ * Determine the maximum speed of a phy interface. This is intended to help
-+ * determine the correct speed to pass to the MAC when the phy is performing
-+ * rate matching.
++ * This function validates whether rate adaptation will work for a particular
++ * combination of @serdes_speed and @link_speed.
 + *
-+ * Return: The maximum speed of @interface
++ * Return: %true if the global config register for @link_speed is configured for
++ * rate adaptation, %true if @link_speed will not be advertised, %false
++ * otherwise.
 + */
-+int phy_interface_max_speed(phy_interface_t interface)
++static bool aqr107_rate_adapt_ok_one(struct phy_device *phydev, int serdes_speed,
++				     int link_speed)
 +{
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_100BASEX:
-+	case PHY_INTERFACE_MODE_REVRMII:
-+	case PHY_INTERFACE_MODE_RMII:
-+	case PHY_INTERFACE_MODE_SMII:
-+	case PHY_INTERFACE_MODE_REVMII:
-+	case PHY_INTERFACE_MODE_MII:
-+		return SPEED_100;
++	struct aqr107_priv *priv = phydev->priv;
++	int val, speed_bit;
++	u32 reg;
 +
-+	case PHY_INTERFACE_MODE_TBI:
-+	case PHY_INTERFACE_MODE_MOCA:
-+	case PHY_INTERFACE_MODE_RTBI:
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+	case PHY_INTERFACE_MODE_1000BASEKX:
-+	case PHY_INTERFACE_MODE_TRGMII:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_GMII:
-+		return SPEED_1000;
++	phydev_dbg(phydev, "validating link_speed=%d serdes_speed=%d\n",
++		   link_speed, serdes_speed);
 +
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		return SPEED_2500;
-+
-+	case PHY_INTERFACE_MODE_5GBASER:
-+		return SPEED_5000;
-+
-+	case PHY_INTERFACE_MODE_XGMII:
-+	case PHY_INTERFACE_MODE_RXAUI:
-+	case PHY_INTERFACE_MODE_XAUI:
-+	case PHY_INTERFACE_MODE_10GBASER:
-+	case PHY_INTERFACE_MODE_10GKR:
-+	case PHY_INTERFACE_MODE_USXGMII:
-+	case PHY_INTERFACE_MODE_QUSGMII:
-+		return SPEED_10000;
-+
-+	case PHY_INTERFACE_MODE_25GBASER:
-+		return SPEED_25000;
-+
-+	case PHY_INTERFACE_MODE_XLGMII:
-+		return SPEED_40000;
-+
-+	case PHY_INTERFACE_MODE_INTERNAL:
-+	case PHY_INTERFACE_MODE_NA:
-+	case PHY_INTERFACE_MODE_MAX:
-+		/* No idea! Garbage in, unknown out */
-+		return SPEED_UNKNOWN;
++	switch (link_speed) {
++	case SPEED_10000:
++		reg = VEND1_GLOBAL_CFG_10G;
++		speed_bit = MDIO_SPEED_10G;
++		break;
++	case SPEED_5000:
++		reg = VEND1_GLOBAL_CFG_5G;
++		speed_bit = MDIO_PCS_SPEED_5G;
++		break;
++	case SPEED_2500:
++		reg = VEND1_GLOBAL_CFG_2_5G;
++		speed_bit = MDIO_PCS_SPEED_2_5G;
++		break;
++	case SPEED_1000:
++		reg = VEND1_GLOBAL_CFG_1G;
++		speed_bit = MDIO_PMA_SPEED_1000;
++		break;
++	case SPEED_100:
++		reg = VEND1_GLOBAL_CFG_100M;
++		speed_bit = MDIO_PMA_SPEED_100;
++		break;
++	case SPEED_10:
++		reg = VEND1_GLOBAL_CFG_10M;
++		speed_bit = MDIO_PMA_SPEED_10;
++		break;
++	default:
++		WARN_ON_ONCE(1);
++		return false;
 +	}
 +
-+	/* If we get here, someone forgot to add an interface mode above */
-+	WARN_ON_ONCE(1);
-+	return SPEED_UNKNOWN;
-+}
-+EXPORT_SYMBOL_GPL(phy_interface_max_speed);
++	/* Vacuously OK, since we won't advertise it anyway */
++	if (!(priv->supported_speeds & speed_bit))
++		return true;
 +
- /* A mapping of all SUPPORTED settings to speed/duplex.  This table
-  * must be grouped by speed and sorted in descending match priority
-  * - iow, descending speed.
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 2805b04d6402..90536f3120ec 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -156,75 +156,6 @@ static const char *phylink_an_mode_str(unsigned int mode)
- 	return mode < ARRAY_SIZE(modestr) ? modestr[mode] : "unknown";
++	val = phy_read_mmd(phydev, MDIO_MMD_VEND1, reg);
++	if (val < 0) {
++		phydev_warn(phydev, "could not read register %x:%.04x (err = %d)\n",
++			    MDIO_MMD_VEND1, reg, val);
++		return false;
++	}
++
++	phydev_dbg(phydev, "%x:%.04x = %.04x\n", MDIO_MMD_VEND1, reg, val);
++	if (FIELD_GET(VEND1_GLOBAL_CFG_RATE_ADAPT, val) !=
++		VEND1_GLOBAL_CFG_RATE_ADAPT_PAUSE)
++		return false;
++
++	switch (FIELD_GET(VEND1_GLOBAL_CFG_SERDES_MODE, val)) {
++	case VEND1_GLOBAL_CFG_SERDES_MODE_XFI20G:
++		return serdes_speed == SPEED_20000;
++	case VEND1_GLOBAL_CFG_SERDES_MODE_XFI:
++		return serdes_speed == SPEED_10000;
++	case VEND1_GLOBAL_CFG_SERDES_MODE_XFI5G:
++		return serdes_speed == SPEED_5000;
++	case VEND1_GLOBAL_CFG_SERDES_MODE_OCSGMII:
++		return serdes_speed == SPEED_2500;
++	case VEND1_GLOBAL_CFG_SERDES_MODE_SGMII:
++		return serdes_speed == SPEED_1000;
++	default:
++		return false;
++	}
++}
++
++/**
++ * aqr107_rate_adapt_ok() - Validate rate adaptation for an interface speed
++ * @phydev: The phy device
++ * @speed: The serdes (phy interface) speed
++ *
++ * This validates whether rate adaptation will work for a particular @speed.
++ * All link speeds less than or equal to @speed are validate to ensure they are
++ * configured properly.
++ *
++ * Return: %true if rate adaptation is supported for @speed, %false otherwise.
++ */
++static bool aqr107_rate_adapt_ok(struct phy_device *phydev, int speed)
++{
++	switch (speed) {
++	case SPEED_10000:
++		if (!aqr107_rate_adapt_ok_one(phydev, speed, SPEED_10000) ||
++		    !aqr107_rate_adapt_ok_one(phydev, speed, SPEED_5000))
++			return false;
++		fallthrough;
++	case SPEED_2500:
++		if (!aqr107_rate_adapt_ok_one(phydev, speed, SPEED_2500))
++			return false;
++		fallthrough;
++	case SPEED_1000:
++		if (!aqr107_rate_adapt_ok_one(phydev, speed, SPEED_1000) ||
++		    !aqr107_rate_adapt_ok_one(phydev, speed, SPEED_100) ||
++		    !aqr107_rate_adapt_ok_one(phydev, speed, SPEED_10))
++			return false;
++		return true;
++	default:
++		return false;
++	};
++}
++
+ static int aqr107_get_rate_matching(struct phy_device *phydev,
+ 				    phy_interface_t iface)
+ {
+-	if (iface == PHY_INTERFACE_MODE_10GBASER ||
+-	    iface == PHY_INTERFACE_MODE_2500BASEX ||
+-	    iface == PHY_INTERFACE_MODE_NA)
++	if (iface != PHY_INTERFACE_MODE_NA) {
++		if (aqr107_rate_adapt_ok(phydev,
++					 phy_interface_max_speed(iface)))
++			return RATE_MATCH_PAUSE;
++		else
++			return RATE_MATCH_NONE;
++	}
++
++	if (aqr107_rate_adapt_ok(phydev, SPEED_10000) ||
++	    aqr107_rate_adapt_ok(phydev, SPEED_2500) ||
++	    aqr107_rate_adapt_ok(phydev, SPEED_1000))
+ 		return RATE_MATCH_PAUSE;
++
+ 	return RATE_MATCH_NONE;
  }
  
--/**
-- * phylink_interface_max_speed() - get the maximum speed of a phy interface
-- * @interface: phy interface mode defined by &typedef phy_interface_t
-- *
-- * Determine the maximum speed of a phy interface. This is intended to help
-- * determine the correct speed to pass to the MAC when the phy is performing
-- * rate matching.
-- *
-- * Return: The maximum speed of @interface
-- */
--static int phylink_interface_max_speed(phy_interface_t interface)
--{
--	switch (interface) {
--	case PHY_INTERFACE_MODE_100BASEX:
--	case PHY_INTERFACE_MODE_REVRMII:
--	case PHY_INTERFACE_MODE_RMII:
--	case PHY_INTERFACE_MODE_SMII:
--	case PHY_INTERFACE_MODE_REVMII:
--	case PHY_INTERFACE_MODE_MII:
--		return SPEED_100;
--
--	case PHY_INTERFACE_MODE_TBI:
--	case PHY_INTERFACE_MODE_MOCA:
--	case PHY_INTERFACE_MODE_RTBI:
--	case PHY_INTERFACE_MODE_1000BASEX:
--	case PHY_INTERFACE_MODE_1000BASEKX:
--	case PHY_INTERFACE_MODE_TRGMII:
--	case PHY_INTERFACE_MODE_RGMII_TXID:
--	case PHY_INTERFACE_MODE_RGMII_RXID:
--	case PHY_INTERFACE_MODE_RGMII_ID:
--	case PHY_INTERFACE_MODE_RGMII:
--	case PHY_INTERFACE_MODE_QSGMII:
--	case PHY_INTERFACE_MODE_SGMII:
--	case PHY_INTERFACE_MODE_GMII:
--		return SPEED_1000;
--
--	case PHY_INTERFACE_MODE_2500BASEX:
--		return SPEED_2500;
--
--	case PHY_INTERFACE_MODE_5GBASER:
--		return SPEED_5000;
--
--	case PHY_INTERFACE_MODE_XGMII:
--	case PHY_INTERFACE_MODE_RXAUI:
--	case PHY_INTERFACE_MODE_XAUI:
--	case PHY_INTERFACE_MODE_10GBASER:
--	case PHY_INTERFACE_MODE_10GKR:
--	case PHY_INTERFACE_MODE_USXGMII:
--	case PHY_INTERFACE_MODE_QUSGMII:
--		return SPEED_10000;
--
--	case PHY_INTERFACE_MODE_25GBASER:
--		return SPEED_25000;
--
--	case PHY_INTERFACE_MODE_XLGMII:
--		return SPEED_40000;
--
--	case PHY_INTERFACE_MODE_INTERNAL:
--	case PHY_INTERFACE_MODE_NA:
--	case PHY_INTERFACE_MODE_MAX:
--		/* No idea! Garbage in, unknown out */
--		return SPEED_UNKNOWN;
--	}
--
--	/* If we get here, someone forgot to add an interface mode above */
--	WARN_ON_ONCE(1);
--	return SPEED_UNKNOWN;
--}
--
- /**
-  * phylink_caps_to_linkmodes() - Convert capabilities to ethtool link modes
-  * @linkmodes: ethtool linkmode mask (must be already initialised)
-@@ -435,7 +366,7 @@ unsigned long phylink_get_capabilities(phy_interface_t interface,
- 				       unsigned long mac_capabilities,
- 				       int rate_matching)
+@@ -711,10 +846,19 @@ static int aqr107_resume(struct phy_device *phydev)
+ 
+ static int aqr107_probe(struct phy_device *phydev)
  {
--	int max_speed = phylink_interface_max_speed(interface);
-+	int max_speed = phy_interface_max_speed(interface);
- 	unsigned long caps = MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
- 	unsigned long matched_caps = 0;
+-	phydev->priv = devm_kzalloc(&phydev->mdio.dev,
+-				    sizeof(struct aqr107_priv), GFP_KERNEL);
+-	if (!phydev->priv)
++	struct aqr107_priv *priv;
++
++	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
+ 		return -ENOMEM;
++	phydev->priv = priv;
++
++	priv->supported_speeds = phy_read_mmd(phydev, MDIO_MMD_PMAPMD,
++					      MDIO_SPEED);
++	if (priv->supported_speeds < 0) {
++		phydev_err(phydev, "could not determine supported speeds\n");
++		return priv->supported_speeds;
++	};
  
-@@ -1202,7 +1133,7 @@ static void phylink_link_up(struct phylink *pl,
- 		 * the link_state) to the interface speed, and will send
- 		 * pause frames to the MAC to limit its transmission speed.
- 		 */
--		speed = phylink_interface_max_speed(link_state.interface);
-+		speed = phy_interface_max_speed(link_state.interface);
- 		duplex = DUPLEX_FULL;
- 		rx_pause = true;
- 		break;
-@@ -1212,7 +1143,7 @@ static void phylink_link_up(struct phylink *pl,
- 		 * the link_state) to the interface speed, and will cause
- 		 * collisions to the MAC to limit its transmission speed.
- 		 */
--		speed = phylink_interface_max_speed(link_state.interface);
-+		speed = phy_interface_max_speed(link_state.interface);
- 		duplex = DUPLEX_HALF;
- 		break;
- 	}
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index ddf66198f751..bb160611d9ad 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -997,6 +997,7 @@ const char *phy_duplex_to_str(unsigned int duplex);
- const char *phy_rate_matching_to_str(int rate_matching);
- 
- int phy_interface_num_ports(phy_interface_t interface);
-+int phy_interface_max_speed(phy_interface_t interface);
- 
- /* A structure for mapping a particular speed and duplex
-  * combination to a particular SUPPORTED and ADVERTISED value
+ 	return aqr_hwmon_probe(phydev);
+ }
 -- 
 2.35.1.1320.gc452695387.dirty
 
