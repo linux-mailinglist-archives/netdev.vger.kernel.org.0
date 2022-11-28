@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29FE663A7BE
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE7E63A7B3
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:02:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231750AbiK1MCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 07:02:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36808 "EHLO
+        id S231223AbiK1MCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 07:02:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231545AbiK1MAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:52 -0500
+        with ESMTP id S231517AbiK1MAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:48 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDBD1A06D
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5C41A222
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:47 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoU-0005NW-Aj; Mon, 28 Nov 2022 13:00:42 +0100
+        id 1ozcoQ-0005HX-VO; Mon, 28 Nov 2022 13:00:39 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoS-000oBz-Kz; Mon, 28 Nov 2022 13:00:41 +0100
+        id 1ozcoP-000oAy-AG; Mon, 28 Nov 2022 13:00:38 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoO-00H6Pl-5t; Mon, 28 Nov 2022 13:00:36 +0100
+        id 1ozcoO-00H6Q3-86; Mon, 28 Nov 2022 13:00:36 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH v1 15/26] net: dsa: microchip: ksz8_r_dyn_mac_table(): move main part of the code out of if statement
-Date:   Mon, 28 Nov 2022 13:00:23 +0100
-Message-Id: <20221128120034.4075562-16-o.rempel@pengutronix.de>
+Subject: [PATCH v1 16/26] net: dsa: microchip: ksz8_r_dyn_mac_table(): use ret instead of rc
+Date:   Mon, 28 Nov 2022 13:00:24 +0100
+Message-Id: <20221128120034.4075562-17-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221128120034.4075562-1-o.rempel@pengutronix.de>
 References: <20221128120034.4075562-1-o.rempel@pengutronix.de>
@@ -60,91 +60,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Start reworking error handling of this function
+Other parts of this file use ret. So, unify it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8795.c | 56 +++++++++++++++--------------
- 1 file changed, 29 insertions(+), 27 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index a6d5de41a754..2674fd553851 100644
+index 2674fd553851..1677f61b138a 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -402,7 +402,9 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
- 	const u32 *masks;
- 	const u16 *regs;
- 	u16 ctrl_addr;
-+	u64 buf = 0;
+@@ -405,7 +405,7 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
+ 	u64 buf = 0;
  	u8 data;
-+	int cnt;
- 	int rc;
+ 	int cnt;
+-	int rc;
++	int ret;
  
  	shifts = dev->info->shifts;
-@@ -418,36 +420,36 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
- 	if (rc == -EAGAIN) {
+ 	masks = dev->info->masks;
+@@ -416,12 +416,12 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
+ 	mutex_lock(&dev->alu_mutex);
+ 	ksz_write16(dev, regs[REG_IND_CTRL_0], ctrl_addr);
+ 
+-	rc = ksz8_valid_dyn_entry(dev, &data);
+-	if (rc == -EAGAIN) {
++	ret = ksz8_valid_dyn_entry(dev, &data);
++	if (ret == -EAGAIN) {
  		if (addr == 0)
  			*entries = 0;
-+		goto unlock_alu;
- 	} else if (rc == -ENXIO) {
+ 		goto unlock_alu;
+-	} else if (rc == -ENXIO) {
++	} else if (ret == -ENXIO) {
  		*entries = 0;
--	/* At least one valid entry in the table. */
--	} else {
--		u64 buf = 0;
--		int cnt;
--
--		ksz_read64(dev, regs[REG_IND_DATA_HI], &buf);
--		data_hi = (u32)(buf >> 32);
--		data_lo = (u32)buf;
--
--		/* Check out how many valid entry in the table. */
--		cnt = data & masks[DYNAMIC_MAC_TABLE_ENTRIES_H];
--		cnt <<= shifts[DYNAMIC_MAC_ENTRIES_H];
--		cnt |= (data_hi & masks[DYNAMIC_MAC_TABLE_ENTRIES]) >>
--			shifts[DYNAMIC_MAC_ENTRIES];
--		*entries = cnt + 1;
--
--		*src_port = (data_hi & masks[DYNAMIC_MAC_TABLE_SRC_PORT]) >>
--			shifts[DYNAMIC_MAC_SRC_PORT];
--
--		mac_addr[5] = (u8)data_lo;
--		mac_addr[4] = (u8)(data_lo >> 8);
--		mac_addr[3] = (u8)(data_lo >> 16);
--		mac_addr[2] = (u8)(data_lo >> 24);
--
--		mac_addr[1] = (u8)data_hi;
--		mac_addr[0] = (u8)(data_hi >> 8);
--		rc = 0;
-+		goto unlock_alu;
+ 		goto unlock_alu;
  	}
-+
-+	ksz_read64(dev, regs[REG_IND_DATA_HI], &buf);
-+	data_hi = (u32)(buf >> 32);
-+	data_lo = (u32)buf;
-+
-+	/* Check out how many valid entry in the table. */
-+	cnt = data & masks[DYNAMIC_MAC_TABLE_ENTRIES_H];
-+	cnt <<= shifts[DYNAMIC_MAC_ENTRIES_H];
-+	cnt |= (data_hi & masks[DYNAMIC_MAC_TABLE_ENTRIES]) >>
-+		shifts[DYNAMIC_MAC_ENTRIES];
-+	*entries = cnt + 1;
-+
-+	*src_port = (data_hi & masks[DYNAMIC_MAC_TABLE_SRC_PORT]) >>
-+		shifts[DYNAMIC_MAC_SRC_PORT];
-+
-+	mac_addr[5] = (u8)data_lo;
-+	mac_addr[4] = (u8)(data_lo >> 8);
-+	mac_addr[3] = (u8)(data_lo >> 16);
-+	mac_addr[2] = (u8)(data_lo >> 24);
-+
-+	mac_addr[1] = (u8)data_hi;
-+	mac_addr[0] = (u8)(data_hi >> 8);
-+	rc = 0;
-+
-+unlock_alu:
+@@ -447,12 +447,12 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
+ 
+ 	mac_addr[1] = (u8)data_hi;
+ 	mac_addr[0] = (u8)(data_hi >> 8);
+-	rc = 0;
++	ret = 0;
+ 
+ unlock_alu:
  	mutex_unlock(&dev->alu_mutex);
  
- 	return rc;
+-	return rc;
++	return ret;
+ }
+ 
+ int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
 -- 
 2.30.2
 
