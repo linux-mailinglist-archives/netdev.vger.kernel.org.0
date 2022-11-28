@@ -2,175 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6603163A471
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:13:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C72F63A473
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:13:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbiK1JNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 04:13:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
+        id S230310AbiK1JNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 04:13:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiK1JNa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:13:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC7E21F
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:12:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669626749;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HQQZLn0FmMUCFZ2qQSadnIASvWkmzSJEE5ukh0xjO/g=;
-        b=TD95+CRpj0r8VrSpsoL+vSLOxd+QA4KjSFXc81GNE9i1wsyxGt08frj3VBlt7GfT5CmXxW
-        HVgHw/N7yX7ZZhz2462g4Dep+2optrubh1/xOhBsImIEeZl6aTZ++bQzF1kRnopWZoUuJn
-        +YVO7ahrHnQ635tH6Ltyex6mhSxubvU=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-635-Cagc-jRUN2mwPOq0_2gozQ-1; Mon, 28 Nov 2022 04:12:27 -0500
-X-MC-Unique: Cagc-jRUN2mwPOq0_2gozQ-1
-Received: by mail-qk1-f198.google.com with SMTP id az31-20020a05620a171f00b006fa2cc1b0bfso18936038qkb.23
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:12:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HQQZLn0FmMUCFZ2qQSadnIASvWkmzSJEE5ukh0xjO/g=;
-        b=laZuqnmEc0IYLuBgFMrGeETbSzDEWqIOd39TxYlci8rDadWLFoc6Sg1uuMZbInYbjc
-         lW5jGm4eXNDlhYZZ2lXWVwOckDgMcVdJf1ikgp3Qyh884/KRYpZhL3CiJoamhTLRKscQ
-         V/r6HPJGoa1ZuuJXHgg7xLLSJJjnzC9ZZIgCR0+/I+RQx4lBV4XEt4pBpYXi94pbla0H
-         /ZPXfRuSkwJ6MZ+vtemkKS3qhSp3Avv8zhJhFbQqx/Ja1Y+IP45o9ZhDeS8xVk3p2PFQ
-         stOkUIYlxJxrv/4ZjorTdce1JvBsrsro8RUJ1YAqHmEo7agLmTGcJTJj49dWKr75THLD
-         1h/A==
-X-Gm-Message-State: ANoB5pnP809xsoa+qrn8dppuvONBIEi/3fW6SrE5Emz4y8CsPuupKGFp
-        wW8+pNg8cf04y689/HSOqe/AD5DR93ru9x5DlRnuGlgP/UJweZZMP9t3a7nuGN9E6hUj425kDH5
-        e6YYaQjHQyadNm8Jv
-X-Received: by 2002:ac8:67c5:0:b0:3a4:f665:7791 with SMTP id r5-20020ac867c5000000b003a4f6657791mr47725048qtp.380.1669626746988;
-        Mon, 28 Nov 2022 01:12:26 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4TpyycggVFsgND4ClCc6B8wuSrlaMN9i6IiH2GGnjUkvpSlhiiKgBPMNkKYR5hfJv9q1VGdQ==
-X-Received: by 2002:ac8:67c5:0:b0:3a4:f665:7791 with SMTP id r5-20020ac867c5000000b003a4f6657791mr47725033qtp.380.1669626746696;
-        Mon, 28 Nov 2022 01:12:26 -0800 (PST)
-Received: from [192.168.0.146] ([139.47.72.25])
-        by smtp.gmail.com with ESMTPSA id dm32-20020a05620a1d6000b006e702033b15sm7875652qkb.66.2022.11.28.01.12.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Nov 2022 01:12:26 -0800 (PST)
-Message-ID: <753d995d-d4f4-bf2e-994d-435a36414127@redhat.com>
-Date:   Mon, 28 Nov 2022 10:12:21 +0100
+        with ESMTP id S230308AbiK1JNj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:13:39 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2111.outbound.protection.outlook.com [40.107.7.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1687676;
+        Mon, 28 Nov 2022 01:13:36 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=S9Q8ruBZBCf19MvyQJwsThozH+OAVb9mIizl4MhxE+rEz28pLjssjms3w1jXUy4SCgzvdQuZC/YfLEcKtuvADj4AV7ddkgV9B91ePcDBDFFHeoF1NuHAfCKMkDxQvlqhgqkufw8N19bfS6ylVPZSrOwwdu5UDTMa5dW44//ETA543fnIezHGvHVZp2fF9Fl90vi8YloTE3zSJ1gYG1rFPZNadzyQqKU5m2+nXYoxp4eFBRK7omavZ8Np7PZxF/HQpmYpU/CjN3bKr8WREDCTz3coxXFHcRBHxDMV/RoL3QbEeXv+9NwSyU6BJOQUi7CgrKce8aYsApKEAYgn6KmxQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UyC1ISNGFyLlFVnxojfWUPdHMhs27VQm0KGMMcs2f6A=;
+ b=gXPCz989wNB0xFtCgbgxebMMKLDfZFOyGBtNBVW8ODayhcLY4hNByf2c3eIM7fAM0nORmqZtA5krrvhdrtW56OWjZsgZkLGzzf8oxBW9m2ys+Bon8FoHbyUMqm3xXkpRRq1CsZV6oTwQGJMP4frrnXqCGiiEDBIwQG6bfpgW6zRsIoBFnv8woDihIdfkU405IMBvuy8Q8g9H9SJroojkpT0HYJkpLItqcyFPW7DB08Gth9pxITqsPJRR0Mw4Oj8GgMZ/ksGwBU/rtnnG2FaaDj7i4HFxMHVGikgfbNnOrz8y9wqz2bQTgLFcMTwg7ss4h7lR1+l7UK2QRR6l0SLR/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UyC1ISNGFyLlFVnxojfWUPdHMhs27VQm0KGMMcs2f6A=;
+ b=xHZEvuCiMNflN5HLmci12YkKkspoRNnKNblnb0A+IYs2Zn8e32Oeg7FMU/in/7A08eKEpT6hj90XbHB3sec8gGjhIgwiBqgvppC+YPv31bDez2n+AK0e2Yt6OsuzwC1R5qhVJox3MUDaTnkuUECspYLHIWeQohGGTt/hFGIwcW8=
+Received: from VI1P190MB0317.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:38::26)
+ by DU0P190MB1953.EURP190.PROD.OUTLOOK.COM (2603:10a6:10:3bb::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.22; Mon, 28 Nov
+ 2022 09:13:32 +0000
+Received: from VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
+ ([fe80::5912:e2b4:985e:265a]) by VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
+ ([fe80::5912:e2b4:985e:265a%3]) with mapi id 15.20.5857.021; Mon, 28 Nov 2022
+ 09:13:31 +0000
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Elad Nachman <enachman@marvell.com>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Taras Chornyi <tchornyi@marvell.com>
+Subject: Re: [PATCH] MAINTAINERS: Update maintainer for Marvell Prestera
+ Ethernet Switch driver
+Thread-Topic: [PATCH] MAINTAINERS: Update maintainer for Marvell Prestera
+ Ethernet Switch driver
+Thread-Index: AQHZAwigVh8f3ft6pEOKlYsmtLGFeq5UDSTX
+Date:   Mon, 28 Nov 2022 09:13:31 +0000
+Message-ID: <VI1P190MB031750C809B1682A5605DDCA95139@VI1P190MB0317.EURP190.PROD.OUTLOOK.COM>
+References: <20221128090542.1628896-1-vadym.kochan@plvision.eu>
+In-Reply-To: <20221128090542.1628896-1-vadym.kochan@plvision.eu>
+Accept-Language: uk-UA, en-US
+Content-Language: uk-UA
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1P190MB0317:EE_|DU0P190MB1953:EE_
+x-ms-office365-filtering-correlation-id: 84ad82be-9b5a-4f2b-5d30-08dad120d1ff
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tjK1xcu8ZGvdVpM5dOqeEpE3bqVwPx5jvIRY3qh5kuGKv3v0Ph+G08MrvIZf5NGVsm/8uKiDdMe0v5xsJ88Q7oHEEv2s6m1yYSYO3ls7JhTfnNRyDrwElinjWnKRS8o5uoXcsDbVnATAEkVmr8BgnUd1VMNCIiyMriu4nf8qvA+/E75BQoPi5AxIWL6hs4N/NKEG16GygmD12WvnTuYbeCWDH0WTSr0mj9eJwctVJEdClpcHS2o1uU0F/h6DDpUsjNQiKwnlcl+knV6OYMYdzpVCX1TvK6kd8IazQ/lkh3tBpv+FzlVEntnq9SwK1inVRpZ/NK7JrT7aNPT0oQ7soti8OIH6ixAZZzRqkkRgVxYKh9H5Dfp6+xy+a2RrEID+d1xop5GrOlD3HlgcY5dALiK8P53VRHghypPuuh3K87wsILWCRUkINd+ER2Rqk6wOZF1fUaq9xKC/hwqHsY9DBlu7rUbX3lgm2CbfSnH8GtxlaHgDM+LjDP+wUh19QPDha/5ODwtZBsWKvc2Ox3gDbvDLcmDcLqaGt7hbnEijxVaKUgAZEjXBGI+lrOqOfGfSDJlypKUdZUJzGpQ28a6RGmxsYbGrr8/ntICVxLRfi+wgQj7VuaWYiwT5zGr2OCB+SIs1o4ohtPbfUcJL9Cn6uxn8a4SViGf7OLyedmrCBYagOq6P8qjDv9ZaXmc8T57UNsFzDsxDcNXrL7VQ3iY3Zqro6us4dGhAmc1ESbyaWgQ=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0317.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39830400003)(346002)(376002)(396003)(366004)(451199015)(71200400001)(7696005)(6506007)(966005)(478600001)(66946007)(66476007)(66556008)(4326008)(186003)(91956017)(41300700001)(52536014)(64756008)(76116006)(8676002)(66446008)(26005)(9686003)(316002)(54906003)(110136005)(5660300002)(2906002)(38070700005)(83380400001)(15650500001)(86362001)(55016003)(33656002)(44832011)(122000001)(8936002)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?koi8-u?Q?NxstYiAIpCkrrCTiNEvw2xHj5Exr5SDo7SicbHj4ePNcxLKAqk+B1s41Rz+51g?=
+ =?koi8-u?Q?nh1OlS1TRtacTw8uG1xFpbjAQRc9pwwn4+Zfj+7csOWeWiumhzfZe08UiBU8aN?=
+ =?koi8-u?Q?+JlotFl5MdByyuImjQmj8psfxPN0SYTKBTotajDTPTvsRiD7nmDMC6uznF0mON?=
+ =?koi8-u?Q?CgVYdauytpbL+mqRjTSsRc+trdjkGqvtU0V89/JEaLf4uV5ODNA+cNtpb62SMa?=
+ =?koi8-u?Q?o1YQkQwJQZCtQM8z574PfR9vQmf+lPMhUEkyc4UiHyeUgmFQo09vLCaXM4RK7c?=
+ =?koi8-u?Q?ck1RTKukIeccldHCCyUcVmol727IYchwtbAVQmXDsZfpYvOiLwu43J5quKxo13?=
+ =?koi8-u?Q?SlmuXUfeIdW4nCzyHlMYdY+fBbvjg0EoiCrVtoLtVhIzQc0dTqmIb0SNtAAyXZ?=
+ =?koi8-u?Q?+9ARS0Z13dAaKcmWJrC0vasiBuMYkxb4DWW1K0uZroL9Q7OSWWYkVEmYNNROnR?=
+ =?koi8-u?Q?oNVK1jI/kGptom9sRsX3FDE3/F/P8dwPDD0QFugCRh2gOEWaSHXFHx0MaWvUoJ?=
+ =?koi8-u?Q?1lUqZr0zULnZWaXUx7tdl61jNyJCvAQh9K3mi1xYx5qXeiQX6ugG6tsCh5gh35?=
+ =?koi8-u?Q?hs48FR0oz9ggrxvLILQ03OsfamG9h25aXiRLHZ7pUGWMnlFvzigi+vxjIg9ITq?=
+ =?koi8-u?Q?9ISTrwDo9i+Ki7KyQWVw4ctxP/LcoJGkbd4jPMuClhEs9d/fMZb4kS3reJkvAq?=
+ =?koi8-u?Q?iBWpF/8idYxUyukBgMoEs1Jgx/wPL8I4b8z8WqyNJDpuKGx2H2QMN53oNoXlf7?=
+ =?koi8-u?Q?LlL6DKdVuBcscvwzDBsOcQ6ImW6rqJW2NLfgb+AoEsoWvISadk7ZDRJMyDdtUV?=
+ =?koi8-u?Q?cOUN/w+l1UOGVaR5iIZRYU+j20/OLB433SZIzNSVtUhjr++wQSxWyBP5MHfP4g?=
+ =?koi8-u?Q?z8Ji9s9iMrIQnbiQz3Q1YFr8xdHSUga5HeYnpMb2ChofuAyeJWk9EEqRY+mhk9?=
+ =?koi8-u?Q?Kwzes7Z/DkMt5ccycJ7OA3LUH5STgNgRzNBYIWuA6qtfem45Oql0FM5UsUUPT/?=
+ =?koi8-u?Q?w8HQrh3yRz406colnraYV2437XFuGPLB1dYMSmxECpjFDjjnA4ihSXlmUMLr2p?=
+ =?koi8-u?Q?0tRhOzD0NRf3hXclF2F/f+HZ5ug302TDhS4XCHrvR1dKdPOxP8f4TdP1Yk+xdb?=
+ =?koi8-u?Q?ntyjQ9/1TvtJkwnTGGNbuEHXpQyJQhHRh3eWAM45I/uwsZJUKEuGoCFqIaY3d2?=
+ =?koi8-u?Q?fj9QZEVsfAJ7pivOCWrnfcDy5p69CRQhTUtFt+whu+0sTUVIrFf7JJH9W7MpQk?=
+ =?koi8-u?Q?sZaA5UIM7FGxPkFQYl+XNi7S/9cOTt7x2PjaFbJXjr+/fdWV7B1VOC/TtNAizD?=
+ =?koi8-u?Q?bX7tvyIItxtKBCxugM7yWtZZlPuNAwyOiN+IFqcIW2pme2oaoODIcQ5PFjLhEh?=
+ =?koi8-u?Q?fUJmTfoZs+CCO9Ej3NwpwqaYdHgfeg20bYyeKKAfyfj4pyX/marn2ULYpI4lYy?=
+ =?koi8-u?Q?t9CWWCqJ8ERKKT8/o738FRYfe9orLnk3oO2yfHDzjiqBS7qvBwnCMe/tPs6dj9?=
+ =?koi8-u?Q?2oEx3S/Q6GFuAN49oor4NhAgfrrptzN5m6Sso1rJ27AxwL+8pH?=
+Content-Type: text/plain; charset="koi8-u"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [ovs-dev] [RFC net-next 1/6] openvswitch: exclude kernel flow key
- from upcalls
-Content-Language: en-US
-To:     Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>, netdev@vger.kernel.org
-Cc:     dev@openvswitch.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kselftest@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20221122140307.705112-1-aconole@redhat.com>
- <20221122140307.705112-2-aconole@redhat.com>
- <c04242ee-f125-6d95-e263-65470222d3cf@ovn.org>
- <83a0b3e4-1327-c1c4-4eb4-9a25ff533d1d@redhat.com>
- <bf975714-7edc-efdd-de84-56194aa6eb60@ovn.org>
-From:   Adrian Moreno <amorenoz@redhat.com>
-In-Reply-To: <bf975714-7edc-efdd-de84-56194aa6eb60@ovn.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 84ad82be-9b5a-4f2b-5d30-08dad120d1ff
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 09:13:31.8366
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pXQsIu48Nh2xEEwBnEFvJoh1FZBvqCj+AJMbWSWE4FtFNy6cRPXOId0jltsTrGriFwigQnYVzOYt9M7hKv2rvlyPEjKGrs/rDR17Y4l+kyY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0P190MB1953
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/25/22 16:51, Ilya Maximets wrote:
-> On 11/25/22 16:29, Adrian Moreno wrote:
->>
->>
->> On 11/23/22 22:22, Ilya Maximets wrote:
->>> On 11/22/22 15:03, Aaron Conole wrote:
->>>> When processing upcall commands, two groups of data are available to
->>>> userspace for processing: the actual packet data and the kernel
->>>> sw flow key data.  The inclusion of the flow key allows the userspace
->>>> avoid running through the dissection again.
->>>>
->>>> However, the userspace can choose to ignore the flow key data, as is
->>>> the case in some ovs-vswitchd upcall processing.  For these messages,
->>>> having the flow key data merely adds additional data to the upcall
->>>> pipeline without any actual gain.  Userspace simply throws the data
->>>> away anyway.
->>>
->>> Hi, Aaron.  While it's true that OVS in userpsace is re-parsing the
->>> packet from scratch and using the newly parsed key for the OpenFlow
->>> translation, the kernel-porvided key is still used in a few important
->>> places.  Mainly for the compatibility checking.  The use is described
->>> here in more details:
->>>     https://docs.kernel.org/networking/openvswitch.html#flow-key-compatibility
->>>
->>> We need to compare the key generated in userspace with the key
->>> generated by the kernel to know if it's safe to install the new flow
->>> to the kernel, i.e. if the kernel and OVS userpsace are parsing the
->>> packet in the same way.
->>>
->>
->> Hi Ilya,
->>
->> Do we need to do that for every packet?
->> Could we send a bitmask of supported fields to userspace at feature
->> negotiation and let OVS slowpath flows that it knows the kernel won't
->> be able to handle properly?
-> 
-> It's not that simple, because supported fields in a packet depend
-> on previous fields in that same packet.  For example, parsing TCP
-> header is generally supported, but it won't be parsed for IPv6
-> fragments (even the first one), number of vlan headers will affect
-> the parsing as we do not parse deeper than 2 vlan headers, etc.
-> So, I'm afraid we have to have a per-packet information, unless we
-> can somehow probe all the possible valid combinations of packet
-> headers.
-> 
-
-Surely. I understand that we'd need more than just a bit per field. Things like 
-L4 on IPv6 frags would need another bit and the number of VLAN headers would 
-need some more. But, are these a handful of exceptions or do we really need all 
-the possible combinations of headers? If it's a matter of naming a handful of 
-corner cases I think we could consider expressing them at initialization time 
-and safe some buffer space plus computation time both in kernel and userspace.
-
--- 
-Adrián Moreno
-
->>
->>
->>> On the other hand, OVS today doesn't check the data, it only checks
->>> which fields are present.  So, if we can generate and pass the bitmap
->>> of fields present in the key or something similar without sending the
->>> full key, that might still save some CPU cycles and memory in the
->>> socket buffer while preserving the ability to check for forward and
->>> backward compatibility.  What do you think?
->>>
->>>
->>> The rest of the patch set seems useful even without patch #1 though.
->>>
->>> Nit: This patch #1 should probably be merged with the patch #6 and be
->>> at the end of a patch set, so the selftest and the main code are updated
->>> at the same time.
->>>
->>> Best regards, Ilya Maximets.
->>> _______________________________________________
->>> dev mailing list
->>> dev@openvswitch.org
->>> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
->>>
->>
->> Thanks
-> 
-
+Hi,=0A=
+=0A=
+Sorry will re-send v2 with preserved Taras but with new mail.=0A=
+=0A=
+________________________________________=0A=
+=F7=A6=C4: Vadym Kochan <vadym.kochan@plvision.eu>=0A=
+=EE=C1=C4=A6=D3=CC=C1=CE=CF: 28 =CC=C9=D3=D4=CF=D0=C1=C4=C1 2022 =D2. 11:05=
+=0A=
+=EB=CF=CD=D5: David S. Miller; Jakub Kicinski; Paolo Abeni; netdev@vger.ker=
+nel.org=0A=
+=EB=CF=D0=A6=D1: Elad Nachman; Mickey Rachamim; Taras Chornyi; linux-kernel=
+@vger.kernel.org; Taras Chornyi; Vadym Kochan=0A=
+=F4=C5=CD=C1: [PATCH] MAINTAINERS: Update maintainer for Marvell Prestera E=
+thernet Switch driver=0A=
+=0A=
+From: Taras Chornyi <tchornyi@marvell.com>=0A=
+=0A=
+Put Elad Nachman as maintainer for Marvell Prestera Ethernet Switch driver.=
+=0A=
+=0A=
+Signed-off-by: Taras Chornyi <tchornyi@marvell.com>=0A=
+Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>=0A=
+---=0A=
+ MAINTAINERS | 2 +-=0A=
+ 1 file changed, 1 insertion(+), 1 deletion(-)=0A=
+=0A=
+diff --git a/MAINTAINERS b/MAINTAINERS=0A=
+index 61fe86968111..3da743bb5072 100644=0A=
+--- a/MAINTAINERS=0A=
++++ b/MAINTAINERS=0A=
+@@ -12366,7 +12366,7 @@ F:      Documentation/networking/device_drivers/eth=
+ernet/marvell/octeontx2.rst=0A=
+ F:     drivers/net/ethernet/marvell/octeontx2/af/=0A=
+=0A=
+ MARVELL PRESTERA ETHERNET SWITCH DRIVER=0A=
+-M:     Taras Chornyi <tchornyi@marvell.com>=0A=
++M:     Elad Nachman <enachman@marvell.com>=0A=
+ S:     Supported=0A=
+ W:     https://github.com/Marvell-switching/switchdev-prestera=0A=
+ F:     drivers/net/ethernet/marvell/prestera/=0A=
+--=0A=
+2.25.1=0A=
+=0A=
