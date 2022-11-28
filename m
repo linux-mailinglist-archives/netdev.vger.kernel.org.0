@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4A9563A79C
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:01:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1999D63A782
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:00:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231440AbiK1MBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 07:01:01 -0500
+        id S231424AbiK1MAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 07:00:21 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231410AbiK1MAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:19 -0500
+        with ESMTP id S231371AbiK1MAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:17 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D2518E2B
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A543C186CA
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:14 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcns-0003pN-P3; Mon, 28 Nov 2022 13:00:04 +0100
+        id 1ozcnr-0003n4-NK; Mon, 28 Nov 2022 13:00:03 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcnr-000o9F-52; Mon, 28 Nov 2022 13:00:03 +0100
+        id 1ozcnp-000o8Y-Od; Mon, 28 Nov 2022 13:00:02 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcnn-00Gzdu-RN; Mon, 28 Nov 2022 12:59:59 +0100
+        id 1ozcnn-00Gze5-Ru; Mon, 28 Nov 2022 12:59:59 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH v1 10/26] net: dsa: microchip: ksz8: refactor ksz8_fdb_dump()
-Date:   Mon, 28 Nov 2022 12:59:42 +0100
-Message-Id: <20221128115958.4049431-11-o.rempel@pengutronix.de>
+Subject: [PATCH v1 11/26] net: dsa: microchip: ksz8: ksz8_fdb_dump: dump static MAC table
+Date:   Mon, 28 Nov 2022 12:59:43 +0100
+Message-Id: <20221128115958.4049431-12-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221128115958.4049431-1-o.rempel@pengutronix.de>
 References: <20221128115958.4049431-1-o.rempel@pengutronix.de>
@@ -60,82 +60,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After fixing different bugs we can refactor this function:
-- be paranoid - read only max possibly amount of entries supported by
-  the HW.
-- pass error values returned by regmap
+Extend fdb_dump with static MAC table dump.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8795.c     | 41 ++++++++++++++-----------
- drivers/net/dsa/microchip/ksz8795_reg.h |  1 +
- 2 files changed, 24 insertions(+), 18 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 736cf4e54333..308b46bb2ce5 100644
+index 308b46bb2ce5..392f6cb1f706 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -949,26 +949,31 @@ void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
- int ksz8_fdb_dump(struct ksz_device *dev, int port,
- 		  dsa_fdb_dump_cb_t *cb, void *data)
- {
--	int ret = 0;
--	u16 i = 0;
--	u16 entries = 0;
--	u8 src_port;
--	u8 mac[ETH_ALEN];
-+	u16 i, entries = 0;
-+	int ret;
+@@ -952,6 +952,23 @@ int ksz8_fdb_dump(struct ksz_device *dev, int port,
+ 	u16 i, entries = 0;
+ 	int ret;
  
--	do {
--		ret = ksz8_r_dyn_mac_table(dev, i, mac, &src_port,
--					   &entries);
--		if (!ret && port == src_port) {
--			ret = cb(mac, 0, false, data);
--			if (ret)
--				break;
--		}
--		i++;
--	} while (i < entries);
--	if (i >= entries)
--		ret = 0;
-+	for (i = 0; i < KSZ8_DYN_MAC_ENTRIES; i++) {
-+		u8 mac[ETH_ALEN];
-+		u8 src_port;
- 
--	return ret;
-+		ret = ksz8_r_dyn_mac_table(dev, i, mac, &src_port, &entries);
++	for (i = 0; i  < dev->info->num_statics; i++) {
++		struct alu_struct alu;
++
++		ret = ksz8_r_sta_mac_table(dev, i, &alu);
 +		if (ret == -ENXIO)
-+			return 0;
++			continue;
 +		if (ret)
 +			return ret;
 +
-+		if (i >= entries)
-+			return 0;
-+
-+		if (port != src_port)
++		if (!(alu.port_forward & BIT(port)))
 +			continue;
 +
-+		ret = cb(mac, 0, false, data);
++		ret = cb(alu.mac, 0, true, data);
 +		if (ret)
 +			return ret;
 +	}
 +
-+	return 0;
- }
- 
- int ksz8_mdb_add(struct ksz_device *dev, int port,
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index 7a57c6088f80..0bdceb534192 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -811,5 +811,6 @@
- #define TAIL_TAG_LOOKUP			BIT(7)
- 
- #define FID_ENTRIES			128
-+#define KSZ8_DYN_MAC_ENTRIES		1024
- 
- #endif
+ 	for (i = 0; i < KSZ8_DYN_MAC_ENTRIES; i++) {
+ 		u8 mac[ETH_ALEN];
+ 		u8 src_port;
 -- 
 2.30.2
 
