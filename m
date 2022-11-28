@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6849263AF61
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:41:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF3C63AF78
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 18:42:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233264AbiK1Rlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 12:41:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51638 "EHLO
+        id S233326AbiK1RmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 12:42:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233257AbiK1Rku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:40:50 -0500
+        with ESMTP id S233280AbiK1RlW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 12:41:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7699129CB3;
-        Mon, 28 Nov 2022 09:39:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935F52A272;
+        Mon, 28 Nov 2022 09:39:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EED80B80E97;
-        Mon, 28 Nov 2022 17:39:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B33FC433D6;
-        Mon, 28 Nov 2022 17:39:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C798FB80E9C;
+        Mon, 28 Nov 2022 17:39:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 480B8C433D6;
+        Mon, 28 Nov 2022 17:39:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669657161;
-        bh=uclkvLuX33Psdpzp52cjnlamp6cmtmjnoSca/s0fCNk=;
+        s=k20201202; t=1669657170;
+        bh=y0onyTytyGueODo0bQ1AhuLo99a7hvNCbNOB8XaCVK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eR1P/x4T8oPqD7s1BUgGe7sYxq2vJ2vXyitzLY2/ZtlhvVz8uuZqf9XI5d8fOGTzh
-         bGpysLudJomWoLWXWGUWbmi1Ci/luE/0iZT+WFhpXxXrv9zFeoaRDw5ePNJB+B4zIG
-         gcxFcxzKO9AirVXAWBvsoAzed001hOPcyH1JJQzyTPOl6c0/JcmdjECBA7pCyiesS7
-         LPPnpIU4fa0ncItO1A0iOEFWTlIzlS3mOBfZQ0WCw460qLFvO1yC9P+8OEdMUdRmBi
-         C0ImZdXUgK+bMY047N5tU1csFUJ1uLfcSGpQh8xjb7f1C+mL+WZxwowsfsqyt/iwly
-         +EpnJ5YThiHuw==
+        b=W2EUkKKr40XEDBth5uobpeKDvTRMhF8jP9ld30LRXt9TVPuD2jNhlWn7ocmOCJcf9
+         M2BO7ONvSuQbQKFTvpDTi20Rf29H/IgMnuGzOgVbRWw26kNX+5ukvkAlFwRjVnlesF
+         uMSFewFqLpodKciGOW5o4KlFFGxVBmY157/WuWAmYSV6Hh48Pukjqm3/7Fk9MslrN1
+         kP0RbXdkttf3KpzCRsTUaGtTnbc4m6gHk0SVV9cZ5BpzgVq+YspAyO9DuE6K4T8L2s
+         j9wmib41MTE7W0xnDQ+7LTW48uBtByMyA43xqLxRxzkO4DryYuIB4IMBjOCMsDaamj
+         JPcps6mCOuq5g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eli Cohen <elic@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        maorg@nvidia.com, maord@nvidia.com, vladbu@nvidia.com,
-        jerrliu@nvidia.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 29/39] net/mlx5: Lag, avoid lockdep warnings
-Date:   Mon, 28 Nov 2022 12:36:09 -0500
-Message-Id: <20221128173642.1441232-29-sashal@kernel.org>
+Cc:     Dominique Martinet <asmadeus@codewreck.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Sasha Levin <sashal@kernel.org>, ericvh@gmail.com,
+        lucho@ionkov.net, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.0 34/39] 9p/xen: check logical size for buffer size
+Date:   Mon, 28 Nov 2022 12:36:14 -0500
+Message-Id: <20221128173642.1441232-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221128173642.1441232-1-sashal@kernel.org>
 References: <20221128173642.1441232-1-sashal@kernel.org>
@@ -59,407 +59,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Dominique Martinet <asmadeus@codewreck.org>
 
-[ Upstream commit 0d4e8ed139d871fcb2844dd71075997753baeec8 ]
+[ Upstream commit 391c18cf776eb4569ecda1f7794f360fe0a45a26 ]
 
-ldev->lock is used to serialize lag change operations. Since multiport
-eswtich functionality was added, we now change the mode dynamically.
-However, acquiring ldev->lock is not allowed as it could possibly lead
-to a deadlock as reported by the lockdep mechanism.
+trans_xen did not check the data fits into the buffer before copying
+from the xen ring, but we probably should.
+Add a check that just skips the request and return an error to
+userspace if it did not fit
 
-[  836.154963] WARNING: possible circular locking dependency detected
-[  836.155850] 5.19.0-rc5_net_56b7df2 #1 Not tainted
-[  836.156549] ------------------------------------------------------
-[  836.157418] handler1/12198 is trying to acquire lock:
-[  836.158178] ffff888187d52b58 (&ldev->lock){+.+.}-{3:3}, at: mlx5_lag_do_mirred+0x3b/0x70 [mlx5_core]
-[  836.159575]
-[  836.159575] but task is already holding lock:
-[  836.160474] ffff8881d4de2930 (&block->cb_lock){++++}-{3:3}, at: tc_setup_cb_add+0x5b/0x200
-[  836.161669] which lock already depends on the new lock.
-[  836.162905]
-[  836.162905] the existing dependency chain (in reverse order) is:
-[  836.164008] -> #3 (&block->cb_lock){++++}-{3:3}:
-[  836.164946]        down_write+0x25/0x60
-[  836.165548]        tcf_block_get_ext+0x1c6/0x5d0
-[  836.166253]        ingress_init+0x74/0xa0 [sch_ingress]
-[  836.167028]        qdisc_create.constprop.0+0x130/0x5e0
-[  836.167805]        tc_modify_qdisc+0x481/0x9f0
-[  836.168490]        rtnetlink_rcv_msg+0x16e/0x5a0
-[  836.169189]        netlink_rcv_skb+0x4e/0xf0
-[  836.169861]        netlink_unicast+0x190/0x250
-[  836.170543]        netlink_sendmsg+0x243/0x4b0
-[  836.171226]        sock_sendmsg+0x33/0x40
-[  836.171860]        ____sys_sendmsg+0x1d1/0x1f0
-[  836.172535]        ___sys_sendmsg+0xab/0xf0
-[  836.173183]        __sys_sendmsg+0x51/0x90
-[  836.173836]        do_syscall_64+0x3d/0x90
-[  836.174471]        entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[  836.175282]
-
-[  836.175282] -> #2 (rtnl_mutex){+.+.}-{3:3}:
-[  836.176190]        __mutex_lock+0x6b/0xf80
-[  836.176830]        register_netdevice_notifier+0x21/0x120
-[  836.177631]        rtnetlink_init+0x2d/0x1e9
-[  836.178289]        netlink_proto_init+0x163/0x179
-[  836.178994]        do_one_initcall+0x63/0x300
-[  836.179672]        kernel_init_freeable+0x2cb/0x31b
-[  836.180403]        kernel_init+0x17/0x140
-[  836.181035]        ret_from_fork+0x1f/0x30
-
- [  836.181687] -> #1 (pernet_ops_rwsem){+.+.}-{3:3}:
-[  836.182628]        down_write+0x25/0x60
-[  836.183235]        unregister_netdevice_notifier+0x1c/0xb0
-[  836.184029]        mlx5_ib_roce_cleanup+0x94/0x120 [mlx5_ib]
-[  836.184855]        __mlx5_ib_remove+0x35/0x60 [mlx5_ib]
-[  836.185637]        mlx5_eswitch_unregister_vport_reps+0x22f/0x440 [mlx5_core]
-[  836.186698]        auxiliary_bus_remove+0x18/0x30
-[  836.187409]        device_release_driver_internal+0x1f6/0x270
-[  836.188253]        bus_remove_device+0xef/0x160
-[  836.188939]        device_del+0x18b/0x3f0
-[  836.189562]        mlx5_rescan_drivers_locked+0xd6/0x2d0 [mlx5_core]
-[  836.190516]        mlx5_lag_remove_devices+0x69/0xe0 [mlx5_core]
-[  836.191414]        mlx5_do_bond_work+0x441/0x620 [mlx5_core]
-[  836.192278]        process_one_work+0x25c/0x590
-[  836.192963]        worker_thread+0x4f/0x3d0
-[  836.193609]        kthread+0xcb/0xf0
-[  836.194189]        ret_from_fork+0x1f/0x30
-
-[  836.194826] -> #0 (&ldev->lock){+.+.}-{3:3}:
-[  836.195734]        __lock_acquire+0x15b8/0x2a10
-[  836.196426]        lock_acquire+0xce/0x2d0
-[  836.197057]        __mutex_lock+0x6b/0xf80
-[  836.197708]        mlx5_lag_do_mirred+0x3b/0x70 [mlx5_core]
-[  836.198575]        tc_act_parse_mirred+0x25b/0x800 [mlx5_core]
-[  836.199467]        parse_tc_actions+0x168/0x5a0 [mlx5_core]
-[  836.200340]        __mlx5e_add_fdb_flow+0x263/0x480 [mlx5_core]
-[  836.201241]        mlx5e_configure_flower+0x8a0/0x1820 [mlx5_core]
-[  836.202187]        tc_setup_cb_add+0xd7/0x200
-[  836.202856]        fl_hw_replace_filter+0x14c/0x1f0 [cls_flower]
-[  836.203739]        fl_change+0xbbe/0x1730 [cls_flower]
-[  836.204501]        tc_new_tfilter+0x407/0xd90
-[  836.205168]        rtnetlink_rcv_msg+0x406/0x5a0
-[  836.205877]        netlink_rcv_skb+0x4e/0xf0
-[  836.206535]        netlink_unicast+0x190/0x250
-[  836.207217]        netlink_sendmsg+0x243/0x4b0
-[  836.207915]        sock_sendmsg+0x33/0x40
-[  836.208538]        ____sys_sendmsg+0x1d1/0x1f0
-[  836.209219]        ___sys_sendmsg+0xab/0xf0
-[  836.209878]        __sys_sendmsg+0x51/0x90
-[  836.210510]        do_syscall_64+0x3d/0x90
-[  836.211137]        entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-[  836.211954] other info that might help us debug this:
-[  836.213174] Chain exists of:
-[  836.213174]   &ldev->lock --> rtnl_mutex --> &block->cb_lock
-   836.214650]  Possible unsafe locking scenario:
-[  836.214650]
-[  836.215574]        CPU0                    CPU1
-[  836.216255]        ----                    ----
-[  836.216943]   lock(&block->cb_lock);
-[  836.217518]                                lock(rtnl_mutex);
-[  836.218348]                                lock(&block->cb_lock);
-[  836.219212]   lock(&ldev->lock);
-[  836.219758]
-[  836.219758]  *** DEADLOCK ***
-[  836.219758]
- [  836.220747] 2 locks held by handler1/12198:
-[  836.221390]  #0: ffff8881d4de2930 (&block->cb_lock){++++}-{3:3}, at: tc_setup_cb_add+0x5b/0x200
-[  836.222646]  #1: ffff88810c9a92c0 (&esw->mode_lock){++++}-{3:3}, at: mlx5_esw_hold+0x39/0x50 [mlx5_core]
-
-[  836.224063] stack backtrace:
-[  836.224799] CPU: 6 PID: 12198 Comm: handler1 Not tainted 5.19.0-rc5_net_56b7df2 #1
-[  836.225923] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-[  836.227476] Call Trace:
-[  836.227929]  <TASK>
-[  836.228332]  dump_stack_lvl+0x57/0x7d
-[  836.228924]  check_noncircular+0x104/0x120
-[  836.229562]  __lock_acquire+0x15b8/0x2a10
-[  836.230201]  lock_acquire+0xce/0x2d0
-[  836.230776]  ? mlx5_lag_do_mirred+0x3b/0x70 [mlx5_core]
-[  836.231614]  ? find_held_lock+0x2b/0x80
-[  836.232221]  __mutex_lock+0x6b/0xf80
-[  836.232799]  ? mlx5_lag_do_mirred+0x3b/0x70 [mlx5_core]
-[  836.233636]  ? mlx5_lag_do_mirred+0x3b/0x70 [mlx5_core]
-[  836.234451]  ? xa_load+0xc3/0x190
-[  836.234995]  mlx5_lag_do_mirred+0x3b/0x70 [mlx5_core]
-[  836.235803]  tc_act_parse_mirred+0x25b/0x800 [mlx5_core]
-[  836.236636]  ? tc_act_can_offload_mirred+0x135/0x210 [mlx5_core]
-[  836.237550]  parse_tc_actions+0x168/0x5a0 [mlx5_core]
-[  836.238364]  __mlx5e_add_fdb_flow+0x263/0x480 [mlx5_core]
-[  836.239202]  mlx5e_configure_flower+0x8a0/0x1820 [mlx5_core]
-[  836.240076]  ? lock_acquire+0xce/0x2d0
-[  836.240668]  ? tc_setup_cb_add+0x5b/0x200
-[  836.241294]  tc_setup_cb_add+0xd7/0x200
-[  836.241917]  fl_hw_replace_filter+0x14c/0x1f0 [cls_flower]
-[  836.242709]  fl_change+0xbbe/0x1730 [cls_flower]
-[  836.243408]  tc_new_tfilter+0x407/0xd90
-[  836.244043]  ? tc_del_tfilter+0x880/0x880
-[  836.244672]  rtnetlink_rcv_msg+0x406/0x5a0
-[  836.245310]  ? netlink_deliver_tap+0x7a/0x4b0
-[  836.245991]  ? if_nlmsg_stats_size+0x2b0/0x2b0
-[  836.246675]  netlink_rcv_skb+0x4e/0xf0
-[  836.258046]  netlink_unicast+0x190/0x250
-[  836.258669]  netlink_sendmsg+0x243/0x4b0
-[  836.259288]  sock_sendmsg+0x33/0x40
-[  836.259857]  ____sys_sendmsg+0x1d1/0x1f0
-[  836.260473]  ___sys_sendmsg+0xab/0xf0
-[  836.261064]  ? lock_acquire+0xce/0x2d0
-[  836.261669]  ? find_held_lock+0x2b/0x80
-[  836.262272]  ? __fget_files+0xb9/0x190
-[  836.262871]  ? __fget_files+0xd3/0x190
-[  836.263462]  __sys_sendmsg+0x51/0x90
-[  836.264064]  do_syscall_64+0x3d/0x90
-[  836.264652]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[  836.265425] RIP: 0033:0x7fdbe5e2677d
-
-[  836.266012] Code: 28 89 54 24 1c 48 89 74 24 10 89 7c 24 08 e8 ba ee
-ff ff 8b 54 24 1c 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 2e 00 00 00 0f
-05 <48> 3d 00 f0 ff ff 77 33 44 89 c7 48 89 44 24 08 e8 ee ee ff ff 48
-[  836.268485] RSP: 002b:00007fdbe48a75a0 EFLAGS: 00000293 ORIG_RAX: 000000000000002e
-[  836.269598] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007fdbe5e2677d
-[  836.270576] RDX: 0000000000000000 RSI: 00007fdbe48a7640 RDI: 000000000000003c
-[  836.271565] RBP: 00007fdbe48a8368 R08: 0000000000000000 R09: 0000000000000000
-[  836.272546] R10: 00007fdbe48a84b0 R11: 0000000000000293 R12: 0000557bd17dc860
-[  836.273527] R13: 0000000000000000 R14: 0000557bd17dc860 R15: 00007fdbe48a7640
-
-[  836.274521]  </TASK>
-
-To avoid using mode holding ldev->lock in the configure flow, we queue a
-work to the lag workqueue and cease wait on a completion object.
-
-In addition, we remove the lock from mlx5_lag_do_mirred() since it is
-not really protecting anything.
-
-It should be noted that an actual deadlock has not been observed.
-
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Tested-by: Stefano Stabellini <sstabellini@kernel.org>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+Link: https://lkml.kernel.org/r/20221118135542.63400-1-asmadeus@codewreck.org
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/lag/lag.c |   3 +-
- .../net/ethernet/mellanox/mlx5/core/lag/lag.h |  14 ++-
- .../ethernet/mellanox/mlx5/core/lag/mpesw.c   | 100 +++++++++++-------
- .../ethernet/mellanox/mlx5/core/lag/mpesw.h   |   1 -
- 4 files changed, 78 insertions(+), 40 deletions(-)
+ net/9p/trans_xen.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-index 065102278cb8..7e139df1305f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-@@ -201,9 +201,8 @@ static void mlx5_ldev_free(struct kref *ref)
- 	if (ldev->nb.notifier_call)
- 		unregister_netdevice_notifier_net(&init_net, &ldev->nb);
- 	mlx5_lag_mp_cleanup(ldev);
--	mlx5_lag_mpesw_cleanup(ldev);
--	cancel_work_sync(&ldev->mpesw_work);
- 	destroy_workqueue(ldev->wq);
-+	mlx5_lag_mpesw_cleanup(ldev);
- 	mutex_destroy(&ldev->lock);
- 	kfree(ldev);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-index ce2ce8ccbd70..f30ac2de639f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-@@ -50,6 +50,19 @@ struct lag_tracker {
- 	enum netdev_lag_hash hash_type;
- };
+diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
+index 227f89cc7237..0f862d5a5960 100644
+--- a/net/9p/trans_xen.c
++++ b/net/9p/trans_xen.c
+@@ -208,6 +208,14 @@ static void p9_xen_response(struct work_struct *work)
+ 			continue;
+ 		}
  
-+enum mpesw_op {
-+	MLX5_MPESW_OP_ENABLE,
-+	MLX5_MPESW_OP_DISABLE,
-+};
++		if (h.size > req->rc.capacity) {
++			dev_warn(&priv->dev->dev,
++				 "requested packet size too big: %d for tag %d with capacity %zd\n",
++				 h.size, h.tag, req->rc.capacity);
++			req->status = REQ_STATUS_ERROR;
++			goto recv_error;
++		}
 +
-+struct mlx5_mpesw_work_st {
-+	struct work_struct work;
-+	struct mlx5_lag    *lag;
-+	enum mpesw_op	   op;
-+	struct completion  comp;
-+	int result;
-+};
-+
- /* LAG data of a ConnectX card.
-  * It serves both its phys functions.
-  */
-@@ -66,7 +79,6 @@ struct mlx5_lag {
- 	struct lag_tracker        tracker;
- 	struct workqueue_struct   *wq;
- 	struct delayed_work       bond_work;
--	struct work_struct	  mpesw_work;
- 	struct notifier_block     nb;
- 	struct lag_mp             lag_mp;
- 	struct mlx5_lag_port_sel  port_sel;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
-index f643202b29c6..c17e8f1ec914 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
-@@ -7,63 +7,95 @@
- #include "eswitch.h"
- #include "lib/mlx5.h"
+ 		memcpy(&req->rc, &h, sizeof(h));
+ 		req->rc.offset = 0;
  
--void mlx5_mpesw_work(struct work_struct *work)
-+static int add_mpesw_rule(struct mlx5_lag *ldev)
- {
--	struct mlx5_lag *ldev = container_of(work, struct mlx5_lag, mpesw_work);
-+	struct mlx5_core_dev *dev = ldev->pf[MLX5_LAG_P1].dev;
-+	int err;
+@@ -217,6 +225,7 @@ static void p9_xen_response(struct work_struct *work)
+ 				     masked_prod, &masked_cons,
+ 				     XEN_9PFS_RING_SIZE(ring));
  
--	mutex_lock(&ldev->lock);
--	mlx5_disable_lag(ldev);
--	mutex_unlock(&ldev->lock);
--}
-+	if (atomic_add_return(1, &ldev->lag_mpesw.mpesw_rule_count) != 1)
-+		return 0;
- 
--static void mlx5_lag_disable_mpesw(struct mlx5_core_dev *dev)
--{
--	struct mlx5_lag *ldev = dev->priv.lag;
-+	if (ldev->mode != MLX5_LAG_MODE_NONE) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
- 
--	if (!queue_work(ldev->wq, &ldev->mpesw_work))
--		mlx5_core_warn(dev, "failed to queue work\n");
-+	err = mlx5_activate_lag(ldev, NULL, MLX5_LAG_MODE_MPESW, false);
-+	if (err) {
-+		mlx5_core_warn(dev, "Failed to create LAG in MPESW mode (%d)\n", err);
-+		goto out_err;
-+	}
-+
-+	return 0;
-+
-+out_err:
-+	atomic_dec(&ldev->lag_mpesw.mpesw_rule_count);
-+	return err;
- }
- 
--void mlx5_lag_del_mpesw_rule(struct mlx5_core_dev *dev)
-+static void del_mpesw_rule(struct mlx5_lag *ldev)
- {
--	struct mlx5_lag *ldev = dev->priv.lag;
-+	if (!atomic_dec_return(&ldev->lag_mpesw.mpesw_rule_count) &&
-+	    ldev->mode == MLX5_LAG_MODE_MPESW)
-+		mlx5_disable_lag(ldev);
-+}
- 
--	if (!ldev)
--		return;
-+static void mlx5_mpesw_work(struct work_struct *work)
-+{
-+	struct mlx5_mpesw_work_st *mpesww = container_of(work, struct mlx5_mpesw_work_st, work);
-+	struct mlx5_lag *ldev = mpesww->lag;
- 
- 	mutex_lock(&ldev->lock);
--	if (!atomic_dec_return(&ldev->lag_mpesw.mpesw_rule_count) &&
--	    ldev->mode == MLX5_LAG_MODE_MPESW)
--		mlx5_lag_disable_mpesw(dev);
-+	if (mpesww->op == MLX5_MPESW_OP_ENABLE)
-+		mpesww->result = add_mpesw_rule(ldev);
-+	else if (mpesww->op == MLX5_MPESW_OP_DISABLE)
-+		del_mpesw_rule(ldev);
- 	mutex_unlock(&ldev->lock);
-+
-+	complete(&mpesww->comp);
- }
- 
--int mlx5_lag_add_mpesw_rule(struct mlx5_core_dev *dev)
-+static int mlx5_lag_mpesw_queue_work(struct mlx5_core_dev *dev,
-+				     enum mpesw_op op)
- {
- 	struct mlx5_lag *ldev = dev->priv.lag;
-+	struct mlx5_mpesw_work_st *work;
- 	int err = 0;
- 
- 	if (!ldev)
- 		return 0;
- 
--	mutex_lock(&ldev->lock);
--	if (atomic_add_return(1, &ldev->lag_mpesw.mpesw_rule_count) != 1)
--		goto out;
-+	work = kzalloc(sizeof(*work), GFP_KERNEL);
-+	if (!work)
-+		return -ENOMEM;
- 
--	if (ldev->mode != MLX5_LAG_MODE_NONE) {
-+	INIT_WORK(&work->work, mlx5_mpesw_work);
-+	init_completion(&work->comp);
-+	work->op = op;
-+	work->lag = ldev;
-+
-+	if (!queue_work(ldev->wq, &work->work)) {
-+		mlx5_core_warn(dev, "failed to queue mpesw work\n");
- 		err = -EINVAL;
- 		goto out;
- 	}
--
--	err = mlx5_activate_lag(ldev, NULL, MLX5_LAG_MODE_MPESW, false);
--	if (err)
--		mlx5_core_warn(dev, "Failed to create LAG in MPESW mode (%d)\n", err);
--
-+	wait_for_completion(&work->comp);
-+	err = work->result;
- out:
--	mutex_unlock(&ldev->lock);
-+	kfree(work);
- 	return err;
- }
- 
-+void mlx5_lag_del_mpesw_rule(struct mlx5_core_dev *dev)
-+{
-+	mlx5_lag_mpesw_queue_work(dev, MLX5_MPESW_OP_DISABLE);
-+}
-+
-+int mlx5_lag_add_mpesw_rule(struct mlx5_core_dev *dev)
-+{
-+	return mlx5_lag_mpesw_queue_work(dev, MLX5_MPESW_OP_ENABLE);
-+}
-+
- int mlx5_lag_do_mirred(struct mlx5_core_dev *mdev, struct net_device *out_dev)
- {
- 	struct mlx5_lag *ldev = mdev->priv.lag;
-@@ -71,12 +103,9 @@ int mlx5_lag_do_mirred(struct mlx5_core_dev *mdev, struct net_device *out_dev)
- 	if (!netif_is_bond_master(out_dev) || !ldev)
- 		return 0;
- 
--	mutex_lock(&ldev->lock);
--	if (ldev->mode == MLX5_LAG_MODE_MPESW) {
--		mutex_unlock(&ldev->lock);
-+	if (ldev->mode == MLX5_LAG_MODE_MPESW)
- 		return -EOPNOTSUPP;
--	}
--	mutex_unlock(&ldev->lock);
-+
- 	return 0;
- }
- 
-@@ -90,11 +119,10 @@ bool mlx5_lag_mpesw_is_activated(struct mlx5_core_dev *dev)
- 
- void mlx5_lag_mpesw_init(struct mlx5_lag *ldev)
- {
--	INIT_WORK(&ldev->mpesw_work, mlx5_mpesw_work);
- 	atomic_set(&ldev->lag_mpesw.mpesw_rule_count, 0);
- }
- 
- void mlx5_lag_mpesw_cleanup(struct mlx5_lag *ldev)
- {
--	cancel_delayed_work_sync(&ldev->bond_work);
-+	WARN_ON(atomic_read(&ldev->lag_mpesw.mpesw_rule_count));
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.h
-index be4abcb8fcd5..88e8daffcf92 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.h
-@@ -12,7 +12,6 @@ struct lag_mpesw {
- 	atomic_t mpesw_rule_count;
- };
- 
--void mlx5_mpesw_work(struct work_struct *work);
- int mlx5_lag_do_mirred(struct mlx5_core_dev *mdev, struct net_device *out_dev);
- bool mlx5_lag_mpesw_is_activated(struct mlx5_core_dev *dev);
- #if IS_ENABLED(CONFIG_MLX5_ESWITCH)
++recv_error:
+ 		virt_mb();
+ 		cons += h.size;
+ 		ring->intf->in_cons = cons;
 -- 
 2.35.1
 
