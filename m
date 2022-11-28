@@ -2,56 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C51A263A4BC
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:22:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C654163A516
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 10:30:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230353AbiK1JWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 04:22:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47814 "EHLO
+        id S230183AbiK1Jal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 04:30:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229708AbiK1JVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:21:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941F31571D;
-        Mon, 28 Nov 2022 01:21:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E445AB80CB4;
-        Mon, 28 Nov 2022 09:21:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BEFC433D6;
-        Mon, 28 Nov 2022 09:21:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669627306;
-        bh=SMcxKZiuICKO5Xo60+6v/dsm1MJeGWQRQxX6Iq8mnT8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Zl+I07p1A7NJAXcqB53dHyPNMujV5O6kRtnRpqFROBuODpCqFvBJRSajUwVViMmhp
-         8GQdjE+8rNGyd+KUB5448+/yUpBuH5ZkMR5RZ7vtRk4R5AzBlhr45lmI9HnPbcXCfU
-         nGXLQeiWY2LBIBACLpONxEttMcYcMueOUBEWbXe5D6ePSW+h8CZs8bvhgsv7CyfvUu
-         vdBcCZvvy1zs0ubdjF8BiOFVLny+on/l6VCOyrXeLNwC1wguJdoB1N5Np3acDfMkla
-         3WzFADIuqtmD28U9E8/J+mMp4nh8j6o0kIxxRp+Mi5eFCcgiri+ZQo8/es0JtQks9x
-         VLB9JfaUFspXw==
-Message-ID: <d20d3b73-38b4-fb06-2daa-125f446aeb44@kernel.org>
-Date:   Mon, 28 Nov 2022 11:21:40 +0200
+        with ESMTP id S230206AbiK1Jaj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 04:30:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1DD8C775
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:29:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669627783;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yXe5/Gs5NMc9hqQvF6Q+od4uwWeU4d6k98E6eiWSSHg=;
+        b=XbbuDL3BjwfV4Vmwn0kxV6whNzsWb0Z95Dx4P/mWMucnyMwbzBtLjy93AtEkcx/vQkBWHL
+        NzQPbqpbaoc/riiiLcLkq6C9WMooENQ0rCk7dlJ4aNL1fXOVj+ezvws0K5Ye8kZRK9OZUP
+        QJmtQ64TTPLRV6+FLjfEEHEMSCT4Ugo=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-634--geL51MRPCaqb8Bl-eaqmQ-1; Mon, 28 Nov 2022 04:29:42 -0500
+X-MC-Unique: -geL51MRPCaqb8Bl-eaqmQ-1
+Received: by mail-wr1-f71.google.com with SMTP id o8-20020adfba08000000b00241e80f08e0so1675246wrg.12
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 01:29:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yXe5/Gs5NMc9hqQvF6Q+od4uwWeU4d6k98E6eiWSSHg=;
+        b=vWlt+8UazayLPPuNHWFQ6NEEQ31jFyuYZCfADWm8wRVd1PqDJZTWMiToza5TjfVosb
+         W7NiKfZkrvMXmUwm+nTvxbMWphcRF5dVO+6mOFRktuRst+OmXzK+Ab20WmyTWtNBuw1z
+         w9QvWxvpNCTw08S6f+uxL2wtgzFsbmB6n0KL2QsugEd8/i0zTIgBZ9bMwnTfWjVbW+wu
+         joG3AOhpEgrpP07/yJqYmzB16Ceoi+EJ28xdJQPeg2GIttGuBbLOYtaMDbqoqjrBNutZ
+         ywh2UytQ8Wa2kSquVviGAvUBNu4m5ehVg28xr2Am9aPIcelhKvGGhqZd/RdRMcXGk7FR
+         uPCg==
+X-Gm-Message-State: ANoB5pkskPKwMwgWqRJ9BkjKSO+Hxz7uItEPJTxu2rh44H7O3MOCF+Ow
+        qA4z2fr63XH/b7XSuVrAsEbJDpiOJ5T3Oy6sQF7vCQpEvP0p2PFiGUJ8J1ToN4Nxi86LlIc4v7l
+        ooZBr1GGAh6gopPmv
+X-Received: by 2002:adf:ebc6:0:b0:241:c6d8:be83 with SMTP id v6-20020adfebc6000000b00241c6d8be83mr22842211wrn.454.1669627781379;
+        Mon, 28 Nov 2022 01:29:41 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf5NNWLiFYkS/4BWx2K5W3KIsae1W7cB7QkH/0YG2DaPbKUxNFXJ8iBUflEeJZH3AcNSktTgUw==
+X-Received: by 2002:adf:ebc6:0:b0:241:c6d8:be83 with SMTP id v6-20020adfebc6000000b00241c6d8be83mr22842182wrn.454.1669627781095;
+        Mon, 28 Nov 2022 01:29:41 -0800 (PST)
+Received: from redhat.com ([2.52.149.178])
+        by smtp.gmail.com with ESMTPSA id z14-20020a7bc7ce000000b003cf78aafdd7sm14055513wmk.39.2022.11.28.01.29.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Nov 2022 01:29:40 -0800 (PST)
+Date:   Mon, 28 Nov 2022 04:29:36 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Li Zetao <lizetao1@huawei.com>
+Cc:     jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com,
+        axboe@kernel.dk, kraxel@redhat.com, david@redhat.com,
+        ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
+        linux_oss@crudebyte.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, rusty@rustcorp.com.au,
+        virtualization@lists.linux-foundation.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: Re: [PATCH 3/4] virtio-input: Fix probe failed when modprobe
+ virtio_input
+Message-ID: <20221128042649-mutt-send-email-mst@kernel.org>
+References: <20221128021005.232105-1-lizetao1@huawei.com>
+ <20221128021005.232105-4-lizetao1@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v3 net-next 5/6] net: ethernet: ti: am65-cpsw: retain
- PORT_VLAN_REG after suspend/resume
-Content-Language: en-US
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, vigneshr@ti.com, linux-omap@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221123124835.18937-1-rogerq@kernel.org>
- <20221123124835.18937-6-rogerq@kernel.org> <Y4DBTbVxUpbJ5sEl@boxer>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <Y4DBTbVxUpbJ5sEl@boxer>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221128021005.232105-4-lizetao1@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,109 +84,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/11/2022 15:21, Maciej Fijalkowski wrote:
-> On Wed, Nov 23, 2022 at 02:48:34PM +0200, Roger Quadros wrote:
->> During suspend resume the context of PORT_VLAN_REG is lost so
->> save it during suspend and restore it during resume for
->> host port and slave ports.
->>
->> Signed-off-by: Roger Quadros <rogerq@kernel.org>
->> Signed-off-by: David S. Miller <davem@davemloft.net>
->> ---
->>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 7 +++++++
->>  drivers/net/ethernet/ti/am65-cpsw-nuss.h | 4 ++++
->>  2 files changed, 11 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->> index 0b59088e3728..f5357afde527 100644
->> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->> @@ -2875,7 +2875,9 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
->>  	struct am65_cpsw_port *port;
->>  	struct net_device *ndev;
->>  	int i, ret;
->> +	struct am65_cpsw_host *host_p = am65_common_get_host(common);
+On Mon, Nov 28, 2022 at 10:10:04AM +0800, Li Zetao wrote:
+> When doing the following test steps, an error was found:
+>   step 1: modprobe virtio_input succeeded
+>     # modprobe virtio_input      <-- OK
 > 
-> Nit: I see that retrieving host pointer depends on getting the common
-> pointer first from dev_get_drvdata(dev) so pure RCT is not possible to
-> maintain here but nonetheless I would move this line just below the common
-> pointer:
+>   step 2: fault injection in input_allocate_device()
+>     # modprobe -r virtio_input   <-- OK
+>     # ...
+>       CPU: 0 PID: 4260 Comm: modprobe Tainted: G        W
+>       6.1.0-rc6-00285-g6a1e40c4b995-dirty #109
+>       Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+>       Call Trace:
+>        <TASK>
+>        should_fail.cold+0x5/0x1f
+>        ...
+>        kmalloc_trace+0x27/0xa0
+>        input_allocate_device+0x43/0x280
+>        virtinput_probe+0x23b/0x1648 [virtio_input]
+>        ...
+>        </TASK>
+>       virtio_input: probe of virtio5 failed with error -12
 > 
-> 	struct am65_cpsw_common *common = dev_get_drvdata(dev);
-> 	struct am65_cpsw_host *host = am65_common_get_host(common);
-> 	struct am65_cpsw_port *port;
-> 	struct net_device *ndev;
-> 	int i, ret;
-
-OK.
-
+>   step 3: modprobe virtio_net failed
+>     # modprobe virtio_input       <-- failed
+>       virtio_input: probe of virtio1 failed with error -2
 > 
-> Also I think plain 'host' for variable name is just fine, no need for _p
-> suffix to indicate it is a pointer. in that case you should go with
-> common_p etc.
-
-host_p is the naming convention used throughout the driver.
-Do think it is a good idea to change it at this one place?
-
+> The root cause of the problem is that the virtqueues are not
+> stopped on the error handling path when input_allocate_device()
+> fails in virtinput_probe(), resulting in an error "-ENOENT"
+> returned in the next modprobe call in setup_vq().
 > 
->>  
->> +	host_p->vid_context = readl(host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
->>  	for (i = 0; i < common->port_num; i++) {
->>  		port = &common->ports[i];
->>  		ndev = port->ndev;
->> @@ -2883,6 +2885,7 @@ static int am65_cpsw_nuss_suspend(struct device *dev)
->>  		if (!ndev)
->>  			continue;
->>  
->> +		port->vid_context = readl(port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
->>  		netif_device_detach(ndev);
->>  		if (netif_running(ndev)) {
->>  			rtnl_lock();
->> @@ -2909,6 +2912,7 @@ static int am65_cpsw_nuss_resume(struct device *dev)
->>  	struct am65_cpsw_port *port;
->>  	struct net_device *ndev;
->>  	int i, ret;
->> +	struct am65_cpsw_host *host_p = am65_common_get_host(common);
->>  
->>  	ret = am65_cpsw_nuss_init_tx_chns(common);
->>  	if (ret)
->> @@ -2941,8 +2945,11 @@ static int am65_cpsw_nuss_resume(struct device *dev)
->>  		}
->>  
->>  		netif_device_attach(ndev);
->> +		writel(port->vid_context, port->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
->>  	}
->>  
->> +	writel(host_p->vid_context, host_p->port_base + AM65_CPSW_PORT_VLAN_REG_OFFSET);
->> +
->>  	return 0;
->>  }
->>  #endif /* CONFIG_PM_SLEEP */
->> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
->> index 2c9850fdfcb6..e95cc37a7286 100644
->> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
->> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
->> @@ -55,12 +55,16 @@ struct am65_cpsw_port {
->>  	bool				rx_ts_enabled;
->>  	struct am65_cpsw_qos		qos;
->>  	struct devlink_port		devlink_port;
->> +	/* Only for suspend resume context */
->> +	u32				vid_context;
->>  };
->>  
->>  struct am65_cpsw_host {
->>  	struct am65_cpsw_common		*common;
->>  	void __iomem			*port_base;
->>  	void __iomem			*stat_base;
->> +	/* Only for suspend resume context */
->> +	u32				vid_context;
->>  };
->>  
->>  struct am65_cpsw_tx_chn {
->> -- 
->> 2.17.1
->>
+> virtio_pci_modern_device uses virtqueues to send or
+> receive message, and "queue_enable" records whether the
+> queues are available. In vp_modern_find_vqs(), all queues
+> will be selected and activated, but once queues are enabled
+> there is no way to go back except reset.
+> 
+> Fix it by reset virtio device on error handling path. After
+> virtinput_init_vqs() succeeded, all virtqueues should be
+> stopped on error handling path.
+> 
+> Fixes: 1fcf0512c9c8 ("virtio_pci: modern driver")
 
---
-cheers,
--roger
+Probably 271c865161c57cfabca45b93eaa712b19da365bc
+
+
+> Signed-off-by: Li Zetao <lizetao1@huawei.com>
+> ---
+>  drivers/virtio/virtio_input.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/virtio/virtio_input.c b/drivers/virtio/virtio_input.c
+> index 3aa46703872d..f638f1cd3531 100644
+> --- a/drivers/virtio/virtio_input.c
+> +++ b/drivers/virtio/virtio_input.c
+> @@ -330,6 +330,7 @@ static int virtinput_probe(struct virtio_device *vdev)
+>  err_mt_init_slots:
+>  	input_free_device(vi->idev);
+>  err_input_alloc:
+> +	virtio_reset_device(vdev);
+>  	vdev->config->del_vqs(vdev);
+>  err_init_vq:
+>  	kfree(vi);
+> -- 
+> 2.25.1
+
