@@ -2,170 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0770163A2D3
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 09:24:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF6C363A300
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 09:29:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229914AbiK1IYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 03:24:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37358 "EHLO
+        id S229883AbiK1I3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 03:29:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbiK1IYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 03:24:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBFD817893
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 00:22:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669623766;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=08ACbZbm+f4rrW15utHPQxye3zrEyxUiKLzM8Bx4A7A=;
-        b=Z/tWeFEPBT+UmmcRi6LInvcL60AY9V7vv52d17mfGDV8XR2iEABQ0m2YmmrVXzYQKxBI8w
-        OtoDIGXbUob13B5BysiToG6jOVTFHCqhxLFD6lLBDPWgmfivrdHLm+U1LG2Gqv/dhO629q
-        E0us1vCoO6ohD7lakwFah+WlG7Kz81M=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-605-9wU9V0cuMyOkYWJtJatrzA-1; Mon, 28 Nov 2022 03:22:44 -0500
-X-MC-Unique: 9wU9V0cuMyOkYWJtJatrzA-1
-Received: by mail-wr1-f72.google.com with SMTP id g14-20020adfa48e000000b00241f94bcd54so1628515wrb.23
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 00:22:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :content-language:references:cc:to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=08ACbZbm+f4rrW15utHPQxye3zrEyxUiKLzM8Bx4A7A=;
-        b=axzIDGZTMWJpeuSNs4iftnbNN2ItCpIhR9tIOuRDVTKQVQzqkfQlRYUcs13O+sRV1/
-         u7OIQjB5hmYzsSaxKJwQBlhP+fMN8POaLAarTmZ9BZny980v0lCWjjox8VW6hQNCICoD
-         Qtkv+1pQVmurwM05SKXbcndPVwRd/1VZCc5UE4baH0M/NGclQl7oGgVWv+8Y8aKNRlIC
-         ChraCBTgilzf8xqETUI54xxq9IsGiUpBPJY605i85Ic2qsJalGB8bQFLFxjk/5TsFOlA
-         JLUfbzae3G6VNbXLoKV74ehjizY9Dg3IeLbAXOn0lvJEu1iBk1i2m7E2nUWXnLRMfbD/
-         2+RQ==
-X-Gm-Message-State: ANoB5pkVLgok1971CbtSBAn7NBowQ6stc5HcyFd4jMik6x3uhKEzk7px
-        kjGeByOEHpg6M/CEL1R+G0s1YXCuLWuokYdeEHgmp/y+BX+4AVOV20sia2OCpY200SQ23P/1rd5
-        U2KEQ21wGMEP7qQN4
-X-Received: by 2002:adf:eb8a:0:b0:22e:31b2:ecb9 with SMTP id t10-20020adfeb8a000000b0022e31b2ecb9mr30942292wrn.693.1669623763100;
-        Mon, 28 Nov 2022 00:22:43 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf50AS2I3KjwPnQrek1jGvg+yRK5+MF+33CkcubpJsA9CW/SHNSir8fcEWGsp4QA6DOlcXT2PQ==
-X-Received: by 2002:adf:eb8a:0:b0:22e:31b2:ecb9 with SMTP id t10-20020adfeb8a000000b0022e31b2ecb9mr30942267wrn.693.1669623762803;
-        Mon, 28 Nov 2022 00:22:42 -0800 (PST)
-Received: from ?IPV6:2003:cb:c702:9000:3d6:e434:f8b4:80cf? (p200300cbc702900003d6e434f8b480cf.dip0.t-ipconnect.de. [2003:cb:c702:9000:3d6:e434:f8b4:80cf])
-        by smtp.gmail.com with ESMTPSA id l19-20020a056000023300b00241de5be3f0sm10082939wrz.37.2022.11.28.00.22.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Nov 2022 00:22:42 -0800 (PST)
-Message-ID: <af62e7fe-d848-acb8-ca77-cdf01022b8de@redhat.com>
-Date:   Mon, 28 Nov 2022 09:22:40 +0100
+        with ESMTP id S229674AbiK1I3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 03:29:45 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD5813CC5;
+        Mon, 28 Nov 2022 00:29:44 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1669624122; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=SlruZNjijJZzyYkvFL6OElHpvJ5NcnjnDm7tGquBFAJmCmXXZ7xyEIdvDkQNKukAaVmlVi9Bc3+T1BoMHqR4WMPHWfitmKcMQV9Qj1Z0RpcsXmHFVX1okyuAaL25m94+FDZ1/45k0UH9DWRCBCIZN2m+OW5eV4U6+fKAV6njUKw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1669624122; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=AS/14WaE2LN43smbHuSpmejZfg+JalHV2YhgqWmQEAE=; 
+        b=bIFBF87ok3heWqT6Z4w322m6ip6W7S6qKVz4ihZKSzxbjoH2NheiWIRQf32n7ELZm2Vq4IubEexB1TCaDl8wy/4B5zClr8J6End6YIxYT0Y2H67doigDBMLbzLKl2UlubFKSOiQ62YMWZZZ0RB3eSViz+aWppC9gr/3t0rlMZAI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1669624122;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=AS/14WaE2LN43smbHuSpmejZfg+JalHV2YhgqWmQEAE=;
+        b=JyGzTO7/cV3Df/8rep2Kwe+HTHBxB6ASQWVOwe3f4YCQRiaxNNvQEndBCMwcYe5k
+        1aua5HNDimYl5QcSpfwqtl1Hw4ilAqL50Uwa9FKyisQG2QyEKCeOG0XJ0pzEb3v/dgJ
+        +dE3f36wwKkyE/vzjVCX1quNzRai5Ua82TU22g74=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1669624120094627.872459276059; Mon, 28 Nov 2022 00:28:40 -0800 (PST)
+Message-ID: <08784493-7e85-9224-acfa-9a87cbd325e7@arinc9.com>
+Date:   Mon, 28 Nov 2022 11:28:31 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-To:     Li Zetao <lizetao1@huawei.com>, mst@redhat.com,
-        jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com,
-        axboe@kernel.dk, kraxel@redhat.com, ericvh@gmail.com,
-        lucho@ionkov.net, asmadeus@codewreck.org, linux_oss@crudebyte.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, rusty@rustcorp.com.au
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-References: <20221128021005.232105-1-lizetao1@huawei.com>
- <20221128021005.232105-3-lizetao1@huawei.com>
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v3 net-next 06/10] dt-bindings: net: dsa: mediatek,mt7530:
+ fix port description location
+To:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Cc:     John Crispin <john@phrozen.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Marek Vasut <marex@denx.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        George McCollister <george.mccollister@gmail.com>,
+        Rob Herring <robh@kernel.org>
+References: <20221127224734.885526-1-colin.foster@in-advantage.com>
+ <20221127224734.885526-7-colin.foster@in-advantage.com>
 Content-Language: en-US
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH 2/4] virtio-mem: Fix probe failed when modprobe virtio_mem
-In-Reply-To: <20221128021005.232105-3-lizetao1@huawei.com>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20221127224734.885526-7-colin.foster@in-advantage.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.11.22 03:10, Li Zetao wrote:
-> When doing the following test steps, an error was found:
->    step 1: modprobe virtio_mem succeeded
->      # modprobe virtio_mem      <-- OK
-> 
->    step 2: fault injection in virtio_mem_init()
->      # modprobe -r virtio_mem   <-- OK
->      # ...
->        CPU: 0 PID: 1837 Comm: modprobe Not tainted
->        6.1.0-rc6-00285-g6a1e40c4b995-dirty
->        Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
->        Call Trace:
->         <TASK>
->         should_fail.cold+0x5/0x1f
->         ...
->         virtio_mem_init_hotplug+0x9ae/0xe57 [virtio_mem]
->         virtio_mem_init.cold+0x327/0x339 [virtio_mem]
->         virtio_mem_probe+0x48e/0x910 [virtio_mem]
->         virtio_dev_probe+0x608/0xae0
->         ...
->         </TASK>
->        virtio_mem virtio4: could not reserve device region
->        virtio_mem: probe of virtio4 failed with error -16
-> 
->    step 3: modprobe virtio_net failed
+On 28.11.2022 01:47, Colin Foster wrote:
+> The description property was located where it applies to every port, not
+> just ports 5 or 6 (CPU ports). Fix this description.
 
-virtio_net ?
+I'm not sure I understand. The description for reg does apply to every 
+port. Both CPU ports and user ports are described. This patch moves the 
+description to under CPU ports only.
 
->      # modprobe virtio_mem       <-- failed
->        virtio_mem: probe of virtio4 failed with error -16
 > 
-> The root cause of the problem is that the virtqueues are not
-> stopped on the error handling path when virtio_mem_init()
-> fails in virtio_mem_probe(), resulting in an error "-ENOENT"
-> returned in the next modprobe call in setup_vq().
-> 
-> virtio_pci_modern_device uses virtqueues to send or
-> receive message, and "queue_enable" records whether the
-> queues are available. In vp_modern_find_vqs(), all queues
-> will be selected and activated, but once queues are enabled
-> there is no way to go back except reset.
-> 
-> Fix it by reset virtio device on error handling path. After
-> virtio_mem_init_vq() succeeded, all virtqueues should be
-> stopped on error handling path.
-> 
-> Fixes: 1fcf0512c9c8 ("virtio_pci: modern driver")
-
-That commit is from 2014. virtio-mem was merged in 2020
-
-Fixes: 5f1f79bbc9e2 ("virtio-mem: Paravirtualized memory hotplug")
-
-> Signed-off-by: Li Zetao <lizetao1@huawei.com>
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 > ---
->   drivers/virtio/virtio_mem.c | 1 +
->   1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-> index 0c2892ec6817..c7f09c2ce982 100644
-> --- a/drivers/virtio/virtio_mem.c
-> +++ b/drivers/virtio/virtio_mem.c
-> @@ -2793,6 +2793,7 @@ static int virtio_mem_probe(struct virtio_device *vdev)
+> v2 -> v3
+>    * New patch.
+> 
+> ---
+>   .../bindings/net/dsa/mediatek,mt7530.yaml          | 14 +++-----------
+>   1 file changed, 3 insertions(+), 11 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index 7df4ea1901ce..415e6c40787e 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -156,17 +156,6 @@ patternProperties:
 >   
->   	return 0;
->   out_del_vq:
-> +	virtio_reset_device(vdev);
->   	vdev->config->del_vqs(vdev);
->   out_free_vm:
->   	kfree(vm);
+>       patternProperties:
+>         "^(ethernet-)?port@[0-9]+$":
+> -        type: object
+> -        description: Ethernet switch ports
+> -
+> -        unevaluatedProperties: false
+> -
 
+Would be nice to mention these being removed on the patch log. Or remove 
+them while doing ("dt-bindings: net: dsa: utilize base definitions for 
+standard dsa switches").
 
-Apart from that
+> -        properties:
+> -          reg:
+> -            description:
+> -              Port address described must be 5 or 6 for CPU port and from 0 to 5
+> -              for user ports.
+> -
+>           allOf:
+>             - $ref: dsa-port.yaml#
+>             - if:
+> @@ -174,6 +163,9 @@ patternProperties:
+>               then:
+>                 properties:
+>                   reg:
+> +                  description:
+> +                    Port address described must be 5 or 6 for CPU port and from
+> +                    0 to 5 for user ports
+>                     enum:
+>                       - 5
+>                       - 6
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+Thank you for your efforts.
 
--- 
-Thanks,
-
-David / dhildenb
-
+Arınç
