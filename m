@@ -2,114 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 379AF639EDB
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 02:22:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 977D9639F5B
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 03:14:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229745AbiK1BW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 20:22:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
+        id S229686AbiK1COG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 27 Nov 2022 21:14:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiK1BWN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 20:22:13 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CF31117B;
-        Sun, 27 Nov 2022 17:22:12 -0800 (PST)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NL73F3BWpzHw33;
-        Mon, 28 Nov 2022 09:21:29 +0800 (CST)
-Received: from huawei.com (10.67.175.21) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 28 Nov
- 2022 09:22:09 +0800
-From:   Li Zetao <lizetao1@huawei.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>, <pbonzini@redhat.com>,
-        <stefanha@redhat.com>, <axboe@kernel.dk>, <kraxel@redhat.com>,
-        <david@redhat.com>, <ericvh@gmail.com>, <lucho@ionkov.net>,
-        <asmadeus@codewreck.org>, <linux_oss@crudebyte.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <rusty@rustcorp.com.au>
-CC:     <lizetao1@huawei.com>, <virtualization@lists.linux-foundation.org>,
-        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <v9fs-developer@lists.sourceforge.net>, <netdev@vger.kernel.org>
-Subject: [PATCH 4/4] virtio-blk: Fix probe failed when modprobe virtio_blk
-Date:   Mon, 28 Nov 2022 10:10:05 +0800
-Message-ID: <20221128021005.232105-5-lizetao1@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221128021005.232105-1-lizetao1@huawei.com>
-References: <20221128021005.232105-1-lizetao1@huawei.com>
+        with ESMTP id S229599AbiK1COF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 21:14:05 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D929CFA;
+        Sun, 27 Nov 2022 18:14:04 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2AS2CoT62031913, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2AS2CoT62031913
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 28 Nov 2022 10:12:50 +0800
+Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Mon, 28 Nov 2022 10:13:34 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 28 Nov 2022 10:13:34 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Mon, 28 Nov 2022 10:13:33 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Sascha Hauer <s.hauer@pengutronix.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Martin Blumenstingl" <martin.blumenstingl@googlemail.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Alexander Hochbaum <alex@appudo.com>,
+        Da Xue <da@libre.computer>,
+        "Bernie Huang" <phhuang@realtek.com>,
+        Viktor Petrenko <g0000ga@gmail.com>
+Subject: RE: [PATCH v3 08/11] rtw88: Add rtw8821cu chipset support
+Thread-Topic: [PATCH v3 08/11] rtw88: Add rtw8821cu chipset support
+Thread-Index: AQHY/oJxlcE4AN1s7Ue+AOL9SzW7Xa5Tn5gw
+Date:   Mon, 28 Nov 2022 02:13:33 +0000
+Message-ID: <64d0d2c40be0404498cf09650d267320@realtek.com>
+References: <20221122145226.4065843-1-s.hauer@pengutronix.de>
+ <20221122145226.4065843-9-s.hauer@pengutronix.de>
+In-Reply-To: <20221122145226.4065843-9-s.hauer@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/11/27_=3F=3F_10:48:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.175.21]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When doing the following test steps, an error was found:
-  step 1: modprobe virtio_blk succeeded
-    # modprobe virtio_blk      <-- OK
 
-  step 2: fault injection in __blk_mq_alloc_disk()
-    # modprobe -r virtio_blk   <-- OK
-    # ...
-      CPU: 0 PID: 4578 Comm: modprobe Tainted: G        W
-      6.1.0-rc6-00308-g644e9524388a-dirty
-      Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-      Call Trace:
-       <TASK>
-       should_failslab+0xa/0x20
-       ...
-       blk_alloc_queue+0x3a4/0x780
-       __blk_mq_alloc_disk+0x91/0x1f0
-       virtblk_probe+0x6ff/0x1f20 [virtio_blk]
-       ...
-       </TASK>
-      virtio_blk: probe of virtio1 failed with error -12
 
-  step 3: modprobe virtio_net failed
-    # modprobe virtio_blk       <-- failed
-      virtio_blk: probe of virtio1 failed with error -2
+> -----Original Message-----
+> From: Sascha Hauer <s.hauer@pengutronix.de>
+> Sent: Tuesday, November 22, 2022 10:52 PM
+> To: linux-wireless@vger.kernel.org
+> Cc: Neo Jou <neojou@gmail.com>; Hans Ulli Kroll <linux@ulli-kroll.de>; Ping-Ke Shih <pkshih@realtek.com>;
+> Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; Martin Blumenstingl <martin.blumenstingl@googlemail.com>;
+> kernel@pengutronix.de; Johannes Berg <johannes@sipsolutions.net>; Alexander Hochbaum <alex@appudo.com>;
+> Da Xue <da@libre.computer>; Bernie Huang <phhuang@realtek.com>; Viktor Petrenko <g0000ga@gmail.com>;
+> Sascha Hauer <s.hauer@pengutronix.de>
+> Subject: [PATCH v3 08/11] rtw88: Add rtw8821cu chipset support
+> 
+> Add support for the rtw8821cu chipset based on
+> https://github.com/ulli-kroll/rtw88-usb.git
+> 
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+> 
+> Notes:
+>     Changes since v2:
+>     - Fix txdesc checksum calculation. The checksum must be calculated over
+>       a fixed number of words.
+> 
+>  drivers/net/wireless/realtek/rtw88/Kconfig    | 11 ++++
+>  drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
+>  drivers/net/wireless/realtek/rtw88/rtw8821c.c | 18 +++++++
+>  drivers/net/wireless/realtek/rtw88/rtw8821c.h | 21 ++++++++
+>  .../net/wireless/realtek/rtw88/rtw8821cu.c    | 50 +++++++++++++++++++
+>  .../net/wireless/realtek/rtw88/rtw8821cu.h    | 10 ++++
+>  6 files changed, 113 insertions(+)
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.c
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.h
+> 
 
-The root cause of the problem is that the virtqueues are not
-stopped on the error handling path when __blk_mq_alloc_disk()
-fails in virtblk_probe(), resulting in an error "-ENOENT"
-returned in the next modprobe call in setup_vq().
+[...]
 
-virtio_pci_modern_device uses virtqueues to send or
-receive message, and "queue_enable" records whether the
-queues are available. In vp_modern_find_vqs(), all queues
-will be selected and activated, but once queues are enabled
-there is no way to go back except reset.
+> --- /dev/null
+> +++ b/drivers/net/wireless/realtek/rtw88/rtw8821cu.h
+> @@ -0,0 +1,10 @@
+> +/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+> +/* Copyright(c) 2018-2019  Realtek Corporation
+> + */
+> +
+> +#ifndef __RTW_8821CU_H_
+> +#define __RTW_8821CU_H_
+> +
+> +extern struct rtw_chip_info rtw8821c_hw_spec;
 
-Fix it by reset virtio device on error handling path. After
-init_vq() succeeded, all virtqueues should be stopped on error
-handling path.
+This has been moved to rtw8821c.h by
+89d8f53ff6e ("wifi: rtw88: Fix Sparse warning for rtw8821c_hw_spec")
 
-Fixes: 1fcf0512c9c8 ("virtio_pci: modern driver")
-Signed-off-by: Li Zetao <lizetao1@huawei.com>
----
- drivers/block/virtio_blk.c | 1 +
- 1 file changed, 1 insertion(+)
+So, we don't need rtw8821cu.h anymore. 
+Please apply this rule to other chips.
 
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 19da5defd734..f401546d4e85 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -1157,6 +1157,7 @@ static int virtblk_probe(struct virtio_device *vdev)
- 	put_disk(vblk->disk);
- out_free_tags:
- 	blk_mq_free_tag_set(&vblk->tag_set);
-+	virtio_reset_device(vdev);
- out_free_vq:
- 	vdev->config->del_vqs(vdev);
- 	kfree(vblk->vqs);
--- 
-2.25.1
+> +
+> +#endif
+> --
+> 2.30.2
 
