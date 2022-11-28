@@ -2,97 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BE16639EC7
-	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 02:21:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B9B639EF0
+	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 02:31:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbiK1BVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Nov 2022 20:21:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39802 "EHLO
+        id S229628AbiK1BbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Nov 2022 20:31:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiK1BVk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 20:21:40 -0500
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DEB1215;
-        Sun, 27 Nov 2022 17:21:39 -0800 (PST)
-Received: by mail-pl1-f170.google.com with SMTP id j12so8745297plj.5;
-        Sun, 27 Nov 2022 17:21:39 -0800 (PST)
+        with ESMTP id S229569AbiK1Ba7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Nov 2022 20:30:59 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCEFA45A
+        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 17:30:58 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id h193so8612446pgc.10
+        for <netdev@vger.kernel.org>; Sun, 27 Nov 2022 17:30:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ivan-computer.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=eHIyETS1lGz31szWszpuBGcrsTyrBOqWhdPJ/l2FVS4=;
+        b=1JJpTxD0a8aytT36HRDIfBru8y7OZTgRm7PdgOY6gy6PD9GHFELU72jGFjGO6J8/kw
+         WhlyYzlRl6m64T6QyYofo+twwOtHP81UTpLgy75ULc24232lclKbTKSJD9HmgGOPQc63
+         LmsM6Vdr52hNYo/fa8YKM+iiawOkUb3XBjY6OhYUUqpHIc+apRKCuy//mUV8EVdPEHvX
+         qLsU6rezwssHrptLb12nUWOdXxSY6T+Cv8q200y+CE760/d6KIJwDSHaCPUQxLYXNkog
+         5LaxLPIqZNfXJlQmG9GCGhFTWCLF4JUOdqC5SaAKbMR5JCXeCzPk4DjAKljJ0q6zME7k
+         5gJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gJyNVXZ0Nag03x8wF+5JRQFWFO/c5LE8KY9nLBrkk88=;
-        b=bLMyj4V5AWVB0OeRG/09OtV3gMmpTuJLlGhu6nz7ssByxfqschyx0S/n3XnkS1gFHu
-         XBhI25l1OTaVevG8WDxxQ2dXXGLC/GT+WbI7bsNMDIhp/wG5F0ILl5LQHK8i6b9mhtnV
-         vy8Fvv78MAU0eQXUUARcKM+ZgI+54eazUdTw3g0pUh89o7xFg4w+5OpBqz2a7Y5cb8T3
-         jRmVVAYdRvwbjifbvjmw70BIMsEOoGGg17xmpHTSrEDaHwvYz6FJLlf2CFynyl3F9M+Q
-         gH00e42S+H5AMWMe6cnfjtJ1i/bOe2dUG32lMRkQeomRhwPtcrnKeY+Q78WgkjH7ReDb
-         eLNA==
-X-Gm-Message-State: ANoB5pk3XxOjnKyJ3wPBIPCH1x5Kiad3zHT65tyJSy/sIuVepfgHV3r9
-        r9CQ8jw9kJ35dsc6/5dmODpMs1uqKzsQlzkD/is=
-X-Google-Smtp-Source: AA0mqf7lEZw8GreOflw9skrfxDXGuWTHslnxVt2egNsAVVjovt9K+mRepQD3N6d/JgviTgcqpE/ngSCFrCHerqBYZtc=
-X-Received: by 2002:a17:902:b608:b0:189:7a8b:537d with SMTP id
- b8-20020a170902b60800b001897a8b537dmr7566610pls.95.1669598498489; Sun, 27 Nov
- 2022 17:21:38 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eHIyETS1lGz31szWszpuBGcrsTyrBOqWhdPJ/l2FVS4=;
+        b=TFMVzgmvUc3R7BXJkjU/v1IuxQN5KkRlDNN69jops/lllNHBVlS/6pnPiMqRMEW30J
+         TnLoBb08odEoM9gJQKWBIoI1ECLTeoXBsYfEGj72don6vjURHqtCPBMdsd3E/rT4KtS1
+         DRSA0DeNVSMpfAV0SVudkU+Lc7e/t0DW0gBZ8miA99F9jOTdQjT+zkoC3p/yNg/OFtpe
+         nNNaUxZA0lEoqYG22x+Guul/FQgtT8ejW45WFQqgRhy6L01WJ4qfdEdFIvptPFg4Edis
+         lTRhlz05GNP/u+A8SFm717oiQhL0VE2BKX0HsFTH0Z6TTPX0ivbH6YKOBoV1HRh7sn5A
+         ymkA==
+X-Gm-Message-State: ANoB5pk9RUp/ExiO8NU1XdUO99ERjWSNc8H2Ia8TJDTVmhUA/bHtIUv+
+        4kCxjAOAI/BEp71P2EnyNH0lZsIDPdM5yHYVvOK3Xg==
+X-Google-Smtp-Source: AA0mqf6/JW8PVKHVn7ofjb3WyFOOg3d21aAJavoE3qpWPyW9xVpOJBxXwPoo2t3hWlFKdWazS4gNx67OkGhaUYPhN2o=
+X-Received: by 2002:a62:ea0e:0:b0:575:7bb:d6fc with SMTP id
+ t14-20020a62ea0e000000b0057507bbd6fcmr6245800pfh.79.1669599057711; Sun, 27
+ Nov 2022 17:30:57 -0800 (PST)
 MIME-Version: 1.0
-References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
- <20221126162211.93322-1-mailhol.vincent@wanadoo.fr> <20221126162211.93322-4-mailhol.vincent@wanadoo.fr>
- <Y4JJ8Dyz7urLz/IM@lunn.ch> <CAMZ6Rq+K+6gbaZ35SOJcR9qQaTJ7KR0jW=XoDKFkobjhj8CHhw@mail.gmail.com>
- <Y4N9IAlQVsdyIJ9Q@lunn.ch>
-In-Reply-To: <Y4N9IAlQVsdyIJ9Q@lunn.ch>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Mon, 28 Nov 2022 10:21:27 +0900
-Message-ID: <CAMZ6RqJHFyeG0ZMaAAfJ_30t-oucJVm05Et-H9DEgzbWj-K6vA@mail.gmail.com>
-Subject: Re: [PATCH v4 3/6] can: etas_es58x: export product information
- through devlink_ops::info_get()
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Lukas Magel <lukas.magel@posteo.net>
+From:   Ivan Babrou <ivan@ivan.computer>
+Date:   Sun, 27 Nov 2022 17:30:47 -0800
+Message-ID: <CAGjnhw_2oSWfMjNPZMneJXxdvT+qoqhKV8787NYuHnOauhSVyw@mail.gmail.com>
+Subject: Unused variable 'mark' in v6.1-rc7
+To:     Daniel Xu <dxu@dxuuu.xyz>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon. 28 Nov. 2022 at 00:08, Andrew Lunn <andrew@lunn.ch> wrote:
-> > I checked, none of gcc and clang would trigger a warning even for a
-> > 'make W=12'. More generally speaking, I made sure that my driver is
-> > free of any W=12.
->
-> That is good enough for me.
->
-> > I do not care any more as long as it does not result in
-> > undefined behaviour.
->
-> Agreed. Hopefully sscanf cannot go completely wrong and go off the end
-> of the buffer. That i would care about. Bit i guess the USB fuzzers
-> would of hit such problems already.
+There's 52d1aa8b8249 in v6.1-rc7:
 
-On the surface, the sscanf() seems OK. It will break the while loop
-when reaching the end of the format:
-  https://elixir.bootlin.com/linux/v6.1-rc6/source/lib/vsprintf.c#L3429
-or the end of the string:
-  https://elixir.bootlin.com/linux/v6.1-rc6/source/lib/vsprintf.c#L3501
-(I am skipping details here, there are other branches that will break
-the while loop and all of them look good).
+* netfilter: conntrack: Fix data-races around ct mark
 
-And me not being the first person using sscanf(), I hope that if a bug
-existed, it would have already been spotted by some static
-analysis/fuzzing/code review :)
+It triggers an error:
 
-That said, I think I answered all your comments. Can I get your
-reviewed-by or ack tag? Thank you!
+#19 355.8 /build/linux-source/net/netfilter/nf_conntrack_netlink.c: In
+function '__ctnetlink_glue_build':
+#19 355.8 /build/linux-source/net/netfilter/nf_conntrack_netlink.c:2674:13:
+error: unused variable 'mark' [-Werror=unused-variable]
+#19 355.8  2674 |         u32 mark;
+#19 355.8       |             ^~~~
+#19 355.8 cc1: all warnings being treated as errors
 
+If CONFIG_NF_CONNTRACK_MARK is not enabled, as mark is declared
+unconditionally, but used under ifdef:
 
-Yours sincerely,
-Vincent Mailhol
+ #ifdef CONFIG_NF_CONNTRACK_MARK
+-       if ((events & (1 << IPCT_MARK) || ct->mark)
+-           && ctnetlink_dump_mark(skb, ct) < 0)
++       mark = READ_ONCE(ct->mark);
++       if ((events & (1 << IPCT_MARK) || mark) &&
++           ctnetlink_dump_mark(skb, mark) < 0)
+                goto nla_put_failure;
+ #endif
+
+To have NF_CONNTRACK_MARK one needs NETFILTER_ADVANCED:
+
+config NF_CONNTRACK_MARK
+        bool  'Connection mark tracking support'
+        depends on NETFILTER_ADVANCED
+
+It's supposed to be enabled by default:
+
+config NETFILTER_ADVANCED
+        bool "Advanced netfilter configuration"
+        depends on NETFILTER
+        default y
+
+But it's not in defconfig (it's missing from arm64 completely):
+
+$ rg NETFILTER_ADVANCED arch/x86/configs/x86_64_defconfig
+93:# CONFIG_NETFILTER_ADVANCED is not set
+
+I think the solution is to enclose mark definition into ifdef as well
+and I'm happy to send a patch if you agree and would like me to.
