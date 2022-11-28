@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0126763A7AF
+	by mail.lfdr.de (Postfix) with ESMTP id A5C3D63A7B1
 	for <lists+netdev@lfdr.de>; Mon, 28 Nov 2022 13:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231621AbiK1MB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 07:01:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36498 "EHLO
+        id S231622AbiK1MB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 07:01:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231476AbiK1MAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:43 -0500
+        with ESMTP id S231134AbiK1MAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 07:00:44 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E2318E1C
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A80519002
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 04:00:43 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoO-0005Et-8W; Mon, 28 Nov 2022 13:00:36 +0100
+        id 1ozcoO-0005Fw-RA; Mon, 28 Nov 2022 13:00:36 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoM-000oAJ-PL; Mon, 28 Nov 2022 13:00:35 +0100
+        id 1ozcoN-000oAW-CB; Mon, 28 Nov 2022 13:00:36 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1ozcoM-00H6LR-Tg; Mon, 28 Nov 2022 13:00:34 +0100
+        id 1ozcoM-00H6Le-Vr; Mon, 28 Nov 2022 13:00:34 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,10 +39,12 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH v1 00/26] net: dsa: microchip: stats64, fdb, error
-Date:   Mon, 28 Nov 2022 13:00:08 +0100
-Message-Id: <20221128120034.4075562-1-o.rempel@pengutronix.de>
+Subject: [PATCH v1 01/26] net: dsa: microchip: add stats64 support for ksz8 series of switches
+Date:   Mon, 28 Nov 2022 13:00:09 +0100
+Message-Id: <20221128120034.4075562-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20221128120034.4075562-1-o.rempel@pengutronix.de>
+References: <20221128120034.4075562-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -58,57 +60,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series is a result of maintaining work on ksz8 part of
-microchip driver. It includes stats64 and fdb support. Error handling.
-Loopback fix and so on...
+Add stats64 support for ksz8xxx series of switches.
 
-Oleksij Rempel (26):
-  net: dsa: microchip: add stats64 support for ksz8 series of switches
-  net: dsa: microchip: ksz8: ksz8_fdb_dump: fix port validation and VID
-    information
-  net: dsa: microchip: ksz8: ksz8_fdb_dump: fix not complete fdb
-    extraction
-  net: dsa: microchip: ksz8: ksz8_fdb_dump: fix time stamp extraction
-  net: dsa: microchip: ksz8: ksz8_fdb_dump: do not extract ghost entry
-    from empty table
-  net: dsa: microchip: ksz8863_smi: fix bulk access
-  net: dsa: microchip: ksz8_r_dyn_mac_table(): remove timestamp support
-  net: dsa: microchip: make ksz8_r_dyn_mac_table() static
-  net: dsa: microchip: ksz8_r_dyn_mac_table(): remove fid support
-  net: dsa: microchip: ksz8: refactor ksz8_fdb_dump()
-  net: dsa: microchip: ksz8: ksz8_fdb_dump: dump static MAC table
-  net: dsa: microchip: ksz8: move static mac table operations to a
-    separate functions
-  net: dsa: microchip: ksz8: add fdb_add/del support
-  net: dsa: microchip: KSZ88x3 fix loopback support
-  net: dsa: microchip: ksz8_r_dyn_mac_table(): move main part of the
-    code out of if statement
-  net: dsa: microchip: ksz8_r_dyn_mac_table(): use ret instead of rc
-  net: dsa: microchip: ksz8_r_dyn_mac_table(): ksz: do not return EAGAIN
-    on timeout
-  net: dsa: microchip: ksz8_r_dyn_mac_table(): return read/write error
-    if we got any
-  net: dsa: microchip: ksz8_r_dyn_mac_table(): use entries variable to
-    signal 0 entries
-  net: dsa: microchip: make ksz8_r_sta_mac_table() static
-  net: dsa: microchip: ksz8_r_sta_mac_table(): do not use error code for
-    empty entries
-  net: dsa: microchip: ksz8_r_sta_mac_table(): make use of error values
-    provided by read/write functions
-  net: dsa: microchip: make ksz8_w_sta_mac_table() static
-  net: dsa: microchip: ksz8_w_sta_mac_table(): make use of error values
-    provided by read/write functions
-  net: dsa: microchip: remove ksz_port:on variable
-  net: dsa: microchip: ksz8: do not force flow control by default
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 87 ++++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h |  1 +
+ 2 files changed, 88 insertions(+)
 
- drivers/net/dsa/microchip/ksz8.h        |  14 +-
- drivers/net/dsa/microchip/ksz8795.c     | 440 +++++++++++++++---------
- drivers/net/dsa/microchip/ksz8795_reg.h |   2 +
- drivers/net/dsa/microchip/ksz8863_smi.c |  10 +-
- drivers/net/dsa/microchip/ksz_common.c  | 100 +++++-
- drivers/net/dsa/microchip/ksz_common.h  |   2 +-
- 6 files changed, 377 insertions(+), 191 deletions(-)
-
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index f39b041765fb..423f944cc34c 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -70,6 +70,43 @@ struct ksz_stats_raw {
+ 	u64 tx_discards;
+ };
+ 
++struct ksz88xx_stats_raw {
++	u64 rx;
++	u64 rx_hi;
++	u64 rx_undersize;
++	u64 rx_fragments;
++	u64 rx_oversize;
++	u64 rx_jabbers;
++	u64 rx_symbol_err;
++	u64 rx_crc_err;
++	u64 rx_align_err;
++	u64 rx_mac_ctrl;
++	u64 rx_pause;
++	u64 rx_bcast;
++	u64 rx_mcast;
++	u64 rx_ucast;
++	u64 rx_64_or_less;
++	u64 rx_65_127;
++	u64 rx_128_255;
++	u64 rx_256_511;
++	u64 rx_512_1023;
++	u64 rx_1024_1522;
++	u64 tx;
++	u64 tx_hi;
++	u64 tx_late_col;
++	u64 tx_pause;
++	u64 tx_bcast;
++	u64 tx_mcast;
++	u64 tx_ucast;
++	u64 tx_deferred;
++	u64 tx_total_col;
++	u64 tx_exc_col;
++	u64 tx_single_col;
++	u64 tx_mult_col;
++	u64 rx_discards;
++	u64 tx_discards;
++};
++
+ static const struct ksz_mib_names ksz88xx_mib_names[] = {
+ 	{ 0x00, "rx" },
+ 	{ 0x01, "rx_hi" },
+@@ -156,6 +193,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
+ 	.w_phy = ksz8_w_phy,
+ 	.r_mib_cnt = ksz8_r_mib_cnt,
+ 	.r_mib_pkt = ksz8_r_mib_pkt,
++	.r_mib_stat64 = ksz88xx_r_mib_stats64,
+ 	.freeze_mib = ksz8_freeze_mib,
+ 	.port_init_cnt = ksz8_port_init_cnt,
+ 	.fdb_dump = ksz8_fdb_dump,
+@@ -1583,6 +1621,55 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
+ 	spin_unlock(&mib->stats64_lock);
+ }
+ 
++void ksz88xx_r_mib_stats64(struct ksz_device *dev, int port)
++{
++	struct ethtool_pause_stats *pstats;
++	struct rtnl_link_stats64 *stats;
++	struct ksz88xx_stats_raw *raw;
++	struct ksz_port_mib *mib;
++
++	mib = &dev->ports[port].mib;
++	stats = &mib->stats64;
++	pstats = &mib->pause_stats;
++	raw = (struct ksz88xx_stats_raw *)mib->counters;
++
++	spin_lock(&mib->stats64_lock);
++
++	stats->rx_packets = raw->rx_bcast + raw->rx_mcast + raw->rx_ucast +
++		raw->rx_pause;
++	stats->tx_packets = raw->tx_bcast + raw->tx_mcast + raw->tx_ucast +
++		raw->tx_pause;
++
++	/* HW counters are counting bytes + FCS which is not acceptable
++	 * for rtnl_link_stats64 interface
++	 */
++	stats->rx_bytes = raw->rx + raw->rx_hi - stats->rx_packets * ETH_FCS_LEN;
++	stats->tx_bytes = raw->tx + raw->tx_hi - stats->tx_packets * ETH_FCS_LEN;
++
++	stats->rx_length_errors = raw->rx_undersize + raw->rx_fragments +
++		raw->rx_oversize;
++
++	stats->rx_crc_errors = raw->rx_crc_err;
++	stats->rx_frame_errors = raw->rx_align_err;
++	stats->rx_dropped = raw->rx_discards;
++	stats->rx_errors = stats->rx_length_errors + stats->rx_crc_errors +
++		stats->rx_frame_errors  + stats->rx_dropped;
++
++	stats->tx_window_errors = raw->tx_late_col;
++	stats->tx_fifo_errors = raw->tx_discards;
++	stats->tx_aborted_errors = raw->tx_exc_col;
++	stats->tx_errors = stats->tx_window_errors + stats->tx_fifo_errors +
++		stats->tx_aborted_errors;
++
++	stats->multicast = raw->rx_mcast;
++	stats->collisions = raw->tx_total_col;
++
++	pstats->tx_pause_frames = raw->tx_pause;
++	pstats->rx_pause_frames = raw->rx_pause;
++
++	spin_unlock(&mib->stats64_lock);
++}
++
+ static void ksz_get_stats64(struct dsa_switch *ds, int port,
+ 			    struct rtnl_link_stats64 *s)
+ {
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index cb27f5a180c7..055d61ff3fb8 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -345,6 +345,7 @@ void ksz_switch_remove(struct ksz_device *dev);
+ 
+ void ksz_init_mib_timer(struct ksz_device *dev);
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
++void ksz88xx_r_mib_stats64(struct ksz_device *dev, int port);
+ void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
+ bool ksz_get_gbit(struct ksz_device *dev, int port);
+ phy_interface_t ksz_get_xmii(struct ksz_device *dev, int port, bool gbit);
 -- 
 2.30.2
 
