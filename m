@@ -2,71 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64C9163C337
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 15:55:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ACFA63C3B9
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 16:27:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235681AbiK2Ozj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 09:55:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33248 "EHLO
+        id S230391AbiK2P1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 10:27:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234670AbiK2Ozi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 09:55:38 -0500
-Received: from pv50p00im-ztdg10011901.me.com (pv50p00im-ztdg10011901.me.com [17.58.6.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6A9B5C
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 06:55:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
-        s=sig1; t=1669733735;
-        bh=7VHgYyrts87O0uqb1nQ28K/+qcn3F8Gj517nlgJXqpk=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=Rm7Ax+eVh9lfS8kpvuuyYRlhN/frni+KjidqvZMcxViExaL5qGlE401G5AAZTOzEM
-         UUzS5Xq7bhKedTJR0gE2wJu61+dRco67dat+1kYqlOgYKN1dPEvyluzbKCpgBg7sTV
-         keXVRHq8cicNur+BsIcETo8jKU6hthbT1Al0oGG6zIIWU/nDr8D6fdAhO9xqQc3YCD
-         aeYzsUUfFsCRXWh4atvDGGiX39dz7wLUVc2IfUlAh18qOXnMQ/MgIAdRxidFgf/HoF
-         O12E7jflHUci6/Zn2T6A4+jOSLrA2vb5Jkdzunk+efhlGEIr1YTlV+6vEGCFT+gba9
-         QEPZLMm8/EIgA==
-Received: from vanilla.lan (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-        by pv50p00im-ztdg10011901.me.com (Postfix) with ESMTPSA id 6EA163A06A5;
-        Tue, 29 Nov 2022 14:55:32 +0000 (UTC)
-From:   JunASAKA <JunASAKA@zzy040330.moe>
-To:     rtl8821cerfe2@gmail.com, Jes.Sorensen@gmail.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: reply to Bitterblue Smith
-Date:   Tue, 29 Nov 2022 22:55:28 +0800
-Message-Id: <20221129145528.377371-1-JunASAKA@zzy040330.moe>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221129043442.14717-1-JunASAKA@zzy040330.moe>
-References: <20221129043442.14717-1-JunASAKA@zzy040330.moe>
+        with ESMTP id S235788AbiK2P1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 10:27:36 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE36BF8
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 07:27:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669735654; x=1701271654;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8DaPoguemd1xeM/9bB0k2RpU7Gpd1O1W61mg5haAZC0=;
+  b=QZ0FZvS05nAVqLvwJJgPvG53MkvvsIjhK6suUzednz2ErJH4OqN6BSSI
+   G/K1j/APLyBPbFsSi1nMRZ2h1TmmytmDxnF2CdjN3f0pF/T0Oj+pcq8/M
+   bOOnbQI3BhX9/GFX2djq6+EgPmgTqFhs3R4Zw72155nEUmBOjSB4ijG9u
+   uLezCFFDzkh7NHUJTXVvZQ99Nn9hOm8QntO2fScvad5E30u+R4e+w4R5+
+   FJlaiFoPky/79IleoNgQMXozuWHsC6uiJnvq97CVS7hzkq8uQtwJ6E96O
+   VzrCNVbA+NsRcy2Jdv0OrptFQgdYqtvo8mGjtx+CBEFN0z1WWCb5Ro6mf
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="294828306"
+X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
+   d="scan'208";a="294828306"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 07:23:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="645930333"
+X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
+   d="scan'208";a="645930333"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga007.fm.intel.com with ESMTP; 29 Nov 2022 07:23:27 -0800
+Received: from vecna.. (vecna.igk.intel.com [10.123.220.17])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2ATFNPZe015209;
+        Tue, 29 Nov 2022 15:23:25 GMT
+From:   Przemek Kitszel <przemyslaw.kitszel@intel.com>
+To:     intel-wired-lan@osuosl.org
+Cc:     netdev@vger.kernel.org, Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        Maciej Machnikowski <maciej.machnikowski@intel.com>,
+        Przemek Kitszel <przemyslaw.kitszel@intel.com>
+Subject: [PATCH net-next] ice: Enable extended PTP support for E823L & E823C devices
+Date:   Tue, 29 Nov 2022 16:12:53 +0100
+Message-Id: <20221129151253.2239967-1-przemyslaw.kitszel@intel.com>
+X-Mailer: git-send-email 2.34.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: cljaZqDiDt2T0ayp4P5SmdB21H1zrx5-
-X-Proofpoint-ORIG-GUID: cljaZqDiDt2T0ayp4P5SmdB21H1zrx5-
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.517,18.0.883,17.11.64.514.0000000_definitions?=
- =?UTF-8?Q?=3D2022-06-21=5F08:2022-06-21=5F01,2022-06-21=5F08,2022-02-23?=
- =?UTF-8?Q?=5F01_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=4 malwarescore=0 clxscore=1030
- adultscore=0 spamscore=4 mlxlogscore=134 suspectscore=0 phishscore=0
- bulkscore=0 mlxscore=4 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2211290084
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bitterblue Smith,
+From: Maciej Machnikowski <maciej.machnikowski@intel.com>
 
- 	I have seen the patch you've mentioned. Actually, when I was trying to address the rtl8192eu problem, I saw that patch and
-considered it would tackle my problem, but it turns out that it doesn't work for me. And I found this rtl8xxxu_queue_select() 
-function which has a *hdr parameter that can be gained from skb since skb is indeed neccessary for this function to work.
-	What do you think of these? And please take a look of my problem above on your convenience, thanks a lot.
+Enable extended PTP support for E823C and E823L devices.
 
-Thanks and Regards,
-Jun ASAKA.
+Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
+Co-developed-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Signed-off-by: Przemek Kitszel <przemyslaw.kitszel@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_lib.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 938ba8c215cb..ea813306e6cd 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -4199,6 +4199,16 @@ void ice_init_feature_support(struct ice_pf *pf)
+ 	case ICE_DEV_ID_E810C_BACKPLANE:
+ 	case ICE_DEV_ID_E810C_QSFP:
+ 	case ICE_DEV_ID_E810C_SFP:
++	case ICE_DEV_ID_E823L_BACKPLANE:
++	case ICE_DEV_ID_E823L_SFP:
++	case ICE_DEV_ID_E823L_10G_BASE_T:
++	case ICE_DEV_ID_E823L_1GBE:
++	case ICE_DEV_ID_E823L_QSFP:
++	case ICE_DEV_ID_E823C_BACKPLANE:
++	case ICE_DEV_ID_E823C_SFP:
++	case ICE_DEV_ID_E823C_10G_BASE_T:
++	case ICE_DEV_ID_E823C_SGMII:
++	case ICE_DEV_ID_E823C_QSFP:
+ 		ice_set_feature_support(pf, ICE_F_DSCP);
+ 		ice_set_feature_support(pf, ICE_F_PTP_EXTTS);
+ 		if (ice_is_e810t(&pf->hw)) {
+-- 
+2.34.3
 
