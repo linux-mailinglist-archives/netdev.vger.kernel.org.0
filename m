@@ -2,202 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 385F163BCC9
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:19:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D66A63BD1D
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:40:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbiK2JTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 04:19:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54676 "EHLO
+        id S229767AbiK2Jka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 04:40:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbiK2JTp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:19:45 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE53954760
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 01:19:43 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id x6so1924703lji.10
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 01:19:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=sg3QtzQpHzzTX1eXKZgkNmLpSXL6VNlIdOuizJonHpU=;
-        b=Cmkt77kYzu0zzeTsUBSsKkObosk1j28KU1I5QCjKJBdQdEIf5nDh2ZlCuWESVYD4ox
-         7u+DwtiqzpDRKqxxozeN7c/TAWS8RTkfj+7FfP1otA+zoNg5+QVN1wfgVYy0NyTSsDvX
-         qtUldOJwcZAUxuFoCUB/z7HOihJsk+L1orPOKiin9LQCeJ2f3T6ylMo8Picdil+Rats9
-         PxdllGY2z9L8R8q86g5y4KTnoI5KsVkr0gM45tZ7sIL+/pQViAQQbIch/SH0kxnH5e0A
-         hMH/CvoSpKPxrMvNwq2G18fGzUpDc4ewP/fxvzecHgUJ9QJOv17wgjjAehmU6SSSVJLa
-         5w3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sg3QtzQpHzzTX1eXKZgkNmLpSXL6VNlIdOuizJonHpU=;
-        b=6oxktek3JNIcrW7EQ2gS6aRsxJHJ0IX0l0bOSqTKMSQjK8ryfWlQq7Cwwupb5Wywj8
-         Oq2GiElFtxWJ6gwqA7inGFFQbcw9Co6VwIKU7DTKzg0rrpHPdF6DxvDbX5nUBPT57INN
-         zsXs0UrLdgj3Yylg8xhvSPBvaQwE+fj+cI7ATvq6wHypHupkh5d/WbYJ2xlp+nKpVyxY
-         ZTtX5DSV2JlrTiHf+S3cAeKZjmEBAyOwSpyctYFJ4/NUXe0L09uU8RQe2jo00CsAA5Vr
-         xtfHq/Q+63zLEvQZwLKQU3JMTpZX/LzJzJ8Yyft9tN3njPb9Ma5mg7qaa1ptnx7oKlqk
-         SI8Q==
-X-Gm-Message-State: ANoB5pmk1wmaC3KzTlK6ZKQAVwGFGlXHYGtBicuDmOLP1f5Vjzcb8deJ
-        qfW9lEGyayroxxFHyDq7qn0Krg==
-X-Google-Smtp-Source: AA0mqf5/jT9FnSy57Ipjz48YGhmhY5lSdTAI5VgVIguoY252oCOou9rswszb/1auQGX1dRKN4yjy1g==
-X-Received: by 2002:a05:651c:c89:b0:26f:bd61:ac4f with SMTP id bz9-20020a05651c0c8900b0026fbd61ac4fmr13311910ljb.396.1669713581897;
-        Tue, 29 Nov 2022 01:19:41 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id be13-20020a056512250d00b004947a12232bsm2095956lfb.275.2022.11.29.01.19.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Nov 2022 01:19:41 -0800 (PST)
-Message-ID: <79c1c64b-7072-3e30-78a7-5e3379d3d65f@linaro.org>
-Date:   Tue, 29 Nov 2022 10:19:39 +0100
+        with ESMTP id S229529AbiK2Jk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:40:28 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2049.outbound.protection.outlook.com [40.107.223.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31EA63B0
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 01:40:25 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PcvYGCqCOUjUwZ3jvLOi+XGUD1UcPImh+uutdDE6HvYCXqtnRD36jnmjSoH87+kMH+bnHeKxhp2c+iEo+ujz9yy57Fl9yl26vaQuLTWmoUQZgSJSFtpTYUPQmI0fWHKz2BOW+NC8gRz31/T/PSfrmRd80SwJwjBLdD3vT7WxpNfwCxCtAngBkZTqFCmWBbny/aKI2PkwnokOHy9bbT3LfRsGRIuM8ZnJJj/Skqf64hLHvwGOrNmLOExOK/fqwDqz6F3LjqE6xmIcYLMRn/ByFeV5iktEaHuakf+r6YRshr5YVjikkba0M70UBAAEAu/sistaXGU9/5ZA7CEibS561Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yCL2U6aSGcrTzmsupbjZjYvZk2pePIvWBheOjEXIDgY=;
+ b=iBqSx+FNZ2RjO4CXoEVFgL8sVdrfvTfUgb7gltBsY9cgwBvTgynupPAaVk1XQIzIkHaNSTHop+W2dAgbzkS4VCLc8HisvT6BPRoJcyRx0yA3HEpQi5E07pZm9+Qyor1oeDrFclcR3tF/m5+E8TJWjyrXiHJrdffsEbYlak9MkfuJ3mkS+jI6ymoUP330VuHN0nAEUBJ1FsP84oBcUFabKENaxQmgeyGyBe51ZqAJdO+rba7LJPTa9rf4OBFmcv4nNH+EHShzCOhHGIXLzfkJiXFgV7B9HYaAaRmQNwdEpj5T23ULun+XGRUr1rL52oWH4xhdmYKy8s+vmCbzjUpp2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yCL2U6aSGcrTzmsupbjZjYvZk2pePIvWBheOjEXIDgY=;
+ b=lqcALla77eO7y9uP2qDUVXwgBPo0CEXnGxy/+ceqUEop7RrrGtPBMLfWh62PRBzskbXVlePJ4XHQS9Sv+WCsy8CbilW6YXZAYpAlwMFX9njRhJCtX9Y4CVCwM/Hke8UwDVrM2wAJlHNCEob8lekHD8Qc/MHxwXSBn/A6sFv94g238ZJ9enNTrwNadKl1Pqoot1OMp0gB5DXqv0WUwnxZgXF/Fh+FWYbMdFl/9aD4micFJk9dlj7Z9phSLs9yLu6lsNGBak8562q9egDJW+piJwJkbrHjgL4OzcqfWo/IGcDzjkm/ZluhwlKXDHtbYT3cJXn5KjoBjHem9FdfNuPw+Q==
+Received: from DM5PR07CA0053.namprd07.prod.outlook.com (2603:10b6:4:ad::18) by
+ SA3PR12MB7950.namprd12.prod.outlook.com (2603:10b6:806:31c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Tue, 29 Nov
+ 2022 09:40:24 +0000
+Received: from DM6NAM11FT041.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:4:ad:cafe::bc) by DM5PR07CA0053.outlook.office365.com
+ (2603:10b6:4:ad::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23 via Frontend
+ Transport; Tue, 29 Nov 2022 09:40:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DM6NAM11FT041.mail.protection.outlook.com (10.13.172.98) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5834.8 via Frontend Transport; Tue, 29 Nov 2022 09:40:23 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 29 Nov
+ 2022 01:40:06 -0800
+Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 29 Nov
+ 2022 01:40:04 -0800
+References: <20221128123817.2031745-1-daniel.machon@microchip.com>
+ <20221128123817.2031745-3-daniel.machon@microchip.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Daniel Machon <daniel.machon@microchip.com>
+CC:     <netdev@vger.kernel.org>, <dsahern@kernel.org>,
+        <stephen@networkplumber.org>, <petrm@nvidia.com>,
+        <maxime.chevallier@bootlin.com>, <vladimir.oltean@nxp.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next v2 2/2] dcb: add new subcommand for apptrust
+Date:   Tue, 29 Nov 2022 10:24:35 +0100
+In-Reply-To: <20221128123817.2031745-3-daniel.machon@microchip.com>
+Message-ID: <87sfi2f6a6.fsf@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
-To:     Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Kalle Valo <kvalo@kernel.org>
-Cc:     =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>,
-        Hector Martin <marcan@marcan.st>,
-        "~postmarketos/upstreaming@lists.sr.ht" 
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        "martin.botka@somainline.org" <martin.botka@somainline.org>,
-        "angelogioacchino.delregno@somainline.org" 
-        <angelogioacchino.delregno@somainline.org>,
-        "marijn.suijten@somainline.org" <marijn.suijten@somainline.org>,
-        "jamipkettunen@somainline.org" <jamipkettunen@somainline.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Marek Vasut <marex@denx.de>,
-        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Soon Tak Lee <soontak.lee@cypress.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
- <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st>
- <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
- <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st>
- <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
- <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com>
- <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk> <87sfke32pc.fsf@kernel.org>
- <4592f87a-bb61-1c28-13f0-d041a6e7d3bf@linaro.org>
- <CACRpkdax-3VVDd29iH51mfumakqM7jyEc8Pbb=AQwAgp2WsqFQ@mail.gmail.com>
- <d03bd4d4-e4ef-681b-b4a5-02822e1eee75@linaro.org> <87fse76yig.fsf@kernel.org>
- <fc2812b1-db96-caa6-2ecb-c5bb2c33246a@linaro.org> <87bkov6x1q.fsf@kernel.org>
- <CACRpkdbpJ8fw0UsuHXGX43JRyPy6j8P41_5gesXOmitHvyoRwQ@mail.gmail.com>
- <28991d2d-d917-af47-4f5f-4e8183569bb1@linaro.org>
-Content-Language: en-US
-In-Reply-To: <28991d2d-d917-af47-4f5f-4e8183569bb1@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT041:EE_|SA3PR12MB7950:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9371bd7c-fd55-421c-2b5c-08dad1edbd54
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 39mY2VN5PnFgviCg/ErRmxLQyAvUKs/7I3nyhPASYd+Byny8Zuwv/98/JHW4Iloy+2yj5e3RcDuvYaYb01Uh4rBC3a/OMubHvSlbEBQE8gwvyqsuZgfvlGNuyWIuMLboOObNR/nISYQZPwLxNYzKAISbFxlPZ02K/vx8bxYEnAxfr4bzB4m1nfjdBRv/N2g+ru7SsRxTvGP/BXDwR26h3ALuIn/lw4wncgOyVXEUBSdZFsbwauHkt69XsViw9BoAPMlEGNPtxTH/El9DPgNnxavlmDkzr+6b/DEdAPyl/E34klCfzx9KHT0PCHGdSvXRE7lLslJ+tB/4JnXAdHRjXmg3YPGrGaBcId+LguNGUDqyD3Wwx5v89ZkywonsXVMhsY4VCvTq0rR78ZHw3z5O8wnJcellMVBJXLqVWMPft6aK35haL3zbMQmQno6yZEmpXXAyUx/lfj7idJIHLx08MfD9Pot/kR1buI2EB/VqAA5iH9d+SE8iOkvRSmO0RLYur/G8LYy8zBah+QBHWl9/ojmModznnP2XghZu+nnGrAa0RBWQJyHRlAawqqb0IzYsh9jiEnuXvPPvDPtBWokQ363rqJiNrfApxGDoQEcYKP68jX+DqF9LFO+7Psu2gtDWADgul6jZYG7GX9LY7tNbgGYApPzsl7spy/HTJGFUPbnG51JcqhxT4TB+ULoF17h//jhRew1K5lyhHPlz6LdXeg==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(136003)(396003)(39860400002)(451199015)(36840700001)(46966006)(40470700004)(16526019)(40480700001)(47076005)(186003)(426003)(336012)(41300700001)(2616005)(8936002)(4744005)(8676002)(2906002)(36756003)(86362001)(82740400003)(40460700003)(70586007)(36860700001)(83380400001)(7636003)(70206006)(316002)(6916009)(54906003)(5660300002)(356005)(4326008)(478600001)(6666004)(26005)(82310400005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 09:40:23.8804
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9371bd7c-fd55-421c-2b5c-08dad1edbd54
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT041.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7950
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/11/2022 15:40, Konrad Dybcio wrote:
-> 
-> 
-> On 26.11.2022 22:45, Linus Walleij wrote:
->> On Fri, Nov 25, 2022 at 1:25 PM Kalle Valo <kvalo@kernel.org> wrote:
->>> Konrad Dybcio <konrad.dybcio@linaro.org> writes:
->>>
->>>> On 25.11.2022 12:53, Kalle Valo wrote:
->>>>> Konrad Dybcio <konrad.dybcio@linaro.org> writes:
->>>>>
->>>>>> On 21.11.2022 14:56, Linus Walleij wrote:
->>>>>>> On Fri, Nov 18, 2022 at 5:47 PM Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
->>>>>>>
->>>>>>>> I can think of a couple of hacky ways to force use of 43596 fw, but I
->>>>>>>> don't think any would be really upstreamable..
->>>>>>>
->>>>>>> If it is only known to affect the Sony Xperias mentioned then
->>>>>>> a thing such as:
->>>>>>>
->>>>>>> if (of_machine_is_compatible("sony,xyz") ||
->>>>>>>     of_machine_is_compatible("sony,zzz")... ) {
->>>>>>>    // Enforce FW version
->>>>>>> }
->>>>>>>
->>>>>>> would be completely acceptable in my book. It hammers the
->>>>>>> problem from the top instead of trying to figure out itsy witsy
->>>>>>> details about firmware revisions.
->>>>>>>
->>>>>>> Yours,
->>>>>>> Linus Walleij
->>>>>>
->>>>>> Actually, I think I came up with a better approach by pulling a page
->>>>>> out of Asahi folks' book - please take a look and tell me what you
->>>>>> think about this:
->>>>>>
->>>>>> [1]
->>>>>> https://github.com/SoMainline/linux/commit/4b6fccc995cd79109b0dae4e4ab2e48db97695e7
->>>>>> [2]
->>>>>> https://github.com/SoMainline/linux/commit/e3ea1dc739634f734104f37fdbed046873921af7
->>
->> Something in this direction works too.
->>
->> The upside is that it tells all operating systems how to deal
->> with the firmware for this hardware.
->>
->>>>> Instead of a directory path ("brcm/brcmfmac43596-pcie") why not provide
->>>>> just the chipset name ("brcmfmac43596-pcie")? IMHO it's unnecessary to
->>>>> have directory names in Device Tree.
->>>>
->>>> I think it's common practice to include a full $FIRMWARE_DIR-relative
->>>> path when specifying firmware in DT, though here I left out the board
->>>> name bit as that's assigned dynamically anyway. That said, if you don't
->>>> like it, I can change it.
->>>
->>> It's just that I have understood that Device Tree is supposed to
->>> describe hardware and to me a firmware directory "brcm/" is a software
->>> property, not a hardware property. But this is really for the Device
->>> Tree maintainers to decide, they know this best :)
->>
->> I would personally just minimize the amount of information
->> put into the device tree to be exactly what is needed to find
->> the right firmware.
->>
->> brcm,firmware-compatible = "43596";
->>
->> since the code already knows how to conjure the rest of the string.
->>
->> But check with Rob/Krzysztof.
->>
->> Yours,
->> Linus Walleij
-> 
-> Krzysztof, Rob [added to CC] - can I have your opinions?
 
-I just got here bunch of quotes and no original message, so my response
-probably won't be complete.
+Daniel Machon <daniel.machon@microchip.com> writes:
 
-Devicetree also describes the system integration properties because we
-need to know how the things are glued together.
+> Add new apptrust subcommand for the dcbnl apptrust extension object.
+>
+> The apptrust command lets you specify a consecutive ordered list of
+> trusted selectors, which can be used by drivers to determine which
+> selectors are eligible (trusted) for packet prioritization, and in which
+> order.
+>
+> Selectors are sent in a new nested attribute:
+> DCB_ATTR_IEEE_APP_TRUST_TABLE.  The nest contains trusted selectors
+> encapsulated in either DCB_ATTR_IEEE_APP or DCB_ATTR_DCB_APP attributes,
+> for standard and non-standard selectors, respectively.
+>
+> Example:
+>
+> Trust selectors dscp and pcp, in that order
+> $ dcb apptrust set dev eth0 order dscp pcp
+>
+> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 
-We have firmware-name property which is a form of path. The
-"directories" in the firmware-name are actually good because they allow
-to create a hierarchy based on a vendor/SoC/model/board. I don't think
-it is worth adding new properties replacing firmware-name.
-
-
-Best regards,
-Krzysztof
-
+Reviewed-by: Petr Machata <petrm@nvidia.com>
