@@ -2,127 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3396463C646
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 18:17:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 960A263C65E
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 18:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236441AbiK2RQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 12:16:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
+        id S236605AbiK2RX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 12:23:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236564AbiK2RQx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 12:16:53 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2055.outbound.protection.outlook.com [40.107.93.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99715663E1
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:16:51 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z1lJR2jGZxPlXE9dUekb+X4xxcvJsQ6Axo6HkVGN7gLspnI8zPNKXCTebWQe1r8XZ2w+vSiQcbpO1huvqxB9y91B6lp0IJLvYz8nfPyKoTeq31c8fakP3FS+5WM0O0bR/r6u/COI0NhOi9auLywvSuKknGrAekO/quf53uNoUpBwZi4+o3fybYR0jngTGqV/Ldbaw0oxnCZ54TKev79tPcHSOcNxFLmsyGLjwlIdUfOyET8fSVLGHLEiCNO+SJR6rJvVc1oPxoEE++WKB/0mdyb1YRIbDEjZpsSRX5M2lzYUccwzd6vcWtXxJjvPBzRonZ94Og/XFcf+/5bgQ984OQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mEvcU0oscRNPyUJPSAobpwiOeAyRvxZqTG8g+IK0SFM=;
- b=Xx6uynS1DPHl+BiMMTERih2qtoZaC35HdT6KUJ738z8nGfiE2s8Tc++Ql/Hg4NErYwXgR02VVQl5/cyqeAsQuVWhkhHxBbbbwyNX1C+bBlWffIspe43P0OypVXtUVkDrMwFerhiHa+SJmnDlkVBV37Z9I0DJjuvIq/sScrzIIC9uc3zhrME6hfuJvYTOsrvuRI2jeZBVQcarJLvwmG+2rgSQLRDKqF2zIEXxBkklXvmLrHyGt0i/ZvQqMLESU9+53C/9ZmkSc7y90pnkUmHoc/MGnjMFB0rjhoq4+zAx4aiJCjs/e2eKLDG6/E27v7AFRfF/u5d7no+kJyAMySRXyw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mEvcU0oscRNPyUJPSAobpwiOeAyRvxZqTG8g+IK0SFM=;
- b=0W6WNKZZ4RsUz9oqhdWIY7/50AsAwlUmUnAwXlQ1JCTj0oSHiy7oPVdq12QDjJ85MrgWemREtnub80kLcmBMiu4ta4I/CWHli89HCsvY7UB5/EkEnNZxgJk8wOfKIwx4TzMNOu5kQX6GYJz53Yc7utuSGXfXmCRVAS6A3fHWpYs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- DM6PR12MB4370.namprd12.prod.outlook.com (2603:10b6:5:2aa::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5857.23; Tue, 29 Nov 2022 17:16:50 +0000
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b]) by DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b%6]) with mapi id 15.20.5857.023; Tue, 29 Nov 2022
- 17:16:50 +0000
-Message-ID: <16a2a2a7-eab0-94a3-28a5-958175aca957@amd.com>
-Date:   Tue, 29 Nov 2022 09:16:47 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.5.0
-Subject: Re: [RFC PATCH net-next 10/19] pds_core: devlink params for enabling
- VIF support
-Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Shannon Nelson <snelson@pensando.io>,
-        netdev@vger.kernel.org, davem@davemloft.net, mst@redhat.com,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        drivers@pensando.io
-References: <20221118225656.48309-1-snelson@pensando.io>
- <20221118225656.48309-11-snelson@pensando.io>
- <20221128102953.2a61e246@kernel.org>
- <f7457718-cff6-e5e1-242e-89b0e118ec3f@amd.com> <Y4U8wIXSM2kESQIr@lunn.ch>
- <43eebffe-7ac1-6311-6973-c7a53935e42d@amd.com> <Y4VEZj7KQG+zSjlh@lunn.ch>
- <20221128153922.2e94958a@kernel.org> <Y4XNPtIVgkWsbA79@nanopsycho>
-From:   Shannon Nelson <shnelson@amd.com>
-In-Reply-To: <Y4XNPtIVgkWsbA79@nanopsycho>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR13CA0239.namprd13.prod.outlook.com
- (2603:10b6:a03:2c1::34) To DS0PR12MB6583.namprd12.prod.outlook.com
- (2603:10b6:8:d1::12)
+        with ESMTP id S236598AbiK2RX0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 12:23:26 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B10468C5A;
+        Tue, 29 Nov 2022 09:23:25 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id c2so10299079qko.1;
+        Tue, 29 Nov 2022 09:23:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :feedback-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=7jlcVHL9xXutHyudxpWgmNyuiG9QsSh1Xo0dK9zsWjA=;
+        b=Nov5hLqCze7EZR8kEb6NBupeNB9jWyAdl6Dw9hSGGMGGm5OPqU/mgPXzGOvCl/88ut
+         mD5GIuQXdKYrHvtkj18slwPS+RDLfkmA38senKJMfjzBQr0bZBDvIR46UycvRsPFmamo
+         5qthavMLzepH+BTZs+rMYsZbXMnIUtGejX3VhvI8OPqDFXBLqRkBc9vinLUOs8Z9oB0r
+         Ivi0rX3sH0dzyG5W57V/AgCsjz0+NSir1qvXuoX96SzyzfJYpD0z2iwNkUXxa6d9rXpN
+         te5em0/EpPWv1qS/JuArwp/lwzl+f7iPEN2T0JxnrWc089nCVhW1hH1XKt/dHlH8myN/
+         9dvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :feedback-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7jlcVHL9xXutHyudxpWgmNyuiG9QsSh1Xo0dK9zsWjA=;
+        b=cD7lJj05Bv18AauPFM88JR2s0j7oQqCzxKxb5yv6iUIzn2ERqct72jpDUbbkxDkB7F
+         ksJDsNr1x5Jf0Zc/fIpMQbjrHYkc5MevozqpzRIICMU07kdlDIQgHytAbRA++l27x00f
+         idsVnM+Qz22iEktEANNbkFl+tdoop5bl+vPoTAttqxUW4u4Pw3ap1HTR9OsGZIyR6Dk5
+         UCtJi2BcGhlPksmmFFx9MQfznfLmuP9Z2+AU9E7vHLSk/bpUlJJKnAksmd9BLdpbo2Tj
+         anqgYDWaxMbUBrCmW/Tf5eHLa5eSwqOO/vP/RkM/5Q9zx9jVbhEfkXVGBipDpd4PdVR3
+         pvYg==
+X-Gm-Message-State: ANoB5pn5usH0W/izC8ZzhJw3sN4Rc4BVnj6mQzHyq8PL8wy3xxzYfVsT
+        /qORriHKKBR2wuILeGxE9Xk=
+X-Google-Smtp-Source: AA0mqf6IDL2RWE/H33qWuzB+/OwKdtxvd/iJIOwpxmlKGEm/zYT9LD2OYB9TH2WQWzdbh2CSWom+dA==
+X-Received: by 2002:a37:f516:0:b0:6fa:32ca:4944 with SMTP id l22-20020a37f516000000b006fa32ca4944mr52045610qkk.738.1669742604409;
+        Tue, 29 Nov 2022 09:23:24 -0800 (PST)
+Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com. [66.111.4.227])
+        by smtp.gmail.com with ESMTPSA id t20-20020a05620a451400b006fba0a389a4sm11185702qkp.88.2022.11.29.09.23.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Nov 2022 09:23:23 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailauth.nyi.internal (Postfix) with ESMTP id 224C727C0054;
+        Tue, 29 Nov 2022 12:23:22 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 29 Nov 2022 12:23:23 -0500
+X-ME-Sender: <xms:CUCGYwMLw060-Ttp4R89ym-Rb7m5Dim28FREUaPNzXGuHl8Xw7MpAw>
+    <xme:CUCGY29-qs3FQI2rGq78JauGjmnH4BUhOfNZx1VaagzJxGnLt7bMZcmcOZXXMsI-i
+    qC9ZN3r3VoSMFRLmQ>
+X-ME-Received: <xmr:CUCGY3Tn44bLjgIikEGZbMYi-V29MM-Qcwqg6dwC2rRjr_ElNthy0Wcc3gq843K3fWXh0UjL0UzTUhFmiKaKGN2RypImojL2Hug>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrtddtgdejudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepuehoqhhu
+    nhcuhfgvnhhguceosghoqhhunhdrfhgvnhhgsehgmhgrihhlrdgtohhmqeenucggtffrrg
+    htthgvrhhnpeevuedtteetledvhfdtudekfffggeelhfejlefhgffgfedviefhgeeifeel
+    vddtgeenucffohhmrghinheplhhkmhhlrdhorhhgpdhqvghmuhdrohhrghenucevlhhush
+    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegsohhquhhnodhmvghs
+    mhhtphgruhhthhhpvghrshhonhgrlhhithihqdeiledvgeehtdeigedqudejjeekheehhe
+    dvqdgsohhquhhnrdhfvghngheppehgmhgrihhlrdgtohhmsehfihigmhgvrdhnrghmvg
+X-ME-Proxy: <xmx:CUCGY4swz2xa-cH9gLIe5K78XXKkDE0_FXWYZ_SgDhinIyPNyxtRvw>
+    <xmx:CUCGY4dRPAAviVrLYE0H6uxRqbCkE4-ZQjYrWiJq9SJeKSmCpA0pTg>
+    <xmx:CUCGY82cSAb1_AQ1qjoKvlJXbjIh-b2Dl8KsaTnPoz3fLOBSCVhd-w>
+    <xmx:CkCGY284FjIDhtsUINsru4paIS8xYQHVLE3xXe5i61hDwhrUm1LLbpXrdknDuUXY>
+Feedback-ID: iad51458e:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 29 Nov 2022 12:23:21 -0500 (EST)
+Date:   Tue, 29 Nov 2022 09:23:18 -0800
+From:   Boqun Feng <boqun.feng@gmail.com>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Hou Tao <houtao@huaweicloud.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Hao Luo <haoluo@google.com>,
+        "houtao1@huawei.com" <houtao1@huawei.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
+Message-ID: <Y4ZABpDSs4/uRutC@Boquns-Mac-mini.local>
+References: <9278cf3f-dfb6-78eb-8862-553545dac7ed@huawei.com>
+ <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
+ <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com>
+ <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com>
+ <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
+ <CA+khW7jgsyFgBqU7hCzZiSSANE7f=A+M-0XbcKApz6Nr-ZnZDg@mail.gmail.com>
+ <07a7491e-f391-a9b2-047e-cab5f23decc5@huawei.com>
+ <CAMDZJNUTaiXMe460P7a7NfK1_bbaahpvi3Q9X85o=G7v9x-w=g@mail.gmail.com>
+ <59fc54b7-c276-2918-6741-804634337881@huaweicloud.com>
+ <541aa740-dcf3-35f5-9f9b-e411978eaa06@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|DM6PR12MB4370:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6228c1f2-270b-4959-ac4d-08dad22d8089
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JiITVzjlqcV3IHkc7GZSJ4rmmo/bPlon6E/BsM5GysK9cK49I6m6gU0DAfwwPSnx0ZjEbeiTfxdz2atlLRNnAbM4+dWAikHFwfv5JNyodpfbxQmxlPIQqxRmHMuhKZMUgJGfXkCt8+QpRbD7rD9xp/JhNylS3aiggQ9M/dscRo1EYWLWh0AsdHv7HMnx3nXhfQ1PnUbQHXiUNlPB922AkdNE2qa82lUlXDgCip2GH9etFanRWCoOvhUvZLgN0mY4BdmIUp/FvtYlRBBx9xwFntjWumHMSv6zmQ+fujg5C/RP+31HajL6+sIEhl7WIC6c1nObKg8ABiWvd3yJktMIIxoJHHLq9ieIP5LPy4bdw3RrV2yd4wHD4uezCNpFMNK2Id+dhyW7DnnS92081djhZTAlC+SJlx2v2M2vgm6QEwWyHa+HKZfOU0SPBnNvmfZbjFsE+ON4Q33RxSIAYO7d1GO8klbZGb6yT3YaITVb0SY2Jceb2Ku0dmuBAyCwHiMI1eDjpWaG3kXDSqjh8Q3sr3hr4t5MzxlLFhe//ItK7U230HoPzIZuKgSmUq+RVYFCvLvBNVb/IRukshDUcwzTFjVHpub2OZOorRr3odHpmpBcHHIWpFgJbwANlfeD7V6tblKpYnGe3MeR03XrOieLkHej96xyfkoVaH4KzU0vvM1z5Q3MhtqwYapCp/JEKDWa6+S5XYmvR5m4WSHKh8k+3MF5KiI5TOFLcKR1uT5w2eA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(136003)(39860400002)(396003)(366004)(451199015)(478600001)(316002)(2906002)(6486002)(110136005)(36756003)(54906003)(66946007)(6666004)(38100700002)(26005)(6506007)(6512007)(53546011)(31696002)(2616005)(186003)(7416002)(4744005)(5660300002)(41300700001)(8936002)(66556008)(31686004)(66476007)(4326008)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cDZuZzJuUTVvb1dHVm5tRHpwdjFvMDNDTHFzQ3g3T2hROWVVYUlQOUVCTUxG?=
- =?utf-8?B?Vmc5bFFQNm5HZ0l6R0VTOWwwTlo2ZVIvWm41M2xtWTl0RkVmaVpJTkZrM3Vr?=
- =?utf-8?B?NTNnZHJtT0FhYWtHTzRSczJQUCtwdDZrUzYvWGVTZVByV2tGRHdCVFRINTJN?=
- =?utf-8?B?YTZnUVFPT3VHeVhQVWZXV0dzRzhWQ3NmdDIxQm1HOXdjenhsNWlKRFFkdnlI?=
- =?utf-8?B?ajQwdWlnYTVoREZaWnZYTVlQalk0cWpoamxHaFhPUlVYbmVqb1FDS2d6dHFD?=
- =?utf-8?B?NkpvQU9mSzdPRW01OEZsTEc0OWk5cjRGRXhEMHMraUNub2Nud1B0dzNaNmM2?=
- =?utf-8?B?cklIVGNUTXZjNm15RjR1RWUzTnI1RnRtV2lLekZIVVI3OTdXZHFZU3U0NnNY?=
- =?utf-8?B?dDAreWhCOEpWNHFqUjhrL3dBWUV2eDM0cHFxZHlINlh1NzRzOFo0U0QvRytq?=
- =?utf-8?B?U1BkdndYN0NOT3pnZlRxTDQ0UkNYOUdUSjNYNDFxVk5HTUdjK2V3cUFXdWp3?=
- =?utf-8?B?enIzRFc5SHJmT1h0bHJoNmVVK2ZFYURSUTMvOXBCcUhlY2kxN1IzWG5qdXpO?=
- =?utf-8?B?YnM5Uit6UExBeUR3N2FBYXRjcVpUdy9SbU9sZGlGcVRGY09qaFI2YVR5SDBw?=
- =?utf-8?B?YTc5eEpvK1JPeDE5bDZoL0NvaTBPWDZWZXByeXRuelpQcjlVZDVlaVp5S0FY?=
- =?utf-8?B?VUNvR1lqL1lhSmNrUFpRT2pZSmNXb2hCOEE3alYzenk5a2piWlZLU2g4cDY2?=
- =?utf-8?B?dHNXZ0tSMHo4dTR3eTBTTlppTDBQTGR6ckhMcUFaU0VLcHpzeWhLTEV0eW1O?=
- =?utf-8?B?M042MUx1OWcyaGxtZHlEWDJKNVF3ZTR1UHpMby9Td3Z3S1Jtc25VemYzZDh2?=
- =?utf-8?B?RUloRURPU2xMM05yK3dCdHFpQWRGRmRWSWVOZ2ZETXB3TVJjQjRtM0xrK0Ew?=
- =?utf-8?B?V2xZeEUyQVZoVmZLR0lBY2hMQUtGaEpGazlrY1ZnT1daQi82emRXZEVKRzVG?=
- =?utf-8?B?Z1BhNEVOaHMvZW53UUVGbU4zYXoyKzIyMk9Femk1SFFiZVVzMXR6cVVnVjlz?=
- =?utf-8?B?cjNhSHN3eGRpbklXWi9UU2FDOGhST1ZMU3hSSlRSWlZ3TlN2Y21VQU1RUExN?=
- =?utf-8?B?V0dPRnMrWEVRTzYwSDd0bTR4M1FvL0NEK0Z6RnJyeUFlM0FCT0R2cnV5UTVU?=
- =?utf-8?B?S0h3NTMwL3pOZ1JzYkdiL2xlWnVjTllMSjhIZC9JYnVLTm5vWWNZZHN6SzBa?=
- =?utf-8?B?WnNBbENjdU5pUlhIMG95aU9LWHFZM2t5ejQ1S29rTkJaVHFHdnh2dWcrallx?=
- =?utf-8?B?QTdaSWRtWnprQjJsYjMxU0daYXhVYlQybDN4dUU5RnFhVG4rdy9mMDZaejZa?=
- =?utf-8?B?VkN2MG5xYVVzblp1UlVhczFLN3JkODhRUEt6SCtKYmdBdnY4Sk44Zk9MSHJ6?=
- =?utf-8?B?MStnTDdzS2pkcjdnZnhSMEFzNjE3NkIzOUNiV2JpdjBCNjBXVkpYbldlTmdK?=
- =?utf-8?B?NGxDZzRmYkhCSTVvU1FuQUVac0V3Vm85azhmOUw4T0ZwbGJYRE1YNnAzSXFU?=
- =?utf-8?B?OC9GTjVhYUMzUUNEbEE4V3hiTFRHY1V3SUlkTDhLeWlhMUxOVGN2ZEtHN2F6?=
- =?utf-8?B?eDFJVmVndW9XMElTZmM2dXdQNUs2bmZWU0ZJMUtXVVZtQmJHMmdtUEFka1h5?=
- =?utf-8?B?WFV1Q2p1TnBzWnRKcDZ2V0Q3UVRHbnVsLzJ4bC8zcUluU1hIY0JNYlpSTW1v?=
- =?utf-8?B?WUF2cWR0bnJuOEZVQU5OQVB5S3Zkdll6dDdSWjZJYi9KWGhMbzQwYkE1eDZo?=
- =?utf-8?B?UzZsTFZ0SXpXZTVqNUhQelVvRFBqZ0xVbFM3S1lOQ25aK1NkZUhodlJsMGgz?=
- =?utf-8?B?VnpoRzFyY1N5bEpDYlhoMGpzbnluK3RkOEVpMEZtRTZ1Sy9VYnRpUDJKcHA2?=
- =?utf-8?B?SnVSOGpBdnNoSGk0TFVYWUpKY1lKU29PWFlFOGt1WlYvK3VFVy9YOWFqTDhT?=
- =?utf-8?B?ckNCcDM3UFhOWWRONG4wSm1OcHZyb0RweDhzKzhqZWhmRnBvQWp5RGtuMmpj?=
- =?utf-8?B?TUlZeTVqZHI5bmVvYUNTRy9xMWsvazlhNEdkdWppR0Y1NFdqTHhjZ0FIc2tp?=
- =?utf-8?Q?QPI7Y5Z7QMOBhN1PBbuVRFIag?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6228c1f2-270b-4959-ac4d-08dad22d8089
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 17:16:49.9307
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: C3TwRm1tF9Vi7prC6efZi0/f11rmNISTBSkjK+kLTIUY1QRBLBc50asuJ3lRmb8pe1+R3CWv8o93Z6fU6cZ/jQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4370
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <541aa740-dcf3-35f5-9f9b-e411978eaa06@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -130,21 +122,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/29/22 1:13 AM, Jiri Pirko wrote:
-> Tue, Nov 29, 2022 at 12:39:22AM CET, kuba@kernel.org wrote:
->> On Tue, 29 Nov 2022 00:29:42 +0100 Andrew Lunn wrote:
->>>> How about:
->>>>     DEVLINK_PARAM_GENERIC_ID_ENABLE_LIVE_MIGRATION
->>>
->>> Much better.
->>
->> +1, although I care much less about the define name which is stupidly
->> long anyway and more about the actual value that the user will see
+On Tue, Nov 29, 2022 at 11:06:51AM -0500, Waiman Long wrote:
+> On 11/29/22 07:45, Hou Tao wrote:
+> > Hi,
+> > 
+> > On 11/29/2022 2:06 PM, Tonghao Zhang wrote:
+> > > On Tue, Nov 29, 2022 at 12:32 PM Hou Tao <houtao1@huawei.com> wrote:
+> > > > Hi,
+> > > > 
+> > > > On 11/29/2022 5:55 AM, Hao Luo wrote:
+> > > > > On Sun, Nov 27, 2022 at 7:15 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > > > > Hi Tonghao,
+> > > > > 
+> > > > > With a quick look at the htab_lock_bucket() and your problem
+> > > > > statement, I agree with Hou Tao that using hash &
+> > > > > min(HASHTAB_MAP_LOCK_MASK, n_bucket - 1) to index in map_locked seems
+> > > > > to fix the potential deadlock. Can you actually send your changes as
+> > > > > v2 so we can take a look and better help you? Also, can you explain
+> > > > > your solution in your commit message? Right now, your commit message
+> > > > > has only a problem statement and is not very clear. Please include
+> > > > > more details on what you do to fix the issue.
+> > > > > 
+> > > > > Hao
+> > > > It would be better if the test case below can be rewritten as a bpf selftests.
+> > > > Please see comments below on how to improve it and reproduce the deadlock.
+> > > > > > Hi
+> > > > > > only a warning from lockdep.
+> > > > Thanks for your details instruction.  I can reproduce the warning by using your
+> > > > setup. I am not a lockdep expert, it seems that fixing such warning needs to set
+> > > > different lockdep class to the different bucket. Because we use map_locked to
+> > > > protect the acquisition of bucket lock, so I think we can define  lock_class_key
+> > > > array in bpf_htab (e.g., lockdep_key[HASHTAB_MAP_LOCK_COUNT]) and initialize the
+> > > > bucket lock accordingly.
+> > The proposed lockdep solution doesn't work. Still got lockdep warning after
+> > that, so cc +locking expert +lkml.org for lockdep help.
+> > 
+> > Hi lockdep experts,
+> > 
+> > We are trying to fix the following lockdep warning from bpf subsystem:
+> > 
+> > [   36.092222] ================================
+> > [   36.092230] WARNING: inconsistent lock state
+> > [   36.092234] 6.1.0-rc5+ #81 Tainted: G            E
+> > [   36.092236] --------------------------------
+> > [   36.092237] inconsistent {INITIAL USE} -> {IN-NMI} usage.
+> > [   36.092238] perf/1515 [HC1[1]:SC0[0]:HE0:SE1] takes:
+> > [   36.092242] ffff888341acd1a0 (&htab->lockdep_key){....}-{2:2}, at:
+> > htab_lock_bucket+0x4d/0x58
+> > [   36.092253] {INITIAL USE} state was registered at:
+> > [   36.092255]   mark_usage+0x1d/0x11d
+> > [   36.092262]   __lock_acquire+0x3c9/0x6ed
+> > [   36.092266]   lock_acquire+0x23d/0x29a
+> > [   36.092270]   _raw_spin_lock_irqsave+0x43/0x7f
+> > [   36.092274]   htab_lock_bucket+0x4d/0x58
+> > [   36.092276]   htab_map_delete_elem+0x82/0xfb
+> > [   36.092278]   map_delete_elem+0x156/0x1ac
+> > [   36.092282]   __sys_bpf+0x138/0xb71
+> > [   36.092285]   __do_sys_bpf+0xd/0x15
+> > [   36.092288]   do_syscall_64+0x6d/0x84
+> > [   36.092291]   entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > [   36.092295] irq event stamp: 120346
+> > [   36.092296] hardirqs last  enabled at (120345): [<ffffffff8180b97f>]
+> > _raw_spin_unlock_irq+0x24/0x39
+> > [   36.092299] hardirqs last disabled at (120346): [<ffffffff81169e85>]
+> > generic_exec_single+0x40/0xb9
+> > [   36.092303] softirqs last  enabled at (120268): [<ffffffff81c00347>]
+> > __do_softirq+0x347/0x387
+> > [   36.092307] softirqs last disabled at (120133): [<ffffffff810ba4f0>]
+> > __irq_exit_rcu+0x67/0xc6
+> > [   36.092311]
+> > [   36.092311] other info that might help us debug this:
+> > [   36.092312]  Possible unsafe locking scenario:
+> > [   36.092312]
+> > [   36.092313]        CPU0
+> > [   36.092313]        ----
+> > [   36.092314]   lock(&htab->lockdep_key);
+> > [   36.092315]   <Interrupt>
+> > [   36.092316]     lock(&htab->lockdep_key);
+> > [   36.092318]
+> > [   36.092318]  *** DEADLOCK ***
+> > [   36.092318]
+> > [   36.092318] 3 locks held by perf/1515:
+> > [   36.092320]  #0: ffff8881b9805cc0 (&cpuctx_mutex){+.+.}-{4:4}, at:
+> > perf_event_ctx_lock_nested+0x8e/0xba
+> > [   36.092327]  #1: ffff8881075ecc20 (&event->child_mutex){+.+.}-{4:4}, at:
+> > perf_event_for_each_child+0x35/0x76
+> > [   36.092332]  #2: ffff8881b9805c20 (&cpuctx_lock){-.-.}-{2:2}, at:
+> > perf_ctx_lock+0x12/0x27
+> > [   36.092339]
+> > [   36.092339] stack backtrace:
+> > [   36.092341] CPU: 0 PID: 1515 Comm: perf Tainted: G            E
+> > 6.1.0-rc5+ #81
+> > [   36.092344] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> > rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+> > [   36.092349] Call Trace:
+> > [   36.092351]  <NMI>
+> > [   36.092354]  dump_stack_lvl+0x57/0x81
+> > [   36.092359]  lock_acquire+0x1f4/0x29a
+> > [   36.092363]  ? handle_pmi_common+0x13f/0x1f0
+> > [   36.092366]  ? htab_lock_bucket+0x4d/0x58
+> > [   36.092371]  _raw_spin_lock_irqsave+0x43/0x7f
+> > [   36.092374]  ? htab_lock_bucket+0x4d/0x58
+> > [   36.092377]  htab_lock_bucket+0x4d/0x58
+> > [   36.092379]  htab_map_update_elem+0x11e/0x220
+> > [   36.092386]  bpf_prog_f3a535ca81a8128a_bpf_prog2+0x3e/0x42
+> > [   36.092392]  trace_call_bpf+0x177/0x215
+> > [   36.092398]  perf_trace_run_bpf_submit+0x52/0xaa
+> > [   36.092403]  ? x86_pmu_stop+0x97/0x97
+> > [   36.092407]  perf_trace_nmi_handler+0xb7/0xe0
+> > [   36.092415]  nmi_handle+0x116/0x254
+> > [   36.092418]  ? x86_pmu_stop+0x97/0x97
+> > [   36.092423]  default_do_nmi+0x3d/0xf6
+> > [   36.092428]  exc_nmi+0xa1/0x109
+> > [   36.092432]  end_repeat_nmi+0x16/0x67
+> > [   36.092436] RIP: 0010:wrmsrl+0xd/0x1b
 > 
-> We have patches that introduce live migration as a generic port function
-> capability bit. It is an attribute of the function.
+> So the lock is really taken in a NMI context. In general, we advise again
+> using lock in a NMI context unless it is a lock that is used only in that
+> context. Otherwise, deadlock is certainly a possibility as there is no way
+> to mask off again NMI.
 > 
 
-Thanks Leon and Jiri, we'll keep an eye out for it.
+I think here they use a percpu counter as an "outer lock" to make the
+accesses to the real lock exclusive:
 
-sln
+	preempt_disable();
+	a = __this_cpu_inc(->map_locked);
+	if (a != 1) {
+		__this_cpu_dec(->map_locked);
+		preempt_enable();
+		return -EBUSY;
+	}
+	preempt_enable();
+		return -EBUSY;
+	
+	raw_spin_lock_irqsave(->raw_lock);
+
+and lockdep is not aware that ->map_locked acts as a lock.
+
+However, I feel this may be just a reinvented try_lock pattern, Hou Tao,
+could you see if this can be refactored with a try_lock? Otherwise, you
+may need to introduce a virtual lockclass for ->map_locked.
+
+Regards,
+Boqun
+
+> Cheers,
+> Longman
+> 
