@@ -2,105 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D35A63C4E0
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:13:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A61B63C4E5
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:14:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236042AbiK2QNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 11:13:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        id S235874AbiK2QOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 11:14:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235848AbiK2QNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:13:21 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0633F65E48
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 08:12:51 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id p24so10132844plw.1
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 08:12:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=j/5pIy0y3J44dCNpZqZCoJvBohGy2JDpkFnXTutTPxY=;
-        b=aP6bOGR1oh4nzcPditMTGXp7QcJeCUxgLxuPrZaBU05BKMefPLGv+/3VaTEJXLxBhQ
-         sBT/F3SN7z3dB6mGxloq3nU0z9ZizXdd7f5+6u4ofilXrngfYRIIZV60r8+vjqTyxCB/
-         RAPmfAyGzBEAoPSilxNIpkFmKgetFMGMMRb5BEeX7BmSTAaS9N0nUdEzr3AF9dc3jsYJ
-         ZUHLxpWYuPRDg0YcfSACC00Z5wOGZppArEhB/W4KUXBuK/fPl44i6NwsJYFBZ/7g+jBL
-         f8HfS8zpvijaKk5M62fFzuRgfAM7SJVbiKM0Sjjum6+ji1Y+Uz1LfpKM+qvTsdvpLMdJ
-         SWSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=j/5pIy0y3J44dCNpZqZCoJvBohGy2JDpkFnXTutTPxY=;
-        b=sq90r2bW+s9TLZqp2G1z4jlTpKMJstMEnE23s86A7sXt9Gnh6pEmHOKUquB1iyUWuR
-         0CUXj5le9XIfd4zJuUE/ntZqKzrRf0nDM3PV3VufpwnBOU4W2si/fwC9NO26hwHn2nnG
-         rTwvIfGwzLPWwEGdQbE6ZoEeKfp0lhjvD+GVDhOzmJGYnI6XBP0NZWkVcnPwf22muAEn
-         htoNwBTJKqU7DAEqtNNMMZOn+LAi8byRzTRIurt5uJQ4brwLyFIie1XVjawVsakNo14D
-         /ShjDUwohIzFmygwg8/0SVYWSFqUq0SZ2c2SM/oD/Y5rutetM+7Pgh0oT8A536V9kzXb
-         6byQ==
-X-Gm-Message-State: ANoB5pmf0u7/WM3yZMhULZmb6kGaApfq/AgukByqZdzKR1JuFbK751lF
-        JZsbvsGGJ+vkwBfXgYAdYRKZTbShP8R4Dx7/
-X-Google-Smtp-Source: AA0mqf6hAY7oq2VeZtu60Lc9lLIrFYVdXW5jEAryT+wAijCJaZtSKPiZ2vOVTwWm+BwnMpfNYHu9Zg==
-X-Received: by 2002:a17:90a:a381:b0:218:6dc3:55b8 with SMTP id x1-20020a17090aa38100b002186dc355b8mr60408623pjp.189.1669738371212;
-        Tue, 29 Nov 2022 08:12:51 -0800 (PST)
-Received: from kvm.. ([58.76.185.115])
-        by smtp.gmail.com with ESMTPSA id x62-20020a623141000000b00572275e68b2sm10078258pfx.116.2022.11.29.08.12.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Nov 2022 08:12:50 -0800 (PST)
-From:   Juhee Kang <claudiajkang@gmail.com>
-To:     hkallweit1@gmail.com, nic_swsd@realtek.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Cc:     Juhee Kang <claudiajkang@gmail.com>
-Subject: [PATCH, net-next] r8169: use tp_to_dev instead of open code
-Date:   Wed, 30 Nov 2022 01:12:44 +0900
-Message-Id: <20221129161244.5356-1-claudiajkang@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S235908AbiK2QOP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:14:15 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E299C22;
+        Tue, 29 Nov 2022 08:14:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669738450; x=1701274450;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3LzeaXthaYLphoE1w4aLAarbQ8ZxUcNuL5nbnHihJTM=;
+  b=hScX4RMdI1ppO8azXuRMyVsV8NIGeiL4Mdr9WFh0ghaBaIoQk4JEp+v6
+   FLJ/RgphxStfXMrA1JrXsxu9swiG6peW4LcQ5JQmyu5D4j83VEncbivB9
+   y+M9rY5CbvF0WVA3QTaAARF+sdNMxQvJf22kCxPXRJ3EZ2Fu+HKDYZFS/
+   1DT1POdTXt810nrftlX2F8LBAlESEHMeqpvoF1Ng8eDG4hG7luYE5MDN5
+   Eg7NCivIqntbE8BPmMemFA00MwDrejMnB9pm67PEKd5A9E1oo/wtvaS7v
+   HUcUmqWGp1j9aCIBogwu7e73MYQ6HkGNa2S0V4PLnv6GudB/VKm/k3HIv
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="302740405"
+X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
+   d="scan'208";a="302740405"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 08:13:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="768476672"
+X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
+   d="scan'208";a="768476672"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga004.jf.intel.com with ESMTP; 29 Nov 2022 08:13:36 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8784F10E; Tue, 29 Nov 2022 18:14:02 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Michael Jamet <michael.jamet@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [resend, PATCH net-next v1 1/2] net: thunderbolt: Switch from __maybe_unused to pm_sleep_ptr() etc
+Date:   Tue, 29 Nov 2022 18:13:58 +0200
+Message-Id: <20221129161359.75792-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The open code is defined as a helper function(tp_to_dev) on r8169_main.c,
-which the open code is &tp->pci_dev->dev. The helper function was added
-in commit 1e1205b7d3e9 ("r8169: add helper tp_to_dev"). And then later,
-commit f1e911d5d0df ("r8169: add basic phylib support") added
-r8169_phylink_handler function but it didn't use the helper function.
-Thus, tp_to_dev() replaces the open code. This patch doesn't change logic.
+Letting the compiler remove these functions when the kernel is built
+without CONFIG_PM_SLEEP support is simpler and less heavier for builds
+than the use of __maybe_unused attributes.
 
-Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/thunderbolt.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 5bc1181f829b..ec157885da13 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4559,12 +4559,13 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
- static void r8169_phylink_handler(struct net_device *ndev)
+diff --git a/drivers/net/thunderbolt.c b/drivers/net/thunderbolt.c
+index a52ee2bf5575..4dbc6c7f2e10 100644
+--- a/drivers/net/thunderbolt.c
++++ b/drivers/net/thunderbolt.c
+@@ -1319,7 +1319,7 @@ static void tbnet_shutdown(struct tb_service *svc)
+ 	tbnet_tear_down(tb_service_get_drvdata(svc), true);
+ }
+ 
+-static int __maybe_unused tbnet_suspend(struct device *dev)
++static int tbnet_suspend(struct device *dev)
  {
- 	struct rtl8169_private *tp = netdev_priv(ndev);
-+	struct device *d = tp_to_dev(tp);
+ 	struct tb_service *svc = tb_to_service(dev);
+ 	struct tbnet *net = tb_service_get_drvdata(svc);
+@@ -1334,7 +1334,7 @@ static int __maybe_unused tbnet_suspend(struct device *dev)
+ 	return 0;
+ }
  
- 	if (netif_carrier_ok(ndev)) {
- 		rtl_link_chg_patch(tp);
--		pm_request_resume(&tp->pci_dev->dev);
-+		pm_request_resume(d);
- 	} else {
--		pm_runtime_idle(&tp->pci_dev->dev);
-+		pm_runtime_idle(d);
- 	}
+-static int __maybe_unused tbnet_resume(struct device *dev)
++static int tbnet_resume(struct device *dev)
+ {
+ 	struct tb_service *svc = tb_to_service(dev);
+ 	struct tbnet *net = tb_service_get_drvdata(svc);
+@@ -1350,9 +1350,7 @@ static int __maybe_unused tbnet_resume(struct device *dev)
+ 	return 0;
+ }
  
- 	phy_print_status(tp->phydev);
+-static const struct dev_pm_ops tbnet_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(tbnet_suspend, tbnet_resume)
+-};
++static DEFINE_SIMPLE_DEV_PM_OPS(tbnet_pm_ops, tbnet_suspend, tbnet_resume);
+ 
+ static const struct tb_service_id tbnet_ids[] = {
+ 	{ TB_SERVICE("network", 1) },
+@@ -1364,7 +1362,7 @@ static struct tb_service_driver tbnet_driver = {
+ 	.driver = {
+ 		.owner = THIS_MODULE,
+ 		.name = "thunderbolt-net",
+-		.pm = &tbnet_pm_ops,
++		.pm = pm_sleep_ptr(&tbnet_pm_ops),
+ 	},
+ 	.probe = tbnet_probe,
+ 	.remove = tbnet_remove,
 -- 
-2.34.1
+2.35.1
 
