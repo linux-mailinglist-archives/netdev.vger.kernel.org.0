@@ -2,208 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FC5B63C71D
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 19:23:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BAFE63C721
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 19:25:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235911AbiK2SXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 13:23:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
+        id S235228AbiK2SZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 13:25:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235644AbiK2SXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 13:23:40 -0500
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27A05FBA3;
-        Tue, 29 Nov 2022 10:23:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=5ZSzUkPwSZlE7lwVIYK/zlxt6BpFN/kJRekUXyW8GJk=; b=VbJ+rXDlSrYHfgeC2Iew3PURBK
-        big7AR0VqNOdMaZFqdekRc1hj8yZDPfKUV3Bgyfh459GvTU75BOsFViXpq++WtktoynNnhRJWkuEr
-        xOnagvByYPCoCccB+zEcQiu+sH08VgdDYeI5ASOnTqwNwJWIeqEfj0sJM16aQDBjlQzhrxcwg7z/r
-        t9gvX8sk7tbrIhKZa2hXc3qznZFSydt1FXtLLx012BVpZJVjMPyGn1A/w7ltbaVcqY5cFZGH48BLr
-        Tsut2PsSYQ9uP1b144SzAoxU2QJGqQoAx5+xXoSQZO22gXe5qw69H0VvFTwaEq27Ve8IZy0TtC0dT
-        rTN2Kp9+PhhMDVlKx6F28pbidKBIBTilA2HhLhh9x3A2Qe/Y/8zGob782F0tHNBPX+JA5Iy2qxiNt
-        a3vYZrxgjSpGOxz7uNV+M3nIlgxHqtJdCRotI6zTkGgR2593+9afngf/qUhzXE+Qym9s5UW7Mv6Wm
-        mwbI8FCuq8cp7tZJErIv+LQAnJk5tewABZYhUa7qpj+cNdcScG9ltGjJvLfAvtiwBRJv0RPY5lW2x
-        GVpmU9tLuHKZCR1vgi7e7W71IKF809i1hCoWoGTKzDyod4WWY4VH/zJdqRkOxVrPeMoYo5d4ZzlMl
-        KOnfagswQd05C7hznra6z0VDHn1kAxtvmR9M9P/1U=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Schspa Shi <schspa@gmail.com>
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
-        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
-Subject: Re: [PATCH] 9p: fix crash when transaction killed
-Date:   Tue, 29 Nov 2022 19:23:19 +0100
-Message-ID: <4282856.sKfH6co6qd@silver>
-In-Reply-To: <m2r0xlu3l9.fsf@gmail.com>
-References: <20221129162251.90790-1-schspa@gmail.com> <m2r0xlu3l9.fsf@gmail.com>
+        with ESMTP id S230410AbiK2SZr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 13:25:47 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58885F85E;
+        Tue, 29 Nov 2022 10:25:45 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2ATIOwuG005450;
+        Tue, 29 Nov 2022 12:24:58 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1669746299;
+        bh=ofMM1FHrj8VajyNy27mGe2ShSZNNvZ2bILHbYWk3VJQ=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=djwnf6jE3TwlGYj1RIbw9GX7+4f3x78hY1Mvzg0UKLTW5+V970/q5OXrbSd6AIhL9
+         yAI3A2MbEZsEb+L4GX4j6yomYq3CMSQmEJ2mxJKWpZkgwo//KGkfEXhWzZ6g7+/xiq
+         4nT/8oIbh4X/qE+phQyt4Fuub84oK1EHybTAJaMM=
+Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2ATIOwkr018566
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 29 Nov 2022 12:24:58 -0600
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 29
+ Nov 2022 12:24:58 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Tue, 29 Nov 2022 12:24:58 -0600
+Received: from [10.250.38.44] (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2ATIOvbE020258;
+        Tue, 29 Nov 2022 12:24:57 -0600
+Message-ID: <922413d0-c566-7765-f374-6f64d94f39aa@ti.com>
+Date:   Tue, 29 Nov 2022 12:24:56 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH 01/18] block/rnbd: fix mixed module-builtin object
+Content-Language: en-US
+To:     Masahiro Yamada <masahiroy@kernel.org>
+CC:     Alexander Lobakin <alobakin@pm.me>, <linux-kbuild@vger.kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        "Boris Brezillon" <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "Hans de Goede" <hdegoede@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20221119225650.1044591-1-alobakin@pm.me>
+ <20221119225650.1044591-2-alobakin@pm.me>
+ <68ceddec-7af9-983d-c8be-7e0dc109df88@ti.com>
+ <CAK7LNAT_PuL0vuYaPxKZ3AfrojBC2tEXUA7Gqs2VuVuoTVoXmQ@mail.gmail.com>
+From:   Andrew Davis <afd@ti.com>
+In-Reply-To: <CAK7LNAT_PuL0vuYaPxKZ3AfrojBC2tEXUA7Gqs2VuVuoTVoXmQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday, November 29, 2022 5:26:46 PM CET Schspa Shi wrote:
+On 11/21/22 11:59 PM, Masahiro Yamada wrote:
+> On Tue, Nov 22, 2022 at 6:18 AM Andrew Davis <afd@ti.com> wrote:
+>>
+>> On 11/19/22 5:04 PM, Alexander Lobakin wrote:
+>>> From: Masahiro Yamada <masahiroy@kernel.org>
+>>>
+>>> With CONFIG_BLK_DEV_RNBD_CLIENT=m and CONFIG_BLK_DEV_RNBD_SERVER=y
+>>> (or vice versa), rnbd-common.o is linked to a module and also to
+>>> vmlinux even though CFLAGS are different between builtins and modules.
+>>>
+>>> This is the same situation as fixed by commit 637a642f5ca5 ("zstd:
+>>> Fixing mixed module-builtin objects").
+>>>
+>>> Turn rnbd_access_mode_str() into an inline function.
+>>>
+>>
+>> Why inline? All you should need is "static" to keep these internal to
+>> each compilation unit. Inline also bloats the object files when the
+>> function is called from multiple places. Let the compiler decide when
+>> to inline.
+>>
+>> Andrew
 > 
-> Schspa Shi <schspa@gmail.com> writes:
 > 
-> > The transport layer of fs does not fully support the cancel request.
-> > When the request is in the REQ_STATUS_SENT state, p9_fd_cancelled
-> > will forcibly delete the request, and at this time p9_[read/write]_work
-> > may continue to use the request. Therefore, it causes UAF .
-> >
-> > There is the logs from syzbot.
-> >
-> > Corrupted memory at 0xffff88807eade00b [ 0xff 0x07 0x00 0x00 0x00 0x00
-> > 0x00 0x00 . . . . . . . . ] (in kfence-#110):
-> >  p9_fcall_fini net/9p/client.c:248 [inline]
-> >  p9_req_put net/9p/client.c:396 [inline]
-> >  p9_req_put+0x208/0x250 net/9p/client.c:390
-> >  p9_client_walk+0x247/0x540 net/9p/client.c:1165
-> >  clone_fid fs/9p/fid.h:21 [inline]
-> >  v9fs_fid_xattr_set+0xe4/0x2b0 fs/9p/xattr.c:118
-> >  v9fs_xattr_set fs/9p/xattr.c:100 [inline]
-> >  v9fs_xattr_handler_set+0x6f/0x120 fs/9p/xattr.c:159
-> >  __vfs_setxattr+0x119/0x180 fs/xattr.c:182
-> >  __vfs_setxattr_noperm+0x129/0x5f0 fs/xattr.c:216
-> >  __vfs_setxattr_locked+0x1d3/0x260 fs/xattr.c:277
-> >  vfs_setxattr+0x143/0x340 fs/xattr.c:309
-> >  setxattr+0x146/0x160 fs/xattr.c:617
-> >  path_setxattr+0x197/0x1c0 fs/xattr.c:636
-> >  __do_sys_setxattr fs/xattr.c:652 [inline]
-> >  __se_sys_setxattr fs/xattr.c:648 [inline]
-> >  __ia32_sys_setxattr+0xc0/0x160 fs/xattr.c:648
-> >  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
-> >  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
-> >  do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
-> >  entry_SYSENTER_compat_after_hwframe+0x70/0x82
-> >
-> > Below is a similar scenario, the scenario in the syzbot log looks more
-> > complicated than this one, but the root cause seems to be the same.
-> >
-> >      T21124               p9_write_work        p9 read_work
-> > ======================== first trans =================================
-> > p9_client_walk
-> >   p9_client_rpc
-> >     p9_client_prepare_req
-> >     /* req->refcount == 2 */
-> >     c->trans_mod->request(c, req);
-> >       p9_fd_request
-> >         req move to unsent_req_list
-> >                             req->status = REQ_STATUS_SENT;
-> >                             req move to req_list
-> >                             << send to server >>
-> >     wait_event_killable
-> >     << get kill signal >>
-> >     if (c->trans_mod->cancel(c, req))
-> >        p9_client_flush(c, req);
-> >          /* send flush request */
-> >          req = p9_client_rpc(c, P9_TFLUSH, "w", oldtag);
-> > 		 if (c->trans_mod->cancelled)
-> >             c->trans_mod->cancelled(c, oldreq);
-> >               /* old req was deleted from req_list */
-> >               /* req->refcount == 1 */
-> >   p9_req_put
-> >     /* req->refcount == 0 */
-> >     << preempted >>
-> >                                        << get response, UAF here >>
-> >                                        m->rreq = p9_tag_lookup(m->client, m->rc.tag);
-> >                                          /* req->refcount == 1 */
-> >                                        << do response >>
-> >                                        p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);
-> >                                          /* req->refcount == 0 */
-> >                                          p9_fcall_fini
-> >                                          /* request have been freed */
-> >     p9_fcall_fini
-> >      /* double free */
-> >                                        p9_req_put(m->client, m->rreq);
-> >                                          /* req->refcount == 1 */
-> >
-> > To fix it, we can wait the request with status REQ_STATUS_SENT returned.
-
-9p server might or might not send a reply on cancelled request. If 9p server
-notices client's Tflush request early enough, then it would simply discard the
-old=cancelled request and not send any reply on that old request. If server
-notices Tflush too late, then server would send a response to the old request.
-
-http://ericvh.github.io/9p-rfc/rfc9p2000.html#anchor28
-
-However after sending Tflush client waits for the corresponding Rflush
-response, and at this point situation should be clear; no further response
-expected from server for old request at this point. And that's what Linux
-client does.
-
-Which server implementation caused that?
-
-> >
-> > Reported-by: syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
-> >
-> > Signed-off-by: Schspa Shi <schspa@gmail.com>
-> > ---
-> >  net/9p/client.c   |  2 +-
-> >  net/9p/trans_fd.c | 12 ++++++++++++
-> >  2 files changed, 13 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/net/9p/client.c b/net/9p/client.c
-> > index aaa37b07e30a..963cf91aa0d5 100644
-> > --- a/net/9p/client.c
-> > +++ b/net/9p/client.c
-> > @@ -440,7 +440,7 @@ void p9_client_cb(struct p9_client *c, struct p9_req_t *req, int status)
-> >  	smp_wmb();
-> >  	req->status = status;
-> >  
-> > -	wake_up(&req->wq);
-> > +	wake_up_all(&req->wq);
-
-Purpose?
-
-> >  	p9_debug(P9_DEBUG_MUX, "wakeup: %d\n", req->tc.tag);
-> >  	p9_req_put(c, req);
-> >  }
-> > diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-> > index eeea0a6a75b6..ee2d6b231af1 100644
-> > --- a/net/9p/trans_fd.c
-> > +++ b/net/9p/trans_fd.c
-> > @@ -30,6 +30,7 @@
-> >  #include <net/9p/transport.h>
-> >  
-> >  #include <linux/syscalls.h> /* killme */
-> > +#include <linux/wait.h>
-> >  
-> >  #define P9_PORT 564
-> >  #define MAX_SOCK_BUF (1024*1024)
-> > @@ -728,6 +729,17 @@ static int p9_fd_cancelled(struct p9_client *client, struct p9_req_t *req)
-> >  		return 0;
-> >  	}
-> >  
-> > +	/* If the request is been sent to the server, we need to wait for the
-> > +	 * job to finish.
-> > +	 */
-> > +	if (req->status == REQ_STATUS_SENT) {
-> > +		spin_unlock(&m->req_lock);
-> > +		p9_debug(P9_DEBUG_TRANS, "client %p req %p wait done\n",
-> > +			 client, req);
-> > +		wait_event(req->wq, req->status >= REQ_STATUS_RCVD);
-> > +
-> > +		return 0;
-> > +	}
-> >  	/* we haven't received a response for oldreq,
-> >  	 * remove it from the list.
-> >  	 */
+> Since it is a header file.
 > 
-> Add Christian Schoenebeck for bad mail address typo.
+> 
+> In header files, "static inline" should be always used.
+> Never "static".
+> 
+
+My comment was more "why"?
+
+> 
+> If a header is included from a C file and there is a function
+> that is not used from that C file,
+> "static" would emit -Wunused-function warning
+> (-Wunused-function is enabled by -Wall, which is the case
+> for the kernel build).
 > 
 > 
 
+Inline still hints to the compiler to inline, causing unneeded
+object size bloat. Using "inline" to signal something else (that
+the function may be unused) when we already have a flag for that
+(__maybe_unused) feels wrong.
 
+Seems this was already debated way back in 2006.. So maybe not
+worth revisiting today, but still a cleanup that could be good
+to think more about later.
 
-
+Andrew
