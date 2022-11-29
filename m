@@ -2,126 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F131363BFB5
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 13:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D62C63BFC9
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 13:11:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233794AbiK2MGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 07:06:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
+        id S233429AbiK2MLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 07:11:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233709AbiK2MFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 07:05:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7343A3
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 04:04:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669723443;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1imltAz45YNaotAIbFUcpudsIMx54FwHI8IznpWl/fg=;
-        b=bLB6rPbTG57CoHNkzIqxXBuU1XTo8cf9WmfQLdsPnnFGaMZZlQW8pnHevZEoQgO6Aq4T18
-        OoHTL7yqRmZmbRK62151QfVVaRxBd8FAdNqWkfWEU9OWnq5b7548i8j143BTJfM4waoyGD
-        vjWGP5CIWnhr0JBPz3BFAiRzoxvbUbI=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-589-KL1KiifBPtideCmK3mnxsA-1; Tue, 29 Nov 2022 07:04:00 -0500
-X-MC-Unique: KL1KiifBPtideCmK3mnxsA-1
-Received: by mail-qk1-f199.google.com with SMTP id bp11-20020a05620a458b00b006fc8fa99f8eso3769846qkb.11
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 04:04:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1imltAz45YNaotAIbFUcpudsIMx54FwHI8IznpWl/fg=;
-        b=xpr10wJtzlXNSYGMv0Ldd1JpwEMGAFDNK33G7iLezmjueZ2KRZg8vQotGSHgLpzQot
-         RPDDnTs1uZ29YyOiJd6wVMU6x1CZWlznY83zBQqblnQ2Ncs6n+GfhlNFB0eGW74qwd9A
-         IwNElwM/XatfwlDS9IQEozls1W7aI6isLgbf8+d2rrUcT+8xrfpXG36aBPUyM32PVNXm
-         lvpK5l0dDYT+PO+FibwGkv8hb9GtESSV+8UwEbicuhXODCCMSA3P2lnHhd3OnRNHoU1R
-         DHnPS/tU7MfeKek4Dup8uvfj+AtPGkHF3hA6K07NVCS1SE5QfMTBDTEXmRGp56+Dw/yX
-         sXow==
-X-Gm-Message-State: ANoB5pmT09YHhZp54DstRu2YR/KhTpQpL86340CFyqD0S/VfSOkoXHuO
-        e4AeiEXeFiysUMLin+kc6IXEYMakXt7LNOKWfA9edkiu+rbu0aTgAda9+T/UKNK9HKkeGvrfLrE
-        32XJsmem+t6GtYxTe
-X-Received: by 2002:ac8:528d:0:b0:3a5:1eb:d8ab with SMTP id s13-20020ac8528d000000b003a501ebd8abmr51370141qtn.443.1669723440197;
-        Tue, 29 Nov 2022 04:04:00 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4TSSLYpVE0Uu3PxfwqDzgVNsZDT5tCMmzPIkbJ3ObJ76V32f4dpT3251cTf8VlB2c+vPqSCQ==
-X-Received: by 2002:ac8:528d:0:b0:3a5:1eb:d8ab with SMTP id s13-20020ac8528d000000b003a501ebd8abmr51370110qtn.443.1669723439921;
-        Tue, 29 Nov 2022 04:03:59 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id x5-20020ac84a05000000b0039cc7ebf46bsm8455425qtq.93.2022.11.29.04.03.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Nov 2022 04:03:59 -0800 (PST)
-Message-ID: <a3c723c5a27a75924f9d2f4ecabe26c04add08f3.camel@redhat.com>
-Subject: Re: [PATCH net 2/2] octeontx2-pf: Fix a potential double free in
- otx2_sq_free_sqbs()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>, sgoutham@marvell.com,
-        gakula@marvell.com, sbhatta@marvell.com, hkelam@marvell.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Date:   Tue, 29 Nov 2022 13:03:56 +0100
-In-Reply-To: <047b210eb3b3a2e26703d8b0570a0a017789c169.1669361183.git.william.xuanziyang@huawei.com>
-References: <cover.1669361183.git.william.xuanziyang@huawei.com>
-         <047b210eb3b3a2e26703d8b0570a0a017789c169.1669361183.git.william.xuanziyang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S230083AbiK2MK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 07:10:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDE52AA;
+        Tue, 29 Nov 2022 04:10:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 149A2616E7;
+        Tue, 29 Nov 2022 12:10:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5620C433C1;
+        Tue, 29 Nov 2022 12:10:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669723854;
+        bh=eK3eWs+NakxQYgxM//BYeenp/ALFDb+g86OEaVascqA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Mj9ZmH+0V4LM3h58rvnCrwkPwoNhBo15JZD1/1Iz69v9Lj9WG6c/AHd+QdyoeJejU
+         zIrRCRdAkXPE+zwUaCaljzQQaDnVSY6hJBzRKgF0l+odTrUClVF70Q2k3IMFHCIABA
+         OKNzfNzjsjljqey3uq0OG7mGEagNWoQwXBIDKxF+56OfscLPE8vGF19ucITk7/grMY
+         27rEr8kDWOnErW7KHhTC40hDmaWu0O8JMwMvZmeopHDc8cpB/AzHrDsdxX9pXG6cWH
+         E+uUwAkoMZruyrBVCDkaEyq5yOGtdJHP7G9220yLf12RMS9hVVMjahnQLO8lkTkTcs
+         KtdCPp0bVvB6Q==
+Date:   Tue, 29 Nov 2022 13:10:51 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Leonardo =?iso-8859-1?Q?Br=E1s?= <leobras@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Tejun Heo <tj@kernel.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Phil Auld <pauld@redhat.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Wang Yufen <wangyufen@huawei.com>, mtosatti@redhat.com,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+        fweisbec@gmail.com
+Subject: Re: [PATCH v2 3/4] sched/isolation: Add HK_TYPE_WQ to isolcpus=domain
+Message-ID: <20221129121051.GB1715045@lothringen>
+References: <20221013184028.129486-1-leobras@redhat.com>
+ <20221013184028.129486-4-leobras@redhat.com>
+ <Y0kfgypRPdJYrvM3@hirez.programming.kicks-ass.net>
+ <20221014132410.GA1108603@lothringen>
+ <7249d33e5b3e7d63b1b2a0df2b43e7a6f2082cf9.camel@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7249d33e5b3e7d63b1b2a0df2b43e7a6f2082cf9.camel@redhat.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On Fri, 2022-11-25 at 15:45 +0800, Ziyang Xuan wrote:
-> otx2_sq_free_sqbs() will be called twice when goto "err_free_nix_queues"
-> label in otx2_init_hw_resources(). The first calling is within
-> otx2_free_sq_res() at "err_free_nix_queues" label, and the second calling
-> is at later "err_free_sq_ptrs" label.
+On Fri, Oct 14, 2022 at 01:27:25PM -0300, Leonardo Brás wrote:
+> Hello Frederic,
 > 
-> In otx2_sq_free_sqbs(), If sq->sqb_ptrs[i] is not 0, the memory page it
-> points to will be freed, and sq->sqb_ptrs[i] do not be assigned 0 after
-> memory page be freed. If otx2_sq_free_sqbs() is called twice, the memory
-> page pointed by sq->sqb_ptrs[i] will be freeed twice. To fix the bug,
-> assign 0 to sq->sqb_ptrs[i] after memory page be freed.
+> So, IIUC you are removing all flags composing nohz_full= parameter in favor of a
+> unified NOHZ_FULL flag. 
 > 
-> Fixes: caa2da34fd25 ("octeontx2-pf: Initialize and config queues")
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c | 1 +
->  1 file changed, 1 insertion(+)
+> I am very new to the code, and I am probably missing the whole picture, but I
+> actually think it's a good approach to keep them split for a couple reasons:
+> 1 - They are easier to understand in code (IMHO): 
+> "This cpu should not do this, because it's not able to do WQ housekeeping" looks
+> better than "because it's not in DOMAIN or NOHZ_FULL housekeeping"
+
+A comment above each site may solve that.
+
 > 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> index 9e10e7471b88..5a25fe51d102 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> @@ -1146,6 +1146,7 @@ void otx2_sq_free_sqbs(struct otx2_nic *pfvf)
->  					     DMA_FROM_DEVICE,
->  					     DMA_ATTR_SKIP_CPU_SYNC);
->  			put_page(virt_to_page(phys_to_virt(pa)));
-> +			sq->sqb_ptrs[sqb] = 0;
+> 2 - They are simpler for using: 
+> Suppose we have this function that should run at a WQ, but we want to keep them
+> out of the isolated cpus. If we have the unified flags, we need to combine both
+> DOMAIN and NOHZ_FULL bitmasks, and then combine it again with something like
+> cpu_online_mask. It usually means allocating a new cpumask_t, and also freeing
+> it afterwards.
+> If we have a single WQ flag, we can avoid the allocation altogether by using
+> for_each_cpu_and(), making the code much simpler.
 
-The above looks not needed...
->  		}
->  		sq->sqb_count = 0;
+I guess having a specific function for workqueues would arrange for it.
 
-... as this will prevent the next invocation of otx2_sq_free_sqbs()
-from traversing and freeing any sq->sqb_ptrs[] element.
+> 
+> 3 - It makes easier to compose new isolation modes:
+> In case the future requires a new isolation mode that also uses the types of
+> isolation we currently have implemented, it would be much easier to just compose
+> it with the current HK flags, instead of having to go through all usages and do
+> a cpumask_and() there. Also, new isolation modes would make (2) worse.
 
-Cheers,
+Actually having a new feature merged in HK_NOHZ_FULL would make it easier to
+handle as it avoids spreading cpumasks. I'm not sure I understand what you
+mean.
 
-Paolo
->  	}
-
-
+Thanks.
