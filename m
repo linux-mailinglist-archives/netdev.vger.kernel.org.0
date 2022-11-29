@@ -2,141 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49DCF63C709
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 19:09:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FC5B63C71D
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 19:23:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232360AbiK2SJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 13:09:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
+        id S235911AbiK2SXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 13:23:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234427AbiK2SJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 13:09:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97155B5B1
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 10:08:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669745311;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WWss6s04eYVKSIx0lJzWCZc2o/lhl7bv0cJ3FBaI44M=;
-        b=ean2esNcnOVUO2RgqgE9kAKFMr5wVM97IP+uNfZ3YQAT1wP31U3STQGYjfF71FCuZwUb6m
-        OPaP6nWejBnVx/qfiLCiK8YRYEaCZZSysT901CXjP+XaNf948ZRrMNK5zMlIwQWqS/wDR4
-        OGCOf94uyZNgs9BcCm63RXWXSOkiJxE=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-134-Ie2Jm-kQNGyhGMMZUjDoNQ-1; Tue, 29 Nov 2022 13:08:30 -0500
-X-MC-Unique: Ie2Jm-kQNGyhGMMZUjDoNQ-1
-Received: by mail-wm1-f70.google.com with SMTP id m17-20020a05600c3b1100b003cf9cc47da5so8170174wms.9
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 10:08:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WWss6s04eYVKSIx0lJzWCZc2o/lhl7bv0cJ3FBaI44M=;
-        b=ZWdtT3i3s7uKRJU1DT09O1phCFbr7l9Dq/aTwIpdvuh8vq9ZXHkUCR9RgElrSzKchL
-         JiMnQ+1k1wMkF0RAuvtmCr3PJ99Gz6iNyrdxbPJcd8I0eLfrczwmmD4ZKdgFLia6pWJ7
-         o+jMKkKcMX61saqT0W9NxJNurnSofK/BKBt6DMVoeLQFguYe0FQ0pLOrpqPUNpiy0mE7
-         SoJ+sValfngEDdeVLAwgvu/cs7mO5Od1XhWSi+7p7oOFbEb3g1Q0mRaczFXXevEjoHRl
-         dCtJG2yo6WXg2uUKlwyWn1xBM7uJGAWPonCOImemFcBdtzhPYPreRwTm6F6P5bAo9daQ
-         Wl/A==
-X-Gm-Message-State: ANoB5pnDBaxajDxi8XpJ8VTTY+7edvuxpDO3OO1JxhWlMPZNgevqDMkh
-        3/+hfruJ+4fqnFQa8da4r3EQFwZ3h23caIJSLdSMny5NJlSNSlf0BhXH6iV4mb57EeXVEOYq0Kq
-        GUnZHMLrW0CZPMAcm
-X-Received: by 2002:adf:f302:0:b0:242:1dbc:2d29 with SMTP id i2-20020adff302000000b002421dbc2d29mr5191486wro.609.1669745308935;
-        Tue, 29 Nov 2022 10:08:28 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf73ePDgW+BAbPeYbRZmZcWwyiWpzxoUO6OeJPrdvj7zRNi0BAFKA5WSxF+wAlxwSUZMyyYHTQ==
-X-Received: by 2002:adf:f302:0:b0:242:1dbc:2d29 with SMTP id i2-20020adff302000000b002421dbc2d29mr5191474wro.609.1669745308723;
-        Tue, 29 Nov 2022 10:08:28 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id h17-20020a05600c315100b003cfd64b6be1sm3952139wmo.27.2022.11.29.10.08.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Nov 2022 10:08:28 -0800 (PST)
-Message-ID: <e80ea4e8f42c2113af358b971610f7341eb7494b.camel@redhat.com>
-Subject: Re: [PATCH net-next] selftests/net: add csum offload test
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com
-Date:   Tue, 29 Nov 2022 19:08:27 +0100
-In-Reply-To: <CA+FuTScsg6b8wKc4Sz=z+M53nWaxOZh4J+A=JooJspDjysXg6Q@mail.gmail.com>
-References: <20221128140210.553391-1-willemdebruijn.kernel@gmail.com>
-         <1951bd409f86287fcffce41e22026ed09605f9b2.camel@redhat.com>
-         <CA+FuTScsg6b8wKc4Sz=z+M53nWaxOZh4J+A=JooJspDjysXg6Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S235644AbiK2SXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 13:23:40 -0500
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27A05FBA3;
+        Tue, 29 Nov 2022 10:23:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=5ZSzUkPwSZlE7lwVIYK/zlxt6BpFN/kJRekUXyW8GJk=; b=VbJ+rXDlSrYHfgeC2Iew3PURBK
+        big7AR0VqNOdMaZFqdekRc1hj8yZDPfKUV3Bgyfh459GvTU75BOsFViXpq++WtktoynNnhRJWkuEr
+        xOnagvByYPCoCccB+zEcQiu+sH08VgdDYeI5ASOnTqwNwJWIeqEfj0sJM16aQDBjlQzhrxcwg7z/r
+        t9gvX8sk7tbrIhKZa2hXc3qznZFSydt1FXtLLx012BVpZJVjMPyGn1A/w7ltbaVcqY5cFZGH48BLr
+        Tsut2PsSYQ9uP1b144SzAoxU2QJGqQoAx5+xXoSQZO22gXe5qw69H0VvFTwaEq27Ve8IZy0TtC0dT
+        rTN2Kp9+PhhMDVlKx6F28pbidKBIBTilA2HhLhh9x3A2Qe/Y/8zGob782F0tHNBPX+JA5Iy2qxiNt
+        a3vYZrxgjSpGOxz7uNV+M3nIlgxHqtJdCRotI6zTkGgR2593+9afngf/qUhzXE+Qym9s5UW7Mv6Wm
+        mwbI8FCuq8cp7tZJErIv+LQAnJk5tewABZYhUa7qpj+cNdcScG9ltGjJvLfAvtiwBRJv0RPY5lW2x
+        GVpmU9tLuHKZCR1vgi7e7W71IKF809i1hCoWoGTKzDyod4WWY4VH/zJdqRkOxVrPeMoYo5d4ZzlMl
+        KOnfagswQd05C7hznra6z0VDHn1kAxtvmR9M9P/1U=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, Schspa Shi <schspa@gmail.com>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
+Subject: Re: [PATCH] 9p: fix crash when transaction killed
+Date:   Tue, 29 Nov 2022 19:23:19 +0100
+Message-ID: <4282856.sKfH6co6qd@silver>
+In-Reply-To: <m2r0xlu3l9.fsf@gmail.com>
+References: <20221129162251.90790-1-schspa@gmail.com> <m2r0xlu3l9.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-11-28 at 11:14 -0500, Willem de Bruijn wrote:
-> On Mon, Nov 28, 2022 at 11:08 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > On Mon, 2022-11-28 at 09:02 -0500, Willem de Bruijn wrote:
-> > > From: Willem de Bruijn <willemb@google.com>
-> > > 
-> > > Test NIC hardware checksum offload:
-> > > 
-> > > - Rx + Tx
-> > > - IPv4 + IPv6
-> > > - TCP + UDP
-> > > 
-> > > Optional features:
-> > > 
-> > > - zero checksum 0xFFFF
-> > > - checksum disable 0x0000
-> > > - transport encap headers
-> > > - randomization
-> > > 
-> > > See file header for detailed comments.
-> > > 
-> > > Expected results differ depending on NIC features:
-> > > 
-> > > - CHECKSUM_UNNECESSARY vs CHECKSUM_COMPLETE
-> > > - NETIF_F_HW_CSUM (csum_start/csum_off) vs NETIF_F_IP(V6)_CSUM
-> > > 
-> > > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > 
-> > I'm wondering if we could hook this into the self-tests list with a
-> > suitable wrapper script, e.g. searching for a NIC exposing the loopback
-> > feature, quering the NETIF_F_HW_CSUM/NETIF_F_IP(V6)_CSUM bit via
-> > ethtool and guessing CHECKSUM_UNNECESSARY vs CHECKSUM_COMPLETE via the
-> > received packet.
-> > 
-> > If the host lacks a suitable device, the test is skipped. WDYT?
+On Tuesday, November 29, 2022 5:26:46 PM CET Schspa Shi wrote:
 > 
-> We could. Optionally with ipvlan and two netns to really emulate a two
-> host setup.
+> Schspa Shi <schspa@gmail.com> writes:
 > 
-> I'm hesitant to include this into kselftests without warning though.
-> Have too often had to debug tests that crashed and left a machine
-> unreachable, because in loopback mode.
+> > The transport layer of fs does not fully support the cancel request.
+> > When the request is in the REQ_STATUS_SENT state, p9_fd_cancelled
+> > will forcibly delete the request, and at this time p9_[read/write]_work
+> > may continue to use the request. Therefore, it causes UAF .
+> >
+> > There is the logs from syzbot.
+> >
+> > Corrupted memory at 0xffff88807eade00b [ 0xff 0x07 0x00 0x00 0x00 0x00
+> > 0x00 0x00 . . . . . . . . ] (in kfence-#110):
+> >  p9_fcall_fini net/9p/client.c:248 [inline]
+> >  p9_req_put net/9p/client.c:396 [inline]
+> >  p9_req_put+0x208/0x250 net/9p/client.c:390
+> >  p9_client_walk+0x247/0x540 net/9p/client.c:1165
+> >  clone_fid fs/9p/fid.h:21 [inline]
+> >  v9fs_fid_xattr_set+0xe4/0x2b0 fs/9p/xattr.c:118
+> >  v9fs_xattr_set fs/9p/xattr.c:100 [inline]
+> >  v9fs_xattr_handler_set+0x6f/0x120 fs/9p/xattr.c:159
+> >  __vfs_setxattr+0x119/0x180 fs/xattr.c:182
+> >  __vfs_setxattr_noperm+0x129/0x5f0 fs/xattr.c:216
+> >  __vfs_setxattr_locked+0x1d3/0x260 fs/xattr.c:277
+> >  vfs_setxattr+0x143/0x340 fs/xattr.c:309
+> >  setxattr+0x146/0x160 fs/xattr.c:617
+> >  path_setxattr+0x197/0x1c0 fs/xattr.c:636
+> >  __do_sys_setxattr fs/xattr.c:652 [inline]
+> >  __se_sys_setxattr fs/xattr.c:648 [inline]
+> >  __ia32_sys_setxattr+0xc0/0x160 fs/xattr.c:648
+> >  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+> >  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+> >  do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
+> >  entry_SYSENTER_compat_after_hwframe+0x70/0x82
+> >
+> > Below is a similar scenario, the scenario in the syzbot log looks more
+> > complicated than this one, but the root cause seems to be the same.
+> >
+> >      T21124               p9_write_work        p9 read_work
+> > ======================== first trans =================================
+> > p9_client_walk
+> >   p9_client_rpc
+> >     p9_client_prepare_req
+> >     /* req->refcount == 2 */
+> >     c->trans_mod->request(c, req);
+> >       p9_fd_request
+> >         req move to unsent_req_list
+> >                             req->status = REQ_STATUS_SENT;
+> >                             req move to req_list
+> >                             << send to server >>
+> >     wait_event_killable
+> >     << get kill signal >>
+> >     if (c->trans_mod->cancel(c, req))
+> >        p9_client_flush(c, req);
+> >          /* send flush request */
+> >          req = p9_client_rpc(c, P9_TFLUSH, "w", oldtag);
+> > 		 if (c->trans_mod->cancelled)
+> >             c->trans_mod->cancelled(c, oldreq);
+> >               /* old req was deleted from req_list */
+> >               /* req->refcount == 1 */
+> >   p9_req_put
+> >     /* req->refcount == 0 */
+> >     << preempted >>
+> >                                        << get response, UAF here >>
+> >                                        m->rreq = p9_tag_lookup(m->client, m->rc.tag);
+> >                                          /* req->refcount == 1 */
+> >                                        << do response >>
+> >                                        p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);
+> >                                          /* req->refcount == 0 */
+> >                                          p9_fcall_fini
+> >                                          /* request have been freed */
+> >     p9_fcall_fini
+> >      /* double free */
+> >                                        p9_req_put(m->client, m->rreq);
+> >                                          /* req->refcount == 1 */
+> >
+> > To fix it, we can wait the request with status REQ_STATUS_SENT returned.
 
-I see your point. The forwarding/loopback.sh test does nothing by
-default without additional command line arguments, something similar
-could work here, too.
+9p server might or might not send a reply on cancelled request. If 9p server
+notices client's Tflush request early enough, then it would simply discard the
+old=cancelled request and not send any reply on that old request. If server
+notices Tflush too late, then server would send a response to the old request.
 
-I think it would still be valuable, because it will simplify automating
-this kind of testing - compared to guessing the needed setup from the
-binary alone. 
+http://ericvh.github.io/9p-rfc/rfc9p2000.html#anchor28
 
-> Either way, something to do as a separate follow-up patch?
+However after sending Tflush client waits for the corresponding Rflush
+response, and at this point situation should be clear; no further response
+expected from server for old request at this point. And that's what Linux
+client does.
 
-Fine by me. 
+Which server implementation caused that?
 
-Thanks,
+> >
+> > Reported-by: syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
+> >
+> > Signed-off-by: Schspa Shi <schspa@gmail.com>
+> > ---
+> >  net/9p/client.c   |  2 +-
+> >  net/9p/trans_fd.c | 12 ++++++++++++
+> >  2 files changed, 13 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/9p/client.c b/net/9p/client.c
+> > index aaa37b07e30a..963cf91aa0d5 100644
+> > --- a/net/9p/client.c
+> > +++ b/net/9p/client.c
+> > @@ -440,7 +440,7 @@ void p9_client_cb(struct p9_client *c, struct p9_req_t *req, int status)
+> >  	smp_wmb();
+> >  	req->status = status;
+> >  
+> > -	wake_up(&req->wq);
+> > +	wake_up_all(&req->wq);
 
-Paolo
+Purpose?
+
+> >  	p9_debug(P9_DEBUG_MUX, "wakeup: %d\n", req->tc.tag);
+> >  	p9_req_put(c, req);
+> >  }
+> > diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+> > index eeea0a6a75b6..ee2d6b231af1 100644
+> > --- a/net/9p/trans_fd.c
+> > +++ b/net/9p/trans_fd.c
+> > @@ -30,6 +30,7 @@
+> >  #include <net/9p/transport.h>
+> >  
+> >  #include <linux/syscalls.h> /* killme */
+> > +#include <linux/wait.h>
+> >  
+> >  #define P9_PORT 564
+> >  #define MAX_SOCK_BUF (1024*1024)
+> > @@ -728,6 +729,17 @@ static int p9_fd_cancelled(struct p9_client *client, struct p9_req_t *req)
+> >  		return 0;
+> >  	}
+> >  
+> > +	/* If the request is been sent to the server, we need to wait for the
+> > +	 * job to finish.
+> > +	 */
+> > +	if (req->status == REQ_STATUS_SENT) {
+> > +		spin_unlock(&m->req_lock);
+> > +		p9_debug(P9_DEBUG_TRANS, "client %p req %p wait done\n",
+> > +			 client, req);
+> > +		wait_event(req->wq, req->status >= REQ_STATUS_RCVD);
+> > +
+> > +		return 0;
+> > +	}
+> >  	/* we haven't received a response for oldreq,
+> >  	 * remove it from the list.
+> >  	 */
+> 
+> Add Christian Schoenebeck for bad mail address typo.
+> 
+> 
+
 
 
 
