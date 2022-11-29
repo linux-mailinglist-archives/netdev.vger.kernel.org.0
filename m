@@ -2,136 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 342C763C4E2
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:14:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05E6E63C4EE
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:15:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235647AbiK2QOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 11:14:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42290 "EHLO
+        id S235766AbiK2QPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 11:15:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235891AbiK2QOO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:14:14 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DBE65E53;
-        Tue, 29 Nov 2022 08:14:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669738447; x=1701274447;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Su0Cw3MyHqpzsKA0PnsNlmYF5H+VQ8b4Iwhnm0qJsZk=;
-  b=gIN9xUrDMmHCizqKmGnS2LVjmiRZd6wlzFkvWYA/UE8zMUz+AF+PvHtU
-   6ttR8G9v+r6FIgrFzkuBM7M4XsBfj5IsL3ca9bpr+edFMI5FIIvS95tg/
-   Kke30HvrvzUHNBi2bjHGXKHVoKJXXASryKeonl1/YcD91nE7JJfyNmDyx
-   7gXQWxGSr6WPu3Fp6yA31jNpbkbNpuohe5zV/komry1ciu7PnvwOTFjfm
-   A3vzuqC3rV4ap8Vs9WR+YD+dwJA476yxagmdaUPgBomy9A57SwzgVyLB/
-   bFCxtzwNcjJuCdpoVFlZEPysjyCZ9r8mYJUGNrgjuqWcsXCiQP3epAUz1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="302740399"
-X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
-   d="scan'208";a="302740399"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 08:13:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="768476669"
-X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
-   d="scan'208";a="768476669"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 29 Nov 2022 08:13:36 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3868D179; Tue, 29 Nov 2022 18:14:03 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Michael Jamet <michael.jamet@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [resend, PATCH net-next v1 2/2] net: thunderbolt: Use separate header data type for the Rx
-Date:   Tue, 29 Nov 2022 18:13:59 +0200
-Message-Id: <20221129161359.75792-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221129161359.75792-1-andriy.shevchenko@linux.intel.com>
-References: <20221129161359.75792-1-andriy.shevchenko@linux.intel.com>
+        with ESMTP id S235936AbiK2QPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:15:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B66CCD;
+        Tue, 29 Nov 2022 08:15:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEDEAB8169F;
+        Tue, 29 Nov 2022 16:15:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E1D3C433C1;
+        Tue, 29 Nov 2022 16:15:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669738512;
+        bh=7+SFe4iBpPQPpkZS2WbJcUsKadar590WDUqsLd4jJpU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=m/SkbXFyDGDfdXOWx/ncH/41Fc1DwZeb3nirHjJkSWoqzgTV5io44u3LlkSnM5oXP
+         Yx32zaM0WAHFwsTcpVwde0JRLeqp2IpP0WbnOvduD4B2fXbJLt4Xbw+G/QAck9Am3R
+         DatCvHe6m48MTZgxjKJkHtn63keVecaZrfsXVgblHPSxPApN6bDTjJc6ui4bY2kAJF
+         54sUhyWV0q17pCosFwpsgxCgwGcrYcn28/y1/Y3wIJHkIkAdnDH9Jv5HtVRlN0/TIq
+         WQOVRi4UB2fDdpbIttQ42W/Il8ZN8b4LXEr8AzN9qO1vTfdcWRiZpyJ0n6DsJvtLYd
+         yn5Z0Va7/AwDw==
+Date:   Tue, 29 Nov 2022 08:15:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Eyal Birger <eyal.birger@gmail.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <herbert@gondor.apana.org.au>, <andrii@kernel.org>,
+        <daniel@iogearbox.net>, <nicolas.dichtel@6wind.com>,
+        <razor@blackwall.org>, <mykolal@fb.com>, <ast@kernel.org>,
+        <song@kernel.org>, <yhs@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@kernel.org>, <sdf@google.com>, <haoluo@google.com>,
+        <jolsa@kernel.org>, <shuah@kernel.org>
+Subject: Re: [PATCH ipsec-next 2/3] xfrm: interface: Add unstable helpers
+ for setting/getting XFRM metadata from TC-BPF
+Message-ID: <20221129081510.56b1025e@kernel.org>
+In-Reply-To: <20221129095001.GV704954@gauss3.secunet.de>
+References: <20221128160501.769892-1-eyal.birger@gmail.com>
+        <20221128160501.769892-3-eyal.birger@gmail.com>
+        <c8a2d940-ff85-c952-74d0-25ad2c33c1af@linux.dev>
+        <20221129095001.GV704954@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The same data type structure is used for bitwise operations and
-regular ones. It makes sparse unhappy, for example:
+On Tue, 29 Nov 2022 10:50:01 +0100 Steffen Klassert wrote:
+> > Please tag for bpf-next  
+> 
+> This is a change to xfrm ipsec, so it should go
+> through the ipsec-next tree, unless there is
+> a good reason for handling that different.
 
-  .../thunderbolt.c:718:23: warning: cast to restricted __le32
-
-  .../thunderbolt.c:953:23: warning: incorrect type in initializer (different base types)
-  .../thunderbolt.c:953:23:    expected restricted __wsum [usertype] wsum
-  .../thunderbolt.c:953:23:    got restricted __be32 [usertype]
-
-Split the header to bitwise one and specific for Rx to make sparse
-happy. Assure the layout by involving static_assert() against size
-and offsets of the member of the structures.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/net/thunderbolt.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/thunderbolt.c b/drivers/net/thunderbolt.c
-index 4dbc6c7f2e10..f7b3d0d4646c 100644
---- a/drivers/net/thunderbolt.c
-+++ b/drivers/net/thunderbolt.c
-@@ -58,12 +58,32 @@
-  * supported then @frame_id is filled, otherwise it stays %0.
-  */
- struct thunderbolt_ip_frame_header {
-+	__le32 frame_size;
-+	__le16 frame_index;
-+	__le16 frame_id;
-+	__le32 frame_count;
-+};
-+
-+/* Same as &struct thunderbolt_ip_frame_header for Rx */
-+struct thunderbolt_ip_frame_rx_hdr {
- 	u32 frame_size;
- 	u16 frame_index;
- 	u16 frame_id;
- 	u32 frame_count;
- };
- 
-+static_assert(sizeof(struct thunderbolt_ip_frame_header) ==
-+	      sizeof(struct thunderbolt_ip_frame_rx_hdr));
-+
-+#define TBIP_FRAME_HDR_MATCH(x)							 \
-+	static_assert(offsetof(struct thunderbolt_ip_frame_header, frame_##x) == \
-+		      offsetof(struct thunderbolt_ip_frame_rx_hdr, frame_##x))
-+TBIP_FRAME_HDR_MATCH(size);
-+TBIP_FRAME_HDR_MATCH(index);
-+TBIP_FRAME_HDR_MATCH(id);
-+TBIP_FRAME_HDR_MATCH(count);
-+#undef TBIP_FRAME_HDR_MATCH
-+
- enum thunderbolt_ip_frame_pdf {
- 	TBIP_PDF_FRAME_START = 1,
- 	TBIP_PDF_FRAME_END,
-@@ -193,7 +213,7 @@ struct tbnet {
- 	struct delayed_work login_work;
- 	struct work_struct connected_work;
- 	struct work_struct disconnect_work;
--	struct thunderbolt_ip_frame_header rx_hdr;
-+	struct thunderbolt_ip_frame_rx_hdr rx_hdr;
- 	struct tbnet_ring rx_ring;
- 	atomic_t frame_id;
- 	struct tbnet_ring tx_ring;
--- 
-2.35.1
-
+Yeah, this is borderline. Do the patches apply cleanly to Linus's tree?
+If so maybe they can be posted as a PR and both trees can pull them in,
+avoiding any unnecessary back and forth...
