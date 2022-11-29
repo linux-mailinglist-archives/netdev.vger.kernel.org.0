@@ -2,93 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 760C963C1F1
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 15:10:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7260C63C1A9
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 15:03:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235139AbiK2OKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 09:10:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45194 "EHLO
+        id S234568AbiK2ODK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 09:03:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235017AbiK2OKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 09:10:13 -0500
-X-Greylist: delayed 538 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 29 Nov 2022 06:10:03 PST
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190275BD5B;
-        Tue, 29 Nov 2022 06:10:02 -0800 (PST)
-Received: from [IPV6:2003:e9:d724:11f3:6a8a:fec:d223:2c22] (p200300e9d72411f36a8a0fecd2232c22.dip0.t-ipconnect.de [IPv6:2003:e9:d724:11f3:6a8a:fec:d223:2c22])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id DEF59C0BFA;
-        Tue, 29 Nov 2022 15:01:01 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1669730462;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tuLukpKCzhM0X/X1MjQzYoVSveA4A5uOI5pwQmS2Yko=;
-        b=PWj4aadTGc7Muu7Ij1ZF4trLwr4EbxZDcfGIFBJjAfUyqkR3cjqP+Vj05UJ63A2+sKs4EO
-        nZINuKkXOAsl3dWuYE5KUS925zFOFeuzclTV0y80W1+VgEkX9BTWbG66bjqbUaHXgeOxjn
-        R51wNW4vSHSscRQmNP566K1D/fj4nMwvzpTOGU8i+uhHFfUdMAecJf6ER2bnkqdQqt9Otm
-        /UsRKL+X+pzxk2QqL5JQTMNC8tx7ul1o8DDhIcWS88ZeQoYRiizJAg2HfcduAry+z0Nmxq
-        iBLeiZYJ/V7W3E5FvvGCIa1dPUyQGjHdiZvV52BzX0yPu8TYlAFsF3g0eqb5WA==
-Message-ID: <fdbc3c12-71c8-16da-6b69-eb235964fcd7@datenfreihafen.org>
-Date:   Tue, 29 Nov 2022 15:01:01 +0100
+        with ESMTP id S233706AbiK2OCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 09:02:49 -0500
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0251813D20;
+        Tue, 29 Nov 2022 06:02:49 -0800 (PST)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 7710168BEB; Tue, 29 Nov 2022 15:02:42 +0100 (CET)
+Date:   Tue, 29 Nov 2022 15:02:42 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     Benjamin Coddington <bcodding@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Christoph =?iso-8859-1?Q?B=F6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Steve French <sfrench@samba.org>,
+        Christine Caulfield <ccaulfie@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Xiubo Li <xiubli@redhat.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org, nbd@other.debian.org,
+        linux-nvme@lists.infradead.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, cluster-devel@redhat.com,
+        ocfs2-devel@oss.oracle.com, v9fs-developer@lists.sourceforge.net,
+        ceph-devel@vger.kernel.org, linux-nfs@vger.kernel.org
+Subject: Re: [PATCH v1 2/3] Treewide: Stop corrupting socket's task_frag
+Message-ID: <20221129140242.GA15747@lst.de>
+References: <cover.1669036433.git.bcodding@redhat.com> <c2ec184226acd21a191ccc1aa46a1d7e43ca7104.1669036433.git.bcodding@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH] ieee802154: cc2520: Fix error return code in
- cc2520_hw_init()
-Content-Language: en-US
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>,
-        varkabhadram@gmail.com, alex.aring@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20221120075046.2213633-1-william.xuanziyang@huawei.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20221120075046.2213633-1-william.xuanziyang@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c2ec184226acd21a191ccc1aa46a1d7e43ca7104.1669036433.git.bcodding@redhat.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 20.11.22 08:50, Ziyang Xuan wrote:
-> In cc2520_hw_init(), if oscillator start failed, the error code
-> should be returned.
-> 
-> Fixes: 0da6bc8cc341 ("ieee802154: cc2520: adds driver for TI CC2520 radio")
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
->   drivers/net/ieee802154/cc2520.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ieee802154/cc2520.c b/drivers/net/ieee802154/cc2520.c
-> index c69b87d3837d..edc769daad07 100644
-> --- a/drivers/net/ieee802154/cc2520.c
-> +++ b/drivers/net/ieee802154/cc2520.c
-> @@ -970,7 +970,7 @@ static int cc2520_hw_init(struct cc2520_private *priv)
->   
->   		if (timeout-- <= 0) {
->   			dev_err(&priv->spi->dev, "oscillator start failed!\n");
-> -			return ret;
-> +			return -ETIMEDOUT;
->   		}
->   		udelay(1);
->   	} while (!(status & CC2520_STATUS_XOSC32M_STABLE));
-
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
-
-regards
-Stefan Schmidt
+Hmm.  Having to set a flag to not accidentally corrupt per-task
+state seems a bit fragile.  Wouldn't it make sense to find a way to opt
+into the feature only for sockets created from the syscall layer?
