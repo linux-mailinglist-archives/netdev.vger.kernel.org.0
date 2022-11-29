@@ -2,167 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 477C263C6C4
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 18:50:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F5563C6DD
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 18:54:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235993AbiK2Ruh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 12:50:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
+        id S236687AbiK2Rys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 12:54:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236319AbiK2Rug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 12:50:36 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A759697FE
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:50:35 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id 5so11526231wmo.1
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:50:35 -0800 (PST)
+        with ESMTP id S236677AbiK2Ryp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 12:54:45 -0500
+Received: from mx0a-003ede02.pphosted.com (mx0a-003ede02.pphosted.com [205.220.169.153])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949BD27140
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:54:43 -0800 (PST)
+Received: from pps.filterd (m0286614.ppops.net [127.0.0.1])
+        by mx0b-003ede02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ATEaO15015193
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:54:43 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=getcruise.com; h=mime-version :
+ references : in-reply-to : from : date : message-id : subject : cc :
+ content-type : content-transfer-encoding; s=ppemail;
+ bh=uWXrCdPelYzin+4K8npplpf2gvKRjBtOt3/S94bUI/c=;
+ b=YFQr0M7FYnGa8W8uDDI5dMyNScB4o/Tq7CZCN+U3M3oQ+g1sIjnWeuo6q+s9vxyxTxiD
+ lCOP4aWMZp2saHIYoay0+5uBPxWLjFWaps78f3thm0NzgJeYZXfZbe2DmYJvn4y5bTn5
+ BxK5dO+mfz2YAb5FG8nuKrOwAeB4tvc3/J6pEdFrYhTYdhLafx8GPxLam3/H2A68KBOT
+ H9oiJJf+SupaFkaSicebZ2jnuN3CrrGgoUGixKK0f6m+3VNYCAzOuH8n9W60CIm487BV
+ pex7fDojxA4jw3iocnctAwuV+e+S6L3BWeAGgkKMAvYdgM+e6Hg+2gaFSnEBcgqksvKT yg== 
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        by mx0b-003ede02.pphosted.com (PPS) with ESMTPS id 3m43jchpf3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:54:43 -0800
+Received: by mail-ed1-f71.google.com with SMTP id m13-20020a056402510d00b0046913fa9291so8490497edd.6
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:54:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=kUE1h4DxDM3TBMHmJVvw8sZULI199ZSmbHIonIGkO1A=;
-        b=D6Dc402DrtIBmI0r7rqDp03v5gUVyMVOq8Q9HomRDZezxPc5XcpbWyg8/FUoBwxHA3
-         Mwhi0eVNEa9k1B6gxte7/lvPFylqRICRifNrbySEb3n2fqaaKYT6GPclt/gBmAidtDZ4
-         doGT5uf/TtgunJ2GNa/C00vdxCQK2QW3XEHv4=
+        d=getcruise.com; s=google;
+        h=content-transfer-encoding:cc:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uWXrCdPelYzin+4K8npplpf2gvKRjBtOt3/S94bUI/c=;
+        b=eRNoQhEX5e13xdUe1RsgdrB/qFRw9AFZTGAdlFAauHTDyOKdzuHIxWMP1R9qiFRBEl
+         2ExnRUL++iKkmlvz4tlY7/oO9LySkKbx5XdPy42a70w0xONd4J6h6LkLB9DIfJxfja9r
+         9QkTxqsrlT/zPVwk/1bfVm6xS0dPWo3bOnIFlCBvkgZqD1w+7N5cg7qyS1pyU5bRE7zT
+         phCyjRAUOE6ex9ufXQyxS5HHo01jj9jUJs5cl5BUKyL/X+bX4WgCoprIblAoGYOIDAZB
+         1ZNwLqB4XSxm+kTDSfT2XFV0Ak1kO+mIAX2PRk++Ibx9BHZIqgYFOYsd49W4GmNUftK6
+         gJAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kUE1h4DxDM3TBMHmJVvw8sZULI199ZSmbHIonIGkO1A=;
-        b=2siSjBQQyd4Sv+TdTfl0IYvqih97VnM9H0+1l5lL/6i/02h7tKvZEM4B+/tAG0NoHp
-         v7zGIA506aM3qz/XcLwAFSsmj4OO6aI1yzxqbbr1oApNIboDvQN3aAg7WouAxmiVAZxG
-         A9TdwGZ8iS3GZjz1bhYlVUIYZpAGCGDcSeNQftJL4YN5EcGMrW/Nd34ZVDzIASYL4j2s
-         dRianhJH6UoQsvYrlS0EjGdpONvr/cECv+xcTUr97/QD9KpJK940l+W1AgIMQqCQeeML
-         oTk4FrwHhBeGenHcHYTC0oKDKGEOORoPz1a/lDpBW8POQGXaZNlLueTad/leH8CBtH5L
-         lClQ==
-X-Gm-Message-State: ANoB5pnnrjazF2bMR5ni4ZIyjM9Tg15Y2/DHpdTgKw1rBS/KvdA478Hu
-        l26ehcYeDdoCSjqL2A1WHcUfIjdECWhhrMIULXAxYw==
-X-Google-Smtp-Source: AA0mqf6b+n0GPSW+tFL49+vFzFll+mRS8vJgMDPlulXjRm75003Ryhdu5g9JDz/WMCi5F1n+DnuXTSJ34vxCLIgW2wA=
-X-Received: by 2002:a05:600c:4e88:b0:3b5:477:1e80 with SMTP id
- f8-20020a05600c4e8800b003b504771e80mr42799733wmq.200.1669744233802; Tue, 29
- Nov 2022 09:50:33 -0800 (PST)
+        h=content-transfer-encoding:cc:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uWXrCdPelYzin+4K8npplpf2gvKRjBtOt3/S94bUI/c=;
+        b=K9REyHSkLmFXKUpb7FEuE4+fJTS7PB6tbb+TMvVHZSKhzC5XAf6VB8TMDW3XjBy/+h
+         hk/L6qUF353py1YfGHfoYNYStFYGOVFCYAumGRmAzWgn0uEvCE2aiwr2oe29hWRzNuAr
+         fI6e2NdYEoya3A7Tb1If4GBT1wJoP7Cjio3tw3O43T/NkrklDioowYmcwDUaW/JpvDG/
+         p0k4SuJlrl4JovKWx1LmCYdWleuFf0+AkuppdTjpSznM1H8mzXFBNQO/owOfGfPOZGMy
+         S/ZMdfLEHvGe8JX8VHRuDobhdcvmwpx/xvOp2KBBRveHOiM7bVhcnilLG1VvaUMYTwlU
+         AjnA==
+X-Gm-Message-State: ANoB5pn3jvGIuHvyLsjTFS0xFyEwez7kECG9jsdivVi+TZ5PMuf1cAoU
+        09Hq48VHOZjGs+4kHZ2AK1uChRlGyzW19amEyTyJ12qecK/yUGGCvcM0a/KkEy7L78haCaxrXph
+        8VNQZ/ZPBYmepw44oFWB4wyAg8fGeSqNY
+X-Received: by 2002:a17:906:5050:b0:7b2:8f2c:a877 with SMTP id e16-20020a170906505000b007b28f2ca877mr23469811ejk.90.1669744480903;
+        Tue, 29 Nov 2022 09:54:40 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7qxpLMZzTXIzDpTTxhtcYo+9K1Sia2ntYKsuu9xSv5S7uQatz1xh5y/8SGVCnIGIhD9IVEWMTcKrr1H7mfdHY=
+X-Received: by 2002:a17:906:5050:b0:7b2:8f2c:a877 with SMTP id
+ e16-20020a170906505000b007b28f2ca877mr23469798ejk.90.1669744480511; Tue, 29
+ Nov 2022 09:54:40 -0800 (PST)
 MIME-Version: 1.0
-References: <20221123191627.3442831-1-lixiaoyan@google.com>
- <20221123191627.3442831-2-lixiaoyan@google.com> <CACKFLin=H_j6Jy+1jZJiG5xuE=C41joZ_dPS_BZmBwcf7W1rHA@mail.gmail.com>
- <CACKFLin7Pzw5E+kZ8GyrMabcVyyOt3Mb96-J2fBE_=2E4xbS5A@mail.gmail.com> <CADjXwjhii7fn5yxh78XXfzFinvoxkdBu7F8kwiWTdtOOMeuExw@mail.gmail.com>
-In-Reply-To: <CADjXwjhii7fn5yxh78XXfzFinvoxkdBu7F8kwiWTdtOOMeuExw@mail.gmail.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Tue, 29 Nov 2022 09:50:21 -0800
-Message-ID: <CACKFLi=pLiqgYkjxxSyMX20z+eTjmorZY8U2PFM=Aey-nhfy8g@mail.gmail.com>
-Subject: Re: [RFC net-next v2 2/2] bnxt: Use generic HBH removal helper in tx path
-To:     Coco Li <lixiaoyan@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Gospodarek <gospo@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f1b61205ee9f9f35"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20221116222429.7466-1-steve.williams@getcruise.com>
+ <20221117200046.0533b138@kernel.org> <CALHoRjctagiFOWi8OWai5--m+sezaMHSOpKNLSQbrKEgRbs-KQ@mail.gmail.com>
+ <Y30sfGrQ2lQN+CMY@lunn.ch>
+In-Reply-To: <Y30sfGrQ2lQN+CMY@lunn.ch>
+From:   Steve Williams <steve.williams@getcruise.com>
+Date:   Tue, 29 Nov 2022 09:54:29 -0800
+Message-ID: <CALHoRjcwnHGWKDLD_RO5W2yDSTBbmPUq+eEczk7v5FjuhKikLw@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH net-next] sandlan: Add the sandlan virtual
+ network interface
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-GUID: nrddofFc7QpVunibUVrL7IVa7gGHKS2R
+X-Proofpoint-ORIG-GUID: nrddofFc7QpVunibUVrL7IVa7gGHKS2R
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-29_11,2022-11-29_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ priorityscore=1501 adultscore=0 lowpriorityscore=0 mlxlogscore=913
+ malwarescore=0 impostorscore=0 phishscore=0 bulkscore=0 clxscore=1015
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211290100
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MISSING_HEADERS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f1b61205ee9f9f35
-Content-Type: text/plain; charset="UTF-8"
-
-On Tue, Nov 29, 2022 at 9:29 AM Coco Li <lixiaoyan@google.com> wrote:
+On Tue, Nov 22, 2022 at 12:09 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> Great, thanks Michael! Will send a new version of the patch.
+> On Mon, Nov 21, 2022 at 06:59:11PM -0800, Steve Williams wrote:
+> > I have had trouble with the veth driver not transparently passing the
+> > full ethernet packets unaltered, and this is wreaking havoc with the
+> > hanic driver that I have (and that I'm submitting separately). That,
+> > and veth nodes only come in pairs, whereas with sandlan I can make
+> > more complex LANs and that allows me to emulate more complex
+> > situations. But fair point, and I am looking more closely at figuring
+> > out exactly what the veth driver is doing to my packets.
 >
+> If there is a real problem with veth, please describe it, so we can
+> fix the bugs. We don't add new emulators because of bugs in the
+> existing system.
 
-I just realized one thing.  In bnxt_features_check() ->
-bnxt_exthdr_check(), we check to make sure every extension header is
-supported by the chip and the number of headers does not exceed what
-the chip can support.  So to be more complete, I think we need to
-exclude this from being counted.
+In light of the feedback I received here, I revisited the issue; and
+was able to get the veth driver to work after all, at least for
+regression tests of the hanic driver. I can't seem to reproduce the
+issue I thought I was having. So that kills one motivation for the
+sandlan driver, at least for me.
 
---000000000000f1b61205ee9f9f35
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+--=20
 
-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
-OnaLEot1MoQO7BIe5S9H4AcCEXXcrJJiAtMCl47ARpyHmvQFQFFTrHgUYEd9V+9bOzY7MBIGSV1N
-/JfsT1sZw6HT0lJkSQefhPGpBniAob62DJP3qr11tu8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU31rAyTdZweIF0tJTFYwfOv2w
-L4QwDQYJKoZIhvcNAQELBQADggEBACcuyaGmk0NSZ7Kio7O7WSZ0j0f9xXcBnLbJvQXFYM7JI5uS
-kw5ozATEN5gfmNIe0AHzqwoYjAf3x8Dv2w7HgyrxWdpjTKQFv5jojxa3A5LVuM8mhPGZfR/L5jSk
-5xc3llsKqrWI4ov4JyW79p0E99gfPA6Waixoavxvv1CZBQ4Stu7N660kTu9sJrACf20E+hdKLoiU
-hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
-E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILbG8WEdaCCq8Y5CB5nio0f4YCYhPrKv
-ohsrIGqmkC9+MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEy
-OTE3NTAzNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBCOl/b1zamkAKpTCfuowGofVGxNkvnoRYXl1DzbjiCfXYufnAJ
-TNTg223D6EZcPLmh+8wK1cN6PseYWve1rPDEJ2YniPpn1PTfKM8HiWMEPskZrLoR+M+5+DIrjXIc
-1iWshLIl42Ni8GBSIu/kGZhkbn80daupqF5T+gbI0SEiMCvOKewRbP3yfmpj4YWgRVkmo+2lnLA7
-ROq6jlcfeHOa5a0CTIZ+MpidivMQSjyMOqteksg2ioMmhMtJWgOin2V1aOdv8MNiGIsyeQemkagg
-gh/KLiVFOiVTgWiQHBMcCv35bRdzdroLPcAdcXbAh2zTAftn3nxl9GpIAckYyT0V
---000000000000f1b61205ee9f9f35--
+Stephen Williams
+
+Senior Software Engineer
+
+Cruise
+
+--=20
+
+
+*Confidentiality=C2=A0Note:*=C2=A0We care about protecting our proprietary=
+=20
+information,=C2=A0confidential=C2=A0material, and trade secrets.=C2=A0This =
+message may=20
+contain some or all of those things. Cruise will suffer material harm if=20
+anyone other than the intended recipient disseminates or takes any action=
+=20
+based on this message. If you have received this message (including any=20
+attachments) in error, please delete it immediately and notify the sender=
+=20
+promptly.
