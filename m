@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 945D963BA50
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 08:10:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AE8563BA4D
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 08:10:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbiK2HJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 02:09:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        id S229917AbiK2HJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 02:09:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbiK2HJa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 02:09:30 -0500
+        with ESMTP id S229923AbiK2HJc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 02:09:32 -0500
 Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CF654B39;
-        Mon, 28 Nov 2022 23:09:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF4E55AB0;
+        Mon, 28 Nov 2022 23:09:24 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1669705760;
+        t=1669705762;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=//zKZ0Noqsu9iGtXCTKTDc+x5DdRB6HefxFQ/T9NHTw=;
-        b=isidMuC2MPBrsAfswDDm+CyJ50W5OAMW67SaOktceGpawWtEFIiA3cRACBbUJXLA5wE715
-        z2UUXybQsYmymy+G/ncrfAvxgb6n/H0PiMLQ2ilpY6EjpNcGtpmxNkYQnLlmXbTUqrsVlX
-        3vdNHvSuMoaoObMzNC4zyE6OA0gfWq4=
+        bh=nfQe8leo1x+sS0p7Ddc9oQNJBqu3FJUxK4SNyCHsigg=;
+        b=FE8RaqluIqsuhwKUmPEw9q1VqNnJAthLy799He7Oh5BBdHdbOXxPMM/LdG1dmKWN6rmA0U
+        CYYKSFpI5zVqSfrGeQpAUxaynsZyK+dC7vS7/H/BGdaEiTEKTce7rCDd6H+J5fv1Z20nVL
+        ERqILQ4zY1sB8yESjCUFAZBm/ArrBbY=
 From:   Martin KaFai Lau <martin.lau@linux.dev>
 To:     bpf@vger.kernel.org
 Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
         'Andrii Nakryiko ' <andrii@kernel.org>,
         'Daniel Borkmann ' <daniel@iogearbox.net>,
         netdev@vger.kernel.org, kernel-team@meta.com
-Subject: [PATCH bpf-next 6/7] selftests/bpf: Remove serial from tests using {open,close}_netns
-Date:   Mon, 28 Nov 2022 23:08:59 -0800
-Message-Id: <20221129070900.3142427-7-martin.lau@linux.dev>
+Subject: [PATCH bpf-next 7/7] selftests/bpf: Avoid pinning prog when attaching to tc ingress in btf_skc_cls_ingress
+Date:   Mon, 28 Nov 2022 23:09:00 -0800
+Message-Id: <20221129070900.3142427-8-martin.lau@linux.dev>
 In-Reply-To: <20221129070900.3142427-1-martin.lau@linux.dev>
 References: <20221129070900.3142427-1-martin.lau@linux.dev>
 MIME-Version: 1.0
@@ -50,84 +50,89 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Martin KaFai Lau <martin.lau@kernel.org>
 
-After removing the mount/umount dance from {open,close}_netns()
-in the pervious patch, "serial_" can be removed from
-the tests using {open,close}_netns().
+This patch removes the need to pin prog when attaching to tc ingress
+in the btf_skc_cls_ingress test.  Instead, directly use the
+bpf_tc_hook_create() and bpf_tc_attach().  The qdisc clsact
+will go away together with the netns, so no need to
+bpf_tc_hook_destroy().
 
 Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/empty_skb.c       | 2 +-
- tools/testing/selftests/bpf/prog_tests/tc_redirect.c     | 2 +-
- tools/testing/selftests/bpf/prog_tests/test_tunnel.c     | 2 +-
- tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c | 2 +-
- tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c    | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+ .../bpf/prog_tests/btf_skc_cls_ingress.c      | 25 ++++++++-----------
+ 1 file changed, 10 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/empty_skb.c b/tools/testing/selftests/bpf/prog_tests/empty_skb.c
-index 0613f3bb8b5e..32dd731e9070 100644
---- a/tools/testing/selftests/bpf/prog_tests/empty_skb.c
-+++ b/tools/testing/selftests/bpf/prog_tests/empty_skb.c
-@@ -9,7 +9,7 @@
- 		goto out; \
- })
+diff --git a/tools/testing/selftests/bpf/prog_tests/btf_skc_cls_ingress.c b/tools/testing/selftests/bpf/prog_tests/btf_skc_cls_ingress.c
+index 7a277035c275..ef4d6a3ae423 100644
+--- a/tools/testing/selftests/bpf/prog_tests/btf_skc_cls_ingress.c
++++ b/tools/testing/selftests/bpf/prog_tests/btf_skc_cls_ingress.c
+@@ -9,6 +9,7 @@
+ #include <string.h>
+ #include <errno.h>
+ #include <sched.h>
++#include <net/if.h>
+ #include <linux/compiler.h>
+ #include <bpf/libbpf.h>
  
--void serial_test_empty_skb(void)
-+void test_empty_skb(void)
+@@ -20,10 +21,12 @@ static struct test_btf_skc_cls_ingress *skel;
+ static struct sockaddr_in6 srv_sa6;
+ static __u32 duration;
+ 
+-#define PROG_PIN_FILE "/sys/fs/bpf/btf_skc_cls_ingress"
+-
+ static int prepare_netns(void)
  {
- 	LIBBPF_OPTS(bpf_test_run_opts, tattr);
- 	struct empty_skb *bpf_obj = NULL;
-diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-index 6f800381f924..bca5e6839ac4 100644
---- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-@@ -1138,7 +1138,7 @@ static void *test_tc_redirect_run_tests(void *arg)
- 	return NULL;
++	LIBBPF_OPTS(bpf_tc_hook, qdisc_lo, .attach_point = BPF_TC_INGRESS);
++	LIBBPF_OPTS(bpf_tc_opts, tc_attach,
++		    .prog_fd = bpf_program__fd(skel->progs.cls_ingress));
++
+ 	if (CHECK(unshare(CLONE_NEWNET), "create netns",
+ 		  "unshare(CLONE_NEWNET): %s (%d)",
+ 		  strerror(errno), errno))
+@@ -33,12 +36,12 @@ static int prepare_netns(void)
+ 		  "ip link set dev lo up", "failed\n"))
+ 		return -1;
+ 
+-	if (CHECK(system("tc qdisc add dev lo clsact"),
+-		  "tc qdisc add dev lo clsact", "failed\n"))
++	qdisc_lo.ifindex = if_nametoindex("lo");
++	if (!ASSERT_OK(bpf_tc_hook_create(&qdisc_lo), "qdisc add dev lo clsact"))
+ 		return -1;
+ 
+-	if (CHECK(system("tc filter add dev lo ingress bpf direct-action object-pinned " PROG_PIN_FILE),
+-		  "install tc cls-prog at ingress", "failed\n"))
++	if (!ASSERT_OK(bpf_tc_attach(&qdisc_lo, &tc_attach),
++		       "filter add dev lo ingress"))
+ 		return -1;
+ 
+ 	/* Ensure 20 bytes options (i.e. in total 40 bytes tcp header) for the
+@@ -195,19 +198,12 @@ static struct test tests[] = {
+ 
+ void test_btf_skc_cls_ingress(void)
+ {
+-	int i, err;
++	int i;
+ 
+ 	skel = test_btf_skc_cls_ingress__open_and_load();
+ 	if (CHECK(!skel, "test_btf_skc_cls_ingress__open_and_load", "failed\n"))
+ 		return;
+ 
+-	err = bpf_program__pin(skel->progs.cls_ingress, PROG_PIN_FILE);
+-	if (CHECK(err, "bpf_program__pin",
+-		  "cannot pin bpf prog to %s. err:%d\n", PROG_PIN_FILE, err)) {
+-		test_btf_skc_cls_ingress__destroy(skel);
+-		return;
+-	}
+-
+ 	for (i = 0; i < ARRAY_SIZE(tests); i++) {
+ 		if (!test__start_subtest(tests[i].desc))
+ 			continue;
+@@ -221,6 +217,5 @@ void test_btf_skc_cls_ingress(void)
+ 		reset_test();
+ 	}
+ 
+-	bpf_program__unpin(skel->progs.cls_ingress, PROG_PIN_FILE);
+ 	test_btf_skc_cls_ingress__destroy(skel);
  }
- 
--void serial_test_tc_redirect(void)
-+void test_tc_redirect(void)
- {
- 	pthread_t test_thread;
- 	int err;
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_tunnel.c b/tools/testing/selftests/bpf/prog_tests/test_tunnel.c
-index eea274110267..07ad457f3370 100644
---- a/tools/testing/selftests/bpf/prog_tests/test_tunnel.c
-+++ b/tools/testing/selftests/bpf/prog_tests/test_tunnel.c
-@@ -421,7 +421,7 @@ static void *test_tunnel_run_tests(void *arg)
- 	return NULL;
- }
- 
--void serial_test_tunnel(void)
-+void test_tunnel(void)
- {
- 	pthread_t test_thread;
- 	int err;
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c b/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-index 9ac6f6a268db..a50971c6cf4a 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-@@ -85,7 +85,7 @@ static void test_max_pkt_size(int fd)
- }
- 
- #define NUM_PKTS 10000
--void serial_test_xdp_do_redirect(void)
-+void test_xdp_do_redirect(void)
- {
- 	int err, xdp_prog_fd, tc_prog_fd, ifindex_src, ifindex_dst;
- 	char data[sizeof(pkt_udp) + sizeof(__u32)];
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c b/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
-index 13daa3746064..c72083885b6d 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
-@@ -174,7 +174,7 @@ static void test_synproxy(bool xdp)
- 	system("ip netns del synproxy");
- }
- 
--void serial_test_xdp_synproxy(void)
-+void test_xdp_synproxy(void)
- {
- 	if (test__start_subtest("xdp"))
- 		test_synproxy(true);
 -- 
 2.30.2
 
