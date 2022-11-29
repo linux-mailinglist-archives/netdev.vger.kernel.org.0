@@ -2,89 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 987EC63CB15
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 23:33:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FCEE63CB1B
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 23:38:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235867AbiK2WdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 17:33:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57882 "EHLO
+        id S236589AbiK2Wik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 17:38:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235589AbiK2WdN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 17:33:13 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252A32CDDC
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 14:33:13 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id bj12so37169046ejb.13
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 14:33:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=l5qA3qKZdKHiw5/o182jJcQJWLvxKSz08LW+4woYnrk=;
-        b=lqu0glwqyZlvFMaKyTg9gOzC3iwa0CGXtTFNGHDUYF913b79OmARxNdB5gO+ODdV+I
-         D7KULC1tY4RjHxV5Xnh+PLI95sQaoS3Fz0hngrncbOQwVjKAxHJ+adfukbfsgl1oXi87
-         gG5JtuP0brHGZBzJ9z37BJfq+649L1bOqmhtaaaSRM0t3NQMBaloSbGa6KcWPLiHwKO9
-         IDgDWy6K2rRMnbHXmfPbCYAtGd/bD2ubo3WtuVd6h8ExXLGErKVP3SPwIjDh62d6gXlH
-         nR60YzW26nVOMxdQr4vXuz3zWC7kRyg7A9eQ/5REEfh8U39qtjO0VB0APr5TfiVb79Me
-         ZTvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=l5qA3qKZdKHiw5/o182jJcQJWLvxKSz08LW+4woYnrk=;
-        b=t5zrGmIAJFrklP5OjIu7vAlyfkg6ycminq1rhDBePT4LKG7HDrSjacqmCTCp+qUVgC
-         SK4gxKYhFDPADhorAz++kfO6kFyVV6dcRJHd8HO6SDs/xTNfON/RJ84J5bKxrD+PsOg8
-         D4HeU+hlhQ7CHRTibkOFJNK81/FPr5Qh4e9yb3ELvrJZNAyHBTD2UKuRNX8o6N7BVunV
-         nhVIPX5Vvyoreo2G21rji9mt8R6bNJrXYEMTQtG0Jvy0xXdXNjIimUBi2xlrkIaXpb08
-         gotafYQI7AaOG7cnTXYgGO1hKNJDyna4bAKcknWn3nbI5ChYfsGXRKA1B8TZO0d1LQ6N
-         cbcQ==
-X-Gm-Message-State: ANoB5pnGjymUODcb1ejeK+Q1pqyH9Z4dRG6nV9MjX5raflAmV04Q/KBE
-        jJuBZ/pj4cr/yv01vNYpbx8=
-X-Google-Smtp-Source: AA0mqf4VvS3QsdW202P/rBfaosH5rgMQcLZtrsNY/H0BYa1FSDuxiuf1YEtvAgepGOJEOeQMroPckA==
-X-Received: by 2002:a17:907:9842:b0:7b9:9492:b3f4 with SMTP id jj2-20020a170907984200b007b99492b3f4mr28540814ejc.688.1669761191533;
-        Tue, 29 Nov 2022 14:33:11 -0800 (PST)
-Received: from ?IPV6:2a01:c22:6ef3:1400:6d2d:6394:6df6:11fc? (dynamic-2a01-0c22-6ef3-1400-6d2d-6394-6df6-11fc.c22.pool.telefonica.de. [2a01:c22:6ef3:1400:6d2d:6394:6df6:11fc])
-        by smtp.googlemail.com with ESMTPSA id qq18-20020a17090720d200b0073ae9ba9ba8sm6577811ejb.3.2022.11.29.14.33.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Nov 2022 14:33:11 -0800 (PST)
-Message-ID: <17e16424-a46c-f39b-2368-bc0c13e3cb6e@gmail.com>
-Date:   Tue, 29 Nov 2022 23:33:08 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH, net-next] r8169: use tp_to_dev instead of open code
-Content-Language: en-US
-To:     Juhee Kang <claudiajkang@gmail.com>, nic_swsd@realtek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-References: <20221129161244.5356-1-claudiajkang@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <20221129161244.5356-1-claudiajkang@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S236517AbiK2Wie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 17:38:34 -0500
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A67F303EF;
+        Tue, 29 Nov 2022 14:38:32 -0800 (PST)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 43729C009; Tue, 29 Nov 2022 23:38:39 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1669761519; bh=smCY981fzC9mZh3eGXAC3uy7nL+6sisKTqlh2Hjzenk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NUbKTNPnHK6tuuncFbF/XE8RjNTxugpELitcB2dWP/xV+80Om6B/65tFtkyOE7u/6
+         OMoqAdmfOT2CQOQQWKuwaACVp+VnCzZbjqo0aNM91bIVBNcuwiY+AUpwh4ihRSx5cl
+         iy6P2GcCVgYIQmAQhX+GxGiExdaDD8FLgRHPJeHb734LqxiTQ90l4j4giD6sk2AyqS
+         jEtpMb3LIZPfxNXmsbU79OQ2mTYii5ADJ98qDMnDPfSUtMJjAJ5Mu0u0kTv3YIO0DO
+         7MxIy0tuZQO56bag0lP6H9tY2Jvafo/sxNlHqmsqhWfUu12hYnTaIiWPII4hrJbblB
+         0RiF9Q9xUdvBw==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 5C02AC009;
+        Tue, 29 Nov 2022 23:38:34 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1669761517; bh=smCY981fzC9mZh3eGXAC3uy7nL+6sisKTqlh2Hjzenk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h6y1a2ztn0ZfYgUgUhnaPxMyQ4t+6WLvNiP12gfRIcnLekJ1foIMsNs33nDA6tk/u
+         vSJ/ANhh7xYim9/WGJXKIkWCeG5QGQLGXkCHITcthUgOFI/dncLQsxpiBSKPMxm82+
+         r53aS5ryiXr40YUAH8nQn86eG8RGcsUcUaoRHkyylhPGhhuQ3oCA2OigGhaFdhD3w/
+         wsaI+53uvgy4xp1HH2oJpVio/b2KhEQnVe065T/IAG6iYv4aFNko18JQivt2VXeMsj
+         N8hHq0ifjh9u4ZjxfDvs4/AdZcwPfvrh2udRXnW1n/rU44yoTc4M1h75kLUUcSkdxT
+         B50011CaxcV2w==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id c0600905;
+        Tue, 29 Nov 2022 22:38:21 +0000 (UTC)
+Date:   Wed, 30 Nov 2022 07:38:06 +0900
+From:   asmadeus@codewreck.org
+To:     Schspa Shi <schspa@gmail.com>
+Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.co,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
+Subject: Re: [PATCH] 9p: fix crash when transaction killed
+Message-ID: <Y4aJzjlkkt5VKy0G@codewreck.org>
+References: <20221129162251.90790-1-schspa@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20221129162251.90790-1-schspa@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29.11.2022 17:12, Juhee Kang wrote:
-> The open code is defined as a helper function(tp_to_dev) on r8169_main.c,
-> which the open code is &tp->pci_dev->dev. The helper function was added
-> in commit 1e1205b7d3e9 ("r8169: add helper tp_to_dev"). And then later,
-> commit f1e911d5d0df ("r8169: add basic phylib support") added
-> r8169_phylink_handler function but it didn't use the helper function.
-> Thus, tp_to_dev() replaces the open code. This patch doesn't change logic.
+Schspa Shi wrote on Wed, Nov 30, 2022 at 12:22:51AM +0800:
+> The transport layer of fs does not fully support the cancel request.
+> When the request is in the REQ_STATUS_SENT state, p9_fd_cancelled
+> will forcibly delete the request, and at this time p9_[read/write]_work
+> may continue to use the request. Therefore, it causes UAF .
 > 
-> Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
+> There is the logs from syzbot.
+> 
+> Corrupted memory at 0xffff88807eade00b [ 0xff 0x07 0x00 0x00 0x00 0x00
+> 0x00 0x00 . . . . . . . . ] (in kfence-#110):
+>  p9_fcall_fini net/9p/client.c:248 [inline]
+>  p9_req_put net/9p/client.c:396 [inline]
+>  p9_req_put+0x208/0x250 net/9p/client.c:390
+>  p9_client_walk+0x247/0x540 net/9p/client.c:1165
+>  clone_fid fs/9p/fid.h:21 [inline]
+>  v9fs_fid_xattr_set+0xe4/0x2b0 fs/9p/xattr.c:118
+>  v9fs_xattr_set fs/9p/xattr.c:100 [inline]
+>  v9fs_xattr_handler_set+0x6f/0x120 fs/9p/xattr.c:159
+>  __vfs_setxattr+0x119/0x180 fs/xattr.c:182
+>  __vfs_setxattr_noperm+0x129/0x5f0 fs/xattr.c:216
+>  __vfs_setxattr_locked+0x1d3/0x260 fs/xattr.c:277
+>  vfs_setxattr+0x143/0x340 fs/xattr.c:309
+>  setxattr+0x146/0x160 fs/xattr.c:617
+>  path_setxattr+0x197/0x1c0 fs/xattr.c:636
+>  __do_sys_setxattr fs/xattr.c:652 [inline]
+>  __se_sys_setxattr fs/xattr.c:648 [inline]
+>  __ia32_sys_setxattr+0xc0/0x160 fs/xattr.c:648
+>  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+>  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+>  do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
+>  entry_SYSENTER_compat_after_hwframe+0x70/0x82
+> 
+> Below is a similar scenario, the scenario in the syzbot log looks more
+> complicated than this one, but the root cause seems to be the same.
+> 
+>      T21124               p9_write_work        p9 read_work
+> ======================== first trans =================================
+> p9_client_walk
+>   p9_client_rpc
+>     p9_client_prepare_req
+>     /* req->refcount == 2 */
+>     c->trans_mod->request(c, req);
+>       p9_fd_request
+>         req move to unsent_req_list
+>                             req->status = REQ_STATUS_SENT;
+>                             req move to req_list
+>                             << send to server >>
+>     wait_event_killable
+>     << get kill signal >>
+>     if (c->trans_mod->cancel(c, req))
+>        p9_client_flush(c, req);
+>          /* send flush request */
+>          req = p9_client_rpc(c, P9_TFLUSH, "w", oldtag);
+> 		 if (c->trans_mod->cancelled)
+>             c->trans_mod->cancelled(c, oldreq);
+>               /* old req was deleted from req_list */
+>               /* req->refcount == 1 */
+>   p9_req_put
+>     /* req->refcount == 0 */
+>     << preempted >>
+>                                        << get response, UAF here >>
+>                                        m->rreq = p9_tag_lookup(m->client, m->rc.tag);
+>                                          /* req->refcount == 1 */
+>                                        << do response >>
+>                                        p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);
+>                                          /* req->refcount == 0 */
+>                                          p9_fcall_fini
+>                                          /* request have been freed */
+>     p9_fcall_fini
+>      /* double free */
+>                                        p9_req_put(m->client, m->rreq);
+>                                          /* req->refcount == 1 */
+> 
+> To fix it, we can wait the request with status REQ_STATUS_SENT returned.
 
-Doesn't hurt and helper is used more than once in this function.
+Christian replied on this (we cannot wait) but I agree with him -- the
+scenario you describe is proteced by p9_tag_lookup checking for refcount
+with refcount_inc_not_zero (p9_req_try_get).
 
-Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
+The normal scenarii for flush are as follow:
+ - cancel before request is sent: no flush, just free
+ - flush is ignored and reply comes first: we get reply from original
+request then reply from flush
+ - flush is handled and reply never comes: we only get reply from flush
 
+Protocol-wise, we can safely reuse the tag after the flush reply got
+received; and as far as I can follow the code we only ever free the tag
+(last p9_call_fini) after flush has returned so the entry should be
+protected.
+
+If we receive a response on the given tag between cancelled and the main
+thread going out the request has been marked as FLSHD and should be
+ignored. . . here is one p9_req_put in p9_read_work() in this case but
+it corresponds to the ref obtained by p9_tag_lookup() so it should be
+valid.
+
+
+I'm happy to believe we have a race somewhere (even if no sane server
+would produce it), but right now I don't see it looking at the code.. :/
+
+-- 
+Dominique
