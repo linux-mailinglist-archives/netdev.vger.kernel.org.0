@@ -2,92 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8133363BC3C
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 09:55:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9329963BC41
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 09:56:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbiK2IzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 03:55:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
+        id S231365AbiK2I4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 03:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231785AbiK2Iyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 03:54:54 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CB459FE6
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 00:54:30 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-72-_IDLqBNPPYKl1T-dLqul3w-1; Tue, 29 Nov 2022 08:54:27 +0000
-X-MC-Unique: _IDLqBNPPYKl1T-dLqul3w-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 29 Nov
- 2022 08:54:25 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.044; Tue, 29 Nov 2022 08:54:25 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jacob Keller' <jacob.e.keller@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: RE: [PATCH net-next v2 1/9] devlink: use min_t to calculate data_size
-Thread-Topic: [PATCH net-next v2 1/9] devlink: use min_t to calculate
- data_size
-Thread-Index: AQHY/3u0GPIWenbZ/0+Xu9BNaPVoNq5OnL0QgAYTcACAAO/9oA==
-Date:   Tue, 29 Nov 2022 08:54:25 +0000
-Message-ID: <4fead34adb0a4461a7800a121b4642e0@AcuMS.aculab.com>
-References: <20221123203834.738606-1-jacob.e.keller@intel.com>
- <20221123203834.738606-2-jacob.e.keller@intel.com>
- <d561b49935234451ac062f9f12c50e83@AcuMS.aculab.com>
- <395aa6d3-c423-266e-28e1-43f8d66dce2a@intel.com>
-In-Reply-To: <395aa6d3-c423-266e-28e1-43f8d66dce2a@intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S229712AbiK2I4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 03:56:40 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0933C28B
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 00:56:40 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id p13-20020a05600c468d00b003cf8859ed1bso10257444wmo.1
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 00:56:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=p4K6sGCjp5UJuab3VAd/zZQ790uNoMHShHR16urluBo=;
+        b=ANlSPXTi5oGxo+g1r9TuePqHZG3basMmHazGbfrEkCXbBQTPP+kK69sfjuVU36j8ZK
+         nMMT67j22ptJpjmrxB1MY/Hq+tOkNQN2+OUQH6QhgOgvdbFCmZcsLj4HXHZCY12Le57N
+         FJRWbGUkAtePbk9Mq6f6u2Xd9KQ7ayRySKxOoj+jIXvIReTh73Pzl0VKiGT/8F9S9c+F
+         +Hla5xFEH2yKYqAdG6KWCTr4uKMXhcB11Ub9C7h/oO3FChl0fFYPVMBQsCRTyOVo6YCi
+         G3jGW/kHMuyosjWf2H9pZ08skyyuCHG/5jdak+7SAoeouTOKSDxW5ylA9mj1ICVfPiVl
+         ketg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=p4K6sGCjp5UJuab3VAd/zZQ790uNoMHShHR16urluBo=;
+        b=8PBXeKmFp+UskpC+1gpfyIAg9eh2qHaxgbKtCNueR9FZhDYBhm3Ps5CNKdijLtzmwv
+         qeNmTd4YcH4uFCAiEgs6+8e0rnKaFm8yofxKkiRJ9IHPVoTnvQXF5lJ4jw5Ih/Uauabl
+         hZ/BUgG3TAbNE/PjXkBBMFXu5pO5+8rYSNw28ZknFmnF9z2NC0ZwF4stDltTPNWxvv/Z
+         pbDG4AeeoaRpL+X5OA7+jHh241gN+yb+EerrINLTbbftQ8labeaqcaZF9OFpjGMRrLa7
+         pwi6Ys/+r1YK8Chl5gq6wlf97Bp62Geftv62PblTCdzoT8hZSzcHeALPsw9I3adYOR6/
+         PfgQ==
+X-Gm-Message-State: ANoB5pkx2LYuB9uyNbrLwB5Nn7lpZ+tqFnbv6DQLTCUTeRgES9cvPyuw
+        h0GgouXbZ40C7Ukb9q/QT+4=
+X-Google-Smtp-Source: AA0mqf41p2JOcr2AkkOktRwvIwUnpszmbUiRWIHfJPubrof2tNkaJsXaKiFll3cLMKNTKyfLK/Y9uA==
+X-Received: by 2002:a05:600c:1907:b0:3cf:7981:9a7 with SMTP id j7-20020a05600c190700b003cf798109a7mr40400642wmq.87.1669712198468;
+        Tue, 29 Nov 2022 00:56:38 -0800 (PST)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id y14-20020adff14e000000b00226dba960b4sm13251626wro.3.2022.11.29.00.56.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Nov 2022 00:56:38 -0800 (PST)
+Date:   Tue, 29 Nov 2022 08:56:35 +0000
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, pieter.jansen-van-vuuren@amd.com,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
+Subject: Re: [PATCH net] sfc: fix error process in
+ efx_ef100_pci_sriov_enable()
+Message-ID: <Y4XJQwhvc51ccjdE@gmail.com>
+Mail-Followup-To: Zhengchao Shao <shaozhengchao@huawei.com>,
+        netdev@vger.kernel.org, ecree.xilinx@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        pieter.jansen-van-vuuren@amd.com, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+References: <20221125071958.276454-1-shaozhengchao@huawei.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221125071958.276454-1-shaozhengchao@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSmFjb2IgS2VsbGVyDQo+IFNlbnQ6IDI4IE5vdmVtYmVyIDIwMjIgMTg6MzENCj4gDQo+
-IE9uIDExLzI0LzIwMjIgMTo1MyBQTSwgRGF2aWQgTGFpZ2h0IHdyb3RlOg0KPiA+IEZyb206IEph
-Y29iIEtlbGxlcg0KPiA+PiBTZW50OiAyMyBOb3ZlbWJlciAyMDIyIDIwOjM4DQo+ID4+DQo+ID4+
-IFRoZSBjYWxjdWxhdGlvbiBmb3IgdGhlIGRhdGFfc2l6ZSBpbiB0aGUgZGV2bGlua19ubF9yZWFk
-X3NuYXBzaG90X2ZpbGwNCj4gPj4gZnVuY3Rpb24gdXNlcyBhbiBpZiBzdGF0ZW1lbnQgdGhhdCBp
-cyBiZXR0ZXIgZXhwcmVzc2VkIHVzaW5nIHRoZSBtaW5fdA0KPiA+PiBtYWNyby4NCj4gPg0KPiA+
-IFRoZXJlIG91Z2h0IHRvIGJlIGEgJ2R1Y2sgc2hvb3QnIGFycmFuZ2VkIGZvciBhbGwgdXNlcyBv
-ZiBtaW5fdCgpLg0KPiA+IEkgd2FzIHRlc3RpbmcgYSBwYXRjaCAoSSBtaWdodCBzdWJtaXQgbmV4
-dCB3ZWVrKSB0aGF0IHJlbGF4ZXMgdGhlDQo+ID4gY2hlY2tzIGluIG1pbigpIHNvIHRoYXQgaXQg
-ZG9lc24ndCBlcnJvciBhIGxvdCBvZiB2YWxpZCBjYXNlcy4NCj4gPiBJbiBwYXJ0aWN1bGFyIGEg
-cG9zaXRpdmUgaW50ZWdlciBjb25zdGFudCBjYW4gYWx3YXlzIGJlIGNhc3QgdG8gKGludCkNCj4g
-PiBhbmQgdGhlIGNvbXBhcmUgd2lsbCBEVFJULg0KPiA+DQo+ID4gSSBmb3VuZCB0aGluZ3MgbGlr
-ZSBtaW5fdCh1MzIsIHUzMl9sZW5ndGgsIHU2NF9saW1pdCkgd2hlcmUNCj4gPiB5b3UgcmVhbGx5
-IGRvbid0IHdhbnQgdG8gbWFzayB0aGUgbGltaXQgZG93bi4NCj4gPiBUaGVyZSBhcmUgYWxzbyB0
-aGUgbWluX3QodTgsIC4uLikgYW5kIG1pbl90KHUxNiwgLi4uKS4NCj4gPg0KPiANCj4gV291bGRu
-J3QgdGhhdCBleGFtcGxlIGp1c3Qgd2FudCB0byBiZSBtaW5fdCh1NjQsIC4uLik/DQoNClRoYXQg
-aXMgd2hhdCBpcyB3b3VsZCBuZWVkIHRvIGJlLg0KQnV0IHRoZSBjb21waWxlciBjYW4gd29yayBp
-dCBvdXQgYW5kIGdldCBpdCByaWdodC4NCg0KPiA+IC4uLg0KPiA+PiArCQlkYXRhX3NpemUgPSBt
-aW5fdCh1MzIsIGVuZF9vZmZzZXQgLSBjdXJyX29mZnNldCwNCj4gPj4gKwkJCQkgIERFVkxJTktf
-UkVHSU9OX1JFQURfQ0hVTktfU0laRSk7DQo+ID4NCj4gPiBIZXJlIEkgdGhpbmsgYm90aCB4eHhf
-b2Zmc2V0IGFyZSB1MzIgLSBzbyB0aGUgQ0hVTktfU0laRQ0KPiA+IGNvbnN0YW50IHByb2JhYmx5
-IG5lZWRzIGEgVSBzdWZmaXguDQo+IA0KPiBSaWdodC4gTXkgdW5kZXJzdGFuZGluZyB3YXMgdGhh
-dCBtaW5fdCB3b3VsZCBjYXN0IGV2ZXJ5dGhpbmcgdG8gYSB1MzINCj4gd2hlbiBkb2luZyBzdWNo
-IGNvbXBhcmlzb24sIGFuZCB3ZSBrbm93IHRoYXQNCj4gREVWTElOS19SRUdJT05fUkVBRF9DSFVO
-S19TSVpFIGlzIDwgVTMyX01BWCBzbyB0aGlzIGlzIG9rPw0KPiANCj4gT3IgYW0gSSBtaXN1bmRl
-cnN0YW5kaW5nPw0KDQpUaGUgY29kZSBpc24ndCB3cm9uZywgZXhjZXB0IHRoYXQgZXJyb3JzIGZy
-b20gbWluKCkgYXJlIHJlYWxseQ0KYW4gaW5kaWNhdGlvbiB0aGF0IHRoZSB0eXBlcyBtaXNtYXRj
-aCwgbm90IHRoYXQgeW91IHNob3VsZCBhZGQNCmxvYWRzIG9mIGNhc3RzLg0KWW91IHdvdWxkbid0
-IHRoaW5rOg0KCXggPSAoaW50KWEgKyAoaW50KWI7DQp3YXMgYW55dGhpbmcgbm9ybWFsLCBidXQg
-dGhhdCBpcyB3aGF0IG1pbl90KCkgZG9lcy4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRk
-cmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBN
-SzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+On Fri, Nov 25, 2022 at 03:19:58PM +0800, Zhengchao Shao wrote:
+> There are two issues in efx_ef100_pci_sriov_enable():
+> 1. When it doesn't have MAE Privilege, it doesn't disable pci sriov.
+> 2. When creating VF successfully, it should return vf nums instead of 0.
 
+This function returns 0 on success, or an error code. It is the higher level
+function ef100_pci_sriov_configure() in ef100.c that returns num_vfs if things
+are ok.
+
+Martin
+
+> Compiled test only.
+> 
+> Fixes: 08135eecd07f ("sfc: add skeleton ef100 VF representors")
+> Fixes: 78a9b3c47bef ("sfc: add EF100 VF support via a write to sriov_numvfs")
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  drivers/net/ethernet/sfc/ef100_sriov.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/ef100_sriov.c b/drivers/net/ethernet/sfc/ef100_sriov.c
+> index 94bdbfcb47e8..adf7fb09940e 100644
+> --- a/drivers/net/ethernet/sfc/ef100_sriov.c
+> +++ b/drivers/net/ethernet/sfc/ef100_sriov.c
+> @@ -25,15 +25,17 @@ static int efx_ef100_pci_sriov_enable(struct efx_nic *efx, int num_vfs)
+>  	if (rc)
+>  		goto fail1;
+>  
+> -	if (!nic_data->grp_mae)
+> +	if (!nic_data->grp_mae) {
+> +		pci_disable_sriov(dev);
+>  		return 0;
+> +	}
+>  
+>  	for (i = 0; i < num_vfs; i++) {
+>  		rc = efx_ef100_vfrep_create(efx, i);
+>  		if (rc)
+>  			goto fail2;
+>  	}
+> -	return 0;
+> +	return num_vfs;
+>  
+>  fail2:
+>  	list_for_each_entry_safe(efv, next, &efx->vf_reps, list)
+> -- 
+> 2.17.1
