@@ -2,139 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 242AF63B916
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 05:20:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37C5B63B91E
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 05:29:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235216AbiK2EUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 23:20:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
+        id S235287AbiK2E32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 23:29:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234994AbiK2EUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 23:20:43 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D675A63E4;
-        Mon, 28 Nov 2022 20:20:41 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NLpym6sVnzmWDk;
-        Tue, 29 Nov 2022 12:20:00 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 29 Nov
- 2022 12:20:39 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
-        <haoluo@google.com>, <jolsa@kernel.org>,
-        <syzkaller-bugs@googlegroups.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH bpf-next] bpf, test_run: fix alignment problem in bpf_test_init()
-Date:   Tue, 29 Nov 2022 12:26:44 +0800
-Message-ID: <20221129042644.231816-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S234872AbiK2E30 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 23:29:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8D327DD7
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 20:28:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669696111;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=z7p6XfrdDCH4aOTwVl/emdldBB1uAxKI9vGCNrFnsCc=;
+        b=Jx+oWDFIkHfvJMB3GpSZZIE1Oj5Xkzjs1QdIWLcvcaE1UkyVPcXYK0gvKA3+yuvOb8s1/Q
+        vIW9qMX9BM/98WQVbSMf80+HnUOsSGhi7nyoLrMTQf0zybMQPJEo4VfWo6TMZszJk1ntdZ
+        sEzCdS/4lvxmjIOMze9O2lxmsxcHqIE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-86-xZNroWIFNiq4PLPq28ZcnA-1; Mon, 28 Nov 2022 23:28:24 -0500
+X-MC-Unique: xZNroWIFNiq4PLPq28ZcnA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F1FB3101A52A;
+        Tue, 29 Nov 2022 04:28:23 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-12-207.pek2.redhat.com [10.72.12.207])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2854F1415100;
+        Tue, 29 Nov 2022 04:28:18 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        si-wei.liu@oracle.com, mst@redhat.com, eperezma@redhat.com,
+        lingshan.zhu@intel.com, elic@nvidia.com,
+        Jason Wang <jasowang@redhat.com>
+Subject: [PATCH V3] vdpa: allow provisioning device features
+Date:   Tue, 29 Nov 2022 12:28:16 +0800
+Message-Id: <20221129042816.10346-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The problem reported by syz is as follows:
-BUG: KASAN: slab-out-of-bounds in __build_skb_around+0x230/0x330
-Write of size 32 at addr ffff88807ec6b2c0 by task bpf_repo/6711
-Call Trace:
-<TASK>
-dump_stack_lvl+0x8e/0xd1
-print_report+0x155/0x454
-kasan_report+0xba/0x1f0
-kasan_check_range+0x35/0x1b0
-memset+0x20/0x40
-__build_skb_around+0x230/0x330
-build_skb+0x4c/0x260
-bpf_prog_test_run_skb+0x2fc/0x1ce0
-__sys_bpf+0x1798/0x4b60
-__x64_sys_bpf+0x75/0xb0
-do_syscall_64+0x35/0x80
-entry_SYSCALL_64_after_hwframe+0x46/0xb0
-</TASK>
+This patch allows device features to be provisioned via vdpa. This
+will be useful for preserving migration compatibility between source
+and destination:
 
-Allocated by task 6711:
-kasan_save_stack+0x1e/0x40
-kasan_set_track+0x21/0x30
-__kasan_kmalloc+0xa1/0xb0
-__kmalloc+0x4e/0xb0
-bpf_test_init.isra.0+0x77/0x100
-bpf_prog_test_run_skb+0x219/0x1ce0
-__sys_bpf+0x1798/0x4b60
-__x64_sys_bpf+0x75/0xb0
-do_syscall_64+0x35/0x80
-entry_SYSCALL_64_after_hwframe+0x46/0xb0
+# vdpa dev add name dev1 mgmtdev pci/0000:02:00.0 device_features 0x300020000
+# vdpa dev config show dev1
+# dev1: mac 52:54:00:12:34:56 link up link_announce false mtu 65535
+      negotiated_features CTRL_VQ VERSION_1 ACCESS_PLATFORM
 
-The process is as follows:
-bpf_prog_test_run_skb()
-	bpf_test_init()
-		data = kzalloc()	//The length of input is 576.
-					//The actual allocated memory
-					//size is 1024.
-	build_skb()
-		__build_skb_around()
-			size = ksize(data)//size = 1024
-			size -= SKB_DATA_ALIGN(
-					sizeof(struct skb_shared_info));
-					//size = 704
-			skb_set_end_offset(skb, size);
-			shinfo = skb_shinfo(skb);//shinfo = data + 704
-			memset(shinfo...)	//Write out of bounds
-
-In bpf_test_init(), the accessible space allocated to data is 576 bytes,
-and the memory allocated to data is 1024 bytes. In __build_skb_around(),
-shinfo indicates the offset of 704 bytes of data, which triggers the issue
-of writing out of bounds.
-
-Fixes: 1cf1cae963c2 ("bpf: introduce BPF_PROG_TEST_RUN command")
-Reported-by: syzbot+fda18eaa8c12534ccb3b@syzkaller.appspotmail.com
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- net/bpf/test_run.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Changes since v2:
+- rebase to master
+- tweak the help text
+Changes since v1:
+- Use uint64_t instead of __u64 for device_features
+- Fix typos and tweak the manpage
+- Add device_features to the help text
+---
+ man/man8/vdpa-dev.8 | 15 +++++++++++++++
+ vdpa/vdpa.c         | 30 ++++++++++++++++++++++++++++--
+ 2 files changed, 43 insertions(+), 2 deletions(-)
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index fcb3e6c5e03c..fbd5337b8f68 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -766,6 +766,8 @@ static void *bpf_test_init(const union bpf_attr *kattr, u32 user_size,
- 			   u32 size, u32 headroom, u32 tailroom)
- {
- 	void __user *data_in = u64_to_user_ptr(kattr->test.data_in);
-+	unsigned int true_size;
-+	void *true_data;
- 	void *data;
+diff --git a/man/man8/vdpa-dev.8 b/man/man8/vdpa-dev.8
+index 9faf3838..43e5bf48 100644
+--- a/man/man8/vdpa-dev.8
++++ b/man/man8/vdpa-dev.8
+@@ -31,6 +31,7 @@ vdpa-dev \- vdpa device configuration
+ .I NAME
+ .B mgmtdev
+ .I MGMTDEV
++.RI "[ device_features " DEVICE_FEATURES " ]"
+ .RI "[ mac " MACADDR " ]"
+ .RI "[ mtu " MTU " ]"
+ .RI "[ max_vqp " MAX_VQ_PAIRS " ]"
+@@ -74,6 +75,15 @@ Name of the new vdpa device to add.
+ Name of the management device to use for device addition.
  
- 	if (size < ETH_HLEN || size > PAGE_SIZE - headroom - tailroom)
-@@ -779,6 +781,14 @@ static void *bpf_test_init(const union bpf_attr *kattr, u32 user_size,
- 	if (!data)
- 		return ERR_PTR(-ENOMEM);
+ .PP
++.BI device_features " DEVICE_FEATURES"
++Specifies the virtio device features bit-mask that is provisioned for the new vdpa device.
++
++The bits can be found under include/uapi/linux/virtio*h.
++
++see macros such as VIRTIO_F_ and VIRTIO_XXX(e.g NET)_F_ for specific bit values.
++
++This is optional.
++
+ .BI mac " MACADDR"
+ - specifies the mac address for the new vdpa device.
+ This is applicable only for the network type of vdpa device. This is optional.
+@@ -127,6 +137,11 @@ vdpa dev add name foo mgmtdev vdpa_sim_net
+ Add the vdpa device named foo on the management device vdpa_sim_net.
+ .RE
+ .PP
++vdpa dev add name foo mgmtdev vdpa_sim_net device_features 0x300020000
++.RS 4
++Add the vdpa device named foo on the management device vdpa_sim_net with device_features of 0x300020000
++.RE
++.PP
+ vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55
+ .RS 4
+ Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55.
+diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
+index b73e40b4..27647d73 100644
+--- a/vdpa/vdpa.c
++++ b/vdpa/vdpa.c
+@@ -27,6 +27,7 @@
+ #define VDPA_OPT_VDEV_MTU		BIT(5)
+ #define VDPA_OPT_MAX_VQP		BIT(6)
+ #define VDPA_OPT_QUEUE_INDEX		BIT(7)
++#define VDPA_OPT_VDEV_FEATURES		BIT(8)
  
-+	true_size = ksize(data);
-+	if (size + headroom + tailroom < true_size) {
-+		true_data = krealloc(data, true_size, GFP_USER | __GFP_ZERO);
-+			if (!true_data)
-+				return ERR_PTR(-ENOMEM);
-+		data = true_data;
+ struct vdpa_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -38,6 +39,7 @@ struct vdpa_opts {
+ 	uint16_t mtu;
+ 	uint16_t max_vqp;
+ 	uint32_t queue_idx;
++	uint64_t device_features;
+ };
+ 
+ struct vdpa {
+@@ -187,6 +189,17 @@ static int vdpa_argv_u32(struct vdpa *vdpa, int argc, char **argv,
+ 	return get_u32(result, *argv, 10);
+ }
+ 
++static int vdpa_argv_u64_hex(struct vdpa *vdpa, int argc, char **argv,
++			     uint64_t *result)
++{
++	if (argc <= 0 || !*argv) {
++		fprintf(stderr, "number expected\n");
++		return -EINVAL;
 +	}
 +
- 	if (copy_from_user(data + headroom, data_in, user_size)) {
- 		kfree(data);
- 		return ERR_PTR(-EFAULT);
++	return get_u64((__u64 *)result, *argv, 16);
++}
++
+ struct vdpa_args_metadata {
+ 	uint64_t o_flag;
+ 	const char *err_msg;
+@@ -244,6 +257,10 @@ static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
+ 		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, opts->max_vqp);
+ 	if (opts->present & VDPA_OPT_QUEUE_INDEX)
+ 		mnl_attr_put_u32(nlh, VDPA_ATTR_DEV_QUEUE_INDEX, opts->queue_idx);
++	if (opts->present & VDPA_OPT_VDEV_FEATURES) {
++		mnl_attr_put_u64(nlh, VDPA_ATTR_DEV_FEATURES,
++				opts->device_features);
++	}
+ }
+ 
+ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
+@@ -329,6 +346,14 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
+ 
+ 			NEXT_ARG_FWD();
+ 			o_found |= VDPA_OPT_QUEUE_INDEX;
++		} else if (!strcmp(*argv, "device_features") &&
++			   (o_optional & VDPA_OPT_VDEV_FEATURES)) {
++			NEXT_ARG_FWD();
++			err = vdpa_argv_u64_hex(vdpa, argc, argv,
++						&opts->device_features);
++			if (err)
++				return err;
++			o_found |= VDPA_OPT_VDEV_FEATURES;
+ 		} else {
+ 			fprintf(stderr, "Unknown option \"%s\"\n", *argv);
+ 			return -EINVAL;
+@@ -615,7 +640,8 @@ static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
+ static void cmd_dev_help(void)
+ {
+ 	fprintf(stderr, "Usage: vdpa dev show [ DEV ]\n");
+-	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ]\n");
++	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ device_features DEVICE_FEATURES]\n");
++	fprintf(stderr, "                                                    [ mac MACADDR ] [ mtu MTU ]\n");
+ 	fprintf(stderr, "                                                    [ max_vqp MAX_VQ_PAIRS ]\n");
+ 	fprintf(stderr, "       vdpa dev del DEV\n");
+ 	fprintf(stderr, "Usage: vdpa dev config COMMAND [ OPTIONS ]\n");
+@@ -708,7 +734,7 @@ static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
+ 	err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
+ 				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME,
+ 				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU |
+-				  VDPA_OPT_MAX_VQP);
++				  VDPA_OPT_MAX_VQP | VDPA_OPT_VDEV_FEATURES);
+ 	if (err)
+ 		return err;
+ 
 -- 
-2.17.1
+2.25.1
 
