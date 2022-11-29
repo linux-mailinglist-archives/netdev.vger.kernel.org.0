@@ -2,131 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8EA063BD6F
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:59:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3423863BD7D
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 11:06:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232049AbiK2J7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 04:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
+        id S231504AbiK2KGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 05:06:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231971AbiK2J7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:59:39 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F60140EF
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 01:59:37 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id d9so823934lja.11
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 01:59:37 -0800 (PST)
+        with ESMTP id S229899AbiK2KGO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 05:06:14 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465745D6A8
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 02:06:13 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id h11so13938222wrw.13
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 02:06:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=SFIijkM0HF0q5gjzFvrk41exWokqNfWHGRBYYJ1Hpt4=;
-        b=v9jYR0msB6pftjlpufll0omMcSmKFtAmrRZpJvtCEr131u6oadvjLEQMda2Pg9P4wP
-         5ysUw+yhtVvKO8JGzgEtW70RlfCxrNSzF3DqgSt864yrdQ66t+ZoCfA4uW/fTVndOZ02
-         EwtIdEcD/WXvnB/XDvoW3bMZalQkHG4ucTQZolpKohYzJNToZLd1gM+n0gqfbw344+S+
-         dXhMlcTo06GENH7Ec9ATETcD/jqC+tYhGCIye/w5W1HFvHfByvm94oryguwgkUR+h3Y9
-         DFRjS2g1GU7ykzFK/XItLxb5Qn3koXmi1bH9MRkl1pdUOpLriCNf0nQGIOb8MxYGENvW
-         7y+A==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=d347PGicPnHnSxrHiUKliUhsEGwWWeTMGutskcoO1f8=;
+        b=EQZnEFyV6mFuWYFQuEzwyqMFNjQs5N9crFahKpo7263Zh2Nd3ZsoGQxxnHwkT7pEen
+         76EdLhcmC+3Ro6CSIHl13rw7Xhu6djlkChnF//XJGsydrFDOIiMEQy56S17I3xZEuFp7
+         ZDdICQR0I/7uUIeVP0de6tCQH1LL5uhimWLYHYTvbv6AFPorP1RX5+r3zV19rm9sGXER
+         vnsXA20bG1rvRXfXbY8UIuIhgaZI/BNxv1S3dZDFeHLrn7RTpMHGrrsHueHxh0IKe9s/
+         xZSUBig4tyAf+xbinrPYxpZqVarHionIOD1W1U1zzgL+oT2p6cbH8Wrya3K+XgVpNk+N
+         7oHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SFIijkM0HF0q5gjzFvrk41exWokqNfWHGRBYYJ1Hpt4=;
-        b=PJPpXNMJQ70zYxo+hj8W3upxTdm2Yy9bTwFXGUdl7JXbr4T/nSA3ztPAdhEAKcDGm8
-         bbRlQ/hsZkoLw9zu5i+rrXIOQSPBt43/K6rUHiUEV1qR6rhd6S+TDAfmZ5m/K+NiX17/
-         L1JWS2jaBsNKgfsg2tZB4b1jKWT/0dc2ozgKt4jsF+08r+fKlDcKL3Ewc/P8xTdKomkE
-         QAqL0uSmq7xHl6w/framIINpxwrKOL/49TkQ//t9ZjJQSkJQtH1sLdy/u9MtEo2qCGov
-         pxUTBDXeVZ7xNbh0Hfy/9eZUobPiuecEkHycv5G0D3rO3cK/xNl9Hjt5pDBNFNVSVycs
-         G+FA==
-X-Gm-Message-State: ANoB5plyUiRZkAFXE1JXFjyKIVYzCGV9BM4MZUWQ82Jhy+ChuUUFptaE
-        G70HCO4sRzFliTBU6pkAONQEEeWyRTi+0+u0
-X-Google-Smtp-Source: AA0mqf5Eyirs5mjGcg+rR5YKwG9bX5kIwPGrCsU0fsJ1m8wdtY6+P74muvPVllxHDy/SqTHs+3YucA==
-X-Received: by 2002:a2e:940f:0:b0:277:5df:9728 with SMTP id i15-20020a2e940f000000b0027705df9728mr11226113ljh.337.1669715976008;
-        Tue, 29 Nov 2022 01:59:36 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id s12-20020a056512214c00b004a2c3fd32edsm2137877lfr.144.2022.11.29.01.59.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Nov 2022 01:59:35 -0800 (PST)
-Message-ID: <8eb78282-08c2-24bf-4049-5c610dd781fc@linaro.org>
-Date:   Tue, 29 Nov 2022 10:59:34 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH 1/2] dt-bindings: net: rockchip-dwmac: add rk3568 xpcs
- compatible
-To:     =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
-        Chukun Pan <amadeus@jmu.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Eric Dumazet <edumazet@google.com>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=d347PGicPnHnSxrHiUKliUhsEGwWWeTMGutskcoO1f8=;
+        b=henNVaqsa8UNByFrQmfegLvW3/yclze9HXM7K+AXg+asTh44norQqh+curAoabFO2C
+         rOj2WtQnLhAB+HsgPy4aFluvfi/nN6TYbL6x0HJWAdq5WCIMMs+nkGLWhMOt+d8wrhvX
+         1IaYdBq+9/dzpb2TY9Qu5kzTeNfve4RxRD+qcJ4uWX3Gq6nNpkiGWcbO00LbBEDUN/N7
+         RgVs/tFTsjGtCzLhXabbo5pWVH4DB4re0yPBMJJ9snZcqUYJ8AecLypqrDTMmMpekSOQ
+         bQUt19+EL9OFK21IJVzgwFaZUj2XwZgWwD+LR4EsPgyGbBkpptbtiDuAMeqNbVtp4u6C
+         H7kw==
+X-Gm-Message-State: ANoB5plIK9bYhF0+pr/87CHC2QsXjTvrqWfeHt7uz13fxNatX8MVdgto
+        IXNUHndBgv/2RQeIXMSiqTzjaA==
+X-Google-Smtp-Source: AA0mqf7uqmv4AbHgFCGUCfF/aINhYFGb6bNTPlW8AYXWDL6hu+2EPxT8e41XcOLKCYyw6vOEEc9eTg==
+X-Received: by 2002:a5d:628b:0:b0:242:26f0:d395 with SMTP id k11-20020a5d628b000000b0024226f0d395mr200276wru.510.1669716371830;
+        Tue, 29 Nov 2022 02:06:11 -0800 (PST)
+Received: from lavr ([81.6.34.132])
+        by smtp.gmail.com with ESMTPSA id f18-20020a05600c4e9200b003c6c182bef9sm1978757wmq.36.2022.11.29.02.06.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Nov 2022 02:06:11 -0800 (PST)
+Date:   Tue, 29 Nov 2022 11:06:09 +0100
+From:   Anton Protopopov <aspsk@isovalent.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Wu <david.wu@rock-chips.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20221129072714.22880-1-amadeus@jmu.edu.cn>
- <6f601615-deab-a1df-b951-dca8467039f8@linaro.org> <4692527.5fSG56mABF@diego>
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <4692527.5fSG56mABF@diego>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 5/8] selftests/bpf: Verify xdp_metadata
+ xdp->af_xdp path
+Message-ID: <Y4XZkZJHVvLgTIk9@lavr>
+References: <20221121182552.2152891-1-sdf@google.com>
+ <20221121182552.2152891-6-sdf@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221121182552.2152891-6-sdf@google.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/11/2022 10:56, Heiko Stübner wrote:
-> Am Dienstag, 29. November 2022, 09:49:08 CET schrieb Krzysztof Kozlowski:
->> On 29/11/2022 08:27, Chukun Pan wrote:
->>> The gmac of RK3568 supports RGMII/SGMII/QSGMII interface.
->>> This patch adds a compatible string for the required clock.
->>>
->>> Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
->>> ---
->>>  Documentation/devicetree/bindings/net/rockchip-dwmac.yaml | 6 ++++++
->>>  1 file changed, 6 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
->>> index 42fb72b6909d..36b1e82212e7 100644
->>> --- a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
->>> +++ b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
->>> @@ -68,6 +68,7 @@ properties:
->>>          - mac_clk_rx
->>>          - aclk_mac
->>>          - pclk_mac
->>> +        - pclk_xpcs
->>>          - clk_mac_ref
->>>          - clk_mac_refout
->>>          - clk_mac_speed
->>> @@ -90,6 +91,11 @@ properties:
->>>        The phandle of the syscon node for the peripheral general register file.
->>>      $ref: /schemas/types.yaml#/definitions/phandle
->>>  
->>> +  rockchip,xpcs:
->>> +    description:
->>> +      The phandle of the syscon node for the peripheral general register file.
->>
->> You used the same description as above, so no, you cannot have two
->> properties which are the same. syscons for GRF are called
->> "rockchip,grf", aren't they?
-> 
-> Not necessarily :-) .
+On 22/11/21 10:25, Stanislav Fomichev wrote:
+>
+> [...]
+>
+> +
+> +	if (bpf_xdp_metadata_rx_timestamp_supported(ctx))
+> +		meta->rx_timestamp = bpf_xdp_metadata_rx_timestamp(ctx);
+> +
+> +	if (bpf_xdp_metadata_rx_hash_supported(ctx))
+> +		meta->rx_hash = bpf_xdp_metadata_rx_hash(ctx);
 
-OK, then description should have something like "...GRF for foo bar".
+Is there a case when F_supported and F are not called in a sequence? If not,
+then you can join them:
 
+	bool (*ndo_xdp_rx_timestamp)(const struct xdp_md *ctx, u64 *timestamp);
 
-Best regards,
-Krzysztof
+so that a calling XDP program does one indirect call instead of two for one
+field
 
+	if (bpf_xdp_metadata_rx_timestamp(ctx, &meta->rx_timestamp)) {
+		/* ... couldn't get the timestamp */
+	}
