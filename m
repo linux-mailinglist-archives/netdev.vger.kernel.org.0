@@ -2,128 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2132763C23E
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 15:17:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFF3C63C272
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 15:27:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235472AbiK2ORh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 09:17:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
+        id S234266AbiK2O1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 09:27:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235791AbiK2ORK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 09:17:10 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7938B64A08;
-        Tue, 29 Nov 2022 06:15:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=CFajEF7LzhmFbTWhHrHm09iOIRTmdCIIsnx1w9YoJK0=; b=DiwJ8SWIYWJXgEPMjXLwb+FiqU
-        bza4a7KMWRIK/uG3vEa3hy+zhrqbCrjwfRCy8kI19QlWQbCsoHTU9ATJiKAsgex/n9BFCVNVxLqpq
-        qJ1YxKT/xupmhmJz1ehcbm0hjKhhnl949LoxWrzsMIdhoa8v0qrcSgoVI1x4VF1ASico=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p01O3-003sSi-NE; Tue, 29 Nov 2022 15:15:03 +0100
-Date:   Tue, 29 Nov 2022 15:15:03 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234237AbiK2O1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 09:27:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6B95C0DA
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 06:26:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669731988;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4AEq8/e4uJ/4ykggQax+wHLvQuwMyqFr7ojK3DGvdTA=;
+        b=AkcSdyiaj4HVwm2jNfYaP1CTrD61NjisetmpWT6cg0WyfXdkcmNppn1SdB0DjkpB0Zteli
+        J2etCNOJH5fu+3rVClaOT1nkl5wSwZRxIsElzIBRE6BtoRA1pg4MQp2s8Jqsl+wM4hco5B
+        HRlYPbniql5tsEYXuLgCw1taoUtl4E0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-539-4u3ekesANO6myoqiLy0qIg-1; Tue, 29 Nov 2022 09:26:25 -0500
+X-MC-Unique: 4u3ekesANO6myoqiLy0qIg-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AB340185A7AA;
+        Tue, 29 Nov 2022 14:26:24 +0000 (UTC)
+Received: from RHTPC1VM0NT (unknown [10.22.34.89])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5A3D8492B07;
+        Tue, 29 Nov 2022 14:26:24 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     Adrian Moreno <amorenoz@redhat.com>
+Cc:     Ilya Maximets <i.maximets@ovn.org>, netdev@vger.kernel.org,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH v1 00/26] net: dsa: microchip: stats64, fdb, error
-Message-ID: <Y4YT5wfckSO1sfRw@lunn.ch>
-References: <20221128115958.4049431-1-o.rempel@pengutronix.de>
- <7f0a7acc-4b6b-8e33-7098-e5dfcb67945f@intel.com>
- <20221129053539.GA25526@pengutronix.de>
+        linux-kselftest@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [ovs-dev] [RFC net-next 1/6] openvswitch: exclude kernel flow
+ key from upcalls
+References: <20221122140307.705112-1-aconole@redhat.com>
+        <20221122140307.705112-2-aconole@redhat.com>
+        <c04242ee-f125-6d95-e263-65470222d3cf@ovn.org>
+        <83a0b3e4-1327-c1c4-4eb4-9a25ff533d1d@redhat.com>
+        <bf975714-7edc-efdd-de84-56194aa6eb60@ovn.org>
+        <753d995d-d4f4-bf2e-994d-435a36414127@redhat.com>
+Date:   Tue, 29 Nov 2022 09:26:22 -0500
+In-Reply-To: <753d995d-d4f4-bf2e-994d-435a36414127@redhat.com> (Adrian
+        Moreno's message of "Mon, 28 Nov 2022 10:12:21 +0100")
+Message-ID: <f7tedtlsupd.fsf@redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221129053539.GA25526@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 29, 2022 at 06:35:39AM +0100, Oleksij Rempel wrote:
-> On Mon, Nov 28, 2022 at 03:09:19PM -0800, Jacob Keller wrote:
-> > 
-> > 
-> > On 11/28/2022 3:59 AM, Oleksij Rempel wrote:
-> > > This patch series is a result of maintaining work on ksz8 part of
-> > > microchip driver. It includes stats64 and fdb support. Error handling.
-> > > Loopback fix and so on...
-> > > 
-> > > Oleksij Rempel (26):
-> > >    net: dsa: microchip: add stats64 support for ksz8 series of switches
-> > >    net: dsa: microchip: ksz8: ksz8_fdb_dump: fix port validation and VID
-> > >      information
-> > >    net: dsa: microchip: ksz8: ksz8_fdb_dump: fix not complete fdb
-> > >      extraction
-> > >    net: dsa: microchip: ksz8: ksz8_fdb_dump: fix time stamp extraction
-> > >    net: dsa: microchip: ksz8: ksz8_fdb_dump: do not extract ghost entry
-> > >      from empty table
-> > >    net: dsa: microchip: ksz8863_smi: fix bulk access
-> > >    net: dsa: microchip: ksz8_r_dyn_mac_table(): remove timestamp support
-> > >    net: dsa: microchip: make ksz8_r_dyn_mac_table() static
-> > >    net: dsa: microchip: ksz8_r_dyn_mac_table(): remove fid support
-> > >    net: dsa: microchip: ksz8: refactor ksz8_fdb_dump()
-> > >    net: dsa: microchip: ksz8: ksz8_fdb_dump: dump static MAC table
-> > >    net: dsa: microchip: ksz8: move static mac table operations to a
-> > >      separate functions
-> > >    net: dsa: microchip: ksz8: add fdb_add/del support
-> > >    net: dsa: microchip: KSZ88x3 fix loopback support
-> > >    net: dsa: microchip: ksz8_r_dyn_mac_table(): move main part of the
-> > >      code out of if statement
-> > >    net: dsa: microchip: ksz8_r_dyn_mac_table(): use ret instead of rc
-> > >    net: dsa: microchip: ksz8_r_dyn_mac_table(): ksz: do not return EAGAIN
-> > >      on timeout
-> > >    net: dsa: microchip: ksz8_r_dyn_mac_table(): return read/write error
-> > >      if we got any
-> > >    net: dsa: microchip: ksz8_r_dyn_mac_table(): use entries variable to
-> > >      signal 0 entries
-> > >    net: dsa: microchip: make ksz8_r_sta_mac_table() static
-> > >    net: dsa: microchip: ksz8_r_sta_mac_table(): do not use error code for
-> > >      empty entries
-> > >    net: dsa: microchip: ksz8_r_sta_mac_table(): make use of error values
-> > >      provided by read/write functions
-> > >    net: dsa: microchip: make ksz8_w_sta_mac_table() static
-> > >    net: dsa: microchip: ksz8_w_sta_mac_table(): make use of error values
-> > >      provided by read/write functions
-> > >    net: dsa: microchip: remove ksz_port:on variable
-> > >    net: dsa: microchip: ksz8: do not force flow control by default
-> > > 
-> > 
-> > 
-> > My understanding is that we typically limit series to 15 patches. Do you
-> > have some justification for why this goes over 15 and can't reasonably be
-> > split into two series?
-> > 
-> > At a glance it seems like a bunch of smaller cleanups.
-> 
-> The previous patch set got request to do more clean ups:
-> https://lore.kernel.org/all/20221124101458.3353902-1-o.rempel@pengutronix.de/
-> 
-> I need to show, there are already more patches in the queue.
+Adrian Moreno <amorenoz@redhat.com> writes:
 
-There is some psychology involved here. I see 26 patches and decide i
-need to allocate 30 minutes to this sometime, and put the review off
-until later, without even looking at them. If i get 5 patches, i
-probably just do it, knowing i will be finished pretty quickly. My
-guess is, 5 patches a day for 5 days will be merged faster than 26
-patches in one go.
+> On 11/25/22 16:51, Ilya Maximets wrote:
+>> On 11/25/22 16:29, Adrian Moreno wrote:
+>>>
+>>>
+>>> On 11/23/22 22:22, Ilya Maximets wrote:
+>>>> On 11/22/22 15:03, Aaron Conole wrote:
+>>>>> When processing upcall commands, two groups of data are available to
+>>>>> userspace for processing: the actual packet data and the kernel
+>>>>> sw flow key data.=C2=A0 The inclusion of the flow key allows the user=
+space
+>>>>> avoid running through the dissection again.
+>>>>>
+>>>>> However, the userspace can choose to ignore the flow key data, as is
+>>>>> the case in some ovs-vswitchd upcall processing.=C2=A0 For these mess=
+ages,
+>>>>> having the flow key data merely adds additional data to the upcall
+>>>>> pipeline without any actual gain.=C2=A0 Userspace simply throws the d=
+ata
+>>>>> away anyway.
+>>>>
+>>>> Hi, Aaron.=C2=A0 While it's true that OVS in userpsace is re-parsing t=
+he
+>>>> packet from scratch and using the newly parsed key for the OpenFlow
+>>>> translation, the kernel-porvided key is still used in a few important
+>>>> places.=C2=A0 Mainly for the compatibility checking.=C2=A0 The use is =
+described
+>>>> here in more details:
+>>>>  =C2=A0=C2=A0 https://docs.kernel.org/networking/openvswitch.html#flow=
+-key-compatibility
+>>>>
+>>>> We need to compare the key generated in userspace with the key
+>>>> generated by the kernel to know if it's safe to install the new flow
+>>>> to the kernel, i.e. if the kernel and OVS userpsace are parsing the
+>>>> packet in the same way.
+>>>>
+>>>
+>>> Hi Ilya,
+>>>
+>>> Do we need to do that for every packet?
+>>> Could we send a bitmask of supported fields to userspace at feature
+>>> negotiation and let OVS slowpath flows that it knows the kernel won't
+>>> be able to handle properly?
+>> It's not that simple, because supported fields in a packet depend
+>> on previous fields in that same packet.  For example, parsing TCP
+>> header is generally supported, but it won't be parsed for IPv6
+>> fragments (even the first one), number of vlan headers will affect
+>> the parsing as we do not parse deeper than 2 vlan headers, etc.
+>> So, I'm afraid we have to have a per-packet information, unless we
+>> can somehow probe all the possible valid combinations of packet
+>> headers.
+>>=20
+>
+> Surely. I understand that we'd need more than just a bit per
+> field. Things like L4 on IPv6 frags would need another bit and the
+> number of VLAN headers would need some more. But, are these a handful
+> of exceptions or do we really need all the possible combinations of
+> headers? If it's a matter of naming a handful of corner cases I think
+> we could consider expressing them at initialization time and safe some
+> buffer space plus computation time both in kernel and userspace.
 
-     Andrew
+I will take a bit more of a look here - there must surely be a way to
+express this when pulling information via DP_GET command so that we
+don't need to wait for a packet to come in to figure out whether we can
+parse it.
+
