@@ -2,168 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FCEE63CB1B
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 23:38:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD13363CB1C
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 23:38:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236589AbiK2Wik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 17:38:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
+        id S236631AbiK2Wio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 17:38:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236517AbiK2Wie (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 17:38:34 -0500
-Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A67F303EF;
-        Tue, 29 Nov 2022 14:38:32 -0800 (PST)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 43729C009; Tue, 29 Nov 2022 23:38:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1669761519; bh=smCY981fzC9mZh3eGXAC3uy7nL+6sisKTqlh2Hjzenk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NUbKTNPnHK6tuuncFbF/XE8RjNTxugpELitcB2dWP/xV+80Om6B/65tFtkyOE7u/6
-         OMoqAdmfOT2CQOQQWKuwaACVp+VnCzZbjqo0aNM91bIVBNcuwiY+AUpwh4ihRSx5cl
-         iy6P2GcCVgYIQmAQhX+GxGiExdaDD8FLgRHPJeHb734LqxiTQ90l4j4giD6sk2AyqS
-         jEtpMb3LIZPfxNXmsbU79OQ2mTYii5ADJ98qDMnDPfSUtMJjAJ5Mu0u0kTv3YIO0DO
-         7MxIy0tuZQO56bag0lP6H9tY2Jvafo/sxNlHqmsqhWfUu12hYnTaIiWPII4hrJbblB
-         0RiF9Q9xUdvBw==
+        with ESMTP id S236570AbiK2Wij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 17:38:39 -0500
+Received: from mx0b-003ede02.pphosted.com (mx0b-003ede02.pphosted.com [205.220.181.153])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5483870461
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 14:38:38 -0800 (PST)
+Received: from pps.filterd (m0286620.ppops.net [127.0.0.1])
+        by mx0b-003ede02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ATDvYbE014957
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 14:38:37 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=getcruise.com; h=mime-version :
+ references : in-reply-to : from : date : message-id : subject : cc :
+ content-type : content-transfer-encoding; s=ppemail;
+ bh=pJiNJ8unIx+MxneWN2hYk+LbzF1KIZOf++G9ThdiI9g=;
+ b=ZRC2lerhTSLWjObKh4Aw/C8ge7zSdpVGy0AS3VGntX2URQ5MOVT/aKkwLSA2Ebz49Vxn
+ ISRaLTP/v2oDirQIRcinbBmh8QMA95v14Rps9FiJrX/OQ2kynhsKNVE/6iDwjzLvDgTm
+ RV9u8Czmuv5dWeV+Trim8dZu0KOo4ypPTsoRKTf3JVr08U3XxoQX9yir0gug+gmcALvD
+ XDRSEZI3Nmr3GDaB/ZDre74tiMXP9V9MXsumNbAIc0SEoXYJj2ENesM/R3LT59sUpRjj
+ hRdDkeZyXI3niqWhFd6n79dMgZMOOhscxxvpneC51PiU+w5x2gNelsApY08S7K02SONl 3A== 
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        by mx0b-003ede02.pphosted.com (PPS) with ESMTPS id 3m580vh079-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 14:38:37 -0800
+Received: by mail-ej1-f70.google.com with SMTP id ne29-20020a1709077b9d00b007c0905baae1so1390215ejc.8
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 14:38:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=getcruise.com; s=google;
+        h=content-transfer-encoding:cc:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pJiNJ8unIx+MxneWN2hYk+LbzF1KIZOf++G9ThdiI9g=;
+        b=BcZzm/XAfVQ5eUp4lr9u32LQjxb2560/nAL50053gIzTwc36EkjMi+jrJfqFJAtzq/
+         5JEJgRZtxB11kM8rQIuZSzLSE+la5vsP5zdcB/02wzKS0gNUiqqMVsIXGpR4IAKcNuGU
+         qTAcH9uduOUMUTnMysQtDCRJVKCgPWFQg6RHoicoP2Fow8XBUCcQ7yPfDUfKQwqdoOzX
+         N75rq/Q6/i3Gw6RXITV+Bp4PADCMXbS0OQEsyuqYjCDIo2Ee4tVdKOKmXfjr9cRX8KXs
+         apGVTs6D1oqJxZIZMtNBaHIE9lLEAO1r5aE6CVYmcCDDFJbaan432l0ZpLTtkN8S9/bz
+         AqCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pJiNJ8unIx+MxneWN2hYk+LbzF1KIZOf++G9ThdiI9g=;
+        b=RlHdVCwT6ujweeLSDHVbxM64rFEN4rFUbiM+B5d08AXHXmWPQJ/Tl00Aq+txQe8Ycl
+         g/9cW+/Os+KO4XHEtBMwsEvCIsF/2NIO3Iy5oMeXXoRNzE5jCmGP464NASI+w4JxAx8G
+         q1UdIeBxHtfAc68XKVtKPt6EI0bWI6ZulMEixS3FkCDXJhmifOcTGN1bZZ/EUJ7BaEXf
+         TKWu1fVI3uVNDVux8dm4Os+cAlzrvL3hBi9/a+lwccLlhMSSjuGdEzcPrK05LLLSqPDy
+         AVYAr6GEaeJvw2Qo3Bo9QrgT6aKzo3+EUtQlVMQ6dNpG0ggpiqn9exi9AcH9ZWT5Dcds
+         dInA==
+X-Gm-Message-State: ANoB5pm4EoDPKHKsLGl8iKyBXrq/Dv3l4Fvr6VPLGJYWCjqrHczFUjNY
+        vce58fQ6LxVzK9qJ168iUq0J78YF2devwWIOttNOnNzoDuA9cpAC3GX2lTYhdVTB80qrsDJK62O
+        Tz01B4kZ/JujW+zdR+FgWH2rmzy0fslqT
+X-Received: by 2002:a17:906:f857:b0:7c0:85ff:d3ee with SMTP id ks23-20020a170906f85700b007c085ffd3eemr4688874ejb.633.1669761515144;
+        Tue, 29 Nov 2022 14:38:35 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6McRlWkt5cNOuvoePyDj1PbQOlNR9Iixea183FgxcisFDWTj0LaXX7ka4djEnTMFKk0UjNsCCReHgjceSyv04=
+X-Received: by 2002:a17:906:f857:b0:7c0:85ff:d3ee with SMTP id
+ ks23-20020a170906f85700b007c085ffd3eemr4688866ejb.633.1669761514899; Tue, 29
+ Nov 2022 14:38:34 -0800 (PST)
+MIME-Version: 1.0
+References: <20221118232639.13743-1-steve.williams@getcruise.com>
+ <20221121195810.3f32d4fd@kernel.org> <20221122113412.dg4diiu5ngmulih2@skbuf>
+ <CALHoRjcw8Du+4Px__x=vfDfjKnHVRnMmAhBBEznQ2CfHPZ9S0A@mail.gmail.com>
+ <20221123142558.akqff2gtvzrqtite@skbuf> <Y34zoflZsC2pn9RO@nanopsycho>
+ <20221123152543.ekc5t7gp2hpmaaze@skbuf> <Y35L9ykSI37snvSw@nanopsycho>
+In-Reply-To: <Y35L9ykSI37snvSw@nanopsycho>
+From:   Steve Williams <steve.williams@getcruise.com>
+Date:   Tue, 29 Nov 2022 14:38:23 -0800
+Message-ID: <CALHoRjeQij510y223baX3QATVaivyozPzJSb71Aq_noz5gFYTg@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH net-next] net/hanic: Add the hanic network
+ interface for high availability links
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-GUID: lezxBI5X5KxDpQQ6NHbRDOjL7znV8UiZ
+X-Proofpoint-ORIG-GUID: lezxBI5X5KxDpQQ6NHbRDOjL7znV8UiZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-29_13,2022-11-29_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ clxscore=1015 mlxlogscore=567 bulkscore=0 suspectscore=0 impostorscore=0
+ priorityscore=1501 phishscore=0 spamscore=0 adultscore=0 malwarescore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211290136
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MISSING_HEADERS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 5C02AC009;
-        Tue, 29 Nov 2022 23:38:34 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1669761517; bh=smCY981fzC9mZh3eGXAC3uy7nL+6sisKTqlh2Hjzenk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h6y1a2ztn0ZfYgUgUhnaPxMyQ4t+6WLvNiP12gfRIcnLekJ1foIMsNs33nDA6tk/u
-         vSJ/ANhh7xYim9/WGJXKIkWCeG5QGQLGXkCHITcthUgOFI/dncLQsxpiBSKPMxm82+
-         r53aS5ryiXr40YUAH8nQn86eG8RGcsUcUaoRHkyylhPGhhuQ3oCA2OigGhaFdhD3w/
-         wsaI+53uvgy4xp1HH2oJpVio/b2KhEQnVe065T/IAG6iYv4aFNko18JQivt2VXeMsj
-         N8hHq0ifjh9u4ZjxfDvs4/AdZcwPfvrh2udRXnW1n/rU44yoTc4M1h75kLUUcSkdxT
-         B50011CaxcV2w==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id c0600905;
-        Tue, 29 Nov 2022 22:38:21 +0000 (UTC)
-Date:   Wed, 30 Nov 2022 07:38:06 +0900
-From:   asmadeus@codewreck.org
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.co,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
-Subject: Re: [PATCH] 9p: fix crash when transaction killed
-Message-ID: <Y4aJzjlkkt5VKy0G@codewreck.org>
-References: <20221129162251.90790-1-schspa@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20221129162251.90790-1-schspa@gmail.com>
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Schspa Shi wrote on Wed, Nov 30, 2022 at 12:22:51AM +0800:
-> The transport layer of fs does not fully support the cancel request.
-> When the request is in the REQ_STATUS_SENT state, p9_fd_cancelled
-> will forcibly delete the request, and at this time p9_[read/write]_work
-> may continue to use the request. Therefore, it causes UAF .
-> 
-> There is the logs from syzbot.
-> 
-> Corrupted memory at 0xffff88807eade00b [ 0xff 0x07 0x00 0x00 0x00 0x00
-> 0x00 0x00 . . . . . . . . ] (in kfence-#110):
->  p9_fcall_fini net/9p/client.c:248 [inline]
->  p9_req_put net/9p/client.c:396 [inline]
->  p9_req_put+0x208/0x250 net/9p/client.c:390
->  p9_client_walk+0x247/0x540 net/9p/client.c:1165
->  clone_fid fs/9p/fid.h:21 [inline]
->  v9fs_fid_xattr_set+0xe4/0x2b0 fs/9p/xattr.c:118
->  v9fs_xattr_set fs/9p/xattr.c:100 [inline]
->  v9fs_xattr_handler_set+0x6f/0x120 fs/9p/xattr.c:159
->  __vfs_setxattr+0x119/0x180 fs/xattr.c:182
->  __vfs_setxattr_noperm+0x129/0x5f0 fs/xattr.c:216
->  __vfs_setxattr_locked+0x1d3/0x260 fs/xattr.c:277
->  vfs_setxattr+0x143/0x340 fs/xattr.c:309
->  setxattr+0x146/0x160 fs/xattr.c:617
->  path_setxattr+0x197/0x1c0 fs/xattr.c:636
->  __do_sys_setxattr fs/xattr.c:652 [inline]
->  __se_sys_setxattr fs/xattr.c:648 [inline]
->  __ia32_sys_setxattr+0xc0/0x160 fs/xattr.c:648
->  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
->  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
->  do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
->  entry_SYSENTER_compat_after_hwframe+0x70/0x82
-> 
-> Below is a similar scenario, the scenario in the syzbot log looks more
-> complicated than this one, but the root cause seems to be the same.
-> 
->      T21124               p9_write_work        p9 read_work
-> ======================== first trans =================================
-> p9_client_walk
->   p9_client_rpc
->     p9_client_prepare_req
->     /* req->refcount == 2 */
->     c->trans_mod->request(c, req);
->       p9_fd_request
->         req move to unsent_req_list
->                             req->status = REQ_STATUS_SENT;
->                             req move to req_list
->                             << send to server >>
->     wait_event_killable
->     << get kill signal >>
->     if (c->trans_mod->cancel(c, req))
->        p9_client_flush(c, req);
->          /* send flush request */
->          req = p9_client_rpc(c, P9_TFLUSH, "w", oldtag);
-> 		 if (c->trans_mod->cancelled)
->             c->trans_mod->cancelled(c, oldreq);
->               /* old req was deleted from req_list */
->               /* req->refcount == 1 */
->   p9_req_put
->     /* req->refcount == 0 */
->     << preempted >>
->                                        << get response, UAF here >>
->                                        m->rreq = p9_tag_lookup(m->client, m->rc.tag);
->                                          /* req->refcount == 1 */
->                                        << do response >>
->                                        p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);
->                                          /* req->refcount == 0 */
->                                          p9_fcall_fini
->                                          /* request have been freed */
->     p9_fcall_fini
->      /* double free */
->                                        p9_req_put(m->client, m->rreq);
->                                          /* req->refcount == 1 */
-> 
-> To fix it, we can wait the request with status REQ_STATUS_SENT returned.
+On Wed, Nov 23, 2022 at 8:36 AM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> >The fact that hanic needs 802.1Q uppers as termination points for
+> >{MAC, VLAN} addresses seemst to simply not scale for IP-based streams,
+> >or generic byte@offset pattern matching based streams.
+>
+> Vlan implementation could be easily done internally in hanic driver if
+> needed, similar to bridge and openvswitch vlan implementations.
 
-Christian replied on this (we cannot wait) but I agree with him -- the
-scenario you describe is proteced by p9_tag_lookup checking for refcount
-with refcount_inc_not_zero (p9_req_try_get).
+Hanic matches streams based on mac and vlan (with absence of vlan a
+valid case) with the stream mapping somewhat localized. I see no
+reason to not allow for in the future other stream matching methods, I
+just didn't see the need for it at this point. If adding a specific
+stream matching method is required to get this through design review,
+then that is something I can look into. But this method is one of the
+few (only?) stream matching methods that doesn't rely on sideband
+data. But again, the stream matching code is localized, and it should
+suffer expansion well, if that is the desire.
 
-The normal scenarii for flush are as follow:
- - cancel before request is sent: no flush, just free
- - flush is ignored and reply comes first: we get reply from original
-request then reply from flush
- - flush is handled and reply never comes: we only get reply from flush
-
-Protocol-wise, we can safely reuse the tag after the flush reply got
-received; and as far as I can follow the code we only ever free the tag
-(last p9_call_fini) after flush has returned so the entry should be
-protected.
-
-If we receive a response on the given tag between cancelled and the main
-thread going out the request has been marked as FLSHD and should be
-ignored. . . here is one p9_req_put in p9_read_work() in this case but
-it corresponds to the ref obtained by p9_tag_lookup() so it should be
-valid.
+As for Vlan implementation, the hanic driver is aware of vlan tags (or
+their absence) in order to do stream matching, but the actual
+tagging/untagging is handled by the existing linux vlan support. I'm
+not understanding why one might want hanic to do the actual vlan
+tagging. Well, actually, if one wants hanic to bridge traffic between
+enlisted ports then maybe that's a case where it might need to edit
+vlan tags, but this is not something that hanic does at this point. I
+don't see why it couldn't gain that functionality if it were
+considered desirable.
 
 
-I'm happy to believe we have a race somewhere (even if no sane server
-would produce it), but right now I don't see it looking at the code.. :/
 
--- 
-Dominique
+--=20
+
+Stephen Williams
+
+Senior Software Engineer
+
+Cruise
+
+--=20
+
+
+*Confidentiality=C2=A0Note:*=C2=A0We care about protecting our proprietary=
+=20
+information,=C2=A0confidential=C2=A0material, and trade secrets.=C2=A0This =
+message may=20
+contain some or all of those things. Cruise will suffer material harm if=20
+anyone other than the intended recipient disseminates or takes any action=
+=20
+based on this message. If you have received this message (including any=20
+attachments) in error, please delete it immediately and notify the sender=
+=20
+promptly.
