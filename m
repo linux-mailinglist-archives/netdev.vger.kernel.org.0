@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 495E363C48D
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:03:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 674AD63C48F
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:03:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235798AbiK2QDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 11:03:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55756 "EHLO
+        id S235944AbiK2QDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 11:03:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235019AbiK2QCU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:02:20 -0500
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CEB64577;
-        Tue, 29 Nov 2022 08:00:59 -0800 (PST)
+        with ESMTP id S235917AbiK2QC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:02:29 -0500
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D04663E8;
+        Tue, 29 Nov 2022 08:01:02 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 663271C0007;
-        Tue, 29 Nov 2022 16:00:56 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id DFB8F1C000E;
+        Tue, 29 Nov 2022 16:00:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1669737658;
+        t=1669737660;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZqVf5GiegObnHu2tH8XCQnLc7w6eelIqnh/044Qa8EU=;
-        b=pKqBYMO9zmdrO3eFyor3b13gSmxb0tifdv7OiLLhPYUQuP8QME84tc2H2buyysVrL7PyVt
-        NY9blVhZYUFh6iYHmk/1VAljqW8RKkR1XJBLe/RZ4h5XgF5PfAQLozst88T6xEsyr3AKok
-        wFdYktXiJM95MEa6fBbg30ojSWDISELIT9aEGrU7ciQYqKErbCs7StRTK2jQVkTl73Vntq
-        HWxRBSwkIYhp8Qeu5wbUuf25bZStraZjddzM0Q3iiqCIuZywlld/m7I8QfoUtj1eU+cdQ+
-        jsP1JB8pDD8JInWu2S72hlW1P5GeXL7YgV/fNJLouctYLPYEq+7Ob5vJe2HmiQ==
+        bh=3Sv2XO/O55kb2J+uLPNufzqPe9J0HvFTZ/fLIsNSQxw=;
+        b=Sy0uxXOUNPFidS9zMVnwwXJfcWnsxyAgAChAtxH/0yMcsPtLmNqg9A9JXpZINFgkoQhKud
+        MNPGp4c77Q/oxLTI8vXAlhbClGSmpez650ezCaPaQ++5EHtnAjzV5nZG9bBBbGgI8zBAID
+        P9GogcYr7WC1XtbAW+xKa6t+vaCGcqXI76StF2jKtNyBZexpKRntYLKJmoWDcYzAJXAQkE
+        QFo2uEVW2sLldZJAmVfi82eni/C8BgW+mGMJux4sogYVghpTW/+r1zk6Pw7rmzbnGevf5o
+        6YSP/BoStZQ5xBWYzLk5qK7b67LvQE+j+vWZy3KlrWRO3EVQpRYn92O7bmcXmg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -44,9 +44,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Guilhem Imberton <guilhem.imberton@qorvo.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next 3/6] ieee802154: Introduce a helper to validate a channel
-Date:   Tue, 29 Nov 2022 17:00:43 +0100
-Message-Id: <20221129160046.538864-4-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next 4/6] mac802154: Prepare forcing specific symbol duration
+Date:   Tue, 29 Nov 2022 17:00:44 +0100
+Message-Id: <20221129160046.538864-5-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221129160046.538864-1-miquel.raynal@bootlin.com>
 References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
@@ -61,56 +61,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This helper for now only checks if the page member and channel member
-are valid (in the specification range) and supported (by checking the
-device capabilities). Soon two new parameters will be introduced and
-having this helper will let us only modify its content rather than
-modifying the logic everywhere else in the subsystem.
+The scan logic will bypass the whole ->set_channel() logic from the top
+by calling the driver hook to just switch between channels when
+required.
 
-There is not functional change.
+We can no longer rely on the "current" page/channel settings to set the
+right symbol duration. Let's add these as new parameters to allow
+providing the page/channel couple that we want.
+
+There is no functional change.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/net/cfg802154.h   | 11 +++++++++++
- net/ieee802154/nl802154.c |  3 +--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+ include/net/cfg802154.h |  3 ++-
+ net/mac802154/cfg.c     |  2 +-
+ net/mac802154/main.c    | 20 +++++++++++---------
+ 3 files changed, 14 insertions(+), 11 deletions(-)
 
 diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-index 76d4f95e9974..11bedfa96371 100644
+index 11bedfa96371..5d4750d24f13 100644
 --- a/include/net/cfg802154.h
 +++ b/include/net/cfg802154.h
-@@ -246,6 +246,17 @@ static inline void wpan_phy_net_set(struct wpan_phy *wpan_phy, struct net *net)
- 	write_pnet(&wpan_phy->_net, net);
+@@ -483,6 +483,7 @@ static inline const char *wpan_phy_name(struct wpan_phy *phy)
+ 	return dev_name(&phy->dev);
  }
  
-+static inline bool ieee802154_chan_is_valid(struct wpan_phy *phy,
-+                                            u8 page, u8 channel)
-+{
-+        if (page > IEEE802154_MAX_PAGE ||
-+            channel > IEEE802154_MAX_CHANNEL ||
-+            !(phy->supported.channels[page] & BIT(channel)))
-+                return false;
-+
-+	return true;
-+}
-+
- /**
-  * struct ieee802154_addr - IEEE802.15.4 device address
-  * @mode: Address mode from frame header. Can be one of:
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index c497ffd8e897..d0c169e8b1b7 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -975,8 +975,7 @@ static int nl802154_set_channel(struct sk_buff *skb, struct genl_info *info)
- 	channel = nla_get_u8(info->attrs[NL802154_ATTR_CHANNEL]);
+-void ieee802154_configure_durations(struct wpan_phy *phy);
++void ieee802154_configure_durations(struct wpan_phy *phy,
++				    unsigned int page, unsigned int channel);
  
- 	/* check 802.15.4 constraints */
--	if (page > IEEE802154_MAX_PAGE || channel > IEEE802154_MAX_CHANNEL ||
--	    !(rdev->wpan_phy.supported.channels[page] & BIT(channel)))
-+	if (!ieee802154_chan_is_valid(&rdev->wpan_phy, page, channel))
- 		return -EINVAL;
+ #endif /* __NET_CFG802154_H */
+diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
+index dc2d918fac68..469d6e8dd2dd 100644
+--- a/net/mac802154/cfg.c
++++ b/net/mac802154/cfg.c
+@@ -118,7 +118,7 @@ ieee802154_set_channel(struct wpan_phy *wpan_phy, u8 page, u8 channel)
+ 	if (!ret) {
+ 		wpan_phy->current_page = page;
+ 		wpan_phy->current_channel = channel;
+-		ieee802154_configure_durations(wpan_phy);
++		ieee802154_configure_durations(wpan_phy, page, channel);
+ 	}
  
- 	return rdev_set_channel(rdev, page, channel);
+ 	return ret;
+diff --git a/net/mac802154/main.c b/net/mac802154/main.c
+index 3ed31daf7b9c..12a13a850fdf 100644
+--- a/net/mac802154/main.c
++++ b/net/mac802154/main.c
+@@ -113,32 +113,33 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
+ }
+ EXPORT_SYMBOL(ieee802154_alloc_hw);
+ 
+-void ieee802154_configure_durations(struct wpan_phy *phy)
++void ieee802154_configure_durations(struct wpan_phy *phy,
++				    unsigned int page, unsigned int channel)
+ {
+ 	u32 duration = 0;
+ 
+-	switch (phy->current_page) {
++	switch (page) {
+ 	case 0:
+-		if (BIT(phy->current_channel) & 0x1)
++		if (BIT(channel) & 0x1)
+ 			/* 868 MHz BPSK 802.15.4-2003: 20 ksym/s */
+ 			duration = 50 * NSEC_PER_USEC;
+-		else if (BIT(phy->current_channel) & 0x7FE)
++		else if (BIT(channel) & 0x7FE)
+ 			/* 915 MHz BPSK	802.15.4-2003: 40 ksym/s */
+ 			duration = 25 * NSEC_PER_USEC;
+-		else if (BIT(phy->current_channel) & 0x7FFF800)
++		else if (BIT(channel) & 0x7FFF800)
+ 			/* 2400 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
+ 			duration = 16 * NSEC_PER_USEC;
+ 		break;
+ 	case 2:
+-		if (BIT(phy->current_channel) & 0x1)
++		if (BIT(channel) & 0x1)
+ 			/* 868 MHz O-QPSK 802.15.4-2006: 25 ksym/s */
+ 			duration = 40 * NSEC_PER_USEC;
+-		else if (BIT(phy->current_channel) & 0x7FE)
++		else if (BIT(channel) & 0x7FE)
+ 			/* 915 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
+ 			duration = 16 * NSEC_PER_USEC;
+ 		break;
+ 	case 3:
+-		if (BIT(phy->current_channel) & 0x3FFF)
++		if (BIT(channel) & 0x3FFF)
+ 			/* 2.4 GHz CSS 802.15.4a-2007: 1/6 Msym/s */
+ 			duration = 6 * NSEC_PER_USEC;
+ 		break;
+@@ -201,7 +202,8 @@ int ieee802154_register_hw(struct ieee802154_hw *hw)
+ 
+ 	ieee802154_setup_wpan_phy_pib(local->phy);
+ 
+-	ieee802154_configure_durations(local->phy);
++	ieee802154_configure_durations(local->phy, local->phy->current_page,
++				       local->phy->current_channel);
+ 
+ 	if (!(hw->flags & IEEE802154_HW_CSMA_PARAMS)) {
+ 		local->phy->supported.min_csma_backoffs = 4;
 -- 
 2.34.1
 
