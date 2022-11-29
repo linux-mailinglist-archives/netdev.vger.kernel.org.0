@@ -2,184 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E74363BB2C
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 09:03:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA1D163BB2E
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 09:03:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230074AbiK2IDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 03:03:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52852 "EHLO
+        id S229898AbiK2IDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 03:03:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiK2IC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 03:02:58 -0500
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 5ACE427CD4;
-        Tue, 29 Nov 2022 00:02:50 -0800 (PST)
-Received: from XMCDN1207038 (unknown [59.61.78.232])
-        by app2 (Coremail) with SMTP id SyJltACnh+SovIVjDH8AAA--.610S2;
-        Tue, 29 Nov 2022 16:02:48 +0800 (CST)
-From:   "Pengcheng Yang" <yangpc@wangsu.com>
-To:     "'Jakub Sitnicki'" <jakub@cloudflare.com>
-Cc:     "'John Fastabend'" <john.fastabend@gmail.com>,
-        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        "'Daniel Borkmann'" <daniel@iogearbox.net>,
-        "'Lorenz Bauer'" <lmb@cloudflare.com>
-References: <1669082309-2546-1-git-send-email-yangpc@wangsu.com> <1669082309-2546-3-git-send-email-yangpc@wangsu.com> <637d8d5bd4e27_2b649208eb@john.notmuch> <000001d8ff01$053529d0$0f9f7d70$@wangsu.com> <87cz97cnz8.fsf@cloudflare.com>
-In-Reply-To: <87cz97cnz8.fsf@cloudflare.com>
-Subject: Re: [PATCH RESEND bpf 2/4] bpf, sockmap: Fix missing BPF_F_INGRESS flag when using apply_bytes
-Date:   Tue, 29 Nov 2022 16:02:48 +0800
-Message-ID: <000001d903c8$f8d2d710$ea788530$@wangsu.com>
+        with ESMTP id S229445AbiK2IDy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 03:03:54 -0500
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50EA2EF39;
+        Tue, 29 Nov 2022 00:03:52 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 891C3E0010;
+        Tue, 29 Nov 2022 08:03:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1669709031;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NFtcuDAhsKGvsH1pnOKbymkG4o1LKn/JeftB9u3zNbQ=;
+        b=AI0Yxo2CstQAy1CAkj9vHfOw1fOrjcDegaRLXRnYDM7Eby2q+o/S7LGZttGl8NxbZJxO3C
+        ITIQdy5Me71lRwx6DunfEV0axYHWBR7o3DF0JhatbpMEBTWh0ZT4kRtl5FcbCQFnnMxbZ1
+        wT2rc9RoQMahTgcBH27wZHVJ2mYnzMZxJjsPNHiWoJoteCseoiDkeuQWbx/v0+Jxij31J5
+        gadGyf8Se8osQFLccfIrrAjRgR9FZTwEp6XVbcfajXaP2oeDWUGWEDa4ZtNZsNvmL6USti
+        VC8yeZWnYHwrMe5O1HqIdaWFZiahReOyhfHjfgukWviAoCeeXIHqID9nUnXxNg==
+Date:   Tue, 29 Nov 2022 09:03:21 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next v2 0/2] IEEE 802.15.4 PAN discovery handling
+Message-ID: <20221129090321.132a4439@xps-13>
+In-Reply-To: <CAK-6q+iLkYuz5csmbLt=tKcfGmdNGP+Sm42+DQRu5180jafEGw@mail.gmail.com>
+References: <20221118221041.1402445-1-miquel.raynal@bootlin.com>
+        <CAK-6q+iLkYuz5csmbLt=tKcfGmdNGP+Sm42+DQRu5180jafEGw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQGntG3gSsG5fexUwyK4ofUjVybadQE5HE+MAYsC+QACkhU0QQGEqlaWroE5o8A=
-Content-Language: zh-cn
-X-CM-TRANSID: SyJltACnh+SovIVjDH8AAA--.610S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxZr1kKr48CF18Kw4DXr1xAFb_yoW7JF15pF
-        s0ya1rCF4jkrWUWw4SqF48WF4I934rtF1jkF1UAw1fKwsrKr18JFn5KFy5ZFn5tr4kCa1a
-        qr4IgFW5GFnrZ3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
-X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,T_SPF_TEMPERROR autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki <jakub@cloudflare.com> wrote:
-> On Wed, Nov 23, 2022 at 02:01 PM +08, Pengcheng Yang wrote:
-> > John Fastabend <john.fastabend@gmail.com> wrote:
-> >>
-> >> 		if (!psock->apply_bytes) {
-> >> 			/* Clean up before releasing the sock lock. */
-> >> 			eval = psock->eval;
-> >> 			psock->eval = __SK_NONE;
-> >> 			psock->sk_redir = NULL;
-> >> 		}
-> >>
-> >> Now that we have a psock->flags we should clera that as
-> >> well right?
+Hi Alexander,
+
+aahringo@redhat.com wrote on Mon, 28 Nov 2022 17:11:38 -0500:
+
+> Hi,
+>=20
+> On Fri, Nov 18, 2022 at 5:13 PM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
 > >
-> > According to my understanding, it is not necessary (but can) to clear
-> > psock->flags here, because psock->flags will be overwritten by msg->flags
-> > at the beginning of each redirection (in sk_psock_msg_verdict()).
-> 
-> 1. We should at least document that psock->flags value can be garbage
->    (undefined) if psock->sk_redir is null.
-> 
-> 2. 'flags' is amiguous (flags for what?). I'd suggest to rename to
->    something like redir_flags.
-> 
->    Also, since we don't care about all flags, but just the ingress bit,
->    we should store just that. It's not about size. Less state passed
->    around is easier to reason about. See patch below.
-> 
-> 3. Alternatively, I'd turn psock->sk_redir into a tagged pointer, like
->    skb->_sk_redir is. This way all state (pointer & flags) is bundled
->    and managed together. It would be a bigger change. Would have to be
->    split out from this patch set.
-> 
-> --8<--
-> 
-> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-> index 70d6cb94e580..84f787416a54 100644
-> --- a/include/linux/skmsg.h
-> +++ b/include/linux/skmsg.h
-> @@ -82,6 +82,7 @@ struct sk_psock {
->  	u32				apply_bytes;
->  	u32				cork_bytes;
->  	u32				eval;
-> +	bool				redir_ingress; /* undefined if sk_redir is null */
->  	struct sk_msg			*cork;
->  	struct sk_psock_progs		progs;
->  #if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index 14d45661a84d..5b70b241ce71 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -2291,8 +2291,8 @@ int tcp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore);
->  void tcp_bpf_clone(const struct sock *sk, struct sock *newsk);
->  #endif /* CONFIG_BPF_SYSCALL */
-> 
-> -int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg, u32 bytes,
-> -			  int flags);
-> +int tcp_bpf_sendmsg_redir(struct sock *sk, bool ingress,
-> +			  struct sk_msg *msg, u32 bytes, int flags);
->  #endif /* CONFIG_NET_SOCK_MSG */
-> 
->  #if !defined(CONFIG_BPF_SYSCALL) || !defined(CONFIG_NET_SOCK_MSG)
-> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> index e6b9ced3eda8..53d0251788aa 100644
-> --- a/net/core/skmsg.c
-> +++ b/net/core/skmsg.c
-> @@ -886,13 +886,16 @@ int sk_psock_msg_verdict(struct sock *sk, struct sk_psock *psock,
->  	ret = sk_psock_map_verd(ret, msg->sk_redir);
->  	psock->apply_bytes = msg->apply_bytes;
->  	if (ret == __SK_REDIRECT) {
-> -		if (psock->sk_redir)
-> +		if (psock->sk_redir) {
->  			sock_put(psock->sk_redir);
-> -		psock->sk_redir = msg->sk_redir;
-> -		if (!psock->sk_redir) {
-> +			psock->sk_redir = NULL;
-> +		}
-> +		if (!msg->sk_redir) {
->  			ret = __SK_DROP;
->  			goto out;
->  		}
-> +		psock->redir_ingress = sk_msg_to_ingress(msg);
-> +		psock->sk_redir = msg->sk_redir;
->  		sock_hold(psock->sk_redir);
->  	}
->  out:
-> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-> index cf9c3e8f7ccb..490b359dc814 100644
-> --- a/net/ipv4/tcp_bpf.c
-> +++ b/net/ipv4/tcp_bpf.c
-> @@ -131,10 +131,9 @@ static int tcp_bpf_push_locked(struct sock *sk, struct sk_msg *msg,
->  	return ret;
->  }
-> 
-> -int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
-> -			  u32 bytes, int flags)
-> +int tcp_bpf_sendmsg_redir(struct sock *sk, bool ingress,
-> +			  struct sk_msg *msg, u32 bytes, int flags)
->  {
-> -	bool ingress = sk_msg_to_ingress(msg);
->  	struct sk_psock *psock = sk_psock_get(sk);
->  	int ret;
-> 
-> @@ -337,7 +336,8 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
->  		release_sock(sk);
-> 
->  		origsize = msg->sg.size;
-> -		ret = tcp_bpf_sendmsg_redir(sk_redir, msg, tosend, flags);
-> +		ret = tcp_bpf_sendmsg_redir(sk_redir, psock->redir_ingress,
-                                       ^^^^^^^
-Thanks for such detailed advice.
-Here it looks like we need to pre-save the redir_ingress before
-setting psock->sk_redir to NULL and release_sock.
+> > Hello,
+> >
+> > Last preparation step before the introduction of the scanning feature
+> > (really): generic helpers to handle PAN discovery upon beacon
+> > reception. We need to tell user space about the discoveries.
+> >
+> > In all the past, current and future submissions, David and Romuald from
+> > Qorvo are credited in various ways (main author, co-author,
+> > suggested-by) depending of the amount of rework that was involved on
+> > each patch, reflecting as much as possible the open-source guidelines we
+> > follow in the kernel. All this effort is made possible thanks to Qorvo
+> > Inc which is pushing towards a featureful upstream WPAN support.
+> > =20
+>=20
+> Acked-by: Alexander Aring <aahringo@redhat.com>
+>=20
+> I am sorry, I saw this series today. Somehow I mess up my mails if we
+> are still writing something on v1 but v2 is already submitted. I will
+> try to keep up next time.
 
-> +					    msg, tosend, flags);
->  		sent = origsize - msg->sg.size;
-> 
->  		if (eval == __SK_REDIRECT)
-> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> index 264cf367e265..b22d97610b9a 100644
-> --- a/net/tls/tls_sw.c
-> +++ b/net/tls/tls_sw.c
-> @@ -846,7 +846,8 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
->  		sk_msg_return_zero(sk, msg, send);
->  		msg->sg.size -= send;
->  		release_sock(sk);
-> -		err = tcp_bpf_sendmsg_redir(sk_redir, &msg_redir, send, flags);
-> +		err = tcp_bpf_sendmsg_redir(sk_redir, psock->redir_ingress,
-> +					    &msg_redir, send, flags);
->  		lock_sock(sk);
->  		if (err < 0) {
->  			*copied -= sk_msg_free_nocharge(sk, &msg_redir);
+Haha I was asking myself wether or not you saw it, no problem :) I did
+send it after your main review but we continued discussing on v1 (about
+the preambles) so I did not ping for the time the discussion would
+settle.
 
+I'll continued with the scan interface which I think is the next step!
+
+Thanks,
+Miqu=C3=A8l
