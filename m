@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 134C663C880
+	by mail.lfdr.de (Postfix) with ESMTP id 9AF0C63C881
 	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 20:35:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236948AbiK2Tfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 14:35:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
+        id S236298AbiK2Tfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 14:35:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236801AbiK2Tf1 (ORCPT
+        with ESMTP id S236955AbiK2Tf1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 14:35:27 -0500
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4E349B5D
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 11:35:04 -0800 (PST)
-Received: by mail-pj1-x104a.google.com with SMTP id k7-20020a17090a39c700b002192c16f19aso6097749pjf.1
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 11:35:04 -0800 (PST)
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E4B4B748
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 11:35:06 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id l4-20020a170903244400b00188c393fff1so14435802pls.7
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 11:35:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8u15BjpfgyWubII864ZKXtaxoMsEt7/IbNZgHb+oLLE=;
-        b=l321ntxYc4xvn4GpkP90og3O+WW9MU3cC4refkeGk/E7hzL7zY4l8ugbhNCtMbRQh8
-         JurE5XdGW3NOAaa5ovfHOOhkEuh9qFKW00QtHil2Wptvn0b9ANRk0prnRPRzBlH98aYz
-         +ii+Wy43B1Krjd9sb2RdfWxQDgSXo9pchTAWScx+mjSK9Bi/L94HqcFuFJQX7JAwz/RA
-         zKety1l6aeuBRFPhI7P7LRYMgSeTr7Ge3rnLk4x2tJ7hUMveNj/F5JGm9FmyN7yMHp16
-         3F4bFtqLHFSFb9Aglb7fY3XgzgMayoAi3SaBJQI7/I1zdnCTwDB/lMRkGJD3yY273Gqf
-         +owQ==
+        bh=a1tnNrGYpSCeOnYtuUapfNCW6KKkKkqa0sSN/w1HvUM=;
+        b=b8Hm8315X/DgTDNwVxD6Y2pfqvt+Ow2k99Fsnw7XmqXqHn4K1RafIYOIyyABiKrlbB
+         G7YP1BIjl9Ju1djx/ilUB72s/V2LelOyYvwXEG/7vw0jodKrASdT7qmTcW1h4OjEuJ54
+         Y/OJ9rekSfGu9CzRwv48UGfjydZGdxvjjs/1UPni2aMjv9oLg8ZMqjzl/R56p+Txym22
+         nDL9tLcSJdW1moLhHgEaa5tbZH1m+UcgBvk383gS9dAUNkKG290HG35IH2qkkr/8+K/F
+         +Wlv3VKT2bsIQHQL8XXuJIaYatRyGGmPoEtYTikVcdtViqEOqt91+EhWRhS0MvOZORkF
+         8Uew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8u15BjpfgyWubII864ZKXtaxoMsEt7/IbNZgHb+oLLE=;
-        b=Ml7U3KWthparJa5OawX+P2ZD22VDdPn2r4deWih3iWjJotkPWDWEsUuUOcg9fx6xBy
-         1LjZtPPMFe9xuhyq/KxrylvblwEdy7QLvF5ynh21Vl8rFDZbmFbWNe0Nmkb7qDq4bxEJ
-         Mt/6vF9i2YgrKS0uOC5/5PBV7giG/2osShaq0vGWn5hFd1VM+jGb/ZjwNyIpvVAo7iL8
-         I2X+pRFyWnzJK2GzLVTByxQMKcGAbIHZ3kmUGDQCS/U6rPkSh5LCGXJhQTIsUktehO2J
-         B5gF5YYakxwojLTyn7aBkcvdqscXvC9mqSXcE9oQ1AzhMzIt3v4OCCZRkpVlDqNhto1Y
-         JeJg==
-X-Gm-Message-State: ANoB5plTAnB3fIntVjvHS8JZ6V15K1g49GLfasL8rfqlT7NT2dEj7DTE
-        ws/VJq5CDptaGZwj6YZGOvgPLaw=
-X-Google-Smtp-Source: AA0mqf7cWlp/g0aQsxrJjBIAcJA51Sukk15BeJpT7zdM6F+41hBd/EFrla8QfJN5LTokV3XzbR7pJQE=
+        bh=a1tnNrGYpSCeOnYtuUapfNCW6KKkKkqa0sSN/w1HvUM=;
+        b=YlMEGl1pzzwMMLatcKlImYWZ9dROqzwEoeKRWopFSNpvXHkd/xpclDLCx3EvIjmIFB
+         XqZaBa/yuaGd11gVxlXPRLdhpf5QTo7pYezxNMbc7xx4XJLr1nUdLpQoYhhlMaVF1l3F
+         Otb5tgduQSeQzWkTKSBK31XeiGR+s6zmQFKHOiCvcrV2sF9mWODc5gmsEsGT3T4106PK
+         Jdj6sRDOXR0FvFb45Esd6N/ivCu8lfcPRMCkU87/NQ27uT+0U7lYWm1C4JwVb6m7a3Xu
+         UtKaNCmiekVVXq9Tu0wDSRvhFK3ZfuDIL77O83SC8f4lKV0kKVReHjH6juqiVpuwepDj
+         HYig==
+X-Gm-Message-State: ANoB5pnC/JH/X0JMumvml6TMGp8g3fhb+tMAoAwfYQSov982EA3vzIXe
+        7Qb+OQozwHTHJziJI+1DxyQ521k=
+X-Google-Smtp-Source: AA0mqf43J29tbBuhXUy5Pf25oij2I61cbbmcUASgkJMs9iMUYLd1nukMzlvwCw4Ad8l0vHiR8wQiNyA=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:902:b416:b0:186:a22a:177e with SMTP id
- x22-20020a170902b41600b00186a22a177emr38009185plr.163.1669750504222; Tue, 29
- Nov 2022 11:35:04 -0800 (PST)
-Date:   Tue, 29 Nov 2022 11:34:47 -0800
+ (user=sdf job=sendgmr) by 2002:a17:902:f08d:b0:189:6b32:27dc with SMTP id
+ p13-20020a170902f08d00b001896b3227dcmr21816328pla.29.1669750505819; Tue, 29
+ Nov 2022 11:35:05 -0800 (PST)
+Date:   Tue, 29 Nov 2022 11:34:48 -0800
 In-Reply-To: <20221129193452.3448944-1-sdf@google.com>
 Mime-Version: 1.0
 References: <20221129193452.3448944-1-sdf@google.com>
 X-Mailer: git-send-email 2.38.1.584.g0f3c55d4c2-goog
-Message-ID: <20221129193452.3448944-7-sdf@google.com>
-Subject: [PATCH bpf-next v3 06/11] mlx4: Introduce mlx4_xdp_buff wrapper for xdp_buff
+Message-ID: <20221129193452.3448944-8-sdf@google.com>
+Subject: [PATCH bpf-next v3 07/11] mxl4: Support RX XDP metadata
 From:   Stanislav Fomichev <sdf@google.com>
 To:     bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -79,7 +79,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No functional changes. Boilerplate to allow stuffing more data after xdp_buff.
+RX timestamp and hash for now. Tested using the prog from the next
+patch.
+
+Also enabling xdp metadata support; don't see why it's disabled,
+there is enough headroom..
 
 Cc: Tariq Toukan <tariqt@nvidia.com>
 Cc: John Fastabend <john.fastabend@gmail.com>
@@ -96,79 +100,160 @@ Cc: xdp-hints@xdp-project.net
 Cc: netdev@vger.kernel.org
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/en_rx.c | 26 +++++++++++++---------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/en_clock.c | 13 +++++--
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    | 10 +++++
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    | 38 ++++++++++++++++++-
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |  1 +
+ include/linux/mlx4/device.h                   |  7 ++++
+ 5 files changed, 64 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_clock.c b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
+index 98b5ffb4d729..9e3b76182088 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_clock.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
+@@ -58,9 +58,7 @@ u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe)
+ 	return hi | lo;
+ }
+ 
+-void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
+-			    struct skb_shared_hwtstamps *hwts,
+-			    u64 timestamp)
++u64 mlx4_en_get_hwtstamp(struct mlx4_en_dev *mdev, u64 timestamp)
+ {
+ 	unsigned int seq;
+ 	u64 nsec;
+@@ -70,8 +68,15 @@ void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
+ 		nsec = timecounter_cyc2time(&mdev->clock, timestamp);
+ 	} while (read_seqretry(&mdev->clock_lock, seq));
+ 
++	return ns_to_ktime(nsec);
++}
++
++void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
++			    struct skb_shared_hwtstamps *hwts,
++			    u64 timestamp)
++{
+ 	memset(hwts, 0, sizeof(struct skb_shared_hwtstamps));
+-	hwts->hwtstamp = ns_to_ktime(nsec);
++	hwts->hwtstamp = mlx4_en_get_hwtstamp(mdev, timestamp);
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+index 8800d3f1f55c..1cb63746a851 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+@@ -2855,6 +2855,11 @@ static const struct net_device_ops mlx4_netdev_ops = {
+ 	.ndo_features_check	= mlx4_en_features_check,
+ 	.ndo_set_tx_maxrate	= mlx4_en_set_tx_maxrate,
+ 	.ndo_bpf		= mlx4_xdp,
++
++	.ndo_xdp_rx_timestamp_supported = mlx4_xdp_rx_timestamp_supported,
++	.ndo_xdp_rx_timestamp	= mlx4_xdp_rx_timestamp,
++	.ndo_xdp_rx_hash_supported = mlx4_xdp_rx_hash_supported,
++	.ndo_xdp_rx_hash	= mlx4_xdp_rx_hash,
+ };
+ 
+ static const struct net_device_ops mlx4_netdev_ops_master = {
+@@ -2887,6 +2892,11 @@ static const struct net_device_ops mlx4_netdev_ops_master = {
+ 	.ndo_features_check	= mlx4_en_features_check,
+ 	.ndo_set_tx_maxrate	= mlx4_en_set_tx_maxrate,
+ 	.ndo_bpf		= mlx4_xdp,
++
++	.ndo_xdp_rx_timestamp_supported = mlx4_xdp_rx_timestamp_supported,
++	.ndo_xdp_rx_timestamp	= mlx4_xdp_rx_timestamp,
++	.ndo_xdp_rx_hash_supported = mlx4_xdp_rx_hash_supported,
++	.ndo_xdp_rx_hash	= mlx4_xdp_rx_hash,
+ };
+ 
+ struct mlx4_en_bond {
 diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index 8f762fc170b3..9c114fc723e3 100644
+index 9c114fc723e3..1b8e1b2d8729 100644
 --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
 +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -661,9 +661,14 @@ static int check_csum(struct mlx4_cqe *cqe, struct sk_buff *skb, void *va,
- #define MLX4_CQE_STATUS_IP_ANY (MLX4_CQE_STATUS_IPV4)
- #endif
+@@ -663,8 +663,40 @@ static int check_csum(struct mlx4_cqe *cqe, struct sk_buff *skb, void *va,
  
-+struct mlx4_xdp_buff {
-+	struct xdp_buff xdp;
-+};
+ struct mlx4_xdp_buff {
+ 	struct xdp_buff xdp;
++	struct mlx4_cqe *cqe;
++	struct mlx4_en_dev *mdev;
++	struct mlx4_en_rx_ring *ring;
++	struct net_device *dev;
+ };
+ 
++bool mlx4_xdp_rx_timestamp_supported(const struct xdp_md *ctx)
++{
++	struct mlx4_xdp_buff *_ctx = (void *)ctx;
++
++	return _ctx->ring->hwtstamp_rx_filter == HWTSTAMP_FILTER_ALL;
++}
++
++u64 mlx4_xdp_rx_timestamp(const struct xdp_md *ctx)
++{
++	struct mlx4_xdp_buff *_ctx = (void *)ctx;
++
++	return mlx4_en_get_hwtstamp(_ctx->mdev, mlx4_en_get_cqe_ts(_ctx->cqe));
++}
++
++bool mlx4_xdp_rx_hash_supported(const struct xdp_md *ctx)
++{
++	struct mlx4_xdp_buff *_ctx = (void *)ctx;
++
++	return _ctx->dev->features & NETIF_F_RXHASH;
++}
++
++u32 mlx4_xdp_rx_hash(const struct xdp_md *ctx)
++{
++	struct mlx4_xdp_buff *_ctx = (void *)ctx;
++
++	return be32_to_cpu(_ctx->cqe->immed_rss_invalid);
++}
 +
  int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int budget)
  {
  	struct mlx4_en_priv *priv = netdev_priv(dev);
-+	struct mlx4_xdp_buff mxbuf = {};
- 	int factor = priv->cqe_factor;
- 	struct mlx4_en_rx_ring *ring;
- 	struct bpf_prog *xdp_prog;
-@@ -671,7 +676,6 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 	bool doorbell_pending;
- 	bool xdp_redir_flush;
- 	struct mlx4_cqe *cqe;
--	struct xdp_buff xdp;
- 	int polled = 0;
- 	int index;
- 
-@@ -681,7 +685,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 	ring = priv->rx_ring[cq_ring];
- 
- 	xdp_prog = rcu_dereference_bh(ring->xdp_prog);
--	xdp_init_buff(&xdp, priv->frag_info[0].frag_stride, &ring->xdp_rxq);
-+	xdp_init_buff(&mxbuf.xdp, priv->frag_info[0].frag_stride, &ring->xdp_rxq);
- 	doorbell_pending = false;
- 	xdp_redir_flush = false;
- 
-@@ -776,24 +780,24 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 						priv->frag_info[0].frag_size,
+@@ -781,8 +813,12 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
  						DMA_FROM_DEVICE);
  
--			xdp_prepare_buff(&xdp, va - frags[0].page_offset,
-+			xdp_prepare_buff(&mxbuf.xdp, va - frags[0].page_offset,
- 					 frags[0].page_offset, length, false);
--			orig_data = xdp.data;
-+			orig_data = mxbuf.xdp.data;
+ 			xdp_prepare_buff(&mxbuf.xdp, va - frags[0].page_offset,
+-					 frags[0].page_offset, length, false);
++					 frags[0].page_offset, length, true);
+ 			orig_data = mxbuf.xdp.data;
++			mxbuf.cqe = cqe;
++			mxbuf.mdev = priv->mdev;
++			mxbuf.ring = ring;
++			mxbuf.dev = dev;
  
--			act = bpf_prog_run_xdp(xdp_prog, &xdp);
-+			act = bpf_prog_run_xdp(xdp_prog, &mxbuf.xdp);
+ 			act = bpf_prog_run_xdp(xdp_prog, &mxbuf.xdp);
  
--			length = xdp.data_end - xdp.data;
--			if (xdp.data != orig_data) {
--				frags[0].page_offset = xdp.data -
--					xdp.data_hard_start;
--				va = xdp.data;
-+			length = mxbuf.xdp.data_end - mxbuf.xdp.data;
-+			if (mxbuf.xdp.data != orig_data) {
-+				frags[0].page_offset = mxbuf.xdp.data -
-+					mxbuf.xdp.data_hard_start;
-+				va = mxbuf.xdp.data;
- 			}
- 
- 			switch (act) {
- 			case XDP_PASS:
- 				break;
- 			case XDP_REDIRECT:
--				if (likely(!xdp_do_redirect(dev, &xdp, xdp_prog))) {
-+				if (likely(!xdp_do_redirect(dev, &mxbuf.xdp, xdp_prog))) {
- 					ring->xdp_redirect++;
- 					xdp_redir_flush = true;
- 					frags[0].page = NULL;
+diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+index e132ff4c82f2..b7c0d4899ad7 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
++++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+@@ -792,6 +792,7 @@ int mlx4_en_netdev_event(struct notifier_block *this,
+  * Functions for time stamping
+  */
+ u64 mlx4_en_get_cqe_ts(struct mlx4_cqe *cqe);
++u64 mlx4_en_get_hwtstamp(struct mlx4_en_dev *mdev, u64 timestamp);
+ void mlx4_en_fill_hwtstamps(struct mlx4_en_dev *mdev,
+ 			    struct skb_shared_hwtstamps *hwts,
+ 			    u64 timestamp);
+diff --git a/include/linux/mlx4/device.h b/include/linux/mlx4/device.h
+index 6646634a0b9d..d5904da1d490 100644
+--- a/include/linux/mlx4/device.h
++++ b/include/linux/mlx4/device.h
+@@ -1585,4 +1585,11 @@ static inline int mlx4_get_num_reserved_uar(struct mlx4_dev *dev)
+ 	/* The first 128 UARs are used for EQ doorbells */
+ 	return (128 >> (PAGE_SHIFT - dev->uar_page_shift));
+ }
++
++struct xdp_md;
++bool mlx4_xdp_rx_timestamp_supported(const struct xdp_md *ctx);
++u64 mlx4_xdp_rx_timestamp(const struct xdp_md *ctx);
++bool mlx4_xdp_rx_hash_supported(const struct xdp_md *ctx);
++u32 mlx4_xdp_rx_hash(const struct xdp_md *ctx);
++
+ #endif /* MLX4_DEVICE_H */
 -- 
 2.38.1.584.g0f3c55d4c2-goog
 
