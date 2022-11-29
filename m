@@ -2,55 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51EA063C03A
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 13:40:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F07CC63C03F
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 13:41:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233131AbiK2MkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 07:40:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
+        id S234296AbiK2Mlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 07:41:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbiK2MkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 07:40:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3D949B55;
-        Tue, 29 Nov 2022 04:40:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S232559AbiK2Mli (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 07:41:38 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBF65EFB6;
+        Tue, 29 Nov 2022 04:41:37 -0800 (PST)
+Received: from [IPV6:2003:e9:d724:11f3:6a8a:fec:d223:2c22] (p200300e9d72411f36a8a0fecd2232c22.dip0.t-ipconnect.de [IPv6:2003:e9:d724:11f3:6a8a:fec:d223:2c22])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F433B815E9;
-        Tue, 29 Nov 2022 12:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9DC92C433D7;
-        Tue, 29 Nov 2022 12:40:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669725616;
-        bh=81J56jrE5uFmZVK3lgDFKhSwPMsZg/s1PTlCp/aDuOE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rxn93+nJxss4G+zag68ef041D5LsJy2KY1eG8z/7R4GvbasaZMIYn8oRetJl+9J06
-         2c1j1V1VajJLZqy8WGdqveoZS+IQgljlq4+dm0FbIWsIf2sHMeeBrMlG3oZ3H4tJq1
-         tn1IAqhW6BmHCDw746CuREaCVCE/+ocJkfMxS/IwQr42ZT4O0gfq3q5mgcqXx/6W8n
-         kYUl+6T2Qhc8SMgOTslxFSQpRluhTxzmV7jJTeYUw7uBcmWPzcXsuJu7i1AQL9lBGm
-         ggk4FZvwhCIlmBmd7hUMxPHexRAwuam0qugQjapPEOM95poCWa/SvL6c80+uVwxsPJ
-         0cWkugtHnS5NA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 79EB5E29F38;
-        Tue, 29 Nov 2022 12:40:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id C577EC0438;
+        Tue, 29 Nov 2022 13:41:34 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1669725695;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hgpY+NqQsulFa+2pWd5BcoI5h8CmCSGexzhvrO3xo+g=;
+        b=UHFUD0ggPNPLNVNfcd+a8r3l8qeqyshayAU+e30y4H4cxefuUNRDTzVj4kX/8OFD5m2rbK
+        KqPHaw+ThfqaJNkMfAKPNGzl9tq7voBfb8uAcF9JtsWhyX3qM4yKk1aGCMEkOP8RMUJSOt
+        XdgbD+ColMiE/53eFFanXZaMAv2DD3Uub4a4FM1KIg/jlCHFdIicea7heQedhdyL3Fird9
+        JZ+zFC3stx6OSC3wnH/UP9BAim8dd88puR5X38vz8RTHolOADl12mp8jvR6yjtFHHIo26m
+        QNA3ewa9FOQgBV04OyE5nsGnPgCjtsgfsLFYlXmc4WxArJA/9XsRmXhK+6Bflg==
+Message-ID: <ff0e20e9-687c-75f7-12ea-c927df39a1db@datenfreihafen.org>
+Date:   Tue, 29 Nov 2022 13:41:32 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/9] Add support for lan966x IS2 VCAP
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166972561648.15346.2560633115999516462.git-patchwork-notify@kernel.org>
-Date:   Tue, 29 Nov 2022 12:40:16 +0000
-References: <20221125095010.124458-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20221125095010.124458-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
-        daniel.machon@microchip.com, UNGLinuxDriver@microchip.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH wpan-next v2 0/2] IEEE 802.15.4 PAN discovery handling
+Content-Language: en-US
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+References: <20221118221041.1402445-1-miquel.raynal@bootlin.com>
+ <CAK-6q+iLkYuz5csmbLt=tKcfGmdNGP+Sm42+DQRu5180jafEGw@mail.gmail.com>
+ <20221129090321.132a4439@xps-13>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20221129090321.132a4439@xps-13>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,45 +69,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hello.
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Fri, 25 Nov 2022 10:50:01 +0100 you wrote:
-> This provides initial support for lan966x for 'tc' traffic control
-> userspace tool and its flower filter. For this is required to use
-> the VCAP library.
+On 29.11.22 09:03, Miquel Raynal wrote:
+> Hi Alexander,
 > 
-> Currently supported flower filter keys and actions are:
-> - source and destination MAC address keys
-> - trap action
+> aahringo@redhat.com wrote on Mon, 28 Nov 2022 17:11:38 -0500:
 > 
-> [...]
+>> Hi,
+>>
+>> On Fri, Nov 18, 2022 at 5:13 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>>>
+>>> Hello,
+>>>
+>>> Last preparation step before the introduction of the scanning feature
+>>> (really): generic helpers to handle PAN discovery upon beacon
+>>> reception. We need to tell user space about the discoveries.
+>>>
+>>> In all the past, current and future submissions, David and Romuald from
+>>> Qorvo are credited in various ways (main author, co-author,
+>>> suggested-by) depending of the amount of rework that was involved on
+>>> each patch, reflecting as much as possible the open-source guidelines we
+>>> follow in the kernel. All this effort is made possible thanks to Qorvo
+>>> Inc which is pushing towards a featureful upstream WPAN support.
+>>>   
+>>
+>> Acked-by: Alexander Aring <aahringo@redhat.com>
+>>
+>> I am sorry, I saw this series today. Somehow I mess up my mails if we
+>> are still writing something on v1 but v2 is already submitted. I will
+>> try to keep up next time.
+> 
+> Haha I was asking myself wether or not you saw it, no problem :) I did
+> send it after your main review but we continued discussing on v1 (about
+> the preambles) so I did not ping for the time the discussion would
+> settle.
 
-Here is the summary with links:
-  - [net-next,1/9] net: microchip: vcap: Merge the vcap_ag_api_kunit.h into vcap_ag_api.h
-    https://git.kernel.org/netdev/net-next/c/0a335db8c745
-  - [net-next,2/9] net: microchip: vcap: Extend vcap with lan966x
-    https://git.kernel.org/netdev/net-next/c/ee72d90b042e
-  - [net-next,3/9] net: lan966x: Add initial VCAP
-    https://git.kernel.org/netdev/net-next/c/b053122532d7
-  - [net-next,4/9] net: lan966x: Add is2 vcap model to vcap API.
-    https://git.kernel.org/netdev/net-next/c/39bedc169cff
-  - [net-next,5/9] net: lan966x: add vcap registers
-    https://git.kernel.org/netdev/net-next/c/f919ccc93dc6
-  - [net-next,6/9] net: lan966x: add tc flower support for VCAP API
-    https://git.kernel.org/netdev/net-next/c/3643abd6e6bc
-  - [net-next,7/9] net: lan966x: add tc matchall goto action
-    https://git.kernel.org/netdev/net-next/c/61caac2d1ab5
-  - [net-next,8/9] net: lan966x: Add port keyset config and callback interface
-    https://git.kernel.org/netdev/net-next/c/4426b78c626d
-  - [net-next,9/9] net: microchip: vcap: Implement w32be
-    https://git.kernel.org/netdev/net-next/c/4f141e367123
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I was trying to apply these two patches, but the first one does not apply:
 
 
+Failed to apply patch:
+error: patch failed: include/net/nl802154.h:58
+error: include/net/nl802154.h: patch does not apply
+hint: Use 'git am --show-current-patch=diff' to see the failed patch
+Applying: ieee802154: Advertize coordinators discovery
+Patch failed at 0001 ieee802154: Advertize coordinators discovery
+
+It seems you need a rebase as there is commit 
+8254393663f9b8cb8b84cdce1abb118833c22a54 which touches this area of the 
+file and removes a comment and ifdef. Should be fine to go in after the 
+rebase.
+
+regards
+Stefan Schmidt
