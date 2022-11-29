@@ -2,127 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8569B63C048
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 13:47:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BDDC63C052
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 13:51:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234462AbiK2Mre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 07:47:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
+        id S234568AbiK2Mv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 07:51:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230385AbiK2Mrd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 07:47:33 -0500
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404375E9F9;
-        Tue, 29 Nov 2022 04:47:30 -0800 (PST)
-Received: by mail-ej1-f45.google.com with SMTP id e27so33462742ejc.12;
-        Tue, 29 Nov 2022 04:47:30 -0800 (PST)
+        with ESMTP id S232559AbiK2MvY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 07:51:24 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765966036B;
+        Tue, 29 Nov 2022 04:51:23 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id vp12so32246126ejc.8;
+        Tue, 29 Nov 2022 04:51:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=G3Vianv53QwBde+4y0neO7GhKiBeHZDFK4V5XmXwBlA=;
+        b=Om0IqUcy9EtT2JgNhJ3iAVIePbprp1q3op8g62egelwTGw1dI/yKkP4pKz6/Fj9l2W
+         EUjhTSy9A7yWlzJyzPpsG8sEj5ZCfSQoBN4S9HePNz83TU63g+JcJA/NV6/bhdX+VGpB
+         yhAQ3G+GYbbQ/ZCnxrWMhTgtcqc9CoSttmkluZjlisBqf+E8VeK7f7eN499Y/7C2LKSh
+         b1Yj0/KT+PsqMJ8ifSDhLnm2gSxvScCvVtIyL3yhhf/Sl6oUXVy1Acunqqojn9UtwQtw
+         sFLgOQXV2V4ZLLyhrNKSL2rgxDBl/txA/q/g1klgDNelp8g9+A5MdelPpWTodq415Tit
+         5iLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sa9E0/v9b1xAmPW/8o9nmxOSrZKgnB1xqUmwf2B/JNM=;
-        b=4EW/nF4P1L7/uA4SAMLl9OYwE5k6YohZ7NxROjIkQu8HtA/+jOBdKliJ49MiY2swj6
-         lGgWDQAZV+XTL2y4UfjddfdLRZXxdEyrWfEI7U9e0aUb21geRPULgTsV2LtflhLGVS6P
-         9dql5vrGtupwsL/onqnpZt60g/vObCaxgpfpWiZeugrvwxvEmrAqRp+SOt1j7l4+Yjze
-         i5/x5I1JFZzUTUvFOdfhD5l+ovCHrUi+Ny/JU3pOtNF5/c6iVEq0EXrqknI5FEI5i2hR
-         bGx3xGJHkyZ3vv2/VEhtUxRk7tGw0ZBrQunvfl51sQEDK/PeXvnav9UQt5jqEb3vfNaU
-         6erw==
-X-Gm-Message-State: ANoB5plgVn/f3esNdBYC0vtgdrTeCEJqchQNxkvCwAdtLVSocrY44XHK
-        GYN5Mp4NcQremFs0hmIV5ME=
-X-Google-Smtp-Source: AA0mqf5mPMJdfEU+nMzytdu19PC8wcc1mvnsSoJbTx1ms+q0Z4xR/Uj00Q+4rh41Dac9Rwmvt48WkA==
-X-Received: by 2002:a17:906:9445:b0:7bb:7520:f168 with SMTP id z5-20020a170906944500b007bb7520f168mr22532207ejx.423.1669726048700;
-        Tue, 29 Nov 2022 04:47:28 -0800 (PST)
-Received: from gmail.com (fwdproxy-cln-012.fbsv.net. [2a03:2880:31ff:c::face:b00c])
-        by smtp.gmail.com with ESMTPSA id n3-20020aa7c683000000b0046353d6f454sm6166678edq.95.2022.11.29.04.47.27
+        bh=G3Vianv53QwBde+4y0neO7GhKiBeHZDFK4V5XmXwBlA=;
+        b=UfO9zejNstld079Y+3kiVDJVgfhhnzKK6lhZfD+mLCxE+a66ceeTWH/4qLQIHyhahk
+         nO3zhlK2lepvx7eG32fZTJbCvmFdOXAGSF7Q02q8YtBuwb4UItlB4LIreeOFQnGdpxCy
+         Pi3iW3ErNW7Nfh3IaES8X4Nty2Z69fIeC0pPHBVOf91h6PSnpYTQdJcOdwOFlRwMmGsV
+         BdRAZfmZBQC6+ogPHGnMHFMVc1+ZGKKUuIgUsDkj9UIVAhvLUFSTpM1BG3EZhSEUDNXg
+         y9ySXoDXMuM8wkJ/JWJOD9j1MUMw2LpriZtSWg6ewIbbq2HsCSjSE5BmL60KlZzimf1a
+         sQ3A==
+X-Gm-Message-State: ANoB5pkvuEOmhVUi3P2WEgydxX7p+UOHVhGR/0w0nUBdXU1AjYwONOHL
+        FWfo0h+as0Nx+iYIHaXIVeM=
+X-Google-Smtp-Source: AA0mqf5lUWfjY+CBqlqSkIGts0oT9WZu/+zq3r7ZpHANh/VrTcKxuYqlTwFiC/0oH0AEbg1BF6YZ/Q==
+X-Received: by 2002:a17:907:2a10:b0:7a7:9b01:2a6c with SMTP id fd16-20020a1709072a1000b007a79b012a6cmr48029800ejc.153.1669726281875;
+        Tue, 29 Nov 2022 04:51:21 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id g3-20020a170906538300b0078cb06c2ef9sm6107282ejo.8.2022.11.29.04.51.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Nov 2022 04:47:28 -0800 (PST)
-Date:   Tue, 29 Nov 2022 04:47:26 -0800
-From:   Breno Leitao <leitao@debian.org>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, leit@fb.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH RESEND net-next] tcp: socket-specific version of
- WARN_ON_ONCE()
-Message-ID: <Y4X/XidkaLaD5Zak@gmail.com>
-References: <20221124112229.789975-1-leitao@debian.org>
- <20221129010055.75780-1-kuniyu@amazon.com>
+        Tue, 29 Nov 2022 04:51:21 -0800 (PST)
+Date:   Tue, 29 Nov 2022 15:51:18 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Jonathan Toppins <jtoppins@redhat.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next v2] bonding: uninitialized variable in
+ bond_miimon_inspect()
+Message-ID: <Y4YARi7a7ES00Y3q@kadam>
+References: <Y4SWJlh3ohJ6EPTL@kili>
+ <14024.1669660215@famine>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221129010055.75780-1-kuniyu@amazon.com>
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <14024.1669660215@famine>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 29, 2022 at 10:00:55AM +0900, Kuniyuki Iwashima wrote:
-> From:   Breno Leitao <leitao@debian.org>
-> Date:   Thu, 24 Nov 2022 03:22:29 -0800
-> > There are cases where we need information about the socket during a
-> > warning, so, it could help us to find bugs that happens and do not have
-> > an easy repro.
-> > 
-> > This diff creates a TCP socket-specific version of WARN_ON_ONCE(), which
-> > dumps more information about the TCP socket.
-> > 
-> > This new warning is not only useful to give more insight about kernel bugs, but,
-> > it is also helpful to expose information that might be coming from buggy
-> > BPF applications, such as BPF applications that sets invalid
-> > tcp_sock->snd_cwnd values.
+On Mon, Nov 28, 2022 at 10:30:15AM -0800, Jay Vosburgh wrote:
+> Dan Carpenter <error27@gmail.com> wrote:
 > 
-> Have you finally found a root cause on BPF or TCP side ?
-
-Yes, this demonstrated to be very useful to find out BPF applications
-that are doing nasty things with the congestion window.
-
-We currently have this patch applied to Meta's infrastructure to track
-BPF applications that are misbehaving, and easily track down to which
-BPF application is the responsible one.
-
-> > +#endif  /* _LINUX_TCP_DEBUG_H */
-> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > index 54836a6b81d6..dd682f60c7cb 100644
-> > --- a/net/ipv4/tcp.c
-> > +++ b/net/ipv4/tcp.c
-> > @@ -4705,6 +4705,36 @@ int tcp_abort(struct sock *sk, int err)
-> >  }
-> >  EXPORT_SYMBOL_GPL(tcp_abort);
-> >  
-> > +void tcp_sock_warn(const struct tcp_sock *tp)
-> > +{
-> > +	const struct sock *sk = (const struct sock *)tp;
-> > +	struct inet_sock *inet = inet_sk(sk);
-> > +	struct inet_connection_sock *icsk = inet_csk(sk);
-> > +
-> > +	WARN_ON(1);
-> > +
-> > +	if (!tp)
+> >The "ignore_updelay" variable needs to be initialized to false.
+> >
+> >Fixes: f8a65ab2f3ff ("bonding: fix link recovery in mode 2 when updelay is nonzero")
+> >Signed-off-by: Dan Carpenter <error27@gmail.com>
 > 
-> Is this needed ?
-
-We are de-referencing tp/sk in the lines below, so, I think it is safe to
-check if they are not NULL before the de-refencing it.
-
-Should I do check for "ck" instead of "tp" to make the code a bit
-cleaner to read?
-
-> > +	pr_warn("Socket Info: family=%u state=%d sport=%u dport=%u ccname=%s cwnd=%u",
-> > +		sk->sk_family, sk->sk_state, ntohs(inet->inet_sport),
-> > +		ntohs(inet->inet_dport), icsk->icsk_ca_ops->name, tcp_snd_cwnd(tp));
-> > +
-> > +	switch (sk->sk_family) {
-> > +	case AF_INET:
-> > +		pr_warn("saddr=%pI4 daddr=%pI4", &inet->inet_saddr,
-> > +			&inet->inet_daddr);
+> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 > 
-> As with tcp_syn_flood_action(), [address]:port format is easy
-> to read and consistent in kernel ?
+> >---
+> >v2: Re-order so the declarations are in reverse Christmas tree order
+> >
+> >Don't forget about:
+> >drivers/net/bonding/bond_main.c:5071 bond_update_slave_arr() warn: missing error code here? 'bond_3ad_get_active_agg_info()' failed. 'ret' = '0'
+> 
+> 	The code around the cited line is correct.  A -1 return from
+> bond_3ad_get_active_agg_info is not indicative of an error in the sense
+> that something has failed, but indicates that there is no active
+> aggregator.  The code correctly returns 0 from bond_update_slave_arr, as
+> returning non-zero would cause bond_slave_arr_handler to loop, retrying
+> the call to bond_update_slave_arr (via workqueue).
+> 
 
-Absolutely. I am going to fix it in v2. Thanks!
+Awesome, thanks for taking a look at this.
+
+regards,
+dan carpenter
+
