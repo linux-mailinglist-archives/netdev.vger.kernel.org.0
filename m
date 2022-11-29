@@ -2,117 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA25B63BD19
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:37:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F023863BD2A
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:43:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbiK2Jhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 04:37:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40288 "EHLO
+        id S230024AbiK2Jn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 04:43:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229818AbiK2Jhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:37:53 -0500
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026FE29815;
-        Tue, 29 Nov 2022 01:37:53 -0800 (PST)
-Received: by mail-pl1-f172.google.com with SMTP id k7so12838719pll.6;
-        Tue, 29 Nov 2022 01:37:52 -0800 (PST)
+        with ESMTP id S229630AbiK2Jnz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:43:55 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0CB1B7BF;
+        Tue, 29 Nov 2022 01:43:54 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id y16so1379994wrm.2;
+        Tue, 29 Nov 2022 01:43:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Jeqcoxm8Nqrt6iXsC20iMe7fG7ZxHmkQeMwVwCCMT84=;
+        b=GWW7tHdJvDC5InTvP1c5sP0a8wc8Way1HZPpGUGBCpWugXfUB2GIiU8Ulwn0OMpkNt
+         XGsllGvOyjsDEOMlsUVogaXndIDfIvTn8F0AZulXhPLi3zPhgh2ZwtCdIYAnXDKU+rOB
+         xUxoNXh1FPYdXE6iFRCVGrF228fnJ4drFmI0WsNyRo9OCIrhjgBgSqsyjSFL939at0If
+         W4VUZZWT3WuWWQWKdC9BKzhMnDrfSdEO/5NA1Svn/QAual9023jdQpNX7KmYKzTFz68k
+         /uH2MVR8+CfQrkVB3vhZIGWIOeJGq4x8WtzVlsRNMUZGscbY4ptm2qyFq+ZSeHHqVu0Z
+         fbIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Q+AGSUb4FRLyd7s2US6m9NjBG7l9wn0Ll8edLLRQmpU=;
-        b=maMOpqkzTRX349+LKxNQN3z0BKWmATNFMQ6dUtvfXuGUJTa9DBjDYwBe6ID6I5Tqeu
-         p5o5vvQB3Bg63TBnR1CV/Z7M0NI0jRbIHpkJI9A4p3+5s8pg6F5GrjWVSTYtmLPj/DYF
-         IoOLfVkq2IthZP2J/09x8pl7xRv6YfszV2dPNfWpx0FcGJ/DWUc1crmWefT+MelazfnE
-         HEvr4aLblFb9WywCI9+h6hcSql2XzOeruUTHXSTXxQpgBZlwghmR0gZOcTjGu5eKMdBe
-         3TO65JGTbj/YDd7Uk+Msbyau8xnspnQAAI1Wc99c8/0bIBvG+4KPXwvzgTjsSxC2BoNl
-         vqyQ==
-X-Gm-Message-State: ANoB5pm66IX6up5Sz1olCSK+qyBtLVliLFQRCCkuR08qwOclV1u555T/
-        CZULL8FOnqjc6Tu/8Vn/eqpAHxvfEXgu+Fzun1g=
-X-Google-Smtp-Source: AA0mqf7WfI50hoerRcgf3B/Jf6GLxqEsRVWE+x+RBOR4VhqxVFXsP3t8iwfzE3TOjubAK9pXbOzPm3C5PvcYml5Z24M=
-X-Received: by 2002:a17:903:452:b0:189:6574:7ac2 with SMTP id
- iw18-20020a170903045200b0018965747ac2mr22126393plb.65.1669714672421; Tue, 29
- Nov 2022 01:37:52 -0800 (PST)
-MIME-Version: 1.0
-References: <20221129000550.3833570-1-mailhol.vincent@wanadoo.fr>
- <20221129000550.3833570-3-mailhol.vincent@wanadoo.fr> <Y4XCCl6F+N2w+ngn@nanopsycho>
-In-Reply-To: <Y4XCCl6F+N2w+ngn@nanopsycho>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 29 Nov 2022 18:37:41 +0900
-Message-ID: <CAMZ6RqJnxkDmMtXSvUF2aondZ_8BGYq4XL35Cg7Vxy9qqsfAeg@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 2/4] net: devlink: remove devlink_info_driver_name_put()
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Jeqcoxm8Nqrt6iXsC20iMe7fG7ZxHmkQeMwVwCCMT84=;
+        b=4SaA63auDv1H1cGO4N4ySsMAt0BmM/pRtF1SdnI/thyOGiUAnjwhLLJ0ontbovZwiU
+         NMj9BuAtt5zKBZpfA5Cgyr0neRE0HdANKbtdwsx+V3vRrmPdrDxbGhdNIwuVCvubR7a+
+         JB4odSS3XaFP5ot+ecXakKc1UNfZKkKNkVKqWYhxtQGaCdkDCY93FxdRKTeFFGsqml6q
+         OrwiLMv9H6JV8FF3FTSrHdMxX57azqwTU4D+ufF/nT+VRMlJgPr7Xs4ZhqpxI6qwoAir
+         38DxjSLwj0BpA4++XkkjhrXT0nY2/8dD6LtFiUkUW7LMfzGeLO+Be/5fosdj6alVFf87
+         e7nw==
+X-Gm-Message-State: ANoB5plHs9h6syBv/hBnxo2B3Pii88m8BJ9YiaIj4PHe13qbbFsZ0OQZ
+        GjUOss0hma7mYc56bHRr/fb+IqyYwMy0sg==
+X-Google-Smtp-Source: AA0mqf7rByhOtrn/GWz8pQ9uGBwVAoOecGpgcUjL5Re7DNs0UezI0GfXpbeuQaEoWHClzXkdXA25dA==
+X-Received: by 2002:a5d:684f:0:b0:242:7a2:a014 with SMTP id o15-20020a5d684f000000b0024207a2a014mr11817514wrw.228.1669715032904;
+        Tue, 29 Nov 2022 01:43:52 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id c2-20020a05600c0a4200b003cfd4cf0761sm1484062wmq.1.2022.11.29.01.43.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Nov 2022 01:43:52 -0800 (PST)
+Date:   Tue, 29 Nov 2022 12:43:47 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>
+Cc:     Daniel Machon <daniel.machon@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Arnaud Ebalard <arno@natisbad.org>,
-        Srujana Challa <schalla@marvell.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Dimitris Michailidis <dmichail@fungible.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Shannon Nelson <snelson@pensando.io>, drivers@pensando.io,
-        Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Vadim Fedorenko <vadfed@fb.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vadim Pasternak <vadimp@mellanox.com>,
-        Shalom Toledo <shalomt@mellanox.com>,
-        linux-crypto@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, oss-drivers@corigine.com,
-        Jiri Pirko <jiri@mellanox.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hao Chen <chenhao288@hisilicon.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Shijith Thotton <sthotton@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net: microchip: sparx5: Fix error handling in
+ vcap_show_admin()
+Message-ID: <Y4XUUx9kzurBN+BV@kili>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue. 29 Nov. 2022 at 17:25, Jiri Pirko <jiri@resnulli.us> wrote:
-> Tue, Nov 29, 2022 at 01:05:48AM CET, mailhol.vincent@wanadoo.fr wrote:
-> >Now that the core sets the driver name attribute, drivers are not
-> >supposed to call devlink_info_driver_name_put() anymore. Remove it.
-> >
-> >Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
->
-> I agree with Jacob that this could be easily squashed to the previous
-> patch. One way or another:
+If vcap_dup_rule() fails that leads to an error pointer dereference
+side the call to vcap_free_rule().  Also it only returns an error if the
+very last call to vcap_read_rule() fails and it returns success for
+other errors.
 
-OK. Let's have the majority decide: I will squash patches 1 and 2 and send a v6.
+I've changed it to just stop printing after the first error and return
+an error code.
 
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Fixes: 3a7921560d2f ("net: microchip: sparx5: Add VCAP rule debugFS support for the VCAP API")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
+---
+ .../ethernet/microchip/vcap/vcap_api_debugfs.c    | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-Thank you for the review.
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
+index d9c7ca988b76..14fcb3d4ee85 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
+@@ -639,17 +639,24 @@ static int vcap_show_admin(struct vcap_control *vctrl,
+ 	mutex_lock(&admin->lock);
+ 	list_for_each_entry(elem, &admin->rules, list) {
+ 		ri = vcap_dup_rule(elem);
+-		if (IS_ERR(ri))
+-			goto free_rule;
++		if (IS_ERR(ri)) {
++			ret = PTR_ERR(ri);
++			goto err_unlock;
++		}
+ 		/* Read data from VCAP */
+ 		ret = vcap_read_rule(ri);
+ 		if (ret)
+-			goto free_rule;
++			goto err_free_rule;
+ 		out->prf(out->dst, "\n");
+ 		vcap_show_admin_rule(vctrl, admin, out, ri);
+-free_rule:
+ 		vcap_free_rule((struct vcap_rule *)ri);
+ 	}
++	mutex_unlock(&admin->lock);
++	return 0;
++
++err_free_rule:
++	vcap_free_rule((struct vcap_rule *)ri);
++err_unlock:
+ 	mutex_unlock(&admin->lock);
+ 	return ret;
+ }
+-- 
+2.35.1
+
