@@ -2,83 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50B6C63BC31
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 09:54:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8133363BC3C
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 09:55:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231485AbiK2IyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 03:54:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
+        id S231783AbiK2IzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 03:55:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231537AbiK2IyE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 03:54:04 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AF743AF5
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 00:53:52 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id j16so21385277lfe.12
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 00:53:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/392GykBtHnWPhSp8IdLCn51RY5siGcKVRp0TZIw73Y=;
-        b=AfYOt9xgm8N8sshzqyj5GnPwFJ+Ud+2wHuhE1yU3oqhrEDFnCD4wJ2lbOzn4uBuEqA
-         MmcMBM/HS258xdVZOPmlsr5Uas2/bX4R7UcVjJFhEweaWCbGW0YGXzQizUo8Y/N9EluR
-         m8vQaDohkKsTnOb2yYTpBzNB9LwCda3WIj/pzf1uZyzvjCJWWHazyjFIAc2dl8otHUre
-         +TwGaKsmEzid8rfKECqH9ajtV48SGwvPjZ9Amehm/jOcLDuvTXO63YEqq96IfoZjvgoc
-         I+gdbV5hF9a31nqhycfBvK+iWVglwEoi459sE6Z1PNunrHNbIBL0PwPLup+s6WQK1nAg
-         6kog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/392GykBtHnWPhSp8IdLCn51RY5siGcKVRp0TZIw73Y=;
-        b=Pu1PEQxeKe4d7FzmqucoU3Orhv8rsQ1adPpvhBiEyo3IlHDd/Cp04pmUiucGfjyDyD
-         kwyzSJ1rTyBoag9rEufkCTQBdeLGK79YLys5OBBWtwdVZnYfofcALyXdgYv4TUE1t7Nt
-         VHXc9VY09ZjuyZvO7aoVNkc4FKpN8JsY0rGjgRLoYCGcZLs9MOK29rEw0fvc0Rvo5PBc
-         /1tZsGe1RRnXfVDXf7YWUNOEkBJB9813u6C9eOHw5CmMLmT/3j1mZ6h5EzP6iyScbyb3
-         c1i//bO1XobSrPwNObYIU/QuqeNgVzimFP9cmujw+oDT42E2v992CVv97G26kJvnKSng
-         +oXQ==
-X-Gm-Message-State: ANoB5pmgUrPYCCv+F+scabmOW4qTkdTZR5BKvS44FPgNh7AQedbjY8+1
-        M2dJU1eXa6EK/elsdydQsTNObg==
-X-Google-Smtp-Source: AA0mqf6qdim8gakdaimBGD+ZKNfFkTChiA2i2Pgz4m5bIeVxjSENpVtYCe5fSjJHTQfXRwe9Xutn2A==
-X-Received: by 2002:a05:6512:3703:b0:4a2:22cf:f44d with SMTP id z3-20020a056512370300b004a222cff44dmr13149775lfr.118.1669712030458;
-        Tue, 29 Nov 2022 00:53:50 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id c13-20020a056512324d00b004b40f2e25d3sm2133465lfr.122.2022.11.29.00.53.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Nov 2022 00:53:50 -0800 (PST)
-Message-ID: <e4676089-7ce2-e123-4e2a-a7d8835e9118@linaro.org>
-Date:   Tue, 29 Nov 2022 09:53:48 +0100
+        with ESMTP id S231785AbiK2Iyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 03:54:54 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CB459FE6
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 00:54:30 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-72-_IDLqBNPPYKl1T-dLqul3w-1; Tue, 29 Nov 2022 08:54:27 +0000
+X-MC-Unique: _IDLqBNPPYKl1T-dLqul3w-1
+Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
+ (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 29 Nov
+ 2022 08:54:25 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.044; Tue, 29 Nov 2022 08:54:25 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jacob Keller' <jacob.e.keller@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: RE: [PATCH net-next v2 1/9] devlink: use min_t to calculate data_size
+Thread-Topic: [PATCH net-next v2 1/9] devlink: use min_t to calculate
+ data_size
+Thread-Index: AQHY/3u0GPIWenbZ/0+Xu9BNaPVoNq5OnL0QgAYTcACAAO/9oA==
+Date:   Tue, 29 Nov 2022 08:54:25 +0000
+Message-ID: <4fead34adb0a4461a7800a121b4642e0@AcuMS.aculab.com>
+References: <20221123203834.738606-1-jacob.e.keller@intel.com>
+ <20221123203834.738606-2-jacob.e.keller@intel.com>
+ <d561b49935234451ac062f9f12c50e83@AcuMS.aculab.com>
+ <395aa6d3-c423-266e-28e1-43f8d66dce2a@intel.com>
+In-Reply-To: <395aa6d3-c423-266e-28e1-43f8d66dce2a@intel.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH 2/2] ethernet: stmicro: stmmac: Add SGMII/QSGMII support
- for RK3568
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     Chukun Pan <amadeus@jmu.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Wu <david.wu@rock-chips.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20221129072714.22880-1-amadeus@jmu.edu.cn>
- <20221129072714.22880-2-amadeus@jmu.edu.cn>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221129072714.22880-2-amadeus@jmu.edu.cn>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,46 +58,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/11/2022 08:27, Chukun Pan wrote:
-> From: David Wu <david.wu@rock-chips.com>
-> 
-> The gmac of RK3568 supports RGMII/SGMII/QSGMII interface.
-> This patch adds the remaining SGMII/QSGMII support.
-
-Do not use "This commit/patch".
-https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
-
-> 
-> Run-tested-on: Ariaboard Photonicat (GMAC0 SGMII)
-> 
-> Signed-off-by: David Wu <david.wu@rock-chips.com>
-> [rebase, rewrite commit message]
-> Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
-> ---
->  .../net/ethernet/stmicro/stmmac/dwmac-rk.c    | 210 +++++++++++++++++-
->  1 file changed, 207 insertions(+), 3 deletions(-)
-> 
-
->  
-> -static int phy_power_on(struct rk_priv_data *bsp_priv, bool enable)
-> +static int rk_gmac_phy_power_on(struct rk_priv_data *bsp_priv, bool enable)
->  {
->  	struct regulator *ldo = bsp_priv->regulator;
->  	int ret;
-> @@ -1728,6 +1909,18 @@ static struct rk_priv_data *rk_gmac_setup(struct platform_device *pdev,
->  							"rockchip,grf");
->  	bsp_priv->php_grf = syscon_regmap_lookup_by_phandle(dev->of_node,
->  							    "rockchip,php-grf");
-> +	bsp_priv->xpcs = syscon_regmap_lookup_by_phandle(dev->of_node,
-> +							 "rockchip,xpcs");
-> +	if (!IS_ERR(bsp_priv->xpcs)) {
-> +		struct phy *comphy;
-> +
-> +		comphy = devm_of_phy_get(&pdev->dev, dev->of_node, NULL);
-
-So instead of having PHY driver, you added a syscon and implemented PHY
-driver here. No. Make a proper PHY driver.
-
-Best regards,
-Krzysztof
+RnJvbTogSmFjb2IgS2VsbGVyDQo+IFNlbnQ6IDI4IE5vdmVtYmVyIDIwMjIgMTg6MzENCj4gDQo+
+IE9uIDExLzI0LzIwMjIgMTo1MyBQTSwgRGF2aWQgTGFpZ2h0IHdyb3RlOg0KPiA+IEZyb206IEph
+Y29iIEtlbGxlcg0KPiA+PiBTZW50OiAyMyBOb3ZlbWJlciAyMDIyIDIwOjM4DQo+ID4+DQo+ID4+
+IFRoZSBjYWxjdWxhdGlvbiBmb3IgdGhlIGRhdGFfc2l6ZSBpbiB0aGUgZGV2bGlua19ubF9yZWFk
+X3NuYXBzaG90X2ZpbGwNCj4gPj4gZnVuY3Rpb24gdXNlcyBhbiBpZiBzdGF0ZW1lbnQgdGhhdCBp
+cyBiZXR0ZXIgZXhwcmVzc2VkIHVzaW5nIHRoZSBtaW5fdA0KPiA+PiBtYWNyby4NCj4gPg0KPiA+
+IFRoZXJlIG91Z2h0IHRvIGJlIGEgJ2R1Y2sgc2hvb3QnIGFycmFuZ2VkIGZvciBhbGwgdXNlcyBv
+ZiBtaW5fdCgpLg0KPiA+IEkgd2FzIHRlc3RpbmcgYSBwYXRjaCAoSSBtaWdodCBzdWJtaXQgbmV4
+dCB3ZWVrKSB0aGF0IHJlbGF4ZXMgdGhlDQo+ID4gY2hlY2tzIGluIG1pbigpIHNvIHRoYXQgaXQg
+ZG9lc24ndCBlcnJvciBhIGxvdCBvZiB2YWxpZCBjYXNlcy4NCj4gPiBJbiBwYXJ0aWN1bGFyIGEg
+cG9zaXRpdmUgaW50ZWdlciBjb25zdGFudCBjYW4gYWx3YXlzIGJlIGNhc3QgdG8gKGludCkNCj4g
+PiBhbmQgdGhlIGNvbXBhcmUgd2lsbCBEVFJULg0KPiA+DQo+ID4gSSBmb3VuZCB0aGluZ3MgbGlr
+ZSBtaW5fdCh1MzIsIHUzMl9sZW5ndGgsIHU2NF9saW1pdCkgd2hlcmUNCj4gPiB5b3UgcmVhbGx5
+IGRvbid0IHdhbnQgdG8gbWFzayB0aGUgbGltaXQgZG93bi4NCj4gPiBUaGVyZSBhcmUgYWxzbyB0
+aGUgbWluX3QodTgsIC4uLikgYW5kIG1pbl90KHUxNiwgLi4uKS4NCj4gPg0KPiANCj4gV291bGRu
+J3QgdGhhdCBleGFtcGxlIGp1c3Qgd2FudCB0byBiZSBtaW5fdCh1NjQsIC4uLik/DQoNClRoYXQg
+aXMgd2hhdCBpcyB3b3VsZCBuZWVkIHRvIGJlLg0KQnV0IHRoZSBjb21waWxlciBjYW4gd29yayBp
+dCBvdXQgYW5kIGdldCBpdCByaWdodC4NCg0KPiA+IC4uLg0KPiA+PiArCQlkYXRhX3NpemUgPSBt
+aW5fdCh1MzIsIGVuZF9vZmZzZXQgLSBjdXJyX29mZnNldCwNCj4gPj4gKwkJCQkgIERFVkxJTktf
+UkVHSU9OX1JFQURfQ0hVTktfU0laRSk7DQo+ID4NCj4gPiBIZXJlIEkgdGhpbmsgYm90aCB4eHhf
+b2Zmc2V0IGFyZSB1MzIgLSBzbyB0aGUgQ0hVTktfU0laRQ0KPiA+IGNvbnN0YW50IHByb2JhYmx5
+IG5lZWRzIGEgVSBzdWZmaXguDQo+IA0KPiBSaWdodC4gTXkgdW5kZXJzdGFuZGluZyB3YXMgdGhh
+dCBtaW5fdCB3b3VsZCBjYXN0IGV2ZXJ5dGhpbmcgdG8gYSB1MzINCj4gd2hlbiBkb2luZyBzdWNo
+IGNvbXBhcmlzb24sIGFuZCB3ZSBrbm93IHRoYXQNCj4gREVWTElOS19SRUdJT05fUkVBRF9DSFVO
+S19TSVpFIGlzIDwgVTMyX01BWCBzbyB0aGlzIGlzIG9rPw0KPiANCj4gT3IgYW0gSSBtaXN1bmRl
+cnN0YW5kaW5nPw0KDQpUaGUgY29kZSBpc24ndCB3cm9uZywgZXhjZXB0IHRoYXQgZXJyb3JzIGZy
+b20gbWluKCkgYXJlIHJlYWxseQ0KYW4gaW5kaWNhdGlvbiB0aGF0IHRoZSB0eXBlcyBtaXNtYXRj
+aCwgbm90IHRoYXQgeW91IHNob3VsZCBhZGQNCmxvYWRzIG9mIGNhc3RzLg0KWW91IHdvdWxkbid0
+IHRoaW5rOg0KCXggPSAoaW50KWEgKyAoaW50KWI7DQp3YXMgYW55dGhpbmcgbm9ybWFsLCBidXQg
+dGhhdCBpcyB3aGF0IG1pbl90KCkgZG9lcy4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRk
+cmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBN
+SzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
