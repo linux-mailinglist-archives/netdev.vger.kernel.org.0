@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B912E63C220
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 15:14:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D07063C224
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 15:14:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235444AbiK2OOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 09:14:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47130 "EHLO
+        id S235489AbiK2OON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 09:14:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235356AbiK2ONg (ORCPT
+        with ESMTP id S235362AbiK2ONg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 09:13:36 -0500
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on060d.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe1f::60d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D36761515;
-        Tue, 29 Nov 2022 06:13:09 -0800 (PST)
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2051.outbound.protection.outlook.com [40.107.14.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BB960345;
+        Tue, 29 Nov 2022 06:13:10 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ocNBFibuPqQ7Becsg2eHRGRlAVOmd8tewV4nakibqZqwr9a3DC6pc2+MHj+oPGjmRtFMx37QF4RebyHLiBHKCzHgA8H5T7euXZx8j1tWIGXdxyqtnC1VGfOFIq2vhHXqSbkgqPZkALAoVyQcTOfYfYg1z5RJH7z9YNJ1zKV7jvLVF82TpxPk/48qq4+FdEVyWlgFAqA7gmxlzvPHF/e/ZccSXi6ozfmvyKXSfnc0WfS3wv3r9A7jCcTTfMPVNkim2g3K+YJruhecEsIbuQ6KgI6WmNRktEjD/zkCIvcv8dm8cge1K37IU6fdD/mJxLvqgrUspniQcS6V/B5T11BrhQ==
+ b=LoER3DLXPCV+jQLKEUPyDlxyla7WNYNbgnIYrNkyCydoZMPGXNAJ4JcttAkpfEtEHZsqOA+gO4yZ9JYmRAv8QsPEsUxbMV4LvuQ4ggLkZF3nXrAM+Bop3L73k5aCKzbeHMRJbLCf6/ccFqdZmbr3AVHgPZIHOPpakRwr1SEDp/Dwhgywx6AAzB4IUMF0qPjX9JpC2xnMI80MZpT/fxSbkyiBOWHEwLvG7yP3Pw8QQmmX7bMbXh4o17JSn9LjjuLlPQ1PUhequdUs44zXzO1Jdlob19GKXNmBI2lJSo5coOslUukUEAa4O8aqQhEG38fUryFOG8R9/QNlGye4easvnQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ezo51H+43DPp5KVZCqsH636wQ5JiPwfxPsHF2yGFLV4=;
- b=nFQpNJCqXT7nVc0NE/HgoNsUZ/d7nsR0NkxZbArLJ6w1SSzLzBQ6xOUFhY1tr28c69Tka+l1C0QeaMHwFZVKa/qLpsd59GLZQCdr80kASFktSrOABhxSIBTiqofg6Fo6OH6m9nus7ExHIxigEpEGLjNQ4CMKoH1BHz2kUQdbRneOq9WD7oVX/OA4xx83pyW4JyRMiGEw/Ow7L4Zh/hKNDDz8r6aWVuC2nJ4zoO29guwYpM+HXfgP77ILWFFPmuaKK/EcTD8AVuXr5xnkatquHzcbPPUBtj38UXiSO6vJn34JT5bqG44uLB/89sBKIcT0dL1lidDIzn/wMlwy5ugKhw==
+ bh=zlYyeYNjtccvTJFdx+DJV5OG7RVmdD6O6Q2XlD8jUPs=;
+ b=Argxuk2msq6A1mCn+mg8JuC8oTubAwgfHnGE6k9xy8/oHgvOvwUJ5dc2HiD65SxR5/aY6wrSAO1HL9H52MmHP53XDTe859NVrTSz62xTinlxLDnZobY2I+yCfp2ckSacnK88T8mlKG9ptZiKdJoZvhq0RvUV/LxMeo7CoChDQTXB4LdqV76BxQs+gjS6O3cE/hwkGwfrX2/1pPf9TQP7catR7rOwNxt5kA5Gc8hxdgUTC/RC81b3Sy+wg7u019xMGGw3FRqzmJeMpEREw/Z1aQpJd+HUcwRU9okR1HZCzwZ++ewO1/Y+pR9xpGjSPdGiSLiQCm7VA8fKWVk5IYYDHg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ezo51H+43DPp5KVZCqsH636wQ5JiPwfxPsHF2yGFLV4=;
- b=MsFZtCr3zqL8E+3nWv24/CkrzjNBVH1fs6ZLwIej5PYK4aCWucK8YxD7JFfNFBk3q9DM9jtxizZGSc4HM2qDqIY9ajlCp5h0fK/qeY5CzZJd5KK6B5BQzDCCcqMzwB0dQD/Vv10OqsMg4uPl2tIM2XNYEaQlymc4xtEZ2R4MXlg=
+ bh=zlYyeYNjtccvTJFdx+DJV5OG7RVmdD6O6Q2XlD8jUPs=;
+ b=hho3a1/3nb78Xow9hfrQJwcFLtPdlr0p02561H1ytXo7tQtAsdvmH5ZBaBgaXduvoVacKWnfVlif381FKlfFipNiALfMv1WNFmrBKywb5cwS65DGtgyyFUTpnrYKM3L6g7PwCFDkB8XecuAV/aZMEZTzJnUE/GOC5OemTztTPVU=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AS8PR04MB8724.eurprd04.prod.outlook.com (2603:10a6:20b:42b::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.19; Tue, 29 Nov
- 2022 14:12:40 +0000
+ 2022 14:12:41 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5857.023; Tue, 29 Nov 2022
- 14:12:40 +0000
+ 14:12:41 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
@@ -48,9 +48,9 @@ Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Russell King <linux@armlinux.org.uk>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 08/12] net: dpaa2-switch replace direct MAC access with dpaa2_switch_port_has_mac()
-Date:   Tue, 29 Nov 2022 16:12:17 +0200
-Message-Id: <20221129141221.872653-9-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 09/12] net: dpaa2-eth: connect to MAC before requesting the "endpoint changed" IRQ
+Date:   Tue, 29 Nov 2022 16:12:18 +0200
+Message-Id: <20221129141221.872653-10-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221129141221.872653-1-vladimir.oltean@nxp.com>
 References: <20221129141221.872653-1-vladimir.oltean@nxp.com>
@@ -62,82 +62,148 @@ X-ClientProxiedBy: VI1PR0701CA0029.eurprd07.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB8724:EE_
-X-MS-Office365-Filtering-Correlation-Id: 39d3d619-4334-4802-05fa-08dad213c5e9
+X-MS-Office365-Filtering-Correlation-Id: 27bf02e3-a215-486d-127e-08dad213c659
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c409kLmaYJs4VG0tkaBPTF8Yv+8YFMqCbrVkyh5jus7m0h0zudVu4+5RYS26mHQZiXBHWnde/cV8g0EALbYoKcOn3nMvO9sX74IRO/Y3AOf6UBhM0c6yrdOeO9NDApEo3nsZWJGrx9XLAz5UpRGNmh9KTzs6OcZVL7QAL+elhoIRHcTyYEZ6PEsClJQ/sRJGGezzWCDgQICFUTwc7P8Y2GycY9M4ORJz/1+0BaHhlS5Du8PY8TEBsGGM+B40d0sBHRYJL+LYUcycYc5oR7PfZQLuC7s48ntPi5YjHe5wFm9j0uS+cL1TwcTe1yvE9ajVKYRsc7XJzzQ+l2hJS0f/4I6E2gzaC/ucU2RuCigyjxBHf7zAQ9giBEVc3m2JLL+QAQnrSRnC/dFHQCAIDRYJ29f66ZZMSHXdr9iSC8Y7LJHopIxKZqcAsYJo/YlaWGGsxytcyRe1QIor5EWHk8y9baWv2J0gbG3ciwXFIitVd4TnHaEL+pDMx1bcR5B9mZHsmZn0Wzj8w/P/qVBHFMul4v84/0SAfo2kuzFniugrd6OfYoO4oJpS8BlSCpcGx6aXMLq5aPfMqdsoW4XLAy1FI2JNlx66LEHbOLRYMwQVhOXtOBJcSlxuzj3QlmtMFcZGvssDbzUr3wZiGsY74kcIEyFaSa1hGRq2W0K/liWhipIErAO3AeyNoHwUdSS3g5e8Y9VVf7fgvITV/nQz/pGNTA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(39860400002)(396003)(366004)(346002)(451199015)(6666004)(6506007)(6486002)(478600001)(66476007)(1076003)(36756003)(186003)(66556008)(2616005)(66946007)(8676002)(4326008)(6512007)(52116002)(5660300002)(26005)(316002)(54906003)(4744005)(6916009)(86362001)(2906002)(83380400001)(41300700001)(44832011)(38350700002)(8936002)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: io75qtPVp3fnTG28qVkRoPQkYCPOzWUyf7OmmUabEFNZzPyF5JMNK7Ey6A090WjIBDDqfbGJFQfO9hk1uWiYl7wGP7aJ+5BstSBvEfXgolWxQpxw1nkS1MI+sZ5kaoVNNhWJfgdzt750Un8kLrcuxn04cS6e2sY7i1VOLfZz+TdaVRT0PKI2xeZCFMJ8+BMxHtXgviti0N+32+Ebw8t5fhqNPU4Pmv9Va38D/AOVxIzwhOclsGVkU5alzdMur1ACf1+MFdUvjBy/b/4v4gaUyZfvf+qldH1OAB6S9iOU5K2pIhC8cWg+IH2XzGMTWjFX5IwLjrZKVWe1nq4Ak1Ojz02p8jloSQH/kzP4yyYZM/q0YetFD7IJMZfE1oj3ysx3xFq1HWt/w/+1IJ49qm/XXjwn/JYETMdJVKyBJY1Gr8rU2UoB1xVzkeHtF88z3QnR0bfFlHVBpyL7KD0NiBt9RZyCAeLbgI3rn2Vw4oTZg9SGBk9Q/NQvuUT03Iaidy2lJ7Y2OKIIxKRZeBwuEMDlDtaPFocsk+n1LbQd+lTQ+mVEKgQH8/tRcWw7AMz/68/LjS0Gu/qvEUOohl47I2tM1Hv+ctBio/H39MLD4zknD8mh3BvHPvau1JA+OKkHIZIneLmPKzyF/YNpOyVOGzZUPtrS8cHjYowzHwMme9FXSNmxFPPB3EqM2GLYzItUTHKK
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(39860400002)(396003)(366004)(346002)(451199015)(6666004)(6506007)(6486002)(478600001)(66476007)(1076003)(36756003)(186003)(66556008)(2616005)(66946007)(8676002)(4326008)(6512007)(52116002)(5660300002)(26005)(316002)(54906003)(6916009)(86362001)(2906002)(83380400001)(41300700001)(44832011)(38350700002)(8936002)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lYtgopuQn7z3Ghx8IgyblV2MfJJWahx80eehdqjGPqPLXYNq8xOyRVyO+ZDY?=
- =?us-ascii?Q?o+S3W4XHE7DINSkaZ+ztFdXoeju/YsjW2/UGcwD9BqRo14/Fmc6P7uOYxXmw?=
- =?us-ascii?Q?sd3diICHbm/m60qs2emgCI+xmAUWgPd5OQTA3byP4qtTtXFuvvWPoQf4/4lN?=
- =?us-ascii?Q?S/z5jOozajbN6hfzr4dxMdX5Zbze9+EQYAIvwWlG709CgUTUY1T2Kb7IJDit?=
- =?us-ascii?Q?MyA77QSgDhNyAKg6u5c8gJQjTDl86hIUTC/f69qCXCxY7MkYCWXoghHf8SGe?=
- =?us-ascii?Q?SVVxqfCgYRGSYj0PNpZ7EFFM+ucVSx/l/6uhJCfisS3SWuumNn1kBiy+ThfO?=
- =?us-ascii?Q?fbSxSXTLzBv10BksbySVzhWM35aaCLeLUnwnC6u0uh0kOqK22A2XFf29JW3f?=
- =?us-ascii?Q?rkh3Y5SXSWw+POQ3sXuGunUtriUxBFVuyvXmwtPZV39NKF1M7IHntceJaY77?=
- =?us-ascii?Q?lv0pOJHdzLQIOSEX5uajjTcVfTAKtAfmjZY/cJuFu3frz0Q8Difix4GVuE3D?=
- =?us-ascii?Q?UeDdTroPEypFYswi4Jc5F8b15HR2V5ZoRP6lCKMuHgcIy8iYh7IrHTBD52QE?=
- =?us-ascii?Q?4Sj4jJDBFBiUNVSqTeIymz7NFStaBAxDgJygHfarJwh+gy+mlUdnYoDfY3ft?=
- =?us-ascii?Q?KabQ94kHXmuxUDcOvNVNb88jcl0KJ/ILhytJjko77tPkH6XEtiN1O0RoDPCY?=
- =?us-ascii?Q?M/7P1w+Hj1HvlqXMk7m6AZEFEkZxxZ5jqI2o5ZjqfvkQOQ+nm926X+c0I0u3?=
- =?us-ascii?Q?vF7Yg6KW/lq+mflKdHuuE6OmV8EqbKzYQv33rzp7+LDFANDbHzEWvfXrUylO?=
- =?us-ascii?Q?cC0J0tIY8hBEbrmd2qGmPlcCMUih3kYCs00qt4l7XFrnZxqc3nsk5X3EsPQc?=
- =?us-ascii?Q?1YwAShNIU147P3H12Z+C9fJTNLnAzQ3k6L2fjIGlD2wG/m9u1ppLY3T1Pp/N?=
- =?us-ascii?Q?camDNtacpMjPz4We8vhlJ49hPdHWfBNHJDn07A9NZMBGkrkb4GHWysXYtKQ8?=
- =?us-ascii?Q?b2NwmFj567sO+gjdOCH2wv4iai3kw0e5r74hH9nSnXEX6T5ecCBEQGU3byXt?=
- =?us-ascii?Q?bQhnzg8FgZkyzULK0KTpou6Nc/X2TLT64/RBzhaK25quui3UT5r6vUcEIWRV?=
- =?us-ascii?Q?DpeuduE+nal+XbDlR+kFyv29baVEsdhVwiepyATyGzblVJTNBGe1qxvsJg6C?=
- =?us-ascii?Q?6GDBIZa/YHQ86Bvwb8doBN9gWWqtUpQFw7nL2UKJJOSS99uRaA8LYIFqTD8B?=
- =?us-ascii?Q?EMkfpBbqkQK/Zf7Csi4/Mu82bMCEotrW3zuEKMVa+HJ8XTYLbKtfPGPGQVCG?=
- =?us-ascii?Q?c793i8vvG1E+q5gEqwaP1wabIN9yDCpPL2RXwBBkgFe5YQXdB5sc9m7TQGO8?=
- =?us-ascii?Q?qgWa3twLFVf6RBv6pPROXp30Ve+hXPJjCVNuvlesIgR/oObn/D6y1LVBK0Wg?=
- =?us-ascii?Q?OnKbmGm6GzVuW13B61pmGmkSMXdgPgZ0OKzQfUdbXxLGZjQh0+UFnA+P+N+6?=
- =?us-ascii?Q?DBCFFTJlP6ggMkaiRwHFKiWO3FueC94mxHOTw249bli90LGtQ5b603PFQZYT?=
- =?us-ascii?Q?nUN8//hOIJwqJORyepz2Tqu7WiOfOh4hMpb6v+cPFf6NVcRUwXHVucuVbeHn?=
- =?us-ascii?Q?IQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5QJgABLLJJi/9qoB1XxQgXwH9VwSHTBD7jiRl0NewprGbX8w1AHtcKw8ZTGN?=
+ =?us-ascii?Q?S3ElR6lgKwwGa/VE32FiiP7Rokf46FpzRx40EPIWTz4JRZwudZd9XEtpnr+k?=
+ =?us-ascii?Q?sWOIWi592DgFDQhxZc4L6eNiBpuGLITR5WUKT/4SAfEY8klLzn/b597CiUWg?=
+ =?us-ascii?Q?9ZQt0eQB5T4b9njhu44bK1yLnTDns0FDeevGJRwz7XzkSd2gRTrWfySqr8vw?=
+ =?us-ascii?Q?HFZ1yveY+uo50h4bdYeHUPmDEDCgK57pqxVsADOCs3DhTKuxRwx1YtP5KlRZ?=
+ =?us-ascii?Q?/4UaLqm1ExY10WeGeHlgEzLuyepC6YCYUJDGVSEaM0glSEJGOT7SKG1Lda7H?=
+ =?us-ascii?Q?v5qr5aP8iZLo+bvc8K+CFeyjibBq2jVwZhvvVLHKnOzeAqpf9lHnZM1q5bbg?=
+ =?us-ascii?Q?o79da+vMQDG67BTKF6XmAVaMXTdyn5xXBR7qRlkEuPy+jxpKb8qAdCXEfGQH?=
+ =?us-ascii?Q?gjwS9ZqAZbVKldTD/Eqh6QMQMQArRKEyRI4RnzCQSlimhYMuK3V3uBwljLUN?=
+ =?us-ascii?Q?VqJBEWgurE8RKm8hUTjCxXW+FlsqMHFk7K6NQooIgdgaLnSjkNUhu3QJ7xBz?=
+ =?us-ascii?Q?CFtVqP9wtU/JOWzAfQobYTM2TKZNkbkMBuHVhlQgJN6JP4wnqm/Lq60V20Q7?=
+ =?us-ascii?Q?u1xrnORrGZG7fBZkyRKqSKEaVbNtf3Gf8o3F0j14/X2J4+dMUG8yRBLvnIFI?=
+ =?us-ascii?Q?igpUSZbEm+pjrzuNIo+GbELRa7BVGO9a9DTBj5neLEVbbfrW3f1r7DztHEv6?=
+ =?us-ascii?Q?HZ90xRVpC3aqDeOF9YiM7gQsAjuAzjEOuuY5vfs6RfNgjTlTvoEYbpFdpbLU?=
+ =?us-ascii?Q?OMhmI6ysdaUD2y0X4hRPaBhcVOwhe19+giPv42/cZh4Ha43H79bpQmwOh3uo?=
+ =?us-ascii?Q?Q6SzDINpB0fF+UMZxRxbK1OtOERwaXucQJqxV8J33OrnCrmZQa2C49TUnKmU?=
+ =?us-ascii?Q?NHv8oJTbA+J3FPAbY8+8eLyk923DitrgqFbZFvfLI7kClE/3Sfl8uHmSPV68?=
+ =?us-ascii?Q?mz6VA7Ixj44tPi4OMb1Fn2PUTc6Qrs909nfhNvkbyH0vHL8YLzsTdaXUKkPK?=
+ =?us-ascii?Q?UaOsCmDLZciSJPnkKYZ099rGy9wRO2Q0qSqpHdjUmQGHDFXbu1TVXVa8gBfa?=
+ =?us-ascii?Q?YXnn6QjelGBI+ESP4vaI6WFEfsUi6SyY2QMCFFjarnFktjTecpqR0qeDpHK2?=
+ =?us-ascii?Q?QWPM+7JEiQwjUJs4qdy5EMEJ5UYZgoC3/aFNaVXDYenPEFlRgG6XMYl3A+NK?=
+ =?us-ascii?Q?yux8dN5pMzF1M1j/+ArAF9fl43kXpXafULBz2gHvOLJZh2SnO2hAdIg5XWmY?=
+ =?us-ascii?Q?hZwYTtoB53bfS1f0N1wWSE9sEcSsvLdNIKJiQeYowQlodwOZlVWxn6Keybjd?=
+ =?us-ascii?Q?XtxvJhEo/pH1o4X+TuUroE6ejXUY14fDqJFPnsUWi3tXdyawOolorAm10IWb?=
+ =?us-ascii?Q?1NcByoxIW1csl75WWGCoR5Y68XndbyXcnmSc9iFRpkaTl3RfVFmjaRWECIpL?=
+ =?us-ascii?Q?/VHASplLkarZYQnKOLVkpKYKtqRMADHvXC8GqDJdNOguG043/9nOtFH5rpUV?=
+ =?us-ascii?Q?/88pm78+mcFBDLWpBDwobeAVDV9xHMEc35AcTapkWfDYfI8+qt8TwPLuqTsN?=
+ =?us-ascii?Q?hA=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39d3d619-4334-4802-05fa-08dad213c5e9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27bf02e3-a215-486d-127e-08dad213c659
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 14:12:39.4972
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 14:12:40.2002
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XeEUHtdCE8AKZylsWn25gKNcn7HsNCXb0IwvmfWQ+trx6wI+qwZl7UPfnwzK67dtkENH3P0H9OQTcgLFUIByvg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: v3EY1uERHrXdZVhlPdeTUx99NtZDhZJDwXmpPXiswbJD/qcI7ojMumT104hDkZvqQI4aR3cy3l22dt7y7wdM/Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8724
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
-        T_SPF_PERMERROR autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The helper function will gain a lockdep annotation in a future patch.
-Make sure to benefit from it.
+dpaa2_eth_connect_mac() is called both from dpaa2_eth_probe() and from
+dpni_irq0_handler_thread().
+
+It could happen that the DPNI gets connected to a DPMAC on the fsl-mc
+bus exactly during probe, as soon as the "endpoint change" interrupt is
+requested in dpaa2_eth_setup_irqs(). This will cause the
+dpni_irq0_handler_thread() to register a phylink instance for that DPMAC.
+
+Then, the probing function will also try to register a phylink instance
+for the same DPMAC, operation which should fail (and this will fail the
+probing of the driver).
+
+Reorder dpaa2_eth_setup_irqs() and dpaa2_eth_connect_mac(), such that
+dpni_irq0_handler_thread() never races with the DPMAC-related portion of
+the probing path.
+
+Also reorder dpaa2_eth_disconnect_mac() to be in the mirror position of
+dpaa2_eth_connect_mac() in the teardown path.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c   | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c
-index 40ee57ef55be..76a4b09e2854 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c
-@@ -189,7 +189,7 @@ static void dpaa2_switch_ethtool_get_stats(struct net_device *netdev,
- 				   dpaa2_switch_ethtool_counters[i].name, err);
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 4dbf8a1651cd..b77d292cd960 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -4899,6 +4899,10 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
+ 	}
+ #endif
+ 
++	err = dpaa2_eth_connect_mac(priv);
++	if (err)
++		goto err_connect_mac;
++
+ 	err = dpaa2_eth_setup_irqs(dpni_dev);
+ 	if (err) {
+ 		netdev_warn(net_dev, "Failed to set link interrupt, fall back to polling\n");
+@@ -4911,10 +4915,6 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
+ 		priv->do_link_poll = true;
  	}
  
--	if (port_priv->mac)
-+	if (dpaa2_switch_port_has_mac(port_priv))
- 		dpaa2_mac_get_ethtool_stats(port_priv->mac, data + i);
- }
+-	err = dpaa2_eth_connect_mac(priv);
+-	if (err)
+-		goto err_connect_mac;
+-
+ 	err = dpaa2_eth_dl_alloc(priv);
+ 	if (err)
+ 		goto err_dl_register;
+@@ -4948,13 +4948,13 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
+ err_dl_trap_register:
+ 	dpaa2_eth_dl_free(priv);
+ err_dl_register:
+-	dpaa2_eth_disconnect_mac(priv);
+-err_connect_mac:
+ 	if (priv->do_link_poll)
+ 		kthread_stop(priv->poll_thread);
+ 	else
+ 		fsl_mc_free_irqs(dpni_dev);
+ err_poll_thread:
++	dpaa2_eth_disconnect_mac(priv);
++err_connect_mac:
+ 	dpaa2_eth_free_rings(priv);
+ err_alloc_rings:
+ err_csum:
+@@ -5002,9 +5002,6 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
+ #endif
  
+ 	unregister_netdev(net_dev);
+-	rtnl_lock();
+-	dpaa2_eth_disconnect_mac(priv);
+-	rtnl_unlock();
+ 
+ 	dpaa2_eth_dl_port_del(priv);
+ 	dpaa2_eth_dl_traps_unregister(priv);
+@@ -5015,6 +5012,9 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
+ 	else
+ 		fsl_mc_free_irqs(ls_dev);
+ 
++	rtnl_lock();
++	dpaa2_eth_disconnect_mac(priv);
++	rtnl_unlock();
+ 	dpaa2_eth_free_rings(priv);
+ 	free_percpu(priv->fd);
+ 	free_percpu(priv->sgt_cache);
 -- 
 2.34.1
 
