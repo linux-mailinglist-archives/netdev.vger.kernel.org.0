@@ -2,133 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75AF363C14F
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 14:42:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DADC963C161
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 14:43:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233885AbiK2Nmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 08:42:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
+        id S234391AbiK2NnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 08:43:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234982AbiK2NmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 08:42:19 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685206205C;
-        Tue, 29 Nov 2022 05:42:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669729338; x=1701265338;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PG5xQuxDe7q39dDNmtpmF3QxaHI/8GT47yySIJeveVA=;
-  b=EFaO2CMy57MmGWejh59hfSmwG+DfxDNNzeLJlG9MoOOl7vm2OtTg16Bf
-   PzTtPKB6tNrBvt5+75auSFx2zvhXs5F8hg+YtwLO8RQy+2SU1v5h2C59N
-   y4tdQc2e1vQNvZ2zgjurEnzdoWb90OPQcXlak5qE1djbD4Yc5XnX6kPQd
-   YJORPmHLJg2oee63sk/gHj+5rcKVeokE54n6Qvd3PS2GVGxB9DlbIWiho
-   aOuO15MlnjgGft8lN8rDngqU8mvlpzwnGMXMJK/eOaBXj/4hj7EAGDiH+
-   byflveN/8mkzdlzLJL6eUEgNm5zKP9r9F/LLW6dELzX8sAQLd3LcRlLTD
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="401399975"
-X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
-   d="scan'208";a="401399975"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 05:42:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="621457612"
-X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
-   d="scan'208";a="621457612"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga006.jf.intel.com with ESMTP; 29 Nov 2022 05:42:15 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 2ATDgD0U028461;
-        Tue, 29 Nov 2022 13:42:13 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Coco Li <lixiaoyan@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S234303AbiK2NnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 08:43:14 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3789E186E9
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 05:43:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=fpudl/FnftKRMrJTxTTTWeziSsjQ4C+kADcLeoKlYyw=; b=vCNS4uip8oP57GIdEkmBp7YVdH
+        3WcP5Oxx/klmqL7Kz/ywDnKwcVQw0ADgmVhMsDDzQxAW7rzjgTknyVun/C2e8UPeETxBQWk1c8n6l
+        34k6MYwsZOze7g5jBHXze2kk+cM2p38FWq6PFMBRPKnDr44pLTQZz174iseKrFMSoCFCX4DSN3S0H
+        gmsKfDQBSgqwtcpRxsxWK+4mCJ5qRqKSYBHTdMbLq0YmCW7oa6Zg90AExhvhlQ5tLVXjM5ve7JbCC
+        +HGjQ/DgEuiuywhwmAmyZoufj8SWxhvhdxcFHuWZMl/3Z1MmJGOiJMdAMNf/tIQJ6bl/JWTvPmPpC
+        S/ON2IOQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35476)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1p00t8-0000jx-G9; Tue, 29 Nov 2022 13:43:06 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1p00t7-0001ar-Em; Tue, 29 Nov 2022 13:43:05 +0000
+Date:   Tue, 29 Nov 2022 13:43:05 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/2] IPv6/GRO: generic helper to remove temporary HBH/jumbo header in driver
-Date:   Tue, 29 Nov 2022 14:41:20 +0100
-Message-Id: <20221129134120.3084527-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <9480856d183c88a205fd79d9dbc156a7fd3ea0d3.camel@redhat.com>
-References: <20221123191627.3442831-1-lixiaoyan@google.com> <9480856d183c88a205fd79d9dbc156a7fd3ea0d3.camel@redhat.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Raag Jadav <raagjadav@gmail.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Marek Behun <marek.behun@nic.cz>
+Subject: Re: [PATCH v4 net-next 3/8] net: phy: bcm84881: move the in-band
+ capability check where it belongs
+Message-ID: <Y4YMaQ8XvkBaS/7D@shell.armlinux.org.uk>
+References: <20221122175603.soux2q2cxs2wfsun@skbuf>
+ <Y30U1tHqLw0SWwo1@shell.armlinux.org.uk>
+ <20221122193618.p57qrvhymeegu7cs@skbuf>
+ <Y34NK9h86cgYmcoM@shell.armlinux.org.uk>
+ <Y34b+7IOaCX401vR@shell.armlinux.org.uk>
+ <20221125123022.cnqobhnuzyqb5ukw@skbuf>
+ <Y4DGhv/6BHNaMEYQ@shell.armlinux.org.uk>
+ <20221125153555.uzrl7j2me3lh2aeg@skbuf>
+ <Y4PhVWmM6//kDoE/@shell.armlinux.org.uk>
+ <Y4YL6oxIFvSMYaCl@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y4YL6oxIFvSMYaCl@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
-Date: Tue, 29 Nov 2022 10:33:59 +0100
+On Tue, Nov 29, 2022 at 01:40:58PM +0000, Russell King (Oracle) wrote:
+> Here's an updated patch.
+> 8<===
+> From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+> Subject: [PATCH] net: phy: marvell: add validate_an_inband() method
+> 
+> Add the validate_an_inband() method for Marvell 88E1111, the Finisar
+> version of the 88E1111, and 88E1112.
+> 
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-> Hello,
-> 
-> Only a couple of minor things below, reporting them as this is still a
-> RFC, right ? ;)
-> 
-> On Wed, 2022-11-23 at 11:16 -0800, Coco Li wrote:
+And this is what I was using on top to force a mismatch with bypass
+enabled:
 
-[...]
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index fbf881cd4a38..c7a0389320cd 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -683,6 +683,14 @@ static int m88e1111_validate_an_inband(struct phy_device *phydev,
+ 	if (extsr < 0 || bmcr < 0)
+ 		return PHY_AN_INBAND_UNKNOWN;
+ 
++	/* <<=== HACK */
++	phydev_info(phydev, "extsr: %04x fiber bmcr: %04x\n", extsr, bmcr);
++	phy_write(phydev, MII_M1111_PHY_EXT_SR, extsr |
++		  MII_M1111_HWCFG_SERIAL_AN_BYPASS);
++	genphy_soft_reset(phydev);
++	return PHY_AN_INBAND_OFF;
++	/* ===>> HACK */
++
+ 	/* We make no efforts to enable the ANENABLE bit when switching mode.
+ 	 * If this bit is clear, then we will not be using in-band signalling.
+ 	 */
 
-> > +static inline int ipv6_hopopt_jumbo_remove(struct sk_buff *skb)
-
-I thinks it's relatively small and inlineable enough to not make it
-an external function, right? I'd keep it inline just how the author
-does it, the compiler then will decide.
-
-> > +{
-> > +	const int hophdr_len = sizeof(struct hop_jumbo_hdr);
-> > +	int nexthdr = ipv6_has_hopopt_jumbo(skb);
-> > +	struct ipv6hdr *h6;
-> > +	int err = 0;
-> > +
-> > +	if (!nexthdr)
-> > +		return err;
-> 
-> You can help a bit the compiler avoiding err initialization:
-> 
-> 	int err;
-> 
-> 	if (!nexthdr)
-> 		return 0;
-
-Same with the end of the function, @err is unused after
-skb_cow_head() and always equal 0, so the end return could be just
-`return 0`.
-
-> 
-> > +
-> > +	err = skb_cow_head(skb, 0);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	/* Remove the HBH header.
-> > +	 * Layout: [Ethernet header][IPv6 header][HBH][L4 Header]
-> > +	 */
-> > +	memmove(skb_mac_header(skb) + hophdr_len, skb_mac_header(skb),
-> > +		skb_network_header(skb) - skb_mac_header(skb) +
-> 
-> The have could be:
-> 
-> 		skb_mac_header_len(skb)
-> 
-> which is IMHO a little more clear.
-> 
-> Thanks!
-> 
-> Paolo
-
-Thanks,
-Olek
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
