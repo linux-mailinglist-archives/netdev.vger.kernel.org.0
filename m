@@ -2,266 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 833FA63B809
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 03:35:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5346E63B886
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 04:06:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235156AbiK2Cfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 21:35:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
+        id S235319AbiK2DGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 22:06:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235243AbiK2Cfa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 21:35:30 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2091.outbound.protection.outlook.com [40.107.223.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392A24AF0C;
-        Mon, 28 Nov 2022 18:35:03 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bd/Qu3Pc+D8kLjyCXdz5p4yuPpvM3bRDCAKQ3/lTeZwn+sMbPDMHvByTYt8DAhkrY/K8KcjpBatj1FrJXptst+auSVhavJKsj6P7RC7bHowD9XMxtVp+ntLhvsaO59iZQy3+wVyqhPyMRiF8YR9j2n71fLCe0paXZ1xn19WiO37uisQC6QBMfPbXUHxq6N0pbcEix/s4MRg5QOpSDpuC2pl3/fmWvcz/HG17wlog5jNPiyRobIw5uCvzGg86f0vd+3gd2nYoDL6eGEj0TVgWpRpFxMupNnn7SPD78NfNradXOaRvw0l8GaAzsvaDSLlL7nNaOY1kH64WYSmHk4GrBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CjqRvSoyRe8qY0tEik/RzKHxMAP5klF9EJ1punOwvVU=;
- b=GdN2eoxo4kdcBfQncDXuEXrtwsmQ6wHx+iBThUZR/7Ch6u78o6MKPW7mdBR+ZyKY50DGruhnG5hJQRR33Y7sSId9l7UiK5tu9Y5M58ImFG6ifoyNSckRiHoolMDZhitlj/pLdI16kPA15j9XCZ5M70N31RQX/kVKiFHezyA/ZfLImsDlJFYLgvEk+oMYWTXhSck1TjRBpVONXD1UBZNnNQII7QLakRmdaRi+QRVRULhupVcNWTtlSaFZ5JZPRaYsiar199vKqti2yOeLEydKyxqVwKLVBp3TZMEAgqHsqXpJcuBJkD3CpV2MuU3o81DufRPU7WKAEocN/fM3fsNj2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CjqRvSoyRe8qY0tEik/RzKHxMAP5klF9EJ1punOwvVU=;
- b=oYVsGQ3F+Gd9l40cIb+mtfGCeEpOIYfmY0RYknLrMmsLppArajg7X2VWyMu5n+k19+3nkai6hZ6xnb308gKnLkxYG8RsxaeqWGdYoX10YjhnK/BLD8OwFyJ60kw+VYuKbMVE63lSdDpPJj+8egkPPxNe28pZuvue3RT+Nd85scc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by SN7PR10MB6617.namprd10.prod.outlook.com
- (2603:10b6:806:2ac::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Tue, 29 Nov
- 2022 02:34:56 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::45b5:a860:9cea:a74c]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::45b5:a860:9cea:a74c%4]) with mapi id 15.20.5857.023; Tue, 29 Nov 2022
- 02:34:56 +0000
-Date:   Tue, 29 Nov 2022 01:34:52 -0800
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        =?utf-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>
-Subject: Re: [PATCH v3 net-next 03/10] dt-bindings: net: dsa: utilize base
- definitions for standard dsa switches
-Message-ID: <Y4XSPMMDgiFipdIW@COLIN-DESKTOP1.localdomain>
-References: <20221127224734.885526-1-colin.foster@in-advantage.com>
- <20221127224734.885526-4-colin.foster@in-advantage.com>
- <20221128232337.GA1513198-robh@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221128232337.GA1513198-robh@kernel.org>
-X-ClientProxiedBy: SJ0PR03CA0290.namprd03.prod.outlook.com
- (2603:10b6:a03:39e::25) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        with ESMTP id S235216AbiK2DGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 22:06:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E4B45084
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 19:04:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669691064;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PJYR23KNh0UlxbGzPt0eSeyjNLVB/XO+AaILK784Ha8=;
+        b=FNGZ3Gt9jdYDYfO58IomCrOJfxiGj/tQzlqt+3ESihDTSsgEQIz9/rOjMv8UeCPVXKE8yZ
+        i6eLV7YyFlZgZm1oPHlFcJi3IFoeP4POd3S7l77x8qzj5Zhpyypa3ZhsEjz+BzidjOR36D
+        GZEp2yzWH1drNei09icmJvLfIeAEdf8=
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
+ [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-327-bBGxb681Nl24YhbbCk0sSQ-1; Mon, 28 Nov 2022 22:04:16 -0500
+X-MC-Unique: bBGxb681Nl24YhbbCk0sSQ-1
+Received: by mail-oi1-f198.google.com with SMTP id u18-20020a056808115200b0035a0dff88f9so4702064oiu.9
+        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 19:04:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PJYR23KNh0UlxbGzPt0eSeyjNLVB/XO+AaILK784Ha8=;
+        b=T7ETA4FRbJaWHY0K67QNQRVa9ZVKnCxnR7Vm59I5eWIoYBNTJfco3BDRyaPBklTGJA
+         G2f82IyUcN/A4tx76jnPqKTe/FH31IoBJIqZe7mC7qHVg2yr+mYVwTsZR1WXcO+UJuMG
+         6cyPfrP4JC8kcJQq9TBYmzrebGz6I5eqW0z/qHQZkiuDip4W3w6Gvj41OkeH8LyvlFEs
+         I51jsiCHjMOt8fE/EJzELKz0n7US4ezgo6lA7JA3shPIxSbd2Hk89B419cEUTFdOKmVq
+         2kjbtUaxUNrSdJnRNnRIvbmlkzmUot6Y1ocu7RqKAH5MaxTY2vH3v/VvufjKPr0+xKGi
+         aPqA==
+X-Gm-Message-State: ANoB5pkgiXZmlcj2eH5CCAW1ZXK8G19wsQK9uOvCwF7B+OzhkgL9uzWX
+        7hA4SaVF/wt/a78KHg4uaJbLygt9B4muA6R5xfR3ubGmRtkryxz/AKp0KPLyLcKdE80kulyXeYg
+        PbqdtPSfCkFxCYyxk1MYUqSZ6iVC3UhV4
+X-Received: by 2002:a9d:4f07:0:b0:66c:64d6:1bb4 with SMTP id d7-20020a9d4f07000000b0066c64d61bb4mr27044587otl.201.1669691054456;
+        Mon, 28 Nov 2022 19:04:14 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf70Ry6OjGs+hy6g6ijoNxP3Znw2AU1BrK7TlBtYSMfr4tzUWxFvSjkwqKm+iZJVXZK3OiprWO47l/Op2eZkPdk=
+X-Received: by 2002:a9d:4f07:0:b0:66c:64d6:1bb4 with SMTP id
+ d7-20020a9d4f07000000b0066c64d61bb4mr27044576otl.201.1669691054181; Mon, 28
+ Nov 2022 19:04:14 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|SN7PR10MB6617:EE_
-X-MS-Office365-Filtering-Correlation-Id: 698dfc62-9a53-4bc7-3558-08dad1b24d85
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ekAKDEHlsi54g2ceqi1vk0ZG7DDT/LwT2cuQmMUURuwzo1YeLn5QIxOsUS3ubzyZ9oUKzovrBYdeDboI+PkfkDTZd3bubZevY6OzeDuGehaQNOhjIPqJJug5+zpeX/7EMcKcXvMU5n1eANb2PazFO8KLKDSnit085ibVTU1dr8dxs/LwE1iPARiNV4soqh7WOVO0oR87zj1PCayxC+b0m3tm+rGv3SjfLSekg6b6N3LU+vVgKBg0MkaTp1l81Y4PvcBDvZy/n+lRgzu80i0bOyHK0XKuirtSBrO0Ya2Lo3LY4qCGpoflFyQuLdtsTqb5CIA6yp234UfH7ZMoUXnjz2sWMu+PkSnJthJOArH0gvNcKXu05PE+2/o2eHN1siI5dgqjG0CwoK+cerEF9kssilAKqLWepWctoHp9AMMCJdvLuEDM4q3sA7KVDD1/Q00ANMqdwM88Bgi5f1p76X5P9FHeNSDyKIIAjuJahiqJeEE9OtQMZtS7Qb1xZGvhGONZ094tMnjF6eHO96xz42WIabvFtMlmkYmt/fUcWiGtjJD6GzE+Z+gcwYIyEE8MgAFyhSI8ZLOyW0xFBzNCtLxi+To/HZXMdH+pi9E74ylSDLCEC7krMce988ksqd+dAM3HGOmpuY6swgjdyEixHklo6jt/XTmUR3Ycc6jEYpgafKE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(366004)(396003)(346002)(136003)(39840400004)(451199015)(86362001)(316002)(41300700001)(5660300002)(83380400001)(54906003)(66946007)(8676002)(66556008)(4326008)(26005)(6506007)(6512007)(66476007)(9686003)(6666004)(478600001)(186003)(6486002)(966005)(6916009)(7416002)(7406005)(8936002)(44832011)(2906002)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R9Hx9EKAt+nCE19UqSuzSZdIjkfKwUIuV6uUxMVomFfn/QZ/QxxPOyyTWhB9?=
- =?us-ascii?Q?NQKnVgX/WEbRsXRg+nEBJDvO0Nhi62zefWIm2SCrTgKxb6BflmTgGzk7VFkI?=
- =?us-ascii?Q?vhJTkGpIa8S+Aq4fLFOSUhgIYpViRBnwDQKBNwEAqKq8ummtJvNdH23E4bGV?=
- =?us-ascii?Q?BdmxXEf8j7p/NLD/hIT91tYN43L2A1INKkApA9bAv+NUyc6wgrlgm1GXqw/5?=
- =?us-ascii?Q?2EbpF62UPEVavfybDoygQLT8fhbt9vm9yMnmU4uBxNSO/XOygNy5dLqK6L3U?=
- =?us-ascii?Q?lr2JF8TPHPImBewNIAwoiEw8PhOQLjZU1/FCRkLv/XxedO7cZLpfPYA1o/lp?=
- =?us-ascii?Q?YbxMiQUd5MR3jauHDUK8dHjA7MyNW1Juv2/42g74AZAtSgRdwmwh4aG1uN/j?=
- =?us-ascii?Q?yy3ENegWrhWWHW0hKGcX7pLgX4xyk1mpd7d5puZ4/BsMlowrJVnCA5vw/gz5?=
- =?us-ascii?Q?9AM/tB1bRsBwj0HrvbTDDgyWHaRvdjqEUY7fi7WPnytQ7RFxDQloCHEboLxz?=
- =?us-ascii?Q?i+jJNdRVIuRG4eT6GJhbBKHByieXiFvDLlpMokaVD3f26PCYcSkY8nk4Z+Si?=
- =?us-ascii?Q?9UE3TorQxwxqCSudUdJYkYUKpHQj/u5PJ2eR0UNGqrZJHEFb5/g5qwSfQbUo?=
- =?us-ascii?Q?Z3s7zYrXr7dtx4bfQ8ONWiqBZ7ajsoXO5WXVOchhs3ukFBjO7bGFVq5pVncH?=
- =?us-ascii?Q?1PSOgftUjnXm+v8IMDCrc9HnKFhU0/7gpoYoKlo6LkbS+AGoF5cWRpFFv0CF?=
- =?us-ascii?Q?RYRY4OPnV396kjdX5DYcJ5Gozf4ItTCqOXd6IAv+FZRoy5/uKsvoG115YRiL?=
- =?us-ascii?Q?/6tfKpuqipm1+N7qtTC2DgMU3JETeViCIqXth80ir6EjCmpgQg89E+jqK2RK?=
- =?us-ascii?Q?x2t7KPa4oJV/drgIsUwDzxepNK8WyWO+rtWtlO7fFwSbAuetn7jlP303laHc?=
- =?us-ascii?Q?6joURLl/BRsphQFH6itRyL0E7C8xvTSObyhy0wqH6soJPgqI0Kd95WPkwWbw?=
- =?us-ascii?Q?/9WkLsLulODwRab1UN2ZMVpr9qSgDQ9vQZH1TA/WoS3N7AHmBtPUGS2GDs1M?=
- =?us-ascii?Q?lOn5WuWmgMT06O+wh2kqDJPxcVJEN4vFteD9AmkSCGepu76OYrWae4vY3F8o?=
- =?us-ascii?Q?hOCBMsMFxJUgDov93DwjJx3AiqRVWS8iuzj65pk4Bb8ZGect1FO1A4HWsycn?=
- =?us-ascii?Q?CIIijhgE5wLkvzVpqLkGohdh3AkC1HGfVaAFX37DL+30eTRrl8O+0GXhoE7D?=
- =?us-ascii?Q?Bj3aYzKFJJduvEF2qQlneyZ1dGFCWLyLAgALXmQTvi3Rz+ZXSHs7lVr3Uc0O?=
- =?us-ascii?Q?W9qcZsOJhUhhfQky+4DxfdBajTEgp/tAUTzguu1UxrJQDJbwRNhBP9D2Hpmb?=
- =?us-ascii?Q?krHWlj/lYCPNzt3ptMJ2VYBtRkJhNEGeL0sr9sqyYTgDew5CbuPCL+YR5dWC?=
- =?us-ascii?Q?6Yezb9rWCqKfwB7J41gfoK1oxteID3XEmpflnm9FLckf/EtvL7GC04xzROYf?=
- =?us-ascii?Q?p0qCa2nm3o14wQ7tNcO1nGNUJftlspycKH5uRF9qNiLUnHqHMQdzIAOTa854?=
- =?us-ascii?Q?EUf/xcJoNaZ00Prmb2i1/6deXVax3AoC9aFyDLMWQ/4HHmMwG5b3sC/R+3mc?=
- =?us-ascii?Q?WLLrQ3ONH//9dmqz0ohPGBU=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 698dfc62-9a53-4bc7-3558-08dad1b24d85
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 02:34:56.3493
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oY3YZJTJEpC/FeXaGlz34yaCdqgLlFVWF08ifyEDVHCt8ps57gRZ1k/RAcEYx39jL3hkujESKtSH/LU6DBiRt2jK6PMrGABvCdCA6KWH14s=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR10MB6617
-X-Spam-Status: No, score=0.0 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_06_12,
-        DKIM_SIGNED,DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221125023045.2158413-1-lulu@redhat.com> <CACGkMEuPMYVamb9saZWX8E38Xu_Q5vS7BKweyUeOaS==uiVZqw@mail.gmail.com>
+ <CACLfguU6VZ7PPf7coj7Fe5ZPdqitekHkL9rfc3o4nWG2uFmonw@mail.gmail.com>
+In-Reply-To: <CACLfguU6VZ7PPf7coj7Fe5ZPdqitekHkL9rfc3o4nWG2uFmonw@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 29 Nov 2022 11:04:03 +0800
+Message-ID: <CACGkMEuxuk3nXK3SnXw1k39jcQr-QGTQMeF8-ZPszxHaBJ6f-w@mail.gmail.com>
+Subject: Re: [PATCH v3] vhost_vdpa: fix the crash in unmap a large memory
+To:     Cindy Lu <lulu@redhat.com>
+Cc:     mst@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
+On Fri, Nov 25, 2022 at 3:38 PM Cindy Lu <lulu@redhat.com> wrote:
+>
+> / and
+>
+>
+> On Fri, 25 Nov 2022 at 15:17, Jason Wang <jasowang@redhat.com> wrote:
+> >
+> > On Fri, Nov 25, 2022 at 10:31 AM Cindy Lu <lulu@redhat.com> wrote:
+> > >
+> > > While testing in vIOMMU, sometimes guest will unmap very large memory=
+,
+> > > which will cause the crash. To fix this,Move the iommu_unmap to
+> > > vhost_vdpa_pa_unmap/vhost_vdpa_va_unmap and only unmap the memory
+> > > that saved in iotlb.
+> > >
+> > > Call Trace:
+> > > [  647.820144] ------------[ cut here ]------------
+> > > [  647.820848] kernel BUG at drivers/iommu/intel/iommu.c:1174!
+> > > [  647.821486] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> > > [  647.822082] CPU: 10 PID: 1181 Comm: qemu-system-x86 Not tainted 6.=
+0.0-rc1home_lulu_2452_lulu7_vhost+ #62
+> > > [  647.823139] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BI=
+OS rel-1.15.0-29-g6a62e0cb0dfe-prebuilt.qem4
+> > > [  647.824365] RIP: 0010:domain_unmap+0x48/0x110
+> > > [  647.825424] Code: 48 89 fb 8d 4c f6 1e 39 c1 0f 4f c8 83 e9 0c 83 =
+f9 3f 7f 18 48 89 e8 48 d3 e8 48 85 c0 75 59
+> > > [  647.828064] RSP: 0018:ffffae5340c0bbf0 EFLAGS: 00010202
+> > > [  647.828973] RAX: 0000000000000001 RBX: ffff921793d10540 RCX: 00000=
+0000000001b
+> > > [  647.830083] RDX: 00000000080000ff RSI: 0000000000000001 RDI: ffff9=
+21793d10540
+> > > [  647.831214] RBP: 0000000007fc0100 R08: ffffae5340c0bcd0 R09: 00000=
+00000000003
+> > > [  647.832388] R10: 0000007fc0100000 R11: 0000000000100000 R12: 00000=
+000080000ff
+> > > [  647.833668] R13: ffffae5340c0bcd0 R14: ffff921793d10590 R15: 00000=
+08000100000
+> > > [  647.834782] FS:  00007f772ec90640(0000) GS:ffff921ce7a80000(0000) =
+knlGS:0000000000000000
+> > > [  647.836004] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > [  647.836990] CR2: 00007f02c27a3a20 CR3: 0000000101b0c006 CR4: 00000=
+00000372ee0
+> > > [  647.838107] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 00000=
+00000000000
+> > > [  647.839283] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 00000=
+00000000400
+> > > [  647.840666] Call Trace:
+> > > [  647.841437]  <TASK>
+> > > [  647.842107]  intel_iommu_unmap_pages+0x93/0x140
+> > > [  647.843112]  __iommu_unmap+0x91/0x1b0
+> > > [  647.844003]  iommu_unmap+0x6a/0x95
+> > > [  647.844885]  vhost_vdpa_unmap+0x1de/0x1f0 [vhost_vdpa]
+> > > [  647.845985]  vhost_vdpa_process_iotlb_msg+0xf0/0x90b [vhost_vdpa]
+> > > [  647.847235]  ? _raw_spin_unlock+0x15/0x30
+> > > [  647.848181]  ? _copy_from_iter+0x8c/0x580
+> > > [  647.849137]  vhost_chr_write_iter+0xb3/0x430 [vhost]
+> > > [  647.850126]  vfs_write+0x1e4/0x3a0
+> > > [  647.850897]  ksys_write+0x53/0xd0
+> > > [  647.851688]  do_syscall_64+0x3a/0x90
+> > > [  647.852508]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > > [  647.853457] RIP: 0033:0x7f7734ef9f4f
+> > > [  647.854408] Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 29 76 =
+f8 ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c8
+> > > [  647.857217] RSP: 002b:00007f772ec8f040 EFLAGS: 00000293 ORIG_RAX: =
+0000000000000001
+> > > [  647.858486] RAX: ffffffffffffffda RBX: 00000000fef00000 RCX: 00007=
+f7734ef9f4f
+> > > [  647.859713] RDX: 0000000000000048 RSI: 00007f772ec8f090 RDI: 00000=
+00000000010
+> > > [  647.860942] RBP: 00007f772ec8f1a0 R08: 0000000000000000 R09: 00000=
+00000000000
+> > > [  647.862206] R10: 0000000000000001 R11: 0000000000000293 R12: 00000=
+00000000010
+> > > [  647.863446] R13: 0000000000000002 R14: 0000000000000000 R15: fffff=
+fff01100000
+> > > [  647.864692]  </TASK>
+> > > [  647.865458] Modules linked in: rpcsec_gss_krb5 auth_rpcgss nfsv4 d=
+ns_resolver nfs lockd grace fscache netfs v]
+> > > [  647.874688] ---[ end trace 0000000000000000 ]---
+> > > [  647.876013] RIP: 0010:domain_unmap+0x48/0x110
+> > > [  647.878306] Code: 48 89 fb 8d 4c f6 1e 39 c1 0f 4f c8 83 e9 0c 83 =
+f9 3f 7f 18 48 89 e8 48 d3 e8 48 85 c0 75 59
+> > > [  647.884581] RSP: 0018:ffffae5340c0bbf0 EFLAGS: 00010202
+> > > [  647.886308] RAX: 0000000000000001 RBX: ffff921793d10540 RCX: 00000=
+0000000001b
+> > > [  647.888775] RDX: 00000000080000ff RSI: 0000000000000001 RDI: ffff9=
+21793d10540
+> > > [  647.890295] RBP: 0000000007fc0100 R08: ffffae5340c0bcd0 R09: 00000=
+00000000003
+> > > [  647.891660] R10: 0000007fc0100000 R11: 0000000000100000 R12: 00000=
+000080000ff
+> > > [  647.893019] R13: ffffae5340c0bcd0 R14: ffff921793d10590 R15: 00000=
+08000100000
+> > > [  647.894506] FS:  00007f772ec90640(0000) GS:ffff921ce7a80000(0000) =
+knlGS:0000000000000000
+> > > [  647.895963] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > [  647.897348] CR2: 00007f02c27a3a20 CR3: 0000000101b0c006 CR4: 00000=
+00000372ee0
+> > > [  647.898719] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 00000=
+00000000000
+> > >
+> > > Cc: stable@vger.kernel.org
+> > > Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+> > > Signed-off-by: Cindy Lu <lulu@redhat.com>
+> > > ---
+> > >  drivers/vhost/vdpa.c | 10 ++++++++--
+> > >  1 file changed, 8 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > > index 166044642fd5..e5a07751bf45 100644
+> > > --- a/drivers/vhost/vdpa.c
+> > > +++ b/drivers/vhost/vdpa.c
+> > > @@ -692,6 +692,8 @@ static void vhost_vdpa_pa_unmap(struct vhost_vdpa=
+ *v,
+> > >         struct vhost_iotlb_map *map;
+> > >         struct page *page;
+> > >         unsigned long pfn, pinned;
+> > > +       struct vdpa_device *vdpa =3D v->vdpa;
+> > > +       const struct vdpa_config_ops *ops =3D vdpa->config;
+> > >
+> > >         while ((map =3D vhost_iotlb_itree_first(iotlb, start, last)) =
+!=3D NULL) {
+> > >                 pinned =3D PFN_DOWN(map->size);
+> > > @@ -703,6 +705,8 @@ static void vhost_vdpa_pa_unmap(struct vhost_vdpa=
+ *v,
+> > >                         unpin_user_page(page);
+> > >                 }
+> > >                 atomic64_sub(PFN_DOWN(map->size), &dev->mm->pinned_vm=
+);
+> > > +               if ((ops->dma_map =3D=3D NULL) && (ops->set_map =3D=
+=3D NULL))
+> > > +                       iommu_unmap(v->domain, map->start, map->size)=
+;
+> >
+> > I think we'd better move the ops->dma_unmap() here as well as iommu_unm=
+ap()?
+> >
+> > >                 vhost_iotlb_map_free(iotlb, map);
+> > >         }
+> > >  }
+> > > @@ -713,11 +717,15 @@ static void vhost_vdpa_va_unmap(struct vhost_vd=
+pa *v,
+> > >  {
+> > >         struct vhost_iotlb_map *map;
+> > >         struct vdpa_map_file *map_file;
+> > > +       struct vdpa_device *vdpa =3D v->vdpa;
+> > > +       const struct vdpa_config_ops *ops =3D vdpa->config;
+> > >
+> > >         while ((map =3D vhost_iotlb_itree_first(iotlb, start, last)) =
+!=3D NULL) {
+> > >                 map_file =3D (struct vdpa_map_file *)map->opaque;
+> > >                 fput(map_file->file);
+> > >                 kfree(map_file);
+> > > +               if (ops->set_map =3D=3D NULL)
+> > > +                       iommu_unmap(v->domain, map->start, map->size)=
+;
+> >
+> > Need to check where we have dma_unmap() and call that if it exists?
+> >
+> > Thanks
+> >
+> Hi Jason=EF=BC=8C
+> I think  these functions are called in vhost_vdpa_unmap,
+> Do you want to separate the function in vhost_vdpa_unmap
+> and move it to vhost_vdpa_va_unmap and vhost_vdpa_pa_unmap? I
 
-On Mon, Nov 28, 2022 at 05:23:37PM -0600, Rob Herring wrote:
-> On Sun, Nov 27, 2022 at 02:47:27PM -0800, Colin Foster wrote:
-> > DSA switches can fall into one of two categories: switches where all ports
-> > follow standard '(ethernet-)?port' properties, and switches that have
-> > additional properties for the ports.
-> > 
-> > The scenario where DSA ports are all standardized can be handled by
-> > swtiches with a reference to 'dsa.yaml#'.
-> > 
-> > The scenario where DSA ports require additional properties can reference
-> > the new '$dsa.yaml#/$defs/base'. This will allow switches to reference
-> > these base defitions of the DSA switch, but add additional properties under
-> > the port nodes.
-> 
-> You have this backwards. '$dsa.yaml#/$defs/base' can't be extended. 
-> Perhaps '$defs/ethernet-ports' would be a better name.
+I meant dma_map()/dma_unmap() should be functional equivalent to
+iommu_map/unmap(). That means we should unmap exactly what is mapped
+before (vDPA parent may call iommu_unmap in its own dma_unmap() if it
+needs). If we move the iommu_unmap() from vhost_vdpa_unmap() to
+vhost_vdpa_{pa|va}_umap, we should move dma_unmap() as well.
 
-Oops. I'll fix this up for next set.
+Thanks
 
-> 
-> > 
-> > Suggested-by: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > ---
-> > 
-> > v3
-> >   * New patch
-> > 
-> > ---
-> >  .../bindings/net/dsa/arrow,xrs700x.yaml       |  2 +-
-> >  .../devicetree/bindings/net/dsa/brcm,b53.yaml |  2 +-
-> >  .../devicetree/bindings/net/dsa/dsa.yaml      | 19 ++++++++++++++++---
-> >  .../net/dsa/hirschmann,hellcreek.yaml         |  2 +-
-> >  .../bindings/net/dsa/mediatek,mt7530.yaml     |  2 +-
-> >  .../bindings/net/dsa/microchip,ksz.yaml       |  2 +-
-> >  .../bindings/net/dsa/microchip,lan937x.yaml   |  2 +-
-> >  .../bindings/net/dsa/mscc,ocelot.yaml         |  2 +-
-> >  .../bindings/net/dsa/nxp,sja1105.yaml         |  2 +-
-> >  .../devicetree/bindings/net/dsa/realtek.yaml  |  2 +-
-> >  .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  2 +-
-> >  11 files changed, 26 insertions(+), 13 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-> > index 259a0c6547f3..8d5abb05abdf 100644
-> > --- a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-> > +++ b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-> > @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
-> >  title: Arrow SpeedChips XRS7000 Series Switch Device Tree Bindings
-> >  
-> >  allOf:
-> > -  - $ref: dsa.yaml#
-> > +  - $ref: dsa.yaml#/$defs/base
-> >  
-> >  maintainers:
-> >    - George McCollister <george.mccollister@gmail.com>
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-> > index 1219b830b1a4..f323fc01b224 100644
-> > --- a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-> > +++ b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-> > @@ -66,7 +66,7 @@ required:
-> >    - reg
-> >  
-> >  allOf:
-> > -  - $ref: dsa.yaml#
-> > +  - $ref: dsa.yaml#/$defs/base
-> >    - if:
-> >        properties:
-> >          compatible:
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > index b9d48e357e77..bd1f0f7c14a8 100644
-> > --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > @@ -19,9 +19,6 @@ description:
-> >  select: false
-> >  
-> >  properties:
-> > -  $nodename:
-> > -    pattern: "^(ethernet-)?switch(@.*)?$"
-> > -
-> >    dsa,member:
-> >      minItems: 2
-> >      maxItems: 2
-> > @@ -58,4 +55,20 @@ oneOf:
-> >  
-> >  additionalProperties: true
-> >  
-> > +$defs:
-> > +  base:
-> > +    description: A DSA switch without any extra port properties
-> > +    $ref: '#/'
-> > +
-> > +    patternProperties:
-> > +      "^(ethernet-)?ports$":
-> 
-> This node at the top level needs 'additionalProperties: false' assuming 
-> we don't allow extra properties in 'ports' nodes. If we do, then we'll 
-> need to be able to reference the 'ports' schema to extend it like is 
-> done with dsa-ports.yaml.
+> thanks
+> cindy
+>
+> > >                 vhost_iotlb_map_free(iotlb, map);
+> > >         }
+> > >  }
+> > > @@ -805,8 +813,6 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v=
+,
+> > >         } else if (ops->set_map) {
+> > >                 if (!v->in_batch)
+> > >                         ops->set_map(vdpa, asid, iotlb);
+> > > -       } else {
+> > > -               iommu_unmap(v->domain, iova, size);
+> > >         }
+> > >
+> > >         /* If we are in the middle of batch processing, delay the fre=
+e
+> > > --
+> > > 2.34.3
+> > >
+> >
+>
 
-I'll double check if there's anything that adds any properties. If there
-is, would that be a separate file pair: "dsa-ports.yaml" and
-"ethernet-switch-ports.yaml"? Or do you think that could be contained in
-the existing dsa.yaml, ethernet-switch.yaml?
-
-> 
-> > +        type: object
-> > +
-> > +        patternProperties:
-> > +          "^(ethernet-)?ports@[0-9]+$":
-> > +            description: Ethernet switch ports
-> > +            $ref: dsa-port.yaml#
-> > +            unevaluatedProperties: false
-> > +
-> > +
-> 
-> One blank line.
-
-Oops again. Thanks for spotting this and for all your help on this!
-
-> 
-> >  ...
