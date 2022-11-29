@@ -2,79 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D1AD63BBB1
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 09:33:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64D3B63BBD0
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 09:38:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230386AbiK2IdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 03:33:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
+        id S230476AbiK2Iif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 03:38:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230326AbiK2Ic0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 03:32:26 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1884259877
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 00:31:43 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id z20so18725491edc.13
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 00:31:43 -0800 (PST)
+        with ESMTP id S230481AbiK2IiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 03:38:00 -0500
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1EA5ADF1;
+        Tue, 29 Nov 2022 00:36:43 -0800 (PST)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-3bfd998fa53so78739827b3.5;
+        Tue, 29 Nov 2022 00:36:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=287JiUA2oQmM2pNNjCPcYh3VGsXmR2ra6mVMQuG3Pus=;
-        b=b3IO/8vakfZMrPtt1gXg0nCfHaxP4/IGZkiP4QyeZH3DnDvDynIo9mTQc+G+xGXwZH
-         7ERs1FYAxok8ADW2pf2TVhL4kQK2jaEW6FjR1wRvSrP+6WX+im9iKPdZZujxOxcHg0ju
-         29L08CPy0g9qNQo3Pz9qSb2x/Iv3U927h2wTyv8ljuQ9MejqQZGN+87mUNKf8nIYFUcf
-         pz47dptt5+xDjOuvXuyjgKPXyovWalVtoIO3jqALn7ZVObqMCtEoOesXjYg0bOKy9W41
-         HfM6ZFwgYlyKaWb6VS9/dswQpsHDS5qs0sPtJJ3XqKxp0f8opIk5aliXNii8WogYaaNn
-         AB7A==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=pfkOEndp/yx+JRjSBn9cHN5l3i+pxuuJ2RW6geOPhYw=;
+        b=ZR+jEz0dzvk6xpPXj53lxM8aL/yM5BPKAlEKuEb2t2ZaMZ1JH83eYMMAMZehcWRpmG
+         kw46HaFKI48cro0faLI2xks648p73ZPWsjxjhNeVUov/LMYm/F1W8r3tUSmgufoRvcZw
+         Q+PxLywuZwFkwAjfImeVfX9QTz75wNwFWAP74bf84Sp24JPHIBxl2YJj4dsJGIVkEblU
+         PoDQZjAcp0pERxMYnggb5Potc6S9sL4Odyxb5PGnBNz6J+y1WHDdhCNlTsvNugvLf3UZ
+         i52QonMdSY/eGGRGj5v+zu9PVsy4/7tm04ktjA/bK5jzszlseIK5aBL/jDtBmozyKaDr
+         LnKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=287JiUA2oQmM2pNNjCPcYh3VGsXmR2ra6mVMQuG3Pus=;
-        b=wl54LqOsqfdemgLwC01eywWDMEytfUhdLoYhvwLzm1uy3dGzkPmV3IMAlf6TEG2Co0
-         KLfDY68k6lLf7RBUgmC2GUzOabgYXHOkJldi2CsiR/RC5ciGSvAPKKof2pIMqtgtfDes
-         qeUT8qbxWAC+oaEmToChaaw5GUo1/FeVjs5fxxYknk2zF1z/fh8p3BH9dRLla6BtlqeU
-         VOUXUQTb2Z0LB9rX2mFFtgNtKS8+zs2xA8XD1PdfVTajgJessjEqky9E/mWdI05326VY
-         R6+5ZywWOg4wwlhIK4d6DFYQbW7DGUgcNegKaSEtFxDNpt1cDID8Fqht7tognWKc5B+2
-         D+ag==
-X-Gm-Message-State: ANoB5pmc/t+wR8DCDl81x+WUkb/7uqzwWvwapYkxBxWwcxbKfOr9B9+x
-        DaeWfqpe3Srge6+++vEClW4FhexiSl47rXZjMjU=
-X-Google-Smtp-Source: AA0mqf6IgwnzIhgMbtVx/00Ih7/h+lkbdC6K45k6byM+ggyJtzSITkDfrV45csMKs50pBxERfobJqg==
-X-Received: by 2002:a50:fc10:0:b0:464:2afe:ae18 with SMTP id i16-20020a50fc10000000b004642afeae18mr52188491edr.183.1669710701549;
-        Tue, 29 Nov 2022 00:31:41 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id og14-20020a1709071dce00b007ae035374a0sm5972887ejc.214.2022.11.29.00.31.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Nov 2022 00:31:40 -0800 (PST)
-Date:   Tue, 29 Nov 2022 09:31:40 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        jiri@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com
-Subject: Re: [PATCH net] net: devlink: fix UAF in
- devlink_compat_running_version()
-Message-ID: <Y4XDbEWmLRE3D1Bx@nanopsycho>
-References: <Y30dPRzO045Od2FA@unreal>
- <20221122122740.4b10d67d@kernel.org>
- <405f703b-b97e-afdd-8d5f-48b8f99d045d@huawei.com>
- <Y33OpMvLcAcnJ1oj@unreal>
- <fa1ab2fb-37ce-a810-8a3f-b71d902e8ff0@huawei.com>
- <Y35x9oawn/i+nuV3@shredder>
- <20221123181800.1e41e8c8@kernel.org>
- <Y4R9dT4QXgybUzdO@shredder>
- <Y4SGYr6VBkIMTEpj@nanopsycho>
- <20221128102043.35c1b9c1@kernel.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pfkOEndp/yx+JRjSBn9cHN5l3i+pxuuJ2RW6geOPhYw=;
+        b=zudvzIqIQfn2s590F1ALKkI2n5DaqI8kGGy9DVXDRdBfzfkvtKQy9YrPfEDS4hWGYd
+         RJbbikj2bOmzj0z9HXdr8dHRDkanoZqbWfGVqiQjz0rRGGhJRAvwftSGxCXrda1v6cef
+         VGWOQ7icuPtxzk0TCXKQc29ctP0A+bKuORTiv8Wq1EKiFOWWe66Du2+eME9YPnLfpy0+
+         KzArG0eej9NkaVervM7ifyamPClrEoS0xr12c73ULu5YIvdX0S6rLRsfwCH3oDkdwvMA
+         Fk6Z7kCmfkKKtzG6w5b6IMRzYhdoVDML4X+iN7Y05vhGa5QvIspVG5eC3LsodYwlPyAy
+         RUZQ==
+X-Gm-Message-State: ANoB5pl5Kk1F+xCha25QRJvgWZlXgtjR+qlXcm4rMtKYwrIBhasWregj
+        i/gqcE1diQn/NJOedW/VA2UZJq34c156IxzoaYbFh52oGA10tg==
+X-Google-Smtp-Source: AA0mqf4DCk0ParghyE4fj9eZZvvy0WbsGmVGy4yuDDXlIYdulWkpQwpmAj3+HsVlzh+fSws2ifKlC2iPCo+5pyrHq5c=
+X-Received: by 2002:a81:9bc6:0:b0:373:45d9:2263 with SMTP id
+ s189-20020a819bc6000000b0037345d92263mr52738017ywg.507.1669711002850; Tue, 29
+ Nov 2022 00:36:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221128102043.35c1b9c1@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <20221128160501.769892-1-eyal.birger@gmail.com>
+ <20221128160501.769892-3-eyal.birger@gmail.com> <c8a2d940-ff85-c952-74d0-25ad2c33c1af@linux.dev>
+In-Reply-To: <c8a2d940-ff85-c952-74d0-25ad2c33c1af@linux.dev>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Tue, 29 Nov 2022 10:36:31 +0200
+Message-ID: <CAHsH6Gtfe-nPTpquN=25gWuGL3ZGg9tBeQ=nFJGmtPNbMM0ghQ@mail.gmail.com>
+Subject: Re: [PATCH ipsec-next 2/3] xfrm: interface: Add unstable helpers for
+ setting/getting XFRM metadata from TC-BPF
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        andrii@kernel.org, daniel@iogearbox.net, nicolas.dichtel@6wind.com,
+        razor@blackwall.org, mykolal@fb.com, ast@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, shuah@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,35 +75,195 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Nov 28, 2022 at 07:20:43PM CET, kuba@kernel.org wrote:
->On Mon, 28 Nov 2022 10:58:58 +0100 Jiri Pirko wrote:
->> >Long term, we either need to find a way to make the ethtool compat stuff
->> >work correctly or just get rid of it and have affected drivers implement
->> >the relevant ethtool operations instead of relying on devlink.
->> >
->> >[1] https://lore.kernel.org/netdev/20221122121048.776643-1-yangyingliang@huawei.com/  
->> 
->> I just had a call with Ido. We both think that this might be a good
->> solution for -net to avoid the use after free.
->> 
->> For net-next, we eventually should change driver init flows to register
->> devlink instance first and only after that register devlink_port and
->> related netdevice. The ordering is important for the userspace app. For
->> example the init flow:
->> <- RTnetlink new netdev event
->> app sees devlink_port handle in IFLA_DEVLINK_PORT
->> -> query devlink instance using this handle  
->> <- ENODEV
->> 
->> The instance is not registered yet.
->> 
->> So we need to make sure all devlink_port_register() calls are happening
->> after devlink_register(). This is aligned with the original flow before
->> devlink_register() was moved by Leon. Also it is aligned with devlink
->> reload and devlink port split flows.
->
->Cool. Do you also agree with doing proper refcounting for the devlink
->instance struct and the liveness check after locking the instance?
+(sent again in plain text, sorry for the noise).
 
-Could you elaborate a bit more? I missed that in the thread and can't
-find it. Why do we need it?
+Hi Martin.
+
+On Tue, Nov 29, 2022 at 3:58 AM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+>
+> On 11/28/22 8:05 AM, Eyal Birger wrote:
+> > This change adds xfrm metadata helpers using the unstable kfunc call
+> > interface for the TC-BPF hooks. This allows steering traffic towards
+> > different IPsec connections based on logic implemented in bpf programs.
+> >
+> > This object is built based on the availabilty of BTF debug info.
+> >
+> > The metadata percpu dsts used on TX take ownership of the original skb
+> > dsts so that they may be used as part of the xfrm transmittion logic -
+> > e.g.  for MTU calculations.
+>
+> A few quick comments and questions:
+
+Thanks for your comments!
+
+>
+> >
+> > Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+> > ---
+> >   include/net/dst_metadata.h     |  1 +
+> >   include/net/xfrm.h             | 20 ++++++++
+> >   net/core/dst.c                 |  4 ++
+> >   net/xfrm/Makefile              |  6 +++
+> >   net/xfrm/xfrm_interface_bpf.c  | 92 ++++++++++++++++++++++++++++++++++
+>
+> Please tag for bpf-next
+Sure. I wasn't totally sure which tree this belongs to.
+
+>
+> >   net/xfrm/xfrm_interface_core.c | 15 ++++++
+> >   6 files changed, 138 insertions(+)
+> >   create mode 100644 net/xfrm/xfrm_interface_bpf.c
+> >
+> > diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
+> > index a454cf4327fe..1b7fae4c6b24 100644
+> > --- a/include/net/dst_metadata.h
+> > +++ b/include/net/dst_metadata.h
+> > @@ -26,6 +26,7 @@ struct macsec_info {
+> >   struct xfrm_md_info {
+> >       u32 if_id;
+> >       int link;
+> > +     struct dst_entry *dst_orig;
+> >   };
+> >
+> >   struct metadata_dst {
+>
+> [ ... ]
+>
+> > diff --git a/net/core/dst.c b/net/core/dst.c
+> > index bc9c9be4e080..4c2eb7e56dab 100644
+> > --- a/net/core/dst.c
+> > +++ b/net/core/dst.c
+> > @@ -315,6 +315,8 @@ void metadata_dst_free(struct metadata_dst *md_dst)
+> >   #ifdef CONFIG_DST_CACHE
+> >       if (md_dst->type == METADATA_IP_TUNNEL)
+> >               dst_cache_destroy(&md_dst->u.tun_info.dst_cache);
+> > +     else if (md_dst->type == METADATA_XFRM)
+> > +             dst_release(md_dst->u.xfrm_info.dst_orig);
+>
+> Why only release dst_orig under CONFIG_DST_CACHE?
+It's a relic from a previous version where I'd used dst cache.
+Will move out of this ifdef.
+
+>
+> >   #endif
+> >       kfree(md_dst);
+> >   }
+> > @@ -348,6 +350,8 @@ void metadata_dst_free_percpu(struct metadata_dst __percpu *md_dst)
+> >
+> >               if (one_md_dst->type == METADATA_IP_TUNNEL)
+> >                       dst_cache_destroy(&one_md_dst->u.tun_info.dst_cache);
+> > +             else if (one_md_dst->type == METADATA_XFRM)
+> > +                     dst_release(one_md_dst->u.xfrm_info.dst_orig);
+>
+> Same here.
+
+Likewise.
+
+>
+> [ ... ]
+>
+> > diff --git a/net/xfrm/xfrm_interface_bpf.c b/net/xfrm/xfrm_interface_bpf.c
+> > new file mode 100644
+> > index 000000000000..d3997ab7cc28
+> > --- /dev/null
+> > +++ b/net/xfrm/xfrm_interface_bpf.c
+> > @@ -0,0 +1,92 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/* Unstable XFRM Helpers for TC-BPF hook
+> > + *
+> > + * These are called from SCHED_CLS BPF programs. Note that it is
+> > + * allowed to break compatibility for these functions since the interface they
+> > + * are exposed through to BPF programs is explicitly unstable.
+> > + */
+> > +
+> > +#include <linux/bpf.h>
+> > +#include <linux/btf_ids.h>
+> > +
+> > +#include <net/dst_metadata.h>
+> > +#include <net/xfrm.h>
+> > +
+> > +struct bpf_xfrm_info {
+> > +     u32 if_id;
+> > +     int link;
+> > +};
+> > +
+> > +static struct metadata_dst __percpu *xfrm_md_dst;
+> > +__diag_push();
+> > +__diag_ignore_all("-Wmissing-prototypes",
+> > +               "Global functions as their definitions will be in xfrm_interface BTF");
+> > +
+> > +__used noinline
+> > +int bpf_skb_get_xfrm_info(struct __sk_buff *skb_ctx, struct bpf_xfrm_info *to)
+> > +{
+> > +     struct sk_buff *skb = (struct sk_buff *)skb_ctx;
+> > +     struct xfrm_md_info *info;
+> > +
+> > +     memset(to, 0, sizeof(*to));
+> > +
+> > +     info = skb_xfrm_md_info(skb);
+> > +     if (!info)
+> > +             return -EINVAL;
+> > +
+> > +     to->if_id = info->if_id;
+> > +     to->link = info->link;
+> > +     return 0;
+> > +}
+> > +
+> > +__used noinline
+> > +int bpf_skb_set_xfrm_info(struct __sk_buff *skb_ctx,
+> > +                       const struct bpf_xfrm_info *from)
+> > +{
+> > +     struct sk_buff *skb = (struct sk_buff *)skb_ctx;
+> > +     struct metadata_dst *md_dst;
+> > +     struct xfrm_md_info *info;
+> > +
+> > +     if (unlikely(skb_metadata_dst(skb)))
+> > +             return -EINVAL;
+> > +
+> > +     md_dst = this_cpu_ptr(xfrm_md_dst);
+> > +
+> > +     info = &md_dst->u.xfrm_info;
+> > +     memset(info, 0, sizeof(*info));
+> > +
+> > +     info->if_id = from->if_id;
+> > +     info->link = from->link;
+> > +     info->dst_orig = skb_dst(skb);
+> However, the dst_orig init is not done under CONFIG_DST_CACHE though...
+>
+> Also, is it possible that skb->_skb_refdst has SKB_DST_NOREF set and later below
+> ... (contd)
+Nice catch! will force dst is refcounted.
+
+>
+> > +
+> > +     dst_hold((struct dst_entry *)md_dst);
+> > +     skb_dst_set(skb, (struct dst_entry *)md_dst);
+> > +     return 0;
+> > +}
+> > +
+> > +__diag_pop()
+> > +
+> > +BTF_SET8_START(xfrm_ifc_kfunc_set)
+> > +BTF_ID_FLAGS(func, bpf_skb_get_xfrm_info)
+> > +BTF_ID_FLAGS(func, bpf_skb_set_xfrm_info)
+> > +BTF_SET8_END(xfrm_ifc_kfunc_set)
+> > +
+> > +static const struct btf_kfunc_id_set xfrm_interface_kfunc_set = {
+> > +     .owner = THIS_MODULE,
+> > +     .set   = &xfrm_ifc_kfunc_set,
+> > +};
+> > +
+> > +int __init register_xfrm_interface_bpf(void)
+> > +{
+> > +     xfrm_md_dst = metadata_dst_alloc_percpu(0, METADATA_XFRM,
+> > +                                             GFP_KERNEL);
+> > +     if (!xfrm_md_dst)
+> > +             return -ENOMEM;
+> > +     return register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS,
+> > +                                      &xfrm_interface_kfunc_set);
+>
+> Will cleanup_xfrm_interface_bpf() be called during error ?
+No. Will fix in v2.
+
+Thanks!
+Eyal.
