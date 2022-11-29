@@ -2,126 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F023863BD2A
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:43:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77C5F63BD35
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:46:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230024AbiK2Jn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 04:43:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
+        id S230024AbiK2Jqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 04:46:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiK2Jnz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:43:55 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0CB1B7BF;
-        Tue, 29 Nov 2022 01:43:54 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id y16so1379994wrm.2;
-        Tue, 29 Nov 2022 01:43:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Jeqcoxm8Nqrt6iXsC20iMe7fG7ZxHmkQeMwVwCCMT84=;
-        b=GWW7tHdJvDC5InTvP1c5sP0a8wc8Way1HZPpGUGBCpWugXfUB2GIiU8Ulwn0OMpkNt
-         XGsllGvOyjsDEOMlsUVogaXndIDfIvTn8F0AZulXhPLi3zPhgh2ZwtCdIYAnXDKU+rOB
-         xUxoNXh1FPYdXE6iFRCVGrF228fnJ4drFmI0WsNyRo9OCIrhjgBgSqsyjSFL939at0If
-         W4VUZZWT3WuWWQWKdC9BKzhMnDrfSdEO/5NA1Svn/QAual9023jdQpNX7KmYKzTFz68k
-         /uH2MVR8+CfQrkVB3vhZIGWIOeJGq4x8WtzVlsRNMUZGscbY4ptm2qyFq+ZSeHHqVu0Z
-         fbIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Jeqcoxm8Nqrt6iXsC20iMe7fG7ZxHmkQeMwVwCCMT84=;
-        b=4SaA63auDv1H1cGO4N4ySsMAt0BmM/pRtF1SdnI/thyOGiUAnjwhLLJ0ontbovZwiU
-         NMj9BuAtt5zKBZpfA5Cgyr0neRE0HdANKbtdwsx+V3vRrmPdrDxbGhdNIwuVCvubR7a+
-         JB4odSS3XaFP5ot+ecXakKc1UNfZKkKNkVKqWYhxtQGaCdkDCY93FxdRKTeFFGsqml6q
-         OrwiLMv9H6JV8FF3FTSrHdMxX57azqwTU4D+ufF/nT+VRMlJgPr7Xs4ZhqpxI6qwoAir
-         38DxjSLwj0BpA4++XkkjhrXT0nY2/8dD6LtFiUkUW7LMfzGeLO+Be/5fosdj6alVFf87
-         e7nw==
-X-Gm-Message-State: ANoB5plHs9h6syBv/hBnxo2B3Pii88m8BJ9YiaIj4PHe13qbbFsZ0OQZ
-        GjUOss0hma7mYc56bHRr/fb+IqyYwMy0sg==
-X-Google-Smtp-Source: AA0mqf7rByhOtrn/GWz8pQ9uGBwVAoOecGpgcUjL5Re7DNs0UezI0GfXpbeuQaEoWHClzXkdXA25dA==
-X-Received: by 2002:a5d:684f:0:b0:242:7a2:a014 with SMTP id o15-20020a5d684f000000b0024207a2a014mr11817514wrw.228.1669715032904;
-        Tue, 29 Nov 2022 01:43:52 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id c2-20020a05600c0a4200b003cfd4cf0761sm1484062wmq.1.2022.11.29.01.43.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Nov 2022 01:43:52 -0800 (PST)
-Date:   Tue, 29 Nov 2022 12:43:47 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>
-Cc:     Daniel Machon <daniel.machon@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net: microchip: sparx5: Fix error handling in
- vcap_show_admin()
-Message-ID: <Y4XUUx9kzurBN+BV@kili>
+        with ESMTP id S229974AbiK2Jqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:46:35 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8982B5A6D9;
+        Tue, 29 Nov 2022 01:46:33 -0800 (PST)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NLyBk07ThzHwHs;
+        Tue, 29 Nov 2022 17:45:50 +0800 (CST)
+Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 29 Nov 2022 17:46:31 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500015.china.huawei.com
+ (7.185.36.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 29 Nov
+ 2022 17:46:31 +0800
+From:   Wang ShaoBo <bobo.shaobowang@huawei.com>
+CC:     <liwei391@huawei.com>, <sameo@linux.intel.com>, <kuba@kernel.org>,
+        <davem@davemloft.net>, <syzkaller-bugs@googlegroups.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bobo.shaobowang@huawei.com>
+Subject: [PATCH] nfc: llcp: Fix race in handling llcp_devices
+Date:   Tue, 29 Nov 2022 17:44:36 +0800
+Message-ID: <20221129094436.3975668-1-bobo.shaobowang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500015.china.huawei.com (7.185.36.181)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If vcap_dup_rule() fails that leads to an error pointer dereference
-side the call to vcap_free_rule().  Also it only returns an error if the
-very last call to vcap_read_rule() fails and it returns success for
-other errors.
+There are multiple path operate llcp_devices list without protection:
 
-I've changed it to just stop printing after the first error and return
-an error code.
+         CPU0                        CPU1
 
-Fixes: 3a7921560d2f ("net: microchip: sparx5: Add VCAP rule debugFS support for the VCAP API")
-Signed-off-by: Dan Carpenter <error27@gmail.com>
+nfc_unregister_device()        nfc_register_device()
+ nfc_llcp_unregister_device()    nfc_llcp_register_device() //no lock
+    ...                            list_add(local->list, llcp_devices)
+    local_release()
+      list_del(local->list)
+
+        CPU2
+...
+ nfc_llcp_find_local()
+   list_for_each_entry(,&llcp_devices,)
+
+So reach race condition if two of the three occur simultaneously like
+following crash report, although there is no reproduction script in
+syzbot currently, our artificially constructed use cases can also
+reproduce it:
+
+list_del corruption. prev->next should be ffff888060ce7000, but was ffff88802a0ad000. (prev=ffffffff8e536240)
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:59!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 16622 Comm: syz-executor.5 Not tainted 6.1.0-rc6-next-20221125-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+RIP: 0010:__list_del_entry_valid.cold+0x12/0x72 lib/list_debug.c:59
+Code: f0 ff 0f 0b 48 89 f1 48 c7 c7 60 96 a6 8a 4c 89 e6 e8 4b 29 f0 ff 0f 0b 4c 89 e1 48 89 ee 48 c7 c7 c0 98 a6 8a e8 37 29 f0 ff <0f> 0b 48 89 ee 48 c7 c7 a0 97 a6 8a e8 26 29 f0 ff 0f 0b 4c 89 e2
+RSP: 0018:ffffc900151afd58 EFLAGS: 00010282
+RAX: 000000000000006d RBX: 0000000000000001 RCX: 0000000000000000
+RDX: ffff88801e7eba80 RSI: ffffffff8166001c RDI: fffff52002a35f9d
+RBP: ffff888060ce7000 R08: 000000000000006d R09: 0000000000000000
+R10: 0000000080000000 R11: 0000000000000000 R12: ffffffff8e536240
+R13: ffff88801f3f3000 R14: ffff888060ce1000 R15: ffff888079d855f0
+FS:  0000555556f57400(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f095d5ad988 CR3: 000000002155a000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __list_del_entry include/linux/list.h:134 [inline]
+ list_del include/linux/list.h:148 [inline]
+ local_release net/nfc/llcp_core.c:171 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ nfc_llcp_local_put net/nfc/llcp_core.c:181 [inline]
+ nfc_llcp_local_put net/nfc/llcp_core.c:176 [inline]
+ nfc_llcp_unregister_device+0xb8/0x260 net/nfc/llcp_core.c:1619
+ nfc_unregister_device+0x196/0x330 net/nfc/core.c:1179
+ virtual_ncidev_close+0x52/0xb0 drivers/nfc/virtual_ncidev.c:163
+ __fput+0x27c/0xa90 fs/file_table.c:320
+ task_work_run+0x16f/0x270 kernel/task_work.c:179
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:171 [inline]
+ exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:203
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+ syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
+ do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+This patch add specific mutex lock llcp_devices_list_lock to ensure
+handling llcp_devices list safety.
+
+Fixes: 30cc4587659e ("NFC: Move LLCP code to the NFC top level diirectory")
+Reported-by: syzbot+81232c4a81a886e2b580@syzkaller.appspotmail.com
+Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
 ---
- .../ethernet/microchip/vcap/vcap_api_debugfs.c    | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ net/nfc/llcp_core.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
-index d9c7ca988b76..14fcb3d4ee85 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.c
-@@ -639,17 +639,24 @@ static int vcap_show_admin(struct vcap_control *vctrl,
- 	mutex_lock(&admin->lock);
- 	list_for_each_entry(elem, &admin->rules, list) {
- 		ri = vcap_dup_rule(elem);
--		if (IS_ERR(ri))
--			goto free_rule;
-+		if (IS_ERR(ri)) {
-+			ret = PTR_ERR(ri);
-+			goto err_unlock;
+diff --git a/net/nfc/llcp_core.c b/net/nfc/llcp_core.c
+index 3364caabef8b..7deaecd9d3cd 100644
+--- a/net/nfc/llcp_core.c
++++ b/net/nfc/llcp_core.c
+@@ -17,6 +17,7 @@
+ static u8 llcp_magic[3] = {0x46, 0x66, 0x6d};
+ 
+ static LIST_HEAD(llcp_devices);
++static DEFINE_MUTEX(llcp_devices_list_lock);
+ 
+ static void nfc_llcp_rx_skb(struct nfc_llcp_local *local, struct sk_buff *skb);
+ 
+@@ -168,7 +169,9 @@ static void local_release(struct kref *ref)
+ 
+ 	local = container_of(ref, struct nfc_llcp_local, ref);
+ 
++	mutex_lock(&llcp_devices_list_lock);
+ 	list_del(&local->list);
++	mutex_unlock(&llcp_devices_list_lock);
+ 	local_cleanup(local);
+ 	kfree(local);
+ }
+@@ -282,9 +285,13 @@ struct nfc_llcp_local *nfc_llcp_find_local(struct nfc_dev *dev)
+ {
+ 	struct nfc_llcp_local *local;
+ 
++	mutex_lock(&llcp_devices_list_lock);
+ 	list_for_each_entry(local, &llcp_devices, list)
+-		if (local->dev == dev)
++		if (local->dev == dev) {
++			mutex_unlock(&llcp_devices_list_lock);
+ 			return local;
 +		}
- 		/* Read data from VCAP */
- 		ret = vcap_read_rule(ri);
- 		if (ret)
--			goto free_rule;
-+			goto err_free_rule;
- 		out->prf(out->dst, "\n");
- 		vcap_show_admin_rule(vctrl, admin, out, ri);
--free_rule:
- 		vcap_free_rule((struct vcap_rule *)ri);
- 	}
-+	mutex_unlock(&admin->lock);
-+	return 0;
-+
-+err_free_rule:
-+	vcap_free_rule((struct vcap_rule *)ri);
-+err_unlock:
- 	mutex_unlock(&admin->lock);
- 	return ret;
++	mutex_unlock(&llcp_devices_list_lock);
+ 
+ 	pr_debug("No device found\n");
+ 
+@@ -1600,7 +1607,9 @@ int nfc_llcp_register_device(struct nfc_dev *ndev)
+ 	timer_setup(&local->sdreq_timer, nfc_llcp_sdreq_timer, 0);
+ 	INIT_WORK(&local->sdreq_timeout_work, nfc_llcp_sdreq_timeout_work);
+ 
++	mutex_lock(&llcp_devices_list_lock);
+ 	list_add(&local->list, &llcp_devices);
++	mutex_unlock(&llcp_devices_list_lock);
+ 
+ 	return 0;
  }
 -- 
-2.35.1
+2.25.1
 
