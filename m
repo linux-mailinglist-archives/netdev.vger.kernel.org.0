@@ -2,130 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7893263B8A0
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 04:14:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF8963B8AA
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 04:18:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235368AbiK2DOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 22:14:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41328 "EHLO
+        id S235451AbiK2DSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 22:18:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234820AbiK2DOW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 22:14:22 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6718D13DC0;
-        Mon, 28 Nov 2022 19:14:21 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id w37so6644168pga.5;
-        Mon, 28 Nov 2022 19:14:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=GqtbVqN1Ji/tLgIK2eSupvgjjaDXGh123VPhBwxrz28=;
-        b=iBTQuMnBjqgW1gYfAZGBAKwfeHpqlSXOuWZzqQ9TUHQMXsiTZA0yCtj0RE4jW03+qQ
-         3RoQ7qAKdz7uJanHoOj2vU4hbRkySOm1X//OakLvdJ+Imk51+zahmingN0ems59RoP8d
-         Q6P5W2g64U5iScdNgHpRfKeBww59PJBjPJ2uH//OtSQMZNlewy7IqozDSzv4OtQw051j
-         lEYTirvPUBAKi+0aFpg4uKwQli+2q5G9eH9k971O0BHf6gXruOrT+e6Lfd+hrwQDeJYQ
-         vMsG2XQkzb4f9cJ0vcrxOgh9b/iXa3phImiSJhO8hPq8DVTEyVYQtEQPk+C7PPndwBkM
-         a2DA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GqtbVqN1Ji/tLgIK2eSupvgjjaDXGh123VPhBwxrz28=;
-        b=aSBgu4nKThLaianxuz6eHcELdJ78iEb5NwonfoCMebnv0vLHhCmM9EC5E95qUNIKWl
-         N0tFMVRxiboWJ3NjnFKAYjU6b6GjbNdY4aAY92N8fjiJoL3uFpQuFYUduhVnUH6vScCr
-         maMaIdku6vLBNpjWX/h4NV64LoPi5x0exKH799z1Ox6hsifSuXbnIsnsG+//lMW7pj0E
-         dbE03c/A0pSL76NLiO+Jw/bKNXXLI5jQewG851CZxB85EoEyB7uJqI5y/LiLEWHRH94W
-         OfGA1Rwpi0WId6ld84wyvSv89QOuz+1CpbS1zLhCkkosp/UZzsoLQKnroeusovZ7TwxD
-         gZCQ==
-X-Gm-Message-State: ANoB5plcESPwhXOwD+5oeqROUFstJ5QKTinBna75TsFFpZJprr9pqTxo
-        stg4OOqAltqp95olPerBvVQ=
-X-Google-Smtp-Source: AA0mqf6EtEcFT/KpY3uHhBAbL1OFo09nPg9NGqfF4ECioi/tztfx4q4YMe2VxLgxEntLn25fWfhKqA==
-X-Received: by 2002:a63:1942:0:b0:46f:7b0d:3602 with SMTP id 2-20020a631942000000b0046f7b0d3602mr30386298pgz.143.1669691660708;
-        Mon, 28 Nov 2022 19:14:20 -0800 (PST)
-Received: from XH22050090-L.ad.ts.tri-ad.global ([103.175.111.222])
-        by smtp.gmail.com with ESMTPSA id c31-20020a17090a492200b00218b32f6a9esm210885pjh.18.2022.11.28.19.14.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Nov 2022 19:14:20 -0800 (PST)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can <linux-can@vger.kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH net-next v2] net: devlink: add DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER
-Date:   Tue, 29 Nov 2022 12:14:06 +0900
-Message-Id: <20221129031406.3849872-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S235340AbiK2DSe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 22:18:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578F2286C1;
+        Mon, 28 Nov 2022 19:18:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0461FB8110F;
+        Tue, 29 Nov 2022 03:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30721C433C1;
+        Tue, 29 Nov 2022 03:18:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669691909;
+        bh=MMYaUJnNIhZwUrQoRSepO+ImmUXzeufv93AYTDMROUU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kKSZ/SfLFHTYbdH8x1JN9JVW/ROT3OtbzN5/KvDZoRwYwUfj+fF1j2337TkXqay5R
+         Rt7riDXvTG/Dvn8PtWC21xD1wlubEAn+mBS959ialK/YU8X0EAv5sWTVPKBmZjEkbS
+         XmaCx6v3vfytmX2HvfpOsAEMnfewUc4DKCBmeanDCRqm6xXN6bx6OOfTrFJF8ICXq8
+         4cVuPdQ4S3jrn0+XQZyrPg7rbZ5L13la00RwDIGtFH2CwtJMpNMpnJc1OuS2OasHKX
+         ZYYFts7Ut6JwpyQEnxwBRAGIoLEeeNlecp5xMDIp/w5s0wifmzImGmtSmNYWQE8aUb
+         cAMPsP9E4U18w==
+Date:   Mon, 28 Nov 2022 19:18:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <f.fainelli@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "Arnd Bergmann" <arnd@arndb.de>
+Cc:     YueHaibing <yuehaibing@huawei.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <pabeni@redhat.com>, <arnd@arndb.de>,
+        <naresh.kamboju@linaro.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] net: broadcom: Add PTP_1588_CLOCK_OPTIONAL dependency
+ for BCMGENET under ARCH_BCM2835
+Message-ID: <20221128191828.169197be@kernel.org>
+In-Reply-To: <20221125115003.30308-1-yuehaibing@huawei.com>
+References: <20221125115003.30308-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As discussed in [1], abbreviating the bootloader to "bl" might not be
-well understood. Instead, a bootloader technically being a firmware,
-name it "fw.bootloader".
+On Fri, 25 Nov 2022 19:50:03 +0800 YueHaibing wrote:
+> commit 8d820bc9d12b ("net: broadcom: Fix BCMGENET Kconfig") fixes the build
+> that contain 99addbe31f55 ("net: broadcom: Select BROADCOM_PHY for BCMGENET")
+> and enable BCMGENET=y but PTP_1588_CLOCK_OPTIONAL=m, which otherwise
+> leads to a link failure. However this may trigger a runtime failure.
+> 
+> Fix the original issue by propagating the PTP_1588_CLOCK_OPTIONAL dependency
+> of BROADCOM_PHY down to BCMGENET.
+> 
+> Fixes: 8d820bc9d12b ("net: broadcom: Fix BCMGENET Kconfig")
+> Fixes: 99addbe31f55 ("net: broadcom: Select BROADCOM_PHY for BCMGENET")
+> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+> Suggested-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  drivers/net/ethernet/broadcom/Kconfig | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/Kconfig b/drivers/net/ethernet/broadcom/Kconfig
+> index 55dfdb34e37b..f4ca0c6c0f51 100644
+> --- a/drivers/net/ethernet/broadcom/Kconfig
+> +++ b/drivers/net/ethernet/broadcom/Kconfig
+> @@ -71,13 +71,14 @@ config BCM63XX_ENET
+>  config BCMGENET
+>  	tristate "Broadcom GENET internal MAC support"
+>  	depends on HAS_IOMEM
+> +	depends on PTP_1588_CLOCK_OPTIONAL || !ARCH_BCM2835
+>  	select MII
+>  	select PHYLIB
+>  	select FIXED_PHY
+>  	select BCM7XXX_PHY
+>  	select MDIO_BCM_UNIMAC
+>  	select DIMLIB
+> -	select BROADCOM_PHY if (ARCH_BCM2835 && PTP_1588_CLOCK_OPTIONAL)
+> +	select BROADCOM_PHY if ARCH_BCM2835
+>  	help
+>  	  This driver supports the built-in Ethernet MACs found in the
+>  	  Broadcom BCM7xxx Set Top Box family chipset.
 
-Add a new macro to devlink.h to formalize this new info attribute name
-and update the documentation.
+What's the code path that leads to the failure? I want to double check
+that the driver is handling the PTP registration return codes correctly.
+IIUC this is a source of misunderstandings in the PTP API.
 
-[1] https://lore.kernel.org/netdev/20221128142723.2f826d20@kernel.org/
-
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-* Changelog *
-
-v1 -> v2:
-
-  * update the documentation as well.
-  Link: https://lore.kernel.org/netdev/20221129020151.3842613-1-mailhol.vincent@wanadoo.fr/
----
- Documentation/networking/devlink/devlink-info.rst | 5 +++++
- include/net/devlink.h                             | 2 ++
- 2 files changed, 7 insertions(+)
-
-diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
-index 7572bf6de5c1..1242b0e6826b 100644
---- a/Documentation/networking/devlink/devlink-info.rst
-+++ b/Documentation/networking/devlink/devlink-info.rst
-@@ -198,6 +198,11 @@ fw.bundle_id
- 
- Unique identifier of the entire firmware bundle.
- 
-+fw.bootloader
-+-------------
-+
-+Version of the bootloader.
-+
- Future work
- ===========
- 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 074a79b8933f..2f552b90b5c6 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -621,6 +621,8 @@ enum devlink_param_generic_id {
- #define DEVLINK_INFO_VERSION_GENERIC_FW_ROCE	"fw.roce"
- /* Firmware bundle identifier */
- #define DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID	"fw.bundle_id"
-+/* Bootloader */
-+#define DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER	"fw.bootloader"
- 
- /**
-  * struct devlink_flash_update_params - Flash Update parameters
--- 
-2.25.1
-
+Richard, here's the original report:
+https://lore.kernel.org/all/CA+G9fYvKfbJHcMZtybf_0Ru3+6fKPg9HwWTOhdCLrOBXMaeG1A@mail.gmail.com/
