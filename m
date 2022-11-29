@@ -2,98 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7D6263BDB0
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 11:12:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90A7F63BDC5
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 11:17:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbiK2KMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 05:12:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
+        id S232577AbiK2KRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 05:17:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232478AbiK2KLg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 05:11:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83945E3CF;
-        Tue, 29 Nov 2022 02:10:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4480A61620;
-        Tue, 29 Nov 2022 10:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 895FAC433D7;
-        Tue, 29 Nov 2022 10:10:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669716616;
-        bh=3eKCHItsWSnQNAWASvCBxxLNZqKr4Q2+OOVfLGrAh6g=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lFawjEVSME8aySxx+WiLk5T86VKrIXeryQt0Mvs3Z1cPBeYz5lI17wshNMLurUpjT
-         P9oKFLTOdIYBtyh397s8CrCrbSSMsK4IIA18y/33zaBFdg2D8T8KD2dOLWEb3M24qD
-         CxQQGbyGb2rYIpUfWS7ofWv2LGV9Qj42GV2pWo5NK5Jvh3s7au/IKJbTs3Xg6Ot/AI
-         yVd2lR25t2ubCnUsPOb2tgB/cJYLAivgQB5RJedQnkTmvUILL4DJHeLhB6mFuVelBK
-         BngfgbSU7lUrAqZlIydXtcuHQopHrXwCQ7/NTwoZVWXgfjjzR7Piq68LXqhQTmkiRL
-         3P3k7CvD9LEzA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6CF15C395EC;
-        Tue, 29 Nov 2022 10:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232487AbiK2KRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 05:17:08 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E957A2E7;
+        Tue, 29 Nov 2022 02:17:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1669717026; x=1701253026;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=ntIufUXdHMrv3LebSNeNQZucKKAEML05blpxTFqTPd0=;
+  b=acBmnh2y+WExKsEGvFwPF7TNR0Smli4D5HsF6+3zasti0xdDltoC84iB
+   dPD/nL1I3YzwAizb5Wiv2KQHT/NXlgtjL5Aeqq1ndgZSfEpDZPunaJx2h
+   jBbJzK7VMH+mDzNd8xf+iVozBZKKabP2mx1BKiCZaBG8dt+usaYHpYQ9V
+   DO3NYrTm/2GYRxgo0B2SYZw3vnl7sMTJQkEkEcLin9YmSFGPqgfMi9DSv
+   vMMpPvqUalAePkmbuaGsa9gTE4gtQ9DqZFaQapOXEoZSsd5UTU3/duIDh
+   QoOU1IZtrLPISo8uzWelVMIGsxyCALjH/ll9oSANfMSBpeeznlO8Vzp2t
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,202,1665471600"; 
+   d="scan'208";a="185652937"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Nov 2022 03:17:05 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 29 Nov 2022 03:17:02 -0700
+Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 29 Nov 2022 03:16:59 -0700
+From:   Divya Koppera <Divya.Koppera@microchip.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <richardcochran@gmail.com>
+CC:     <UNGLinuxDriver@microchip.com>, <Madhuri.Sripada@microchip.com>
+Subject: [PATCH v3 net-next] net: phy: micrel: Fix warn: passing zero to PTR_ERR
+Date:   Tue, 29 Nov 2022 15:46:53 +0530
+Message-ID: <20221129101653.6921-1-Divya.Koppera@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/7] Marvell nvmem mac addresses support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166971661643.29836.9423706129492957108.git-patchwork-notify@kernel.org>
-Date:   Tue, 29 Nov 2022 10:10:16 +0000
-References: <20221124111556.264647-1-miquel.raynal@bootlin.com>
-In-Reply-To: <20221124111556.264647-1-miquel.raynal@bootlin.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        robert.marko@sartura.hr, luka.perkov@sartura.hr,
-        thomas.petazzoni@bootlin.com, michael@walle.cc, mw@semihalf.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        vadym.kochan@plvision.eu
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Handle the NULL pointer case
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Fixes New smatch warnings:
+drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero to 'PTR_ERR'
 
-On Thu, 24 Nov 2022 12:15:49 +0100 you wrote:
-> Hello,
-> 
-> Now that we are aligned on how to make information available from static
-> storage media to drivers like Ethernet controller drivers or switch
-> drivers by using nvmem cells and going through the whole nvmem
-> infrastructure, here are two driver updates to reflect these changes.
-> 
-> [...]
+Fixes Old smatch warnings:
+drivers/net/phy/micrel.c:1750 ksz886x_cable_test_get_status() error:
+uninitialized symbol 'ret'.
 
-Here is the summary with links:
-  - [net-next,v2,1/7] Revert "dt-bindings: marvell,prestera: Add description for device-tree bindings"
-    https://git.kernel.org/netdev/net-next/c/98eb05dc99fd
-  - [net-next,v2,2/7] dt-bindings: net: marvell,dfx-server: Convert to yaml
-    https://git.kernel.org/netdev/net-next/c/63b956f99175
-  - [net-next,v2,3/7] dt-bindings: net: marvell,prestera: Convert to yaml
-    https://git.kernel.org/netdev/net-next/c/a429ab01163c
-  - [net-next,v2,4/7] dt-bindings: net: marvell,prestera: Describe PCI devices of the prestera family
-    https://git.kernel.org/netdev/net-next/c/39d103862015
-  - [net-next,v2,5/7] of: net: export of_get_mac_address_nvmem()
-    https://git.kernel.org/netdev/net-next/c/4c47867bc789
-  - [net-next,v2,6/7] net: marvell: prestera: Avoid unnecessary DT lookups
-    https://git.kernel.org/netdev/net-next/c/a48acad789ff
-  - [net-next,v2,7/7] net: mvpp2: Consider NVMEM cells as possible MAC address source
-    https://git.kernel.org/netdev/net-next/c/7a74c1265ab4
+vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
+Fixes: 21b688dabecb ("net: phy: micrel: Cable Diag feature for lan8814 phy")
+Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+---
+v2 -> v3:
+- Changed subject line from net to net-next
+- Removed config check for ptp and clock configuration
+  instead added null check for ptp_clock
+- Fixed one more warning related to initialisaton.
 
-You are awesome, thank you!
+v1 -> v2:
+- Handled NULL pointer case
+- Changed subject line with net-next to net
+---
+ drivers/net/phy/micrel.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 26ce0c5defcd..3703e2fafbd4 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -2088,7 +2088,8 @@ static int ksz886x_cable_test_get_status(struct phy_device *phydev,
+ 	const struct kszphy_type *type = phydev->drv->driver_data;
+ 	unsigned long pair_mask = type->pair_mask;
+ 	int retries = 20;
+-	int pair, ret;
++	int ret = 0;
++	int pair;
+ 
+ 	*finished = false;
+ 
+@@ -2970,12 +2971,13 @@ static int lan8814_config_intr(struct phy_device *phydev)
+ 
+ static void lan8814_ptp_init(struct phy_device *phydev)
+ {
++	struct lan8814_shared_priv *shared_priv = phydev->shared->priv;
+ 	struct kszphy_priv *priv = phydev->priv;
+ 	struct kszphy_ptp_priv *ptp_priv = &priv->ptp_priv;
+ 	u32 temp;
+ 
+-	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
+-	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
++	/* Check if PHC support is missing at the configuration level */
++	if (!shared_priv->ptp_clock)
+ 		return;
+ 
+ 	lanphy_write_page_reg(phydev, 5, TSU_HARD_RESET, TSU_HARD_RESET_);
+@@ -3016,10 +3018,6 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
+ {
+ 	struct lan8814_shared_priv *shared = phydev->shared->priv;
+ 
+-	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
+-	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
+-		return 0;
+-
+ 	/* Initialise shared lock for clock*/
+ 	mutex_init(&shared->shared_lock);
+ 
+@@ -3039,12 +3037,16 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
+ 
+ 	shared->ptp_clock = ptp_clock_register(&shared->ptp_clock_info,
+ 					       &phydev->mdio.dev);
+-	if (IS_ERR_OR_NULL(shared->ptp_clock)) {
++	if (IS_ERR(shared->ptp_clock)) {
+ 		phydev_err(phydev, "ptp_clock_register failed %lu\n",
+ 			   PTR_ERR(shared->ptp_clock));
+ 		return -EINVAL;
+ 	}
+ 
++	/* Check if PHC support is missing at the configuration level */
++	if (!shared->ptp_clock)
++		return 0;
++
+ 	phydev_dbg(phydev, "successfully registered ptp clock\n");
+ 
+ 	shared->phydev = phydev;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.17.1
 
