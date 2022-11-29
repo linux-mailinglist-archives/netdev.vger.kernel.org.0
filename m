@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 674AD63C48F
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:03:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 226B863C491
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:03:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235944AbiK2QDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 11:03:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
+        id S236143AbiK2QDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 11:03:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235917AbiK2QC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:02:29 -0500
+        with ESMTP id S235976AbiK2QCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:02:30 -0500
 Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D04663E8;
-        Tue, 29 Nov 2022 08:01:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEDD6A761;
+        Tue, 29 Nov 2022 08:01:04 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DFB8F1C000E;
-        Tue, 29 Nov 2022 16:00:58 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id DEF6A1C0012;
+        Tue, 29 Nov 2022 16:01:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1669737660;
+        t=1669737663;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3Sv2XO/O55kb2J+uLPNufzqPe9J0HvFTZ/fLIsNSQxw=;
-        b=Sy0uxXOUNPFidS9zMVnwwXJfcWnsxyAgAChAtxH/0yMcsPtLmNqg9A9JXpZINFgkoQhKud
-        MNPGp4c77Q/oxLTI8vXAlhbClGSmpez650ezCaPaQ++5EHtnAjzV5nZG9bBBbGgI8zBAID
-        P9GogcYr7WC1XtbAW+xKa6t+vaCGcqXI76StF2jKtNyBZexpKRntYLKJmoWDcYzAJXAQkE
-        QFo2uEVW2sLldZJAmVfi82eni/C8BgW+mGMJux4sogYVghpTW/+r1zk6Pw7rmzbnGevf5o
-        6YSP/BoStZQ5xBWYzLk5qK7b67LvQE+j+vWZy3KlrWRO3EVQpRYn92O7bmcXmg==
+        bh=6ocsrVWDse05TiOwgeTNazLf/2kUkHgtJk9TtjrMWVk=;
+        b=DOcy8BJpb9CO0bTXkMyViBykgCnstedkMVQ3zyEDm7B0zuXaQoFpeU63xpGZvcYscTnCxq
+        f+ccXcy2OfdoAALRmH/YOyCaNrIq5JPIc4e2VoGFYo0+PwkqB1ZClp4HpQZ7bq2vftzS8J
+        2nLVHW/CBo8HYzdexQ3EQUNemPkKBWcsXg4q+Cky7+HZTVYdBBrNldLEtTTRedK+v4E0Av
+        agjoETy4asWdNntL3B2jGqV/Z73cvBx/qAmuiqkZgAx5C8bz86uWgLeVcbuRZ1EpjELPpH
+        Nvouz5K8R3aWyStsJgaQvd5xVefw4c/A26VpdpNnZKy+xgeIsRYtCNAHnr3kqg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -44,9 +44,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Guilhem Imberton <guilhem.imberton@qorvo.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next 4/6] mac802154: Prepare forcing specific symbol duration
-Date:   Tue, 29 Nov 2022 17:00:44 +0100
-Message-Id: <20221129160046.538864-5-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next 5/6] mac802154: Add MLME Tx locked helpers
+Date:   Tue, 29 Nov 2022 17:00:45 +0100
+Message-Id: <20221129160046.538864-6-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221129160046.538864-1-miquel.raynal@bootlin.com>
 References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
@@ -61,105 +61,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The scan logic will bypass the whole ->set_channel() logic from the top
-by calling the driver hook to just switch between channels when
-required.
-
-We can no longer rely on the "current" page/channel settings to set the
-right symbol duration. Let's add these as new parameters to allow
-providing the page/channel couple that we want.
-
-There is no functional change.
+These have the exact same behavior as before, except they expect the
+rtnl to be already taken (and will complain otherwise). This allows
+performing MLME transmissions from different contexts.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/net/cfg802154.h |  3 ++-
- net/mac802154/cfg.c     |  2 +-
- net/mac802154/main.c    | 20 +++++++++++---------
- 3 files changed, 14 insertions(+), 11 deletions(-)
+ net/mac802154/ieee802154_i.h |  6 ++++++
+ net/mac802154/tx.c           | 42 +++++++++++++++++++++++++-----------
+ 2 files changed, 35 insertions(+), 13 deletions(-)
 
-diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-index 11bedfa96371..5d4750d24f13 100644
---- a/include/net/cfg802154.h
-+++ b/include/net/cfg802154.h
-@@ -483,6 +483,7 @@ static inline const char *wpan_phy_name(struct wpan_phy *phy)
- 	return dev_name(&phy->dev);
+diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
+index 509e0172fe82..aeadee543a9c 100644
+--- a/net/mac802154/ieee802154_i.h
++++ b/net/mac802154/ieee802154_i.h
+@@ -141,10 +141,16 @@ int ieee802154_mlme_op_pre(struct ieee802154_local *local);
+ int ieee802154_mlme_tx(struct ieee802154_local *local,
+ 		       struct ieee802154_sub_if_data *sdata,
+ 		       struct sk_buff *skb);
++int ieee802154_mlme_tx_locked(struct ieee802154_local *local,
++			      struct ieee802154_sub_if_data *sdata,
++			      struct sk_buff *skb);
+ void ieee802154_mlme_op_post(struct ieee802154_local *local);
+ int ieee802154_mlme_tx_one(struct ieee802154_local *local,
+ 			   struct ieee802154_sub_if_data *sdata,
+ 			   struct sk_buff *skb);
++int ieee802154_mlme_tx_one_locked(struct ieee802154_local *local,
++				  struct ieee802154_sub_if_data *sdata,
++				  struct sk_buff *skb);
+ netdev_tx_t
+ ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
+ netdev_tx_t
+diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+index 9d8d43cf1e64..2a6f1ed763c9 100644
+--- a/net/mac802154/tx.c
++++ b/net/mac802154/tx.c
+@@ -137,34 +137,37 @@ int ieee802154_mlme_op_pre(struct ieee802154_local *local)
+ 	return ieee802154_sync_and_hold_queue(local);
  }
  
--void ieee802154_configure_durations(struct wpan_phy *phy);
-+void ieee802154_configure_durations(struct wpan_phy *phy,
-+				    unsigned int page, unsigned int channel);
+-int ieee802154_mlme_tx(struct ieee802154_local *local,
+-		       struct ieee802154_sub_if_data *sdata,
+-		       struct sk_buff *skb)
++int ieee802154_mlme_tx_locked(struct ieee802154_local *local,
++			      struct ieee802154_sub_if_data *sdata,
++			      struct sk_buff *skb)
+ {
+-	int ret;
+-
+ 	/* Avoid possible calls to ->ndo_stop() when we asynchronously perform
+ 	 * MLME transmissions.
+ 	 */
+-	rtnl_lock();
++	ASSERT_RTNL();
  
- #endif /* __NET_CFG802154_H */
-diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
-index dc2d918fac68..469d6e8dd2dd 100644
---- a/net/mac802154/cfg.c
-+++ b/net/mac802154/cfg.c
-@@ -118,7 +118,7 @@ ieee802154_set_channel(struct wpan_phy *wpan_phy, u8 page, u8 channel)
- 	if (!ret) {
- 		wpan_phy->current_page = page;
- 		wpan_phy->current_channel = channel;
--		ieee802154_configure_durations(wpan_phy);
-+		ieee802154_configure_durations(wpan_phy, page, channel);
- 	}
+ 	/* Ensure the device was not stopped, otherwise error out */
+-	if (!local->open_count) {
+-		rtnl_unlock();
++	if (!local->open_count)
+ 		return -ENETDOWN;
+-	}
+ 
+ 	/* Warn if the ieee802154 core thinks MLME frames can be sent while the
+ 	 * net interface expects this cannot happen.
+ 	 */
+-	if (WARN_ON_ONCE(!netif_running(sdata->dev))) {
+-		rtnl_unlock();
++	if (WARN_ON_ONCE(!netif_running(sdata->dev)))
+ 		return -ENETDOWN;
+-	}
+ 
+ 	ieee802154_tx(local, skb);
+-	ret = ieee802154_sync_queue(local);
++	return ieee802154_sync_queue(local);
++}
+ 
++int ieee802154_mlme_tx(struct ieee802154_local *local,
++		       struct ieee802154_sub_if_data *sdata,
++		       struct sk_buff *skb)
++{
++	int ret;
++
++	rtnl_lock();
++	ret = ieee802154_mlme_tx_locked(local, sdata, skb);
+ 	rtnl_unlock();
  
  	return ret;
-diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-index 3ed31daf7b9c..12a13a850fdf 100644
---- a/net/mac802154/main.c
-+++ b/net/mac802154/main.c
-@@ -113,32 +113,33 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
+@@ -188,6 +191,19 @@ int ieee802154_mlme_tx_one(struct ieee802154_local *local,
+ 	return ret;
  }
- EXPORT_SYMBOL(ieee802154_alloc_hw);
  
--void ieee802154_configure_durations(struct wpan_phy *phy)
-+void ieee802154_configure_durations(struct wpan_phy *phy,
-+				    unsigned int page, unsigned int channel)
++int ieee802154_mlme_tx_one_locked(struct ieee802154_local *local,
++				  struct ieee802154_sub_if_data *sdata,
++				  struct sk_buff *skb)
++{
++	int ret;
++
++	ieee802154_mlme_op_pre(local);
++	ret = ieee802154_mlme_tx_locked(local, sdata, skb);
++	ieee802154_mlme_op_post(local);
++
++	return ret;
++}
++
+ static bool ieee802154_queue_is_stopped(struct ieee802154_local *local)
  {
- 	u32 duration = 0;
- 
--	switch (phy->current_page) {
-+	switch (page) {
- 	case 0:
--		if (BIT(phy->current_channel) & 0x1)
-+		if (BIT(channel) & 0x1)
- 			/* 868 MHz BPSK 802.15.4-2003: 20 ksym/s */
- 			duration = 50 * NSEC_PER_USEC;
--		else if (BIT(phy->current_channel) & 0x7FE)
-+		else if (BIT(channel) & 0x7FE)
- 			/* 915 MHz BPSK	802.15.4-2003: 40 ksym/s */
- 			duration = 25 * NSEC_PER_USEC;
--		else if (BIT(phy->current_channel) & 0x7FFF800)
-+		else if (BIT(channel) & 0x7FFF800)
- 			/* 2400 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
- 			duration = 16 * NSEC_PER_USEC;
- 		break;
- 	case 2:
--		if (BIT(phy->current_channel) & 0x1)
-+		if (BIT(channel) & 0x1)
- 			/* 868 MHz O-QPSK 802.15.4-2006: 25 ksym/s */
- 			duration = 40 * NSEC_PER_USEC;
--		else if (BIT(phy->current_channel) & 0x7FE)
-+		else if (BIT(channel) & 0x7FE)
- 			/* 915 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
- 			duration = 16 * NSEC_PER_USEC;
- 		break;
- 	case 3:
--		if (BIT(phy->current_channel) & 0x3FFF)
-+		if (BIT(channel) & 0x3FFF)
- 			/* 2.4 GHz CSS 802.15.4a-2007: 1/6 Msym/s */
- 			duration = 6 * NSEC_PER_USEC;
- 		break;
-@@ -201,7 +202,8 @@ int ieee802154_register_hw(struct ieee802154_hw *hw)
- 
- 	ieee802154_setup_wpan_phy_pib(local->phy);
- 
--	ieee802154_configure_durations(local->phy);
-+	ieee802154_configure_durations(local->phy, local->phy->current_page,
-+				       local->phy->current_channel);
- 
- 	if (!(hw->flags & IEEE802154_HW_CSMA_PARAMS)) {
- 		local->phy->supported.min_csma_backoffs = 4;
+ 	return test_bit(WPAN_PHY_FLAG_STATE_QUEUE_STOPPED, &local->phy->flags);
 -- 
 2.34.1
 
