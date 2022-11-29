@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF63063BCF8
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:30:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ABBB63BCF9
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:30:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbiK2JaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 04:30:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33918 "EHLO
+        id S231426AbiK2JaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 04:30:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbiK2JaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:30:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBEDC5B874
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 01:30:10 -0800 (PST)
+        with ESMTP id S230291AbiK2JaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:30:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171EB5BD4C
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 01:30:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9EED615E9
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:30:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A207C433C1;
-        Tue, 29 Nov 2022 09:30:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C02B5B811D6
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5240FC433C1;
+        Tue, 29 Nov 2022 09:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669714209;
-        bh=HctrvSVZVwt3fOyUZllpNtmczVxztv1RSc80yQCX+kc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=twyYnqGrvUM9XXCVO9jlFOd5Fr4inBHt0e53zeodXGd+Wug7BOgRT5IRiV8DpVCb0
-         WRHF+cOAHgUfJ8vP1ykUOzUcMrPyKv83opvWBrYzUyFXM1LFuiBuZGek+bgnhbdL4b
-         zEuvcyHAwOH11DBWgDnP7UwKG97BKxpWB0Blpj54Hbj54rNmAFA9zebgfqHDZMuSHN
-         3siYx6ne6luFBvv9DPMPqxs1hxxrlqLexzzIdaO5EIA0LBA4O3+AVN1Lo8xXymgEgb
-         HPmcyv4IgeVUXygiMhGHpkwZjJQWaK1uF1oTsYv4f2Z4/wfU7yjuRP6Ux3i8GRnjjn
-         iCR9RZUouaxsw==
+        s=k20201202; t=1669714210;
+        bh=c27r3GhuOJTHbxQdbCQPVMZ4C+/znej3VDXfV4UNzZ8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=X49Iy1XuHnFAzSeFOcUiE40iJm3GuvvhVWgjT0Czkbo6O/4+B5dIVQGlJzeEFl46P
+         8yFIClxWoI5HtsLwLvU4sewH0J9z8oZTr+/owJweY2AzNq3f/V0zpswvwPTvcN7p8o
+         QcfawBNVuLt0SszqCzST0CxCF32vVsdpAFx3/Raa01kL31BW0fA8tJR3McxVGfU05B
+         jZ0sRsyrftVlcugbdh5yS0TdypuggtqCJS5fF/Ef1ub85deI/TBtlc6KHdcxcerIaj
+         zUgD+dHS+K0/lC12Kv4nA8FFesE/55a/HZ+pJKYMeBKW6jTRH5qZRGkkF+KkV2qQHk
+         H3nqI3MXVtJyg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>, Chris Mi <cmi@nvidia.com>,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [PATCH net 1/2] Revert "net/mlx5e: MACsec, remove replay window size limitation in offload path"
-Date:   Tue, 29 Nov 2022 01:30:05 -0800
-Message-Id: <20221129093006.378840-1-saeed@kernel.org>
+Subject: [PATCH net 2/2] net/mlx5: Lag, Fix for loop when checking lag
+Date:   Tue, 29 Nov 2022 01:30:06 -0800
+Message-Id: <20221129093006.378840-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221129093006.378840-1-saeed@kernel.org>
+References: <20221129093006.378840-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -54,74 +56,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Chris Mi <cmi@nvidia.com>
 
-This reverts commit c0071be0e16c461680d87b763ba1ee5e46548fde.
+The cited commit adds a for loop to check if each port supports lag
+or not. But dev is not initialized correctly. Fix it by initializing
+dev for each iteration.
 
-The cited commit removed the validity checks which initialized the
-window_sz and never removed the use of the now uninitialized variable,
-so now we are left with wrong value in the window size and the following
-clang warning: [-Wuninitialized]
-drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c:232:45:
-       warning: variable 'window_sz' is uninitialized when used here
-       MLX5_SET(macsec_aso, aso_ctx, window_size, window_sz);
-
-Revet at this time to address the clang issue due to lack of time to
-test the proper solution.
-
-Fixes: c0071be0e16c ("net/mlx5e: MACsec, remove replay window size limitation in offload path")
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: e87c6a832f88 ("net/mlx5: E-switch, Fix duplicate lag creation")
+Signed-off-by: Chris Mi <cmi@nvidia.com>
 Reported-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/macsec.c         | 16 ++++++++++++++++
- include/linux/mlx5/mlx5_ifc.h                    |  7 +++++++
- 2 files changed, 23 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index 0d6dc394a12a..f900709639f6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -229,6 +229,22 @@ static int macsec_set_replay_protection(struct mlx5_macsec_obj_attrs *attrs, voi
- 	if (!attrs->replay_protect)
- 		return 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+index 4070dc1d17cb..32c3e0a649a7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+@@ -700,11 +700,13 @@ static bool mlx5_lag_check_prereq(struct mlx5_lag *ldev)
+ 			return false;
  
-+	switch (attrs->replay_window) {
-+	case 256:
-+		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_256BIT;
-+		break;
-+	case 128:
-+		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_128BIT;
-+		break;
-+	case 64:
-+		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_64BIT;
-+		break;
-+	case 32:
-+		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_32BIT;
-+		break;
-+	default:
-+		return -EINVAL;
+ #ifdef CONFIG_MLX5_ESWITCH
+-	dev = ldev->pf[MLX5_LAG_P1].dev;
+-	for (i = 0; i  < ldev->ports; i++)
++	for (i = 0; i < ldev->ports; i++) {
++		dev = ldev->pf[i].dev;
+ 		if (mlx5_eswitch_num_vfs(dev->priv.eswitch) && !is_mdev_switchdev_mode(dev))
+ 			return false;
 +	}
- 	MLX5_SET(macsec_aso, aso_ctx, window_size, window_sz);
- 	MLX5_SET(macsec_aso, aso_ctx, mode, MLX5_MACSEC_ASO_REPLAY_PROTECTION);
  
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 981fc7dfa408..5a4e914e2a6f 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -11611,6 +11611,13 @@ enum {
- 	MLX5_MACSEC_ASO_REPLAY_PROTECTION = 0x1,
- };
- 
-+enum {
-+	MLX5_MACSEC_ASO_REPLAY_WIN_32BIT  = 0x0,
-+	MLX5_MACSEC_ASO_REPLAY_WIN_64BIT  = 0x1,
-+	MLX5_MACSEC_ASO_REPLAY_WIN_128BIT = 0x2,
-+	MLX5_MACSEC_ASO_REPLAY_WIN_256BIT = 0x3,
-+};
-+
- #define MLX5_MACSEC_ASO_INC_SN  0x2
- #define MLX5_MACSEC_ASO_REG_C_4_5 0x2
- 
++	dev = ldev->pf[MLX5_LAG_P1].dev;
+ 	mode = mlx5_eswitch_mode(dev);
+ 	for (i = 0; i < ldev->ports; i++)
+ 		if (mlx5_eswitch_mode(ldev->pf[i].dev) != mode)
 -- 
 2.38.1
 
