@@ -2,341 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B986363B841
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 03:52:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3C463B845
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 03:53:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234973AbiK2CwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 21:52:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50356 "EHLO
+        id S235263AbiK2CxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 21:53:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbiK2CwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 21:52:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C1048749;
-        Mon, 28 Nov 2022 18:52:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B216861550;
-        Tue, 29 Nov 2022 02:52:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8D7FC433D6;
-        Tue, 29 Nov 2022 02:52:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669690340;
-        bh=uQEuilvvwucEGAVpN51igynIO7Tr4WHkJ3elhFbQNmQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pJoid75Ur576beSdyjwPOh7k4Chh0VSCRJTvD6bc/GZFDfF361490f/tY+/lu2GMR
-         ImE6bETGZlgNqstRRpKTUALOrVf80QGE3g+4amrWyEggb3EAOLCa/Hm4Ik6HRA7xep
-         ZosRh6RLvLrKeZGESpZhyve5MYMbxQYeDZanXXBfyJeMeyLiSAe6gnZ0thOVeEQHd2
-         gZEysXCbgb6F91hbuMpxAnY17ERsQW66ctQtwcEL1T4Ix1wcV78VjLIvkQgbo34QqH
-         GIgCYfeziYuG/vuDzTIT5qmsypmCub7BX0xZC7ym9pfXFXXknAfRB4E7XqmVYaonc1
-         AETVy65KBYA5Q==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pabeni@redhat.com
-Subject: [PULL] Networking for v6.1-rc8 (part 1)
-Date:   Mon, 28 Nov 2022 18:52:19 -0800
-Message-Id: <20221129025219.2374322-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S235206AbiK2CxA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 21:53:00 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBDF2A428;
+        Mon, 28 Nov 2022 18:52:57 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id 82so4278797pgc.0;
+        Mon, 28 Nov 2022 18:52:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=35p5Pzvij06883L5xcotqkJm3JL5Gnq7PcCbaLDkUh8=;
+        b=Y7b9duHr6K89L/ohp2M0hPG3B89OYr6vF9bFrfIiCWJBLHgcnXkP9P1WwonJ2c//51
+         XKIIu36s6NdzF4oIuGKkjPxIMjGaK5aZfnAqlwWqnVmuhFiNGCzMedTU7ZRjP2NSqt8w
+         JEOpANuinneiS1fYdV3K0TjMkeuCPBMc9DCoPYox/4Lp812J+9vbKQJndbflPdeM0vHX
+         kpMJNSvcOOepdfEZ4cyCLp9zyScncvgNtpSE788m1zhCckPRO3An4UZdM0hnZcwaW2M0
+         hoSbv2BCs2mAciVXknzwAynj8LLHl3mfMBLZ1XZgwsprWd2h/R1kC9OVLRgHVuMtonsd
+         wNFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=35p5Pzvij06883L5xcotqkJm3JL5Gnq7PcCbaLDkUh8=;
+        b=ZbqBevg3VloFVrujeQ31ijYaoW75FeB/E2QtVexgvpdobN74uk4//MEW4HixXH9Mt1
+         JN5vIgYqm7PKOAYG3QlstHJgdL7HmUeGRk5YChJllf5/UNdh+IHFHDE+4M2NAD3VMNZN
+         9iJp2TGI/LmLxnUH+5VqE+wALIW7IOTRcjie7r/xFSBZWU4jSRHxt2TBf60mJR23HknD
+         mkxVq/bKmPZQCHIbdEPfxOUOn4zzDch/C+xQf01vNnOWRC+3NefcSaxGHQRXSXJD4HhT
+         xCbx3ESTnjJu9JBcV+MmP33MBzeDDKINClpw3eUafQuHA1cqnUbApwvM0eXId+9ly0bd
+         FLiA==
+X-Gm-Message-State: ANoB5plmi034WwBbeayD4bxQOV1Pt4sGuEj4nFHhyh58f9LNvOPoiXep
+        jkgoUcNSlCkSpEnAMIYJRLo=
+X-Google-Smtp-Source: AA0mqf7Tjpn4WAePefz0sLICTbs/gASw+w8ggwNV0ibHiC1F0Nu9VpXXTFnOY+jU/lsv4xinlY4IkQ==
+X-Received: by 2002:a65:4c85:0:b0:46f:59bd:6125 with SMTP id m5-20020a654c85000000b0046f59bd6125mr48407772pgt.147.1669690376990;
+        Mon, 28 Nov 2022 18:52:56 -0800 (PST)
+Received: from localhost ([183.242.254.166])
+        by smtp.gmail.com with ESMTPSA id p21-20020a631e55000000b004597e92f99dsm7233338pgm.66.2022.11.28.18.52.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Nov 2022 18:52:55 -0800 (PST)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     yin31149@gmail.com, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     18801353760@163.com,
+        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com,
+        Cong Wang <cong.wang@bytedance.com>,
+        Dmitry Vyukov <dvyukov@google.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] net: sched: fix memory leak in tcindex_set_parms
+Date:   Tue, 29 Nov 2022 10:52:49 +0800
+Message-Id: <20221129025249.463833-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
+Syzkaller reports a memory leak as follows:
+====================================
+BUG: memory leak
+unreferenced object 0xffff88810c287f00 (size 256):
+  comm "syz-executor105", pid 3600, jiffies 4294943292 (age 12.990s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
+    [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
+    [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
+    [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
+    [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
+    [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
+    [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
+    [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
+    [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
+    [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
+    [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+    [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
+    [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
+    [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
+    [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
+    [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
+    [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
+    [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
+    [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
+    [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
+    [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
+    [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+====================================
+
+Kernel uses tcindex_change() to change an existing
+filter properties. During the process of changing,
+kernel uses tcindex_alloc_perfect_hash() to newly
+allocate filter results, uses tcindex_filter_result_init()
+to clear the old filter result.
+
+Yet the problem is that, kernel clears the old
+filter result, without destroying its tcf_exts structure,
+which triggers the above memory leak.
+
+Considering that there already extis a tc_filter_wq workqueue
+to destroy the old tcindex_data by tcindex_partial_destroy_work()
+at the end of tcindex_set_parms(), this patch solves this memory
+leak bug by removing this old filter result clearing part,
+and delegating it to the tc_filter_wq workqueue.
+
+[Thanks to the suggestion from Jakub Kicinski, Cong Wang, Paolo Abeni
+and Dmitry Vyukov]
+
+Fixes: b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()")
+Link: https://lore.kernel.org/all/0000000000001de5c505ebc9ec59@google.com/
+Reported-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
+Tested-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
+Cc: Cong Wang <cong.wang@bytedance.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Dmitry Vyukov <dvyukov@google.com> 
+Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+---
+v3:
+  - refactor the commit message
+  - delegate the tcf_exts_destroy() to tc_filter_wq workqueue,
+suggested by Paolo Abeni and Dmitry Vyukov
+
+v2: https://lore.kernel.org/all/20221113170507.8205-1-yin31149@gmail.com/
+
+v1: https://lore.kernel.org/all/20221031060835.11722-1-yin31149@gmail.com/
+
+ net/sched/cls_tcindex.c | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+index 1c9eeb98d826..3f4e7a6cdd96 100644
+--- a/net/sched/cls_tcindex.c
++++ b/net/sched/cls_tcindex.c
+@@ -478,14 +478,6 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+ 		tcf_bind_filter(tp, &cr, base);
+ 	}
+ 
+-	if (old_r && old_r != r) {
+-		err = tcindex_filter_result_init(old_r, cp, net);
+-		if (err < 0) {
+-			kfree(f);
+-			goto errout_alloc;
+-		}
+-	}
+-
+ 	oldp = p;
+ 	r->res = cr;
+ 	tcf_exts_change(&r->exts, &e);
+-- 
+2.34.1
 
-I disappeared for Thanksgiving without communicating properly
-which resulted in some confusion on our side and things not
-getting merged up correctly, so flushing the queue again.
-Probably for the best given some of the patches here.
-
-
-The following changes since commit 661e5ebbafd26d9d2e3c749f5cf591e55c7364f5:
-
-  net: thunderx: Fix the ACPI memory leak (2022-11-24 10:15:47 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc8-1
-
-for you to fetch changes up to cdde1560118f82498fc9e9a7c1ef7f0ef7755891:
-
-  net: mdiobus: fix unbalanced node reference count (2022-11-28 18:10:25 -0800)
-
-----------------------------------------------------------------
-Including fixes from bpf, can and wifi.
-
-Current release - new code bugs:
-
- - eth: mlx5e:
-   - use kvfree() in mlx5e_accel_fs_tcp_create()
-   - MACsec, fix RX data path 16 RX security channel limit
-   - MACsec, fix memory leak when MACsec device is deleted
-   - MACsec, fix update Rx secure channel active field
-   - MACsec, fix add Rx security association (SA) rule memory leak
-
-Previous releases - regressions:
-
- - wifi: cfg80211: don't allow multi-BSSID in S1G
-
- - stmmac: set MAC's flow control register to reflect current settings
-
- - eth: mlx5:
-   - E-switch, fix duplicate lag creation
-   - fix use-after-free when reverting termination table
-
-Previous releases - always broken:
-
- - ipv4: fix route deletion when nexthop info is not specified
-
- - bpf: fix a local storage BPF map bug where the value's spin lock
-   field can get initialized incorrectly
-
- - tipc: re-fetch skb cb after tipc_msg_validate
-
- - wifi: wilc1000: fix Information Element parsing
-
- - can: can327: fix potential skb leak when netdev is down
-
- - can: add number of missing netdev freeing on error paths
-
- - aquantia: do not purge addresses when setting the number of rings
-
- - wwan: iosm:
-   - fix incorrect skb length leading to truncated packet
-   - fix crash in peek throughput test due to skb UAF
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      Merge branch 'Bug fix and test case for special map value field '
-
-Andrii Nakryiko (1):
-      Merge branch 'libbpf: Fixes for ring buffer'
-
-Chris Mi (2):
-      net/mlx5: E-switch, Destroy legacy fdb table when needed
-      net/mlx5: E-switch, Fix duplicate lag creation
-
-Dan Carpenter (1):
-      net/mlx5e: Fix a couple error codes
-
-David S. Miller (4):
-      Merge tag 'linux-can-fixes-for-6.1-20221124' of git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can
-      Merge branch '10GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
-      Merge tag 'mlx5-fixes-2022-11-24' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
-      Merge branch 'wwan-iosm-fixes'
-
-Duoming Zhou (1):
-      qlcnic: fix sleep-in-atomic-context bugs caused by msleep
-
-Emeel Hakim (3):
-      net/mlx5e: MACsec, fix add Rx security association (SA) rule memory leak
-      net/mlx5e: MACsec, remove replay window size limitation in offload path
-      net/mlx5e: MACsec, block offload requests with encrypt off
-
-Goh, Wei Sheng (1):
-      net: stmmac: Set MAC's flow control register to reflect current settings
-
-Heiko Schocher (1):
-      can: sja1000: fix size of OCR_MODE_MASK define
-
-Hou Tao (5):
-      bpf, perf: Use subprog name when reporting subprog ksymbol
-      libbpf: Use page size as max_entries when probing ring buffer map
-      libbpf: Handle size overflow for ringbuf mmap
-      libbpf: Handle size overflow for user ringbuf mmap
-      libbpf: Check the validity of size in user_ring_buffer__reserve()
-
-Ido Schimmel (1):
-      ipv4: Fix route deletion when nexthop info is not specified
-
-Izabela Bakollari (1):
-      aquantia: Do not purge addresses when setting the number of rings
-
-Jakub Kicinski (3):
-      Merge tag 'for-netdev' of https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-      Merge tag 'wireless-2022-11-28' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless
-      Merge branch 'mptcp-more-fixes-for-6-1'
-
-Jerry Ray (1):
-      dsa: lan9303: Correct stat name
-
-Jiasheng Jiang (1):
-      can: m_can: Add check for devm_clk_get
-
-Jiri Olsa (3):
-      libbpf: Use correct return pointer in attach_raw_tp
-      selftests/bpf: Filter out default_idle from kprobe_multi bench
-      selftests/bpf: Make test_bench_attach serial
-
-Johannes Berg (2):
-      wifi: cfg80211: fix buffer overflow in elem comparison
-      wifi: cfg80211: don't allow multi-BSSID in S1G
-
-Lorenzo Bianconi (1):
-      wifi: mac8021: fix possible oob access in ieee80211_get_rate_duration
-
-Lukas Bulwahn (1):
-      qed: avoid defines prefixed with CONFIG
-
-M Chetan Kumar (4):
-      net: wwan: iosm: fix kernel test robot reported error
-      net: wwan: iosm: fix dma_alloc_coherent incompatible pointer type
-      net: wwan: iosm: fix crash in peek throughput test
-      net: wwan: iosm: fix incorrect skb length
-
-Marek Vasut (1):
-      MAINTAINERS: mark rsi wifi driver as orphan
-
-Menglong Dong (1):
-      mptcp: don't orphan ssk in mptcp_close()
-
-Paolo Abeni (1):
-      mptcp: fix sleep in atomic at close time
-
-Phil Turnbull (4):
-      wifi: wilc1000: validate pairwise and authentication suite offsets
-      wifi: wilc1000: validate length of IEEE80211_P2P_ATTR_OPER_CHANNEL attribute
-      wifi: wilc1000: validate length of IEEE80211_P2P_ATTR_CHANNEL_LIST attribute
-      wifi: wilc1000: validate number of channels
-
-Raed Salem (5):
-      net/mlx5e: MACsec, fix RX data path 16 RX security channel limit
-      net/mlx5e: MACsec, fix memory leak when MACsec device is deleted
-      net/mlx5e: MACsec, fix update Rx secure channel active field
-      net/mlx5e: MACsec, fix mlx5e_macsec_update_rxsa bail condition and functionality
-      net/mlx5e: MACsec, fix Tx SA active field update
-
-Rasmus Villemoes (2):
-      net: fec: don't reset irq coalesce settings to defaults on "ip link up"
-      net: loopback: use NET_NAME_PREDICTABLE for name_assign_type
-
-Roi Dayan (1):
-      net/mlx5e: Fix use-after-free when reverting termination table
-
-Russell King (Oracle) (1):
-      net: phylink: fix PHY validation with rate adaption
-
-Shang XiaoJing (2):
-      ixgbevf: Fix resource leak in ixgbevf_init_module()
-      i40e: Fix error handling in i40e_init_module()
-
-Suman Ghosh (1):
-      octeontx2-pf: Fix pfc_alloc_status array overflow
-
-Wang Hai (2):
-      e100: Fix possible use after free in e100_xmit_prepare
-      net/9p: Fix a potential socket leak in p9_socket_open
-
-Xin Long (1):
-      tipc: re-fetch skb cb after tipc_msg_validate
-
-Xu Kuohai (2):
-      bpf: Do not copy spin lock field from user in bpf_selem_alloc
-      bpf: Set and check spin lock value in sk_storage_map_test
-
-Yang Yingliang (2):
-      net: phy: fix null-ptr-deref while probe() failed
-      net: mdiobus: fix unbalanced node reference count
-
-Yasushi SHOJI (1):
-      can: mcba_usb: Fix termination command argument
-
-Yuan Can (3):
-      fm10k: Fix error handling in fm10k_init_module()
-      iavf: Fix error handling in iavf_init_module()
-      net: net_netdev: Fix error handling in ntb_netdev_init_module()
-
-YueHaibing (4):
-      net/mlx5: DR, Fix uninitialized var warning
-      net/mlx5: Fix uninitialized variable bug in outlen_write()
-      net/mlx5e: Use kvfree() in mlx5e_accel_fs_tcp_create()
-      net: hsr: Fix potential use-after-free
-
-Yuri Karpov (1):
-      net: ethernet: nixge: fix NULL dereference
-
-Zhang Changzhong (5):
-      can: sja1000_isa: sja1000_isa_probe(): add missing free_sja1000dev()
-      can: cc770: cc770_isa_probe(): add missing free_cc770dev()
-      can: etas_es58x: es58x_init_netdev(): free netdev when register_candev()
-      can: m_can: pci: add missing m_can_class_free_dev() in probe/remove methods
-      net: ethernet: ti: am65-cpsw: fix error handling in am65_cpsw_nuss_probe()
-
-Ziyang Xuan (1):
-      can: can327: can327_feed_frame_to_netdev(): fix potential skb leak when netdev is down
-
- MAINTAINERS                                        |   4 +-
- drivers/net/can/can327.c                           |   4 +-
- drivers/net/can/cc770/cc770_isa.c                  |  10 +-
- drivers/net/can/m_can/m_can.c                      |   2 +-
- drivers/net/can/m_can/m_can_pci.c                  |   9 +-
- drivers/net/can/sja1000/sja1000_isa.c              |  10 +-
- drivers/net/can/usb/etas_es58x/es58x_core.c        |   5 +-
- drivers/net/can/usb/mcba_usb.c                     |  10 +-
- drivers/net/dsa/lan9303-core.c                     |   2 +-
- .../net/ethernet/aquantia/atlantic/aq_ethtool.c    |   5 +-
- drivers/net/ethernet/aquantia/atlantic/aq_main.c   |   4 +-
- drivers/net/ethernet/aquantia/atlantic/aq_main.h   |   2 +
- drivers/net/ethernet/freescale/fec_main.c          |  22 +---
- drivers/net/ethernet/intel/e100.c                  |   5 +-
- drivers/net/ethernet/intel/fm10k/fm10k_main.c      |  10 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c        |  11 +-
- drivers/net/ethernet/intel/iavf/iavf_main.c        |   9 +-
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c  |  10 +-
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |   4 +-
- .../ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c  |   4 +-
- .../ethernet/mellanox/mlx5/core/en_accel/macsec.c  | 138 +++++++++------------
- .../ethernet/mellanox/mlx5/core/en_accel/macsec.h  |   6 +-
- .../mellanox/mlx5/core/en_accel/macsec_fs.c        |  17 ++-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |   3 +
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   8 ++
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   7 ++
- .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c  |   5 +-
- .../mellanox/mlx5/core/steering/dr_table.c         |   5 +-
- drivers/net/ethernet/ni/nixge.c                    |  29 ++---
- drivers/net/ethernet/qlogic/qed/qed_mcp.c          |  24 ++--
- .../net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c    |   4 +-
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |   2 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |  12 +-
- drivers/net/ethernet/ti/am65-cpsw-nuss.c           |   2 +-
- drivers/net/loopback.c                             |   2 +-
- drivers/net/mdio/fwnode_mdio.c                     |   2 +-
- drivers/net/ntb_netdev.c                           |   9 +-
- drivers/net/phy/phy_device.c                       |   2 +
- drivers/net/phy/phylink.c                          |  22 +++-
- drivers/net/wireless/microchip/wilc1000/cfg80211.c |  39 ++++--
- drivers/net/wireless/microchip/wilc1000/hif.c      |  21 +++-
- drivers/net/wwan/iosm/iosm_ipc_mux_codec.c         |  26 ++--
- drivers/net/wwan/iosm/iosm_ipc_protocol.h          |   2 +-
- include/linux/can/platform/sja1000.h               |   2 +-
- include/linux/mlx5/mlx5_ifc.h                      |   7 --
- kernel/bpf/bpf_local_storage.c                     |   2 +-
- kernel/events/core.c                               |   2 +-
- net/9p/trans_fd.c                                  |   4 +-
- net/hsr/hsr_forward.c                              |   5 +-
- net/ipv4/fib_semantics.c                           |   8 +-
- net/mac80211/airtime.c                             |   3 +
- net/mptcp/protocol.c                               |  13 +-
- net/mptcp/subflow.c                                |   6 +-
- net/tipc/crypto.c                                  |   3 +
- net/wireless/scan.c                                |  10 +-
- tools/lib/bpf/libbpf.c                             |   2 +-
- tools/lib/bpf/libbpf_probes.c                      |   2 +-
- tools/lib/bpf/ringbuf.c                            |  26 +++-
- .../selftests/bpf/map_tests/sk_storage_map.c       |  36 +++---
- .../selftests/bpf/prog_tests/kprobe_multi_test.c   |   8 +-
- tools/testing/selftests/net/fib_nexthops.sh        |  11 ++
- 63 files changed, 416 insertions(+), 267 deletions(-)
