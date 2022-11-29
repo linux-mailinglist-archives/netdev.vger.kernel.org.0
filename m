@@ -2,250 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 707E363B9AC
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 07:07:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F099E63B9B8
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 07:18:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235435AbiK2GHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 01:07:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41706 "EHLO
+        id S235444AbiK2GST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 01:18:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiK2GHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 01:07:14 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046435130F;
-        Mon, 28 Nov 2022 22:07:13 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id o7-20020a05600c510700b003cffc0b3374so10028636wms.0;
-        Mon, 28 Nov 2022 22:07:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=8Hds72p12q9f/0qFLeNjOEIAu/21/bRmKnUaWOjM7qk=;
-        b=PbVTkkWWH1IC2mZZSQRoTmhay7rhVHBK0Gnm6EXqLr8logN7GYAYE5sSJA9jOfO1Tu
-         mcU7UJ9gYXABbOApizsWYo3N9fcrpf8237LRfyLU18GGsXg1OQui7lzaNjDRXZSWFrU2
-         ygEiJIND9xetUKjAJHuVrSfcyls6fYwUBo5LTLgZLSc7Vu3ySw+9faLd6cyA1TTLx8aZ
-         ndxKF540qSmd1PzLbANAsmitYt+iodx7HgZ07wOTFZvucBqW1znUjdVROI5X+Zvd/kWq
-         ILz5qIymRz6EiD4pm/0f2JEfo7yfVGjklmGu8cixXp/pJOpDphvpMF06z3q+8mQdswkl
-         1Pgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8Hds72p12q9f/0qFLeNjOEIAu/21/bRmKnUaWOjM7qk=;
-        b=7dH4fA08zckGDEVueo1QdF65OQCk4mkz7TgcuvbF1+BpBDe0pl7fue5CZZrLumgE/Q
-         626acpnRvCFh35uUkCMDI5ghpXCwV/RnD/p6MOs0kxZL7LL3dAZXD9ZZl0A2183oB9g0
-         C8eWSsL3u00NIP3iDL0IRx1HFhTY5hMhw6iOW+ayUpHItgEeHrIlxSiasWPuWWW1OeN4
-         TFOsuQHEC8eclS5/fCuDj7r1psJd7WGG5WBZ6+Zx9AaBv0DTnxapTZLYQFkvLjphiZqF
-         O/QEKVYG2Cfht9pvKzR9bOKZ7zzLPVIODlKx2vXdY0fGm/T/faS6R1LUiRqdckC0qHiy
-         dYXA==
-X-Gm-Message-State: ANoB5pkV5UOzncSUpQiRflS9yYK8GRMHRL0nKuZFNjqn8CjfHFFib9XJ
-        yhnZ4C59elhBeuL8lwZn8kexmtkVAuL4Pdx+IaI=
-X-Google-Smtp-Source: AA0mqf7P/VbE7HkyEWqEQoVVXkdtzX6QtUI9TnJtDL1GRG19EXM5EKTlBCdFR8YF4uaguwe9Il3L/2BdRNgI6IAWJE0=
-X-Received: by 2002:a05:600c:4f05:b0:3d0:3d33:a629 with SMTP id
- l5-20020a05600c4f0500b003d03d33a629mr17064582wmq.126.1669702031449; Mon, 28
- Nov 2022 22:07:11 -0800 (PST)
+        with ESMTP id S234251AbiK2GSO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 01:18:14 -0500
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Nov 2022 22:18:09 PST
+Received: from esa1.hc3370-68.iphmx.com (esa1.hc3370-68.iphmx.com [216.71.145.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C342015FC8;
+        Mon, 28 Nov 2022 22:18:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=citrix.com; s=securemail; t=1669702689;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=bmlgSAtGbFtOdTc2GOvO2wyZBv0MSel48KWcSeby+RI=;
+  b=CVPlJDsjJlMPg5rRWdVhzAcIUtSpPg1RkGA0BWB9aZWfLF/PC+UNcHfW
+   S6xwVW71HvjqzbwLH6/kxF8AqSUEcgHF5od9l7gf2HsMyzrMUNWZONNU0
+   ce42jfM2KeM2byQ1juvIwLTX+aQdQ2chJCa6h/RDtCJb5qLDoBT6+65WS
+   Y=;
+Authentication-Results: esa1.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
+X-SBRS: None
+X-MesageID: 86155238
+X-Ironport-Server: esa1.hc3370-68.iphmx.com
+X-Remote-IP: 162.221.156.83
+X-Policy: $RELAYED
+IronPort-Data: A9a23:/wwzm67QmHsfLrdwyeQQXAxRtJ3HchMFZxGqfqrLsTDasY5as4F+v
+ mIYWW6GafyJNmXwKY10aIu+9U0G6JGHxoNgG1dkrio9Hi5G8cbLO4+Ufxz6V8+wwm8vb2o8t
+ plDNYOQRCwQZiWBzvt4GuG59RGQ7YnRGvynTraBYnoqLeNdYH9JoQp5nOIkiZJfj9G8Agec0
+ fv/uMSaM1K+s9JOGjt8B5mr9VU+4pwehBtC5gZkPKkR7QeE/5UoJMl3yZ+ZfiOQrrZ8RoZWd
+ 86bpJml82XQ+QsaC9/Nut4XpWVTH9Y+lSDX4pZnc/DKbipq/0Te4Y5iXBYoUm9Fii3hojxE4
+ I4lWapc6+seFvakdOw1C3G0GszlVEFM0OevzXOX6aR/w6BaGpdFLjoH4EweZOUlFuhL7W5my
+ cYxczAofhW5xMXsz5SLWMR8jdwKBZy+VG8fkikIITDxCP8nRdbIQrnQ5M8e1zA17ixMNa+AP
+ YxDM2MpNUmeJU0UUrsUIMtWcOOAgnj5NTlZtXqepLYt4niVxwt0uFToGIqLI4HXH54F9qqej
+ m2Y7kPGWgsjDtya4CXC3X+0vf/MuQquDer+E5Xnr6U30TV/3Fc7EBQcWF26ieO0hk63R5RUL
+ El80ikzp6Ea90GxSNT5GRqirxasrhMaHtZdDeA+wAWM0bbPpRaUAHAeSTxMY8Bgs9U5LRQu1
+ 1mUj5bqCCZpvbm9V32Q7PGXoCm0NCxTKnUNDQcCQBcJ7sfLvo4+lFTMQ8xlHarzicf6cRn9z
+ y2PpTozm50ciskE06j99lfC6xquqYLOVRUd/RjMUySu6QYRTJW+e4Wi5Fzf7PBBBIWUVF+Mu
+ D4Dgcf2xOwHE5yIvCCEXugIGLan+7CDPSG0qVlrEpo6/jKh4Um/bJtQ6zFzIkRuGssccDqva
+ 0jW0T69/7cKYiHsN/UuJdvsVYJ6lsAMCOgJSNjoVPMVYr1hcTXE23thQ36C8nDmiGEFxPRX1
+ YigTe6gCnMTCKJCxTWwRvsA3bJD+h3S1V8/VrigkU35jOP2iGq9DO5cbQDQNrxRALas+l29z
+ jpJCyedJ/yzusXaazKfz4McJEtiwZMTVcGv8Jw/mgJuz2Nb9IAd5x35m+tJl29Nxf49egL0E
+ paVBCdlJKLX3yGvFOlzQikLhXOGdc8XQYgHFSItJ020/HMofJyi6qwSH7NuI+d2qrI7lq8kE
+ KZbEyllPhioYm2XkwnxkLGn9NAyHPhVrV3m09WZjMgXIMc7Gl2hFi7MdQrz7igeZhdbRuNny
+ 4BNF2rzH/I+euiVJJ+OMK33kAvt5SN1dSAbdxKgH+S/sX7EqOBCQxEdRNdsSy3QAX0vHgen6
+ js=
+IronPort-HdrOrdr: A9a23:2Qpes6A5gwNlSHblHem455DYdb4zR+YMi2TC1yhKJiC9E/bo8/
+ xG88576faZslsssRIb6LW90cu7IU80nKQdieJ6AV7LZniFhILCFu9fBOXZrwEIYxeOldJg6Q
+ ==
+X-IronPort-AV: E=Sophos;i="5.96,202,1665460800"; 
+   d="scan'208";a="86155238"
+From:   Lin Liu <lin.liu@citrix.com>
+CC:     Lin Liu <lin.liu@citrix.com>, Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "moderated list:XEN HYPERVISOR INTERFACE" 
+        <xen-devel@lists.xenproject.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH] drivers/net/netfront: Fix NULL sring after live migration
+Date:   Tue, 29 Nov 2022 06:17:02 +0000
+Message-ID: <20221129061702.60629-1-lin.liu@citrix.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20221121100521.56601-1-xiangxia.m.yue@gmail.com>
- <20221121100521.56601-2-xiangxia.m.yue@gmail.com> <7ed2f531-79a3-61fe-f1c2-b004b752c3f7@huawei.com>
- <CAMDZJNUiPOcnpNg8tM4xCoJABJz_3=AaXLTm5ofQg64mGDkB_A@mail.gmail.com>
- <9278cf3f-dfb6-78eb-8862-553545dac7ed@huawei.com> <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
- <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com>
- <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com> <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
- <CA+khW7jgsyFgBqU7hCzZiSSANE7f=A+M-0XbcKApz6Nr-ZnZDg@mail.gmail.com> <07a7491e-f391-a9b2-047e-cab5f23decc5@huawei.com>
-In-Reply-To: <07a7491e-f391-a9b2-047e-cab5f23decc5@huawei.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 29 Nov 2022 14:06:33 +0800
-Message-ID: <CAMDZJNUTaiXMe460P7a7NfK1_bbaahpvi3Q9X85o=G7v9x-w=g@mail.gmail.com>
-Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jiri Olsa <jolsa@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE,
+        TO_EQ_FM_DIRECT_MX autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 29, 2022 at 12:32 PM Hou Tao <houtao1@huawei.com> wrote:
->
-> Hi,
->
-> On 11/29/2022 5:55 AM, Hao Luo wrote:
-> > On Sun, Nov 27, 2022 at 7:15 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> > Hi Tonghao,
-> >
-> > With a quick look at the htab_lock_bucket() and your problem
-> > statement, I agree with Hou Tao that using hash &
-> > min(HASHTAB_MAP_LOCK_MASK, n_bucket - 1) to index in map_locked seems
-> > to fix the potential deadlock. Can you actually send your changes as
-> > v2 so we can take a look and better help you? Also, can you explain
-> > your solution in your commit message? Right now, your commit message
-> > has only a problem statement and is not very clear. Please include
-> > more details on what you do to fix the issue.
-> >
-> > Hao
-> It would be better if the test case below can be rewritten as a bpf selftests.
-> Please see comments below on how to improve it and reproduce the deadlock.
-> >
-> >> Hi
-> >> only a warning from lockdep.
-> Thanks for your details instruction.  I can reproduce the warning by using your
-> setup. I am not a lockdep expert, it seems that fixing such warning needs to set
-> different lockdep class to the different bucket. Because we use map_locked to
-> protect the acquisition of bucket lock, so I think we can define  lock_class_key
-> array in bpf_htab (e.g., lockdep_key[HASHTAB_MAP_LOCK_COUNT]) and initialize the
-> bucket lock accordingly.
-Hi
-Thanks for your reply. define the lock_class_key array looks good.
-Last question: how about using  raw_spin_trylock_irqsave, if the
-bucket is locked on the same or other cpu.
-raw_spin_trylock_irqsave will return the false, we should return the
--EBUSY in htab_lock_bucket.
+A NAPI is setup for each network sring to poll data to kernel
+The sring with source host is destroyed before live migration and
+new sring with target host is setup after live migration.
+The NAPI for the old sring is not deleted until setup new sring
+with target host after migration. With busy_poll/busy_read enabled,
+the NAPI can be polled before got deleted when resume VM.
 
-static inline int htab_lock_bucket(struct bucket *b,
-                                   unsigned long *pflags)
-{
-        unsigned long flags;
+[50116.602938] BUG: unable to handle kernel NULL pointer dereference at
+0000000000000008
+[50116.603047] IP: xennet_poll+0xae/0xd20
+[50116.603090] PGD 0 P4D 0
+[50116.603118] Oops: 0000 [#1] SMP PTI
+[50116.604624] Call Trace:
+[50116.604674]  ? finish_task_switch+0x71/0x230
+[50116.604745]  ? timerqueue_del+0x1d/0x40
+[50116.604807]  ? hrtimer_try_to_cancel+0xb5/0x110
+[50116.604882]  ? xennet_alloc_rx_buffers+0x2a0/0x2a0
+[50116.604958]  napi_busy_loop+0xdb/0x270
+[50116.605017]  sock_poll+0x87/0x90
+[50116.605066]  do_sys_poll+0x26f/0x580
+[50116.605125]  ? tracing_map_insert+0x1d4/0x2f0
+[50116.605196]  ? event_hist_trigger+0x14a/0x260
+...
+[50116.613598]  ? finish_task_switch+0x71/0x230
+[50116.614131]  ? __schedule+0x256/0x890
+[50116.614640]  ? recalc_sigpending+0x1b/0x50
+[50116.615144]  ? xen_sched_clock+0x15/0x20
+[50116.615643]  ? __rb_reserve_next+0x12d/0x140
+[50116.616138]  ? ring_buffer_lock_reserve+0x123/0x3d0
+[50116.616634]  ? event_triggers_call+0x87/0xb0
+[50116.617138]  ? trace_event_buffer_commit+0x1c4/0x210
+[50116.617625]  ? xen_clocksource_get_cycles+0x15/0x20
+[50116.618112]  ? ktime_get_ts64+0x51/0xf0
+[50116.618578]  SyS_ppoll+0x160/0x1a0
+[50116.619029]  ? SyS_ppoll+0x160/0x1a0
+[50116.619475]  do_syscall_64+0x73/0x130
+[50116.619901]  entry_SYSCALL_64_after_hwframe+0x41/0xa6
+...
+[50116.806230] RIP: xennet_poll+0xae/0xd20 RSP: ffffb4f041933900
+[50116.806772] CR2: 0000000000000008
+[50116.807337] ---[ end trace f8601785b354351c ]---
 
-        if (!raw_spin_trylock_irqsave(&b->raw_lock, flags))
-                return -EBUSY;
+xen frontend should remove the NAPIs for the old srings before live
+migration as the bond srings are destroyed
 
-        *pflags = flags;
-        return 0;
-}
+There is a tiny window between the srings are set to NULL and
+the NAPIs are disabled, It is safe as the NAPI threads are still
+frozen at that time
 
-> >> 1. the kernel .config
-> >> #
-> >> # Debug Oops, Lockups and Hangs
-> >> #
-> >> CONFIG_PANIC_ON_OOPS=y
-> >> CONFIG_PANIC_ON_OOPS_VALUE=1
-> >> CONFIG_PANIC_TIMEOUT=0
-> >> CONFIG_LOCKUP_DETECTOR=y
-> >> CONFIG_SOFTLOCKUP_DETECTOR=y
-> >> # CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
-> >> CONFIG_HARDLOCKUP_DETECTOR_PERF=y
-> >> CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
-> >> CONFIG_HARDLOCKUP_DETECTOR=y
-> >> CONFIG_BOOTPARAM_HARDLOCKUP_PANIC=y
-> >> CONFIG_DETECT_HUNG_TASK=y
-> >> CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=120
-> >> # CONFIG_BOOTPARAM_HUNG_TASK_PANIC is not set
-> >> # CONFIG_WQ_WATCHDOG is not set
-> >> # CONFIG_TEST_LOCKUP is not set
-> >> # end of Debug Oops, Lockups and Hangs
-> >>
-> >> 2. bpf.c, the map size is 2.
-> >> struct {
-> >> __uint(type, BPF_MAP_TYPE_HASH);
-> Adding __uint(map_flags, BPF_F_ZERO_SEED); to ensure there will be no seed for
-> hash calculation, so we can use key=4 and key=20 to construct the case that
-> these two keys have the same bucket index but have different map_locked index.
-> >> __uint(max_entries, 2);
-> >> __uint(key_size, sizeof(unsigned int));
-> >> __uint(value_size, sizeof(unsigned int));
-> >> } map1 SEC(".maps");
-> >>
-> >> static int bpf_update_data()
-> >> {
-> >> unsigned int val = 1, key = 0;
-> key = 20
-> >>
-> >> return bpf_map_update_elem(&map1, &key, &val, BPF_ANY);
-> >> }
-> >>
-> >> SEC("kprobe/ip_rcv")
-> >> int bpf_prog1(struct pt_regs *regs)
-> >> {
-> >> bpf_update_data();
-> >> return 0;
-> >> }
-> kprobe on ip_rcv is unnecessary, you can just remove it.
-> >>
-> >> SEC("tracepoint/nmi/nmi_handler")
-> >> int bpf_prog2(struct pt_regs *regs)
-> >> {
-> >> bpf_update_data();
-> >> return 0;
-> >> }
-> Please use SEC("fentry/nmi_handle") instead of SEC("tracepoint") and unfold
-> bpf_update_data(), because the running of bpf program on tracepoint will be
-> blocked by bpf_prog_active which will be increased bpf_map_update_elem through
-> bpf_disable_instrumentation().
-> >>
-> >> char _license[] SEC("license") = "GPL";
-> >> unsigned int _version SEC("version") = LINUX_VERSION_CODE;
-> >>
-> >> 3. bpf loader.
-> >> #include "kprobe-example.skel.h"
-> >>
-> >> #include <unistd.h>
-> >> #include <errno.h>
-> >>
-> >> #include <bpf/bpf.h>
-> >>
-> >> int main()
-> >> {
-> >> struct kprobe_example *skel;
-> >> int map_fd, prog_fd;
-> >> int i;
-> >> int err = 0;
-> >>
-> >> skel = kprobe_example__open_and_load();
-> >> if (!skel)
-> >> return -1;
-> >>
-> >> err = kprobe_example__attach(skel);
-> >> if (err)
-> >> goto cleanup;
-> >>
-> >> /* all libbpf APIs are usable */
-> >> prog_fd = bpf_program__fd(skel->progs.bpf_prog1);
-> >> map_fd = bpf_map__fd(skel->maps.map1);
-> >>
-> >> printf("map_fd: %d\n", map_fd);
-> >>
-> >> unsigned int val = 0, key = 0;
-> >>
-> >> while (1) {
-> >> bpf_map_delete_elem(map_fd, &key);
-> No needed neither. Only do bpf_map_update_elem() is OK. Also change key=0 from
-> key=4, so it will have the same bucket index as key=20 but have different
-> map_locked index.
-> >> bpf_map_update_elem(map_fd, &key, &val, BPF_ANY);
-> >> }
-> Also need to pin the process on a specific CPU (e.g., CPU 0)
-> >>
-> >> cleanup:
-> >> kprobe_example__destroy(skel);
-> >> return err;
-> >> }
-> >>
-> >> 4. run the bpf loader and perf record for nmi interrupts.  the warming occurs
-> For perf event, you can reference prog_tests/find_vma.c on how to using
-> perf_event_open to trigger a perf nmi interrupt. The perf event also needs to
-> pin on a specific CPU as the caller of bpf_map_update_elem() does.
->
-> >>
-> >> --
-> >> Best regards, Tonghao
-> > .
->
+Signed-off-by: Lin Liu <lin.liu@citrix.com>
+---
+ drivers/net/xen-netfront.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index 9af2b027c19c..dc404e05970c 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -1862,6 +1862,12 @@ static int netfront_resume(struct xenbus_device *dev)
+ 	netif_tx_unlock_bh(info->netdev);
+ 
+ 	xennet_disconnect_backend(info);
++
++	rtnl_lock();
++	if (info->queues)
++		xennet_destroy_queues(info);
++	rtnl_unlock();
++
+ 	return 0;
+ }
+ 
 -- 
-Best regards, Tonghao
+2.17.1
+
