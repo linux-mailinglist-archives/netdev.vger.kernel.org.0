@@ -2,63 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B02163C787
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 19:56:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDCE363C7B5
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 20:01:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236401AbiK2S4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 13:56:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32888 "EHLO
+        id S236459AbiK2TBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 14:01:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233159AbiK2Szg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 13:55:36 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D5261BA2;
-        Tue, 29 Nov 2022 10:55:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=HdhNqyL9b6+i/7sE7vyZwnk+0Mb0bUvJtlVA06WsRNk=; b=gYf2PQJ4GAf7YOwlGpsxjpgiSC
-        UWWqZkWv26a8We/lOIdE9aemGPJsUEPH7x3lD5LIqQIYjMKDeMYdMdihYP67e0L/DIQaV98V1uIA7
-        GWB8esLSw37GG0foLzfCihsZRNI4VIa5qsxeCUuWidjSyaRT+s2yZiPzD9FumnpgsDRI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p05l0-003u8O-Mk; Tue, 29 Nov 2022 19:55:02 +0100
-Date:   Tue, 29 Nov 2022 19:55:02 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 08/12] net: dpaa2-switch replace direct MAC
- access with dpaa2_switch_port_has_mac()
-Message-ID: <Y4ZVhhonnUm39qay@lunn.ch>
-References: <20221129141221.872653-1-vladimir.oltean@nxp.com>
- <20221129141221.872653-9-vladimir.oltean@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221129141221.872653-9-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S236460AbiK2TBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 14:01:10 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C64F59
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 11:00:03 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id u10-20020a17090a400a00b00215deac75b4so10353043pjc.3
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 11:00:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YrIwK5afTQO/qKn0v/ZglneBEpq38VdgdU3mQcxlua4=;
+        b=EBjGumsrY5Y5QyAnSraQ55klyb/pQXqKTxNShaOM1O5rJik2ldrYH4KRR8RH+E4JCo
+         gAvD8Qeb/he2WS8XgAb6peWZHaP34pqdV46cv9RUDaZ6cHxVC3y8of9uRM51QB7ce0jJ
+         eHoJDAZH0L5MYqb1AfKTtFKxYR7W/w8aMZy/Mi4dsg2mGIYZUGzAbE4e/g7fEUebpOrE
+         yc9o+cOJMT2+BeBOajcj5XPbcF6eBJyfv4qN6IzcQxJLBTlmBoiNPjOSzMecrIthAJrv
+         kFpJMp4v6u8YH84d124t5XA0+9ogrVIHdLD62SIDe59KHo9IerPTk1G51CLaDbuopb7m
+         y7qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YrIwK5afTQO/qKn0v/ZglneBEpq38VdgdU3mQcxlua4=;
+        b=mDa0/eTUIYUBsm5Cm1NEroxl+GaZYhjriAs3tkE9/q9J14NAkMG0tHKi6VQOPpN+Xn
+         Z9AuearVB0dbMngZ+uBHjJMpkNF6FvOZ45R/t6OFIs60iYc31CRel3lH7cH5PK3d2OCy
+         riLM8oYabu0Jo9txE7qtXt6emMenpsrj8aLJ0JL3JgZ4vmdgaTXoO36jpYS0QlSVZ+0Q
+         +oQJg25vQg7uUhBbsWIXBpsnNxscF/pko4sGMs2KVEroSm4lrlRU2l6e21/dYvQ5d0gI
+         rz3TO7eMXxu988soIPonWCdVmKe/nxoSTjZWu2xq8JP2+et4JbeKvEIHbVBGCXf5KZRo
+         xcgg==
+X-Gm-Message-State: ANoB5plhcFKm0R3JS5hbF7uTpfZNb/4yi/w8mBMx8c+hVUVYD32fBA2D
+        rPrURShM7V3aj8pvAZgMncwD8DI=
+X-Google-Smtp-Source: AA0mqf6yaLWhuR8bIayxNbDI4HnwARh6uJn9P5nMloOp9WGH7Slq6WE/y5Au7kTMPq7oL4gy269oPxw=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:902:ce90:b0:187:19c4:373a with SMTP id
+ f16-20020a170902ce9000b0018719c4373amr50967842plg.163.1669748402714; Tue, 29
+ Nov 2022 11:00:02 -0800 (PST)
+Date:   Tue, 29 Nov 2022 11:00:01 -0800
+In-Reply-To: <20221129070900.3142427-1-martin.lau@linux.dev>
+Mime-Version: 1.0
+References: <20221129070900.3142427-1-martin.lau@linux.dev>
+Message-ID: <Y4ZWsXKTKgm/e7P8@google.com>
+Subject: Re: [PATCH bpf-next 0/7] selftests/bpf: Remove unnecessary
+ mount/umount dance
+From:   sdf@google.com
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     bpf@vger.kernel.org, "'Alexei Starovoitov '" <ast@kernel.org>,
+        "'Andrii Nakryiko '" <andrii@kernel.org>,
+        "'Daniel Borkmann '" <daniel@iogearbox.net>,
+        netdev@vger.kernel.org, kernel-team@meta.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 29, 2022 at 04:12:17PM +0200, Vladimir Oltean wrote:
-> The helper function will gain a lockdep annotation in a future patch.
-> Make sure to benefit from it.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 11/28, Martin KaFai Lau wrote:
+> From: Martin KaFai Lau <martin.lau@kernel.org>
 
- Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Some of the tests do mount/umount dance when switching netns.
+> It is error-prone like  
+> https://lore.kernel.org/bpf/20221123200829.2226254-1-sdf@google.com/
 
-    Andrew
+> Another issue is, there are many left over after running some of the  
+> tests:
+> #> mount | egrep sysfs | wc -l
+> 19
+
+> Instead of further debugging this dance,  this set is to avoid the needs  
+> to
+> do this remounting altogether.  It will then allow those tests to be run
+> in parallel again.
+
+Looks great, thank you for taking care of this! Since I'm partly to
+blame for the mess, took a quick look at the series:
+
+Acked-by: Stanislav Fomichev <sdf@google.com>
+
+> Martin KaFai Lau (7):
+>    selftests/bpf: Use if_nametoindex instead of reading the
+>      /sys/net/class/*/ifindex
+>    selftests/bpf: Avoid pinning bpf prog in the tc_redirect_dtime test
+>    selftests/bpf: Avoid pinning bpf prog in the tc_redirect_peer_l3 test
+>    selftests/bpf: Avoid pinning bpf prog in the netns_load_bpf() callers
+>    selftests/bpf: Remove the "/sys" mount and umount dance in
+>      {open,close}_netns
+>    selftests/bpf: Remove serial from tests using {open,close}_netns
+>    selftests/bpf: Avoid pinning prog when attaching to tc ingress in
+>      btf_skc_cls_ingress
+
+>   tools/testing/selftests/bpf/network_helpers.c |  51 +--
+>   .../bpf/prog_tests/btf_skc_cls_ingress.c      |  25 +-
+>   .../selftests/bpf/prog_tests/empty_skb.c      |   2 +-
+>   .../selftests/bpf/prog_tests/tc_redirect.c    | 314 +++++++++---------
+>   .../selftests/bpf/prog_tests/test_tunnel.c    |   2 +-
+>   .../bpf/prog_tests/xdp_do_redirect.c          |   2 +-
+>   .../selftests/bpf/prog_tests/xdp_synproxy.c   |   2 +-
+>   7 files changed, 178 insertions(+), 220 deletions(-)
+
+> --
+> 2.30.2
+
