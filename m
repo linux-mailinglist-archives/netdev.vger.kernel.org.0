@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 325CC63BD55
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:53:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36F2A63BD59
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 10:53:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231938AbiK2JxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 04:53:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
+        id S232254AbiK2Jxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 04:53:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231991AbiK2Jwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:52:51 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359BCDEBA;
-        Tue, 29 Nov 2022 01:52:45 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id u15-20020a17090a3fcf00b002191825cf02so8544725pjm.2;
-        Tue, 29 Nov 2022 01:52:45 -0800 (PST)
+        with ESMTP id S231740AbiK2JxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 04:53:07 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3072193EF;
+        Tue, 29 Nov 2022 01:52:54 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id w79so13187333pfc.2;
+        Tue, 29 Nov 2022 01:52:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=q+HcPAfOXUEhgB8t67wP/cjouMyhjRZQn2uzLIUxtrM=;
-        b=J6WKtTXnQV8Zq71pPB0zFZTPxvL6UGEHTzjmMv3xN5MdjdEeV+BVL0xkN+cTUImBbc
-         xEuh14jXCXMW/vxptpV8xn5uTAN24mkhL3e00X7OZOHFHOklnIlTi7FSH4CDbQKN562L
-         L/HY799r3W7BrlGIF5dysbYYYQddrtfWUkjgt8hWScl7T9NbiiFMLeHNP/bSEcVYmMGv
-         a2RxTPOr1PC859By7i+Xyb7gShL7lGKM5b4Ks7h6se7EK+MyqaazlL0Exy1klJkW7Nr5
-         d7/qxZQ2XlvtIPaVH35oJfZmayG1gyKAAUV2ArzX8yLz8S4NbxX8ZUWhCivaDF0MpmSp
-         +HjQ==
+        bh=sRMinq7k8Rp6x2pTL5xVUf/39/IR4pJUwqlpijwhsQ8=;
+        b=oqIH2yTunmVjjXDHYNlUinxnxGW49OErAZelZct0jEWFO6BnXwKg1vfD2dGKmHWxmB
+         un+UxeNiqOuQByawttlpYgSjjkKR1FPnyJ5lXb/c42Da2r7PaZw+1XUjlmtSknDD2EqB
+         o5j8cQtrV2woKecwlFsgTJmX6xbYthyJrrEqgucmgov7sZ1mQL/uXSNxnzPdzQf1JBqR
+         g7TLtCYviUD8oCSuMHwd78bHpb1+RKtVQ+UrNLNIgLAXfBiLhPvylbIHZsIKDYkBaxxO
+         kScM/2yVWzC3YMSVYizokfzZcVQpOSjpAmEEi5tjdrOMmw5LeiA6UjOljlQaTW1iPhfI
+         pUmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=q+HcPAfOXUEhgB8t67wP/cjouMyhjRZQn2uzLIUxtrM=;
-        b=BuCLnsUT56Sku/8BB64FP32bSm0qM3r/6w1eqvJPhMc2jsrItW7yyIY6kPaCCes+zp
-         gI6gB4bLnpvke6hp427Bi72Z94MbXi3KXbN9Kfg0YSGHR8WR73kIaGfBNQD0xkwudUDw
-         1lVJROSMvJgSC9sPtdRqzuXccD23UWAAWsj2TOBu/W4+XktgyoIUpR5nDeQmO6WDq/1C
-         28nolLlpvE4tva9eH72+gyI3IwfRjgVhleuNbEXmYmYJvP/7lPF/LOUtyGBRRosClR2W
-         RaA6p9xnUX7GQ86tcL8NVnj88Wo1+JzIluzqtec46Lc6ZQ7z7RxjKJTmgWb4JQfISAIP
-         dVLw==
-X-Gm-Message-State: ANoB5pn0QYBO2OnE8O55v0x14L/kQyVQASh73lwWbt8irnYJy3sIr2bC
-        0y8uVjjz+phNu8Wa+fmAXbw=
-X-Google-Smtp-Source: AA0mqf4Lw/qQGGFmSQRFNytTLBUGv/AQ65WV04fGbUW4eia7yU4P2vgjBbDaOFgMNltEoNBsP5lZEg==
-X-Received: by 2002:a17:903:2683:b0:186:6f1e:5087 with SMTP id jf3-20020a170903268300b001866f1e5087mr37426289plb.119.1669715564331;
-        Tue, 29 Nov 2022 01:52:44 -0800 (PST)
+        bh=sRMinq7k8Rp6x2pTL5xVUf/39/IR4pJUwqlpijwhsQ8=;
+        b=gFA6FSmdurYfnNRJOqJHC7AQfbWOF4gVFwB/C+jiUECVBIfsyPa/RyxM7ilSgfw7B7
+         VUCThSlxI9SCsFFpt14Y9u1N1MDlPBHDDUrQBM16yJHw/MDeK751YoW69eGvQBv8N1b0
+         z7n4qIRQMGwjYk5x7pAXjwBybjt2L2dX6Zir52vhWJSPr1gxxMj/rxhlP5NXDND3sCZv
+         dN7pH3hrIT+Mj/w8A0DUiK0X6J6xHr9mTgXi9bbpg6hWM0Ix8bQuXNBtydEqSKDGUPhj
+         fDMsQafbJfFvKQoUeHmhHEARP1EA+mjt7J1Be5+jbluFeN7HWcwQyGE86r2LZAk7AYQi
+         H/PQ==
+X-Gm-Message-State: ANoB5pmXVzHJD7VsvV7zJ9+mBea75NEyAoeL1XYbv5OiVuSd30EPmb6U
+        6yDUOKBcqZETnNl8Z5EwMaQ=
+X-Google-Smtp-Source: AA0mqf5u6z67DbifkBMUy3hi5AKKsu673ZUUXV8SFZGZ6XVPZWR3+A17osZujQsrllkqhTg1QnkiyA==
+X-Received: by 2002:a63:4944:0:b0:44e:466f:4759 with SMTP id y4-20020a634944000000b0044e466f4759mr31555695pgk.194.1669715574047;
+        Tue, 29 Nov 2022 01:52:54 -0800 (PST)
 Received: from XH22050090-L.ad.ts.tri-ad.global ([103.175.111.222])
-        by smtp.gmail.com with ESMTPSA id mv15-20020a17090b198f00b0021937b2118bsm941346pjb.54.2022.11.29.01.52.35
+        by smtp.gmail.com with ESMTPSA id mv15-20020a17090b198f00b0021937b2118bsm941346pjb.54.2022.11.29.01.52.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Nov 2022 01:52:44 -0800 (PST)
+        Tue, 29 Nov 2022 01:52:53 -0800 (PST)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
@@ -100,9 +100,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Shijith Thotton <sthotton@marvell.com>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [PATCH net-next v6 2/3] net: devlink: make the devlink_ops::info_get() callback optional
-Date:   Tue, 29 Nov 2022 18:51:39 +0900
-Message-Id: <20221129095140.3913303-3-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH net-next v6 3/3] net: devlink: clean-up empty devlink_ops::info_get()
+Date:   Tue, 29 Nov 2022 18:51:40 +0900
+Message-Id: <20221129095140.3913303-4-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221129095140.3913303-1-mailhol.vincent@wanadoo.fr>
 References: <20221129095140.3913303-1-mailhol.vincent@wanadoo.fr>
@@ -118,65 +118,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some drivers only reported the driver name in their
-devlink_ops::info_get() callback. Now that the core provides this
-information, the callback became empty. For such drivers, just
-removing the callback would prevent the core from executing
-devlink_nl_info_fill() meaning that "devlink dev info" would not
-return anything.
+devlink_ops::info_get() is now optional and devlink will continue to
+report information even if that callback gets removed.
 
-Make the callback function optional by executing
-devlink_nl_info_fill() even if devlink_ops::info_get() is NULL.
-
-N.B.: the drivers with devlink support which previously did not
-implement devlink_ops::info_get() will now also be able to report
-the driver name.
+Remove all the empty devlink_ops::info_get() callbacks from the
+drivers.
 
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Reviewed-by: Jacob Keller  <jacob.e.keller@intel.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- net/core/devlink.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/fungible/funeth/funeth_devlink.c     | 7 -------
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c   | 7 -------
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c | 8 --------
+ 3 files changed, 22 deletions(-)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 3babc16eeb6b..817d978bb729 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6773,9 +6773,11 @@ devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
- 		goto err_cancel_msg;
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_devlink.c b/drivers/net/ethernet/fungible/funeth/funeth_devlink.c
+index 6668375edff6..4fbeb3fd71a8 100644
+--- a/drivers/net/ethernet/fungible/funeth/funeth_devlink.c
++++ b/drivers/net/ethernet/fungible/funeth/funeth_devlink.c
+@@ -3,14 +3,7 @@
+ #include "funeth.h"
+ #include "funeth_devlink.h"
  
- 	req.msg = msg;
--	err = devlink->ops->info_get(devlink, &req, extack);
--	if (err)
--		goto err_cancel_msg;
-+	if (devlink->ops->info_get) {
-+		err = devlink->ops->info_get(devlink, &req, extack);
-+		if (err)
-+			goto err_cancel_msg;
-+	}
- 
- 	err = devlink_nl_driver_info_get(dev->driver, &req);
- 	if (err)
-@@ -6796,9 +6798,6 @@ static int devlink_nl_cmd_info_get_doit(struct sk_buff *skb,
- 	struct sk_buff *msg;
- 	int err;
- 
--	if (!devlink->ops->info_get)
--		return -EOPNOTSUPP;
+-static int fun_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+-			   struct netlink_ext_ack *extack)
+-{
+-	return 0;
+-}
 -
- 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
- 	if (!msg)
- 		return -ENOMEM;
-@@ -6824,7 +6823,7 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
- 	int err = 0;
+ static const struct devlink_ops fun_dl_ops = {
+-	.info_get = fun_dl_info_get,
+ };
  
- 	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
--		if (idx < start || !devlink->ops->info_get)
-+		if (idx < start)
- 			goto inc;
+ struct devlink *fun_devlink_alloc(struct device *dev)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+index f15439d26d21..bda1a6fa2ec4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+@@ -1547,14 +1547,7 @@ static int rvu_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 	return 0;
+ }
  
- 		devl_lock(devlink);
+-static int rvu_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
+-				struct netlink_ext_ack *extack)
+-{
+-	return 0;
+-}
+-
+ static const struct devlink_ops rvu_devlink_ops = {
+-	.info_get = rvu_devlink_info_get,
+ 	.eswitch_mode_get = rvu_devlink_eswitch_mode_get,
+ 	.eswitch_mode_set = rvu_devlink_eswitch_mode_set,
+ };
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
+index 5cc6416cf1a6..63ef7c41d18d 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
+@@ -77,15 +77,7 @@ static const struct devlink_param otx2_dl_params[] = {
+ 			     otx2_dl_mcam_count_validate),
+ };
+ 
+-static int otx2_devlink_info_get(struct devlink *devlink,
+-				 struct devlink_info_req *req,
+-				 struct netlink_ext_ack *extack)
+-{
+-	return 0;
+-}
+-
+ static const struct devlink_ops otx2_devlink_ops = {
+-	.info_get = otx2_devlink_info_get,
+ };
+ 
+ int otx2_register_dl(struct otx2_nic *pfvf)
 -- 
 2.25.1
 
