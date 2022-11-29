@@ -2,143 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01CC863C59C
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:50:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE57E63C5A5
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236225AbiK2QuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 11:50:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44148 "EHLO
+        id S236140AbiK2QvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 11:51:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236288AbiK2Qty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:49:54 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C0462057;
-        Tue, 29 Nov 2022 08:46:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/97m3TMDE03+EpCbdrZ+c4M2zDEjrdJ2UQ5oeB+yWak=; b=V9Ffhkkfr1FpYeTscVOOF722Ln
-        4dxu2cYN7BqgJu3fNVvttE4g1TqGup2Cvk3753m0bDQbMAm5Vo82b8C4r8BDXhds4PSTneD6SLk4Z
-        PAk4VbRsvmu/nBcvakeyvXgIpHMgxq+4t4+hPhljw0CVnQcl9j2R5eLw5gyC5LsIsyB7ImAaiM3jq
-        6WI4JTVTw7hUrePibi2Q2SxgiRq0kTrQE5RidsCdnlMkhg+JaoLnjyWeA72D6sGF363WByU9Pq31d
-        w1hvMWG6pS5aq2w0tU0Wiep8Y1q7eSBB9N04c3QfqMpS14ReqalpwDMRaxdkmPdb1FczN9DPb2YcF
-        XT0pNxjA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35482)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1p03kI-0000w9-Ug; Tue, 29 Nov 2022 16:46:10 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1p03kG-0001hE-V2; Tue, 29 Nov 2022 16:46:08 +0000
-Date:   Tue, 29 Nov 2022 16:46:08 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net v2 2/2] phy: aquantia: Determine rate adaptation
- support from registers
-Message-ID: <Y4Y3UGBCRtCopMva@shell.armlinux.org.uk>
-References: <20221128195409.100873-1-sean.anderson@seco.com>
- <20221128195409.100873-2-sean.anderson@seco.com>
- <Y4VCz2i+kkK0z+XY@shell.armlinux.org.uk>
- <b25b1d9b-35dd-a645-a5f4-05eb0dbc6039@seco.com>
- <Y4VVhwQqk2iwBzao@shell.armlinux.org.uk>
- <9d4db6a2-5d3f-1e2a-b60a-9a051a61b7da@seco.com>
- <Y4Ywh+0p8tfTMt0f@shell.armlinux.org.uk>
- <10c0545d-d9aa-8d85-e3ba-ee739cb126ef@seco.com>
-MIME-Version: 1.0
+        with ESMTP id S236403AbiK2Qux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:50:53 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on20615.outbound.protection.outlook.com [IPv6:2a01:111:f400:7d00::615])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495176F82B;
+        Tue, 29 Nov 2022 08:46:53 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GLR05mVsp+reJWBk1RrjhkdFXjrzHpC/siQk+78TvtoyeOpfSDHvk+vR5LKxBF5bOeqyEgNdrbUtwY0PaiCLOHML4Zhq2Gcb66461yKZzj5Vlwuj77mPxslIvVb7cxZRt8FU3ETtmFUEFMA8CYtGTWTnxk12ZjAxRgJEsc7VyVO+UBtA5mSnQNAGB+nNVroNXtqcTZG50VpJrDquOPAXDs5ijMYJEb3tzFp+ZUdMNwpvavzTgtQ0dydJdJSA/7joZp1u2eXc0CXKBwiWu6yizYI3EczFEXX/CX6iQl9UwYejRBmsSfMKWJBTQeCnr0IrIGdY3IMsqPfsBw7pHEyjBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C+nFg35RId0EloQSkdfwvWZAjifuD6NH3QxRXFfRzCs=;
+ b=XbYWCF4Gd7FRu8hCufQCYAYN7yt+Zks+YKNkpsm/dqPaBP+UHKOFlsHlG4O/8Y/rQZm63fdT2QGH53Te/QvENjweJzUIaaXNJR7XzaGgGrJXOhILeZpfZRc4oAZa7ubBWHRmlrTLuVINcV0xU13tcJKkp1mliHsE62o+R2twCTE+f0Gsgjcb4kZcsRkp2/tSA30Nh53Fqwpf/pOd72sTS/OkiH1sgZREebIqcmmShpB0lHYGpo6oyf6rpnhTMje5XxqgkCmY7nyop7E+4kbBME1Q5o3pOAokEBmXYiDMMbXMtd/d109exlNAlch4fIVEAs7luc0981dGNLX2tp324w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C+nFg35RId0EloQSkdfwvWZAjifuD6NH3QxRXFfRzCs=;
+ b=iY/iGDhN3SFjpNGnGOVn0F4RwNyPa7bmKqTUNJfyVEPzDS5mNXAbTQo0aRMX5QOuQbPXbY6x1F0C3kOzHI0mbBS5tqFe7mUAJbFMTvb+338aGaD8INdMLxpVnO+WCr3HQjTbxKFvdWk10KiTTBkQfLufkyNCA0S1NjofaBWRx5E=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB8545.eurprd04.prod.outlook.com (2603:10a6:20b:420::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.21; Tue, 29 Nov
+ 2022 16:46:23 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5857.023; Tue, 29 Nov 2022
+ 16:46:23 +0000
+Date:   Tue, 29 Nov 2022 18:46:19 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
+Cc:     Siddharth Vadapalli <s-vadapalli@ti.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, linux@armlinux.org.uk,
+        pabeni@redhat.com, rogerq@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        vigneshr@ti.com, spatton@ti.com
+Subject: Re: [PATCH net] net: ethernet: ti: am65-cpsw: Fix RGMII
+ configuration at SPEED_10
+Message-ID: <20221129164619.mq3b4y4cxj2vvl24@skbuf>
+References: <20221129050639.111142-1-s-vadapalli@ti.com>
+ <CALs4sv29ZdyK-k0d9_FrRPd_v_6GrC_NU_dYnU5rLWmYxVM2Zg@mail.gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <10c0545d-d9aa-8d85-e3ba-ee739cb126ef@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CALs4sv29ZdyK-k0d9_FrRPd_v_6GrC_NU_dYnU5rLWmYxVM2Zg@mail.gmail.com>
+X-ClientProxiedBy: AM0PR10CA0088.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:15::41) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB8545:EE_
+X-MS-Office365-Filtering-Correlation-Id: 50602a3c-8aac-462c-e778-08dad2293fe3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 07T/Uj+ZlOnLYeutcGFzyugXYQ33HZPd7iTf4qE2sySKXmh86onwGrSHITPiMYlLAQsIDpcNSeDCr5dmytB1V9O/QtmmakX9wn5xCTsuZmMCBQT+Og0rxhiVcZ4awZrntjL6qilV7041IqBDBUNHptpNkTLqc8hmz31+mnNeByxEVFq1m8bIDIld5iI17SYUpOEzSGUGnwuUyRfLPQm6DCd9Ko/C6yPffoePB72nK5Sx75qPH49ZwrGJLMmtWQgQxfAWG4gjTWximLR88B1fp6Z3Zerd3GjCYZLBa9DUfqptHI5IcIQ/VgornTEf4S/dGHL7XuM86cWgaZ/B1R3STw5twKtXBrAsuNWKP/hhPaGFHgaccUzMd88Imwxu3C5hlFDf6R8xVOfg6uVV/57zXkFQpW/mws5JIIe1LSg2e+0LHwxxNNQuE/z4Dd+DIPb5ff+LbbyuAScNt7ZfOqDPQt6DCAPl49pMGFtgBPZKNerbCnIk1gaZG5udI024+q4GE+DIgmnFqUujKEBlBBpWzwj9v0KzZ7KMdtgLHW6o7UX1vyYTHPt6clVRVRtlrF1uJLtvgi88vetVnqJQJN3E6cv+oi6T3FadaJtf3xGr17v6nTrryRLfV2EOGW99qZ1zQ/oUxL99cTzond5qB9WK/Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(39860400002)(376002)(346002)(396003)(136003)(366004)(451199015)(186003)(4326008)(2906002)(1076003)(8676002)(66946007)(66476007)(86362001)(6506007)(478600001)(6486002)(6512007)(26005)(6666004)(9686003)(6916009)(316002)(66556008)(38100700002)(4744005)(5660300002)(7416002)(44832011)(33716001)(41300700001)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?M7mIV4pPna+AgC202W7gXnSI09FvvHCWQ4PIKj7OPgXY8sIQCXglKd7y7una?=
+ =?us-ascii?Q?6llbKYMm6UPWUoho/mJvwKzjWHdtVWktQtHwEgL9PYCuK1FTQC7unBPv4nlR?=
+ =?us-ascii?Q?OuEkbzgBmP8hi2Dam2tdQl85kvA75J8OIFDb+/UJDk6dtw70IFNYPgByhBYB?=
+ =?us-ascii?Q?J7VOZcn0PkggwCd+imTIcTZ3HUljHZOnCtOCiv9wjGO8FoeZUPFPyntaHcI4?=
+ =?us-ascii?Q?/xpeh4q60ZQhc0YTvzyL9zXHOKizfwBPlh6q5FYWB/JxyOtVgybjNEo/8Agd?=
+ =?us-ascii?Q?bGumQcjHnDU4eeLKeaLiGBBw5LqxmtazN7lhQRIlm24oWzfBpdQEfPX0Q9y3?=
+ =?us-ascii?Q?ZilwAUHSnYBCJp6k2w3AT/vzcDMAhcStfRwqS2MpoIBflpCWfzlqujWB2MEw?=
+ =?us-ascii?Q?12XFwvs1J1Qql2YxULkT2NV9eEErToQXy56JgzTkhsTlFq0z/8pVw2p3OkWv?=
+ =?us-ascii?Q?W6JWp/EvBY9obaAaSjd7EueBl+RQtOWOMlpkunVJ6g6bdcbNQo1s3ADSpK7K?=
+ =?us-ascii?Q?4J1S7w6O4/3/McOtwy6v5odPk5lli7kKnwIH+l1wvpBzWDh8ktsh8RlEehNH?=
+ =?us-ascii?Q?XH7Duwxb8UtZ9RxqoX4WAzJE2ITLoOI+JcWv/K8xLzlEeAYwfxIglBgRTBYu?=
+ =?us-ascii?Q?kuWhTWazWR9boBKvZnVsb1o5V4wjTSQVJgb0ndrI+e429oCe4CWvKlo3mwEK?=
+ =?us-ascii?Q?UcuFrVOk1vDdrZob67riaQASmMgyXCUnuZo7IeQNcn0JTXXhOlppbpAAAA/R?=
+ =?us-ascii?Q?67JUJ0Ff6C+xD4BBXBcTZVm2gYwU4uCWkZIT+kpB8Aks06A/T1TwZCqYdEqj?=
+ =?us-ascii?Q?PjQu1Xf/iR4dMBj6+8w6Oeda2u9PCK6jC3Pg3al0IpMffbq66iugsh8veND2?=
+ =?us-ascii?Q?XRVxCyUDLjYZAXBzg7BHz/puFG97wYWSfNKCIG+Ev9ueoEwV2XXSBMnYyNeZ?=
+ =?us-ascii?Q?h9/IPSDeK5s6OUix+ehXcDxcWx2YDjIYM3kl7qtsBF9jwkCVqPbe3shP/etq?=
+ =?us-ascii?Q?J6oufp1tBKQhVdqMd7RmjH/ZnxZTortbQ3VpGwLkOlJf1pD8UwOHzPwEMgWQ?=
+ =?us-ascii?Q?jp1qAaSX0xjWyvhlofPGKaDoP0f0tBnVUVXktBxi/O7krEsxmbhcFvuSKTVA?=
+ =?us-ascii?Q?AKRc7UM+2LAo789mIMFPqatO5dEE6Wyjk9QfgwyfIwSj1iVsrCf7RJDpGhuT?=
+ =?us-ascii?Q?rJbAfZirdTc5fc2l/zJ95k9GHcEcZPZMg00zTw6EEEGLXmnz9CLGrxRUTaoo?=
+ =?us-ascii?Q?jcz1fiVgjN3Slgh4QZegXKHZvKLuqYzj7jCaoLR443c+fM91teCctd6HyaXj?=
+ =?us-ascii?Q?v95kEgZCM6ByYXm6RC1Cw5tmhygWtadUJRBjMaSRHey0WQjaUNi54sU6U9rL?=
+ =?us-ascii?Q?+ITsb49QqFuLhghVRTrh7MFlHG4S6KvPj9s5wasQvFMN6M2bA7s66x/0ZaSK?=
+ =?us-ascii?Q?GzPuJ7YqIHwpdOmx+xkWmGZtbyAV5wb5iil8NucMj1yclRTpUAKTYvescJZF?=
+ =?us-ascii?Q?wptz0pEC7FSzpOa9jJKcA6ZwwRlzGtSqyYKENXwTgo9Bwvc3JoW/2Na0eQMI?=
+ =?us-ascii?Q?oxEospHnCgvPkS7p+kPo+SNIv1c4TNhx5SSGqdsX7nO75GQOwZgK6tHSA9ot?=
+ =?us-ascii?Q?tQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50602a3c-8aac-462c-e778-08dad2293fe3
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 16:46:23.5301
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rrKBLMEDnuIzGtnoHS7uuwJQeo41eUrQSoCZ7cA9kh7csqtbkL+6v1UOodX81alturMNMeoREYYn910CObGi0w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8545
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,T_SPF_PERMERROR autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 29, 2022 at 11:29:39AM -0500, Sean Anderson wrote:
-> On 11/29/22 11:17, Russell King (Oracle) wrote:
-> > On Tue, Nov 29, 2022 at 10:56:56AM -0500, Sean Anderson wrote:
-> >> On 11/28/22 19:42, Russell King (Oracle) wrote:
-> >> > On Mon, Nov 28, 2022 at 07:21:56PM -0500, Sean Anderson wrote:
-> >> >> On 11/28/22 18:22, Russell King (Oracle) wrote:
-> >> >> > This doesn't make any sense. priv->supported_speeds is the set of speeds
-> >> >> > read from the PMAPMD. The only bits that are valid for this are the
-> >> >> > MDIO_PMA_SPEED_* definitions, but teh above switch makes use of the
-> >> >> > MDIO_PCS_SPEED_* definitions. To see why this is wrong, look at these
-> >> >> > two definitions:
-> >> >> > 
-> >> >> > #define MDIO_PMA_SPEED_10               0x0040  /* 10M capable */
-> >> >> > #define MDIO_PCS_SPEED_2_5G             0x0040  /* 2.5G capable */
-> >> >> > 
-> >> >> > Note that they are the same value, yet above, you're testing for bit 6
-> >> >> > being clear effectively for both 10M and 2.5G speeds. I suspect this
-> >> >> > is *not* what you want.
-> >> >> > 
-> >> >> > MDIO_PMA_SPEED_* are only valid for the PMAPMD MMD (MMD 1).
-> >> >> > MDIO_PCS_SPEED_* are only valid for the PCS MMD (MMD 3).
-> >> >> 
-> >> >> Ugh. I almost noticed this from the register naming...
-> >> >> 
-> >> >> Part of the problem is that all the defines are right next to each other
-> >> >> with no indication of what you just described.
-> >> > 
-> >> > That's because they all refer to the speed register which is at the same
-> >> > address, but for some reason the 802.3 committees decided to make the
-> >> > register bits mean different things depending on the MMD. That's why the
-> >> > definition states the MMD name in it.
-> >> 
-> >> Well, then it's really a different register per MMD (and therefore the
-> >> definitions should be better separated). Grouping them together implies
-> >> that they share bits, when they do not (except for the 10G bit).
-> > 
-> > What about bits that are shared amongst the different registers.
-> > Should we have multiple definitions for the link status bit in _all_
-> > the different MMDs, despite it being the same across all status 1
-> > registers?
-> 
-> No, but for registers which are 95% difference we should at least separate
-> them and add a comment.
-> 
-> > Clause 45 is quite a trainwreck when it comes to these register
-> > definitions.
-> 
-> Maybe they should have randomized the bit orders in the first place to discourage this sort of thing :)
-> 
-> > As I've stated, there is a pattern to the naming. Understand it,
-> > and it isn't confusing.
-> > 
-> 
-> I don't have a problem with the naming, just the organization of the
-> source file.
+On Tue, Nov 29, 2022 at 11:16:42AM +0530, Pavan Chebbi wrote:
+> Looks like this patch should be directed to net-next?
 
-The organisation is sane. There are some shared bits in the SPEED
-register between different MMDs.
-
-If we separate the PMA and PCS with a blink line, do we then seperate
-the register groups with two blank lines? No, people will complain
-about that (they already do if you think about doing that in source
-files.)
-
-Sorry, but... one has to pay attention to the whole of the macro name,
-not just the last few characters... and think "is something that
-contains "_PCS_" in its name really suitable for use with a PMA/PMD
-MMD register when there's a PCS MMD? Now let me think... umm. no.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Do you know more about what CPSW_SL_CTL_EXT_EN does, exactly? I'm not
+able to assess the impact of the bug being fixed. What doesn't work?
+Maybe Siddharth could put more focus on that.
