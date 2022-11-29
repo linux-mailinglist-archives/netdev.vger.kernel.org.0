@@ -2,81 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AED363BA84
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 08:22:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F2E63BA89
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 08:26:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiK2HV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 02:21:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
+        id S229712AbiK2H0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 02:26:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiK2HV1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 02:21:27 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C6B3AC31
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 23:21:26 -0800 (PST)
-Date:   Tue, 29 Nov 2022 08:21:22 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1669706483;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MQKXJPSvxUV0hQyNaD6UpX+KWDEBJiig1LV0w73OtnU=;
-        b=OBYo6WlAlgUxxORd6W331PMCsxKNdyDSv7Lhn95ak4v2ts+ozz+j2pdR23uDBjXpmgtNnH
-        JO/NLJ1d/pdRvnsd8ip5MwyZXdX61d4nTS55GkpYFKLUFOj6rVmd5NOabWRgc/VAoX6qxY
-        FDYn2xH8b9h55tszsLyy3Pg0+UPeizKOegKPowQP4FYcKV0loVbBqxOBV8/KvhceYSOZ2B
-        1JeOM0IvzvfKavCLVklxsMQ7+ISr8uVJGNMh/PqMlVGBhc2tP6NsUgo99mPBCxqeWCjPhj
-        ic9UKft2G8N0K1fc3JpLG+QSPqCre6Bnhzizz3Ut4uGRUKxSgoDckhIAMeq6Tg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1669706483;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MQKXJPSvxUV0hQyNaD6UpX+KWDEBJiig1LV0w73OtnU=;
-        b=UCwxCmFH8h0Q0ue0x81kfqVTvPjvVdL/tlpNkFi4Hv+4Nr3upOddwp9BlGw52khhPHADlN
-        AKvElUTRw0payFDQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [PATCH v4 net-next 0/8]: hsr: HSR send/recv fixes
-Message-ID: <Y4Wy8ix3uZs07RIw@linutronix.de>
-References: <20221125165610.3802446-1-bigeasy@linutronix.de>
- <20221128192401.7e855eaf@kernel.org>
+        with ESMTP id S229541AbiK2H0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 02:26:38 -0500
+Received: from forwardcorp1b.mail.yandex.net (forwardcorp1b.mail.yandex.net [178.154.239.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE9A3F041;
+        Mon, 28 Nov 2022 23:26:37 -0800 (PST)
+Received: from myt6-23a5e62c0090.qloud-c.yandex.net (myt6-23a5e62c0090.qloud-c.yandex.net [IPv6:2a02:6b8:c12:1da3:0:640:23a5:e62c])
+        by forwardcorp1b.mail.yandex.net (Yandex) with ESMTP id 582505FCCA;
+        Tue, 29 Nov 2022 10:26:25 +0300 (MSK)
+Received: from d-tatianin-nix.yandex-team.ru (unknown [2a02:6b8:b081:b439::1:13])
+        by myt6-23a5e62c0090.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id LQK9P90QiiE1-30JiTpIk;
+        Tue, 29 Nov 2022 10:26:24 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1669706784; bh=95WBhUqQuWLuJqbtsgIW1Evy4AsD29l5Ce6uiLn3sZY=;
+        h=Message-Id:Date:Cc:Subject:To:From;
+        b=LOPYmdjGnfNtZBVOKMQJMEE0WmS4RpUQkrygKxfVeRIrpIH5bPJXAzWdS9kUDkG3r
+         /d1v1XCACNwLwdXlwUQVNiYrM8j4q59aI2guH8DijITKywEDbvLJQB2P2K9h+uZYDo
+         bzktjPGgJAlxmMR56hrjfYY/reDB9StmgubNQRnI=
+Authentication-Results: myt6-23a5e62c0090.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
+To:     netdev@vger.kernel.org
+Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
+        linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH v1] drivers/net/bonding/bond_3ad: return when there's no aggregator
+Date:   Tue, 29 Nov 2022 10:26:17 +0300
+Message-Id: <20221129072617.439074-1-d-tatianin@yandex-team.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20221128192401.7e855eaf@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-11-28 19:24:01 [-0800], Jakub Kicinski wrote:
-> On Fri, 25 Nov 2022 17:56:02 +0100 Sebastian Andrzej Siewior wrote:
-> > I started playing with HSR and run into a problem. Tested latest
-> > upstream -rc and noticed more problems. Now it appears to work.
-> > For testing I have a small three node setup with iperf and ping. While
-> > iperf doesn't complain ping reports missing packets and duplicates.
-> 
-> Any reason Arvid is not CCed? please always when there's a Fixes tag,
-> the authors should be CCed.
+Otherwise we would dereference a NULL aggregator pointer when calling
+__set_agg_ports_ready on the line below.
 
-As per commit
-   e8d5bb4dfaa72 ("MAINTAINERS: Orphan HSR network protocol")
+Found by Linux Verification Center (linuxtesting.org) with the SVACE
+static analysis tool.
 
-that email bounces. So not added because that email
-(arvid.brodin@alten.se) won't reach him. Is there another one I missed?
+Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
+---
+ drivers/net/bonding/bond_3ad.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> Please run v5 thru checkpatch there are spelling errors it points out
-> (and maybe something more).
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index acb6ff0be5ff..320e5461853f 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -1520,6 +1520,7 @@ static void ad_port_selection_logic(struct port *port, bool *update_slave_arr)
+ 			slave_err(bond->dev, port->slave->dev,
+ 				  "Port %d did not find a suitable aggregator\n",
+ 				  port->actor_port_number);
++			return;
+ 		}
+ 	}
+ 	/* if all aggregator's ports are READY_N == TRUE, set ready=TRUE
+-- 
+2.25.1
 
-I remember doing that. Will do again ;)
-
-Sebastian
