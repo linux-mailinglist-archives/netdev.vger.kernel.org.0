@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AAAC63C5CE
+	by mail.lfdr.de (Postfix) with ESMTP id B6F6763C5CF
 	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 17:58:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236225AbiK2Q6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 11:58:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
+        id S236505AbiK2Q6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 11:58:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236140AbiK2Q5b (ORCPT
+        with ESMTP id S236142AbiK2Q5b (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 11:57:31 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5F869DE5
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 08:51:45 -0800 (PST)
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8FB69DED
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 08:51:46 -0800 (PST)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1669740702;
@@ -21,21 +21,21 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0YBg6wNjoG7moyK7baDOJkZnjGpK2XumKcD7kvZsXz0=;
-        b=cNhCWWiEL+sCnk3am278xF2CefaJIZ+PhQRp8niBknV6Jm0r7Y0H88YWqhTIVSp7xhPAGJ
-        5Nm0Mmj2P+L53DIdgVDkodYCLNOSdpCxW9gaOaMp7xd7/fQOE4v+tNfbVZbMHi6Nkg3tfM
-        daEd7+mJiB/AixZLFEsliznj5iPKJdNThOWbSpIKA/muR/Bp5nP+oAmSAj+DYC6wqh3Sju
-        w672LkFB+6+neQQoC3IPk0+Cpgf12VROq18QTf14MvcS4qSjW3JZpR35FXG+Ri8vJwzxK2
-        sEe/mrqIMK74lz/Y5fFpwI9hxJaaywnWPmtcccI52GAjqZ3WLgZr2L+si/+V2w==
+        bh=k8ZUWdmKKpxHScpBal2gNNwA7ou8leJNvjFhbk8j6wU=;
+        b=QZaxzMWZtNH00eSc7C0i/bMiO9A+C7Tdm9FY0aDyiOB6qkk6UAVIpGo6DT8z0vclqSVvcD
+        WKiDCyuYEmPaMEGuXKhYalIEHFEpoR7ENENSaHhXRwJ4UmtyUGp/Jv7d/eRFevzA4mntC9
+        bgaSNMNfZKv2C0Meq/UYi9CXx4+UulIlByjlswEHL2jWsYCoDsptfrD01ZA8a056oNbe2f
+        MB1It3isWQYuuZN5d1deW+RNxc/6SZtZqJ/SK+qUudwETLOYZYFYud0bVMHJ1xo8JMRv5W
+        sMBKteZ4G43uwxPyvBIB3IsVhNfGAof9BauWVfq42+ghMmckCoT1D6uiGoZh4Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1669740702;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0YBg6wNjoG7moyK7baDOJkZnjGpK2XumKcD7kvZsXz0=;
-        b=QQJQzOXEpbPH1H5gXt/cBrsC+NT6rP6rMcB40tIpRLNbHBYpSjB1E2bczBuvb0eNb3w4nR
-        cfNZF27GqR7szvBw==
+        bh=k8ZUWdmKKpxHScpBal2gNNwA7ou8leJNvjFhbk8j6wU=;
+        b=4r4DTkGZJYQGHejHG6U7jpNpM0suxcDjg4VHM38aC66Wis5KY35eTNj1gWJOyByKCWWN3N
+        oxR8nqoFa/vqo0Bw==
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -44,9 +44,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Thomas Gleixner <tglx@linutronix.de>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v5 net-next 6/8] hsr: Synchronize sequence number updates.
-Date:   Tue, 29 Nov 2022 17:48:13 +0100
-Message-Id: <20221129164815.128922-7-bigeasy@linutronix.de>
+Subject: [PATCH v5 net-next 7/8] hsr: Use a single struct for self_node.
+Date:   Tue, 29 Nov 2022 17:48:14 +0100
+Message-Id: <20221129164815.128922-8-bigeasy@linutronix.de>
 In-Reply-To: <20221129164815.128922-1-bigeasy@linutronix.de>
 References: <20221129164815.128922-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -60,97 +60,166 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hsr_register_frame_out() compares new sequence_nr vs the old one
-recorded in hsr_node::seq_out and if the new sequence_nr is higher then
-it will be written to hsr_node::seq_out as the new value.
+self_node_db is a list_head with one entry of struct hsr_node. The
+purpose is to hold the two MAC addresses of the node itself.
+It is convenient to recycle the structure. However having a list_head
+and fetching always the first entry is not really optimal.
 
-This operation isn't locked so it is possible that two frames with the
-same sequence number arrive (via the two slave devices) and are fed to
-hsr_register_frame_out() at the same time. Both will pass the check and
-update the sequence counter later to the same value. As a result the
-content of the same packet is fed into the stack twice.
+Created a new data strucure contaning the two MAC addresses named
+hsr_self_node. Access that structure like an RCU protected pointer so
+it can be replaced on the fly without blocking the reader.
 
-This was noticed by running ping and observing DUP being reported from
-time to time.
-
-Instead of using the hsr_priv::seqnr_lock for the whole receive path (as
-it is for sending in the master node) add an additional lock that is only
-used for sequence number checks and updates.
-
-Add a per-node lock that is used during sequence number reads and
-updates.
-
-Fixes: f421436a591d3 ("net/hsr: Add support for the High-availability Seaml=
-ess Redundancy protocol (HSRv0)")
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- net/hsr/hsr_framereg.c | 9 ++++++++-
- net/hsr/hsr_framereg.h | 2 ++
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ net/hsr/hsr_device.c   |  1 -
+ net/hsr/hsr_framereg.c | 63 +++++++++++++++++++-----------------------
+ net/hsr/hsr_main.h     |  8 +++++-
+ 3 files changed, 35 insertions(+), 37 deletions(-)
 
+diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+index b1e86a7265b32..5a236aae2366f 100644
+--- a/net/hsr/hsr_device.c
++++ b/net/hsr/hsr_device.c
+@@ -490,7 +490,6 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct=
+ net_device *slave[2],
+ 	hsr =3D netdev_priv(hsr_dev);
+ 	INIT_LIST_HEAD(&hsr->ports);
+ 	INIT_LIST_HEAD(&hsr->node_db);
+-	INIT_LIST_HEAD(&hsr->self_node_db);
+ 	spin_lock_init(&hsr->list_lock);
+=20
+ 	eth_hw_addr_set(hsr_dev, slave[0]->dev_addr);
 diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index f2dd846ff9038..39a6088080e93 100644
+index 39a6088080e93..00db74d96583d 100644
 --- a/net/hsr/hsr_framereg.c
 +++ b/net/hsr/hsr_framereg.c
-@@ -157,6 +157,7 @@ static struct hsr_node *hsr_add_node(struct hsr_priv *h=
-sr,
- 		return NULL;
+@@ -38,21 +38,22 @@ static bool seq_nr_after(u16 a, u16 b)
 =20
- 	ether_addr_copy(new_node->macaddress_A, addr);
-+	spin_lock_init(&new_node->seq_out_lock);
+ bool hsr_addr_is_self(struct hsr_priv *hsr, unsigned char *addr)
+ {
+-	struct hsr_node *node;
++	struct hsr_self_node *sn;
++	bool ret =3D false;
 =20
- 	/* We are only interested in time diffs here, so use current jiffies
- 	 * as initialization. (0 could trigger an spurious ring error warning).
-@@ -353,6 +354,7 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
+-	node =3D list_first_or_null_rcu(&hsr->self_node_db, struct hsr_node,
+-				      mac_list);
+-	if (!node) {
++	rcu_read_lock();
++	sn =3D rcu_dereference(hsr->self_node);
++	if (!sn) {
+ 		WARN_ONCE(1, "HSR: No self node\n");
+-		return false;
++		goto out;
  	}
 =20
- 	ether_addr_copy(node_real->macaddress_B, ethhdr->h_source);
-+	spin_lock_bh(&node_real->seq_out_lock);
- 	for (i =3D 0; i < HSR_PT_PORTS; i++) {
- 		if (!node_curr->time_in_stale[i] &&
- 		    time_after(node_curr->time_in[i], node_real->time_in[i])) {
-@@ -363,6 +365,7 @@ void hsr_handle_sup_frame(struct hsr_frame_info *frame)
- 		if (seq_nr_after(node_curr->seq_out[i], node_real->seq_out[i]))
- 			node_real->seq_out[i] =3D node_curr->seq_out[i];
- 	}
-+	spin_unlock_bh(&node_real->seq_out_lock);
- 	node_real->addr_B_port =3D port_rcv->type;
+-	if (ether_addr_equal(addr, node->macaddress_A))
+-		return true;
+-	if (ether_addr_equal(addr, node->macaddress_B))
+-		return true;
+-
+-	return false;
++	if (ether_addr_equal(addr, sn->macaddress_A) ||
++	    ether_addr_equal(addr, sn->macaddress_B))
++		ret =3D true;
++out:
++	rcu_read_unlock();
++	return ret;
+ }
+=20
+ /* Search for mac entry. Caller must hold rcu read lock.
+@@ -70,50 +71,42 @@ static struct hsr_node *find_node_by_addr_A(struct list=
+_head *node_db,
+ 	return NULL;
+ }
+=20
+-/* Helper for device init; the self_node_db is used in hsr_rcv() to recogn=
+ize
++/* Helper for device init; the self_node is used in hsr_rcv() to recognize
+  * frames from self that's been looped over the HSR ring.
+  */
+ int hsr_create_self_node(struct hsr_priv *hsr,
+ 			 const unsigned char addr_a[ETH_ALEN],
+ 			 const unsigned char addr_b[ETH_ALEN])
+ {
+-	struct list_head *self_node_db =3D &hsr->self_node_db;
+-	struct hsr_node *node, *oldnode;
++	struct hsr_self_node *sn, *old;
+=20
+-	node =3D kmalloc(sizeof(*node), GFP_KERNEL);
+-	if (!node)
++	sn =3D kmalloc(sizeof(*sn), GFP_KERNEL);
++	if (!sn)
+ 		return -ENOMEM;
+=20
+-	ether_addr_copy(node->macaddress_A, addr_a);
+-	ether_addr_copy(node->macaddress_B, addr_b);
++	ether_addr_copy(sn->macaddress_A, addr_a);
++	ether_addr_copy(sn->macaddress_B, addr_b);
 =20
  	spin_lock_bh(&hsr->list_lock);
-@@ -456,13 +459,17 @@ void hsr_register_frame_in(struct hsr_node *node, str=
-uct hsr_port *port,
- int hsr_register_frame_out(struct hsr_port *port, struct hsr_node *node,
- 			   u16 sequence_nr)
- {
-+	spin_lock_bh(&node->seq_out_lock);
- 	if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]) &&
- 	    time_is_after_jiffies(node->time_out[port->type] +
--	    msecs_to_jiffies(HSR_ENTRY_FORGET_TIME)))
-+	    msecs_to_jiffies(HSR_ENTRY_FORGET_TIME))) {
-+		spin_unlock_bh(&node->seq_out_lock);
- 		return 1;
-+	}
+-	oldnode =3D list_first_or_null_rcu(self_node_db,
+-					 struct hsr_node, mac_list);
+-	if (oldnode) {
+-		list_replace_rcu(&oldnode->mac_list, &node->mac_list);
+-		spin_unlock_bh(&hsr->list_lock);
+-		kfree_rcu(oldnode, rcu_head);
+-	} else {
+-		list_add_tail_rcu(&node->mac_list, self_node_db);
+-		spin_unlock_bh(&hsr->list_lock);
+-	}
++	old =3D rcu_replace_pointer(hsr->self_node, sn,
++				  lockdep_is_held(&hsr->list_lock));
++	spin_unlock_bh(&hsr->list_lock);
 =20
- 	node->time_out[port->type] =3D jiffies;
- 	node->seq_out[port->type] =3D sequence_nr;
-+	spin_unlock_bh(&node->seq_out_lock);
++	if (old)
++		kfree_rcu(old, rcu_head);
  	return 0;
  }
 =20
-diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
-index b5f902397bf1a..b23556251d621 100644
---- a/net/hsr/hsr_framereg.h
-+++ b/net/hsr/hsr_framereg.h
-@@ -69,6 +69,8 @@ void prp_update_san_info(struct hsr_node *node, bool is_s=
-up);
+ void hsr_del_self_node(struct hsr_priv *hsr)
+ {
+-	struct list_head *self_node_db =3D &hsr->self_node_db;
+-	struct hsr_node *node;
++	struct hsr_self_node *old;
 =20
- struct hsr_node {
- 	struct list_head	mac_list;
-+	/* Protect R/W access to seq_out */
-+	spinlock_t		seq_out_lock;
- 	unsigned char		macaddress_A[ETH_ALEN];
- 	unsigned char		macaddress_B[ETH_ALEN];
- 	/* Local slave through which AddrB frames are received from this node */
+ 	spin_lock_bh(&hsr->list_lock);
+-	node =3D list_first_or_null_rcu(self_node_db, struct hsr_node, mac_list);
+-	if (node) {
+-		list_del_rcu(&node->mac_list);
+-		kfree_rcu(node, rcu_head);
+-	}
++	old =3D rcu_replace_pointer(hsr->self_node, NULL,
++				  lockdep_is_held(&hsr->list_lock));
+ 	spin_unlock_bh(&hsr->list_lock);
++	if (old)
++		kfree_rcu(old, rcu_head);
+ }
+=20
+ void hsr_del_nodes(struct list_head *node_db)
+diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+index 16ae9fb09ccd2..5584c80a5c795 100644
+--- a/net/hsr/hsr_main.h
++++ b/net/hsr/hsr_main.h
+@@ -182,11 +182,17 @@ struct hsr_proto_ops {
+ 	void (*update_san_info)(struct hsr_node *node, bool is_sup);
+ };
+=20
++struct hsr_self_node {
++	unsigned char	macaddress_A[ETH_ALEN];
++	unsigned char	macaddress_B[ETH_ALEN];
++	struct rcu_head	rcu_head;
++};
++
+ struct hsr_priv {
+ 	struct rcu_head		rcu_head;
+ 	struct list_head	ports;
+ 	struct list_head	node_db;	/* Known HSR nodes */
+-	struct list_head	self_node_db;	/* MACs of slaves */
++	struct hsr_self_node	__rcu *self_node;	/* MACs of slaves */
+ 	struct timer_list	announce_timer;	/* Supervision frame dispatch */
+ 	struct timer_list	prune_timer;
+ 	int announce_count;
 --=20
 2.38.1
 
