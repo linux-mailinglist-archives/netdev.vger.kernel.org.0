@@ -2,375 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EEDF63C632
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 18:12:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 248A463C643
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 18:16:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236043AbiK2RMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 12:12:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45932 "EHLO
+        id S235518AbiK2RQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 12:16:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236039AbiK2RMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 12:12:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF81190;
-        Tue, 29 Nov 2022 09:12:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E90E761846;
-        Tue, 29 Nov 2022 17:12:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BEF4C433C1;
-        Tue, 29 Nov 2022 17:12:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669741955;
-        bh=N57EwuI2bvGzIBT15rletU5aCRCITkxYGWyOef47+d4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bryjiMYtHPnHkcX6GPNaZ3eouXJHaQ5GIUvdqKER5idq3kShk/8o2Mct49X9M77HF
-         oOOsSdgWTYPFmgZsfshiuLFyuzNMSw6UPhallfr8CeNBQcCHa1tn+K+FeMm9t4pDJZ
-         OR+DV8vaDwQQO+7qGYEhQotk86o1GLdkrujPTky3BkcilfOKnpuTzwVYxzzBQn/apg
-         KEIcVl5/VL2qwVYUURn973a57FEnb1ndhEpA/wV+mqeFzmcqBISgqqiGwXGNYe4UaS
-         VnbnGINmVCOz1nS48cvZnfKSFV13WqUt7Ep99MdfBJ8KD8PHhhw2jMLUhtV/fanGZW
-         Uzi/os4b4sL3g==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pabeni@redhat.com
-Subject: [PULL v2] Networking for v6.1-rc8 (part 1)
-Date:   Tue, 29 Nov 2022 09:12:34 -0800
-Message-Id: <20221129171234.2974397-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S230217AbiK2RQD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 12:16:03 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2112.outbound.protection.outlook.com [40.107.6.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51A766C87;
+        Tue, 29 Nov 2022 09:16:01 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TTknm2fFQ37jaJ38qXfg7Xf4gjqfbH1CcrA4h2bibqyy8/avKAA6f4h0mc76voHAYn0di23zk98owW9Y12iPIplCj+/Tr+Pkvnv5Mx9fPgtllDLEfBwvNouO8OVercpMuaqmBn0KmQXxeMBThba3YE/Udu+swnIR/dxFP/MJYxwAzzDfCn/tQWy/a7MrIfusDhVNymS19ESpmNI+1l9L1GUhPb7fHC8o8VnK0GPVhNLZQD0gWaA/ecLBBG4GuqmC4iO2Lk8tmhB31EwNIvf024fkbYzuCSuQCzetOIOamSAUhOKW0vU75plHz6ewjOeaX7iXbtOqP22Q6WyvIWZA7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ftyvnqijf3T4oFrw30QLTODi4w+NJBc63SOL4IdUaEk=;
+ b=P7HJdTbwdJRtglnEBHx93r48ya7PwhnTJ+/YhsqI7QTlW88neI4jROdpNGa0PpdBkAU3VNGzNgzP9uqXqXpDGmza5fZ29v4N1oVxjYkC6TY41wH4MrJBk7l/oeO1+b84AsTqbtwkP7hHnWfG00PLbzePgvtafsoYUMoWQUAhK+AKszUIWvtsGkHuNpLYZ10Cs/Nen4NtT1RoGE/PZwA9IWepflIYdi/UczWsek6yvbThWcu8pPyAa8NqO4jXYIT/NBw6loz7qXycMysFIGov/nkN1xXz9WiGv8xTwsAYK2N8a707k2ooWDnZzLvHXH3S44aAA26xP3hljQCUXcTVqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=esd.eu; dmarc=pass action=none header.from=esd.eu; dkim=pass
+ header.d=esd.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ftyvnqijf3T4oFrw30QLTODi4w+NJBc63SOL4IdUaEk=;
+ b=FULlQJQMjLtGRjc4xnXWqFMyTrbT4IAJDotrdKPWJimBtDor7NJDp9SKE54L1C8tcBye7CCiYAKXS8/f6Em4GJ2z6ohg2lmc05QNNSh5tZk9Yck9i2HaHGyRcq+BESgPszTFo8NN31SLDoOisLaqPnbN1H1gqJQp+9xzsoPGUPU=
+Received: from GVXPR03MB8426.eurprd03.prod.outlook.com (2603:10a6:150:4::9) by
+ DB9PR03MB9711.eurprd03.prod.outlook.com (2603:10a6:10:453::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5857.21; Tue, 29 Nov 2022 17:15:56 +0000
+Received: from GVXPR03MB8426.eurprd03.prod.outlook.com
+ ([fe80::acef:56e7:b5cf:317d]) by GVXPR03MB8426.eurprd03.prod.outlook.com
+ ([fe80::acef:56e7:b5cf:317d%3]) with mapi id 15.20.5857.021; Tue, 29 Nov 2022
+ 17:15:56 +0000
+From:   Frank Jungclaus <Frank.Jungclaus@esd.eu>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>
+CC:     =?iso-8859-15?Q?Stefan_M=E4tje?= <Stefan.Maetje@esd.eu>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mailhol.vincent@wanadoo.fr" <mailhol.vincent@wanadoo.fr>
+Subject: Re: [PATCH RESEND 1/1] can: esd_usb: Allow REC and TEC to return to
+ zero
+Thread-Topic: [PATCH RESEND 1/1] can: esd_usb: Allow REC and TEC to return to
+ zero
+Thread-Index: AQHZAES6tPgW1JW2aUWnZtafT+CSX65PzIaAgAZfa4A=
+Date:   Tue, 29 Nov 2022 17:15:56 +0000
+Message-ID: <567bb7208c29388eb5a4fe7a270f2c3192a87e0e.camel@esd.eu>
+References: <20221124203806.3034897-1-frank.jungclaus@esd.eu>
+         <20221124203806.3034897-2-frank.jungclaus@esd.eu>
+         <20221125155651.ilwfs64mtzcn2zvi@pengutronix.de>
+In-Reply-To: <20221125155651.ilwfs64mtzcn2zvi@pengutronix.de>
+Accept-Language: en-001, de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.44.4-0ubuntu1 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=esd.eu;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: GVXPR03MB8426:EE_|DB9PR03MB9711:EE_
+x-ms-office365-filtering-correlation-id: b7253028-f9c7-44f8-373c-08dad22d60c9
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uGCJNhmRpixrVCdujGiamzrPKdTfFo3rP0Nc2kYSXyE6Abr0JwiVcSch7r5mOn9GRVUKz9B6AKhTyf5EcK4ika40L5Bq97QnIVsEIpZdEk5fJD0ESrtF2S3P8t+j2IzrV4nj+MqEGYbNhn10EMBXBoUi1hEghSdrDExKg+xpPs6Mm3Vj23nd+G3JXMjbdlBetRiMs2OiEXuSmLU/FJfJS1pmcufcb5pzAkPvG4sMLDcIaKSeTPuRuNU5IKzFQ4eS4VVNTcSIHOyVzeyDPWNbhTSsE7u/1kqqLA6a9vytVgDKu90L7e4uYTkIG8coCwnt2QvMEcnU/5UV3IPho7rfo13SEUEspUwMJQ52nrBfyRlTNAsmlY1MGGZ6Y/iVJGNUVA5LoYcBSR9iXbIsCjAOFMAA1MR5ghVS5PzjGfJnmF2gkBumYGn/opszjS5SmRx2ORl5f37sgYuQ8DTYmx/BhXY/kamingjIpCBN8+Dw3dKjN8KFftLrOQ+x4LLnwPB37oCJeOMsdVTKjjaPx4ywZfAwM5Nh+GOKXMjNzbqwpKbKBp8awwl11YbDcOqrxEjqAc9tnaSxe4LrsU3NlDO9FuDXbUheD1fQM15sVvVQywBw/YkSRdwDTdOeABtuVJVNALblZJfaR62zarkTAFSUmdYbXuWdNbFYAR1ZaIyuXHSBEzqfqssPfmNyM+XSxLk+0Ohd5F0jmL1vjyq8rArPhA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GVXPR03MB8426.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(396003)(346002)(39840400004)(376002)(451199015)(6506007)(122000001)(41300700001)(478600001)(966005)(6486002)(71200400001)(38100700002)(53546011)(36756003)(316002)(54906003)(4326008)(8676002)(66556008)(66476007)(64756008)(26005)(66446008)(66946007)(76116006)(38070700005)(8936002)(6512007)(2906002)(186003)(4001150100001)(2616005)(5660300002)(91956017)(86362001)(83380400001)(6916009);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-15?Q?Q5a8Y0hDjJUEWhwMkXoxA7UcBk0Ey9+QvxzZa4KYmkrq1cJREycEe7sBX?=
+ =?iso-8859-15?Q?F6FRBh+7JtgaX2gK84j2saACqqQ/50DPvcj3WmuRZxRXCibn0sBsQZXO0?=
+ =?iso-8859-15?Q?cJttCWhQZhy2IY0dXrLj8Ad8uZDXBWKB/BWI1wG0p3NN+W1Spocd3mQPU?=
+ =?iso-8859-15?Q?RA3ZNRq8QElGEWCoQgcigvfAvs/Lr1edl6UstYCybLho4jArcqTuFHgId?=
+ =?iso-8859-15?Q?KLV4IR609Os8FHE+oehbdTeI7Y2/b6SqhjRls9Pj51EBeQjN1wDxYV1Xa?=
+ =?iso-8859-15?Q?Gso1v13TPpufb1wERW3KdOS/vYFcDnLDk60yoq5fv3MIqVDqaUTVTjKyQ?=
+ =?iso-8859-15?Q?h5BksKv4LrmiYkXMbOs2dt+rUBsmIYYAlXyz5tBUgPT9vElrgR1A0BvaA?=
+ =?iso-8859-15?Q?gQvLtsCcC+I9B1w5mDCQ2aJKQP9C0UCa8R7na/emhk8GsfjDPRogN/Uwl?=
+ =?iso-8859-15?Q?6ZufCzt3UuKRg+Y/LNjAYsappm6hmBkEla0HFfi68P1bOpjUZ4IjqZ81g?=
+ =?iso-8859-15?Q?eyVS1vSkDDujv8YLVWXTQsjFGvLF2YJ02ddOcnIvuVIi/SJOJTLxamov5?=
+ =?iso-8859-15?Q?csJmsp2Ic7aCC/UZJKZ8l4bT69FtuFxFZhAGdtblhNOsBEww5hOe1/NK/?=
+ =?iso-8859-15?Q?LxqAqy5Rm73CRc//da0GFrBBOoiUIZGKRZanpJWt+a4jMVL4vBgdi0zLd?=
+ =?iso-8859-15?Q?1Tu4WjHzkwITpxBD4XpftZxlCyBWHuNxOLDBfF3Nm4oMkrgVsJgVn2K+R?=
+ =?iso-8859-15?Q?nyc1DouGyIt/r+7P+6NbZ4WXZVbbvshrfCHsumnEpsLKubz3fJfj/JXis?=
+ =?iso-8859-15?Q?2wkvlfdRt3zlAqREvUGf3CAF4exqapU15znsy74WjXYeLEZCbWzQhMjV7?=
+ =?iso-8859-15?Q?sj1I4XsP4Q3bfpOEiw+d9LeolNd+GkgiVYCvq4wyCN6/KJhLDNn6IGUSj?=
+ =?iso-8859-15?Q?duOMM6IAAytGxxtmJnSphxXZIVeb7mAWHtsvwGugVS2dbUKsWfo3erOXX?=
+ =?iso-8859-15?Q?gUjxRDeWrcuoCrhUBjFhVf4ERun1JVmg0TsRe8oHfE89aWlkffFsT+YNU?=
+ =?iso-8859-15?Q?kM5kHYPpqKPEZs+3vwIR9MVjVKZpYa2a15DZeT5HKjanLZO3t/+zfyfM4?=
+ =?iso-8859-15?Q?HqRUS2M3CLeUNGtJ3qF7T5lolDVAIH+QXWY5iuJVf36Yhk7qRaXJKBiXD?=
+ =?iso-8859-15?Q?KwaChCYbdL8cPIvUSyT5mgxTlG6LW5anvkhOqyiHXSR0rTpZdWYAh7vpx?=
+ =?iso-8859-15?Q?S0nOVBU5iq8affnfbmN2GN3RJmnoKprwTP2b1H+m2I4+LB/7/tzASbMjF?=
+ =?iso-8859-15?Q?shxfw9jYbg8GV3+I5j+B/J8tU8MoM7SsyDF+qz0WnFZnoZzFId67Z+t9h?=
+ =?iso-8859-15?Q?ZCakHW8mIh6JpgtmaLvFD8dRJJgUkc0DVoo/tBz08hGqJ6Ym0zMFL4C0I?=
+ =?iso-8859-15?Q?XkpDtOl4CH7gPM0jIn4LhomF/h4kIkXKDlPVuz2oI7ROpcDOABGDHPTzC?=
+ =?iso-8859-15?Q?FY7FOICjJtThhSCACQze1P5CorlnphaM6P8Fl4RJPfiMU04jDsImJIt/1?=
+ =?iso-8859-15?Q?of8ERFHJ4zJCIvL2k/lBgRWAUU1cNKNaiu4G5kx06VMDVPmAjatCMXU8O?=
+ =?iso-8859-15?Q?5mtEvcfWt69zCNj+HqdakTjTz9d43xiVNyrQZK1sNTkqY1J2YXQRtJTcA?=
+ =?iso-8859-15?Q?5+HMi+r6eiq66HaxV+/MV94BxA=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-15"
+Content-ID: <0911C8CE3D9DD942ABA0335C71884FAA@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: esd.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: GVXPR03MB8426.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7253028-f9c7-44f8-373c-08dad22d60c9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Nov 2022 17:15:56.5351
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YcEIIotrWPNSF31DVy8OtptUp1hMJfvrx6I+PtA2/Rw5g3mORt8M53JqSjFBWq3F3JsS3s3BWAaQ0rUm1AxPWQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR03MB9711
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
+Hello Marc,
+thanks for commenting.
+
+On Fri, 2022-11-25 at 16:56 +0100, Marc Kleine-Budde wrote:
+> On 24.11.2022 21:38:06, Frank Jungclaus wrote:
+> > We don't get any further EVENT from an esd CAN USB device for changes
+> > on REC or TEC while those counters converge to 0 (with ecc =3D=3D 0).
+> > So when handling the "Back to Error Active"-event force
+> > txerr =3D rxerr =3D 0, otherwise the berr-counters might stay on
+> > values like 95 forever ...
+> >=20
+> > Also, to make life easier during the ongoing development a
+> > netdev_dbg() has been introduced to allow dumping error events send by
+> > an esd CAN USB device.
+> >=20
+> > Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
+>=20
+> Please add a Fixes tag.
+>=20
+> https://elixir.bootlin.com/linux/v6.0/source/Documentation/process/handli=
+ng-regressions.rst#L107
+>=20
+From my point of view this is not a regression, it's a sort of
+imperfection existing since the initial add of esd_usb(2).c to the
+kernel. So should I add a "Fixes:" referring to the initial commit?
+(Currently) I'm slow on the uptake ;)
+
+> > ---
+> >  drivers/net/can/usb/esd_usb.c | 8 +++++++-
+> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_us=
+b.c
+> > index 1bcfad11b1e4..da24c649aadd 100644
+> > --- a/drivers/net/can/usb/esd_usb.c
+> > +++ b/drivers/net/can/usb/esd_usb.c
+> > @@ -230,10 +230,14 @@ static void esd_usb_rx_event(struct esd_usb_net_p=
+riv *priv,
+> > =20
+> >  	if (id =3D=3D ESD_EV_CAN_ERROR_EXT) {
+> >  		u8 state =3D msg->msg.rx.data[0];
+> > -		u8 ecc =3D msg->msg.rx.data[1];
+> > +		u8 ecc   =3D msg->msg.rx.data[1];
+>=20
+> unrelated, please remove.
+>=20
+You're right, sorry, will be removed in v2 ...
+
+> >  		u8 rxerr =3D msg->msg.rx.data[2];
+> >  		u8 txerr =3D msg->msg.rx.data[3];
+> > =20
+> > +		netdev_dbg(priv->netdev,
+> > +			   "CAN_ERR_EV_EXT: dlc=3D%#02x state=3D%02x ecc=3D%02x rec=3D%02x =
+tec=3D%02x\n",
+> > +			   msg->msg.rx.dlc, state, ecc, rxerr, txerr);
+> > +
+> >  		skb =3D alloc_can_err_skb(priv->netdev, &cf);
+> >  		if (skb =3D=3D NULL) {
+> >  			stats->rx_dropped++;
+> > @@ -260,6 +264,8 @@ static void esd_usb_rx_event(struct esd_usb_net_pri=
+v *priv,
+> >  				break;
+> >  			default:
+> >  				priv->can.state =3D CAN_STATE_ERROR_ACTIVE;
+> > +				txerr =3D 0;
+> > +				rxerr =3D 0;
+> >  				break;
+> >  			}
+> >  		} else {
+>=20
+> regards,
+> Marc
+>=20
+Regards, Frank
 
-.. with the clang warning fixed and a few other minor fixes.
-
-
-The following changes since commit 661e5ebbafd26d9d2e3c749f5cf591e55c7364f5:
-
-  net: thunderx: Fix the ACPI memory leak (2022-11-24 10:15:47 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc8-2
-
-for you to fetch changes up to d66233a312ec9013af3e37e4030b479a20811ec3:
-
-  net: ethernet: renesas: ravb: Fix promiscuous mode after system resumed (2022-11-29 08:41:01 -0800)
-
-----------------------------------------------------------------
-Including fixes from bpf, can and wifi.
-
-Current release - new code bugs:
-
- - eth: mlx5e:
-   - use kvfree() in mlx5e_accel_fs_tcp_create()
-   - MACsec, fix RX data path 16 RX security channel limit
-   - MACsec, fix memory leak when MACsec device is deleted
-   - MACsec, fix update Rx secure channel active field
-   - MACsec, fix add Rx security association (SA) rule memory leak
-
-Previous releases - regressions:
-
- - wifi: cfg80211: don't allow multi-BSSID in S1G
-
- - stmmac: set MAC's flow control register to reflect current settings
-
- - eth: mlx5:
-   - E-switch, fix duplicate lag creation
-   - fix use-after-free when reverting termination table
-
-Previous releases - always broken:
-
- - ipv4: fix route deletion when nexthop info is not specified
-
- - bpf: fix a local storage BPF map bug where the value's spin lock
-   field can get initialized incorrectly
-
- - tipc: re-fetch skb cb after tipc_msg_validate
-
- - wifi: wilc1000: fix Information Element parsing
-
- - packet: do not set TP_STATUS_CSUM_VALID on CHECKSUM_COMPLETE
-
- - sctp: fix memory leak in sctp_stream_outq_migrate()
-
- - can: can327: fix potential skb leak when netdev is down
-
- - can: add number of missing netdev freeing on error paths
-
- - aquantia: do not purge addresses when setting the number of rings
-
- - wwan: iosm:
-   - fix incorrect skb length leading to truncated packet
-   - fix crash in peek throughput test due to skb UAF
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      Merge branch 'Bug fix and test case for special map value field '
-
-Andrii Nakryiko (1):
-      Merge branch 'libbpf: Fixes for ring buffer'
-
-Ayush Sawal (1):
-      MAINTAINERS: Update maintainer list for chelsio drivers
-
-Chris Mi (3):
-      net/mlx5: E-switch, Destroy legacy fdb table when needed
-      net/mlx5: E-switch, Fix duplicate lag creation
-      net/mlx5: Lag, Fix for loop when checking lag
-
-Dan Carpenter (1):
-      net/mlx5e: Fix a couple error codes
-
-David S. Miller (4):
-      Merge tag 'linux-can-fixes-for-6.1-20221124' of git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can
-      Merge branch '10GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
-      Merge tag 'mlx5-fixes-2022-11-24' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
-      Merge branch 'wwan-iosm-fixes'
-
-Duoming Zhou (1):
-      qlcnic: fix sleep-in-atomic-context bugs caused by msleep
-
-Emeel Hakim (3):
-      net/mlx5e: MACsec, fix add Rx security association (SA) rule memory leak
-      net/mlx5e: MACsec, remove replay window size limitation in offload path
-      net/mlx5e: MACsec, block offload requests with encrypt off
-
-Goh, Wei Sheng (1):
-      net: stmmac: Set MAC's flow control register to reflect current settings
-
-Heiko Schocher (1):
-      can: sja1000: fix size of OCR_MODE_MASK define
-
-Hou Tao (5):
-      bpf, perf: Use subprog name when reporting subprog ksymbol
-      libbpf: Use page size as max_entries when probing ring buffer map
-      libbpf: Handle size overflow for ringbuf mmap
-      libbpf: Handle size overflow for user ringbuf mmap
-      libbpf: Check the validity of size in user_ring_buffer__reserve()
-
-Ido Schimmel (1):
-      ipv4: Fix route deletion when nexthop info is not specified
-
-Izabela Bakollari (1):
-      aquantia: Do not purge addresses when setting the number of rings
-
-Jakub Kicinski (3):
-      Merge tag 'for-netdev' of https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-      Merge tag 'wireless-2022-11-28' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless
-      Merge branch 'mptcp-more-fixes-for-6-1'
-
-Jerry Ray (1):
-      dsa: lan9303: Correct stat name
-
-Jiasheng Jiang (1):
-      can: m_can: Add check for devm_clk_get
-
-Jiri Olsa (3):
-      libbpf: Use correct return pointer in attach_raw_tp
-      selftests/bpf: Filter out default_idle from kprobe_multi bench
-      selftests/bpf: Make test_bench_attach serial
-
-Johannes Berg (2):
-      wifi: cfg80211: fix buffer overflow in elem comparison
-      wifi: cfg80211: don't allow multi-BSSID in S1G
-
-Lorenzo Bianconi (1):
-      wifi: mac8021: fix possible oob access in ieee80211_get_rate_duration
-
-Lukas Bulwahn (1):
-      qed: avoid defines prefixed with CONFIG
-
-M Chetan Kumar (4):
-      net: wwan: iosm: fix kernel test robot reported error
-      net: wwan: iosm: fix dma_alloc_coherent incompatible pointer type
-      net: wwan: iosm: fix crash in peek throughput test
-      net: wwan: iosm: fix incorrect skb length
-
-Marek Vasut (1):
-      MAINTAINERS: mark rsi wifi driver as orphan
-
-Menglong Dong (1):
-      mptcp: don't orphan ssk in mptcp_close()
-
-Paolo Abeni (1):
-      mptcp: fix sleep in atomic at close time
-
-Phil Turnbull (4):
-      wifi: wilc1000: validate pairwise and authentication suite offsets
-      wifi: wilc1000: validate length of IEEE80211_P2P_ATTR_OPER_CHANNEL attribute
-      wifi: wilc1000: validate length of IEEE80211_P2P_ATTR_CHANNEL_LIST attribute
-      wifi: wilc1000: validate number of channels
-
-Raed Salem (5):
-      net/mlx5e: MACsec, fix RX data path 16 RX security channel limit
-      net/mlx5e: MACsec, fix memory leak when MACsec device is deleted
-      net/mlx5e: MACsec, fix update Rx secure channel active field
-      net/mlx5e: MACsec, fix mlx5e_macsec_update_rxsa bail condition and functionality
-      net/mlx5e: MACsec, fix Tx SA active field update
-
-Rasmus Villemoes (2):
-      net: fec: don't reset irq coalesce settings to defaults on "ip link up"
-      net: loopback: use NET_NAME_PREDICTABLE for name_assign_type
-
-Roi Dayan (1):
-      net/mlx5e: Fix use-after-free when reverting termination table
-
-Russell King (Oracle) (1):
-      net: phylink: fix PHY validation with rate adaption
-
-Saeed Mahameed (1):
-      Revert "net/mlx5e: MACsec, remove replay window size limitation in offload path"
-
-Shang XiaoJing (3):
-      ixgbevf: Fix resource leak in ixgbevf_init_module()
-      i40e: Fix error handling in i40e_init_module()
-      net: marvell: prestera: Fix a NULL vs IS_ERR() check in some functions
-
-Shannon Nelson (1):
-      ionic: update MAINTAINERS entry
-
-Shigeru Yoshida (1):
-      net: tun: Fix use-after-free in tun_detach()
-
-Suman Ghosh (1):
-      octeontx2-pf: Fix pfc_alloc_status array overflow
-
-Wang Hai (2):
-      e100: Fix possible use after free in e100_xmit_prepare
-      net/9p: Fix a potential socket leak in p9_socket_open
-
-Willem de Bruijn (1):
-      packet: do not set TP_STATUS_CSUM_VALID on CHECKSUM_COMPLETE
-
-Xin Long (1):
-      tipc: re-fetch skb cb after tipc_msg_validate
-
-Xu Kuohai (2):
-      bpf: Do not copy spin lock field from user in bpf_selem_alloc
-      bpf: Set and check spin lock value in sk_storage_map_test
-
-Yang Yingliang (2):
-      net: phy: fix null-ptr-deref while probe() failed
-      net: mdiobus: fix unbalanced node reference count
-
-Yasushi SHOJI (1):
-      can: mcba_usb: Fix termination command argument
-
-Yoshihiro Shimoda (1):
-      net: ethernet: renesas: ravb: Fix promiscuous mode after system resumed
-
-Yuan Can (3):
-      fm10k: Fix error handling in fm10k_init_module()
-      iavf: Fix error handling in iavf_init_module()
-      net: net_netdev: Fix error handling in ntb_netdev_init_module()
-
-YueHaibing (4):
-      net/mlx5: DR, Fix uninitialized var warning
-      net/mlx5: Fix uninitialized variable bug in outlen_write()
-      net/mlx5e: Use kvfree() in mlx5e_accel_fs_tcp_create()
-      net: hsr: Fix potential use-after-free
-
-Yuri Karpov (1):
-      net: ethernet: nixge: fix NULL dereference
-
-Zhang Changzhong (5):
-      can: sja1000_isa: sja1000_isa_probe(): add missing free_sja1000dev()
-      can: cc770: cc770_isa_probe(): add missing free_cc770dev()
-      can: etas_es58x: es58x_init_netdev(): free netdev when register_candev()
-      can: m_can: pci: add missing m_can_class_free_dev() in probe/remove methods
-      net: ethernet: ti: am65-cpsw: fix error handling in am65_cpsw_nuss_probe()
-
-Zhengchao Shao (1):
-      sctp: fix memory leak in sctp_stream_outq_migrate()
-
-Ziyang Xuan (1):
-      can: can327: can327_feed_frame_to_netdev(): fix potential skb leak when netdev is down
-
- .mailmap                                           |   1 +
- MAINTAINERS                                        |  11 +-
- drivers/net/can/can327.c                           |   4 +-
- drivers/net/can/cc770/cc770_isa.c                  |  10 +-
- drivers/net/can/m_can/m_can.c                      |   2 +-
- drivers/net/can/m_can/m_can_pci.c                  |   9 +-
- drivers/net/can/sja1000/sja1000_isa.c              |  10 +-
- drivers/net/can/usb/etas_es58x/es58x_core.c        |   5 +-
- drivers/net/can/usb/mcba_usb.c                     |  10 +-
- drivers/net/dsa/lan9303-core.c                     |   2 +-
- .../net/ethernet/aquantia/atlantic/aq_ethtool.c    |   5 +-
- drivers/net/ethernet/aquantia/atlantic/aq_main.c   |   4 +-
- drivers/net/ethernet/aquantia/atlantic/aq_main.h   |   2 +
- drivers/net/ethernet/freescale/fec_main.c          |  22 +---
- drivers/net/ethernet/intel/e100.c                  |   5 +-
- drivers/net/ethernet/intel/fm10k/fm10k_main.c      |  10 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c        |  11 +-
- drivers/net/ethernet/intel/iavf/iavf_main.c        |   9 +-
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c  |  10 +-
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   2 +-
- .../ethernet/marvell/prestera/prestera_router.c    |   2 +-
- .../ethernet/marvell/prestera/prestera_router_hw.c |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |   4 +-
- .../ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c  |   4 +-
- .../ethernet/mellanox/mlx5/core/en_accel/macsec.c  | 122 ++++++++++-----------
- .../ethernet/mellanox/mlx5/core/en_accel/macsec.h  |   6 +-
- .../mellanox/mlx5/core/en_accel/macsec_fs.c        |  17 ++-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |   3 +
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   8 ++
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   7 ++
- .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c  |   9 +-
- .../mellanox/mlx5/core/steering/dr_table.c         |   5 +-
- drivers/net/ethernet/ni/nixge.c                    |  29 ++---
- drivers/net/ethernet/qlogic/qed/qed_mcp.c          |  24 ++--
- .../net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c    |   4 +-
- drivers/net/ethernet/renesas/ravb_main.c           |   1 +
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |   2 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |  12 +-
- drivers/net/ethernet/ti/am65-cpsw-nuss.c           |   2 +-
- drivers/net/loopback.c                             |   2 +-
- drivers/net/mdio/fwnode_mdio.c                     |   2 +-
- drivers/net/ntb_netdev.c                           |   9 +-
- drivers/net/phy/phy_device.c                       |   2 +
- drivers/net/phy/phylink.c                          |  22 +++-
- drivers/net/tun.c                                  |   4 +-
- drivers/net/wireless/microchip/wilc1000/cfg80211.c |  39 +++++--
- drivers/net/wireless/microchip/wilc1000/hif.c      |  21 +++-
- drivers/net/wwan/iosm/iosm_ipc_mux_codec.c         |  26 +++--
- drivers/net/wwan/iosm/iosm_ipc_protocol.h          |   2 +-
- include/linux/can/platform/sja1000.h               |   2 +-
- include/net/sctp/stream_sched.h                    |   2 +
- kernel/bpf/bpf_local_storage.c                     |   2 +-
- kernel/events/core.c                               |   2 +-
- net/9p/trans_fd.c                                  |   4 +-
- net/hsr/hsr_forward.c                              |   5 +-
- net/ipv4/fib_semantics.c                           |   8 +-
- net/mac80211/airtime.c                             |   3 +
- net/mptcp/protocol.c                               |  13 +--
- net/mptcp/subflow.c                                |   6 +-
- net/packet/af_packet.c                             |   6 +-
- net/sctp/stream.c                                  |  25 +++--
- net/sctp/stream_sched.c                            |   5 +
- net/sctp/stream_sched_prio.c                       |  19 ++++
- net/sctp/stream_sched_rr.c                         |   5 +
- net/tipc/crypto.c                                  |   3 +
- net/wireless/scan.c                                |  10 +-
- tools/lib/bpf/libbpf.c                             |   2 +-
- tools/lib/bpf/libbpf_probes.c                      |   2 +-
- tools/lib/bpf/ringbuf.c                            |  26 ++++-
- .../selftests/bpf/map_tests/sk_storage_map.c       |  36 +++---
- .../selftests/bpf/prog_tests/kprobe_multi_test.c   |   8 +-
- tools/testing/selftests/net/fib_nexthops.sh        |  11 ++
- 73 files changed, 480 insertions(+), 265 deletions(-)
