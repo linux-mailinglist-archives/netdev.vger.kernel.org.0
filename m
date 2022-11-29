@@ -2,107 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 077F863C61F
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 18:08:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0148863C62F
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 18:11:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235150AbiK2RIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 12:08:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
+        id S236292AbiK2RLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 12:11:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234741AbiK2RIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 12:08:36 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26192791E
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:08:33 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id h28so713354pfq.9
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 09:08:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cfz3Mcgxkqb1OqUShW9AvM1bJWJ5IVPUimuhgnHTUfM=;
-        b=aB+ZuGMOzbK18zkd0jlC4zEUTSM38tp9K/bCtuVmGeRWETnLRpEwg6Cfsis6G/o8YB
-         2HqB7jorwoOw6h/LjLMxu5ed5EZE92927W/9yhpp/QruynXSUNxJp0OMoVkixJnRoaDz
-         PSuOZAOkF9I4gSS32lclTss+2DBuTn/ncV2ntYH8YMzg9PF3tm8qf0hVKILYBg2UDCmD
-         wbUFp/1Fi7NjOLDWJsNeD/wtnDvCVPYo4knWim39AeNTc1EFLvMkEGW6VYwyktGtW5Qx
-         +UBWGG0y4yJft2CYMgbAUi9qHrNg41pvQg2NXxZ0NdMCIm2c1JLzlQ89YLhdvsbn7Bys
-         PI7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cfz3Mcgxkqb1OqUShW9AvM1bJWJ5IVPUimuhgnHTUfM=;
-        b=09HjaxPB1t00jUn+6HnoJLwQrPGn97Kaf7yHxdxDuCUqitEe6b4mWyfjuIX5kdXHpN
-         DkRt2heq+GpIT4X+QGqvzxCyhTe1BVvPJ7kz0M/hd17UdlyiNm/RFaX09hwmBorRiQ0N
-         4jZFCykUOXPp5fwoQznf0AfdVb+wqXBPjCKFlQoAR687Y0bsmHpgeOf4cxKndyup1Vr3
-         WXE8iNKQmdfq69mcl7tEvLfG7P3FRSGwjTcNpiqvSBHCtpNvDTu7R+EAIdujX5u8c5cW
-         BzSt1tgMQ0lfJDXjUrLP45X+L4m1nlz/AZmGD7GhKX26rqkr4vKoLm1Metf5EjtobVsc
-         Stfg==
-X-Gm-Message-State: ANoB5pnqV6yn2xYwJjeUIZ72zA+b1ccKx0xJ0vDfwRWizGudaa1YCTvu
-        kbf2kqhSHQJ4S78/olK6METq6g==
-X-Google-Smtp-Source: AA0mqf5swFLksPgiEDo6TRTvtGl0tdoW1L9fhbh0pRyA3vgdzDg/DHK7jSPhCQbx1VNNnHFBlq3wIw==
-X-Received: by 2002:a63:ce58:0:b0:473:e2bb:7fc0 with SMTP id r24-20020a63ce58000000b00473e2bb7fc0mr33307253pgi.604.1669741713274;
-        Tue, 29 Nov 2022 09:08:33 -0800 (PST)
-Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id h23-20020a63e157000000b00434272fe870sm8633883pgk.88.2022.11.29.09.08.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Nov 2022 09:08:32 -0800 (PST)
-Message-ID: <9044e2b7-193f-ade4-b4a3-69e40b12088a@kernel.dk>
-Date:   Tue, 29 Nov 2022 10:08:30 -0700
+        with ESMTP id S236414AbiK2RLj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 12:11:39 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9095FBA5;
+        Tue, 29 Nov 2022 09:11:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669741898; x=1701277898;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7M5v88T9DtcIFzCeKmaHBS7GEm5CVug8t2O/Fw9p5Cc=;
+  b=Xmm/GOO55tzmPmEFi035KiY02vtZrsYGc3psIPqZwAx4YU6jb1td7dRM
+   kjb+jGMk0TbveIDyeP1WxaCWKeUFinzZq4Lk8L9tO9nK30Fr+W+F2Sqk1
+   RjLhv96lViJrnoXFB3SSw4aI5o+pUlfsRozhc59NAwg9bA5MmcszH0XPw
+   LppO0HP+7iriB2foEI90rm06ppKisAavJFBBaEqUtYAwiI7uUTaKVK+gr
+   9d6evhZfTrPSQSJ66CfNR5J6E9Ow4bShOpUKNZkhYBNTe0DF6xlKA58bC
+   MdkoBz7bAGXms17jjKWWzvLMMTlf7F+AUExp3jxngtnQqOIjoPrzl8JgA
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="312792136"
+X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
+   d="scan'208";a="312792136"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 09:11:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="643862494"
+X-IronPort-AV: E=Sophos;i="5.96,203,1665471600"; 
+   d="scan'208";a="643862494"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga002.jf.intel.com with ESMTP; 29 Nov 2022 09:11:34 -0800
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        anthony.l.nguyen@intel.com, magnus.karlsson@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Robin Cowley <robin.cowley@thehutgroup.com>
+Subject: [PATCH intel-net] ice: xsk: do not use xdp_return_frame() on tx_buf->raw_buf
+Date:   Tue, 29 Nov 2022 18:11:25 +0100
+Message-Id: <20221129171125.4092238-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v2 0/5] Fix probe failed when modprobe modules
-Content-Language: en-US
-To:     Li Zetao <lizetao1@huawei.com>
-Cc:     st@redhat.com, jasowang@redhat.com, pbonzini@redhat.com,
-        stefanha@redhat.com, airlied@redhat.com, kraxel@redhat.com,
-        gurchetansingh@chromium.org, olvaffe@gmail.com, daniel@ffwll.ch,
-        david@redhat.com, ericvh@gmail.com, lucho@ionkov.net,
-        asmadeus@codewreck.org, linux_oss@crudebyte.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, pmorel@linux.vnet.ibm.com,
-        cornelia.huck@de.ibm.com, pankaj.gupta.linux@gmail.com,
-        rusty@rustcorp.com.au, airlied@gmail.com,
-        virtualization@lists.linux-foundation.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-References: <20221128021005.232105-1-lizetao1@huawei.com>
- <20221129160615.3343036-1-lizetao1@huawei.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20221129160615.3343036-1-lizetao1@huawei.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/29/22 9:06 AM, Li Zetao wrote:
-> This patchset fixes similar issue, the root cause of the
-> problem is that the virtqueues are not stopped on error
-> handling path.
+Previously ice XDP xmit routine was changed in a way that it avoids
+xdp_buff->xdp_frame conversion as it is simply not needed for handling
+XDP_TX action and what is more it saves us CPU cycles. This routine is
+re-used on ZC driver to handle XDP_TX action.
 
-Not related to just this patchset, but guys, Huawei really *REALLY* need
-to get the email situation sorted. I'm digging whole/half patchsets out
-of spam every morning.
+Although for XDP_TX on Rx ZC xdp_buff that comes from xsk_buff_pool is
+converted to xdp_frame, xdp_frame itself is not stored inside
+ice_tx_buf, we only store raw data pointer. Casting this pointer to
+xdp_frame and calling against it xdp_return_frame in
+ice_clean_xdp_tx_buf() results in undefined behavior.
 
-This has been brought up in the past. And no, the cloud variant of
-the email also doesn't work properly.
+To fix this, simply call page_frag_free() on tx_buf->raw_buf.
+Later intention is to remove the buff->frame conversion in order to
+simplify the codebase and improve XDP_TX performance on ZC.
 
-Talk to your IT department, get this sorted once and for all. You risk
-your patches being dumped on the floor because people don't see them,
-or only see small parts of a patchset. And it's really annoying to have
-to deal with as a recipient.
+Fixes: 126cdfe1007a ("ice: xsk: Improve AF_XDP ZC Tx and use batching API")
+Reported-and-tested-by: Robin Cowley <robin.cowley@thehutgroup.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_xsk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+index 056c904b83cc..79fa65d1cf20 100644
+--- a/drivers/net/ethernet/intel/ice/ice_xsk.c
++++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+@@ -772,7 +772,7 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+ static void
+ ice_clean_xdp_tx_buf(struct ice_tx_ring *xdp_ring, struct ice_tx_buf *tx_buf)
+ {
+-	xdp_return_frame((struct xdp_frame *)tx_buf->raw_buf);
++	page_frag_free(tx_buf->raw_buf);
+ 	xdp_ring->xdp_tx_active--;
+ 	dma_unmap_single(xdp_ring->dev, dma_unmap_addr(tx_buf, dma),
+ 			 dma_unmap_len(tx_buf, len), DMA_TO_DEVICE);
 -- 
-Jens Axboe
-
+2.34.1
 
