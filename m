@@ -2,62 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4CE363C111
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 14:32:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F8F963C125
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 14:35:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232598AbiK2Ncj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 08:32:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
+        id S230054AbiK2NfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 08:35:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231853AbiK2Nch (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 08:32:37 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBAB1134;
-        Tue, 29 Nov 2022 05:32:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=4WfKFE855g4aYPWa1PlPctAvnu0Rng8EtAhvBUpBVLw=; b=TRGuiPx5Qvn4d++NVEk4kXtXAN
-        LFytMrH9LvmGqwzTakP8tkNjOAOWQQvlUBSB5UilKV7TbL8D3lsomwoGk4Y441G7BmBZUkKyt91gr
-        3BajQDNop3pzMpN5jM0l2YVAvmH7s7jnH0Gz2V5JsexeTcHri0lkGgMkYSjQ/2gYpj3M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p00hn-003s2I-N5; Tue, 29 Nov 2022 14:31:23 +0100
-Date:   Tue, 29 Nov 2022 14:31:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Chukun Pan <amadeus@jmu.edu.cn>
-Cc:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] net: phy: motorcomm: change the phy id of yt8521 to
- lowercase
-Message-ID: <Y4YJq2+6HC/F2yiz@lunn.ch>
-References: <20221129080005.24780-1-amadeus@jmu.edu.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221129080005.24780-1-amadeus@jmu.edu.cn>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229632AbiK2NfM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 08:35:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AFDC1134;
+        Tue, 29 Nov 2022 05:35:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07679B811BC;
+        Tue, 29 Nov 2022 13:35:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C6AC433C1;
+        Tue, 29 Nov 2022 13:35:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669728908;
+        bh=AgrFaXDHO4T8urlnogCwZ98IvUvFDANZ++DIGe943KE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jV9BEps1XGs/8fKcoiR/Q1JO799qkN+235RF8yuZya24QM90/LEk0eNABaGTehX1i
+         /BdztpcW1MvnwMxAURXmVb3m8gFbeBfeEQUgICBUypOlEyMmYT0VoqEjviZMSnhBui
+         fD2rFON+a5Pm4IJGoNU7RgE5diimosEHT3Lre9T5xYB0x/wst9GaCEucNDxrJXVmLS
+         9EKoFn4FjSuY22UQs08H/dsEJS+OaneyvcIo5IN1ZmeY2ERiQ37nbuw7xzqDwUN1ik
+         r7/7jLft+MWmNNy2SSf9Jpbxb82SE3bKBVf+Ro7D6m5fpGkW51tN5y+GzRRfNywcCT
+         bHfoaiQUiFU0g==
+From:   Roger Quadros <rogerq@kernel.org>
+To:     davem@davemloft.net, maciej.fijalkowski@intel.com, kuba@kernel.org
+Cc:     andrew@lunn.ch, edumazet@google.com, pabeni@redhat.com,
+        vigneshr@ti.com, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roger Quadros <rogerq@kernel.org>
+Subject: [PATCH v4 net-next 0/6] net: ethernet: ti: am65-cpsw: Fix set channel operation
+Date:   Tue, 29 Nov 2022 15:34:55 +0200
+Message-Id: <20221129133501.30659-1-rogerq@kernel.org>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 29, 2022 at 04:00:05PM +0800, Chukun Pan wrote:
-> The phy id is usually defined in lower case, also align the indents.
-> 
-> Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
+Hi,
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This contains a critical bug fix for the recently merged suspend/resume
+support [1] that broke set channel operation. (ethtool -L eth0 tx <n>)
 
-    Andrew
+As there were 2 dependent patches on top of the offending commit [1]
+first revert them and then apply them back after the correct fix.
+
+[1] fd23df72f2be ("net: ethernet: ti: am65-cpsw: Add suspend/resume support")
+
+cheers,
+-roger
+
+Changelog:
+v4:
+- move am65_cpsw_nuss_ndev_add_tx_napi() earlier to avoid declaration.
+- print error and error out if soft RESET failed in
+  am65_cpsw_nuss_ndo_slave_open()
+- move struct 'am65_cpsw_host *host' where 'common' is defined.
+
+v3:
+- revert offending commit before applying the updated patch.
+- drop optimization patch to be sent separately.
+
+v2:
+- Fix build warning
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c:562:13: warning: variable 'tmo' set but not used [-Wunused-but-set-variable]
+
+Roger Quadros (6):
+  Revert "net: ethernet: ti: am65-cpsw: Fix hardware switch mode on
+    suspend/resume"
+  Revert "net: ethernet: ti: am65-cpsw: retain PORT_VLAN_REG after
+    suspend/resume"
+  Revert "net: ethernet: ti: am65-cpsw: Add suspend/resume support"
+  net: ethernet: ti: am65-cpsw: Add suspend/resume support
+  net: ethernet: ti: am65-cpsw: retain PORT_VLAN_REG after
+    suspend/resume
+  net: ethernet: ti: am65-cpsw: Fix hardware switch mode on
+    suspend/resume
+
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 197 ++++++++++++-----------
+ 1 file changed, 105 insertions(+), 92 deletions(-)
+
+-- 
+2.17.1
+
