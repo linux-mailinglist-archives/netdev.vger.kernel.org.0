@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5227963BA45
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 08:09:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61D8E63BA43
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 08:09:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbiK2HJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 02:09:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47574 "EHLO
+        id S229861AbiK2HJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 02:09:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbiK2HJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 02:09:11 -0500
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A1C391F7;
-        Mon, 28 Nov 2022 23:09:10 -0800 (PST)
+        with ESMTP id S229600AbiK2HJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 02:09:14 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05ADE391F7;
+        Mon, 28 Nov 2022 23:09:12 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1669705749;
+        t=1669705751;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nF8XM1Bnr/Qv5MtuKPAYXJRVg+7rYkUBNR+4U/ZUOLg=;
-        b=m2jXhCCTzBhS1MraKp8Cj9m3Y9ILX7ZqD8KPJzeujxI7x+UbRMZXSWuyNjB3iQrI/YPBC7
-        JajuWZfTYxAkMoLwX8dHDB7j+Oz14L4lDLBbUgrYbSYXP0Tl4Pmvvfjsxz9fq6ZqlEuYcT
-        3iskEX7jPM33r89Unl3fwFySSD+yLrA=
+        bh=BeXQ1syZzDHmFlguhO+kKhll0xox7nS4pLrij1EQpWQ=;
+        b=PACVqbGcIwZUGux2TknqD6jUWH4VEqGpBKz7xivbWd1BA003fKhDeSAOEGeRQrtzFQ+/2E
+        /uvAvDzNzyMQRp/cL0BgoRorNwjySUpwl1IymJzBA4Rifl+dAK9tJSEHtiBtNlA8ZG2GM6
+        Zj1T4hQDsfo2LT2DSZmCunvZnh2+2bE=
 From:   Martin KaFai Lau <martin.lau@linux.dev>
 To:     bpf@vger.kernel.org
 Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
         'Andrii Nakryiko ' <andrii@kernel.org>,
         'Daniel Borkmann ' <daniel@iogearbox.net>,
         netdev@vger.kernel.org, kernel-team@meta.com
-Subject: [PATCH bpf-next 1/7] selftests/bpf: Use if_nametoindex instead of reading the /sys/net/class/*/ifindex
-Date:   Mon, 28 Nov 2022 23:08:54 -0800
-Message-Id: <20221129070900.3142427-2-martin.lau@linux.dev>
+Subject: [PATCH bpf-next 2/7] selftests/bpf: Avoid pinning bpf prog in the tc_redirect_dtime test
+Date:   Mon, 28 Nov 2022 23:08:55 -0800
+Message-Id: <20221129070900.3142427-3-martin.lau@linux.dev>
 In-Reply-To: <20221129070900.3142427-1-martin.lau@linux.dev>
 References: <20221129070900.3142427-1-martin.lau@linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -50,114 +50,214 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Martin KaFai Lau <martin.lau@kernel.org>
 
-When switching netns, the setns_by_fd() is doing dances in mount/umounting
-the /sys directories.  One reason is the tc_redirect.c test is depending
-on the /sys/net/class/*/ifindex instead of using the if_nametoindex().
-if_nametoindex() uses ioctl() to get the ifindex.
-
-This patch is to move all /sys/net/class/*/ifindex usages to
-if_nametoindex().  The current code checks ifindex >= 0 which is
-incorrect.  ifindex > 0 should be checked instead.  This patch also
-stores ifindex_veth_src and ifindex_veth_dst since the latter patch
-will need them.
+This patch removes the need to pin prog in the tc_redirect_dtime
+test by directly using the bpf_tc_hook_create() and bpf_tc_attach().
+The clsact qdisc will go away together with the test netns, so
+no need to do bpf_tc_hook_destroy().
 
 Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
 ---
- .../selftests/bpf/prog_tests/tc_redirect.c    | 46 ++++++++-----------
- 1 file changed, 18 insertions(+), 28 deletions(-)
+ .../selftests/bpf/prog_tests/tc_redirect.c    | 149 ++++++++++++------
+ 1 file changed, 100 insertions(+), 49 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-index cb6a53b3e023..2d85742efdd3 100644
+index 2d85742efdd3..690102f1ceda 100644
 --- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
 +++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-@@ -11,12 +11,12 @@
-  */
- 
- #include <arpa/inet.h>
--#include <linux/if.h>
- #include <linux/if_tun.h>
- #include <linux/limits.h>
- #include <linux/sysctl.h>
- #include <linux/time_types.h>
- #include <linux/net_tstamp.h>
-+#include <net/if.h>
- #include <stdbool.h>
- #include <stdio.h>
- #include <sys/stat.h>
-@@ -115,7 +115,9 @@ static void netns_setup_namespaces_nofail(const char *verb)
+@@ -250,6 +250,56 @@ static int netns_setup_links_and_routes(struct netns_setup_result *result)
+ 	return -1;
  }
  
- struct netns_setup_result {
-+	int ifindex_veth_src;
- 	int ifindex_veth_src_fwd;
-+	int ifindex_veth_dst;
- 	int ifindex_veth_dst_fwd;
- };
++static int qdisc_clsact_create(struct bpf_tc_hook *qdisc_hook, int ifindex)
++{
++	char err_str[128], ifname[16];
++	int err;
++
++	qdisc_hook->ifindex = ifindex;
++	qdisc_hook->attach_point = BPF_TC_INGRESS | BPF_TC_EGRESS;
++	err = bpf_tc_hook_create(qdisc_hook);
++	snprintf(err_str, sizeof(err_str),
++		 "qdisc add dev %s clsact",
++		 if_indextoname(qdisc_hook->ifindex, ifname) ? : "<unknown_iface>");
++	err_str[sizeof(err_str) - 1] = 0;
++	ASSERT_OK(err, err_str);
++
++	return err;
++}
++
++static int xgress_filter_add(struct bpf_tc_hook *qdisc_hook,
++			     enum bpf_tc_attach_point xgress,
++			     const struct bpf_program *prog, int priority)
++{
++	LIBBPF_OPTS(bpf_tc_opts, tc_attach);
++	char err_str[128], ifname[16];
++	int err;
++
++	qdisc_hook->attach_point = xgress;
++	tc_attach.prog_fd = bpf_program__fd(prog);
++	tc_attach.priority = priority;
++	err = bpf_tc_attach(qdisc_hook, &tc_attach);
++	snprintf(err_str, sizeof(err_str),
++		 "filter add dev %s %s prio %d bpf da %s",
++		 if_indextoname(qdisc_hook->ifindex, ifname) ? : "<unknown_iface>",
++		 xgress == BPF_TC_INGRESS ? "ingress" : "egress",
++		 priority, bpf_program__name(prog));
++	err_str[sizeof(err_str) - 1] = 0;
++	ASSERT_OK(err, err_str);
++
++	return err;
++}
++
++#define QDISC_CLSACT_CREATE(qdisc_hook, ifindex) ({		\
++	if ((err = qdisc_clsact_create(qdisc_hook, ifindex)))	\
++		goto fail;					\
++})
++
++#define XGRESS_FILTER_ADD(qdisc_hook, xgress, prog, priority) ({		\
++	if ((err = xgress_filter_add(qdisc_hook, xgress, prog, priority)))	\
++		goto fail;							\
++})
++
+ static int netns_load_bpf(void)
+ {
+ 	SYS("tc qdisc add dev veth_src_fwd clsact");
+@@ -489,78 +539,79 @@ static void test_inet_dtime(int family, int type, const char *addr, __u16 port)
+ 		close(client_fd);
+ }
  
-@@ -139,27 +141,6 @@ static int get_ifaddr(const char *name, char *ifaddr)
+-static int netns_load_dtime_bpf(struct test_tc_dtime *skel)
++static int netns_load_dtime_bpf(struct test_tc_dtime *skel,
++				const struct netns_setup_result *setup_result)
+ {
++	LIBBPF_OPTS(bpf_tc_hook, qdisc_veth_src_fwd);
++	LIBBPF_OPTS(bpf_tc_hook, qdisc_veth_dst_fwd);
++	LIBBPF_OPTS(bpf_tc_hook, qdisc_veth_src);
++	LIBBPF_OPTS(bpf_tc_hook, qdisc_veth_dst);
+ 	struct nstoken *nstoken;
+-
+-#define PIN_FNAME(__file) "/sys/fs/bpf/" #__file
+-#define PIN(__prog) ({							\
+-		int err = bpf_program__pin(skel->progs.__prog, PIN_FNAME(__prog)); \
+-		if (!ASSERT_OK(err, "pin " #__prog))		\
+-			goto fail;					\
+-		})
++	int err;
+ 
+ 	/* setup ns_src tc progs */
+ 	nstoken = open_netns(NS_SRC);
+ 	if (!ASSERT_OK_PTR(nstoken, "setns " NS_SRC))
+ 		return -1;
+-	PIN(egress_host);
+-	PIN(ingress_host);
+-	SYS("tc qdisc add dev veth_src clsact");
+-	SYS("tc filter add dev veth_src ingress bpf da object-pinned "
+-	    PIN_FNAME(ingress_host));
+-	SYS("tc filter add dev veth_src egress bpf da object-pinned "
+-	    PIN_FNAME(egress_host));
++	/* tc qdisc add dev veth_src clsact */
++	QDISC_CLSACT_CREATE(&qdisc_veth_src, setup_result->ifindex_veth_src);
++	/* tc filter add dev veth_src ingress bpf da ingress_host */
++	XGRESS_FILTER_ADD(&qdisc_veth_src, BPF_TC_INGRESS, skel->progs.ingress_host, 0);
++	/* tc filter add dev veth_src egress bpf da egress_host */
++	XGRESS_FILTER_ADD(&qdisc_veth_src, BPF_TC_EGRESS, skel->progs.egress_host, 0);
+ 	close_netns(nstoken);
+ 
+ 	/* setup ns_dst tc progs */
+ 	nstoken = open_netns(NS_DST);
+ 	if (!ASSERT_OK_PTR(nstoken, "setns " NS_DST))
+ 		return -1;
+-	PIN(egress_host);
+-	PIN(ingress_host);
+-	SYS("tc qdisc add dev veth_dst clsact");
+-	SYS("tc filter add dev veth_dst ingress bpf da object-pinned "
+-	    PIN_FNAME(ingress_host));
+-	SYS("tc filter add dev veth_dst egress bpf da object-pinned "
+-	    PIN_FNAME(egress_host));
++	/* tc qdisc add dev veth_dst clsact */
++	QDISC_CLSACT_CREATE(&qdisc_veth_dst, setup_result->ifindex_veth_dst);
++	/* tc filter add dev veth_dst ingress bpf da ingress_host */
++	XGRESS_FILTER_ADD(&qdisc_veth_dst, BPF_TC_INGRESS, skel->progs.ingress_host, 0);
++	/* tc filter add dev veth_dst egress bpf da egress_host */
++	XGRESS_FILTER_ADD(&qdisc_veth_dst, BPF_TC_EGRESS, skel->progs.egress_host, 0);
+ 	close_netns(nstoken);
+ 
+ 	/* setup ns_fwd tc progs */
+ 	nstoken = open_netns(NS_FWD);
+ 	if (!ASSERT_OK_PTR(nstoken, "setns " NS_FWD))
+ 		return -1;
+-	PIN(ingress_fwdns_prio100);
+-	PIN(egress_fwdns_prio100);
+-	PIN(ingress_fwdns_prio101);
+-	PIN(egress_fwdns_prio101);
+-	SYS("tc qdisc add dev veth_dst_fwd clsact");
+-	SYS("tc filter add dev veth_dst_fwd ingress prio 100 bpf da object-pinned "
+-	    PIN_FNAME(ingress_fwdns_prio100));
+-	SYS("tc filter add dev veth_dst_fwd ingress prio 101 bpf da object-pinned "
+-	    PIN_FNAME(ingress_fwdns_prio101));
+-	SYS("tc filter add dev veth_dst_fwd egress prio 100 bpf da object-pinned "
+-	    PIN_FNAME(egress_fwdns_prio100));
+-	SYS("tc filter add dev veth_dst_fwd egress prio 101 bpf da object-pinned "
+-	    PIN_FNAME(egress_fwdns_prio101));
+-	SYS("tc qdisc add dev veth_src_fwd clsact");
+-	SYS("tc filter add dev veth_src_fwd ingress prio 100 bpf da object-pinned "
+-	    PIN_FNAME(ingress_fwdns_prio100));
+-	SYS("tc filter add dev veth_src_fwd ingress prio 101 bpf da object-pinned "
+-	    PIN_FNAME(ingress_fwdns_prio101));
+-	SYS("tc filter add dev veth_src_fwd egress prio 100 bpf da object-pinned "
+-	    PIN_FNAME(egress_fwdns_prio100));
+-	SYS("tc filter add dev veth_src_fwd egress prio 101 bpf da object-pinned "
+-	    PIN_FNAME(egress_fwdns_prio101));
++	/* tc qdisc add dev veth_dst_fwd clsact */
++	QDISC_CLSACT_CREATE(&qdisc_veth_dst_fwd, setup_result->ifindex_veth_dst_fwd);
++	/* tc filter add dev veth_dst_fwd ingress prio 100 bpf da ingress_fwdns_prio100 */
++	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_INGRESS,
++			  skel->progs.ingress_fwdns_prio100, 100);
++	/* tc filter add dev veth_dst_fwd ingress prio 101 bpf da ingress_fwdns_prio101 */
++	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_INGRESS,
++			  skel->progs.ingress_fwdns_prio101, 101);
++	/* tc filter add dev veth_dst_fwd egress prio 100 bpf da egress_fwdns_prio100 */
++	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_EGRESS,
++			  skel->progs.egress_fwdns_prio100, 100);
++	/* tc filter add dev veth_dst_fwd egress prio 101 bpf da egress_fwdns_prio101 */
++	XGRESS_FILTER_ADD(&qdisc_veth_dst_fwd, BPF_TC_EGRESS,
++			  skel->progs.egress_fwdns_prio101, 101);
++
++	/* tc qdisc add dev veth_src_fwd clsact */
++	QDISC_CLSACT_CREATE(&qdisc_veth_src_fwd, setup_result->ifindex_veth_src_fwd);
++	/* tc filter add dev veth_src_fwd ingress prio 100 bpf da ingress_fwdns_prio100 */
++	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_INGRESS,
++			  skel->progs.ingress_fwdns_prio100, 100);
++	/* tc filter add dev veth_src_fwd ingress prio 101 bpf da ingress_fwdns_prio101 */
++	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_INGRESS,
++			  skel->progs.ingress_fwdns_prio101, 101);
++	/* tc filter add dev veth_src_fwd egress prio 100 bpf da egress_fwdns_prio100 */
++	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_EGRESS,
++			  skel->progs.egress_fwdns_prio100, 100);
++	/* tc filter add dev veth_src_fwd egress prio 101 bpf da egress_fwdns_prio101 */
++	XGRESS_FILTER_ADD(&qdisc_veth_src_fwd, BPF_TC_EGRESS,
++			  skel->progs.egress_fwdns_prio101, 101);
+ 	close_netns(nstoken);
+-
+-#undef PIN
+-
  	return 0;
+ 
+ fail:
+ 	close_netns(nstoken);
+-	return -1;
++	return err;
  }
  
--static int get_ifindex(const char *name)
--{
--	char path[PATH_MAX];
--	char buf[32];
--	FILE *f;
--	int ret;
--
--	snprintf(path, PATH_MAX, "/sys/class/net/%s/ifindex", name);
--	f = fopen(path, "r");
--	if (!ASSERT_OK_PTR(f, path))
--		return -1;
--
--	ret = fread(buf, 1, sizeof(buf), f);
--	if (!ASSERT_GT(ret, 0, "fread ifindex")) {
--		fclose(f);
--		return -1;
--	}
--	fclose(f);
--	return atoi(buf);
--}
--
- #define SYS(fmt, ...)						\
- 	({							\
- 		char cmd[1024];					\
-@@ -182,11 +163,20 @@ static int netns_setup_links_and_routes(struct netns_setup_result *result)
- 	if (get_ifaddr("veth_src_fwd", veth_src_fwd_addr))
- 		goto fail;
+ enum {
+@@ -736,7 +787,7 @@ static void test_tc_redirect_dtime(struct netns_setup_result *setup_result)
+ 	if (!ASSERT_OK(err, "test_tc_dtime__load"))
+ 		goto done;
  
--	result->ifindex_veth_src_fwd = get_ifindex("veth_src_fwd");
--	if (result->ifindex_veth_src_fwd < 0)
-+	result->ifindex_veth_src = if_nametoindex("veth_src");
-+	if (!ASSERT_GT(result->ifindex_veth_src, 0, "ifindex_veth_src"))
- 		goto fail;
--	result->ifindex_veth_dst_fwd = get_ifindex("veth_dst_fwd");
--	if (result->ifindex_veth_dst_fwd < 0)
-+
-+	result->ifindex_veth_src_fwd = if_nametoindex("veth_src_fwd");
-+	if (!ASSERT_GT(result->ifindex_veth_src_fwd, 0, "ifindex_veth_src_fwd"))
-+		goto fail;
-+
-+	result->ifindex_veth_dst = if_nametoindex("veth_dst");
-+	if (!ASSERT_GT(result->ifindex_veth_dst, 0, "ifindex_veth_dst"))
-+		goto fail;
-+
-+	result->ifindex_veth_dst_fwd = if_nametoindex("veth_dst_fwd");
-+	if (!ASSERT_GT(result->ifindex_veth_dst_fwd, 0, "ifindex_veth_dst_fwd"))
- 		goto fail;
+-	if (netns_load_dtime_bpf(skel))
++	if (netns_load_dtime_bpf(skel, setup_result))
+ 		goto done;
  
- 	SYS("ip link set veth_src netns " NS_SRC);
-@@ -1034,8 +1024,8 @@ static void test_tc_redirect_peer_l3(struct netns_setup_result *setup_result)
- 	if (!ASSERT_OK_PTR(skel, "test_tc_peer__open"))
- 		goto fail;
- 
--	ifindex = get_ifindex("tun_fwd");
--	if (!ASSERT_GE(ifindex, 0, "get_ifindex tun_fwd"))
-+	ifindex = if_nametoindex("tun_fwd");
-+	if (!ASSERT_GT(ifindex, 0, "if_indextoname tun_fwd"))
- 		goto fail;
- 
- 	skel->rodata->IFINDEX_SRC = ifindex;
+ 	nstoken = open_netns(NS_FWD);
 -- 
 2.30.2
 
