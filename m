@@ -2,92 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9717863B88C
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 04:08:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C784D63B88E
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 04:09:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235223AbiK2DID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Nov 2022 22:08:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
+        id S235368AbiK2DJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Nov 2022 22:09:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235190AbiK2DIC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 22:08:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BD6FAE7
-        for <netdev@vger.kernel.org>; Mon, 28 Nov 2022 19:08:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEAC9B8110C
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 03:07:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51264C433C1;
-        Tue, 29 Nov 2022 03:07:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669691278;
-        bh=Hf1dIojADPf46FAQIbUwbrpFiw4kxu8sUSY22cwuH8Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=u6rDnQw2/KueLTVk9PrnQb/VmaF54/KqQjAwGK+IKB+ERp86j1QHSwAdFiJF0Exhd
-         cHwiHlO3cs8ElLXwQfUJohmkOTNq1vkbd2zTc5sOPB3UwUrbrTj7mAIjF0FSVma+uc
-         bnwzpsK4Yk/ThrYW4uB5W/4/9oSWk/gXZfsh+dJ2C3o3AqjJuZLcvijiQgdSlhP+5Q
-         QjouJ5aUS1suWUODBPCfLhw5te/0KIw8Pboz2xRJpJRUaP603dIMpjOjV1FrlD/Rqj
-         56W+Kr2RjOsVenGrT+wTb6ddutTgv8yYvcbzP46ci3dI+f9r7kifzblUojvpM36ChU
-         boeteyiVBLFkg==
-Date:   Mon, 28 Nov 2022 19:07:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] r8169: enable GRO software interrupt
- coalescing per default
-Message-ID: <20221128190757.2e4d92dc@kernel.org>
-In-Reply-To: <9d94f2d8-d297-7550-2932-793a34e5efb9@gmail.com>
-References: <9d94f2d8-d297-7550-2932-793a34e5efb9@gmail.com>
+        with ESMTP id S235190AbiK2DJB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Nov 2022 22:09:01 -0500
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6F52250E;
+        Mon, 28 Nov 2022 19:09:00 -0800 (PST)
+Received: by mail-pl1-f180.google.com with SMTP id j12so12116480plj.5;
+        Mon, 28 Nov 2022 19:09:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OnP/cSsNFQTbxkXyddPmxzdhH2J+Sh0TrPclLTaIN1o=;
+        b=Kp6oOV0+Fb66gIi2MEsxZj4jd7/4H6pzvrjoUV+nlzjXl2++bcFcmfM9LncM5ucsl9
+         /aKafVODTaR+KpJMxf4aGQo3kWAHX2jd2mvRzapVkFGNvY9+QA+fbAa9U2ZV5OymGeZP
+         nVV29+NenF0sC6xXhssNDeCssTHUEIx3e60V2l/4Or/C/iSq/HLv0XvL1K56WFkZcAY8
+         1j3WTB8LlRfX86UdBFy0WDyeD5uz+PJ1Gu9mcP0bla7X5dX8PtKLeMvUpF9oQ8zl2aq5
+         +mV/wJX/dEr+J51X1xaPb6Zf8DQdki32YBLvnURb2MdME3iJr2QWTsN4AuUUPQTF6BSO
+         T6CQ==
+X-Gm-Message-State: ANoB5pmWPOx/AqksqiWOCcUv8/cb/5p8DUEU+cN6wNVWb6/sQ+zhy1LF
+        DkweaqTMvFhc5TYmO/hdXG1MRmXhxk7AmTbrBeo=
+X-Google-Smtp-Source: AA0mqf4jlAYwTXYUbXwME9TCX9WQ3MTWK6Ln45diYwf5FNplHSOA8XpCrhE2AlTtp8PQi+7H7V55SJuzwp+w4UDrA2I=
+X-Received: by 2002:a17:90a:8a07:b0:20a:c032:da66 with SMTP id
+ w7-20020a17090a8a0700b0020ac032da66mr62123468pjn.19.1669691340166; Mon, 28
+ Nov 2022 19:09:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221129020151.3842613-1-mailhol.vincent@wanadoo.fr> <20221128181430.2390b238@kernel.org>
+In-Reply-To: <20221128181430.2390b238@kernel.org>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 29 Nov 2022 12:08:49 +0900
+Message-ID: <CAMZ6RqLQe41eHuZNLZEP93ER-xvfKzK9V8EV1zXfmyKaf_a0aQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: devlink: add DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiri Pirko <jiri@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can <linux-can@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 26 Nov 2022 15:07:07 +0100 Heiner Kallweit wrote:
-> There are reports about r8169 not reaching full line speed on certain
-> systems (e.g. SBC's) with a 2.5Gbps link.
-> There was a time when hardware interrupt coalescing was enabled per
-> default, but this was changed due to ASPM-related issues on few systems.
-> 
-> Meanwhile we have sysfs attributes for controlling kind of
-> "software interrupt coalescing" on the GRO level. However most distros
-> and users don't know about it. So lets set a conservative default for
-> both involved parameters. Users can still override the defaults via
-> sysfs. Don't enable these settings on the fast ethernet chip versions,
-> they are slow enough.
-> 
-> Even with these conservative setting interrupt load on my 1Gbps test
-> system reduced significantly.
++CC: Marc and linux-can mailing list.
 
-Sure, why not. Could you please wrap the init into a helper?
-Should help us ensure the params are not wildly different between
-drivers and make any later refactoring easier.
+On Tue. 29 Nov. 2022 at 11:14, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 29 Nov 2022 11:01:51 +0900 Vincent Mailhol wrote:
+> > As discussed in [1], abbreviating the bootloader to "bl" might not be
+> > well understood. Instead, a bootloader technically being a firmware,
+> > name it "fw.bootloader".
+> >
+> > Add a new macro to devlink.h to formalize this new info attribute
+> > name.
+> >
+> > [1] https://lore.kernel.org/netdev/20221128142723.2f826d20@kernel.org/
+> >
+> > Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+>
+> It's okay for this patch to go via the can tree, FWIW.
+> It may cause an extra delay for you if you have to wait
+> for the define to propagate.
 
-Maybe something like:
+Marc always pulls from net-next before picking patches and it is a
+common practice to send to the linux-can mailing list some series
+which are based on net-next. So I do not foresee any major delay.
 
-/**
- * netdev_sw_irq_coalesce_default_on() - enable SW IRQ coalescing by default
- * @dev: netdev to enable the IRQ coalescing on
- * bla bla bla
- */
-int netdev_sw_irq_coalesce_default_on(struct net_device *dev)
-{
-	WARN_ON(dev->reg_state != NETREG_UNREGISTERED);
+> Either way you should document the meaning of the parameter,
+> however obvious it may seem:
+>
+>  Documentation/networking/devlink/devlink-info.rst
 
-	dev->gro_flush_timeout = 20000;
-	dev->napi_defer_hard_irqs = 1;
-}
-EXPORT...
+ACK.
+
+I will send the v2 with both the netdev and the linux-can mailing
+list. I am fine whoever picks it.
