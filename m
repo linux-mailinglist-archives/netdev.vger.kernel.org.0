@@ -2,86 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66EC063CA23
-	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 22:11:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93B0063CA63
+	for <lists+netdev@lfdr.de>; Tue, 29 Nov 2022 22:14:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236938AbiK2VL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 16:11:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38534 "EHLO
+        id S236889AbiK2VO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 16:14:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236992AbiK2VLH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 16:11:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E93D70469;
-        Tue, 29 Nov 2022 13:10:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S236874AbiK2VO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 16:14:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EC32BB0F
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 13:13:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669756426;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=d30QTxTORkW1N9eKwj6M+zoNiUdizDE1AT68blPInq4=;
+        b=gboecGvtyDN0DLH9sLTkkXTR6SCdLvisvOgvxq1bnbI5h1dFRbQRHfXmtqLHanorCDY50I
+        uX63xEJuMhqVMFrVfj7lEMYEYI5zKd5o91BAVxqlgOsCjhAbAc1pXXj80kSBfCKVNp/KQX
+        Se5mgbjjU0HEwY5vtOe0p05f/AhQG/A=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-517-aiGqA2bEOSuJ6sHhQ3xVHg-1; Tue, 29 Nov 2022 16:13:39 -0500
+X-MC-Unique: aiGqA2bEOSuJ6sHhQ3xVHg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BBF5618DE;
-        Tue, 29 Nov 2022 21:10:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 84F9CC43142;
-        Tue, 29 Nov 2022 21:10:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669756239;
-        bh=NrCuAivPv3qzyDvI/rHbjvPlp31xALKnnxmZZ7zY+mg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WZ1Ifuyh8ehomMO7obYf7e569GVymyaRtRxEFXRnAnm0M2CiRKpxTQv0VOZn9swXY
-         BctDv0FJL48NhbfZhB3pZwKFYaXEVVg9piKzDkJwBYO71DGRCUnZuyKa/VgvL1SkzW
-         vEm30eKyJm6DbqQNvN8nFIWt6l79jbKoRZB1dgUHZAg3+4Cq5ewm+NbrWbgiAeDxUI
-         Ngx7Wv/09xft3PbVFKkFlOT+2U352A4WwDt4zQKsc5aCHd7vboahFJAO4synbWY8uW
-         gdZWktWnbf7W5a8e660xPXEAoQg8sLfvpgZe0VZEndnMA3YuhA9rxoYMuaLZRZIwPB
-         pIgsNpm/Yji6A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 600D4C395EC;
-        Tue, 29 Nov 2022 21:10:39 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B4C94802314;
+        Tue, 29 Nov 2022 21:13:38 +0000 (UTC)
+Received: from [10.22.17.30] (unknown [10.22.17.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5E4E640C83AA;
+        Tue, 29 Nov 2022 21:13:37 +0000 (UTC)
+Message-ID: <51c23d0e-9f00-4433-f2e8-95113f0b2a9d@redhat.com>
+Date:   Tue, 29 Nov 2022 16:13:35 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] dt-bindings: net: realtek-bluetooth: Add RTL8723DS
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <166975623937.18742.13348891788442486147.git-patchwork-notify@kernel.org>
-Date:   Tue, 29 Nov 2022 21:10:39 +0000
-References: <20221125040956.18648-1-samuel@sholland.org>
-In-Reply-To: <20221125040956.18648-1-samuel@sholland.org>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        linux-bluetooth@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, kuba@kernel.org,
-        robh@kernel.org, alistair@alistair23.me,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        anarsoul@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
+Content-Language: en-US
+To:     Hao Luo <haoluo@google.com>, Boqun Feng <boqun.feng@gmail.com>
+Cc:     Hou Tao <houtao@huaweicloud.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, bpf <bpf@vger.kernel.org>,
+        "houtao1@huawei.com" <houtao1@huawei.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
+ <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com>
+ <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com>
+ <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
+ <CA+khW7jgsyFgBqU7hCzZiSSANE7f=A+M-0XbcKApz6Nr-ZnZDg@mail.gmail.com>
+ <07a7491e-f391-a9b2-047e-cab5f23decc5@huawei.com>
+ <CAMDZJNUTaiXMe460P7a7NfK1_bbaahpvi3Q9X85o=G7v9x-w=g@mail.gmail.com>
+ <59fc54b7-c276-2918-6741-804634337881@huaweicloud.com>
+ <541aa740-dcf3-35f5-9f9b-e411978eaa06@redhat.com>
+ <Y4ZABpDSs4/uRutC@Boquns-Mac-mini.local>
+ <Y4ZCKaQFqDY3aLTy@Boquns-Mac-mini.local>
+ <CA+khW7hkQRFcC1QgGxEK_NeaVvCe3Hbe_mZ-_UkQKaBaqnOLEQ@mail.gmail.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <CA+khW7hkQRFcC1QgGxEK_NeaVvCe3Hbe_mZ-_UkQKaBaqnOLEQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
+On 11/29/22 14:36, Hao Luo wrote:
+> On Tue, Nov 29, 2022 at 9:32 AM Boqun Feng <boqun.feng@gmail.com> wrote:
+>> Just to be clear, I meant to refactor htab_lock_bucket() into a try
+>> lock pattern. Also after a second thought, the below suggestion doesn't
+>> work. I think the proper way is to make htab_lock_bucket() as a
+>> raw_spin_trylock_irqsave().
+>>
+>> Regards,
+>> Boqun
+>>
+> The potential deadlock happens when the lock is contended from the
+> same cpu. When the lock is contended from a remote cpu, we would like
+> the remote cpu to spin and wait, instead of giving up immediately. As
+> this gives better throughput. So replacing the current
+> raw_spin_lock_irqsave() with trylock sacrifices this performance gain.
+>
+> I suspect the source of the problem is the 'hash' that we used in
+> htab_lock_bucket(). The 'hash' is derived from the 'key', I wonder
+> whether we should use a hash derived from 'bucket' rather than from
+> 'key'. For example, from the memory address of the 'bucket'. Because,
+> different keys may fall into the same bucket, but yield different
+> hashes. If the same bucket can never have two different 'hashes' here,
+> the map_locked check should behave as intended. Also because
+> ->map_locked is per-cpu, execution flows from two different cpus can
+> both pass.
 
-On Thu, 24 Nov 2022 22:09:56 -0600 you wrote:
-> RTL8723DS is another variant of the RTL8723 WiFi + Bluetooth chip. It is
-> already supported by the hci_uart/btrtl driver. Document the compatible.
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Alistair Francis <alistair@alistair23.me>
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> 
-> [...]
+I would suggest that you add a in_nmi() check and if true use trylock to 
+get the lock. You can continue to use raw_spin_lock_irqsave() in all 
+other cases.
 
-Here is the summary with links:
-  - [v2] dt-bindings: net: realtek-bluetooth: Add RTL8723DS
-    https://git.kernel.org/bluetooth/bluetooth-next/c/b05684f9f99b
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Cheers,
+Longman
 
