@@ -2,80 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 088B363CD80
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 03:48:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB22E63CDA4
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 04:04:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232420AbiK3Csc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 21:48:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57418 "EHLO
+        id S232554AbiK3DEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 22:04:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232385AbiK3Cs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 21:48:29 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9C56CA1D;
-        Tue, 29 Nov 2022 18:48:28 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id q7so24115426wrr.8;
-        Tue, 29 Nov 2022 18:48:28 -0800 (PST)
+        with ESMTP id S229775AbiK3DEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 22:04:40 -0500
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61852AC58;
+        Tue, 29 Nov 2022 19:04:39 -0800 (PST)
+Received: by mail-io1-xd29.google.com with SMTP id b2so11494957iof.12;
+        Tue, 29 Nov 2022 19:04:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TtkyVa2IrpwnujLbAlvNXcH3WzrDZO7fZhfeo5ojqx4=;
-        b=Yys8xeVioelna9iNWiERvl5crZc+mVVlT+/OZm1LNnG4J2rCxTB+EJIklMMegkuscc
-         lSsPxMzna89c6M//ei9tMuP1ATGqyC3dtCL3IquQxuTokBHVfGQNifV+4NriXFtI2X17
-         fszP4brWR/Hx+1/LnduzDEDWLG2bW2wn+YiLZznjK3Bl6yjsYFGNitQ1NCRBg6VsdwA3
-         mdvc/0pCR4hmvzoA9KsE/aXTinG4WlUei5trUCNevQehnnAyVeIxHs/rrX9R1ViLAbSq
-         ugV0pwm7w1LorCZ+BNVB/yXIdQa79D+iw5qhGFXmZxo5o6Ez23tqKsvpa3jdwq/RxNVs
-         BinQ==
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=7XROP14rJYXzTuiWyk83t4xQBYY/HpEJYx05llAt13k=;
+        b=cyY9BuXbzMD69BfeS2Dd6RN3Ry7Gv3A77tITGI6/lP9cguoyqH5AfI5WHC6RCheoBA
+         +iD7K6IYuBwxKQiHSZeA0uEf7L6Jyd8w/S1coBbXGeKWV2fMDH35mZutTa+wMrA/uQXm
+         jQ/Rxzw8W2JLQ+vE0XOy/MPvONypUsx56jgwoNYVzwV7K41ovOHCTiflRG0MQekiHbER
+         ICDDd+WD6psqGVUqiGVuSNmU6LNzd2S5mD0dBSGC7Ag5medYm/G5GAJjcvyh8VtzlmDf
+         WFA773NstUiaK0N47tzS4dYOWuyvOBDqORhJQtQpzGmZKJKeWLZgeEPgBQYPCAPev0tY
+         /rTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TtkyVa2IrpwnujLbAlvNXcH3WzrDZO7fZhfeo5ojqx4=;
-        b=4Q8gpUOG4ZS0u6BnZFgHhNs1Kp4k9IZ9oSILavaATvPoMwXWRSl+nZdtzVNjcpxeM0
-         jMIflimS3goU7RNYmluXJ8GQhkjmbArxJEWsK/shlBJMnwjk13sO6n8DWjoj5UYsrkh9
-         QcUsSA0m6qaQ8/6AnwKFH7nlvXFc4BSLBzz6DeL/BHoVB+/yzhX+AXYdQBD+3f43aA++
-         MJDHlh7Src1ud4fKPLQlh0x7CKTKhrMFjpSt8zv9C89WQgYT4rF6s9Enl4KsSeAl/BAi
-         ByBvOy2kuxXzGkblJ4p0N2ZR7j74T3fuO0d8m/rQC+s0np/c78Fe/wxN+eFWpSuqGhP0
-         nr5w==
-X-Gm-Message-State: ANoB5pmjLwPTQpd63w83pxxNMw8mJRgTghTzgDULghZRP+MWCTnG+UMs
-        mUVN7lx6BjFSblcnUp2xGyZDyr61SWisMo252jE=
-X-Google-Smtp-Source: AA0mqf7oM1xVfPZeEBeXoHPoEIp2eTKZPeY+uxONWEAQpo3ShqFa81+F9spvkCRBBnSaiGYb573NrE1KoDjO7rmL9G0=
-X-Received: by 2002:adf:e68a:0:b0:242:1926:7838 with SMTP id
- r10-20020adfe68a000000b0024219267838mr7357388wrm.200.1669776506939; Tue, 29
- Nov 2022 18:48:26 -0800 (PST)
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7XROP14rJYXzTuiWyk83t4xQBYY/HpEJYx05llAt13k=;
+        b=cBST4Ueu8q9OjnstgZTMB5VIijVGv4QNpBDNc+q5NUW0gEVnt5FhQINNudOhdO83mp
+         W+2OVgdDB1ur085aug3P6bhR3j7GSofn0KZYMBSGmpjYTd5/ZtaMOsBED3ZCteM/wqgd
+         lcOY5mKukQSplptEzSAXgUHdQxnFJkBPo3p+XKqhqionyxsgWXoXle+If4KU4Oda5dDR
+         z9dOka74qe2m9Yw/G2xBnl6WBsLC0juCkx/fdY9QQ6R/AiwenfTIcsw9/9Tr+nqm51pb
+         imfbrwSKSWesHGRmTbnOuSy02wT66/e7E5r4wV5mxWY+oPfo4aGIyzGRW6X6FN1NTLX/
+         X5fg==
+X-Gm-Message-State: ANoB5pnTwl8bg21Xlu0QLB3f+QrlOiNvkOJMc9TcjicT7N4GVCpKocOc
+        gMh4qYIBx82djWWfA05XLCK8F2p0wMm1vw==
+X-Google-Smtp-Source: AA0mqf6oQ4P/klApsV6gYwa958mnSWHwAtPDRcf0GPh9AmhZNKq9TfbKoldVGzyn1LQdcWLyWFEJ3w==
+X-Received: by 2002:a02:2710:0:b0:36c:c1d4:d3e0 with SMTP id g16-20020a022710000000b0036cc1d4d3e0mr28505285jaa.181.1669777479139;
+        Tue, 29 Nov 2022 19:04:39 -0800 (PST)
+Received: from MBP (ec2-18-117-95-84.us-east-2.compute.amazonaws.com. [18.117.95.84])
+        by smtp.gmail.com with ESMTPSA id l66-20020a6b3e45000000b006dfbf3fe79dsm114587ioa.32.2022.11.29.19.04.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Nov 2022 19:04:38 -0800 (PST)
+References: <20221129162251.90790-1-schspa@gmail.com>
+ <Y4aJzjlkkt5VKy0G@codewreck.org>
+User-agent: mu4e 1.8.10; emacs 28.2
+From:   Schspa Shi <schspa@gmail.com>
+To:     asmadeus@codewreck.org
+Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.co,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
+Subject: Re: [PATCH] 9p: fix crash when transaction killed
+Date:   Wed, 30 Nov 2022 10:22:44 +0800
+In-reply-to: <Y4aJzjlkkt5VKy0G@codewreck.org>
+Message-ID: <m2r0xli1mq.fsf@gmail.com>
 MIME-Version: 1.0
-References: <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
- <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com>
- <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com> <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
- <CA+khW7jgsyFgBqU7hCzZiSSANE7f=A+M-0XbcKApz6Nr-ZnZDg@mail.gmail.com>
- <07a7491e-f391-a9b2-047e-cab5f23decc5@huawei.com> <CAMDZJNUTaiXMe460P7a7NfK1_bbaahpvi3Q9X85o=G7v9x-w=g@mail.gmail.com>
- <59fc54b7-c276-2918-6741-804634337881@huaweicloud.com> <541aa740-dcf3-35f5-9f9b-e411978eaa06@redhat.com>
- <Y4ZABpDSs4/uRutC@Boquns-Mac-mini.local> <Y4ZCKaQFqDY3aLTy@Boquns-Mac-mini.local>
- <CA+khW7hkQRFcC1QgGxEK_NeaVvCe3Hbe_mZ-_UkQKaBaqnOLEQ@mail.gmail.com> <23b5de45-1a11-b5c9-d0d3-4dbca0b7661e@huaweicloud.com>
-In-Reply-To: <23b5de45-1a11-b5c9-d0d3-4dbca0b7661e@huaweicloud.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Wed, 30 Nov 2022 10:47:50 +0800
-Message-ID: <CAMDZJNWtyanKtXtAxYGwvJ0LTgYLf=5iYFm63pbvvJLPE8oHSQ@mail.gmail.com>
-Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
-To:     Hou Tao <houtao@huaweicloud.com>
-Cc:     Hao Luo <haoluo@google.com>, Waiman Long <longman@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jiri Olsa <jolsa@kernel.org>, bpf <bpf@vger.kernel.org>,
-        "houtao1@huawei.com" <houtao1@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -86,84 +74,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 9:50 AM Hou Tao <houtao@huaweicloud.com> wrote:
+
+asmadeus@codewreck.org writes:
+
+> Schspa Shi wrote on Wed, Nov 30, 2022 at 12:22:51AM +0800:
+>> The transport layer of fs does not fully support the cancel request.
+>> When the request is in the REQ_STATUS_SENT state, p9_fd_cancelled
+>> will forcibly delete the request, and at this time p9_[read/write]_work
+>> may continue to use the request. Therefore, it causes UAF .
+>> 
+>> There is the logs from syzbot.
+>> 
+>> Corrupted memory at 0xffff88807eade00b [ 0xff 0x07 0x00 0x00 0x00 0x00
+>> 0x00 0x00 . . . . . . . . ] (in kfence-#110):
+>>  p9_fcall_fini net/9p/client.c:248 [inline]
+>>  p9_req_put net/9p/client.c:396 [inline]
+>>  p9_req_put+0x208/0x250 net/9p/client.c:390
+>>  p9_client_walk+0x247/0x540 net/9p/client.c:1165
+>>  clone_fid fs/9p/fid.h:21 [inline]
+>>  v9fs_fid_xattr_set+0xe4/0x2b0 fs/9p/xattr.c:118
+>>  v9fs_xattr_set fs/9p/xattr.c:100 [inline]
+>>  v9fs_xattr_handler_set+0x6f/0x120 fs/9p/xattr.c:159
+>>  __vfs_setxattr+0x119/0x180 fs/xattr.c:182
+>>  __vfs_setxattr_noperm+0x129/0x5f0 fs/xattr.c:216
+>>  __vfs_setxattr_locked+0x1d3/0x260 fs/xattr.c:277
+>>  vfs_setxattr+0x143/0x340 fs/xattr.c:309
+>>  setxattr+0x146/0x160 fs/xattr.c:617
+>>  path_setxattr+0x197/0x1c0 fs/xattr.c:636
+>>  __do_sys_setxattr fs/xattr.c:652 [inline]
+>>  __se_sys_setxattr fs/xattr.c:648 [inline]
+>>  __ia32_sys_setxattr+0xc0/0x160 fs/xattr.c:648
+>>  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+>>  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+>>  do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
+>>  entry_SYSENTER_compat_after_hwframe+0x70/0x82
+>> 
+>> Below is a similar scenario, the scenario in the syzbot log looks more
+>> complicated than this one, but the root cause seems to be the same.
+>> 
+>>      T21124               p9_write_work        p9 read_work
+>> ======================== first trans =================================
+>> p9_client_walk
+>>   p9_client_rpc
+>>     p9_client_prepare_req
+>>     /* req->refcount == 2 */
+>>     c->trans_mod->request(c, req);
+>>       p9_fd_request
+>>         req move to unsent_req_list
+>>                             req->status = REQ_STATUS_SENT;
+>>                             req move to req_list
+>>                             << send to server >>
+>>     wait_event_killable
+>>     << get kill signal >>
+>>     if (c->trans_mod->cancel(c, req))
+>>        p9_client_flush(c, req);
+>>          /* send flush request */
+>>          req = p9_client_rpc(c, P9_TFLUSH, "w", oldtag);
+>> 		 if (c->trans_mod->cancelled)
+>>             c->trans_mod->cancelled(c, oldreq);
+>>               /* old req was deleted from req_list */
+>>               /* req->refcount == 1 */
+>>   p9_req_put
+>>     /* req->refcount == 0 */
+>>     << preempted >>
+>>                                        << get response, UAF here >>
+>>                                        m->rreq = p9_tag_lookup(m->client, m->rc.tag);
+>>                                          /* req->refcount == 1 */
+>>                                        << do response >>
+>>                                        p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);
+>>                                          /* req->refcount == 0 */
+>>                                          p9_fcall_fini
+>>                                          /* request have been freed */
+>>     p9_fcall_fini
+>>      /* double free */
+>>                                        p9_req_put(m->client, m->rreq);
+>>                                          /* req->refcount == 1 */
+>> 
+>> To fix it, we can wait the request with status REQ_STATUS_SENT returned.
 >
-> Hi Hao,
+> Christian replied on this (we cannot wait) but I agree with him -- the
+
+Yes, this is where I worry about too, this wait maybe cause a deadlock.
+
+> scenario you describe is proteced by p9_tag_lookup checking for refcount
+> with refcount_inc_not_zero (p9_req_try_get).
+
+Thanks for pointing out the zero value check here, the scene in the
+commit message does not hold.
+
 >
-> On 11/30/2022 3:36 AM, Hao Luo wrote:
-> > On Tue, Nov 29, 2022 at 9:32 AM Boqun Feng <boqun.feng@gmail.com> wrote:
-> >> Just to be clear, I meant to refactor htab_lock_bucket() into a try
-> >> lock pattern. Also after a second thought, the below suggestion doesn't
-> >> work. I think the proper way is to make htab_lock_bucket() as a
-> >> raw_spin_trylock_irqsave().
-> >>
-> >> Regards,
-> >> Boqun
-> >>
-> > The potential deadlock happens when the lock is contended from the
-> > same cpu. When the lock is contended from a remote cpu, we would like
-> > the remote cpu to spin and wait, instead of giving up immediately. As
-> > this gives better throughput. So replacing the current
-> > raw_spin_lock_irqsave() with trylock sacrifices this performance gain.
-> >
-> > I suspect the source of the problem is the 'hash' that we used in
-> > htab_lock_bucket(). The 'hash' is derived from the 'key', I wonder
-> > whether we should use a hash derived from 'bucket' rather than from
-> > 'key'. For example, from the memory address of the 'bucket'. Because,
-> > different keys may fall into the same bucket, but yield different
-> > hashes. If the same bucket can never have two different 'hashes' here,
-> > the map_locked check should behave as intended. Also because
-> > ->map_locked is per-cpu, execution flows from two different cpus can
-> > both pass.
-> The warning from lockdep is due to the reason the bucket lock A is used in a
-> no-NMI context firstly, then the same bucke lock is used a NMI context, so
-Yes, I tested lockdep too, we can't use the lock in NMI(but only
-try_lock work fine) context if we use them no-NMI context. otherwise
-the lockdep prints the warning.
-* for the dead-lock case: we can use the
-1. hash & min(HASHTAB_MAP_LOCK_MASK, htab->n_buckets -1)
-2. or hash bucket address.
-
-* for lockdep warning, we should use in_nmi check with map_locked.
-
-BTW, the patch doesn't work, so we can remove the lock_key
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c50eb518e262fa06bd334e6eec172eaf5d7a5bd9
-
-static inline int htab_lock_bucket(const struct bpf_htab *htab,
-                                   struct bucket *b, u32 hash,
-                                   unsigned long *pflags)
-{
-        unsigned long flags;
-
-        hash = hash & min(HASHTAB_MAP_LOCK_MASK, htab->n_buckets -1);
-
-        preempt_disable();
-        if (unlikely(__this_cpu_inc_return(*(htab->map_locked[hash])) != 1)) {
-                __this_cpu_dec(*(htab->map_locked[hash]));
-                preempt_enable();
-                return -EBUSY;
-        }
-
-        if (in_nmi()) {
-                if (!raw_spin_trylock_irqsave(&b->raw_lock, flags))
-                        return -EBUSY;
-        } else {
-                raw_spin_lock_irqsave(&b->raw_lock, flags);
-        }
-
-        *pflags = flags;
-        return 0;
-}
-
-
-> lockdep deduces that may be a dead-lock. I have already tried to use the same
-> map_locked for keys with the same bucket, the dead-lock is gone, but still got
-> lockdep warning.
-> >
-> > Hao
-> > .
+> The normal scenarii for flush are as follow:
+>  - cancel before request is sent: no flush, just free
+>  - flush is ignored and reply comes first: we get reply from original
+> request then reply from flush
+>  - flush is handled and reply never comes: we only get reply from flush
 >
+> Protocol-wise, we can safely reuse the tag after the flush reply got
+> received; and as far as I can follow the code we only ever free the tag
+> (last p9_call_fini) after flush has returned so the entry should be
+> protected.
+>
+> If we receive a response on the given tag between cancelled and the main
+> thread going out the request has been marked as FLSHD and should be
+> ignored. . . here is one p9_req_put in p9_read_work() in this case but
+> it corresponds to the ref obtained by p9_tag_lookup() so it should be
+> valid.
+>
+>
+> I'm happy to believe we have a race somewhere (even if no sane server
+> would produce it), but right now I don't see it looking at the code.. :/
 
+And I think there is a race too. because the syzbot report about 9p fs
+memory corruption multi times.
+
+As for the problem, the p9_tag_lookup only takes the rcu_read_lock when
+accessing the IDR, why it doesn't take the p9_client->lock? Maybe the
+root cause is that a lock is missing here.
 
 -- 
-Best regards, Tonghao
+BRs
+Schspa Shi
