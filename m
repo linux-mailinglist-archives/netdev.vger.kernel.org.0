@@ -2,187 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 796FF63DCEF
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 19:18:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3048463DCFB
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 19:19:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbiK3SR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 13:17:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39526 "EHLO
+        id S230196AbiK3ST3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 13:19:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230288AbiK3SRa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 13:17:30 -0500
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008BF88B56;
-        Wed, 30 Nov 2022 10:15:18 -0800 (PST)
-Message-ID: <b3306950-bea9-e914-0491-54048d6d55e4@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1669832107;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cLk4yabJzvkIcVmaArcXfeMK0WT9teH2A3xR5+0JBmQ=;
-        b=BN0Tx1JDsXTuP0AEdr7CMBTRwApD3BJ8bru3zwgbLz1lEyhZLGZlLe87vrP2IQZva9PdpL
-        S8VglkwhjobLUazPcH01M1jYa2efXKdrTLlCgbl8GOosVgu0wWuaCRcIjLBw4THCji3iiL
-        pSExCBdcOZwL58B5K5nKHeeCHyMcLmU=
-Date:   Wed, 30 Nov 2022 10:14:56 -0800
+        with ESMTP id S230247AbiK3STM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 13:19:12 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4828D649
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 10:16:22 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id s141so1906074oie.10
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 10:16:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=BZx3c6pdH3tvbbV8hd9d5C+kOw6FjAWMt/tV6RWix8Y=;
+        b=oBDpW4gxowQLjwbJ4RHVMMkexMHrXMKjhTZQiyPABVqPYrQ7s01TUq7w7ZZQI5r4Kc
+         xu0yJ8r8HcgO+Nip5velLlgN0y+gGXA0vL+fjBPBfHGMF/OM2vvp/pnSvvU4WT0/+MIh
+         M71zdaOSYzXBAjKLzTCXd0oAQ3DD1ySOkIDek=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=BZx3c6pdH3tvbbV8hd9d5C+kOw6FjAWMt/tV6RWix8Y=;
+        b=i//sF5B/lO/SV6IJ5KE/LT9ZZk1UkqNmAEwAI0lc83VIXF2cyAUaGEhI5oFt7QKo5d
+         5e3HR1Obhm4QtnDeK/U0LuQ4dE2AjFrQjFxRd6z4ojAuMSIq9Ar/frB++zheg4zhYauh
+         Xw3XWg9uTkcpMVB8+5mqob/sRR5bXmrZZbJgpRWgnmxjsG44zFtpB8XkaigPxl/YE8Pi
+         Lc2Vb5Ft9JETydQ4vgULyTjjuX+HsuyqdQK4euQ5kCq/KUew6QeqzyvLBdF9LwzSPlWL
+         X9gyB/JTLT3mXB06zLiMd/P5nLhtHy/qdheGodInh6s6SyduBpzc1uyq1Xjg1+qwzRK0
+         LDyA==
+X-Gm-Message-State: ANoB5pnL6M92jI0/IrPq7pL3wF6+FpjKeucSCbF8XqCLxQdGmfNihwoI
+        M6BS9hHXOLyPYORa8gGJ85CjhKrph3BKLqNqoX9B3w==
+X-Google-Smtp-Source: AA0mqf6ktv4Mbw61Q5evf5XgM9SEqSo3B9f7VRAeR5VeuVYN1GfdLs+BjPg/oU+Mvra8qnf8D7T0V+5TYSr+T+2Sxns=
+X-Received: by 2002:a05:6808:1a09:b0:354:4a36:aa32 with SMTP id
+ bk9-20020a0568081a0900b003544a36aa32mr32435098oib.15.1669832181662; Wed, 30
+ Nov 2022 10:16:21 -0800 (PST)
 MIME-Version: 1.0
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-Subject: Re: [PATCH ipsec-next,v2 2/3] xfrm: interface: Add unstable helpers
- for setting/getting XFRM metadata from TC-BPF
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        andrii@kernel.org, daniel@iogearbox.net, nicolas.dichtel@6wind.com,
-        razor@blackwall.org, mykolal@fb.com, ast@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, shuah@kernel.org
-References: <20221129132018.985887-1-eyal.birger@gmail.com>
- <20221129132018.985887-3-eyal.birger@gmail.com>
-Content-Language: en-US
-In-Reply-To: <20221129132018.985887-3-eyal.birger@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+References: <20221130181316.GA1012431@paulmck-ThinkPad-P17-Gen-1> <20221130181325.1012760-14-paulmck@kernel.org>
+In-Reply-To: <20221130181325.1012760-14-paulmck@kernel.org>
+From:   Joel Fernandes <joel@joelfernandes.org>
+Date:   Wed, 30 Nov 2022 18:16:11 +0000
+Message-ID: <CAEXW_YS1nfsV_ohXDaB1i2em=+0KP1DofktS24oGFa4wPAbiiw@mail.gmail.com>
+Subject: Re: [PATCH rcu 14/16] rxrpc: Use call_rcu_hurry() instead of call_rcu()
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@meta.com, rostedt@goodmis.org,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/29/22 5:20 AM, Eyal Birger wrote:
-> diff --git a/net/xfrm/xfrm_interface_bpf.c b/net/xfrm/xfrm_interface_bpf.c
-> new file mode 100644
-> index 000000000000..757e15857dbf
-> --- /dev/null
-> +++ b/net/xfrm/xfrm_interface_bpf.c
-> @@ -0,0 +1,100 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Unstable XFRM Helpers for TC-BPF hook
-> + *
-> + * These are called from SCHED_CLS BPF programs. Note that it is
-> + * allowed to break compatibility for these functions since the interface they
-> + * are exposed through to BPF programs is explicitly unstable.
-> + */
-> +
-> +#include <linux/bpf.h>
-> +#include <linux/btf_ids.h>
-> +
-> +#include <net/dst_metadata.h>
-> +#include <net/xfrm.h>
-> +
-> +struct bpf_xfrm_info {
-No need to introduce a bpf variant of the "struct xfrm_md_info" (more on this 
-later).
+Hi Eric,
 
-> +	u32 if_id;
-> +	int link;
-> +};
-> +
-> +static struct metadata_dst __percpu *xfrm_md_dst;
-> +__diag_push();
-> +__diag_ignore_all("-Wmissing-prototypes",
-> +		  "Global functions as their definitions will be in xfrm_interface BTF");
-> +
-> +__used noinline
-> +int bpf_skb_get_xfrm_info(struct __sk_buff *skb_ctx, struct bpf_xfrm_info *to)
+Could you give your ACK for this patch?
 
-This kfunc is not needed.  It only reads the skb->_skb_refdst.  The new kfunc 
-bpf_rdonly_cast() can be used.  Take a look at the bpf_rdonly_cast() usages in 
-the selftests/bpf/progs/type_cast.c.  It was in bpf-next only but should also be 
-in net-next now.
+The networking testing passed on ChromeOS and it has been in -next for
+some time so has gotten testing there. The CONFIG option is default
+disabled.
 
-> +{
-> +	struct sk_buff *skb = (struct sk_buff *)skb_ctx;
-> +	struct xfrm_md_info *info;
-> +
-> +	memset(to, 0, sizeof(*to));
-> +
-> +	info = skb_xfrm_md_info(skb);
-> +	if (!info)
-> +		return -EINVAL;
-> +
-> +	to->if_id = info->if_id;
-> +	to->link = info->link;
-> +	return 0;
-> +}
-> +
-> +__used noinline
-> +int bpf_skb_set_xfrm_info(struct __sk_buff *skb_ctx,
-> +			  const struct bpf_xfrm_info *from)
+Thanks a lot,
 
-Directly use "const struct xfrm_md_info *from" instead.  This kfunc can check 
-from->dst_orig != NULL and return -EINVAL.  It will then have a consistent API 
-with the bpf_rdonly_cast() mentioned above.
+- Joel
 
-> +{
-> +	struct sk_buff *skb = (struct sk_buff *)skb_ctx;
-> +	struct metadata_dst *md_dst;
-> +	struct xfrm_md_info *info;
-> +
-> +	if (unlikely(skb_metadata_dst(skb)))
-> +		return -EINVAL;
-> +
-> +	md_dst = this_cpu_ptr(xfrm_md_dst);
-> +
-> +	info = &md_dst->u.xfrm_info;
-> +	memset(info, 0, sizeof(*info));
-
-Unnecessary memset here.  Everything should have been initialized below. 
-bpf_skb_set_tunnel_key() needs memset but not here.
-
-> +
-> +	info->if_id = from->if_id;
-> +	info->link = from->link;
-> +	skb_dst_force(skb);
-> +	info->dst_orig = skb_dst(skb);
-> +
-> +	dst_hold((struct dst_entry *)md_dst);
-> +	skb_dst_set(skb, (struct dst_entry *)md_dst);
-> +	return 0;
-> +}
-> +
-> +__diag_pop()
-> +
-> +BTF_SET8_START(xfrm_ifc_kfunc_set)
-> +BTF_ID_FLAGS(func, bpf_skb_get_xfrm_info)
-> +BTF_ID_FLAGS(func, bpf_skb_set_xfrm_info)
-> +BTF_SET8_END(xfrm_ifc_kfunc_set)
-> +
-> +static const struct btf_kfunc_id_set xfrm_interface_kfunc_set = {
-> +	.owner = THIS_MODULE,
-> +	.set   = &xfrm_ifc_kfunc_set,
-> +};
-> +
-> +int __init register_xfrm_interface_bpf(void)
-> +{
-> +	int err;
-> +
-> +	xfrm_md_dst = metadata_dst_alloc_percpu(0, METADATA_XFRM,
-> +						GFP_KERNEL);
-
-May be DEFINE_PER_CPU() instead?
-
-> +	if (!xfrm_md_dst)
-> +		return -ENOMEM;
-> +	err = register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS,
-> +					&xfrm_interface_kfunc_set);
-> +	if (err < 0) {
-> +		cleanup_xfrm_interface_bpf();
-> +		return err;
-> +	}
-> +	return 0;
-> +}
-> +
-> +void __exit cleanup_xfrm_interface_bpf(void)
-> +{
-> +	metadata_dst_free_percpu(xfrm_md_dst);
-> +}
-
+On Wed, Nov 30, 2022 at 6:13 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+>
+> From: "Joel Fernandes (Google)" <joel@joelfernandes.org>
+>
+> Earlier commits in this series allow battery-powered systems to build
+> their kernels with the default-disabled CONFIG_RCU_LAZY=y Kconfig option.
+> This Kconfig option causes call_rcu() to delay its callbacks in order
+> to batch them.  This means that a given RCU grace period covers more
+> callbacks, thus reducing the number of grace periods, in turn reducing
+> the amount of energy consumed, which increases battery lifetime which
+> can be a very good thing.  This is not a subtle effect: In some important
+> use cases, the battery lifetime is increased by more than 10%.
+>
+> This CONFIG_RCU_LAZY=y option is available only for CPUs that offload
+> callbacks, for example, CPUs mentioned in the rcu_nocbs kernel boot
+> parameter passed to kernels built with CONFIG_RCU_NOCB_CPU=y.
+>
+> Delaying callbacks is normally not a problem because most callbacks do
+> nothing but free memory.  If the system is short on memory, a shrinker
+> will kick all currently queued lazy callbacks out of their laziness,
+> thus freeing their memory in short order.  Similarly, the rcu_barrier()
+> function, which blocks until all currently queued callbacks are invoked,
+> will also kick lazy callbacks, thus enabling rcu_barrier() to complete
+> in a timely manner.
+>
+> However, there are some cases where laziness is not a good option.
+> For example, synchronize_rcu() invokes call_rcu(), and blocks until
+> the newly queued callback is invoked.  It would not be a good for
+> synchronize_rcu() to block for ten seconds, even on an idle system.
+> Therefore, synchronize_rcu() invokes call_rcu_hurry() instead of
+> call_rcu().  The arrival of a non-lazy call_rcu_hurry() callback on a
+> given CPU kicks any lazy callbacks that might be already queued on that
+> CPU.  After all, if there is going to be a grace period, all callbacks
+> might as well get full benefit from it.
+>
+> Yes, this could be done the other way around by creating a
+> call_rcu_lazy(), but earlier experience with this approach and
+> feedback at the 2022 Linux Plumbers Conference shifted the approach
+> to call_rcu() being lazy with call_rcu_hurry() for the few places
+> where laziness is inappropriate.
+>
+> And another call_rcu() instance that cannot be lazy is the one
+> in rxrpc_kill_connection(), which sometimes does a wakeup
+> that should not be unduly delayed.
+>
+> Therefore, make rxrpc_kill_connection() use call_rcu_hurry() in order
+> to revert to the old behavior.
+>
+> [ paulmck: Apply s/call_rcu_flush/call_rcu_hurry/ feedback from Tejun Heo. ]
+>
+> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: Marc Dionne <marc.dionne@auristor.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: <linux-afs@lists.infradead.org>
+> Cc: <netdev@vger.kernel.org>
+> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> ---
+>  net/rxrpc/conn_object.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+> index 22089e37e97f0..9c5fae9ca106c 100644
+> --- a/net/rxrpc/conn_object.c
+> +++ b/net/rxrpc/conn_object.c
+> @@ -253,7 +253,7 @@ void rxrpc_kill_connection(struct rxrpc_connection *conn)
+>          * must carry a ref on the connection to prevent us getting here whilst
+>          * it is queued or running.
+>          */
+> -       call_rcu(&conn->rcu, rxrpc_destroy_connection);
+> +       call_rcu_hurry(&conn->rcu, rxrpc_destroy_connection);
+>  }
+>
+>  /*
+> --
+> 2.31.1.189.g2e36527f23
+>
