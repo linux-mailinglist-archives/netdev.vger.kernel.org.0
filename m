@@ -2,121 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6020963D339
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 11:22:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD64363D3BE
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 11:51:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235107AbiK3KWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 05:22:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51094 "EHLO
+        id S229861AbiK3KvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 05:51:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235655AbiK3KWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 05:22:17 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37052C649
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 02:22:05 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1p0KE4-0001I7-Et; Wed, 30 Nov 2022 11:22:00 +0100
-Received: from pengutronix.de (unknown [IPv6:2a0a:edc0:0:701:38ad:958d:3def:4382])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id C106012DD15;
-        Wed, 30 Nov 2022 10:21:58 +0000 (UTC)
-Date:   Wed, 30 Nov 2022 11:21:57 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Frank Jungclaus <Frank.Jungclaus@esd.eu>
-Cc:     Stefan =?utf-8?B?TcOkdGpl?= <Stefan.Maetje@esd.eu>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mailhol.vincent@wanadoo.fr" <mailhol.vincent@wanadoo.fr>
-Subject: Re: [PATCH RESEND 1/1] can: esd_usb: Allow REC and TEC to return to
- zero
-Message-ID: <20221130102157.ip7w35ufc6xepb5w@pengutronix.de>
-References: <20221124203806.3034897-1-frank.jungclaus@esd.eu>
- <20221124203806.3034897-2-frank.jungclaus@esd.eu>
- <20221125155651.ilwfs64mtzcn2zvi@pengutronix.de>
- <567bb7208c29388eb5a4fe7a270f2c3192a87e0e.camel@esd.eu>
+        with ESMTP id S229515AbiK3KvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 05:51:12 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257AC716C1;
+        Wed, 30 Nov 2022 02:51:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669805472; x=1701341472;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yhIEfje7scP4uHE/V4Mj7IrqqEE1cET9PfIRw9AAsgM=;
+  b=Y1d2o2XR9DrFKt2vzA9JQeSxtyMKipFfrI1N8j1/xurYxhVzOoMZjVT0
+   cesNcQlyXWW4pUlrvqBHuRWOR1+YqWNkiAWZL7x5sjSxuoUk1+VWf2RnA
+   KNi0LPr18LxPMoHO6b/elSJ3E0y0jzJOZqmbYtZaVCFawLNdb3ZLWhCFB
+   TfNLNnjj/peBMWvTVTlvK5S5NsibJnRUMYLJp8T7ZVl8lc2L11t/pR8Hp
+   rmJCKO/NrFkKRouAbfnkzuVXSqs9i7nXJZdrCQWmQfZ/0g/EnIoFpqEKo
+   2ilGjCRCGWN4dBT9HnTQIXfeJTeVPv9iEUYoiIxz3ENxTx/ttVPPSQ3K2
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="302968581"
+X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
+   d="scan'208";a="302968581"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 02:51:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="818585158"
+X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
+   d="scan'208";a="818585158"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga005.jf.intel.com with ESMTP; 30 Nov 2022 02:51:09 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1p0KgE-002Dib-37;
+        Wed, 30 Nov 2022 12:51:06 +0200
+Date:   Wed, 30 Nov 2022 12:51:06 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Jamet <michael.jamet@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [resend, PATCH net-next v1 2/2] net: thunderbolt: Use separate
+ header data type for the Rx
+Message-ID: <Y4c1mtUlJfcxUQSi@smile.fi.intel.com>
+References: <20221129161359.75792-1-andriy.shevchenko@linux.intel.com>
+ <20221129161359.75792-2-andriy.shevchenko@linux.intel.com>
+ <Y4cKSJI/TSQVMMJr@black.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="txnwk44n5fupu5xm"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <567bb7208c29388eb5a4fe7a270f2c3192a87e0e.camel@esd.eu>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <Y4cKSJI/TSQVMMJr@black.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Nov 30, 2022 at 09:46:16AM +0200, Mika Westerberg wrote:
+> On Tue, Nov 29, 2022 at 06:13:59PM +0200, Andy Shevchenko wrote:
+> > The same data type structure is used for bitwise operations and
+> > regular ones. It makes sparse unhappy, for example:
+> > 
+> >   .../thunderbolt.c:718:23: warning: cast to restricted __le32
+> > 
+> >   .../thunderbolt.c:953:23: warning: incorrect type in initializer (different base types)
+> >   .../thunderbolt.c:953:23:    expected restricted __wsum [usertype] wsum
+> >   .../thunderbolt.c:953:23:    got restricted __be32 [usertype]
+> > 
+> > Split the header to bitwise one and specific for Rx to make sparse
+> > happy. Assure the layout by involving static_assert() against size
+> > and offsets of the member of the structures.
 
---txnwk44n5fupu5xm
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> I would much rather keep the humans reading this happy than add 20+
+> lines just to silence a tool. Unless this of course is some kind of a
+> real bug.
 
-On 29.11.2022 17:15:56, Frank Jungclaus wrote:
-> Hello Marc,
-> thanks for commenting.
->=20
-> On Fri, 2022-11-25 at 16:56 +0100, Marc Kleine-Budde wrote:
-> > On 24.11.2022 21:38:06, Frank Jungclaus wrote:
-> > > We don't get any further EVENT from an esd CAN USB device for changes
-> > > on REC or TEC while those counters converge to 0 (with ecc =3D=3D 0).
-> > > So when handling the "Back to Error Active"-event force
-> > > txerr =3D rxerr =3D 0, otherwise the berr-counters might stay on
-> > > values like 95 forever ...
-> > >=20
-> > > Also, to make life easier during the ongoing development a
-> > > netdev_dbg() has been introduced to allow dumping error events send by
-> > > an esd CAN USB device.
-> > >=20
-> > > Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
-> >=20
-> > Please add a Fixes tag.
-> >=20
-> > https://elixir.bootlin.com/linux/v6.0/source/Documentation/process/hand=
-ling-regressions.rst#L107
-> >=20
-> From my point of view this is not a regression, it's a sort of
-> imperfection existing since the initial add of esd_usb(2).c to the
-> kernel. So should I add a "Fixes:" referring to the initial commit?
-> (Currently) I'm slow on the uptake ;)
+Actually, changing types to bitwise ones reduces the sparse noise
+(I will double check this) without reducing readability.
+Would it be accepted?
 
-Please add a fixes tag that refers to the code that this patch fixes.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Marc
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---txnwk44n5fupu5xm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOHLsMACgkQrX5LkNig
-0103zQf/ZAgtOyPFAuMRQXXBwGvOD1FH/DO/cXRKQXSUcdSJDwPjg4ztdxsWa1Sp
-jSg3bsvFTtRkSO7aOurWCjg8WZs6arv2YT80Kp7tB9rQ8YxxIXF7SVnt2L9KaxQS
-KFgSUEC5liQt1VYTQtXTkf3fKkMpA+wi14jjuuOWWDD1dSDFVx/vYyMmC9z+/pDm
-VzBVRxngUzjf1EgPHP8P9qOj4SOfOXbwLhN65A3TaxRJBQLZwqaqGWVF911Uwizi
-x4YDkFnLqnMGJXQOfiZZjK9H92cpyKuwaaiMhfGEDnHgvDM/0x3idvqUN96nHUIv
-m6xh2ULrXchDJVHHwbFRcUbM5IyKxA==
-=cWlk
------END PGP SIGNATURE-----
-
---txnwk44n5fupu5xm--
