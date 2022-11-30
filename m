@@ -2,256 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 442C763D7D2
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:11:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBC5963D817
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:30:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbiK3OLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 09:11:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
+        id S229878AbiK3OaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 09:30:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbiK3OL1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:11:27 -0500
-Received: from pv50p00im-ztdg10021201.me.com (pv50p00im-ztdg10021201.me.com [17.58.6.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F3781D84
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 06:09:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
-        s=sig1; t=1669817352;
-        bh=fCzooQMJwRO5ac8K1KpkBuVy8Jp59r3M74rKZ9Q3SGo=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=FmE/l14c2fanQQ8FfomWX8MlvycUHd3QxuWnk9PKK2KAQTz5Hd4Bihi8HFCojukub
-         exPT4KHVB7Epnd3eAThf49Mzi+cWTjkAKcgF+u41WCWofHV7PBFNnsp9RIvCh7wmli
-         o5T+7X+vvYnVSenJZECHxYiTUUZL2djSWkA/XTE4le/hRuBDsF60CZ+68ufFRASvby
-         wU/SdBgA+tvD2eT6uHeIhhmeuVGIsqbP62OpgfZ33QH4c8i/9GvCezDVB/z9EqhE5w
-         eXW4hy5VcKvwsTIibLhmlXXg+snUQXacD79S4lM6a8l3BxAlvfsroSbw6yu81Z10DD
-         qxycwqwy8gTtA==
-Received: from vanilla.. (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-        by pv50p00im-ztdg10021201.me.com (Postfix) with ESMTPSA id 913366806AE;
-        Wed, 30 Nov 2022 14:09:08 +0000 (UTC)
-From:   JunASAKA <JunASAKA@zzy040330.moe>
-To:     Jes.Sorensen@gmail.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        JunASAKA <JunASAKA@zzy040330.moe>
-Subject: [PATCH] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
-Date:   Wed, 30 Nov 2022 22:08:49 +0800
-Message-Id: <20221130140849.153705-1-JunASAKA@zzy040330.moe>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229559AbiK3OaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:30:15 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0EC52888;
+        Wed, 30 Nov 2022 06:30:14 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1669817506; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=MBcgFbrxBMjCUsYG5JPRrKKOle/H+6CLvHLsKhUx7pGZLSo7InNJY1XoZh2orec8LiN/fuMmkzcItQOuWc/Oggq4K+ooy2GsQTgCZopz0ITgJ7F4AJjYcXkOgFtZGIDyF/Tn6FBiWEp7A4+dyD+Hdg3v0fIBLNLvbvcpb9fPBq8=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1669817506; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=QF5pLbXUIUVP28HpDZnKqlToc38teR4R32c+jesH+QM=; 
+        b=TUNQ8cHrgqns0eHBc3DfXD+rwLkdzqPFztq0Ens1q4Zt1GNyinG8t3QVugkQj7nYzeGT5iZRg3ZGY9NBCMcqf6mfCOBhZ5qZhBxo3uw9/X9o3OXvbuXEXBncGS8d0munLxduoEP5BKia9DYBqh3wBR+nZ9st98uToRtnBgFSTSY=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1669817506;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=QF5pLbXUIUVP28HpDZnKqlToc38teR4R32c+jesH+QM=;
+        b=HfKAf4+Fel3coxytPwxCdcvr10bO6It6KMz9XQGSx8zBhVPLMBNwvphkDbv4PRBH
+        46P1LoZCIUxZawUHkV429aO6CGMJEcZ9QLB02hIwx4g/Dp5bRfd5jX7+E5Rxcd0iWFW
+        XVs2bsC3ntk6QlmzoL111TFrzu1K8SiYvYhUQudo=
+Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1669817503309623.081549759161; Wed, 30 Nov 2022 06:11:43 -0800 (PST)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        soc@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Stefan Agner <stefan@agner.ch>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Oleksij Rempel <linux@rempel-privat.de>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 0/5] remove label = "cpu" from DSA dt-binding
+Date:   Wed, 30 Nov 2022 17:10:35 +0300
+Message-Id: <20221130141040.32447-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: qShzc4VapBIvO-AL8wVh_HTz1KxSF-gz
-X-Proofpoint-GUID: qShzc4VapBIvO-AL8wVh_HTz1KxSF-gz
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.0.605.474.0000000_definitions?=
- =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2020-01-23?=
- =?UTF-8?Q?=5F02_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 clxscore=1030
- bulkscore=0 mlxlogscore=721 phishscore=0 mlxscore=0 spamscore=0
- malwarescore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2209130000 definitions=main-2211300099
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixing "Path A RX IQK failed" and "Path B RX IQK failed"
-issues for rtl8192eu chips by replacing the arguments with
-the ones in the updated official driver.
+Hello folks,
 
-Signed-off-by: JunASAKA <JunASAKA@zzy040330.moe>
----
- .../realtek/rtl8xxxu/rtl8xxxu_8192e.c         | 76 +++++++++++++------
- 1 file changed, 54 insertions(+), 22 deletions(-)
+With this patch series, we're completely getting rid of 'label = "cpu";'
+which is not used by the DSA dt-binding at all.
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-index b06508d0cd..82346500f2 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-@@ -734,6 +734,12 @@ static int rtl8192eu_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	 */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_DF, 0x00180);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x20000);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0x07f77);
-+
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
- 
- 	/* Path A IQK setting */
-@@ -779,11 +785,16 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
--	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf117b);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf1173);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf1173);
- 
- 	/* PA/PAD control by 0x56, and set = 0x0 */
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_DF, 0x00980);
--	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x51000);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x511e0);
- 
- 	/* Enter IQK mode */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-@@ -798,14 +809,14 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c1f);
--	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x68160c1f);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x8216031f);
-+	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x6816031f);
- 
- 	/* LO calibration setting */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
- 
- 	/* One shot, path A LOK & IQK */
--	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
-+	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
- 
- 	mdelay(10);
-@@ -836,11 +847,16 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
--	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7ffa);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7ff2);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
- 
- 	/* PA/PAD control by 0x56, and set = 0x0 */
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_DF, 0x00980);
--	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x51000);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x510e0);
- 
- 	/* Enter IQK mode */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-@@ -854,14 +870,14 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c1f);
--	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x28160c1f);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x821608ff);
-+	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x281608ff);
- 
- 	/* LO calibration setting */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a891);
- 
- 	/* One shot, path A LOK & IQK */
--	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
-+	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
- 
- 	mdelay(10);
-@@ -891,22 +907,28 @@ static int rtl8192eu_iqk_path_b(struct rtl8xxxu_priv *priv)
- 
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00180);
--	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
- 
--	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x20000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0x07f77);
-+
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
- 
-+	// rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
-+	// rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-+
- 	/* Path B IQK setting */
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x18008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x821403e2);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82140303);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x68160000);
- 
- 	/* LO calibration setting */
--	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00492911);
-+	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00462911);
- 
- 	/* One shot, path A LOK & IQK */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
-@@ -942,11 +964,16 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
--	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf117b);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf1173);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf1173);
- 
- 	/* PA/PAD control by 0x56, and set = 0x0 */
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00980);
--	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x51000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x511e0);
- 
- 	/* Enter IQK mode */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-@@ -961,8 +988,8 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x18008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82160c1f);
--	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x68160c1f);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x8216031f);
-+	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x6816031f);
- 
- 	/* LO calibration setting */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
-@@ -1002,11 +1029,16 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
--	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ffa);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
- 
- 	/* PA/PAD control by 0x56, and set = 0x0 */
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00980);
--	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x51000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x510e0);
- 
- 	/* Enter IQK mode */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-@@ -1020,8 +1052,8 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x18008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c1f);
--	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x28160c1f);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x821608ff);
-+	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x281608ff);
- 
- 	/* LO calibration setting */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a891);
--- 
-2.38.1
+Information for taking the patches for maintainers:
+Patch 1: netdev maintainers (based off netdev/net-next.git main)
+Patch 2-3: SoC maintainers (based off soc/soc.git soc/dt)
+Patch 4: MIPS maintainers (based off mips/linux.git mips-next)
+Patch 5: PowerPC maintainers (based off powerpc/linux.git next-test)
+
+I've been meaning to submit this for a few months. Find the relevant
+conversation here:
+https://lore.kernel.org/netdev/20220913155408.GA3802998-robh@kernel.org/
+
+Here's how I did it, for the interested (or suggestions):
+
+Find the platforms which have got 'label = "cpu";' defined.
+grep -rnw . -e 'label = "cpu";'
+
+Remove the line where 'label = "cpu";' is included.
+sed -i /'label = "cpu";'/,+d arch/arm/boot/dts/*
+sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/freescale/*
+sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/marvell/*
+sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/mediatek/*
+sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/rockchip/*
+sed -i /'label = "cpu";'/,+d arch/mips/boot/dts/qca/*
+sed -i /'label = "cpu";'/,+d arch/mips/boot/dts/ralink/*
+sed -i /'label = "cpu";'/,+d arch/powerpc/boot/dts/turris1x.dts
+sed -i /'label = "cpu";'/,+d Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+
+Restore the symlink files which typechange after running sed.
+
+Arınç ÜNAL (5):
+  dt-bindings: net: qca,ar71xx: remove label = "cpu" from examples
+  arm: dts: remove label = "cpu" from DSA dt-binding
+  arm64: dts: remove label = "cpu" from DSA dt-binding
+  mips: dts: remove label = "cpu" from DSA dt-binding
+  powerpc: dts: remove label = "cpu" from DSA dt-binding
+
 
