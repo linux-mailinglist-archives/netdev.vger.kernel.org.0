@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E4DA63D9BA
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 16:44:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D5E763D9E2
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 16:50:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbiK3Poz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 10:44:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
+        id S229940AbiK3Pu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 10:50:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbiK3Pox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 10:44:53 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD1D813B2;
-        Wed, 30 Nov 2022 07:44:52 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AU8rddD030044;
-        Wed, 30 Nov 2022 07:44:38 -0800
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2043.outbound.protection.outlook.com [104.47.57.43])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3m642d99r7-1
+        with ESMTP id S229737AbiK3Pu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 10:50:26 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275C784DD7;
+        Wed, 30 Nov 2022 07:50:23 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AUCSqo6021177;
+        Wed, 30 Nov 2022 07:50:16 -0800
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2169.outbound.protection.outlook.com [104.47.55.169])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3m3k6wg9k9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Nov 2022 07:44:38 -0800
+        Wed, 30 Nov 2022 07:50:15 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l1d7khFcIwsiP0ktVuOyDeyW4yim3VCcS12JPR9EWPrExtj+ELdlzMJB3ohvBNRwGx2FQen/Kvh6a62xYV+gBmfjKeAd9sPCKiToRrE0X2v75GnXNI0XCXQT37lzrFtVh0G4WniR1P0MEilDmiNRByn5jC25NY61BoUmtRlDLSfUUTPwAmpr0gZKyBTVMTV/TrvAd+pW3KPfveQHcxugtaz8EMupt2TGtVsP/mpex8zgUdro4wnMLB+FtODZYsj7UvtpfweE3I8dQO4+Ph0NY/KpjW1+wj/YvtPSrEYKoYvRA5JreK/AVyJQESlAeBBkRsMNev1PqzMECaf7CNW4ZA==
+ b=NfGvcRU309fNN93O6ZIQXRAVMnkKoD4izJHvVDPDyGhRnuv+uxdDBkTjA1CbF/Fajb7yDPc4dqNJ15F//1TsXgr2z9GYI7kp70TqnFqX+qciSojsjdKh6IqlZ11PrC0odwOPtKuhbQoBtM/4TRnckYDx8HGSxJ9bMKTzgrl370TW8EHF7BrDXYmma7jJAWOQcqntkSSL72P1jIlLg3gIfTwKUOByvyUeF0xwVTOWGqskYSQooyxZTMmwnIpn7izP3ds393rK9rusJUFh8lpsStR9GTBRkJirkzvbljLrsW3hI4c/7JXjxuuztNaxYysfNd3L0Y78CKwHxzCqrl61SQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bFiHSXtcRJL7dBJ87Og6+XYpib5q6br39YJsxDBEbUY=;
- b=cWyHVhO8DAQPZT8cW8bVVbZjmskw98VEgt6b2ePVzNZ4kirBhov7sD8MVySqu9KS/spW2/NnA/xgrPn3YA8JrboOrFh8F/ISPHfOfvKHNnL1F38FDlhjx3JUnsQZ0w7oPbKb9W61cfHwrniUwxe0KC0bGCUymmz5lY8ElN6E4/kkP41X048qdJTVAUyQC3jc90P3fBLFZ5q/BX/m+PhaQYYkEW0ZUvgqoRFgfUvqAAsawTYguRwvrkqBKQwVbsmP5NYhVypYTSUmeboXj/sxsDHX2eHmL8Y12kzchoi78+8Kec9wrQYRmtFBhDRFsxCLXfffhmkB7PzAgG7WR3UsCQ==
+ bh=YSkRl/kj/y81p7xDw1gVdRMM9SgtTdZHFjF2/JYIbJk=;
+ b=J9+XNRjexLA2KJquCd8tDiXe3RWUaHlGjvXNfr2od0T5MN77Ryzds+oUZb1AUHtbDgdLazXBGCG72n8685m5M8B453YBRn+bERfQLYFoOtWW5jFm4PxLRUn2hS8hk+A5ey2LBV55/1l1fO95als+RKZXiE/t+Az1c15nYV8oCG5KdU3M5DPlgs+DltMrga+PZGQoYOb5+xCjdWGL4/vM7IYB6m6veFdf7AMidHA887Hu6xJb2O+bWj43IYz2NeNTh8NlCxTdGyzpV612EG+JNVsyMniQX7U/fET133sQvBqKgrPKsK7qmpdh4v9r0ZCjZbeFQ/SKz8b4IpLgwLIOKw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
  dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bFiHSXtcRJL7dBJ87Og6+XYpib5q6br39YJsxDBEbUY=;
- b=PuQtp3IqIAxq1NwWFZImm0HnunVXHeJloGNZqNNizmRd/I4YfhyWu7DCqNLgWnH6ZupV6K1wpY9qTrs/8WlNxr6RlXnFkqnRfu3TXMw+3fTGviHwidCTxmyygiFoeiNFFkyw8AnBCuJz6+fHB99QSGEGjbqcm5O3qaaAHD3XwqM=
+ bh=YSkRl/kj/y81p7xDw1gVdRMM9SgtTdZHFjF2/JYIbJk=;
+ b=XE2IZV/xtqsVPHGBAa64NvY8JwrbLNblICUhi3dJqZgOczWWV/h2kQ0gFOOCcdQCehG4ctJSajD+6Hs+V5743vW9Tv19ui/oRqno+lkRAstoypqtt1wcVhkHi0NpptOUO0AHLxrJ82eReXG8120Km5xiDRFka6kqHLJX7e9RVak=
 Received: from BYAPR18MB2423.namprd18.prod.outlook.com (2603:10b6:a03:132::28)
- by PH0PR18MB4781.namprd18.prod.outlook.com (2603:10b6:510:ca::14) with
+ by MW3PR18MB3610.namprd18.prod.outlook.com (2603:10b6:303:52::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.19; Wed, 30 Nov
- 2022 15:44:31 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.20; Wed, 30 Nov
+ 2022 15:50:11 +0000
 Received: from BYAPR18MB2423.namprd18.prod.outlook.com
  ([fe80::81c8:f21b:cf9e:df2d]) by BYAPR18MB2423.namprd18.prod.outlook.com
  ([fe80::81c8:f21b:cf9e:df2d%3]) with mapi id 15.20.5857.023; Wed, 30 Nov 2022
- 15:44:31 +0000
+ 15:50:11 +0000
 From:   Veerasenareddy Burru <vburru@marvell.com>
 To:     Leon Romanovsky <leon@kernel.org>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -58,28 +58,28 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: RE: [EXT] Re: [PATCH net-next v2 2/9] octeon_ep: poll for control
- messages
-Thread-Topic: [EXT] Re: [PATCH net-next v2 2/9] octeon_ep: poll for control
- messages
-Thread-Index: AQHZA/PZs+9RX6z1+0m5ZGIy8eBWva5XNNSAgABoFsA=
-Date:   Wed, 30 Nov 2022 15:44:30 +0000
-Message-ID: <BYAPR18MB242397C352B0086140106A46CC159@BYAPR18MB2423.namprd18.prod.outlook.com>
+Subject: RE: [EXT] Re: [PATCH net-next v2 1/9] octeon_ep: defer probe if
+ firmware not ready
+Thread-Topic: [EXT] Re: [PATCH net-next v2 1/9] octeon_ep: defer probe if
+ firmware not ready
+Thread-Index: AQHZA/PZ82bWA4Tya0WGfhTwd2BjbK5XM0GAgABqSSA=
+Date:   Wed, 30 Nov 2022 15:50:11 +0000
+Message-ID: <BYAPR18MB242303FCE6E42D1467E4F420CC159@BYAPR18MB2423.namprd18.prod.outlook.com>
 References: <20221129130933.25231-1-vburru@marvell.com>
- <20221129130933.25231-3-vburru@marvell.com> <Y4cirWdJipOxmNaT@unreal>
-In-Reply-To: <Y4cirWdJipOxmNaT@unreal>
+ <20221129130933.25231-2-vburru@marvell.com> <Y4chWyR6qTlptkTE@unreal>
+In-Reply-To: <Y4chWyR6qTlptkTE@unreal>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcdmJ1cnJ1XGFw?=
  =?us-ascii?Q?cGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEy?=
- =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctZGY2ZmE3NzQtNzBjNS0xMWVkLTgzNzItZjRhNDc1?=
- =?us-ascii?Q?OWE1OGFjXGFtZS10ZXN0XGRmNmZhNzc2LTcwYzUtMTFlZC04MzcyLWY0YTQ3?=
- =?us-ascii?Q?NTlhNThhY2JvZHkudHh0IiBzej0iMzA5NSIgdD0iMTMzMTQyOTY2Njg4MDk3?=
- =?us-ascii?Q?NjEyIiBoPSIzWXNqV2QxcHRkRVJaRjY2TDNjWFQ0eEgxUnc9IiBpZD0iIiBi?=
- =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFQNEZBQUJN?=
- =?us-ascii?Q?SmNtaDBnVFpBY0ttcWRoVDh0ZXd3cWFwMkZQeTE3QUpBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctYWE5YTlhZjMtNzBjNi0xMWVkLTgzNzItZjRhNDc1?=
+ =?us-ascii?Q?OWE1OGFjXGFtZS10ZXN0XGFhOWE5YWY1LTcwYzYtMTFlZC04MzcyLWY0YTQ3?=
+ =?us-ascii?Q?NTlhNThhY2JvZHkudHh0IiBzej0iMzkwMSIgdD0iMTMzMTQyOTcwMDk2NTMz?=
+ =?us-ascii?Q?MzUwIiBoPSJMQktab1lZaHVQMXA1NG5YazkvbndqSmhOYW89IiBpZD0iIiBi?=
+ =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFQNEZBQUJt?=
+ =?us-ascii?Q?di9GczB3VFpBVnE1Mzk4UnZTUmxXcm5mM3hHOUpHVUpBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBSEFBQUFDT0JRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?RUFBUUFCQUFBQStSRzhlZ0FBQUFBQUFBQUFBQUFBQUo0QUFBQmhBR1FBWkFC?=
  =?us-ascii?Q?eUFHVUFjd0J6QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
@@ -118,7 +118,7 @@ x-dg-refone: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU
  =?us-ascii?Q?VUFiUUJoQUdrQWJBQmZBR0VBWkFCa0FISUFaUUJ6QUhNQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFEd0FBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFFQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQVFBQUFBQUFBQUFDQUFBQUFBQ2VBQUFBYlFCaEFISUFkZ0JsQUd3?=
  =?us-ascii?Q?QWJBQmZBSFFBWlFCeUFHMEFhUUJ1QUhVQWN3QUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
@@ -127,57 +127,57 @@ x-dg-refone: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU
 x-dg-reftwo: QUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUE9PSIvPjwvbWV0YT4=
 x-dg-rorf: true
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR18MB2423:EE_|PH0PR18MB4781:EE_
-x-ms-office365-filtering-correlation-id: 9bb74de6-9233-4a76-3809-08dad2e9c58c
+x-ms-traffictypediagnostic: BYAPR18MB2423:EE_|MW3PR18MB3610:EE_
+x-ms-office365-filtering-correlation-id: b94b3929-ccb7-42a0-6a37-08dad2ea908b
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NgkJHbaP9TJaAYgjsBtNU9MJU1CyqYXSJp9uI2Ti9hnHijwVUGC13ISPz5my65e6xlGLjUiDHMzQNXx5xGFw0ZOSRRL7WqN6O6EHP+9jpEy7gMkMnlcm1yjQeKolfMcudXddhyzpj569t8Sd/L2ElwvHe9+4/8F2FgKn2J9KoUBCgKfdwwq9BFf+Y6gorugBmBsvdOKRZKQ+ZgpIZe/259BsmHtCRNzQLNqw05sN6Qr7fvjAvdrbVg832HeCEN+gjekQxDAaw8XeMbXxvNu6w60ksLHZOzy5IrU22Ph0Qkltzhmp/ktSTllaBsCvizXwQUQR8sSNZyaahE80vefucszLDndizxABaJCFDu6Y0lWsG9fAN7gGtCkMH6/4AOGAZiOlzIl3cE36xRUQS8s6tYReCdQ9kwGWXPd+GqF5ZH7R1ZsIk64mt3/WMu9z/dDKwB/A5Ft3dpK5z4jpkyvkiPER/OWlSAEpd3TmTCEc1obFnr2+a2X7bYb5bPjoOI7xq8ReY8YW/Iuvycz4T3Q1xfhAnOAkyxmvL2QnTo2BACCdcUc4gDOMKS1TZ+yws4Sz7GloI+dtQQe1IMpkJP+DxofFna/Z/35cG3x0u8UxcYc73mc9ajJqhkm8Mx2XYjDYJ+DW/cKnM/ERAdZ1u8Cyfly+ExyBpbgF48qJCoApPAlTzt8EEWVnQJyCS1X4agX0tty8FBzAfdJOo30GU9U59Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2423.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(451199015)(33656002)(55016003)(38100700002)(122000001)(38070700005)(8676002)(15650500001)(7696005)(83380400001)(86362001)(8936002)(478600001)(64756008)(66556008)(66946007)(76116006)(4326008)(316002)(71200400001)(186003)(54906003)(2906002)(6916009)(41300700001)(9686003)(66476007)(66446008)(52536014)(26005)(5660300002)(53546011)(6506007);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: XWSaz9ik7LsatGqum2xUYPonA/sXv8V8pgktsTAS4S4r11QqU6C6uERK+wbEg7xydv30F8wQ70MGP8fwszZu+csN9ASb+zTjK7PA0TQzs2tLp3F6kX3zjhqAt23mFHhAyDnknl5cH2XB0Qfvs0E7/wWkiKgjJqsXDb6v49WYGl6P/RDsbb5qWQoGC4wIBMP8La4ZyHUJDm0tOkielA24rDDLLJCJVZPjC3BRTERv/sTSQ2b1QRY6Yonqg2gHnaLQaixESDRPbxKnjofLdHRJy5vnCj2DwET7vut1l1ywH3z63vHvq17DL1HOjH//7NVJW5VaBkDKzQdVxdEhdVwGtnffiQ0QxXJMuiWDs/JtFghViw/gyFk4hD79UG+/uOmLRwydgXGRoDsYIXc/Pe4E0sasMCVH+8Xb7L+s3sAXu5cdryNOdr4buLKJHKubIZEAR7IC4rdrV6np5FCe5zlfHq9+nWy3sWS5aqcDFurM3dvYyvs1SBF85/YwmzpdLpMwKf6t6RDY6iQaUys6nlDAF9CiON7kbAsaG3pydRf2YqwD6lMpKRk/CM8xQJJBJh3qJezVibgH3igatFxrYRNfAhsyMOdk1QXbYjJI0i1YyFdFIAe54unN35JBgGygOpRFQiXGDwfc+QmvEJ/YJtj7XmD7/xLgrl5XpEv2JQ/xED3LSDqYb0SOVW3LEAeG+IRAJWXqN7ADV4TQsCqb+Vvnxg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2423.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(346002)(366004)(376002)(136003)(451199015)(2906002)(5660300002)(41300700001)(66556008)(66946007)(64756008)(4326008)(52536014)(76116006)(66476007)(71200400001)(33656002)(66446008)(6916009)(54906003)(8676002)(8936002)(86362001)(9686003)(26005)(478600001)(6506007)(316002)(53546011)(186003)(7696005)(38100700002)(55016003)(83380400001)(38070700005)(122000001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?kbooCD5D9XhEwh9Ghb1ZK4Zk/HoYrzBKnry1ZxO5xXcETWDRZ1micNbgpfuO?=
- =?us-ascii?Q?Fymp1BwYHb3muETy2nKwDVcC/w57F31abnAclr/d+VeyTcv+EIDIGENke83w?=
- =?us-ascii?Q?SmpRE1Pd5n0AagMicY2V0u64uaASWByUom2LHuIfU59SD+QwECT4bjOrbQWR?=
- =?us-ascii?Q?wgouTR56rbySww3eBXOfgASV/l0vNhzLZZfJCGSchyOz18JmZg4N/KKNwM4x?=
- =?us-ascii?Q?fE562m8yncLUrnpYoetuu7P+eJzjD4TfraVBgJCiGorCeeRtGcnh2dyww98H?=
- =?us-ascii?Q?Ex13Rwd24fSGU3IwIsqwumc30TNyDGP16+qxtDGSlbj1IGu5wCtK00NG/zD1?=
- =?us-ascii?Q?B8bYscnCyrfB9XJxuewwCVIuItDRc4ekta4mX5NJ8elruDDaXqhNlkpodk/1?=
- =?us-ascii?Q?4a8Irh3l7sGrJiayh4sSB9XUG+HMGbug4ms5pQvi/fbjSyz0nAWVcsTOstd8?=
- =?us-ascii?Q?3OdZ6Sg0e/6chHawP7DUtu/weJyaRWtpscVIJYHYOhhg/gsyc0p1ZK3BsDk5?=
- =?us-ascii?Q?rgeP6hFhiqdHIKUy680V32VgHLNWdJIogKlNDyyXBtEg9G8ewmSoQRNGk5Ao?=
- =?us-ascii?Q?IeMub7q7b0Ps9qw79LolQ+U78+eoCl9F5RMwQ+kI7nagSnkBaJlMAicj0aVb?=
- =?us-ascii?Q?lqWudI+Bmz6oADamhzQxKUERZohT4GsJ2Jodl+zPMwueJDcKU2A5aO4LN3aP?=
- =?us-ascii?Q?Dcm2zQQotPxta+V1MgpGmaTb/UFMfdWEkkR+F2Nk7YyB48arvpEo9PyTk8H4?=
- =?us-ascii?Q?dgCP/x/zGnXYBf1CbpWIhf6ioZp3xGx+PQzczUDWHOZqLK4vO3Cp30tiYdxp?=
- =?us-ascii?Q?CXQEs/De2H0QeqU/zzQDyavTzZHeODY8ya9OKdOp8/bwuvsQF5uQmpINBkuF?=
- =?us-ascii?Q?EPZrnm9LJew0K2n8RbYeLTci3vJmbbh9XLl4ukefbI35havlsa5Tw12tPtPF?=
- =?us-ascii?Q?WG4V/LRTd8TCo9xOkSqrZSgNqCJzP1nHVDfZ/LO4vWRXuTmJ4g1NIJf3lEjB?=
- =?us-ascii?Q?vIDGQFRIm/pNrcLaHqofVFilc/+4rsXxodOwAZMHf2GtO4ejhWuE3mESFygk?=
- =?us-ascii?Q?/nzxonxqzxrQAtX1UHpB41V7yEZ+3+mrlRnk6C4yx98gJRbiAgXJApBSTrmO?=
- =?us-ascii?Q?8Fb8My1FT0/8pehkJ7InXAdB0kcwNq0ktp4yaxEZp/rCuN8zrUHxHq6mWjTF?=
- =?us-ascii?Q?5kOCZW/PBG0N7b62KiJ+m7XvbCZJYlXh0Mnk3Ot1377hIJtO4lqEHy2W+G6R?=
- =?us-ascii?Q?y389WJYRXt4V0YrT+q6rCwDTOWLCuJsHVznqFKgU98n6qDxfxGQsZ9RA9QDu?=
- =?us-ascii?Q?ewLXDttWlNfQ9EUrfcMcL9IGK4kyhcUDryJoQJibRlh257ximJgRd3N/+P/7?=
- =?us-ascii?Q?kfN5iU0RsjPgy9qQMojoOwwetBPB+pB2fRraSJKXHoVIsjnRAWdyUls9X9Xm?=
- =?us-ascii?Q?jFHIZPT7GOuvxiLSmFeoNGRUvTY+dkkf+gBhK8H9khzk4+lmk9YaD3Qqiwba?=
- =?us-ascii?Q?AQbYsR3jV+v/HRHbF0+fD0SZRbocv21Yx1v9rWYv8ZUx7ZeDS93CR92p2ZWB?=
- =?us-ascii?Q?CbK538q7/VBKomGTCTU=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Lc3vHUcReCZ8tPBQJ8PrMRTQdunVKHSZ4niXscWY+9Kwq/jUArImrt81WRJi?=
+ =?us-ascii?Q?33nTrivM+Q4lbafSwMCowAqXvSXxB0X5e5rKzfKYSfRHitJNE/IeURoo5bKS?=
+ =?us-ascii?Q?5fHoBBPvenroUtBu595oFLr1odsyMi7Oy9XwUofkWxcu2ZN9cQ4Ol51KXMf8?=
+ =?us-ascii?Q?x2rb2NOPS+7DqbtwWBuz5WpXysZ6n2w2zkokKzFQQWiafTvTzWz9AEz+fz/w?=
+ =?us-ascii?Q?mpRpAiAGNemGhii0erzw5vT+BsttU71aGWxMjR4UCdctUhBaO9c2o8PmwKFE?=
+ =?us-ascii?Q?egdexD0mfG6pdWwLFNgqg1TBzGiMHc9QPORfzcnUU+V2hF0LGMfWGn4tVVM4?=
+ =?us-ascii?Q?9H3QyImu4CPzCcLjv14fQn45CzsDuh1CAF21CA4ct4x1RfweHnNLumCzgwC+?=
+ =?us-ascii?Q?qix/ADqUarY/FM+/mCgl5Kewhu59zbn/xIZNqbAGhfv2iUtFv16oW6PAPrCt?=
+ =?us-ascii?Q?vQVlBK7xCbKiv8XMZ8Hyb0s3KuEdt4pCXwvq529O9TzSjP5CswEbkasToRF5?=
+ =?us-ascii?Q?SdkpyeOtRhIvfNa7NP+++mLRAbaiWAcvCVWAbXF3jB57pGmvSvSd8ekEu8gK?=
+ =?us-ascii?Q?sKP6VYRAJaCgKZStNy2gmgAnLdBR3gYpsx1FpJcbWQk3OR6zRmjK6taSW69c?=
+ =?us-ascii?Q?7JDX50bgu5f835RxBFowfx2b41Yg4m3BKqvELWhw7ysuehfo8znXGPc8OBFP?=
+ =?us-ascii?Q?aSZVso+XAGCUU+VpNSRBOgv+UdBNBN7Degv+ONDXXnCSyKwv2jLzc/ImqB9X?=
+ =?us-ascii?Q?3jdjpTZxq8BYfUqTLa7/jYE5ztU6OJHW9IgimWi7bj75wZ88lF7RBKl1mCn2?=
+ =?us-ascii?Q?Uz8uxNdYt5Z47VX4e5VZxSnRIwLtg+wCoEVNzfZiCmbAx1/eXqbehpU6LvTy?=
+ =?us-ascii?Q?1Hqg1y/sGEzVi/+9K/NGcv2g1MRN4H45wDwjlQdoKmtidfeC/+V5INhd9ZiF?=
+ =?us-ascii?Q?dDgkGvmeqxMDC5wfcmpulNgVn2JTJGT8D9leLCnQwrCCuwHgJOedw/EKvu+3?=
+ =?us-ascii?Q?vVp6rS16zyRjUTFPaHyeeOWkw+v/8428yGlw5SAKhlMUKe59l2t0nyKqmR9j?=
+ =?us-ascii?Q?89AUhUlROGytRm7wveJbkna6IQsr5aAGDpZUIZvaY1+J5t7nnkev9u+ERb32?=
+ =?us-ascii?Q?Q1cxJgiq9qyTMC82B0vqsuPhVLt4WbLKDUnlI/nf/I9LMHLj5MgnkrCMUJKQ?=
+ =?us-ascii?Q?urkNIHL3WMV7Jhfp9Y/M9JAMLO4qzjz63l6uQ+yN/wlrVYzJnrWc3iyzatDV?=
+ =?us-ascii?Q?0sRhPcnRe3WxZ/b159XNPQEphK6X08vKwkFC/DNEE2VumU3boGkxrRfyxEtS?=
+ =?us-ascii?Q?xAGheszJzjGIlEVj82PLI/7z/GkR0AwhIy9IPBBwEc/OywogBSZ2Boy9dPXr?=
+ =?us-ascii?Q?S98hq1FC40x9rGrKclfvSSHfVuKiYcOuqIZIPrV6dztW9R/Q39pRAW4mJ/rt?=
+ =?us-ascii?Q?jKRuUSvxRy9ecE5PaTdWKnMP409j2rApqr2X14arRouKKi0t/NL02AC9Fqtz?=
+ =?us-ascii?Q?16fBheKyx0JKJoSzjztQhw7DKPWgRJRrxMxCBKQ1Z1dbQsyj83BDXFsnUkOg?=
+ =?us-ascii?Q?e9haQhqu9gCCkTLRoqQ=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: marvell.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR18MB2423.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9bb74de6-9233-4a76-3809-08dad2e9c58c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Nov 2022 15:44:30.9547
+X-MS-Exchange-CrossTenant-Network-Message-Id: b94b3929-ccb7-42a0-6a37-08dad2ea908b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Nov 2022 15:50:11.5269
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qTHI9H9dcCw4YlCUNcB/xCW1fECeErc+/bAwXxm5xksGo6DKm2j+DUeinXf3XrgDQ7zKQm8ObVPpNtU6/hOtzA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR18MB4781
-X-Proofpoint-ORIG-GUID: KCNp_7rpFVMTpKVn-f23M6m7ucqu-MSH
-X-Proofpoint-GUID: KCNp_7rpFVMTpKVn-f23M6m7ucqu-MSH
+X-MS-Exchange-CrossTenant-userprincipalname: UxT9vHOeCYq9wdMARTEHbjQoKrhHHucex4aPJ5zkLQG4qAO3hwY7wxyG0ONZgvw/pLlEeLyIlSUEQ5xl0wYOzw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR18MB3610
+X-Proofpoint-GUID: ZClyKQvoCaf8D7af26UI9AJWmqQpgfZ2
+X-Proofpoint-ORIG-GUID: ZClyKQvoCaf8D7af26UI9AJWmqQpgfZ2
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2022-11-30_04,2022-11-30_02,2022-06-22_01
@@ -194,7 +194,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > -----Original Message-----
 > From: Leon Romanovsky <leon@kernel.org>
-> Sent: Wednesday, November 30, 2022 1:30 AM
+> Sent: Wednesday, November 30, 2022 1:25 AM
 > To: Veerasenareddy Burru <vburru@marvell.com>
 > Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Liron Himi
 > <lironh@marvell.com>; Abhijit Ayarekar <aayarekar@marvell.com>; Sathesh
@@ -202,59 +202,106 @@ X-Mailing-List: netdev@vger.kernel.org
 > linux-doc@vger.kernel.org; David S. Miller <davem@davemloft.net>; Eric
 > Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>;
 > Paolo Abeni <pabeni@redhat.com>
-> Subject: [EXT] Re: [PATCH net-next v2 2/9] octeon_ep: poll for control
-> messages
+> Subject: [EXT] Re: [PATCH net-next v2 1/9] octeon_ep: defer probe if
+> firmware not ready
 >=20
 > External Email
 >=20
 > ----------------------------------------------------------------------
-> On Tue, Nov 29, 2022 at 05:09:25AM -0800, Veerasenareddy Burru wrote:
-> > Poll for control messages until interrupts are enabled.
-> > All the interrupts are enabled in ndo_open().
->=20
-> So what are you saying if I have your device and didn't enable network
-> device, you will poll forever?
-Yes, Leon. It will poll periodically until network interface is enabled.
->=20
-> > Add ability to listen for notifications from firmware before ndo_open()=
-.
-> > Once interrupts are enabled, this polling is disabled and all the
-> > messages are processed by bottom half of interrupt handler.
+> On Tue, Nov 29, 2022 at 05:09:24AM -0800, Veerasenareddy Burru wrote:
+> > Defer probe if firmware is not ready for device usage.
 > >
 > > Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
 > > Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
+> > Signed-off-by: Satananda Burla <sburla@marvell.com>
 > > ---
 > > v1 -> v2:
+> >  * was scheduling workqueue task to wait for firmware ready,
+> >    to probe/initialize the device.
+> >  * now, removed the workqueue task; the probe returns EPROBE_DEFER,
+> >    if firmware is not ready.
 > >  * removed device status oct->status, as it is not required with the
-> >    modified implementation in 0001-xxxx.patch
+> >    modified implementation.
 > >
-> >  .../marvell/octeon_ep/octep_cn9k_pf.c         | 49 +++++++++----------
-> >  .../ethernet/marvell/octeon_ep/octep_main.c   | 35 +++++++++++++
-> >  .../ethernet/marvell/octeon_ep/octep_main.h   | 11 ++++-
-> >  .../marvell/octeon_ep/octep_regs_cn9k_pf.h    |  4 ++
-> >  4 files changed, 71 insertions(+), 28 deletions(-)
+> >  .../ethernet/marvell/octeon_ep/octep_main.c   | 26
+> +++++++++++++++++++
+> >  1 file changed, 26 insertions(+)
 > >
-> > diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
-> > b/drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
-> > index 6ad88d0fe43f..ace2dfd1e918 100644
-> > --- a/drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
-> > +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
-> > @@ -352,27 +352,36 @@ static void
-> octep_setup_mbox_regs_cn93_pf(struct octep_device *oct, int q_no)
-> >  	mbox->mbox_read_reg =3D oct->mmio[0].hw_addr +
-> > CN93_SDP_R_MBOX_VF_PF_DATA(q_no);  }
+> > diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> > b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> > index 5a898fb88e37..aa7d0ced9807 100644
+> > --- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> > +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> > @@ -1017,6 +1017,25 @@ static void octep_device_cleanup(struct
+> octep_device *oct)
+> >  	oct->conf =3D NULL;
+> >  }
 > >
-> > -/* Mailbox Interrupt handler */
-> > -static void cn93_handle_pf_mbox_intr(struct octep_device *oct)
-> > +/* Process non-ioq interrupts required to keep pf interface running.
-> > + * OEI_RINT is needed for control mailbox  */ static int
-> > +octep_poll_non_ioq_interrupts_cn93_pf(struct octep_device *oct)
-> >  {
-> > -	u64 mbox_int_val =3D 0ULL, val =3D 0ULL, qno =3D 0ULL;
-> > +	u64 reg0;
-> > +	int handled =3D 0;
+> > +static u8 get_fw_ready_status(struct pci_dev *pdev)
 >=20
-> Reversed Christmas tree.
-Thanks for the feedback. Will revise the patch.
+> Please change this function to return bool, you are not interested in sta=
+tus.
+>=20
+Yes, we can just return bool; Thanks for the suggestion. Will implement thi=
+s.
+> > +{
+> > +	u32 pos =3D 0;
+> > +	u16 vsec_id;
+> > +	u8 status;
+> > +
+> > +	while ((pos =3D pci_find_next_ext_capability(pdev, pos,
+> > +						   PCI_EXT_CAP_ID_VNDR))) {
+> > +		pci_read_config_word(pdev, pos + 4, &vsec_id); #define
+> > +FW_STATUS_VSEC_ID  0xA3
+> > +		if (vsec_id =3D=3D FW_STATUS_VSEC_ID) {
+>=20
+> Success oriented flow, plase
+> if (vsec_id !=3D FW_STATUS_VSEC_ID)
+>  cotitnue;
+>=20
+> ....
+>=20
+Sure, will change this.
+> > +			pci_read_config_byte(pdev, (pos + 8), &status);
+> > +			dev_info(&pdev->dev, "Firmware ready %u\n",
+> status);
+> > +			return status;
+> > +		}
+> > +	}
+> > +	return 0;
+> > +}
+> > +
+> >  /**
+> >   * octep_probe() - Octeon PCI device probe handler.
+> >   *
+> > @@ -1053,6 +1072,13 @@ static int octep_probe(struct pci_dev *pdev,
+> const struct pci_device_id *ent)
+> >  	pci_enable_pcie_error_reporting(pdev);
+> >  	pci_set_master(pdev);
+> >
+> > +#define FW_STATUS_READY    1
+> > +	if (get_fw_ready_status(pdev) !=3D FW_STATUS_READY) {
+>=20
+> No need to this new define if you change get_fw_ready_status() to return
+> true/false.
+We will change this to true/false.
+>=20
+> And I think that you can put this check earlier in octep_probe().
+We will check and move this to earlier point in octep_probe().
+
+Thanks
 >=20
 > Thanks
+>=20
+> > +		dev_notice(&pdev->dev, "Firmware not ready; defer
+> probe.\n");
+> > +		err =3D -EPROBE_DEFER;
+> > +		goto err_alloc_netdev;
+> > +	}
+> > +
+> >  	netdev =3D alloc_etherdev_mq(sizeof(struct octep_device),
+> >  				   OCTEP_MAX_QUEUES);
+> >  	if (!netdev) {
+> > --
+> > 2.36.0
+> >
