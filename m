@@ -2,91 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08CD463D611
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 13:58:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DE7B63D648
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 14:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235323AbiK3M6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 07:58:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38792 "EHLO
+        id S235256AbiK3NJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 08:09:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230311AbiK3M6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 07:58:09 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6342019E;
-        Wed, 30 Nov 2022 04:58:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669813088; x=1701349088;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=P+B9D+I/DdG1og2ijWgNYumi4veq1JZcmYFFnx4RACo=;
-  b=GkDw/B3bzcxOu0ra01m0nz3nXgv9SA6OGCISwpBY3ClWr/8oDEdvdMnW
-   XiZEQYX3w8dpHF+iXz+sOB9dRhT2qlf9Ni5cOVfj2/38u2aQho5u2bB75
-   dYeaD3HdGwDig16kmOcTTM/kZ4DCFadIpBT3y9nWIsLDoXJrDgxY4+Uqn
-   P+PE2r6CX8RSixuXmw4u2+gatixR/+/3bGve6IwHBl5NJclJTdtGUxgIA
-   4gba1Bwnn0OjOW7lyEwO0nna3nq+43N6iw0U4dSkRSfIBFrCnwSscIwpK
-   RYfx6lN6BDvmFzYV0h7j+6R/E/t1UnA9aQKCMbDWxfxtyMDoQdf2gNMd0
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="298760712"
-X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
-   d="scan'208";a="298760712"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 04:58:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="750334495"
-X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
-   d="scan'208";a="750334495"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 30 Nov 2022 04:58:05 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 07B7610E; Wed, 30 Nov 2022 14:58:31 +0200 (EET)
-Date:   Wed, 30 Nov 2022 14:58:31 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v3 2/2] net: thunderbolt: Use bitwise types in
- the struct thunderbolt_ip_frame_header
-Message-ID: <Y4dTd1Ni2pIH1wbd@black.fi.intel.com>
-References: <20221130123613.20829-1-andriy.shevchenko@linux.intel.com>
- <20221130123613.20829-2-andriy.shevchenko@linux.intel.com>
+        with ESMTP id S230415AbiK3NJU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 08:09:20 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23556C709;
+        Wed, 30 Nov 2022 05:09:18 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id q1so15968437pgl.11;
+        Wed, 30 Nov 2022 05:09:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=h6U6pKxwnhQVoSAmRgs97bjo6brEZhCoz3DBdXGke2Q=;
+        b=KmxDmulFwNTac6Q+zCbGcDrpFOdQrVDF8PNUNp+WReBqzsGE1xVM9k5ojobtdP00tO
+         KnOSxiePV1PqkXSfHda2d9VJQrj+psLYTcMvGIjhs4xLm9J2MksN6/B0j7sPGTO9MYBj
+         8kf/JUN19+BQA7EB/P0v4cEtzp4eBJNekp418K1wWp9DCQkrXDaMp3f526s3JC0Q8/YO
+         eph9WwVU3dD0NUMd8gC5CrMkgAOLvX+uasbw9N3Wm+IQbCtH5nsLPg1isgf4XMSJI2fK
+         hOTwqGDFOQgvL7PiVRabtxPVg+xM9oQVe1JNSSQ4bT/hShfTye/B48FSkCJioSm7Xuib
+         QVhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=h6U6pKxwnhQVoSAmRgs97bjo6brEZhCoz3DBdXGke2Q=;
+        b=1B0wcpO7CktBfGUI/2LKmYgoMeKlQXeuZ9N2ldw8mYb4eJC6n47fiz7W7abcu/6rjw
+         /VMHC6JF6g7wH0tDGiUTYDSyaxfGrH80SMxUSlIUBK9F3Z/akXnuG3E7tO3cy/o6FiV7
+         GaFb0/Ycb7I/Akr6QY4G6qVLKCwTpV2A7Qjs1elLqXnhxUV2RwHO4ah/ogSSmCZ1Bhos
+         PwFPWvJ7za2sJzKZllyZALilyzcGFSeNYfT69SL1mgCs4r4xLb9kHcnt2/a7UQgiiA22
+         blp9njdbZ2mzrkSqlIqCZXZ7DuVoirXpRumYzeky6HXixmfkFL4t9libBzrQGmnpVYu4
+         pJxw==
+X-Gm-Message-State: ANoB5pkngEPFnviPeV1ei7xKRua7OdkqPGzIyzI9HmNkn5JgXS59gs/s
+        P5rxAT44qEqn8A7bcmR6KdE=
+X-Google-Smtp-Source: AA0mqf7jil2oLqYE/pjfkA2t4sBYT+buNYBPj+vXowPApj2brdy8weMJGlARFcMZbKJeDEfjT22AHw==
+X-Received: by 2002:a65:6c11:0:b0:477:2bc0:f1b with SMTP id y17-20020a656c11000000b004772bc00f1bmr35640254pgu.566.1669813758143;
+        Wed, 30 Nov 2022 05:09:18 -0800 (PST)
+Received: from MBP.lan (ec2-18-117-95-84.us-east-2.compute.amazonaws.com. [18.117.95.84])
+        by smtp.gmail.com with ESMTPSA id w81-20020a627b54000000b0057255b7c8easm1372539pfc.33.2022.11.30.05.09.08
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 30 Nov 2022 05:09:17 -0800 (PST)
+From:   Schspa Shi <schspa@gmail.com>
+To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
+        linux_oss@crudebyte.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
+Subject: [PATCH v2] 9p/fd: set req refcount to zero to avoid uninitialized usage
+Date:   Wed, 30 Nov 2022 21:08:31 +0800
+Message-Id: <20221130130830.97199-1-schspa@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20221130123613.20829-2-andriy.shevchenko@linux.intel.com>
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 02:36:13PM +0200, Andy Shevchenko wrote:
-> The main usage of the struct thunderbolt_ip_frame_header is to handle
-> the packets on the media layer. The header is bound to the protocol
-> in which the byte ordering is crucial. However the data type definition
-> doesn't use that and sparse is unhappy, for example (17 altogether):
-> 
->   .../thunderbolt.c:718:23: warning: cast to restricted __le32
-> 
->   .../thunderbolt.c:966:42: warning: incorrect type in assignment (different base types)
->   .../thunderbolt.c:966:42:    expected unsigned int [usertype] frame_count
->   .../thunderbolt.c:966:42:    got restricted __le32 [usertype]
-> 
-> Switch to the bitwise types in the struct thunderbolt_ip_frame_header to
-> reduce this, but not completely solving (9 left), because the same data
-> type is used for Rx header handled locally (in CPU byte order).
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+When the transport layer of fs cancels the request, it is deleted from the
+client side. But the server can send a response with the freed tag.
 
-Looks good to me. I assume you tested this against non-Linux OS to
-ensure nothing broke? ;-)
+When the new request allocated, we add it to idr, and use the id form idr
+as tag, which will have the same tag with high probability. Then initialize
+the refcount after adding it to idr.
 
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+If the p9_read_work got a response before the refcount initiated. It will
+use a uninitialized req, which will result in a bad request data struct.
+
+There is the logs from syzbot.
+
+Corrupted memory at 0xffff88807eade00b [ 0xff 0x07 0x00 0x00 0x00 0x00
+0x00 0x00 . . . . . . . . ] (in kfence-#110):
+ p9_fcall_fini net/9p/client.c:248 [inline]
+ p9_req_put net/9p/client.c:396 [inline]
+ p9_req_put+0x208/0x250 net/9p/client.c:390
+ p9_client_walk+0x247/0x540 net/9p/client.c:1165
+ clone_fid fs/9p/fid.h:21 [inline]
+ v9fs_fid_xattr_set+0xe4/0x2b0 fs/9p/xattr.c:118
+ v9fs_xattr_set fs/9p/xattr.c:100 [inline]
+ v9fs_xattr_handler_set+0x6f/0x120 fs/9p/xattr.c:159
+ __vfs_setxattr+0x119/0x180 fs/xattr.c:182
+ __vfs_setxattr_noperm+0x129/0x5f0 fs/xattr.c:216
+ __vfs_setxattr_locked+0x1d3/0x260 fs/xattr.c:277
+ vfs_setxattr+0x143/0x340 fs/xattr.c:309
+ setxattr+0x146/0x160 fs/xattr.c:617
+ path_setxattr+0x197/0x1c0 fs/xattr.c:636
+ __do_sys_setxattr fs/xattr.c:652 [inline]
+ __se_sys_setxattr fs/xattr.c:648 [inline]
+ __ia32_sys_setxattr+0xc0/0x160 fs/xattr.c:648
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x70/0x82
+
+Below is a similar scenario, the scenario in the syzbot log looks more
+complicated than this one, but this patch seems can fix it.
+
+     T21124                   p9_read_work
+======================== second trans =================================
+p9_client_walk
+  p9_client_rpc
+    p9_client_prepare_req
+      p9_tag_alloc
+        req = kmem_cache_alloc(p9_req_cache, GFP_NOFS);
+        tag = idr_alloc
+        << preempted >>
+        req->tc.tag = tag;
+                            /* req->[refcount/tag] == uninitilzed */
+                            m->rreq = p9_tag_lookup(m->client, m->rc.tag);
+
+        refcount_set(&req->refcount, 2);
+                            << do response/error >>
+                            p9_req_put(m->client, m->rreq);
+                            /* req->refcount == 1 */
+
+    /* req->refcount == 1 */
+    << got a bad refcount >>
+
+To fix it, we can initize the refcount to zero before add to idr.
+
+Reported-by: syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
+
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+---
+ net/9p/client.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index aaa37b07e30a..a72cb597a8ab 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -297,6 +297,10 @@ p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size,
+ 	p9pdu_reset(&req->rc);
+ 	req->t_err = 0;
+ 	req->status = REQ_STATUS_ALLOC;
++	/* p9_tag_lookup relies on this refcount to be zero to avoid
++	 * getting a freed request.
++	 */
++	refcount_set(&req->refcount, 0);
+ 	init_waitqueue_head(&req->wq);
+ 	INIT_LIST_HEAD(&req->req_list);
+ 
+-- 
+2.37.3
+
