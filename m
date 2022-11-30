@@ -2,158 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7362B63DB99
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:09:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53A3363DBAF
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:14:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230448AbiK3RJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 12:09:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
+        id S231134AbiK3ROW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 12:14:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbiK3RJ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:09:27 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1D2578FC
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 09:04:18 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1p0QV0-0005r7-Bq; Wed, 30 Nov 2022 18:03:54 +0100
-Received: from pengutronix.de (unknown [IPv6:2a0a:edc0:0:701:cf48:5678:3bb0:eeda])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 1960812E2AE;
-        Wed, 30 Nov 2022 17:03:52 +0000 (UTC)
-Date:   Wed, 30 Nov 2022 18:03:51 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Jiri Pirko <jiri@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S231143AbiK3ROC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:14:02 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8F1B08;
+        Wed, 30 Nov 2022 09:11:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=HOR8TJlxjCjAtgrXFWiZM3BCPiC97uvsOgWLmMHIcAM=; b=sJhVGozYoTaAqEbOHSw0JhUC/J
+        ypKAouVxcLP88WVTUnVmgtF2KsPw4dohg41oO4EmPrBMy6rP0tZxVYoqGthR9Qrha8QcnCXvjtqTI
+        /7gf957SDvkw5IVCsxATJM+cakLQy84lk53yvWQxM6UhHAxtl2KxjoKb3fji+pxoxZ38=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p0Qba-003ymW-GK; Wed, 30 Nov 2022 18:10:42 +0100
+Date:   Wed, 30 Nov 2022 18:10:42 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        linux-can <linux-can@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net: devlink: add
- DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER
-Message-ID: <20221130170351.cjyaqr22vhqzq4hv@pengutronix.de>
-References: <20221129031406.3849872-1-mailhol.vincent@wanadoo.fr>
- <Y4XCnAA2hGvqgXh0@nanopsycho>
- <CAMZ6RqJ54rfLfODB1JNaFr_pxWxzHJBoC2UmCKAZ7mSkEbcdzQ@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
+        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: Add driver for Motorcomm yt8531
+ gigabit ethernet phy
+Message-ID: <Y4eOkiaRywaUJa9n@lunn.ch>
+References: <20221130094928.14557-1-Frank.Sae@motor-comm.com>
+ <Y4copjAzKpGSeunB@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="obziojiov5xhwwjh"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMZ6RqJ54rfLfODB1JNaFr_pxWxzHJBoC2UmCKAZ7mSkEbcdzQ@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <Y4copjAzKpGSeunB@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Nov 30, 2022 at 09:55:50AM +0000, Russell King (Oracle) wrote:
+> On Wed, Nov 30, 2022 at 05:49:28PM +0800, Frank wrote:
+> > +/**
+> > + * yt8531_set_wol() - turn wake-on-lan on or off
+> > + * @phydev: a pointer to a &struct phy_device
+> > + * @wol: a pointer to a &struct ethtool_wolinfo
+> > + *
+> > + * NOTE: YTPHY_WOL_CONFIG_REG, YTPHY_WOL_MACADDR2_REG, YTPHY_WOL_MACADDR1_REG
+> > + * and YTPHY_WOL_MACADDR0_REG are common ext reg.
+> > + *
+> > + * returns 0 or negative errno code
+> > + */
+> > +static int yt8531_set_wol(struct phy_device *phydev,
+> > +			  struct ethtool_wolinfo *wol)
+> > +{
+> 
+> So this is called from the .set_wol method directly, and won't have the
+> MDIO bus lock taken...
 
---obziojiov5xhwwjh
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Frank
 
-On 29.11.2022 18:28:44, Vincent MAILHOL wrote:
-> On Tue. 29 Nov. 2022 at 17:33, Jiri Pirko <jiri@resnulli.us> wrote:
-> > Tue, Nov 29, 2022 at 04:14:06AM CET, mailhol.vincent@wanadoo.fr wrote:
-> > >As discussed in [1], abbreviating the bootloader to "bl" might not be
-> > >well understood. Instead, a bootloader technically being a firmware,
-> > >name it "fw.bootloader".
-> > >
-> > >Add a new macro to devlink.h to formalize this new info attribute name
-> > >and update the documentation.
-> > >
-> > >[1] https://lore.kernel.org/netdev/20221128142723.2f826d20@kernel.org/
-> > >
-> > >Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> > >Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> > >---
-> > >* Changelog *
-> > >
-> > >v1 -> v2:
-> > >
-> > >  * update the documentation as well.
-> > >  Link: https://lore.kernel.org/netdev/20221129020151.3842613-1-mailho=
-l.vincent@wanadoo.fr/
-> > >---
-> > > Documentation/networking/devlink/devlink-info.rst | 5 +++++
-> > > include/net/devlink.h                             | 2 ++
-> > > 2 files changed, 7 insertions(+)
-> > >
-> > >diff --git a/Documentation/networking/devlink/devlink-info.rst b/Docum=
-entation/networking/devlink/devlink-info.rst
-> > >index 7572bf6de5c1..1242b0e6826b 100644
-> > >--- a/Documentation/networking/devlink/devlink-info.rst
-> > >+++ b/Documentation/networking/devlink/devlink-info.rst
-> > >@@ -198,6 +198,11 @@ fw.bundle_id
-> > >
-> > > Unique identifier of the entire firmware bundle.
-> > >
-> > >+fw.bootloader
-> > >+-------------
-> > >+
-> > >+Version of the bootloader.
-> > >+
-> > > Future work
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > >
-> > >diff --git a/include/net/devlink.h b/include/net/devlink.h
-> > >index 074a79b8933f..2f552b90b5c6 100644
-> > >--- a/include/net/devlink.h
-> > >+++ b/include/net/devlink.h
-> > >@@ -621,6 +621,8 @@ enum devlink_param_generic_id {
-> > > #define DEVLINK_INFO_VERSION_GENERIC_FW_ROCE  "fw.roce"
-> > > /* Firmware bundle identifier */
-> > > #define DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID     "fw.bundle_id"
-> > >+/* Bootloader */
-> > >+#define DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER    "fw.bootloader"
-> >
-> > You add it and don't use it. You should add only what you use.
->=20
-> I will use it in this series for the linux-can tree:
-> https://lore.kernel.org/netdev/20221126162211.93322-4-mailhol.vincent@wan=
-adoo.fr/
->=20
-> If it is a problem to send this as a standalone patch, I will then
-> just add it to my series and have the patch go through the linux-can
-> tree.
+This is not the first time Russell has pointed out your locking is
+wrong.
 
-As you have the Ok from Greg, include this in you v5 series.
+How about adding a check in functions which should be called with the
+lock taken really do have the lock taken?
 
-Marc
+ASSERT_RTNL() but for an MDIO bus.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---obziojiov5xhwwjh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOHjPQACgkQrX5LkNig
-011yRQf/Z//khRUupApjepNa7hj73LOXKehQrdvABWt+K/GUaMpnRFtDMASWz4ZJ
-D9DH4Gk9+dsV6y8/tHnE9VNMYXZCkDqLxqq3INn7b4Th+eyS6Ajfk79k51Iervdv
-Q7IgNfeuEV52vnjIUrfGXIpqpV/1Tc83nmyiHM1yuhKPFv88hWAppuzZ53lTZRnE
-YHfAL9iy/FaA85w0334LSuIst36Mj2CFtFWc4+ymA0aBwL2t8dbiIQ0dDgYOowep
-Rk7NkT0LSsPXNUfm0KYq12z4VYG7lvWAtzWcSHwX0G+axxzWQKGY4lMAd8mBsAoY
-+1jDIuaKCXorISuFceKoD2ock+4+jw==
-=7wqE
------END PGP SIGNATURE-----
-
---obziojiov5xhwwjh--
+	Andrew
