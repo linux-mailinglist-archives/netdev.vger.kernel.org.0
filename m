@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F15C563CE99
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:12:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A298D63CE9C
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:13:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233421AbiK3FMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 00:12:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56456 "EHLO
+        id S233399AbiK3FNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 00:13:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233327AbiK3FMN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 00:12:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC2E769C8
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 21:12:10 -0800 (PST)
+        with ESMTP id S233383AbiK3FMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 00:12:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB827615F
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 21:12:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D2DC6154A
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 05:12:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7755C433D7;
-        Wed, 30 Nov 2022 05:12:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7A55B81A37
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 05:12:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B606C433D6;
+        Wed, 30 Nov 2022 05:12:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669785129;
-        bh=bA/H6yg00w3XCf3lRidc0U9sEr9eEuUY7+jA2vAo9zU=;
+        s=k20201202; t=1669785130;
+        bh=ncNlw+O42Nf+UkNdsDRACsWyHfRIYRyVZRtEpnXk3Sw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ny0wsisUNr9FkwDARxsbiBRYh5kK7hGyKJyCOgRYHJo+BuTUK3N5I/Sk8p91Uq0wf
-         GkEb/9TWhheUuHlJaLTVDdjnnxDR4FZBdyUooIe5tATz2KIfDUpEw3eQuXPJxPG5M5
-         pg3tU+fgqPrPDqhUvzOiYsrVRuG/3euaPMQYE4JAC1BYDe2+HArGnzFvASn9opJTu5
-         bK5r6afjMD67Zrv/w65dL1OacX0DpDgkAWMhLVUr/iGGpz6poVvCcD7PqPXZs7ZF9P
-         VKYBYB3h1AmQJAT75Gq11D//Ovmd4V3GudyelM7qKD5DR3Gm8Mpkss/QAAaTgDJ0Xv
-         m2OWkP13UbWzA==
+        b=ceDQeq/tQOCTG7sE8yAF1b8MneK9rafpoO5ZlWjM9kx0fj35/k8u1Aa8VheRXZ4h1
+         cmne4RrpejiHcTmf770utcC8bZ8zDgKWRwMqLrU7h2AamNIvWw1dc38nv17pDyEr+W
+         Mb+UGprBrtFmCp2KHgLLuvLzP1ENY6nrBG3ruyLMI0Ywo8d17g68/jvhcAOW3nHxY7
+         ayVEOYIoL07NOKHxKN2QkKGSNLeax6BVrvJX8VKhd6UVe4b5PdvyUBdDnT+CnDuV2O
+         xaDPzXGX1takfYIC4/diS4rQ1lFKpV9cl1vzoNYeeiU7ZuEXIYGsyIddJJRY7kY8To
+         wvgYnSMut0q3Q==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>
-Subject: [net-next 10/15] net/mlx5e: Don't access directly DMA device pointer
-Date:   Tue, 29 Nov 2022 21:11:47 -0800
-Message-Id: <20221130051152.479480-11-saeed@kernel.org>
+Subject: [net-next 11/15] net/mlx5e: Delete always true DMA check
+Date:   Tue, 29 Nov 2022 21:11:48 -0800
+Message-Id: <20221130051152.479480-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221130051152.479480-1-saeed@kernel.org>
 References: <20221130051152.479480-1-saeed@kernel.org>
@@ -58,28 +58,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Use specialized helper to fetch DMA device pointer.
+DMA address always exists for MACsec ASO object.
 
 Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/en_accel/macsec.c  | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index f900709639f6..7d5a27f7423f 100644
+index 7d5a27f7423f..9369a580743e 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -186,7 +186,7 @@ static int mlx5e_macsec_aso_reg_mr(struct mlx5_core_dev *mdev, struct mlx5e_macs
- 		return err;
- 	}
+@@ -1299,12 +1299,12 @@ static void macsec_aso_build_wqe_ctrl_seg(struct mlx5e_macsec_aso *macsec_aso,
+ 					  struct mlx5_wqe_aso_ctrl_seg *aso_ctrl,
+ 					  struct mlx5_aso_ctrl_param *param)
+ {
++	struct mlx5e_macsec_umr *umr = macsec_aso->umr;
++
+ 	memset(aso_ctrl, 0, sizeof(*aso_ctrl));
+-	if (macsec_aso->umr->dma_addr) {
+-		aso_ctrl->va_l  = cpu_to_be32(macsec_aso->umr->dma_addr | ASO_CTRL_READ_EN);
+-		aso_ctrl->va_h  = cpu_to_be32((u64)macsec_aso->umr->dma_addr >> 32);
+-		aso_ctrl->l_key = cpu_to_be32(macsec_aso->umr->mkey);
+-	}
++	aso_ctrl->va_l = cpu_to_be32(umr->dma_addr | ASO_CTRL_READ_EN);
++	aso_ctrl->va_h = cpu_to_be32((u64)umr->dma_addr >> 32);
++	aso_ctrl->l_key = cpu_to_be32(umr->mkey);
  
--	dma_device = &mdev->pdev->dev;
-+	dma_device = mlx5_core_dma_dev(mdev);
- 	dma_addr = dma_map_single(dma_device, umr->ctx, sizeof(umr->ctx), DMA_BIDIRECTIONAL);
- 	err = dma_mapping_error(dma_device, dma_addr);
- 	if (err) {
+ 	if (!param)
+ 		return;
 -- 
 2.38.1
 
