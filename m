@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A939563CEF2
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:57:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC17463CEF9
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:57:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233942AbiK3F5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 00:57:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
+        id S233839AbiK3F5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 00:57:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233937AbiK3F4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 00:56:49 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF74037238;
-        Tue, 29 Nov 2022 21:56:10 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id q7so24510777wrr.8;
-        Tue, 29 Nov 2022 21:56:10 -0800 (PST)
+        with ESMTP id S233955AbiK3F5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 00:57:08 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF5C77223;
+        Tue, 29 Nov 2022 21:56:56 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id o5so16399736wrm.1;
+        Tue, 29 Nov 2022 21:56:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=MfF4ygUbOy4r9BRLeLJ9LFmBydVfI8Aj6mDHNVkLPn8=;
-        b=gcxhkSvzOPgjvQRMzYbnvSGAlb4eJq+J5P04SEDVQX+Kx+DjMUENjGjZMkZ5tS78A9
-         OHag0NHlwi8s0eR/hPoBcc8I070I0W1MBnq9ZHb/7Z3CJ7VlemQpnlmBMaEqzBYY51+j
-         XSPuaPzsWFUeMbtOsoXjYZlhhk09df2LM6aDJ4MXeS1hFjY90ZoBxlpnMq9GAAJYNB4a
-         nHyHorU7k5HLkhOhBSbyB5zPtJvLO1FrBDvgT7eYwQbCk50Swjfthsgz4Nc81CdBWSHN
-         +LEGYIh3qpTrFvR5lF4aoM4JSB/ZBVscpYyI4JpJCfs5O65qJG4fvaM+bXs/j9noR0Vk
-         HJlA==
+        bh=6w+OdNdRFHbYUVtJA19A47W8lBW0pPewV38NS5DP0eg=;
+        b=lkMY4jkWg70EE3fQH7Y0sib3cykd1n1T3kHixPfe86BQgLqVRK1uTXnZ6ZiI4GsAgu
+         ozglYdOLC00u0utGIMBkEklWc76MHZ/hajC9tspFxd5XuowHwhEHQk8+rs8tXjBDUTkT
+         baGDyq6obFQviCVni1/SG7bCObZpfJAkCtBGh+UMee+YVRjT89nmcx+Tx5zxfF9YB6Q4
+         lmBp1J4xjePYoj14v0Fln5WlZanLa+VRF1gm2Vl06X6Wgrmlto6HG+e+1W7rdBZiJr9a
+         9p8xwCs/gF+IJyxluR4FvW5hS6F97XOHlnut7Dje3r5JmTq3W57ceHF0TbLGCpOK4lJJ
+         OgMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=MfF4ygUbOy4r9BRLeLJ9LFmBydVfI8Aj6mDHNVkLPn8=;
-        b=V4GwU+fpW5LkvBUotCXnfTwGvv2oQvUvjKXHMhrF3mxvI/vc41gxElz8G5TCoplCaI
-         DXijJ3w+jPKaR4LNLN7Qp//bgpH9PEc+2ucjAOZ8G8aHpg+/qx+/tBX5AMghu9WjpdoE
-         ZrJwSQmhSDUX6CTDl6mX6/obArDWXkV0WzdqsyXBcvlWUhQZnmRm3ZhgVk1qyN8ybiU6
-         FwLf9LY/PVUtgHJgLe+XVkW9UwhyiKHOnWL1SLe6gDKU7EjMpbmctSYmBlj+NYt1UeEe
-         ALaNX3ckeoP7QrHeBvd6OaYoG0au1qurvEYJQIyVDtGqjnWHFD6aG4MWSIwceK7ahYRz
-         PqKA==
-X-Gm-Message-State: ANoB5pnOnqcVZe8eYypaLP2UUKH4hWrg2lRPQLx6JS+wN8n5vkjJMq9A
-        mtXwHyvTshnPDsBfE93HJjXSuhUFMnRBKagHSj8=
-X-Google-Smtp-Source: AA0mqf5Qv+kD/cnvehrbrkXnxDlXa9v1LTZlDTOAaBOklGYkCCFpGpr107Xx7AHzy71ozi+0rmdPyCByblQJEo4lOak=
-X-Received: by 2002:adf:e0c6:0:b0:22a:34a4:8831 with SMTP id
- m6-20020adfe0c6000000b0022a34a48831mr36576787wri.199.1669787769432; Tue, 29
- Nov 2022 21:56:09 -0800 (PST)
+        bh=6w+OdNdRFHbYUVtJA19A47W8lBW0pPewV38NS5DP0eg=;
+        b=Qdwhz0yY2EHkv0jlwHgT0K8C+kLBfCnI9KjPOpi4ZewU67+3lOobGxuGP9o24YMjQa
+         MwdbcDxlsGXv88s6yK88s0jdH1UC/PSnGKzT5G9l4+Lf6bnLguSkA/FVC5GtMIdUDhgQ
+         hupNx93BoFdxPFlfc9W4M/pINnT879vpdsoWRXRBb1b7lJGHOSYN6GI2N9f2G1PZ2vTf
+         bNA3eogMlpoBNA/w2Mx9VK12diCaeiFyh1snuIHFsmyGGHSPD4LZQU3A2ifr4c62adM6
+         QmFjWRUjehcr7hXR5hd/Eft6OKOmDnAW9kWqPaoDGpsFcT5/kfroU8y5P6EVBmtRxSmH
+         d44w==
+X-Gm-Message-State: ANoB5pl7KBijOKfTjQaqx+bMGT+GIy5qfOKmJIqdH9CzJkIq2a51vyxr
+        PzANBPmZm/puxTFr4G57Xc0Ots4TmoTqSykTore6X7Tv
+X-Google-Smtp-Source: AA0mqf49nwlETYQIm+SAUx75IQEY7QfFc4l75jRTh8XT/+ayBmcLfg4uN2g0DFCyybeUSgiiJqcJdALdpAw96ez/3aU=
+X-Received: by 2002:a05:6000:181:b0:241:c6f9:3e5a with SMTP id
+ p1-20020a056000018100b00241c6f93e5amr27677332wrx.157.1669787815082; Tue, 29
+ Nov 2022 21:56:55 -0800 (PST)
 MIME-Version: 1.0
 References: <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
  <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com>
@@ -55,14 +55,14 @@ References: <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
  <Y4ZABpDSs4/uRutC@Boquns-Mac-mini.local> <Y4ZCKaQFqDY3aLTy@Boquns-Mac-mini.local>
  <CA+khW7hkQRFcC1QgGxEK_NeaVvCe3Hbe_mZ-_UkQKaBaqnOLEQ@mail.gmail.com>
  <23b5de45-1a11-b5c9-d0d3-4dbca0b7661e@huaweicloud.com> <CAMDZJNWtyanKtXtAxYGwvJ0LTgYLf=5iYFm63pbvvJLPE8oHSQ@mail.gmail.com>
- <8d424223-1da6-60bf-dd2c-cd2fe6d263fe@huaweicloud.com>
-In-Reply-To: <8d424223-1da6-60bf-dd2c-cd2fe6d263fe@huaweicloud.com>
+ <8d424223-1da6-60bf-dd2c-cd2fe6d263fe@huaweicloud.com> <CA+khW7hsvueaRRFX3m-gxtW0A7fYEOJLfDTSTVMY-OLn_si1hQ@mail.gmail.com>
+In-Reply-To: <CA+khW7hsvueaRRFX3m-gxtW0A7fYEOJLfDTSTVMY-OLn_si1hQ@mail.gmail.com>
 From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Wed, 30 Nov 2022 13:55:32 +0800
-Message-ID: <CAMDZJNWv0Qv6LJ=APOj644vKfJttcQ4WHXFizxn_2hCeVzQcXA@mail.gmail.com>
+Date:   Wed, 30 Nov 2022 13:56:18 +0800
+Message-ID: <CAMDZJNVEnYeqj1-ZcfJHwz4ZSVBA5H46_jMEkLxRgkgQ4R=Gaw@mail.gmail.com>
 Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
-To:     Hou Tao <houtao@huaweicloud.com>
-Cc:     Hao Luo <haoluo@google.com>, Waiman Long <longman@redhat.com>,
+To:     Hao Luo <haoluo@google.com>
+Cc:     Hou Tao <houtao@huaweicloud.com>, Waiman Long <longman@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
         netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
@@ -88,98 +88,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 12:13 PM Hou Tao <houtao@huaweicloud.com> wrote:
+On Wed, Nov 30, 2022 at 1:02 PM Hao Luo <haoluo@google.com> wrote:
 >
-> Hi,
+> On Tue, Nov 29, 2022 at 8:13 PM Hou Tao <houtao@huaweicloud.com> wrote:
+> >
+> > On 11/30/2022 10:47 AM, Tonghao Zhang wrote:
+> <...>
+> > >         if (in_nmi()) {
+> > >                 if (!raw_spin_trylock_irqsave(&b->raw_lock, flags))
+> > >                         return -EBUSY;
+> >
+> > The only purpose of trylock here is to make lockdep happy and it may lead to
+> > unnecessary -EBUSY error for htab operations in NMI context. I still prefer add
+> > a virtual lock-class for map_locked to fix the lockdep warning. So could you use
+> > separated patches to fix the potential dead-lock and the lockdep warning ? It
+> > will be better you can also add a bpf selftests for deadlock problem as said before.
+> >
 >
-> On 11/30/2022 10:47 AM, Tonghao Zhang wrote:
-> > On Wed, Nov 30, 2022 at 9:50 AM Hou Tao <houtao@huaweicloud.com> wrote:
-> >> Hi Hao,
-> >>
-> >> On 11/30/2022 3:36 AM, Hao Luo wrote:
-> >>> On Tue, Nov 29, 2022 at 9:32 AM Boqun Feng <boqun.feng@gmail.com> wrote:
-> >>>> Just to be clear, I meant to refactor htab_lock_bucket() into a try
-> >>>> lock pattern. Also after a second thought, the below suggestion doesn't
-> >>>> work. I think the proper way is to make htab_lock_bucket() as a
-> >>>> raw_spin_trylock_irqsave().
-> >>>>
-> >>>> Regards,
-> >>>> Boqun
-> >>>>
-> >>> The potential deadlock happens when the lock is contended from the
-> >>> same cpu. When the lock is contended from a remote cpu, we would like
-> >>> the remote cpu to spin and wait, instead of giving up immediately. As
-> >>> this gives better throughput. So replacing the current
-> >>> raw_spin_lock_irqsave() with trylock sacrifices this performance gain.
-> >>>
-> >>> I suspect the source of the problem is the 'hash' that we used in
-> >>> htab_lock_bucket(). The 'hash' is derived from the 'key', I wonder
-> >>> whether we should use a hash derived from 'bucket' rather than from
-> >>> 'key'. For example, from the memory address of the 'bucket'. Because,
-> >>> different keys may fall into the same bucket, but yield different
-> >>> hashes. If the same bucket can never have two different 'hashes' here,
-> >>> the map_locked check should behave as intended. Also because
-> >>> ->map_locked is per-cpu, execution flows from two different cpus can
-> >>> both pass.
-> >> The warning from lockdep is due to the reason the bucket lock A is used in a
-> >> no-NMI context firstly, then the same bucke lock is used a NMI context, so
-> > Yes, I tested lockdep too, we can't use the lock in NMI(but only
-> > try_lock work fine) context if we use them no-NMI context. otherwise
-> > the lockdep prints the warning.
-> > * for the dead-lock case: we can use the
-> > 1. hash & min(HASHTAB_MAP_LOCK_MASK, htab->n_buckets -1)
-> > 2. or hash bucket address.
-> Use the computed hash will be better than hash bucket address, because the hash
-> buckets are allocated sequentially.
-> >
-> > * for lockdep warning, we should use in_nmi check with map_locked.
-> >
-> > BTW, the patch doesn't work, so we can remove the lock_key
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c50eb518e262fa06bd334e6eec172eaf5d7a5bd9
-> >
-> > static inline int htab_lock_bucket(const struct bpf_htab *htab,
-> >                                    struct bucket *b, u32 hash,
-> >                                    unsigned long *pflags)
-> > {
-> >         unsigned long flags;
-> >
-> >         hash = hash & min(HASHTAB_MAP_LOCK_MASK, htab->n_buckets -1);
-> >
-> >         preempt_disable();
-> >         if (unlikely(__this_cpu_inc_return(*(htab->map_locked[hash])) != 1)) {
-> >                 __this_cpu_dec(*(htab->map_locked[hash]));
-> >                 preempt_enable();
-> >                 return -EBUSY;
-> >         }
-> >
-> >         if (in_nmi()) {
-> >                 if (!raw_spin_trylock_irqsave(&b->raw_lock, flags))
-> >                         return -EBUSY;
-> The only purpose of trylock here is to make lockdep happy and it may lead to
-> unnecessary -EBUSY error for htab operations in NMI context. I still prefer add
-> a virtual lock-class for map_locked to fix the lockdep warning. So could you use
-Hi, what is virtual lock-class ? Can you give me an example of what you mean?
-> separated patches to fix the potential dead-lock and the lockdep warning ? It
-> will be better you can also add a bpf selftests for deadlock problem as said before.
+> Agree with Tao here. Tonghao, could you send another version which:
 >
+> - separates the fix to deadlock and the fix to lockdep warning
+> - includes a bpf selftest to verify the fix to deadlock
+> - with bpf-specific tag: [PATCH bpf-next]
+>
+> There are multiple ideas on the fly in this thread, it's easy to lose
+> track of what has been proposed and what change you intend to make.
+Hi, I will send v2 soon. Thanks.
 > Thanks,
-> Tao
-> >         } else {
-> >                 raw_spin_lock_irqsave(&b->raw_lock, flags);
-> >         }
-> >
-> >         *pflags = flags;
-> >         return 0;
-> > }
-> >
-> >
-> >> lockdep deduces that may be a dead-lock. I have already tried to use the same
-> >> map_locked for keys with the same bucket, the dead-lock is gone, but still got
-> >> lockdep warning.
-> >>> Hao
-> >>> .
-> >
->
+> Hao
+
 
 
 -- 
