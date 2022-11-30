@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2012B63DC4F
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:47:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A793B63DC53
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:47:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiK3RrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 12:47:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
+        id S229894AbiK3RrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 12:47:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiK3RrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:47:15 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4546C52163;
-        Wed, 30 Nov 2022 09:47:13 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id 3-20020a17090a098300b00219041dcbe9so2978677pjo.3;
-        Wed, 30 Nov 2022 09:47:13 -0800 (PST)
+        with ESMTP id S229853AbiK3RrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:47:16 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BBD5217D;
+        Wed, 30 Nov 2022 09:47:15 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id b13-20020a17090a5a0d00b0021906102d05so2970165pjd.5;
+        Wed, 30 Nov 2022 09:47:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3N5Q6e+noIaCEVCaxbfUnFlF+ThohEHIJopf4VIMSyc=;
-        b=S1/3uw3ywG3vphD7zeS2OydWptUTqs8mU98QrM46zbLPy15QW0548Ya8/9Ix5QnC7K
-         vIIUBoxGnWriBbSa08uo4UKZwnTmXf8P1I9sDYSYNxVA9ORA/HHx/J8bvrnfg4z5nJGb
-         LoqUD4F7GSA7Tyod7KYYSVu1PYGu8HY8VGzYUWwGTAs4bQCtbnmb4m3U+pgys8gVXdcM
-         PTOiB2EjkI8McMEmT7wbHOkerNTBSBi7OXCqFEiTZrkz6rp8n8JhEOT9HrUwEBZ5Q+Gv
-         J6NxEGBNeGqKJ5ANku35vWs7/OpGhglx5K9tadPAmYVXcgqi0mgl+dzdp41ffaKgEdvc
-         +jPA==
+        bh=3MR3h+En6xAnYa/nGayyjwsy00Mwh4XUedfM8z4JVpY=;
+        b=jxMSYixhM7Ngh5a62kfk/HGeGLa1WwkfLaNM4Bpm3xLEpuBQz0s1SKEmd3zgYrxyxc
+         a5AQ0xotP+kkQoB2ExHx3E3j1cN6mS2v4vvOKqQS2EWE+wJQYw/uLEDkp66Wbyv3m7tn
+         IHuSVL+hJXcOmqbWlHUEqRbv5k6BKzMAjnS6UY0T2Zj2/MHX9m/OMxfJJj+2K33AWx2V
+         ZQ7Bu4/BtEWMAKNyAKnfifIps9NX+mmvktnY/hh/L3iWr2sQpr5Qu2u/lKw4GumpoS8l
+         xwkxxN3Dld/wHhJejycoz9zBWvSkcnuh0EwClZMdykRNvd3pRm6LmurN1TJn0v5HfT8v
+         scnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=3N5Q6e+noIaCEVCaxbfUnFlF+ThohEHIJopf4VIMSyc=;
-        b=PlAraelGPWDBjxrWyKNDaiaj27MIPVSkx/V7CYxgl64DqAtj8bo7aoN4HI1caqDKBs
-         9Z2g8e02iRHn4gaQpQ0BuYE5P9aeAxJgs4Ax/hc+9W/tlxYkfmYzIhYLDmca/FU/ocNM
-         WTaLG8svJ7JwLqEWCOKGRHwJpPmUh651C3siPdCXHp7ogCv2JW1kDTdCidDCF14cYd/D
-         U/Axdn+tPl0Ri0Oie7p3eQjqBlpYJq2i6TuA43arDEBYD06Ew2ZssvUWnyh7noYUXFQk
-         uCwYHRgYvC/csHieuCQszNDn9sacb0jGmz/bfngSVr/1TjzQnnbImJr/y7LhqSNidhwa
-         jlOw==
-X-Gm-Message-State: ANoB5pmFs5GXL6fmcN0QucNayKFgC4EFlOaBvh88lA0dWpxIRs9D3GlN
-        etmU0iYAIjF329fSjDqimK6SGlzR7Db3Aw==
-X-Google-Smtp-Source: AA0mqf54bL8yQjYXXbnj3lTp5sn31uT7G2IToaiuVNnODJpC+YKhicE2YwWbOqBXVgzOXcxkRahW7g==
-X-Received: by 2002:a17:90a:70c5:b0:218:985d:25a0 with SMTP id a5-20020a17090a70c500b00218985d25a0mr57153942pjm.168.1669830432290;
-        Wed, 30 Nov 2022 09:47:12 -0800 (PST)
+        bh=3MR3h+En6xAnYa/nGayyjwsy00Mwh4XUedfM8z4JVpY=;
+        b=i1R6QQJQmfLZbPydW4Gi3WQnJxSvbinhgX+p1Z8AV1HWO1y8hLzUHS4ig+s2+aPyR4
+         HdRpQGRcJXf+o7mAnLv6f1lMw/gGaW078O01oGh/0fDg126yY6S10FjBuc8SqRpbCuVG
+         veUdvD0YFk8xldsnsfJCLICriYGee+wGdE5mIwivSRZyIWXqC6gE7oNm6+r3gBGqVPLI
+         LSwkPHa2hADDr5Is8oBh6NzgAKJEPZU2KG/K1Ty2Vm4lQGusMY9IxAe5b9HtIpb478Ta
+         ma6r2yJ4I7pjqTlO5ssgzxju9g6Q7hiUozQlb1jwP6LGjOCL2yeasEtAiuQ7V5dCYFFP
+         o+8w==
+X-Gm-Message-State: ANoB5plcobYXhs/xCeQ7qIyb8PBCP4zEZLWfQOSUzZQrZkTLnHG2ssmC
+        MVrkwVQnuKhqVsgNBab3qH0zKWQTu+CnAA==
+X-Google-Smtp-Source: AA0mqf7YOYrxOXP0JssPpNsQ8ePia+E5j4wwsBmgO+xnQgqprxpia9JnbI+fDRk5vzyN8OAXAbbp/g==
+X-Received: by 2002:a17:90a:4615:b0:218:8f4:bad5 with SMTP id w21-20020a17090a461500b0021808f4bad5mr72721002pjg.55.1669830435020;
+        Wed, 30 Nov 2022 09:47:15 -0800 (PST)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id p3-20020aa79e83000000b00574cdb63f03sm1714505pfq.144.2022.11.30.09.47.09
+        by smtp.gmail.com with ESMTPSA id p3-20020aa79e83000000b00574cdb63f03sm1714505pfq.144.2022.11.30.09.47.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Nov 2022 09:47:11 -0800 (PST)
+        Wed, 30 Nov 2022 09:47:14 -0800 (PST)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     linux-can@vger.kernel.org
@@ -61,12 +61,13 @@ Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
         Lukas Magel <lukas.magel@posteo.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v5 0/7] can: etas_es58x: report firmware, bootloader and hardware version
-Date:   Thu,  1 Dec 2022 02:46:51 +0900
-Message-Id: <20221130174658.29282-1-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v5 1/7] can: etas_es58x: add devlink support
+Date:   Thu,  1 Dec 2022 02:46:52 +0900
+Message-Id: <20221130174658.29282-2-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.37.4
-In-Reply-To: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20221130174658.29282-1-mailhol.vincent@wanadoo.fr>
 References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
+ <20221130174658.29282-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,161 +80,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The goal of this series is to report the firmware version, the
-bootloader version and the hardware revision of ETAS ES58x
-devices.
+Add basic support for devlink at the device level. The callbacks of
+struct devlink_ops will be implemented next.
 
-These are already reported in the kernel log but this isn't best
-practice. Remove the kernel log and instead export all these through
-devlink. The devlink core automatically exports the firmware and the
-bootloader version to ethtool, so no need to implement the
-ethtool_ops::get_drvinfo() callback anymore.
-
-Patch one and two implement the core support for devlink (at device
-level) and devlink port (at the network interface level).
-
-Patch three export usb_cache_string() and patch four add a new info
-attribute to devlink.h. Both are prerequisites for patch five.
-
-Patch five is the actual goal: it parses the product information from
-a custom usb string returned by the device and expose them through
-devlink.
-
-Patch six removes the product information from the kernel log.
-
-Finally, patch seven add a devlink documentation page with list all
-the information attributes reported by the driver.
-
-
-* Sample outputs following this series *
-
-| $ devlink dev info 
-| usb/1-9:1.1:
-|   serial_number 0108954
-|   versions:
-|       fixed:
-|         board.rev B012/000
-|       running:
-|         fw 04.00.01
-|         fw.bootloader 02.00.00
-
-| $ devlink port show can0
-| usb/1-9:1.1/0: type eth netdev can0 flavour physical port 0 splittable false
-
-| $ ethtool -i can0
-| driver: etas_es58x
-| version: 6.1.0-rc7+
-| firmware-version: 04.00.01 02.00.00 
-| expansion-rom-version: 
-| bus-info: 1-9:1.1
-| supports-statistics: no
-| supports-test: no
-| supports-eeprom-access: no
-| supports-register-dump: no
-| supports-priv-flags: no
-
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
-* Changelog *
-
-v4 -> v5:
-
-  * [PATH 2/7] add devlink port support. This extends devlink to the
-    network interface.
-
-  * thanks to devlink port, 'ethtool -i' is now able to retrieve the
-    firmware version from devlink. No need to implement the
-    ethtool_ops::get_drvinfo() callback anymore: remove one patch from
-    the series.
-
-  * [PATCH 4/7] A new patch to add a new info attribute for the
-    bootloader version in devlink.h. This patch was initially sent as
-    a standalone patch here:
-      https://lore.kernel.org/netdev/20221129031406.3849872-1-mailhol.vincent@wanadoo.fr/
-    Merging it to this series so that it is both added and used at the
-    same time.
-
-  * [PATCH 5/7] use the newly info attribute defined in patch 4/7 to
-    report the bootloader version instead of the custom string "bl".
-
-  * [PATCH 5/7] because the series does not implement
-    ethtool_ops::get_drvinfo() anymore, the two helper functions
-    es58x_sw_version_is_set() and es58x_hw_revision_is_set() are only
-    used in devlink.c. Move them from es58x_core.h to es58x_devlink.c.
-
-  * [PATCH 5/7] small rework of the helper function
-    es58x_hw_revision_is_set(): it is OK to only check the letter (if
-    the letter is '\0', it will not be possible to print the next
-    numbers).
-
-  * [PATCH 5/7 and 6/7] add reviewed-by Andrew Lunn tag.
-
-  * [PATCH 7/7] Now, 'ethtool -i' reports both the firmware version
-    and the bootloader version (this is how the core export the
-    information from devlink to ethtool). Update the documentation to
-    reflect this fact.
-
-  * Reoder the patches.
-
-v3 -> v4:
-
-  * major rework to use devlink instead of sysfs following Andrew's
-    comment.
-
-  * split the series in 6 patches.
-
-  * [PATCH 1/6] add Acked-by: Greg Kroah-Hartman
-
-v2 -> v3:
-
-  * patch 2/3: do not spam the kernel log anymore with the product
-    number. Instead parse the product information string, extract the
-    firmware version, the bootloadar version and the hardware revision
-    and export them through sysfs.
-
-  * patch 2/3: rework the parsing in order not to need additional
-    fields in struct es58x_parameters.
-
-  * patch 3/3: only populate ethtool_drvinfo::fw_version because since
-    commit edaf5df22cb8 ("ethtool: ethtool_get_drvinfo: populate
-    drvinfo fields even if callback exits"), there is no need to
-    populate ethtool_drvinfo::driver and ethtool_drvinfo::bus_info in
-    the driver.
-
-v1 -> v2:
-
-  * was a single patch. It is now a series of three patches.
-  * add a first new patch to export  usb_cache_string().
-  * add a second new patch to apply usb_cache_string() to existing code.
-  * add missing check on product info string to prevent a buffer overflow.
-  * add comma on the last entry of struct es58x_parameters.
-
-Vincent Mailhol (7):
-  can: etas_es58x: add devlink support
-  can: etas_es58x: add devlink port support
-  USB: core: export usb_cache_string()
-  net: devlink: add DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER
-  can: etas_es58x: export product information through
-    devlink_ops::info_get()
-  can: etas_es58x: remove es58x_get_product_info()
-  Documentation: devlink: add devlink documentation for the etas_es58x
-    driver
-
- .../networking/devlink/devlink-info.rst       |   5 +
- .../networking/devlink/etas_es58x.rst         |  36 +++
- MAINTAINERS                                   |   1 +
- drivers/net/can/usb/Kconfig                   |   1 +
- drivers/net/can/usb/etas_es58x/Makefile       |   2 +-
- drivers/net/can/usb/etas_es58x/es58x_core.c   |  98 +++-----
- drivers/net/can/usb/etas_es58x/es58x_core.h   |  50 ++++
- .../net/can/usb/etas_es58x/es58x_devlink.c    | 235 ++++++++++++++++++
- drivers/usb/core/message.c                    |   1 +
- drivers/usb/core/usb.h                        |   1 -
- include/linux/usb.h                           |   1 +
- include/net/devlink.h                         |   2 +
- 12 files changed, 372 insertions(+), 61 deletions(-)
- create mode 100644 Documentation/networking/devlink/etas_es58x.rst
+ drivers/net/can/usb/Kconfig                    |  1 +
+ drivers/net/can/usb/etas_es58x/Makefile        |  2 +-
+ drivers/net/can/usb/etas_es58x/es58x_core.c    | 13 ++++++++++---
+ drivers/net/can/usb/etas_es58x/es58x_core.h    |  6 ++++++
+ drivers/net/can/usb/etas_es58x/es58x_devlink.c | 13 +++++++++++++
+ 5 files changed, 31 insertions(+), 4 deletions(-)
  create mode 100644 drivers/net/can/usb/etas_es58x/es58x_devlink.c
 
+diff --git a/drivers/net/can/usb/Kconfig b/drivers/net/can/usb/Kconfig
+index 8c6fea661530..445504ababce 100644
+--- a/drivers/net/can/usb/Kconfig
++++ b/drivers/net/can/usb/Kconfig
+@@ -30,6 +30,7 @@ config CAN_ESD_USB
+ config CAN_ETAS_ES58X
+ 	tristate "ETAS ES58X CAN/USB interfaces"
+ 	select CRC16
++	select NET_DEVLINK
+ 	help
+ 	  This driver supports the ES581.4, ES582.1 and ES584.1 interfaces
+ 	  from ETAS GmbH (https://www.etas.com/en/products/es58x.php).
+diff --git a/drivers/net/can/usb/etas_es58x/Makefile b/drivers/net/can/usb/etas_es58x/Makefile
+index a129b4aa0215..d6667ebe259f 100644
+--- a/drivers/net/can/usb/etas_es58x/Makefile
++++ b/drivers/net/can/usb/etas_es58x/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_CAN_ETAS_ES58X) += etas_es58x.o
+-etas_es58x-y = es58x_core.o es581_4.o es58x_fd.o
++etas_es58x-y = es58x_core.o es58x_devlink.o es581_4.o es58x_fd.o
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 5aba16849603..aeffe61faed8 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -16,6 +16,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/usb.h>
++#include <net/devlink.h>
+ 
+ #include "es58x_core.h"
+ 
+@@ -2177,6 +2178,7 @@ static struct es58x_device *es58x_init_es58x_dev(struct usb_interface *intf,
+ {
+ 	struct device *dev = &intf->dev;
+ 	struct es58x_device *es58x_dev;
++	struct devlink *devlink;
+ 	const struct es58x_parameters *param;
+ 	const struct es58x_operators *ops;
+ 	struct usb_device *udev = interface_to_usbdev(intf);
+@@ -2199,11 +2201,12 @@ static struct es58x_device *es58x_init_es58x_dev(struct usb_interface *intf,
+ 		ops = &es581_4_ops;
+ 	}
+ 
+-	es58x_dev = devm_kzalloc(dev, es58x_sizeof_es58x_device(param),
+-				 GFP_KERNEL);
+-	if (!es58x_dev)
++	devlink = devlink_alloc(&es58x_dl_ops, es58x_sizeof_es58x_device(param),
++				dev);
++	if (!devlink)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	es58x_dev = devlink_priv(devlink);
+ 	es58x_dev->param = param;
+ 	es58x_dev->ops = ops;
+ 	es58x_dev->dev = dev;
+@@ -2250,6 +2253,8 @@ static int es58x_probe(struct usb_interface *intf,
+ 	if (ret)
+ 		return ret;
+ 
++	devlink_register(priv_to_devlink(es58x_dev));
++
+ 	for (ch_idx = 0; ch_idx < es58x_dev->num_can_ch; ch_idx++) {
+ 		ret = es58x_init_netdev(es58x_dev, ch_idx);
+ 		if (ret) {
+@@ -2275,8 +2280,10 @@ static void es58x_disconnect(struct usb_interface *intf)
+ 	dev_info(&intf->dev, "Disconnecting %s %s\n",
+ 		 es58x_dev->udev->manufacturer, es58x_dev->udev->product);
+ 
++	devlink_unregister(priv_to_devlink(es58x_dev));
+ 	es58x_free_netdevs(es58x_dev);
+ 	es58x_free_urbs(es58x_dev);
++	devlink_free(priv_to_devlink(es58x_dev));
+ 	usb_set_intfdata(intf, NULL);
+ }
+ 
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.h b/drivers/net/can/usb/etas_es58x/es58x_core.h
+index 4a082fd69e6f..bf24375580e5 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.h
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.h
+@@ -674,6 +674,7 @@ static inline enum es58x_flag es58x_get_flags(const struct sk_buff *skb)
+ 	return es58x_flags;
+ }
+ 
++/* es58x_core.c. */
+ int es58x_can_get_echo_skb(struct net_device *netdev, u32 packet_idx,
+ 			   u64 *tstamps, unsigned int pkts);
+ int es58x_tx_ack_msg(struct net_device *netdev, u16 tx_free_entries,
+@@ -691,9 +692,14 @@ int es58x_rx_cmd_ret_u32(struct net_device *netdev,
+ int es58x_send_msg(struct es58x_device *es58x_dev, u8 cmd_type, u8 cmd_id,
+ 		   const void *msg, u16 cmd_len, int channel_idx);
+ 
++/* es58x_devlink.c. */
++extern const struct devlink_ops es58x_dl_ops;
++
++/* es581_4.c. */
+ extern const struct es58x_parameters es581_4_param;
+ extern const struct es58x_operators es581_4_ops;
+ 
++/* es58x_fd.c. */
+ extern const struct es58x_parameters es58x_fd_param;
+ extern const struct es58x_operators es58x_fd_ops;
+ 
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_devlink.c b/drivers/net/can/usb/etas_es58x/es58x_devlink.c
+new file mode 100644
+index 000000000000..af6ca7ada23f
+--- /dev/null
++++ b/drivers/net/can/usb/etas_es58x/es58x_devlink.c
+@@ -0,0 +1,13 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/* Driver for ETAS GmbH ES58X USB CAN(-FD) Bus Interfaces.
++ *
++ * File es58x_devlink.c: report the product information using devlink.
++ *
++ * Copyright (c) 2022 Vincent Mailhol <mailhol.vincent@wanadoo.fr>
++ */
++
++#include <net/devlink.h>
++
++const struct devlink_ops es58x_dl_ops = {
++};
 -- 
 2.37.4
 
