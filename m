@@ -2,119 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B51163D563
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 13:19:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE1E863D586
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 13:24:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234589AbiK3MTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 07:19:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
+        id S234448AbiK3MYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 07:24:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234531AbiK3MTm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 07:19:42 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00067303FC;
-        Wed, 30 Nov 2022 04:19:41 -0800 (PST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 4/4] netfilter: ctnetlink: fix compilation warning after data race fixes in ct mark
-Date:   Wed, 30 Nov 2022 13:19:34 +0100
-Message-Id: <20221130121934.1125-5-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221130121934.1125-1-pablo@netfilter.org>
-References: <20221130121934.1125-1-pablo@netfilter.org>
+        with ESMTP id S230367AbiK3MYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 07:24:20 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15BF2B618;
+        Wed, 30 Nov 2022 04:24:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669811060; x=1701347060;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CHddWfflPs8kLESzYoIMrTNSP+L+KcSfpj3rQaLl8ps=;
+  b=oITNyRvew8KVb3YH9fOF/4xqdDIXk6ASxtByefLx6WTkLg+JJjPat0ej
+   A2mhTITR/vgVJ4o0dZ8xvc4y7iUy3IQPlIjNwJVDAHR98J/Rh9+iUCEBA
+   VXi5+HjXsC87fV/sEC8phzduGl9UoCbx4l0d2ddV3Q8uQfApOp6YIaEj9
+   MxC99YbQcfPAFer9YXEeht4lrqCv/wHWXSGsIHZTsRo0XKEAnvww9RFfb
+   LKgdPAN+qjvacAlpolurOeshkBXGwYXj8jSFpm8pDrfd82Q8PfKGdVFx5
+   iCd+xTspKty9c1i8deqn1B5T9kR4L4I2Fsb624xT7nyFTOIqUnHn87btM
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="401662243"
+X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
+   d="scan'208";a="401662243"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 04:24:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="889272093"
+X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
+   d="scan'208";a="889272093"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 30 Nov 2022 04:24:16 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id C505710E; Wed, 30 Nov 2022 14:24:42 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Michael Jamet <michael.jamet@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH net-next v2 1/2] Revert "net: thunderbolt: Use separate header data type for the Rx"
+Date:   Wed, 30 Nov 2022 14:24:38 +0200
+Message-Id: <20221130122439.10822-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All warnings (new ones prefixed by >>):
-
-   net/netfilter/nf_conntrack_netlink.c: In function '__ctnetlink_glue_build':
->> net/netfilter/nf_conntrack_netlink.c:2674:13: warning: unused variable 'mark' [-Wunused-variable]
-    2674 |         u32 mark;
-         |             ^~~~
-
-Fixes: 52d1aa8b8249 ("netfilter: conntrack: Fix data-races around ct mark")
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Ivan Babrou <ivan@ivan.computer>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+This reverts commit 9ad63a3dad65b984ba16f5841163457dec266be4.
 ---
- net/netfilter/nf_conntrack_netlink.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+v2: added tag (Mika)
+ drivers/net/thunderbolt.c | 22 +---------------------
+ 1 file changed, 1 insertion(+), 21 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index d71150a40fb0..1286ae7d4609 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -328,8 +328,13 @@ ctnetlink_dump_timestamp(struct sk_buff *skb, const struct nf_conn *ct)
- }
+diff --git a/drivers/net/thunderbolt.c b/drivers/net/thunderbolt.c
+index 0fc2d9222a71..c73d419f1456 100644
+--- a/drivers/net/thunderbolt.c
++++ b/drivers/net/thunderbolt.c
+@@ -58,32 +58,12 @@
+  * supported then @frame_id is filled, otherwise it stays %0.
+  */
+ struct thunderbolt_ip_frame_header {
+-	__le32 frame_size;
+-	__le16 frame_index;
+-	__le16 frame_id;
+-	__le32 frame_count;
+-};
+-
+-/* Same as &struct thunderbolt_ip_frame_header for Rx */
+-struct thunderbolt_ip_frame_rx_hdr {
+ 	u32 frame_size;
+ 	u16 frame_index;
+ 	u16 frame_id;
+ 	u32 frame_count;
+ };
  
- #ifdef CONFIG_NF_CONNTRACK_MARK
--static int ctnetlink_dump_mark(struct sk_buff *skb, u32 mark)
-+static int ctnetlink_dump_mark(struct sk_buff *skb, const struct nf_conn *ct)
- {
-+	u32 mark = READ_ONCE(ct->mark);
-+
-+	if (!mark)
-+		return 0;
-+
- 	if (nla_put_be32(skb, CTA_MARK, htonl(mark)))
- 		goto nla_put_failure;
- 	return 0;
-@@ -543,7 +548,7 @@ static int ctnetlink_dump_extinfo(struct sk_buff *skb,
- static int ctnetlink_dump_info(struct sk_buff *skb, struct nf_conn *ct)
- {
- 	if (ctnetlink_dump_status(skb, ct) < 0 ||
--	    ctnetlink_dump_mark(skb, READ_ONCE(ct->mark)) < 0 ||
-+	    ctnetlink_dump_mark(skb, ct) < 0 ||
- 	    ctnetlink_dump_secctx(skb, ct) < 0 ||
- 	    ctnetlink_dump_id(skb, ct) < 0 ||
- 	    ctnetlink_dump_use(skb, ct) < 0 ||
-@@ -722,7 +727,6 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
- 	struct sk_buff *skb;
- 	unsigned int type;
- 	unsigned int flags = 0, group;
--	u32 mark;
- 	int err;
- 
- 	if (events & (1 << IPCT_DESTROY)) {
-@@ -827,9 +831,8 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
- 	}
- 
- #ifdef CONFIG_NF_CONNTRACK_MARK
--	mark = READ_ONCE(ct->mark);
--	if ((events & (1 << IPCT_MARK) || mark) &&
--	    ctnetlink_dump_mark(skb, mark) < 0)
-+	if (events & (1 << IPCT_MARK) &&
-+	    ctnetlink_dump_mark(skb, ct) < 0)
- 		goto nla_put_failure;
- #endif
- 	nlmsg_end(skb, nlh);
-@@ -2671,7 +2674,6 @@ static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
- {
- 	const struct nf_conntrack_zone *zone;
- 	struct nlattr *nest_parms;
--	u32 mark;
- 
- 	zone = nf_ct_zone(ct);
- 
-@@ -2733,8 +2735,7 @@ static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
- 		goto nla_put_failure;
- 
- #ifdef CONFIG_NF_CONNTRACK_MARK
--	mark = READ_ONCE(ct->mark);
--	if (mark && ctnetlink_dump_mark(skb, mark) < 0)
-+	if (ctnetlink_dump_mark(skb, ct) < 0)
- 		goto nla_put_failure;
- #endif
- 	if (ctnetlink_dump_labels(skb, ct) < 0)
+-static_assert(sizeof(struct thunderbolt_ip_frame_header) ==
+-	      sizeof(struct thunderbolt_ip_frame_rx_hdr));
+-
+-#define TBIP_FRAME_HDR_MATCH(x)							 \
+-	static_assert(offsetof(struct thunderbolt_ip_frame_header, frame_##x) == \
+-		      offsetof(struct thunderbolt_ip_frame_rx_hdr, frame_##x))
+-TBIP_FRAME_HDR_MATCH(size);
+-TBIP_FRAME_HDR_MATCH(index);
+-TBIP_FRAME_HDR_MATCH(id);
+-TBIP_FRAME_HDR_MATCH(count);
+-#undef TBIP_FRAME_HDR_MATCH
+-
+ enum thunderbolt_ip_frame_pdf {
+ 	TBIP_PDF_FRAME_START = 1,
+ 	TBIP_PDF_FRAME_END,
+@@ -213,7 +193,7 @@ struct tbnet {
+ 	struct delayed_work login_work;
+ 	struct work_struct connected_work;
+ 	struct work_struct disconnect_work;
+-	struct thunderbolt_ip_frame_rx_hdr rx_hdr;
++	struct thunderbolt_ip_frame_header rx_hdr;
+ 	struct tbnet_ring rx_ring;
+ 	atomic_t frame_id;
+ 	struct tbnet_ring tx_ring;
 -- 
-2.30.2
+2.35.1
 
