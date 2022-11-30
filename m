@@ -2,48 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDC2C63D19D
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 10:20:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3E9563D1C5
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 10:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbiK3JUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 04:20:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51008 "EHLO
+        id S233019AbiK3JYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 04:24:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiK3JUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 04:20:07 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CCE391F8
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 01:20:06 -0800 (PST)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NMYYl6FL2zmWGT;
-        Wed, 30 Nov 2022 17:19:23 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 30 Nov 2022 17:20:04 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 30 Nov
- 2022 17:20:03 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ioana.ciornei@nxp.com>,
-        <calvin.johnson@oss.nxp.com>, <grant.likely@arm.com>,
-        <zengheng4@huawei.com>
-Subject: [PATCH net] net: mdiobus: remove unneccessary fwnode_handle_put() in the error path
-Date:   Wed, 30 Nov 2022 17:17:59 +0800
-Message-ID: <20221130091759.682841-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S232373AbiK3JYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 04:24:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B9F2A967;
+        Wed, 30 Nov 2022 01:24:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9362B81A99;
+        Wed, 30 Nov 2022 09:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D885BC433C1;
+        Wed, 30 Nov 2022 09:24:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669800287;
+        bh=TdyM8hMpRwYA7lJLFOBGQQtN/uspLzJubg/tO0o+fBo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Qg/4JEpHq0VapvPQZG7o5odpmHpLltXvEx5sITQmJKCpHaaMtJZtLnqP50biDk+fP
+         x/wACcZj6kakpvLUFNkXXEG91fjV2fc9frXFy/meS2rYHkYgBA/0pjGITswxQnoLec
+         YS230P55xqjrmSnZNvqouwTSbArGMIT31m6aRWr7Z3op0Tm+Tb5ncKnWA/gwt5JKYn
+         RlhgI9X9Ytne/HP4aJECeB9AuwuPkccN/WmKIzOda6Ia5SHTRuB1Lsvmdywc7lwBmz
+         fISykQFyh8P3jKXuzmBQXeO/RHVlLxsgD8KeuT0y3xU263DpeEjY6NOBsMd556pV7s
+         v+rcRUZRyflgA==
+Date:   Wed, 30 Nov 2022 11:24:43 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Veerasenareddy Burru <vburru@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lironh@marvell.com, aayarekar@marvell.com, sedara@marvell.com,
+        sburla@marvell.com, linux-doc@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v2 1/9] octeon_ep: defer probe if firmware not
+ ready
+Message-ID: <Y4chWyR6qTlptkTE@unreal>
+References: <20221129130933.25231-1-vburru@marvell.com>
+ <20221129130933.25231-2-vburru@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221129130933.25231-2-vburru@marvell.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,48 +59,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If phy_device_register() or fwnode_mdiobus_phy_device_register()
-fail, phy_device_free() is called, the device refcount is decreased
-to 0, then fwnode_handle_put() is called in phy_device_release(),
-so the fwnode_handle_put() in the error path can be removed to avoid
-double put.
+On Tue, Nov 29, 2022 at 05:09:24AM -0800, Veerasenareddy Burru wrote:
+> Defer probe if firmware is not ready for device usage.
+> 
+> Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
+> Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
+> Signed-off-by: Satananda Burla <sburla@marvell.com>
+> ---
+> v1 -> v2:
+>  * was scheduling workqueue task to wait for firmware ready,
+>    to probe/initialize the device.
+>  * now, removed the workqueue task; the probe returns EPROBE_DEFER,
+>    if firmware is not ready.
+>  * removed device status oct->status, as it is not required with the
+>    modified implementation.
+> 
+>  .../ethernet/marvell/octeon_ep/octep_main.c   | 26 +++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> index 5a898fb88e37..aa7d0ced9807 100644
+> --- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> @@ -1017,6 +1017,25 @@ static void octep_device_cleanup(struct octep_device *oct)
+>  	oct->conf = NULL;
+>  }
+>  
+> +static u8 get_fw_ready_status(struct pci_dev *pdev)
 
-Fixes: cdde1560118f ("net: mdiobus: fix unbalanced node reference count")
-Reported-by: Zeng Heng <zengheng4@huawei.com>
-Tested-by: Zeng Heng <zengheng4@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/mdio/fwnode_mdio.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+Please change this function to return bool, you are not interested in
+status.
 
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index eb344f6d4a7b..e584abda585b 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -97,10 +97,8 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
- 	 * register it
- 	 */
- 	rc = phy_device_register(phy);
--	if (rc) {
--		fwnode_handle_put(child);
-+	if (rc)
- 		return rc;
--	}
- 
- 	dev_dbg(&mdio->dev, "registered phy %p fwnode at address %i\n",
- 		child, addr);
-@@ -152,10 +150,8 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 
- 		/* All data is now stored in the phy struct, so register it */
- 		rc = phy_device_register(phy);
--		if (rc) {
--			fwnode_handle_put(phy->mdio.dev.fwnode);
-+		if (rc)
- 			goto clean_phy;
--		}
- 	} else if (is_of_node(child)) {
- 		rc = fwnode_mdiobus_phy_device_register(bus, phy, child, addr);
- 		if (rc)
--- 
-2.25.1
+> +{
+> +	u32 pos = 0;
+> +	u16 vsec_id;
+> +	u8 status;
+> +
+> +	while ((pos = pci_find_next_ext_capability(pdev, pos,
+> +						   PCI_EXT_CAP_ID_VNDR))) {
+> +		pci_read_config_word(pdev, pos + 4, &vsec_id);
+> +#define FW_STATUS_VSEC_ID  0xA3
+> +		if (vsec_id == FW_STATUS_VSEC_ID) {
 
+Success oriented flow, plase
+if (vsec_id != FW_STATUS_VSEC_ID)
+ cotitnue;
+
+....
+
+> +			pci_read_config_byte(pdev, (pos + 8), &status);
+> +			dev_info(&pdev->dev, "Firmware ready %u\n", status);
+> +			return status;
+> +		}
+> +	}
+> +	return 0;
+> +}
+> +
+>  /**
+>   * octep_probe() - Octeon PCI device probe handler.
+>   *
+> @@ -1053,6 +1072,13 @@ static int octep_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	pci_enable_pcie_error_reporting(pdev);
+>  	pci_set_master(pdev);
+>  
+> +#define FW_STATUS_READY    1
+> +	if (get_fw_ready_status(pdev) != FW_STATUS_READY) {
+
+No need to this new define if you change get_fw_ready_status() to return
+true/false.
+
+And I think that you can put this check earlier in octep_probe().
+
+Thanks
+
+> +		dev_notice(&pdev->dev, "Firmware not ready; defer probe.\n");
+> +		err = -EPROBE_DEFER;
+> +		goto err_alloc_netdev;
+> +	}
+> +
+>  	netdev = alloc_etherdev_mq(sizeof(struct octep_device),
+>  				   OCTEP_MAX_QUEUES);
+>  	if (!netdev) {
+> -- 
+> 2.36.0
+> 
