@@ -2,46 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB6C963CE90
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:12:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A310763CE91
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:12:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232600AbiK3FMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 00:12:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56100 "EHLO
+        id S233084AbiK3FME (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 00:12:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229918AbiK3FMA (ORCPT
+        with ESMTP id S230425AbiK3FMA (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 00:12:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B336037F
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 21:11:58 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0585E63CDF
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 21:12:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8277561A0D
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 05:11:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F2CC433D6;
-        Wed, 30 Nov 2022 05:11:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 971FB619FF
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 05:11:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D41D9C433D6;
+        Wed, 30 Nov 2022 05:11:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669785117;
-        bh=DAFk/pA2gTM45Py7Psvqm93OwVCnYmhgSi5BJ5W5UAI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WYOnlC/i3SmAhhvx1CLejqdb8hsOF3hCDZ7ciRXuo/1wxxF0W8KGOYPSBB5f8we4D
-         jNZqhTORj1tFCgCrHstd4tMUx9F4kfGlpKz1RSHkKTdJeF37pjYsIDB+aUFIeK4/0N
-         MzVH4BmWoJBvZrjUpyEyZJp/lmvy+ubqAOLXi/dvRHt5s6Hg9/BzSfWxgZU97PC19s
-         kahY5brMV9iES9Y7ML3h/R6aQK7IaBBYhU1FjVl61gFCFP9DppMkltCyGiFQc6tHn4
-         f7GJTEq1dncC0gT8CXKvyfl7DnYdwB4ErlxfoZC8fj9mWmzj/irT2GsM3cLKEcWwQ5
-         llh81QY4BRURA==
+        s=k20201202; t=1669785119;
+        bh=cBgJBzoNdaFkoru1R3oh/4yixBxz7No1+7z3a1geK5Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=L3j2FrL91n5VG0RMipk/cXl0/wMLUSVGfYpzgFvMWfy9oFNOkaUhUkwofqqJmpuoI
+         uerjyvigSSYVi8RyBbPrhp3X6sXCtUOdArRflav0HYcRoMjckIOKeZTvTKnFyr+6K2
+         0eQMXCfp/AkNc0AqXj9jFAI2ZlzXWW82hcZLXsQIimqAP0xB77i4x0nCFGkoHtMpta
+         A+FMd+lJRzJo91eRP6ZVIprdkpwk4M+m4TNwWZtYwduPQBnP4ZvnOFzMEC04ZnpBQy
+         dIVCb8tDIgeyKe3sF5WZKcXEib6nlPDY7mS6XXt/ofpM5upXInH80xy61DR8IDsIQw
+         Isk77sqfH1gcQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [pull request][net-next 00/15] mlx5 updates 2022-11-29
-Date:   Tue, 29 Nov 2022 21:11:37 -0800
-Message-Id: <20221130051152.479480-1-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>
+Subject: [net-next 01/15] net/mlx5e: Remove unneeded io-mapping.h #include
+Date:   Tue, 29 Nov 2022 21:11:38 -0800
+Message-Id: <20221130051152.479480-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221130051152.479480-1-saeed@kernel.org>
+References: <20221130051152.479480-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -53,93 +57,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-This PR provides misc updates to mlx5 driver.
-For more information please see tag log below.
+The mlx5 net files don't use io_mapping functionalities. So there is no
+point in including <linux/io-mapping.h>.
+Remove it.
 
-Please pull and let me know if there is any problem.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c  | 1 -
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 1 -
+ drivers/net/ethernet/mellanox/mlx5/core/uar.c  | 1 -
+ 3 files changed, 3 deletions(-)
 
-Thanks,
-Saeed.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+index e7a894ba5c3e..d3ca745d107d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -37,7 +37,6 @@
+ #include <linux/slab.h>
+ #include <linux/delay.h>
+ #include <linux/random.h>
+-#include <linux/io-mapping.h>
+ #include <linux/mlx5/driver.h>
+ #include <linux/mlx5/eq.h>
+ #include <linux/debugfs.h>
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 70e8dc305bec..25e87e5d9270 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -37,7 +37,6 @@
+ #include <linux/pci.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/slab.h>
+-#include <linux/io-mapping.h>
+ #include <linux/interrupt.h>
+ #include <linux/delay.h>
+ #include <linux/mlx5/driver.h>
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/uar.c b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
+index 8455e79bc44a..1513112ecec8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/uar.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
+@@ -31,7 +31,6 @@
+  */
+ 
+ #include <linux/kernel.h>
+-#include <linux/io-mapping.h>
+ #include <linux/mlx5/driver.h>
+ #include "mlx5_core.h"
+ 
+-- 
+2.38.1
 
-
-The following changes since commit 5cb0c51fe366cf96b7911d25db3e678401732246:
-
-  Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next (2022-11-29 20:50:51 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-11-29
-
-for you to fetch changes up to 953d771587e232e537665d34086a94ed29b89e5f:
-
-  net/mlx5e: Support devlink reload of IPsec core (2022-11-29 21:09:49 -0800)
-
-----------------------------------------------------------------
-mlx5-updates-2022-11-29
-
-Misc update for mlx5 driver
-
-1) Various trivial cleanups
-
-2) Maor Dickman, Adds support for trap offload with additional actions
-
-3) From Tariq, UMR (device memory registrations) cleanups,
-   UMR WQE must be aligned to 64B per device spec, (not a bug fix).
-
-----------------------------------------------------------------
-Christophe JAILLET (1):
-      net/mlx5e: Remove unneeded io-mapping.h #include
-
-Gustavo A. R. Silva (1):
-      net/mlx5e: Replace zero-length arrays with DECLARE_FLEX_ARRAY() helper
-
-Leon Romanovsky (4):
-      net/mlx5e: Don't access directly DMA device pointer
-      net/mlx5e: Delete always true DMA check
-      net/mlx5: Remove redundant check
-      net/mlx5e: Support devlink reload of IPsec core
-
-Maor Dickman (1):
-      net/mlx5e: TC, Add offload support for trap with additional actions
-
-Petr Pavlu (1):
-      net/mlx5: Remove unused ctx variables
-
-Rahul Rameshbabu (1):
-      net/mlx5: Fix orthography errors in documentation
-
-Roi Dayan (2):
-      net/mlx5e: Don't use termination table when redundant
-      net/mlx5e: Do early return when setup vports dests for slow path flow
-
-Tariq Toukan (4):
-      net/mlx5e: Add padding when needed in UMR WQEs
-      net/mlx5: Remove unused UMR MTT definitions
-      net/mlx5: Generalize name of UMR alignment definition
-      net/mlx5: Use generic definition for UMR KLM alignment
-
- .../device_drivers/ethernet/mellanox/mlx5.rst      | 82 +++++++++++-----------
- drivers/infiniband/hw/mlx5/odp.c                   |  3 +-
- drivers/infiniband/hw/mlx5/umr.c                   | 14 ++--
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |  1 -
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |  8 +--
- .../net/ethernet/mellanox/mlx5/core/en/params.c    |  4 +-
- .../ethernet/mellanox/mlx5/core/en/tc/act/trap.c   | 10 +--
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c   | 17 +++--
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.h   |  5 +-
- .../ethernet/mellanox/mlx5/core/en_accel/macsec.c  | 12 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  9 +--
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   | 10 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 21 ++++--
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |  4 +-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  5 ++
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 35 ++++-----
- .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  | 32 +++++++--
- drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c  |  3 -
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  3 -
- drivers/net/ethernet/mellanox/mlx5/core/uar.c      |  1 -
- include/linux/mlx5/device.h                        |  7 +-
- include/linux/mlx5/driver.h                        |  2 -
- 22 files changed, 153 insertions(+), 135 deletions(-)
