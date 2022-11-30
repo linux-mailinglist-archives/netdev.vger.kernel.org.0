@@ -2,131 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E734B63D3F3
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 12:07:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E96863D409
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 12:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbiK3LHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 06:07:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
+        id S230326AbiK3LKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 06:10:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234005AbiK3LG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 06:06:59 -0500
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF9774A94;
-        Wed, 30 Nov 2022 03:06:55 -0800 (PST)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 8C8A0C009; Wed, 30 Nov 2022 12:07:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1669806422; bh=xf0zVpTlYde/bxu53jwBvwyrnmZDM6MyGXUmXHAVDU0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mkfutD8yjATXqvMQIyS7YBDYJmrXAdQjSMkXquGYbIoZG9B8/HTz2olo5SB2grcd+
-         WjjS0eHAT5nKpXOVZWj7VGdUfFymmFwRaiiDsTuhdoIIBeGTGX6TFcZBMq1F3UkfwC
-         rw8X4X3EJ8Zd1XJ/mdpUFjtzEqdAXcEZjRpUo7fRp5bOL10j/Id5F/F+pFYWtS9acw
-         3fWK61cf6aBauQH6Kl0fjIeP3vQhI3Rh1eq+SWPqTFSjNJpCt+0jMqONDOCzT3Yion
-         YcPZmEEf8fjbLGOo6U5wILZEL7qCGj/eYwXyKcOXaOl/5kZSkAH8TCS8YOTUB8NigK
-         Q2/Qdhi7SWOkA==
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id D3CBDC009;
-        Wed, 30 Nov 2022 12:06:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1669806421; bh=xf0zVpTlYde/bxu53jwBvwyrnmZDM6MyGXUmXHAVDU0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XhnFZc69CTBcQak7ujtOYC4fe3atj0S2rJqHvTI9blyQpo9/jCW0a+BCfH+FBp5+G
-         a6SoU2byYmEuDkUD4fIzA+PaLxa8WvOJXCGx+G+1YgsqnUVl6LaWFQD/bhLBXEN/01
-         6BY0BLVnP5muceuLbihVp95115ad7Zfc3llOHcuxT0MeF7bfBD3OWLEFntJXJ8pxXu
-         DXjGmVdyAR8szwe9acx88ld+FfjSYB7urx7G/nPY3e1vTluGINzhy189/YEdnf7zgu
-         jddY5LOFZGnvquZIwwOrv4CgiyCJtOVvU/EJlLeUPCn5Ydv92S7I+ZC4OiM+sit4dO
-         LnMKzK5MlHYmA==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 81d189f2;
-        Wed, 30 Nov 2022 11:06:46 +0000 (UTC)
-Date:   Wed, 30 Nov 2022 20:06:31 +0900
-From:   asmadeus@codewreck.org
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
-Subject: Re: [PATCH] 9p: fix crash when transaction killed
-Message-ID: <Y4c5N/SAuszTLiEA@codewreck.org>
-References: <20221129162251.90790-1-schspa@gmail.com>
- <Y4aJzjlkkt5VKy0G@codewreck.org>
- <m2r0xli1mq.fsf@gmail.com>
- <Y4b1MQaEsPRK+3lF@codewreck.org>
- <m2o7sowzas.fsf@gmail.com>
+        with ESMTP id S231550AbiK3LKb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 06:10:31 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E12474CC6;
+        Wed, 30 Nov 2022 03:10:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669806630; x=1701342630;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SHCCZ8tHX7swHS+8I5E5Yfv024KDVI1AhlbR7nZOZSI=;
+  b=LBAYZ7W3HYv5kaT6uLUBSxdX5aptsu5H97aHAk05xV5MGDSXl2e/pcwa
+   IsHCZCCMEeGGcjYRmw78c8mwuNMbfHicucG80gq5mEGzoDqnC8JG/uUmG
+   KUIhGWeconyQ1Veodu3ms+EHb76PXtUwruUFuwSt9E8NxPlwMhMn/oe2V
+   Oedy8nKcfDXPmvVR5WIMUDFXb2UQNBAJsonHre9RyavybdJgkEeBDhnTV
+   H+eC4aSvaY1A/cnEAxOfR/jPSE5r1iE+DggD8gaq9piS9vch7sNn9R3PV
+   2WegSojcau9gEGKbf7V/LFTn5DCcJCpkEnXC1ZEkBJ8tkrJV7UGQN5Zkh
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="342289945"
+X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
+   d="scan'208";a="342289945"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 03:09:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="786425773"
+X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
+   d="scan'208";a="786425773"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 30 Nov 2022 03:09:32 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1001)
+        id 8F510184; Wed, 30 Nov 2022 13:09:59 +0200 (EET)
+Date:   Wed, 30 Nov 2022 13:09:59 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Jamet <michael.jamet@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [resend, PATCH net-next v1 2/2] net: thunderbolt: Use separate
+ header data type for the Rx
+Message-ID: <Y4c6B/mj+g2BCwy9@black.fi.intel.com>
+References: <20221129161359.75792-1-andriy.shevchenko@linux.intel.com>
+ <20221129161359.75792-2-andriy.shevchenko@linux.intel.com>
+ <Y4cKSJI/TSQVMMJr@black.fi.intel.com>
+ <Y4c1mtUlJfcxUQSi@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <m2o7sowzas.fsf@gmail.com>
+In-Reply-To: <Y4c1mtUlJfcxUQSi@smile.fi.intel.com>
+X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Schspa Shi wrote on Wed, Nov 30, 2022 at 04:14:32PM +0800:
-> >  - reqs are alloced in a kmem_cache created with SLAB_TYPESAFE_BY_RCU.
-> >  This means that if we get a req from idr_find, even if it has just been
-> >  freed, it either is still in the state it was freed at (hence refcount
-> >  0, we ignore it) or is another req coming from the same cache (if
+On Wed, Nov 30, 2022 at 12:51:06PM +0200, Andy Shevchenko wrote:
+> On Wed, Nov 30, 2022 at 09:46:16AM +0200, Mika Westerberg wrote:
+> > On Tue, Nov 29, 2022 at 06:13:59PM +0200, Andy Shevchenko wrote:
+> > > The same data type structure is used for bitwise operations and
+> > > regular ones. It makes sparse unhappy, for example:
+> > > 
+> > >   .../thunderbolt.c:718:23: warning: cast to restricted __le32
+> > > 
+> > >   .../thunderbolt.c:953:23: warning: incorrect type in initializer (different base types)
+> > >   .../thunderbolt.c:953:23:    expected restricted __wsum [usertype] wsum
+> > >   .../thunderbolt.c:953:23:    got restricted __be32 [usertype]
+> > > 
+> > > Split the header to bitwise one and specific for Rx to make sparse
+> > > happy. Assure the layout by involving static_assert() against size
+> > > and offsets of the member of the structures.
 > 
-> If the req was newly alloced(It was at a new page), refcount maybe not
-> 0, there will be problem in this case. It seems we can't relay on this.
+> > I would much rather keep the humans reading this happy than add 20+
+> > lines just to silence a tool. Unless this of course is some kind of a
+> > real bug.
 > 
-> We need to set the refcount to zero before add it to idr in p9_tag_alloc.
+> Actually, changing types to bitwise ones reduces the sparse noise
+> (I will double check this) without reducing readability.
+> Would it be accepted?
 
-Hmm, if it's reused then it's zero by definition, but if it's a new
-allocation (uninitialized) then anything goes; that lookup could find
-and increase it before the refcount_set, and we'd have an off by one
-leading to use after free. Good catch!
-
-Initializing it to zero will lead to the client busy-looping until after
-the refcount is properly set, which should work.
-Setting refcount early might have us use an re-used req before the tag
-has been changed so that one cannot move.
-
-Could you test with just that changed if syzbot still reproduces this
-bug? (perhaps add a comment if you send this)
-
-------
-diff --git a/net/9p/client.c b/net/9p/client.c
-index aaa37b07e30a..aa64724f6a69 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -297,6 +297,7 @@ p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size,
- 	p9pdu_reset(&req->rc);
- 	req->t_err = 0;
- 	req->status = REQ_STATUS_ALLOC;
-+	refcount_set(&req->refcount, 0);
- 	init_waitqueue_head(&req->wq);
- 	INIT_LIST_HEAD(&req->req_list);
-
------ 
-
-> >  refcount isn't zero, we can check its tag)
-> 
-> As for the release case, the next request will have the same tag with
-> high probability. It's better to make the tag value to be an increase
-> sequence, thus will avoid very much possible req reuse.
-
-I'd love to be able to do this, but it would break some servers that
-assume tags are small (e.g. using it as an index for a tag array)
-... I thought nfs-ganesha was doing this but they properly put in in
-buckets, so that's one less server to worry about, but I wouldn't put
-it past some simple servers to do that; having a way to lookup a given
-tag for flush is an implementation requirement.
-
-That shouldn't be a problem though as that will just lead to either fail
-the guard check after lookup (m->rreq->status != REQ_STATUS_SENT) or be
-processed as a normal reply if it's already been sent by the other
-thread at this point.
-OTOH, that m->rreq->status isn't protected by m->req_lock in trans_fd,
-and that is probably another bug...
-
--- 
-Dominique
+Sure if it makes it more readable and does not add too many lines :)
