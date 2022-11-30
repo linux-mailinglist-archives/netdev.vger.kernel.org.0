@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC5963D817
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:30:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 621CE63D7E0
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:14:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229878AbiK3OaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 09:30:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
+        id S229613AbiK3OOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 09:14:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiK3OaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:30:15 -0500
+        with ESMTP id S229532AbiK3OOF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:14:05 -0500
 Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0EC52888;
-        Wed, 30 Nov 2022 06:30:14 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1669817506; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5ECA2D1D6
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 06:13:58 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1669817521; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=MBcgFbrxBMjCUsYG5JPRrKKOle/H+6CLvHLsKhUx7pGZLSo7InNJY1XoZh2orec8LiN/fuMmkzcItQOuWc/Oggq4K+ooy2GsQTgCZopz0ITgJ7F4AJjYcXkOgFtZGIDyF/Tn6FBiWEp7A4+dyD+Hdg3v0fIBLNLvbvcpb9fPBq8=
+        b=AnJlLep2xwdKaRzoYQiGsuhHN1kXNKIqJay45/8xGipAA4pU5DmftNsoCWpjfyn3hXiuVFy67s47F/Z0iurPci1OLujtpQdp6rqUIiITopwss7HVUCANJivLbnrUIwhQnY7rwbW3dec0AabIHy6Q3jlIzHL6XvluZqv2X6Z3Otw=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1669817506; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=QF5pLbXUIUVP28HpDZnKqlToc38teR4R32c+jesH+QM=; 
-        b=TUNQ8cHrgqns0eHBc3DfXD+rwLkdzqPFztq0Ens1q4Zt1GNyinG8t3QVugkQj7nYzeGT5iZRg3ZGY9NBCMcqf6mfCOBhZ5qZhBxo3uw9/X9o3OXvbuXEXBncGS8d0munLxduoEP5BKia9DYBqh3wBR+nZ9st98uToRtnBgFSTSY=
+        t=1669817521; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=uPoI5XfZ23UUuypvg5x1t4pcYyKf1wgCFVtGI5ZTQ+s=; 
+        b=ces143QCWhbMpQJLxcEB+IMeYEZCH3LXMw8zZowY6aRLNUNcYEiRpsICXW7/WtM4mBXTjb+8RKLq7oy0hc/fpaUDl20pDwFyk7QHfUtywb6s5i+vc+6hVBG1/M+2aS+pfPjludfBxAQ8s+WO2FDw8NsLo7beqalGi1UEdMw47jA=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1669817506;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1669817521;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=QF5pLbXUIUVP28HpDZnKqlToc38teR4R32c+jesH+QM=;
-        b=HfKAf4+Fel3coxytPwxCdcvr10bO6It6KMz9XQGSx8zBhVPLMBNwvphkDbv4PRBH
-        46P1LoZCIUxZawUHkV429aO6CGMJEcZ9QLB02hIwx4g/Dp5bRfd5jX7+E5Rxcd0iWFW
-        XVs2bsC3ntk6QlmzoL111TFrzu1K8SiYvYhUQudo=
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=uPoI5XfZ23UUuypvg5x1t4pcYyKf1wgCFVtGI5ZTQ+s=;
+        b=QZe441J5Q9GQ/nLIdo/FKpZXwwCbv87jUC83xlWpMM+YnuZ8d55JFGTZdlC5ez82
+        OAuZXidLlhW5VzcaE49WfQ+FAO5JWpfd1J9AMN305UuYPEUBNS2ZlaKZ/5j6AHJahEP
+        Y4M0WSZnV0v8mRrVOvXqs7cca2Mi3VRI2XOdSi3U=
 Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1669817503309623.081549759161; Wed, 30 Nov 2022 06:11:43 -0800 (PST)
+        with SMTPS id 16698175186813.6941551506523638; Wed, 30 Nov 2022 06:11:58 -0800 (PST)
 From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
@@ -96,61 +96,45 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
         linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 0/5] remove label = "cpu" from DSA dt-binding
-Date:   Wed, 30 Nov 2022 17:10:35 +0300
-Message-Id: <20221130141040.32447-1-arinc.unal@arinc9.com>
+Subject: [PATCH 1/5] dt-bindings: net: qca,ar71xx: remove label = "cpu" from examples
+Date:   Wed, 30 Nov 2022 17:10:36 +0300
+Message-Id: <20221130141040.32447-2-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221130141040.32447-1-arinc.unal@arinc9.com>
+References: <20221130141040.32447-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-ZohoMailClient: External
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello folks,
+This is not used by the DSA dt-binding, so remove it from the examples.
 
-With this patch series, we're completely getting rid of 'label = "cpu";'
-which is not used by the DSA dt-binding at all.
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+---
+ Documentation/devicetree/bindings/net/qca,ar71xx.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-Information for taking the patches for maintainers:
-Patch 1: netdev maintainers (based off netdev/net-next.git main)
-Patch 2-3: SoC maintainers (based off soc/soc.git soc/dt)
-Patch 4: MIPS maintainers (based off mips/linux.git mips-next)
-Patch 5: PowerPC maintainers (based off powerpc/linux.git next-test)
-
-I've been meaning to submit this for a few months. Find the relevant
-conversation here:
-https://lore.kernel.org/netdev/20220913155408.GA3802998-robh@kernel.org/
-
-Here's how I did it, for the interested (or suggestions):
-
-Find the platforms which have got 'label = "cpu";' defined.
-grep -rnw . -e 'label = "cpu";'
-
-Remove the line where 'label = "cpu";' is included.
-sed -i /'label = "cpu";'/,+d arch/arm/boot/dts/*
-sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/freescale/*
-sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/marvell/*
-sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/mediatek/*
-sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/rockchip/*
-sed -i /'label = "cpu";'/,+d arch/mips/boot/dts/qca/*
-sed -i /'label = "cpu";'/,+d arch/mips/boot/dts/ralink/*
-sed -i /'label = "cpu";'/,+d arch/powerpc/boot/dts/turris1x.dts
-sed -i /'label = "cpu";'/,+d Documentation/devicetree/bindings/net/qca,ar71xx.yaml
-
-Restore the symlink files which typechange after running sed.
-
-Arınç ÜNAL (5):
-  dt-bindings: net: qca,ar71xx: remove label = "cpu" from examples
-  arm: dts: remove label = "cpu" from DSA dt-binding
-  arm64: dts: remove label = "cpu" from DSA dt-binding
-  mips: dts: remove label = "cpu" from DSA dt-binding
-  powerpc: dts: remove label = "cpu" from DSA dt-binding
-
+diff --git a/Documentation/devicetree/bindings/net/qca,ar71xx.yaml b/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+index 1ebf9e8c8a1d..89f94b31b546 100644
+--- a/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
++++ b/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+@@ -123,7 +123,6 @@ examples:
+ 
+                     switch_port0: port@0 {
+                         reg = <0x0>;
+-                        label = "cpu";
+                         ethernet = <&eth1>;
+ 
+                         phy-mode = "gmii";
+-- 
+2.34.1
 
