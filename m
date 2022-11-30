@@ -2,111 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F9B63D674
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 14:18:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FCF763D69F
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 14:26:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234500AbiK3NS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 08:18:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
+        id S230415AbiK3N0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 08:26:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232159AbiK3NS0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 08:18:26 -0500
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD4124F0F;
-        Wed, 30 Nov 2022 05:18:24 -0800 (PST)
-Received: by mail-ed1-f51.google.com with SMTP id s12so23995295edd.5;
-        Wed, 30 Nov 2022 05:18:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j3gCSpctzSb5QQ/wDIhVeSSLZMDhkOBRyiGRuBRimuo=;
-        b=V+W+YM544wbHcC9G8cXtrINwH3eFIe4dyJqg++CvRKtPI3CBHvk9VYF51BRvbsKhy0
-         PJcU4K3iE413N8f9Miuw4UL45VA4VgFSbayTak0hR6x3Q6GshJ19TtxGjNtu2JMYm7lf
-         ZdhoGytSXHDYxWL32BnMvIa1vr9zdwdp4ymV+MWKb1mBStgTBqg1uW4/t7juF3bSnjpw
-         42Az6/XDi9sY1sgwxqomWEAORnePcuR/e9jm05/Dc01DobNoh8hjSyVevjXT9D18sH9Z
-         W81Y1110eGxjvgklL4inpeqxmCi5ZgZ2/NQqnf3UkZiY3CqGnU4fV+GqI1ujfMwhe+Rj
-         +SKQ==
-X-Gm-Message-State: ANoB5pmH9jvfVk97NlVv7FZKih80+YQgIyCe+2yo4braBMtzALumT+GF
-        8SSSzMk+NI06pyj26/iC6cSgyeoyentfCA==
-X-Google-Smtp-Source: AA0mqf41seBsYiqkTCekZEaAEFw8V7u/u8Myu8PnrQun9domaFmvcOuaEDBknGeoBBXu3kw8S73r3g==
-X-Received: by 2002:a05:6402:144f:b0:46b:51e5:832a with SMTP id d15-20020a056402144f00b0046b51e5832amr11078029edx.331.1669814302988;
-        Wed, 30 Nov 2022 05:18:22 -0800 (PST)
-Received: from gmail.com (fwdproxy-cln-020.fbsv.net. [2a03:2880:31ff:14::face:b00c])
-        by smtp.gmail.com with ESMTPSA id i9-20020a170906698900b007bff9fb211fsm644089ejr.57.2022.11.30.05.18.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Nov 2022 05:18:22 -0800 (PST)
-Date:   Wed, 30 Nov 2022 05:18:20 -0800
-From:   Breno Leitao <leitao@debian.org>
-To:     "Iwashima, Kuniyuki" <kuniyu@amazon.co.jp>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>, "leit@fb.com" <leit@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH RESEND net-next] tcp: socket-specific version of
- WARN_ON_ONCE()
-Message-ID: <Y4dYHLMTtr+QqeLm@gmail.com>
-References: <20221124112229.789975-1-leitao@debian.org>
- <20221129010055.75780-1-kuniyu@amazon.com>
- <Y4X/XidkaLaD5Zak@gmail.com>
- <A5D7EBCF-CC49-4575-9DA7-0419BA1F0E9B@amazon.co.jp>
+        with ESMTP id S229472AbiK3N0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 08:26:15 -0500
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC7450D41;
+        Wed, 30 Nov 2022 05:26:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=a26lIzJ4dptbrOGi0GFPN+IgCtoaj1aHi7+e9iGicfE=; b=Kh/Dn3L6ycIIXU8wsJwzKY4WSB
+        n+TEVb/X6z4AQG7GQETxE4KLClWaBBdYGqh3moY/8eXeLWYyzYVdJYrKl9VwdRA5DqNr6UvAkwmfU
+        1mhRdHE7RYfBbJch9V3b0RNBzWimGXhpAw2ALBYb+9msmuVLi5dfZJtLF6F2LjHZq0yZE+chlJARm
+        8uXqBLI+5D9/1knP7f3r62PqMHC2o4v9QLjHSAXjAQL8hcGvIqCYxOxZpdGAGaMPBo+LQu+4dAISS
+        T6Vyfh3srdvx9KXruov3YrsZ3KfK1jyGrENJZKCjruMqWNQwVTNgLrCsOTZFfNXi2jtxV+ZOusJPq
+        ynaNQii5LHhImkDbtw5BUzCAaCQ569TzySiksa4vynILiD9/WD1AlTFQH5cREfi8eBeLycPrild1X
+        NlDRCAQQjE7dM7MYT8ULcvKcCmzn6ZG70UncJlxMitrUfKlCGxN09UO2PP31I1xgbm/kY44vRqyNc
+        jwMRvUtQL/h1tBPwHktbtGBCj1xnyFBi7flXuDcrBLnOhWCEvUzX7jBRE6Y7TJPtt6flhTqzPAAuK
+        q054eLNaGDGQCbPxRpoHATanim4e1XBYxMswLuxOo2Ho28gqyBgxYJu5IZhkeBMTkm7JFt6kGD4kV
+        l/m7NFeqp6tLl4Q0DtONOEybY/kpXJGTn+4OeakxE=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org
+Cc:     Schspa Shi <schspa@gmail.com>, ericvh@gmail.com, lucho@ionkov.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
+Subject: Re: [PATCH] 9p: fix crash when transaction killed
+Date:   Wed, 30 Nov 2022 14:25:59 +0100
+Message-ID: <4084178.bTz7GqEF8p@silver>
+In-Reply-To: <Y4dSfYoU6F8+D8ac@codewreck.org>
+References: <20221129162251.90790-1-schspa@gmail.com> <2356667.R3SNuAaExM@silver>
+ <Y4dSfYoU6F8+D8ac@codewreck.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <A5D7EBCF-CC49-4575-9DA7-0419BA1F0E9B@amazon.co.jp>
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 29, 2022 at 09:16:16PM +0000, Iwashima, Kuniyuki wrote:
-> > On Nov 29, 2022, at 21:48, Breno Leitao <leitao@debian.org> wrote:
-> >> On Tue, Nov 29, 2022 at 10:00:55AM +0900, Kuniyuki Iwashima wrote:
-
-<snip>
-
-> >>> +void tcp_sock_warn(const struct tcp_sock *tp)
-> >>> +{
-> >>> +   const struct sock *sk = (const struct sock *)tp;
-> >>> +   struct inet_sock *inet = inet_sk(sk);
-> >>> +   struct inet_connection_sock *icsk = inet_csk(sk);
-> >>> +
-> >>> +   WARN_ON(1);
-> >>> +
-> >>> +   if (!tp)
-> >> 
-> >> Is this needed ?
+On Wednesday, November 30, 2022 1:54:21 PM CET asmadeus@codewreck.org wrote:
+> Christian Schoenebeck wrote on Wed, Nov 30, 2022 at 01:43:20PM +0100:
+> > > > As for the release case, the next request will have the same tag with
+> > > > high probability. It's better to make the tag value to be an increase
+> > > > sequence, thus will avoid very much possible req reuse.
+> > > 
+> > > I'd love to be able to do this, but it would break some servers that
+> > > assume tags are small (e.g. using it as an index for a tag array)
+> > > ... I thought nfs-ganesha was doing this but they properly put in in
+> > > buckets, so that's one less server to worry about, but I wouldn't put
+> > > it past some simple servers to do that; having a way to lookup a given
+> > > tag for flush is an implementation requirement.
 > > 
-> > We are de-referencing tp/sk in the lines below, so, I think it is safe to
-> > check if they are not NULL before the de-refencing it.
+> > I really think it's time to emit tag number sequentially. If it turns out that
+> > it's a server that is broken, we could then simply ignore replies with old/
+> > unknown tag number. It would also help a lot when debugging 9p issues in
+> > general when you know tag numbers are not re-used (in near future).
+> > 
+> > A 9p server must not make any assumptions how tag numbers are generated by
+> > client, whether dense or sparse, or whatever. If it does then server is
+> > broken, which is much easier to fix than synchronization issues we have to
+> > deal with like this one.
 > 
-> tp->snd_cwnd is accessed just after this WARN, 
-> so I thought there were no cases where tp is NULL.
+> Well, it's a one line change: just replace the idr_alloc in the else
+> branch of p9_tag_alloc with idr_alloc_cyclic.
+> But linux has an history of not breaking userspace, even if it's broken.
+> One could argue that the server side of a networked protocol isn't
+> as tightly coupled but I still think we should be careful with it --
+> adding a new mount option to rever to the old behaviour at the very
+> least.
 
-Oh, important to say that we want to re-use this macro on other places
-as well. This initial usage (on tcp_snd_cwnd_set()) is just for the
-initial patch. I see value replacing some WARN_ON_*() by
-TCP_SOCK_WARN_ON_ONCE() in other parts of the code, so, this check is to
-protect this warning when TCP_SOCK_WARN_ON_ONCE() is called from
-different places.
++1 for the mount option.
 
-Anyway, I definitely can remove the check here, but, we might want to
-re-add it later, as we replace some WARN_ON_* by TCP_SOCK_WARN_ON_*();
+> I'm also not convinced it'd fix anything here, we're not talking about a
+> real server but about a potential attacker -- if a reply comes in with
+> the next tag while we're allocating it, we'll get the exact same problem
+> as we have right now.
+> Frankly, 9p has no security at all so I'm not sure this is something we
+> really need to worry about, but bugs are bugs so we might as well fix
+> them if someone has the time for that...
+> 
+> Anyway, I can appreciate that logs will definitely be easier to read, so
+> an option to voluntarily switch to cyclic allocation would be more than
+> welcome as a first step and shouldn't be too hard to do...
 
-> I think this additional if could confuse future readers and 
-> want to make sure if there is such a case.
+I would actually do it the other way around: generating continuous sequential
+tags by default and only reverting back to dense tags if requested by mount
+option.
 
-How come checking if a pointer is valid before de-refencing it could
-confuse readers?
+Is there any server implementation known to rely on current dense tag
+generation?
 
-Thank you for the review!
+If there is really some exotic server somewhere that uses e.g. a simple
+constant size array to lookup tags and nobody is able to replace that array by
+a hash table or something for whatever reason, then I am pretty sure that
+server is limited at other ends as well (e.g. small 'msize'). So what we could
+do is adjusting the default behaviour according to the other side and allow to
+explicitly set both sequential and dense tags by mount option (i.e. not just
+a boolean mount option).
+
+Best regards,
+Christian Schoenebeck
+
+
