@@ -2,49 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A3363DBAF
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:14:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED64463DBBE
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231134AbiK3ROW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 12:14:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39708 "EHLO
+        id S230153AbiK3RPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 12:15:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231143AbiK3ROC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:14:02 -0500
+        with ESMTP id S230042AbiK3RPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:15:15 -0500
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8F1B08;
-        Wed, 30 Nov 2022 09:11:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BC383253;
+        Wed, 30 Nov 2022 09:13:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=HOR8TJlxjCjAtgrXFWiZM3BCPiC97uvsOgWLmMHIcAM=; b=sJhVGozYoTaAqEbOHSw0JhUC/J
-        ypKAouVxcLP88WVTUnVmgtF2KsPw4dohg41oO4EmPrBMy6rP0tZxVYoqGthR9Qrha8QcnCXvjtqTI
-        /7gf957SDvkw5IVCsxATJM+cakLQy84lk53yvWQxM6UhHAxtl2KxjoKb3fji+pxoxZ38=;
+        bh=aaaRr47iMyz13V4p0s0tz24ija0q5pJXRHrcx6F9yS8=; b=y0zzetYR2G/SyMqKA+rarja+ji
+        Iq0ZhlEYsRM/+vBQAxDY4gXvxkMyuRhh9kZ/RXloVXukqYFyB2cbWRbf/pU1Bl34Zs7Ju2OS6heqK
+        uhzc241uRl2JFn5NnuvDfIo4NIx3SrSvSeAjmrONDpQQEw/YaLTQpicEGjNw815MSZWs=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1p0Qba-003ymW-GK; Wed, 30 Nov 2022 18:10:42 +0100
-Date:   Wed, 30 Nov 2022 18:10:42 +0100
+        id 1p0QeW-003ynZ-RM; Wed, 30 Nov 2022 18:13:44 +0100
+Date:   Wed, 30 Nov 2022 18:13:44 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
-        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phy: Add driver for Motorcomm yt8531
- gigabit ethernet phy
-Message-ID: <Y4eOkiaRywaUJa9n@lunn.ch>
-References: <20221130094928.14557-1-Frank.Sae@motor-comm.com>
- <Y4copjAzKpGSeunB@shell.armlinux.org.uk>
+To:     Xiaolei Wang <xiaolei.wang@windriver.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [v3][net-next][PATCH 1/1] net: phy: Add link between phy dev and
+ mac dev
+Message-ID: <Y4ePSM1oad5un/4k@lunn.ch>
+References: <20221130021216.1052230-1-xiaolei.wang@windriver.com>
+ <20221130021216.1052230-2-xiaolei.wang@windriver.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y4copjAzKpGSeunB@shell.armlinux.org.uk>
+In-Reply-To: <20221130021216.1052230-2-xiaolei.wang@windriver.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -54,33 +50,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 09:55:50AM +0000, Russell King (Oracle) wrote:
-> On Wed, Nov 30, 2022 at 05:49:28PM +0800, Frank wrote:
-> > +/**
-> > + * yt8531_set_wol() - turn wake-on-lan on or off
-> > + * @phydev: a pointer to a &struct phy_device
-> > + * @wol: a pointer to a &struct ethtool_wolinfo
-> > + *
-> > + * NOTE: YTPHY_WOL_CONFIG_REG, YTPHY_WOL_MACADDR2_REG, YTPHY_WOL_MACADDR1_REG
-> > + * and YTPHY_WOL_MACADDR0_REG are common ext reg.
-> > + *
-> > + * returns 0 or negative errno code
-> > + */
-> > +static int yt8531_set_wol(struct phy_device *phydev,
-> > +			  struct ethtool_wolinfo *wol)
-> > +{
+On Wed, Nov 30, 2022 at 10:12:16AM +0800, Xiaolei Wang wrote:
+> If the external phy used by current mac interface is
+> managed by another mac interface, it means that this
+> network port cannot work independently, especially
+> when the system suspends and resumes, the following
+> trace may appear, so we should create a device link
+> between phy dev and mac dev.
 > 
-> So this is called from the .set_wol method directly, and won't have the
-> MDIO bus lock taken...
+>   WARNING: CPU: 0 PID: 24 at drivers/net/phy/phy.c:983 phy_error+0x20/0x68
+>   Modules linked in:
+>   CPU: 0 PID: 24 Comm: kworker/0:2 Not tainted 6.1.0-rc3-00011-g5aaef24b5c6d-dirty #34
+>   Hardware name: Freescale i.MX6 SoloX (Device Tree)
+>   Workqueue: events_power_efficient phy_state_machine
+>   unwind_backtrace from show_stack+0x10/0x14
+>   show_stack from dump_stack_lvl+0x68/0x90
+>   dump_stack_lvl from __warn+0xb4/0x24c
+>   __warn from warn_slowpath_fmt+0x5c/0xd8
+>   warn_slowpath_fmt from phy_error+0x20/0x68
+>   phy_error from phy_state_machine+0x22c/0x23c
+>   phy_state_machine from process_one_work+0x288/0x744
+>   process_one_work from worker_thread+0x3c/0x500
+>   worker_thread from kthread+0xf0/0x114
+>   kthread from ret_from_fork+0x14/0x28
+>   Exception stack(0xf0951fb0 to 0xf0951ff8)
+> 
+> Signed-off-by: Xiaolei Wang <xiaolei.wang@windriver.com>
 
-Hi Frank
+Florian gave you a Reviewed-by and a Tested-by: You should add these
+to following versions of the patch, otherwise they can get lost. They
+also help speed up merging if they are from trusted reviewers.
 
-This is not the first time Russell has pointed out your locking is
-wrong.
-
-How about adding a check in functions which should be called with the
-lock taken really do have the lock taken?
-
-ASSERT_RTNL() but for an MDIO bus.
-
-	Andrew
+   Andrew
