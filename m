@@ -2,77 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 537BF63DC6C
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:48:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C985363DC76
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:52:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229951AbiK3Rse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 12:48:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
+        id S229850AbiK3Rwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 12:52:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbiK3RsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:48:08 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C359DF8;
-        Wed, 30 Nov 2022 09:47:32 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id r18so16736778pgr.12;
-        Wed, 30 Nov 2022 09:47:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cBWVgR+RLUqkJ8KuTZNticMrWH5FaJ887K/c4/dMWdA=;
-        b=WsjXgGWo66TTf4k4CxDjO+Yxift66oL1FoKPNxBbihKtuoOA6A11uvbDG1PwudCgXQ
-         w2Ti5aXY8NPBiYPRx1hyWUXPmCkOESo3MEfV2IflpG7PcWR5dtjp0WF24VSI2s/8jqEl
-         u0Zs46TlIevVudlrikGM7pRi4OV7QB008WyTpDuAw4c5SX+SWGbr7y10DFDAgzZ+CEnd
-         +07OmOj6ViR0TZqXMuxH+nduGu3vUSf9+2P3pSXh/Z8SIDh1Zyl8nMfCKI49nfag8N7p
-         x6YY/OHtrnAAu/wR7sapVecrlvjsHAfYrOtnVtWdTb2qLKrbft82Y93QZwMsWIzWv9tf
-         kTCg==
+        with ESMTP id S229636AbiK3Rw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:52:29 -0500
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1D9252;
+        Wed, 30 Nov 2022 09:52:29 -0800 (PST)
+Received: by mail-pg1-f178.google.com with SMTP id v3so16773348pgh.4;
+        Wed, 30 Nov 2022 09:52:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=cBWVgR+RLUqkJ8KuTZNticMrWH5FaJ887K/c4/dMWdA=;
-        b=fW70i49ADstA59XQ8pgtgeVJfjFfOKyuYCcEUi3VkErUxEBOE45uRiM9PeeZ2iPutT
-         NihDMKpVYvRELdg2xw8opexIiKvI5CwuR4ekkBZgLY/V/+B3/0XUGJos/IIY1607+p5d
-         Mx2Srcr3MGMTMSGEnO6FE60a/QfyldRhI8LG/vjfzZ0K48O6gvYy55B8NlEnnYCjmpPs
-         vbN2PV2yCGOeVq4Q/x/jbmfS4WdbQNnmWYaT5DfkRIpwdbg9Bzrc6LGrkCti5RZdh14h
-         161Gl2fbbFCG99+rA3DLYzlSjGcDjSBbu06xzvGZF3EGd/RZLbXTMMz7gwevlv5PhtDN
-         09Gg==
-X-Gm-Message-State: ANoB5plzxDzBqMAmOlEPSUJ4PM1X9VYrTGq5bvZgwAJ6sjQ+Sr6/B0xi
-        1lnh+YMYnZB2L6PZ7TzLwFDuKF+tjikdew==
-X-Google-Smtp-Source: AA0mqf6+iAYcgK40TW/F0ayXJMs5DDcd7U+Q10WoXb0OwWhIMHR8WWRiUQOxMJTsUAUBjvY3o6NNAQ==
-X-Received: by 2002:a63:1345:0:b0:476:f92f:69f0 with SMTP id 5-20020a631345000000b00476f92f69f0mr55727855pgt.463.1669830451644;
-        Wed, 30 Nov 2022 09:47:31 -0800 (PST)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id p3-20020aa79e83000000b00574cdb63f03sm1714505pfq.144.2022.11.30.09.47.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Nov 2022 09:47:31 -0800 (PST)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     linux-can@vger.kernel.org
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Saeed Mahameed <saeed@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@nvidia.com>,
-        Lukas Magel <lukas.magel@posteo.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v5 7/7] Documentation: devlink: add devlink documentation for the etas_es58x driver
-Date:   Thu,  1 Dec 2022 02:46:58 +0900
-Message-Id: <20221130174658.29282-8-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.37.4
-In-Reply-To: <20221130174658.29282-1-mailhol.vincent@wanadoo.fr>
-References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
- <20221130174658.29282-1-mailhol.vincent@wanadoo.fr>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AK8P6Fl6Gl8hJBklqr3lYKP7boOFbdA07yIc5/BbDqg=;
+        b=6X8YncQRGlE0XHdc1b3knET9M7FwaKOlVghZq7Fi7I3bh9nLsTVVcIwTfbaMYCyM83
+         H52wGLZ/wnC+z59CmgWuQ1dJQ3hcaTvauDII7K9kcwzO4nJhLnADkb5pu1/HaJiDBXHh
+         eWc7Idvv9/zsbNkeX7YAWUx8VfvRNm0DiwAtc+7XBORNBGGi+db8jsstQAsmPHTaJJsw
+         ZKGggdORoI4tkwJFuPY9fg8amGI3DZSXbUdrDcP//aoU7x/nvkuc9MT3xEfA3rv+w2RM
+         49puIkS8ZVT31CcKryM+r6wy6HjmaeS6/O1clZbmaS4tX+SMd4cN/Hgp464MdJ6ejzrN
+         W/jg==
+X-Gm-Message-State: ANoB5plLsjgHeFq/Sq3KKVU+DteBcVYHg9UbLYN3YmV/zcIQM20wgU+k
+        1YgAkMQ4UJ54zuXXTn1jhiqnGrXiQw+yn+vn2Do=
+X-Google-Smtp-Source: AA0mqf5JHUZ4VH1l7y3UQOWl6cSZftofpIQTDhvTXCDPtlZ8sE0xLJUWAhZOxj+Hmn9Nf307yRTWa63fJ5BygTGXdY4=
+X-Received: by 2002:a63:1955:0:b0:477:50ed:6415 with SMTP id
+ 21-20020a631955000000b0047750ed6415mr45496852pgz.535.1669830748612; Wed, 30
+ Nov 2022 09:52:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+References: <20221129031406.3849872-1-mailhol.vincent@wanadoo.fr>
+ <Y4XCnAA2hGvqgXh0@nanopsycho> <CAMZ6RqJ54rfLfODB1JNaFr_pxWxzHJBoC2UmCKAZ7mSkEbcdzQ@mail.gmail.com>
+ <20221130170351.cjyaqr22vhqzq4hv@pengutronix.de>
+In-Reply-To: <20221130170351.cjyaqr22vhqzq4hv@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Thu, 1 Dec 2022 02:52:17 +0900
+Message-ID: <CAMZ6RqLy_H-A-=_jgPh6dUdHa_wMLB20X0rCFY7vkgBwvS1Uyg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: devlink: add DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Jiri Pirko <jiri@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        linux-can <linux-can@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
         SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,70 +62,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-List all the version information reported by the etas_es58x driver
-through devlink. Also, update MAINTAINERS with the newly created file.
+On Thu. 1 Dec. 2022 at 02:14, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 29.11.2022 18:28:44, Vincent MAILHOL wrote:
+> > On Tue. 29 Nov. 2022 at 17:33, Jiri Pirko <jiri@resnulli.us> wrote:
+> > > Tue, Nov 29, 2022 at 04:14:06AM CET, mailhol.vincent@wanadoo.fr wrote:
+> > > >As discussed in [1], abbreviating the bootloader to "bl" might not be
+> > > >well understood. Instead, a bootloader technically being a firmware,
+> > > >name it "fw.bootloader".
+> > > >
+> > > >Add a new macro to devlink.h to formalize this new info attribute name
+> > > >and update the documentation.
+> > > >
+> > > >[1] https://lore.kernel.org/netdev/20221128142723.2f826d20@kernel.org/
+> > > >
+> > > >Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> > > >Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> > > >---
+> > > >* Changelog *
+> > > >
+> > > >v1 -> v2:
+> > > >
+> > > >  * update the documentation as well.
+> > > >  Link: https://lore.kernel.org/netdev/20221129020151.3842613-1-mailhol.vincent@wanadoo.fr/
+> > > >---
+> > > > Documentation/networking/devlink/devlink-info.rst | 5 +++++
+> > > > include/net/devlink.h                             | 2 ++
+> > > > 2 files changed, 7 insertions(+)
+> > > >
+> > > >diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
+> > > >index 7572bf6de5c1..1242b0e6826b 100644
+> > > >--- a/Documentation/networking/devlink/devlink-info.rst
+> > > >+++ b/Documentation/networking/devlink/devlink-info.rst
+> > > >@@ -198,6 +198,11 @@ fw.bundle_id
+> > > >
+> > > > Unique identifier of the entire firmware bundle.
+> > > >
+> > > >+fw.bootloader
+> > > >+-------------
+> > > >+
+> > > >+Version of the bootloader.
+> > > >+
+> > > > Future work
+> > > > ===========
+> > > >
+> > > >diff --git a/include/net/devlink.h b/include/net/devlink.h
+> > > >index 074a79b8933f..2f552b90b5c6 100644
+> > > >--- a/include/net/devlink.h
+> > > >+++ b/include/net/devlink.h
+> > > >@@ -621,6 +621,8 @@ enum devlink_param_generic_id {
+> > > > #define DEVLINK_INFO_VERSION_GENERIC_FW_ROCE  "fw.roce"
+> > > > /* Firmware bundle identifier */
+> > > > #define DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID     "fw.bundle_id"
+> > > >+/* Bootloader */
+> > > >+#define DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER    "fw.bootloader"
+> > >
+> > > You add it and don't use it. You should add only what you use.
+> >
+> > I will use it in this series for the linux-can tree:
+> > https://lore.kernel.org/netdev/20221126162211.93322-4-mailhol.vincent@wanadoo.fr/
+> >
+> > If it is a problem to send this as a standalone patch, I will then
+> > just add it to my series and have the patch go through the linux-can
+> > tree.
+>
+> As you have the Ok from Greg, include this in you v5 series.
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- .../networking/devlink/etas_es58x.rst         | 36 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 2 files changed, 37 insertions(+)
- create mode 100644 Documentation/networking/devlink/etas_es58x.rst
+This is a different patch. Greg gave me his ACK to export usb_cache_string():
+  https://lore.kernel.org/linux-usb/Y3zyCz5HbGdsxmRT@kroah.com/
 
-diff --git a/Documentation/networking/devlink/etas_es58x.rst b/Documentation/networking/devlink/etas_es58x.rst
-new file mode 100644
-index 000000000000..9893e57b625a
---- /dev/null
-+++ b/Documentation/networking/devlink/etas_es58x.rst
-@@ -0,0 +1,36 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==========================
-+etas_es58x devlink support
-+==========================
-+
-+This document describes the devlink features implemented by the
-+``etas_es58x`` device driver.
-+
-+Info versions
-+=============
-+
-+The ``etas_es58x`` driver reports the following versions
-+
-+.. list-table:: devlink info versions implemented
-+   :widths: 5 5 90
-+
-+   * - Name
-+     - Type
-+     - Description
-+   * - ``fw``
-+     - running
-+     - Version of the firmware running on the device. Also available
-+       through ``ethtool -i`` as the first member of the
-+       ``firmware-version``.
-+   * - ``bl``
-+     - running
-+     - Version of the bootloader running on the device. Also available
-+       through ``ethtool -i`` as the second member of the
-+       ``firmware-version``.
-+   * - ``board.rev``
-+     - fixed
-+     - The hardware revision of the device.
-+   * - ``serial_number``
-+     - fixed
-+     - The USB serial number. Also available through ``lsusb -v``.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 955c1be1efb2..71f4f8776779 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7682,6 +7682,7 @@ ETAS ES58X CAN/USB DRIVER
- M:	Vincent Mailhol <mailhol.vincent@wanadoo.fr>
- L:	linux-can@vger.kernel.org
- S:	Maintained
-+F:	Documentation/networking/devlink/etas_es58x.rst
- F:	drivers/net/can/usb/etas_es58x/
- 
- ETHERNET BRIDGE
--- 
-2.37.4
+This is a new patch to add an info attribute for the bootloader in
+devlink.h. Regardless, I added it to the v5:
+  https://lore.kernel.org/linux-can/20221130174658.29282-5-mailhol.vincent@wanadoo.fr/
 
+@Jakub (and other netdev maintainers): do not pick this, it will go
+through linux-can.
+
+
+Yours sincerely,
+Vincent Mailhol
