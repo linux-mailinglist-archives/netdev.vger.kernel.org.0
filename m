@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E46EE63DC5B
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:47:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A930063DC5F
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:47:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbiK3Rrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 12:47:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42666 "EHLO
+        id S230064AbiK3Rrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 12:47:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229931AbiK3Rre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:47:34 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CABB2578FF;
-        Wed, 30 Nov 2022 09:47:21 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id 4so17446169pli.0;
-        Wed, 30 Nov 2022 09:47:21 -0800 (PST)
+        with ESMTP id S229976AbiK3Rrg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:47:36 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC6D578F8;
+        Wed, 30 Nov 2022 09:47:24 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id w79so17513682pfc.2;
+        Wed, 30 Nov 2022 09:47:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vkA/imn3R47+/xWfnmkBBzHVEaOv5ORTLT0XDNYcHEQ=;
-        b=OoP+A/PeBvBzmupXLt/lsvO1apltYMdxEG3OZIhEC56t6KiA/M+UZ48T+l+4UXsWKq
-         wNknt8IOx/edAvich+nZPNoTnGFuyINikd9r7gtrl8JC7knnpTbFEouni1nDP7Sr8PfD
-         xP+xyRmtblMM1CKchHrJ3zvN45jH5OnL2A+AmL5Dofp4zU9mHOKueyJlgS67DvEn5x7D
-         ef2/K5Hle/fHa9BeZ4Ok+Xbe+AgVLiKSxeclQarv36/zpWFKjWhFOOB3Ef1qYwuJRlfc
-         oJeR9a/u2canR6akO3wVyWecdbm9X1USCbkOyuwPtQG2w3n51ugiiz5/FGFOtbhyvgvc
-         2WLA==
+        bh=kpwlduiswno0GODc7vV+afSgYhDmAPourYDvbL9id5k=;
+        b=konABwWSuQgbns2x2gFYV7aV7YXTZiNFUrzMBapHKFzorTx6vKkB1h2AO7olpBAJVW
+         WzuEargfUwpfygc3VRPSNrAqnfITf9uGDAYyjeQk2oPy6dAy0tsYc2+uC2dr64U2+X6b
+         Jxh/6JmfrSnKlnHWy2+9IcnIO3GFWOEcoQwU1024WMRezE8EvR9Ndd31AeA5paTbsfaM
+         ZGearzpvjXMNGhgLDkNXmc2iw/HopPxH7VZ++55xYGOcW4cFVqcSfVqHm7HbH7deMDGS
+         P1ZooGi5779Dja9dHzI00RKTrA3w3IsL3NI+M9qvNirSNNbUlB5DWZelF8rEfUlGePMP
+         TpyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=vkA/imn3R47+/xWfnmkBBzHVEaOv5ORTLT0XDNYcHEQ=;
-        b=bUXMyDPKvJ7TL8KZ6d76IiWOFlr5o2l447djpxLPDuKQTwv4YUyOf8rUfEw6Yj3QuN
-         IfYF/qjEatB/lGRbMQ5swli0GsOB2YUsuruqB+8prg46IrlgIMaxws3zlqhk5LBkz5su
-         PYqEA6gRUNvxeDpA0PYv0z4wPPPPHWZg8yHzKne36/cnJvLzAhIEL7Vbf8RKh4O3u4pX
-         VC6MXXzKtnfUINuZIxGbbV7/fbbWJGbaKSpRwyeCMWgibVnf5U7Z6zbEFy5H/dH9DI0p
-         6kP0ba4JKz8jYiRx1YTxIYfJbhAe/GuqpdHvB+/LockJ6puKUWhGJ4Hvvd88bm4UDB8c
-         Np4Q==
-X-Gm-Message-State: ANoB5pnF7ZMY6PB8lxN3kPtNqRoIOo3BcdKtWn7p3kotBcnAI3U72krQ
-        tUPAipNAFudbgmvqUDHC4YKGSgJ+KpU8Jg==
-X-Google-Smtp-Source: AA0mqf5ZjD8scjcxHQX5lLFN3qZGLAhKhInerb6Ay6XmiXEPENVyaU8oNPs/oR0WXoEzl/BWB8RVdA==
-X-Received: by 2002:a17:90b:3c52:b0:219:2b64:cc0e with SMTP id pm18-20020a17090b3c5200b002192b64cc0emr19627097pjb.161.1669830440569;
-        Wed, 30 Nov 2022 09:47:20 -0800 (PST)
+        bh=kpwlduiswno0GODc7vV+afSgYhDmAPourYDvbL9id5k=;
+        b=PeHOe1qFRS7b7Q4jo+7DfGe7GkUHDVxA9jTmpd8KxXW2ZH1EKz3MSiHxgcDPhxHan2
+         4zH1N0nlmILPXLEfisjQzZ/NOwWtwCn9DrRcka7KRan3g+Zl9ZI/nodiIzOBRtuE7+3P
+         BQeAuQPY2YK41+yJkNSzohLW/89hnHpQ4EpgUl0KwUgzlTrcVq7z+M3M84XZs7RhMAAK
+         /8jTgaber5UEkkywiVmTNG/3bODxAEGf4e3cDgPRhEOW9kUNhQ9W/65tyWmUBLwyoxN8
+         OqD4oFPZqpycvRKX3RTNqv7lyOQG9gnJtxNCcH5KftCdtBd+Aminu/Cp4QjZKCOXRfyz
+         l+jQ==
+X-Gm-Message-State: ANoB5pn2ee/ZQGykI9V/WTB75F0GnpuHmpHsKdNduLMoT4Afncvv9iLy
+        x6i6VFB+dBfaHV7Fc7VnAFLXVHTy4iYgMA==
+X-Google-Smtp-Source: AA0mqf5PEYjhCpnLmS8aeWV9F8rYE+xSooQBFE++F/WfuW9IGmzoqtaNdI64P1DIkn0yJt+i5Ec4SA==
+X-Received: by 2002:a05:6a00:338c:b0:56b:a319:7b52 with SMTP id cm12-20020a056a00338c00b0056ba3197b52mr43478099pfb.21.1669830443318;
+        Wed, 30 Nov 2022 09:47:23 -0800 (PST)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id p3-20020aa79e83000000b00574cdb63f03sm1714505pfq.144.2022.11.30.09.47.18
+        by smtp.gmail.com with ESMTPSA id p3-20020aa79e83000000b00574cdb63f03sm1714505pfq.144.2022.11.30.09.47.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Nov 2022 09:47:20 -0800 (PST)
+        Wed, 30 Nov 2022 09:47:23 -0800 (PST)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     linux-can@vger.kernel.org
@@ -61,9 +61,9 @@ Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
         Lukas Magel <lukas.magel@posteo.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v5 3/7] USB: core: export usb_cache_string()
-Date:   Thu,  1 Dec 2022 02:46:54 +0900
-Message-Id: <20221130174658.29282-4-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v5 4/7] net: devlink: add DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER
+Date:   Thu,  1 Dec 2022 02:46:55 +0900
+Message-Id: <20221130174658.29282-5-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.37.4
 In-Reply-To: <20221130174658.29282-1-mailhol.vincent@wanadoo.fr>
 References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
@@ -80,55 +80,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-usb_cache_string() can also be useful for the drivers so export it.
+As discussed in [1], abbreviating the bootloader to "bl" might not be
+well understood. Instead, a bootloader technically being a firmware,
+name it "fw.bootloader".
 
+Add a new macro to devlink.h to formalize this new info attribute name
+and update the documentation.
+
+[1] https://lore.kernel.org/netdev/20221128142723.2f826d20@kernel.org/
+
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-For reference, acked by Greg here:
-https://lore.kernel.org/linux-usb/Y3zyCz5HbGdsxmRT@kroah.com/
----
- drivers/usb/core/message.c | 1 +
- drivers/usb/core/usb.h     | 1 -
- include/linux/usb.h        | 1 +
- 3 files changed, 2 insertions(+), 1 deletion(-)
+This was initially sent as a standalone patch here:
 
-diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
-index 4d59d927ae3e..127fac1af676 100644
---- a/drivers/usb/core/message.c
-+++ b/drivers/usb/core/message.c
-@@ -1037,6 +1037,7 @@ char *usb_cache_string(struct usb_device *udev, int index)
- 	}
- 	return smallbuf;
- }
-+EXPORT_SYMBOL_GPL(usb_cache_string);
+  https://lore.kernel.org/netdev/20221129031406.3849872-1-mailhol.vincent@wanadoo.fr/
+
+Merging it to this series so that it is both added and used.
+---
+ Documentation/networking/devlink/devlink-info.rst | 5 +++++
+ include/net/devlink.h                             | 2 ++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
+index 7572bf6de5c1..1242b0e6826b 100644
+--- a/Documentation/networking/devlink/devlink-info.rst
++++ b/Documentation/networking/devlink/devlink-info.rst
+@@ -198,6 +198,11 @@ fw.bundle_id
  
- /*
-  * usb_get_device_descriptor - (re)reads the device descriptor (usbcore)
-diff --git a/drivers/usb/core/usb.h b/drivers/usb/core/usb.h
-index 82538daac8b8..0eac7d4285d1 100644
---- a/drivers/usb/core/usb.h
-+++ b/drivers/usb/core/usb.h
-@@ -47,7 +47,6 @@ extern int usb_get_device_descriptor(struct usb_device *dev,
- extern int usb_set_isoch_delay(struct usb_device *dev);
- extern int usb_get_bos_descriptor(struct usb_device *dev);
- extern void usb_release_bos_descriptor(struct usb_device *dev);
--extern char *usb_cache_string(struct usb_device *udev, int index);
- extern int usb_set_configuration(struct usb_device *dev, int configuration);
- extern int usb_choose_configuration(struct usb_device *udev);
- extern int usb_generic_driver_probe(struct usb_device *udev);
-diff --git a/include/linux/usb.h b/include/linux/usb.h
-index 9ff1ad4dfad1..d2d2f41052c0 100644
---- a/include/linux/usb.h
-+++ b/include/linux/usb.h
-@@ -1829,6 +1829,7 @@ static inline int usb_get_ptm_status(struct usb_device *dev, void *data)
+ Unique identifier of the entire firmware bundle.
  
- extern int usb_string(struct usb_device *dev, int index,
- 	char *buf, size_t size);
-+extern char *usb_cache_string(struct usb_device *udev, int index);
++fw.bootloader
++-------------
++
++Version of the bootloader.
++
+ Future work
+ ===========
  
- /* wrappers that also update important state inside usbcore */
- extern int usb_clear_halt(struct usb_device *dev, int pipe);
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 074a79b8933f..2f552b90b5c6 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -621,6 +621,8 @@ enum devlink_param_generic_id {
+ #define DEVLINK_INFO_VERSION_GENERIC_FW_ROCE	"fw.roce"
+ /* Firmware bundle identifier */
+ #define DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID	"fw.bundle_id"
++/* Bootloader */
++#define DEVLINK_INFO_VERSION_GENERIC_FW_BOOTLOADER	"fw.bootloader"
+ 
+ /**
+  * struct devlink_flash_update_params - Flash Update parameters
 -- 
 2.37.4
 
