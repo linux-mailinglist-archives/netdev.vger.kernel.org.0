@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFF6563D504
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 12:53:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BD9263D505
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 12:53:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234857AbiK3Lxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 06:53:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44622 "EHLO
+        id S234475AbiK3Lxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 06:53:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235050AbiK3LxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 06:53:09 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on20610.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e89::610])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4293D4384F
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 03:52:55 -0800 (PST)
+        with ESMTP id S234023AbiK3LxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 06:53:12 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2054.outbound.protection.outlook.com [40.107.92.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191816395
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 03:52:59 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TnW6RJ+ZGtfORZSPHykJbnhhL1JsuTBSg8gRe1+LBACP9dZf3t5xDS/9EXVfziaS7cfKM2jvLO6B/G1/x+7P4akL+NftTepRmjbweeubAjxRHlf/L3uYZxJnI8BcROippm8H8YVCMGi1Mz5D0dgO9n0pxEkX8gX2T2mTZn2fqWmBpcME5jXUwadgtcBchSUIeu/HqzrMG/mPOQYfVS4HEzAomutwVhCHaV2r0p53Es5BBz0azTWjAWexD2Imyfoxg0sUrOmSiUSh1e3x41etRor8aSAcgj43UHSa+tzewbatXJnHT3mfKsxD7LRLLXFZBemZ2ZHMPGg+XX7iRURuxA==
+ b=Nud7dxsny+t50OYD3f6nN2lbzelQjLE+FiyzRtXRnQFCrEZMAnXqcBhDFZMnTmCITCMFsOYmanenrS87fRPaISXsaihZwEVLR0tZjWogMMIBiUeKwlOJ+yZbI4RjQD59sqfy1fT09y3kO2BlcOEqKXIxZXHH9T5IzJCEPWQphE+nUEZdWBlEKM56LYnLtzSdEkLAOXA8v6ifRIrqFqd9xUWkgyRARknOHjHJN2H2iPNnYjr8+I1RYGGULdgs+wER3X3/Wka7FerLhByXQWC6b2K0fxI4b2zCK19AI5CS4UuxXWxDWyw4GI3dYOHwTugg4yPjAlUJmKp4gnbGJf9lBQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+8tnz/fAIpB6X4FwfAExW1GLX/Kd3rHDtlo5rFKlJ40=;
- b=X/tlbAeqboYqVJPgF1UrMDd1aJaEPhqt8H3DsVxv2QZzrgTHnuCVcc8D05eLf3H/hrk893nYvD2P7rOUQEGJR79TUb43t/j01NLjiiHtpqnZJ7STdKWCcgU6o5pJIHwNX8YhJ8BuW66GU67sRCnOG9SLiNlU79rkzbyH1IyBFGDIN4AqJy1WqyktgSo1JjKq31UHFbLN5wvEe751HpTyHyTEtQQl+NhAyA26YAco1fzOu6yAfFbw1gQ4F8mBH1X2eFU+PcbrFpLZ2tYCo9VRAD1FCgpWEC9Eqf7FF67VMHaaMcG3mgQvN0qAVyH/ZDqxx582nmJUmiepo0sZsrO2ew==
+ bh=uxbjXPUmyVu7jtPYS4lTU8jCr6P3PdNRtmwYwSWthpk=;
+ b=C3SnvE3iuGbOtaS9r6H7grMI1h8EULelrUcg6kMQCvmHGDof6C3OGob1xtRxH43I6AJrjJxz3onIYAk2ODiIl/BliRgRabxKmq02Fh2b56Anl6XXu7UJkyl2HDfoEK7SFfwYoLhUssouplJRdwOuc32DrWNAS8DTS9glVBP7bnVSnqCRmAeNutZCjZY2PllWtO/maN2MJfo2s3/XnO7zK8LjmLzMo1necBODj2sSo9IxN1gf1XeZHmmEo+OWmdtk0c+EwcYVLEf0uS09Tri6IFVFjWmRInlALpQRbRLFJ5pYleXxvad9MCqWEfC5ich48nKKLoOH3SFxG8LvE0TF9g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+8tnz/fAIpB6X4FwfAExW1GLX/Kd3rHDtlo5rFKlJ40=;
- b=gY71+n50ebDdbaBin7YJCobU4+fD9zI4aTvXYZxM8ITWY7+ycp93QQHJvuB7YeNZWKByXrgFTRd7GAbZqOjcmGPdgRdT2Rm5NWE7sDWkPkXBDZ1NtaTK8GKzfdX245X05Wqy9TLn9LZ5jC4RQgbHzLCEUwx6+ZAO/pOX7CtzcB8v1aggdXhqfbFsHKS5RBOuKsPmjBVAqEnOd+u9xmew2Kx+hrExr8Ys/uyZ8fWXgmyRFhCb/7dIsijRWxbY3OJ7eA0bA7ufLG0EIK7oxgDAVsZgsY5RaAvgr5xvWrLMr9g+NsyNHi8qI3Yz/jMMMC+CghfafWZdpkp6jZgBN8q0aA==
-Received: from BN1PR13CA0015.namprd13.prod.outlook.com (2603:10b6:408:e2::20)
- by MN0PR12MB5979.namprd12.prod.outlook.com (2603:10b6:208:37e::15) with
+ bh=uxbjXPUmyVu7jtPYS4lTU8jCr6P3PdNRtmwYwSWthpk=;
+ b=oCRMbwqcW2CfOQdozEhCz8Y1+xQIZurqaYeyMsPy7muVaxMjC4vYWx7hXvrR3gjRtF9S/IOyDxwgfZF3pR6Oad/XIuOYDD+R8Kuu8xZ4dN5YR5tKcP/hPJBMlMZ/4DkAUqN/+9Y0XCxR6gLGZSjVpoFYVRqyNjLgi/F8n16ZKYdRWSL2zFFjk0gQdTUNKw2NnOiU1nWlB3nbKtnKnP8CxNqvdN1OJ1lsRBRk798/10gKyaZtLgUo484t3PIP79+c0RYWQRUBlKAL/OdeYqmU7R55eeSY3o5UH1hIO5ckCj+gQHY/xUWP7rBz5Xj1Sza9NsRuipfv2/aLQsdO1rM5XQ==
+Received: from BN9PR03CA0588.namprd03.prod.outlook.com (2603:10b6:408:10d::23)
+ by SA1PR12MB6702.namprd12.prod.outlook.com (2603:10b6:806:252::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Wed, 30 Nov
- 2022 11:52:51 +0000
-Received: from BN8NAM11FT106.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e2:cafe::81) by BN1PR13CA0015.outlook.office365.com
- (2603:10b6:408:e2::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8 via Frontend
- Transport; Wed, 30 Nov 2022 11:52:50 +0000
+ 2022 11:52:57 +0000
+Received: from BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:10d:cafe::70) by BN9PR03CA0588.outlook.office365.com
+ (2603:10b6:408:10d::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23 via Frontend
+ Transport; Wed, 30 Nov 2022 11:52:57 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,24 +47,24 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.161 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT106.mail.protection.outlook.com (10.13.177.7) with Microsoft SMTP
+ BN8NAM11FT051.mail.protection.outlook.com (10.13.177.66) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5857.22 via Frontend Transport; Wed, 30 Nov 2022 11:52:50 +0000
+ 15.20.5857.22 via Frontend Transport; Wed, 30 Nov 2022 11:52:57 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 30 Nov
- 2022 03:52:40 -0800
+ 2022 03:52:44 -0800
 Received: from nps-server-23.mtl.labs.mlnx (10.126.231.35) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Wed, 30 Nov 2022 03:52:36 -0800
+ 15.2.986.36; Wed, 30 Nov 2022 03:52:40 -0800
 From:   Shay Drory <shayd@nvidia.com>
 To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>
 CC:     <danielj@nvidia.com>, <yishaih@nvidia.com>, <jiri@nvidia.com>,
         <saeedm@nvidia.com>, <parav@nvidia.com>
-Subject: [PATCH net-next 2/8] devlink: Validate port function request
-Date:   Wed, 30 Nov 2022 13:52:11 +0200
-Message-ID: <20221130115217.7171-3-shayd@nvidia.com>
+Subject: [PATCH net-next 3/8] devlink: Move devlink port function hw_addr attr documentation
+Date:   Wed, 30 Nov 2022 13:52:12 +0200
+Message-ID: <20221130115217.7171-4-shayd@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221130115217.7171-1-shayd@nvidia.com>
 References: <20221130115217.7171-1-shayd@nvidia.com>
@@ -76,97 +76,144 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT106:EE_|MN0PR12MB5979:EE_
-X-MS-Office365-Filtering-Correlation-Id: 227d07c0-3560-461c-7795-08dad2c96872
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT051:EE_|SA1PR12MB6702:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3e28c3e5-de01-470d-688e-08dad2c96c44
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LJLF6ADR1fotEIfV3Yhv/qQSAn4HoNrlMDy3tgZEv2objYvyh//O6mu+IpykOQm+KtXxuJ/XctOQcZIwNiFK3GmDmpREN29Qxc0ojTJO/OcXi5b7gSVNh5OgNHKtwjnflwnyr4N6V7T9/fRrE3weG6+uq4uRn6kWLg6tvugERVIpVlR+q2S7M/SMmdcGDJ+V8GuwDcpPP4ydb0pTDGrzXAS982m7YqX3/yET3ieGhfMyR4Lk+yxq0xBemvT3yMky/JHrzk75mGejwd6pHSheB0kSyr7zieZe9TdBBGl6pAIpXEEe5AGEcc6AuMwZf83w5XP3/kRChvx2N05RNTgmuGZesHdLFTAH2IcNEahs+YFnlQVMxWpeoghvWUNKBuqX96fkmMsJPQtx+xxmT6r88R1wsclqw725JoR+zgffvsdGDQNqgNFcj36/KK78ngB8U0pDkI7VUsHtxWDvk2TsX/codR5Sl+5ItdQ1JhoAMLExjf6wsKXT3IwdYfXkM1waXMWiHKwuUB0HoQ7ul9joGplUCEy/kaQsngjAv2KwltynnnaQKSzsa6/8QULc/anKMHL/hSZzOWaJ2X2zYSDj3ZJNt2bzZ2ek10CKzM4huO44DXwVXgt1VCYY9e/GFiag8ZkpMVCQL8uhHnbfufMLjIFIS7rahbN93TnQhu747cF6BkiydljYqaOWYM3kjnW7vzM90n/2qhXAsWEou9dk4w==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(136003)(346002)(376002)(451199015)(46966006)(40470700004)(36840700001)(186003)(1076003)(2616005)(107886003)(336012)(426003)(36860700001)(47076005)(16526019)(5660300002)(6666004)(41300700001)(36756003)(82310400005)(70206006)(86362001)(26005)(8676002)(82740400003)(8936002)(478600001)(4326008)(40480700001)(54906003)(83380400001)(70586007)(2906002)(40460700003)(316002)(356005)(7636003)(15650500001)(110136005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: IxExsXfjKXf8tWoP78lTBBcD0XQOJ+94m0of38znyMhyL6titvpk7cCx23Urzm8MjbENfB+JkGtF5rYMXFOO70mH6DTcb3WCHYY35tL6imWZ34Afd0+cLWWaUImkSaksFKt5ZuRqIsd0+j8ZdB0dGa3N/Tb2fdjLnrJ62HQ8smDO61PzYdM1PZTes/aVej70dNV5xnwJUiOYgc70Hno7TblctdEgF1DKtPy4lUFDS3OL0GJRQFqynki9dwECr1K3mrrorsaXapN01ShcwaqfLG6pDKZTMMUCR+uiQB242mgNvqhC3eXFM+iixWYWwwWpPsic6E3B1anes1kMXR4Ap0e1cNX5Klswl7ZtxiPmtFqaamAFKZUmUh+j8f9Xtk3gtmnAICl/ltWnqD6Se5KUJPlAwu9/OM+G0bkrI7pJKjX9Dqnwrup2wojs95aLK3wGGnywCwjtJL25UkslHqF8CA1a9965tOhz8XHP/8PVliVMyHiYAWtIONjGHf+ghyqdPKkj31BVmErBVIT6BTcvkOwr0gHLCaeh7Vgv10V+8DpPkPMKVG6T0kQ/UrvbfEckuaYMTLghDVFxPneSE6Tzjn3iCJD8XAdsQMRLMHuOjS7jaBbqredPOKKmD8LjXUP6ot2cee+iCuQVJsq/cktWiJEQZv32SknnQTHfu6IGddihIHpPNaTJmX1H9U5MqkNoUtrB5pL7E/lKIpZo28o07w==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(136003)(376002)(346002)(451199015)(46966006)(36840700001)(40470700004)(8676002)(41300700001)(70206006)(316002)(110136005)(54906003)(4326008)(5660300002)(8936002)(478600001)(426003)(40460700003)(336012)(26005)(186003)(107886003)(1076003)(2906002)(16526019)(82310400005)(6666004)(47076005)(70586007)(36860700001)(36756003)(82740400003)(2616005)(40480700001)(7636003)(86362001)(83380400001)(356005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2022 11:52:50.6907
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2022 11:52:57.0997
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 227d07c0-3560-461c-7795-08dad2c96872
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e28c3e5-de01-470d-688e-08dad2c96c44
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT106.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5979
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6702
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to avoid partial request processing, validate the request
-before processing it.
+devlink port function hw_addr attr documentation is in mlx5 specific
+file while there is nothing mlx5 specific about it.
+Move it to devlink-port.rst.
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- net/core/devlink.c | 27 ++++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ .../device_drivers/ethernet/mellanox/mlx5.rst | 38 +-----------------
+ .../networking/devlink/devlink-port.rst       | 40 +++++++++++++++++++
+ 2 files changed, 42 insertions(+), 36 deletions(-)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index cea154ddce7a..485348697290 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -1644,11 +1644,6 @@ static int devlink_port_function_hw_addr_set(struct devlink_port *port,
- 		}
- 	}
+diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
+index 5edf50d7dbd5..6ae3b35a17d5 100644
+--- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
++++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
+@@ -351,42 +351,8 @@ driver.
  
--	if (!ops->port_function_hw_addr_set) {
--		NL_SET_ERR_MSG_MOD(extack, "Port doesn't support function attributes");
--		return -EOPNOTSUPP;
--	}
+ MAC address setup
+ -----------------
+-mlx5 driver provides mechanism to setup the MAC address of the PCI VF/SF.
 -
- 	return ops->port_function_hw_addr_set(port, hw_addr, hw_addr_len,
- 					      extack);
- }
-@@ -1662,12 +1657,26 @@ static int devlink_port_fn_state_set(struct devlink_port *port,
+-The configured MAC address of the PCI VF/SF will be used by netdevice and rdma
+-device created for the PCI VF/SF.
+-
+-- Get the MAC address of the VF identified by its unique devlink port index::
+-
+-    $ devlink port show pci/0000:06:00.0/2
+-    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
+-      function:
+-        hw_addr 00:00:00:00:00:00
+-
+-- Set the MAC address of the VF identified by its unique devlink port index::
+-
+-    $ devlink port function set pci/0000:06:00.0/2 hw_addr 00:11:22:33:44:55
+-
+-    $ devlink port show pci/0000:06:00.0/2
+-    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
+-      function:
+-        hw_addr 00:11:22:33:44:55
+-
+-- Get the MAC address of the SF identified by its unique devlink port index::
+-
+-    $ devlink port show pci/0000:06:00.0/32768
+-    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
+-      function:
+-        hw_addr 00:00:00:00:00:00
+-
+-- Set the MAC address of the VF identified by its unique devlink port index::
+-
+-    $ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:88
+-
+-    $ devlink port show pci/0000:06:00.0/32768
+-    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcivf pfnum 0 sfnum 88
+-      function:
+-        hw_addr 00:00:00:00:88:88
++mlx5 driver support devlink port function attr mechanism to setup MAC
++address. (refer to Documentation/networking/devlink/devlink-port.rst)
  
- 	state = nla_get_u8(attr);
- 	ops = port->devlink->ops;
--	if (!ops->port_fn_state_set) {
-+	return ops->port_fn_state_set(port, state, extack);
-+}
-+
-+static int devlink_port_function_validate(struct devlink_port *devlink_port,
-+					  struct nlattr **tb,
-+					  struct netlink_ext_ack *extack)
-+{
-+	const struct devlink_ops *ops = devlink_port->devlink->ops;
-+
-+	if (tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR] &&
-+	    !ops->port_function_hw_addr_set) {
-+		NL_SET_ERR_MSG_MOD(extack, "Port doesn't support function attributes");
-+		return -EOPNOTSUPP;
-+	}
-+	if (tb[DEVLINK_PORT_FN_ATTR_STATE] && !ops->port_fn_state_set) {
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "Function does not support state setting");
- 		return -EOPNOTSUPP;
- 	}
--	return ops->port_fn_state_set(port, state, extack);
-+	return 0;
- }
+ SF state setup
+ --------------
+diff --git a/Documentation/networking/devlink/devlink-port.rst b/Documentation/networking/devlink/devlink-port.rst
+index 98557c2ab1c1..0b520363c6af 100644
+--- a/Documentation/networking/devlink/devlink-port.rst
++++ b/Documentation/networking/devlink/devlink-port.rst
+@@ -122,6 +122,46 @@ A user may set the hardware address of the function using
+ 'devlink port function set hw_addr' command. For Ethernet port function
+ this means a MAC address.
  
- static int devlink_port_function_set(struct devlink_port *port,
-@@ -1684,6 +1693,10 @@ static int devlink_port_function_set(struct devlink_port *port,
- 		return err;
- 	}
- 
-+	err = devlink_port_function_validate(port, tb, extack);
-+	if (err)
-+		return err;
++Function attributes
++===================
 +
- 	attr = tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR];
- 	if (attr) {
- 		err = devlink_port_function_hw_addr_set(port, attr, extack);
++MAC address setup
++-----------------
++The configured MAC address of the PCI VF/SF will be used by netdevice and rdma
++device created for the PCI VF/SF.
++
++- Get the MAC address of the VF identified by its unique devlink port index::
++
++    $ devlink port show pci/0000:06:00.0/2
++    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
++      function:
++        hw_addr 00:00:00:00:00:00
++
++- Set the MAC address of the VF identified by its unique devlink port index::
++
++    $ devlink port function set pci/0000:06:00.0/2 hw_addr 00:11:22:33:44:55
++
++    $ devlink port show pci/0000:06:00.0/2
++    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
++      function:
++        hw_addr 00:11:22:33:44:55
++
++- Get the MAC address of the SF identified by its unique devlink port index::
++
++    $ devlink port show pci/0000:06:00.0/32768
++    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
++      function:
++        hw_addr 00:00:00:00:00:00
++
++- Set the MAC address of the VF identified by its unique devlink port index::
++
++    $ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:88
++
++    $ devlink port show pci/0000:06:00.0/32768
++    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcivf pfnum 0 sfnum 88
++      function:
++        hw_addr 00:00:00:00:88:88
++
+ Subfunction
+ ============
+ 
 -- 
 2.38.1
 
