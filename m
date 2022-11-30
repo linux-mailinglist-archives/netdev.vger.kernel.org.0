@@ -2,88 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36D4663D7B8
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:08:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EABE863D7BB
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:08:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbiK3OIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 09:08:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
+        id S230007AbiK3OIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 09:08:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229806AbiK3OHh (ORCPT
+        with ESMTP id S229829AbiK3OHh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:07:37 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829747722A
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 06:07:07 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id e27so41586305ejc.12
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 06:07:07 -0800 (PST)
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF798BD16
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 06:07:08 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id bj12so41518563ejb.13
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 06:07:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=tessares.net; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Jypnv7wptQURs7eFnZrKwLAnNbefpkWc9aDC2tuITf8=;
-        b=rWIZ32Mn4YU11VZPjBYcyjpGALFr0mub2FeUmrggTQ+QArd5PjZ2OQOHNox+jJYez1
-         JwvJUHP4KnlgMNgld2+iUuVk2e1sGApkV2Y33JkOzyLY30lRyVCOupISgOiPqgS6MwOy
-         FHP4DOTMxrx3BsTLsFnXL9NEtEkePZh+bfOlGqMtRm+BRg1QswDK1HyaB2DPdNWpAsE6
-         mjQxMLmkVDsVWSWCG/GkCPozjvZ+yUD1/DWROmDrWJoWmeeAIxFkXhM6UX1faGUk8aCc
-         8bqIJlZyMN7ame9ZjpyS7loSQmxTVLUvUmELdT7Pd3kC78AErumMGTm7GwlyWu34Nr4X
-         DMKA==
+        bh=w8+9TtQhJTeugjJt6JDxh1bHQ8477mWDIxdOTyt8gMw=;
+        b=4oflt4ubSUqJSREur2/9AlJll73FxY6sPeNoi/8wc7ocqzr/u8Cl0H/oPniO8evrYC
+         7SEqf9JNI9HBQYpZwbpGd6PgvYJaZ7lzjqGVZw/3jk286YmCOgvsFOi46eTOHUKRwj2g
+         c/gsolXbaAlW2aAjBzQRmwIWjHrC5P3LGVNYKXD+3ARG9nokvofk7/EHXSxY3LKrYCq8
+         E49GiNfIMAwvMevvQQdi98im6TmTo2/aT1k8CUTo3T8HzBFvDX5Veu49i6PIdNgHmps0
+         SF6LShcVe6xUAYMKcqNWatomleAHfran5j/kWwOqpGwt54vpuo30sd0Hi8kVLrplmey2
+         jX2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Jypnv7wptQURs7eFnZrKwLAnNbefpkWc9aDC2tuITf8=;
-        b=fSNCjiu/AcSe5ZuYm9CdnRkrVpKhbzaokw0tHFBhczm+6g457pydZhYj16UIEgHDUJ
-         g/SWYN5Y9ONslLMLdmbDK8szH/RurqD+I9H8XutOk+bj5o2uSGndFlnv+y+LBI3XKUo8
-         sF4/1+J/FR8eW/hGb9izetORVIJo6Q1ER/Hv7ZRrrwlDj1yL47C6I7QV/xTwQaa0tEDv
-         HcOE6u4sN0ZQKRNoWp9YVpZT6V/c9ooBUFwfWXioZWQpG45C2C9j5NPVxXWR0fQfBYdJ
-         2quBB0ZXs2jyJ0odpGH2eRpb0Fz4K7kJSK60Pj3BjZD1NTufyC371v5CEyWaVyIxSoQY
-         XTpg==
-X-Gm-Message-State: ANoB5pnlYHYjXw4VD2uDkGN3Mi2wcqnjbfczu4TibsTDaokc3D1mdjSI
-        E7hk214fkWVxDubihDGCKCQImg==
-X-Google-Smtp-Source: AA0mqf7GHMCp00Y7SecKSmhD4vcmJrOgglpaXWfNNt8kKNntvyMlY67sp3ifPr/EITblAUBOA8X0ng==
-X-Received: by 2002:a17:906:448d:b0:7ae:37aa:6bf with SMTP id y13-20020a170906448d00b007ae37aa06bfmr51496092ejo.481.1669817224788;
-        Wed, 30 Nov 2022 06:07:04 -0800 (PST)
+        bh=w8+9TtQhJTeugjJt6JDxh1bHQ8477mWDIxdOTyt8gMw=;
+        b=QzuABcgCfTzTc/vI+sfgTIqQO0Vs8HQJMCkTYcsFRbDxHq0jm2hQLDFDsJL19kLMPN
+         edacmtKfY4Zt/Dqj9fYVioX3itubUL/mFx84rFlKjtufiB45vCvwKyulXglWPjzBMCgq
+         jzeEJesmOMtdhWw7wLC83xXMtw9tDuPZraOkYHtWDs9TTZUDhCrlTRU3q0kRR2Bwlumt
+         NNSWORCZMteSzQ2owGaev4nn8cZlRi7xTAqw63F11srCyK+u6bTWuvqRo3MCoMUBLuUO
+         Q81uwCZAhsiEFeV5lQXUbm4XFj4TRsSdw3ThTuP7LgW48Cg/rIHIx2XnoC2uERCoSeFg
+         d4Mw==
+X-Gm-Message-State: ANoB5pnNQjjY73DK4rAruXTV/CbNeIJErgIw2pe3M66URx10C4wb6Pbo
+        Ym0peWY4yEUhw3qQMIQWooAgqs/pUw20qz310ng=
+X-Google-Smtp-Source: AA0mqf6xQFkbPndD0+0xMKNKfhBREvCTpy6IDc9dr5EQT+7HRW5hZ+Pa9H9qnGWSWNlwoac4ZVY9Aw==
+X-Received: by 2002:a17:906:1106:b0:7be:833e:d242 with SMTP id h6-20020a170906110600b007be833ed242mr16211181eja.405.1669817226587;
+        Wed, 30 Nov 2022 06:07:06 -0800 (PST)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id mh1-20020a170906eb8100b0073d83f80b05sm692454ejb.94.2022.11.30.06.07.03
+        by smtp.gmail.com with ESMTPSA id mh1-20020a170906eb8100b0073d83f80b05sm692454ejb.94.2022.11.30.06.07.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Nov 2022 06:07:04 -0800 (PST)
+        Wed, 30 Nov 2022 06:07:05 -0800 (PST)
 From:   Matthieu Baerts <matthieu.baerts@tessares.net>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
 Cc:     Geliang Tang <geliang.tang@suse.com>, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 06/11] mptcp: add pm listener events
-Date:   Wed, 30 Nov 2022 15:06:28 +0100
-Message-Id: <20221130140637.409926-7-matthieu.baerts@tessares.net>
+        mptcp@lists.linux.dev, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 07/11] selftests: mptcp: enhance userspace pm tests
+Date:   Wed, 30 Nov 2022 15:06:29 +0100
+Message-Id: <20221130140637.409926-8-matthieu.baerts@tessares.net>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221130140637.409926-1-matthieu.baerts@tessares.net>
 References: <20221130140637.409926-1-matthieu.baerts@tessares.net>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5398; i=matthieu.baerts@tessares.net;
- h=from:subject; bh=LnmyaHIci1tYgRCMKF8BiZsWwBqNZm01jB01Gdm9oE4=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBjh2NokNuPz8n5gfzPjJehB5RFek7IJw3lhjKPHQw3
- 5vs8XKCJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCY4djaAAKCRD2t4JPQmmgc/WWEA
- CBznvHePDjzNkcpqIwrlw2lL7Bs1l/G7rWbrVWfoPJnqRpYwZRlw+0yWYOYkazXeoK5jPMMSnVMLeA
- 9SWwQOE2I8VqZnQDarUiI1fxr9qBhP/t4V4Mams7hCLQlZ8UFu9ezJYEDP6ihkPShyOJJ+6EEssQUE
- fJQCHGqLDkn4Qsx/S59UY+dx8mFi6tB+nlSSdhakqnjzD1ABg5nK6wayi9A8zDUOul5fdlUNPhlja0
- h8xB34UerEil6aoIaDB7iM/1iHJB5wJkS6T8k4aaCveFH4/uvWxGEzkRFbwYqWXzZRuAb+XyKIcjKo
- ps6e/EWE93ga5OvI0HvS2wWIfMEV5CYEYfyNMn2xBKohnljUzowX5pCDABKaulSNL/V7LScEBROrCt
- ntQ9cthDUVsT56DfevVXKD7+s2UYD+4/G4iysZ5u2Pjw5TO1oA1xVX+uP48VcLw+DtYCirnxtfU8WX
- YghSCkNaMELqV8SUkcmnUGiedlQKarv6IyVW0Oc5RV2XP08zWD0TIj886D3mr8XmzmCqk4lPzYpy03
- /RWNGi8D9A+NDSNT8Aa8cGWb9yWc1+vzmOmvkNdvESVxkzfWWc4fW3P2AhiPTPzsYchWOoDdtHl69f
- AT9rDZC8dEhobuE9zDmis7qjxdHI1NLMoRjoNEYFrf+wgRDKrIZIbOVVSk/A==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2625; i=matthieu.baerts@tessares.net;
+ h=from:subject; bh=Uj60AGilfzPETmXERWWoIIHskkAhbbWouLnBIXu+gN4=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBjh2NoIX0vsxi6qa6Jw9EvRJSFj6RKVVDVxl079pit
+ dpz244SJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCY4djaAAKCRD2t4JPQmmgc+QuD/
+ 4vEfMtrQx3rmlLZrWdN7G+a5I4u1HKqoMgVD/K8hnMq+rbBZsSxkXv0i13De/SUMveauxDcN+h0OGn
+ M9bWZkwrt7Vbd+YKt1Eajj+wYl5fN9RHqKXx3GhciodaTxc71HCEZwUDviloUYXzJjjDZzk5EnzM85
+ pEyDiRqsFHKfX2YcpXhdvk2HtGoLfFTXI1BzEpVyQnrcOimfiIPPI6iEDWvTleaeK7rug/FrOV1K5f
+ HL0btU98dEPfIAYfCaU1gem2Qf9OuRP155KNU0vwTwcnIb2Iv3rmBi6cPW83uz9wbRIfu+bQqvhRWC
+ hvWA6fKih0LTqlLAEB9H1fWPWlMXFQk9xQOMqF2a3FYp4M6I9jZSYB34yeDRO4z9gEYZi4M1Rkv+Zq
+ c5EOxvzuM7t8IBWVUnoUdfWqC7kFFr+DpYdstkHwL427+m741j8mylCCJeD2rcnzdWvaOW00J7B5NW
+ I2Bg+WsKmZoFU3p57XnpTtQMm90/x0O4EkO5hlEyaSyWSkdQuJmVZ3j0cpHsYNKfgssrvRGFnoDg1A
+ 0IpSJbkwPFpjFtGqWW0awE74dAbjF2yaBJ8TdMdNFJHS8qpmt/w2DSYZlrMo2S6FFW4lzNR0QqCH8t
+ dHY/qK32CqLtp1lbDrtl4UmBe+fPYE+e1J2nJpXdPRNYdxQGm9cXvTIzbQFg==
 X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp; fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -92,170 +92,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geliang Tang <geliang.tang@suse.com>
 
-This patch adds two new MPTCP netlink event types for PM listening
-socket create and close, named MPTCP_EVENT_LISTENER_CREATED and
-MPTCP_EVENT_LISTENER_CLOSED.
+Some userspace pm tests failed since pm listener events have been added.
+Now MPTCP_EVENT_LISTENER_CREATED event becomes the first item in the
+events list like this:
 
-Add a new function mptcp_event_pm_listener() to push the new events
-with family, port and addr to userspace.
+ type:15,family:2,sport:10006,saddr4:0.0.0.0
+ type:1,token:3701282876,server_side:1,family:2,saddr4:10.0.1.1,...
 
-Invoke mptcp_event_pm_listener() with MPTCP_EVENT_LISTENER_CREATED in
-mptcp_listen() and mptcp_pm_nl_create_listen_socket(), invoke it with
-MPTCP_EVENT_LISTENER_CLOSED in __mptcp_close_ssk().
+And no token value in this MPTCP_EVENT_LISTENER_CREATED event.
+
+This patch fixes this by specifying the type 1 item to search for token
+values.
 
 Signed-off-by: Geliang Tang <geliang.tang@suse.com>
 Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- include/uapi/linux/mptcp.h |  9 ++++++
- net/mptcp/pm_netlink.c     | 57 ++++++++++++++++++++++++++++++++++++++
- net/mptcp/protocol.c       |  3 ++
- net/mptcp/protocol.h       |  2 ++
- 4 files changed, 71 insertions(+)
+ tools/testing/selftests/net/mptcp/mptcp_join.sh   | 3 ++-
+ tools/testing/selftests/net/mptcp/userspace_pm.sh | 7 ++++---
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/include/uapi/linux/mptcp.h b/include/uapi/linux/mptcp.h
-index dfe19bf13f4c..32af2d278cb4 100644
---- a/include/uapi/linux/mptcp.h
-+++ b/include/uapi/linux/mptcp.h
-@@ -160,6 +160,12 @@ struct mptcp_info {
-  *                           daddr4 | daddr6, sport, dport, backup, if_idx
-  *                           [, error]
-  * The priority of a subflow has changed. 'error' should not be set.
-+ *
-+ * MPTCP_EVENT_LISTENER_CREATED: family, sport, saddr4 | saddr6
-+ * A new PM listener is created.
-+ *
-+ * MPTCP_EVENT_LISTENER_CLOSED: family, sport, saddr4 | saddr6
-+ * A PM listener is closed.
-  */
- enum mptcp_event_type {
- 	MPTCP_EVENT_UNSPEC = 0,
-@@ -174,6 +180,9 @@ enum mptcp_event_type {
- 	MPTCP_EVENT_SUB_CLOSED = 11,
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+index 2a402b3b771f..f10ef65a7009 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -830,7 +830,8 @@ do_transfer()
+ 			if [ $userspace_pm -eq 0 ]; then
+ 				pm_nl_add_endpoint $ns1 $addr flags signal
+ 			else
+-				tk=$(sed -n 's/.*\(token:\)\([[:digit:]]*\).*$/\2/p;q' "$evts_ns1")
++				tk=$(grep "type:1," "$evts_ns1" |
++				     sed -n 's/.*\(token:\)\([[:digit:]]*\).*$/\2/p;q')
+ 				ip netns exec ${listener_ns} ./pm_nl_ctl ann $addr token $tk id $id
+ 				sleep 1
+ 				ip netns exec ${listener_ns} ./pm_nl_ctl rem token $tk id $id
+diff --git a/tools/testing/selftests/net/mptcp/userspace_pm.sh b/tools/testing/selftests/net/mptcp/userspace_pm.sh
+index 5dfc3ee74b98..08a88ea47a29 100755
+--- a/tools/testing/selftests/net/mptcp/userspace_pm.sh
++++ b/tools/testing/selftests/net/mptcp/userspace_pm.sh
+@@ -172,9 +172,10 @@ make_connection()
+ 	client_serverside=$(sed --unbuffered -n 's/.*\(server_side:\)\([[:digit:]]*\).*$/\2/p;q'\
+ 				      "$client_evts")
+ 	kill_wait $server_evts_pid
+-	server_token=$(sed --unbuffered -n 's/.*\(token:\)\([[:digit:]]*\).*$/\2/p;q' "$server_evts")
+-	server_serverside=$(sed --unbuffered -n 's/.*\(server_side:\)\([[:digit:]]*\).*$/\2/p;q'\
+-				      "$server_evts")
++	server_token=$(grep "type:1," "$server_evts" |
++		       sed --unbuffered -n 's/.*\(token:\)\([[:digit:]]*\).*$/\2/p;q')
++	server_serverside=$(grep "type:1," "$server_evts" |
++			    sed --unbuffered -n 's/.*\(server_side:\)\([[:digit:]]*\).*$/\2/p;q')
+ 	rm -f "$client_evts" "$server_evts" "$file"
  
- 	MPTCP_EVENT_SUB_PRIORITY = 13,
-+
-+	MPTCP_EVENT_LISTENER_CREATED = 15,
-+	MPTCP_EVENT_LISTENER_CLOSED = 16,
- };
- 
- enum mptcp_event_attr {
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index d66fbd558263..eef69d0e44ec 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -1029,6 +1029,8 @@ static int mptcp_pm_nl_create_listen_socket(struct sock *sk,
- 	if (err)
- 		return err;
- 
-+	mptcp_event_pm_listener(ssock->sk, MPTCP_EVENT_LISTENER_CREATED);
-+
- 	return 0;
- }
- 
-@@ -2152,6 +2154,58 @@ void mptcp_event_addr_announced(const struct sock *ssk,
- 	kfree_skb(skb);
- }
- 
-+void mptcp_event_pm_listener(const struct sock *ssk,
-+			     enum mptcp_event_type event)
-+{
-+	const struct inet_sock *issk = inet_sk(ssk);
-+	struct net *net = sock_net(ssk);
-+	struct nlmsghdr *nlh;
-+	struct sk_buff *skb;
-+
-+	if (!genl_has_listeners(&mptcp_genl_family, net, MPTCP_PM_EV_GRP_OFFSET))
-+		return;
-+
-+	skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!skb)
-+		return;
-+
-+	nlh = genlmsg_put(skb, 0, 0, &mptcp_genl_family, 0, event);
-+	if (!nlh)
-+		goto nla_put_failure;
-+
-+	if (nla_put_u16(skb, MPTCP_ATTR_FAMILY, ssk->sk_family))
-+		goto nla_put_failure;
-+
-+	if (nla_put_be16(skb, MPTCP_ATTR_SPORT, issk->inet_sport))
-+		goto nla_put_failure;
-+
-+	switch (ssk->sk_family) {
-+	case AF_INET:
-+		if (nla_put_in_addr(skb, MPTCP_ATTR_SADDR4, issk->inet_saddr))
-+			goto nla_put_failure;
-+		break;
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+	case AF_INET6: {
-+		const struct ipv6_pinfo *np = inet6_sk(ssk);
-+
-+		if (nla_put_in6_addr(skb, MPTCP_ATTR_SADDR6, &np->saddr))
-+			goto nla_put_failure;
-+		break;
-+	}
-+#endif
-+	default:
-+		WARN_ON_ONCE(1);
-+		goto nla_put_failure;
-+	}
-+
-+	genlmsg_end(skb, nlh);
-+	mptcp_nl_mcast_send(net, skb, GFP_KERNEL);
-+	return;
-+
-+nla_put_failure:
-+	kfree_skb(skb);
-+}
-+
- void mptcp_event(enum mptcp_event_type type, const struct mptcp_sock *msk,
- 		 const struct sock *ssk, gfp_t gfp)
- {
-@@ -2197,6 +2251,9 @@ void mptcp_event(enum mptcp_event_type type, const struct mptcp_sock *msk,
- 		if (mptcp_event_sub_closed(skb, msk, ssk) < 0)
- 			goto nla_put_failure;
- 		break;
-+	case MPTCP_EVENT_LISTENER_CREATED:
-+	case MPTCP_EVENT_LISTENER_CLOSED:
-+		break;
- 	}
- 
- 	genlmsg_end(skb, nlh);
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index b0d387be500a..f6f93957275b 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2355,6 +2355,7 @@ static void __mptcp_close_ssk(struct sock *sk, struct sock *ssk,
- 			tcp_set_state(ssk, TCP_CLOSE);
- 			mptcp_subflow_queue_clean(ssk);
- 			inet_csk_listen_stop(ssk);
-+			mptcp_event_pm_listener(ssk, MPTCP_EVENT_LISTENER_CLOSED);
- 		}
- 		__tcp_close(ssk, 0);
- 
-@@ -3647,6 +3648,8 @@ static int mptcp_listen(struct socket *sock, int backlog)
- 	if (!err)
- 		mptcp_copy_inaddrs(sock->sk, ssock->sk);
- 
-+	mptcp_event_pm_listener(ssock->sk, MPTCP_EVENT_LISTENER_CREATED);
-+
- unlock:
- 	release_sock(sock->sk);
- 	return err;
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 8b4379a2cd85..955fb3d88eb3 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -839,6 +839,8 @@ void mptcp_event(enum mptcp_event_type type, const struct mptcp_sock *msk,
- 		 const struct sock *ssk, gfp_t gfp);
- void mptcp_event_addr_announced(const struct sock *ssk, const struct mptcp_addr_info *info);
- void mptcp_event_addr_removed(const struct mptcp_sock *msk, u8 id);
-+void mptcp_event_pm_listener(const struct sock *ssk,
-+			     enum mptcp_event_type event);
- bool mptcp_userspace_pm_active(const struct mptcp_sock *msk);
- 
- void mptcp_fastopen_gen_msk_ackseq(struct mptcp_sock *msk, struct mptcp_subflow_context *subflow,
+ 	if [ "$client_token" != "" ] && [ "$server_token" != "" ] && [ "$client_serverside" = 0 ] &&
 -- 
 2.37.2
 
