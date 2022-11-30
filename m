@@ -2,157 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6B763D885
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:51:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2F4663D8BD
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 16:04:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229730AbiK3Ovb convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 30 Nov 2022 09:51:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
+        id S229794AbiK3PEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 10:04:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbiK3Ov2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:51:28 -0500
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B286573B83;
-        Wed, 30 Nov 2022 06:51:24 -0800 (PST)
-Received: by mail-qt1-f173.google.com with SMTP id a27so11229401qtw.10;
-        Wed, 30 Nov 2022 06:51:24 -0800 (PST)
+        with ESMTP id S229792AbiK3PEg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 10:04:36 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC534F63
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 07:04:35 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id o7-20020a05600c510700b003cffc0b3374so1632457wms.0
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 07:04:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CblclVSvG4Ad9bZLQNsoiuQd96HmBkiRb6NfAARjS/c=;
+        b=HM/rT674Cw7XYkk+NIYJgiFq/CYBV+FqXchCWGc2wwU+ShH9LHTMcKaCvWICs0n0WO
+         C9Y1J2wdvrHjc2IwXtoWaMzaZ3vl6wkf8UDj2GkJVYrqGHfaUg8/4zsXMftLv2Q/PIiW
+         EcJHT6ahNmCIGO1UWHPVJcr1nfvKjxgJxhtJXUE/Ga9+qCrW8GK2Bt/bgmet03Hs3yqV
+         YQlkRgDqS3SIWK3GlgjrKaB010sLkWEfOKdyBwteRM/T5nMxf5VdZfZZJy21mcEdzPZy
+         3hXw17MxOUOieIMDovagMBgU1yNKpQ7OyfDltJTQ/LYWdNk8sYHrOajWXXUyieeRzj3V
+         yF+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rbewHNiIDPrh2vDJAS18QQyUgoqR1U2XFbW+RCOiyVY=;
-        b=fCXuCOgUwLOoxJH49GdlHGzuXdGP3I5vqtKMQfw5p/zM1r4oBmwI25DVL2rJwh3AEm
-         2MT2kuea8mUOjXqUTBz4OHAlI6cj3GPIYUor399iWhBHSMyTZbHscIOjg0vQjyw9/TKP
-         hZS6NWMNxSV74chr9cNAJ3IYqBs3z1yKSWzsv8dd6Usp8rHqgbOw5BME2sOFlciLJHVF
-         2gsgvGdnvdp8G4gwF1ibs9mvH5gMeBYfaFiGGWOL0rdIzdtFxbkQ2zT7WDbqiw26zikL
-         uR9+g09vhUsfyhh/onuP5TIxIsSWkyoNxLmMMaDoHa8uQYJGSmUxE0rk2FmCGJLb97GO
-         TwtA==
-X-Gm-Message-State: ANoB5pnuGTT7RELZ7BhWRdGXJ8VlkfCavUzwlUiDK58G7HuexBWb2TZ/
-        OQLy0BhEvyuLsDsdJV6nxkMzQOEQzK35CQ==
-X-Google-Smtp-Source: AA0mqf5t9XxSny7wiMYJL+fC3x3d1hmg9pcxoc3fo7HwOxvscAyInELNzC7ZXHCOZNBIyrHqL5faMA==
-X-Received: by 2002:a05:622a:488f:b0:3a6:328e:e7d1 with SMTP id fc15-20020a05622a488f00b003a6328ee7d1mr21723005qtb.272.1669819883617;
-        Wed, 30 Nov 2022 06:51:23 -0800 (PST)
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
-        by smtp.gmail.com with ESMTPSA id y26-20020a37f61a000000b006bc192d277csm1262642qkj.10.2022.11.30.06.51.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Nov 2022 06:51:22 -0800 (PST)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-3c090251d59so117848417b3.4;
-        Wed, 30 Nov 2022 06:51:22 -0800 (PST)
-X-Received: by 2002:a81:f80f:0:b0:38e:e541:d8ca with SMTP id
- z15-20020a81f80f000000b0038ee541d8camr55824371ywm.283.1669819872327; Wed, 30
- Nov 2022 06:51:12 -0800 (PST)
+        bh=CblclVSvG4Ad9bZLQNsoiuQd96HmBkiRb6NfAARjS/c=;
+        b=tSlT545Po4fKXJ4F/2atsBFQbbbCCxMdGbtrjuhgPHgtCvd9f3sYgQ0OXjRScfS96g
+         d/7AnIztA+1XU1W5+0jIwtlpxAJiFCwKFQ8jz3VlTdiIJ3CSsH0FHgH4I/2qUGXrRBvJ
+         g0uYHTN3uRC3s/E9Erwot2ONBIoHYzH7XjwzGnikGlqxQ/f1xiGleLF9ZBXroI6b729n
+         XzQs+IHKlNLDn2L+/zQfX66Pkk77goOExIAtRfbP4nyGN226WvymfuyRdd+Yp+oKh7tG
+         fMY5vBwAw4W4HGUAr8x6uqwg/S2p5if2kuWCwWmgPcUHhAZNxPXm7wTW37Dr2oeJMTjx
+         C2Wg==
+X-Gm-Message-State: ANoB5pldwliPj7AncuaeJr+KItjTbKSf+GnwdmI2ZrgxlHloDQSH2O2K
+        Pj6bpBBP5XbtWOHpYovIYeaw6ddbw14NfHxnfjg=
+X-Google-Smtp-Source: AA0mqf4Mxz5Py5I0tleN6GShdLuDpqtzPHoVQabVmDV4b+rnyrvFW+/4dt6FGXTQxVZbmcHbur0zz00+NpBs1HvNLAQ=
+X-Received: by 2002:a05:600c:4e46:b0:3d0:57ea:3188 with SMTP id
+ e6-20020a05600c4e4600b003d057ea3188mr11635905wmq.28.1669820674281; Wed, 30
+ Nov 2022 07:04:34 -0800 (PST)
 MIME-Version: 1.0
-References: <20221130141040.32447-1-arinc.unal@arinc9.com> <20221130141040.32447-3-arinc.unal@arinc9.com>
-In-Reply-To: <20221130141040.32447-3-arinc.unal@arinc9.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 30 Nov 2022 15:51:00 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVBZiWxORfb2hd0hn_En6yFEwm8uJXr553YfB8gv1sOFw@mail.gmail.com>
-Message-ID: <CAMuHMdVBZiWxORfb2hd0hn_En6yFEwm8uJXr553YfB8gv1sOFw@mail.gmail.com>
-Subject: Re: [PATCH 2/5] arm: dts: remove label = "cpu" from DSA dt-binding
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        soc@kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+References: <20221130124616.1500643-1-dnlplm@gmail.com>
+In-Reply-To: <20221130124616.1500643-1-dnlplm@gmail.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Wed, 30 Nov 2022 07:04:21 -0800
+Message-ID: <CAA93jw58hiRprhvCiek+YSOSb_y2QsQVWQMzrPARgGJGj9gEew@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/3] add tx packets aggregation to ethtool and rmnet
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Stefan Agner <stefan@agner.ch>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+        Eric Dumazet <edumazet@google.com>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Gal Pressman <gal@nvidia.com>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CC cleger
-
-On Wed, Nov 30, 2022 at 3:33 PM Arınç ÜNAL <arinc.unal@arinc9.com> wrote:
-> This is not used by the DSA dt-binding, so remove it from all devicetrees.
+On Wed, Nov 30, 2022 at 5:15 AM Daniele Palmas <dnlplm@gmail.com> wrote:
 >
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Hello maintainers and all,
+>
+> this patchset implements tx qmap packets aggregation in rmnet and generic
+> ethtool support for that.
+>
+> Some low-cat Thread-x based modems are not capable of properly reaching t=
+he maximum
+> allowed throughput both in tx and rx during a bidirectional test if tx pa=
+ckets
+> aggregation is not enabled.
+>
+> I verified this problem with rmnet + qmi_wwan by using a MDM9207 Cat. 4 b=
+ased modem
+> (50Mbps/150Mbps max throughput). What is actually happening is pictured a=
+t
+> https://drive.google.com/file/d/1gSbozrtd9h0X63i6vdkNpN68d-9sg8f9/view
 
->  arch/arm/boot/dts/r9a06g032.dtsi                          | 1 -
+Thank you for documenting which device this is. Is it still handing in
+150ms of bufferbloat in good conditions,
+and 25 seconds or so in bad?
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Testing with iperf TCP, when rx and tx flows are tested singularly there'=
+s no issue
+> in tx and minor issues in rx (not able to reach max throughput). When the=
+re are concurrent
+> tx and rx flows, tx throughput has an huge drop. rx a minor one, but stil=
+l present.
+>
+> The same scenario with tx aggregation enabled is pictured at
+> https://drive.google.com/file/d/1jcVIKNZD7K3lHtwKE5W02mpaloudYYih/view
+> showing a regular graph.
+>
+> This issue does not happen with high-cat modems (e.g. SDX20), or at least=
+ it
+> does not happen at the throughputs I'm able to test currently: maybe the =
+same
+> could happen when moving close to the maximum rates supported by those mo=
+dems.
+> Anyway, having the tx aggregation enabled should not hurt.
+>
+> The first attempt to solve this issue was in qmi_wwan qmap implementation=
+,
+> see the discussion at https://lore.kernel.org/netdev/20221019132503.6783-=
+1-dnlplm@gmail.com/
+>
+> However, it turned out that rmnet was a better candidate for the implemen=
+tation.
+>
+> Moreover, Greg and Jakub suggested also to use ethtool for the configurat=
+ion:
+> not sure if I got their advice right, but this patchset add also generic =
+ethtool
+> support for tx aggregation.
+>
+> The patches have been tested mainly against an MDM9207 based modem throug=
+h USB
+> and SDX55 through PCI (MHI).
+>
+> v2 should address the comments highlighted in the review: the implementat=
+ion is
+> still in rmnet, due to Subash's request of keeping tx aggregation there.
+>
+> Thanks,
+> Daniele
+>
+> Daniele Palmas (3):
+>   ethtool: add tx aggregation parameters
+>   net: qualcomm: rmnet: add tx packets aggregation
+>   net: qualcomm: rmnet: add ethtool support for configuring tx
+>     aggregation
+>
+>  Documentation/networking/ethtool-netlink.rst  |  17 ++
+>  .../ethernet/qualcomm/rmnet/rmnet_config.c    |   5 +
+>  .../ethernet/qualcomm/rmnet/rmnet_config.h    |  20 ++
+>  .../ethernet/qualcomm/rmnet/rmnet_handlers.c  |  18 +-
+>  .../net/ethernet/qualcomm/rmnet/rmnet_map.h   |   6 +
+>  .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 191 ++++++++++++++++++
+>  .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   |  54 ++++-
+>  .../net/ethernet/qualcomm/rmnet/rmnet_vnd.h   |   1 +
+>  include/linux/ethtool.h                       |  12 +-
+>  include/uapi/linux/ethtool_netlink.h          |   3 +
+>  net/ethtool/coalesce.c                        |  22 +-
+>  11 files changed, 342 insertions(+), 7 deletions(-)
+>
+> --
+> 2.37.1
+>
 
-> --- a/arch/arm/boot/dts/r9a06g032.dtsi
-> +++ b/arch/arm/boot/dts/r9a06g032.dtsi
-> @@ -401,7 +401,6 @@ switch_port3: port@3 {
->                                 switch_port4: port@4 {
->                                         reg = <4>;
->                                         ethernet = <&gmac2>;
-> -                                       label = "cpu";
->                                         phy-mode = "internal";
->                                         status = "disabled";
->                                         fixed-link {
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--=20
+This song goes out to all the folk that thought Stadia would work:
+https://www.linkedin.com/posts/dtaht_the-mushroom-song-activity-69813666656=
+07352320-FXtz
+Dave T=C3=A4ht CEO, TekLibre, LLC
