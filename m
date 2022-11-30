@@ -2,83 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58ADE63D466
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 12:25:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DEC163D4AD
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 12:33:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234496AbiK3LZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 06:25:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48044 "EHLO
+        id S235224AbiK3Ldr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 06:33:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234213AbiK3LYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 06:24:10 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4B01019;
-        Wed, 30 Nov 2022 03:23:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=6301NlmXCNSuGpCf/dSPGEa9RRPWwBQpP9USBwW/W3w=; b=ZxodPxa0H9FYjpkK5W+h5nwe4k
-        OnGIlGaXgUjCNF1ESuXI213S7MG/j0h/6QJqt0JhSC+s5f/6hWPJoUQbC8+yc5UHVV4Pb5Y5Jz5ul
-        sRTKIYanacZtUuy2gQD7+QBFIn1xxej8FFFP/aPxXtNk5fSPyXmYb86ndLM742OLUi7YWeKTgBNLJ
-        hzirRHzwLlRvI5G56896hxWj0o4KWFA7My5lgI2MQU2y+HxXQzJj1cnn3hIo/3qDIrOk+GpwzYGUn
-        5Khv5vjKcvFHk+JjKTJzYBi9tNFt1E/qmcFaxm3mF4pmmC7vMR0zBMdCd/2feVUTaNdHHLxgxy3Dk
-        HN13xWvA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35492)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1p0LBp-0001di-Kx; Wed, 30 Nov 2022 11:23:45 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1p0LBm-0002Rv-CO; Wed, 30 Nov 2022 11:23:42 +0000
-Date:   Wed, 30 Nov 2022 11:23:42 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Clark Wang <xiaoning.wang@nxp.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
-        andrew@lunn.ch, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] net: phylink: add sync flag mac_ready to fix resume
- issue with WoL enabled
-Message-ID: <Y4c9PlfEC17pVE08@shell.armlinux.org.uk>
-References: <20221130111148.1064475-1-xiaoning.wang@nxp.com>
- <20221130111148.1064475-2-xiaoning.wang@nxp.com>
+        with ESMTP id S232155AbiK3LdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 06:33:11 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E112B622
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 03:32:10 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id z20so23608559edc.13
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 03:32:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=dCLizZFqVMBex6LDJOdkhOaN/HpY/Uk9igOYheHLaTg=;
+        b=yzlILFHR/R6Yxu0o4xL4jZDZZlXSu4xrYgGgCQG1kRXtuz2GLMop34AG0/901+NmLy
+         BiikA65CzhUlo4uE4xQp10ko24VTFNtTEQwBMZfLmxK7KgMIj+jyLL14tQv7zXbb3oKd
+         /nNUnFsKJoE2sj4KCDtgvTQ80ERxKCtgC50To4J8St6L6eI1M475DDZ6u/r09bHm8r6m
+         o00QtW/Npz35anmjMKq2XhH3Lss5MZga9aS52VR02XYodWNdvD73NnJXpZqJwaHGGb0r
+         dM33mcWna6q3DZ9aGpb4i/HYZwPZXHIzTWtyEBvjK2GL4Mu4+V0DlFkxx8EfUNAU9WHc
+         XUVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dCLizZFqVMBex6LDJOdkhOaN/HpY/Uk9igOYheHLaTg=;
+        b=QiSIrwyBw/gFeNx/qxtV5V6JpRz7hlwuusM+Z1AYrSnMzAiGE1ghOQZbI2Go+GHyw2
+         cEo+3m63Y9LyhqCqQccLRlRfYYEgQGgTU9Jphu6LGVGcjnso5iiKoUZ41BEu5W3MrVfx
+         iJ4uouURZmckrcwD0zf6EFuEAV2UdPYsU2lInxZGGK6R93Rpph0Eyo6SuQYn2qU9aP1u
+         Xdep2QY0mKPP4LlEVytOuqFcVXyKYjU2Pnhf795u9xQammNZw0+i428ysPvpqZjjAIsE
+         EnddBc579Hx79XMzqBkSF4/xyynrRakkzCjdZC1MkR8u8qPwo1IkrdB/NJHyCYX0M6+J
+         KZiA==
+X-Gm-Message-State: ANoB5pn7QD2EWBn+1R4LD+Ikal8IQTEX8tgkggHylYQQkdXArm88lwnC
+        SHD3o1lh8v1rRW61LwPRyWqtCA==
+X-Google-Smtp-Source: AA0mqf4O+Hd8z0mVWfoygK5QZFBMteR5gkjA+2HeAFksyVh/9bSShZ3US0+wjO3yKQsZBDYrEuXJzw==
+X-Received: by 2002:a05:6402:e9c:b0:458:d064:a8c2 with SMTP id h28-20020a0564020e9c00b00458d064a8c2mr55631300eda.346.1669807929185;
+        Wed, 30 Nov 2022 03:32:09 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id lb26-20020a170907785a00b00781e7d364ebsm544849ejc.144.2022.11.30.03.32.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Nov 2022 03:32:08 -0800 (PST)
+Date:   Wed, 30 Nov 2022 12:32:07 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        netdev@vger.kernel.org, jiri@nvidia.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH net] net: devlink: fix UAF in
+ devlink_compat_running_version()
+Message-ID: <Y4c/N/H0xrGQwnKP@nanopsycho>
+References: <Y33OpMvLcAcnJ1oj@unreal>
+ <fa1ab2fb-37ce-a810-8a3f-b71d902e8ff0@huawei.com>
+ <Y35x9oawn/i+nuV3@shredder>
+ <20221123181800.1e41e8c8@kernel.org>
+ <Y4R9dT4QXgybUzdO@shredder>
+ <Y4SGYr6VBkIMTEpj@nanopsycho>
+ <20221128102043.35c1b9c1@kernel.org>
+ <Y4XDbEWmLRE3D1Bx@nanopsycho>
+ <20221129181826.79cef64c@kernel.org>
+ <Y4caLsLEQFMgz7HV@unreal>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221130111148.1064475-2-xiaoning.wang@nxp.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y4caLsLEQFMgz7HV@unreal>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 07:11:47PM +0800, Clark Wang wrote:
-> Issue we met:
-> On some platforms, mac cannot work after resumed from the suspend with WoL
-> enabled.
-> 
-> The cause of the issue:
-> 1. phylink_resolve() is in a workqueue which will not be executed immediately.
->    This is the call sequence:
->        phylink_resolve()->phylink_link_up()->pl->mac_ops->mac_link_up()
->    For stmmac driver, mac_link_up() will set the correct speed/duplex...
->    values which are from link_state.
-> 2. In stmmac_resume(), it will call stmmac_hw_setup() after called the
->    phylink_resume(). stmmac_core_init() is called in function stmmac_hw_setup(),
+Wed, Nov 30, 2022 at 09:54:06AM CET, leon@kernel.org wrote:
+>On Tue, Nov 29, 2022 at 06:18:26PM -0800, Jakub Kicinski wrote:
+>> On Tue, 29 Nov 2022 09:31:40 +0100 Jiri Pirko wrote:
+>> > >Cool. Do you also agree with doing proper refcounting for the devlink
+>> > >instance struct and the liveness check after locking the instance?  
+>> > 
+>> > Could you elaborate a bit more? I missed that in the thread and can't
+>> > find it. Why do we need it?
+>> 
+>> Look at the __devlink_free() and changes 
+>> to devlink_compat_flash_update() here:
+>> 
+>> https://lore.kernel.org/netdev/20211030231254.2477599-3-kuba@kernel.org/
+>> 
+>> The model I had in mind (a year ago when it all started) was that 
+>> the driver takes the devlink instance lock around its entire init path,
+>> including the registration of the instance. This way the devlink
+>> instance is never visible "half initialized". I mean - it's "visible"
+>> as in you can see a notification over netlink before init is done but
+>> you can't access it until the init in the driver is completed and it
+>> releases the instance lock.
+>
+>In parallel thread, Jiri wanted to avoid this situation of netlink
+>notifications for not-visible yet object. He gave as an example
+>devlink_port which is advertised without devlink being ready.
 
-... and that is where the problem is. Don't call phylink_resume() before
-your hardware is ready to see a link-up event.
+To be honest, I'm lost tracking what you point at. I never suggested to
+send notification of devlink_port before devlink notification is sent
+previously. Perhaps you misread that.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>
+>Thanks
