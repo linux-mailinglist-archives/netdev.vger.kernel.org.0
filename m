@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E91063CEA1
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:15:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 184FA63CEAE
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:23:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233368AbiK3FPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 00:15:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
+        id S233475AbiK3FXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 00:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233492AbiK3FOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 00:14:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D651810569;
-        Tue, 29 Nov 2022 21:14:09 -0800 (PST)
+        with ESMTP id S233434AbiK3FXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 00:23:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9997221E37;
+        Tue, 29 Nov 2022 21:23:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D72DB81A2F;
-        Wed, 30 Nov 2022 05:14:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB158C433D7;
-        Wed, 30 Nov 2022 05:14:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32F01619D7;
+        Wed, 30 Nov 2022 05:23:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39E94C433D6;
+        Wed, 30 Nov 2022 05:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669785247;
-        bh=UJJOr+1Zu/xCfSQOhz+1aSAA9ArZAZFN/LkVGHPS1g8=;
+        s=k20201202; t=1669785789;
+        bh=0uiCT7VW9vnoouUwDIR7IEw9jHQ41V4i1Lzazd87aZs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QrP1KJDm8cSX4Nr1MGRoNra4yBeYO12+0Hxx0ScPh0XItPm7qHopZA5bX4Z4thtpr
-         2ccG6YcIU/3SHkgFOLRiZQGf44+yhER9NOCS0qdhtTJsCSwyCQ/vuHXSY0M89hjvxV
-         5JZTcc2J54G+nS6v22szHKl9TbFYiuytYIddFIwWqIJ5Nqtqy7g9zaDE1U6qV17d91
-         Owx5ucgHArTPvFPx2U8EoisOrwo/AFcFBooICsB7IOM14p3xxcMSHAM4MmFZ/DIu1P
-         6VKtL0eTPcoxqWMsOQ7cVHm5tXfL+AiXs5J9kj06rqgW4quNd0qqrOxWV4uFyTu9P6
-         oRssXFUqtpEVQ==
-Date:   Tue, 29 Nov 2022 21:14:05 -0800
+        b=ptiddjqe2YckLqGBnIGFCW5KfSUn2KCDa3ljKvUWPPmsbWsRoZ3fU1z63Vnm3srAX
+         T/34TtNlnXRKdFGCXmnV6z6fGaM2PQezlN1C2a8kEge4ii/2I4uUI6bnRPIu51ifJI
+         eMQsjyobhYP1YgofXCFtlNPBFrYu9oKc362i/6rAifH1d6VpqC089HWLBAq2U+HR7L
+         Mx7cpKrSlC2Oe7I7Te12UdiwJPDhSJL/YLzPtvPeQaOUajvtrS0iUJjooryCwu3rmI
+         Uk/gN1wM3Uph5w8leUjJ5VGuBlCmk7BUlM5YdDlfW/YWo2+WMj3JvN99sGJSj4G/lJ
+         TUvIwzVQlF+bg==
+Date:   Tue, 29 Nov 2022 21:23:07 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
+To:     Aleksandr Burakov <a.burakov@rosalinux.ru>,
+        Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Elad Nachman <enachman@marvell.com>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>
-Subject: Re: [PATCH v2] MAINTAINERS: Update maintainer for Marvell Prestera
- Ethernet Switch driver
-Message-ID: <20221129211405.7d6de0d5@kernel.org>
-In-Reply-To: <20221128093934.1631570-1-vadym.kochan@plvision.eu>
-References: <20221128093934.1631570-1-vadym.kochan@plvision.eu>
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: Re: [PATCH] liquidio: avoid NULL pointer dereference in
+ lio_vf_rep_copy_packet()
+Message-ID: <20221129212307.2b2b4fc0@kernel.org>
+In-Reply-To: <20221128102659.4946-1-a.burakov@rosalinux.ru>
+References: <20221128102659.4946-1-a.burakov@rosalinux.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,13 +57,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Nov 2022 11:39:34 +0200 Vadym Kochan wrote:
-> Add Elad Nachman as maintainer for Marvell Prestera Ethernet Switch driver.
-> 
-> Change Taras Chornyi mailbox to plvision.
+On Mon, 28 Nov 2022 13:26:59 +0300 Aleksandr Burakov wrote:
+> --- a/drivers/net/ethernet/cavium/liquidio/lio_vf_rep.c
+> +++ b/drivers/net/ethernet/cavium/liquidio/lio_vf_rep.c
+> @@ -272,13 +272,12 @@ lio_vf_rep_copy_packet(struct octeon_device *oct,
+>  				pg_info->page_offset;
+>  			memcpy(skb->data, va, MIN_SKB_SIZE);
+>  			skb_put(skb, MIN_SKB_SIZE);
+> +			skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+> +					pg_info->page,
+> +					pg_info->page_offset + MIN_SKB_SIZE,
+> +					len - MIN_SKB_SIZE,
+> +					LIO_RXBUFFER_SZ);
+>  		}
+> -
+> -		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+> -				pg_info->page,
+> -				pg_info->page_offset + MIN_SKB_SIZE,
+> -				len - MIN_SKB_SIZE,
+> -				LIO_RXBUFFER_SZ);
+>  	} else {
+>  		struct octeon_skb_page_info *pg_info =
+>  			((struct octeon_skb_page_info *)(skb->cb));
 
-This is a patch, so the description needs to explain why...
-and who these people are. It would seem more natural if you, 
-Oleksandr and Yevhen were the maintainers.
+The else branch also looks at pg_info and derefs page like there's 
+no tomorrow. You need to put a bit more effort into the analysis.
 
-Seriously, this is a community project please act the part.
+Marvell people please chime in and tell us what the intention is here.
+Whether page can be NULL here or this is defensive programming and can
+be dropped.
