@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FD9563DB2C
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 17:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59ECF63DB2F
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 17:57:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230452AbiK3Q4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 11:56:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
+        id S230440AbiK3Q5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 11:57:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbiK3Q4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 11:56:19 -0500
+        with ESMTP id S230165AbiK3Q43 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 11:56:29 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932A78DFD2
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 08:55:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DD68DFDB
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 08:55:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669827316;
+        s=mimecast20190719; t=1669827326;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TfU2vOhI2FJqWWTwtY56Qr3tqmx7ENd1hy5S4qU6G68=;
-        b=II2zeNeswEoC8LG5chLy8+T7aRbO5m7fPLGVEdfB/PZJCavDn0KLBqZBl75IUXzuivLCp2
-        RHbjUPtMRPCFn1piuRVuCwzsUPcW7F2fSvilwabNj2HuaORzsa+CULfaXJTohVW2lRlHFg
-        TLeXhWOW2OlmdDwa1Q6QA859clme7/w=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=eG6QqN39A1wxyi1zZYg6LY3f0auotnE9gFgF71Yj0o0=;
+        b=X6B7/TzDOsECsv/zPFIcJ3ojLxhc6MKHkVTqiwRq6bDrXu+EvrCGLtPp9vXkVInsPdLmj0
+        gYNi4pdemrGO/5WCFYUpH8n1LLdUTGI8BUNUnf1lar3CurgloXyuSLHykpQ8HJBZNA4Ic2
+        1HqSBmDCZhgq40G7xQ1XMmUdTS6aHwo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-113-UxU8F81IM02y7tOXAELrUg-1; Wed, 30 Nov 2022 11:55:13 -0500
-X-MC-Unique: UxU8F81IM02y7tOXAELrUg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-621-NaGv5uZENWmpP5_M0-FvVg-1; Wed, 30 Nov 2022 11:55:22 -0500
+X-MC-Unique: NaGv5uZENWmpP5_M0-FvVg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 09E62381079D;
-        Wed, 30 Nov 2022 16:55:13 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DD28D8339C5;
+        Wed, 30 Nov 2022 16:55:21 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 474B3C15BA4;
-        Wed, 30 Nov 2022 16:55:12 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EA9A22166B26;
+        Wed, 30 Nov 2022 16:55:20 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 06/35] rxrpc: Remove the [_k]net() debugging macros
+Subject: [PATCH net-next 07/35] rxrpc: Drop rxrpc_conn_parameters from
+ rxrpc_connection and rxrpc_bundle
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Wed, 30 Nov 2022 16:55:09 +0000
-Message-ID: <166982730951.621383.821090767945998432.stgit@warthog.procyon.org.uk>
+Date:   Wed, 30 Nov 2022 16:55:18 +0000
+Message-ID: <166982731818.621383.14821411053362690406.stgit@warthog.procyon.org.uk>
 In-Reply-To: <166982725699.621383.2358362793992993374.stgit@warthog.procyon.org.uk>
 References: <166982725699.621383.2358362793992993374.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,323 +67,881 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the _net() and knet() debugging macros in favour of tracepoints.
+Remove the rxrpc_conn_parameters struct from the rxrpc_connection and
+rxrpc_bundle structs and emplace the members directly.  These are going to
+get filled in from the rxrpc_call struct in future.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- net/rxrpc/ar-internal.h  |   10 ----------
- net/rxrpc/call_object.c  |    6 ------
- net/rxrpc/conn_client.c  |    2 --
- net/rxrpc/conn_object.c  |    2 --
- net/rxrpc/conn_service.c |    2 --
- net/rxrpc/input.c        |    1 -
- net/rxrpc/local_object.c |    8 --------
- net/rxrpc/peer_event.c   |   48 ++--------------------------------------------
- net/rxrpc/peer_object.c  |    6 +-----
- 9 files changed, 3 insertions(+), 82 deletions(-)
+ net/rxrpc/ar-internal.h  |   16 ++++++++++++--
+ net/rxrpc/call_accept.c  |    6 +++--
+ net/rxrpc/call_event.c   |    2 +-
+ net/rxrpc/call_object.c  |    6 +++--
+ net/rxrpc/conn_client.c  |   53 +++++++++++++++++++++++++++------------------
+ net/rxrpc/conn_event.c   |   26 +++++++++++-----------
+ net/rxrpc/conn_object.c  |   22 +++++++++----------
+ net/rxrpc/conn_service.c |    6 +++--
+ net/rxrpc/input.c        |    4 ++-
+ net/rxrpc/key.c          |    2 +-
+ net/rxrpc/output.c       |   32 ++++++++++++++-------------
+ net/rxrpc/proc.c         |    6 +++--
+ net/rxrpc/rxkad.c        |   54 +++++++++++++++++++++++-----------------------
+ net/rxrpc/security.c     |    4 ++-
+ 14 files changed, 131 insertions(+), 108 deletions(-)
 
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index a3a29390e12b..36ece1efb1d4 100644
+index 36ece1efb1d4..7c48b0163032 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -1190,20 +1190,17 @@ extern unsigned int rxrpc_debug;
- #define kenter(FMT,...)	dbgprintk("==> %s("FMT")",__func__ ,##__VA_ARGS__)
- #define kleave(FMT,...)	dbgprintk("<== %s()"FMT"",__func__ ,##__VA_ARGS__)
- #define kdebug(FMT,...)	dbgprintk("    "FMT ,##__VA_ARGS__)
--#define knet(FMT,...)	dbgprintk("@@@ "FMT ,##__VA_ARGS__)
+@@ -403,12 +403,18 @@ enum rxrpc_conn_proto_state {
+  * RxRPC client connection bundle.
+  */
+ struct rxrpc_bundle {
+-	struct rxrpc_conn_parameters params;
++	struct rxrpc_local	*local;		/* Representation of local endpoint */
++	struct rxrpc_peer	*peer;		/* Remote endpoint */
++	struct key		*key;		/* Security details */
+ 	refcount_t		ref;
+ 	atomic_t		active;		/* Number of active users */
+ 	unsigned int		debug_id;
++	u32			security_level;	/* Security level selected */
++	u16			service_id;	/* Service ID for this connection */
+ 	bool			try_upgrade;	/* True if the bundle is attempting upgrade */
+ 	bool			alloc_conn;	/* True if someone's getting a conn */
++	bool			exclusive;	/* T if conn is exclusive */
++	bool			upgrade;	/* T if service ID can be upgraded */
+ 	short			alloc_error;	/* Error from last conn allocation */
+ 	spinlock_t		channel_lock;
+ 	struct rb_node		local_node;	/* Node in local->client_conns */
+@@ -424,7 +430,9 @@ struct rxrpc_bundle {
+  */
+ struct rxrpc_connection {
+ 	struct rxrpc_conn_proto	proto;
+-	struct rxrpc_conn_parameters params;
++	struct rxrpc_local	*local;		/* Representation of local endpoint */
++	struct rxrpc_peer	*peer;		/* Remote endpoint */
++	struct key		*key;		/* Security details */
  
+ 	refcount_t		ref;
+ 	struct rcu_head		rcu;
+@@ -471,9 +479,13 @@ struct rxrpc_connection {
+ 	atomic_t		serial;		/* packet serial number counter */
+ 	unsigned int		hi_serial;	/* highest serial number received */
+ 	u32			service_id;	/* Service ID, possibly upgraded */
++	u32			security_level;	/* Security level selected */
+ 	u8			security_ix;	/* security type */
+ 	u8			out_clientflag;	/* RXRPC_CLIENT_INITIATED if we are client */
+ 	u8			bundle_shift;	/* Index into bundle->avail_chans */
++	bool			exclusive;	/* T if conn is exclusive */
++	bool			upgrade;	/* T if service ID can be upgraded */
++	u16			orig_service_id; /* Originally requested service ID */
+ 	short			error;		/* Local error code */
+ };
  
- #if defined(__KDEBUG)
- #define _enter(FMT,...)	kenter(FMT,##__VA_ARGS__)
- #define _leave(FMT,...)	kleave(FMT,##__VA_ARGS__)
- #define _debug(FMT,...)	kdebug(FMT,##__VA_ARGS__)
--#define _net(FMT,...)	knet(FMT,##__VA_ARGS__)
- 
- #elif defined(CONFIG_AF_RXRPC_DEBUG)
- #define RXRPC_DEBUG_KENTER	0x01
- #define RXRPC_DEBUG_KLEAVE	0x02
- #define RXRPC_DEBUG_KDEBUG	0x04
--#define RXRPC_DEBUG_KNET	0x10
- 
- #define _enter(FMT,...)					\
- do {							\
-@@ -1223,17 +1220,10 @@ do {							\
- 		kdebug(FMT,##__VA_ARGS__);		\
- } while (0)
- 
--#define _net(FMT,...)					\
--do {							\
--	if (unlikely(rxrpc_debug & RXRPC_DEBUG_KNET))	\
--		knet(FMT,##__VA_ARGS__);		\
--} while (0)
--
- #else
- #define _enter(FMT,...)	no_printk("==> %s("FMT")",__func__ ,##__VA_ARGS__)
- #define _leave(FMT,...)	no_printk("<== %s()"FMT"",__func__ ,##__VA_ARGS__)
- #define _debug(FMT,...)	no_printk("    "FMT ,##__VA_ARGS__)
--#define _net(FMT,...)	no_printk("@@@ "FMT ,##__VA_ARGS__)
- #endif
- 
- /*
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 1befe22cd301..e36a317b2e9a 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -349,8 +349,6 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- 
- 	rxrpc_start_call_timer(call);
- 
--	_net("CALL new %d on CONN %d", call->debug_id, call->conn->debug_id);
--
- 	_leave(" = %p [new]", call);
+diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
+index 48790ee77019..4888959e4727 100644
+--- a/net/rxrpc/call_accept.c
++++ b/net/rxrpc/call_accept.c
+@@ -305,8 +305,8 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
+ 		b->conn_backlog[conn_tail] = NULL;
+ 		smp_store_release(&b->conn_backlog_tail,
+ 				  (conn_tail + 1) & (RXRPC_BACKLOG_MAX - 1));
+-		conn->params.local = rxrpc_get_local(local);
+-		conn->params.peer = peer;
++		conn->local = rxrpc_get_local(local);
++		conn->peer = peer;
+ 		rxrpc_see_connection(conn);
+ 		rxrpc_new_incoming_connection(rx, conn, sec, skb);
+ 	} else {
+@@ -323,7 +323,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
+ 	call->conn = conn;
+ 	call->security = conn->security;
+ 	call->security_ix = conn->security_ix;
+-	call->peer = rxrpc_get_peer(conn->params.peer);
++	call->peer = rxrpc_get_peer(conn->peer);
+ 	call->cong_ssthresh = call->peer->cong_ssthresh;
+ 	call->tx_last_sent = ktime_get_real();
  	return call;
- 
-@@ -423,8 +421,6 @@ void rxrpc_incoming_call(struct rxrpc_sock *rx,
- 	hlist_add_head_rcu(&call->error_link, &conn->params.peer->error_targets);
- 	spin_unlock(&conn->params.peer->lock);
- 
--	_net("CALL incoming %d on CONN %d", call->debug_id, call->conn->debug_id);
--
- 	rxrpc_start_call_timer(call);
- 	_leave("");
- }
-@@ -669,8 +665,6 @@ void rxrpc_cleanup_call(struct rxrpc_call *call)
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 349f3df569ba..b17ed37434bd 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -69,7 +69,7 @@ void rxrpc_propose_delay_ACK(struct rxrpc_call *call, rxrpc_serial_t serial,
+ void rxrpc_send_ACK(struct rxrpc_call *call, u8 ack_reason,
+ 		    rxrpc_serial_t serial, enum rxrpc_propose_ack_trace why)
  {
+-	struct rxrpc_local *local = call->conn->params.local;
++	struct rxrpc_local *local = call->conn->local;
  	struct rxrpc_txbuf *txb;
  
--	_net("DESTROY CALL %d", call->debug_id);
--
- 	memset(&call->sock_node, 0xcd, sizeof(call->sock_node));
+ 	if (test_bit(RXRPC_CALL_DISCONNECTED, &call->flags))
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index e36a317b2e9a..59928f0a8fe1 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -417,9 +417,9 @@ void rxrpc_incoming_call(struct rxrpc_sock *rx,
+ 	conn->channels[chan].call_id = call->call_id;
+ 	rcu_assign_pointer(conn->channels[chan].call, call);
  
- 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+-	spin_lock(&conn->params.peer->lock);
+-	hlist_add_head_rcu(&call->error_link, &conn->params.peer->error_targets);
+-	spin_unlock(&conn->params.peer->lock);
++	spin_lock(&conn->peer->lock);
++	hlist_add_head_rcu(&call->error_link, &conn->peer->error_targets);
++	spin_unlock(&conn->peer->lock);
+ 
+ 	rxrpc_start_call_timer(call);
+ 	_leave("");
 diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index f11c97e28d2a..2b76fbffd4dd 100644
+index 2b76fbffd4dd..71404b33623f 100644
 --- a/net/rxrpc/conn_client.c
 +++ b/net/rxrpc/conn_client.c
-@@ -541,8 +541,6 @@ static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
- 	call->service_id = conn->service_id;
+@@ -51,7 +51,7 @@ static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle);
+ static int rxrpc_get_client_connection_id(struct rxrpc_connection *conn,
+ 					  gfp_t gfp)
+ {
+-	struct rxrpc_net *rxnet = conn->params.local->rxnet;
++	struct rxrpc_net *rxnet = conn->local->rxnet;
+ 	int id;
  
- 	trace_rxrpc_connect_call(call);
--	_net("CONNECT call %08x:%08x as call %d on conn %d",
--	     call->cid, call->call_id, call->debug_id, conn->debug_id);
+ 	_enter("");
+@@ -122,8 +122,13 @@ static struct rxrpc_bundle *rxrpc_alloc_bundle(struct rxrpc_conn_parameters *cp,
  
- 	write_lock_bh(&call->state_lock);
- 	call->state = RXRPC_CALL_CLIENT_SEND_REQUEST;
+ 	bundle = kzalloc(sizeof(*bundle), gfp);
+ 	if (bundle) {
+-		bundle->params = *cp;
+-		rxrpc_get_peer(bundle->params.peer);
++		bundle->local		= cp->local;
++		bundle->peer		= rxrpc_get_peer(cp->peer);
++		bundle->key		= cp->key;
++		bundle->exclusive	= cp->exclusive;
++		bundle->upgrade		= cp->upgrade;
++		bundle->service_id	= cp->service_id;
++		bundle->security_level	= cp->security_level;
+ 		refcount_set(&bundle->ref, 1);
+ 		atomic_set(&bundle->active, 1);
+ 		spin_lock_init(&bundle->channel_lock);
+@@ -140,7 +145,7 @@ struct rxrpc_bundle *rxrpc_get_bundle(struct rxrpc_bundle *bundle)
+ 
+ static void rxrpc_free_bundle(struct rxrpc_bundle *bundle)
+ {
+-	rxrpc_put_peer(bundle->params.peer);
++	rxrpc_put_peer(bundle->peer);
+ 	kfree(bundle);
+ }
+ 
+@@ -164,7 +169,7 @@ static struct rxrpc_connection *
+ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle, gfp_t gfp)
+ {
+ 	struct rxrpc_connection *conn;
+-	struct rxrpc_net *rxnet = bundle->params.local->rxnet;
++	struct rxrpc_net *rxnet = bundle->local->rxnet;
+ 	int ret;
+ 
+ 	_enter("");
+@@ -177,10 +182,16 @@ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle, gfp_t gfp)
+ 
+ 	refcount_set(&conn->ref, 1);
+ 	conn->bundle		= bundle;
+-	conn->params		= bundle->params;
++	conn->local		= bundle->local;
++	conn->peer		= bundle->peer;
++	conn->key		= bundle->key;
++	conn->exclusive		= bundle->exclusive;
++	conn->upgrade		= bundle->upgrade;
++	conn->orig_service_id	= bundle->service_id;
++	conn->security_level	= bundle->security_level;
+ 	conn->out_clientflag	= RXRPC_CLIENT_INITIATED;
+ 	conn->state		= RXRPC_CONN_CLIENT;
+-	conn->service_id	= conn->params.service_id;
++	conn->service_id	= conn->orig_service_id;
+ 
+ 	ret = rxrpc_get_client_connection_id(conn, gfp);
+ 	if (ret < 0)
+@@ -196,9 +207,9 @@ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle, gfp_t gfp)
+ 	write_unlock(&rxnet->conn_lock);
+ 
+ 	rxrpc_get_bundle(bundle);
+-	rxrpc_get_peer(conn->params.peer);
+-	rxrpc_get_local(conn->params.local);
+-	key_get(conn->params.key);
++	rxrpc_get_peer(conn->peer);
++	rxrpc_get_local(conn->local);
++	key_get(conn->key);
+ 
+ 	trace_rxrpc_conn(conn->debug_id, rxrpc_conn_new_client,
+ 			 refcount_read(&conn->ref),
+@@ -228,7 +239,7 @@ static bool rxrpc_may_reuse_conn(struct rxrpc_connection *conn)
+ 	if (!conn)
+ 		goto dont_reuse;
+ 
+-	rxnet = conn->params.local->rxnet;
++	rxnet = conn->local->rxnet;
+ 	if (test_bit(RXRPC_CONN_DONT_REUSE, &conn->flags))
+ 		goto dont_reuse;
+ 
+@@ -285,7 +296,7 @@ static struct rxrpc_bundle *rxrpc_look_up_bundle(struct rxrpc_conn_parameters *c
+ 	while (p) {
+ 		bundle = rb_entry(p, struct rxrpc_bundle, local_node);
+ 
+-#define cmp(X) ((long)bundle->params.X - (long)cp->X)
++#define cmp(X) ((long)bundle->X - (long)cp->X)
+ 		diff = (cmp(peer) ?:
+ 			cmp(key) ?:
+ 			cmp(security_level) ?:
+@@ -314,7 +325,7 @@ static struct rxrpc_bundle *rxrpc_look_up_bundle(struct rxrpc_conn_parameters *c
+ 		parent = *pp;
+ 		bundle = rb_entry(parent, struct rxrpc_bundle, local_node);
+ 
+-#define cmp(X) ((long)bundle->params.X - (long)cp->X)
++#define cmp(X) ((long)bundle->X - (long)cp->X)
+ 		diff = (cmp(peer) ?:
+ 			cmp(key) ?:
+ 			cmp(security_level) ?:
+@@ -532,7 +543,7 @@ static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
+ 
+ 	rxrpc_see_call(call);
+ 	list_del_init(&call->chan_wait_link);
+-	call->peer	= rxrpc_get_peer(conn->params.peer);
++	call->peer	= rxrpc_get_peer(conn->peer);
+ 	call->conn	= rxrpc_get_connection(conn);
+ 	call->cid	= conn->proto.cid | channel;
+ 	call->call_id	= call_id;
+@@ -569,7 +580,7 @@ static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
+  */
+ static void rxrpc_unidle_conn(struct rxrpc_bundle *bundle, struct rxrpc_connection *conn)
+ {
+-	struct rxrpc_net *rxnet = bundle->params.local->rxnet;
++	struct rxrpc_net *rxnet = bundle->local->rxnet;
+ 	bool drop_ref;
+ 
+ 	if (!list_empty(&conn->cache_link)) {
+@@ -795,7 +806,7 @@ void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call
+ {
+ 	struct rxrpc_connection *conn;
+ 	struct rxrpc_channel *chan = NULL;
+-	struct rxrpc_net *rxnet = bundle->params.local->rxnet;
++	struct rxrpc_net *rxnet = bundle->local->rxnet;
+ 	unsigned int channel;
+ 	bool may_reuse;
+ 	u32 cid;
+@@ -936,11 +947,11 @@ static void rxrpc_unbundle_conn(struct rxrpc_connection *conn)
+  */
+ static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle)
+ {
+-	struct rxrpc_local *local = bundle->params.local;
++	struct rxrpc_local *local = bundle->local;
+ 	bool need_put = false;
+ 
+ 	if (atomic_dec_and_lock(&bundle->active, &local->client_bundles_lock)) {
+-		if (!bundle->params.exclusive) {
++		if (!bundle->exclusive) {
+ 			_debug("erase bundle");
+ 			rb_erase(&bundle->local_node, &local->client_bundles);
+ 			need_put = true;
+@@ -957,7 +968,7 @@ static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle)
+  */
+ static void rxrpc_kill_client_conn(struct rxrpc_connection *conn)
+ {
+-	struct rxrpc_local *local = conn->params.local;
++	struct rxrpc_local *local = conn->local;
+ 	struct rxrpc_net *rxnet = local->rxnet;
+ 
+ 	_enter("C=%x", conn->debug_id);
+@@ -1036,7 +1047,7 @@ void rxrpc_discard_expired_client_conns(struct work_struct *work)
+ 		expiry = rxrpc_conn_idle_client_expiry;
+ 		if (nr_conns > rxrpc_reap_client_connections)
+ 			expiry = rxrpc_conn_idle_client_fast_expiry;
+-		if (conn->params.local->service_closed)
++		if (conn->local->service_closed)
+ 			expiry = rxrpc_closed_conn_expiry * HZ;
+ 
+ 		conn_expires_at = conn->idle_timestamp + expiry;
+@@ -1110,7 +1121,7 @@ void rxrpc_clean_up_local_conns(struct rxrpc_local *local)
+ 
+ 	list_for_each_entry_safe(conn, tmp, &rxnet->idle_client_conns,
+ 				 cache_link) {
+-		if (conn->params.local == local) {
++		if (conn->local == local) {
+ 			trace_rxrpc_client(conn, -1, rxrpc_client_discard);
+ 			list_move(&conn->cache_link, &graveyard);
+ 		}
+diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
+index d5549cbfc71b..71ed6b9dc63a 100644
+--- a/net/rxrpc/conn_event.c
++++ b/net/rxrpc/conn_event.c
+@@ -52,8 +52,8 @@ static void rxrpc_conn_retransmit_call(struct rxrpc_connection *conn,
+ 	if (skb && call_id != sp->hdr.callNumber)
+ 		return;
+ 
+-	msg.msg_name	= &conn->params.peer->srx.transport;
+-	msg.msg_namelen	= conn->params.peer->srx.transport_len;
++	msg.msg_name	= &conn->peer->srx.transport;
++	msg.msg_namelen	= conn->peer->srx.transport_len;
+ 	msg.msg_control	= NULL;
+ 	msg.msg_controllen = 0;
+ 	msg.msg_flags	= 0;
+@@ -86,8 +86,8 @@ static void rxrpc_conn_retransmit_call(struct rxrpc_connection *conn,
+ 		break;
+ 
+ 	case RXRPC_PACKET_TYPE_ACK:
+-		mtu = conn->params.peer->if_mtu;
+-		mtu -= conn->params.peer->hdrsize;
++		mtu = conn->peer->if_mtu;
++		mtu -= conn->peer->hdrsize;
+ 		pkt.ack.bufferSpace	= 0;
+ 		pkt.ack.maxSkew		= htons(skb ? skb->priority : 0);
+ 		pkt.ack.firstPacket	= htonl(chan->last_seq + 1);
+@@ -131,8 +131,8 @@ static void rxrpc_conn_retransmit_call(struct rxrpc_connection *conn,
+ 		break;
+ 	}
+ 
+-	ret = kernel_sendmsg(conn->params.local->socket, &msg, iov, ioc, len);
+-	conn->params.peer->last_tx_at = ktime_get_seconds();
++	ret = kernel_sendmsg(conn->local->socket, &msg, iov, ioc, len);
++	conn->peer->last_tx_at = ktime_get_seconds();
+ 	if (ret < 0)
+ 		trace_rxrpc_tx_fail(chan->call_debug_id, serial, ret,
+ 				    rxrpc_tx_point_call_final_resend);
+@@ -211,8 +211,8 @@ static int rxrpc_abort_connection(struct rxrpc_connection *conn,
+ 	set_bit(RXRPC_CONN_DONT_REUSE, &conn->flags);
+ 	spin_unlock_bh(&conn->state_lock);
+ 
+-	msg.msg_name	= &conn->params.peer->srx.transport;
+-	msg.msg_namelen	= conn->params.peer->srx.transport_len;
++	msg.msg_name	= &conn->peer->srx.transport;
++	msg.msg_namelen	= conn->peer->srx.transport_len;
+ 	msg.msg_control	= NULL;
+ 	msg.msg_controllen = 0;
+ 	msg.msg_flags	= 0;
+@@ -241,7 +241,7 @@ static int rxrpc_abort_connection(struct rxrpc_connection *conn,
+ 	rxrpc_abort_calls(conn, RXRPC_CALL_LOCALLY_ABORTED, serial);
+ 	whdr.serial = htonl(serial);
+ 
+-	ret = kernel_sendmsg(conn->params.local->socket, &msg, iov, 2, len);
++	ret = kernel_sendmsg(conn->local->socket, &msg, iov, 2, len);
+ 	if (ret < 0) {
+ 		trace_rxrpc_tx_fail(conn->debug_id, serial, ret,
+ 				    rxrpc_tx_point_conn_abort);
+@@ -251,7 +251,7 @@ static int rxrpc_abort_connection(struct rxrpc_connection *conn,
+ 
+ 	trace_rxrpc_tx_packet(conn->debug_id, &whdr, rxrpc_tx_point_conn_abort);
+ 
+-	conn->params.peer->last_tx_at = ktime_get_seconds();
++	conn->peer->last_tx_at = ktime_get_seconds();
+ 
+ 	_leave(" = 0");
+ 	return 0;
+@@ -330,7 +330,7 @@ static int rxrpc_process_event(struct rxrpc_connection *conn,
+ 			return ret;
+ 
+ 		ret = conn->security->init_connection_security(
+-			conn, conn->params.key->payload.data[0]);
++			conn, conn->key->payload.data[0]);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -484,9 +484,9 @@ void rxrpc_process_connection(struct work_struct *work)
+ 
+ 	rxrpc_see_connection(conn);
+ 
+-	if (__rxrpc_use_local(conn->params.local)) {
++	if (__rxrpc_use_local(conn->local)) {
+ 		rxrpc_do_process_connection(conn);
+-		rxrpc_unuse_local(conn->params.local);
++		rxrpc_unuse_local(conn->local);
+ 	}
+ 
+ 	rxrpc_put_connection(conn);
 diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
-index 156bd26daf74..d5d15389406f 100644
+index d5d15389406f..ad6e5ee1f069 100644
 --- a/net/rxrpc/conn_object.c
 +++ b/net/rxrpc/conn_object.c
-@@ -356,8 +356,6 @@ static void rxrpc_destroy_connection(struct rcu_head *rcu)
+@@ -120,10 +120,10 @@ struct rxrpc_connection *rxrpc_find_connection_rcu(struct rxrpc_local *local,
+ 		}
  
- 	ASSERTCMP(refcount_read(&conn->ref), ==, 0);
+ 		if (conn->proto.epoch != k.epoch ||
+-		    conn->params.local != local)
++		    conn->local != local)
+ 			goto not_found;
  
--	_net("DESTROY CONN %d", conn->debug_id);
--
- 	del_timer_sync(&conn->timer);
+-		peer = conn->params.peer;
++		peer = conn->peer;
+ 		switch (srx.transport.family) {
+ 		case AF_INET:
+ 			if (peer->srx.transport.sin.sin_port !=
+@@ -231,7 +231,7 @@ void rxrpc_disconnect_call(struct rxrpc_call *call)
+  */
+ void rxrpc_kill_connection(struct rxrpc_connection *conn)
+ {
+-	struct rxrpc_net *rxnet = conn->params.local->rxnet;
++	struct rxrpc_net *rxnet = conn->local->rxnet;
+ 
+ 	ASSERT(!rcu_access_pointer(conn->channels[0].call) &&
+ 	       !rcu_access_pointer(conn->channels[1].call) &&
+@@ -340,7 +340,7 @@ void rxrpc_put_service_conn(struct rxrpc_connection *conn)
+ 	__refcount_dec(&conn->ref, &r);
+ 	trace_rxrpc_conn(debug_id, rxrpc_conn_put_service, r - 1, here);
+ 	if (r - 1 == 1)
+-		rxrpc_set_service_reap_timer(conn->params.local->rxnet,
++		rxrpc_set_service_reap_timer(conn->local->rxnet,
+ 					     jiffies + rxrpc_connection_expiry);
+ }
+ 
+@@ -360,13 +360,13 @@ static void rxrpc_destroy_connection(struct rcu_head *rcu)
  	rxrpc_purge_queue(&conn->rx_queue);
  
+ 	conn->security->clear(conn);
+-	key_put(conn->params.key);
++	key_put(conn->key);
+ 	rxrpc_put_bundle(conn->bundle);
+-	rxrpc_put_peer(conn->params.peer);
++	rxrpc_put_peer(conn->peer);
+ 
+-	if (atomic_dec_and_test(&conn->params.local->rxnet->nr_conns))
+-		wake_up_var(&conn->params.local->rxnet->nr_conns);
+-	rxrpc_put_local(conn->params.local);
++	if (atomic_dec_and_test(&conn->local->rxnet->nr_conns))
++		wake_up_var(&conn->local->rxnet->nr_conns);
++	rxrpc_put_local(conn->local);
+ 
+ 	kfree(conn);
+ 	_leave("");
+@@ -397,10 +397,10 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
+ 		if (conn->state == RXRPC_CONN_SERVICE_PREALLOC)
+ 			continue;
+ 
+-		if (rxnet->live && !conn->params.local->dead) {
++		if (rxnet->live && !conn->local->dead) {
+ 			idle_timestamp = READ_ONCE(conn->idle_timestamp);
+ 			expire_at = idle_timestamp + rxrpc_connection_expiry * HZ;
+-			if (conn->params.local->service_closed)
++			if (conn->local->service_closed)
+ 				expire_at = idle_timestamp + rxrpc_closed_conn_expiry * HZ;
+ 
+ 			_debug("reap CONN %d { u=%d,t=%ld }",
 diff --git a/net/rxrpc/conn_service.c b/net/rxrpc/conn_service.c
-index 6e6aa02c6f9e..75f903099eb0 100644
+index 75f903099eb0..a3b91864ef21 100644
 --- a/net/rxrpc/conn_service.c
 +++ b/net/rxrpc/conn_service.c
-@@ -184,8 +184,6 @@ void rxrpc_new_incoming_connection(struct rxrpc_sock *rx,
+@@ -164,7 +164,7 @@ void rxrpc_new_incoming_connection(struct rxrpc_sock *rx,
+ 
+ 	conn->proto.epoch	= sp->hdr.epoch;
+ 	conn->proto.cid		= sp->hdr.cid & RXRPC_CIDMASK;
+-	conn->params.service_id	= sp->hdr.serviceId;
++	conn->orig_service_id	= sp->hdr.serviceId;
+ 	conn->service_id	= sp->hdr.serviceId;
+ 	conn->security_ix	= sp->hdr.securityIndex;
+ 	conn->out_clientflag	= 0;
+@@ -183,7 +183,7 @@ void rxrpc_new_incoming_connection(struct rxrpc_sock *rx,
+ 		conn->service_id = rx->service_upgrade.to;
  
  	/* Make the connection a target for incoming packets. */
- 	rxrpc_publish_service_conn(conn->params.peer, conn);
--
--	_net("CONNECTION new %d {%x}", conn->debug_id, conn->proto.cid);
+-	rxrpc_publish_service_conn(conn->params.peer, conn);
++	rxrpc_publish_service_conn(conn->peer, conn);
  }
  
  /*
+@@ -192,7 +192,7 @@ void rxrpc_new_incoming_connection(struct rxrpc_sock *rx,
+  */
+ void rxrpc_unpublish_service_conn(struct rxrpc_connection *conn)
+ {
+-	struct rxrpc_peer *peer = conn->params.peer;
++	struct rxrpc_peer *peer = conn->peer;
+ 
+ 	write_seqlock_bh(&peer->service_conn_lock);
+ 	if (test_and_clear_bit(RXRPC_CONN_IN_SERVICE_CONNS, &conn->flags))
 diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 646ee61af40e..e2461f29d765 100644
+index e2461f29d765..44caf88e04b8 100644
 --- a/net/rxrpc/input.c
 +++ b/net/rxrpc/input.c
-@@ -725,7 +725,6 @@ static void rxrpc_input_ackinfo(struct rxrpc_call *call, struct sk_buff *skb,
- 		peer->maxdata = mtu;
- 		peer->mtu = mtu + peer->hdrsize;
- 		spin_unlock_bh(&peer->lock);
--		_net("Net MTU %u (maxdata %u)", peer->mtu, peer->maxdata);
+@@ -1339,10 +1339,10 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 
+ 			if (!test_bit(RXRPC_CONN_PROBING_FOR_UPGRADE, &conn->flags))
+ 				goto reupgrade;
+-			old_id = cmpxchg(&conn->service_id, conn->params.service_id,
++			old_id = cmpxchg(&conn->service_id, conn->orig_service_id,
+ 					 sp->hdr.serviceId);
+ 
+-			if (old_id != conn->params.service_id &&
++			if (old_id != conn->orig_service_id &&
+ 			    old_id != sp->hdr.serviceId)
+ 				goto reupgrade;
+ 		}
+diff --git a/net/rxrpc/key.c b/net/rxrpc/key.c
+index 8d2073e0e3da..1ecddcb3745a 100644
+--- a/net/rxrpc/key.c
++++ b/net/rxrpc/key.c
+@@ -513,7 +513,7 @@ int rxrpc_get_server_data_key(struct rxrpc_connection *conn,
+ 	if (ret < 0)
+ 		goto error;
+ 
+-	conn->params.key = key;
++	conn->key = key;
+ 	_leave(" = 0 [%d]", key_serial(key));
+ 	return 0;
+ 
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index 635acf3dbd77..b5d8eac8c49c 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -142,8 +142,8 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
+ 		txb->ack.reason = RXRPC_ACK_IDLE;
  	}
  
- 	if (wake)
-diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index a943fdf91e24..11080c335d42 100644
---- a/net/rxrpc/local_object.c
-+++ b/net/rxrpc/local_object.c
-@@ -198,7 +198,6 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- 	struct rxrpc_local *local;
- 	struct rxrpc_net *rxnet = rxrpc_net(net);
- 	struct hlist_node *cursor;
--	const char *age;
- 	long diff;
+-	mtu = conn->params.peer->if_mtu;
+-	mtu -= conn->params.peer->hdrsize;
++	mtu = conn->peer->if_mtu;
++	mtu -= conn->peer->hdrsize;
+ 	jmax = rxrpc_rx_jumbo_max;
+ 	qsize = (window - 1) - call->rx_consumed;
+ 	rsize = max_t(int, call->rx_winsize - qsize, 0);
+@@ -259,7 +259,7 @@ static int rxrpc_send_ack_packet(struct rxrpc_local *local, struct rxrpc_txbuf *
+ 	txb->ack.previousPacket	= htonl(call->rx_highest_seq);
+ 
+ 	iov_iter_kvec(&msg.msg_iter, WRITE, iov, 1, len);
+-	ret = do_udp_sendmsg(conn->params.local->socket, &msg, len);
++	ret = do_udp_sendmsg(conn->local->socket, &msg, len);
+ 	call->peer->last_tx_at = ktime_get_seconds();
+ 	if (ret < 0)
+ 		trace_rxrpc_tx_fail(call->debug_id, serial, ret,
+@@ -368,8 +368,8 @@ int rxrpc_send_abort_packet(struct rxrpc_call *call)
+ 	pkt.whdr.serial = htonl(serial);
+ 
+ 	iov_iter_kvec(&msg.msg_iter, WRITE, iov, 1, sizeof(pkt));
+-	ret = do_udp_sendmsg(conn->params.local->socket, &msg, sizeof(pkt));
+-	conn->params.peer->last_tx_at = ktime_get_seconds();
++	ret = do_udp_sendmsg(conn->local->socket, &msg, sizeof(pkt));
++	conn->peer->last_tx_at = ktime_get_seconds();
+ 	if (ret < 0)
+ 		trace_rxrpc_tx_fail(call->debug_id, serial, ret,
+ 				    rxrpc_tx_point_call_abort);
+@@ -473,7 +473,7 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
+ 	if (txb->len >= call->peer->maxdata)
+ 		goto send_fragmentable;
+ 
+-	down_read(&conn->params.local->defrag_sem);
++	down_read(&conn->local->defrag_sem);
+ 
+ 	txb->last_sent = ktime_get_real();
+ 	if (txb->wire.flags & RXRPC_REQUEST_ACK)
+@@ -486,10 +486,10 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
+ 	 *     message and update the peer record
+ 	 */
+ 	rxrpc_inc_stat(call->rxnet, stat_tx_data_send);
+-	ret = do_udp_sendmsg(conn->params.local->socket, &msg, len);
+-	conn->params.peer->last_tx_at = ktime_get_seconds();
++	ret = do_udp_sendmsg(conn->local->socket, &msg, len);
++	conn->peer->last_tx_at = ktime_get_seconds();
+ 
+-	up_read(&conn->params.local->defrag_sem);
++	up_read(&conn->local->defrag_sem);
+ 	if (ret < 0) {
+ 		rxrpc_cancel_rtt_probe(call, serial, rtt_slot);
+ 		trace_rxrpc_tx_fail(call->debug_id, serial, ret,
+@@ -549,22 +549,22 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
+ 	/* attempt to send this message with fragmentation enabled */
+ 	_debug("send fragment");
+ 
+-	down_write(&conn->params.local->defrag_sem);
++	down_write(&conn->local->defrag_sem);
+ 
+ 	txb->last_sent = ktime_get_real();
+ 	if (txb->wire.flags & RXRPC_REQUEST_ACK)
+ 		rtt_slot = rxrpc_begin_rtt_probe(call, serial, rxrpc_rtt_tx_data);
+ 
+-	switch (conn->params.local->srx.transport.family) {
++	switch (conn->local->srx.transport.family) {
+ 	case AF_INET6:
+ 	case AF_INET:
+-		ip_sock_set_mtu_discover(conn->params.local->socket->sk,
++		ip_sock_set_mtu_discover(conn->local->socket->sk,
+ 					 IP_PMTUDISC_DONT);
+ 		rxrpc_inc_stat(call->rxnet, stat_tx_data_send_frag);
+-		ret = do_udp_sendmsg(conn->params.local->socket, &msg, len);
+-		conn->params.peer->last_tx_at = ktime_get_seconds();
++		ret = do_udp_sendmsg(conn->local->socket, &msg, len);
++		conn->peer->last_tx_at = ktime_get_seconds();
+ 
+-		ip_sock_set_mtu_discover(conn->params.local->socket->sk,
++		ip_sock_set_mtu_discover(conn->local->socket->sk,
+ 					 IP_PMTUDISC_DO);
+ 		break;
+ 
+@@ -582,7 +582,7 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
+ 	}
+ 	rxrpc_tx_backoff(call, ret);
+ 
+-	up_write(&conn->params.local->defrag_sem);
++	up_write(&conn->local->defrag_sem);
+ 	goto done;
+ }
+ 
+diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
+index fae22a8b38d6..bb2edf6db896 100644
+--- a/net/rxrpc/proc.c
++++ b/net/rxrpc/proc.c
+@@ -172,9 +172,9 @@ static int rxrpc_connection_seq_show(struct seq_file *seq, void *v)
+ 		goto print;
+ 	}
+ 
+-	sprintf(lbuff, "%pISpc", &conn->params.local->srx.transport);
++	sprintf(lbuff, "%pISpc", &conn->local->srx.transport);
+ 
+-	sprintf(rbuff, "%pISpc", &conn->params.peer->srx.transport);
++	sprintf(rbuff, "%pISpc", &conn->peer->srx.transport);
+ print:
+ 	seq_printf(seq,
+ 		   "UDP   %-47.47s %-47.47s %4x %08x %s %3u"
+@@ -186,7 +186,7 @@ static int rxrpc_connection_seq_show(struct seq_file *seq, void *v)
+ 		   rxrpc_conn_is_service(conn) ? "Svc" : "Clt",
+ 		   refcount_read(&conn->ref),
+ 		   rxrpc_conn_states[conn->state],
+-		   key_serial(conn->params.key),
++		   key_serial(conn->key),
+ 		   atomic_read(&conn->serial),
+ 		   conn->hi_serial,
+ 		   conn->channels[0].call_id,
+diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
+index 36cf40442a7e..d1233720e05f 100644
+--- a/net/rxrpc/rxkad.c
++++ b/net/rxrpc/rxkad.c
+@@ -103,7 +103,7 @@ static int rxkad_init_connection_security(struct rxrpc_connection *conn,
+ 	struct crypto_sync_skcipher *ci;
  	int ret;
  
-@@ -232,7 +231,6 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- 		if (!rxrpc_use_local(local))
- 			break;
+-	_enter("{%d},{%x}", conn->debug_id, key_serial(conn->params.key));
++	_enter("{%d},{%x}", conn->debug_id, key_serial(conn->key));
  
--		age = "old";
- 		goto found;
- 	}
+ 	conn->security_ix = token->security_index;
  
-@@ -250,14 +248,9 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- 	} else {
- 		hlist_add_head_rcu(&local->link, &rxnet->local_endpoints);
- 	}
--	age = "new";
+@@ -118,7 +118,7 @@ static int rxkad_init_connection_security(struct rxrpc_connection *conn,
+ 				   sizeof(token->kad->session_key)) < 0)
+ 		BUG();
  
- found:
- 	mutex_unlock(&rxnet->local_mutex);
--
--	_net("LOCAL %s %d {%pISp}",
--	     age, local->debug_id, &local->srx.transport);
--
- 	_leave(" = %p", local);
- 	return local;
- 
-@@ -467,7 +460,6 @@ static void rxrpc_local_rcu(struct rcu_head *rcu)
- 
- 	ASSERT(!work_pending(&local->processor));
- 
--	_net("DESTROY LOCAL %d", local->debug_id);
- 	kfree(local);
- 	_leave("");
- }
-diff --git a/net/rxrpc/peer_event.c b/net/rxrpc/peer_event.c
-index be781c156e89..ad4d1769e02b 100644
---- a/net/rxrpc/peer_event.c
-+++ b/net/rxrpc/peer_event.c
-@@ -48,13 +48,11 @@ static struct rxrpc_peer *rxrpc_lookup_peer_local_rcu(struct rxrpc_local *local,
- 		srx->transport.sin.sin_port = serr->port;
- 		switch (serr->ee.ee_origin) {
- 		case SO_EE_ORIGIN_ICMP:
--			_net("Rx ICMP");
- 			memcpy(&srx->transport.sin.sin_addr,
- 			       skb_network_header(skb) + serr->addr_offset,
- 			       sizeof(struct in_addr));
- 			break;
- 		case SO_EE_ORIGIN_ICMP6:
--			_net("Rx ICMP6 on v4 sock");
- 			memcpy(&srx->transport.sin.sin_addr,
- 			       skb_network_header(skb) + serr->addr_offset + 12,
- 			       sizeof(struct in_addr));
-@@ -70,14 +68,12 @@ static struct rxrpc_peer *rxrpc_lookup_peer_local_rcu(struct rxrpc_local *local,
- 	case AF_INET6:
- 		switch (serr->ee.ee_origin) {
- 		case SO_EE_ORIGIN_ICMP6:
--			_net("Rx ICMP6");
- 			srx->transport.sin6.sin6_port = serr->port;
- 			memcpy(&srx->transport.sin6.sin6_addr,
- 			       skb_network_header(skb) + serr->addr_offset,
- 			       sizeof(struct in6_addr));
- 			break;
- 		case SO_EE_ORIGIN_ICMP:
--			_net("Rx ICMP on v6 sock");
- 			srx->transport_len = sizeof(srx->transport.sin);
- 			srx->transport.family = AF_INET;
- 			srx->transport.sin.sin_port = serr->port;
-@@ -106,13 +102,9 @@ static struct rxrpc_peer *rxrpc_lookup_peer_local_rcu(struct rxrpc_local *local,
-  */
- static void rxrpc_adjust_mtu(struct rxrpc_peer *peer, unsigned int mtu)
+-	switch (conn->params.security_level) {
++	switch (conn->security_level) {
+ 	case RXRPC_SECURITY_PLAIN:
+ 	case RXRPC_SECURITY_AUTH:
+ 	case RXRPC_SECURITY_ENCRYPT:
+@@ -150,7 +150,7 @@ static int rxkad_how_much_data(struct rxrpc_call *call, size_t remain,
  {
--	_net("Rx ICMP Fragmentation Needed (%d)", mtu);
--
- 	/* wind down the local interface MTU */
--	if (mtu > 0 && peer->if_mtu == 65535 && mtu < peer->if_mtu) {
-+	if (mtu > 0 && peer->if_mtu == 65535 && mtu < peer->if_mtu)
- 		peer->if_mtu = mtu;
--		_net("I/F MTU %u", mtu);
--	}
+ 	size_t shdr, buf_size, chunk;
  
- 	if (mtu == 0) {
- 		/* they didn't give us a size, estimate one */
-@@ -133,8 +125,6 @@ static void rxrpc_adjust_mtu(struct rxrpc_peer *peer, unsigned int mtu)
- 		peer->mtu = mtu;
- 		peer->maxdata = peer->mtu - peer->hdrsize;
- 		spin_unlock_bh(&peer->lock);
--		_net("Net MTU %u (maxdata %u)",
--		     peer->mtu, peer->maxdata);
- 	}
- }
- 
-@@ -222,41 +212,6 @@ static void rxrpc_store_error(struct rxrpc_peer *peer,
- 	err = ee->ee_errno;
- 
- 	switch (ee->ee_origin) {
--	case SO_EE_ORIGIN_ICMP:
--		switch (ee->ee_type) {
--		case ICMP_DEST_UNREACH:
--			switch (ee->ee_code) {
--			case ICMP_NET_UNREACH:
--				_net("Rx Received ICMP Network Unreachable");
--				break;
--			case ICMP_HOST_UNREACH:
--				_net("Rx Received ICMP Host Unreachable");
--				break;
--			case ICMP_PORT_UNREACH:
--				_net("Rx Received ICMP Port Unreachable");
--				break;
--			case ICMP_NET_UNKNOWN:
--				_net("Rx Received ICMP Unknown Network");
--				break;
--			case ICMP_HOST_UNKNOWN:
--				_net("Rx Received ICMP Unknown Host");
--				break;
--			default:
--				_net("Rx Received ICMP DestUnreach code=%u",
--				     ee->ee_code);
--				break;
--			}
--			break;
--
--		case ICMP_TIME_EXCEEDED:
--			_net("Rx Received ICMP TTL Exceeded");
--			break;
--
--		default:
--			break;
--		}
--		break;
--
- 	case SO_EE_ORIGIN_NONE:
- 	case SO_EE_ORIGIN_LOCAL:
- 		compl = RXRPC_CALL_LOCAL_ERROR;
-@@ -266,6 +221,7 @@ static void rxrpc_store_error(struct rxrpc_peer *peer,
- 		if (err == EACCES)
- 			err = EHOSTUNREACH;
- 		fallthrough;
-+	case SO_EE_ORIGIN_ICMP:
+-	switch (call->conn->params.security_level) {
++	switch (call->conn->security_level) {
  	default:
+ 		buf_size = chunk = min_t(size_t, remain, RXRPC_JUMBO_DATALEN);
+ 		shdr = 0;
+@@ -192,7 +192,7 @@ static int rxkad_prime_packet_security(struct rxrpc_connection *conn,
+ 
+ 	_enter("");
+ 
+-	if (!conn->params.key)
++	if (!conn->key)
+ 		return 0;
+ 
+ 	tmpbuf = kmalloc(tmpsize, GFP_KERNEL);
+@@ -205,7 +205,7 @@ static int rxkad_prime_packet_security(struct rxrpc_connection *conn,
+ 		return -ENOMEM;
+ 	}
+ 
+-	token = conn->params.key->payload.data[0];
++	token = conn->key->payload.data[0];
+ 	memcpy(&iv, token->kad->session_key, sizeof(iv));
+ 
+ 	tmpbuf[0] = htonl(conn->proto.epoch);
+@@ -317,7 +317,7 @@ static int rxkad_secure_packet_encrypt(const struct rxrpc_call *call,
+ 	}
+ 
+ 	/* encrypt from the session key */
+-	token = call->conn->params.key->payload.data[0];
++	token = call->conn->key->payload.data[0];
+ 	memcpy(&iv, token->kad->session_key, sizeof(iv));
+ 
+ 	sg_init_one(&sg, txb->data, txb->len);
+@@ -344,13 +344,13 @@ static int rxkad_secure_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
+ 	int ret;
+ 
+ 	_enter("{%d{%x}},{#%u},%u,",
+-	       call->debug_id, key_serial(call->conn->params.key),
++	       call->debug_id, key_serial(call->conn->key),
+ 	       txb->seq, txb->len);
+ 
+ 	if (!call->conn->rxkad.cipher)
+ 		return 0;
+ 
+-	ret = key_validate(call->conn->params.key);
++	ret = key_validate(call->conn->key);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -380,7 +380,7 @@ static int rxkad_secure_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
+ 		y = 1; /* zero checksums are not permitted */
+ 	txb->wire.cksum = htons(y);
+ 
+-	switch (call->conn->params.security_level) {
++	switch (call->conn->security_level) {
+ 	case RXRPC_SECURITY_PLAIN:
+ 		ret = 0;
  		break;
- 	}
-diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
-index 041a51225c5f..b3c3c1c344fc 100644
---- a/net/rxrpc/peer_object.c
-+++ b/net/rxrpc/peer_object.c
-@@ -138,10 +138,8 @@ struct rxrpc_peer *rxrpc_lookup_peer_rcu(struct rxrpc_local *local,
- 	unsigned long hash_key = rxrpc_peer_hash_key(local, srx);
- 
- 	peer = __rxrpc_lookup_peer_rcu(local, srx, hash_key);
--	if (peer) {
--		_net("PEER %d {%pISp}", peer->debug_id, &peer->srx.transport);
-+	if (peer)
- 		_leave(" = %p {u=%d}", peer, refcount_read(&peer->ref));
--	}
- 	return peer;
- }
- 
-@@ -371,8 +369,6 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *rx,
- 			peer = candidate;
+@@ -525,7 +525,7 @@ static int rxkad_verify_packet_2(struct rxrpc_call *call, struct sk_buff *skb,
  	}
  
--	_net("PEER %d {%pISp}", peer->debug_id, &peer->srx.transport);
--
- 	_leave(" = %p {u=%d}", peer, refcount_read(&peer->ref));
- 	return peer;
+ 	/* decrypt from the session key */
+-	token = call->conn->params.key->payload.data[0];
++	token = call->conn->key->payload.data[0];
+ 	memcpy(&iv, token->kad->session_key, sizeof(iv));
+ 
+ 	skcipher_request_set_sync_tfm(req, call->conn->rxkad.cipher);
+@@ -596,7 +596,7 @@ static int rxkad_verify_packet(struct rxrpc_call *call, struct sk_buff *skb)
+ 	u32 x, y;
+ 
+ 	_enter("{%d{%x}},{#%u}",
+-	       call->debug_id, key_serial(call->conn->params.key), seq);
++	       call->debug_id, key_serial(call->conn->key), seq);
+ 
+ 	if (!call->conn->rxkad.cipher)
+ 		return 0;
+@@ -632,7 +632,7 @@ static int rxkad_verify_packet(struct rxrpc_call *call, struct sk_buff *skb)
+ 		goto protocol_error;
+ 	}
+ 
+-	switch (call->conn->params.security_level) {
++	switch (call->conn->security_level) {
+ 	case RXRPC_SECURITY_PLAIN:
+ 		ret = 0;
+ 		break;
+@@ -678,8 +678,8 @@ static int rxkad_issue_challenge(struct rxrpc_connection *conn)
+ 	challenge.min_level	= htonl(0);
+ 	challenge.__padding	= 0;
+ 
+-	msg.msg_name	= &conn->params.peer->srx.transport;
+-	msg.msg_namelen	= conn->params.peer->srx.transport_len;
++	msg.msg_name	= &conn->peer->srx.transport;
++	msg.msg_namelen	= conn->peer->srx.transport_len;
+ 	msg.msg_control	= NULL;
+ 	msg.msg_controllen = 0;
+ 	msg.msg_flags	= 0;
+@@ -705,14 +705,14 @@ static int rxkad_issue_challenge(struct rxrpc_connection *conn)
+ 	serial = atomic_inc_return(&conn->serial);
+ 	whdr.serial = htonl(serial);
+ 
+-	ret = kernel_sendmsg(conn->params.local->socket, &msg, iov, 2, len);
++	ret = kernel_sendmsg(conn->local->socket, &msg, iov, 2, len);
+ 	if (ret < 0) {
+ 		trace_rxrpc_tx_fail(conn->debug_id, serial, ret,
+ 				    rxrpc_tx_point_rxkad_challenge);
+ 		return -EAGAIN;
+ 	}
+ 
+-	conn->params.peer->last_tx_at = ktime_get_seconds();
++	conn->peer->last_tx_at = ktime_get_seconds();
+ 	trace_rxrpc_tx_packet(conn->debug_id, &whdr,
+ 			      rxrpc_tx_point_rxkad_challenge);
+ 	_leave(" = 0");
+@@ -736,8 +736,8 @@ static int rxkad_send_response(struct rxrpc_connection *conn,
+ 
+ 	_enter("");
+ 
+-	msg.msg_name	= &conn->params.peer->srx.transport;
+-	msg.msg_namelen	= conn->params.peer->srx.transport_len;
++	msg.msg_name	= &conn->peer->srx.transport;
++	msg.msg_namelen	= conn->peer->srx.transport_len;
+ 	msg.msg_control	= NULL;
+ 	msg.msg_controllen = 0;
+ 	msg.msg_flags	= 0;
+@@ -762,14 +762,14 @@ static int rxkad_send_response(struct rxrpc_connection *conn,
+ 	serial = atomic_inc_return(&conn->serial);
+ 	whdr.serial = htonl(serial);
+ 
+-	ret = kernel_sendmsg(conn->params.local->socket, &msg, iov, 3, len);
++	ret = kernel_sendmsg(conn->local->socket, &msg, iov, 3, len);
+ 	if (ret < 0) {
+ 		trace_rxrpc_tx_fail(conn->debug_id, serial, ret,
+ 				    rxrpc_tx_point_rxkad_response);
+ 		return -EAGAIN;
+ 	}
+ 
+-	conn->params.peer->last_tx_at = ktime_get_seconds();
++	conn->peer->last_tx_at = ktime_get_seconds();
+ 	_leave(" = 0");
+ 	return 0;
  }
+@@ -832,15 +832,15 @@ static int rxkad_respond_to_challenge(struct rxrpc_connection *conn,
+ 	u32 version, nonce, min_level, abort_code;
+ 	int ret;
+ 
+-	_enter("{%d,%x}", conn->debug_id, key_serial(conn->params.key));
++	_enter("{%d,%x}", conn->debug_id, key_serial(conn->key));
+ 
+ 	eproto = tracepoint_string("chall_no_key");
+ 	abort_code = RX_PROTOCOL_ERROR;
+-	if (!conn->params.key)
++	if (!conn->key)
+ 		goto protocol_error;
+ 
+ 	abort_code = RXKADEXPIRED;
+-	ret = key_validate(conn->params.key);
++	ret = key_validate(conn->key);
+ 	if (ret < 0)
+ 		goto other_error;
+ 
+@@ -863,10 +863,10 @@ static int rxkad_respond_to_challenge(struct rxrpc_connection *conn,
+ 
+ 	abort_code = RXKADLEVELFAIL;
+ 	ret = -EACCES;
+-	if (conn->params.security_level < min_level)
++	if (conn->security_level < min_level)
+ 		goto other_error;
+ 
+-	token = conn->params.key->payload.data[0];
++	token = conn->key->payload.data[0];
+ 
+ 	/* build the response packet */
+ 	resp = kzalloc(sizeof(struct rxkad_response), GFP_NOFS);
+@@ -878,7 +878,7 @@ static int rxkad_respond_to_challenge(struct rxrpc_connection *conn,
+ 	resp->encrypted.cid		= htonl(conn->proto.cid);
+ 	resp->encrypted.securityIndex	= htonl(conn->security_ix);
+ 	resp->encrypted.inc_nonce	= htonl(nonce + 1);
+-	resp->encrypted.level		= htonl(conn->params.security_level);
++	resp->encrypted.level		= htonl(conn->security_level);
+ 	resp->kvno			= htonl(token->kad->kvno);
+ 	resp->ticket_len		= htonl(token->kad->ticket_len);
+ 	resp->encrypted.call_id[0]	= htonl(conn->channels[0].call_counter);
+@@ -1226,7 +1226,7 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
+ 	level = ntohl(response->encrypted.level);
+ 	if (level > RXRPC_SECURITY_ENCRYPT)
+ 		goto protocol_error_free;
+-	conn->params.security_level = level;
++	conn->security_level = level;
+ 
+ 	/* create a key to hold the security data and expiration time - after
+ 	 * this the connection security can be handled in exactly the same way
+diff --git a/net/rxrpc/security.c b/net/rxrpc/security.c
+index 50cb5f1ee0c0..e6ddac9b3732 100644
+--- a/net/rxrpc/security.c
++++ b/net/rxrpc/security.c
+@@ -69,7 +69,7 @@ int rxrpc_init_client_conn_security(struct rxrpc_connection *conn)
+ {
+ 	const struct rxrpc_security *sec;
+ 	struct rxrpc_key_token *token;
+-	struct key *key = conn->params.key;
++	struct key *key = conn->key;
+ 	int ret;
+ 
+ 	_enter("{%d},{%x}", conn->debug_id, key_serial(key));
+@@ -163,7 +163,7 @@ struct key *rxrpc_look_up_server_security(struct rxrpc_connection *conn,
+ 
+ 	rcu_read_lock();
+ 
+-	rx = rcu_dereference(conn->params.local->service);
++	rx = rcu_dereference(conn->local->service);
+ 	if (!rx)
+ 		goto out;
+ 
 
 
