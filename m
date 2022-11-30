@@ -2,122 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DBF563E262
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 21:57:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C84EE63E26C
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 22:02:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbiK3U5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 15:57:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
+        id S229770AbiK3VCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 16:02:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229709AbiK3U45 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 15:56:57 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC56837C2;
-        Wed, 30 Nov 2022 12:56:55 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id vp12so43007131ejc.8;
-        Wed, 30 Nov 2022 12:56:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9jQlZQ+8HHYhpox7WBTyYuGJEtiPdn1BZqHahmN+0t8=;
-        b=c/ZbbDLshtsnxHXWxNMYALtyBOztdhBPPQcbQhB4hCZ2jZCh21g9d68kHDpcFXIo3X
-         LQUz+0cyyBdKTKGSKgghnblI9XOPJCKjD0psvLzWaFH6YgwGXPfGqO+ruqaYu2IRx3OD
-         5ptvNdGsVY9S55xso7HvPOqL/45ZGwNvf1xL8n8Vh37J1UDwjJR2w8JLHCN3gp091Srb
-         W+snMQ6rZ/hOWh32gdCkGlfzgfKxsbOffbiuOzMQ90K5m1FCE8ad22KdaKAq5mL6a15I
-         zFuDHD8f0M+yKM8BtcerrO0CkT39dXUFwQfdM7qQQGZF0Zqf2DCChS91b/mu78Z5qaVI
-         cBVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9jQlZQ+8HHYhpox7WBTyYuGJEtiPdn1BZqHahmN+0t8=;
-        b=lMLkBUfc1S9S//36jZNPtJJucnFpfMisrQqIGso75obeMpWuFpVKGAPpEby8I+M0H5
-         LiJXWA3LErbXFNtPjXXUZFhRFaFsca83A9k6ArLhQejy2TyU6Ax56A3i3zMtn+Whe4yI
-         n4t4Qf86+oAsO6vVT9vZulA2/ypm/JxadEJYDLoUZsFsX7ycFkCY6pHwm1etlvYydxSe
-         5DsYdZnUVM87/DPlmyTyxiZR3ycj/zk2DjzYv4qyUhi+SkfzlZJ1kN0NlO9GhcA1eYYz
-         l6PBleSKmruRdIk+PyeyLVSpdXcl46aO9CKwFRytyDLKYX+krGDvbg27mdGxvQsSPt6H
-         sLDw==
-X-Gm-Message-State: ANoB5pkNo3QacHIaVJtnUhC6OCsq8hRpyEx5ZLxIO6S1plOXeyEnzSFt
-        qZ5y56xzrUWirkCc43FCpLETUhoMO5D80g==
-X-Google-Smtp-Source: AA0mqf6Go41vkhjDiWfTbKYo1OqcNmEkIfml37MQwVo4LMApJUE9faSYXhhmGqRXBl+WHGCrTp6eVA==
-X-Received: by 2002:a17:907:9854:b0:7bc:30e0:6bea with SMTP id jj20-20020a170907985400b007bc30e06beamr25039204ejc.49.1669841814037;
-        Wed, 30 Nov 2022 12:56:54 -0800 (PST)
-Received: from skbuf ([188.26.184.222])
-        by smtp.gmail.com with ESMTPSA id c5-20020a1709060fc500b007ae10525550sm1036407ejk.47.2022.11.30.12.56.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Nov 2022 12:56:53 -0800 (PST)
-Date:   Wed, 30 Nov 2022 22:56:51 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jerry Ray <jerry.ray@microchip.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229461AbiK3VC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 16:02:28 -0500
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E87383EA1;
+        Wed, 30 Nov 2022 13:02:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1669842144;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=rQjv0ilcgXlZxoUpB0HbLsfebMKlAgyw+Xw7AfTs1CU=;
+    b=F+Xg1D4iYJLeyPuMtepW/NlzFi19PGjYOLvAuV5v5ibvfQFWiBvN5XFCApAbyJiP0f
+    E2SMHt7yMtpalJrRvU9TeQCiBiDxpbC34zPl9vnnLs55IPg3PyCXhO0yw6zwGDPPUFiY
+    PrSMMILsKv50mQsexLEt2jVnRSXebJdYkVGE+YQalEhi8eog5yEFlAG/fFmKMdJwphaI
+    0ruPTifQ745nS2iT/ZMoE8KAAxAWKDtwBsfsEzphahNKuA7v2KBlyhh4kvAj+gZQIjLm
+    bZz4+GHc5maLyci83b9C+oIaH+IwlGnc5Wd8kcbfRsEuGCVQ7+1H24XrKlb0K3vHlAci
+    GsbA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdIrpKytISr6hZqJAw=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfd:d104::923]
+    by smtp.strato.de (RZmta 48.2.1 AUTH)
+    with ESMTPSA id Dde783yAUL2NYBv
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 30 Nov 2022 22:02:23 +0100 (CET)
+Message-ID: <ed685ce0-16e2-3f7c-173a-ac14f32d9ca6@hartkopp.net>
+Date:   Wed, 30 Nov 2022 22:02:23 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [RFC][PATCH 0/2] LIN support for Linux
+Content-Language: en-US
+To:     Christoph Fritz <christoph.fritz@hexdev.de>
+Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Richard Weinberger <richard@nod.at>,
+        Andreas Lauser <andreas.lauser@mbition.io>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4] dsa: lan9303: Add 3 ethtool stats
-Message-ID: <20221130205651.4kgh7dpqp72ywbuq@skbuf>
-References: <20221130200804.21778-1-jerry.ray@microchip.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221130200804.21778-1-jerry.ray@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221127190244.888414-1-christoph.fritz@hexdev.de>
+ <58a773bd-0db4-bade-f8a2-46e850df9b0b@hartkopp.net> <Y4SKZb9woV5XE1bU@mars>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <Y4SKZb9woV5XE1bU@mars>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jerry,
+Hi Christoph, all,
 
-On Wed, Nov 30, 2022 at 02:08:04PM -0600, Jerry Ray wrote:
->  static void lan9303_get_ethtool_stats(struct dsa_switch *ds, int port,
->  				      uint64_t *data)
->  {
->  	struct lan9303 *chip = ds->priv;
->  	unsigned int u;
->  
->  	for (u = 0; u < ARRAY_SIZE(lan9303_mib); u++) {
->  		u32 reg;
->  		int ret;
->  
->  		ret = lan9303_read_switch_port(
->  			chip, port, lan9303_mib[u].offset, &reg);
->  
-> -		if (ret)
-> +		if (ret) {
->  			dev_warn(chip->dev, "Reading status port %d reg %u failed\n",
->  				 port, lan9303_mib[u].offset);
-> +			reg = 0;
-> +		}
+On 28.11.22 11:16, Christoph Fritz wrote:
 
-This part of the change still is unrelated and affects existing code.
-Bug fixes to existing code are submitted as separate patches. In some
-kernel trees, they are at the very least tagged with a Fixes: tag and
-put before other development work. In netdev, they are sent to a different
-git tree (net.git) which eventually lands in a different set of branches
-than net-next.git. You need to not mix bug fixes with development code.
-Andrew also suggested that you separate each logical change into a
-separate patch.
+>> IIRC the implementation of the master/slave timings was the biggest
+> 
+> Currently sllin only supports master mode, I guess because of the tight
+> timing constraints.
 
-This, plus the fact that Jakub asked you to also provide standardized
-counters, not just free-form ones, which you found it ok to disregard.
+I think this has to be corrected.
 
-I hope that only a misunderstanding is involved, because if it isn't,
-then Jakub will know you, alright, but as the person who disregards
-review feedback and expects that it'll just disappear. I think Jakub
-has pretty solid grounds to not expect that you'll come back with what
-has been requested.
+In the master mode the SocketCAN Broadcast Manager (BCM) is configured 
+to periodically send LIN headers
+(according to LIN schedule table).
 
-Sorry, this patch has a NACK from me at least until you come back with
-some clarifications, and split the change.
+https://www.kernel.org/doc/html/latest/networking/can.html#broadcast-manager-protocol-sockets-sock-dgram
 
->  		data[u] = reg;
->  	}
+This is a very easy approach to precisely send the the LIN frames from 
+kernel space and also atomically change the content of (all) the 
+configured LIN frames while the schedule table is continuously processed.
+
+Sending LIN frames directly from *userspace* (and handling timers there) 
+was *never* intended for real LIN communication - although the examples 
+(with cangen) in the document look like this.
+
+Same applies to the slave mode:
+
+If you check out 
+https://raw.githubusercontent.com/wiki/lin-bus/linux-lin/sllin-doc.pdf 
+on page 11 you are able to enable the slave mode with
+
+	insmod ./sllin.ko master=0
+
+The 'trick' about this mode is that the RTR-functionality of the BCM is 
+able process the incoming CAN/LIN identifier and *instantly* send back 
+some pre-defined data for that specific LIN-ID, so that the SLLIN driver 
+sends/answers the 'data' section of the received LIN-ID within the 
+required timing constrains for LIN slaves.
+
+Not sure if the info about this concept got lost somehow, but the 
+CAN_BCM is the key for handling the LIN protocol and offload the LIN 
+scheduling (master/slave) to the kernel for the comparably dumb tty 
+interfaces.
+
+Best regards,
+Oliver
