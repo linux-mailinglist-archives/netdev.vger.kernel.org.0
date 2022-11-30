@@ -2,201 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C22D63D7C6
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:09:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 442C763D7D2
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:11:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbiK3OJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 09:09:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
+        id S229945AbiK3OLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 09:11:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229938AbiK3OHo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:07:44 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9498BD22
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 06:07:14 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id z20so24175166edc.13
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 06:07:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xHXcuy6oLE+Bgau9uGaJ5XFA1fmV6aif/DsLUjpATIk=;
-        b=6pAl5L0VLYVXTiFnKW5E0skgWr5aO+z+xDFrjrFCoygUB9HiXC6ugck9ATxUopyWti
-         H8wqG8ibFuGqDbf4IxVAeG+MNjsB02sYm/XJbeaxKF+IZSNU1+5NIlmQlMshCEMMrDx3
-         LEJ9Fb9y+F9bLOtrqPFQ07p4zXiLA1tFbD4mnU+5cHobdfroCt9rehpFbgt1DeVNtU+G
-         cyXZM79AcPgsgUPEed9ODLeH0n14OrTVbrJUzxNPSz+thEi1umaCxayYXmLyegjTfds7
-         w1k4hD/aBdMHN4e4zelHwEEEqCnfdJnHIoAdgIlbQsP0O5tJ9n5Qjt/ssncXzjqO26aU
-         p+VQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xHXcuy6oLE+Bgau9uGaJ5XFA1fmV6aif/DsLUjpATIk=;
-        b=4ljbSPc/CDuQgXhR0s8oUE4XI802Nx35az07TyqiLcqC6ZQxPyGuiq/SSnGJimWuS7
-         u5B9azw3H36s3If//ed0PTsj9YNNo+Zjix9kylpqIXEaKO64XrZo8GuERA7m49OUvIre
-         PX8Sm/jkopU245v69qZuzxJHvAIMyBz5OhNgfT+XK8GFbNN29J4MccAEF8StjqbuZbzr
-         /W9pn9CpkrDnQQc5m/DyP1xibJCFZ4bFrVvD0q0yW05BNsv9w6tp1qOP4NC2ZGknUCgh
-         EbCAiV8DuxlfwDi0EXQuTB8E5p53dzWxYI/wYpwDFsk9z8Vp71E3m2S3w2NBZkjaOajM
-         aNcg==
-X-Gm-Message-State: ANoB5pnh3QSOhAdleT+Q5zpmyBoA/VjnI0caGQs5bVUc6WZcZWYGbnLB
-        wg7zrsdWaMKjGMfbpK6pySisjQ==
-X-Google-Smtp-Source: AA0mqf6ewQ3Wcmzfrxx1kg91XYTrJwaHBigrcJyyV4Am60DQzR9SUx1Bh1B7j8tYPPI+bjGnpvw8TA==
-X-Received: by 2002:a05:6402:2074:b0:46a:bb9e:40d1 with SMTP id bd20-20020a056402207400b0046abb9e40d1mr23210839edb.242.1669817232990;
-        Wed, 30 Nov 2022 06:07:12 -0800 (PST)
-Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id mh1-20020a170906eb8100b0073d83f80b05sm692454ejb.94.2022.11.30.06.07.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Nov 2022 06:07:12 -0800 (PST)
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
-Cc:     Geliang Tang <geliang.tang@suse.com>, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 11/11] selftests: mptcp: listener test for in-kernel PM
-Date:   Wed, 30 Nov 2022 15:06:33 +0100
-Message-Id: <20221130140637.409926-12-matthieu.baerts@tessares.net>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221130140637.409926-1-matthieu.baerts@tessares.net>
-References: <20221130140637.409926-1-matthieu.baerts@tessares.net>
+        with ESMTP id S229804AbiK3OL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:11:27 -0500
+Received: from pv50p00im-ztdg10021201.me.com (pv50p00im-ztdg10021201.me.com [17.58.6.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F3781D84
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 06:09:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
+        s=sig1; t=1669817352;
+        bh=fCzooQMJwRO5ac8K1KpkBuVy8Jp59r3M74rKZ9Q3SGo=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=FmE/l14c2fanQQ8FfomWX8MlvycUHd3QxuWnk9PKK2KAQTz5Hd4Bihi8HFCojukub
+         exPT4KHVB7Epnd3eAThf49Mzi+cWTjkAKcgF+u41WCWofHV7PBFNnsp9RIvCh7wmli
+         o5T+7X+vvYnVSenJZECHxYiTUUZL2djSWkA/XTE4le/hRuBDsF60CZ+68ufFRASvby
+         wU/SdBgA+tvD2eT6uHeIhhmeuVGIsqbP62OpgfZ33QH4c8i/9GvCezDVB/z9EqhE5w
+         eXW4hy5VcKvwsTIibLhmlXXg+snUQXacD79S4lM6a8l3BxAlvfsroSbw6yu81Z10DD
+         qxycwqwy8gTtA==
+Received: from vanilla.. (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+        by pv50p00im-ztdg10021201.me.com (Postfix) with ESMTPSA id 913366806AE;
+        Wed, 30 Nov 2022 14:09:08 +0000 (UTC)
+From:   JunASAKA <JunASAKA@zzy040330.moe>
+To:     Jes.Sorensen@gmail.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        JunASAKA <JunASAKA@zzy040330.moe>
+Subject: [PATCH] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
+Date:   Wed, 30 Nov 2022 22:08:49 +0800
+Message-Id: <20221130140849.153705-1-JunASAKA@zzy040330.moe>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3645; i=matthieu.baerts@tessares.net;
- h=from:subject; bh=GYVgZ0ERRFhrNn6nnoF5lHfo9sSALlgzV4tXPFj4Gfk=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBjh2NpDQZZlZIAutRRRraikXlvQ/bHo9/MRdBkQPGS
- nPdMgDOJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCY4djaQAKCRD2t4JPQmmgcyohD/
- 91r32UYsZ+REfGf2SMW49ZwRShsLHwi5nPmiCAvVMANuAb2Y3i5PhjtnNnJCQLYLvgWRTQsH4YTNUg
- GQFlLgIUEygrccr5MOayeQePm0fDejaZHUjk5CW39jGzXwvgOqRvS712fn6ozELABLwvGHbSJRJV5y
- 9D9u0mscDRn8umN+CLnKKDdAtgrOXXLUwqYlZ73AqhRy+TVWvzc0fNyXNpfhoHxyzFgM504MzfJlUH
- yS/qOmPKSFW7q20nRSRvkM4h1Uy/7McV7bSLsBXa4zMOruaYE0nYHOiFkOx3Bxk/3ZFvBe1DQlit6g
- MR8ml8BpXoh0BYUKpP0NWZrD4bahTKRaxMjQRl3ozG4brL1ox1RP0Bt69iT56TGf7kV2sNMB3mMr19
- q8UrJTPtBd4B7m1GeDmrGOUtaqjxyjRJXVSQvObhNfIO/V2RV1i9eIbziAgXUvQKslgRdFQz7F5qCB
- 8hVWKG+47EqvJ/FSMdgNjCy9nM1+x3CJXO25g/G6VL3qub3xE1ztOATl1vYR09TpSq1907TsZX5Fp8
- J98/rJGjupG6Q5k1qrnCVYSzZsD4ARUpH9Rm3kigqIyf9vGVnUwC6dVWMQde0yTYmnLNbCxZLHn1uU
- kUCTllIMXHZv7MTbvuurpLPDWpao7kRurC+kTPJg2jRU6+/mXJrna2SOKsrQ==
-X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp; fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Proofpoint-ORIG-GUID: qShzc4VapBIvO-AL8wVh_HTz1KxSF-gz
+X-Proofpoint-GUID: qShzc4VapBIvO-AL8wVh_HTz1KxSF-gz
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.0.605.474.0000000_definitions?=
+ =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2020-01-23?=
+ =?UTF-8?Q?=5F02_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 clxscore=1030
+ bulkscore=0 mlxlogscore=721 phishscore=0 mlxscore=0 spamscore=0
+ malwarescore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2209130000 definitions=main-2211300099
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliang.tang@suse.com>
+Fixing "Path A RX IQK failed" and "Path B RX IQK failed"
+issues for rtl8192eu chips by replacing the arguments with
+the ones in the updated official driver.
 
-This patch adds test coverage for listening sockets created by the
-in-kernel path manager in mptcp_join.sh.
-
-It adds the listener event checking in the existing "remove single
-address with port" test. The output looks like this:
-
- 003 remove single address with port syn[ ok ] - synack[ ok ] - ack[ ok ]
-                                     add[ ok ] - echo  [ ok ] - pt [ ok ]
-                                     syn[ ok ] - synack[ ok ] - ack[ ok ]
-                                     syn[ ok ] - ack   [ ok ]
-                                     rm [ ok ] - rmsf  [ ok ]   invert
-                                     CREATE_LISTENER 10.0.2.1:10100[ ok ]
-                                     CLOSE_LISTENER 10.0.2.1:10100 [ ok ]
-
-Signed-off-by: Geliang Tang <geliang.tang@suse.com>
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: JunASAKA <JunASAKA@zzy040330.moe>
 ---
- .../testing/selftests/net/mptcp/mptcp_join.sh | 58 ++++++++++++++++++-
- 1 file changed, 57 insertions(+), 1 deletion(-)
+ .../realtek/rtl8xxxu/rtl8xxxu_8192e.c         | 76 +++++++++++++------
+ 1 file changed, 54 insertions(+), 22 deletions(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 32a3694c57fb..d11d3d566608 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -2513,6 +2513,57 @@ backup_tests()
- 	fi
- }
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+index b06508d0cd..82346500f2 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+@@ -734,6 +734,12 @@ static int rtl8192eu_iqk_path_a(struct rtl8xxxu_priv *priv)
+ 	 */
+ 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
+ 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_DF, 0x00180);
++
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x20000);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0x07f77);
++
+ 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
  
-+LISTENER_CREATED=15 #MPTCP_EVENT_LISTENER_CREATED
-+LISTENER_CLOSED=16  #MPTCP_EVENT_LISTENER_CLOSED
+ 	/* Path A IQK setting */
+@@ -779,11 +785,16 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
+ 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
+ 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
+-	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf117b);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf1173);
 +
-+AF_INET=2
-+AF_INET6=10
-+
-+verify_listener_events()
-+{
-+	local evt=$1
-+	local e_type=$2
-+	local e_family=$3
-+	local e_saddr=$4
-+	local e_sport=$5
-+	local type
-+	local family
-+	local saddr
-+	local sport
-+
-+	if [ $e_type = $LISTENER_CREATED ]; then
-+		stdbuf -o0 -e0 printf "\t\t\t\t\t CREATE_LISTENER %s:%s"\
-+			$e_saddr $e_sport
-+	elif [ $e_type = $LISTENER_CLOSED ]; then
-+		stdbuf -o0 -e0 printf "\t\t\t\t\t CLOSE_LISTENER %s:%s "\
-+			$e_saddr $e_sport
-+	fi
-+
-+	type=$(grep "type:$e_type," $evt |
-+	       sed --unbuffered -n 's/.*\(type:\)\([[:digit:]]*\).*$/\2/p;q')
-+	family=$(grep "type:$e_type," $evt |
-+		 sed --unbuffered -n 's/.*\(family:\)\([[:digit:]]*\).*$/\2/p;q')
-+	sport=$(grep "type:$e_type," $evt |
-+		sed --unbuffered -n 's/.*\(sport:\)\([[:digit:]]*\).*$/\2/p;q')
-+	if [ $family ] && [ $family = $AF_INET6 ]; then
-+		saddr=$(grep "type:$e_type," $evt |
-+			sed --unbuffered -n 's/.*\(saddr6:\)\([0-9a-f:.]*\).*$/\2/p;q')
-+	else
-+		saddr=$(grep "type:$e_type," $evt |
-+			sed --unbuffered -n 's/.*\(saddr4:\)\([0-9.]*\).*$/\2/p;q')
-+	fi
-+
-+	if [ $type ] && [ $type = $e_type ] &&
-+	   [ $family ] && [ $family = $e_family ] &&
-+	   [ $saddr ] && [ $saddr = $e_saddr ] &&
-+	   [ $sport ] && [ $sport = $e_sport ]; then
-+		stdbuf -o0 -e0 printf "[ ok ]\n"
-+		return 0
-+	fi
-+	fail_test
-+	stdbuf -o0 -e0 printf "[fail]\n"
-+}
-+
- add_addr_ports_tests()
- {
- 	# signal address with port
-@@ -2537,7 +2588,8 @@ add_addr_ports_tests()
- 	fi
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf1173);
  
- 	# single address with port, remove
--	if reset "remove single address with port"; then
-+	# pm listener events
-+	if reset_with_events "remove single address with port"; then
- 		pm_nl_set_limits $ns1 0 1
- 		pm_nl_add_endpoint $ns1 10.0.2.1 flags signal port 10100
- 		pm_nl_set_limits $ns2 1 1
-@@ -2545,6 +2597,10 @@ add_addr_ports_tests()
- 		chk_join_nr 1 1 1
- 		chk_add_nr 1 1 1
- 		chk_rm_nr 1 1 invert
-+
-+		verify_listener_events $evts_ns1 $LISTENER_CREATED $AF_INET 10.0.2.1 10100
-+		verify_listener_events $evts_ns1 $LISTENER_CLOSED $AF_INET 10.0.2.1 10100
-+		kill_events_pids
- 	fi
+ 	/* PA/PAD control by 0x56, and set = 0x0 */
+ 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_DF, 0x00980);
+-	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x51000);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x511e0);
  
- 	# subflow and signal with port, remove
+ 	/* Enter IQK mode */
+ 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
+@@ -798,14 +809,14 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
+ 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
+ 
+-	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c1f);
+-	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x68160c1f);
++	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x8216031f);
++	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x6816031f);
+ 
+ 	/* LO calibration setting */
+ 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
+ 
+ 	/* One shot, path A LOK & IQK */
+-	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
++	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
+ 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
+ 
+ 	mdelay(10);
+@@ -836,11 +847,16 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
+ 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
+ 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
+-	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7ffa);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7ff2);
++
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
+ 
+ 	/* PA/PAD control by 0x56, and set = 0x0 */
+ 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_DF, 0x00980);
+-	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x51000);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x510e0);
+ 
+ 	/* Enter IQK mode */
+ 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
+@@ -854,14 +870,14 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
+ 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
+ 
+-	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c1f);
+-	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x28160c1f);
++	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x821608ff);
++	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x281608ff);
+ 
+ 	/* LO calibration setting */
+ 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a891);
+ 
+ 	/* One shot, path A LOK & IQK */
+-	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
++	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
+ 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
+ 
+ 	mdelay(10);
+@@ -891,22 +907,28 @@ static int rtl8192eu_iqk_path_b(struct rtl8xxxu_priv *priv)
+ 
+ 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
+ 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00180);
+-	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
+ 
+-	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x20000);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0x07f77);
++
+ 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
+ 
++	// rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
++	// rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
++
+ 	/* Path B IQK setting */
+ 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x38008c1c);
+ 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
+ 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x18008c1c);
+ 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
+ 
+-	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x821403e2);
++	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82140303);
+ 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x68160000);
+ 
+ 	/* LO calibration setting */
+-	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00492911);
++	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00462911);
+ 
+ 	/* One shot, path A LOK & IQK */
+ 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
+@@ -942,11 +964,16 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
+ 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
+ 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
+-	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf117b);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf1173);
++
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
++	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf1173);
+ 
+ 	/* PA/PAD control by 0x56, and set = 0x0 */
+ 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00980);
+-	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x51000);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x511e0);
+ 
+ 	/* Enter IQK mode */
+ 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
+@@ -961,8 +988,8 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x18008c1c);
+ 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
+ 
+-	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82160c1f);
+-	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x68160c1f);
++	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x8216031f);
++	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x6816031f);
+ 
+ 	/* LO calibration setting */
+ 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
+@@ -1002,11 +1029,16 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
+ 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
+ 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
+-	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ffa);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
++
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
+ 
+ 	/* PA/PAD control by 0x56, and set = 0x0 */
+ 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00980);
+-	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x51000);
++	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x510e0);
+ 
+ 	/* Enter IQK mode */
+ 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
+@@ -1020,8 +1052,8 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
+ 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x18008c1c);
+ 
+-	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c1f);
+-	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x28160c1f);
++	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x821608ff);
++	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x281608ff);
+ 
+ 	/* LO calibration setting */
+ 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a891);
 -- 
-2.37.2
+2.38.1
 
