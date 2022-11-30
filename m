@@ -2,74 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A40163E1A9
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 21:14:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B65863E1AE
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 21:17:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230159AbiK3UOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 15:14:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44288 "EHLO
+        id S229513AbiK3URX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 15:17:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbiK3UOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 15:14:21 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5369457E;
-        Wed, 30 Nov 2022 12:11:28 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id jl24so304412plb.8;
-        Wed, 30 Nov 2022 12:11:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8ws56OmnbODsSag8ifeH+mKjjjBdZv6y7WQ6kCsX4bY=;
-        b=dScuvAJJ0o4Ciy/CCDZmemhr9OhcMjBs1RogvmT/oIyPC9KoHFhcsnD6OViMUT3pj1
-         m6Cdp8f0DYbhc+SMcl3zN9OwGEdsPPSLzD/SUDFZoc+TdUlSN70LI4MC+j1XKnKcCz2O
-         ubVnUCdIHUhNu+dkjvBTxJiVpRgiVHvxZYzgkGEAfm7Uvloy5uXAEBhdLHeO2t6Jt/9w
-         MYnlqDYenr9fpSr6JR86y7k3+fGuIDBJ/PO8bV3Ma42Ln7LLdXVXofTqIO36WCOygzFZ
-         jJk3ScsGT8EN0OwpnpUlcISDZtmrWFGPpos289IOvN6Xa4bnQnWKLzDJM72JeNupd6tr
-         kkzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8ws56OmnbODsSag8ifeH+mKjjjBdZv6y7WQ6kCsX4bY=;
-        b=hsvmtozhDHdiWsJQPW5SBB4vvQIDDdTAfNHBAVqDO5JApejEl2aCtK/JksO5gvPAp6
-         j9UqbVUIgqrII8P3BkKxd5gmohojub53xvL7BS1UsFWQpNjiaJdXIUxMj6loOdX0a9DC
-         0HyGd13bMYNkiHJWT3HVmIryFoKB8lAozGZfgWdJvC59Qk8+CdV2OYH3z+wScZjLPM1F
-         e5RtwhuWpDOf/tRw87bcnR7c63d6etVLGwfCpnWmk3KdD/o/UcS8vjJt3j/MGJLP32vM
-         C6HOhvSFopaZiYhO6caQJ5XO92F7LH5UEc/Zg3HfIjpySf2UEsGAIEPPxppo09ss7mbk
-         77LQ==
-X-Gm-Message-State: ANoB5pmxQL63J1g8Ho/4cgnA8FSWni8Tr+UqgVWllSsO/o1N/gI4/1Bi
-        tz5NcFFdyYSeUXdapvi9eCU=
-X-Google-Smtp-Source: AA0mqf4aoJxrffqEDGlugp0KzDPS2+B1GhRh7qDm2TRsD7t+QG3BBEe5SsMmIZmGZyhi8bGpUDYPcw==
-X-Received: by 2002:a17:90a:df0e:b0:20b:22fb:2ef with SMTP id gp14-20020a17090adf0e00b0020b22fb02efmr73260481pjb.158.1669839088041;
-        Wed, 30 Nov 2022 12:11:28 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id o2-20020a17090a744200b0020d67a726easm3495877pjk.10.2022.11.30.12.11.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Nov 2022 12:11:27 -0800 (PST)
-Message-ID: <66894fc0-78d3-0334-5227-a961dc4aa205@gmail.com>
-Date:   Wed, 30 Nov 2022 12:11:22 -0800
+        with ESMTP id S229962AbiK3UQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 15:16:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357E41E9
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 12:12:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669839139;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6bOTVpeICKuL76FpWE+vvC2K7TTxT1V/p2B5s3kX4Ck=;
+        b=O+GHls8RIQDRBSvvD8ulU7pd/jhvltjOV9yndQ5PJbtantyHoi1LRFUMJG4Ja3mcttuZk6
+        Q8huDULDrp86B8wf/6rl+JroBgmGCyl3LhogHSNxan2vJRqHkrZazned52ysXwVdFTX+j4
+        txkpFwWeX2d1RgYNzXfp3aWo3jGt8ng=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-272-sFsIdYlFN7G8GOPPIh-NqA-1; Wed, 30 Nov 2022 15:12:15 -0500
+X-MC-Unique: sFsIdYlFN7G8GOPPIh-NqA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9FD81185A792;
+        Wed, 30 Nov 2022 20:12:14 +0000 (UTC)
+Received: from jtoppins.rdu.csb (unknown [10.22.32.182])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0FB5FC15BB4;
+        Wed, 30 Nov 2022 20:12:14 +0000 (UTC)
+From:   Jonathan Toppins <jtoppins@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Jarod Wilson <jarod@redhat.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/2] Documentation: bonding: update miimon default to 100
+Date:   Wed, 30 Nov 2022 15:12:06 -0500
+Message-Id: <4c3f4f0b8f4a8cd3c104d58c106b97ce5f180bc1.1669839127.git.jtoppins@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [v3][net-next][PATCH 1/1] net: phy: Add link between phy dev and
- mac dev
-Content-Language: en-US
-To:     Xiaolei Wang <xiaolei.wang@windriver.com>, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221130021216.1052230-1-xiaolei.wang@windriver.com>
- <20221130021216.1052230-2-xiaolei.wang@windriver.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221130021216.1052230-2-xiaolei.wang@windriver.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,35 +66,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/29/22 18:12, Xiaolei Wang wrote:
-> If the external phy used by current mac interface is
-> managed by another mac interface, it means that this
-> network port cannot work independently, especially
-> when the system suspends and resumes, the following
-> trace may appear, so we should create a device link
-> between phy dev and mac dev.
-> 
->    WARNING: CPU: 0 PID: 24 at drivers/net/phy/phy.c:983 phy_error+0x20/0x68
->    Modules linked in:
->    CPU: 0 PID: 24 Comm: kworker/0:2 Not tainted 6.1.0-rc3-00011-g5aaef24b5c6d-dirty #34
->    Hardware name: Freescale i.MX6 SoloX (Device Tree)
->    Workqueue: events_power_efficient phy_state_machine
->    unwind_backtrace from show_stack+0x10/0x14
->    show_stack from dump_stack_lvl+0x68/0x90
->    dump_stack_lvl from __warn+0xb4/0x24c
->    __warn from warn_slowpath_fmt+0x5c/0xd8
->    warn_slowpath_fmt from phy_error+0x20/0x68
->    phy_error from phy_state_machine+0x22c/0x23c
->    phy_state_machine from process_one_work+0x288/0x744
->    process_one_work from worker_thread+0x3c/0x500
->    worker_thread from kthread+0xf0/0x114
->    kthread from ret_from_fork+0x14/0x28
->    Exception stack(0xf0951fb0 to 0xf0951ff8)
-> 
-> Signed-off-by: Xiaolei Wang <xiaolei.wang@windriver.com>
+With commit c1f897ce186a ("bonding: set default miimon value for non-arp
+modes if not set") the miimon default was changed from zero to 100 if
+arp_interval is also zero. Document this fact in bonding.rst.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: c1f897ce186a ("bonding: set default miimon value for non-arp modes if not set")
+Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+---
+ Documentation/networking/bonding.rst | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
+index 96cd7a26f3d9..da57aac73ffc 100644
+--- a/Documentation/networking/bonding.rst
++++ b/Documentation/networking/bonding.rst
+@@ -566,7 +566,8 @@ miimon
+ 	link monitoring.  A value of 100 is a good starting point.
+ 	The use_carrier option, below, affects how the link state is
+ 	determined.  See the High Availability section for additional
+-	information.  The default value is 0.
++	information.  The default value is 100 if arp_interval is not
++	set.
+ 
+ min_links
+ 
 -- 
-Florian
+2.31.1
 
