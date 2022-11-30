@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C1563DB2A
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 17:56:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FD9563DB2C
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 17:56:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230433AbiK3Q4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 11:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43930 "EHLO
+        id S230452AbiK3Q4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 11:56:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230425AbiK3Q4L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 11:56:11 -0500
+        with ESMTP id S230437AbiK3Q4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 11:56:19 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95C88DFD1
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 08:55:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932A78DFD2
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 08:55:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669827306;
+        s=mimecast20190719; t=1669827316;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ELwEvoqcLtONqcVmTzyiWYOh4/BRyQ//XCTjBm7n/as=;
-        b=HTpmT/xRZiGtaq+yrtP1QeOjFgNv+6LH3V/AhxiToHvgOjZG2fjAHZqCGQdN45u7YwtlLp
-        LvLEG+aHdISjZPx0Cn/nLP4kIDUdEpG7cCIAFjCtNYj2YJpPhR5u4tA93/mCl1kGWUV38p
-        7N6ohUfwrcAzVv1AT4DJGsMKQU2cbo0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=TfU2vOhI2FJqWWTwtY56Qr3tqmx7ENd1hy5S4qU6G68=;
+        b=II2zeNeswEoC8LG5chLy8+T7aRbO5m7fPLGVEdfB/PZJCavDn0KLBqZBl75IUXzuivLCp2
+        RHbjUPtMRPCFn1piuRVuCwzsUPcW7F2fSvilwabNj2HuaORzsa+CULfaXJTohVW2lRlHFg
+        TLeXhWOW2OlmdDwa1Q6QA859clme7/w=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-623-QBErPwqRMhm2mMrJEZc66A-1; Wed, 30 Nov 2022 11:55:04 -0500
-X-MC-Unique: QBErPwqRMhm2mMrJEZc66A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+ us-mta-113-UxU8F81IM02y7tOXAELrUg-1; Wed, 30 Nov 2022 11:55:13 -0500
+X-MC-Unique: UxU8F81IM02y7tOXAELrUg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5A1A2101A5AD;
-        Wed, 30 Nov 2022 16:55:04 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 09E62381079D;
+        Wed, 30 Nov 2022 16:55:13 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 82FF540C6EC4;
-        Wed, 30 Nov 2022 16:55:03 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 474B3C15BA4;
+        Wed, 30 Nov 2022 16:55:12 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 05/35] rxrpc: Remove the [k_]proto() debugging macros
+Subject: [PATCH net-next 06/35] rxrpc: Remove the [_k]net() debugging macros
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Wed, 30 Nov 2022 16:55:00 +0000
-Message-ID: <166982730073.621383.6529596529186180273.stgit@warthog.procyon.org.uk>
+Date:   Wed, 30 Nov 2022 16:55:09 +0000
+Message-ID: <166982730951.621383.821090767945998432.stgit@warthog.procyon.org.uk>
 In-Reply-To: <166982725699.621383.2358362793992993374.stgit@warthog.procyon.org.uk>
 References: <166982725699.621383.2358362793992993374.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,350 +66,323 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the kproto() and _proto() debugging macros in preference to using
-tracepoints for this.
+Remove the _net() and knet() debugging macros in favour of tracepoints.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- include/trace/events/rxrpc.h |   60 ++++++++++++++++++++++++++++++++++++++++++
- net/rxrpc/ar-internal.h      |   10 -------
- net/rxrpc/conn_event.c       |    4 ---
- net/rxrpc/input.c            |   17 ------------
- net/rxrpc/local_event.c      |    3 --
- net/rxrpc/output.c           |    2 -
- net/rxrpc/peer_event.c       |    4 ---
- net/rxrpc/rxkad.c            |    9 ++----
- 8 files changed, 63 insertions(+), 46 deletions(-)
+ net/rxrpc/ar-internal.h  |   10 ----------
+ net/rxrpc/call_object.c  |    6 ------
+ net/rxrpc/conn_client.c  |    2 --
+ net/rxrpc/conn_object.c  |    2 --
+ net/rxrpc/conn_service.c |    2 --
+ net/rxrpc/input.c        |    1 -
+ net/rxrpc/local_object.c |    8 --------
+ net/rxrpc/peer_event.c   |   48 ++--------------------------------------------
+ net/rxrpc/peer_object.c  |    6 +-----
+ 9 files changed, 3 insertions(+), 82 deletions(-)
 
-diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index b9886d1df825..2b77f9a75bf7 100644
---- a/include/trace/events/rxrpc.h
-+++ b/include/trace/events/rxrpc.h
-@@ -733,6 +733,66 @@ TRACE_EVENT(rxrpc_rx_abort,
- 		      __entry->abort_code)
- 	    );
- 
-+TRACE_EVENT(rxrpc_rx_challenge,
-+	    TP_PROTO(struct rxrpc_connection *conn, rxrpc_serial_t serial,
-+		     u32 version, u32 nonce, u32 min_level),
-+
-+	    TP_ARGS(conn, serial, version, nonce, min_level),
-+
-+	    TP_STRUCT__entry(
-+		    __field(unsigned int,		conn		)
-+		    __field(rxrpc_serial_t,		serial		)
-+		    __field(u32,			version		)
-+		    __field(u32,			nonce		)
-+		    __field(u32,			min_level	)
-+			     ),
-+
-+	    TP_fast_assign(
-+		    __entry->conn = conn->debug_id;
-+		    __entry->serial = serial;
-+		    __entry->version = version;
-+		    __entry->nonce = nonce;
-+		    __entry->min_level = min_level;
-+			   ),
-+
-+	    TP_printk("C=%08x CHALLENGE %08x v=%x n=%x ml=%x",
-+		      __entry->conn,
-+		      __entry->serial,
-+		      __entry->version,
-+		      __entry->nonce,
-+		      __entry->min_level)
-+	    );
-+
-+TRACE_EVENT(rxrpc_rx_response,
-+	    TP_PROTO(struct rxrpc_connection *conn, rxrpc_serial_t serial,
-+		     u32 version, u32 kvno, u32 ticket_len),
-+
-+	    TP_ARGS(conn, serial, version, kvno, ticket_len),
-+
-+	    TP_STRUCT__entry(
-+		    __field(unsigned int,		conn		)
-+		    __field(rxrpc_serial_t,		serial		)
-+		    __field(u32,			version		)
-+		    __field(u32,			kvno		)
-+		    __field(u32,			ticket_len	)
-+			     ),
-+
-+	    TP_fast_assign(
-+		    __entry->conn = conn->debug_id;
-+		    __entry->serial = serial;
-+		    __entry->version = version;
-+		    __entry->kvno = kvno;
-+		    __entry->ticket_len = ticket_len;
-+			   ),
-+
-+	    TP_printk("C=%08x RESPONSE %08x v=%x kvno=%x tl=%x",
-+		      __entry->conn,
-+		      __entry->serial,
-+		      __entry->version,
-+		      __entry->kvno,
-+		      __entry->ticket_len)
-+	    );
-+
- TRACE_EVENT(rxrpc_rx_rwind_change,
- 	    TP_PROTO(struct rxrpc_call *call, rxrpc_serial_t serial,
- 		     u32 rwind, bool wake),
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index f5c538ce3e23..a3a29390e12b 100644
+index a3a29390e12b..36ece1efb1d4 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -1190,7 +1190,6 @@ extern unsigned int rxrpc_debug;
+@@ -1190,20 +1190,17 @@ extern unsigned int rxrpc_debug;
  #define kenter(FMT,...)	dbgprintk("==> %s("FMT")",__func__ ,##__VA_ARGS__)
  #define kleave(FMT,...)	dbgprintk("<== %s()"FMT"",__func__ ,##__VA_ARGS__)
  #define kdebug(FMT,...)	dbgprintk("    "FMT ,##__VA_ARGS__)
--#define kproto(FMT,...)	dbgprintk("### "FMT ,##__VA_ARGS__)
- #define knet(FMT,...)	dbgprintk("@@@ "FMT ,##__VA_ARGS__)
+-#define knet(FMT,...)	dbgprintk("@@@ "FMT ,##__VA_ARGS__)
  
  
-@@ -1198,14 +1197,12 @@ extern unsigned int rxrpc_debug;
+ #if defined(__KDEBUG)
  #define _enter(FMT,...)	kenter(FMT,##__VA_ARGS__)
  #define _leave(FMT,...)	kleave(FMT,##__VA_ARGS__)
  #define _debug(FMT,...)	kdebug(FMT,##__VA_ARGS__)
--#define _proto(FMT,...)	kproto(FMT,##__VA_ARGS__)
- #define _net(FMT,...)	knet(FMT,##__VA_ARGS__)
+-#define _net(FMT,...)	knet(FMT,##__VA_ARGS__)
  
  #elif defined(CONFIG_AF_RXRPC_DEBUG)
  #define RXRPC_DEBUG_KENTER	0x01
  #define RXRPC_DEBUG_KLEAVE	0x02
  #define RXRPC_DEBUG_KDEBUG	0x04
--#define RXRPC_DEBUG_KPROTO	0x08
- #define RXRPC_DEBUG_KNET	0x10
+-#define RXRPC_DEBUG_KNET	0x10
  
  #define _enter(FMT,...)					\
-@@ -1226,12 +1223,6 @@ do {							\
+ do {							\
+@@ -1223,17 +1220,10 @@ do {							\
  		kdebug(FMT,##__VA_ARGS__);		\
  } while (0)
  
--#define _proto(FMT,...)					\
+-#define _net(FMT,...)					\
 -do {							\
--	if (unlikely(rxrpc_debug & RXRPC_DEBUG_KPROTO))	\
--		kproto(FMT,##__VA_ARGS__);		\
+-	if (unlikely(rxrpc_debug & RXRPC_DEBUG_KNET))	\
+-		knet(FMT,##__VA_ARGS__);		\
 -} while (0)
 -
- #define _net(FMT,...)					\
- do {							\
- 	if (unlikely(rxrpc_debug & RXRPC_DEBUG_KNET))	\
-@@ -1242,7 +1233,6 @@ do {							\
+ #else
  #define _enter(FMT,...)	no_printk("==> %s("FMT")",__func__ ,##__VA_ARGS__)
  #define _leave(FMT,...)	no_printk("<== %s()"FMT"",__func__ ,##__VA_ARGS__)
  #define _debug(FMT,...)	no_printk("    "FMT ,##__VA_ARGS__)
--#define _proto(FMT,...)	no_printk("### "FMT ,##__VA_ARGS__)
- #define _net(FMT,...)	no_printk("@@@ "FMT ,##__VA_ARGS__)
+-#define _net(FMT,...)	no_printk("@@@ "FMT ,##__VA_ARGS__)
  #endif
  
-diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
-index aab069701398..d5549cbfc71b 100644
---- a/net/rxrpc/conn_event.c
-+++ b/net/rxrpc/conn_event.c
-@@ -122,14 +122,12 @@ static void rxrpc_conn_retransmit_call(struct rxrpc_connection *conn,
+ /*
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index 1befe22cd301..e36a317b2e9a 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -349,8 +349,6 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
  
- 	switch (chan->last_type) {
- 	case RXRPC_PACKET_TYPE_ABORT:
--		_proto("Tx ABORT %%%u { %d } [re]", serial, conn->abort_code);
- 		break;
- 	case RXRPC_PACKET_TYPE_ACK:
- 		trace_rxrpc_tx_ack(chan->call_debug_id, serial,
- 				   ntohl(pkt.ack.firstPacket),
- 				   ntohl(pkt.ack.serial),
- 				   pkt.ack.reason, 0);
--		_proto("Tx ACK %%%u [re]", serial);
- 		break;
- 	}
+ 	rxrpc_start_call_timer(call);
  
-@@ -242,7 +240,6 @@ static int rxrpc_abort_connection(struct rxrpc_connection *conn,
- 	serial = atomic_inc_return(&conn->serial);
- 	rxrpc_abort_calls(conn, RXRPC_CALL_LOCALLY_ABORTED, serial);
- 	whdr.serial = htonl(serial);
--	_proto("Tx CONN ABORT %%%u { %d }", serial, conn->abort_code);
+-	_net("CALL new %d on CONN %d", call->debug_id, call->conn->debug_id);
+-
+ 	_leave(" = %p [new]", call);
+ 	return call;
  
- 	ret = kernel_sendmsg(conn->params.local->socket, &msg, iov, 2, len);
- 	if (ret < 0) {
-@@ -315,7 +312,6 @@ static int rxrpc_process_event(struct rxrpc_connection *conn,
- 			return -EPROTO;
- 		}
- 		abort_code = ntohl(wtmp);
--		_proto("Rx ABORT %%%u { ac=%d }", sp->hdr.serial, abort_code);
+@@ -423,8 +421,6 @@ void rxrpc_incoming_call(struct rxrpc_sock *rx,
+ 	hlist_add_head_rcu(&call->error_link, &conn->params.peer->error_targets);
+ 	spin_unlock(&conn->params.peer->lock);
  
- 		conn->error = -ECONNABORTED;
- 		conn->abort_code = abort_code;
+-	_net("CALL incoming %d on CONN %d", call->debug_id, call->conn->debug_id);
+-
+ 	rxrpc_start_call_timer(call);
+ 	_leave("");
+ }
+@@ -669,8 +665,6 @@ void rxrpc_cleanup_call(struct rxrpc_call *call)
+ {
+ 	struct rxrpc_txbuf *txb;
+ 
+-	_net("DESTROY CALL %d", call->debug_id);
+-
+ 	memset(&call->sock_node, 0xcd, sizeof(call->sock_node));
+ 
+ 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
+index f11c97e28d2a..2b76fbffd4dd 100644
+--- a/net/rxrpc/conn_client.c
++++ b/net/rxrpc/conn_client.c
+@@ -541,8 +541,6 @@ static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
+ 	call->service_id = conn->service_id;
+ 
+ 	trace_rxrpc_connect_call(call);
+-	_net("CONNECT call %08x:%08x as call %d on conn %d",
+-	     call->cid, call->call_id, call->debug_id, conn->debug_id);
+ 
+ 	write_lock_bh(&call->state_lock);
+ 	call->state = RXRPC_CALL_CLIENT_SEND_REQUEST;
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index 156bd26daf74..d5d15389406f 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -356,8 +356,6 @@ static void rxrpc_destroy_connection(struct rcu_head *rcu)
+ 
+ 	ASSERTCMP(refcount_read(&conn->ref), ==, 0);
+ 
+-	_net("DESTROY CONN %d", conn->debug_id);
+-
+ 	del_timer_sync(&conn->timer);
+ 	rxrpc_purge_queue(&conn->rx_queue);
+ 
+diff --git a/net/rxrpc/conn_service.c b/net/rxrpc/conn_service.c
+index 6e6aa02c6f9e..75f903099eb0 100644
+--- a/net/rxrpc/conn_service.c
++++ b/net/rxrpc/conn_service.c
+@@ -184,8 +184,6 @@ void rxrpc_new_incoming_connection(struct rxrpc_sock *rx,
+ 
+ 	/* Make the connection a target for incoming packets. */
+ 	rxrpc_publish_service_conn(conn->params.peer, conn);
+-
+-	_net("CONNECTION new %d {%x}", conn->debug_id, conn->proto.cid);
+ }
+ 
+ /*
 diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index bdf70b81addc..646ee61af40e 100644
+index 646ee61af40e..e2461f29d765 100644
 --- a/net/rxrpc/input.c
 +++ b/net/rxrpc/input.c
-@@ -551,9 +551,6 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- 	       atomic64_read(&call->ackr_window), call->rx_highest_seq,
- 	       skb->len, seq0);
- 
--	_proto("Rx DATA %%%u { #%u f=%02x }",
--	       sp->hdr.serial, seq0, sp->hdr.flags);
--
- 	state = READ_ONCE(call->state);
- 	if (state >= RXRPC_CALL_COMPLETE) {
- 		rxrpc_free_skb(skb, rxrpc_skb_freed);
-@@ -708,11 +705,6 @@ static void rxrpc_input_ackinfo(struct rxrpc_call *call, struct sk_buff *skb,
- 	bool wake = false;
- 	u32 rwind = ntohl(ackinfo->rwind);
- 
--	_proto("Rx ACK %%%u Info { rx=%u max=%u rwin=%u jm=%u }",
--	       sp->hdr.serial,
--	       ntohl(ackinfo->rxMTU), ntohl(ackinfo->maxMTU),
--	       rwind, ntohl(ackinfo->jumbo_max));
--
- 	if (rwind > RXRPC_TX_MAX_WINDOW)
- 		rwind = RXRPC_TX_MAX_WINDOW;
- 	if (call->tx_winsize != rwind) {
-@@ -855,7 +847,6 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+@@ -725,7 +725,6 @@ static void rxrpc_input_ackinfo(struct rxrpc_call *call, struct sk_buff *skb,
+ 		peer->maxdata = mtu;
+ 		peer->mtu = mtu + peer->hdrsize;
+ 		spin_unlock_bh(&peer->lock);
+-		_net("Net MTU %u (maxdata %u)", peer->mtu, peer->maxdata);
  	}
  
- 	if (ack.reason == RXRPC_ACK_PING) {
--		_proto("Rx ACK %%%u PING Request", ack_serial);
- 		rxrpc_send_ACK(call, RXRPC_ACK_PING_RESPONSE, ack_serial,
- 			       rxrpc_propose_ack_respond_to_ping);
- 	} else if (sp->hdr.flags & RXRPC_REQUEST_ACK) {
-@@ -1014,9 +1005,6 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- static void rxrpc_input_ackall(struct rxrpc_call *call, struct sk_buff *skb)
- {
- 	struct rxrpc_ack_summary summary = { 0 };
--	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
--
--	_proto("Rx ACKALL %%%u", sp->hdr.serial);
+ 	if (wake)
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index a943fdf91e24..11080c335d42 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -198,7 +198,6 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
+ 	struct rxrpc_local *local;
+ 	struct rxrpc_net *rxnet = rxrpc_net(net);
+ 	struct hlist_node *cursor;
+-	const char *age;
+ 	long diff;
+ 	int ret;
  
- 	spin_lock(&call->input_lock);
- 
-@@ -1044,8 +1032,6 @@ static void rxrpc_input_abort(struct rxrpc_call *call, struct sk_buff *skb)
- 
- 	trace_rxrpc_rx_abort(call, sp->hdr.serial, abort_code);
- 
--	_proto("Rx ABORT %%%u { %x }", sp->hdr.serial, abort_code);
--
- 	rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
- 				  abort_code, -ECONNABORTED);
- }
-@@ -1081,8 +1067,6 @@ static void rxrpc_input_call_packet(struct rxrpc_call *call,
- 		goto no_free;
- 
- 	case RXRPC_PACKET_TYPE_BUSY:
--		_proto("Rx BUSY %%%u", sp->hdr.serial);
--
- 		/* Just ignore BUSY packets from the server; the retry and
- 		 * lifespan timers will take care of business.  BUSY packets
- 		 * from the client don't make sense.
-@@ -1325,7 +1309,6 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
- 		goto discard;
- 
- 	default:
--		_proto("Rx Bad Packet Type %u", sp->hdr.type);
- 		goto bad_message;
- 	}
- 
-diff --git a/net/rxrpc/local_event.c b/net/rxrpc/local_event.c
-index 19e929c7c38b..f23a3fbabbda 100644
---- a/net/rxrpc/local_event.c
-+++ b/net/rxrpc/local_event.c
-@@ -63,8 +63,6 @@ static void rxrpc_send_version_request(struct rxrpc_local *local,
- 
- 	len = iov[0].iov_len + iov[1].iov_len;
- 
--	_proto("Tx VERSION (reply)");
--
- 	ret = kernel_sendmsg(local->socket, &msg, iov, 2, len);
- 	if (ret < 0)
- 		trace_rxrpc_tx_fail(local->debug_id, 0, ret,
-@@ -98,7 +96,6 @@ void rxrpc_process_local_events(struct rxrpc_local *local)
- 			if (skb_copy_bits(skb, sizeof(struct rxrpc_wire_header),
- 					  &v, 1) < 0)
- 				return;
--			_proto("Rx VERSION { %02x }", v);
- 			if (v == 0)
- 				rxrpc_send_version_request(local, &sp->hdr, skb);
+@@ -232,7 +231,6 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
+ 		if (!rxrpc_use_local(local))
  			break;
-diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
-index c5eed0e83e47..635acf3dbd77 100644
---- a/net/rxrpc/output.c
-+++ b/net/rxrpc/output.c
-@@ -701,8 +701,6 @@ void rxrpc_send_keepalive(struct rxrpc_peer *peer)
  
- 	len = iov[0].iov_len + iov[1].iov_len;
+-		age = "old";
+ 		goto found;
+ 	}
  
--	_proto("Tx VERSION (keepalive)");
+@@ -250,14 +248,9 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
+ 	} else {
+ 		hlist_add_head_rcu(&local->link, &rxnet->local_endpoints);
+ 	}
+-	age = "new";
+ 
+ found:
+ 	mutex_unlock(&rxnet->local_mutex);
 -
- 	iov_iter_kvec(&msg.msg_iter, WRITE, iov, 2, len);
- 	ret = do_udp_sendmsg(peer->local->socket, &msg, len);
- 	if (ret < 0)
+-	_net("LOCAL %s %d {%pISp}",
+-	     age, local->debug_id, &local->srx.transport);
+-
+ 	_leave(" = %p", local);
+ 	return local;
+ 
+@@ -467,7 +460,6 @@ static void rxrpc_local_rcu(struct rcu_head *rcu)
+ 
+ 	ASSERT(!work_pending(&local->processor));
+ 
+-	_net("DESTROY LOCAL %d", local->debug_id);
+ 	kfree(local);
+ 	_leave("");
+ }
 diff --git a/net/rxrpc/peer_event.c b/net/rxrpc/peer_event.c
-index cda3890657a9..be781c156e89 100644
+index be781c156e89..ad4d1769e02b 100644
 --- a/net/rxrpc/peer_event.c
 +++ b/net/rxrpc/peer_event.c
-@@ -253,15 +253,12 @@ static void rxrpc_store_error(struct rxrpc_peer *peer,
+@@ -48,13 +48,11 @@ static struct rxrpc_peer *rxrpc_lookup_peer_local_rcu(struct rxrpc_local *local,
+ 		srx->transport.sin.sin_port = serr->port;
+ 		switch (serr->ee.ee_origin) {
+ 		case SO_EE_ORIGIN_ICMP:
+-			_net("Rx ICMP");
+ 			memcpy(&srx->transport.sin.sin_addr,
+ 			       skb_network_header(skb) + serr->addr_offset,
+ 			       sizeof(struct in_addr));
  			break;
- 
- 		default:
--			_proto("Rx Received ICMP error { type=%u code=%u }",
--			       ee->ee_type, ee->ee_code);
+ 		case SO_EE_ORIGIN_ICMP6:
+-			_net("Rx ICMP6 on v4 sock");
+ 			memcpy(&srx->transport.sin.sin_addr,
+ 			       skb_network_header(skb) + serr->addr_offset + 12,
+ 			       sizeof(struct in_addr));
+@@ -70,14 +68,12 @@ static struct rxrpc_peer *rxrpc_lookup_peer_local_rcu(struct rxrpc_local *local,
+ 	case AF_INET6:
+ 		switch (serr->ee.ee_origin) {
+ 		case SO_EE_ORIGIN_ICMP6:
+-			_net("Rx ICMP6");
+ 			srx->transport.sin6.sin6_port = serr->port;
+ 			memcpy(&srx->transport.sin6.sin6_addr,
+ 			       skb_network_header(skb) + serr->addr_offset,
+ 			       sizeof(struct in6_addr));
  			break;
- 		}
- 		break;
+ 		case SO_EE_ORIGIN_ICMP:
+-			_net("Rx ICMP on v6 sock");
+ 			srx->transport_len = sizeof(srx->transport.sin);
+ 			srx->transport.family = AF_INET;
+ 			srx->transport.sin.sin_port = serr->port;
+@@ -106,13 +102,9 @@ static struct rxrpc_peer *rxrpc_lookup_peer_local_rcu(struct rxrpc_local *local,
+  */
+ static void rxrpc_adjust_mtu(struct rxrpc_peer *peer, unsigned int mtu)
+ {
+-	_net("Rx ICMP Fragmentation Needed (%d)", mtu);
+-
+ 	/* wind down the local interface MTU */
+-	if (mtu > 0 && peer->if_mtu == 65535 && mtu < peer->if_mtu) {
++	if (mtu > 0 && peer->if_mtu == 65535 && mtu < peer->if_mtu)
+ 		peer->if_mtu = mtu;
+-		_net("I/F MTU %u", mtu);
+-	}
  
+ 	if (mtu == 0) {
+ 		/* they didn't give us a size, estimate one */
+@@ -133,8 +125,6 @@ static void rxrpc_adjust_mtu(struct rxrpc_peer *peer, unsigned int mtu)
+ 		peer->mtu = mtu;
+ 		peer->maxdata = peer->mtu - peer->hdrsize;
+ 		spin_unlock_bh(&peer->lock);
+-		_net("Net MTU %u (maxdata %u)",
+-		     peer->mtu, peer->maxdata);
+ 	}
+ }
+ 
+@@ -222,41 +212,6 @@ static void rxrpc_store_error(struct rxrpc_peer *peer,
+ 	err = ee->ee_errno;
+ 
+ 	switch (ee->ee_origin) {
+-	case SO_EE_ORIGIN_ICMP:
+-		switch (ee->ee_type) {
+-		case ICMP_DEST_UNREACH:
+-			switch (ee->ee_code) {
+-			case ICMP_NET_UNREACH:
+-				_net("Rx Received ICMP Network Unreachable");
+-				break;
+-			case ICMP_HOST_UNREACH:
+-				_net("Rx Received ICMP Host Unreachable");
+-				break;
+-			case ICMP_PORT_UNREACH:
+-				_net("Rx Received ICMP Port Unreachable");
+-				break;
+-			case ICMP_NET_UNKNOWN:
+-				_net("Rx Received ICMP Unknown Network");
+-				break;
+-			case ICMP_HOST_UNKNOWN:
+-				_net("Rx Received ICMP Unknown Host");
+-				break;
+-			default:
+-				_net("Rx Received ICMP DestUnreach code=%u",
+-				     ee->ee_code);
+-				break;
+-			}
+-			break;
+-
+-		case ICMP_TIME_EXCEEDED:
+-			_net("Rx Received ICMP TTL Exceeded");
+-			break;
+-
+-		default:
+-			break;
+-		}
+-		break;
+-
  	case SO_EE_ORIGIN_NONE:
  	case SO_EE_ORIGIN_LOCAL:
--		_proto("Rx Received local error { error=%d }", err);
  		compl = RXRPC_CALL_LOCAL_ERROR;
- 		break;
- 
-@@ -270,7 +267,6 @@ static void rxrpc_store_error(struct rxrpc_peer *peer,
+@@ -266,6 +221,7 @@ static void rxrpc_store_error(struct rxrpc_peer *peer,
+ 		if (err == EACCES)
  			err = EHOSTUNREACH;
  		fallthrough;
++	case SO_EE_ORIGIN_ICMP:
  	default:
--		_proto("Rx Received error report { orig=%u }", ee->ee_origin);
  		break;
  	}
+diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
+index 041a51225c5f..b3c3c1c344fc 100644
+--- a/net/rxrpc/peer_object.c
++++ b/net/rxrpc/peer_object.c
+@@ -138,10 +138,8 @@ struct rxrpc_peer *rxrpc_lookup_peer_rcu(struct rxrpc_local *local,
+ 	unsigned long hash_key = rxrpc_peer_hash_key(local, srx);
  
-diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
-index 110a5550c0a6..36cf40442a7e 100644
---- a/net/rxrpc/rxkad.c
-+++ b/net/rxrpc/rxkad.c
-@@ -704,7 +704,6 @@ static int rxkad_issue_challenge(struct rxrpc_connection *conn)
+ 	peer = __rxrpc_lookup_peer_rcu(local, srx, hash_key);
+-	if (peer) {
+-		_net("PEER %d {%pISp}", peer->debug_id, &peer->srx.transport);
++	if (peer)
+ 		_leave(" = %p {u=%d}", peer, refcount_read(&peer->ref));
+-	}
+ 	return peer;
+ }
  
- 	serial = atomic_inc_return(&conn->serial);
- 	whdr.serial = htonl(serial);
--	_proto("Tx CHALLENGE %%%u", serial);
+@@ -371,8 +369,6 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *rx,
+ 			peer = candidate;
+ 	}
  
- 	ret = kernel_sendmsg(conn->params.local->socket, &msg, iov, 2, len);
- 	if (ret < 0) {
-@@ -762,7 +761,6 @@ static int rxkad_send_response(struct rxrpc_connection *conn,
- 
- 	serial = atomic_inc_return(&conn->serial);
- 	whdr.serial = htonl(serial);
--	_proto("Tx RESPONSE %%%u", serial);
- 
- 	ret = kernel_sendmsg(conn->params.local->socket, &msg, iov, 3, len);
- 	if (ret < 0) {
-@@ -856,8 +854,7 @@ static int rxkad_respond_to_challenge(struct rxrpc_connection *conn,
- 	nonce = ntohl(challenge.nonce);
- 	min_level = ntohl(challenge.min_level);
- 
--	_proto("Rx CHALLENGE %%%u { v=%u n=%u ml=%u }",
--	       sp->hdr.serial, version, nonce, min_level);
-+	trace_rxrpc_rx_challenge(conn, sp->hdr.serial, version, nonce, min_level);
- 
- 	eproto = tracepoint_string("chall_ver");
- 	abort_code = RXKADINCONSISTENCY;
-@@ -1139,8 +1136,8 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
- 	version = ntohl(response->version);
- 	ticket_len = ntohl(response->ticket_len);
- 	kvno = ntohl(response->kvno);
--	_proto("Rx RESPONSE %%%u { v=%u kv=%u tl=%u }",
--	       sp->hdr.serial, version, kvno, ticket_len);
-+
-+	trace_rxrpc_rx_response(conn, sp->hdr.serial, version, kvno, ticket_len);
- 
- 	eproto = tracepoint_string("rxkad_rsp_ver");
- 	abort_code = RXKADINCONSISTENCY;
+-	_net("PEER %d {%pISp}", peer->debug_id, &peer->srx.transport);
+-
+ 	_leave(" = %p {u=%d}", peer, refcount_read(&peer->ref));
+ 	return peer;
+ }
 
 
