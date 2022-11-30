@@ -2,53 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E638363E07D
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 20:13:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3C263E097
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 20:21:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229532AbiK3TNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 14:13:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60856 "EHLO
+        id S229551AbiK3TVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 14:21:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiK3TNY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 14:13:24 -0500
+        with ESMTP id S229448AbiK3TUp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 14:20:45 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AEBC578E2;
-        Wed, 30 Nov 2022 11:13:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB1E91C21
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 11:20:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53617B81CA9;
-        Wed, 30 Nov 2022 19:13:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 536A0C433D6;
-        Wed, 30 Nov 2022 19:13:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AF81B81CB8
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 19:20:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04AC7C433D6;
+        Wed, 30 Nov 2022 19:20:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669835601;
-        bh=5a0Wi1tTOl2eI+PZ0VBS9tDcKn+vlFyK3kLgB4S5xpE=;
+        s=k20201202; t=1669836039;
+        bh=9AIdWgwx1mDtWEGrCCdaSLV0AmX/ddZzwZmhxSwrRU8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GuPHEYHd/50QpxiURBEqLIgUpcIx7xsMsnsYOQzTO/MBnEWZa5Uead+1cWLzYy9ii
-         H58urSlqsgIRN1Zi4tQbKtyW0UVaQoeMvTKIa4iMtpICAX31mE4k9tI7YGNm/UR0Kl
-         IrM4IxySVYQY/mH0Dh2uit2JUnDc4NuxYGTwGMNBUOkaUFpNe/sHc8/wWW6o2p95Hx
-         Qnz038wBIm9GOWLUwuo5tQijFpPnt61xR+yq4gU9ss7qIPeM77IkzCh020dVC9MzlQ
-         u+DRiesz9kkSJ9N5qXpVsCtTnX8Iv/xHodRcVqW761qRsOSxQ94Lt02FU8h6pgMVKP
-         9juN6uYWUSNzg==
-Date:   Wed, 30 Nov 2022 21:13:16 +0200
+        b=oS7F9iILbsVDYr4VVgsufOYfmFXYnjlky/5roEHgUwW5a1Ts7NdBMkoIHxBxgONCH
+         ghmZ7rfqUXUFwBpRAeuruczOtB17A9nLgNjc23cDkc3ufnsNW2DROFZdL51lgldzZl
+         MpiEBr95pddzyMrq/YDL1+FpYNPmgPXhdAX5LRC/fAKbw1T6gb6a7gFaahaZwG8Jmt
+         0cDXi1BxcfO0VWgTJVjRxDZXZBIB9dv5r0p9FG72fEvpAvcEK98zeJiOI8CxdqbnmQ
+         HPr5ezJ2fvSbSsouc/LCslqsYvMPNu7hG4UIQn6KMlkrlcuL6DIeK2u9SgY2+cS1I+
+         Dku9wMwwUU10w==
+Date:   Wed, 30 Nov 2022 21:20:34 +0200
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     zhang.songyi@zte.com.cn, saeedm@nvidia.com, pabeni@redhat.com,
-        davem@davemloft.net, edumazet@google.com, mbloch@nvidia.com,
-        maorg@nvidia.com, elic@nvidia.com, jerrliu@nvidia.com,
-        cmi@nvidia.com, vladbu@nvidia.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net/mlx5: remove NULL check before dev_{put,
- hold}
-Message-ID: <Y4erTPSg44sGU6S4@unreal>
-References: <202211301541270908055@zte.com.cn>
- <Y4cbssiTgsGGNHlh@unreal>
- <20221130092516.024873db@kernel.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Ido Schimmel <idosch@idosch.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        netdev@vger.kernel.org, jiri@nvidia.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH net] net: devlink: fix UAF in
+ devlink_compat_running_version()
+Message-ID: <Y4etAg+vcnRCMWx9@unreal>
+References: <20221123181800.1e41e8c8@kernel.org>
+ <Y4R9dT4QXgybUzdO@shredder>
+ <Y4SGYr6VBkIMTEpj@nanopsycho>
+ <20221128102043.35c1b9c1@kernel.org>
+ <Y4XDbEWmLRE3D1Bx@nanopsycho>
+ <20221129181826.79cef64c@kernel.org>
+ <Y4dBrx3GTl2TLIrJ@nanopsycho>
+ <20221130084659.618a8d60@kernel.org>
+ <Y4eMFUBWKuLLavGB@nanopsycho>
+ <20221130092042.0c223a8c@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221130092516.024873db@kernel.org>
+In-Reply-To: <20221130092042.0c223a8c@kernel.org>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,32 +64,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 09:25:16AM -0800, Jakub Kicinski wrote:
-> On Wed, 30 Nov 2022 11:00:34 +0200 Leon Romanovsky wrote:
-> > On Wed, Nov 30, 2022 at 03:41:27PM +0800, zhang.songyi@zte.com.cn wrote:
-> > > From: zhang songyi <zhang.songyi@zte.com.cn>
-> > > 
-> > > The call netdev_{put, hold} of dev_{put, hold} will check NULL,
-> > > so there is no need to check before using dev_{put, hold}.
-> > > 
-> > > Fix the following coccicheck warning:
-> > > /drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:1450:2-10:
-> > > WARNING:
-> > > WARNING  NULL check before dev_{put, hold} functions is not needed.
-> > > 
-> > > Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
-> > > ---
-> > >  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c | 3 +--
-> > >  1 file changed, 1 insertion(+), 2 deletions(-)  
+On Wed, Nov 30, 2022 at 09:20:42AM -0800, Jakub Kicinski wrote:
+> On Wed, 30 Nov 2022 18:00:05 +0100 Jiri Pirko wrote:
+> > Wed, Nov 30, 2022 at 05:46:59PM CET, kuba@kernel.org wrote:
+> > >On Wed, 30 Nov 2022 12:42:39 +0100 Jiri Pirko wrote:  
+> > >> **)
+> > >> I see. With the change I suggest, meaning doing
+> > >> devlink_port_register/unregister() and netdev_register/unregister only
+> > >> for registered devlink instance, you don't need this at all. When you
+> > >> hit this compat callback, the netdevice is there and therefore devlink
+> > >> instance is registered for sure.  
+> > >
+> > >If you move devlink registration up it has to be under the instance
+> > >lock, otherwise we're back to reload problems. That implies unregister
+> > >should be under the lock too. But then we can't wait for refs in
+> > >unregister. Perhaps I don't understand the suggestion.  
 > > 
-> > Please change all places in mlx5 in one patch.
+> > I unlock for register and for the rest of the init I lock again.
 > 
-> Your call as a mlx5 maintainer, but I'd say don't change them at all.
+> The moment you register that instance callbacks can start coming.
+> Leon move the register call last for a good reason - all drivers
+> we looked at had bugs in handling init.
 
-I'm fine with one patch per-driver, I'm not fine with one patch per-line :).
+Plus we had very cozy lock->unlock->lock sequences during devlink
+command execution, which caused to races between devlink calls
+and driver initialization.
 
-> All these trivial patches are such a damn waste of time.
-
-IMHO, it is valuable changes for actively developed code.
+So I'm also interested to see what Jiri meant by saying "I unlock for
+register and for the rest of the init I lock again".
 
 Thanks
