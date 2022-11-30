@@ -2,92 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5F4263DCA9
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 19:06:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2296863DCC8
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 19:13:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbiK3SGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 13:06:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        id S229791AbiK3SNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 13:13:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiK3SGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 13:06:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB7183E8F
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 10:05:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669831535;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6+9pEpSvu2FHz1yS+wCPOcJow4YxC8PEpQzJw4BQdEI=;
-        b=ghY9IqyG+Fr0QmIU3C8PvXOztqZbJ3b6vIt/hIQLvj1F4JbCjob7FAHNcOGCgkAR38ZqwM
-        +KahmZOgyipKZiHMQu7iFMeZIoEvG9eJXTqYt2S3J0JU/wXE8ZoZtcPZhMq4jrCp7cQDdK
-        HeJZ2Du3LPE4wrvqCdZJwrqAIOpGDdg=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-527-VyjDuKNwOZ6JwPtwmYJwtQ-1; Wed, 30 Nov 2022 13:05:05 -0500
-X-MC-Unique: VyjDuKNwOZ6JwPtwmYJwtQ-1
-Received: by mail-il1-f198.google.com with SMTP id g7-20020a056e021a2700b0030326ba44e4so4348521ile.13
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 10:05:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:in-reply-to
-         :mime-version:references:from:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=6+9pEpSvu2FHz1yS+wCPOcJow4YxC8PEpQzJw4BQdEI=;
-        b=WnKL5f334QIHbbJyAMKbEOu/Soa0r0mwyvxth/ex+8kev62TrgQhiftKNaS9kMcvrw
-         Y2YNqNnlYiPIgUgyHnLRAW1TtHiH3LMC16HrbLt3DET3UgY4d2rFRdLjAis3aljKQWNQ
-         0kemWAFDJ+quoTr6/If5xHL3GAXwMwy85Gu1Jxq5X/BWhsq7N9YxwUBMSxSaQ0EQckSZ
-         iiT5LOUws9eyNvZw1ApPZjnEcMQXdovv+9dxS4lxWvIM/+ZfPooEyBPe7pl+v9E8+8fd
-         NOKd3tEVTRRtF7BMbX1ZQaeo1NAkYcmdxE+oBc8CldeDPHMJvjmC109qos8QDrc1MvSQ
-         vs6A==
-X-Gm-Message-State: ANoB5pmUywfcv8ORYmKJIB50gZbRXSjld/mG1aXKq++HSDtY6hRPDxoy
-        LEpje+PkTqLNJAEx8EvTI5sPR5GH1mS8/8w3tZWi189A0wHlIaVSfh9BfG/EnNc/5vq98NeUZ1U
-        8Z/AVjqgaf347Akvf6scxSWsjrbgyEpIw
-X-Received: by 2002:a05:6e02:f43:b0:303:814:dc0d with SMTP id y3-20020a056e020f4300b003030814dc0dmr10491921ilj.131.1669831502182;
-        Wed, 30 Nov 2022 10:05:02 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6kOznEE5J3QfHq9nIf1Asv3zexr3CZhfJlg1dCSQkCkXnUW5392NxNbk6e9gxR9mt63Cq4X3/BddGP6YRwuVI=
-X-Received: by 2002:a05:6e02:f43:b0:303:814:dc0d with SMTP id
- y3-20020a056e020f4300b003030814dc0dmr10491904ilj.131.1669831501902; Wed, 30
- Nov 2022 10:05:01 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 30 Nov 2022 10:05:01 -0800
-From:   Marcelo Leitner <mleitner@redhat.com>
-References: <20221122112020.922691-1-simon.horman@corigine.com>
- <CAM0EoMk0OLf-uXkt48Pk2SNjti=ttsBRk=JG51-J9m0H-Wcr-A@mail.gmail.com>
- <PH0PR13MB47934A5BC51DB0D0C1BD8778940E9@PH0PR13MB4793.namprd13.prod.outlook.com>
- <CALnP8ZZ0iEsMKuDqdyEV6noeM=dtp9Qqkh6RUp9LzMYtXKcT2A@mail.gmail.com>
- <PH0PR13MB4793DE760F60B63796BF9C5E94139@PH0PR13MB4793.namprd13.prod.outlook.com>
- <CALnP8ZanoC6C6Xb-14fy6em8ZJaFnk+78ufOdb=gBfMn-ce2eA@mail.gmail.com>
- <FA3E42DF-5CA2-40D4-A448-DE7B73A1AC80@redhat.com> <CALnP8ZZiw9b_xOzC3FaB8dnSDU1kJkqR6CQA5oJUu_mUj8eOdQ@mail.gmail.com>
- <80007094-D864-45F2-ABD5-1D22F1E960F6@redhat.com> <PH0PR13MB47936B3D3C0C0345C666C87194159@PH0PR13MB4793.namprd13.prod.outlook.com>
-MIME-Version: 1.0
-In-Reply-To: <PH0PR13MB47936B3D3C0C0345C666C87194159@PH0PR13MB4793.namprd13.prod.outlook.com>
-Date:   Wed, 30 Nov 2022 10:05:01 -0800
-Message-ID: <CALnP8ZZ3HkYqmrrHsV2skC1fkkZNViLszXkS2sq5wjTw_ZR6hQ@mail.gmail.com>
-Subject: Re: [PATCH/RFC net-next] tc: allow drivers to accept gact with PIPE
- when offloading
-To:     Tianyu Yuan <tianyu.yuan@corigine.com>
-Cc:     Eelco Chaudron <echaudro@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Edward Cree <edward.cree@amd.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        "dev@openvswitch.org" <dev@openvswitch.org>,
-        oss-drivers <oss-drivers@corigine.com>,
-        Ziyang Chen <ziyang.chen@corigine.com>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S229904AbiK3SNB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 13:13:01 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA0C1AF17;
+        Wed, 30 Nov 2022 10:12:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1669831979; x=1701367979;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=TVHzia00OKIpvouQ0QyIYlUD/mCnkIt8tWHN/gK8c9U=;
+  b=Wh9paAdqh+/nMrB66v7GxHneOEQ86Unzesz2YSZYhva/h17R+J8qilaV
+   nS3XiMATB5qXwciK4+xkPCNEamViu5eUlOad7GDth7f4g5MtYyWzAUG6k
+   dPkoN2ZAIH2j7Bg+/XEzLLrJTTC+QsjcYV/LckngZJCvKqPo950FY/P/H
+   vhvPcJSGgrM2E9Zz8AFqUASy2GNsGtCid1s4lyQpF/ffa21wB69cQ6Juq
+   y/3sA1hlcXHneKh5EaM/gemcNSNjetHLPve+GCuVGkgSsEKpHfEbu0KRU
+   FthR4I6o9dcUQYKUPfc+iPIqxIjJq3cnyvS7lF8fTDPQO7ASXOaaHNbVY
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,207,1665471600"; 
+   d="scan'208";a="191187677"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Nov 2022 11:12:58 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 30 Nov 2022 11:12:56 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12 via Frontend Transport; Wed, 30 Nov 2022 11:12:56 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aj7z2ms/mwb04S0vqS7vc9PUlPL/C+ZvLFHj9030rNq2Qyw2N+qyAFCCwE/9rL8KVlss1tqE7GYbL7cvPjZnnFdiSTHwBAAHcSyHjaQ6m0uMvDaTqD/FKr4Lb2qedF3oVRsvR+30hamp19MWVdJrjpM/Mk/aRyCwDxManmEJGvXj1KH4XJhy0+GB7Gsr4ieW2DnbGojQ914HoDD6MqGAcnj9umqq+r913SyKEQNltH2SnNKPBZBQ77Zv95bcJDVW7G8lFC71CO922VH3pm/PM/cIBv7nPaceuNrMYVWw/9NvXy3NJVGerDRN/rh/qocsoFjwOXoWU0S7jBYyvgkwUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SgN5rhofwXfG03Xpwx6/dLOGopZSbAJLEaT+XiOMltM=;
+ b=DB5dEZN6kOSDiYkJl/zsNZm6nbwmtA+HFGFzmvHYIymWEZGPzWBGRC/xKnWY2tnwkx0zvLD8wmgIXyFxOqTGWGm0ym3mBvyECttk8Lt8Y2YMIfqyRweko6Dbp5uZSkqccb3FMUoboeAkt3+cwaWTyKmEsH8pmtXba/j6pCtnxPy9+bOmYEDWSg0/eUuKWB9Cxy97ZZ8lOZD7eVfax1GEZINK62AENNnci/CjT+1rcArghREUeU/OE0DMjICZSHIR2RNA/dYpTqS/kWEI8B11e4VWQOVDCkTo/LiWTn7r9Y1qwtfRpWRc4Y9s7WOUVujNmv02H0AaeJrmIohfbr5hFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SgN5rhofwXfG03Xpwx6/dLOGopZSbAJLEaT+XiOMltM=;
+ b=bF0hW5z8Hzl8veuvE8HfDaIH4xvAzB8qPjdESBFzZjFWGKfDFX5PiRP5X1njRjC7tBkNBGRHt558asOVKsL9MPjNKr06aaMCJ5ctJXGySckyiEnFPKNxp1Iwk7Yfk87wicXN4e6HPjFLIklerwx4xC/3BYdhOZBbg46Z7dKAGb4=
+Received: from MWHPR11MB1693.namprd11.prod.outlook.com (2603:10b6:300:2b::21)
+ by DM4PR11MB6382.namprd11.prod.outlook.com (2603:10b6:8:be::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Wed, 30 Nov
+ 2022 18:12:54 +0000
+Received: from MWHPR11MB1693.namprd11.prod.outlook.com
+ ([fe80::5928:21d9:268f:3481]) by MWHPR11MB1693.namprd11.prod.outlook.com
+ ([fe80::5928:21d9:268f:3481%10]) with mapi id 15.20.5857.023; Wed, 30 Nov
+ 2022 18:12:54 +0000
+From:   <Jerry.Ray@microchip.com>
+To:     <kuba@kernel.org>
+CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <olteanv@gmail.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next v3] dsa: lan9303: Add 3 ethtool stats
+Thread-Topic: [PATCH net-next v3] dsa: lan9303: Add 3 ethtool stats
+Thread-Index: AQHZA2vPxK4eDIuP5kOkg3W32g1dkK5U+YSAgAKmf0CAABFlAIAAFinA
+Date:   Wed, 30 Nov 2022 18:12:54 +0000
+Message-ID: <MWHPR11MB1693909B5E06A7791F0FD079EF159@MWHPR11MB1693.namprd11.prod.outlook.com>
+References: <20221128205521.32116-1-jerry.ray@microchip.com>
+        <20221128152145.486c6e4b@kernel.org>
+        <MWHPR11MB1693E002721F0696949C5DCBEF159@MWHPR11MB1693.namprd11.prod.outlook.com>
+ <20221130085226.16c1ffc3@kernel.org>
+In-Reply-To: <20221130085226.16c1ffc3@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MWHPR11MB1693:EE_|DM4PR11MB6382:EE_
+x-ms-office365-filtering-correlation-id: e442a461-4f5b-44ff-2304-08dad2fe8078
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: pldCIFXjURf986/HrETImGqIZpTvsnPrj8eVMhrynQLcYwgdYOl/bt4Nvk2ikcUK/jJzmCIC1InlydAVjJ7ljZfqIolMPKxPID1/QhUct7DlkVwoieKk3qWtHhHSgirk4uVoamKzfL2wfLjUTLrvSAgrcT25jWsuDPMgcfmgHrikaaCl5JTvztNgz1n1X4p7nTtHU9Hz3Lgi63CMYutAtpaS6NWDuwr2+ULzSoEtLEXtrU7FxTxJsv6VYJAoJ0qTnxE1jrPOBELd+1bq/J9yS6ZiheIN/K6IPw5oCoW69/4jMhXMMFny7mC+4a8nYXW+XHauopf8Yg3vM6nLpM9wzOxknmrQbFqwK/Go7uAN5Rxc7scMmTt6XVjUlMzbnQFgFmCD2VcDqophsccrhsP+ixzwm3Oqlr6k4wOOhg703vA1Ta+N/LGS7P7mtWROYsgNpc5B7q7niC71cCfrCENWUcDpUX/IU2mFvuWrd3DrPHjG6qrx7MCgqdtjxylBFvU4hR/M9K0EGAXr1VCP7weqr5zLQNZicXZSDtHRMNnxDg91WLWS9AICTJe0xHMPBeZAayJAExQyChNMENlgIOZVfN6K7ZRyVD6CaeM46cSu6n8gAwVWXVFPqKyyrQjtQMtCp8U30aoM40cVnsoSDeTHQOaGm3EInBkzGWMZ5jnTc4q1Hra0QNahFE7L/xhxL+XlCM9gP6GMIPLA5y2TNs7Png==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1693.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(39860400002)(346002)(366004)(376002)(136003)(451199015)(38070700005)(55016003)(33656002)(86362001)(54906003)(316002)(6916009)(76116006)(5660300002)(41300700001)(4744005)(71200400001)(8936002)(66476007)(66556008)(4326008)(66946007)(52536014)(8676002)(2906002)(478600001)(66446008)(64756008)(83380400001)(122000001)(7696005)(9686003)(26005)(6506007)(38100700002)(186003)(66899015);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?llgqfZTp65sow6o4xNeh6gOBeq3iqDGmHI/5e6hk6VAA+1sJP4gHwJjhinPV?=
+ =?us-ascii?Q?IvyvYyfH7m8jOWz8RBt0ZTqOxG9FGrwfWmuJ329hjDEE1VWBCQY1wVFNdjX2?=
+ =?us-ascii?Q?jMyLQwMzxFgW70/6V0l0kYZAY2Xswk6DIQQQtgqiVj4olTA485sPEplAyBO3?=
+ =?us-ascii?Q?IFNljLNzm/qwDOOmLMcQt9UKiC553D2yIlGakU1861JZHm9ugFwd++u3AVP/?=
+ =?us-ascii?Q?axjEWtR9UiexjguO/LP46Sb9yn57TelG3O5nRCYXv0vAo4AkX5Ow12HWRDK2?=
+ =?us-ascii?Q?9g+b/YchJsWzkHzUIJLgq/oJnYKRWPJRDbc6EXpt0/EWRCwkuEv5n+T846uC?=
+ =?us-ascii?Q?NL2510hFg44qtH/aHYmgqHy9QJWLnz6bE5iHaTVWY+RLEBA6g3L1vPzroZkg?=
+ =?us-ascii?Q?GLWH/928KVWbr1kszcJEAdIYWnxFP2LS3L9vPiac95tyPDS8vOuMp0wqXtbQ?=
+ =?us-ascii?Q?yrzad5zHZJe7uCupB0c9LFCs2wHPaGPdS633/3ZxhTICcWAcZBqoh0U10SWB?=
+ =?us-ascii?Q?hlo4vCwdGHWdyBr1BwhhJaUVQPx1Rn/IsojD3UUFFQOWvsAz+A5DlTwr2gjs?=
+ =?us-ascii?Q?KGrXLvslljxukxHPUIXSy9NNE8O7JXMPWSfjTwON75/vCNJw8GnO3eUjamLM?=
+ =?us-ascii?Q?auAQ3sDcQl37XFC+gI2Xtr2jtqTrrdnV0i3WG1ar6+/HAJEmJ7bMvVY9e7Qg?=
+ =?us-ascii?Q?wC/ZupQtHnU5wZ76qhs5/CWjACe0oF2xGMzfX4SwXu6NNmlEFCbUYSr5M4tm?=
+ =?us-ascii?Q?l4/GQYz21nTFBGPh5kzklu4XxTXIhVSJaelrECK3S6gdYwua0Rv/rh644gvV?=
+ =?us-ascii?Q?/c/QUXe+bNATbTIkZwlYArcbMymwthC1SIro+FRZ70o5ijQLwk+fwc1iHZbs?=
+ =?us-ascii?Q?9cLapi+kYujq0d0YAeYpx/TVrkRFlYko3OhFoIJ6IM3mPd8giokECkfeCTq2?=
+ =?us-ascii?Q?TZzKzb+Ym1jSublI3SH/qq29F7Tn1awwqmXlY+mxxP9NSLLSSiqO1Em5eV82?=
+ =?us-ascii?Q?DpfY4c3/Os8LTuISlhioIG3/33llvXk13mybtQHW05QDw+oIbnyjHFsRUNX0?=
+ =?us-ascii?Q?BrISjeZhEEJjhlhSc00GJB2df2llg2rFSe/CYKVK+wjh2nvwdzoctF8rD9Ao?=
+ =?us-ascii?Q?Q/vQ2VA5K53Bik66wunSAmhk98YKvWITajXQwI+pj947DVpFnjT8DY7QryJe?=
+ =?us-ascii?Q?48oVCurf6HP9JiS+2iizjG22mBG/B2KCbPfNdl2SrbMi4Ph+vPksdD+c0pVJ?=
+ =?us-ascii?Q?MtalGBgTL2YlJOUgSte77eHMBlVnUVUQcfsF7zUXgAi6eIgvyGG8M93fBSw8?=
+ =?us-ascii?Q?gJ/3HYloVW83AzqJl8FBk4jB1TbUx7jBEdaf0/XsLUD1GrXGzoj8PfHbqmvc?=
+ =?us-ascii?Q?yFMDFrL1jUUbdx5PpP2bYHMLDWaOYv/aOwFrTcEDwaS7+H8IpWHO3qDkZhs/?=
+ =?us-ascii?Q?NdNWH2JLufQ4WXm9Vymx133HZC5swTksWoP2oSh5BEuf7h/zPe1j69M6ByP9?=
+ =?us-ascii?Q?Gz4Tgbaoq04WVU6VDXTHvCQ1FUbCydtL/ciwWjigC8WiUQ9aeXJOUQfYAHeC?=
+ =?us-ascii?Q?9uxdC0f5uJEIj39u2PKZUfLPuPJI9ptZ73RcNB+1?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1693.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e442a461-4f5b-44ff-2304-08dad2fe8078
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Nov 2022 18:12:54.4917
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8I6Pq+32qpTdkmABTyte6ohIye8+5i9YUSfoEygokBmOa7dsVZAfDNPDZr8SOhYvN+9XF5bHYkbSvorttCg0tQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6382
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -95,107 +144,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 03:36:57AM +0000, Tianyu Yuan wrote:
+>>> Why not add them there as well?
+>>>
+>>> Are these drops accounted for in any drop / error statistics within
+>>> rtnl_link_stats?
+>>>
+>>> It's okay to provide implementation specific breakdown via ethtool -S
+>>> but user must be able to notice that there are some drops / errors in
+>>> the system by looking at standard stats.
+>>
+>> The idea here is to provide the statistics as documented in the part
+>> datasheet.  In the future, I'll be looking to add support for the stats6=
+4
+>> API and will deal with appropriately sorting the available hardware stat=
+s
+>> into the rtnl_link_stats buckets.
 >
-> On Mon, Nov 29, 2022 at 8:35 PM , Eelco Chaudron wrote:
-> >
-> > On 28 Nov 2022, at 14:33, Marcelo Leitner wrote:
-> >
-> > > On Mon, Nov 28, 2022 at 02:17:40PM +0100, Eelco Chaudron wrote:
-> > >>
-> > >>
-> > >> On 28 Nov 2022, at 14:11, Marcelo Leitner wrote:
-> > >>
-> > >>> On Mon, Nov 28, 2022 at 07:11:05AM +0000, Tianyu Yuan wrote:
-> > > ...
-> > >>>>
-> > >>>> Furthermore, I think the current stats for each action mentioned i=
-n
-> > >>>> 2) cannot represent the real hw stats and this is why [ RFC
-> > >>>> net-next v2 0/2] (net: flow_offload: add support for per action hw=
- stats)
-> > will come up.
-> > >>>
-> > >>> Exactly. Then, when this patchset (or similar) come up, it won't
-> > >>> update all actions with the same stats anymore. It will require a
-> > >>> set of stats from hw for the gact with PIPE action here. But if
-> > >>> drivers are ignoring this action, they can't have specific stats fo=
-r
-> > >>> it. Or am I missing something?
-> > >>>
-> > >>> So it is better for the drivers to reject the whole flow instead of
-> > >>> simply ignoring it, and let vswitchd probe if it should or should
-> > >>> not use this action.
-> > >>
-> > >> Please note that OVS does not probe features per interface, but does=
- it
-> > per datapath. So if it=E2=80=99s supported in pipe in tc software, we w=
-ill use it. If the
-> > driver rejects it, we will probably end up with the tc software rule on=
-ly.
-> > >
-> > > Ah right. I remember it will pick 1 interface for testing and use
-> > > those results everywhere, which then I don't know if it may or may no=
-t
-> > > be a representor port or not. Anyhow, then it should use skip_sw, to
-> > > try to probe for the offloading part. Otherwise I'm afraid tc sw will
-> > > always accept this flow and trick the probing, yes.
-> >
-> > Well, it depends on how you look at it. In theory, we should be hardwar=
-e
-> > agnostic, meaning what if you have different hardware in your system? O=
-VS
-> > only supports global offload enablement.
-> >
-> > Tianyu how are you planning to support this from the OVS side? How woul=
-d
-> > you probe kernel and/or hardware support for this change?
->
-> Currently in the test demo, I just extend gact with PIPE (previously only=
- SHOT as default and
-> GOTO_CHAIN when chain exists), and then put such a gact with PIPE at the =
-first place of each
-> filter which will be transacted with kernel tc.
->
-> About the tc sw datapath mentioned, we don't have to make changes because=
- gact with PIPE
-> has already been supported in current tc implementation and it could act =
-like a 'counter' And
-> for the hardware we just need to ignore this PIPE and the stats of this a=
-ction will still be updated
-> in kernel side and sent to userspace.
-
-I can't see how the action would have stats from hw if the driver is
-ignoring the action.
-
-But maybe there was a misunderstanding here. I was reading more the
-cxgb4 driver here and AFAICT this patch will skip PIPE on the action
-validation, but not actually skip the action entirely. Then it will
-hit cxgb4_process_flow_actions() and maybe the driver will the right
-thing with a dummy action out of the blue. Was this your expectation,
-to just ignore it in the validation step, and let it fall through
-through the driver? If yes, the comments are misleading, as the NICs
-will have to process the packets.
-
->
-> I agree with that the unsupported actions should be rejected by drivers, =
-so may another approach
-> could work without ignoring PIPE in all the related drivers, that we dire=
-ctly make put the flower stats
-> from driver into the socket which is used to transact with userspace and =
-userspace(e.g. OVS) update
-> the flow stats using this stats instead of the parsing the action stats. =
-How do you think of this?
-
-I don't understand this approach. Can you please rephrase?
-
-Thanks,
-Marcelo
-
->
-> Cheers,
-> Tianyu
-> >
-> > //Eelco
+>Upstream we care about providing reasonably uniform experience across
+>drivers and vendors. Because I don't know you and therefore don't trust
+>you to follow up you must do the standard thing in the same patch set,
+>pretty please.
 >
 
+Won't be able to get to stats64 this cycle.  Looking to migrate to phylink
+first.  This is a pretty old driver.
+
+Understand you don't know me - yet. =20
+
+Regards,
+Jerry.
