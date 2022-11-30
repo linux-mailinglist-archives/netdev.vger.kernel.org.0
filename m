@@ -2,118 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FCF763D69F
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 14:26:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C310263D6B2
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 14:29:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230415AbiK3N0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 08:26:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33542 "EHLO
+        id S230415AbiK3N3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 08:29:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiK3N0P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 08:26:15 -0500
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC7450D41;
-        Wed, 30 Nov 2022 05:26:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=a26lIzJ4dptbrOGi0GFPN+IgCtoaj1aHi7+e9iGicfE=; b=Kh/Dn3L6ycIIXU8wsJwzKY4WSB
-        n+TEVb/X6z4AQG7GQETxE4KLClWaBBdYGqh3moY/8eXeLWYyzYVdJYrKl9VwdRA5DqNr6UvAkwmfU
-        1mhRdHE7RYfBbJch9V3b0RNBzWimGXhpAw2ALBYb+9msmuVLi5dfZJtLF6F2LjHZq0yZE+chlJARm
-        8uXqBLI+5D9/1knP7f3r62PqMHC2o4v9QLjHSAXjAQL8hcGvIqCYxOxZpdGAGaMPBo+LQu+4dAISS
-        T6Vyfh3srdvx9KXruov3YrsZ3KfK1jyGrENJZKCjruMqWNQwVTNgLrCsOTZFfNXi2jtxV+ZOusJPq
-        ynaNQii5LHhImkDbtw5BUzCAaCQ569TzySiksa4vynILiD9/WD1AlTFQH5cREfi8eBeLycPrild1X
-        NlDRCAQQjE7dM7MYT8ULcvKcCmzn6ZG70UncJlxMitrUfKlCGxN09UO2PP31I1xgbm/kY44vRqyNc
-        jwMRvUtQL/h1tBPwHktbtGBCj1xnyFBi7flXuDcrBLnOhWCEvUzX7jBRE6Y7TJPtt6flhTqzPAAuK
-        q054eLNaGDGQCbPxRpoHATanim4e1XBYxMswLuxOo2Ho28gqyBgxYJu5IZhkeBMTkm7JFt6kGD4kV
-        l/m7NFeqp6tLl4Q0DtONOEybY/kpXJGTn+4OeakxE=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     asmadeus@codewreck.org
-Cc:     Schspa Shi <schspa@gmail.com>, ericvh@gmail.com, lucho@ionkov.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
-Subject: Re: [PATCH] 9p: fix crash when transaction killed
-Date:   Wed, 30 Nov 2022 14:25:59 +0100
-Message-ID: <4084178.bTz7GqEF8p@silver>
-In-Reply-To: <Y4dSfYoU6F8+D8ac@codewreck.org>
-References: <20221129162251.90790-1-schspa@gmail.com> <2356667.R3SNuAaExM@silver>
- <Y4dSfYoU6F8+D8ac@codewreck.org>
+        with ESMTP id S229472AbiK3N3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 08:29:45 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9754054B20;
+        Wed, 30 Nov 2022 05:29:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1669814982; x=1701350982;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=igkyneSahWQojHBUvpkTErM6kbG4iiuA7DeLIJI446k=;
+  b=zvMXXAz82H1pMHIFyYnIoichxT8+cH3MGNYn1W4RhjZ+2R8oSnv0W/rV
+   /L01wlY55rwdbkXz/ks6/VU0rFutHt3nNhCffFN7SPBHqTb38gzxes6bc
+   2NKq+aiQGGVq344keHTX39oHgxj8IJSC1km09D3BEuuVfLtSQfsT2aDqy
+   0zSEgfcXsKFzZyro/bZAUkjczpGdKVNlDLLEUyQNTkFvXAxEPvOIAOt1C
+   7qyVIGGXpiW5z+DUOInM1045A+9AKt7K0AvS1fwPGUA02LOixxlkNDbfa
+   bOeeQq126dUUXBScU97U6mq9tz3KwiMBiAWwYIvShLWxcDluwMgj724nE
+   w==;
+X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
+   d="scan'208";a="191136735"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Nov 2022 06:29:41 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 30 Nov 2022 06:29:41 -0700
+Received: from che-lt-i67786lx.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 30 Nov 2022 06:29:37 -0700
+From:   Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <f.fainelli@gmail.com>, <olteanv@gmail.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+Subject: [RFC Patch net-next 0/5] add ethtool categorized statistics
+Date:   Wed, 30 Nov 2022 18:58:57 +0530
+Message-ID: <20221130132902.2984580-1-rakesh.sankaranarayanan@microchip.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, November 30, 2022 1:54:21 PM CET asmadeus@codewreck.org wrote:
-> Christian Schoenebeck wrote on Wed, Nov 30, 2022 at 01:43:20PM +0100:
-> > > > As for the release case, the next request will have the same tag with
-> > > > high probability. It's better to make the tag value to be an increase
-> > > > sequence, thus will avoid very much possible req reuse.
-> > > 
-> > > I'd love to be able to do this, but it would break some servers that
-> > > assume tags are small (e.g. using it as an index for a tag array)
-> > > ... I thought nfs-ganesha was doing this but they properly put in in
-> > > buckets, so that's one less server to worry about, but I wouldn't put
-> > > it past some simple servers to do that; having a way to lookup a given
-> > > tag for flush is an implementation requirement.
-> > 
-> > I really think it's time to emit tag number sequentially. If it turns out that
-> > it's a server that is broken, we could then simply ignore replies with old/
-> > unknown tag number. It would also help a lot when debugging 9p issues in
-> > general when you know tag numbers are not re-used (in near future).
-> > 
-> > A 9p server must not make any assumptions how tag numbers are generated by
-> > client, whether dense or sparse, or whatever. If it does then server is
-> > broken, which is much easier to fix than synchronization issues we have to
-> > deal with like this one.
-> 
-> Well, it's a one line change: just replace the idr_alloc in the else
-> branch of p9_tag_alloc with idr_alloc_cyclic.
-> But linux has an history of not breaking userspace, even if it's broken.
-> One could argue that the server side of a networked protocol isn't
-> as tightly coupled but I still think we should be careful with it --
-> adding a new mount option to rever to the old behaviour at the very
-> least.
+Patch series contain following changes:
+- add categorized ethtool statistics for Microchip KSZ series 
+switches, support "eth-mac", "eth-phy", "eth-ctrl", "rmon" 
+parameters with ethtool statistics command. mib parameter index 
+are same for all KSZ family switches except KSZ8830. So, functions 
+can be re-used across all KSZ Families (except KSZ8830) and LAN937x 
+series. Create separate functions for KSZ8830 with their mib 
+parameters.
+- Remove num_alus member from ksz_chip_data structure since it is 
+unused.
 
-+1 for the mount option.
+Changes tested on LAN937x Series and KSZ9477.
 
-> I'm also not convinced it'd fix anything here, we're not talking about a
-> real server but about a potential attacker -- if a reply comes in with
-> the next tag while we're allocating it, we'll get the exact same problem
-> as we have right now.
-> Frankly, 9p has no security at all so I'm not sure this is something we
-> really need to worry about, but bugs are bugs so we might as well fix
-> them if someone has the time for that...
-> 
-> Anyway, I can appreciate that logs will definitely be easier to read, so
-> an option to voluntarily switch to cyclic allocation would be more than
-> welcome as a first step and shouldn't be too hard to do...
+Rakesh Sankaranarayanan (5):
+  net: dsa: microchip: add rmon grouping for ethtool statistics
+  net: dsa: microchip: add eth ctrl grouping for ethtool statistics
+  net: dsa: microchip: add eth mac grouping for ethtool statistics
+  net: dsa: microchip: add eth phy grouping for ethtool statistics
+  net: dsa: microchip: remove num_alus variable
 
-I would actually do it the other way around: generating continuous sequential
-tags by default and only reverting back to dense tags if requested by mount
-option.
+ drivers/net/dsa/microchip/Makefile      |   1 +
+ drivers/net/dsa/microchip/ksz_common.c  |  70 +++--
+ drivers/net/dsa/microchip/ksz_common.h  |  10 +-
+ drivers/net/dsa/microchip/ksz_ethtool.c | 344 ++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_ethtool.h |  31 +++
+ 5 files changed, 439 insertions(+), 17 deletions(-)
+ create mode 100644 drivers/net/dsa/microchip/ksz_ethtool.c
+ create mode 100644 drivers/net/dsa/microchip/ksz_ethtool.h
 
-Is there any server implementation known to rely on current dense tag
-generation?
-
-If there is really some exotic server somewhere that uses e.g. a simple
-constant size array to lookup tags and nobody is able to replace that array by
-a hash table or something for whatever reason, then I am pretty sure that
-server is limited at other ends as well (e.g. small 'msize'). So what we could
-do is adjusting the default behaviour according to the other side and allow to
-explicitly set both sequential and dense tags by mount option (i.e. not just
-a boolean mount option).
-
-Best regards,
-Christian Schoenebeck
-
+-- 
+2.34.1
 
