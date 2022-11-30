@@ -2,163 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F54263CD7D
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 03:48:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 088B363CD80
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 03:48:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232206AbiK3Crt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 21:47:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
+        id S232420AbiK3Csc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 21:48:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiK3Crs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 21:47:48 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD2824F31
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 18:47:46 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id q7so24113993wrr.8
-        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 18:47:46 -0800 (PST)
+        with ESMTP id S232385AbiK3Cs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 21:48:29 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9C56CA1D;
+        Tue, 29 Nov 2022 18:48:28 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id q7so24115426wrr.8;
+        Tue, 29 Nov 2022 18:48:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
+        d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=JUgobMXMeWECDW3ek9+e0C733/O+//2T52cesJaBX8c=;
-        b=T1OxF4PGJxCKYpPi2zeoIwGsw5lnoOCW/tW1NDq3any4MzV/CbInZwEKbKPN4wVO33
-         //2pWNb5BdQwHE1IabbQqu00+pSpgqPcTyuRyKTp42zk8WPBOJYEdcPYAgNrmMxru5Ks
-         WooSwk9xo5wMRYGQGvoMAT/xfgl1yShQe7UzQ=
+        bh=TtkyVa2IrpwnujLbAlvNXcH3WzrDZO7fZhfeo5ojqx4=;
+        b=Yys8xeVioelna9iNWiERvl5crZc+mVVlT+/OZm1LNnG4J2rCxTB+EJIklMMegkuscc
+         lSsPxMzna89c6M//ei9tMuP1ATGqyC3dtCL3IquQxuTokBHVfGQNifV+4NriXFtI2X17
+         fszP4brWR/Hx+1/LnduzDEDWLG2bW2wn+YiLZznjK3Bl6yjsYFGNitQ1NCRBg6VsdwA3
+         mdvc/0pCR4hmvzoA9KsE/aXTinG4WlUei5trUCNevQehnnAyVeIxHs/rrX9R1ViLAbSq
+         ugV0pwm7w1LorCZ+BNVB/yXIdQa79D+iw5qhGFXmZxo5o6Ez23tqKsvpa3jdwq/RxNVs
+         BinQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=JUgobMXMeWECDW3ek9+e0C733/O+//2T52cesJaBX8c=;
-        b=cIKCdl5r7BGXGNke8YO7OD02JOKcKk4wiyO1RYKOZjtCI5/cXuHADeW+KKIbv7/geV
-         Ib2XhN+tbtWBRShvTNij42as6PllK3ziPwmzrhpz0nGGF23VtbgvID8vpGd3dNVZ48Lp
-         1qJZnWsgG8DGtXLfe4O735ZMYvAWN7v3uMfhZtcwDsywoZ2AThZw95u9uiayFnnM1NFc
-         fD4ygMJ17aJ/PTm3BVYPB64uIKEt0s7KELTgvWRa3Ibs2eHKEZquYM47ZuQZijDVMpVz
-         ucJ7/z1snMddzo72AkfNsnQNVE/STw5a/EhAjVnxyM+OKxrVETZMJw/U6Y9DPeSJMI8g
-         Ro5w==
-X-Gm-Message-State: ANoB5pkegIBACS5v89TFYVyzLwTPOSh23hnY5ZF9al9ma58FnZXNUzRe
-        S9UA3iZLWZW1AgkxOmLxGcxH6RLm0xKMyCjUg3019A==
-X-Google-Smtp-Source: AA0mqf5vDxpbR2aK7DjWFkpy/hZFpuGrC8xsRES0tEiJR2/LUStruaNY8eUCaSpk8MKy8at6jWPu3c/ch2FBcMLhDnw=
-X-Received: by 2002:a5d:6f0f:0:b0:236:5b81:1daa with SMTP id
- ay15-20020a5d6f0f000000b002365b811daamr27570609wrb.17.1669776464835; Tue, 29
- Nov 2022 18:47:44 -0800 (PST)
+        bh=TtkyVa2IrpwnujLbAlvNXcH3WzrDZO7fZhfeo5ojqx4=;
+        b=4Q8gpUOG4ZS0u6BnZFgHhNs1Kp4k9IZ9oSILavaATvPoMwXWRSl+nZdtzVNjcpxeM0
+         jMIflimS3goU7RNYmluXJ8GQhkjmbArxJEWsK/shlBJMnwjk13sO6n8DWjoj5UYsrkh9
+         QcUsSA0m6qaQ8/6AnwKFH7nlvXFc4BSLBzz6DeL/BHoVB+/yzhX+AXYdQBD+3f43aA++
+         MJDHlh7Src1ud4fKPLQlh0x7CKTKhrMFjpSt8zv9C89WQgYT4rF6s9Enl4KsSeAl/BAi
+         ByBvOy2kuxXzGkblJ4p0N2ZR7j74T3fuO0d8m/rQC+s0np/c78Fe/wxN+eFWpSuqGhP0
+         nr5w==
+X-Gm-Message-State: ANoB5pmjLwPTQpd63w83pxxNMw8mJRgTghTzgDULghZRP+MWCTnG+UMs
+        mUVN7lx6BjFSblcnUp2xGyZDyr61SWisMo252jE=
+X-Google-Smtp-Source: AA0mqf7oM1xVfPZeEBeXoHPoEIp2eTKZPeY+uxONWEAQpo3ShqFa81+F9spvkCRBBnSaiGYb573NrE1KoDjO7rmL9G0=
+X-Received: by 2002:adf:e68a:0:b0:242:1926:7838 with SMTP id
+ r10-20020adfe68a000000b0024219267838mr7357388wrm.200.1669776506939; Tue, 29
+ Nov 2022 18:48:26 -0800 (PST)
 MIME-Version: 1.0
-References: <20221130013108.90062-1-kuba@kernel.org>
-In-Reply-To: <20221130013108.90062-1-kuba@kernel.org>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Tue, 29 Nov 2022 18:47:33 -0800
-Message-ID: <CACKFLinyajLsJr0_a4QXFmuKg7sJUQgniNMUWnasqOSfAAuJPw@mail.gmail.com>
-Subject: Re: [PATCH net-next] bnxt: report FEC block stats via standard interface
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000010107105eea72130"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
+ <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com>
+ <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com> <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
+ <CA+khW7jgsyFgBqU7hCzZiSSANE7f=A+M-0XbcKApz6Nr-ZnZDg@mail.gmail.com>
+ <07a7491e-f391-a9b2-047e-cab5f23decc5@huawei.com> <CAMDZJNUTaiXMe460P7a7NfK1_bbaahpvi3Q9X85o=G7v9x-w=g@mail.gmail.com>
+ <59fc54b7-c276-2918-6741-804634337881@huaweicloud.com> <541aa740-dcf3-35f5-9f9b-e411978eaa06@redhat.com>
+ <Y4ZABpDSs4/uRutC@Boquns-Mac-mini.local> <Y4ZCKaQFqDY3aLTy@Boquns-Mac-mini.local>
+ <CA+khW7hkQRFcC1QgGxEK_NeaVvCe3Hbe_mZ-_UkQKaBaqnOLEQ@mail.gmail.com> <23b5de45-1a11-b5c9-d0d3-4dbca0b7661e@huaweicloud.com>
+In-Reply-To: <23b5de45-1a11-b5c9-d0d3-4dbca0b7661e@huaweicloud.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Wed, 30 Nov 2022 10:47:50 +0800
+Message-ID: <CAMDZJNWtyanKtXtAxYGwvJ0LTgYLf=5iYFm63pbvvJLPE8oHSQ@mail.gmail.com>
+Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
+To:     Hou Tao <houtao@huaweicloud.com>
+Cc:     Hao Luo <haoluo@google.com>, Waiman Long <longman@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, bpf <bpf@vger.kernel.org>,
+        "houtao1@huawei.com" <houtao1@huawei.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000010107105eea72130
-Content-Type: text/plain; charset="UTF-8"
-
-On Tue, Nov 29, 2022 at 5:31 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Wed, Nov 30, 2022 at 9:50 AM Hou Tao <houtao@huaweicloud.com> wrote:
 >
-> I must have missed that these stats are only exposed
-> via the unstructured ethtool -S when they got merged.
-> Plumb in the structured form.
+> Hi Hao,
 >
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: michael.chan@broadcom.com
-> ---
+> On 11/30/2022 3:36 AM, Hao Luo wrote:
+> > On Tue, Nov 29, 2022 at 9:32 AM Boqun Feng <boqun.feng@gmail.com> wrote:
+> >> Just to be clear, I meant to refactor htab_lock_bucket() into a try
+> >> lock pattern. Also after a second thought, the below suggestion doesn't
+> >> work. I think the proper way is to make htab_lock_bucket() as a
+> >> raw_spin_trylock_irqsave().
+> >>
+> >> Regards,
+> >> Boqun
+> >>
+> > The potential deadlock happens when the lock is contended from the
+> > same cpu. When the lock is contended from a remote cpu, we would like
+> > the remote cpu to spin and wait, instead of giving up immediately. As
+> > this gives better throughput. So replacing the current
+> > raw_spin_lock_irqsave() with trylock sacrifices this performance gain.
+> >
+> > I suspect the source of the problem is the 'hash' that we used in
+> > htab_lock_bucket(). The 'hash' is derived from the 'key', I wonder
+> > whether we should use a hash derived from 'bucket' rather than from
+> > 'key'. For example, from the memory address of the 'bucket'. Because,
+> > different keys may fall into the same bucket, but yield different
+> > hashes. If the same bucket can never have two different 'hashes' here,
+> > the map_locked check should behave as intended. Also because
+> > ->map_locked is per-cpu, execution flows from two different cpus can
+> > both pass.
+> The warning from lockdep is due to the reason the bucket lock A is used in a
+> no-NMI context firstly, then the same bucke lock is used a NMI context, so
+Yes, I tested lockdep too, we can't use the lock in NMI(but only
+try_lock work fine) context if we use them no-NMI context. otherwise
+the lockdep prints the warning.
+* for the dead-lock case: we can use the
+1. hash & min(HASHTAB_MAP_LOCK_MASK, htab->n_buckets -1)
+2. or hash bucket address.
 
-We missed it too.  Thanks.
+* for lockdep warning, we should use in_nmi check with map_locked.
 
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+BTW, the patch doesn't work, so we can remove the lock_key
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c50eb518e262fa06bd334e6eec172eaf5d7a5bd9
 
---00000000000010107105eea72130
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+static inline int htab_lock_bucket(const struct bpf_htab *htab,
+                                   struct bucket *b, u32 hash,
+                                   unsigned long *pflags)
+{
+        unsigned long flags;
 
-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
-OnaLEot1MoQO7BIe5S9H4AcCEXXcrJJiAtMCl47ARpyHmvQFQFFTrHgUYEd9V+9bOzY7MBIGSV1N
-/JfsT1sZw6HT0lJkSQefhPGpBniAob62DJP3qr11tu8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU31rAyTdZweIF0tJTFYwfOv2w
-L4QwDQYJKoZIhvcNAQELBQADggEBACcuyaGmk0NSZ7Kio7O7WSZ0j0f9xXcBnLbJvQXFYM7JI5uS
-kw5ozATEN5gfmNIe0AHzqwoYjAf3x8Dv2w7HgyrxWdpjTKQFv5jojxa3A5LVuM8mhPGZfR/L5jSk
-5xc3llsKqrWI4ov4JyW79p0E99gfPA6Waixoavxvv1CZBQ4Stu7N660kTu9sJrACf20E+hdKLoiU
-hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
-E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIM3nI6Kt3eeTaTnlARifYE14kSJaxwlC
-gmsF2AwnIpFCMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEz
-MDAyNDc0NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAQo4WKYfym79PzAUfEMNElSp/DFwxq+m9zLV/Rnwg+paVcnbpq
-5Sxvs6GDesYEMK/4cQzx1uO8txaz7YWNTnvmpNqO30ncFMTKi+8bV9bhBsp49coIKJJ6+nfsnQre
-yzYy0Wvjy8J4OGV3mGv/pk1HF1zbjaBUvfsldXMExUA+bZGOhMi+vgZAPpLyjjY0irTmb2L4adFW
-8fTyIW+KVEHtVgobyYjSmZ+K42Mf4GcuPG0d1rGo/qWzbp8pNhYUYri754uoKaES9+M5gfVAcgk9
-HvsMCnvf6HoK/C1Z1nCma7zaXKnX3tFrLaDUEcgDH0SSCRA8REiXYQORIlfL5Hwl
---00000000000010107105eea72130--
+        hash = hash & min(HASHTAB_MAP_LOCK_MASK, htab->n_buckets -1);
+
+        preempt_disable();
+        if (unlikely(__this_cpu_inc_return(*(htab->map_locked[hash])) != 1)) {
+                __this_cpu_dec(*(htab->map_locked[hash]));
+                preempt_enable();
+                return -EBUSY;
+        }
+
+        if (in_nmi()) {
+                if (!raw_spin_trylock_irqsave(&b->raw_lock, flags))
+                        return -EBUSY;
+        } else {
+                raw_spin_lock_irqsave(&b->raw_lock, flags);
+        }
+
+        *pflags = flags;
+        return 0;
+}
+
+
+> lockdep deduces that may be a dead-lock. I have already tried to use the same
+> map_locked for keys with the same bucket, the dead-lock is gone, but still got
+> lockdep warning.
+> >
+> > Hao
+> > .
+>
+
+
+-- 
+Best regards, Tonghao
