@@ -2,147 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2867863CD00
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 02:47:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4001D63CD07
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 02:50:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231779AbiK3Brh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 20:47:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53464 "EHLO
+        id S232032AbiK3BuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 20:50:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiK3Brg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 20:47:36 -0500
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5904813B;
-        Tue, 29 Nov 2022 17:47:31 -0800 (PST)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-13bd2aea61bso19433311fac.0;
-        Tue, 29 Nov 2022 17:47:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jHLuEwDd4ephlkChL9nCW8YQ7VT3fy4zl63QtukC6uk=;
-        b=mszqok5e+P0HO8KMquZAwj2ulqGdn79hCsFcF6DehjjW2LARu8qilsWv3XsVH69EOG
-         B9E5tH1teWPEFpT/vbZlByIBSIV2ET24W1YgOHMJ3rkfEj2AaI7cw3X2d1h+yoeP6grJ
-         Gycis4bjMmnnxhJcEs9FqNSVKZqIA0fXPpsDaASEqc8GrahoqbdmpIklGpKJWbNfVcp5
-         SqgASUiIeX/svV0O5X0Mq+oV9nXPokWgVkPYjcnrWvQ9TJA2tREyxbhS6WfGaNrgyih8
-         DxT4kxu4/NRZNbrXi01FQdq1hmdGpvKXlLGEZXh0xIoc74o2d2H+bve/hv2KkhVHeBsr
-         BnHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jHLuEwDd4ephlkChL9nCW8YQ7VT3fy4zl63QtukC6uk=;
-        b=atVFeS/gCcwZQsfMay8mIuNWjFSXvGS/gtPMPgBklvh4Sf9Cig62khS4QHsGYLh4lO
-         Il1ZmMefxO0mw41TkARj884GqYokYBixuzwFgW8F9HHr9YnfJqIvNVxfz/i7YJLSBZrD
-         VAkgadSEXyc89sR0AeMNP0G3VXsGrvA8BPwkWnXfUy3w1VgBF7oeSMY2oi97OmCz+LuB
-         j+ClYbNmWguiR/W+yfkfXsBvWTujnOYMnWAJCTn8n5Ru3WBWF2Cb8jTKa/y5fjs2cfGI
-         rDDrQIyJlIoX+Y73kLU+dpb4NtgBsEGhhyh+Yc8/PQpJMygHO8zxCRyk8gQBgwq28jf0
-         X8QQ==
-X-Gm-Message-State: ANoB5pnjqtQw9iGMBDhmbYVTwoVAl+9Jmg+nUVFUIEg53o8nndFCh+sV
-        ivadBiTlwZUBPD/PuAYFW+U=
-X-Google-Smtp-Source: AA0mqf4tcHIJ6VIdAdcykahix+4U0RnE4zsbd6pkZt/jPJIJ4Onv1aFMW8XZzzYhRZ7J+lJAz8V0Gw==
-X-Received: by 2002:a05:6870:5a5:b0:13a:f95a:2cca with SMTP id m37-20020a05687005a500b0013af95a2ccamr34859654oap.212.1669772850608;
-        Tue, 29 Nov 2022 17:47:30 -0800 (PST)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id z25-20020a056870d69900b00141e56210b2sm222965oap.57.2022.11.29.17.47.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Nov 2022 17:47:30 -0800 (PST)
-Date:   Tue, 29 Nov 2022 17:47:28 -0800
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     Valentin Schneider <vschneid@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Barry Song <baohua@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        haniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Mel Gorman <mgorman@suse.de>,
+        with ESMTP id S229448AbiK3BuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 20:50:15 -0500
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C776C729;
+        Tue, 29 Nov 2022 17:50:11 -0800 (PST)
+Received: from mail02.huawei.com (unknown [172.30.67.169])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4NMMbK5lcCz4f3k6L;
+        Wed, 30 Nov 2022 09:50:05 +0800 (CST)
+Received: from [10.174.176.117] (unknown [10.174.176.117])
+        by APP2 (Coremail) with SMTP id Syh0CgAXerXMtoZjR757BQ--.34895S2;
+        Wed, 30 Nov 2022 09:50:08 +0800 (CST)
+Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
+To:     Hao Luo <haoluo@google.com>
+Cc:     Waiman Long <longman@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
         Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH v2 0/4] cpumask: improve on cpumask_local_spread()
- locality
-Message-ID: <Y4a2MBVEYEY+alO8@yury-laptop>
-References: <20221112190946.728270-1-yury.norov@gmail.com>
- <xhsmh7czwyvtj.mognet@vschneid.remote.csb>
- <Y3PXw8Hqn+RCMg2J@yury-laptop>
- <xhsmho7t5ydke.mognet@vschneid.remote.csb>
- <665b6081-be55-de9a-1f7f-70a143df329d@gmail.com>
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, bpf <bpf@vger.kernel.org>,
+        "houtao1@huawei.com" <houtao1@huawei.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>
+References: <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
+ <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com>
+ <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com>
+ <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
+ <CA+khW7jgsyFgBqU7hCzZiSSANE7f=A+M-0XbcKApz6Nr-ZnZDg@mail.gmail.com>
+ <07a7491e-f391-a9b2-047e-cab5f23decc5@huawei.com>
+ <CAMDZJNUTaiXMe460P7a7NfK1_bbaahpvi3Q9X85o=G7v9x-w=g@mail.gmail.com>
+ <59fc54b7-c276-2918-6741-804634337881@huaweicloud.com>
+ <541aa740-dcf3-35f5-9f9b-e411978eaa06@redhat.com>
+ <Y4ZABpDSs4/uRutC@Boquns-Mac-mini.local>
+ <Y4ZCKaQFqDY3aLTy@Boquns-Mac-mini.local>
+ <CA+khW7hkQRFcC1QgGxEK_NeaVvCe3Hbe_mZ-_UkQKaBaqnOLEQ@mail.gmail.com>
+From:   Hou Tao <houtao@huaweicloud.com>
+Message-ID: <23b5de45-1a11-b5c9-d0d3-4dbca0b7661e@huaweicloud.com>
+Date:   Wed, 30 Nov 2022 09:50:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <665b6081-be55-de9a-1f7f-70a143df329d@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CA+khW7hkQRFcC1QgGxEK_NeaVvCe3Hbe_mZ-_UkQKaBaqnOLEQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-CM-TRANSID: Syh0CgAXerXMtoZjR757BQ--.34895S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7KFW8ZF47ZF4Dtr4rKr1xKrg_yoW8WF1DpF
+        W2g343KF4kZr1UZ3WvvF18tw4rAw12ka1jkrW5Xr1vvr45W343ZFW8K3y8ZFyjqr4fJrs0
+        vrsFva48CFZ0vaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvab4IE77IF4wAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
+        0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+        6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+        Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7Mxk0xIA0c2IE
+        e2xFo4CEbIxvr21l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
+        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a
+        6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
+        kF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv
+        67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyT
+        uYvjxUo0eHDUUUU
+X-CM-SenderInfo: xkrx3t3r6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 28, 2022 at 08:39:24AM +0200, Tariq Toukan wrote:
-> 
-> 
-> On 11/17/2022 2:23 PM, Valentin Schneider wrote:
-> > On 15/11/22 10:32, Yury Norov wrote:
-> > > On Tue, Nov 15, 2022 at 05:24:56PM +0000, Valentin Schneider wrote:
-> > > > 
-> > > > Is this meant as a replacement for [1]?
-> > > 
-> > > No. Your series adds an iterator, and in my experience the code that
-> > > uses iterators of that sort is almost always better and easier to
-> > > understand than cpumask_nth() or cpumask_next()-like users.
-> > > 
-> > > My series has the only advantage that it allows keep existing codebase
-> > > untouched.
-> > > 
-> > 
-> > Right
-> > 
-> > > > I like that this is changing an existing interface so that all current
-> > > > users directly benefit from the change. Now, about half of the users of
-> > > > cpumask_local_spread() use it in a loop with incremental @i parameter,
-> > > > which makes the repeated bsearch a bit of a shame, but then I'm tempted to
-> > > > say the first point makes it worth it.
-> > > > 
-> > > > [1]: https://lore.kernel.org/all/20221028164959.1367250-1-vschneid@redhat.com/
-> > > 
-> > > In terms of very common case of sequential invocation of local_spread()
-> > > for cpus from 0 to nr_cpu_ids, the complexity of my approach is n * log n,
-> > > and your approach is amortized O(n), which is better. Not a big deal _now_,
-> > > as you mentioned in the other email. But we never know how things will
-> > > evolve, right?
-> > > 
-> > > So, I would take both and maybe in comment to cpumask_local_spread()
-> > > mention that there's a better alternative for those who call the
-> > > function for all CPUs incrementally.
-> > > 
-> > 
-> > Ack, sounds good.
-> > 
-> 
-> Good.
-> Is a respin needed, to add the comment mentioned above?
+Hi Hao,
 
-If you think it's worth the effort.
+On 11/30/2022 3:36 AM, Hao Luo wrote:
+> On Tue, Nov 29, 2022 at 9:32 AM Boqun Feng <boqun.feng@gmail.com> wrote:
+>> Just to be clear, I meant to refactor htab_lock_bucket() into a try
+>> lock pattern. Also after a second thought, the below suggestion doesn't
+>> work. I think the proper way is to make htab_lock_bucket() as a
+>> raw_spin_trylock_irqsave().
+>>
+>> Regards,
+>> Boqun
+>>
+> The potential deadlock happens when the lock is contended from the
+> same cpu. When the lock is contended from a remote cpu, we would like
+> the remote cpu to spin and wait, instead of giving up immediately. As
+> this gives better throughput. So replacing the current
+> raw_spin_lock_irqsave() with trylock sacrifices this performance gain.
+>
+> I suspect the source of the problem is the 'hash' that we used in
+> htab_lock_bucket(). The 'hash' is derived from the 'key', I wonder
+> whether we should use a hash derived from 'bucket' rather than from
+> 'key'. For example, from the memory address of the 'bucket'. Because,
+> different keys may fall into the same bucket, but yield different
+> hashes. If the same bucket can never have two different 'hashes' here,
+> the map_locked check should behave as intended. Also because
+> ->map_locked is per-cpu, execution flows from two different cpus can
+> both pass.
+The warning from lockdep is due to the reason the bucket lock A is used in a
+no-NMI context firstly, then the same bucke lock is used a NMI context, so
+lockdep deduces that may be a dead-lock. I have already tried to use the same
+map_locked for keys with the same bucket, the dead-lock is gone, but still got
+lockdep warning.
+>
+> Hao
+> .
+
