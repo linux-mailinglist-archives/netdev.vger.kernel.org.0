@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9779063E43F
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 00:06:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09D0663E43C
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 00:06:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229712AbiK3XGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 18:06:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
+        id S229445AbiK3XGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 18:06:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbiK3XG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 18:06:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D29950E5
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 15:05:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669849529;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=chCgMEOdPcT2pjDuX1oaF0+9J3jNNFoDJQhqkxGPISA=;
-        b=h7hHT419mpZn7L0A+INRNceHcGUftkeEvaio0744bs1m0mrnUqi3TjteYJ5L6VvIU5wTl9
-        IYxO3CZn/jwJ1sPBZmVkp9DItHKTIP2a81w+7mWYFJmeMLWKSwQw1Oaj2bfL3siKmSgizE
-        v1+PasCE9ZP/Jxb5/b0v8DJZjenhsHs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-617-hLY3PVO3Mv259JTv7fsqyw-1; Wed, 30 Nov 2022 18:05:27 -0500
-X-MC-Unique: hLY3PVO3Mv259JTv7fsqyw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E622E2999B58;
-        Wed, 30 Nov 2022 23:05:26 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 56C42C15BB4;
-        Wed, 30 Nov 2022 23:05:25 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <CAEXW_YSd3dyxHxnU1EuER+xyBGGatONzPovphFX5K9seSbkdkg@mail.gmail.com>
-References: <CAEXW_YSd3dyxHxnU1EuER+xyBGGatONzPovphFX5K9seSbkdkg@mail.gmail.com> <20221130181316.GA1012431@paulmck-ThinkPad-P17-Gen-1> <20221130181325.1012760-14-paulmck@kernel.org> <CAEXW_YS1nfsV_ohXDaB1i2em=+0KP1DofktS24oGFa4wPAbiiw@mail.gmail.com> <639433.1669835344@warthog.procyon.org.uk>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     dhowells@redhat.com, "Paul E. McKenney" <paulmck@kernel.org>,
-        rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@meta.com, rostedt@goodmis.org,
-        Marc Dionne <marc.dionne@auristor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH rcu 14/16] rxrpc: Use call_rcu_hurry() instead of call_rcu()
+        with ESMTP id S229586AbiK3XGL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 18:06:11 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28D397033;
+        Wed, 30 Nov 2022 15:06:07 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id s5so76819edc.12;
+        Wed, 30 Nov 2022 15:06:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=UQlapujHjKw7zEIFDE0bIVyHKZ7ZDtpnlk0TFhcybwA=;
+        b=Ysm8TV/wU765nO4TfDrEonAPGjEFGm6E5iiVUYJOpUTVRLXFO3g8PSVucc0QBO77qc
+         RotMShY3b1/V8LPZ+LTzTvOwYtDXl1whxa23u4QnDrou4mw86hzWbB2eCC69gybYw7TW
+         smQ5ZQXFdzRLVJu1tRka0CNIHqBmT/wN6ONRqZOsbUTSP9z0IdRTPONmCLEg8YTZND9D
+         KmvHnVx4MzMB4nGmQMVWwjCW9Tt/5g8kUHJEpPsSx6OdWTbHV0/fS8i0NaJWBnhCCTEJ
+         jppNDTC7lFN5JUGJCU/NNBRqRydvrYiGDi+FAvFuu7z25o5hk8qSlAm27IylwMNvc2k/
+         K9WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UQlapujHjKw7zEIFDE0bIVyHKZ7ZDtpnlk0TFhcybwA=;
+        b=0oF7Pz2wmfcwxj93D4G47KqsMaJxgUTSEmbxJMeNa30l4U30ihwuvMaNvroOCLGBs3
+         pCjillY+bSJN+RHdli34+TUTR9wdQe9i5v2uC9YjPdUFUYORQVwKCEk5hr7b0h18zUB6
+         8gdWzgeMG3jZXKnL99jWgxwobui0AhzYfMaQZ+nQT3bl48USzzqpXClO+n4mJTeGyMlH
+         Kfi1L/ciG7gkLZ853QjxtKYlEFDMvCltajBaNPNLSuQqVDFzWWliuwtt0TTU4X9yjyp6
+         AY2PHtXAyv0Q116O1n5tVicLpqtxsy9DTnDwL2WbjY4vCWZg28uGs+Yj8GwhRBdiI8Bu
+         GAbQ==
+X-Gm-Message-State: ANoB5pnqQXRdiCXUr6jtmc8poYzQ68Qjp3ExJJc0S/da3IlIxESx7eKL
+        HvDW4Ip/WNTqHjw0Y3NNHcuVCQQQcBpcsWw4ql/ePrCl
+X-Google-Smtp-Source: AA0mqf7PtDPrIxDqKatcWfpFTL79ZuvV3WUTnTPNI4tc9Zv92huJfMiwWmwTqHWYV+x88CA6tbxVdC/+182b6AVVNFs=
+X-Received: by 2002:a50:ed90:0:b0:46a:e6e3:b3cf with SMTP id
+ h16-20020a50ed90000000b0046ae6e3b3cfmr21089221edr.333.1669849566068; Wed, 30
+ Nov 2022 15:06:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <658623.1669849522.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Wed, 30 Nov 2022 23:05:22 +0000
-Message-ID: <658624.1669849522@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <20221124151603.807536-1-benjamin.tissoires@redhat.com> <20221124151603.807536-2-benjamin.tissoires@redhat.com>
+In-Reply-To: <20221124151603.807536-2-benjamin.tissoires@redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 30 Nov 2022 15:05:53 -0800
+Message-ID: <CAEf4Bzaq3QfhzqQK=BqCkzNcoS3A5L-ntJ5vj16uMc=jS4bxkw@mail.gmail.com>
+Subject: Re: [RFC hid v1 01/10] bpftool: generate json output of skeletons
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,57 +73,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Joel Fernandes <joel@joelfernandes.org> wrote:
-
-> > Note that this conflicts with my patch:
-> >
-> >         rxrpc: Don't hold a ref for connection workqueue
-> >         https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux=
--fs.git/commit/?h=3Drxrpc-next&id=3D450b00011290660127c2d76f5c5ed264126eb2=
-29
-> >
-> > which should render it unnecessary.  It's a little ahead of yours in t=
-he
-> > net-next queue, if that means anything.
-> =
-
-> Could you clarify why it is unnecessary?
-
-Rather than tearing down parts of the connection it only logs a trace line=
-,
-frees the memory and decrements the counter on the namespace.  This it use=
-d to
-account that all the pieces of memory allocated in that namespace are gone
-before the namespace is removed to check for leaks.  The RCU cleanup used =
-to
-use some other stuff (such as the peer hash) in the rxrpc_net struct but n=
-o
-longer will after the patches I submitted.
-
-> After your patch, you are still doing a wake up in your call_rcu() callb=
-ack:
+On Thu, Nov 24, 2022 at 7:16 AM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
 >
-> - ASSERTCMP(refcount_read(&conn->ref), =3D=3D, 0);
-> + if (atomic_dec_and_test(&rxnet->nr_conns))
-> +    wake_up_var(&rxnet->nr_conns);
+> So we can then build light skeletons with loaders in any language.
+>
+
+It would be useful to include an example generated JSON. Other than
+that the overall idea makes sense. Kind of machine-friendly "BPF
+object schema" to allow automation.
+
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> ---
+>  tools/bpf/bpftool/gen.c | 95 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 95 insertions(+)
+>
+> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+> index cf8b4e525c88..818a5209b3ac 100644
+> --- a/tools/bpf/bpftool/gen.c
+> +++ b/tools/bpf/bpftool/gen.c
+> @@ -904,6 +904,96 @@ codegen_progs_skeleton(struct bpf_object *obj, size_t prog_cnt, bool populate_li
+>         }
+>  }
+>
+> +static int gen_json(struct bpf_object *obj, const char *obj_name, size_t file_sz, uint8_t *obj_data)
+> +{
+> +       struct bpf_program *prog;
+> +       struct bpf_map *map;
+> +       char ident[256];
+> +
+> +       jsonw_start_object(json_wtr);   /* root object */
+> +
+> +       jsonw_string_field(json_wtr, "name", obj_name);
+> +
+> +       jsonw_bool_field(json_wtr, "use_loader", use_loader);
+> +
+> +       /* print all maps */
+> +       jsonw_name(json_wtr, "maps");
+> +       jsonw_start_array(json_wtr);
+> +       bpf_object__for_each_map(map, obj) {
+> +               if (!get_map_ident(map, ident, sizeof(ident))) {
+> +                       p_err("ignoring unrecognized internal map '%s'...",
+> +                             bpf_map__name(map));
+> +                       continue;
+> +               }
+> +
+> +               jsonw_start_object(json_wtr);   /* map object */
+> +               jsonw_string_field(json_wtr, "ident", ident);
+> +               jsonw_string_field(json_wtr, "name", bpf_map__name(map));
+> +
+> +               /* print mmap data value */
+> +               if (is_internal_mmapable_map(map, ident, sizeof(ident))) {
+> +                       const void *mmap_data = NULL;
+> +                       size_t mmap_size = 0;
+> +
+> +                       mmap_data = bpf_map__initial_value(map, &mmap_size);
+> +
+> +                       jsonw_uint_field(json_wtr, "size", mmap_size);
+> +                       jsonw_uint_field(json_wtr, "mmap_sz", bpf_map_mmap_sz(map));
+> +                       jsonw_name(json_wtr, "data");
+> +                       print_hex_data_json((uint8_t *)mmap_data, mmap_size);
+> +
+> +               }
+> +               jsonw_end_object(json_wtr);     /* map object */
+> +       }
+> +       jsonw_end_array(json_wtr);
+> +
+> +       /* print all progs */
+> +       jsonw_name(json_wtr, "progs");
+> +       jsonw_start_array(json_wtr);
+> +       bpf_object__for_each_program(prog, obj) {
+> +               jsonw_start_object(json_wtr);   /* prog object */
+> +               jsonw_string_field(json_wtr, "name", bpf_program__name(prog));
+> +               jsonw_string_field(json_wtr, "sec", bpf_program__section_name(prog));
+> +               jsonw_end_object(json_wtr);     /* prog object */
+> +       }
+> +       jsonw_end_array(json_wtr);
+> +
+> +       /* print object data */
+> +       if (use_loader) {
+> +               DECLARE_LIBBPF_OPTS(gen_loader_opts, opts);
+> +               int err = 0;
+> +
+> +               err = bpf_object__gen_loader(obj, &opts);
+> +               if (err)
+> +                       return err;
+> +
+> +               err = bpf_object__load(obj);
+> +               if (err) {
+> +                       p_err("failed to load object file");
+> +                       return err;
+> +               }
+> +               /* If there was no error during load then gen_loader_opts
+> +                * are populated with the loader program.
+> +                */
+> +
+> +               jsonw_uint_field(json_wtr, "data_sz", opts.data_sz);
+> +               jsonw_name(json_wtr, "data");
+> +               print_hex_data_json((uint8_t *)opts.data, opts.data_sz);
+> +
+> +               jsonw_uint_field(json_wtr, "insns_sz", opts.insns_sz);
+> +               jsonw_name(json_wtr, "insns");
+> +               print_hex_data_json((uint8_t *)opts.insns, opts.insns_sz);
+> +
+> +       } else {
+> +               jsonw_name(json_wtr, "data");
+> +               print_hex_data_json(obj_data, file_sz);
+> +       }
+> +
+> +       jsonw_end_object(json_wtr);     /* root object */
+> +
+> +       return 0;
 > +}
-> =
-
-> Are you saying the code can now tolerate delays? What if the RCU
-> callback is invoked after arbitrarily long delays making the sleeping
-> process to wait?
-
-True.  But that now only holds up the destruction of a net namespace and t=
-he
-removal of the rxrpc module.
-
-> If you agree, you can convert the call_rcu() to call_rcu_hurry() in
-> your patch itself. Would you be willing to do that? If not, that's
-> totally OK and I can send a patch later once yours is in (after
-> further testing).
-
-I can add it to part 4 (see my rxrpc-ringless-5 branch) if it is necessary=
-.
-
-David
-
+> +
+>  static int do_skeleton(int argc, char **argv)
+>  {
+>         char header_guard[MAX_OBJ_NAME_LEN + sizeof("__SKEL_H__")];
+> @@ -986,6 +1076,11 @@ static int do_skeleton(int argc, char **argv)
+>                 goto out;
+>         }
+>
+> +       if (json_output) {
+> +               err = gen_json(obj, obj_name, file_sz, (uint8_t *)obj_data);
+> +               goto out;
+> +       }
+> +
+>         bpf_object__for_each_map(map, obj) {
+>                 if (!get_map_ident(map, ident, sizeof(ident))) {
+>                         p_err("ignoring unrecognized internal map '%s'...",
+> --
+> 2.38.1
+>
