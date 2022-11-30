@@ -2,54 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EEA263CD65
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 03:31:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C32163CD77
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 03:39:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232206AbiK3CbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Nov 2022 21:31:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48344 "EHLO
+        id S229778AbiK3Cjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Nov 2022 21:39:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231948AbiK3CbF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 21:31:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D366B386;
-        Tue, 29 Nov 2022 18:31:04 -0800 (PST)
+        with ESMTP id S229595AbiK3Cjq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Nov 2022 21:39:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E91286A74D
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 18:39:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29AA7619B3;
-        Wed, 30 Nov 2022 02:31:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7AE5C433D6;
-        Wed, 30 Nov 2022 02:31:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A60B9B819D2
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 02:39:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0657AC433C1;
+        Wed, 30 Nov 2022 02:39:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669775463;
-        bh=b+3JXoB1sxTN6Zr6Yv7abFfG2xs7x/MsL6RvCM34yZ4=;
+        s=k20201202; t=1669775983;
+        bh=UEbFQouLpFCPg1Q6yY6nVrh9wWd/PAcOpdPYFlhTfQ4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iOgQ5dplzUw0VChcokj9bxcv5DA1H603KU7c2CSIw/pg+C2WOBI11b6Grimhwickf
-         a2X4+fTq0qYV2DTJPD+ByQzpfVLgOJ+tIZa9o6DDEkOHPvZCwgTtZVnGu/ijIX2rSN
-         Q4Z9vePuAcv7ek5UrIzLD1n/xrOlfb7tagNhK1ZY/LaBwXTXpUKu6ydNZTA0JUGxpE
-         bM42EpzsvEmBCwAc5UnwYUIA6PhA3EfjlwlGEzZcklEcbOJtmCkI5uDw5jR/V/Bv5b
-         ONBts1oXFO2LT+TiTm8/yXIRCWjo5EM+zlwAguRLQrWpk1Te622NzHRDB3DvLCxucn
-         dK8SuSogszNow==
-Date:   Tue, 29 Nov 2022 18:31:02 -0800
+        b=GBRWxPMN/lxxuuEcBPAlMjay/uD7ZS0OW/C9SOcR9HBDTBcb0OA1N3EZqi5JBZg1m
+         /qr2ng00NyYP1qpzex58V8ZJND5QULudo0YL5I6ASGF4rO+iBda1L7CnPIv74+UKI6
+         P6n6mHl1KrRAwUTzOjoDw3hNaZ2dBnYkSzmz7xpjad9gBOdMGkr6KpnjMHsN7PX2ir
+         6seR3ReU/onBIV6KaaKMqDaWGiUkSQf/YuvrBZD/KBMWUdyFEZWpI8tcGnYSsPbgvA
+         9IxZDxSl2WIhMe35SLHQX8rMEb0PuJMQgNceoW7r7fMnWCIqEjLgYdcLgXhbxQm+wM
+         dr4soeuxWvVqw==
+Date:   Tue, 29 Nov 2022 18:39:41 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Saeed Mahameed <saeed@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@nvidia.com>,
-        Lukas Magel <lukas.magel@posteo.net>
-Subject: Re: [PATCH v4 5/6] can: etas_es58x: report the firmware version
- through ethtool
-Message-ID: <20221129183102.1983375c@kernel.org>
-In-Reply-To: <CAMZ6RqJU5hm=HniJ59aGvHyaWboa7ZHv+9nSbzGxoY-cCfxMag@mail.gmail.com>
-References: <20221104073659.414147-1-mailhol.vincent@wanadoo.fr>
-        <20221126162211.93322-1-mailhol.vincent@wanadoo.fr>
-        <20221126162211.93322-6-mailhol.vincent@wanadoo.fr>
-        <20221128142857.07cb5d88@kicinski-fedora-PC1C0HJN>
-        <CAMZ6RqJU5hm=HniJ59aGvHyaWboa7ZHv+9nSbzGxoY-cCfxMag@mail.gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
+        netdev@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
+        yc-core@yandex-team.ru, lvc-project@linuxtesting.org
+Subject: Re: [PATCH v2 3/3] net/ethtool/ioctl: split ethtool_get_phy_stats
+ into multiple helpers
+Message-ID: <20221129183938.496850f7@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <Y4ai4tCT48r/ktbO@lunn.ch>
+References: <20221129103801.498149-1-d-tatianin@yandex-team.ru>
+        <20221129103801.498149-4-d-tatianin@yandex-team.ru>
+        <Y4ai4tCT48r/ktbO@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,19 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Nov 2022 02:12:27 +0900 Vincent MAILHOL wrote:
-> I was not aware of this one. Thank you for pointing this out.
-> If I correctly understand, devlink_compat_running_version() is
-> supposed to allow ethtool to retrieve the firmware version from
-> devlink, right?
+On Wed, 30 Nov 2022 01:25:06 +0100 Andrew Lunn wrote:
+> On Tue, Nov 29, 2022 at 01:38:01PM +0300, Daniil Tatianin wrote:
+> > So that it's easier to follow and make sense of the branching and
+> > various conditions.
+> > 
+> > Stats retrieval has been split into two separate functions
+> > ethtool_get_phy_stats_phydev & ethtool_get_phy_stats_ethtool.
+> > The former attempts to retrieve the stats using phydev & phy_ops, while
+> > the latter uses ethtool_ops.
+> > 
+> > Actual n_stats validation & array allocation has been moved into a new
+> > ethtool_vzalloc_stats_array helper.
+> > 
+> > This also fixes a potential NULL dereference of
+> > ops->get_ethtool_phy_stats where it was getting called in an else branch
+> > unconditionally without making sure it was actually present.
+> > 
+> > Found by Linux Verification Center (linuxtesting.org) with the SVACE
+> > static analysis tool.
+> > 
+> > Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>  
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Yes.
-
-> Currently it does not work. I guess it is because I am not using
-> SET_NETDEV_DEVLINK_PORT()? I initially thought that this was optional.
-
-It's optional but breaks the linking hence the fallback can't kick in.
-I guess "optional-ity" is a spectrum :)
-
-> I will continue to investigate and see if it is possible to completely
-> remove the .get_drvinfo() callback.
+FWIW the patches did not hit the list, once again :/
