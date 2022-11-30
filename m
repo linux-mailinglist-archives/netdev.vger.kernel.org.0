@@ -2,64 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 510A963D54C
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 13:14:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 180B463D551
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 13:16:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234304AbiK3MOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 07:14:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32852 "EHLO
+        id S233214AbiK3MQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 07:16:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231322AbiK3MOG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 07:14:06 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EAF2B600;
-        Wed, 30 Nov 2022 04:14:05 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id vv4so40874752ejc.2;
-        Wed, 30 Nov 2022 04:14:05 -0800 (PST)
+        with ESMTP id S229468AbiK3MQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 07:16:02 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C292B62D
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 04:16:01 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id d1so26789634wrs.12
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 04:16:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Lj97Y0Fj3f0GUlUBEVb57/dPo/1vC2s+z47mWfenrC4=;
-        b=Ds3z99e+jksFhw9iEbhhn7cdIkXy9v/AM/890kB0niF9tib84ZTwZLFhcXXqr4H55r
-         RCavPP4imf5xYpIkNb19Nt+OVfVY+2/F5zZp5xK41/nuwuaUy/RF3VEAhtuIIdl0bNsY
-         57z/ZzOu0n6JMN0/Bg7CCxfdbVH09BVf1h4yFWwiUzkw7Rl7hR1Z6mTvnMGkyaeSOYc7
-         gLKR6CQvsaHTaDrWQpRYfAKpeiQtHEF8JUBT77A2FyR4loy1YDtSEdlaTjW/Cpqx1Yyt
-         7g7zVzp11AZGltdw9KiZl+XhiVvcyDtrbnYcCqnItqqLxzuGwDS2Bb/tKq1IQV2FrVQY
-         4LgQ==
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=duZmZFIurozEAQ1bvz5E0UHRAWplyevgCKCKZZqIelo=;
+        b=IDLnwkxaWEFt//1+1HJfZQk+XbamYSHxbxN2JNFHHOVFbG4Lrfpt/8/2wtBXXS9IkW
+         08uSjrAbTKFoTcWh5ahh7vp4+mghRV5Q3HVbcXUNGlXDlSD/o70/T7jcwTMOEWMIfMJK
+         hwVXX2jm8yoY6Z1rgOj19fmDMrsHpv/8kDQeoBlsMMj1lx3qb2X5sMoFjT29BNz6lGsA
+         Bd801H7sUdIY90+WmThT69T/GLCefKXbIGyPaHyKsjNWsIihlV/UhHFUISiGjs3pv0BO
+         sovs6kC/h37arRJ6P+M6X4a3znnlXKXKBOEzGxbmWeKB+kX6EpdiFstSZwbhyVDx9d0F
+         ElAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Lj97Y0Fj3f0GUlUBEVb57/dPo/1vC2s+z47mWfenrC4=;
-        b=NsruYpBzGXcANW8Tl1StrnFFHmmeWiS6eCs7wucIk9aH6tgD+1CaHfBQdx2kt+n6An
-         3C1JIO0Xm0enoRTS2B/1nCaS2FzxSsQN/hZORVUCVhy8QngfZpG0y17aKbFxkCBR4axR
-         XAWzJzpSNueMgAtPpseQaQEmdpNlkwz6ka27yYYzFyvGykmCBNrJbHWlfpj+hjkEF82u
-         nZ8NRlwvUMmwgx00vJxQ9smnXNFWM8HPrTXx6wJUGL+AjXow9izrAYNIoWIJQ24j16T2
-         2BXUG1Aj67sUEtGQZw0CJk5ZKd+v8uhBoslHCV0wTiq3/BhuCNMHtlMWzEIAg+rlEy5c
-         7jzA==
-X-Gm-Message-State: ANoB5pkA/Q49D9GJiDZnDUPwBkxc/NTDzLtZJL7I7Z+jL393XY9waltA
-        KudDJuQxzFk9fZROY2LfcbLDIJF6793UoNvWCQs=
-X-Google-Smtp-Source: AA0mqf7i+NfB9VUtrTSB4fToW5A8P322CGH2MvHw+TfTtlVnDCtKRglPhu63+YzcUkq3/kBHBfzUYA2WcWuOvWTfPr4=
-X-Received: by 2002:a17:907:8e09:b0:7bc:420d:709f with SMTP id
- th9-20020a1709078e0900b007bc420d709fmr23849641ejc.658.1669810444111; Wed, 30
- Nov 2022 04:14:04 -0800 (PST)
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=duZmZFIurozEAQ1bvz5E0UHRAWplyevgCKCKZZqIelo=;
+        b=XJdDfrXqUXw1TNz+pgXTLrPQUgpplyi8Iy6Xe0TNCwIt9QmEI93Ap8RdpVXzEuy9gU
+         zKyyvzWjdfEas5vATtpMA9zaSxYXWaOF9Pcu2mW09WlnlQY40ozxvy9uFVFhwj4512+w
+         Uf6CePtwJlHeGD1jmy2cl12Nr4DiFP/j2dz1je/cxP5D1t2VAf/VBUDHpYaxtqRrTb0k
+         vu9VKxldkuTWUcVlpdeDnFlDy92rV/JO89FCOEHWSWpxXPiipNyUmbRoB9llQ5udUvZW
+         Jkw/zFmwQUtoyhiiY4C6bPzLfnXawCLnY+Y5bREZjU09R4TDqmP7GvyieSX7Nqlkm0t/
+         aIKQ==
+X-Gm-Message-State: ANoB5plrrpvfEIrHI7r5pRCvz6TZ0sF0J4vkR1tNsY4SXoExzHrqL0qa
+        LtxSPIi9qsMWQKKDF9D2T8TBzvesBdw3+A==
+X-Google-Smtp-Source: AA0mqf7GE3zXSXRhXSZIxpCCSMrl8WRJFLNyPNtkoH/zMjaRJ1YYD8vh6IanL+WJXdjDMjYdqNmXvg==
+X-Received: by 2002:a5d:44c8:0:b0:242:2a46:6ff9 with SMTP id z8-20020a5d44c8000000b002422a466ff9mr2058943wrr.371.1669810559835;
+        Wed, 30 Nov 2022 04:15:59 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id v14-20020a05600c444e00b003a1980d55c4sm5795416wmn.47.2022.11.30.04.15.58
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Nov 2022 04:15:59 -0800 (PST)
+Date:   Wed, 30 Nov 2022 13:16:02 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     netdev@vger.kernel.org
+Subject: Help on PHY not supporting autoneg
+Message-ID: <Y4dJgj4Z8516tJwx@gvm01>
 MIME-Version: 1.0
-References: <20221130094142.545051-1-tirthendu.sarkar@intel.com> <Y4dFR9oR3AAIcPlB@boxer>
-In-Reply-To: <Y4dFR9oR3AAIcPlB@boxer>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 30 Nov 2022 13:13:52 +0100
-Message-ID: <CAJ8uoz0Fogd9RTMGy1ktqnM5UR==o9nHLst4O+na_gP4kfgmpA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests: xsk: changes for setting up NICs to
- run xsk self-tests
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Saeed Mahameed <saeed@kernel.org>
-Cc:     Tirthendu Sarkar <tirthendu.sarkar@intel.com>, bjorn@kernel.org,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -70,87 +66,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 1:09 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Wed, Nov 30, 2022 at 03:11:42PM +0530, Tirthendu Sarkar wrote:
-> > ETH devies need to be set up for running xsk self-tests, like enable
-> > loopback, set promiscuous mode, MTU etc. This patch adds those settings
-> > before running xsk self-tests and reverts them back once done.
-> >
-> > Signed-off-by: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/test_xsk.sh | 27 ++++++++++++++++++++++++-
-> >  1 file changed, 26 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
-> > index d821fd098504..e7a5c5fc4f71 100755
-> > --- a/tools/testing/selftests/bpf/test_xsk.sh
-> > +++ b/tools/testing/selftests/bpf/test_xsk.sh
-> > @@ -106,7 +106,11 @@ MTU=1500
-> >  trap ctrl_c INT
-> >
-> >  function ctrl_c() {
-> > -        cleanup_exit ${VETH0} ${VETH1} ${NS1}
-> > +     if [ ! -z $ETH ]; then
-> > +             cleanup_exit ${VETH0} ${VETH1} ${NS1}
-> > +     else
-> > +             cleanup_eth
-> > +     fi
-> >       exit 1
-> >  }
-> >
-> > @@ -138,9 +142,28 @@ setup_vethPairs() {
-> >       ip link set ${VETH0} up
-> >  }
-> >
-> > +setup_eth() {
-> > +       sudo ethtool -L ${ETH} combined 1
->
-> what if particular device has a different way of configuring single
-> channel? like
->
-> $ sudo ethtool -L ${ETH} tx 1 rx 1
->
-> I am not sure if we want to proceed with settings that are specific to
-> Intel devices. What if mlx5 will this in a much different way?
+Hello netdev group,
+I am looking for someone willing to help me on a problem I encountered
+while trying to implement a driver for a PHY that does not support
+autoneg. On my reference HW, the PHY is connected to a stmmac via MII.
 
-Adding Saeed as he will know. How does Mellanox set the number of
-channels to 1 and how do you enable loopback mode? At least the rest
-should be the same.
+This is what I did in the driver:
+- implement get_features to report NO AN support, and the supported link
+  modes.
+- implement the IRQ handling (config_intr and handle_interrupt) to
+  report the link status
 
-> > +       sudo ethtool -K ${ETH} loopback on
-> > +       sudo ip link set ${ETH} promisc on
-> > +       sudo ip link set ${ETH} mtu ${MTU}
-> > +       sudo ip link set ${ETH} up
-> > +       IPV6_DISABLE_CMD="sudo sysctl -n net.ipv6.conf.${ETH}.disable_ipv6"
-> > +       IPV6_DISABLE=`$IPV6_DISABLE_CMD 2> /dev/null`
-> > +       [[ $IPV6_DISABLE == "0" ]] && $IPV6_DISABLE_CMD=1
-> > +       sleep 1
-> > +}
-> > +
-> > +cleanup_eth() {
-> > +       [[ $IPV6_DISABLE == "0" ]] && $IPV6_DISABLE_CMD=0
-> > +       sudo ethtool -K ${ETH} loopback off
-> > +       sudo ip link set ${ETH} promisc off
-> > +}
-> > +
-> >  if [ ! -z $ETH ]; then
-> >       VETH0=${ETH}
-> >       VETH1=${ETH}
-> > +     setup_eth
-> >       NS1=""
-> >  else
-> >       validate_root_exec
-> > @@ -191,6 +214,8 @@ exec_xskxceiver
-> >
-> >  if [ -z $ETH ]; then
-> >       cleanup_exit ${VETH0} ${VETH1} ${NS1}
-> > +else
-> > +     cleanup_eth
-> >  fi
-> >
-> >  failures=0
-> > --
-> > 2.34.1
-> >
+The first problem I encountered is: how to start the PHY? The device
+requires a bit (LINK_CONTROL) to be enabled before trying to bring up
+the link. But I could not find any obvious callback from phylib to
+actually do this. Eventually, I opted for implementing the
+suspend/resume callbacks and set that bit in there. Is that right? Any
+better option?
+
+With that said, the thing still does not work as I would expect. When I
+ifconfig up my device, here's what happens (the ncn_* prints are just
+debug prinktks I've added to show the problem). See also my comments in
+the log marked with //
+
+/root # ifconfig eth0 up
+[   26.950557] socfpga-dwmac ff700000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
+[   26.962673] ncn_soft_reset
+[   26.966345] ncn_config_init
+[   26.969168] ncn_config_intr
+[   26.972211] disable IRQs   // OK, this is expected, phylib is resetting the device
+[   26.975062] ncn_resume     // not sure I expected this to be here, but it does not harm
+[   26.977746] socfpga-dwmac ff700000.ethernet eth0: PHY [stmmac-0:08] driver [NCN26000] (irq=49)
+[   26.986861] ncn_config_intr
+[   26.990045] ncn_config_intr ret = 8000, irqs = 0001
+[   26.994958] ncn_handle_interrupt 8000
+[   26.998941] ncn_handle_interrupt 8001
+[   27.002752] link = 1, ret = 0829       // there I get a link UP!
+[   27.016526] dwmac1000: Master AXI performs any burst length
+[   27.022128] socfpga-dwmac ff700000.ethernet eth0: No Safety Features support found
+[   27.029999] socfpga-dwmac ff700000.ethernet eth0: IEEE 1588-2008 Advanced Timestamp supported
+[   27.039425] socfpga-dwmac ff700000.ethernet eth0: registered PTP clock
+[   27.049388] socfpga-dwmac ff700000.ethernet eth0: configuring for phy/mii link mode
+[   27.057155] ncn_resume  // I don't fully understand what happened since the link up, but it seems the MAC is doing more initialization
+[   27.061251] ncn_handle_interrupt 8001
+[   27.065100] link = 0, ret = 0809 // here I get a link down (???)
+
+From there on, if I read the LINK_CONTROL bit, someone set it to 0 (???)
+This bit lies in the control register (Clause 22, address 0).
+
+/root # mdio-tool -i eth0 -r -a 0
+clause 22 register @eth0 0x0000 --> 0x0000   // ????? That explains the link down, though
+
+If I manually set the LINK_CONTROL bit, then I magically get the link up
+
+/root # mdio-tool -i eth0 -w -a 0 0x1000
+[   81.276504] ncn_handle_interrupt 8001
+[   81.280345] link = 1, ret = 0829
+clause 22 register @eth0 0x0000 <-- 0x1000[   81.284442] socfpga-dwmac ff700000.ethernet eth0: No phy led trigger registered for speed(10)
+
+/root # [   81.297690] socfpga-dwmac ff700000.ethernet eth0: Link is Up - 10Mbps/Half - flow control off
+
+I've also tried a completely different approach, that is "emulating"
+autoneg by implementing the config_aneg, aneg_done and read_status
+callbacks. If I do this, then my driver works just fine and nobody seems
+to be overwriting register 0.
+
+Any clue on what I might be doing wrong here?
+
+Thank you in advance for any help you might provide.
+Regards,
+Piergiorgio
+
