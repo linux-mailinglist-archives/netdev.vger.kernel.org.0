@@ -2,78 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACD7963E1B0
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 21:17:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A55DC63E1C7
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 21:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbiK3URY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 15:17:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        id S230062AbiK3UV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 15:21:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiK3UQp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 15:16:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E43689301;
-        Wed, 30 Nov 2022 12:13:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04AD661DBE;
-        Wed, 30 Nov 2022 20:13:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5979AC433D6;
-        Wed, 30 Nov 2022 20:13:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669839180;
-        bh=pyfET1ToAw3P7uNG+TwmmC/YKEAYeHY3LwFAqLPkGuY=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=s3ziu1MLDHz/XzIZoldakOWlQ63NfX8SLBbOxIRGytLtTq19KSXwavlc/JUtJoLCF
-         /9mMILqTat0Cznb6OCtI0JPoYlSE2xOi0ha3Hp0eVrDjrlsgT4Es1sDAVoTr0Yp+7r
-         ecBJvOoUfEGfJF3F3NfdKy/dBLC7lwgbE6hLFFgskzZx8A8X/CcFjHuZvekJSwuB0x
-         oSnmGZdHOjx+O4I4PKCC21Thf0R54jtoHJmI8vBMJzERqlQ0sLk3ahBeCXX7fhcFAF
-         Sda+3ql1w83Vp+hFMLBdSE1F4UBtp3fbvSAC479BtrKi7PO6HOjEPR+JF4/ZJGRNma
-         FeRrBe0m7yvYw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id EEEED5C051C; Wed, 30 Nov 2022 12:12:59 -0800 (PST)
-Date:   Wed, 30 Nov 2022 12:12:59 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@meta.com,
-        rostedt@goodmis.org, Marc Dionne <marc.dionne@auristor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH rcu 14/16] rxrpc: Use call_rcu_hurry() instead of
- call_rcu()
-Message-ID: <20221130201259.GR4001@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <CAEXW_YS1nfsV_ohXDaB1i2em=+0KP1DofktS24oGFa4wPAbiiw@mail.gmail.com>
- <20221130181316.GA1012431@paulmck-ThinkPad-P17-Gen-1>
- <20221130181325.1012760-14-paulmck@kernel.org>
- <639433.1669835344@warthog.procyon.org.uk>
+        with ESMTP id S229969AbiK3UVA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 15:21:00 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642BD23BED
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 12:17:51 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id m204so20033220oib.6
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 12:17:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=lf9T1oLTLGP7W1nyGzAWDJnXj7/p/jhbbGGie8srQTE=;
+        b=oyjPOqyvujryB0noATPgxFc1sZrUuyqCS42aJvokKs436/eoSp+6+rX5OnvbD/yudk
+         V4iUo/Vniin/nJ/YbejysoUYCSCNFrm2tr2Z6r3quoycxz9Er1VHsCEflLBrCgbUlwDS
+         T5hMQ69PojAo5M1RCFf7Adfgt31nFng5t1rPIBBTWwTzD72JVPXkOWztq0BHsZFYDD+u
+         9fZoJ+eLrQRK86s5hN34vPDG1190r1SkDHKB6JixGV2EwoaNeLsqH0beSMFQGQw7qJNd
+         xfSzNQYPtYnWhhf4EFvcAP2oOcF0lItBfNJYqM6YiZsl7Mz4rJXxDc+9yKmDhsQMZV/d
+         Q/xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lf9T1oLTLGP7W1nyGzAWDJnXj7/p/jhbbGGie8srQTE=;
+        b=UEFn8oRwWZDZEX1bMbUBiSEUc0zDzoN+f4AvaFswneq4WRgXgQ91HwAChDXSXfglmQ
+         VijTHXVvkBBydUqS8JIlBVzwTvHLVQi7ywspqmDbxFcRDMt9G6GW+n8tMd8WaoU4zyY0
+         FnnfBFQCkFT9/GLFNCnLfuIUxNJhG2GHkVczt7KqoJyD+O2/mvSshLI3OuMH+gghceHu
+         IBMNPzskiciT2yt0cCi5NYUCxHQ3andc6FW/gC8UypLD6bafKZYozblPJt+SJXFQHR25
+         QAX0Fiov8JFyBrbSr+/TGinTT/pHo1BGaeompwZBcMvPpZAAkdrsvkAVOHXfH8hEiOUo
+         bc3A==
+X-Gm-Message-State: ANoB5pl+oitXZgKJ309vI6hCD6kyudv+y1rZXCBWfGIRG+CmIZEkt1Ec
+        Qj8jheQ7b7q1aJegWBupxQAaicLlhFHIUGKs7bqZ2Q==
+X-Google-Smtp-Source: AA0mqf58r7hvvVKvPt+x5p4U9j23auwntSydB7vAJx+mEf6lB9a3wE0iSXe0uiA5Oj5jDTqA693mK202zDElOVGC9bM=
+X-Received: by 2002:aca:d01:0:b0:35b:d6f7:c569 with SMTP id
+ 1-20020aca0d01000000b0035bd6f7c569mr1552485oin.125.1669839470579; Wed, 30 Nov
+ 2022 12:17:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <639433.1669835344@warthog.procyon.org.uk>
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221121182552.2152891-1-sdf@google.com> <20221121182552.2152891-3-sdf@google.com>
+ <Y4eRtJOPWBOCKe1Q@lincoln> <CAKH8qBtseOmsWmeprdRsvz0T=vAObYE_CpsYQOX0CsLR_iXNFA@mail.gmail.com>
+In-Reply-To: <CAKH8qBtseOmsWmeprdRsvz0T=vAObYE_CpsYQOX0CsLR_iXNFA@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 30 Nov 2022 12:17:39 -0800
+Message-ID: <CAKH8qBstSJEN5wvcPAcrnD0at8fNeyLNwijiT4wv=wD9eAd1TA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/8] bpf: XDP metadata RX kfuncs
+To:     Larysa Zaremba <larysa.zaremba@intel.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 07:09:04PM +0000, David Howells wrote:
-> Note that this conflicts with my patch:
-> 
-> 	rxrpc: Don't hold a ref for connection workqueue
-> 	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit/?h=rxrpc-next&id=450b00011290660127c2d76f5c5ed264126eb229
-> 
-> which should render it unnecessary.  It's a little ahead of yours in the
-> net-next queue, if that means anything.
+On Wed, Nov 30, 2022 at 11:06 AM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> On Wed, Nov 30, 2022 at 9:38 AM Larysa Zaremba <larysa.zaremba@intel.com> wrote:
+> >
+> > On Mon, Nov 21, 2022 at 10:25:46AM -0800, Stanislav Fomichev wrote:
+> >
+> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > > index 9528a066cfa5..315876fa9d30 100644
+> > > --- a/kernel/bpf/verifier.c
+> > > +++ b/kernel/bpf/verifier.c
+> > > @@ -15171,6 +15171,25 @@ static int fixup_call_args(struct bpf_verifier_env *env)
+> > >       return err;
+> > >  }
+> > >
+> > > +static int fixup_xdp_kfunc_call(struct bpf_verifier_env *env, u32 func_id)
+> > > +{
+> > > +     struct bpf_prog_aux *aux = env->prog->aux;
+> > > +     void *resolved = NULL;
+> >
+> > First I would like to say I really like the kfunc hints impementation.
+> >
+> > I am currently trying to test possible performace benefits of the unrolled
+> > version in the ice driver. I was working on top of the RFC v2,
+> > when I noticed a problem that also persists in this newer version.
+> >
+> > For debugging purposes, I have put the following logs in this place in code.
+> >
+> > printk(KERN_ERR "func_id=%u\n", func_id);
+> > printk(KERN_ERR "XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED=%u\n",
+> >        xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED));
+> > printk(KERN_ERR "XDP_METADATA_KFUNC_RX_TIMESTAMP=%u\n",
+> >        xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP));
+> > printk(KERN_ERR "XDP_METADATA_KFUNC_RX_HASH_SUPPORTED=%u\n",
+> >        xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH_SUPPORTED));
+> > printk(KERN_ERR "XDP_METADATA_KFUNC_RX_HASH=%u\n",
+> >        xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH));
+> >
+> > Loading the program, which uses bpf_xdp_metadata_rx_timestamp_supported()
+> > and bpf_xdp_metadata_rx_timestamp(), has resulted in such messages:
+> >
+> > [  412.611888] func_id=108131
+> > [  412.611891] XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED=108126
+> > [  412.611892] XDP_METADATA_KFUNC_RX_TIMESTAMP=108128
+> > [  412.611892] XDP_METADATA_KFUNC_RX_HASH_SUPPORTED=108130
+> > [  412.611893] XDP_METADATA_KFUNC_RX_HASH=108131
+> > [  412.611894] func_id=108130
+> > [  412.611894] XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED=108126
+> > [  412.611895] XDP_METADATA_KFUNC_RX_TIMESTAMP=108128
+> > [  412.611895] XDP_METADATA_KFUNC_RX_HASH_SUPPORTED=108130
+> > [  412.611895] XDP_METADATA_KFUNC_RX_HASH=108131
+> >
+> > As you can see, I've got 108131 and 108130 IDs in program,
+> > while 108126 and 108128 would be more reasonable.
+> > It's hard to proceed with the implementation, when IDs cannot be sustainably
+> > compared.
+>
+> Thanks for the report!
+> Toke has reported a similar issue in [0], have you tried his patch?
+> I've also tried to address it in v3 [1], could you retry on top of it?
+> I'll try to insert your printk in my local build to see what happens
+> with btf ids on my side. Will get back to you..
+>
+> 0: https://lore.kernel.org/bpf/87mt8e2a69.fsf@toke.dk/
+> 1: https://lore.kernel.org/bpf/20221129193452.3448944-3-sdf@google.com/T/#u
 
-OK, I will drop this patch in favor of yours, thank you!
+Nope, even if I go back to v2, I still can't reproduce locally.
+Somehow in my setup they are sorted properly :-/
+Would appreciate it if you can test the v3 patch and confirm whether
+it's fixed on your side or not.
 
-							Thanx, Paul
+> > Furthermore, dumped vmlinux BTF shows the IDs is in the exactly reversed
+> > order:
+> >
+> > [108126] FUNC 'bpf_xdp_metadata_rx_hash' type_id=108125 linkage=static
+> > [108128] FUNC 'bpf_xdp_metadata_rx_hash_supported' type_id=108127 linkage=static
+> > [108130] FUNC 'bpf_xdp_metadata_rx_timestamp' type_id=108129 linkage=static
+> > [108131] FUNC 'bpf_xdp_metadata_rx_timestamp_supported' type_id=108127 linkage=static
+> >
+> > > +
+> > > +     if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED))
+> > > +             resolved = aux->xdp_netdev->netdev_ops->ndo_xdp_rx_timestamp_supported;
+> > > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP))
+> > > +             resolved = aux->xdp_netdev->netdev_ops->ndo_xdp_rx_timestamp;
+> > > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH_SUPPORTED))
+> > > +             resolved = aux->xdp_netdev->netdev_ops->ndo_xdp_rx_hash_supported;
+> > > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH))
+> > > +             resolved = aux->xdp_netdev->netdev_ops->ndo_xdp_rx_hash;
+> > > +
+> > > +     if (resolved)
+> > > +             return BPF_CALL_IMM(resolved);
+> > > +     return 0;
+> > > +}
+> > > +
+> >
+> > My working tree (based on this version) is available on github [0]. Situation
+> > is also described in the last commit message.
+> > I would be great, if you could check, whether this behaviour can be reproduced
+> > on your setup.
+> >
+> > [0] https://github.com/walking-machine/linux/tree/hints-v2
