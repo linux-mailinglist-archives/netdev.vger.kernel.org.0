@@ -2,26 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0DF63D560
+	by mail.lfdr.de (Postfix) with ESMTP id 82A8363D561
 	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 13:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234100AbiK3MTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S234450AbiK3MTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 30 Nov 2022 07:19:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35566 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiK3MTk (ORCPT
+        with ESMTP id S230346AbiK3MTk (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 07:19:40 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A061521E29;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A42C927FC0;
         Wed, 30 Nov 2022 04:19:39 -0800 (PST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 0/4] Netfilter fixes for net
-Date:   Wed, 30 Nov 2022 13:19:30 +0100
-Message-Id: <20221130121934.1125-1-pablo@netfilter.org>
+Subject: [PATCH net 1/4] netfilter: nft_set_pipapo: Actually validate intervals in fields after the first one
+Date:   Wed, 30 Nov 2022 13:19:31 +0100
+Message-Id: <20221130121934.1125-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20221130121934.1125-1-pablo@netfilter.org>
+References: <20221130121934.1125-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -32,54 +34,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Stefano Brivio <sbrivio@redhat.com>
 
-The following patchset contains Netfilter fixes for net:
+Embarrassingly, nft_pipapo_insert() checked for interval validity in
+the first field only.
 
-1) Check for interval validity in all concatenation fields in
-   nft_set_pipapo, from Stefano Brivio.
+The start_p and end_p pointers were reset to key data from the first
+field at every iteration of the loop which was supposed to go over
+the set fields.
 
-2) Missing preemption disabled in conntrack and flowtable stat
-   updates, from Xin Long.
+Fixes: 3c4287f62044 ("nf_tables: Add set type for arbitrary concatenation of ranges")
+Reported-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nft_set_pipapo.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-3) Fix compilation warning when CONFIG_NF_CONNTRACK_MARK=n.
+diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
+index 4f9299b9dcdd..06d46d182634 100644
+--- a/net/netfilter/nft_set_pipapo.c
++++ b/net/netfilter/nft_set_pipapo.c
+@@ -1162,6 +1162,7 @@ static int nft_pipapo_insert(const struct net *net, const struct nft_set *set,
+ 	struct nft_pipapo_match *m = priv->clone;
+ 	u8 genmask = nft_genmask_next(net);
+ 	struct nft_pipapo_field *f;
++	const u8 *start_p, *end_p;
+ 	int i, bsize_max, err = 0;
+ 
+ 	if (nft_set_ext_exists(ext, NFT_SET_EXT_KEY_END))
+@@ -1202,9 +1203,9 @@ static int nft_pipapo_insert(const struct net *net, const struct nft_set *set,
+ 	}
+ 
+ 	/* Validate */
++	start_p = start;
++	end_p = end;
+ 	nft_pipapo_for_each_field(f, i, m) {
+-		const u8 *start_p = start, *end_p = end;
+-
+ 		if (f->rules >= (unsigned long)NFT_PIPAPO_RULE0_MAX)
+ 			return -ENOSPC;
+ 
+-- 
+2.30.2
 
-Except for 3) which was a bug introduced in a recent fix in 6.1-rc.
-Anything else, broken for several releases.
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit f2fc2280faabafc8df83ee007699d21f7a6301fe:
-
-  Merge branch 'wwan-iosm-fixes' (2022-11-28 11:31:59 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
-
-for you to fetch changes up to 1feeae071507ad65cf9f462a1bdd543a4bf89e71:
-
-  netfilter: ctnetlink: fix compilation warning after data race fixes in ct mark (2022-11-30 13:08:49 +0100)
-
-----------------------------------------------------------------
-Pablo Neira Ayuso (1):
-      netfilter: ctnetlink: fix compilation warning after data race fixes in ct mark
-
-Stefano Brivio (1):
-      netfilter: nft_set_pipapo: Actually validate intervals in fields after the first one
-
-Xin Long (2):
-      netfilter: flowtable_offload: fix using __this_cpu_add in preemptible
-      netfilter: conntrack: fix using __this_cpu_add in preemptible
-
- net/netfilter/nf_conntrack_core.c     |  6 +++---
- net/netfilter/nf_conntrack_netlink.c  | 19 ++++++++++---------
- net/netfilter/nf_flow_table_offload.c |  6 +++---
- net/netfilter/nft_set_pipapo.c        |  5 +++--
- 4 files changed, 19 insertions(+), 17 deletions(-)
