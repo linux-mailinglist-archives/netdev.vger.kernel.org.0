@@ -2,94 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6EB863DC09
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:33:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 755EC63DC46
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:44:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230019AbiK3Rdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 12:33:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59648 "EHLO
+        id S229850AbiK3RoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 12:44:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiK3Rdf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:33:35 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B61C27B1E;
-        Wed, 30 Nov 2022 09:33:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=eWTp50vj1owXok9ZS3DmZfJ3/9+ZtfspBzxtU2pkiRI=; b=B1cSd1GkIITcC8/xA5aVHlM8+p
-        1Rr1lANb/HDuYBAg8j9goKrN6bfsVoXW0be+Iu7cFOfiezpqDvY3JQu9C5Ej8FhOiPF64Od/rxQ6J
-        pK27iZVpfVj3TM9Mar4tb38myxDjdItKcft9cKeB+SaeqpB0BioD28IQe5+oamHmxLJBiJkpaS65m
-        UlkUCjpAciVEx+2rUbBRg5kbZcHP+chAA1JlV/W0rS0f3vJ0bIcA9JRnD+3v3diksD0BPu6R2BQBe
-        TWRbzP/SG3zBhnJKVhPfrIesmWPo8IDvl9rzUBG6NpJj07Qbx8UXLg3oXU/qaSviFDHHP+FxC+X8b
-        rmga18dQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35504)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1p0QxT-0001zy-W9; Wed, 30 Nov 2022 17:33:20 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1p0QxP-0002fg-9t; Wed, 30 Nov 2022 17:33:15 +0000
-Date:   Wed, 30 Nov 2022 17:33:15 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
-        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phy: Add driver for Motorcomm yt8531
- gigabit ethernet phy
-Message-ID: <Y4eT25bT7T8W6UXW@shell.armlinux.org.uk>
-References: <20221130094928.14557-1-Frank.Sae@motor-comm.com>
- <Y4copjAzKpGSeunB@shell.armlinux.org.uk>
- <Y4eOkiaRywaUJa9n@lunn.ch>
+        with ESMTP id S229621AbiK3RoR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:44:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419D650D70
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 09:43:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669830197;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=voK5XLV56Q9FI5eyVszeBGUsLnZ4M62G6sR/KUxS2MY=;
+        b=h6jFSWVIz2P6NA+ItFXCnCkrMe7+RJ2qg5svIIN8UxztaC/m+CcagJzzpa57AGckSvTWFt
+        pVBSYxVHzeQnPZ4nNHSiDrpyMg/tqTz3788k/sUKmj9T544vINzEyTLH+ihqSJ0g/OVXRz
+        1G7lq1W9m2EvtXsFJDVF/RUuVNKBQmk=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-342-q8qHOwNuNTmF6O-WRn0VWA-1; Wed, 30 Nov 2022 12:43:07 -0500
+X-MC-Unique: q8qHOwNuNTmF6O-WRn0VWA-1
+Received: by mail-qk1-f197.google.com with SMTP id w14-20020a05620a424e00b006fc46116f7dso39259356qko.12
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 09:43:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=voK5XLV56Q9FI5eyVszeBGUsLnZ4M62G6sR/KUxS2MY=;
+        b=q+5uqjbX+MwBzle8vRB20ZMe3Kz+ADQW4uKd0zWFraxGJdjfEQsRvpNoQiKQRaUNXu
+         mwNaGfjyyeWVcAzT1V9CnDCPQhbv0DzSuqkcOt81IRKlZPLK+2nIjJ4dDYm2LKc0hU3Q
+         18ecduO01HKuAdneQZjFckgU7s0/D7dIsKtgSZuTRmZ0UuqdLFJNelGsdklAlyHhRg6x
+         VP6AsMBNwWmIzImglR28Sv8JHfVkV1EukXfV8NnIzGYtNPl+1XlZ84i47ZzAeRvEAcqc
+         qZUsiY2EwFe2Vz7+DiuH3pW7LHTRz0nP2p1n2SucDI4jTIXnLUovljrTUmevE/8VSQ0s
+         U9sA==
+X-Gm-Message-State: ANoB5pmvbErGIvYk6VFwNdXYtlZOUrrOaRCTOqlUGqgeRN396un2YH1m
+        b/S7a5fRGxYL4YjNLShe+cDYydiwsu1kowJyVydgT+rbYLyhL8azohmh2tE/Yuan58xmtxSICbZ
+        f+7g6tM5ETfHfG72R
+X-Received: by 2002:ac8:1416:0:b0:3a5:6822:1a42 with SMTP id k22-20020ac81416000000b003a568221a42mr44920283qtj.174.1669830187016;
+        Wed, 30 Nov 2022 09:43:07 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6WAPHf8bd6gCmpsnoP2kOmMN0tOtqukSeMA0xoipZdye6rc5uujfvMb4ufBL+lhjVaLVVJug==
+X-Received: by 2002:ac8:1416:0:b0:3a5:6822:1a42 with SMTP id k22-20020ac81416000000b003a568221a42mr44920254qtj.174.1669830186742;
+        Wed, 30 Nov 2022 09:43:06 -0800 (PST)
+Received: from x1.redhat.com (c-73-214-169-22.hsd1.pa.comcast.net. [73.214.169.22])
+        by smtp.gmail.com with ESMTPSA id s18-20020a05620a29d200b006fba0a389a4sm1666087qkp.88.2022.11.30.09.43.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Nov 2022 09:43:06 -0800 (PST)
+From:   Brian Masney <bmasney@redhat.com>
+To:     irusskikh@marvell.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        cth451@gmail.com
+Subject: [PATCH] net: atlantic: fix check for invalid ethernet addresses
+Date:   Wed, 30 Nov 2022 12:42:59 -0500
+Message-Id: <20221130174259.1591567-1-bmasney@redhat.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y4eOkiaRywaUJa9n@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+The Qualcomm sa8540p automotive development board (QDrive3) has an
+Aquantia NIC wired over PCIe. The ethernet MAC address assigned to
+all of the boards in our lab is 00:17:b6:00:00:00. The existing
+check in aq_nic_is_valid_ether_addr() only checks for leading zeros
+in the MAC address. Let's update the check to also check for trailing
+zeros in the MAC address so that a random MAC address is assigned
+in this case.
 
-On Wed, Nov 30, 2022 at 06:10:42PM +0100, Andrew Lunn wrote:
-> This is not the first time Russell has pointed out your locking is
-> wrong.
-> 
-> How about adding a check in functions which should be called with the
-> lock taken really do have the lock taken?
+Signed-off-by: Brian Masney <bmasney@redhat.com>
+---
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-They already do:
-
-        lockdep_assert_held_once(&bus->mdio_lock);
-
-but I guess people just aren't testing their code with lockdep enabled.
-
-The only other thing I can think of trying is to use mutex_trylock():
-
-	if (WARN_ON_ONCE(mutex_trylock(&bus->mdio_lock)))
-		mutex_unlock(&bus->mdio_lock);
-
-scattered throughout.
-
-However, if the author does have lockdep enabled but ignores the
-warnings, that isn't going to help.
-
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index 06508eebb585..c9c850bbc805 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -293,7 +293,8 @@ static bool aq_nic_is_valid_ether_addr(const u8 *addr)
+ 	/* Some engineering samples of Aquantia NICs are provisioned with a
+ 	 * partially populated MAC, which is still invalid.
+ 	 */
+-	return !(addr[0] == 0 && addr[1] == 0 && addr[2] == 0);
++	return !(addr[0] == 0 && addr[1] == 0 && addr[2] == 0) &&
++		!(addr[3] == 0 && addr[4] == 0 && addr[5] == 0);
+ }
+ 
+ int aq_nic_ndev_register(struct aq_nic_s *self)
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.38.1
+
