@@ -2,189 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D466063D2CA
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 11:08:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75D5263D2EC
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 11:12:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235443AbiK3KIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 05:08:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
+        id S235754AbiK3KM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 05:12:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235421AbiK3KII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 05:08:08 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1F327FC1
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 02:08:07 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id v206so4184671ybv.7
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 02:08:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=gTY4msHW0mU+j44a/4XpG7Ibk3G0jKR9038B6uw9O7g=;
-        b=C8pDtLx1pv4JMjE9Fsz9f3CtSwf7YGEFobyOnVv4J3a5QMuJ2XjnqXAHzqkvKiUEE5
-         ZWGIA82x31ECsdAeevobKZioL8R5Rjya4c24Hzbgrj8URzw7NHHNYlgjeAeemTzdElC7
-         n4nnJqMJxAMzqZNx1V335sCfuApPEoJUVFUEo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gTY4msHW0mU+j44a/4XpG7Ibk3G0jKR9038B6uw9O7g=;
-        b=L1z8SPWskEDuashdh2WDy2oW/ESX8p5IXjSjjplQZUBv0r2CfzLNY4J1i7l6A4blZC
-         1D6acHxRmj5JO3MrObiDZayVYxgim7rAsm8N1uoY73pn0uSQcQ/ONr4PBNwu9h4tc0J9
-         2RLmhrZDwgiRoWm4PBPV2Zxlx4EjKxnMPu6dg0xcodCXmd0ETD398IyMFtRT8xHG8pas
-         5VNWpHuWIxRe5vJWe52MRty43C/JZPYLfu6AJNCptR2hiKKHoUnbVAQ6jE7UX1JOo+3w
-         xvlT3fwZA3c92ey4GyqJ6Q0PBCdyMp5KMMTx3DONFuBPKnIWhZ9L0/E3OMkYp6zccAa9
-         BMPA==
-X-Gm-Message-State: ANoB5pmZISzQd61nHN2dr3hv1CdelX2hCtUnedBk6X2oZRyCs7Tx0wge
-        43Xht7rSMkOsc/bjO8GGEljkveSHfbqeQFPZ384Geg==
-X-Google-Smtp-Source: AA0mqf6gMbc7xD5xpzzQQ/tJvZikOc25op2/9rV15k9H0FA0S1POCuDZvBoFpIyfUAU/rfvayzHjZCb+AG6PIQWNDXk=
-X-Received: by 2002:a5b:285:0:b0:6d3:bab1:8d32 with SMTP id
- x5-20020a5b0285000000b006d3bab18d32mr57265919ybl.541.1669802886911; Wed, 30
- Nov 2022 02:08:06 -0800 (PST)
-MIME-Version: 1.0
-References: <20221130084431.3299054-1-YKarpov@ispras.ru>
-In-Reply-To: <20221130084431.3299054-1-YKarpov@ispras.ru>
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Wed, 30 Nov 2022 15:37:56 +0530
-Message-ID: <CALs4sv0MG_L+0seM+jyufq7QTpLMvG_K8FPGWa3_-rMjbth-Jw@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: fix NULL pointer dereference in seq_match()
-To:     Yuri Karpov <YKarpov@ispras.ru>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S235740AbiK3KMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 05:12:22 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD7231DF0;
+        Wed, 30 Nov 2022 02:12:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669803142; x=1701339142;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gkLkJR8RE36XG9BI0LgN87G1MnvrwDX8Iwn1/fvXg/U=;
+  b=V4x8Six4JXLpmprvqJntS6w7bbIKKj/HSn7BGYTvxlvvde2rRn7UNP43
+   tXSUt+p07FdJJ374nVYneE8FKH12Teur29W6dqn1KD/byuSM44OAC6Yl+
+   n8IvNrD70oJ6u1Fp53D1STqz8xIrczI7LzUdmXiBkxsbU4GpQT8LXNhmP
+   Lu7nRgsgMDIPCQJsQUXJ/9Eiz4oH44qwMEoFqNiC39cPwRAHgXcsyLfLF
+   uSEt8xkyeDVMEcpcYfprIJ+D1BiI3dFxJVUoMq0m0kR6GKycDRschA27i
+   oWxphPAAKOgy3v+rL4sciqcu0FmDO6J2pMoNj0iTUFPN1taZduPHIjnIQ
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="316511239"
+X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
+   d="scan'208";a="316511239"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 02:12:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="818575930"
+X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
+   d="scan'208";a="818575930"
+Received: from b49691a74bf0.jf.intel.com ([10.165.59.99])
+  by orsmga005.jf.intel.com with ESMTP; 30 Nov 2022 02:12:20 -0800
+From:   Chen Hu <hu1.chen@intel.com>
+Cc:     hu1.chen@intel.com, jpoimboe@kernel.org, memxor@gmail.com,
+        bpf@vger.kernel.org, Pengfei Xu <pengfei.xu@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000efe25305eead47b9"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf v3] selftests/bpf: Fix "missing ENDBR" BUG for destructor kfunc
+Date:   Wed, 30 Nov 2022 02:11:31 -0800
+Message-Id: <20221130101135.26806-1-hu1.chen@intel.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000efe25305eead47b9
-Content-Type: text/plain; charset="UTF-8"
+With CONFIG_X86_KERNEL_IBT enabled, the test_verifier triggers the
+following BUG:
 
-On Wed, Nov 30, 2022 at 2:15 PM Yuri Karpov <YKarpov@ispras.ru> wrote:
->
-> ptp_parse_header() result is not checked in seq_match() that can lead
-> to NULL pointer dereferense.
->
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
->
-> Fixes: c6fe0ad2c349 ("net: dsa: mv88e6xxx: add rx/tx timestamping support")
-> Signed-off-by: Yuri Karpov <YKarpov@ispras.ru>
-> ---
->  drivers/net/dsa/mv88e6xxx/hwtstamp.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/dsa/mv88e6xxx/hwtstamp.c b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
-> index 331b4ca089ff..97f30795a2bb 100644
-> --- a/drivers/net/dsa/mv88e6xxx/hwtstamp.c
-> +++ b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
-> @@ -246,7 +246,7 @@ static int seq_match(struct sk_buff *skb, u16 ts_seqid)
->
->         hdr = ptp_parse_header(skb, type);
->
-> -       return ts_seqid == ntohs(hdr->sequence_id);
-> +       return hdr ? ts_seqid == ntohs(hdr->sequence_id) : 0;
->  }
+  traps: Missing ENDBR: bpf_kfunc_call_test_release+0x0/0x30
+  ------------[ cut here ]------------
+  kernel BUG at arch/x86/kernel/traps.c:254!
+  invalid opcode: 0000 [#1] PREEMPT SMP
+  <TASK>
+   asm_exc_control_protection+0x26/0x50
+  RIP: 0010:bpf_kfunc_call_test_release+0x0/0x30
+  Code: 00 48 c7 c7 18 f2 e1 b4 e8 0d ca 8c ff 48 c7 c0 00 f2 e1 b4 c3
+	0f 1f 44 00 00 66 0f 1f 00 0f 1f 44 00 00 0f 0b 31 c0 c3 66 90
+       <66> 0f 1f 00 0f 1f 44 00 00 48 85 ff 74 13 4c 8d 47 18 b8 ff ff ff
+   bpf_map_free_kptrs+0x2e/0x70
+   array_map_free+0x57/0x140
+   process_one_work+0x194/0x3a0
+   worker_thread+0x54/0x3a0
+   ? rescuer_thread+0x390/0x390
+   kthread+0xe9/0x110
+   ? kthread_complete_and_exit+0x20/0x20
 
-You need to have the target tree in the subject. But change looks good to me.
+It turns out that ENDBR in bpf_kfunc_call_test_release() is converted to
+NOP by apply_ibt_endbr().
 
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+The only text references to this function from kernel side are:
 
->
->  static void mv88e6xxx_get_rxts(struct mv88e6xxx_chip *chip,
-> --
-> 2.34.1
->
+  $ grep -r bpf_kfunc_call_test_release
+  net/bpf/test_run.c:noinline void bpf_kfunc_call_test_release(...)
+  net/bpf/test_run.c:BTF_ID_FLAGS(func, bpf_kfunc_call_test_release, ...)
+  net/bpf/test_run.c:BTF_ID(func, bpf_kfunc_call_test_release)
 
---000000000000efe25305eead47b9
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+but it may be called from bpf program as kfunc. (no other caller from
+kernel)
 
-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
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEII7rtCKnkiifq/5CASEmLHnK+zze7V5r
-QHEDcNn4SNKoMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEz
-MDEwMDgwN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCkqNyDTwL6s1sE3cAddC2X/FOHNqMBsU89TtWuE30k5rPxpc3a
-k7fO5B1pExxWiamqx4IIjgaHgXuOHt4k0IvkLvgGlPXjs1Le35o9wIWjmj7/4TxUtNvcp7vZAVXJ
-6tHN7ERxHyZShApmo6fd+xpurSF/ATaFUBfI/y5YwO7+z71p51Wb+xk518uZfFqmoiM+tMGNwfww
-4gIfzxnbN30q125b/Wjmi97GjUgvCbEAQEZy6fcBgQml16eJHBYrGXxFKbxdu97/gqhD3HEmiIPX
-a1Pd92qDQ0kCpjnXtqL9qKcMt4gvDNVl/WjDzn7Qw6R6zx21WH1y9zJkNWReF8ju
---000000000000efe25305eead47b9--
+This fix creates dummy references to destructor kfuncs so ENDBR stay
+there.
+
+Also modify macro XXX_NOSEAL slightly:
+- ASM_IBT_NOSEAL now stands for pure asm
+- IBT_NOSEAL can be used directly in C
+
+Signed-off-by: Chen Hu <hu1.chen@intel.com>
+Tested-by: Pengfei Xu <pengfei.xu@intel.com>
+---
+v3:
+- Macro go to IBT related header as suggested by Jiri Olsa
+- Describe reference to the func clearly in commit message as suggested
+  by Peter Zijlstra and Jiri Olsa
+ 
+v2: https://lore.kernel.org/all/20221122073244.21279-1-hu1.chen@intel.com/
+
+v1: https://lore.kernel.org/all/20221121085113.611504-1-hu1.chen@intel.com/
+
+ arch/x86/include/asm/ibt.h | 6 +++++-
+ arch/x86/kvm/emulate.c     | 2 +-
+ net/bpf/test_run.c         | 5 +++++
+ 3 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/ibt.h b/arch/x86/include/asm/ibt.h
+index 9b08082a5d9f..be86dc31661c 100644
+--- a/arch/x86/include/asm/ibt.h
++++ b/arch/x86/include/asm/ibt.h
+@@ -36,11 +36,14 @@
+  * the function as needing to be "sealed" (i.e. ENDBR converted to NOP by
+  * apply_ibt_endbr()).
+  */
+-#define IBT_NOSEAL(fname)				\
++#define ASM_IBT_NOSEAL(fname)				\
+ 	".pushsection .discard.ibt_endbr_noseal\n\t"	\
+ 	_ASM_PTR fname "\n\t"				\
+ 	".popsection\n\t"
+ 
++#define IBT_NOSEAL(name)				\
++	asm(ASM_IBT_NOSEAL(#name))
++
+ static inline __attribute_const__ u32 gen_endbr(void)
+ {
+ 	u32 endbr;
+@@ -94,6 +97,7 @@ extern __noendbr void ibt_restore(u64 save);
+ #ifndef __ASSEMBLY__
+ 
+ #define ASM_ENDBR
++#define ASM_IBT_NOSEAL(name)
+ #define IBT_NOSEAL(name)
+ 
+ #define __noendbr
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 4a43261d25a2..d870c8bb5831 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -327,7 +327,7 @@ static int fastop(struct x86_emulate_ctxt *ctxt, fastop_t fop);
+ 	".type " name ", @function \n\t" \
+ 	name ":\n\t" \
+ 	ASM_ENDBR \
+-	IBT_NOSEAL(name)
++	ASM_IBT_NOSEAL(name)
+ 
+ #define FOP_FUNC(name) \
+ 	__FOP_FUNC(#name)
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index fcb3e6c5e03c..9e9c8e8d50d7 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -601,6 +601,11 @@ noinline void bpf_kfunc_call_memb_release(struct prog_test_member *p)
+ {
+ }
+ 
++#ifdef CONFIG_X86_KERNEL_IBT
++IBT_NOSEAL(bpf_kfunc_call_test_release);
++IBT_NOSEAL(bpf_kfunc_call_memb_release);
++#endif
++
+ noinline void bpf_kfunc_call_memb1_release(struct prog_test_member1 *p)
+ {
+ 	WARN_ON_ONCE(1);
+-- 
+2.34.1
+
