@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 569A863DB33
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 17:57:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2616563DB3A
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 17:58:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbiK3Q5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 11:57:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
+        id S230262AbiK3Q6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 11:58:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230477AbiK3Q5B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 11:57:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A7C8BD24
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 08:56:01 -0800 (PST)
+        with ESMTP id S230398AbiK3Q5M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 11:57:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB1A8DFD9
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 08:56:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669827361;
+        s=mimecast20190719; t=1669827369;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XilLwybICsq41/oo+GVJRMcE1JWK/wGEmIz1NglHaXQ=;
-        b=W+r0bYAyQ1QhcTY0yLINPbCRnKU0TnXnmwb8iU6AjUMoLjTX2zDvfBXO1DI2IekBrXucxm
-        M5SPh5Hdsrf0TnHz5N1pH7qum1IuApynFy+bDAXbK4aR9Trn4QuyiooyKbO1dl7ODKYVqd
-        5r0Qs3vrcSNSlFf6Yu5hXos3uGlWZ04=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=iyOF7gG+QYSUiYaAyp1hNBrHWsnDHaJGxZh5igSu+Bc=;
+        b=SPt/9s6OGSnPIPlQuaQRMFGR9BHve+HpSDrdM/bDMvDu5PhS81AWBJEUtKf9Hq70NIHnwO
+        LR8//lG6/GDJfNo1x2BFO9mX6SyOnFzb88ccbShlld2uwW8B7FfT91dNZsuLEiYAi9FhHM
+        7KYXFIDaTFIv3mB5lNs9/q7Gm/M9MtI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-665-4If4uVqIOs6zTMzlexgKCQ-1; Wed, 30 Nov 2022 11:55:57 -0500
-X-MC-Unique: 4If4uVqIOs6zTMzlexgKCQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+ us-mta-264-UwMERweMOS2V8ymBlsZRKQ-1; Wed, 30 Nov 2022 11:56:05 -0500
+X-MC-Unique: UwMERweMOS2V8ymBlsZRKQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9EBAF100F7FE;
-        Wed, 30 Nov 2022 16:55:56 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 741941C1D1A4;
+        Wed, 30 Nov 2022 16:56:05 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C65692166B26;
-        Wed, 30 Nov 2022 16:55:55 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 99C792024CBE;
+        Wed, 30 Nov 2022 16:56:04 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 11/35] rxrpc: trace: Don't use
- __builtin_return_address for rxrpc_conn tracing
+Subject: [PATCH net-next 12/35] rxrpc: trace: Don't use
+ __builtin_return_address for rxrpc_call tracing
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Wed, 30 Nov 2022 16:55:53 +0000
-Message-ID: <166982735304.621383.2105219559780451282.stgit@warthog.procyon.org.uk>
+Date:   Wed, 30 Nov 2022 16:56:01 +0000
+Message-ID: <166982736179.621383.14214149882082452223.stgit@warthog.procyon.org.uk>
 In-Reply-To: <166982725699.621383.2358362793992993374.stgit@warthog.procyon.org.uk>
 References: <166982725699.621383.2358362793992993374.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -68,485 +68,684 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 In rxrpc tracing, use enums to generate lists of points of interest rather
-than __builtin_return_address() for the rxrpc_conn tracepoint
+than __builtin_return_address() for the rxrpc_call tracepoint
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- include/trace/events/rxrpc.h |   58 +++++++++++++++++++++++++++---------------
- net/rxrpc/ar-internal.h      |   21 +++++++++------
- net/rxrpc/call_accept.c      |    9 ++-----
- net/rxrpc/call_object.c      |    2 +
- net/rxrpc/conn_client.c      |   28 ++++++++++----------
- net/rxrpc/conn_event.c       |    4 +--
- net/rxrpc/conn_object.c      |   40 +++++++++++++++--------------
- net/rxrpc/conn_service.c     |    4 +--
- net/rxrpc/input.c            |    2 +
- 9 files changed, 92 insertions(+), 76 deletions(-)
+ include/trace/events/rxrpc.h |   83 ++++++++++++++++++++--------------
+ net/rxrpc/ar-internal.h      |    8 ++-
+ net/rxrpc/call_accept.c      |   16 +++----
+ net/rxrpc/call_event.c       |    8 ++-
+ net/rxrpc/call_object.c      |  102 ++++++++++++++++++------------------------
+ net/rxrpc/conn_client.c      |    2 -
+ net/rxrpc/input.c            |    8 ++-
+ net/rxrpc/output.c           |    2 -
+ net/rxrpc/peer_event.c       |    2 -
+ net/rxrpc/recvmsg.c          |    8 ++-
+ net/rxrpc/sendmsg.c          |    4 +-
+ 11 files changed, 121 insertions(+), 122 deletions(-)
 
 diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index 1c74143a51c1..e09568a8c173 100644
+index e09568a8c173..3f6de4294148 100644
 --- a/include/trace/events/rxrpc.h
 +++ b/include/trace/events/rxrpc.h
-@@ -82,14 +82,34 @@
- 	E_(rxrpc_peer_put_keepalive,		"PUT keepaliv")
+@@ -127,26 +127,44 @@
+ 	E_(rxrpc_client_to_idle,		"->Idle")
  
- #define rxrpc_conn_traces \
--	EM(rxrpc_conn_got,			"GOT") \
--	EM(rxrpc_conn_new_client,		"NWc") \
--	EM(rxrpc_conn_new_service,		"NWs") \
--	EM(rxrpc_conn_put_client,		"PTc") \
--	EM(rxrpc_conn_put_service,		"PTs") \
--	EM(rxrpc_conn_queued,			"QUE") \
--	EM(rxrpc_conn_reap_service,		"RPs") \
--	E_(rxrpc_conn_seen,			"SEE")
-+	EM(rxrpc_conn_free,			"FREE        ") \
-+	EM(rxrpc_conn_get_activate_call,	"GET act-call") \
-+	EM(rxrpc_conn_get_call_input,		"GET inp-call") \
-+	EM(rxrpc_conn_get_conn_input,		"GET inp-conn") \
-+	EM(rxrpc_conn_get_idle,			"GET idle    ") \
-+	EM(rxrpc_conn_get_poke,			"GET poke    ") \
-+	EM(rxrpc_conn_get_service_conn,		"GET svc-conn") \
-+	EM(rxrpc_conn_new_client,		"NEW client  ") \
-+	EM(rxrpc_conn_new_service,		"NEW service ") \
-+	EM(rxrpc_conn_put_already_queued,	"PUT alreadyq") \
-+	EM(rxrpc_conn_put_call,			"PUT call    ") \
-+	EM(rxrpc_conn_put_call_input,		"PUT inp-call") \
-+	EM(rxrpc_conn_put_conn_input,		"PUT inp-conn") \
-+	EM(rxrpc_conn_put_discard,		"PUT discard ") \
-+	EM(rxrpc_conn_put_discard_idle,		"PUT disc-idl") \
-+	EM(rxrpc_conn_put_local_dead,		"PUT loc-dead") \
-+	EM(rxrpc_conn_put_noreuse,		"PUT noreuse ") \
-+	EM(rxrpc_conn_put_poke,			"PUT poke    ") \
-+	EM(rxrpc_conn_put_unbundle,		"PUT unbundle") \
-+	EM(rxrpc_conn_put_unidle,		"PUT unidle  ") \
-+	EM(rxrpc_conn_put_work,			"PUT work    ") \
-+	EM(rxrpc_conn_queue_challenge,		"GQ  chall   ") \
-+	EM(rxrpc_conn_queue_retry_work,		"GQ  retry-wk") \
-+	EM(rxrpc_conn_queue_rx_work,		"GQ  rx-work ") \
-+	EM(rxrpc_conn_queue_timer,		"GQ  timer   ") \
-+	EM(rxrpc_conn_see_new_service_conn,	"SEE new-svc ") \
-+	EM(rxrpc_conn_see_reap_service,		"SEE reap-svc") \
-+	E_(rxrpc_conn_see_work,			"SEE work    ")
+ #define rxrpc_call_traces \
+-	EM(rxrpc_call_connected,		"CON") \
+-	EM(rxrpc_call_error,			"*E*") \
+-	EM(rxrpc_call_got,			"GOT") \
+-	EM(rxrpc_call_got_kernel,		"Gke") \
+-	EM(rxrpc_call_got_timer,		"GTM") \
+-	EM(rxrpc_call_got_tx,			"Gtx") \
+-	EM(rxrpc_call_got_userid,		"Gus") \
+-	EM(rxrpc_call_new_client,		"NWc") \
+-	EM(rxrpc_call_new_service,		"NWs") \
+-	EM(rxrpc_call_put,			"PUT") \
+-	EM(rxrpc_call_put_kernel,		"Pke") \
+-	EM(rxrpc_call_put_noqueue,		"PnQ") \
+-	EM(rxrpc_call_put_notimer,		"PnT") \
+-	EM(rxrpc_call_put_timer,		"PTM") \
+-	EM(rxrpc_call_put_tx,			"Ptx") \
+-	EM(rxrpc_call_put_userid,		"Pus") \
+-	EM(rxrpc_call_queued,			"QUE") \
+-	EM(rxrpc_call_queued_ref,		"QUR") \
+-	EM(rxrpc_call_release,			"RLS") \
+-	E_(rxrpc_call_seen,			"SEE")
++	EM(rxrpc_call_get_input,		"GET input   ") \
++	EM(rxrpc_call_get_kernel_service,	"GET krnl-srv") \
++	EM(rxrpc_call_get_notify_socket,	"GET notify  ") \
++	EM(rxrpc_call_get_recvmsg,		"GET recvmsg ") \
++	EM(rxrpc_call_get_release_sock,		"GET rel-sock") \
++	EM(rxrpc_call_get_sendmsg,		"GET sendmsg ") \
++	EM(rxrpc_call_get_send_ack,		"GET send-ack") \
++	EM(rxrpc_call_get_timer,		"GET timer   ") \
++	EM(rxrpc_call_get_userid,		"GET user-id ") \
++	EM(rxrpc_call_new_client,		"NEW client  ") \
++	EM(rxrpc_call_new_prealloc_service,	"NEW prealloc") \
++	EM(rxrpc_call_put_already_queued,	"PUT alreadyq") \
++	EM(rxrpc_call_put_discard_prealloc,	"PUT disc-pre") \
++	EM(rxrpc_call_put_input,		"PUT input   ") \
++	EM(rxrpc_call_put_kernel,		"PUT kernel  ") \
++	EM(rxrpc_call_put_recvmsg,		"PUT recvmsg ") \
++	EM(rxrpc_call_put_release_sock,		"PUT rls-sock") \
++	EM(rxrpc_call_put_release_sock_tba,	"PUT rls-sk-a") \
++	EM(rxrpc_call_put_send_ack,		"PUT send-ack") \
++	EM(rxrpc_call_put_sendmsg,		"PUT sendmsg ") \
++	EM(rxrpc_call_put_timer,		"PUT timer   ") \
++	EM(rxrpc_call_put_timer_already,	"PUT timer-al") \
++	EM(rxrpc_call_put_unnotify,		"PUT unnotify") \
++	EM(rxrpc_call_put_userid_exists,	"PUT u-exists") \
++	EM(rxrpc_call_put_work,			"PUT work    ") \
++	EM(rxrpc_call_queue_abort,		"QUE abort   ") \
++	EM(rxrpc_call_queue_requeue,		"QUE requeue ") \
++	EM(rxrpc_call_queue_resend,		"QUE resend  ") \
++	EM(rxrpc_call_queue_timer,		"QUE timer   ") \
++	EM(rxrpc_call_see_accept,		"SEE accept  ") \
++	EM(rxrpc_call_see_activate_client,	"SEE act-clnt") \
++	EM(rxrpc_call_see_connect_failed,	"SEE con-fail") \
++	EM(rxrpc_call_see_connected,		"SEE connect ") \
++	EM(rxrpc_call_see_distribute_error,	"SEE dist-err") \
++	EM(rxrpc_call_see_input,		"SEE input   ") \
++	EM(rxrpc_call_see_release,		"SEE release ") \
++	EM(rxrpc_call_see_userid_exists,	"SEE u-exists") \
++	E_(rxrpc_call_see_zap,			"SEE zap     ")
  
- #define rxrpc_client_traces \
- 	EM(rxrpc_client_activate_chans,		"Activa") \
-@@ -430,30 +450,26 @@ TRACE_EVENT(rxrpc_peer,
+ #define rxrpc_txqueue_traces \
+ 	EM(rxrpc_txqueue_await_reply,		"AWR") \
+@@ -503,32 +521,29 @@ TRACE_EVENT(rxrpc_client,
  	    );
  
- TRACE_EVENT(rxrpc_conn,
--	    TP_PROTO(unsigned int conn_debug_id, enum rxrpc_conn_trace op,
--		     int usage, const void *where),
-+	    TP_PROTO(unsigned int conn_debug_id, int ref, enum rxrpc_conn_trace why),
+ TRACE_EVENT(rxrpc_call,
+-	    TP_PROTO(unsigned int call_debug_id, enum rxrpc_call_trace op,
+-		     int usage, const void *where, const void *aux),
++	    TP_PROTO(unsigned int call_debug_id, int ref, unsigned long aux,
++		     enum rxrpc_call_trace why),
  
--	    TP_ARGS(conn_debug_id, op, usage, where),
-+	    TP_ARGS(conn_debug_id, ref, why),
+-	    TP_ARGS(call_debug_id, op, usage, where, aux),
++	    TP_ARGS(call_debug_id, ref, aux, why),
  
  	    TP_STRUCT__entry(
- 		    __field(unsigned int,	conn		)
--		    __field(int,		op		)
--		    __field(int,		usage		)
--		    __field(const void *,	where		)
-+		    __field(int,		ref		)
-+		    __field(int,		why		)
+ 		    __field(unsigned int,		call		)
+-		    __field(int,			op		)
+-		    __field(int,			usage		)
+-		    __field(const void *,		where		)
+-		    __field(const void *,		aux		)
++		    __field(int,			ref		)
++		    __field(int,			why		)
++		    __field(unsigned long,		aux		)
  			     ),
  
  	    TP_fast_assign(
- 		    __entry->conn = conn_debug_id;
+ 		    __entry->call = call_debug_id;
 -		    __entry->op = op;
 -		    __entry->usage = usage;
 -		    __entry->where = where;
 +		    __entry->ref = ref;
 +		    __entry->why = why;
+ 		    __entry->aux = aux;
  			   ),
  
--	    TP_printk("C=%08x %s u=%d sp=%pSR",
-+	    TP_printk("C=%08x %s r=%d",
- 		      __entry->conn,
--		      __print_symbolic(__entry->op, rxrpc_conn_traces),
+-	    TP_printk("c=%08x %s u=%d sp=%pSR a=%p",
++	    TP_printk("c=%08x %s r=%d a=%lx",
+ 		      __entry->call,
+-		      __print_symbolic(__entry->op, rxrpc_call_traces),
 -		      __entry->usage,
--		      __entry->where)
-+		      __print_symbolic(__entry->why, rxrpc_conn_traces),
-+		      __entry->ref)
+-		      __entry->where,
++		      __print_symbolic(__entry->why, rxrpc_call_traces),
++		      __entry->ref,
+ 		      __entry->aux)
  	    );
  
- TRACE_EVENT(rxrpc_client,
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 6cb111e9761c..bc8281c410c5 100644
+index bc8281c410c5..82eb09b961a0 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -882,7 +882,7 @@ int rxrpc_connect_call(struct rxrpc_sock *, struct rxrpc_call *,
- 		       gfp_t);
- void rxrpc_expose_client_call(struct rxrpc_call *);
- void rxrpc_disconnect_client_call(struct rxrpc_bundle *, struct rxrpc_call *);
--void rxrpc_put_client_conn(struct rxrpc_connection *);
-+void rxrpc_put_client_conn(struct rxrpc_connection *, enum rxrpc_conn_trace);
- void rxrpc_discard_expired_client_conns(struct work_struct *);
- void rxrpc_destroy_all_client_connections(struct rxrpc_net *);
- void rxrpc_clean_up_local_conns(struct rxrpc_local *);
-@@ -906,11 +906,13 @@ struct rxrpc_connection *rxrpc_find_connection_rcu(struct rxrpc_local *,
- void __rxrpc_disconnect_call(struct rxrpc_connection *, struct rxrpc_call *);
- void rxrpc_disconnect_call(struct rxrpc_call *);
- void rxrpc_kill_connection(struct rxrpc_connection *);
--bool rxrpc_queue_conn(struct rxrpc_connection *);
--void rxrpc_see_connection(struct rxrpc_connection *);
--struct rxrpc_connection *rxrpc_get_connection(struct rxrpc_connection *);
--struct rxrpc_connection *rxrpc_get_connection_maybe(struct rxrpc_connection *);
--void rxrpc_put_service_conn(struct rxrpc_connection *);
-+bool rxrpc_queue_conn(struct rxrpc_connection *, enum rxrpc_conn_trace);
-+void rxrpc_see_connection(struct rxrpc_connection *, enum rxrpc_conn_trace);
-+struct rxrpc_connection *rxrpc_get_connection(struct rxrpc_connection *,
-+					      enum rxrpc_conn_trace);
-+struct rxrpc_connection *rxrpc_get_connection_maybe(struct rxrpc_connection *,
-+						    enum rxrpc_conn_trace);
-+void rxrpc_put_service_conn(struct rxrpc_connection *, enum rxrpc_conn_trace);
- void rxrpc_service_connection_reaper(struct work_struct *);
- void rxrpc_destroy_all_connections(struct rxrpc_net *);
- 
-@@ -924,15 +926,16 @@ static inline bool rxrpc_conn_is_service(const struct rxrpc_connection *conn)
- 	return !rxrpc_conn_is_client(conn);
- }
- 
--static inline void rxrpc_put_connection(struct rxrpc_connection *conn)
-+static inline void rxrpc_put_connection(struct rxrpc_connection *conn,
-+					enum rxrpc_conn_trace why)
- {
- 	if (!conn)
- 		return;
- 
- 	if (rxrpc_conn_is_client(conn))
--		rxrpc_put_client_conn(conn);
-+		rxrpc_put_client_conn(conn, why);
- 	else
--		rxrpc_put_service_conn(conn);
-+		rxrpc_put_service_conn(conn, why);
- }
- 
- static inline void rxrpc_reduce_conn_timer(struct rxrpc_connection *conn,
+@@ -847,10 +847,10 @@ void rxrpc_incoming_call(struct rxrpc_sock *, struct rxrpc_call *,
+ 			 struct sk_buff *);
+ void rxrpc_release_call(struct rxrpc_sock *, struct rxrpc_call *);
+ void rxrpc_release_calls_on_socket(struct rxrpc_sock *);
+-bool __rxrpc_queue_call(struct rxrpc_call *);
+-bool rxrpc_queue_call(struct rxrpc_call *);
+-void rxrpc_see_call(struct rxrpc_call *);
+-bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op);
++bool __rxrpc_queue_call(struct rxrpc_call *, enum rxrpc_call_trace);
++bool rxrpc_queue_call(struct rxrpc_call *, enum rxrpc_call_trace);
++void rxrpc_see_call(struct rxrpc_call *, enum rxrpc_call_trace);
++bool rxrpc_try_get_call(struct rxrpc_call *, enum rxrpc_call_trace);
+ void rxrpc_get_call(struct rxrpc_call *, enum rxrpc_call_trace);
+ void rxrpc_put_call(struct rxrpc_call *, enum rxrpc_call_trace);
+ void rxrpc_cleanup_call(struct rxrpc_call *);
 diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index f6bc3b07c3e5..04b52e28e0cc 100644
+index 04b52e28e0cc..dd4ca4bee77f 100644
 --- a/net/rxrpc/call_accept.c
 +++ b/net/rxrpc/call_accept.c
-@@ -91,9 +91,6 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
- 		b->conn_backlog[head] = conn;
- 		smp_store_release(&b->conn_backlog_head,
- 				  (head + 1) & (size - 1));
--
--		trace_rxrpc_conn(conn->debug_id, rxrpc_conn_new_service,
--				 refcount_read(&conn->ref), here);
- 	}
- 
- 	/* Now it gets complicated, because calls get registered with the
-@@ -309,10 +306,10 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
- 				  (conn_tail + 1) & (RXRPC_BACKLOG_MAX - 1));
- 		conn->local = rxrpc_get_local(local, rxrpc_local_get_prealloc_conn);
- 		conn->peer = peer;
--		rxrpc_see_connection(conn);
-+		rxrpc_see_connection(conn, rxrpc_conn_see_new_service_conn);
- 		rxrpc_new_incoming_connection(rx, conn, sec, skb);
- 	} else {
--		rxrpc_get_connection(conn);
-+		rxrpc_get_connection(conn, rxrpc_conn_get_service_conn);
- 	}
- 
- 	/* And now we can allocate and set up a new call */
-@@ -402,7 +399,7 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
- 	case RXRPC_CONN_SERVICE_UNSECURED:
- 		conn->state = RXRPC_CONN_SERVICE_CHALLENGING;
- 		set_bit(RXRPC_CONN_EV_CHALLENGE, &call->conn->events);
--		rxrpc_queue_conn(call->conn);
-+		rxrpc_queue_conn(call->conn, rxrpc_conn_queue_challenge);
- 		break;
- 
- 	case RXRPC_CONN_SERVICE:
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 1b725afd6e2c..29ec4013aa0b 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -635,7 +635,7 @@ static void rxrpc_destroy_call(struct work_struct *work)
- 
- 	rxrpc_delete_call_timer(call);
- 
--	rxrpc_put_connection(call->conn);
-+	rxrpc_put_connection(call->conn, rxrpc_conn_put_call);
- 	rxrpc_put_peer(call->peer, rxrpc_peer_put_call);
- 	kmem_cache_free(rxrpc_call_jar, call);
- 	if (atomic_dec_and_test(&rxnet->nr_calls))
-diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index 9444da235a48..dcfec6a45255 100644
---- a/net/rxrpc/conn_client.c
-+++ b/net/rxrpc/conn_client.c
-@@ -211,9 +211,8 @@ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle, gfp_t gfp)
- 	rxrpc_get_local(conn->local, rxrpc_local_get_client_conn);
- 	key_get(conn->key);
- 
--	trace_rxrpc_conn(conn->debug_id, rxrpc_conn_new_client,
--			 refcount_read(&conn->ref),
--			 __builtin_return_address(0));
-+	trace_rxrpc_conn(conn->debug_id, refcount_read(&conn->ref),
-+			 rxrpc_conn_new_client);
- 
- 	atomic_inc(&rxnet->nr_client_conns);
- 	trace_rxrpc_client(conn, -1, rxrpc_client_alloc);
-@@ -467,10 +466,10 @@ static void rxrpc_add_conn_to_bundle(struct rxrpc_bundle *bundle, gfp_t gfp)
- 	if (candidate) {
- 		_debug("discard C=%x", candidate->debug_id);
- 		trace_rxrpc_client(candidate, -1, rxrpc_client_duplicate);
--		rxrpc_put_connection(candidate);
-+		rxrpc_put_connection(candidate, rxrpc_conn_put_discard);
- 	}
- 
--	rxrpc_put_connection(old);
-+	rxrpc_put_connection(old, rxrpc_conn_put_noreuse);
- 	_leave("");
- }
- 
-@@ -544,7 +543,7 @@ static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
- 	rxrpc_see_call(call);
- 	list_del_init(&call->chan_wait_link);
- 	call->peer	= rxrpc_get_peer(conn->peer, rxrpc_peer_get_activate_call);
--	call->conn	= rxrpc_get_connection(conn);
-+	call->conn	= rxrpc_get_connection(conn, rxrpc_conn_get_activate_call);
- 	call->cid	= conn->proto.cid | channel;
- 	call->call_id	= call_id;
- 	call->security	= conn->security;
-@@ -592,7 +591,7 @@ static void rxrpc_unidle_conn(struct rxrpc_bundle *bundle, struct rxrpc_connecti
- 		}
- 		spin_unlock(&rxnet->client_conn_cache_lock);
- 		if (drop_ref)
--			rxrpc_put_connection(conn);
-+			rxrpc_put_connection(conn, rxrpc_conn_put_unidle);
- 	}
- }
- 
-@@ -896,7 +895,7 @@ void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call
- 		trace_rxrpc_client(conn, channel, rxrpc_client_to_idle);
- 		conn->idle_timestamp = jiffies;
- 
--		rxrpc_get_connection(conn);
-+		rxrpc_get_connection(conn, rxrpc_conn_get_idle);
- 		spin_lock(&rxnet->client_conn_cache_lock);
- 		list_move_tail(&conn->cache_link, &rxnet->idle_client_conns);
- 		spin_unlock(&rxnet->client_conn_cache_lock);
-@@ -938,7 +937,7 @@ static void rxrpc_unbundle_conn(struct rxrpc_connection *conn)
- 
- 	if (need_drop) {
- 		rxrpc_deactivate_bundle(bundle);
--		rxrpc_put_connection(conn);
-+		rxrpc_put_connection(conn, rxrpc_conn_put_unbundle);
- 	}
- }
- 
-@@ -983,15 +982,15 @@ static void rxrpc_kill_client_conn(struct rxrpc_connection *conn)
- /*
-  * Clean up a dead client connections.
-  */
--void rxrpc_put_client_conn(struct rxrpc_connection *conn)
-+void rxrpc_put_client_conn(struct rxrpc_connection *conn,
-+			   enum rxrpc_conn_trace why)
+@@ -38,7 +38,6 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
+ 				      unsigned long user_call_ID, gfp_t gfp,
+ 				      unsigned int debug_id)
  {
 -	const void *here = __builtin_return_address(0);
- 	unsigned int debug_id = conn->debug_id;
- 	bool dead;
- 	int r;
+ 	struct rxrpc_call *call, *xcall;
+ 	struct rxrpc_net *rxnet = rxrpc_net(sock_net(&rx->sk));
+ 	struct rb_node *parent, **pp;
+@@ -102,9 +101,8 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
+ 	call->flags |= (1 << RXRPC_CALL_IS_SERVICE);
+ 	call->state = RXRPC_CALL_SERVER_PREALLOC;
  
- 	dead = __refcount_dec_and_test(&conn->ref, &r);
--	trace_rxrpc_conn(debug_id, rxrpc_conn_put_client, r - 1, here);
-+	trace_rxrpc_conn(debug_id, r - 1, why);
- 	if (dead)
- 		rxrpc_kill_client_conn(conn);
- }
-@@ -1063,7 +1062,8 @@ void rxrpc_discard_expired_client_conns(struct work_struct *work)
- 	spin_unlock(&rxnet->client_conn_cache_lock);
+-	trace_rxrpc_call(call->debug_id, rxrpc_call_new_service,
+-			 refcount_read(&call->ref),
+-			 here, (const void *)user_call_ID);
++	trace_rxrpc_call(call->debug_id, refcount_read(&call->ref),
++			 user_call_ID, rxrpc_call_new_prealloc_service);
  
- 	rxrpc_unbundle_conn(conn);
--	rxrpc_put_connection(conn); /* Drop the ->cache_link ref */
-+	/* Drop the ->cache_link ref */
-+	rxrpc_put_connection(conn, rxrpc_conn_put_discard_idle);
+ 	write_lock(&rx->call_lock);
  
- 	nr_conns--;
- 	goto next;
-@@ -1134,7 +1134,7 @@ void rxrpc_clean_up_local_conns(struct rxrpc_local *local)
- 				  struct rxrpc_connection, cache_link);
- 		list_del_init(&conn->cache_link);
- 		rxrpc_unbundle_conn(conn);
--		rxrpc_put_connection(conn);
-+		rxrpc_put_connection(conn, rxrpc_conn_put_local_dead);
+@@ -125,11 +123,11 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
+ 	call->user_call_ID = user_call_ID;
+ 	call->notify_rx = notify_rx;
+ 	if (user_attach_call) {
+-		rxrpc_get_call(call, rxrpc_call_got_kernel);
++		rxrpc_get_call(call, rxrpc_call_get_kernel_service);
+ 		user_attach_call(call, user_call_ID);
  	}
  
- 	_leave(" [culled]");
-diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
-index 225edaf019f1..817f895c77ca 100644
---- a/net/rxrpc/conn_event.c
-+++ b/net/rxrpc/conn_event.c
-@@ -472,14 +472,14 @@ void rxrpc_process_connection(struct work_struct *work)
- 	struct rxrpc_connection *conn =
- 		container_of(work, struct rxrpc_connection, processor);
- 
--	rxrpc_see_connection(conn);
-+	rxrpc_see_connection(conn, rxrpc_conn_see_work);
- 
- 	if (__rxrpc_use_local(conn->local, rxrpc_local_use_conn_work)) {
- 		rxrpc_do_process_connection(conn);
- 		rxrpc_unuse_local(conn->local, rxrpc_local_unuse_conn_work);
+-	rxrpc_get_call(call, rxrpc_call_got_userid);
++	rxrpc_get_call(call, rxrpc_call_get_userid);
+ 	rb_link_node(&call->sock_node, parent, pp);
+ 	rb_insert_color(&call->sock_node, &rx->calls);
+ 	set_bit(RXRPC_CALL_HAS_USERID, &call->flags);
+@@ -229,7 +227,7 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
+ 		}
+ 		rxrpc_call_completed(call);
+ 		rxrpc_release_call(rx, call);
+-		rxrpc_put_call(call, rxrpc_call_put);
++		rxrpc_put_call(call, rxrpc_call_put_discard_prealloc);
+ 		tail = (tail + 1) & (size - 1);
  	}
  
--	rxrpc_put_connection(conn);
-+	rxrpc_put_connection(conn, rxrpc_conn_put_work);
+@@ -318,7 +316,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
+ 	smp_store_release(&b->call_backlog_tail,
+ 			  (call_tail + 1) & (RXRPC_BACKLOG_MAX - 1));
+ 
+-	rxrpc_see_call(call);
++	rxrpc_see_call(call, rxrpc_call_see_accept);
+ 	call->conn = conn;
+ 	call->security = conn->security;
+ 	call->security_ix = conn->security_ix;
+@@ -430,7 +428,7 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
+ 	 * (recvmsg queue, to-be-accepted queue or user ID tree) or the kernel
+ 	 * service to prevent the call from being deallocated too early.
+ 	 */
+-	rxrpc_put_call(call, rxrpc_call_put);
++	rxrpc_put_call(call, rxrpc_call_put_discard_prealloc);
+ 
+ 	_leave(" = %p{%d}", call, call->debug_id);
+ 	return call;
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 591af8e2e3d0..0c8d2186cda8 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -101,7 +101,7 @@ void rxrpc_send_ACK(struct rxrpc_call *call, u8 ack_reason,
+ 	txb->ack.reason		= ack_reason;
+ 	txb->ack.nAcks		= 0;
+ 
+-	if (!rxrpc_try_get_call(call, rxrpc_call_got)) {
++	if (!rxrpc_try_get_call(call, rxrpc_call_get_send_ack)) {
+ 		rxrpc_put_txbuf(txb, rxrpc_txbuf_put_nomem);
+ 		return;
+ 	}
+@@ -302,7 +302,7 @@ void rxrpc_process_call(struct work_struct *work)
+ 	unsigned int iterations = 0;
+ 	rxrpc_serial_t ackr_serial;
+ 
+-	rxrpc_see_call(call);
++	rxrpc_see_call(call, rxrpc_call_see_input);
+ 
+ 	//printk("\n--------------------\n");
+ 	_enter("{%d,%s,%lx}",
+@@ -436,12 +436,12 @@ void rxrpc_process_call(struct work_struct *work)
+ 		goto requeue;
+ 
+ out_put:
+-	rxrpc_put_call(call, rxrpc_call_put);
++	rxrpc_put_call(call, rxrpc_call_put_work);
+ out:
  	_leave("");
  	return;
- }
-diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
-index 554ee5dd3325..bbace8d9953d 100644
---- a/net/rxrpc/conn_object.c
-+++ b/net/rxrpc/conn_object.c
-@@ -26,7 +26,7 @@ static void rxrpc_connection_timer(struct timer_list *timer)
- 	struct rxrpc_connection *conn =
- 		container_of(timer, struct rxrpc_connection, timer);
  
--	rxrpc_queue_conn(conn);
-+	rxrpc_queue_conn(conn, rxrpc_conn_queue_timer);
+ requeue:
+-	__rxrpc_queue_call(call);
++	__rxrpc_queue_call(call, rxrpc_call_queue_requeue);
+ 	goto out;
+ }
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index 29ec4013aa0b..afd957f6dc1c 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -53,9 +53,9 @@ static void rxrpc_call_timer_expired(struct timer_list *t)
+ 
+ 	if (call->state < RXRPC_CALL_COMPLETE) {
+ 		trace_rxrpc_timer_expired(call, jiffies);
+-		__rxrpc_queue_call(call);
++		__rxrpc_queue_call(call, rxrpc_call_queue_timer);
+ 	} else {
+-		rxrpc_put_call(call, rxrpc_call_put);
++		rxrpc_put_call(call, rxrpc_call_put_already_queued);
+ 	}
  }
  
+@@ -64,10 +64,10 @@ void rxrpc_reduce_call_timer(struct rxrpc_call *call,
+ 			     unsigned long now,
+ 			     enum rxrpc_timer_trace why)
+ {
+-	if (rxrpc_try_get_call(call, rxrpc_call_got_timer)) {
++	if (rxrpc_try_get_call(call, rxrpc_call_get_timer)) {
+ 		trace_rxrpc_timer(call, why, now);
+ 		if (timer_reduce(&call->timer, expire_at))
+-			rxrpc_put_call(call, rxrpc_call_put_notimer);
++			rxrpc_put_call(call, rxrpc_call_put_timer_already);
+ 	}
+ }
+ 
+@@ -110,7 +110,7 @@ struct rxrpc_call *rxrpc_find_call_by_user_ID(struct rxrpc_sock *rx,
+ 	return NULL;
+ 
+ found_extant_call:
+-	rxrpc_get_call(call, rxrpc_call_got);
++	rxrpc_get_call(call, rxrpc_call_get_sendmsg);
+ 	read_unlock(&rx->call_lock);
+ 	_leave(" = %p [%d]", call, refcount_read(&call->ref));
+ 	return call;
+@@ -270,7 +270,6 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
+ 	struct rxrpc_net *rxnet;
+ 	struct semaphore *limiter;
+ 	struct rb_node *parent, **pp;
+-	const void *here = __builtin_return_address(0);
+ 	int ret;
+ 
+ 	_enter("%p,%lx", rx, p->user_call_ID);
+@@ -291,9 +290,8 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
+ 
+ 	call->interruptibility = p->interruptibility;
+ 	call->tx_total_len = p->tx_total_len;
+-	trace_rxrpc_call(call->debug_id, rxrpc_call_new_client,
+-			 refcount_read(&call->ref),
+-			 here, (const void *)p->user_call_ID);
++	trace_rxrpc_call(call->debug_id, refcount_read(&call->ref),
++			 p->user_call_ID, rxrpc_call_new_client);
+ 	if (p->kernel)
+ 		__set_bit(RXRPC_CALL_KERNEL, &call->flags);
+ 
+@@ -322,7 +320,7 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
+ 	rcu_assign_pointer(call->socket, rx);
+ 	call->user_call_ID = p->user_call_ID;
+ 	__set_bit(RXRPC_CALL_HAS_USERID, &call->flags);
+-	rxrpc_get_call(call, rxrpc_call_got_userid);
++	rxrpc_get_call(call, rxrpc_call_get_userid);
+ 	rb_link_node(&call->sock_node, parent, pp);
+ 	rb_insert_color(&call->sock_node, &rx->calls);
+ 	list_add(&call->sock_link, &rx->sock_calls);
+@@ -344,8 +342,7 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
+ 	if (ret < 0)
+ 		goto error_attached_to_socket;
+ 
+-	trace_rxrpc_call(call->debug_id, rxrpc_call_connected,
+-			 refcount_read(&call->ref), here, NULL);
++	rxrpc_see_call(call, rxrpc_call_see_connected);
+ 
+ 	rxrpc_start_call_timer(call);
+ 
+@@ -362,11 +359,11 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
+ 	release_sock(&rx->sk);
+ 	__rxrpc_set_call_completion(call, RXRPC_CALL_LOCAL_ERROR,
+ 				    RX_CALL_DEAD, -EEXIST);
+-	trace_rxrpc_call(call->debug_id, rxrpc_call_error,
+-			 refcount_read(&call->ref), here, ERR_PTR(-EEXIST));
++	trace_rxrpc_call(call->debug_id, refcount_read(&call->ref), 0,
++			 rxrpc_call_see_userid_exists);
+ 	rxrpc_release_call(rx, call);
+ 	mutex_unlock(&call->user_mutex);
+-	rxrpc_put_call(call, rxrpc_call_put);
++	rxrpc_put_call(call, rxrpc_call_put_userid_exists);
+ 	_leave(" = -EEXIST");
+ 	return ERR_PTR(-EEXIST);
+ 
+@@ -376,8 +373,8 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
+ 	 * leave the error to recvmsg() to deal with.
+ 	 */
+ error_attached_to_socket:
+-	trace_rxrpc_call(call->debug_id, rxrpc_call_error,
+-			 refcount_read(&call->ref), here, ERR_PTR(ret));
++	trace_rxrpc_call(call->debug_id, refcount_read(&call->ref), ret,
++			 rxrpc_call_see_connect_failed);
+ 	set_bit(RXRPC_CALL_DISCONNECTED, &call->flags);
+ 	__rxrpc_set_call_completion(call, RXRPC_CALL_LOCAL_ERROR,
+ 				    RX_CALL_DEAD, ret);
+@@ -428,72 +425,65 @@ void rxrpc_incoming_call(struct rxrpc_sock *rx,
  /*
-@@ -260,43 +260,42 @@ void rxrpc_kill_connection(struct rxrpc_connection *conn)
-  * Queue a connection's work processor, getting a ref to pass to the work
-  * queue.
+  * Queue a call's work processor, getting a ref to pass to the work queue.
   */
--bool rxrpc_queue_conn(struct rxrpc_connection *conn)
-+bool rxrpc_queue_conn(struct rxrpc_connection *conn, enum rxrpc_conn_trace why)
+-bool rxrpc_queue_call(struct rxrpc_call *call)
++bool rxrpc_queue_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
  {
 -	const void *here = __builtin_return_address(0);
- 	int r;
+ 	int n;
  
- 	if (!__refcount_inc_not_zero(&conn->ref, &r))
+ 	if (!__refcount_inc_not_zero(&call->ref, &n))
  		return false;
- 	if (rxrpc_queue_work(&conn->processor))
--		trace_rxrpc_conn(conn->debug_id, rxrpc_conn_queued, r + 1, here);
-+		trace_rxrpc_conn(conn->debug_id, why, r + 1);
+ 	if (rxrpc_queue_work(&call->processor))
+-		trace_rxrpc_call(call->debug_id, rxrpc_call_queued, n + 1,
+-				 here, NULL);
++		trace_rxrpc_call(call->debug_id, n + 1, 0, why);
  	else
--		rxrpc_put_connection(conn);
-+		rxrpc_put_connection(conn, rxrpc_conn_put_already_queued);
+-		rxrpc_put_call(call, rxrpc_call_put_noqueue);
++		rxrpc_put_call(call, rxrpc_call_put_already_queued);
  	return true;
  }
  
  /*
-  * Note the re-emergence of a connection.
+  * Queue a call's work processor, passing the callers ref to the work queue.
   */
--void rxrpc_see_connection(struct rxrpc_connection *conn)
-+void rxrpc_see_connection(struct rxrpc_connection *conn,
-+			  enum rxrpc_conn_trace why)
+-bool __rxrpc_queue_call(struct rxrpc_call *call)
++bool __rxrpc_queue_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
  {
 -	const void *here = __builtin_return_address(0);
- 	if (conn) {
--		int n = refcount_read(&conn->ref);
-+		int r = refcount_read(&conn->ref);
- 
--		trace_rxrpc_conn(conn->debug_id, rxrpc_conn_seen, n, here);
-+		trace_rxrpc_conn(conn->debug_id, r, why);
- 	}
- }
- 
- /*
-  * Get a ref on a connection.
-  */
--struct rxrpc_connection *rxrpc_get_connection(struct rxrpc_connection *conn)
-+struct rxrpc_connection *rxrpc_get_connection(struct rxrpc_connection *conn,
-+					      enum rxrpc_conn_trace why)
- {
--	const void *here = __builtin_return_address(0);
- 	int r;
- 
- 	__refcount_inc(&conn->ref, &r);
--	trace_rxrpc_conn(conn->debug_id, rxrpc_conn_got, r, here);
-+	trace_rxrpc_conn(conn->debug_id, r + 1, why);
- 	return conn;
- }
- 
-@@ -304,14 +303,14 @@ struct rxrpc_connection *rxrpc_get_connection(struct rxrpc_connection *conn)
-  * Try to get a ref on a connection.
-  */
- struct rxrpc_connection *
--rxrpc_get_connection_maybe(struct rxrpc_connection *conn)
-+rxrpc_get_connection_maybe(struct rxrpc_connection *conn,
-+			   enum rxrpc_conn_trace why)
- {
--	const void *here = __builtin_return_address(0);
- 	int r;
- 
- 	if (conn) {
- 		if (__refcount_inc_not_zero(&conn->ref, &r))
--			trace_rxrpc_conn(conn->debug_id, rxrpc_conn_got, r + 1, here);
-+			trace_rxrpc_conn(conn->debug_id, r + 1, why);
- 		else
- 			conn = NULL;
- 	}
-@@ -331,14 +330,14 @@ static void rxrpc_set_service_reap_timer(struct rxrpc_net *rxnet,
- /*
-  * Release a service connection
-  */
--void rxrpc_put_service_conn(struct rxrpc_connection *conn)
-+void rxrpc_put_service_conn(struct rxrpc_connection *conn,
-+			    enum rxrpc_conn_trace why)
- {
--	const void *here = __builtin_return_address(0);
- 	unsigned int debug_id = conn->debug_id;
- 	int r;
- 
- 	__refcount_dec(&conn->ref, &r);
--	trace_rxrpc_conn(debug_id, rxrpc_conn_put_service, r - 1, here);
-+	trace_rxrpc_conn(debug_id, r - 1, why);
- 	if (r - 1 == 1)
- 		rxrpc_set_service_reap_timer(conn->local->rxnet,
- 					     jiffies + rxrpc_connection_expiry);
-@@ -354,6 +353,9 @@ static void rxrpc_destroy_connection(struct rcu_head *rcu)
- 
- 	_enter("{%d,u=%d}", conn->debug_id, refcount_read(&conn->ref));
- 
-+	trace_rxrpc_conn(conn->debug_id, refcount_read(&conn->ref),
-+			 rxrpc_conn_free);
+ 	int n = refcount_read(&call->ref);
 +
- 	ASSERTCMP(refcount_read(&conn->ref), ==, 0);
+ 	ASSERTCMP(n, >=, 1);
+ 	if (rxrpc_queue_work(&call->processor))
+-		trace_rxrpc_call(call->debug_id, rxrpc_call_queued_ref, n,
+-				 here, NULL);
++		trace_rxrpc_call(call->debug_id, n, 0, why);
+ 	else
+-		rxrpc_put_call(call, rxrpc_call_put_noqueue);
++		rxrpc_put_call(call, rxrpc_call_put_already_queued);
+ 	return true;
+ }
  
- 	del_timer_sync(&conn->timer);
-@@ -419,7 +421,7 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
- 		 */
- 		if (!refcount_dec_if_one(&conn->ref))
- 			continue;
--		trace_rxrpc_conn(conn->debug_id, rxrpc_conn_reap_service, 0, NULL);
-+		rxrpc_see_connection(conn, rxrpc_conn_see_reap_service);
+ /*
+  * Note the re-emergence of a call.
+  */
+-void rxrpc_see_call(struct rxrpc_call *call)
++void rxrpc_see_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
+ {
+-	const void *here = __builtin_return_address(0);
+ 	if (call) {
+-		int n = refcount_read(&call->ref);
++		int r = refcount_read(&call->ref);
  
- 		if (rxrpc_conn_is_client(conn))
- 			BUG();
-diff --git a/net/rxrpc/conn_service.c b/net/rxrpc/conn_service.c
-index a3b91864ef21..bf087213bd4d 100644
---- a/net/rxrpc/conn_service.c
-+++ b/net/rxrpc/conn_service.c
-@@ -141,9 +141,7 @@ struct rxrpc_connection *rxrpc_prealloc_service_connection(struct rxrpc_net *rxn
- 		list_add_tail(&conn->proc_link, &rxnet->conn_proc_list);
- 		write_unlock(&rxnet->conn_lock);
+-		trace_rxrpc_call(call->debug_id, rxrpc_call_seen, n,
+-				 here, NULL);
++		trace_rxrpc_call(call->debug_id, r, 0, why);
+ 	}
+ }
  
--		trace_rxrpc_conn(conn->debug_id, rxrpc_conn_new_service,
--				 refcount_read(&conn->ref),
--				 __builtin_return_address(0));
-+		rxrpc_see_connection(conn, rxrpc_conn_new_service);
+-bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
++bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
+ {
+-	const void *here = __builtin_return_address(0);
+-	int n;
++	int r;
+ 
+-	if (!__refcount_inc_not_zero(&call->ref, &n))
++	if (!__refcount_inc_not_zero(&call->ref, &r))
+ 		return false;
+-	trace_rxrpc_call(call->debug_id, op, n + 1, here, NULL);
++	trace_rxrpc_call(call->debug_id, r + 1, 0, why);
+ 	return true;
+ }
+ 
+ /*
+  * Note the addition of a ref on a call.
+  */
+-void rxrpc_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
++void rxrpc_get_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
+ {
+-	const void *here = __builtin_return_address(0);
+-	int n;
++	int r;
+ 
+-	__refcount_inc(&call->ref, &n);
+-	trace_rxrpc_call(call->debug_id, op, n + 1, here, NULL);
++	__refcount_inc(&call->ref, &r);
++	trace_rxrpc_call(call->debug_id, r + 1, 0, why);
+ }
+ 
+ /*
+@@ -510,15 +500,13 @@ static void rxrpc_cleanup_ring(struct rxrpc_call *call)
+  */
+ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
+ {
+-	const void *here = __builtin_return_address(0);
+ 	struct rxrpc_connection *conn = call->conn;
+ 	bool put = false;
+ 
+ 	_enter("{%d,%d}", call->debug_id, refcount_read(&call->ref));
+ 
+-	trace_rxrpc_call(call->debug_id, rxrpc_call_release,
+-			 refcount_read(&call->ref),
+-			 here, (const void *)call->flags);
++	trace_rxrpc_call(call->debug_id, refcount_read(&call->ref),
++			 call->flags, rxrpc_call_see_release);
+ 
+ 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+ 
+@@ -544,14 +532,14 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
+ 
+ 	write_unlock_bh(&rx->recvmsg_lock);
+ 	if (put)
+-		rxrpc_put_call(call, rxrpc_call_put);
++		rxrpc_put_call(call, rxrpc_call_put_unnotify);
+ 
+ 	write_lock(&rx->call_lock);
+ 
+ 	if (test_and_clear_bit(RXRPC_CALL_HAS_USERID, &call->flags)) {
+ 		rb_erase(&call->sock_node, &rx->calls);
+ 		memset(&call->sock_node, 0xdd, sizeof(call->sock_node));
+-		rxrpc_put_call(call, rxrpc_call_put_userid);
++		rxrpc_put_call(call, rxrpc_call_put_userid_exists);
  	}
  
- 	return conn;
+ 	list_del(&call->sock_link);
+@@ -580,17 +568,17 @@ void rxrpc_release_calls_on_socket(struct rxrpc_sock *rx)
+ 				  struct rxrpc_call, accept_link);
+ 		list_del(&call->accept_link);
+ 		rxrpc_abort_call("SKR", call, 0, RX_CALL_DEAD, -ECONNRESET);
+-		rxrpc_put_call(call, rxrpc_call_put);
++		rxrpc_put_call(call, rxrpc_call_put_release_sock_tba);
+ 	}
+ 
+ 	while (!list_empty(&rx->sock_calls)) {
+ 		call = list_entry(rx->sock_calls.next,
+ 				  struct rxrpc_call, sock_link);
+-		rxrpc_get_call(call, rxrpc_call_got);
++		rxrpc_get_call(call, rxrpc_call_get_release_sock);
+ 		rxrpc_abort_call("SKT", call, 0, RX_CALL_DEAD, -ECONNRESET);
+ 		rxrpc_send_abort_packet(call);
+ 		rxrpc_release_call(rx, call);
+-		rxrpc_put_call(call, rxrpc_call_put);
++		rxrpc_put_call(call, rxrpc_call_put_release_sock);
+ 	}
+ 
+ 	_leave("");
+@@ -599,20 +587,18 @@ void rxrpc_release_calls_on_socket(struct rxrpc_sock *rx)
+ /*
+  * release a call
+  */
+-void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
++void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
+ {
+ 	struct rxrpc_net *rxnet = call->rxnet;
+-	const void *here = __builtin_return_address(0);
+ 	unsigned int debug_id = call->debug_id;
+ 	bool dead;
+-	int n;
++	int r;
+ 
+ 	ASSERT(call != NULL);
+ 
+-	dead = __refcount_dec_and_test(&call->ref, &n);
+-	trace_rxrpc_call(debug_id, op, n, here, NULL);
++	dead = __refcount_dec_and_test(&call->ref, &r);
++	trace_rxrpc_call(debug_id, r - 1, 0, why);
+ 	if (dead) {
+-		_debug("call %d dead", call->debug_id);
+ 		ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+ 
+ 		if (!list_empty(&call->link)) {
+@@ -701,7 +687,7 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
+ 					  struct rxrpc_call, link);
+ 			_debug("Zapping call %p", call);
+ 
+-			rxrpc_see_call(call);
++			rxrpc_see_call(call, rxrpc_call_see_zap);
+ 			list_del_init(&call->link);
+ 
+ 			pr_err("Call %p still in use (%d,%s,%lx,%lx)!\n",
+diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
+index dcfec6a45255..4352e777aa2a 100644
+--- a/net/rxrpc/conn_client.c
++++ b/net/rxrpc/conn_client.c
+@@ -540,7 +540,7 @@ static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
+ 	clear_bit(RXRPC_CONN_FINAL_ACK_0 + channel, &conn->flags);
+ 	clear_bit(conn->bundle_shift + channel, &bundle->avail_chans);
+ 
+-	rxrpc_see_call(call);
++	rxrpc_see_call(call, rxrpc_call_see_activate_client);
+ 	list_del_init(&call->chan_wait_link);
+ 	call->peer	= rxrpc_get_peer(conn->peer, rxrpc_peer_get_activate_call);
+ 	call->conn	= rxrpc_get_connection(conn, rxrpc_conn_get_activate_call);
 diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index cecfd201d832..c8ff7489b412 100644
+index c8ff7489b412..09b44cd11c9b 100644
 --- a/net/rxrpc/input.c
 +++ b/net/rxrpc/input.c
-@@ -1121,7 +1121,7 @@ static void rxrpc_post_packet_to_conn(struct rxrpc_connection *conn,
- 	_enter("%p,%p", conn, skb);
+@@ -14,7 +14,7 @@ static void rxrpc_proto_abort(const char *why,
+ {
+ 	if (rxrpc_abort_call(why, call, seq, RX_PROTOCOL_ERROR, -EBADMSG)) {
+ 		set_bit(RXRPC_CALL_EV_ABORT, &call->events);
+-		rxrpc_queue_call(call);
++		rxrpc_queue_call(call, rxrpc_call_queue_abort);
+ 	}
+ }
  
- 	skb_queue_tail(&conn->rx_queue, skb);
--	rxrpc_queue_conn(conn);
-+	rxrpc_queue_conn(conn, rxrpc_conn_queue_rx_work);
+@@ -175,7 +175,7 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
+ 	call->cong_cumul_acks = cumulative_acks;
+ 	trace_rxrpc_congest(call, summary, acked_serial, change);
+ 	if (resend && !test_and_set_bit(RXRPC_CALL_EV_RESEND, &call->events))
+-		rxrpc_queue_call(call);
++		rxrpc_queue_call(call, rxrpc_call_queue_resend);
+ 	return;
+ 
+ packet_loss_detected:
+@@ -678,7 +678,7 @@ static void rxrpc_input_check_for_lost_ack(struct rxrpc_call *call)
+ {
+ 	if (after(call->acks_lost_top, call->acks_prev_seq) &&
+ 	    !test_and_set_bit(RXRPC_CALL_EV_RESEND, &call->events))
+-		rxrpc_queue_call(call);
++		rxrpc_queue_call(call, rxrpc_call_queue_resend);
  }
  
  /*
+@@ -1099,7 +1099,7 @@ static void rxrpc_input_implicit_end_call(struct rxrpc_sock *rx,
+ 	default:
+ 		if (rxrpc_abort_call("IMP", call, 0, RX_CALL_DEAD, -ESHUTDOWN)) {
+ 			set_bit(RXRPC_CALL_EV_ABORT, &call->events);
+-			rxrpc_queue_call(call);
++			rxrpc_queue_call(call, rxrpc_call_queue_abort);
+ 		}
+ 		trace_rxrpc_improper_term(call);
+ 		break;
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index 2762b7ada9ae..d324e88f7642 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -310,7 +310,7 @@ void rxrpc_transmit_ack_packets(struct rxrpc_local *local)
+ 		}
+ 
+ 		list_del_init(&txb->tx_link);
+-		rxrpc_put_call(txb->call, rxrpc_call_put);
++		rxrpc_put_call(txb->call, rxrpc_call_put_send_ack);
+ 		rxrpc_put_txbuf(txb, rxrpc_txbuf_put_ack_tx);
+ 	}
+ }
+diff --git a/net/rxrpc/peer_event.c b/net/rxrpc/peer_event.c
+index 5e97d321ac38..b28739d10927 100644
+--- a/net/rxrpc/peer_event.c
++++ b/net/rxrpc/peer_event.c
+@@ -238,7 +238,7 @@ static void rxrpc_distribute_error(struct rxrpc_peer *peer, int error,
+ 	struct rxrpc_call *call;
+ 
+ 	hlist_for_each_entry_rcu(call, &peer->error_targets, error_link) {
+-		rxrpc_see_call(call);
++		rxrpc_see_call(call, rxrpc_call_see_distribute_error);
+ 		rxrpc_set_call_completion(call, compl, 0, -error);
+ 	}
+ }
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index 134122f5961a..c84d2b620396 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -42,7 +42,7 @@ void rxrpc_notify_socket(struct rxrpc_call *call)
+ 		} else {
+ 			write_lock_bh(&rx->recvmsg_lock);
+ 			if (list_empty(&call->recvmsg_link)) {
+-				rxrpc_get_call(call, rxrpc_call_got);
++				rxrpc_get_call(call, rxrpc_call_get_notify_socket);
+ 				list_add_tail(&call->recvmsg_link, &rx->recvmsg_q);
+ 			}
+ 			write_unlock_bh(&rx->recvmsg_lock);
+@@ -451,7 +451,7 @@ int rxrpc_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 	if (!(flags & MSG_PEEK))
+ 		list_del_init(&call->recvmsg_link);
+ 	else
+-		rxrpc_get_call(call, rxrpc_call_got);
++		rxrpc_get_call(call, rxrpc_call_get_recvmsg);
+ 	write_unlock_bh(&rx->recvmsg_lock);
+ 
+ 	trace_rxrpc_recvmsg(call, rxrpc_recvmsg_dequeue, 0);
+@@ -537,7 +537,7 @@ int rxrpc_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 
+ error_unlock_call:
+ 	mutex_unlock(&call->user_mutex);
+-	rxrpc_put_call(call, rxrpc_call_put);
++	rxrpc_put_call(call, rxrpc_call_put_recvmsg);
+ 	trace_rxrpc_recvmsg(call, rxrpc_recvmsg_return, ret);
+ 	return ret;
+ 
+@@ -548,7 +548,7 @@ int rxrpc_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 		write_unlock_bh(&rx->recvmsg_lock);
+ 		trace_rxrpc_recvmsg(call, rxrpc_recvmsg_requeue, 0);
+ 	} else {
+-		rxrpc_put_call(call, rxrpc_call_put);
++		rxrpc_put_call(call, rxrpc_call_put_recvmsg);
+ 	}
+ error_no_call:
+ 	release_sock(&rx->sk);
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index cfe0badba0b3..76b1e2e89c1e 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -667,7 +667,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 		case RXRPC_CALL_CLIENT_AWAIT_CONN:
+ 		case RXRPC_CALL_SERVER_PREALLOC:
+ 		case RXRPC_CALL_SERVER_SECURING:
+-			rxrpc_put_call(call, rxrpc_call_put);
++			rxrpc_put_call(call, rxrpc_call_put_sendmsg);
+ 			ret = -EBUSY;
+ 			goto error_release_sock;
+ 		default:
+@@ -737,7 +737,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 	if (!dropped_lock)
+ 		mutex_unlock(&call->user_mutex);
+ error_put:
+-	rxrpc_put_call(call, rxrpc_call_put);
++	rxrpc_put_call(call, rxrpc_call_put_sendmsg);
+ 	_leave(" = %d", ret);
+ 	return ret;
+ 
 
 
