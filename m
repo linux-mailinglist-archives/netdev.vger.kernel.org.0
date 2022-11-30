@@ -2,55 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D4A563CEB5
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:30:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3376A63CEBE
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 06:34:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233554AbiK3Fam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 00:30:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39646 "EHLO
+        id S232637AbiK3Feo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 00:34:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232637AbiK3Fai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 00:30:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909DD69A86;
-        Tue, 29 Nov 2022 21:30:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EEA91619FF;
-        Wed, 30 Nov 2022 05:30:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 074CDC433C1;
-        Wed, 30 Nov 2022 05:30:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669786235;
-        bh=1TK50U/vtai6Rwr9FlTaVax6I29145N7olGNNgxGURE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gIznxXhG5bBI0tfM4H4oYw/ZyttSK7E2KTeA/3fmxF1URihtoChcX+jgGP3OofRTE
-         oJ+fJuTS+7FLYettpHgDwwNrg5GPBmCNA+psMcvkuR0Cy44PkE7pohZ+kQA02QL76p
-         1LWamDwAnJCf1zhHqxYFVbpdxGQlbRT6wD+DkaTWfus76tZ733/jz8taLCzaMK7vcy
-         nmXulA3/1MU7o0ec6+5c1VzcLP3Dia9Z0dq/86aFsyJWBjHQFXkJQdOUHnfYf4xdt8
-         cX19Vul7jwKdua18503oCu8UVltbSU5/Vxjwr7yjgRNn4azmcbcgvQsghVQaf4L/3E
-         hAsqOy0QeZh6g==
-Date:   Tue, 29 Nov 2022 21:30:34 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ronak Doshi <doshir@vmware.com>
-Cc:     <netdev@vger.kernel.org>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231338AbiK3Fem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 00:34:42 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16B26C73F
+        for <netdev@vger.kernel.org>; Tue, 29 Nov 2022 21:34:39 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1p0Fjx-0008QZ-6e; Wed, 30 Nov 2022 06:34:37 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1p0Fju-0005mu-8m; Wed, 30 Nov 2022 06:34:34 +0100
+Date:   Wed, 30 Nov 2022 06:34:34 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Arun.Ramadoss@microchip.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 net  1/2] vmxnet3: correctly report encapsulated LRO
- packet
-Message-ID: <20221129213034.18f7c826@kernel.org>
-In-Reply-To: <20221128193205.3820-2-doshir@vmware.com>
-References: <20221128193205.3820-1-doshir@vmware.com>
-        <20221128193205.3820-2-doshir@vmware.com>
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH v1 00/26] net: dsa: microchip: stats64, fdb, error
+Message-ID: <20221130053434.GA19642@pengutronix.de>
+References: <20221128115958.4049431-1-o.rempel@pengutronix.de>
+ <7f0a7acc-4b6b-8e33-7098-e5dfcb67945f@intel.com>
+ <20221129053539.GA25526@pengutronix.de>
+ <Y4YT5wfckSO1sfRw@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Y4YT5wfckSO1sfRw@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,9 +63,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Nov 2022 11:32:03 -0800 Ronak Doshi wrote:
-> +				union Vmxnet3_GenericDesc *gdesc;
-> +				
+On Tue, Nov 29, 2022 at 03:15:03PM +0100, Andrew Lunn wrote:
+> On Tue, Nov 29, 2022 at 06:35:39AM +0100, Oleksij Rempel wrote:
+> > On Mon, Nov 28, 2022 at 03:09:19PM -0800, Jacob Keller wrote:
+> > > 
+> > > My understanding is that we typically limit series to 15 patches. Do you
+> > > have some justification for why this goes over 15 and can't reasonably be
+> > > split into two series?
+> > > 
+> > > At a glance it seems like a bunch of smaller cleanups.
+> > 
+> > The previous patch set got request to do more clean ups:
+> > https://lore.kernel.org/all/20221124101458.3353902-1-o.rempel@pengutronix.de/
+> > 
+> > I need to show, there are already more patches in the queue.
+> 
+> There is some psychology involved here. I see 26 patches and decide i
+> need to allocate 30 minutes to this sometime, and put the review off
+> until later, without even looking at them. If i get 5 patches, i
+> probably just do it, knowing i will be finished pretty quickly. My
+> guess is, 5 patches a day for 5 days will be merged faster than 26
+> patches in one go.
 
-Trailing white space here.
-Please use checkpatch.
+Good point. Thx!
+
+I'll split this patch set.
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
