@@ -2,108 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F5EE63D7D8
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:13:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F7D563D7DC
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:13:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbiK3ONJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 09:13:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
+        id S229949AbiK3ONm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 09:13:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbiK3OMw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:12:52 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7792B81382;
-        Wed, 30 Nov 2022 06:11:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669817482; x=1701353482;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yzmwxZgDr5S8U5t89iHsOd4kxIhVuBa4UeeGtP6f1KM=;
-  b=GrOgDqlYz9uV4NZo/x3kP2RpKF6Abn9btr+JFBGrqndjLt5S0oPGJxZd
-   hVEBjXpa0BmCA5Irrv3R5aYe5SyyaCZNGybboPiPnfWl5CzW/b8Y/TedA
-   Z+kDaHf6tpf+lx0CZZwCLh33Efo2OEokQARTTzFLevJt9k/bGHwMDKUUi
-   YQiTWP+5y00UC/JLm7R3xoDZ3feIUiPL6T2xDjVru2Ae+OMDb0/y50jSZ
-   uE3ROzSNiAkH0dH/rwf9FtJVlCq1nQlAOnhX8umTlAmexgUGaYwu/zV96
-   94OR3nakBkQfy4grM+VYJZFaSJpaT0Kx6jRGUnWsVDpO5E9QiWoTHEHz2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="317251329"
-X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
-   d="scan'208";a="317251329"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 06:11:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="973116908"
-X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
-   d="scan'208";a="973116908"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP; 30 Nov 2022 06:11:19 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1p0Nnx-002IQd-0P;
-        Wed, 30 Nov 2022 16:11:17 +0200
-Date:   Wed, 30 Nov 2022 16:11:16 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v3 2/2] net: thunderbolt: Use bitwise types in
- the struct thunderbolt_ip_frame_header
-Message-ID: <Y4dkhPuQ03W6Tqy/@smile.fi.intel.com>
-References: <20221130123613.20829-1-andriy.shevchenko@linux.intel.com>
- <20221130123613.20829-2-andriy.shevchenko@linux.intel.com>
- <Y4dTd1Ni2pIH1wbd@black.fi.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y4dTd1Ni2pIH1wbd@black.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229743AbiK3ON0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:13:26 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CDAE1759A;
+        Wed, 30 Nov 2022 06:12:48 -0800 (PST)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AUDTxx8011736;
+        Wed, 30 Nov 2022 14:12:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2022-7-12;
+ bh=81Gw5jnCL8waFzPfYwJgsHW4IkKTk/GT8Ct4LdrMODM=;
+ b=CQdwj51p6KRg4NWqvuKl1Hv4vPpEIVw0gYMdr3gBmYVR6ycsgP6goucwGAxYOt6A4Mkw
+ P6D7cPW1CwdfjS4GTkroRbZfZabn4EMQYJBHQ1/t9i8lqxqYmRDuQqcZ0WMu/KlcjIA8
+ Cx6lT7bqIvJkMnZ6GitMdCmi2wGIHQk2YoI1xi9RmD64KPZ/0cr1Ly+INrBXSmYbfqyr
+ 5Fe7ZYyADG3mX4K1noaVIBUwd5MP0RoHleNZE8aVgyHAthNCUivgGaMYJYX+IU97V4/1
+ oqgG1YxdDM8h5jZc1c5tJFijTXsL49OsSDInDqSbRV5FoFoJ/afql/YgpYv7Nu6QrbdO lA== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3m40y414v3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 30 Nov 2022 14:12:38 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 2AUE6ojL000587;
+        Wed, 30 Nov 2022 14:12:36 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3m398ff6gk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 30 Nov 2022 14:12:36 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2AUECa9P000944;
+        Wed, 30 Nov 2022 14:12:36 GMT
+Received: from dhcp-10-152-13-169.usdhcp.oraclecorp.com.com (dhcp-10-152-13-169.usdhcp.oraclecorp.com [10.152.13.169])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3m398ff6b5-1;
+        Wed, 30 Nov 2022 14:12:36 +0000
+From:   George Kennedy <george.kennedy@oracle.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     george.kennedy@oracle.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        harshit.m.mogalapalli@oracle.com
+Subject: [PATCH] net: check for dev pointer being NULL in dev_hard_header() to avoid GPF
+Date:   Wed, 30 Nov 2022 09:11:52 -0500
+Message-Id: <1669817512-4560-1-git-send-email-george.kennedy@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-30_04,2022-11-30_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxlogscore=999
+ spamscore=0 malwarescore=0 phishscore=0 suspectscore=0 bulkscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211300099
+X-Proofpoint-GUID: O52LZs4KDTyVMXOkO-BKiWXxxRYPyoWW
+X-Proofpoint-ORIG-GUID: O52LZs4KDTyVMXOkO-BKiWXxxRYPyoWW
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 02:58:31PM +0200, Mika Westerberg wrote:
-> On Wed, Nov 30, 2022 at 02:36:13PM +0200, Andy Shevchenko wrote:
-> > The main usage of the struct thunderbolt_ip_frame_header is to handle
-> > the packets on the media layer. The header is bound to the protocol
-> > in which the byte ordering is crucial. However the data type definition
-> > doesn't use that and sparse is unhappy, for example (17 altogether):
-> > 
-> >   .../thunderbolt.c:718:23: warning: cast to restricted __le32
-> > 
-> >   .../thunderbolt.c:966:42: warning: incorrect type in assignment (different base types)
-> >   .../thunderbolt.c:966:42:    expected unsigned int [usertype] frame_count
-> >   .../thunderbolt.c:966:42:    got restricted __le32 [usertype]
-> > 
-> > Switch to the bitwise types in the struct thunderbolt_ip_frame_header to
-> > reduce this, but not completely solving (9 left), because the same data
-> > type is used for Rx header handled locally (in CPU byte order).
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Looks good to me. I assume you tested this against non-Linux OS to
-> ensure nothing broke? ;-)
+The dev pointer can be NULL in dev_hard_header(). Add check for dev being
+NULL in dev_hard_header() to avoid GPF.
 
-Oh, no. It's compile tested only. And since we are using leXX_to_cpu() against
-fields in that data structure I assume that it won't be any functional issue
-with this. It's all about strict type checking.
+general protection fault, probably for non-canonical address
+    0xdffffc0000000046: 0000 [#1] PREEMPT SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000230-0x0000000000000237]
+CPU: 1 PID: 45 Comm: kworker/1:1 Not tainted 6.1.0-rc7+ #2
+Hardware name: Red Hat KVM, BIOS 1.15.0-2.module+el8.6.0+20659+3dcf7c70
+Workqueue: mld mld_ifc_work
+RIP: 0010:macvlan_hard_header (./include/linux/netdevice.h:3057
+    (discriminator 4) drivers/net/macvlan.c:594 (discriminator 4))
+RSP: 0018:ffff888103d377d0 EFLAGS: 00010212
+RAX: dffffc0000000000 RBX: ffff88801cf1a000 RCX: 0000000000000000
+RDX: 0000000000000046 RSI: 0000000000000000 RDI: 0000000000000230
+RBP: ffff88801e8ef328 R08: 0000000000000000 R09: 0000000000000060
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff88801f0497c0
+R13: 0000000000000000 R14: ffff888045187c98 R15: 0000000000000060
+FS:  0000000000000000(0000) GS:ffff888106c80000(0000)
+    knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fbf3f1c1840 CR3: 0000000014e36000 CR4: 00000000000006e0
+Call Trace:
+ <TASK>
+neigh_connected_output (./include/linux/netdevice.h:3060
+    net/core/neighbour.c:1595)
+ip6_finish_output2 (./include/net/neighbour.h:546
+    net/ipv6/ip6_output.c:134)
+ip6_finish_output (net/ipv6/ip6_output.c:195 net/ipv6/ip6_output.c:206)
+ip6_output (./include/linux/netfilter.h:291 net/ipv6/ip6_output.c:227)
+NF_HOOK.constprop.0 (./include/net/dst.h:445
+    ./include/linux/netfilter.h:302)
+mld_sendpack (net/ipv6/mcast.c:1824)
+mld_send_cr (net/ipv6/mcast.c:2122)
+mld_ifc_work (net/ipv6/mcast.c:2655)
+process_one_work (kernel/workqueue.c:2294)
+worker_thread (./include/linux/list.h:292 kernel/workqueue.c:2437)
+kthread (kernel/kthread.c:376)
+ret_from_fork (arch/x86/entry/entry_64.S:312)
+ </TASK>
+Modules linked in:
+Dumping ftrace buffer:
+   (ftrace buffer empty)
+---[ end trace 0000000000000000 ]---
 
-> Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Fixes: 0c4e85813d0a ("[NET]: Wrap netdevice hardware header creation.")
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+---
+ include/linux/netdevice.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thank you!
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index eddf8ee270e7..9b25a6301fa5 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3054,7 +3054,7 @@ static inline int dev_hard_header(struct sk_buff *skb, struct net_device *dev,
+ 				  const void *daddr, const void *saddr,
+ 				  unsigned int len)
+ {
+-	if (!dev->header_ops || !dev->header_ops->create)
++	if (!dev || !dev->header_ops || !dev->header_ops->create)
+ 		return 0;
+ 
+ 	return dev->header_ops->create(skb, dev, type, daddr, saddr, len);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.31.1
 
