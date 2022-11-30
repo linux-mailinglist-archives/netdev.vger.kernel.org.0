@@ -2,169 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8F4163D870
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:45:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D6B763D885
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 15:51:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbiK3Opg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 09:45:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43634 "EHLO
+        id S229730AbiK3Ovb convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 30 Nov 2022 09:51:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiK3Opf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:45:35 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FB32EF53;
-        Wed, 30 Nov 2022 06:45:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669819533; x=1701355533;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7OXz1JQfXpxmshc7RVji/7ppQefNBiE4Gk2wpXgkYeI=;
-  b=KzMTndQ8DAnZtTITE5++As5d2aA1Nhip9QtpyKVqw4SXNAMuwvhkt7ye
-   eD/lxVQXleqcKA4dEUUytI7Q0q8Cs8uPD9U2CVn75XimnGqIAM9ahhNfb
-   nI+b6BltGiY8ORRIlgpHXU9vH/uYaW3M5K+q7KhyTNXcG5ny6ZptfGwHi
-   YQYp55t1U2bwtaDB3RQS5uxDKXKayAiQYAW3sffMlNixIfQka9qqhNfzV
-   eDPLc/KBGJPoOUSU92hmg1yu/S31Rqq2jtQKmfKX02idyZww27+LZQ+Si
-   a+rEXl8njIv77GA9iLH9R1paWU6hvxF5ZeXARuL9IgWadTmHIPwIUZ2Xx
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
-   d="scan'208";a="191147978"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Nov 2022 07:45:32 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 30 Nov 2022 07:45:31 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Wed, 30 Nov 2022 07:45:31 -0700
-Date:   Wed, 30 Nov 2022 15:50:34 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Divya Koppera <Divya.Koppera@microchip.com>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <richardcochran@gmail.com>,
-        <UNGLinuxDriver@microchip.com>, <Madhuri.Sripada@microchip.com>
-Subject: Re: [PATCH v3 net-next] net: phy: micrel: Fix warn: passing zero to
- PTR_ERR
-Message-ID: <20221130145034.rmput7zdhwevo2p7@soft-dev3-1>
-References: <20221129101653.6921-1-Divya.Koppera@microchip.com>
+        with ESMTP id S229674AbiK3Ov2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 09:51:28 -0500
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B286573B83;
+        Wed, 30 Nov 2022 06:51:24 -0800 (PST)
+Received: by mail-qt1-f173.google.com with SMTP id a27so11229401qtw.10;
+        Wed, 30 Nov 2022 06:51:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rbewHNiIDPrh2vDJAS18QQyUgoqR1U2XFbW+RCOiyVY=;
+        b=fCXuCOgUwLOoxJH49GdlHGzuXdGP3I5vqtKMQfw5p/zM1r4oBmwI25DVL2rJwh3AEm
+         2MT2kuea8mUOjXqUTBz4OHAlI6cj3GPIYUor399iWhBHSMyTZbHscIOjg0vQjyw9/TKP
+         hZS6NWMNxSV74chr9cNAJ3IYqBs3z1yKSWzsv8dd6Usp8rHqgbOw5BME2sOFlciLJHVF
+         2gsgvGdnvdp8G4gwF1ibs9mvH5gMeBYfaFiGGWOL0rdIzdtFxbkQ2zT7WDbqiw26zikL
+         uR9+g09vhUsfyhh/onuP5TIxIsSWkyoNxLmMMaDoHa8uQYJGSmUxE0rk2FmCGJLb97GO
+         TwtA==
+X-Gm-Message-State: ANoB5pnuGTT7RELZ7BhWRdGXJ8VlkfCavUzwlUiDK58G7HuexBWb2TZ/
+        OQLy0BhEvyuLsDsdJV6nxkMzQOEQzK35CQ==
+X-Google-Smtp-Source: AA0mqf5t9XxSny7wiMYJL+fC3x3d1hmg9pcxoc3fo7HwOxvscAyInELNzC7ZXHCOZNBIyrHqL5faMA==
+X-Received: by 2002:a05:622a:488f:b0:3a6:328e:e7d1 with SMTP id fc15-20020a05622a488f00b003a6328ee7d1mr21723005qtb.272.1669819883617;
+        Wed, 30 Nov 2022 06:51:23 -0800 (PST)
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
+        by smtp.gmail.com with ESMTPSA id y26-20020a37f61a000000b006bc192d277csm1262642qkj.10.2022.11.30.06.51.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Nov 2022 06:51:22 -0800 (PST)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-3c090251d59so117848417b3.4;
+        Wed, 30 Nov 2022 06:51:22 -0800 (PST)
+X-Received: by 2002:a81:f80f:0:b0:38e:e541:d8ca with SMTP id
+ z15-20020a81f80f000000b0038ee541d8camr55824371ywm.283.1669819872327; Wed, 30
+ Nov 2022 06:51:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20221129101653.6921-1-Divya.Koppera@microchip.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20221130141040.32447-1-arinc.unal@arinc9.com> <20221130141040.32447-3-arinc.unal@arinc9.com>
+In-Reply-To: <20221130141040.32447-3-arinc.unal@arinc9.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 30 Nov 2022 15:51:00 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVBZiWxORfb2hd0hn_En6yFEwm8uJXr553YfB8gv1sOFw@mail.gmail.com>
+Message-ID: <CAMuHMdVBZiWxORfb2hd0hn_En6yFEwm8uJXr553YfB8gv1sOFw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] arm: dts: remove label = "cpu" from DSA dt-binding
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        soc@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Stefan Agner <stefan@agner.ch>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/29/2022 15:46, Divya Koppera wrote:
+CC cleger
 
-Hi Divya,
+On Wed, Nov 30, 2022 at 3:33 PM Arınç ÜNAL <arinc.unal@arinc9.com> wrote:
+> This is not used by the DSA dt-binding, so remove it from all devicetrees.
+>
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-> Handle the NULL pointer case
-> 
-> Fixes New smatch warnings:
-> drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero to 'PTR_ERR'
-> 
-> Fixes Old smatch warnings:
-> drivers/net/phy/micrel.c:1750 ksz886x_cable_test_get_status() error:
-> uninitialized symbol 'ret'.
+>  arch/arm/boot/dts/r9a06g032.dtsi                          | 1 -
 
-Shouldn't you split this patch in 2 different patches, as you fix 2
-issues.
-Also any reason why you target net-next and not net? Because I can
-see the blamed patches on net branch.
+Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-> 
-> vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
-> Fixes: 21b688dabecb ("net: phy: micrel: Cable Diag feature for lan8814 phy")
-> Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
-> ---
-> v2 -> v3:
-> - Changed subject line from net to net-next
-> - Removed config check for ptp and clock configuration
->   instead added null check for ptp_clock
-> - Fixed one more warning related to initialisaton.
-> 
-> v1 -> v2:
-> - Handled NULL pointer case
-> - Changed subject line with net-next to net
-> ---
->  drivers/net/phy/micrel.c | 18 ++++++++++--------
->  1 file changed, 10 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> index 26ce0c5defcd..3703e2fafbd4 100644
-> --- a/drivers/net/phy/micrel.c
-> +++ b/drivers/net/phy/micrel.c
-> @@ -2088,7 +2088,8 @@ static int ksz886x_cable_test_get_status(struct phy_device *phydev,
->  	const struct kszphy_type *type = phydev->drv->driver_data;
->  	unsigned long pair_mask = type->pair_mask;
->  	int retries = 20;
-> -	int pair, ret;
-> +	int ret = 0;
-> +	int pair;
->  
->  	*finished = false;
->  
-> @@ -2970,12 +2971,13 @@ static int lan8814_config_intr(struct phy_device *phydev)
->  
->  static void lan8814_ptp_init(struct phy_device *phydev)
->  {
-> +	struct lan8814_shared_priv *shared_priv = phydev->shared->priv;
->  	struct kszphy_priv *priv = phydev->priv;
->  	struct kszphy_ptp_priv *ptp_priv = &priv->ptp_priv;
->  	u32 temp;
->  
-> -	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
-> -	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
-> +	/* Check if PHC support is missing at the configuration level */
-> +	if (!shared_priv->ptp_clock)
->  		return;
->  
->  	lanphy_write_page_reg(phydev, 5, TSU_HARD_RESET, TSU_HARD_RESET_);
-> @@ -3016,10 +3018,6 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
->  {
->  	struct lan8814_shared_priv *shared = phydev->shared->priv;
->  
-> -	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
-> -	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
-> -		return 0;
-> -
->  	/* Initialise shared lock for clock*/
->  	mutex_init(&shared->shared_lock);
->  
-> @@ -3039,12 +3037,16 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
->  
->  	shared->ptp_clock = ptp_clock_register(&shared->ptp_clock_info,
->  					       &phydev->mdio.dev);
-> -	if (IS_ERR_OR_NULL(shared->ptp_clock)) {
-> +	if (IS_ERR(shared->ptp_clock)) {
->  		phydev_err(phydev, "ptp_clock_register failed %lu\n",
->  			   PTR_ERR(shared->ptp_clock));
->  		return -EINVAL;
->  	}
->  
-> +	/* Check if PHC support is missing at the configuration level */
-> +	if (!shared->ptp_clock)
-> +		return 0;
-> +
->  	phydev_dbg(phydev, "successfully registered ptp clock\n");
->  
->  	shared->phydev = phydev;
-> -- 
-> 2.17.1
-> 
+> --- a/arch/arm/boot/dts/r9a06g032.dtsi
+> +++ b/arch/arm/boot/dts/r9a06g032.dtsi
+> @@ -401,7 +401,6 @@ switch_port3: port@3 {
+>                                 switch_port4: port@4 {
+>                                         reg = <4>;
+>                                         ethernet = <&gmac2>;
+> -                                       label = "cpu";
+>                                         phy-mode = "internal";
+>                                         status = "disabled";
+>                                         fixed-link {
 
--- 
-/Horatiu
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
