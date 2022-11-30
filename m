@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6854163DB6C
-	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:03:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2DCD63DB6F
+	for <lists+netdev@lfdr.de>; Wed, 30 Nov 2022 18:04:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbiK3RDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 12:03:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54334 "EHLO
+        id S231181AbiK3REY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 12:04:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbiK3RDE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:03:04 -0500
+        with ESMTP id S231138AbiK3RDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 12:03:38 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147B884DFD
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 08:58:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3279209F
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 08:59:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669827533;
+        s=mimecast20190719; t=1669827542;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XKe8BanoVhCwvvownjLNdqC0xZgMjP2lmZkgV07bsRk=;
-        b=aAEYZ1trKtmm6R7rf3N2LmckJjTgefOge1ORTB/6Lj61nx0lrQUzzIIYuZHKlBNKdpsYr4
-        BxNMQbpr4aMEOOCsXQSPIAWvpb2E750niA5/7wml+ydzTrO9WaNrE9CddNBRQbd6YFX5f2
-        Zhh9oEb/7EYY9zD+JjKB6hHEqkjHf9s=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=VtdYwukbYgl0UpjEXIEIAmSWA1Q9LhbOt+7IbY0H2pY=;
+        b=HLy3M8uUj5osBGDWxIP+blf34bTvPDC6/u3Bjvk78KyBe9+4TiGtqwzD/+ZhgA1WPXjukP
+        rn45DvVwD5W51DDIE/f//GRkrWmnKHx+5wsu1nsad3jqRrq8Ri2g6V0eGTdV4Rh6SpHSRj
+        tbuoOdpH6k7vwcuYd11pgUKeDPk/Cyw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-495-XzqVxU7aP76e0bH-yJYY6Q-1; Wed, 30 Nov 2022 11:58:50 -0500
-X-MC-Unique: XzqVxU7aP76e0bH-yJYY6Q-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-531-nlARyOf7OIC-DcKVxT0EPw-1; Wed, 30 Nov 2022 11:58:59 -0500
+X-MC-Unique: nlARyOf7OIC-DcKVxT0EPw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CB3E5101A52A;
-        Wed, 30 Nov 2022 16:58:49 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 821BC38173D3;
+        Wed, 30 Nov 2022 16:58:58 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DC82E492B04;
-        Wed, 30 Nov 2022 16:58:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C3041492CA2;
+        Wed, 30 Nov 2022 16:58:57 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 31/35] rxrpc: Remove the _bh annotation from all the
- spinlocks
+Subject: [PATCH net-next 32/35] rxrpc: Trace/count transmission underflows and
+ cwnd resets
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Wed, 30 Nov 2022 16:58:46 +0000
-Message-ID: <166982752629.621383.8913353266465133998.stgit@warthog.procyon.org.uk>
+Date:   Wed, 30 Nov 2022 16:58:55 +0000
+Message-ID: <166982753502.621383.18092511902509739439.stgit@warthog.procyon.org.uk>
 In-Reply-To: <166982725699.621383.2358362793992993374.stgit@warthog.procyon.org.uk>
 References: <166982725699.621383.2358362793992993374.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,594 +67,191 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-None of the spinlocks in rxrpc need a _bh annotation now as the RCU
-callback routines no longer take spinlocks and the bulk of the packet
-wrangling code is now run in the I/O thread, not softirq context.
+Add a tracepoint to log when a cwnd reset occurs due to lack of
+transmission on a call.
+
+Add stat counters to count transmission underflows (ie. when we have tx
+window space, but sendmsg doesn't manage to keep up), cwnd resets and
+transmission failures.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- net/rxrpc/af_rxrpc.c     |    4 ++--
- net/rxrpc/call_accept.c  |    8 ++++----
- net/rxrpc/call_event.c   |    4 ++--
- net/rxrpc/call_object.c  |   20 ++++++++++----------
- net/rxrpc/conn_client.c  |    4 ++--
- net/rxrpc/conn_event.c   |   16 ++++++++--------
- net/rxrpc/conn_service.c |   10 +++++-----
- net/rxrpc/input.c        |    4 ++--
- net/rxrpc/output.c       |    8 ++++----
- net/rxrpc/peer_event.c   |   16 ++++++++--------
- net/rxrpc/peer_object.c  |    8 ++++----
- net/rxrpc/recvmsg.c      |   36 ++++++++++++++++++------------------
- net/rxrpc/sendmsg.c      |   12 ++++++------
- 13 files changed, 75 insertions(+), 75 deletions(-)
+ include/trace/events/rxrpc.h |   38 ++++++++++++++++++++++++++++++++++++++
+ net/rxrpc/ar-internal.h      |    3 +++
+ net/rxrpc/call_event.c       |    4 +++-
+ net/rxrpc/input.c            |    7 +++++--
+ net/rxrpc/output.c           |    2 ++
+ net/rxrpc/proc.c             |   14 ++++++++++----
+ 6 files changed, 61 insertions(+), 7 deletions(-)
 
-diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
-index 8ad4d85acb0b..7ea576f6ba4b 100644
---- a/net/rxrpc/af_rxrpc.c
-+++ b/net/rxrpc/af_rxrpc.c
-@@ -359,9 +359,9 @@ void rxrpc_kernel_end_call(struct socket *sock, struct rxrpc_call *call)
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index c49b0c233594..b41e913ae78a 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -1446,6 +1446,44 @@ TRACE_EVENT(rxrpc_congest,
+ 		      __entry->sum.retrans_timeo ? " rTxTo" : "")
+ 	    );
  
- 	/* Make sure we're not going to call back into a kernel service */
- 	if (call->notify_rx) {
--		spin_lock_bh(&call->notify_lock);
-+		spin_lock(&call->notify_lock);
- 		call->notify_rx = rxrpc_dummy_notify_rx;
--		spin_unlock_bh(&call->notify_lock);
-+		spin_unlock(&call->notify_lock);
- 	}
++TRACE_EVENT(rxrpc_reset_cwnd,
++	    TP_PROTO(struct rxrpc_call *call, ktime_t now),
++
++	    TP_ARGS(call, now),
++
++	    TP_STRUCT__entry(
++		    __field(unsigned int,			call		)
++		    __field(enum rxrpc_congest_mode,		mode		)
++		    __field(unsigned short,			cwnd		)
++		    __field(unsigned short,			extra		)
++		    __field(rxrpc_seq_t,			hard_ack	)
++		    __field(rxrpc_seq_t,			prepared	)
++		    __field(ktime_t,				since_last_tx	)
++		    __field(bool,				has_data	)
++			     ),
++
++	    TP_fast_assign(
++		    __entry->call	= call->debug_id;
++		    __entry->mode	= call->cong_mode;
++		    __entry->cwnd	= call->cong_cwnd;
++		    __entry->extra	= call->cong_extra;
++		    __entry->hard_ack	= call->acks_hard_ack;
++		    __entry->prepared	= call->tx_prepared - call->tx_bottom;
++		    __entry->since_last_tx = ktime_sub(now, call->tx_last_sent);
++		    __entry->has_data	= !list_empty(&call->tx_sendmsg);
++			   ),
++
++	    TP_printk("c=%08x q=%08x %s cw=%u+%u pr=%u tm=%llu d=%u",
++		      __entry->call,
++		      __entry->hard_ack,
++		      __print_symbolic(__entry->mode, rxrpc_congest_modes),
++		      __entry->cwnd,
++		      __entry->extra,
++		      __entry->prepared,
++		      ktime_to_ns(__entry->since_last_tx),
++		      __entry->has_data)
++	    );
++
+ TRACE_EVENT(rxrpc_disconnect_call,
+ 	    TP_PROTO(struct rxrpc_call *call),
  
- 	mutex_unlock(&call->user_mutex);
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index 86a4187fb2fb..603e7520384a 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -138,9 +138,9 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
- 	write_unlock(&rx->call_lock);
- 
- 	rxnet = call->rxnet;
--	spin_lock_bh(&rxnet->call_lock);
-+	spin_lock(&rxnet->call_lock);
- 	list_add_tail_rcu(&call->link, &rxnet->calls);
--	spin_unlock_bh(&rxnet->call_lock);
-+	spin_unlock(&rxnet->call_lock);
- 
- 	b->call_backlog[call_head] = call;
- 	smp_store_release(&b->call_backlog_head, (call_head + 1) & (size - 1));
-@@ -188,8 +188,8 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
- 	/* Make sure that there aren't any incoming calls in progress before we
- 	 * clear the preallocation buffers.
- 	 */
--	spin_lock_bh(&rx->incoming_lock);
--	spin_unlock_bh(&rx->incoming_lock);
-+	spin_lock(&rx->incoming_lock);
-+	spin_unlock(&rx->incoming_lock);
- 
- 	head = b->peer_backlog_head;
- 	tail = b->peer_backlog_tail;
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 6b993a3d4186..6cfe366ee224 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -101,6 +101,9 @@ struct rxrpc_net {
+ 	atomic_t		stat_tx_data_retrans;
+ 	atomic_t		stat_tx_data_send;
+ 	atomic_t		stat_tx_data_send_frag;
++	atomic_t		stat_tx_data_send_fail;
++	atomic_t		stat_tx_data_underflow;
++	atomic_t		stat_tx_data_cwnd_reset;
+ 	atomic_t		stat_rx_data;
+ 	atomic_t		stat_rx_data_reqack;
+ 	atomic_t		stat_rx_data_jumbo;
 diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 9db62fa55c62..18591f9ecc6a 100644
+index 18591f9ecc6a..9f1e490ab976 100644
 --- a/net/rxrpc/call_event.c
 +++ b/net/rxrpc/call_event.c
-@@ -101,9 +101,9 @@ void rxrpc_send_ACK(struct rxrpc_call *call, u8 ack_reason,
- 		return;
- 	}
- 
--	spin_lock_bh(&local->ack_tx_lock);
-+	spin_lock(&local->ack_tx_lock);
- 	list_add_tail(&txb->tx_link, &local->ack_tx_queue);
--	spin_unlock_bh(&local->ack_tx_lock);
-+	spin_unlock(&local->ack_tx_lock);
- 	trace_rxrpc_send_ack(call, why, ack_reason, serial);
- 
- 	rxrpc_wake_up_io_thread(local);
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index d441a715d988..be5eb8cdf549 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -354,9 +354,9 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- 	write_unlock(&rx->call_lock);
- 
- 	rxnet = call->rxnet;
--	spin_lock_bh(&rxnet->call_lock);
-+	spin_lock(&rxnet->call_lock);
- 	list_add_tail_rcu(&call->link, &rxnet->calls);
--	spin_unlock_bh(&rxnet->call_lock);
-+	spin_unlock(&rxnet->call_lock);
- 
- 	/* From this point on, the call is protected by its own lock. */
- 	release_sock(&rx->sk);
-@@ -537,7 +537,7 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
- 	del_timer_sync(&call->timer);
- 
- 	/* Make sure we don't get any more notifications */
--	write_lock_bh(&rx->recvmsg_lock);
-+	write_lock(&rx->recvmsg_lock);
- 
- 	if (!list_empty(&call->recvmsg_link)) {
- 		_debug("unlinking once-pending call %p { e=%lx f=%lx }",
-@@ -550,7 +550,7 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
- 	call->recvmsg_link.next = NULL;
- 	call->recvmsg_link.prev = NULL;
- 
--	write_unlock_bh(&rx->recvmsg_lock);
-+	write_unlock(&rx->recvmsg_lock);
- 	if (put)
- 		rxrpc_put_call(call, rxrpc_call_put_unnotify);
- 
-@@ -622,9 +622,9 @@ void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
- 		ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
- 
- 		if (!list_empty(&call->link)) {
--			spin_lock_bh(&rxnet->call_lock);
-+			spin_lock(&rxnet->call_lock);
- 			list_del_init(&call->link);
--			spin_unlock_bh(&rxnet->call_lock);
-+			spin_unlock(&rxnet->call_lock);
- 		}
- 
- 		rxrpc_cleanup_call(call);
-@@ -706,7 +706,7 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
- 	_enter("");
- 
- 	if (!list_empty(&rxnet->calls)) {
--		spin_lock_bh(&rxnet->call_lock);
-+		spin_lock(&rxnet->call_lock);
- 
- 		while (!list_empty(&rxnet->calls)) {
- 			call = list_entry(rxnet->calls.next,
-@@ -721,12 +721,12 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
- 			       rxrpc_call_states[call->state],
- 			       call->flags, call->events);
- 
--			spin_unlock_bh(&rxnet->call_lock);
-+			spin_unlock(&rxnet->call_lock);
- 			cond_resched();
--			spin_lock_bh(&rxnet->call_lock);
-+			spin_lock(&rxnet->call_lock);
- 		}
- 
--		spin_unlock_bh(&rxnet->call_lock);
-+		spin_unlock(&rxnet->call_lock);
- 	}
- 
- 	atomic_dec(&rxnet->nr_calls);
-diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index 3c7b1bdec0db..a08e33c9e54b 100644
---- a/net/rxrpc/conn_client.c
-+++ b/net/rxrpc/conn_client.c
-@@ -557,9 +557,9 @@ static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
- 
- 	trace_rxrpc_connect_call(call);
- 
--	write_lock_bh(&call->state_lock);
-+	write_lock(&call->state_lock);
- 	call->state = RXRPC_CALL_CLIENT_SEND_REQUEST;
--	write_unlock_bh(&call->state_lock);
-+	write_unlock(&call->state_lock);
- 
- 	/* Paired with the read barrier in rxrpc_connect_call().  This orders
- 	 * cid and epoch in the connection wrt to call_id without the need to
-diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
-index 643a56322224..480364bcbf85 100644
---- a/net/rxrpc/conn_event.c
-+++ b/net/rxrpc/conn_event.c
-@@ -198,9 +198,9 @@ static int rxrpc_abort_connection(struct rxrpc_connection *conn,
- 	_enter("%d,,%u,%u", conn->debug_id, error, abort_code);
- 
- 	/* generate a connection-level abort */
--	spin_lock_bh(&conn->state_lock);
-+	spin_lock(&conn->state_lock);
- 	if (conn->state >= RXRPC_CONN_REMOTELY_ABORTED) {
--		spin_unlock_bh(&conn->state_lock);
-+		spin_unlock(&conn->state_lock);
- 		_leave(" = 0 [already dead]");
- 		return 0;
- 	}
-@@ -209,7 +209,7 @@ static int rxrpc_abort_connection(struct rxrpc_connection *conn,
- 	conn->abort_code = abort_code;
- 	conn->state = RXRPC_CONN_LOCALLY_ABORTED;
- 	set_bit(RXRPC_CONN_DONT_REUSE, &conn->flags);
--	spin_unlock_bh(&conn->state_lock);
-+	spin_unlock(&conn->state_lock);
- 
- 	msg.msg_name	= &conn->peer->srx.transport;
- 	msg.msg_namelen	= conn->peer->srx.transport_len;
-@@ -265,12 +265,12 @@ static void rxrpc_call_is_secure(struct rxrpc_call *call)
- {
- 	_enter("%p", call);
- 	if (call) {
--		write_lock_bh(&call->state_lock);
-+		write_lock(&call->state_lock);
- 		if (call->state == RXRPC_CALL_SERVER_SECURING) {
- 			call->state = RXRPC_CALL_SERVER_RECV_REQUEST;
- 			rxrpc_notify_socket(call);
- 		}
--		write_unlock_bh(&call->state_lock);
-+		write_unlock(&call->state_lock);
- 	}
- }
- 
-@@ -325,18 +325,18 @@ static int rxrpc_process_event(struct rxrpc_connection *conn,
- 			return ret;
- 
- 		spin_lock(&conn->bundle->channel_lock);
--		spin_lock_bh(&conn->state_lock);
-+		spin_lock(&conn->state_lock);
- 
- 		if (conn->state == RXRPC_CONN_SERVICE_CHALLENGING) {
- 			conn->state = RXRPC_CONN_SERVICE;
--			spin_unlock_bh(&conn->state_lock);
-+			spin_unlock(&conn->state_lock);
- 			for (loop = 0; loop < RXRPC_MAXCALLS; loop++)
- 				rxrpc_call_is_secure(
- 					rcu_dereference_protected(
- 						conn->channels[loop].call,
- 						lockdep_is_held(&conn->bundle->channel_lock)));
- 		} else {
--			spin_unlock_bh(&conn->state_lock);
-+			spin_unlock(&conn->state_lock);
- 		}
- 
- 		spin_unlock(&conn->bundle->channel_lock);
-diff --git a/net/rxrpc/conn_service.c b/net/rxrpc/conn_service.c
-index b5ae7c753fc3..2a55a88b2a5b 100644
---- a/net/rxrpc/conn_service.c
-+++ b/net/rxrpc/conn_service.c
-@@ -73,7 +73,7 @@ static void rxrpc_publish_service_conn(struct rxrpc_peer *peer,
- 	struct rxrpc_conn_proto k = conn->proto;
- 	struct rb_node **pp, *parent;
- 
--	write_seqlock_bh(&peer->service_conn_lock);
-+	write_seqlock(&peer->service_conn_lock);
- 
- 	pp = &peer->service_conns.rb_node;
- 	parent = NULL;
-@@ -94,14 +94,14 @@ static void rxrpc_publish_service_conn(struct rxrpc_peer *peer,
- 	rb_insert_color(&conn->service_node, &peer->service_conns);
- conn_published:
- 	set_bit(RXRPC_CONN_IN_SERVICE_CONNS, &conn->flags);
--	write_sequnlock_bh(&peer->service_conn_lock);
-+	write_sequnlock(&peer->service_conn_lock);
- 	_leave(" = %d [new]", conn->debug_id);
- 	return;
- 
- found_extant_conn:
- 	if (refcount_read(&cursor->ref) == 0)
- 		goto replace_old_connection;
--	write_sequnlock_bh(&peer->service_conn_lock);
-+	write_sequnlock(&peer->service_conn_lock);
- 	/* We should not be able to get here.  rxrpc_incoming_connection() is
- 	 * called in a non-reentrant context, so there can't be a race to
- 	 * insert a new connection.
-@@ -195,8 +195,8 @@ void rxrpc_unpublish_service_conn(struct rxrpc_connection *conn)
- {
- 	struct rxrpc_peer *peer = conn->peer;
- 
--	write_seqlock_bh(&peer->service_conn_lock);
-+	write_seqlock(&peer->service_conn_lock);
- 	if (test_and_clear_bit(RXRPC_CONN_IN_SERVICE_CONNS, &conn->flags))
- 		rb_erase(&conn->service_node, &peer->service_conns);
--	write_sequnlock_bh(&peer->service_conn_lock);
-+	write_sequnlock(&peer->service_conn_lock);
- }
+@@ -317,8 +317,10 @@ static void rxrpc_transmit_some_data(struct rxrpc_call *call)
+ 	case RXRPC_CALL_CLIENT_AWAIT_REPLY:
+ 		if (!rxrpc_tx_window_has_space(call))
+ 			return;
+-		if (list_empty(&call->tx_sendmsg))
++		if (list_empty(&call->tx_sendmsg)) {
++			rxrpc_inc_stat(call->rxnet, stat_tx_data_underflow);
+ 			return;
++		}
+ 		rxrpc_decant_prepared_tx(call);
+ 		break;
+ 	default:
 diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 7ae7046f0b03..dd2ac5d55e1c 100644
+index dd2ac5d55e1c..2988e3d0c1f6 100644
 --- a/net/rxrpc/input.c
 +++ b/net/rxrpc/input.c
-@@ -669,10 +669,10 @@ static void rxrpc_input_ackinfo(struct rxrpc_call *call, struct sk_buff *skb,
+@@ -27,6 +27,7 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
+ 	enum rxrpc_congest_change change = rxrpc_cong_no_change;
+ 	unsigned int cumulative_acks = call->cong_cumul_acks;
+ 	unsigned int cwnd = call->cong_cwnd;
++	ktime_t now;
+ 	bool resend = false;
  
- 	peer = call->peer;
- 	if (mtu < peer->maxdata) {
--		spin_lock_bh(&peer->lock);
-+		spin_lock(&peer->lock);
- 		peer->maxdata = mtu;
- 		peer->mtu = mtu + peer->hdrsize;
--		spin_unlock_bh(&peer->lock);
-+		spin_unlock(&peer->lock);
- 	}
- 
- 	if (wake)
+ 	summary->flight_size =
+@@ -59,13 +60,15 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
+ 	/* If we haven't transmitted anything for >1RTT, we should reset the
+ 	 * congestion management state.
+ 	 */
++	now = ktime_get_real();
+ 	if ((call->cong_mode == RXRPC_CALL_SLOW_START ||
+ 	     call->cong_mode == RXRPC_CALL_CONGEST_AVOIDANCE) &&
+ 	    ktime_before(ktime_add_us(call->tx_last_sent,
+-				      call->peer->srtt_us >> 3),
+-			 ktime_get_real())
++				      call->peer->srtt_us >> 3), now)
+ 	    ) {
++		trace_rxrpc_reset_cwnd(call, now);
+ 		change = rxrpc_cong_idle_reset;
++		rxrpc_inc_stat(call->rxnet, stat_tx_data_cwnd_reset);
+ 		summary->mode = RXRPC_CALL_SLOW_START;
+ 		if (RXRPC_TX_SMSS > 2190)
+ 			summary->cwnd = 2;
 diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
-index 2ea1fa1b8a6f..e5d715b855fc 100644
+index e5d715b855fc..8147a47d1702 100644
 --- a/net/rxrpc/output.c
 +++ b/net/rxrpc/output.c
-@@ -286,9 +286,9 @@ void rxrpc_transmit_ack_packets(struct rxrpc_local *local)
- 	if (list_empty(&local->ack_tx_queue))
- 		return;
+@@ -485,6 +485,7 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
  
--	spin_lock_bh(&local->ack_tx_lock);
-+	spin_lock(&local->ack_tx_lock);
- 	list_splice_tail_init(&local->ack_tx_queue, &queue);
--	spin_unlock_bh(&local->ack_tx_lock);
-+	spin_unlock(&local->ack_tx_lock);
- 
- 	while (!list_empty(&queue)) {
- 		struct rxrpc_txbuf *txb =
-@@ -296,9 +296,9 @@ void rxrpc_transmit_ack_packets(struct rxrpc_local *local)
- 
- 		ret = rxrpc_send_ack_packet(local, txb);
- 		if (ret < 0 && ret != -ECONNRESET) {
--			spin_lock_bh(&local->ack_tx_lock);
-+			spin_lock(&local->ack_tx_lock);
- 			list_splice_init(&queue, &local->ack_tx_queue);
--			spin_unlock_bh(&local->ack_tx_lock);
-+			spin_unlock(&local->ack_tx_lock);
- 			break;
- 		}
- 
-diff --git a/net/rxrpc/peer_event.c b/net/rxrpc/peer_event.c
-index fb8096e93d2c..6685bf917aa6 100644
---- a/net/rxrpc/peer_event.c
-+++ b/net/rxrpc/peer_event.c
-@@ -121,10 +121,10 @@ static void rxrpc_adjust_mtu(struct rxrpc_peer *peer, unsigned int mtu)
+ 	up_read(&conn->local->defrag_sem);
+ 	if (ret < 0) {
++		rxrpc_inc_stat(call->rxnet, stat_tx_data_send_fail);
+ 		rxrpc_cancel_rtt_probe(call, serial, rtt_slot);
+ 		trace_rxrpc_tx_fail(call->debug_id, serial, ret,
+ 				    rxrpc_tx_point_call_data_nofrag);
+@@ -567,6 +568,7 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
  	}
  
- 	if (mtu < peer->mtu) {
--		spin_lock_bh(&peer->lock);
-+		spin_lock(&peer->lock);
- 		peer->mtu = mtu;
- 		peer->maxdata = peer->mtu - peer->hdrsize;
--		spin_unlock_bh(&peer->lock);
-+		spin_unlock(&peer->lock);
- 	}
- }
+ 	if (ret < 0) {
++		rxrpc_inc_stat(call->rxnet, stat_tx_data_send_fail);
+ 		rxrpc_cancel_rtt_probe(call, serial, rtt_slot);
+ 		trace_rxrpc_tx_fail(call->debug_id, serial, ret,
+ 				    rxrpc_tx_point_call_data_frag);
+diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
+index 5af7c8ee4b1a..6816934cb4cf 100644
+--- a/net/rxrpc/proc.c
++++ b/net/rxrpc/proc.c
+@@ -398,13 +398,16 @@ int rxrpc_stats_show(struct seq_file *seq, void *v)
+ 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_single_net(seq));
  
-@@ -237,7 +237,7 @@ static void rxrpc_peer_keepalive_dispatch(struct rxrpc_net *rxnet,
- 	time64_t keepalive_at;
- 	int slot;
+ 	seq_printf(seq,
+-		   "Data     : send=%u sendf=%u\n",
++		   "Data     : send=%u sendf=%u fail=%u\n",
+ 		   atomic_read(&rxnet->stat_tx_data_send),
+-		   atomic_read(&rxnet->stat_tx_data_send_frag));
++		   atomic_read(&rxnet->stat_tx_data_send_frag),
++		   atomic_read(&rxnet->stat_tx_data_send_fail));
+ 	seq_printf(seq,
+-		   "Data-Tx  : nr=%u retrans=%u\n",
++		   "Data-Tx  : nr=%u retrans=%u uf=%u cwr=%u\n",
+ 		   atomic_read(&rxnet->stat_tx_data),
+-		   atomic_read(&rxnet->stat_tx_data_retrans));
++		   atomic_read(&rxnet->stat_tx_data_retrans),
++		   atomic_read(&rxnet->stat_tx_data_underflow),
++		   atomic_read(&rxnet->stat_tx_data_cwnd_reset));
+ 	seq_printf(seq,
+ 		   "Data-Rx  : nr=%u reqack=%u jumbo=%u\n",
+ 		   atomic_read(&rxnet->stat_rx_data),
+@@ -472,8 +475,11 @@ int rxrpc_stats_clear(struct file *file, char *buf, size_t size)
  
--	spin_lock_bh(&rxnet->peer_hash_lock);
-+	spin_lock(&rxnet->peer_hash_lock);
- 
- 	while (!list_empty(collector)) {
- 		peer = list_entry(collector->next,
-@@ -248,7 +248,7 @@ static void rxrpc_peer_keepalive_dispatch(struct rxrpc_net *rxnet,
- 			continue;
- 
- 		if (__rxrpc_use_local(peer->local, rxrpc_local_use_peer_keepalive)) {
--			spin_unlock_bh(&rxnet->peer_hash_lock);
-+			spin_unlock(&rxnet->peer_hash_lock);
- 
- 			keepalive_at = peer->last_tx_at + RXRPC_KEEPALIVE_TIME;
- 			slot = keepalive_at - base;
-@@ -267,7 +267,7 @@ static void rxrpc_peer_keepalive_dispatch(struct rxrpc_net *rxnet,
- 			 */
- 			slot += cursor;
- 			slot &= mask;
--			spin_lock_bh(&rxnet->peer_hash_lock);
-+			spin_lock(&rxnet->peer_hash_lock);
- 			list_add_tail(&peer->keepalive_link,
- 				      &rxnet->peer_keepalive[slot & mask]);
- 			rxrpc_unuse_local(peer->local, rxrpc_local_unuse_peer_keepalive);
-@@ -275,7 +275,7 @@ static void rxrpc_peer_keepalive_dispatch(struct rxrpc_net *rxnet,
- 		rxrpc_put_peer_locked(peer, rxrpc_peer_put_keepalive);
- 	}
- 
--	spin_unlock_bh(&rxnet->peer_hash_lock);
-+	spin_unlock(&rxnet->peer_hash_lock);
- }
- 
- /*
-@@ -305,7 +305,7 @@ void rxrpc_peer_keepalive_worker(struct work_struct *work)
- 	 * second; the bucket at cursor + 1 goes at now + 1s and so
- 	 * on...
- 	 */
--	spin_lock_bh(&rxnet->peer_hash_lock);
-+	spin_lock(&rxnet->peer_hash_lock);
- 	list_splice_init(&rxnet->peer_keepalive_new, &collector);
- 
- 	stop = cursor + ARRAY_SIZE(rxnet->peer_keepalive);
-@@ -317,7 +317,7 @@ void rxrpc_peer_keepalive_worker(struct work_struct *work)
- 	}
- 
- 	base = now;
--	spin_unlock_bh(&rxnet->peer_hash_lock);
-+	spin_unlock(&rxnet->peer_hash_lock);
- 
- 	rxnet->peer_keepalive_base = base;
- 	rxnet->peer_keepalive_cursor = cursor;
-diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
-index 9e682a60a800..608946dcc505 100644
---- a/net/rxrpc/peer_object.c
-+++ b/net/rxrpc/peer_object.c
-@@ -349,7 +349,7 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *rx,
- 			return NULL;
- 		}
- 
--		spin_lock_bh(&rxnet->peer_hash_lock);
-+		spin_lock(&rxnet->peer_hash_lock);
- 
- 		/* Need to check that we aren't racing with someone else */
- 		peer = __rxrpc_lookup_peer_rcu(local, srx, hash_key);
-@@ -362,7 +362,7 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *rx,
- 				      &rxnet->peer_keepalive_new);
- 		}
- 
--		spin_unlock_bh(&rxnet->peer_hash_lock);
-+		spin_unlock(&rxnet->peer_hash_lock);
- 
- 		if (peer)
- 			rxrpc_free_peer(candidate);
-@@ -412,10 +412,10 @@ static void __rxrpc_put_peer(struct rxrpc_peer *peer)
- 
- 	ASSERT(hlist_empty(&peer->error_targets));
- 
--	spin_lock_bh(&rxnet->peer_hash_lock);
-+	spin_lock(&rxnet->peer_hash_lock);
- 	hash_del_rcu(&peer->hash_link);
- 	list_del_init(&peer->keepalive_link);
--	spin_unlock_bh(&rxnet->peer_hash_lock);
-+	spin_unlock(&rxnet->peer_hash_lock);
- 
- 	rxrpc_free_peer(peer);
- }
-diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
-index 77d03b9e4c4c..3a8576e9daf3 100644
---- a/net/rxrpc/recvmsg.c
-+++ b/net/rxrpc/recvmsg.c
-@@ -36,16 +36,16 @@ void rxrpc_notify_socket(struct rxrpc_call *call)
- 	sk = &rx->sk;
- 	if (rx && sk->sk_state < RXRPC_CLOSE) {
- 		if (call->notify_rx) {
--			spin_lock_bh(&call->notify_lock);
-+			spin_lock(&call->notify_lock);
- 			call->notify_rx(sk, call, call->user_call_ID);
--			spin_unlock_bh(&call->notify_lock);
-+			spin_unlock(&call->notify_lock);
- 		} else {
--			write_lock_bh(&rx->recvmsg_lock);
-+			write_lock(&rx->recvmsg_lock);
- 			if (list_empty(&call->recvmsg_link)) {
- 				rxrpc_get_call(call, rxrpc_call_get_notify_socket);
- 				list_add_tail(&call->recvmsg_link, &rx->recvmsg_q);
- 			}
--			write_unlock_bh(&rx->recvmsg_lock);
-+			write_unlock(&rx->recvmsg_lock);
- 
- 			if (!sock_flag(sk, SOCK_DEAD)) {
- 				_debug("call %ps", sk->sk_data_ready);
-@@ -87,9 +87,9 @@ bool rxrpc_set_call_completion(struct rxrpc_call *call,
- 	bool ret = false;
- 
- 	if (call->state < RXRPC_CALL_COMPLETE) {
--		write_lock_bh(&call->state_lock);
-+		write_lock(&call->state_lock);
- 		ret = __rxrpc_set_call_completion(call, compl, abort_code, error);
--		write_unlock_bh(&call->state_lock);
-+		write_unlock(&call->state_lock);
- 	}
- 	return ret;
- }
-@@ -107,9 +107,9 @@ bool rxrpc_call_completed(struct rxrpc_call *call)
- 	bool ret = false;
- 
- 	if (call->state < RXRPC_CALL_COMPLETE) {
--		write_lock_bh(&call->state_lock);
-+		write_lock(&call->state_lock);
- 		ret = __rxrpc_call_completed(call);
--		write_unlock_bh(&call->state_lock);
-+		write_unlock(&call->state_lock);
- 	}
- 	return ret;
- }
-@@ -131,9 +131,9 @@ bool rxrpc_abort_call(const char *why, struct rxrpc_call *call,
- {
- 	bool ret;
- 
--	write_lock_bh(&call->state_lock);
-+	write_lock(&call->state_lock);
- 	ret = __rxrpc_abort_call(why, call, seq, abort_code, error);
--	write_unlock_bh(&call->state_lock);
-+	write_unlock(&call->state_lock);
- 	return ret;
- }
- 
-@@ -193,23 +193,23 @@ static void rxrpc_end_rx_phase(struct rxrpc_call *call, rxrpc_serial_t serial)
- 	if (call->state == RXRPC_CALL_CLIENT_RECV_REPLY)
- 		rxrpc_propose_delay_ACK(call, serial, rxrpc_propose_ack_terminal_ack);
- 
--	write_lock_bh(&call->state_lock);
-+	write_lock(&call->state_lock);
- 
- 	switch (call->state) {
- 	case RXRPC_CALL_CLIENT_RECV_REPLY:
- 		__rxrpc_call_completed(call);
--		write_unlock_bh(&call->state_lock);
-+		write_unlock(&call->state_lock);
- 		break;
- 
- 	case RXRPC_CALL_SERVER_RECV_REQUEST:
- 		call->state = RXRPC_CALL_SERVER_ACK_REQUEST;
- 		call->expect_req_by = jiffies + MAX_JIFFY_OFFSET;
--		write_unlock_bh(&call->state_lock);
-+		write_unlock(&call->state_lock);
- 		rxrpc_propose_delay_ACK(call, serial,
- 					rxrpc_propose_ack_processing_op);
- 		break;
- 	default:
--		write_unlock_bh(&call->state_lock);
-+		write_unlock(&call->state_lock);
- 		break;
- 	}
- }
-@@ -442,14 +442,14 @@ int rxrpc_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 	/* Find the next call and dequeue it if we're not just peeking.  If we
- 	 * do dequeue it, that comes with a ref that we will need to release.
- 	 */
--	write_lock_bh(&rx->recvmsg_lock);
-+	write_lock(&rx->recvmsg_lock);
- 	l = rx->recvmsg_q.next;
- 	call = list_entry(l, struct rxrpc_call, recvmsg_link);
- 	if (!(flags & MSG_PEEK))
- 		list_del_init(&call->recvmsg_link);
- 	else
- 		rxrpc_get_call(call, rxrpc_call_get_recvmsg);
--	write_unlock_bh(&rx->recvmsg_lock);
-+	write_unlock(&rx->recvmsg_lock);
- 
- 	trace_rxrpc_recvmsg(call, rxrpc_recvmsg_dequeue, 0);
- 
-@@ -538,9 +538,9 @@ int rxrpc_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 
- error_requeue_call:
- 	if (!(flags & MSG_PEEK)) {
--		write_lock_bh(&rx->recvmsg_lock);
-+		write_lock(&rx->recvmsg_lock);
- 		list_add(&call->recvmsg_link, &rx->recvmsg_q);
--		write_unlock_bh(&rx->recvmsg_lock);
-+		write_unlock(&rx->recvmsg_lock);
- 		trace_rxrpc_recvmsg(call, rxrpc_recvmsg_requeue, 0);
- 	} else {
- 		rxrpc_put_call(call, rxrpc_call_put_recvmsg);
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 58e0a36f6aa9..2c861c55ed70 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -195,7 +195,7 @@ static void rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
- 
- 	if (last || call->state == RXRPC_CALL_SERVER_ACK_REQUEST) {
- 		_debug("________awaiting reply/ACK__________");
--		write_lock_bh(&call->state_lock);
-+		write_lock(&call->state_lock);
- 		switch (call->state) {
- 		case RXRPC_CALL_CLIENT_SEND_REQUEST:
- 			call->state = RXRPC_CALL_CLIENT_AWAIT_REPLY;
-@@ -218,7 +218,7 @@ static void rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
- 		default:
- 			break;
- 		}
--		write_unlock_bh(&call->state_lock);
-+		write_unlock(&call->state_lock);
- 	}
- 
- 	if (poke)
-@@ -357,10 +357,10 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- success:
- 	ret = copied;
- 	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
--		read_lock_bh(&call->state_lock);
-+		read_lock(&call->state_lock);
- 		if (call->error < 0)
- 			ret = call->error;
--		read_unlock_bh(&call->state_lock);
-+		read_unlock(&call->state_lock);
- 	}
- out:
- 	call->tx_pending = txb;
-@@ -725,9 +725,9 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
- 				      notify_end_tx, &dropped_lock);
- 		break;
- 	case RXRPC_CALL_COMPLETE:
--		read_lock_bh(&call->state_lock);
-+		read_lock(&call->state_lock);
- 		ret = call->error;
--		read_unlock_bh(&call->state_lock);
-+		read_unlock(&call->state_lock);
- 		break;
- 	default:
- 		/* Request phase complete for this client call */
+ 	atomic_set(&rxnet->stat_tx_data, 0);
+ 	atomic_set(&rxnet->stat_tx_data_retrans, 0);
++	atomic_set(&rxnet->stat_tx_data_underflow, 0);
++	atomic_set(&rxnet->stat_tx_data_cwnd_reset, 0);
+ 	atomic_set(&rxnet->stat_tx_data_send, 0);
+ 	atomic_set(&rxnet->stat_tx_data_send_frag, 0);
++	atomic_set(&rxnet->stat_tx_data_send_fail, 0);
+ 	atomic_set(&rxnet->stat_rx_data, 0);
+ 	atomic_set(&rxnet->stat_rx_data_reqack, 0);
+ 	atomic_set(&rxnet->stat_rx_data_jumbo, 0);
 
 
