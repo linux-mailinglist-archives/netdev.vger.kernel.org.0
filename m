@@ -2,126 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4383563EDBD
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 11:28:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ADE563EE11
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 11:40:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230427AbiLAK23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 05:28:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
+        id S230357AbiLAKkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 05:40:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230309AbiLAK2M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 05:28:12 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9897A2C105
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 02:28:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669890491; x=1701426491;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mc7Od7XYGYoGaurxyko9c2tZRfh+P5cEKjX66w/8Ywc=;
-  b=CX4WLXKsLZkuLvJMcyUpU9vsSuyB40QNHggPycPx9SOxGTG6arSudMYm
-   /XRCBIQADx0GPAqcjJS4VLPI9VeJOMjdv9LjkfQwQVVJFWQXjFbTo/n5o
-   1gacZ5Vb6JkomqKUxL5v8JOHXjSrufH4+QLFL62o3CR/X8kZEaBXm6jss
-   aBKafnSome28zWeak57lM6VhfMZvcifxab2ZJ4Gm6w+Dhb7YEHrG0xtyM
-   p7NZQLu31y7A2w+/SH3fLfaWn9CvjCcn8uUC8Q+U9MqL8V4LFQL0Amx8L
-   scjFqND3S7wyNuq1TfC3rLJn9EZQAOG2tTjC2zq9dL6AuqRST7T8wzMMC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="313278028"
-X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="313278028"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 02:28:11 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="769184577"
-X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="769184577"
-Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 02:28:08 -0800
-From:   Michal Wilczynski <michal.wilczynski@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     alexandr.lobakin@intel.com, przemyslaw.kitszel@intel.com,
-        jiri@resnulli.us, wojciech.drewek@intel.com, dsahern@gmail.com,
-        stephen@networkplumber.org,
-        Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: [PATCH iproute2-next v2 4/4] devlink: Add documentation for tx_prority and tx_weight
-Date:   Thu,  1 Dec 2022 11:26:26 +0100
-Message-Id: <20221201102626.56390-5-michal.wilczynski@intel.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221201102626.56390-1-michal.wilczynski@intel.com>
-References: <20221201102626.56390-1-michal.wilczynski@intel.com>
+        with ESMTP id S230207AbiLAKkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 05:40:07 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68E09493D;
+        Thu,  1 Dec 2022 02:40:06 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4NNCJN4W7qz4xFy;
+        Thu,  1 Dec 2022 21:40:04 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1669891204;
+        bh=KTDVN/7lIjIrER/XXkOz9H8eWtf2nxvkUgRAGM5il/U=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=mtH77xWqReqw3bUURmWOaOMUgI1fnhJeqxa/jFrTE2AiPxZgRHJOdcrEogd7m6t+K
+         hSD5E6U7i+ckFXkoXJyBCf9GV9mhqfTh6a2EhgZiI/SRGv0KENZChmJYXHVWQJ6yRk
+         6YrETuvLSFH3GLBrIHlAqPWESejuap3arDVMjfILKy+BGr1aGCqxlVdA7HLC4kSTkB
+         h2Fc1q1HQQmg4WuwySsEcmNguqQitD5GKa/mEHq6/vneU8YBjQFOfp9St3mhaor2x1
+         6DM3kpUr8F1g1c/fjGREENP6GL+7W1pjUv9OMijMtZXQ/VLwrb7rHigKdo6xpjkop7
+         l5PmypY+0tAfg==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 5/5] powerpc: dts: remove label = "cpu" from DSA dt-binding
+In-Reply-To: <20221130141040.32447-6-arinc.unal@arinc9.com>
+References: <20221130141040.32447-1-arinc.unal@arinc9.com>
+ <20221130141040.32447-6-arinc.unal@arinc9.com>
+Date:   Thu, 01 Dec 2022 21:40:03 +1100
+Message-ID: <87a647s8zg.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New netlink attributes tx_priority and tx_weight were added.
-Update the man page for devlink-rate to account for new attributes.
+Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com> writes:
+> This is not used by the DSA dt-binding, so remove it from all devicetrees.
+>
+> Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+> ---
+>  arch/powerpc/boot/dts/turris1x.dts | 2 --
+>  1 file changed, 2 deletions(-)
 
-Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
-Reviewed-by: Wojciech Drewek <wojciech.drewek@intel.com>
----
- man/man8/devlink-rate.8 | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+Adding Pali to Cc.
 
-diff --git a/man/man8/devlink-rate.8 b/man/man8/devlink-rate.8
-index cc2f50c38619..bcec3c31673a 100644
---- a/man/man8/devlink-rate.8
-+++ b/man/man8/devlink-rate.8
-@@ -26,12 +26,16 @@ devlink-rate \- devlink rate management
- .RI "{ " DEV/PORT_INDEX " | " DEV/NODE_NAME " } "
- .RB [ " tx_share \fIVALUE " ]
- .RB [ " tx_max \fIVALUE " ]
-+.RB [ " tx_priority \fIN " ]
-+.RB [ " tx_weight \fIN " ]
- .RB "[ {" " parent \fINODE_NAME " | " noparent " "} ]"
- 
- .ti -8
- .BI "devlink port function rate add " DEV/NODE_NAME
- .RB [ " tx_share \fIVALUE " ]
- .RB [ " tx_max \fIVALUE " ]
-+.RB [ " tx_priority \fIN " ]
-+.RB [ " tx_weight \fIN " ]
- .RB "[ {" " parent \fINODE_NAME " | " noparent " "} ]"
- 
- .ti -8
-@@ -83,6 +87,20 @@ rate group.
- .PP
- .BI tx_max " VALUE"
- - specifies maximum tx rate value.
-+.PP
-+.BI tx_priority " N"
-+- allows for usage of strict priority arbiter among siblings. This arbitration
-+scheme attempts to schedule nodes based on their priority as long as the nodes
-+remain within their bandwidth limit. The higher the priority the higher the
-+probability that the node will get selected for scheduling.
-+.PP
-+.BI tx_weight " N"
-+- allows for usage of Weighted Fair Queuing arbitration scheme among siblings.
-+This arbitration scheme can be used simultaneously with the strict priority.
-+As a node is configured with a higher rate it gets more BW relative to it's
-+siblings. Values are relative like a percentage points, they basically tell
-+how much BW should node take relative to it's siblings.
-+.PP
- .TP 8
- .I VALUE
- These parameter accept a floating point number, possibly followed by either a
-@@ -123,6 +141,10 @@ To specify in IEC units, replace the SI prefix (k-, m-, g-, t-) with IEC prefix
- (ki-, mi-, gi- and ti-) respectively. Input is case-insensitive.
- .RE
- .PP
-+.TP 8
-+.I N
-+These parameter accept integer meaning weight or priority of a node.
-+.PP
- .BI parent " NODE_NAME \fR| " noparent
- - set rate object parent to existing node with name \fINODE_NAME\fR or unset
- parent. Rate limits of the parent node applied to all it's children. Actual
--- 
-2.37.2
+These were only recently updated in commit:
 
+  8bf056f57f1d ("powerpc: dts: turris1x.dts: Fix labels in DSA cpu port nod=
+es")
+
+Which said:
+
+  DSA cpu port node has to be marked with "cpu" label.
+
+But if the binding doesn't use them then I'm confused why they needed to
+be updated.
+
+cheers
+
+
+> diff --git a/arch/powerpc/boot/dts/turris1x.dts b/arch/powerpc/boot/dts/t=
+urris1x.dts
+> index 045af668e928..3841c8d96d00 100644
+> --- a/arch/powerpc/boot/dts/turris1x.dts
+> +++ b/arch/powerpc/boot/dts/turris1x.dts
+> @@ -147,7 +147,6 @@ ports {
+>=20=20
+>  					port@0 {
+>  						reg =3D <0>;
+> -						label =3D "cpu";
+>  						ethernet =3D <&enet1>;
+>  						phy-mode =3D "rgmii-id";
+>=20=20
+> @@ -184,7 +183,6 @@ port@5 {
+>=20=20
+>  					port@6 {
+>  						reg =3D <6>;
+> -						label =3D "cpu";
+>  						ethernet =3D <&enet0>;
+>  						phy-mode =3D "rgmii-id";
+>=20=20
+> --=20
+> 2.34.1
