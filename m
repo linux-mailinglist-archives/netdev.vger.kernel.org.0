@@ -2,77 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2838563E65F
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 01:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4BB063E689
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 01:33:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbiLAAUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 19:20:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36566 "EHLO
+        id S229751AbiLAAdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 19:33:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbiLAATn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 19:19:43 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CF11C431;
-        Wed, 30 Nov 2022 16:17:51 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id z20so235617edc.13;
-        Wed, 30 Nov 2022 16:17:51 -0800 (PST)
+        with ESMTP id S229538AbiLAAc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 19:32:59 -0500
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CF146665
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 16:32:56 -0800 (PST)
+Received: by mail-oi1-x22b.google.com with SMTP id m204so422045oib.6
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 16:32:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WVj64qAtRgX8Z3JwUjtW5pZMQEDu05ynwbkezRsMWTo=;
-        b=ZTLoFaiLM1GjQoUT4Af8bSKI7sURHwRL+uLvvy3H5ZdYfBlNfGeMjJEyKvLpTK4Ebl
-         /8LfB2LlCrtulB4quWhepDZYX/Ptl5DfeKXqTq/avBbGk0KwNa+AQ2d9yI9e9fxfWJid
-         NPlmOoAlntvSti27NPEFX1SZurP/gzyrNP8tUzQvCCXN5vqfXpYjF8bf/cvzFtL1zYKB
-         LYfnKRq5gEK3vwUVB1+nx4oPcxD4PDaNqd1RQwm5cCR3YIKXhKsb5c0HsSaiBpo94Xwa
-         zIkjQaBHCUeX7Ye2jpOq6M1w5GO499bQhf/4dPkmiM2YltB8mKabc5VjzK5fvb49/kBO
-         INbg==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qf/BMEs9bgR379g3kVf+2jSNyHJ0315hhT9d1N7WzYU=;
+        b=BL2TqVq0b1vLdrW8in8KaMpSdTqJPAQOimTS6oBexCA09t525q1m/RRfBvVwC0MRAO
+         cpwlKoLiQpj9gvdq1W2COPSn/b220e4mB025docvuJdQJxqNlURnJqm0uaGh4l1tE4MV
+         bs2jyH0KZiCP4r/ImYlnvT7LqM3Gv5/BL8mNESjT1w1cLpSK3S0KrupvD5H8dIiW9/92
+         9bI8FVcY6Z3bbMAlXfPdhgNJVJ1Qlco1yxEG7XMH7jIphSiWgXT8a1Y2lUfiY01aCMbn
+         d41Xpay/JBoGUZB3ggjQJSFktgkFiSBMX/0pX4Kndg0i3+7e1GqcuUr/HRciEZQCuvir
+         qvDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WVj64qAtRgX8Z3JwUjtW5pZMQEDu05ynwbkezRsMWTo=;
-        b=VDYO82FEfVTlmk7+Lcynm2Sjey8t72NuwFlj1YumDZ32yNPulMT6eQItdCNFWipT/A
-         /rtDm7tEBJAIrexyOtZLWRLHAX8idf3eu/EvkpvDgNHsyQX17fKCIsw712i3ae+7Ex/I
-         FwTIvBBqJy7/asFbtYI44/EwQ9CyU6gatBJWYcb0Yt5fsbdnYx+6N0R8WT5k/wWKYURF
-         XfkRsyjqCOc9he2oSyrTlrUUG6zalg0P/L2pl8JngAO5+aqqp30dc/aMBKbh/4YdXwj0
-         Wlabe7lRCHOusjyiPgvMqCKvCQWW6TuPf8iDWVd9v8olgcixnadqb7Hvd3y9BtgDHtnM
-         zKgA==
-X-Gm-Message-State: ANoB5pkXPOG1AvJ+oAxeajFda4U3pXJOgxYq+Tf7uD8uFmZZM4qm8LjH
-        3rSppT0dKlgEDHsbkSyuvac=
-X-Google-Smtp-Source: AA0mqf5OZFJCDSDqIKa5+5rwnnaAdtR1yzwn3AJ0fet0dKcApeChDz6p34VPQvl8rctUq2WvumWHyA==
-X-Received: by 2002:a05:6402:e8c:b0:468:89dd:aa0b with SMTP id h12-20020a0564020e8c00b0046889ddaa0bmr58449815eda.258.1669853869442;
-        Wed, 30 Nov 2022 16:17:49 -0800 (PST)
-Received: from skbuf ([188.26.184.222])
-        by smtp.gmail.com with ESMTPSA id vf6-20020a170907238600b007bebfc97f44sm1154921ejb.75.2022.11.30.16.17.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Nov 2022 16:17:49 -0800 (PST)
-Date:   Thu, 1 Dec 2022 02:17:46 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com, richardcochran@gmail.com,
-        ceggers@arri.de
-Subject: Re: [Patch net-next v1 01/12] net: dsa: microchip: ptp: add the
- posix clock support
-Message-ID: <20221201001746.ha72fty32s6ckvu6@skbuf>
-References: <20221128103227.23171-1-arun.ramadoss@microchip.com>
- <20221128103227.23171-1-arun.ramadoss@microchip.com>
- <20221128103227.23171-2-arun.ramadoss@microchip.com>
- <20221128103227.23171-2-arun.ramadoss@microchip.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qf/BMEs9bgR379g3kVf+2jSNyHJ0315hhT9d1N7WzYU=;
+        b=CHD+ubJ9X7Ez3gb8PPjLdnbiRByTXQImw/JNXdnjmQZgr9Z89bJQI6jnqulwBGFeFn
+         hUiWzduN6wapfWJEfUuIFmMxx94CKFhgCfS5ZYU/Hl9Cg8m0xBnX26dFCYNsInfEzQ7B
+         Ozys8JRdg4G73UGXe9Urws592vFpzI7vZoJEo7ztnVZ02HmudQY6BPBWpPUvfcGabwgD
+         KHX/vSu+f9BniP6SqwWR/WJfhdo8DuKNOM1jJe3FYxX6ev4qgSDV3l9V02ULNS3us1G5
+         ESDyFj4tXxBJPx4KBKEhAv3Ke1xGX5BWDkjBnOfecFYwy9n5Bh2Zw7yV7eEKIfwm3LR6
+         b5zg==
+X-Gm-Message-State: ANoB5plT1dp9W7PaRCeTcbDU5EP41BBEO/zKlW4av0nS26ru4AOYvkTS
+        xEoUo5s3pzMFGZtcLvyXD4MK7zy7GQVFYcTaJXz+lw==
+X-Google-Smtp-Source: AA0mqf4HQxLdf1XvZmFeToHXrxubXKog8HmFrkwcba231TZQR8oI84iISFXiQSdzK1q8YzFrEINs6w3bC9i71atZCiM=
+X-Received: by 2002:a05:6808:a90:b0:35b:aa33:425a with SMTP id
+ q16-20020a0568080a9000b0035baa33425amr9696615oij.181.1669854775273; Wed, 30
+ Nov 2022 16:32:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221128103227.23171-2-arun.ramadoss@microchip.com>
- <20221128103227.23171-2-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221129193452.3448944-1-sdf@google.com> <8735a1zdrt.fsf@toke.dk>
+ <CAKH8qBsTNEZcyLq8EsZhsBHsLNe7831r23YdwZfDsbXo06FTBg@mail.gmail.com> <87o7soxd1v.fsf@toke.dk>
+In-Reply-To: <87o7soxd1v.fsf@toke.dk>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 30 Nov 2022 16:32:44 -0800
+Message-ID: <CAKH8qBsJSJoVJGg3j_JxeM_10BRyYTt6kQvbSMWT016jyUOu6w@mail.gmail.com>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 00/11] xdp: hints via kfuncs
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,152 +81,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 28, 2022 at 04:02:16PM +0530, Arun Ramadoss wrote:
-> From: Christian Eggers <ceggers@arri.de>
-> 
-> This patch implement routines (adjfine, adjtime, gettime and settime)
-> for manipulating the chip's PTP clock. It registers the ptp caps
-> to posix clock register.
-> 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Co-developed-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> 
-> ---
-> RFC v2 -> Patch v1
-> - Repharsed the Kconfig help text
-> - Removed IS_ERR_OR_NULL check in ptp_clock_unregister
-> - Add the check for ptp_data->clock in ksz_ptp_ts_info
-> - Renamed MAX_DRIFT_CORR to KSZ_MAX_DRIFT_CORR
-> - Removed the comments
-> - Variables declaration in reverse christmas tree
-> - Added the ptp_clock_optional
-> ---
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index c6726cbd5465..5a6bfd42c6f9 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -444,6 +447,19 @@ static inline int ksz_write32(struct ksz_device *dev, u32 reg, u32 value)
->  	return ret;
->  }
->  
-> +static inline int ksz_rmw16(struct ksz_device *dev, u32 reg, u16 mask,
-> +			    u16 value)
-> +{
-> +	int ret;
-> +
-> +	ret = regmap_update_bits(dev->regmap[1], reg, mask, value);
-> +	if (ret)
-> +		dev_err(dev->dev, "can't rmw 16bit reg: 0x%x %pe\n", reg,
-> +			ERR_PTR(ret));
+On Wed, Nov 30, 2022 at 3:01 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Stanislav Fomichev <sdf@google.com> writes:
+>
+> > On Tue, Nov 29, 2022 at 12:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
+@redhat.com> wrote:
+> >>
+> >> Stanislav Fomichev <sdf@google.com> writes:
+> >>
+> >> > Please see the first patch in the series for the overall
+> >> > design and use-cases.
+> >> >
+> >> > Changes since v2:
+> >> >
+> >> > - Rework bpf_prog_aux->xdp_netdev refcnt (Martin)
+> >> >
+> >> >   Switched to dropping the count early, after loading / verification=
+ is
+> >> >   done. At attach time, the pointer value is used only for comparing
+> >> >   the actual netdev at attach vs netdev at load.
+> >>
+> >> So if we're not holding the netdev reference, we'll end up with a BPF
+> >> program with hard-coded CALL instructions calling into a module that
+> >> could potentially be unloaded while that BPF program is still alive,
+> >> right?
+> >>
+> >> I suppose that since we're checking that the attach iface is the same
+> >> that the program should not be able to run after the module is unloade=
+d,
+> >> but it still seems a bit iffy. And we should definitely block
+> >> BPF_PROG_RUN invocations of programs with a netdev set (but we should =
+do
+> >> that anyway).
+> >
+> > Ugh, good point about BPF_PROG_RUN, seems like it should be blocked
+> > regardless of the locking scheme though, right?
+> > Since our mlx4/mlx5 changes expect something after the xdp_buff, we
+> > can't use those per-netdev programs with our generic
+> > bpf_prog_test_run_xdp...
+>
+> Yup, I think we should just block it for now; maybe it can be enabled
+> later if it turns out to be useful (and we find a way to resolve the
+> kfuncs for this case).
+>
+> Also, speaking of things we need to disable, tail calls is another one.
+> And for freplace program attachment we need to add a check that the
+> target interfaces match as well.
 
-Is the colon misplaced? What do you want to say, "can't rmw 16bit reg: 0x0 -EIO",
-or "can't rmw 16bit reg 0x0: -EIO"?
+Agreed, thanks!
 
-Reminds me of a joke:
-"The inventor of the Oxford comma has died. Tributes have been led by
-J.K. Rowling, his wife and the Queen of England".
+> >> >   (potentially can be a problem if the same slub slot is reused
+> >> >   for another netdev later on?)
+> >>
+> >> Yeah, this would be bad as well, obviously. I guess this could happen?
+> >
+> > Not sure, that's why I'm raising it here to see what others think :-)
+> > Seems like this has to be actively exploited to happen? (and it's a
+> > privileged operation)
+> >
+> > Alternatively, we can go back to the original version where the prog
+> > holds the device.
+> > Matin mentioned in the previous version that if we were to hold a
+> > netdev refcnt, we'd have to drop it also from unregister_netdevice.
+>
+> Yeah; I guess we could keep a list of "bound" XDP programs in struct
+> net_device and clear each one on unregister? Also, bear in mind that the
+> "unregister" callback is also called when a netdev moves between
+> namespaces; which is probably not what we want in this case?
+>
+> > It feels like beyond that extra dev_put, we'd need to reset our
+> > aux->xdp_netdev and/or add some flag or something else to indicate
+> > that this bpf program is "orphaned" and can't be attached anywhere
+> > anymore (since the device is gone; netdev_run_todo should free the
+> > netdev it seems).
+>
+> You could add a flag, and change the check to:
+>
+> +               if (new_prog->aux->xdp_has_netdev &&
+> +                   new_prog->aux->xdp_netdev !=3D dev) {
+> +                       NL_SET_ERR_MSG(extack, "Cannot attach to a differ=
+ent target device");
+> +                       return -EINVAL;
+> +               }
+>
+> That way the check will always fail if xdp_netdev is reset to NULL
+> (while keeping the flag) on dereg?
 
-> +
-> +	return ret;
-> +}
-> +
->  static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
->  {
->  	u32 val[2];
-> +static int ksz_ptp_settime(struct ptp_clock_info *ptp,
-> +			   const struct timespec64 *ts)
-> +{
-> +	struct ksz_ptp_data *ptp_data = ptp_caps_to_data(ptp);
-> +	struct ksz_device *dev = ptp_data_to_ksz_dev(ptp_data);
-> +	int ret;
-> +
-> +	mutex_lock(&ptp_data->lock);
-> +
-> +	/* Write to shadow registers and Load PTP clock */
-> +	ret = ksz_write16(dev, REG_PTP_RTC_SUB_NANOSEC__2, PTP_RTC_0NS);
-> +	if (ret)
-> +		goto error_return;
-> +
-> +	ret = ksz_write32(dev, REG_PTP_RTC_NANOSEC, ts->tv_nsec);
-> +	if (ret)
-> +		goto error_return;
-> +
-> +	ret = ksz_write32(dev, REG_PTP_RTC_SEC, ts->tv_sec);
-> +	if (ret)
-> +		goto error_return;
-> +
-> +	ret = ksz_rmw16(dev, REG_PTP_CLK_CTRL, PTP_LOAD_TIME, PTP_LOAD_TIME);
-> +
-> +error_return:
+Something like that, yeah. I'll also take a closer look at offload.c
+as Martin points out. I should probably leverage it instead of trying
+to add more custom handling here..
 
-I would avoid naming labels with "error_", if the success code path is
-also going to run through the code they point to. "goto unlock" sounds
-about right.
+> > That should address this potential issue with reusing the same addr
+> > for another netdev, but is a bit more complicated code-wise.
+> > Thoughts?
+>
+> I'd be in favour of adding this tracking; I worry that we'll end up with
+> some very subtle and hard-to-debug bugs if we somehow do end up
+> executing the wrong kfuncs...
 
-> +	mutex_unlock(&ptp_data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct ptp_clock_info ksz_ptp_caps = {
-> +	.owner		= THIS_MODULE,
-> +	.name		= "Microchip Clock",
-> +	.max_adj	= KSZ_MAX_DRIFT_CORR,
-> +	.gettime64	= ksz_ptp_gettime,
-> +	.settime64	= ksz_ptp_settime,
-> +	.adjfine	= ksz_ptp_adjfine,
-> +	.adjtime	= ksz_ptp_adjtime,
-> +};
-
-Is it a conscious decision to have this structure declared here in the
-.rodata section (I think that's where this goes?), when it will only be
-used as a blueprint for the implicit memcpy (struct assignment) in
-ksz_ptp_clock_register()?
-
-Just saying that it would be possible to initialize the fields in
-ptp_data->caps even without resorting to declaring one extra structure,
-which consumes space. I'll leave you alone if you ACK that you know your
-assignment below is a struct copy and not a pointer assignment.
-
-> +
-> +int ksz_ptp_clock_register(struct dsa_switch *ds)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	struct ksz_ptp_data *ptp_data;
-> +	int ret;
-> +
-> +	ptp_data = &dev->ptp_data;
-> +	mutex_init(&ptp_data->lock);
-> +
-> +	ptp_data->caps = ksz_ptp_caps;
-> +
-> +	ret = ksz_ptp_start_clock(dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ptp_data->clock = ptp_clock_register(&ptp_data->caps, dev->dev);
-> +	if (IS_ERR_OR_NULL(ptp_data->clock))
-> +		return PTR_ERR(ptp_data->clock);
-> +
-> +	ret = ksz_rmw16(dev, REG_PTP_MSG_CONF1, PTP_802_1AS, PTP_802_1AS);
-> +	if (ret)
-> +		goto error_unregister_clock;
-
-Registering a structure with a subsystem generally means that it becomes
-immediately accessible to user space, and its (POSIX clock) ops are callable.
-
-You haven't explained what PTP_802_1AS does, concretely, even though
-I asked for a comment in the previous patch set. Is it okay for the PTP
-clock to be registered while the PTP_802_1AS bit hasn't been yet written?
-The first few operations might take place with it still unset.
-
-I know what 802.1AS is, I just don't know what the register field does.
-
-> +
-> +	return 0;
-> +
-> +error_unregister_clock:
-> +	ptp_clock_unregister(ptp_data->clock);
-> +	return ret;
-> +}
+SG, will try to address soon!
