@@ -2,265 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D77663ECDF
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:48:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B231D63ECFC
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:56:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230273AbiLAJsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 04:48:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
+        id S230087AbiLAJ44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 04:56:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230294AbiLAJsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:48:12 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0813D911;
-        Thu,  1 Dec 2022 01:48:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669888089; x=1701424089;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rDAe2kQfpvbvGbtHIdt/8h/yij6HnvtvEPNK7N+IFkw=;
-  b=oaEEWgfGyA9jfpKKRhDKlGEQELgE8yLa0nMzDBHEqbpUnyJ/RzOFQeso
-   PKnKVCT1N2vmoyb8eiOO74JVTS7Y1xqZABIYwPOSXJSvzzhF0N2AW65P6
-   XeBtqw7SgLReLllYS0MxJfDM8nB7qPfovmPvBmTEaEdTON0eV0gXLrMNq
-   3YQHe2RSCSgJzI2m6wiFj+jeRPrl/oKibbVVLFMN/GCCHvAV3M+AQi4ai
-   tq5VXe1tNxTD/GknAVm1uo1M3Tb3I0Qj1jdJkRP59jJiszYsNDlqVnPVj
-   kCtHpTnZT6ldK5slnpsTjmm/t0i+Qc/mSk6avz3zrhKiaBJdGRgN1hk/c
-   g==;
-X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="189518671"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Dec 2022 02:48:07 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 1 Dec 2022 02:48:06 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Thu, 1 Dec 2022 02:48:06 -0700
-Date:   Thu, 1 Dec 2022 10:53:10 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <daniel.machon@microchip.com>, <richardcochran@gmail.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next 4/4] net: lan966x: Add ptp trap rules
-Message-ID: <20221201095310.qw5ckd6fp7lrxypr@soft-dev3-1>
-References: <20221130143525.934906-1-horatiu.vultur@microchip.com>
- <20221130143525.934906-1-horatiu.vultur@microchip.com>
- <20221130143525.934906-5-horatiu.vultur@microchip.com>
- <20221130143525.934906-5-horatiu.vultur@microchip.com>
- <20221130165443.ewjwm3z7nbwmktcv@skbuf>
+        with ESMTP id S230013AbiLAJ4u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:56:50 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E922B89AD6
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 01:56:48 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id 130so1372862pfu.8
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 01:56:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gEi5WooIzymVJWTmisumqALsHWCs8mFJrm8lGYU0gwg=;
+        b=lhsxbXMptzbThlto8/s9mq8gvOTeQm71kwyFost1kp4jJfu3FfEwyfW7FlEez3IAT0
+         2fpaIR9O13gitkUK3SPHjae1AzvyxVIAVkabSih35tKaIDAGUMUm0wzJ6dJshVtcmLGN
+         UpsJ3vovMBypF8U1dbftpieUXFgFcq8RJOA9LmWv/WXOeluYInOfunSYysa7LLP0wzBf
+         GdmgMnyDkgtaTPv79HlDRjeNoUy4sNAp36s12S0c68a5NbhupNNDVJpM/TePN/8y1L0y
+         i8ASwM+6bdRVyao00W2CiX68Ztw1DWhQ4sba2Ps1x+4kwu7L3JDWCJH/65H3Cyf8DYi7
+         A4zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gEi5WooIzymVJWTmisumqALsHWCs8mFJrm8lGYU0gwg=;
+        b=xT7NfkoXWKTfS/JPU7FK1HPe/NsF3yhjddudDFB+X1KX9lYOzyFI2RrkZy99azZwUf
+         0pRAR1/IK1sF0IV62afZ3HgJVQbWr+et8zMiVwArrOELtsE2cWoNwNDwJ09jSgje8m4C
+         yhBMxJT08DafkHx3wElMySYnxz4dUfrpl/iGiUj0t9ehzGvsikQRyv/7sG0pUXf1CLR5
+         8esOhOHiNN1sZrEdNSrKfgmoND9cq+DWez75bPHa9X4SDn/w8wse0E9Chc/4dvmQjTLc
+         jcqQSLpd5dq7DZWlJ7Jjj1Qz/JQYtXNyvioRyJZKkxLMtkb2ACPEMs4AWQhycr/l+Lum
+         el5A==
+X-Gm-Message-State: ANoB5plnIbxkldNcjCIEngGrPJNAdUiTl7AD4wJdw/xijwKiZNc1SDyR
+        eUOjNmNin+lK1wJp16t1LzaWng==
+X-Google-Smtp-Source: AA0mqf6/kB86fKTvI6Alt6QeX/Re8QGsHujO7z6ZxIRp/ruxn0H9ZYp/9b2o18P9qS5nzK12O0Sr7Q==
+X-Received: by 2002:a62:5844:0:b0:563:1231:1da with SMTP id m65-20020a625844000000b00563123101damr50373568pfb.5.1669888608459;
+        Thu, 01 Dec 2022 01:56:48 -0800 (PST)
+Received: from alarm.flets-east.jp ([2400:4050:c360:8200:7b99:f7c3:d084:f1e2])
+        by smtp.gmail.com with ESMTPSA id j3-20020a170902da8300b001714e7608fdsm3146244plx.256.2022.12.01.01.56.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Dec 2022 01:56:48 -0800 (PST)
+From:   Akihiko Odaki <akihiko.odaki@daynix.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yan Vugenfirer <yan@daynix.com>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Akihiko Odaki <akihiko.odaki@daynix.com>
+Subject: [PATCH net v3 RESEND] igbvf: Regard vf reset nack as success
+Date:   Thu,  1 Dec 2022 18:56:38 +0900
+Message-Id: <20221201095638.63652-1-akihiko.odaki@daynix.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20221130165443.ewjwm3z7nbwmktcv@skbuf>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/30/2022 18:54, Vladimir Oltean wrote:
-> 
-> Hello Horatiu,
+vf reset nack actually represents the reset operation itself is
+performed but no address is assigned. Therefore, e1000_reset_hw_vf
+should fill the "perm_addr" with the zero address and return success on
+such an occasion. This prevents its callers in netdev.c from saying PF
+still resetting, and instead allows them to correctly report that no
+address is assigned.
 
-Hi Vladimir,
+Fixes: 6ddbc4cf1f4d ("igb: Indicate failure on vf reset for empty mac address")
+Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
+---
+Resending as I forgot to CC Tony Nguyen. Sorry for messing your mailbox.
+V2 -> V3: Added Fixes: tag
 
-> 
-> On Wed, Nov 30, 2022 at 03:35:25PM +0100, Horatiu Vultur wrote:
-> > diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-> > index e5a2bbe064f8f..1f6614ee83169 100644
-> > --- a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-> > +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-> > @@ -3,6 +3,8 @@
-> >  #include <linux/ptp_classify.h>
-> >
-> >  #include "lan966x_main.h"
-> > +#include "vcap_api.h"
-> > +#include "vcap_api_client.h"
-> >
-> >  #define LAN966X_MAX_PTP_ID   512
-> >
-> > @@ -18,6 +20,17 @@
-> >
-> >  #define TOD_ACC_PIN          0x7
-> >
-> > +/* This represents the base rule ID for the PTP rules that are added in the
-> > + * VCAP to trap frames to CPU. This number needs to be bigger than the maximum
-> > + * number of entries that can exist in the VCAP.
-> > + */
-> > +#define LAN966X_VCAP_PTP_RULE_ID     1000000
-> > +#define LAN966X_VCAP_L2_PTP_TRAP     (LAN966X_VCAP_PTP_RULE_ID + 0)
-> > +#define LAN966X_VCAP_IPV4_EV_PTP_TRAP        (LAN966X_VCAP_PTP_RULE_ID + 1)
-> > +#define LAN966X_VCAP_IPV4_GEN_PTP_TRAP       (LAN966X_VCAP_PTP_RULE_ID + 2)
-> > +#define LAN966X_VCAP_IPV6_EV_PTP_TRAP        (LAN966X_VCAP_PTP_RULE_ID + 3)
-> > +#define LAN966X_VCAP_IPV6_GEN_PTP_TRAP       (LAN966X_VCAP_PTP_RULE_ID + 4)
-> > +
-> >  enum {
-> >       PTP_PIN_ACTION_IDLE = 0,
-> >       PTP_PIN_ACTION_LOAD,
-> > @@ -35,19 +48,229 @@ static u64 lan966x_ptp_get_nominal_value(void)
-> >       return 0x304d4873ecade305;
-> >  }
-> >
-> > +static int lan966x_ptp_add_trap(struct lan966x_port *port,
-> > +                             int (*add_ptp_key)(struct vcap_rule *vrule,
-> > +                                                struct lan966x_port*),
-> > +                             u32 rule_id,
-> > +                             u16 proto)
-> > +{
-> > +     struct lan966x *lan966x = port->lan966x;
-> > +     struct vcap_rule *vrule;
-> > +     int err;
-> > +
-> > +     vrule = vcap_get_rule(lan966x->vcap_ctrl, rule_id);
-> > +     if (vrule) {
-> > +             u32 value, mask;
-> > +
-> > +             /* Just modify the ingress port mask and exit */
-> > +             vcap_rule_get_key_u32(vrule, VCAP_KF_IF_IGR_PORT_MASK,
-> > +                                   &value, &mask);
-> > +             mask &= ~BIT(port->chip_port);
-> > +             vcap_rule_mod_key_u32(vrule, VCAP_KF_IF_IGR_PORT_MASK,
-> > +                                   value, mask);
-> > +
-> > +             err = vcap_mod_rule(vrule);
-> > +             goto free_rule;
-> > +     }
-> > +
-> > +     vrule = vcap_alloc_rule(lan966x->vcap_ctrl, port->dev,
-> > +                             LAN966X_VCAP_CID_IS2_L0,
-> > +                             VCAP_USER_PTP, 0, rule_id);
-> > +     if (!vrule)
-> > +             return -ENOMEM;
-> > +     if (IS_ERR(vrule))
-> > +             return PTR_ERR(vrule);
-> > +
-> > +     err = add_ptp_key(vrule, port);
-> > +     if (err)
-> > +             goto free_rule;
-> > +
-> > +     err = vcap_set_rule_set_actionset(vrule, VCAP_AFS_BASE_TYPE);
-> > +     err |= vcap_rule_add_action_bit(vrule, VCAP_AF_CPU_COPY_ENA, VCAP_BIT_1);
-> > +     err |= vcap_rule_add_action_u32(vrule, VCAP_AF_MASK_MODE, LAN966X_PMM_REPLACE);
-> > +     err |= vcap_val_rule(vrule, proto);
-> > +     if (err)
-> > +             goto free_rule;
-> > +
-> > +     err = vcap_add_rule(vrule);
-> > +
-> > +free_rule:
-> > +     /* Free the local copy of the rule */
-> > +     vcap_free_rule(vrule);
-> > +     return err;
-> > +}
-> > +
-> > +static int lan966x_ptp_del_trap(struct lan966x_port *port,
-> > +                             u32 rule_id)
-> > +{
-> > +     struct lan966x *lan966x = port->lan966x;
-> > +     struct vcap_rule *vrule;
-> > +     u32 value, mask;
-> > +     int err;
-> > +
-> > +     vrule = vcap_get_rule(lan966x->vcap_ctrl, rule_id);
-> > +     if (!vrule)
-> > +             return -EEXIST;
-> > +
-> > +     vcap_rule_get_key_u32(vrule, VCAP_KF_IF_IGR_PORT_MASK, &value, &mask);
-> > +     mask |= BIT(port->chip_port);
-> 
-> Does the VCAP API not abstract away the negative mask representation of
-> the IGR_PORT_MASK field?
+ drivers/net/ethernet/intel/igbvf/vf.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-It doesn't look like. I think some of the reasons are:
-- the vcap library interprets this key as any other key. It doesn't do
-  anything special, as this library is used by other chips which might
-  not the negative mask (currently there is no chip like this).
-- also usually the user doesn't need to add this mask, because is added
-  by default if the key doesn't exist. Of course this case with ptp is
-  more special because we try to reuse the rules in HW.
-
-> I guess someone will stumble upon this in the
-> future and introduce a bug. In ocelot, struct ocelot_vcap_filter ::
-> ingress_port_mask ended being used quite in a wide variety of places.
-> It would be quite messy, unintuitive and tiring to treat it like a
-> reverse port mask everywhere it is used. In ocelot_vcap.c, it is just
-> reversed in the vcap_key_set() call.
-
-...
-
-> > +static int lan966x_ptp_add_l2_key(struct vcap_rule *vrule,
-> > +                               struct lan966x_port *port)
-> > +{
-> > +     return vcap_rule_add_key_u32(vrule, VCAP_KF_ETYPE, ETH_P_1588, ~0);
-> > +}
-> > +
-> > +static int lan966x_ptp_add_ip_event_key(struct vcap_rule *vrule,
-> > +                                     struct lan966x_port *port)
-> > +{
-> > +     return vcap_rule_add_key_u32(vrule, VCAP_KF_L4_DPORT, 319, ~0) ||
-> 
-> s/319/PTP_EV_PORT/
-> 
-> > +            vcap_rule_add_key_bit(vrule, VCAP_KF_TCP_IS, VCAP_BIT_0);
-> > +}
-> > +
-> > +static int lan966x_ptp_add_ip_general_key(struct vcap_rule *vrule,
-> > +                                       struct lan966x_port *port)
-> > +{
-> > +     return vcap_rule_add_key_u32(vrule, VCAP_KF_L4_DPORT, 320, ~0) ||
-> 
-> s/320/PTP_GEN_PORT/
-
-Great catch! I will update these in the next version.
-
-> 
-> > +             vcap_rule_add_key_bit(vrule, VCAP_KF_TCP_IS, VCAP_BIT_0);
-> > +}
-> > +
-> > +static int lan966x_ptp_add_l2_rule(struct lan966x_port *port)
-> > +{
-> > +     return lan966x_ptp_add_trap(port, lan966x_ptp_add_l2_key,
-> > +                                 LAN966X_VCAP_L2_PTP_TRAP, ETH_P_ALL);
-> > +}
-> > +
-> > +static int lan966x_ptp_add_ipv4_rules(struct lan966x_port *port)
-> > +{
-> > +     int err;
-> > +
-> > +     err = lan966x_ptp_add_trap(port, lan966x_ptp_add_ip_event_key,
-> > +                                LAN966X_VCAP_IPV4_EV_PTP_TRAP, ETH_P_IP);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     err = lan966x_ptp_add_trap(port, lan966x_ptp_add_ip_general_key,
-> > +                                LAN966X_VCAP_IPV4_GEN_PTP_TRAP, ETH_P_IP);
-> > +     if (err)
-> > +             lan966x_ptp_del_trap(port, LAN966X_VCAP_IPV4_EV_PTP_TRAP);
-> > +
-> > +     return err;
-> > +}
-> 
-> There's a comical amount of code duplication between this and ocelot_ptp.c,
-> save for the fact that it was written by different people. Is there any
-> possibility to reuse code with ocelot?
-
-There is some code duplication but not much, as both of the
-implementation have the same goal, to add vcap rules in HW when enabling
-timestamping.
-The main difference between the lan966x and ocelot is that they are
-having a different API for the vcap. So they will need many function
-pointers back to the drivers to fill up the keys and then also to add
-the rules in vcap. I would lean reuse this code when we add
-similar support for sparx5.
-
+diff --git a/drivers/net/ethernet/intel/igbvf/vf.c b/drivers/net/ethernet/intel/igbvf/vf.c
+index b8ba3f94c363..2691ae2a8002 100644
+--- a/drivers/net/ethernet/intel/igbvf/vf.c
++++ b/drivers/net/ethernet/intel/igbvf/vf.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright(c) 2009 - 2018 Intel Corporation. */
+ 
++#include <linux/etherdevice.h>
++
+ #include "vf.h"
+ 
+ static s32 e1000_check_for_link_vf(struct e1000_hw *hw);
+@@ -131,11 +133,18 @@ static s32 e1000_reset_hw_vf(struct e1000_hw *hw)
+ 		/* set our "perm_addr" based on info provided by PF */
+ 		ret_val = mbx->ops.read_posted(hw, msgbuf, 3);
+ 		if (!ret_val) {
+-			if (msgbuf[0] == (E1000_VF_RESET |
+-					  E1000_VT_MSGTYPE_ACK))
++			switch (msgbuf[0]) {
++			case E1000_VF_RESET | E1000_VT_MSGTYPE_ACK:
+ 				memcpy(hw->mac.perm_addr, addr, ETH_ALEN);
+-			else
++				break;
++
++			case E1000_VF_RESET | E1000_VT_MSGTYPE_NACK:
++				eth_zero_addr(hw->mac.perm_addr);
++				break;
++
++			default:
+ 				ret_val = -E1000_ERR_MAC_INIT;
++			}
+ 		}
+ 	}
+ 
 -- 
-/Horatiu
+2.38.1
+
