@@ -2,90 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FE1163E86D
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 04:45:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74D2563E888
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 04:46:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiLADpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 22:45:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
+        id S229905AbiLADqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 22:46:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiLADpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 22:45:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9054A9076A
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 19:45:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A10AB81D17
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 03:45:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C54C433C1;
-        Thu,  1 Dec 2022 03:45:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669866307;
-        bh=o5sBlsB/l7hjLFxDG2yD3RquRL+oFmftY6L8rt/3IeY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bTH/mbVvrC1ueKELF734XZqauOa8StWinC3jkHWGZ4QnbMHJaSn3nJclFIpvv/ti9
-         K44AAsqI1eT9pg9jZeHaiAGkX4dZA8L6hooPDth/pmgw5ICA6XejmZ8DBjNoPlYcuz
-         ZxkFFU7tUAKfdyg3CphfDoorQo8PH2Ehi59uRYa/mg2YRBufkb8ZdncfPbxiX0/JC/
-         bGB8LNOWwXQ01TSKg7FudRmRfmiM/HoLPlZBMB+1ota1Om9b2AvV16RR6DSlmlNW1J
-         KwHrhVEleRGd3v1gONp1b4tQD4jk0mNYhFvoJ8ZNJp0qQi23iFAASKiZfmp5X0Z4Uf
-         xeU4CSY/B0gCg==
-Date:   Wed, 30 Nov 2022 19:45:06 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <shnelson@amd.com>
-Cc:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
-        davem@davemloft.net, mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, drivers@pensando.io
-Subject: Re: [RFC PATCH net-next 08/19] pds_core: initial VF configuration
-Message-ID: <20221130194506.642031db@kernel.org>
-In-Reply-To: <b839c112-df1f-a36a-0d89-39b336956492@amd.com>
-References: <20221118225656.48309-1-snelson@pensando.io>
-        <20221118225656.48309-9-snelson@pensando.io>
-        <20221128102828.09ed497a@kernel.org>
-        <d24a9900-154f-ad3a-fef4-73a57f0cddb0@amd.com>
-        <20221128153719.2b6102cc@kernel.org>
-        <75072b2a-0b69-d519-4174-6d61d027f7d4@amd.com>
-        <20221128165522.62dcd7be@kernel.org>
-        <51330a32-1fa1-cc0f-e06e-b4ac351cb820@amd.com>
-        <20221128175448.3723f5ee@kernel.org>
-        <fbf3266c-f125-c01a-fcc3-dc16b4055ed5@amd.com>
-        <20221129180250.3320da56@kernel.org>
-        <b839c112-df1f-a36a-0d89-39b336956492@amd.com>
+        with ESMTP id S229833AbiLADqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 22:46:01 -0500
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2E29F498;
+        Wed, 30 Nov 2022 19:45:59 -0800 (PST)
+Received: by mail-oi1-f173.google.com with SMTP id l127so768035oia.8;
+        Wed, 30 Nov 2022 19:45:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ykrUdgnpt//KI390EfyviTWw7fKUM7t8IqT8KivZw44=;
+        b=d7d1fhXmxRIyCrTBjsXpsvifIfXqCp7u2LbIp5mq4y0mD6jxfHBH8EUWEAIUGHcB2q
+         Uo6KGjocTogxt554sT2wSquUdL8v6GjmsDyRYA37cMTrHZK/TKR5gKf5zNiSjr5a7QQd
+         dH69Hcu68RR4D/+yBP9No7LA0RiW2sbbdBJ7B3eKZQSyo1TcfTbNB7ETcNRacMtgCWU+
+         vr+JKNhqiPzznMDJrJimPMZ4tGXV2R5XgV6kqnCwvYr6FZJgJkbzj84LMhct6MMSUHUc
+         Ib40gD9WmP41GnTfXldnPHkcQS5quT6yy6N1+Cu/mY9VSlpMvfRCFD+zbCFTAA0oJbMg
+         3Uzw==
+X-Gm-Message-State: ANoB5pnNZYNbzyB0OIOFeaejzfTkLD/hoZftyxUHnx5B5lKghAL/85kE
+        sRnYuXMwa4CgrF8sZ4KPtA==
+X-Google-Smtp-Source: AA0mqf5WCmFLREdSlYC9qzJRKrm7hw0V931v+JMD58V5b6VI64AQhK6aDD8+l29/3c1aTaLsQwxYJg==
+X-Received: by 2002:aca:2201:0:b0:354:fe21:a47c with SMTP id b1-20020aca2201000000b00354fe21a47cmr32279869oic.10.1669866358423;
+        Wed, 30 Nov 2022 19:45:58 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 17-20020a9d0611000000b006605883eae6sm1630945otn.63.2022.11.30.19.45.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Nov 2022 19:45:58 -0800 (PST)
+Received: (nullmailer pid 3605657 invoked by uid 1000);
+        Thu, 01 Dec 2022 03:45:57 -0000
+Date:   Wed, 30 Nov 2022 21:45:57 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Samuel Holland <samuel@sholland.org>
+Cc:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        LABBE Corentin <clabbe.montjoie@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
+Subject: Re: [PATCH 2/3] dt-bindings: net: sun8i-emac: Fix snps,dwmac.yaml
+ inheritance
+Message-ID: <20221201034557.GA2998157-robh@kernel.org>
+References: <20221125202008.64595-1-samuel@sholland.org>
+ <20221125202008.64595-3-samuel@sholland.org>
+ <5b05317d-28cc-bfc8-f415-e6acf453dc7c@linaro.org>
+ <20221126142735.47dcca6d@slackpad.lan>
+ <99c3e666-ec26-07a0-be40-0177dd449d84@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <99c3e666-ec26-07a0-be40-0177dd449d84@linaro.org>
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Nov 2022 16:12:23 -0800 Shannon Nelson wrote:
-> > Enough back and forth. I'm not going to come up with a special model
-> > just for you when a model already exists, and you present no technical
-> > argument against it.
+On Sat, Nov 26, 2022 at 03:48:33PM +0100, Krzysztof Kozlowski wrote:
+> On 26/11/2022 15:28, Andre Przywara wrote:
+> > On Sat, 26 Nov 2022 14:26:25 +0100
+> > Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 > > 
-> > I am against merging your code, if you want to override find other
-> > vendors and senior upstream reviewers who will side with you.  
+> > Hi,
+> > 
+> >> On 25/11/2022 21:20, Samuel Holland wrote:
+> >>> The sun8i-emac binding extends snps,dwmac.yaml, and should accept all
+> >>> properties defined there, including "mdio", "resets", and "reset-names".
+> >>> However, validation currently fails for these properties because the  
+> >>
+> >> validation does not fail:
+> >> make dt_binding_check -> no problems
+> >>
+> >> Maybe you meant that DTS do not pass dtbs_check?
+> > 
+> > Yes, that's what he meant: If a board actually doesn't have Ethernet
+> > configured, dt-validate complains. I saw this before, but didn't find
+> > any solution.
+> > An example is: $ dt-validate ... sun50i-a64-pinephone-1.2.dtb
+> > arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dtb:
+> >   ethernet@1c30000: Unevaluated properties are not allowed ('resets', 'reset-names', 'mdio' were unexpected)
+> >   From schema: Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+> > 
+> > Why exactly is beyond me, but this patch removes this message.
 > 
-> We're not asking for a special model, just to use the PF interface to 
-> configure VFs as has been the practice in the past.
+> I don't think this should be fixed like this. That's the problem of
+> dtschema (not ignoring fully disabled nodes) and such patch only moves
+> from one correct syntax to another correct syntax, which fixes dtschema
+> problem, but changes nothing here.
 
-It simply does not compute for me. You're exposing a very advanced vDPA
-interface, and yet you say you don't need any network configuration
-beyond what Niantic had.
+Humm, it looks to me like the 'phy-mode' required in snps,dwmac.yaml 
+causes the problem, but I can't get a minimized example to fail. 
+Something in 'required' shouldn't matter. Definitely seems like an issue 
+in the jsonschema package. I'll keep looking at it.
 
-There are no upstream-minded users of IPUs, if it was up to me I'd flat
-out ban them from the kernel.
-
-> Anyway, this feature can wait and we can work out alternatives later. 
-> For now, we'll drop the netdev portion from the driver and rework the 
-> other bits as discussed in other messages.  I'll likely have a v2 for 
-> comments sometime next week.
-
-Seems reasonable, if it doesn't live in networking and doesn't use any
-networking APIs it won't matter to me.
+Rob
