@@ -2,76 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5628963EF6B
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 12:26:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 859DE63EF83
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 12:32:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbiLAL0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 06:26:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42054 "EHLO
+        id S230128AbiLALcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 06:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiLAL0Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 06:26:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197432C4
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 03:25:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669893917;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7ep72vLxE58Hj5NSOsGJz6rENtgNcndE3NkTvnuzGDE=;
-        b=XXG27M97nfNa1GngjvGKkd81KMVWup0RjHPdAeaFr6H7ORAEGqNLqPbVf4mnSyg9zAEFlk
-        MnD5IFaMDNQ66N3NG3Qmic6IRa1+5tW1oOMR5vEy8Jx0AS7tQshiglLBm6Ls1hMx6NjRgJ
-        Vj7iibC2yQ+/QM2zNRi2g9n+x17a+w4=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-250-91ACEaKuM5GhqhpICzuPbA-1; Thu, 01 Dec 2022 06:25:16 -0500
-X-MC-Unique: 91ACEaKuM5GhqhpICzuPbA-1
-Received: by mail-wm1-f71.google.com with SMTP id h9-20020a1c2109000000b003cfd37aec58so727204wmh.1
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 03:25:15 -0800 (PST)
+        with ESMTP id S230170AbiLALcG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 06:32:06 -0500
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3F368C78
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 03:32:05 -0800 (PST)
+Received: by mail-qk1-x72d.google.com with SMTP id z1so897165qkl.9
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 03:32:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rl77mLM+nS2WleLEKM9Wn8XS/XixBfMa/FxIIGjsWMA=;
+        b=Vn4FLqGJXz+f9V2HgImVs0xIbAiFPk2CTvlf9njIObAWjjDmelFcOclj9iTWLmbKid
+         /KCyw/13iZC5Mn9PDUnIeNiTafy/Dz+RQJDFuqUCtWG2VvgVRD2IsDXZBf8cJ8amFc0Q
+         7nrbepmtPG4pghDMFNgDwYfFdRBZF48pQbbAI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7ep72vLxE58Hj5NSOsGJz6rENtgNcndE3NkTvnuzGDE=;
-        b=n8dolFKrZZPMSn/fbhOHFgbFiNycY4b6yegkuzoOav6NrNhJu0WLVHaAnnM58DQCcw
-         wbLedgxhg/q2oEuInwmYfiXD1JZzMRREU5Cd7GQkdiXOFE5V9FLEOmzuWfaN/Har78oo
-         IhRotGc8kHbnzS1WswwfK+UXO/Ny2Ym8tJa23vgEBZ8/JsRFcBfHXu4UL232FT3B3Hzg
-         L8rGA+LvZI+jVkiguS5drawLcIQtfrHHJ1C7PEkTj6xQXCyC7Vd26/NtEgpnnjTDaLpk
-         Yq7+6kSxWzKLmOMDGwkw6hdm+nBr6tumHUrrK+/dBC7pXzzx0HE1bX4wI21aDMZwFnB2
-         zlYg==
-X-Gm-Message-State: ANoB5pnDYns/bPZmOFoIXL4RLzQe60gn4fnGrDm8CargIlGG0XqYbZGI
-        cMYtDwH4nOtQoNainUdeOJMHwOfsT7Diz6X26CO9iqf1LCcdAAbu+kjsg0UOkvRKnmLtRJk/1JO
-        WSZONxGD2MUKWG+eK
-X-Received: by 2002:a5d:4a8c:0:b0:242:165e:7a79 with SMTP id o12-20020a5d4a8c000000b00242165e7a79mr12148263wrq.343.1669893914871;
-        Thu, 01 Dec 2022 03:25:14 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7T6oAcCAjM/6a6zgzwAS5bkUYUQkeATl7F2kjZacgCrgATu3VUsNvuAWXyhxxd1feg1XyRFw==
-X-Received: by 2002:a5d:4a8c:0:b0:242:165e:7a79 with SMTP id o12-20020a5d4a8c000000b00242165e7a79mr12148245wrq.343.1669893914608;
-        Thu, 01 Dec 2022 03:25:14 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id i1-20020a05600c354100b003b4868eb71bsm9730088wmq.25.2022.12.01.03.25.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Dec 2022 03:25:14 -0800 (PST)
-Message-ID: <188f255ca50e0e7a46e0fd139982e6ee3652bd7f.camel@redhat.com>
-Subject: Re: [PATCH] nfc: llcp: Fix race in handling llcp_devices
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Wang ShaoBo <bobo.shaobowang@huawei.com>
-Cc:     liwei391@huawei.com, sameo@linux.intel.com, kuba@kernel.org,
-        davem@davemloft.net, syzkaller-bugs@googlegroups.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 01 Dec 2022 12:25:13 +0100
-In-Reply-To: <20221129094436.3975668-1-bobo.shaobowang@huawei.com>
-References: <20221129094436.3975668-1-bobo.shaobowang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Rl77mLM+nS2WleLEKM9Wn8XS/XixBfMa/FxIIGjsWMA=;
+        b=Z7AaNx0Qj02kSajTo7GIWssDN35QMVYr77DGwM/eprxsAlX/OSja1frCzYg2YnUkTL
+         X488jx8mQPPyQzktYNF671Va6TAAXuih0hRN/s8V/7iJGt2HjM8fgYdcNnbN1PHewU1K
+         2Buxa/0bKMA2zypcysbHtDG2/Guq8R38WDF/vsY5MwxoyYqkUthWVzuf7sS2Ej91PchV
+         siDmgBP+1QKiCfVXwuH6XS8lxNhk+O16I/Sck59YjqIVvG8RxvTANwnk232/ir0CQar1
+         DL/LSIUXsXeJ+7lyCvrkHImLvyNpjiYm3/woyl1gnW3dO15SxeWLhOELy7KwE8JmwGvy
+         h4Mg==
+X-Gm-Message-State: ANoB5pkvH8lhO3d6d0OBaBa0k4OMfdnL6qrZND68kk+hIDe0KaRZESB+
+        4EWbL24/UDBt9NwUNK7Vi2keUQ==
+X-Google-Smtp-Source: AA0mqf7cOFPH72RgtSNCCk5vKVTULqwXYF1K4TEjnN/d9D3hwv5n4rKxRvDY1iW0F3BM+Z0Q2sBt5A==
+X-Received: by 2002:a05:620a:4590:b0:6fa:3b2b:1da3 with SMTP id bp16-20020a05620a459000b006fa3b2b1da3mr58004284qkb.166.1669894324348;
+        Thu, 01 Dec 2022 03:32:04 -0800 (PST)
+Received: from [10.176.68.61] ([192.19.148.250])
+        by smtp.gmail.com with ESMTPSA id j11-20020ac8550b000000b003434d3b5938sm2458924qtq.2.2022.12.01.03.31.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Dec 2022 03:32:02 -0800 (PST)
+Message-ID: <c83d7496-7547-2ab4-571a-60e16aa2aa3d@broadcom.com>
+Date:   Thu, 1 Dec 2022 12:31:58 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
+To:     Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Kalle Valo <kvalo@kernel.org>
+Cc:     =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>,
+        Hector Martin <marcan@marcan.st>,
+        "~postmarketos/upstreaming@lists.sr.ht" 
+        <~postmarketos/upstreaming@lists.sr.ht>,
+        "martin.botka@somainline.org" <martin.botka@somainline.org>,
+        "angelogioacchino.delregno@somainline.org" 
+        <angelogioacchino.delregno@somainline.org>,
+        "marijn.suijten@somainline.org" <marijn.suijten@somainline.org>,
+        "jamipkettunen@somainline.org" <jamipkettunen@somainline.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Marek Vasut <marex@denx.de>,
+        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Soon Tak Lee <soontak.lee@cypress.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
+ <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st>
+ <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
+ <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st>
+ <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
+ <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com>
+ <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk> <87sfke32pc.fsf@kernel.org>
+ <4592f87a-bb61-1c28-13f0-d041a6e7d3bf@linaro.org>
+ <CACRpkdax-3VVDd29iH51mfumakqM7jyEc8Pbb=AQwAgp2WsqFQ@mail.gmail.com>
+ <d03bd4d4-e4ef-681b-b4a5-02822e1eee75@linaro.org> <87fse76yig.fsf@kernel.org>
+ <fc2812b1-db96-caa6-2ecb-c5bb2c33246a@linaro.org> <87bkov6x1q.fsf@kernel.org>
+ <CACRpkdbpJ8fw0UsuHXGX43JRyPy6j8P41_5gesXOmitHvyoRwQ@mail.gmail.com>
+ <28991d2d-d917-af47-4f5f-4e8183569bb1@linaro.org>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+In-Reply-To: <28991d2d-d917-af47-4f5f-4e8183569bb1@linaro.org>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000008589405eec292ab"
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,78 +108,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-11-29 at 17:44 +0800, Wang ShaoBo wrote:
-> There are multiple path operate llcp_devices list without protection:
-> 
->          CPU0                        CPU1
-> 
-> nfc_unregister_device()        nfc_register_device()
->  nfc_llcp_unregister_device()    nfc_llcp_register_device() //no lock
->     ...                            list_add(local->list, llcp_devices)
->     local_release()
->       list_del(local->list)
-> 
->         CPU2
-> ...
->  nfc_llcp_find_local()
->    list_for_each_entry(,&llcp_devices,)
-> 
-> So reach race condition if two of the three occur simultaneously like
-> following crash report, although there is no reproduction script in
-> syzbot currently, our artificially constructed use cases can also
-> reproduce it:
-> 
-> list_del corruption. prev->next should be ffff888060ce7000, but was ffff88802a0ad000. (prev=ffffffff8e536240)
-> ------------[ cut here ]------------
-> kernel BUG at lib/list_debug.c:59!
-> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 16622 Comm: syz-executor.5 Not tainted 6.1.0-rc6-next-20221125-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
-> RIP: 0010:__list_del_entry_valid.cold+0x12/0x72 lib/list_debug.c:59
-> Code: f0 ff 0f 0b 48 89 f1 48 c7 c7 60 96 a6 8a 4c 89 e6 e8 4b 29 f0 ff 0f 0b 4c 89 e1 48 89 ee 48 c7 c7 c0 98 a6 8a e8 37 29 f0 ff <0f> 0b 48 89 ee 48 c7 c7 a0 97 a6 8a e8 26 29 f0 ff 0f 0b 4c 89 e2
-> RSP: 0018:ffffc900151afd58 EFLAGS: 00010282
-> RAX: 000000000000006d RBX: 0000000000000001 RCX: 0000000000000000
-> RDX: ffff88801e7eba80 RSI: ffffffff8166001c RDI: fffff52002a35f9d
-> RBP: ffff888060ce7000 R08: 000000000000006d R09: 0000000000000000
-> R10: 0000000080000000 R11: 0000000000000000 R12: ffffffff8e536240
-> R13: ffff88801f3f3000 R14: ffff888060ce1000 R15: ffff888079d855f0
-> FS:  0000555556f57400(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f095d5ad988 CR3: 000000002155a000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  __list_del_entry include/linux/list.h:134 [inline]
->  list_del include/linux/list.h:148 [inline]
->  local_release net/nfc/llcp_core.c:171 [inline]
->  kref_put include/linux/kref.h:65 [inline]
->  nfc_llcp_local_put net/nfc/llcp_core.c:181 [inline]
->  nfc_llcp_local_put net/nfc/llcp_core.c:176 [inline]
->  nfc_llcp_unregister_device+0xb8/0x260 net/nfc/llcp_core.c:1619
->  nfc_unregister_device+0x196/0x330 net/nfc/core.c:1179
->  virtual_ncidev_close+0x52/0xb0 drivers/nfc/virtual_ncidev.c:163
->  __fput+0x27c/0xa90 fs/file_table.c:320
->  task_work_run+0x16f/0x270 kernel/task_work.c:179
->  resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
->  exit_to_user_mode_loop kernel/entry/common.c:171 [inline]
->  exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:203
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
->  syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:296
->  do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> This patch add specific mutex lock llcp_devices_list_lock to ensure
-> handling llcp_devices list safety.
+--00000000000008589405eec292ab
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Why a mutex instead of a spinlock? all the critical sections are very
-small (both code and time-wise), while the list of callers reaching
-that code is quite large making hard to check each of them is really in
-process context.
+On 11/28/2022 3:40 PM, Konrad Dybcio wrote:
+> 
+> 
+> On 26.11.2022 22:45, Linus Walleij wrote:
+>> On Fri, Nov 25, 2022 at 1:25 PM Kalle Valo <kvalo@kernel.org> wrote:
+>>> Konrad Dybcio <konrad.dybcio@linaro.org> writes:
+>>>
+>>>> On 25.11.2022 12:53, Kalle Valo wrote:
+>>>>> Konrad Dybcio <konrad.dybcio@linaro.org> writes:
+>>>>>
+>>>>>> On 21.11.2022 14:56, Linus Walleij wrote:
+>>>>>>> On Fri, Nov 18, 2022 at 5:47 PM Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
+>>>>>>>
+>>>>>>>> I can think of a couple of hacky ways to force use of 43596 fw, but I
+>>>>>>>> don't think any would be really upstreamable..
+>>>>>>>
+>>>>>>> If it is only known to affect the Sony Xperias mentioned then
+>>>>>>> a thing such as:
+>>>>>>>
+>>>>>>> if (of_machine_is_compatible("sony,xyz") ||
+>>>>>>>      of_machine_is_compatible("sony,zzz")... ) {
+>>>>>>>     // Enforce FW version
+>>>>>>> }
+>>>>>>>
+>>>>>>> would be completely acceptable in my book. It hammers the
+>>>>>>> problem from the top instead of trying to figure out itsy witsy
+>>>>>>> details about firmware revisions.
+>>>>>>>
+>>>>>>> Yours,
+>>>>>>> Linus Walleij
+>>>>>>
+>>>>>> Actually, I think I came up with a better approach by pulling a page
+>>>>>> out of Asahi folks' book - please take a look and tell me what you
+>>>>>> think about this:
+>>>>>>
+>>>>>> [1]
+>>>>>> https://github.com/SoMainline/linux/commit/4b6fccc995cd79109b0dae4e4ab2e48db97695e7
+>>>>>> [2]
+>>>>>> https://github.com/SoMainline/linux/commit/e3ea1dc739634f734104f37fdbed046873921af7
+>>
+>> Something in this direction works too.
+>>
+>> The upside is that it tells all operating systems how to deal
+>> with the firmware for this hardware.
+>>
+>>>>> Instead of a directory path ("brcm/brcmfmac43596-pcie") why not provide
+>>>>> just the chipset name ("brcmfmac43596-pcie")? IMHO it's unnecessary to
+>>>>> have directory names in Device Tree.
+>>>>
+>>>> I think it's common practice to include a full $FIRMWARE_DIR-relative
+>>>> path when specifying firmware in DT, though here I left out the board
+>>>> name bit as that's assigned dynamically anyway. That said, if you don't
+>>>> like it, I can change it.
+>>>
+>>> It's just that I have understood that Device Tree is supposed to
+>>> describe hardware and to me a firmware directory "brcm/" is a software
+>>> property, not a hardware property. But this is really for the Device
+>>> Tree maintainers to decide, they know this best :)
+>>
+>> I would personally just minimize the amount of information
+>> put into the device tree to be exactly what is needed to find
+>> the right firmware.
+>>
+>> brcm,firmware-compatible = "43596";
+>>
+>> since the code already knows how to conjure the rest of the string.
+>>
+>> But check with Rob/Krzysztof.
+>>
+>> Yours,
+>> Linus Walleij
+> 
+> Krzysztof, Rob [added to CC] - can I have your opinions?
 
-Please switch to a spinlock instead.
+I tried catching up on this thread. Reading it I am not sure what the 
+issue is, but I am happy to dive in. If you can provide a boot log with 
+brcmfmac loaded with module parameter 'debug=0x1416' I can try and make 
+sense of the chipid/devid confusion.
 
-Cheers,
+Regards,
+Arend
 
-Paolo
+--00000000000008589405eec292ab
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
+MIIQdwYJKoZIhvcNAQcCoIIQaDCCEGQCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3OMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVYwggQ+oAMCAQICDE79bW6SMzVJMuOi1zANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMTQzMjNaFw0yNTA5MTAxMTQzMjNaMIGV
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEFyZW5kIFZhbiBTcHJpZWwxKzApBgkqhkiG
+9w0BCQEWHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+DwAwggEKAoIBAQDxOB8Yu89pZLsG9Ic8ZY3uGibuv+NRsij+E70OMJQIwugrByyNq5xgH0BI22vJ
+LT7VKCB6YJC88ewEFfYi3EKW/sn6RL16ImUM40beDmQ12WBquJRoxVNyoByNalmTOBNYR95ZQZJw
+1nrzaoJtK0XIsv0dNCUcLlAc+jHkngD+I0ptVuWoMO1BcJexqJf5iX2M1CdC8PXTh9g4FIQnG2mc
+2Gzj3QNJRLsZu1TLyOyBBIr/BE7UiY3RabgRzknBGAPmzhS+fmyM8OtM5BYBsFBrSUFtZZO2p/tf
+Nbc24J2zf2peoZ8MK+7WQqummYlOnz+FyDkA9EybeNMcS5C+xi/PAgMBAAGjggHdMIIB2TAOBgNV
+HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
+Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
+KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
+dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
+OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
+MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
+BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFIikAXd8CEtv
+ZbDflDRnf3tuStPuMA0GCSqGSIb3DQEBCwUAA4IBAQCdS5XCYx6k2GGZui9DlFsFm75khkqAU7rT
+zBX04sJU1+B1wtgmWTVIzW7ugdtDZ4gzaV0S9xRhpDErjJaltxPbCylb1DEsLj+AIvBR34caW6ZG
+sQk444t0HPb29HnWYj+OllIGMbdJWr0/P95ZrKk2bP24ub3ZP/8SyzrohfIba9WZKMq6g2nTLZE3
+BtkeSGJx/8dy0h8YmRn+adOrxKXHxhSL8BNn8wsmIZyYWe6fRcBtO3Ks2DOLyHCdkoFlN8x9VUQF
+N2ulEgqCbRKkx+qNirW86eF138lr1gRxzclu/38ko//MmkAYR/+hP3WnBll7zbpIt0jc9wyFkSqH
+p8a1MYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
+YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMTv1t
+bpIzNUky46LXMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCA8kcc27C1FOd5qS+Tr
+SwJUqCYLufez/BB/ywEBsR8XlzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMjEyMDExMTMyMDRaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAUtJKd/wU80CTF8z1yDMo+iyyucwcLONzrNgy
+86MxRv6xDgOAGjxzmp4eCdJ5TYowl6Nt7Bisn92rFbaiug9XFjUHLvkGwuGRPRJjzrmg4swkdt64
+8au4wsZsIm3LaQuDtaMukJ98BhRgenwieBi9FFEmhSTrxMpttxubskDr+o7D+GdyYzJgqSYM4I0W
+/pLbWY8wrufwmmbhOJmTfzO4+Su2c0y7Iqf+YO+07zKXpjjtwDu2mofT1dHLwQJaJHQ7yD1hTSOG
+nVIrtXNqM03DEbliPH7P8Zz0Gq0fWRDlEtfFBeFlntGJEQf87YSZgXVLol9mw0RqnhsCqMSpHbDa
+6w==
+--00000000000008589405eec292ab--
