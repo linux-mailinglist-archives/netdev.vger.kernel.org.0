@@ -2,190 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF13263E80F
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 03:53:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3599663E81E
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 04:01:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbiLACxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 21:53:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        id S229869AbiLADBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 22:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiLACxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 21:53:47 -0500
-Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163EC9580E;
-        Wed, 30 Nov 2022 18:53:45 -0800 (PST)
-Received: from mail02.huawei.com (unknown [172.30.67.169])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4NN0yD3JJ8z4f3m7W;
-        Thu,  1 Dec 2022 10:53:40 +0800 (CST)
-Received: from [10.174.176.117] (unknown [10.174.176.117])
-        by APP2 (Coremail) with SMTP id Syh0CgCXrLcxF4hj+zG4BQ--.60735S2;
-        Thu, 01 Dec 2022 10:53:41 +0800 (CST)
-Subject: Re: [net-next] bpf: avoid hashtab deadlock with try_lock
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Hao Luo <haoluo@google.com>, Waiman Long <longman@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jiri Olsa <jolsa@kernel.org>, bpf <bpf@vger.kernel.org>,
-        "houtao1@huawei.com" <houtao1@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>
-References: <41eda0ea-0ed4-1ffb-5520-06fda08e5d38@huawei.com>
- <CAMDZJNVSv3Msxw=5PRiXyO8bxNsA-4KyxU8BMCVyHxH-3iuq2Q@mail.gmail.com>
- <fdb3b69c-a29c-2d5b-a122-9d98ea387fda@huawei.com>
- <CAMDZJNWTry2eF_n41a13tKFFSSLFyp3BVKakOOWhSDApdp0f=w@mail.gmail.com>
- <CA+khW7jgsyFgBqU7hCzZiSSANE7f=A+M-0XbcKApz6Nr-ZnZDg@mail.gmail.com>
- <07a7491e-f391-a9b2-047e-cab5f23decc5@huawei.com>
- <CAMDZJNUTaiXMe460P7a7NfK1_bbaahpvi3Q9X85o=G7v9x-w=g@mail.gmail.com>
- <59fc54b7-c276-2918-6741-804634337881@huaweicloud.com>
- <541aa740-dcf3-35f5-9f9b-e411978eaa06@redhat.com>
- <Y4ZABpDSs4/uRutC@Boquns-Mac-mini.local>
- <Y4ZCKaQFqDY3aLTy@Boquns-Mac-mini.local>
- <CA+khW7hkQRFcC1QgGxEK_NeaVvCe3Hbe_mZ-_UkQKaBaqnOLEQ@mail.gmail.com>
- <23b5de45-1a11-b5c9-d0d3-4dbca0b7661e@huaweicloud.com>
- <CAMDZJNWtyanKtXtAxYGwvJ0LTgYLf=5iYFm63pbvvJLPE8oHSQ@mail.gmail.com>
- <8d424223-1da6-60bf-dd2c-cd2fe6d263fe@huaweicloud.com>
- <CAMDZJNWv0Qv6LJ=APOj644vKfJttcQ4WHXFizxn_2hCeVzQcXA@mail.gmail.com>
-From:   Hou Tao <houtao@huaweicloud.com>
-Message-ID: <20b8ad93-7a90-dc8c-581b-491d543423a5@huaweicloud.com>
-Date:   Thu, 1 Dec 2022 10:53:37 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        with ESMTP id S229811AbiLADBX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 22:01:23 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475479580E;
+        Wed, 30 Nov 2022 19:01:21 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NN13724flzJp2q;
+        Thu,  1 Dec 2022 10:57:55 +0800 (CST)
+Received: from [10.174.179.191] (10.174.179.191) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 1 Dec 2022 11:01:15 +0800
+Message-ID: <14e5c329-03c4-e82e-8ae2-97d30d53e4fd@huawei.com>
+Date:   Thu, 1 Dec 2022 11:01:14 +0800
 MIME-Version: 1.0
-In-Reply-To: <CAMDZJNWv0Qv6LJ=APOj644vKfJttcQ4WHXFizxn_2hCeVzQcXA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-CM-TRANSID: Syh0CgCXrLcxF4hj+zG4BQ--.60735S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGFWfXw1rCrykZr45Cw4fuFg_yoWrZFyfpF
-        W7GFyUKF4kZr15uan2vF18tr4ayw129r4UZrZ8J340vF90v3sxurWIqw1j9Fy0qrn3JFsI
-        vr42va47CryjyFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvIb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7Cj
-        xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
-        0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
-        6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
-        Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7Mxk0xIA0c2IE
-        e2xFo4CEbIxvr21l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
-        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a
-        6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
-        kF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE
-        14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf
-        9x07UZ18PUUUUU=
-X-CM-SenderInfo: xkrx3t3r6k3tpzhluzxrxghudrp/
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH] wifi: brcmfmac: Fix error return code in
+ brcmf_sdio_download_firmware()
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>
+CC:     <aspriel@gmail.com>, <hante.meuleman@broadcom.com>,
+        <kvalo@kernel.org>, <davem@davemloft.net>,
+        <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
+        <arend@broadcom.com>
+References: <1669716458-15327-1-git-send-email-wangyufen@huawei.com>
+ <CA+8PC_czBYZUsOH7brTh4idjg3ps58PtanqtmTD0mPN3Sp9Xhw@mail.gmail.com>
+ <4e61f6e5-94bd-9e29-d12f-d5928f00c8a8@huawei.com>
+ <5dd42599-ace7-42cb-8b3c-90704d18fc21@broadcom.com>
+From:   wangyufen <wangyufen@huawei.com>
+In-Reply-To: <5dd42599-ace7-42cb-8b3c-90704d18fc21@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.191]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500010.china.huawei.com (7.192.105.118)
 X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-On 11/30/2022 1:55 PM, Tonghao Zhang wrote:
-> On Wed, Nov 30, 2022 at 12:13 PM Hou Tao <houtao@huaweicloud.com> wrote:
->> Hi,
+
+在 2022/11/30 19:19, Arend van Spriel 写道:
+> On 11/30/2022 3:00 AM, wangyufen wrote:
 >>
->> On 11/30/2022 10:47 AM, Tonghao Zhang wrote:
->>> On Wed, Nov 30, 2022 at 9:50 AM Hou Tao <houtao@huaweicloud.com> wrote:
->>>> Hi Hao,
+>>
+>> 在 2022/11/30 1:41, Franky Lin 写道:
+>>> On Tue, Nov 29, 2022 at 1:47 AM Wang Yufen <wangyufen@huawei.com> wrote:
 >>>>
->>>> On 11/30/2022 3:36 AM, Hao Luo wrote:
->>>>> On Tue, Nov 29, 2022 at 9:32 AM Boqun Feng <boqun.feng@gmail.com> wrote:
->>>>>> Just to be clear, I meant to refactor htab_lock_bucket() into a try
->>>>>> lock pattern. Also after a second thought, the below suggestion doesn't
->>>>>> work. I think the proper way is to make htab_lock_bucket() as a
->>>>>> raw_spin_trylock_irqsave().
->>>>>>
->>>>>> Regards,
->>>>>> Boqun
->>>>>>
->>>>> The potential deadlock happens when the lock is contended from the
->>>>> same cpu. When the lock is contended from a remote cpu, we would like
->>>>> the remote cpu to spin and wait, instead of giving up immediately. As
->>>>> this gives better throughput. So replacing the current
->>>>> raw_spin_lock_irqsave() with trylock sacrifices this performance gain.
->>>>>
->>>>> I suspect the source of the problem is the 'hash' that we used in
->>>>> htab_lock_bucket(). The 'hash' is derived from the 'key', I wonder
->>>>> whether we should use a hash derived from 'bucket' rather than from
->>>>> 'key'. For example, from the memory address of the 'bucket'. Because,
->>>>> different keys may fall into the same bucket, but yield different
->>>>> hashes. If the same bucket can never have two different 'hashes' here,
->>>>> the map_locked check should behave as intended. Also because
->>>>> ->map_locked is per-cpu, execution flows from two different cpus can
->>>>> both pass.
->>>> The warning from lockdep is due to the reason the bucket lock A is used in a
->>>> no-NMI context firstly, then the same bucke lock is used a NMI context, so
->>> Yes, I tested lockdep too, we can't use the lock in NMI(but only
->>> try_lock work fine) context if we use them no-NMI context. otherwise
->>> the lockdep prints the warning.
->>> * for the dead-lock case: we can use the
->>> 1. hash & min(HASHTAB_MAP_LOCK_MASK, htab->n_buckets -1)
->>> 2. or hash bucket address.
->> Use the computed hash will be better than hash bucket address, because the hash
->> buckets are allocated sequentially.
->>> * for lockdep warning, we should use in_nmi check with map_locked.
+>>>> Fix to return a negative error code -EINVAL instead of 0.
+>>>>
+>>>> Compile tested only.
+>>>>
+>>>> Fixes: d380ebc9b6fb ("brcmfmac: rename chip download functions")
+>>>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+>>>> ---
+>>>>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 +
+>>>>   1 file changed, 1 insertion(+)
+>>>>
+>>>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c 
+>>>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>> index 465d95d..329ec8ac 100644
+>>>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>> @@ -3414,6 +3414,7 @@ static int brcmf_sdio_download_firmware(struct 
+>>>> brcmf_sdio *bus,
+>>>>          /* Take arm out of reset */
+>>>>          if (!brcmf_chip_set_active(bus->ci, rstvec)) {
+>>>>                  brcmf_err("error getting out of ARM core reset\n");
+>>>> +               bcmerror = -EINVAL;
 >>>
->>> BTW, the patch doesn't work, so we can remove the lock_key
->>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c50eb518e262fa06bd334e6eec172eaf5d7a5bd9
->>>
->>> static inline int htab_lock_bucket(const struct bpf_htab *htab,
->>>                                    struct bucket *b, u32 hash,
->>>                                    unsigned long *pflags)
->>> {
->>>         unsigned long flags;
->>>
->>>         hash = hash & min(HASHTAB_MAP_LOCK_MASK, htab->n_buckets -1);
->>>
->>>         preempt_disable();
->>>         if (unlikely(__this_cpu_inc_return(*(htab->map_locked[hash])) != 1)) {
->>>                 __this_cpu_dec(*(htab->map_locked[hash]));
->>>                 preempt_enable();
->>>                 return -EBUSY;
->>>         }
->>>
->>>         if (in_nmi()) {
->>>                 if (!raw_spin_trylock_irqsave(&b->raw_lock, flags))
->>>                         return -EBUSY;
->> The only purpose of trylock here is to make lockdep happy and it may lead to
->> unnecessary -EBUSY error for htab operations in NMI context. I still prefer add
->> a virtual lock-class for map_locked to fix the lockdep warning. So could you use
-> Hi, what is virtual lock-class ? Can you give me an example of what you mean?
-If LOCKDEP is enabled, raw_spinlock will add dep_map in the definition and it
-also calls lock_acquire() and lock_release() to assist the deadlock check. Now
-map_locked is not a lock but it acts like a raw_spin_trylock, so we need to add
-dep_map to it manually, and then also call lock_acquire(trylock=1) and
-lock_release() before increasing and decreasing map_locked. You can reference
-the implementation of raw_spin_trylock and raw_spin_unlock for more details.
->> separated patches to fix the potential dead-lock and the lockdep warning ? It
->> will be better you can also add a bpf selftests for deadlock problem as said before.
+>>> ENODEV seems more appropriate here.
 >>
->> Thanks,
->> Tao
->>>         } else {
->>>                 raw_spin_lock_irqsave(&b->raw_lock, flags);
->>>         }
->>>
->>>         *pflags = flags;
->>>         return 0;
->>> }
->>>
->>>
->>>> lockdep deduces that may be a dead-lock. I have already tried to use the same
->>>> map_locked for keys with the same bucket, the dead-lock is gone, but still got
->>>> lockdep warning.
->>>>> Hao
->>>>> .
->
+>> However, if brcmf_chip_set_active()  fails in 
+>> brcmf_pcie_exit_download_state(), "-EINVAL" is returned.
+>> Is it necessary to keep consistent?
+> 
+> If we can not get the ARM on the chip out of reset things will fail soon 
+> enough further down the road. Anyway, the other function calls return 
+> -EIO so let's do the same here.
+> 
 
+So -EIO is better?  Anyone else have any other opinions? 😄
+
+Thanks,
+Wang
+
+> Thanks,
+> Arend
