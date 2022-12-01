@@ -2,123 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2902A63EAF5
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 09:25:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AB2463EAF1
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 09:21:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229646AbiLAIZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 03:25:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
+        id S229635AbiLAIVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 03:21:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiLAIZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 03:25:26 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92B76034D
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 00:25:24 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id ay8-20020a05600c1e0800b003d0808d2826so112735wmb.1
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 00:25:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MPkucWBhogscl9zWbIw6tHCv9NBDHzkjPzeEc9DlEPM=;
-        b=GSt+5Adn2ECyXk0aDLQgCLpIe4OEw/AFzkl1XbLYUxsA6oxiiY8fdPYeF9ZsXvj7Uc
-         B+TGzqxLkX9jzb98073SXoOQx9wcfK/+MvEcFQkri9TYmGxWpV2bkLxNabgMYFnMEdbU
-         HBbW4zZkcONX1DQl22e+WcbFGwSJxIYvv62QjWqibzTxElXT/p6u30C+tFzZm5XxUrr1
-         ipIKsaGCAr1XbAytG/c1EvUViT4ICf1j6MsJwkPgvrU9i5Wj5V4r/k1kbMMHcAt1hesg
-         SoNfWXS/dT5UlWJekSWm7A4i4gysfF+WWUpBTqKelu9tSDWSyTbT1Pb8DFU8enbZpatr
-         PzwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MPkucWBhogscl9zWbIw6tHCv9NBDHzkjPzeEc9DlEPM=;
-        b=gXM5ewuwyzhN9o5JZkz9axzXlAWtrbZeeOn8ujjGhabAUzuMa0ee7rFvpuaMOx2W9g
-         lhlPO8l22Btjkzx9F+JSAoAoj8daYdigiSup0XdpkLlK3bumpqH85OcZzMiFiMGDBuaL
-         CH6KM7EK7647i1JIQePBLUou1HeqmrG3a5jFuOvpGL1Swt2R7eCsGbpuMt50qkhv/5uk
-         YJsPuBDUP0B+Bu8wwMBiimgE7HTexNSB/MxRKBiSegeDdMfBBQRNJTCzYra8z8MU4dHM
-         UeImm9YYFY6cIPbIPa99M1vnA09LVTI7qLJrWSGKYpTKVr4fqunlT0NjPX4TxKt9CNGF
-         gcqg==
-X-Gm-Message-State: ANoB5plH66MEdertxLKdZ7gaccN3Zx404SLBjzbeuVvIjlnP4X4tXfg6
-        pYU9WybJBgjPa8EteQ7y+uxWa05dSUIHvQ==
-X-Google-Smtp-Source: AA0mqf61/jm8tD5ncmSz9iLVMFaB46CtQJbCgP+8ehTyDB/6d/16SNWm6xXQd8Ht1WavDDI54vfHYA==
-X-Received: by 2002:a05:600c:3110:b0:3cf:b07a:cd56 with SMTP id g16-20020a05600c311000b003cfb07acd56mr49133571wmo.143.1669883123387;
-        Thu, 01 Dec 2022 00:25:23 -0800 (PST)
-Received: from blmsp ([185.238.219.127])
-        by smtp.gmail.com with ESMTPSA id l9-20020a05600c1d0900b003cf878c4468sm9433762wms.5.2022.12.01.00.25.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Dec 2022 00:25:22 -0800 (PST)
-Date:   Thu, 1 Dec 2022 09:25:21 +0100
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 04/15] can: m_can: Use transmit event FIFO watermark
- level interrupt
-Message-ID: <20221201082521.3tqevaygz4nhw52u@blmsp>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-5-msp@baylibre.com>
- <20221130171715.nujptzwnut7silbm@pengutronix.de>
+        with ESMTP id S229579AbiLAIVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 03:21:16 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DCC2B1A9;
+        Thu,  1 Dec 2022 00:21:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1669882872; x=1701418872;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AlPYdQCYvkoxVbZrZSZWzW+Og4pUdKEw9Hd0l72WtTI=;
+  b=fx00iyLOCFsdE3jKFuoiz7e7jksNX5aqVO1vxCEG6zyFSZ+NBYkbU/ti
+   nmCioDBW+2pQT+YN3Q2oyT9ApPWo/jlWpkTCdZQ690Qp7ILwKKUth00Zf
+   AGU9njbdqNAxxgbGoN7aFqi8u97Vu8H86erNnL2P3Gx08cGHxlXLGZyPi
+   9+GyZ/xXV+F8EULEOaJaPjY701D7dBzGuwIxvanrCjYd2y4ab4rF6cVZ0
+   C+1ZkLHfInywuy082Pczt1xVZ3iA2wRWoL5O2YJ8NXp/X911oZWRhLN/D
+   l/g67V2+URhcy9pPpDscKHqrofkkl1shvzwIG3ID77y9r6Om+agzonttG
+   A==;
+X-IronPort-AV: E=Sophos;i="5.96,207,1665471600"; 
+   d="scan'208";a="189505260"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Dec 2022 01:21:08 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 1 Dec 2022 01:21:03 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Thu, 1 Dec 2022 01:21:03 -0700
+Date:   Thu, 1 Dec 2022 09:26:07 +0100
+From:   Horatiu Vultur - M31836 <Horatiu.Vultur@microchip.com>
+To:     Divya Koppera - I30481 <Divya.Koppera@microchip.com>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        UNGLinuxDriver <UNGLinuxDriver@microchip.com>,
+        Madhuri Sripada - I34878 <Madhuri.Sripada@microchip.com>
+Subject: Re: [PATCH v3 net-next] net: phy: micrel: Fix warn: passing zero to
+ PTR_ERR
+Message-ID: <20221201082607.ap4jqool2uc6ziqk@soft-dev3-1>
+References: <20221129101653.6921-1-Divya.Koppera@microchip.com>
+ <20221130145034.rmput7zdhwevo2p7@soft-dev3-1>
+ <CO1PR11MB4771030026F8460B5A92DC35E2149@CO1PR11MB4771.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20221130171715.nujptzwnut7silbm@pengutronix.de>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CO1PR11MB4771030026F8460B5A92DC35E2149@CO1PR11MB4771.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
-
-Thanks for reviewing.
-
-On Wed, Nov 30, 2022 at 06:17:15PM +0100, Marc Kleine-Budde wrote:
-> On 16.11.2022 21:52:57, Markus Schneider-Pargmann wrote:
-> > Currently the only mode of operation is an interrupt for every transmit
-> > event. This is inefficient for peripheral chips. Use the transmit FIFO
-> > event watermark interrupt instead if the FIFO size is more than 2. Use
-> > FIFOsize - 1 for the watermark so the interrupt is triggered early
-> > enough to not stop transmitting.
-> > 
-> > Note that if the number of transmits is less than the watermark level,
-> > the transmit events will not be processed until there is any other
-> > interrupt. This will only affect statistic counters. Also there is an
-> > interrupt every time the timestamp wraps around.
-> > 
-> > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+The 12/01/2022 07:08, Divya Koppera - I30481 wrote:
+> Hi Horatiu,
 > 
-> Please make this configurable with the ethtool TX IRQ coalescing
-> parameter. Please setup an hwtimer to enable the regular interrupt after
-> some configurable time to avoid starving of the TX complete events.
-
-I guess hwtimer==hrtimer?
-
-I thought about setting up a timer but decided against it as the TX
-completion events are only used to update statistics of the interface,
-as far as I can tell. I can implement a timer as well.
-
-For the upcoming receive side patch I already added a hrtimer. I may try
-to use the same timer for both directions as it is going to do the exact
-same thing in both cases (call the interrupt routine). Of course that
-depends on the details of the coalescing support. Any objections on
-that?
-
-> I've implemented this for the mcp251xfd driver, see:
+> > -----Original Message-----
+> > From: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > Sent: Wednesday, November 30, 2022 8:21 PM
+> > To: Divya Koppera - I30481 <Divya.Koppera@microchip.com>
+> > Cc: andrew@lunn.ch; hkallweit1@gmail.com; linux@armlinux.org.uk;
+> > davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> > pabeni@redhat.com; netdev@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; richardcochran@gmail.com; UNGLinuxDriver
+> > <UNGLinuxDriver@microchip.com>; Madhuri Sripada - I34878
+> > <Madhuri.Sripada@microchip.com>
+> > Subject: Re: [PATCH v3 net-next] net: phy: micrel: Fix warn: passing zero to
+> > PTR_ERR
+> > 
+> > The 11/29/2022 15:46, Divya Koppera wrote:
+> > 
+> > Hi Divya,
+> > 
+> > > Handle the NULL pointer case
+> > >
+> > > Fixes New smatch warnings:
+> > > drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing
+> > zero to 'PTR_ERR'
+> > >
+> > > Fixes Old smatch warnings:
+> > > drivers/net/phy/micrel.c:1750 ksz886x_cable_test_get_status() error:
+> > > uninitialized symbol 'ret'.
+> > 
+> > Shouldn't you split this patch in 2 different patches, as you fix 2 issues.
 > 
-> 656fc12ddaf8 ("can: mcp251xfd: add TX IRQ coalescing ethtool support")
-> 169d00a25658 ("can: mcp251xfd: add TX IRQ coalescing support")
-> 846990e0ed82 ("can: mcp251xfd: add RX IRQ coalescing ethtool support")
-> 60a848c50d2d ("can: mcp251xfd: add RX IRQ coalescing support")
-> 9263c2e92be9 ("can: mcp251xfd: ring: add support for runtime configurable RX/TX ring parameters")
+> I got these warnings in single mail, so thought of fixing it in one patch. Also, one patch has single line change so did this way.
+> Yeah, splitting sense good, will do in next revision.
+> 
+> > Also any reason why you target net-next and not net? Because I can see the
+> > blamed patches on net branch.
+> > 
+> 
+> Initially I targeted for net-next and in second revision I moved to net as it is fix. But I got a comment as below. So again, targeted to net-next.
+> 
+> "
+> > v1 -> v2:
+> > - Handled NULL pointer case
+> > - Changed subject line with net-next to net
+> 
+> This is not a genuine bug fix, and so it should target next-next."
 
-Thanks for the pointers. I will have a look and try to implement it
-similarly.
+That is fine by me.
 
-Best,
-Markus
+...
+
+> > >
+> > >
+> > >  static void lan8814_ptp_init(struct phy_device *phydev)  {
+> > > +	struct lan8814_shared_priv *shared_priv = phydev->shared->priv;
+> > >  	struct kszphy_priv *priv = phydev->priv;
+> > >  	struct kszphy_ptp_priv *ptp_priv = &priv->ptp_priv;
+> > >  	u32 temp;
+> > >
+> > > -	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
+> > > -	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
+> > > +	/* Check if PHC support is missing at the configuration level */
+> > > +	if (!shared_priv->ptp_clock)
+> > >  		return;
+
+Sorry I forgot to mention this in the previous email.
+Can you rename shared_priv to just shared. Because in all the other places
+it is used shared and not shared_priv.
+
+-- 
+/Horatiu
