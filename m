@@ -2,98 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E0863E831
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 04:11:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB8F563E84D
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 04:24:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbiLADLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 22:11:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
+        id S229726AbiLADYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 22:24:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiLADLB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 22:11:01 -0500
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C9BE743879;
-        Wed, 30 Nov 2022 19:10:57 -0800 (PST)
-Received: from loongson.cn (unknown [113.200.148.30])
-        by gateway (Coremail) with SMTP id _____8Dx9vA_G4hjR30CAA--.5787S3;
-        Thu, 01 Dec 2022 11:10:55 +0800 (CST)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8Dxr+A9G4hj9AUjAA--.22044S2;
-        Thu, 01 Dec 2022 11:10:53 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests: net: Use "grep -E" instead of "egrep"
-Date:   Thu,  1 Dec 2022 11:10:48 +0800
-Message-Id: <1669864248-829-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf8Dxr+A9G4hj9AUjAA--.22044S2
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
-X-Coremail-Antispam: 1Uk129KBjvJXoWruFWrur1DGFy3tF1xGFyUKFg_yoW8JF13p3
-        y8GwnrKr1rJFyjyF4UWF4SqF4fKan3ZF48WrWrGrnrZrs8J3WxXFySgF47AF47WrWDXws5
-        Z3s29ryruan8A3DanT9S1TB71UUUUUJqnTZGkaVYY2UrUUUUj1kv1TuYvTs0mT0YCTnIWj
-        qI5I8CrVACY4xI64kE6c02F40Ex7xfYxn0WfASr-VFAUDa7-sFnT9fnUUIcSsGvfJTRUUU
-        b3AYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s
-        1l1IIY67AEw4v_Jrv_JF1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xv
-        wVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwA2z4
-        x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJVWxJr1l
-        n4kS14v26r1Y6r17M2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6xkI12xvs2x26I8E6x
-        ACxx1l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17McIj6I8E
-        87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82
-        IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l4IxYO2xFxVAFwI0_Jrv_JF1lx2Iq
-        xVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r
-        1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY
-        6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67
-        AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuY
-        vjxU4s2-UUUUU
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229515AbiLADYf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 22:24:35 -0500
+X-Greylist: delayed 515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 30 Nov 2022 19:24:31 PST
+Received: from pctpxymta1.ctd.tn.gov.in (mail.ctd.tn.gov.in [164.100.134.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4BE140F8
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 19:24:31 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by pctpxymta1.ctd.tn.gov.in (Postfix) with ESMTP id ADBA7A4217;
+        Thu,  1 Dec 2022 08:44:31 +0530 (IST)
+Received: from pctpxymta1.ctd.tn.gov.in ([127.0.0.1])
+        by localhost (pctpxymta1.ctd.tn.gov.in [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id PqRPLpTG1os3; Thu,  1 Dec 2022 08:44:31 +0530 (IST)
+Received: from localhost (localhost [127.0.0.1])
+        by pctpxymta1.ctd.tn.gov.in (Postfix) with ESMTP id 77362A41D6;
+        Thu,  1 Dec 2022 08:44:31 +0530 (IST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 pctpxymta1.ctd.tn.gov.in 77362A41D6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ctd.tn.gov.in;
+        s=5D52FA52-8E28-11EB-890F-40401F18B45F; t=1669864471;
+        bh=qq4l1APaRBFOV8Y7JwyHpLogieHx6Q3zZ+hmqb7GxXE=;
+        h=MIME-Version:To:From:Date:Message-Id;
+        b=E7CD2SGXtJ+KAFShYvBoQ3btyZN2R8i3K/i2nIwZwhy32+t+wopMHD+Mx/6K1DFDC
+         xWtfwjXLKoD+IS90ElfXvjnGv48pmMOgjDFN5A2yvHkbLcnu2Auwhgc5H3TImX/EWv
+         mSf5/BdETxUuGt9KDOnRWrr5mdGEk9UZJxTK7+ZDuR5ehAGD5L8wZiHSqCIfwOeAL+
+         6k4GzvJF3UIgfTxodIlVZMk6Kg+KBW62Tq3h+PEoea9TIdnbt9FgNS//coBH8KkMxN
+         nj8ESoPLSBtJzFz0ptc+2XMzJocdvfLe0zjyC+7f518TIESJChPs5EF8vOkFxjWG0E
+         T+eOIOhE6vEWQ==
+X-Amavis-Modified: Mail body modified (using disclaimer) -
+        pctpxymta1.ctd.tn.gov.in
+X-Virus-Scanned: amavisd-new at pctpxymta1.ctd.tn.gov.in
+Received: from pctpxymta1.ctd.tn.gov.in ([127.0.0.1])
+        by localhost (pctpxymta1.ctd.tn.gov.in [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id XUTWf2oi3fgm; Thu,  1 Dec 2022 08:44:31 +0530 (IST)
+Received: from [172.20.10.2] (unknown [10.236.243.239])
+        by pctpxymta1.ctd.tn.gov.in (Postfix) with ESMTPSA id 16849A4217;
+        Thu,  1 Dec 2022 08:44:21 +0530 (IST)
+Content-Type: text/plain; charset="iso-8859-1"
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Oferta pozyczki
+To:     Recipients <mgrdcct.namakkal@ctd.tn.gov.in>
+From:   mgrdcct.namakkal@ctd.tn.gov.in
+Date:   Wed, 30 Nov 2022 19:14:12 -0800
+Reply-To: andrewlogan1@outlook.com
+X-Antivirus: Avast (VPS 221130-12, 11/30/2022), Outbound message
+X-Antivirus-Status: Clean
+Message-Id: <20221201031422.16849A4217@pctpxymta1.ctd.tn.gov.in>
+X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        FROM_LOCAL_NOVOWEL,HK_RANDOM_ENVFROM,HK_RANDOM_FROM,MIME_QP_LONG_LINE,
+        RCVD_IN_MSPIKE_H2,RCVD_IN_SBL,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The latest version of grep claims the egrep is now obsolete so the build
-now contains warnings that look like:
-	egrep: warning: egrep is obsolescent; using grep -E
-fix this using "grep -E" instead.
+Czy potrzebujesz zatwierdzonej pozyczki biznesowej i osobistej / finansowan=
+ia o maksymalnej stopie procentowej 3% rocznie? Skontaktuj sie z nami juz d=
+zis, wysylajac wiadomosc e-mail na adres (andrewlogan1@outlook.com), aby uz=
+yskac wiecej informacji, jesli jestes zainteresowany.
 
-  sed -i "s/egrep/grep -E/g" `grep egrep -rwl tools/testing/selftests/net`
-
-Here are the steps to install the latest grep:
-
-  wget http://ftp.gnu.org/gnu/grep/grep-3.8.tar.gz
-  tar xf grep-3.8.tar.gz
-  cd grep-3.8 && ./configure && make
-  sudo make install
-  export PATH=/usr/local/bin:$PATH
-
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
-
-As Shuah suggested, this patch should go through net tree
-
- tools/testing/selftests/net/toeplitz.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/net/toeplitz.sh b/tools/testing/selftests/net/toeplitz.sh
-index 0a49907..da5bfd8 100755
---- a/tools/testing/selftests/net/toeplitz.sh
-+++ b/tools/testing/selftests/net/toeplitz.sh
-@@ -32,7 +32,7 @@ DEV="eth0"
- # This is determined by reading the RSS indirection table using ethtool.
- get_rss_cfg_num_rxqs() {
- 	echo $(ethtool -x "${DEV}" |
--		egrep [[:space:]]+[0-9]+:[[:space:]]+ |
-+		grep -E [[:space:]]+[0-9]+:[[:space:]]+ |
- 		cut -d: -f2- |
- 		awk '{$1=$1};1' |
- 		tr ' ' '\n' |
 -- 
-2.1.0
+This email has been checked for viruses by Avast antivirus software.
+www.avast.com
+The information contained in this mail message and/or attachments to it may contain confidential or privileged information of the Department. This message is intended only for you. If you are not the intended recipient, you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited by the Department. If you have erroneously received this message, please immediately delete it, notify the sender and inform the Call Centre. This e-mail reply is only intended to provide clarity/explanation to the request mail. It cannot be used for any legal purposes. This e-mail is of confidential nature and intended solely for the use of the individual/entity to whom they are addressed and not binding any agreement on behalf of the department.
 
