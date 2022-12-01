@@ -2,105 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6401D63EEA5
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 12:01:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F56D63EEA9
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 12:01:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbiLALBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 06:01:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
+        id S230430AbiLALBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 06:01:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbiLALAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 06:00:47 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2050.outbound.protection.outlook.com [40.107.243.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9968F87C82
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 03:00:30 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EnjI4HC+IXeBI/yvJY+muoFMWApCdsiKLn9KcvnCpA4WacnDHzHfB4/gCB+t1EBsqh5Ha7Pf0BxNW8UjVoTXJQPIWu+eYXhkmng3voIRHZp6NNb4XZajv7I4Z9mfJ7f0EreN17WUG+Rbo3K3TDio9nLbjOEvOtpVBQF6KLYSFE/dAu0U8Bbb9M7A8Fw1WH8BvYnSFZ0MgHoyn+ovt6WVSR8kbo3bo8VgeuXLxS4VuAOlmaJySCNsxrhfLD5dQUyuwKwlpIcRRk/S69UlnH3Qas+x217OTfJ5VL8GkGlyrUIsNv8zhLrD5TFSr1FyfgDfC4M4V4UIsgf+t3YyaiKuLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8QgxkHEe+q60ES7CW2xcS/wgiOSC3+YEaTs9lFbhIW8=;
- b=JvGItbLPdzOJMRQFL76LUnjMM8q129H9cUbCx/V1i4zLCQxzrW2RlPvefu1gIQvt6HeIjij/NdNZKyvWuxjLfwECIDBGcgGM59oJF9aSTB1KIizeWN+y6Ke3LQfQMdTqv0bd+5jdOILJxEOKHQ6PvlzuiNk1YxqEUFKgmgKcYhf8l27vhHALL0ANkOKAysHG6OJ1BbxsabWIePJF4fCcrEFHVi8IqmWqVi73XQ21dhwK8rDqEZQFM/cCsLzYYUr9ojx4OngU5fzZFqsE/epP7IwluLizMMw64qRWjyq4QVZcjef1fuE8LY6S+0QdQXrxnQPVTx3XCorvalmNux3q7g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8QgxkHEe+q60ES7CW2xcS/wgiOSC3+YEaTs9lFbhIW8=;
- b=PKdvGOH8yWlh0krfQeuvX0cNjwUpSyuXd/N2faTfgCCDYukYc7Pg+ROcZcFrzkcP26UvSrcPBeOsu9FdnM8Fa5tpFeu/Yxj0tG7t7v+AWoNNjP6+3HvA+SSkSxo5mmEXAZ9NpFDFER1OS4JFZiY6ZRZx//DqFgK/szczEM6mtY5xPrTBk7QMQN580ObcbblTbGmhrx9eLucQu9Ql3lbFVC0nzwREBN70OA0SmupGUyA2MydmowafS/JeqeN03/LnTfzl73T57i+A4RSjGmvJzyRZIluSR5cYbFRSHdgjzXOzrsW3Rt1Q9FwrEam8k9ozg8Hfs625goWrnA1QGnNj/w==
-Received: from MW4PR04CA0087.namprd04.prod.outlook.com (2603:10b6:303:6b::32)
- by BY5PR12MB4308.namprd12.prod.outlook.com (2603:10b6:a03:20a::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Thu, 1 Dec
- 2022 11:00:28 +0000
-Received: from CO1NAM11FT020.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:6b:cafe::17) by MW4PR04CA0087.outlook.office365.com
- (2603:10b6:303:6b::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8 via Frontend
- Transport; Thu, 1 Dec 2022 11:00:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT020.mail.protection.outlook.com (10.13.174.149) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5834.8 via Frontend Transport; Thu, 1 Dec 2022 11:00:27 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 1 Dec 2022
- 03:00:13 -0800
-Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 1 Dec 2022
- 03:00:11 -0800
-References: <20221128123817.2031745-1-daniel.machon@microchip.com>
- <20221128123817.2031745-2-daniel.machon@microchip.com>
- <0642f8ab-63be-7db2-bd7c-16f19a3bdddc@kernel.org>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     David Ahern <dsahern@kernel.org>
-CC:     Daniel Machon <daniel.machon@microchip.com>,
-        <netdev@vger.kernel.org>, <stephen@networkplumber.org>,
-        <petrm@nvidia.com>, <maxime.chevallier@bootlin.com>,
-        <vladimir.oltean@nxp.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH iproute2-next v2 1/2] dcb: add new pcp-prio parameter to
- dcb app
-Date:   Thu, 1 Dec 2022 11:57:13 +0100
-In-Reply-To: <0642f8ab-63be-7db2-bd7c-16f19a3bdddc@kernel.org>
-Message-ID: <87cz93fky0.fsf@nvidia.com>
+        with ESMTP id S230200AbiLALBI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 06:01:08 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1906EAD98A
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 03:00:42 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1p0hIy-0003CQ-O1; Thu, 01 Dec 2022 12:00:36 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:dc5e:59bf:44a8:4077])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 59FFD12F517;
+        Thu,  1 Dec 2022 11:00:35 +0000 (UTC)
+Date:   Thu, 1 Dec 2022 12:00:33 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Markus Schneider-Pargmann <msp@baylibre.com>
+Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 04/15] can: m_can: Use transmit event FIFO watermark
+ level interrupt
+Message-ID: <20221201110033.r7hnvpw6fp2fquni@pengutronix.de>
+References: <20221116205308.2996556-1-msp@baylibre.com>
+ <20221116205308.2996556-5-msp@baylibre.com>
+ <20221130171715.nujptzwnut7silbm@pengutronix.de>
+ <20221201082521.3tqevaygz4nhw52u@blmsp>
+ <20221201090508.jh5iymwmhs3orb2v@pengutronix.de>
+ <20221201101220.r63fvussavailwh5@blmsp>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT020:EE_|BY5PR12MB4308:EE_
-X-MS-Office365-Filtering-Correlation-Id: f33b9793-b40a-4d3d-7723-08dad38b418f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cYa+ZINUBnnFKeTKJBHptewrR2/DdfbeVPoJMMdoIKsAYyahjXhOU7ewX7DoJ88oXlYuyS+1mg8OUv3REs2kRUCYL0Ck/EejNkUCxA1avFeFHddC3qOy/nXh2r90as2hM2lP7ZvBcQbMiTnS7pzfiujxZpC28OJg6mygRQETCY2nbJEB5HN2TJAuWrF6v4YFhV2Gp4+8JcsA9dkfU4WT5GTiZ4NZ67M1653fPwwCYF81xICOMRMaB4O1g+Ew8owNXkFNQB57fPNSwNP4cJpwLdFywG2DqYIeqShqFGhiimBF2KsHwfjrwfB72R0GVjC4s+oUax3okoPtX6CA1YtneCwqCWbS037aya+utnmetvoC9sMcy7AdF5tBSMck1thKE92AVdjRrjgUilbSU1q0kWt+rsJKVjufKGEUesaTTskwOS0SiSfjHSBgO4rYtWXf0jaKq/gJoHeryYc4FqRD6Lx1wvZQs1dM330MpCVg/aKw2EYhZW/dWT14T00Wan8NPCOmbUkO9CVY2FSPf7lsQHE+g1BTEqaK7Y8Q6GqAbLVB9zXA9pmh+/Oj7F1o4MO4g9QC9Sn89D2LYghYkOle/Wqt9La4on4woxDOfOukeSEU4LxWDei9baQqO8kyGrZPJ7/GQPxoCXOCFjfd9rhBPcghnhjIMYI2WjWujaWVM5taScb5vFpK2dxK98W5fMbL
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(346002)(376002)(396003)(451199015)(40470700004)(46966006)(36840700001)(82310400005)(36756003)(40480700001)(186003)(70206006)(4326008)(356005)(70586007)(7636003)(16526019)(8936002)(6916009)(316002)(40460700003)(2616005)(8676002)(26005)(86362001)(426003)(5660300002)(2906002)(83380400001)(53546011)(47076005)(41300700001)(336012)(478600001)(36860700001)(54906003)(4744005)(82740400003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Dec 2022 11:00:27.8463
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f33b9793-b40a-4d3d-7723-08dad38b418f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT020.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4308
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="edcoqv646ihy76od"
+Content-Disposition: inline
+In-Reply-To: <20221201101220.r63fvussavailwh5@blmsp>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -108,25 +61,128 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-David Ahern <dsahern@kernel.org> writes:
+--edcoqv646ihy76od
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On 11/28/22 5:38 AM, Daniel Machon wrote:
->> @@ -344,6 +420,17 @@ static int dcb_app_print_key_dscp(__u16 protocol)
->>  	return print_uint(PRINT_ANY, NULL, "%d:", protocol);
->>  }
->>  
->> +static int dcb_app_print_key_pcp(__u16 protocol)
->> +{
->> +	/* Print in numerical form, if protocol value is out-of-range */
->> +	if (protocol > 15) {
->
-> 15 is used in a number of places in this patch. What's the significance
-> and can you give it a name that identifies the meaning? i.e., protocol
-> is a u16 why the 15 limit? (and update all places accordingly)
+On 01.12.2022 11:12:20, Markus Schneider-Pargmann wrote:
+> > > For the upcoming receive side patch I already added a hrtimer. I may =
+try
+> > > to use the same timer for both directions as it is going to do the ex=
+act
+> > > same thing in both cases (call the interrupt routine). Of course that
+> > > depends on the details of the coalescing support. Any objections on
+> > > that?
+> >=20
+> > For the mcp251xfd I implemented the RX and TX coalescing independent of
+> > each other and made it configurable via ethtool's IRQ coalescing
+> > options.
+> >=20
+> > The hardware doesn't support any timeouts and only FIFO not empty, FIFO
+> > half full and FIFO full IRQs and the on chip RAM for mailboxes is rather
+> > limited. I think the mcan core has the same limitations.
+>=20
+> Yes and no, the mcan core provides watermark levels so it has more
+> options, but there is no hardware timer as well (at least I didn't see
+> anything usable).
 
-In case of PCP, "protocol" is 0..7 for PCP values with DEI=0, and 8..15
-for the same values respecively, but with DEI=1. That's fundamentally
-where the 15 comes from.
+Are there any limitations to the water mark level?
 
-Here in particular, it is ARRAY_LENGTH(pcp_names), and I agree, it would
-be better to express it this way.
+> > The configuration for the mcp251xfd looks like this:
+> >=20
+> > - First decide for classical CAN or CAN-FD mode
+> > - configure RX and TX ring size
+> >   9263c2e92be9 ("can: mcp251xfd: ring: add support for runtime configur=
+able RX/TX ring parameters")
+> >   For TX only a single FIFO is used.
+> >   For RX up to 3 FIFOs (up to a depth of 32 each).
+> >   FIFO depth is limited to power of 2.
+> >   On the mcan cores this is currently done with a DT property.
+> >   Runtime configurable ring size is optional but gives more flexibility
+> >   for our use-cases due to limited RAM size.
+> > - configure RX and TX coalescing via ethtools
+> >   Set a timeout and the max CAN frames to coalesce.
+> >   The max frames are limited to half or full FIFO.
+>=20
+> mcan can offer more options for the max frames limit fortunately.
+>=20
+> >=20
+> > How does coalescing work?
+> >=20
+> > If coalescing is activated during reading of the RX'ed frames the FIFO
+> > not empty IRQ is disabled (the half or full IRQ stays enabled). After
+> > handling the RX'ed frames a hrtimer is started. In the hrtimer's
+> > functions the FIFO not empty IRQ is enabled again.
+>=20
+> My rx path patches are working similarly though not 100% the same. I
+> will adopt everything and add it to the next version of this series.
+>=20
+> >=20
+> > I decided not to call the IRQ handler from the hrtimer to avoid
+> > concurrency, but enable the FIFO not empty IRQ.
+>=20
+> mcan uses a threaded irq and I found this nice helper function I am
+> currently using for the receive path.
+> 	irq_wake_thread()
+>=20
+> It is not widely used so I hope this is fine. But this hopefully avoids
+> the concurrency issue. Also I don't need to artificially create an IRQ
+> as you do.
+
+I think it's Ok to use the function. Which IRQs are enabled after you
+leave the RX handler? The mcp251xfd driver enables only a high watermark
+IRQ and sets up the hrtimer. Then we have 3 scenarios:
+- high watermark IRQ triggers -> IRQ is handled,
+- FIFO level between 0 and high water mark -> no IRQ triggered, but
+  hrtimer will run, irq_wake_thread() is called, IRQ is handled
+- FIFO level 0 -> no IRQ triggered, hrtimer will run. What do you do in
+  the IRQ handler? Check if FIFO is empty and enable the FIFO not empty
+  IRQ?
+
+The mcp251xfd unconditionally enables the FIFO not empty IRQ in the
+hrtimer. This avoids reading of the FIFO fill level.
+
+[...]
+
+> > If you want to implement runtime configurable ring size, I created a
+> > function to help in the calculation of the ring sizes:
+> >=20
+> > a1439a5add62 ("can: mcp251xfd: ram: add helper function for runtime rin=
+g size calculation")
+> >=20
+> > The code is part of the mcp251xfd driver, but is prepared to become a
+> > generic helper function. The HW parameters are described with struct
+> > can_ram_config and use you can_ram_get_layout() to get a valid RAM
+> > layout based on CAN/CAN-FD ring size and coalescing parameters.
+>=20
+> Thank you. I think configurable ring sizes are currently out of scope
+> for me as I only have limited time for this.
+
+Ok.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--edcoqv646ihy76od
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOIiUgACgkQrX5LkNig
+012m7wf+Jkt4dPHkK/5FDYm3DG5+UmIraPvosBGc3TpNPpIiQJoA4XYiPfhu9W76
+NiUKMYjg+dNabhQYBLEc3Nn2eQpeJ6ZSQlVqxkphlwe2LTgfJgt3emb9n4AssZYY
+8CW/iXBfT8XW7U+Ju565zGtajtcHaoELpXXxTVaXn/U8NGrla4XGeJEVSBQbnQNN
+Zknw0IqzBgrsAHcU+DZJ2aMtbqGeYNdMWBro1Gftr65pYDLV5Q/ktOlJPNw7WYUp
+pIqYCkHqBqAG/BsUPfJl0DdD9x7+pndiDoY9VnlViN46v/x+Ovh1dKi3tcM3Xzkb
+eiKkOWDsd7+pcqQdWhQZK8ZndXqJ0w==
+=7fy5
+-----END PGP SIGNATURE-----
+
+--edcoqv646ihy76od--
