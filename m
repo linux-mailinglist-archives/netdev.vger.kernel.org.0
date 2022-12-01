@@ -2,76 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F46D63F051
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 13:20:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 951CB63F0A6
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 13:34:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230503AbiLAMUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 07:20:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
+        id S231416AbiLAMex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 07:34:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiLAMUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 07:20:15 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE283AB029
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 04:20:13 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id e13so2097668edj.7
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 04:20:13 -0800 (PST)
+        with ESMTP id S231351AbiLAMew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 07:34:52 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F673B8
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 04:34:51 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3bf4ade3364so15824207b3.3
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 04:34:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Fc+NfI1G82VXbsLpV9SBOH8Z0UVjn9b22k9eXKpSu+A=;
-        b=igM/rfz9FSWsLH64YVJ1PC0OhgrpvQCOkLYY1HUrVb2ucZlbMZ0BJphPgmkkrAB3wc
-         aM/1XgxEIaNUXgMCdEELmnD79mkw+wWWw8t8Gw7zQMj+4l12wEqfLP27U+4zhROMrywV
-         +C0m2pNbEmSKnuieER2zmtC8EYTU4ECxO2FPlRWGV70blVU2nnxUZ29a8f5WmTU/Oc7W
-         XpVSDMQU30lJMd/9CEEn7EBCxqYabzy9MR0RXjfoJd5tMFHxO8sZNQRPz9TupdrIjKkn
-         A/tOxJ2kmphg16JYtfiMYRgbLyU/BkPfdzwiwJ2F6dmNHXmf7+MabNXrd8ERyvVwVFwD
-         rnxA==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=xh33RakEW13LUwUL2e9VL/yLHoD9aqDpzZITRCOvqTk=;
+        b=A2OjnZ+LyU3gZ+/pT5aETYLXAfxuU9IGwHh3/P7mJZfq6i6/Ubaevad+FF1GqtDR5x
+         Uhi/KkFm3iErxWNhPuObLDOYs44q8xpvjJvCFbFCofMsEq82FYJ3lr0ty6fj8h4G8yJF
+         etdeosUyHflJFxFyTqo5i7MgnX5/DzW1QBNcGVp8VQWfWv9TEu2ciBybE5KcvREsWGAD
+         Lsoy1vtfe/cMHyRYTc0vlhgegZzG46gdm2Obd9nBgDLWF85HKOfePl4KOk4TLhe4wdvx
+         UwF9Hmz0kzhRwuihamqHoekcUY0QAA7d2BiqqOvFBiBJW6lAqkSQSaKvOHB4OY+A8xVh
+         uEQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Fc+NfI1G82VXbsLpV9SBOH8Z0UVjn9b22k9eXKpSu+A=;
-        b=7gY8/PAjQY7OynnPEvqmL6TsfhHifQgQh7e2pJhH66dRHivIIvhdN5tqGazNeE4DLs
-         qKbZXK1hZO68XJZ+EW7AqxHxrZnwU2w6205ShAMTtSUJxafy2Iz0tMsPjeTSKLmo77SG
-         4eYhfXNAOdwPDOHKq28B+0EPGV/xwnLpExALucTDXNNIYtad5q7B9MnNc9j219jnAsCp
-         L7cHmrjlQYTZB3gWD+iWFWa/9T5AxrUxBrkjf/G4/xERm1nydlAX9JUKgqr4fMSVwWlc
-         D+6qKQbbfsNCzUSfEMDzQIIqwAOb2JvZ33pO8rpsH3vZn6j13GegMLG54JRoy/BbM5Rl
-         hB8w==
-X-Gm-Message-State: ANoB5pncLIjviIh2ylJndhPQqFSMWIqnrn2/XKB6QKUDlAtmd2b5bry9
-        VnAFpJbfoK6fhIiwEXagxMbWyQ==
-X-Google-Smtp-Source: AA0mqf6NGwJKbLZaHfx0Cq3Vv182k1Tl8AK+iaWeVXtUzggAgEjGzgGunEsofFJziwhM0QuJMQl6sg==
-X-Received: by 2002:a05:6402:19a:b0:460:7413:5d46 with SMTP id r26-20020a056402019a00b0046074135d46mr59984984edv.47.1669897212128;
-        Thu, 01 Dec 2022 04:20:12 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id gi20-20020a1709070c9400b0077d6f628e14sm1732893ejc.83.2022.12.01.04.20.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Dec 2022 04:20:10 -0800 (PST)
-Date:   Thu, 1 Dec 2022 13:20:10 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        netdev@vger.kernel.org, jiri@nvidia.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com
-Subject: Re: [PATCH net] net: devlink: fix UAF in
- devlink_compat_running_version()
-Message-ID: <Y4ib+gOo50lpbEWS@nanopsycho>
-References: <20221128102043.35c1b9c1@kernel.org>
- <Y4XDbEWmLRE3D1Bx@nanopsycho>
- <20221129181826.79cef64c@kernel.org>
- <Y4dBrx3GTl2TLIrJ@nanopsycho>
- <20221130084659.618a8d60@kernel.org>
- <Y4eMFUBWKuLLavGB@nanopsycho>
- <20221130092042.0c223a8c@kernel.org>
- <Y4etAg+vcnRCMWx9@unreal>
- <Y4hoYI/eidosRvHt@nanopsycho>
- <Y4h8cvsa+6LT/Yq+@unreal>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xh33RakEW13LUwUL2e9VL/yLHoD9aqDpzZITRCOvqTk=;
+        b=H3Qm9GDErTgSfHMeD43mwiyOGQd3aS/CTK5D6l9zpFkBXtF9pi4MlM432VzJmHlKMd
+         fGxNG0oY+Y2ktL7qrUP0fZIL2vYOJXzv2dQsDa/XPDt3QF6gUD+QcjWt6T8TDm77F1fH
+         tYNI8Iiu3a24PEB59r4Hm3GLesBMbkveQvxgIMfIi1xEFAqGlQq/7RQ5fviqTZ7vMTdZ
+         od6sWHVPVwO5nujVKJQHqOrqn4+SduwKFVtqOrsoUohpyQSCMeT8GQGi/xANbWfj/N9Q
+         VGPQUAH7KTYGVv7Y9eIexEqS24AyF0seKpZLtPzf7dXy+XKx2GPh8yrk4P61ab161TSa
+         flXQ==
+X-Gm-Message-State: ANoB5pmVhZf20IZLuVgMyld29ZnqpMan+pvRc/ceZ+J32ZVkUld4tIuE
+        1eCu67PYqFovPHGXO8R2vr09mW/80WhYtWd+W5wAiaT52LY=
+X-Google-Smtp-Source: AA0mqf4euFrUdUVZK2eq70fgNUjXAQe/wBpbROblbeoZfeDRNSJcVLnxUbQ9fwbsETT9izJO5aJ22tcyrrsyItP8CQk=
+X-Received: by 2002:a81:a094:0:b0:3ba:721f:b37c with SMTP id
+ x142-20020a81a094000000b003ba721fb37cmr30425409ywg.457.1669898090510; Thu, 01
+ Dec 2022 04:34:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y4h8cvsa+6LT/Yq+@unreal>
+References: <20221128154456.689326-1-pctammela@mojatatu.com> <2e0a2888c89db8226578106b0a7a3eeda7c94582.camel@redhat.com>
+In-Reply-To: <2e0a2888c89db8226578106b0a7a3eeda7c94582.camel@redhat.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Thu, 1 Dec 2022 07:34:39 -0500
+Message-ID: <CAM0EoM=5GZJMrEk8-T+rp+jFHzPy7jDqV_ogQ2p57x0KmnDvnQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/3] net/sched: retpoline wrappers for tc
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Pedro Tammela <pctammela@gmail.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuniyu@amazon.com,
+        Pedro Tammela <pctammela@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -81,46 +67,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Dec 01, 2022 at 11:05:38AM CET, leon@kernel.org wrote:
->On Thu, Dec 01, 2022 at 09:40:00AM +0100, Jiri Pirko wrote:
->> Wed, Nov 30, 2022 at 08:20:34PM CET, leon@kernel.org wrote:
->> >On Wed, Nov 30, 2022 at 09:20:42AM -0800, Jakub Kicinski wrote:
->> >> On Wed, 30 Nov 2022 18:00:05 +0100 Jiri Pirko wrote:
->> >> > Wed, Nov 30, 2022 at 05:46:59PM CET, kuba@kernel.org wrote:
->> >> > >On Wed, 30 Nov 2022 12:42:39 +0100 Jiri Pirko wrote:  
->> >> > >> **)
->> >> > >> I see. With the change I suggest, meaning doing
->> >> > >> devlink_port_register/unregister() and netdev_register/unregister only
->> >> > >> for registered devlink instance, you don't need this at all. When you
->> >> > >> hit this compat callback, the netdevice is there and therefore devlink
->> >> > >> instance is registered for sure.  
->> >> > >
->> >> > >If you move devlink registration up it has to be under the instance
->> >> > >lock, otherwise we're back to reload problems. That implies unregister
->> >> > >should be under the lock too. But then we can't wait for refs in
->> >> > >unregister. Perhaps I don't understand the suggestion.  
->> >> > 
->> >> > I unlock for register and for the rest of the init I lock again.
->> >> 
->> >> The moment you register that instance callbacks can start coming.
->> >> Leon move the register call last for a good reason - all drivers
->> >> we looked at had bugs in handling init.
->> >
->> >Plus we had very cozy lock->unlock->lock sequences during devlink
->> >command execution, which caused to races between devlink calls
->> >and driver initialization.
->> 
->> So? Why do you think it is a problem?
+On Thu, Dec 1, 2022 at 6:05 AM Paolo Abeni <pabeni@redhat.com> wrote:
 >
->We need to see the actual implementation. In general, once you unlock
->you can get other threads to change the state of your device.
+> On Mon, 2022-11-28 at 12:44 -0300, Pedro Tammela wrote:
 
-Sure, I still don't understand, why it would be a problem.
+[..]
 
+> > We observed a 3-6% speed up on the retpoline CPUs, when going through 1
+> > tc filter,
 >
->> 
->> >
->> >So I'm also interested to see what Jiri meant by saying "I unlock for
->> >register and for the rest of the init I lock again".
->> >
->> >Thanks
+> Do yu have all the existing filters enabled at build time in your test
+> kernel? the reported figures are quite higher then expected considering
+> there are 7th new unlikely branch in between.
+>
+
+That can be validated with a test that compiles a kernel with a filter under
+test listed first then another kernel with the same filter last.
+
+Also given these tests were using 64B pkts to achieve the highest pps, perhaps
+using MTU sized pkts with pktgen would give more realistic results?
+
+In addition to the tests for 1 and 100 filters...
+
+> Also it would be nice to have some figure for the last filter in the if
+> chain. I fear we could have some regressions there even for 'retpoline'
+> CPUs - given the long if chain - and u32 is AFAIK (not much actually)
+> still quite used.
+>
+
+I would say flower and bpf + u32 are probably the highest used,
+but given no available data on this usage beauty is in the eye of
+the beholder. I hope it doesnt become a real estate battle like we
+have in which subsystem gets to see packets first or last ;->
+
+> Finally, it looks like the filter order in patch 1/3 is quite relevant,
+> and it looks like you used the lexicographic order, I guess it should
+> be better to sort them by 'relevance', if someone could provide a
+> reasonable 'relevance' order. I personally would move ife, ipt and
+> simple towards the bottom.
+
+I think we can come up with some reasonable order.
+
+cheers,
+jamal
