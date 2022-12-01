@@ -2,193 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00C8E63F13E
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 14:10:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B531D63F15E
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 14:16:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231149AbiLANKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 08:10:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53254 "EHLO
+        id S231194AbiLANQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 08:16:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231220AbiLANJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 08:09:59 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129129E44A;
-        Thu,  1 Dec 2022 05:09:56 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id vv4so4107639ejc.2;
-        Thu, 01 Dec 2022 05:09:55 -0800 (PST)
+        with ESMTP id S230443AbiLANQf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 08:16:35 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325919E476
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 05:16:34 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id 189so1965018ybe.8
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 05:16:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0jz1HLaxl88ozkD6mHLvrjmXIkPIX0Lx9G6bs3QkAkg=;
-        b=Fk1LLVz8P+OfjdPAyMGQUn6qVnyleCgKlLJSrTJXx04x5Jf7Ocs1/DdRH1ftZdZgyQ
-         pjrauZk8C82Bl+P2XQqcII+xTv0mpDhmxEFYEht/F+Px1fLv372iFJ1E+bJH4pwzqB9P
-         vk3iplF5gu3DAEWtiOpxqSdaMs3p7tXJxyA9bmWE8KdJQpocpNbc3obfMb9BcLRABQgp
-         cCozLtCgDymPg/kLFiAaew9wkKTMKq5XCgR4FFwn7jiU05odvA0UiwjmZOllPCIyMDkS
-         Q0qlT3s64O4ehiVrVAKJSDScVpTQJTSRjtS0pQynb+NcQD7mi1izC+cU4dK2tsKm63Wz
-         igTQ==
+        d=broadcom.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=03wwSKgdex1YLilXV+m7fKHAr2yhtLLhgPCFkfNf/m0=;
+        b=b/0siSspNYZBdgGaVzWJD1SlFOGp0gABpcCfrv1nAGw//KpWLkdGXSwlZZwISRHpNj
+         EXbSix6aXZRz8Z2WekEr5tX3jtG5Gv2/hkSFPw8V9KJRI9pVUzX58+6pBJL8Z5b6Z9+c
+         Wa35wO0Ve4uecYw+BG9XfYkhHAmeGKcrDZtDQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0jz1HLaxl88ozkD6mHLvrjmXIkPIX0Lx9G6bs3QkAkg=;
-        b=juAiFhezIRnVI7z1d4RnO9NwmaL5RV6GQrRW0Mrw9o98dQoTDWR+iBR/o2R7VUX2Lc
-         ytsep/bV5b99K46ZcPVyGvXnnU6J7+fa4hcAveiGcPM8jUDcyKjkvynZhnqfx3jV4Ed1
-         6T4d8O+FT8BmE6Kh31V/P6+uU9z9WMKYXtKioCKi4mIh+Yw1SbnJ5/sxC/WhlBR5dNOe
-         1b2txZvFNUE/1ne5/zLia+K74kOZsTUSzgurdIvqmnzDbdtlMnfiSn3mMXyWEp0dexQ8
-         jyLbK4aIidgPvBJwgkCXNELUWgweJwEbqR5HaQPqWwXtyhh/20zcfsxv3q3IYzSTicOk
-         gflg==
-X-Gm-Message-State: ANoB5pmgtPuHttMinAWGG9NxqN/6Bkk8CKGLAJeFYwYUcuhJBW3dNwEi
-        /1bgH39TYaA4lbKrWZaxq/Q=
-X-Google-Smtp-Source: AA0mqf5dP6+vhvNUs9jbQn3Wu4GllWNV3MCZCxwOALYg/+eHJX4RhUbzfEG1BkP45IPlfV/Y4j9EHA==
-X-Received: by 2002:a17:906:6681:b0:7ae:732d:bc51 with SMTP id z1-20020a170906668100b007ae732dbc51mr43644830ejo.549.1669900194522;
-        Thu, 01 Dec 2022 05:09:54 -0800 (PST)
-Received: from [192.168.1.50] ([79.119.240.254])
-        by smtp.gmail.com with ESMTPSA id q18-20020a1709066b1200b007bf988ce9f7sm1778988ejr.38.2022.12.01.05.09.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Dec 2022 05:09:54 -0800 (PST)
-Message-ID: <a0c14bfd-a502-6b19-de75-491ea9af3816@gmail.com>
-Date:   Thu, 1 Dec 2022 15:09:52 +0200
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=03wwSKgdex1YLilXV+m7fKHAr2yhtLLhgPCFkfNf/m0=;
+        b=G/+kteFYS7DbpJ1aInGk+IBjfPwLSEQLE/PYvBPkMzFldD1LRqWX2Eg3iq3uQzF5UD
+         Dp7t+66OKQ+w84RY/QEHw4NPed6O0Gig4D7K+Ol413Y50FAwvkbp6MJvLtctxsSqL7rM
+         dWlouv70fnTknGJ9XrQYHzcfaBs9c1qtZJYhbmEc19RR/5lxY1qQGw0rfNuHjg2KQCro
+         OIr3gGQI7OO3JaSnL1QQv8x+faGua4ArINAlssfy4fP26493joBYNo3iVj7qYa/tCo+C
+         rOd1+zTkUaF0Nu5XAdrLnA3P7NoGpyvPjaJP2iBYKTRG+/31ppI5lpE/gM9sLA4FuVS/
+         p6qw==
+X-Gm-Message-State: ANoB5pmhMw7GDPm9Ug8Z/KJ6VgFeztzNeFa+doKx49BYk4u55g/y0ftU
+        BvmGmK182g2ckPJu+xHx/Yxaiy61Do1kUivduj65Ng==
+X-Google-Smtp-Source: AA0mqf634rChlBV+hDJz6XqHfF4SbCN+5E3/VFtWye4wZq0lmYRzzczfmNd219kHAzLnsHYFUiDCMJop/CvXn+6NAxc=
+X-Received: by 2002:a25:9e8a:0:b0:6cc:54cb:71ff with SMTP id
+ p10-20020a259e8a000000b006cc54cb71ffmr63212521ybq.339.1669900593228; Thu, 01
+ Dec 2022 05:16:33 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Jun ASAKA <JunASAKA@zzy040330.moe>,
-        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>
-Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20221130140849.153705-1-JunASAKA@zzy040330.moe>
- <663e6d79c34f44998a937fe9fbd228e9@realtek.com>
- <6ce2e648-9c12-56a1-9118-e1e18c7ecd7d@zzy040330.moe>
- <870b8a6e591f4de8b83df26f2a65330b@realtek.com>
-Content-Language: en-US
-From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
-In-Reply-To: <870b8a6e591f4de8b83df26f2a65330b@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <1669817512-4560-1-git-send-email-george.kennedy@oracle.com>
+In-Reply-To: <1669817512-4560-1-git-send-email-george.kennedy@oracle.com>
+From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
+Date:   Thu, 1 Dec 2022 18:46:22 +0530
+Message-ID: <CALs4sv2ZfT1SAYY0oOYhrBBCjsG_th5g=QtSsbKJnPbW8faQ+w@mail.gmail.com>
+Subject: Re: [PATCH] net: check for dev pointer being NULL in
+ dev_hard_header() to avoid GPF
+To:     George Kennedy <george.kennedy@oracle.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        harshit.m.mogalapalli@oracle.com
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000b1984005eec4072d"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/12/2022 04:18, Ping-Ke Shih wrote:
-> 
->> -----Original Message-----
->> From: Jun ASAKA <JunASAKA@zzy040330.moe>
->> Sent: Thursday, December 1, 2022 9:39 AM
->> To: Ping-Ke Shih <pkshih@realtek.com>; Jes.Sorensen@gmail.com
->> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
->> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
->> Subject: Re: [PATCH] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
->>
->> On 01/12/2022 8:54 am, Ping-Ke Shih wrote:
->>
->>>
->>>> -----Original Message-----
->>>> From: JunASAKA <JunASAKA@zzy040330.moe>
->>>> Sent: Wednesday, November 30, 2022 10:09 PM
->>>> To: Jes.Sorensen@gmail.com
->>>> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
->>>> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; JunASAKA
->>>> <JunASAKA@zzy040330.moe>
->>>> Subject: [PATCH] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
->>>>
->>>> Fixing "Path A RX IQK failed" and "Path B RX IQK failed"
->>>> issues for rtl8192eu chips by replacing the arguments with
->>>> the ones in the updated official driver.
->>> I think it would be better if you can point out which version you use, and
->>> people will not modify them back to old version suddenly.
->>>
->>>> Signed-off-by: JunASAKA <JunASAKA@zzy040330.moe>
->>>> ---
->>>>   .../realtek/rtl8xxxu/rtl8xxxu_8192e.c         | 76 +++++++++++++------
->>>>   1 file changed, 54 insertions(+), 22 deletions(-)
->>>>
->>>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> index b06508d0cd..82346500f2 100644
->>>> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
->>> [...]
->>>
->>>> @@ -891,22 +907,28 @@ static int rtl8192eu_iqk_path_b(struct rtl8xxxu_priv *priv)
->>>>
->>>>   	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
->>>>   	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00180);
->>>> -	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
->>>>
->>>> -	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
->>>> +	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
->>>> +	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x20000);
->>>> +	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
->>>> +	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0x07f77);
->>>> +
->>>>   	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
->>>>
->>>> +	// rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
->>>> +	// rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
->>>> +
->>> I think this is a test code of vendor driver. No need them here.
->>>
->>>
->>>>   	/* Path B IQK setting */
->>>>   	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x38008c1c);
->>>>   	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
->>>>   	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x18008c1c);
->>>>   	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
->>>>
->>>> -	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x821403e2);
->>>> +	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82140303);
->>>>   	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x68160000);
->>>>
->>>>   	/* LO calibration setting */
->>>> -	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00492911);
->>>> +	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00462911);
->>>>
->>>>   	/* One shot, path A LOK & IQK */
->>>>   	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
->>> [...]
->>>
->>> I have compared your patch with internal code, and they are the same.
->>> But, I don't have a test.
->>>
->>> Ping-Ke
->>
->> I changed those arguments into the ones here:
->> https://github.com/Mange/rtl8192eu-linux-driver which works fine with my
->> rtl8192eu wifi dongle. But forgive my ignorant that I don't have enough
->> experience on wifi drivers, I just compared those two drivers and
->> figured that those codes fixing my IQK failures.
-> 
-> I do similar things as well. :-)
-> 
-> The github repository mentioned 
-> "This branch is based on Realtek's driver versioned 4.4.1. master is based on 4.3.1.1 originally."
-> So, we can add something to commit message: 
-> 1. https://github.com/Mange/rtl8192eu-linux-driver 
-> 2. vendor driver version: 4.3.1.1
-> 
+--000000000000b1984005eec4072d
+Content-Type: text/plain; charset="UTF-8"
+
+On Wed, Nov 30, 2022 at 7:43 PM George Kennedy
+<george.kennedy@oracle.com> wrote:
+>
+> The dev pointer can be NULL in dev_hard_header(). Add check for dev being
+> NULL in dev_hard_header() to avoid GPF.
+>
+> general protection fault, probably for non-canonical address
+>     0xdffffc0000000046: 0000 [#1] PREEMPT SMP KASAN NOPTI
+> KASAN: null-ptr-deref in range [0x0000000000000230-0x0000000000000237]
+> CPU: 1 PID: 45 Comm: kworker/1:1 Not tainted 6.1.0-rc7+ #2
+> Hardware name: Red Hat KVM, BIOS 1.15.0-2.module+el8.6.0+20659+3dcf7c70
+> Workqueue: mld mld_ifc_work
+> RIP: 0010:macvlan_hard_header (./include/linux/netdevice.h:3057
+>     (discriminator 4) drivers/net/macvlan.c:594 (discriminator 4))
+> RSP: 0018:ffff888103d377d0 EFLAGS: 00010212
+> RAX: dffffc0000000000 RBX: ffff88801cf1a000 RCX: 0000000000000000
+> RDX: 0000000000000046 RSI: 0000000000000000 RDI: 0000000000000230
+> RBP: ffff88801e8ef328 R08: 0000000000000000 R09: 0000000000000060
+> R10: 0000000000000000 R11: 0000000000000000 R12: ffff88801f0497c0
+> R13: 0000000000000000 R14: ffff888045187c98 R15: 0000000000000060
+> FS:  0000000000000000(0000) GS:ffff888106c80000(0000)
+>     knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007fbf3f1c1840 CR3: 0000000014e36000 CR4: 00000000000006e0
+> Call Trace:
+>  <TASK>
+> neigh_connected_output (./include/linux/netdevice.h:3060
+>     net/core/neighbour.c:1595)
+> ip6_finish_output2 (./include/net/neighbour.h:546
+>     net/ipv6/ip6_output.c:134)
+> ip6_finish_output (net/ipv6/ip6_output.c:195 net/ipv6/ip6_output.c:206)
+> ip6_output (./include/linux/netfilter.h:291 net/ipv6/ip6_output.c:227)
+> NF_HOOK.constprop.0 (./include/net/dst.h:445
+>     ./include/linux/netfilter.h:302)
+> mld_sendpack (net/ipv6/mcast.c:1824)
+> mld_send_cr (net/ipv6/mcast.c:2122)
+> mld_ifc_work (net/ipv6/mcast.c:2655)
+> process_one_work (kernel/workqueue.c:2294)
+> worker_thread (./include/linux/list.h:292 kernel/workqueue.c:2437)
+> kthread (kernel/kthread.c:376)
+> ret_from_fork (arch/x86/entry/entry_64.S:312)
+>  </TASK>
+> Modules linked in:
+> Dumping ftrace buffer:
+>    (ftrace buffer empty)
+> ---[ end trace 0000000000000000 ]---
+>
+> Fixes: 0c4e85813d0a ("[NET]: Wrap netdevice hardware header creation.")
+> Reported-by: syzkaller <syzkaller@googlegroups.com>
+> Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+> ---
+>  include/linux/netdevice.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index eddf8ee270e7..9b25a6301fa5 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -3054,7 +3054,7 @@ static inline int dev_hard_header(struct sk_buff *skb, struct net_device *dev,
+>                                   const void *daddr, const void *saddr,
+>                                   unsigned int len)
+>  {
+> -       if (!dev->header_ops || !dev->header_ops->create)
+> +       if (!dev || !dev->header_ops || !dev->header_ops->create)
+>                 return 0;
+
+net_device being NULL during eth header construction? seems like a
+more serious issue?
+If it indeed is a genuine scenario I think a better description is needed...
+
+>
+>         return dev->header_ops->create(skb, dev, type, daddr, saddr, len);
 > --
-> Ping-Ke
-> 
+> 2.31.1
+>
 
-That repo is confusing, unfortunately. Indeed, the "master" branch seems to
-contain v4.3.1.1_11320.20140505. But the last commit is from 2017.
+--000000000000b1984005eec4072d
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-The "realtek-4.4.x" branch is the one being actively maintained, and at some
-point it was updated to v5.6.4_35685.20191108_COEX20171113-0047. README.md
-was forgotten.
+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
+OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
+dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
+fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
+9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
+pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
+25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
+Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICOxZVKDCs83BghAQJfrXQGrIdUo9dpx
+XVk7QLaGCPQKMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIw
+MTEzMTYzM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQCdesEI6liHnREmarUKE5SjXxOkMxbTwhakhYSHs8PrfMKp7iya
+35jm5PqaeME5DRmjpvugmFxJeNu/ob225f13G00Apc0jRm9PvhfwtH+NP4aLE+MkJf+AXB07ujyu
+u0KnRtt5Oz3mEaMDaCg1eqpg5w6VLz4BM4slQi1EFwqDkeSjll6OwbzGF41JAqfCnKHfihwUxJcg
+fbY8GzQ+2i78u6J683VF19CdJICTkgcNCCbBoHYL76EEZSvECcdoQztwHe7Q7Li12A5cqkUUdyEn
+93smOZ72bya+E9n7gLM/lEhirEjQ0187xAo0atE0WXUFFX4n6rnYpv310w4DgjFB
+--000000000000b1984005eec4072d--
