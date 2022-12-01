@@ -2,47 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D92763E940
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 06:16:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D029E63E943
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 06:18:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229677AbiLAFQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 00:16:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
+        id S229690AbiLAFSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 00:18:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbiLAFQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 00:16:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564CF8EE69
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 21:16:46 -0800 (PST)
+        with ESMTP id S229503AbiLAFSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 00:18:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D63578E2
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 21:18:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE69C61E78
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 05:16:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7F3EC433D6;
-        Thu,  1 Dec 2022 05:16:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F08BB81DA5
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 05:18:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17645C433C1;
+        Thu,  1 Dec 2022 05:18:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669871805;
-        bh=HPWpNSLcq5pqzBfpA0Nm8VIasPFzBgT51p8dEkd6rdk=;
+        s=k20201202; t=1669871881;
+        bh=9ozpd8nYFysugKfgBPxD+MKlyYn9QbBTzWIdlCRuNzA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jZVusoswc+L/K85pLII2rcZeIAcfVrnfgcS7JQySPhOt7k4hD5//TfNBP7UpQsePc
-         SDjIAjMx5fBV7LCUmHHX3tAqFMKe4iqNAl++2XMx7A+H4ZlN3vt2vegZu0hcNx3GPv
-         GagjmC792VqWi76ARClxpr5PGbfRAnv4o4ZTABiRpcQRBhUT250a6S6FnrTLSCM+kj
-         tnI/a0/uw9VLH4WwaFRag6N9SbdfVzWVkR1QZ9ZKwRc/exee+v0gFSpBeHvOMzQ/Dn
-         YGAwso6QUsyFm1qiCY6SvJeQuBuMFEcg6gF9aoeCLbQ3kgqzxP0gAPctl7At8eI+SR
-         WYVGtVg7aF5vg==
-Date:   Wed, 30 Nov 2022 21:16:43 -0800
+        b=vAIzMlyrl/HGnUNfTmbORyFJFvy03r8z34VyWXHABsoPnlc2Q032KVBiLeTUOlV6A
+         JF6lrl/i17eVd2fUi0SgGw31x0wkjVrGhWMXBPaO2iGgiWGAteuCOfxGThhOr3QwpX
+         Y2qRwMhyISnSbm7z2XucFA89U2mx4Z5iGHz2YENwiWrwAE4Nyy82H6n7LuGSwtrKv1
+         V8JLymz1HhCBkirPsApMzpRfbkDYkJ9h3P1Zz2si/EnJdI2EF9tigmD9KEornYi7K9
+         weQobAFg4YCYXEXpqzNYQlzQ1v8EnvCMBZmXfvK6zKn9E2eNcFIF1q4bY0wLz7NZiy
+         gLjcEUcVIK9gw==
+Date:   Wed, 30 Nov 2022 21:18:00 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pedro Tammela <pctammela@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, kuniyu@amazon.com,
-        Pedro Tammela <pctammela@mojatatu.com>
-Subject: Re: [PATCH net-next v2 1/3] net/sched: add retpoline wrapper for tc
-Message-ID: <20221130211643.01d65f46@kernel.org>
-In-Reply-To: <20221128154456.689326-2-pctammela@mojatatu.com>
-References: <20221128154456.689326-1-pctammela@mojatatu.com>
-        <20221128154456.689326-2-pctammela@mojatatu.com>
+To:     Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+Cc:     netdev@vger.kernel.org, mkubecek@suse.cz, andrew@lunn.ch,
+        corbet@lwn.net, sridhar.samudrala@intel.com,
+        anthony.l.nguyen@intel.com
+Subject: Re: [PATCH net-next v6] ethtool: add netlink based get rss support
+Message-ID: <20221130211800.372f9a9b@kernel.org>
+In-Reply-To: <20221128175556.49354-1-sudheer.mogilappagari@intel.com>
+References: <20221128175556.49354-1-sudheer.mogilappagari@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,45 +53,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Nov 2022 12:44:54 -0300 Pedro Tammela wrote:
-> On kernels compiled with CONFIG_RETPOLINE and CONFIG_NET_TC_INDIRECT_WRAPPER,
-> optimize actions and filters that are compiled as built-ins into a direct call.
-> The calls are ordered alphabetically, but new ones should be ideally
-> added last.
+On Mon, 28 Nov 2022 09:55:56 -0800 Sudheer Mogilappagari wrote:
+> Add netlink based support for "ethtool -x <dev> [context x]"
+> command by implementing ETHTOOL_MSG_RSS_GET netlink message.
+> This is equivalent to functionality provided via ETHTOOL_GRSSH
+> in ioctl path. It sends RSS table, hash key and hash function
+> of an interface to user space.
 > 
-> On subsequent patches we expose the classifiers and actions functions
-> and wire up the wrapper into tc.
+> This patch implements existing functionality available
+> in ioctl path and enables addition of new RSS context
+> based parameters in future.
 
-> +#if IS_ENABLED(CONFIG_RETPOLINE) && IS_ENABLED(CONFIG_NET_TC_INDIRECT_WRAPPER)
+Please try make htmldocs, the tables below are mis-formatted.
 
-The latter 'depends on' former, so just check the latter.
-
-> +static inline int __tc_act(struct sk_buff *skb, const struct tc_action *a,
-> +			   struct tcf_result *res)
-> +{
-> +	if (0) { /* noop */ }
-> +#if IS_BUILTIN(CONFIG_NET_ACT_BPF)
-> +	else if (a->ops->act == tcf_bpf_act)
-> +		return tcf_bpf_act(skb, a, res);
-> +#endif
-
-How does the 'else if' ladder compare to a switch statement?
-
-> +#ifdef CONFIG_NET_CLS_ACT
-> +static inline int __tc_act(struct sk_buff *skb, const struct tc_action *a,
-> +			   struct tcf_result *res)
-> +{
-> +	return a->ops->act(skb, a, res);
-> +}
-> +#endif
+> +=====================================  ======  ==========================
+> +  ``ETHTOOL_A_RSS_HEADER``             nested  request header
+> +  ``ETHTOOL_A_RSS_CONTEXT``            u32     context number
+> + ====================================  ======  ==========================
 > +
-> +#ifdef CONFIG_NET_CLS
-> +static inline int __tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
-> +				struct tcf_result *res)
-> +{
-> +	return tp->classify(skb, tp, res);
-> +}
-> +#endif
+> +Kernel response contents:
+> +
+> +=====================================  ======  ==========================
+> +  ``ETHTOOL_A_RSS_HEADER``             nested  reply header
+> +  ``ETHTOOL_A_RSS_HFUNC``              u32     RSS hash func
+> +  ``ETHTOOL_A_RSS_INDIR``              binary  Indir table bytes
+> +  ``ETHTOOL_A_RSS_HKEY``               binary  Hash key bytes
+> + ====================================  ======  ==========================
 
-please don't wrap the static inline helpers in #ifdefs unless it's
-actually necessary for build to pass.
+> +static int
+> +rss_reply_size(const struct ethnl_req_info *req_base,
+> +	       const struct ethnl_reply_data *reply_base)
+> +{
+> +	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
+> +	int len;
+> +
+> +	len =  nla_total_size(sizeof(u32)) +	/* _RSS_HFUNC */
+> +	       nla_total_size(sizeof(u32) * data->indir_size) + /* _RSS_INDIR */
+> +	       nla_total_size(data->hkey_size);	/* _RSS_HKEY */
+
+nit: double space after =
