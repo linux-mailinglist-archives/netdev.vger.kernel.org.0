@@ -2,122 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 781AB63EC20
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:15:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEDAB63EC24
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:16:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229848AbiLAJPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 04:15:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48666 "EHLO
+        id S229615AbiLAJQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 04:16:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiLAJPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:15:16 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F491442C7;
-        Thu,  1 Dec 2022 01:15:15 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1669886069; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=PuFREHxuJ3FoD3zI0cgmwgxXBACrFbsNXtmB1ZUDMZF0Vw7u5go+yLfWIyRlKmsI4dy/C4JBEgDliSKn1GHoNmOpzBqaWl6iXr8io/eTVI3oCPsCmOMRaRxdzRXptLt4DP3hnV53GkO6NAhhWer+prEaTAbxrLXw/JqtvaQrzWo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1669886069; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=rmnGX0as+j0mWZhRBwCINR7c9wsJ33DTrPhAflpkh7k=; 
-        b=fw/MEtbCpCH9VgI82wo0vE16g6dZ8NV1Le4xk0BjWdTYK38rt7XBr8kXPBBPo3YRUN6Qe0dqE8w6e3UHXsxU9mNhstxy2c3zRoUP/VEPwky/wlzovr2sCQ7tztCh20i22nk9oPAoF3GnSvN5RPlNAcT6sNLjUOovaigMSm1VuKI=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1669886069;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=rmnGX0as+j0mWZhRBwCINR7c9wsJ33DTrPhAflpkh7k=;
-        b=kC5OJuaedGtqPWAXavS8QBOXmOzGAN9KVKeFTZblN5hQvtgIY+bZgMHEmvSv5xeL
-        m50GcHUsZyBhq0mNsX+aCeIwwvLqFeeWwtPZKWwBHrfnYXDUeClaEjUb82O6yrKKDVx
-        OifNFxxqXQi0y0KKnh1zyARvxBzbuGAfmR/P71Bk=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1669886067241836.827775278157; Thu, 1 Dec 2022 01:14:27 -0800 (PST)
-Message-ID: <b5ed90cf-1b5d-9306-7b06-ded7c331ca2a@arinc9.com>
-Date:   Thu, 1 Dec 2022 12:14:21 +0300
+        with ESMTP id S229576AbiLAJQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:16:14 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E941B442C7
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 01:16:13 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1p0ffs-00053K-AF; Thu, 01 Dec 2022 10:16:08 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:dc5e:59bf:44a8:4077])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D433A12ECAC;
+        Thu,  1 Dec 2022 09:16:06 +0000 (UTC)
+Date:   Thu, 1 Dec 2022 10:16:05 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Markus Schneider-Pargmann <msp@baylibre.com>
+Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 02/15] can: m_can: Wakeup net queue once tx was issued
+Message-ID: <20221201091605.jgd7dlswcbxapdy3@pengutronix.de>
+References: <20221116205308.2996556-1-msp@baylibre.com>
+ <20221116205308.2996556-3-msp@baylibre.com>
+ <20221130172100.ef4xn6j6kzrymdyn@pengutronix.de>
+ <20221201084302.oodh22xgvwsjmoc3@blmsp>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH 0/5] remove label = "cpu" from DSA dt-binding
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        soc@kernel.org, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20221130141040.32447-1-arinc.unal@arinc9.com>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20221130141040.32447-1-arinc.unal@arinc9.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bgbavs7rssx26dyz"
+Content-Disposition: inline
+In-Reply-To: <20221201084302.oodh22xgvwsjmoc3@blmsp>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm sending a more specific mail to make sure this series doesn't fall 
-through the cracks like Andrew said. I'd like this merged this week 
-before the merge window closes.
 
-Jakub, please take patch 1.
-Arnd, please take patch 2 and 3.
-Thomas, please take patch 4.
-Michael, please take patch 5.
+--bgbavs7rssx26dyz
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Arınç
+On 01.12.2022 09:43:02, Markus Schneider-Pargmann wrote:
+> Hi Marc,
+>=20
+> On Wed, Nov 30, 2022 at 06:21:00PM +0100, Marc Kleine-Budde wrote:
+> > On 16.11.2022 21:52:55, Markus Schneider-Pargmann wrote:
+> > > Currently the driver waits to wakeup the queue until the interrupt for
+> > > the transmit event is received and acknowledged. If we want to use the
+> > > hardware FIFO, this is too late.
+> > >=20
+> > > Instead release the queue as soon as the transmit was transferred into
+> > > the hardware FIFO. We are then ready for the next transmit to be
+> > > transferred.
+> >=20
+> > If you want to really speed up the TX path, remove the worker and use
+> > the spi_async() API from the xmit callback, see mcp251xfd_start_xmit().
+>=20
+> Good idea. I will check how regmap's async_write works and if it is
+> suitable to do the job. I don't want to drop the regmap usage for this
+> right now.
 
-On 30.11.2022 17:10, Arınç ÜNAL wrote:
-> Hello folks,
-> 
-> With this patch series, we're completely getting rid of 'label = "cpu";'
-> which is not used by the DSA dt-binding at all.
-> 
-> Information for taking the patches for maintainers:
-> Patch 1: netdev maintainers (based off netdev/net-next.git main)
-> Patch 2-3: SoC maintainers (based off soc/soc.git soc/dt)
-> Patch 4: MIPS maintainers (based off mips/linux.git mips-next)
-> Patch 5: PowerPC maintainers (based off powerpc/linux.git next-test)
-> 
-> I've been meaning to submit this for a few months. Find the relevant
-> conversation here:
-> https://lore.kernel.org/netdev/20220913155408.GA3802998-robh@kernel.org/
-> 
-> Here's how I did it, for the interested (or suggestions):
-> 
-> Find the platforms which have got 'label = "cpu";' defined.
-> grep -rnw . -e 'label = "cpu";'
-> 
-> Remove the line where 'label = "cpu";' is included.
-> sed -i /'label = "cpu";'/,+d arch/arm/boot/dts/*
-> sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/freescale/*
-> sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/marvell/*
-> sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/mediatek/*
-> sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/rockchip/*
-> sed -i /'label = "cpu";'/,+d arch/mips/boot/dts/qca/*
-> sed -i /'label = "cpu";'/,+d arch/mips/boot/dts/ralink/*
-> sed -i /'label = "cpu";'/,+d arch/powerpc/boot/dts/turris1x.dts
-> sed -i /'label = "cpu";'/,+d Documentation/devicetree/bindings/net/qca,ar71xx.yaml
-> 
-> Restore the symlink files which typechange after running sed.
-> 
-> Arınç ÜNAL (5):
->    dt-bindings: net: qca,ar71xx: remove label = "cpu" from examples
->    arm: dts: remove label = "cpu" from DSA dt-binding
->    arm64: dts: remove label = "cpu" from DSA dt-binding
->    mips: dts: remove label = "cpu" from DSA dt-binding
->    powerpc: dts: remove label = "cpu" from DSA dt-binding
-> 
-> 
+IIRC regmap async write still uses mutexes, but sleeping is not allowed
+in the xmit handler. The mcp251xfd driver does the endianness conversion
+(and the optional CRC) manually for the TX path.
+
+Sending directly from the xmit handler basically eliminates the queuing
+between the network stack and the worker. Getting rid of the worker
+makes life easier and it's faster anyways.
+
+> > Extra bonus if you implement xmit_more() and transfer more than 1 skb
+> > per SPI transfer.
+>=20
+> That's on my todo list, but I am not sure I will get to it soonish.
+
+I haven't implemented this for the mcp251xfd, yet, but I have some
+proof-of-concept code somewhere. However, the mcp251xfd driver already
+implemented byte queue limits: 0084e298acfe ("can: mcp251xfd: add BQL
+support").
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--bgbavs7rssx26dyz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOIcNIACgkQrX5LkNig
+012hAggAlCb40W8MfJXLFvupUYSaOXCTBav4Ad74PpGE+RCHo5V+RVAHB6xNqBUC
+Ur3tjLynBaHmla68klZIdl4ZUqRU5cBdJtRiGQpHwZJLqU9xP2FuiUf0I0VHAn/9
+Wa/0yS2DY3kd9Ss9cdeAsewED4/0+zjgaFWWVycUX8srrcTi7ub26px0QGCkH+ld
+6H2MJOtYzkLD3tAlcAghuRpfp3bsq2ZigzRfkungG8vJOlvkm7AsvLH49Q+ZAAW9
+ALcyi61T2MGL6tL4glNVH5nozZif11Oo8SLY+y6cSeiRv1XGH+LLA6W2ff9hJo04
+24rseGKCL6TUFzXOWhE1w+CBmE+LKQ==
+=p4PT
+-----END PGP SIGNATURE-----
+
+--bgbavs7rssx26dyz--
