@@ -2,131 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC8DE63E8E6
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 05:37:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A1363E8C9
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 05:11:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229668AbiLAEhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 23:37:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
+        id S229609AbiLAELk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 23:11:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiLAEhN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 23:37:13 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D595277425
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 20:37:10 -0800 (PST)
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20221201043708epoutp01ebc35c2d0e8b7359bbadab267bb37673~skWXsAaDQ3044330443epoutp01O
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 04:37:08 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20221201043708epoutp01ebc35c2d0e8b7359bbadab267bb37673~skWXsAaDQ3044330443epoutp01O
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1669869428;
-        bh=z/uj3aw1pAluhqEep2srfIlcP+du9f+FkKAdDbyUsiY=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=KAtXC1NuHE5vcNPAEUlfx9BJPpR2qpVPvcoP8D3/NV/ayGPRchZVP3giTgyaHSyuI
-         A+XK/ZtUpRsAgsAFMgLhWdHFyUqfUYpBdicLTYFcT2uEUC7npcR1DtR4s2poMLbrz6
-         1+HoGeV/8w2JJn40kUNlxkSoHqY4olWpvpkCDLE0=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20221201043708epcas5p4ec9c2d060a41756dee37e1d4251756aa~skWXAlGLD1260512605epcas5p4W;
-        Thu,  1 Dec 2022 04:37:08 +0000 (GMT)
-Received: from epsmges5p3new.samsung.com (unknown [182.195.38.181]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4NN3FZ2q17z4x9Pt; Thu,  1 Dec
-        2022 04:37:06 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        EE.64.56352.27F28836; Thu,  1 Dec 2022 13:37:06 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-        20221201041110epcas5p1b0f4efd9b6c225ab5203d840099f649f~sj-sFqa6D0484304843epcas5p1M;
-        Thu,  1 Dec 2022 04:11:10 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20221201041110epsmtrp203f02a4b4228ebe1be25ea2b6f0baa04~sj-sD_scY1904419044epsmtrp2i;
-        Thu,  1 Dec 2022 04:11:10 +0000 (GMT)
-X-AuditID: b6c32a4b-383ff7000001dc20-55-63882f725909
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        07.F7.18644.D5928836; Thu,  1 Dec 2022 13:11:09 +0900 (KST)
-Received: from FDSFTE314 (unknown [107.122.81.85]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20221201041104epsmtip1fbe8af72afac5e3640d702a0af30fb0f~sj-m4_qG_2592925929epsmtip1W;
-        Thu,  1 Dec 2022 04:11:04 +0000 (GMT)
-From:   "Vivek Yadav" <vivek.2311@samsung.com>
-To:     "'Marc Kleine-Budde'" <mkl@pengutronix.de>
-Cc:     <rcsekar@samsung.com>, <krzysztof.kozlowski+dt@linaro.org>,
-        <wg@grandegger.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <pankaj.dubey@samsung.com>,
-        <ravi.patel@samsung.com>, <alim.akhtar@samsung.com>,
-        <linux-fsd@tesla.com>, <robh+dt@kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <aswani.reddy@samsung.com>, <sriranjani.p@samsung.com>
-In-Reply-To: <20221124145405.d67cb6xmoiqfdsq3@pengutronix.de>
-Subject: RE: RE: [PATCH v3 1/2] can: m_can: Move mram init to mcan device
- setup
-Date:   Thu, 1 Dec 2022 09:40:50 +0530
-Message-ID: <01f901d9053a$f138bdd0$d3aa3970$@samsung.com>
+        with ESMTP id S229538AbiLAELc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 23:11:32 -0500
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2082.outbound.protection.outlook.com [40.107.14.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0440B9838B;
+        Wed, 30 Nov 2022 20:11:31 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KWr7jcUG9WDFGAm+vVy0eV6i1tUrWVYO/Bvwdg/rLrutbJOjcGly+iw5ij6YBNS7xYVIraxmfXbZoRBoN8lgvLv/stjtG/7UJpe2Duf/8IsdUPJb5d+QwaLjpw8+F/WYOT3JgtTV0H6EuifTiXaix5wGxi3EqCI5bNrkJ9Y1nT1KLZzDr107VbvgcKfBdtfDDi1h+CYptqSgktDB7vzfIJdpZ5yhJ8NDQVSnI+iGFr6ViGW1G0HaL24H/0kY7fjOqlGv0dk3BMT6xsxWZcZLFfzLdPHUYb3OfrdaYvt/i4u1lad100zGeEMHnPvYFOzwdky7vuVGy1DkChVKuRFhHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=788usBSCMQMU2rrjse/znmauf869N5yVpkf7LitcVXM=;
+ b=R3hXBR1LzB3TIFtjnjSiTC32Vm4VJJngeMXBid4UW5ik6DjXjbz8m9Wzfp+TeLvzMUJgYSaF1PsduVdJrQS7El55XZ6Zr7A4Q3mBcAnbFuLBPe2B6/1gvR7v7HofHy4P0DiOOnJJdL1hvNwKnE+9wSLCXE4lBUhdqj1YCdyyMOmFkK9TTaR+QwsoA6MV7dL79KiwQLRSXDkFm+KBjhnHjgTxAkYsNciEqKylp+41uDeZGmyDeoyMfiOZ48U+AyoMH/5UlFyQdEPMif2duAgeTNjQ2bDUZcK+ZRR6QIYTPkYqL/on+NUVvsPclPUZ697JfxFCn/0LhUDOop2bfocb8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=788usBSCMQMU2rrjse/znmauf869N5yVpkf7LitcVXM=;
+ b=V2t6WnzUd8ljpOpmRnzg34u70UJ2OD4/gSQ4Bu2nszgeO6O8FDjPHWTUaPzgTjx2MzZrMlO/U+AmWt2sf/euZBWVVgZ7DD4zjupY+reIYLCulxv4VARjShGPmcR8jFUsQ6SERMlPzL59xMEugVraG8vOwpKRoMov+WWgUaK++HgrJZKbBejy30fDiM5ycgOi88La4w2AquLA9F7KWffihhvkjsi0Kxqx9BPD5dK/Ll1bbx9NewsFGWKcBqFqiSGrktRhOolCXjuHjQnemM+omZ4ly+0Oceh+SZqdi1YYGflCNVqhheOeRUkwnXoYpDmhAJvt6zfqGagSZP09o3d7bA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from AS8PR04MB9009.eurprd04.prod.outlook.com (2603:10a6:20b:42d::19)
+ by AS1PR04MB9335.eurprd04.prod.outlook.com (2603:10a6:20b:4dd::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Thu, 1 Dec
+ 2022 04:11:27 +0000
+Received: from AS8PR04MB9009.eurprd04.prod.outlook.com
+ ([fe80::696b:5418:b458:196a]) by AS8PR04MB9009.eurprd04.prod.outlook.com
+ ([fe80::696b:5418:b458:196a%3]) with mapi id 15.20.5857.023; Thu, 1 Dec 2022
+ 04:11:26 +0000
+Date:   Thu, 1 Dec 2022 12:11:12 +0800
+From:   Firo Yang <firo.yang@suse.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     marcelo.leitner@gmail.com, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, mkubecek@suse.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        firogm@gmail.com
+Subject: Re: [PATCH v2 1/1] sctp: sysctl: make extra pointers netns aware
+Message-ID: <Y4gpYPlWNLe5o8Hy@suse.com>
+References: <20221125121127.40815-1-firo.yang@suse.com>
+ <20221129204818.7d8204b4@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20221129204818.7d8204b4@kernel.org>
+X-ClientProxiedBy: TYCP286CA0041.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:29d::16) To AS8PR04MB9009.eurprd04.prod.outlook.com
+ (2603:10a6:20b:42d::19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQKzKt4C0V6WIa1X2lvfORr5q2BWDgH5Y+bNAeiPnOMDLJn5dwD4TowRAqfPl+usTqoaEA==
-Content-Language: en-in
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrOJsWRmVeSWpSXmKPExsWy7bCmum6RfkeywZ1ZfBYP5m1jszi0eSu7
-        xZzzLSwW84+cY7V4euwRu0Xfi4fMFhe29bFabHp8jdVi1fepzBYPX4VbXN41h81ixvl9TBbr
-        F01hsTi2QMzi2+k3jBaLtn5ht3j4YQ+7xawLO1gtWvceYbe4/WYdq8XSeztZHUQ9tqy8yeSx
-        YFOpx8dLtxk9Nq3qZPO4c20Pm8fmJfUe/X8NPN7vu8rm0bdlFaPHv6a57B6fN8kFcEdl22Sk
-        JqakFimk5iXnp2TmpdsqeQfHO8ebmhkY6hpaWpgrKeQl5qbaKrn4BOi6ZeYAfamkUJaYUwoU
-        CkgsLlbSt7Mpyi8tSVXIyC8usVVKLUjJKTAp0CtOzC0uzUvXy0stsTI0MDAyBSpMyM6YemQ/
-        Y0GveMWTQxdYGhg/C3UxcnJICJhIXPu3mBHEFhLYzShxt9Oni5ELyP7EKPFg3kFGCOczo8SJ
-        3W1sMB2X3z5mgujYxSjxb00NRNFzRolb15ewgCTYBHQkmif/BRsrIqAn8XvCIrAGZoH1LBLf
-        DomA2JwCthK3vk5mBbGFBQIl3t1pAKtnEVCR2PC4F6yeV8BSovnuF0YIW1Di5MwnLBBztCWW
-        LXzNDHGQgsTPp8tYIXaFSXz8dIwZokZc4ujPHqia+ZwSH5+lQNguElP//2SHsIUlXh3fAmVL
-        SXx+txfqyWSJHf86WSHsDIkFE/cwQtj2EgeuzAG6gQNovqbE+l36EGFZiamn1kG9yCfR+/sJ
-        E0ScV2LHPBhbReLF5wmsIK0gq3rPCU9gVJqF5LFZSB6bheSBWQjLFjCyrGKUTC0ozk1PLTYt
-        MM5LLYfHdnJ+7iZGcA7Q8t7B+OjBB71DjEwcjIcYJTiYlUR4Oz63JQvxpiRWVqUW5ccXleak
-        Fh9iNAWG9kRmKdHkfGAWyiuJNzSxNDAxMzMzsTQ2M1QS5108QytZSCA9sSQ1OzW1ILUIpo+J
-        g1OqgclL6OHyxcktq85Fm/D27RWVtlyv+a6zNvJA7VnntSERGwTOrPjySWhFN9cPvavfliZ3
-        HXF+NkW8cmHgMqnPUVUvG4V4KgLebONWr71/ueNvTLL0tZC2pHMhvhoPlS2NI2bPXFa7+sHC
-        2mXyDjHtxlfV/n049fmZBUu6W/5aoeUK2rsLihRD1RVfiSozzrpRffTgJcsa5uiz+2PnTGR1
-        YzkT/zhuzc3mjJ4sr4UzfwhFW12ezlPoe7im74DzjeTp11L+SPBfCjTODzyisCb/GWPssZ9v
-        4ieLCGVMOjo5vOtXFutqLRGT7gzfv77zedR//72xQKp51bN/EgzanqJtVeuapS+bJ9yaxCHZ
-        0xjwQ4mlOCPRUIu5qDgRAA7kQnWKBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Sf0yMcRzHfe95nnue4rrHXe6+splOm/XrUYZ9WcwWesyP8Edis5w8q1td
-        bs8VyaZIpigscp2jH7h1Z8nukkpCTpZfhYmkOHf9ICUqSTLrbrb+e23vX58/PhQmceI+lCop
-        meOTlIkKoSde9UAxN3in//HYkCLdcvTxUpUQNVhvksjQfBRHRbbnBOpq/ESivF47hlqq8ghk
-        cbQSyDx6DkP2L9vQq1qDEOma6wWoovQsjhqLZejnk68Ald4cJpF9sI5E+pZqAmXdsZGo/et1
-        Al3trCFWzWIrTW0CttiSwn5/2Q5YizlbyL5vrROy1ivp7KmJEPZb/Wshm1dpBuzfIxdJdsgy
-        d/P0HZ5he7hE1T6OX7hyl2f84wtnSE2TLLW8zSnMABWSHOBBQXoxfNXvEOQAT0pCVwM4VF9I
-        uAUfePbpZ9zNUmj620O6TV0AtltLwaQgpINgZv6Ei71pBo6fLnU1YfQjHH5o6yTciWcCOGwb
-        xSZdHvQK+G4k3zUhpSOhqaPMNYHTfvCGI1cwySJ6GczsGAZungmbCp0uD0YHwlx7FvjPxpI+
-        zH3ePDjWZSTcV0TB7z8aMbdHDh+OncROA6l+SpV+SpV+SpV+SqQY4GYwm9No1XFqbahmURK3
-        n9Eq1dqUpDgmdq/aAlyPEBBQDerMg0wDEFCgAUAKU3iLjg8di5WI9igPpHH83hg+JZHTNoA5
-        FK6Qi1pymmIkdJwymUvgOA3H/1cFlIdPhiDig2ydDhP1Pw0ekP6xHVYFOUZu9Wzt9fti1Uem
-        GZc405t9l6+yj+czY6rIASJxY3stL8q13V/v0Zjlb5g/HpYqXjtWtxV/E9C6o7ZAI55pDP5t
-        CIvO/MUclG7yggOFGb3mfN5eZa6XOgp9vU/NkK3JZPpOpDq7NwTG7I5K2RS0whBYEyJfQIhr
-        jKE6VeX2KLm4u79kOlOeXgTDz+Nvl1nv7ja2eplkVInxthfbNxr24mr2aEHZIF3ZoVtarjoE
-        izb2FNh8dt6LuPZMnKwpH2HDSW305QcvfD9NY9riqARTckT06y1+6t9yZedB9a2JoXNUcVoQ
-        r1vtPy9NrMC18crQAIzXKv8BMvCK1XcDAAA=
-X-CMS-MailID: 20221201041110epcas5p1b0f4efd9b6c225ab5203d840099f649f
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20221122105022epcas5p3f5db1c5790b605bac8d319fe06ad915b
-References: <20221122105455.39294-1-vivek.2311@samsung.com>
-        <CGME20221122105022epcas5p3f5db1c5790b605bac8d319fe06ad915b@epcas5p3.samsung.com>
-        <20221122105455.39294-2-vivek.2311@samsung.com>
-        <20221123224146.iic52cuhhnwqk2te@pengutronix.de>
-        <01a101d8ffe4$1797f290$46c7d7b0$@samsung.com>
-        <20221124145405.d67cb6xmoiqfdsq3@pengutronix.de>
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        PDS_BAD_THREAD_QP_64,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB9009:EE_|AS1PR04MB9335:EE_
+X-MS-Office365-Filtering-Correlation-Id: d5e3ae42-026b-4bf2-44ba-08dad3521d72
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kRBZClc7sI/GdLfLcVNiLNkiH88j+SOZZXWXcLqgTeQSKqYFKOefAm/ktPxBuqAYs/ZCFQ7VTUr05kIF3PLRqqwOVdylA3G6rWtrPHc/ZVThSZ4Mq+KGW09pyPDc3l88cg94Kj1ed0gu45uTxdHpNLYBmlT+TWr0htZ59DS/gZPAEAFUHYdtQztiW4SmErQfmjjCCYqEJHZudySuwjzOQ4Uh3T6rCGDM9yi76JGBl9rLEfQ9Dp9ZnpInm+Sk+1xwTHVdxGSmR+/MpuffCa/2NaEkeyUbR2UTS7dlrQzvZj0Kyq3SBM0Lmf/jFmBgSy2h8YW2adSPxG3XaEtaqavYjv/Ozw8B5Mb74h/5ZMEL3HdaMooxINTzERbqQgY8gXbBUHwYj4MZZB6M/i5yqmBaAcjKZVfBOZC6R4NnYNx7dxFaJFZ2Wgt0gnM82v6T8HmYBCb7v1NmsW/WKcO9O7B2ey4o7E1KP9UOSKtAenHVzvcBv9P1kf7VJimNy+YOzFTeqLoUN+spFSV9n7e/0ZrE+XM7UwwY8zsCDBdclablz8upSHDJ1nwE9KG+rCW5ghbV++IRrlyqpCxiQFnggAMNzbxl4h8VniTUnnxdk1mzLMm3JeNqmHEvjrGNEI0kMkSuEMTghJTE9I/gJm1NFyU1hg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB9009.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39860400002)(136003)(366004)(396003)(376002)(346002)(451199015)(2906002)(8676002)(4326008)(5660300002)(66556008)(66946007)(41300700001)(6506007)(66476007)(6916009)(38100700002)(186003)(2616005)(316002)(36756003)(86362001)(4744005)(8936002)(44832011)(7416002)(6512007)(478600001)(6666004)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z0tWMHZqaGYzR0h3c3BrRCt4dkpNbVk5clJDRVBzMHNNc1pQSDNHUDhVaVV1?=
+ =?utf-8?B?bWZKejQvZjdSR3FhY2tmOWlaeXorRnFqZ3ZlVU52bHZJR1gvTjQrVHVMZ2ZK?=
+ =?utf-8?B?K2J0K2tFMzZERU5LTmsvWVc5WmFVTUxQeG9EMEJJSXNiZjhMM2hHMlpaUEJO?=
+ =?utf-8?B?bEdyeXg3d2lnVEZpcDYrbmdQK3FCSHozRE5IMXp3R3dwTmJtQlcxYjd0a2xm?=
+ =?utf-8?B?Yys0a2Ywc1huZTUvZ3JuVHBST0RVSWF3eFd4bnRJemNoVkJIRHlHRS9sNzZ3?=
+ =?utf-8?B?VWpGbHlHWDI3UlFrUHhzcXRWZ1FVYjhVWHBQaDRSdDI3ZjZHRTdaMFdzaHVr?=
+ =?utf-8?B?Yk13SDBwNldEUVFidE11VHJOY1c0cGFra3NtTlRHZUpxTjdhL2RJNGFYc21W?=
+ =?utf-8?B?QmFTSnUwdmMzNGtITEIyb2w2N2ZEc05JQld5Z29CS2FwVGwvYW9uL3lXVk10?=
+ =?utf-8?B?NW9DbTRxZUFZNVVSVU5QS3hNSTBSYVdNdGhUOWJ0ZG04M2pmcmhKbmRvQk4r?=
+ =?utf-8?B?Z21tU2hBY0VHMURiOFZjbGNzZzhQK3dFaXcvUjZ4azB2SVczWml2SXpiL3cr?=
+ =?utf-8?B?U1NNcXZXNklGdDdnT3JiOFI4NUh5Z0RpV1AyeVBtcXBLQkMzYTY2N0tSRzJx?=
+ =?utf-8?B?bXFlcnpwWWNLbFVUMFZrUEdTcks4OXIxVXIzNlpkSlZGdWdGRDRDWmxsSVRI?=
+ =?utf-8?B?ZWdCbWQ0d0pPWlBYZEI1TFR1eHpCamlBeUp6NlZZWTZPREU0V1ZPbkJQVU1o?=
+ =?utf-8?B?UERZVVhicExGbHBvRkkwbTlETTlmcUxEcnQzalNmeG03YzFJdjNzTDh2c1Bn?=
+ =?utf-8?B?QnpOaUx2TDFPTEdZa2FDQ2s5NmtoR2M2Y3dPVS8yTGd2UmgyV3NxRTNzQkkr?=
+ =?utf-8?B?R1hud3BXS3gyMUQ2YnVnVUJrTjJld1MxNnVNYWpLYnNqbzVJWGRSbGlRRE1m?=
+ =?utf-8?B?eWhjWGRzblN4NzVKTjRvZ0FQYUpaeWd1OFhndHlNdXlsRDZIWHBrQWxGRnlV?=
+ =?utf-8?B?NDRtbVJnTWFKOWxudzJubFFMVTBGaHltN1laWENxaFQ4bEs1Zm5OSHFjeDBH?=
+ =?utf-8?B?Y1VIZS9DYmZDc09QV01RcEljYzB1VjBvSEtEaXRTY1czb2pTVFhGbTJyV1VQ?=
+ =?utf-8?B?WkwwcUhNY0RDaGhUU3A1YUxINW5lSFQ0RUUyNmZKOHlyTysvYk1lK0w4WWJN?=
+ =?utf-8?B?ODZZbTFQZm4yTEtWZm55VkpMMzlveG9oVUFKS0NySlRmbTBiL0JpYlJvYk1X?=
+ =?utf-8?B?QytqWnJlSXFMRStEdndoVVgyOWk1UXROSWRyTy9GckRkcVpKdjdWMzFMSmx1?=
+ =?utf-8?B?SzNzNzJlem9NcWozZEJCdHc2UXdlVk0ydy8wa3JkS1oyNURQOUE0TXBIeFox?=
+ =?utf-8?B?cWN5S2d6RHJIRm9OSWxPY2RkS2ZSVWJ4Z0hOeTVBVnpvbTN5Y3dWbmlCcW1S?=
+ =?utf-8?B?cHN3czFQMUFGUkE0QXc3dGs4dDhBZC9lTjhFa0lJMng0a1RCZnNpZjlpeFZj?=
+ =?utf-8?B?QWZpUi91amZoN1FnYmd6Z1JQM2JweVYyNERBOFpJZ3U3Q1hVZStCTzEzb3Q2?=
+ =?utf-8?B?MGdldHVIbGJQRU52ODc5bndYRUMybW5qeitSMitrcXBMakFLSU9kd0E1eXpl?=
+ =?utf-8?B?eFZSd0hYdDVzVzRvd2pXN3dtS1E4dE1BNVJDbDJUZjNOR3MrQTJMNTNDU0NB?=
+ =?utf-8?B?SCtTK1dkTzRaSENFdXRCa3hZR2c3V2YvS0pmTk5ST3hTb09JZmQxNW9sdnFQ?=
+ =?utf-8?B?ZmMvbDZCRC9iZ3d5TEhlSEVzdWJmRFhqMUVuZG56bTJLMk1aa1A3enNhSmRp?=
+ =?utf-8?B?ZG1SUHloQmJMcDdiMlo3UXMrTTBoaWxYeFdsYmllYjhrdDRhbkxlRHBoOFBT?=
+ =?utf-8?B?OFBpMHFZYzRXZjJRRnErSisyQTVPcVU0NGhHLzlVQ0xob1B3aFg4RWJyZzVh?=
+ =?utf-8?B?YTIwNHVRS1dHNFVwMWtXWm5rdVhqSGRsYW9Fb2FEZnRwQmxlcUF4T0ExcnZP?=
+ =?utf-8?B?VkpqOWZPUERZQmxBdy9XL2NHblZ6aGJZNEc4QU9aa2RHMVZBdVlYTnl5Snk4?=
+ =?utf-8?B?T0xTTEw4eXNiekVmVXBwRUpKcmxHaTY2bmxSYmwydEtZVVoxUE1SSmNyOHdL?=
+ =?utf-8?B?WEJmRUxaclVURzIxVXlGcnVTZlpINVVyd05abnNZbHJaMlRGL2Y0VWVjWXdj?=
+ =?utf-8?Q?BJFIlB/UF9Zqrerwm/UuJ1XSqCUOJ9DFQhnF3ZDDdPhC?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d5e3ae42-026b-4bf2-44ba-08dad3521d72
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB9009.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Dec 2022 04:11:26.9133
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yyCLkEZXT7HftVFETUxrnSySZ6kPwRALLUJ+TM6dwX4PJYdpK5M6x391637b/F9FueLrCs/u2VPvdOIBp96F0w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9335
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -134,74 +126,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The 11/29/2022 20:48, Jakub Kicinski wrote:
+> On Fri, 25 Nov 2022 20:11:27 +0800 Firo Yang wrote:
+> > +#define SCTP_RTO_MIN_IDX       1
+> > +#define SCTP_RTO_MAX_IDX       2
+> > +#define SCTP_PF_RETRANS_IDX    3
+> > +#define SCTP_PS_RETRANS_IDX    4
+> 
+> Use these to index the entries, please, like this:
+> 
+> struct bla table[] = {
+> 	[MY_INDEX_ONE] = {
+> 		.whatever = 1,
+> 	},
+> 	[MY_INDEX_TWO] = {
+> 		.fields = 2,
+> 	},
+> 	{
+> 		.there = 3,
+> 	},
+> 	{
+> 		.are = 4,
+> 	},
+> };
+> 
+> I think that works even without all entries in the table having the
+> index.. ?
+> 
 
+Cool. I will send a V3.
 
-> -----Original Message-----
-> From: Marc Kleine-Budde <mkl=40pengutronix.de>
-> Sent: 24 November 2022 20:24
-> To: Vivek Yadav <vivek.2311=40samsung.com>
-> Cc: rcsekar=40samsung.com; krzysztof.kozlowski+dt=40linaro.org;
-> wg=40grandegger.com; davem=40davemloft.net; edumazet=40google.com;
-> kuba=40kernel.org; pabeni=40redhat.com; pankaj.dubey=40samsung.com;
-> ravi.patel=40samsung.com; alim.akhtar=40samsung.com; linux-fsd=40tesla.co=
-m;
-> robh+dt=40kernel.org; linux-can=40vger.kernel.org; netdev=40vger.kernel.o=
-rg;
-> linux-kernel=40vger.kernel.org; linux-arm-kernel=40lists.infradead.org; l=
-inux-
-> samsung-soc=40vger.kernel.org; devicetree=40vger.kernel.org;
-> aswani.reddy=40samsung.com; sriranjani.p=40samsung.com
-> Subject: Re: RE: =5BPATCH v3 1/2=5D can: m_can: Move mram init to mcan de=
-vice
-> setup
->=20
-> On 24.11.2022 14:36:48, Vivek Yadav wrote:
-> > > Why not call the RAM init directly from m_can_chip_config()?
-> > >
-> > m_can_chip_config function is called from m_can open.
-> >
-> > Configuring RAM init every time we open the CAN instance is not
-> > needed, I think only once during the probe is enough.
->=20
-> That probably depends on you power management. If I add a regulator to
-> power the external tcan4x5x chip and power it up during open(), I need to
-> initialize the RAM.
->=20
-Thanks for the clarification,
-There is one doubt for which I need clarity if I add ram init in m_can_chip=
-_config.
-
-In the current implementation, m_can_ram_init is added in the probe and m_c=
-an_class_resume function.
-If I add the ram init function in chip_config which is getting called from =
-m_can_start, then m_can_init_ram will be called two times, once in resume a=
-nd next from m_can_start also.
-
-Can we add ram init inside the m_can_open function itself?
-Because it is independent of m_can resume functionality.
-
-> > If message RAM init failed then fifo Transmit and receive will fail
-> > and there will be no communication. So there is no point to =22open and
-> > Configure CAN chip=22.
->=20
-> For mmio devices the RAM init will probably not fail. There are return va=
-lues
-> and error checking for the SPI attached devices. Where the SPI
-> communication will fail. However if this is problem, I assume the chip wi=
-ll not
-> be detected in the first place.
->=20
-> > From my understanding it's better to keep RAM init inside the probe
-> > and if there is a failure happened goes to CAN probe failure.
->=20
-> Marc
->=20
-> --
-> Pengutronix e.K.                 =7C Marc Kleine-Budde           =7C
-> Embedded Linux                   =7C
-> https://protect2.fireeye.com/v1/url?k=3D2053d9ab-7fc8e0b4-205252e4-
-> 000babdfecba-a8c309c53e3358f5&q=3D1&e=3Dc0cfd0e2-a422-4821-a49d-
-> 113cfa4da9cb&u=3Dhttps%3A%2F%2Fwww.pengutronix.de%2F  =7C
-> Vertretung West/Dortmund         =7C Phone: +49-231-2826-924     =7C
-> Amtsgericht Hildesheim, HRA 2686 =7C Fax:   +49-5121-206917-5555 =7C
-
+Thanks,
+// Firo
