@@ -2,76 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE18A63EC93
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:32:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F91D63EC8B
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230180AbiLAJcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 04:32:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
+        id S230218AbiLAJbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 04:31:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbiLAJcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:32:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05D7900E6
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 01:31:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669887061;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=u/iFWcb6lk61NYrGYwPNwjbI1wwMR1ABxD7gcOpCxTQ=;
-        b=ATWss8eCe1KOpQaTLdFJyWrlwQ/GFNVcaGr+8hoIbpc0A1ON5c14c6wijblvK8eVcsLYIp
-        ji1lY3izqa6V+4lHZiqzvIFhPg/5KAY8byLx42aGSfXZRRwPd/sMiUmG+INV1k9Yx8yEdb
-        Til1CW21TiYfoHfStA+1kjG/RsECDwU=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-459-0Bk-GQlPPMW13BrIDEuV-g-1; Thu, 01 Dec 2022 04:31:00 -0500
-X-MC-Unique: 0Bk-GQlPPMW13BrIDEuV-g-1
-Received: by mail-qt1-f199.google.com with SMTP id k1-20020ac84781000000b003a6894cdd5eso2988526qtq.14
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 01:30:59 -0800 (PST)
+        with ESMTP id S230229AbiLAJbW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:31:22 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9367975E1
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 01:30:55 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id y16so1730447wrm.2
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 01:30:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EoRTMNVcYQTgedY2uiMQ9QMpPHQ3mvgwAT6uMCKj34E=;
+        b=g5GmAoIEmENTnQkoMRfTbw5Z1YM6pQ6938MZYpNEon85B6aowgwmBChicSr8QEhoFx
+         zHhjuRiwouAizynLI6c8JrVItd8BusWH1DV5tw1WLyMhFHcICa1FlFzuehehsnt6Fq6N
+         IsCmM6xuCsoQLCXZjbyps5lqkDOW5jiuFwzNQI+oLb/Min9Pm6e+//BU3AtpMNkSLFCD
+         ma4SWc09WzPS4ukZYGHrryvfCiUGdZNB0k3v/g385xVsjsfbg1EFfQAYiyln8FUfBTuj
+         UWQNqfgKwdfusqolppUkU+npmBTWbD7K5l4UjsSEOR6q/TWdAC1+HNjJ2N5MOR7fXIuM
+         WWcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=u/iFWcb6lk61NYrGYwPNwjbI1wwMR1ABxD7gcOpCxTQ=;
-        b=Jdeet7nryPmCWEATCD6FqkQDdUuHXnU6GEBefXI9qlLfUi6UAl7VseV/Z6faUXOaR8
-         2TqIfRxOrFII1BqBJIq+nbMq5xnfN0IB6fMDThHdYuvNEbC/l8U+YFFxrdQ7B4RRaX4G
-         j9ORLXYwq5P733KiyWaDzrBNKz1sgk3z2XMH8Q+N7S0kw3NMLjpMM1abl2Cx+vSmu9i9
-         m5L4l8Fi3oXqevyb0eDz0CmCB7VhVQYbk5cKFq9ucnoQXTULJXdx2tXhfOZ4SvUnF9+S
-         bwTou0ythpDDMnsnkimVAEEAR/kY7/jGWz9iCtd+NhMd5erjHZ8r94qUx4KBMeHsmX/U
-         YGhg==
-X-Gm-Message-State: ANoB5plCgi5gL+8mtgK+bGcGW8QtcAusqWlfeCOnksSVIWmzYlf7DVFw
-        OX637YDt1HwxfC8xvCBz2K3sM8g3H5G2rBO0ihUZ+VDt6DmVyoqHDw3nWIYzqBozmQPsBbbw9Xa
-        8hUH9hDOIXuGnBo2h
-X-Received: by 2002:a05:620a:1466:b0:6fc:9f27:751c with SMTP id j6-20020a05620a146600b006fc9f27751cmr4769323qkl.581.1669887059042;
-        Thu, 01 Dec 2022 01:30:59 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6ObInhKxnj+Y8OIfwAyq8W7j4ejraBLHWb4dyLVbolMXGenjKm5xLcYanZOa6a9oq8denEYg==
-X-Received: by 2002:a05:620a:1466:b0:6fc:9f27:751c with SMTP id j6-20020a05620a146600b006fc9f27751cmr4769304qkl.581.1669887058806;
-        Thu, 01 Dec 2022 01:30:58 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
-        by smtp.gmail.com with ESMTPSA id g8-20020a05620a40c800b006cebda00630sm3334156qko.60.2022.12.01.01.30.57
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EoRTMNVcYQTgedY2uiMQ9QMpPHQ3mvgwAT6uMCKj34E=;
+        b=aAuM3zZx81ealDYpwJDpYbHa4raH2MwjfZD5O1s/CS6MRk5F7b+I0YmupRl1BIwSps
+         4BdT5Ct++FS3AJjvNN3wLIVHEDHQtGFeEqW8Gx0k2OL9G42GXfk48qYuyxktJ1dAc8C0
+         bvgcOTVpHKhy3PbohYCLTtIqjI1PjCXuZbfjTv5E0kZizHElTxFLErDZZnPj1l9EWkSG
+         c6TekqpzbdnyFuo6HHJksHiWAOYYhmSHTZZaueqAQQFsphbl0dcNrPQDbqQODpww/a03
+         IqykTVx0prKNUBTKSLF62uvHHU3khZkS9SuiIslDTY9OO7fGXoLC4uNxFg+29pz36gNR
+         bgwA==
+X-Gm-Message-State: ANoB5plK6zwDG7U8oiYpXqTS64OwAhzbmHYnHYbvNpZzaC4WbcWEyotG
+        Zv6ZqTfxA8OYWHk8WpoZOrq0fuWJGDYsHQ==
+X-Google-Smtp-Source: AA0mqf7LI/wNlmwAtPvQK1caD1/4f4npQl7ADtgABYZRZrLzCNgkUYeIo7z7qqlJBS4egnACcBVo3w==
+X-Received: by 2002:a5d:61cd:0:b0:241:f8e3:7111 with SMTP id q13-20020a5d61cd000000b00241f8e37111mr23318771wrv.299.1669887054007;
+        Thu, 01 Dec 2022 01:30:54 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id l5-20020a5d5605000000b002367ad808a9sm3886262wrv.30.2022.12.01.01.30.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Dec 2022 01:30:58 -0800 (PST)
-Message-ID: <7f1277b54a76280cfdaa25d0765c825d665146b9.camel@redhat.com>
-Subject: Re: [PATCH net v2] unix: Fix race in SOCK_SEQPACKET's
- unix_dgram_sendmsg()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Kirill Tkhai <tkhai@ya.ru>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
-        Kuniyuki Iwashima <kuniyu@amazon.com>
-Date:   Thu, 01 Dec 2022 10:30:55 +0100
-In-Reply-To: <bd4d533b-15d2-6c0a-7667-70fd95dbea20@ya.ru>
-References: <bd4d533b-15d2-6c0a-7667-70fd95dbea20@ya.ru>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 01 Dec 2022 01:30:53 -0800 (PST)
+Date:   Thu, 1 Dec 2022 10:30:56 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+Subject: Re: Help on PHY not supporting autoneg
+Message-ID: <Y4h0UGXR7znwMWLo@gvm01>
+References: <Y4dJgj4Z8516tJwx@gvm01>
+ <Y4d3fV8lUhUehCq6@lunn.ch>
+ <Y4fgT1kjX9LTULOi@gvm01>
+ <Y4gOG5rFwlezsfoD@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y4gOG5rFwlezsfoD@lunn.ch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,49 +72,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2022-11-27 at 01:46 +0300, Kirill Tkhai wrote:
-> There is a race resulting in alive SOCK_SEQPACKET socket
-> may change its state from TCP_ESTABLISHED to TCP_CLOSE:
+On Thu, Dec 01, 2022 at 03:14:51AM +0100, Andrew Lunn wrote:
+> > /root # ethtool eth0
+> > Settings for eth0:
+> >         Supported ports: [ MII ]
+> >         Supported link modes:   10baseT1S_P2MP/Half
+> >         Supported pause frame use: Symmetric Receive-only
+> >         Supports auto-negotiation: No
+> >         Supported FEC modes: Not reported
+> >         Advertised link modes:  10baseT1S_P2MP/Half
+> >         Advertised pause frame use: Symmetric Receive-only
 > 
-> unix_release_sock(peer)                  unix_dgram_sendmsg(sk)
->   sock_orphan(peer)
->     sock_set_flag(peer, SOCK_DEAD)
->                                            sock_alloc_send_pskb()
->                                              if !(sk->sk_shutdown & SEND_SHUTDOWN)
->                                                OK
->                                            if sock_flag(peer, SOCK_DEAD)
->                                              sk->sk_state = TCP_CLOSE
->   sk->sk_shutdown = SHUTDOWN_MASK
-> 
-> 
-> After that socket sk remains almost normal: it is able to connect, listen, accept
-> and recvmsg, while it can't sendmsg.
-> 
-> Since this is the only possibility for alive SOCK_SEQPACKET to change
-> the state in such way, we should better fix this strange and potentially
-> danger corner case.
-> 
-> Also, move TCP_CLOSE assignment for SOCK_DGRAM sockets under state lock
-> to fix race with unix_dgram_connect():
-> 
-> unix_dgram_connect(other)            unix_dgram_sendmsg(sk)
->                                        unix_peer(sk) = NULL
->                                        unix_state_unlock(sk)
->   unix_state_double_lock(sk, other)
->   sk->sk_state  = TCP_ESTABLISHED
->   unix_peer(sk) = other
->   unix_state_double_unlock(sk, other)
->                                        sk->sk_state  = TCP_CLOSED
-> 
-> This patch fixes both of these races.
-> 
-> Fixes: 83301b5367a9 ("af_unix: Set TCP_ESTABLISHED for datagram sockets too")
+> That looks odd. The PHY should indicate if it supports pause
+> negotiation. Since this PHY does not support autoneg, it should not be
+> saying it can negotiate pause. So i'm wondering why it is saying this
+> here. Same for 'Supported pause'.
+This is indeed a good question. This is the code snippet for the PHY
+driver:
 
-I don't think this commmit introduces the issues, both behavior
-described above appear to be present even before?
+static int ncn26000_get_features(struct phy_device *phydev) {
+	linkmode_zero(phydev->supported);
+	linkmode_set_bit(ETHTOOL_LINK_MODE_MII_BIT, phydev->supported);
 
+	linkmode_set_bit(
+		ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
+		phydev->supported
+	);
 
-Thank!
+	linkmode_copy(phydev->advertising, phydev->supported);
+	return 0;
+}
 
-Paolo
+static int ncn26000_config_aneg(struct phy_device *phydev) {
+	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
+	phydev->mdix = ETH_TP_MDI;
+	phydev->pause = 0;
+	phydev->asym_pause = 0;
+	phydev->speed = SPEED_10;
+	phydev->duplex = DUPLEX_HALF;
 
+	// bring up the link (link_ctrl is mapped to BMCR_ANENABLE)
+	// clear also ISOLATE mode and Collision Test
+	return phy_write(phydev, MII_BMCR, BMCR_ANENABLE);
+}
+
+As you can see there is no mention of PAUSE support in the features, and
+the pause/asym_pause flags in phydev are set to 0.
+
+Could it be a problem of the userspace tool?
+Any advice on where to start looking?
+ 
+> >         Advertised auto-negotiation: No
+> >         Advertised FEC modes: Not reported
+> >         Speed: 10Mb/s
+> >         Duplex: Half
+> >         Auto-negotiation: off
+> >         Port: Twisted Pair
+> >         PHYAD: 8
+> >         Transceiver: external
+> >         MDI-X: off (auto)
+> 
+> Given that this is a T1 PHY does MDI-X have any meaning? The (auto)
+> indicates the PHY is returning mdix_ctrl=ETH_TP_MDI_AUTO, when it
+> should be returning ETH_TP_MDI_INVALID to indicate it is not
+> supported.
+This is in fact debatable. The 10BASE-T1S has a unique feature making it
+polarity insensitive. It's not like other xBASE-T1 PHYs that
+auto-detects the polarity, the line coding (Differential Manchester) is
+intrinsically polarity agnostic. Therefore I'm personally undecided on
+the best approach.
+
+On one hand, If the driver reports that MDI-X is not supported, the user
+might think he needs to care about the polarity, which could be
+misleading. On the other hand, there is no real auto-switch of TX/RX.
+
+I'm not sure if/how 100BASE-T1 for example handles polarity, but we
+probably need a common approach.
+
+Thoughts?
+ 
+> >         Supports Wake-on: d
+> >         Wake-on: d
+> >         Current message level: 0x0000003f (63)
+> >                                drv probe link timer ifdown ifup
+> >         Link detected: yes
+> > 
+> > 
+> > > What exactly is LINK_CONTROL. It is not one of the Linux names for a
+> > > bit in BMCR.
+> > The 802.3cg standard define link_control as a varibale set by autoneg.
+> > In factm it is tied to the BMCR_ANENABLE bit. The standard further
+> > specifies that when AN is not supported, this bit can be supplied in a
+> > vendor-specific way. A common thing to do is to just leave it tied to
+> > the BMCR_ANENABLE bit.
+> > 
+> > So, the "problem" seems to lie in the genphy_setup_forced() function.
+> > More precisely, where you pointed me at: 
+> > >       return phy_modify(phydev, MII_BMCR,
+> > >                         ~(BMCR_LOOPBACK | BMCR_ISOLATE | BMCR_PDOWN), ctl);
+> > > 
+> > 
+> > In my view we have two choices to handle LINK_CONTROL.
+> > 
+> > 1. Just let the PHY driver override the config_aneg() callback as I did.
+> > This may be a bit counter-intuitive because of the function name, but it
+> > works.
+> > 
+> > 2. in phylib, distinguish the case of a PHY having aneg disabled from a
+> > PHY NOT supporting aneg. In the latter case, don't touch the control
+> > register and/or provide a separate callback for "starting" the PHY
+> > (e.g., set_link_ctrl)
+> 
+> 2) sounds wrong. As you said, it is vendor-specific. As such you
+> cannot trust it to mean anything. The standard has left it undefined,
+> so you cannot do anything in generic code. I would also worry about
+> breaking older PHYs who have never had this bit set.
+Maybe I did not explain what I had in mind correctly.
+I did not mean to set this bit, it is indeed vendor-specific.
+The idea would be to define a new callback that by default does what we
+have right now (clear all bits in register 0). But PHY drivers may
+override it to actually do something meaningful, like setting the AN
+bit.
+> 
+> So i would go with 1). As i said, the function name is not ideal, but
+> it has been like this since forever.
+I'm not strongly biased between 1 and 2, but I would first re-consider 2
+before making a final decision.
+
+Thank you very much for your kind reply.
+Piergiorgio
