@@ -2,126 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA7163EF8F
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 12:36:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB6A663EFA3
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 12:40:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229817AbiLALgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 06:36:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        id S230227AbiLALkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 06:40:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbiLALgJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 06:36:09 -0500
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793998C46E;
-        Thu,  1 Dec 2022 03:36:06 -0800 (PST)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id EAFDD5FD07;
-        Thu,  1 Dec 2022 14:36:03 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1669894564;
-        bh=diW2bt1nmVltkaw9FbBARpnyQZELnALJTnHl6DJ6SBI=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=rwOL/AATBNzSjXZn8ZugQtXSV/95r4hNHPwmeCatujJ+9VQQd7WSryGLz3VYrDW08
-         oGtN0/o2ZTTcGJatqlzi3bskkGFnWq4pU+GW6/iVyGdp+zFnZSvQ+2h7CHGZSGBnfx
-         QTYhH5rkYFLUZrih756Vva33LfJ1Omrjb+xI7frJ91864NI47C7r+BAZ1vP0jKUX+b
-         /124k4orhxHm871BORyWpRWbwrLtaqPPeFVYmVj+cuFusIFExt5EK5peqjGi26vj/Q
-         fH0f5BI5dTjsTzH4KN0bstDdQ/Dg5yzHhtaFet8spi6s1ghxyfYVmLISKwli/k2dv1
-         vvk8FPWngtK4A==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Thu,  1 Dec 2022 14:36:01 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        Bryan Tan <bryantan@vmware.com>, Vishnu Dasa <vdasa@vmware.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
+        with ESMTP id S229915AbiLALkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 06:40:07 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB78E29368;
+        Thu,  1 Dec 2022 03:40:05 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1669894669; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=QTQmm9pOeLgmKb8bWo/bk1tmntAG21CY8mqL5Y7GzMv84vMVC3VrVna9NzX1hngi7eK1jcFyuiSXXvVA9bOp7v2JNs+2P/yWem+qMtXkZfdIeULvLO4Rfg8yQmTObIt1kyNHO2k94mTkgHZvRKbMyIMAcRvOxm9qMfK6qb3t88g=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1669894669; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=dfOEXnlaPDTQyh5hwojKntKZbR0Ct6BYQNOU/3518PU=; 
+        b=OYF7SwvD1mv3O+HAFCbq9CfMSGf7fvV73aJ926EunEgVq/bUTdRUCCmRrZD9+8rTw9wNG3PDjimgO76TJJ6VPC/P/vttun+Obu5Dzyp0sS31x9L5iYLvG+rdO6kZvZ2wtK6Gn86PgqwwiOO9sfMtbOWsOMExVMcejf44MYA+nAo=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1669894669;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=dfOEXnlaPDTQyh5hwojKntKZbR0Ct6BYQNOU/3518PU=;
+        b=Sxoe6pf0viFvg95RBI3wMeoXYd0syHO9a0cEcwxKEbUeNP5X1PyRVz24a8qLfztM
+        cNOs3+XlOAmEYW4Cspyrx9xPr6rdVmINXwU/r6bTSOpPefuylQ7S/DIWSUhazWPCj3l
+        ohbSEg1Td2+qDT3JhrnQZaDjIZ9aCibjEQyIlKI4=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1669894667415837.5294444284028; Thu, 1 Dec 2022 03:37:47 -0800 (PST)
+Message-ID: <83ed1490-4d87-98c5-2616-54b5f1ab64b7@arinc9.com>
+Date:   Thu, 1 Dec 2022 14:37:31 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH 0/5] remove label = "cpu" from DSA dt-binding
+To:     Michael Ellerman <mpe@ellerman.id.au>, Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        soc@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        "Bobby Eshleman" <bobby.eshleman@bytedance.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v2 3/6] vsock/vmci: always return ENOMEM in case of
- error
-Thread-Topic: [RFC PATCH v2 3/6] vsock/vmci: always return ENOMEM in case of
- error
-Thread-Index: AQHZAPB8vpTNk9Cz/UiwVhA3FAXi7a5YmwUAgAAipwA=
-Date:   Thu, 1 Dec 2022 11:36:01 +0000
-Message-ID: <1d01f9ea-0212-ffe9-1168-47b98e2ede46@sberdevices.ru>
-References: <9d96f6c6-1d4f-8197-b3bc-8957124c8933@sberdevices.ru>
- <675b1f93-dc07-0a70-0622-c3fc6236c8bb@sberdevices.ru>
- <20221201093048.q2pradrgn5limcfb@sgarzare-redhat>
-In-Reply-To: <20221201093048.q2pradrgn5limcfb@sgarzare-redhat>
-Accept-Language: en-US, ru-RU
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Stefan Agner <stefan@agner.ch>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+References: <20221130141040.32447-1-arinc.unal@arinc9.com>
+ <Y4d9B7VSHvqJn0iS@lunn.ch> <32638470-b074-3b14-bfb2-10b49307b9e3@arinc9.com>
+ <877czbs8w7.fsf@mpe.ellerman.id.au>
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D5DB5093729C0541A2F948FB05E0AA6D@sberdevices.ru>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/12/01 00:48:00 #20630840
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <877czbs8w7.fsf@mpe.ellerman.id.au>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMDEuMTIuMjAyMiAxMjozMCwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBPbiBGcmks
-IE5vdiAyNSwgMjAyMiBhdCAwNTowODowNlBNICswMDAwLCBBcnNlbml5IEtyYXNub3Ygd3JvdGU6
-DQo+PiBGcm9tOiBCb2JieSBFc2hsZW1hbiA8Ym9iYnkuZXNobGVtYW5AYnl0ZWRhbmNlLmNvbT4N
-Cj4+DQo+PiBUaGlzIHNhdmVzIG9yaWdpbmFsIGJlaGF2aW91ciBmcm9tIGFmX3Zzb2NrLmMgLSBz
-d2l0Y2ggYW55IGVycm9yDQo+PiBjb2RlIHJldHVybmVkIGZyb20gdHJhbnNwb3J0IGxheWVyIHRv
-IEVOT01FTS4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBCb2JieSBFc2hsZW1hbiA8Ym9iYnkuZXNo
-bGVtYW5AYnl0ZWRhbmNlLmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IEFyc2VuaXkgS3Jhc25vdiA8
-QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1Pg0KPj4gLS0tDQo+PiBuZXQvdm13X3Zzb2NrL3ZtY2lf
-dHJhbnNwb3J0LmMgfCA5ICsrKysrKysrLQ0KPj4gMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9u
-cygrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gQEJyeWFuIEBWaXNobnUgd2hhdCBkbyB5b3UgdGhp
-bmsgYWJvdXQgdGhpcyBwYXRjaD8NCj4gDQo+IEEgYml0IG9mIGNvbnRleHQ6DQo+IA0KPiBCZWZv
-cmUgdGhpcyBzZXJpZXMsIHRoZSBhZl92c29jayBjb3JlIGFsd2F5cyByZXR1cm5lZCBFTk9NRU0g
-dG8gdGhlIHVzZXIgaWYgdGhlIHRyYW5zcG9ydCBmYWlsZWQgdG8gcXVldWUgdGhlIHBhY2tldC4N
-Cj4gDQo+IE5vdyB3ZSBhcmUgY2hhbmdpbmcgaXQgYnkgcmV0dXJuaW5nIHRoZSB0cmFuc3BvcnQg
-ZXJyb3IuIFNvIEkgdGhpbmsgaGVyZSB3ZSB3YW50IHRvIHByZXNlcnZlIHRoZSBwcmV2aW91cyBi
-ZWhhdmlvciBmb3Igdm1jaSwgYnV0IEkgZG9uJ3Qga25vdyBpZiB0aGF0J3MgdGhlIHJpZ2h0IHRo
-aW5nLg0KPiANCj4gDQo+IA0KPiBAQXJzZW5peSBwbGVhc2UgaW4gdGhlIG5leHQgdmVyc2lvbnMg
-ZGVzY3JpYmUgYmV0dGVyIGluIHRoZSBjb21taXQgbWVzc2FnZXMgdGhlIHJlYXNvbnMgZm9yIHRo
-ZXNlIGNoYW5nZXMsIHNvIGl0IGlzIGVhc2llciByZXZpZXcgZm9yIG90aGVycyBhbmQgYWxzbyBp
-biB0aGUgZnV0dXJlIGJ5IHJlYWRpbmcgdGhlIGNvbW1pdCBtZXNzYWdlIHdlIGNhbiB1bmRlcnN0
-YW5kIHRoZSByZWFzb24gZm9yIHRoZSBjaGFuZ2UuDQpIZWxsbywNCg0KU3VyZSEgU29ycnkgZm9y
-IHRoYXQhIEFsc28sIEkgY2FuIHNlbmQgYm90aCB2bWNpIGFuZCBoeXBlcnYgcGF0Y2hlcyBpbiB0
-aGUgbmV4dCB2ZXJzaW9uKGUuZy4gbm90IHdhaXRpbmcgZm9yDQpyZXZpZXdlcnMgcmVwbHkgYW5k
-IHJlb3JkZXIgdGhlbSB3aXRoIDEvNiBhcyBZb3UgYXNrZWQpLCBhcyByZXN1bHQgb2YgcmV2aWV3
-IGNvdWxkIGJlIGRyb3BwZWQgcGF0Y2ggb25seS4NCg0KVGhhbmtzLCBBcnNlbml5DQo+IA0KPiBU
-aGFua3MsDQo+IFN0ZWZhbm8NCj4gDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2sv
-dm1jaV90cmFuc3BvcnQuYyBiL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYw0KPj4gaW5k
-ZXggODQyYzk0Mjg2ZDMxLi4yODlhMzZhMjAzYTIgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvdm13X3Zz
-b2NrL3ZtY2lfdHJhbnNwb3J0LmMNCj4+ICsrKyBiL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3Bv
-cnQuYw0KPj4gQEAgLTE4MzgsNyArMTgzOCwxNCBAQCBzdGF0aWMgc3NpemVfdCB2bWNpX3RyYW5z
-cG9ydF9zdHJlYW1fZW5xdWV1ZSgNCj4+IMKgwqDCoMKgc3RydWN0IG1zZ2hkciAqbXNnLA0KPj4g
-wqDCoMKgwqBzaXplX3QgbGVuKQ0KPj4gew0KPj4gLcKgwqDCoCByZXR1cm4gdm1jaV9xcGFpcl9l
-bnF1ZXYodm1jaV90cmFucyh2c2spLT5xcGFpciwgbXNnLCBsZW4sIDApOw0KPj4gK8KgwqDCoCBp
-bnQgZXJyOw0KPj4gKw0KPj4gK8KgwqDCoCBlcnIgPSB2bWNpX3FwYWlyX2VucXVldih2bWNpX3Ry
-YW5zKHZzayktPnFwYWlyLCBtc2csIGxlbiwgMCk7DQo+PiArDQo+PiArwqDCoMKgIGlmIChlcnIg
-PCAwKQ0KPj4gK8KgwqDCoMKgwqDCoMKgIGVyciA9IC1FTk9NRU07DQo+PiArDQo+PiArwqDCoMKg
-IHJldHVybiBlcnI7DQo+PiB9DQo+Pg0KPj4gc3RhdGljIHM2NCB2bWNpX3RyYW5zcG9ydF9zdHJl
-YW1faGFzX2RhdGEoc3RydWN0IHZzb2NrX3NvY2sgKnZzaykNCj4+IC0twqANCj4+IDIuMjUuMQ0K
-PiANCg0K
+On 1.12.2022 13:42, Michael Ellerman wrote:
+> Arınç ÜNAL <arinc.unal@arinc9.com> writes:
+>> On 30.11.2022 18:55, Andrew Lunn wrote:
+>>> On Wed, Nov 30, 2022 at 05:10:35PM +0300, Arınç ÜNAL wrote:
+>>>> Hello folks,
+>>>>
+>>>> With this patch series, we're completely getting rid of 'label = "cpu";'
+>>>> which is not used by the DSA dt-binding at all.
+>>>>
+>>>> Information for taking the patches for maintainers:
+>>>> Patch 1: netdev maintainers (based off netdev/net-next.git main)
+>>>> Patch 2-3: SoC maintainers (based off soc/soc.git soc/dt)
+>>>> Patch 4: MIPS maintainers (based off mips/linux.git mips-next)
+>>>> Patch 5: PowerPC maintainers (based off powerpc/linux.git next-test)
+>>>
+>>> Hi Arınç
+>>>
+>>> So your plan is that each architecture maintainer merges one patch?
+>>
+>> Initially, I sent this series to soc@kernel.org to take it all but Rob
+>> said it must be this way instead.
+>>
+>>>
+>>> That is fine, but it is good to be explicit, otherwise patches will
+>>> fall through the cracks because nobody picks them up. I generally use
+>>> To: to indicate who i expect to merge a patch, and everybody else in
+>>> the Cc:
+>>
+>> Thanks for this, I'll follow suit if I don't see any activity for a few
+>> weeks.
+> 
+> IMHO the best solution if the patches are truly independent is to send
+> them independantly to each maintainer. That way there's no confusion
+> about whether someone else will take the series.
+> 
+> It's also simpler for maintainers to apply a single standalone patch vs
+> pick a single patch from a larger series.
+
+I agree. I'll do that next time.
+
+Cheers.
+Arınç
