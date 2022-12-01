@@ -2,157 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A490463FBE9
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 00:24:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C37463FC1F
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 00:36:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbiLAXYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 18:24:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        id S231673AbiLAXgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 18:36:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbiLAXYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 18:24:04 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2A011820
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 15:24:02 -0800 (PST)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S231484AbiLAXgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 18:36:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2929DA47F3;
+        Thu,  1 Dec 2022 15:36:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 4C9B250F;
-        Fri,  2 Dec 2022 00:24:01 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1669937041;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Jtnmo4I47IdTSG/Z7smZDH0I/Y+AGngT56oWJX9nXo=;
-        b=SKMnUQQxsu2xDYUo6hOweLDZlZmJ9K96QrMWSAuz9zNgkv3tH/TwubWIyi9FXWV21XoT+r
-        9EAn48aO6a0dcVSNeL5FpAn7Ymul/dflAN6I9sZy/nbDe3+qRqD1g8q1yMpCXhObva5XlE
-        WY9lw1lhnkiRD3++xKHBsha7Jk/psofP8BFoJB1JopzvVyqa1el7vSAlL5uoe3sOPw68wN
-        cnH1pm9NkX/ebnqanENT4EEAC1xoldyLqvMQQT4JBsTvHxsuVOpLBBS0taZE63Fmx/w8RX
-        4OKNRWwtD4yVLTDifnjG+enR2OFiVT6I465anYeM/lbOtOSeqmzjj2HcxrAi4w==
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F831621B6;
+        Thu,  1 Dec 2022 23:36:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 708CAC433C1;
+        Thu,  1 Dec 2022 23:36:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669937767;
+        bh=kOpV5F3H9zw7ssEkXlo5P1Ww9ety3cKYMPUvZSRKm6Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MO2j/fxKH28EN5OqO4OeTxj5264wLoyst7kgLjm99wbYQTeXPcMkhwYRXxNdbb9Vo
+         qsuw+y4eC0C1YnVYJSOd++UqtV1cc/NUODzYuquUOQ0eEjEdX3uRsUbx2ZeSHddo4H
+         lg9hCgRGYbMJoa66K3HbSo3qyfKiKdR4ASBl6e6E7Iqj7FLLNSXayJccAZiTVKEM6o
+         kWqSgJ+85TI7vuKD5M1OrPEBj+WWE4CeBcoeMzArjpieybOfH+mA1ve3BXas6sGcug
+         UcgrbxBXKUrHWItNVP9SmbnxxmeinAuPBXT5F1/uom7wxANVCMYsI1E9pOQmhBXxft
+         0CTWORuM8+5Ug==
+Date:   Thu, 1 Dec 2022 15:36:05 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dmitry Safonov <0x7f454c46@gmail.com>
+Cc:     Dmitry Safonov <dima@arista.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jason Baron <jbaron@akamai.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH v6 1/5] jump_label: Prevent key->enabled int overflow
+Message-ID: <20221201153605.58c2382d@kernel.org>
+In-Reply-To: <CAJwJo6Z9sTDgOFFrpbrXT6eagtmbB5mhfudG0Osp75J4ipNSqQ@mail.gmail.com>
+References: <20221123173859.473629-1-dima@arista.com>
+        <20221123173859.473629-2-dima@arista.com>
+        <Y4B17nBArWS1Iywo@hirez.programming.kicks-ass.net>
+        <2081d2ac-b2b5-9299-7239-dc4348ec0d0a@arista.com>
+        <20221201143134.6bb285d8@kernel.org>
+        <CAJwJo6Z9sTDgOFFrpbrXT6eagtmbB5mhfudG0Osp75J4ipNSqQ@mail.gmail.com>
 MIME-Version: 1.0
-Date:   Fri, 02 Dec 2022 00:24:01 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        netdev@vger.kernel.org, Xu Liang <lxu@maxlinear.com>
-Subject: Re: GPY215 PHY interrupt issue
-In-Reply-To: <Y4klbgDIuxHXaWrC@lunn.ch>
-References: <fd1352e543c9d815a7a327653baacda7@walle.cc>
- <Y4DcoTmU3nWqMHIp@lunn.ch> <baa468f15c6e00c0f29a31253c54383c@walle.cc>
- <Y4S4EfChuo0wmX2k@lunn.ch> <c69e1d1d897dd7500b59c49f0873e7dd@walle.cc>
- <Y4jOMocoLneO8xoD@lunn.ch> <158870dd20a5e30cda9f17009aa0c6c8@walle.cc>
- <Y4klbgDIuxHXaWrC@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <1d186774cfa4173955c89e7262b1d1b7@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-12-01 23:06, schrieb Andrew Lunn:
-> On Thu, Dec 01, 2022 at 10:31:19PM +0100, Michael Walle wrote:
->> Am 2022-12-01 16:54, schrieb Andrew Lunn:
->> > > So, switching the line to GPIO input doesn't help here, which also
->> > > means the interrupt line will be stuck the whole time.
->> >
->> > Sounds like they totally messed up the design somehow.
->> >
->> > Since we are into horrible hack territory.....
->> >
->> > I assume you are using the Link state change interrupt? LSTC?
->> 
->> Yes, but recently I've found it that it also happens with
->> the speed change interrupt (during link-up). By pure luck (or
->> bad luck really?) I discovered that when I reduce the MDIO
->> frequency I get a similar behavior for the interrupt line
->> at link-up with the LSPC interrupt. I don't think it has
->> something to do with the frequency but with changed timing.
+On Thu, 1 Dec 2022 23:17:11 +0000 Dmitry Safonov wrote:
+> On Thu, 1 Dec 2022 at 22:31, Jakub Kicinski <kuba@kernel.org> wrote:
+> > > I initially thought it has to go through tip trees because of the
+> > > dependence, but as you say it's just one patch.
+> > >
+> > > I was also asked by Jakub on v4 to wait for Eric's Ack/Review, so once I
+> > > get a go from him, I will send all 6 patches for inclusion into -net
+> > > tree, if that will be in time before the merge window.  
+> >
+> > Looks like we're all set on the networking side (thanks Eric!!)  
 > 
-> So at a wild guess, there is some sort of race condition between the
-> 2.5MHz ish MDIO clock and the rest of the system which is probably
-> clocked at 25Mhz.
+> Thanks!
 > 
-> We have to hope this is limited to just interrupts! Not any MDIO bus
-> transaction.
+> > Should I pull Peter's branch? Or you want to just resent a patch Peter
+> > already queued. A bit of an unusual situation..  
 > 
->> +	/* The PHY might leave the interrupt line asserted even after 
->> PHY_ISTAT
->> +	* is read. To avoid interrupt storms, delay the interrupt handling 
->> as
->> +	* long as the PHY drives the interrupt line. An internal bus read 
->> will
->> +	* stall as long as the interrupt line is asserted, thus just read a
->> +	* random register here.
->> +	* Because we cannot access the internal bus at all while the 
->> interrupt
->> +	* is driven by the PHY, there is no way to make the interrupt line
->> +	* unstuck (e.g. by changing the pinmux to GPIO input) during that 
->> time
->> +	* frame. Therefore, polling is the best we can do and won't do any 
->> more
->> +	* harm.
->> +	* It was observed that this bug happens on link state and link speed
->> +	* changes on a GPY215B and GYP215C independent of the firmware 
->> version
->> +	* (which doesn't mean that this list is exhaustive).
->> +	*/
->> +	if (needs_mdint_wa && (reg & (PHY_IMASK_LSTC | PHY_IMASK_LSPC)))
->> +		gpy_mbox_read(phydev, REG_GPIO0_OUT);
->> +
->>  	phy_trigger_machine(phydev);
->> 
->>  	return IRQ_HANDLED;
-> 
-> So this delayed exiting the interrupt handler until the line actually
-> return to normal. And during that time, the interrupt is disabled. And
-> hence the storm is avoided.
+> Either way would work for me.
+> I can send it in a couple of hours if you prefer instead of pulling the branch.
 
-Exactly. Almost like your idea with polling the interrupt line
-in GPIO mode.
+I prefer to pull, seems safer in case Peter does get another patch.
 
-> I'm assuming gpy_mbox_read() has a timeout, so if the PHY completely
-> jams, it does exit? If that happens, maybe call phy_error() to
-> indicate the PHY is dead. And don't return IRQ_HANDLED, but
-> IRQ_NONE. I think the IRQ core should notice the storm for an
-> interrupt which nobody cares about and disable the interrupt.
-> Probably not much you can do after that, but at least the machine
-> won't be totally dead.
+It's this one, right?
 
-Ah, yes. In the earlier code (that changed the pin to GPIO input),
-I had that error handling. Missed that here, I'll add it.
-And yes, there is an timeout of 10ms.
+https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/log/?h=locking/core
 
->> It seems like at least these two are :/ So with the code above
->> we could avoid the interrupt storm but we can't do anything about
->> the blocked interrupt line. I'm unsure if that is acceptable or
->> if we'd have to disable interrupts on this PHY altogether and
->> fallback to polling.
-> 
-> It probably depends on your system design. If this is the only PHY and
-> the storm can be avoided, it is probably O.K. If you have other PHYs
-> sharing the line, and those PHYs are doing time sensitive stuff like
-> PTP, maybe polling would be better.
-> 
-> Maybe add a kconfig symbol CONFIG_MAXLINEAR_GPHY_BROKEN_INTERRUPTS and
-> make all the interrupt code conditional on this? Hopefully distros
-> won't enable it, but the option is there to buy into the behaviour if
-> you want?
-
-I don't even dare to ask, but wouldn't a device tree property
-maxlinear,use-broken-interrupts make more sense than a compile time
-option? I'm fine with both.
-
--michael
+I'll pulled, I'll push out once the build is done.
