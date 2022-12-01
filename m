@@ -2,164 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB0963EB44
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 09:39:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B2663EB46
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 09:39:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbiLAIjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 03:39:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40932 "EHLO
+        id S229599AbiLAIjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 03:39:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiLAIjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 03:39:15 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2070c.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e1b::70c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAFA85678;
-        Thu,  1 Dec 2022 00:39:14 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CR7qt9q/b59GIJcOyePxNipz1RFytsjhJpc6B2T2QB3ofPT4iYd2bTW3mXgeJSFezO2fvTHGCouuhD14OmkhZtfDg2YYDFnMHAy47s645LjIWJiNWKsJCN6s2Zb1VpRu+0RyBFAY6obXWh/xzoncFc6tk65LwvlWKIdm88XG9pd9i3H2YPuJms/XI97dpm0DZhLyk52hpACg7GrfkUt7Fua+ZnZKF0zC5kN8k4ch6ZfFisHQScqW+6wHngknjzgIRO5Eks0K5mIr0p023qULTT9OQiMGpZR9RIFQdXBBFjfbd9EVlxOCOwdbI4zgnJ3O9flskkDh2BeBc6uB4d49tQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gxGPXShbXFRyn14efca9jduZq7jEUerWihs7mhfEeiI=;
- b=jB0F309qrbC1+0xveAmpGGonHBgh55F+MkDSvn8MYQTTEorBmV1ULW/imluqB2FcP+WsfXA6pCmXdFFFuOcqnKUjX47B4RBh8BrgzbVo/l84m4ahvjEvU8n8xOv2KPPIAAsSHWo5HfbsMwrhfXWpDFXs+yKjAM2Rk7tEFAtrl4sWI8WnkwYa2ML+8obWyATS+uUhRCo6Ni1ms2+a27ydILYNbZ5MH+dgnR8pJbPAOMvOp3OJLl10RA9ICDS7wP5m0C3LxZm3okIwgRV219fTfTxV8n7UgQbWkcPPRMtmwqO8NfkZLfMefUIG1K8AZwLXJJIrJhAdGS8pnDm7eX8L5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gxGPXShbXFRyn14efca9jduZq7jEUerWihs7mhfEeiI=;
- b=rQC1I0CLjReJGpt6LB3N1gRapTNTJlG4ZxdWhefioFvIcfw/+LhQm217FWeiK4nVwsw10dzv9qoVSn74z53mTgS8U99S0MXjw2R9vcKhlLzSB+XOP5E9b8tAnMJ4VQVGsZBtDn8cpFPc51wZaexCUYFRTrE1bG34J7dUqaisP9w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from GVXP190MB1990.EURP190.PROD.OUTLOOK.COM (2603:10a6:150:4::7) by
- VI1P190MB0751.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:12a::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.8; Thu, 1 Dec 2022 08:39:09 +0000
-Received: from GVXP190MB1990.EURP190.PROD.OUTLOOK.COM
- ([fe80::bf31:7027:5543:3e42]) by GVXP190MB1990.EURP190.PROD.OUTLOOK.COM
- ([fe80::bf31:7027:5543:3e42%9]) with mapi id 15.20.5857.021; Thu, 1 Dec 2022
- 08:39:09 +0000
-Message-ID: <96e3d5fc-ab8c-2344-3266-3b73664499f1@plvision.eu>
-Date:   Thu, 1 Dec 2022 10:39:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2] MAINTAINERS: Update maintainer for Marvell Prestera
- Ethernet Switch driver
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Elad Nachman <enachman@marvell.com>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>
-References: <20221128093934.1631570-1-vadym.kochan@plvision.eu>
- <20221129211405.7d6de0d5@kernel.org>
-From:   Taras Chornyi <taras.chornyi@plvision.eu>
-In-Reply-To: <20221129211405.7d6de0d5@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR3P281CA0092.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a1::12) To GVXP190MB1990.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:150:4::7)
+        with ESMTP id S229713AbiLAIjc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 03:39:32 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7A1386A1E
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 00:39:28 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id x2so1437839edd.2
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 00:39:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=R2A7UboQ3FATux5TsIgS3DlWXxgC24MIPv5TH2ZNaaA=;
+        b=N6FGuKrQgP5lLoo2FPmdynuFlJ2I+r5VMdGRr0Co9MTm/hXuKAffGV8yjkqptn1e4z
+         bdxfXqKHIyzNsgkXytqGooiySqsMhl1o2iwPdSpERiTet/AkSJ6jW29X1grV9ABgH6Lm
+         ays+VamyQOg7iLd5houvM9+QMAP5yYmt7NLR/A23prMbEGiPCxmMIObTWlvAKr3BrXxU
+         KR/GNz9zvovY0CrT1pwDUCtCOfNVssRw+WpKk4YIH0JcmQcCc4Q5Aj9h45/F8YScnvCP
+         LOwJhS+P0ZTINKD9BweDzpEVv5IOFqfPT9/MfCu/MStCQEx4qNh5jrFD/nwIvw4WaHR1
+         Zq+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=R2A7UboQ3FATux5TsIgS3DlWXxgC24MIPv5TH2ZNaaA=;
+        b=a4wCAJy1w8t4wI4g/5+PqB8M6oUC/0AjdvJpUZF5YykuF31Uxs+v6sZxds0OSNRl1M
+         3vJ0vcsyiQaJHkyCLi5a/CPg8iXcDwpOFP99tY1ly8QuWcGx+4KXw46d5q8qjGLZX2Uc
+         McHPWtXivp2dHKwP4qyxe/vlWqK/kp3AFvtWj6MzwFJon0CZXK4ugy3iGV7hmDBUSbco
+         fOMXxLxZiGJAV87BqLeaoh7aIprXCoZ6cTcq0aaoe49zsCT6a2wLpX5y4GydoDmDF8Gq
+         zkwTB7Sk2mG2SGagI2nuDAmMMtUqXPoYBHvEkN7Vo2fkGTvRJByMqa6Fq07dm229yoqG
+         6TRg==
+X-Gm-Message-State: ANoB5pk7pY5Xkjo0YSTSxMUv6hjYAgdoSmN3J5Pc1sya5gDrWJlMBU7i
+        dYTaZFyotBz/V9vXA/+nSbzeuQ==
+X-Google-Smtp-Source: AA0mqf6Qatw1fsOHK/HNdURo5iPQdvnwd44UMS25M/cROTyNr0KE7LkKTpNqJsGy/+FDGdsQjOYW5A==
+X-Received: by 2002:a05:6402:1156:b0:467:374e:5f9b with SMTP id g22-20020a056402115600b00467374e5f9bmr41863610edw.283.1669883967293;
+        Thu, 01 Dec 2022 00:39:27 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id cz15-20020a0564021caf00b004589da5e5cesm1457035edb.41.2022.12.01.00.39.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Dec 2022 00:39:26 -0800 (PST)
+Date:   Thu, 1 Dec 2022 09:39:25 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
+        jiri@nvidia.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com
+Subject: Re: [PATCH net] net: devlink: fix UAF in
+ devlink_compat_running_version()
+Message-ID: <Y4hoPcbHoaOBuj2D@nanopsycho>
+References: <20221123181800.1e41e8c8@kernel.org>
+ <Y4R9dT4QXgybUzdO@shredder>
+ <Y4SGYr6VBkIMTEpj@nanopsycho>
+ <20221128102043.35c1b9c1@kernel.org>
+ <Y4XDbEWmLRE3D1Bx@nanopsycho>
+ <20221129181826.79cef64c@kernel.org>
+ <Y4dBrx3GTl2TLIrJ@nanopsycho>
+ <20221130084659.618a8d60@kernel.org>
+ <Y4eMFUBWKuLLavGB@nanopsycho>
+ <20221130092042.0c223a8c@kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GVXP190MB1990:EE_|VI1P190MB0751:EE_
-X-MS-Office365-Filtering-Correlation-Id: 38db9404-d8bc-4845-da03-08dad3778396
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AbuZ9nkUgCw3dCJ1aPdR5b+kuguYtXLFxSa0ZL1xHQwgQ7QhTPiZucTK6e3TTuUGlalAWEW3kTmoxBELtUSv9VzUIjj1wf2mUP1Xckc4ozflNemrjOXSiZjZbLI3treNvgxotsntvdBC9Bbrrlpu9gBZmzDDBxGrrrIY50yMDSfu9FmfPF4pH1Q777TasTDLDvDNzoDH6ZVyOVVYxAUDsI0X1U5VjdnrhKoeJxjj+lIw9KkryoUHB65kZsQpav2PPkxuVNzMcHEfj+LWOR8HrXpE0aNl1YaRqozHlu2KHip69SO5s8X2XP7FT8R45q1QrmQ+wi/8IhkjMJpb/6bkhlmPgvHf04//ATAm6bayKQdjBLytLNF5vsUyf9+VG8iYlOYZ/1USMPfM0mb9TvS5I/7SpCfh/Jy3M9R6azdqV3HweInGjnBrmkcCsBN8WEiDkKqdHJA/43RqaSLdVoExoV3B3Atdm1aF2BYxJSOwFw1qPtEpnzYV4BLHVOsjt9lzgSvYSdKxnlnCr4Q5g2yRCSo1LNt7RqSa0UbF6SvPyZOEbdSz+UCMpRPVKzm9HWmjpwirv0yw0Cu2RrGC0snBQpmk5dYS5+rtW4tse4fWDkFsp5xroCCnLjYaUluFdeXdTNpScyy+MkLf0Jbhdl2uDUbUn9gdwV9UdNACY4FruIvHng04/Oq2A5MjqDTVEPvqVsa1JNJkc3sZKC1tTvCv155ZgYywx0iogsSus+NcBM0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GVXP190MB1990.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(376002)(136003)(39830400003)(396003)(451199015)(66574015)(66899015)(31686004)(86362001)(31696002)(110136005)(53546011)(6512007)(6506007)(36756003)(6486002)(38100700002)(186003)(83380400001)(2616005)(44832011)(5660300002)(41300700001)(26005)(478600001)(66946007)(8676002)(15650500001)(66476007)(4326008)(66556008)(8936002)(54906003)(316002)(6636002)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q0JWRk9UVEVTSFdkWW1OTnhCemJnUzVGSStKbXVXMmxCWFFPSGtCZWs0aUFn?=
- =?utf-8?B?TzVmb0M5b3VFQm5lemtPSzRQUHRKblNjTEhKTVlIZERoTXJ6Y2plYVRBTWJl?=
- =?utf-8?B?TTREdFlXMSt5TWtsRlBBMXhQMjVKUXpBaFl5VHRKNFJBdXltUGtsUnpwOWxR?=
- =?utf-8?B?NWc4ejVqSitYWnZHRzN4UXZ0aVVSbHFrc3pGcGFLcSttQ0V1SklWd0liSWZ0?=
- =?utf-8?B?L0dQRzB5VXZZZ25oSVpVTjhia1JoT1R5REhnQjArSGJVM0xSRlpXSlgrZno2?=
- =?utf-8?B?NHpxcHVRb21RQlhZaTZLOFZidkNiRnp6QXhaNGNSQ212UlY2Um11Y1FETTlG?=
- =?utf-8?B?Y1RPcG9wVHJ1Mzc5S0ZUd1RURStKNVdBbTFrL3g5SEZaRWxtNlVOOHRpWHNS?=
- =?utf-8?B?bVdreHVhK3dUa3oxRjB2bnVKTDczMm9wYTdOak5weVFiKzdST0lRdS9HU1g3?=
- =?utf-8?B?OC9PdmFjeHgrQUJleW9FTGxhRloyYXdhTFJ4SXh0K3lCamQ3cUZ4d1duU0M5?=
- =?utf-8?B?L1Q1dHZCcXBDTTlRQWZRaG15SG93VXNKZkpwZDR5anI1V3EzaWR1Z0dsUEtk?=
- =?utf-8?B?THlwUzc4MkxQeXdZb2FyaU9QWm5BZTZqMzd3YXhkL3RmMGVqbFBCQmRKQklP?=
- =?utf-8?B?WnFGN3JjbHpFdWw5dVpBM1dUZEhPVmJ0UzExQmFzWXhEU3NJZy9RNjZpbW9E?=
- =?utf-8?B?WFpRNURQanNQUUdZc2IxQWlvUTFUNHFuVklQY29xRXRHRnRuVi9PTjRKNVRw?=
- =?utf-8?B?dCtCdUtPNDg2cE9yQ2lLM1FIeTVvMVFRRWJTRFRoQWxXVU9mMmpORDhTdXRo?=
- =?utf-8?B?eFhKc2hmYm1RRUdnSVNMSlkvSm5EeDEvM05wQUJVeEo2M3MvVElNcHpxcEox?=
- =?utf-8?B?RmtmeGtJbGVRUlNWUU5teG5rS2ozVFh1RWE2SHlXODhEdUplL1FHb2s5RTNz?=
- =?utf-8?B?cmFQZTF5VE85UmdsQVoyc1lPUCtxdERkOHpjLzBHbUE5WFEzbnM5a2FOaW5Z?=
- =?utf-8?B?aHlLSEI1SWhVazJ1RFIvY3RZdlNtOGxaMndnalYwbUtDMVNVTi9VQzlqVk9r?=
- =?utf-8?B?SHhRa3plRE1kSkpsbWd6ZzI0dXMzV0k5eXRDMG4vZ3RacnR2emxqR05SYTB1?=
- =?utf-8?B?dWpwektIYWhnT2pJRDlUVFllcmUwU01VNEVsVFJjRlRmWTdVYVRpN3pXZlI2?=
- =?utf-8?B?dWVhd2tTSFphdmoyczUrWDVuT2hrOEJ2VjlTWUhHdHJmclYwQmNDNkwydUk2?=
- =?utf-8?B?NE1xaUxiSmp6ZmxTNHhzR0daaERQTDJnMis4OC9UUE5ZNUlZd0x0dkMyaEt6?=
- =?utf-8?B?c3MrSWNZY0dQdjFSa1hkVWFDbnR6V05sSzNPbkVNbW12NXNPZmJBNXdIa3pK?=
- =?utf-8?B?a00yY25ZY2FXa256eGo3UzRPc0YrbXZFY0wzTXpZVTBoUHNjYlp1ek5MY3h0?=
- =?utf-8?B?amhOREd5Rm4vcmVpYk4xSlNjeW95cTBBbXhTMy9WSFZsUGJZRCtZVmJUbTNC?=
- =?utf-8?B?enhVdmRBbzdiRG9oWjVvTXF3N2lpeVNPRTVTcDFFcnRSem9xb0EzdnVBajZj?=
- =?utf-8?B?akdFMCs3Tk5tZG5Wa05iTFVtdnlCb05velpMeWYxVGt2VGVqWjI3UGhvQnFi?=
- =?utf-8?B?YUkwMzUraDZGWmpRRVdYcy85R0xpc3FHcTZoWEY4THRzczQwWXNqcWgwbW03?=
- =?utf-8?B?ckhYdnpkeXF5aVhaY2p0S1F4RkJtS3RIN1hwanc5blZqM1JDVHk4ZktFaWNT?=
- =?utf-8?B?RGo4RG5BY2tBUHFMRjFWckdXb0NzOGtqODloamdoR053MXF6enR5QUU0Wktq?=
- =?utf-8?B?V280TmZ6MEhuWWdxVHZPSWNNb0xKbGphWm4rcWhYQjRFU3hCdGwwbk1BYXZo?=
- =?utf-8?B?RVdsTVpjMStmeUhPUDhnSVpYVGo2SkE5bnhKVG1GWkdNeUpWdWtOMjJhVWxW?=
- =?utf-8?B?dHRGK2hLRW5wRitLRUFzREpQWkwzeHA4SFY4emV3TjNraWRMVGNuQXNxaDBE?=
- =?utf-8?B?Z2k1bEtLV2Rpay9ueEc2cm80TXNSWW5QZ2M5VHUvelZCcTRmSjJNZU5QK2dt?=
- =?utf-8?B?ejJMazhGVVVrREMwWnFoYnRLVXlCcG5sK3dSVXM0dWtIUDNUZnB4VU8ySDRv?=
- =?utf-8?B?U0xPREcwV0tyRnpmcndjZUhhbTVEZWMxZmczRFpwTnhwWGk3dkJRYk9DVklP?=
- =?utf-8?B?Nmc9PQ==?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 38db9404-d8bc-4845-da03-08dad3778396
-X-MS-Exchange-CrossTenant-AuthSource: GVXP190MB1990.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Dec 2022 08:39:08.9866
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kb2hmtXrREf8F2T0VRjsCeMMuDz+em0Hcb0tK24q8Mc2KrdupwFgEA/sUuXiJ0qnw+Tg5TNEpxB+kgIELiIJgHt31FjhecW5mn8lnSaYjQ8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0751
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221130092042.0c223a8c@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.11.22 07:14, Jakub Kicinski wrote:
-> On Mon, 28 Nov 2022 11:39:34 +0200 Vadym Kochan wrote:
->> Add Elad Nachman as maintainer for Marvell Prestera Ethernet Switch driver.
->>
->> Change Taras Chornyi mailbox to plvision.
-> This is a patch, so the description needs to explain why...
-> and who these people are. It would seem more natural if you,
-> Oleksandr and Yevhen were the maintainers.
+Wed, Nov 30, 2022 at 06:20:42PM CET, kuba@kernel.org wrote:
+>On Wed, 30 Nov 2022 18:00:05 +0100 Jiri Pirko wrote:
+>> Wed, Nov 30, 2022 at 05:46:59PM CET, kuba@kernel.org wrote:
+>> >On Wed, 30 Nov 2022 12:42:39 +0100 Jiri Pirko wrote:  
+>> >> **)
+>> >> I see. With the change I suggest, meaning doing
+>> >> devlink_port_register/unregister() and netdev_register/unregister only
+>> >> for registered devlink instance, you don't need this at all. When you
+>> >> hit this compat callback, the netdevice is there and therefore devlink
+>> >> instance is registered for sure.  
+>> >
+>> >If you move devlink registration up it has to be under the instance
+>> >lock, otherwise we're back to reload problems. That implies unregister
+>> >should be under the lock too. But then we can't wait for refs in
+>> >unregister. Perhaps I don't understand the suggestion.  
+>> 
+>> I unlock for register and for the rest of the init I lock again.
 >
-> Seriously, this is a community project please act the part.
-The Marvell Prestera Switchdev Kernel Driver's focus and maintenance are 
-shifted from PLVision (Marvell Contractors) to the Marvell team in Israel.
-In the last 12 months, the driver's development efforts have been shared 
-between the PLVision team and Elad Nachman from the Marvell Israel group.
+>The moment you register that instance callbacks can start coming.
+>Leon move the register call last for a good reason - all drivers
+>we looked at had bugs in handling init.
+>
+>We can come up with fixes in the drivers, flags, devlink_set_features()
+>and all that sort of garbage until the day we die but let's not.
+>The driver facing API should be simple - hold the lock around entire
+>init.
+>
+>> >> What is "half-initialized"? Take devlink reload flow for instance. There
+>> >> are multiple things removed/readded, like devlink_port and related
+>> >> netdevice. No problem there.  
+>> >
+>> >Yes, but reload is under the instance lock, so nothing can mess with 
+>> >a device in a transitional state.  
+>> 
+>> Sure, that is what I want to do too. To be under instance lock.
+>
+>I'm confused, you just said "I unlock for register".
 
-Elad Nachman is a veteran with over ten years of experience in Linux 
-kernel development.
-He has made many Linux kernel contributions to several community 
-projects, including the Linux kernel, DPDK (KNI Linux Kernel driver) and 
-the DENT project.
-Elad has done reviews and technical code contributions on Armada 3700, 
-Helping Pali Rohár, who is the maintainer of the Armada 3700 PCI 
-sub-system, as well as others in the Armada 3700 cpufreq sub-system.
-In the last year and a half, Elad has internally dealt extensively with 
-the Marvell Prestera sub-system and has led various upstreaming 
-sub-projects related to the Prestera sub-system, Including Prestera 
-sub-system efforts related to the Marvell AC5/X SOC drivers upstreaming. 
-This included technical review and guidance on the technical aspects and 
-code content of the patches sent for review.
-In addition, Elad is a member of the internal review group of code 
-before it applies as a PR.
+Ah, right. I got your point now, you don't want the user to see
+half-init devlink objects. In reload, the secondhalf-uninit&seconfhalf-init
+happens atomically under instance lock, so the user sees the whole picture
+still.
 
-Finally, do note the fact that I will continue to maintain/support this 
-driver, but I would like to have someone that I can share the effort with.
+But is it a problem? For ports, I don't think so. For the other objects
+being removed-readded during reload, why do you think it is a problem?
+
+
+>
+>> >> As mentioned above (**), I don't think this is needed.  
+>> >
+>> >But it is, please just let me do it and make the bugs stop 😭  
+>> 
+>> Why exactly is it needed? I don't see it, pardon my ignorance :)
+>> 
+>> Let me send the RFC of the change tomorrow, you'll see what I mean.
+>
+>The way I see it Leon had a stab at it, you did too, now it's my turn..
+
+Up to you.
