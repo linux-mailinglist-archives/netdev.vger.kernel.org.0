@@ -2,71 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43CEC63F96A
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 21:49:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 019FC63F982
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 22:01:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbiLAUs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 15:48:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45530 "EHLO
+        id S230264AbiLAVBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 16:01:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbiLAUsw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 15:48:52 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479B42FFE8;
-        Thu,  1 Dec 2022 12:48:48 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id d131so225757ybh.4;
-        Thu, 01 Dec 2022 12:48:48 -0800 (PST)
+        with ESMTP id S230465AbiLAVBd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 16:01:33 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075D5BEC71;
+        Thu,  1 Dec 2022 13:01:25 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id b13-20020a17090a5a0d00b0021906102d05so3282567pjd.5;
+        Thu, 01 Dec 2022 13:01:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=N1ZEAITnlnIL0uo/MUd+4DILu+xpsXxa/BaZ4ECfnM8=;
-        b=WyGkdNpHa5CRQ5od0hODlgB8PdqXLsW8QvZyb/PaoclhgigeVtDOtN3/X+MjBBohPg
-         fAJKbCobXRt3kSOEwjShwxBMNCPezV9rp4jM/kmfzc7b2Kso9dzEd2GjJ4+k4TqzbDXn
-         ozHUKBovZ6ntjxxLR1pV0xur7Dffp4PLACtNFsBUzWrvDrYYYLYcmeaar6OaIPUwnoP+
-         vS2K7SzKVUydrVDxUaSB0Rt7Y1BxY1qOPkiVrDwtSCKir5Bc2kdzy+htVqDfWiHKLkqt
-         +YvUdaRoOmkfsSTIDs21vTleziVaktQZe8p5el78FMqxdiRP9Es1xch6rk8FzLv5vCLs
-         f4rw==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=LRq1OL6Xj9pmq08PnRJaytzi6oZ4smB3yIcsOA6bRZ8=;
+        b=mL/QChE2IM6Sa+fr7sGjHdhpKLgydMltDYaZP3WHB98HQTtWKBzZBJ+MlB5LKoS6kr
+         CKU4uuTE1Qs8d5dKkTq2KSCAtX1qlVYGnIF9pNZdwIaPZHBlQj58xst48Nev03oEO3G9
+         ox/cIyJuMcOv7BrK67pVJgaJLOOcfh2HAJCj92YKqru70tPx+HFip1yh90mLfEVvXeSH
+         +vgF4D0ALutmTZH4ZIHjzWWH3qg/Fm7p/XMXL7ahtnulI5XkQlVIiTqOCdQut3OgFx9X
+         Li/+WJutX+j0Tc1GoJxIaiml4E4ZOS1ZJFE6KUAiMSRs0tkNI0CQkLtsFvKae+Iqe2AB
+         /BHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=N1ZEAITnlnIL0uo/MUd+4DILu+xpsXxa/BaZ4ECfnM8=;
-        b=YlFbJolxQgY/Vcoqha2jjI2+/yJ7y3Bz9h4ajNINnN7MS+ZEszoMXUmkH8hBS7ITUn
-         aFs2orqRTLqp8MNI3Sr0Pdn1ZIaLOMVGELzId5Iu6DaC+l4gzjzMX2CgsocSgfa9o8Rv
-         ZEbxs+0sTuTpcLAspWPTw8xnQfyWfxpHDtH3wc5d53GACI9Z50/YvMh8hIZNYrUqxQsH
-         3IIjSBMKf3As4AGkiIs3hlDvsnlA2BxIKXye4v+21IvYXqYQE3t9P5lw+4xyrBRdZldH
-         GbjkFvidb1Hj9K154hMiny0AO7JYD97WARSd3lgqR2kHgC+vNSbaBxRHoZT7NK0yZKZ8
-         u3nw==
-X-Gm-Message-State: ANoB5pl7MkfyPm8sdSeb0MN8SVA6MZ2iQ4UkTI9Ve1zPuuYthmmZhyf/
-        s6IRHsXabHNWZJENGj4JoG+OfFJZ4v2HJKEmt/I=
-X-Google-Smtp-Source: AA0mqf7P2XR9ZGUdtibT6H1IotM1KHS20VYF48xyhV/t4p4fXyyfUbMrklp5zCu94hmcsSe0Hctv2TNHJldLsNDIvw8=
-X-Received: by 2002:a25:401:0:b0:6fa:8a4b:40b6 with SMTP id
- 1-20020a250401000000b006fa8a4b40b6mr8671751ybe.230.1669927727147; Thu, 01 Dec
- 2022 12:48:47 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LRq1OL6Xj9pmq08PnRJaytzi6oZ4smB3yIcsOA6bRZ8=;
+        b=wADOf3r278pLYrGKCeP+G/FNGyW+Zbh97IbGaD2E+wDuo0wnld5xk4Ogvt1T3zSm7H
+         ncU4hgrG2V2VM1le8uPAw/PCTxYbuYZ4UqF8SoazVVXHNfrKDsu9X/s3QJTCqThrr0x9
+         aU5ztkbHVjQEt2Je23hb0/43Gu+EWtcFcA6pusbyBGGEUQA5OQf5UOVapTfRTGWL7A2S
+         kiuXO7agSf6G92h7R+YmOMp7jLoLnGJsvlXcI4d/bQf25WHKz4Rx2az1EZveZv6i3epi
+         Q6bZaJIXkFF0ltfvGaVOeF2xI53i/kxX6qbE3YRvllPb9tBgmf0suvTjKtdCUttQIXKG
+         KCrA==
+X-Gm-Message-State: ANoB5pnhPb+8HhjrInVTM2R/uNiLH/8Y9thSY8eTQjk8ygzpd/1XMkGs
+        BOA3diEIsEkIgvyDYqB/dfA=
+X-Google-Smtp-Source: AA0mqf6kwzXSHtomF6UgbQTjc6L42lOm5imMB/D9GPDhjeLMYdCotgUgkirKWbp5mNXOVt2pLOH85A==
+X-Received: by 2002:a17:902:6a86:b0:187:722:f4db with SMTP id n6-20020a1709026a8600b001870722f4dbmr50441108plk.87.1669928485074;
+        Thu, 01 Dec 2022 13:01:25 -0800 (PST)
+Received: from ?IPV6:2600:8802:b00:4a48:edbb:db52:d3ff:52f? ([2600:8802:b00:4a48:edbb:db52:d3ff:52f])
+        by smtp.gmail.com with ESMTPSA id a15-20020aa78e8f000000b005743cdde1a7sm3643147pfr.82.2022.12.01.13.01.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Dec 2022 13:01:24 -0800 (PST)
+Message-ID: <88dda176-cfbd-5351-970c-93d5aa598aaa@gmail.com>
+Date:   Thu, 1 Dec 2022 13:01:23 -0800
 MIME-Version: 1.0
-References: <20221129132018.985887-1-eyal.birger@gmail.com>
- <20221129132018.985887-4-eyal.birger@gmail.com> <ba1a8717-7d9a-9a78-d80a-ad95bb902085@linux.dev>
- <CAHsH6Gvb94O6ir-emzop1FoDsbHh7QNVFrtDuohzvXpVe0S4Vg@mail.gmail.com> <917db515-072c-31d5-1cd2-b28bc40f7bd4@linux.dev>
-In-Reply-To: <917db515-072c-31d5-1cd2-b28bc40f7bd4@linux.dev>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Thu, 1 Dec 2022 22:48:35 +0200
-Message-ID: <CAHsH6GsDmw5qNv-9u-DfOXaUgtaGhOesEveOvX5cVcnYmjtonA@mail.gmail.com>
-Subject: Re: [PATCH ipsec-next,v2 3/3] selftests/bpf: add xfrm_info tests
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        andrii@kernel.org, daniel@iogearbox.net, nicolas.dichtel@6wind.com,
-        razor@blackwall.org, mykolal@fb.com, ast@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, shuah@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v3 1/3] net: dsa: ksz: Check return value
+Content-Language: en-US
+To:     Artem Chernyshev <artem.chernyshev@red-soft.ru>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+References: <20221201140032.26746-1-artem.chernyshev@red-soft.ru>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20221201140032.26746-1-artem.chernyshev@red-soft.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -75,27 +77,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 1, 2022 at 10:26 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->
-> On 11/30/22 9:34 PM, Eyal Birger wrote:
-> >>> +
-> >>> +struct {
-> >>> +     __uint(type, BPF_MAP_TYPE_ARRAY);
-> >>> +     __uint(max_entries, 2);
-> >>> +     __type(key, __u32);
-> >>> +     __type(value, __u32);
-> >>> +} dst_if_id_map SEC(".maps");
-> >>
-> >> It is easier to use global variables instead of a map.
-> >
-> > Would these be available for read/write from the test application (as the
-> > map is currently populated/read from userspace)?
->
-> Yes, through the skel->bss->...
-> selftests/bpf/prog_tests/ has examples.
 
-Oh this is very useful! I tested and indeed this works perfectly.
-WIll use in v3.
 
-Thanks!
-Eyal.
+On 12/1/2022 6:00 AM, Artem Chernyshev wrote:
+> Return NULL if we got unexpected value from skb_trim_rcsum()
+> in ksz_common_rcv()
+> 
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> 
+> Fixes: bafe9ba7d908 ("net: dsa: ksz: Factor out common tag code")
+> Signed-off-by: Artem Chernyshev <artem.chernyshev@red-soft.ru>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
