@@ -2,72 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8584263E99C
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 07:10:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7931863E9AC
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 07:14:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbiLAGKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 01:10:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49896 "EHLO
+        id S229750AbiLAGOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 01:14:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229748AbiLAGKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 01:10:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F74A85E2
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 22:10:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26FE861EA9
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 06:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 46373C43153;
-        Thu,  1 Dec 2022 06:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669875017;
-        bh=hozUH6T6PH3Y6/hM/gJcrV49l5jrvVEfOsr88QDqV4A=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NMlv2kIdOXXpsxwO6wWMg0z/dfV3LoKJzOMbEvoBJjUIP3ajugPonUv1iXUVq1Za3
-         JHmzOGYQTDkKOcrjgfC12ngt1+qLyDtjSP9+0VEMYEiHzWXEl5Rb7AIWp4vYfSv+Vv
-         lquFGjUBrqCB4h5U06a5UbC3rzJZFVLWf8hTmZdokwK1l1rF/aIpPjoNGLtBFnXY37
-         AaDqGt2RZBdG2tx5Wbg+OH1ik76+BN7jbL40VS8YW7u7l5JT8KBBRQlfyRVhj68bQy
-         4sp5pIdNM5Vrsq20UR1LJu/3iCQ0J2YOi0WcmJzXrscYxQ4yeOaCWxejmyI0MumfM+
-         Z0uiwAXegZgJQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2B4F0E29F38;
-        Thu,  1 Dec 2022 06:10:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229449AbiLAGO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 01:14:27 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F10A6B65
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 22:14:27 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1p0cot-0005vD-4h; Thu, 01 Dec 2022 07:13:15 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1p0coe-0002BZ-Us; Thu, 01 Dec 2022 07:13:00 +0100
+Date:   Thu, 1 Dec 2022 07:13:00 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        soc@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Stefan Agner <stefan@agner.ch>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 1/5] dt-bindings: net: qca,ar71xx: remove label = "cpu"
+ from examples
+Message-ID: <20221201061300.GD19642@pengutronix.de>
+References: <20221130141040.32447-1-arinc.unal@arinc9.com>
+ <20221130141040.32447-2-arinc.unal@arinc9.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v6 0/3] net: devlink: return the driver name in
- devlink_nl_info_fill
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166987501717.18933.6140637869420910519.git-patchwork-notify@kernel.org>
-Date:   Thu, 01 Dec 2022 06:10:17 +0000
-References: <20221129095140.3913303-1-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20221129095140.3913303-1-mailhol.vincent@wanadoo.fr>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     jiri@nvidia.com, netdev@vger.kernel.org, kuba@kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, bbrezillon@kernel.org,
-        arno@natisbad.org, schalla@marvell.com, kurt@linutronix.de,
-        andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
-        michael.chan@broadcom.com, ioana.ciornei@nxp.com,
-        dmichail@fungible.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, sgoutham@marvell.com,
-        lcherian@marvell.com, gakula@marvell.com, jerinj@marvell.com,
-        hkelam@marvell.com, sbhatta@marvell.com, tchornyi@marvell.com,
-        saeedm@nvidia.com, leon@kernel.org, idosch@nvidia.com,
-        petrm@nvidia.com, simon.horman@corigine.com, snelson@pensando.io,
-        drivers@pensando.io, aelior@marvell.com, manishc@marvell.com,
-        jonathan.lemon@gmail.com, vadfed@fb.com, richardcochran@gmail.com,
-        vadimp@mellanox.com, shalomt@mellanox.com,
-        linux-crypto@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, oss-drivers@corigine.com,
-        jiri@mellanox.com, herbert@gondor.apana.org.au,
-        chenhao288@hisilicon.com, huangguangbin2@huawei.com,
-        chi.minghao@zte.com.cn, sthotton@marvell.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+In-Reply-To: <20221130141040.32447-2-arinc.unal@arinc9.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,32 +112,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 29 Nov 2022 18:51:37 +0900 you wrote:
-> The driver name is available in device_driver::name. Right now,
-> drivers still have to report this piece of information themselves in
-> their devlink_ops::info_get callback function.
+On Wed, Nov 30, 2022 at 05:10:36PM +0300, Arınç ÜNAL wrote:
+> This is not used by the DSA dt-binding, so remove it from the examples.
 > 
-> The goal of this series is to have the devlink core to report this
-> information instead of the drivers.
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+
+Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+
+Thx!
+
+> ---
+>  Documentation/devicetree/bindings/net/qca,ar71xx.yaml | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-> [...]
+> diff --git a/Documentation/devicetree/bindings/net/qca,ar71xx.yaml b/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+> index 1ebf9e8c8a1d..89f94b31b546 100644
+> --- a/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+> +++ b/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+> @@ -123,7 +123,6 @@ examples:
+>  
+>                      switch_port0: port@0 {
+>                          reg = <0x0>;
+> -                        label = "cpu";
+>                          ethernet = <&eth1>;
+>  
+>                          phy-mode = "gmii";
+> -- 
+> 2.34.1
+> 
+> 
 
-Here is the summary with links:
-  - [net-next,v6,1/3] net: devlink: let the core report the driver name instead of the drivers
-    https://git.kernel.org/netdev/net-next/c/226bf9805506
-  - [net-next,v6,2/3] net: devlink: make the devlink_ops::info_get() callback optional
-    https://git.kernel.org/netdev/net-next/c/c5cd7c86847c
-  - [net-next,v6,3/3] net: devlink: clean-up empty devlink_ops::info_get()
-    https://git.kernel.org/netdev/net-next/c/cf4590b91db4
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
