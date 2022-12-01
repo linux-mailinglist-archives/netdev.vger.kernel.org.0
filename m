@@ -2,109 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB43A63F0E1
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 13:50:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC5F63F0ED
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 13:53:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbiLAMu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 07:50:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33862 "EHLO
+        id S229777AbiLAMxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 07:53:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbiLAMuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 07:50:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CD191C3A;
-        Thu,  1 Dec 2022 04:50:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6AA2AB81F3E;
-        Thu,  1 Dec 2022 12:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D218C433D7;
-        Thu,  1 Dec 2022 12:50:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669899018;
-        bh=tHu/RAOQMiQxnwrAgil/D4i7F+V8yl6O/JMiB1Av2Xk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=p1iJnIIScCz0obgtCvhTltSGf8OHkdanhSeB8S3DoTjJookiLeNnulaibwWc2K0bR
-         keac/9EuibCSDE0k53Az2bmvrADwvkj71J0tJdpSrbEB/vh0lRJ2qClPSmjbnVUfXv
-         Sw/h4qsUEw39XSp/kVSvpZe0BIff6ItfJLGtYw1tyHjyYKGKh7d9MnTLJD6UrGMM0x
-         JbESfEFE73PS29SbCChcMI/KtprwTe4LIT/hPAJXlKpVy04iwGNQClH2oC4ByNvuPl
-         1kplYwAfXee6rxFjlYM3M3DREvQkKHAbn2BQ4XvTNNOUglQsTNl5PtKab0oFge4Ihi
-         s+ZrFNTUow35Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F2384E21EF1;
-        Thu,  1 Dec 2022 12:50:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229843AbiLAMxU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 07:53:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B2D94570
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 04:52:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669899146;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KX7ZgKnKmftxfER1/7x229HjmVmAjL/J0cNOAMkyjzU=;
+        b=fc/wXM/L6rf01AhIYBvV/RdFs8oXlM2lsS0vk7S1on2QK7i7IlJkFrU0GDkO3yA3o42gLl
+        kNvNDTRH+oY6Fwi3RQdQ69jML6Xe5VXodyxfzFkpo4Kj87NShd9sSnV2YAprHWF6uJfHpK
+        A4d0EfqwyWdDFtjesoAUQQbQqP01+Qs=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-609-YcrMBom5N-eL7THbpd3LXQ-1; Thu, 01 Dec 2022 07:52:25 -0500
+X-MC-Unique: YcrMBom5N-eL7THbpd3LXQ-1
+Received: by mail-wm1-f69.google.com with SMTP id v188-20020a1cacc5000000b003cf76c4ae66so2499724wme.7
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 04:52:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KX7ZgKnKmftxfER1/7x229HjmVmAjL/J0cNOAMkyjzU=;
+        b=gpj5qWhtVO3sS5NmZ8cwHJT+rZQSWSwAPPkZngemR/j8p/k/qp7WpOba1WkXgmMkzK
+         E92it8ojqE+je3Hop4s4uiGpTokSY6New5Du+a06DNT2zC65en0p/ZhG6TCFgPB+6Tke
+         Q5mR4eEh6zaMg1WI3tyvizr2fX8qTW0vUlkF9Px3hkXs9RD+SeX7DvZXxPZ38vVjtx+l
+         Wvu+2ILUxF2fdUDP4MtcyRWCenQORzT5hEmNIdCIIKvCu2aJSLs16dRsIXrXVnd0MYjc
+         EajQ4ZssE7Bcp7CK5EbJH7MO+6GKzvGZCrsKBj5ySZyZood1exvPnaqxauG7YHpXNMYs
+         Wl+w==
+X-Gm-Message-State: ANoB5pnOdvvnjfug/++weXsRbGNL+Dd+rzRK119vyWzZYXGcCE7Q0is/
+        yEGjvrzAI1dROQQNNN4BhgnTpFnyMmjlHg+1iCD2virYmuAZyNHgL5ROBSK+MRm/YnAlLYp6erj
+        7t3BqqSPyxDeqahk3
+X-Received: by 2002:a5d:5a95:0:b0:241:65d4:8b41 with SMTP id bp21-20020a5d5a95000000b0024165d48b41mr39503359wrb.470.1669899143922;
+        Thu, 01 Dec 2022 04:52:23 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6Sg+DcQkYoi4np2dM5zcwejMd8n6MfCsURlgx5SaFB6lFEzMiJlNe6Hi+4IEo9IqhbBB2MXw==
+X-Received: by 2002:a5d:5a95:0:b0:241:65d4:8b41 with SMTP id bp21-20020a5d5a95000000b0024165d48b41mr39503346wrb.470.1669899143730;
+        Thu, 01 Dec 2022 04:52:23 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
+        by smtp.gmail.com with ESMTPSA id w6-20020adfec46000000b0022efc4322a9sm4597741wrn.10.2022.12.01.04.52.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Dec 2022 04:52:23 -0800 (PST)
+Message-ID: <754ebf6db6955795f628d9a887adf4577a8d9041.camel@redhat.com>
+Subject: Re: [PATCH v2 net] net: microchip: sparx5: correctly free skb in
+ xmit
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Casper Andersson <casper.casan@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Date:   Thu, 01 Dec 2022 13:52:21 +0100
+In-Reply-To: <20221129152635.15362-1-casper.casan@gmail.com>
+References: <20221129152635.15362-1-casper.casan@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/12] Fix rtnl_mutex deadlock with DPAA2 and SFP
- modules
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166989901798.1197.13323886521084195316.git-patchwork-notify@kernel.org>
-Date:   Thu, 01 Dec 2022 12:50:17 +0000
-References: <20221129141221.872653-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20221129141221.872653-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, ioana.ciornei@nxp.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux@armlinux.org.uk, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Tue, 29 Nov 2022 16:12:09 +0200 you wrote:
-> This patch set deliberately targets net-next and lacks Fixes: tags due
-> to caution on my part.
+On Tue, 2022-11-29 at 16:26 +0100, Casper Andersson wrote:
+> consume_skb on transmitted, kfree_skb on dropped, do not free on
+> TX_BUSY.
 > 
-> While testing some SFP modules on the Solidrun Honeycomb LX2K platform,
-> I noticed that rebooting causes a deadlock:
+> Previously the xmit function could return -EBUSY without freeing, which
+> supposedly is interpreted as a drop. And was using kfree on successfully
+> transmitted packets.
 > 
-> ============================================
-> WARNING: possible recursive locking detected
-> 6.1.0-rc5-07010-ga9b9500ffaac-dirty #656 Not tainted
+> sparx5_fdma_xmit and sparx5_inject returns error code, where -EBUSY
+> indicates TX_BUSY and any other error code indicates dropped.
 > 
-> [...]
+> Fixes: f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
+> 
+> Signed-off-by: Casper Andersson <casper.casan@gmail.com>
 
-Here is the summary with links:
-  - [net-next,01/12] net: dpaa2-eth: don't use -ENOTSUPP error code
-    https://git.kernel.org/netdev/net-next/c/91c71bf14da4
-  - [net-next,02/12] net: dpaa2: replace dpaa2_mac_is_type_fixed() with dpaa2_mac_is_type_phy()
-    https://git.kernel.org/netdev/net-next/c/320fefa9e2ed
-  - [net-next,03/12] net: dpaa2-mac: absorb phylink_start() call into dpaa2_mac_start()
-    https://git.kernel.org/netdev/net-next/c/385333888154
-  - [net-next,04/12] net: dpaa2-mac: remove defensive check in dpaa2_mac_disconnect()
-    https://git.kernel.org/netdev/net-next/c/ccbd7822950f
-  - [net-next,05/12] net: dpaa2-eth: assign priv->mac after dpaa2_mac_connect() call
-    https://git.kernel.org/netdev/net-next/c/02d61948e8da
-  - [net-next,06/12] net: dpaa2-switch: assign port_priv->mac after dpaa2_mac_connect() call
-    https://git.kernel.org/netdev/net-next/c/88d64367cea0
-  - [net-next,07/12] net: dpaa2: publish MAC stringset to ethtool -S even if MAC is missing
-    https://git.kernel.org/netdev/net-next/c/29811d6e19d7
-  - [net-next,08/12] net: dpaa2-switch replace direct MAC access with dpaa2_switch_port_has_mac()
-    https://git.kernel.org/netdev/net-next/c/bc230671bfb2
-  - [net-next,09/12] net: dpaa2-eth: connect to MAC before requesting the "endpoint changed" IRQ
-    https://git.kernel.org/netdev/net-next/c/55f90a4d07ec
-  - [net-next,10/12] net: dpaa2-eth: serialize changes to priv->mac with a mutex
-    https://git.kernel.org/netdev/net-next/c/2291982e29b1
-  - [net-next,11/12] net: dpaa2-switch: serialize changes to priv->mac with a mutex
-    https://git.kernel.org/netdev/net-next/c/3c7f44fa9c4c
-  - [net-next,12/12] net: dpaa2-mac: move rtnl_lock() only around phylink_{,dis}connect_phy()
-    https://git.kernel.org/netdev/net-next/c/87db82cb6149
+Minor nit: please remote the empty line between the Fixes and SoB tags,
+thanks!
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Paolo
 
