@@ -2,93 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C966963F3A1
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 16:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21AF563F3A9
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 16:21:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbiLAPUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 10:20:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58150 "EHLO
+        id S230500AbiLAPVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 10:21:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230129AbiLAPUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 10:20:02 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C47CA47F2;
-        Thu,  1 Dec 2022 07:20:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=mDOf95eDTZe1lv0pAYb0o56fQ3mCO67yFPfF16RFTr8=; b=nvV4tr2Xebh0CdlfoCcpcWIwGN
-        0J1UQKFuGN/RTM0vUU+DCOlZPRxeIQXi2vvFmfmrEYMwbYXGTN6APcx3Ci2R0NpcckMM+DMNTK9eR
-        M9istheCxbVY+vG6kQY1HxTOQ8xend1fwl4TCWtMt1+ZW3ITmlgpgz4eOgQY3muhUGEs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p0lLa-0044WM-9q; Thu, 01 Dec 2022 16:19:34 +0100
-Date:   Thu, 1 Dec 2022 16:19:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Roger Quadros <rogerq@kernel.org>
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        maciej.fijalkowski@intel.com, kuba@kernel.org, edumazet@google.com,
-        vigneshr@ti.com, linux-omap@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 4/6] net: ethernet: ti: am65-cpsw: Add
- suspend/resume support
-Message-ID: <Y4jGBtWurJ4tmHOc@lunn.ch>
-References: <20221129133501.30659-1-rogerq@kernel.org>
- <20221129133501.30659-5-rogerq@kernel.org>
- <9fdc4e0eee7ead18c119b6bc3e93f7f73d2980cd.camel@redhat.com>
- <c41064a1-9da7-d848-6f9f-e1f3b722c063@kernel.org>
+        with ESMTP id S230129AbiLAPVX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 10:21:23 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F5BA95AB
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 07:21:22 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id x24so733112qkf.5
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 07:21:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=F+aJp9nKjPGTL8kc2LjILS5v+0u+UwxQjsGUkZU58yo=;
+        b=T7ZxDVxe+Ywjh4UUtEtwOqON3VjmUHLhLR0gfCSAYJ7YyZ1b6aFffciBrCR4WK7btn
+         8lhlZi4RIBNx7J1+i0TEVfhPfk27qSkJsldYhgbjhnKrnO5W90cb4GR6AIOR0fewkGjq
+         NSyRWvYWMCpz12bBPo69oP5frjsemX/8qZOv4oGbb6Zl+/jM/ISPlNe3d3Dy0Rs2WYhg
+         P5QV6fByuVedQaAht8GGc5gv3U7kmRz7idweXUfe3wAYpg/e8Y2GSzqvzQMOHCdnonz/
+         XLmnzpN/wJTYcjb3w5C12vr8+36TEYLP7rVrAlVYZN4BYcojhSdGL7kD7kM/dd3VwJhO
+         qJKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=F+aJp9nKjPGTL8kc2LjILS5v+0u+UwxQjsGUkZU58yo=;
+        b=BJ4F/CALz3+eXuhAQpFgtuHly5NKcneQ5vblEUJepdjPoemuZS8cukmW2DOOJl0A8W
+         +yMiyclKCwMwnXytZsGPSDFUondm/dG/SWKZkgDcVh9sopxruTP4tAPyTl2yfOxjyfJb
+         f5UZuHkkL8YtZKVosO6b6MEnNmkEeZeDSX0UdsnUo92GEoOeLEx+xP0Ytt47tA0dDauK
+         vlLbswOZkJs+UbRl5Uf24w3H/pSHZlysdE0j5ybhkZpDWTfu+yNuaPysoeuCqzXIABHt
+         EpFR1XNSURWGN89hX08eO0Ly+H+3S61zfeNntmf0n7KYtwX9nuLrVjJ2+FSFVv1x5FVl
+         +OJw==
+X-Gm-Message-State: ANoB5pliokRrD5C3gYgKCpBdvEXYOcMRf0QV6ikV6lfgU4xvAw+4eTcG
+        OCczcZn/bvdIB7jxhmog1uPzpCYhxEbMXTByaDc=
+X-Google-Smtp-Source: AA0mqf7+O+K+gVqCfzLsaYusvxMfIZ6u4ct4O8yGJ7fPPuPcdPb8myfdpqI51AM6DJInrsBPM6bpc9cEggqXy1wFJL0=
+X-Received: by 2002:a37:80c:0:b0:6fa:2cab:4945 with SMTP id
+ 12-20020a37080c000000b006fa2cab4945mr43701973qki.256.1669908081701; Thu, 01
+ Dec 2022 07:21:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c41064a1-9da7-d848-6f9f-e1f3b722c063@kernel.org>
+References: <CAHRDKfRZEw3Mq9GP3rCf2U10Y7X7N61BNZCa95tKESZkVD2qAg@mail.gmail.com>
+ <Y2yzKfSPJ7h2arO/@shredder>
+In-Reply-To: <Y2yzKfSPJ7h2arO/@shredder>
+From:   Leonid Komaryanskiy <lkomaryanskiy@gmail.com>
+Date:   Thu, 1 Dec 2022 17:21:10 +0200
+Message-ID: <CAHRDKfSoNdWWjv8X6-fBvaaaJ7wFekvKAYkfD01JBcqrMiLtUA@mail.gmail.com>
+Subject: Re: ip_forward notification for driver
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     dmytro_firsov@epam.com, petrm@nvidia.com, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 01, 2022 at 01:44:28PM +0200, Roger Quadros wrote:
-> Hi,
-> 
-> On 01/12/2022 13:40, Paolo Abeni wrote:
-> > On Tue, 2022-11-29 at 15:34 +0200, Roger Quadros wrote:
-> >> @@ -555,11 +556,26 @@ static int am65_cpsw_nuss_ndo_slave_open(struct net_device *ndev)
-> >>  	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
-> >>  	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
-> >>  	int ret, i;
-> >> +	u32 reg;
-> >>  
-> >>  	ret = pm_runtime_resume_and_get(common->dev);
-> >>  	if (ret < 0)
-> >>  		return ret;
-> >>  
-> >> +	/* Idle MAC port */
-> >> +	cpsw_sl_ctl_set(port->slave.mac_sl, CPSW_SL_CTL_CMD_IDLE);
-> >> +	cpsw_sl_wait_for_idle(port->slave.mac_sl, 100);
-> >> +	cpsw_sl_ctl_reset(port->slave.mac_sl);
-> >> +
-> >> +	/* soft reset MAC */
-> >> +	cpsw_sl_reg_write(port->slave.mac_sl, CPSW_SL_SOFT_RESET, 1);
-> >> +	mdelay(1);
-> >> +	reg = cpsw_sl_reg_read(port->slave.mac_sl, CPSW_SL_SOFT_RESET);
-> >> +	if (reg) {
-> >> +		dev_err(common->dev, "soft RESET didn't complete\n");
-> > 
-> > I *think* Andrew was asking for dev_dbg() here, but let's see what he
-> > has to say :)
-> 
-> In the earlier revision we were not exiting with error, so dev_dbg()
-> was more appropriate there.
-> In this revision we error out so I thought dev_err() was ok.
+Ido Schimmel, thank you for your advice.
+We checked netevents (NETEVENT_IPV4_MPATH_HASH_UPDATE and
+NETEVENT_IPV4_FWD_UPDATE_PRIORITY_UPDATE) but unfortunately, netevents
+notifier doesn't trigger at all in case of changing value in
+/proc/sys/net/ipv4/ip_forward. We see, that these events come in the
+case of modifying /proc/sys/net/ipv4/fib_multipath_hash_policy, but
+not for ip_forward. Shell we prepare an upstream patch with notifier
+for ip_forward modify netevent?
 
-Yes, i would agree. It is fatal, so dev_err() is appropriate.
-
-What is not shown here is the return value. I think it is -EBUSY? I'm
-wondering if -ETIMEDOUT is better?
-
-	  Andrew
+On Thu, Nov 10, 2022 at 10:15 AM Ido Schimmel <idosch@idosch.org> wrote:
+>
+> On Thu, Nov 10, 2022 at 09:51:35AM +0200, Leonid Komaryanskiy wrote:
+> > I'm working on L3 routing offload for switch device and have a
+> > question about ip_forwarding. I want to disable/enable forwarding on
+> > the hardware side according to changing value in
+> > /proc/sys/net/ipv4/ip_forward. As I see, inet_netconf_notify_devconf
+> > just sends rtnl_notify for userspace. Could I ask you for advice, on
+> > how can I handle updating value via some notifier or some other Linux
+> > mechanism in driver?
+>
+> You can look into netevents. See NETEVENT_IPV4_MPATH_HASH_UPDATE and
+> NETEVENT_IPV4_FWD_UPDATE_PRIORITY_UPDATE, for example.
