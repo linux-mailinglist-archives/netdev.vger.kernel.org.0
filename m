@@ -2,119 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 570FE63E790
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 03:14:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D6B63E7A7
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 03:19:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbiLACOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 21:14:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
+        id S229879AbiLACTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 21:19:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiLACOy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 21:14:54 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7812862DC
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 18:14:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=AWYONY4OtWmBCVvgaY1Wq+1qizR7PPLF6prnj0iBV/s=; b=Jc17KBYNHIHmq0mcatiq/l6nAl
-        pXD/TmNtPGDLbc8m6mr1KRb/4UR76TYZBktNAmbc4G82rACkKiFn7OsjZSl6UTOUUbUurLLb/fsP2
-        oEUQYEhtgCKBudrfpccHTxDz+F/EdX52CLWqv8Aq983n0rUqLJgUtkDpu1pYqmLJ+L9Y=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p0Z6B-0041ON-S7; Thu, 01 Dec 2022 03:14:51 +0100
-Date:   Thu, 1 Dec 2022 03:14:51 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: Help on PHY not supporting autoneg
-Message-ID: <Y4gOG5rFwlezsfoD@lunn.ch>
-References: <Y4dJgj4Z8516tJwx@gvm01>
- <Y4d3fV8lUhUehCq6@lunn.ch>
- <Y4fgT1kjX9LTULOi@gvm01>
+        with ESMTP id S229802AbiLACTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 21:19:19 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C69C099511;
+        Wed, 30 Nov 2022 18:19:17 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B12I7lpC004454, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B12I7lpC004454
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 1 Dec 2022 10:18:07 +0800
+Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Thu, 1 Dec 2022 10:18:52 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Thu, 1 Dec 2022 10:18:52 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Thu, 1 Dec 2022 10:18:52 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Jun ASAKA <JunASAKA@zzy040330.moe>,
+        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>
+CC:     "kvalo@kernel.org" <kvalo@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
+Thread-Topic: [PATCH] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
+Thread-Index: AQHZBMW0Ra7MKeD5kEmSajNwR0qaiK5YM5hw//+IBwCAAIuIkA==
+Date:   Thu, 1 Dec 2022 02:18:52 +0000
+Message-ID: <870b8a6e591f4de8b83df26f2a65330b@realtek.com>
+References: <20221130140849.153705-1-JunASAKA@zzy040330.moe>
+ <663e6d79c34f44998a937fe9fbd228e9@realtek.com>
+ <6ce2e648-9c12-56a1-9118-e1e18c7ecd7d@zzy040330.moe>
+In-Reply-To: <6ce2e648-9c12-56a1-9118-e1e18c7ecd7d@zzy040330.moe>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzEg5LiK5Y2IIDEyOjA5OjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y4fgT1kjX9LTULOi@gvm01>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> /root # ethtool eth0
-> Settings for eth0:
->         Supported ports: [ MII ]
->         Supported link modes:   10baseT1S_P2MP/Half
->         Supported pause frame use: Symmetric Receive-only
->         Supports auto-negotiation: No
->         Supported FEC modes: Not reported
->         Advertised link modes:  10baseT1S_P2MP/Half
->         Advertised pause frame use: Symmetric Receive-only
-
-That looks odd. The PHY should indicate if it supports pause
-negotiation. Since this PHY does not support autoneg, it should not be
-saying it can negotiate pause. So i'm wondering why it is saying this
-here. Same for 'Supported pause'.
-
->         Advertised auto-negotiation: No
->         Advertised FEC modes: Not reported
->         Speed: 10Mb/s
->         Duplex: Half
->         Auto-negotiation: off
->         Port: Twisted Pair
->         PHYAD: 8
->         Transceiver: external
->         MDI-X: off (auto)
-
-Given that this is a T1 PHY does MDI-X have any meaning? The (auto)
-indicates the PHY is returning mdix_ctrl=ETH_TP_MDI_AUTO, when it
-should be returning ETH_TP_MDI_INVALID to indicate it is not
-supported.
-
->         Supports Wake-on: d
->         Wake-on: d
->         Current message level: 0x0000003f (63)
->                                drv probe link timer ifdown ifup
->         Link detected: yes
-> 
-> 
-> > What exactly is LINK_CONTROL. It is not one of the Linux names for a
-> > bit in BMCR.
-> The 802.3cg standard define link_control as a varibale set by autoneg.
-> In factm it is tied to the BMCR_ANENABLE bit. The standard further
-> specifies that when AN is not supported, this bit can be supplied in a
-> vendor-specific way. A common thing to do is to just leave it tied to
-> the BMCR_ANENABLE bit.
-> 
-> So, the "problem" seems to lie in the genphy_setup_forced() function.
-> More precisely, where you pointed me at: 
-> >       return phy_modify(phydev, MII_BMCR,
-> >                         ~(BMCR_LOOPBACK | BMCR_ISOLATE | BMCR_PDOWN), ctl);
-> > 
-> 
-> In my view we have two choices to handle LINK_CONTROL.
-> 
-> 1. Just let the PHY driver override the config_aneg() callback as I did.
-> This may be a bit counter-intuitive because of the function name, but it
-> works.
-> 
-> 2. in phylib, distinguish the case of a PHY having aneg disabled from a
-> PHY NOT supporting aneg. In the latter case, don't touch the control
-> register and/or provide a separate callback for "starting" the PHY
-> (e.g., set_link_ctrl)
-
-2) sounds wrong. As you said, it is vendor-specific. As such you
-cannot trust it to mean anything. The standard has left it undefined,
-so you cannot do anything in generic code. I would also worry about
-breaking older PHYs who have never had this bit set.
-
-So i would go with 1). As i said, the function name is not ideal, but
-it has been like this since forever.
-
-   Andrew
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEp1biBBU0FLQSA8SnVuQVNB
+S0FAenp5MDQwMzMwLm1vZT4NCj4gU2VudDogVGh1cnNkYXksIERlY2VtYmVyIDEsIDIwMjIgOToz
+OSBBTQ0KPiBUbzogUGluZy1LZSBTaGloIDxwa3NoaWhAcmVhbHRlay5jb20+OyBKZXMuU29yZW5z
+ZW5AZ21haWwuY29tDQo+IENjOiBrdmFsb0BrZXJuZWwub3JnOyBkYXZlbUBkYXZlbWxvZnQubmV0
+OyBlZHVtYXpldEBnb29nbGUuY29tOyBrdWJhQGtlcm5lbC5vcmc7IHBhYmVuaUByZWRoYXQuY29t
+Ow0KPiBsaW51eC13aXJlbGVzc0B2Z2VyLmtlcm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5v
+cmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRDSF0g
+d2lmaTogcnRsOHh4eHU6IGZpeGluZyBJUUsgZmFpbHVyZXMgZm9yIHJ0bDgxOTJldQ0KPiANCj4g
+T24gMDEvMTIvMjAyMiA4OjU0IGFtLCBQaW5nLUtlIFNoaWggd3JvdGU6DQo+IA0KPiA+DQo+ID4+
+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IEp1bkFTQUtBIDxKdW5BU0FL
+QUB6enkwNDAzMzAubW9lPg0KPiA+PiBTZW50OiBXZWRuZXNkYXksIE5vdmVtYmVyIDMwLCAyMDIy
+IDEwOjA5IFBNDQo+ID4+IFRvOiBKZXMuU29yZW5zZW5AZ21haWwuY29tDQo+ID4+IENjOiBrdmFs
+b0BrZXJuZWwub3JnOyBkYXZlbUBkYXZlbWxvZnQubmV0OyBlZHVtYXpldEBnb29nbGUuY29tOyBr
+dWJhQGtlcm5lbC5vcmc7IHBhYmVuaUByZWRoYXQuY29tOw0KPiA+PiBsaW51eC13aXJlbGVzc0B2
+Z2VyLmtlcm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2Vy
+Lmtlcm5lbC5vcmc7IEp1bkFTQUtBDQo+ID4+IDxKdW5BU0FLQUB6enkwNDAzMzAubW9lPg0KPiA+
+PiBTdWJqZWN0OiBbUEFUQ0hdIHdpZmk6IHJ0bDh4eHh1OiBmaXhpbmcgSVFLIGZhaWx1cmVzIGZv
+ciBydGw4MTkyZXUNCj4gPj4NCj4gPj4gRml4aW5nICJQYXRoIEEgUlggSVFLIGZhaWxlZCIgYW5k
+ICJQYXRoIEIgUlggSVFLIGZhaWxlZCINCj4gPj4gaXNzdWVzIGZvciBydGw4MTkyZXUgY2hpcHMg
+YnkgcmVwbGFjaW5nIHRoZSBhcmd1bWVudHMgd2l0aA0KPiA+PiB0aGUgb25lcyBpbiB0aGUgdXBk
+YXRlZCBvZmZpY2lhbCBkcml2ZXIuDQo+ID4gSSB0aGluayBpdCB3b3VsZCBiZSBiZXR0ZXIgaWYg
+eW91IGNhbiBwb2ludCBvdXQgd2hpY2ggdmVyc2lvbiB5b3UgdXNlLCBhbmQNCj4gPiBwZW9wbGUg
+d2lsbCBub3QgbW9kaWZ5IHRoZW0gYmFjayB0byBvbGQgdmVyc2lvbiBzdWRkZW5seS4NCj4gPg0K
+PiA+PiBTaWduZWQtb2ZmLWJ5OiBKdW5BU0FLQSA8SnVuQVNBS0FAenp5MDQwMzMwLm1vZT4NCj4g
+Pj4gLS0tDQo+ID4+ICAgLi4uL3JlYWx0ZWsvcnRsOHh4eHUvcnRsOHh4eHVfODE5MmUuYyAgICAg
+ICAgIHwgNzYgKysrKysrKysrKysrKy0tLS0tLQ0KPiA+PiAgIDEgZmlsZSBjaGFuZ2VkLCA1NCBp
+bnNlcnRpb25zKCspLCAyMiBkZWxldGlvbnMoLSkNCj4gPj4NCj4gPj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsOHh4eHUvcnRsOHh4eHVfODE5MmUuYw0KPiA+
+PiBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsOHh4eHUvcnRsOHh4eHVfODE5MmUu
+Yw0KPiA+PiBpbmRleCBiMDY1MDhkMGNkLi44MjM0NjUwMGYyIDEwMDY0NA0KPiA+PiAtLS0gYS9k
+cml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bDh4eHh1L3J0bDh4eHh1XzgxOTJlLmMNCj4g
+Pj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGw4eHh4dS9ydGw4eHh4dV84
+MTkyZS5jDQo+ID4gWy4uLl0NCj4gPg0KPiA+PiBAQCAtODkxLDIyICs5MDcsMjggQEAgc3RhdGlj
+IGludCBydGw4MTkyZXVfaXFrX3BhdGhfYihzdHJ1Y3QgcnRsOHh4eHVfcHJpdiAqcHJpdikNCj4g
+Pj4NCj4gPj4gICAJcnRsOHh4eHVfd3JpdGUzMihwcml2LCBSRUdfRlBHQTBfSVFLLCAweDAwMDAw
+MDAwKTsNCj4gPj4gICAJcnRsOHh4eHVfd3JpdGVfcmZyZWcocHJpdiwgUkZfQiwgUkY2MDUyX1JF
+R19VTktOT1dOX0RGLCAweDAwMTgwKTsNCj4gPj4gLQlydGw4eHh4dV93cml0ZTMyKHByaXYsIFJF
+R19GUEdBMF9JUUssIDB4ODA4MDAwMDApOw0KPiA+Pg0KPiA+PiAtCXJ0bDh4eHh1X3dyaXRlMzIo
+cHJpdiwgUkVHX0ZQR0EwX0lRSywgMHgwMDAwMDAwMCk7DQo+ID4+ICsJcnRsOHh4eHVfd3JpdGVf
+cmZyZWcocHJpdiwgUkZfQiwgUkY2MDUyX1JFR19XRV9MVVQsIDB4ODAwYTApOw0KPiA+PiArCXJ0
+bDh4eHh1X3dyaXRlX3JmcmVnKHByaXYsIFJGX0IsIFJGNjA1Ml9SRUdfUkNLX09TLCAweDIwMDAw
+KTsNCj4gPj4gKwlydGw4eHh4dV93cml0ZV9yZnJlZyhwcml2LCBSRl9CLCBSRjYwNTJfUkVHX1RY
+UEFfRzEsIDB4MDAwMGYpOw0KPiA+PiArCXJ0bDh4eHh1X3dyaXRlX3JmcmVnKHByaXYsIFJGX0Is
+IFJGNjA1Ml9SRUdfVFhQQV9HMiwgMHgwN2Y3Nyk7DQo+ID4+ICsNCj4gPj4gICAJcnRsOHh4eHVf
+d3JpdGUzMihwcml2LCBSRUdfRlBHQTBfSVFLLCAweDgwODAwMDAwKTsNCj4gPj4NCj4gPj4gKwkv
+LyBydGw4eHh4dV93cml0ZTMyKHByaXYsIFJFR19GUEdBMF9JUUssIDB4MDAwMDAwMDApOw0KPiA+
+PiArCS8vIHJ0bDh4eHh1X3dyaXRlMzIocHJpdiwgUkVHX0ZQR0EwX0lRSywgMHg4MDgwMDAwMCk7
+DQo+ID4+ICsNCj4gPiBJIHRoaW5rIHRoaXMgaXMgYSB0ZXN0IGNvZGUgb2YgdmVuZG9yIGRyaXZl
+ci4gTm8gbmVlZCB0aGVtIGhlcmUuDQo+ID4NCj4gPg0KPiA+PiAgIAkvKiBQYXRoIEIgSVFLIHNl
+dHRpbmcgKi8NCj4gPj4gICAJcnRsOHh4eHVfd3JpdGUzMihwcml2LCBSRUdfVFhfSVFLX1RPTkVf
+QSwgMHgzODAwOGMxYyk7DQo+ID4+ICAgCXJ0bDh4eHh1X3dyaXRlMzIocHJpdiwgUkVHX1JYX0lR
+S19UT05FX0EsIDB4MzgwMDhjMWMpOw0KPiA+PiAgIAlydGw4eHh4dV93cml0ZTMyKHByaXYsIFJF
+R19UWF9JUUtfVE9ORV9CLCAweDE4MDA4YzFjKTsNCj4gPj4gICAJcnRsOHh4eHVfd3JpdGUzMihw
+cml2LCBSRUdfUlhfSVFLX1RPTkVfQiwgMHgzODAwOGMxYyk7DQo+ID4+DQo+ID4+IC0JcnRsOHh4
+eHVfd3JpdGUzMihwcml2LCBSRUdfVFhfSVFLX1BJX0IsIDB4ODIxNDAzZTIpOw0KPiA+PiArCXJ0
+bDh4eHh1X3dyaXRlMzIocHJpdiwgUkVHX1RYX0lRS19QSV9CLCAweDgyMTQwMzAzKTsNCj4gPj4g
+ICAJcnRsOHh4eHVfd3JpdGUzMihwcml2LCBSRUdfUlhfSVFLX1BJX0IsIDB4NjgxNjAwMDApOw0K
+PiA+Pg0KPiA+PiAgIAkvKiBMTyBjYWxpYnJhdGlvbiBzZXR0aW5nICovDQo+ID4+IC0JcnRsOHh4
+eHVfd3JpdGUzMihwcml2LCBSRUdfSVFLX0FHQ19SU1AsIDB4MDA0OTI5MTEpOw0KPiA+PiArCXJ0
+bDh4eHh1X3dyaXRlMzIocHJpdiwgUkVHX0lRS19BR0NfUlNQLCAweDAwNDYyOTExKTsNCj4gPj4N
+Cj4gPj4gICAJLyogT25lIHNob3QsIHBhdGggQSBMT0sgJiBJUUsgKi8NCj4gPj4gICAJcnRsOHh4
+eHVfd3JpdGUzMihwcml2LCBSRUdfSVFLX0FHQ19QVFMsIDB4ZmEwMDAwMDApOw0KPiA+IFsuLi5d
+DQo+ID4NCj4gPiBJIGhhdmUgY29tcGFyZWQgeW91ciBwYXRjaCB3aXRoIGludGVybmFsIGNvZGUs
+IGFuZCB0aGV5IGFyZSB0aGUgc2FtZS4NCj4gPiBCdXQsIEkgZG9uJ3QgaGF2ZSBhIHRlc3QuDQo+
+ID4NCj4gPiBQaW5nLUtlDQo+IA0KPiBJIGNoYW5nZWQgdGhvc2UgYXJndW1lbnRzIGludG8gdGhl
+IG9uZXMgaGVyZToNCj4gaHR0cHM6Ly9naXRodWIuY29tL01hbmdlL3J0bDgxOTJldS1saW51eC1k
+cml2ZXIgd2hpY2ggd29ya3MgZmluZSB3aXRoIG15DQo+IHJ0bDgxOTJldSB3aWZpIGRvbmdsZS4g
+QnV0IGZvcmdpdmUgbXkgaWdub3JhbnQgdGhhdCBJIGRvbid0IGhhdmUgZW5vdWdoDQo+IGV4cGVy
+aWVuY2Ugb24gd2lmaSBkcml2ZXJzLCBJIGp1c3QgY29tcGFyZWQgdGhvc2UgdHdvIGRyaXZlcnMg
+YW5kDQo+IGZpZ3VyZWQgdGhhdCB0aG9zZSBjb2RlcyBmaXhpbmcgbXkgSVFLIGZhaWx1cmVzLg0K
+DQpJIGRvIHNpbWlsYXIgdGhpbmdzIGFzIHdlbGwuIDotKQ0KDQpUaGUgZ2l0aHViIHJlcG9zaXRv
+cnkgbWVudGlvbmVkIA0KIlRoaXMgYnJhbmNoIGlzIGJhc2VkIG9uIFJlYWx0ZWsncyBkcml2ZXIg
+dmVyc2lvbmVkIDQuNC4xLiBtYXN0ZXIgaXMgYmFzZWQgb24gNC4zLjEuMSBvcmlnaW5hbGx5LiIN
+ClNvLCB3ZSBjYW4gYWRkIHNvbWV0aGluZyB0byBjb21taXQgbWVzc2FnZTogDQoxLiBodHRwczov
+L2dpdGh1Yi5jb20vTWFuZ2UvcnRsODE5MmV1LWxpbnV4LWRyaXZlciANCjIuIHZlbmRvciBkcml2
+ZXIgdmVyc2lvbjogNC4zLjEuMQ0KDQotLQ0KUGluZy1LZQ0KDQo=
