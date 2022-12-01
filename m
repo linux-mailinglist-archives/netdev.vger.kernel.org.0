@@ -2,148 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B1663EA60
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 08:34:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7222363EA78
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 08:43:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbiLAHeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 02:34:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
+        id S229551AbiLAHnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 02:43:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiLAHef (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 02:34:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B780630F41;
-        Wed, 30 Nov 2022 23:34:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47EE861EB8;
-        Thu,  1 Dec 2022 07:34:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332CDC433D6;
-        Thu,  1 Dec 2022 07:34:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669880072;
-        bh=70O6dWJgZaOOZXUcY049Qm0l1Sl9m0rDak1NqB+X3FA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=VjyMr2PhNhftA89A5fAHg5mMHPzyCjrsdNh8fCfzIIsMjBMfbM94vQvO18k/17c++
-         M/LpJBVqxXxONrI142i/HA0HAVHIt0OVBetWr723YRVxQoSiLt8+KJYO8AUbYsaWf3
-         cz0E30ozBL8TOVS4eI46GvwapLXkfCfwdKnXDlUR1e8qj9MARmbvMKIv+yhVp0FjBf
-         Y4/syiiEiX1lmc5ycm0Esk3Cd34+vyX6OjT6eCGOVbzvySIg753Pk8A2QKGuy6iTwT
-         SJtDvXKZtIAYVcoX2hghbR+lX2hidRBSrmm23NybkZdpyCa8p6nYMvwO2thjmtVJeo
-         M5Hjl1BS4Ktig==
-From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To:     dario.binacchi@amarulasolutions.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Richard Palethorpe <richard.palethorpe@suse.com>,
-        Petr Vorel <petr.vorel@suse.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        Max Staudt <max@enpas.org>
-Subject: [PATCH] can: slcan: fix freed work crash
-Date:   Thu,  1 Dec 2022 08:34:26 +0100
-Message-Id: <20221201073426.17328-1-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229507AbiLAHnk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 02:43:40 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CAA45A37
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 23:43:38 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id j196so993918ybj.2
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 23:43:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=n/cSfJyuw306M41Dp+L+BI0/0zq6sfGvI8BbkoukRHo=;
+        b=kJrxYS8ifZi++NNhu7Qf+KtFc8uekfyczf2pLWdBbxXH/aASZ/RXOrOk8MtPahSwbL
+         dSES1VZ6n5tlydFOcRs6UHHSoboIs6gNKuXLVq0acyLDw8/vSSGSkJAnYlPWrI/KUphq
+         chEdKyfPUoutY0nNxv4dXHykwKcl3a6OcYo1R5Qxn2KMc3YGcK2HdyJ/T/3eKHWtWQdl
+         fMf6Y5EFK1kdcIrfXQvoN73b6K+x8yT35SBSXL7vomFXH9ZxT5/A1qpmhMHzu4ZKR3an
+         9vURQPEg/mCHVEo4JP6LgAW7kJWyEXHEwwoThXDe/82DMC1yHODZYZ3rAHnq1FhHT05a
+         J3VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=n/cSfJyuw306M41Dp+L+BI0/0zq6sfGvI8BbkoukRHo=;
+        b=FgHmx2l7KrZr72IFyTOklSHqSX1E+uQoepoayG0nNtilIyaTzSCAmkPjXG+EuULst4
+         07zMDe/PdxZ6S44bJIO1oM20BnlR67hGVSga2PHGHQPr6RoN/8R7GpDR6ib1tI2387mZ
+         E7cU3lmJni0uuh8dyHdR9NUVlH6C3HFB8SsUZDRjOlI41XK+kR3qEI7kMWp4sWjCRAPu
+         jarID0gb81ntXdySp7xJKharsopOFG6AOzeVHAETosPDBB6cfTlKtK0iKAPLUi5r4Z7y
+         BANYTO/+LGDC6QWPn9OlUrJe61veDcyW6tB21OUOd+2spNGtFik4HJsDmnHR2RbzWrLZ
+         /S5A==
+X-Gm-Message-State: ANoB5pmT0CbdZBW1XIKgPsRG4Sr8VbVGYXV0YtNyjZFqStBhbtXt0uya
+        1VYZoq7Sylpvx1T3kUMY/DvCUY4ldRu5DGkFSvfUJA==
+X-Google-Smtp-Source: AA0mqf58zbiU2tOdgfpIyYwAtowOVuJiYQYGedVWE37iNqvP8PDnpM1y2y1xatVDhqnnQ8TB+MnNjkUHPLwvaS1G16c=
+X-Received: by 2002:a25:d782:0:b0:6f5:6b11:8110 with SMTP id
+ o124-20020a25d782000000b006f56b118110mr19813207ybg.560.1669880617677; Wed, 30
+ Nov 2022 23:43:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <CA+G9fYsK5WUxs6p9NaE4e3p7ew_+s0SdW0+FnBgiLWdYYOvoMg@mail.gmail.com>
+ <CANpmjNOQxZ--jXZdqN3tjKE=sd4X6mV4K-PyY40CMZuoB5vQTg@mail.gmail.com>
+ <CA+G9fYs55N3J8TRA557faxvAZSnCTUqnUx+p1GOiCiG+NVfqnw@mail.gmail.com> <Y4e3WC4UYtszfFBe@codewreck.org>
+In-Reply-To: <Y4e3WC4UYtszfFBe@codewreck.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 1 Dec 2022 13:13:25 +0530
+Message-ID: <CA+G9fYuJZ1C3802+uLvqJYMjGged36wyW+G1HZJLzrtmbi1bJA@mail.gmail.com>
+Subject: Re: arm64: allmodconfig: BUG: KCSAN: data-race in p9_client_cb / p9_client_rpc
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Marco Elver <elver@google.com>, rcu <rcu@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        kunit-dev@googlegroups.com, lkft-triage@lists.linaro.org,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>
+Content-Type: multipart/mixed; boundary="00000000000008f9c705eebf61a4"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The LTP test pty03 is causing a crash in slcan:
-  BUG: kernel NULL pointer dereference, address: 0000000000000008
-  #PF: supervisor read access in kernel mode
-  #PF: error_code(0x0000) - not-present page
-  PGD 0 P4D 0
-  Oops: 0000 [#1] PREEMPT SMP NOPTI
-  CPU: 0 PID: 348 Comm: kworker/0:3 Not tainted 6.0.8-1-default #1 openSUSE Tumbleweed 9d20364b934f5aab0a9bdf84e8f45cfdfae39dab
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.15.0-0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
-  Workqueue:  0x0 (events)
-  RIP: 0010:process_one_work (/home/rich/kernel/linux/kernel/workqueue.c:706 /home/rich/kernel/linux/kernel/workqueue.c:2185)
-  Code: 49 89 ff 41 56 41 55 41 54 55 53 48 89 f3 48 83 ec 10 48 8b 06 48 8b 6f 48 49 89 c4 45 30 e4 a8 04 b8 00 00 00 00 4c 0f 44 e0 <49> 8b 44 24 08 44 8b a8 00 01 00 00 41 83 e5 20 f6 45 10 04 75 0e
-  RSP: 0018:ffffaf7b40f47e98 EFLAGS: 00010046
-  RAX: 0000000000000000 RBX: ffff9d644e1b8b48 RCX: ffff9d649e439968
-  RDX: 00000000ffff8455 RSI: ffff9d644e1b8b48 RDI: ffff9d64764aa6c0
-  RBP: ffff9d649e4335c0 R08: 0000000000000c00 R09: ffff9d64764aa734
-  R10: 0000000000000007 R11: 0000000000000001 R12: 0000000000000000
-  R13: ffff9d649e4335e8 R14: ffff9d64490da780 R15: ffff9d64764aa6c0
-  FS:  0000000000000000(0000) GS:ffff9d649e400000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 0000000000000008 CR3: 0000000036424000 CR4: 00000000000006f0
-  Call Trace:
-   <TASK>
-  worker_thread (/home/rich/kernel/linux/kernel/workqueue.c:2436)
-  kthread (/home/rich/kernel/linux/kernel/kthread.c:376)
-  ret_from_fork (/home/rich/kernel/linux/arch/x86/entry/entry_64.S:312)
+--00000000000008f9c705eebf61a4
+Content-Type: text/plain; charset="UTF-8"
 
-Apparently, the slcan's tx_work is freed while being scheduled. While
-slcan_netdev_close() (netdev side) calls flush_work(&sl->tx_work),
-slcan_close() (tty side) does not. So when the netdev is never set UP,
-but the tty is stuffed with bytes and forced to wakeup write, the work
-is scheduled, but never flushed.
+On Thu, 1 Dec 2022 at 01:35, Dominique Martinet <asmadeus@codewreck.org> wrote:
+>
+> Naresh Kamboju wrote on Wed, Nov 30, 2022 at 09:34:45PM +0530:
+> > > > [  424.418214] write to 0xffff00000a753000 of 4 bytes by interrupt on cpu 0:
+> > > > [  424.422437]  p9_client_cb+0x84/0x100
+> > >
+> > > Then we can look at git blame of the lines and see if it's new code.
+> >
+> > True.
+> > Hope that tree and tag could help you get git details.
+>
+> Even with the git tag, if we don't build for the same arch with the same
+> compiler version/options and the same .config we aren't likely to have
+> identical binaries, so we cannot make sense of these offsets without
+> much work.
+>
+> As much as I'd like to investigate a data race in 9p (and geez that code
+> has been such a headache from syzbot already so I don't doubt there are
+> more), having line numbers is really not optional if we want to scale at
+> all.
+> If you still have the vmlinux binary from that build (or if you can
+> rebuild with the same options), running this text through addr2line
+> should not take you too long.
 
-So add an additional flush_work() to slcan_close() to be sure the work
-is flushed under all circumstances.
+Please find build artifacts in this link,
+ - config
+ - vmlinux
+ - System.map
+https://people.linaro.org/~anders.roxell/next-20221130-allmodconfig-arm64-tuxmake-build/
 
-The Fixes commit below moved flush_work() from slcan_close() to
-slcan_netdev_close(). What was the rationale behind it? Maybe we can
-drop the one in slcan_netdev_close()?
+And
 
-I see the same pattern in can327. So it perhaps needs the very same fix.
+ # aarch64-linux-gnu-objdump -D vmlinux|less search for p9_client_cb
 
-Fixes: cfcb4465e992 ("can: slcan: remove legacy infrastructure")
-Link: https://bugzilla.suse.com/show_bug.cgi?id=1205597
-Reported-by: Richard Palethorpe <richard.palethorpe@suse.com>
-Tested-by: Petr Vorel <petr.vorel@suse.com>
-Cc: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-can@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Cc: Max Staudt <max@enpas.org>
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
----
- drivers/net/can/slcan/slcan-core.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+Attached objdump log and here is the link.
+    - http://ix.io/4hk1
 
-diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index fbb34139daa1..f4db77007c13 100644
---- a/drivers/net/can/slcan/slcan-core.c
-+++ b/drivers/net/can/slcan/slcan-core.c
-@@ -864,12 +864,14 @@ static void slcan_close(struct tty_struct *tty)
- {
- 	struct slcan *sl = (struct slcan *)tty->disc_data;
- 
--	/* unregister_netdev() calls .ndo_stop() so we don't have to.
--	 * Our .ndo_stop() also flushes the TTY write wakeup handler,
--	 * so we can safely set sl->tty = NULL after this.
--	 */
- 	unregister_candev(sl->dev);
- 
-+	/*
-+	 * The netdev needn't be UP (so .ndo_stop() is not called). Hence make
-+	 * sure this is not running before freeing it up.
-+	 */
-+	flush_work(&sl->tx_work);
-+
- 	/* Mark channel as dead */
- 	spin_lock_bh(&sl->lock);
- 	tty->disc_data = NULL;
--- 
-2.38.1
+> (You might need to build with at least CONFIG_DEBUG_INFO_REDUCED (or not
+> reduced), but that is on by default for aarch64)
 
+Thanks for the suggestions.
+The Kconfig is enabled now.
+CONFIG_DEBUG_INFO_REDUCED=y
+
+> --
+> Dominique
+
+
+- Naresh
+
+--00000000000008f9c705eebf61a4
+Content-Type: text/plain; charset="US-ASCII"; name="objdump-p9_client_cb.txt"
+Content-Disposition: attachment; filename="objdump-p9_client_cb.txt"
+Content-Transfer-Encoding: base64
+Content-ID: <f_lb4rmdbt0>
+X-Attachment-Id: f_lb4rmdbt0
+
+ZmZmZjgwMDAwYTQ2Y2FjMCA8cDlfY2xpZW50X2NiPjoKZmZmZjgwMDAwYTQ2Y2FjMDogICAgICAg
+ZDUwMzIwMWYgICAgICAgIG5vcApmZmZmODAwMDBhNDZjYWM0OiAgICAgICBkNTAzMjAxZiAgICAg
+ICAgbm9wCmZmZmY4MDAwMGE0NmNhYzg6ICAgICAgIGQ1MDMyMzNmICAgICAgICBwYWNpYXNwCmZm
+ZmY4MDAwMGE0NmNhY2M6ICAgICAgIGE5YmM3YmZkICAgICAgICBzdHAgICAgIHgyOSwgeDMwLCBb
+c3AsICMtNjRdIQpmZmZmODAwMDBhNDZjYWQwOiAgICAgICA5MTAwMDNmZCAgICAgICAgbW92ICAg
+ICB4MjksIHNwCmZmZmY4MDAwMGE0NmNhZDQ6ICAgICAgIGE5MDE1M2YzICAgICAgICBzdHAgICAg
+IHgxOSwgeDIwLCBbc3AsICMxNl0KZmZmZjgwMDAwYTQ2Y2FkODogICAgICAgYWEwMTAzZjMgICAg
+ICAgIG1vdiAgICAgeDE5LCB4MQpmZmZmODAwMDBhNDZjYWRjOiAgICAgICBhYTFlMDNmNCAgICAg
+ICAgbW92ICAgICB4MjAsIHgzMApmZmZmODAwMDBhNDZjYWUwOiAgICAgICBhOTAyNWJmNSAgICAg
+ICAgc3RwICAgICB4MjEsIHgyMiwgW3NwLCAjMzJdCmZmZmY4MDAwMGE0NmNhZTQ6ICAgICAgIDJh
+MDIwM2Y2ICAgICAgICBtb3YgICAgIHcyMiwgdzIKZmZmZjgwMDAwYTQ2Y2FlODogICAgICAgYWEw
+MDAzZjUgICAgICAgIG1vdiAgICAgeDIxLCB4MApmZmZmODAwMDBhNDZjYWVjOiAgICAgICBmOTAw
+MWJmNyAgICAgICAgc3RyICAgICB4MjMsIFtzcCwgIzQ4XQpmZmZmODAwMDBhNDZjYWYwOiAgICAg
+ICBhYTE0MDNmZSAgICAgICAgbW92ICAgICB4MzAsIHgyMApmZmZmODAwMDBhNDZjYWY0OiAgICAg
+ICBkNTAzMjBmZiAgICAgICAgeHBhY2xyaQpmZmZmODAwMDBhNDZjYWY4OiAgICAgICA5MTAxYmE3
+NyAgICAgICAgYWRkICAgICB4MjMsIHgxOSwgIzB4NmUKZmZmZjgwMDAwYTQ2Y2FmYzogICAgICAg
+YWExZTAzZTAgICAgICAgIG1vdiAgICAgeDAsIHgzMApmZmZmODAwMDBhNDZjYjAwOiAgICAgICA5
+NzgzNGIyMCAgICAgICAgYmwgICAgICBmZmZmODAwMDA4NTNmNzgwIDxfX3RzYW5fZnVuY19lbnRy
+eT4KZmZmZjgwMDAwYTQ2Y2IwNDogICAgICAgZjAwMDM2MTQgICAgICAgIGFkcnAgICAgeDIwLCBm
+ZmZmODAwMDBhYjJmMDAwIDxldmVudF90eXBlX3NpemUrMHg4PgpmZmZmODAwMDBhNDZjYjA4OiAg
+ICAgICBhYTE3MDNlMCAgICAgICAgbW92ICAgICB4MCwgeDIzCmZmZmY4MDAwMGE0NmNiMGM6ICAg
+ICAgIDk3ODM1Y2FkICAgICAgICBibCAgICAgIGZmZmY4MDAwMDg1NDNkYzAgPF9fdHNhbl9yZWFk
+Mj4KZmZmZjgwMDAwYTQ2Y2IxMDogICAgICAgNzk0MGRlNjMgICAgICAgIGxkcmggICAgdzMsIFt4
+MTksICMxMTBdCmZmZmY4MDAwMGE0NmNiMTQ6ICAgICAgIDkxMWM4Mjk0ICAgICAgICBhZGQgICAg
+IHgyMCwgeDIwLCAjMHg3MjAKZmZmZjgwMDAwYTQ2Y2IxODogICAgICAgOTEzODQyOTQgICAgICAg
+IGFkZCAgICAgeDIwLCB4MjAsICMweGUxMApmZmZmODAwMDBhNDZjYjFjOiAgICAgICA1MjgwMDQw
+MCAgICAgICAgbW92ICAgICB3MCwgIzB4MjAgICAgICAgICAgICAgICAgICAgICAgIC8vICMzMgpm
+ZmZmODAwMDBhNDZjYjIwOiAgICAgICBhYTE0MDNlMSAgICAgICAgbW92ICAgICB4MSwgeDIwCmZm
+ZmY4MDAwMGE0NmNiMjQ6ICAgICAgIGIwMDA2YTIyICAgICAgICBhZHJwICAgIHgyLCBmZmZmODAw
+MDBiMWIxMDAwIDxrYWxsc3ltc190b2tlbl9pbmRleCsweDIwZjA3MD4KZmZmZjgwMDAwYTQ2Y2Iy
+ODogICAgICAgOTEwYTgwNDIgICAgICAgIGFkZCAgICAgeDIsIHgyLCAjMHgyYTAKZmZmZjgwMDAw
+YTQ2Y2IyYzogICAgICAgOTdmZmYzNDUgICAgICAgIGJsICAgICAgZmZmZjgwMDAwYTQ2OTg0MCA8
+X3A5X2RlYnVnPgpmZmZmODAwMDBhNDZjYjMwOiAgICAgICA1MjgwMDA4MCAgICAgICAgbW92ICAg
+ICB3MCwgIzB4NCAgICAgICAgICAgICAgICAgICAgICAgIC8vICM0CmZmZmY4MDAwMGE0NmNiMzQ6
+ICAgICAgIDk3ODM0ZGUzICAgICAgICBibCAgICAgIGZmZmY4MDAwMDg1NDAyYzAgPF9fdHNhbl9h
+dG9taWNfc2lnbmFsX2ZlbmNlPgpmZmZmODAwMDBhNDZjYjM4OiAgICAgICBkNTAzM2FiZiAgICAg
+ICAgZG1iICAgICBpc2hzdApmZmZmODAwMDBhNDZjYjNjOiAgICAgICBhYTEzMDNlMCAgICAgICAg
+bW92ICAgICB4MCwgeDE5CmZmZmY4MDAwMGE0NmNiNDA6ICAgICAgIDk3ODM1YWMwICAgICAgICBi
+bCAgICAgIGZmZmY4MDAwMDg1NDM2NDAgPF9fdHNhbl91bmFsaWduZWRfd3JpdGU0PgpmZmZmODAw
+MDBhNDZjYjQ0OiAgICAgICBhYTEzMDNlMCAgICAgICAgbW92ICAgICB4MCwgeDE5CmZmZmY4MDAw
+MGE0NmNiNDg6ICAgICAgIGQyODAwMDAzICAgICAgICBtb3YgICAgIHgzLCAjMHgwICAgICAgICAg
+ICAgICAgICAgICAgICAgLy8gIzAKZmZmZjgwMDAwYTQ2Y2I0YzogICAgICAgNTI4MDAwMjIgICAg
+ICAgIG1vdiAgICAgdzIsICMweDEgICAgICAgICAgICAgICAgICAgICAgICAvLyAjMQpmZmZmODAw
+MDBhNDZjYjUwOiAgICAgICA1MjgwMDA2MSAgICAgICAgbW92ICAgICB3MSwgIzB4MyAgICAgICAg
+ICAgICAgICAgICAgICAgIC8vICMzCg==
+--00000000000008f9c705eebf61a4--
