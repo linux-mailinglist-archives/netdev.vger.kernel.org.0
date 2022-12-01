@@ -2,159 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A221463FA9B
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 23:33:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A749C63FAA1
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 23:34:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231338AbiLAWdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 17:33:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51356 "EHLO
+        id S231166AbiLAWeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 17:34:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiLAWdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 17:33:14 -0500
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4643355AA0;
-        Thu,  1 Dec 2022 14:33:12 -0800 (PST)
-Received: by mail-oi1-f171.google.com with SMTP id n205so3616683oib.1;
-        Thu, 01 Dec 2022 14:33:12 -0800 (PST)
+        with ESMTP id S229473AbiLAWeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 17:34:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C0463D44
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 14:33:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669933998;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/2O4LegilVsQdyPuKZbJssTZDoZcgdukJ0d/d1p6i90=;
+        b=BIMoCMBskBt6lB+bwRtfCrGpaHG5GEgV6YlIRMTfrFjW6EwOEEhRJFvBFSLPGgf8yqcppF
+        694/wi4UM30oeRFKJvcAtJHlR/1V4aQcuAAGvLxfzSHH9xT30eFq5GkOlPVybxEv35dRbD
+        9Tqgxje/cE/Td+6CNqQQ0xDw3xuB4DA=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-356-bjB0CHPbMf2vN_X6lt3cTg-1; Thu, 01 Dec 2022 17:33:17 -0500
+X-MC-Unique: bjB0CHPbMf2vN_X6lt3cTg-1
+Received: by mail-wr1-f70.google.com with SMTP id o8-20020adfba08000000b00241e80f08e0so691673wrg.12
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 14:33:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3XoZ57KQ2t8KQq59VcUGCIObJJ9YFC3Bj9uQynJzeWk=;
-        b=OrFp+q9RYDcxNJSGmPBiAFyIE/I37hOn9ENTizHxhEqliMSqisQgqFFkeplOSFdGSK
-         9rP8jDc7SK9POFnQuTxI9u2lG64hMtarzWn8GtXvvWirdIx0ELqT13nmcC/aRc3MMw/q
-         rfCX8vPlL6RTJ1Co0UMRRGq7+9Vjx3axobbxMDmsOnBj3E9lvod154OUlEMRBz181OS4
-         zUKeCIgdaTQb4yBBPNXtjcTWVgdZvHcsNvmhWc0Ad2r7Zl5h55KOv99dOBdz4ya86fSg
-         NDVMSjke09GrmvrpLYOU5EIf7GJ9Gw8WQX1SxzEwvMrX1Jzg4Cvi4MdCA0H3qZyAV8+P
-         djjg==
-X-Gm-Message-State: ANoB5plD/DtDpXdboNmjnI9lP83iTs1xbg+H7EmM2tmUGxq+ddH360bQ
-        7Q9HnTSM0CeXpZS9AxeKKQ==
-X-Google-Smtp-Source: AA0mqf5a/P+Jg0CbhGiTwnvrxazbAzgcxokOqED+K4ErW/L2Ks4hck7y2jw4TM8M9zRaXF1+WAevBA==
-X-Received: by 2002:aca:1e05:0:b0:354:2c4e:bc6e with SMTP id m5-20020aca1e05000000b003542c4ebc6emr35484670oic.85.1669933991378;
-        Thu, 01 Dec 2022 14:33:11 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id b19-20020a9d6b93000000b0066c34486aa7sm2593598otq.73.2022.12.01.14.33.09
+        bh=/2O4LegilVsQdyPuKZbJssTZDoZcgdukJ0d/d1p6i90=;
+        b=ryAp/41Rcpt9VcUOy72A0/5X/hnP/wbeZNZJ2+H0yUb9MiaSFcJ0boFzqx3uz1fbrz
+         4vfqkC4JB+HLQ/m+p7UXZhV5WLaPyDPlNnZN9zWUs7qCCNOGNKXniiPkSG3KGPMav9mY
+         3qEM68auUU+GoLWNZA+yrrwpa3fyiDKt/bEWVkoXExzumdUxfkIF2inF25c2eKBJab9s
+         jS93lnizXl4FH4yiPz6Coq03fAOQ61+pfcFJSQHV/KedX6I+6mZz4tcloa2PRy3wTV4E
+         hTOARPiqaClyHg96eaTLMBkp14lH/tlDO7cixnZZXpJGyNBAgvQsWiZT88MzTRAOFCag
+         YkxQ==
+X-Gm-Message-State: ANoB5pnNccKuAeU/oUqpfou9nbwTfFSc+Ec+rlhrXItj01vfppYhsImZ
+        kNdddqz1C2GOqhxSHKc+WmYs1LXQx5LQwbAZUzcUccV+/1Xdapz5x4aaM3tsPX3HCgIKRcFiImE
+        WKnIhEoWVpL8WYgug
+X-Received: by 2002:adf:f60f:0:b0:22e:6564:e987 with SMTP id t15-20020adff60f000000b0022e6564e987mr42165683wrp.401.1669933995892;
+        Thu, 01 Dec 2022 14:33:15 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4SwqSn8+94MC8XNNJvmxjUkYSbcbXFohTxf/WlvTlCWz77FFhQffJ2sV3nppJe5VRZILk7iQ==
+X-Received: by 2002:adf:f60f:0:b0:22e:6564:e987 with SMTP id t15-20020adff60f000000b0022e6564e987mr42165669wrp.401.1669933995602;
+        Thu, 01 Dec 2022 14:33:15 -0800 (PST)
+Received: from redhat.com ([2.52.16.138])
+        by smtp.gmail.com with ESMTPSA id l9-20020a05600c2cc900b003cf9bf5208esm9663857wmc.19.2022.12.01.14.33.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Dec 2022 14:33:10 -0800 (PST)
-Received: (nullmailer pid 1565634 invoked by uid 1000);
-        Thu, 01 Dec 2022 22:33:09 -0000
-Date:   Thu, 1 Dec 2022 16:33:09 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        =?UTF-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>
-Subject: Re: [PATCH v3 net-next 04/10] dt-bindings: net: dsa: allow
- additional ethernet-port properties
-Message-ID: <20221201223309.GA1555093-robh@kernel.org>
-References: <20221127224734.885526-1-colin.foster@in-advantage.com>
- <20221127224734.885526-5-colin.foster@in-advantage.com>
- <20221128232759.GB1513198-robh@kernel.org>
- <Y4Wy7iSeGEtpQkgI@euler>
+        Thu, 01 Dec 2022 14:33:15 -0800 (PST)
+Date:   Thu, 1 Dec 2022 17:33:11 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Andrew Melnychenko <andrew@daynix.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jasowang@redhat.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, devel@daynix.com
+Subject: Re: [PATCH v4 0/6] TUN/VirtioNet USO features support.
+Message-ID: <20221201173252-mutt-send-email-mst@kernel.org>
+References: <20221201215644.246571-1-andrew@daynix.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y4Wy7iSeGEtpQkgI@euler>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20221201215644.246571-1-andrew@daynix.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 28, 2022 at 11:21:18PM -0800, Colin Foster wrote:
-> On Mon, Nov 28, 2022 at 05:27:59PM -0600, Rob Herring wrote:
-> > On Sun, Nov 27, 2022 at 02:47:28PM -0800, Colin Foster wrote:
-> > > Explicitly allow additional properties for both the ethernet-port and
-> > > ethernet-ports properties. This specifically will allow the qca8k.yaml
-> > > binding to use shared properties.
-> > > 
-> > > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > > ---
-> > > 
-> > > v2 -> v3
-> > >   * No change
-> > > 
-> > > v1 -> v2
-> > >   * New patch
-> > > 
-> > > ---
-> > >  Documentation/devicetree/bindings/net/dsa/dsa.yaml | 4 +++-
-> > >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > > index bd1f0f7c14a8..87475c2ab092 100644
-> > > --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > > +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > > @@ -38,6 +38,8 @@ patternProperties:
-> > >        '#size-cells':
-> > >          const: 0
-> > >  
-> > > +    additionalProperties: true
-> > > +
-> > 
-> > Where then do we restrict adding properties to ethernet-ports nodes?
-> > 
-> > >      patternProperties:
-> > >        "^(ethernet-)?port@[0-9]+$":
-> > >          type: object
-> > > @@ -45,7 +47,7 @@ patternProperties:
-> > >  
-> > >          $ref: dsa-port.yaml#
-> > >  
-> > > -        unevaluatedProperties: false
-> > > +        unevaluatedProperties: true
-> > 
-> > Same question for ethernet-port nodes.
+On Thu, Dec 01, 2022 at 11:56:38PM +0200, Andrew Melnychenko wrote:
+> Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
+> Technically they enable NETIF_F_GSO_UDP_L4
+> (and only if USO4 & USO6 are set simultaneously).
+> It allows the transmission of large UDP packets.
 > 
-> For ethernet-port nodes, the qca8k has unevaluatedProperties: false. But
-> the fact that you're asking this question means I probably misunderstood
-> something...
+> UDP Segmentation Offload (USO/GSO_UDP_L4) - ability to split UDP packets
+> into several segments. It's similar to UFO, except it doesn't use IP
+> fragmentation. The drivers may push big packets and the NIC will split
+> them(or assemble them in case of receive), but in the case of VirtioNet
+> we just pass big UDP to the host. So we are freeing the driver from doing
+> the unnecessary job of splitting. The same thing for several guests
+> on one host, we can pass big packets between guests.
+> 
+> Different features USO4 and USO6 are required for qemu where Windows
+> guests can enable disable USO receives for IPv4 and IPv6 separately.
+> On the other side, Linux can't really differentiate USO4 and USO6, for now.
+> For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
+> In the future, there would be a mechanism to control UDP_L4 GSO separately.
+> 
+> New types for virtio-net already in virtio-net specification:
+> https://github.com/oasis-tcs/virtio-spec/issues/120
+> 
+> Test it WIP Qemu https://github.com/daynix/qemu/tree/USOv3
+> 
+> Andrew (5):
+>   uapi/linux/if_tun.h: Added new offload types for USO4/6.
+>   driver/net/tun: Added features for USO.
+>   uapi/linux/virtio_net.h: Added USO types.
+>   linux/virtio_net.h: Support USO offload in vnet header.
+>   drivers/net/virtio_net.c: Added USO support.
+> 
+> Andrew Melnychenko (1):
+>   udp: allow header check for dodgy GSO_UDP_L4 packets.
 
-The above is the case where you aren't adding extra properties (IIRC), 
-so 'unevaluatedProperties: false' should be correct.
+I don't see patches except 0 on list.
 
-'unevaluatedProperties: true' is never correct in bindings. If you ref a
-schema that sets it to true, you can't override it.
+>  drivers/net/tap.c               | 10 ++++++++--
+>  drivers/net/tun.c               |  8 +++++++-
+>  drivers/net/virtio_net.c        | 24 +++++++++++++++++++++---
+>  include/linux/virtio_net.h      |  9 +++++++++
+>  include/uapi/linux/if_tun.h     |  2 ++
+>  include/uapi/linux/virtio_net.h |  5 +++++
+>  net/ipv4/udp_offload.c          |  3 ++-
+>  net/ipv6/udp_offload.c          |  3 ++-
+>  8 files changed, 56 insertions(+), 8 deletions(-)
+> 
+> -- 
+> 2.38.1
+> 
+> _______________________________________________
+> Virtualization mailing list
+> Virtualization@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+> 
 
-So qca8k, should reference dsa-port.yaml, define its extra properties 
-and set 'unevaluatedProperties: false'.
-
-> For the ethernet-ports node, I'm curious if my other follow-up answers
-> that question where I realized dsa.yaml should, under the base
-> definition, have additionalPrpoerties: false. But again, my guess is
-> that isn't the case.
-
-That one looks correct.
-
-Rob
