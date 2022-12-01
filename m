@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B22163F99F
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 22:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2728463F9A2
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 22:14:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiLAVOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 16:14:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
+        id S229816AbiLAVOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 16:14:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiLAVOf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 16:14:35 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84E6BF66F;
-        Thu,  1 Dec 2022 13:14:34 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id ja4-20020a05600c556400b003cf6e77f89cso3831097wmb.0;
-        Thu, 01 Dec 2022 13:14:34 -0800 (PST)
+        with ESMTP id S229811AbiLAVOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 16:14:39 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B83BF66F;
+        Thu,  1 Dec 2022 13:14:38 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id h4-20020a1c2104000000b003d0760654d3so3592147wmh.4;
+        Thu, 01 Dec 2022 13:14:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=arGJugZXKuegCy+b2Wy748udH7dyCPYLgoQysJN9/+E=;
-        b=G8I3r0UFOmARwoPh8BwqG3XgTzilTOCk8MXuobDoiBD7EaZA2kag7KurO9gpBh9/xP
-         uSR1EztpspRtCkwrbNRGBRNBSR47ze8b1l0+lgwr8w2HbULTK6yueiUhMAzkwI4xBTBe
-         s4XA8ReFVa+PNNG3MK4uA2X2RrY+TIafn36iZFZ2D7Kw1UjZxXz39/ejXAXm9Eewk6gl
-         cht1EbbMZH484vH70ma10+T0qeW4taPBiFUr5h8IAk5KW6uh6ck9DhkBegEDvl3HRVq4
-         qFyESQ1nq11PvnjcSGtxNyM25auaOIqTirxYfV+qAzcut3QIaciMaooW8bRjKirPDzZh
-         78Fw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=d1/BEU+Gh3yZCofE7EQRT991qKfijn26P08IEHM1GPc=;
+        b=ZPTju31t9w7xAlbNxYiGePVe4PxjVmWUfFyHrZuFHOpPQ+Om0Kwa1uaMaqRCgKo6iZ
+         tKSJIpxE7ZOAUQPZMTfcfzKHNxqZ+ZsuWL7QBiSAfuP3rJeZlTqItEZWcM1qWqSiqm7l
+         znQWRzlySND9kCFoCRI/LSLW5O2+TVla+kUbHqx0qyt+Et14bO13+W86L4prXi0xtE11
+         MRmj/Fjgnx8ecm9efTOz419r6ftLOo8iEg6s6yV/v6CTlCKuUUk6UBtsziYELkE/wB+R
+         Vbx+Oa055ZoogAFSwOOfOeKxGalvlQ1MfkIUexK415zbqxFF1s0M464w46KZkWoOetaF
+         zDXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=arGJugZXKuegCy+b2Wy748udH7dyCPYLgoQysJN9/+E=;
-        b=lXRlXNXbthGXFnwqrP3CJPcA1L7nmQ5uZJhqgzedycNzaySjX5JvVYjdoNthZZtPxX
-         e/LFtV6hTMrj/c84AL/jE5TYWVqKQKrnAV6VtFkL6+gE3wYDlajrZyyjJQWkmcW3I7+H
-         NzRH9K36ojMZm5LqBq8aDGjjDfbsqohymeMRbmJwMdX1VTWt1XcVvKWFpAXH/eG35f9A
-         3MktCIPBBsWfFYoQtNTF3P70WZJKxduMv9OEtZCsrplKBTg2sH4JRXtJxsaHe5fJ/Q3x
-         vgZtSE5CjPHkp+9/IGLbyZor0AMY9LATFQ89VteFdCBPV5K7irj2C0yhoa1m2AFmz/oc
-         H2ew==
-X-Gm-Message-State: ANoB5pk647nZrZ9D4qKJzxx2xRrmvKVOY7DyjLRVCb1YbWtKXFjlvaBN
-        ScD1nMxsOmd9IFXsdq3NmRE=
-X-Google-Smtp-Source: AA0mqf7xIdmNr/IVA6wau15GjaiOh2J7K5KuHpMOHdbdrU0DZ6nCVr3UT/wYVLP1hqD2ohBVk4dp6Q==
-X-Received: by 2002:a05:600c:1e89:b0:3cf:774b:ce6f with SMTP id be9-20020a05600c1e8900b003cf774bce6fmr6367406wmb.133.1669929272979;
-        Thu, 01 Dec 2022 13:14:32 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=d1/BEU+Gh3yZCofE7EQRT991qKfijn26P08IEHM1GPc=;
+        b=Vd+bZyt2zYzTLr5RFhyTASsctIe81jbbOIG+kazc+6EuV4oGAuwXuLR5EXNEuZ6j6m
+         QL76TAl0aGedp/MS/tUdK9WeREWindYS95185kTU9RLHAoCtAtTJJNwISHH1jaeytJmS
+         SyySwqVCPHtyUYSyLSYJqzjEkcDDuOSXHxjiS3MScUAgHAtLHgnDtuLJHZvMPS5oPcIk
+         Exdpmj71mJ9PTsvoK02IG8q22JEv/vSzA4YCGv0z9M1FRouF1pZ44Oz8PqxuOdMUCZY0
+         0l2I0OJlobqBglrRrEMeKvm1c/ObgIyn1sy6bJL2ccJEEIqcXIA1grVjoubXyTGG2YUs
+         3Txg==
+X-Gm-Message-State: ANoB5pnx5LaPutK7ZjjpWvZi2o3Hal+av5GI/qr6/35MeqAOAj9fz6SO
+        9aMyKOf/DS5H/Zu4yTvO1WY=
+X-Google-Smtp-Source: AA0mqf6bYHN2wysDrhhAWut6JRqf7x8HmO2pfpuXXvVBpQYFiv5QlFIzAJDbRv/XIzPcQVj+Q0Domg==
+X-Received: by 2002:a05:600c:3490:b0:3c2:7211:732e with SMTP id a16-20020a05600c349000b003c27211732emr53564411wmq.191.1669929276400;
+        Thu, 01 Dec 2022 13:14:36 -0800 (PST)
 Received: from localhost.localdomain ([213.57.189.88])
-        by smtp.gmail.com with ESMTPSA id m35-20020a05600c3b2300b003b50428cf66sm7508708wms.33.2022.12.01.13.14.30
+        by smtp.gmail.com with ESMTPSA id m35-20020a05600c3b2300b003b50428cf66sm7508708wms.33.2022.12.01.13.14.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Dec 2022 13:14:32 -0800 (PST)
+        Thu, 01 Dec 2022 13:14:36 -0800 (PST)
 From:   Eyal Birger <eyal.birger@gmail.com>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, steffen.klassert@secunet.com,
@@ -61,10 +62,12 @@ To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org,
         Eyal Birger <eyal.birger@gmail.com>
-Subject: [PATCH bpf-next,v3 0/4] xfrm: interface: Add unstable helpers for XFRM metadata
-Date:   Thu,  1 Dec 2022 23:14:21 +0200
-Message-Id: <20221201211425.1528197-1-eyal.birger@gmail.com>
+Subject: [PATCH bpf-next,v3 1/4] xfrm: interface: rename xfrm_interface.c to xfrm_interface_core.c
+Date:   Thu,  1 Dec 2022 23:14:22 +0200
+Message-Id: <20221201211425.1528197-2-eyal.birger@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221201211425.1528197-1-eyal.birger@gmail.com>
+References: <20221201211425.1528197-1-eyal.birger@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,45 +80,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series adds xfrm metadata helpers using the unstable kfunc
-call interface for the TC-BPF hooks.
+This change allows adding additional files to the xfrm_interface module.
 
-This allows steering traffic towards different IPsec connections based
-on logic implemented in bpf programs.
-
-The helpers are integrated into the xfrm_interface module. For this
-purpose the main functionality of this module is moved to
-xfrm_interface_core.c.
-
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 ---
+ net/xfrm/Makefile                                    | 2 ++
+ net/xfrm/{xfrm_interface.c => xfrm_interface_core.c} | 0
+ 2 files changed, 2 insertions(+)
+ rename net/xfrm/{xfrm_interface.c => xfrm_interface_core.c} (100%)
 
-Series changes in v3:
-  - tag bpf-next tree instead of ipsec-next
-  - add IFLA_XFRM_COLLECT_METADATA sync patch
-
-Eyal Birger (4):
-  xfrm: interface: rename xfrm_interface.c to xfrm_interface_core.c
-  xfrm: interface: Add unstable helpers for setting/getting XFRM
-    metadata from TC-BPF
-  tools: add IFLA_XFRM_COLLECT_METADATA to uapi/linux/if_link.h
-  selftests/bpf: add xfrm_info tests
-
- include/net/dst_metadata.h                    |   1 +
- include/net/xfrm.h                            |  20 +
- net/core/dst.c                                |   8 +-
- net/xfrm/Makefile                             |   8 +
- net/xfrm/xfrm_interface_bpf.c                 |  99 +++++
- ...xfrm_interface.c => xfrm_interface_core.c} |  15 +
- tools/include/uapi/linux/if_link.h            |   1 +
- tools/testing/selftests/bpf/config            |   2 +
- .../selftests/bpf/prog_tests/xfrm_info.c      | 365 ++++++++++++++++++
- tools/testing/selftests/bpf/progs/xfrm_info.c |  40 ++
- 10 files changed, 557 insertions(+), 2 deletions(-)
- create mode 100644 net/xfrm/xfrm_interface_bpf.c
- rename net/xfrm/{xfrm_interface.c => xfrm_interface_core.c} (98%)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xfrm_info.c
- create mode 100644 tools/testing/selftests/bpf/progs/xfrm_info.c
-
+diff --git a/net/xfrm/Makefile b/net/xfrm/Makefile
+index 494aa744bfb9..08a2870fdd36 100644
+--- a/net/xfrm/Makefile
++++ b/net/xfrm/Makefile
+@@ -3,6 +3,8 @@
+ # Makefile for the XFRM subsystem.
+ #
+ 
++xfrm_interface-$(CONFIG_XFRM_INTERFACE) += xfrm_interface_core.o
++
+ obj-$(CONFIG_XFRM) := xfrm_policy.o xfrm_state.o xfrm_hash.o \
+ 		      xfrm_input.o xfrm_output.o \
+ 		      xfrm_sysctl.o xfrm_replay.o xfrm_device.o
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface_core.c
+similarity index 100%
+rename from net/xfrm/xfrm_interface.c
+rename to net/xfrm/xfrm_interface_core.c
 -- 
 2.34.1
 
