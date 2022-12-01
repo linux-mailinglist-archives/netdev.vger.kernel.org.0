@@ -2,110 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F7A63EF42
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 12:18:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B164A63EF50
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 12:20:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230385AbiLALSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 06:18:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
+        id S230300AbiLALUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 06:20:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230337AbiLALRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 06:17:22 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1188F42196
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 03:14:59 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1p0hWn-00068H-9A; Thu, 01 Dec 2022 12:14:53 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:dc5e:59bf:44a8:4077])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D242412F557;
-        Thu,  1 Dec 2022 11:14:51 +0000 (UTC)
-Date:   Thu, 1 Dec 2022 12:14:50 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/15] can: m_can: Cache tx putidx and transmits in flight
-Message-ID: <20221201111450.fpadmwscjyhefs2u@pengutronix.de>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-4-msp@baylibre.com>
+        with ESMTP id S230170AbiLALTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 06:19:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E50317FA;
+        Thu,  1 Dec 2022 03:16:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82BECB81F09;
+        Thu,  1 Dec 2022 11:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE20BC433D6;
+        Thu,  1 Dec 2022 11:16:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669893381;
+        bh=gjIpFgiHsSCfwp8Iivsv/TFloWDIpl99lTs5icYgtPo=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=e6PNRziMC39/JyphXTu1pksXHr+d0VaToDwVTnILg3dnd2jFTmj20kueJbb6iPZYQ
+         pnTaxYJHdhTEUQfRzkpsG3fpz21Ltzjjy+8dVPta72u+LDK7T+mt6ZMmITIWjyDhfJ
+         HjS2ufesBaaBUPpnHvqhgGBmFR8xePh0FYNhUO8Eui6i33MYMmQVCcy1DbrMEs7MgH
+         grFSIZVOQHPXHLnONWYr/nijsyyqD8YeN2koixQC6EnYxSz8o5A6vIByFxqeUG1939
+         RKN0d/os7cto8EcsdSkjpzOK3U3ewy5qdp9rQmgb1DK2JJeOnGsQ3o75Xv3hVQ0uMb
+         yFQ+kp/gK9LGA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Arend Van Spriel <arend.vanspriel@broadcom.com>
+Cc:     wangyufen <wangyufen@huawei.com>,
+        Franky Lin <franky.lin@broadcom.com>, <aspriel@gmail.com>,
+        <hante.meuleman@broadcom.com>, <davem@davemloft.net>,
+        <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
+        <arend@broadcom.com>
+Subject: Re: [PATCH] wifi: brcmfmac: Fix error return code in brcmf_sdio_download_firmware()
+References: <1669716458-15327-1-git-send-email-wangyufen@huawei.com>
+        <CA+8PC_czBYZUsOH7brTh4idjg3ps58PtanqtmTD0mPN3Sp9Xhw@mail.gmail.com>
+        <4e61f6e5-94bd-9e29-d12f-d5928f00c8a8@huawei.com>
+        <5dd42599-ace7-42cb-8b3c-90704d18fc21@broadcom.com>
+        <14e5c329-03c4-e82e-8ae2-97d30d53e4fd@huawei.com>
+        <184cc562ed8.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
+Date:   Thu, 01 Dec 2022 13:16:17 +0200
+In-Reply-To: <184cc562ed8.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
+        (Arend Van Spriel's message of "Thu, 01 Dec 2022 07:18:32 +0100")
+Message-ID: <87bkon4bni.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ysvt4sh7xyxarrpp"
-Content-Disposition: inline
-In-Reply-To: <20221116205308.2996556-4-msp@baylibre.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Arend Van Spriel <arend.vanspriel@broadcom.com> writes:
 
---ysvt4sh7xyxarrpp
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On December 1, 2022 4:01:39 AM wangyufen <wangyufen@huawei.com> wrote:
+>
+>> =E5=9C=A8 2022/11/30 19:19, Arend van Spriel =E5=86=99=E9=81=93:
+>>> On 11/30/2022 3:00 AM, wangyufen wrote:
+>>>>
+>>>>
+>>>> =E5=9C=A8 2022/11/30 1:41, Franky Lin =E5=86=99=E9=81=93:
+>>>>> On Tue, Nov 29, 2022 at 1:47 AM Wang Yufen <wangyufen@huawei.com> wro=
+te:
+>>>>>>
+>>>>>> Fix to return a negative error code -EINVAL instead of 0.
+>>>>>>
+>>>>>> Compile tested only.
+>>>>>>
+>>>>>> Fixes: d380ebc9b6fb ("brcmfmac: rename chip download functions")
+>>>>>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+>>>>>> ---
+>>>>>>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 +
+>>>>>>  1 file changed, 1 insertion(+)
+>>>>>>
+>>>>>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>>>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>>>> index 465d95d..329ec8ac 100644
+>>>>>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>>>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>>>> @@ -3414,6 +3414,7 @@ static int brcmf_sdio_download_firmware(struct
+>>>>>> brcmf_sdio *bus,
+>>>>>>         /* Take arm out of reset */
+>>>>>>         if (!brcmf_chip_set_active(bus->ci, rstvec)) {
+>>>>>>                 brcmf_err("error getting out of ARM core reset\n");
+>>>>>> +               bcmerror =3D -EINVAL;
+>>>>>
+>>>>> ENODEV seems more appropriate here.
+>>>>
+>>>> However, if brcmf_chip_set_active()  fails in
+>>>> brcmf_pcie_exit_download_state(), "-EINVAL" is returned.
+>>>> Is it necessary to keep consistent?
+>>>
+>>> If we can not get the ARM on the chip out of reset things will fail soon
+>>> enough further down the road. Anyway, the other function calls return
+>>> -EIO so let's do the same here.
+>>
+>> So -EIO is better?  Anyone else have any other opinions? =F0=9F=98=84
+>
+> Obviously it is no better than -EINVAL when you look at the behavior.
+> It is just a feeble attempt to be a little bit more consistent. Feel
+> free to change the return value for brcmf_pcie_exit_download_state()
+> as well.
 
-On 16.11.2022 21:52:56, Markus Schneider-Pargmann wrote:
-> On peripheral chips every read/write can be costly. Avoid reading easily
-> trackable information and cache them internally. This saves multiple
-> reads.
->=20
-> Transmit FIFO put index is cached, this is increased for every time we
-> enqueue a transmit request.
->=20
-> The transmits in flight is cached as well. With each transmit request it
-> is increased when reading the finished transmit event it is decreased.
->=20
-> A submit limit is cached to avoid submitting too many transmits at once,
-> either because the TX FIFO or the TXE FIFO is limited. This is currently
-> done very conservatively as the minimum of the fifo sizes. This means we
-> can reach FIFO full events but won't drop anything.
+Weirdly Arend's last comment is not visible in patchwork:
 
-You have a dedicated in_flight variable, which is read-modify-write in 2
-different code path, i.e. this looks racy.
+https://patchwork.kernel.org/project/linux-wireless/patch/1669716458-15327-=
+1-git-send-email-wangyufen@huawei.com/
 
-If you allow only power-of-two FIFO size, you can use 2 unsigned
-variables, i.e. a head and a tail pointer. You can apply a mask to get
-the index to the FIFO. The difference between head and tail is the fill
-level of the FIFO. See mcp251xfd driver for this.
-
-Marc
+His last email is visible, but the last paragraph is not shown. Some
+strange hiccup somewhere I guess, just wanted to mention it in case we
+see more of them.
 
 --=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+https://patchwork.kernel.org/project/linux-wireless/list/
 
---ysvt4sh7xyxarrpp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOIjKcACgkQrX5LkNig
-0106Pgf/c+3LyxVEAyWReUSMy4S25PKscNC/HC7FSIfZv/T4pUhUfhjoNHFsdOKD
-mxJS60E0hXNuER/oOjUzN/hQYCf8eLDmo7lY1ABkwUMqt03s6ouIeo2nUIxfYBHM
-Cxiju541PilmMvIhydL/j0YMPfexOvvVV6XJHGHPTPAfoRF/adHphiIMHg34IVbv
-R/mZtnutVHNwnjaZLmM0ffiXHxyRexca5ptziY6cqzT5S11ktYPPyqcx4NPxbZeF
-iVCKBICb2Yu4vqFF93shAflWPnfLrgIHewju/lSYA3yGFOgzATIRF/iawTdmK/8K
-e3WT//xQtxnLxJG7bZ33s8AvIWkwvg==
-=k8r2
------END PGP SIGNATURE-----
-
---ysvt4sh7xyxarrpp--
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
