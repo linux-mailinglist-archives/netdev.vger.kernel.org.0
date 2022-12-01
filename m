@@ -2,162 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75E9963FAC4
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 23:43:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F16163FBD1
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 00:17:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbiLAWnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 17:43:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
+        id S231381AbiLAXRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 18:17:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbiLAWms (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 17:42:48 -0500
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105FD2CE35;
-        Thu,  1 Dec 2022 14:42:43 -0800 (PST)
-Received: by mail-oi1-f179.google.com with SMTP id c129so3680012oia.0;
-        Thu, 01 Dec 2022 14:42:43 -0800 (PST)
+        with ESMTP id S230465AbiLAXRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 18:17:23 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414492125A;
+        Thu,  1 Dec 2022 15:17:22 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id a13-20020a9d6e8d000000b00668d65fc44fso1943475otr.9;
+        Thu, 01 Dec 2022 15:17:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=DBc6RFle0m00JwSwMB3U89uXhK/jC0j0+ULxJGcGlZs=;
+        b=aVaxUFeXgNiOog4IIjsp4DVM0zKmVuqgyBHsoUAs5rnylyB69Olppto9g4gFcN4FqQ
+         H4SWhHi/33n3YxprvfTVvwFocCK1jHIvsnvJUNLNCItNCsDmNrYzQ9T9l0/XJICjsOWu
+         4o4K0L5FK9udSpwBFbiETnf8s/m/asKVYs2Wqw89hvoGJpb+9pa3jlp5hTvu90T4ED9s
+         Q14Kia1OiG1fSMTVomIH9Nn6lKnpjGWZ9w4OlkKoHvpbofIb4a99ntMv7ExUULwAdv74
+         BXRDzuvdA+X3O/Jm+DEpktWCQ+Rx5DXoDS5rxkjm4YhvB6DUVPtOo3zeBTY+yUnOO3gv
+         zh0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QSoJgBw7gvJKRqtJPwGF8TC9wXnUbl77+8hQ4HnaDNg=;
-        b=2Ca8LwsXVD3/x3TAnmkzUnlAegttIwE4WUSXGVhS2tbuPZEtOC+BCPxlCneNTTBHaS
-         2SQycET5Dlerp97Gpz1bKF6RfZ8GVjSOZF/UItRnQx4bD5Cd6HcDMkQOhKHESwWZbg3D
-         jYfMGjVxmXrNNA0WYhnjGDkLKAytjsRAb6wZGbxU3gBqxzop0kJGZhJ2ar4BltANJHmm
-         rlwXfNFF7Vr6z3nytioK1aN3G8tY4THA2vxZKYXjPStanitJyT7fqxFCzxVlXhVBs/5/
-         rLxcNTUPmuDPM9ABBlwLPoFy0hKhKWG9zQmY7GeunGepnoH8GLR7r3JqXz9MaGWla0I8
-         NX2Q==
-X-Gm-Message-State: ANoB5pl0fJZlPL1ZEc9iqzfRSiD0srqOp+fddieeET4VkX3/NnW/azb0
-        p/zFfBHSLdrDRb0yeyeOzA==
-X-Google-Smtp-Source: AA0mqf7svA0cxObJDPcHKDecL0TjB4LXILyHf3dlg0pDOqySswFXalFd1Qb1ROCnAafNRLIhvA0gbg==
-X-Received: by 2002:a05:6808:7c1:b0:35a:eee1:6716 with SMTP id f1-20020a05680807c100b0035aeee16716mr24058254oij.173.1669934562232;
-        Thu, 01 Dec 2022 14:42:42 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id f97-20020a9d03ea000000b0066c41be56e7sm2617464otf.55.2022.12.01.14.42.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Dec 2022 14:42:41 -0800 (PST)
-Received: (nullmailer pid 1578165 invoked by uid 1000);
-        Thu, 01 Dec 2022 22:42:40 -0000
-Date:   Thu, 1 Dec 2022 16:42:40 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        =?UTF-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>
-Subject: Re: [PATCH v3 net-next 05/10] dt-bindings: net: dsa: qca8k: utilize
- shared dsa.yaml
-Message-ID: <20221201224240.GA1565974-robh@kernel.org>
-References: <20221127224734.885526-1-colin.foster@in-advantage.com>
- <20221127224734.885526-6-colin.foster@in-advantage.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DBc6RFle0m00JwSwMB3U89uXhK/jC0j0+ULxJGcGlZs=;
+        b=gEwvGpsTQUXOqj3mEREwqYg6yQTFI0VW+ESr0B7ihoiRQonW47t/rXM1gtfsLqmreM
+         scpm7D+O+facB/lFIoDgm3ckuVEOmjHXh/rw/H/xjSTEEaxG/msBw5hapJepXKCJEgMT
+         ALuTHs5sjryA26dBLsjTJYk2ksjkkiXJthLvO9u5bjsbShMZP3YnQiwdbikDYvdVnlsm
+         UYvSoMpV0w0Y2fyc8X+FhezvqHimlVxR5Ery2l9biWcAaAUHMZsG6RG5dyyA/+RVHpbv
+         5Y32bh7eYTO3OorRNmVsU+jHn86Zhm1gxj6GJRTU6zSV8IQhQ4WLWIwWz2huzeoEi0Ex
+         D7eQ==
+X-Gm-Message-State: ANoB5pnkBjbYhTjJ2l+kiVa0ATvMJ6vTCH+VyXztsIxFaE3AT4Ob+CIc
+        MLFkCtd4mDM6evg5kO8U12BCMxIArFA9SQpaRe/5i1OS
+X-Google-Smtp-Source: AA0mqf5MPDDKs+XONRrgIA79tbujNUkca/XcpxNtJ/8DIRgqhG2PKd7cZF1d44wjXS0vCpFNxsTDFUCTwFYDhCt86/k=
+X-Received: by 2002:a05:6830:3697:b0:66b:e4f2:7f2a with SMTP id
+ bk23-20020a056830369700b0066be4f27f2amr25550959otb.317.1669936641563; Thu, 01
+ Dec 2022 15:17:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221127224734.885526-6-colin.foster@in-advantage.com>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+References: <20221123173859.473629-1-dima@arista.com> <20221123173859.473629-2-dima@arista.com>
+ <Y4B17nBArWS1Iywo@hirez.programming.kicks-ass.net> <2081d2ac-b2b5-9299-7239-dc4348ec0d0a@arista.com>
+ <20221201143134.6bb285d8@kernel.org>
+In-Reply-To: <20221201143134.6bb285d8@kernel.org>
+From:   Dmitry Safonov <0x7f454c46@gmail.com>
+Date:   Thu, 1 Dec 2022 23:17:11 +0000
+Message-ID: <CAJwJo6Z9sTDgOFFrpbrXT6eagtmbB5mhfudG0Osp75J4ipNSqQ@mail.gmail.com>
+Subject: Re: [PATCH v6 1/5] jump_label: Prevent key->enabled int overflow
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Dmitry Safonov <dima@arista.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jason Baron <jbaron@akamai.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 27, 2022 at 02:47:29PM -0800, Colin Foster wrote:
-> The dsa.yaml binding contains duplicated bindings for address and size
-> cells, as well as the reference to dsa-port.yaml. Instead of duplicating
-> this information, remove the reference to dsa-port.yaml and include the
-> full reference to dsa.yaml.
-> 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
-> 
-> v2 -> v3
->   * Remove #address-cells and #size-cells from v2. The examples were
->     incorrect and fixed elsewhere.
->   * Remove erroneous unevaluatedProperties: true under Ethernet Port.
->   * Add back ref: dsa-port.yaml#.
-> 
-> v1 -> v2
->   * Add #address-cells and #size-cells to the switch layer. They aren't
->     part of dsa.yaml.
->   * Add unevaluatedProperties: true to the ethernet-port layer so it can
->     correctly read properties from dsa.yaml.
-> 
-> ---
->  Documentation/devicetree/bindings/net/dsa/qca8k.yaml | 11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> index 6fc9bc985726..93a9ddebcac8 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> @@ -66,20 +66,15 @@ properties:
->                   With the legacy mapping the reg corresponding to the internal
->                   mdio is the switch reg with an offset of -1.
->  
-> +$ref: "dsa.yaml#"
-> +
->  patternProperties:
->    "^(ethernet-)?ports$":
->      type: object
-> -    properties:
-> -      '#address-cells':
-> -        const: 1
-> -      '#size-cells':
-> -        const: 0
-> -
->      patternProperties:
->        "^(ethernet-)?port@[0-6]$":
->          type: object
->          description: Ethernet switch ports
-> -
->          $ref: dsa-port.yaml#
+On Thu, 1 Dec 2022 at 22:31, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 25 Nov 2022 14:28:30 +0000 Dmitry Safonov wrote:
+> > > What is the plan for merging this? I'm assuming it would want to go
+> > > through the network tree, but as already noted earlier it depends on a
+> > > patch I have in tip/locking/core.
+> > >
+> > > Now I checked, tip/locking/core is *just* that one patch, so it might be
+> > > possible to merge that branch and this series into the network tree and
+> > > note that during the pull request to Linus.
+> >
+> > I initially thought it has to go through tip trees because of the
+> > dependence, but as you say it's just one patch.
+> >
+> > I was also asked by Jakub on v4 to wait for Eric's Ack/Review, so once I
+> > get a go from him, I will send all 6 patches for inclusion into -net
+> > tree, if that will be in time before the merge window.
+>
+> Looks like we're all set on the networking side (thanks Eric!!)
 
-So here you need 'unevaluatedProperties: false'.
+Thanks!
 
-unevaluatedProperties only applies to the properties defined in a single 
-node level, and child nodes properties from 2 schemas can't 'see' each 
-other. IOW, what dsa.yaml has in child nodes has no effect on this node. 
+> Should I pull Peter's branch? Or you want to just resent a patch Peter
+> already queued. A bit of an unusual situation..
 
->  
->          properties:
-> @@ -116,7 +111,7 @@ required:
->    - compatible
->    - reg
->  
-> -additionalProperties: true
-> +unevaluatedProperties: false
+Either way would work for me.
+I can send it in a couple of hours if you prefer instead of pulling the branch.
 
-So this has no effect on anything within "^(ethernet-)?port@[0-6]$" and 
-below.
-
-Rob
+Thank you,
+             Dmitry
