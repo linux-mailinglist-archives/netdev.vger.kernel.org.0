@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8250663F593
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 17:46:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 249A063F596
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 17:46:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiLAQqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 11:46:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35716 "EHLO
+        id S229829AbiLAQqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 11:46:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229755AbiLAQqT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 11:46:19 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E57B956F
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 08:46:15 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id fy37so5529640ejc.11
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 08:46:15 -0800 (PST)
+        with ESMTP id S229811AbiLAQqW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 11:46:22 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68245B0DDA
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 08:46:17 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id vv4so5599958ejc.2
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 08:46:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KkPC04q2E5HTXjNLsMckFEW+LV/JOlSKL22EoOe/qm4=;
-        b=TsKpBhrgA3blPp5YB5lM9OSq6pcco1h3cGTXZ9AHUpjdzD5nkfYsDlDncpUP/eU4zs
-         teJm1El9p+NkMc1T+WWQwb0ztuH9p0QfVMIh+Ot/4aJT9zCfeT23f+KJXct73ibT8qSn
-         LmYmPouRRSFNNNow/PHgDMEPRffQXI6IxHWM/Rl2FWxs2CmbsR00asj8ldUHi8ZTw0Nr
-         D6BT1lVpFm/UflJUXKKlf2k56FVuv1PhAvD/59WaPV254ifZ1OTRUA6WsO8gi3dvxp9V
-         aSW85XsIf+2pJdUsCNIw+Ed9r64X/+V7oLqY7VYO3rsTBLkouygrHrrgAjJpDWWaZRpT
-         zEdw==
+        bh=6PmPCwisSN6edwEjWasd+zdr1/T2q3IACarVCyKDRIs=;
+        b=FXpeLnfdxJrFZN5yw0tdoPzEQ+LNu0SzF7zcNau5t+Ej1wnElCJ/qOwZCa3Zu+uK8D
+         2xGvZlQZlCkbkDqkDt6UpVBYppXktgA1ykzqlRZcmowzeDoQS23jAypZEAOOS+cSqtcl
+         J6KGeGIr2qu0cM9t9QmP5R94J+Qo5kQiaTvqd9poe8eYN3JPteYajrFtP4WTkJDOL1ub
+         MFcRtZn9gZ8ii6JTClIEnVMzm1V0GxMQJLZuV4LAof50Y8Le5LyP//PpePosZkfAE+cb
+         TVvlc/iyBEDddxhCk8IZmffsxBgEKR49DxM2eTgv8RBAAqeWD6NCZVgikfSxv7Lkdftw
+         S5KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=KkPC04q2E5HTXjNLsMckFEW+LV/JOlSKL22EoOe/qm4=;
-        b=ossM6W+m3SGwTCagK2CKQwod/DqQg4v6a6h9HywXvLycmKkDBc3coA16wdTYZ8716F
-         LtexNRoUwLh0f23ub+9Tamps3YOFRq6PBxfcly1KxuLtNRPIT49Be4oqdDvxeEaddPGp
-         2aHoocl7PD4F/vKnsI9R43I7gd/CNUT6dxBNBEDrmH2L9qIQRMuPvPbvlhzjHEEpUuTq
-         YTrGFSvuQlCniSqnUquOq1oXjszDfV3tttaCUu+rUgR4uD1XzTCxsywf8XnTvnKicoZB
-         27S29vCQjwFaYlzd2gSQBE6FykGwyYg4JoqZAX/A02oIv6ErJBe8T7uikushnSGkto8o
-         w22Q==
-X-Gm-Message-State: ANoB5pn2Pbtf2Nbpyq0VacPJiebGq+y1QejUKatHPlZFXcDJQ+4izJ/8
-        r1R+iH0gLdQwnyjYgKyXsk5PKhxgT5fvloV6
-X-Google-Smtp-Source: AA0mqf5rFKqvItNMHX6nNt9fMYQCJ1iGUAzChBg/hm7WRMQjOGfQKpC4g0i6CQhpxQWdf3okutnnzA==
-X-Received: by 2002:a17:906:805:b0:78d:8267:3379 with SMTP id e5-20020a170906080500b0078d82673379mr55712732ejd.415.1669913173864;
-        Thu, 01 Dec 2022 08:46:13 -0800 (PST)
+        bh=6PmPCwisSN6edwEjWasd+zdr1/T2q3IACarVCyKDRIs=;
+        b=uhQOm1pvvdh2C3KP0NQCwBxv78uD4IjNbRFqOhiGKf0TemOCtudrgm7m0xWvhBoclc
+         2qOdfsxSriMwCBrApjO7/Q+3AGB6druwbwYHCtG0UsfKNJXU+93Q7a+NlEyFcXw1zA+q
+         EdmITNHW5tl5PG98U9+J6TmUhFz/04SX0Q3oRWMPfAPlMwE+UfPwE/8dUXcnZiR1zjGG
+         IObvGmLcOnXGWFmIdvMD+xFhUlJL2ecJJ2ertDeOcfTUm0TOg5nXouW6bixKFLV98Se1
+         hJErTSBt9/I86uqsY0QYL7jyfo+lT8T7EfiXVa5b/W9pm89uDwDPHjx51g4uSFvTz98e
+         RCwg==
+X-Gm-Message-State: ANoB5pnk55f1YbT6kHUafPm6mQwTt4nOMmTV+8r/G5DX6NvSzWE/FJjj
+        ANBjTwfDdTlmG+iHngF1HfsQ8834eMcW3ZzI
+X-Google-Smtp-Source: AA0mqf7x4QZADPXYFbNlXrOMPitCPBGFuEPFBvqG696YquxJ+aXtJBrQGXe0bDTXXSCILni+5gz+rg==
+X-Received: by 2002:a17:906:4e8c:b0:7ba:9c18:1204 with SMTP id v12-20020a1709064e8c00b007ba9c181204mr35122261eju.262.1669913175793;
+        Thu, 01 Dec 2022 08:46:15 -0800 (PST)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id v25-20020a056402185900b00467c3cbab6fsm1911235edy.77.2022.12.01.08.46.12
+        by smtp.gmail.com with ESMTPSA id sg43-20020a170907a42b00b007bdf4340129sm2008105ejc.14.2022.12.01.08.46.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Dec 2022 08:46:12 -0800 (PST)
+        Thu, 01 Dec 2022 08:46:14 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, yangyingliang@huawei.com, leon@kernel.org
-Subject: [patch net-next RFC 2/7] netdevsim: Reorder devl_port_register/unregister() calls to be done when devlink is registered
-Date:   Thu,  1 Dec 2022 17:46:03 +0100
-Message-Id: <20221201164608.209537-3-jiri@resnulli.us>
+Subject: [patch net-next RFC 3/7] mlxsw: Reorder devl_port_register/unregister() calls to be done when devlink is registered
+Date:   Thu,  1 Dec 2022 17:46:04 +0100
+Message-Id: <20221201164608.209537-4-jiri@resnulli.us>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221201164608.209537-1-jiri@resnulli.us>
 References: <20221201164608.209537-1-jiri@resnulli.us>
@@ -77,92 +77,165 @@ then devlink is registered.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/netdevsim/dev.c | 31 +++++++++++++++++++++++++------
- 1 file changed, 25 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c    | 24 ++++++++++++
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  2 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 38 ++++++++++++++-----
+ 3 files changed, 55 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index b962fc8e1397..8ed235ac986f 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -949,6 +949,7 @@ static void nsim_dev_traps_exit(struct devlink *devlink)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index a0a06e2eff82..9908fb0f2d8a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -2215,8 +2215,24 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
+ 		devl_unlock(devlink);
+ 		devlink_register(devlink);
+ 	}
++
++	if (mlxsw_driver->ports_init) {
++		if (!reload)
++			devl_lock(devlink);
++		err = mlxsw_driver->ports_init(mlxsw_core);
++		if (!reload)
++			devl_unlock(devlink);
++		if (err)
++			goto err_driver_ports_init;
++	}
++
+ 	return 0;
  
- static int nsim_dev_reload_create(struct nsim_dev *nsim_dev,
- 				  struct netlink_ext_ack *extack);
-+static void nsim_dev_reload_ports_destroy(struct nsim_dev *nsim_dev);
- static void nsim_dev_reload_destroy(struct nsim_dev *nsim_dev);
++err_driver_ports_init:
++	if (!reload) {
++		devlink_unregister(devlink);
++		devl_lock(devlink);
++	}
+ err_driver_init:
+ 	mlxsw_env_fini(mlxsw_core->env);
+ err_env_init:
+@@ -2284,6 +2300,14 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
+ {
+ 	struct devlink *devlink = priv_to_devlink(mlxsw_core);
  
- static int nsim_dev_reload_down(struct devlink *devlink, bool netns_change,
-@@ -965,6 +966,7 @@ static int nsim_dev_reload_down(struct devlink *devlink, bool netns_change,
- 		return -EOPNOTSUPP;
++	if (mlxsw_core->driver->ports_fini) {
++		if (!reload)
++			devl_lock(devlink);
++		mlxsw_core->driver->ports_fini(mlxsw_core);
++		if (!reload)
++			devl_unlock(devlink);
++	}
++
+ 	if (!reload) {
+ 		devlink_unregister(devlink);
+ 		devl_lock(devlink);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index e0a6fcbbcb19..a41ca92318e8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -348,6 +348,8 @@ struct mlxsw_driver {
+ 		    const struct mlxsw_bus_info *mlxsw_bus_info,
+ 		    struct netlink_ext_ack *extack);
+ 	void (*fini)(struct mlxsw_core *mlxsw_core);
++	int (*ports_init)(struct mlxsw_core *mlxsw_core);
++	void (*ports_fini)(struct mlxsw_core *mlxsw_core);
+ 	int (*port_split)(struct mlxsw_core *mlxsw_core, u16 local_port,
+ 			  unsigned int count, struct netlink_ext_ack *extack);
+ 	int (*port_unsplit)(struct mlxsw_core *mlxsw_core, u16 local_port,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index f5b2d965d476..b216c7dd8419 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -3251,16 +3251,8 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
+ 		goto err_sample_trigger_init;
  	}
  
-+	nsim_dev_reload_ports_destroy(nsim_dev);
- 	nsim_dev_reload_destroy(nsim_dev);
- 	return 0;
- }
-@@ -1600,17 +1602,22 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
- 	if (err)
- 		goto err_psample_exit;
- 
--	err = nsim_dev_port_add_all(nsim_dev, nsim_bus_dev->port_count);
--	if (err)
--		goto err_hwstats_exit;
+-	err = mlxsw_sp_ports_create(mlxsw_sp);
+-	if (err) {
+-		dev_err(mlxsw_sp->bus_info->dev, "Failed to create ports\n");
+-		goto err_ports_create;
+-	}
 -
- 	nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_LEGACY;
- 	devlink_set_features(devlink, DEVLINK_F_RELOAD);
- 	devl_unlock(devlink);
- 	devlink_register(devlink);
-+
-+	devl_lock(devlink);
-+	err = nsim_dev_port_add_all(nsim_dev, nsim_bus_dev->port_count);
-+	devl_unlock(devlink);
-+	if (err)
-+		goto err_devlink_unregister;
-+
  	return 0;
  
--err_hwstats_exit:
-+err_devlink_unregister:
-+	devlink_unregister(devlink);
-+	devl_lock(devlink);
- 	nsim_dev_hwstats_exit(nsim_dev);
- err_psample_exit:
- 	nsim_dev_psample_exit(nsim_dev);
-@@ -1640,6 +1647,15 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
- 	return err;
+-err_ports_create:
+-	rhashtable_destroy(&mlxsw_sp->sample_trigger_ht);
+ err_sample_trigger_init:
+ 	mlxsw_sp_port_module_info_fini(mlxsw_sp);
+ err_port_module_info_init:
+@@ -3445,11 +3437,24 @@ static int mlxsw_sp4_init(struct mlxsw_core *mlxsw_core,
+ 	return mlxsw_sp_init(mlxsw_core, mlxsw_bus_info, extack);
  }
  
-+static void nsim_dev_reload_ports_destroy(struct nsim_dev *nsim_dev)
++static int mlxsw_sp_ports_init(struct mlxsw_core *mlxsw_core)
 +{
-+	struct devlink *devlink = priv_to_devlink(nsim_dev);
++	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
++	int err;
 +
-+	if (devlink_is_reload_failed(devlink))
-+		return;
-+	nsim_dev_port_del_all(nsim_dev);
++	err = mlxsw_sp_ports_create(mlxsw_sp);
++	if (err) {
++		dev_err(mlxsw_sp->bus_info->dev, "Failed to create ports\n");
++		return err;
++	}
++
++	return 0;
 +}
 +
- static void nsim_dev_reload_destroy(struct nsim_dev *nsim_dev)
+ static void mlxsw_sp_fini(struct mlxsw_core *mlxsw_core)
  {
- 	struct devlink *devlink = priv_to_devlink(nsim_dev);
-@@ -1654,7 +1670,6 @@ static void nsim_dev_reload_destroy(struct nsim_dev *nsim_dev)
- 			nsim_esw_legacy_enable(nsim_dev, NULL);
- 	}
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
  
--	nsim_dev_port_del_all(nsim_dev);
- 	nsim_dev_hwstats_exit(nsim_dev);
- 	nsim_dev_psample_exit(nsim_dev);
- 	nsim_dev_health_exit(nsim_dev);
-@@ -1668,6 +1683,10 @@ void nsim_drv_remove(struct nsim_bus_dev *nsim_bus_dev)
- 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
- 	struct devlink *devlink = priv_to_devlink(nsim_dev);
+-	mlxsw_sp_ports_remove(mlxsw_sp);
+ 	rhashtable_destroy(&mlxsw_sp->sample_trigger_ht);
+ 	mlxsw_sp_port_module_info_fini(mlxsw_sp);
+ 	mlxsw_sp_dpipe_fini(mlxsw_sp);
+@@ -3478,6 +3483,13 @@ static void mlxsw_sp_fini(struct mlxsw_core *mlxsw_core)
+ 	mlxsw_sp_parsing_fini(mlxsw_sp);
+ }
  
-+	devl_lock(devlink);
-+	nsim_dev_reload_ports_destroy(nsim_dev);
-+	devl_unlock(devlink);
++static void mlxsw_sp_ports_fini(struct mlxsw_core *mlxsw_core)
++{
++	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
 +
- 	devlink_unregister(devlink);
- 	devl_lock(devlink);
- 	nsim_dev_reload_destroy(nsim_dev);
++	mlxsw_sp_ports_remove(mlxsw_sp);
++}
++
+ static const struct mlxsw_config_profile mlxsw_sp1_config_profile = {
+ 	.used_flood_mode                = 1,
+ 	.flood_mode                     = MLXSW_CMD_MBOX_CONFIG_PROFILE_FLOOD_MODE_CONTROLLED,
+@@ -3934,6 +3946,8 @@ static struct mlxsw_driver mlxsw_sp1_driver = {
+ 	.fw_filename			= MLXSW_SP1_FW_FILENAME,
+ 	.init				= mlxsw_sp1_init,
+ 	.fini				= mlxsw_sp_fini,
++	.ports_init			= mlxsw_sp_ports_init,
++	.ports_fini			= mlxsw_sp_ports_fini,
+ 	.port_split			= mlxsw_sp_port_split,
+ 	.port_unsplit			= mlxsw_sp_port_unsplit,
+ 	.sb_pool_get			= mlxsw_sp_sb_pool_get,
+@@ -3971,6 +3985,8 @@ static struct mlxsw_driver mlxsw_sp2_driver = {
+ 	.fw_filename			= MLXSW_SP2_FW_FILENAME,
+ 	.init				= mlxsw_sp2_init,
+ 	.fini				= mlxsw_sp_fini,
++	.ports_init			= mlxsw_sp_ports_init,
++	.ports_fini			= mlxsw_sp_ports_fini,
+ 	.port_split			= mlxsw_sp_port_split,
+ 	.port_unsplit			= mlxsw_sp_port_unsplit,
+ 	.ports_remove_selected		= mlxsw_sp_ports_remove_selected,
+@@ -4010,6 +4026,8 @@ static struct mlxsw_driver mlxsw_sp3_driver = {
+ 	.fw_filename			= MLXSW_SP3_FW_FILENAME,
+ 	.init				= mlxsw_sp3_init,
+ 	.fini				= mlxsw_sp_fini,
++	.ports_init			= mlxsw_sp_ports_init,
++	.ports_fini			= mlxsw_sp_ports_fini,
+ 	.port_split			= mlxsw_sp_port_split,
+ 	.port_unsplit			= mlxsw_sp_port_unsplit,
+ 	.ports_remove_selected		= mlxsw_sp_ports_remove_selected,
+@@ -4047,6 +4065,8 @@ static struct mlxsw_driver mlxsw_sp4_driver = {
+ 	.priv_size			= sizeof(struct mlxsw_sp),
+ 	.init				= mlxsw_sp4_init,
+ 	.fini				= mlxsw_sp_fini,
++	.ports_init			= mlxsw_sp_ports_init,
++	.ports_fini			= mlxsw_sp_ports_fini,
+ 	.port_split			= mlxsw_sp_port_split,
+ 	.port_unsplit			= mlxsw_sp_port_unsplit,
+ 	.ports_remove_selected		= mlxsw_sp_ports_remove_selected,
 -- 
 2.37.3
 
