@@ -2,403 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E7C63F308
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 15:39:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CAC863F31F
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 15:49:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231864AbiLAOjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 09:39:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
+        id S231296AbiLAOth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 09:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231468AbiLAOj3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 09:39:29 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73F89A8FEC
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 06:39:27 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B1Ecbz77007477, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B1Ecbz77007477
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 1 Dec 2022 22:38:37 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.9; Thu, 1 Dec 2022 22:39:23 +0800
-Received: from localhost.localdomain (172.21.182.189) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Thu, 1 Dec 2022 22:39:22 +0800
-From:   Chunhao Lin <hau@realtek.com>
-To:     <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        Chunhao Lin <hau@realtek.com>
-Subject: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
-Date:   Thu, 1 Dec 2022 22:39:11 +0800
-Message-ID: <20221201143911.4449-1-hau@realtek.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231274AbiLAOte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 09:49:34 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42658AC6C5;
+        Thu,  1 Dec 2022 06:49:33 -0800 (PST)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1p0ksS-0001wj-W1; Thu, 01 Dec 2022 15:49:29 +0100
+Message-ID: <8305bc31-28d5-4041-a3b0-d012e67d8070@leemhuis.info>
+Date:   Thu, 1 Dec 2022 15:49:28 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.182.189]
-X-ClientProxiedBy: RTEXH36505.realtek.com.tw (172.21.6.25) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: trusted connection
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 12/01/2022 14:16:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzEgpFWkyCAxMjo1NzowMA==?=
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [Regression] Bug 216711 - null SSID reported by systemd-networkd
+ when connected to a WPA3 network
+Content-Language: en-US, de-DE
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     Johannes Berg <johannes.berg@intel.com>
+Cc:     Zoddo <kernel+bugzilla@zoddo.fr>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <fa0d345a-c3e5-fbf2-4fab-e43235e779b6@leemhuis.info>
+In-Reply-To: <fa0d345a-c3e5-fbf2-4fab-e43235e779b6@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1669906173;f00fc34c;
+X-HE-SMSGID: 1p0ksS-0001wj-W1
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtl8168h(revid 0x2a) + rtl8211fs is for utp to fiber application.
-rtl8168h is connected to rtl8211fs utp interface. And fiber is connected
-to rtl8211fs sfp interface. rtl8168h use its eeprm or gpo pins to control
-rtl8211fs mdio bus.
+[CCing the network maintainers]
 
-In this patch, driver will register a phy device which uses bitbanged MDIO
-framework to access rtl8211fs.
+Hi, this is your Linux kernel regression tracker. Top-posting for once,
+to make this easily accessible to everyone.
 
-Becuse driver only needs to set rtl8211fs phy parameters, so after setting
-rtl8211fs phy parameters, it will release  phy device.
+Johannes, sorry to bother you, but I have to ask what's up there? Has
+there any progress been made wrt to below regression? I'm wondering, as
+I forwarded this ten days ago and haven't seen a single reply, but maybe
+I missed something.
 
-Fiber does not support speed down, so driver will not speed down phy when
-system suspend or shutdown.
+BTW, in between a second user who's affected by the regression showed up
+in the bugzilla ticket.
 
-Driver will set mdiobb_ops owner to NULL when call alloc_mdio_bitbang().
-That avoid increase module's refcount to prevent rmmod cannot be done.
-https://patchwork.kernel.org/project/linux-renesas-soc/patch/20200730100151.7490-1-ashiduka@fujitsu.com/
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
-Signed-off-by: Chunhao Lin <hau@realtek.com>
----
-v4 -> v5: register a phy device for rtl8211fs
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
 
- drivers/net/ethernet/realtek/Kconfig      |   1 +
- drivers/net/ethernet/realtek/r8169_main.c | 247 +++++++++++++++++++++-
- 2 files changed, 247 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/realtek/Kconfig b/drivers/net/ethernet/realtek/Kconfig
-index 93d9df55b361..20367114ac72 100644
---- a/drivers/net/ethernet/realtek/Kconfig
-+++ b/drivers/net/ethernet/realtek/Kconfig
-@@ -100,6 +100,7 @@ config R8169
- 	depends on PCI
- 	select FW_LOADER
- 	select CRC32
-+	select MDIO_BITBANG
- 	select PHYLIB
- 	select REALTEK_PHY
- 	help
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 5bc1181f829b..cd6cd64a197f 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -28,6 +28,7 @@
- #include <linux/bitfield.h>
- #include <linux/prefetch.h>
- #include <linux/ipv6.h>
-+#include <linux/mdio-bitbang.h>
- #include <asm/unaligned.h>
- #include <net/ip6_checksum.h>
- 
-@@ -325,6 +326,15 @@ enum rtl8168_registers {
- #define EARLY_TALLY_EN			(1 << 16)
- };
- 
-+enum rtl_bb_registers {
-+	MDIO_IN			= 0xdc04,
-+	PINOE			= 0xdc06,
-+	PIN_I_SEL_1		= 0xdc08,
-+	PIN_I_SEL_2		= 0xdc0A,
-+	PINPU			= 0xdc18,
-+	GPOUTPIN_SEL	= 0xdc20,
-+};
-+
- enum rtl8125_registers {
- 	IntrMask_8125		= 0x38,
- 	IntrStatus_8125		= 0x3c,
-@@ -573,6 +583,14 @@ struct rtl8169_tc_offsets {
- 	__le16	rx_missed;
- };
- 
-+struct rtl_bb_mask {
-+	const u16 pin;
-+	const u16 mdio_oe;
-+	const u16 mdio;
-+	const u16 mdc;
-+	const u16 rb_pos;
-+};
-+
- enum rtl_flag {
- 	RTL_FLAG_TASK_ENABLED = 0,
- 	RTL_FLAG_TASK_RESET_PENDING,
-@@ -624,6 +642,12 @@ struct rtl8169_private {
- 	struct rtl_fw *rtl_fw;
- 
- 	u32 ocp_base;
-+
-+	struct {
-+		struct mii_bus *mii_bus;
-+		struct phy_device *phydev;
-+		struct bb_info *ctrl;
-+	} bb;
- };
- 
- typedef void (*rtl_generic_fct)(struct rtl8169_private *tp);
-@@ -1199,6 +1223,217 @@ static enum rtl_dash_type rtl_check_dash(struct rtl8169_private *tp)
- 	}
- }
- 
-+struct bb_info {
-+	struct rtl8169_private *tp;
-+	struct mdiobb_ctrl ctrl;
-+	struct rtl_bb_mask mask;
-+	u16 pinoe;
-+	u16 pin_i_sel_1;
-+	u16 pin_i_sel_2;
-+};
-+
-+/* Data I/O pin control */
-+static void rtl_bb_mdio_dir(struct mdiobb_ctrl *ctrl, int output)
-+{
-+	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
-+	struct rtl8169_private *tp = bitbang->tp;
-+	const u16 mask = bitbang->mask.mdio_oe;
-+	const u16 reg = PINOE;
-+	u16 value;
-+
-+	value = bitbang->pinoe;
-+	if (output)
-+		value |= mask;
-+	else
-+		value &= ~mask;
-+	r8168_mac_ocp_write(tp, reg, value);
-+}
-+
-+/* Set bit data*/
-+static void rtl_bb_set_mdio(struct mdiobb_ctrl *ctrl, int set)
-+{
-+	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
-+	struct rtl8169_private *tp = bitbang->tp;
-+	const u16 mask = bitbang->mask.mdio;
-+	const u16 reg = PIN_I_SEL_2;
-+	u16 value;
-+
-+	value = bitbang->pin_i_sel_2;
-+	if (set)
-+		value |= mask;
-+	else
-+		value &= ~mask;
-+	r8168_mac_ocp_write(tp, reg, value);
-+}
-+
-+/* Get bit data*/
-+static int rtl_bb_get_mdio(struct mdiobb_ctrl *ctrl)
-+{
-+	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
-+	struct rtl8169_private *tp = bitbang->tp;
-+	const u16 reg = MDIO_IN;
-+
-+	return (r8168_mac_ocp_read(tp, reg) & BIT(bitbang->mask.rb_pos)) != 0;
-+}
-+
-+/* MDC pin control */
-+static void rtl_bb_mdc_ctrl(struct mdiobb_ctrl *ctrl, int set)
-+{
-+	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
-+	struct rtl8169_private *tp = bitbang->tp;
-+	const u16 mask = bitbang->mask.mdc;
-+	const u16 mdc_reg = PIN_I_SEL_1;
-+	u16 value;
-+
-+	value = bitbang->pin_i_sel_1;
-+	if (set)
-+		value |= mask;
-+	else
-+		value &= ~mask;
-+	r8168_mac_ocp_write(tp, mdc_reg, value);
-+}
-+
-+/* mdio bus control struct */
-+static const struct mdiobb_ops bb_ops = {
-+	.owner = NULL, /* set to NULL for not increase refcount */
-+	.set_mdc = rtl_bb_mdc_ctrl,
-+	.set_mdio_dir = rtl_bb_mdio_dir,
-+	.set_mdio_data = rtl_bb_set_mdio,
-+	.get_mdio_data = rtl_bb_get_mdio,
-+};
-+
-+static void rtl_bb_init(struct bb_info *bitbang, struct rtl_bb_mask *mask)
-+{
-+	struct rtl8169_private *tp = bitbang->tp;
-+
-+	r8168_mac_ocp_modify(tp, PINPU, mask->pin, 0);
-+	r8168_mac_ocp_modify(tp, PINOE, 0, mask->pin);
-+	bitbang->pinoe = r8168_mac_ocp_read(tp, PINOE);
-+	bitbang->pin_i_sel_1 = r8168_mac_ocp_read(tp, PIN_I_SEL_1);
-+	bitbang->pin_i_sel_2 = r8168_mac_ocp_read(tp, PIN_I_SEL_2);
-+	memcpy(&bitbang->mask, mask, sizeof(struct rtl_bb_mask));
-+}
-+
-+/* Bitbang MDIO bus init function */
-+static int rtl_bb_mdio_bus_init(struct rtl8169_private *tp,
-+				  struct rtl_bb_mask *mask)
-+{
-+	struct pci_dev *pdev = tp->pci_dev;
-+	struct bb_info *bitbang;
-+	struct mii_bus *new_bus;
-+	int rc = 0;
-+
-+	/* create bit control struct for PHY */
-+	bitbang = kzalloc(sizeof(struct bb_info), GFP_KERNEL);
-+	if (!bitbang) {
-+		rc = -ENOMEM;
-+		goto out;
-+	}
-+
-+	/* bitbang init */
-+	bitbang->tp = tp;
-+	bitbang->ctrl.ops = &bb_ops;
-+
-+	/* Bitbang MII controller setting */
-+	new_bus = alloc_mdio_bitbang(&bitbang->ctrl);
-+	if (!new_bus) {
-+		rc = -ENOMEM;
-+		goto err_bb_init_0;
-+	}
-+
-+	new_bus->name = "r8169_bb_mii_bus";
-+	new_bus->parent = &pdev->dev;
-+	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-bb-%x-%x",
-+		 pci_domain_nr(pdev->bus), pci_dev_id(pdev));
-+
-+	rtl_bb_init(bitbang, mask);
-+
-+	rc = mdiobus_register(new_bus);
-+	if (rc)
-+		goto err_bb_init_1;
-+
-+	tp->bb.phydev = mdiobus_get_phy(new_bus, 0);
-+	if (!tp->bb.phydev) {
-+		rc = -ENODEV;
-+		goto err_bb_init_2;
-+	} else if (!tp->bb.phydev->drv) {
-+		/* Most chip versions fail with the genphy driver.
-+		 * Therefore ensure that the dedicated PHY driver is loaded.
-+		 */
-+		rc =  -EUNATCH;
-+		goto err_bb_init_2;
-+	}
-+
-+	tp->bb.mii_bus = new_bus;
-+	tp->bb.ctrl = bitbang;
-+out:
-+	return rc;
-+
-+err_bb_init_2:
-+	mdiobus_unregister(new_bus);
-+err_bb_init_1:
-+	free_mdio_bitbang(new_bus);
-+err_bb_init_0:
-+	kfree(bitbang);
-+	goto out;
-+}
-+
-+static void rtl_bb_mdio_bus_release(struct rtl8169_private *tp)
-+{
-+	/* Unregister mdio bus */
-+	mdiobus_unregister(tp->bb.mii_bus);
-+
-+	/* free bitbang info */
-+	free_mdio_bitbang(tp->bb.mii_bus);
-+
-+	/* free bit control struct */
-+	kfree(tp->bb.ctrl);
-+}
-+
-+static int __rtl_check_bb_mdio_bus(struct rtl8169_private *tp)
-+{
-+	static struct rtl_bb_mask pin_mask_eeprom = {
-+		0x0050, 0x0040, 0x000f, 0x0f00, 6};
-+	static struct rtl_bb_mask pin_mask_gpo = {
-+		0x0210, 0x0200, 0xf000, 0x0f00, 9};
-+
-+	if (!rtl_bb_mdio_bus_init(tp, &pin_mask_eeprom) ||
-+		!rtl_bb_mdio_bus_init(tp, &pin_mask_gpo))
-+		return 0;
-+
-+	return -1;
-+}
-+
-+static bool rtl_supports_bb_mdio_bus(struct rtl8169_private *tp)
-+{
-+	return tp->mac_version == RTL_GIGA_MAC_VER_46 &&
-+		   tp->pci_dev->revision == 0x2a;
-+}
-+
-+static int rtl_check_bb_mdio_bus(struct rtl8169_private *tp)
-+{
-+	if (rtl_supports_bb_mdio_bus(tp))
-+		return __rtl_check_bb_mdio_bus(tp);
-+	return -1;
-+}
-+
-+static void rtl8169_init_bb_phy(struct rtl8169_private *tp)
-+{
-+	struct phy_device *phydev = tp->bb.phydev;
-+
-+	/* disable ctap */
-+	phy_modify_paged(phydev, 0x0a43, 0x19, BIT(6), 0);
-+
-+	/* change Rx threshold */
-+	phy_modify_paged(phydev, 0x0dcc, 0x14, 0, BIT(2) | BIT(3) | BIT(4));
-+
-+	/* switch pin34 to PMEB pin */
-+	phy_modify_paged(phydev, 0x0d40, 0x16, 0, BIT(5));
-+
-+	/* enable pass_linkctl_en */
-+	phy_modify_paged(phydev, 0x0a4b, 0x11, 0, BIT(4));
-+}
-+
- static void rtl_set_d3_pll_down(struct rtl8169_private *tp, bool enable)
- {
- 	switch (tp->mac_version) {
-@@ -2171,6 +2406,14 @@ static void rtl8169_init_phy(struct rtl8169_private *tp)
- 	    tp->pci_dev->subsystem_device == 0xe000)
- 		phy_write_paged(tp->phydev, 0x0001, 0x10, 0xf01b);
- 
-+	if (!rtl_check_bb_mdio_bus(tp)) {
-+		rtl8169_init_bb_phy(tp);
-+		/* disable ctap */
-+		phy_modify_paged(tp->phydev, 0x0a43, 0x11, BIT(6), 0);
-+
-+		rtl_bb_mdio_bus_release(tp);
-+	}
-+
- 	/* We may have called phy_speed_down before */
- 	phy_speed_up(tp->phydev);
- 
-@@ -2227,7 +2470,9 @@ static void rtl_prepare_power_down(struct rtl8169_private *tp)
- 		rtl_ephy_write(tp, 0x19, 0xff64);
- 
- 	if (device_may_wakeup(tp_to_dev(tp))) {
--		phy_speed_down(tp->phydev, false);
-+		/* Fiber not support speed down */
-+		if (!tp->bb.mii_bus)
-+			phy_speed_down(tp->phydev, false);
- 		rtl_wol_enable_rx(tp);
- 	}
- }
--- 
-2.25.1
-
+On 21.11.22 09:32, Thorsten Leemhuis wrote:
+> Hi, this is your Linux kernel regression tracker speaking.
+> 
+> I noticed a regression report in bugzilla.kernel.org. As many (most?)
+> kernel developer don't keep an eye on it, I decided to forward it by
+> mail. Quoting from https://bugzilla.kernel.org/show_bug.cgi?id=216711 :
+> 
+>>  Zoddo 2022-11-19 15:36:02 UTC
+>>
+>> Created attachment 303236 [details]
+>> Bisect log
+>>
+>> Starting with linux 5.19.2, systemd-networkd reports a "(null)" SSID when connected to WPA3 network.
+>>
+>> Steps to reproduce:
+>> 1. Get a system with systemd-networkd (maybe this issue can be exhibited with other methods, but using systemd-netword is the only one I know; I haven't found how to get this data directly from the kernel)
+>> 2. Connect to a wireless network using WPA3.
+>> 3. Run "networkctl status <wlan interface>", and observe that "WiFi access point" shows "(null)" instead of the network's SSID.
+>> 4. If you try again with a WPA2 network, the SSID is shown as expected. WPA3 network also behaves as expected on kernel <=5.19.1
+>>
+>> This bug also affects linux 6.0 (tested on 6.0.8).
+>>
+>>
+>> Bisection identified the following commit as the culprit:
+>> (full bisect log attached)
+>>
+>> 7a53ad13c09150076b7ddde96c2dfc5622c90b45 is the first bad commit
+>> commit 7a53ad13c09150076b7ddde96c2dfc5622c90b45
+>> Author: Johannes Berg <johannes.berg@intel.com>
+>> Date:   Thu Apr 14 16:50:57 2022 +0200
+>>
+>>     wifi: cfg80211: do some rework towards MLO link APIs
+>>     
+>>     [ Upstream commit 7b0a0e3c3a88260b6fcb017e49f198463aa62ed1 ]
+>>     
+>>     In order to support multi-link operation with multiple links,
+>>     start adding some APIs. The notable addition here is to have
+>>     the link ID in a new nl80211 attribute, that will be used to
+>>     differentiate the links in many nl80211 operations.
+> 
+> 
+> See the ticket for more details.
+> 
+> BTW, let me use this mail to also add the report to the list of tracked
+> regressions to ensure it's doesn't fall through the cracks:
+> 
+> #regzbot introduced: 7b0a0e3c3a882
+> https://bugzilla.kernel.org/show_bug.cgi?id=216711
+> #regzbot ignore-activity
+> 
+> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+> 
+> P.S.: As the Linux kernel's regression tracker I deal with a lot of
+> reports and sometimes miss something important when writing mails like
+> this. If that's the case here, don't hesitate to tell me in a public
+> reply, it's in everyone's interest to set the public record straight.
