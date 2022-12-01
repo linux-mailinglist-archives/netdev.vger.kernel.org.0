@@ -2,79 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC2D463F5BD
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 17:54:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8603563F5CE
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 17:59:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbiLAQyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 11:54:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
+        id S229949AbiLAQ76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 11:59:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiLAQya (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 11:54:30 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67D527143
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 08:54:29 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id w26-20020a056830061a00b0066c320f5b49so1325026oti.5
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 08:54:29 -0800 (PST)
+        with ESMTP id S229681AbiLAQ74 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 11:59:56 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A229AA5551
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 08:59:54 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id b2so5650475eja.7
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 08:59:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=h6gqlBqf72AAqgjEaxIk36DFKyr5wgtbH1GA7J8jPkY=;
-        b=dVkFMCNqYiS6EyABVobZ7nYqoVBSbkwpV3+xXRdZ1cjdt6njNMQyDufkYBoVZJdk/S
-         3lHHQv7yV2yq9+bTDnel1OXwv5DoPLPgxIwfCDmrMaYW1cZQr04J5wt3bnrSUiPdw88l
-         bNRCp41xGDgRaP40zlxvitNZV0BNqAGXWHUqa5wNNwfMs9Hn0vHYrepYlraV3vNnPMKJ
-         Bqn745u1E6xUiLxGx1U9CUerOQy43HpEHCSQMYp1F0ldkmIICZjmDsY5LPiswJ3ffD2I
-         nLQFufSESrEfRL4DbwUNhwdaNUX+XXPQQKWvvwhdfM9ykI6KgeUumVeUb6HV5TqMD23m
-         Gs6A==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=MxGqyJNrUGujXMX18s1mjL2u0fDn76vkmShKgy0/GIg=;
+        b=ghr+FqNiUeaxQ4O+hMb0CJ0v2KjgGXRQdIdZ9HUrcmEmVzMRFeNhxJgjR8fv8C6DY3
+         S8jsWUxHH/1OOrICy7P7eElJ4AaEhhxQXjEcjRoRy45Mt1OX+1sj/Uh8wQp7Dg7F9CcF
+         j9bMEGrsEEnBzPqz59AYJUw+Uad1SiZ3Mbot3iyudLo9EHr1Be1w3cbope15tyviU+AU
+         su9Te/qPn/N8XSmNGL/LSy0ar9cqpuKYiw3fcAlj1Pr8j8GiuXoYNRH5mS4CYtxiwtYF
+         AGbIHMP3Na7kl92PlvFHnhvehgboRsd1vbFuJXZhNcbZY+RKO8QqfHP85MPp+3pvLYwf
+         PJJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=h6gqlBqf72AAqgjEaxIk36DFKyr5wgtbH1GA7J8jPkY=;
-        b=GWONXD39pCEz1yaxxhKeVVxELESSVtyz1/t5/gpi4Day5K2F8slit1lbUq8fR5kkYs
-         O/i/JgeVfuOkxMpa6/99baeeCbVjfFSLvHsxUQ7zgDVCcW537Ao5kXuu7+qnf4fV8SC1
-         farr1N9K9JkmDVlFIZhwh14GXyqioxPkck9cobx3FfUP+QCR/UdevLtp2/Z9NKnoL6D1
-         a9wWdLDFkBgU6Hx0H4YmRB456PtqwKxFvAaZ3w7V2c8l7KKWsMsrEtZmcqbtHg9Stv/T
-         gDXWYkl8X0UfYsDeDzPO6CBfnobAwAKUAZOp5Lo8uiLGvh3dcyAj841ab16l9RU87v03
-         5M1w==
-X-Gm-Message-State: ANoB5pnGA0+9BDuI4BQXXSOhDer2g9nfi8zi0f3aAfNo2REzjc3j4oc/
-        m/cFHriWUzjs421t5fZokTuWrftfT5X7B+x4VjM=
-X-Google-Smtp-Source: AA0mqf4LfJtcPztErORPP4bwHXagD9A/mQHrqvI/PDhaE/zO/e/uBlxzGq2MA/hbQA2Zwagm2GAZjuYOVtwYspHizaM=
-X-Received: by 2002:a05:6830:1bec:b0:66e:7deb:b5b with SMTP id
- k12-20020a0568301bec00b0066e7deb0b5bmr285701otb.295.1669913669206; Thu, 01
- Dec 2022 08:54:29 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MxGqyJNrUGujXMX18s1mjL2u0fDn76vkmShKgy0/GIg=;
+        b=6NpuChnx0kdz9NswH8gjwXR2lFjPlbyjNvPklXRIR0QAhl8/K2vWAJJ+limNPxXOFq
+         TdoqE6F/KkHOGYNsBINV3guGOe4iIyE9tPvsLqgTG9nsx7jF638v0J92j08uIV+Mu3kl
+         5Z3fR1y7LsaB3HXixT9qJCydDO/ipvJWgmRs5qvRuVMt27LrH6QEXAOsxOqFAvok1TXR
+         J4BFRdA6cXRpd5ImwnVi7GpTUAQ1V0pFfY6VIG/fhNGulTpMd6sju0xe3lTquorhQjac
+         6ypPyF3VymWEcr27Azi1W5RgVfD+NWcLu7Xp5950NeqQQo5Q9/8xa8rKGGmxBGmQ+ta5
+         VG9g==
+X-Gm-Message-State: ANoB5plXVOXyVLVwgf1OURXoDkuTlc80sVxBuI0Cd6iR7BwNG2QNenC8
+        pkijPq5n/NCqqPxe6ZKwWfx/cxUfQl3PlA==
+X-Google-Smtp-Source: AA0mqf4sv2kZ4cYbl4xbOf8gb/qBFcNRIjTbJ1RX+Ei7CBmvtdncQ0lBGkaIDZJVRJMUY7sDX1V4Cw==
+X-Received: by 2002:a17:906:d8a6:b0:7c0:b741:8b61 with SMTP id qc6-20020a170906d8a600b007c0b7418b61mr1861040ejb.625.1669913992984;
+        Thu, 01 Dec 2022 08:59:52 -0800 (PST)
+Received: from blmsp ([2001:4091:a245:805c:9cf4:fdb8:bb61:5f4e])
+        by smtp.gmail.com with ESMTPSA id tz4-20020a170907c78400b007c0b530f3cfsm652511ejc.72.2022.12.01.08.59.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Dec 2022 08:59:52 -0800 (PST)
+Date:   Thu, 1 Dec 2022 17:59:51 +0100
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 04/15] can: m_can: Use transmit event FIFO watermark
+ level interrupt
+Message-ID: <20221201165951.5a4srb7zjrsdr3vd@blmsp>
+References: <20221116205308.2996556-1-msp@baylibre.com>
+ <20221116205308.2996556-5-msp@baylibre.com>
+ <20221130171715.nujptzwnut7silbm@pengutronix.de>
+ <20221201082521.3tqevaygz4nhw52u@blmsp>
+ <20221201090508.jh5iymwmhs3orb2v@pengutronix.de>
+ <20221201101220.r63fvussavailwh5@blmsp>
+ <20221201110033.r7hnvpw6fp2fquni@pengutronix.de>
 MIME-Version: 1.0
-References: <cover.1669138256.git.lucien.xin@gmail.com> <439676c5242282638057f92dc51314df7bcd0a73.1669138256.git.lucien.xin@gmail.com>
- <Y34s/iGaTfj0DwRg@t14s.localdomain>
-In-Reply-To: <Y34s/iGaTfj0DwRg@t14s.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 1 Dec 2022 11:53:43 -0500
-Message-ID: <CADvbK_ehBnvUUEpDDpNy1OYyst233F0CawZzhsrVOFgnpa14vA@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next 3/5] net: sched: return NF_ACCEPT when fails to
- add nat ext in tcf_ct_act_nat
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jarno Rajahalme <jarno@ovn.org>
-Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
-        ovs-dev@openvswitch.org, davem@davemloft.net, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Aaron Conole <aconole@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20221201110033.r7hnvpw6fp2fquni@pengutronix.de>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,63 +78,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 9:24 AM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Tue, Nov 22, 2022 at 12:32:19PM -0500, Xin Long wrote:
-> > This patch changes to return NF_ACCEPT when fails to add nat
-> > ext before doing NAT in tcf_ct_act_nat(), to keep consistent
-> > with OVS' processing in ovs_ct_nat().
-> >
-> > Reviewed-by: Saeed Mahameed <saeed@kernel.org>
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  net/sched/act_ct.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> > index da0b7f665277..8869b3ef6642 100644
-> > --- a/net/sched/act_ct.c
-> > +++ b/net/sched/act_ct.c
-> > @@ -994,7 +994,7 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
-> >
-> >       /* Add NAT extension if not confirmed yet. */
-> >       if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
-> > -             return NF_DROP;   /* Can't NAT. */
-> > +             return NF_ACCEPT;   /* Can't NAT. */
->
-> I'm wondering if the fix should actually be in OVS, to make it drop
-> the packet? Aaron, Eelco?
->
-> If the user asked for NAT, and it can't NAT, it doesn't seem right to
-> forward the packet while not performing the asked action.
->
-> If we follow the code here, it may even commit the entry without the
-> NAT extension, rendering the connection useless/broken per the first
-> if condition above. It just won't try again.
-nf_ct_nat_ext_add() returning NULL is caused by krealloc() failure
-like an -ENOMEM error, and a similar thing could happen in
-nfct_seqadj_ext_add() called by ovs_ct_nat() -> nf_nat_setup_info()
-when doing NAT where it returns DROP. So I think it's right that
-we should fix this in openvswitch instead of TC.
+On Thu, Dec 01, 2022 at 12:00:33PM +0100, Marc Kleine-Budde wrote:
+> On 01.12.2022 11:12:20, Markus Schneider-Pargmann wrote:
+> > > > For the upcoming receive side patch I already added a hrtimer. I may try
+> > > > to use the same timer for both directions as it is going to do the exact
+> > > > same thing in both cases (call the interrupt routine). Of course that
+> > > > depends on the details of the coalescing support. Any objections on
+> > > > that?
+> > > 
+> > > For the mcp251xfd I implemented the RX and TX coalescing independent of
+> > > each other and made it configurable via ethtool's IRQ coalescing
+> > > options.
+> > > 
+> > > The hardware doesn't support any timeouts and only FIFO not empty, FIFO
+> > > half full and FIFO full IRQs and the on chip RAM for mailboxes is rather
+> > > limited. I think the mcan core has the same limitations.
+> > 
+> > Yes and no, the mcan core provides watermark levels so it has more
+> > options, but there is no hardware timer as well (at least I didn't see
+> > anything usable).
+> 
+> Are there any limitations to the water mark level?
 
-Anyway, in ovs_ct_nat():
+Anything specific? I can't really see any limitation. You can set the
+watermark between 1 and 32. I guess we could also always use it instead
+of the new-element interrupt, but I haven't tried that yet. That may
+simplify the code.
 
-        if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
-                return NF_ACCEPT;   /* Can't NAT. */
+> 
+> > > The configuration for the mcp251xfd looks like this:
+> > > 
+> > > - First decide for classical CAN or CAN-FD mode
+> > > - configure RX and TX ring size
+> > >   9263c2e92be9 ("can: mcp251xfd: ring: add support for runtime configurable RX/TX ring parameters")
+> > >   For TX only a single FIFO is used.
+> > >   For RX up to 3 FIFOs (up to a depth of 32 each).
+> > >   FIFO depth is limited to power of 2.
+> > >   On the mcan cores this is currently done with a DT property.
+> > >   Runtime configurable ring size is optional but gives more flexibility
+> > >   for our use-cases due to limited RAM size.
+> > > - configure RX and TX coalescing via ethtools
+> > >   Set a timeout and the max CAN frames to coalesce.
+> > >   The max frames are limited to half or full FIFO.
+> > 
+> > mcan can offer more options for the max frames limit fortunately.
+> > 
+> > > 
+> > > How does coalescing work?
+> > > 
+> > > If coalescing is activated during reading of the RX'ed frames the FIFO
+> > > not empty IRQ is disabled (the half or full IRQ stays enabled). After
+> > > handling the RX'ed frames a hrtimer is started. In the hrtimer's
+> > > functions the FIFO not empty IRQ is enabled again.
+> > 
+> > My rx path patches are working similarly though not 100% the same. I
+> > will adopt everything and add it to the next version of this series.
+> > 
+> > > 
+> > > I decided not to call the IRQ handler from the hrtimer to avoid
+> > > concurrency, but enable the FIFO not empty IRQ.
+> > 
+> > mcan uses a threaded irq and I found this nice helper function I am
+> > currently using for the receive path.
+> > 	irq_wake_thread()
+> > 
+> > It is not widely used so I hope this is fine. But this hopefully avoids
+> > the concurrency issue. Also I don't need to artificially create an IRQ
+> > as you do.
+> 
+> I think it's Ok to use the function. Which IRQs are enabled after you
+> leave the RX handler? The mcp251xfd driver enables only a high watermark
+> IRQ and sets up the hrtimer. Then we have 3 scenarios:
+> - high watermark IRQ triggers -> IRQ is handled,
+> - FIFO level between 0 and high water mark -> no IRQ triggered, but
+>   hrtimer will run, irq_wake_thread() is called, IRQ is handled
+> - FIFO level 0 -> no IRQ triggered, hrtimer will run. What do you do in
+>   the IRQ handler? Check if FIFO is empty and enable the FIFO not empty
+>   IRQ?
 
-git blame shows this was added at the beginning by:
+I am currently doing the normal IRQ handler run. It checks the
+"Interrupt Register" at the beginning. This register does not show the
+interrupts that fired, it shows the status. So even though the watermark
+interrupt didn't trigger when called by a timer, RF0N 'new message'
+status bit is still set if there is something new in the FIFO. Of course
+it is the same for the transmit status bits.
+So there is no need to read the FIFO fill levels directly, just the
+general status register.
 
-    05752523e565 ("openvswitch: Interface with NAT.")
-
-So add Jarno Rajahalme to Cc: list.
-
-Thanks.
-
->
-> >
-> >       if (ctinfo != IP_CT_NEW && (ct->status & IPS_NAT_MASK) &&
-> >           (ctinfo != IP_CT_RELATED || commit)) {
-> > --
-> > 2.31.1
-> >
+Best,
+Markus
