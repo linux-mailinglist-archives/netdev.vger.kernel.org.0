@@ -2,66 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC47263F963
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 21:48:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43CEC63F96A
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 21:49:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230197AbiLAUsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 15:48:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45486 "EHLO
+        id S230309AbiLAUs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 15:48:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbiLAUsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 15:48:47 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1463C6E0;
-        Thu,  1 Dec 2022 12:48:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=2SVV90pj+UQ0Fb13WshMPyga636VKNklNN1qenW6MPs=; b=mZBoXJQWKIjm6sASM2q/jSB8m0
-        LAdGBlOLd1x/SgUws3pqt6gjOGjvdd+6o8L5N3inLGSL+9XFplmmZzlWT1JCavc70Z9UcPvvA4lu+
-        UAGUzNwbitf120OXQ0LVB9LHjkRe4mS8jm+8jr/jHMgEWDRt8yZDcekUlcaK1geNyu1I=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p0qTl-00462v-3h; Thu, 01 Dec 2022 21:48:21 +0100
-Date:   Thu, 1 Dec 2022 21:48:21 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: phy: swphy: Only warn once for unknown
- speed
-Message-ID: <Y4kTFRBvsN/JCeNd@lunn.ch>
-References: <20221201202254.561103-1-sean.anderson@seco.com>
+        with ESMTP id S230193AbiLAUsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 15:48:52 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479B42FFE8;
+        Thu,  1 Dec 2022 12:48:48 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id d131so225757ybh.4;
+        Thu, 01 Dec 2022 12:48:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=N1ZEAITnlnIL0uo/MUd+4DILu+xpsXxa/BaZ4ECfnM8=;
+        b=WyGkdNpHa5CRQ5od0hODlgB8PdqXLsW8QvZyb/PaoclhgigeVtDOtN3/X+MjBBohPg
+         fAJKbCobXRt3kSOEwjShwxBMNCPezV9rp4jM/kmfzc7b2Kso9dzEd2GjJ4+k4TqzbDXn
+         ozHUKBovZ6ntjxxLR1pV0xur7Dffp4PLACtNFsBUzWrvDrYYYLYcmeaar6OaIPUwnoP+
+         vS2K7SzKVUydrVDxUaSB0Rt7Y1BxY1qOPkiVrDwtSCKir5Bc2kdzy+htVqDfWiHKLkqt
+         +YvUdaRoOmkfsSTIDs21vTleziVaktQZe8p5el78FMqxdiRP9Es1xch6rk8FzLv5vCLs
+         f4rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=N1ZEAITnlnIL0uo/MUd+4DILu+xpsXxa/BaZ4ECfnM8=;
+        b=YlFbJolxQgY/Vcoqha2jjI2+/yJ7y3Bz9h4ajNINnN7MS+ZEszoMXUmkH8hBS7ITUn
+         aFs2orqRTLqp8MNI3Sr0Pdn1ZIaLOMVGELzId5Iu6DaC+l4gzjzMX2CgsocSgfa9o8Rv
+         ZEbxs+0sTuTpcLAspWPTw8xnQfyWfxpHDtH3wc5d53GACI9Z50/YvMh8hIZNYrUqxQsH
+         3IIjSBMKf3As4AGkiIs3hlDvsnlA2BxIKXye4v+21IvYXqYQE3t9P5lw+4xyrBRdZldH
+         GbjkFvidb1Hj9K154hMiny0AO7JYD97WARSd3lgqR2kHgC+vNSbaBxRHoZT7NK0yZKZ8
+         u3nw==
+X-Gm-Message-State: ANoB5pl7MkfyPm8sdSeb0MN8SVA6MZ2iQ4UkTI9Ve1zPuuYthmmZhyf/
+        s6IRHsXabHNWZJENGj4JoG+OfFJZ4v2HJKEmt/I=
+X-Google-Smtp-Source: AA0mqf7P2XR9ZGUdtibT6H1IotM1KHS20VYF48xyhV/t4p4fXyyfUbMrklp5zCu94hmcsSe0Hctv2TNHJldLsNDIvw8=
+X-Received: by 2002:a25:401:0:b0:6fa:8a4b:40b6 with SMTP id
+ 1-20020a250401000000b006fa8a4b40b6mr8671751ybe.230.1669927727147; Thu, 01 Dec
+ 2022 12:48:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221201202254.561103-1-sean.anderson@seco.com>
+References: <20221129132018.985887-1-eyal.birger@gmail.com>
+ <20221129132018.985887-4-eyal.birger@gmail.com> <ba1a8717-7d9a-9a78-d80a-ad95bb902085@linux.dev>
+ <CAHsH6Gvb94O6ir-emzop1FoDsbHh7QNVFrtDuohzvXpVe0S4Vg@mail.gmail.com> <917db515-072c-31d5-1cd2-b28bc40f7bd4@linux.dev>
+In-Reply-To: <917db515-072c-31d5-1cd2-b28bc40f7bd4@linux.dev>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Thu, 1 Dec 2022 22:48:35 +0200
+Message-ID: <CAHsH6GsDmw5qNv-9u-DfOXaUgtaGhOesEveOvX5cVcnYmjtonA@mail.gmail.com>
+Subject: Re: [PATCH ipsec-next,v2 3/3] selftests/bpf: add xfrm_info tests
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        andrii@kernel.org, daniel@iogearbox.net, nicolas.dichtel@6wind.com,
+        razor@blackwall.org, mykolal@fb.com, ast@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, shuah@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 01, 2022 at 03:22:53PM -0500, Sean Anderson wrote:
-> swphy_read_reg is called quite frequently during normal operation. If an
-> invalid speed is used for state, then it can turn dmesg into a firehose.
-> Although the first warn will likely contain a backtrace for the
-> offending driver, later warnings will usually just contain a backtrace
-> from the phy state machine. Just warn once.
+On Thu, Dec 1, 2022 at 10:26 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+>
+> On 11/30/22 9:34 PM, Eyal Birger wrote:
+> >>> +
+> >>> +struct {
+> >>> +     __uint(type, BPF_MAP_TYPE_ARRAY);
+> >>> +     __uint(max_entries, 2);
+> >>> +     __type(key, __u32);
+> >>> +     __type(value, __u32);
+> >>> +} dst_if_id_map SEC(".maps");
+> >>
+> >> It is easier to use global variables instead of a map.
+> >
+> > Would these be available for read/write from the test application (as the
+> > map is currently populated/read from userspace)?
+>
+> Yes, through the skel->bss->...
+> selftests/bpf/prog_tests/ has examples.
 
-Hi Sean
+Oh this is very useful! I tested and indeed this works perfectly.
+WIll use in v3.
 
-How did you trigger this? I have a patch in this area as well, which i
-want Russells opinion on. I'm wondering if we are hitting the same
-problem.
-
-	Andrew
+Thanks!
+Eyal.
