@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD8E063FA8D
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 23:29:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBE5063FA96
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 23:31:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbiLAW3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 17:29:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
+        id S231311AbiLAWbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 17:31:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbiLAW3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 17:29:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3977BBE4F9
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 14:29:54 -0800 (PST)
+        with ESMTP id S231290AbiLAWbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 17:31:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE39BE684;
+        Thu,  1 Dec 2022 14:31:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD62F62067
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 22:29:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C08ACC433C1;
-        Thu,  1 Dec 2022 22:29:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59BED62177;
+        Thu,  1 Dec 2022 22:31:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F68C433C1;
+        Thu,  1 Dec 2022 22:31:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669933793;
-        bh=+xQbXoV/PZNrdLXanNhkb2XP4cq3hRdIlJ7muQjat3M=;
+        s=k20201202; t=1669933895;
+        bh=zFj+T+nAIMyUg25iDdawyC+U8K2rLsVrPw2FPBwcqa8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QBjoHSIKLtxrHBPuEjGkWTqurPSJVEx794Q5a4KABErqPfgiEzzIVY1RtP551F0gR
-         UrayP9P99CaxwvCFK45Lqnz0NT+AGlxiBqp50exeoXMkBktK4fqyHosAPW/QoA0so4
-         4A52oJ7n0BsBfDmhhl/eKP3tKPy5muOlSdMnNk8y5wm22ypkUzAsF29G4oETROr68Q
-         hfTRIZdcprkxZJrVjw532DEXKqtAhAW4Ob0Q3Jot7T6zMGi42sObja3bAMlvn59tiA
-         qz4aGcrYyoqxzrs9bmK5xggO6tIB3uIV1TLShJjulCqAAOjSs8Jbj+lWL0bcICrx+U
-         KH2UbOHnxSebQ==
-Date:   Thu, 1 Dec 2022 14:29:51 -0800
+        b=An71A+AvytWtsCceVD3N4iuwv4NYO6YtpgetxaSDT4NDM00X0DKGaMiH1HOrto6V5
+         krQ84SSQIgVAQJRVQegJDHikmJV1F+FjZfNqRgjceihbRDI6Y0fobyuOg0PSjCZuCm
+         A3RAax7qXR+Qht+FyZ9y5d+zCigWfnYDZgYPBNcpgWsVglTZ314t3Bq7sBmqk1TCDV
+         s6QjbsXlf15AmWcD4/fYK3DMbkxRo1Mqs7JJYUWNDqygfAbMlCa1r+13bJmXkTt3Of
+         ETHMrJ4H/JX4ux3PtwWKBLZ5znfOLS6lvVMXUxyuswDFSmq5MMhbD0vtUwXxGUWmQk
+         1CRvVThP11CcQ==
+Date:   Thu, 1 Dec 2022 14:31:34 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <shnelson@amd.com>
-Cc:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
-        davem@davemloft.net, mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, drivers@pensando.io
-Subject: Re: [RFC PATCH net-next 08/19] pds_core: initial VF configuration
-Message-ID: <20221201142951.5f068079@kernel.org>
-In-Reply-To: <6a174081-0187-551c-4b34-17a59ad38230@amd.com>
-References: <20221118225656.48309-1-snelson@pensando.io>
-        <20221118225656.48309-9-snelson@pensando.io>
-        <20221128102828.09ed497a@kernel.org>
-        <d24a9900-154f-ad3a-fef4-73a57f0cddb0@amd.com>
-        <20221128153719.2b6102cc@kernel.org>
-        <75072b2a-0b69-d519-4174-6d61d027f7d4@amd.com>
-        <20221128165522.62dcd7be@kernel.org>
-        <51330a32-1fa1-cc0f-e06e-b4ac351cb820@amd.com>
-        <20221128175448.3723f5ee@kernel.org>
-        <fbf3266c-f125-c01a-fcc3-dc16b4055ed5@amd.com>
-        <20221129180250.3320da56@kernel.org>
-        <b839c112-df1f-a36a-0d89-39b336956492@amd.com>
-        <20221130194506.642031db@kernel.org>
-        <6a174081-0187-551c-4b34-17a59ad38230@amd.com>
+To:     Dmitry Safonov <dima@arista.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jason Baron <jbaron@akamai.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH v6 1/5] jump_label: Prevent key->enabled int overflow
+Message-ID: <20221201143134.6bb285d8@kernel.org>
+In-Reply-To: <2081d2ac-b2b5-9299-7239-dc4348ec0d0a@arista.com>
+References: <20221123173859.473629-1-dima@arista.com>
+        <20221123173859.473629-2-dima@arista.com>
+        <Y4B17nBArWS1Iywo@hirez.programming.kicks-ass.net>
+        <2081d2ac-b2b5-9299-7239-dc4348ec0d0a@arista.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -66,41 +67,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 1 Dec 2022 11:19:51 -0800 Shannon Nelson wrote:
-> > It simply does not compute for me. You're exposing a very advanced vDPA
-> > interface, and yet you say you don't need any network configuration
-> > beyond what Niantic had.  
+On Fri, 25 Nov 2022 14:28:30 +0000 Dmitry Safonov wrote:
+> > What is the plan for merging this? I'm assuming it would want to go
+> > through the network tree, but as already noted earlier it depends on a
+> > patch I have in tip/locking/core.
+> > 
+> > Now I checked, tip/locking/core is *just* that one patch, so it might be
+> > possible to merge that branch and this series into the network tree and
+> > note that during the pull request to Linus.  
 > 
-> Would you have the same responses if we were trying to do this same kind 
-> of PF netdev on a simple Niantic-like device (simple sr-iov support, 
-> little filtering capability)?
-
-It is really hard for me to imagine someone building a Niantic-like
-device today.
-
-Recently I was thought-experiment-designing simplest Niantic-like device
-for container workloads. And my conclusion was that yes, TC would
-probably be the best way to control forwarding. (Sorry not really an
-answer to your question, I don't know of any real Niantics of the day)
-
-> > There are no upstream-minded users of IPUs, if it was up to me I'd flat
-> > out ban them from the kernel.  
+> I initially thought it has to go through tip trees because of the
+> dependence, but as you say it's just one patch.
 > 
-> Yeah, there's a lot of hidden magic going on behind the PCI devices 
-> presented to the host, and a lot of it depends on the use cases 
-> attempting to be addressed by the different product vendors and their 
-> various cloud and enterprise customers.  I tend to think that the most 
-> friction here comes from us being more familiar and comfortable with the 
-> enterprise use cases where we typically own the whole host, and not so 
-> comfortable these newer cloud use cases with control and configuration 
-> coming from outside the host.
+> I was also asked by Jakub on v4 to wait for Eric's Ack/Review, so once I
+> get a go from him, I will send all 6 patches for inclusion into -net
+> tree, if that will be in time before the merge window.
 
-I know about cloud as much as I know about enterprise, being a Meta's
-employee. But those who do have public clouds seem to develop all the
-meaningful tech behind closed doors, under NDAs. And at best "bless" 
-us with a code dump which is under an open source license.
+Looks like we're all set on the networking side (thanks Eric!!)
 
-The community is where various developers should come together and
-design together. If you do a full design internally and then come
-upstream to just ship the code then it's a SW distribution channel,
-not an open source project. That's what I am not comfortable with.
+Should I pull Peter's branch? Or you want to just resent a patch Peter
+already queued. A bit of an unusual situation..
