@@ -2,193 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19C3463EBF3
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:06:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 781AB63EC20
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:15:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbiLAJGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 04:06:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37742 "EHLO
+        id S229848AbiLAJPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 04:15:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230059AbiLAJFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:05:50 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD108931F
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 01:05:17 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1p0fVH-0002bz-9P; Thu, 01 Dec 2022 10:05:11 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:dc5e:59bf:44a8:4077])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D80D612EC7E;
-        Thu,  1 Dec 2022 09:05:09 +0000 (UTC)
-Date:   Thu, 1 Dec 2022 10:05:08 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 04/15] can: m_can: Use transmit event FIFO watermark
- level interrupt
-Message-ID: <20221201090508.jh5iymwmhs3orb2v@pengutronix.de>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-5-msp@baylibre.com>
- <20221130171715.nujptzwnut7silbm@pengutronix.de>
- <20221201082521.3tqevaygz4nhw52u@blmsp>
+        with ESMTP id S229576AbiLAJPQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:15:16 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F491442C7;
+        Thu,  1 Dec 2022 01:15:15 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1669886069; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=PuFREHxuJ3FoD3zI0cgmwgxXBACrFbsNXtmB1ZUDMZF0Vw7u5go+yLfWIyRlKmsI4dy/C4JBEgDliSKn1GHoNmOpzBqaWl6iXr8io/eTVI3oCPsCmOMRaRxdzRXptLt4DP3hnV53GkO6NAhhWer+prEaTAbxrLXw/JqtvaQrzWo=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1669886069; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=rmnGX0as+j0mWZhRBwCINR7c9wsJ33DTrPhAflpkh7k=; 
+        b=fw/MEtbCpCH9VgI82wo0vE16g6dZ8NV1Le4xk0BjWdTYK38rt7XBr8kXPBBPo3YRUN6Qe0dqE8w6e3UHXsxU9mNhstxy2c3zRoUP/VEPwky/wlzovr2sCQ7tztCh20i22nk9oPAoF3GnSvN5RPlNAcT6sNLjUOovaigMSm1VuKI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1669886069;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=rmnGX0as+j0mWZhRBwCINR7c9wsJ33DTrPhAflpkh7k=;
+        b=kC5OJuaedGtqPWAXavS8QBOXmOzGAN9KVKeFTZblN5hQvtgIY+bZgMHEmvSv5xeL
+        m50GcHUsZyBhq0mNsX+aCeIwwvLqFeeWwtPZKWwBHrfnYXDUeClaEjUb82O6yrKKDVx
+        OifNFxxqXQi0y0KKnh1zyARvxBzbuGAfmR/P71Bk=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1669886067241836.827775278157; Thu, 1 Dec 2022 01:14:27 -0800 (PST)
+Message-ID: <b5ed90cf-1b5d-9306-7b06-ded7c331ca2a@arinc9.com>
+Date:   Thu, 1 Dec 2022 12:14:21 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="76e2vv7xqav4dg7p"
-Content-Disposition: inline
-In-Reply-To: <20221201082521.3tqevaygz4nhw52u@blmsp>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH 0/5] remove label = "cpu" from DSA dt-binding
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        soc@kernel.org, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20221130141040.32447-1-arinc.unal@arinc9.com>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20221130141040.32447-1-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+I'm sending a more specific mail to make sure this series doesn't fall 
+through the cracks like Andrew said. I'd like this merged this week 
+before the merge window closes.
 
---76e2vv7xqav4dg7p
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Jakub, please take patch 1.
+Arnd, please take patch 2 and 3.
+Thomas, please take patch 4.
+Michael, please take patch 5.
 
-On 01.12.2022 09:25:21, Markus Schneider-Pargmann wrote:
-> Hi Marc,
->=20
-> Thanks for reviewing.
->=20
-> On Wed, Nov 30, 2022 at 06:17:15PM +0100, Marc Kleine-Budde wrote:
-> > On 16.11.2022 21:52:57, Markus Schneider-Pargmann wrote:
-> > > Currently the only mode of operation is an interrupt for every transm=
-it
-> > > event. This is inefficient for peripheral chips. Use the transmit FIFO
-> > > event watermark interrupt instead if the FIFO size is more than 2. Use
-> > > FIFOsize - 1 for the watermark so the interrupt is triggered early
-> > > enough to not stop transmitting.
-> > >=20
-> > > Note that if the number of transmits is less than the watermark level,
-> > > the transmit events will not be processed until there is any other
-> > > interrupt. This will only affect statistic counters. Also there is an
-> > > interrupt every time the timestamp wraps around.
-> > >=20
-> > > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> >=20
-> > Please make this configurable with the ethtool TX IRQ coalescing
-> > parameter. Please setup an hwtimer to enable the regular interrupt after
-> > some configurable time to avoid starving of the TX complete events.
->=20
-> I guess hwtimer=3D=3Dhrtimer?
+Arınç
 
-Sorry, yes!
-
-> I thought about setting up a timer but decided against it as the TX
-> completion events are only used to update statistics of the interface,
-> as far as I can tell. I can implement a timer as well.
-
-It's not only statistics, the sending socket can opt in to receive the
-sent CAN frame on successful transmission. Other sockets will (by
-default) receive successful sent CAN frames. The idea is that the other
-sockets see the same CAN bus, doesn't matter if they are on a different
-system receiving the CAN frame via the bus or on the same system
-receiving the CAN frame as soon it has been sent to the bus.
-
-> For the upcoming receive side patch I already added a hrtimer. I may try
-> to use the same timer for both directions as it is going to do the exact
-> same thing in both cases (call the interrupt routine). Of course that
-> depends on the details of the coalescing support. Any objections on
-> that?
-
-For the mcp251xfd I implemented the RX and TX coalescing independent of
-each other and made it configurable via ethtool's IRQ coalescing
-options.
-
-The hardware doesn't support any timeouts and only FIFO not empty, FIFO
-half full and FIFO full IRQs and the on chip RAM for mailboxes is rather
-limited. I think the mcan core has the same limitations.
-
-The configuration for the mcp251xfd looks like this:
-
-- First decide for classical CAN or CAN-FD mode
-- configure RX and TX ring size
-  9263c2e92be9 ("can: mcp251xfd: ring: add support for runtime configurable=
- RX/TX ring parameters")
-  For TX only a single FIFO is used.
-  For RX up to 3 FIFOs (up to a depth of 32 each).
-  FIFO depth is limited to power of 2.
-  On the mcan cores this is currently done with a DT property.
-  Runtime configurable ring size is optional but gives more flexibility
-  for our use-cases due to limited RAM size.
-- configure RX and TX coalescing via ethtools
-  Set a timeout and the max CAN frames to coalesce.
-  The max frames are limited to half or full FIFO.
-
-How does coalescing work?
-
-If coalescing is activated during reading of the RX'ed frames the FIFO
-not empty IRQ is disabled (the half or full IRQ stays enabled). After
-handling the RX'ed frames a hrtimer is started. In the hrtimer's
-functions the FIFO not empty IRQ is enabled again.
-
-I decided not to call the IRQ handler from the hrtimer to avoid
-concurrency, but enable the FIFO not empty IRQ.
-
-> > I've implemented this for the mcp251xfd driver, see:
-> >=20
-> > 656fc12ddaf8 ("can: mcp251xfd: add TX IRQ coalescing ethtool support")
-> > 169d00a25658 ("can: mcp251xfd: add TX IRQ coalescing support")
-> > 846990e0ed82 ("can: mcp251xfd: add RX IRQ coalescing ethtool support")
-> > 60a848c50d2d ("can: mcp251xfd: add RX IRQ coalescing support")
-> > 9263c2e92be9 ("can: mcp251xfd: ring: add support for runtime configurab=
-le RX/TX ring parameters")
->=20
-> Thanks for the pointers. I will have a look and try to implement it
-> similarly.
-
-If you want to implement runtime configurable ring size, I created a
-function to help in the calculation of the ring sizes:
-
-a1439a5add62 ("can: mcp251xfd: ram: add helper function for runtime ring si=
-ze calculation")
-
-The code is part of the mcp251xfd driver, but is prepared to become a
-generic helper function. The HW parameters are described with struct
-can_ram_config and use you can_ram_get_layout() to get a valid RAM
-layout based on CAN/CAN-FD ring size and coalescing parameters.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---76e2vv7xqav4dg7p
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOIbkEACgkQrX5LkNig
-012oYAf/a+KUcifNesQiHqFnEzD66u05tdKZTWgG7XUoR7dO3htMvva3WILrusi7
-8+X8A7Z/LQ7Xqwt5THmhibSS9gVf1lJikk2FLQSdk0P0sT0y1QP7akAmj37eZpeF
-yCnKXICaGSSJJcNJEaEmepeI5vPttObukGpJMxhwUxli0JJHh9j3MYvdAzpxD8af
-yrX9OLn06rOO18Dy5kZC7Y2zeN1UYz4FDinLOudHJ2juPGUNhrnLRTAdEWaQ+Nwd
-82zB8OdGla8BSqIXuTwccPEYchyIukoHEY0U4EXaZJn4dhAVn1wPg7ZXkku/09xp
-cBFiwvRdLtIKiMKE7+1ut29HxPXUUQ==
-=qQ9M
------END PGP SIGNATURE-----
-
---76e2vv7xqav4dg7p--
+On 30.11.2022 17:10, Arınç ÜNAL wrote:
+> Hello folks,
+> 
+> With this patch series, we're completely getting rid of 'label = "cpu";'
+> which is not used by the DSA dt-binding at all.
+> 
+> Information for taking the patches for maintainers:
+> Patch 1: netdev maintainers (based off netdev/net-next.git main)
+> Patch 2-3: SoC maintainers (based off soc/soc.git soc/dt)
+> Patch 4: MIPS maintainers (based off mips/linux.git mips-next)
+> Patch 5: PowerPC maintainers (based off powerpc/linux.git next-test)
+> 
+> I've been meaning to submit this for a few months. Find the relevant
+> conversation here:
+> https://lore.kernel.org/netdev/20220913155408.GA3802998-robh@kernel.org/
+> 
+> Here's how I did it, for the interested (or suggestions):
+> 
+> Find the platforms which have got 'label = "cpu";' defined.
+> grep -rnw . -e 'label = "cpu";'
+> 
+> Remove the line where 'label = "cpu";' is included.
+> sed -i /'label = "cpu";'/,+d arch/arm/boot/dts/*
+> sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/freescale/*
+> sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/marvell/*
+> sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/mediatek/*
+> sed -i /'label = "cpu";'/,+d arch/arm64/boot/dts/rockchip/*
+> sed -i /'label = "cpu";'/,+d arch/mips/boot/dts/qca/*
+> sed -i /'label = "cpu";'/,+d arch/mips/boot/dts/ralink/*
+> sed -i /'label = "cpu";'/,+d arch/powerpc/boot/dts/turris1x.dts
+> sed -i /'label = "cpu";'/,+d Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+> 
+> Restore the symlink files which typechange after running sed.
+> 
+> Arınç ÜNAL (5):
+>    dt-bindings: net: qca,ar71xx: remove label = "cpu" from examples
+>    arm: dts: remove label = "cpu" from DSA dt-binding
+>    arm64: dts: remove label = "cpu" from DSA dt-binding
+>    mips: dts: remove label = "cpu" from DSA dt-binding
+>    powerpc: dts: remove label = "cpu" from DSA dt-binding
+> 
+> 
