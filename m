@@ -2,155 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E31463F81F
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 20:25:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3DCF63F844
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 20:31:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbiLATZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 14:25:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46546 "EHLO
+        id S230425AbiLATbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 14:31:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbiLATZc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 14:25:32 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9BBC7721
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 11:25:31 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id y83so3317246yby.12
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 11:25:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=NQoeb0KaA6tBmStXDhUp2Jzj7YSOKmV4N1ezYR1ylC0=;
-        b=QeERqtXOAtsPgIvidT8jMSYIXHRseZnTuXJVybh/79J7qNsQn5H/3UWmmA/1LThXQ2
-         WDSmM3WuDWtb5LwOhaem6Asdnabvn8FqSLpYsJQPRQkrwY3g6/HlsmU1wWTiAhSdt3oa
-         cz4sQDBt+cADd2ElYTF50MUdWkX50sWJDCYtC1nlTwJV1HKC+BmRH36VcV3rAMgq3dRC
-         6GomxwZnHTlZwcFvLgt/7Ll6A37SiuRMbkzR04VACbABY2xTvvNikWX4ZuoCjMZAfm1u
-         IAgkKvTyc5D+qVR18PcQIiaLB49ml0vWiSbR9ZvNimEQdB3/wq+OaoaPdozXr7q7J11g
-         iXbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NQoeb0KaA6tBmStXDhUp2Jzj7YSOKmV4N1ezYR1ylC0=;
-        b=vjZnAow5mnnKutu/ub0hRyWVaWZx6l0zT2+ym/eBlN81WrgxSMqn6jl36I/5zGFaCL
-         rJ+GdPVqUnRLOgaZxbQDtIFpwxccZirYp2Ttl+mYehKqM+f/en9z3MTpsPW4I8MJESRL
-         lq40B5FSYu2pANRum9RFWRd6pPLnT17hhmAGwVab1V79UXdysEsZ/+bzjGdQxlhls8D4
-         F2AFmoOkPfschEpZyRhZTUYU9ywE0GcFKFLIERkzw65cOeNb7fE+hbbz5Kgb6mJjsBR5
-         J/NVneQrvk5+PLDsUXTL/BdX+few5bJU8jpyOidxDe6pAtWNwU9hC4e5VNj5NYz2I0A1
-         WX5w==
-X-Gm-Message-State: ANoB5pkU3ghbiP/6pn9RvETf1JNM5fGmoq5GErA2pKpeSodQhP2gcjLU
-        XUUcc0xgByuZotDaOFGdY26/3KpEd5xyOaIj0nUvxQ==
-X-Google-Smtp-Source: AA0mqf4FirlLNrAAQOf54JhkjC7QUPVZI8xTLsWtKiqihKjMUiFPu6xzC2dZ1JE2QmK/rhX9QzEXeIUd85Tcjw9iDR4=
-X-Received: by 2002:a25:d88:0:b0:6f0:9db5:63e7 with SMTP id
- 130-20020a250d88000000b006f09db563e7mr36460310ybn.387.1669922730336; Thu, 01
- Dec 2022 11:25:30 -0800 (PST)
+        with ESMTP id S230422AbiLATai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 14:30:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0B1CA15F;
+        Thu,  1 Dec 2022 11:30:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA27BB82008;
+        Thu,  1 Dec 2022 19:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97982C433C1;
+        Thu,  1 Dec 2022 19:30:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669923021;
+        bh=0RxRzmDFLKwQUSgOIo6SuPkpbO4W72b1VHA4ZTgHkqc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ky2zh/RynzTEWtmlLZ/FHid1Dc0FH/RMY9FbFYHg35MAt2n3x+hASDaKqs0Mdqca2
+         6Jq6vyKb0SSIk0XYUf0YBuFb4SsFS+geQCDU29CkHxtL+Zh1Ht7ueAYPB0jbpnuVwU
+         9m8bpO/+SQL/qJ5hoAlSHPHaRgf0UgiUbf2Q8ewt2tRKhk/2NR3I+pbgeUjg5efupC
+         7or94wbkXOf/FQ+utb7pR2kUSY5V6Qn5Al9EttMPjKkhs2Q1O3DOAEug0zrKH5sjAN
+         5nmr13FJTgwJXsiwqTL8xcH7bu3pv39GJo+iw+/xvM3fIg0YlcQXYzGe4KwEByGcoD
+         KBg0Ab6Upl0+A==
+Date:   Thu, 1 Dec 2022 19:30:16 +0000
+From:   Conor Dooley <conor@kernel.org>
+To:     Yanhong Wang <yanhong.wang@starfivetech.com>
+Cc:     linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+Subject: Re: [PATCH v1 7/7] riscv: dts: starfive: visionfive-v2: Add phy
+ delay_chain configuration
+Message-ID: <Y4kAyAhBseNmmDo8@spud>
+References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
+ <20221201090242.2381-8-yanhong.wang@starfivetech.com>
+ <Y4jpDvXo/uj9ygLR@spud>
 MIME-Version: 1.0
-References: <1669817512-4560-1-git-send-email-george.kennedy@oracle.com> <CALs4sv2ZfT1SAYY0oOYhrBBCjsG_th5g=QtSsbKJnPbW8faQ+w@mail.gmail.com>
-In-Reply-To: <CALs4sv2ZfT1SAYY0oOYhrBBCjsG_th5g=QtSsbKJnPbW8faQ+w@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 1 Dec 2022 20:25:18 +0100
-Message-ID: <CANn89iL9obgd==tdp9DgdxXk78UvzF6D4J1OeihB1kx9_U4oZw@mail.gmail.com>
-Subject: Re: [PATCH] net: check for dev pointer being NULL in
- dev_hard_header() to avoid GPF
-To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
-Cc:     George Kennedy <george.kennedy@oracle.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        harshit.m.mogalapalli@oracle.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y4jpDvXo/uj9ygLR@spud>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 1, 2022 at 2:16 PM Pavan Chebbi <pavan.chebbi@broadcom.com> wrote:
->
-> On Wed, Nov 30, 2022 at 7:43 PM George Kennedy
-> <george.kennedy@oracle.com> wrote:
-> >
-> > The dev pointer can be NULL in dev_hard_header(). Add check for dev being
-> > NULL in dev_hard_header() to avoid GPF.
-> >
-> > general protection fault, probably for non-canonical address
-> >     0xdffffc0000000046: 0000 [#1] PREEMPT SMP KASAN NOPTI
-> > KASAN: null-ptr-deref in range [0x0000000000000230-0x0000000000000237]
-> > CPU: 1 PID: 45 Comm: kworker/1:1 Not tainted 6.1.0-rc7+ #2
-> > Hardware name: Red Hat KVM, BIOS 1.15.0-2.module+el8.6.0+20659+3dcf7c70
-> > Workqueue: mld mld_ifc_work
-> > RIP: 0010:macvlan_hard_header (./include/linux/netdevice.h:3057
-> >     (discriminator 4) drivers/net/macvlan.c:594 (discriminator 4))
-> > RSP: 0018:ffff888103d377d0 EFLAGS: 00010212
-> > RAX: dffffc0000000000 RBX: ffff88801cf1a000 RCX: 0000000000000000
-> > RDX: 0000000000000046 RSI: 0000000000000000 RDI: 0000000000000230
-> > RBP: ffff88801e8ef328 R08: 0000000000000000 R09: 0000000000000060
-> > R10: 0000000000000000 R11: 0000000000000000 R12: ffff88801f0497c0
-> > R13: 0000000000000000 R14: ffff888045187c98 R15: 0000000000000060
-> > FS:  0000000000000000(0000) GS:ffff888106c80000(0000)
-> >     knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00007fbf3f1c1840 CR3: 0000000014e36000 CR4: 00000000000006e0
-> > Call Trace:
-> >  <TASK>
-> > neigh_connected_output (./include/linux/netdevice.h:3060
-> >     net/core/neighbour.c:1595)
-> > ip6_finish_output2 (./include/net/neighbour.h:546
-> >     net/ipv6/ip6_output.c:134)
-> > ip6_finish_output (net/ipv6/ip6_output.c:195 net/ipv6/ip6_output.c:206)
-> > ip6_output (./include/linux/netfilter.h:291 net/ipv6/ip6_output.c:227)
-> > NF_HOOK.constprop.0 (./include/net/dst.h:445
-> >     ./include/linux/netfilter.h:302)
-> > mld_sendpack (net/ipv6/mcast.c:1824)
-> > mld_send_cr (net/ipv6/mcast.c:2122)
-> > mld_ifc_work (net/ipv6/mcast.c:2655)
-> > process_one_work (kernel/workqueue.c:2294)
-> > worker_thread (./include/linux/list.h:292 kernel/workqueue.c:2437)
-> > kthread (kernel/kthread.c:376)
-> > ret_from_fork (arch/x86/entry/entry_64.S:312)
-> >  </TASK>
-> > Modules linked in:
-> > Dumping ftrace buffer:
-> >    (ftrace buffer empty)
-> > ---[ end trace 0000000000000000 ]---
-> >
-> > Fixes: 0c4e85813d0a ("[NET]: Wrap netdevice hardware header creation.")
-> > Reported-by: syzkaller <syzkaller@googlegroups.com>
-> > Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+On Thu, Dec 01, 2022 at 05:49:08PM +0000, Conor Dooley wrote:
+> On Thu, Dec 01, 2022 at 05:02:42PM +0800, Yanhong Wang wrote:
+> > riscv: dts: starfive: visionfive-v2: Add phy delay_chain configuration
+> > 
+> > Add phy delay_chain configuration to support motorcomm phy driver for
+> > StarFive VisionFive 2 board.
+
+nit: please re-word this commit next time around to actually say what
+you're doing here. I didn't notice it initially, but this patch is doing
+a lot more than adding `delay_chain` configuration. To my dwmac unaware
+brain, there's nothing hits for that term outside of the changelog :(
+
+Thanks,
+Conor.
+
+> > 
+> > Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
 > > ---
-> >  include/linux/netdevice.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > index eddf8ee270e7..9b25a6301fa5 100644
-> > --- a/include/linux/netdevice.h
-> > +++ b/include/linux/netdevice.h
-> > @@ -3054,7 +3054,7 @@ static inline int dev_hard_header(struct sk_buff *skb, struct net_device *dev,
-> >                                   const void *daddr, const void *saddr,
-> >                                   unsigned int len)
-> >  {
-> > -       if (!dev->header_ops || !dev->header_ops->create)
-> > +       if (!dev || !dev->header_ops || !dev->header_ops->create)
-
-Do  you have a repro ?
-
-This patch will not prevent a crash later I think.
-
-Please fix the root cause, thanks !
-
-> >                 return 0;
->
-> net_device being NULL during eth header construction? seems like a
-> more serious issue?
-> If it indeed is a genuine scenario I think a better description is needed...
->
-> >
-> >         return dev->header_ops->create(skb, dev, type, daddr, saddr, len);
-> > --
-> > 2.31.1
-> >
+> >  .../jh7110-starfive-visionfive-v2.dts         | 46 +++++++++++++++++++
+> >  1 file changed, 46 insertions(+)
+> > 
+> > diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
+> > index c8946cf3a268..2868ef4c74ef 100644
+> > --- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
+> > +++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
+> > @@ -15,6 +15,8 @@
+> >  
+> >  	aliases {
+> >  		serial0 = &uart0;
+> > +		ethernet0=&gmac0;
+> > +		ethernet1=&gmac1;
+> 
+> Please match the whitespace usage of the existing entry.
+> 
+> >  	};
+> >  
+> >  	chosen {
+> > @@ -114,3 +116,47 @@
+> >  	pinctrl-0 = <&uart0_pins>;
+> >  	status = "okay";
+> >  };
+> > +
+> > +&gmac0 {
+> > +	status = "okay";
+> > +	#address-cells = <1>;
+> > +	#size-cells = <0>;
+> > +	phy-handle = <&phy0>;
+> > +	status = "okay";
+> > +	mdio0 {
+> 
+> A line of whitespace before the child nodes too please :)
+> 
+> > +		#address-cells = <1>;
+> > +		#size-cells = <0>;
+> > +		compatible = "snps,dwmac-mdio";
+> > +		phy0: ethernet-phy@0 {
+> > +			reg = <0>;
+> > +			rxc_dly_en = <1>;
+> > +			tx_delay_sel_fe = <5>;
+> > +			tx_delay_sel = <0xa>;
+> > +			tx_inverted_10 = <0x1>;
+> > +			tx_inverted_100 = <0x1>;
+> > +			tx_inverted_1000 = <0x1>;
+> > +		};
+> > +	};
+> > +};
+> > +
+> > +&gmac1 {
+> > +	status = "okay";
+> > +	#address-cells = <1>;
+> > +	#size-cells = <0>;
+> > +	phy-handle = <&phy1>;
+> > +	status = "okay";
+> > +	mdio1 {
+> > +		#address-cells = <1>;
+> > +		#size-cells = <0>;
+> > +		compatible = "snps,dwmac-mdio";
+> > +		phy1: ethernet-phy@1 {
+> > +			reg = <1>;
+> > +			tx_delay_sel_fe = <5>;
+> > +			tx_delay_sel = <0>;
+> > +			rxc_dly_en = <0>;
+> > +			tx_inverted_10 = <0x1>;
+> > +			tx_inverted_100 = <0x1>;
+> > +			tx_inverted_1000 = <0x0>;
+> > +		};
+> > +	};
+> > +};
+> > -- 
+> > 2.17.1
+> > 
