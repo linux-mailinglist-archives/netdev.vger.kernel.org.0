@@ -2,48 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B34C63E860
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 04:40:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE1163E86D
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 04:45:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbiLADku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 22:40:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
+        id S229619AbiLADpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 22:45:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiLADks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 22:40:48 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAEB70608
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 19:40:47 -0800 (PST)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NN1zm4Th1z15MvL;
-        Thu,  1 Dec 2022 11:40:04 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 1 Dec 2022 11:40:45 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 1 Dec
- 2022 11:40:44 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ioana.ciornei@nxp.com>,
-        <calvin.johnson@oss.nxp.com>, <grant.likely@arm.com>,
-        <zengheng4@huawei.com>
-Subject: [PATCH net v2] net: mdiobus: fix double put fwnode in the error path
-Date:   Thu, 1 Dec 2022 11:38:38 +0800
-Message-ID: <20221201033838.1938765-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229704AbiLADpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 22:45:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9054A9076A
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 19:45:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A10AB81D17
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 03:45:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C54C433C1;
+        Thu,  1 Dec 2022 03:45:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669866307;
+        bh=o5sBlsB/l7hjLFxDG2yD3RquRL+oFmftY6L8rt/3IeY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bTH/mbVvrC1ueKELF734XZqauOa8StWinC3jkHWGZ4QnbMHJaSn3nJclFIpvv/ti9
+         K44AAsqI1eT9pg9jZeHaiAGkX4dZA8L6hooPDth/pmgw5ICA6XejmZ8DBjNoPlYcuz
+         ZxkFFU7tUAKfdyg3CphfDoorQo8PH2Ehi59uRYa/mg2YRBufkb8ZdncfPbxiX0/JC/
+         bGB8LNOWwXQ01TSKg7FudRmRfmiM/HoLPlZBMB+1ota1Om9b2AvV16RR6DSlmlNW1J
+         KwHrhVEleRGd3v1gONp1b4tQD4jk0mNYhFvoJ8ZNJp0qQi23iFAASKiZfmp5X0Z4Uf
+         xeU4CSY/B0gCg==
+Date:   Wed, 30 Nov 2022 19:45:06 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shannon Nelson <shnelson@amd.com>
+Cc:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
+        davem@davemloft.net, mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org, drivers@pensando.io
+Subject: Re: [RFC PATCH net-next 08/19] pds_core: initial VF configuration
+Message-ID: <20221130194506.642031db@kernel.org>
+In-Reply-To: <b839c112-df1f-a36a-0d89-39b336956492@amd.com>
+References: <20221118225656.48309-1-snelson@pensando.io>
+        <20221118225656.48309-9-snelson@pensando.io>
+        <20221128102828.09ed497a@kernel.org>
+        <d24a9900-154f-ad3a-fef4-73a57f0cddb0@amd.com>
+        <20221128153719.2b6102cc@kernel.org>
+        <75072b2a-0b69-d519-4174-6d61d027f7d4@amd.com>
+        <20221128165522.62dcd7be@kernel.org>
+        <51330a32-1fa1-cc0f-e06e-b4ac351cb820@amd.com>
+        <20221128175448.3723f5ee@kernel.org>
+        <fbf3266c-f125-c01a-fcc3-dc16b4055ed5@amd.com>
+        <20221129180250.3320da56@kernel.org>
+        <b839c112-df1f-a36a-0d89-39b336956492@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,45 +64,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If phy_device_register() or fwnode_mdiobus_phy_device_register()
-fail, phy_device_free() is called, the device refcount is decreased
-to 0, then fwnode_handle_put() will be called in phy_device_release(),
-but in the error path, fwnode_handle_put() has already been called,
-so set fwnode to NULL after fwnode_handle_put() in the error path to
-avoid double put.
+On Wed, 30 Nov 2022 16:12:23 -0800 Shannon Nelson wrote:
+> > Enough back and forth. I'm not going to come up with a special model
+> > just for you when a model already exists, and you present no technical
+> > argument against it.
+> > 
+> > I am against merging your code, if you want to override find other
+> > vendors and senior upstream reviewers who will side with you.  
+> 
+> We're not asking for a special model, just to use the PF interface to 
+> configure VFs as has been the practice in the past.
 
-Fixes: cdde1560118f ("net: mdiobus: fix unbalanced node reference count")
-Reported-by: Zeng Heng <zengheng4@huawei.com>
-Tested-by: Zeng Heng <zengheng4@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v1 -> v2:
-  Don't remove fwnode_handle_put() in the error path,
-  set fwnode to NULL avoid double put.
----
- drivers/net/mdio/fwnode_mdio.c | 2 ++
- 1 file changed, 2 insertions(+)
+It simply does not compute for me. You're exposing a very advanced vDPA
+interface, and yet you say you don't need any network configuration
+beyond what Niantic had.
 
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index eb344f6d4a7b..9df618577712 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -99,6 +99,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
- 	rc = phy_device_register(phy);
- 	if (rc) {
- 		fwnode_handle_put(child);
-+		device_set_node(&phy->mdio.dev, NULL);
- 		return rc;
- 	}
- 
-@@ -154,6 +155,7 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 		rc = phy_device_register(phy);
- 		if (rc) {
- 			fwnode_handle_put(phy->mdio.dev.fwnode);
-+			phy->mdio.dev.fwnode = NULL;
- 			goto clean_phy;
- 		}
- 	} else if (is_of_node(child)) {
--- 
-2.25.1
+There are no upstream-minded users of IPUs, if it was up to me I'd flat
+out ban them from the kernel.
 
+> Anyway, this feature can wait and we can work out alternatives later. 
+> For now, we'll drop the netdev portion from the driver and rework the 
+> other bits as discussed in other messages.  I'll likely have a v2 for 
+> comments sometime next week.
+
+Seems reasonable, if it doesn't live in networking and doesn't use any
+networking APIs it won't matter to me.
