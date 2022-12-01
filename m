@@ -2,56 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D77563F644
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 18:39:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7941363F6B6
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 18:48:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230159AbiLARjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 12:39:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56884 "EHLO
+        id S231152AbiLARsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 12:48:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230139AbiLARjL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 12:39:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7E6A4334;
-        Thu,  1 Dec 2022 09:39:08 -0800 (PST)
+        with ESMTP id S230017AbiLARrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 12:47:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F38B955D;
+        Thu,  1 Dec 2022 09:45:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68584B81FC1;
-        Thu,  1 Dec 2022 17:39:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9063C433C1;
-        Thu,  1 Dec 2022 17:39:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D87D062094;
+        Thu,  1 Dec 2022 17:45:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1559DC433B5;
+        Thu,  1 Dec 2022 17:45:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669916346;
-        bh=EQiwzs8F1/qVmkVpXCClLWzdE+Wc1pX7zMIG7mNXbv8=;
+        s=k20201202; t=1669916752;
+        bh=diJq5nKrbt92ecplLzYvhikaJNLRnOYzNpmxyjrLq1o=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QS9dXU4QLiEZW5ErRsJA5lWiHpLrRUa1h5LOICfJ36ph0K51kSOFwnbiFC/3pn1u+
-         R5++oOy+mQtkZr3a5f14FktlINBt20oLbSN/rIhR2iM7JN2qRw974J2bWG5q6ZqNQi
-         EfYyjAJQaADJSs9JW2nutw7ZaGoA6qj0kRm9wVBWAPN91zlEkv8JvQU0U6yJK87mmh
-         dd2628oqaGM2OwpilLKvys6RYmdC5rRyG8gBoG9MA5Ue7Y3+bceY+QCC1KN5p6uk2d
-         W96pSkpEYanCf3kn6sw1218+juUkxA91q7GIHAuhCnkY3WscYQxFt4vkp4Uk62hssS
-         QXYdhW/LHL3pA==
-Received: by pali.im (Postfix)
-        id C653C5CD; Thu,  1 Dec 2022 18:39:02 +0100 (CET)
-Date:   Thu, 1 Dec 2022 18:39:02 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Subject: Re: [PATCH 5/5] powerpc: dts: remove label = "cpu" from DSA
- dt-binding
-Message-ID: <20221201173902.zrtpeq4mkk3i3vpk@pali>
-References: <20221130141040.32447-1-arinc.unal@arinc9.com>
- <20221130141040.32447-6-arinc.unal@arinc9.com>
- <87a647s8zg.fsf@mpe.ellerman.id.au>
+        b=IJZZ9Cl/vvp5kYzx9XhdC1nEFqIeiWUf6wKNqyOId3y0wIY3M8frb1c6Hynzh9wM4
+         0Tj67odSTEFxeyKh/stoMFBJlfxoq7wLFYPDqz5PA9iIGMYiSLfXfjLfjNK4X+Clqp
+         2OQL9zx7h9jA4RQViXW+cpfHtyOchkLIw/MCZX+WAdlnWoDiRptnm4Q00N8ZIRR/Nj
+         ZOdkU9WRrXsk0p9lqSNvhhXytHk2q04yDz708B+3Dz9ojde+5d9CXSSnR/1LqHH3Kt
+         GIN+3saySD/4oFnvf9rvS0LzVC+T6oGwccOFJMdGXRwP6xrLiyxHtkAuLwh2jJ3ADQ
+         SMzTEeO0ddbLg==
+Date:   Thu, 1 Dec 2022 17:45:46 +0000
+From:   Conor Dooley <conor@kernel.org>
+To:     Yanhong Wang <yanhong.wang@starfivetech.com>
+Cc:     linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+Subject: Re: [PATCH v1 6/7] riscv: dts: starfive: jh7110: Add ethernet device
+ node
+Message-ID: <Y4joSiz0gKvyuecn@spud>
+References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
+ <20221201090242.2381-7-yanhong.wang@starfivetech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87a647s8zg.fsf@mpe.ellerman.id.au>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20221201090242.2381-7-yanhong.wang@starfivetech.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,65 +65,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday 01 December 2022 21:40:03 Michael Ellerman wrote:
-> Arınç ÜNAL <arinc.unal@arinc9.com> writes:
-> > This is not used by the DSA dt-binding, so remove it from all devicetrees.
-> >
-> > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> > ---
-> >  arch/powerpc/boot/dts/turris1x.dts | 2 --
-> >  1 file changed, 2 deletions(-)
+On Thu, Dec 01, 2022 at 05:02:41PM +0800, Yanhong Wang wrote:
+> Add JH7110 ethernet device node to support gmac driver for the JH7110
+> RISC-V SoC.
 > 
-> Adding Pali to Cc.
+> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
+> ---
+>  arch/riscv/boot/dts/starfive/jh7110.dtsi | 80 ++++++++++++++++++++++++
+>  1 file changed, 80 insertions(+)
 > 
-> These were only recently updated in commit:
-> 
->   8bf056f57f1d ("powerpc: dts: turris1x.dts: Fix labels in DSA cpu port nodes")
-> 
-> Which said:
-> 
->   DSA cpu port node has to be marked with "cpu" label.
-> 
-> But if the binding doesn't use them then I'm confused why they needed to
-> be updated.
-> 
-> cheers
+> diff --git a/arch/riscv/boot/dts/starfive/jh7110.dtsi b/arch/riscv/boot/dts/starfive/jh7110.dtsi
+> index c22e8f1d2640..97ed5418d91f 100644
+> --- a/arch/riscv/boot/dts/starfive/jh7110.dtsi
+> +++ b/arch/riscv/boot/dts/starfive/jh7110.dtsi
+> @@ -433,5 +433,85 @@
+>  			reg-shift = <2>;
+>  			status = "disabled";
+>  		};
+> +
+> +		stmmac_axi_setup: stmmac-axi-config {
+> +			snps,wr_osr_lmt = <4>;
+> +			snps,rd_osr_lmt = <4>;
+> +			snps,blen = <256 128 64 32 0 0 0>;
+> +		};
+> +
+> +		gmac0: ethernet@16030000 {
+> +			compatible = "starfive,dwmac", "snps,dwmac-5.20";
+> +			reg = <0x0 0x16030000 0x0 0x10000>;
+> +			clocks = <&aoncrg JH7110_AONCLK_GMAC0_AXI>,
+> +				 <&aoncrg JH7110_AONCLK_GMAC0_AHB>,
+> +				 <&syscrg JH7110_SYSCLK_GMAC0_PTP>,
+> +				 <&aoncrg JH7110_AONCLK_GMAC0_TX>,
+> +				 <&syscrg JH7110_SYSCLK_GMAC0_GTXC>,
+> +				 <&syscrg JH7110_SYSCLK_GMAC0_GTXCLK>;
+> +			clock-names = "stmmaceth",
+> +					"pclk",
+> +					"ptp_ref",
+> +					"tx",
+> +					"gtxc",
+> +					"gtx";
 
-I was told by Marek (CCed) that DSA port connected to CPU should have
-label "cpu" and not "cpu<number>". Modern way for specifying CPU port is
-by defining reference to network device, which there is already (&enet1
-and &enet0). So that change just "fixed" incorrect naming cpu0 and cpu1.
+Can you sort this into fewer lines please?
 
-So probably linux kernel does not need label = "cpu" in DTS anymore. But
-this is not the reason to remove this property. Linux kernel does not
-use lot of other nodes and properties too... Device tree should describe
-hardware and not its usage in Linux. "label" property is valid in device
-tree and it exactly describes what or where is this node connected. And
-it may be used for other systems.
+> +			resets = <&aoncrg JH7110_AONRST_GMAC0_AXI>,
+> +				 <&aoncrg JH7110_AONRST_GMAC0_AHB>;
+> +			reset-names = "stmmaceth", "ahb";
+> +			interrupts = <7>, <6>, <5> ;
 
-So I do not see a point in removing "label" properties from turris1x.dts
-file, nor from any other dts file.
+Please also remove the space before the ;
 
+> +			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
+
+The answer is probably "the dw driver needs this" but my OCD really
+hates "macirq" vs "eth_wake_irq"..
+
+> +			phy-mode = "rgmii-id";
+> +			snps,multicast-filter-bins = <64>;
+> +			snps,perfect-filter-entries = <8>;
+> +			rx-fifo-depth = <2048>;
+> +			tx-fifo-depth = <2048>;
+> +			snps,fixed-burst;
+> +			snps,no-pbl-x8;
+> +			snps,force_thresh_dma_mode;
+> +			snps,axi-config = <&stmmac_axi_setup>;
+> +			snps,tso;
+> +			snps,en-tx-lpi-clockgating;
+> +			snps,lpi_en;
+> +			snps,txpbl = <16>;
+> +			snps,rxpbl = <16>;
+> +			status = "disabled";
+> +		};
+> +
+> +		gmac1: ethernet@16040000 {
+> +			compatible = "starfive,dwmac", "snps,dwmac-5.20";
+> +			reg = <0x0 0x16040000 0x0 0x10000>;
+> +			clocks = <&syscrg JH7110_SYSCLK_GMAC1_AXI>,
+> +				 <&syscrg JH7110_SYSCLK_GMAC1_AHB>,
+> +				 <&syscrg JH7110_SYSCLK_GMAC1_PTP>,
+> +				 <&syscrg JH7110_SYSCLK_GMAC1_TX>,
+> +				 <&syscrg JH7110_SYSCLK_GMAC1_GTXC>,
+> +				 <&syscrg JH7110_SYSCLK_GMAC1_GTXCLK>;
+> +			clock-names = "stmmaceth",
+> +					"pclk",
+> +					"ptp_ref",
+> +					"tx",
+> +					"gtxc",
+> +					"gtx";
+> +			resets = <&syscrg JH7110_SYSRST_GMAC1_AXI>,
+> +				 <&syscrg JH7110_SYSRST_GMAC1_AHB>;
+> +			reset-names = "stmmaceth", "ahb";
+> +			interrupts = <78>, <77>, <76> ;
+
+Same comments for this node.
+
+> +			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
+> +			phy-mode = "rgmii-id";
+> +			snps,multicast-filter-bins = <64>;
+> +			snps,perfect-filter-entries = <8>;
+> +			rx-fifo-depth = <2048>;
+> +			tx-fifo-depth = <2048>;
+> +			snps,fixed-burst;
+> +			snps,no-pbl-x8;
+> +			snps,force_thresh_dma_mode;
+> +			snps,axi-config = <&stmmac_axi_setup>;
+> +			snps,tso;
+> +			snps,en-tx-lpi-clockgating;
+> +			snps,lpi_en;
+> +			snps,txpbl = <16>;
+> +			snps,rxpbl = <16>;
+> +			status = "disabled";
+> +		};
+>  	};
+>  };
+> -- 
+> 2.17.1
 > 
-> > diff --git a/arch/powerpc/boot/dts/turris1x.dts b/arch/powerpc/boot/dts/turris1x.dts
-> > index 045af668e928..3841c8d96d00 100644
-> > --- a/arch/powerpc/boot/dts/turris1x.dts
-> > +++ b/arch/powerpc/boot/dts/turris1x.dts
-> > @@ -147,7 +147,6 @@ ports {
-> >  
-> >  					port@0 {
-> >  						reg = <0>;
-> > -						label = "cpu";
-> >  						ethernet = <&enet1>;
-> >  						phy-mode = "rgmii-id";
-> >  
-> > @@ -184,7 +183,6 @@ port@5 {
-> >  
-> >  					port@6 {
-> >  						reg = <6>;
-> > -						label = "cpu";
-> >  						ethernet = <&enet0>;
-> >  						phy-mode = "rgmii-id";
-> >  
-> > -- 
-> > 2.34.1
