@@ -2,263 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F319163E7F4
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 03:40:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86D9A63E7F6
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 03:41:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbiLACj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 21:39:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
+        id S229686AbiLAClM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 21:41:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiLACj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 21:39:56 -0500
-Received: from pv50p00im-ztdg10011201.me.com (pv50p00im-ztdg10011201.me.com [17.58.6.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A276A76C
-        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 18:39:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
-        s=sig1; t=1669862394;
-        bh=vVzCkNibPb24yKs1Ys7tKLpUoqZjpBwIEYhRVWu8Mng=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=ETeO8VXzTbHIBsYKIyZ8oDj1h+NtJlzNgAkY+XB0ctRKE2jwlmL7GJhHKs2gTspUJ
-         VrtmXPNckrBix1mb6rJRv++hH3SOevqd60j02vwmG9wq0r9SNdA5bbeqRUBY9KxnS5
-         pmEskund6RIEfdlJYdIMlYCc+WSa+Nousp/HydTjiP7ZK3aXeWhmddXk+o4/n+kLvQ
-         fL+zHZieoUSOYzWHAsXFI0hNKXveD50UK8Y4KWlbC9nO8tm8yKhTrJqDR497Hdvvg/
-         8+kJsWuEuKMJmrSCYREdXQlGXMPwwMYOJhi4KxHlsoInh84rVP9o3pAss0j/pU/E4f
-         cm/E2jdP4c5Yg==
-Received: from vanilla.lan (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-        by pv50p00im-ztdg10011201.me.com (Postfix) with ESMTPSA id 08C1468086F;
-        Thu,  1 Dec 2022 02:39:50 +0000 (UTC)
-From:   Jun ASAKA <JunASAKA@zzy040330.moe>
-To:     Jes.Sorensen@gmail.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jun ASAKA <JunASAKA@zzy040330.moe>
-Subject: [PATCH v2] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
-Date:   Thu,  1 Dec 2022 10:39:45 +0800
-Message-Id: <20221201023945.6221-1-JunASAKA@zzy040330.moe>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229568AbiLAClL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 21:41:11 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0F292A18
+        for <netdev@vger.kernel.org>; Wed, 30 Nov 2022 18:41:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Z119mBHaDUIx022QrJyyWWTx8egNlcqNB0hI0mHimos=; b=r1RMdjUI2ZoHFprdi6+FSev6BB
+        9iMLW+lpSuX/2yXjDkWQ7sWOBcVgXbLbUXDEApxrjDD95f78mnElzSPw+LNMxed4spO6/yMXC2ZEr
+        x5A/Vm2pp7u5cKInlF12fyQ5lgg/5S0P5F1Gt7mGNuihdCBDnzeyrssVHk5swKmLPFs0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p0ZVY-0041Vs-Bv; Thu, 01 Dec 2022 03:41:04 +0100
+Date:   Thu, 1 Dec 2022 03:41:04 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ioana.ciornei@nxp.com,
+        calvin.johnson@oss.nxp.com, grant.likely@arm.com,
+        zengheng4@huawei.com
+Subject: Re: [PATCH net] net: mdiobus: remove unneccessary
+ fwnode_handle_put() in the error path
+Message-ID: <Y4gUQC+Gh4b/lr5f@lunn.ch>
+References: <20221130091759.682841-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: 8FEZjWgBZwtKgnkexNtTHi6qyjrbNltU
-X-Proofpoint-GUID: 8FEZjWgBZwtKgnkexNtTHi6qyjrbNltU
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.11.64.514.0000000_definitions?=
- =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2022-02-23?=
- =?UTF-8?Q?=5F01_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 spamscore=0
- adultscore=0 mlxlogscore=659 phishscore=0 mlxscore=0 clxscore=1030
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2212010014
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLACK autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221130091759.682841-1-yangyingliang@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixing "Path A RX IQK failed" and "Path B RX IQK failed"
-issues for rtl8192eu chips by replacing the arguments with
-the ones in the updated official driver as shown below.
-1. https://github.com/Mange/rtl8192eu-linux-driver
-2. vendor driver version: 4.3.1.1
+On Wed, Nov 30, 2022 at 05:17:59PM +0800, Yang Yingliang wrote:
+> If phy_device_register() or fwnode_mdiobus_phy_device_register()
+> fail, phy_device_free() is called, the device refcount is decreased
+> to 0, then fwnode_handle_put() is called in phy_device_release(),
+> so the fwnode_handle_put() in the error path can be removed to avoid
+> double put.
+> 
+> Fixes: cdde1560118f ("net: mdiobus: fix unbalanced node reference count")
+> Reported-by: Zeng Heng <zengheng4@huawei.com>
+> Tested-by: Zeng Heng <zengheng4@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/net/mdio/fwnode_mdio.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+> index eb344f6d4a7b..e584abda585b 100644
+> --- a/drivers/net/mdio/fwnode_mdio.c
+> +++ b/drivers/net/mdio/fwnode_mdio.c
+> @@ -97,10 +97,8 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+>  	 * register it
+>  	 */
+>  	rc = phy_device_register(phy);
+> -	if (rc) {
+> -		fwnode_handle_put(child);
+> +	if (rc)
+>  		return rc;
+> -	}
 
-Tested-by: Jun ASAKA <JunASAKA@zzy040330.moe>
-Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
----
-v2: 
- - add detailed info about the newer version this patch used.
- - no functional update.
----
-.../realtek/rtl8xxxu/rtl8xxxu_8192e.c         | 76 +++++++++++++------
- 1 file changed, 54 insertions(+), 22 deletions(-)
+The current code is:
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-index b06508d0cd..82346500f2 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-@@ -734,6 +734,12 @@ static int rtl8192eu_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	 */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_DF, 0x00180);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x20000);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0x07f77);
-+
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
- 
- 	/* Path A IQK setting */
-@@ -779,11 +785,16 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
--	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf117b);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf1173);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf1173);
- 
- 	/* PA/PAD control by 0x56, and set = 0x0 */
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_DF, 0x00980);
--	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x51000);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x511e0);
- 
- 	/* Enter IQK mode */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-@@ -798,14 +809,14 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c1f);
--	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x68160c1f);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x8216031f);
-+	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x6816031f);
- 
- 	/* LO calibration setting */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
- 
- 	/* One shot, path A LOK & IQK */
--	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
-+	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
- 
- 	mdelay(10);
-@@ -836,11 +847,16 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
--	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7ffa);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7ff2);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
- 
- 	/* PA/PAD control by 0x56, and set = 0x0 */
- 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_DF, 0x00980);
--	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x51000);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_UNKNOWN_56, 0x510e0);
- 
- 	/* Enter IQK mode */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-@@ -854,14 +870,14 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c1f);
--	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x28160c1f);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x821608ff);
-+	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x281608ff);
- 
- 	/* LO calibration setting */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a891);
- 
- 	/* One shot, path A LOK & IQK */
--	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
-+	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
- 
- 	mdelay(10);
-@@ -891,22 +907,28 @@ static int rtl8192eu_iqk_path_b(struct rtl8xxxu_priv *priv)
- 
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00180);
--	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
- 
--	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x20000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0x07f77);
-+
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
- 
-+	// rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
-+	// rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-+
- 	/* Path B IQK setting */
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x18008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x821403e2);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82140303);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x68160000);
- 
- 	/* LO calibration setting */
--	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00492911);
-+	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00462911);
- 
- 	/* One shot, path A LOK & IQK */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
-@@ -942,11 +964,16 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
--	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf117b);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf1173);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf1173);
- 
- 	/* PA/PAD control by 0x56, and set = 0x0 */
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00980);
--	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x51000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x511e0);
- 
- 	/* Enter IQK mode */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-@@ -961,8 +988,8 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x18008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x38008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82160c1f);
--	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x68160c1f);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x8216031f);
-+	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x6816031f);
- 
- 	/* LO calibration setting */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
-@@ -1002,11 +1029,16 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
--	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ffa);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
-+
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
- 
- 	/* PA/PAD control by 0x56, and set = 0x0 */
- 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_DF, 0x00980);
--	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x51000);
-+	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_UNKNOWN_56, 0x510e0);
- 
- 	/* Enter IQK mode */
- 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
-@@ -1020,8 +1052,8 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
- 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_B, 0x18008c1c);
- 
--	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82160c1f);
--	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x28160c1f);
-+	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x821608ff);
-+	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x281608ff);
- 
- 	/* LO calibration setting */
- 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a891);
--- 
-2.38.1
+        /* Associate the fwnode with the device structure so it
+         * can be looked up later
+         */
+        fwnode_handle_get(child);
+        device_set_node(&phy->mdio.dev, child);
 
+        /* All data is now stored in the phy struct;
+         * register it
+         */
+        rc = phy_device_register(phy);
+        if (rc) {
+                fwnode_handle_put(child);
+                return rc;
+        }
+
+The fwnode_handle_put(child) balances the earlier
+fwnode_handle_get(child).
+
+The code will look wrong without this balance. Please find a better
+fix which actually looks correct.
+
+    Andrew
