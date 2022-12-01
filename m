@@ -2,88 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C46CD63EC63
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:25:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE18A63EC93
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:32:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229575AbiLAJZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 04:25:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
+        id S230180AbiLAJcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 04:32:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiLAJZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:25:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F122A29A
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 01:24:09 -0800 (PST)
+        with ESMTP id S230190AbiLAJcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:32:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05D7900E6
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 01:31:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669886648;
+        s=mimecast20190719; t=1669887061;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UgJ+HDh8KhhTBQLgmfONT+YSYAYl+JCf9dmOxyoPJKY=;
-        b=N1/PSGKv5YW8MDhRPCJ4zKklu1dF0Tjsd4HUfWspcu25TULowDZN4Pie1P80aAWt63TSrG
-        H5P+jRh5GB1Vl0+L7ylyW2RjEira1PWDo1JAKf6Sxj/+3PwCTX8OFB52wcrXL5RfaBVp5n
-        LTYV8bNuEa9LXHzlkJ0gsCFN53P0KbU=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=u/iFWcb6lk61NYrGYwPNwjbI1wwMR1ABxD7gcOpCxTQ=;
+        b=ATWss8eCe1KOpQaTLdFJyWrlwQ/GFNVcaGr+8hoIbpc0A1ON5c14c6wijblvK8eVcsLYIp
+        ji1lY3izqa6V+4lHZiqzvIFhPg/5KAY8byLx42aGSfXZRRwPd/sMiUmG+INV1k9Yx8yEdb
+        Til1CW21TiYfoHfStA+1kjG/RsECDwU=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-526-eSrtFOxLNdOOjcNrf1Iqgg-1; Thu, 01 Dec 2022 04:24:06 -0500
-X-MC-Unique: eSrtFOxLNdOOjcNrf1Iqgg-1
-Received: by mail-wm1-f72.google.com with SMTP id j2-20020a05600c1c0200b003cf7397fc9bso592553wms.5
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 01:24:06 -0800 (PST)
+ us-mta-459-0Bk-GQlPPMW13BrIDEuV-g-1; Thu, 01 Dec 2022 04:31:00 -0500
+X-MC-Unique: 0Bk-GQlPPMW13BrIDEuV-g-1
+Received: by mail-qt1-f199.google.com with SMTP id k1-20020ac84781000000b003a6894cdd5eso2988526qtq.14
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 01:30:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UgJ+HDh8KhhTBQLgmfONT+YSYAYl+JCf9dmOxyoPJKY=;
-        b=6QHV5UPoU0A+50Xr711rWj0MF/hmcCxhBM+orykZjPMCImexviZ9DL+3E3Z5dQjaPf
-         XQkRvKlBNN0sssEiB7Bhh5UNVn8E9vpSi6p98bE6BIh+WFMcMfHeAkQR2vghf0kUEj39
-         PZ9pvbiD6Vzl8YgO1JVthClSJjZT3B/5oanyrZ1xNKr87CMleFT8k8GydBWia/LAQjWC
-         L5Y8IPfPGdpIJjgQQNWxHKh3i8irRm3RoVHqEKVe1/AhcSWsRNOM7RoEv0VSkvYag4LH
-         RiphohVlOQ3MKZF2PiAiVTQ9GgNksBOXT3SJOnSdmaP/SwQ0UKh9hfQoApjpAeKQr99o
-         vgtQ==
-X-Gm-Message-State: ANoB5plJB7QNMJ6fGU8qOVULrdYuRGZx9jM+ZrbfwZeZ5g16izFyRyP+
-        Bh2dVeatTZHAy1icVB0UVBu5vlBZCx6SEvn1Gkj/D6/NuyacVcVD9cfCiuSPL7QFZLWJGQlKO87
-        q42EC96cH/rYRksrf
-X-Received: by 2002:a5d:4ccb:0:b0:236:d611:4fcf with SMTP id c11-20020a5d4ccb000000b00236d6114fcfmr29574587wrt.192.1669886645078;
-        Thu, 01 Dec 2022 01:24:05 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf51AfiJW8ivh3gMCG70OBpMd9MsL8P1xJEHEG5W9Kg8EmdeOizi/C3u9PaCATJ6V1Bz8hc4Hw==
-X-Received: by 2002:a5d:4ccb:0:b0:236:d611:4fcf with SMTP id c11-20020a5d4ccb000000b00236d6114fcfmr29574568wrt.192.1669886644807;
-        Thu, 01 Dec 2022 01:24:04 -0800 (PST)
-Received: from sgarzare-redhat (host-82-53-134-234.retail.telecomitalia.it. [82.53.134.234])
-        by smtp.gmail.com with ESMTPSA id l5-20020a5d5605000000b002367ad808a9sm3868673wrv.30.2022.12.01.01.24.03
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=u/iFWcb6lk61NYrGYwPNwjbI1wwMR1ABxD7gcOpCxTQ=;
+        b=Jdeet7nryPmCWEATCD6FqkQDdUuHXnU6GEBefXI9qlLfUi6UAl7VseV/Z6faUXOaR8
+         2TqIfRxOrFII1BqBJIq+nbMq5xnfN0IB6fMDThHdYuvNEbC/l8U+YFFxrdQ7B4RRaX4G
+         j9ORLXYwq5P733KiyWaDzrBNKz1sgk3z2XMH8Q+N7S0kw3NMLjpMM1abl2Cx+vSmu9i9
+         m5L4l8Fi3oXqevyb0eDz0CmCB7VhVQYbk5cKFq9ucnoQXTULJXdx2tXhfOZ4SvUnF9+S
+         bwTou0ythpDDMnsnkimVAEEAR/kY7/jGWz9iCtd+NhMd5erjHZ8r94qUx4KBMeHsmX/U
+         YGhg==
+X-Gm-Message-State: ANoB5plCgi5gL+8mtgK+bGcGW8QtcAusqWlfeCOnksSVIWmzYlf7DVFw
+        OX637YDt1HwxfC8xvCBz2K3sM8g3H5G2rBO0ihUZ+VDt6DmVyoqHDw3nWIYzqBozmQPsBbbw9Xa
+        8hUH9hDOIXuGnBo2h
+X-Received: by 2002:a05:620a:1466:b0:6fc:9f27:751c with SMTP id j6-20020a05620a146600b006fc9f27751cmr4769323qkl.581.1669887059042;
+        Thu, 01 Dec 2022 01:30:59 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6ObInhKxnj+Y8OIfwAyq8W7j4ejraBLHWb4dyLVbolMXGenjKm5xLcYanZOa6a9oq8denEYg==
+X-Received: by 2002:a05:620a:1466:b0:6fc:9f27:751c with SMTP id j6-20020a05620a146600b006fc9f27751cmr4769304qkl.581.1669887058806;
+        Thu, 01 Dec 2022 01:30:58 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-120-203.dyn.eolo.it. [146.241.120.203])
+        by smtp.gmail.com with ESMTPSA id g8-20020a05620a40c800b006cebda00630sm3334156qko.60.2022.12.01.01.30.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Dec 2022 01:24:04 -0800 (PST)
-Date:   Thu, 1 Dec 2022 10:23:30 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Dexuan Cui <decui@microsoft.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v2 2/6] hv_sock: always return ENOMEM in case of error
-Message-ID: <20221201092330.ia5addl4sgw7fhk2@sgarzare-redhat>
-References: <9d96f6c6-1d4f-8197-b3bc-8957124c8933@sberdevices.ru>
- <a10ffbed-848d-df8c-ec4e-ba25c4c8e3e8@sberdevices.ru>
+        Thu, 01 Dec 2022 01:30:58 -0800 (PST)
+Message-ID: <7f1277b54a76280cfdaa25d0765c825d665146b9.camel@redhat.com>
+Subject: Re: [PATCH net v2] unix: Fix race in SOCK_SEQPACKET's
+ unix_dgram_sendmsg()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Kirill Tkhai <tkhai@ya.ru>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Date:   Thu, 01 Dec 2022 10:30:55 +0100
+In-Reply-To: <bd4d533b-15d2-6c0a-7667-70fd95dbea20@ya.ru>
+References: <bd4d533b-15d2-6c0a-7667-70fd95dbea20@ya.ru>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <a10ffbed-848d-df8c-ec4e-ba25c4c8e3e8@sberdevices.ru>
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -94,34 +79,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 25, 2022 at 05:05:53PM +0000, Arseniy Krasnov wrote:
->From: Bobby Eshleman <bobby.eshleman@bytedance.com>
->
->This saves original behaviour from af_vsock.c - switch any error
->code returned from transport layer to ENOMEM.
->
->Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> net/vmw_vsock/hyperv_transport.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
->index 59c3e2697069..fbbe55133da2 100644
->--- a/net/vmw_vsock/hyperv_transport.c
->+++ b/net/vmw_vsock/hyperv_transport.c
->@@ -687,7 +687,7 @@ static ssize_t hvs_stream_enqueue(struct vsock_sock *vsk, struct msghdr *msg,
-> 	if (bytes_written)
-> 		ret = bytes_written;
-> 	kfree(send_buf);
->-	return ret;
->+	return ret < 0 ? -ENOMEM : ret;
+On Sun, 2022-11-27 at 01:46 +0300, Kirill Tkhai wrote:
+> There is a race resulting in alive SOCK_SEQPACKET socket
+> may change its state from TCP_ESTABLISHED to TCP_CLOSE:
+> 
+> unix_release_sock(peer)                  unix_dgram_sendmsg(sk)
+>   sock_orphan(peer)
+>     sock_set_flag(peer, SOCK_DEAD)
+>                                            sock_alloc_send_pskb()
+>                                              if !(sk->sk_shutdown & SEND_SHUTDOWN)
+>                                                OK
+>                                            if sock_flag(peer, SOCK_DEAD)
+>                                              sk->sk_state = TCP_CLOSE
+>   sk->sk_shutdown = SHUTDOWN_MASK
+> 
+> 
+> After that socket sk remains almost normal: it is able to connect, listen, accept
+> and recvmsg, while it can't sendmsg.
+> 
+> Since this is the only possibility for alive SOCK_SEQPACKET to change
+> the state in such way, we should better fix this strange and potentially
+> danger corner case.
+> 
+> Also, move TCP_CLOSE assignment for SOCK_DGRAM sockets under state lock
+> to fix race with unix_dgram_connect():
+> 
+> unix_dgram_connect(other)            unix_dgram_sendmsg(sk)
+>                                        unix_peer(sk) = NULL
+>                                        unix_state_unlock(sk)
+>   unix_state_double_lock(sk, other)
+>   sk->sk_state  = TCP_ESTABLISHED
+>   unix_peer(sk) = other
+>   unix_state_double_unlock(sk, other)
+>                                        sk->sk_state  = TCP_CLOSED
+> 
+> This patch fixes both of these races.
+> 
+> Fixes: 83301b5367a9 ("af_unix: Set TCP_ESTABLISHED for datagram sockets too")
 
-I'm not sure for hyperv we want to preserve -ENOMEM. This transport was 
-added after virtio-vsock, so I think we can return the error directly.
+I don't think this commmit introduces the issues, both behavior
+described above appear to be present even before?
 
-@Dexuan what do you think?
 
-Thanks,
-Stefano
+Thank!
+
+Paolo
 
