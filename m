@@ -2,190 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8F263F608
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 18:14:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9434963F62C
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 18:34:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbiLAROX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 12:14:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35918 "EHLO
+        id S229989AbiLARe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 12:34:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiLAROW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 12:14:22 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C481AC6F5
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 09:14:21 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id c7so1443798iof.13
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 09:14:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=fxCmfBah9ZMYfRaa3VChKHviqburNhg5/RwvVPix2pc=;
-        b=gU/Yux4O9DYTa2mEHOvL6QQ1GsOU9kvJDJpVRneXLc+UrZWEe9lmn7TrLhQQEKwssr
-         5hk782/etlINnAftOyVnywjecVn9OLuRMzHBIfrcsIiIf5tLgFYKQrIgOYo6ksP+aqal
-         cFqq1uvcrjlDSS6r0i8iwRHNhH+si8yhszvrOIvREBPmCRLiN/RIc+zDAZMbwQeEQUTm
-         WSt88h777LdqwmpX0eJDNWCSd8lv169bUMnLPK4aa7lVqgiSp/hkHLKrtyUQXQ84w+DB
-         Hyc9ErsEH9sf/xrk5wHwWY8hJ8sV7MByqgwEnfOMT4vLGcWTzukRMYBtfvb2SsLcCJxo
-         FxLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=fxCmfBah9ZMYfRaa3VChKHviqburNhg5/RwvVPix2pc=;
-        b=4k9cpmQ28dAkPwTXEoDZluhz6REVY8BbL8cL0OEuQxcnm9qUY38scNJy/ZFuAKoefW
-         fp7NGLXAPQlIo2/ncXE+VDKJ+2DrspraL4D3kbgfWovd0YID0kVY1pRECDiyeMORKXz/
-         WYHXzHZWikuZ05rWay+6NjarGRqII7fs84v1xMkcAHgR/TVCOAu/MViPEDe1SWqqkb1M
-         w5gtzZE/WMC/DWt1FG51A9XewpHO3M7K79mdQTA7AsV1QJ5ao8A02w9ktopRrJgKIsku
-         ePWdaX+5iwvJt6KD2BPLk+3mQCXyHSPR+AVY1yh3YTQwzFrSEAgTFrWRVTKPlSNeXOh9
-         i91A==
-X-Gm-Message-State: ANoB5pn+bszLDjFfc1WHrSNb5fWEOtsiQ/LxuvzynDdbfCIwUuszR6Nf
-        qgrUhzg18Lh0qI8OFX9wFlJ6ckqXZxm5hAxlFA0KFQ==
-X-Google-Smtp-Source: AA0mqf7G1v4A40tgXr1NRHstLcTme21GLZJRJyVkeIBRJ8cOOHakVhk+7tqNHxac0XV9O/wu9t/1tPlmxunVkBo6PRs=
-X-Received: by 2002:a02:ccb5:0:b0:375:bdb9:f1e4 with SMTP id
- t21-20020a02ccb5000000b00375bdb9f1e4mr23543554jap.67.1669914860723; Thu, 01
- Dec 2022 09:14:20 -0800 (PST)
-MIME-Version: 1.0
-References: <20221121182552.2152891-1-sdf@google.com> <20221121182552.2152891-3-sdf@google.com>
- <Y4eRtJOPWBOCKe1Q@lincoln> <CAKH8qBtseOmsWmeprdRsvz0T=vAObYE_CpsYQOX0CsLR_iXNFA@mail.gmail.com>
- <CAKH8qBstSJEN5wvcPAcrnD0at8fNeyLNwijiT4wv=wD9eAd1TA@mail.gmail.com> <Y4ixjzpD9EoBgfGY@lincoln>
-In-Reply-To: <Y4ixjzpD9EoBgfGY@lincoln>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 1 Dec 2022 09:14:04 -0800
-Message-ID: <CAKH8qBuU5bjURwitY+GOO5SVF6+-FZ3panavveaLCJw__S587Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/8] bpf: XDP metadata RX kfuncs
-To:     Larysa Zaremba <larysa.zaremba@intel.com>
-Cc:     toke@redhat.com, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
+        with ESMTP id S229468AbiLARe1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 12:34:27 -0500
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E6692A0F;
+        Thu,  1 Dec 2022 09:34:26 -0800 (PST)
+Received: from localhost.localdomain (unknown [81.5.110.16])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 2605440D4004;
+        Thu,  1 Dec 2022 17:34:22 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 2605440D4004
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+        s=default; t=1669916062;
+        bh=1Yld3/6UrtN3Zfgf3UojbyOQXGmtYGVa6e3vHIqgirg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jgYoo7JcltneHCFmNbgYXH8Hj+3mR2lkhRLFW/8ZWR34wZWSx15Wrg7GXFlQ5Ma42
+         vFiKki6aYExBWhk8jNAXeZnYqbMkj0zSXq45MN93DaX8Y2fhC/Qoc7XH056YlMfJFy
+         rCNa7PeHrXr4HgxiRJj/gcHMJqjjvmf8u9c7DVH0=
+From:   Valentina Goncharenko <goncharenko.vp@ispras.ru>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Valentina Goncharenko <goncharenko.vp@ispras.ru>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Jon Ringle <jringle@gridpoint.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: [PATCH 1/2] net: encx24j600: Add parentheses to fix precedence
+Date:   Thu,  1 Dec 2022 20:34:07 +0300
+Message-Id: <20221201173408.26954-1-goncharenko.vp@ispras.ru>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 1, 2022 at 6:08 AM Larysa Zaremba <larysa.zaremba@intel.com> wrote:
->
-> On Wed, Nov 30, 2022 at 12:17:39PM -0800, Stanislav Fomichev wrote:
-> > On Wed, Nov 30, 2022 at 11:06 AM Stanislav Fomichev <sdf@google.com> wrote:
-> > >
-> > > On Wed, Nov 30, 2022 at 9:38 AM Larysa Zaremba <larysa.zaremba@intel.com> wrote:
-> > > >
-> > > > On Mon, Nov 21, 2022 at 10:25:46AM -0800, Stanislav Fomichev wrote:
-> > > >
-> > > > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > > > > index 9528a066cfa5..315876fa9d30 100644
-> > > > > --- a/kernel/bpf/verifier.c
-> > > > > +++ b/kernel/bpf/verifier.c
-> > > > > @@ -15171,6 +15171,25 @@ static int fixup_call_args(struct bpf_verifier_env *env)
-> > > > >       return err;
-> > > > >  }
-> > > > >
-> > > > > +static int fixup_xdp_kfunc_call(struct bpf_verifier_env *env, u32 func_id)
-> > > > > +{
-> > > > > +     struct bpf_prog_aux *aux = env->prog->aux;
-> > > > > +     void *resolved = NULL;
-> > > >
-> > > > First I would like to say I really like the kfunc hints impementation.
-> > > >
-> > > > I am currently trying to test possible performace benefits of the unrolled
-> > > > version in the ice driver. I was working on top of the RFC v2,
-> > > > when I noticed a problem that also persists in this newer version.
-> > > >
-> > > > For debugging purposes, I have put the following logs in this place in code.
-> > > >
-> > > > printk(KERN_ERR "func_id=%u\n", func_id);
-> > > > printk(KERN_ERR "XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED=%u\n",
-> > > >        xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED));
-> > > > printk(KERN_ERR "XDP_METADATA_KFUNC_RX_TIMESTAMP=%u\n",
-> > > >        xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP));
-> > > > printk(KERN_ERR "XDP_METADATA_KFUNC_RX_HASH_SUPPORTED=%u\n",
-> > > >        xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH_SUPPORTED));
-> > > > printk(KERN_ERR "XDP_METADATA_KFUNC_RX_HASH=%u\n",
-> > > >        xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH));
-> > > >
-> > > > Loading the program, which uses bpf_xdp_metadata_rx_timestamp_supported()
-> > > > and bpf_xdp_metadata_rx_timestamp(), has resulted in such messages:
-> > > >
-> > > > [  412.611888] func_id=108131
-> > > > [  412.611891] XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED=108126
-> > > > [  412.611892] XDP_METADATA_KFUNC_RX_TIMESTAMP=108128
-> > > > [  412.611892] XDP_METADATA_KFUNC_RX_HASH_SUPPORTED=108130
-> > > > [  412.611893] XDP_METADATA_KFUNC_RX_HASH=108131
-> > > > [  412.611894] func_id=108130
-> > > > [  412.611894] XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED=108126
-> > > > [  412.611895] XDP_METADATA_KFUNC_RX_TIMESTAMP=108128
-> > > > [  412.611895] XDP_METADATA_KFUNC_RX_HASH_SUPPORTED=108130
-> > > > [  412.611895] XDP_METADATA_KFUNC_RX_HASH=108131
-> > > >
-> > > > As you can see, I've got 108131 and 108130 IDs in program,
-> > > > while 108126 and 108128 would be more reasonable.
-> > > > It's hard to proceed with the implementation, when IDs cannot be sustainably
-> > > > compared.
-> > >
-> > > Thanks for the report!
-> > > Toke has reported a similar issue in [0], have you tried his patch?
-> > > I've also tried to address it in v3 [1], could you retry on top of it?
-> > > I'll try to insert your printk in my local build to see what happens
-> > > with btf ids on my side. Will get back to you..
-> > >
-> > > 0: https://lore.kernel.org/bpf/87mt8e2a69.fsf@toke.dk/
-> > > 1: https://lore.kernel.org/bpf/20221129193452.3448944-3-sdf@google.com/T/#u
-> >
-> > Nope, even if I go back to v2, I still can't reproduce locally.
-> > Somehow in my setup they are sorted properly :-/
-> > Would appreciate it if you can test the v3 patch and confirm whether
-> > it's fixed on your side or not.
-> >
->
-> I've tested v3 and it looks like the isssue was resolved.
-> Thanks a lot!
+In functions regmap_encx24j600_phy_reg_read() and
+regmap_encx24j600_phy_reg_write() in the conditions of the waiting
+cycles for filling the variable 'ret' it is necessary to add parentheses
+to prevent wrong assignment due to logical operations precedence.
 
-Great, thank you for verifying!
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-> > > > Furthermore, dumped vmlinux BTF shows the IDs is in the exactly reversed
-> > > > order:
-> > > >
-> > > > [108126] FUNC 'bpf_xdp_metadata_rx_hash' type_id=108125 linkage=static
-> > > > [108128] FUNC 'bpf_xdp_metadata_rx_hash_supported' type_id=108127 linkage=static
-> > > > [108130] FUNC 'bpf_xdp_metadata_rx_timestamp' type_id=108129 linkage=static
-> > > > [108131] FUNC 'bpf_xdp_metadata_rx_timestamp_supported' type_id=108127 linkage=static
-> > > >
-> > > > > +
-> > > > > +     if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED))
-> > > > > +             resolved = aux->xdp_netdev->netdev_ops->ndo_xdp_rx_timestamp_supported;
-> > > > > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP))
-> > > > > +             resolved = aux->xdp_netdev->netdev_ops->ndo_xdp_rx_timestamp;
-> > > > > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH_SUPPORTED))
-> > > > > +             resolved = aux->xdp_netdev->netdev_ops->ndo_xdp_rx_hash_supported;
-> > > > > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH))
-> > > > > +             resolved = aux->xdp_netdev->netdev_ops->ndo_xdp_rx_hash;
-> > > > > +
-> > > > > +     if (resolved)
-> > > > > +             return BPF_CALL_IMM(resolved);
-> > > > > +     return 0;
-> > > > > +}
-> > > > > +
-> > > >
-> > > > My working tree (based on this version) is available on github [0]. Situation
-> > > > is also described in the last commit message.
-> > > > I would be great, if you could check, whether this behaviour can be reproduced
-> > > > on your setup.
-> > > >
-> > > > [0] https://github.com/walking-machine/linux/tree/hints-v2
+Fixes: d70e53262f5c ("net: Microchip encx24j600 driver")
+Signed-off-by: Valentina Goncharenko <goncharenko.vp@ispras.ru>
+---
+ drivers/net/ethernet/microchip/encx24j600-regmap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/encx24j600-regmap.c b/drivers/net/ethernet/microchip/encx24j600-regmap.c
+index 81a8ccca7e5e..2e337c7a5773 100644
+--- a/drivers/net/ethernet/microchip/encx24j600-regmap.c
++++ b/drivers/net/ethernet/microchip/encx24j600-regmap.c
+@@ -359,7 +359,7 @@ static int regmap_encx24j600_phy_reg_read(void *context, unsigned int reg,
+ 		goto err_out;
+ 
+ 	usleep_range(26, 100);
+-	while ((ret = regmap_read(ctx->regmap, MISTAT, &mistat) != 0) &&
++	while (((ret = regmap_read(ctx->regmap, MISTAT, &mistat)) != 0) &&
+ 	       (mistat & BUSY))
+ 		cpu_relax();
+ 
+@@ -397,7 +397,7 @@ static int regmap_encx24j600_phy_reg_write(void *context, unsigned int reg,
+ 		goto err_out;
+ 
+ 	usleep_range(26, 100);
+-	while ((ret = regmap_read(ctx->regmap, MISTAT, &mistat) != 0) &&
++	while (((ret = regmap_read(ctx->regmap, MISTAT, &mistat)) != 0) &&
+ 	       (mistat & BUSY))
+ 		cpu_relax();
+ 
+-- 
+2.25.1
+
