@@ -2,53 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D97863EC2F
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:19:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC89D63EC61
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 10:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229548AbiLAJTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 04:19:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52248 "EHLO
+        id S229566AbiLAJZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 04:25:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiLAJS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:18:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7027755AAF
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 01:18:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27488B81E6A
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 09:18:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BB07C433D6;
-        Thu,  1 Dec 2022 09:18:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669886334;
-        bh=i6/eIbeI+RNnD8E5pw+ajxOfXqfBaqnj27TBZ59SLIA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lLS4b8XqCPwReq4za74bvFAPgIHaHHxL84RARZ2d/2Y3stwkXSZftiGGXnqHoD5/X
-         gjViwkCqZy9ttlwt9dlMvfXs8ikvjI4oko+lLmZEaY4CPfWGTDf5De5fKMhrGMKPH3
-         /ASyEa5nO/kf9tZh6Cu+Rb30DHiyykRPdmVHKjiY/BhhrG2j4NqWCwuTMxNnyiL/mg
-         mALdL3p5Qa1CC1W2BBbC8SuT57Nm1GQAZZ1eVzJTzDLvYwhEjg0jLHGbjT1gxc0bTO
-         UR12lSqeZlKACNIER2QpB3c+Ix59wSMinK2ARCZYlzfaNojBAGAlo8jcgX+MWYNhcm
-         P6HJ0fHIRXFSA==
-Date:   Thu, 1 Dec 2022 11:18:50 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, Jacob Keller <jacob.e.keller@intel.com>,
-        netdev@vger.kernel.org, richardcochran@gmail.com,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: Re: [PATCH net-next 08/14] ice: protect init and calibrating fields
- with spinlock
-Message-ID: <Y4hxen0fOSVnXWbf@unreal>
-References: <20221130194330.3257836-1-anthony.l.nguyen@intel.com>
- <20221130194330.3257836-9-anthony.l.nguyen@intel.com>
+        with ESMTP id S229631AbiLAJZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 04:25:02 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33411C0
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 01:25:00 -0800 (PST)
+Received: from kwepemi500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NN9Y23KTrzqSfP;
+        Thu,  1 Dec 2022 17:20:54 +0800 (CST)
+Received: from huawei.com (10.175.103.91) by kwepemi500024.china.huawei.com
+ (7.221.188.100) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 1 Dec
+ 2022 17:24:25 +0800
+From:   Zeng Heng <zengheng4@huawei.com>
+To:     <f.fainelli@gmail.com>, <pabeni@redhat.com>, <andrew@lunn.ch>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <edumazet@google.com>, <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <liwei391@huawei.com>,
+        <zengheng4@huawei.com>
+Subject: [PATCH] net: mdio: fix unbalanced fwnode reference count in mdio_device_release()
+Date:   Thu, 1 Dec 2022 17:22:02 +0800
+Message-ID: <20221201092202.3394119-1-zengheng4@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221130194330.3257836-9-anthony.l.nguyen@intel.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500024.china.huawei.com (7.221.188.100)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,49 +46,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 11:43:24AM -0800, Tony Nguyen wrote:
-> From: Jacob Keller <jacob.e.keller@intel.com>
-> 
-> Ensure that the init and calibrating fields of the PTP Tx timestamp tracker
-> structure are only modified under the spin lock. This ensures that the
-> accesses are consistent and that new timestamp requests will either begin
-> completely or get ignored.
-> 
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_ptp.c | 55 ++++++++++++++++++++++--
->  drivers/net/ethernet/intel/ice/ice_ptp.h |  2 +-
->  2 files changed, 52 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-> index a7d950dd1264..0e39fed7cfca 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-> @@ -599,6 +599,42 @@ static u64 ice_ptp_extend_40b_ts(struct ice_pf *pf, u64 in_tstamp)
->  				     (in_tstamp >> 8) & mask);
->  }
->  
-> +/**
-> + * ice_ptp_is_tx_tracker_init - Check if the Tx tracker is initialized
-> + * @tx: the PTP Tx timestamp tracker to check
-> + *
-> + * Check that a given PTP Tx timestamp tracker is initialized. Acquires the
-> + * tx->lock spinlock.
-> + */
-> +static bool
-> +ice_ptp_is_tx_tracker_init(struct ice_ptp_tx *tx)
-> +{
-> +	bool init;
-> +
-> +	spin_lock(&tx->lock);
-> +	init = tx->init;
-> +	spin_unlock(&tx->lock);
-> +
-> +	return init;
+There is warning report about of_node refcount leak
+while probing mdio device:
 
-How this type of locking can be correct?
-It doesn't protect anything and equal to do not have locking at all.
+OF: ERROR: memory leak, expected refcount 1 instead of 2,
+of_node_get()/of_node_put() unbalanced - destroy cset entry:
+attach overlay node /spi/soc@0/mdio@710700c0/ethernet@4
 
-Thanks
+In of_mdiobus_register_device(), we increase fwnode refcount
+by fwnode_handle_get() before associating the of_node with
+mdio device, but it has never been decreased after that.
+Since that, in mdio_device_release(), it needs to call
+fwnode_handle_put() in addition instead of calling kfree()
+directly.
+
+After above, just calling mdio_device_free() in the error handle
+path of of_mdiobus_register_device() is enough to keep the
+refcount balanced.
+
+Fixes: a9049e0c513c ("mdio: Add support for mdio drivers.")
+Signed-off-by: Zeng Heng <zengheng4@huawei.com>
+---
+ drivers/net/mdio/of_mdio.c    | 1 -
+ drivers/net/phy/mdio_device.c | 2 ++
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
+index 796e9c7857d0..296317a6b333 100644
+--- a/drivers/net/mdio/of_mdio.c
++++ b/drivers/net/mdio/of_mdio.c
+@@ -69,7 +69,6 @@ static int of_mdiobus_register_device(struct mii_bus *mdio,
+ 	rc = mdio_device_register(mdiodev);
+ 	if (rc) {
+ 		mdio_device_free(mdiodev);
+-		of_node_put(child);
+ 		return rc;
+ 	}
+ 
+diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
+index 250742ffdfd9..044828d081d2 100644
+--- a/drivers/net/phy/mdio_device.c
++++ b/drivers/net/phy/mdio_device.c
+@@ -21,6 +21,7 @@
+ #include <linux/slab.h>
+ #include <linux/string.h>
+ #include <linux/unistd.h>
++#include <linux/property.h>
+ 
+ void mdio_device_free(struct mdio_device *mdiodev)
+ {
+@@ -30,6 +31,7 @@ EXPORT_SYMBOL(mdio_device_free);
+ 
+ static void mdio_device_release(struct device *dev)
+ {
++	fwnode_handle_put(dev->fwnode);
+ 	kfree(to_mdio_device(dev));
+ }
+ 
+-- 
+2.25.1
+
