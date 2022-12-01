@@ -2,134 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A6CB63F9D9
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 22:31:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B155B63F9E8
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 22:34:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231129AbiLAVbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 16:31:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53886 "EHLO
+        id S231165AbiLAVe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 16:34:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230127AbiLAVbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 16:31:22 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D73BA6B6F
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 13:31:21 -0800 (PST)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S231154AbiLAVeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 16:34:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6BAC3591
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 13:34:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id DD6A588;
-        Thu,  1 Dec 2022 22:31:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1669930279;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qfEYUsGv5LHSnAXTXYv80m+wnEHVstGAKrLjI8Ln92g=;
-        b=XNR/GkJZJitmXWuowOLatw1Z1a+1VyKeTLwNI5f0FYe8OuiBY4Rywe2ZHXgo2bvEuM6oQ3
-        UFB47TdIOMngJNtnJaojfT9ZrtiPwsvXXI66819JrGX+Q+L4DcigZbrCb1/H7D/dAwz8WE
-        vq/ffjYgzLZ5vQ4wb1AQ0sRdRSOLVvV9wCRH0cAF3btB6mD4ytPmClfgDTTPVmVyecka4j
-        V6cpuq3itpgLIZfBHNh/CkcgHB2OJUBa4WALWLDotGStOM3pbwBfcPtFxFa+JiafW0+GBB
-        ir9MyuCszoa0VLRUH0Yvdfooz9HL24WscMo+T5pQjpzClzh9WCDd5U8rDBhiiw==
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23D31B82037
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 21:34:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73710C433C1;
+        Thu,  1 Dec 2022 21:34:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669930461;
+        bh=WSxq0VVXBR36KvHqkgdZDoUaRmpg0ZDZ/oFsMEnQxIU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=CoZzjVcCPM+rOx0J2mgxjBoPtV/9Djio2jC9CzCAGaUf7+RzlpyJD3lUgtYwAgKpr
+         AR1oOU1wH1Mesx/UgeslaUZ3DqDwLn0byOJsQZF87L2y7tchuubwTN1Ux6cEOeIUEi
+         0eP5FkuXBF/VhkGDHpDDRWWdJDvzHQuOlYxq+QlqHB0BIAucJfIof/j3vA8n8/KPji
+         E1W7OSYxUVmQsQW0V/SP6B6VUN46DPy3iEc+hNZL158qmpSu9wP36O2BDEsOP/R5nE
+         ztPuB8anac8jRtZiB3+I8UJ5MZM09EfwDAys80K1jzWmqpBxVaxFx/VyfbT/i8PiMV
+         VeFWkCZl+JgmQ==
+Date:   Thu, 1 Dec 2022 22:34:17 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     claudiu.manoil@nxp.com
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com
+Subject: non-linear xdp fix for enetc driver
+Message-ID: <Y4kd2f0563PVof5O@lore-desk>
 MIME-Version: 1.0
-Date:   Thu, 01 Dec 2022 22:31:19 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        netdev@vger.kernel.org, Xu Liang <lxu@maxlinear.com>
-Subject: Re: GPY215 PHY interrupt issue
-In-Reply-To: <Y4jOMocoLneO8xoD@lunn.ch>
-References: <fd1352e543c9d815a7a327653baacda7@walle.cc>
- <Y4DcoTmU3nWqMHIp@lunn.ch> <baa468f15c6e00c0f29a31253c54383c@walle.cc>
- <Y4S4EfChuo0wmX2k@lunn.ch> <c69e1d1d897dd7500b59c49f0873e7dd@walle.cc>
- <Y4jOMocoLneO8xoD@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <158870dd20a5e30cda9f17009aa0c6c8@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pj+KNPPIwowdv3g/"
+Content-Disposition: inline
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-12-01 16:54, schrieb Andrew Lunn:
->> So, switching the line to GPIO input doesn't help here, which also
->> means the interrupt line will be stuck the whole time.
-> 
-> Sounds like they totally messed up the design somehow.
-> 
-> Since we are into horrible hack territory.....
-> 
-> I assume you are using the Link state change interrupt? LSTC?
 
-Yes, but recently I've found it that it also happens with
-the speed change interrupt (during link-up). By pure luck (or
-bad luck really?) I discovered that when I reduce the MDIO
-frequency I get a similar behavior for the interrupt line
-at link-up with the LSPC interrupt. I don't think it has
-something to do with the frequency but with changed timing.
-Anyway, I need to do the workaround for LTSC and for LSPC...
+--pj+KNPPIwowdv3g/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-At the moment I have the following, which works:
+Hi Claudiu,
 
-@@ -560,6 +610,8 @@ static int gpy_config_intr(struct phy_device 
-*phydev)
+I am not very familiar with enetc driver codebase but I guess we are missin=
+g to
+set frag bit in xdp_buff flag whenever the driver receives a non linear pac=
+ket
+in xdp mode (frag bit is needed by xdp stack). Can you please check the pat=
+ch
+below? (if it is ok I will post a formal fix).
 
-  static irqreturn_t gpy_handle_interrupt(struct phy_device *phydev)
-  {
-+	bool needs_mdint_wa = phydev->drv->phy_id == PHY_ID_GPY215B ||
-+			     phydev->drv->phy_id == PHY_ID_GPY215C;
-  	int reg;
+Regards,
+Lorenzo
 
-  	reg = phy_read(phydev, PHY_ISTAT);
-@@ -571,6 +623,23 @@ static irqreturn_t gpy_handle_interrupt(struct 
-phy_device *phydev)
-  	if (!(reg & PHY_IMASK_MASK))
-  		return IRQ_NONE;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/eth=
+ernet/freescale/enetc/enetc.c
+index 8671591cb750..9ddd6c1c6e0e 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -1416,6 +1416,7 @@ static void enetc_add_rx_buff_to_xdp(struct enetc_bdr=
+ *rx_ring, int i,
+ 	skb_frag_size_set(frag, size);
+ 	__skb_frag_set_page(frag, rx_swbd->page);
+=20
++	xdp_buff_set_frags_flag(xdp_buff);
+ 	shinfo->nr_frags++;
+ }
+=20
 
-+	/* The PHY might leave the interrupt line asserted even after 
-PHY_ISTAT
-+	* is read. To avoid interrupt storms, delay the interrupt handling as
-+	* long as the PHY drives the interrupt line. An internal bus read will
-+	* stall as long as the interrupt line is asserted, thus just read a
-+	* random register here.
-+	* Because we cannot access the internal bus at all while the interrupt
-+	* is driven by the PHY, there is no way to make the interrupt line
-+	* unstuck (e.g. by changing the pinmux to GPIO input) during that time
-+	* frame. Therefore, polling is the best we can do and won't do any 
-more
-+	* harm.
-+	* It was observed that this bug happens on link state and link speed
-+	* changes on a GPY215B and GYP215C independent of the firmware version
-+	* (which doesn't mean that this list is exhaustive).
-+	*/
-+	if (needs_mdint_wa && (reg & (PHY_IMASK_LSTC | PHY_IMASK_LSPC)))
-+		gpy_mbox_read(phydev, REG_GPIO0_OUT);
-+
-  	phy_trigger_machine(phydev);
+--pj+KNPPIwowdv3g/
+Content-Type: application/pgp-signature; name="signature.asc"
 
-  	return IRQ_HANDLED;
+-----BEGIN PGP SIGNATURE-----
 
-> Maybe instead use Link speed change and Duplex mode change? And
-> disallow 10/Half. Some PHYs change to 10/Half when they loose
-> link. They might be enough to tell you the link has changed. You can
-> then read the BMSR to find out what actually happened.
-> 
-> This is assuming that interrupts in general are not FUBAR.
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY4kd2QAKCRA6cBh0uS2t
+rBP5AP0bhDwWTENNtylCdPxAGZy+WgAdpOJ60CXpXSzmEUOWfgEAsCCa2ikYd7aj
+WEau5dUM5jS/jQyx+XEhvbCIIY32cQE=
+=9mS5
+-----END PGP SIGNATURE-----
 
-It seems like at least these two are :/ So with the code above
-we could avoid the interrupt storm but we can't do anything about
-the blocked interrupt line. I'm unsure if that is acceptable or
-if we'd have to disable interrupts on this PHY altogether and
-fallback to polling.
-
--michael
+--pj+KNPPIwowdv3g/--
