@@ -2,89 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED8F963E774
-	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 03:06:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D8CD63E7AB
+	for <lists+netdev@lfdr.de>; Thu,  1 Dec 2022 03:20:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbiLACGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Nov 2022 21:06:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
+        id S229917AbiLACTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Nov 2022 21:19:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbiLACGv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 21:06:51 -0500
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB3B63D41;
-        Wed, 30 Nov 2022 18:06:50 -0800 (PST)
-Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4NMzw93Tbtz4y0v0;
-        Thu,  1 Dec 2022 10:06:49 +0800 (CST)
-Received: from xaxapp01.zte.com.cn ([10.88.40.50])
-        by mse-fl2.zte.com.cn with SMTP id 2B126g6R046935;
-        Thu, 1 Dec 2022 10:06:42 +0800 (+08)
-        (envelope-from zhang.songyi@zte.com.cn)
-Received: from mapi (xaxapp01[null])
-        by mapi (Zmail) with MAPI id mid31;
-        Thu, 1 Dec 2022 10:06:42 +0800 (CST)
-Date:   Thu, 1 Dec 2022 10:06:42 +0800 (CST)
-X-Zmail-TransId: 2af963880c32ffffffffd06acfa2
-X-Mailer: Zmail v1.0
-Message-ID: <202212011006426677429@zte.com.cn>
-Mime-Version: 1.0
-From:   <zhang.songyi@zte.com.cn>
-To:     <lars.povlsen@microchip.com>
-Cc:     <steen.hegelund@microchip.com>, <daniel.machon@microchip.com>,
-        <unglinuxdriver@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: =?UTF-8?B?W1BBVENIIG5ldC1uZXh0XSBuZXQ6IG1pY3JvY2hpcDogdmNhcDogUmVtb3ZlIHVubmVlZGVkIHNlbWljb2xvbnM=?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl2.zte.com.cn 2B126g6R046935
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.251.13.novalocal with ID 63880C39.000 by FangMail milter!
-X-FangMail-Envelope: 1669860409/4NMzw93Tbtz4y0v0/63880C39.000/10.5.228.133/[10.5.228.133]/mse-fl2.zte.com.cn/<zhang.songyi@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 63880C39.000/4NMzw93Tbtz4y0v0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229795AbiLACTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Nov 2022 21:19:35 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C1F4D5ED;
+        Wed, 30 Nov 2022 18:19:33 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id 3-20020a17090a098300b00219041dcbe9so564409pjo.3;
+        Wed, 30 Nov 2022 18:19:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=KrLJtRqv6qfTxT8OQhavnIfXvCPDD2TtRpNvKMUltn8=;
+        b=KIHlOgIn25vxxoYO8p8aEiritxvvRnWz0ceh+/krFxcq4fZoZg9OTTZ7bpx443ntsE
+         mK92t77BsuA107Nh37pxbMr4efk1i3x7uqGvNufRCTPbz9/tsrLXRshdygBhh0nbaJS/
+         o6iMbNSwurNsAV31dHyYZVPdYgGJoN5Pn/HJKRuMq53wKTUun65zUgSrsNS5t8zLeIHF
+         TIAl09fEDy32CU8ClpLWGtCpAvoITrbRRj3odzJcG8uDCRlnw7W/KHeSJ2bzJUXaoFZb
+         RbrDuoWk9s3D/USulSHJwMLItaXfpgHAZUgjWWOR4DM1BP56+//ZRglGSLhQA7z3ez4Z
+         XexA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KrLJtRqv6qfTxT8OQhavnIfXvCPDD2TtRpNvKMUltn8=;
+        b=kz8p8zUPJyxzc4it6Jbx1ETgVWoIBf8iCHCASOMlTmgNOmEg5yJfLkdKDcDUHznTKx
+         l/M9SMOuB4h4Xi2VqYaZtrhwUp4fgWgAUugAKwTCMY6CZaiGn3vZqSEYtBBDyKM6Cjea
+         Q10ZMd59txdmOcdbogbzHmYs5ngSOvTwK/voHuj1OsZW97ZpH4L3qypuEp/dzGx8u4+P
+         gFuWUUsl5tkksqQuGkwqAw59YCACGOs7OuNex2xV8XXH+xTNA+v+3aneTcWKd/mjzHDl
+         yhnAboSDFNuMOCYcglCL1NvguXhjwv24zyEefLNXNRpOTqcqxEh04jXoThDBrj10nka4
+         HYZQ==
+X-Gm-Message-State: ANoB5plLpGz6mQUYV79rrgyjxe6cQ6L3z+rlfVBWyhYd9u08XQxTElYo
+        oJRpu+qWFfnsK+Zk47GzQjilHL/5KtwasA==
+X-Google-Smtp-Source: AA0mqf678NTkoa7EQM8cCHrvXR6/pbUbnlv8Yp9/z1G1P92agRhCGgo/IIaZNJu+/k1nLxvCHxMOcQ==
+X-Received: by 2002:a17:902:e5c1:b0:189:8c37:6f16 with SMTP id u1-20020a170902e5c100b001898c376f16mr18379118plf.69.1669861173354;
+        Wed, 30 Nov 2022 18:19:33 -0800 (PST)
+Received: from MBP (ec2-18-117-95-84.us-east-2.compute.amazonaws.com. [18.117.95.84])
+        by smtp.gmail.com with ESMTPSA id a15-20020aa78e8f000000b005743cdde1a7sm2020263pfr.82.2022.11.30.18.19.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Nov 2022 18:19:32 -0800 (PST)
+References: <20221130130830.97199-1-schspa@gmail.com>
+ <Y4da9/BHrEqgwq4q@codewreck.org>
+User-agent: mu4e 1.8.10; emacs 28.2
+From:   Schspa Shi <schspa@gmail.com>
+To:     asmadeus@codewreck.org
+Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
+Subject: Re: [PATCH v2] 9p/fd: set req refcount to zero to avoid
+ uninitialized usage
+Date:   Thu, 01 Dec 2022 10:14:35 +0800
+In-reply-to: <Y4da9/BHrEqgwq4q@codewreck.org>
+Message-ID: <m2r0xj6f2x.fsf@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: zhang songyi <zhang.songyi@zte.com.cn>
 
-Semicolons after "}" are not needed.
+asmadeus@codewreck.org writes:
 
-Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
----
- drivers/net/ethernet/microchip/vcap/vcap_api.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> Schspa Shi wrote on Wed, Nov 30, 2022 at 09:08:31PM +0800:
+>> When the transport layer of fs cancels the request, it is deleted from the
+>> client side. But the server can send a response with the freed tag.
+>> 
+>> When the new request allocated, we add it to idr, and use the id form idr
+>> as tag, which will have the same tag with high probability. Then initialize
+>> the refcount after adding it to idr.
+>
+> ultimately this bug has nothing to do with tag reuse -- we don't
+> actually need flush at all to trigger it.
+>
+> - thread1 starts new request; idr initialized with tag X
+> - thread2 receives something for tag X, increments refcount before
+> refcount init
+> - thread1 resets refcount to two incorrectly
+>
+> This could happen on any new message where the server voluntarily sends
+> a reply with tag X before the request has been sent; in a cyclic model
+> as suggested in the other thread it would be easy to guess just last+1
+> for an hypothetical attacker.
+>
+> This scenario with flush is just how syzbot happened to trigger it, but
+> I think it's just superfluous to this commit message.
+>
+> A few more nitpicks on wording below; happy to adjust things myself as I
+> apply patches but might as well comment first...
+>
+>> If the p9_read_work got a response before the refcount initiated. It will
+>> use a uninitialized req, which will result in a bad request data struct.
+>> 
+>> There is the logs from syzbot.
+>
+> English: Here is ...
+>
+>> Corrupted memory at 0xffff88807eade00b [ 0xff 0x07 0x00 0x00 0x00 0x00
+>> 0x00 0x00 . . . . . . . . ] (in kfence-#110):
+>>  p9_fcall_fini net/9p/client.c:248 [inline]
+>>  p9_req_put net/9p/client.c:396 [inline]
+>>  p9_req_put+0x208/0x250 net/9p/client.c:390
+>>  p9_client_walk+0x247/0x540 net/9p/client.c:1165
+>>  clone_fid fs/9p/fid.h:21 [inline]
+>>  v9fs_fid_xattr_set+0xe4/0x2b0 fs/9p/xattr.c:118
+>>  v9fs_xattr_set fs/9p/xattr.c:100 [inline]
+>>  v9fs_xattr_handler_set+0x6f/0x120 fs/9p/xattr.c:159
+>>  __vfs_setxattr+0x119/0x180 fs/xattr.c:182
+>>  __vfs_setxattr_noperm+0x129/0x5f0 fs/xattr.c:216
+>>  __vfs_setxattr_locked+0x1d3/0x260 fs/xattr.c:277
+>>  vfs_setxattr+0x143/0x340 fs/xattr.c:309
+>>  setxattr+0x146/0x160 fs/xattr.c:617
+>>  path_setxattr+0x197/0x1c0 fs/xattr.c:636
+>>  __do_sys_setxattr fs/xattr.c:652 [inline]
+>>  __se_sys_setxattr fs/xattr.c:648 [inline]
+>>  __ia32_sys_setxattr+0xc0/0x160 fs/xattr.c:648
+>>  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+>>  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+>>  do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
+>>  entry_SYSENTER_compat_after_hwframe+0x70/0x82
+>> 
+>> Below is a similar scenario, the scenario in the syzbot log looks more
+>> complicated than this one, but this patch seems can fix it.
+>
+> English: seems to fix it?
+> (thanks for checking!)
+>
+Sorry for my bad english, this patch will fix it.
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index 93efa8243b02..b8df3cf32f1f 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -1394,7 +1394,7 @@ static void vcap_copy_from_client_keyfield(struct vcap_rule *rule,
-                vcap_copy_to_w32be(field->data.u128.value, data->u128.value, size);
-                vcap_copy_to_w32be(field->data.u128.mask,  data->u128.mask, size);
-                break;
--       };
-+       }
- }
+>> 
+>>      T21124                   p9_read_work
+>> ======================== second trans =================================
+>> p9_client_walk
+>>   p9_client_rpc
+>>     p9_client_prepare_req
+>>       p9_tag_alloc
+>>         req = kmem_cache_alloc(p9_req_cache, GFP_NOFS);
+>>         tag = idr_alloc
+>>         << preempted >>
+>>         req->tc.tag = tag;
+>>                             /* req->[refcount/tag] == uninitilzed */
+>
+> typo: uninitialized
 
- /* Check if the keyfield is already in the rule */
-@@ -1584,7 +1584,7 @@ static void vcap_copy_from_client_actionfield(struct vcap_rule *rule,
-        case VCAP_FIELD_U128:
-                vcap_copy_to_w32be(field->data.u128.value, data->u128.value, size);
-                break;
--       };
-+       }
- }
+thanks for check.
+>
+>>                             m->rreq = p9_tag_lookup(m->client, m->rc.tag);
+>
+> it's not obvious for someone reading this not familiar with 9p that
+> lookup will increment refcount
+>
+>> 
+>>         refcount_set(&req->refcount, 2);
+>>                             << do response/error >>
+>>                             p9_req_put(m->client, m->rreq);
+>>                             /* req->refcount == 1 */
+>> 
+>>     /* req->refcount == 1 */
+>>     << got a bad refcount >>
+>
+> it's not obvious from this going back to thread 1 with a refcount of 1
+> would be a bad refcount, either.
+> One possible scenario would be:
+>
+> 				/* increments uninitalized refcount */
+>                                 req = p9_tag_lookup(tag)
+>     refcount_set(req->refcount, 2)
+> 				/* cb drops one ref */
+> 				p9_client_cb(req)
+> 				/* reader thread drops its ref:
+> 				   request is incorrectly freed */
+> 				p9_req_put(req)
+>     /* use after free and ref underflow */
+>     p9_req_put(req)
+>
 
- /* Check if the actionfield is already in the rule */
---
-2.25.1
+OK, this is more clear.
+
+>
+>
+>> To fix it, we can initize the refcount to zero before add to idr.
+>> 
+>> Reported-by: syzbot+8f1060e2aaf8ca55220b@syzkaller.appspotmail.com
+>> 
+>
+> There should be no empty line between the tags; tags are part of the
+> "trailer" and some tools handle it as such (like git interpret-trailers),
+> which would ignore that Reported-by as it is not part of the last block
+> of text.
+>
+Thanks for reminding the format issue here.
+>> Signed-off-by: Schspa Shi <schspa@gmail.com>
+>> ---
+>>  net/9p/client.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>> 
+>> diff --git a/net/9p/client.c b/net/9p/client.c
+>> index aaa37b07e30a..a72cb597a8ab 100644
+>> --- a/net/9p/client.c
+>> +++ b/net/9p/client.c
+>> @@ -297,6 +297,10 @@ p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size,
+>>  	p9pdu_reset(&req->rc);
+>>  	req->t_err = 0;
+>>  	req->status = REQ_STATUS_ALLOC;
+>> +	/* p9_tag_lookup relies on this refcount to be zero to avoid
+>> +	 * getting a freed request.
+>
+> A freed request would have 0 by definition, if it isn't zero then this
+> is a newly allocated uninit request, so this comment is incorrect.
+>
+> How about:
+> 	/* refcount needs to be set to 0 before inserting into the idr
+> 	 * so p9_tag_lookup does not accept a request that is not fully
+> 	 * initialized. refcount_set to 2 below will mark request live.
+> 	 */
+>
+
+Your comment is more clear, I will change to this one.
+
+>> +	 */
+>> +	refcount_set(&req->refcount, 0);
+>>  	init_waitqueue_head(&req->wq);
+>>  	INIT_LIST_HEAD(&req->req_list);
+>>  
+
+-- 
+BRs
+Schspa Shi
