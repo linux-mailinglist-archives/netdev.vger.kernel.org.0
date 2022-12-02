@@ -2,306 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A1664021F
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:30:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C269D640215
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:29:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232288AbiLBIau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 03:30:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
+        id S232796AbiLBI36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 03:29:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232412AbiLBI3T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:29:19 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2042.outbound.protection.outlook.com [40.107.237.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56D6B0B77
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:27:09 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iZ8Uu/MtxqSE4ZWIQzeIycUc1MFQt7S9T8Rs32V3vgkAW1P63f5uKYU1ZYQg1PL1197RRc6g3sDXOy51EAKUxe9isjkeDYgt3brM/h6/nIExFlLFtmYuXHBuOYAzKkn5UJ/s68hiI/q+30h8KexdZjTsN4JeaJdGa4oy2CFUdEB2exQUYZN8cMvwrWKRNF1vtPsT2o6LpTIYLmkwkLmjbUmNida+vtHVsna1cusmSfjXmHNH8b5Q7j8XvJSjEAel0CJQex4/noUA7NnP/71f9nRWPv2QuKPZas5eHBAx4xtnHdXccHs07lxibdOD2N7mEStJ+ulH+TJshQmsCZmktQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0mEsBYf0YCHE+52R+L01sHCVv6+tB/Pr7te8VPcd03U=;
- b=SMQ5jKx3mhN5LMVgy+0iH9UJNFCgSIMko9ZHA5ytxRwGqO7eDqSyMDkL5GmnCpGOF8YRdrsq4n2tP++gPrXWmt9rpnm4J2WetLxnnHzXYhgeTgb2pmAOIBF2CVqSqAGNXv+Qux1SD3UiPUKW887EBkNVKDJqGGh1uSl/pYy5VSwAj1t3dJ38Q/oOfW+fdNAe8p4RgH7yApOfBj81svK4jnI2Dvu3kmiFkufjoTv8NZ4CQ8NN5GmRN27o8tWmGhFYioG5rxd9lUUasqzVYEkO0JXMyNCFgpOiqidLdBmoZ7F7Q9iTpn2+bSs1h6arebDtFR7XS08bRCajEmDJQqXh2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0mEsBYf0YCHE+52R+L01sHCVv6+tB/Pr7te8VPcd03U=;
- b=QwwcMMuSEqmt4S/Dda4EefsCQnpKVOwT6F02cbO/iQagG+55GV+HhhmMdV5w7FcPD6Yg2FZz0UanpUsia9q+iUm1LmRiU+S5qFWRBVYOUg4TFLKMnyeGD8ghSdYmuhKT+209w+VKWAAe9HOeMQDGzb2+9UlBPd1C0vZ6eZBRz1h+ueezXfCdlQiaN9gZ8/+ZRb7wm0pesBOQQz6VuWetBgdhjWYwtR+hcoyYcL1IYgVe0ELvh9V5z8Ihq3joy0O7vDtI3aPKGT3md5ypBMEsce2UEVdPc2jxotRZjpW5LtkYgQ4e4f9UZbr8wrjRKAhge+zOUEjdq3en1838TpA7EA==
-Received: from DS7PR03CA0180.namprd03.prod.outlook.com (2603:10b6:5:3b2::35)
- by IA1PR12MB6650.namprd12.prod.outlook.com (2603:10b6:208:3a1::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Fri, 2 Dec
- 2022 08:27:07 +0000
-Received: from DM6NAM11FT112.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b2::4) by DS7PR03CA0180.outlook.office365.com
- (2603:10b6:5:3b2::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10 via Frontend
- Transport; Fri, 2 Dec 2022 08:27:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT112.mail.protection.outlook.com (10.13.173.77) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.10 via Frontend Transport; Fri, 2 Dec 2022 08:27:07 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 2 Dec 2022
- 00:26:57 -0800
-Received: from nps-server-23.mtl.labs.mlnx (10.126.231.35) by
- rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Fri, 2 Dec 2022 00:26:54 -0800
-From:   Shay Drory <shayd@nvidia.com>
-To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <danielj@nvidia.com>, <yishaih@nvidia.com>, <jiri@nvidia.com>,
-        <saeedm@nvidia.com>, <parav@nvidia.com>
-Subject: [PATCH net-next V2 8/8] net/mlx5: E-Switch, Implement devlink port function cmds to control migratable
-Date:   Fri, 2 Dec 2022 10:26:22 +0200
-Message-ID: <20221202082622.57765-9-shayd@nvidia.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221202082622.57765-1-shayd@nvidia.com>
-References: <20221202082622.57765-1-shayd@nvidia.com>
+        with ESMTP id S232725AbiLBI3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:29:11 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80AE13E37
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:26:38 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id a16so5482909edb.9
+        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 00:26:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ML3LigPye9slymmQTT1udRKE8+nSaEiNw/uG2E2KoPk=;
+        b=R2E00+wpZOyDrFOmsvkiQhyX0vhYiWQxk0xBVNl8ZEIvllE3rxhNKOIAvHiwPrNuhM
+         e69lNIdquVuJygverzP60tvyr7iAsfXbU/f0vM4XiRUBX9pcGUBPq3FxSFaSSJLNsmPG
+         l7erayyPpaiOKeBkuDLBSKiEW45Ang/X/09t82O7maW6UKL49lUqOJOLL8wxp1Axyk7b
+         8JuV8qgMM+q/f7tkm4M2ck5h9ncSHhaMyrE/3DoHtM4WhB6ziELdfDbXwgrID1MKiRUh
+         mP1Nf9Wucb5AfEZM99XQ5MLuvvHhAFwK4sF19IWVZEs4CEZAVckn6A1kXmeOcFj+kVeH
+         m6Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ML3LigPye9slymmQTT1udRKE8+nSaEiNw/uG2E2KoPk=;
+        b=w2jXQ6gqkvMDjHs8haylCXuBjCY9NkW8pE7VgcWUHmoQSDcPXuD2HILb6ViTBjs+gc
+         07b2Pc3n8epeIZcjj3Lolh1MbNriHy54wLiZDJAl6zwlwkcncXuo28NAGsrPefp+7vTG
+         vRnP1DA2C2JxGEwBbtUYe5yYadx6EDKnegCk//ZqdLVNidulQPpGLXOBMTNCK8FDdTG1
+         jdFIxCx9mVhHvkafQncXuMQlwetT6HB4DD27v+vwnsvMjkhxa009kNbwDvODTkeV8/hK
+         P0N9XxMxotbD7+rtdVjYx0jAKak4kkeKOrwHmSX8/X08OebCPBrWdQXDrqP0su/mEMca
+         tE4w==
+X-Gm-Message-State: ANoB5pmePJJI+GFAv3YbLZatBD7R+8kOWrYmikDY91hE/tdmGYnYXe49
+        vQlyKXKAKqSvjTEw+GGVJG/YnehSgaDoYZH/
+X-Google-Smtp-Source: AA0mqf7VBGh4BsMl5rZuxBaltmb88R5RTrFason69vnJzqsb+Dye6NCzNT7f5Snl8A4Uu5eIUmjKcQ==
+X-Received: by 2002:a05:6402:2998:b0:46c:5e:9f89 with SMTP id eq24-20020a056402299800b0046c005e9f89mr4957763edb.259.1669969597231;
+        Fri, 02 Dec 2022 00:26:37 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id h26-20020a1709063b5a00b0078db5bddd9csm2208295ejf.22.2022.12.02.00.26.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Dec 2022 00:26:36 -0800 (PST)
+Date:   Fri, 2 Dec 2022 09:26:42 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, peppe.cavallaro@st.com,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Antonio Borneo <antonio.borneo@st.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [PATCH net] stmmac: fix potential division by 0
+Message-ID: <Y4m2wg+OFc7pHc/7@gvm01>
+References: <Y4f3NGAZ2rqHkjWV@gvm01>
+ <Y4gFt9GBRyv3kl2Y@lunn.ch>
+ <Y4iA6mwSaZw+PKHZ@gvm01>
+ <Y4i/Aeqh94ZP/mA0@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT112:EE_|IA1PR12MB6650:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9caa8d8b-ac65-4014-a93d-08dad43f0005
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zAZ99De/RL6ZYXERIYKcOZxQCvyByT3HEP6OjUZf8HvZi6dWduO5opDNG8Har4ikfkB+DHf2s8gPOwzfMxMrcbbSCGQcxTrta2GTl3KZQG+rNNdZijkKtUFL34N4tmAM7cI9T73q4wYwmYMfzzvDNhKTchcCJktPJ+t7OnD8VIPjxucg+vXSOGrhDUBsCVt3iTH4p9PxKiKtTu4VJjdCgyjLuhu221hXf/wGNXDbJP66XD1J5t/kcBPJGcADAWxqaAMx/SJZZ8krqKv+EfsfXZyeHsK+8/VDA5EFT8QbQSthtbwVqAjZm6u7lFTKntf7Xs5NXkk/yo6h9QjOYXKIrvm+v8FzoPGXbxQbtFEhlkvhKzRtjSt5u7Qp63YYYrLve/A3gtjcHuSdBAzTfUFGfmbApuJdhaC2d+uzDEQAEq5YpdNjpzanEEcT2pYJsQ+Ucee2b09dbn0PDKAGlJmHq8z+xT/vY/dIspgtZ/SHeJVpIulT0IiZ352wlua1CsDi5XH0ZNWdnU4GfINHHZDyPO7KkIhVNfYCSecsYT89pd8k122F3vcuMsKsvtazC6GzfcfQNeCh5T82Z3Vv6oWs/bONaAS//sTKtlNDGCtRiBW+hcSdJcSbW67M6dbBGr4nP8AHbBTKW8jzTaQ5QlHAQ3Xb/Ktnslu9mE3vYCZDtJUDCerkAnTJwNP0AUbulWS2loSuGdbldQY17LrCdEhWxg==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(376002)(396003)(136003)(451199015)(46966006)(40470700004)(36840700001)(186003)(2616005)(1076003)(36860700001)(426003)(107886003)(47076005)(336012)(16526019)(5660300002)(36756003)(6666004)(82310400005)(70206006)(86362001)(26005)(478600001)(82740400003)(8676002)(8936002)(83380400001)(4326008)(40480700001)(356005)(54906003)(70586007)(41300700001)(7636003)(2906002)(40460700003)(316002)(110136005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2022 08:27:07.3339
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9caa8d8b-ac65-4014-a93d-08dad43f0005
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT112.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6650
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y4i/Aeqh94ZP/mA0@lunn.ch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement devlink port function commands to enable / disable migratable.
-This is used to control the migratable capability of the device.
+On Thu, Dec 01, 2022 at 03:49:37PM +0100, Andrew Lunn wrote:
+> On Thu, Dec 01, 2022 at 11:24:42AM +0100, Piergiorgio Beruto wrote:
+> > On Thu, Dec 01, 2022 at 02:39:03AM +0100, Andrew Lunn wrote:
+> > > On Thu, Dec 01, 2022 at 01:37:08AM +0100, Piergiorgio Beruto wrote:
+> > > > Depending on the HW platform and configuration, the
+> > > > stmmac_config_sub_second_increment() function may return 0 in the
+> > > > sec_inc variable. Therefore, the subsequent div_u64 operation can Oops
+> > > > the kernel because of the divisor being 0.
+> > > 
+> > > I'm wondering why it would return 0? Is the configuration actually
+> > > invalid? Is ptp_clock is too small, such that the value of data is
+> > > bigger than 255, but when masked with 0xff it gives zero?
+> > Ok, I did some more analysis on this. On my reference board, I got two
+> > PHYs connected to two stmmac, one is 1000BASE-T, the other one is
+> > 10BASE-T1S.
+> > 
+> > Fot the 1000BASE-T PHY everything works ok. The ptp_clock is 0ee6b280
+> > which gives data = 8 that is less than FF.
+> > 
+> > For the 10BASE-T1 PHY the ptp_clock is 001dcd65 which gives data = 400
+> > (too large). Therefore, it is 0 after masking.
+> 
+> So both too large, and also unlucky. If it had been 0x3ff you would
+> not of noticed.
+> 
+> > The root cause is the MAC using the internal clock as a PTP reference
+> > (default), which should be allowed since the connection to an external
+> > PTP clock is optional from an HW perspective. The internal clock seems
+> > to be derived from the MII clock speed, which is 2.5 MHz at 10 Mb/s.
+> 
+> I think we need help from somebody who understands PTP on this device.
+> The clock is clearly out of range, but how important is that to PTP?
+> Will PTP work if the value is clamped to 0xff? Or should we be
+> returning -EINVAL and disabling PTP because it has no chance of
+> working?
+> 
+> Add to Cc: a few people who have worked on the PTP code. Lets see what
+> they have to say.
+> 
+>      Andrew
 
-Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Acked-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../device_drivers/ethernet/mellanox/mlx5.rst |   8 ++
- .../net/ethernet/mellanox/mlx5/core/devlink.c |   2 +
- .../net/ethernet/mellanox/mlx5/core/eswitch.c |   8 ++
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |   5 +
- .../mellanox/mlx5/core/eswitch_offloads.c     | 100 ++++++++++++++++++
- 5 files changed, 123 insertions(+)
+For reference, this is the log of the error.
 
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index 8b8f95d1293a..6969652f593c 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -364,6 +364,14 @@ PCI devices/SF.
- mlx5 driver support devlink port function attr mechanism to setup RoCE
- capability. (refer to Documentation/networking/devlink/devlink-port.rst)
- 
-+migratable capability setup
-+---------------------------
-+User who wants mlx5 PCI VFs to be able to perform live migration need to
-+explicitly enable the VF migratable capability.
-+
-+mlx5 driver support devlink port function attr mechanism to setup migratable
-+capability. (refer to Documentation/networking/devlink/devlink-port.rst)
-+
- SF state setup
- --------------
- To use the SF, the user must activate the SF using the SF function state
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 992cdb3b7cc8..a674bf0b6046 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -316,6 +316,8 @@ static const struct devlink_ops mlx5_devlink_ops = {
- 	.rate_leaf_parent_set = mlx5_esw_devlink_rate_parent_set,
- 	.port_function_roce_get = mlx5_devlink_port_function_roce_get,
- 	.port_function_roce_set = mlx5_devlink_port_function_roce_set,
-+	.port_function_mig_get = mlx5_devlink_port_function_mig_get,
-+	.port_function_mig_set = mlx5_devlink_port_function_mig_set,
- #endif
- #ifdef CONFIG_MLX5_SF_MANAGER
- 	.port_new = mlx5_devlink_sf_port_new,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index 001fb1e62135..527e4bffda8d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -794,6 +794,14 @@ static int mlx5_esw_vport_caps_get(struct mlx5_eswitch *esw, struct mlx5_vport *
- 	hca_caps = MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability);
- 	vport->info.roce_enabled = MLX5_GET(cmd_hca_cap, hca_caps, roce);
- 
-+	memset(query_ctx, 0, query_out_sz);
-+	err = mlx5_vport_get_other_func_cap(esw->dev, vport->vport, query_ctx,
-+					    MLX5_CAP_GENERAL_2);
-+	if (err)
-+		goto out_free;
-+
-+	hca_caps = MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability);
-+	vport->info.mig_enabled = MLX5_GET(cmd_hca_cap_2, hca_caps, migratable);
- out_free:
- 	kfree(query_ctx);
- 	return err;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index 71f27fb35c49..8625b97411a9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -154,6 +154,7 @@ struct mlx5_vport_info {
- 	u8                      spoofchk: 1;
- 	u8                      trusted: 1;
- 	u8                      roce_enabled: 1;
-+	u8                      mig_enabled: 1;
- };
- 
- /* Vport context events */
-@@ -509,6 +510,10 @@ int mlx5_devlink_port_function_hw_addr_get(struct devlink_port *port,
- int mlx5_devlink_port_function_hw_addr_set(struct devlink_port *port,
- 					   const u8 *hw_addr, int hw_addr_len,
- 					   struct netlink_ext_ack *extack);
-+int mlx5_devlink_port_function_mig_get(struct devlink_port *port, bool *is_enabled,
-+				       struct netlink_ext_ack *extack);
-+int mlx5_devlink_port_function_mig_set(struct devlink_port *port, bool enable,
-+				       struct netlink_ext_ack *extack);
- int mlx5_devlink_port_function_roce_get(struct devlink_port *port, bool *is_enabled,
- 					struct netlink_ext_ack *extack);
- int mlx5_devlink_port_function_roce_set(struct devlink_port *port, bool enable,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index f258fd7e27a8..ce38d9c0ad71 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -4038,6 +4038,106 @@ mlx5_devlink_port_function_get_vport(struct devlink_port *port, struct mlx5_eswi
- 	return mlx5_eswitch_get_vport(esw, vport_num);
- }
- 
-+int mlx5_devlink_port_function_mig_get(struct devlink_port *port, bool *is_enabled,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct mlx5_eswitch *esw;
-+	struct mlx5_vport *vport;
-+	int err = -EOPNOTSUPP;
-+
-+	esw = mlx5_devlink_eswitch_get(port->devlink);
-+	if (IS_ERR(esw))
-+		return PTR_ERR(esw);
-+
-+	if (!MLX5_CAP_GEN(esw->dev, migration)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Device doesn't support migration");
-+		return err;
-+	}
-+
-+	vport = mlx5_devlink_port_function_get_vport(port, esw);
-+	if (IS_ERR(vport)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid port");
-+		return PTR_ERR(vport);
-+	}
-+
-+	mutex_lock(&esw->state_lock);
-+	if (vport->enabled) {
-+		*is_enabled = vport->info.mig_enabled;
-+		err = 0;
-+	}
-+	mutex_unlock(&esw->state_lock);
-+	return err;
-+}
-+
-+int mlx5_devlink_port_function_mig_set(struct devlink_port *port, bool enable,
-+				       struct netlink_ext_ack *extack)
-+{
-+	int query_out_sz = MLX5_ST_SZ_BYTES(query_hca_cap_out);
-+	struct mlx5_eswitch *esw;
-+	struct mlx5_vport *vport;
-+	void *query_ctx;
-+	void *hca_caps;
-+	int err = -EOPNOTSUPP;
-+
-+	esw = mlx5_devlink_eswitch_get(port->devlink);
-+	if (IS_ERR(esw))
-+		return PTR_ERR(esw);
-+
-+	if (!MLX5_CAP_GEN(esw->dev, migration)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Device doesn't support migration");
-+		return err;
-+	}
-+
-+	vport = mlx5_devlink_port_function_get_vport(port, esw);
-+	if (IS_ERR(vport)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid port");
-+		return PTR_ERR(vport);
-+	}
-+
-+	mutex_lock(&esw->state_lock);
-+	if (!vport->enabled) {
-+		NL_SET_ERR_MSG_MOD(extack, "Eswitch vport is disabled");
-+		goto out;
-+	}
-+
-+	if (vport->info.mig_enabled == enable) {
-+		err = 0;
-+		goto out;
-+	}
-+
-+	query_ctx = kzalloc(query_out_sz, GFP_KERNEL);
-+	if (!query_ctx) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+
-+	err = mlx5_vport_get_other_func_cap(esw->dev, vport->vport, query_ctx,
-+					    MLX5_CAP_GENERAL_2);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed getting HCA caps");
-+		goto out_free;
-+	}
-+
-+	hca_caps = MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability);
-+	memcpy(hca_caps, MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability),
-+	       MLX5_UN_SZ_BYTES(hca_cap_union));
-+	MLX5_SET(cmd_hca_cap_2, hca_caps, migratable, 1);
-+
-+	err = mlx5_vport_set_other_func_cap(esw->dev, hca_caps, vport->vport,
-+					    MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE2);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed setting HCA migratable cap");
-+		goto out_free;
-+	}
-+
-+	vport->info.mig_enabled = enable;
-+
-+out_free:
-+	kfree(query_ctx);
-+out:
-+	mutex_unlock(&esw->state_lock);
-+	return err;
-+}
- int mlx5_devlink_port_function_roce_get(struct devlink_port *port, bool *is_enabled,
- 					struct netlink_ext_ack *extack)
- {
--- 
-2.38.1
+/root # ifconfig eth0 up
+[   95.062067] socfpga-dwmac ff700000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
+[   95.076440] socfpga-dwmac ff700000.ethernet eth0: PHY [stmmac-0:08] driver [NCN26000] (irq=49)
+[   95.095964] dwmac1000: Master AXI performs any burst length
+[   95.101588] socfpga-dwmac ff700000.ethernet eth0: No Safety Features support found
+[   95.109428] Division by zero in kernel.
+[   95.113447] CPU: 0 PID: 239 Comm: ifconfig Not tainted 6.1.0-rc7-centurion3-1.0.3.0-01574-gb624218205b7-dirty #77
+[   95.123686] Hardware name: Altera SOCFPGA
+[   95.127695]  unwind_backtrace from show_stack+0x10/0x14
+[   95.132938]  show_stack from dump_stack_lvl+0x40/0x4c
+[   95.137992]  dump_stack_lvl from Ldiv0+0x8/0x10
+[   95.142527]  Ldiv0 from __aeabi_uidivmod+0x8/0x18
+[   95.147232]  __aeabi_uidivmod from div_u64_rem+0x1c/0x40
+[   95.152552]  div_u64_rem from stmmac_init_tstamp_counter+0xd0/0x164
+[   95.158826]  stmmac_init_tstamp_counter from stmmac_hw_setup+0x430/0xf00
+[   95.165533]  stmmac_hw_setup from __stmmac_open+0x214/0x2d4
+[   95.171117]  __stmmac_open from stmmac_open+0x30/0x44
+[   95.176182]  stmmac_open from __dev_open+0x11c/0x134
+[   95.181172]  __dev_open from __dev_change_flags+0x168/0x17c
+[   95.186750]  __dev_change_flags from dev_change_flags+0x14/0x50
+[   95.192662]  dev_change_flags from devinet_ioctl+0x2b4/0x604
+[   95.198321]  devinet_ioctl from inet_ioctl+0x1ec/0x214
+[   95.203462]  inet_ioctl from sock_ioctl+0x14c/0x3c4
+[   95.208354]  sock_ioctl from vfs_ioctl+0x20/0x38
+[   95.212984]  vfs_ioctl from sys_ioctl+0x250/0x844
+[   95.217691]  sys_ioctl from ret_fast_syscall+0x0/0x4c
+[   95.222743] Exception stack(0xd0ee1fa8 to 0xd0ee1ff0)
+[   95.227790] 1fa0:                   00574c4f be9aeca4 00000003 00008914 be9aeca4 be9aec50
+[   95.235945] 1fc0: 00574c4f be9aeca4 0059f078 00000036 be9aee8c be9aef7a 00000015 00000000
+[   95.244096] 1fe0: 005a01f0 be9aec38 004d7484 b6e67d74
 
+   Piergiorgio
