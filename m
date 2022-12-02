@@ -2,60 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E569B640E25
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 20:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1494640E34
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 20:08:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234024AbiLBTBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 14:01:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53406 "EHLO
+        id S234497AbiLBTIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 14:08:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234557AbiLBTBC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 14:01:02 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A87BE345D;
-        Fri,  2 Dec 2022 11:01:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=9weWN0J9UlP3f78JROiu0G5wNY7vMBJUXZpIa0yvM1w=; b=yz/5laJq2eltamPH2JgAHpEag+
-        Rfbg2bEzQyVhzXqphIxnwVAzuBFeGfxejG70bpNrc+7RkmWdW+YT+kzEbWQL8wX4gCFjG489ZOeXh
-        +jyCUhedl5hxUeyDD+dTnOwnJmFDRxdP34AX2sNK+lE4XMAeI9CI7Ic6XJUXDCAaC7J675v4Wu+T3
-        ZOSPjwXW2YFf4u0L50L0Yf3DzLul1FachcxPlGfNBSmLhp9LfwGtuhv/2qzdPNye+tFMRCVC5QlbR
-        +ZmItZYwvU9fbUV2tP2zDurj8pGhfLHUJ85rsGbp3GNaaEpptyNcl3r5dR+QNDgGH0jTy5tUH8UFn
-        qfb7+TBg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35538)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1p1BHO-0004UF-5i; Fri, 02 Dec 2022 19:00:58 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1p1BHN-0004d4-EM; Fri, 02 Dec 2022 19:00:57 +0000
-Date:   Fri, 2 Dec 2022 19:00:57 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next v3 2/3] net: mdio: Update speed register bits
-Message-ID: <Y4pLaQ4EB5jSuX5d@shell.armlinux.org.uk>
-References: <20221202181719.1068869-1-sean.anderson@seco.com>
- <20221202181719.1068869-3-sean.anderson@seco.com>
+        with ESMTP id S234187AbiLBTIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 14:08:41 -0500
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203A393827;
+        Fri,  2 Dec 2022 11:08:39 -0800 (PST)
+Message-ID: <6d0e13eb-63e0-a777-2a27-7f2e02867a13@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1670008117;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uVok47OFBEZZM7DL3MNnIdvx1TzDy010/6cy/h3x/YM=;
+        b=Cv84JwblirIlBeGmvJp+pyOJUtd7PNeAtvNQXv4BWm3lJ/F8l1lsDSFSfLUZ2W5wcm1xbN
+        fsDLDv9GJXouc2SrZIvI9pmGGHbrLKr79q6gSZmZajo3mzY35W8ghKD4sPnRxC04w4sYr1
+        YOiePl1314oyCF2tttdcBhndDFdVNno=
+Date:   Fri, 2 Dec 2022 11:08:29 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221202181719.1068869-3-sean.anderson@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Subject: Re: [PATCH bpf-next,v4 2/4] xfrm: interface: Add unstable helpers for
+ setting/getting XFRM metadata from TC-BPF
+Content-Language: en-US
+To:     Eyal Birger <eyal.birger@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        andrii@kernel.org, daniel@iogearbox.net, nicolas.dichtel@6wind.com,
+        razor@blackwall.org, mykolal@fb.com, ast@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, shuah@kernel.org, liuhangbin@gmail.com,
+        lixiaoyan@google.com
+References: <20221202095920.1659332-1-eyal.birger@gmail.com>
+ <20221202095920.1659332-3-eyal.birger@gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20221202095920.1659332-3-eyal.birger@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,13 +58,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 02, 2022 at 01:17:17PM -0500, Sean Anderson wrote:
-> This updates the speed register bits to the 2018 revision of 802.3. It
-> also splits up the definitions to prevent confusion in casual observers.
+On 12/2/22 1:59 AM, Eyal Birger wrote:
+> +__used noinline
+> +int bpf_skb_set_xfrm_info(struct __sk_buff *skb_ctx,
+> +			  const struct bpf_xfrm_info *from)
+> +{
+> +	struct sk_buff *skb = (struct sk_buff *)skb_ctx;
+> +	struct metadata_dst *md_dst;
+> +	struct xfrm_md_info *info;
+> +
+> +	if (unlikely(skb_metadata_dst(skb)))
+> +		return -EINVAL;
+> +
+> +	md_dst = this_cpu_ptr(xfrm_md_dst);
+> +
+> +	info = &md_dst->u.xfrm_info;
+> +
+> +	info->if_id = from->if_id;
+> +	info->link = from->link;
+> +	skb_dst_force(skb);
+> +	info->dst_orig = skb_dst(skb);
+> +
+> +	dst_hold((struct dst_entry *)md_dst);
+> +	skb_dst_set(skb, (struct dst_entry *)md_dst);
 
-Are you going to do it for the other registers so that there is
-consistency?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I may be missed something obvious and this just came to my mind,
+
+What stops cleanup_xfrm_interface_bpf() being run while skb is still holding the 
+md_dst?
+
+[ ... ]
+
+> +static const struct btf_kfunc_id_set xfrm_interface_kfunc_set = {
+> +	.owner = THIS_MODULE,
+> +	.set   = &xfrm_ifc_kfunc_set,
+> +};
+> +
+> +int __init register_xfrm_interface_bpf(void)
+> +{
+> +	int err;
+> +
+> +	xfrm_md_dst = metadata_dst_alloc_percpu(0, METADATA_XFRM,
+> +						GFP_KERNEL);
+> +	if (!xfrm_md_dst)
+> +		return -ENOMEM;
+> +	err = register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS,
+> +					&xfrm_interface_kfunc_set);
+> +	if (err < 0) {
+> +		metadata_dst_free_percpu(xfrm_md_dst);
+> +		return err;
+> +	}
+> +	return 0;
+> +}
+> +
+> +void cleanup_xfrm_interface_bpf(void)
+> +{
+> +	metadata_dst_free_percpu(xfrm_md_dst);
+> +}
+
