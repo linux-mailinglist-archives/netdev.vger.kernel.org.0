@@ -2,46 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BD506407AF
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 14:31:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EC7A6407B8
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 14:34:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232476AbiLBNbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 08:31:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33308 "EHLO
+        id S232331AbiLBNel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 08:34:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232011AbiLBNbd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 08:31:33 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C44CB390B
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 05:31:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=KRPBdjppLpZqji2Jk04x9r3IICXm96KFLXGqvJoUUxs=; b=sjPEO7fKaKvK7fCZjKKFQeLvUK
-        NuwTMEkUMTit1/3JpNPzOt1bwReLM45CGlkLLnTiFZG+0H4zOwgH3/FngvaGBRHBrfJzmBUF7D8UP
-        1+oRFnz5zNxzlVhE2KMHcHGxSbyZGGuus09+R3FI+DG7/lQoabJG8Jpo5n8+OzYjj1LA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p168Y-004B4H-Ew; Fri, 02 Dec 2022 14:31:30 +0100
-Date:   Fri, 2 Dec 2022 14:31:30 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        with ESMTP id S233668AbiLBNej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 08:34:39 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7104DC9353;
+        Fri,  2 Dec 2022 05:34:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=D4fZpyrx2i5YjjD4vPxhMjurysVwUOy3bpQ9AthaYkY=; b=IM6kqtlkIUZ8tL3pUjeU4756yS
+        j0Me6H9HF+gf/0z3nnpeRep6iS9Y0l5RBEEdQmrzNK9umpzesekxeB33XZ4KBgSVSnin9rdEVYz2X
+        qcy3O8EhHNOwfJzmdBUmC3dbG4zlnMEWuks+Zz+l+Qo2V8AtNb4VhvpL3UHJ4zM64OFyx37QUgUR1
+        F1BcjF1li2SZOGG2wDY+QQhSsbOBRXxEXkg57K0Cqf3Wc1vO2kWTcNpqACUmT3qel8ce1dfKfjjx2
+        tb9npa6S5do0JQ1AJxRd+im5ioPQ/yQNmE2sbOWT+yEN75OiMGYX8zF1djM2mKlLdfMYx+yTEqcuF
+        GB5WA6EQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35528)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1p16BJ-00049F-H5; Fri, 02 Dec 2022 13:34:21 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1p16BE-0004Qm-Of; Fri, 02 Dec 2022 13:34:16 +0000
+Date:   Fri, 2 Dec 2022 13:34:16 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next] net: sfp: clean up i2c-bus property parsing
-Message-ID: <Y4n+MnK6ZPMUIRhq@lunn.ch>
-References: <E1p13A4-0096Qh-TW@rmk-PC.armlinux.org.uk>
+        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
+        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: phy: Add driver for Motorcomm yt8531
+ gigabit ethernet phy
+Message-ID: <Y4n+2Ehvp6SInxUw@shell.armlinux.org.uk>
+References: <20221202073648.3182-1-Frank.Sae@motor-comm.com>
+ <Y4n9T+KGj/hX3C0e@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1p13A4-0096Qh-TW@rmk-PC.armlinux.org.uk>
+In-Reply-To: <Y4n9T+KGj/hX3C0e@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,21 +64,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 02, 2022 at 10:20:52AM +0000, Russell King (Oracle) wrote:
-> We currently have some complicated code in sfp_probe() which gets the
-> I2C bus depending on whether the sfp node is DT or ACPI, and we use
-> completely separate lookup functions.
+On Fri, Dec 02, 2022 at 02:27:43PM +0100, Andrew Lunn wrote:
+> > +static bool mdio_is_locked(struct phy_device *phydev)
+> > +{
+> > +	return mutex_is_locked(&phydev->mdio.bus->mdio_lock);
+> > +}
+> > +
+> > +#define ASSERT_MDIO(phydev) \
+> > +	WARN_ONCE(!mdio_is_locked(phydev), \
+> > +		  "MDIO: assertion failed at %s (%d)\n", __FILE__,  __LINE__)
+> > +
 > 
-> This could do with being in a separate function to make the code more
-> readable, so move it to a new function, sfp_i2c_get(). We can also use
-> fwnode_find_reference() to lookup the I2C bus fwnode before then
-> decending into fwnode-type specific parsing.
+> Hi Frank
 > 
-> A future cleanup would be to move the fwnode-type specific parsing into
-> the i2c layer, which is where it really should be.
-> 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> You are not the only one who gets locking wrong. This could be used in
+> other drivers. Please add it to include/linux/phy.h,
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+That placement doesn't make much sense.
 
-    Andrew
+As I already said, we have lockdep checks in drivers/net/phy/mdio_bus.c,
+and if we want to increase their effectiveness, then that's the place
+that it should be done.
+
+I don't see any point in using __FILE__ and __LINE__ in the above
+macro either. Firstly, WARN_ONCE() already includes the file and line,
+and secondly, the backtrace is more useful than the file and line where
+the assertion occurs especially if it's placed in mdio_bus.c
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
