@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0CD3640217
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:30:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2317F640218
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:30:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232810AbiLBI37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 03:29:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46664 "EHLO
+        id S232829AbiLBIaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 03:30:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232735AbiLBI3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:29:12 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2046.outbound.protection.outlook.com [40.107.92.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E26A9E8A
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:26:42 -0800 (PST)
+        with ESMTP id S231468AbiLBI3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:29:15 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2056.outbound.protection.outlook.com [40.107.100.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A368ABA1F
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:26:49 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FBBvdID63h+vr20O77As0ReE7QCJAvOild2N4y4eMf5+CpDOK3pAYpmqZMiUacB4r9zJIhNIzUolRm6WqOnevkwhy9q/rNDR2zP1DOGsdm7SLyYAp+1zwLOPsmpxw6nFEnKoShfIl6/e+fSqayozCvLrKwqTQhrhkcCHeAi1EEsSwbr+VnOg9QS5ah4lTV1609Ink3DxQ/6xYqHM/PgaGTofqUROFTgcw2qQIgh3uEkFk7j6otVTrDSyAB84exTZLp7o7zSd+fsjFylt4qqwohK45xb2KygiFrwplGJynw6j0efd7VVzNfPn6skLS6o14w6uQZEXjYzC4WVD4jNnng==
+ b=KSzqRnl8negW/FGKCHxeReGycRpZuB6XsBrUjgWnqHMpuxDi6Qy4zrv57uXAEzO67uvUCmrkbLb4KfL/mqE5Th15nT7ugLMl4AmwPlTGa9qelnaOZs6kOPvUHuVWDKrvhF0p2ntWM2IKQQ1KnqK769Wmz7nrcmiiSClyg2owS8lle+CvV0EKE9Ml2Fig/13niiHpC5WCCaLq8lbo+zdGMXbZbebw56iS1z8w+uf3K2HFqIHvIGuY91AA8kEZ6wTFfT6S8IYEPV2RV4qF2TjctU+tXXGVS/ZTWCmObkde1DsJcHAp6Otntt1jzfUZ9OABFRai0Qk3q9pyScKV9CWqKg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IFuATbyOS0cQmz91yBhQy42hY0HX7xSdXaZvA1w0eZs=;
- b=m+ptNjLDrLNEVaN2T0fYGVfAjMtY6ccnGFzY7UPFzjOe+9ErFil+J0mh9ZLqw7rF9s3+m/83ixqhwTUl2T3DNmk/3oec8wBSE6GoF6Z/YQ5GQOITJQrMbxoNXrvE0lhh9WV6Wkjrb/sIfViL323GGcVR/YpmQBaoArStC7EN6xEzCwWc0JpKNuu994KbXn5V2aGBR5iTHa0YO73TCu0UoWDjiSllxSDuV1WMtCzQezhKf2N1ltLS3LMshfg9TV1d3svGj0wVv4g0C7a5wRj+JVn3VZBlzFsTpcFNTfL3cm45m8ZvhnJdyVAGnWbpJgZdIh73B6XBQZQBVmGay6YcvQ==
+ bh=LTny/6TSqOFfO8nfwISfiiAAkcHEXJpf2tH80vHe5Fw=;
+ b=ONGy8oKcPoZ8EW0yO9WaTBcbklWLuo7gAAG5cS6ob0ZmSMmZjiDlRWwDTpyKFZ1NtlpCwV0KqZ0B8qOe29yQLVWk++yHVx/bDBblNmJ2QLNdrJ/Y+lF01qbLI3cB/2lyE/fYJGxfYRyNHgqcCbuJChjpF/G3/abPRqWnV1gxC45IwMPOlhcOQvhrmuRucvjSWuUoTvKI0I5oQPfE5+Hp7bNdhKLpnhYHeKkPXV/vC8UqTf7yxDoI1TADBkAQqAwPdLJDfvOTe9FtMTwbp1zUwJoq0/yBIOSizoDc7PqY5TexJPIULOhAyPni56szM33nY6FLtVeIkfLM01wteVR7Bw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IFuATbyOS0cQmz91yBhQy42hY0HX7xSdXaZvA1w0eZs=;
- b=ktBtrilOSH16GtgOUVGrqR4PhAB55G1oCdTFBzawzX3J3BfaA2gi55LXpXUQ5SelnWonR+X9WUEEsnQSzCN5jqA/C4iazmFku+N5E0b20ud7h7Xcn5Uvq53SzDhZV0Hfkn65gBFjZyIPz3uS+WCpTAf2KuoGDp7doiIIrmYVdSS6OlrC1F3yLcgjpV8npk2gQUI1bT037qQdN3EgC6H7GNtCHPF2c1S7QSEDPCFF+okrp8naXxdIKqcdOEVdnugNpfEZytcmLptdHWqUDMS9Er11jnU2/8VDUrtrWXUFoQRPZ96Blw9/bkMXDen/uD7F4j/B7fW5CayC8qjFHJ5Zxg==
-Received: from DM6PR21CA0018.namprd21.prod.outlook.com (2603:10b6:5:174::28)
- by MN0PR12MB6125.namprd12.prod.outlook.com (2603:10b6:208:3c7::15) with
+ bh=LTny/6TSqOFfO8nfwISfiiAAkcHEXJpf2tH80vHe5Fw=;
+ b=JVQPoJQN/dSpwJCN79IAIplY58qbrxU7/knFJo8j4qYNqtkb8d2LL88lBxIQBjnhqTInqv7K66ACWbYB76RRRbWaO3pcuIIoUHc0EiHcj4Nf2DxwUgyeZXb7nQ7Cq+J1tQQiYhDSQdsjUY6t0j72yQHBdAzvdDyJML6E/o562Ls3jdvBrUEGkGM++Vw7szzIWphc92RSiV/suSzYGUYDHS91bZLwPIjt66/1WejjMZrcnU5dHO+Xy8pGh/v9LuyLOuXflrBCQJC0dW5Fg4pyLIYg3onKH/JK03ZvPxyx9F2Pv1mahwA6y/uwTMn1UWo2qZS8R1vCXIG8O1dRrGIJoQ==
+Received: from MW4PR03CA0212.namprd03.prod.outlook.com (2603:10b6:303:b9::7)
+ by SA0PR12MB4445.namprd12.prod.outlook.com (2603:10b6:806:95::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Fri, 2 Dec
- 2022 08:26:40 +0000
-Received: from DM6NAM11FT037.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:174:cafe::c1) by DM6PR21CA0018.outlook.office365.com
- (2603:10b6:5:174::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5901.8 via Frontend
- Transport; Fri, 2 Dec 2022 08:26:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8; Fri, 2 Dec
+ 2022 08:26:47 +0000
+Received: from CO1NAM11FT099.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b9:cafe::61) by MW4PR03CA0212.outlook.office365.com
+ (2603:10b6:303:b9::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10 via Frontend
+ Transport; Fri, 2 Dec 2022 08:26:47 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT037.mail.protection.outlook.com (10.13.172.122) with Microsoft SMTP
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT099.mail.protection.outlook.com (10.13.175.171) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5857.21 via Frontend Transport; Fri, 2 Dec 2022 08:26:39 +0000
+ 15.20.5857.17 via Frontend Transport; Fri, 2 Dec 2022 08:26:47 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 2 Dec 2022
- 00:26:33 -0800
+ 00:26:36 -0800
 Received: from nps-server-23.mtl.labs.mlnx (10.126.231.35) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Fri, 2 Dec 2022 00:26:30 -0800
+ 15.2.986.36; Fri, 2 Dec 2022 00:26:33 -0800
 From:   Shay Drory <shayd@nvidia.com>
 To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>
 CC:     <danielj@nvidia.com>, <yishaih@nvidia.com>, <jiri@nvidia.com>,
         <saeedm@nvidia.com>, <parav@nvidia.com>
-Subject: [PATCH net-next V2 0/8] devlink: Add port function attribute to enable/disable Roce and migratable
-Date:   Fri, 2 Dec 2022 10:26:14 +0200
-Message-ID: <20221202082622.57765-1-shayd@nvidia.com>
+Subject: [PATCH net-next V2 1/8] net/mlx5: Introduce IFC bits for migratable
+Date:   Fri, 2 Dec 2022 10:26:15 +0200
+Message-ID: <20221202082622.57765-2-shayd@nvidia.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221202082622.57765-1-shayd@nvidia.com>
+References: <20221202082622.57765-1-shayd@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -74,23 +76,23 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT037:EE_|MN0PR12MB6125:EE_
-X-MS-Office365-Filtering-Correlation-Id: c2362250-5034-4c78-455a-08dad43eefad
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT099:EE_|SA0PR12MB4445:EE_
+X-MS-Office365-Filtering-Correlation-Id: 54c94dbe-321e-4c23-abe0-08dad43ef44d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nE/clLVhNzx7Q9MrBoVxrgy0as6hXKtWXomBktmQhCmuHj2mWecmhjd4bkngbFW4ZwWuIMP6x1rhaoLeDmVmWLKUaIlXGWD9avU1uHZGp0izA2DeCYR9PjeWmzpVcED2yxyJh7+xP0RC5KL8XZWOPlJa5z2KeGs6Bfsg3HS6Pm0rYe4WYw+yowiVRBYHB1/7G42vQfwbaIFybOj9lKwZmvFGRwTwgaf/plQnSyzFQaiApRE6V6jdsE/Pcrr09nAVEaaUpx06VtuNbt5H4UoEHpDUngOmCJdvtAi9XVA2E5uHHBzSRE1adJj7WAT2YVOqEfSoWrwvWDArwDtGTk3DW5AuOkKB2d94LNsnfzLgX9EqqyrRP9Gj7qvVKrjnjcpxZmBI2MtbXQGHxc3XkpUqlhxzRlHxJwIGADavRVDqxiajPZBXgkzBium2dXadtnKHaKnDUqFX3ftssoWHBLqsmxVzWaJ6eEb0MafkPJ4E4l7Nyv9C08xwcLtaJ+tuL6ID462YhBxcpZ2Z+V/Hxb87xYdnDTmMWHpUwAHJ2wHuJZbSJHSL4jSU1iAQLT6C9JS1x+B8S/cMPjHiNmqUCVJC27uLlDXZyyWhP8i0xBpQhJ07df2lAV9TgMbHLPZgt/lticRaBh28Lo2Lr6gEhDBZpJ+RzfJe5wrJqcLLMsOR5RHw2Sl61+8On4SkWY1+6hNE/Me6PQBqrBo3LaRjZ5WSH6F8CdezFwWBVm3QFEYDc/FbcqXlXvl3TvWbWq3GuuQcYHJQ9hr/TBWdN+1mss2oB+t/ghPG3YK/cHPgNXvS5G0=
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(376002)(396003)(346002)(451199015)(36840700001)(46966006)(40470700004)(7636003)(40480700001)(40460700003)(356005)(6666004)(2906002)(36756003)(2616005)(107886003)(86362001)(16526019)(966005)(478600001)(186003)(8936002)(36860700001)(26005)(316002)(70586007)(5660300002)(41300700001)(70206006)(110136005)(4326008)(54906003)(8676002)(82740400003)(336012)(1076003)(82310400005)(83380400001)(47076005)(426003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ZMJWQr123F7G95pi5/R3YK5Hy1zYwELly4HyyGI4lGJ3kMMw2S4oORFT3vZ9zyPgA+blUCKQW+pxcDpuVfF/8/WRLqZjyRbq8ZJgIIuXbUleP+L4L059tKPLkZyOMWr7uvU9v73PvkK9j9/ZoDQdGVD4c1TO90jY4L4/10e9AjATNQOA82XsRrccv2hnCruRe9KojFlJPuIFC9/VDYe22cAoOGW0/k9FnMEi4fVts2eRkXg2QGLuXcTrV2yDmm1BSUlbwVEJBFeJPArfBWtUM3sOMOD9i4PDFRltYfieCyLxKUlTWBycWuZkk6bLwyRZ8PUaEU39nCgIHLNOeIPyCwziS7raDkYts5oOf3IhUrdryB0qXljzR9WNptX7P3Oj/0jfzjnQA/8mu2tfBomlb+EntBBQtP4tFGupx0JDrZ214DMWF3YTpSEwLrC8YiqFOcOp63ML7R2WsDVtbDeFmDmlQA3Pu/TWMZtmT5gAauQM2sSYDs4vOUEGlRNCkurOW4EWN7lznQz/lt3ipfxIRO9CvIl/fswF1f3FPjyCctugG7T7DLRd5upu8f3fV5eqDigEjXdiAyCZt5VkU5Mr0COf7cZTtBnz4XDEWjAtXr3dxdyyH38zl7xVKLN/uIxQm9v+U1TAZxQIBZTwct5IUAh1xOKHqFKnvmb4kNoftcYBHfR71/Nkpu9uSe9RnS/yzmnUU8fNewBZVi2VEXJ6Og==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(396003)(136003)(39860400002)(376002)(451199015)(36840700001)(46966006)(40470700004)(82310400005)(478600001)(6666004)(107886003)(7636003)(356005)(86362001)(82740400003)(70206006)(2906002)(40460700003)(54906003)(8936002)(110136005)(316002)(26005)(16526019)(186003)(336012)(1076003)(36756003)(41300700001)(70586007)(4326008)(8676002)(2616005)(40480700001)(83380400001)(426003)(47076005)(36860700001)(5660300002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2022 08:26:39.9111
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2022 08:26:47.6575
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2362250-5034-4c78-455a-08dad43eefad
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54c94dbe-321e-4c23-abe0-08dad43ef44d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT037.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT099.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6125
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4445
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -101,117 +103,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series is a complete rewrite of the series "devlink: Add port
-function attribute to enable/disable roce"
-link:
-https://lore.kernel.org/netdev/20221102163954.279266-1-danielj@nvidia.com/
+From: Yishai Hadas <yishaih@nvidia.com>
 
-Currently mlx5 PCI VF and SF are enabled by default for RoCE
-functionality. And mlx5 PCI VF is disable by dafault for migratable
-functionality.
+Introduce IFC related capabilities to enable setting VF to be able to
+perform live migration. e.g.: to be migratable.
 
-Currently a user does not have the ability to disable RoCE for a PCI
-VF/SF device before such device is enumerated by the driver.
-
-User is also incapable to do such setting from smartnic scenario for a
-VF from the smartnic.
-
-Current 'enable_roce' device knob is limited to do setting only at
-driverinit time. By this time device is already created and firmware has
-already allocated necessary system memory for supporting RoCE.
-
-Also, Currently a user does not have the ability to enable migratable
-for a PCI VF.
-
-The above are a hyper visor level control, to set the functionality of
-devices passed through to guests.
-
-This is achieved by extending existing 'port function' object to control
-capabilities of a function. This enables users to control capability of
-the device before enumeration.
-
-Examples when user prefers to disable RoCE for a VF when using switchdev
-mode:
-
-$ devlink port show pci/0000:06:00.0/1
-pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller 0
-pfnum 0 vfnum 0 external false splittable false
-  function:
-    hw_addr 00:00:00:00:00:00 roce enable
-
-$ devlink port function set pci/0000:06:00.0/1 roce disable
-  
-$ devlink port show pci/0000:06:00.0/1
-pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller 0
-pfnum 0 vfnum 0 external false splittable false
-  function:
-    hw_addr 00:00:00:00:00:00 roce disable
-
-FAQs:
------
-1. What does roce enable/disable do?
-Ans: It disables RoCE capability of the function before its enumerated,
-so when driver reads the capability from the device firmware, it is
-disabled.
-At this point RDMA stack will not be able to create UD, QP1, RC, XRC
-type of QPs. When RoCE is disabled, the GID table of all ports of the
-device is disabled in the device and software stack.
-
-2. How is the roce 'port function' option different from existing
-devlink param?
-Ans: RoCE attribute at the port function level disables the RoCE
-capability at the specific function level; while enable_roce only does
-at the software level.
-
-3. Why is this option for disabling only RoCE and not the whole RDMA
-device?
-Ans: Because user still wants to use the RDMA device for non RoCE
-commands in more memory efficient way.
-
-Patch summary:
-Patch-1 introduce ifc bits for migratable command
-Patch-2 avoid partial port function request processing
-Patch-3 move devlink hw_addr attribute doc to devlink file
-Patch-4 adds devlink attribute to control roce
-Patch-5 add generic setters/getters for other functions caps 
-Patch-6 implements mlx5 callbacks for roce control
-Patch-7 adds devlink attribute to control migratable
-Patch-8 implements mlx5 callbacks for migratable control
-
+Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Acked-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-v1->v2:
- - see patch 7 for a changelog.
+ include/linux/mlx5/mlx5_ifc.h | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Shay Drory (6):
-  devlink: Validate port function request
-  devlink: Move devlink port function hw_addr attr documentation
-  devlink: Expose port function commands to control RoCE
-  net/mlx5: Add generic getters for other functions caps
-  devlink: Expose port function commands to control migratable
-  net/mlx5: E-Switch, Implement devlink port function cmds to control
-    migratable
-
-Yishai Hadas (2):
-  net/mlx5: Introduce IFC bits for migratable
-  net/mlx5: E-Switch, Implement devlink port function cmds to control
-    RoCE
-
- .../device_drivers/ethernet/mellanox/mlx5.rst |  46 ++--
- .../networking/devlink/devlink-port.rst       | 120 +++++++++-
- .../net/ethernet/mellanox/mlx5/core/devlink.c |   4 +
- .../net/ethernet/mellanox/mlx5/core/eswitch.c |  43 ++++
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  11 +-
- .../mellanox/mlx5/core/eswitch_offloads.c     | 210 +++++++++++++++++-
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   5 +-
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c |   3 +-
- .../net/ethernet/mellanox/mlx5/core/vport.c   |  30 ++-
- include/linux/mlx5/mlx5_ifc.h                 |   6 +-
- include/linux/mlx5/vport.h                    |   2 +
- include/net/devlink.h                         |  40 ++++
- include/uapi/linux/devlink.h                  |  13 ++
- net/core/devlink.c                            | 195 +++++++++++++++-
- 14 files changed, 682 insertions(+), 46 deletions(-)
-
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 5a4e914e2a6f..2093131483c7 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -68,6 +68,7 @@ enum {
+ 	MLX5_SET_HCA_CAP_OP_MOD_ODP                   = 0x2,
+ 	MLX5_SET_HCA_CAP_OP_MOD_ATOMIC                = 0x3,
+ 	MLX5_SET_HCA_CAP_OP_MOD_ROCE                  = 0x4,
++	MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE2       = 0x20,
+ 	MLX5_SET_HCA_CAP_OP_MODE_PORT_SELECTION       = 0x25,
+ };
+ 
+@@ -1875,7 +1876,10 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ };
+ 
+ struct mlx5_ifc_cmd_hca_cap_2_bits {
+-	u8	   reserved_at_0[0xa0];
++	u8	   reserved_at_0[0x80];
++
++	u8         migratable[0x1];
++	u8         reserved_at_81[0x1f];
+ 
+ 	u8	   max_reformat_insert_size[0x8];
+ 	u8	   max_reformat_insert_offset[0x8];
 -- 
 2.38.1
 
