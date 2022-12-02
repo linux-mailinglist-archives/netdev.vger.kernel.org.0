@@ -2,87 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65F036405B0
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 12:20:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE0D56405C2
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 12:26:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbiLBLU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 06:20:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37182 "EHLO
+        id S233186AbiLBL0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 06:26:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233067AbiLBLUX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 06:20:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC3B7F8A4;
-        Fri,  2 Dec 2022 03:20:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89FB4B82142;
-        Fri,  2 Dec 2022 11:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4BEC6C433D7;
-        Fri,  2 Dec 2022 11:20:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669980017;
-        bh=ZijqJ5Y0fEiCwwKbkuv4C73PUtqmtzIwS7+w0AJ7XFg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lsGMj0R/aGek2z1UyvEyzjVn/8PAuj9lv4d97bptECd2JSPwoU26LbKfOUkjiOT0i
-         7IIEnboOKUClUoo96xZ7ToiNaoIEuArziy2kna3Mm+SiHJBv7WPBXrtqJXF8C1ZPQO
-         8S/ShEVjbt1kzhqkcUo/oFEgIDJLNjvvRwatiCV7ckS9Qc70Py8bdxkUPkWmjpM5JH
-         GVdD8T9WfXhtwxpWWMorEVv827prU/ZHOtGDJ9R8MMeuSRdY6GDwKgelZ2cES3sFJP
-         LqTPu/NRNFyDJn7+HXJVPVw5gzPgm26AWcjwx9VtFZre6LIjYROA8J8jKwnG0MfPcQ
-         81UofL3lMHz+Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2B93BE450B4;
-        Fri,  2 Dec 2022 11:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233170AbiLBL0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 06:26:38 -0500
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31234CAF80;
+        Fri,  2 Dec 2022 03:26:36 -0800 (PST)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id 6D3132FA6A;
+        Fri,  2 Dec 2022 13:26:33 +0200 (EET)
+Received: from ink.ssi.bg (unknown [193.238.174.40])
+        by mg.ssi.bg (Proxmox) with ESMTP id 0F3232FA69;
+        Fri,  2 Dec 2022 13:26:32 +0200 (EET)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 3640D3C0435;
+        Fri,  2 Dec 2022 13:26:28 +0200 (EET)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 2B2BQQ5M043907;
+        Fri, 2 Dec 2022 13:26:27 +0200
+Date:   Fri, 2 Dec 2022 13:26:26 +0200 (EET)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Dan Carpenter <error27@gmail.com>
+cc:     liqiong <liqiong@nfschina.com>, Peilin Ye <yepeilin.cs@gmail.com>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, Yu Zhe <yuzhe@nfschina.com>
+Subject: Re: [PATCH] ipvs: initialize 'ret' variable in do_ip_vs_set_ctl()
+In-Reply-To: <Y4nSu7D5T2jDkXGK@kadam>
+Message-ID: <7758482-42e8-9057-b568-3980858267f@ssi.bg>
+References: <20221202032511.1435-1-liqiong@nfschina.com> <Y4nORiViTw0XlU2a@kadam> <9bc0af1a-3cf0-de4e-7073-0f7895b7f6eb@nfschina.com> <Y4nSu7D5T2jDkXGK@kadam>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/2] Documentation: bonding: update miimon default to
- 100
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166998001717.12503.6133600119187941184.git-patchwork-notify@kernel.org>
-Date:   Fri, 02 Dec 2022 11:20:17 +0000
-References: <4c3f4f0b8f4a8cd3c104d58c106b97ce5f180bc1.1669839127.git.jtoppins@redhat.com>
-In-Reply-To: <4c3f4f0b8f4a8cd3c104d58c106b97ce5f180bc1.1669839127.git.jtoppins@redhat.com>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, corbet@lwn.net,
-        maheshb@google.com, jarod@redhat.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/mixed; boundary="-1463811672-1864568413-1669980388=:40112"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+---1463811672-1864568413-1669980388=:40112
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-On Wed, 30 Nov 2022 15:12:06 -0500 you wrote:
-> With commit c1f897ce186a ("bonding: set default miimon value for non-arp
-> modes if not set") the miimon default was changed from zero to 100 if
-> arp_interval is also zero. Document this fact in bonding.rst.
+
+	Hello,
+
+On Fri, 2 Dec 2022, Dan Carpenter wrote:
+
+> On Fri, Dec 02, 2022 at 06:18:37PM +0800, liqiong wrote:
+> > 
+> > 
+> > 在 2022年12月02日 18:07, Dan Carpenter 写道:
+> > > On Fri, Dec 02, 2022 at 11:25:11AM +0800, Li Qiong wrote:
+> > >> The 'ret' should need to be initialized to 0, in case
+> > >> return a uninitialized value because no default process
+> > >> for "switch (cmd)".
+> > >>
+> > >> Signed-off-by: Li Qiong <liqiong@nfschina.com>
+> > > If this is a real bug, then it needs a fixes tag.  The fixes tag helps
+> > > us know whether to back port or not and it also helps in reviewing the
+> > > patch.  Also get_maintainer.pl will CC the person who introduced the
+> > > bug so they can review it.  They are normally the best person to review
+> > > their own code.
+> > >
+> > > Here it would be:
+> > > Fixes: c5a8a8498eed ("ipvs: Fix uninit-value in do_ip_vs_set_ctl()")
+> > >
+> > > Which is strange...  Also it suggest that the correct value is -EINVAL
+> > > and not 0.
+> > >
+> > > The thing about uninitialized variable bugs is that Smatch and Clang
+> > > both warn about them so they tend to get reported pretty quick.
+> > > Apparently neither Nathan nor I sent forwarded this static checker
+> > > warning.  :/
+> > >
+> > > regards,
+> > > dan carpenter
+> > 
+> > It is not a real bug,   I  use tool (eg: smatch, sparse) to audit the
+> > code,  got this warning and check it, found may be a real problem.
 > 
-> Fixes: c1f897ce186a ("bonding: set default miimon value for non-arp modes if not set")
-> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+> Yeah.  If it is a false positive just ignore it, do not bother to
+> silence wrong static checker warnings.
 > 
-> [...]
+> The code in question here is:
+> 
+> 	if (len != set_arglen[CMDID(cmd)]) {
+> 
+> The only time that condition can be true is for the cases in the switch
+> statement.  So Peilin's patch is correct.
+> 
+> Smatch is bad at understanding arrays so Smatch cannot parse the if
+> statement above as a human reader can.
 
-Here is the summary with links:
-  - [net-next,1/2] Documentation: bonding: update miimon default to 100
-    https://git.kernel.org/netdev/net-next/c/f036b97da67f
-  - [net-next,2/2] Documentation: bonding: correct xmit hash steps
-    https://git.kernel.org/netdev/net-next/c/95cce3fae4d9
+	Yes, no bug in current code. But it is better to return the 
+default switch case with -EINVAL (not 0), in case new commands are added.
+Such patch should target net-next, it is just for compilers/tools
+that do not look into set_arglen[].
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Regards
 
+--
+Julian Anastasov <ja@ssi.bg>
+---1463811672-1864568413-1669980388=:40112--
 
