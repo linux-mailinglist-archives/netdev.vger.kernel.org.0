@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 893E5640EE4
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 21:10:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F20D640EE7
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 21:11:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233890AbiLBUKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 15:10:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
+        id S234312AbiLBULF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 15:11:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiLBUKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 15:10:48 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B458F1162
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 12:10:47 -0800 (PST)
+        with ESMTP id S234818AbiLBULB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 15:11:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918C0F37FC
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 12:10:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6CFA4CE1FA6
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 20:10:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC66AC433C1;
-        Fri,  2 Dec 2022 20:10:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 442BAB82277
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 20:10:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72137C433C1;
+        Fri,  2 Dec 2022 20:10:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670011843;
-        bh=7QXsFQsjAlHtWFPIrCaA20g5hQp7wcqHMj+0h0qjLao=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ZGHlhlc9ZHgkPFwBrkw9vh85oCqPyxYb6W3CEy5X7Q4mYOyHH+tB49+oLhms21+p6
-         FrdIyYerVwsTpDVBwZtmMe0a1bg7TTSF8RiOf7hwC+Ow55La8gFRQvZjwfAbxkvG8c
-         U2ZfHJt+SZVroATox162ocHyAFiX+yDF96kMnV0KwT14eVxKe6To/C/8Y9Dyykb6vt
-         v1hY6x8k39J7+5BDmnqPo5DLvGNfCrjSOqd/EvVTXROwf7UduEjZETtk4UIqJUnodF
-         CsmJSoS5Fl+pA0K0fhbBZkekXXWJBa6cTqmboorqAiau/ICRAXlnqq8NKVLxrTbZWg
-         5Oo5qO5SBADQQ==
+        s=k20201202; t=1670011856;
+        bh=wlrwo+8/RwiRmKkYEGja0Hs8rQmUkIOyHb6eMOY6LwM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=r7u52RSDR/uo2pw/Jrn32zI7FoWEzpf7O+eBxCpykg2BtDDw+rCLs1Pn69SHMtcq+
+         eQD3+p4wVpTfhyRgHBr5861gNiewzt5f0sfS08S2WOR9KPJaJ1MeEylq93t8vOPqoD
+         nddZ1OBrp63efv/mHBLtKwysHHrORFbT24Ed1IYJCwDeUt1VIItk9ZSrYUHWZaQ13F
+         nZtAgdYveVVI84muBXW0MVZxi1lLzLhyohWmJRm0zGa5PAlpW3jv6fTxRD5vdWJQl2
+         b5V2kTJRkAbOAeRecMF+LxbHg3PZ+hWSP8SXMEHTRW7rlerEp6iIkAWIy/1SsRynOm
+         ficAXEulBWBjA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -38,11 +38,14 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Bharat Bhushan <bbhushan2@marvell.com>
-Subject: [PATCH xfrm-next 00/16] mlx5 IPsec packet offload support (Part I)
-Date:   Fri,  2 Dec 2022 22:10:21 +0200
-Message-Id: <cover.1670011671.git.leonro@nvidia.com>
+        Bharat Bhushan <bbhushan2@marvell.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH xfrm-next 01/16] net/mlx5: Return ready to use ASO WQE
+Date:   Fri,  2 Dec 2022 22:10:22 +0200
+Message-Id: <5bbd3960d71aa6c63398393561dfffd67ce43f14.1670011671.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <cover.1670011671.git.leonro@nvidia.com>
+References: <cover.1670011671.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -56,47 +59,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Hi,
+There is no need in hiding returned ASO WQE type by providing void*,
+use the real type instead. Do it together with zeroing that memory,
+so ASO WQE will be ready to use immediately.
 
-This series follows previously sent "Extend XFRM core to allow packet
-offload configuration" series [1].
+Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c | 1 -
+ drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c     | 7 +++++--
+ drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h     | 2 +-
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-It is first part with refactoring to mlx5 allow us natively extend
-mlx5 IPsec logic to support both crypto and packet offloads.
-
-Thanks
-
-[1] https://lore.kernel.org/all/cover.1670005543.git.leonro@nvidia.com
-
-Leon Romanovsky (16):
-  net/mlx5: Return ready to use ASO WQE
-  net/mlx5: Add HW definitions for IPsec packet offload
-  net/mlx5e: Advertise IPsec packet offload support
-  net/mlx5e: Store replay window in XFRM attributes
-  net/mlx5e: Remove extra layers of defines
-  net/mlx5e: Create symmetric IPsec RX and TX flow steering structs
-  net/mlx5e: Use mlx5 print routines for low level IPsec code
-  net/mlx5e: Remove accesses to priv for low level IPsec FS code
-  net/mlx5e: Create Advanced Steering Operation object for IPsec
-  net/mlx5e: Create hardware IPsec packet offload objects
-  net/mlx5e: Move IPsec flow table creation to separate function
-  net/mlx5e: Refactor FTE setup code to be more clear
-  net/mlx5e: Flatten the IPsec RX add rule path
-  net/mlx5e: Make clear what IPsec rx_err does
-  net/mlx5e: Group IPsec miss handles into separate struct
-  net/mlx5e: Generalize creation of default IPsec miss group and rule
-
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   1 +
- .../ethernet/mellanox/mlx5/core/en/tc/meter.c |   1 -
- .../mellanox/mlx5/core/en_accel/ipsec.c       |  50 +-
- .../mellanox/mlx5/core/en_accel/ipsec.h       |  48 +-
- .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 629 +++++++++---------
- .../mlx5/core/en_accel/ipsec_offload.c        | 107 ++-
- .../net/ethernet/mellanox/mlx5/core/lib/aso.c |   7 +-
- .../net/ethernet/mellanox/mlx5/core/lib/aso.h |   3 +-
- include/linux/mlx5/mlx5_ifc.h                 |  53 +-
- 9 files changed, 543 insertions(+), 356 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+index be74e1403328..25cd449e8aad 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+@@ -162,7 +162,6 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
+ 			   MLX5_ACCESS_ASO_OPC_MOD_FLOW_METER);
+ 
+ 	aso_ctrl = &aso_wqe->aso_ctrl;
+-	memset(aso_ctrl, 0, sizeof(*aso_ctrl));
+ 	aso_ctrl->data_mask_mode = MLX5_ASO_DATA_MASK_MODE_BYTEWISE_64BYTE << 6;
+ 	aso_ctrl->condition_1_0_operand = MLX5_ASO_ALWAYS_TRUE |
+ 					  MLX5_ASO_ALWAYS_TRUE << 4;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
+index 0f9e4f01c85a..5a80fb7dbbca 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
+@@ -353,12 +353,15 @@ void mlx5_aso_build_wqe(struct mlx5_aso *aso, u8 ds_cnt,
+ 	cseg->general_id = cpu_to_be32(obj_id);
+ }
+ 
+-void *mlx5_aso_get_wqe(struct mlx5_aso *aso)
++struct mlx5_aso_wqe *mlx5_aso_get_wqe(struct mlx5_aso *aso)
+ {
++	struct mlx5_aso_wqe *wqe;
+ 	u16 pi;
+ 
+ 	pi = mlx5_wq_cyc_ctr2ix(&aso->wq, aso->pc);
+-	return mlx5_wq_cyc_get_wqe(&aso->wq, pi);
++	wqe = mlx5_wq_cyc_get_wqe(&aso->wq, pi);
++	memset(wqe, 0, sizeof(*wqe));
++	return wqe;
+ }
+ 
+ void mlx5_aso_post_wqe(struct mlx5_aso *aso, bool with_data,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
+index 2d40dcf9d42e..4312614bf3bc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
+@@ -77,7 +77,7 @@ enum {
+ 
+ struct mlx5_aso;
+ 
+-void *mlx5_aso_get_wqe(struct mlx5_aso *aso);
++struct mlx5_aso_wqe *mlx5_aso_get_wqe(struct mlx5_aso *aso);
+ void mlx5_aso_build_wqe(struct mlx5_aso *aso, u8 ds_cnt,
+ 			struct mlx5_aso_wqe *aso_wqe,
+ 			u32 obj_id, u32 opc_mode);
 -- 
 2.38.1
 
