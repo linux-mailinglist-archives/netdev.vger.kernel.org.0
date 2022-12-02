@@ -2,108 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9021E6404C5
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 11:35:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91A966404D1
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 11:37:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233038AbiLBKfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 05:35:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
+        id S232576AbiLBKgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 05:36:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232800AbiLBKfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 05:35:03 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA62C1BFB;
-        Fri,  2 Dec 2022 02:35:02 -0800 (PST)
-Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NNq7F5ljmz15N2v;
-        Fri,  2 Dec 2022 18:34:17 +0800 (CST)
-Received: from [10.174.176.189] (10.174.176.189) by
- kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 2 Dec 2022 18:34:59 +0800
-Message-ID: <52a15a3f-a288-7a7f-e9b3-1096d108e4a3@huawei.com>
-Date:   Fri, 2 Dec 2022 18:34:58 +0800
+        with ESMTP id S232881AbiLBKgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 05:36:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676E9C4CDE;
+        Fri,  2 Dec 2022 02:36:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 047A362245;
+        Fri,  2 Dec 2022 10:36:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C92C433D6;
+        Fri,  2 Dec 2022 10:36:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669977391;
+        bh=WbzKkJ3I8UX3YvCZ/mmSVTcsBOZOo1tFhfKena2T4u8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=NQUt8fnFYTodVrDYc3t+2RuYihYGjJKlCQCJYou1AhplRu+EReCEX/TpOa0QJ9KVe
+         oKcJ/VL5nKryt2MsgvUCFlyPK/ATO9OOhKOea9dbRgcwsmZU0AwjU159xV+bL66JDe
+         9mQ6TjGAntnj6Dqst9mhhfqJZXl9geH/s4I6hRBDH+z567B2B3kUuaF8nALQYOiJo3
+         ESKuXmWWzJmcCbTH4QG1jydPwyjDcC9SP7mz09VEObloNG0pwkdutY49N6ZZPHstTO
+         S4b9vedK4hgC47ZXhi72cuwe/+elKdwRA9L0gu/7bo8oAC3ahL0uBa+x1AUHHDhORx
+         8HsWVaLyLkMWw==
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@rivosinc.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Brendan Jackman <jackmanb@google.com>
+Subject: [PATCH bpf] bpf: Proper R0 zero-extension for BPF_CALL instructions
+Date:   Fri,  2 Dec 2022 11:36:20 +0100
+Message-Id: <20221202103620.1915679-1-bjorn@kernel.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH] net: microchip: sparx5: Fix missing destroy_workqueue of
- mact_queue
-To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
-        <Steen.Hegelund@microchip.com>, <daniel.machon@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20221201134717.25750-1-linqiheng@huawei.com>
- <CALs4sv36FCT6uUAHM8KTGX5GwgeZGNTSLxB2cq7h-K3jxuK+HQ@mail.gmail.com>
- <CALs4sv3w4Gjs2JGr-hHh_XEXoVWJm3t27O=ezy6HEzRXuk2TwA@mail.gmail.com>
-From:   Qiheng Lin <linqiheng@huawei.com>
-In-Reply-To: <CALs4sv3w4Gjs2JGr-hHh_XEXoVWJm3t27O=ezy6HEzRXuk2TwA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.189]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500014.china.huawei.com (7.221.188.232)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2022/12/2 18:02, Pavan Chebbi 写道:
-> On Fri, Dec 2, 2022 at 1:36 PM Pavan Chebbi <pavan.chebbi@broadcom.com> wrote:
->>
->> On Thu, Dec 1, 2022 at 6:57 PM Qiheng Lin <linqiheng@huawei.com> wrote:
->>>
->>> The mchp_sparx5_probe() won't destroy workqueue created by
->>> create_singlethread_workqueue() in sparx5_start() when later
->>> inits failed. Add destroy_workqueue in the cleanup_ports case,
->>> also add it in mchp_sparx5_remove()
->>>
->>> Signed-off-by: Qiheng Lin <linqiheng@huawei.com>
->>> ---
->>>   drivers/net/ethernet/microchip/sparx5/sparx5_main.c | 3 +++
->>>   1 file changed, 3 insertions(+)
->>>
->>> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
->>> index eeac04b84638..b6bbb3c9bd7a 100644
->>> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
->>> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
->>> @@ -887,6 +887,8 @@ static int mchp_sparx5_probe(struct platform_device *pdev)
->>>
->>>   cleanup_ports:
->>>          sparx5_cleanup_ports(sparx5);
->>> +       if (sparx5->mact_queue)
->>> +               destroy_workqueue(sparx5->mact_queue);
->>
->> Would be better if you destroy inside sparx5_start() before returning failure.
->>
-> 
-> Alternatively you could add the destroy inside sparx5_cleanup_ports()
-> that will cover all error exits?
+From: Björn Töpel <bjorn@rivosinc.com>
 
-That works functionally, I have considered this modification as well. 
-Since I'm not quite sure on the naming, destroying the mact_queue 
-belongs to sparx5_cleanup_ports, which they don't contain now.
+A BPF call instruction can be, correctly, marked with zext_dst set to
+true. An example of this can be found in the BPF selftests
+progs/bpf_cubic.c:
 
-> 
->>>   cleanup_config:
->>>          kfree(configs);
->>>   cleanup_pnode:
->>> @@ -911,6 +913,7 @@ static int mchp_sparx5_remove(struct platform_device *pdev)
->>>          sparx5_cleanup_ports(sparx5);
->>>          /* Unregister netdevs */
->>>          sparx5_unregister_notifier_blocks(sparx5);
->>> +       destroy_workqueue(sparx5->mact_queue);
->>>
->>>          return 0;
->>>   }
->>> --
->>> 2.32.0
->>>
+  ...
+  extern __u32 tcp_reno_undo_cwnd(struct sock *sk) __ksym;
+
+  __u32 BPF_STRUCT_OPS(bpf_cubic_undo_cwnd, struct sock *sk)
+  {
+          return tcp_reno_undo_cwnd(sk);
+  }
+  ...
+
+which compiles to:
+  0:  r1 = *(u64 *)(r1 + 0x0)
+  1:  call -0x1
+  2:  exit
+
+The call will be marked as zext_dst set to true, and for some backends
+(bpf_jit_needs_zext() returns true) expanded to:
+  0:  r1 = *(u64 *)(r1 + 0x0)
+  1:  call -0x1
+  2:  w0 = w0
+  3:  exit
+
+The opt_subreg_zext_lo32_rnd_hi32() function which is responsible for
+the zext patching, relies on insn_def_regno() to fetch the register to
+zero-extend. However, this function does not handle call instructions
+correctly, and opt_subreg_zext_lo32_rnd_hi32() fails the verification.
+
+Make sure that R0 is correctly resolved for (BPF_JMP | BPF_CALL)
+instructions.
+
+Fixes: 83a2881903f3 ("bpf: Account for BPF_FETCH in insn_has_def32()")
+Signed-off-by: Björn Töpel <bjorn@rivosinc.com>
+---
+I'm not super happy about the additional special case -- first
+cmpxchg, and now call. :-( A more elegant/generic solution is welcome!
+---
+ kernel/bpf/verifier.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 264b3dc714cc..4f9660eafc72 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -13386,6 +13386,9 @@ static int opt_subreg_zext_lo32_rnd_hi32(struct bpf_verifier_env *env,
+ 		if (!bpf_jit_needs_zext() && !is_cmpxchg_insn(&insn))
+ 			continue;
+ 
++		if (insn.code == (BPF_JMP | BPF_CALL))
++			load_reg = BPF_REG_0;
++
+ 		if (WARN_ON(load_reg == -1)) {
+ 			verbose(env, "verifier bug. zext_dst is set, but no reg is defined\n");
+ 			return -EFAULT;
+
+base-commit: 01f856ae6d0ca5ad0505b79bf2d22d7ca439b2a1
+-- 
+2.37.2
 
