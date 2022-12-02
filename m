@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C73C6401A9
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:12:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 538F56401BA
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:13:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232712AbiLBIMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 03:12:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
+        id S232763AbiLBIM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 03:12:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232663AbiLBIMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:12:38 -0500
+        with ESMTP id S232693AbiLBIMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:12:39 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443C8D96
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:12:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F189B4A7
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:12:37 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <sha@pengutronix.de>)
-        id 1p119o-00059b-IC; Fri, 02 Dec 2022 09:12:28 +0100
+        id 1p119p-0005A8-Jw; Fri, 02 Dec 2022 09:12:29 +0100
 Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <sha@pengutronix.de>)
-        id 1p119m-001lGS-QF; Fri, 02 Dec 2022 09:12:27 +0100
+        id 1p119o-001lGg-42; Fri, 02 Dec 2022 09:12:28 +0100
 Received: from sha by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <sha@pengutronix.de>)
-        id 1p119m-00BfDg-Ph; Fri, 02 Dec 2022 09:12:26 +0100
+        id 1p119m-00BfDj-Qm; Fri, 02 Dec 2022 09:12:26 +0100
 From:   Sascha Hauer <s.hauer@pengutronix.de>
 To:     linux-wireless@vger.kernel.org
 Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
@@ -38,9 +38,9 @@ Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
         Da Xue <da@libre.computer>, Po-Hao Huang <phhuang@realtek.com>,
         Viktor Petrenko <g0000ga@gmail.com>,
         Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH v5 03/11] wifi: rtw88: Drop rf_lock
-Date:   Fri,  2 Dec 2022 09:12:16 +0100
-Message-Id: <20221202081224.2779981-4-s.hauer@pengutronix.de>
+Subject: [PATCH v5 04/11] wifi: rtw88: Drop h2c.lock
+Date:   Fri,  2 Dec 2022 09:12:17 +0100
+Message-Id: <20221202081224.2779981-5-s.hauer@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221202081224.2779981-1-s.hauer@pengutronix.de>
 References: <20221202081224.2779981-1-s.hauer@pengutronix.de>
@@ -59,139 +59,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rtwdev->rf_lock spinlock protects the rf register accesses in
-rtw_read_rf() and rtw_write_rf(). Most callers of these functions hold
-rtwdev->mutex already with the exception of the callsites in the debugfs
-code. The debugfs code doesn't justify an extra lock, so acquire the mutex
-there as well before calling rf register accessors and drop the now
-unnecessary spinlock.
+The h2c.lock spinlock is used in rtw_fw_send_h2c_command() and
+rtw_fw_send_h2c_packet().  Most callers call this with rtwdev->mutex
+held, except from one callsite in the debugfs code. The debugfs code
+alone doesn't justify the extra lock, so acquire rtwdev->mutex in
+debugfs and drop the now unnecessary spinlock.
 
 Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
 ---
- drivers/net/wireless/realtek/rtw88/debug.c | 11 +++++++++++
- drivers/net/wireless/realtek/rtw88/hci.h   |  9 +++------
+ drivers/net/wireless/realtek/rtw88/debug.c |  2 ++
+ drivers/net/wireless/realtek/rtw88/fw.c    | 13 ++++---------
  drivers/net/wireless/realtek/rtw88/main.c  |  1 -
- drivers/net/wireless/realtek/rtw88/main.h  |  3 ---
- 4 files changed, 14 insertions(+), 10 deletions(-)
+ drivers/net/wireless/realtek/rtw88/main.h  |  2 --
+ 4 files changed, 6 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/wireless/realtek/rtw88/debug.c b/drivers/net/wireless/realtek/rtw88/debug.c
-index 9ebe544e51d0d..70e19f2a1a355 100644
+index 70e19f2a1a355..f5b8a77ebc67b 100644
 --- a/drivers/net/wireless/realtek/rtw88/debug.c
 +++ b/drivers/net/wireless/realtek/rtw88/debug.c
-@@ -144,7 +144,9 @@ static int rtw_debugfs_get_rf_read(struct seq_file *m, void *v)
- 	addr = debugfs_priv->rf_addr;
- 	mask = debugfs_priv->rf_mask;
- 
-+	mutex_lock(&rtwdev->mutex);
- 	val = rtw_read_rf(rtwdev, path, addr, mask);
-+	mutex_unlock(&rtwdev->mutex);
- 
- 	seq_printf(m, "rf_read path:%d addr:0x%08x mask:0x%08x val=0x%08x\n",
- 		   path, addr, mask, val);
-@@ -414,7 +416,9 @@ static ssize_t rtw_debugfs_set_rf_write(struct file *filp,
- 		return count;
+@@ -392,7 +392,9 @@ static ssize_t rtw_debugfs_set_h2c(struct file *filp,
+ 		return -EINVAL;
  	}
  
 +	mutex_lock(&rtwdev->mutex);
- 	rtw_write_rf(rtwdev, path, addr, mask, val);
+ 	rtw_fw_h2c_cmd_dbg(rtwdev, param);
 +	mutex_unlock(&rtwdev->mutex);
- 	rtw_dbg(rtwdev, RTW_DBG_DEBUGFS,
- 		"write_rf path:%d addr:0x%08x mask:0x%08x, val:0x%08x\n",
- 		path, addr, mask, val);
-@@ -519,6 +523,8 @@ static int rtw_debug_get_rf_dump(struct seq_file *m, void *v)
- 	u32 addr, offset, data;
- 	u8 path;
  
-+	mutex_lock(&rtwdev->mutex);
-+
- 	for (path = 0; path < rtwdev->hal.rf_path_num; path++) {
- 		seq_printf(m, "RF path:%d\n", path);
- 		for (addr = 0; addr < 0x100; addr += 4) {
-@@ -533,6 +539,8 @@ static int rtw_debug_get_rf_dump(struct seq_file *m, void *v)
- 		seq_puts(m, "\n");
- 	}
- 
-+	mutex_unlock(&rtwdev->mutex);
-+
- 	return 0;
+ 	return count;
  }
+diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
+index 0b5f903c0f366..a58c80d4825b1 100644
+--- a/drivers/net/wireless/realtek/rtw88/fw.c
++++ b/drivers/net/wireless/realtek/rtw88/fw.c
+@@ -322,7 +322,7 @@ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
+ 		h2c[3], h2c[2], h2c[1], h2c[0],
+ 		h2c[7], h2c[6], h2c[5], h2c[4]);
  
-@@ -1026,6 +1034,8 @@ static void dump_gapk_status(struct rtw_dev *rtwdev, struct seq_file *m)
- 		   dm_info->dm_flags & BIT(RTW_DM_CAP_TXGAPK) ? '-' : '+',
- 		   rtw_dm_cap_strs[RTW_DM_CAP_TXGAPK]);
- 
-+	mutex_lock(&rtwdev->mutex);
-+
- 	for (path = 0; path < rtwdev->hal.rf_path_num; path++) {
- 		val = rtw_read_rf(rtwdev, path, RF_GAINTX, RFREG_MASK);
- 		seq_printf(m, "path %d:\n0x%x = 0x%x\n", path, RF_GAINTX, val);
-@@ -1035,6 +1045,7 @@ static void dump_gapk_status(struct rtw_dev *rtwdev, struct seq_file *m)
- 				   txgapk->rf3f_fs[path][i], i);
- 		seq_puts(m, "\n");
- 	}
-+	mutex_unlock(&rtwdev->mutex);
- }
- 
- static int rtw_debugfs_get_dm_cap(struct seq_file *m, void *v)
-diff --git a/drivers/net/wireless/realtek/rtw88/hci.h b/drivers/net/wireless/realtek/rtw88/hci.h
-index 4c6fc6fb3f83b..830d7532f2a35 100644
---- a/drivers/net/wireless/realtek/rtw88/hci.h
-+++ b/drivers/net/wireless/realtek/rtw88/hci.h
-@@ -166,12 +166,11 @@ static inline u32
- rtw_read_rf(struct rtw_dev *rtwdev, enum rtw_rf_path rf_path,
- 	    u32 addr, u32 mask)
- {
--	unsigned long flags;
- 	u32 val;
- 
--	spin_lock_irqsave(&rtwdev->rf_lock, flags);
-+	lockdep_assert_held(&rtwdev->mutex);
-+
- 	val = rtwdev->chip->ops->read_rf(rtwdev, rf_path, addr, mask);
--	spin_unlock_irqrestore(&rtwdev->rf_lock, flags);
- 
- 	return val;
- }
-@@ -180,11 +179,9 @@ static inline void
- rtw_write_rf(struct rtw_dev *rtwdev, enum rtw_rf_path rf_path,
- 	     u32 addr, u32 mask, u32 data)
- {
--	unsigned long flags;
+-	spin_lock(&rtwdev->h2c.lock);
 +	lockdep_assert_held(&rtwdev->mutex);
  
--	spin_lock_irqsave(&rtwdev->rf_lock, flags);
- 	rtwdev->chip->ops->write_rf(rtwdev, rf_path, addr, mask, data);
--	spin_unlock_irqrestore(&rtwdev->rf_lock, flags);
+ 	box = rtwdev->h2c.last_box_num;
+ 	switch (box) {
+@@ -344,7 +344,7 @@ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
+ 		break;
+ 	default:
+ 		WARN(1, "invalid h2c mail box number\n");
+-		goto out;
++		return;
+ 	}
+ 
+ 	ret = read_poll_timeout_atomic(rtw_read8, box_state,
+@@ -353,7 +353,7 @@ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
+ 
+ 	if (ret) {
+ 		rtw_err(rtwdev, "failed to send h2c command\n");
+-		goto out;
++		return;
+ 	}
+ 
+ 	for (idx = 0; idx < 4; idx++)
+@@ -363,9 +363,6 @@ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
+ 
+ 	if (++rtwdev->h2c.last_box_num >= 4)
+ 		rtwdev->h2c.last_box_num = 0;
+-
+-out:
+-	spin_unlock(&rtwdev->h2c.lock);
  }
  
- static inline u32
+ void rtw_fw_h2c_cmd_dbg(struct rtw_dev *rtwdev, u8 *h2c)
+@@ -377,15 +374,13 @@ static void rtw_fw_send_h2c_packet(struct rtw_dev *rtwdev, u8 *h2c_pkt)
+ {
+ 	int ret;
+ 
+-	spin_lock(&rtwdev->h2c.lock);
++	lockdep_assert_held(&rtwdev->mutex);
+ 
+ 	FW_OFFLOAD_H2C_SET_SEQ_NUM(h2c_pkt, rtwdev->h2c.seq);
+ 	ret = rtw_hci_write_data_h2c(rtwdev, h2c_pkt, H2C_PKT_SIZE);
+ 	if (ret)
+ 		rtw_err(rtwdev, "failed to send h2c packet\n");
+ 	rtwdev->h2c.seq++;
+-
+-	spin_unlock(&rtwdev->h2c.lock);
+ }
+ 
+ void
 diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-index a7331872e8530..710ddb0283c82 100644
+index 710ddb0283c82..c98e56890401c 100644
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
 @@ -2067,7 +2067,6 @@ int rtw_core_init(struct rtw_dev *rtwdev)
  	skb_queue_head_init(&rtwdev->coex.queue);
  	skb_queue_head_init(&rtwdev->tx_report.queue);
  
--	spin_lock_init(&rtwdev->rf_lock);
- 	spin_lock_init(&rtwdev->h2c.lock);
+-	spin_lock_init(&rtwdev->h2c.lock);
  	spin_lock_init(&rtwdev->txq_lock);
  	spin_lock_init(&rtwdev->tx_report.q_lock);
+ 
 diff --git a/drivers/net/wireless/realtek/rtw88/main.h b/drivers/net/wireless/realtek/rtw88/main.h
-index 6e5875f6d07f4..f24d17f482aaa 100644
+index f24d17f482aaa..4b57542bef1e9 100644
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1995,9 +1995,6 @@ struct rtw_dev {
- 	/* ensures exclusive access from mac80211 callbacks */
- 	struct mutex mutex;
+@@ -2020,8 +2020,6 @@ struct rtw_dev {
+ 	struct {
+ 		/* incicate the mail box to use with fw */
+ 		u8 last_box_num;
+-		/* protect to send h2c to fw */
+-		spinlock_t lock;
+ 		u32 seq;
+ 	} h2c;
  
--	/* read/write rf register */
--	spinlock_t rf_lock;
--
- 	/* watch dog every 2 sec */
- 	struct delayed_work watch_dog_work;
- 	u32 watch_dog_cnt;
 -- 
 2.30.2
 
