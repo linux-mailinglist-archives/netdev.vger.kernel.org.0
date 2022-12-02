@@ -2,96 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 309516406FE
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 13:41:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8885164071C
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 13:48:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233496AbiLBMlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 07:41:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37870 "EHLO
+        id S233578AbiLBMsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 07:48:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233528AbiLBMlF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 07:41:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8DA92A3F
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 04:40:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669984802;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1wJ2wgoErJDueIYp6I/hAf4m+NEXaPGfMKgQq8cz2Ew=;
-        b=SOx5ZWIm02JG2jMnYvUeQrcbWY5hJ8/BopVuhL/NZ5Zhgh5zUJBMVMHsjKJOV5VXEZV850
-        Xjq5sNQHwbbnoOld1jKx8fyahq6XfiIDsPlyEHXouZ6e9AMiUP/h8dfbEmfjxYlUqci3rm
-        ZG7J+fNoHLDSc4NerovlhSAD9372S24=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-136-cURwZy-9Nu25ZBssMXXbgA-1; Fri, 02 Dec 2022 07:40:00 -0500
-X-MC-Unique: cURwZy-9Nu25ZBssMXXbgA-1
-Received: by mail-ej1-f72.google.com with SMTP id hs42-20020a1709073eaa00b007c00fb5a509so3285195ejc.17
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 04:40:00 -0800 (PST)
+        with ESMTP id S232190AbiLBMsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 07:48:36 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3219E478
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 04:48:35 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id ml11so11319997ejb.6
+        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 04:48:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=AT0KbpDr/o1zMwkliKr6eks9jc+exErBv7eT8T8pj78=;
+        b=skePfRc3JK5U9CKJh6ersO7UP25S5G4SHdxxFzsJKpzlVQ6hGv2q5VOYiRx7WmnXpn
+         BNQauBNM0e46G/mWjMEC4+iipBqfouArZ9uQn3UrTbUkmPlwP435V8kiNz/mwxgycyxN
+         +m4zeDDo3DJcdntArFveir7heK1/rPbaGLWbLqD6rebzjagzRvUbNM7JEZ4ym/6EywKF
+         KMksm8dbbhmDqTTSz5ACVsUV2c3gk9dgmrRyhicQFUDqUqAzTrWl4V1t56gSOz6EDaar
+         g+RUMMS89wnVhdrX3R4LkkYLWAm4Kq2Z1ocbt9kO4n7i0CeeEV6iwCb3VKeguH1SbKbT
+         e9lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1wJ2wgoErJDueIYp6I/hAf4m+NEXaPGfMKgQq8cz2Ew=;
-        b=hN0FEefQi5uueeq9b1zkYUbhAovByQ9kF52yiVQYwFdlUOl2BsO8//em9STukip6hq
-         19V9pYTe+5ibrqQxNovp6kvbX9+CcJ9mR+epuP6x9MfEYEzgKMViCtti2b5UMQJmqjeE
-         XGXSbl0F0K8bvYF7U/rHN09ySlnSR4LcH0WDOzSgLy1Tf/jUyVWQc622J6H6V7III7gi
-         DV1t4UC1hisReEdmzsuZ5D7C+h+WSgrfid5VBw77yBG4DyVqUFgQg39P5/7/ylmG/0x3
-         tCjyfyt+rOsqHZjHjmpgWq9pMoye/ZvEBA9fdv5CfYYoS/TmhbGwn9Gk8H01nE/SI19c
-         njAQ==
-X-Gm-Message-State: ANoB5plbL7neF2IIoYWm6qXqfqTHlQZe+SxeoPlszmPj76/uMwoGLeHX
-        qGhuvyMWRcTfc3OTIvPz3tavp7qSmIzTPEDHV2Spq/4rR/9uLLasd32sa+sIyPwMm84+RAirnp1
-        g+5/TrwpfBsqGvFiH
-X-Received: by 2002:a17:906:314a:b0:7c0:c90a:a978 with SMTP id e10-20020a170906314a00b007c0c90aa978mr1622785eje.387.1669984799610;
-        Fri, 02 Dec 2022 04:39:59 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7+Qeib7MZSkM6ys/7t8WsYFYt78NNrX8E7ilGfb//hg9P4I5ro0bqQz7BkSa79meFlbHVKPQ==
-X-Received: by 2002:a17:906:314a:b0:7c0:c90a:a978 with SMTP id e10-20020a170906314a00b007c0c90aa978mr1622766eje.387.1669984799325;
-        Fri, 02 Dec 2022 04:39:59 -0800 (PST)
-Received: from [10.39.192.173] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id v13-20020aa7d64d000000b0046ac460da13sm2882467edr.53.2022.12.02.04.39.57
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 02 Dec 2022 04:39:58 -0800 (PST)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     Tianyu Yuan <tianyu.yuan@corigine.com>
-Cc:     Marcelo Leitner <mleitner@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Edward Cree <edward.cree@amd.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>, dev@openvswitch.org,
-        oss-drivers <oss-drivers@corigine.com>,
-        Ziyang Chen <ziyang.chen@corigine.com>
-Subject: Re: [PATCH/RFC net-next] tc: allow drivers to accept gact with PIPE
- when offloading
-Date:   Fri, 02 Dec 2022 13:39:56 +0100
-X-Mailer: MailMate (1.14r5929)
-Message-ID: <077229AF-F32B-4147-9F3C-FED786417E61@redhat.com>
-In-Reply-To: <PH0PR13MB4793ED98F9384F2CBBA0909094179@PH0PR13MB4793.namprd13.prod.outlook.com>
-References: <20221122112020.922691-1-simon.horman@corigine.com>
- <CAM0EoMk0OLf-uXkt48Pk2SNjti=ttsBRk=JG51-J9m0H-Wcr-A@mail.gmail.com>
- <PH0PR13MB47934A5BC51DB0D0C1BD8778940E9@PH0PR13MB4793.namprd13.prod.outlook.com>
- <CALnP8ZZ0iEsMKuDqdyEV6noeM=dtp9Qqkh6RUp9LzMYtXKcT2A@mail.gmail.com>
- <PH0PR13MB4793DE760F60B63796BF9C5E94139@PH0PR13MB4793.namprd13.prod.outlook.com>
- <CALnP8ZanoC6C6Xb-14fy6em8ZJaFnk+78ufOdb=gBfMn-ce2eA@mail.gmail.com>
- <FA3E42DF-5CA2-40D4-A448-DE7B73A1AC80@redhat.com>
- <CALnP8ZZiw9b_xOzC3FaB8dnSDU1kJkqR6CQA5oJUu_mUj8eOdQ@mail.gmail.com>
- <80007094-D864-45F2-ABD5-1D22F1E960F6@redhat.com>
- <PH0PR13MB47936B3D3C0C0345C666C87194159@PH0PR13MB4793.namprd13.prod.outlook.com>
- <A92B3AD9-296F-4B20-88AC-D9F4124C15A9@redhat.com>
- <PH0PR13MB4793ED98F9384F2CBBA0909094179@PH0PR13MB4793.namprd13.prod.outlook.com>
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AT0KbpDr/o1zMwkliKr6eks9jc+exErBv7eT8T8pj78=;
+        b=Jj0nuNd5N1eDd1XMDn5R/hRYLG3idccjHF4NbYaLGMhdjWsbXNTdRFOJs7V8l15c60
+         yL3/aHPQEBdelpT2BFgnRMxA5wXZozg4bM4ee65eKTV4PeIxlzso2Fl4DDRZU7gLN4Xw
+         bTkbn1RciEP8j/68HZ8ujZC6fr5bElTPkWPta1xRb/BgpxXspdGA/7zExq9rrsvSKyNq
+         Lg+8ralr6+0hEOKdoz5dUFFS3XjS4JXvxOn12Ad1T5y9Imj6X030SBq6Ec3Bt0FUx/GH
+         V1/9cIOOLpBCGPW4NP1MV09cNKhGzNVo0RkpgQhMbG3GsKj2tQwHRqiRmPSJAgnXEJGu
+         sZkA==
+X-Gm-Message-State: ANoB5pmM9J1/xHDGMIP8wD0egdPWh3Aq1f0KoDKS6gvg4DSsY6sAB0PT
+        KxdNLAkFVOms0xf5CapX9I0IpA==
+X-Google-Smtp-Source: AA0mqf7jWlSapASGV7QpFArGzZKGyztzyAmsT17+Oylni66HWxNUNyk9jUexCfpd8FjM1Nw6MdfrUg==
+X-Received: by 2002:a17:906:1ecf:b0:7ad:902c:d1d6 with SMTP id m15-20020a1709061ecf00b007ad902cd1d6mr47737298ejj.143.1669985313640;
+        Fri, 02 Dec 2022 04:48:33 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id ky1-20020a170907778100b0072a881b21d8sm2959163ejc.119.2022.12.02.04.48.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Dec 2022 04:48:32 -0800 (PST)
+Date:   Fri, 2 Dec 2022 13:48:31 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vadim Fedorenko <vadfed@fb.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: Re: [RFC PATCH v4 4/4] ptp_ocp: implement DPLL ops
+Message-ID: <Y4n0H9BbzaX5pCpQ@nanopsycho>
+References: <20221129213724.10119-1-vfedorenko@novek.ru>
+ <20221129213724.10119-5-vfedorenko@novek.ru>
+ <Y4dPaHx1kT3A80n/@nanopsycho>
+ <DM6PR11MB4657D9753412AD9DEE7FAB7D9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR11MB4657D9753412AD9DEE7FAB7D9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -99,128 +79,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2 Dec 2022, at 13:33, Tianyu Yuan wrote:
-
-> On Fri, Dec 2, 2022 at 8:18 PM , Eelco Chaudron wrote:
+Fri, Dec 02, 2022 at 12:27:32PM CET, arkadiusz.kubalewski@intel.com wrote:
+>>From: Jiri Pirko <jiri@resnulli.us>
+>>Sent: Wednesday, November 30, 2022 1:41 PM
 >>
->> On 30 Nov 2022, at 4:36, Tianyu Yuan wrote:
+>>Tue, Nov 29, 2022 at 10:37:24PM CET, vfedorenko@novek.ru wrote:
+>>>From: Vadim Fedorenko <vadfed@fb.com>
+
+[...]
+
+
+>>>+static int ptp_ocp_dpll_get_attr(struct dpll_device *dpll, struct
+>>dpll_attr *attr)
+>>>+{
+>>>+	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+>>>+	int sync;
+>>>+
+>>>+	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
+>>>+	dpll_attr_lock_status_set(attr, sync ? DPLL_LOCK_STATUS_LOCKED :
+>>DPLL_LOCK_STATUS_UNLOCKED);
 >>
->>> On Mon, Nov 29, 2022 at 8:35 PM , Eelco Chaudron wrote:
->>>>
->>>> On 28 Nov 2022, at 14:33, Marcelo Leitner wrote:
->>>>
->>>>> On Mon, Nov 28, 2022 at 02:17:40PM +0100, Eelco Chaudron wrote:
->>>>>>
->>>>>>
->>>>>> On 28 Nov 2022, at 14:11, Marcelo Leitner wrote:
->>>>>>
->>>>>>> On Mon, Nov 28, 2022 at 07:11:05AM +0000, Tianyu Yuan wrote:
->>>>> ...
->>>>>>>>
->>>>>>>> Furthermore, I think the current stats for each action mentioned=
-
->>>>>>>> in
->>>>>>>> 2) cannot represent the real hw stats and this is why [ RFC
->>>>>>>> net-next v2 0/2] (net: flow_offload: add support for per action
->>>>>>>> hw stats)
->>>> will come up.
->>>>>>>
->>>>>>> Exactly. Then, when this patchset (or similar) come up, it won't
->>>>>>> update all actions with the same stats anymore. It will require a=
-
->>>>>>> set of stats from hw for the gact with PIPE action here. But if
->>>>>>> drivers are ignoring this action, they can't have specific stats
->>>>>>> for it. Or am I missing something?
->>>>>>>
->>>>>>> So it is better for the drivers to reject the whole flow instead
->>>>>>> of simply ignoring it, and let vswitchd probe if it should or
->>>>>>> should not use this action.
->>>>>>
->>>>>> Please note that OVS does not probe features per interface, but
->>>>>> does it
->>>> per datapath. So if it=E2=80=99s supported in pipe in tc software, w=
-e will
->>>> use it. If the driver rejects it, we will probably end up with the t=
-c software
->> rule only.
->>>>>
->>>>> Ah right. I remember it will pick 1 interface for testing and use
->>>>> those results everywhere, which then I don't know if it may or may
->>>>> not be a representor port or not. Anyhow, then it should use
->>>>> skip_sw, to try to probe for the offloading part. Otherwise I'm
->>>>> afraid tc sw will always accept this flow and trick the probing, ye=
-s.
->>>>
->>>> Well, it depends on how you look at it. In theory, we should be
->>>> hardware agnostic, meaning what if you have different hardware in
->>>> your system? OVS only supports global offload enablement.
->>>>
->>>> Tianyu how are you planning to support this from the OVS side? How
->>>> would you probe kernel and/or hardware support for this change?
->>>
->>> Currently in the test demo, I just extend gact with PIPE (previously
->>> only SHOT as default and GOTO_CHAIN when chain exists), and then put
->>> such a gact with PIPE at the first place of each filter which will be=
- transacted
->> with kernel tc.
->>>
->>> About the tc sw datapath mentioned, we don't have to make changes
->>> because gact with PIPE has already been supported in current tc
->>> implementation and it could act like a 'counter' And for the hardware=
-
->>> we just need to ignore this PIPE and the stats of this action will st=
-ill be
->> updated in kernel side and sent to userspace.
->>
->> I know it=E2=80=99s supported now, but if we implement it, it might fa=
-il in existing
->> environments. So from an OVS userspace perspective, you need to
->> implement something like:
+>>get,set,confuse. This attr thing sucks, sorry :/
 >
-> I've got your point now, sorry for my misunderstanding previously.
-
-No problem, there are quite some emails around this patch.
-
->> - Probe the kernel to see if this patch is applied, if not use the old=
- method so
->> we do not break existing deployments when upgrading OVS but not the
->> kernel.
->> - If we do have this newer kernel, do we assume all drivers that worke=
-d
->> before, now also work?
->>   - If this is not the case, how will you determine what approach to u=
-se? We
->> do not have a per-interface layer, but a per-datapath one, i.e. the ke=
-rnel. We
->> do not know at initialization time what NICs will be added later and w=
-e can
->> not decide on the strategy to use.
->>
->> Thought? Maybe this should be discussed outside of the netdev mailing =
-list,
->> but what I want to highlight is that there should be a runtime way to
->> determine if this patch is applied to the kernel (without using any ac=
-tual hw
->> driver).
+>Once again, I feel obligated to add some explanations :)
 >
-> I agree that whether the patch is applied in kernel should be checked a=
-t runtime rather than
-> compiling (for the demo I made this check inacinlude.m4). I think I nee=
-d some time to investigate
-> how to implement it. We may discuss it later in an OVS mailing list.
+>getter is ops called by dpll subsystem, it requires data, so here value shall
+>be set for the caller, right?
+>Also have explained the reason why this attr struct and functions are done this
+>way in the response to cover letter concerns.
 
-No problem, but just want to make sure that if it needs changes to this p=
-atch to be able to do it, now is the time ;)
+Okay, I will react there.
 
 
->>> I agree with that the unsupported actions should be rejected by
->>> drivers, so may another approach could work without ignoring PIPE in
->>> all the related drivers, that we directly make put the flower stats
->>> from driver into the socket which is used to transact with userspace =
-and
->> userspace(e.g. OVS) update the flow stats using this stats instead of =
-the
->> parsing the action stats. How do you think of this?
+>
+>>
+>>
+>>>+
+>>>+	return 0;
+>>>+}
+>>>+
+>>>+static int ptp_ocp_dpll_pin_get_attr(struct dpll_device *dpll, struct
+>>dpll_pin *pin,
+>>>+				     struct dpll_pin_attr *attr)
+>>>+{
+>>>+	dpll_pin_attr_type_set(attr, DPLL_PIN_TYPE_EXT);
+>>
+>>This is exactly what I was talking about in the cover letter. This is
+>>const, should be put into static struct and passed to
+>>dpll_device_alloc().
+>
+>Actually this type or some other parameters might change in the run-time,
 
+No. This should not change.
+If the pin is SyncE port, it's that for all lifetime of pin. It cannot
+turn to be a EXT/SMA connector all of the sudden. This should be
+definitelly fixed, it's a device topology.
+
+Can you explain the exact scenario when the change of personality of pin
+can happen? Perhaps I'm missing something.
+
+
+
+>depends on the device, it is up to the driver how it will handle any getter,
+>if driver knows it won't change it could also have some static member and copy
+>the data with: dpll_pin_attr_copy(...);
+>
+>>
+>>
+>>>+	return 0;
+>>>+}
+>>>+
+>>>+static struct dpll_device_ops dpll_ops = {
+>>>+	.get	= ptp_ocp_dpll_get_attr,
+>>>+};
+>>>+
+>>>+static struct dpll_pin_ops dpll_pin_ops = {
+>>>+	.get	= ptp_ocp_dpll_pin_get_attr,
+>>>+};
+>>>+
+>>> static int
+>>> ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>>> {
+>>>+	const u8 dpll_cookie[DPLL_COOKIE_LEN] = { "OCP" };
+>>>+	char pin_desc[PIN_DESC_LEN];
+>>> 	struct devlink *devlink;
+>>>+	struct dpll_pin *pin;
+>>> 	struct ptp_ocp *bp;
+>>>-	int err;
+>>>+	int err, i;
+>>>
+>>> 	devlink = devlink_alloc(&ptp_ocp_devlink_ops, sizeof(*bp), &pdev-
+>>>dev);
+>>> 	if (!devlink) {
+>>>@@ -4230,6 +4263,20 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct
+>>pci_device_id *id)
+>>>
+>>> 	ptp_ocp_info(bp);
+>>> 	devlink_register(devlink);
+>>>+
+>>>+	bp->dpll = dpll_device_alloc(&dpll_ops, DPLL_TYPE_PPS, dpll_cookie,
+>>pdev->bus->number, bp, &pdev->dev);
+>>>+	if (!bp->dpll) {
+>>>+		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
+>>>+		goto out;
+>>>+	}
+>>>+	dpll_device_register(bp->dpll);
+>>
+>>You still have the 2 step init process. I believe it would be better to
+>>just have dpll_device_create/destroy() to do it in one shot.
+>
+>For me either is ok, but due to pins alloc/register as explained below I would
+>leave it as it is.
+
+Please don't, it has no value. Just adds unnecesary code. Have it nice
+and simple.
+
+
+>
+>>
+>>
+>>>+
+>>>+	for (i = 0; i < 4; i++) {
+>>>+		snprintf(pin_desc, PIN_DESC_LEN, "sma%d", i + 1);
+>>>+		pin = dpll_pin_alloc(pin_desc, PIN_DESC_LEN);
+>>>+		dpll_pin_register(bp->dpll, pin, &dpll_pin_ops, bp);
+>>
+>>Same here, no point of having 2 step init.
+>
+>The alloc of a pin is not required if the pin already exist and would be just
+>registered with another dpll.
+
+Please don't. Have a pin created on a single DPLL. Why you make things
+compitated here? I don't follow.
+
+
+>Once we decide to entirely drop shared pins idea this could be probably done,
+>although other kernel code usually use this twostep approach?
+
+No, it does not. It's is used whatever fits on the individual usecase.
+
+
+>
+>>
+>>
+>>>+	}
+>>>+
+>>> 	return 0;
+>>
+>>
+>>Btw, did you consider having dpll instance here as and auxdev? It would
+>>be suitable I believe. It is quite simple to do it. See following patch
+>>as an example:
+>
+>I haven't think about it, definetly gonna take a look to see if there any
+>benefits in ice.
+
+Please do. The proper separation and bus/device modelling is at least
+one of the benefits. The other one is that all dpll drivers would
+happily live in drivers/dpll/ side by side.
+
+
+
+>
+>Thanks,
+>Arkadiusz
+>
+>>
+>>commit bd02fd76d1909637c95e8ef13e7fd1e748af910d
+>>Author: Jiri Pirko <jiri@nvidia.com>
+>>Date:   Mon Jul 25 10:29:17 2022 +0200
+>>
+>>    mlxsw: core_linecards: Introduce per line card auxiliary device
+>>
+>>
+>>
+>>
+>>>
+>>> out:
+>>>@@ -4247,6 +4294,8 @@ ptp_ocp_remove(struct pci_dev *pdev)
+>>> 	struct ptp_ocp *bp = pci_get_drvdata(pdev);
+>>> 	struct devlink *devlink = priv_to_devlink(bp);
+>>>
+>>>+	dpll_device_unregister(bp->dpll);
+>>>+	dpll_device_free(bp->dpll);
+>>> 	devlink_unregister(devlink);
+>>> 	ptp_ocp_detach(bp);
+>>> 	pci_disable_device(pdev);
+>>>--
+>>>2.27.0
+>>>
