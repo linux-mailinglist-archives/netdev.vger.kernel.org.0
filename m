@@ -2,72 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 192976405C8
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 12:27:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A0A6405CC
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 12:28:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232898AbiLBL1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 06:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
+        id S233209AbiLBL15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 06:27:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231367AbiLBL1k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 06:27:40 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6B2EBA;
-        Fri,  2 Dec 2022 03:27:36 -0800 (PST)
+        with ESMTP id S232399AbiLBL1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 06:27:43 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9381118;
+        Fri,  2 Dec 2022 03:27:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669980456; x=1701516456;
+  t=1669980460; x=1701516460;
   h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=WXIE26D4q2xTrsSyvmLgYrZLvz/l/y7HZsHCj11NU1s=;
-  b=HDgi1bMF9QC/oaStDsljMduOerHp8cTHylg5VO9m2GoTiniIh2tnnAQn
-   gamTOQOmmi/LS20ArYt2PC8gPSodpDPOCcQV0DzB7UuzRKlY3BVEI8JtL
-   VKEAAITZTXs1r3WpWp9NnVj7HcK3j0Rg7p12KpO+5pCTBTGQIGdoJpjOk
-   1dmJieCJnE/p+9h+zQbRP8lYWfTeMdKwi5mKFKnN6FzwiIz3W6O25Ova0
-   fO/rr2cpdFnS+wn5ZKVPOsTimlrgEtvthdLejJl/V9LrtwXIOS6j9Frx9
-   6JrdrW7JgI7Jsz81A6tbO8b6XRHdkohr+rqBEoA/GKKUlOpz+lulhUFGC
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10548"; a="317794242"
+  bh=6Cx4fjTosYrReIL9+2JHK4nHIlm/gKP1lulySshKZcY=;
+  b=MIhxfYac1ij4oAamiDX9rpROX/Xw4VZI4GqvmtYr1YkVAVmEiEKdCp9v
+   jUWNMZ/c/aUQkB/EtZZHrqWhRVNBDmpnz/TtVURz2z8XAzpVXX7CkD810
+   q+l1tQFwJjX/SnwSmXDuY4mnkKlB7iYG0sBjJHrZoPOsk04zouz3DcRsq
+   z9OG6FBF0Bnwf5VKQmKlzD/ldSiF4U9us54epeLaV28qfps3mB8VtaOL7
+   LY0w8gATBnvssFv3oY3mue9gzBLHjdHaqKQmzINz1TR3I2etlU3VEGzSb
+   kNWi9q2dOXMxDXcB5NLqHJCtNtuXW8CcRW5fPdAk3WoHzv5TDWH8OMi0H
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10548"; a="317083535"
 X-IronPort-AV: E=Sophos;i="5.96,212,1665471600"; 
-   d="scan'208";a="317794242"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2022 03:27:35 -0800
+   d="scan'208";a="317083535"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2022 03:27:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10548"; a="638726064"
+X-IronPort-AV: E=McAfee;i="6500,9779,10548"; a="708448657"
 X-IronPort-AV: E=Sophos;i="5.96,212,1665471600"; 
-   d="scan'208";a="638726064"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga007.jf.intel.com with ESMTP; 02 Dec 2022 03:27:35 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="708448657"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga008.fm.intel.com with ESMTP; 02 Dec 2022 03:27:38 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 2 Dec 2022 03:27:35 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ 15.1.2507.16; Fri, 2 Dec 2022 03:27:38 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Fri, 2 Dec 2022 03:27:35 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.16; Fri, 2 Dec 2022 03:27:38 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Fri, 2 Dec 2022 03:27:38 -0800
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.49) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Fri, 2 Dec 2022 03:27:34 -0800
+ 15.1.2507.16; Fri, 2 Dec 2022 03:27:37 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NH0a60X1OI23sXjSBE1WHOpbKJPCAuGpSUvFE8uT/pdWJZMfkN3NdUoPClUhrcCtB9jyU4Vs/1j/kuSdQjwCjsGrvhKUdQvi2TsIbwpUMgKo3a4k6CTDKV9yBSD5NY5S8jysNCcp9iRc6JL5J8976g41TssDOqM3Ec+tZw2uBy5gyLnktOzdyAuSFgb91ukyKZ8EBdLT3yNGLmaTYMizp2TlQwlCJTB6X1HIiU+S6Nyz5IWDQ044zq3t0Jy1fa2LCyVTM7laMa3Objj4OgzpcNm8CU+rS/pckoytoT+t/eeJg1idBgrN3DGoijRWmZ4YguUCN8BiO/gKXVdl7K3Nnw==
+ b=ctdHeSacFdt9NTXG4aRiUHP6ihj1OvNYDy7p4oWiEpQX4TVBgUUsXYpD36HZFgZ3VsoyItBnHLYtQWWiz9Rxnflcy0L2VtOXcBn6d3j2yOHuZNJAu4bVCCU5A7lfrtfp0ugFigv7zgXq+cCL8SzIAC5qqwVH4ZNFxSkjH53cGt/ocULqXq9cMzwuwYY3z2idma7Pfw4M/vZISCBRjQZDwmCuFEwXTbdoyLP2okqh/ciU5HVmJxlue1MpMfHjJldUbfkNv5F1vV8Ty2pUeaw5y6TL9lI9ckqg0GFetuQfdDPVDIYIkCM2O5EOm54A93PPykMEe3D5ATstoh6gkmauvw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jwxQtlYMDMUjpVvgfk//i3Q5Vj6pIAyMGuQIbbBrGuQ=;
- b=AKIFvdD6cpIYUXZ4vTZ3ktBXMejeTRjRiHFpoQoUqUiEm17l6tJ79k3iKlZ3UyT8itSzkvFh4VybmRx3b88rq3O08IOPggF/DiMzkQ8MsUkdrht3SESaA6/cw+qjGHqSPGbvJpGBtwQbONTGXfFkPr1+VQz7ejkgl+kRmq/uluctp/cY04ikOe9sb/xHszu2+N2awML2SNkHKP0k7aGlmyBDnWddE+S98wC78CysUrl9vgdahIhEXsWyBJLYxb0wgCcwJ9CTj1lk1m77LKBmN74eUP0gDYZr7Hddxl0YzmfrhEWU15MEALtrRDbAevcseHH38n3Iabo45bQtLPc/vA==
+ bh=AGwziU/a9EbdgEdbBSkd59MKuukmcwXwNOBt30EK7D0=;
+ b=I9aBFwrgwtf7yyYKN/06/6v5RGoQKkvK+oThgz1n4fY8Fd8HA9/AQT4X6a2NaXBmFgT93UZpY1jsQR6b7eB0IJSGF1DmvPF3glbleENK3asXXu7oxnX0MZ1QpM8oJ2MBc/8jNZkkQkLo7J/9912cgWtMDwSNTlU5macf7NlY+1B5Zljx1sTcKcuLQtzZsL62MEoAV72DyR6XxOcrpQiR4tqpNOg8O3ljBmCRnohezHj5dmKC7d880hGZddAn9+lvDC09ncWLacNa0FBz+poaIE0e681Xm6dD+a9dr05QuTHJmS6NekpSoRiI15RyQYC4WVdoq/xc56Ajp2QAKUnb3g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- DS7PR11MB7806.namprd11.prod.outlook.com (2603:10b6:8:db::15) with Microsoft
+ DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.10; Fri, 2 Dec 2022 11:27:32 +0000
+ 15.20.5880.10; Fri, 2 Dec 2022 11:27:35 +0000
 Received: from DM6PR11MB4657.namprd11.prod.outlook.com
  ([fe80::5006:f262:3103:f080]) by DM6PR11MB4657.namprd11.prod.outlook.com
  ([fe80::5006:f262:3103:f080%8]) with mapi id 15.20.5880.010; Fri, 2 Dec 2022
- 11:27:32 +0000
+ 11:27:35 +0000
 From:   "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
 To:     Jiri Pirko <jiri@resnulli.us>,
         Vadim Fedorenko <vfedorenko@novek.ru>
@@ -78,15 +82,17 @@ CC:     Jakub Kicinski <kuba@kernel.org>,
         Vadim Fedorenko <vadfed@fb.com>,
         "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: RE: [RFC PATCH v4 4/4] ptp_ocp: implement DPLL ops
-Thread-Topic: [RFC PATCH v4 4/4] ptp_ocp: implement DPLL ops
-Thread-Index: AQHZBDry/jNi33oty0uFzAsT01mIf65XaZgAgAMHnuA=
-Date:   Fri, 2 Dec 2022 11:27:32 +0000
-Message-ID: <DM6PR11MB4657D9753412AD9DEE7FAB7D9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "Olech, Milena" <milena.olech@intel.com>,
+        "Michalik, Michal" <michal.michalik@intel.com>
+Subject: RE: [RFC PATCH v4 2/4] dpll: Add DPLL framework base functions
+Thread-Topic: [RFC PATCH v4 2/4] dpll: Add DPLL framework base functions
+Thread-Index: AQHZBDrzHhOO6jCKv0uW33ic8hB1f65Xq5eAgALEiZA=
+Date:   Fri, 2 Dec 2022 11:27:35 +0000
+Message-ID: <DM6PR11MB4657DE713E4E83E09DFCFA4B9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
 References: <20221129213724.10119-1-vfedorenko@novek.ru>
- <20221129213724.10119-5-vfedorenko@novek.ru> <Y4dPaHx1kT3A80n/@nanopsycho>
-In-Reply-To: <Y4dPaHx1kT3A80n/@nanopsycho>
+ <20221129213724.10119-3-vfedorenko@novek.ru> <Y4eGxb2i7uwdkh1T@nanopsycho>
+In-Reply-To: <Y4eGxb2i7uwdkh1T@nanopsycho>
 Accept-Language: pl-PL, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -94,59 +100,60 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|DS7PR11MB7806:EE_
-x-ms-office365-filtering-correlation-id: 0ac2486d-7215-4cb0-aed9-08dad458342c
+x-ms-traffictypediagnostic: DM6PR11MB4657:EE_
+x-ms-office365-filtering-correlation-id: 650a7509-855a-4b95-16c3-08dad4583626
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jb/62a1DEjzsv3GLjOfhaRxyrHIiOvBD9micTPdH0/r5F2gMZRopXbO/AgmlXxuXxfczUcPz6F0HHDemnL2ClTnVZBqylbmRIlu91ImT0SRoAyrhdjvlZ8lA2TebUuwu3VtV15rqyjZ9fMxmuPQbhzkdclEswVQJkF9eQy07s6a3IET3Kitb1Iky8F5lHAXpGkOBo/nqAePrkZ/vFuikpLP/xyRM3PcgOQXRVdQ7AfClQknMXwJa2oJ6DfryJ08oxXFGtxG9777NzHSFukZs0v2JnQDLB7vWMwIef9Eds4T9ZHloFWGdwi8L0DpB7UgZuAM4oOmNYF7HmIvMoF/i6AN/tz5jMuNm+VMml2yrbOyokfnIo2yC3GarZyj6BYZAW6bTEzvhuVAKNav16LAZ5eEiguZ+Bp84MAzG5K+LGSOMEFKA5MMfc22WBvs3Oa+5Az+TW3nClQ5YTIwXTKR/QWno9gxfdFFK9o61tiwWYx+HoSB3NBrmEG371sxTAjQhrlUW1GhrXDJKvDsmMmMd9IwpYfsvryUHOmB9cZgM83zdt9d2R0bmgSgXjIskhxk0KJIuITQigLkp6iLR275p+CQ7+Yh3kUF1SlrlNOW/QbgDbRBXt8tHkN7kX5e/Xc8sZ+GOpNvyhWgoXfRfthjlNR4p2PAIW82UzQGhnlGoXyV42meM+m+s1EEXbQgtICYAkiJCAjEhUC+2mb1vEIThww==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(376002)(346002)(396003)(136003)(39860400002)(451199015)(26005)(186003)(66446008)(71200400001)(6506007)(7696005)(8676002)(66476007)(64756008)(66556008)(66946007)(478600001)(4326008)(41300700001)(5660300002)(52536014)(8936002)(83380400001)(2906002)(76116006)(122000001)(82960400001)(9686003)(316002)(86362001)(54906003)(110136005)(38100700002)(33656002)(55016003)(38070700005);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: Nm88XkM4M2sr+yYoYtWXF95KjhlqUx8j2r3JKbwo8l5fe9ztDnjdDpbGmoMHG+EYgP9u894SenVxjF4FbE7TQc1+/3sy2OkAef/g+XExgwDXpV0u/nzUVeFKTxUNgYMU6rrP0Tup2O73jseSag9DTVpOK7YFl6aLJ+Lz3f4UJMHadkuMO51P38GgFJJQgwXNzjM45ffYKuyUBVrFxJp4UP0vcYAnInpo9OACOgbkZgn8/zRpgqwQz3nIxvo49F/a8upN5t0GipsezwwZD951Vx+j2FqON0Wwg1acEqvrnXOriZhMIjsAjaxMRnCiPnvdig0WhD3qMI2oTBm6V2RI1OqAfcnQ2eycWF5KixNsN+uhP3xk8MdzadqE964t2yV6l25di+UXhr1TTMQzcmypPQqFnHha9p9e+efHJNSJVmTWEaRK3R47dsol5VMBVFCgxDNhv2IYs875UlM+pinjfH1mbG2OuL6gKWmUi0g5LXsK5hJ/DpMn3l4MtLW2EycMVLY3pLERPZt1FD/HcVu/uvHWNPtGnR5q4y+ZspVLCMK9zc8JI+Wl+p7IVzzcYgr4rgNDkx/uj+A/YfC50Q0hFjD05ulx17xoV9Pd59IYFbjmEET/J/RRF36MuhW3xUuaw+muwzT1wt8qJmi2wangwoq43LfPBiizzl3beiYgPVBbtEHn1jnMxuJIOT1zZ53WQKrLev4LD6EM7tTBru6eVg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(366004)(376002)(346002)(136003)(39860400002)(451199015)(55016003)(33656002)(316002)(186003)(26005)(9686003)(54906003)(110136005)(41300700001)(30864003)(83380400001)(8936002)(52536014)(5660300002)(76116006)(66476007)(66556008)(66446008)(64756008)(66946007)(2906002)(4326008)(8676002)(478600001)(38070700005)(122000001)(6506007)(7696005)(107886003)(86362001)(71200400001)(38100700002)(82960400001)(579004)(559001);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uoIsu/WZaec+ByBeKu13nUSvK1VTtiCnUJJLce4ColBoDe6qHeR6kyjQ6wsC?=
- =?us-ascii?Q?L/5RxzR501odrIKbCB2+Gk537JHOlcoxfidC4HcIGslT4mMtN6dkzmvMVfVE?=
- =?us-ascii?Q?5+hz888ELdTLASinRmEzUIowIguMAkc3eDzDhGawq+tn1wwBpdsLJet5vFxr?=
- =?us-ascii?Q?pZ8puYujPbXCsrpJH7I93bOIn+tT4xeijw68BZf2grKu9pU79ft78LCkiFmq?=
- =?us-ascii?Q?ibpiXUnR7PgHVDjVdUp/W5YTJprpidh9vg1Xxg7lOtweR9D5yN6MThaRCKcy?=
- =?us-ascii?Q?JCK1LaV5+tbbwUINyyqRKTFUQn5jVbg5Jr11Zfnf3U/HH1k+2+gIvjMCE3DF?=
- =?us-ascii?Q?+6Oe0EkfgKrfEwp00QSLlvFnuDRUQq0bk0MWMd34vuPvFOQ42lFsYSuMi9nE?=
- =?us-ascii?Q?cvfU2CQGYurrnVCtg0pqUNxcIRXi1q8B+Bcsro1xENf/XuRVtohia6tlbgqQ?=
- =?us-ascii?Q?dPr+ls3tzlgOHcH1g9DTjtKSo0bi4EAIIu7vHe66bfYWkUwc2gWHa9agNGs1?=
- =?us-ascii?Q?6dhaZxUp91y+Q7KS2WFIiHABBUrT1r77zHUCUQW3oeXcCx7s3t0eHPUasrEx?=
- =?us-ascii?Q?1BFXNexk4V9ljtobAi36tzDQrN74RwOGJ4wR1pL/vGk6gU3bbQ8lOddIECGs?=
- =?us-ascii?Q?jvloqiu961IWsB6883qftH6IJq7t8dNARCsJpzq6HyMeJshLegBCGfGcShHW?=
- =?us-ascii?Q?/6DCN7nCJuZaxVKZ0xPyfPOTvDKJbu+uP5yJ1aO4tUa5RiKX4sSOw8q6BfFs?=
- =?us-ascii?Q?L/XJqSvQElaVmZDfsoSJdkmj4gePNZ/IFDNbm/BE40QqWVzX/ke+qe5OuV2B?=
- =?us-ascii?Q?xpnFlwLpog7/0+/RcOQICEvQbhxjnsRDKeG7kcZtD2EMMUJI3GV6APqG4OHd?=
- =?us-ascii?Q?7TeLXhiG1L3x5Ef4qKOnCa8H2yaQekv35HzFV6rIGjZ2KOG8ZQdIZigD14ij?=
- =?us-ascii?Q?Vl8kiutcby1wUxUeLOywJCXhcQp4ZLMfd47VbeG3kpkOfFfP31XA1tA9jCf9?=
- =?us-ascii?Q?w4bAXZiAn9iZGOYmskJsay98yAN8ozOZSZC12odKQTzw/JAHFcstODAAi0l3?=
- =?us-ascii?Q?Pv2iFJsreQs1reC1a21B226HT6ucyf5g1jCTwpVf/w847Mz+xHwAnHQJtazh?=
- =?us-ascii?Q?suZ9e8AVxsq2GMLSE6SE0+nfWgnIpUiUcK8GfQO0P5va00LM8tKJyFGp9sFu?=
- =?us-ascii?Q?RJJzz+G85UqzDXln799qEfzR+thCILbof69TGBSszwAbZpME7+ceey9htQ9r?=
- =?us-ascii?Q?957LtRU9gSJa+HWDZke/mz3io7zQSxJdjRsAnFMgBKhtXf+yB48hF4yOG+WN?=
- =?us-ascii?Q?TY5RVUrtrqqHod1CwymOHabSe5WkuctnRsr6t0b8xFLKNT7S9ykAjDvGzg17?=
- =?us-ascii?Q?A7QU8lM5ygC/IEaVY7VlHAf5OBAobHzvCCHFsDfaGAETUWM3v0qzAGx4Cxts?=
- =?us-ascii?Q?BUV4CBEZbQpt6rVjCOG06wPEvBhZrTc7sgxovjDKMAtNZfUSHvMoR6KO/9KS?=
- =?us-ascii?Q?DSKi+708lb9LqYr2iquhoqB2Gf653LpIsisFuZVl4WxZlLpC9y3B1bTzFqfH?=
- =?us-ascii?Q?py+mkGVBA50GnQ1dHQXheAMBPn/Dyz9zG16dfMfBVoHYoekTo7MdnZDTdgjr?=
- =?us-ascii?Q?QQ=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Nvp0G+y5rdaw4uU2ur5LSvPtF1rR3cmlBMsCT5dxLliNJbeg97bgYYfLf4CF?=
+ =?us-ascii?Q?41NKZSIQetQE9fFULbP0L9aHiVlk6Mbb5dFT9MMLKjV7VuB+eZTf6PbJP5Ih?=
+ =?us-ascii?Q?FEsw6xWnEBe2ZHHQG33S5nM/YyG4V7FHq2I99swGBw873KogWwdUFv96IatT?=
+ =?us-ascii?Q?2XuDUWv/MaT5U3SNRd2ecf+wWR28qlW6tNRCHoZOrSah1njJWZnCjFQPxHk/?=
+ =?us-ascii?Q?AHl6gmA8Z4WuQALF8LXOUFnNUVzAoWWVXNZdIqdu94fPZgCDgyhpOXPKO+/h?=
+ =?us-ascii?Q?ObuJ17GHb5Lrkhodw+BBVZVOr964R8lFC/52zEDyCDkkR7SpXbJSgyAhJ2as?=
+ =?us-ascii?Q?PW5oqS/zd2JtKiBmg4/m4fGGQzxj//v4RQg69OMnYl1ogFof8/3XV8N1M+y3?=
+ =?us-ascii?Q?vM69yvDrX6x/UPj9Lie5l5QkH9Rm1H8y2CFzpqqSkKTRt+WmaaTw9HWKJVeo?=
+ =?us-ascii?Q?ajZ/ZlnYTrLch8w8h9kvwHSO9pIMGVj6Y2y0m1VgeHZwO/9Lw2A7i4BGooKJ?=
+ =?us-ascii?Q?FVjXFB3QGFZ5DN6L1yIrwKWKuJoYgYlUy5IBx26gYM8/B1Ldc9EuwOymM9A8?=
+ =?us-ascii?Q?X7c8Al0n9Ymvy6YTcjtxBGTqFrP6Xl3eCCFF7oN7wRyrja9PC/qkZWZVCTC6?=
+ =?us-ascii?Q?yiOyZt04nBrOH0K8IYD42oZ6RT4cpXH43Zyi4jZHtuFF1X2oqxCeaK15vyKl?=
+ =?us-ascii?Q?bekhjeLbD6z/UoaOmBolEvsFqxZyi5pXatuOXZaQ9tPXxa33gwCrnlMPdI9P?=
+ =?us-ascii?Q?vK3UFeQxNZiBoc/bsh8QEoHpkJ6oLM9h+dsQI3jrDOC3p+guXl+GRuvpa0el?=
+ =?us-ascii?Q?KtE/ZgTLXMQSfD1XqFLyPP3/W+9/RPotFznAHkH/duulxFmqBceJhgJuEVBM?=
+ =?us-ascii?Q?CMui/ffurfnHTmCzPTapREHuL8sxTciJYonf8mWzR1NlVayR8Z/EK2Ep/t4o?=
+ =?us-ascii?Q?dHEkS/x2eVx2McUNNoSJHqJr6dT4FMrUMSfaEyd38r0dxc0qFS1+Ri3R+M7r?=
+ =?us-ascii?Q?Q+q/Y/urTn4ZalBsl9tgyrN2EdBu3HmPgHkz2FTxQXG5xzBZujYHyd8d8YZp?=
+ =?us-ascii?Q?a3WKmGiuRwdKBe13/NdSE6Qm3mrGwmEgoQsrE5pzz4iZy+hpl7784uMbPICH?=
+ =?us-ascii?Q?PR848HqOnwPsMNH9EGv4Vj7pjXMnH0C/dWK6cI/7A2iPC16ortWfljg/Oq/T?=
+ =?us-ascii?Q?Rz8LErBTcxQrfj0FAgKKLjhdqXG+aGF3dmiXunWzR+L/NbaucFxcrNMdxTKJ?=
+ =?us-ascii?Q?WMMTsrbwRJnfmt9WntI54+WmHMjrBQtJnzz/5EacCZt2NCYNoPvApE+KImk3?=
+ =?us-ascii?Q?MxZfyqTtquyWxtZtruvqx3B+KTT/O1Pa+RwVwrVYcR2jJRgg3q8AxI37aOGX?=
+ =?us-ascii?Q?RAqxy+/JU2p4INt4Fq3dOknx/zlH2OlhKfiv9cHWy5AQT9r9W9rdAZh6IiiE?=
+ =?us-ascii?Q?O16zM0KyiEHd/wzl6VIxg/FaxzQX/KURSdS/tAiKqisBU8/TNBoIFrYPho4W?=
+ =?us-ascii?Q?0ck/Iv4R/08IZkGibgE079aipAYZHws6kCIx0C5dPw0xFmKXws55+IQfMIWC?=
+ =?us-ascii?Q?YvkqJkUHHucqUExldb8FIltD8py/8JsCEgFYrkynuN676Kmpc0cZj6GfWtVC?=
+ =?us-ascii?Q?bg=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ac2486d-7215-4cb0-aed9-08dad458342c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Dec 2022 11:27:32.3744
+X-MS-Exchange-CrossTenant-Network-Message-Id: 650a7509-855a-4b95-16c3-08dad4583626
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Dec 2022 11:27:35.6863
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jIZx/H+WYMRbWOK+5UQZ+lzwHcQNh6qA7qzJpnZw7dWyBcRqdhlQZB2eTkW5mJ/PAmGQ/49HNPWLlumEknwq1O9VgEwXAIDoGdhE9hsY+J4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR11MB7806
+X-MS-Exchange-CrossTenant-userprincipalname: yy41mb57lZ+pqrVQslnS14RNXNdpfpvzY2TOwL0H/Bj5SG5ZWUBYRC9P5mv0OjKQn66qX0sElNwfmRy9iobbUb0FueAVenOfLJ642MHs/Ro=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4657
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -154,323 +161,1103 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 >From: Jiri Pirko <jiri@resnulli.us>
->Sent: Wednesday, November 30, 2022 1:41 PM
->
->Tue, Nov 29, 2022 at 10:37:24PM CET, vfedorenko@novek.ru wrote:
+>Sent: Wednesday, November 30, 2022 5:37 PM
+>Tue, Nov 29, 2022 at 10:37:22PM CET, vfedorenko@novek.ru wrote:
 >>From: Vadim Fedorenko <vadfed@fb.com>
->>
->>Implement basic DPLL operations in ptp_ocp driver as the
->>simplest example of using new subsystem.
->>
->>Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
->>---
->> drivers/ptp/Kconfig   |   1 +
->> drivers/ptp/ptp_ocp.c | 123 +++++++++++++++++++++++++++++-------------
->> 2 files changed, 87 insertions(+), 37 deletions(-)
->>
->>diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
->>index fe4971b65c64..8c4cfabc1bfa 100644
->>--- a/drivers/ptp/Kconfig
->>+++ b/drivers/ptp/Kconfig
->>@@ -177,6 +177,7 @@ config PTP_1588_CLOCK_OCP
->> 	depends on COMMON_CLK
->> 	select NET_DEVLINK
->> 	select CRC16
->>+	select DPLL
->> 	help
->> 	  This driver adds support for an OpenCompute time card.
->>
->>diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
->>index 154d58cbd9ce..605853ac4a12 100644
->>--- a/drivers/ptp/ptp_ocp.c
->>+++ b/drivers/ptp/ptp_ocp.c
->>@@ -23,6 +23,8 @@
->> #include <linux/mtd/mtd.h>
->> #include <linux/nvmem-consumer.h>
->> #include <linux/crc16.h>
->>+#include <linux/dpll.h>
->>+#include <uapi/linux/dpll.h>
->>
->> #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
->> #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
->>@@ -353,6 +355,7 @@ struct ptp_ocp {
->> 	struct ptp_ocp_signal	signal[4];
->> 	struct ptp_ocp_sma_connector sma[4];
->> 	const struct ocp_sma_op *sma_op;
+>
+>[...]
+>
+>>+
+>>+static const struct nla_policy dpll_cmd_device_get_policy[] =3D {
+>>+	[DPLLA_ID]		=3D { .type =3D NLA_U32 },
+>>+	[DPLLA_NAME]		=3D { .type =3D NLA_STRING,
+>>+				    .len =3D DPLL_NAME_LEN },
+>>+	[DPLLA_DUMP_FILTER]	=3D { .type =3D NLA_U32 },
+>>+	[DPLLA_NETIFINDEX]	=3D { .type =3D NLA_U32 },
+>
+>Only pin has a netdevice not the dpll. Also does not make sense to allow
+>as an input attr.
+
+Yes, this part shall be removed.
+
+>
+>
+>>+};
+>>+
+>>+static const struct nla_policy dpll_cmd_device_set_policy[] =3D {
+>>+	[DPLLA_ID]		=3D { .type =3D NLA_U32 },
+>>+	[DPLLA_NAME]		=3D { .type =3D NLA_STRING,
+>>+				    .len =3D DPLL_NAME_LEN },
+>>+	[DPLLA_MODE]		=3D { .type =3D NLA_U32 },
+>>+	[DPLLA_SOURCE_PIN_IDX]	=3D { .type =3D NLA_U32 },
+>>+};
+>>+
+>>+static const struct nla_policy dpll_cmd_pin_set_policy[] =3D {
+>>+	[DPLLA_ID]		=3D { .type =3D NLA_U32 },
+>>+	[DPLLA_PIN_IDX]		=3D { .type =3D NLA_U32 },
+>>+	[DPLLA_PIN_TYPE]	=3D { .type =3D NLA_U32 },
+>>+	[DPLLA_PIN_SIGNAL_TYPE]	=3D { .type =3D NLA_U32 },
+>>+	[DPLLA_PIN_CUSTOM_FREQ] =3D { .type =3D NLA_U32 },
+>>+	[DPLLA_PIN_STATE]	=3D { .type =3D NLA_U32 },
+>>+	[DPLLA_PIN_PRIO]	=3D { .type =3D NLA_U32 },
+>>+};
+>>+
+>>+struct dpll_param {
+>>+	struct netlink_callback *cb;
+>>+	struct sk_buff *msg;
 >>+	struct dpll_device *dpll;
->> };
->>
->> #define OCP_REQ_TIMESTAMP	BIT(0)
->>@@ -835,18 +838,19 @@ static DEFINE_IDR(ptp_ocp_idr);
->> struct ocp_selector {
->> 	const char *name;
->> 	int value;
->>+	int dpll_type;
->> };
->>
->> static const struct ocp_selector ptp_ocp_clock[] =3D {
->>-	{ .name =3D "NONE",	.value =3D 0 },
->>-	{ .name =3D "TOD",	.value =3D 1 },
->>-	{ .name =3D "IRIG",	.value =3D 2 },
->>-	{ .name =3D "PPS",	.value =3D 3 },
->>-	{ .name =3D "PTP",	.value =3D 4 },
->>-	{ .name =3D "RTC",	.value =3D 5 },
->>-	{ .name =3D "DCF",	.value =3D 6 },
->>-	{ .name =3D "REGS",	.value =3D 0xfe },
->>-	{ .name =3D "EXT",	.value =3D 0xff },
->>+	{ .name =3D "NONE",	.value =3D 0,		.dpll_type =3D 0 },
->>+	{ .name =3D "TOD",	.value =3D 1,		.dpll_type =3D 0 },
->>+	{ .name =3D "IRIG",	.value =3D 2,		.dpll_type =3D 0 },
->>+	{ .name =3D "PPS",	.value =3D 3,		.dpll_type =3D 0 },
->>+	{ .name =3D "PTP",	.value =3D 4,		.dpll_type =3D 0 },
->>+	{ .name =3D "RTC",	.value =3D 5,		.dpll_type =3D 0 },
->>+	{ .name =3D "DCF",	.value =3D 6,		.dpll_type =3D 0 },
->>+	{ .name =3D "REGS",	.value =3D 0xfe,		.dpll_type =3D 0 },
->>+	{ .name =3D "EXT",	.value =3D 0xff,		.dpll_type =3D 0 },
->> 	{ }
->> };
->>
->>@@ -855,37 +859,37 @@ static const struct ocp_selector ptp_ocp_clock[] =
-=3D {
->> #define SMA_SELECT_MASK		GENMASK(14, 0)
->>
->> static const struct ocp_selector ptp_ocp_sma_in[] =3D {
->>-	{ .name =3D "10Mhz",	.value =3D 0x0000 },
->>-	{ .name =3D "PPS1",	.value =3D 0x0001 },
->>-	{ .name =3D "PPS2",	.value =3D 0x0002 },
->>-	{ .name =3D "TS1",	.value =3D 0x0004 },
->>-	{ .name =3D "TS2",	.value =3D 0x0008 },
->>-	{ .name =3D "IRIG",	.value =3D 0x0010 },
->>-	{ .name =3D "DCF",	.value =3D 0x0020 },
->>-	{ .name =3D "TS3",	.value =3D 0x0040 },
->>-	{ .name =3D "TS4",	.value =3D 0x0080 },
->>-	{ .name =3D "FREQ1",	.value =3D 0x0100 },
->>-	{ .name =3D "FREQ2",	.value =3D 0x0200 },
->>-	{ .name =3D "FREQ3",	.value =3D 0x0400 },
->>-	{ .name =3D "FREQ4",	.value =3D 0x0800 },
->>-	{ .name =3D "None",	.value =3D SMA_DISABLE },
->>+	{ .name =3D "10Mhz",	.value =3D 0x0000,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_10_MHZ },
->>+	{ .name =3D "PPS1",	.value =3D 0x0001,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_1_PPS },
->>+	{ .name =3D "PPS2",	.value =3D 0x0002,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_1_PPS },
->>+	{ .name =3D "TS1",	.value =3D 0x0004,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "TS2",	.value =3D 0x0008,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "IRIG",	.value =3D 0x0010,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "DCF",	.value =3D 0x0020,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "TS3",	.value =3D 0x0040,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "TS4",	.value =3D 0x0080,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "FREQ1",	.value =3D 0x0100,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "FREQ2",	.value =3D 0x0200,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "FREQ3",	.value =3D 0x0400,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "FREQ4",	.value =3D 0x0800,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "None",	.value =3D SMA_DISABLE,	.dpll_type =3D 0 },
->> 	{ }
->> };
->>
->> static const struct ocp_selector ptp_ocp_sma_out[] =3D {
->>-	{ .name =3D "10Mhz",	.value =3D 0x0000 },
->>-	{ .name =3D "PHC",	.value =3D 0x0001 },
->>-	{ .name =3D "MAC",	.value =3D 0x0002 },
->>-	{ .name =3D "GNSS1",	.value =3D 0x0004 },
->>-	{ .name =3D "GNSS2",	.value =3D 0x0008 },
->>-	{ .name =3D "IRIG",	.value =3D 0x0010 },
->>-	{ .name =3D "DCF",	.value =3D 0x0020 },
->>-	{ .name =3D "GEN1",	.value =3D 0x0040 },
->>-	{ .name =3D "GEN2",	.value =3D 0x0080 },
->>-	{ .name =3D "GEN3",	.value =3D 0x0100 },
->>-	{ .name =3D "GEN4",	.value =3D 0x0200 },
->>-	{ .name =3D "GND",	.value =3D 0x2000 },
->>-	{ .name =3D "VCC",	.value =3D 0x4000 },
->>+	{ .name =3D "10Mhz",	.value =3D 0x0000,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_10_MHZ },
->>+	{ .name =3D "PHC",	.value =3D 0x0001,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "MAC",	.value =3D 0x0002,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "GNSS1",	.value =3D 0x0004,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_1_PPS },
->>+	{ .name =3D "GNSS2",	.value =3D 0x0008,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_1_PPS },
->>+	{ .name =3D "IRIG",	.value =3D 0x0010,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "DCF",	.value =3D 0x0020,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "GEN1",	.value =3D 0x0040,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "GEN2",	.value =3D 0x0080,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "GEN3",	.value =3D 0x0100,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "GEN4",	.value =3D 0x0200,	.dpll_type =3D
->DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ },
->>+	{ .name =3D "GND",	.value =3D 0x2000,	.dpll_type =3D 0 },
->>+	{ .name =3D "VCC",	.value =3D 0x4000,	.dpll_type =3D 0 },
->> 	{ }
->> };
->>
->>@@ -4175,12 +4179,41 @@ ptp_ocp_detach(struct ptp_ocp *bp)
->> 	device_unregister(&bp->dev);
->> }
->>
->>+static int ptp_ocp_dpll_get_attr(struct dpll_device *dpll, struct
->dpll_attr *attr)
->>+{
->>+	struct ptp_ocp *bp =3D (struct ptp_ocp *)dpll_priv(dpll);
->>+	int sync;
->>+
->>+	sync =3D ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
->>+	dpll_attr_lock_status_set(attr, sync ? DPLL_LOCK_STATUS_LOCKED :
->DPLL_LOCK_STATUS_UNLOCKED);
->
->get,set,confuse. This attr thing sucks, sorry :/
-
-Once again, I feel obligated to add some explanations :)
-
-getter is ops called by dpll subsystem, it requires data, so here value sha=
-ll
-be set for the caller, right?
-Also have explained the reason why this attr struct and functions are done =
-this
-way in the response to cover letter concerns.
-
->
->
->>+
->>+	return 0;
->>+}
->>+
->>+static int ptp_ocp_dpll_pin_get_attr(struct dpll_device *dpll, struct
->dpll_pin *pin,
->>+				     struct dpll_pin_attr *attr)
->>+{
->>+	dpll_pin_attr_type_set(attr, DPLL_PIN_TYPE_EXT);
->
->This is exactly what I was talking about in the cover letter. This is
->const, should be put into static struct and passed to
->dpll_device_alloc().
-
-Actually this type or some other parameters might change in the run-time,
-depends on the device, it is up to the driver how it will handle any getter=
-,
-if driver knows it won't change it could also have some static member and c=
-opy
-the data with: dpll_pin_attr_copy(...);
-
->
->
->>+	return 0;
->>+}
->>+
->>+static struct dpll_device_ops dpll_ops =3D {
->>+	.get	=3D ptp_ocp_dpll_get_attr,
->>+};
->>+
->>+static struct dpll_pin_ops dpll_pin_ops =3D {
->>+	.get	=3D ptp_ocp_dpll_pin_get_attr,
->>+};
->>+
->> static int
->> ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->> {
->>+	const u8 dpll_cookie[DPLL_COOKIE_LEN] =3D { "OCP" };
->>+	char pin_desc[PIN_DESC_LEN];
->> 	struct devlink *devlink;
 >>+	struct dpll_pin *pin;
->> 	struct ptp_ocp *bp;
->>-	int err;
->>+	int err, i;
->>
->> 	devlink =3D devlink_alloc(&ptp_ocp_devlink_ops, sizeof(*bp), &pdev-
->>dev);
->> 	if (!devlink) {
->>@@ -4230,6 +4263,20 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct
->pci_device_id *id)
->>
->> 	ptp_ocp_info(bp);
->> 	devlink_register(devlink);
+>>+	enum dpll_event_change change_type;
+>>+};
 >>+
->>+	bp->dpll =3D dpll_device_alloc(&dpll_ops, DPLL_TYPE_PPS, dpll_cookie,
->pdev->bus->number, bp, &pdev->dev);
->>+	if (!bp->dpll) {
->>+		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
+>>+struct dpll_dump_ctx {
+>>+	int dump_filter;
+>>+};
+>>+
+>>+typedef int (*cb_t)(struct dpll_param *);
+>>+
+>>+static struct genl_family dpll_gnl_family;
+>>+
+>>+static struct dpll_dump_ctx *dpll_dump_context(struct netlink_callback
+>*cb)
+>>+{
+>>+	return (struct dpll_dump_ctx *)cb->ctx;
+>>+}
+>>+
+>>+static int dpll_msg_add_id(struct sk_buff *msg, u32 id)
+>>+{
+>>+	if (nla_put_u32(msg, DPLLA_ID, id))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_name(struct sk_buff *msg, const char *name)
+>>+{
+>>+	if (nla_put_string(msg, DPLLA_NAME, name))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int __dpll_msg_add_mode(struct sk_buff *msg, enum dplla msg_type,
+>>+			       enum dpll_mode mode)
+>>+{
+>>+	if (nla_put_s32(msg, msg_type, mode))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_mode(struct sk_buff *msg, const struct dpll_attr
+>*attr)
+>>+{
+>>+	enum dpll_mode m =3D dpll_attr_mode_get(attr);
+>>+
+>>+	if (m =3D=3D DPLL_MODE_UNSPEC)
+>>+		return 0;
+>>+
+>>+	return __dpll_msg_add_mode(msg, DPLLA_MODE, m);
+>>+}
+>>+
+>>+static int dpll_msg_add_modes_supported(struct sk_buff *msg,
+>>+					const struct dpll_attr *attr)
+>>+{
+>>+	enum dpll_mode i;
+>>+	int  ret =3D 0;
+>>+
+>>+	for (i =3D DPLL_MODE_UNSPEC + 1; i <=3D DPLL_MODE_MAX; i++) {
+>>+		if (dpll_attr_mode_supported(attr, i)) {
+>>+			ret =3D __dpll_msg_add_mode(msg, DPLLA_MODE_SUPPORTED, i);
+>>+			if (ret)
+>>+				return -EMSGSIZE;
+>>+		}
+>>+	}
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+static int dpll_msg_add_source_pin(struct sk_buff *msg, struct dpll_attr
+>*attr)
+>>+{
+>>+	u32 source_idx;
+>>+
+>>+	if (dpll_attr_source_idx_get(attr, &source_idx))
+>>+		return 0;
+>>+	if (nla_put_u32(msg, DPLLA_SOURCE_PIN_IDX, source_idx))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_netifindex(struct sk_buff *msg, struct dpll_attr
+>*attr)
+>>+{
+>>+	unsigned int netifindex; // TODO: Should be u32?
+>>+
+>>+	if (dpll_attr_netifindex_get(attr, &netifindex))
+>>+		return 0;
+>>+	if (nla_put_u32(msg, DPLLA_NETIFINDEX, netifindex))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_lock_status(struct sk_buff *msg, struct dpll_att=
+r
+>*attr)
+>>+{
+>>+	enum dpll_lock_status s =3D dpll_attr_lock_status_get(attr);
+>>+
+>>+	if (s =3D=3D DPLL_LOCK_STATUS_UNSPEC)
+>>+		return 0;
+>>+	if (nla_put_s32(msg, DPLLA_LOCK_STATUS, s))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_temp(struct sk_buff *msg, struct dpll_attr *attr=
+)
+>>+{
+>>+	s32 temp;
+>>+
+>>+	if (dpll_attr_temp_get(attr, &temp))
+>>+		return 0;
+>>+	if (nla_put_u32(msg, DPLLA_TEMP, temp))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_pin_idx(struct sk_buff *msg, u32 pin_idx)
+>>+{
+>>+	if (nla_put_u32(msg, DPLLA_PIN_IDX, pin_idx))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_pin_description(struct sk_buff *msg,
+>>+					const char *description)
+>>+{
+>>+	if (nla_put_string(msg, DPLLA_PIN_DESCRIPTION, description))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_pin_parent_idx(struct sk_buff *msg, u32
+>parent_idx)
+>>+{
+>>+	if (nla_put_u32(msg, DPLLA_PIN_PARENT_IDX, parent_idx))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int __dpll_msg_add_pin_type(struct sk_buff *msg, enum dplla attr,
+>>+				   enum dpll_pin_type type)
+>>+{
+>>+	if (nla_put_s32(msg, attr, type))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int
+>>+dpll_msg_add_pin_type(struct sk_buff *msg, const struct dpll_pin_attr
+>*attr)
+>>+{
+>>+	enum dpll_pin_type t =3D dpll_pin_attr_type_get(attr);
+>>+
+>>+	if (t =3D=3D DPLL_PIN_TYPE_UNSPEC)
+>>+		return 0;
+>>+
+>>+	return __dpll_msg_add_pin_type(msg, DPLLA_PIN_TYPE, t);
+>>+}
+>>+
+>>+static int dpll_msg_add_pin_types_supported(struct sk_buff *msg,
+>>+					    const struct dpll_pin_attr *attr)
+>>+{
+>>+	enum dpll_pin_type i;
+>>+	int ret;
+>>+
+>>+	for (i =3D DPLL_PIN_TYPE_UNSPEC + 1; i <=3D DPLL_PIN_TYPE_MAX; i++) {
+>>+		if (dpll_pin_attr_type_supported(attr, i)) {
+>>+			ret =3D __dpll_msg_add_pin_type(msg,
+>>+						      DPLLA_PIN_TYPE_SUPPORTED,
+>>+						      i);
+>>+			if (ret)
+>>+				return ret;
+>>+		}
+>>+	}
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int __dpll_msg_add_pin_signal_type(struct sk_buff *msg,
+>>+					  enum dplla attr,
+>>+					  enum dpll_pin_signal_type type)
+>>+{
+>>+	if (nla_put_s32(msg, attr, type))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_pin_signal_type(struct sk_buff *msg,
+>>+					const struct dpll_pin_attr *attr)
+>>+{
+>>+	enum dpll_pin_signal_type t =3D dpll_pin_attr_signal_type_get(attr);
+>>+
+>>+	if (t =3D=3D DPLL_PIN_SIGNAL_TYPE_UNSPEC)
+>>+		return 0;
+>>+
+>>+	return __dpll_msg_add_pin_signal_type(msg, DPLLA_PIN_SIGNAL_TYPE, t);
+>>+}
+>>+
+>>+static int
+>>+dpll_msg_add_pin_signal_types_supported(struct sk_buff *msg,
+>>+					const struct dpll_pin_attr *attr)
+>>+{
+>>+	const enum dplla da =3D DPLLA_PIN_SIGNAL_TYPE_SUPPORTED;
+>>+	enum dpll_pin_signal_type i;
+>>+	int ret;
+>>+
+>>+	for (i =3D DPLL_PIN_SIGNAL_TYPE_UNSPEC + 1;
+>>+	     i <=3D DPLL_PIN_SIGNAL_TYPE_MAX; i++) {
+>>+		if (dpll_pin_attr_signal_type_supported(attr, i)) {
+>>+			ret =3D __dpll_msg_add_pin_signal_type(msg, da, i);
+>>+			if (ret)
+>>+				return ret;
+>>+		}
+>>+	}
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_pin_custom_freq(struct sk_buff *msg,
+>>+					const struct dpll_pin_attr *attr)
+>>+{
+>>+	u32 freq;
+>>+
+>>+	if (dpll_pin_attr_custom_freq_get(attr, &freq))
+>>+		return 0;
+>>+	if (nla_put_u32(msg, DPLLA_PIN_CUSTOM_FREQ, freq))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_pin_states(struct sk_buff *msg,
+>>+				   const struct dpll_pin_attr *attr)
+>>+{
+>>+	enum dpll_pin_state i;
+>>+
+>>+	for (i =3D DPLL_PIN_STATE_UNSPEC + 1; i <=3D DPLL_PIN_STATE_MAX; i++)
+>>+		if (dpll_pin_attr_state_enabled(attr, i))
+>>+			if (nla_put_s32(msg, DPLLA_PIN_STATE, i))
+>>+				return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_msg_add_pin_states_supported(struct sk_buff *msg,
+>>+					     const struct dpll_pin_attr *attr)
+>>+{
+>>+	enum dpll_pin_state i;
+>>+
+>>+	for (i =3D DPLL_PIN_STATE_UNSPEC + 1; i <=3D DPLL_PIN_STATE_MAX; i++)
+>>+		if (dpll_pin_attr_state_supported(attr, i))
+>>+			if (nla_put_s32(msg, DPLLA_PIN_STATE_SUPPORTED, i))
+>>+				return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int
+>>+dpll_msg_add_pin_prio(struct sk_buff *msg, const struct dpll_pin_attr
+>*attr)
+>>+{
+>>+	u32 prio;
+>>+
+>>+	if (dpll_pin_attr_prio_get(attr, &prio))
+>>+		return 0;
+>>+	if (nla_put_u32(msg, DPLLA_PIN_PRIO, prio))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int
+>>+dpll_msg_add_pin_netifindex(struct sk_buff *msg, const struct
+>dpll_pin_attr *attr)
+>>+{
+>>+	unsigned int netifindex; // TODO: Should be u32?
+>>+
+>>+	if (dpll_pin_attr_netifindex_get(attr, &netifindex))
+>>+		return 0;
+>>+	if (nla_put_u32(msg, DPLLA_PIN_NETIFINDEX, netifindex))
+>
+>I was thinking about this. It is problematic. DPLL has no notion of
+>network namespaces. So if the driver passes ifindex, dpll/user has no
+>clue in which network namespace it is (ifindexes ovelay in multiple
+>namespaces).
+>
+>There is no easy/nice solution. For now, I would go without this and
+>only have linkage the opposite direction, from netdev to dpll.
+
+Well, makes sense to me.
+Although as I have checked `ip a` showed the same ifindex either if port wa=
+s
+in the namespace or not.
+Isn't it better to let the user know ifindex, even if he has to iterate all
+the namespaces he has created?
+
+>
+>
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int
+>>+dpll_msg_add_event_change_type(struct sk_buff *msg,
+>>+			       enum dpll_event_change event)
+>>+{
+>>+	if (nla_put_s32(msg, DPLLA_CHANGE_TYPE, event))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int
+>>+__dpll_cmd_device_dump_one(struct sk_buff *msg, struct dpll_device *dpll=
+)
+>>+{
+>>+	int ret =3D dpll_msg_add_id(msg, dpll_id(dpll));
+>>+
+>>+	if (ret)
+>>+		return ret;
+>>+	ret =3D dpll_msg_add_name(msg, dpll_dev_name(dpll));
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+static int
+>>+__dpll_cmd_pin_dump_one(struct sk_buff *msg, struct dpll_device *dpll,
+>>+			struct dpll_pin *pin)
+>>+{
+>>+	struct dpll_pin_attr *attr =3D dpll_pin_attr_alloc();
+>>+	struct dpll_pin *parent =3D NULL;
+>>+	int ret;
+>>+
+>>+	if (!attr)
+>>+		return -ENOMEM;
+>>+	ret =3D dpll_msg_add_pin_idx(msg, dpll_pin_idx(dpll, pin));
+>>+	if (ret)
 >>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_description(msg,
+>dpll_pin_get_description(pin));
+>>+	if (ret)
+>>+		goto out;
+>>+	parent =3D dpll_pin_get_parent(pin);
+>>+	if (parent) {
+>>+		ret =3D dpll_msg_add_pin_parent_idx(msg, dpll_pin_idx(dpll,
+>>+								    parent));
+>>+		if (ret)
+>>+			goto out;
 >>+	}
->>+	dpll_device_register(bp->dpll);
+>>+	ret =3D dpll_pin_get_attr(dpll, pin, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_type(msg, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_types_supported(msg, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_signal_type(msg, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_signal_types_supported(msg, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_custom_freq(msg, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_states(msg, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_states_supported(msg, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_prio(msg, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+	ret =3D dpll_msg_add_pin_netifindex(msg, attr);
+>>+	if (ret)
+>>+		goto out;
+>>+out:
+>>+	dpll_pin_attr_free(attr);
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+static int __dpll_cmd_dump_pins(struct sk_buff *msg, struct dpll_device
+>*dpll)
+>>+{
+>>+	struct dpll_pin *pin;
+>>+	struct nlattr *attr;
+>>+	unsigned long i;
+>>+	int ret =3D 0;
+>>+
+>>+	for_each_pin_on_dpll(dpll, pin, i) {
+>>+		attr =3D nla_nest_start(msg, DPLLA_PIN);
+>>+		if (!attr) {
+>>+			ret =3D -EMSGSIZE;
+>>+			goto nest_cancel;
+>>+		}
+>>+		ret =3D __dpll_cmd_pin_dump_one(msg, dpll, pin);
+>>+		if (ret)
+>>+			goto nest_cancel;
+>>+		nla_nest_end(msg, attr);
+>>+	}
+>>+
+>>+	return ret;
+>>+
+>>+nest_cancel:
+>>+	nla_nest_cancel(msg, attr);
+>>+	return ret;
+>>+}
+>>+
+>>+static int
+>>+__dpll_cmd_dump_status(struct sk_buff *msg, struct dpll_device *dpll)
+>>+{
+>>+	struct dpll_attr *attr =3D dpll_attr_alloc();
+>>+	int ret =3D dpll_get_attr(dpll, attr);
+>>+
+>>+	if (ret)
+>>+		return -EAGAIN;
+>>+	if (dpll_msg_add_source_pin(msg, attr))
+>>+		return -EMSGSIZE;
+>>+	if (dpll_msg_add_temp(msg, attr))
+>>+		return -EMSGSIZE;
+>>+	if (dpll_msg_add_lock_status(msg, attr))
+>>+		return -EMSGSIZE;
+>>+	if (dpll_msg_add_mode(msg, attr))
+>>+		return -EMSGSIZE;
+>>+	if (dpll_msg_add_modes_supported(msg, attr))
+>>+		return -EMSGSIZE;
+>>+	if (dpll_msg_add_netifindex(msg, attr))
+>>+		return -EMSGSIZE;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int
+>>+dpll_device_dump_one(struct dpll_device *dpll, struct sk_buff *msg,
+>>+		     int dump_filter)
+>>+{
+>>+	int ret;
+>>+
+>>+	dpll_lock(dpll);
+>>+	ret =3D __dpll_cmd_device_dump_one(msg, dpll);
+>>+	if (ret)
+>>+		goto out_unlock;
+>>+
+>>+	if (dump_filter & DPLL_DUMP_FILTER_STATUS) {
+>>+		ret =3D __dpll_cmd_dump_status(msg, dpll);
+>>+		if (ret)
+>>+			goto out_unlock;
+>>+	}
+>>+	if (dump_filter & DPLL_DUMP_FILTER_PINS)
+>>+		ret =3D __dpll_cmd_dump_pins(msg, dpll);
+>>+	dpll_unlock(dpll);
+>>+
+>>+	return ret;
+>>+out_unlock:
+>>+	dpll_unlock(dpll);
+>>+	return ret;
+>>+}
+>>+
+>>+static enum dpll_pin_type dpll_msg_read_pin_type(struct nlattr *a)
+>>+{
+>>+	return nla_get_s32(a);
+>>+}
+>>+
+>>+static enum dpll_pin_signal_type dpll_msg_read_pin_sig_type(struct nlatt=
+r
+>*a)
+>>+{
+>>+	return nla_get_s32(a);
+>>+}
+>>+
+>>+static u32 dpll_msg_read_pin_custom_freq(struct nlattr *a)
+>>+{
+>>+	return nla_get_u32(a);
+>>+}
+>>+
+>>+static enum dpll_pin_state dpll_msg_read_pin_state(struct nlattr *a)
+>>+{
+>>+	return nla_get_s32(a);
+>>+}
+>>+
+>>+static u32 dpll_msg_read_pin_prio(struct nlattr *a)
+>>+{
+>>+	return nla_get_u32(a);
+>>+}
+>>+
+>>+static u32 dpll_msg_read_dump_filter(struct nlattr *a)
+>>+{
+>>+	return nla_get_u32(a);
+>>+}
+>>+
+>>+static int
+>>+dpll_pin_attr_from_nlattr(struct dpll_pin_attr *pa, struct genl_info
+>*info)
+>>+{
+>>+	enum dpll_pin_signal_type st;
+>>+	enum dpll_pin_state state;
+>>+	enum dpll_pin_type t;
+>>+	struct nlattr *a;
+>>+	int rem, ret =3D 0;
+>>+	u32 prio, freq;
+>>+
+>>+	nla_for_each_attr(a, genlmsg_data(info->genlhdr),
+>>+			  genlmsg_len(info->genlhdr), rem) {
+>>+		switch (nla_type(a)) {
+>>+		case DPLLA_PIN_TYPE:
+>>+			t =3D dpll_msg_read_pin_type(a);
+>>+			ret =3D dpll_pin_attr_type_set(pa, t);
+>>+			if (ret)
+>>+				return ret;
+>>+			break;
+>>+		case DPLLA_PIN_SIGNAL_TYPE:
+>>+			st =3D dpll_msg_read_pin_sig_type(a);
+>>+			ret =3D dpll_pin_attr_signal_type_set(pa, st);
+>>+			if (ret)
+>>+				return ret;
+>>+			break;
+>>+		case DPLLA_PIN_CUSTOM_FREQ:
+>>+			freq =3D dpll_msg_read_pin_custom_freq(a);
+>>+			ret =3D dpll_pin_attr_custom_freq_set(pa, freq);
+>>+			if (ret)
+>>+				return ret;
+>>+			break;
+>>+		case DPLLA_PIN_STATE:
+>>+			state =3D dpll_msg_read_pin_state(a);
+>>+			ret =3D dpll_pin_attr_state_set(pa, state);
+>>+			if (ret)
+>>+				return ret;
+>>+			break;
+>>+		case DPLLA_PIN_PRIO:
+>>+			prio =3D dpll_msg_read_pin_prio(a);
+>>+			ret =3D dpll_pin_attr_prio_set(pa, prio);
+>>+			if (ret)
+>>+				return ret;
+>>+			break;
+>>+		default:
+>>+			break;
+>>+		}
+>>+	}
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+static int dpll_cmd_pin_set(struct sk_buff *skb, struct genl_info *info)
+>>+{
+>>+	struct dpll_pin_attr *old =3D NULL, *new =3D NULL, *delta =3D NULL;
+>>+	struct dpll_device *dpll =3D info->user_ptr[0];
+>>+	struct nlattr **attrs =3D info->attrs;
+>>+	struct dpll_pin *pin;
+>>+	int ret, pin_id;
+>>+
+>>+	if (!attrs[DPLLA_PIN_IDX])
+>>+		return -EINVAL;
+>>+	pin_id =3D nla_get_u32(attrs[DPLLA_PIN_IDX]);
+>>+	old =3D dpll_pin_attr_alloc();
+>>+	new =3D dpll_pin_attr_alloc();
+>>+	delta =3D dpll_pin_attr_alloc();
+>>+	if (!old || !new || !delta) {
+>>+		ret =3D -ENOMEM;
+>>+		goto mem_free;
+>>+	}
+>>+	dpll_lock(dpll);
+>>+	pin =3D dpll_pin_get_by_idx(dpll, pin_id);
+>>+	if (!pin) {
+>>+		ret =3D -ENODEV;
+>>+		goto mem_free_unlock;
+>>+	}
+>>+	ret =3D dpll_pin_get_attr(dpll, pin, old);
+>>+	if (ret)
+>>+		goto mem_free_unlock;
+>>+	ret =3D dpll_pin_attr_from_nlattr(new, info);
+>>+	if (ret)
+>>+		goto mem_free_unlock;
+>>+	ret =3D dpll_pin_attr_delta(delta, new, old);
+>>+	dpll_unlock(dpll);
+>>+	if (!ret)
+>>+		ret =3D dpll_pin_set_attr(dpll, pin, delta);
+>>+	else
+>>+		ret =3D -EINVAL;
+>>+
+>>+	dpll_pin_attr_free(delta);
+>>+	dpll_pin_attr_free(new);
+>>+	dpll_pin_attr_free(old);
+>>+
+>>+	return ret;
+>>+
+>>+mem_free_unlock:
+>>+	dpll_unlock(dpll);
+>>+mem_free:
+>>+	dpll_pin_attr_free(delta);
+>>+	dpll_pin_attr_free(new);
+>>+	dpll_pin_attr_free(old);
+>>+	return ret;
+>>+}
+>>+
+>>+enum dpll_mode dpll_msg_read_mode(struct nlattr *a)
+>>+{
+>>+	return nla_get_s32(a);
+>>+}
+>>+
+>>+u32 dpll_msg_read_source_pin_id(struct nlattr *a)
+>>+{
+>>+	return nla_get_u32(a);
+>>+}
+>>+
+>>+static int
+>>+dpll_attr_from_nlattr(struct dpll_attr *dpll, struct genl_info *info)
+>>+{
+>>+	enum dpll_mode m;
+>>+	struct nlattr *a;
+>>+	int rem, ret =3D 0;
+>>+	u32 source_pin;
+>>+
+>>+	nla_for_each_attr(a, genlmsg_data(info->genlhdr),
+>>+			  genlmsg_len(info->genlhdr), rem) {
+>>+		switch (nla_type(a)) {
+>>+		case DPLLA_MODE:
+>>+			m =3D dpll_msg_read_mode(a);
+>>+
+>>+			ret =3D dpll_attr_mode_set(dpll, m);
+>>+			if (ret)
+>>+				return ret;
+>>+			break;
+>>+		case DPLLA_SOURCE_PIN_IDX:
+>>+			source_pin =3D dpll_msg_read_source_pin_id(a);
+>>+
+>>+			ret =3D dpll_attr_source_idx_set(dpll, source_pin);
+>>+			if (ret)
+>>+				return ret;
+>>+			break;
+>>+		default:
+>>+			break;
+>>+		}
+>>+	}
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+static int dpll_cmd_device_set(struct sk_buff *skb, struct genl_info
+>*info)
+>>+{
+>>+	struct dpll_attr *old =3D NULL, *new =3D NULL, *delta =3D NULL;
+>>+	struct dpll_device *dpll =3D info->user_ptr[0];
+>>+	int ret;
+>>+
+>>+	old =3D dpll_attr_alloc();
+>>+	new =3D dpll_attr_alloc();
+>>+	delta =3D dpll_attr_alloc();
+>>+	if (!old || !new || !delta) {
+>>+		ret =3D -ENOMEM;
+>>+		goto mem_free;
+>>+	}
+>>+	dpll_lock(dpll);
+>>+	ret =3D dpll_get_attr(dpll, old);
+>>+	dpll_unlock(dpll);
+>>+	if (!ret) {
+>>+		dpll_attr_from_nlattr(new, info);
+>>+		ret =3D dpll_attr_delta(delta, new, old);
+>>+		if (!ret)
+>>+			ret =3D dpll_set_attr(dpll, delta);
+>>+	}
+>>+
+>>+mem_free:
+>>+	dpll_attr_free(old);
+>>+	dpll_attr_free(new);
+>>+	dpll_attr_free(delta);
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+static int
+>>+dpll_cmd_device_dump(struct sk_buff *skb, struct netlink_callback *cb)
+>>+{
+>>+	struct dpll_dump_ctx *ctx =3D dpll_dump_context(cb);
+>>+	struct dpll_device *dpll;
+>>+	struct nlattr *hdr;
+>>+	unsigned long i;
+>>+	int ret;
+>>+
+>>+	hdr =3D genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh-
+>>nlmsg_seq,
+>>+			  &dpll_gnl_family, 0, DPLL_CMD_DEVICE_GET);
+>>+	if (!hdr)
+>>+		return -EMSGSIZE;
+>>+
+>>+	for_each_dpll(dpll, i) {
+>>+		ret =3D dpll_device_dump_one(dpll, skb, ctx->dump_filter);
+>>+		if (ret)
+>>+			break;
+>>+	}
+>>+
+>>+	if (ret)
+>>+		genlmsg_cancel(skb, hdr);
+>>+	else
+>>+		genlmsg_end(skb, hdr);
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+static int dpll_cmd_device_get(struct sk_buff *skb, struct genl_info
+>*info)
+>>+{
+>>+	struct dpll_device *dpll =3D info->user_ptr[0];
+>>+	struct nlattr **attrs =3D info->attrs;
+>>+	struct sk_buff *msg;
+>>+	int dump_filter =3D 0;
+>>+	struct nlattr *hdr;
+>>+	int ret;
+>>+
+>>+	if (attrs[DPLLA_DUMP_FILTER])
+>>+		dump_filter =3D
+>>+			dpll_msg_read_dump_filter(attrs[DPLLA_DUMP_FILTER]);
+>>+
+>>+	msg =3D genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
+>>+	if (!msg)
+>>+		return -ENOMEM;
+>>+	hdr =3D genlmsg_put_reply(msg, info, &dpll_gnl_family, 0,
+>>+				DPLL_CMD_DEVICE_GET);
+>>+	if (!hdr)
+>>+		return -EMSGSIZE;
+>>+
+>>+	ret =3D dpll_device_dump_one(dpll, msg, dump_filter);
+>>+	if (ret)
+>>+		goto out_free_msg;
+>>+	genlmsg_end(msg, hdr);
+>>+
+>>+	return genlmsg_reply(msg, info);
+>>+
+>>+out_free_msg:
+>>+	nlmsg_free(msg);
+>>+	return ret;
+>>+
+>>+}
+>>+
+>>+static int dpll_cmd_device_get_start(struct netlink_callback *cb)
+>>+{
+>>+	const struct genl_dumpit_info *info =3D genl_dumpit_info(cb);
+>>+	struct dpll_dump_ctx *ctx =3D dpll_dump_context(cb);
+>>+	struct nlattr *attr =3D info->attrs[DPLLA_DUMP_FILTER];
+>>+
+>>+	if (attr)
+>>+		ctx->dump_filter =3D dpll_msg_read_dump_filter(attr);
+>>+	else
+>>+		ctx->dump_filter =3D 0;
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static int dpll_pre_doit(const struct genl_split_ops *ops, struct sk_buf=
+f
+>*skb,
+>>+			 struct genl_info *info)
+>>+{
+>>+	struct dpll_device *dpll_id =3D NULL, *dpll_name =3D NULL;
+>>+
+>>+	if (!info->attrs[DPLLA_ID] &&
+>>+	    !info->attrs[DPLLA_NAME])
+>>+		return -EINVAL;
+>>+
+>>+	if (info->attrs[DPLLA_ID]) {
+>>+		u32 id =3D nla_get_u32(info->attrs[DPLLA_ID]);
+>>+
+>>+		dpll_id =3D dpll_device_get_by_id(id);
+>>+		if (!dpll_id)
+>>+			return -ENODEV;
+>>+		info->user_ptr[0] =3D dpll_id;
+>>+	}
+>>+	if (info->attrs[DPLLA_NAME]) {
+>>+		const char *name =3D nla_data(info->attrs[DPLLA_NAME]);
+>>+
+>>+		dpll_name =3D dpll_device_get_by_name(name);
+>>+		if (!dpll_name)
+>>+			return -ENODEV;
+>>+
+>>+		if (dpll_id && dpll_name !=3D dpll_id)
+>>+			return -EINVAL;
+>>+		info->user_ptr[0] =3D dpll_name;
+>>+	}
+>>+
+>>+	return 0;
+>>+}
+>>+
+>>+static const struct genl_ops dpll_ops[] =3D {
+>>+	{
+>>+		.cmd	=3D DPLL_CMD_DEVICE_GET,
+>>+		.flags  =3D GENL_UNS_ADMIN_PERM,
+>>+		.start	=3D dpll_cmd_device_get_start,
+>>+		.dumpit	=3D dpll_cmd_device_dump,
+>>+		.doit	=3D dpll_cmd_device_get,
+>>+		.policy	=3D dpll_cmd_device_get_policy,
+>>+		.maxattr =3D ARRAY_SIZE(dpll_cmd_device_get_policy) - 1,
+>>+	},
+>>+	{
+>>+		.cmd	=3D DPLL_CMD_DEVICE_SET,
+>>+		.flags	=3D GENL_UNS_ADMIN_PERM,
+>>+		.doit	=3D dpll_cmd_device_set,
+>>+		.policy	=3D dpll_cmd_device_set_policy,
+>>+		.maxattr =3D ARRAY_SIZE(dpll_cmd_device_set_policy) - 1,
+>>+	},
+>>+	{
+>>+		.cmd	=3D DPLL_CMD_PIN_SET,
+>>+		.flags	=3D GENL_UNS_ADMIN_PERM,
+>>+		.doit	=3D dpll_cmd_pin_set,
+>>+		.policy	=3D dpll_cmd_pin_set_policy,
+>>+		.maxattr =3D ARRAY_SIZE(dpll_cmd_pin_set_policy) - 1,
+>>+	},
+>>+};
+>>+
+>>+static struct genl_family dpll_family __ro_after_init =3D {
+>>+	.hdrsize	=3D 0,
+>>+	.name		=3D DPLL_FAMILY_NAME,
+>>+	.version	=3D DPLL_VERSION,
+>>+	.ops		=3D dpll_ops,
+>>+	.n_ops		=3D ARRAY_SIZE(dpll_ops),
+>>+	.mcgrps		=3D dpll_mcgrps,
+>>+	.n_mcgrps	=3D ARRAY_SIZE(dpll_mcgrps),
+>>+	.pre_doit	=3D dpll_pre_doit,
+>>+	.parallel_ops   =3D true,
+>>+};
+>>+
+>>+static int dpll_event_device_id(struct dpll_param *p)
+>>+{
+>>+	int ret =3D dpll_msg_add_id(p->msg, dpll_id(p->dpll));
+>>+
+>>+	if (ret)
+>>+		return ret;
+>>+	ret =3D dpll_msg_add_name(p->msg, dpll_dev_name(p->dpll));
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+static int dpll_event_device_change(struct dpll_param *p)
+>>+{
+>>+	int ret =3D dpll_msg_add_id(p->msg, dpll_id(p->dpll));
+>>+
+>>+	if (ret)
+>>+		return ret;
+>>+	ret =3D dpll_msg_add_event_change_type(p->msg, p->change_type);
+>>+	if (ret)
+>>+		return ret;
+>>+	switch (p->change_type)	{
+>>+	case DPLL_CHANGE_PIN_ADD:
+>>+	case DPLL_CHANGE_PIN_DEL:
+>>+	case DPLL_CHANGE_PIN_TYPE:
+>>+	case DPLL_CHANGE_PIN_SIGNAL_TYPE:
+>>+	case DPLL_CHANGE_PIN_STATE:
+>>+	case DPLL_CHANGE_PIN_PRIO:
+>>+		ret =3D dpll_msg_add_pin_idx(p->msg, dpll_pin_idx(p->dpll, p-
+>>pin));
+>>+		break;
+>>+	default:
+>>+		break;
+>>+	}
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+static const cb_t event_cb[] =3D {
+>>+	[DPLL_EVENT_DEVICE_CREATE]	=3D dpll_event_device_id,
+>>+	[DPLL_EVENT_DEVICE_DELETE]	=3D dpll_event_device_id,
+>>+	[DPLL_EVENT_DEVICE_CHANGE]	=3D dpll_event_device_change,
+>>+};
+>>+
+>>+/*
+>>+ * Generic netlink DPLL event encoding
+>>+ */
+>>+static int dpll_send_event(enum dpll_event event, struct dpll_param *p)
+>>+{
+>>+	struct sk_buff *msg;
+>>+	int ret =3D -EMSGSIZE;
+>>+	void *hdr;
+>>+
+>>+	msg =3D genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
+>>+	if (!msg)
+>>+		return -ENOMEM;
+>>+	p->msg =3D msg;
+>>+
+>>+	hdr =3D genlmsg_put(msg, 0, 0, &dpll_family, 0, event);
+>>+	if (!hdr)
+>>+		goto out_free_msg;
+>>+
+>>+	ret =3D event_cb[event](p);
+>>+	if (ret)
+>>+		goto out_cancel_msg;
+>>+
+>>+	genlmsg_end(msg, hdr);
+>>+
+>>+	genlmsg_multicast(&dpll_family, msg, 0, 0, GFP_KERNEL);
+>>+
+>>+	return 0;
+>>+
+>>+out_cancel_msg:
+>>+	genlmsg_cancel(msg, hdr);
+>>+out_free_msg:
+>>+	nlmsg_free(msg);
+>>+
+>>+	return ret;
+>>+}
+>>+
+>>+int dpll_notify_device_create(struct dpll_device *dpll)
+>>+{
+>>+	struct dpll_param p =3D { .dpll =3D dpll };
+>>+
+>>+	return dpll_send_event(DPLL_EVENT_DEVICE_CREATE, &p);
+>>+}
+>>+
+>>+int dpll_notify_device_delete(struct dpll_device *dpll)
+>>+{
+>>+	struct dpll_param p =3D { .dpll =3D dpll };
+>>+
+>>+	return dpll_send_event(DPLL_EVENT_DEVICE_DELETE, &p);
+>>+}
+>>+
+>>+int dpll_notify_device_change(struct dpll_device *dpll,
+>>+			      enum dpll_event_change event,
+>>+			      struct dpll_pin *pin)
+>>+{
+>>+	struct dpll_param p =3D { .dpll =3D dpll,
+>>+				.change_type =3D event,
+>>+				.pin =3D pin };
 >
->You still have the 2 step init process. I believe it would be better to
->just have dpll_device_create/destroy() to do it in one shot.
+>This is odd. Why don't you just pass the object you want to expose the
+>event for. You should have coupling between the object and send event
+>function:
+>dpll_device_notify(dpll, event);
+>dpll_pin_notify(pin, event);
+>Then you can avoid this param struct.
 
-For me either is ok, but due to pins alloc/register as explained below I wo=
-uld
-leave it as it is.
+Makes sense to me.
 
 >
 >
 >>+
->>+	for (i =3D 0; i < 4; i++) {
->>+		snprintf(pin_desc, PIN_DESC_LEN, "sma%d", i + 1);
->>+		pin =3D dpll_pin_alloc(pin_desc, PIN_DESC_LEN);
->>+		dpll_pin_register(bp->dpll, pin, &dpll_pin_ops, bp);
+>>+	return dpll_send_event(DPLL_EVENT_DEVICE_CHANGE, &p);
+>>+}
 >
->Same here, no point of having 2 step init.
+>[...]
+>
+>
+>>+/* dplla - Attributes of dpll generic netlink family
+>>+ *
+>>+ * @DPLLA_UNSPEC - invalid attribute
+>>+ * @DPLLA_ID - ID of a dpll device (unsigned int)
+>>+ * @DPLLA_NAME - human-readable name (char array of DPLL_NAME_LENGTH
+>size)
+>>+ * @DPLLA_MODE - working mode of dpll (enum dpll_mode)
+>>+ * @DPLLA_MODE_SUPPORTED - list of supported working modes (enum
+>dpll_mode)
+>>+ * @DPLLA_SOURCE_PIN_ID - ID of source pin selected to drive dpll
+>>+ *	(unsigned int)
+>>+ * @DPLLA_LOCK_STATUS - dpll's lock status (enum dpll_lock_status)
+>>+ * @DPLLA_TEMP - dpll's temperature (signed int - Celsius degrees)
+>>+ * @DPLLA_DUMP_FILTER - filter bitmask (int, sum of DPLL_DUMP_FILTER_*
+>defines)
+>>+ * @DPLLA_NETIFINDEX - related network interface index
+>>+ * @DPLLA_PIN - nested attribute, each contains single pin attributes
+>>+ * @DPLLA_PIN_IDX - index of a pin on dpll (unsigned int)
+>>+ * @DPLLA_PIN_DESCRIPTION - human-readable pin description provided by
+>driver
+>>+ *	(char array of PIN_DESC_LEN size)
+>>+ * @DPLLA_PIN_TYPE - current type of a pin (enum dpll_pin_type)
+>>+ * @DPLLA_PIN_TYPE_SUPPORTED - pin types supported (enum dpll_pin_type)
+>>+ * @DPLLA_PIN_SIGNAL_TYPE - current type of a signal
+>>+ *	(enum dpll_pin_signal_type)
+>>+ * @DPLLA_PIN_SIGNAL_TYPE_SUPPORTED - pin signal types supported
+>>+ *	(enum dpll_pin_signal_type)
+>>+ * @DPLLA_PIN_CUSTOM_FREQ - freq value for
+>DPLL_PIN_SIGNAL_TYPE_CUSTOM_FREQ
+>>+ *	(unsigned int)
+>>+ * @DPLLA_PIN_STATE - state of pin's capabilities (enum dpll_pin_state)
+>>+ * @DPLLA_PIN_STATE_SUPPORTED - available pin's capabilities
+>>+ *	(enum dpll_pin_state)
+>>+ * @DPLLA_PIN_PRIO - priority of a pin on dpll (unsigned int)
+>>+ * @DPLLA_PIN_PARENT_IDX - if of a parent pin (unsigned int)
+>>+ * @DPLLA_CHANGE_TYPE - type of device change event
+>>+ *	(enum dpll_change_type)
+>>+ * @DPLLA_PIN_NETIFINDEX - related network interface index for the pin
+>>+ **/
+>>+enum dplla {
+>>+	DPLLA_UNSPEC,
+>>+	DPLLA_ID,
+>>+	DPLLA_NAME,
+>>+	DPLLA_MODE,
+>>+	DPLLA_MODE_SUPPORTED,
+>>+	DPLLA_SOURCE_PIN_IDX,
+>>+	DPLLA_LOCK_STATUS,
+>>+	DPLLA_TEMP,
+>
+>Did you consider need for DPLLA_CLOCK_QUALITY? The our device exposes
+>quality of the clock. SyncE daemon needs to be aware of the clock
+>quality
+>
+>Also, how about the clock identification. I recall this being discussed
+>in the past as well. This is also needed for SyncE daemon.
+>DPLLA_CLOCK_ID - SyncE has it at 64bit number.
+>
 
-The alloc of a pin is not required if the pin already exist and would be ju=
-st
-registered with another dpll.
-Once we decide to entirely drop shared pins idea this could be probably don=
-e,
-although other kernel code usually use this twostep approach?
+Yep, definitely I agree with both.
 
 >
+>>+	DPLLA_DUMP_FILTER,
+>>+	DPLLA_NETIFINDEX,
 >
->>+	}
->>+
->> 	return 0;
->
->
->Btw, did you consider having dpll instance here as and auxdev? It would
->be suitable I believe. It is quite simple to do it. See following patch
->as an example:
+>Duplicate, you have it under pin.
 
-I haven't think about it, definetly gonna take a look to see if there any
-benefits in ice.
+The pin can have netifindex as pin signal source may originate there by
+Clock recovery mechanics.
+The dpll can have ifindex as it "owns" the dpll.
+Shall user know about it? probably nothing usefull for him, although
+didn't Maciej Machnikowski asked to have such traceability?
 
 Thanks,
 Arkadiusz
 
 >
->commit bd02fd76d1909637c95e8ef13e7fd1e748af910d
->Author: Jiri Pirko <jiri@nvidia.com>
->Date:   Mon Jul 25 10:29:17 2022 +0200
 >
->    mlxsw: core_linecards: Introduce per line card auxiliary device
+>>+	DPLLA_PIN,
+>>+	DPLLA_PIN_IDX,
+>>+	DPLLA_PIN_DESCRIPTION,
+>>+	DPLLA_PIN_TYPE,
+>>+	DPLLA_PIN_TYPE_SUPPORTED,
+>>+	DPLLA_PIN_SIGNAL_TYPE,
+>>+	DPLLA_PIN_SIGNAL_TYPE_SUPPORTED,
+>>+	DPLLA_PIN_CUSTOM_FREQ,
+>>+	DPLLA_PIN_STATE,
+>>+	DPLLA_PIN_STATE_SUPPORTED,
+>>+	DPLLA_PIN_PRIO,
+>>+	DPLLA_PIN_PARENT_IDX,
+>>+	DPLLA_CHANGE_TYPE,
+>>+	DPLLA_PIN_NETIFINDEX,
+>>+	__DPLLA_MAX,
+>>+};
+>>+
+>>+#define DPLLA_MAX (__DPLLA_MAX - 1)
 >
 >
->
->
->>
->> out:
->>@@ -4247,6 +4294,8 @@ ptp_ocp_remove(struct pci_dev *pdev)
->> 	struct ptp_ocp *bp =3D pci_get_drvdata(pdev);
->> 	struct devlink *devlink =3D priv_to_devlink(bp);
->>
->>+	dpll_device_unregister(bp->dpll);
->>+	dpll_device_free(bp->dpll);
->> 	devlink_unregister(devlink);
->> 	ptp_ocp_detach(bp);
->> 	pci_disable_device(pdev);
->>--
->>2.27.0
->>
+>[...]
+
