@@ -2,254 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 343C064102A
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 22:46:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D89A564103F
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 22:56:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234717AbiLBVqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 16:46:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33238 "EHLO
+        id S234698AbiLBV40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 16:56:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234678AbiLBVqi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 16:46:38 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FDFF1CF9;
-        Fri,  2 Dec 2022 13:46:37 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1670017546; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=DnXhT2OUlhlC5DwILJKEz4FKOfX14rJuU1Z5pzoNKTHRt0IUEa9cKCxGC4LhhHuaTHuIVkQLu9THL5C9MN53zX4Lw32mj3sFgx+Ie6bN410Bu32ZGi8nu3VMyzkgRbo05Xn8LajJ48A+CPQiVZ0T9zuAwYnAJANtBLQAwfNb/ZY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1670017546; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=JTgtnJqoI3mBOnlXVRuirNE3H0rwkt9IzKJ3dXVz2R0=; 
-        b=UQF4RXBepui+yim0KwIXhj7dIhvabk1ebfPx5aBM/OJRRVD6h9B8XSbiylbUJV+tZHQL36Y4iJfWYF+VdvHoF1PXZ7gMR8OXrmh3SCTSa4m6FYGWRfT2VZbwTMq6/KIDyBCGu6sJHv5q6FsnmmHLdUsfXpwsDfS1Q21BO4D0uhQ=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1670017546;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=JTgtnJqoI3mBOnlXVRuirNE3H0rwkt9IzKJ3dXVz2R0=;
-        b=bFc/Twx+wSKbN8cptiRq7XpT5s0ryu0P35a+jvbqT8ZRJwgPIDEnK6Ps6plwEu81
-        w0cLAsN8BAPiqk64Tf8fnP6ZotcTzZJaT2y0LQeZqZ/qb55X7oq1a6rVSyUT44eQhXw
-        Igl7pFg4wtB7Ywjk7u/WCAm/0bsT69eVVbU85i2c=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1670017543642787.7203324647592; Fri, 2 Dec 2022 13:45:43 -0800 (PST)
-Message-ID: <bfc6810b-3c21-201b-3c4f-a0def3928597@arinc9.com>
-Date:   Sat, 3 Dec 2022 00:45:34 +0300
+        with ESMTP id S234497AbiLBV4Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 16:56:25 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B3FF1CC3
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 13:56:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=9sZHXzIxIQapTscsh4sPvFWsC5jaoeT3CbyIKmxxhxo=; b=uLRlcqf67MNOYsO2vSHTumVqPh
+        nZ/Wv7CgWf4Qn75fnnfofJmgCOJzur0hc1PkcPF/IFp4kHy3wWBAuY+rfg78Wes9HcG0KA3nDPIfI
+        AvZMjKYQawloGNHb88Ux0Lh8mTTuWfXzSj4TFNTcVZtcL2FQopm9Tn2OrOPZLKDo+vjA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p1E0r-004E2c-6e; Fri, 02 Dec 2022 22:56:05 +0100
+Date:   Fri, 2 Dec 2022 22:56:05 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mengyuan Lou <mengyuanlou@net-swift.com>
+Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
+Subject: Re: [PATCH net-next] net: ngbe: Add mdio bus driver.
+Message-ID: <Y4p0dQWijzQMlBmW@lunn.ch>
+References: <20221202083558.57618-1-mengyuanlou@net-swift.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v4 net-next 3/9] dt-bindings: net: dsa: utilize base
- definitions for standard dsa switches
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
-Cc:     John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>,
-        Rob Herring <robh@kernel.org>
-References: <20221202204559.162619-1-colin.foster@in-advantage.com>
- <20221202204559.162619-4-colin.foster@in-advantage.com>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20221202204559.162619-4-colin.foster@in-advantage.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221202083558.57618-1-mengyuanlou@net-swift.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2.12.2022 23:45, Colin Foster wrote:
-> DSA switches can fall into one of two categories: switches where all ports
-> follow standard '(ethernet-)?port' properties, and switches that have
-> additional properties for the ports.
-> 
-> The scenario where DSA ports are all standardized can be handled by
-> swtiches with a reference to the new 'dsa.yaml#/$defs/ethernet-ports'.
-> 
-> The scenario where DSA ports require additional properties can reference
-> '$dsa.yaml#' directly. This will allow switches to reference these standard
-> defitions of the DSA switch, but add additional properties under the port
-> nodes.
-> 
-> Suggested-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Acked-by: Alvin Šipraga <alsi@bang-olufsen.dk> # realtek
-> ---
-> 
-> v3 -> v4
->    * Rename "$defs/base" to "$defs/ethernet-ports" to avoid implication of a
->      "base class" and fix commit message accordingly
->    * Add the following to the common etherent-ports node:
->        "additionalProperties: false"
->        "#address-cells" property
->        "#size-cells" property
->    * Fix "etherenet-ports@[0-9]+" to correctly be "ethernet-port@[0-9]+"
->    * Remove unnecessary newline
->    * Apply changes to mediatek,mt7530.yaml that were previously in a separate patch
->    * Add Reviewed and Acked tags
-> 
-> v3
->    * New patch
-> 
-> ---
->   .../bindings/net/dsa/arrow,xrs700x.yaml       |  2 +-
->   .../devicetree/bindings/net/dsa/brcm,b53.yaml |  2 +-
->   .../devicetree/bindings/net/dsa/dsa.yaml      | 25 ++++++++++++++++---
->   .../net/dsa/hirschmann,hellcreek.yaml         |  2 +-
->   .../bindings/net/dsa/mediatek,mt7530.yaml     | 16 +++---------
->   .../bindings/net/dsa/microchip,ksz.yaml       |  2 +-
->   .../bindings/net/dsa/microchip,lan937x.yaml   |  2 +-
->   .../bindings/net/dsa/mscc,ocelot.yaml         |  2 +-
->   .../bindings/net/dsa/nxp,sja1105.yaml         |  2 +-
->   .../devicetree/bindings/net/dsa/realtek.yaml  |  2 +-
->   .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  2 +-
->   11 files changed, 35 insertions(+), 24 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-> index 259a0c6547f3..5888e3a0169a 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->   title: Arrow SpeedChips XRS7000 Series Switch Device Tree Bindings
->   
->   allOf:
-> -  - $ref: dsa.yaml#
-> +  - $ref: dsa.yaml#/$defs/ethernet-ports
->   
->   maintainers:
->     - George McCollister <george.mccollister@gmail.com>
-> diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-> index 1219b830b1a4..5bef4128d175 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-> @@ -66,7 +66,7 @@ required:
->     - reg
->   
->   allOf:
-> -  - $ref: dsa.yaml#
-> +  - $ref: dsa.yaml#/$defs/ethernet-ports
->     - if:
->         properties:
->           compatible:
-> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> index b9d48e357e77..b9e366e46aed 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> @@ -19,9 +19,6 @@ description:
->   select: false
->   
->   properties:
-> -  $nodename:
-> -    pattern: "^(ethernet-)?switch(@.*)?$"
-> -
->     dsa,member:
->       minItems: 2
->       maxItems: 2
-> @@ -58,4 +55,26 @@ oneOf:
->   
->   additionalProperties: true
->   
-> +$defs:
-> +  ethernet-ports:
-> +    description: A DSA switch without any extra port properties
-> +    $ref: '#/'
-> +
-> +    patternProperties:
-> +      "^(ethernet-)?ports$":
-> +        type: object
-> +        additionalProperties: false
-> +
-> +        properties:
-> +          '#address-cells':
-> +            const: 1
-> +          '#size-cells':
-> +            const: 0
-> +
-> +        patternProperties:
-> +          "^(ethernet-)?port@[0-9]+$":
-> +            description: Ethernet switch ports
-> +            $ref: dsa-port.yaml#
-> +            unevaluatedProperties: false
-> +
->   ...
-> diff --git a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
-> index 73b774eadd0b..748ef9983ce2 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
-> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->   title: Hirschmann Hellcreek TSN Switch Device Tree Bindings
->   
->   allOf:
-> -  - $ref: dsa.yaml#
-> +  - $ref: dsa.yaml#/$defs/ethernet-ports
->   
->   maintainers:
->     - Andrew Lunn <andrew@lunn.ch>
-> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> index f2e9ff3f580b..b815272531fa 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> @@ -156,17 +156,6 @@ patternProperties:
->   
->       patternProperties:
->         "^(ethernet-)?port@[0-9]+$":
-> -        type: object
-> -        description: Ethernet switch ports
-> -
-> -        unevaluatedProperties: false
-> -
-> -        properties:
-> -          reg:
-> -            description:
-> -              Port address described must be 5 or 6 for CPU port and from 0 to 5
-> -              for user ports.
+> --- a/drivers/net/ethernet/wangxun/Kconfig
+> +++ b/drivers/net/ethernet/wangxun/Kconfig
+> @@ -25,6 +25,9 @@ config NGBE
+>  	tristate "Wangxun(R) GbE PCI Express adapters support"
+>  	depends on PCI
+>  	select LIBWX
+> +	select PHYLIB
+> +	select MARVELL_PHY
+> +	select MOTORCOMM_PHY
 
-This shouldn't be moved. Please reread our conversation on the previous 
-version.
+Don't select specific PHYs. Distros build them all as modules.
 
-> -
->           allOf:
->             - $ref: dsa-port.yaml#
->             - if:
-> @@ -174,6 +163,9 @@ patternProperties:
->               then:
->                 properties:
->                   reg:
-> +                  description:
-> +                    Port address described must be 5 or 6 for CPU port and from
-> +                    0 to 5 for user ports
+> +int ngbe_phy_led_oem_hostif(struct ngbe_hw *hw, u32 *data)
+> +{
+> +	struct wx_hic_read_shadow_ram buffer;
+> +	struct wx_hw *wxhw = &hw->wxhw;
+> +	int status;
 
-Arınç
+Please break the patch up into smaller chunks and write good commit
+messages. I've no idea what this has to do with MDIO or PHY. Something
+to do with controlling the PHYs LEDS?
+
+It seems like you could have one patch adding the MDIO bus support,
+and one patch adding calls to phylib. And then try to break the rest
+up into logical collections of changes.
+
+> +	ret = wx_stop_adapter(wxhw);
+> +	if (ret != 0)
+> +		return ret;
+> +	val = WX_MIS_RST_LAN_RST(wxhw->bus.func);
+> +	wr32(wxhw, WX_MIS_RST, val | rd32(wxhw, WX_MIS_RST));
+> +
+> +	ret = read_poll_timeout(rd32, val,
+> +				!(val & (BIT(9) << wxhw->bus.func)), 1000,
+> +				100000, false, wxhw, 0x10028);
+> +	if (ret)
+> +		wx_dbg(wxhw, "Lan reset exceed s maximum times.\n");
+> +
+> +	wr32(wxhw, NGBE_PHY_CONFIG(0x1f), 0xa43);
+> +	ret = read_poll_timeout(rd32, val, val & 0x20, 1000,
+> +				100000, false, wxhw, NGBE_PHY_CONFIG(0x1d));
+> +	if (ret)
+> +		wx_dbg(wxhw, "Gphy reset failed.\n");
+
+What is this doing? Toggling a GPIO which is connected to the PHY
+reset input?
+
+> -	/* reset num_rar_entries to 128 */
+> +	/* reset num_rar_entries to 32 */
+
+This looks like an unrelated change, nothing to do with MDIO or PHY.
+
+>  	switch (type_mask) {
+>  	case NGBE_SUBID_M88E1512_SFP:
+>  	case NGBE_SUBID_LY_M88E1512_SFP:
+> -		hw->phy.type = ngbe_phy_m88e1512_sfi;
+> +		hw->phy.type = ngbe_phy_mv_sfi;
+>  		break;
+>  	case NGBE_SUBID_M88E1512_RJ45:
+> -		hw->phy.type = ngbe_phy_m88e1512;
+> +		hw->phy.type = ngbe_phy_mv;
+>  		break;
+>  	case NGBE_SUBID_M88E1512_MIX:
+> -		hw->phy.type = ngbe_phy_m88e1512_unknown;
+> +		hw->phy.type = ngbe_phy_mv_mix;
+>  		break;
+>  	case NGBE_SUBID_YT8521S_SFP:
+>  	case NGBE_SUBID_YT8521S_SFP_GPIO:
+>  	case NGBE_SUBID_LY_YT8521S_SFP:
+> -		hw->phy.type = ngbe_phy_yt8521s_sfi;
+> +		hw->phy.type = ngbe_phy_yt_mix;
+>  		break;
+>  	case NGBE_SUBID_INTERNAL_YT8521S_SFP:
+>  	case NGBE_SUBID_INTERNAL_YT8521S_SFP_GPIO:
+> -		hw->phy.type = ngbe_phy_internal_yt8521s_sfi;
+> +		hw->phy.type = ngbe_phy_internal_yt_sfi;
+>  		break;
+>  	case NGBE_SUBID_RGMII_FPGA:
+>  	case NGBE_SUBID_OCP_CARD:
+
+Generally, a MAC driver does not care what sort of PHY is connected to
+it. The PHY driver does all that is needed. So it is not clear to me
+why you need this.
+
+
+> @@ -481,6 +539,8 @@ static int ngbe_probe(struct pci_dev *pdev,
+>  		   "PHY: %s, PBA No: Wang Xun GbE Family Controller\n",
+>  		   hw->phy.type == ngbe_phy_internal ? "Internal" : "External");
+>  	netif_info(adapter, probe, netdev, "%pM\n", netdev->dev_addr);
+> +	/* print PCI link speed and width */
+> +	pcie_print_link_status(pdev);
+
+Also seems unrelated.
+
+> +static int ngbe_phy_read_reg_mdi(struct mii_bus *bus, int phy_addr, int regnum)
+> +{
+> +	u32 command = 0, device_type = 0;
+> +	struct ngbe_hw *hw = bus->priv;
+> +	struct wx_hw *wxhw = &hw->wxhw;
+> +	u32 phy_data = 0;
+> +	u32 val = 0;
+> +	int ret = 0;
+> +
+> +	/* setup and write the address cycle command */
+> +	command = NGBE_MSCA_RA(regnum) |
+> +		  NGBE_MSCA_PA(phy_addr) |
+> +		  NGBE_MSCA_DA(device_type);
+> +	wr32(wxhw, NGBE_MSCA, command);
+> +
+> +	command = NGBE_MSCC_CMD(NGBE_MSCA_CMD_READ) |
+> +		  NGBE_MSCC_BUSY |
+> +		  NGBE_MDIO_CLK(6);
+> +	wr32(wxhw, NGBE_MSCC, command);
+
+It looks like you don't support C45? If so, please return -EOPNOTSUPP
+if asked to do a C45 transaction.
+
+> +static int ngbe_phy_read_reg(struct mii_bus *bus, int phy_addr, int regnum)
+> +{
+> +	struct ngbe_hw *hw = bus->priv;
+> +	u16 phy_data = 0;
+> +
+> +	if (hw->mac_type == ngbe_mac_type_mdi)
+> +		phy_data = ngbe_phy_read_reg_internal(bus, phy_addr, regnum);
+> +	else if (hw->mac_type == ngbe_mac_type_rgmii)
+> +		phy_data = ngbe_phy_read_reg_mdi(bus, phy_addr, regnum);
+
+Do you have two mdio busses?
+
+> +static void ngbe_gphy_wait_mdio_access_on(struct phy_device *phydev)
+> +{
+> +	u16 val;
+> +	int ret;
+> +
+> +	/* select page to 0xa43*/
+> +	phy_write(phydev, 0x1f, 0x0a43);
+> +	/* wait to phy can access */
+> +	ret = read_poll_timeout(phy_read, val, val & 0x20, 100,
+> +				2000, false, phydev, 0x1d);
+
+What is this doing? The MAC should not be directly accessing the PHY.
+
+> +
+> +	if (ret)
+> +		phydev_err(phydev, "Access to phy timeout\n");
+> +}
+> +
+> +static void ngbe_gphy_dis_eee(struct phy_device *phydev)
+> +{
+> +	phy_write(phydev, 0x1f, 0x0a4b);
+> +	phy_write(phydev, 0x11, 0x1110);
+> +	phy_write(phydev, 0x1f, 0x0000);
+> +	phy_write(phydev, 0xd, 0x0007);
+> +	phy_write(phydev, 0xe, 0x003c);
+> +	phy_write(phydev, 0xd, 0x4007);
+> +	phy_write(phydev, 0xe, 0x0000);
+
+Again, the MAC should not be accessing the PHY. From the name, i'm
+guessing your MAC does not support EEE? So you want to stop the PHY
+advertising EEE?
+
+This is how other MAC drivers do this:
+
+	/* disable EEE autoneg, EEE not supported by TSNEP */
+	memset(&ethtool_eee, 0, sizeof(ethtool_eee));
+	phy_ethtool_set_eee(adapter->phydev, &ethtool_eee);
+
+Please delete all code which directly access the PHY. You might need
+to add new functionality to the PHY driver, but in general, it is not
+needed, the existing PHY drivers should do what you need.
+
+> +int ngbe_phy_connect(struct ngbe_hw *hw)
+> +{
+> +	struct ngbe_adapter *adapter = container_of(hw,
+> +						    struct ngbe_adapter,
+> +						    hw);
+> +	int ret;
+> +
+> +	ret = phy_connect_direct(adapter->netdev,
+> +				 hw->phydev,
+> +				 ngbe_handle_link_change,
+> +				 PHY_INTERFACE_MODE_RGMII);
+
+Who is responsible for RGMII delays? In general, the PHY adds the
+delay, so you pass PHY_INTERFACE_MODE_RGMII_ID here.
+
+> +int ngbe_mdio_init(struct ngbe_hw *hw)
+> +{
+> +	struct pci_dev *pdev = hw->wxhw.pdev;
+> +	int ret;
+> +
+> +	hw->mii_bus = devm_mdiobus_alloc(&pdev->dev);
+> +	if (!hw->mii_bus)
+> +		return -ENOMEM;
+> +
+> +	hw->mii_bus->name = "ngbe_mii_bus";
+> +	hw->mii_bus->read = &ngbe_phy_read_reg;
+> +	hw->mii_bus->write = &ngbe_phy_write_reg;
+> +	hw->mii_bus->phy_mask = 0xfffffffe;
+> +	hw->mii_bus->parent = &pdev->dev;
+> +	hw->mii_bus->priv = hw;
+> +
+> +	snprintf(hw->mii_bus->id, MII_BUS_ID_SIZE, "ngbe-%x",
+> +		 (pdev->bus->number << 8) |
+> +		 pdev->devfn);
+> +
+> +	ret = devm_mdiobus_register(&pdev->dev, hw->mii_bus);
+> +	if (ret)
+> +		return ret;
+> +
+> +	hw->phydev = mdiobus_get_phy(hw->mii_bus, 0);
+
+Is this a hardware limitation? Only address 0 is supported?
+
+> +	if (!hw->phydev) {
+> +		return -ENODEV;
+> +	} else if (!hw->phydev->drv) {
+> +		wx_err(&hw->wxhw,
+> +		       "No dedicated PHY driver found for PHY ID 0x%08x.\n",
+> +		       hw->phydev->phy_id);
+> +		return -EUNATCH;
+> +	}
+
+That is probably wrong. The module could still be loading. It is only
+when you connect the MAC to the PHY does it need to have a PHY
+driver. At that point, if there is no driver loaded it will fall back
+to the generic PHY driver. You don't see any other MAC driver with
+code like this.
+
+As a general comment, if you do something which no other driver does,
+you are probably doing something you should not do.
+
+    Andrew
+
