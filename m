@@ -2,48 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5343163FE57
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 03:51:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74A6B63FE5A
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 03:53:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbiLBCvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 21:51:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36400 "EHLO
+        id S231317AbiLBCxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 21:53:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230170AbiLBCvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 21:51:21 -0500
+        with ESMTP id S230211AbiLBCxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 21:53:03 -0500
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD340B275D;
-        Thu,  1 Dec 2022 18:51:19 -0800 (PST)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4NNcnQ0Zdtz6855h;
-        Fri,  2 Dec 2022 10:48:10 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA51A83261;
+        Thu,  1 Dec 2022 18:53:01 -0800 (PST)
+Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4NNctR1JS9z67RRb;
+        Fri,  2 Dec 2022 10:52:31 +0800 (CST)
 Received: from lhrpeml500004.china.huawei.com (7.191.163.9) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+ fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 2 Dec 2022 03:51:18 +0100
+ 15.1.2375.31; Fri, 2 Dec 2022 03:52:59 +0100
 Received: from [10.122.132.241] (10.122.132.241) by
  lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Fri, 2 Dec 2022 02:51:17 +0000
-Message-ID: <b53c6fe8-0c7a-ad99-5d43-49889d72c398@huawei.com>
-Date:   Fri, 2 Dec 2022 05:51:16 +0300
+ 15.1.2375.34; Fri, 2 Dec 2022 02:52:58 +0000
+Message-ID: <f52ca883-599c-0731-e710-f1255810650f@huawei.com>
+Date:   Fri, 2 Dec 2022 05:52:57 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
-Subject: Re: [PATCH] landlock: Allow filesystem layout changes for domains
- without such rule type
+Subject: Re: [PATCH v8 04/12] landlock: Move unmask_layers() and
+ init_layer_masks()
 Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <artem.kuzin@huawei.com>, <gnoack3000@gmail.com>,
-        <willemdebruijn.kernel@gmail.com>,
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
+        Andy Whitcroft <apw@canonical.com>,
+        Joe Perches <joe@perches.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
         <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>
-References: <5c6c99f7-4218-1f79-477e-5d943c9809fd@digikod.net>
- <20221117185509.702361-1-mic@digikod.net>
- <1956e8c2-fd4c-898e-dd0f-22ad20a69740@huawei.com>
- <787e7546-25b9-4e32-6560-b6907cdd6401@digikod.net>
+        <netfilter-devel@vger.kernel.org>, <artem.kuzin@huawei.com>
+References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
+ <20221021152644.155136-5-konstantin.meskhidze@huawei.com>
+ <aed09115-cfd8-1986-a848-bb33d2743def@digikod.net>
+ <8542aa54-4d74-8b56-8dc4-ee619d66c7bf@huawei.com>
+ <2ba68e9d-445d-78d4-bc3c-a12b29f9d63d@digikod.net>
 From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <787e7546-25b9-4e32-6560-b6907cdd6401@digikod.net>
+In-Reply-To: <2ba68e9d-445d-78d4-bc3c-a12b29f9d63d@digikod.net>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.122.132.241]
@@ -63,26 +67,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 11/28/2022 11:25 PM, Mickaël Salaün пишет:
 > 
-> On 28/11/2022 04:02, Konstantin Meskhidze (A) wrote:
+> On 28/11/2022 04:25, Konstantin Meskhidze (A) wrote:
 >> 
 >> 
->> 11/17/2022 9:55 PM, Mickaël Salaün пишет:
->>> Allow mount point and root directory changes when there is no filesystem
->>> rule tied to the current Landlock domain.  This doesn't change anything
->>> for now because a domain must have at least a (filesystem) rule, but
->>> this will change when other rule types will come.  For instance, a
->>> domain only restricting the network should have no impact on filesystem
->>> restrictions.
+>> 11/17/2022 9:42 PM, Mickaël Salaün пишет:
 >>>
->>> Add a new get_current_fs_domain() helper to quickly check filesystem
->>> rule existence for all filesystem LSM hooks.
->> 
->>     Ok. I got it.
->>     Do I need also to add a new network helper:
->>     like landlock_get_raw_net_access_mask?
+>>> On 21/10/2022 17:26, Konstantin Meskhidze wrote:
+>>>> This patch moves unmask_layers() and init_layer_masks() helpers
+>>>> to ruleset.c to share with landlock network implementation in
+>>>
+>>> …to share them with the Landlock network implementation in
+>>>
+>>      Got it.
+>>>
+>>>> following commits.
+>>>>
+>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>> ---
 > 
-> A get_raw helper would not be useful if there is not network access
-> initially denied (like for FS_REFER).
+> [...]
+> 
+>>>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>>>> index 608ab356bc3e..50baff4fcbb4 100644
+>>>> --- a/security/landlock/ruleset.h
+>>>> +++ b/security/landlock/ruleset.h
+>>>> @@ -34,6 +34,16 @@ typedef u16 layer_mask_t;
+>>>>    /* Makes sure all layers can be checked. */
+>>>>    static_assert(BITS_PER_TYPE(layer_mask_t) >= LANDLOCK_MAX_NUM_LAYERS);
+>>>>
+>>>> +/*
+>>>> + * All access rights that are denied by default whether they are handled or not
+>>>> + * by a ruleset/layer.  This must be ORed with all ruleset->fs_access_masks[]
+>>>> + * entries when we need to get the absolute handled access masks.
+>>>> + */
+>>>> +/* clang-format off */
+>>>> +#define ACCESS_INITIALLY_DENIED ( \
+>>>> +	LANDLOCK_ACCESS_FS_REFER)
+>>>> +/* clang-format on */
+>>>
+>>> This ACCESS_INITIALLY_DENIED definition must be moved, not copied. You
+>>> can rename ACCESS_INITIALLY_DENIED to ACCESS_FS_INITIALLY_DENIED and
+>>> move this hunk before the access_mask_t definition.
+>>>
+>>     Yep. Will be fixed.
+>>>
+>>>> +
+>>>>    /**
+>>>>     * struct landlock_layer - Access rights for a given layer
+>>>>     */
+>>>> @@ -246,4 +256,14 @@ landlock_get_fs_access_mask(const struct landlock_ruleset *const ruleset,
+>>>>    		LANDLOCK_SHIFT_ACCESS_FS) &
+>>>>    	       LANDLOCK_MASK_ACCESS_FS;
+>>>>    }
+>>>> +
+>>>> +bool unmask_layers(const struct landlock_rule *const rule,
+>>>
+>>> All public Landlock helpers must be prefixed with "landlock_"
+>> 
+>>     Do you mean ones which are shared between fs and net parts?
+> 
+> All helpers that ends up in the exported ELF symbols, so all implemented
+> in the .c files with their signature defined in .h files. The static
+> inlined .h helpers don't need to have such prefix if there is no conflict.
 
-  Ok.
+   Got it. Thanks.
+> 
+> 
+>>>
+>>>> +		   const access_mask_t access_request,
+>>>> +		   layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
+>>>> +
+>>>> +access_mask_t
+>>>> +init_layer_masks(const struct landlock_ruleset *const domain,
+>>>> +		 const access_mask_t access_request,
+>>>> +		 layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
+>>>
+>>> There is a warning generated by checkpatch.pl about this line:
+>>>      WARNING: function definition argument 'layer_mask_t' should also have
+>>> an identifier name
+>>>
+>>> I think this is a bug in checkpatch.pl
+>>>
+>>      I got this warn, but cant get rid of it.
+>>      Also think its a bug in checkpatck.pl
+> 
+> Please ignore it for now. It would be nice to have a checkpatch.pl fix
+> though.
+> 
+   Ok.
+>> 
+>>> Any though Andy, Joe, Dwaipayan or Lukas?
 > .
