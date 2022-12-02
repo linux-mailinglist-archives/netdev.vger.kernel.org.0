@@ -2,130 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E686963FFEC
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 06:43:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1EAD63FFFF
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 06:53:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232285AbiLBFnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 00:43:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40694 "EHLO
+        id S232302AbiLBFx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 00:53:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231195AbiLBFnC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 00:43:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D6ED2912
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 21:41:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669959718;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eUKoGhwXuawO+Q9ctXLJTWVmMFQ1RDIh1AE3sBU1nvc=;
-        b=Jiu+Ysh1833i/yP11MIJ3LQeHYQ3L0/SbnS4ZlBRJ/zv7ejaA5nC1/9rAW79Bis7LrWY+o
-        f22/w/RUSDFXpjLoR2kcE3iDS3rjFkNQDZNBOFK/Vi40QVe+Js7IzeKlgUtKSFLXh+l2LO
-        k1luwlyXHbJvWVSTCngTHK5VmvziRSs=
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
- [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-118-imMnz_cQPNmAc8vN13Aftw-1; Fri, 02 Dec 2022 00:41:54 -0500
-X-MC-Unique: imMnz_cQPNmAc8vN13Aftw-1
-Received: by mail-oo1-f71.google.com with SMTP id w18-20020a4a6d52000000b0049f209d84bbso1338660oof.7
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 21:41:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eUKoGhwXuawO+Q9ctXLJTWVmMFQ1RDIh1AE3sBU1nvc=;
-        b=mWL57F93I38JreLbmkpk+Pai0ekyEDTtQY1jY15fKCTGAnGhbiq/LtM+laJp46vqzG
-         MCxYeaeeKY/yBz7oOEAwL0yYus9vQKWWGID5zMYwR2UoofozOM8gbYXlI/OBYddp4BBe
-         59ENTa1vKeV9U58TVjeMLoWmGili9ZljQgnX32Vw/JiCLrr5VXXMB+JuKU6FCZl0trZ6
-         MZmPrDzf8CLmhbauu066CoHsKFH+seCLzO2Gqy4chaA9xEGhrY6SiQOr1LrDt6bEJWG3
-         ntexzIQDaKcJmroR0Jt8oeeOVuhh0qIWyj7nhcRmf49K2JOyuHJ3Z2soxyPNofVWwvHn
-         MouA==
-X-Gm-Message-State: ANoB5pkGOPOjqHndwa5KW6c0JgcL61FT3BWOpEVSteWDPeQov/p/ltUC
-        gbibZ20uo6P5ASXkWcUzaXqPL+lxMHxH4MCOnvJL3cVnQkvIAO+WkAvgyMx22Ku7jiJfvFfJvEH
-        0BHhrCLkF3fSAIz7llxbrNeVxA/8kYI7r
-X-Received: by 2002:a05:6830:6505:b0:66c:fb5b:4904 with SMTP id cm5-20020a056830650500b0066cfb5b4904mr34942002otb.237.1669959714275;
-        Thu, 01 Dec 2022 21:41:54 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4GqKUi4a7OPQXgIY85nJalmtGjjKzQneNkJaMeFgfh1jL18scOCPin9+AeQkaBI16rY6l76WIiFLo4kfWXGKE=
-X-Received: by 2002:a05:6830:6505:b0:66c:fb5b:4904 with SMTP id
- cm5-20020a056830650500b0066cfb5b4904mr34941991otb.237.1669959714031; Thu, 01
- Dec 2022 21:41:54 -0800 (PST)
+        with ESMTP id S232050AbiLBFxZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 00:53:25 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40592D585B;
+        Thu,  1 Dec 2022 21:53:23 -0800 (PST)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 125FA24DBCB;
+        Fri,  2 Dec 2022 13:53:20 +0800 (CST)
+Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 2 Dec
+ 2022 13:53:20 +0800
+Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
+ (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 2 Dec
+ 2022 13:53:18 +0800
+Message-ID: <40c1995e-07ea-9c84-e36f-8d179daa5c0b@starfivetech.com>
+Date:   Fri, 2 Dec 2022 13:53:17 +0800
 MIME-Version: 1.0
-References: <20221122074348.88601-1-hengqi@linux.alibaba.com> <1b95612c-a38b-90e2-cbe3-211d8129fb9f@linux.alibaba.com>
-In-Reply-To: <1b95612c-a38b-90e2-cbe3-211d8129fb9f@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 2 Dec 2022 13:41:42 +0800
-Message-ID: <CACGkMEtm7dh+PqiFi4XDwN-XSei0WqMWq5TBkYzGAWmEj83awg@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/9] virtio_net: support multi buffer xdp
-To:     Heng Qi <hengqi@linux.alibaba.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [PATCH v1 6/7] riscv: dts: starfive: jh7110: Add ethernet device
+ node
+Content-Language: en-US
+To:     Conor Dooley <conor@kernel.org>
+CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
+ <20221201090242.2381-7-yanhong.wang@starfivetech.com> <Y4joSiz0gKvyuecn@spud>
+From:   yanhong wang <yanhong.wang@starfivetech.com>
+In-Reply-To: <Y4joSiz0gKvyuecn@spud>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS063.cuchost.com (172.16.6.23) To EXMBX173.cuchost.com
+ (172.16.6.93)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 2, 2022 at 12:50 PM Heng Qi <hengqi@linux.alibaba.com> wrote:
->
-> Hi, Jason.
->
-> Do you have any comments on this series?
 
--EBUSY this week, but I will review it next week for sure.
 
-Thanks
+On 2022/12/2 1:45, Conor Dooley wrote:
+> On Thu, Dec 01, 2022 at 05:02:41PM +0800, Yanhong Wang wrote:
+>> Add JH7110 ethernet device node to support gmac driver for the JH7110
+>> RISC-V SoC.
+>> 
+>> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
+>> ---
+>>  arch/riscv/boot/dts/starfive/jh7110.dtsi | 80 ++++++++++++++++++++++++
+>>  1 file changed, 80 insertions(+)
+>> 
+>> diff --git a/arch/riscv/boot/dts/starfive/jh7110.dtsi b/arch/riscv/boot/dts/starfive/jh7110.dtsi
+>> index c22e8f1d2640..97ed5418d91f 100644
+>> --- a/arch/riscv/boot/dts/starfive/jh7110.dtsi
+>> +++ b/arch/riscv/boot/dts/starfive/jh7110.dtsi
+>> @@ -433,5 +433,85 @@
+>>  			reg-shift = <2>;
+>>  			status = "disabled";
+>>  		};
+>> +
+>> +		stmmac_axi_setup: stmmac-axi-config {
+>> +			snps,wr_osr_lmt = <4>;
+>> +			snps,rd_osr_lmt = <4>;
+>> +			snps,blen = <256 128 64 32 0 0 0>;
+>> +		};
+>> +
+>> +		gmac0: ethernet@16030000 {
+>> +			compatible = "starfive,dwmac", "snps,dwmac-5.20";
+>> +			reg = <0x0 0x16030000 0x0 0x10000>;
+>> +			clocks = <&aoncrg JH7110_AONCLK_GMAC0_AXI>,
+>> +				 <&aoncrg JH7110_AONCLK_GMAC0_AHB>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC0_PTP>,
+>> +				 <&aoncrg JH7110_AONCLK_GMAC0_TX>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC0_GTXC>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC0_GTXCLK>;
+>> +			clock-names = "stmmaceth",
+>> +					"pclk",
+>> +					"ptp_ref",
+>> +					"tx",
+>> +					"gtxc",
+>> +					"gtx";
+> 
+> Can you sort this into fewer lines please?
 
->
-> Thanks.
->
-> =E5=9C=A8 2022/11/22 =E4=B8=8B=E5=8D=883:43, Heng Qi =E5=86=99=E9=81=93:
-> > Currently, virtio net only supports xdp for single-buffer packets
-> > or linearized multi-buffer packets. This patchset supports xdp for
-> > multi-buffer packets, then GRO_HW related features can be
-> > negotiated, and do not affect the processing of single-buffer xdp.
-> >
-> > In order to build multi-buffer xdp neatly, we integrated the code
-> > into virtnet_build_xdp_buff() for xdp. The first buffer is used
-> > for prepared xdp buff, and the rest of the buffers are added to
-> > its skb_shared_info structure. This structure can also be
-> > conveniently converted during XDP_PASS to get the corresponding skb.
-> >
-> > Since virtio net uses comp pages, and bpf_xdp_frags_increase_tail()
-> > is based on the assumption of the page pool,
-> > (rxq->frag_size - skb_frag_size(frag) - skb_frag_off(frag))
-> > is negative in most cases. So we didn't set xdp_rxq->frag_size in
-> > virtnet_open() to disable the tail increase.
-> >
-> > Heng Qi (9):
-> >    virtio_net: disable the hole mechanism for xdp
-> >    virtio_net: set up xdp for multi buffer packets
-> >    virtio_net: update bytes calculation for xdp_frame
-> >    virtio_net: remove xdp related info from page_to_skb()
-> >    virtio_net: build xdp_buff with multi buffers
-> >    virtio_net: construct multi-buffer xdp in mergeable
-> >    virtio_net: build skb from multi-buffer xdp
-> >    virtio_net: transmit the multi-buffer xdp
-> >    virtio_net: support multi-buffer xdp
-> >
-> >   drivers/net/virtio_net.c | 356 ++++++++++++++++++++++++--------------=
--
-> >   1 file changed, 219 insertions(+), 137 deletions(-)
-> >
->
+Will sort in the next version.
 
+> 
+>> +			resets = <&aoncrg JH7110_AONRST_GMAC0_AXI>,
+>> +				 <&aoncrg JH7110_AONRST_GMAC0_AHB>;
+>> +			reset-names = "stmmaceth", "ahb";
+>> +			interrupts = <7>, <6>, <5> ;
+> 
+> Please also remove the space before the ;
+
+Will remove the space.
+
+> 
+>> +			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
+> 
+> The answer is probably "the dw driver needs this" but my OCD really
+> hates "macirq" vs "eth_wake_irq"..
+
+The definition of  "macirq" and "eth_wake_irq"  is to reuse stmmac_get_platform_resources() API. 
+
+> 
+>> +			phy-mode = "rgmii-id";
+>> +			snps,multicast-filter-bins = <64>;
+>> +			snps,perfect-filter-entries = <8>;
+>> +			rx-fifo-depth = <2048>;
+>> +			tx-fifo-depth = <2048>;
+>> +			snps,fixed-burst;
+>> +			snps,no-pbl-x8;
+>> +			snps,force_thresh_dma_mode;
+>> +			snps,axi-config = <&stmmac_axi_setup>;
+>> +			snps,tso;
+>> +			snps,en-tx-lpi-clockgating;
+>> +			snps,lpi_en;
+>> +			snps,txpbl = <16>;
+>> +			snps,rxpbl = <16>;
+>> +			status = "disabled";
+>> +		};
+>> +
+>> +		gmac1: ethernet@16040000 {
+>> +			compatible = "starfive,dwmac", "snps,dwmac-5.20";
+>> +			reg = <0x0 0x16040000 0x0 0x10000>;
+>> +			clocks = <&syscrg JH7110_SYSCLK_GMAC1_AXI>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC1_AHB>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC1_PTP>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC1_TX>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC1_GTXC>,
+>> +				 <&syscrg JH7110_SYSCLK_GMAC1_GTXCLK>;
+>> +			clock-names = "stmmaceth",
+>> +					"pclk",
+>> +					"ptp_ref",
+>> +					"tx",
+>> +					"gtxc",
+>> +					"gtx";
+>> +			resets = <&syscrg JH7110_SYSRST_GMAC1_AXI>,
+>> +				 <&syscrg JH7110_SYSRST_GMAC1_AHB>;
+>> +			reset-names = "stmmaceth", "ahb";
+>> +			interrupts = <78>, <77>, <76> ;
+> 
+> Same comments for this node.
+
+Will remove the space.
+
+> 
+>> +			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
+>> +			phy-mode = "rgmii-id";
+>> +			snps,multicast-filter-bins = <64>;
+>> +			snps,perfect-filter-entries = <8>;
+>> +			rx-fifo-depth = <2048>;
+>> +			tx-fifo-depth = <2048>;
+>> +			snps,fixed-burst;
+>> +			snps,no-pbl-x8;
+>> +			snps,force_thresh_dma_mode;
+>> +			snps,axi-config = <&stmmac_axi_setup>;
+>> +			snps,tso;
+>> +			snps,en-tx-lpi-clockgating;
+>> +			snps,lpi_en;
+>> +			snps,txpbl = <16>;
+>> +			snps,rxpbl = <16>;
+>> +			status = "disabled";
+>> +		};
+>>  	};
+>>  };
+>> -- 
+>> 2.17.1
+>> 
