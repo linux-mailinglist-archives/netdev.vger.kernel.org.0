@@ -2,301 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF63D64094A
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 16:26:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 962AC64095D
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 16:27:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233368AbiLBP0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 10:26:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
+        id S233666AbiLBP1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 10:27:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231224AbiLBP0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 10:26:51 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66978CFE5C
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 07:26:50 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id f7so6897098edc.6
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 07:26:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=/adbtqxVpKBIWVcLfXhDtsmKHBydX2cX2Y7rwuxuuTw=;
-        b=Bf4CD+iW1Vgg40llwWVyrme9e8Qz2x5xkWSshDlK2l/rMtb54MDeOBLeobg4357Nrt
-         JAR+3197/RicQDvNO9i8W8swc/VGb95zrFRkoih8qrpV0Jnd6A1GYN22PC7sQfw7uv87
-         Q24WMeRsx57+au6FRnOgBEyWolzjJEtxQ5iAM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/adbtqxVpKBIWVcLfXhDtsmKHBydX2cX2Y7rwuxuuTw=;
-        b=ZsgRw4RfbmTBUGmwWAGUbvqVSL2F02xW/ajcyLNsvPT/DD94vG+SuBzkkMCZC4Yhry
-         vR/x1KMuSwlg/80SJHq6PjYKa4hTVxd8JdqX873qRc00RIy5+cdm9kyNus/2Er5LNsoT
-         JGCuiUt8JrLoyYtMQV/ahwT5fash5HGE/Jcg9Zi9kx3rtQHuPTLPYE7evLMaKb19mQ7e
-         /OiDZvNQaP2TU9UVnoupoQVSE1389pxSs6i29pe0uOqe/692sQkaP/6UYlO9u47vo+hv
-         HjG7WqylvkLsRd0b2sGk+7j8KUkWfKKNTQ+IvB4vkZM1yoC5c83+fIHtbWl056hOBthb
-         9q+w==
-X-Gm-Message-State: ANoB5pmvsYT0GZDqIJcfhOdB/AKZrVLY80HISSZdFUBkHl/m4zCXVDxx
-        hTf4pogcn02lhnj9i007DJWWmA==
-X-Google-Smtp-Source: AA0mqf5LN1NccbvZur20OjSw1oMoYUPvDX7/sOsWtl8G5C5hwrldrYGMLbi4HICuXi2lHK/nDPwX2Q==
-X-Received: by 2002:a05:6402:110d:b0:469:dd6:bfee with SMTP id u13-20020a056402110d00b004690dd6bfeemr48989845edv.330.1669994808886;
-        Fri, 02 Dec 2022 07:26:48 -0800 (PST)
-Received: from [192.168.178.136] (f215227.upc-f.chello.nl. [80.56.215.227])
-        by smtp.gmail.com with ESMTPSA id 9-20020a170906210900b0073de0506745sm3070147ejt.197.2022.12.02.07.26.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Dec 2022 07:26:47 -0800 (PST)
-Message-ID: <af489711-6849-6f87-8ea3-6c8216f0007b@broadcom.com>
-Date:   Fri, 2 Dec 2022 16:26:46 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
-To:     Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Kalle Valo <kvalo@kernel.org>
-Cc:     =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>,
-        Hector Martin <marcan@marcan.st>,
-        "~postmarketos/upstreaming@lists.sr.ht" 
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        "martin.botka@somainline.org" <martin.botka@somainline.org>,
-        "angelogioacchino.delregno@somainline.org" 
-        <angelogioacchino.delregno@somainline.org>,
-        "marijn.suijten@somainline.org" <marijn.suijten@somainline.org>,
-        "jamipkettunen@somainline.org" <jamipkettunen@somainline.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
+        with ESMTP id S233545AbiLBP11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 10:27:27 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC72CFE67
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 07:27:26 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1p17wW-0007eq-GS; Fri, 02 Dec 2022 16:27:12 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:63a6:d4c5:22e2:f72a])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1E2CB1317A1;
+        Fri,  2 Dec 2022 15:27:10 +0000 (UTC)
+Date:   Fri, 2 Dec 2022 16:27:01 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc:     dario.binacchi@amarulasolutions.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Richard Palethorpe <richard.palethorpe@suse.com>,
+        Petr Vorel <petr.vorel@suse.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Marek Vasut <marex@denx.de>,
-        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Soon Tak Lee <soontak.lee@cypress.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
- <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st>
- <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
- <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st>
- <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
- <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com>
- <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk> <87sfke32pc.fsf@kernel.org>
- <4592f87a-bb61-1c28-13f0-d041a6e7d3bf@linaro.org>
- <CACRpkdax-3VVDd29iH51mfumakqM7jyEc8Pbb=AQwAgp2WsqFQ@mail.gmail.com>
- <d03bd4d4-e4ef-681b-b4a5-02822e1eee75@linaro.org> <87fse76yig.fsf@kernel.org>
- <fc2812b1-db96-caa6-2ecb-c5bb2c33246a@linaro.org> <87bkov6x1q.fsf@kernel.org>
- <CACRpkdbpJ8fw0UsuHXGX43JRyPy6j8P41_5gesXOmitHvyoRwQ@mail.gmail.com>
- <28991d2d-d917-af47-4f5f-4e8183569bb1@linaro.org>
- <c83d7496-7547-2ab4-571a-60e16aa2aa3d@broadcom.com>
- <6e4f1795-08b5-7644-d1fa-102d6d6b47fb@linaro.org>
-From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-In-Reply-To: <6e4f1795-08b5-7644-d1fa-102d6d6b47fb@linaro.org>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000060840b05eed9f71a"
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        Max Staudt <max@enpas.org>
+Subject: Re: [PATCH] can: slcan: fix freed work crash
+Message-ID: <20221202152701.ewnillsqded7uby4@pengutronix.de>
+References: <20221201073426.17328-1-jirislaby@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ojrs3pnyh3h6c3hc"
+Content-Disposition: inline
+In-Reply-To: <20221201073426.17328-1-jirislaby@kernel.org>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000060840b05eed9f71a
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
-On 12/2/2022 11:33 AM, Konrad Dybcio wrote:
-> 
-> 
-> On 1.12.2022 12:31, Arend van Spriel wrote:
->> On 11/28/2022 3:40 PM, Konrad Dybcio wrote:
->>>
->>>
->>> On 26.11.2022 22:45, Linus Walleij wrote:
->>>> On Fri, Nov 25, 2022 at 1:25 PM Kalle Valo <kvalo@kernel.org> wrote:
->>>>> Konrad Dybcio <konrad.dybcio@linaro.org> writes:
->>>>>
->>>>>> On 25.11.2022 12:53, Kalle Valo wrote:
->>>>>>> Konrad Dybcio <konrad.dybcio@linaro.org> writes:
->>>>>>>
->>>>>>>> On 21.11.2022 14:56, Linus Walleij wrote:
->>>>>>>>> On Fri, Nov 18, 2022 at 5:47 PM Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
->>>>>>>>>
->>>>>>>>>> I can think of a couple of hacky ways to force use of 43596 fw, but I
->>>>>>>>>> don't think any would be really upstreamable..
->>>>>>>>>
->>>>>>>>> If it is only known to affect the Sony Xperias mentioned then
->>>>>>>>> a thing such as:
->>>>>>>>>
->>>>>>>>> if (of_machine_is_compatible("sony,xyz") ||
->>>>>>>>>       of_machine_is_compatible("sony,zzz")... ) {
->>>>>>>>>      // Enforce FW version
->>>>>>>>> }
->>>>>>>>>
->>>>>>>>> would be completely acceptable in my book. It hammers the
->>>>>>>>> problem from the top instead of trying to figure out itsy witsy
->>>>>>>>> details about firmware revisions.
->>>>>>>>>
->>>>>>>>> Yours,
->>>>>>>>> Linus Walleij
->>>>>>>>
->>>>>>>> Actually, I think I came up with a better approach by pulling a page
->>>>>>>> out of Asahi folks' book - please take a look and tell me what you
->>>>>>>> think about this:
->>>>>>>>
->>>>>>>> [1]
->>>>>>>> https://github.com/SoMainline/linux/commit/4b6fccc995cd79109b0dae4e4ab2e48db97695e7
->>>>>>>> [2]
->>>>>>>> https://github.com/SoMainline/linux/commit/e3ea1dc739634f734104f37fdbed046873921af7
->>>>
->>>> Something in this direction works too.
->>>>
->>>> The upside is that it tells all operating systems how to deal
->>>> with the firmware for this hardware.
->>>>
->>>>>>> Instead of a directory path ("brcm/brcmfmac43596-pcie") why not provide
->>>>>>> just the chipset name ("brcmfmac43596-pcie")? IMHO it's unnecessary to
->>>>>>> have directory names in Device Tree.
->>>>>>
->>>>>> I think it's common practice to include a full $FIRMWARE_DIR-relative
->>>>>> path when specifying firmware in DT, though here I left out the board
->>>>>> name bit as that's assigned dynamically anyway. That said, if you don't
->>>>>> like it, I can change it.
->>>>>
->>>>> It's just that I have understood that Device Tree is supposed to
->>>>> describe hardware and to me a firmware directory "brcm/" is a software
->>>>> property, not a hardware property. But this is really for the Device
->>>>> Tree maintainers to decide, they know this best :)
->>>>
->>>> I would personally just minimize the amount of information
->>>> put into the device tree to be exactly what is needed to find
->>>> the right firmware.
->>>>
->>>> brcm,firmware-compatible = "43596";
->>>>
->>>> since the code already knows how to conjure the rest of the string.
->>>>
->>>> But check with Rob/Krzysztof.
->>>>
->>>> Yours,
->>>> Linus Walleij
->>>
->>> Krzysztof, Rob [added to CC] - can I have your opinions?
->>
->> I tried catching up on this thread. Reading it I am not sure what the issue is, but I am happy to dive in. If you can provide a boot log with brcmfmac loaded with module parameter 'debug=0x1416' I can try and make sense of the chipid/devid confusion.
-> 
-> Hope this helps, thanks! https://hastebin.com/xidagekuge.yaml
+--ojrs3pnyh3h6c3hc
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-It does to some extent. It is basically a 4359 revision 9:
+On 01.12.2022 08:34:26, Jiri Slaby (SUSE) wrote:
+> The LTP test pty03 is causing a crash in slcan:
+>   BUG: kernel NULL pointer dereference, address: 0000000000000008
+>   #PF: supervisor read access in kernel mode
+>   #PF: error_code(0x0000) - not-present page
+>   PGD 0 P4D 0
+>   Oops: 0000 [#1] PREEMPT SMP NOPTI
+>   CPU: 0 PID: 348 Comm: kworker/0:3 Not tainted 6.0.8-1-default #1 openSU=
+SE Tumbleweed 9d20364b934f5aab0a9bdf84e8f45cfdfae39dab
+>   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.15.0-=
+0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
+>   Workqueue:  0x0 (events)
+>   RIP: 0010:process_one_work (/home/rich/kernel/linux/kernel/workqueue.c:=
+706 /home/rich/kernel/linux/kernel/workqueue.c:2185)
+>   Code: 49 89 ff 41 56 41 55 41 54 55 53 48 89 f3 48 83 ec 10 48 8b 06 48=
+ 8b 6f 48 49 89 c4 45 30 e4 a8 04 b8 00 00 00 00 4c 0f 44 e0 <49> 8b 44 24 =
+08 44 8b a8 00 01 00 00 41 83 e5 20 f6 45 10 04 75 0e
+>   RSP: 0018:ffffaf7b40f47e98 EFLAGS: 00010046
+>   RAX: 0000000000000000 RBX: ffff9d644e1b8b48 RCX: ffff9d649e439968
+>   RDX: 00000000ffff8455 RSI: ffff9d644e1b8b48 RDI: ffff9d64764aa6c0
+>   RBP: ffff9d649e4335c0 R08: 0000000000000c00 R09: ffff9d64764aa734
+>   R10: 0000000000000007 R11: 0000000000000001 R12: 0000000000000000
+>   R13: ffff9d649e4335e8 R14: ffff9d64490da780 R15: ffff9d64764aa6c0
+>   FS:  0000000000000000(0000) GS:ffff9d649e400000(0000) knlGS:00000000000=
+00000
+>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>   CR2: 0000000000000008 CR3: 0000000036424000 CR4: 00000000000006f0
+>   Call Trace:
+>    <TASK>
+>   worker_thread (/home/rich/kernel/linux/kernel/workqueue.c:2436)
+>   kthread (/home/rich/kernel/linux/kernel/kthread.c:376)
+>   ret_from_fork (/home/rich/kernel/linux/arch/x86/entry/entry_64.S:312)
+>=20
+> Apparently, the slcan's tx_work is freed while being scheduled. While
+> slcan_netdev_close() (netdev side) calls flush_work(&sl->tx_work),
+> slcan_close() (tty side) does not. So when the netdev is never set UP,
+> but the tty is stuffed with bytes and forced to wakeup write, the work
+> is scheduled, but never flushed.
+>=20
+> So add an additional flush_work() to slcan_close() to be sure the work
+> is flushed under all circumstances.
+>=20
+> The Fixes commit below moved flush_work() from slcan_close() to
+> slcan_netdev_close(). What was the rationale behind it? Maybe we can
+> drop the one in slcan_netdev_close()?
+>=20
+> I see the same pattern in can327. So it perhaps needs the very same fix.
+>=20
+> Fixes: cfcb4465e992 ("can: slcan: remove legacy infrastructure")
+> Link: https://bugzilla.suse.com/show_bug.cgi?id=3D1205597
+> Reported-by: Richard Palethorpe <richard.palethorpe@suse.com>
+> Tested-by: Petr Vorel <petr.vorel@suse.com>
+> Cc: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> Cc: Wolfgang Grandegger <wg@grandegger.com>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: linux-can@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: stable@vger.kernel.org
+> Cc: Max Staudt <max@enpas.org>
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 
-[   25.898782] brcmfmac: brcmf_chip_recognition found AXI chip: BCM4359/9
+Added to linux-can,
 
-The 4359 entry in pcie.c is applicable for revision 0 and higher 
-(doubtful but that is in the code):
+Thanks,
+Marc
 
-	BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-We need to change the mask above to 0x000001FF and add a new entry with 
-mask 0xFFFFFE00. All we need is come up with a reasonable firmware 
-filename. So can you run the strings command on the firmware you use:
+--ojrs3pnyh3h6c3hc
+Content-Type: application/pgp-signature; name="signature.asc"
 
-$ strings fw.bin | tail -1
+-----BEGIN PGP SIGNATURE-----
 
-and let me know the output.
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOKGUMACgkQrX5LkNig
+011wWQgAn+U91/ZltYGvoyP6wurNPczrfH4QqhMQ3x77TXxYpIO7Bme9LzWgnowK
+aCZGAi6RhnBCwVHYrRkPuQ9karVWhlrEYkLRKZJcBG3fbbOFMC+lUy51Tk4Dd+fR
+GZKwdr4ODTxerh5E6PBqCais4zGBdzBqGB+md9C7EUnvgC5MeGSAf8EFUkRrmb8T
+Wd8F2IRz5FCOZ0JjlTDHWWoS4dedoiodLUhyDCXn2mDMVjtDGkCHcvMM+3MO1bE1
+GLU21H65XDHg6nVBDmvMpLdfbvDxc3qVroe3wXyeJ8wzSd/acELrHusTZXKvmDg+
+IU0m+hpBwzplYQLMJSzmk5zZN76bWQ==
+=XIQ/
+-----END PGP SIGNATURE-----
 
-Regards,
-Arend
-So for rev 9 we need a new entry
-
---00000000000060840b05eed9f71a
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-2Gzj3QNJRLsZu1TLyOyBBIr/BE7UiY3RabgRzknBGAPmzhS+fmyM8OtM5BYBsFBrSUFtZZO2p/tf
-Nbc24J2zf2peoZ8MK+7WQqummYlOnz+FyDkA9EybeNMcS5C+xi/PAgMBAAGjggHdMIIB2TAOBgNV
-HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
-Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
-KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
-Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
-dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
-OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
-MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
-BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFIikAXd8CEtv
-ZbDflDRnf3tuStPuMA0GCSqGSIb3DQEBCwUAA4IBAQCdS5XCYx6k2GGZui9DlFsFm75khkqAU7rT
-zBX04sJU1+B1wtgmWTVIzW7ugdtDZ4gzaV0S9xRhpDErjJaltxPbCylb1DEsLj+AIvBR34caW6ZG
-sQk444t0HPb29HnWYj+OllIGMbdJWr0/P95ZrKk2bP24ub3ZP/8SyzrohfIba9WZKMq6g2nTLZE3
-BtkeSGJx/8dy0h8YmRn+adOrxKXHxhSL8BNn8wsmIZyYWe6fRcBtO3Ks2DOLyHCdkoFlN8x9VUQF
-N2ulEgqCbRKkx+qNirW86eF138lr1gRxzclu/38ko//MmkAYR/+hP3WnBll7zbpIt0jc9wyFkSqH
-p8a1MYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
-YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMTv1t
-bpIzNUky46LXMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCBrB+iC+qHHPIbGEKYo
-Dg0ogOepqZJOnqU4lOYxRoO/UzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0yMjEyMDIxNTI2NDlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
-AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
-BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAZsjgK6A4Hl/2F49NP4yysfMBn+mxFpiv+6yg
-9j4+xg19QdnsgQLRjo2Fe5TxsgaJg49BCVoyWgGkw/HTuKGXN0xrwi4MqQJBbo3qMx21JWKMZNFq
-0Qkt7j8KMS+1MFCp9ENzNF1KFvW926MnWeqPSkEuqxQ1dUQPMMvWm8QRIGlrs4LX31H0sYDVqpSX
-rJiTyXZVGI2Nhydpa8uxSiZtWD/UJu0db0lUxO2/JVQzaFUhcFxcLsvdovc/6rtYok4011DyW1JU
-mgDwaPNE7DsEmLRfGtDnuwfnzZiAXBC+zvUqKfKR7sg23x0nwtSgLbFqx8z6eEIv6Nuaf4IhiEVP
-vw==
---00000000000060840b05eed9f71a--
+--ojrs3pnyh3h6c3hc--
