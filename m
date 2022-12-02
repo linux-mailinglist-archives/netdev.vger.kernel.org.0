@@ -2,81 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4253F640575
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 12:04:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B6F664057D
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 12:06:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232784AbiLBLEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 06:04:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49080 "EHLO
+        id S232880AbiLBLGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 06:06:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232740AbiLBLEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 06:04:37 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5600BC5AD;
-        Fri,  2 Dec 2022 03:04:35 -0800 (PST)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NNqnL3QTyzRpvK;
-        Fri,  2 Dec 2022 19:03:50 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 2 Dec 2022 19:04:33 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <sgoutham@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH net v2] octeontx2-pf: Fix potential memory leak in otx2_init_tc()
-Date:   Fri, 2 Dec 2022 19:04:30 +0800
-Message-ID: <20221202110430.1472991-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S232307AbiLBLGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 06:06:22 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC959BC5A1;
+        Fri,  2 Dec 2022 03:06:20 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 13E861883906;
+        Fri,  2 Dec 2022 11:06:18 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 0C28425003AB;
+        Fri,  2 Dec 2022 11:06:18 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 05C1F9EC0021; Fri,  2 Dec 2022 11:06:17 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Date:   Fri, 02 Dec 2022 12:06:17 +0100
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 net-next 2/2] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+In-Reply-To: <20221120150018.qupfa3flq6hoapgj@skbuf>
+References: <20221112203748.68995-1-netdev@kapio-technology.com>
+ <20221112203748.68995-1-netdev@kapio-technology.com>
+ <20221112203748.68995-3-netdev@kapio-technology.com>
+ <20221112203748.68995-3-netdev@kapio-technology.com>
+ <20221115222312.lix6xpvddjbsmoac@skbuf>
+ <6c77f91d096e7b1eeaa73cd546eb6825@kapio-technology.com>
+ <20221120150018.qupfa3flq6hoapgj@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <343cbf3d367e2a2d4e3ce09487f43615@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In otx2_init_tc(), if rhashtable_init() failed, it does not free
-tc->tc_entries_bitmap which is allocated in otx2_tc_alloc_ent_bitmap().
+On 2022-11-20 16:00, Vladimir Oltean wrote:
+> On Sun, Nov 20, 2022 at 11:21:08AM +0100, netdev@kapio-technology.com 
+> wrote:
+>> I have something like this, using 'mvls vtu' from
+>> https://github.com/wkz/mdio-tools:
+>>  VID   FID  SID  P  Q  F  0  1  2  3  4  5  6  7  8  9  a
+>>    0     0    0  y  -  -  =  =  =  =  =  =  =  =  =  =  =
+>>    1     2    0  -  -  -  u  u  u  u  u  u  u  u  u  u  =
+>> 4095     1    0  -  -  -  =  =  =  =  =  =  =  =  =  =  =
+>> 
+>> as a vtu table. I don't remember exactly the consequences, but I am 
+>> quite
+>> sure that fid=0 gave
+>> incorrect handling, but there might be something that I have missed as 
+>> to
+>> other setups.
+> 
+> Can you please find out? There needs to be an answer as to why 
+> something
+> which shouldn't happen happens.
 
-Fixes: 2e2a8126ffac ("octeontx2-pf: Unify flow management variables")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
-v2:
-  - Remove patch 2 which is not a problem, see the following link:
-    https://www.spinics.net/lists/netdev/msg864159.html
----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Hi Vladimir,
+I haven't been able to reproduce the situation with fid=0, and it may be 
+superfluous to check if fid has a non-zero value as the case of fid=0 in 
+the miss violation handling is not valid on a bridged port, where I 
+understand from consultation that the case fid=0 corresponds to a 
+non-bridged port.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-index e64318c110fd..6a01ab1a6e6f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-@@ -1134,7 +1134,12 @@ int otx2_init_tc(struct otx2_nic *nic)
- 		return err;
- 
- 	tc->flow_ht_params = tc_flow_ht_params;
--	return rhashtable_init(&tc->flow_table, &tc->flow_ht_params);
-+	err = rhashtable_init(&tc->flow_table, &tc->flow_ht_params);
-+	if (err) {
-+		kfree(tc->tc_entries_bitmap);
-+		tc->tc_entries_bitmap = NULL;
-+	}
-+	return err;
- }
- EXPORT_SYMBOL(otx2_init_tc);
- 
--- 
-2.25.1
+What I experienced then might have been from some previous bug at a 
+time, but I don't know.
 
+Should I remove the check or not?
