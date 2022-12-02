@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D316640EFF
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 21:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B069A640F00
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 21:15:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234854AbiLBUPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 15:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50206 "EHLO
+        id S234875AbiLBUPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 15:15:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234882AbiLBUPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 15:15:42 -0500
+        with ESMTP id S234866AbiLBUPr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 15:15:47 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34CFF231F
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 12:15:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AE0837E8
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 12:15:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 825ED622CB
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 20:15:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62AA6C433D6;
-        Fri,  2 Dec 2022 20:15:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AF38622C0
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 20:15:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79AC8C433D6;
+        Fri,  2 Dec 2022 20:15:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670012138;
-        bh=TK+qMtxgcWdt6+u1drEYW1EvJXx92l4NyLtu1EITX7U=;
+        s=k20201202; t=1670012143;
+        bh=0RrhwQjJxAq5V54DEuNMqVtr+y+pobLDKyJ8JjDBvDg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lzIesLZZiz9viuZ7EfBDF3uLuO/Uav0YZrmy1iL3XH58AJihZt2fP2Tjr33zd7p+n
-         YXE3wV7yVvPYEkIYqo3npeoDvmaJc0GR1XabsiDnj3KeZjMTnUjrdSsmGXucwv5q9L
-         BNxsy/7DwfAydSsDY1d3bI4nrFYDsWiEUjn4fgHnorh6ZLHgLOaVmQx8f/9ol3QmJD
-         cy6BC6WeHvHrdWAwRAOUnG9ZYZpDxjYZo560Hvg/6rEaQpPGT4m/Z9JD/yyWhRr6rH
-         0iyqyOWrvBOZusImt4ahKJhrVNNfhS09BdBMYZMxCeGghbIYKihdq0urpO13StTQaL
-         O2QPHTG47Ib5g==
+        b=mN2REa3j4vt3MxqzyV3D+awmnoIr92q0R0hW7PKwp4d+30cBFPELn/rA3Ugcc2Fyl
+         ZkuMnsowMsnpRtjyaFoof0KKpndx1QckYEech/LUVQhmL4etoz76Gj+/ewWbx3dPIr
+         5vnNCCCJGb2v9BXPY/GPqrDhDWDd+jTqDjg7JWw4t0sFU+drH9ywp9W12xhnUKMyWI
+         BKTqpryf/XBfML5/6y/Hp/UrIskGJd6S8hZx8FCodaNbkdhT5jRu+/F3+o+xSqEM/3
+         MRGiB4YPCoaNsk5LI2NNDGl0SCmuOgWSC95wG0ATTtNAoFiDJGQ09jqdXTb65rNa0k
+         oRlVScsB6QJ+A==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -38,11 +38,10 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Bharat Bhushan <bbhushan2@marvell.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH xfrm-next 08/13] net/mlx5e: Provide intermediate pointer to access IPsec struct
-Date:   Fri,  2 Dec 2022 22:14:52 +0200
-Message-Id: <344c855c23ad578357851ad2ec8c22dde4ef3d21.1670011885.git.leonro@nvidia.com>
+        Bharat Bhushan <bbhushan2@marvell.com>
+Subject: [PATCH xfrm-next 09/13] net/mlx5e: Store all XFRM SAs in Xarray
+Date:   Fri,  2 Dec 2022 22:14:53 +0200
+Message-Id: <b60519617bcd08fc9442a656c959a9d32066dfd5.1670011885.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <cover.1670011885.git.leonro@nvidia.com>
 References: <cover.1670011885.git.leonro@nvidia.com>
@@ -59,55 +58,230 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Improve readability by providing direct pointer to struct mlx5e_ipsec.
+Instead of performing custom hash calculations, rely on FW that returns
+unique identifier to every created SA. That identifier is Xarray ready,
+which provides better semantic with efficient access.
 
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+In addition, store both TX and RX SAs to allow correlation between event
+generated by HW when limits are armed and XFRM states.
+
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c         | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ .../mellanox/mlx5/core/en_accel/ipsec.c       | 82 +++++--------------
+ .../mellanox/mlx5/core/en_accel/ipsec.h       |  8 +-
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c  | 12 ++-
+ 3 files changed, 28 insertions(+), 74 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index 8f08dbf2206e..fe10f1a2a04a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -50,57 +50,6 @@ static struct mlx5e_ipsec_pol_entry *to_ipsec_pol_entry(struct xfrm_policy *x)
+ 	return (struct mlx5e_ipsec_pol_entry *)x->xdo.offload_handle;
+ }
+ 
+-struct xfrm_state *mlx5e_ipsec_sadb_rx_lookup(struct mlx5e_ipsec *ipsec,
+-					      unsigned int handle)
+-{
+-	struct mlx5e_ipsec_sa_entry *sa_entry;
+-	struct xfrm_state *ret = NULL;
+-
+-	rcu_read_lock();
+-	hash_for_each_possible_rcu(ipsec->sadb_rx, sa_entry, hlist, handle)
+-		if (sa_entry->handle == handle) {
+-			ret = sa_entry->x;
+-			xfrm_state_hold(ret);
+-			break;
+-		}
+-	rcu_read_unlock();
+-
+-	return ret;
+-}
+-
+-static int mlx5e_ipsec_sadb_rx_add(struct mlx5e_ipsec_sa_entry *sa_entry)
+-{
+-	unsigned int handle = sa_entry->ipsec_obj_id;
+-	struct mlx5e_ipsec *ipsec = sa_entry->ipsec;
+-	struct mlx5e_ipsec_sa_entry *_sa_entry;
+-	unsigned long flags;
+-
+-	rcu_read_lock();
+-	hash_for_each_possible_rcu(ipsec->sadb_rx, _sa_entry, hlist, handle)
+-		if (_sa_entry->handle == handle) {
+-			rcu_read_unlock();
+-			return  -EEXIST;
+-		}
+-	rcu_read_unlock();
+-
+-	spin_lock_irqsave(&ipsec->sadb_rx_lock, flags);
+-	sa_entry->handle = handle;
+-	hash_add_rcu(ipsec->sadb_rx, &sa_entry->hlist, sa_entry->handle);
+-	spin_unlock_irqrestore(&ipsec->sadb_rx_lock, flags);
+-
+-	return 0;
+-}
+-
+-static void mlx5e_ipsec_sadb_rx_del(struct mlx5e_ipsec_sa_entry *sa_entry)
+-{
+-	struct mlx5e_ipsec *ipsec = sa_entry->ipsec;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&ipsec->sadb_rx_lock, flags);
+-	hash_del_rcu(&sa_entry->hlist);
+-	spin_unlock_irqrestore(&ipsec->sadb_rx_lock, flags);
+-}
+-
+ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
+ {
+ 	struct xfrm_replay_state_esn *replay_esn;
+@@ -291,6 +240,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
+ {
+ 	struct mlx5e_ipsec_sa_entry *sa_entry = NULL;
+ 	struct net_device *netdev = x->xso.real_dev;
++	struct mlx5e_ipsec *ipsec;
+ 	struct mlx5e_priv *priv;
+ 	int err;
+ 
+@@ -298,6 +248,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
+ 	if (!priv->ipsec)
+ 		return -EOPNOTSUPP;
+ 
++	ipsec = priv->ipsec;
+ 	err = mlx5e_xfrm_validate_state(x);
+ 	if (err)
+ 		return err;
+@@ -309,7 +260,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
+ 	}
+ 
+ 	sa_entry->x = x;
+-	sa_entry->ipsec = priv->ipsec;
++	sa_entry->ipsec = ipsec;
+ 
+ 	/* check esn */
+ 	mlx5e_ipsec_update_esn_state(sa_entry);
+@@ -324,18 +275,22 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
+ 	if (err)
+ 		goto err_hw_ctx;
+ 
+-	if (x->xso.dir == XFRM_DEV_OFFLOAD_IN) {
+-		err = mlx5e_ipsec_sadb_rx_add(sa_entry);
+-		if (err)
+-			goto err_add_rule;
+-	} else {
++	/* We use *_bh() variant because xfrm_timer_handler(), which runs
++	 * in softirq context, can reach our state delete logic and we need
++	 * xa_erase_bh() there.
++	 */
++	err = xa_insert_bh(&ipsec->sadb, sa_entry->ipsec_obj_id, sa_entry,
++			   GFP_KERNEL);
++	if (err)
++		goto err_add_rule;
++
++	if (x->xso.dir == XFRM_DEV_OFFLOAD_OUT)
+ 		sa_entry->set_iv_op = (x->props.flags & XFRM_STATE_ESN) ?
+ 				mlx5e_ipsec_set_iv_esn : mlx5e_ipsec_set_iv;
+-	}
+ 
+ 	INIT_WORK(&sa_entry->modify_work.work, _update_xfrm_state);
+ 	x->xso.offload_handle = (unsigned long)sa_entry;
+-	goto out;
++	return 0;
+ 
+ err_add_rule:
+ 	mlx5e_accel_ipsec_fs_del_rule(sa_entry);
+@@ -350,9 +305,11 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
+ static void mlx5e_xfrm_del_state(struct xfrm_state *x)
+ {
+ 	struct mlx5e_ipsec_sa_entry *sa_entry = to_ipsec_sa_entry(x);
++	struct mlx5e_ipsec *ipsec = sa_entry->ipsec;
++	struct mlx5e_ipsec_sa_entry *old;
+ 
+-	if (x->xso.dir == XFRM_DEV_OFFLOAD_IN)
+-		mlx5e_ipsec_sadb_rx_del(sa_entry);
++	old = xa_erase_bh(&ipsec->sadb, sa_entry->ipsec_obj_id);
++	WARN_ON(old != sa_entry);
+ }
+ 
+ static void mlx5e_xfrm_free_state(struct xfrm_state *x)
+@@ -379,8 +336,7 @@ void mlx5e_ipsec_init(struct mlx5e_priv *priv)
+ 	if (!ipsec)
+ 		return;
+ 
+-	hash_init(ipsec->sadb_rx);
+-	spin_lock_init(&ipsec->sadb_rx_lock);
++	xa_init_flags(&ipsec->sadb, XA_FLAGS_ALLOC);
+ 	ipsec->mdev = priv->mdev;
+ 	ipsec->wq = alloc_ordered_workqueue("mlx5e_ipsec: %s", 0,
+ 					    priv->netdev->name);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+index 492be255d267..724f2df14a97 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+@@ -120,8 +120,7 @@ struct mlx5e_ipsec_aso {
+ 
+ struct mlx5e_ipsec {
+ 	struct mlx5_core_dev *mdev;
+-	DECLARE_HASHTABLE(sadb_rx, MLX5E_IPSEC_SADB_RX_BITS);
+-	spinlock_t sadb_rx_lock; /* Protects sadb_rx */
++	struct xarray sadb;
+ 	struct mlx5e_ipsec_sw_stats sw_stats;
+ 	struct mlx5e_ipsec_hw_stats hw_stats;
+ 	struct workqueue_struct *wq;
+@@ -150,9 +149,7 @@ struct mlx5e_ipsec_modify_state_work {
+ };
+ 
+ struct mlx5e_ipsec_sa_entry {
+-	struct hlist_node hlist; /* Item in SADB_RX hashtable */
+ 	struct mlx5e_ipsec_esn_state esn_state;
+-	unsigned int handle; /* Handle in SADB_RX */
+ 	struct xfrm_state *x;
+ 	struct mlx5e_ipsec *ipsec;
+ 	struct mlx5_accel_esp_xfrm_attrs attrs;
+@@ -193,9 +190,6 @@ void mlx5e_ipsec_init(struct mlx5e_priv *priv);
+ void mlx5e_ipsec_cleanup(struct mlx5e_priv *priv);
+ void mlx5e_ipsec_build_netdev(struct mlx5e_priv *priv);
+ 
+-struct xfrm_state *mlx5e_ipsec_sadb_rx_lookup(struct mlx5e_ipsec *dev,
+-					      unsigned int handle);
+-
+ void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_ipsec *ipsec);
+ int mlx5e_accel_ipsec_fs_init(struct mlx5e_ipsec *ipsec);
+ int mlx5e_accel_ipsec_fs_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-index 6859f1c1a831..9f07e58f7737 100644
+index 9f07e58f7737..eab5bc718771 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-@@ -312,23 +312,23 @@ void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
- 				       struct mlx5_cqe64 *cqe)
- {
+@@ -314,8 +314,8 @@ void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
  	u32 ipsec_meta_data = be32_to_cpu(cqe->ft_metadata);
--	struct mlx5e_priv *priv;
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct mlx5e_ipsec *ipsec = priv->ipsec;
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 	struct mlx5e_ipsec *ipsec = priv->ipsec;
++	struct mlx5e_ipsec_sa_entry *sa_entry;
  	struct xfrm_offload *xo;
- 	struct xfrm_state *xs;
+-	struct xfrm_state *xs;
  	struct sec_path *sp;
  	u32  sa_handle;
  
- 	sa_handle = MLX5_IPSEC_METADATA_HANDLE(ipsec_meta_data);
--	priv = netdev_priv(netdev);
- 	sp = secpath_set(skb);
- 	if (unlikely(!sp)) {
--		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_sp_alloc);
-+		atomic64_inc(&ipsec->sw_stats.ipsec_rx_drop_sp_alloc);
+@@ -326,13 +326,17 @@ void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
  		return;
  	}
  
--	xs = mlx5e_ipsec_sadb_rx_lookup(priv->ipsec, sa_handle);
-+	xs = mlx5e_ipsec_sadb_rx_lookup(ipsec, sa_handle);
- 	if (unlikely(!xs)) {
--		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_sadb_miss);
-+		atomic64_inc(&ipsec->sw_stats.ipsec_rx_drop_sadb_miss);
+-	xs = mlx5e_ipsec_sadb_rx_lookup(ipsec, sa_handle);
+-	if (unlikely(!xs)) {
++	rcu_read_lock();
++	sa_entry = xa_load(&ipsec->sadb, sa_handle);
++	if (unlikely(!sa_entry)) {
++		rcu_read_unlock();
+ 		atomic64_inc(&ipsec->sw_stats.ipsec_rx_drop_sadb_miss);
  		return;
  	}
++	xfrm_state_hold(sa_entry->x);
++	rcu_read_unlock();
  
-@@ -349,6 +349,6 @@ void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
- 		xo->status = CRYPTO_INVALID_PACKET_SYNTAX;
- 		break;
- 	default:
--		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_syndrome);
-+		atomic64_inc(&ipsec->sw_stats.ipsec_rx_drop_syndrome);
- 	}
- }
+-	sp->xvec[sp->len++] = xs;
++	sp->xvec[sp->len++] = sa_entry->x;
+ 	sp->olen++;
+ 
+ 	xo = xfrm_offload(skb);
 -- 
 2.38.1
 
