@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62982640DB1
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 19:44:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2F07640DFB
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 19:56:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234264AbiLBSou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 13:44:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
+        id S233768AbiLBS4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 13:56:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234635AbiLBSn5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 13:43:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33BAAE4FF
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 10:42:56 -0800 (PST)
+        with ESMTP id S233452AbiLBS4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 13:56:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F831C7
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 10:56:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E84262396
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 18:42:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75179C433D6;
-        Fri,  2 Dec 2022 18:42:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3E55B82222
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 18:56:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F84C433C1;
+        Fri,  2 Dec 2022 18:56:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670006575;
-        bh=DbcLeJ309mE2FIrtsNoXWG0hMdQWCm9MLdecI5p8O4c=;
+        s=k20201202; t=1670007389;
+        bh=xfwp7fvTaxFxqJSYeSvJrkW1TjrMx2vD+omSRbLvGiU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NQFHbkUzjvXXLuvH2h2W3H7QZjJqEcqchW5xzcFxRx1jvqYXZn8edRIAta/V+FF/+
-         p5SIb95djulEQzCH+N/hZsnBv21oVWGhecpYHfcamypfEaiYgDaWVC7k+VgiuPbbTA
-         uxc64B6EN+FB4VqDn7Dc4UTlkv3vM40ZX4f1iPk7bxYh8oY1c/nEgSQerBzOZMmT0f
-         ZNWxivC8I9jMwvzO77nUEZCosuLBtTia7QNqj9PecD0b8Rbvvix7gXNAuDVWHjTMVf
-         kTG1zrhaGxS16LSat5Fg+CWxy+7XUbpX6o8mQrFqgJdLfm9Fd7iN7fEYx5yWApytbu
-         JOouFPDPqpCow==
-Date:   Fri, 2 Dec 2022 10:42:54 -0800
+        b=d5PKwDgjM31MkZm8h+nPiGCSyogMDS9loWLaBE6WgBIBT/cNI9M/Eqt7KFIqWKj4Q
+         P40ecrRmDzlyrPzv3KsXWd6++irJj3Qbfvas9xHrwQl4ph45JjmefJEVR2/Z9xjCTw
+         ij11VgoAPKnt5FkwnOhLJnxOfxWy7bZFApA2Er4TX826he2AXt6HKbPl/FtI5FC14V
+         K//zAGLSnlPC9qVHyOW9mYSYIgYoH7qHTrMmF2mvDWTNP5ZHNHI9nd78DGvLsc2slc
+         hC8n5flm9ObQ+2acXCGg6r0uk8a8YIAgGnl2MpUs0cE7xk8T+Ul3cgC+4UZGU4vEEg
+         NlmQfEzerr0rw==
+Date:   Fri, 2 Dec 2022 10:56:28 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Shay Drory <shayd@nvidia.com>
 Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
         <danielj@nvidia.com>, <yishaih@nvidia.com>, <jiri@nvidia.com>,
         <saeedm@nvidia.com>, <parav@nvidia.com>
-Subject: Re: [PATCH net-next V2 2/8] devlink: Validate port function request
-Message-ID: <20221202104254.0e7a2d34@kernel.org>
-In-Reply-To: <20221202082622.57765-3-shayd@nvidia.com>
+Subject: Re: [PATCH net-next V2 4/8] devlink: Expose port function commands
+ to control RoCE
+Message-ID: <20221202105628.3a16029a@kernel.org>
+In-Reply-To: <20221202082622.57765-5-shayd@nvidia.com>
 References: <20221202082622.57765-1-shayd@nvidia.com>
-        <20221202082622.57765-3-shayd@nvidia.com>
+        <20221202082622.57765-5-shayd@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,7 +55,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2 Dec 2022 10:26:16 +0200 Shay Drory wrote:
-> +		NL_SET_ERR_MSG_MOD(extack, "Port doesn't support function attributes");
+On Fri, 2 Dec 2022 10:26:18 +0200 Shay Drory wrote:
+> Expose port function commands to enable / disable RoCE, this is used to
+> control the port RoCE device capabilities.
 
-NL_SET_ERR_MSG_ATTR(), please
+> @@ -122,6 +122,9 @@ A user may set the hardware address of the function using
+>  'devlink port function set hw_addr' command. For Ethernet port function
+>  this means a MAC address.
+>  
+> +Users may also set the RoCE capability of the function using
+> +'devlink port function set roce' command.
+
+nit: use backticks (`) for better highlight?
+
+> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+> index 70191d96af89..830f8ffd69d1 100644
+> --- a/include/uapi/linux/devlink.h
+> +++ b/include/uapi/linux/devlink.h
+> @@ -658,11 +658,23 @@ enum devlink_resource_unit {
+>  	DEVLINK_RESOURCE_UNIT_ENTRY,
+>  };
+>  
+> +enum devlink_port_fn_attr_cap {
+> +	DEVLINK_PORT_FN_ATTR_CAP_ROCE,
+> +
+> +	/* Add new caps above */
+> +	__DEVLINK_PORT_FN_ATTR_CAPS_MAX,
+> +	DEVLINK_PORT_FN_ATTR_CAPS_MAX = __DEVLINK_PORT_FN_ATTR_CAPS_MAX - 1
+
+Is DEVLINK_PORT_FN_ATTR_CAPS_MAX actually needed?
+This is a bit list, not an attribute list, don't copy the format 
+of netlink attribute definition without a reason.
+
+> +};
+> +
+> +#define DEVLINK_PORT_FN_ATTR_CAPS_VALID_MASK \
+> +	(_BITUL(__DEVLINK_PORT_FN_ATTR_CAPS_MAX) - 1)
+
+This does not belong in the uAPI. User space has to discover the mask
+at runtime via a policy dump, anyway.
+
+> +	[DEVLINK_PORT_FN_ATTR_CAPS] =
+> +		NLA_POLICY_BITFIELD32(DEVLINK_PORT_FN_ATTR_CAPS_VALID_MASK),
+
+Why is there _ATTR in the name of the CAPS mask?
+
+>  };
+>  
+>  static const struct nla_policy devlink_selftest_nl_policy[DEVLINK_ATTR_SELFTEST_ID_MAX + 1] = {
+> @@ -692,6 +694,64 @@ devlink_sb_tc_index_get_from_attrs(struct devlink_sb *devlink_sb,
+>  	return 0;
+>  }
+>  
+> +#define DEVLINK_PORT_FN_CAP(_name) \
+> +	BIT(DEVLINK_PORT_FN_ATTR_CAP_##_name)
+
+No, just work harder to make the name concise :/
+Not being able to grep or ctag uses of a value is a huge PITA during
+code reviews.
+
+> +#define DEVLINK_PORT_FN_SET_CAP(caps, cap, enable)	\
+> +	do {						\
+> +		typeof(cap) cap_ = (cap); \
+> +		typeof(caps) caps_ = (caps); \
+> +		(caps_)->selector |= cap_;	\
+> +		if (enable)					\
+> +			(caps_)->value |= cap_; \
+> +	} while (0)
+
+I think you can code this up as a function instead of a macro.
