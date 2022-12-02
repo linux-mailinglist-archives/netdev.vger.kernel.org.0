@@ -2,124 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 895B76404B9
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 11:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9021E6404C5
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 11:35:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233406AbiLBKds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 05:33:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43642 "EHLO
+        id S233038AbiLBKfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 05:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233378AbiLBKdk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 05:33:40 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6D8C4CFC
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 02:33:36 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id r26so5875633edc.10
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 02:33:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/e58gZBtEpImuaapH5z3ZZXyBnJ+7CtdRYYz6q6IemE=;
-        b=FBEXuKdH6DfRsx/hPmSsGMAoEqRA85szN/9ar3oRgmjZKJSW0qhSTMipDJfm2YOWoQ
-         aWCWj3YaFHriFVFVuqIBHBXtPSRJz901i+Ix+WOHoKB1VeZHk0CAHkNfH9Smf9l9Rrvo
-         IM7L/PfDnCGhkeVRsZpsK5387PYAMfyEO9yXca3u/33VOejA35Y3GUqR26S+Fq+2fXAs
-         7prhT/G8V2D2zcr13/2W37SvVVSd/K4e//HKKA00PKCpBfAe/bn3D9M/KjmGI+m+j4uk
-         sMW66RUtnuKD1kEyUEwzuxEJ6wQ1LSgsuwNLLnkK8vqBclsIMWz3KBejJw9PelhZCz0P
-         Oexw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/e58gZBtEpImuaapH5z3ZZXyBnJ+7CtdRYYz6q6IemE=;
-        b=aCrkW3WRVMtsODVPFE02vLqkfhCRPxHTnLEGf3TeykJ6kthlK8xtKqiD0wwSFrfY5D
-         lpkOCriETo4n1k2BXqU7xWEkQbHeCY3YLdgAEfIUI3G56PO4YsYAGD4GdJRI+217zAT4
-         m1pa2tMmaVv0+r+7oxBD6ia3y3KtqhUuICFBUsErJubXP3QljDppmjekPdOLgQP0+6jX
-         cu82IvEnyJOd1h4n4der0k1YWp6TMcQDN9wCF1jDAIlMhzlZFDivMfw7saqa+RbYSS0i
-         CCt9eMTSV3Kwq9V+LrempelYmNSc5xF4HT7CphF3v42lBTwNiJLJVFV3fLOOgJgnrx/+
-         43uA==
-X-Gm-Message-State: ANoB5pnfFXvK4Zd7rj9uQUA6PSOlIGDC4XOWkyRZ/AK973Fqh7dJMsb9
-        ef0LHyQfI9fhL1fYOzgi73FG7Q==
-X-Google-Smtp-Source: AA0mqf62g7tL05/yrH9Nmc/hP4lJkxbx6iU2/cPHDSx5Oqj8j6hZK8YiIPj5dHAh++pcOEG7PBPo0w==
-X-Received: by 2002:a05:6402:528d:b0:468:dc9:ec08 with SMTP id en13-20020a056402528d00b004680dc9ec08mr49095306edb.17.1669977214833;
-        Fri, 02 Dec 2022 02:33:34 -0800 (PST)
-Received: from [10.44.2.26] (84-199-106-91.ifiber.telenet-ops.be. [84.199.106.91])
-        by smtp.gmail.com with ESMTPSA id q18-20020a1709066b1200b007bf988ce9f7sm2876728ejr.38.2022.12.02.02.33.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Dec 2022 02:33:34 -0800 (PST)
-Message-ID: <fc48c2e1-1df2-c636-bfa4-621148790133@tessares.net>
-Date:   Fri, 2 Dec 2022 11:33:33 +0100
+        with ESMTP id S232800AbiLBKfD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 05:35:03 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA62C1BFB;
+        Fri,  2 Dec 2022 02:35:02 -0800 (PST)
+Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NNq7F5ljmz15N2v;
+        Fri,  2 Dec 2022 18:34:17 +0800 (CST)
+Received: from [10.174.176.189] (10.174.176.189) by
+ kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 2 Dec 2022 18:34:59 +0800
+Message-ID: <52a15a3f-a288-7a7f-e9b3-1096d108e4a3@huawei.com>
+Date:   Fri, 2 Dec 2022 18:34:58 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 00/11] mptcp: PM listener events + selftests
- cleanup
-Content-Language: en-GB
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        mptcp@lists.linux.dev, netdev@vger.kernel.org
-References: <20221130140637.409926-1-matthieu.baerts@tessares.net>
- <20221201200953.2944415e@kernel.org>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20221201200953.2944415e@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH] net: microchip: sparx5: Fix missing destroy_workqueue of
+ mact_queue
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <lars.povlsen@microchip.com>,
+        <Steen.Hegelund@microchip.com>, <daniel.machon@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20221201134717.25750-1-linqiheng@huawei.com>
+ <CALs4sv36FCT6uUAHM8KTGX5GwgeZGNTSLxB2cq7h-K3jxuK+HQ@mail.gmail.com>
+ <CALs4sv3w4Gjs2JGr-hHh_XEXoVWJm3t27O=ezy6HEzRXuk2TwA@mail.gmail.com>
+From:   Qiheng Lin <linqiheng@huawei.com>
+In-Reply-To: <CALs4sv3w4Gjs2JGr-hHh_XEXoVWJm3t27O=ezy6HEzRXuk2TwA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.189]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemi500014.china.huawei.com (7.221.188.232)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-On 02/12/2022 05:09, Jakub Kicinski wrote:
-> On Wed, 30 Nov 2022 15:06:22 +0100 Matthieu Baerts wrote:
->> Thanks to the patch 6/11, the MPTCP path manager now sends Netlink events when
->> MPTCP listening sockets are created and closed. The reason why it is needed is
->> explained in the linked ticket [1]:
+在 2022/12/2 18:02, Pavan Chebbi 写道:
+> On Fri, Dec 2, 2022 at 1:36 PM Pavan Chebbi <pavan.chebbi@broadcom.com> wrote:
 >>
->>   MPTCP for Linux, when not using the in-kernel PM, depends on the userspace PM
->>   to create extra listening sockets before announcing addresses and ports. Let's
->>   call these "PM listeners".
+>> On Thu, Dec 1, 2022 at 6:57 PM Qiheng Lin <linqiheng@huawei.com> wrote:
+>>>
+>>> The mchp_sparx5_probe() won't destroy workqueue created by
+>>> create_singlethread_workqueue() in sparx5_start() when later
+>>> inits failed. Add destroy_workqueue in the cleanup_ports case,
+>>> also add it in mchp_sparx5_remove()
+>>>
+>>> Signed-off-by: Qiheng Lin <linqiheng@huawei.com>
+>>> ---
+>>>   drivers/net/ethernet/microchip/sparx5/sparx5_main.c | 3 +++
+>>>   1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
+>>> index eeac04b84638..b6bbb3c9bd7a 100644
+>>> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
+>>> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
+>>> @@ -887,6 +887,8 @@ static int mchp_sparx5_probe(struct platform_device *pdev)
+>>>
+>>>   cleanup_ports:
+>>>          sparx5_cleanup_ports(sparx5);
+>>> +       if (sparx5->mact_queue)
+>>> +               destroy_workqueue(sparx5->mact_queue);
 >>
->>   With the existing MPTCP netlink events, a userspace PM can create PM listeners
->>   at startup time, or in response to an incoming connection. Creating sockets in
->>   response to connections is not optimal: ADD_ADDRs can't be sent until the
->>   sockets are created and listen()ed, and if all connections are closed then it
->>   may not be clear to the userspace PM daemon that PM listener sockets should be
->>   cleaned up.
+>> Would be better if you destroy inside sparx5_start() before returning failure.
 >>
->>   Hence this feature request: to add MPTCP netlink events for listening socket
->>   close & create, so PM listening sockets can be managed based on application
->>   activity.
->>
->>   [1] https://github.com/multipath-tcp/mptcp_net-next/issues/313
->>
->> Selftests for these new Netlink events have been added in patches 9,11/11.
->>
->> The remaining patches introduce different cleanups and small improvements in
->> MPTCP selftests to ease the maintenance and the addition of new tests.
 > 
-> Also could you warp you cover letters at 72 characters?
-> I need to reflow them before I can read them :(
+> Alternatively you could add the destroy inside sparx5_cleanup_ports()
+> that will cover all error exits?
 
-Oops, my bad, I'm sorry for that! Thank you for having reported the issue!
+That works functionally, I have considered this modification as well. 
+Since I'm not quite sure on the naming, destroying the mact_queue 
+belongs to sparx5_cleanup_ports, which they don't contain now.
 
-I didn't notice I didn't set the limit to 72 chars for the
-"gitsendemail" file type like I did for "gitcommit" in my current vim
-config. Done now, next cover-letter should be properly formatted! :)
+> 
+>>>   cleanup_config:
+>>>          kfree(configs);
+>>>   cleanup_pnode:
+>>> @@ -911,6 +913,7 @@ static int mchp_sparx5_remove(struct platform_device *pdev)
+>>>          sparx5_cleanup_ports(sparx5);
+>>>          /* Unregister netdevs */
+>>>          sparx5_unregister_notifier_blocks(sparx5);
+>>> +       destroy_workqueue(sparx5->mact_queue);
+>>>
+>>>          return 0;
+>>>   }
+>>> --
+>>> 2.32.0
+>>>
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
