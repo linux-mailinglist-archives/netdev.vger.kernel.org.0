@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC23641064
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 23:12:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3834641066
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 23:12:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234593AbiLBWMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 17:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
+        id S234681AbiLBWM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 17:12:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiLBWMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 17:12:19 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0D2F899B
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 14:12:18 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id t5-20020a5b07c5000000b006dfa2102debso6517610ybq.4
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 14:12:18 -0800 (PST)
+        with ESMTP id S233977AbiLBWMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 17:12:23 -0500
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514E4F9303
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 14:12:22 -0800 (PST)
+Received: by mail-pf1-x44a.google.com with SMTP id v23-20020aa78097000000b005748c087db1so6071861pff.2
+        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 14:12:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=aqtQqt3CYbfEmZYhGTH/QgYDRef/TM1s51odegjsqeI=;
-        b=HdgVFnSLUnEmFG4MkBjFMO4G2tTWjjsOcCEdrCCe+T/mJxH48wYxh0iNqe6oMNckjR
-         OPoNQfdgUK0jrKTtdGC9jVZRT8z+mfsZwc65UsCrVc/ms9azzlRS/eOsXn00RItDM4TL
-         1b623/78nCbsdtkrLJe7LBgL2mlvaW2QnLxQDEECMJy8iN18LfGdLCv1XAanIvgQ/ifn
-         hKzUAN9CEY98iN9PzLbfT3UDryQE3BXEzb/qWphS/1MWZNDX25qiiIeHhGSWJ6UVIcVG
-         0Uqu6qrgKrnGHZJ3OKKgpDfz8JkTn92v0KcwF/ZxfzKV+epZN5gnlW3XbWzpPa8xogbh
-         tpTQ==
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=RxFknGyAkcIOOsCgLG6r1err07+MBrN/SSNfaLXlwhg=;
+        b=dB0yZm0vtYjeMx8aJ36Rn/NpjR0HOQmUVA3aFPdVivS5kxj7wKoAsTcPNoAT8arhsA
+         mQ+6r2J7uLpsNM8NKQTyTNs2dq7CwDZ+Weqd9hrvp/SKJTIFJHtCid/SZc3i8gTmyvQu
+         C7aJm96Wbv/dWI2bZdS7+Yt72IEFTOLcuNOol3UVrk2PpZhu6wBtUMy6AzH0T59kGjbk
+         8d3jHrPMVbv0y2Wjpq8abKjL0TqRYfkNXrjHpFKLSIKysLF2EKnhVQX9dOYMbLlW1ssP
+         QfeaS1GnYMTpnZsw7unZNrZUy9WZ21Su51G8exq8HfqMVSO9Tf4q2MU4/zRNq8crE6y6
+         W72Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=aqtQqt3CYbfEmZYhGTH/QgYDRef/TM1s51odegjsqeI=;
-        b=v6EeYFxRUybG8DDSPLwOBmFNzYZsK0NCZfGj+JnxMbwtLF5fn3L0sPEknpu5qg5+AD
-         ZxIk63VjJ/VhJnpp/UGMwmL7N8Ev/GWuZsRnjNNE+P8pn2AawjPR/mdtArv8pmnDX3Ry
-         /mZVveXjBX1YQLlNA3g1BduCDNWESJ6/2H3HB4EfP21T5AGXjwFVtmsTQ6vQkpmqOnrC
-         f0LYArN6jyafyWHtDx0qxkFjSJAvg2Qwu0qQqrS6PDIFRrz2HQvnVYCeyfjYqYGkKS+g
-         xfyM4cjaEQppQciox5IZOhtDt4wA3DIk2WfdHxZakgzD3TD834P0sEzePGZywkE8ZSWm
-         agRw==
-X-Gm-Message-State: ANoB5pm3zIU5dMJlsy21B/TFc951zlejK9QX/nyZfBwB+zVtg2z289q8
-        DCA1SjPm346R4v6iuePyFdGN/elKLwoAWCg=
-X-Google-Smtp-Source: AA0mqf5ciOxlekVv9aOeSzePlJQ4uYKqkzOIVZqTyxgblQDfY//KIiJDG0IH/dEbc4yf6QjRcXFMEfjrtp//x28=
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RxFknGyAkcIOOsCgLG6r1err07+MBrN/SSNfaLXlwhg=;
+        b=Cwux2nM6w0CeiaXzzsnsBkDw2u2YVqHG5BjU4Bys5dX6eKkZWbMRYL48RWfUkANg5i
+         DejMEvUHRdgtkAPb5geXbmSYjbnPjyK7hW/hiAxWIsIO8yYQiIfsW86fBT5ylvMB2lm7
+         PRKfNZxBG6w5p8fePVREHA9JJaCKWac+UXDvwfP2mMJHhW4dVE//A/1mdLraLK+PjVng
+         UVP7jOcKGYZ80y4sMUKNW75nrGHFlNMfGKtfakiZyQFYqXar/Wo6Tau/3dAs77BmWjiN
+         kdI3OVG3OAWrbKVhkXIAh3lepFAHxmA89zllE9/JRc1MFSsamNvPNu0RtnJqXEp+I/bW
+         VeqA==
+X-Gm-Message-State: ANoB5pnVBbUauFF0mpF/9vFXnX/OkbBC+TbXcJxBUm3hfBBFY5BZ71v0
+        y0/nCtjLgDZ3sVruvH8pJbfxz7qo8eJHFmk=
+X-Google-Smtp-Source: AA0mqf5wXcrw5d0m1tnOeS4rkHBJ8FcNfWgR5Eu3EYiFy6/85Conhs0C0zQcUP87be5oqcekRI5FcuNccvMcJ8Y=
 X-Received: from lixiaoyan-desktop.svl.corp.google.com ([2620:15c:2c4:201:806c:1abb:ce24:13cf])
- (user=lixiaoyan job=sendgmr) by 2002:a81:510:0:b0:356:4adb:67b4 with SMTP id
- 16-20020a810510000000b003564adb67b4mr57763344ywf.141.1670019138178; Fri, 02
- Dec 2022 14:12:18 -0800 (PST)
-Date:   Fri,  2 Dec 2022 14:12:12 -0800
+ (user=lixiaoyan job=sendgmr) by 2002:a05:6a00:2183:b0:574:2104:5657 with SMTP
+ id h3-20020a056a00218300b0057421045657mr51866119pfi.58.1670019141829; Fri, 02
+ Dec 2022 14:12:21 -0800 (PST)
+Date:   Fri,  2 Dec 2022 14:12:13 -0800
+In-Reply-To: <20221202221213.236564-1-lixiaoyan@google.com>
 Mime-Version: 1.0
+References: <20221202221213.236564-1-lixiaoyan@google.com>
 X-Mailer: git-send-email 2.39.0.rc0.267.gcb52ba06e7-goog
-Message-ID: <20221202221213.236564-1-lixiaoyan@google.com>
-Subject: [RFC net-next v4 1/2] IPv6/GRO: generic helper to remove temporary
- HBH/jumbo header in driver
+Message-ID: <20221202221213.236564-2-lixiaoyan@google.com>
+Subject: [RFC net-next v4 2/2] bnxt: Use generic HBH removal helper in tx path
 From:   Coco Li <lixiaoyan@google.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
@@ -72,110 +73,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPv6/TCP and GRO stacks can build big TCP packets with an added
-temporary Hop By Hop header.
+Eric Dumazet implemented Big TCP that allowed bigger TSO/GRO packet sizes
+for IPv6 traffic. See patch series:
+'commit 89527be8d8d6 ("net: add IFLA_TSO_{MAX_SIZE|SEGS} attributes")'
 
-Is GSO is not involved, then the temporary header needs to be removed in
-the driver. This patch provides a generic helper for drivers that need
-to modify their headers in place.
+This reduces the number of packets traversing the networking stack and
+should usually improves performance. However, it also inserts a
+temporary Hop-by-hop IPv6 extension header.
 
+Using the HBH header removal method in the previous path, the extra header
+be removed in bnxt drivers to allow it to send big TCP packets (bigger
+TSO packets) as well.
+
+Tested:
+Compiled locally
+
+To further test functional correctness, update the GSO/GRO limit on the
+physical NIC:
+
+ip link set eth0 gso_max_size 181000
+ip link set eth0 gro_max_size 181000
+
+Note that if there are bonding or ipvan devices on top of the physical
+NIC, their GSO sizes need to be updated as well.
+
+Then, IPv6/TCP packets with sizes larger than 64k can be observed.
+
+Big TCP functionality is tested by Michael, feature checks not yet.
+
+Tested by Michael:
+I've confirmed with our hardware team that this is supported by our
+chips, and I've tested it up to gso_max_size of 524280.  Thanks.
+
+Tested-by: Michael Chan <michael.chan@broadcom.com>
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: Coco Li <lixiaoyan@google.com>
 ---
- include/net/ipv6.h     | 35 +++++++++++++++++++++++++++++++++++
- net/ipv6/ip6_offload.c | 27 ++++-----------------------
- 2 files changed, 39 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 26 ++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index d383c895592a..08adec74f067 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -500,6 +500,41 @@ static inline int ipv6_has_hopopt_jumbo(const struct sk_buff *skb)
- 	return jhdr->nexthdr;
- }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 0fe164b42c5d..c2713cb5debd 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -389,6 +389,9 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			return NETDEV_TX_BUSY;
+ 	}
  
-+/* Return 0 if HBH header is successfully removed
-+ * Or if HBH removal is unnecessary (packet is not big TCP)
-+ * Return error to indicate dropping the packet
-+ */
-+static inline int ipv6_hopopt_jumbo_remove(struct sk_buff *skb)
-+{
-+	const int hophdr_len = sizeof(struct hop_jumbo_hdr);
-+	int nexthdr = ipv6_has_hopopt_jumbo(skb);
-+	struct ipv6hdr *h6;
++	if (unlikely(ipv6_hopopt_jumbo_remove(skb)))
++		goto tx_free;
 +
-+	if (!nexthdr)
-+		return 0;
-+
-+	if (skb_cow_head(skb, 0))
-+		return -1;
-+
-+	/* Remove the HBH header.
-+	 * Layout: [Ethernet header][IPv6 header][HBH][L4 Header]
-+	 */
-+	memmove(skb_mac_header(skb) + hophdr_len, skb_mac_header(skb),
-+		skb_network_header(skb) - skb_mac_header(skb) +
-+		sizeof(struct ipv6hdr));
-+
-+	if (unlikely(!pskb_may_pull(skb, hophdr_len)))
-+		return -1;
-+
-+	skb->network_header += hophdr_len;
-+	skb->mac_header += hophdr_len;
-+
-+	h6 = ipv6_hdr(skb);
-+	h6->nexthdr = nexthdr;
-+
-+	return 0;
-+}
-+
- static inline bool ipv6_accept_ra(struct inet6_dev *idev)
- {
- 	/* If forwarding is enabled, RA are not accepted unless the special
-diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
-index 3ee345672849..00dc2e3b0184 100644
---- a/net/ipv6/ip6_offload.c
-+++ b/net/ipv6/ip6_offload.c
-@@ -77,7 +77,7 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
- 	struct sk_buff *segs = ERR_PTR(-EINVAL);
- 	struct ipv6hdr *ipv6h;
- 	const struct net_offload *ops;
--	int proto, nexthdr;
-+	int proto, err;
- 	struct frag_hdr *fptr;
- 	unsigned int payload_len;
- 	u8 *prevhdr;
-@@ -87,28 +87,9 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
- 	bool gso_partial;
+ 	length = skb->len;
+ 	len = skb_headlen(skb);
+ 	last_frag = skb_shinfo(skb)->nr_frags;
+@@ -11342,9 +11345,28 @@ static bool bnxt_exthdr_check(struct bnxt *bp, struct sk_buff *skb, int nw_off,
  
- 	skb_reset_network_header(skb);
--	nexthdr = ipv6_has_hopopt_jumbo(skb);
--	if (nexthdr) {
--		const int hophdr_len = sizeof(struct hop_jumbo_hdr);
--		int err;
--
--		err = skb_cow_head(skb, 0);
--		if (err < 0)
--			return ERR_PTR(err);
--
--		/* remove the HBH header.
--		 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
--		 */
--		memmove(skb_mac_header(skb) + hophdr_len,
--			skb_mac_header(skb),
--			ETH_HLEN + sizeof(struct ipv6hdr));
--		skb->data += hophdr_len;
--		skb->len -= hophdr_len;
--		skb->network_header += hophdr_len;
--		skb->mac_header += hophdr_len;
--		ipv6h = (struct ipv6hdr *)skb->data;
--		ipv6h->nexthdr = nexthdr;
--	}
-+	err = ipv6_hopopt_jumbo_remove(skb);
-+	if (err)
-+		return ERR_PTR(err);
- 	nhoff = skb_network_header(skb) - skb_mac_header(skb);
- 	if (unlikely(!pskb_may_pull(skb, sizeof(*ipv6h))))
- 		goto out;
+ 		if (hdrlen > 64)
+ 			return false;
++
++		/* The ext header may be a hop-by-hop header inserted for
++		 * big TCP purposes. This will be removed before sending
++		 * from NIC, so do not count it.
++		 */
++		if (*nexthdr == NEXTHDR_HOP) {
++			if (likely(skb->len <= GRO_LEGACY_MAX_SIZE))
++				goto increment_hdr;
++
++			struct hop_jumbo_hdr *jhdr = (struct hop_jumbo_hdr *)(nexthdr + hdrlen);
++
++			if (jhdr->tlv_type != IPV6_TLV_JUMBO || jhdr->hdrlen != 0 ||
++			    (jhdr->nexthdr != IPPROTO_TCP && jhdr->nexthdr != IPPROTO_UDP))
++				goto increment_hdr;
++
++			goto next_hdr;
++		}
++increment_hdr:
++		hdr_count++;
++next_hdr:
+ 		nexthdr = &hp->nexthdr;
+ 		start += hdrlen;
+-		hdr_count++;
+ 	}
+ 	if (nextp) {
+ 		/* Caller will check inner protocol */
+@@ -13657,6 +13679,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		dev->features &= ~NETIF_F_LRO;
+ 	dev->priv_flags |= IFF_UNICAST_FLT;
+ 
++	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
++
+ #ifdef CONFIG_BNXT_SRIOV
+ 	init_waitqueue_head(&bp->sriov_cfg_wait);
+ #endif
 -- 
 2.39.0.rc0.267.gcb52ba06e7-goog
 
