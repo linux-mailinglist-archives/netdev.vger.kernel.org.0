@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAF8863FF11
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 04:34:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DB6263FEFF
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 04:34:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232285AbiLBDeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 22:34:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44332 "EHLO
+        id S232098AbiLBDeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 22:34:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232270AbiLBDdT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 22:33:19 -0500
-Received: from CY4PR02CU007-vft-obe.outbound.protection.outlook.com (mail-westcentralusazon11021023.outbound.protection.outlook.com [40.93.199.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E03DF3A;
-        Thu,  1 Dec 2022 19:32:38 -0800 (PST)
+        with ESMTP id S232245AbiLBDdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 22:33:17 -0500
+Received: from DM4PR02CU001-vft-obe.outbound.protection.outlook.com (mail-centralusazon11022027.outbound.protection.outlook.com [52.101.63.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0893865BC;
+        Thu,  1 Dec 2022 19:32:37 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e6EcD6NFJY5R1cOH7dW6UG8Uf1+gtYRI30/7JlNzyzRQ+K878vf2JOKCdNeUpZ9u5dO5zXNkT/EJw6bj+es5grUln/1lF9uS/SWbPVVP2MsTBpYwtTQJaOiNMvvb0djv73WlfajxrorImdy7MnAQbQaEoNq2Ay6Oo9FY9F4+GoDwFFms6T3VfaDKGBkIyIWY9ybaqQFHsNi2b4/Xs+1rC6gRxOSuy2oQzUx7/Nkdv1A8F7kfHuGdx1D5vi22ztP7C90WDs+TQsbh/SYOpk+TZro5kYDEYIG7dh8p81GXab+z/btAxcMNlb5Bi9RLM/+IXaePvLRT+EJhajjzxn3nbw==
+ b=MYuPdWxNUs8KwschDwyIEfMtePPadA/bMmAPpjI6YKZ+/a7SgdbsbYG8HQxQ14msiwv6N5v3Cpi7WqE5mJuIbzGDnv/7HZ9hR40PWGFi/eLSFv9BCLfCsGcIKUMtfpeH44GKuwXdBTP1OB6VCXX4SPTQYTtuCMPj/w+00gnIFkxjWRcCsPox7BL2DF6S+9TNFAHTohm/JNm3qPCimQmC8x4flEdEN+07eMZIxvV/vWqWKM8wCQxqAI512P0W7R8Fp8r7k+GEqO2CrPNsX0Cvy8ijViwv5Ej+GJTe8Q2mBtAlaUNazNY6VolRPQBS32pflPK/qAxR473zM1xV1XgWOA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CLvLpvSwNbIGXks/vU31yhV4PgqEudo572uGrbfS4zk=;
- b=oXFpdQmkf1Btm7jWnMKr6lLFpQxiZFbf8TmcBp6Y16pyUxKi9A71wCfpwKkWgrs3zirBw6p7ILjlHLw2HP0ylIqLrgiTN0rEDYj6CLjWAkjBtzqJBtR2p0kLp4JfC7wA9z1gugD0NY3I0nE6Pa2cDLS8s+Qe6t1rEVK0hVp6aHPuzSf6fDorpSH0eI2XHiE4RpUXBDsXzHqDdgWFhqwplSRnL2lNm7rDiiK3/J1QEBn4+zvFMkJRZ6UI5M1MXH6P85hqob3Q3G/dOdA4eBng1lg3RC+Ui+6HqjgvJOLQfzP1B/gb5v0agMMlMjzfwV0DngCpSBqtNB6bm4xy6q0ajQ==
+ bh=AcnvgpzsxhSuI65c5UvEjo1C3IpsG+3rnruV2R/KQIM=;
+ b=aAqwJonhH7rUfv4CVBCj1edGta4iWgnzIrO90hHO5DcukYaE/J9EtcUiUFbVvA0EPFZeQ69aeVU6FQwK6MInPT4mBBA2mkm0loodbxM9MjXy+zmM2nLMam/fGYdkIhMKInzVHwsWpW4ZYZmTXnRKmK4O+GcJAn+DthrL1K2ljaQKgfHNUVUs7hUjLzMXgIaROnNPBsifL9XbYGW7iBcQcASSr5iWf3Go8hPctQxEYn7EaIm5IRVJEH8iwZdR68/NVnDdFU+7QZJp46sm9ZSqL1JwltUsHSoXuJLY/rgdo0LyVo+DXxmAa8dI9JQLiZhDno3FA5AdYG4APZLk53qi4w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CLvLpvSwNbIGXks/vU31yhV4PgqEudo572uGrbfS4zk=;
- b=IuuZXYpcWwqR/NpebKSpVDXYIMkHgKOZJRKD4U/D3J2Je+cBV82ikeTQgQ3F8nFhYejDCd7b+B/TjPe0N+FhSDE+E6QCEPkm5b0twEJKphLQKIZ1YAUVO8MrtVh3P1707HiU9be468I43CIpEBuTA1YrPFSLIQL39RWlceTbpto=
+ bh=AcnvgpzsxhSuI65c5UvEjo1C3IpsG+3rnruV2R/KQIM=;
+ b=IZJdLq7VMWZZneUdXSkXp6A5dKmXrdimggL160Zncq89yOJd5zQ48WdEHZruqWAi8++bGi2ET0gGMJ8bWN7VdhQl93hrzgPK5sIcsPCbwCgy4Y3WOzr5RAQyd81z+6GwUXDwUX38UONkb0YCPh3jwYd8PiEbei+//mU4DUidBWk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
- by BL0PR2101MB1316.namprd21.prod.outlook.com (2603:10b6:208:92::10) with
+ by DM6PR21MB1340.namprd21.prod.outlook.com (2603:10b6:5:175::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5901.8; Fri, 2 Dec
- 2022 03:32:24 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5901.4; Fri, 2 Dec
+ 2022 03:32:27 +0000
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::c3e3:a6ef:232c:299b]) by DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::c3e3:a6ef:232c:299b%9]) with mapi id 15.20.5901.008; Fri, 2 Dec 2022
- 03:32:24 +0000
+ 03:32:27 +0000
 From:   Michael Kelley <mikelley@microsoft.com>
 To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
@@ -58,9 +58,9 @@ To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
         iommu@lists.linux.dev
 Cc:     mikelley@microsoft.com
-Subject: [Patch v4 10/13] hv_netvsc: Remove second mapping of send and recv buffers
-Date:   Thu,  1 Dec 2022 19:30:28 -0800
-Message-Id: <1669951831-4180-11-git-send-email-mikelley@microsoft.com>
+Subject: [Patch v4 11/13] Drivers: hv: Don't remap addresses that are above shared_gpa_boundary
+Date:   Thu,  1 Dec 2022 19:30:29 -0800
+Message-Id: <1669951831-4180-12-git-send-email-mikelley@microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
 References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
@@ -71,54 +71,54 @@ X-ClientProxiedBy: MW4PR04CA0234.namprd04.prod.outlook.com
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|BL0PR2101MB1316:EE_
-X-MS-Office365-Filtering-Correlation-Id: a6664ff8-452e-4284-9c84-08dad415d41a
+X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|DM6PR21MB1340:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9e8f2460-dd23-4a2e-f4a4-08dad415d563
 X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AjdUBeSzzuytcdRkD/V5e0q5PfYXVopWMa/2piT0GZYIkc4I0QLPHI/zLgABQLaoBFH0oLEuLQRf28USRTZfdUcDOYrj6j9pgyTqXvjjRM8oz1p8LVEtrChs5gZ7t5Mv2cecZZbVw12GYlu1LTt6t7T+A6+6Xngiabd+ylNnRP3DIyS1jBwpNgRe+WXX1Pi6RpQ1hp2j2jNJxIWRC/GpO3THpPdHEO3D4CE06ZeLXCd0650o7gcHVMuJnTR8HnQ6bYOu0WASdH4IQn3ZszuHrvXqxf0eeBl81fBQnZbFeIC5NzEEKRXhzqoQZSPdimqDbMeIZf2pHgWxkwPwnCui2AIs+WHelAQ7/fNC6l2nDYSc86PMHczlfFr94NNwat2Myw0CT+P0DG4vZ51GXRPXe9bnw941QobydKeqfqrEmNRzbMHqe51rkVhWckz9/sdBigKQ5LmbDUBShZn3QgFyR6c1ZaMHF6jed3ys6N45E6RnlPWulDGji79Rc85IBW3CUnaCQX3FKn6ENxSfJ1QSoglEZ6rYkCtaL8v924vm320cPR8CfamaIOM9VTHGllW4IUVhu+qOBBdOcdBH5135mpqOTI0uBf16VaUTEb+CiVCcB1Epk5L2igjdgbyXEDw4K+NnFlGHO8JgaABNHHwQx5oup2WTH/JudyJLCoIiph97xz+eoRehiLiHeQ8XxaklR0afYyog7Ga3OinTGQA8C71q98iT5BQH07FnqYFeGYTtURgzvk/C7t/fy65qYwem
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(136003)(396003)(39860400002)(366004)(451199015)(86362001)(921005)(41300700001)(36756003)(2616005)(186003)(8936002)(5660300002)(66476007)(66556008)(52116002)(66946007)(82960400001)(7406005)(8676002)(7416002)(6506007)(107886003)(6486002)(316002)(478600001)(10290500003)(4326008)(6512007)(26005)(82950400001)(38100700002)(38350700002)(2906002)(83380400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: WpO1MtFr2GFW9XPdEFUZ73I0vWq2PWa27ZnwxP40g3xEj56bV9WpvBgfkk0rXlAtzrv1/4wfq+mwZ6qiZJK08BkTXjHnp1cSxekMCfk3iSsL8hs7ZNWDsvGExKFPDBJddgWC7uoO3y959CuEAXm8npAxILN/LrzpVJgOneuz/zWE7GXJgUEr+Pjei/E/veitsvXPktqXfuEO1c8MKh93Ly42ldaLJC92pMxPh0JxadkO+QXUZKSeviej9GGU7bAZE+vEj3zsvz91cNr3ketRUIFWmJSIQBMCTWqG4rtgGau35AlbgOssTYYxhppXXyleYd1mOJuJ6SOcmKMCOfuQZnJ8iiS4bNNQF1O30HS7qi3x+ikirefhv+o+acKhtr3p3McAcY2PdJvbYcGZQXW7c1bO3q5SSkP1roiCRe9iyJjmnDM3JimRd8wv4EJRo3ZrCIFLrSBkf+w21TKcmylrwpGcF0ZnbIm8f/9UUIj0ywpovKOHQNxRzbYxK50m9kBOezwuLLQ0YMlcuVSIgm63dOgPFGEJlHSKFX20scJ+gNoOm0DsgFd3NlctBiAkk4tESiyK6WucxpwKDZJLicTCszc8FdjCk1UIJZoNYDF7JC7iBbXxNLmStMkA+L42wLLIUOUiJ33CXgon7GAh6XKz1uhtuuo5VlLYvuU6S/gg9Pj32QRFmCZ2i4OUFULao+XILyDPDZtH0zrdsktUf3U/V0xnifpCnAFO135/M5WlHsiYJrhF2ApoKJALJinONrXI
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(136003)(396003)(39860400002)(366004)(451199015)(186003)(8936002)(8676002)(10290500003)(2616005)(107886003)(86362001)(2906002)(36756003)(7416002)(41300700001)(82950400001)(7406005)(82960400001)(66476007)(66556008)(83380400001)(66946007)(316002)(4326008)(921005)(5660300002)(52116002)(478600001)(6486002)(6506007)(38350700002)(6512007)(38100700002)(26005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zuG15Q7e3ElnC7eEyOuHyHjB9JYN+ErNBCCruAXPbgSBThz/Y5YemdnSPjY2?=
- =?us-ascii?Q?4285oKRkWTTNfYd9kMOS1p8sCn4tnX1Y62PRp2e6aIOnfaoCqVsFRDk6lzyN?=
- =?us-ascii?Q?uyEvqd2xxh8v7rYF3C1PrDyYIR8abSBT92kxXEJL23ciDp59wrTG9fIQsyuJ?=
- =?us-ascii?Q?TEM9Hz0lycQI/0VwiXmxAWZ7Ex9vx1buRRuaswE9+3kjGNTebaS/qmeksFjP?=
- =?us-ascii?Q?Nrx74ketG0zIR+8iZCUGfG8OTW7n1K5tlQUxDwryiUyvbOYOlImJPQx8tKoz?=
- =?us-ascii?Q?St9gZLXHJRPMDAim5+7UMFDCsoexkOdc+m1zVLsN2LKKwK3DB6CAj7u9sabg?=
- =?us-ascii?Q?lMyYblSAtAgeMB+0wS8Kobj1DvoQmkI6o9aAV65hZrxEVIMVRmHi75YvySGA?=
- =?us-ascii?Q?G9iZXYkNjoqSvy0oKt5fXy68qrmyi/uHYItx1HS2ANbfxJtdSg/vsD+sPd5h?=
- =?us-ascii?Q?dd9z+H7RyEMWa1OI71TnMSwT9kNnBMLp+Vyl1fJHbQj/amXXd68W4iIO6lyn?=
- =?us-ascii?Q?5ggp5+TGXZYNrR/KfK4K4fXsFR5CZM2J9a3iI4mtFKZF5TeI3ti+b7USoB47?=
- =?us-ascii?Q?OyvIL6MsOU/0S9DtZpipqOQeTtUzbTOGa/ZPZzEFEtVzTN8Zgoiv8OTEkf9w?=
- =?us-ascii?Q?9ucxLOLDWzkjP/65FjMBdqTMGsAP12YkjqaJgGKxdE8rFfYwl/mPtX+HoAvI?=
- =?us-ascii?Q?jX4HRXtg87TFClQmE4LcoHqf6qMkrkur/nG7uJnnXTAW9CjJhtoN/PpQun0z?=
- =?us-ascii?Q?50UPWC4qWp+noRBNyxiKQ6lrhuuyW87QskdUtMuZPxSu8x8j5IR4S+JkDZdB?=
- =?us-ascii?Q?cS8HSLOlzZox52Tez2CSw2GcCF/LlX4PRF+aANtPSVNiNvqTXNzJBhWm1paN?=
- =?us-ascii?Q?+ftXSmTabauBdzaF7oN72m1YGFo2sfRC1+brI+k+1WQL4Mz6LxZImz02V/UJ?=
- =?us-ascii?Q?KEBLfw/7uWVEEd03c9fxsAeFYRDPTM2yqsStefYOqZsWo/edsEJ76w0eB4v2?=
- =?us-ascii?Q?azBAuQmosmCwq3Rmn7PIrj42YhTGjEEmqqoMz83AXv8c9KFzSn01R1OpljzQ?=
- =?us-ascii?Q?HmRbeNXmM33A/1s1D8A6cOVSxrV+FlAPtlX+w+zhlKhbPJ2raSX4PzwrEjKV?=
- =?us-ascii?Q?YWlnbvs56stlXFr+8F6lEC2cbNNUVv04k5UrZExL1ISOizo7836Rl8p9Bx/T?=
- =?us-ascii?Q?4s8ZXNjIIvvlrUlTM0+Uq7Om58PN8PZVoYrZLER4RLZJB4KVBqusEBxje6M7?=
- =?us-ascii?Q?I4mnGNktI/7YuT35pStXLZL/2goaWLNQBoUKQYKdKZE+PfDFFmuL4X3TL540?=
- =?us-ascii?Q?mAdyKfeOO+haexbRl2doOw8+4GcfxhweaBHUcKeoyN8HanES7m4WoQEUVU9d?=
- =?us-ascii?Q?yfk8NmpYQJLAR8C2xHKMjjvSFhHik65NwTFGM8ORwQbA7uxIEnIDzz5/xd7w?=
- =?us-ascii?Q?ppPJAPA+fzjaX60JaYbc1GOPmg2vJ9DJJiwHcXEtJLdbGfWdDziDg3ra/z44?=
- =?us-ascii?Q?8eGlvTVLLHNJfRhXjOJUQEkZwWCQYAvt/7VNW2xMT4sjr7qkJc2Xodh1cn9J?=
- =?us-ascii?Q?R27AgMEwEAmYKDKMTGmPJQurJgP8b01ORBhJVfvvSrpz7DBL7xKO6MUxDn6f?=
- =?us-ascii?Q?yw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?egjLJMd1g7mee5I+0sqB+nAezJkeAzNULiYxv36vncLAbv8gt7HaJ3+V8/J7?=
+ =?us-ascii?Q?eA+UOHvdIq1h8dVQ1xcDIFSJYSvFsb9OBPRY8nTdZ48zYFaEmBegYetaND5F?=
+ =?us-ascii?Q?i6Y4yHdCitWeQU4AhgKZ4rzzVbqPI+Hh1nFncfXcJRuquXPvUiT4cJgd6Rkh?=
+ =?us-ascii?Q?C8WzZo6hssIRX6rruLSsX7B8o7l9Y0ZwuR9Gk3dzdMfr5WIF9ACkwb7f8XkN?=
+ =?us-ascii?Q?ucy1pEsnn+hoOqP9O8954XvXElqFnyuMusmT9gmKDgaVjre3fvOxf/8lfXLX?=
+ =?us-ascii?Q?4xEmxzCPnFwlEL/9u22uCreIqUA3EoAQZXTI/4LhBArnP0RoWJ4/cBTDTE9j?=
+ =?us-ascii?Q?CqcjMX+oa8vaJZcf0sG9xYja0HGRMJBBfBMIf1v4Vt0fK/UUwyCb1xXWFCt9?=
+ =?us-ascii?Q?G2/m8e/RY0UoZwVevoG+DR2xfSDhlUnHFsr87ydWaTZosRz/FKNxMjdEbp6y?=
+ =?us-ascii?Q?1T729QB1Tsv1g7r9wif+XV41mqN5Lx/tySgdAcuEkrSr3LCvNtXJJ+d1u9uT?=
+ =?us-ascii?Q?Nsb0vuh6nfJvh/X2t0DVZ5v2g63KtNE+Je1VuEbGCkcFIVUTa94Jdarhid4q?=
+ =?us-ascii?Q?FfDyqP0dDLskLnmrLu8HZQxugXLQakwU8pMKbKK7T0p9smPnfCTIxvYuhvnY?=
+ =?us-ascii?Q?Iuxf6GOxGVFDqfuUFd8B/c0MpwmkMdkqTkG9IO8Qz1RZct/7eiLebmmWNjLm?=
+ =?us-ascii?Q?AL5WHmC8lnNXs58F5ik2LTBQLN0jDwns/yzFDHoYgXOAuchKTKr5LalRcDmY?=
+ =?us-ascii?Q?TQl/bpKFbm1d00aji7BaHMvfYjxfXQsmARCzFA/z8Oa38tRA7y3I0BmZUkXz?=
+ =?us-ascii?Q?2MPvLxRns4F/3F5gLi9U80MuVykhR9ZA0KFv5s11EHBadReSMwmVBg5QF/hS?=
+ =?us-ascii?Q?J0aBnePekH0MonW3S8u4l4gAuIpmwEL8iy6yfe+ZiGwWUJcQxlu9tY9dy6yg?=
+ =?us-ascii?Q?RkYQ2DmrhK2W7xQepi3xUOKulGZNr5b2kYeMH6lom4ynQLvAhUJLBQjfYhOX?=
+ =?us-ascii?Q?56cxmH7AjimL34drJ08GNbnYT51N7CYV/Gq+F2lcNDF6rX3JLnhv64ix87kq?=
+ =?us-ascii?Q?fOzZWp84OK3pPGx2CbOb3l+jc00GFJzSUqA/BTrXxY7axWm99tM88ckO03L3?=
+ =?us-ascii?Q?SOwhFu5B6VIRaNXYV4Lcx1GdmVew+ja1gi76HWMNyg7ARiGMcK2HJ0ApMiPc?=
+ =?us-ascii?Q?Q2IY4jFZlww8kISemi4jxBkF+BoSJ65R/l50x0QJlX3xYbDvwd+skWR0bkit?=
+ =?us-ascii?Q?2Rl0ci1lSsdeDsymMfb+/wk/zCzjXaxAE0b8CM36uKbpG38LZMS+yJo1hLd6?=
+ =?us-ascii?Q?3jX1N22bdR78e9WEgyKhXeDmJ4Aa7CtuBr0XUM5FnVlO4lEnsoh8j79iMHty?=
+ =?us-ascii?Q?9eLG7uEEQrc64HPFOarhu6hE/pmFEwF2hSnHhLWErBRUOAbBHcBLWcvMMtfG?=
+ =?us-ascii?Q?FRkieSdTTUpgTf+BlvtbdVgVzs/FjY8AhkOy3rT2IJWHrLm5WAGYuJmjBpfV?=
+ =?us-ascii?Q?LhaeBKMoydGr0KlQ1bPTdcEawfvxyT145aXZTO0A2wBKO0ixPp8N1KQVWkiq?=
+ =?us-ascii?Q?APShXWAlrPzINkCo4YY0BCT99GfgzuJmy+euPcMRSW84lR4UK7OK5na7glJ9?=
+ =?us-ascii?Q?WA=3D=3D?=
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a6664ff8-452e-4284-9c84-08dad415d41a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e8f2460-dd23-4a2e-f4a4-08dad415d563
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2022 03:32:24.6761
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2022 03:32:26.8658
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: L6dlaqNRUaFGQB5dx03gnBWUL5XTu4Uzt/57baOAEU3/ntRbtnVG7b00AmKYaqkJITgUNhv1ELSkZSLo0f4gTg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB1316
+X-MS-Exchange-CrossTenant-UserPrincipalName: yFH4xa6ZoERTKuHzhP0VC2pOLXfHN63fLgbI+4bKQG+T5hMKAhD1AoNLLJxQjlMLt8JXld39RnsZ3t+/apod8A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1340
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
@@ -129,226 +129,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With changes to how Hyper-V guest VMs flip memory between private
-(encrypted) and shared (decrypted), creating a second kernel virtual
-mapping for shared memory is no longer necessary.  Everything needed
-for the transition to shared is handled by set_memory_decrypted().
+With the vTOM bit now treated as a protection flag and not part of
+the physical address, avoid remapping physical addresses with vTOM set
+since technically such addresses aren't valid.  Use ioremap_cache()
+instead of memremap() to ensure that the mapping provides decrypted
+access, which will correctly set the vTOM bit as a protection flag.
 
-As such, remove the code to create and manage the second
-mapping for the pre-allocated send and recv buffers.  This mapping
-is the last user of hv_map_memory()/hv_unmap_memory(), so delete
-these functions as well.  Finally, hv_map_memory() is the last
-user of vmap_pfn() in Hyper-V guest code, so remove the Kconfig
-selection of VMAP_PFN.
+While this change is not required for correctness with the current
+implementation of memremap(), for general code hygiene it's better to
+not depend on the mapping functions doing something reasonable with
+a physical address that is out-of-range.
+
+While here, fix typos in two error messages.
 
 Signed-off-by: Michael Kelley <mikelley@microsoft.com>
 Reviewed-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
- arch/x86/hyperv/ivm.c           | 28 ------------------------
- drivers/hv/Kconfig              |  1 -
- drivers/hv/hv_common.c          | 11 ----------
- drivers/net/hyperv/hyperv_net.h |  2 --
- drivers/net/hyperv/netvsc.c     | 48 ++---------------------------------------
- include/asm-generic/mshyperv.h  |  2 --
- 6 files changed, 2 insertions(+), 90 deletions(-)
+ arch/x86/hyperv/hv_init.c |  7 +++++--
+ drivers/hv/hv.c           | 23 +++++++++++++----------
+ 2 files changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
-index 8e2717d..83b71bd 100644
---- a/arch/x86/hyperv/ivm.c
-+++ b/arch/x86/hyperv/ivm.c
-@@ -356,34 +356,6 @@ void __init hv_vtom_init(void)
+diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+index 6dbfb26..9070a78 100644
+--- a/arch/x86/hyperv/hv_init.c
++++ b/arch/x86/hyperv/hv_init.c
+@@ -63,7 +63,10 @@ static int hyperv_init_ghcb(void)
+ 	 * memory boundary and map it here.
+ 	 */
+ 	rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
+-	ghcb_va = memremap(ghcb_gpa, HV_HYP_PAGE_SIZE, MEMREMAP_WB);
++
++	/* Mask out vTOM bit. ioremap_cache() maps decrypted */
++	ghcb_gpa &= ~ms_hyperv.shared_gpa_boundary;
++	ghcb_va = (void *)ioremap_cache(ghcb_gpa, HV_HYP_PAGE_SIZE);
+ 	if (!ghcb_va)
+ 		return -ENOMEM;
  
- #endif /* CONFIG_AMD_MEM_ENCRYPT */
- 
--/*
-- * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
-- */
--void *hv_map_memory(void *addr, unsigned long size)
--{
--	unsigned long *pfns = kcalloc(size / PAGE_SIZE,
--				      sizeof(unsigned long), GFP_KERNEL);
--	void *vaddr;
--	int i;
--
--	if (!pfns)
--		return NULL;
--
--	for (i = 0; i < size / PAGE_SIZE; i++)
--		pfns[i] = vmalloc_to_pfn(addr + i * PAGE_SIZE) +
--			(ms_hyperv.shared_gpa_boundary >> PAGE_SHIFT);
--
--	vaddr = vmap_pfn(pfns, size / PAGE_SIZE, pgprot_decrypted(PAGE_KERNEL_NOENC));
--	kfree(pfns);
--
--	return vaddr;
--}
--
--void hv_unmap_memory(void *addr)
--{
--	vunmap(addr);
--}
--
- enum hv_isolation_type hv_get_isolation_type(void)
- {
- 	if (!(ms_hyperv.priv_high & HV_ISOLATION))
-diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
-index 0747a8f..9a074cb 100644
---- a/drivers/hv/Kconfig
-+++ b/drivers/hv/Kconfig
-@@ -8,7 +8,6 @@ config HYPERV
- 		|| (ARM64 && !CPU_BIG_ENDIAN))
- 	select PARAVIRT
- 	select X86_HV_CALLBACK_VECTOR if X86
--	select VMAP_PFN
- 	help
- 	  Select this option to run Linux as a Hyper-V client operating
- 	  system.
-diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-index ae68298..566735f 100644
---- a/drivers/hv/hv_common.c
-+++ b/drivers/hv/hv_common.c
-@@ -308,14 +308,3 @@ u64 __weak hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_s
- 	return HV_STATUS_INVALID_PARAMETER;
- }
- EXPORT_SYMBOL_GPL(hv_ghcb_hypercall);
--
--void __weak *hv_map_memory(void *addr, unsigned long size)
--{
--	return NULL;
--}
--EXPORT_SYMBOL_GPL(hv_map_memory);
--
--void __weak hv_unmap_memory(void *addr)
--{
--}
--EXPORT_SYMBOL_GPL(hv_unmap_memory);
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index dd5919e..33d51e3 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -1139,7 +1139,6 @@ struct netvsc_device {
- 
- 	/* Receive buffer allocated by us but manages by NetVSP */
- 	void *recv_buf;
--	void *recv_original_buf;
- 	u32 recv_buf_size; /* allocated bytes */
- 	struct vmbus_gpadl recv_buf_gpadl_handle;
- 	u32 recv_section_cnt;
-@@ -1148,7 +1147,6 @@ struct netvsc_device {
- 
- 	/* Send buffer allocated by us */
- 	void *send_buf;
--	void *send_original_buf;
- 	u32 send_buf_size;
- 	struct vmbus_gpadl send_buf_gpadl_handle;
- 	u32 send_section_cnt;
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 9352dad..661bbe6 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -154,17 +154,8 @@ static void free_netvsc_device(struct rcu_head *head)
- 	int i;
- 
- 	kfree(nvdev->extension);
--
--	if (nvdev->recv_original_buf)
--		vfree(nvdev->recv_original_buf);
--	else
--		vfree(nvdev->recv_buf);
--
--	if (nvdev->send_original_buf)
--		vfree(nvdev->send_original_buf);
--	else
--		vfree(nvdev->send_buf);
--
-+	vfree(nvdev->recv_buf);
-+	vfree(nvdev->send_buf);
- 	bitmap_free(nvdev->send_section_map);
- 
- 	for (i = 0; i < VRSS_CHANNEL_MAX; i++) {
-@@ -347,7 +338,6 @@ static int netvsc_init_buf(struct hv_device *device,
- 	struct nvsp_message *init_packet;
- 	unsigned int buf_size;
- 	int i, ret = 0;
--	void *vaddr;
- 
- 	/* Get receive buffer area. */
- 	buf_size = device_info->recv_sections * device_info->recv_section_size;
-@@ -383,17 +373,6 @@ static int netvsc_init_buf(struct hv_device *device,
- 		goto cleanup;
+@@ -217,7 +220,7 @@ static int hv_cpu_die(unsigned int cpu)
+ 	if (hv_ghcb_pg) {
+ 		ghcb_va = (void **)this_cpu_ptr(hv_ghcb_pg);
+ 		if (*ghcb_va)
+-			memunmap(*ghcb_va);
++			iounmap(*ghcb_va);
+ 		*ghcb_va = NULL;
  	}
  
--	if (hv_isolation_type_snp()) {
--		vaddr = hv_map_memory(net_device->recv_buf, buf_size);
--		if (!vaddr) {
--			ret = -ENOMEM;
--			goto cleanup;
--		}
--
--		net_device->recv_original_buf = net_device->recv_buf;
--		net_device->recv_buf = vaddr;
--	}
--
- 	/* Notify the NetVsp of the gpadl handle */
- 	init_packet = &net_device->channel_init_pkt;
- 	memset(init_packet, 0, sizeof(struct nvsp_message));
-@@ -497,17 +476,6 @@ static int netvsc_init_buf(struct hv_device *device,
- 		goto cleanup;
- 	}
+diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
+index 4d6480d..410e6c4 100644
+--- a/drivers/hv/hv.c
++++ b/drivers/hv/hv.c
+@@ -217,11 +217,13 @@ void hv_synic_enable_regs(unsigned int cpu)
+ 	simp.simp_enabled = 1;
  
--	if (hv_isolation_type_snp()) {
--		vaddr = hv_map_memory(net_device->send_buf, buf_size);
--		if (!vaddr) {
--			ret = -ENOMEM;
--			goto cleanup;
--		}
--
--		net_device->send_original_buf = net_device->send_buf;
--		net_device->send_buf = vaddr;
--	}
--
- 	/* Notify the NetVsp of the gpadl handle */
- 	init_packet = &net_device->channel_init_pkt;
- 	memset(init_packet, 0, sizeof(struct nvsp_message));
-@@ -762,12 +730,6 @@ void netvsc_device_remove(struct hv_device *device)
- 		netvsc_teardown_send_gpadl(device, net_device, ndev);
- 	}
+ 	if (hv_isolation_type_snp()) {
++		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
++		u64 base = (simp.base_simp_gpa << HV_HYP_PAGE_SHIFT) &
++				~ms_hyperv.shared_gpa_boundary;
+ 		hv_cpu->synic_message_page
+-			= memremap(simp.base_simp_gpa << HV_HYP_PAGE_SHIFT,
+-				   HV_HYP_PAGE_SIZE, MEMREMAP_WB);
++			= (void *)ioremap_cache(base, HV_HYP_PAGE_SIZE);
+ 		if (!hv_cpu->synic_message_page)
+-			pr_err("Fail to map syinc message page.\n");
++			pr_err("Fail to map synic message page.\n");
+ 	} else {
+ 		simp.base_simp_gpa = virt_to_phys(hv_cpu->synic_message_page)
+ 			>> HV_HYP_PAGE_SHIFT;
+@@ -234,12 +236,13 @@ void hv_synic_enable_regs(unsigned int cpu)
+ 	siefp.siefp_enabled = 1;
  
--	if (net_device->recv_original_buf)
--		hv_unmap_memory(net_device->recv_buf);
+ 	if (hv_isolation_type_snp()) {
+-		hv_cpu->synic_event_page =
+-			memremap(siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT,
+-				 HV_HYP_PAGE_SIZE, MEMREMAP_WB);
 -
--	if (net_device->send_original_buf)
--		hv_unmap_memory(net_device->send_buf);
--
- 	/* Release all resources */
- 	free_netvsc_device_rcu(net_device);
- }
-@@ -1831,12 +1793,6 @@ struct netvsc_device *netvsc_device_add(struct hv_device *device,
- 	netif_napi_del(&net_device->chan_table[0].napi);
++		/* Mask out vTOM bit. ioremap_cache() maps decrypted */
++		u64 base = (siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT) &
++				~ms_hyperv.shared_gpa_boundary;
++		hv_cpu->synic_event_page
++			= (void *)ioremap_cache(base, HV_HYP_PAGE_SIZE);
+ 		if (!hv_cpu->synic_event_page)
+-			pr_err("Fail to map syinc event page.\n");
++			pr_err("Fail to map synic event page.\n");
+ 	} else {
+ 		siefp.base_siefp_gpa = virt_to_phys(hv_cpu->synic_event_page)
+ 			>> HV_HYP_PAGE_SHIFT;
+@@ -316,7 +319,7 @@ void hv_synic_disable_regs(unsigned int cpu)
+ 	 */
+ 	simp.simp_enabled = 0;
+ 	if (hv_isolation_type_snp())
+-		memunmap(hv_cpu->synic_message_page);
++		iounmap(hv_cpu->synic_message_page);
+ 	else
+ 		simp.base_simp_gpa = 0;
  
- cleanup2:
--	if (net_device->recv_original_buf)
--		hv_unmap_memory(net_device->recv_buf);
--
--	if (net_device->send_original_buf)
--		hv_unmap_memory(net_device->send_buf);
--
- 	free_netvsc_device(&net_device->rcu);
+@@ -326,7 +329,7 @@ void hv_synic_disable_regs(unsigned int cpu)
+ 	siefp.siefp_enabled = 0;
  
- 	return ERR_PTR(ret);
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index bfb9eb9..6fabc4a 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -267,8 +267,6 @@ static inline int cpumask_to_vpset_noself(struct hv_vpset *vpset,
- void hyperv_cleanup(void);
- bool hv_query_ext_cap(u64 cap_query);
- void hv_setup_dma_ops(struct device *dev, bool coherent);
--void *hv_map_memory(void *addr, unsigned long size);
--void hv_unmap_memory(void *addr);
- #else /* CONFIG_HYPERV */
- static inline bool hv_is_hyperv_initialized(void) { return false; }
- static inline bool hv_is_hibernation_supported(void) { return false; }
+ 	if (hv_isolation_type_snp())
+-		memunmap(hv_cpu->synic_event_page);
++		iounmap(hv_cpu->synic_event_page);
+ 	else
+ 		siefp.base_siefp_gpa = 0;
+ 
 -- 
 1.8.3.1
 
