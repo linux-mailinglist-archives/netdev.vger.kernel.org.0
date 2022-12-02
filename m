@@ -2,129 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ADF9641096
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 23:28:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEF766410C9
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 23:44:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234714AbiLBW2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 17:28:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51368 "EHLO
+        id S234318AbiLBWoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 17:44:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234409AbiLBW2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 17:28:00 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DAC37FBC
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 14:27:58 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id jl24so5881056plb.8
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 14:27:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ALZWGLHwa13YfXZGkxW0FB63ANWeHG5fPT+X9QnIXNE=;
-        b=X3/Ygkl9QthpO86CXg54X6whNZrFQqYUC0a1gJ7z1caR4J8jEDl6DfVlTLaBNivhcY
-         NiphJrlOXZlUsJ+SpV9Zi/OaCqZQmF+w8BKtnwGuplrgBPudjQNAGaFRELzlURBACYjN
-         fvskVx3RWz/t+JrUbcEZFBXzzW/hbUS1lG/vc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ALZWGLHwa13YfXZGkxW0FB63ANWeHG5fPT+X9QnIXNE=;
-        b=F3RWdZ3eJl86/y7AmXbrmp6t5QeVQgv3zKjem5yHmJh0+31ve1O6RiseC61RrTfSKS
-         6EPEJmvRUPUgrxezFcfy5i9b6QzSyf4C+aFq6At8UiUMX7E+DVibaWMbWCz7HJp/QE3C
-         DGS1Ftk5LqFVYPQr3UA5YBoNqM9Yet8ymtBTI49Z65LddgiCV/MnDJvoU/rCtxQcdild
-         tBtIobS6Y6fNVMh4eRpvmlruy3VboQdGWmW8UepORwBpf5Zj8li6jmngIRtRil3Tox5F
-         PpkKPEYHqAYKcDg2YMvu0mWgZh2rfLYm938PfooDRs7HbIvDhw7v6gk4PY5KJmHy62v/
-         Dd6w==
-X-Gm-Message-State: ANoB5plyUj6//wgliF9RLT6XefCcVoC3Ia1jy6N7ou80pfGNWbrpZDBe
-        bAwsVWsivrcdC4uaGLyLHAxjbg==
-X-Google-Smtp-Source: AA0mqf5jLuXI/3izYGoUxy610VM/+FmgD12XJpKjAnMQ9yTLUWnTyNdgZ4kJJE+Exwk0YwLhcYT/sQ==
-X-Received: by 2002:a17:90b:3608:b0:219:6b1b:63d8 with SMTP id ml8-20020a17090b360800b002196b1b63d8mr14207707pjb.143.1670020078378;
-        Fri, 02 Dec 2022 14:27:58 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id x22-20020a170902821600b00189ac5a2340sm5734186pln.124.2022.12.02.14.27.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Dec 2022 14:27:57 -0800 (PST)
-From:   coverity-bot <keescook@chromium.org>
-X-Google-Original-From: coverity-bot <keescook+coverity-bot@chromium.org>
-Date:   Fri, 2 Dec 2022 14:27:57 -0800
-To:     Shayne Chen <shayne.chen@mediatek.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        linux-wireless@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        StanleyYP Wang <StanleyYP.Wang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Peter Chiu <chui-hao.chiu@mediatek.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Money Wang <Money.Wang@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        Howard Hsu <howard-yh.hsu@mediatek.com>,
-        linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
-        "David S. Miller" <davem@davemloft.net>,
-        Evelyn Tsai <evelyn.tsai@mediatek.com>,
-        linux-kernel@vger.kernel.org,
-        MeiChia Chiu <meichia.chiu@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Bo Jiao <Bo.Jiao@mediatek.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Sujuan Chen <sujuan.chen@mediatek.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-next@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Coverity: mt7996_mcu_ie_countdown(): Insecure data handling
-Message-ID: <202212021427.3A86EE0@keescook>
+        with ESMTP id S234159AbiLBWn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 17:43:59 -0500
+Received: from forward500p.mail.yandex.net (forward500p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:110])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61CE2F81AF
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 14:43:58 -0800 (PST)
+Received: from vla1-62318bfe5573.qloud-c.yandex.net (vla1-62318bfe5573.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:3819:0:640:6231:8bfe])
+        by forward500p.mail.yandex.net (Yandex) with ESMTP id CDEF4F010D8;
+        Sat,  3 Dec 2022 01:43:54 +0300 (MSK)
+Received: by vla1-62318bfe5573.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id rhct6XQYASw1-FGfs8Fwj;
+        Sat, 03 Dec 2022 01:43:54 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1670021034;
+        bh=ukc1ERIAmm7lad6hTl+ahMtA50A0ifEQElSJujT3wEY=;
+        h=In-Reply-To:From:Date:References:To:Subject:Message-ID;
+        b=vp0V02QHjsM7du86qBee4Cp+bJ1uCbIoNfff1hZEJqow28TUuQGYgUwAh5UrS0kTX
+         +0mhSOajqN1Z70HqQN8+0b7jW3Gd2X9Wl8krDvGPYoHUxH0uNsQJlOcka8fuWpe8k/
+         li4jLtSKGmDzzoPdrPOqD7eTH38C9Y035Q95hRjE=
+Authentication-Results: vla1-62318bfe5573.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
+Message-ID: <b7172d71-5f64-104e-48cc-3e6b07ba75ac@ya.ru>
+Date:   Sat, 3 Dec 2022 01:43:53 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net v2] unix: Fix race in SOCK_SEQPACKET's
+ unix_dgram_sendmsg()
+To:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+References: <bd4d533b-15d2-6c0a-7667-70fd95dbea20@ya.ru>
+ <7f1277b54a76280cfdaa25d0765c825d665146b9.camel@redhat.com>
+Content-Language: en-US
+From:   Kirill Tkhai <tkhai@ya.ru>
+In-Reply-To: <7f1277b54a76280cfdaa25d0765c825d665146b9.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On 01.12.2022 12:30, Paolo Abeni wrote:
+> On Sun, 2022-11-27 at 01:46 +0300, Kirill Tkhai wrote:
+>> There is a race resulting in alive SOCK_SEQPACKET socket
+>> may change its state from TCP_ESTABLISHED to TCP_CLOSE:
+>>
+>> unix_release_sock(peer)                  unix_dgram_sendmsg(sk)
+>>   sock_orphan(peer)
+>>     sock_set_flag(peer, SOCK_DEAD)
+>>                                            sock_alloc_send_pskb()
+>>                                              if !(sk->sk_shutdown & SEND_SHUTDOWN)
+>>                                                OK
+>>                                            if sock_flag(peer, SOCK_DEAD)
+>>                                              sk->sk_state = TCP_CLOSE
+>>   sk->sk_shutdown = SHUTDOWN_MASK
+>>
+>>
+>> After that socket sk remains almost normal: it is able to connect, listen, accept
+>> and recvmsg, while it can't sendmsg.
+>>
+>> Since this is the only possibility for alive SOCK_SEQPACKET to change
+>> the state in such way, we should better fix this strange and potentially
+>> danger corner case.
+>>
+>> Also, move TCP_CLOSE assignment for SOCK_DGRAM sockets under state lock
+>> to fix race with unix_dgram_connect():
+>>
+>> unix_dgram_connect(other)            unix_dgram_sendmsg(sk)
+>>                                        unix_peer(sk) = NULL
+>>                                        unix_state_unlock(sk)
+>>   unix_state_double_lock(sk, other)
+>>   sk->sk_state  = TCP_ESTABLISHED
+>>   unix_peer(sk) = other
+>>   unix_state_double_unlock(sk, other)
+>>                                        sk->sk_state  = TCP_CLOSED
+>>
+>> This patch fixes both of these races.
+>>
+>> Fixes: 83301b5367a9 ("af_unix: Set TCP_ESTABLISHED for datagram sockets too")
+> 
+> I don't think this commmit introduces the issues, both behavior
+> described above appear to be present even before?
 
-This is an experimental semi-automated report about issues detected by
-Coverity from a scan of next-20221202 as part of the linux-next scan project:
-https://scan.coverity.com/projects/linux-next-weekly-scan
+1)Hm, I pointed to the commit suggested by Kuniyuki without checking it.
 
-You're getting this email because you were associated with the identified
-lines of code (noted below) that were touched by commits:
+Possible, the real problem commit is dc56ad7028c5 "af_unix: fix potential NULL deref in unix_dgram_connect()",
+since it added TCP_CLOSED assignment to unix_dgram_sendmsg().
 
-  Thu Dec 1 17:29:14 2022 +0100
-    98686cd21624 ("wifi: mt76: mt7996: add driver for MediaTek Wi-Fi 7 (802.11be) devices")
+2)What do you think about initial version of fix?
 
-Coverity reported the following:
+https://patchwork.kernel.org/project/netdevbpf/patch/38a920a7-cfba-7929-886d-c3c6effc0c43@ya.ru/
 
-*** CID 1527797:  Insecure data handling  (TAINTED_SCALAR)
-drivers/net/wireless/mediatek/mt76/mt7996/mcu.c:415 in mt7996_mcu_ie_countdown()
-409     	struct mt76_phy *mphy = &dev->mt76.phy;
-410     	struct mt7996_mcu_rxd *rxd = (struct mt7996_mcu_rxd *)skb->data;
-411     	const char *data = (char *)&rxd[1], *tail;
-412     	struct header *hdr = (struct header *)data;
-413     	struct tlv *tlv = (struct tlv *)(data + 4);
-414
-vvv     CID 1527797:  Insecure data handling  (TAINTED_SCALAR)
-vvv     Using tainted variable "hdr->band" as an index into an array "(*dev).mt76.phys".
-415     	if (hdr->band && dev->mt76.phys[hdr->band])
-416     		mphy = dev->mt76.phys[hdr->band];
-417
-418     	tail = skb->data + le16_to_cpu(rxd->len);
-419     	while (data + sizeof(struct tlv) < tail && le16_to_cpu(tlv->len)) {
-420     		switch (le16_to_cpu(tlv->tag)) {
+Despite there are some arguments, I'm not still sure that v2 is better.
 
-If this is a false positive, please let us know so we can mark it as
-such, or teach the Coverity rules to be smarter. If not, please make
-sure fixes get into linux-next. :) For patches fixing this, please
-include these lines (but double-check the "Fixes" first):
-
-Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-Addresses-Coverity-ID: 1527797 ("Insecure data handling")
-Fixes: 98686cd21624 ("wifi: mt76: mt7996: add driver for MediaTek Wi-Fi 7 (802.11be) devices")
-
-Thanks for your attention!
-
--- 
-Coverity-bot
+Thanks,
+Kirill
