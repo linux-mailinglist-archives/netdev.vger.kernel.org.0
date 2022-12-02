@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2500F63FDB7
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 02:38:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8654D63FDC0
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 02:40:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbiLBBiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 20:38:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56500 "EHLO
+        id S231613AbiLBBkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 20:40:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiLBBiM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 20:38:12 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AE98FD4B
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 17:38:11 -0800 (PST)
-Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NNbCp6DJlzRnsM;
-        Fri,  2 Dec 2022 09:37:26 +0800 (CST)
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
+        with ESMTP id S230185AbiLBBjt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 20:39:49 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B77AA4308;
+        Thu,  1 Dec 2022 17:39:48 -0800 (PST)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NNbBY1b9zzJp4h;
+        Fri,  2 Dec 2022 09:36:21 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 2 Dec 2022 09:38:09 +0800
-Subject: Re: [PATCH net v2] net: mdiobus: fix double put fwnode in the error
- path
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <hkallweit1@gmail.com>,
-        <linux@armlinux.org.uk>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <ioana.ciornei@nxp.com>, <calvin.johnson@oss.nxp.com>,
-        <grant.likely@arm.com>, <zengheng4@huawei.com>
-References: <20221201033838.1938765-1-yangyingliang@huawei.com>
- <Y4jJQ3iKkico/xFX@lunn.ch>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <0d8d05e1-5145-e208-920f-858a86833ee0@huawei.com>
-Date:   Fri, 2 Dec 2022 09:38:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ 15.1.2375.31; Fri, 2 Dec 2022 09:39:45 +0800
+Subject: Re: [PATCH net 2/2] octeontx2-pf: Fix a potential double free in
+ otx2_sq_free_sqbs()
+To:     Paolo Abeni <pabeni@redhat.com>, <sgoutham@marvell.com>,
+        <gakula@marvell.com>, <sbhatta@marvell.com>, <hkelam@marvell.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>
+References: <cover.1669361183.git.william.xuanziyang@huawei.com>
+ <047b210eb3b3a2e26703d8b0570a0a017789c169.1669361183.git.william.xuanziyang@huawei.com>
+ <a3c723c5a27a75924f9d2f4ecabe26c04add08f3.camel@redhat.com>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <1a39ec51-0879-a17f-7f4c-4ca0edbeb2a7@huawei.com>
+Date:   Fri, 2 Dec 2022 09:39:45 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <Y4jJQ3iKkico/xFX@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <a3c723c5a27a75924f9d2f4ecabe26c04add08f3.camel@redhat.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500006.china.huawei.com (7.192.105.130)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -54,61 +54,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2022/12/1 23:33, Andrew Lunn wrote:
-> On Thu, Dec 01, 2022 at 11:38:38AM +0800, Yang Yingliang wrote:
->> If phy_device_register() or fwnode_mdiobus_phy_device_register()
->> fail, phy_device_free() is called, the device refcount is decreased
->> to 0, then fwnode_handle_put() will be called in phy_device_release(),
->> but in the error path, fwnode_handle_put() has already been called,
->> so set fwnode to NULL after fwnode_handle_put() in the error path to
->> avoid double put.
+> Hello,
+> 
+> On Fri, 2022-11-25 at 15:45 +0800, Ziyang Xuan wrote:
+>> otx2_sq_free_sqbs() will be called twice when goto "err_free_nix_queues"
+>> label in otx2_init_hw_resources(). The first calling is within
+>> otx2_free_sq_res() at "err_free_nix_queues" label, and the second calling
+>> is at later "err_free_sq_ptrs" label.
 >>
->> Fixes: cdde1560118f ("net: mdiobus: fix unbalanced node reference count")
->> Reported-by: Zeng Heng <zengheng4@huawei.com>
->> Tested-by: Zeng Heng <zengheng4@huawei.com>
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->> v1 -> v2:
->>    Don't remove fwnode_handle_put() in the error path,
->>    set fwnode to NULL avoid double put.
->> ---
->>   drivers/net/mdio/fwnode_mdio.c | 2 ++
->>   1 file changed, 2 insertions(+)
+>> In otx2_sq_free_sqbs(), If sq->sqb_ptrs[i] is not 0, the memory page it
+>> points to will be freed, and sq->sqb_ptrs[i] do not be assigned 0 after
+>> memory page be freed. If otx2_sq_free_sqbs() is called twice, the memory
+>> page pointed by sq->sqb_ptrs[i] will be freeed twice. To fix the bug,
+>> assign 0 to sq->sqb_ptrs[i] after memory page be freed.
 >>
->> diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
->> index eb344f6d4a7b..9df618577712 100644
->> --- a/drivers/net/mdio/fwnode_mdio.c
->> +++ b/drivers/net/mdio/fwnode_mdio.c
->> @@ -99,6 +99,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
->>   	rc = phy_device_register(phy);
->>   	if (rc) {
->>   		fwnode_handle_put(child);
->> +		device_set_node(&phy->mdio.dev, NULL);
->>   		return rc;
->>   	}
-> This looks better, it is balanced. But i would argue the order is
-> wrong.
->
-> 	fwnode_handle_get(child);
-> 	device_set_node(&phy->mdio.dev, child);
->
-> 	/* All data is now stored in the phy struct;
-> 	 * register it
-> 	 */
-> 	rc = phy_device_register(phy);
-> 	if (rc) {
-> 		fwnode_handle_put(child);
-> 		return rc;
-> 	}
->
-> In general you undo stuff in the opposite order to which you did
-> it. So device_set_node() first, then fwnode_handle_put(). Otherwise
-> you have a potential race condition.
-OK, I will change the order in v3.
+>> Fixes: caa2da34fd25 ("octeontx2-pf: Initialize and config queues")
+>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+>> ---
+>>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+>> index 9e10e7471b88..5a25fe51d102 100644
+>> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+>> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+>> @@ -1146,6 +1146,7 @@ void otx2_sq_free_sqbs(struct otx2_nic *pfvf)
+>>  					     DMA_FROM_DEVICE,
+>>  					     DMA_ATTR_SKIP_CPU_SYNC);
+>>  			put_page(virt_to_page(phys_to_virt(pa)));
+>> +			sq->sqb_ptrs[sqb] = 0;
+> 
+> The above looks not needed...
+>>  		}
+>>  		sq->sqb_count = 0;
+> 
+> ... as this will prevent the next invocation of otx2_sq_free_sqbs()
+> from traversing and freeing any sq->sqb_ptrs[] element.
 
-Thanks,
-Yang
->
->      Andrew
+Yes, you are right. I did pay much attention to sq->sqb_ptrs[],
+and omitted the for loop condition.
+
+Thank you!
+
+> 
+> Cheers,
+> 
+> Paolo
+>>  	}
+> 
+> 
 > .
+> 
