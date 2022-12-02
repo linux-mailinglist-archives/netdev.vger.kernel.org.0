@@ -2,46 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1DCE63FF92
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 05:50:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38D5363FFAF
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 05:59:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231558AbiLBEui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 23:50:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57996 "EHLO
+        id S232390AbiLBE7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 23:59:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230506AbiLBEuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 23:50:37 -0500
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D817CC86B7;
-        Thu,  1 Dec 2022 20:50:35 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VWBVp5d_1669956631;
-Received: from 30.221.147.159(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VWBVp5d_1669956631)
-          by smtp.aliyun-inc.com;
-          Fri, 02 Dec 2022 12:50:33 +0800
-Message-ID: <1b95612c-a38b-90e2-cbe3-211d8129fb9f@linux.alibaba.com>
-Date:   Fri, 2 Dec 2022 12:50:30 +0800
+        with ESMTP id S232299AbiLBE7Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 23:59:16 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4BBCCEE6;
+        Thu,  1 Dec 2022 20:59:13 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NNggn0swqz15N2X;
+        Fri,  2 Dec 2022 12:58:29 +0800 (CST)
+Received: from [10.174.179.191] (10.174.179.191) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 2 Dec 2022 12:59:10 +0800
+Message-ID: <b146653a-4113-ea8f-4204-770c7fb5e1cb@huawei.com>
+Date:   Fri, 2 Dec 2022 12:59:10 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:107.0)
- Gecko/20100101 Thunderbird/107.0
-Subject: Re: [RFC PATCH 0/9] virtio_net: support multi buffer xdp
-From:   Heng Qi <hengqi@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20221122074348.88601-1-hengqi@linux.alibaba.com>
-In-Reply-To: <20221122074348.88601-1-hengqi@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH] wifi: brcmfmac: Fix error return code in
+ brcmf_sdio_download_firmware()
+To:     Arend Van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>
+CC:     <aspriel@gmail.com>, <hante.meuleman@broadcom.com>,
+        <kvalo@kernel.org>, <davem@davemloft.net>,
+        <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
+        <arend@broadcom.com>
+References: <1669716458-15327-1-git-send-email-wangyufen@huawei.com>
+ <CA+8PC_czBYZUsOH7brTh4idjg3ps58PtanqtmTD0mPN3Sp9Xhw@mail.gmail.com>
+ <4e61f6e5-94bd-9e29-d12f-d5928f00c8a8@huawei.com>
+ <5dd42599-ace7-42cb-8b3c-90704d18fc21@broadcom.com>
+ <14e5c329-03c4-e82e-8ae2-97d30d53e4fd@huawei.com>
+ <184cc562ed8.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
+From:   wangyufen <wangyufen@huawei.com>
+In-Reply-To: <184cc562ed8.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.2 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
+X-Originating-IP: [10.174.179.191]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,42 +59,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Jason.
 
-Do you have any comments on this series?
 
-Thanks.
+在 2022/12/1 14:18, Arend Van Spriel 写道:
+> On December 1, 2022 4:01:39 AM wangyufen <wangyufen@huawei.com> wrote:
+> 
+>> 在 2022/11/30 19:19, Arend van Spriel 写道:
+>>> On 11/30/2022 3:00 AM, wangyufen wrote:
+>>>>
+>>>>
+>>>> 在 2022/11/30 1:41, Franky Lin 写道:
+>>>>> On Tue, Nov 29, 2022 at 1:47 AM Wang Yufen <wangyufen@huawei.com> 
+>>>>> wrote:
+>>>>>>
+>>>>>> Fix to return a negative error code -EINVAL instead of 0.
+>>>>>>
+>>>>>> Compile tested only.
+>>>>>>
+>>>>>> Fixes: d380ebc9b6fb ("brcmfmac: rename chip download functions")
+>>>>>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+>>>>>> ---
+>>>>>>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 +
+>>>>>>  1 file changed, 1 insertion(+)
+>>>>>>
+>>>>>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>>>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>>>> index 465d95d..329ec8ac 100644
+>>>>>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>>>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>>>>> @@ -3414,6 +3414,7 @@ static int brcmf_sdio_download_firmware(struct
+>>>>>> brcmf_sdio *bus,
+>>>>>>         /* Take arm out of reset */
+>>>>>>         if (!brcmf_chip_set_active(bus->ci, rstvec)) {
+>>>>>>                 brcmf_err("error getting out of ARM core reset\n");
+>>>>>> +               bcmerror = -EINVAL;
+>>>>>
+>>>>> ENODEV seems more appropriate here.
+>>>>
+>>>> However, if brcmf_chip_set_active()  fails in
+>>>> brcmf_pcie_exit_download_state(), "-EINVAL" is returned.
+>>>> Is it necessary to keep consistent?
+>>>
+>>> If we can not get the ARM on the chip out of reset things will fail soon
+>>> enough further down the road. Anyway, the other function calls return
+>>> -EIO so let's do the same here.
+>>
+>> So -EIO is better?  Anyone else have any other opinions? 😄
+> 
+> Obviously it is no better than -EINVAL when you look at the behavior. It 
+> is just a feeble attempt to be a little bit more consistent. Feel free 
+> to change the return value for brcmf_pcie_exit_download_state() as well.
+> 
+All right, I'll send a v2 and change the error return values on both 
+sides to -EIO.
 
-在 2022/11/22 下午3:43, Heng Qi 写道:
-> Currently, virtio net only supports xdp for single-buffer packets
-> or linearized multi-buffer packets. This patchset supports xdp for
-> multi-buffer packets, then GRO_HW related features can be
-> negotiated, and do not affect the processing of single-buffer xdp.
->
-> In order to build multi-buffer xdp neatly, we integrated the code
-> into virtnet_build_xdp_buff() for xdp. The first buffer is used
-> for prepared xdp buff, and the rest of the buffers are added to
-> its skb_shared_info structure. This structure can also be
-> conveniently converted during XDP_PASS to get the corresponding skb.
->
-> Since virtio net uses comp pages, and bpf_xdp_frags_increase_tail()
-> is based on the assumption of the page pool,
-> (rxq->frag_size - skb_frag_size(frag) - skb_frag_off(frag))
-> is negative in most cases. So we didn't set xdp_rxq->frag_size in
-> virtnet_open() to disable the tail increase.
->
-> Heng Qi (9):
->    virtio_net: disable the hole mechanism for xdp
->    virtio_net: set up xdp for multi buffer packets
->    virtio_net: update bytes calculation for xdp_frame
->    virtio_net: remove xdp related info from page_to_skb()
->    virtio_net: build xdp_buff with multi buffers
->    virtio_net: construct multi-buffer xdp in mergeable
->    virtio_net: build skb from multi-buffer xdp
->    virtio_net: transmit the multi-buffer xdp
->    virtio_net: support multi-buffer xdp
->
->   drivers/net/virtio_net.c | 356 ++++++++++++++++++++++++---------------
->   1 file changed, 219 insertions(+), 137 deletions(-)
->
-
+Thanks，
+Wang
+> Regards,
+> Arend
+>>>
+> 
+> 
+> 
