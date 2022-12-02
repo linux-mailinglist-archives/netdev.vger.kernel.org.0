@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0389163FCC7
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 462B563FCC9
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:20:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231962AbiLBAUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 19:20:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51018 "EHLO
+        id S231908AbiLBAUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 19:20:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230059AbiLBATT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:19:19 -0500
+        with ESMTP id S231601AbiLBAUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:20:11 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C072D11DF
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:17:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F04210
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:17:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669940247;
+        s=mimecast20190719; t=1669940255;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=e+gEyqHAYcukbUT7EiIRiNqkNampnQzNPJX4nGRXEqo=;
-        b=JR8Ih8GRYppq0fq6mehk+wTHni0Bke6w0jOWxe8IhuEjUuPFhSjJ9nDNJmeQ5mBUrBPTYZ
-        kJ+5nKrh0PP6ag8Q9wdlS2sL+3tVU0REBVQMwtFuTfvoIfFlCtx1/ZFUP0yLoRGIK+1ozb
-        mzbyNLzldgi4DWUhSlawJuuYP3u+lfI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=a3YmpGDKcnBEnpAHkJlNK2byBHIgeHPDnNurcx2Ouqo=;
+        b=ipX6T5v+V0iHimEUOhkfSL+uVKyeQuSbg5aUcwnb1hTUqk+NI42RNUEv9aLEWlfeHjrCjv
+        VzBAzlMe58QdCN06S72ZS0anK32QIej2U4yv1jCsKhaHgGCCSGmrBEHFNCIa2EIboi9mrM
+        PRk+CJViw2lSK/rk/Iij5v22IAtMVlc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-403-Mq8ZxlfhMI2AOIBVa-ygAQ-1; Thu, 01 Dec 2022 19:17:23 -0500
-X-MC-Unique: Mq8ZxlfhMI2AOIBVa-ygAQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-551-15tA8-hLNXOIGANJNSVlwA-1; Thu, 01 Dec 2022 19:17:31 -0500
+X-MC-Unique: 15tA8-hLNXOIGANJNSVlwA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B8C801C05ABD;
-        Fri,  2 Dec 2022 00:17:22 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8237685A59D;
+        Fri,  2 Dec 2022 00:17:31 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5E65B492B11;
-        Fri,  2 Dec 2022 00:17:21 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AA2B3C154AB;
+        Fri,  2 Dec 2022 00:17:30 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 16/36] rxrpc: Don't hold a ref for call timer or
+Subject: [PATCH net-next 17/36] rxrpc: Don't hold a ref for connection
  workqueue
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Fri, 02 Dec 2022 00:17:18 +0000
-Message-ID: <166994023875.1732290.1978144862974692939.stgit@warthog.procyon.org.uk>
+Date:   Fri, 02 Dec 2022 00:17:27 +0000
+Message-ID: <166994024789.1732290.10832345552842649185.stgit@warthog.procyon.org.uk>
 In-Reply-To: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
 References: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,8 +67,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, rxrpc gives the call timer a ref on the call when it starts it
-and this is passed along to the workqueue by the timer expiration function.
+Currently, rxrpc gives the connection's work item a ref on the connection
+when it queues it - and this is called from the timer expiration function.
 The problem comes when queue_work() fails (ie. the work item is already
 queued): the timer routine must put the ref - but this may cause the
 cleanup code to run.
@@ -77,349 +77,622 @@ This has the unfortunate effect that the cleanup code may then be run in
 softirq context - which means that any spinlocks it might need to touch
 have to be guarded to disable softirqs (ie. they need a "_bh" suffix).
 
-Fix this by:
+ (1) Don't give a ref to the work item.
 
- (1) Don't give a ref to the timer.
+ (2) Simplify handling of service connections by adding a separate active
+     count so that the refcount isn't also used for this.
 
- (2) Making the expiration function not do anything if the refcount is 0.
-     Note that this is more of an optimisation.
+ (3) Connection destruction for both client and service connections can
+     then be cleaned up by putting rxrpc_put_connection() out of line and
+     making a tidy progression through the destruction code (offloaded to a
+     workqueue if put from softirq or processor function context).  The RCU
+     part of the cleanup then only deals with the freeing at the end.
 
- (3) Make sure that the cleanup routine waits for timer to complete.
+ (4) Make rxrpc_queue_conn() return immediately if it sees the active count
+     is -1 rather then queuing the connection.
 
-However, this has a consequence that timer cannot give a ref to the work
-item.  Therefore the following fixes are also necessary:
-
- (4) Don't give a ref to the work item.
-
- (5) Make the work item return asap if it sees the ref count is 0.
-
- (6) Make sure that the cleanup routine waits for the work item to
+ (5) Make sure that the cleanup routine waits for the work item to
      complete.
+
+ (6) Stash the rxrpc_net pointer in the conn struct so that the rcu free
+     routine can use it, even if the local endpoint has been freed.
 
 Unfortunately, neither the timer nor the work item can simply get around
 the problem by just using refcount_inc_not_zero() as the waits would still
 have to be done, and there would still be the possibility of having to put
 the ref in the expiration function.
 
-Note the call work item is going to go away with the work being transferred
-to the I/O thread, so the wait in (6) will become obsolete.
+Note the connection work item is mostly going to go away with the main
+event work being transferred to the I/O thread, so the wait in (6) will
+become obsolete.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- include/trace/events/rxrpc.h |    6 --
- net/rxrpc/ar-internal.h      |    6 +-
- net/rxrpc/call_event.c       |   11 ++--
- net/rxrpc/call_object.c      |  111 ++++++++++++++++--------------------------
- net/rxrpc/txbuf.c            |    2 +
- 5 files changed, 52 insertions(+), 84 deletions(-)
+ include/trace/events/rxrpc.h |   11 +--
+ net/rxrpc/ar-internal.h      |   25 ++----
+ net/rxrpc/call_accept.c      |    1 
+ net/rxrpc/conn_client.c      |   31 ++------
+ net/rxrpc/conn_event.c       |    4 -
+ net/rxrpc/conn_object.c      |  169 +++++++++++++++++++++++-------------------
+ net/rxrpc/conn_service.c     |    4 +
+ net/rxrpc/net_ns.c           |    2 
+ net/rxrpc/proc.c             |    5 +
+ 9 files changed, 123 insertions(+), 129 deletions(-)
 
 diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index 5a2292baffc8..4538de0079a5 100644
+index 4538de0079a5..44a9be9836f9 100644
 --- a/include/trace/events/rxrpc.h
 +++ b/include/trace/events/rxrpc.h
-@@ -155,11 +155,9 @@
- 	EM(rxrpc_call_get_release_sock,		"GET rel-sock") \
- 	EM(rxrpc_call_get_sendmsg,		"GET sendmsg ") \
- 	EM(rxrpc_call_get_send_ack,		"GET send-ack") \
--	EM(rxrpc_call_get_timer,		"GET timer   ") \
- 	EM(rxrpc_call_get_userid,		"GET user-id ") \
- 	EM(rxrpc_call_new_client,		"NEW client  ") \
- 	EM(rxrpc_call_new_prealloc_service,	"NEW prealloc") \
--	EM(rxrpc_call_put_already_queued,	"PUT alreadyq") \
- 	EM(rxrpc_call_put_discard_prealloc,	"PUT disc-pre") \
- 	EM(rxrpc_call_put_input,		"PUT input   ") \
- 	EM(rxrpc_call_put_kernel,		"PUT kernel  ") \
-@@ -168,11 +166,8 @@
- 	EM(rxrpc_call_put_release_sock_tba,	"PUT rls-sk-a") \
- 	EM(rxrpc_call_put_send_ack,		"PUT send-ack") \
- 	EM(rxrpc_call_put_sendmsg,		"PUT sendmsg ") \
--	EM(rxrpc_call_put_timer,		"PUT timer   ") \
--	EM(rxrpc_call_put_timer_already,	"PUT timer-al") \
- 	EM(rxrpc_call_put_unnotify,		"PUT unnotify") \
- 	EM(rxrpc_call_put_userid_exists,	"PUT u-exists") \
--	EM(rxrpc_call_put_work,			"PUT work    ") \
- 	EM(rxrpc_call_queue_abort,		"QUE abort   ") \
- 	EM(rxrpc_call_queue_requeue,		"QUE requeue ") \
- 	EM(rxrpc_call_queue_resend,		"QUE resend  ") \
-@@ -368,6 +363,7 @@
- 	EM(rxrpc_txbuf_put_rotated,		"PUT ROTATED")	\
- 	EM(rxrpc_txbuf_put_send_aborted,	"PUT SEND-X ")	\
- 	EM(rxrpc_txbuf_put_trans,		"PUT TRANS  ")	\
-+	EM(rxrpc_txbuf_see_out_of_step,		"OUT-OF-STEP")	\
- 	EM(rxrpc_txbuf_see_send_more,		"SEE SEND+  ")	\
- 	E_(rxrpc_txbuf_see_unacked,		"SEE UNACKED")
- 
+@@ -112,7 +112,6 @@
+ 	EM(rxrpc_conn_get_service_conn,		"GET svc-conn") \
+ 	EM(rxrpc_conn_new_client,		"NEW client  ") \
+ 	EM(rxrpc_conn_new_service,		"NEW service ") \
+-	EM(rxrpc_conn_put_already_queued,	"PUT alreadyq") \
+ 	EM(rxrpc_conn_put_call,			"PUT call    ") \
+ 	EM(rxrpc_conn_put_call_input,		"PUT inp-call") \
+ 	EM(rxrpc_conn_put_conn_input,		"PUT inp-conn") \
+@@ -121,13 +120,13 @@
+ 	EM(rxrpc_conn_put_local_dead,		"PUT loc-dead") \
+ 	EM(rxrpc_conn_put_noreuse,		"PUT noreuse ") \
+ 	EM(rxrpc_conn_put_poke,			"PUT poke    ") \
++	EM(rxrpc_conn_put_service_reaped,	"PUT svc-reap") \
+ 	EM(rxrpc_conn_put_unbundle,		"PUT unbundle") \
+ 	EM(rxrpc_conn_put_unidle,		"PUT unidle  ") \
+-	EM(rxrpc_conn_put_work,			"PUT work    ") \
+-	EM(rxrpc_conn_queue_challenge,		"GQ  chall   ") \
+-	EM(rxrpc_conn_queue_retry_work,		"GQ  retry-wk") \
+-	EM(rxrpc_conn_queue_rx_work,		"GQ  rx-work ") \
+-	EM(rxrpc_conn_queue_timer,		"GQ  timer   ") \
++	EM(rxrpc_conn_queue_challenge,		"QUE chall   ") \
++	EM(rxrpc_conn_queue_retry_work,		"QUE retry-wk") \
++	EM(rxrpc_conn_queue_rx_work,		"QUE rx-work ") \
++	EM(rxrpc_conn_queue_timer,		"QUE timer   ") \
+ 	EM(rxrpc_conn_see_new_service_conn,	"SEE new-svc ") \
+ 	EM(rxrpc_conn_see_reap_service,		"SEE reap-svc") \
+ 	E_(rxrpc_conn_see_work,			"SEE work    ")
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index c588c0e81f63..03523a864c11 100644
+index 03523a864c11..41a57c145f2b 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -598,6 +598,7 @@ struct rxrpc_call {
- 	u32			next_req_timo;	/* Timeout for next Rx request packet (jif) */
- 	struct timer_list	timer;		/* Combined event timer */
- 	struct work_struct	processor;	/* Event processor */
-+	struct work_struct	destroyer;	/* In-process-context destroyer */
- 	rxrpc_notify_rx_t	notify_rx;	/* kernel service Rx notification function */
- 	struct list_head	link;		/* link in master call list */
- 	struct list_head	chan_wait_link;	/* Link in conn->bundle->waiting_calls */
-@@ -827,8 +828,6 @@ void rxrpc_reduce_call_timer(struct rxrpc_call *call,
- 			     unsigned long now,
- 			     enum rxrpc_timer_trace why);
+@@ -76,7 +76,7 @@ struct rxrpc_net {
+ 	bool			kill_all_client_conns;
+ 	atomic_t		nr_client_conns;
+ 	spinlock_t		client_conn_cache_lock; /* Lock for ->*_client_conns */
+-	spinlock_t		client_conn_discard_lock; /* Prevent multiple discarders */
++	struct mutex		client_conn_discard_lock; /* Prevent multiple discarders */
+ 	struct list_head	idle_client_conns;
+ 	struct work_struct	client_conn_reaper;
+ 	struct timer_list	client_conn_reap_timer;
+@@ -432,9 +432,11 @@ struct rxrpc_connection {
+ 	struct rxrpc_conn_proto	proto;
+ 	struct rxrpc_local	*local;		/* Representation of local endpoint */
+ 	struct rxrpc_peer	*peer;		/* Remote endpoint */
++	struct rxrpc_net	*rxnet;		/* Network namespace to which call belongs */
+ 	struct key		*key;		/* Security details */
  
--void rxrpc_delete_call_timer(struct rxrpc_call *call);
+ 	refcount_t		ref;
++	atomic_t		active;		/* Active count for service conns */
+ 	struct rcu_head		rcu;
+ 	struct list_head	cache_link;
+ 
+@@ -455,6 +457,7 @@ struct rxrpc_connection {
+ 
+ 	struct timer_list	timer;		/* Conn event timer */
+ 	struct work_struct	processor;	/* connection event processor */
++	struct work_struct	destructor;	/* In-process-context destroyer */
+ 	struct rxrpc_bundle	*bundle;	/* Client connection bundle */
+ 	struct rb_node		service_node;	/* Node in peer->service_conns */
+ 	struct list_head	proc_link;	/* link in procfs list */
+@@ -897,20 +900,20 @@ void rxrpc_process_delayed_final_acks(struct rxrpc_connection *, bool);
+ extern unsigned int rxrpc_connection_expiry;
+ extern unsigned int rxrpc_closed_conn_expiry;
+ 
+-struct rxrpc_connection *rxrpc_alloc_connection(gfp_t);
++struct rxrpc_connection *rxrpc_alloc_connection(struct rxrpc_net *, gfp_t);
+ struct rxrpc_connection *rxrpc_find_connection_rcu(struct rxrpc_local *,
+ 						   struct sk_buff *,
+ 						   struct rxrpc_peer **);
+ void __rxrpc_disconnect_call(struct rxrpc_connection *, struct rxrpc_call *);
+ void rxrpc_disconnect_call(struct rxrpc_call *);
+-void rxrpc_kill_connection(struct rxrpc_connection *);
+-bool rxrpc_queue_conn(struct rxrpc_connection *, enum rxrpc_conn_trace);
++void rxrpc_kill_client_conn(struct rxrpc_connection *);
++void rxrpc_queue_conn(struct rxrpc_connection *, enum rxrpc_conn_trace);
+ void rxrpc_see_connection(struct rxrpc_connection *, enum rxrpc_conn_trace);
+ struct rxrpc_connection *rxrpc_get_connection(struct rxrpc_connection *,
+ 					      enum rxrpc_conn_trace);
+ struct rxrpc_connection *rxrpc_get_connection_maybe(struct rxrpc_connection *,
+ 						    enum rxrpc_conn_trace);
+-void rxrpc_put_service_conn(struct rxrpc_connection *, enum rxrpc_conn_trace);
++void rxrpc_put_connection(struct rxrpc_connection *, enum rxrpc_conn_trace);
+ void rxrpc_service_connection_reaper(struct work_struct *);
+ void rxrpc_destroy_all_connections(struct rxrpc_net *);
+ 
+@@ -924,18 +927,6 @@ static inline bool rxrpc_conn_is_service(const struct rxrpc_connection *conn)
+ 	return !rxrpc_conn_is_client(conn);
+ }
+ 
+-static inline void rxrpc_put_connection(struct rxrpc_connection *conn,
+-					enum rxrpc_conn_trace why)
+-{
+-	if (!conn)
+-		return;
 -
- /*
-  * call_object.c
-  */
-@@ -847,8 +846,7 @@ void rxrpc_incoming_call(struct rxrpc_sock *, struct rxrpc_call *,
- 			 struct sk_buff *);
- void rxrpc_release_call(struct rxrpc_sock *, struct rxrpc_call *);
- void rxrpc_release_calls_on_socket(struct rxrpc_sock *);
--bool __rxrpc_queue_call(struct rxrpc_call *, enum rxrpc_call_trace);
--bool rxrpc_queue_call(struct rxrpc_call *, enum rxrpc_call_trace);
-+void rxrpc_queue_call(struct rxrpc_call *, enum rxrpc_call_trace);
- void rxrpc_see_call(struct rxrpc_call *, enum rxrpc_call_trace);
- bool rxrpc_try_get_call(struct rxrpc_call *, enum rxrpc_call_trace);
- void rxrpc_get_call(struct rxrpc_call *, enum rxrpc_call_trace);
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 29ca02e53c47..049b92b1c040 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -323,8 +323,8 @@ void rxrpc_process_call(struct work_struct *work)
- 		rxrpc_shrink_call_tx_buffer(call);
- 
- 	if (call->state == RXRPC_CALL_COMPLETE) {
--		rxrpc_delete_call_timer(call);
--		goto out_put;
-+		del_timer_sync(&call->timer);
-+		goto out;
- 	}
- 
- 	/* Work out if any timeouts tripped */
-@@ -432,16 +432,15 @@ void rxrpc_process_call(struct work_struct *work)
- 	rxrpc_reduce_call_timer(call, next, now, rxrpc_timer_restart);
- 
- 	/* other events may have been raised since we started checking */
--	if (call->events && call->state < RXRPC_CALL_COMPLETE)
-+	if (call->events)
- 		goto requeue;
- 
--out_put:
--	rxrpc_put_call(call, rxrpc_call_put_work);
- out:
- 	_leave("");
- 	return;
- 
- requeue:
--	__rxrpc_queue_call(call, rxrpc_call_queue_requeue);
-+	if (call->state < RXRPC_CALL_COMPLETE)
-+		rxrpc_queue_call(call, rxrpc_call_queue_requeue);
- 	goto out;
- }
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 815209673115..9cd7e0190ef4 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -53,9 +53,7 @@ static void rxrpc_call_timer_expired(struct timer_list *t)
- 
- 	if (call->state < RXRPC_CALL_COMPLETE) {
- 		trace_rxrpc_timer_expired(call, jiffies);
--		__rxrpc_queue_call(call, rxrpc_call_queue_timer);
--	} else {
--		rxrpc_put_call(call, rxrpc_call_put_already_queued);
-+		rxrpc_queue_call(call, rxrpc_call_queue_timer);
- 	}
- }
- 
-@@ -64,21 +62,14 @@ void rxrpc_reduce_call_timer(struct rxrpc_call *call,
- 			     unsigned long now,
- 			     enum rxrpc_timer_trace why)
- {
--	if (rxrpc_try_get_call(call, rxrpc_call_get_timer)) {
--		trace_rxrpc_timer(call, why, now);
--		if (timer_reduce(&call->timer, expire_at))
--			rxrpc_put_call(call, rxrpc_call_put_timer_already);
--	}
+-	if (rxrpc_conn_is_client(conn))
+-		rxrpc_put_client_conn(conn, why);
+-	else
+-		rxrpc_put_service_conn(conn, why);
 -}
 -
--void rxrpc_delete_call_timer(struct rxrpc_call *call)
--{
--	if (del_timer_sync(&call->timer))
--		rxrpc_put_call(call, rxrpc_call_put_timer);
-+	trace_rxrpc_timer(call, why, now);
-+	timer_reduce(&call->timer, expire_at);
- }
- 
- static struct lock_class_key rxrpc_call_user_mutex_lock_class_key;
- 
-+static void rxrpc_destroy_call(struct work_struct *);
-+
- /*
-  * find an extant server call
-  * - called in process context with IRQs enabled
-@@ -139,7 +130,8 @@ struct rxrpc_call *rxrpc_alloc_call(struct rxrpc_sock *rx, gfp_t gfp,
- 				  &rxrpc_call_user_mutex_lock_class_key);
- 
- 	timer_setup(&call->timer, rxrpc_call_timer_expired, 0);
--	INIT_WORK(&call->processor, &rxrpc_process_call);
-+	INIT_WORK(&call->processor, rxrpc_process_call);
-+	INIT_WORK(&call->destroyer, rxrpc_destroy_call);
- 	INIT_LIST_HEAD(&call->link);
- 	INIT_LIST_HEAD(&call->chan_wait_link);
- 	INIT_LIST_HEAD(&call->accept_link);
-@@ -423,34 +415,12 @@ void rxrpc_incoming_call(struct rxrpc_sock *rx,
- }
- 
- /*
-- * Queue a call's work processor, getting a ref to pass to the work queue.
-+ * Queue a call's work processor.
-  */
--bool rxrpc_queue_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
-+void rxrpc_queue_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
+ static inline void rxrpc_reduce_conn_timer(struct rxrpc_connection *conn,
+ 					   unsigned long expire_at)
  {
--	int n;
--
--	if (!__refcount_inc_not_zero(&call->ref, &n))
--		return false;
- 	if (rxrpc_queue_work(&call->processor))
--		trace_rxrpc_call(call->debug_id, n + 1, 0, why);
--	else
--		rxrpc_put_call(call, rxrpc_call_put_already_queued);
--	return true;
+diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
+index dd4ca4bee77f..8d106b626aa3 100644
+--- a/net/rxrpc/call_accept.c
++++ b/net/rxrpc/call_accept.c
+@@ -308,6 +308,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
+ 		rxrpc_new_incoming_connection(rx, conn, sec, skb);
+ 	} else {
+ 		rxrpc_get_connection(conn, rxrpc_conn_get_service_conn);
++		atomic_inc(&conn->active);
+ 	}
+ 
+ 	/* And now we can allocate and set up a new call */
+diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
+index 34ff6fa85c32..9485a3d18f29 100644
+--- a/net/rxrpc/conn_client.c
++++ b/net/rxrpc/conn_client.c
+@@ -51,7 +51,7 @@ static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle);
+ static int rxrpc_get_client_connection_id(struct rxrpc_connection *conn,
+ 					  gfp_t gfp)
+ {
+-	struct rxrpc_net *rxnet = conn->local->rxnet;
++	struct rxrpc_net *rxnet = conn->rxnet;
+ 	int id;
+ 
+ 	_enter("");
+@@ -179,7 +179,7 @@ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle, gfp_t gfp)
+ 
+ 	_enter("");
+ 
+-	conn = rxrpc_alloc_connection(gfp);
++	conn = rxrpc_alloc_connection(rxnet, gfp);
+ 	if (!conn) {
+ 		_leave(" = -ENOMEM");
+ 		return ERR_PTR(-ENOMEM);
+@@ -243,7 +243,7 @@ static bool rxrpc_may_reuse_conn(struct rxrpc_connection *conn)
+ 	if (!conn)
+ 		goto dont_reuse;
+ 
+-	rxnet = conn->local->rxnet;
++	rxnet = conn->rxnet;
+ 	if (test_bit(RXRPC_CONN_DONT_REUSE, &conn->flags))
+ 		goto dont_reuse;
+ 
+@@ -970,7 +970,7 @@ static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle)
+ /*
+  * Clean up a dead client connection.
+  */
+-static void rxrpc_kill_client_conn(struct rxrpc_connection *conn)
++void rxrpc_kill_client_conn(struct rxrpc_connection *conn)
+ {
+ 	struct rxrpc_local *local = conn->local;
+ 	struct rxrpc_net *rxnet = local->rxnet;
+@@ -981,23 +981,6 @@ static void rxrpc_kill_client_conn(struct rxrpc_connection *conn)
+ 	atomic_dec(&rxnet->nr_client_conns);
+ 
+ 	rxrpc_put_client_connection_id(conn);
+-	rxrpc_kill_connection(conn);
 -}
 -
 -/*
-- * Queue a call's work processor, passing the callers ref to the work queue.
+- * Clean up a dead client connections.
 - */
--bool __rxrpc_queue_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
+-void rxrpc_put_client_conn(struct rxrpc_connection *conn,
+-			   enum rxrpc_conn_trace why)
 -{
--	int n = refcount_read(&call->ref);
+-	unsigned int debug_id = conn->debug_id;
+-	bool dead;
+-	int r;
 -
--	ASSERTCMP(n, >=, 1);
--	if (rxrpc_queue_work(&call->processor))
--		trace_rxrpc_call(call->debug_id, n, 0, why);
--	else
--		rxrpc_put_call(call, rxrpc_call_put_already_queued);
--	return true;
-+		trace_rxrpc_call(call->debug_id, refcount_read(&call->ref), 0, why);
+-	dead = __refcount_dec_and_test(&conn->ref, &r);
+-	trace_rxrpc_conn(debug_id, r - 1, why);
+-	if (dead)
+-		rxrpc_kill_client_conn(conn);
  }
  
  /*
-@@ -514,7 +484,7 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
- 		BUG();
- 
- 	rxrpc_put_call_slot(call);
--	rxrpc_delete_call_timer(call);
-+	del_timer_sync(&call->timer);
- 
- 	/* Make sure we don't get any more notifications */
- 	write_lock_bh(&rx->recvmsg_lock);
-@@ -612,36 +582,41 @@ void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
- }
- 
- /*
-- * Final call destruction - but must be done in process context.
-+ * Free up the call under RCU.
-  */
--static void rxrpc_destroy_call(struct work_struct *work)
-+static void rxrpc_rcu_free_call(struct rcu_head *rcu)
- {
--	struct rxrpc_call *call = container_of(work, struct rxrpc_call, processor);
--	struct rxrpc_net *rxnet = call->rxnet;
--
--	rxrpc_delete_call_timer(call);
-+	struct rxrpc_call *call = container_of(rcu, struct rxrpc_call, rcu);
-+	struct rxrpc_net *rxnet = READ_ONCE(call->rxnet);
- 
--	rxrpc_put_connection(call->conn, rxrpc_conn_put_call);
--	rxrpc_put_peer(call->peer, rxrpc_peer_put_call);
- 	kmem_cache_free(rxrpc_call_jar, call);
- 	if (atomic_dec_and_test(&rxnet->nr_calls))
- 		wake_up_var(&rxnet->nr_calls);
- }
- 
- /*
-- * Final call destruction under RCU.
-+ * Final call destruction - but must be done in process context.
-  */
--static void rxrpc_rcu_destroy_call(struct rcu_head *rcu)
-+static void rxrpc_destroy_call(struct work_struct *work)
- {
--	struct rxrpc_call *call = container_of(rcu, struct rxrpc_call, rcu);
-+	struct rxrpc_call *call = container_of(work, struct rxrpc_call, destroyer);
-+	struct rxrpc_txbuf *txb;
- 
--	if (in_softirq()) {
--		INIT_WORK(&call->processor, rxrpc_destroy_call);
--		if (!rxrpc_queue_work(&call->processor))
--			BUG();
--	} else {
--		rxrpc_destroy_call(&call->processor);
-+	del_timer_sync(&call->timer);
-+	cancel_work_sync(&call->processor); /* The processor may restart the timer */
-+	del_timer_sync(&call->timer);
-+
-+	rxrpc_cleanup_ring(call);
-+	while ((txb = list_first_entry_or_null(&call->tx_buffer,
-+					       struct rxrpc_txbuf, call_link))) {
-+		list_del(&txb->call_link);
-+		rxrpc_put_txbuf(txb, rxrpc_txbuf_put_cleaned);
+@@ -1023,7 +1006,7 @@ void rxrpc_discard_expired_client_conns(struct work_struct *work)
  	}
-+	rxrpc_put_txbuf(call->tx_pending, rxrpc_txbuf_put_cleaned);
-+	rxrpc_free_skb(call->acks_soft_tbl, rxrpc_skb_put_ack);
-+	rxrpc_put_connection(call->conn, rxrpc_conn_put_call);
-+	rxrpc_put_peer(call->peer, rxrpc_peer_put_call);
-+	call_rcu(&call->rcu, rxrpc_rcu_free_call);
+ 
+ 	/* Don't double up on the discarding */
+-	if (!spin_trylock(&rxnet->client_conn_discard_lock)) {
++	if (!mutex_trylock(&rxnet->client_conn_discard_lock)) {
+ 		_leave(" [already]");
+ 		return;
+ 	}
+@@ -1061,6 +1044,7 @@ void rxrpc_discard_expired_client_conns(struct work_struct *work)
+ 			goto not_yet_expired;
+ 	}
+ 
++	atomic_dec(&conn->active);
+ 	trace_rxrpc_client(conn, -1, rxrpc_client_discard);
+ 	list_del_init(&conn->cache_link);
+ 
+@@ -1087,7 +1071,7 @@ void rxrpc_discard_expired_client_conns(struct work_struct *work)
+ 
+ out:
+ 	spin_unlock(&rxnet->client_conn_cache_lock);
+-	spin_unlock(&rxnet->client_conn_discard_lock);
++	mutex_unlock(&rxnet->client_conn_discard_lock);
+ 	_leave("");
  }
  
- /*
-@@ -649,23 +624,21 @@ static void rxrpc_rcu_destroy_call(struct rcu_head *rcu)
-  */
- void rxrpc_cleanup_call(struct rxrpc_call *call)
- {
--	struct rxrpc_txbuf *txb;
+@@ -1127,6 +1111,7 @@ void rxrpc_clean_up_local_conns(struct rxrpc_local *local)
+ 	list_for_each_entry_safe(conn, tmp, &rxnet->idle_client_conns,
+ 				 cache_link) {
+ 		if (conn->local == local) {
++			atomic_dec(&conn->active);
+ 			trace_rxrpc_client(conn, -1, rxrpc_client_discard);
+ 			list_move(&conn->cache_link, &graveyard);
+ 		}
+diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
+index 49d885f73fa5..23a74e35052d 100644
+--- a/net/rxrpc/conn_event.c
++++ b/net/rxrpc/conn_event.c
+@@ -478,8 +478,4 @@ void rxrpc_process_connection(struct work_struct *work)
+ 		rxrpc_do_process_connection(conn);
+ 		rxrpc_unuse_local(conn->local, rxrpc_local_unuse_conn_work);
+ 	}
 -
- 	memset(&call->sock_node, 0xcd, sizeof(call->sock_node));
+-	rxrpc_put_connection(conn, rxrpc_conn_put_work);
+-	_leave("");
+-	return;
+ }
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index f7c271a740ed..c2e05ea29f12 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -19,7 +19,9 @@
+ unsigned int __read_mostly rxrpc_connection_expiry = 10 * 60;
+ unsigned int __read_mostly rxrpc_closed_conn_expiry = 10;
  
- 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
- 	ASSERT(test_bit(RXRPC_CALL_RELEASED, &call->flags));
+-static void rxrpc_destroy_connection(struct rcu_head *);
++static void rxrpc_clean_up_connection(struct work_struct *work);
++static void rxrpc_set_service_reap_timer(struct rxrpc_net *rxnet,
++					 unsigned long reap_at);
  
--	rxrpc_cleanup_ring(call);
--	while ((txb = list_first_entry_or_null(&call->tx_buffer,
--					       struct rxrpc_txbuf, call_link))) {
--		list_del(&txb->call_link);
--		rxrpc_put_txbuf(txb, rxrpc_txbuf_put_cleaned);
--	}
--	rxrpc_put_txbuf(call->tx_pending, rxrpc_txbuf_put_cleaned);
--	rxrpc_free_skb(call->acks_soft_tbl, rxrpc_skb_put_ack);
-+	del_timer_sync(&call->timer);
-+	cancel_work(&call->processor);
+ static void rxrpc_connection_timer(struct timer_list *timer)
+ {
+@@ -32,7 +34,8 @@ static void rxrpc_connection_timer(struct timer_list *timer)
+ /*
+  * allocate a new connection
+  */
+-struct rxrpc_connection *rxrpc_alloc_connection(gfp_t gfp)
++struct rxrpc_connection *rxrpc_alloc_connection(struct rxrpc_net *rxnet,
++						gfp_t gfp)
+ {
+ 	struct rxrpc_connection *conn;
  
--	call_rcu(&call->rcu, rxrpc_rcu_destroy_call);
-+	if (in_softirq() || work_busy(&call->processor))
-+		/* Can't use the rxrpc workqueue as we need to cancel/flush
-+		 * something that may be running/waiting there.
-+		 */
-+		schedule_work(&call->destroyer);
-+	else
-+		rxrpc_destroy_call(&call->destroyer);
+@@ -42,10 +45,12 @@ struct rxrpc_connection *rxrpc_alloc_connection(gfp_t gfp)
+ 	if (conn) {
+ 		INIT_LIST_HEAD(&conn->cache_link);
+ 		timer_setup(&conn->timer, &rxrpc_connection_timer, 0);
+-		INIT_WORK(&conn->processor, &rxrpc_process_connection);
++		INIT_WORK(&conn->processor, rxrpc_process_connection);
++		INIT_WORK(&conn->destructor, rxrpc_clean_up_connection);
+ 		INIT_LIST_HEAD(&conn->proc_link);
+ 		INIT_LIST_HEAD(&conn->link);
+ 		skb_queue_head_init(&conn->rx_queue);
++		conn->rxnet = rxnet;
+ 		conn->security = &rxrpc_no_security;
+ 		spin_lock_init(&conn->state_lock);
+ 		conn->debug_id = atomic_inc_return(&rxrpc_debug_id);
+@@ -224,53 +229,20 @@ void rxrpc_disconnect_call(struct rxrpc_call *call)
+ 
+ 	set_bit(RXRPC_CALL_DISCONNECTED, &call->flags);
+ 	conn->idle_timestamp = jiffies;
+-}
+-
+-/*
+- * Kill off a connection.
+- */
+-void rxrpc_kill_connection(struct rxrpc_connection *conn)
+-{
+-	struct rxrpc_net *rxnet = conn->local->rxnet;
+-
+-	ASSERT(!rcu_access_pointer(conn->channels[0].call) &&
+-	       !rcu_access_pointer(conn->channels[1].call) &&
+-	       !rcu_access_pointer(conn->channels[2].call) &&
+-	       !rcu_access_pointer(conn->channels[3].call));
+-	ASSERT(list_empty(&conn->cache_link));
+-
+-	write_lock(&rxnet->conn_lock);
+-	list_del_init(&conn->proc_link);
+-	write_unlock(&rxnet->conn_lock);
+-
+-	/* Drain the Rx queue.  Note that even though we've unpublished, an
+-	 * incoming packet could still be being added to our Rx queue, so we
+-	 * will need to drain it again in the RCU cleanup handler.
+-	 */
+-	rxrpc_purge_queue(&conn->rx_queue);
+-
+-	/* Leave final destruction to RCU.  The connection processor work item
+-	 * must carry a ref on the connection to prevent us getting here whilst
+-	 * it is queued or running.
+-	 */
+-	call_rcu(&conn->rcu, rxrpc_destroy_connection);
++	if (atomic_dec_and_test(&conn->active))
++		rxrpc_set_service_reap_timer(conn->rxnet,
++					     jiffies + rxrpc_connection_expiry);
  }
  
  /*
-diff --git a/net/rxrpc/txbuf.c b/net/rxrpc/txbuf.c
-index 96bfee89927b..f93dc666a3a0 100644
---- a/net/rxrpc/txbuf.c
-+++ b/net/rxrpc/txbuf.c
-@@ -120,6 +120,8 @@ void rxrpc_shrink_call_tx_buffer(struct rxrpc_call *call)
- 		if (before(hard_ack, txb->seq))
- 			break;
+  * Queue a connection's work processor, getting a ref to pass to the work
+  * queue.
+  */
+-bool rxrpc_queue_conn(struct rxrpc_connection *conn, enum rxrpc_conn_trace why)
++void rxrpc_queue_conn(struct rxrpc_connection *conn, enum rxrpc_conn_trace why)
+ {
+-	int r;
+-
+-	if (!__refcount_inc_not_zero(&conn->ref, &r))
+-		return false;
+-	if (rxrpc_queue_work(&conn->processor))
+-		trace_rxrpc_conn(conn->debug_id, why, r + 1);
+-	else
+-		rxrpc_put_connection(conn, rxrpc_conn_put_already_queued);
+-	return true;
++	if (atomic_read(&conn->active) >= 0 &&
++	    rxrpc_queue_work(&conn->processor))
++		rxrpc_see_connection(conn, why);
+ }
  
-+		if (txb->seq != call->tx_bottom + 1)
-+			rxrpc_see_txbuf(txb, rxrpc_txbuf_see_out_of_step);
- 		ASSERTCMP(txb->seq, ==, call->tx_bottom + 1);
- 		call->tx_bottom++;
- 		list_del_rcu(&txb->call_link);
+ /*
+@@ -327,51 +299,96 @@ static void rxrpc_set_service_reap_timer(struct rxrpc_net *rxnet,
+ 		timer_reduce(&rxnet->service_conn_reap_timer, reap_at);
+ }
+ 
+-/*
+- * Release a service connection
+- */
+-void rxrpc_put_service_conn(struct rxrpc_connection *conn,
+-			    enum rxrpc_conn_trace why)
+-{
+-	unsigned int debug_id = conn->debug_id;
+-	int r;
+-
+-	__refcount_dec(&conn->ref, &r);
+-	trace_rxrpc_conn(debug_id, r - 1, why);
+-	if (r - 1 == 1)
+-		rxrpc_set_service_reap_timer(conn->local->rxnet,
+-					     jiffies + rxrpc_connection_expiry);
+-}
+-
+ /*
+  * destroy a virtual connection
+  */
+-static void rxrpc_destroy_connection(struct rcu_head *rcu)
++static void rxrpc_rcu_free_connection(struct rcu_head *rcu)
+ {
+ 	struct rxrpc_connection *conn =
+ 		container_of(rcu, struct rxrpc_connection, rcu);
++	struct rxrpc_net *rxnet = conn->rxnet;
+ 
+ 	_enter("{%d,u=%d}", conn->debug_id, refcount_read(&conn->ref));
+ 
+ 	trace_rxrpc_conn(conn->debug_id, refcount_read(&conn->ref),
+ 			 rxrpc_conn_free);
++	kfree(conn);
+ 
+-	ASSERTCMP(refcount_read(&conn->ref), ==, 0);
++	if (atomic_dec_and_test(&rxnet->nr_conns))
++		wake_up_var(&rxnet->nr_conns);
++}
++
++/*
++ * Clean up a dead connection.
++ */
++static void rxrpc_clean_up_connection(struct work_struct *work)
++{
++	struct rxrpc_connection *conn =
++		container_of(work, struct rxrpc_connection, destructor);
++	struct rxrpc_net *rxnet = conn->rxnet;
++
++	ASSERT(!rcu_access_pointer(conn->channels[0].call) &&
++	       !rcu_access_pointer(conn->channels[1].call) &&
++	       !rcu_access_pointer(conn->channels[2].call) &&
++	       !rcu_access_pointer(conn->channels[3].call));
++	ASSERT(list_empty(&conn->cache_link));
+ 
+ 	del_timer_sync(&conn->timer);
++	cancel_work_sync(&conn->processor); /* Processing may restart the timer */
++	del_timer_sync(&conn->timer);
++
++	write_lock(&rxnet->conn_lock);
++	list_del_init(&conn->proc_link);
++	write_unlock(&rxnet->conn_lock);
++
+ 	rxrpc_purge_queue(&conn->rx_queue);
+ 
++	rxrpc_kill_client_conn(conn);
++
+ 	conn->security->clear(conn);
+ 	key_put(conn->key);
+ 	rxrpc_put_bundle(conn->bundle, rxrpc_bundle_put_conn);
+ 	rxrpc_put_peer(conn->peer, rxrpc_peer_put_conn);
+-
+-	if (atomic_dec_and_test(&conn->local->rxnet->nr_conns))
+-		wake_up_var(&conn->local->rxnet->nr_conns);
+ 	rxrpc_put_local(conn->local, rxrpc_local_put_kill_conn);
+ 
+-	kfree(conn);
+-	_leave("");
++	/* Drain the Rx queue.  Note that even though we've unpublished, an
++	 * incoming packet could still be being added to our Rx queue, so we
++	 * will need to drain it again in the RCU cleanup handler.
++	 */
++	rxrpc_purge_queue(&conn->rx_queue);
++
++	call_rcu(&conn->rcu, rxrpc_rcu_free_connection);
++}
++
++/*
++ * Drop a ref on a connection.
++ */
++void rxrpc_put_connection(struct rxrpc_connection *conn,
++			  enum rxrpc_conn_trace why)
++{
++	unsigned int debug_id;
++	bool dead;
++	int r;
++
++	if (!conn)
++		return;
++
++	debug_id = conn->debug_id;
++	dead = __refcount_dec_and_test(&conn->ref, &r);
++	trace_rxrpc_conn(debug_id, r - 1, why);
++	if (dead) {
++		del_timer(&conn->timer);
++		cancel_work(&conn->processor);
++
++		if (in_softirq() || work_busy(&conn->processor) ||
++		    timer_pending(&conn->timer))
++			/* Can't use the rxrpc workqueue as we need to cancel/flush
++			 * something that may be running/waiting there.
++			 */
++			schedule_work(&conn->destructor);
++		else
++			rxrpc_clean_up_connection(&conn->destructor);
++	}
+ }
+ 
+ /*
+@@ -383,6 +400,7 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
+ 	struct rxrpc_net *rxnet =
+ 		container_of(work, struct rxrpc_net, service_conn_reaper);
+ 	unsigned long expire_at, earliest, idle_timestamp, now;
++	int active;
+ 
+ 	LIST_HEAD(graveyard);
+ 
+@@ -393,8 +411,8 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
+ 
+ 	write_lock(&rxnet->conn_lock);
+ 	list_for_each_entry_safe(conn, _p, &rxnet->service_conns, link) {
+-		ASSERTCMP(refcount_read(&conn->ref), >, 0);
+-		if (likely(refcount_read(&conn->ref) > 1))
++		ASSERTCMP(atomic_read(&conn->active), >=, 0);
++		if (likely(atomic_read(&conn->active) > 0))
+ 			continue;
+ 		if (conn->state == RXRPC_CONN_SERVICE_PREALLOC)
+ 			continue;
+@@ -405,8 +423,8 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
+ 			if (conn->local->service_closed)
+ 				expire_at = idle_timestamp + rxrpc_closed_conn_expiry * HZ;
+ 
+-			_debug("reap CONN %d { u=%d,t=%ld }",
+-			       conn->debug_id, refcount_read(&conn->ref),
++			_debug("reap CONN %d { a=%d,t=%ld }",
++			       conn->debug_id, atomic_read(&conn->active),
+ 			       (long)expire_at - (long)now);
+ 
+ 			if (time_before(now, expire_at)) {
+@@ -416,10 +434,11 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
+ 			}
+ 		}
+ 
+-		/* The usage count sits at 1 whilst the object is unused on the
+-		 * list; we reduce that to 0 to make the object unavailable.
++		/* The activity count sits at 0 whilst the conn is unused on
++		 * the list; we reduce that to -1 to make the conn unavailable.
+ 		 */
+-		if (!refcount_dec_if_one(&conn->ref))
++		active = 0;
++		if (!atomic_try_cmpxchg(&conn->active, &active, -1))
+ 			continue;
+ 		rxrpc_see_connection(conn, rxrpc_conn_see_reap_service);
+ 
+@@ -443,8 +462,8 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
+ 				  link);
+ 		list_del_init(&conn->link);
+ 
+-		ASSERTCMP(refcount_read(&conn->ref), ==, 0);
+-		rxrpc_kill_connection(conn);
++		ASSERTCMP(atomic_read(&conn->active), ==, -1);
++		rxrpc_put_connection(conn, rxrpc_conn_put_service_reaped);
+ 	}
+ 
+ 	_leave("");
+diff --git a/net/rxrpc/conn_service.c b/net/rxrpc/conn_service.c
+index 2c44d67b43dc..b5ae7c753fc3 100644
+--- a/net/rxrpc/conn_service.c
++++ b/net/rxrpc/conn_service.c
+@@ -125,7 +125,7 @@ static void rxrpc_publish_service_conn(struct rxrpc_peer *peer,
+ struct rxrpc_connection *rxrpc_prealloc_service_connection(struct rxrpc_net *rxnet,
+ 							   gfp_t gfp)
+ {
+-	struct rxrpc_connection *conn = rxrpc_alloc_connection(gfp);
++	struct rxrpc_connection *conn = rxrpc_alloc_connection(rxnet, gfp);
+ 
+ 	if (conn) {
+ 		/* We maintain an extra ref on the connection whilst it is on
+@@ -181,6 +181,8 @@ void rxrpc_new_incoming_connection(struct rxrpc_sock *rx,
+ 	    conn->service_id == rx->service_upgrade.from)
+ 		conn->service_id = rx->service_upgrade.to;
+ 
++	atomic_set(&conn->active, 1);
++
+ 	/* Make the connection a target for incoming packets. */
+ 	rxrpc_publish_service_conn(conn->peer, conn);
+ }
+diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
+index 84242c0e467c..5905530e2f33 100644
+--- a/net/rxrpc/net_ns.c
++++ b/net/rxrpc/net_ns.c
+@@ -65,7 +65,7 @@ static __net_init int rxrpc_init_net(struct net *net)
+ 	atomic_set(&rxnet->nr_client_conns, 0);
+ 	rxnet->kill_all_client_conns = false;
+ 	spin_lock_init(&rxnet->client_conn_cache_lock);
+-	spin_lock_init(&rxnet->client_conn_discard_lock);
++	mutex_init(&rxnet->client_conn_discard_lock);
+ 	INIT_LIST_HEAD(&rxnet->idle_client_conns);
+ 	INIT_WORK(&rxnet->client_conn_reaper,
+ 		  rxrpc_discard_expired_client_conns);
+diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
+index bb2edf6db896..d3a6d24cf871 100644
+--- a/net/rxrpc/proc.c
++++ b/net/rxrpc/proc.c
+@@ -159,7 +159,7 @@ static int rxrpc_connection_seq_show(struct seq_file *seq, void *v)
+ 		seq_puts(seq,
+ 			 "Proto Local                                          "
+ 			 " Remote                                         "
+-			 " SvID ConnID   End Use State    Key     "
++			 " SvID ConnID   End Ref Act State    Key     "
+ 			 " Serial   ISerial  CallId0  CallId1  CallId2  CallId3\n"
+ 			 );
+ 		return 0;
+@@ -177,7 +177,7 @@ static int rxrpc_connection_seq_show(struct seq_file *seq, void *v)
+ 	sprintf(rbuff, "%pISpc", &conn->peer->srx.transport);
+ print:
+ 	seq_printf(seq,
+-		   "UDP   %-47.47s %-47.47s %4x %08x %s %3u"
++		   "UDP   %-47.47s %-47.47s %4x %08x %s %3u %3d"
+ 		   " %s %08x %08x %08x %08x %08x %08x %08x\n",
+ 		   lbuff,
+ 		   rbuff,
+@@ -185,6 +185,7 @@ static int rxrpc_connection_seq_show(struct seq_file *seq, void *v)
+ 		   conn->proto.cid,
+ 		   rxrpc_conn_is_service(conn) ? "Svc" : "Clt",
+ 		   refcount_read(&conn->ref),
++		   atomic_read(&conn->active),
+ 		   rxrpc_conn_states[conn->state],
+ 		   key_serial(conn->key),
+ 		   atomic_read(&conn->serial),
 
 
