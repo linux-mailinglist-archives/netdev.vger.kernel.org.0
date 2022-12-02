@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABFC163FCEB
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:24:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0426263FCEC
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:24:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232168AbiLBAYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 19:24:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34378 "EHLO
+        id S231945AbiLBAYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 19:24:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231531AbiLBAXe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:23:34 -0500
+        with ESMTP id S232171AbiLBAXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:23:36 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE3FD3DF9
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:19:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46C1D4254
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:19:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669940357;
+        s=mimecast20190719; t=1669940365;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0ItRdbm0UyoTawpAty3EqeXI5my06iwbuvMc90NvWqA=;
-        b=Ha8pa+XxPLR3sSq+LelSWqNCcZK+EnALXfRYjQ/aOyLNoajm2JRXZBNecvgX1BkfgkWSLN
-        LKuaBmxRbqNVkd3dcKhgFThQe2jFcximVmBIyf+8I8u03WwyC6gef3MuavrSQws1TzbmfV
-        Bf9YmWxlWWRvTL5SszrbfRiY6urzttg=
+        bh=L5K0/1KSpPMNNElCfjhINDPpkDoq54xRghHeiwJooY0=;
+        b=X376ia1ebp2LKn19njbByDYOBsreZrynojRZ48QM3W2kzSVoCt7NITIx+W3Zu5ejFJPaB3
+        IgMPuZDggH/HlskjyF5YGKv+Ms5SoD+xxl8OE83qs/PwGujGOsJjca39BVsEOKBQluvhvV
+        1Ti3KtD92T0VCyVqxCqixr7ovwmJd+E=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-201-6fBdFN06N4KNyQyVfp0jPQ-1; Thu, 01 Dec 2022 19:19:14 -0500
-X-MC-Unique: 6fBdFN06N4KNyQyVfp0jPQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-335-8_lRfQkSOzyWu744-WoUSw-1; Thu, 01 Dec 2022 19:19:22 -0500
+X-MC-Unique: 8_lRfQkSOzyWu744-WoUSw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CCF2085A59D;
-        Fri,  2 Dec 2022 00:19:13 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 58841101A528;
+        Fri,  2 Dec 2022 00:19:22 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 18F5E492B11;
-        Fri,  2 Dec 2022 00:19:13 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 97F2E40C2065;
+        Fri,  2 Dec 2022 00:19:21 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 29/36] rxrpc: Reduce the use of RCU in packet input
+Subject: [PATCH net-next 30/36] rxrpc: Extract the peer address from an
+ incoming packet earlier
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Fri, 02 Dec 2022 00:19:10 +0000
-Message-ID: <166994035029.1732290.5164470094736354349.stgit@warthog.procyon.org.uk>
+Date:   Fri, 02 Dec 2022 00:19:19 +0000
+Message-ID: <166994035898.1732290.15533782027697967740.stgit@warthog.procyon.org.uk>
 In-Reply-To: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
 References: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,259 +67,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shrink the region of rxrpc_input_packet() that is covered by the RCU read
-lock so that it only covers the connection and call lookup.  This means
-that the bits now outside of that can call sleepable functions such as
-kmalloc and sendmsg.
-
-Also take a ref on the conn or call we're going to use before we drop the
-RCU read lock.
+Extract the peer address from an incoming packet earlier, at the beginning
+of rxrpc_input_packet() and thence pass a pointer to it to various
+functions that use it as part of the lookup rather than doing it on several
+separate paths.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- net/rxrpc/ar-internal.h |    3 +-
- net/rxrpc/call_accept.c |   13 ++-------
- net/rxrpc/input.c       |    7 ++---
- net/rxrpc/io_thread.c   |   68 ++++++++++++++++++++++++++++++++++++-----------
- 4 files changed, 59 insertions(+), 32 deletions(-)
+ net/rxrpc/ar-internal.h |    2 ++
+ net/rxrpc/call_accept.c |   10 ++++++----
+ net/rxrpc/conn_object.c |   29 ++++++++---------------------
+ net/rxrpc/io_thread.c   |   17 +++++++++++++++--
+ 4 files changed, 31 insertions(+), 27 deletions(-)
 
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 6af7298af39b..cfd16f1e5c83 100644
+index cfd16f1e5c83..c3c915a05627 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -961,8 +961,7 @@ void rxrpc_unpublish_service_conn(struct rxrpc_connection *);
-  * input.c
-  */
- void rxrpc_input_call_event(struct rxrpc_call *, struct sk_buff *);
--void rxrpc_input_implicit_end_call(struct rxrpc_sock *, struct rxrpc_connection *,
--				   struct rxrpc_call *);
-+void rxrpc_input_implicit_end_call(struct rxrpc_connection *, struct rxrpc_call *);
+@@ -824,6 +824,7 @@ int rxrpc_service_prealloc(struct rxrpc_sock *, gfp_t);
+ void rxrpc_discard_prealloc(struct rxrpc_sock *);
+ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *,
+ 					   struct rxrpc_sock *,
++					   struct sockaddr_rxrpc *,
+ 					   struct sk_buff *);
+ void rxrpc_accept_incoming_calls(struct rxrpc_local *);
+ int rxrpc_user_charge_accept(struct rxrpc_sock *, unsigned long);
+@@ -916,6 +917,7 @@ extern unsigned int rxrpc_closed_conn_expiry;
  
- /*
-  * io_thread.c
+ struct rxrpc_connection *rxrpc_alloc_connection(struct rxrpc_net *, gfp_t);
+ struct rxrpc_connection *rxrpc_find_connection_rcu(struct rxrpc_local *,
++						   struct sockaddr_rxrpc *,
+ 						   struct sk_buff *,
+ 						   struct rxrpc_peer **);
+ void __rxrpc_disconnect_call(struct rxrpc_connection *, struct rxrpc_call *);
 diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index 5f978b0b2404..beb8efa2e7a9 100644
+index beb8efa2e7a9..11134b7cec17 100644
 --- a/net/rxrpc/call_accept.c
 +++ b/net/rxrpc/call_accept.c
-@@ -336,13 +336,13 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
-  * If this is for a kernel service, when we allocate the call, it will have
-  * three refs on it: (1) the kernel service, (2) the user_call_ID tree, (3) the
-  * retainer ref obtained from the backlog buffer.  Prealloc calls for userspace
-- * services only have the ref from the backlog buffer.  We want to pass this
-- * ref to non-BH context to dispose of.
-+ * services only have the ref from the backlog buffer.  We pass this ref to the
-+ * caller.
-  *
-  * If we want to report an error, we mark the skb with the packet type and
-  * abort code and return NULL.
-  *
-- * The call is returned with the user access mutex held.
-+ * The call is returned with the user access mutex held and a ref on it.
+@@ -258,6 +258,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
+ 						    struct rxrpc_peer *peer,
+ 						    struct rxrpc_connection *conn,
+ 						    const struct rxrpc_security *sec,
++						    struct sockaddr_rxrpc *peer_srx,
+ 						    struct sk_buff *skb)
+ {
+ 	struct rxrpc_backlog *b = rx->backlog;
+@@ -287,8 +288,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
+ 			peer = NULL;
+ 		if (!peer) {
+ 			peer = b->peer_backlog[peer_tail];
+-			if (rxrpc_extract_addr_from_skb(&peer->srx, skb) < 0)
+-				return NULL;
++			peer->srx = *peer_srx;
+ 			b->peer_backlog[peer_tail] = NULL;
+ 			smp_store_release(&b->peer_backlog_tail,
+ 					  (peer_tail + 1) &
+@@ -346,6 +346,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
   */
  struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
  					   struct rxrpc_sock *rx,
-@@ -426,13 +426,6 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
- 
- 	rxrpc_send_ping(call, skb);
- 
--	/* We have to discard the prealloc queue's ref here and rely on a
--	 * combination of the RCU read lock and refs held either by the socket
--	 * (recvmsg queue, to-be-accepted queue or user ID tree) or the kernel
--	 * service to prevent the call from being deallocated too early.
--	 */
--	rxrpc_put_call(call, rxrpc_call_put_discard_prealloc);
--
- 	if (hlist_unhashed(&call->error_link)) {
- 		spin_lock(&call->peer->lock);
- 		hlist_add_head(&call->error_link, &call->peer->error_targets);
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 42addbcf59f9..01d32f817a7a 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -1072,8 +1072,7 @@ void rxrpc_input_call_event(struct rxrpc_call *call, struct sk_buff *skb)
-  *
-  * TODO: If callNumber > call_id + 1, renegotiate security.
-  */
--void rxrpc_input_implicit_end_call(struct rxrpc_sock *rx,
--				   struct rxrpc_connection *conn,
-+void rxrpc_input_implicit_end_call(struct rxrpc_connection *conn,
- 				   struct rxrpc_call *call)
++					   struct sockaddr_rxrpc *peer_srx,
+ 					   struct sk_buff *skb)
  {
- 	switch (READ_ONCE(call->state)) {
-@@ -1091,7 +1090,7 @@ void rxrpc_input_implicit_end_call(struct rxrpc_sock *rx,
- 		break;
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+@@ -371,7 +372,7 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
+ 	 * we have to recheck the routing.  However, we're now holding
+ 	 * rx->incoming_lock, so the values should remain stable.
+ 	 */
+-	conn = rxrpc_find_connection_rcu(local, skb, &peer);
++	conn = rxrpc_find_connection_rcu(local, peer_srx, skb, &peer);
+ 
+ 	if (!conn) {
+ 		sec = rxrpc_get_incoming_security(rx, skb);
+@@ -379,7 +380,8 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
+ 			goto no_call;
  	}
  
--	spin_lock(&rx->incoming_lock);
-+	spin_lock(&conn->bundle->channel_lock);
- 	__rxrpc_disconnect_call(conn, call);
--	spin_unlock(&rx->incoming_lock);
-+	spin_unlock(&conn->bundle->channel_lock);
- }
+-	call = rxrpc_alloc_incoming_call(rx, local, peer, conn, sec, skb);
++	call = rxrpc_alloc_incoming_call(rx, local, peer, conn, sec, peer_srx,
++					 skb);
+ 	if (!call) {
+ 		skb->mark = RXRPC_SKB_MARK_REJECT_BUSY;
+ 		goto no_call;
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index 5a39255ea014..98e49646ca1d 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -73,29 +73,17 @@ struct rxrpc_connection *rxrpc_alloc_connection(struct rxrpc_net *rxnet,
+  * The caller must be holding the RCU read lock.
+  */
+ struct rxrpc_connection *rxrpc_find_connection_rcu(struct rxrpc_local *local,
++						   struct sockaddr_rxrpc *srx,
+ 						   struct sk_buff *skb,
+ 						   struct rxrpc_peer **_peer)
+ {
+ 	struct rxrpc_connection *conn;
+ 	struct rxrpc_conn_proto k;
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+-	struct sockaddr_rxrpc srx;
+ 	struct rxrpc_peer *peer;
+ 
+ 	_enter(",%x", sp->hdr.cid & RXRPC_CIDMASK);
+ 
+-	if (rxrpc_extract_addr_from_skb(&srx, skb) < 0)
+-		goto not_found;
+-
+-	if (srx.transport.family != local->srx.transport.family &&
+-	    (srx.transport.family == AF_INET &&
+-	     local->srx.transport.family != AF_INET6)) {
+-		pr_warn_ratelimited("AF_RXRPC: Protocol mismatch %u not %u\n",
+-				    srx.transport.family,
+-				    local->srx.transport.family);
+-		goto not_found;
+-	}
+-
+ 	k.epoch	= sp->hdr.epoch;
+ 	k.cid	= sp->hdr.cid & RXRPC_CIDMASK;
+ 
+@@ -104,7 +92,7 @@ struct rxrpc_connection *rxrpc_find_connection_rcu(struct rxrpc_local *local,
+ 		 * parameter set.  We look up the peer first as an intermediate
+ 		 * step and then the connection from the peer's tree.
+ 		 */
+-		peer = rxrpc_lookup_peer_rcu(local, &srx);
++		peer = rxrpc_lookup_peer_rcu(local, srx);
+ 		if (!peer)
+ 			goto not_found;
+ 		*_peer = peer;
+@@ -117,8 +105,7 @@ struct rxrpc_connection *rxrpc_find_connection_rcu(struct rxrpc_local *local,
+ 		/* Look up client connections by connection ID alone as their
+ 		 * IDs are unique for this machine.
+ 		 */
+-		conn = idr_find(&rxrpc_client_conn_ids,
+-				sp->hdr.cid >> RXRPC_CIDSHIFT);
++		conn = idr_find(&rxrpc_client_conn_ids, sp->hdr.cid >> RXRPC_CIDSHIFT);
+ 		if (!conn || refcount_read(&conn->ref) == 0) {
+ 			_debug("no conn");
+ 			goto not_found;
+@@ -129,20 +116,20 @@ struct rxrpc_connection *rxrpc_find_connection_rcu(struct rxrpc_local *local,
+ 			goto not_found;
+ 
+ 		peer = conn->peer;
+-		switch (srx.transport.family) {
++		switch (srx->transport.family) {
+ 		case AF_INET:
+ 			if (peer->srx.transport.sin.sin_port !=
+-			    srx.transport.sin.sin_port ||
++			    srx->transport.sin.sin_port ||
+ 			    peer->srx.transport.sin.sin_addr.s_addr !=
+-			    srx.transport.sin.sin_addr.s_addr)
++			    srx->transport.sin.sin_addr.s_addr)
+ 				goto not_found;
+ 			break;
+ #ifdef CONFIG_AF_RXRPC_IPV6
+ 		case AF_INET6:
+ 			if (peer->srx.transport.sin6.sin6_port !=
+-			    srx.transport.sin6.sin6_port ||
++			    srx->transport.sin6.sin6_port ||
+ 			    memcmp(&peer->srx.transport.sin6.sin6_addr,
+-				   &srx.transport.sin6.sin6_addr,
++				   &srx->transport.sin6.sin6_addr,
+ 				   sizeof(struct in6_addr)) != 0)
+ 				goto not_found;
+ 			break;
 diff --git a/net/rxrpc/io_thread.c b/net/rxrpc/io_thread.c
-index 91b8ba5b90db..3b6927610677 100644
+index 3b6927610677..bc65d83fab88 100644
 --- a/net/rxrpc/io_thread.c
 +++ b/net/rxrpc/io_thread.c
-@@ -257,6 +257,8 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
+@@ -155,6 +155,7 @@ static bool rxrpc_extract_abort(struct sk_buff *skb)
+ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
+ {
+ 	struct rxrpc_connection *conn;
++	struct sockaddr_rxrpc peer_srx;
+ 	struct rxrpc_channel *chan;
+ 	struct rxrpc_call *call = NULL;
+ 	struct rxrpc_skb_priv *sp;
+@@ -257,6 +258,18 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
  	if (sp->hdr.serviceId == 0)
  		goto bad_message;
  
-+	rcu_read_lock();
++	if (WARN_ON_ONCE(rxrpc_extract_addr_from_skb(&peer_srx, skb) < 0))
++		return 0; /* Unsupported address type - discard. */
 +
++	if (peer_srx.transport.family != local->srx.transport.family &&
++	    (peer_srx.transport.family == AF_INET &&
++	     local->srx.transport.family != AF_INET6)) {
++		pr_warn_ratelimited("AF_RXRPC: Protocol mismatch %u not %u\n",
++				    peer_srx.transport.family,
++				    local->srx.transport.family);
++		return 0; /* Wrong address type - discard. */
++	}
++
+ 	rcu_read_lock();
+ 
  	if (rxrpc_to_server(sp)) {
- 		/* Weed out packets to services we're not offering.  Packets
- 		 * that would begin a call are explicitly rejected and the rest
-@@ -264,7 +266,9 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
- 		 */
- 		rx = rcu_dereference(local->service);
- 		if (!rx || (sp->hdr.serviceId != rx->srx.srx_service &&
--			    sp->hdr.serviceId != rx->second_service)) {
-+			    sp->hdr.serviceId != rx->second_service)
-+		    ) {
-+			rcu_read_unlock();
- 			if (sp->hdr.type == RXRPC_PACKET_TYPE_DATA &&
- 			    sp->hdr.seq == 1)
- 				goto unsupported_service;
-@@ -293,7 +297,12 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
- 		if (sp->hdr.callNumber == 0) {
- 			/* Connection-level packet */
- 			_debug("CONN %p {%d}", conn, conn->debug_id);
--			rxrpc_post_packet_to_conn(conn, skb);
-+			conn = rxrpc_get_connection_maybe(conn, rxrpc_conn_get_conn_input);
-+			rcu_read_unlock();
-+			if (conn) {
-+				rxrpc_post_packet_to_conn(conn, skb);
-+				rxrpc_put_connection(conn, rxrpc_conn_put_conn_input);
-+			}
- 			return 0;
- 		}
- 
-@@ -305,20 +314,26 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
- 		chan = &conn->channels[channel];
- 
- 		/* Ignore really old calls */
--		if (sp->hdr.callNumber < chan->last_call)
-+		if (sp->hdr.callNumber < chan->last_call) {
-+			rcu_read_unlock();
- 			return 0;
-+		}
- 
- 		if (sp->hdr.callNumber == chan->last_call) {
- 			if (chan->call ||
--			    sp->hdr.type == RXRPC_PACKET_TYPE_ABORT)
-+			    sp->hdr.type == RXRPC_PACKET_TYPE_ABORT) {
-+				rcu_read_unlock();
- 				return 0;
-+			}
- 
- 			/* For the previous service call, if completed
- 			 * successfully, we discard all further packets.
- 			 */
- 			if (rxrpc_conn_is_service(conn) &&
--			    chan->last_type == RXRPC_PACKET_TYPE_ACK)
-+			    chan->last_type == RXRPC_PACKET_TYPE_ACK) {
-+				rcu_read_unlock();
- 				return 0;
-+			}
- 
- 			/* But otherwise we need to retransmit the final packet
- 			 * from data cached in the connection record.
-@@ -328,20 +343,32 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
- 						    sp->hdr.seq,
- 						    sp->hdr.serial,
- 						    sp->hdr.flags);
--			rxrpc_post_packet_to_conn(conn, skb);
-+			conn = rxrpc_get_connection_maybe(conn, rxrpc_conn_get_call_input);
-+			rcu_read_unlock();
-+			if (conn) {
-+				rxrpc_post_packet_to_conn(conn, skb);
-+				rxrpc_put_connection(conn, rxrpc_conn_put_call_input);
-+			}
- 			return 0;
- 		}
- 
- 		call = rcu_dereference(chan->call);
- 
- 		if (sp->hdr.callNumber > chan->call_id) {
--			if (rxrpc_to_client(sp))
-+			if (rxrpc_to_client(sp)) {
-+				rcu_read_unlock();
- 				goto reject_packet;
--			if (call)
--				rxrpc_input_implicit_end_call(rx, conn, call);
--			call = NULL;
-+			}
-+			if (call) {
-+				rxrpc_input_implicit_end_call(conn, call);
-+				chan->call = NULL;
-+				call = NULL;
-+			}
- 		}
- 
-+		if (call && !rxrpc_try_get_call(call, rxrpc_call_get_input))
-+			call = NULL;
-+
- 		if (call) {
- 			if (sp->hdr.serviceId != call->dest_srx.srx_service)
- 				call->dest_srx.srx_service = sp->hdr.serviceId;
-@@ -352,23 +379,33 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
+@@ -276,7 +289,7 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
  		}
  	}
  
--	if (!call || refcount_read(&call->ref) == 0) {
-+	if (!call) {
- 		if (rxrpc_to_client(sp) ||
--		    sp->hdr.type != RXRPC_PACKET_TYPE_DATA)
-+		    sp->hdr.type != RXRPC_PACKET_TYPE_DATA) {
-+			rcu_read_unlock();
- 			goto bad_message;
--		if (sp->hdr.seq != 1)
-+		}
-+		if (sp->hdr.seq != 1) {
-+			rcu_read_unlock();
+-	conn = rxrpc_find_connection_rcu(local, skb, &peer);
++	conn = rxrpc_find_connection_rcu(local, &peer_srx, skb, &peer);
+ 	if (conn) {
+ 		if (sp->hdr.securityIndex != conn->security_ix)
+ 			goto wrong_security;
+@@ -389,7 +402,7 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
+ 			rcu_read_unlock();
  			return 0;
-+		}
- 		call = rxrpc_new_incoming_call(local, rx, skb);
--		if (!call)
-+		if (!call) {
-+			rcu_read_unlock();
+ 		}
+-		call = rxrpc_new_incoming_call(local, rx, skb);
++		call = rxrpc_new_incoming_call(local, rx, &peer_srx, skb);
+ 		if (!call) {
+ 			rcu_read_unlock();
  			goto reject_packet;
-+		}
- 	}
- 
-+	rcu_read_unlock();
-+
- 	/* Process a call packet. */
- 	rxrpc_input_call_event(call, skb);
-+	rxrpc_put_call(call, rxrpc_call_put_input);
- 	trace_rxrpc_rx_done(0, 0);
- 	return 0;
- 
- wrong_security:
-+	rcu_read_unlock();
- 	trace_rxrpc_abort(0, "SEC", sp->hdr.cid, sp->hdr.callNumber, sp->hdr.seq,
- 			  RXKADINCONSISTENCY, EBADMSG);
- 	skb->priority = RXKADINCONSISTENCY;
-@@ -381,6 +418,7 @@ static int rxrpc_input_packet(struct rxrpc_local *local, struct sk_buff **_skb)
- 	goto post_abort;
- 
- reupgrade:
-+	rcu_read_unlock();
- 	trace_rxrpc_abort(0, "UPG", sp->hdr.cid, sp->hdr.callNumber, sp->hdr.seq,
- 			  RX_PROTOCOL_ERROR, EBADMSG);
- 	goto protocol_error;
-@@ -433,9 +471,7 @@ int rxrpc_io_thread(void *data)
- 			switch (skb->mark) {
- 			case RXRPC_SKB_MARK_PACKET:
- 				skb->priority = 0;
--				rcu_read_lock();
- 				rxrpc_input_packet(local, &skb);
--				rcu_read_unlock();
- 				trace_rxrpc_rx_done(skb->mark, skb->priority);
- 				rxrpc_free_skb(skb, rxrpc_skb_put_input);
- 				break;
 
 
