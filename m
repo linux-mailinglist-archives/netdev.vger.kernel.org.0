@@ -2,122 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4FB663FDCB
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 02:44:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E605163FDE9
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 03:03:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231629AbiLBBoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 20:44:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
+        id S231358AbiLBCDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 21:03:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbiLBBof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 20:44:35 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBD3D2DA7;
-        Thu,  1 Dec 2022 17:44:33 -0800 (PST)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NNbM76HkfzHw22;
-        Fri,  2 Dec 2022 09:43:47 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 2 Dec 2022 09:44:31 +0800
-Subject: Re: [PATCH net 1/2] octeontx2-pf: Fix possible memory leak in
- otx2_probe()
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        <sunil.kovvuri@gmail.com>, <sgoutham@marvell.com>
-CC:     <gakula@marvell.com>, <sbhatta@marvell.com>, <hkelam@marvell.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <naveenm@marvell.com>, <rsaladi2@marvell.com>,
-        <linux-kernel@vger.kernel.org>
-References: <cover.1669253985.git.william.xuanziyang@huawei.com>
- <e024450cf08f469fb1e0153b78a04a54829dfddb.1669253985.git.william.xuanziyang@huawei.com>
- <Y4DHHUUbGl5wWGQ+@boxer> <f4bb4aa5-08cc-4a4d-76cf-46bda5c6de59@huawei.com>
-Message-ID: <538c8b9a-7d6c-69f8-9e14-45436446127e@huawei.com>
-Date:   Fri, 2 Dec 2022 09:44:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S230456AbiLBCDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 21:03:20 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E61BE139
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 18:03:19 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id be13so5319642lfb.4
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 18:03:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=6DC30ra67XbimQ0DPoAW+D9lHfkQCC2g+rgI/z0QNHM=;
+        b=XbCWI67Q8OAZgL4Wau2xeIeIytpIwMQxvjeU30HTI/a+y1BnRiRRoRO4mJgFhAISmV
+         gtnXQG8XTMrlVx99MvawpbB9QACC/wSfDHghUJiL4sbz3g6pF1/zjyIn4dn8+J1YjQMB
+         YrTDnKSGQkvmraXxKJ6WfSxgABqdrwvJLLSxZKFc4bOuIbZLsC+7VbvnwN0dhc5VgA8O
+         X/B8HugSgszqD/Id/T4L1nlB0V7MUmorYjCu57NTsoycqmJePoJED852KMAGoH4B9G7x
+         AszHulURpntF6Fs5uafyEIFgxLHLdCKoVQJ3NSi+0kO4R/BBnaHvVjLDWSyKhPXoJCmD
+         fRUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=6DC30ra67XbimQ0DPoAW+D9lHfkQCC2g+rgI/z0QNHM=;
+        b=s2JffWXAK9GB/KuusmOyP4LykpYlwslMIT5xrvAomqhbbY6k6zl0ja7hFKYWY6VqlW
+         U/Bm+wn8dquABh5XAkr6Ou2GIFf6q9rz3yZJ0xvmus2yj4i90mMqT+oeSDdaTC+FX40O
+         7mibsdMZK10KLjrc7VqhA1B4eYwvjJKpvAZmm1sHH9v9FlbWBVNLTphaIPIaytCYamDH
+         Qqd/thee82K2/Hy8PgE0ZyR/YBY0VLPm+ZbyleZ1i7McdRpymoTYQlKqXkVPI1NlbRN0
+         JJHIfTnyVnTdQ1YRgB+9c1q+bO22O/z3VdIo3MU54VxBitSMhwnMNOG5FWsiH+b3/qQz
+         nykA==
+X-Gm-Message-State: ANoB5pnMrWuFs/4oldFAchHsA/MBW5pWBjczyJjHIJ50Uymu6UHj7CSo
+        DvmBW5JZb9bDZt4t8635kT5gLs39u0bAwcVdsZLAdma6GTzASA==
+X-Google-Smtp-Source: AA0mqf7OXDRBb0RQNP0Alc5TqIwHvZAArQDKI7dY8JCWviTOMDXwEOM0P9W6SH9e6DGU3L6vHTY4NiNuPTamBW1YHQQ=
+X-Received: by 2002:ac2:5f76:0:b0:4af:7f16:e1c4 with SMTP id
+ c22-20020ac25f76000000b004af7f16e1c4mr24901596lfc.351.1669946597502; Thu, 01
+ Dec 2022 18:03:17 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <f4bb4aa5-08cc-4a4d-76cf-46bda5c6de59@huawei.com>
-Content-Type: text/plain; charset="gbk"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20221129200653.962019-1-lixiaoyan@google.com> <20221129200653.962019-2-lixiaoyan@google.com>
+ <CACKFLi=qu7KBNPAST0fffxu1TC7-PAX2QzMM6b-1C0X5OCNFqQ@mail.gmail.com>
+In-Reply-To: <CACKFLi=qu7KBNPAST0fffxu1TC7-PAX2QzMM6b-1C0X5OCNFqQ@mail.gmail.com>
+From:   Coco Li <lixiaoyan@google.com>
+Date:   Thu, 1 Dec 2022 18:03:06 -0800
+Message-ID: <CADjXwjgJtXQx14h4_aSYiEHgZjGsYVGEs+LKm13BkweZFAtUUQ@mail.gmail.com>
+Subject: Re: [RFC net-next v3 2/2] bnxt: Use generic HBH removal helper in tx path
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Daisuke Nishimura <nishimura@mxp.nes.nec.co.jp>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-16.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,HK_RANDOM_ENVFROM,HK_RANDOM_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> On Thu, Nov 24, 2022 at 09:56:43AM +0800, Ziyang Xuan wrote:
->>> In otx2_probe(), there are several possible memory leak bugs
->>> in exception paths as follows:
->>> 1. Do not release pf->otx2_wq when excute otx2_init_tc() failed.
->>> 2. Do not shutdown tc when excute otx2_register_dl() failed.
->>> 3. Do not unregister devlink when initialize SR-IOV failed.
->>>
->>> Fixes: 1d4d9e42c240 ("octeontx2-pf: Add tc flower hardware offload on ingress traffic")
->>> Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
->>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->>> ---
->>>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 5 ++++-
->>>  1 file changed, 4 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
->>> index 303930499a4c..8d7f2c3b0cfd 100644
->>> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
->>> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
->>> @@ -2900,7 +2900,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->>>  
->>>  	err = otx2_register_dl(pf);
->>>  	if (err)
->>> -		goto err_mcam_flow_del;
->>> +		goto err_register_dl;
->>>  
->>>  	/* Initialize SR-IOV resources */
->>>  	err = otx2_sriov_vfcfg_init(pf);
->>> @@ -2919,8 +2919,11 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->>>  	return 0;
->>
->> If otx2_dcbnl_set_ops() fails at the end then shouldn't we also call
->> otx2_sriov_vfcfg_cleanup() ?
-> 
-> I think it does not need. This is the probe process. PF and VF are all not ready to work,
-> so pf->vf_configs[i].link_event_work does not scheduled. And pf->vf_configs memory resource will
-> be freed by devm subsystem if probe failed. There are not memory leak and other problems.
-> 
-Hello Sunil Goutham, Maciej Fijalkowski,
+On Tue, Nov 29, 2022 at 12:42 PM Michael Chan <michael.chan@broadcom.com> wrote:
+>
+> On Tue, Nov 29, 2022 at 12:07 PM Coco Li <lixiaoyan@google.com> wrote:
+> > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> > index 0fe164b42c5d..f144a5ef2e04 100644
+> > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> > @@ -389,6 +389,9 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+> >                         return NETDEV_TX_BUSY;
+> >         }
+> >
+> > +       if (unlikely(ipv6_hopopt_jumbo_remove(skb)))
+> > +               goto tx_free;
+> > +
+> >         length = skb->len;
+> >         len = skb_headlen(skb);
+> >         last_frag = skb_shinfo(skb)->nr_frags;
+> > @@ -11342,9 +11345,15 @@ static bool bnxt_exthdr_check(struct bnxt *bp, struct sk_buff *skb, int nw_off,
+> >
+> >                 if (hdrlen > 64)
+> >                         return false;
+> > +
+> > +               /* The ext header may be a hop-by-hop header inserted for
+> > +                * big TCP purposes. This will be removed before sending
+> > +                * from NIC, so do not count it.
+> > +                */
+> > +               if (!(*nexthdr == NEXTHDR_HOP && ipv6_has_hopopt_jumbo(skb)))
+>
+> To be more efficient, why not just check the header's tlv_type here
+> instead of calling ipv6_has_hopopt_jumbo()?
+>
 
-What do you think about my analysis? Look forward to your reply.
+It may be possible that the next header is Hop_by_hop but the packet
+is not tcp, meaning that it would not be removed and we'd still want
+to count this header towards the limit.
+ipv6_has_hopopt_jumbo checks for the big tcp case (gso, skb len
+reaches a certain size) particularly.
 
-Thank you!
-
-> @Sunil Goutham, Please help to confirm.
-> 
-> Thanks.
-> 
->>
->>>  
->>>  err_pf_sriov_init:
->>> +	otx2_unregister_dl(pf);
->>> +err_register_dl:
->>>  	otx2_shutdown_tc(pf);
->>>  err_mcam_flow_del:
->>> +	destroy_workqueue(pf->otx2_wq);
->>>  	otx2_mcam_flow_del(pf);
->>>  err_unreg_netdev:
->>>  	unregister_netdev(netdev);
->>> -- 
->>> 2.25.1
->>>
->> .
->>
-> .
-> 
+> > +                       hdr_count++;
+> >                 nexthdr = &hp->nexthdr;
+> >                 start += hdrlen;
+> > -               hdr_count++;
+> >         }
+> >         if (nextp) {
+> >                 /* Caller will check inner protocol */
+> > @@ -13657,6 +13666,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+> >                 dev->features &= ~NETIF_F_LRO;
+> >         dev->priv_flags |= IFF_UNICAST_FLT;
+> >
+> > +       netif_set_tso_max_size(dev, GSO_MAX_SIZE);
+> > +
+> >  #ifdef CONFIG_BNXT_SRIOV
+> >         init_waitqueue_head(&bp->sriov_cfg_wait);
+> >  #endif
+> > --
+> > 2.38.1.584.g0f3c55d4c2-goog
+> >
