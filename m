@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09B9D640F08
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 21:16:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F756640F07
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 21:16:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234945AbiLBUQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 15:16:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50442 "EHLO
+        id S234909AbiLBUQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 15:16:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234936AbiLBUQH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 15:16:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971F5F233B
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 12:16:05 -0800 (PST)
+        with ESMTP id S234514AbiLBUQF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 15:16:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D31F4657
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 12:16:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FBF5B821A2
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 20:16:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 547F8C433C1;
-        Fri,  2 Dec 2022 20:16:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 293CCB82279
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 20:16:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62F60C433C1;
+        Fri,  2 Dec 2022 20:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670012162;
-        bh=Vv26uo8juTQPCIxGRc87fEyl0wV+pPMFicNCakD4H08=;
+        s=k20201202; t=1670012158;
+        bh=toWihzUnrnY/xLkc3n8uTzFoTWu3zhqrleykrLnAAM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nWcPOA0AcZEyP9ZHHgDeoPKsDkGa2AGVdP8Fdy9c22v1Dbf9yw5RbruMb/iuvrY2n
-         hOvyUAr2VsDveWF/mWoY2JA0fFPBiB/96JHO5kwIxSMT18+3gnGv84rSZrgVedJA3l
-         kSw7wXAXa94gsEqpR/tr/CpTz/gcqm4eh61yLELMfI+Za3TZ0zdvPw7pFhsBmNDrvU
-         7T9PHrsfs6R10OXaughGIACfdt08I5F+xHROCEC9Y5ycgPKbuP+ZrycpvOJk941bZD
-         FkIgFW/HENH2fXWxv0+9Y5ZgFjav6MrCzusWMqdBFPVuw7+/ZnqV2+Xb/nAjfXAiTl
-         fH5lUHdBF3/LQ==
+        b=GqmBdt2AwqiGh92OvyBe+5JJtkjL33pLetZZgjFLShGAGJaBn/uwG0OK6gp5D6fUm
+         g/J65RSWf9dg0RamO3MqS60cc36pGmV1QoJXww9zx8gbIDC37ZlqfH7XNCG5EYsSci
+         KvLanztH0zTWLH+1FslW8NL2JcH3f57ZebYxc2T2yk8dUUOpw5Pe+tIugrcCk1ZMWB
+         0OPJYYAVf6YWpAXTm/rLBwzZfxmUB4QsXSRdRqcmgDGa2GZnPiFHyziufX+gHvbD5q
+         6VjndDTg8dVtCCCuCRf/6R0YKeRUqz1xm/MyU3GN8ciuTR5SCO9XbKuLMaJgigof6J
+         nnx68KlcD1OTQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -39,10 +39,10 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Bharat Bhushan <bbhushan2@marvell.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH xfrm-next 12/13] net/mlx5e: Handle ESN update events
-Date:   Fri,  2 Dec 2022 22:14:56 +0200
-Message-Id: <908e318c7d3ed3ff602c8dd9a6b793f4cb9d32d0.1670011885.git.leonro@nvidia.com>
+        Raed Salem <raeds@nvidia.com>
+Subject: [PATCH xfrm-next 13/13] net/mlx5e: Open mlx5 driver to accept IPsec packet offload
+Date:   Fri,  2 Dec 2022 22:14:57 +0200
+Message-Id: <92123e9097808796a5f432e35eb22ec4a111fc22.1670011885.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <cover.1670011885.git.leonro@nvidia.com>
 References: <cover.1670011885.git.leonro@nvidia.com>
@@ -59,115 +59,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Extend event logic to update ESN state (esn_msb, esn_overlap)
-for an IPsec Offload context.
+Enable configuration of IPsec packet offload through XFRM state add
+interface together with moving specific to IPsec packet mode limitations
+to specific switch-case section.
 
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec.c       |  5 +--
- .../mellanox/mlx5/core/en_accel/ipsec.h       |  2 +
- .../mlx5/core/en_accel/ipsec_offload.c        | 44 +++++++++++++++++++
- 3 files changed, 48 insertions(+), 3 deletions(-)
+ .../mellanox/mlx5/core/en_accel/ipsec.c       | 41 ++++++++++++++-----
+ 1 file changed, 31 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index 4f176bd8395a..f5f930ea3f0f 100644
+index f5f930ea3f0f..bb9023957f74 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -108,9 +108,8 @@ static void mlx5e_ipsec_init_limits(struct mlx5e_ipsec_sa_entry *sa_entry,
- 		x->lft.hard_packet_limit - x->lft.soft_packet_limit;
+@@ -191,11 +191,6 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
+ 		netdev_info(netdev, "Only IPv4/6 xfrm states may be offloaded\n");
+ 		return -EINVAL;
+ 	}
+-	if (x->props.mode != XFRM_MODE_TRANSPORT &&
+-	    x->props.mode != XFRM_MODE_TUNNEL) {
+-		dev_info(&netdev->dev, "Only transport and tunnel xfrm states may be offloaded\n");
+-		return -EINVAL;
+-	}
+ 	if (x->id.proto != IPPROTO_ESP) {
+ 		netdev_info(netdev, "Only ESP xfrm state may be offloaded\n");
+ 		return -EINVAL;
+@@ -229,11 +224,32 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
+ 		netdev_info(netdev, "Cannot offload xfrm states with geniv other than seqiv\n");
+ 		return -EINVAL;
+ 	}
+-	if (x->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
+-		netdev_info(netdev, "Unsupported xfrm offload type\n");
+-		return -EINVAL;
+-	}
+-	if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET) {
++	switch (x->xso.type) {
++	case XFRM_DEV_OFFLOAD_CRYPTO:
++		if (!(mlx5_ipsec_device_caps(priv->mdev) &
++		      MLX5_IPSEC_CAP_CRYPTO)) {
++			netdev_info(netdev, "Crypto offload is not supported\n");
++			return -EINVAL;
++		}
++
++		if (x->props.mode != XFRM_MODE_TRANSPORT &&
++		    x->props.mode != XFRM_MODE_TUNNEL) {
++			netdev_info(netdev, "Only transport and tunnel xfrm states may be offloaded\n");
++			return -EINVAL;
++		}
++		break;
++	case XFRM_DEV_OFFLOAD_PACKET:
++		if (!(mlx5_ipsec_device_caps(priv->mdev) &
++		      MLX5_IPSEC_CAP_PACKET_OFFLOAD)) {
++			netdev_info(netdev, "Packet offload is not supported\n");
++			return -EINVAL;
++		}
++
++		if (x->props.mode != XFRM_MODE_TRANSPORT) {
++			netdev_info(netdev, "Only transport xfrm states may be offloaded in packet mode\n");
++			return -EINVAL;
++		}
++
+ 		if (x->replay_esn && x->replay_esn->replay_window != 32 &&
+ 		    x->replay_esn->replay_window != 64 &&
+ 		    x->replay_esn->replay_window != 128 &&
+@@ -263,6 +279,11 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
+ 				    "Hard packet limit must be greater than soft one\n");
+ 			return -EINVAL;
+ 		}
++		break;
++	default:
++		netdev_info(netdev, "Unsupported xfrm offload type %d\n",
++			    x->xso.type);
++		return -EINVAL;
+ 	}
+ 	return 0;
  }
- 
--static void
--mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
--				   struct mlx5_accel_esp_xfrm_attrs *attrs)
-+void mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
-+					struct mlx5_accel_esp_xfrm_attrs *attrs)
- {
- 	struct xfrm_state *x = sa_entry->x;
- 	struct aes_gcm_keymat *aes_gcm = &attrs->aes_gcm;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index e7f21e449268..a92e19c4c499 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -230,6 +230,8 @@ void mlx5e_ipsec_aso_update_curlft(struct mlx5e_ipsec_sa_entry *sa_entry,
- void mlx5e_accel_ipsec_fs_read_stats(struct mlx5e_priv *priv,
- 				     void *ipsec_stats);
- 
-+void mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
-+					struct mlx5_accel_esp_xfrm_attrs *attrs);
- static inline struct mlx5_core_dev *
- mlx5e_ipsec_sa2dev(struct mlx5e_ipsec_sa_entry *sa_entry)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index 1b5014ffa257..8e3614218fc4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -6,6 +6,10 @@
- #include "ipsec.h"
- #include "lib/mlx5.h"
- 
-+enum {
-+	MLX5_IPSEC_ASO_REMOVE_FLOW_PKT_CNT_OFFSET,
-+};
-+
- u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev)
- {
- 	u32 caps = 0;
-@@ -260,6 +264,39 @@ void mlx5_accel_esp_modify_xfrm(struct mlx5e_ipsec_sa_entry *sa_entry,
- 	memcpy(&sa_entry->attrs, attrs, sizeof(sa_entry->attrs));
- }
- 
-+static void
-+mlx5e_ipsec_aso_update_esn(struct mlx5e_ipsec_sa_entry *sa_entry,
-+			   const struct mlx5_accel_esp_xfrm_attrs *attrs)
-+{
-+	struct mlx5_wqe_aso_ctrl_seg data = {};
-+
-+	data.data_mask_mode = MLX5_ASO_DATA_MASK_MODE_BITWISE_64BIT << 6;
-+	data.condition_1_0_operand = MLX5_ASO_ALWAYS_TRUE | MLX5_ASO_ALWAYS_TRUE
-+								    << 4;
-+	data.data_offset_condition_operand = MLX5_IPSEC_ASO_REMOVE_FLOW_PKT_CNT_OFFSET;
-+	data.bitwise_data = cpu_to_be64(BIT_ULL(54));
-+	data.data_mask = data.bitwise_data;
-+
-+	mlx5e_ipsec_aso_query(sa_entry, &data);
-+}
-+
-+static void mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry,
-+					 u32 mode_param)
-+{
-+	struct mlx5_accel_esp_xfrm_attrs attrs = {};
-+
-+	if (mode_param < MLX5E_IPSEC_ESN_SCOPE_MID) {
-+		sa_entry->esn_state.esn++;
-+		sa_entry->esn_state.overlap = 0;
-+	} else {
-+		sa_entry->esn_state.overlap = 1;
-+	}
-+
-+	mlx5e_ipsec_build_accel_xfrm_attrs(sa_entry, &attrs);
-+	mlx5_accel_esp_modify_xfrm(sa_entry, &attrs);
-+	mlx5e_ipsec_aso_update_esn(sa_entry, &attrs);
-+}
-+
- static void mlx5e_ipsec_handle_event(struct work_struct *_work)
- {
- 	struct mlx5e_ipsec_work *work =
-@@ -284,6 +321,13 @@ static void mlx5e_ipsec_handle_event(struct work_struct *_work)
- 		goto unlock;
- 
- 	aso->use_cache = true;
-+	if (attrs->esn_trigger &&
-+	    !MLX5_GET(ipsec_aso, aso->ctx, esn_event_arm)) {
-+		u32 mode_param = MLX5_GET(ipsec_aso, aso->ctx, mode_parameter);
-+
-+		mlx5e_ipsec_update_esn_state(sa_entry, mode_param);
-+	}
-+
- 	if (attrs->soft_packet_limit != XFRM_INF)
- 		if (!MLX5_GET(ipsec_aso, aso->ctx, soft_lft_arm) ||
- 		    !MLX5_GET(ipsec_aso, aso->ctx, hard_lft_arm) ||
 -- 
 2.38.1
 
