@@ -2,107 +2,315 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57087640199
+	by mail.lfdr.de (Postfix) with ESMTP id EE27264019B
 	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:10:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232413AbiLBIKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 03:10:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53200 "EHLO
+        id S232606AbiLBIKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 03:10:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232359AbiLBIKE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:10:04 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855E4AE4E0
+        with ESMTP id S232602AbiLBIKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:10:05 -0500
+Received: from out-190.mta0.migadu.com (out-190.mta0.migadu.com [91.218.175.190])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8581DAE4F3
         for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:10:03 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1p117L-0004RO-0U; Fri, 02 Dec 2022 09:09:55 +0100
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1p117I-0004pi-Ez; Fri, 02 Dec 2022 09:09:52 +0100
-Date:   Fri, 2 Dec 2022 09:09:52 +0100
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
-        Alexander Hochbaum <alex@appudo.com>,
-        Da Xue <da@libre.computer>, Po-Hao Huang <phhuang@realtek.com>,
-        Viktor Petrenko <g0000ga@gmail.com>
-Subject: Re: [PATCH v4 08/11] wifi: rtw88: Add rtw8821cu chipset support
-Message-ID: <20221202080952.GG9130@pengutronix.de>
-References: <20221129100754.2753237-1-s.hauer@pengutronix.de>
- <20221129100754.2753237-9-s.hauer@pengutronix.de>
- <20221129081753.087b7a35@kernel.org>
+Message-ID: <cb1d8ee5-c5b4-261b-7cbb-459dbbe700b9@linux.dev>
+Date:   Fri, 2 Dec 2022 00:09:53 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221129081753.087b7a35@kernel.org>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH bpf-next,v3 4/4] selftests/bpf: add xfrm_info tests
+Content-Language: en-US
+To:     Eyal Birger <eyal.birger@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        andrii@kernel.org, daniel@iogearbox.net, nicolas.dichtel@6wind.com,
+        razor@blackwall.org, mykolal@fb.com, ast@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, shuah@kernel.org, liuhangbin@gmail.com,
+        lixiaoyan@google.com
+References: <20221201211425.1528197-1-eyal.birger@gmail.com>
+ <20221201211425.1528197-5-eyal.birger@gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20221201211425.1528197-5-eyal.birger@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 29, 2022 at 08:17:53AM -0800, Jakub Kicinski wrote:
-> On Tue, 29 Nov 2022 11:07:51 +0100 Sascha Hauer wrote:
-> > +config RTW88_8821CU
-> > +	tristate "Realtek 8821CU USB wireless network adapter"
-> > +	depends on USB
-> > +	select RTW88_CORE
-> > +	select RTW88_USB
-> > +	select RTW88_8821C
-> > +	help
-> > +	  Select this option will enable support for 8821CU chipset
-> > +
-> > +	  802.11ac USB wireless network adapter
+On 12/1/22 1:14 PM, Eyal Birger wrote:
+> Test the xfrm_info kfunc helpers.
 > 
-> Those kconfig knobs add so little code, why not combine them all into
-> one? No point bothering the user with 4 different questions with amount
-> to almost nothing.
+> Note: the tests require support for xfrmi "external" mode in iproute2.
 
-I tend to agree here. I followed the pattern used with PCI support here,
-but I also think that we don't need to be able to select all chips
-individually. The following should be enough:
+Not needed now. Please update the commit message.
 
-config RTW88_PCI
-	tristate
-	depends on PCI
-	default y
+The test is failing on platform that has no kfunc support yet.  Please check the 
+BPF CI result in patchwork after posting to ensure the tests run well:
+https://patchwork.kernel.org/project/netdevbpf/patch/20221201211425.1528197-5-eyal.birger@gmail.com/
 
-config RTW88_USB
-	tristate
-	depends on USB
-	default y
+This test needs to be added to the DENYLIST.<arch> for the not yet supported 
+platform.  Please refer to selftests/bpf/README.rst for details.
 
-Still I'd like to continue with the current pattern to not block merging
-of the USB support with this topic.
+[ ... ]
 
-I could create a follow up patch though if that's desired.
+> +#define SYS_NOFAIL(fmt, ...)					\
+> +	({							\
+> +		char cmd[1024];					\
+> +		snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__);	\
+> +		system(cmd);					\
+> +	})
+> +
+> +static int attach_tc_prog(struct bpf_tc_hook *hook, int igr_fd, int egr_fd)
+> +{
+> +	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts1, .handle = 1,
+> +			    .priority = 1, .prog_fd = igr_fd);
+> +	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts2, .handle = 1,
+> +			    .priority = 1, .prog_fd = egr_fd);
 
-Sascha
+s/DECLARE_LIBBPF_OPTS/LIBBPF_OPTS/
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+DECLARE_ is a legacy naming in libbpf_legacy.h
+
+[ ... ]
+
+> +static int setup_xfrmi_external_dev(const char *ns)
+> +{
+> +	struct {
+> +		struct nlmsghdr nh;
+> +		struct ifinfomsg info;
+> +		unsigned char data[128];
+> +	} req;
+> +	struct rtattr *link_info, *info_data;
+> +	struct nstoken *nstoken;
+> +	int ret = -1, sock = 0;
+
+sock = -1;
+
+> +	struct nlmsghdr *nh;
+> +
+> +	memset(&req, 0, sizeof(req));
+> +	nh = &req.nh;
+> +	nh->nlmsg_len = NLMSG_LENGTH(sizeof(req.info));
+> +	nh->nlmsg_type = RTM_NEWLINK;
+> +	nh->nlmsg_flags |= NLM_F_CREATE | NLM_F_REQUEST;
+> +
+> +	rtattr_add_str(nh, IFLA_IFNAME, "ipsec0");
+> +	link_info = rtattr_begin(nh, IFLA_LINKINFO);
+> +	rtattr_add_str(nh, IFLA_INFO_KIND, "xfrm");
+> +	info_data = rtattr_begin(nh, IFLA_INFO_DATA);
+> +	rtattr_add(nh, IFLA_XFRM_COLLECT_METADATA, 0);
+> +	rtattr_end(nh, info_data);
+> +	rtattr_end(nh, link_info);
+> +
+> +	nstoken = open_netns(ns);
+
+Please check error.
+
+> +
+> +	sock = socket(AF_NETLINK, SOCK_RAW | SOCK_CLOEXEC, NETLINK_ROUTE);
+> +	if (!ASSERT_GT(sock, 0, "netlink socket"))
+
+s/_GT/_GE/
+
+> +		goto Exit;
+
+Please run checkpatch.pl...
+
+CHECK: Avoid CamelCase: <Exit>
+#301: FILE: tools/testing/selftests/bpf/prog_tests/xfrm_info.c:250:
++		goto Exit;
+
+> +	ret = send(sock, nh, nh->nlmsg_len, 0);
+> +	if (!ASSERT_EQ(ret, nh->nlmsg_len, "netlink send length"))
+> +		goto Exit;
+> +
+> +	ret = 0;
+> +Exit:
+> +	if (sock)
+
+if (sock != -1) ...
+
+> +		close(sock);
+> +	close_netns(nstoken);
+> +	return ret;
+> +}
+> +
+> +static int config_overlay(void)
+> +{
+> +	if (setup_xfrm_tunnel(NS0, NS1, IP4_ADDR_VETH01, IP4_ADDR_VETH10,
+> +			      IF_ID_0_TO_1, IF_ID_1))
+> +		goto fail;
+> +	if (setup_xfrm_tunnel(NS0, NS2, IP4_ADDR_VETH02, IP4_ADDR_VETH20,
+> +			      IF_ID_0_TO_2, IF_ID_2))
+> +		goto fail;
+> +
+> +	/* Older iproute2 doesn't support this option */
+> +	if (!ASSERT_OK(setup_xfrmi_external_dev(NS0), "xfrmi"))
+> +		goto fail;
+> +
+> +	SYS("ip -net " NS0 " addr add 192.168.1.100/24 dev ipsec0");
+> +	SYS("ip -net " NS0 " link set dev ipsec0 up");
+> +
+> +	SYS("ip -net " NS1 " link add ipsec0 type xfrm if_id %d", IF_ID_1);
+> +	SYS("ip -net " NS1 " addr add 192.168.1.200/24 dev ipsec0");
+> +	SYS("ip -net " NS1 " link set dev ipsec0 up");
+> +
+> +	SYS("ip -net " NS2 " link add ipsec0 type xfrm if_id %d", IF_ID_2);
+> +	SYS("ip -net " NS2 " addr add 192.168.1.200/24 dev ipsec0");
+> +	SYS("ip -net " NS2 " link set dev ipsec0 up");
+> +
+> +	return 0;
+> +fail:
+> +	return -1;
+> +}
+> +
+> +static int test_ping(int family, const char *addr)
+> +{
+> +	SYS("%s %s %s > /dev/null", ping_command(family), PING_ARGS, addr);
+> +	return 0;
+> +fail:
+> +	return -1;
+> +}
+> +
+> +static int test_xfrm_ping(struct xfrm_info *skel, u32 if_id)
+> +{
+> +	skel->bss->req_if_id = if_id;
+> +
+> +	if (test_ping(AF_INET, "192.168.1.200"))
+
+nit. Directly do SYS() here to avoid another reading detour to test_ping() which 
+is almost a one liner and only used once here.
+
+> +		return -1;
+> +
+> +	if (!ASSERT_EQ(skel->bss->resp_if_id, if_id, "if_id"))
+> +		return -1;
+> +
+> +	return 0;
+> +}
+> +
+> +static void _test_xfrm_info(void)
+> +{
+> +	int get_xfrm_info_prog_fd, set_xfrm_info_prog_fd;
+> +	struct xfrm_info *skel = NULL;
+> +	struct nstoken *nstoken = NULL;
+> +	int ifindex = -1;
+
+nit. Unnecessary init.  Nonthing to cleanup at the label "done:" and it is not a 
+return value also.  will be easier to review.
+
+> +	DECLARE_LIBBPF_OPTS(bpf_tc_hook, tc_hook,
+> +			    .attach_point = BPF_TC_INGRESS);
+> +
+> +	/* load and attach bpf progs to ipsec dev tc hook point */
+> +	skel = xfrm_info__open_and_load();
+> +	if (!ASSERT_OK_PTR(skel, "xfrm_info__open_and_load"))
+> +		goto done;
+> +	nstoken = open_netns(NS0);
+
+Check error.
+
+> +	ifindex = if_nametoindex("ipsec0");
+> +	if (!ASSERT_NEQ(ifindex, 0, "ipsec0 ifindex"))
+> +		goto done;
+> +	tc_hook.ifindex = ifindex;
+> +	set_xfrm_info_prog_fd = bpf_program__fd(skel->progs.set_xfrm_info);
+> +	get_xfrm_info_prog_fd = bpf_program__fd(skel->progs.get_xfrm_info);
+> +	if (!ASSERT_GE(set_xfrm_info_prog_fd, 0, "bpf_program__fd"))
+> +		goto done;
+> +	if (!ASSERT_GE(get_xfrm_info_prog_fd, 0, "bpf_program__fd"))
+> +		goto done;
+> +	if (attach_tc_prog(&tc_hook, get_xfrm_info_prog_fd,
+> +			   set_xfrm_info_prog_fd))
+> +		goto done;
+> +	if (!ASSERT_EQ(test_xfrm_ping(skel, IF_ID_0_TO_1), 0, "ping " NS1))
+> +		goto done;
+> +	if (!ASSERT_EQ(test_xfrm_ping(skel, IF_ID_0_TO_2), 0, "ping " NS2))
+> +		goto done;
+> +
+> +done:
+> +	if (nstoken)
+> +		close_netns(nstoken);
+> +	if (skel)
+> +		xfrm_info__destroy(skel);
+> +}
+> +
+> +void test_xfrm_info(void)
+> +{
+> +	cleanup();
+> +
+> +	if (!ASSERT_OK(config_underlay(), "config_underlay"))
+
+cleanup() is needed on error.
+
+> +		return;
+> +	if (!ASSERT_OK(config_overlay(), "config_overlay"))
+
+Same here.
+
+> +		return;
+> +
+> +	if (test__start_subtest("xfrm_info"))
+> +		_test_xfrm_info();
+> +
+> +	cleanup();
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/xfrm_info.c b/tools/testing/selftests/bpf/progs/xfrm_info.c
+> new file mode 100644
+> index 000000000000..908579310bf9
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/xfrm_info.c
+> @@ -0,0 +1,40 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <linux/bpf.h>
+> +#include <linux/pkt_cls.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +__u32 req_if_id;
+> +__u32 resp_if_id;
+> +
+> +struct bpf_xfrm_info {
+> +	__u32 if_id;
+> +	int link;
+> +} __attribute__((preserve_access_index));
+> +
+> +int bpf_skb_set_xfrm_info(struct __sk_buff *skb_ctx,
+> +			  const struct bpf_xfrm_info *from) __ksym;
+> +int bpf_skb_get_xfrm_info(struct __sk_buff *skb_ctx,
+> +			  struct bpf_xfrm_info *to) __ksym;
+> +
+> +SEC("tc")
+> +int set_xfrm_info(struct __sk_buff *skb)
+> +{
+> +	struct bpf_xfrm_info info = { .if_id = req_if_id };
+> +
+> +	return bpf_skb_set_xfrm_info(skb, &info) ? TC_ACT_SHOT : TC_ACT_UNSPEC;
+
+Add these TC_ACT_* to bpf_tracing_net.h and then vmlinux.h can be used.  Take a 
+look at some of the bpf_tracing_net.h in selftests.
+
+> +}
+> +
+> +SEC("tc")
+> +int get_xfrm_info(struct __sk_buff *skb)
+> +{
+> +	struct bpf_xfrm_info info = {};
+> +
+> +	if (bpf_skb_get_xfrm_info(skb, &info) < 0)
+> +		return TC_ACT_SHOT;
+> +
+> +	resp_if_id = info.if_id;
+> +
+> +	return TC_ACT_UNSPEC;
+> +}
+> +
+> +char _license[] SEC("license") = "GPL";
+
