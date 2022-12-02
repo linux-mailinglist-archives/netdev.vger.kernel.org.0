@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D89463FCC2
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BABD663FCC4
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:19:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbiLBAT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 19:19:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51534 "EHLO
+        id S230456AbiLBATu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 19:19:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiLBAS3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:18:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14845D2D78
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:17:08 -0800 (PST)
+        with ESMTP id S231618AbiLBATF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:19:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9224CF79C
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:17:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669940227;
+        s=mimecast20190719; t=1669940238;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HRrmPOQXGyQvrE192VqLxp1giKxs1t8Q4mImd844U28=;
-        b=U2sPHHVlQbmVxFXzLlsgQ+a+6TEj/xlhiQZHomQkieulllINymcVyFyA1TamsDzyBGlaiC
-        PbhC6T87U5BinYBfCytAUqXL8/sek+jIpUtcRC4cHjMj7YxZDh7Te+m9m2axm+uQkp6nD3
-        1JaCb0+zJODolZjPYU6OdwH+68+Kawo=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Zed4TskVzZBf0Lp0+EduaaL2oGYwYd/Zz6NwOYGIqxk=;
+        b=XNh1LpuGOn/lNG/AsYgPUFjKqN00xIdkkiUqc8T1u8pYacdtoJGxiLcgaeZO2IzolKJTBE
+        cG+i4Jy+TY3xLS/x7XNRFW1oMxuzPPBJtcdgN6z74csSKkaF7qzuzTEWYWgHU06lvsVIOP
+        w6L9BJXVSZ42QBxGYj3jo8XahvbOeOQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-654-a6wNvPXJPB-6Z2KmvVbW_Q-1; Thu, 01 Dec 2022 19:17:05 -0500
-X-MC-Unique: a6wNvPXJPB-6Z2KmvVbW_Q-1
+ us-mta-245-kBr-BznsNYurfU0C0l-6UA-1; Thu, 01 Dec 2022 19:17:14 -0500
+X-MC-Unique: kBr-BznsNYurfU0C0l-6UA-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CCBF53C025CB;
-        Fri,  2 Dec 2022 00:17:04 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9665C101A52A;
+        Fri,  2 Dec 2022 00:17:13 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1D11940C94EB;
-        Fri,  2 Dec 2022 00:17:04 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C207D40C945A;
+        Fri,  2 Dec 2022 00:17:12 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 14/36] rxrpc: Trace rxrpc_bundle refcount
+Subject: [PATCH net-next 15/36] rxrpc: trace: Don't use
+ __builtin_return_address for sk_buff tracing
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Fri, 02 Dec 2022 00:17:01 +0000
-Message-ID: <166994022133.1732290.11148644492031221120.stgit@warthog.procyon.org.uk>
+Date:   Fri, 02 Dec 2022 00:17:10 +0000
+Message-ID: <166994022998.1732290.15072960704788713451.stgit@warthog.procyon.org.uk>
 In-Reply-To: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
 References: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
@@ -66,219 +67,539 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a tracepoint for the rxrpc_bundle refcounting.
+In rxrpc tracing, use enums to generate lists of points of interest rather
+than __builtin_return_address() for the sk_buff tracepoint.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- include/trace/events/rxrpc.h |   34 ++++++++++++++++++++++++++++++++++
- net/rxrpc/ar-internal.h      |    4 ++--
- net/rxrpc/conn_client.c      |   27 ++++++++++++++++-----------
- net/rxrpc/conn_object.c      |    2 +-
- net/rxrpc/conn_service.c     |    3 ++-
- 5 files changed, 55 insertions(+), 15 deletions(-)
+ include/trace/events/rxrpc.h |   57 ++++++++++++++++++++++++------------------
+ net/rxrpc/call_event.c       |    4 +--
+ net/rxrpc/call_object.c      |    2 +
+ net/rxrpc/conn_event.c       |    6 ++--
+ net/rxrpc/input.c            |   36 +++++++++++++--------------
+ net/rxrpc/local_event.c      |    4 +--
+ net/rxrpc/output.c           |    6 ++--
+ net/rxrpc/peer_event.c       |    8 +++---
+ net/rxrpc/recvmsg.c          |    6 ++--
+ net/rxrpc/skbuff.c           |   36 +++++++++++----------------
+ 10 files changed, 84 insertions(+), 81 deletions(-)
 
 diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index 3f6de4294148..6f5be7ac7f6b 100644
+index 6f5be7ac7f6b..5a2292baffc8 100644
 --- a/include/trace/events/rxrpc.h
 +++ b/include/trace/events/rxrpc.h
-@@ -81,6 +81,15 @@
- 	EM(rxrpc_peer_put_input_error,		"PUT inpt-err") \
- 	E_(rxrpc_peer_put_keepalive,		"PUT keepaliv")
+@@ -17,19 +17,31 @@
+  * Declare tracing information enums and their string mappings for display.
+  */
+ #define rxrpc_skb_traces \
+-	EM(rxrpc_skb_ack,			"ACK") \
+-	EM(rxrpc_skb_cleaned,			"CLN") \
+-	EM(rxrpc_skb_cloned_jumbo,		"CLJ") \
+-	EM(rxrpc_skb_freed,			"FRE") \
+-	EM(rxrpc_skb_got,			"GOT") \
+-	EM(rxrpc_skb_lost,			"*L*") \
+-	EM(rxrpc_skb_new,			"NEW") \
+-	EM(rxrpc_skb_purged,			"PUR") \
+-	EM(rxrpc_skb_received,			"RCV") \
+-	EM(rxrpc_skb_rotated,			"ROT") \
+-	EM(rxrpc_skb_seen,			"SEE") \
+-	EM(rxrpc_skb_unshared,			"UNS") \
+-	E_(rxrpc_skb_unshared_nomem,		"US0")
++	EM(rxrpc_skb_eaten_by_unshare,		"ETN unshare  ") \
++	EM(rxrpc_skb_eaten_by_unshare_nomem,	"ETN unshar-nm") \
++	EM(rxrpc_skb_get_ack,			"GET ack      ") \
++	EM(rxrpc_skb_get_conn_work,		"GET conn-work") \
++	EM(rxrpc_skb_get_to_recvmsg,		"GET to-recv  ") \
++	EM(rxrpc_skb_get_to_recvmsg_oos,	"GET to-recv-o") \
++	EM(rxrpc_skb_new_encap_rcv,		"NEW encap-rcv") \
++	EM(rxrpc_skb_new_error_report,		"NEW error-rpt") \
++	EM(rxrpc_skb_new_jumbo_subpacket,	"NEW jumbo-sub") \
++	EM(rxrpc_skb_new_unshared,		"NEW unshared ") \
++	EM(rxrpc_skb_put_ack,			"PUT ack      ") \
++	EM(rxrpc_skb_put_conn_work,		"PUT conn-work") \
++	EM(rxrpc_skb_put_error_report,		"PUT error-rep") \
++	EM(rxrpc_skb_put_input,			"PUT input    ") \
++	EM(rxrpc_skb_put_jumbo_subpacket,	"PUT jumbo-sub") \
++	EM(rxrpc_skb_put_lose,			"PUT lose     ") \
++	EM(rxrpc_skb_put_purge,			"PUT purge    ") \
++	EM(rxrpc_skb_put_rotate,		"PUT rotate   ") \
++	EM(rxrpc_skb_put_unknown,		"PUT unknown  ") \
++	EM(rxrpc_skb_see_conn_work,		"SEE conn-work") \
++	EM(rxrpc_skb_see_local_work,		"SEE locl-work") \
++	EM(rxrpc_skb_see_recvmsg,		"SEE recvmsg  ") \
++	EM(rxrpc_skb_see_reject,		"SEE reject   ") \
++	EM(rxrpc_skb_see_rotate,		"SEE rotate   ") \
++	E_(rxrpc_skb_see_version,		"SEE version  ")
  
-+#define rxrpc_bundle_traces \
-+	EM(rxrpc_bundle_free,			"FREE        ") \
-+	EM(rxrpc_bundle_get_client_call,	"GET clt-call") \
-+	EM(rxrpc_bundle_get_client_conn,	"GET clt-conn") \
-+	EM(rxrpc_bundle_get_service_conn,	"GET svc-conn") \
-+	EM(rxrpc_bundle_put_conn,		"PUT conn    ") \
-+	EM(rxrpc_bundle_put_discard,		"PUT discard ") \
-+	E_(rxrpc_bundle_new,			"NEW         ")
-+
- #define rxrpc_conn_traces \
- 	EM(rxrpc_conn_free,			"FREE        ") \
- 	EM(rxrpc_conn_get_activate_call,	"GET act-call") \
-@@ -361,6 +370,7 @@
- #define EM(a, b) a,
- #define E_(a, b) a
- 
-+enum rxrpc_bundle_trace		{ rxrpc_bundle_traces } __mode(byte);
- enum rxrpc_call_trace		{ rxrpc_call_traces } __mode(byte);
- enum rxrpc_client_trace		{ rxrpc_client_traces } __mode(byte);
- enum rxrpc_congest_change	{ rxrpc_congest_changes } __mode(byte);
-@@ -390,6 +400,7 @@ enum rxrpc_txqueue_trace	{ rxrpc_txqueue_traces } __mode(byte);
- #define EM(a, b) TRACE_DEFINE_ENUM(a);
- #define E_(a, b) TRACE_DEFINE_ENUM(a);
- 
-+rxrpc_bundle_traces;
- rxrpc_call_traces;
- rxrpc_client_traces;
- rxrpc_congest_changes;
-@@ -467,6 +478,29 @@ TRACE_EVENT(rxrpc_peer,
- 		      __entry->ref)
+ #define rxrpc_local_traces \
+ 	EM(rxrpc_local_free,			"FREE        ") \
+@@ -582,33 +594,30 @@ TRACE_EVENT(rxrpc_call,
  	    );
  
-+TRACE_EVENT(rxrpc_bundle,
-+	    TP_PROTO(unsigned int bundle_debug_id, int ref, enum rxrpc_bundle_trace why),
-+
-+	    TP_ARGS(bundle_debug_id, ref, why),
-+
-+	    TP_STRUCT__entry(
-+		    __field(unsigned int,	bundle		)
-+		    __field(int,		ref		)
-+		    __field(int,		why		)
-+			     ),
-+
-+	    TP_fast_assign(
-+		    __entry->bundle = bundle_debug_id;
-+		    __entry->ref = ref;
+ TRACE_EVENT(rxrpc_skb,
+-	    TP_PROTO(struct sk_buff *skb, enum rxrpc_skb_trace op,
+-		     int usage, int mod_count, const void *where),
++	    TP_PROTO(struct sk_buff *skb, int usage, int mod_count,
++		     enum rxrpc_skb_trace why),
+ 
+-	    TP_ARGS(skb, op, usage, mod_count, where),
++	    TP_ARGS(skb, usage, mod_count, why),
+ 
+ 	    TP_STRUCT__entry(
+ 		    __field(struct sk_buff *,		skb		)
+-		    __field(enum rxrpc_skb_trace,	op		)
+ 		    __field(int,			usage		)
+ 		    __field(int,			mod_count	)
+-		    __field(const void *,		where		)
++		    __field(enum rxrpc_skb_trace,	why		)
+ 			     ),
+ 
+ 	    TP_fast_assign(
+ 		    __entry->skb = skb;
+-		    __entry->op = op;
+ 		    __entry->usage = usage;
+ 		    __entry->mod_count = mod_count;
+-		    __entry->where = where;
 +		    __entry->why = why;
-+			   ),
-+
-+	    TP_printk("CB=%08x %s r=%d",
-+		      __entry->bundle,
-+		      __print_symbolic(__entry->why, rxrpc_bundle_traces),
-+		      __entry->ref)
-+	    );
-+
- TRACE_EVENT(rxrpc_conn,
- 	    TP_PROTO(unsigned int conn_debug_id, int ref, enum rxrpc_conn_trace why),
+ 			   ),
  
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 82eb09b961a0..c588c0e81f63 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -875,8 +875,8 @@ extern unsigned long rxrpc_conn_idle_client_fast_expiry;
- extern struct idr rxrpc_client_conn_ids;
+-	    TP_printk("s=%p Rx %s u=%d m=%d p=%pSR",
++	    TP_printk("s=%p Rx %s u=%d m=%d",
+ 		      __entry->skb,
+-		      __print_symbolic(__entry->op, rxrpc_skb_traces),
++		      __print_symbolic(__entry->why, rxrpc_skb_traces),
+ 		      __entry->usage,
+-		      __entry->mod_count,
+-		      __entry->where)
++		      __entry->mod_count)
+ 	    );
  
- void rxrpc_destroy_client_conn_ids(void);
--struct rxrpc_bundle *rxrpc_get_bundle(struct rxrpc_bundle *);
--void rxrpc_put_bundle(struct rxrpc_bundle *);
-+struct rxrpc_bundle *rxrpc_get_bundle(struct rxrpc_bundle *, enum rxrpc_bundle_trace);
-+void rxrpc_put_bundle(struct rxrpc_bundle *, enum rxrpc_bundle_trace);
- int rxrpc_connect_call(struct rxrpc_sock *, struct rxrpc_call *,
- 		       struct rxrpc_conn_parameters *, struct sockaddr_rxrpc *,
- 		       gfp_t);
-diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index 4352e777aa2a..34ff6fa85c32 100644
---- a/net/rxrpc/conn_client.c
-+++ b/net/rxrpc/conn_client.c
-@@ -133,31 +133,36 @@ static struct rxrpc_bundle *rxrpc_alloc_bundle(struct rxrpc_conn_parameters *cp,
- 		atomic_set(&bundle->active, 1);
- 		spin_lock_init(&bundle->channel_lock);
- 		INIT_LIST_HEAD(&bundle->waiting_calls);
-+		trace_rxrpc_bundle(bundle->debug_id, 1, rxrpc_bundle_new);
+ TRACE_EVENT(rxrpc_rx_packet,
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 0c8d2186cda8..29ca02e53c47 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -153,7 +153,7 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+ 		spin_lock_bh(&call->acks_ack_lock);
+ 		ack_skb = call->acks_soft_tbl;
+ 		if (ack_skb) {
+-			rxrpc_get_skb(ack_skb, rxrpc_skb_ack);
++			rxrpc_get_skb(ack_skb, rxrpc_skb_get_ack);
+ 			ack = (void *)ack_skb->data + sizeof(struct rxrpc_wire_header);
+ 		}
+ 		spin_unlock_bh(&call->acks_ack_lock);
+@@ -251,7 +251,7 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+ no_further_resend:
+ 	spin_unlock(&call->tx_lock);
+ no_resend:
+-	rxrpc_free_skb(ack_skb, rxrpc_skb_freed);
++	rxrpc_free_skb(ack_skb, rxrpc_skb_put_ack);
+ 
+ 	resend_at = nsecs_to_jiffies(ktime_to_ns(ktime_sub(now, oldest)));
+ 	resend_at += jiffies + rxrpc_get_rto_backoff(call->peer,
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index afd957f6dc1c..815209673115 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -663,7 +663,7 @@ void rxrpc_cleanup_call(struct rxrpc_call *call)
+ 		rxrpc_put_txbuf(txb, rxrpc_txbuf_put_cleaned);
  	}
- 	return bundle;
+ 	rxrpc_put_txbuf(call->tx_pending, rxrpc_txbuf_put_cleaned);
+-	rxrpc_free_skb(call->acks_soft_tbl, rxrpc_skb_cleaned);
++	rxrpc_free_skb(call->acks_soft_tbl, rxrpc_skb_put_ack);
+ 
+ 	call_rcu(&call->rcu, rxrpc_rcu_destroy_call);
+ }
+diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
+index 817f895c77ca..49d885f73fa5 100644
+--- a/net/rxrpc/conn_event.c
++++ b/net/rxrpc/conn_event.c
+@@ -437,7 +437,7 @@ static void rxrpc_do_process_connection(struct rxrpc_connection *conn)
+ 	/* go through the conn-level event packets, releasing the ref on this
+ 	 * connection that each one has when we've finished with it */
+ 	while ((skb = skb_dequeue(&conn->rx_queue))) {
+-		rxrpc_see_skb(skb, rxrpc_skb_seen);
++		rxrpc_see_skb(skb, rxrpc_skb_see_conn_work);
+ 		ret = rxrpc_process_event(conn, skb, &abort_code);
+ 		switch (ret) {
+ 		case -EPROTO:
+@@ -449,7 +449,7 @@ static void rxrpc_do_process_connection(struct rxrpc_connection *conn)
+ 			goto requeue_and_leave;
+ 		case -ECONNABORTED:
+ 		default:
+-			rxrpc_free_skb(skb, rxrpc_skb_freed);
++			rxrpc_free_skb(skb, rxrpc_skb_put_conn_work);
+ 			break;
+ 		}
+ 	}
+@@ -463,7 +463,7 @@ static void rxrpc_do_process_connection(struct rxrpc_connection *conn)
+ protocol_error:
+ 	if (rxrpc_abort_connection(conn, ret, abort_code) < 0)
+ 		goto requeue_and_leave;
+-	rxrpc_free_skb(skb, rxrpc_skb_freed);
++	rxrpc_free_skb(skb, rxrpc_skb_put_conn_work);
+ 	return;
  }
  
--struct rxrpc_bundle *rxrpc_get_bundle(struct rxrpc_bundle *bundle)
-+struct rxrpc_bundle *rxrpc_get_bundle(struct rxrpc_bundle *bundle,
-+				      enum rxrpc_bundle_trace why)
- {
--	refcount_inc(&bundle->ref);
-+	int r;
-+
-+	__refcount_inc(&bundle->ref, &r);
-+	trace_rxrpc_bundle(bundle->debug_id, r + 1, why);
- 	return bundle;
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 09b44cd11c9b..ab8b7a1be935 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -485,7 +485,7 @@ static void rxrpc_input_data_one(struct rxrpc_call *call, struct sk_buff *skb)
+ 					rxrpc_propose_ack_input_data);
+ 
+ err_free:
+-	rxrpc_free_skb(skb, rxrpc_skb_freed);
++	rxrpc_free_skb(skb, rxrpc_skb_put_input);
  }
  
- static void rxrpc_free_bundle(struct rxrpc_bundle *bundle)
- {
-+	trace_rxrpc_bundle(bundle->debug_id, 1, rxrpc_bundle_free);
- 	rxrpc_put_peer(bundle->peer, rxrpc_peer_put_bundle);
- 	kfree(bundle);
+ /*
+@@ -513,7 +513,7 @@ static bool rxrpc_input_split_jumbo(struct rxrpc_call *call, struct sk_buff *skb
+ 			kdebug("couldn't clone");
+ 			return false;
+ 		}
+-		rxrpc_new_skb(jskb, rxrpc_skb_cloned_jumbo);
++		rxrpc_new_skb(jskb, rxrpc_skb_new_jumbo_subpacket);
+ 		jsp = rxrpc_skb(jskb);
+ 		jsp->offset = offset;
+ 		jsp->len = RXRPC_JUMBO_DATALEN;
+@@ -553,7 +553,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 
+ 	state = READ_ONCE(call->state);
+ 	if (state >= RXRPC_CALL_COMPLETE) {
+-		rxrpc_free_skb(skb, rxrpc_skb_freed);
++		rxrpc_free_skb(skb, rxrpc_skb_put_input);
+ 		return;
+ 	}
+ 
+@@ -563,14 +563,14 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 	if (sp->hdr.securityIndex != 0) {
+ 		struct sk_buff *nskb = skb_unshare(skb, GFP_ATOMIC);
+ 		if (!nskb) {
+-			rxrpc_eaten_skb(skb, rxrpc_skb_unshared_nomem);
++			rxrpc_eaten_skb(skb, rxrpc_skb_eaten_by_unshare_nomem);
+ 			return;
+ 		}
+ 
+ 		if (nskb != skb) {
+-			rxrpc_eaten_skb(skb, rxrpc_skb_received);
++			rxrpc_eaten_skb(skb, rxrpc_skb_eaten_by_unshare);
+ 			skb = nskb;
+-			rxrpc_new_skb(skb, rxrpc_skb_unshared);
++			rxrpc_new_skb(skb, rxrpc_skb_new_unshared);
+ 			sp = rxrpc_skb(skb);
+ 		}
+ 	}
+@@ -609,7 +609,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 	rxrpc_notify_socket(call);
+ 
+ 	spin_unlock(&call->input_lock);
+-	rxrpc_free_skb(skb, rxrpc_skb_freed);
++	rxrpc_free_skb(skb, rxrpc_skb_put_input);
+ 	_leave(" [queued]");
  }
  
--void rxrpc_put_bundle(struct rxrpc_bundle *bundle)
-+void rxrpc_put_bundle(struct rxrpc_bundle *bundle, enum rxrpc_bundle_trace why)
- {
--	unsigned int d = bundle->debug_id;
-+	unsigned int id = bundle->debug_id;
- 	bool dead;
- 	int r;
- 
- 	dead = __refcount_dec_and_test(&bundle->ref, &r);
--
--	_debug("PUT B=%x %d", d, r - 1);
-+	trace_rxrpc_bundle(id, r - 1, why);
- 	if (dead)
- 		rxrpc_free_bundle(bundle);
- }
-@@ -206,7 +211,7 @@ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle, gfp_t gfp)
- 	list_add_tail(&conn->proc_link, &rxnet->conn_proc_list);
- 	write_unlock(&rxnet->conn_lock);
- 
--	rxrpc_get_bundle(bundle);
-+	rxrpc_get_bundle(bundle, rxrpc_bundle_get_client_conn);
- 	rxrpc_get_peer(conn->peer, rxrpc_peer_get_client_conn);
- 	rxrpc_get_local(conn->local, rxrpc_local_get_client_conn);
- 	key_get(conn->key);
-@@ -342,7 +347,7 @@ static struct rxrpc_bundle *rxrpc_look_up_bundle(struct rxrpc_conn_parameters *c
- 	candidate->debug_id = atomic_inc_return(&rxrpc_bundle_id);
- 	rb_link_node(&candidate->local_node, parent, pp);
- 	rb_insert_color(&candidate->local_node, &local->client_bundles);
--	rxrpc_get_bundle(candidate);
-+	rxrpc_get_bundle(candidate, rxrpc_bundle_get_client_call);
- 	spin_unlock(&local->client_bundles_lock);
- 	_leave(" = %u [new]", candidate->debug_id);
- 	return candidate;
-@@ -350,7 +355,7 @@ static struct rxrpc_bundle *rxrpc_look_up_bundle(struct rxrpc_conn_parameters *c
- found_bundle_free:
- 	rxrpc_free_bundle(candidate);
- found_bundle:
--	rxrpc_get_bundle(bundle);
-+	rxrpc_get_bundle(bundle, rxrpc_bundle_get_client_call);
- 	atomic_inc(&bundle->active);
- 	spin_unlock(&local->client_bundles_lock);
- 	_leave(" = %u [found]", bundle->debug_id);
-@@ -740,7 +745,7 @@ int rxrpc_connect_call(struct rxrpc_sock *rx,
- 
- out_put_bundle:
- 	rxrpc_deactivate_bundle(bundle);
--	rxrpc_put_bundle(bundle);
-+	rxrpc_put_bundle(bundle, rxrpc_bundle_get_client_call);
+@@ -994,8 +994,8 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
  out:
- 	_leave(" = %d", ret);
- 	return ret;
-@@ -958,7 +963,7 @@ static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle)
+ 	spin_unlock(&call->input_lock);
+ out_not_locked:
+-	rxrpc_free_skb(skb_put, rxrpc_skb_freed);
+-	rxrpc_free_skb(skb_old, rxrpc_skb_freed);
++	rxrpc_free_skb(skb_put, rxrpc_skb_put_input);
++	rxrpc_free_skb(skb_old, rxrpc_skb_put_ack);
+ }
  
- 		spin_unlock(&local->client_bundles_lock);
- 		if (need_put)
--			rxrpc_put_bundle(bundle);
-+			rxrpc_put_bundle(bundle, rxrpc_bundle_put_discard);
+ /*
+@@ -1075,7 +1075,7 @@ static void rxrpc_input_call_packet(struct rxrpc_call *call,
+ 		break;
+ 	}
+ 
+-	rxrpc_free_skb(skb, rxrpc_skb_freed);
++	rxrpc_free_skb(skb, rxrpc_skb_put_input);
+ no_free:
+ 	_leave("");
+ }
+@@ -1137,7 +1137,7 @@ static void rxrpc_post_packet_to_local(struct rxrpc_local *local,
+ 		skb_queue_tail(&local->event_queue, skb);
+ 		rxrpc_queue_local(local);
+ 	} else {
+-		rxrpc_free_skb(skb, rxrpc_skb_freed);
++		rxrpc_free_skb(skb, rxrpc_skb_put_input);
  	}
  }
  
-diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
-index bbace8d9953d..f7c271a740ed 100644
---- a/net/rxrpc/conn_object.c
-+++ b/net/rxrpc/conn_object.c
-@@ -363,7 +363,7 @@ static void rxrpc_destroy_connection(struct rcu_head *rcu)
+@@ -1150,7 +1150,7 @@ static void rxrpc_reject_packet(struct rxrpc_local *local, struct sk_buff *skb)
+ 		skb_queue_tail(&local->reject_queue, skb);
+ 		rxrpc_queue_local(local);
+ 	} else {
+-		rxrpc_free_skb(skb, rxrpc_skb_freed);
++		rxrpc_free_skb(skb, rxrpc_skb_put_input);
+ 	}
+ }
  
- 	conn->security->clear(conn);
- 	key_put(conn->key);
--	rxrpc_put_bundle(conn->bundle);
-+	rxrpc_put_bundle(conn->bundle, rxrpc_bundle_put_conn);
- 	rxrpc_put_peer(conn->peer, rxrpc_peer_put_conn);
+@@ -1228,7 +1228,7 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 	if (skb->tstamp == 0)
+ 		skb->tstamp = ktime_get_real();
  
- 	if (atomic_dec_and_test(&conn->local->rxnet->nr_conns))
-diff --git a/net/rxrpc/conn_service.c b/net/rxrpc/conn_service.c
-index bf087213bd4d..2c44d67b43dc 100644
---- a/net/rxrpc/conn_service.c
-+++ b/net/rxrpc/conn_service.c
-@@ -133,7 +133,8 @@ struct rxrpc_connection *rxrpc_prealloc_service_connection(struct rxrpc_net *rxn
- 		 */
- 		conn->state = RXRPC_CONN_SERVICE_PREALLOC;
- 		refcount_set(&conn->ref, 2);
--		conn->bundle = rxrpc_get_bundle(&rxrpc_service_dummy_bundle);
-+		conn->bundle = rxrpc_get_bundle(&rxrpc_service_dummy_bundle,
-+						rxrpc_bundle_get_service_conn);
+-	rxrpc_new_skb(skb, rxrpc_skb_received);
++	rxrpc_new_skb(skb, rxrpc_skb_new_encap_rcv);
  
- 		atomic_inc(&rxnet->nr_conns);
- 		write_lock(&rxnet->conn_lock);
+ 	skb_pull(skb, sizeof(struct udphdr));
+ 
+@@ -1245,7 +1245,7 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 		static int lose;
+ 		if ((lose++ & 7) == 7) {
+ 			trace_rxrpc_rx_lose(sp);
+-			rxrpc_free_skb(skb, rxrpc_skb_lost);
++			rxrpc_free_skb(skb, rxrpc_skb_put_lose);
+ 			return 0;
+ 		}
+ 	}
+@@ -1286,14 +1286,14 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 		if (sp->hdr.securityIndex != 0) {
+ 			struct sk_buff *nskb = skb_unshare(skb, GFP_ATOMIC);
+ 			if (!nskb) {
+-				rxrpc_eaten_skb(skb, rxrpc_skb_unshared_nomem);
++				rxrpc_eaten_skb(skb, rxrpc_skb_eaten_by_unshare_nomem);
+ 				goto out;
+ 			}
+ 
+ 			if (nskb != skb) {
+-				rxrpc_eaten_skb(skb, rxrpc_skb_received);
++				rxrpc_eaten_skb(skb, rxrpc_skb_eaten_by_unshare);
+ 				skb = nskb;
+-				rxrpc_new_skb(skb, rxrpc_skb_unshared);
++				rxrpc_new_skb(skb, rxrpc_skb_new_unshared);
+ 				sp = rxrpc_skb(skb);
+ 			}
+ 		}
+@@ -1434,7 +1434,7 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 	goto out;
+ 
+ discard:
+-	rxrpc_free_skb(skb, rxrpc_skb_freed);
++	rxrpc_free_skb(skb, rxrpc_skb_put_input);
+ out:
+ 	trace_rxrpc_rx_done(0, 0);
+ 	return 0;
+diff --git a/net/rxrpc/local_event.c b/net/rxrpc/local_event.c
+index f23a3fbabbda..c344383a20b2 100644
+--- a/net/rxrpc/local_event.c
++++ b/net/rxrpc/local_event.c
+@@ -88,7 +88,7 @@ void rxrpc_process_local_events(struct rxrpc_local *local)
+ 	if (skb) {
+ 		struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 
+-		rxrpc_see_skb(skb, rxrpc_skb_seen);
++		rxrpc_see_skb(skb, rxrpc_skb_see_local_work);
+ 		_debug("{%d},{%u}", local->debug_id, sp->hdr.type);
+ 
+ 		switch (sp->hdr.type) {
+@@ -105,7 +105,7 @@ void rxrpc_process_local_events(struct rxrpc_local *local)
+ 			break;
+ 		}
+ 
+-		rxrpc_free_skb(skb, rxrpc_skb_freed);
++		rxrpc_free_skb(skb, rxrpc_skb_put_input);
+ 	}
+ 
+ 	_leave("");
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index d324e88f7642..131c7a76fb06 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -615,7 +615,7 @@ void rxrpc_reject_packets(struct rxrpc_local *local)
+ 	memset(&whdr, 0, sizeof(whdr));
+ 
+ 	while ((skb = skb_dequeue(&local->reject_queue))) {
+-		rxrpc_see_skb(skb, rxrpc_skb_seen);
++		rxrpc_see_skb(skb, rxrpc_skb_see_reject);
+ 		sp = rxrpc_skb(skb);
+ 
+ 		switch (skb->mark) {
+@@ -631,7 +631,7 @@ void rxrpc_reject_packets(struct rxrpc_local *local)
+ 			ioc = 2;
+ 			break;
+ 		default:
+-			rxrpc_free_skb(skb, rxrpc_skb_freed);
++			rxrpc_free_skb(skb, rxrpc_skb_put_input);
+ 			continue;
+ 		}
+ 
+@@ -656,7 +656,7 @@ void rxrpc_reject_packets(struct rxrpc_local *local)
+ 						      rxrpc_tx_point_reject);
+ 		}
+ 
+-		rxrpc_free_skb(skb, rxrpc_skb_freed);
++		rxrpc_free_skb(skb, rxrpc_skb_put_input);
+ 	}
+ 
+ 	_leave("");
+diff --git a/net/rxrpc/peer_event.c b/net/rxrpc/peer_event.c
+index b28739d10927..f35cfc458dcf 100644
+--- a/net/rxrpc/peer_event.c
++++ b/net/rxrpc/peer_event.c
+@@ -158,12 +158,12 @@ void rxrpc_error_report(struct sock *sk)
+ 		_leave("UDP socket errqueue empty");
+ 		return;
+ 	}
+-	rxrpc_new_skb(skb, rxrpc_skb_received);
++	rxrpc_new_skb(skb, rxrpc_skb_new_error_report);
+ 	serr = SKB_EXT_ERR(skb);
+ 	if (!skb->len && serr->ee.ee_origin == SO_EE_ORIGIN_TIMESTAMPING) {
+ 		_leave("UDP empty message");
+ 		rcu_read_unlock();
+-		rxrpc_free_skb(skb, rxrpc_skb_freed);
++		rxrpc_free_skb(skb, rxrpc_skb_put_error_report);
+ 		return;
+ 	}
+ 
+@@ -172,7 +172,7 @@ void rxrpc_error_report(struct sock *sk)
+ 		peer = NULL;
+ 	if (!peer) {
+ 		rcu_read_unlock();
+-		rxrpc_free_skb(skb, rxrpc_skb_freed);
++		rxrpc_free_skb(skb, rxrpc_skb_put_error_report);
+ 		_leave(" [no peer]");
+ 		return;
+ 	}
+@@ -189,7 +189,7 @@ void rxrpc_error_report(struct sock *sk)
+ 	rxrpc_store_error(peer, serr);
+ out:
+ 	rcu_read_unlock();
+-	rxrpc_free_skb(skb, rxrpc_skb_freed);
++	rxrpc_free_skb(skb, rxrpc_skb_put_error_report);
+ 	rxrpc_put_peer(peer, rxrpc_peer_put_input_error);
+ 
+ 	_leave("");
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index c84d2b620396..bfac9e09347e 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -229,7 +229,7 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
+ 	_enter("%d", call->debug_id);
+ 
+ 	skb = skb_dequeue(&call->recvmsg_queue);
+-	rxrpc_see_skb(skb, rxrpc_skb_rotated);
++	rxrpc_see_skb(skb, rxrpc_skb_see_rotate);
+ 
+ 	sp = rxrpc_skb(skb);
+ 	tseq   = sp->hdr.seq;
+@@ -240,7 +240,7 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
+ 	if (after(tseq, call->rx_consumed))
+ 		smp_store_release(&call->rx_consumed, tseq);
+ 
+-	rxrpc_free_skb(skb, rxrpc_skb_freed);
++	rxrpc_free_skb(skb, rxrpc_skb_put_rotate);
+ 
+ 	trace_rxrpc_receive(call, last ? rxrpc_receive_rotate_last : rxrpc_receive_rotate,
+ 			    serial, call->rx_consumed);
+@@ -302,7 +302,7 @@ static int rxrpc_recvmsg_data(struct socket *sock, struct rxrpc_call *call,
+ 	 */
+ 	skb = skb_peek(&call->recvmsg_queue);
+ 	while (skb) {
+-		rxrpc_see_skb(skb, rxrpc_skb_seen);
++		rxrpc_see_skb(skb, rxrpc_skb_see_recvmsg);
+ 		sp = rxrpc_skb(skb);
+ 		seq = sp->hdr.seq;
+ 
+diff --git a/net/rxrpc/skbuff.c b/net/rxrpc/skbuff.c
+index 0c827d5bb2b8..ebe0c75e7b07 100644
+--- a/net/rxrpc/skbuff.c
++++ b/net/rxrpc/skbuff.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+-/* ar-skbuff.c: socket buffer destruction handling
++/* Socket buffer accounting
+  *
+  * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
+  * Written by David Howells (dhowells@redhat.com)
+@@ -19,56 +19,50 @@
+ /*
+  * Note the allocation or reception of a socket buffer.
+  */
+-void rxrpc_new_skb(struct sk_buff *skb, enum rxrpc_skb_trace op)
++void rxrpc_new_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)
+ {
+-	const void *here = __builtin_return_address(0);
+ 	int n = atomic_inc_return(select_skb_count(skb));
+-	trace_rxrpc_skb(skb, op, refcount_read(&skb->users), n, here);
++	trace_rxrpc_skb(skb, refcount_read(&skb->users), n, why);
+ }
+ 
+ /*
+  * Note the re-emergence of a socket buffer from a queue or buffer.
+  */
+-void rxrpc_see_skb(struct sk_buff *skb, enum rxrpc_skb_trace op)
++void rxrpc_see_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)
+ {
+-	const void *here = __builtin_return_address(0);
+ 	if (skb) {
+ 		int n = atomic_read(select_skb_count(skb));
+-		trace_rxrpc_skb(skb, op, refcount_read(&skb->users), n, here);
++		trace_rxrpc_skb(skb, refcount_read(&skb->users), n, why);
+ 	}
+ }
+ 
+ /*
+  * Note the addition of a ref on a socket buffer.
+  */
+-void rxrpc_get_skb(struct sk_buff *skb, enum rxrpc_skb_trace op)
++void rxrpc_get_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)
+ {
+-	const void *here = __builtin_return_address(0);
+ 	int n = atomic_inc_return(select_skb_count(skb));
+-	trace_rxrpc_skb(skb, op, refcount_read(&skb->users), n, here);
++	trace_rxrpc_skb(skb, refcount_read(&skb->users), n, why);
+ 	skb_get(skb);
+ }
+ 
+ /*
+  * Note the dropping of a ref on a socket buffer by the core.
+  */
+-void rxrpc_eaten_skb(struct sk_buff *skb, enum rxrpc_skb_trace op)
++void rxrpc_eaten_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)
+ {
+-	const void *here = __builtin_return_address(0);
+ 	int n = atomic_inc_return(&rxrpc_n_rx_skbs);
+-	trace_rxrpc_skb(skb, op, 0, n, here);
++	trace_rxrpc_skb(skb, 0, n, why);
+ }
+ 
+ /*
+  * Note the destruction of a socket buffer.
+  */
+-void rxrpc_free_skb(struct sk_buff *skb, enum rxrpc_skb_trace op)
++void rxrpc_free_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)
+ {
+-	const void *here = __builtin_return_address(0);
+ 	if (skb) {
+-		int n;
+-		n = atomic_dec_return(select_skb_count(skb));
+-		trace_rxrpc_skb(skb, op, refcount_read(&skb->users), n, here);
++		int n = atomic_dec_return(select_skb_count(skb));
++		trace_rxrpc_skb(skb, refcount_read(&skb->users), n, why);
+ 		kfree_skb(skb);
+ 	}
+ }
+@@ -78,12 +72,12 @@ void rxrpc_free_skb(struct sk_buff *skb, enum rxrpc_skb_trace op)
+  */
+ void rxrpc_purge_queue(struct sk_buff_head *list)
+ {
+-	const void *here = __builtin_return_address(0);
+ 	struct sk_buff *skb;
++
+ 	while ((skb = skb_dequeue((list))) != NULL) {
+ 		int n = atomic_dec_return(select_skb_count(skb));
+-		trace_rxrpc_skb(skb, rxrpc_skb_purged,
+-				refcount_read(&skb->users), n, here);
++		trace_rxrpc_skb(skb, refcount_read(&skb->users), n,
++				rxrpc_skb_put_purge);
+ 		kfree_skb(skb);
+ 	}
+ }
 
 
