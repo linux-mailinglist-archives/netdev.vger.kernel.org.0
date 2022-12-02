@@ -2,44 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CCD163FF7B
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 05:29:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 551E263FF88
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 05:40:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231736AbiLBE3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 23:29:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42722 "EHLO
+        id S231382AbiLBEkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 23:40:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiLBE3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 23:29:42 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE4BBF669;
-        Thu,  1 Dec 2022 20:29:41 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NNg1h5QMXzmWK1;
-        Fri,  2 Dec 2022 12:28:56 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 2 Dec
- 2022 12:29:39 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <johannes@sipsolutions.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <sara.sharon@intel.com>, <luciano.coelho@intel.com>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH v2] wifi: mac80211: fix memory leak in ieee80211_register_hw()
-Date:   Fri, 2 Dec 2022 12:38:38 +0800
-Message-ID: <20221202043838.2324539-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S230211AbiLBEkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 23:40:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BFDC9365
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 20:40:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0D3CB820A9
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 04:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 61447C433C1;
+        Fri,  2 Dec 2022 04:40:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669956017;
+        bh=7SjnQtbczCHpyENCu2nGx0oR3hUoq/elqt7biapwHlY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=UYkoHYsdrarICnPPs+Rn66Hz6JPnYH91O6IsVxgguoFJUFheNHYqAAigTZFaziPY2
+         gxYz+irzkXtEVS2AsMVuT46qqLocdkfbtbqTT/CYhYcHf5ZO3CYl/bs6ao0eBXeN5Q
+         bqGm/NaMwh0ENTZ10JXfUbejrXsblLzOzKjZl5c7Z1C/b8Z0yux/pXyWCy2+UFYfI8
+         V6NDxQIWdn6+qdjc7yr9GPhIQhi2+SVSq4M5Ja5XwylancXtSuZ+Wpz2zfYOgazPKg
+         iAcOWB8fc6uockZ6lsjjCAPnoAV5Sgbj4jGpX6pjmeiteCQM/HV+87d9ye71TCB6x3
+         X7rqUQUlxWQ7Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3FF7EE270C8;
+        Fri,  2 Dec 2022 04:40:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 net-next 0/8]
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166995601725.2394.13228944085745632127.git-patchwork-notify@kernel.org>
+Date:   Fri, 02 Dec 2022 04:40:17 +0000
+References: <20221129164815.128922-1-bigeasy@linutronix.de>
+In-Reply-To: <20221129164815.128922-1-bigeasy@linutronix.de>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, tglx@linutronix.de,
+        kurt@linutronix.de
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -47,55 +56,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When ieee80211_init_rate_ctrl_alg() failed in ieee80211_register_hw(),
-it doesn't release local->fq. The memory leakage information is as
-follows:
-unreferenced object 0xffff888109cad400 (size 512):
-  comm "insmod", pid 15145, jiffies 4295005736 (age 3670.100s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000d1eb4a9f>] __kmalloc+0x3e/0xb0
-    [<00000000befc3e34>] ieee80211_txq_setup_flows+0x1fe/0xa10
-    [<00000000b13f1457>] ieee80211_register_hw+0x1b64/0x3950
-    [<00000000ba9f4e99>] 0xffffffffa02214db
-    [<00000000833435c0>] 0xffffffffa024048d
-    [<00000000a4ddd6ef>] do_one_initcall+0x10f/0x630
-    [<0000000068f29e16>] do_init_module+0x19f/0x5e0
-    [<00000000f52609b6>] load_module+0x64b7/0x6eb0
-    [<00000000b628a5b3>] __do_sys_finit_module+0x140/0x200
-    [<00000000c7f35d15>] do_syscall_64+0x35/0x80
-    [<0000000044d8d0fd>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+Hello:
 
-Fixes: a50e5fb8db83 ("mac80211: fix a kernel panic when TXing after TXQ teardown")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
-v2: Don't remove flows clear action in ieee80211_remove_interfaces()
----
- net/mac80211/main.c | 2 ++
- 1 file changed, 2 insertions(+)
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/net/mac80211/main.c b/net/mac80211/main.c
-index 02b5abc7326b..18edf0591c2e 100644
---- a/net/mac80211/main.c
-+++ b/net/mac80211/main.c
-@@ -1326,6 +1326,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
- 					      hw->rate_control_algorithm);
- 	rtnl_unlock();
- 	if (result < 0) {
-+		ieee80211_txq_teardown_flows(local);
- 		wiphy_debug(local->hw.wiphy,
- 			    "Failed to initialize rate control algorithm\n");
- 		goto fail_rate;
-@@ -1364,6 +1365,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
- 
- 		sband = kmemdup(sband, sizeof(*sband), GFP_KERNEL);
- 		if (!sband) {
-+			ieee80211_txq_teardown_flows(local);
- 			result = -ENOMEM;
- 			goto fail_rate;
- 		}
+On Tue, 29 Nov 2022 17:48:07 +0100 you wrote:
+> I started playing with HSR and run into a problem. Tested latest
+> upstream -rc and noticed more problems. Now it appears to work.
+> For testing I have a small three node setup with iperf and ping. While
+> iperf doesn't complain ping reports missing packets and duplicates.
+> 
+> v4…v5:
+> - Added __rcu annotation ub patch #7
+> - Spelling fixes in #2 and #6.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v5,net-next,1/8] Revert "net: hsr: use hlist_head instead of list_head for mac addresses"
+    (no matching commit)
+  - [v5,net-next,2/8] hsr: Add a rcu-read lock to hsr_forward_skb().
+    https://git.kernel.org/netdev/net-next/c/5aa2820177af
+  - [v5,net-next,3/8] hsr: Avoid double remove of a node.
+    https://git.kernel.org/netdev/net-next/c/0c74d9f79ec4
+  - [v5,net-next,4/8] hsr: Disable netpoll.
+    https://git.kernel.org/netdev/net-next/c/d5c7652eb16f
+  - [v5,net-next,5/8] hsr: Synchronize sending frames to have always incremented outgoing seq nr.
+    https://git.kernel.org/netdev/net-next/c/06afd2c31d33
+  - [v5,net-next,6/8] hsr: Synchronize sequence number updates.
+    https://git.kernel.org/netdev/net-next/c/5c7aa13210c3
+  - [v5,net-next,7/8] hsr: Use a single struct for self_node.
+    https://git.kernel.org/netdev/net-next/c/20d3c1e9b861
+  - [v5,net-next,8/8] selftests: Add a basic HSR test.
+    https://git.kernel.org/netdev/net-next/c/7d0455e97072
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
