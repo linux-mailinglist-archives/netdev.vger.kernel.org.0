@@ -2,315 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE27264019B
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DCF06401C6
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:13:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232606AbiLBIKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 03:10:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53192 "EHLO
+        id S232481AbiLBIND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 03:13:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232602AbiLBIKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:10:05 -0500
-Received: from out-190.mta0.migadu.com (out-190.mta0.migadu.com [91.218.175.190])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8581DAE4F3
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:10:03 -0800 (PST)
-Message-ID: <cb1d8ee5-c5b4-261b-7cbb-459dbbe700b9@linux.dev>
-Date:   Fri, 2 Dec 2022 00:09:53 -0800
+        with ESMTP id S232717AbiLBIMn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:12:43 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE77918E3E
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:12:40 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1p119o-00059a-IC; Fri, 02 Dec 2022 09:12:28 +0100
+Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <sha@pengutronix.de>)
+        id 1p119m-001lGP-Ko; Fri, 02 Dec 2022 09:12:27 +0100
+Received: from sha by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <sha@pengutronix.de>)
+        id 1p119m-00BfDY-N6; Fri, 02 Dec 2022 09:12:26 +0100
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     linux-wireless@vger.kernel.org
+Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        kernel@pengutronix.de, Alexander Hochbaum <alex@appudo.com>,
+        Da Xue <da@libre.computer>, Po-Hao Huang <phhuang@realtek.com>,
+        Viktor Petrenko <g0000ga@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v5 00/11] RTW88: Add support for USB variants
+Date:   Fri,  2 Dec 2022 09:12:13 +0100
+Message-Id: <20221202081224.2779981-1-s.hauer@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Subject: Re: [PATCH bpf-next,v3 4/4] selftests/bpf: add xfrm_info tests
-Content-Language: en-US
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        andrii@kernel.org, daniel@iogearbox.net, nicolas.dichtel@6wind.com,
-        razor@blackwall.org, mykolal@fb.com, ast@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, shuah@kernel.org, liuhangbin@gmail.com,
-        lixiaoyan@google.com
-References: <20221201211425.1528197-1-eyal.birger@gmail.com>
- <20221201211425.1528197-5-eyal.birger@gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <20221201211425.1528197-5-eyal.birger@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/1/22 1:14 PM, Eyal Birger wrote:
-> Test the xfrm_info kfunc helpers.
-> 
-> Note: the tests require support for xfrmi "external" mode in iproute2.
+This has only small changes to the last version. I dropped the endless
+loop check again and added the "Edimax EW-7611ULB V2" to the rtw8723du
+id table.
 
-Not needed now. Please update the commit message.
+Sascha
 
-The test is failing on platform that has no kfunc support yet.  Please check the 
-BPF CI result in patchwork after posting to ensure the tests run well:
-https://patchwork.kernel.org/project/netdevbpf/patch/20221201211425.1528197-5-eyal.birger@gmail.com/
+Sascha Hauer (11):
+  wifi: rtw88: print firmware type in info message
+  wifi: rtw88: Call rtw_fw_beacon_filter_config() with rtwdev->mutex
+    held
+  wifi: rtw88: Drop rf_lock
+  wifi: rtw88: Drop h2c.lock
+  wifi: rtw88: Drop coex mutex
+  wifi: rtw88: iterate over vif/sta list non-atomically
+  wifi: rtw88: Add common USB chip support
+  wifi: rtw88: Add rtw8821cu chipset support
+  wifi: rtw88: Add rtw8822bu chipset support
+  wifi: rtw88: Add rtw8822cu chipset support
+  wifi: rtw88: Add rtw8723du chipset support
 
-This test needs to be added to the DENYLIST.<arch> for the not yet supported 
-platform.  Please refer to selftests/bpf/README.rst for details.
+ drivers/net/wireless/realtek/rtw88/Kconfig    |  47 +
+ drivers/net/wireless/realtek/rtw88/Makefile   |  15 +
+ drivers/net/wireless/realtek/rtw88/coex.c     |   3 +-
+ drivers/net/wireless/realtek/rtw88/debug.c    |  15 +
+ drivers/net/wireless/realtek/rtw88/fw.c       |  13 +-
+ drivers/net/wireless/realtek/rtw88/hci.h      |   9 +-
+ drivers/net/wireless/realtek/rtw88/mac.c      |   3 +
+ drivers/net/wireless/realtek/rtw88/mac80211.c |   2 +-
+ drivers/net/wireless/realtek/rtw88/main.c     |  12 +-
+ drivers/net/wireless/realtek/rtw88/main.h     |  12 +-
+ drivers/net/wireless/realtek/rtw88/phy.c      |   6 +-
+ drivers/net/wireless/realtek/rtw88/ps.c       |   2 +-
+ drivers/net/wireless/realtek/rtw88/reg.h      |   1 +
+ drivers/net/wireless/realtek/rtw88/rtw8723d.c |  28 +
+ drivers/net/wireless/realtek/rtw88/rtw8723d.h |  13 +-
+ .../net/wireless/realtek/rtw88/rtw8723du.c    |  36 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c |  18 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h |  21 +
+ .../net/wireless/realtek/rtw88/rtw8821cu.c    |  50 +
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c |  19 +
+ .../net/wireless/realtek/rtw88/rtw8822bu.c    |  90 ++
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c |  24 +
+ .../net/wireless/realtek/rtw88/rtw8822cu.c    |  44 +
+ drivers/net/wireless/realtek/rtw88/tx.h       |  31 +
+ drivers/net/wireless/realtek/rtw88/usb.c      | 911 ++++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/usb.h      | 107 ++
+ drivers/net/wireless/realtek/rtw88/util.c     | 103 ++
+ drivers/net/wireless/realtek/rtw88/util.h     |  12 +-
+ 28 files changed, 1609 insertions(+), 38 deletions(-)
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.h
 
-[ ... ]
-
-> +#define SYS_NOFAIL(fmt, ...)					\
-> +	({							\
-> +		char cmd[1024];					\
-> +		snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__);	\
-> +		system(cmd);					\
-> +	})
-> +
-> +static int attach_tc_prog(struct bpf_tc_hook *hook, int igr_fd, int egr_fd)
-> +{
-> +	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts1, .handle = 1,
-> +			    .priority = 1, .prog_fd = igr_fd);
-> +	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts2, .handle = 1,
-> +			    .priority = 1, .prog_fd = egr_fd);
-
-s/DECLARE_LIBBPF_OPTS/LIBBPF_OPTS/
-
-DECLARE_ is a legacy naming in libbpf_legacy.h
-
-[ ... ]
-
-> +static int setup_xfrmi_external_dev(const char *ns)
-> +{
-> +	struct {
-> +		struct nlmsghdr nh;
-> +		struct ifinfomsg info;
-> +		unsigned char data[128];
-> +	} req;
-> +	struct rtattr *link_info, *info_data;
-> +	struct nstoken *nstoken;
-> +	int ret = -1, sock = 0;
-
-sock = -1;
-
-> +	struct nlmsghdr *nh;
-> +
-> +	memset(&req, 0, sizeof(req));
-> +	nh = &req.nh;
-> +	nh->nlmsg_len = NLMSG_LENGTH(sizeof(req.info));
-> +	nh->nlmsg_type = RTM_NEWLINK;
-> +	nh->nlmsg_flags |= NLM_F_CREATE | NLM_F_REQUEST;
-> +
-> +	rtattr_add_str(nh, IFLA_IFNAME, "ipsec0");
-> +	link_info = rtattr_begin(nh, IFLA_LINKINFO);
-> +	rtattr_add_str(nh, IFLA_INFO_KIND, "xfrm");
-> +	info_data = rtattr_begin(nh, IFLA_INFO_DATA);
-> +	rtattr_add(nh, IFLA_XFRM_COLLECT_METADATA, 0);
-> +	rtattr_end(nh, info_data);
-> +	rtattr_end(nh, link_info);
-> +
-> +	nstoken = open_netns(ns);
-
-Please check error.
-
-> +
-> +	sock = socket(AF_NETLINK, SOCK_RAW | SOCK_CLOEXEC, NETLINK_ROUTE);
-> +	if (!ASSERT_GT(sock, 0, "netlink socket"))
-
-s/_GT/_GE/
-
-> +		goto Exit;
-
-Please run checkpatch.pl...
-
-CHECK: Avoid CamelCase: <Exit>
-#301: FILE: tools/testing/selftests/bpf/prog_tests/xfrm_info.c:250:
-+		goto Exit;
-
-> +	ret = send(sock, nh, nh->nlmsg_len, 0);
-> +	if (!ASSERT_EQ(ret, nh->nlmsg_len, "netlink send length"))
-> +		goto Exit;
-> +
-> +	ret = 0;
-> +Exit:
-> +	if (sock)
-
-if (sock != -1) ...
-
-> +		close(sock);
-> +	close_netns(nstoken);
-> +	return ret;
-> +}
-> +
-> +static int config_overlay(void)
-> +{
-> +	if (setup_xfrm_tunnel(NS0, NS1, IP4_ADDR_VETH01, IP4_ADDR_VETH10,
-> +			      IF_ID_0_TO_1, IF_ID_1))
-> +		goto fail;
-> +	if (setup_xfrm_tunnel(NS0, NS2, IP4_ADDR_VETH02, IP4_ADDR_VETH20,
-> +			      IF_ID_0_TO_2, IF_ID_2))
-> +		goto fail;
-> +
-> +	/* Older iproute2 doesn't support this option */
-> +	if (!ASSERT_OK(setup_xfrmi_external_dev(NS0), "xfrmi"))
-> +		goto fail;
-> +
-> +	SYS("ip -net " NS0 " addr add 192.168.1.100/24 dev ipsec0");
-> +	SYS("ip -net " NS0 " link set dev ipsec0 up");
-> +
-> +	SYS("ip -net " NS1 " link add ipsec0 type xfrm if_id %d", IF_ID_1);
-> +	SYS("ip -net " NS1 " addr add 192.168.1.200/24 dev ipsec0");
-> +	SYS("ip -net " NS1 " link set dev ipsec0 up");
-> +
-> +	SYS("ip -net " NS2 " link add ipsec0 type xfrm if_id %d", IF_ID_2);
-> +	SYS("ip -net " NS2 " addr add 192.168.1.200/24 dev ipsec0");
-> +	SYS("ip -net " NS2 " link set dev ipsec0 up");
-> +
-> +	return 0;
-> +fail:
-> +	return -1;
-> +}
-> +
-> +static int test_ping(int family, const char *addr)
-> +{
-> +	SYS("%s %s %s > /dev/null", ping_command(family), PING_ARGS, addr);
-> +	return 0;
-> +fail:
-> +	return -1;
-> +}
-> +
-> +static int test_xfrm_ping(struct xfrm_info *skel, u32 if_id)
-> +{
-> +	skel->bss->req_if_id = if_id;
-> +
-> +	if (test_ping(AF_INET, "192.168.1.200"))
-
-nit. Directly do SYS() here to avoid another reading detour to test_ping() which 
-is almost a one liner and only used once here.
-
-> +		return -1;
-> +
-> +	if (!ASSERT_EQ(skel->bss->resp_if_id, if_id, "if_id"))
-> +		return -1;
-> +
-> +	return 0;
-> +}
-> +
-> +static void _test_xfrm_info(void)
-> +{
-> +	int get_xfrm_info_prog_fd, set_xfrm_info_prog_fd;
-> +	struct xfrm_info *skel = NULL;
-> +	struct nstoken *nstoken = NULL;
-> +	int ifindex = -1;
-
-nit. Unnecessary init.  Nonthing to cleanup at the label "done:" and it is not a 
-return value also.  will be easier to review.
-
-> +	DECLARE_LIBBPF_OPTS(bpf_tc_hook, tc_hook,
-> +			    .attach_point = BPF_TC_INGRESS);
-> +
-> +	/* load and attach bpf progs to ipsec dev tc hook point */
-> +	skel = xfrm_info__open_and_load();
-> +	if (!ASSERT_OK_PTR(skel, "xfrm_info__open_and_load"))
-> +		goto done;
-> +	nstoken = open_netns(NS0);
-
-Check error.
-
-> +	ifindex = if_nametoindex("ipsec0");
-> +	if (!ASSERT_NEQ(ifindex, 0, "ipsec0 ifindex"))
-> +		goto done;
-> +	tc_hook.ifindex = ifindex;
-> +	set_xfrm_info_prog_fd = bpf_program__fd(skel->progs.set_xfrm_info);
-> +	get_xfrm_info_prog_fd = bpf_program__fd(skel->progs.get_xfrm_info);
-> +	if (!ASSERT_GE(set_xfrm_info_prog_fd, 0, "bpf_program__fd"))
-> +		goto done;
-> +	if (!ASSERT_GE(get_xfrm_info_prog_fd, 0, "bpf_program__fd"))
-> +		goto done;
-> +	if (attach_tc_prog(&tc_hook, get_xfrm_info_prog_fd,
-> +			   set_xfrm_info_prog_fd))
-> +		goto done;
-> +	if (!ASSERT_EQ(test_xfrm_ping(skel, IF_ID_0_TO_1), 0, "ping " NS1))
-> +		goto done;
-> +	if (!ASSERT_EQ(test_xfrm_ping(skel, IF_ID_0_TO_2), 0, "ping " NS2))
-> +		goto done;
-> +
-> +done:
-> +	if (nstoken)
-> +		close_netns(nstoken);
-> +	if (skel)
-> +		xfrm_info__destroy(skel);
-> +}
-> +
-> +void test_xfrm_info(void)
-> +{
-> +	cleanup();
-> +
-> +	if (!ASSERT_OK(config_underlay(), "config_underlay"))
-
-cleanup() is needed on error.
-
-> +		return;
-> +	if (!ASSERT_OK(config_overlay(), "config_overlay"))
-
-Same here.
-
-> +		return;
-> +
-> +	if (test__start_subtest("xfrm_info"))
-> +		_test_xfrm_info();
-> +
-> +	cleanup();
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/xfrm_info.c b/tools/testing/selftests/bpf/progs/xfrm_info.c
-> new file mode 100644
-> index 000000000000..908579310bf9
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/xfrm_info.c
-> @@ -0,0 +1,40 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/bpf.h>
-> +#include <linux/pkt_cls.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +__u32 req_if_id;
-> +__u32 resp_if_id;
-> +
-> +struct bpf_xfrm_info {
-> +	__u32 if_id;
-> +	int link;
-> +} __attribute__((preserve_access_index));
-> +
-> +int bpf_skb_set_xfrm_info(struct __sk_buff *skb_ctx,
-> +			  const struct bpf_xfrm_info *from) __ksym;
-> +int bpf_skb_get_xfrm_info(struct __sk_buff *skb_ctx,
-> +			  struct bpf_xfrm_info *to) __ksym;
-> +
-> +SEC("tc")
-> +int set_xfrm_info(struct __sk_buff *skb)
-> +{
-> +	struct bpf_xfrm_info info = { .if_id = req_if_id };
-> +
-> +	return bpf_skb_set_xfrm_info(skb, &info) ? TC_ACT_SHOT : TC_ACT_UNSPEC;
-
-Add these TC_ACT_* to bpf_tracing_net.h and then vmlinux.h can be used.  Take a 
-look at some of the bpf_tracing_net.h in selftests.
-
-> +}
-> +
-> +SEC("tc")
-> +int get_xfrm_info(struct __sk_buff *skb)
-> +{
-> +	struct bpf_xfrm_info info = {};
-> +
-> +	if (bpf_skb_get_xfrm_info(skb, &info) < 0)
-> +		return TC_ACT_SHOT;
-> +
-> +	resp_if_id = info.if_id;
-> +
-> +	return TC_ACT_UNSPEC;
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
+-- 
+2.30.2
 
