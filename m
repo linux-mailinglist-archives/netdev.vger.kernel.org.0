@@ -2,332 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7FE964117E
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 00:29:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1102164119C
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 00:42:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233745AbiLBX3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 18:29:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
+        id S234799AbiLBXmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 18:42:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233221AbiLBX3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 18:29:12 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0F2CEFAD
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 15:29:11 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id o13so14912057ejm.1
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 15:29:10 -0800 (PST)
+        with ESMTP id S234685AbiLBXmu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 18:42:50 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5CE218B8;
+        Fri,  2 Dec 2022 15:42:45 -0800 (PST)
+X-UUID: cf38e9520aa04a16bd91d128c6f83033-20221203
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=MIME-Version:Content-Transfer-Encoding:Content-ID:Content-Type:In-Reply-To:References:Message-ID:Date:Subject:CC:To:From; bh=XznkicVyGkT9bzO3F0ruKdOeVg4M411Zp+706t9sI98=;
+        b=nxSVqP/luhPPQsDTaV1i48unSb8ImkeSjj27Z6HzkVn5lu378ljP6KgtFOTeR82JhOWAiaAWe+x80hIHIzo5mKRE+1vRyYwc++LYM/az/sig+RVgl4KfC3lQp7lPn4rgqv9fKPIhzN5i1S0elNokrs0RUCIUCTuH1uL0nVrPlx4=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.14,REQID:a7f9aa0b-ed09-4dc8-bd04-91ade8bf2610,IP:0,U
+        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:-5,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+        :release,TS:-5
+X-CID-INFO: VERSION:1.1.14,REQID:a7f9aa0b-ed09-4dc8-bd04-91ade8bf2610,IP:0,URL
+        :0,TC:0,Content:0,EDM:0,RT:0,SF:-5,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
+        elease,TS:-5
+X-CID-META: VersionHash:dcaaed0,CLOUDID:db8b041f-5e1d-4ab5-ab8e-3e04efc02b30,B
+        ulkID:221203065626A3XV88X6,BulkQuantity:23,Recheck:0,SF:17|19|102,TC:nil,C
+        ontent:0,EDM:-3,IP:nil,URL:1,File:nil,Bulk:40,QS:nil,BEC:nil,COL:0
+X-UUID: cf38e9520aa04a16bd91d128c6f83033-20221203
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <ryder.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 208233583; Sat, 03 Dec 2022 07:42:40 +0800
+Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Sat, 3 Dec 2022 07:42:39 +0800
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (172.21.101.239)
+ by mtkmbs10n1.mediatek.com (172.21.101.34) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Sat, 3 Dec 2022 07:42:39 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZcTeH4CT0gfU8NZGnzHSyVhBnBO/fW5gf9/0WucREvQ5xbDGnm9aUUtIzyKqCKNKZP8Jpo+l2MlPMTCDSR9lS6LNjRkQm74SlgzT9EmGPw5H1eukQ8BYQy9uaF8q0yd7Jx4KLlh5ejOMqV8/dnp/zj8SN5k8vbpcb5z91vDBHEbwZL7IUWE1PVl8x1Tz5kgmAQLluSGwkPfSN3PzYPQOl8uHr9VWYaS1zLVt/Xfd5eez6C/GprKQxwN/BFMLNVxtH+MMV2vlkkQpOPMbOce/LR5ZZZhWl32Jrpo8hXk3Y4qqZUqaixRVNH9fIqVEn4iQ8AdCo0B+H3W4qcC2sWwI+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XznkicVyGkT9bzO3F0ruKdOeVg4M411Zp+706t9sI98=;
+ b=GIBBh53u1X2zWj3nxq7VcXEH61mgDKUmaqwjVGUgV4UcVY9R+qQPxKNJ8BSkDqr2xHFrEfhGGrEgOftlAIRd8jE9Lnd3bfIes8d/ksxEUUxYcSkYPKmyKTeZ6MYkyi6MV02t3tMRO8YiyOaMHXD2q+fDnXFgz70e1n7nvLIeZTixkF2fWwddz1ZjnlW1ycZsLbRjjmfg+0W5hcBE+HuD2c/jZZVSYxl4Wo6GKOrLXBXCsM0+VzdG0GnkaIFGDZRRby604dDOoUsR4A4IExEHc9t/LsEhNK37u8HwWVnEtqJdF8E7fKbGpxqlybuzA9UF9GTh5CHKT3nG25x+2KbPcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mediatek.com; dmarc=pass action=none header.from=mediatek.com;
+ dkim=pass header.d=mediatek.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FlZmpsvcB9zb2R2tDTklavxONJ8h3E6CMZNTQMgPMCU=;
-        b=NiU+p5Ja/D4n94OIOlNUg6dyipJu9fQ80q28OxU9zvQBPZptUJ9rnRb5jlPlJkry0j
-         5yih7NpRoe3MhXyglsiVvF/DS2Rup/xIaZRNiMSBbnIYI7L1jnBUeEttEGHhzh31hcXQ
-         xK1Mf5TIlz6ZYTb1SD/UHNWuqa1dQTsbhvm4SjvsI3rLv8RWB1xA+bj9QZQZWhn+uP7Y
-         C1v3LgsOsVpjSM8N6vfOhZx++hqaHmAwJN60/xP/JpCAbDGNgTaWAR4ychRUChYO8heg
-         7o4oXpbhYrEEmTw4Ol9+4Irsc4JjBZUvatPFMlNaH0D6TlxFJmeA+S57Ee6VjN0xfVij
-         sJ0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FlZmpsvcB9zb2R2tDTklavxONJ8h3E6CMZNTQMgPMCU=;
-        b=7P5RtTkEWKZzvm2yEvcBmZ9G9vTDI59du474sRDOVAUAESOY0ZClWfqyww9+mUONHt
-         TnP+M717NsJ+044SAIJWn73cHodjynbgpgj0C+haK5SLvDtoJYkkUYbWbj5ZaQVnsc+A
-         qMFmjsewdENaydwZL5jFDCcGMvD/HXb/u0CdE78qOsW8H5aXOAJeOYmFcan3yGCoM94X
-         lVHyEPh/hpQl9Ids79vpp9P3qvT9NnyT42lyVqfkxtR7y312oqETHA4QbXP7VFH+Iq4X
-         h86U0PmNnP4Kl6lP2LKstsJPgqdhXUq+lNs0wYzc9pALXLWBAFVq/jc+0CH1GISPK/x9
-         zs2Q==
-X-Gm-Message-State: ANoB5pkKfV28cvHA4kUg+qKrSSYExDTloHGMD3AZfc50pgiQv0WeJvn6
-        sNtOnOkfo8bURg9Y8Vafx2E=
-X-Google-Smtp-Source: AA0mqf5dk3dPPqgaP6FxYQO+00H/OVUtqvAd0v4DyfVc4ZeWwp4qXFEToyxvrccKU9lVzTzDMI1Hmw==
-X-Received: by 2002:a17:906:5a94:b0:7bc:34d3:31fe with SMTP id l20-20020a1709065a9400b007bc34d331femr34392589ejq.427.1670023749280;
-        Fri, 02 Dec 2022 15:29:09 -0800 (PST)
-Received: from ?IPV6:2a01:c23:c0bd:c300:8000:63f:1f0b:d5d2? (dynamic-2a01-0c23-c0bd-c300-8000-063f-1f0b-d5d2.c23.pool.telefonica.de. [2a01:c23:c0bd:c300:8000:63f:1f0b:d5d2])
-        by smtp.googlemail.com with ESMTPSA id la8-20020a170907780800b00788c622fa2csm3500390ejc.135.2022.12.02.15.29.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Dec 2022 15:29:08 -0800 (PST)
-Message-ID: <d9950cdd-2964-692d-3c10-91168cf99878@gmail.com>
-Date:   Sat, 3 Dec 2022 00:29:08 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Mengyuan Lou <mengyuanlou@net-swift.com>
-Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
-References: <20221202083558.57618-1-mengyuanlou@net-swift.com>
- <Y4p0dQWijzQMlBmW@lunn.ch>
+ d=mediateko365.onmicrosoft.com; s=selector2-mediateko365-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XznkicVyGkT9bzO3F0ruKdOeVg4M411Zp+706t9sI98=;
+ b=OpETVxftf9Nbv7rPxXaHWj/mzcFEy+7mUrEqwj5JEQUM+hzL817XVrqGIsTK7TO0lnW+lZED5SeNvKKuzrZyygdhnbIlMv+ZQA3tJoUY4uvg5214auwV+j8bkp9Xjz4NXCSBceCZ94ZIEBDL1mzwMzxW9QF46Hl6wKDMcDiLDIs=
+Received: from TY0PR03MB6354.apcprd03.prod.outlook.com (2603:1096:400:14a::9)
+ by TYZPR03MB7027.apcprd03.prod.outlook.com (2603:1096:400:331::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Fri, 2 Dec
+ 2022 23:42:37 +0000
+Received: from TY0PR03MB6354.apcprd03.prod.outlook.com
+ ([fe80::320d:30ac:41ac:b1a3]) by TY0PR03MB6354.apcprd03.prod.outlook.com
+ ([fe80::320d:30ac:41ac:b1a3%5]) with mapi id 15.20.5880.010; Fri, 2 Dec 2022
+ 23:42:37 +0000
+From:   Ryder Lee <Ryder.Lee@mediatek.com>
+To:     "keescook@chromium.org" <keescook@chromium.org>
+CC:     =?utf-8?B?TWVpQ2hpYSBDaGl1ICjpgrHnvo7lmIkp?= 
+        <MeiChia.Chiu@mediatek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
+        =?utf-8?B?U2hheW5lIENoZW4gKOmZs+i7kuS4nik=?= 
+        <Shayne.Chen@mediatek.com>, "nbd@nbd.name" <nbd@nbd.name>,
+        "lorenzo@kernel.org" <lorenzo@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Sean Wang <Sean.Wang@mediatek.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        =?utf-8?B?U3VqdWFuIENoZW4gKOmZiOe0oOWonyk=?= 
+        <Sujuan.Chen@mediatek.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        =?utf-8?B?Qm8gSmlhbyAo54Sm5rOiKQ==?= <Bo.Jiao@mediatek.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: Re: Coverity: mt7915_mcu_get_chan_mib_info(): Memory - illegal
+ accesses
+Thread-Topic: Coverity: mt7915_mcu_get_chan_mib_info(): Memory - illegal
+ accesses
+Thread-Index: AQHZBp97nbgv/Go0Rk6e4OypxWDzN65bNVOAgAACYoCAAAqLgA==
+Date:   Fri, 2 Dec 2022 23:42:36 +0000
+Message-ID: <6285b967a37d7f641b13ba73c10033450ee8ea7f.camel@mediatek.com>
+References: <202212021424.34C0F695E4@keescook>
+         <1a16599dd5e4eed86bae112a232a3599af43a5f2.camel@mediatek.com>
+         <202212021504.A1942911@keescook>
+In-Reply-To: <202212021504.A1942911@keescook>
+Accept-Language: en-US
 Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next] net: ngbe: Add mdio bus driver.
-In-Reply-To: <Y4p0dQWijzQMlBmW@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=mediatek.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TY0PR03MB6354:EE_|TYZPR03MB7027:EE_
+x-ms-office365-filtering-correlation-id: f1f4595b-9961-4beb-093d-08dad4bee42b
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4hTywygS7DNdRaDL4l83RdEpNocwne2nswxnfovMzZwmEtouiYykrG81khbGiX+aR63SQZ1e7wOlgfRR9Ns15n8eEAnGJPxHHssOnQw9NQ6yOb9IyKgkPnMyV4pkcMlJZI9uZfLrDnrbH9iBnYe9Ppg8LBIEMFrkLF/UOd8GXjxNPqYO3AOK22gdmBdF8fq15yivz0MZd4MN2f0siBgnrsyiHKwjeLy1icLhPuKwJIP03hOxX8R53Y7CwTVU3W0YSSl291+7vIckixPr9LzYEpsJiM4xgo2mxDdnOqUQpEA3DhPHer8F3cc996ShpVouvQ0tIxwQgpQCIrKxdmP1V7JHFF7wU9UuyUbMFLtmjkYTg8YG8UkwP+zNCHyHgLFpZ0XA2DHK/nJu3DLvOoOcAYE0zAua5O0ab9yaSb1rSas7GtELw5FwiJpBnFtG+wh+Q+QGlDrIlgisDMXF0eHPJX9DTZSckV/Jqux7cEiYGQXw1hdaaRLUc5RP/YxxwKxWK9LmbCeEkzOnVjPjEi1EJaTIjOvU/YJSkaWMd+q/l6VENgDzXY6rgf2sZPTKBQGM8p0ceHvSTigGhfgrEpIwpDxYB8iTCmksM9zEVjI6mgFEXn4pHWjp3c/zaaQ7dm9yzKbOtvzesqN7FAL16r1n6O4kKA8tGeYdCtBLCj3+B8cKMs51uHcJi3WSbLr+v0wm3G/NY1/82jz9cgDEm+trMqxNMteS2y52pOLk2/hhZfk=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY0PR03MB6354.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(376002)(366004)(136003)(346002)(451199015)(36756003)(83380400001)(8676002)(2616005)(76116006)(316002)(6486002)(86362001)(38070700005)(38100700002)(66556008)(7416002)(64756008)(2906002)(41300700001)(54906003)(4326008)(6506007)(8936002)(186003)(966005)(6512007)(26005)(5660300002)(478600001)(91956017)(71200400001)(6916009)(66446008)(122000001)(66946007)(66476007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UXZkTTRnOHhqSGw3YmVHblBSQndCOHdjcWQ0RW51Rms0cTlnL0tBS1MxNncw?=
+ =?utf-8?B?ZzVIOEVRYnlkZ0lMN0twb2J2azVLRjU4eGluV1hDck5KVDZ4cGZzN3p6QjNi?=
+ =?utf-8?B?bk10ZUdrdlNnWWNqQTByNkl5aENhNFR6MGY1VHlLMTAyaWxscko4T1A1ZTlH?=
+ =?utf-8?B?VHFCZ0R2cmNpdk9wNS9uVEFJSEZuUEVBV3hla0M5VFhVRTZyUWZYcW9oS2pW?=
+ =?utf-8?B?YVFHRVhCTCszODYzUnZCbGluMmhYVVVuKzdFOHdQdU1uUjVlS01Oc2txdUFn?=
+ =?utf-8?B?RHdUZmg5ZXZXZG16OENjc1JaOHUwSDM1RktDTzhwZ1BCeHdrbDFUTm1nRFVp?=
+ =?utf-8?B?U1lPS3lVM2dmcUlGRXhxanV4M0pmMVdYNE5scDRwTHlzMnBvUy9uZzFhcFFF?=
+ =?utf-8?B?N0F4OEIxK3hlNkppZFRtRldsQUtNTTJiTCtxVzFUYzhaU3p4c082Wm93SVRp?=
+ =?utf-8?B?UjRXVW5zbDlNb1dZOWYyYTdwQ3k5RHNvY2lDbkphZU1US0Q2d29wcEVaL1lH?=
+ =?utf-8?B?ZjVUQWdwaW5JRnhGUk1MZkhjMU93NHFhbDlJeDNEbFIyOGd4b052emlvVVcy?=
+ =?utf-8?B?Y3lkZE5NUE1MRjJwMWdLaDNLcE5UZ0FJTkFLUlBscFpOREdzRVlGK3FXbHBa?=
+ =?utf-8?B?U0tVbkdWUGt3NXFXQnorK0JDcGxJRjZwRlJSYlFpdWtmb2VhYzA2dXZIZzZO?=
+ =?utf-8?B?MU1wSGU1TU81VlA4UEJSdjBtQlBLYkltUlJ5V0ZWQldYZXVVVk5CNXlKbmhs?=
+ =?utf-8?B?d2syN0VGWEdWSmVkSUttOHNPTkJlT0dBamlTMTN5T2J5d0VuRGVoSXFmZGJC?=
+ =?utf-8?B?NDEwc05ZZzdKcUFOclhlTGZHaWphb29JUllBcGt3Vkp1a0xTK0dTM2lRNkd5?=
+ =?utf-8?B?SE1rWXp4NTYrbklycmFJRXNLeXUxQjBwbzFZaXZvdXZ5Z2lmcThwZ202OVk0?=
+ =?utf-8?B?RnlYYXUrbk5IQkxCazRBMjlFL25kQytjb3lpaVVZRHppb0lYNVYvUko4UkRy?=
+ =?utf-8?B?RWk0bU9FREZIWURKMWlEVkFvaGJ4cmgwMHl6OGVsSFZFMWgxc3orRDRqcjg4?=
+ =?utf-8?B?d0tSdFBBV3JFeTl1dGlCdzVTaDVTZnZxZjFuU0VLcTVybmdvODFEOW9JbnZr?=
+ =?utf-8?B?eGRJU1VwQTFWNGRlUzdEb21PaTdldWdBYmJlRFAxSkhBMFUyeTVyZVhmczdP?=
+ =?utf-8?B?d2xYYTg3MFhhd1poRm8xaVZzNWZJNlc3WVdKQXVHMmsxRytGeDQ5QzByTWs1?=
+ =?utf-8?B?ZHRQSlFhVHdKNDNFNFdRUzZmd21LVy8vZ0tlZHUrbXJZV2g5dHZGK1FLQkNE?=
+ =?utf-8?B?QUlCbnI3em1vWFZYeXoyZmFOR2lXVk54WTNKVVIrb3lDY2t4WEVOM0xGWjFj?=
+ =?utf-8?B?VWMwRFcwdmZYcUhxYzRqM2hXT0o3dGg4QTRsTkpMZnV1WHYwN2xybS9Oamty?=
+ =?utf-8?B?ZmwyaVBPb1RXYm93QnIxK0FBZlRVTlRpZjJnYUhET0NyeVZVbFJCYnUxRlJG?=
+ =?utf-8?B?Z0JGQndDbmRLQStWUVdMMEVsc3VMWVg4U1hIaWZxOWk4emVpVEh5VWlERkhs?=
+ =?utf-8?B?YWN4bU04UlRtTGRaVm9XY3A5K1BWcFQvRlJpVFVvV2wxdm5qTlhBRm80bDBV?=
+ =?utf-8?B?R3AvcGxXek8wRjlIbFZiaHhoUDlUUG85Sk9yTzBadGpyeWVPR3JkYzVMQlhS?=
+ =?utf-8?B?UkJMTnZGNTRvdW9RN1lQOXdrYit0SUlKYy91UzNrNEtPQmphanRXRTFoWUZh?=
+ =?utf-8?B?bG5JcTVlSjJhNUs3UHVWSURZZExuLytRb3R0ckZUTTdSNWlneFJveTBNZ0NF?=
+ =?utf-8?B?a2pTVVA1VUp6eU5uS1k5VnBxOEpSaE5GZGVCR00vZkNuWjZxRnZoclEyOXda?=
+ =?utf-8?B?ZTFDUkxHTW1DalIvcTNjTnorS3p1NUh5T0RsTGVMN1JUMHpRVE5JRU9OVTlx?=
+ =?utf-8?B?RXlpN25Bajk1U3NzNS9TaXc1Nk93U28rM3dHdFdzcUpyUmVtS3lFRTlWckVj?=
+ =?utf-8?B?cllOa0FHaTdLNUhZNzhjMERTMGVSa0NhNkliUkwveUxFbndTamx2M0Rod2Rr?=
+ =?utf-8?B?WGtpRnd4Y3VtUW9vVkZiTU5LdmVjQVlnNnVYbE1SNktRUVd4WEdPb3JsOEhY?=
+ =?utf-8?B?ZnZCUzB3cEhkUWhEL2hyVk9VYnBBUEJSOXRHdUtUR2o5VVVHMzcyVFVIMTdh?=
+ =?utf-8?B?cUE9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <52B8E1FF4ECC014690D8C015368B0DFE@apcprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY0PR03MB6354.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1f4595b-9961-4beb-093d-08dad4bee42b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Dec 2022 23:42:36.2934
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a7687ede-7a6b-4ef6-bace-642f677fbe31
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zSnVODo6bcYtWOhaMk9RUUwoXs37XvHbJzuarD2tMcxRRlli4kVuvz1FcpJ6eu2aPL8XEcKbuV0FK+BbVIr0TA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR03MB7027
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02.12.2022 22:56, Andrew Lunn wrote:
->> --- a/drivers/net/ethernet/wangxun/Kconfig
->> +++ b/drivers/net/ethernet/wangxun/Kconfig
->> @@ -25,6 +25,9 @@ config NGBE
->>  	tristate "Wangxun(R) GbE PCI Express adapters support"
->>  	depends on PCI
->>  	select LIBWX
->> +	select PHYLIB
->> +	select MARVELL_PHY
->> +	select MOTORCOMM_PHY
-> 
-> Don't select specific PHYs. Distros build them all as modules.
-> 
->> +int ngbe_phy_led_oem_hostif(struct ngbe_hw *hw, u32 *data)
->> +{
->> +	struct wx_hic_read_shadow_ram buffer;
->> +	struct wx_hw *wxhw = &hw->wxhw;
->> +	int status;
-> 
-> Please break the patch up into smaller chunks and write good commit
-> messages. I've no idea what this has to do with MDIO or PHY. Something
-> to do with controlling the PHYs LEDS?
-> 
-> It seems like you could have one patch adding the MDIO bus support,
-> and one patch adding calls to phylib. And then try to break the rest
-> up into logical collections of changes.
-> 
->> +	ret = wx_stop_adapter(wxhw);
->> +	if (ret != 0)
->> +		return ret;
->> +	val = WX_MIS_RST_LAN_RST(wxhw->bus.func);
->> +	wr32(wxhw, WX_MIS_RST, val | rd32(wxhw, WX_MIS_RST));
->> +
->> +	ret = read_poll_timeout(rd32, val,
->> +				!(val & (BIT(9) << wxhw->bus.func)), 1000,
->> +				100000, false, wxhw, 0x10028);
->> +	if (ret)
->> +		wx_dbg(wxhw, "Lan reset exceed s maximum times.\n");
->> +
->> +	wr32(wxhw, NGBE_PHY_CONFIG(0x1f), 0xa43);
->> +	ret = read_poll_timeout(rd32, val, val & 0x20, 1000,
->> +				100000, false, wxhw, NGBE_PHY_CONFIG(0x1d));
->> +	if (ret)
->> +		wx_dbg(wxhw, "Gphy reset failed.\n");
-> 
-> What is this doing? Toggling a GPIO which is connected to the PHY
-> reset input?
-> 
->> -	/* reset num_rar_entries to 128 */
->> +	/* reset num_rar_entries to 32 */
-> 
-> This looks like an unrelated change, nothing to do with MDIO or PHY.
-> 
->>  	switch (type_mask) {
->>  	case NGBE_SUBID_M88E1512_SFP:
->>  	case NGBE_SUBID_LY_M88E1512_SFP:
->> -		hw->phy.type = ngbe_phy_m88e1512_sfi;
->> +		hw->phy.type = ngbe_phy_mv_sfi;
->>  		break;
->>  	case NGBE_SUBID_M88E1512_RJ45:
->> -		hw->phy.type = ngbe_phy_m88e1512;
->> +		hw->phy.type = ngbe_phy_mv;
->>  		break;
->>  	case NGBE_SUBID_M88E1512_MIX:
->> -		hw->phy.type = ngbe_phy_m88e1512_unknown;
->> +		hw->phy.type = ngbe_phy_mv_mix;
->>  		break;
->>  	case NGBE_SUBID_YT8521S_SFP:
->>  	case NGBE_SUBID_YT8521S_SFP_GPIO:
->>  	case NGBE_SUBID_LY_YT8521S_SFP:
->> -		hw->phy.type = ngbe_phy_yt8521s_sfi;
->> +		hw->phy.type = ngbe_phy_yt_mix;
->>  		break;
->>  	case NGBE_SUBID_INTERNAL_YT8521S_SFP:
->>  	case NGBE_SUBID_INTERNAL_YT8521S_SFP_GPIO:
->> -		hw->phy.type = ngbe_phy_internal_yt8521s_sfi;
->> +		hw->phy.type = ngbe_phy_internal_yt_sfi;
->>  		break;
->>  	case NGBE_SUBID_RGMII_FPGA:
->>  	case NGBE_SUBID_OCP_CARD:
-> 
-> Generally, a MAC driver does not care what sort of PHY is connected to
-> it. The PHY driver does all that is needed. So it is not clear to me
-> why you need this.
-> 
-> 
->> @@ -481,6 +539,8 @@ static int ngbe_probe(struct pci_dev *pdev,
->>  		   "PHY: %s, PBA No: Wang Xun GbE Family Controller\n",
->>  		   hw->phy.type == ngbe_phy_internal ? "Internal" : "External");
->>  	netif_info(adapter, probe, netdev, "%pM\n", netdev->dev_addr);
->> +	/* print PCI link speed and width */
->> +	pcie_print_link_status(pdev);
-> 
-> Also seems unrelated.
-> 
->> +static int ngbe_phy_read_reg_mdi(struct mii_bus *bus, int phy_addr, int regnum)
->> +{
->> +	u32 command = 0, device_type = 0;
->> +	struct ngbe_hw *hw = bus->priv;
->> +	struct wx_hw *wxhw = &hw->wxhw;
->> +	u32 phy_data = 0;
->> +	u32 val = 0;
->> +	int ret = 0;
->> +
->> +	/* setup and write the address cycle command */
->> +	command = NGBE_MSCA_RA(regnum) |
->> +		  NGBE_MSCA_PA(phy_addr) |
->> +		  NGBE_MSCA_DA(device_type);
->> +	wr32(wxhw, NGBE_MSCA, command);
->> +
->> +	command = NGBE_MSCC_CMD(NGBE_MSCA_CMD_READ) |
->> +		  NGBE_MSCC_BUSY |
->> +		  NGBE_MDIO_CLK(6);
->> +	wr32(wxhw, NGBE_MSCC, command);
-> 
-> It looks like you don't support C45? If so, please return -EOPNOTSUPP
-> if asked to do a C45 transaction.
-> 
->> +static int ngbe_phy_read_reg(struct mii_bus *bus, int phy_addr, int regnum)
->> +{
->> +	struct ngbe_hw *hw = bus->priv;
->> +	u16 phy_data = 0;
->> +
->> +	if (hw->mac_type == ngbe_mac_type_mdi)
->> +		phy_data = ngbe_phy_read_reg_internal(bus, phy_addr, regnum);
->> +	else if (hw->mac_type == ngbe_mac_type_rgmii)
->> +		phy_data = ngbe_phy_read_reg_mdi(bus, phy_addr, regnum);
-> 
-> Do you have two mdio busses?
-> 
->> +static void ngbe_gphy_wait_mdio_access_on(struct phy_device *phydev)
->> +{
->> +	u16 val;
->> +	int ret;
->> +
->> +	/* select page to 0xa43*/
->> +	phy_write(phydev, 0x1f, 0x0a43);
->> +	/* wait to phy can access */
->> +	ret = read_poll_timeout(phy_read, val, val & 0x20, 100,
->> +				2000, false, phydev, 0x1d);
-> 
-> What is this doing? The MAC should not be directly accessing the PHY.
-> 
-
-This seems to be call
-phy_read_paged(phydev, 0xa43, RTL8211F_INSR);
-from rtl8211f_ack_interrupt() in the Realtek PHY driver.
-Looks to me like the assumption here is that a specific
-Realtek PHY is attached.
-
->> +
->> +	if (ret)
->> +		phydev_err(phydev, "Access to phy timeout\n");
->> +}
->> +
->> +static void ngbe_gphy_dis_eee(struct phy_device *phydev)
->> +{
->> +	phy_write(phydev, 0x1f, 0x0a4b);
->> +	phy_write(phydev, 0x11, 0x1110);
->> +	phy_write(phydev, 0x1f, 0x0000);
->> +	phy_write(phydev, 0xd, 0x0007);
->> +	phy_write(phydev, 0xe, 0x003c);
->> +	phy_write(phydev, 0xd, 0x4007);
->> +	phy_write(phydev, 0xe, 0x0000);
-> 
-> Again, the MAC should not be accessing the PHY. From the name, i'm
-> guessing your MAC does not support EEE? So you want to stop the PHY
-> advertising EEE?
-> 
-> This is how other MAC drivers do this:
-> 
-> 	/* disable EEE autoneg, EEE not supported by TSNEP */
-> 	memset(&ethtool_eee, 0, sizeof(ethtool_eee));
-> 	phy_ethtool_set_eee(adapter->phydev, &ethtool_eee);
-> 
-> Please delete all code which directly access the PHY. You might need
-> to add new functionality to the PHY driver, but in general, it is not
-> needed, the existing PHY drivers should do what you need.
-> 
->> +int ngbe_phy_connect(struct ngbe_hw *hw)
->> +{
->> +	struct ngbe_adapter *adapter = container_of(hw,
->> +						    struct ngbe_adapter,
->> +						    hw);
->> +	int ret;
->> +
->> +	ret = phy_connect_direct(adapter->netdev,
->> +				 hw->phydev,
->> +				 ngbe_handle_link_change,
->> +				 PHY_INTERFACE_MODE_RGMII);
-> 
-> Who is responsible for RGMII delays? In general, the PHY adds the
-> delay, so you pass PHY_INTERFACE_MODE_RGMII_ID here.
-> 
->> +int ngbe_mdio_init(struct ngbe_hw *hw)
->> +{
->> +	struct pci_dev *pdev = hw->wxhw.pdev;
->> +	int ret;
->> +
->> +	hw->mii_bus = devm_mdiobus_alloc(&pdev->dev);
->> +	if (!hw->mii_bus)
->> +		return -ENOMEM;
->> +
->> +	hw->mii_bus->name = "ngbe_mii_bus";
->> +	hw->mii_bus->read = &ngbe_phy_read_reg;
->> +	hw->mii_bus->write = &ngbe_phy_write_reg;
->> +	hw->mii_bus->phy_mask = 0xfffffffe;
->> +	hw->mii_bus->parent = &pdev->dev;
->> +	hw->mii_bus->priv = hw;
->> +
->> +	snprintf(hw->mii_bus->id, MII_BUS_ID_SIZE, "ngbe-%x",
->> +		 (pdev->bus->number << 8) |
->> +		 pdev->devfn);
->> +
->> +	ret = devm_mdiobus_register(&pdev->dev, hw->mii_bus);
->> +	if (ret)
->> +		return ret;
->> +
->> +	hw->phydev = mdiobus_get_phy(hw->mii_bus, 0);
-> 
-> Is this a hardware limitation? Only address 0 is supported?
-> 
->> +	if (!hw->phydev) {
->> +		return -ENODEV;
->> +	} else if (!hw->phydev->drv) {
->> +		wx_err(&hw->wxhw,
->> +		       "No dedicated PHY driver found for PHY ID 0x%08x.\n",
->> +		       hw->phydev->phy_id);
->> +		return -EUNATCH;
->> +	}
-> 
-
-This code seems to be copied from r8169_mdio_register() in the r8169
-MAC driver. There we deal with internal PHY's only. Once we know the
-MAC version, we know the PHY version.
-
-In r8169 the motivation for the check is that access to registers
-MII_MMD_CTRL/MII_MMD_DATA causes a hang on certain PHY versions
-with the genphy driver. These PHY versions have vendor-specific
-registers at addresses MII_MMD_CTRL/MII_MMD_DATA.
-
-Author should explain what's his motivation here.
-
-> That is probably wrong. The module could still be loading. It is only
-> when you connect the MAC to the PHY does it need to have a PHY
-> driver. At that point, if there is no driver loaded it will fall back
-> to the generic PHY driver. You don't see any other MAC driver with
-> code like this.
-> 
-> As a general comment, if you do something which no other driver does,
-> you are probably doing something you should not do.
-> 
->     Andrew
-> 
-Heiner
-
+T24gRnJpLCAyMDIyLTEyLTAyIGF0IDE1OjA0IC0wODAwLCBLZWVzIENvb2sgd3JvdGU6DQo+ID4g
+DQo+IE9uIEZyaSwgRGVjIDAyLCAyMDIyIGF0IDEwOjU2OjE5UE0gKzAwMDAsIFJ5ZGVyIExlZSB3
+cm90ZToNCj4gPiBPbiBGcmksIDIwMjItMTItMDIgYXQgMTQ6MjQgLTA4MDAsIGNvdmVyaXR5LWJv
+dCB3cm90ZToNCj4gPiA+IEhlbGxvIQ0KPiA+ID4gDQo+ID4gPiBUaGlzIGlzIGFuIGV4cGVyaW1l
+bnRhbCBzZW1pLWF1dG9tYXRlZCByZXBvcnQgYWJvdXQgaXNzdWVzDQo+ID4gPiBkZXRlY3RlZA0K
+PiA+ID4gYnkNCj4gPiA+IENvdmVyaXR5IGZyb20gYSBzY2FuIG9mIG5leHQtMjAyMjEyMDIgYXMg
+cGFydCBvZiB0aGUgbGludXgtbmV4dA0KPiA+ID4gc2Nhbg0KPiA+ID4gcHJvamVjdDoNCj4gPiA+
+IA0KPiA+IA0KPiA+IA0KaHR0cHM6Ly91cmxkZWZlbnNlLmNvbS92My9fX2h0dHBzOi8vc2Nhbi5j
+b3Zlcml0eS5jb20vcHJvamVjdHMvbGludXgtbmV4dC13ZWVrbHktc2Nhbl9fOyEhQ1RSTktBOXdN
+ZzBBUmJ3IWo3al9DMEtwTzRWRDJ5TU9vZHZwZUlleFRHcTRmaHkyeXE2bm9rTnVhOXU0TFRvaVVP
+TGs0b3U4SkZGTnJYa3JoODBkNUJLMms0NGZhUlFzdEhFOSQNCj4gPiAgDQo+ID4gPiAgDQo+ID4g
+PiANCj4gPiA+IFlvdSdyZSBnZXR0aW5nIHRoaXMgZW1haWwgYmVjYXVzZSB5b3Ugd2VyZSBhc3Nv
+Y2lhdGVkIHdpdGggdGhlDQo+ID4gPiBpZGVudGlmaWVkDQo+ID4gPiBsaW5lcyBvZiBjb2RlIChu
+b3RlZCBiZWxvdykgdGhhdCB3ZXJlIHRvdWNoZWQgYnkgY29tbWl0czoNCj4gPiA+IA0KPiA+ID4g
+ICBUaHUgRmViIDMgMTM6NTc6NTYgMjAyMiArMDEwMA0KPiA+ID4gICAgIDQxN2E0NTM0ZDIyMyAo
+Im10NzY6IG10NzkxNTogdXBkYXRlIG10NzkxNV9jaGFuX21pYl9vZmZzIGZvcg0KPiA+ID4gbXQ3
+OTE2IikNCj4gPiA+IA0KPiA+ID4gQ292ZXJpdHkgcmVwb3J0ZWQgdGhlIGZvbGxvd2luZzoNCj4g
+PiA+IA0KPiA+ID4gKioqIENJRCAxNTI3ODAxOiAgTWVtb3J5IC0gaWxsZWdhbCBhY2Nlc3NlcyAg
+KE9WRVJSVU4pDQo+ID4gPiBkcml2ZXJzL25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2L210Nzkx
+NS9tY3UuYzozMDA1IGluDQo+ID4gPiBtdDc5MTVfbWN1X2dldF9jaGFuX21pYl9pbmZvKCkNCj4g
+PiA+IDI5OTkgICAgIAkJc3RhcnQgPSA1Ow0KPiA+ID4gMzAwMCAgICAgCQlvZnMgPSAwOw0KPiA+
+ID4gMzAwMSAgICAgCX0NCj4gPiA+IDMwMDINCj4gPiA+IDMwMDMgICAgIAlmb3IgKGkgPSAwOyBp
+IDwgNTsgaSsrKSB7DQo+ID4gPiAzMDA0ICAgICAJCXJlcVtpXS5iYW5kID0gY3B1X3RvX2xlMzIo
+cGh5LT5tdDc2LT5iYW5kX2lkeCk7DQo+ID4gPiB2dnYgICAgIENJRCAxNTI3ODAxOiAgTWVtb3J5
+IC0gaWxsZWdhbCBhY2Nlc3NlcyAgKE9WRVJSVU4pDQo+ID4gPiB2dnYgICAgIE92ZXJydW5uaW5n
+IGFycmF5ICJvZmZzIiBvZiA5IDQtYnl0ZSBlbGVtZW50cyBhdCBlbGVtZW50DQo+ID4gPiBpbmRl
+eCA5IChieXRlIG9mZnNldCAzOSkgdXNpbmcgaW5kZXggImkgKyBzdGFydCIgKHdoaWNoIGV2YWx1
+YXRlcw0KPiA+ID4gdG8NCj4gPiA+IDkpLg0KPiA+ID4gMzAwNSAgICAgCQlyZXFbaV0ub2ZmcyA9
+IGNwdV90b19sZTMyKG9mZnNbaSArIHN0YXJ0XSk7DQo+ID4gPiAzMDA2DQo+ID4gPiAzMDA3ICAg
+ICAJCWlmICghaXNfbXQ3OTE1KCZkZXYtPm10NzYpICYmIGkgPT0gMykNCj4gPiA+IDMwMDggICAg
+IAkJCWJyZWFrOw0KPiA+ID4gMzAwOSAgICAgCX0NCj4gPiA+IDMwMTANCj4gPiA+IA0KPiA+ID4g
+SWYgdGhpcyBpcyBhIGZhbHNlIHBvc2l0aXZlLCBwbGVhc2UgbGV0IHVzIGtub3cgc28gd2UgY2Fu
+IG1hcmsgaXQNCj4gPiA+IGFzDQo+ID4gPiBzdWNoLCBvciB0ZWFjaCB0aGUgQ292ZXJpdHkgcnVs
+ZXMgdG8gYmUgc21hcnRlci4gSWYgbm90LCBwbGVhc2UNCj4gPiA+IG1ha2UNCj4gPiA+IHN1cmUg
+Zml4ZXMgZ2V0IGludG8gbGludXgtbmV4dC4gOikgRm9yIHBhdGNoZXMgZml4aW5nIHRoaXMsDQo+
+ID4gPiBwbGVhc2UNCj4gPiA+IGluY2x1ZGUgdGhlc2UgbGluZXMgKGJ1dCBkb3VibGUtY2hlY2sg
+dGhlICJGaXhlcyIgZmlyc3QpOg0KPiA+ID4gDQo+ID4gDQo+ID4gSSB0aGluayB0aGlzIGlzIGEg
+ZmFsc2UgcG9zdGl2ZSBhcyB0aGUgc3Vic2VxdWVudCBjaGVjayAnaWYNCj4gPiAoIWlzX210Nzkx
+NSgmZGV2LT5tdDc2KSAmJiBpID09IDMpJyBzaG91bGQgYnJlYWsgYXJyYXkgIm9mZnMiIG9mIDgu
+DQo+IA0KPiBBaCwgb2theS4gV2hhdCBpZiBpc19tdDc5MTUoJmRldi0+bXQ3NikgaXMgYWx3YXlz
+IHRydWU/DQo+IA0KPiAtS2Vlcw0KDQoJaW50IHN0YXJ0ID0gMDsNCg0KCWlmICghaXNfbXQ3OTE1
+KCZkZXYtPm10NzYpKSB7DQoJCXN0YXJ0ID0gNTsNCgkJb2ZzID0gMDsNCgl9DQoNCglmb3IgKGkg
+PSAwOyBpIDwgNTsgaSsrKSB7DQoJCXJlcVtpXS5iYW5kID0gY3B1X3RvX2xlMzIocGh5LT5iYW5k
+X2lkeCk7DQoJCXJlcVtpXS5vZmZzID0gY3B1X3RvX2xlMzIob2Zmc1tpICsgc3RhcnRdKTsNCg0K
+CQlpZiAoIWlzX210NzkxNSgmZGV2LT5tdDc2KSAmJiBpID09IDMpIC8vDQoJCQlicmVhazsNCgl9
+DQoNCkZvciAnaXNfbXQ3OTE1JyBjYXNlLCBzdGFydDowIGFuZCBpOiAwIDEgMiAzIDQsIHdoZXJl
+YXMgIWlzX210NzkxNScNCmNhc2UsIHN0YXJ0OjUgYW5kIGk6IDAgMSAyIDMgKHRoZW4gYnJlYWsp
+Lg0KDQpJIGtub3cgaXQncyBhIGJpdCB0cmlja3kuIFRoaXMgaXMgdXNlZCB0byBkaWZmZXJlbnRp
+YXRlIGNoaXBzZXQNCnJldmlzaW9uLg0KDQpSeWRlcg0K
