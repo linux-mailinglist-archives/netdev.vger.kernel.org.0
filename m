@@ -2,67 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF2663FCF0
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:24:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EF4C63FCFB
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:26:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230059AbiLBAYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 19:24:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
+        id S232196AbiLBA0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 19:26:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232160AbiLBAYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:24:09 -0500
-Received: from pv50p00im-tydg10011801.me.com (pv50p00im-tydg10011801.me.com [17.58.6.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA13D49F4
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:20:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
-        s=sig1; t=1669940400;
-        bh=/w9TPf3NSlEwGn40lxKF4FT1gfTJedo6HFbvr7MYF64=;
-        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-        b=GTlfj7VmIx0UJ793HT9AXvGwH31UcMAYs0EaDlknb+h+4S1YbjajjzoqauelwiBMs
-         PINq0kGd8OL1gVaewn4llwFIuYGLwv961ul3aByYTMxTtpjVC99ia50AzGejB+UZkF
-         SWHjv0fLCElwtyMPCM+Jk+Cm+1YQuxyrctMYseooAS+wq03f4mNoBOyhGbsk0cTTS0
-         ZnKUCmZGgx3MinZX1tEzFWO8NTtymjtygJA95QN2TPBr7tD8cu1iFqw3eNqV41lP0s
-         49hYXLDPbo5ESfOf+JYTXutiSuiReahtFIPzNb7/ghPcTP2C/fxSkANpDQG3P04Khp
-         REhtVWF+kU3/g==
-Received: from [10.8.0.2] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-        by pv50p00im-tydg10011801.me.com (Postfix) with ESMTPSA id 9DF238008D0;
-        Fri,  2 Dec 2022 00:19:56 +0000 (UTC)
-Message-ID: <d647052f-47d2-55f7-ed75-15323c820b5e@zzy040330.moe>
-Date:   Fri, 2 Dec 2022 08:19:53 +0800
+        with ESMTP id S232197AbiLBAZc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:25:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5DB615F
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:20:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1669940407;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wDjd7O4j2Jorwv9GTTfqJk00CzdcoDbQL3nyEA34Spg=;
+        b=BN2IPhO2H357vahVVAKln6fb9YIjcFPnMlL3NFvQA4NFsP2/RHnmiCCNhTaHx8izGjF4gL
+        VUJDSw0N8ydcMhbGzYopCmZ1as3gP647idakv5LCL/tmiTZaigHuoVQ4SYujni8koNKqQJ
+        1GrJkBG7MP4pMcxqPObAl6NRpajViHg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-25-XokyRoCOMvmSz_NL50ywDw-1; Thu, 01 Dec 2022 19:20:04 -0500
+X-MC-Unique: XokyRoCOMvmSz_NL50ywDw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 34483185A7A3;
+        Fri,  2 Dec 2022 00:20:04 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E558111E3F8;
+        Fri,  2 Dec 2022 00:20:03 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net-next 35/36] rxrpc: Fold __rxrpc_unuse_local() into
+ rxrpc_unuse_local()
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Fri, 02 Dec 2022 00:20:00 +0000
+Message-ID: <166994040079.1732290.11921762776971277873.stgit@warthog.procyon.org.uk>
+In-Reply-To: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
+References: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v4] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>
-Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20221201161453.16800-1-JunASAKA@zzy040330.moe>
- <48d5141e5b2f4309bde78cacb67341a3@realtek.com>
-Content-Language: en-GB
-From:   Jun ASAKA <JunASAKA@zzy040330.moe>
-In-Reply-To: <48d5141e5b2f4309bde78cacb67341a3@realtek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: QtRiEshMkjg48dELrj5FgmqmYgRcNqQi
-X-Proofpoint-ORIG-GUID: QtRiEshMkjg48dELrj5FgmqmYgRcNqQi
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.11.64.514.0000000_definitions?=
- =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2022-02-23?=
- =?UTF-8?Q?=5F01_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0
- suspectscore=0 clxscore=1030 phishscore=0 mlxlogscore=460 bulkscore=0
- spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2212020000
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,42 +67,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/12/2022 8:14 am, Ping-Ke Shih wrote:
+Fold __rxrpc_unuse_local() into rxrpc_unuse_local() as the latter is now
+the only user of the former.
 
->
->> -----Original Message-----
->> From: Jun ASAKA <JunASAKA@zzy040330.moe>
->> Sent: Friday, December 2, 2022 12:15 AM
->> To: Jes.Sorensen@gmail.com
->> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
->> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jun ASAKA
->> <JunASAKA@zzy040330.moe>
->> Subject: [PATCH v4] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
->>
->> Fixing "Path A RX IQK failed" and "Path B RX IQK failed"
->> issues for rtl8192eu chips by replacing the arguments with
->> the ones in the updated official driver as shown below.
->> 1. https://github.com/Mange/rtl8192eu-linux-driver
->> 2. vendor driver version: 5.6.4
->>
->> Tested-by: Jun ASAKA <JunASAKA@zzy040330.moe>
->> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
->
->> ---
->> v4:
->>   - fixed some mistakes.
->> v3:
->>   - add detailed info about the newer version this patch used.
->>   - no functional update.
->> ---
->>   .../realtek/rtl8xxxu/rtl8xxxu_8192e.c         | 73 +++++++++++++------
->>   1 file changed, 51 insertions(+), 22 deletions(-)
->>
-> [...]
->
-Thanks for your review!
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+---
 
+ net/rxrpc/ar-internal.h  |   12 ------------
+ net/rxrpc/local_object.c |   12 ++++++++++--
+ 2 files changed, 10 insertions(+), 14 deletions(-)
 
-Jun ASAKA.
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 785cd0dd1eea..2a4928249a64 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -1002,18 +1002,6 @@ void rxrpc_unuse_local(struct rxrpc_local *, enum rxrpc_local_trace);
+ void rxrpc_destroy_local(struct rxrpc_local *local);
+ void rxrpc_destroy_all_locals(struct rxrpc_net *);
+ 
+-static inline bool __rxrpc_unuse_local(struct rxrpc_local *local,
+-				       enum rxrpc_local_trace why)
+-{
+-	unsigned int debug_id = local->debug_id;
+-	int r, u;
+-
+-	r = refcount_read(&local->ref);
+-	u = atomic_dec_return(&local->active_users);
+-	trace_rxrpc_local(debug_id, why, r, u);
+-	return u == 0;
+-}
+-
+ static inline bool __rxrpc_use_local(struct rxrpc_local *local,
+ 				     enum rxrpc_local_trace why)
+ {
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index c73a5a1bc088..1e994a83db2b 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -359,8 +359,16 @@ struct rxrpc_local *rxrpc_use_local(struct rxrpc_local *local,
+  */
+ void rxrpc_unuse_local(struct rxrpc_local *local, enum rxrpc_local_trace why)
+ {
+-	if (local && __rxrpc_unuse_local(local, why))
+-		kthread_stop(local->io_thread);
++	unsigned int debug_id = local->debug_id;
++	int r, u;
++
++	if (local) {
++		r = refcount_read(&local->ref);
++		u = atomic_dec_return(&local->active_users);
++		trace_rxrpc_local(debug_id, why, r, u);
++		if (u == 0)
++			kthread_stop(local->io_thread);
++	}
+ }
+ 
+ /*
+
 
