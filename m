@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADD6363FCFA
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:25:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BF2663FCF0
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 01:24:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232008AbiLBAZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 19:25:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35846 "EHLO
+        id S230059AbiLBAYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Dec 2022 19:24:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231583AbiLBAZH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:25:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED93D49EE
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:19:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1669940399;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aq4DkxpZC2p4fY6FSUmjQGcB/Am9rAKQ2JZKLZqwp+8=;
-        b=LR8zAAk0F8stqsu9NLGvZ1Skf4is1cqUzQW9ipMvem99tx+PEmqdyQ5pOcMu9cZGGOik7W
-        PV4ZUnOvq2r+vtczBAbH2hyMmnuxlrt9sYj8T9qTivkUtnP2kmKZPLxK4yH9pLsJbeQ4eM
-        VXzVDoQTBVrcIb9Lf5llB7OxDlcV3iE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-422-g0_eHj9NNziROc7pgo4Ihg-1; Thu, 01 Dec 2022 19:19:56 -0500
-X-MC-Unique: g0_eHj9NNziROc7pgo4Ihg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9D5A3833AEF;
-        Fri,  2 Dec 2022 00:19:55 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E2A232166BB6;
-        Fri,  2 Dec 2022 00:19:54 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 34/36] rxrpc: Move the cwnd degradation after
- transmitting packets
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, dhowells@redhat.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Fri, 02 Dec 2022 00:19:52 +0000
-Message-ID: <166994039212.1732290.14435161630571059598.stgit@warthog.procyon.org.uk>
-In-Reply-To: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
-References: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.5
+        with ESMTP id S232160AbiLBAYJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 19:24:09 -0500
+Received: from pv50p00im-tydg10011801.me.com (pv50p00im-tydg10011801.me.com [17.58.6.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA13D49F4
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 16:20:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
+        s=sig1; t=1669940400;
+        bh=/w9TPf3NSlEwGn40lxKF4FT1gfTJedo6HFbvr7MYF64=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=GTlfj7VmIx0UJ793HT9AXvGwH31UcMAYs0EaDlknb+h+4S1YbjajjzoqauelwiBMs
+         PINq0kGd8OL1gVaewn4llwFIuYGLwv961ul3aByYTMxTtpjVC99ia50AzGejB+UZkF
+         SWHjv0fLCElwtyMPCM+Jk+Cm+1YQuxyrctMYseooAS+wq03f4mNoBOyhGbsk0cTTS0
+         ZnKUCmZGgx3MinZX1tEzFWO8NTtymjtygJA95QN2TPBr7tD8cu1iFqw3eNqV41lP0s
+         49hYXLDPbo5ESfOf+JYTXutiSuiReahtFIPzNb7/ghPcTP2C/fxSkANpDQG3P04Khp
+         REhtVWF+kU3/g==
+Received: from [10.8.0.2] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+        by pv50p00im-tydg10011801.me.com (Postfix) with ESMTPSA id 9DF238008D0;
+        Fri,  2 Dec 2022 00:19:56 +0000 (UTC)
+Message-ID: <d647052f-47d2-55f7-ed75-15323c820b5e@zzy040330.moe>
+Date:   Fri, 2 Dec 2022 08:19:53 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v4] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>
+Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20221201161453.16800-1-JunASAKA@zzy040330.moe>
+ <48d5141e5b2f4309bde78cacb67341a3@realtek.com>
+Content-Language: en-GB
+From:   Jun ASAKA <JunASAKA@zzy040330.moe>
+In-Reply-To: <48d5141e5b2f4309bde78cacb67341a3@realtek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+X-Proofpoint-GUID: QtRiEshMkjg48dELrj5FgmqmYgRcNqQi
+X-Proofpoint-ORIG-GUID: QtRiEshMkjg48dELrj5FgmqmYgRcNqQi
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.11.64.514.0000000_definitions?=
+ =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2022-02-23?=
+ =?UTF-8?Q?=5F01_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0
+ suspectscore=0 clxscore=1030 phishscore=0 mlxlogscore=460 bulkscore=0
+ spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2212020000
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,169 +70,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we've gone for >1RTT without transmitting a packet, we should reduce
-the ssthresh and cut the cwnd by half (as suggested in RFC2861 sec 3.1).
+On 02/12/2022 8:14 am, Ping-Ke Shih wrote:
 
-However, we may receive ACK packets in a batch and the first of these may
-cut the cwnd, preventing further transmission, and each subsequent one cuts
-the cwnd yet further, reducing it to the floor and killing performance.
+>
+>> -----Original Message-----
+>> From: Jun ASAKA <JunASAKA@zzy040330.moe>
+>> Sent: Friday, December 2, 2022 12:15 AM
+>> To: Jes.Sorensen@gmail.com
+>> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
+>> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jun ASAKA
+>> <JunASAKA@zzy040330.moe>
+>> Subject: [PATCH v4] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
+>>
+>> Fixing "Path A RX IQK failed" and "Path B RX IQK failed"
+>> issues for rtl8192eu chips by replacing the arguments with
+>> the ones in the updated official driver as shown below.
+>> 1. https://github.com/Mange/rtl8192eu-linux-driver
+>> 2. vendor driver version: 5.6.4
+>>
+>> Tested-by: Jun ASAKA <JunASAKA@zzy040330.moe>
+>> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
+> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+>
+>> ---
+>> v4:
+>>   - fixed some mistakes.
+>> v3:
+>>   - add detailed info about the newer version this patch used.
+>>   - no functional update.
+>> ---
+>>   .../realtek/rtl8xxxu/rtl8xxxu_8192e.c         | 73 +++++++++++++------
+>>   1 file changed, 51 insertions(+), 22 deletions(-)
+>>
+> [...]
+>
+Thanks for your review!
 
-Fix this by moving the cwnd reset to after doing the transmission and
-resetting the base time such that we don't cut the cwnd by half again for
-at least another RTT.
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
----
-
- net/rxrpc/ar-internal.h |    2 ++
- net/rxrpc/call_event.c  |    7 +++++++
- net/rxrpc/input.c       |   49 ++++++++++++++++++++++++++---------------------
- net/rxrpc/proc.c        |    5 +++--
- 4 files changed, 39 insertions(+), 24 deletions(-)
-
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 6cfe366ee224..785cd0dd1eea 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -666,6 +666,7 @@ struct rxrpc_call {
- 	 * packets) rather than bytes.
- 	 */
- #define RXRPC_TX_SMSS		RXRPC_JUMBO_DATALEN
-+#define RXRPC_MIN_CWND		(RXRPC_TX_SMSS > 2190 ? 2 : RXRPC_TX_SMSS > 1095 ? 3 : 4)
- 	u8			cong_cwnd;	/* Congestion window size */
- 	u8			cong_extra;	/* Extra to send for congestion management */
- 	u8			cong_ssthresh;	/* Slow-start threshold */
-@@ -953,6 +954,7 @@ void rxrpc_unpublish_service_conn(struct rxrpc_connection *);
- /*
-  * input.c
-  */
-+void rxrpc_congestion_degrade(struct rxrpc_call *);
- void rxrpc_input_call_packet(struct rxrpc_call *, struct sk_buff *);
- void rxrpc_implicit_end_call(struct rxrpc_call *, struct sk_buff *);
- 
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 9f1e490ab976..fd122e3726bd 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -427,6 +427,13 @@ void rxrpc_input_call_event(struct rxrpc_call *call, struct sk_buff *skb)
- 
- 	rxrpc_transmit_some_data(call);
- 
-+	if (skb) {
-+		struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
-+
-+		if (sp->hdr.type == RXRPC_PACKET_TYPE_ACK)
-+			rxrpc_congestion_degrade(call);
-+	}
-+
- 	if (test_and_clear_bit(RXRPC_CALL_EV_INITIAL_PING, &call->events))
- 		rxrpc_send_initial_ping(call);
- 
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 2988e3d0c1f6..d0e20e946e48 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -27,7 +27,6 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
- 	enum rxrpc_congest_change change = rxrpc_cong_no_change;
- 	unsigned int cumulative_acks = call->cong_cumul_acks;
- 	unsigned int cwnd = call->cong_cwnd;
--	ktime_t now;
- 	bool resend = false;
- 
- 	summary->flight_size =
-@@ -57,27 +56,6 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
- 	summary->cumulative_acks = cumulative_acks;
- 	summary->dup_acks = call->cong_dup_acks;
- 
--	/* If we haven't transmitted anything for >1RTT, we should reset the
--	 * congestion management state.
--	 */
--	now = ktime_get_real();
--	if ((call->cong_mode == RXRPC_CALL_SLOW_START ||
--	     call->cong_mode == RXRPC_CALL_CONGEST_AVOIDANCE) &&
--	    ktime_before(ktime_add_us(call->tx_last_sent,
--				      call->peer->srtt_us >> 3), now)
--	    ) {
--		trace_rxrpc_reset_cwnd(call, now);
--		change = rxrpc_cong_idle_reset;
--		rxrpc_inc_stat(call->rxnet, stat_tx_data_cwnd_reset);
--		summary->mode = RXRPC_CALL_SLOW_START;
--		if (RXRPC_TX_SMSS > 2190)
--			summary->cwnd = 2;
--		else if (RXRPC_TX_SMSS > 1095)
--			summary->cwnd = 3;
--		else
--			summary->cwnd = 4;
--	}
--
- 	switch (call->cong_mode) {
- 	case RXRPC_CALL_SLOW_START:
- 		if (summary->saw_nacks)
-@@ -197,6 +175,33 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
- 	goto out_no_clear_ca;
- }
- 
-+/*
-+ * Degrade the congestion window if we haven't transmitted a packet for >1RTT.
-+ */
-+void rxrpc_congestion_degrade(struct rxrpc_call *call)
-+{
-+	ktime_t rtt, now;
-+
-+	if (call->cong_mode != RXRPC_CALL_SLOW_START &&
-+	    call->cong_mode != RXRPC_CALL_CONGEST_AVOIDANCE)
-+		return;
-+	if (call->state == RXRPC_CALL_CLIENT_AWAIT_REPLY)
-+		return;
-+
-+	rtt = ns_to_ktime(call->peer->srtt_us * (1000 / 8));
-+	now = ktime_get_real();
-+	if (!ktime_before(ktime_add(call->tx_last_sent, rtt), now))
-+		return;
-+
-+	trace_rxrpc_reset_cwnd(call, now);
-+	rxrpc_inc_stat(call->rxnet, stat_tx_data_cwnd_reset);
-+	call->tx_last_sent = now;
-+	call->cong_mode = RXRPC_CALL_SLOW_START;
-+	call->cong_ssthresh = max_t(unsigned int, call->cong_ssthresh,
-+				    call->cong_cwnd * 3 / 4);
-+	call->cong_cwnd = max_t(unsigned int, call->cong_cwnd / 2, RXRPC_MIN_CWND);
-+}
-+
- /*
-  * Apply a hard ACK by advancing the Tx window.
-  */
-diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
-index 6816934cb4cf..3a59591ec061 100644
---- a/net/rxrpc/proc.c
-+++ b/net/rxrpc/proc.c
-@@ -61,7 +61,7 @@ static int rxrpc_call_seq_show(struct seq_file *seq, void *v)
- 			 "Proto Local                                          "
- 			 " Remote                                         "
- 			 " SvID ConnID   CallID   End Use State    Abort   "
--			 " DebugId  TxSeq    TW RxSeq    RW RxSerial RxTimo\n");
-+			 " DebugId  TxSeq    TW RxSeq    RW RxSerial CW RxTimo\n");
- 		return 0;
- 	}
- 
-@@ -84,7 +84,7 @@ static int rxrpc_call_seq_show(struct seq_file *seq, void *v)
- 	wtmp   = atomic64_read_acquire(&call->ackr_window);
- 	seq_printf(seq,
- 		   "UDP   %-47.47s %-47.47s %4x %08x %08x %s %3u"
--		   " %-8.8s %08x %08x %08x %02x %08x %02x %08x %06lx\n",
-+		   " %-8.8s %08x %08x %08x %02x %08x %02x %08x %02x %06lx\n",
- 		   lbuff,
- 		   rbuff,
- 		   call->dest_srx.srx_service,
-@@ -98,6 +98,7 @@ static int rxrpc_call_seq_show(struct seq_file *seq, void *v)
- 		   acks_hard_ack, READ_ONCE(call->tx_top) - acks_hard_ack,
- 		   lower_32_bits(wtmp), upper_32_bits(wtmp) - lower_32_bits(wtmp),
- 		   call->rx_serial,
-+		   call->cong_cwnd,
- 		   timeout);
- 
- 	return 0;
-
+Jun ASAKA.
 
