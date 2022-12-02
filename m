@@ -2,62 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 105F564024C
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:36:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A69C640252
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232968AbiLBIgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 03:36:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
+        id S232584AbiLBIhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 03:37:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232406AbiLBIfn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:35:43 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EAB7CE1A;
-        Fri,  2 Dec 2022 00:34:26 -0800 (PST)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NNmND0lS9zqT1Z;
-        Fri,  2 Dec 2022 16:30:20 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 2 Dec 2022 16:34:24 +0800
-Subject: Re: [EXT] Re: [PATCH net 1/2] octeontx2-pf: Fix possible memory leak
- in otx2_probe()
-To:     Geethasowjanya Akula <gakula@marvell.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "sunil.kovvuri@gmail.com" <sunil.kovvuri@gmail.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>
-CC:     Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Naveen Mamindlapalli <naveenm@marvell.com>,
-        Rakesh Babu Saladi <rsaladi2@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <cover.1669253985.git.william.xuanziyang@huawei.com>
- <e024450cf08f469fb1e0153b78a04a54829dfddb.1669253985.git.william.xuanziyang@huawei.com>
- <Y4DHHUUbGl5wWGQ+@boxer> <f4bb4aa5-08cc-4a4d-76cf-46bda5c6de59@huawei.com>
- <538c8b9a-7d6c-69f8-9e14-45436446127e@huawei.com>
- <DM6PR18MB26020F45167434B409A32AA7CD179@DM6PR18MB2602.namprd18.prod.outlook.com>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <97439096-aeab-f24a-1767-b535cf29b49a@huawei.com>
-Date:   Fri, 2 Dec 2022 16:34:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S232607AbiLBIhO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:37:14 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D27BC5BF
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:35:49 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id j4so6406115lfk.0
+        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 00:35:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:organization:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=H9OQZa8rRfzIKwLc+PuyHkHeJbeXPMigkw6Tzwmg3uA=;
+        b=gKg6ZFo6TiyXx7Zovx5yZtGQxIridObZOvUu7G+sc+NejWLDTF3jMnG2cCvtje+qts
+         4X7A97vGOi04RQDJcQI09R1KbCfvpynWLo2vrKLhpE8+vdLGOA25qg+gL/xLa+F3amKX
+         KMYnu2RX5eHnebYuHFHpdvtdw4G/THUjCiyybUFw/TWVa8KDWble0xGlKmKDyf/8dHKT
+         V08ODN8eeTrLP6M7ENxL2HR43aXReVmwRWJtwZXs1TXZHnRXXUM42oHLiSla8b2R2jZy
+         UkOdJHYYnuNv7rjAKTBh+3EtW7udl3h7uVWR9CNXM5iefM+msfQec927vBN4RizfflMY
+         xKNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:organization:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=H9OQZa8rRfzIKwLc+PuyHkHeJbeXPMigkw6Tzwmg3uA=;
+        b=FczVWztkgO55hduDWV1ckEX301cvtBZ1yniBKfM+wtlHLtoTPU/+dlCiXuQxLVLWdn
+         gRlb0OruYFu4WTSmGkcUVkYAT/tFiCJ1iFwuuHyCckzKIQEiRlqO6Rojz8bIwf9DJcKc
+         qpBVJJBlyWnoX90xYcEOtAJMknLRB31XrXFNx6QQZG0t3naFCtQal+dD1mjfJdqnomSz
+         JBSdfBcVEStFvVd+HqPYBeU1gEPWMLfQW15oegQfyzVxXvKrhNVFgoNJbNtBR1m4ycAk
+         U3YQza+Vw60FijZ0gd8s+6Ua01VSw6XGup4bLvZcf7OaUyIvMk+T15WSCS80Bmx0zpVJ
+         lyLA==
+X-Gm-Message-State: ANoB5plnVS/wmOQPAgxxk7dqbMhhR1nevCWKBI20PE/LwfhcWsjHFNLv
+        cPoMwTBIgmHP+EBZlxwoFSU=
+X-Google-Smtp-Source: AA0mqf76QsAHEEskAhsuOA7rbMk9uL8DS4SufvqHelYpVCyHLIow5CigRrmnSs+Hrg1TfOYXw7OiOg==
+X-Received: by 2002:ac2:4e82:0:b0:4ac:9f25:21c2 with SMTP id o2-20020ac24e82000000b004ac9f2521c2mr20716558lfr.519.1669970147368;
+        Fri, 02 Dec 2022 00:35:47 -0800 (PST)
+Received: from wse-c0155.. (static-193-12-47-69.cust.tele2.se. [193.12.47.69])
+        by smtp.gmail.com with ESMTPSA id l5-20020ac24305000000b0049936272173sm943194lfh.204.2022.12.02.00.35.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Dec 2022 00:35:46 -0800 (PST)
+From:   Casper Andersson <casper.casan@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH v3 net] net: microchip: sparx5: correctly free skb in xmit
+Date:   Fri,  2 Dec 2022 09:35:44 +0100
+Message-Id: <20221202083544.2905207-1-casper.casan@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <DM6PR18MB26020F45167434B409A32AA7CD179@DM6PR18MB2602.namprd18.prod.outlook.com>
-Content-Type: text/plain; charset="gbk"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,90 +77,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> ________________________________________
-> From: Ziyang Xuan (William) <william.xuanziyang@huawei.com>
-> Sent: Friday, December 2, 2022 7:14 AM
-> To: Maciej Fijalkowski; sunil.kovvuri@gmail.com; Sunil Kovvuri Goutham
-> Cc: Geethasowjanya Akula; Subbaraya Sundeep Bhatta; Hariprasad Kelam; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com; netdev@vger.kernel.org; Naveen Mamindlapalli; Rakesh Babu Saladi; linux-kernel@vger.kernel.org
-> Subject: [EXT] Re: [PATCH net 1/2] octeontx2-pf: Fix possible memory leak in otx2_probe()
-> 
-> External Email
-> 
-> ----------------------------------------------------------------------
->>>> On Thu, Nov 24, 2022 at 09:56:43AM +0800, Ziyang Xuan wrote:
->>>>> In otx2_probe(), there are several possible memory leak bugs
->>>>> in exception paths as follows:
->>>>> 1. Do not release pf->otx2_wq when excute otx2_init_tc() failed.
->>>>> 2. Do not shutdown tc when excute otx2_register_dl() failed.
->>>>> 3. Do not unregister devlink when initialize SR-IOV failed.
->>>>>
->>>>> Fixes: 1d4d9e42c240 ("octeontx2-pf: Add tc flower hardware offload on ingress traffic")
->>>>> Fixes: 2da489432747 ("octeontx2-pf: devlink params support to set mcam entry count")
->>>>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->>>>> ---
->>>>>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 5 ++++-
->>>>>  1 file changed, 4 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
->>>>> index 303930499a4c..8d7f2c3b0cfd 100644
->>>>> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
->>>>> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
->>>>> @@ -2900,7 +2900,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->>>>>
->>>>>     err = otx2_register_dl(pf);
->>>>>     if (err)
->>>>> -           goto err_mcam_flow_del;
->>>>> +           goto err_register_dl;
->>>>>
->>>>>     /* Initialize SR-IOV resources */
->>>>>     err = otx2_sriov_vfcfg_init(pf);
->>>>> @@ -2919,8 +2919,11 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->>>>>     return 0;
->>>>
->>>> If otx2_dcbnl_set_ops() fails at the end then shouldn't we also call
->>>> otx2_sriov_vfcfg_cleanup() ?
->>>
->>> I think it does not need. This is the probe process. PF and VF are all not ready to work,
->>> so pf->vf_configs[i].link_event_work does not scheduled. And pf->vf_configs memory resource will
->>> be freed by devm subsystem if probe failed. There are not memory leak and other problems.
->>>
->> Hello Sunil Goutham, Maciej Fijalkowski,
-> 
->> What do you think about my analysis? Look forward to your >reply.
-> otx2_sriov_vfcfg_cleanup() is not required. Since PF probe is failed, link event won't get triggered.
-> 
-Hello Geetha,
+consume_skb on transmitted, kfree_skb on dropped, do not free on
+TX_BUSY.
 
-If there is not any other question, can you add "Reviewed-by" for my patchset?
+Previously the xmit function could return -EBUSY without freeing, which
+supposedly is interpreted as a drop. And was using kfree on successfully
+transmitted packets.
 
-Thank you!
+sparx5_fdma_xmit and sparx5_inject returns error code, where -EBUSY
+indicates TX_BUSY and any other error code indicates dropped.
 
-> Thanks,
-> Geetha.
->> Thank you!
-> 
->>> @Sunil Goutham, Please help to confirm.
->>>
->>> Thanks.
->>>
->>>>
->>>>>
->>>>>  err_pf_sriov_init:
->>>>> +   otx2_unregister_dl(pf);
->>>>> +err_register_dl:
->>>>>     otx2_shutdown_tc(pf);
->>>>>  err_mcam_flow_del:
->>>>> +   destroy_workqueue(pf->otx2_wq);
->>>>>     otx2_mcam_flow_del(pf);
->>>>>  err_unreg_netdev:
->>>>>     unregister_netdev(netdev);
->>>>> --
->>>>> 2.25.1
->>>>>
->>>> .
->>>>
->>> .
->>>
-> .
-> 
+Fixes: f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
+Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+v2->v3:
+  Removed empty line between Fixes and Signed-off-by
+
+ .../ethernet/microchip/sparx5/sparx5_fdma.c   |  2 +-
+ .../ethernet/microchip/sparx5/sparx5_packet.c | 41 +++++++++++--------
+ 2 files changed, 25 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c b/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
+index 66360c8c5a38..141897dfe388 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
+@@ -317,7 +317,7 @@ int sparx5_fdma_xmit(struct sparx5 *sparx5, u32 *ifh, struct sk_buff *skb)
+ 	next_dcb_hw = sparx5_fdma_next_dcb(tx, tx->curr_entry);
+ 	db_hw = &next_dcb_hw->db[0];
+ 	if (!(db_hw->status & FDMA_DCB_STATUS_DONE))
+-		tx->dropped++;
++		return -EINVAL;
+ 	db = list_first_entry(&tx->db_list, struct sparx5_db, list);
+ 	list_move_tail(&db->list, &tx->db_list);
+ 	next_dcb_hw->nextptr = FDMA_DCB_INVALID_DATA;
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+index 83c16ca5b30f..6db6ac6a3bbc 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+@@ -234,9 +234,8 @@ netdev_tx_t sparx5_port_xmit_impl(struct sk_buff *skb, struct net_device *dev)
+ 	sparx5_set_port_ifh(ifh, port->portno);
+ 
+ 	if (sparx5->ptp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
+-		ret = sparx5_ptp_txtstamp_request(port, skb);
+-		if (ret)
+-			return ret;
++		if (sparx5_ptp_txtstamp_request(port, skb) < 0)
++			return NETDEV_TX_BUSY;
+ 
+ 		sparx5_set_port_ifh_rew_op(ifh, SPARX5_SKB_CB(skb)->rew_op);
+ 		sparx5_set_port_ifh_pdu_type(ifh, SPARX5_SKB_CB(skb)->pdu_type);
+@@ -250,23 +249,31 @@ netdev_tx_t sparx5_port_xmit_impl(struct sk_buff *skb, struct net_device *dev)
+ 	else
+ 		ret = sparx5_inject(sparx5, ifh, skb, dev);
+ 
+-	if (ret == NETDEV_TX_OK) {
+-		stats->tx_bytes += skb->len;
+-		stats->tx_packets++;
++	if (ret == -EBUSY)
++		goto busy;
++	if (ret < 0)
++		goto drop;
+ 
+-		if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
+-		    SPARX5_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
+-			return ret;
++	stats->tx_bytes += skb->len;
++	stats->tx_packets++;
++	sparx5->tx.packets++;
+ 
+-		dev_kfree_skb_any(skb);
+-	} else {
+-		stats->tx_dropped++;
++	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
++	    SPARX5_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
++		return NETDEV_TX_OK;
+ 
+-		if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
+-		    SPARX5_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
+-			sparx5_ptp_txtstamp_release(port, skb);
+-	}
+-	return ret;
++	dev_consume_skb_any(skb);
++	return NETDEV_TX_OK;
++drop:
++	stats->tx_dropped++;
++	sparx5->tx.dropped++;
++	dev_kfree_skb_any(skb);
++	return NETDEV_TX_OK;
++busy:
++	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
++	    SPARX5_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
++		sparx5_ptp_txtstamp_release(port, skb);
++	return NETDEV_TX_BUSY;
+ }
+ 
+ static enum hrtimer_restart sparx5_injection_timeout(struct hrtimer *tmr)
+-- 
+2.34.1
+
