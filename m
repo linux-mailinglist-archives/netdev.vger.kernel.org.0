@@ -2,97 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E592664047E
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 11:22:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57FC9640489
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 11:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233356AbiLBKV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 05:21:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32934 "EHLO
+        id S233296AbiLBK0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 05:26:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233394AbiLBKVk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 05:21:40 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B2BCD9AF
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 02:21:31 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id o13so10526723ejm.1
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 02:21:31 -0800 (PST)
+        with ESMTP id S232399AbiLBK0V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 05:26:21 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E1926AC0;
+        Fri,  2 Dec 2022 02:26:20 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id bs21so7122148wrb.4;
+        Fri, 02 Dec 2022 02:26:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=AE0TKJtwd9IQnencGJnEElxXNLiEn0+mC5tnxibpqHo=;
-        b=rtMHpXJWNbX8FNiQYiXlZZ1aTT3z+0lAXZoPtFyvvv6RK0qE9FOpzpf9gVXKKq7Z4S
-         yOXF5G0gGOKrnLXUcW10X88pQGq9PoekOIUB1ofEBf2dr8eNofCNIylr5C68CeEDoc+y
-         /HZpMlmph7elZiY3qlGZWvwSC01UlEywBS6kRWzHHZKzwiSfPzAhXdCNT54Vn5q8cIsC
-         CdX8qwi0zEsvE4bGvtDeuGt7+rPEmnXWPX4QBT/2ty765UqyTVTXHtJkQvw08ZigV6pr
-         zWHVRNWfu2thBbau69LkPeF5L6qL8HsbDF002iXXb7OrG5zc1QQqVyzzzsODM/c6HFUU
-         rt2Q==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=jNLrMQiEM6rpQlVYEUNGp4QXPdu9DtLm7iUcNPRtKZw=;
+        b=RjH3ddx6KxF5pUy3UjLPOERQnD+F6WxodSR7IxcB2vbYsVBWIF0hgjm6udRXUhASbv
+         4ey8t12fwULfJ0ZMR7Vqs7oATPjSei7v6ZgPJuk9Kv9OS2To+YkgbLMQv4LrxVWRH4VF
+         88tmGpuUvQbsilOQmRL3tjx3ac92rGJVLCfIeXsvIuJz0X4aAVCgv7r7h2LnQxxU/y2+
+         qxkxdCs+pINgyJZ0MLkVe2YQDu3dIN0MY54rRDsM16GLwm5mXmyNZ0N3eZ0SwljbDcDB
+         aMrzBeG3u6Ri0iEsQbiw0sF0xgGoP2SY03Os4t9dEQTsW++hnCVme8xZioDeSQsdiRWl
+         9oNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AE0TKJtwd9IQnencGJnEElxXNLiEn0+mC5tnxibpqHo=;
-        b=ZUEWQ7UFSB0sSbc5RKA8k0o81OqZ7dTVrwYmd3/x8428CoSD+RBa4xojB1vKrE2CmS
-         EvwQSQ4Uhozg58CBxDY3ZM+H2/Ze6hm9ZUOqV3xKtLDC6kkRmhDRMzZrhjGUPbfmwnay
-         aZG/K/K+AlwHE8znpfcvOyUVJ+hbjQ9JyXlp/Az2DYLQbP7qillwLqDIQUHzk7OyUKhD
-         5wBSeWdnMMGiNJp4bsgStbtRcyLvD7dHxJeakfTvIox3nFkxdpU8+IhQRbPyl8hDgdR3
-         m9g4NRfzCu8c2djYaG4OFN0P7GmQLQW9xd9xzEIH5vXXeAV34ogf3PMVoqhMcXSJn/z5
-         eGKg==
-X-Gm-Message-State: ANoB5pnDSL2zU/yPX6zOeAGs5xP5TpsTcsOZMtkyz/XXWeNh1N+chrFP
-        ybLO3IN344raCq6VCNRcmllEDeOPFSFtHwct
-X-Google-Smtp-Source: AA0mqf7MI7nZc1kPglk3dKX6GSH2uZUr2yMATDRLWsHDsQp9h6wHZ+xIVL/0p36/B1+B6Cyx0WUN1A==
-X-Received: by 2002:a17:906:99d6:b0:7c0:c91c:5d38 with SMTP id s22-20020a17090699d600b007c0c91c5d38mr1077498ejn.50.1669976490081;
-        Fri, 02 Dec 2022 02:21:30 -0800 (PST)
-Received: from [10.44.2.26] ([81.246.10.41])
-        by smtp.gmail.com with ESMTPSA id r2-20020aa7c142000000b0046182b3ad46sm2787117edp.20.2022.12.02.02.21.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Dec 2022 02:21:29 -0800 (PST)
-Message-ID: <4a86bc13-9f87-bea8-e4f6-db3ea9eadd3e@tessares.net>
-Date:   Fri, 2 Dec 2022 11:21:29 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 06/11] mptcp: add pm listener events
-Content-Language: en-GB
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        bh=jNLrMQiEM6rpQlVYEUNGp4QXPdu9DtLm7iUcNPRtKZw=;
+        b=55W3NceivZ5KTW36kC1SfJmOliovdY1/1+Wr5KTd6p8hMuCJ12mO1oAdSkmaSMu6Vv
+         ZXZntripPjx2285b5JXIORTE4Xx6WNrDGcuKtEdF+2crax9/gV/PAbRNNX+M+RBo4NPX
+         4KKqQabip/WBxOnGJbPB+YGJUIugV+P0ieECu2hJUc+0prHNxRrKkLv1xAz5A2ZZ5N3+
+         9zveoLrWrGkDjdvq3UPvAcegeWNPmE4RgXdZOcsD46r6+TUgE7E9UglBGCdaTkjQiReY
+         D2A5h4E6NYTHoHdsLiW3x69lmdkJnCfiP9yTPCuLMwzMGSTttNn8vzhYQFklf0KHdbbb
+         y0Lg==
+X-Gm-Message-State: ANoB5plYMkDGJelfnNBJEIRH4D7mpm8GLlvF5PFiX5+tTUaSJQ2TzbXd
+        s2r+BJUqdPUBuFTrDC1Gbbc=
+X-Google-Smtp-Source: AA0mqf4Er2ZY9L/YcgQphvw5kybsI2mvqT/p/UmoQ5FIfH6LRnk/GiXYKTOGKQh+FMjRT3yt0hUx/g==
+X-Received: by 2002:a5d:438e:0:b0:242:3b4f:96ed with SMTP id i14-20020a5d438e000000b002423b4f96edmr3976231wrq.261.1669976778858;
+        Fri, 02 Dec 2022 02:26:18 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id o12-20020a5d670c000000b002424b695f7esm212568wru.46.2022.12.02.02.26.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Dec 2022 02:26:18 -0800 (PST)
+Date:   Fri, 2 Dec 2022 13:26:03 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     liqiong <liqiong@nfschina.com>
+Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Geliang Tang <geliang.tang@suse.com>, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20221130140637.409926-1-matthieu.baerts@tessares.net>
- <20221130140637.409926-7-matthieu.baerts@tessares.net>
- <20221201200535.14e208ac@kernel.org>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20221201200535.14e208ac@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        coreteam@netfilter.org, Yu Zhe <yuzhe@nfschina.com>
+Subject: Re: [PATCH] ipvs: initialize 'ret' variable in do_ip_vs_set_ctl()
+Message-ID: <Y4nSu7D5T2jDkXGK@kadam>
+References: <20221202032511.1435-1-liqiong@nfschina.com>
+ <Y4nORiViTw0XlU2a@kadam>
+ <9bc0af1a-3cf0-de4e-7073-0f7895b7f6eb@nfschina.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9bc0af1a-3cf0-de4e-7073-0f7895b7f6eb@nfschina.com>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-On 02/12/2022 05:05, Jakub Kicinski wrote:
-> On Wed, 30 Nov 2022 15:06:28 +0100 Matthieu Baerts wrote:
->> +	kfree_skb(skb);
+On Fri, Dec 02, 2022 at 06:18:37PM +0800, liqiong wrote:
 > 
-> nlmsg_free(), could you inspect the code and follow up?
+> 
+> 在 2022年12月02日 18:07, Dan Carpenter 写道:
+> > On Fri, Dec 02, 2022 at 11:25:11AM +0800, Li Qiong wrote:
+> >> The 'ret' should need to be initialized to 0, in case
+> >> return a uninitialized value because no default process
+> >> for "switch (cmd)".
+> >>
+> >> Signed-off-by: Li Qiong <liqiong@nfschina.com>
+> > If this is a real bug, then it needs a fixes tag.  The fixes tag helps
+> > us know whether to back port or not and it also helps in reviewing the
+> > patch.  Also get_maintainer.pl will CC the person who introduced the
+> > bug so they can review it.  They are normally the best person to review
+> > their own code.
+> >
+> > Here it would be:
+> > Fixes: c5a8a8498eed ("ipvs: Fix uninit-value in do_ip_vs_set_ctl()")
+> >
+> > Which is strange...  Also it suggest that the correct value is -EINVAL
+> > and not 0.
+> >
+> > The thing about uninitialized variable bugs is that Smatch and Clang
+> > both warn about them so they tend to get reported pretty quick.
+> > Apparently neither Nathan nor I sent forwarded this static checker
+> > warning.  :/
+> >
+> > regards,
+> > dan carpenter
+> 
+> It is not a real bug,   I  use tool (eg: smatch, sparse) to audit the
+> code,  got this warning and check it, found may be a real problem.
 
-Good catch, thank you for reporting that!
+Yeah.  If it is a false positive just ignore it, do not bother to
+silence wrong static checker warnings.
 
-Geliang has already sent a follow up patch.
+The code in question here is:
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+	if (len != set_arglen[CMDID(cmd)]) {
+
+The only time that condition can be true is for the cases in the switch
+statement.  So Peilin's patch is correct.
+
+Smatch is bad at understanding arrays so Smatch cannot parse the if
+statement above as a human reader can.
+
+regards,
+dan carpenter
+
