@@ -2,130 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B359641023
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 22:44:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 343C064102A
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 22:46:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234684AbiLBVoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 16:44:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59892 "EHLO
+        id S234717AbiLBVqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 16:46:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234438AbiLBVoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 16:44:18 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52BBBEF897
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 13:44:17 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id w37so5419756pga.5
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 13:44:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=3TlcMvyiugRHE5Un3yCASIxHYhR6LVV5Y+KI6j8Z1T0=;
-        b=XVs59mQbP2h7EnLbN+vedMs/PV47A/jaXIlLX7ddlpm9VBPtoEDS9hVd0watpk/OfX
-         rl+Mb39pMpDBA2SMBfZBKWiwlkTHvgYRTTWf9GxsTkU75vGz8hsiuGo2HDFJfYqzWw3l
-         DhDVm9GzfgsauMxGu7P9PVJYDuTtdupqk0YkY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3TlcMvyiugRHE5Un3yCASIxHYhR6LVV5Y+KI6j8Z1T0=;
-        b=kuVesHirc6wvdYWf9tQ6aZ2SpfTvJxo0BlHoPqDs2fmkvMfj2p1bfa7eWXaFm6jUsv
-         wkwg5d3FqguziVTS1jb2IsqnDg58eJ2xV4n2y4zkt6hqpcQKKcxtd2OlnXxDwP2OnsKq
-         HUOR/WwSR7alhriMl51FYp+Efh2KMzwRt4D/RrzV4GsO2yunAouQNdfUNYBuqKW5i7Qo
-         SH1BHdK9pQLvhHq88tXerbTZJM12hymY2U20KOnUQ/jHRAqdwPVeYpDsX8hdyAHfwQ6I
-         RDcluvnnxJVgy0ozcas+l3QWjn0+M2MG4/HAOiqZGmttG+WovMOTASiS/d3KbPXZOri+
-         xdMQ==
-X-Gm-Message-State: ANoB5plPeDeAiivCe2zKpu4pXgfJpO/TbBJukZAfwlG+zzLeupYXcXeA
-        wyMpcf6FAW8sWL4ZLUPoOoqVWg==
-X-Google-Smtp-Source: AA0mqf7ZOGMMRaYLBOza1ULS6lopJC4lfMiEe4wjG+jiiUWAJkQM3HPvVM9A3P1Z5k4BO6QkRI0MoA==
-X-Received: by 2002:a05:6a00:10cd:b0:567:546c:718b with SMTP id d13-20020a056a0010cd00b00567546c718bmr54124080pfu.17.1670017456817;
-        Fri, 02 Dec 2022 13:44:16 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id l11-20020a170903244b00b001896522a23bsm6079889pls.39.2022.12.02.13.44.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Dec 2022 13:44:16 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        syzbot+210e196cef4711b65139@syzkaller.appspotmail.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        "John W. Linville" <linville@tuxdriver.com>,
-        Ilan Elias <ilane@ti.com>, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH] NFC: nci: Bounds check struct nfc_target arrays
-Date:   Fri,  2 Dec 2022 13:44:14 -0800
-Message-Id: <20221202214410.never.693-kees@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S234678AbiLBVqi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 16:46:38 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FDFF1CF9;
+        Fri,  2 Dec 2022 13:46:37 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1670017546; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=DnXhT2OUlhlC5DwILJKEz4FKOfX14rJuU1Z5pzoNKTHRt0IUEa9cKCxGC4LhhHuaTHuIVkQLu9THL5C9MN53zX4Lw32mj3sFgx+Ie6bN410Bu32ZGi8nu3VMyzkgRbo05Xn8LajJ48A+CPQiVZ0T9zuAwYnAJANtBLQAwfNb/ZY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1670017546; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=JTgtnJqoI3mBOnlXVRuirNE3H0rwkt9IzKJ3dXVz2R0=; 
+        b=UQF4RXBepui+yim0KwIXhj7dIhvabk1ebfPx5aBM/OJRRVD6h9B8XSbiylbUJV+tZHQL36Y4iJfWYF+VdvHoF1PXZ7gMR8OXrmh3SCTSa4m6FYGWRfT2VZbwTMq6/KIDyBCGu6sJHv5q6FsnmmHLdUsfXpwsDfS1Q21BO4D0uhQ=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1670017546;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=JTgtnJqoI3mBOnlXVRuirNE3H0rwkt9IzKJ3dXVz2R0=;
+        b=bFc/Twx+wSKbN8cptiRq7XpT5s0ryu0P35a+jvbqT8ZRJwgPIDEnK6Ps6plwEu81
+        w0cLAsN8BAPiqk64Tf8fnP6ZotcTzZJaT2y0LQeZqZ/qb55X7oq1a6rVSyUT44eQhXw
+        Igl7pFg4wtB7Ywjk7u/WCAm/0bsT69eVVbU85i2c=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1670017543642787.7203324647592; Fri, 2 Dec 2022 13:45:43 -0800 (PST)
+Message-ID: <bfc6810b-3c21-201b-3c4f-a0def3928597@arinc9.com>
+Date:   Sat, 3 Dec 2022 00:45:34 +0300
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2256; h=from:subject:message-id; bh=n38/3uuX4410R1aGCzc71edAU/gWj6X1zXWrsLo0q5E=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjinGuw9AiLTFgZ2UDY++dtaynqpFfMyigMIt160pK ee1aIJKJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY4pxrgAKCRCJcvTf3G3AJsegD/ 9N+U73mJr9v0gHh/kToM/CJ+NIvX2uOd70w9qQx+80nvu6s8mAimVc/WqdKgKiGaHwI/MB7MeX3680 M3TTlhY0zPpxQmE1YqEinfwgJA/fPSEeLZTOOZTv//2I55qEQlCLeLhXgsDBjLugwkSAVuPVm42cN/ 7H7qHMJbWKQMtKCQq+m6DnWny0yJ0HVg/U/S4P/gm3yrmucn1lQVwgjPz/mBYlCZB4034RK/hB4uSM ezB89qAqeEYsr8VMUax8G9Fa7XpRqYEFP1631YQnAOGa1MarRDPj3D8CWYh3EGAeWSqgaBfJy5bGo4 n7p6K/f9kmhPj7nOmTkOvQQoybaoI+Du0SPz/EcyZ2T1CsvXDgN3Cf/fb8PnaQIjapBRoID9s/vbll 5jjtI/kD2gfRN6g1en+nLqsg1h5xBuvKxD/RqahO+7hjl4wsdVjqsKfllgP5T6lOvAElrWa81NEoUC msimSI7M5BeWLg8UWduhC5gzjWkqdqXqidvCNCYW0ZLFaEqReGgLlEJAlNW/ovQZ3fvFJtqZdZQmZ3 /zGoY12Jgtth1OHHrKhp8Zt9Mp/PDkuJdL8ng6eHYxwzC8epuC7EikoXcNja3br3WN8YC2vGOiERy0 eH5BIcNgglzTcTiGsBqRK4mqvOylDhDTmFz+hw+eST+SF2hu7PNVavvwTHkA==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v4 net-next 3/9] dt-bindings: net: dsa: utilize base
+ definitions for standard dsa switches
+To:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Cc:     John Crispin <john@phrozen.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Marek Vasut <marex@denx.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        George McCollister <george.mccollister@gmail.com>,
+        Rob Herring <robh@kernel.org>
+References: <20221202204559.162619-1-colin.foster@in-advantage.com>
+ <20221202204559.162619-4-colin.foster@in-advantage.com>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20221202204559.162619-4-colin.foster@in-advantage.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While running under CONFIG_FORTIFY_SOURCE=y, syzkaller reported:
+On 2.12.2022 23:45, Colin Foster wrote:
+> DSA switches can fall into one of two categories: switches where all ports
+> follow standard '(ethernet-)?port' properties, and switches that have
+> additional properties for the ports.
+> 
+> The scenario where DSA ports are all standardized can be handled by
+> swtiches with a reference to the new 'dsa.yaml#/$defs/ethernet-ports'.
+> 
+> The scenario where DSA ports require additional properties can reference
+> '$dsa.yaml#' directly. This will allow switches to reference these standard
+> defitions of the DSA switch, but add additional properties under the port
+> nodes.
+> 
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Acked-by: Alvin Šipraga <alsi@bang-olufsen.dk> # realtek
+> ---
+> 
+> v3 -> v4
+>    * Rename "$defs/base" to "$defs/ethernet-ports" to avoid implication of a
+>      "base class" and fix commit message accordingly
+>    * Add the following to the common etherent-ports node:
+>        "additionalProperties: false"
+>        "#address-cells" property
+>        "#size-cells" property
+>    * Fix "etherenet-ports@[0-9]+" to correctly be "ethernet-port@[0-9]+"
+>    * Remove unnecessary newline
+>    * Apply changes to mediatek,mt7530.yaml that were previously in a separate patch
+>    * Add Reviewed and Acked tags
+> 
+> v3
+>    * New patch
+> 
+> ---
+>   .../bindings/net/dsa/arrow,xrs700x.yaml       |  2 +-
+>   .../devicetree/bindings/net/dsa/brcm,b53.yaml |  2 +-
+>   .../devicetree/bindings/net/dsa/dsa.yaml      | 25 ++++++++++++++++---
+>   .../net/dsa/hirschmann,hellcreek.yaml         |  2 +-
+>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 16 +++---------
+>   .../bindings/net/dsa/microchip,ksz.yaml       |  2 +-
+>   .../bindings/net/dsa/microchip,lan937x.yaml   |  2 +-
+>   .../bindings/net/dsa/mscc,ocelot.yaml         |  2 +-
+>   .../bindings/net/dsa/nxp,sja1105.yaml         |  2 +-
+>   .../devicetree/bindings/net/dsa/realtek.yaml  |  2 +-
+>   .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  2 +-
+>   11 files changed, 35 insertions(+), 24 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+> index 259a0c6547f3..5888e3a0169a 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   title: Arrow SpeedChips XRS7000 Series Switch Device Tree Bindings
+>   
+>   allOf:
+> -  - $ref: dsa.yaml#
+> +  - $ref: dsa.yaml#/$defs/ethernet-ports
+>   
+>   maintainers:
+>     - George McCollister <george.mccollister@gmail.com>
+> diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+> index 1219b830b1a4..5bef4128d175 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+> @@ -66,7 +66,7 @@ required:
+>     - reg
+>   
+>   allOf:
+> -  - $ref: dsa.yaml#
+> +  - $ref: dsa.yaml#/$defs/ethernet-ports
+>     - if:
+>         properties:
+>           compatible:
+> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> index b9d48e357e77..b9e366e46aed 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> @@ -19,9 +19,6 @@ description:
+>   select: false
+>   
+>   properties:
+> -  $nodename:
+> -    pattern: "^(ethernet-)?switch(@.*)?$"
+> -
+>     dsa,member:
+>       minItems: 2
+>       maxItems: 2
+> @@ -58,4 +55,26 @@ oneOf:
+>   
+>   additionalProperties: true
+>   
+> +$defs:
+> +  ethernet-ports:
+> +    description: A DSA switch without any extra port properties
+> +    $ref: '#/'
+> +
+> +    patternProperties:
+> +      "^(ethernet-)?ports$":
+> +        type: object
+> +        additionalProperties: false
+> +
+> +        properties:
+> +          '#address-cells':
+> +            const: 1
+> +          '#size-cells':
+> +            const: 0
+> +
+> +        patternProperties:
+> +          "^(ethernet-)?port@[0-9]+$":
+> +            description: Ethernet switch ports
+> +            $ref: dsa-port.yaml#
+> +            unevaluatedProperties: false
+> +
+>   ...
+> diff --git a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+> index 73b774eadd0b..748ef9983ce2 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   title: Hirschmann Hellcreek TSN Switch Device Tree Bindings
+>   
+>   allOf:
+> -  - $ref: dsa.yaml#
+> +  - $ref: dsa.yaml#/$defs/ethernet-ports
+>   
+>   maintainers:
+>     - Andrew Lunn <andrew@lunn.ch>
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index f2e9ff3f580b..b815272531fa 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -156,17 +156,6 @@ patternProperties:
+>   
+>       patternProperties:
+>         "^(ethernet-)?port@[0-9]+$":
+> -        type: object
+> -        description: Ethernet switch ports
+> -
+> -        unevaluatedProperties: false
+> -
+> -        properties:
+> -          reg:
+> -            description:
+> -              Port address described must be 5 or 6 for CPU port and from 0 to 5
+> -              for user ports.
 
-  memcpy: detected field-spanning write (size 129) of single field "target->sensf_res" at net/nfc/nci/ntf.c:260 (size 18)
+This shouldn't be moved. Please reread our conversation on the previous 
+version.
 
-This appears to be a legitimate lack of bounds checking in
-nci_add_new_protocol(). Add the missing checks.
+> -
+>           allOf:
+>             - $ref: dsa-port.yaml#
+>             - if:
+> @@ -174,6 +163,9 @@ patternProperties:
+>               then:
+>                 properties:
+>                   reg:
+> +                  description:
+> +                    Port address described must be 5 or 6 for CPU port and from
+> +                    0 to 5 for user ports
 
-Reported-by: syzbot+210e196cef4711b65139@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/lkml/0000000000001c590f05ee7b3ff4@google.com
-Fixes: 019c4fbaa790 ("NFC: Add NCI multiple targets support")
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- net/nfc/nci/ntf.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/nfc/nci/ntf.c b/net/nfc/nci/ntf.c
-index 282c51051dcc..994a0a1efb58 100644
---- a/net/nfc/nci/ntf.c
-+++ b/net/nfc/nci/ntf.c
-@@ -240,6 +240,8 @@ static int nci_add_new_protocol(struct nci_dev *ndev,
- 		target->sens_res = nfca_poll->sens_res;
- 		target->sel_res = nfca_poll->sel_res;
- 		target->nfcid1_len = nfca_poll->nfcid1_len;
-+		if (target->nfcid1_len > ARRAY_SIZE(target->nfcid1))
-+			return -EPROTO;
- 		if (target->nfcid1_len > 0) {
- 			memcpy(target->nfcid1, nfca_poll->nfcid1,
- 			       target->nfcid1_len);
-@@ -248,6 +250,8 @@ static int nci_add_new_protocol(struct nci_dev *ndev,
- 		nfcb_poll = (struct rf_tech_specific_params_nfcb_poll *)params;
- 
- 		target->sensb_res_len = nfcb_poll->sensb_res_len;
-+		if (target->sensb_res_len > ARRAY_SIZE(target->sensb_res))
-+			return -EPROTO;
- 		if (target->sensb_res_len > 0) {
- 			memcpy(target->sensb_res, nfcb_poll->sensb_res,
- 			       target->sensb_res_len);
-@@ -256,6 +260,8 @@ static int nci_add_new_protocol(struct nci_dev *ndev,
- 		nfcf_poll = (struct rf_tech_specific_params_nfcf_poll *)params;
- 
- 		target->sensf_res_len = nfcf_poll->sensf_res_len;
-+		if (target->sensf_res_len > ARRAY_SIZE(target->sensf_res))
-+			return -EPROTO;
- 		if (target->sensf_res_len > 0) {
- 			memcpy(target->sensf_res, nfcf_poll->sensf_res,
- 			       target->sensf_res_len);
--- 
-2.34.1
-
+Arınç
