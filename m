@@ -2,129 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A976164106E
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 23:13:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F6364107F
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 23:20:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234855AbiLBWNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 17:13:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33684 "EHLO
+        id S234790AbiLBWUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 17:20:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234856AbiLBWNG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 17:13:06 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CEDBD0DE
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 14:13:04 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id f3so5474055pgc.2
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 14:13:04 -0800 (PST)
+        with ESMTP id S234508AbiLBWUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 17:20:20 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DB3E8E1F
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 14:20:19 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id s16so2664834iln.4
+        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 14:20:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+        d=ieee.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=/kWu3ykUp6jy2oE1ZRRlRshB8WYV422H/n94yGeyIhw=;
-        b=GAXzEoo+S14lTK4cD0oXTEUsG2k/16arWIJHGYDGGoAITzPptHOYra+4PIZqAMKrAp
-         0tB61+aGUNfbM+CwM2yGVn+YfT1RARaHjexCaAWA6Kq22roouKhqhimPBUwevE+wG2Sg
-         ZdiVdxiW6gDD6Q9OAe7rXSCASwOhwS+nWPyfQ=
+        bh=XbwRRbO5HZ0texwF0dw1j20ewkIulyg4TI01mh2rWro=;
+        b=UnWWPkF2gG/H6UzceaTgRb3H4v/Sj333aGQxNdrY4fxU0neTBgS3ZijUOjusHqlUcx
+         PRzFvPo6moBkGak0jupft9RW6lA+neAII1uIsya4wAStFRHJYdb2YdjUkoWbiXHDnTla
+         NwgISB3mGIgyfXTKM2/j46dinSLTPjsIIhyus=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/kWu3ykUp6jy2oE1ZRRlRshB8WYV422H/n94yGeyIhw=;
-        b=ACurBt9YbrxkG5941z9EwFndLupktL6IgtBu9qx1DsMOfADr5QCTk71c7fUWIi1anS
-         9OITr6KDH3OegxX3bGEQGsBxnvE4lO1ByBKPIm0nNeLeUkqMqMa02dTYWecCpmVKa2WI
-         Nv8NqmCpL7jzRa85KgpkYQaq/ZSRBPCRSXZvKiFpjmpZUeg/D52YoInnYMjO1MpWKwqK
-         U5p7CEtWHsV/5x17Madn5Hk7sj7D+7jukr96kzK4lg19m8bEuXiXco4sBuNGmAd8TMhG
-         SOg5yZqEFwqqzlUnd/5hrMZnaMJ7YfSP2rS5E5pJrbbSEmuxaFGGqg6HoqHqhon/UVNU
-         PDEg==
-X-Gm-Message-State: ANoB5pkRWDh61o3s5wOeMBQgDJEU3jxS7yAwP4TxwuZLQ/ZMWQOboXgB
-        AKYWvp7IVL7/P+uznGgF4dNkaA==
-X-Google-Smtp-Source: AA0mqf4yMGLxJ4yzBzgABiEyiOC9Cw7v89H4Mg51yU3dIagFC0iIYu5hjOGUJWotx3YNlubWgYaiJQ==
-X-Received: by 2002:a63:dd16:0:b0:476:d2d9:5151 with SMTP id t22-20020a63dd16000000b00476d2d95151mr45023874pgg.487.1670019184321;
-        Fri, 02 Dec 2022 14:13:04 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id f205-20020a6238d6000000b00574679561b4sm5563234pfa.134.2022.12.02.14.13.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Dec 2022 14:13:03 -0800 (PST)
-From:   coverity-bot <keescook@chromium.org>
-X-Google-Original-From: coverity-bot <keescook+coverity-bot@chromium.org>
-Date:   Fri, 2 Dec 2022 14:13:02 -0800
-To:     Shayne Chen <shayne.chen@mediatek.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        linux-wireless@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        StanleyYP Wang <StanleyYP.Wang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Peter Chiu <chui-hao.chiu@mediatek.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Money Wang <Money.Wang@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        Howard Hsu <howard-yh.hsu@mediatek.com>,
-        linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
-        "David S. Miller" <davem@davemloft.net>,
-        Evelyn Tsai <evelyn.tsai@mediatek.com>,
-        linux-kernel@vger.kernel.org,
-        MeiChia Chiu <meichia.chiu@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Bo Jiao <Bo.Jiao@mediatek.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Sujuan Chen <sujuan.chen@mediatek.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-next@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Coverity: mt7996_mcu_rx_radar_detected(): Insecure data handling
-Message-ID: <202212021413.392BADAF@keescook>
+        bh=XbwRRbO5HZ0texwF0dw1j20ewkIulyg4TI01mh2rWro=;
+        b=OxBy5tftUZDM3/5sKt+5TyXfs6G53r+XomuvLidqxifyDSvOqG1z74HmrKQhSAsDqq
+         K9dBkEaCDXpX8b7b63iQDbbKFWMPAU/98uZUHxeG0nWNY1q1+/pYO0VoARqJcgrVtXlf
+         ts0DTyGCqUASx82KK/Zi5Q++KEP/WGWvQ+hWNNDhf/XCZu8TknTacIi518cU3jy/mLd8
+         7c+NT/auTEaWJypZZV/waUPjL0Q+TzrGB4Ck8AQ8BRyC7v2BOqCmxGT5Lc620Kbp+CIg
+         mbmhEX5EVLa+qT7tDeh7Toc8kn1WP1pu5NDOCPsafSlpP9fQOtw+o88JIyLYX/Cyg09b
+         GUsQ==
+X-Gm-Message-State: ANoB5pkb7qMrhkn4IHeIFRaWQPgifDQvERgHTcBn/Dhds72V2I4VJgae
+        le6UQ1W46n4ShEewuKr5kl/tEQ==
+X-Google-Smtp-Source: AA0mqf7OvUqnk6aSmqTB+dIl8bs8dlsLWuzc24wNmTgp6rltz6BAC/fLnhVBabmRTetHJPoniu7Itg==
+X-Received: by 2002:a92:c5c5:0:b0:303:1215:ea9d with SMTP id s5-20020a92c5c5000000b003031215ea9dmr12824454ilt.242.1670019618260;
+        Fri, 02 Dec 2022 14:20:18 -0800 (PST)
+Received: from [172.22.22.4] ([98.61.227.136])
+        by smtp.googlemail.com with ESMTPSA id cn23-20020a0566383a1700b00374bf3b62a0sm3099678jab.99.2022.12.02.14.20.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Dec 2022 14:20:17 -0800 (PST)
+Message-ID: <ff01f296-f3bb-4fdf-d57f-8dd14f1b61d2@ieee.org>
+Date:   Fri, 2 Dec 2022 16:20:16 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH] net: ipa: use sysfs_emit() to instead of scnprintf()
+Content-Language: en-US
+To:     ye.xingchen@zte.com.cn, davem@davemloft.net
+Cc:     elder@kernel.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <202212021642142044742@zte.com.cn>
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <202212021642142044742@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On 12/2/22 2:42 AM, ye.xingchen@zte.com.cn wrote:
+> From: ye xingchen <ye.xingchen@zte.com.cn>
+> 
+> Follow the advice of the Documentation/filesystems/sysfs.rst and show()
+> should only use sysfs_emit() or sysfs_emit_at() when formatting the
+> value to be returned to user space.
 
-This is an experimental semi-automated report about issues detected by
-Coverity from a scan of next-20221202 as part of the linux-next scan project:
-https://scan.coverity.com/projects/linux-next-weekly-scan
+The buffer passed is non-null and the existing code properly
+limits the buffer to PAGE_SIZE.
 
-You're getting this email because you were associated with the identified
-lines of code (noted below) that were touched by commits:
+But... OK.
 
-  Thu Dec 1 17:29:14 2022 +0100
-    98686cd21624 ("wifi: mt76: mt7996: add driver for MediaTek Wi-Fi 7 (802.11be) devices")
+Reviewed-by: Alex Elder <elder@linaro.org>
 
-Coverity reported the following:
+> 
+> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+> ---
+>   drivers/net/ipa/ipa_sysfs.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ipa/ipa_sysfs.c b/drivers/net/ipa/ipa_sysfs.c
+> index 5cbc15a971f9..14bd2f903045 100644
+> --- a/drivers/net/ipa/ipa_sysfs.c
+> +++ b/drivers/net/ipa/ipa_sysfs.c
+> @@ -46,7 +46,7 @@ version_show(struct device *dev, struct device_attribute *attr, char *buf)
+>   {
+>   	struct ipa *ipa = dev_get_drvdata(dev);
+> 
+> -	return scnprintf(buf, PAGE_SIZE, "%s\n", ipa_version_string(ipa));
+> +	return sysfs_emit(buf, "%s\n", ipa_version_string(ipa));
+>   }
+> 
+>   static DEVICE_ATTR_RO(version);
+> @@ -70,7 +70,7 @@ static ssize_t rx_offload_show(struct device *dev,
+>   {
+>   	struct ipa *ipa = dev_get_drvdata(dev);
+> 
+> -	return scnprintf(buf, PAGE_SIZE, "%s\n", ipa_offload_string(ipa));
+> +	return sysfs_emit(buf, "%s\n", ipa_offload_string(ipa));
+>   }
+> 
+>   static DEVICE_ATTR_RO(rx_offload);
+> @@ -80,7 +80,7 @@ static ssize_t tx_offload_show(struct device *dev,
+>   {
+>   	struct ipa *ipa = dev_get_drvdata(dev);
+> 
+> -	return scnprintf(buf, PAGE_SIZE, "%s\n", ipa_offload_string(ipa));
+> +	return sysfs_emit(buf, "%s\n", ipa_offload_string(ipa));
+>   }
+> 
+>   static DEVICE_ATTR_RO(tx_offload);
 
-*** CID 1527812:  Insecure data handling  (TAINTED_SCALAR)
-drivers/net/wireless/mediatek/mt76/mt7996/mcu.c:338 in mt7996_mcu_rx_radar_detected()
-332     {
-333     	struct mt76_phy *mphy = &dev->mt76.phy;
-334     	struct mt7996_mcu_rdd_report *r;
-335
-336     	r = (struct mt7996_mcu_rdd_report *)skb->data;
-337
-vvv     CID 1527812:  Insecure data handling  (TAINTED_SCALAR)
-vvv     Using tainted variable "r->band_idx" as an index into an array "(*dev).mt76.phys".
-338     	mphy = dev->mt76.phys[r->band_idx];
-339     	if (!mphy)
-340     		return;
-341
-342     	if (r->band_idx == MT_RX_SEL2)
-343     		cfg80211_background_radar_event(mphy->hw->wiphy,
-
-If this is a false positive, please let us know so we can mark it as
-such, or teach the Coverity rules to be smarter. If not, please make
-sure fixes get into linux-next. :) For patches fixing this, please
-include these lines (but double-check the "Fixes" first):
-
-Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-Addresses-Coverity-ID: 1527812 ("Insecure data handling")
-Fixes: 98686cd21624 ("wifi: mt76: mt7996: add driver for MediaTek Wi-Fi 7 (802.11be) devices")
-
-Thanks for your attention!
-
--- 
-Coverity-bot
