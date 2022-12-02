@@ -2,262 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F13DE6401B9
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:13:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0CD3640217
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:30:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232757AbiLBIMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 03:12:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
+        id S232810AbiLBI37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 03:29:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232681AbiLBIMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:12:39 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E1626F3
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:12:36 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1p119p-0005An-Vh; Fri, 02 Dec 2022 09:12:30 +0100
-Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <sha@pengutronix.de>)
-        id 1p119o-001lGy-Gz; Fri, 02 Dec 2022 09:12:29 +0100
-Received: from sha by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <sha@pengutronix.de>)
-        id 1p119n-00BfE4-2J; Fri, 02 Dec 2022 09:12:27 +0100
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     linux-wireless@vger.kernel.org
-Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Alexander Hochbaum <alex@appudo.com>,
-        Da Xue <da@libre.computer>, Po-Hao Huang <phhuang@realtek.com>,
-        Viktor Petrenko <g0000ga@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH v5 11/11] wifi: rtw88: Add rtw8723du chipset support
-Date:   Fri,  2 Dec 2022 09:12:24 +0100
-Message-Id: <20221202081224.2779981-12-s.hauer@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221202081224.2779981-1-s.hauer@pengutronix.de>
-References: <20221202081224.2779981-1-s.hauer@pengutronix.de>
+        with ESMTP id S232735AbiLBI3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:29:12 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2046.outbound.protection.outlook.com [40.107.92.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E26A9E8A
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:26:42 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FBBvdID63h+vr20O77As0ReE7QCJAvOild2N4y4eMf5+CpDOK3pAYpmqZMiUacB4r9zJIhNIzUolRm6WqOnevkwhy9q/rNDR2zP1DOGsdm7SLyYAp+1zwLOPsmpxw6nFEnKoShfIl6/e+fSqayozCvLrKwqTQhrhkcCHeAi1EEsSwbr+VnOg9QS5ah4lTV1609Ink3DxQ/6xYqHM/PgaGTofqUROFTgcw2qQIgh3uEkFk7j6otVTrDSyAB84exTZLp7o7zSd+fsjFylt4qqwohK45xb2KygiFrwplGJynw6j0efd7VVzNfPn6skLS6o14w6uQZEXjYzC4WVD4jNnng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IFuATbyOS0cQmz91yBhQy42hY0HX7xSdXaZvA1w0eZs=;
+ b=m+ptNjLDrLNEVaN2T0fYGVfAjMtY6ccnGFzY7UPFzjOe+9ErFil+J0mh9ZLqw7rF9s3+m/83ixqhwTUl2T3DNmk/3oec8wBSE6GoF6Z/YQ5GQOITJQrMbxoNXrvE0lhh9WV6Wkjrb/sIfViL323GGcVR/YpmQBaoArStC7EN6xEzCwWc0JpKNuu994KbXn5V2aGBR5iTHa0YO73TCu0UoWDjiSllxSDuV1WMtCzQezhKf2N1ltLS3LMshfg9TV1d3svGj0wVv4g0C7a5wRj+JVn3VZBlzFsTpcFNTfL3cm45m8ZvhnJdyVAGnWbpJgZdIh73B6XBQZQBVmGay6YcvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IFuATbyOS0cQmz91yBhQy42hY0HX7xSdXaZvA1w0eZs=;
+ b=ktBtrilOSH16GtgOUVGrqR4PhAB55G1oCdTFBzawzX3J3BfaA2gi55LXpXUQ5SelnWonR+X9WUEEsnQSzCN5jqA/C4iazmFku+N5E0b20ud7h7Xcn5Uvq53SzDhZV0Hfkn65gBFjZyIPz3uS+WCpTAf2KuoGDp7doiIIrmYVdSS6OlrC1F3yLcgjpV8npk2gQUI1bT037qQdN3EgC6H7GNtCHPF2c1S7QSEDPCFF+okrp8naXxdIKqcdOEVdnugNpfEZytcmLptdHWqUDMS9Er11jnU2/8VDUrtrWXUFoQRPZ96Blw9/bkMXDen/uD7F4j/B7fW5CayC8qjFHJ5Zxg==
+Received: from DM6PR21CA0018.namprd21.prod.outlook.com (2603:10b6:5:174::28)
+ by MN0PR12MB6125.namprd12.prod.outlook.com (2603:10b6:208:3c7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Fri, 2 Dec
+ 2022 08:26:40 +0000
+Received: from DM6NAM11FT037.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:174:cafe::c1) by DM6PR21CA0018.outlook.office365.com
+ (2603:10b6:5:174::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5901.8 via Frontend
+ Transport; Fri, 2 Dec 2022 08:26:40 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DM6NAM11FT037.mail.protection.outlook.com (10.13.172.122) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5857.21 via Frontend Transport; Fri, 2 Dec 2022 08:26:39 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 2 Dec 2022
+ 00:26:33 -0800
+Received: from nps-server-23.mtl.labs.mlnx (10.126.231.35) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.36; Fri, 2 Dec 2022 00:26:30 -0800
+From:   Shay Drory <shayd@nvidia.com>
+To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <danielj@nvidia.com>, <yishaih@nvidia.com>, <jiri@nvidia.com>,
+        <saeedm@nvidia.com>, <parav@nvidia.com>
+Subject: [PATCH net-next V2 0/8] devlink: Add port function attribute to enable/disable Roce and migratable
+Date:   Fri, 2 Dec 2022 10:26:14 +0200
+Message-ID: <20221202082622.57765-1-shayd@nvidia.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT037:EE_|MN0PR12MB6125:EE_
+X-MS-Office365-Filtering-Correlation-Id: c2362250-5034-4c78-455a-08dad43eefad
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nE/clLVhNzx7Q9MrBoVxrgy0as6hXKtWXomBktmQhCmuHj2mWecmhjd4bkngbFW4ZwWuIMP6x1rhaoLeDmVmWLKUaIlXGWD9avU1uHZGp0izA2DeCYR9PjeWmzpVcED2yxyJh7+xP0RC5KL8XZWOPlJa5z2KeGs6Bfsg3HS6Pm0rYe4WYw+yowiVRBYHB1/7G42vQfwbaIFybOj9lKwZmvFGRwTwgaf/plQnSyzFQaiApRE6V6jdsE/Pcrr09nAVEaaUpx06VtuNbt5H4UoEHpDUngOmCJdvtAi9XVA2E5uHHBzSRE1adJj7WAT2YVOqEfSoWrwvWDArwDtGTk3DW5AuOkKB2d94LNsnfzLgX9EqqyrRP9Gj7qvVKrjnjcpxZmBI2MtbXQGHxc3XkpUqlhxzRlHxJwIGADavRVDqxiajPZBXgkzBium2dXadtnKHaKnDUqFX3ftssoWHBLqsmxVzWaJ6eEb0MafkPJ4E4l7Nyv9C08xwcLtaJ+tuL6ID462YhBxcpZ2Z+V/Hxb87xYdnDTmMWHpUwAHJ2wHuJZbSJHSL4jSU1iAQLT6C9JS1x+B8S/cMPjHiNmqUCVJC27uLlDXZyyWhP8i0xBpQhJ07df2lAV9TgMbHLPZgt/lticRaBh28Lo2Lr6gEhDBZpJ+RzfJe5wrJqcLLMsOR5RHw2Sl61+8On4SkWY1+6hNE/Me6PQBqrBo3LaRjZ5WSH6F8CdezFwWBVm3QFEYDc/FbcqXlXvl3TvWbWq3GuuQcYHJQ9hr/TBWdN+1mss2oB+t/ghPG3YK/cHPgNXvS5G0=
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(376002)(396003)(346002)(451199015)(36840700001)(46966006)(40470700004)(7636003)(40480700001)(40460700003)(356005)(6666004)(2906002)(36756003)(2616005)(107886003)(86362001)(16526019)(966005)(478600001)(186003)(8936002)(36860700001)(26005)(316002)(70586007)(5660300002)(41300700001)(70206006)(110136005)(4326008)(54906003)(8676002)(82740400003)(336012)(1076003)(82310400005)(83380400001)(47076005)(426003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2022 08:26:39.9111
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2362250-5034-4c78-455a-08dad43eefad
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT037.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6125
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the rtw8723du chipset based on
-https://github.com/ulli-kroll/rtw88-usb.git
+This series is a complete rewrite of the series "devlink: Add port
+function attribute to enable/disable roce"
+link:
+https://lore.kernel.org/netdev/20221102163954.279266-1-danielj@nvidia.com/
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Currently mlx5 PCI VF and SF are enabled by default for RoCE
+functionality. And mlx5 PCI VF is disable by dafault for migratable
+functionality.
+
+Currently a user does not have the ability to disable RoCE for a PCI
+VF/SF device before such device is enumerated by the driver.
+
+User is also incapable to do such setting from smartnic scenario for a
+VF from the smartnic.
+
+Current 'enable_roce' device knob is limited to do setting only at
+driverinit time. By this time device is already created and firmware has
+already allocated necessary system memory for supporting RoCE.
+
+Also, Currently a user does not have the ability to enable migratable
+for a PCI VF.
+
+The above are a hyper visor level control, to set the functionality of
+devices passed through to guests.
+
+This is achieved by extending existing 'port function' object to control
+capabilities of a function. This enables users to control capability of
+the device before enumeration.
+
+Examples when user prefers to disable RoCE for a VF when using switchdev
+mode:
+
+$ devlink port show pci/0000:06:00.0/1
+pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller 0
+pfnum 0 vfnum 0 external false splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 roce enable
+
+$ devlink port function set pci/0000:06:00.0/1 roce disable
+  
+$ devlink port show pci/0000:06:00.0/1
+pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller 0
+pfnum 0 vfnum 0 external false splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 roce disable
+
+FAQs:
+-----
+1. What does roce enable/disable do?
+Ans: It disables RoCE capability of the function before its enumerated,
+so when driver reads the capability from the device firmware, it is
+disabled.
+At this point RDMA stack will not be able to create UD, QP1, RC, XRC
+type of QPs. When RoCE is disabled, the GID table of all ports of the
+device is disabled in the device and software stack.
+
+2. How is the roce 'port function' option different from existing
+devlink param?
+Ans: RoCE attribute at the port function level disables the RoCE
+capability at the specific function level; while enable_roce only does
+at the software level.
+
+3. Why is this option for disabling only RoCE and not the whole RDMA
+device?
+Ans: Because user still wants to use the RDMA device for non RoCE
+commands in more memory efficient way.
+
+Patch summary:
+Patch-1 introduce ifc bits for migratable command
+Patch-2 avoid partial port function request processing
+Patch-3 move devlink hw_addr attribute doc to devlink file
+Patch-4 adds devlink attribute to control roce
+Patch-5 add generic setters/getters for other functions caps 
+Patch-6 implements mlx5 callbacks for roce control
+Patch-7 adds devlink attribute to control migratable
+Patch-8 implements mlx5 callbacks for migratable control
+
 ---
+v1->v2:
+ - see patch 7 for a changelog.
 
-Notes:
-    Changes since v4:
-    - Add Edimax EW-7611ULB V2 to id table
-    
-    Changes since v3:
-    - drop unnecessary rtw8723du.h
-    
-    Changes since v2:
-    - Re-add this patch, tested on hardware now
-    
-    Changes since v1:
-    - Fix txdesc checksum calculation: Unlike other chips this one needs
-      a chksum = ~chksum at the end
-    - Fix efuse layout (struct rtw8723de_efuse and struct rtw8723du_efuse need
-      to be in a union as they are used alternatively)
+Shay Drory (6):
+  devlink: Validate port function request
+  devlink: Move devlink port function hw_addr attr documentation
+  devlink: Expose port function commands to control RoCE
+  net/mlx5: Add generic getters for other functions caps
+  devlink: Expose port function commands to control migratable
+  net/mlx5: E-Switch, Implement devlink port function cmds to control
+    migratable
 
- drivers/net/wireless/realtek/rtw88/Kconfig    | 11 ++++++
- drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
- drivers/net/wireless/realtek/rtw88/rtw8723d.c | 28 +++++++++++++++
- drivers/net/wireless/realtek/rtw88/rtw8723d.h | 13 ++++++-
- .../net/wireless/realtek/rtw88/rtw8723du.c    | 36 +++++++++++++++++++
- 5 files changed, 90 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.c
+Yishai Hadas (2):
+  net/mlx5: Introduce IFC bits for migratable
+  net/mlx5: E-Switch, Implement devlink port function cmds to control
+    RoCE
 
-diff --git a/drivers/net/wireless/realtek/rtw88/Kconfig b/drivers/net/wireless/realtek/rtw88/Kconfig
-index 138289bc5ad0c..651ab56d9c6bd 100644
---- a/drivers/net/wireless/realtek/rtw88/Kconfig
-+++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -86,6 +86,17 @@ config RTW88_8723DE
- 
- 	  802.11n PCIe wireless network adapter
- 
-+config RTW88_8723DU
-+	tristate "Realtek 8723DU USB wireless network adapter"
-+	depends on USB
-+	select RTW88_CORE
-+	select RTW88_USB
-+	select RTW88_8723D
-+	help
-+	  Select this option will enable support for 8723DU chipset
-+
-+	  802.11n USB wireless network adapter
-+
- config RTW88_8821CE
- 	tristate "Realtek 8821CE PCI wireless network adapter"
- 	depends on PCI
-diff --git a/drivers/net/wireless/realtek/rtw88/Makefile b/drivers/net/wireless/realtek/rtw88/Makefile
-index fe2dd90204a78..fe7293ee87b45 100644
---- a/drivers/net/wireless/realtek/rtw88/Makefile
-+++ b/drivers/net/wireless/realtek/rtw88/Makefile
-@@ -44,6 +44,9 @@ rtw88_8723d-objs		:= rtw8723d.o rtw8723d_table.o
- obj-$(CONFIG_RTW88_8723DE)	+= rtw88_8723de.o
- rtw88_8723de-objs		:= rtw8723de.o
- 
-+obj-$(CONFIG_RTW88_8723DU)	+= rtw88_8723du.o
-+rtw88_8723du-objs		:= rtw8723du.o
-+
- obj-$(CONFIG_RTW88_8821C)	+= rtw88_8821c.o
- rtw88_8821c-objs		:= rtw8821c.o rtw8821c_table.o
- 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8723d.c b/drivers/net/wireless/realtek/rtw88/rtw8723d.c
-index 0a4f770fcbb7e..2d2f768bae2ea 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8723d.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8723d.c
-@@ -210,6 +210,12 @@ static void rtw8723de_efuse_parsing(struct rtw_efuse *efuse,
- 	ether_addr_copy(efuse->addr, map->e.mac_addr);
- }
- 
-+static void rtw8723du_efuse_parsing(struct rtw_efuse *efuse,
-+				    struct rtw8723d_efuse *map)
-+{
-+	ether_addr_copy(efuse->addr, map->u.mac_addr);
-+}
-+
- static int rtw8723d_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
- {
- 	struct rtw_efuse *efuse = &rtwdev->efuse;
-@@ -239,6 +245,9 @@ static int rtw8723d_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
- 	case RTW_HCI_TYPE_PCIE:
- 		rtw8723de_efuse_parsing(efuse, map);
- 		break;
-+	case RTW_HCI_TYPE_USB:
-+		rtw8723du_efuse_parsing(efuse, map);
-+		break;
- 	default:
- 		/* unsupported now */
- 		return -ENOTSUPP;
-@@ -1945,6 +1954,24 @@ static void rtw8723d_pwr_track(struct rtw_dev *rtwdev)
- 	dm_info->pwr_trk_triggered = false;
- }
- 
-+static void rtw8723d_fill_txdesc_checksum(struct rtw_dev *rtwdev,
-+					  struct rtw_tx_pkt_info *pkt_info,
-+					  u8 *txdesc)
-+{
-+	size_t words = 32 / 2; /* calculate the first 32 bytes (16 words) */
-+	__le16 chksum = 0;
-+	__le16 *data = (__le16 *)(txdesc);
-+
-+	SET_TX_DESC_TXDESC_CHECKSUM(txdesc, 0x0000);
-+
-+	while (words--)
-+		chksum ^= *data++;
-+
-+	chksum = ~chksum;
-+
-+	SET_TX_DESC_TXDESC_CHECKSUM(txdesc, __le16_to_cpu(chksum));
-+}
-+
- static struct rtw_chip_ops rtw8723d_ops = {
- 	.phy_set_param		= rtw8723d_phy_set_param,
- 	.read_efuse		= rtw8723d_read_efuse,
-@@ -1965,6 +1992,7 @@ static struct rtw_chip_ops rtw8723d_ops = {
- 	.config_bfee		= NULL,
- 	.set_gid_table		= NULL,
- 	.cfg_csi_rate		= NULL,
-+	.fill_txdesc_checksum	= rtw8723d_fill_txdesc_checksum,
- 
- 	.coex_set_init		= rtw8723d_coex_cfg_init,
- 	.coex_set_ant_switch	= NULL,
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8723d.h b/drivers/net/wireless/realtek/rtw88/rtw8723d.h
-index 4641f6e047b41..a356318a5c15b 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8723d.h
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8723d.h
-@@ -41,6 +41,14 @@ struct rtw8723de_efuse {
- 	u8 sub_device_id[2];
- };
- 
-+struct rtw8723du_efuse {
-+	u8 res4[48];                    /* 0xd0 */
-+	u8 vender_id[2];                /* 0x100 */
-+	u8 product_id[2];               /* 0x102 */
-+	u8 usb_option;                  /* 0x104 */
-+	u8 mac_addr[ETH_ALEN];          /* 0x107 */
-+};
-+
- struct rtw8723d_efuse {
- 	__le16 rtl_id;
- 	u8 rsvd[2];
-@@ -69,7 +77,10 @@ struct rtw8723d_efuse {
- 	u8 rfe_option;
- 	u8 country_code[2];
- 	u8 res[3];
--	struct rtw8723de_efuse e;
-+	union {
-+		struct rtw8723de_efuse e;
-+		struct rtw8723du_efuse u;
-+	};
- };
- 
- extern const struct rtw_chip_info rtw8723d_hw_spec;
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8723du.c b/drivers/net/wireless/realtek/rtw88/rtw8723du.c
-new file mode 100644
-index 0000000000000..322a805da76b0
---- /dev/null
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8723du.c
-@@ -0,0 +1,36 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+/* Copyright(c) 2018-2019  Realtek Corporation
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/usb.h>
-+#include "main.h"
-+#include "rtw8723d.h"
-+#include "usb.h"
-+
-+static const struct usb_device_id rtw_8723du_id_table[] = {
-+	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK, 0xd723, 0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) }, /* 8723DU 1*1 */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x7392, 0xd611, 0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) }, /* Edimax EW-7611ULB V2 */
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(usb, rtw_8723du_id_table);
-+
-+static int rtw8723du_probe(struct usb_interface *intf,
-+			   const struct usb_device_id *id)
-+{
-+	return rtw_usb_probe(intf, id);
-+}
-+
-+static struct usb_driver rtw_8723du_driver = {
-+	.name = "rtw_8723du",
-+	.id_table = rtw_8723du_id_table,
-+	.probe = rtw8723du_probe,
-+	.disconnect = rtw_usb_disconnect,
-+};
-+module_usb_driver(rtw_8723du_driver);
-+
-+MODULE_AUTHOR("Hans Ulli Kroll <linux@ulli-kroll.de>");
-+MODULE_DESCRIPTION("Realtek 802.11n wireless 8723du driver");
-+MODULE_LICENSE("Dual BSD/GPL");
+ .../device_drivers/ethernet/mellanox/mlx5.rst |  46 ++--
+ .../networking/devlink/devlink-port.rst       | 120 +++++++++-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |   4 +
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  43 ++++
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  11 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 210 +++++++++++++++++-
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   5 +-
+ .../net/ethernet/mellanox/mlx5/core/pci_irq.c |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/vport.c   |  30 ++-
+ include/linux/mlx5/mlx5_ifc.h                 |   6 +-
+ include/linux/mlx5/vport.h                    |   2 +
+ include/net/devlink.h                         |  40 ++++
+ include/uapi/linux/devlink.h                  |  13 ++
+ net/core/devlink.c                            | 195 +++++++++++++++-
+ 14 files changed, 682 insertions(+), 46 deletions(-)
+
 -- 
-2.30.2
+2.38.1
 
