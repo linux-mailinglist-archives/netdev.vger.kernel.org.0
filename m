@@ -2,140 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C9AC6408B0
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 15:46:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 041826408BE
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 15:49:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233526AbiLBOqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 09:46:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47774 "EHLO
+        id S233338AbiLBOtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 09:49:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233338AbiLBOqr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 09:46:47 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63D8DFB64
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 06:46:46 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1p17JJ-0002Ij-Ga; Fri, 02 Dec 2022 15:46:41 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:63a6:d4c5:22e2:f72a])
+        with ESMTP id S232265AbiLBOtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 09:49:10 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CC8D2936;
+        Fri,  2 Dec 2022 06:49:09 -0800 (PST)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 6A01413172B;
-        Fri,  2 Dec 2022 14:46:39 +0000 (UTC)
-Date:   Fri, 2 Dec 2022 15:46:30 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/15] can: m_can: Cache tx putidx and transmits in flight
-Message-ID: <20221202144630.l4jil6spb4er5vzk@pengutronix.de>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-4-msp@baylibre.com>
- <20221201111450.fpadmwscjyhefs2u@pengutronix.de>
- <20221202083740.moa7whqd52oasbar@blmsp>
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 5AF6588;
+        Fri,  2 Dec 2022 15:49:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1669992547;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=q6y9iigXj3WP0hzsik/QSNuzmj4g9Dp1lWgTADU4n9g=;
+        b=cZaf5Cuisju6zyt4dTQ5ygX0nSSXzAQ1vJ8+HIqq7BeDigqksGEpZdn3V+30MzLnvU32tL
+        iAIcAb23huqXrnS5okAsM4qshxpSxwhJlR4m1B9b3Obd046JmIxCDXEAiEZmFPvxC1og3+
+        WLH5PgGuOSwxxlimkMzIs6+yHUZStIiTkGL8vFR3dTPTwafGUetN5BYlXxDatDvx9OkM+m
+        vehtqii72WWk1JR092//giJwz2NkgqprsdHF1YOWAk/PN+4cnPwvXRgWrmWbCoeB34Esv/
+        hlYihXkmWxz4J+aT48jnnaNxO/h2+xxZevvzRbqrl/reFPrn87XpL6GULsF5ew==
+From:   Michael Walle <michael@walle.cc>
+To:     Xu Liang <lxu@maxlinear.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next] net: phy: mxl-gpy: rename MMD_VEND1 macros to match datasheet
+Date:   Fri,  2 Dec 2022 15:49:00 +0100
+Message-Id: <20221202144900.3298204-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ixaicbn435jko43j"
-Content-Disposition: inline
-In-Reply-To: <20221202083740.moa7whqd52oasbar@blmsp>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Rename the temperature sensors macros to match the names in the
+datasheet.
 
---ixaicbn435jko43j
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+For the curious: I probably copied the prefix from the already existing
+VPSPEC2_ macros in the driver, the datasheet also mentions some VPSPEC2_
+names, but I suspect they are typos.
 
-On 02.12.2022 09:37:40, Markus Schneider-Pargmann wrote:
-> Hi Marc,
->=20
-> On Thu, Dec 01, 2022 at 12:14:50PM +0100, Marc Kleine-Budde wrote:
-> > On 16.11.2022 21:52:56, Markus Schneider-Pargmann wrote:
-> > > On peripheral chips every read/write can be costly. Avoid reading eas=
-ily
-> > > trackable information and cache them internally. This saves multiple
-> > > reads.
-> > >=20
-> > > Transmit FIFO put index is cached, this is increased for every time we
-> > > enqueue a transmit request.
-> > >=20
-> > > The transmits in flight is cached as well. With each transmit request=
- it
-> > > is increased when reading the finished transmit event it is decreased.
-> > >=20
-> > > A submit limit is cached to avoid submitting too many transmits at on=
-ce,
-> > > either because the TX FIFO or the TXE FIFO is limited. This is curren=
-tly
-> > > done very conservatively as the minimum of the fifo sizes. This means=
- we
-> > > can reach FIFO full events but won't drop anything.
-> >=20
-> > You have a dedicated in_flight variable, which is read-modify-write in 2
-> > different code path, i.e. this looks racy.
->=20
-> True, of course, thank you. Yes I have to redesign this a bit for
-> concurrency.
->=20
-> > If you allow only power-of-two FIFO size, you can use 2 unsigned
-> > variables, i.e. a head and a tail pointer. You can apply a mask to get
-> > the index to the FIFO. The difference between head and tail is the fill
-> > level of the FIFO. See mcp251xfd driver for this.
->=20
-> Maybe that is a trivial question but what's wrong with using atomics
-> instead?
+ drivers/net/phy/mxl-gpy.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-I think it's Ok to use an atomic for the fill level. The put index
-doesn't need to be. No need to cache the get index, as it's in the same
-register as the fill level.
+diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
+index 27c0f161623e..0ff7ef076072 100644
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -78,8 +78,8 @@
+ 				 VSPEC1_SGMII_CTRL_ANRS)
+ 
+ /* Temperature sensor */
+-#define VPSPEC1_TEMP_STA	0x0E
+-#define VPSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
++#define VSPEC1_TEMP_STA	0x0E
++#define VSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
+ 
+ /* WoL */
+ #define VPSPEC2_WOL_CTL		0x0E06
+@@ -140,14 +140,14 @@ static int gpy_hwmon_read(struct device *dev,
+ 	struct phy_device *phydev = dev_get_drvdata(dev);
+ 	int ret;
+ 
+-	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, VPSPEC1_TEMP_STA);
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_TEMP_STA);
+ 	if (ret < 0)
+ 		return ret;
+ 	if (!ret)
+ 		return -ENODATA;
+ 
+ 	*value = polynomial_calc(&poly_N_to_temp,
+-				 FIELD_GET(VPSPEC1_TEMP_STA_DATA, ret));
++				 FIELD_GET(VSPEC1_TEMP_STA_DATA, ret));
+ 
+ 	return 0;
+ }
+-- 
+2.30.2
 
-As the mcp251xfd benefits from caching both indexes, a head and tail
-pointer felt like the right choice. As both are only written in 1
-location, no need for atomics or locking.
-
-> The tcan mram size is limited to 2048 so I would like to avoid limiting
-> the possible sizes of the tx fifos.
-
-What FIFO sizes are you using currently?
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---ixaicbn435jko43j
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOKD8QACgkQrX5LkNig
-011nRggApqQ6QLzpNnhi7K+OdMn/p9UPZnTesrpUao+VEKOrPhAeHqJKnNqbxQAx
-SZBcx39+DMalId+KYY93FB5Y7TxqBAGafQjIhK+DIezdKPybIXsBapR5HmHzmchk
-0oDptBDm/fxWa4akqiGOkucBXXPufVFZqWp3JDhvZkm+cN5PtwAxOJXjt5a77Op8
-FBkIjiH3xt35Qbj7wjGl7XiH59QJJNakBkwiBRTXAcbzUEVgeqE9grhHJK8lmXuT
-8FMXWHzOmVgpxU+LzuzrJrwjEGom6itXWzGrwTMq/y2Qw/xNXxDS1/na4ovFtNJD
-i2JW1ba6cSM0WYYBtDJOaFoa6AqgiQ==
-=mbq6
------END PGP SIGNATURE-----
-
---ixaicbn435jko43j--
