@@ -2,56 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38D5363FFAF
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 05:59:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D67C263FFB7
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 06:05:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232390AbiLBE7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Dec 2022 23:59:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
+        id S232229AbiLBFFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 00:05:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232299AbiLBE7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Dec 2022 23:59:16 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4BBCCEE6;
-        Thu,  1 Dec 2022 20:59:13 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NNggn0swqz15N2X;
-        Fri,  2 Dec 2022 12:58:29 +0800 (CST)
-Received: from [10.174.179.191] (10.174.179.191) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 2 Dec 2022 12:59:10 +0800
-Message-ID: <b146653a-4113-ea8f-4204-770c7fb5e1cb@huawei.com>
-Date:   Fri, 2 Dec 2022 12:59:10 +0800
+        with ESMTP id S230447AbiLBFFl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 00:05:41 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF978CFE42
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 21:05:40 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id z192so4799938yba.0
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 21:05:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Vhe0TmBmcMpXBlfJ6TPbqd5wC4r2cqoonsCw7lEpw8w=;
+        b=SP1VJ/q9/KT7X5Cgea3OTjfkzFzENKi5KluDmlkz0dWtDcTRLPiMYS1k/kldX5gDLC
+         NJX9aPJWSG7yOEMvLW0xz7KOoDkmAgeNgglXF+t7hBT89ZL3Mbsv1TcZoN6W5WWg7AFS
+         2AS5N9Wb5dpFos2BFs7b8QAnBxqyL6HXJASbIMOrtolVnUzOg4jidbP/v09pk2n1ThVI
+         kVUp2RRV9HiBb96RpKGlTKCDdiGNM/BdImF3a1TjfqmPciO4VgZ+u0fGgHMa2jx4uSnD
+         9kzioZ/sFe3QHOaYq2y30dfKGbG75cWV/3MhJfayDAsWbtPfzFM2OseY52KmjiniEXPT
+         8M+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Vhe0TmBmcMpXBlfJ6TPbqd5wC4r2cqoonsCw7lEpw8w=;
+        b=qcbCiMQqq/Sb1fSXrNmA/8/c1P6Il/ZtKdxKKexzJe1eqfr8Lq911s3SucKl2/e+PY
+         InIkpyhQKHwgY+oowSYdQWTepsfFrPDjPAMCDUXdrSv6MGo1NXvH0uqHRr8W9IHuXvxN
+         RdU8AcWMnkwq5Wh1fNNKUtXpT8eSqgCuIFFayA7qlDhAJhJUnMCHGiwhJqH4oJbX6Ehp
+         nQ7+oj0ifYcmD2NQbze7V141grDg0E5Qv73y3ACbV8NTL8farfCNkofjXNzJ8Dm21FKV
+         977F0ZwQbwtc8FChrqiUmyY7zJFyEVd/kp7ex3hXxjst5uerj3ysZwiYzeCZ+4qrY3ya
+         9PIg==
+X-Gm-Message-State: ANoB5pmSw7RMHrODavVAu1YE3JTQclF9Pr3J+GERtDz6bwuH2D+8GdJE
+        MnWCV++OSJJTKRao6OCV6oafLRYh7ZLVYr1l0diwkw==
+X-Google-Smtp-Source: AA0mqf4kHPlsC8WkHLl8Dp2kIV/cYi+4qqMe55OQD2v6YGezKpR75AWPN6HsqPXzmLyLsvvfWndsMFjyOv/Gpomuav0=
+X-Received: by 2002:a25:d655:0:b0:6fc:1c96:c9fe with SMTP id
+ n82-20020a25d655000000b006fc1c96c9femr5314859ybg.36.1669957539732; Thu, 01
+ Dec 2022 21:05:39 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH] wifi: brcmfmac: Fix error return code in
- brcmf_sdio_download_firmware()
-To:     Arend Van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>
-CC:     <aspriel@gmail.com>, <hante.meuleman@broadcom.com>,
-        <kvalo@kernel.org>, <davem@davemloft.net>,
-        <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
-        <arend@broadcom.com>
-References: <1669716458-15327-1-git-send-email-wangyufen@huawei.com>
- <CA+8PC_czBYZUsOH7brTh4idjg3ps58PtanqtmTD0mPN3Sp9Xhw@mail.gmail.com>
- <4e61f6e5-94bd-9e29-d12f-d5928f00c8a8@huawei.com>
- <5dd42599-ace7-42cb-8b3c-90704d18fc21@broadcom.com>
- <14e5c329-03c4-e82e-8ae2-97d30d53e4fd@huawei.com>
- <184cc562ed8.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-From:   wangyufen <wangyufen@huawei.com>
-In-Reply-To: <184cc562ed8.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.191]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221123173859.473629-1-dima@arista.com> <20221123173859.473629-4-dima@arista.com>
+ <CANn89iJEYhTFsF8vqe6enE7d107HfXZvgxN=iLGQj21sx9gwcQ@mail.gmail.com>
+In-Reply-To: <CANn89iJEYhTFsF8vqe6enE7d107HfXZvgxN=iLGQj21sx9gwcQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 2 Dec 2022 06:05:28 +0100
+Message-ID: <CANn89i+6dKFvBRHNyfSbZ6e+Azjz-x48D1um0qrKVRw0xoUquA@mail.gmail.com>
+Subject: Re: [PATCH v6 3/5] net/tcp: Disable TCP-MD5 static key on
+ tcp_md5sig_info destruction
+To:     Dmitry Safonov <dima@arista.com>
+Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Baron <jbaron@akamai.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,65 +81,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Dec 1, 2022 at 8:38 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Wed, Nov 23, 2022 at 6:39 PM Dmitry Safonov <dima@arista.com> wrote:
+> >
+> > To do that, separate two scenarios:
+> > - where it's the first MD5 key on the system, which means that enabling
+> >   of the static key may need to sleep;
+> > - copying of an existing key from a listening socket to the request
+> >   socket upon receiving a signed TCP segment, where static key was
+> >   already enabled (when the key was added to the listening socket).
+> >
+> > Now the life-time of the static branch for TCP-MD5 is until:
+> > - last tcp_md5sig_info is destroyed
+> > - last socket in time-wait state with MD5 key is closed.
+> >
+> > Which means that after all sockets with TCP-MD5 keys are gone, the
+> > system gets back the performance of disabled md5-key static branch.
+> >
+> > While at here, provide static_key_fast_inc() helper that does ref
+> > counter increment in atomic fashion (without grabbing cpus_read_lock()
+> > on CONFIG_JUMP_LABEL=y). This is needed to add a new user for
+> > a static_key when the caller controls the lifetime of another user.
+> >
+> > Signed-off-by: Dmitry Safonov <dima@arista.com>
+> > Acked-by: Jakub Kicinski <kuba@kernel.org>
+>
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
 
+Hmm, I missed two kfree_rcu(key) calls, I will send the following fix:
 
-在 2022/12/1 14:18, Arend Van Spriel 写道:
-> On December 1, 2022 4:01:39 AM wangyufen <wangyufen@huawei.com> wrote:
-> 
->> 在 2022/11/30 19:19, Arend van Spriel 写道:
->>> On 11/30/2022 3:00 AM, wangyufen wrote:
->>>>
->>>>
->>>> 在 2022/11/30 1:41, Franky Lin 写道:
->>>>> On Tue, Nov 29, 2022 at 1:47 AM Wang Yufen <wangyufen@huawei.com> 
->>>>> wrote:
->>>>>>
->>>>>> Fix to return a negative error code -EINVAL instead of 0.
->>>>>>
->>>>>> Compile tested only.
->>>>>>
->>>>>> Fixes: d380ebc9b6fb ("brcmfmac: rename chip download functions")
->>>>>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
->>>>>> ---
->>>>>>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 +
->>>>>>  1 file changed, 1 insertion(+)
->>>>>>
->>>>>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>>>>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>>>>> index 465d95d..329ec8ac 100644
->>>>>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>>>>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>>>>> @@ -3414,6 +3414,7 @@ static int brcmf_sdio_download_firmware(struct
->>>>>> brcmf_sdio *bus,
->>>>>>         /* Take arm out of reset */
->>>>>>         if (!brcmf_chip_set_active(bus->ci, rstvec)) {
->>>>>>                 brcmf_err("error getting out of ARM core reset\n");
->>>>>> +               bcmerror = -EINVAL;
->>>>>
->>>>> ENODEV seems more appropriate here.
->>>>
->>>> However, if brcmf_chip_set_active()  fails in
->>>> brcmf_pcie_exit_download_state(), "-EINVAL" is returned.
->>>> Is it necessary to keep consistent?
->>>
->>> If we can not get the ARM on the chip out of reset things will fail soon
->>> enough further down the road. Anyway, the other function calls return
->>> -EIO so let's do the same here.
->>
->> So -EIO is better?  Anyone else have any other opinions? 😄
-> 
-> Obviously it is no better than -EINVAL when you look at the behavior. It 
-> is just a feeble attempt to be a little bit more consistent. Feel free 
-> to change the return value for brcmf_pcie_exit_download_state() as well.
-> 
-All right, I'll send a v2 and change the error return values on both 
-sides to -EIO.
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 7fae586405cfb10011a0674289280bf400dfa8d8..8320d0ecb13ae1e3e259f3c13a4c2797fbd984a5
+100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1245,7 +1245,7 @@ int tcp_md5_do_add(struct sock *sk, const union
+tcp_md5_addr *addr,
 
-Thanks，
-Wang
-> Regards,
-> Arend
->>>
-> 
-> 
-> 
+                        md5sig =
+rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk));
+                        rcu_assign_pointer(tp->md5sig_info, NULL);
+-                       kfree_rcu(md5sig);
++                       kfree_rcu(md5sig, rcu);
+                        return -EUSERS;
+                }
+        }
+@@ -1271,7 +1271,7 @@ int tcp_md5_key_copy(struct sock *sk, const
+union tcp_md5_addr *addr,
+                        md5sig =
+rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk));
+                        net_warn_ratelimited("Too many TCP-MD5 keys in
+the system\n");
+                        rcu_assign_pointer(tp->md5sig_info, NULL);
+-                       kfree_rcu(md5sig);
++                       kfree_rcu(md5sig, rcu);
+                        return -EUSERS;
+                }
+        }
