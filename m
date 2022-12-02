@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0DD964012D
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 08:44:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC7EE640141
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 08:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231578AbiLBHoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 02:44:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
+        id S232573AbiLBHvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 02:51:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230486AbiLBHox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 02:44:53 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA388E5BE
-        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 23:44:52 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id d128so5055855ybf.10
-        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 23:44:52 -0800 (PST)
+        with ESMTP id S232533AbiLBHu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 02:50:58 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A9EA6CE2
+        for <netdev@vger.kernel.org>; Thu,  1 Dec 2022 23:50:47 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id j196so5119953ybj.2
+        for <netdev@vger.kernel.org>; Thu, 01 Dec 2022 23:50:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ybMra8sis46teo65TFjEsNHiX0PFZ7DXkDpYovH3IgU=;
-        b=hezuBCRmMQoH8iRnYcNEg9YCmlZZFPpFdqpdFi314f1OBYZxe5HjlcK0lqFIEV7Cgi
-         RDY2uyIWrFaJIRL6ri+YnMK5ORmSG0OYb3utYvBEXc45p6FZBWn8VGUfIKtMGldsAyOe
-         C6lJSryVG5Uih7p5Ns7VNjDL64vC36BpDrktg=
+        bh=ZrjR8/tbj3RMC8A/S5LUCfGknR+TYUpY31h8G6FNwGE=;
+        b=SLYIOqyBkCITLcv/dpDy3y3yOMWidnF79AW7d3e4G/f8spP0l4XAo+BcVSKCnnYUXf
+         2kW3HQ94nJo6H4RGZrbgoOQusYiI7AVn3XwzaAzBQQrLcTaU6CLj+RFWA9WghjU1kEr/
+         6oYc2dyfUD3jS6qPoujgZ94Dqhed9uSV5LniM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ybMra8sis46teo65TFjEsNHiX0PFZ7DXkDpYovH3IgU=;
-        b=IWWn+CAGC/8MYpjRvwfkX32jiFvi9t6+dXuz1mt1/08f5A8bhYJh1t+jKepabVo8a3
-         lVBMwXmreh0feScaQx2AywKaOw04ki7+zrjK7xDZKaeCf5434vlCWIiOIe6degtrJHPt
-         nXkgxm6JCBj43oKjns52xCH2cXHMl3dTdQIUtt1JBwbJScF3i7g3SBmfF0M8v38EBDPb
-         zSLM3qtjUErmUBuKzXExy+gpWmuI/4SXLrlrzcXrKr8jOJ/beW/XlQWInoe7AJycIkWG
-         OCcBh8BGe3H2ffERKGaDJdaLnWcn/7RmHtXW7eiFGmAjabwwpCqir3ZqH9hINE8uplIA
-         ZXCA==
-X-Gm-Message-State: ANoB5pkBxPtKVIYT1slTCJJFJgwUCYUWU7IVKqFOnClEXF3uWyagp6mo
-        tXSA9xhB14x7kj08utY9PJw48EHyflkndejg9h2ghw==
-X-Google-Smtp-Source: AA0mqf479tyHWOu2qiBqniNzDrEaAExuV0TjWYrl1gpigWF8pnNiZEJJVCh2c2KbpoF86//XaYeaNMdQAK23DD2SUNM=
-X-Received: by 2002:a25:9e8a:0:b0:6cc:54cb:71ff with SMTP id
- p10-20020a259e8a000000b006cc54cb71ffmr66953170ybq.339.1669967091285; Thu, 01
- Dec 2022 23:44:51 -0800 (PST)
+        bh=ZrjR8/tbj3RMC8A/S5LUCfGknR+TYUpY31h8G6FNwGE=;
+        b=jF44xLkMOSYBNcclIg2qvfgDL+QL+ayEJJWH2E/bQCYiNf1dlORaJbIuUqDorNQGxO
+         pkOFx6aYulHsEK3LjEbxxTy+XefpRaWMlU9s292L5U3w1oxjH1z+Zg+YYcTZRndE8jq2
+         yF3MiuwSQO1FI27utIm9naHe2Cyxbbc8bb1+8TPcLKCKRaUe4IUj6vyc+JLEXiMXLf4F
+         Gr853xIQWtOQ8HB8xOekose+Q1qswEahtPNrhDhmDhWcHDM5GbXhRqZIsKkq3NSezB5d
+         NAsh+8SyPMo+QdCRKxZtNVmAXRY2sr3eDU6mJk+eKBWb61q0at0f4suhn+v6tI/yjG3P
+         A8EQ==
+X-Gm-Message-State: ANoB5pn1QGX2kuasE+drWJueAoVVy5oQ8NG2vtpaaSYPbggOL229njuJ
+        9stdbXzKCKAbjVHWF0sj05u7VV29q06ZU2hr4C4Q/A==
+X-Google-Smtp-Source: AA0mqf7H5IGtuEz49jQJqC4d7VxVJiG3Ajx5VSyCQk3Y8UoupXX+oN+W/nso0AoOR5EtM/QYNIaJE+QyZVCQDrVfFjs=
+X-Received: by 2002:a25:cf55:0:b0:6f6:f5d0:aa62 with SMTP id
+ f82-20020a25cf55000000b006f6f5d0aa62mr22298179ybg.81.1669967446732; Thu, 01
+ Dec 2022 23:50:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20221202052847.2623997-1-edumazet@google.com>
-In-Reply-To: <20221202052847.2623997-1-edumazet@google.com>
+References: <20221201173408.26954-1-goncharenko.vp@ispras.ru>
+In-Reply-To: <20221201173408.26954-1-goncharenko.vp@ispras.ru>
 From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-Date:   Fri, 2 Dec 2022 13:14:40 +0530
-Message-ID: <CALs4sv1_azmgz+GSOmi-__KZayQCWZVrBQwY4fw6uwNA1AWJmw@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: use 2-arg optimal variant of kfree_rcu()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+Date:   Fri, 2 Dec 2022 13:20:36 +0530
+Message-ID: <CALs4sv3_YEnE4SGoUJZQBSA+ymFUJ=Njv0P2mi1QgfDD2ewOOA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: encx24j600: Add parentheses to fix precedence
+To:     Valentina Goncharenko <goncharenko.vp@ispras.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, Dmitry Safonov <dima@arista.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>,
+        Jon Ringle <jringle@gridpoint.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000488dca05eed383b3"
+        boundary="00000000000077967905eed398e9"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
@@ -66,56 +67,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000488dca05eed383b3
+--00000000000077967905eed398e9
 Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Dec 2, 2022 at 10:59 AM Eric Dumazet <edumazet@google.com> wrote:
+On Thu, Dec 1, 2022 at 11:04 PM Valentina Goncharenko
+<goncharenko.vp@ispras.ru> wrote:
 >
-> kfree_rcu(1-arg) should be avoided as much as possible,
-> since this is only possible from sleepable contexts,
-> and incurr extra rcu barriers.
+> In functions regmap_encx24j600_phy_reg_read() and
+> regmap_encx24j600_phy_reg_write() in the conditions of the waiting
+> cycles for filling the variable 'ret' it is necessary to add parentheses
+> to prevent wrong assignment due to logical operations precedence.
 >
-> I wish the 1-arg variant of kfree_rcu() would
-> get a distinct name, like kfree_rcu_slow()
-> to avoid it being abused.
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
 >
-> Fixes: 459837b522f7 ("net/tcp: Disable TCP-MD5 static key on tcp_md5sig_info destruction")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Dmitry Safonov <dima@arista.com>
-> Cc: Paul E. McKenney <paulmck@kernel.org>
+> Fixes: d70e53262f5c ("net: Microchip encx24j600 driver")
+> Signed-off-by: Valentina Goncharenko <goncharenko.vp@ispras.ru>
 > ---
->  net/ipv4/tcp_ipv4.c | 4 ++--
+>  drivers/net/ethernet/microchip/encx24j600-regmap.c | 4 ++--
 >  1 file changed, 2 insertions(+), 2 deletions(-)
 >
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index 7fae586405cfb10011a0674289280bf400dfa8d8..8320d0ecb13ae1e3e259f3c13a4c2797fbd984a5 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -1245,7 +1245,7 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
+> diff --git a/drivers/net/ethernet/microchip/encx24j600-regmap.c b/drivers/net/ethernet/microchip/encx24j600-regmap.c
+> index 81a8ccca7e5e..2e337c7a5773 100644
+> --- a/drivers/net/ethernet/microchip/encx24j600-regmap.c
+> +++ b/drivers/net/ethernet/microchip/encx24j600-regmap.c
+> @@ -359,7 +359,7 @@ static int regmap_encx24j600_phy_reg_read(void *context, unsigned int reg,
+>                 goto err_out;
 >
->                         md5sig = rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk));
->                         rcu_assign_pointer(tp->md5sig_info, NULL);
-> -                       kfree_rcu(md5sig);
-> +                       kfree_rcu(md5sig, rcu);
->                         return -EUSERS;
->                 }
->         }
-> @@ -1271,7 +1271,7 @@ int tcp_md5_key_copy(struct sock *sk, const union tcp_md5_addr *addr,
->                         md5sig = rcu_dereference_protected(tp->md5sig_info, lockdep_sock_is_held(sk));
->                         net_warn_ratelimited("Too many TCP-MD5 keys in the system\n");
->                         rcu_assign_pointer(tp->md5sig_info, NULL);
-> -                       kfree_rcu(md5sig);
-> +                       kfree_rcu(md5sig, rcu);
->                         return -EUSERS;
->                 }
->         }
+>         usleep_range(26, 100);
+> -       while ((ret = regmap_read(ctx->regmap, MISTAT, &mistat) != 0) &&
+> +       while (((ret = regmap_read(ctx->regmap, MISTAT, &mistat)) != 0) &&
+>                (mistat & BUSY))
+>                 cpu_relax();
+>
+> @@ -397,7 +397,7 @@ static int regmap_encx24j600_phy_reg_write(void *context, unsigned int reg,
+>                 goto err_out;
+>
+>         usleep_range(26, 100);
+> -       while ((ret = regmap_read(ctx->regmap, MISTAT, &mistat) != 0) &&
+> +       while (((ret = regmap_read(ctx->regmap, MISTAT, &mistat)) != 0) &&
+>                (mistat & BUSY))
+>                 cpu_relax();
+>
 > --
-> 2.39.0.rc0.267.gcb52ba06e7-goog
+> 2.25.1
 >
-Looks good to me.
+Makes sense to me.
 Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
---000000000000488dca05eed383b3
+--00000000000077967905eed398e9
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -186,13 +185,13 @@ pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
 Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILXEWxNsz8Qy6Ie4neD/QqKZ/GF13iY/
-ua0QnFT4ZsP5MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIw
-MjA3NDQ1MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMet3ciOskE9QEmZHPagYFPatnrqW7RR
+HdJEofD5LJjyMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIw
+MjA3NTA0N1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCC9d44+9XTtNIBAuZY6UAVRTs0XEPe3tXZ6IJZOGROqCnk9iy1
-XuBnOn/01vnk59l1TQMO37Z6fTjmnydWSEjKoH7KuSFHRlUprdxIe9gFFbmCEL9vpBJVK6oagRg2
-MW7Y5rtOrp6Dy0ZRtuhBCwjeszBSdwJv6tSTtkW4Vh9EI5QR50aAWPHda44tEIePi54Gw+UfJ/cR
-LrFfofKDsY0H6z540CfTbEHenCxSuejuxSShmpcKoB1k86Am2bMcqYTkbPqmrfL0d0dHQ5DciLGc
-UxNQa71dI0KF+O9nbsWiGUmqvF9kaH8Zo0CY1KQXNo90D7Bp6Pqdpvrv4uDXqnnf
---000000000000488dca05eed383b3--
+ATANBgkqhkiG9w0BAQEFAASCAQBX/o5l9V/B4tpTB4zk35pdSXVikABhFiBb62NPXVyLzvQpOZW1
+/yVZnLxUU776MdxHwr8Ugjm1Wp0hzFsb4LnqcYeHDxePmK+vpFGqJfLfgFygW5x+75hw9z38kyeu
+cBjEambOG1nlCmEDqnP6hJKmVq9uAyA63Alx5E7l925ZKBBP37cVn+fBGQQFbbxGJphMECFrq3+T
++Jpkkv+/HxOW15vnBHmSExLOekIMdLSP7qqwh5Hv/KhQQakGYHgG1dlEXAFQO1KhzJxs8Ao9doxc
+vSl+RyKiXMK06Y29sx2U7lkZXa2iVCyKPTNu+VReJGO8I7Dkxkk6BGfLJQFKeKZe
+--00000000000077967905eed398e9--
