@@ -2,69 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68BF964021D
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:30:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05DA064021E
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 09:30:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232855AbiLBIab (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 03:30:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
+        id S232862AbiLBIad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 03:30:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232228AbiLBI3S (ORCPT
+        with ESMTP id S232406AbiLBI3S (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 03:29:18 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on20620.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5a::620])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB41EAFCDB
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:27:02 -0800 (PST)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2057.outbound.protection.outlook.com [40.107.92.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A007B0B75
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 00:27:09 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UvKINsh2B9NQFWa+v2nVW25KfIf2rU79XgnuZZUsDWqHvyh/3iIzgxWH/KmyLEpXtqsyi/docI5vv0Ay7FWB8UI2avXg9TEBe43LmorbFPYLWN4bS1IYf7YxJTvolz0nWi8p2G2Hn/Ok+mA+WJJfXAYG9DYa7Xp/lumqdDYbYxwoPbvkn1n40BizW9NaRJxVqeQQ0UADFylpAfQWMh0xFov9qMoziJzZ9z3ueXkmLHJeU9uSpzI/eolR7W5dYRklQbI3ng2CcyiQJ7/kZ98m9QPnlxzhqzmoZ4od8Ha1Fyc/0yMp/P84M1KHRmhVTRiOwll2ShGRF8V1t2/TdaQAog==
+ b=liMTGXLn7zRAJ4GA6294pOsScGHkr65M4HAmrG6Bwz+EFT461as+1Hm5QXT/Ko97ItfYnZIu5Bq271NldT8eJ5MLVWdh9YKVGa5Ag2wwrGX0tdpaB+6nE/AIaEfDbYeR3nyM7IlAEdZktycovCnAL/DCLOCIin1+miklKzmH+K495biqu4+j/gUeutm3eGVXCBVbe40ad8YZ50MuJTEeDTLVJG0SBFIDcCBPMipImLlix7DuSiA9w/ETCzvt3sjzsU44oCs07s0+27Lq4tVsgeFV6nsF2gAj1gxjcqu7j/ZfGlxt2XbGGMAJVjrxS6mq6QQAYb6dXcyP+CWiC8/rxQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cklU5gEz7jWwCwHiUYw/s1wXGXpvEgzGozGPJEn7yto=;
- b=RNF9Rtxds/oN1sYo/5Q/2trXrxIsE7yQGu2r6sLy9kHqgeu5mIgUO0umJB4S1ekegiAFr/GXJpR3JvWm1F2jDhoEz160yVMoaUB1t2R8ojtk/rqBDSuoqb09PwSWz/RIFjynWAfRD7FL5PxMGqZtl0B4xhZwFxliz7evaile5fJxMkvY+DVnT+0NOIDx4czYBAu4B9wWy4IQHhFJXWHGlTdr+FbcXAP8Er6CR6qNKzFE5yW5I9HRmJkSIQ6hwGoIJUBr18WylVM5i71iVAFsd4b6inp6iM8AV06IYyyW0F/nYWmJ5SFDxLgpG/GOx4rxBaVmQHJZ9XPZUHk4SBrJiA==
+ bh=wWFdRmCdeB0qwnmZbBuyUCx7h0WXmtCUhh3eXF1joUk=;
+ b=RZF0F2M9lpHfpXzq1KIaVxwKJDJhXcKobcVK01Nbdmiho6uKmORoZVWc99Z8vNl0kEaaudd6J1DHHAQsuky0DxQpgnRtsLKj+0rLc+WxDwNgv/uveKbX7BMiRdHAMxFrdLQmbY2atoDr8+b05Ls0npKSOSk6l9pu6G/AUCaGx1qP5T3qdWZPDP+QKmrpWy2dDC8b/7Lb4qxpyeunhtPPJtHYKA8/4zs3wunk5e5/CSatMNg+iF95hLL9d/Re9UcybbWpRVmnkfSvpqMXBkOVV4DbUxu4T9VMRxLDMNq3UTG7e0yFTUzm9rA0GJ6+IaBmfL7yXebhONsrDzHYfBrkVQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cklU5gEz7jWwCwHiUYw/s1wXGXpvEgzGozGPJEn7yto=;
- b=XRIzJnFKz2LcvdNRlEBWqaZFQGldK22V2Gg8ff+P45DBnNU+ZhuQuA6SfgeQSggVal5AG2fEeoe7vQoHdGivR7uqXvDCjfd+wyf9tXkIGyLBMHgueMXqqAqp8NHLt2/EPteg7treb1g4IKR3Kmy2eiK4nISz0HIO+EkVbHvbOBiHgZfRkZjwtvlAYfyytOkJgOln3tAkjX2YqD4iJku9DA0NuTFIkxY062tA6gMN3ZpIpHDl9/maLCOeyeVI0czcOMczvY3KXwH7s1RqPOIjiLRYyjLyK5iRJnUFwAfzYBekwh5NL4xKiYLdqCJQkHTibY6mVBbwdeg2swktBgzFXg==
-Received: from DS7PR03CA0275.namprd03.prod.outlook.com (2603:10b6:5:3ad::10)
- by CH2PR12MB4277.namprd12.prod.outlook.com (2603:10b6:610:ae::23) with
+ bh=wWFdRmCdeB0qwnmZbBuyUCx7h0WXmtCUhh3eXF1joUk=;
+ b=WjKzpKzaBoTRtDjs7gRC1eBxaNEflmqSft1+BKyP7A2nxIfK7ihfb69OgUO8BeyB1ntw+zLK6GHYV55KRhM2s02dbPIkj2JFyuH1wLnCtJbWpuZ1K05dGZMCSazMtc+tqdsBRkae9UjuggfmbJIfODL0t730/+Mn1sCsSe9CBNf2dPsH4PrTrr+uGwogmE07lo9spjuSF+JizvC1j6U2CtPLtLJyLDWUUoytbJoW1YjaOgbY6hcVg8qiWFpqFk8Ry2VNxiIExVJ2e4fStQXHDq5qUVv5pUi8yQwPy+uLPyzar8Wl2vXjwlNCh1h8diIpzJ32pIADTI6UhEsqT3AA7A==
+Received: from MW4PR03CA0337.namprd03.prod.outlook.com (2603:10b6:303:dc::12)
+ by DS7PR12MB5765.namprd12.prod.outlook.com (2603:10b6:8:74::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Fri, 2 Dec
- 2022 08:27:00 +0000
-Received: from DM6NAM11FT096.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3ad:cafe::25) by DS7PR03CA0275.outlook.office365.com
- (2603:10b6:5:3ad::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8 via Frontend
- Transport; Fri, 2 Dec 2022 08:27:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ 2022 08:27:07 +0000
+Received: from CO1NAM11FT049.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:dc:cafe::3) by MW4PR03CA0337.outlook.office365.com
+ (2603:10b6:303:dc::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10 via Frontend
+ Transport; Fri, 2 Dec 2022 08:27:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT096.mail.protection.outlook.com (10.13.173.145) with Microsoft SMTP
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT049.mail.protection.outlook.com (10.13.175.50) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.10 via Frontend Transport; Fri, 2 Dec 2022 08:27:00 +0000
+ 15.20.5880.10 via Frontend Transport; Fri, 2 Dec 2022 08:27:06 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 2 Dec 2022
- 00:26:51 -0800
+ 00:26:54 -0800
 Received: from nps-server-23.mtl.labs.mlnx (10.126.231.35) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Fri, 2 Dec 2022 00:26:48 -0800
+ 15.2.986.36; Fri, 2 Dec 2022 00:26:51 -0800
 From:   Shay Drory <shayd@nvidia.com>
 To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>
 CC:     <danielj@nvidia.com>, <yishaih@nvidia.com>, <jiri@nvidia.com>,
         <saeedm@nvidia.com>, <parav@nvidia.com>
-Subject: [PATCH net-next V2 6/8] net/mlx5: E-Switch, Implement devlink port function cmds to control RoCE
-Date:   Fri, 2 Dec 2022 10:26:20 +0200
-Message-ID: <20221202082622.57765-7-shayd@nvidia.com>
+Subject: [PATCH net-next V2 7/8] devlink: Expose port function commands to control migratable
+Date:   Fri, 2 Dec 2022 10:26:21 +0200
+Message-ID: <20221202082622.57765-8-shayd@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221202082622.57765-1-shayd@nvidia.com>
 References: <20221202082622.57765-1-shayd@nvidia.com>
@@ -76,335 +76,290 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT096:EE_|CH2PR12MB4277:EE_
-X-MS-Office365-Filtering-Correlation-Id: d5d95758-e49c-4f4f-c6c3-08dad43efbc7
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT049:EE_|DS7PR12MB5765:EE_
+X-MS-Office365-Filtering-Correlation-Id: 24477438-74b6-4e10-be53-08dad43effa9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: k8llcJOCjO+2bc1mUqZVnFUHx+cTs4XHRQJ6BCaQJ6FB3VyM6KoTLB/OMdeBH25xvqWVPrMwGuxm2QPcHZ80H+vv3InvLVnn3VzViw+ile4VIWZ2sUI3349ChkrdTCJW0acA3UXezqixvPI+YZa944Hl7n8BiRYKFtl/cpL4n7gzPhgMN+57hyOedc1czODJ8KbF6W4qGX3wzJXdww0S4tEV96H+4kqmZvoXQkOuq6s3o/efv3iR52nCR68Zunp48HVKn2O0gZSqusTlDGgyk51NiwgpL1SS0p3MAKYPHvretQvVtfU+jGye53ln+kQuKLrMT8hvJfwmyifrgLsPzmuqpZsyqIiE6KLN2cun/qc8jbojpgBGzofy7ZybCoPyjIg26L/1UZ59JIlz/0VPFbs41CSR48R1tzHRunCe0K46Mqm8wpwmBl6t1CCBg0pHHwr+iEorW0atJOuJrKmn77zAIH1JcsPd9a5TWySfzlKGA7DJdnTlKbEcGWfwfMooec2bCDLBOU42wBzSVzWjT2KuudK5Xl2ZYmQYMeVw5JHSaqYlGXwXLpSziZSUytllM7+92r3hLNod6iAtnXgc5JV+WGIclUw2U0+5ZlfM1V9DWwP4T6xp/NQUqZnjvdwfksIUW0458Qmjg7Hyb0r7dxT8Py+vSbw5Wd7Dt3rJZbb6hxpw48ZEKHivsOs03XaPghjgeI4jsoKFs/OOZCj1uw==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(346002)(376002)(396003)(451199015)(46966006)(40470700004)(36840700001)(47076005)(5660300002)(426003)(40480700001)(110136005)(54906003)(40460700003)(30864003)(41300700001)(16526019)(70206006)(82310400005)(356005)(336012)(7636003)(82740400003)(8936002)(8676002)(4326008)(186003)(1076003)(2906002)(26005)(2616005)(36756003)(70586007)(36860700001)(86362001)(6666004)(316002)(83380400001)(107886003)(478600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: j+HrHTFlmEaNXXyyd5nCZyfUKxt2ngJn/7XbxmM1ogqy3vAWJxKIvwdGzSVBGTWxp1IqR9Wmlwq/iqfmrXcYe/J0u+saiJ85glptY+pjHYm/F/UyObS/W8JsUiR4qSXdaBQGpXoT4OFRhPZNigTLkVKWz13YZXOCXEzqVL2yBvGU9+lxdR57Yu1Felm83dsHJm/tcGvFDPhwBy74nmsmDVPoODgnVxs1bISz0LsoA3v/YqPQOVGJlC8QwZNSwEnGXShe3Idt9Lgp1itwT1lo/26jnKORzY3d4u8TRvHQ7U7kuiQUqF6jmZd/rqp6scctR2VzboIeRDXAk5w+sROJ59CpH9E+eSenJvvMp+VqHhiOoVxxZYvCZTXf14p1J+5id4GxhWK2xehcJDhvmNo4t++WQjD9DXPov30B+JHmUDs84zSdINbLPLIHe214iG+iDzFdDjiVTFiuF88c4cVA66/RYp7dViWRia87IOJnt8eaKeLpL6U3iE0Jrttfm6r0Txh9taWnCXudp8whmDC5LHAi4IY6UR1ZtY9JwVDXtL65nFNyB5eWHIt70SCjqfMrzXQh+AjJqv3tO127+rg4TTVpJmbOwKV2d4bC3FcPh2JFSGvc9ouM/DZF3VzgvAyRpH/pYEkPtRjHnP5TQSy+om2dgGhqiZuEs2e8KDJ+9NkPWp79GnlEavCCkk7nXHK686f7LRvKqg9FePYrhCvD5g==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(376002)(396003)(346002)(451199015)(36840700001)(46966006)(40470700004)(7636003)(40480700001)(40460700003)(356005)(6666004)(2906002)(36756003)(2616005)(107886003)(86362001)(16526019)(478600001)(186003)(8936002)(36860700001)(26005)(316002)(70586007)(5660300002)(41300700001)(70206006)(110136005)(4326008)(54906003)(8676002)(82740400003)(336012)(1076003)(82310400005)(83380400001)(47076005)(426003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2022 08:27:00.2018
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2022 08:27:06.7315
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5d95758-e49c-4f4f-c6c3-08dad43efbc7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24477438-74b6-4e10-be53-08dad43effa9
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT096.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT049.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4277
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5765
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yishai Hadas <yishaih@nvidia.com>
+Expose port function commands to enable / disable migratable
+capability, this is used to set the port function as migratable.
 
-Implement devlink port function commands to enable / disable RoCE.
-This is used to control the RoCE device capabilities.
+Live migration is the process of transferring a live virtual machine
+from one physical host to another without disrupting its normal
+operation.
 
-This patch implement infrastructure which will be used by downstream
-patches that will add additional capabilities.
+In order for a VM to be able to perform LM, all the VM components must
+be able to perform migration. e.g.: to be migratable.
+In order for VF to be migratable, VF must be bound to VFIO driver with
+migration support.
 
-Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-Signed-off-by: Daniel Jurgens <danielj@nvidia.com>
+When migratable capability is enable for a function of the port, the
+device is making the necessary preparations for the function to be
+migratable, which might include disabling features which cannot be
+migrated.
+
+Example of LM with migratable function configuration:
+Set migratable of the VF's port function.
+
+$ devlink port show pci/0000:06:00.0/2
+pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0
+vfnum 1
+    function:
+        hw_addr 00:00:00:00:00:00 migratable disable
+
+$ devlink port function set pci/0000:06:00.0/2 migratable enable
+
+$ devlink port show pci/0000:06:00.0/2
+pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0
+vfnum 1
+    function:
+        hw_addr 00:00:00:00:00:00 migratable enable
+
+Bind VF to VFIO driver with migration support:
+$ echo <pci_id> > /sys/bus/pci/devices/0000:08:00.0/driver/unbind
+$ echo mlx5_vfio_pci > /sys/bus/pci/devices/0000:08:00.0/driver_override
+$ echo <pci_id> > /sys/bus/pci/devices/0000:08:00.0/driver/bind
+
+Attach VF to the VM.
+Start the VM.
+Perform LM.
+
 Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Acked-by: Saeed Mahameed <saeedm@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Reported-by: kernel test robot <lkp@intel.com>
 ---
- .../device_drivers/ethernet/mellanox/mlx5.rst |  10 ++
- .../net/ethernet/mellanox/mlx5/core/devlink.c |   2 +
- .../net/ethernet/mellanox/mlx5/core/eswitch.c |  35 ++++++
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |   6 +-
- .../mellanox/mlx5/core/eswitch_offloads.c     | 108 ++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
- .../net/ethernet/mellanox/mlx5/core/vport.c   |  24 ++++
- 7 files changed, 186 insertions(+), 1 deletion(-)
+v1->v2:
+ - fix documentation warning
+---
+ .../networking/devlink/devlink-port.rst       | 46 ++++++++++++++++
+ include/net/devlink.h                         | 21 ++++++++
+ include/uapi/linux/devlink.h                  |  1 +
+ net/core/devlink.c                            | 54 +++++++++++++++++++
+ 4 files changed, 122 insertions(+)
 
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index 07cfc1b07db3..8b8f95d1293a 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -354,6 +354,16 @@ MAC address setup
- mlx5 driver support devlink port function attr mechanism to setup MAC
- address. (refer to Documentation/networking/devlink/devlink-port.rst)
+diff --git a/Documentation/networking/devlink/devlink-port.rst b/Documentation/networking/devlink/devlink-port.rst
+index 79f9c0390b47..2e3d17291ae0 100644
+--- a/Documentation/networking/devlink/devlink-port.rst
++++ b/Documentation/networking/devlink/devlink-port.rst
+@@ -125,6 +125,9 @@ this means a MAC address.
+ Users may also set the RoCE capability of the function using
+ 'devlink port function set roce' command.
  
-+RoCE capability setup
-+---------------------
-+Not all mlx5 PCI devices/SFs require RoCE capability.
++Users may also set the function as migratable using
++'devlink port function set migratable' command.
 +
-+When RoCE capability is disabled, it saves 1 Mbytes worth of system memory per
-+PCI devices/SF.
+ Function attributes
+ ===================
+ 
+@@ -194,6 +197,49 @@ VF/SF driver cannot override it.
+         function:
+             hw_addr 00:00:00:00:00:00 roce disable
+ 
++migratable capability setup
++---------------------------
++Live migration is the process of transferring a live virtual machine
++from one physical host to another without disrupting its normal
++operation.
 +
-+mlx5 driver support devlink port function attr mechanism to setup RoCE
-+capability. (refer to Documentation/networking/devlink/devlink-port.rst)
++User who want PCI VFs to be able to perform live migration need to
++explicitly enable the VF migratable capability.
 +
- SF state setup
- --------------
- To use the SF, the user must activate the SF using the SF function state
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 751bc4a9edcf..992cdb3b7cc8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -314,6 +314,8 @@ static const struct devlink_ops mlx5_devlink_ops = {
- 	.rate_node_new = mlx5_esw_devlink_rate_node_new,
- 	.rate_node_del = mlx5_esw_devlink_rate_node_del,
- 	.rate_leaf_parent_set = mlx5_esw_devlink_rate_parent_set,
-+	.port_function_roce_get = mlx5_devlink_port_function_roce_get,
-+	.port_function_roce_set = mlx5_devlink_port_function_roce_set,
- #endif
- #ifdef CONFIG_MLX5_SF_MANAGER
- 	.port_new = mlx5_devlink_sf_port_new,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index 374e3fbdc2cf..001fb1e62135 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -772,6 +772,33 @@ static void esw_vport_cleanup_acl(struct mlx5_eswitch *esw,
- 		esw_vport_destroy_offloads_acl_tables(esw, vport);
++When user enables migratable capability for a VF, and the HV binds the VF to VFIO driver
++with migration support, the user can migrate the VM with this VF from one HV to a
++different one.
++
++However, when migratable capability is enable, device will disable features which cannot
++be migrated. Thus migratable cap can impose limitations on a VF so let the user decide.
++
++Example of LM with migratable function configuration:
++- Get migratable capability of the VF device::
++
++    $ devlink port show pci/0000:06:00.0/2
++    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
++        function:
++            hw_addr 00:00:00:00:00:00 migratable disable
++
++- Set migratable capability of the VF device::
++
++    $ devlink port function set pci/0000:06:00.0/2 migratable enable
++
++    $ devlink port show pci/0000:06:00.0/2
++    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
++        function:
++            hw_addr 00:00:00:00:00:00 migratable enable
++
++- Bind VF to VFIO driver with migration support::
++
++$ echo <pci_id> > /sys/bus/pci/devices/0000:08:00.0/driver/unbind
++$ echo mlx5_vfio_pci > /sys/bus/pci/devices/0000:08:00.0/driver_override
++$ echo <pci_id> > /sys/bus/pci/devices/0000:08:00.0/driver/bind
++
++Attach VF to the VM.
++Start the VM.
++Perform live migration.
++
+ Subfunction
+ ============
+ 
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 20306fb8a1d9..fdb5e8da33ce 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1470,6 +1470,27 @@ struct devlink_ops {
+ 	int (*port_function_roce_set)(struct devlink_port *devlink_port,
+ 				      bool enable,
+ 				      struct netlink_ext_ack *extack);
++	/**
++	 * @port_function_mig_get: Port function's migratable get function.
++	 *
++	 * Query migratable state of a function managed by the devlink port.
++	 * Return -EOPNOTSUPP if port function migratable handling is not
++	 * supported.
++	 */
++	int (*port_function_mig_get)(struct devlink_port *devlink_port,
++				     bool *is_enable,
++				     struct netlink_ext_ack *extack);
++	/**
++	 * @port_function_mig_set: Port function's migratable set function.
++	 *
++	 * Enable/Disable migratable state of a function managed by the devlink
++	 * port.
++	 * Return -EOPNOTSUPP if port function migratable handling is not
++	 * supported.
++	 */
++	int (*port_function_mig_set)(struct devlink_port *devlink_port,
++				     bool enable,
++				     struct netlink_ext_ack *extack);
+ 	/**
+ 	 * port_new() - Add a new port function of a specified flavor
+ 	 * @devlink: Devlink instance
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 830f8ffd69d1..5a2b87a05c74 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -660,6 +660,7 @@ enum devlink_resource_unit {
+ 
+ enum devlink_port_fn_attr_cap {
+ 	DEVLINK_PORT_FN_ATTR_CAP_ROCE,
++	DEVLINK_PORT_FN_ATTR_CAP_MIGRATABLE,
+ 
+ 	/* Add new caps above */
+ 	__DEVLINK_PORT_FN_ATTR_CAPS_MAX,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index dcf6aae443a9..9ea6d1f854db 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -728,6 +728,29 @@ static int devlink_port_fn_roce_fill(const struct devlink_ops *ops,
+ 	return 0;
  }
  
-+static int mlx5_esw_vport_caps_get(struct mlx5_eswitch *esw, struct mlx5_vport *vport)
++static int devlink_port_function_mig_fill(const struct devlink_ops *ops,
++					  struct devlink_port *devlink_port,
++					  struct nla_bitfield32 *caps,
++					  struct netlink_ext_ack *extack)
 +{
-+	int query_out_sz = MLX5_ST_SZ_BYTES(query_hca_cap_out);
-+	void *query_ctx;
-+	void *hca_caps;
++	bool is_enable;
 +	int err;
 +
-+	if (!MLX5_CAP_GEN(esw->dev, vhca_resource_manager))
++	if (!ops->port_function_mig_get ||
++	    devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_PCI_VF)
 +		return 0;
 +
-+	query_ctx = kzalloc(query_out_sz, GFP_KERNEL);
-+	if (!query_ctx)
-+		return -ENOMEM;
++	err = ops->port_function_mig_get(devlink_port, &is_enable, extack);
++	if (err) {
++		if (err == -EOPNOTSUPP)
++			return 0;
++		return err;
++	}
 +
-+	err = mlx5_vport_get_other_func_cap(esw->dev, vport->vport, query_ctx,
-+					    MLX5_CAP_GENERAL);
-+	if (err)
-+		goto out_free;
-+
-+	hca_caps = MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability);
-+	vport->info.roce_enabled = MLX5_GET(cmd_hca_cap, hca_caps, roce);
-+
-+out_free:
-+	kfree(query_ctx);
-+	return err;
++	DEVLINK_PORT_FN_SET_CAP(caps, DEVLINK_PORT_FN_CAP(MIGRATABLE), is_enable);
++	return 0;
 +}
 +
- static int esw_vport_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport)
- {
- 	u16 vport_num = vport->vport;
-@@ -785,6 +812,10 @@ static int esw_vport_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport)
- 	if (mlx5_esw_is_manager_vport(esw, vport_num))
+ static int devlink_port_fn_caps_fill(const struct devlink_ops *ops,
+ 				     struct devlink_port *devlink_port,
+ 				     struct sk_buff *msg,
+@@ -741,6 +764,10 @@ static int devlink_port_fn_caps_fill(const struct devlink_ops *ops,
+ 	if (err)
+ 		return err;
+ 
++	err = devlink_port_function_mig_fill(ops, devlink_port, &caps, extack);
++	if (err)
++		return err;
++
+ 	if (!caps.selector)
  		return 0;
- 
-+	err = mlx5_esw_vport_caps_get(esw, vport);
-+	if (err)
-+		goto err_caps;
-+
- 	mlx5_modify_vport_admin_state(esw->dev,
- 				      MLX5_VPORT_STATE_OP_MOD_ESW_VPORT,
- 				      vport_num, 1,
-@@ -804,6 +835,10 @@ static int esw_vport_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport)
- 			       vport->info.qos, flags);
- 
+ 	err = nla_put_bitfield32(msg, DEVLINK_PORT_FN_ATTR_CAPS, caps.value,
+@@ -1335,6 +1362,15 @@ static int devlink_port_fn_state_fill(const struct devlink_ops *ops,
  	return 0;
-+
-+err_caps:
-+	esw_vport_cleanup_acl(esw, vport);
-+	return err;
  }
  
- /* Don't cleanup vport->info, it's needed to restore vport configuration */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index 42d9df417e20..71f27fb35c49 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -153,6 +153,7 @@ struct mlx5_vport_info {
- 	u8                      qos;
- 	u8                      spoofchk: 1;
- 	u8                      trusted: 1;
-+	u8                      roce_enabled: 1;
- };
- 
- /* Vport context events */
-@@ -508,7 +509,10 @@ int mlx5_devlink_port_function_hw_addr_get(struct devlink_port *port,
- int mlx5_devlink_port_function_hw_addr_set(struct devlink_port *port,
- 					   const u8 *hw_addr, int hw_addr_len,
- 					   struct netlink_ext_ack *extack);
--
-+int mlx5_devlink_port_function_roce_get(struct devlink_port *port, bool *is_enabled,
-+					struct netlink_ext_ack *extack);
-+int mlx5_devlink_port_function_roce_set(struct devlink_port *port, bool enable,
-+					struct netlink_ext_ack *extack);
- void *mlx5_eswitch_get_uplink_priv(struct mlx5_eswitch *esw, u8 rep_type);
- 
- int mlx5_eswitch_add_vlan_action(struct mlx5_eswitch *esw,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 33dffcb8bdd7..f258fd7e27a8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -4022,3 +4022,111 @@ int mlx5_devlink_port_function_hw_addr_set(struct devlink_port *port,
- 
- 	return mlx5_eswitch_set_vport_mac(esw, vport_num, hw_addr);
++static int
++devlink_port_fn_mig_set(struct devlink_port *devlink_port, bool enable,
++			struct netlink_ext_ack *extack)
++{
++	const struct devlink_ops *ops = devlink_port->devlink->ops;
++
++	return ops->port_function_mig_set(devlink_port, enable, extack);
++}
++
+ static int
+ devlink_port_fn_roce_set(struct devlink_port *devlink_port, bool enable,
+ 			 struct netlink_ext_ack *extack)
+@@ -1361,6 +1397,13 @@ static int devlink_port_fn_caps_set(struct devlink_port *devlink_port,
+ 		if (err)
+ 			return err;
+ 	}
++	if (caps.selector & DEVLINK_PORT_FN_CAP(MIGRATABLE)) {
++		err = devlink_port_fn_mig_set(devlink_port, caps_value &
++					      DEVLINK_PORT_FN_CAP(MIGRATABLE),
++					      extack);
++		if (err)
++			return err;
++	}
+ 	return 0;
  }
-+
-+static struct mlx5_vport *
-+mlx5_devlink_port_function_get_vport(struct devlink_port *port, struct mlx5_eswitch *esw)
-+{
-+	u16 vport_num;
-+
-+	if (!MLX5_CAP_GEN(esw->dev, vhca_resource_manager))
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	vport_num = mlx5_esw_devlink_port_index_to_vport_num(port->index);
-+	if (!is_port_function_supported(esw, vport_num))
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	return mlx5_eswitch_get_vport(esw, vport_num);
-+}
-+
-+int mlx5_devlink_port_function_roce_get(struct devlink_port *port, bool *is_enabled,
-+					struct netlink_ext_ack *extack)
-+{
-+	struct mlx5_eswitch *esw;
-+	struct mlx5_vport *vport;
-+	int err = -EOPNOTSUPP;
-+
-+	esw = mlx5_devlink_eswitch_get(port->devlink);
-+	if (IS_ERR(esw))
-+		return PTR_ERR(esw);
-+
-+	vport = mlx5_devlink_port_function_get_vport(port, esw);
-+	if (IS_ERR(vport)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid port");
-+		return PTR_ERR(vport);
-+	}
-+
-+	mutex_lock(&esw->state_lock);
-+	if (vport->enabled) {
-+		*is_enabled = vport->info.roce_enabled;
-+		err = 0;
-+	}
-+	mutex_unlock(&esw->state_lock);
-+	return err;
-+}
-+
-+int mlx5_devlink_port_function_roce_set(struct devlink_port *port, bool enable,
-+					struct netlink_ext_ack *extack)
-+{
-+	int query_out_sz = MLX5_ST_SZ_BYTES(query_hca_cap_out);
-+	struct mlx5_eswitch *esw;
-+	struct mlx5_vport *vport;
-+	int err = -EOPNOTSUPP;
-+	void *query_ctx;
-+	void *hca_caps;
-+	u16 vport_num;
-+
-+	esw = mlx5_devlink_eswitch_get(port->devlink);
-+	if (IS_ERR(esw))
-+		return PTR_ERR(esw);
-+
-+	vport = mlx5_devlink_port_function_get_vport(port, esw);
-+	if (IS_ERR(vport)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid port");
-+		return PTR_ERR(vport);
-+	}
-+	vport_num = vport->vport;
-+
-+	mutex_lock(&esw->state_lock);
-+	if (!vport->enabled) {
-+		NL_SET_ERR_MSG_MOD(extack, "Eswitch vport is disabled");
-+		goto out;
-+	}
-+
-+	if (vport->info.roce_enabled == enable) {
-+		err = 0;
-+		goto out;
-+	}
-+
-+	query_ctx = kzalloc(query_out_sz, GFP_KERNEL);
-+	if (!query_ctx) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+
-+	err = mlx5_vport_get_other_func_cap(esw->dev, vport_num, query_ctx,
-+					    MLX5_CAP_GENERAL);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed getting HCA caps");
-+		goto out_free;
-+	}
-+
-+	hca_caps = MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability);
-+	memcpy(hca_caps, MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability),
-+	       MLX5_UN_SZ_BYTES(hca_cap_union));
-+	MLX5_SET(cmd_hca_cap, hca_caps, roce, enable);
-+
-+	err = mlx5_vport_set_other_func_cap(esw->dev, hca_caps, vport_num,
-+					    MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed setting HCA roce cap");
-+		goto out_free;
-+	}
-+
-+	vport->info.roce_enabled = enable;
-+
-+out_free:
-+	kfree(query_ctx);
-+out:
-+	mutex_unlock(&esw->state_lock);
-+	return err;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index 09473983778f..029305a8b80a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -324,6 +324,8 @@ void mlx5_unload_one_devl_locked(struct mlx5_core_dev *dev);
- int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery);
- int mlx5_load_one_devl_locked(struct mlx5_core_dev *dev, bool recovery);
  
-+int mlx5_vport_set_other_func_cap(struct mlx5_core_dev *dev, const void *hca_cap, u16 function_id,
-+				  u16 opmod);
- #define mlx5_vport_get_other_func_general_cap(dev, fid, out)		\
- 	mlx5_vport_get_other_func_cap(dev, fid, out, MLX5_CAP_GENERAL)
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/vport.c b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-index 7eca7582f243..ba7e3df22413 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-@@ -1173,3 +1173,27 @@ int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, vo
- 	return mlx5_cmd_exec_inout(dev, query_hca_cap, in, out);
+@@ -1781,6 +1824,17 @@ static int devlink_port_function_validate(struct devlink_port *devlink_port,
+ 					    "Port doesn't support RoCE function attribute");
+ 			return -EOPNOTSUPP;
+ 		}
++		if (caps.selector & DEVLINK_PORT_FN_CAP(MIGRATABLE)) {
++			if (!ops->port_function_mig_set) {
++				NL_SET_ERR_MSG_ATTR(extack, attr,
++						    "Port doesn't support migratable function attribute");
++			}
++			if (devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_PCI_VF) {
++				NL_SET_ERR_MSG_ATTR(extack, attr,
++						    "migratable function attribute supported for VFs only");
++				return -EOPNOTSUPP;
++			}
++		}
+ 	}
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(mlx5_vport_get_other_func_cap);
-+
-+int mlx5_vport_set_other_func_cap(struct mlx5_core_dev *dev, const void *hca_cap,
-+				  u16 function_id, u16 opmod)
-+{
-+	int set_sz = MLX5_ST_SZ_BYTES(set_hca_cap_in);
-+	void *set_hca_cap;
-+	void *set_ctx;
-+	int ret;
-+
-+	set_ctx = kzalloc(set_sz, GFP_KERNEL);
-+	if (!set_ctx)
-+		return -ENOMEM;
-+
-+	MLX5_SET(set_hca_cap_in, set_ctx, opcode, MLX5_CMD_OP_SET_HCA_CAP);
-+	MLX5_SET(set_hca_cap_in, set_ctx, op_mod, opmod << 1);
-+	set_hca_cap = MLX5_ADDR_OF(set_hca_cap_in, set_ctx, capability);
-+	memcpy(set_hca_cap, hca_cap, MLX5_ST_SZ_BYTES(cmd_hca_cap));
-+	MLX5_SET(set_hca_cap_in, set_ctx, function_id, function_id);
-+	MLX5_SET(set_hca_cap_in, set_ctx, other_function, true);
-+	ret = mlx5_cmd_exec_in(dev, set_hca_cap, set_ctx);
-+
-+	kfree(set_ctx);
-+	return ret;
-+}
 -- 
 2.38.1
 
