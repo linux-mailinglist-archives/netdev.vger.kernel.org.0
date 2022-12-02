@@ -2,280 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D89A564103F
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 22:56:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A150641051
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 23:05:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234698AbiLBV40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 16:56:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44016 "EHLO
+        id S234828AbiLBWFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 17:05:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234497AbiLBV4Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 16:56:25 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B3FF1CC3
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 13:56:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=9sZHXzIxIQapTscsh4sPvFWsC5jaoeT3CbyIKmxxhxo=; b=uLRlcqf67MNOYsO2vSHTumVqPh
-        nZ/Wv7CgWf4Qn75fnnfofJmgCOJzur0hc1PkcPF/IFp4kHy3wWBAuY+rfg78Wes9HcG0KA3nDPIfI
-        AvZMjKYQawloGNHb88Ux0Lh8mTTuWfXzSj4TFNTcVZtcL2FQopm9Tn2OrOPZLKDo+vjA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p1E0r-004E2c-6e; Fri, 02 Dec 2022 22:56:05 +0100
-Date:   Fri, 2 Dec 2022 22:56:05 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Mengyuan Lou <mengyuanlou@net-swift.com>
-Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
-Subject: Re: [PATCH net-next] net: ngbe: Add mdio bus driver.
-Message-ID: <Y4p0dQWijzQMlBmW@lunn.ch>
-References: <20221202083558.57618-1-mengyuanlou@net-swift.com>
+        with ESMTP id S234668AbiLBWFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 17:05:46 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA398F230C
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 14:05:45 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id c7so2744374pfc.12
+        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 14:05:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=YGmhfz9LKketteJ29KbDn67sA38cLHNS36kuvwxlMm8=;
+        b=TSqUQgbjbBdg6dvDWR1KVKuTEI3gAe6/W+8DLD7nw2mWi+QX+pcwtPxwJFoxQmJGEe
+         uNxgwfWgkBGeh75QcHsRkRMQfxOkr6GVNv7M9DU6N537BAZNupUYZmYR8DdUZWlAAwbR
+         KMF3Htct7RWcrCqmWw5tW/Ic0PXvyQHTzFYVE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:date:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YGmhfz9LKketteJ29KbDn67sA38cLHNS36kuvwxlMm8=;
+        b=7ODGsWlt/HK0cdUxBEQ3NfmwTdvG28ywI5NTBpPLDVXSp41ruUfj9L5uUaUVjl7zsl
+         9osf9Os3/pjt1+folXZBpYRUFmTTVrhtL3eukk/DIi5X32QRwJySVALqOweTs8ymd57A
+         6pof4P5fUAnDvbKjaroTZAOdJnPPf6LCTZsg3hwTcGJLihTARnd5ZuZpsxD3kEgCdqWn
+         OYhXkki9KdZKDxuNxBJCA1RrwQVldk22frU5FTEtfCKcMog5rA36Pc85mz1UlV9+PUie
+         qOhA2Abyh6Sx8/JFosDXeI+FoMPC8jW6YsGDeG9bnO8/8KB9uONXIjodKvR6tybKfzaV
+         F8pA==
+X-Gm-Message-State: ANoB5pndfceUffMktxXSx5osMWwrinV7noipTFvr7st4KHU5WE3CAriu
+        7+3CBq4Veu9ltGqo/JlDHBaU2WuLrLDUyhY3
+X-Google-Smtp-Source: AA0mqf5DhG6zysI+aj3WH5KAazaNoxWHCLIcnDeHYGVOYKMWwq4jAur5eQGJ0+dbDGN2a+EriUvEoA==
+X-Received: by 2002:a05:6a00:4009:b0:563:2ada:30a3 with SMTP id by9-20020a056a00400900b005632ada30a3mr55402742pfb.27.1670018745233;
+        Fri, 02 Dec 2022 14:05:45 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id s24-20020a17090ad49800b00210125b789dsm5170014pju.54.2022.12.02.14.05.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Dec 2022 14:05:44 -0800 (PST)
+From:   coverity-bot <keescook@chromium.org>
+X-Google-Original-From: coverity-bot <keescook+coverity-bot@chromium.org>
+Date:   Fri, 2 Dec 2022 14:05:43 -0800
+To:     Shayne Chen <shayne.chen@mediatek.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        linux-wireless@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        StanleyYP Wang <StanleyYP.Wang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Peter Chiu <chui-hao.chiu@mediatek.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Money Wang <Money.Wang@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        Howard Hsu <howard-yh.hsu@mediatek.com>,
+        linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
+        "David S. Miller" <davem@davemloft.net>,
+        Evelyn Tsai <evelyn.tsai@mediatek.com>,
+        linux-kernel@vger.kernel.org,
+        MeiChia Chiu <meichia.chiu@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Bo Jiao <Bo.Jiao@mediatek.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Sujuan Chen <sujuan.chen@mediatek.com>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-next@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Coverity: mt7996_rf_regval_set(): Integer handling issues
+Message-ID: <202212021405.93CF11D2A@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221202083558.57618-1-mengyuanlou@net-swift.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> --- a/drivers/net/ethernet/wangxun/Kconfig
-> +++ b/drivers/net/ethernet/wangxun/Kconfig
-> @@ -25,6 +25,9 @@ config NGBE
->  	tristate "Wangxun(R) GbE PCI Express adapters support"
->  	depends on PCI
->  	select LIBWX
-> +	select PHYLIB
-> +	select MARVELL_PHY
-> +	select MOTORCOMM_PHY
+Hello!
 
-Don't select specific PHYs. Distros build them all as modules.
+This is an experimental semi-automated report about issues detected by
+Coverity from a scan of next-20221202 as part of the linux-next scan project:
+https://scan.coverity.com/projects/linux-next-weekly-scan
 
-> +int ngbe_phy_led_oem_hostif(struct ngbe_hw *hw, u32 *data)
-> +{
-> +	struct wx_hic_read_shadow_ram buffer;
-> +	struct wx_hw *wxhw = &hw->wxhw;
-> +	int status;
+You're getting this email because you were associated with the identified
+lines of code (noted below) that were touched by commits:
 
-Please break the patch up into smaller chunks and write good commit
-messages. I've no idea what this has to do with MDIO or PHY. Something
-to do with controlling the PHYs LEDS?
+  Thu Dec 1 17:29:14 2022 +0100
+    98686cd21624 ("wifi: mt76: mt7996: add driver for MediaTek Wi-Fi 7 (802.11be) devices")
 
-It seems like you could have one patch adding the MDIO bus support,
-and one patch adding calls to phylib. And then try to break the rest
-up into logical collections of changes.
+Coverity reported the following:
 
-> +	ret = wx_stop_adapter(wxhw);
-> +	if (ret != 0)
-> +		return ret;
-> +	val = WX_MIS_RST_LAN_RST(wxhw->bus.func);
-> +	wr32(wxhw, WX_MIS_RST, val | rd32(wxhw, WX_MIS_RST));
-> +
-> +	ret = read_poll_timeout(rd32, val,
-> +				!(val & (BIT(9) << wxhw->bus.func)), 1000,
-> +				100000, false, wxhw, 0x10028);
-> +	if (ret)
-> +		wx_dbg(wxhw, "Lan reset exceed s maximum times.\n");
-> +
-> +	wr32(wxhw, NGBE_PHY_CONFIG(0x1f), 0xa43);
-> +	ret = read_poll_timeout(rd32, val, val & 0x20, 1000,
-> +				100000, false, wxhw, NGBE_PHY_CONFIG(0x1d));
-> +	if (ret)
-> +		wx_dbg(wxhw, "Gphy reset failed.\n");
+*** CID 1527816:  Integer handling issues  (INCOMPATIBLE_CAST)
+drivers/net/wireless/mediatek/mt76/mt7996/debugfs.c:657 in mt7996_rf_regval_set()
+651
+652     static int
+653     mt7996_rf_regval_set(void *data, u64 val)
+654     {
+655     	struct mt7996_dev *dev = data;
+656
+vvv     CID 1527816:  Integer handling issues  (INCOMPATIBLE_CAST)
+vvv     Pointer "&val" points to an object whose effective type is "unsigned long long" (64 bits, unsigned) but is dereferenced as a narrower "unsigned int" (32 bits, unsigned). This may lead to unexpected results depending on machine endianness.
+657     	return mt7996_mcu_rf_regval(dev, dev->mt76.debugfs_reg, (u32 *)&val, true);
+658     }
+659
+660     DEFINE_DEBUGFS_ATTRIBUTE(fops_rf_regval, mt7996_rf_regval_get,
+661     			 mt7996_rf_regval_set, "0x%08llx\n");
+662
 
-What is this doing? Toggling a GPIO which is connected to the PHY
-reset input?
+If this is a false positive, please let us know so we can mark it as
+such, or teach the Coverity rules to be smarter. If not, please make
+sure fixes get into linux-next. :) For patches fixing this, please
+include these lines (but double-check the "Fixes" first):
 
-> -	/* reset num_rar_entries to 128 */
-> +	/* reset num_rar_entries to 32 */
+Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
+Addresses-Coverity-ID: 1527816 ("Integer handling issues")
+Fixes: 98686cd21624 ("wifi: mt76: mt7996: add driver for MediaTek Wi-Fi 7 (802.11be) devices")
 
-This looks like an unrelated change, nothing to do with MDIO or PHY.
+Thanks for your attention!
 
->  	switch (type_mask) {
->  	case NGBE_SUBID_M88E1512_SFP:
->  	case NGBE_SUBID_LY_M88E1512_SFP:
-> -		hw->phy.type = ngbe_phy_m88e1512_sfi;
-> +		hw->phy.type = ngbe_phy_mv_sfi;
->  		break;
->  	case NGBE_SUBID_M88E1512_RJ45:
-> -		hw->phy.type = ngbe_phy_m88e1512;
-> +		hw->phy.type = ngbe_phy_mv;
->  		break;
->  	case NGBE_SUBID_M88E1512_MIX:
-> -		hw->phy.type = ngbe_phy_m88e1512_unknown;
-> +		hw->phy.type = ngbe_phy_mv_mix;
->  		break;
->  	case NGBE_SUBID_YT8521S_SFP:
->  	case NGBE_SUBID_YT8521S_SFP_GPIO:
->  	case NGBE_SUBID_LY_YT8521S_SFP:
-> -		hw->phy.type = ngbe_phy_yt8521s_sfi;
-> +		hw->phy.type = ngbe_phy_yt_mix;
->  		break;
->  	case NGBE_SUBID_INTERNAL_YT8521S_SFP:
->  	case NGBE_SUBID_INTERNAL_YT8521S_SFP_GPIO:
-> -		hw->phy.type = ngbe_phy_internal_yt8521s_sfi;
-> +		hw->phy.type = ngbe_phy_internal_yt_sfi;
->  		break;
->  	case NGBE_SUBID_RGMII_FPGA:
->  	case NGBE_SUBID_OCP_CARD:
-
-Generally, a MAC driver does not care what sort of PHY is connected to
-it. The PHY driver does all that is needed. So it is not clear to me
-why you need this.
-
-
-> @@ -481,6 +539,8 @@ static int ngbe_probe(struct pci_dev *pdev,
->  		   "PHY: %s, PBA No: Wang Xun GbE Family Controller\n",
->  		   hw->phy.type == ngbe_phy_internal ? "Internal" : "External");
->  	netif_info(adapter, probe, netdev, "%pM\n", netdev->dev_addr);
-> +	/* print PCI link speed and width */
-> +	pcie_print_link_status(pdev);
-
-Also seems unrelated.
-
-> +static int ngbe_phy_read_reg_mdi(struct mii_bus *bus, int phy_addr, int regnum)
-> +{
-> +	u32 command = 0, device_type = 0;
-> +	struct ngbe_hw *hw = bus->priv;
-> +	struct wx_hw *wxhw = &hw->wxhw;
-> +	u32 phy_data = 0;
-> +	u32 val = 0;
-> +	int ret = 0;
-> +
-> +	/* setup and write the address cycle command */
-> +	command = NGBE_MSCA_RA(regnum) |
-> +		  NGBE_MSCA_PA(phy_addr) |
-> +		  NGBE_MSCA_DA(device_type);
-> +	wr32(wxhw, NGBE_MSCA, command);
-> +
-> +	command = NGBE_MSCC_CMD(NGBE_MSCA_CMD_READ) |
-> +		  NGBE_MSCC_BUSY |
-> +		  NGBE_MDIO_CLK(6);
-> +	wr32(wxhw, NGBE_MSCC, command);
-
-It looks like you don't support C45? If so, please return -EOPNOTSUPP
-if asked to do a C45 transaction.
-
-> +static int ngbe_phy_read_reg(struct mii_bus *bus, int phy_addr, int regnum)
-> +{
-> +	struct ngbe_hw *hw = bus->priv;
-> +	u16 phy_data = 0;
-> +
-> +	if (hw->mac_type == ngbe_mac_type_mdi)
-> +		phy_data = ngbe_phy_read_reg_internal(bus, phy_addr, regnum);
-> +	else if (hw->mac_type == ngbe_mac_type_rgmii)
-> +		phy_data = ngbe_phy_read_reg_mdi(bus, phy_addr, regnum);
-
-Do you have two mdio busses?
-
-> +static void ngbe_gphy_wait_mdio_access_on(struct phy_device *phydev)
-> +{
-> +	u16 val;
-> +	int ret;
-> +
-> +	/* select page to 0xa43*/
-> +	phy_write(phydev, 0x1f, 0x0a43);
-> +	/* wait to phy can access */
-> +	ret = read_poll_timeout(phy_read, val, val & 0x20, 100,
-> +				2000, false, phydev, 0x1d);
-
-What is this doing? The MAC should not be directly accessing the PHY.
-
-> +
-> +	if (ret)
-> +		phydev_err(phydev, "Access to phy timeout\n");
-> +}
-> +
-> +static void ngbe_gphy_dis_eee(struct phy_device *phydev)
-> +{
-> +	phy_write(phydev, 0x1f, 0x0a4b);
-> +	phy_write(phydev, 0x11, 0x1110);
-> +	phy_write(phydev, 0x1f, 0x0000);
-> +	phy_write(phydev, 0xd, 0x0007);
-> +	phy_write(phydev, 0xe, 0x003c);
-> +	phy_write(phydev, 0xd, 0x4007);
-> +	phy_write(phydev, 0xe, 0x0000);
-
-Again, the MAC should not be accessing the PHY. From the name, i'm
-guessing your MAC does not support EEE? So you want to stop the PHY
-advertising EEE?
-
-This is how other MAC drivers do this:
-
-	/* disable EEE autoneg, EEE not supported by TSNEP */
-	memset(&ethtool_eee, 0, sizeof(ethtool_eee));
-	phy_ethtool_set_eee(adapter->phydev, &ethtool_eee);
-
-Please delete all code which directly access the PHY. You might need
-to add new functionality to the PHY driver, but in general, it is not
-needed, the existing PHY drivers should do what you need.
-
-> +int ngbe_phy_connect(struct ngbe_hw *hw)
-> +{
-> +	struct ngbe_adapter *adapter = container_of(hw,
-> +						    struct ngbe_adapter,
-> +						    hw);
-> +	int ret;
-> +
-> +	ret = phy_connect_direct(adapter->netdev,
-> +				 hw->phydev,
-> +				 ngbe_handle_link_change,
-> +				 PHY_INTERFACE_MODE_RGMII);
-
-Who is responsible for RGMII delays? In general, the PHY adds the
-delay, so you pass PHY_INTERFACE_MODE_RGMII_ID here.
-
-> +int ngbe_mdio_init(struct ngbe_hw *hw)
-> +{
-> +	struct pci_dev *pdev = hw->wxhw.pdev;
-> +	int ret;
-> +
-> +	hw->mii_bus = devm_mdiobus_alloc(&pdev->dev);
-> +	if (!hw->mii_bus)
-> +		return -ENOMEM;
-> +
-> +	hw->mii_bus->name = "ngbe_mii_bus";
-> +	hw->mii_bus->read = &ngbe_phy_read_reg;
-> +	hw->mii_bus->write = &ngbe_phy_write_reg;
-> +	hw->mii_bus->phy_mask = 0xfffffffe;
-> +	hw->mii_bus->parent = &pdev->dev;
-> +	hw->mii_bus->priv = hw;
-> +
-> +	snprintf(hw->mii_bus->id, MII_BUS_ID_SIZE, "ngbe-%x",
-> +		 (pdev->bus->number << 8) |
-> +		 pdev->devfn);
-> +
-> +	ret = devm_mdiobus_register(&pdev->dev, hw->mii_bus);
-> +	if (ret)
-> +		return ret;
-> +
-> +	hw->phydev = mdiobus_get_phy(hw->mii_bus, 0);
-
-Is this a hardware limitation? Only address 0 is supported?
-
-> +	if (!hw->phydev) {
-> +		return -ENODEV;
-> +	} else if (!hw->phydev->drv) {
-> +		wx_err(&hw->wxhw,
-> +		       "No dedicated PHY driver found for PHY ID 0x%08x.\n",
-> +		       hw->phydev->phy_id);
-> +		return -EUNATCH;
-> +	}
-
-That is probably wrong. The module could still be loading. It is only
-when you connect the MAC to the PHY does it need to have a PHY
-driver. At that point, if there is no driver loaded it will fall back
-to the generic PHY driver. You don't see any other MAC driver with
-code like this.
-
-As a general comment, if you do something which no other driver does,
-you are probably doing something you should not do.
-
-    Andrew
-
+-- 
+Coverity-bot
