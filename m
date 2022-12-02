@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E813640EEE
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 21:11:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94934640EF0
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 21:12:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234881AbiLBULu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 15:11:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45684 "EHLO
+        id S234921AbiLBUMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 15:12:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234880AbiLBULd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 15:11:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2200DF1CC4
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 12:11:27 -0800 (PST)
+        with ESMTP id S234856AbiLBULe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 15:11:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CFFF1CCF
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 12:11:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD6EE622E0
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 20:11:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD70C433D7;
-        Fri,  2 Dec 2022 20:11:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A85E7622CB
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 20:11:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C48DC433C1;
+        Fri,  2 Dec 2022 20:11:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670011886;
-        bh=FxYRQnPqsWLxOrXu1p+qun82TQtXFu3goc3CPSYlDEM=;
+        s=k20201202; t=1670011890;
+        bh=tgMh15cyno/75xkIEGH1Z8OvjMnkpPDH4FcE5iTR7AA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BmrqpxYqyo8C2FleXYcGqkshSuqN/hfIh9CJjEWhLuFN9Q/FGwEZR2F+EqX1J5aTx
-         7zlE3EotqsCnbFFLgUX2WuCmLXe7EZk5Kd+5JtpHH5PCSLroQmIB6PyYzbGqhsbTQ6
-         MoweQYL4swrSuNxKA1hiERJSYV1mDw2HNixIVAu6tSSPFATEUJSC9D9XaW4bFhT1eY
-         4vReZoMM5f8pQdpyz7knrl/RcsM/9xqyAs+tR40mdzNwjSHTGu16IIYIDDlDcXG3sy
-         Z6zFLYI9CFZPFRY94L6mJg7WxdnjuN0Hp0oQhZyd2rSMScJHp2mmHmo62jOi2Uxghv
-         U58HqRJem2WJw==
+        b=PAwrUQd0lj42iJnGrirClgxiXZJNd7E1xiGv9ftAfhxQJHBYwnhTS2vkHPCgD2oMj
+         K+z3VgLRxcLGm2ChV1WcAJJxGgEPA5xYXB47XGjYBJwwo1+rvwCcPDhM+HyrJgVNie
+         rj/txDjzePUZ7HV11r1qe2mZqTTmpRAx+k+xLdAU20+7UuhtOxnoxPhQBKUDlwSb00
+         9phIa0dJqGh3j9D15d3vqFJGynfFutTnJr/j8ITWgE7nXLLHspqtoZBijo6fcxshXg
+         3nub+U945mmvOK9SHwi0LWj8uHDc+jyEk/FFbBI66M/jGQWgY4WEy5plVuvq8tHkF8
+         Z2XhF7I19iJvA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -41,9 +41,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Bharat Bhushan <bbhushan2@marvell.com>,
         Raed Salem <raeds@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH xfrm-next 11/16] net/mlx5e: Move IPsec flow table creation to separate function
-Date:   Fri,  2 Dec 2022 22:10:32 +0200
-Message-Id: <9f1b2e1809aa97642f46c2a4a597e52702a1570f.1670011671.git.leonro@nvidia.com>
+Subject: [PATCH xfrm-next 12/16] net/mlx5e: Refactor FTE setup code to be more clear
+Date:   Fri,  2 Dec 2022 22:10:33 +0200
+Message-Id: <2752cbcd615ce39f927a7c074d53a08a9bb4ed43.1670011671.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <cover.1670011671.git.leonro@nvidia.com>
 References: <cover.1670011671.git.leonro@nvidia.com>
@@ -60,102 +60,226 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Even now, to support IPsec crypto, the RX and TX paths use same
-logic to create flow tables. In the following patches, we will
-add more tables to support IPsec packet offload. So reuse existing
-code and rewrite it to support IPsec packet offload from the beginning.
+The policy offload logic needs to set flow steering rule that match
+on saddr and daddr too, so factor out this code to separate functions,
+together with code alignment to netdev coding pattern of relying on
+family type.
+
+As part of this change, let's separate more logic from setup_fte_common
+to make sure that the function names describe that is done in the
+function better than general *common* name.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 45 ++++++++++---------
- 1 file changed, 23 insertions(+), 22 deletions(-)
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 139 +++++++++++-------
+ 1 file changed, 85 insertions(+), 54 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-index 8e87d8d02511..f65a74e3d648 100644
+index f65a74e3d648..4c5904544bda 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-@@ -42,6 +42,21 @@ static enum mlx5_traffic_types family2tt(u32 family)
- 	return MLX5_TT_IPV6_IPSEC_ESP;
+@@ -326,61 +326,78 @@ static void tx_ft_put(struct mlx5e_ipsec *ipsec)
+ 	mutex_unlock(&tx->ft.mutex);
  }
  
-+static struct mlx5_flow_table *ipsec_ft_create(struct mlx5_flow_namespace *ns,
-+					       int level, int prio,
-+					       int max_num_groups)
+-static void setup_fte_common(struct mlx5_accel_esp_xfrm_attrs *attrs,
+-			     u32 ipsec_obj_id,
+-			     struct mlx5_flow_spec *spec,
+-			     struct mlx5_flow_act *flow_act)
++static void setup_fte_addr4(struct mlx5_flow_spec *spec, __be32 *saddr,
++			    __be32 *daddr)
+ {
+-	u8 ip_version = (attrs->family == AF_INET) ? 4 : 6;
++	spec->match_criteria_enable |= MLX5_MATCH_OUTER_HEADERS;
+ 
+-	spec->match_criteria_enable = MLX5_MATCH_OUTER_HEADERS | MLX5_MATCH_MISC_PARAMETERS;
+-
+-	/* ip_version */
+ 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ip_version);
+-	MLX5_SET(fte_match_param, spec->match_value, outer_headers.ip_version, ip_version);
++	MLX5_SET(fte_match_param, spec->match_value, outer_headers.ip_version, 4);
++
++	memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
++			    outer_headers.src_ipv4_src_ipv6.ipv4_layout.ipv4), saddr, 4);
++	memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
++			    outer_headers.dst_ipv4_dst_ipv6.ipv4_layout.ipv4), daddr, 4);
++	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
++			 outer_headers.src_ipv4_src_ipv6.ipv4_layout.ipv4);
++	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
++			 outer_headers.dst_ipv4_dst_ipv6.ipv4_layout.ipv4);
++}
+ 
+-	/* Non fragmented */
+-	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.frag);
+-	MLX5_SET(fte_match_param, spec->match_value, outer_headers.frag, 0);
++static void setup_fte_addr6(struct mlx5_flow_spec *spec, __be32 *saddr,
++			    __be32 *daddr)
 +{
-+	struct mlx5_flow_table_attr ft_attr = {};
++	spec->match_criteria_enable |= MLX5_MATCH_OUTER_HEADERS;
 +
-+	ft_attr.autogroup.num_reserved_entries = 1;
-+	ft_attr.autogroup.max_num_groups = max_num_groups;
-+	ft_attr.max_fte = NUM_IPSEC_FTE;
-+	ft_attr.level = level;
-+	ft_attr.prio = prio;
++	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ip_version);
++	MLX5_SET(fte_match_param, spec->match_value, outer_headers.ip_version, 6);
 +
-+	return mlx5_create_auto_grouped_flow_table(ns, &ft_attr);
++	memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
++			    outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6), saddr, 16);
++	memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
++			    outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6), daddr, 16);
++	memset(MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
++			    outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6), 0xff, 16);
++	memset(MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
++			    outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6), 0xff, 16);
++}
+ 
++static void setup_fte_esp(struct mlx5_flow_spec *spec)
++{
+ 	/* ESP header */
++	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS;
++
+ 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ip_protocol);
+ 	MLX5_SET(fte_match_param, spec->match_value, outer_headers.ip_protocol, IPPROTO_ESP);
++}
+ 
++static void setup_fte_spi(struct mlx5_flow_spec *spec, u32 spi)
++{
+ 	/* SPI number */
++	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS;
++
+ 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, misc_parameters.outer_esp_spi);
+-	MLX5_SET(fte_match_param, spec->match_value,
+-		 misc_parameters.outer_esp_spi, attrs->spi);
+-
+-	if (ip_version == 4) {
+-		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
+-				    outer_headers.src_ipv4_src_ipv6.ipv4_layout.ipv4),
+-		       &attrs->saddr.a4, 4);
+-		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
+-				    outer_headers.dst_ipv4_dst_ipv6.ipv4_layout.ipv4),
+-		       &attrs->daddr.a4, 4);
+-		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
+-				 outer_headers.src_ipv4_src_ipv6.ipv4_layout.ipv4);
+-		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
+-				 outer_headers.dst_ipv4_dst_ipv6.ipv4_layout.ipv4);
+-	} else {
+-		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
+-				    outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6),
+-		       &attrs->saddr.a6, 16);
+-		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
+-				    outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6),
+-		       &attrs->daddr.a6, 16);
+-		memset(MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
+-				    outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6),
+-		       0xff, 16);
+-		memset(MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
+-				    outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6),
+-		       0xff, 16);
+-	}
++	MLX5_SET(fte_match_param, spec->match_value, misc_parameters.outer_esp_spi, spi);
++}
+ 
+-	flow_act->crypto.type = MLX5_FLOW_CONTEXT_ENCRYPT_DECRYPT_TYPE_IPSEC;
+-	flow_act->crypto.obj_id = ipsec_obj_id;
+-	flow_act->flags |= FLOW_ACT_NO_APPEND;
++static void setup_fte_no_frags(struct mlx5_flow_spec *spec)
++{
++	/* Non fragmented */
++	spec->match_criteria_enable |= MLX5_MATCH_OUTER_HEADERS;
++
++	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.frag);
++	MLX5_SET(fte_match_param, spec->match_value, outer_headers.frag, 0);
 +}
 +
- static int rx_err_add_rule(struct mlx5_core_dev *mdev,
- 			   struct mlx5e_ipsec_rx *rx,
- 			   struct mlx5e_ipsec_rx_err *rx_err)
-@@ -160,17 +175,13 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
- {
- 	struct mlx5_flow_namespace *ns = mlx5e_fs_get_ns(ipsec->fs, false);
- 	struct mlx5_ttc_table *ttc = mlx5e_fs_get_ttc(ipsec->fs, false);
--	struct mlx5_flow_table_attr ft_attr = {};
- 	struct mlx5_flow_table *ft;
- 	int err;
- 
- 	rx->default_dest = mlx5_ttc_get_default_dest(ttc, family2tt(family));
- 
--	ft_attr.max_fte = 1;
--	ft_attr.autogroup.max_num_groups = 1;
--	ft_attr.level = MLX5E_ACCEL_FS_ESP_FT_ERR_LEVEL;
--	ft_attr.prio = MLX5E_NIC_PRIO;
--	ft = mlx5_create_auto_grouped_flow_table(ns, &ft_attr);
-+	ft = ipsec_ft_create(ns, MLX5E_ACCEL_FS_ESP_FT_ERR_LEVEL,
-+			     MLX5E_NIC_PRIO, 1);
- 	if (IS_ERR(ft))
- 		return PTR_ERR(ft);
- 
-@@ -180,12 +191,8 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
- 		goto err_add;
- 
- 	/* Create FT */
--	ft_attr.max_fte = NUM_IPSEC_FTE;
--	ft_attr.level = MLX5E_ACCEL_FS_ESP_FT_LEVEL;
--	ft_attr.prio = MLX5E_NIC_PRIO;
--	ft_attr.autogroup.num_reserved_entries = 1;
--	ft_attr.autogroup.max_num_groups = 1;
--	ft = mlx5_create_auto_grouped_flow_table(ns, &ft_attr);
-+	ft = ipsec_ft_create(ns, MLX5E_ACCEL_FS_ESP_FT_LEVEL, MLX5E_NIC_PRIO,
-+			     1);
- 	if (IS_ERR(ft)) {
- 		err = PTR_ERR(ft);
- 		goto err_fs_ft;
-@@ -273,18 +280,12 @@ static void rx_ft_put(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
- /* IPsec TX flow steering */
- static int tx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec_tx *tx)
- {
--	struct mlx5_flow_table_attr ft_attr = {};
- 	struct mlx5_flow_table *ft;
--	int err;
- 
--	ft_attr.max_fte = NUM_IPSEC_FTE;
--	ft_attr.autogroup.max_num_groups = 1;
--	ft = mlx5_create_auto_grouped_flow_table(tx->ns, &ft_attr);
--	if (IS_ERR(ft)) {
--		err = PTR_ERR(ft);
--		mlx5_core_err(mdev, "fail to create ipsec tx ft err=%d\n", err);
--		return err;
--	}
-+	ft = ipsec_ft_create(tx->ns, 0, 0, 1);
-+	if (IS_ERR(ft))
-+		return PTR_ERR(ft);
++static void setup_fte_reg_a(struct mlx5_flow_spec *spec)
++{
++	/* Add IPsec indicator in metadata_reg_a */
++	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_2;
 +
- 	tx->ft.sa = ft;
- 	return 0;
++	MLX5_SET(fte_match_param, spec->match_criteria,
++		 misc_parameters_2.metadata_reg_a, MLX5_ETH_WQE_FT_META_IPSEC);
++	MLX5_SET(fte_match_param, spec->match_value,
++		 misc_parameters_2.metadata_reg_a, MLX5_ETH_WQE_FT_META_IPSEC);
  }
+ 
+ static int rx_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry)
+@@ -390,7 +407,6 @@ static int rx_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 	struct mlx5_accel_esp_xfrm_attrs *attrs = &sa_entry->attrs;
+ 	struct mlx5_core_dev *mdev = mlx5e_ipsec_sa2dev(sa_entry);
+ 	struct mlx5e_ipsec *ipsec = sa_entry->ipsec;
+-	u32 ipsec_obj_id = sa_entry->ipsec_obj_id;
+ 	struct mlx5_modify_hdr *modify_hdr = NULL;
+ 	struct mlx5_flow_destination dest = {};
+ 	struct mlx5_flow_act flow_act = {};
+@@ -409,13 +425,21 @@ static int rx_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 		goto out_err;
+ 	}
+ 
+-	setup_fte_common(attrs, ipsec_obj_id, spec, &flow_act);
++	if (attrs->family == AF_INET)
++		setup_fte_addr4(spec, &attrs->saddr.a4, &attrs->daddr.a4);
++	else
++		setup_fte_addr6(spec, attrs->saddr.a6, attrs->daddr.a6);
++
++	setup_fte_spi(spec, attrs->spi);
++	setup_fte_esp(spec);
++	setup_fte_no_frags(spec);
+ 
+ 	/* Set bit[31] ipsec marker */
+ 	/* Set bit[23-0] ipsec_obj_id */
+ 	MLX5_SET(set_action_in, action, action_type, MLX5_ACTION_TYPE_SET);
+ 	MLX5_SET(set_action_in, action, field, MLX5_ACTION_IN_FIELD_METADATA_REG_B);
+-	MLX5_SET(set_action_in, action, data, (ipsec_obj_id | BIT(31)));
++	MLX5_SET(set_action_in, action, data,
++		 (sa_entry->ipsec_obj_id | BIT(31)));
+ 	MLX5_SET(set_action_in, action, offset, 0);
+ 	MLX5_SET(set_action_in, action, length, 32);
+ 
+@@ -429,6 +453,9 @@ static int rx_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 		goto out_err;
+ 	}
+ 
++	flow_act.crypto.type = MLX5_FLOW_CONTEXT_ENCRYPT_DECRYPT_TYPE_IPSEC;
++	flow_act.crypto.obj_id = sa_entry->ipsec_obj_id;
++	flow_act.flags |= FLOW_ACT_NO_APPEND;
+ 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
+ 			  MLX5_FLOW_CONTEXT_ACTION_CRYPTO_DECRYPT |
+ 			  MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
+@@ -458,6 +485,7 @@ static int rx_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 
+ static int tx_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry)
+ {
++	struct mlx5_accel_esp_xfrm_attrs *attrs = &sa_entry->attrs;
+ 	struct mlx5_core_dev *mdev = mlx5e_ipsec_sa2dev(sa_entry);
+ 	struct mlx5e_ipsec *ipsec = sa_entry->ipsec;
+ 	struct mlx5_flow_act flow_act = {};
+@@ -476,16 +504,19 @@ static int tx_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 		goto out;
+ 	}
+ 
+-	setup_fte_common(&sa_entry->attrs, sa_entry->ipsec_obj_id, spec,
+-			 &flow_act);
++	if (attrs->family == AF_INET)
++		setup_fte_addr4(spec, &attrs->saddr.a4, &attrs->daddr.a4);
++	else
++		setup_fte_addr6(spec, attrs->saddr.a6, attrs->daddr.a6);
+ 
+-	/* Add IPsec indicator in metadata_reg_a */
+-	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_2;
+-	MLX5_SET(fte_match_param, spec->match_criteria, misc_parameters_2.metadata_reg_a,
+-		 MLX5_ETH_WQE_FT_META_IPSEC);
+-	MLX5_SET(fte_match_param, spec->match_value, misc_parameters_2.metadata_reg_a,
+-		 MLX5_ETH_WQE_FT_META_IPSEC);
++	setup_fte_spi(spec, attrs->spi);
++	setup_fte_esp(spec);
++	setup_fte_no_frags(spec);
++	setup_fte_reg_a(spec);
+ 
++	flow_act.crypto.type = MLX5_FLOW_CONTEXT_ENCRYPT_DECRYPT_TYPE_IPSEC;
++	flow_act.crypto.obj_id = sa_entry->ipsec_obj_id;
++	flow_act.flags |= FLOW_ACT_NO_APPEND;
+ 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_ALLOW |
+ 			  MLX5_FLOW_CONTEXT_ACTION_CRYPTO_ENCRYPT;
+ 	rule = mlx5_add_flow_rules(tx->ft.sa, spec, &flow_act, NULL, 0);
 -- 
 2.38.1
 
