@@ -2,77 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D094640395
-	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 10:43:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFAFC6403C1
+	for <lists+netdev@lfdr.de>; Fri,  2 Dec 2022 10:50:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232645AbiLBJn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 04:43:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        id S232815AbiLBJua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 04:50:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232623AbiLBJnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 04:43:52 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71E3C23DB
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 01:43:50 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id bs21so6961236wrb.4
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 01:43:50 -0800 (PST)
+        with ESMTP id S232793AbiLBJua (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 04:50:30 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E357B0DD3
+        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 01:50:29 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id a14so401687pfa.1
+        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 01:50:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=c7jlww+YwvtAfoXwz8qUgfga6wLFv4byhYCz3Q0szb8=;
-        b=UUc5j3AY/8JQw+2iT1LRk0y67Zdou18oQp+qMNiQ5HQ2ZM7wjqAqK+J0bA0SVzPl1m
-         uhLopuQ7wySKWej1bxdYuxwkfM/zbXDRzaYKHXEfUbjQo4aPkNsWSJJL1EIY+RRNF2yb
-         qRF64ISg2W7145G7j8/5wfzG2Ktx8O9JBzgSGYZfF0+Z5whK4hQMe/07xss/gbfFjGXj
-         6CoT9Y0iev91zqQYyOveRkI95p7oP2h50Jn2/F70Pj/TJ7LbnUWyaDUD3WhDVYz9E06G
-         itm/c6NrQoXxBfm37yjjjZPXUdv/sQQoZ9fX1ip9k84iN1UzkLc+3FyYCFqi2UbVAdIg
-         e55w==
+        bh=U/zymK+naRfBaT1puTpD9p2ER033FnnMrFUSbDtMdTk=;
+        b=dUnmde17sT5oV+SCpFBHVPWJKo0KmkmzRp72OpIn+SW6/cu4pM09O8P99rbRy6LROJ
+         VroLQzdfgksZt+7Ewk+gSlk8zDGmMCDvCC4xBIhp1MoBMFqCCaF3bxTxLN7l7ugnnM/3
+         Qbm34cHnXTzJB6wMcyZXX0QY7pac/9DHXtOqyca5hKcqy/zHY5xlZzYhTszSnQC2thep
+         MLFiym2621DOmngcfVAYOhc664TRcKUHx8K+rizadXQ3Vwrf4uZ9dd5taw7UBgFmsGvQ
+         3rBeYColblw82Pl6LE6/ROiud7B8sBughv5xSwNq1iiCxinlDps2OLSbhs03oPGDE+dX
+         5OFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=c7jlww+YwvtAfoXwz8qUgfga6wLFv4byhYCz3Q0szb8=;
-        b=xznLHVYBw5ZgvRuY2OEmKH49E6fYVgEXi+uZiDxj4CuhXPd4wrHx8NrSRZLzO9hRFx
-         Wz6OxDyKsYvHAC+KBoPOUBvpsZPJoF6Ecem3Wfg3R6JmEL8YIod1/S8DTT8QHCUJuM8g
-         tmtTlAt+PfqnBAmHLNHCl83hvEWCpYneRSDzfmzRDz+vt7zsBhl4Nu/vYCQgtVABcHAl
-         2UpF7wH97f3GjcA+K8eeOwdFNHNLQMavMnTMjbQxDZhb+5oqlLZCACIP5N0Tvg5/JkTO
-         oyfdv7ZK7PvQt/i0YfDsAcwqK1mcq/byYD4IcFfCJBHa1g89/sh6fJ+Wc8wE/VQONiXR
-         1vPw==
-X-Gm-Message-State: ANoB5pkVWWvYnUA+e5l8utXIlw7QAGw/8VgXwAUP0YEsaEUrxrR3oftw
-        lHnDoxX+NxNNk10svSts8+BkiQ==
-X-Google-Smtp-Source: AA0mqf5PU3+l+PWDbIeocGDkvLX8GPrawrhlnnw5BkWigrAwIkUb2MEgKnEa5yha97IhUbU+4a9aAQ==
-X-Received: by 2002:a5d:5952:0:b0:241:a79b:3c41 with SMTP id e18-20020a5d5952000000b00241a79b3c41mr42208065wri.22.1669974229202;
-        Fri, 02 Dec 2022 01:43:49 -0800 (PST)
-Received: from blmsp ([185.238.219.119])
-        by smtp.gmail.com with ESMTPSA id j3-20020adfd203000000b002366c3eefccsm6661799wrh.109.2022.12.02.01.43.47
+        bh=U/zymK+naRfBaT1puTpD9p2ER033FnnMrFUSbDtMdTk=;
+        b=ftFbio0j3j9hrsk3lrj+WW4dtNzpOHWeP1oQtax+nzts2x/t1v8a+H0sWT8u3TuAhm
+         6Ft+7uIkREREQnfTR6UX3fJ2lC9/sgmetjeVblkrV+YANqNuPS/Qvvwc3bBkX5kzEBCq
+         dVxVhB6oV1KytrLEiyR/rHNFWQUKIDjkZgsIfF9k62EKrzIFf3dvbkB2GLy9g6+W7DPp
+         Hj67lPqHXwjbh/r3TMC+Fuaguj4s9OqybBBk2ixE67LV/ydWWWGSngW9l8iiq8pGDNBF
+         pMvdH+6tIuQL60Twx+89Uzz+to/o9eAc2XayZkLwNWxSS8vlAER1ZVCORVzd/ewvMm3j
+         R6FQ==
+X-Gm-Message-State: ANoB5pn1RcTFohoftczxKJI1WyEud5W4Ijk4rDybgmx/xO/nOCpz5ILO
+        9FsQSiZmr6f3ELjl8XJXmKU=
+X-Google-Smtp-Source: AA0mqf7hwFoeAq8yRcAXLCTvVOfQZplFN6rMFhov36Nq45+xNe+cBoKa+/G46IwTS48UDVl+OHOGEw==
+X-Received: by 2002:a62:be01:0:b0:575:caf6:5cd8 with SMTP id l1-20020a62be01000000b00575caf65cd8mr13537039pff.22.1669974628409;
+        Fri, 02 Dec 2022 01:50:28 -0800 (PST)
+Received: from Laptop-X1 ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id oe12-20020a17090b394c00b002193db6f18dsm4433049pjb.13.2022.12.02.01.50.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Dec 2022 01:43:48 -0800 (PST)
-Date:   Fri, 2 Dec 2022 10:43:46 +0100
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 04/15] can: m_can: Use transmit event FIFO watermark
- level interrupt
-Message-ID: <20221202094346.u2nasxlcwh7llwe5@blmsp>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-5-msp@baylibre.com>
- <20221130171715.nujptzwnut7silbm@pengutronix.de>
- <20221201082521.3tqevaygz4nhw52u@blmsp>
- <20221201090508.jh5iymwmhs3orb2v@pengutronix.de>
- <20221201101220.r63fvussavailwh5@blmsp>
- <20221201110033.r7hnvpw6fp2fquni@pengutronix.de>
- <20221201165951.5a4srb7zjrsdr3vd@blmsp>
- <20221202092306.7p3r4yuauwjj5xaj@pengutronix.de>
+        Fri, 02 Dec 2022 01:50:27 -0800 (PST)
+Date:   Fri, 2 Dec 2022 17:50:23 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tom Parkin <tparkin@katalix.com>,
+        Haowei Yan <g1042620637@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: Re: [PATCH net v4] l2tp: Serialize access to sk_user_data with
+ sk_callback_lock
+Message-ID: <Y4nKX8IXjHLSVHnz@Laptop-X1>
+References: <20221114191619.124659-1-jakub@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221202092306.7p3r4yuauwjj5xaj@pengutronix.de>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <20221114191619.124659-1-jakub@cloudflare.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,79 +77,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 02, 2022 at 10:23:06AM +0100, Marc Kleine-Budde wrote:
-...
-> > > > > The configuration for the mcp251xfd looks like this:
-> > > > > 
-> > > > > - First decide for classical CAN or CAN-FD mode
-> > > > > - configure RX and TX ring size
-> > > > >   9263c2e92be9 ("can: mcp251xfd: ring: add support for runtime configurable RX/TX ring parameters")
-> > > > >   For TX only a single FIFO is used.
-> > > > >   For RX up to 3 FIFOs (up to a depth of 32 each).
-> > > > >   FIFO depth is limited to power of 2.
-> > > > >   On the mcan cores this is currently done with a DT property.
-> > > > >   Runtime configurable ring size is optional but gives more flexibility
-> > > > >   for our use-cases due to limited RAM size.
-> > > > > - configure RX and TX coalescing via ethtools
-> > > > >   Set a timeout and the max CAN frames to coalesce.
-> > > > >   The max frames are limited to half or full FIFO.
-> > > > 
-> > > > mcan can offer more options for the max frames limit fortunately.
-> > > > 
-> > > > > 
-> > > > > How does coalescing work?
-> > > > > 
-> > > > > If coalescing is activated during reading of the RX'ed frames the FIFO
-> > > > > not empty IRQ is disabled (the half or full IRQ stays enabled). After
-> > > > > handling the RX'ed frames a hrtimer is started. In the hrtimer's
-> > > > > functions the FIFO not empty IRQ is enabled again.
-> > > > 
-> > > > My rx path patches are working similarly though not 100% the same. I
-> > > > will adopt everything and add it to the next version of this series.
-> > > > 
-> > > > > 
-> > > > > I decided not to call the IRQ handler from the hrtimer to avoid
-> > > > > concurrency, but enable the FIFO not empty IRQ.
-> > > > 
-> > > > mcan uses a threaded irq and I found this nice helper function I am
-> > > > currently using for the receive path.
-> > > > 	irq_wake_thread()
-> > > > 
-> > > > It is not widely used so I hope this is fine. But this hopefully avoids
-> > > > the concurrency issue. Also I don't need to artificially create an IRQ
-> > > > as you do.
-> > > 
-> > > I think it's Ok to use the function. Which IRQs are enabled after you
-> > > leave the RX handler? The mcp251xfd driver enables only a high watermark
-> > > IRQ and sets up the hrtimer. Then we have 3 scenarios:
-> > > - high watermark IRQ triggers -> IRQ is handled,
-> > > - FIFO level between 0 and high water mark -> no IRQ triggered, but
-> > >   hrtimer will run, irq_wake_thread() is called, IRQ is handled
-> > > - FIFO level 0 -> no IRQ triggered, hrtimer will run. What do you do in
-> > >   the IRQ handler? Check if FIFO is empty and enable the FIFO not empty
-> > >   IRQ?
-> > 
-> > I am currently doing the normal IRQ handler run. It checks the
-> > "Interrupt Register" at the beginning. This register does not show the
-> > interrupts that fired, it shows the status. So even though the watermark
-> > interrupt didn't trigger when called by a timer, RF0N 'new message'
-> > status bit is still set if there is something new in the FIFO.
+On Mon, Nov 14, 2022 at 08:16:19PM +0100, Jakub Sitnicki wrote:
+> sk->sk_user_data has multiple users, which are not compatible with each
+> other. Writers must synchronize by grabbing the sk->sk_callback_lock.
 > 
-> That covers scenario 2 from above.
+> l2tp currently fails to grab the lock when modifying the underlying tunnel
+> socket fields. Fix it by adding appropriate locking.
 > 
-> > Of course it is the same for the transmit status bits.
+> We err on the side of safety and grab the sk_callback_lock also inside the
+> sk_destruct callback overridden by l2tp, even though there should be no
+> refs allowing access to the sock at the time when sk_destruct gets called.
 > 
-> ACK - The TX complete event handling is a 95% copy/paste of the RX
-> handling.
+> v4:
+> - serialize write to sk_user_data in l2tp sk_destruct
 > 
-> > So there is no need to read the FIFO fill levels directly, just the
-> > general status register.
+> v3:
+> - switch from sock lock to sk_callback_lock
+> - document write-protection for sk_user_data
 > 
-> What do you do if the hrtimer fires and there's no CAN frame waiting in
-> the FIFO?
+> v2:
+> - update Fixes to point to origin of the bug
+> - use real names in Reported/Tested-by tags
+> 
+> Cc: Tom Parkin <tparkin@katalix.com>
+> Fixes: 3557baabf280 ("[L2TP]: PPP over L2TP driver core")
+> Reported-by: Haowei Yan <g1042620637@gmail.com>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+> 
+> This took me forever. Sorry about that.
+> 
+>  include/net/sock.h   |  2 +-
+>  net/l2tp/l2tp_core.c | 19 +++++++++++++------
+>  2 files changed, 14 insertions(+), 7 deletions(-)
+> 
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 5db02546941c..e0517ecc6531 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -323,7 +323,7 @@ struct sk_filter;
+>    *	@sk_tskey: counter to disambiguate concurrent tstamp requests
+>    *	@sk_zckey: counter to order MSG_ZEROCOPY notifications
+>    *	@sk_socket: Identd and reporting IO signals
+> -  *	@sk_user_data: RPC layer private data
+> +  *	@sk_user_data: RPC layer private data. Write-protected by @sk_callback_lock.
+>    *	@sk_frag: cached page frag
+>    *	@sk_peek_off: current peek_offset value
+>    *	@sk_send_head: front of stuff to transmit
+> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+> index 7499c51b1850..754fdda8a5f5 100644
+> --- a/net/l2tp/l2tp_core.c
+> +++ b/net/l2tp/l2tp_core.c
+> @@ -1150,8 +1150,10 @@ static void l2tp_tunnel_destruct(struct sock *sk)
+>  	}
+>  
+>  	/* Remove hooks into tunnel socket */
+> +	write_lock_bh(&sk->sk_callback_lock);
+>  	sk->sk_destruct = tunnel->old_sk_destruct;
+>  	sk->sk_user_data = NULL;
+> +	write_unlock_bh(&sk->sk_callback_lock);
+>  
+>  	/* Call the original destructor */
+>  	if (sk->sk_destruct)
 
-Just enabling the 'new item' interrupt again and keep the hrtimer
-disabled.
+Hi Jakub,
 
-Best,
-Markus
+I have a similar issue with vxlan driver. Similar with commit
+ad6c9986bcb6 ("vxlan: Fix GRO cells race condition between receive and link
+delete"). There is still a race condition on vxlan that when receive a packet
+while deleting a VXLAN device. In vxlan_ecn_decapsulate(), the
+vxlan_get_sk_family() call panic as sk is NULL.
+
+ #0 [ffffa25ec6978a38] machine_kexec at ffffffff8c669757
+ #1 [ffffa25ec6978a90] __crash_kexec at ffffffff8c7c0a4d
+ #2 [ffffa25ec6978b58] crash_kexec at ffffffff8c7c1c48
+ #3 [ffffa25ec6978b60] oops_end at ffffffff8c627f2b
+ #4 [ffffa25ec6978b80] page_fault_oops at ffffffff8c678fcb
+ #5 [ffffa25ec6978bd8] exc_page_fault at ffffffff8d109542
+ #6 [ffffa25ec6978c00] asm_exc_page_fault at ffffffff8d200b62
+    [exception RIP: vxlan_ecn_decapsulate+0x3b]
+    RIP: ffffffffc1014e7b  RSP: ffffa25ec6978cb0  RFLAGS: 00010246
+    RAX: 0000000000000008  RBX: ffff8aa000888000  RCX: 0000000000000000
+    RDX: 000000000000000e  RSI: ffff8a9fc7ab803e  RDI: ffff8a9fd1168700
+    RBP: ffff8a9fc7ab803e   R8: 0000000000700000   R9: 00000000000010ae
+    R10: ffff8a9fcb748980  R11: 0000000000000000  R12: ffff8a9fd1168700
+    R13: ffff8aa000888000  R14: 00000000002a0000  R15: 00000000000010ae
+    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ #7 [ffffa25ec6978ce8] vxlan_rcv at ffffffffc10189cd [vxlan]
+ #8 [ffffa25ec6978d90] udp_queue_rcv_one_skb at ffffffff8cfb6507
+ #9 [ffffa25ec6978dc0] udp_unicast_rcv_skb at ffffffff8cfb6e45
+#10 [ffffa25ec6978dc8] __udp4_lib_rcv at ffffffff8cfb8807
+#11 [ffffa25ec6978e20] ip_protocol_deliver_rcu at ffffffff8cf76951
+#12 [ffffa25ec6978e48] ip_local_deliver at ffffffff8cf76bde
+#13 [ffffa25ec6978ea0] __netif_receive_skb_one_core at ffffffff8cecde9b
+#14 [ffffa25ec6978ec8] process_backlog at ffffffff8cece139
+#15 [ffffa25ec6978f00] __napi_poll at ffffffff8ceced1a
+#16 [ffffa25ec6978f28] net_rx_action at ffffffff8cecf1f3
+#17 [ffffa25ec6978fa0] __softirqentry_text_start at ffffffff8d4000ca
+#18 [ffffa25ec6978ff0] do_softirq at ffffffff8c6fbdc3
+--- <IRQ stack> ---
+
+> struct socket ffff8a9fd1168700
+struct socket {
+  state = SS_FREE,
+  type = 0,
+  flags = 0,
+  file = 0xffff8a9fcb748000,
+  sk = 0x0,
+  ops = 0x0,
+
+So I'm wondering if we should also have locks in udp_tunnel_sock_release().
+Or should we add a checking in sk state before calling vxlan_get_sk_family()?
+
+Thanks
+Hangbin
