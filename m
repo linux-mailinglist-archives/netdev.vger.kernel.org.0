@@ -2,87 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8D66416B6
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 13:36:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BD66416C7
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 14:07:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbiLCMgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 07:36:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
+        id S229671AbiLCNG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 08:06:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiLCMgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 07:36:38 -0500
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E14D2FC08;
-        Sat,  3 Dec 2022 04:36:37 -0800 (PST)
-Received: by mail-qk1-x733.google.com with SMTP id g10so1752603qkl.6;
-        Sat, 03 Dec 2022 04:36:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=zyo55RdF12Oshfuf3anRJy4vhxaURJFlQu/s5gweHZ0=;
-        b=NY02Mmc0Nh8rO1KBj+bnqsrvonxkvcC8zCanAt3zxl28feFnqNLOul/6njS088eTqE
-         iFYnRxtL7zGarfWRurTJiH0bLMOahLDg1Vajsu69Vmdwp/oXtsu1D7212P3vBwKg5wuJ
-         jR423R8QurvnLSMWBWxFEubfF+TpWQGajN8aoDSnjxUkfC3j4wqe5ZXfAHsy1XIEAUMt
-         sXtybIPY93mg0vT5B8fpWhoXCxDJadvNizXVuJcmunWEq5LA5zicEuwvHi5znnzqntiq
-         3Ar8EfJTGAL64cKBaIxh8wubYOWcFH7KexuZiGN4wwUBlqA1/5zrhhsG7lRtwd2yqDyi
-         Eiww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zyo55RdF12Oshfuf3anRJy4vhxaURJFlQu/s5gweHZ0=;
-        b=WeE65VDigfyGxNNiN6CPhhym5YoLPmBA+vpcV86tNK6JY5x06kLNa9TrPX+9s5Zie4
-         IG9HjPmssWeTZVg0L/FOgVLsL8+nesY5cyXPpyIIboucdVUAAVvYeUASBm34VCIIuI1v
-         pzV7MDr8EM4KQiJHbS6xJI8BcUcMDazTuF6PCtGn04XikHcYvU5gVv1784fM/IJ8xv7+
-         FxccDuoIliT8IPrmSYRmIJS0U1wAI8/5vrP6GemZEmSZvX5MfZ/26PQD5tkZ1jZONDFL
-         xvwYy/I3WQNn0QTxeJMYMdy6MVX/mi3BgeJf9cOsa0BE3notOWw+W9crfgKk4nUVJSUz
-         ZM/g==
-X-Gm-Message-State: ANoB5pnIXRNjvFxfDrjtsqSmUOmwodIk/RteUfo0yLgzy7WS/fK7/R35
-        DUNfnuPXVtva61q4esyhhZFFXTECrz0Ht5iGM5M=
-X-Google-Smtp-Source: AA0mqf4CuxmqO0vLrdefK9yfCZYY2Fi7D9QJghNcIlStaWHAAXcABy2XcQ1vTHvl22jwWjsQGQxKd7Ugk/GLElBQT8I=
-X-Received: by 2002:a37:f504:0:b0:6cf:5fa1:15f8 with SMTP id
- l4-20020a37f504000000b006cf5fa115f8mr67062663qkk.748.1670070996109; Sat, 03
- Dec 2022 04:36:36 -0800 (PST)
+        with ESMTP id S229462AbiLCNGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 08:06:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0358410FF5
+        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 05:06:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93EDF60C44
+        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 13:06:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F8E8C433C1;
+        Sat,  3 Dec 2022 13:06:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670072810;
+        bh=Vo3fkvSX826mwP9UMcYTnSSxWbHto2AxWbY9D8FrhE8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=pCWqkVUAAMsY0ORtsK6/be3JPJTgouUFckrZx9lJKA6EN385RJAHBToH5t2UgY9CU
+         Dbkcx1WeHLAqDHAEDRofrvIdCWMUadXbs6blk6eQB67oPdTki5r0rv6C90ujt2AxBG
+         PRi48j1XlBbo53VEuRMg7aonJAsCYNUwVB6ly6Z/USILAybKIGiywlNK/0qrqQzVHe
+         6YSvqCzDU6M9PA28x/y0YIEgl9LMUoFbXSr00xTFKws0+dgMPSPjXG9Ll7xMdRc+C3
+         I6zkL1nK4fXwGucnN/8d9bwlBi6GyXciQX8h1b5nQx2KbDXndbPXsbaw8KKegd2fDR
+         GW0dB4+us6LRw==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, sujuan.chen@mediatek.com,
+        lorenzo.bianconi@redhat.com
+Subject: [PATCH net-next] net: ethernet: mtk_wed: add reset to rx_ring_setup callback
+Date:   Sat,  3 Dec 2022 14:06:30 +0100
+Message-Id: <26fa16f2f212bff5edfdbe8a4f41dba7a132b0be.1670072570.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-References: <20211015164809.22009-1-asmaa@nvidia.com> <20211015164809.22009-2-asmaa@nvidia.com>
- <CACRpkdbvR0+5gKUH7eE2tZ1H9DR-WiYyh9KSnUTesYiZ=AezNw@mail.gmail.com>
-In-Reply-To: <CACRpkdbvR0+5gKUH7eE2tZ1H9DR-WiYyh9KSnUTesYiZ=AezNw@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 3 Dec 2022 14:35:59 +0200
-Message-ID: <CAHp75VfaoS4yu0UOJj4V2N+4tWdD0JF47TFgfKCGt7SC-Uhfaw@mail.gmail.com>
-Subject: Re: [PATCH v5 1/2] gpio: mlxbf2: Introduce IRQ support
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Asmaa Mnebhi <asmaa@nvidia.com>, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, andrew@lunn.ch, kuba@kernel.org,
-        bgolaszewski@baylibre.com, davem@davemloft.net, rjw@rjwysocki.net,
-        davthompson@nvidia.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 3, 2022 at 12:14 PM Linus Walleij <linus.walleij@linaro.org> wrote:
-> On Fri, Oct 15, 2021 at 6:48 PM Asmaa Mnebhi <asmaa@nvidia.com> wrote:
->
-> > Introduce standard IRQ handling in the gpio-mlxbf2.c
-> > driver.
-> >
-> > Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
->
-> Looks good to me!
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Introduce reset parameter to mtk_wed_rx_ring_setup signature.
+This is a preliminary patch to add Wireless Ethernet Dispatcher reset
+support.
 
-It was more than a year ago :-)
+Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
+Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/ethernet/mediatek/mtk_wed.c  | 20 +++++++++++++-------
+ drivers/net/wireless/mediatek/mt76/dma.c |  2 +-
+ include/linux/soc/mediatek/mtk_wed.h     |  8 ++++----
+ 3 files changed, 18 insertions(+), 12 deletions(-)
 
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
+index 6352abd4157e..b1ec3f353b66 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed.c
+@@ -1216,7 +1216,8 @@ mtk_wed_wdma_rx_ring_setup(struct mtk_wed_device *dev, int idx, int size,
+ }
+ 
+ static int
+-mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int size)
++mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int size,
++			   bool reset)
+ {
+ 	u32 desc_size = sizeof(struct mtk_wdma_desc) * dev->hw->version;
+ 	struct mtk_wed_ring *wdma;
+@@ -1225,8 +1226,8 @@ mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int size)
+ 		return -EINVAL;
+ 
+ 	wdma = &dev->tx_wdma[idx];
+-	if (mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE, desc_size,
+-			       true))
++	if (!reset && mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE,
++					 desc_size, true))
+ 		return -ENOMEM;
+ 
+ 	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_BASE,
+@@ -1236,6 +1237,9 @@ mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int size)
+ 	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_CPU_IDX, 0);
+ 	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_DMA_IDX, 0);
+ 
++	if (reset)
++		mtk_wed_ring_reset(wdma, MTK_WED_WDMA_RING_SIZE, true);
++
+ 	if (!idx)  {
+ 		wed_w32(dev, MTK_WED_WDMA_RING_TX + MTK_WED_RING_OFS_BASE,
+ 			wdma->desc_phys);
+@@ -1577,18 +1581,20 @@ mtk_wed_txfree_ring_setup(struct mtk_wed_device *dev, void __iomem *regs)
+ }
+ 
+ static int
+-mtk_wed_rx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs)
++mtk_wed_rx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs,
++		      bool reset)
+ {
+ 	struct mtk_wed_ring *ring = &dev->rx_ring[idx];
+ 
+ 	if (WARN_ON(idx >= ARRAY_SIZE(dev->rx_ring)))
+ 		return -EINVAL;
+ 
+-	if (mtk_wed_ring_alloc(dev, ring, MTK_WED_RX_RING_SIZE,
+-			       sizeof(*ring->desc), false))
++	if (!reset && mtk_wed_ring_alloc(dev, ring, MTK_WED_RX_RING_SIZE,
++					 sizeof(*ring->desc), false))
+ 		return -ENOMEM;
+ 
+-	if (mtk_wed_wdma_tx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE))
++	if (mtk_wed_wdma_tx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE,
++				       reset))
+ 		return -ENOMEM;
+ 
+ 	ring->reg_base = MTK_WED_RING_RX_DATA(idx);
+diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
+index 3f8c0845fcca..f795548562f5 100644
+--- a/drivers/net/wireless/mediatek/mt76/dma.c
++++ b/drivers/net/wireless/mediatek/mt76/dma.c
+@@ -648,7 +648,7 @@ mt76_dma_wed_setup(struct mt76_dev *dev, struct mt76_queue *q)
+ 			q->wed_regs = wed->txfree_ring.reg_base;
+ 		break;
+ 	case MT76_WED_Q_RX:
+-		ret = mtk_wed_device_rx_ring_setup(wed, ring, q->regs);
++		ret = mtk_wed_device_rx_ring_setup(wed, ring, q->regs, false);
+ 		if (!ret)
+ 			q->wed_regs = wed->rx_ring[ring].reg_base;
+ 		break;
+diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
+index beb190449704..a0746d4aec20 100644
+--- a/include/linux/soc/mediatek/mtk_wed.h
++++ b/include/linux/soc/mediatek/mtk_wed.h
+@@ -160,7 +160,7 @@ struct mtk_wed_ops {
+ 	int (*tx_ring_setup)(struct mtk_wed_device *dev, int ring,
+ 			     void __iomem *regs, bool reset);
+ 	int (*rx_ring_setup)(struct mtk_wed_device *dev, int ring,
+-			     void __iomem *regs);
++			     void __iomem *regs, bool reset);
+ 	int (*txfree_ring_setup)(struct mtk_wed_device *dev,
+ 				 void __iomem *regs);
+ 	int (*msg_update)(struct mtk_wed_device *dev, int cmd_id,
+@@ -228,8 +228,8 @@ mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
+ 	(_dev)->ops->irq_get(_dev, _mask)
+ #define mtk_wed_device_irq_set_mask(_dev, _mask) \
+ 	(_dev)->ops->irq_set_mask(_dev, _mask)
+-#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs) \
+-	(_dev)->ops->rx_ring_setup(_dev, _ring, _regs)
++#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) \
++	(_dev)->ops->rx_ring_setup(_dev, _ring, _regs, _reset)
+ #define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash) \
+ 	(_dev)->ops->ppe_check(_dev, _skb, _reason, _hash)
+ #define mtk_wed_device_update_msg(_dev, _id, _msg, _len) \
+@@ -249,7 +249,7 @@ static inline bool mtk_wed_device_active(struct mtk_wed_device *dev)
+ #define mtk_wed_device_reg_write(_dev, _reg, _val) do {} while (0)
+ #define mtk_wed_device_irq_get(_dev, _mask) 0
+ #define mtk_wed_device_irq_set_mask(_dev, _mask) do {} while (0)
+-#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs) -ENODEV
++#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) -ENODEV
+ #define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash)  do {} while (0)
+ #define mtk_wed_device_update_msg(_dev, _id, _msg, _len) -ENODEV
+ #define mtk_wed_device_stop(_dev) do {} while (0)
 -- 
-With Best Regards,
-Andy Shevchenko
+2.38.1
+
