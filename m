@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A060B641917
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 21:44:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE40364191B
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 21:48:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbiLCUoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 15:44:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
+        id S229755AbiLCUsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 15:48:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiLCUoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 15:44:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C1A60EA;
-        Sat,  3 Dec 2022 12:44:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DD66B80782;
-        Sat,  3 Dec 2022 20:44:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0BA5C433C1;
-        Sat,  3 Dec 2022 20:43:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670100238;
-        bh=Mjt6xiXtxGYM7hTuzc+6X726pwVTwWJ7KDsMrRCyBqs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sC01FcTHOatBjyQjO1V0AOdBS3VZsPMseu0z32NLF02KYmcabavP0BQk27gQhXiEi
-         ihg2w4Zo9gN38cthfobICA+hj0fetFrqZPIvfRzDZ1Q1Ig54TpcOGzeRkN1oenPffw
-         f+k6FVaXedlo5Kkbt8nmiGixVg9+wk/tSYvrUrn9WXVzJsM08VZO7W686gYCyC1Vhb
-         URKHPmddGQcc4zrhARzfsKDOIMSXnD64i8/UhL2It1x1SEUM7+JbOgMWISwpJpRmdk
-         MT2r/E+7VFmzPdfLCqsdypaO0ZTiCxcBbUWsEKUEC+1kwvZvgusxAchkNiMtgbvP59
-         +NsCF38rTY/3w==
-Date:   Sat, 3 Dec 2022 12:43:57 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>, zhang.songyi@zte.com.cn,
-        saeedm@nvidia.com, pabeni@redhat.com, davem@davemloft.net,
-        edumazet@google.com, mbloch@nvidia.com, maorg@nvidia.com,
-        elic@nvidia.com, jerrliu@nvidia.com, cmi@nvidia.com,
-        vladbu@nvidia.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net/mlx5: remove NULL check before dev_{put,
- hold}
-Message-ID: <Y4u1DVbFWFPx3hMf@x130>
-References: <202211301541270908055@zte.com.cn>
- <Y4cbssiTgsGGNHlh@unreal>
- <20221130092516.024873db@kernel.org>
+        with ESMTP id S229450AbiLCUsB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 15:48:01 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C457564E3;
+        Sat,  3 Dec 2022 12:48:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=nrIUiqu0rhHfNsiWFPaaq3UEuLRQT2XtfSlEcQWCe80=; b=AofCRjqnSYXZ8feR+kEmJkOUC2
+        MZqTyRCe/KBWz+8IvZVZ6dP9aoc32d9xigxVoFXBUvYAM5W/tqxdMQ/Wg7ysLy9nBa63WByVgYLZn
+        BtjSVsFqoOMwaBUNqIAEf14fT/gtqQn9eua1PyIk//lpbk6Hc0JuppW6HfrnwQMPNGLk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p1ZQE-004HrO-Th; Sat, 03 Dec 2022 21:47:42 +0100
+Date:   Sat, 3 Dec 2022 21:47:42 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
+        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: phy: Add driver for Motorcomm yt8531
+ gigabit ethernet phy
+Message-ID: <Y4u17vz20EemzxEB@lunn.ch>
+References: <20221202073648.3182-1-Frank.Sae@motor-comm.com>
+ <Y4n9T+KGj/hX3C0e@lunn.ch>
+ <Y4n+2Ehvp6SInxUw@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221130092516.024873db@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y4n+2Ehvp6SInxUw@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30 Nov 09:25, Jakub Kicinski wrote:
->On Wed, 30 Nov 2022 11:00:34 +0200 Leon Romanovsky wrote:
->> On Wed, Nov 30, 2022 at 03:41:27PM +0800, zhang.songyi@zte.com.cn wrote:
->> > From: zhang songyi <zhang.songyi@zte.com.cn>
->> >
->> > The call netdev_{put, hold} of dev_{put, hold} will check NULL,
->> > so there is no need to check before using dev_{put, hold}.
->> >
->> > Fix the following coccicheck warning:
->> > /drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:1450:2-10:
->> > WARNING:
->> > WARNING  NULL check before dev_{put, hold} functions is not needed.
->> >
->> > Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
->> > ---
->> >  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c | 3 +--
->> >  1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> Please change all places in mlx5 in one patch.
->
->Your call as a mlx5 maintainer, but I'd say don't change them at all.
->All these trivial patches are such a damn waste of time.
+On Fri, Dec 02, 2022 at 01:34:16PM +0000, Russell King (Oracle) wrote:
+> On Fri, Dec 02, 2022 at 02:27:43PM +0100, Andrew Lunn wrote:
+> > > +static bool mdio_is_locked(struct phy_device *phydev)
+> > > +{
+> > > +	return mutex_is_locked(&phydev->mdio.bus->mdio_lock);
+> > > +}
+> > > +
+> > > +#define ASSERT_MDIO(phydev) \
+> > > +	WARN_ONCE(!mdio_is_locked(phydev), \
+> > > +		  "MDIO: assertion failed at %s (%d)\n", __FILE__,  __LINE__)
+> > > +
+> > 
+> > Hi Frank
+> > 
+> > You are not the only one who gets locking wrong. This could be used in
+> > other drivers. Please add it to include/linux/phy.h,
+> 
+> That placement doesn't make much sense.
+> 
+> As I already said, we have lockdep checks in drivers/net/phy/mdio_bus.c,
+> and if we want to increase their effectiveness, then that's the place
+> that it should be done.
 
-I agree, let's not waste more time on this, I will accept this patch as is
-since it's already marked awating-upstream.. 
+I was following the ASSERT_RTNL model, but that is used in quite deep
+and complex call stacks, and it is useful to scatter the macro in lots
+of places. PHY drivers are however very shallow, so yes, putting them
+in mdio_bus.c makes a lot of sense.
 
-Applied to net-next-mlx5
+> I don't see any point in using __FILE__ and __LINE__ in the above
+> macro either. Firstly, WARN_ONCE() already includes the file and line,
+> and secondly, the backtrace is more useful than the file and line where
+> the assertion occurs especially if it's placed in mdio_bus.c
+
+And PHY driver functions are simpler, there is a lot less inlining
+going on, so the function name is probably all you need to know to
+find where you messed up the locking. So i agree, they can be removed.
+
+     Andrew
