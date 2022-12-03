@@ -2,90 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B29386417D2
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 17:41:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99A656417DB
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 17:47:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbiLCQk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 11:40:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        id S229817AbiLCQr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 11:47:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiLCQk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 11:40:56 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBC01FCD2;
-        Sat,  3 Dec 2022 08:40:54 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id l11so10293964edb.4;
-        Sat, 03 Dec 2022 08:40:54 -0800 (PST)
+        with ESMTP id S229448AbiLCQrZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 11:47:25 -0500
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5355F1EECA
+        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 08:47:24 -0800 (PST)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-3704852322fso78092117b3.8
+        for <netdev@vger.kernel.org>; Sat, 03 Dec 2022 08:47:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=LQ8xubanzd9+YmlzrGLsTJHNMcl91Ughdo9/l+FSuMM=;
-        b=hiY3HcrHTc3T2Oy7z7Tj94uZbex9hv4uZ8RdWdocPqJJ3JrlvPjas0gykuLomSXAbO
-         IWOmQSX4LMYYWtTZ1CacLVMD7c84cCa7h4ylhirAXzjVmWxRgNQsCKGfBemrqbIsHrgL
-         DwHiR0sJJgpwnLiwFD+vQOEP8MwvxxAhvw/9MIL/sNtwLlPEcAuAhHckHERutyU5PuVB
-         RLxLScIOFmKMwRCoTjNoJKP4mxXCbIcaTyON0/pTw1MfzNKjPN3UlrPTODnDs0aSagCb
-         hVK2lX+vulXKUVwDflC5uLOZ4fNe58A0OgzpHbcHwiebSknNt5MsDGclTYvdPFw/YfOt
-         0tKA==
+        bh=Qn9rzwOPoUgx3KNCikSZW0olrpEdB8fhdwL7QqLBi74=;
+        b=tNkAN9J6KJRs6JVVZwcksPUEVCiO60efNXFxBYRqvKS4tVHjd0wAYlSEwSorC6o7n+
+         7L9EQNVMskLyTBy5KNrObNcqAGuYSxJP9VQt0yF7Cm9/AEjGyQrIgZpTdeTA7uVBqjQA
+         ck+L9Uy6s8zCFhcFogr92F7g0YlBA1gEli2UVUWYNlh53FEp3irKbhk5//ObHtm6y6LO
+         3cgCTLgLL8C+g9gpzZFQp3UyHk31Gh+1mXBeCAZoUv9gSqQJdS3Gsg5muIdh6VChiYwX
+         zXGSO0a64MCLd9rVdfvPeNJtey43uP8g5Do42mQkZrDqfzDd+OXgn7czSqaF+RAdFHJr
+         glvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=LQ8xubanzd9+YmlzrGLsTJHNMcl91Ughdo9/l+FSuMM=;
-        b=YnYu0/NrdZXjLrXXpFoX96B6MwYLYJijXkGUD9jYs+oYuMR56h5qMJ4wNyC3hHKFKZ
-         6/wR91i7rlcZhoY2beiGJ+/SvxF8vck7fiX6QVGsVW/YcsDXhE9Zr4K6xH1XEbhLFC2v
-         tdakiEE0jHQmsg3x/CqgevCQ30Qx16Yglwgj+w/e/lBoTUsMDxHIiTeg1Au+VJidXaKY
-         QmqRqPIeSHVmzPFxSLMjUjsVIeG3CORjNMw5uyz94KCvSMLCnUdf4I5fyy0pqR1MejUX
-         W01SD8CbTSyY55HvxtWuvaV/LXLvViIQCIQ5Ctz2ROpLnrUmbDha+s4WCUW6gDd7aiMl
-         iOLw==
-X-Gm-Message-State: ANoB5pkcA0psZLvGNXCG/HEOCBo1B5YcY6EVQDC7RY5xTWt2QVeYYrK2
-        KiYBaZNKUzY890haOSPWZTA63jOyxjAZDd+HYhE=
-X-Google-Smtp-Source: AA0mqf4Fw05PxBvulQnp1D6VoFF5JChDHkFZuOW2NiyjEVA5vYEc30GGZtqJod+PxyqLMHFYYJGccX0aEIHnfwS1zzg=
-X-Received: by 2002:a05:6402:5289:b0:462:70ee:fdb8 with SMTP id
- en9-20020a056402528900b0046270eefdb8mr33646016edb.66.1670085651954; Sat, 03
- Dec 2022 08:40:51 -0800 (PST)
+        bh=Qn9rzwOPoUgx3KNCikSZW0olrpEdB8fhdwL7QqLBi74=;
+        b=a3Gr02LSmAcXWo87XvJFuOBTSL6IvtG3q1Er+9qN1wJYAeaSQfKTFdA8d7vbWPXIlr
+         zMTA9nU8DfHs6mzB5IpmblHfx1iXqScaPkoYP5cUcZbDRTuyhj8H9dET6UF9FI/LehRf
+         +90AchQEXIOZ7YAYsMnuvj/8Qnz3nBVVvYeArn88pejETpaieJO6Hl0WipLDV/9qbJDF
+         DWEbjK1Brm5zfQ3yLlXqHYwta76of4ewOJU7jThrH6E/fls5mCn9ty09os329yTFDjpX
+         ORP8z7AFj/vLMsyZ/3jFL3Z+AHZmi4/AZEVYWZZoAMRPAfZ23gUXvlXH20xSwEBAe0sh
+         NX1Q==
+X-Gm-Message-State: ANoB5pkLxGx6NtvA+m+3JSEK8KJhObZFxvpfMcfeVNlEAoYpjLFrIxlW
+        cFt9/zn3mB5Ko7zCXc6F+oMmCe3Z0h+KGnilzW3IZw==
+X-Google-Smtp-Source: AA0mqf5aaE6vGdGJee0oGXLrp9VMzbyBqL1+zxvA4YghkB4vnJHFUGUXBa2c67yMxgrGQ2aKPGkQyJUXbQ8zqFU0Ix0=
+X-Received: by 2002:a05:690c:884:b0:37b:4a21:f86a with SMTP id
+ cd4-20020a05690c088400b0037b4a21f86amr58483902ywb.465.1670086043315; Sat, 03
+ Dec 2022 08:47:23 -0800 (PST)
 MIME-Version: 1.0
-References: <20221126094530.226629-1-yangjihong1@huawei.com>
- <20221126094530.226629-2-yangjihong1@huawei.com> <20221128015758.aekybr3qlahfopwq@MacBook-Pro-5.local>
- <dc9d1823-80f2-e2d9-39a8-c39b6f52dec5@huawei.com> <CAADnVQJPRCnESmJ92W39bo-btqNbYaNsGQO0is6FD3JLU_mSjQ@mail.gmail.com>
- <8cb54255-4dce-6d50-d6f0-ac9af0e56f37@huawei.com>
-In-Reply-To: <8cb54255-4dce-6d50-d6f0-ac9af0e56f37@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 3 Dec 2022 08:40:40 -0800
-Message-ID: <CAADnVQJXr6XxpG2E-AkO7__qg-sujrhyO+JWWa1iwYmAO4S0Pw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/4] bpf: Adapt 32-bit return value kfunc for
- 32-bit ARM when zext extension
-To:     Yang Jihong <yangjihong1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Shubham Bansal <illusionist.neo@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        colin.i.king@gmail.com, Artem Savkov <asavkov@redhat.com>,
-        Delyan Kratunov <delyank@fb.com>, bpf <bpf@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
+References: <CA+G9fYsK5WUxs6p9NaE4e3p7ew_+s0SdW0+FnBgiLWdYYOvoMg@mail.gmail.com>
+ <CANpmjNOQxZ--jXZdqN3tjKE=sd4X6mV4K-PyY40CMZuoB5vQTg@mail.gmail.com>
+ <CA+G9fYs55N3J8TRA557faxvAZSnCTUqnUx+p1GOiCiG+NVfqnw@mail.gmail.com>
+ <Y4e3WC4UYtszfFBe@codewreck.org> <CA+G9fYuJZ1C3802+uLvqJYMjGged36wyW+G1HZJLzrtmbi1bJA@mail.gmail.com>
+ <Y4ttC/qESg7Np9mR@codewreck.org>
+In-Reply-To: <Y4ttC/qESg7Np9mR@codewreck.org>
+From:   Marco Elver <elver@google.com>
+Date:   Sat, 3 Dec 2022 17:46:46 +0100
+Message-ID: <CANpmjNNcY0LQYDuMS2pG2R3EJ+ed1t7BeWbLK2MNxnzPcD=wZw@mail.gmail.com>
+Subject: Re: arm64: allmodconfig: BUG: KCSAN: data-race in p9_client_cb / p9_client_rpc
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        rcu <rcu@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        kunit-dev@googlegroups.com, lkft-triage@lists.linaro.org,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-16.4 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        URI_DOTEDU,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,133 +77,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 2, 2022 at 6:58 PM Yang Jihong <yangjihong1@huawei.com> wrote:
+On Sat, 3 Dec 2022 at 16:37, Dominique Martinet <asmadeus@codewreck.org> wrote:
 >
+> (reply out of order)
 >
->
-> On 2022/11/29 0:41, Alexei Starovoitov wrote:
-> > On Mon, Nov 28, 2022 at 4:40 AM Yang Jihong <yangjihong1@huawei.com> wrote:
-> >>
-> >>
-> >>
-> >> On 2022/11/28 9:57, Alexei Starovoitov wrote:
-> >>> On Sat, Nov 26, 2022 at 05:45:27PM +0800, Yang Jihong wrote:
-> >>>> For ARM32 architecture, if data width of kfunc return value is 32 bits,
-> >>>> need to do explicit zero extension for high 32-bit, insn_def_regno should
-> >>>> return dst_reg for BPF_JMP type of BPF_PSEUDO_KFUNC_CALL. Otherwise,
-> >>>> opt_subreg_zext_lo32_rnd_hi32 returns -EFAULT, resulting in BPF failure.
-> >>>>
-> >>>> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
-> >>>> ---
-> >>>>    kernel/bpf/verifier.c | 44 ++++++++++++++++++++++++++++++++++++++++---
-> >>>>    1 file changed, 41 insertions(+), 3 deletions(-)
-> >>>>
-> >>>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> >>>> index 264b3dc714cc..193ea927aa69 100644
-> >>>> --- a/kernel/bpf/verifier.c
-> >>>> +++ b/kernel/bpf/verifier.c
-> >>>> @@ -1927,6 +1927,21 @@ find_kfunc_desc(const struct bpf_prog *prog, u32 func_id, u16 offset)
-> >>>>                      sizeof(tab->descs[0]), kfunc_desc_cmp_by_id_off);
-> >>>>    }
-> >>>>
-> >>>> +static int kfunc_desc_cmp_by_imm(const void *a, const void *b);
-> >>>> +
-> >>>> +static const struct bpf_kfunc_desc *
-> >>>> +find_kfunc_desc_by_imm(const struct bpf_prog *prog, s32 imm)
-> >>>> +{
-> >>>> +    struct bpf_kfunc_desc desc = {
-> >>>> +            .imm = imm,
-> >>>> +    };
-> >>>> +    struct bpf_kfunc_desc_tab *tab;
-> >>>> +
-> >>>> +    tab = prog->aux->kfunc_tab;
-> >>>> +    return bsearch(&desc, tab->descs, tab->nr_descs,
-> >>>> +                   sizeof(tab->descs[0]), kfunc_desc_cmp_by_imm);
-> >>>> +}
-> >>>> +
-> >>>>    static struct btf *__find_kfunc_desc_btf(struct bpf_verifier_env *env,
-> >>>>                                        s16 offset)
-> >>>>    {
-> >>>> @@ -2342,6 +2357,13 @@ static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
-> >>>>                        */
-> >>>>                       if (insn->src_reg == BPF_PSEUDO_CALL)
-> >>>>                               return false;
-> >>>> +
-> >>>> +                    /* Kfunc call will reach here because of insn_has_def32,
-> >>>> +                     * conservatively return TRUE.
-> >>>> +                     */
-> >>>> +                    if (insn->src_reg == BPF_PSEUDO_KFUNC_CALL)
-> >>>> +                            return true;
-> >>>> +
-> >>>>                       /* Helper call will reach here because of arg type
-> >>>>                        * check, conservatively return TRUE.
-> >>>>                        */
-> >>>> @@ -2405,10 +2427,26 @@ static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
-> >>>>    }
-> >>>>
-> >>>>    /* Return the regno defined by the insn, or -1. */
-> >>>> -static int insn_def_regno(const struct bpf_insn *insn)
-> >>>> +static int insn_def_regno(struct bpf_verifier_env *env, const struct bpf_insn *insn)
-> >>>>    {
-> >>>>       switch (BPF_CLASS(insn->code)) {
-> >>>>       case BPF_JMP:
-> >>>> +            if (insn->src_reg == BPF_PSEUDO_KFUNC_CALL) {
-> >>>> +                    const struct bpf_kfunc_desc *desc;
-> >>>> +
-> >>>> +                    /* The value of desc cannot be NULL */
-> >>>> +                    desc = find_kfunc_desc_by_imm(env->prog, insn->imm);
-> >>>> +
-> >>>> +                    /* A kfunc can return void.
-> >>>> +                     * The btf type of the kfunc's return value needs
-> >>>> +                     * to be checked against "void" first
-> >>>> +                     */
-> >>>> +                    if (desc->func_model.ret_size == 0)
-> >>>> +                            return -1;
-> >>>> +                    else
-> >>>> +                            return insn->dst_reg;
-> >>>> +            }
-> >>>> +            fallthrough;
-> >>>
-> >>> I cannot make any sense of this patch.
-> >>> insn->dst_reg above is 0.
-> >>> The kfunc call doesn't define a register from insn_def_regno() pov.
-> >>>
-> >>> Are you hacking insn_def_regno() to return 0 so that
-> >>> if (WARN_ON(load_reg == -1)) {
-> >>>     verbose(env, "verifier bug. zext_dst is set, but no reg is defined\n");
-> >>>     return -EFAULT;
-> >>> }
-> >>> in opt_subreg_zext_lo32_rnd_hi32() doesn't trigger ?
-> >>>
-> >>> But this verifier message should have been a hint that you need
-> >>> to analyze why zext_dst is set on this kfunc call.
-> >>> Maybe it shouldn't ?
-> >>> Did you analyze the logic of mark_btf_func_reg_size() ?
-> >> make r0 zext is not caused by mark_btf_func_reg_size.
-> >>
-> >> This problem occurs when running the kfunc_call_test_ref_btf_id test
-> >> case in the 32-bit ARM environment.
+> Naresh Kamboju wrote on Thu, Dec 01, 2022 at 01:13:25PM +0530:
+> > > (You might need to build with at least CONFIG_DEBUG_INFO_REDUCED (or not
+> > > reduced), but that is on by default for aarch64)
 > >
-> > Why is it not failing on x86-32 ?
-> Use the latest mainline kernel code to test on the x86_32 machine. The
-> test also fails:
+> > Thanks for the suggestions.
+> > The Kconfig is enabled now.
+> > CONFIG_DEBUG_INFO_REDUCED=y
 >
->    # ./test_progs -t kfunc_call/kfunc_call_test_ref_btf_id
->    Failed to load bpf_testmod.ko into the kernel: -8
->    WARNING! Selftests relying on bpf_testmod.ko will be skipped.
->    libbpf: prog 'kfunc_call_test_ref_btf_id': BPF program load failed:
-> Bad address
->    libbpf: prog 'kfunc_call_test_ref_btf_id': -- BEGIN PROG LOAD LOG --
->    processed 25 insns (limit 1000000) max_states_per_insn 0 total_states
-> 2 peak_states 2 mark_read 1
->    -- END PROG LOAD LOG --
->    libbpf: prog 'kfunc_call_test_ref_btf_id': failed to load: -14
->    libbpf: failed to load object 'kfunc_call_test'
->    libbpf: failed to load BPF skeleton 'kfunc_call_test': -14
->    verify_success:FAIL:skel unexpected error: -14
+> It looks enabled in your the config file you linked at, I don't
+> understand this remark?
+> Did you produce the trace the other day without it and rebuild the
+> kernel with it?
+> In this case you also have CONFIG_DEBUG_INFO_SPLIT set, so the vmlinux
+> file does not contain enough informations to retrieve line numbers or
+> types, and in particular addr2line cannot be used on the files you
+> provided.
+> I've never used split debug infos before, but digging old threads I'm
+> not too hopeful unless that changed:
+> https://lkml.iu.edu/hypermail/linux/kernel/1711.1/03393.html
+> https://sourceware.org/bugzilla/show_bug.cgi?id=22434
 >
-> Therefore, this problem also exists on x86_32:
-> "verifier bug. zext_dst is set, but no reg is defined"
+> (...a test build later, it's still mostly useless...
+> normal build
+> $ ./scripts/faddr2line vmlinux __schedule+0x314
+> __schedule+0x314/0x6c0:
+> perf_fetch_caller_regs at include/linux/perf_event.h:1286
+> (inlined by) __perf_sw_event_sched at include/linux/perf_event.h:1307
+> (inlined by) perf_event_task_sched_out at include/linux/perf_event.h:1347
+> (inlined by) prepare_task_switch at kernel/sched/core.c:5053
+> (inlined by) context_switch at kernel/sched/core.c:5195
+> (inlined by) __schedule at kernel/sched/core.c:6561
+>
+> split dwarf build
+> $ ./scripts/faddr2line vmlinux __schedule+0x314
+> aarch64-linux-gnu-addr2line: DWARF error: could not find abbrev number 860923
+> __schedule+0x314/0x780:
+> aarch64-linux-gnu-addr2line: DWARF error: could not find abbrev number 860923
+> __schedule at core.c:?
+>
+> I'd tend to agree build time/space savings aren't worth the developer
+> time.
+> )
+>
+> Anyway, address sanitizer used to have a kasan_symbolize.py script but
+> it looks like it got removed as no longer maintained, and I'm not sure
+> what's a good tool to just run these logs through nowadays, might want
+> to ask other test projects folks what they use...
+>
+> > > If you still have the vmlinux binary from that build (or if you can
+> > > rebuild with the same options), running this text through addr2line
+> > > should not take you too long.
+> >
+> > Please find build artifacts in this link,
+> >  - config
+> >  - vmlinux
+> >  - System.map
+> > https://people.linaro.org/~anders.roxell/next-20221130-allmodconfig-arm64-tuxmake-build/
+>
+> So from the disassembly...
+>
+>  - p9_client_cb+0x84 is right before the wake_up and after the wmb(), so
+> I assume we're on writing req->status line 441:
+>
+> ---
+> p9_client_cb(...)
+> {
+> ...
+>         smp_wmb();
+>         req->status = status;
+>
+>         wake_up(&req->wq);
+> ---
+>
+> report is about a write from 2 to 3, this makes sense we're going from
+> REQ_STATUS_SENT (2) to REQ_STATUS_RCVD (3).
+>
+>
+>  - p9_client_rpc+0x1d0 isn't as simple to pin down as I'm having a hard
+> time making sense of the kcsan instrumentations...
+> The report is talking about a READ of 4 bytes at the same address, so
+> I'd expect to see an ccess to req->status (and we're likely spot on
+> wait_event_killable which checks req->status), but this doesn't seem to
+> match up with the assembly: here's the excerpt from disass around 0x1d0
+> = 464 (why doesn't gdb provide hex offsets..)
+> ---
+>    0xffff80000a46e9b8 <+440>:   cmn     w28, #0x200
+>    0xffff80000a46e9bc <+444>:   ccmn    w28, #0xe, #0x4, ne  // ne = any
+>    0xffff80000a46e9c0 <+448>:   b.eq    0xffff80000a46ecfc <p9_client_rpc+1276>  // b.none
+>    0xffff80000a46e9c4 <+452>:   mov     x0, x25
+>    0xffff80000a46e9c8 <+456>:   bl      0xffff800008543640 <__tsan_write4>
+>    0xffff80000a46e9cc <+460>:   mov     w0, #0x2                        // #2
+>    0xffff80000a46e9d0 <+464>:   str     w0, [x21, #88]
+>    0xffff80000a46e9d4 <+468>:   b       0xffff80000a46ecfc <p9_client_rpc+1276>
+>    0xffff80000a46e9d8 <+472>:   mov     w27, #0x1                       // #1
+>    0xffff80000a46e9dc <+476>:   mov     x0, x23
+>    0xffff80000a46e9e0 <+480>:   mov     w1, #0x2bc                      // #700
+>    0xffff80000a46e9e4 <+484>:   bl      0xffff800008192d80 <__might_sleep>
+> ---
+>
+> +464 is a write to x21 (client 'c', from looking at how it is passed
+> into x0 for other function calls) at offset 88 (status field according
+> to dwarf infos from a rebuild with your config/same sources)
+>
+> So, err, I'm a bit lost on this side.
+> But I can't really find a problem with what KCSAN complains about --
+> we are indeed accessing status from two threads without any locks.
+> Instead of a lock, we're using a barrier so that:
+>  - recv thread/cb: writes to req stuff || write to req status
+>  - p9_client_rpc: reads req status || reads other fields from req
+>
+> Which has been working well enough (at least, without the barrier things
+> blow up quite fast).
+>
+> So can I'll just consider this a false positive, but if someone knows
+> how much one can read into this that'd be appreciated.
 
-The kernel returns -14 == EFAULT.
-That's a completely different issue.
+The barriers only ensure ordering, but not atomicity of the accesses
+themselves (for one, the compiler is well in its right to transform
+plain accesses in ways that the concurrent algorithm wasn't designed
+for). In this case it looks like it's just missing
+READ_ONCE()/WRITE_ONCE().
+
+A (relatively) quick primer on the kernel's memory model and
+where/what/how we need to "mark" accesses:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/memory-model/Documentation/access-marking.txt
+
+Thanks,
+-- Marco
