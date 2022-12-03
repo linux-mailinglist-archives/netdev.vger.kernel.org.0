@@ -2,68 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A259641402
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 04:29:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B24A7641410
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 04:56:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbiLCD3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 22:29:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
+        id S230312AbiLCDz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 22:55:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230071AbiLCD3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 22:29:43 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637F8E08C
-        for <netdev@vger.kernel.org>; Fri,  2 Dec 2022 19:29:42 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id f3so5913265pgc.2
-        for <netdev@vger.kernel.org>; Fri, 02 Dec 2022 19:29:42 -0800 (PST)
+        with ESMTP id S229981AbiLCDzz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 22:55:55 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B306EBF923;
+        Fri,  2 Dec 2022 19:55:54 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id c140so8236281ybf.11;
+        Fri, 02 Dec 2022 19:55:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vcWwWpLmNHt2FY1UogwwEk6ssueE+FtaD3irCe/nJpg=;
-        b=WKib0rlI7jX9hMLtmD+2EDMra8vFHWfm7Bsr+mo+0NaCggSEvHxskqHUswkXmfCSHX
-         Hdxg2SayztXzuUqOT6eQi/Zb5ajVSGZEPT7845IHY98tBa2Q1bzQ6UzWy1Bm/1kJVnPm
-         EDW0DyZOwyUmVLwx0HZaTjmCvjFaUz/XVGBnvhpdtMxbvmG6CEvfPWhV+ckWPFyYAQmW
-         lYUl2YZrvtKf5/N2Dx00PRHYdXZPSWEKdGaTJqZObqR1M3g5x04sXgzLbHPN5GWll2B5
-         ObnVHkZxXL1K0ApMyaew7beAYyoaNeIu+EgWjlFXPYlcVVECKNKcTznP8zEUUulhNFau
-         TG8A==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=kHS6CLXWQpHB/BJrAaxuJc2OY8x0uiv3R6/NvgJ6/hA=;
+        b=gPXmkV5OmTUmcB0Uyl80A0/dVUXa2NLAhnXApMvHwKMh9Kmnog48hjw7Db1oe13aXH
+         FXI8/ZlVaZPQnALjZryRuuOpBfJgkcfPHNVBIQi41h7oAasx5NaGamlfCjTd9JCh9ut7
+         Bcdx4i74ezZmE2B3qnsytKk7i1a3sJRf89sjrQ9E7wn7VF7GkmpHBjQmFDcHxSMjcAoa
+         UDettIVR8P6HBr2Jt1hhdOmgzDw4lswZKk2pDkdLLK6FezI2lBBN6ymUqqUMgHjSJmWl
+         d1yrD28PDFKaxnHt5qoqvfeWm7Me2EC3ebQ9oJ9+ZgfBBtOcepyuWiDVsVcWAIsTXne0
+         VW6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=vcWwWpLmNHt2FY1UogwwEk6ssueE+FtaD3irCe/nJpg=;
-        b=RJfAA9YoXFnjbgO8yADCvBSzYsKq1SFuxuKG+sUbMsTs829ydrA6UwcHwS4XjPtYnc
-         ywwQtB0WJsdrekaJ/jCZL6wMtd+KRPJY+jnUD1LJVYF68202M6sflIPm7ZZQqR3nfNYQ
-         jSt1QLH2RDgfDW5BH4raNpwSfCi+sL3rW5A5NZUG9R6KKjDyMkALWtkrMBQoW1LX8sVv
-         stjp8GJOcM2v3Kr58fpypG52nb3EmBOCqoJHpHPZER4wpGCDSSH3c8C3+pp0WIjOhMxP
-         YVZCyLcVUKgU7vgn8QC2kzu1umOU14Bot6Kjxvp4cd+A14+z+P5ZaZ8zhYoi8lkpD2Hc
-         XxKA==
-X-Gm-Message-State: ANoB5pku3Ei+1nhgjVg2Vv4gVFFWJx4/tNBbsmIRfxLDjJvOMkgFEuab
-        7L3Xke/v2fUf/7LocgMgkZ3bU1MJ7vhHEA==
-X-Google-Smtp-Source: AA0mqf66gJ0O1tmPdaARcvkgB0P9MEQngRO0gb3SnDrEKDPCVfZdukBz9nrtM1egOHQ1dd6kB+9Yqg==
-X-Received: by 2002:a05:6a00:1d98:b0:56d:4670:6e2a with SMTP id z24-20020a056a001d9800b0056d46706e2amr64553941pfw.77.1670038181384;
-        Fri, 02 Dec 2022 19:29:41 -0800 (PST)
-Received: from localhost.localdomain ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id y5-20020a17090a784500b002187a4dd830sm7202797pjl.46.2022.12.02.19.29.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Dec 2022 19:29:40 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        William Tu <u9012063@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jianlin Shi <jishi@redhat.com>
-Subject: [PATCHv2 net] ip_gre: do not report erspan version on GRE interface
-Date:   Sat,  3 Dec 2022 11:28:58 +0800
-Message-Id: <20221203032858.3130339-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.38.1
+        bh=kHS6CLXWQpHB/BJrAaxuJc2OY8x0uiv3R6/NvgJ6/hA=;
+        b=2gQLhlfmJ9VBzqmi1xW8vAfbhaLzd1mVQVhXzkUyWINd3s0cj3AbwnZQmjNGbJ5h7p
+         rnsMJAvhLhX+p717gaEtMk0S4aWkf6KS/WWiJB9pqlJTuO1+lJbUwuEkTaLSVH7DMlG3
+         jYyLy7/gIpyu0KsOmn6oJxB81aV4YbySfgVdgwZPszdTwonvY7tX4mg0gkC+pbdbOn7P
+         7l/rGw5ubeO4qfku0dzrooQhNj0sdjIxGUKjSnGcUiGs2FDf9Kic1IJskVcLtalppeoC
+         j0u+JpwommEqgP0jnZcxKFI4zM4G6IzfXfh1KbolStt1DxOVwPM8xmwC6KvfgV/aBD/+
+         AVpQ==
+X-Gm-Message-State: ANoB5pmBWwo+XokHvrEsHJayS8IfZ/8nRDeJB3yDY6ZYaXx7L9CRR/9I
+        ln0gBji4m+BFIpBmy5vOGYFwkOYUO18ox0rUAco=
+X-Google-Smtp-Source: AA0mqf77CwzLriATDu/S5/3TAJXdCBpTETjQlqAi3OyLTGJP5TAUUxTFVcGXMNbJWz8CvvXaLsIE8J4FWf8B2hEQRtU=
+X-Received: by 2002:a25:9e0b:0:b0:6e8:1d39:f445 with SMTP id
+ m11-20020a259e0b000000b006e81d39f445mr68025282ybq.7.1670039753610; Fri, 02
+ Dec 2022 19:55:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20221202095920.1659332-1-eyal.birger@gmail.com>
+ <20221202095920.1659332-3-eyal.birger@gmail.com> <6d0e13eb-63e0-a777-2a27-7f2e02867a13@linux.dev>
+ <CAHsH6Gtt4vihaZ5kCFsjT8x1SmuiUkijnVxgAA9bMp4NOgPeAw@mail.gmail.com>
+ <4cf2ecd4-2f21-848a-00df-4e4fd86667eb@linux.dev> <CAHsH6Gt=WQhcqTsrDRhVyOSMwc4be5JaY9LpkbtFunvNZx3_Cg@mail.gmail.com>
+ <b35e5328-c57f-a5f7-d9cb-eaee1a73991a@linux.dev>
+In-Reply-To: <b35e5328-c57f-a5f7-d9cb-eaee1a73991a@linux.dev>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Sat, 3 Dec 2022 05:55:42 +0200
+Message-ID: <CAHsH6GuRTV1fqPWaeKsqyPgceQAgGiJ39HZ7CiDK1YdmnOU2Tg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next,v4 2/4] xfrm: interface: Add unstable helpers for
+ setting/getting XFRM metadata from TC-BPF
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        andrii@kernel.org, daniel@iogearbox.net, nicolas.dichtel@6wind.com,
+        razor@blackwall.org, mykolal@fb.com, ast@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, shuah@kernel.org, liuhangbin@gmail.com,
+        lixiaoyan@google.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -74,96 +79,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Although the type I ERSPAN is based on the barebones IP + GRE
-encapsulation and no extra ERSPAN header. Report erspan version on GRE
-interface looks unreasonable. Fix this by separating the erspan and gre
-fill info.
+Hi Martin,
 
-IPv6 GRE does not have this info as IPv6 only supports erspan version
-1 and 2.
+On Fri, Dec 2, 2022 at 11:27 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+>
+> On 12/2/22 12:49 PM, Eyal Birger wrote:
+> > On Fri, Dec 2, 2022 at 10:27 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+> >>
+> >> On 12/2/22 11:42 AM, Eyal Birger wrote:
+> >>> Hi Martin,
+> >>>
+> >>> On Fri, Dec 2, 2022 at 9:08 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+> >>>>
+> >>>> On 12/2/22 1:59 AM, Eyal Birger wrote:
+> >>>>> +__used noinline
+> >>>>> +int bpf_skb_set_xfrm_info(struct __sk_buff *skb_ctx,
+> >>>>> +                       const struct bpf_xfrm_info *from)
+> >>>>> +{
+> >>>>> +     struct sk_buff *skb = (struct sk_buff *)skb_ctx;
+> >>>>> +     struct metadata_dst *md_dst;
+> >>>>> +     struct xfrm_md_info *info;
+> >>>>> +
+> >>>>> +     if (unlikely(skb_metadata_dst(skb)))
+> >>>>> +             return -EINVAL;
+> >>>>> +
+> >>>>> +     md_dst = this_cpu_ptr(xfrm_md_dst);
+> >>>>> +
+> >>>>> +     info = &md_dst->u.xfrm_info;
+> >>>>> +
+> >>>>> +     info->if_id = from->if_id;
+> >>>>> +     info->link = from->link;
+> >>>>> +     skb_dst_force(skb);
+> >>>>> +     info->dst_orig = skb_dst(skb);
+> >>>>> +
+> >>>>> +     dst_hold((struct dst_entry *)md_dst);
+> >>>>> +     skb_dst_set(skb, (struct dst_entry *)md_dst);
+> >>>>
+> >>>>
+> >>>> I may be missed something obvious and this just came to my mind,
+> >>>>
+> >>>> What stops cleanup_xfrm_interface_bpf() being run while skb is still holding the
+> >>>> md_dst?
+> >>>>
+> >>> Oh I think you're right. I missed this.
+> >>>
+> >>> In order to keep this implementation I suppose it means that the module would
+> >>> not be allowed to be removed upon use of this kfunc. but this could be seen as
+> >>> annoying from the configuration user experience.
+> >>>
+> >>> Alternatively the metadata dsts can be separately allocated from the kfunc,
+> >>> which is probably the simplest approach to maintain, so I'll work on that
+> >>> approach.
+> >>
+> >> If it means dst_alloc on every skb, it will not be cheap.
+> >>
+> >> Another option is to metadata_dst_alloc_percpu() once during the very first
+> >> bpf_skb_set_xfrm_info() call and the xfrm_md_dst memory will never be freed.  It
+> >> is a tradeoff but likely the correct one.  You can take a look at
+> >> bpf_get_skb_set_tunnel_proto().
+> >>
+> >
+> > Yes, I originally wrote this as a helper similar to the tunnel key
+> > helper which uses bpf_get_skb_set_tunnel_proto(), and when converting
+> > to kfuncs I kept the
+> > percpu implementation.
+> >
+> > However, the set tunnel key code is never unloaded. Whereas taking this
+> > approach here would mean that this memory would leak on each module reload
+> > iiuc.
+>
+> 'struct metadata_dst __percpu *xfrm_md_dst' cannot be in the xfrm module.
+> filter.c could be an option.
 
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Fixes: f989d546a2d5 ("erspan: Add type I version 0 support.")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
-v2: fix o_flags not passed to gre fill info, reported by kernel test robot
----
- net/ipv4/ip_gre.c | 48 ++++++++++++++++++++++++++++-------------------
- 1 file changed, 29 insertions(+), 19 deletions(-)
+Looking at it some more, won't the module reference taken by the kfunc btf
+guarantee that the module can't be unloaded while the kfunc is used by a
+loaded program?
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index f866d6282b2b..cae9f1a4e059 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -1492,24 +1492,6 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
- 	struct ip_tunnel_parm *p = &t->parms;
- 	__be16 o_flags = p->o_flags;
- 
--	if (t->erspan_ver <= 2) {
--		if (t->erspan_ver != 0 && !t->collect_md)
--			o_flags |= TUNNEL_KEY;
--
--		if (nla_put_u8(skb, IFLA_GRE_ERSPAN_VER, t->erspan_ver))
--			goto nla_put_failure;
--
--		if (t->erspan_ver == 1) {
--			if (nla_put_u32(skb, IFLA_GRE_ERSPAN_INDEX, t->index))
--				goto nla_put_failure;
--		} else if (t->erspan_ver == 2) {
--			if (nla_put_u8(skb, IFLA_GRE_ERSPAN_DIR, t->dir))
--				goto nla_put_failure;
--			if (nla_put_u16(skb, IFLA_GRE_ERSPAN_HWID, t->hwid))
--				goto nla_put_failure;
--		}
--	}
--
- 	if (nla_put_u32(skb, IFLA_GRE_LINK, p->link) ||
- 	    nla_put_be16(skb, IFLA_GRE_IFLAGS,
- 			 gre_tnl_flags_to_gre_flags(p->i_flags)) ||
-@@ -1550,6 +1532,34 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
- 	return -EMSGSIZE;
- }
- 
-+static int erspan_fill_info(struct sk_buff *skb, const struct net_device *dev)
-+{
-+	struct ip_tunnel *t = netdev_priv(dev);
-+
-+	if (t->erspan_ver <= 2) {
-+		if (t->erspan_ver != 0 && !t->collect_md)
-+			t->parms.o_flags |= TUNNEL_KEY;
-+
-+		if (nla_put_u8(skb, IFLA_GRE_ERSPAN_VER, t->erspan_ver))
-+			goto nla_put_failure;
-+
-+		if (t->erspan_ver == 1) {
-+			if (nla_put_u32(skb, IFLA_GRE_ERSPAN_INDEX, t->index))
-+				goto nla_put_failure;
-+		} else if (t->erspan_ver == 2) {
-+			if (nla_put_u8(skb, IFLA_GRE_ERSPAN_DIR, t->dir))
-+				goto nla_put_failure;
-+			if (nla_put_u16(skb, IFLA_GRE_ERSPAN_HWID, t->hwid))
-+				goto nla_put_failure;
-+		}
-+	}
-+
-+	return ipgre_fill_info(skb, dev);
-+
-+nla_put_failure:
-+	return -EMSGSIZE;
-+}
-+
- static void erspan_setup(struct net_device *dev)
- {
- 	struct ip_tunnel *t = netdev_priv(dev);
-@@ -1628,7 +1638,7 @@ static struct rtnl_link_ops erspan_link_ops __read_mostly = {
- 	.changelink	= erspan_changelink,
- 	.dellink	= ip_tunnel_dellink,
- 	.get_size	= ipgre_get_size,
--	.fill_info	= ipgre_fill_info,
-+	.fill_info	= erspan_fill_info,
- 	.get_link_net	= ip_tunnel_get_link_net,
- };
- 
--- 
-2.38.1
+I tried this using a synthetic test attaching the program to a dummy interface
+and the module couldn't be unloaded while the program was loaded.
 
+In such case, is it possible for the memory to be freed while there are in-use
+percpu metadata dsts?
+
+Eyal.
