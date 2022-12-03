@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB890641815
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 18:24:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6A22641816
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 18:25:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbiLCRYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 12:24:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43478 "EHLO
+        id S229812AbiLCRZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 12:25:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiLCRYi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 12:24:38 -0500
+        with ESMTP id S229765AbiLCRZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 12:25:19 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B6B1E70B;
-        Sat,  3 Dec 2022 09:24:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004311EC44
+        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 09:25:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=b8jU26nVv5zOpuzDY4RwO7PBnJsJWgH0sc80AjiDjCg=; b=0Opbfyx0A7KcUTzMBxsQam5MR2
-        l6MSrcSSRtyJaDFtsvuJcPz7EPzYJo8F4ynaXRbCsckseKpHhXtY4+iCjwqSTJenHcMa5yeXLC9sk
-        nUEidgOVOL46zFwEyJgxDaCUWRgVII7sB5/A1M4lqWymyUKmAPx2EnMsVwJFa1NHXI4a3YFSALpt0
-        kamqwpd3Mn/B3Xg2VIdd3wesfmfG8mrHhfIn+27CIwFDR+pX3P7Z16usnSlH/4VY5F1Bgixddfcno
-        JLwkg5LnNx/9PQnWHj+gEDA85AnJz1IlZMBoUDNqtj6NQRH+Mo3hhpXpSi7YCWHLE33+2M4W9LZ8Q
-        Z57YNhHg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35548)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=H8DP/UAd+ntJsvVkaIU200Z81c3IhL3jFjDwQCdenxs=; b=U/bqytPGP9J2vIypfqsC69bvji
+        o/MgORN0BnpGQRMd95H37svclllCTUr1M8vSYryMPDSKKCE/eHXhok5Voq3QxCP90G80OMXnf2AsV
+        8i1+a0OwufZtoKk8Qc4vkwOyUjrEcxjGiJFP43wWRbOcaGXuiXUIfWs8GmLgSC9H25hYLuN+rn2Ab
+        oi6l/5Vp4E/L4DKufRGxFJ3pWHogIpEf04LnjDjLcjRWaaRu0xP6p1CL5NFPlvnCWv212HQ1ohdZA
+        h2rif10bfn/5yg8EkOUaFcQwKTo3zakpp4IA9x4LgZ34UD5Bn1YtFjBPAMliEzZ2lH+bmmqY/ruVk
+        XidfAimQ==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:37228 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1p1WFe-0005Gi-11; Sat, 03 Dec 2022 17:24:34 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1p1WFb-0005W0-Or; Sat, 03 Dec 2022 17:24:31 +0000
-Date:   Sat, 3 Dec 2022 17:24:31 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     kernel test robot <lkp@intel.com>, devicetree@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev
-Subject: Re: [PATCH net-next v2] net: sfp: clean up i2c-bus property parsing
-Message-ID: <Y4uGT19d1Euz75Vd@shell.armlinux.org.uk>
-References: <E1p1OIG-0098J4-EV@rmk-PC.armlinux.org.uk>
- <202212040026.WN9NQzqq-lkp@intel.com>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1p1WGJ-0005Gv-Nb; Sat, 03 Dec 2022 17:25:15 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1p1WGJ-0098wS-4w; Sat, 03 Dec 2022 17:25:15 +0000
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next v3] net: sfp: clean up i2c-bus property parsing
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202212040026.WN9NQzqq-lkp@intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1p1WGJ-0098wS-4w@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Sat, 03 Dec 2022 17:25:15 +0000
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
@@ -57,47 +58,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 04, 2022 at 12:40:25AM +0800, kernel test robot wrote:
-> Thank you for the patch! Perhaps something to improve:
+We currently have some complicated code in sfp_probe() which gets the
+I2C bus depending on whether the sfp node is DT or ACPI, and we use
+completely separate lookup functions.
 
-Sigh... this is another stupidity.
+This could do with being in a separate function to make the code more
+readable, so move it to a new function, sfp_i2c_get(). We can also use
+fwnode_find_reference() to lookup the I2C bus fwnode before then
+decending into fwnode-type specific parsing.
 
-> 73970055450eeb Russell King          2017-07-25  2701  	if (pdev->dev.of_node) {
-> 73970055450eeb Russell King          2017-07-25 @2702  		struct device_node *node = pdev->dev.of_node;
+A future cleanup would be to move the fwnode-type specific parsing into
+the i2c layer, which is where it really should be.
 
-"node" declared here...
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/sfp.c | 77 +++++++++++++++++++++++--------------------
+ 1 file changed, 41 insertions(+), 36 deletions(-)
 
-> 259c8618b0099b Russell King          2017-12-14  2703  		const struct of_device_id *id;
-> 73970055450eeb Russell King          2017-07-25  2704  
-> 259c8618b0099b Russell King          2017-12-14  2705  		id = of_match_node(sfp_of_match, node);
-
-... and clearly used here, so the code looks to be correct.
-
-However, when CONFIG_OF is not set, of_match_node() does not make use
-of this argument:
-
-#define of_match_node(_matches, _node)  NULL
-
-which results in otherwise correct code issuing a warning when
-CONFIG_OF is disabled... and sure enough, your configuration has:
-
-> # CONFIG_OF is not set
-
-This illustrates just how bad an idea it is to use compiler macros for
-this stuff - it actively hurts compile testing, because you have to
-test every damn combination of configuration options to get proper
-coverage, which is totally and utterly rediculous.
-
-of_match_node() and ACPI_HANDLE_FWNODE() should *both* be inline
-functions when the subsystem is disabled, so that incorrect arguments
-can be detected, and warnings about unused variables such as the one
-you're reporting here doesn't happen.
-
-While the issue lies firmly in the realms of the DT (and ACPI) headers,
-I will yet again respin this patch to sort this out - but really the
-correct solution is to fix the bloody headers so compile coverage
-actually works.
-
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 39fd1811375c..83b99d95b278 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -2642,10 +2642,46 @@ static void sfp_cleanup(void *data)
+ 	kfree(sfp);
+ }
+ 
++static int sfp_i2c_get(struct sfp *sfp)
++{
++	struct acpi_handle *acpi_handle;
++	struct fwnode_handle *h;
++	struct i2c_adapter *i2c;
++	struct device_node *np;
++	int err;
++
++	h = fwnode_find_reference(dev_fwnode(sfp->dev), "i2c-bus", 0);
++	if (IS_ERR(h)) {
++		dev_err(sfp->dev, "missing 'i2c-bus' property\n");
++		return -ENODEV;
++	}
++
++	if (is_acpi_device_node(h)) {
++		acpi_handle = ACPI_HANDLE_FWNODE(h);
++		i2c = i2c_acpi_find_adapter_by_handle(acpi_handle);
++	} else if ((np = to_of_node(h)) != NULL) {
++		i2c = of_find_i2c_adapter_by_node(np);
++	} else {
++		err = -EINVAL;
++		goto put;
++	}
++
++	if (!i2c) {
++		err = -EPROBE_DEFER;
++		goto put;
++	}
++
++	err = sfp_i2c_configure(sfp, i2c);
++	if (err)
++		i2c_put_adapter(i2c);
++put:
++	fwnode_handle_put(h);
++	return err;
++}
++
+ static int sfp_probe(struct platform_device *pdev)
+ {
+ 	const struct sff_data *sff;
+-	struct i2c_adapter *i2c;
+ 	char *sfp_irq_name;
+ 	struct sfp *sfp;
+ 	int err, i;
+@@ -2663,51 +2699,20 @@ static int sfp_probe(struct platform_device *pdev)
+ 	sff = sfp->type = &sfp_data;
+ 
+ 	if (pdev->dev.of_node) {
+-		struct device_node *node = pdev->dev.of_node;
+ 		const struct of_device_id *id;
+-		struct device_node *np;
+ 
+-		id = of_match_node(sfp_of_match, node);
++		id = of_match_node(sfp_of_match, pdev->dev.of_node);
+ 		if (WARN_ON(!id))
+ 			return -EINVAL;
+ 
+ 		sff = sfp->type = id->data;
+-
+-		np = of_parse_phandle(node, "i2c-bus", 0);
+-		if (!np) {
+-			dev_err(sfp->dev, "missing 'i2c-bus' property\n");
+-			return -ENODEV;
+-		}
+-
+-		i2c = of_find_i2c_adapter_by_node(np);
+-		of_node_put(np);
+-	} else if (has_acpi_companion(&pdev->dev)) {
+-		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
+-		struct fwnode_handle *fw = acpi_fwnode_handle(adev);
+-		struct fwnode_reference_args args;
+-		struct acpi_handle *acpi_handle;
+-		int ret;
+-
+-		ret = acpi_node_get_property_reference(fw, "i2c-bus", 0, &args);
+-		if (ret || !is_acpi_device_node(args.fwnode)) {
+-			dev_err(&pdev->dev, "missing 'i2c-bus' property\n");
+-			return -ENODEV;
+-		}
+-
+-		acpi_handle = ACPI_HANDLE_FWNODE(args.fwnode);
+-		i2c = i2c_acpi_find_adapter_by_handle(acpi_handle);
+-	} else {
++	} else if (!has_acpi_companion(&pdev->dev)) {
+ 		return -EINVAL;
+ 	}
+ 
+-	if (!i2c)
+-		return -EPROBE_DEFER;
+-
+-	err = sfp_i2c_configure(sfp, i2c);
+-	if (err < 0) {
+-		i2c_put_adapter(i2c);
++	err = sfp_i2c_get(sfp);
++	if (err)
+ 		return err;
+-	}
+ 
+ 	for (i = 0; i < GPIO_MAX; i++)
+ 		if (sff->gpios & BIT(i)) {
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
