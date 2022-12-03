@@ -2,95 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F06FD641780
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 16:26:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 370DA64178B
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 16:37:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiLCP0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 10:26:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
+        id S229755AbiLCPhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 10:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiLCP03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 10:26:29 -0500
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C3520378
-        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 07:26:27 -0800 (PST)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-3b48b139b46so76664307b3.12
-        for <netdev@vger.kernel.org>; Sat, 03 Dec 2022 07:26:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=bGe4GNyxmwK9fHKcpWPV+aY9F1fVNX/Avi/M8MffBQI=;
-        b=q0AAAtRQUPt6x1NzIQzLDCal68Zv9htM6kw5MefoKLrKHB70OQELY1Be9ug1yQOiZP
-         KlCSVt/SBNT9ZXWMh1MpBxy0EF9Hk4Dh9dcoZrHsXbnJdHzey6ktOBn2jPYrYq/qbc7d
-         jvjuCDZRRfSqkyEa0iEYxu8Bkz3kMHpEMmRy65m/7JfHFHyY6Mq/DmwV56+uCL1VtT20
-         MpWR2PA91JYuaWf0XsLqmW8gkL5Gkz7R7V2q5qVsEZtCe5Au+zwJflTDyWyjY+lUo3UU
-         hSTnZL0GPRGVdfJT8qZt9jXne3Ck0oIdhvQ6lEgzrBKY7jp5YsFb4P9ajhkImosJgJE+
-         qWhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bGe4GNyxmwK9fHKcpWPV+aY9F1fVNX/Avi/M8MffBQI=;
-        b=7dDs9BHBeko+sDFe02VcLBAJN76EEEe0cWwqGF6Svdp5bMG4Z5UnKlpqXQwljwFdhY
-         zwytXo3E2BXQENEgE4rSGoSG+6+aQgcf8aPN90w6uff2IPksWKLTng/Au6LVjLIl7Vu2
-         ECfes2jjgRWbE91tJuvrJbeU/AnpjLy2amIYVG5ynPU3pIwZwBJnXTbE5wghdRsVwJrZ
-         lzZYS3LX1Sf7CJxOv9u6YgidnIjuq/YZvMX3YsuZqjvmpt+7aZ7FYR629QpvcTakF77w
-         v7mm6wWu2q1KfMTjajmFoZrysAX7RXjNHd9EuHDOxSvpBtErbMK5IIhiHtkfL2aiGjom
-         Cl2g==
-X-Gm-Message-State: ANoB5pnCAnIocCJe3wygkQMBgxnc6hDZUon5ZcnduExDz+vMmNL78d7S
-        ohaZsU5/4UF5xx8XOKOjoAGNsGm7xwRTQXtPeoQ=
-X-Google-Smtp-Source: AA0mqf54PrQoV5w4okOLBENvwPVGVbjNmDqfM6qPF4Z8yT5QkCJES0ksNRPMfeBxFGWFgrtPZYcOT5MG5Z1gJEIFSr4=
-X-Received: by 2002:a0d:d90a:0:b0:3e7:c742:f90c with SMTP id
- b10-20020a0dd90a000000b003e7c742f90cmr1033143ywe.475.1670081186602; Sat, 03
- Dec 2022 07:26:26 -0800 (PST)
-MIME-Version: 1.0
-References: <20221203032858.3130339-1-liuhangbin@gmail.com>
-In-Reply-To: <20221203032858.3130339-1-liuhangbin@gmail.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Sat, 3 Dec 2022 07:25:50 -0800
-Message-ID: <CALDO+SbuAAsPHRq=KHh1Z_+DquwdDVJaUqXozGgzoixOUddJNA@mail.gmail.com>
-Subject: Re: [PATCHv2 net] ip_gre: do not report erspan version on GRE interface
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jianlin Shi <jishi@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229502AbiLCPhL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 10:37:11 -0500
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9490F1F9CF;
+        Sat,  3 Dec 2022 07:37:08 -0800 (PST)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 25FCEC01E; Sat,  3 Dec 2022 16:37:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1670081836; bh=8+/C65NBDY0v0RW89Yk+KvRuOiE5ckvyFprjWMjz5YY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CW1cjt68c+e+aLbFm/Hd+zg5T723ITNKM4oL9pXH7tX/3qJy8/xBn7qsoseb3vUDz
+         8vmAipTmn1kUqid6cLwGoeMRWWJZKpNx2v2j5auUttm6EmEkdkCCx3St2+6znHjPXI
+         Yvu5CW2sZN1CvsLtrM+XGocyMiiHMDW5ABbyz5dI00XMxBGmVo3/AEvpHtmdz1wbcI
+         yFy9clMPgVdFHJhYV4YoJ830ZLIe0Wiat3a1mKxxrsaijutklJ2Bc3opxH4NSw+F+w
+         0V6l7K5Vo7KX6pz2qZntjYKtRJdYnT0zeLBDHaZKTUwJNdGny2PfCuxFQOjx5TWB+J
+         0idfhT4O1u4Lw==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 2E939C009;
+        Sat,  3 Dec 2022 16:37:10 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1670081834; bh=8+/C65NBDY0v0RW89Yk+KvRuOiE5ckvyFprjWMjz5YY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=unUT9ds9jwb7N2eFG2l0ezPdfPT81KpA2/D1yP7SF/l5CMRgazxYY1QeentuSRybK
+         SF5eh9B/w19EvVvhhfSNJtX4uE6BriBMdHqwjKZ9ehVhbBNrobwmaQ8staVrder6Ir
+         13SGtmObM2ALaBCcPtWP9eK6kQFjEpcelWiEUTQbvvG9PINb2KLmvwOedOjHGMqQ4j
+         w5C0ltVpOO5yH60WwwtSTq+x7R+ZssmBrnqYm/2f9Yb8yQJd7QMTZSwUkk4mOSsjRe
+         t3sKZm5ISTokpMT4ttdsDNKUytQK2SeQnh7wLBvJQCtnS8lKC3MbHV+0/ilbBIRMuO
+         GNpo4kKouoS6A==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 2ef2e6a7;
+        Sat, 3 Dec 2022 15:36:58 +0000 (UTC)
+Date:   Sun, 4 Dec 2022 00:36:43 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Marco Elver <elver@google.com>, rcu <rcu@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        kunit-dev@googlegroups.com, lkft-triage@lists.linaro.org,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: Re: arm64: allmodconfig: BUG: KCSAN: data-race in p9_client_cb /
+ p9_client_rpc
+Message-ID: <Y4ttC/qESg7Np9mR@codewreck.org>
+References: <CA+G9fYsK5WUxs6p9NaE4e3p7ew_+s0SdW0+FnBgiLWdYYOvoMg@mail.gmail.com>
+ <CANpmjNOQxZ--jXZdqN3tjKE=sd4X6mV4K-PyY40CMZuoB5vQTg@mail.gmail.com>
+ <CA+G9fYs55N3J8TRA557faxvAZSnCTUqnUx+p1GOiCiG+NVfqnw@mail.gmail.com>
+ <Y4e3WC4UYtszfFBe@codewreck.org>
+ <CA+G9fYuJZ1C3802+uLvqJYMjGged36wyW+G1HZJLzrtmbi1bJA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYuJZ1C3802+uLvqJYMjGged36wyW+G1HZJLzrtmbi1bJA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 2, 2022 at 7:29 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> Although the type I ERSPAN is based on the barebones IP + GRE
-> encapsulation and no extra ERSPAN header. Report erspan version on GRE
-> interface looks unreasonable. Fix this by separating the erspan and gre
-> fill info.
+(reply out of order)
 
-Thanks, it's true that current code when using GRE, we will report ERSPAN type,
-which is not necessary.
+Naresh Kamboju wrote on Thu, Dec 01, 2022 at 01:13:25PM +0530:
+> > (You might need to build with at least CONFIG_DEBUG_INFO_REDUCED (or not
+> > reduced), but that is on by default for aarch64)
+> 
+> Thanks for the suggestions.
+> The Kconfig is enabled now.
+> CONFIG_DEBUG_INFO_REDUCED=y
 
->
-> IPv6 GRE does not have this info as IPv6 only supports erspan version
-> 1 and 2.
+It looks enabled in your the config file you linked at, I don't
+understand this remark?
+Did you produce the trace the other day without it and rebuild the
+kernel with it?
+In this case you also have CONFIG_DEBUG_INFO_SPLIT set, so the vmlinux
+file does not contain enough informations to retrieve line numbers or
+types, and in particular addr2line cannot be used on the files you
+provided.
+I've never used split debug infos before, but digging old threads I'm
+not too hopeful unless that changed:
+https://lkml.iu.edu/hypermail/linux/kernel/1711.1/03393.html
+https://sourceware.org/bugzilla/show_bug.cgi?id=22434
 
-I checked the ipv6 GRE, and it doesn't report because we're checking
-in ip6gre_fill_info
-        if (p->erspan_ver == 1 || p->erspan_ver == 2) {
-So it's indeed ok for IPv6 GRE.
+(...a test build later, it's still mostly useless...
+normal build
+$ ./scripts/faddr2line vmlinux __schedule+0x314
+__schedule+0x314/0x6c0:
+perf_fetch_caller_regs at include/linux/perf_event.h:1286
+(inlined by) __perf_sw_event_sched at include/linux/perf_event.h:1307
+(inlined by) perf_event_task_sched_out at include/linux/perf_event.h:1347
+(inlined by) prepare_task_switch at kernel/sched/core.c:5053
+(inlined by) context_switch at kernel/sched/core.c:5195
+(inlined by) __schedule at kernel/sched/core.c:6561
 
->
-> Reported-by: Jianlin Shi <jishi@redhat.com>
-> Fixes: f989d546a2d5 ("erspan: Add type I version 0 support.")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+split dwarf build
+$ ./scripts/faddr2line vmlinux __schedule+0x314
+aarch64-linux-gnu-addr2line: DWARF error: could not find abbrev number 860923
+__schedule+0x314/0x780:
+aarch64-linux-gnu-addr2line: DWARF error: could not find abbrev number 860923
+__schedule at core.c:?
 
-Acked-by: William Tu <u9012063@gmail.com>
+I'd tend to agree build time/space savings aren't worth the developer
+time.
+)
+
+Anyway, address sanitizer used to have a kasan_symbolize.py script but
+it looks like it got removed as no longer maintained, and I'm not sure
+what's a good tool to just run these logs through nowadays, might want
+to ask other test projects folks what they use...
+
+> > If you still have the vmlinux binary from that build (or if you can
+> > rebuild with the same options), running this text through addr2line
+> > should not take you too long.
+> 
+> Please find build artifacts in this link,
+>  - config
+>  - vmlinux
+>  - System.map
+> https://people.linaro.org/~anders.roxell/next-20221130-allmodconfig-arm64-tuxmake-build/
+
+So from the disassembly...
+
+ - p9_client_cb+0x84 is right before the wake_up and after the wmb(), so
+I assume we're on writing req->status line 441:
+
+---
+p9_client_cb(...)
+{
+...
+        smp_wmb();
+        req->status = status;
+
+        wake_up(&req->wq);
+---
+
+report is about a write from 2 to 3, this makes sense we're going from
+REQ_STATUS_SENT (2) to REQ_STATUS_RCVD (3).
+
+
+ - p9_client_rpc+0x1d0 isn't as simple to pin down as I'm having a hard
+time making sense of the kcsan instrumentations...
+The report is talking about a READ of 4 bytes at the same address, so
+I'd expect to see an ccess to req->status (and we're likely spot on
+wait_event_killable which checks req->status), but this doesn't seem to
+match up with the assembly: here's the excerpt from disass around 0x1d0
+= 464 (why doesn't gdb provide hex offsets..)
+---
+   0xffff80000a46e9b8 <+440>:	cmn	w28, #0x200
+   0xffff80000a46e9bc <+444>:	ccmn	w28, #0xe, #0x4, ne  // ne = any
+   0xffff80000a46e9c0 <+448>:	b.eq	0xffff80000a46ecfc <p9_client_rpc+1276>  // b.none
+   0xffff80000a46e9c4 <+452>:	mov	x0, x25
+   0xffff80000a46e9c8 <+456>:	bl	0xffff800008543640 <__tsan_write4>
+   0xffff80000a46e9cc <+460>:	mov	w0, #0x2                   	// #2
+   0xffff80000a46e9d0 <+464>:	str	w0, [x21, #88]
+   0xffff80000a46e9d4 <+468>:	b	0xffff80000a46ecfc <p9_client_rpc+1276>
+   0xffff80000a46e9d8 <+472>:	mov	w27, #0x1                   	// #1
+   0xffff80000a46e9dc <+476>:	mov	x0, x23
+   0xffff80000a46e9e0 <+480>:	mov	w1, #0x2bc                 	// #700
+   0xffff80000a46e9e4 <+484>:	bl	0xffff800008192d80 <__might_sleep>
+---
+
++464 is a write to x21 (client 'c', from looking at how it is passed
+into x0 for other function calls) at offset 88 (status field according
+to dwarf infos from a rebuild with your config/same sources)
+
+So, err, I'm a bit lost on this side.
+But I can't really find a problem with what KCSAN complains about --
+we are indeed accessing status from two threads without any locks.
+Instead of a lock, we're using a barrier so that:
+ - recv thread/cb: writes to req stuff || write to req status
+ - p9_client_rpc: reads req status || reads other fields from req
+
+Which has been working well enough (at least, without the barrier things
+blow up quite fast).
+
+So can I'll just consider this a false positive, but if someone knows
+how much one can read into this that'd be appreciated.
+
+
+Thanks,
+--
+Dominique
+
+ 
