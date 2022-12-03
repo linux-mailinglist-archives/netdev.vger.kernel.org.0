@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71CC6641961
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 23:14:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 208A2641963
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 23:14:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbiLCWN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 17:13:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
+        id S229630AbiLCWOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 17:14:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiLCWNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 17:13:50 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14181140C2
+        with ESMTP id S229687AbiLCWNv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 17:13:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFC01C92C
         for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 14:13:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 86DD8CE093C
-        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 22:13:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A29F3C433C1;
-        Sat,  3 Dec 2022 22:13:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3371BB807ED
+        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 22:13:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C69B1C43470;
+        Sat,  3 Dec 2022 22:13:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670105625;
-        bh=fjKU3AW0EZymAbS2IlpPqXuf2Mz0yJ8SaBSmq6wl1hQ=;
+        s=k20201202; t=1670105626;
+        bh=/qbyTmPgNv+Z/qj/vSO0xJFvVVoAW1E2Wcyl5xOzbVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UDoPcev22DqZgjzpazHYbd0i57CCQvfrcm3h+HmH10g/Ru0uXJd0S8ZxqTMTA7Ugm
-         /37qoCFV372w6mFuVF0j/NVi2PSfFs8NUMyoPM7Rf6wj6HHfZdu2L2jzHdr/3b+Xge
-         fRw2amJxgV/8FVuGeMuDGOyafnpL4kD/i9z8cyecrhZDFO/QjkGJXU22ihXOO6THJk
-         xly3XoAYmLMdP7IbSeoXXrwKcH1DbpPLn7qUlU2Q+EUBmlVSy8St/VQTjIfvhKXYit
-         yLaGqmiJx87dvEBgAJVlujFsP3LOtnMLSkpy+uL04KySYWvDDKLSbGTK2OsEj5ydGn
-         d0X/3Ii1gQizQ==
+        b=AKpRaRFHgRtYUxkH95OigFvVKOzal4R0eLvrAe1InJTk0AFWAEOGCt0ItQ2xNj7UF
+         WLhTWCjUkHwBrgqadiEe2od5PY3VNt3sKIygzzokkq5r84099mXzcTrCcYlRWPKb3E
+         garWhk3a+y0toJZMboLTGbAbReoSuc5nLfcgPOdP9U0NCTOGSHLPIviP5iqMYNUVkJ
+         tYh34tcJUfM7yN8TzWUnpjg0EgTCWbjXwvBKkiD5uTn2PP0QwHPpNXumrrj5MYHO/g
+         3RKdPTzysrl0lMPorxIY7/upvGsiAmk0RgO6nfqS0qCjDiCAqvr0kpiuXku40tSfg5
+         +eePdEyL7jvgQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
         Roi Dayan <roid@nvidia.com>
-Subject: [net-next 03/15] net/mlx5e: TC, reuse flow attribute post parser processing
-Date:   Sat,  3 Dec 2022 14:13:25 -0800
-Message-Id: <20221203221337.29267-4-saeed@kernel.org>
+Subject: [net-next 04/15] net/mlx5e: TC, add terminating actions
+Date:   Sat,  3 Dec 2022 14:13:26 -0800
+Message-Id: <20221203221337.29267-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221203221337.29267-1-saeed@kernel.org>
 References: <20221203221337.29267-1-saeed@kernel.org>
@@ -58,179 +58,112 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Oz Shlomo <ozsh@nvidia.com>
 
-After the tc action parsing phase the flow attribute is initialized with
-relevant eswitch offload objects such as tunnel, vlan, header modify and
-counter attributes. The post processing is done both for fdb and post-action
-attributes.
-
-Reuse the flow attribute post parsing logic by both fdb and post-action
-offloads.
+Extend act api to identify actions that terminate action list.
+Pre-step for terminating branching actions.
 
 Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 96 ++++++++++---------
- 1 file changed, 51 insertions(+), 45 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c    | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h    | 3 +++
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c   | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c   | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c | 7 +++++++
+ .../net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c | 1 +
+ 7 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 10d1609ece58..46222541e435 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -606,6 +606,12 @@ int mlx5e_get_flow_namespace(struct mlx5e_tc_flow *flow)
- 		MLX5_FLOW_NAMESPACE_FDB : MLX5_FLOW_NAMESPACE_KERNEL;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c
+index 21aab96357b5..a278f52d52b0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c
+@@ -28,4 +28,5 @@ tc_act_parse_accept(struct mlx5e_tc_act_parse_state *parse_state,
+ struct mlx5e_tc_act mlx5e_tc_act_accept = {
+ 	.can_offload = tc_act_can_offload_accept,
+ 	.parse_action = tc_act_parse_accept,
++	.is_terminating_action = true,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
+index 3337241cfd84..eba0c8698926 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
+@@ -11,7 +11,7 @@ static struct mlx5e_tc_act *tc_acts_fdb[NUM_FLOW_ACTIONS] = {
+ 	[FLOW_ACTION_DROP] = &mlx5e_tc_act_drop,
+ 	[FLOW_ACTION_TRAP] = &mlx5e_tc_act_trap,
+ 	[FLOW_ACTION_GOTO] = &mlx5e_tc_act_goto,
+-	[FLOW_ACTION_REDIRECT] = &mlx5e_tc_act_mirred,
++	[FLOW_ACTION_REDIRECT] = &mlx5e_tc_act_redirect,
+ 	[FLOW_ACTION_MIRRED] = &mlx5e_tc_act_mirred,
+ 	[FLOW_ACTION_REDIRECT_INGRESS] = &mlx5e_tc_act_redirect_ingress,
+ 	[FLOW_ACTION_VLAN_PUSH] = &mlx5e_tc_act_vlan,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
+index e1570ff056ae..8ede44902284 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
+@@ -60,6 +60,8 @@ struct mlx5e_tc_act {
  
-+static struct mlx5_core_dev *
-+get_flow_counter_dev(struct mlx5e_tc_flow *flow)
-+{
-+	return mlx5e_is_eswitch_flow(flow) ? flow->attr->esw_attr->counter_dev : flow->priv->mdev;
-+}
+ 	int (*stats_action)(struct mlx5e_priv *priv,
+ 			    struct flow_offload_action *fl_act);
 +
- static struct mod_hdr_tbl *
- get_mod_hdr_table(struct mlx5e_priv *priv, struct mlx5e_tc_flow *flow)
- {
-@@ -1718,6 +1724,48 @@ clean_encap_dests(struct mlx5e_priv *priv,
- 	}
- }
++	bool is_terminating_action;
+ };
  
-+static int
-+post_process_attr(struct mlx5e_tc_flow *flow,
-+		  struct mlx5_flow_attr *attr,
-+		  bool is_post_act_attr,
-+		  struct netlink_ext_ack *extack)
-+{
-+	struct mlx5_eswitch *esw = flow->priv->mdev->priv.eswitch;
-+	bool vf_tun;
-+	int err = 0;
+ struct mlx5e_tc_flow_action {
+@@ -81,6 +83,7 @@ extern struct mlx5e_tc_act mlx5e_tc_act_vlan_mangle;
+ extern struct mlx5e_tc_act mlx5e_tc_act_mpls_push;
+ extern struct mlx5e_tc_act mlx5e_tc_act_mpls_pop;
+ extern struct mlx5e_tc_act mlx5e_tc_act_mirred;
++extern struct mlx5e_tc_act mlx5e_tc_act_redirect;
+ extern struct mlx5e_tc_act mlx5e_tc_act_mirred_nic;
+ extern struct mlx5e_tc_act mlx5e_tc_act_ct;
+ extern struct mlx5e_tc_act mlx5e_tc_act_sample;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c
+index dd025a95c439..7d16aeabb119 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c
+@@ -27,4 +27,5 @@ tc_act_parse_drop(struct mlx5e_tc_act_parse_state *parse_state,
+ struct mlx5e_tc_act mlx5e_tc_act_drop = {
+ 	.can_offload = tc_act_can_offload_drop,
+ 	.parse_action = tc_act_parse_drop,
++	.is_terminating_action = true,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c
+index 25174f68613e..0923e6db2d0a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c
+@@ -121,4 +121,5 @@ struct mlx5e_tc_act mlx5e_tc_act_goto = {
+ 	.can_offload = tc_act_can_offload_goto,
+ 	.parse_action = tc_act_parse_goto,
+ 	.post_parse = tc_act_post_parse_goto,
++	.is_terminating_action = true,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c
+index 4ac7de3f6afa..78c427b38048 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c
+@@ -334,4 +334,11 @@ tc_act_parse_mirred(struct mlx5e_tc_act_parse_state *parse_state,
+ struct mlx5e_tc_act mlx5e_tc_act_mirred = {
+ 	.can_offload = tc_act_can_offload_mirred,
+ 	.parse_action = tc_act_parse_mirred,
++	.is_terminating_action = false,
++};
 +
-+	err = set_encap_dests(flow->priv, flow, attr, extack, &vf_tun);
-+	if (err)
-+		goto err_out;
-+
-+	if (mlx5e_is_eswitch_flow(flow)) {
-+		err = mlx5_eswitch_add_vlan_action(esw, attr);
-+		if (err)
-+			goto err_out;
-+	}
-+
-+	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR) {
-+		if (vf_tun || is_post_act_attr) {
-+			err = mlx5e_tc_add_flow_mod_hdr(flow->priv, flow, attr);
-+			if (err)
-+				goto err_out;
-+		} else {
-+			err = mlx5e_attach_mod_hdr(flow->priv, flow, attr->parse_attr);
-+			if (err)
-+				goto err_out;
-+		}
-+	}
-+
-+	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_COUNT) {
-+		err = alloc_flow_attr_counter(get_flow_counter_dev(flow), attr);
-+		if (err)
-+			goto err_out;
-+	}
-+
-+err_out:
-+	return err;
-+}
-+
- static int
- mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
- 		      struct mlx5e_tc_flow *flow,
-@@ -1728,7 +1776,6 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
- 	struct mlx5_flow_attr *attr = flow->attr;
- 	struct mlx5_esw_flow_attr *esw_attr;
- 	u32 max_prio, max_chain;
--	bool vf_tun;
- 	int err = 0;
- 
- 	parse_attr = attr->parse_attr;
-@@ -1818,32 +1865,10 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
- 		esw_attr->int_port = int_port;
- 	}
- 
--	err = set_encap_dests(priv, flow, attr, extack, &vf_tun);
--	if (err)
--		goto err_out;
--
--	err = mlx5_eswitch_add_vlan_action(esw, attr);
-+	err = post_process_attr(flow, attr, false, extack);
- 	if (err)
- 		goto err_out;
- 
--	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR) {
--		if (vf_tun) {
--			err = mlx5e_tc_add_flow_mod_hdr(priv, flow, attr);
--			if (err)
--				goto err_out;
--		} else {
--			err = mlx5e_attach_mod_hdr(priv, flow, parse_attr);
--			if (err)
--				goto err_out;
--		}
--	}
--
--	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_COUNT) {
--		err = alloc_flow_attr_counter(esw_attr->counter_dev, attr);
--		if (err)
--			goto err_out;
--	}
--
- 	/* we get here if one of the following takes place:
- 	 * (1) there's no error
- 	 * (2) there's an encap action and we don't have valid neigh
-@@ -3639,12 +3664,6 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
- 	return attr2;
- }
- 
--static struct mlx5_core_dev *
--get_flow_counter_dev(struct mlx5e_tc_flow *flow)
--{
--	return mlx5e_is_eswitch_flow(flow) ? flow->attr->esw_attr->counter_dev : flow->priv->mdev;
--}
--
- struct mlx5_flow_attr *
- mlx5e_tc_get_encap_attr(struct mlx5e_tc_flow *flow)
- {
-@@ -3754,7 +3773,6 @@ alloc_flow_post_acts(struct mlx5e_tc_flow *flow, struct netlink_ext_ack *extack)
- 	struct mlx5e_post_act *post_act = get_post_action(flow->priv);
- 	struct mlx5_flow_attr *attr, *next_attr = NULL;
- 	struct mlx5e_post_act_handle *handle;
--	bool vf_tun;
- 	int err;
- 
- 	/* This is going in reverse order as needed.
-@@ -3776,26 +3794,14 @@ alloc_flow_post_acts(struct mlx5e_tc_flow *flow, struct netlink_ext_ack *extack)
- 		if (list_is_last(&attr->list, &flow->attrs))
- 			break;
- 
--		err = set_encap_dests(flow->priv, flow, attr, extack, &vf_tun);
-+		err = actions_prepare_mod_hdr_actions(flow->priv, flow, attr, extack);
- 		if (err)
- 			goto out_free;
- 
--		err = actions_prepare_mod_hdr_actions(flow->priv, flow, attr, extack);
-+		err = post_process_attr(flow, attr, true, extack);
- 		if (err)
- 			goto out_free;
- 
--		if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR) {
--			err = mlx5e_tc_add_flow_mod_hdr(flow->priv, flow, attr);
--			if (err)
--				goto out_free;
--		}
--
--		if (attr->action & MLX5_FLOW_CONTEXT_ACTION_COUNT) {
--			err = alloc_flow_attr_counter(get_flow_counter_dev(flow), attr);
--			if (err)
--				goto out_free;
--		}
--
- 		handle = mlx5e_tc_post_act_add(post_act, attr);
- 		if (IS_ERR(handle)) {
- 			err = PTR_ERR(handle);
++struct mlx5e_tc_act mlx5e_tc_act_redirect = {
++	.can_offload = tc_act_can_offload_mirred,
++	.parse_action = tc_act_parse_mirred,
++	.is_terminating_action = true,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c
+index 90b4c1b34776..7f409692b18f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c
+@@ -48,4 +48,5 @@ tc_act_parse_mirred_nic(struct mlx5e_tc_act_parse_state *parse_state,
+ struct mlx5e_tc_act mlx5e_tc_act_mirred_nic = {
+ 	.can_offload = tc_act_can_offload_mirred_nic,
+ 	.parse_action = tc_act_parse_mirred_nic,
++	.is_terminating_action = true,
+ };
 -- 
 2.38.1
 
