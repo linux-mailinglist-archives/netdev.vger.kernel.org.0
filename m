@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB15F641956
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 23:12:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA91641955
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 23:11:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbiLCWLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 17:11:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
+        id S229503AbiLCWLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 17:11:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiLCWLc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 17:11:32 -0500
+        with ESMTP id S229450AbiLCWL3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 17:11:29 -0500
+X-Greylist: delayed 1015 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 03 Dec 2022 14:11:27 PST
 Received: from mx01lb.world4you.com (mx01lb.world4you.com [81.19.149.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90C81C434;
-        Sat,  3 Dec 2022 14:11:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726A61C434;
+        Sat,  3 Dec 2022 14:11:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+1pzVMjrXxDSSspIV0bVsNsHo7Kcxn6MpXhlD84VVuA=; b=NztCf5W3A/M6JtoPjoe5TYiTxH
-        lseg5GN5EMrfznnENXH+4W4Hfs1biB/NUz3ApYLg7xk03r4STXMJY8Y4PbYZTySKftb/surN3AMNQ
-        +DueDahRdl7A+wKn8q1CeMqXFgAvZ4aOG6/Vk5BwZ7SLNwiVnspD0KACLRL2aJY3ee5c=;
+        bh=6mLp75EylkcS0zpNAr3dcPmCuuK0krLzoFoUhQH+z4I=; b=vR03Cm1oW93PCAWvF74IEVt2xT
+        P0//q7CKk9Lok/+xYtZ/lH4wXoUAlDOXekR1qrdEwsmFBgpRDBCFEYy0XyQ2hadAefTcL3uySWIyx
+        RyantghYPnTbsTAZXFssJG8eAaV+i3hFvPdMIuQ5VZ2stgbcLNB6fEo2lG5skfiiiAuY=;
 Received: from 88-117-56-227.adsl.highway.telekom.at ([88.117.56.227] helo=hornet.engleder.at)
         by mx01lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gerhard@engleder-embedded.com>)
-        id 1p1aSu-0003Ir-Ts; Sat, 03 Dec 2022 22:54:33 +0100
+        id 1p1aSv-0003Ir-N5; Sat, 03 Dec 2022 22:54:33 +0100
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
         hawk@kernel.org, john.fastabend@gmail.com,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next 5/6] tsnep: Add RX queue info for XDP support
-Date:   Sat,  3 Dec 2022 22:54:15 +0100
-Message-Id: <20221203215416.13465-6-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next 6/6] tsnep: Add XDP RX support
+Date:   Sat,  3 Dec 2022 22:54:16 +0100
+Message-Id: <20221203215416.13465-7-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221203215416.13465-1-gerhard@engleder-embedded.com>
 References: <20221203215416.13465-1-gerhard@engleder-embedded.com>
@@ -53,163 +54,190 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Register xdp_rxq_info with page_pool memory model. This is needed for
-XDP buffer handling.
+If BPF program is set up, then run BPF program for every received frame
+and execute the selected action.
+
+Test results with A53 1.2GHz:
+
+XDP_DROP (samples/bpf/xdp1)
+proto 17:     865683 pkt/s
+
+XDP_TX (samples/bpf/xdp2)
+proto 17:     253594 pkt/s
+
+XDP_REDIRECT (samples/bpf/xdpsock)
+ sock0@eth2:0 rxdrop xdp-drv
+                   pps            pkts           1.00
+rx                 862,258        4,514,166
+tx                 0              0
+
+XDP_REDIRECT (samples/bpf/xdp_redirect)
+eth2->eth1         608,895 rx/s   0 err,drop/s   608,895 xmit/s
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- drivers/net/ethernet/engleder/tsnep.h      |  5 ++--
- drivers/net/ethernet/engleder/tsnep_main.c | 34 +++++++++++++++++-----
- 2 files changed, 30 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/engleder/tsnep_main.c | 100 +++++++++++++++++++++
+ 1 file changed, 100 insertions(+)
 
-diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index 0e7fc36a64e1..70bc133d4a9d 100644
---- a/drivers/net/ethernet/engleder/tsnep.h
-+++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -127,6 +127,7 @@ struct tsnep_rx {
- 	u32 owner_counter;
- 	int increment_owner_counter;
- 	struct page_pool *page_pool;
-+	struct xdp_rxq_info xdp_rxq;
- 
- 	u32 packets;
- 	u32 bytes;
-@@ -139,11 +140,11 @@ struct tsnep_queue {
- 	struct tsnep_adapter *adapter;
- 	char name[IFNAMSIZ + 9];
- 
-+	struct napi_struct napi;
-+
- 	struct tsnep_tx *tx;
- 	struct tsnep_rx *rx;
- 
--	struct napi_struct napi;
--
- 	int irq;
- 	u32 irq_mask;
- 	void __iomem *irq_delay_addr;
 diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index d7dcac641180..725b2a1e7be4 100644
+index 725b2a1e7be4..4e3c6bd3dc9f 100644
 --- a/drivers/net/ethernet/engleder/tsnep_main.c
 +++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -833,6 +833,9 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
+@@ -27,6 +27,7 @@
+ #include <linux/phy.h>
+ #include <linux/iopoll.h>
+ #include <linux/bpf.h>
++#include <linux/bpf_trace.h>
+ 
+ #define TSNEP_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
+ #define TSNEP_HEADROOM ALIGN(max(TSNEP_SKB_PAD, XDP_PACKET_HEADROOM), 4)
+@@ -44,6 +45,11 @@
+ #define TSNEP_COALESCE_USECS_MAX     ((ECM_INT_DELAY_MASK >> ECM_INT_DELAY_SHIFT) * \
+ 				      ECM_INT_DELAY_BASE_US + ECM_INT_DELAY_BASE_US - 1)
+ 
++#define TSNEP_XDP_PASS		0
++#define TSNEP_XDP_CONSUMED	BIT(0)
++#define TSNEP_XDP_TX		BIT(1)
++#define TSNEP_XDP_REDIRECT	BIT(2)
++
+ enum {
+ 	__TSNEP_DOWN,
+ };
+@@ -819,6 +825,11 @@ static inline unsigned int tsnep_rx_offset(struct tsnep_rx *rx)
+ 	return TSNEP_SKB_PAD;
+ }
+ 
++static inline unsigned int tsnep_rx_offset_xdp(void)
++{
++	return XDP_PACKET_HEADROOM;
++}
++
+ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
+ {
+ 	struct device *dmadev = rx->adapter->dmadev;
+@@ -1024,6 +1035,65 @@ static int tsnep_rx_refill(struct tsnep_rx *rx, int count, bool reuse)
+ 	return i;
+ }
+ 
++static int tsnep_xdp_run_prog(struct tsnep_rx *rx, struct bpf_prog *prog,
++			      struct xdp_buff *xdp)
++{
++	unsigned int length;
++	unsigned int sync;
++	u32 act;
++
++	length = xdp->data_end - xdp->data_hard_start - tsnep_rx_offset_xdp();
++
++	act = bpf_prog_run_xdp(prog, xdp);
++
++	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
++	sync = xdp->data_end - xdp->data_hard_start - tsnep_rx_offset_xdp();
++	sync = max(sync, length);
++
++	switch (act) {
++	case XDP_PASS:
++		return TSNEP_XDP_PASS;
++	case XDP_TX:
++		if (tsnep_xdp_xmit_back(rx->adapter, xdp) < 0)
++			goto out_failure;
++		return TSNEP_XDP_TX;
++	case XDP_REDIRECT:
++		if (xdp_do_redirect(rx->adapter->netdev, xdp, prog) < 0)
++			goto out_failure;
++		return TSNEP_XDP_REDIRECT;
++	default:
++		bpf_warn_invalid_xdp_action(rx->adapter->netdev, prog, act);
++		fallthrough;
++	case XDP_ABORTED:
++out_failure:
++		trace_xdp_exception(rx->adapter->netdev, prog, act);
++		fallthrough;
++	case XDP_DROP:
++		page_pool_put_page(rx->page_pool, virt_to_head_page(xdp->data),
++				   sync, true);
++		return TSNEP_XDP_CONSUMED;
++	}
++}
++
++static void tsnep_finalize_xdp(struct tsnep_adapter *adapter, int status)
++{
++	int cpu = smp_processor_id();
++	int queue;
++	struct netdev_queue *nq;
++
++	if (status & TSNEP_XDP_TX) {
++		queue = cpu % adapter->num_tx_queues;
++		nq = netdev_get_tx_queue(adapter->netdev, queue);
++
++		__netif_tx_lock(nq, cpu);
++		tsnep_xdp_xmit_flush(&adapter->tx[queue]);
++		__netif_tx_unlock(nq);
++	}
++
++	if (status & TSNEP_XDP_REDIRECT)
++		xdp_do_flush();
++}
++
+ static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
+ 				       int length)
+ {
+@@ -1062,12 +1132,17 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
+ 	int desc_available;
+ 	int done = 0;
+ 	enum dma_data_direction dma_dir;
++	struct bpf_prog *prog;
+ 	struct tsnep_rx_entry *entry;
++	struct xdp_buff xdp;
++	int xdp_status = 0;
+ 	struct sk_buff *skb;
+ 	int length;
++	int retval;
+ 
+ 	desc_available = tsnep_rx_desc_available(rx);
+ 	dma_dir = page_pool_get_dma_dir(rx->page_pool);
++	prog = READ_ONCE(rx->adapter->xdp_prog);
+ 
+ 	while (likely(done < budget) && (rx->read != rx->write)) {
+ 		entry = &rx->entry[rx->read];
+@@ -1111,6 +1186,28 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
+ 		rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
+ 		desc_available++;
+ 
++		if (prog) {
++			xdp_init_buff(&xdp, PAGE_SIZE, &rx->xdp_rxq);
++			xdp_prepare_buff(&xdp, page_address(entry->page),
++					 tsnep_rx_offset_xdp() + TSNEP_RX_INLINE_METADATA_SIZE,
++					 length - TSNEP_RX_INLINE_METADATA_SIZE,
++					 false);
++			retval = tsnep_xdp_run_prog(rx, prog, &xdp);
++		} else {
++			retval = TSNEP_XDP_PASS;
++		}
++		if (retval) {
++			if (retval & (TSNEP_XDP_TX | TSNEP_XDP_REDIRECT))
++				xdp_status |= retval;
++
++			rx->packets++;
++			rx->bytes += length - TSNEP_RX_INLINE_METADATA_SIZE;
++
++			entry->page = NULL;
++
++			continue;
++		}
++
+ 		skb = tsnep_build_skb(rx, entry->page, length);
+ 		if (skb) {
+ 			page_pool_release_page(rx->page_pool, entry->page);
+@@ -1129,6 +1226,9 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
  		entry->page = NULL;
  	}
  
-+	if (xdp_rxq_info_is_reg(&rx->xdp_rxq))
-+		xdp_rxq_info_unreg(&rx->xdp_rxq);
++	if (xdp_status)
++		tsnep_finalize_xdp(rx->adapter, xdp_status);
 +
- 	if (rx->page_pool)
- 		page_pool_destroy(rx->page_pool);
+ 	if (desc_available)
+ 		tsnep_rx_refill(rx, desc_available, false);
  
-@@ -848,7 +851,7 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
- 	}
- }
- 
--static int tsnep_rx_ring_init(struct tsnep_rx *rx)
-+static int tsnep_rx_ring_init(struct tsnep_rx *rx, unsigned int napi_id)
- {
- 	struct device *dmadev = rx->adapter->dmadev;
- 	struct tsnep_rx_entry *entry;
-@@ -891,6 +894,15 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
- 		goto failed;
- 	}
- 
-+	retval = xdp_rxq_info_reg(&rx->xdp_rxq, rx->adapter->netdev,
-+				  rx->queue_index, napi_id);
-+	if (retval)
-+		goto failed;
-+	retval = xdp_rxq_info_reg_mem_model(&rx->xdp_rxq, MEM_TYPE_PAGE_POOL,
-+					    rx->page_pool);
-+	if (retval)
-+		goto failed;
-+
- 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
- 		entry = &rx->entry[i];
- 		next_entry = &rx->entry[(i + 1) % TSNEP_RING_SIZE];
-@@ -1139,7 +1151,8 @@ static bool tsnep_rx_pending(struct tsnep_rx *rx)
- }
- 
- static int tsnep_rx_open(struct tsnep_adapter *adapter, void __iomem *addr,
--			 int queue_index, struct tsnep_rx *rx)
-+			 unsigned int napi_id, int queue_index,
-+			 struct tsnep_rx *rx)
- {
- 	dma_addr_t dma;
- 	int retval;
-@@ -1149,7 +1162,7 @@ static int tsnep_rx_open(struct tsnep_adapter *adapter, void __iomem *addr,
- 	rx->addr = addr;
- 	rx->queue_index = queue_index;
- 
--	retval = tsnep_rx_ring_init(rx);
-+	retval = tsnep_rx_ring_init(rx, napi_id);
- 	if (retval)
- 		return retval;
- 
-@@ -1277,6 +1290,7 @@ int tsnep_netdev_open(struct net_device *netdev)
- {
- 	struct tsnep_adapter *adapter = netdev_priv(netdev);
- 	int i;
-+	unsigned int napi_id;
- 	void __iomem *addr;
- 	int tx_queue_index = 0;
- 	int rx_queue_index = 0;
-@@ -1284,6 +1298,11 @@ int tsnep_netdev_open(struct net_device *netdev)
- 
- 	for (i = 0; i < adapter->num_queues; i++) {
- 		adapter->queue[i].adapter = adapter;
-+
-+		netif_napi_add(adapter->netdev, &adapter->queue[i].napi,
-+			       tsnep_poll);
-+		napi_id = adapter->queue[i].napi.napi_id;
-+
- 		if (adapter->queue[i].tx) {
- 			addr = adapter->addr + TSNEP_QUEUE(tx_queue_index);
- 			retval = tsnep_tx_open(adapter, addr, tx_queue_index,
-@@ -1294,7 +1313,7 @@ int tsnep_netdev_open(struct net_device *netdev)
- 		}
- 		if (adapter->queue[i].rx) {
- 			addr = adapter->addr + TSNEP_QUEUE(rx_queue_index);
--			retval = tsnep_rx_open(adapter, addr,
-+			retval = tsnep_rx_open(adapter, addr, napi_id,
- 					       rx_queue_index,
- 					       adapter->queue[i].rx);
- 			if (retval)
-@@ -1326,8 +1345,6 @@ int tsnep_netdev_open(struct net_device *netdev)
- 		goto phy_failed;
- 
- 	for (i = 0; i < adapter->num_queues; i++) {
--		netif_napi_add(adapter->netdev, &adapter->queue[i].napi,
--			       tsnep_poll);
- 		napi_enable(&adapter->queue[i].napi);
- 
- 		tsnep_enable_irq(adapter, adapter->queue[i].irq_mask);
-@@ -1348,6 +1365,8 @@ int tsnep_netdev_open(struct net_device *netdev)
- 			tsnep_rx_close(adapter->queue[i].rx);
- 		if (adapter->queue[i].tx)
- 			tsnep_tx_close(adapter->queue[i].tx);
-+
-+		netif_napi_del(&adapter->queue[i].napi);
- 	}
- 	return retval;
- }
-@@ -1366,7 +1385,6 @@ int tsnep_netdev_close(struct net_device *netdev)
- 		tsnep_disable_irq(adapter, adapter->queue[i].irq_mask);
- 
- 		napi_disable(&adapter->queue[i].napi);
--		netif_napi_del(&adapter->queue[i].napi);
- 
- 		tsnep_free_irq(&adapter->queue[i], i == 0);
- 
-@@ -1374,6 +1392,8 @@ int tsnep_netdev_close(struct net_device *netdev)
- 			tsnep_rx_close(adapter->queue[i].rx);
- 		if (adapter->queue[i].tx)
- 			tsnep_tx_close(adapter->queue[i].tx);
-+
-+		netif_napi_del(&adapter->queue[i].napi);
- 	}
- 
- 	return 0;
 -- 
 2.30.2
 
