@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3391A641957
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 23:12:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB15F641956
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 23:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbiLCWLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 17:11:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
+        id S229531AbiLCWLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 17:11:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiLCWLg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 17:11:36 -0500
+        with ESMTP id S229450AbiLCWLc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 17:11:32 -0500
 Received: from mx01lb.world4you.com (mx01lb.world4you.com [81.19.149.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7B41C435;
-        Sat,  3 Dec 2022 14:11:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90C81C434;
+        Sat,  3 Dec 2022 14:11:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=FgM2mbgkRu2OhStX6TU8FKTYxc4hNus0Qh81nY7PSss=; b=oXv+CO1pUQ5NN5XCUvJrLcV7Tj
-        iNMn+rdAOx4K4ADvo2x1w6GugbZhk8DitMJPfUg5Ikewulj0xemjeyVc1aAEXW3ZbpbG/drLVJNoy
-        +HjrUOQ2f2JITKYjfGLU7K+/417faJ38CDOXLUrJIiSqwRXFxxgbiUCE/UpQnXEsBXcs=;
+        bh=+1pzVMjrXxDSSspIV0bVsNsHo7Kcxn6MpXhlD84VVuA=; b=NztCf5W3A/M6JtoPjoe5TYiTxH
+        lseg5GN5EMrfznnENXH+4W4Hfs1biB/NUz3ApYLg7xk03r4STXMJY8Y4PbYZTySKftb/surN3AMNQ
+        +DueDahRdl7A+wKn8q1CeMqXFgAvZ4aOG6/Vk5BwZ7SLNwiVnspD0KACLRL2aJY3ee5c=;
 Received: from 88-117-56-227.adsl.highway.telekom.at ([88.117.56.227] helo=hornet.engleder.at)
         by mx01lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gerhard@engleder-embedded.com>)
-        id 1p1aSu-0003Ir-A2; Sat, 03 Dec 2022 22:54:32 +0100
+        id 1p1aSu-0003Ir-Ts; Sat, 03 Dec 2022 22:54:33 +0100
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
         hawk@kernel.org, john.fastabend@gmail.com,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next 4/6] tsnep: Prepare RX buffer for XDP support
-Date:   Sat,  3 Dec 2022 22:54:14 +0100
-Message-Id: <20221203215416.13465-5-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next 5/6] tsnep: Add RX queue info for XDP support
+Date:   Sat,  3 Dec 2022 22:54:15 +0100
+Message-Id: <20221203215416.13465-6-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221203215416.13465-1-gerhard@engleder-embedded.com>
 References: <20221203215416.13465-1-gerhard@engleder-embedded.com>
@@ -53,102 +53,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reserve XDP_PACKET_HEADROOM in front of RX buffer if XDP is enabled.
-Also set DMA direction properly in this case.
+Register xdp_rxq_info with page_pool memory model. This is needed for
+XDP buffer handling.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- drivers/net/ethernet/engleder/tsnep_main.c | 31 +++++++++++++++-------
- 1 file changed, 22 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/engleder/tsnep.h      |  5 ++--
+ drivers/net/ethernet/engleder/tsnep_main.c | 34 +++++++++++++++++-----
+ 2 files changed, 30 insertions(+), 9 deletions(-)
 
+diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
+index 0e7fc36a64e1..70bc133d4a9d 100644
+--- a/drivers/net/ethernet/engleder/tsnep.h
++++ b/drivers/net/ethernet/engleder/tsnep.h
+@@ -127,6 +127,7 @@ struct tsnep_rx {
+ 	u32 owner_counter;
+ 	int increment_owner_counter;
+ 	struct page_pool *page_pool;
++	struct xdp_rxq_info xdp_rxq;
+ 
+ 	u32 packets;
+ 	u32 bytes;
+@@ -139,11 +140,11 @@ struct tsnep_queue {
+ 	struct tsnep_adapter *adapter;
+ 	char name[IFNAMSIZ + 9];
+ 
++	struct napi_struct napi;
++
+ 	struct tsnep_tx *tx;
+ 	struct tsnep_rx *rx;
+ 
+-	struct napi_struct napi;
+-
+ 	int irq;
+ 	u32 irq_mask;
+ 	void __iomem *irq_delay_addr;
 diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index d9ba4a8deec5..d7dcac641180 100644
+index d7dcac641180..725b2a1e7be4 100644
 --- a/drivers/net/ethernet/engleder/tsnep_main.c
 +++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -26,9 +26,10 @@
- #include <linux/etherdevice.h>
- #include <linux/phy.h>
- #include <linux/iopoll.h>
-+#include <linux/bpf.h>
+@@ -833,6 +833,9 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
+ 		entry->page = NULL;
+ 	}
  
- #define TSNEP_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
--#define TSNEP_HEADROOM ALIGN(TSNEP_SKB_PAD, 4)
-+#define TSNEP_HEADROOM ALIGN(max(TSNEP_SKB_PAD, XDP_PACKET_HEADROOM), 4)
- #define TSNEP_MAX_RX_BUF_SIZE (PAGE_SIZE - TSNEP_HEADROOM - \
- 			       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
++	if (xdp_rxq_info_is_reg(&rx->xdp_rxq))
++		xdp_rxq_info_unreg(&rx->xdp_rxq);
++
+ 	if (rx->page_pool)
+ 		page_pool_destroy(rx->page_pool);
  
-@@ -808,6 +809,16 @@ static void tsnep_tx_close(struct tsnep_tx *tx)
- 	tsnep_tx_ring_cleanup(tx);
+@@ -848,7 +851,7 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
+ 	}
  }
  
-+static inline unsigned int tsnep_rx_offset(struct tsnep_rx *rx)
-+{
-+	struct tsnep_adapter *adapter = rx->adapter;
-+
-+	if (tsnep_xdp_is_enabled(adapter))
-+		return XDP_PACKET_HEADROOM;
-+
-+	return TSNEP_SKB_PAD;
-+}
-+
- static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
+-static int tsnep_rx_ring_init(struct tsnep_rx *rx)
++static int tsnep_rx_ring_init(struct tsnep_rx *rx, unsigned int napi_id)
  {
  	struct device *dmadev = rx->adapter->dmadev;
-@@ -869,9 +880,10 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
- 	pp_params.pool_size = TSNEP_RING_SIZE;
- 	pp_params.nid = dev_to_node(dmadev);
- 	pp_params.dev = dmadev;
--	pp_params.dma_dir = DMA_FROM_DEVICE;
-+	pp_params.dma_dir = tsnep_xdp_is_enabled(rx->adapter) ?
-+			    DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
- 	pp_params.max_len = TSNEP_MAX_RX_BUF_SIZE;
--	pp_params.offset = TSNEP_SKB_PAD;
-+	pp_params.offset = tsnep_rx_offset(rx);
- 	rx->page_pool = page_pool_create(&pp_params);
- 	if (IS_ERR(rx->page_pool)) {
- 		retval = PTR_ERR(rx->page_pool);
-@@ -906,7 +918,7 @@ static void tsnep_rx_set_page(struct tsnep_rx *rx, struct tsnep_rx_entry *entry,
- 	entry->page = page;
- 	entry->len = TSNEP_MAX_RX_BUF_SIZE;
- 	entry->dma = page_pool_get_dma_addr(entry->page);
--	entry->desc->rx = __cpu_to_le64(entry->dma + TSNEP_SKB_PAD);
-+	entry->desc->rx = __cpu_to_le64(entry->dma + tsnep_rx_offset(rx));
+ 	struct tsnep_rx_entry *entry;
+@@ -891,6 +894,15 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
+ 		goto failed;
+ 	}
+ 
++	retval = xdp_rxq_info_reg(&rx->xdp_rxq, rx->adapter->netdev,
++				  rx->queue_index, napi_id);
++	if (retval)
++		goto failed;
++	retval = xdp_rxq_info_reg_mem_model(&rx->xdp_rxq, MEM_TYPE_PAGE_POOL,
++					    rx->page_pool);
++	if (retval)
++		goto failed;
++
+ 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
+ 		entry = &rx->entry[i];
+ 		next_entry = &rx->entry[(i + 1) % TSNEP_RING_SIZE];
+@@ -1139,7 +1151,8 @@ static bool tsnep_rx_pending(struct tsnep_rx *rx)
  }
  
- static int tsnep_rx_alloc_buffer(struct tsnep_rx *rx, int index)
-@@ -1010,14 +1022,14 @@ static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
- 		return NULL;
+ static int tsnep_rx_open(struct tsnep_adapter *adapter, void __iomem *addr,
+-			 int queue_index, struct tsnep_rx *rx)
++			 unsigned int napi_id, int queue_index,
++			 struct tsnep_rx *rx)
+ {
+ 	dma_addr_t dma;
+ 	int retval;
+@@ -1149,7 +1162,7 @@ static int tsnep_rx_open(struct tsnep_adapter *adapter, void __iomem *addr,
+ 	rx->addr = addr;
+ 	rx->queue_index = queue_index;
  
- 	/* update pointers within the skb to store the data */
--	skb_reserve(skb, TSNEP_SKB_PAD + TSNEP_RX_INLINE_METADATA_SIZE);
-+	skb_reserve(skb, tsnep_rx_offset(rx) + TSNEP_RX_INLINE_METADATA_SIZE);
- 	__skb_put(skb, length - TSNEP_RX_INLINE_METADATA_SIZE - ETH_FCS_LEN);
+-	retval = tsnep_rx_ring_init(rx);
++	retval = tsnep_rx_ring_init(rx, napi_id);
+ 	if (retval)
+ 		return retval;
  
- 	if (rx->adapter->hwtstamp_config.rx_filter == HWTSTAMP_FILTER_ALL) {
- 		struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
- 		struct tsnep_rx_inline *rx_inline =
- 			(struct tsnep_rx_inline *)(page_address(page) +
--						   TSNEP_SKB_PAD);
-+						   tsnep_rx_offset(rx));
+@@ -1277,6 +1290,7 @@ int tsnep_netdev_open(struct net_device *netdev)
+ {
+ 	struct tsnep_adapter *adapter = netdev_priv(netdev);
+ 	int i;
++	unsigned int napi_id;
+ 	void __iomem *addr;
+ 	int tx_queue_index = 0;
+ 	int rx_queue_index = 0;
+@@ -1284,6 +1298,11 @@ int tsnep_netdev_open(struct net_device *netdev)
  
- 		skb_shinfo(skb)->tx_flags |=
- 			SKBTX_HW_TSTAMP_NETDEV;
-@@ -1077,11 +1089,12 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 		 */
- 		dma_rmb();
+ 	for (i = 0; i < adapter->num_queues; i++) {
+ 		adapter->queue[i].adapter = adapter;
++
++		netif_napi_add(adapter->netdev, &adapter->queue[i].napi,
++			       tsnep_poll);
++		napi_id = adapter->queue[i].napi.napi_id;
++
+ 		if (adapter->queue[i].tx) {
+ 			addr = adapter->addr + TSNEP_QUEUE(tx_queue_index);
+ 			retval = tsnep_tx_open(adapter, addr, tx_queue_index,
+@@ -1294,7 +1313,7 @@ int tsnep_netdev_open(struct net_device *netdev)
+ 		}
+ 		if (adapter->queue[i].rx) {
+ 			addr = adapter->addr + TSNEP_QUEUE(rx_queue_index);
+-			retval = tsnep_rx_open(adapter, addr,
++			retval = tsnep_rx_open(adapter, addr, napi_id,
+ 					       rx_queue_index,
+ 					       adapter->queue[i].rx);
+ 			if (retval)
+@@ -1326,8 +1345,6 @@ int tsnep_netdev_open(struct net_device *netdev)
+ 		goto phy_failed;
  
--		prefetch(page_address(entry->page) + TSNEP_SKB_PAD);
-+		prefetch(page_address(entry->page) + tsnep_rx_offset(rx));
- 		length = __le32_to_cpu(entry->desc_wb->properties) &
- 			 TSNEP_DESC_LENGTH_MASK;
--		dma_sync_single_range_for_cpu(dmadev, entry->dma, TSNEP_SKB_PAD,
--					      length, dma_dir);
-+		dma_sync_single_range_for_cpu(dmadev, entry->dma,
-+					      tsnep_rx_offset(rx), length,
-+					      dma_dir);
+ 	for (i = 0; i < adapter->num_queues; i++) {
+-		netif_napi_add(adapter->netdev, &adapter->queue[i].napi,
+-			       tsnep_poll);
+ 		napi_enable(&adapter->queue[i].napi);
  
- 		rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
- 		desc_available++;
+ 		tsnep_enable_irq(adapter, adapter->queue[i].irq_mask);
+@@ -1348,6 +1365,8 @@ int tsnep_netdev_open(struct net_device *netdev)
+ 			tsnep_rx_close(adapter->queue[i].rx);
+ 		if (adapter->queue[i].tx)
+ 			tsnep_tx_close(adapter->queue[i].tx);
++
++		netif_napi_del(&adapter->queue[i].napi);
+ 	}
+ 	return retval;
+ }
+@@ -1366,7 +1385,6 @@ int tsnep_netdev_close(struct net_device *netdev)
+ 		tsnep_disable_irq(adapter, adapter->queue[i].irq_mask);
+ 
+ 		napi_disable(&adapter->queue[i].napi);
+-		netif_napi_del(&adapter->queue[i].napi);
+ 
+ 		tsnep_free_irq(&adapter->queue[i], i == 0);
+ 
+@@ -1374,6 +1392,8 @@ int tsnep_netdev_close(struct net_device *netdev)
+ 			tsnep_rx_close(adapter->queue[i].rx);
+ 		if (adapter->queue[i].tx)
+ 			tsnep_tx_close(adapter->queue[i].tx);
++
++		netif_napi_del(&adapter->queue[i].napi);
+ 	}
+ 
+ 	return 0;
 -- 
 2.30.2
 
