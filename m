@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 208A2641963
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 23:14:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C85C3641962
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 23:14:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbiLCWOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 17:14:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33456 "EHLO
+        id S229821AbiLCWOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 17:14:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiLCWNv (ORCPT
+        with ESMTP id S229739AbiLCWNv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 17:13:51 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFC01C92C
-        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 14:13:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DFD21CB3F
+        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 14:13:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3371BB807ED
-        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 22:13:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C69B1C43470;
-        Sat,  3 Dec 2022 22:13:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56314B807E9
+        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 22:13:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06F53C433D7;
+        Sat,  3 Dec 2022 22:13:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670105626;
-        bh=/qbyTmPgNv+Z/qj/vSO0xJFvVVoAW1E2Wcyl5xOzbVk=;
+        s=k20201202; t=1670105628;
+        bh=8JgKjUDvNHuk6W+h3RwSapp5tLyA/fv9hZmt/7s2T1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AKpRaRFHgRtYUxkH95OigFvVKOzal4R0eLvrAe1InJTk0AFWAEOGCt0ItQ2xNj7UF
-         WLhTWCjUkHwBrgqadiEe2od5PY3VNt3sKIygzzokkq5r84099mXzcTrCcYlRWPKb3E
-         garWhk3a+y0toJZMboLTGbAbReoSuc5nLfcgPOdP9U0NCTOGSHLPIviP5iqMYNUVkJ
-         tYh34tcJUfM7yN8TzWUnpjg0EgTCWbjXwvBKkiD5uTn2PP0QwHPpNXumrrj5MYHO/g
-         3RKdPTzysrl0lMPorxIY7/upvGsiAmk0RgO6nfqS0qCjDiCAqvr0kpiuXku40tSfg5
-         +eePdEyL7jvgQ==
+        b=WOzcKv2Y/KrxnLJSwPWUE3ErrST7a5fvap07JU1cqVWOxGcNC5rYr0BA1GSaIb10t
+         pvpW6j3X8jGruFVFURDfCzn981PR1eYaemzx/PnPglUC3vqB1Wh0bJJkyj4sCQLzQY
+         ejceLIQoRKcZztVqylB2NYlbFTBLMCvcolI2Ho1YKYPK+eiMmKP9lfta45Wl5eLDOG
+         VsdDzeRYCNj5SpaMcCpl4H9o3krfgz77ZdTvaHHeb6tY4J4w6obN19yIykhc7/9i8x
+         TaTR/DBG9dw9ii9LnSqVHWMBhGiYvknq0CuNJdkWUNKr+WNkXYH6V9gq5mtb9YDhYC
+         kQbwsPtfCdfdQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
         Roi Dayan <roid@nvidia.com>
-Subject: [net-next 04/15] net/mlx5e: TC, add terminating actions
-Date:   Sat,  3 Dec 2022 14:13:26 -0800
-Message-Id: <20221203221337.29267-5-saeed@kernel.org>
+Subject: [net-next 05/15] net/mlx5e: TC, validate action list per attribute
+Date:   Sat,  3 Dec 2022 14:13:27 -0800
+Message-Id: <20221203221337.29267-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221203221337.29267-1-saeed@kernel.org>
 References: <20221203221337.29267-1-saeed@kernel.org>
@@ -58,112 +58,115 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Oz Shlomo <ozsh@nvidia.com>
 
-Extend act api to identify actions that terminate action list.
-Pre-step for terminating branching actions.
+Currently the entire flow action list is validate for offload limitations.
+For example, flow with both forward and drop actions are declared invalid
+due to hardware restrictions.
+However, a multi-table hardware model changes the limitations from a flow
+scope to a single flow attribute scope.
+
+Apply offload limitations to flow attributes instead of the entire flow.
 
 Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c | 1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c    | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h    | 3 +++
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c   | 1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c   | 1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c | 7 +++++++
- .../net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c | 1 +
- 7 files changed, 15 insertions(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 62 ++++++++++---------
+ 1 file changed, 32 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c
-index 21aab96357b5..a278f52d52b0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c
-@@ -28,4 +28,5 @@ tc_act_parse_accept(struct mlx5e_tc_act_parse_state *parse_state,
- struct mlx5e_tc_act mlx5e_tc_act_accept = {
- 	.can_offload = tc_act_can_offload_accept,
- 	.parse_action = tc_act_parse_accept,
-+	.is_terminating_action = true,
- };
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-index 3337241cfd84..eba0c8698926 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-@@ -11,7 +11,7 @@ static struct mlx5e_tc_act *tc_acts_fdb[NUM_FLOW_ACTIONS] = {
- 	[FLOW_ACTION_DROP] = &mlx5e_tc_act_drop,
- 	[FLOW_ACTION_TRAP] = &mlx5e_tc_act_trap,
- 	[FLOW_ACTION_GOTO] = &mlx5e_tc_act_goto,
--	[FLOW_ACTION_REDIRECT] = &mlx5e_tc_act_mirred,
-+	[FLOW_ACTION_REDIRECT] = &mlx5e_tc_act_redirect,
- 	[FLOW_ACTION_MIRRED] = &mlx5e_tc_act_mirred,
- 	[FLOW_ACTION_REDIRECT_INGRESS] = &mlx5e_tc_act_redirect_ingress,
- 	[FLOW_ACTION_VLAN_PUSH] = &mlx5e_tc_act_vlan,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-index e1570ff056ae..8ede44902284 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-@@ -60,6 +60,8 @@ struct mlx5e_tc_act {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 46222541e435..7eaf6c73b091 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -1724,6 +1724,30 @@ clean_encap_dests(struct mlx5e_priv *priv,
+ 	}
+ }
  
- 	int (*stats_action)(struct mlx5e_priv *priv,
- 			    struct flow_offload_action *fl_act);
++static int
++verify_attr_actions(u32 actions, struct netlink_ext_ack *extack)
++{
++	if (!(actions &
++	      (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST | MLX5_FLOW_CONTEXT_ACTION_DROP))) {
++		NL_SET_ERR_MSG_MOD(extack, "Rule must have at least one forward/drop action");
++		return -EOPNOTSUPP;
++	}
 +
-+	bool is_terminating_action;
- };
++	if (!(~actions &
++	      (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST | MLX5_FLOW_CONTEXT_ACTION_DROP))) {
++		NL_SET_ERR_MSG_MOD(extack, "Rule cannot support forward+drop action");
++		return -EOPNOTSUPP;
++	}
++
++	if (actions & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
++	    actions & MLX5_FLOW_CONTEXT_ACTION_DROP) {
++		NL_SET_ERR_MSG_MOD(extack, "Drop with modify header action is not supported");
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
+ static int
+ post_process_attr(struct mlx5e_tc_flow *flow,
+ 		  struct mlx5_flow_attr *attr,
+@@ -1734,6 +1758,10 @@ post_process_attr(struct mlx5e_tc_flow *flow,
+ 	bool vf_tun;
+ 	int err = 0;
  
- struct mlx5e_tc_flow_action {
-@@ -81,6 +83,7 @@ extern struct mlx5e_tc_act mlx5e_tc_act_vlan_mangle;
- extern struct mlx5e_tc_act mlx5e_tc_act_mpls_push;
- extern struct mlx5e_tc_act mlx5e_tc_act_mpls_pop;
- extern struct mlx5e_tc_act mlx5e_tc_act_mirred;
-+extern struct mlx5e_tc_act mlx5e_tc_act_redirect;
- extern struct mlx5e_tc_act mlx5e_tc_act_mirred_nic;
- extern struct mlx5e_tc_act mlx5e_tc_act_ct;
- extern struct mlx5e_tc_act mlx5e_tc_act_sample;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c
-index dd025a95c439..7d16aeabb119 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/drop.c
-@@ -27,4 +27,5 @@ tc_act_parse_drop(struct mlx5e_tc_act_parse_state *parse_state,
- struct mlx5e_tc_act mlx5e_tc_act_drop = {
- 	.can_offload = tc_act_can_offload_drop,
- 	.parse_action = tc_act_parse_drop,
-+	.is_terminating_action = true,
- };
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c
-index 25174f68613e..0923e6db2d0a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/goto.c
-@@ -121,4 +121,5 @@ struct mlx5e_tc_act mlx5e_tc_act_goto = {
- 	.can_offload = tc_act_can_offload_goto,
- 	.parse_action = tc_act_parse_goto,
- 	.post_parse = tc_act_post_parse_goto,
-+	.is_terminating_action = true,
- };
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c
-index 4ac7de3f6afa..78c427b38048 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred.c
-@@ -334,4 +334,11 @@ tc_act_parse_mirred(struct mlx5e_tc_act_parse_state *parse_state,
- struct mlx5e_tc_act mlx5e_tc_act_mirred = {
- 	.can_offload = tc_act_can_offload_mirred,
- 	.parse_action = tc_act_parse_mirred,
-+	.is_terminating_action = false,
-+};
++	err = verify_attr_actions(attr->action, extack);
++	if (err)
++		goto err_out;
 +
-+struct mlx5e_tc_act mlx5e_tc_act_redirect = {
-+	.can_offload = tc_act_can_offload_mirred,
-+	.parse_action = tc_act_parse_mirred,
-+	.is_terminating_action = true,
- };
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c
-index 90b4c1b34776..7f409692b18f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c
-@@ -48,4 +48,5 @@ tc_act_parse_mirred_nic(struct mlx5e_tc_act_parse_state *parse_state,
- struct mlx5e_tc_act mlx5e_tc_act_mirred_nic = {
- 	.can_offload = tc_act_can_offload_mirred_nic,
- 	.parse_action = tc_act_parse_mirred_nic,
-+	.is_terminating_action = true,
- };
+ 	err = set_encap_dests(flow->priv, flow, attr, extack, &vf_tun);
+ 	if (err)
+ 		goto err_out;
+@@ -3532,36 +3560,6 @@ actions_match_supported(struct mlx5e_priv *priv,
+ 	ct_clear = flow->attr->ct_attr.ct_action & TCA_CT_ACT_CLEAR;
+ 	ct_flow = flow_flag_test(flow, CT) && !ct_clear;
+ 
+-	if (!(actions &
+-	      (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST | MLX5_FLOW_CONTEXT_ACTION_DROP))) {
+-		NL_SET_ERR_MSG_MOD(extack, "Rule must have at least one forward/drop action");
+-		return false;
+-	}
+-
+-	if (!(~actions &
+-	      (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST | MLX5_FLOW_CONTEXT_ACTION_DROP))) {
+-		NL_SET_ERR_MSG_MOD(extack, "Rule cannot support forward+drop action");
+-		return false;
+-	}
+-
+-	if (actions & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
+-	    actions & MLX5_FLOW_CONTEXT_ACTION_DROP) {
+-		NL_SET_ERR_MSG_MOD(extack, "Drop with modify header action is not supported");
+-		return false;
+-	}
+-
+-	if (!(~actions &
+-	      (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST | MLX5_FLOW_CONTEXT_ACTION_DROP))) {
+-		NL_SET_ERR_MSG_MOD(extack, "Rule cannot support forward+drop action");
+-		return false;
+-	}
+-
+-	if (actions & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
+-	    actions & MLX5_FLOW_CONTEXT_ACTION_DROP) {
+-		NL_SET_ERR_MSG_MOD(extack, "Drop with modify header action is not supported");
+-		return false;
+-	}
+-
+ 	if (actions & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
+ 	    !modify_header_match_supported(priv, &parse_attr->spec, flow_action,
+ 					   actions, ct_flow, ct_clear, extack))
+@@ -3957,6 +3955,10 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
+ 	if (err)
+ 		return err;
+ 
++	err = verify_attr_actions(attr->action, extack);
++	if (err)
++		return err;
++
+ 	if (!actions_match_supported(priv, flow_action, parse_state->actions,
+ 				     parse_attr, flow, extack))
+ 		return -EOPNOTSUPP;
 -- 
 2.38.1
 
