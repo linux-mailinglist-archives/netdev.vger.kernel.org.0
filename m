@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B436416E6
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 14:32:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD5C86416EA
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 14:32:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiLCNcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 08:32:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
+        id S229756AbiLCNc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 08:32:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiLCNcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 08:32:19 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5081CB31;
-        Sat,  3 Dec 2022 05:32:18 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id a9so7037433pld.7;
-        Sat, 03 Dec 2022 05:32:18 -0800 (PST)
+        with ESMTP id S229755AbiLCNc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 08:32:26 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424AE1DDE1;
+        Sat,  3 Dec 2022 05:32:25 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id k5so7329790pjo.5;
+        Sat, 03 Dec 2022 05:32:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ge/hvb27wH9tqZKTvQJ35IDsoTdlfsfW2RzAv9+gF3w=;
-        b=k1d/Uab7IlDLX6e5E27qe0CBQhCi8ZjEvPIIa1x/Usq+VKJF6+mnGK0TX8YOHsljsh
-         qjh7BmIzwix8tJ2FT4KpULD2oM7vwMdmRyNK30rZo1j97USnIcNAw621wo580gQswMSQ
-         YwkcC+3xRtYXlyf66EfqIwkimsRZMJXDjP5AEBz8mrxJ/prAO2+NPiD3goVnjiK2i44/
-         1gajD9iTICYw+9dBUFlOyiPXoEcrhKBAIMJcI5b9ggoYM2Xmr4WzkDcV5zHeG/2BEwME
-         5Y8GHBAZLGfXs11By/wtaHn6aTynVdko9MTpNo+7jtEpw717d63USI6tR9gmIpTu/07u
-         4Ozg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LDbQ/ixPZp4MuAgA81AzBaLcxOr0XSMHsSft2Avw78E=;
+        b=DAcUroikxVvLn80Gwk/9VcQcseLDD0vWDs8loVwkpuS0FYWw+9DuTDUxxW2w4BI0T0
+         +HjWbfZY/qdF5l+mLHbYnQmeOkCzi5lTn31NL4/3GaMnOo6dsB3Wq8VG/9hx4WGi8p2x
+         ihSoCi2LAMU6EosEy9PbuUkKhMZ1Y7hFfpTatgNifXzAPVkLgq/n2Ey5CeCX30iirCy4
+         aN5DFYm6+Fu+AcEU0sZplzVIknKSAbjTZ4El+SQQUj6Z+6C4aIo3pVoPlc7lIsmy6bwH
+         ZjYDcNV0jQO9mK9R9TdhpSiRFF+Ooh+Y3p1uu3FDEvNQZV4vIt1KK5cuLLSXMuK+R6NZ
+         uhjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ge/hvb27wH9tqZKTvQJ35IDsoTdlfsfW2RzAv9+gF3w=;
-        b=ZbHMGi4454YtL26hGmcT+iFZcPE1X65iVF4JLK4hBA8eCFZ7CvRx4oDl6S85tgvx2t
-         dLCw1+PnDGrw/R2wSDOohEfOpwWkghLzwMO/d5H8hRfiiZcqLvVKbFKwrN2a9hCL1JiU
-         XP8jDeZxrk1NiH3mL0esYzfK12y1zBgq1mP/wm9ccfe9E/w+Ns0avlRBqvoIquMObO+l
-         WalPPvdZ16+Wy7S7brkfy0i5WaXP4+ieoU9p3BiXJwI3b1IXX2riK5kcb2zUEjAKOj7S
-         4joliveYhsZc6kv9KrFVozbym7PdPwoQf56Z7y0Eu7934OkjOyZOSH2svfNFtYFSBUXC
-         B+aA==
-X-Gm-Message-State: ANoB5pnItWg99W5o36LZiYOxe9yKH08FV/qrx3smFFK/nrxh1JiOOW48
-        hkkimogVP+9bpyKG+mFuWqg=
-X-Google-Smtp-Source: AA0mqf5B214dZKTD3qNQ4z0ukitrTNIFHKRW3JKAkwCYTOVPzjoiTNoTrVfvT46AGxqY8zVloxL69A==
-X-Received: by 2002:a17:902:7885:b0:189:1366:fba7 with SMTP id q5-20020a170902788500b001891366fba7mr58575707pll.45.1670074337649;
-        Sat, 03 Dec 2022 05:32:17 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=LDbQ/ixPZp4MuAgA81AzBaLcxOr0XSMHsSft2Avw78E=;
+        b=XM8n9J+WHGDBRTEyaDTdg/tOXKPkEyhP0PXxa8Djmp/8KdbYMEiPq4qRjcd0hJedqr
+         5FBNqJCJeOgOXX34RjNX18aAJ+fRJ0rWl9EY8vNlznJ/LTdcouSeunaTQFanXUxc6htF
+         iglyDCRmQxtHglzGUrCveC4S9hjXLntlh3LJHnPXJvaw3EvhCTpADzd+MWfATAONtMgG
+         JnL/FDD0Pk56Ink/zc4eXZTw/sTAAu/NLuNrXCgnCZkRRDEDj74SYjpC6AfYZmKEVnYh
+         AHerIwOziLBe+9G/ZEYKBz5dGCXrb62M1AGTmsbeHtlaJ8pR3KF0HQui2jYoJgDXMgXx
+         I3vQ==
+X-Gm-Message-State: ANoB5pmlbKT1Y1c/muwDwTjwnCqPKzg0islgFs3pT0s7BMeLo0B2/Ln9
+        MAH52/yeAR2jmrO3AU5LT5M=
+X-Google-Smtp-Source: AA0mqf5Nc0j1Mx5FIWuxqTHyDKOot9BG829w40CZ4gxqboITEFsJ/QsGCy30VzXpYVRKnhUU4UV+UQ==
+X-Received: by 2002:a17:902:7b84:b0:189:6623:4c47 with SMTP id w4-20020a1709027b8400b0018966234c47mr6131538pll.170.1670074344657;
+        Sat, 03 Dec 2022 05:32:24 -0800 (PST)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id q12-20020a170902dacc00b00185402cfedesm7414472plx.246.2022.12.03.05.32.10
+        by smtp.gmail.com with ESMTPSA id q12-20020a170902dacc00b00185402cfedesm7414472plx.246.2022.12.03.05.32.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Dec 2022 05:32:17 -0800 (PST)
+        Sat, 03 Dec 2022 05:32:24 -0800 (PST)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
@@ -88,10 +89,12 @@ Cc:     Wolfgang Grandegger <wg@grandegger.com>,
         Alan Stern <stern@rowland.harvard.edu>,
         linux-usb@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH 0/8] can: usb: remove all usb_set_intfdata(intf, NULL) in drivers' disconnect()
-Date:   Sat,  3 Dec 2022 22:31:51 +0900
-Message-Id: <20221203133159.94414-1-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH 1/8] can: ems_usb: ems_usb_disconnect(): fix NULL pointer dereference
+Date:   Sat,  3 Dec 2022 22:31:52 +0900
+Message-Id: <20221203133159.94414-2-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.37.4
+In-Reply-To: <20221203133159.94414-1-mailhol.vincent@wanadoo.fr>
+References: <20221203133159.94414-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -104,53 +107,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The core sets the usb_interface to NULL in [1]. Also setting it to
-NULL in usb_driver::disconnects() is at best useless, at worse risky.
+ems_usb sets the usb_interface to NULL before waiting for the
+completion of outstanding urbs. This can result in NULL pointer
+dereference, c.f. [1] and [2].
 
-Indeed, if a driver set the usb interface to NULL before all actions
-relying on the interface-data pointer complete, there is a risk of
-NULL pointer dereference. Typically, this is the case if there are
-outstanding urbs which have not yet completed when entering
-disconnect().
+Remove the call to usb_set_intfdata(intf, NULL). The core will take
+care of setting it to NULL after ems_usb_disconnect() at [3].
 
-If all actions are already completed, doing usb_set_intfdata(intf,
-NULL) is useless because the core does it at [1].
+[1] commit 27ef17849779 ("usb: add usb_set_intfdata() documentation")
+Link: https://git.kernel.org/gregkh/usb/c/27ef17849779
 
-The first seven patches fix all drivers which set their usb_interface
-to NULL while outstanding URB might still exists. There is one patch
-per driver in order to add the relevant "Fixes:" tag to each of them.
+[2] thread about usb_set_intfdata() on linux-usb mailing.
+Link: https://lore.kernel.org/linux-usb/Y4OD70GD4KnoRk0k@rowland.harvard.edu/
 
-The last patch removes in bulk the remaining benign calls to
-usb_set_intfdata(intf, NULL) in etas_es58x and peak_usb.
-
-N.B. some other usb drivers outside of the can tree also have the same
-issue, but this is out of scope of this.
-
-[1] function usb_unbind_interface() from drivers/usb/core/driver.c
+[3] function usb_unbind_interface() from drivers/usb/core/driver.c
 Link: https://elixir.bootlin.com/linux/v6.0/source/drivers/usb/core/driver.c#L497
 
-Vincent Mailhol (8):
-  can: ems_usb: ems_usb_disconnect(): fix NULL pointer dereference
-  can: esd_usb: esd_usb_disconnect(): fix NULL pointer dereference
-  can: gs_usb: gs_usb_disconnect(): fix NULL pointer dereference
-  can: kvaser_usb: kvaser_usb_disconnect(): fix NULL pointer dereference
-  can: mcba_usb: mcba_usb_disconnect(): fix NULL pointer dereference
-  can: ucan: ucan_disconnect(): fix NULL pointer dereference
-  can: usb_8dev: usb_8dev_disconnect(): fix NULL pointer dereference
-  can: etas_es58x and peak_usb: remove useless call to
-    usb_set_intfdata()
+Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+ drivers/net/can/usb/ems_usb.c | 2 --
+ 1 file changed, 2 deletions(-)
 
- drivers/net/can/usb/ems_usb.c                    | 2 --
- drivers/net/can/usb/esd_usb.c                    | 2 --
- drivers/net/can/usb/etas_es58x/es58x_core.c      | 1 -
- drivers/net/can/usb/gs_usb.c                     | 2 --
- drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c | 2 --
- drivers/net/can/usb/mcba_usb.c                   | 2 --
- drivers/net/can/usb/peak_usb/pcan_usb_core.c     | 2 --
- drivers/net/can/usb/ucan.c                       | 2 --
- drivers/net/can/usb/usb_8dev.c                   | 2 --
- 9 files changed, 17 deletions(-)
-
+diff --git a/drivers/net/can/usb/ems_usb.c b/drivers/net/can/usb/ems_usb.c
+index 050c0b49938a..c64cb40ac8de 100644
+--- a/drivers/net/can/usb/ems_usb.c
++++ b/drivers/net/can/usb/ems_usb.c
+@@ -1062,8 +1062,6 @@ static void ems_usb_disconnect(struct usb_interface *intf)
+ {
+ 	struct ems_usb *dev = usb_get_intfdata(intf);
+ 
+-	usb_set_intfdata(intf, NULL);
+-
+ 	if (dev) {
+ 		unregister_netdev(dev->netdev);
+ 
 -- 
 2.37.4
 
