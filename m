@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BB3641421
-	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 05:40:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FD0C641428
+	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 05:52:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbiLCEkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Dec 2022 23:40:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
+        id S230359AbiLCEuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Dec 2022 23:50:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiLCEkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 23:40:20 -0500
+        with ESMTP id S230215AbiLCEux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Dec 2022 23:50:53 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070FC92A3B;
-        Fri,  2 Dec 2022 20:40:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456C7B68D4;
+        Fri,  2 Dec 2022 20:50:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9679FB8229F;
-        Sat,  3 Dec 2022 04:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 41CC8C433D7;
-        Sat,  3 Dec 2022 04:40:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E54AAB81AD6;
+        Sat,  3 Dec 2022 04:50:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06DDDC433C1;
+        Sat,  3 Dec 2022 04:50:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670042417;
-        bh=IalLhNA0Wd6Cx26vlm+yVV8EFNCe5y1O6LGLKcDZ4+Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tOkx/8fSvvUjwy+BdnzkJANge25ecbWY3JChHVDHIaS8M9yD6dcHJsUhob6VDRfBo
-         7jiPQ5r6pU9YRykWXcgTPLlGZSX8UPOSdYAL38rYVTjkIAiFFFye+v3klkVzOa61C5
-         GIRFMjgoa6nTIVv02o0VPrvwBUlzblBQnsGsNv9T9+ihOUs7i3debm+HGg+AnBW2R/
-         GwwRJlo+ZDDtuzX2ZGVu/Ti4LAx3AI8MftgqJdgwUHCQX9JhPjmU1klAhfz8akfgXm
-         jD7B9/ltm/45udPBDPScCRUBoEUs+9/vbF5UBAjcSk0NUZZZw2yXBhcqkGYxY78rmO
-         GJX//9Kp+YliA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1DCAAE29F3E;
-        Sat,  3 Dec 2022 04:40:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1670043049;
+        bh=E9Nv+QaJ5r8gtO9zqBOkqxrvuj5zmcUnm8L9hDnTTQs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=d6qyI30qjSwTCkanduIsgvH4nzVnR1i/n9yVK/FujC0/Cx8n4AKS8neZy82S8SjZX
+         mcmF9mT3r5HD/B2xZ1M2UaEMxErVHYMR7w/gU+F+PZkN4xw3ET4Ebly62ifFkj4vSk
+         Yh7g3yAG/u+iKWw6H6rnhzlg+bokhy9ADeWHZWPl3AovSEc5tA6iL1URUyn5pS2DDp
+         pMNxAlIYFeQ6k+w+Sf38Qbkm/RGkywx6Bbpun9toemWn4N+y1lcOvHKYYoWX2rVunW
+         bf5kgRt+CH8dISP643oP3Jdj/sa5b9GpA9aeXrb8BSNhr5Y/bIdYzuZn0c23sJ7IE8
+         yzGkiiuHmsEsw==
+Date:   Fri, 2 Dec 2022 20:50:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <zhang.songyi@zte.com.cn>
+Cc:     <lars.povlsen@microchip.com>, <steen.hegelund@microchip.com>,
+        <daniel.machon@microchip.com>, <unglinuxdriver@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: microchip: vcap: Remove unneeded
+ semicolons
+Message-ID: <20221202205047.57d59a9a@kernel.org>
+In-Reply-To: <202212011006426677429@zte.com.cn>
+References: <202212011006426677429@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bluetooth 2022-12-02
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167004241711.29921.3509378462888475002.git-patchwork-notify@kernel.org>
-Date:   Sat, 03 Dec 2022 04:40:17 +0000
-References: <20221202213726.2801581-1-luiz.dentz@gmail.com>
-In-Reply-To: <20221202213726.2801581-1-luiz.dentz@gmail.com>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,29 +55,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri,  2 Dec 2022 13:37:26 -0800 you wrote:
-> The following changes since commit e931a173a685fe213127ae5aa6b7f2196c1d875d:
+On Thu, 1 Dec 2022 10:06:42 +0800 (CST) zhang.songyi@zte.com.cn wrote:
+> From: zhang songyi <zhang.songyi@zte.com.cn>
 > 
->   Merge branch 'vmxnet3-fixes' (2022-12-02 10:30:07 +0000)
+> Semicolons after "}" are not needed.
 > 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-12-02
-> 
-> [...]
+> Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
 
-Here is the summary with links:
-  - pull-request: bluetooth 2022-12-02
-    https://git.kernel.org/netdev/net/c/a789c70c1dfe
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Please rebase, patch does not apply.
