@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C798A641969
+	by mail.lfdr.de (Postfix) with ESMTP id 70594641968
 	for <lists+netdev@lfdr.de>; Sat,  3 Dec 2022 23:14:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbiLCWOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 17:14:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        id S229886AbiLCWOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 17:14:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbiLCWOD (ORCPT
+        with ESMTP id S229822AbiLCWOD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 17:14:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3035F1E3E8
-        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 14:13:54 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6561E3E4
+        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 14:13:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8065B807E9
-        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 22:13:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64077C433C1;
-        Sat,  3 Dec 2022 22:13:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6129D60B9B
+        for <netdev@vger.kernel.org>; Sat,  3 Dec 2022 22:13:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A10DAC433D7;
+        Sat,  3 Dec 2022 22:13:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670105631;
-        bh=rFbFIns5sp0SUwOWEu8dmGe499KCdgUBoMosI3hdQnk=;
+        s=k20201202; t=1670105632;
+        bh=i2Gy5V7jREmDnB/f7KQrkYOk2kSzefvvO0e4jrhHz40=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t85rjbppSIY1o1TISfhIfh8glaM3XP3Yaul/dwVY29Ilw/0pO1pGWN1tp/bLC+m/7
-         3LabCAOFETDgHQ1okpzi7XzztIJMYpvLFKleV5nXL9Vci4kndDYO0P4ncPaC5dmEPK
-         sX0UOIXFTE9OQW8b7NqrgrADnjc9acZDm6KeT8GRKdVWGp6qQ3g5W9pMdFnBLWRSfD
-         z0nkyxY45OEmA2MY2SMNaETnS+1NrgUYDwIaabIVrUdlrfb/wn0MtlrcX7TqvCEeAg
-         6UIGJsT1PBKINWTp7wJLtKaUKNACwINujdssv1bZAw27uAT/GLJ7I/5f0y7eohlbP+
-         2B4ZhqTfnwzfQ==
+        b=fb6BcDfalC1sDc1alhVQrsclljnYvUnDLpsLsLAkhFDJwjfbhg/Qu5MFvKhoJXzXH
+         uBV79LaaigXj52CpW1Q54BWVRz4h9Er4eKBxI9C4DB8y/y2+IYVU2ILxmL+8NextpZ
+         YKu2fsg8U3QqYxGkbNDhoB1ti7pVloySsQdwoMtOMM9u78c+xio22Wr4BJv68awT1t
+         4K799Mmd0tJqAnRM3eDjLWHjjOIOakaFrlzKzWohKR5KMlm3yv/cHtLni2WLV0CXYg
+         n31XBJbiwkXIaBcx6d3h1A23TbOaV6IdUaaMGyKzrMAoJlq4WmUalpEWK4Aj+s0Phk
+         H0hjfJ6GwyRow==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
         Roi Dayan <roid@nvidia.com>
-Subject: [net-next 08/15] net/mlx5e: TC, initialize branching action with target attr
-Date:   Sat,  3 Dec 2022 14:13:30 -0800
-Message-Id: <20221203221337.29267-9-saeed@kernel.org>
+Subject: [net-next 09/15] net/mlx5e: TC, rename post_meter actions
+Date:   Sat,  3 Dec 2022 14:13:31 -0800
+Message-Id: <20221203221337.29267-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221203221337.29267-1-saeed@kernel.org>
 References: <20221203221337.29267-1-saeed@kernel.org>
@@ -58,210 +58,235 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Oz Shlomo <ozsh@nvidia.com>
 
-Identify the jump target action when iterating the action list.
-Initialize the jump target attr with the jumping attribute during the
-parsing phase. Initialize the jumping attr post action with the target
-during the offload phase.
+Currently post meter supports only the pipe/drop conform-exceed policy.
+This assumption is reflected in several variable names.
+Rename the following variables as a pre-step for using the generalized
+branching action platform.
+
+Rename fwd_green_rule/drop_red_rule to green_rule/red_rule respectively.
+Repurpose red_counter/green_counter to act_counter/drop_counter to allow
+police conform-exceed configurations that do not drop.
 
 Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 86 +++++++++++++++++--
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  2 +
- 2 files changed, 83 insertions(+), 5 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/tc/meter.c | 24 +++++++--------
+ .../ethernet/mellanox/mlx5/core/en/tc/meter.h |  4 +--
+ .../mellanox/mlx5/core/en/tc/post_meter.c     | 30 +++++++++----------
+ .../mellanox/mlx5/core/en/tc/post_meter.h     |  4 +--
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |  4 +--
+ 5 files changed, 33 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 6bd71a85d56d..d52f8601fef4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -132,6 +132,15 @@ struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[] = {
- 	[PACKET_COLOR_TO_REG] = packet_color_to_reg,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+index be74e1403328..4e5f4aa44724 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+@@ -257,16 +257,16 @@ __mlx5e_flow_meter_alloc(struct mlx5e_flow_meters *flow_meters)
+ 	counter = mlx5_fc_create(mdev, true);
+ 	if (IS_ERR(counter)) {
+ 		err = PTR_ERR(counter);
+-		goto err_red_counter;
++		goto err_drop_counter;
+ 	}
+-	meter->red_counter = counter;
++	meter->drop_counter = counter;
+ 
+ 	counter = mlx5_fc_create(mdev, true);
+ 	if (IS_ERR(counter)) {
+ 		err = PTR_ERR(counter);
+-		goto err_green_counter;
++		goto err_act_counter;
+ 	}
+-	meter->green_counter = counter;
++	meter->act_counter = counter;
+ 
+ 	meters_obj = list_first_entry_or_null(&flow_meters->partial_list,
+ 					      struct mlx5e_flow_meter_aso_obj,
+@@ -313,10 +313,10 @@ __mlx5e_flow_meter_alloc(struct mlx5e_flow_meters *flow_meters)
+ err_mem:
+ 	mlx5e_flow_meter_destroy_aso_obj(mdev, id);
+ err_create:
+-	mlx5_fc_destroy(mdev, meter->green_counter);
+-err_green_counter:
+-	mlx5_fc_destroy(mdev, meter->red_counter);
+-err_red_counter:
++	mlx5_fc_destroy(mdev, meter->act_counter);
++err_act_counter:
++	mlx5_fc_destroy(mdev, meter->drop_counter);
++err_drop_counter:
+ 	kfree(meter);
+ 	return ERR_PTR(err);
+ }
+@@ -329,8 +329,8 @@ __mlx5e_flow_meter_free(struct mlx5e_flow_meter_handle *meter)
+ 	struct mlx5e_flow_meter_aso_obj *meters_obj;
+ 	int n, pos;
+ 
+-	mlx5_fc_destroy(mdev, meter->green_counter);
+-	mlx5_fc_destroy(mdev, meter->red_counter);
++	mlx5_fc_destroy(mdev, meter->act_counter);
++	mlx5_fc_destroy(mdev, meter->drop_counter);
+ 
+ 	meters_obj = meter->meters_obj;
+ 	pos = (meter->obj_id - meters_obj->base_id) * 2 + meter->idx;
+@@ -575,8 +575,8 @@ mlx5e_tc_meter_get_stats(struct mlx5e_flow_meter_handle *meter,
+ 	u64 bytes1, packets1, lastuse1;
+ 	u64 bytes2, packets2, lastuse2;
+ 
+-	mlx5_fc_query_cached(meter->green_counter, &bytes1, &packets1, &lastuse1);
+-	mlx5_fc_query_cached(meter->red_counter, &bytes2, &packets2, &lastuse2);
++	mlx5_fc_query_cached(meter->act_counter, &bytes1, &packets1, &lastuse1);
++	mlx5_fc_query_cached(meter->drop_counter, &bytes2, &packets2, &lastuse2);
+ 
+ 	*bytes = bytes1 + bytes2;
+ 	*packets = packets1 + packets2;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
+index 6de6e8a16327..f16abf33bb51 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
+@@ -32,8 +32,8 @@ struct mlx5e_flow_meter_handle {
+ 	struct hlist_node hlist;
+ 	struct mlx5e_flow_meter_params params;
+ 
+-	struct mlx5_fc *green_counter;
+-	struct mlx5_fc *red_counter;
++	struct mlx5_fc *act_counter;
++	struct mlx5_fc *drop_counter;
  };
  
-+struct mlx5e_tc_jump_state {
-+	u32 jump_count;
-+	bool jump_target;
-+	struct mlx5_flow_attr *jumping_attr;
-+
-+	enum flow_action_id last_id;
-+	u32 last_index;
-+};
-+
- struct mlx5e_tc_table *mlx5e_tc_table_alloc(void)
+ struct mlx5e_meter_attr {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.c
+index 8b77e822810e..60209205f683 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.c
+@@ -11,8 +11,8 @@
+ struct mlx5e_post_meter_priv {
+ 	struct mlx5_flow_table *ft;
+ 	struct mlx5_flow_group *fg;
+-	struct mlx5_flow_handle *fwd_green_rule;
+-	struct mlx5_flow_handle *drop_red_rule;
++	struct mlx5_flow_handle *green_rule;
++	struct mlx5_flow_handle *red_rule;
+ };
+ 
+ struct mlx5_flow_table *
+@@ -85,8 +85,8 @@ static int
+ mlx5e_post_meter_rules_create(struct mlx5e_priv *priv,
+ 			      struct mlx5e_post_meter_priv *post_meter,
+ 			      struct mlx5e_post_act *post_act,
+-			      struct mlx5_fc *green_counter,
+-			      struct mlx5_fc *red_counter)
++			      struct mlx5_fc *act_counter,
++			      struct mlx5_fc *drop_counter)
  {
- 	struct mlx5e_tc_table *tc;
-@@ -3688,6 +3697,7 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
+ 	struct mlx5_flow_destination dest[2] = {};
+ 	struct mlx5_flow_act flow_act = {};
+@@ -104,7 +104,7 @@ mlx5e_post_meter_rules_create(struct mlx5e_priv *priv,
+ 			  MLX5_FLOW_CONTEXT_ACTION_COUNT;
+ 	flow_act.flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
+ 	dest[0].type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
+-	dest[0].counter_id = mlx5_fc_id(red_counter);
++	dest[0].counter_id = mlx5_fc_id(drop_counter);
  
- 	attr2->branch_true = NULL;
- 	attr2->branch_false = NULL;
-+	attr2->jumping_attr = NULL;
- 	return attr2;
- }
- 
-@@ -3796,7 +3806,9 @@ alloc_flow_post_acts(struct mlx5e_tc_flow *flow, struct netlink_ext_ack *extack)
- 		if (!next_attr) {
- 			/* Set counter action on last post act rule. */
- 			attr->action |= MLX5_FLOW_CONTEXT_ACTION_COUNT;
--		} else {
-+		}
-+
-+		if (next_attr && !(attr->flags & MLX5_ATTR_FLAG_TERMINATING)) {
- 			err = mlx5e_tc_act_set_next_post_act(flow, attr, next_attr);
- 			if (err)
- 				goto out_free;
-@@ -3823,6 +3835,13 @@ alloc_flow_post_acts(struct mlx5e_tc_flow *flow, struct netlink_ext_ack *extack)
- 		}
- 
- 		attr->post_act_handle = handle;
-+
-+		if (attr->jumping_attr) {
-+			err = mlx5e_tc_act_set_next_post_act(flow, attr->jumping_attr, attr);
-+			if (err)
-+				goto out_free;
-+		}
-+
- 		next_attr = attr;
+ 	rule = mlx5_add_flow_rules(post_meter->ft, spec, &flow_act, dest, 1);
+ 	if (IS_ERR(rule)) {
+@@ -112,7 +112,7 @@ mlx5e_post_meter_rules_create(struct mlx5e_priv *priv,
+ 		err = PTR_ERR(rule);
+ 		goto err_red;
  	}
+-	post_meter->drop_red_rule = rule;
++	post_meter->red_rule = rule;
  
-@@ -3889,13 +3908,58 @@ alloc_branch_attr(struct mlx5e_tc_flow *flow,
- 	return err;
- }
+ 	mlx5e_tc_match_to_reg_match(spec, PACKET_COLOR_TO_REG,
+ 				    MLX5_FLOW_METER_COLOR_GREEN, MLX5_PACKET_COLOR_MASK);
+@@ -121,7 +121,7 @@ mlx5e_post_meter_rules_create(struct mlx5e_priv *priv,
+ 	dest[0].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
+ 	dest[0].ft = mlx5e_tc_post_act_get_ft(post_act);
+ 	dest[1].type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
+-	dest[1].counter_id = mlx5_fc_id(green_counter);
++	dest[1].counter_id = mlx5_fc_id(act_counter);
  
-+static void
-+dec_jump_count(struct flow_action_entry *act, struct mlx5e_tc_act *tc_act,
-+	       struct mlx5_flow_attr *attr, struct mlx5e_priv *priv,
-+	       struct mlx5e_tc_jump_state *jump_state)
-+{
-+	if (!jump_state->jump_count)
-+		return;
-+
-+	/* Single tc action can instantiate multiple offload actions (e.g. pedit)
-+	 * Jump only over a tc action
-+	 */
-+	if (act->id == jump_state->last_id && act->hw_index == jump_state->last_index)
-+		return;
-+
-+	jump_state->last_id = act->id;
-+	jump_state->last_index = act->hw_index;
-+
-+	/* nothing to do for intermediate actions */
-+	if (--jump_state->jump_count > 1)
-+		return;
-+
-+	if (jump_state->jump_count == 1) { /* last action in the jump action list */
-+
-+		/* create a new attribute after this action */
-+		jump_state->jump_target = true;
-+
-+		if (tc_act->is_terminating_action) { /* the branch ends here */
-+			attr->flags |= MLX5_ATTR_FLAG_TERMINATING;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+		} else { /* the branch continues executing the rest of the actions */
-+			struct mlx5e_post_act *post_act;
-+
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-+			post_act = get_post_action(priv);
-+			attr->dest_ft = mlx5e_tc_post_act_get_ft(post_act);
-+		}
-+	} else if (jump_state->jump_count == 0) { /* first attr after the jump action list */
-+		/* This is the post action for the jumping attribute (either red or green)
-+		 * Use the stored jumping_attr to set the post act id on the jumping attribute
-+		 */
-+		attr->jumping_attr = jump_state->jumping_attr;
-+	}
-+}
-+
- static int
- parse_branch_ctrl(struct flow_action_entry *act, struct mlx5e_tc_act *tc_act,
- 		  struct mlx5e_tc_flow *flow, struct mlx5_flow_attr *attr,
-+		  struct mlx5e_tc_jump_state *jump_state,
- 		  struct netlink_ext_ack *extack)
- {
- 	struct mlx5e_tc_act_branch_ctrl cond_true, cond_false;
--	u32 jump_count;
-+	u32 jump_count = jump_state->jump_count;
- 	int err;
+ 	rule = mlx5_add_flow_rules(post_meter->ft, spec, &flow_act, dest, 2);
+ 	if (IS_ERR(rule)) {
+@@ -129,13 +129,13 @@ mlx5e_post_meter_rules_create(struct mlx5e_priv *priv,
+ 		err = PTR_ERR(rule);
+ 		goto err_green;
+ 	}
+-	post_meter->fwd_green_rule = rule;
++	post_meter->green_rule = rule;
  
- 	if (!tc_act->get_branch_ctrl)
-@@ -3908,11 +3972,18 @@ parse_branch_ctrl(struct flow_action_entry *act, struct mlx5e_tc_act *tc_act,
- 	if (err)
- 		goto out_err;
- 
-+	if (jump_count)
-+		jump_state->jumping_attr = attr->branch_true;
-+
- 	err = alloc_branch_attr(flow, &cond_false,
- 				&attr->branch_false, &jump_count, extack);
- 	if (err)
- 		goto err_branch_false;
- 
-+	if (jump_count && !jump_state->jumping_attr)
-+		jump_state->jumping_attr = attr->branch_false;
-+
-+	jump_state->jump_count = jump_count;
+ 	kvfree(spec);
  	return 0;
  
- err_branch_false:
-@@ -3928,6 +3999,7 @@ parse_tc_actions(struct mlx5e_tc_act_parse_state *parse_state,
- 	struct netlink_ext_ack *extack = parse_state->extack;
- 	struct mlx5e_tc_flow_action flow_action_reorder;
- 	struct mlx5e_tc_flow *flow = parse_state->flow;
-+	struct mlx5e_tc_jump_state jump_state = {};
- 	struct mlx5_flow_attr *attr = flow->attr;
- 	enum mlx5_flow_namespace_type ns_type;
- 	struct mlx5e_priv *priv = flow->priv;
-@@ -3947,6 +4019,7 @@ parse_tc_actions(struct mlx5e_tc_act_parse_state *parse_state,
- 	list_add(&attr->list, &flow->attrs);
+ err_green:
+-	mlx5_del_flow_rules(post_meter->drop_red_rule);
++	mlx5_del_flow_rules(post_meter->red_rule);
+ err_red:
+ 	kvfree(spec);
+ 	return err;
+@@ -144,8 +144,8 @@ mlx5e_post_meter_rules_create(struct mlx5e_priv *priv,
+ static void
+ mlx5e_post_meter_rules_destroy(struct mlx5e_post_meter_priv *post_meter)
+ {
+-	mlx5_del_flow_rules(post_meter->drop_red_rule);
+-	mlx5_del_flow_rules(post_meter->fwd_green_rule);
++	mlx5_del_flow_rules(post_meter->red_rule);
++	mlx5_del_flow_rules(post_meter->green_rule);
+ }
  
- 	flow_action_for_each(i, _act, &flow_action_reorder) {
-+		jump_state.jump_target = false;
- 		act = *_act;
- 		tc_act = mlx5e_tc_act_get(act->id, ns_type);
- 		if (!tc_act) {
-@@ -3964,16 +4037,19 @@ parse_tc_actions(struct mlx5e_tc_act_parse_state *parse_state,
- 		if (err)
- 			goto out_free;
+ static void
+@@ -164,8 +164,8 @@ struct mlx5e_post_meter_priv *
+ mlx5e_post_meter_init(struct mlx5e_priv *priv,
+ 		      enum mlx5_flow_namespace_type ns_type,
+ 		      struct mlx5e_post_act *post_act,
+-		      struct mlx5_fc *green_counter,
+-		      struct mlx5_fc *red_counter)
++		      struct mlx5_fc *act_counter,
++		      struct mlx5_fc *drop_counter)
+ {
+ 	struct mlx5e_post_meter_priv *post_meter;
+ 	int err;
+@@ -182,8 +182,8 @@ mlx5e_post_meter_init(struct mlx5e_priv *priv,
+ 	if (err)
+ 		goto err_fg;
  
--		err = parse_branch_ctrl(act, tc_act, flow, attr, extack);
-+		dec_jump_count(act, tc_act, attr, priv, &jump_state);
-+
-+		err = parse_branch_ctrl(act, tc_act, flow, attr, &jump_state, extack);
- 		if (err)
- 			goto out_free;
+-	err = mlx5e_post_meter_rules_create(priv, post_meter, post_act, green_counter,
+-					    red_counter);
++	err = mlx5e_post_meter_rules_create(priv, post_meter, post_act,
++					    act_counter, drop_counter);
+ 	if (err)
+ 		goto err_rules;
  
- 		parse_state->actions |= attr->action;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.h
+index 34d0e4b9fc7a..37c74e7bfb6a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.h
+@@ -21,8 +21,8 @@ struct mlx5e_post_meter_priv *
+ mlx5e_post_meter_init(struct mlx5e_priv *priv,
+ 		      enum mlx5_flow_namespace_type ns_type,
+ 		      struct mlx5e_post_act *post_act,
+-		      struct mlx5_fc *green_counter,
+-		      struct mlx5_fc *red_counter);
++		      struct mlx5_fc *act_counter,
++		      struct mlx5_fc *drop_counter);
+ void
+ mlx5e_post_meter_cleanup(struct mlx5e_post_meter_priv *post_meter);
  
- 		/* Split attr for multi table act if not the last act. */
--		if (tc_act->is_multi_table_act &&
-+		if (jump_state.jump_target ||
-+		    (tc_act->is_multi_table_act &&
- 		    tc_act->is_multi_table_act(priv, act, attr) &&
--		    i < flow_action_reorder.num_entries - 1) {
-+		    i < flow_action_reorder.num_entries - 1)) {
- 			err = mlx5e_tc_act_post_parse(parse_state, flow_action, attr, ns_type);
- 			if (err)
- 				goto out_free;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index cee88f7dd50f..f2677d9ca0b4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -97,6 +97,7 @@ struct mlx5_flow_attr {
- 	} lag;
- 	struct mlx5_flow_attr *branch_true;
- 	struct mlx5_flow_attr *branch_false;
-+	struct mlx5_flow_attr *jumping_attr;
- 	/* keep this union last */
- 	union {
- 		DECLARE_FLEX_ARRAY(struct mlx5_esw_flow_attr, esw_attr);
-@@ -112,6 +113,7 @@ enum {
- 	MLX5_ATTR_FLAG_SAMPLE        = BIT(4),
- 	MLX5_ATTR_FLAG_ACCEPT        = BIT(5),
- 	MLX5_ATTR_FLAG_CT            = BIT(6),
-+	MLX5_ATTR_FLAG_TERMINATING   = BIT(7),
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index d52f8601fef4..ce449fa4f36e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -422,8 +422,8 @@ mlx5e_tc_add_flow_meter(struct mlx5e_priv *priv,
+ 	}
  
- /* Returns true if any of the flags that require skipping further TC/NF processing are set. */
+ 	ns_type = mlx5e_tc_meter_get_namespace(meter->flow_meters);
+-	post_meter = mlx5e_post_meter_init(priv, ns_type, post_act, meter->green_counter,
+-					   meter->red_counter);
++	post_meter = mlx5e_post_meter_init(priv, ns_type, post_act, meter->act_counter,
++					   meter->drop_counter);
+ 	if (IS_ERR(post_meter)) {
+ 		mlx5_core_err(priv->mdev, "Failed to init post meter\n");
+ 		goto err_meter_init;
 -- 
 2.38.1
 
