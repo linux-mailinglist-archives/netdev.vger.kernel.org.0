@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C344641CE6
-	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 13:29:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF396641CE8
+	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 13:33:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbiLDM3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Dec 2022 07:29:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        id S229934AbiLDMc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Dec 2022 07:32:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiLDM3T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 07:29:19 -0500
+        with ESMTP id S229892AbiLDMc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 07:32:59 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B27201;
-        Sun,  4 Dec 2022 04:29:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1B512ABC
+        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 04:32:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CAC760110;
-        Sun,  4 Dec 2022 12:29:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D0DBC433C1;
-        Sun,  4 Dec 2022 12:29:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4C7960E77
+        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 12:32:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E67FC433D6;
+        Sun,  4 Dec 2022 12:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670156957;
-        bh=Cd45dw6/fKlmTx5ULGNx6W47Kn4QFo/Ra8RmCHB0WkI=;
+        s=k20201202; t=1670157176;
+        bh=iQ+pz5jxkUQV3CQlFhNyB/esFfXV4PiszQqeGxj1DHw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H2dBtc4n8sAYJRidEY+DG8umS0NcxsWlxGIhAKevjyXSwbxeotVCndv7+sMI4gCzf
-         cRjDnFK0kzpyhyJMZY8F5JLEoL6aMaOe9mUn9UCvp12tLYyNsSNyzm0yp91gQe8AHE
-         e2Mw/aaxRKLjKK919Ex8qLsqLgIeKr+VcxT6p8AbAc4nOJ0zWrIktpT06EiPuFvKje
-         YXTOEMPwcnL5nE4yGjPUULOUT68TVUOizpR31Km393FTKtR+BcwEYXj+tt3YRqCOOf
-         LI3ypEIIAb878V0htcSi/SC6x/A94rTxnjFP0GjShO9brneSSCLrC3JLrK868u/Yy/
-         qSZ4x4yxoc7YA==
-Date:   Sun, 4 Dec 2022 14:29:06 +0200
+        b=LtdtNu9OpHfq9fmUT8vSQ/4j3F8FCbpsUfleSd8jgScmW0L3IhW+/CgAfXGAmlQQj
+         NI3783c/zSBwPyVXkfum5N5f+5YpPfZe8unYzVxx0lMAV00xJMgPHLfphaEw4ghJ0T
+         rpAUlGlJwtDmvmpaswutbd56utsIDzJCch8ksxpFUi/ppTPRNRo9opImNQERh91vRb
+         CG0GLGBCge/9b9A+1/fELSbmSz0ovHoIFTJgONxIKlg8XbzFkmlzQ7fTTcrVZjk8zP
+         UhrAtskiR8Gu1CGZpS555coRgnEfX66qLf1PQB2n1iZXJBWH4DcusRYO4d2BkniM34
+         eZQ4bbPXkO6xw==
+Date:   Sun, 4 Dec 2022 14:32:44 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     ye.xingchen@zte.com.cn
-Cc:     davem@davemloft.net, ecree.xilinx@gmail.com,
-        habetsm.xilinx@gmail.com, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, petrm@nvidia.com, khalasa@piap.pl,
-        shayagr@amazon.com, wsa+renesas@sang-engineering.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sfc: use sysfs_emit() to instead of scnprintf()
-Message-ID: <Y4ySkvSn+imvDy0d@unreal>
-References: <202212021632208664419@zte.com.cn>
+To:     Yuan Can <yuancan@huawei.com>
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, lorenzo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        matthias.bgg@gmail.com, sujuan.chen@mediatek.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] net: ethernet: mtk_wed: Fix missing of_node_put() in
+ mtk_wed_wo_hardware_init()
+Message-ID: <Y4yTbO0+7MmhTvVT@unreal>
+References: <20221202083029.87834-1-yuancan@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202212021632208664419@zte.com.cn>
+In-Reply-To: <20221202083029.87834-1-yuancan@huawei.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,19 +57,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 02, 2022 at 04:32:20PM +0800, ye.xingchen@zte.com.cn wrote:
-> From: ye xingchen <ye.xingchen@zte.com.cn>
+On Fri, Dec 02, 2022 at 08:30:29AM +0000, Yuan Can wrote:
+> The np needs to be released through of_node_put() in the error handling
+> path of mtk_wed_wo_hardware_init().
 > 
-> Follow the advice of the Documentation/filesystems/sysfs.rst and show()
-> should only use sysfs_emit() or sysfs_emit_at() when formatting the
-> value to be returned to user space.
-> 
-> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+> Fixes: 799684448e3e ("net: ethernet: mtk_wed: introduce wed wo support")
+> Signed-off-by: Yuan Can <yuancan@huawei.com>
 > ---
->  drivers/net/ethernet/sfc/efx_common.c       | 2 +-
->  drivers/net/ethernet/sfc/siena/efx_common.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+>  drivers/net/ethernet/mediatek/mtk_wed_wo.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
 
 Please use [PATCH net-next] ... format in title.
 
+> 
+> diff --git a/drivers/net/ethernet/mediatek/mtk_wed_wo.c b/drivers/net/ethernet/mediatek/mtk_wed_wo.c
+> index 4754b6db009e..d61bd0b11331 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_wed_wo.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_wed_wo.c
+> @@ -407,8 +407,10 @@ mtk_wed_wo_hardware_init(struct mtk_wed_wo *wo)
+>  		return -ENODEV;
+>  
+>  	wo->mmio.regs = syscon_regmap_lookup_by_phandle(np, NULL);
+> -	if (IS_ERR_OR_NULL(wo->mmio.regs))
+
+syscon_regmap_lookup_by_phandle() returns or error or valid pointer.
+The right check needs to be IS_ERR(wo->mmio.regs)
+
 Thanks
+
+> -		return PTR_ERR(wo->mmio.regs);
+> +	if (IS_ERR_OR_NULL(wo->mmio.regs)) {
+> +		ret = PTR_ERR(wo->mmio.regs);
+> +		goto error_put;
+> +	}
+>  
+>  	wo->mmio.irq = irq_of_parse_and_map(np, 0);
+>  	wo->mmio.irq_mask = MTK_WED_WO_ALL_INT_MASK;
+> @@ -456,7 +458,8 @@ mtk_wed_wo_hardware_init(struct mtk_wed_wo *wo)
+>  
+>  error:
+>  	devm_free_irq(wo->hw->dev, wo->mmio.irq, wo);
+> -
+> +error_put:
+> +	of_node_put(np);
+>  	return ret;
+>  }
+>  
+> -- 
+> 2.17.1
+> 
