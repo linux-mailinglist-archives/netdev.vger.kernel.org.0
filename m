@@ -2,41 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C8E2641E44
-	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 18:41:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7C3A641E48
+	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 18:50:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230248AbiLDRlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Dec 2022 12:41:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
+        id S230261AbiLDRuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Dec 2022 12:50:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbiLDRlR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 12:41:17 -0500
+        with ESMTP id S229999AbiLDRuI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 12:50:08 -0500
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555011409B
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 09:41:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2101413F9C;
+        Sun,  4 Dec 2022 09:50:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:
-        Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
-        Content-Disposition:In-Reply-To:References;
-        bh=dH2cbaHGRegnJw/Hn7QKEfDwAdIbI7N2e1kPBoMzAMw=; b=QDX5oQgjC1lcJr/35sxOXa/Ml3
-        ahipyGxJR7JFBHca6fbv9FW3wyCjwQ2C+K31m+U3saSx519GakUR9+SzELFoxYGvD6DW1qEUSXxKI
-        pqm3Z56a2F5UNom+LAyOZeBRpZT2rQG97fShHLCn3JtLemvZB2m7lirq0b6sm4D2FRTg=;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=jnWCmLa07Cboorow/ejMSmqioVuXh5OGUyXFM2GYNr0=; b=Zg2wUo7aShYjqEIwFMO0Y5yuyy
+        JEHlwz1SncQIHQ9MbxoXwaA2RPxseYsCOgITQeAXXhR0/wYP1mJ2+BJyrtVoTLJaWU0T/Xwc8wgg8
+        cGbTtK8SX874KzL0pxu0I+tl1bLDUwi6hk8nKddVs35hD+QNlZ8IsNCG5+D12EZ3Qmt4=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1p1szJ-004KjY-Jj; Sun, 04 Dec 2022 18:41:13 +0100
+        id 1p1t7Z-004KlS-8i; Sun, 04 Dec 2022 18:49:45 +0100
+Date:   Sun, 4 Dec 2022 18:49:45 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH net-next] net: phy: swphy: Support all normal speeds when link down
-Date:   Sun,  4 Dec 2022 18:41:03 +0100
-Message-Id: <20221204174103.1033005-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.37.2
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH net-next 1/2] ethtool: update UAPI files
+Message-ID: <Y4zduT5aHd4vxQZL@lunn.ch>
+References: <cover.1670121214.git.piergiorgio.beruto@gmail.com>
+ <0f7042bc6bcd59b37969d10a40e65d705940bee0.1670121214.git.piergiorgio.beruto@gmail.com>
+ <Y4zVMj7rOkyA12uA@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y4zVMj7rOkyA12uA@shell.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -46,94 +53,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The software PHY emulator validation function is happy to accept any
-link speed if the link is down. swphy_read_reg() however triggers a
-WARN_ON(). Change this to report all the standard 1G link speeds are
-supported. Once the speed is known the supported link modes will
-change, which is a bit odd, but for emulation is probably O.K.
+On Sun, Dec 04, 2022 at 05:13:22PM +0000, Russell King (Oracle) wrote:
+> On Sun, Dec 04, 2022 at 03:38:37AM +0100, Piergiorgio Beruto wrote:
+> 
+> NAK. No description of changes.
 
-Suggested-by: Russell King (Oracle) <linux@armlinux.org.uk>
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
+Hi Piergiorgio
 
-Hi Sean
+Look at the previous examples of this:
 
-Does this fix your problem?
+commit 41fddc0eb01fcd8c5a47b415d3faecd714652513
+Author: Michal Kubecek <mkubecek@suse.cz>
+Date:   Mon Jun 13 23:50:26 2022 +0200
 
-drivers/net/phy/swphy.c | 30 +++++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 7 deletions(-)
+    update UAPI header copies
+    
+    Update to kernel v5.18.
+    
+    Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-diff --git a/drivers/net/phy/swphy.c b/drivers/net/phy/swphy.c
-index 59f1ba4d49bc..63bd98217092 100644
---- a/drivers/net/phy/swphy.c
-+++ b/drivers/net/phy/swphy.c
-@@ -29,8 +29,10 @@ enum {
- 	SWMII_SPEED_10 = 0,
- 	SWMII_SPEED_100,
- 	SWMII_SPEED_1000,
-+	SWMII_SPEED_UNKNOWN,
- 	SWMII_DUPLEX_HALF = 0,
- 	SWMII_DUPLEX_FULL,
-+	SWMII_DUPLEX_UNKNOWN,
- };
- 
- /*
-@@ -51,6 +53,11 @@ static const struct swmii_regs speed[] = {
- 		.lpagb = LPA_1000FULL | LPA_1000HALF,
- 		.estat = ESTATUS_1000_TFULL | ESTATUS_1000_THALF,
- 	},
-+	[SWMII_SPEED_UNKNOWN] = {
-+		.bmsr  = BMSR_ESTATEN | BMSR_100FULL | BMSR_100HALF |
-+			 BMSR_10FULL | BMSR_10HALF,
-+		.estat = ESTATUS_1000_TFULL | ESTATUS_1000_THALF,
-+	},
- };
- 
- static const struct swmii_regs duplex[] = {
-@@ -66,6 +73,11 @@ static const struct swmii_regs duplex[] = {
- 		.lpagb = LPA_1000FULL,
- 		.estat = ESTATUS_1000_TFULL,
- 	},
-+	[SWMII_DUPLEX_UNKNOWN] = {
-+		.bmsr  = BMSR_ESTATEN | BMSR_100FULL | BMSR_100HALF |
-+			 BMSR_10FULL | BMSR_10HALF,
-+		.estat = ESTATUS_1000_TFULL | ESTATUS_1000_THALF,
-+	},
- };
- 
- static int swphy_decode_speed(int speed)
-@@ -87,8 +99,9 @@ static int swphy_decode_speed(int speed)
-  * @state: software phy status
-  *
-  * This checks that we can represent the state stored in @state can be
-- * represented in the emulated MII registers.  Returns 0 if it can,
-- * otherwise returns -EINVAL.
-+ * represented in the emulated MII registers. Invalid speed is allowed
-+ * when the link is down, but the speed must be valid when the link is
-+ * up. Returns 0 if it can, otherwise returns -EINVAL.
-  */
- int swphy_validate_state(const struct fixed_phy_status *state)
- {
-@@ -123,11 +136,14 @@ int swphy_read_reg(int reg, const struct fixed_phy_status *state)
- 	if (reg > MII_REGS_NUM)
- 		return -1;
- 
--	speed_index = swphy_decode_speed(state->speed);
--	if (WARN_ON(speed_index < 0))
--		return 0;
--
--	duplex_index = state->duplex ? SWMII_DUPLEX_FULL : SWMII_DUPLEX_HALF;
-+	if (state->link) {
-+		speed_index = swphy_decode_speed(state->speed);
-+		duplex_index = state->duplex ? SWMII_DUPLEX_FULL :
-+			SWMII_DUPLEX_HALF;
-+	} else {
-+		speed_index = SWMII_SPEED_UNKNOWN;
-+		duplex_index = SWMII_DUPLEX_UNKNOWN;
-+	}
- 
- 	bmsr |= speed[speed_index].bmsr & duplex[duplex_index].bmsr;
- 	estat |= speed[speed_index].estat & duplex[duplex_index].estat;
--- 
-2.38.1
+> > diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
+> > index 944711cfa6f6..5f414deacf23 100644
+> > --- a/uapi/linux/ethtool.h
+> > +++ b/uapi/linux/ethtool.h
+> > @@ -11,14 +11,16 @@
+> >   * Portions Copyright (C) Sun Microsystems 2008
+> >   */
+> >  
+> > -#ifndef _LINUX_ETHTOOL_H
+> > -#define _LINUX_ETHTOOL_H
+> > +#ifndef _UAPI_LINUX_ETHTOOL_H
+> > +#define _UAPI_LINUX_ETHTOOL_H
 
+Maybe ask Michal Kubecek how he does this. It does not appear to be a
+straight copy of the headers.
+
+	 Andrew
