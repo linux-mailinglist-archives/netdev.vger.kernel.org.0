@@ -2,86 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E5C1641B6F
-	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 09:00:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25C31641BBE
+	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 10:05:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbiLDIA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Dec 2022 03:00:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
+        id S229703AbiLDJF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Dec 2022 04:05:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiLDIA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 03:00:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7072417A95
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 00:00:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13411B8091B
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 08:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29C57C433B5;
-        Sun,  4 Dec 2022 08:00:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670140820;
-        bh=BGt9IN4sRlO1sLUu3YUsBT/nTusEQMKMDzntWU7ek1w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jJSUulI8R1lXeM2eObWknfeh3Qd+K7+Tq3/cUpxYsL389ScjpWv1mp/GO9gC9QXqB
-         X2eWzy15mpYuQeqvIhJG1F1T2mjey5xAZLrQMlLxvYdOlXax211CgxBp3xfB6KW1yH
-         8H8eq2d9tHoIY5mwv6Ltc6kIagWlF6qbPLwr4FJZXVj/oWsB0WXIbEzRwI2H/kjt9U
-         5aKCmPX0R8l6SB23WemP20Vu5zDXQIoxDp2/AYbjSoLBGI8R9hii3iZavmDSJI61ON
-         c9FC7XTKiWSn7HjbKFA8zoqnY1aN2KLxfaNyjhYBLJ5BosPqQHARCTCCuK9HgF0d5W
-         TXju5LnWoMV7Q==
-Date:   Sun, 4 Dec 2022 10:00:16 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Bharat Bhushan <bbhushan2@marvell.com>
-Subject: Re: [PATCH xfrm-next v10 0/8] Extend XFRM core to allow packet
- offload configuration
-Message-ID: <Y4xTkImiAiXavCAN@unreal>
-References: <cover.1670005543.git.leonro@nvidia.com>
+        with ESMTP id S229636AbiLDJF1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 04:05:27 -0500
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AFE15A2C
+        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 01:05:25 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4DCB75C00A4;
+        Sun,  4 Dec 2022 04:05:23 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Sun, 04 Dec 2022 04:05:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1670144723; x=1670231123; bh=lsMlg+nMOAoGyXJiGA9BuKoPOtzB
+        U01frgsFoEFodQ0=; b=s82YG0/dWILhk42KJP4ogCfKqRIkVNt65GmgxHdVxmlN
+        iuOv0V6jvsXaQUWGQ9UD3VquycL1wo9PBt9Wnzl/rF1Y+9vW4BLR2erVL2LbQKRu
+        MikeduMzfJCInE5kkHLdOJ3sactyOQxqtz/Gj/Vtm3i/9+gi/wFX6nlVwP0Hhesb
+        4bxnNsSnutaoZO845iK11Y4iQEO0APjGf9vBAnhPnZpon8p32OP7Y14LAEf2aBx/
+        KFR3xwtOszVZUtLjV2KUFurgPeQ1xB4DgifUZXjmKgPTBvyr0K9/6AjuRpkdi3o0
+        JEvWIgybRfTsySvKMz3bhrB75VM6y/xwxllDrfDJ4A==
+X-ME-Sender: <xms:0mKMY-j-nHuqK93so-MUzq75n8vaabJ1ogtqC3ZGA1YkSp-hscbuEg>
+    <xme:0mKMY_AUsySXne5oQoT2ut3DrR8O4yTWF7mA8fdshQ20TQgIkEryQEd48Ekd49MyH
+    HDPbnzt-uh-KsY>
+X-ME-Received: <xmr:0mKMY2Hir-lF1teJpdyFum1hT6hGeJJ4ylrsC3KHRwLM2JDbuY5gU-MAtBo_>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedruddvucetufdoteggodetrfdotffvucfrrh
+    hofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgenuceurghi
+    lhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurh
+    epfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgthhhi
+    mhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvghrnh
+    ephefhtdejvdeiffefudduvdffgeetieeigeeugfduffdvffdtfeehieejtdfhjeeknecu
+    ffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurf
+    grrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:0mKMY3T1lZn9p88jDGaPnt-7rFhT6obX_tA35eovFHNOdX-mr-gStA>
+    <xmx:0mKMY7x-kzqU95yfx97ghCkjv5DP9KO0MuYPavacrnUgxaCsARVdYg>
+    <xmx:0mKMY1564NK3qaWYvVrUHnbi8MlE03UK8M06HMhtqwrtjtQfJFCl8A>
+    <xmx:02KMY9uT0zdVJI8s-U_oz0Fe-j1PLvhWJCPD-byGxBAc56OAhllchA>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 4 Dec 2022 04:05:21 -0500 (EST)
+Date:   Sun, 4 Dec 2022 11:05:18 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Leonid Komaryanskiy <lkomaryanskiy@gmail.com>
+Cc:     netdev@vger.kernel.org, dmytro_firsov@epam.com, petrm@nvidia.com,
+        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+Subject: Re: ip_forward notification for driver
+Message-ID: <Y4xizqncq1JTvNMu@shredder>
+References: <CAHRDKfRZEw3Mq9GP3rCf2U10Y7X7N61BNZCa95tKESZkVD2qAg@mail.gmail.com>
+ <Y2yzKfSPJ7h2arO/@shredder>
+ <CAHRDKfSoNdWWjv8X6-fBvaaaJ7wFekvKAYkfD01JBcqrMiLtUA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1670005543.git.leonro@nvidia.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAHRDKfSoNdWWjv8X6-fBvaaaJ7wFekvKAYkfD01JBcqrMiLtUA@mail.gmail.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 02, 2022 at 08:41:26PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> The following series extends XFRM core code to handle a new type of IPsec
-> offload - packet offload.
+On Thu, Dec 01, 2022 at 05:21:10PM +0200, Leonid Komaryanskiy wrote:
+> We checked netevents (NETEVENT_IPV4_MPATH_HASH_UPDATE and
+> NETEVENT_IPV4_FWD_UPDATE_PRIORITY_UPDATE) but unfortunately, netevents
+> notifier doesn't trigger at all in case of changing value in
+> /proc/sys/net/ipv4/ip_forward. We see, that these events come in the
+> case of modifying /proc/sys/net/ipv4/fib_multipath_hash_policy, but
+> not for ip_forward. Shell we prepare an upstream patch with notifier
+> for ip_forward modify netevent?
 
-<...>
+I believe this is the correct interface to use for this notification,
+but if you are going to submit such a patch, then it needs to be
+submitted together with a patch for a driver that listens to the event
+an acts upon it. New APIs without an upstream user are not allowed.
+Also, please make sure you add a test under
+tools/testing/selftests/net/forwarding/.
 
-> Leon Romanovsky (8):
->   xfrm: add new packet offload flag
->   xfrm: allow state packet offload mode
->   xfrm: add an interface to offload policy
->   xfrm: add TX datapath support for IPsec packet offload mode
->   xfrm: add RX datapath protection for IPsec packet offload mode
->   xfrm: speed-up lookup of HW policies
->   xfrm: add support to HW update soft and hard limits
->   xfrm: document IPsec packet offload mode
-
-Hi Steffen,
-
-Like we discussed on v9 of this series, I do prefer to see this code
-merged before merge window. It will simplify so much for me, like
-UAPI exposure for iproute2 and *swan* forks. The internal API for
-our mlx5 refactoring e.t.c.
-
-The code in our regression is all time and it is completely safe for any
-non-packet offload devices.
-
-Thanks
+P.S. Please avoid top-posting as explained here:
+https://docs.kernel.org/process/2.Process.html#mailing-lists
