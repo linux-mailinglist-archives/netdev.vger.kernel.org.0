@@ -2,102 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66C22641D28
-	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 14:07:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C88E641D37
+	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 14:26:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbiLDNHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Dec 2022 08:07:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
+        id S229996AbiLDN0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Dec 2022 08:26:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiLDNHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 08:07:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2172217899
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 05:07:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8AE1B8075D
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 13:07:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A5E5C433C1;
-        Sun,  4 Dec 2022 13:07:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670159222;
-        bh=chlRnalb7pVdKBbL3xGD8d14nSvltNKVeqlHVirWbRo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UQx82WapAzgvTFf5/1aEQLF7JcEQ7XSfQDR/4FGloJIsltQBF3dW7GctJe711/AG/
-         GmEcukTONqrDRD3Y82mUrqc6FibQSBOrK0mVMtR4LHpldUNO6rUnhyT514RTqnGiFa
-         iy6yJXrk2rz4i+PqXfAGCBF13Yjt0ui1zDOjfxraKniawbmtqvWDD+2OSXvYmAeYlA
-         uOFAHlbOVGRklSFyyc3v+G8f42P7G5PO4vAP5FNABmOjMwMEb0u2BVtte1oUdIQJFc
-         OVLaX2Xn9NGOGTTDig/8JJFN4wZqKlJdRGiFKGuY+6nveEVzJJSpJsRIZWRwfLbUrC
-         iILT8FIZXkzkQ==
-Date:   Sun, 4 Dec 2022 15:06:54 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH net-next] net: ethernet: mtk_wed: fix possible deadlock
- if mtk_wed_wo_init fails
-Message-ID: <Y4ybbkn+nXkGsqWe@unreal>
-References: <a87f05e60ea1a94b571c9c87b69cc5b0e94943f2.1669999089.git.lorenzo@kernel.org>
+        with ESMTP id S229539AbiLDN0s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 08:26:48 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E83178BA;
+        Sun,  4 Dec 2022 05:26:46 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 9A7DA18838DB;
+        Sun,  4 Dec 2022 13:26:43 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 80C4B25003AB;
+        Sun,  4 Dec 2022 13:26:43 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 70F3C9EC002A; Sun,  4 Dec 2022 13:26:43 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a87f05e60ea1a94b571c9c87b69cc5b0e94943f2.1669999089.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Date:   Sun, 04 Dec 2022 14:26:43 +0100
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 net-next 2/2] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+In-Reply-To: <20221115222312.lix6xpvddjbsmoac@skbuf>
+References: <20221112203748.68995-1-netdev@kapio-technology.com>
+ <20221112203748.68995-1-netdev@kapio-technology.com>
+ <20221112203748.68995-3-netdev@kapio-technology.com>
+ <20221112203748.68995-3-netdev@kapio-technology.com>
+ <20221115222312.lix6xpvddjbsmoac@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <c8340cea42d0c2b098c7e62de0d6dace@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 02, 2022 at 06:36:33PM +0100, Lorenzo Bianconi wrote:
-> Introduce __mtk_wed_detach() in order to avoid a possible deadlock in
-> mtk_wed_attach routine if mtk_wed_wo_init fails.
+On 2022-11-15 23:23, Vladimir Oltean wrote:
 > 
-> Fixes: 4c5de09eb0d0 ("net: ethernet: mtk_wed: add configure wed wo support")
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/mediatek/mtk_wed.c     | 24 ++++++++++++++-------
->  drivers/net/ethernet/mediatek/mtk_wed_mcu.c | 10 ++++++---
->  drivers/net/ethernet/mediatek/mtk_wed_wo.c  |  3 +++
->  3 files changed, 26 insertions(+), 11 deletions(-)
-
-<...>
-
-> diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-> index f9539e6233c9..b084009a32f9 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-> @@ -176,6 +176,9 @@ int mtk_wed_mcu_send_msg(struct mtk_wed_wo *wo, int id, int cmd,
->  	u16 seq;
->  	int ret;
->  
-> +	if (!wo)
-> +		return -ENODEV;
-
-<...>
-
->  static void
->  mtk_wed_wo_hw_deinit(struct mtk_wed_wo *wo)
->  {
-> +	if (!wo)
-> +		return;
-
-How are these changes related to the written in deadlock?
-How is it possible to get internal mtk functions without valid wo?
-
-Thanks
-
-> +
->  	/* disable interrupts */
->  	mtk_wed_wo_set_isr(wo, 0);
->  
-> -- 
-> 2.38.1
+> Is it beneficial in any way to pass the violation type to
+> mv88e6xxx_handle_violation(), considering that we only call it from the
+> "miss" code path, and if we were to call it with something else 
+> ("member"),
+> it would return a strange error code (1)?
 > 
+> I don't necessarily see any way in which we'll need to handle the
+> "member" (migration, right?) violation any different in the future,
+> except ignore it, either.
+> 
+
+MV88E6XXX_G1_ATU_OP_AGE_OUT_VIOLATION will also be handled, and it could 
+be
+that MV88E6XXX_G1_ATU_OP_FULL_VIOLATION would want handling, though I 
+don't
+know of plans for that.
+
+The MV88E6XXX_G1_ATU_OP_MEMBER_VIOLATION interrupt can be suppressed if 
+we
+want.
+
+I think a switch on the type is the most readable code form.
+
+
+p.s. I have changed it, so that global1_atu.c reads:
+
+         if (val & MV88E6XXX_G1_ATU_OP_MISS_VIOLATION) {
+                 dev_err_ratelimited(chip->dev,
+                                     "ATU miss violation for %pM portvec 
+%x spid %d\n",
+                                     entry.mac, entry.portvec, spid);
+                 chip->ports[spid].atu_miss_violation++;
+
+                 if (!fid) {
+                         err = -EINVAL;
+                         goto out;
+                 }
+
+                 if (chip->ports[spid].mab)
+                         err = mv88e6xxx_handle_violation(chip, spid, 
+&entry,
+                                                          fid, 
+MV88E6XXX_G1_ATU_OP_MISS_VIOLATION);
+                 if (err)
+                         goto out;
+         }
+
+with the use of out_unlock in the chip mutex locked case.
