@@ -2,116 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60FC8642020
-	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 23:50:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5136364207E
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 00:15:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230341AbiLDWuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Dec 2022 17:50:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
+        id S230388AbiLDXNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Dec 2022 18:13:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230330AbiLDWuo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 17:50:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6E2F5B7
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 14:49:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670194189;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UAH0a91c7U1jqtpok3gsbLLRM6v87SVVxbB37wK7DIA=;
-        b=SuQ0ZUpGPt7tq88pOql0fGwIaBDkg4veBYlu6GcJd7bmOefMgVHCCkwy3fDTCuQVwzkx5b
-        r2oFomw6LIBXaBb4zGHJlodqOZTXQX0pQmcibeOAeP5seukXSHIOgFL+rvVvThtWtDd8/3
-        SHoIkNn6GpYUF3gmXn9/Dlz63osqKC8=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-221-sWcJ6C38PZ2fihfHEx7cAA-1; Sun, 04 Dec 2022 17:49:48 -0500
-X-MC-Unique: sWcJ6C38PZ2fihfHEx7cAA-1
-Received: by mail-ed1-f71.google.com with SMTP id w4-20020a05640234c400b004631f8923baso4687104edc.5
-        for <netdev@vger.kernel.org>; Sun, 04 Dec 2022 14:49:47 -0800 (PST)
+        with ESMTP id S229954AbiLDXNO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 18:13:14 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9931CF03D
+        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 15:13:13 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id s186so11076647oia.5
+        for <netdev@vger.kernel.org>; Sun, 04 Dec 2022 15:13:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UJpyFvUyUtxsBTLM/XucvE7iM+6xRJD98sJzNgeyIJk=;
+        b=20GQto+zPsCpJYQE8+PxT5z6UZTXvNSsYvpF5Kpg9wnnmHjBS93SuhUlVclyNaz4Te
+         b34qTq/WgdTW/BMKwDZxlkPIExzsAKih7AEKqvRJFf0zr7O3Wrop8ormzP6vhZWae9Aq
+         iv1VuFreWMEGcrEc4Np/9THe/ztZnTwX4WuGHOF0wRJOP4fCheah8b+34biVOg7yQhrS
+         zqOmBbVFVOCx356XyZvNk14AtQYMjFozasU9vlsxaWYt/94u+Vfpd4qKFWRa6ZjnEFwu
+         bI8I3veA1jE+DCkv5btiR5cQEus0hcvmsWEGCYeW/hTiwMeZDgMVHOKDdXtQBmet5pHo
+         Zb3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UAH0a91c7U1jqtpok3gsbLLRM6v87SVVxbB37wK7DIA=;
-        b=XK98EPEo0dwaAQAYoKTzhvors29zAtU3298jSpEq1le1RXcMWwpmBD4wbWCNMpBKD8
-         Z/hE3qcPH6hRKY+kE0n6jNCB9ezrZ+SHw7PilRd4MofrhYMF9XASfH1KuQZ7Kc3ooHAE
-         9OXQErdFFtOHFAC1VYsn6uhePi5RzvaclykkNhiuME7h1LfYPrI7rFGzcxzvkoFnGT4d
-         ggCDIP/JA2V3JVR0bwBBmrXe/aFA6aJCgaj1OVE6sdIjUr8CZ1J9/1JDKMdmNG5PI4D0
-         nVtoPy7yNvFkXSePIx+sV2hrQTK6sRq9hQLgsuQ+GomEQ2ASg2KhIXaFaGzCjDVxSi3E
-         8fDQ==
-X-Gm-Message-State: ANoB5pkM06kDXxERvkFFWZhI/jtZ07wOdQx4soyiCRR5pdk+K1MrBSlw
-        jGEgrxyGZTEsP7zv4Kofsr8D8LcNK08jA5uSwQIXWXSY7hWN90oVhAp1LxY7sBTaMJ+HL5wV72H
-        amRVlshY2lYRw2tvQBZzMy/a8uCvtMSa5
-X-Received: by 2002:a17:906:698f:b0:78d:93b1:b3ba with SMTP id i15-20020a170906698f00b0078d93b1b3bamr69575379ejr.66.1670194186290;
-        Sun, 04 Dec 2022 14:49:46 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7TZ3aOChwOEI1M64XGnQEXCszIrZ0w3nmS13wa7e/xB9FJwTErCNwaGXgqxtnrEcH0zUQa48CYQ/nOY2Jts2Q=
-X-Received: by 2002:a17:906:698f:b0:78d:93b1:b3ba with SMTP id
- i15-20020a170906698f00b0078d93b1b3bamr69575372ejr.66.1670194186091; Sun, 04
- Dec 2022 14:49:46 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UJpyFvUyUtxsBTLM/XucvE7iM+6xRJD98sJzNgeyIJk=;
+        b=qqOT3AQ5DcPaIALH/ogr2eiBRDsn5vWXACBrfrGjsdWJn4lbwTptKv6ol5xLjAq6FE
+         ZZ2vBejkhFss8+fCzVklJRtHmE+63l0neFTaQBjBX+17xKnQkcAVqhFv4U3BpP1HOf+G
+         QiljGXLnxR0+6AB/uHHXyy/Q33JTO4hZxd+s+8rkGmCVV/n9z/P9Jor3mKee4vdM1hUc
+         KoUVde1HLSKbwN6y4O4+MEIu0+EDjeW0IMi9nBKX2WfuLhyma3j7C/0P2TBmcxEoTEDi
+         Sflv8xWTHvxLDYoDBfIWdJo7GyjSBaC6o5ZKWz9YdnzosrlO0/IAxWN1+1iTAm1f5T3J
+         MFLA==
+X-Gm-Message-State: ANoB5pk5oZYgHdz4SgrdBwfVqrWxf4ygUzpAzB6jUD1F+ElxJY6lNrPj
+        NawnLqeff28TIAhhfxAIeZYwOA==
+X-Google-Smtp-Source: AA0mqf4kUOqgS2tHCaRB6/T5xoTDh+La5KYHrzWR/sM1UgDFNv0ap7Zdfx/DytV03el7Xq/2nbmmsQ==
+X-Received: by 2002:aca:e057:0:b0:35b:ae45:b9e9 with SMTP id x84-20020acae057000000b0035bae45b9e9mr17509031oig.201.1670195592936;
+        Sun, 04 Dec 2022 15:13:12 -0800 (PST)
+Received: from ?IPV6:2804:14d:5c5e:4698:8d0f:4b58:d430:8c9c? ([2804:14d:5c5e:4698:8d0f:4b58:d430:8c9c])
+        by smtp.gmail.com with ESMTPSA id r41-20020a05687017a900b0014378df87cfsm8050543oae.33.2022.12.04.15.13.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 04 Dec 2022 15:13:12 -0800 (PST)
+Message-ID: <dfa52acc-f95c-5e7e-b84b-b54b2903ac9f@mojatatu.com>
+Date:   Sun, 4 Dec 2022 20:13:07 -0300
 MIME-Version: 1.0
-References: <20221130091705.1831140-1-weiyongjun@huaweicloud.com>
-In-Reply-To: <20221130091705.1831140-1-weiyongjun@huaweicloud.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sun, 4 Dec 2022 17:49:34 -0500
-Message-ID: <CAK-6q+gN9d2_=bN9tvCqCxSbymMfyJjF0j=gj4kUbi-bfSnF4g@mail.gmail.com>
-Subject: Re: [PATCH wpan] mac802154: fix missing INIT_LIST_HEAD in ieee802154_if_add()
-To:     Wei Yongjun <weiyongjun@huaweicloud.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net-next v2 0/3] net/sched: retpoline wrappers for tc
+Content-Language: en-US
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Pedro Tammela <pctammela@gmail.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuniyu@amazon.com
+References: <20221128154456.689326-1-pctammela@mojatatu.com>
+ <2e0a2888c89db8226578106b0a7a3eeda7c94582.camel@redhat.com>
+ <CAM0EoM=5GZJMrEk8-T+rp+jFHzPy7jDqV_ogQ2p57x0KmnDvnQ@mail.gmail.com>
+From:   Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <CAM0EoM=5GZJMrEk8-T+rp+jFHzPy7jDqV_ogQ2p57x0KmnDvnQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 01/12/2022 09:34, Jamal Hadi Salim wrote:
+> On Thu, Dec 1, 2022 at 6:05 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>>
+>> On Mon, 2022-11-28 at 12:44 -0300, Pedro Tammela wrote:
+> 
+> [..]
+> 
+>>> We observed a 3-6% speed up on the retpoline CPUs, when going through 1
+>>> tc filter,
+>>
+>> Do yu have all the existing filters enabled at build time in your test
+>> kernel? the reported figures are quite higher then expected considering
+>> there are 7th new unlikely branch in between.
+>>
+> 
+> That can be validated with a test that compiles a kernel with a filter under
+> test listed first then another kernel with the same filter last.
+> 
+> Also given these tests were using 64B pkts to achieve the highest pps, perhaps
+> using MTU sized pkts with pktgen would give more realistic results?
+> 
+> In addition to the tests for 1 and 100 filters...
+> 
+>> Also it would be nice to have some figure for the last filter in the if
+>> chain. I fear we could have some regressions there even for 'retpoline'
+>> CPUs - given the long if chain - and u32 is AFAIK (not much actually)
+>> still quite used.
+>>
+> 
+> I would say flower and bpf + u32 are probably the highest used,
+> but given no available data on this usage beauty is in the eye of
+> the beholder. I hope it doesnt become a real estate battle like we
+> have in which subsystem gets to see packets first or last ;->
+> 
+>> Finally, it looks like the filter order in patch 1/3 is quite relevant,
+>> and it looks like you used the lexicographic order, I guess it should
+>> be better to sort them by 'relevance', if someone could provide a
+>> reasonable 'relevance' order. I personally would move ife, ipt and
+>> simple towards the bottom.
+> 
+> I think we can come up with some reasonable order.
+> 
+> cheers,
+> jamal
 
-On Wed, Nov 30, 2022 at 4:19 AM Wei Yongjun <weiyongjun@huaweicloud.com> wrote:
->
-> From: Wei Yongjun <weiyongjun1@huawei.com>
->
-> Kernel fault injection test reports null-ptr-deref as follows:
->
-> BUG: kernel NULL pointer dereference, address: 0000000000000008
-> RIP: 0010:cfg802154_netdev_notifier_call+0x120/0x310 include/linux/list.h:114
-> Call Trace:
->  <TASK>
->  raw_notifier_call_chain+0x6d/0xa0 kernel/notifier.c:87
->  call_netdevice_notifiers_info+0x6e/0xc0 net/core/dev.c:1944
->  unregister_netdevice_many_notify+0x60d/0xcb0 net/core/dev.c:1982
->  unregister_netdevice_queue+0x154/0x1a0 net/core/dev.c:10879
->  register_netdevice+0x9a8/0xb90 net/core/dev.c:10083
->  ieee802154_if_add+0x6ed/0x7e0 net/mac802154/iface.c:659
->  ieee802154_register_hw+0x29c/0x330 net/mac802154/main.c:229
->  mcr20a_probe+0xaaa/0xcb1 drivers/net/ieee802154/mcr20a.c:1316
->
-> ieee802154_if_add() allocates wpan_dev as netdev's private data, but not
-> init the list in struct wpan_dev. cfg802154_netdev_notifier_call() manage
-> the list when device register/unregister, and may lead to null-ptr-deref.
->
-> Use INIT_LIST_HEAD() on it to initialize it correctly.
->
-> Fixes: fcf39e6e88e9 ("ieee802154: add wpan_dev_list")
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+We got a new system with a 7950x and I had some free time today to test 
+out the classifier order with v3, which I will post soon.
 
-Nice catch. :)
+64b pps:
+baseline - 5914980
+first - 6397116 (+8.15%)
+last - 6362476 (+7.5%)
 
-Acked-by: Alexander Aring <aahringo@redhat.com>
+1500b pps:
+baseline - 6367965
+first - 6754578 (+6.07%)
+last - 6745576 (+5.9%)
 
-- Alex
-
+The difference between first to last is minimal, but it exists.
+DDR5 seems to give a nice boost on pps for this test, when compared to 
+the 5950x. Which makes sense, since it's quite heavy on the memory 
+allocator.
