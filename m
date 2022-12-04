@@ -2,41 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64AF1641A71
-	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 03:37:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8745641A74
+	for <lists+netdev@lfdr.de>; Sun,  4 Dec 2022 03:38:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbiLDChc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Dec 2022 21:37:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48014 "EHLO
+        id S229765AbiLDCh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Dec 2022 21:37:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiLDChb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 21:37:31 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3971B1B9DE;
-        Sat,  3 Dec 2022 18:37:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=SOme4rNJC+GgoyaJJOvsD0k7gpqezBS3tzWfsFGOMpg=; b=sSg7WNDnK6gKTpes03xcQuvW+7
-        lx+nsJMCmWDQk6mA/gnhMvPuN8CLy0qMqXZl3pOEfYvrC67HI9IvxGB6auHW4cSUJUzgI8SO1iVBj
-        pzLor/7Vw/odSg22R10UoR5masFsWH5ilMHqVSLozVpp/EIWboEmFySepxEJr6CdS55CwSDSPoubj
-        zS7X1xtRq3a0vmuuWcJDseVxCHzkecd02JF2367fZSX/odb6sSpLZuAkgpiZbfKj5SDoyLCQyJPbT
-        wXg+JrhBSJG2wyKbVNyqaI5Em1VXyP7gfTHIvQTpOh9QsI3jSLY2VIzFyuUqTSIh5m/ojSkmoUsiU
-        c4pD7ULg==;
-Received: from [2601:1c2:d80:3110::a2e7]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1p1esT-0069XU-U4; Sun, 04 Dec 2022 02:37:14 +0000
-Message-ID: <c1fd8c0b-76d9-a15c-a3e9-3bd89a6dfabc@infradead.org>
-Date:   Sat, 3 Dec 2022 18:37:13 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 1/4] net/ethtool: Add netlink interface for the
- PLCA RS
-Content-Language: en-US
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S229911AbiLDChx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Dec 2022 21:37:53 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CF526DD;
+        Sat,  3 Dec 2022 18:37:51 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id gu23so20022601ejb.10;
+        Sat, 03 Dec 2022 18:37:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=NVTd7YblBJw8WVygy8pkP9cYiuGqm/Kx98vGCHEwEQA=;
+        b=NWbkdIq1DQi8dtmbz1J8wf4UvEixJ+ZHd6K4HHrvVYspO/zwnz9LLHc1vzSmH/209e
+         zsk6biwMCyoJUNrsFxXJhwBwZbst6jEjDqyBWdOWC3EQjfB6xtPQXzIOPbxJ4lnERUNd
+         qaUOGAM5E7MTV5lcubXMESwdq4kDrQkgZ2wxAKaZnAPt35PCGDo6zugceaPhd5KqTqNh
+         uPN7wRvt1a/TbVlK8bb+wjN2M/FnXMWb+0R69IrizseE+NURSqebAB0kiUS5x/Iyjr88
+         L2gOlYuwrha1dT08vWk8U969Ch1pcdsfUQgesKiMBzIkEQN9r68Y9/f15y6KkwJ/CBOe
+         e/sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=NVTd7YblBJw8WVygy8pkP9cYiuGqm/Kx98vGCHEwEQA=;
+        b=Swwfn5M9FLPSrLcbS2WaCFtdyPVr2GBMt4dHaDci+Lg+yGUsIYBb2+BukwBoSQB5Bl
+         jbZEdNtU4V484z2EvoWhms1NpHG62U4is0DXs966za378B42s4lJ5gJOTzvUzVPwk3CA
+         RWHGBPg5XRUJCgzu2R9vZGp/8KH0EWNPBMJcDtV0CBDMjpmKgbDXx9ovva2GuN7a5bpB
+         7npeP3qQVd8x5CBuOUowPf6xIX5Yxx0Mqm5ElxZtf1VMnzfuLyhs5OXZHibJdmrptB/1
+         e3JFi68Ie9YaD9TqcDXgTg9TO/xISZDCsbhgLXaOoRhf7jEhbcjP/ogA0p1bSUHvkKcK
+         jPQA==
+X-Gm-Message-State: ANoB5pkOXHpO3tXk8TePjj9UedgFyS0rKmImjvdVEAxAh5wonqhfoKBN
+        67Oq800VoMLW7E2IgdAtwl4=
+X-Google-Smtp-Source: AA0mqf68+z6eaCi/DELLcQB+4YEM2fjjngrWdA7pNXzryEacWmMSSjl4egjYONnxo9b49n+3xRW8Bg==
+X-Received: by 2002:a17:906:a843:b0:79e:1059:6d65 with SMTP id dx3-20020a170906a84300b0079e10596d65mr48228468ejb.695.1670121469950;
+        Sat, 03 Dec 2022 18:37:49 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id q18-20020a17090676d200b007c0e23b5615sm769205ejn.34.2022.12.03.18.37.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Dec 2022 18:37:49 -0800 (PST)
+Date:   Sun, 4 Dec 2022 03:37:57 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
@@ -45,80 +58,45 @@ To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Oleksij Rempel <o.rempel@pengutronix.de>
-References: <cover.1670119328.git.piergiorgio.beruto@gmail.com>
- <7209a794f6bee74fbfd76178000fd548d95c52ad.1670119328.git.piergiorgio.beruto@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <7209a794f6bee74fbfd76178000fd548d95c52ad.1670119328.git.piergiorgio.beruto@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Subject: [PATCH net-next 0/2] ethtool: add PLCA RS support
+Message-ID: <cover.1670121214.git.piergiorgio.beruto@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi--
+This patchset is related to the proposed "add PLCA RS support and onsemi
+NCN26000" patchset on the kernel. It adds userland support for
+getting/setting the configuration of the Physical Layer Collision
+Avoidance (PLCA) Reconciliation Sublayer (RS) defined in the IEEE 802.3
+specifications, amended by IEEE802.3cg-2019.
 
-On 12/3/22 18:30, Piergiorgio Beruto wrote:
-> Add support for configuring the PLCA Reconciliation Sublayer on
-> multi-drop PHYs that support IEEE802.3cg-2019 Clause 148 (e.g.,
-> 10BASE-T1S). This patch adds the appropriate netlink interface
-> to ethtool.
-> 
-> Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-> ---
+Piergiorgio Beruto (2):
+  Update UAPI files
+  Add support for IEEE 802.3cg-2019 Clause 148 - PLCA RS
 
+ Makefile.am                  |   1 +
+ ethtool.c                    |  21 +++
+ netlink/extapi.h             |   6 +
+ netlink/plca.c               | 311 +++++++++++++++++++++++++++++++++++
+ netlink/settings.c           |  86 +++++++++-
+ uapi/linux/ethtool.h         | 104 ++++++++++--
+ uapi/linux/ethtool_netlink.h |  49 +++++-
+ uapi/linux/genetlink.h       |   6 +-
+ uapi/linux/if_link.h         |  23 ++-
+ uapi/linux/netlink.h         |  41 +++--
+ uapi/linux/rtnetlink.h       |   8 +-
+ 11 files changed, 616 insertions(+), 40 deletions(-)
+ create mode 100644 netlink/plca.c
 
-> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-> index e5b6cb1a77f9..99e3497b6aa1 100644
-> --- a/drivers/net/phy/phy.c
-> +++ b/drivers/net/phy/phy.c
-> @@ -543,6 +543,40 @@ int phy_ethtool_get_stats(struct phy_device *phydev,
->  }
->  EXPORT_SYMBOL(phy_ethtool_get_stats);
->  
-
-What is the meaning of all these empty kernel-doc comment blocks?
-Why are they here?
-Please delete them.
-
-> +/**
-> + *
-> + */
-> +int phy_ethtool_get_plca_cfg(struct phy_device *dev,
-> +			     struct phy_plca_cfg *plca_cfg)
-> +{
-> +	// TODO
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL(phy_ethtool_get_plca_cfg);
-> +
-> +/**
-> + *
-> + */
-> +int phy_ethtool_set_plca_cfg(struct phy_device *dev,
-> +			     struct netlink_ext_ack *extack,
-> +			     const struct phy_plca_cfg *plca_cfg)
-> +{
-> +	// TODO
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL(phy_ethtool_set_plca_cfg);
-> +
-> +/**
-> + *
-> + */
-> +int phy_ethtool_get_plca_status(struct phy_device *dev,
-> +				struct phy_plca_status *plca_st)
-> +{
-> +	// TODO
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL(phy_ethtool_get_plca_status);
-
-Thanks.
 -- 
-~Randy
+2.35.1
+
