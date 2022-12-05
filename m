@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EA7D64310D
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 20:08:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCFE16431BD
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 20:17:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233281AbiLETIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 14:08:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
+        id S232827AbiLETRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 14:17:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232839AbiLETIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 14:08:17 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4700DF4D
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 11:08:16 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id t17so875572eju.1
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 11:08:16 -0800 (PST)
+        with ESMTP id S233671AbiLETQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 14:16:19 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3889A24F24
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 11:15:24 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id v19-20020a9d5a13000000b0066e82a3872dso5855257oth.5
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 11:15:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=c2LKJwmUhCiywqgijn8LslmC5b1+alFKAirrClrDjQc=;
-        b=kTf5uYLM6f6nncGxUh5FsM/A+tsCJyFjxdL1kSoLJhWxjAKYhcIEwCF1Z+uNdGevR0
-         hIkGry0SWRyeIN24hdP0zRXNOWQPSZe1EBqe8Bj17fkYGs1xrEt0/efnfIG2/TE2A8Eg
-         96YnY+N9sqJkwj5fmSG+ABy+zEGK/RV4lQmvwlYyrm7ciAuojnNG+2lLKb8l0gpeuDqt
-         r+/BojAWXPIfdpy2Rorf+PouKi2OyWwxiP4L+kKbTmQMBXy2pz27McljwhRpIKtun/fw
-         7MtZf5tN/pMC4taE2MPSDDY5wN1MtYmzfB/165ZgzRM8BSHrw9zCB94DQcQTqtATd3CQ
-         SqFA==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hcBdvoHg691jHOFKHwuWlLKsEYm+rxMZx93OjZXwe5g=;
+        b=hBlBJfrmsbPdQQiHuel4S12lDHftQQFlIIh9l51SvHOmn+IT4DWVE3PyjsELBBPgCX
+         7QK/FzPd4uyI4+XJYU5TyKiGlgU38oJ7UdAIF+mCObn5NeiyeJnp4nwYhNNLqpKndNGp
+         t6Xa1rpEQRZosvFz0dTWFRFPLQ5FeqvJ5ryE3426aPw22nMQT3rd+cZkWr1Re4EtgYfx
+         6ac0Ya5WmRBNnsEMiG6DFialJzFHtKjrA66VVqJoFdEfgDYos2YbjKL/+1us82C6V6Yf
+         ImSQ+6I9r7EPbfmVZdXGCIXIPL0rg+NW5FMWU3VmBuIAhUK6R9t3LyFNZcqHAZ+F4mrg
+         YJ6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=c2LKJwmUhCiywqgijn8LslmC5b1+alFKAirrClrDjQc=;
-        b=2q/FJvwhAOOg0DQMC60nxOLfviK1u617UJmkmI2ayHeEF4E3YcboYIcHgqqEyCDH+z
-         52helMzp2D4WcRN3bzIFJrQyEsfv12YKeKF5q/x/JUKtXuJdrVhc94TyDcXFAo1+AJks
-         guptG1bFKS6KfiEPBYAAnsFzsdwr7a4RhlG8I2tNHXacWnt3iUx3gPSbzd2taRXbPFPo
-         I55qVLMDMob4YWzifeaD1lHAdGkpY7JtyiG7ocui2kzvid5NtXQ5OoK9r3Zsrs00xAqE
-         XcW6Ml3W76lJDvJmEME7QIpHL7DrJVOr94RpIAidpn6PSi6xxDDUtR8JDwX4IK2nRuIy
-         F5uw==
-X-Gm-Message-State: ANoB5plo2EB4KGfHik4de2Zt3TuywQlpFtNYtQJi25jaxeQdiHfEhWRs
-        sZ4nvUeLZ5fyzx9z3CSEuLrHiLMXkscn3w==
-X-Google-Smtp-Source: AA0mqf4RZs4hb6sQ2qrGeotc2+jFEYuEtLMKZQ5OfbSpIGKVmIALe8JkrAOu0FPdDmYn/Jlhk2yuoQ==
-X-Received: by 2002:a17:906:3109:b0:7a0:b505:cae5 with SMTP id 9-20020a170906310900b007a0b505cae5mr71344826ejx.648.1670267295314;
-        Mon, 05 Dec 2022 11:08:15 -0800 (PST)
-Received: from skbuf ([188.26.185.87])
-        by smtp.gmail.com with ESMTPSA id ca24-20020a170906a3d800b007abafe43c3bsm6536230ejb.86.2022.12.05.11.08.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 11:08:14 -0800 (PST)
-Date:   Mon, 5 Dec 2022 21:08:05 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: Using a bridge for DSA and non-DSA devices
-Message-ID: <20221205190805.vwcv6z7ize3z64j2@skbuf>
-References: <2269377.ElGaqSPkdT@n95hx1g2>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hcBdvoHg691jHOFKHwuWlLKsEYm+rxMZx93OjZXwe5g=;
+        b=Z67s8V+ecLirTqg6uE+WRfEDscsCi1r7PvqdkM6ufgJ8vsDhVHhmtyDUW5baKKbaIQ
+         sgj+MoT+Jiiblcrqu5Fu0PYcWyRKl2LxUp9PW7P9Hfl5m//JX73Q5ACN41VY1oIdkKob
+         A4UYPmZohcXE3sXmrXihe0N0oLck9739QS4eIP5KH+5gqyhlVJPlxqZZ1dtpu0GO7trE
+         6uYoA0Q2T0ugiy4YwqKRZweCNsUGHcP+9aHymAys0u8HNlfkZRWgGSUWACBUZBehHC+0
+         CKJTgXYyKH0Sajo9qE1PDkzBhL7qtY1v04pshbEYGP08JuVGrqm+vU7o0o9JrijrCCVW
+         tMww==
+X-Gm-Message-State: ANoB5pmihBZ2pL48xajX2XtQl5jj8VttJBbRkC0u2O4j9fJ2hDRXhb00
+        ilHiWNweOqSZr8HYWKqHfb8E80fZJT3dsHcGOCt9lw==
+X-Google-Smtp-Source: AA0mqf7kIQXgNqtTfeXQfN7nvM9fWkY35cyBMym4tSBF0+yVcnPcC7aqn4LYFbP49/1b6z4EMq7qGv+E4zEWrnNaAlU=
+X-Received: by 2002:a05:6830:618b:b0:66d:a939:9baf with SMTP id
+ cb11-20020a056830618b00b0066da9399bafmr32834257otb.161.1670267723338; Mon, 05
+ Dec 2022 11:15:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2269377.ElGaqSPkdT@n95hx1g2>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <Y44xdN3zH4f+BZCD@zwp-5820-Tower>
+In-Reply-To: <Y44xdN3zH4f+BZCD@zwp-5820-Tower>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Mon, 5 Dec 2022 14:15:06 -0500
+Message-ID: <CADVnQykvAWHFOec_=DyU9GMLppK6mpeK-GqUVbktJffj1XA5rQ@mail.gmail.com>
+Subject: Re: [RFC PATCH] tcp: correct srtt and mdev_us calculation
+To:     Weiping Zhang <zhangweiping@didiglobal.com>
+Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, zwp10758@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,27 +68,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christian,
+On Mon, Dec 5, 2022 at 1:02 PM Weiping Zhang
+<zhangweiping@didiglobal.com> wrote:
+>
+> From the comments we can see that, rtt = 7/8 rtt + 1/8 new,
+> but there is an mistake,
+>
+> m -= (srtt >> 3);
+> srtt += m;
+>
+> explain:
+> m -= (srtt >> 3); //use t stands for new m
+> t = m - srtt/8;
+>
+> srtt = srtt + t
+> = srtt + m - srtt/8
+> = srtt 7/8 + m
+>
+> Test code:
+>
+>  #include<stdio.h>
+>
+>  #define u32 unsigned int
+>
+> static void test_old(u32 srtt, long mrtt_us)
+> {
+>         long m = mrtt_us;
+>         u32 old = srtt;
+>
+>         m -= (srtt >> 3);
+>         srtt += m;
+>
+>         printf("%s old_srtt: %u mrtt_us: %ld new_srtt: %u\n", __func__,  old, mrtt_us, srtt);
+> }
+>
+> static void test_new(u32 srtt, long mrtt_us)
+> {
+>         long m = mrtt_us;
+>         u32 old = srtt;
+>
+>         m = ((m - srtt) >> 3);
+>         srtt += m;
+>
+>         printf("%s old_srtt: %u mrtt_us: %ld new_srtt: %u\n", __func__,  old, mrtt_us, srtt);
+> }
+>
+> int main(int argc, char **argv)
+> {
+>         u32 srtt = 100;
+>         long mrtt_us = 90;
+>
+>         test_old(srtt, mrtt_us);
+>         test_new(srtt, mrtt_us);
+>
+>         return 0;
+> }
+>
+> ./a.out
+> test_old old_srtt: 100 mrtt_us: 90 new_srtt: 178
+> test_new old_srtt: 100 mrtt_us: 90 new_srtt: 98
+>
+> Signed-off-by: Weiping Zhang <zhangweiping@didiglobal.com>
 
-On Mon, Dec 05, 2022 at 07:15:42PM +0100, Christian Eggers wrote:
-> Usually a bridge does forwarding of traffic between different hardware
-> interfaces in software. For DSA, setting up a bridge configures the
-> hardware in a way that traffic is forwarded in hardware.
-> 
-> Is there any problem combining these two situations on a single bridge?
-> Currently I use a bridge for configuring a DSA switch with two DSA slave
-> interfaces. Can I add a non-DSA device (e.g. an USB Ethernet gadget)
-> to this bridge?
+Please note that this analysis and this test program do not take
+account of the fact that srtt in the Linux kernel is maintained in a
+form where it is shifted left by 3 bits, to maintain a 3-bit
+fractional part. That is why at first glance it would seem there is a
+missing multiplication of the new sample by 1/8. By not shifting the
+new sample when it is added to srtt, the new sample is *implicitly*
+multiplied by 1/8.
 
-In the model that the DSA core tries to impose, software bridging is
-possible, as long as you understand the physical constraints (throughput
-will be limited by the link speed of the CPU ports), and as long as the
-switch doesn't use DSA_TAG_PROTO_NONE (a remnant of the past).
+>  net/ipv4/tcp_input.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 0640453fce54..0242bb31e1ce 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -848,7 +848,7 @@ static void tcp_rtt_estimator(struct sock *sk, long mrtt_us)
+>          * that VJ failed to avoid. 8)
+>          */
+>         if (srtt != 0) {
+> -               m -= (srtt >> 3);       /* m is now error in rtt est */
+> +               m = (m - srtt >> 3);    /* m is now error in rtt est */
+>                 srtt += m;              /* rtt = 7/8 rtt + 1/8 new */
+>                 if (m < 0) {
+>                         m = -m;         /* m is now abs(error) */
+> @@ -864,7 +864,7 @@ static void tcp_rtt_estimator(struct sock *sk, long mrtt_us)
+>                         if (m > 0)
+>                                 m >>= 3;
+>                 } else {
+> -                       m -= (tp->mdev_us >> 2);   /* similar update on mdev */
+> +                       m = (m - tp->mdev_us >> 2);   /* similar update on mdev */
+>                 }
+>                 tp->mdev_us += m;               /* mdev = 3/4 mdev + 1/4 new */
+>                 if (tp->mdev_us > tp->mdev_max_us) {
+> --
+> 2.34.1
 
-Unfortunately the results might depend on which switch driver you use
-for this, since some driver cooperation is needed for smooth sailing,
-and we don't see perfect uniformity. See the
-ds->assisted_learning_on_cpu_port flag for some more details.
+AFAICT this proposed patch does not change the behavior of the code
+but merely expresses the same operations with slightly different
+syntax. Am I missing something?  :-)
 
-Did you already try to experiment with software bridging and faced any
-issues?
+thanks,
+neal
