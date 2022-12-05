@@ -2,129 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65AE16425FE
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:45:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ADCB642613
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:48:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231335AbiLEJpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 04:45:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57550 "EHLO
+        id S231514AbiLEJss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 04:48:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230324AbiLEJpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:45:14 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD7A1903A
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:45:13 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1p2827-0004t1-VD; Mon, 05 Dec 2022 10:45:08 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:c1b8:7ff9:10eb:2660])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 7D4821362AB;
-        Mon,  5 Dec 2022 09:45:06 +0000 (UTC)
-Date:   Mon, 5 Dec 2022 10:44:58 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 14/15] can: tcan4x5x: Fix register range of first block
-Message-ID: <20221205094458.xkvlvp7fnygf23fq@pengutronix.de>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-15-msp@baylibre.com>
- <20221202142810.kmd5m26fnm6lw2jh@pengutronix.de>
- <20221205093013.kpsqyb3fhd5njubm@blmsp>
+        with ESMTP id S231458AbiLEJsm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:48:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C5A55A6
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:47:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670233665;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IcvnyLKDgnT5EwGdRxoCJ/l5uFVnluQmDLioHt8iGWE=;
+        b=M4MoF8Zih7RlM/aZzhWm4NqAFN+GciVNM44hmiVPBTKUXuN5yF91olQn4pGNzTRbS+OWpi
+        R8Gl4Kk+tgpUcQKUxHbnnA702JXGPvi6XGshvHXQ6XdcEVaKaMfsHkLOt3ZRL8fU3we+1L
+        +HBT6tkypR2Rx5cGRuK4Gcipf1nxAfE=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-91-O0dZbCmOMDqBMDcRQA1VsA-1; Mon, 05 Dec 2022 04:47:44 -0500
+X-MC-Unique: O0dZbCmOMDqBMDcRQA1VsA-1
+Received: by mail-qv1-f69.google.com with SMTP id nn2-20020a056214358200b004bb7bc3dfdcso30541978qvb.23
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 01:47:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IcvnyLKDgnT5EwGdRxoCJ/l5uFVnluQmDLioHt8iGWE=;
+        b=Klcrpl7nviHyqh9GlKH9NuADz3oNMxwcOrs5L+CMVdymjCQJCR8WGU0YmbR3HBbev4
+         xgojIemNN0zax9FZjXbIAfVxUCxkuERQ03ynnNZBQiOiprRCw7tTgwl+K7UhvnPdBdMg
+         QQMRYmQjUGADR+EpnM5zbu9NgGrAEWwBBin1UWH0nPKYbCis7Zi25fdQiBUc/3068luP
+         HGwA+GMreNFHW2dnbJ7ie8K0CBfC5Kzrsho4O3MQdXwJOFTdnroC2VkncRvEi6vzh4D+
+         xBMOUbxfNahBmO2bV+PeFOi14MnsoUrc5QQCnzgE+SzGoYUVDvSPXt5D8i7ecjaymVq6
+         +hpA==
+X-Gm-Message-State: ANoB5pk6SPTgjJ/mIL9QYMkbcHHkzBDS4D5dFq7SBbyGz+UYed2jELgm
+        ORVRgpeGpqAXjJh+erHbWAdEspBK4ELlAo4UKf6229v7Oo/aAodegcLxIJ196Z6rYH6bcGf22fO
+        yVv3aJZNZWA/VSwiu
+X-Received: by 2002:a05:620a:13ab:b0:6fe:b81b:b34d with SMTP id m11-20020a05620a13ab00b006feb81bb34dmr3591728qki.670.1670233663913;
+        Mon, 05 Dec 2022 01:47:43 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf45OxZ8+RfdMfmhJecYJujPPz1Wg0eh2+1ixtUFNzLbxhTUqg3CfNjhGJz5ohM76/NfGk6Qbw==
+X-Received: by 2002:a05:620a:13ab:b0:6fe:b81b:b34d with SMTP id m11-20020a05620a13ab00b006feb81bb34dmr3591720qki.670.1670233663688;
+        Mon, 05 Dec 2022 01:47:43 -0800 (PST)
+Received: from sgarzare-redhat (host-87-11-6-51.retail.telecomitalia.it. [87.11.6.51])
+        by smtp.gmail.com with ESMTPSA id ay40-20020a05622a22a800b003a57a317c17sm9285578qtb.74.2022.12.05.01.47.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 01:47:43 -0800 (PST)
+Date:   Mon, 5 Dec 2022 10:47:36 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Artem Chernyshev <artem.chernyshev@red-soft.ru>
+Cc:     Vishnu Dasa <vdasa@vmware.com>, Bryan Tan <bryantan@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        lvc-project@linuxtesting.org
+Subject: Re: [PATCH v2] net: vmw_vsock: vmci: Check memcpy_from_msg()
+Message-ID: <20221205094736.k3yuwk7emijpitvw@sgarzare-redhat>
+References: <702BBCBE-6E80-4B12-A996-4A2CB7C66D70@vmware.com>
+ <20221203083312.923029-1-artem.chernyshev@red-soft.ru>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="d45yhfs3ex7kqilv"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20221205093013.kpsqyb3fhd5njubm@blmsp>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20221203083312.923029-1-artem.chernyshev@red-soft.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Dec 03, 2022 at 11:33:12AM +0300, Artem Chernyshev wrote:
+>vmci_transport_dgram_enqueue() does not check the return value
+>of memcpy_from_msg(). Return with an error if the memcpy fails.
+>
+>Found by Linux Verification Center (linuxtesting.org) with SVACE.
+>
+>Fixes: 0f7db23a07af ("vmci_transport: switch ->enqeue_dgram, ->enqueue_stream and ->dequeue_stream to msghdr")
+>Signed-off-by: Artem Chernyshev <artem.chernyshev@red-soft.ru>
+>---
+>V1->V2 Fix memory leaking and updates for description
+>
+> net/vmw_vsock/vmci_transport.c | 5 ++++-
+> 1 file changed, 4 insertions(+), 1 deletion(-)
+>
+>diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+>index 842c94286d31..c94c3deaa09d 100644
+>--- a/net/vmw_vsock/vmci_transport.c
+>+++ b/net/vmw_vsock/vmci_transport.c
+>@@ -1711,7 +1711,10 @@ static int vmci_transport_dgram_enqueue(
+> 	if (!dg)
+> 		return -ENOMEM;
+>
+>-	memcpy_from_msg(VMCI_DG_PAYLOAD(dg), msg, len);
+>+	if (memcpy_from_msg(VMCI_DG_PAYLOAD(dg), msg, len)) {
+>+		kfree(dg);
+>+		return -EFAULT;
 
---d45yhfs3ex7kqilv
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Since memcpy_from_msg() is a wrapper of copy_from_iter_full() that 
+simply returns -EFAULT in case of an error, perhaps it would be better 
+here to return the value of memcpy_from_msg() instead of wiring the 
+error.
 
-On 05.12.2022 10:30:13, Markus Schneider-Pargmann wrote:
-> Hi Marc,
->=20
-> On Fri, Dec 02, 2022 at 03:28:10PM +0100, Marc Kleine-Budde wrote:
-> > On 16.11.2022 21:53:07, Markus Schneider-Pargmann wrote:
-> > > According to the datasheet 0x1c is the last register in the first blo=
-ck,
-> > > not register 0x2c.
-> >=20
-> > The datasheet "SLLSF91A =E2=80=93 DECEMBER 2018 =E2=80=93 REVISED JANUA=
-RY 2020" says:
-> >=20
-> > | 8.6.1 Device ID and Interrupt/Diagnostic Flag Registers: 16'h0000 to
-> > | 16'h002F
-> >=20
-> > While the last described register is at 0xc.
->=20
-> Sorry, not sure what I looked up here. The last described register is
-> 0x10 SPI Error status mask in my datasheet:
-> 'SLLSEZ5D =E2=80=93 JANUARY 2018 =E2=80=93 REVISED JUNE 2022'
+However in the end the behavior is the same, so even if you don't want 
+to change it I'll leave my R-b:
 
-The TCAN4550-Q1 variant has the 0x10 register documented, while the
-TCAN4550 (w/o -Q1) doesn't have.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-> I would prefer using the actual registers if that is ok with you, so
-> 0x10 here because I assume the remaining registers have internal use or
-> maybe don't exist at all?! If there is an undocumented register that
-> needs to be used at some point we can still modify the ranges.
+Thanks,
+Stefano
 
-I'm fine with using 0x10 as the last register.
-
-> Also it seems the existing ranges are following the same logic and don't
-> list the whole range, just the documented registers.
->=20
-> The second range is wrong as well. The last register is 0x830, will
-> fix.
-
-IIRC I used the register ranges from the section titles ("8.6.1 Device
-ID and Interrupt/Diagnostic Flag Registers: 16'h0000 to 16'h002F") when
-I added the {wr,rd}_table.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---d45yhfs3ex7kqilv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmONvZYACgkQrX5LkNig
-013z1QgAjPwBzVU/x6eVgTdQF2PdBSxxR0pwfZ5/P+K/RPjyWJaXjXlt/gjgeR0Y
-GHY6YFgMg1DoyVP8AQmJQzoX+fkNKNbkpbmO8gF034cE5W3Grxz2A4mG7fRYQpnb
-u1vQvzfRDROsmr257PgNQHy84zTVjK9l5KSmdSGZxsj+uA/Y8W+1LmsHyQDa3pBZ
-qmhhKtCKJ0hkUP7Az7ujfeiKsMzwdXqyvfdcbEzm2ytW89pa9361lTJ0/eCB9Zke
-OUin8fexcYc0pzx3fu5BdTt0uU1KWK4gvmR49ku8KtkEJmE9SvReQRbUwvzjY1B8
-Kz+lrElpIK7kmuH/3i/poGELti3y5A==
-=oU/3
------END PGP SIGNATURE-----
-
---d45yhfs3ex7kqilv--
