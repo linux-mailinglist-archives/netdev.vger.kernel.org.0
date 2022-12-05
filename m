@@ -2,122 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DD2A643911
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 00:05:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA9764394D
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 00:11:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233105AbiLEXEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 18:04:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
+        id S233996AbiLEXL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 18:11:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234128AbiLEXEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 18:04:15 -0500
-Received: from CO1PR02CU002-vft-obe.outbound.protection.outlook.com (mail-westus2azon11010005.outbound.protection.outlook.com [52.101.46.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14F11AD91;
-        Mon,  5 Dec 2022 15:04:13 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j3ep2IoS3l1kJpO8Ef74zVH+k4QnX4JniGjGtUBFujUoJq+RUAT00IBvtu5H5jAaoJ6ebIGVb5KpcrFLw+NsIpckEivMCNfp1ckMK2U9AzBLBYOJ5fGQLAAFCd/PFeRBoIGjQoVlek5w1GR5BneuwGgJl8j1L7v1JTQJUmsPJZBZ+e06Rlw7Kq/3/Ly1AKLCCwtG1Wtd1SfZPi970AUwgtzT0rjmQA75cYZ8SDkvIGSndhyHuRgP5KC9ajk4WhqflmcFAnCY0NJw2f1G28PNP1S/QL9NMCoXTuwhd28IXdqTt5B277vbFsCf15s4AQyKq2gmSUiyaTQ7ob+uZT/wWg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=20Kf+jnBk1nPR3nM5uqQoF//GpuyODKmmc/8P7Yj63M=;
- b=d2Qpjoa8W4uRfX8cAkNZLQ44getUk0a3ucKeg1d5LqXyvhdpZFVjqyBlo2YoZRmnZr6g/d2y/YgAukJLbZeMNM43I1pitO+aLnjh23FNOsran1zeioMtqi93HlnHuZlyhlua4JkZaq4l004I1CIuqPhrD1RADIFigzOa3iB+fRLndjTWyHRh59LRnkDGMsgTWrbFMvWiO183lj7NeH3e3f4jTHuPMbc857izhCkeH1UldCexjgp1p4mEx32ZURgmW1Y527b0qCIab+1EFD+kRxnJEuxpZoGRko5xYczXdwvu0MFtgf4EUc+Mer9Gy3Iv0YV5IxQ67c7WErMGwLYNGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=20Kf+jnBk1nPR3nM5uqQoF//GpuyODKmmc/8P7Yj63M=;
- b=JPlRQk5LRWAHLtRavrXREcXFymZXQ76awaWsyOf7ERGYHjYxabfttOtyumfFxWX9jtXtA/UZ2e/Y2387sQPu8nv+wQs1oN1MqRo//zVmPgn75CONKE4zO4YoIoFJCK50u8q7YlKx0X6CnNoxb9XiRV0zSpSC1UJBuj50glwYxIQ=
-Received: from BYAPR05MB3960.namprd05.prod.outlook.com (2603:10b6:a02:88::12)
- by BN8PR05MB5971.namprd05.prod.outlook.com (2603:10b6:408:45::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.11; Mon, 5 Dec
- 2022 23:03:47 +0000
-Received: from BYAPR05MB3960.namprd05.prod.outlook.com
- ([fe80::6764:941b:e0cc:c4e1]) by BYAPR05MB3960.namprd05.prod.outlook.com
- ([fe80::6764:941b:e0cc:c4e1%7]) with mapi id 15.20.5880.013; Mon, 5 Dec 2022
- 23:03:47 +0000
-From:   Vishnu Dasa <vdasa@vmware.com>
-To:     Artem Chernyshev <artem.chernyshev@red-soft.ru>
-CC:     Stefano Garzarella <sgarzare@redhat.com>,
-        Pv-drivers <Pv-drivers@vmware.com>,
-        Bryan Tan <bryantan@vmware.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v3] net: vmw_vsock: vmci: Check memcpy_from_msg()
-Thread-Topic: [PATCH v3] net: vmw_vsock: vmci: Check memcpy_from_msg()
-Thread-Index: AQHZCKACaX0tDF5YAk21qHDUk/x20q5f6mcA
-Date:   Mon, 5 Dec 2022 23:03:47 +0000
-Message-ID: <C39CC4BC-E87C-4C6D-ADC9-A33E7696BD20@vmware.com>
-References: <20221205115200.2987942-1-artem.chernyshev@red-soft.ru>
-In-Reply-To: <20221205115200.2987942-1-artem.chernyshev@red-soft.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vmware.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR05MB3960:EE_|BN8PR05MB5971:EE_
-x-ms-office365-filtering-correlation-id: 62b149bc-6bef-4528-2974-08dad714f762
-x-ld-processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9YIAVwSpEPvskyW12JurUIdeP/zI+j4BZiIBLSBTzHeHe1TvC2SSzWPNoWiVuztxtRCODhUboaL0ogyqDWJJPaupBk8WTz2jEDURyo0hjKDryCuXz9+Hw9SLLWyRooUVrjp5HLMHIdTuF1W2bimRZrSyo9SK053//pfY+E6ZctwyDvynkcV/osOd7wWn8tiL/sJfWwkCeYpg7cZkiT6owPbbk0AA2lU+7NY1NWCBBAry4EZUGmoVilfcKB1WAVzPGGJ9UUXWLV9G9O6LJHzTa9KAyenQhTr14ZSBDr+UD65Zv5z01Y8gFBoxf0ksE/eQlIlAzYhmWEJJ/Rfne3MAxky2OXFxUgZ9DKFktSMoy2mpaetDPCCkprai5maP5+K9e/yVuj+rHI1hVL7G6WL1QhcNk90sPfWH2g9CCdfVHFj338NbzCxMRW1J1c8tUcwZbC4weXfrSz5F3CcS8MvQ/i5Q502otG35gdWUtYo1C0F+F5n1Y1sKyAN6Sh3vqaOWZgVfMlLKHEkewLV4tNVUT8wIosid0nz5pCHq0rfNYnAZATx+DfYSekrgQWCn6ER6oi3az8u3PyozKKz6NcHOpWGrFDyRofLwfEw5gHtM8PcrLKg7gVMejfbZejB2GeoKqb26xn6DnermrcY/e/nOYg2uUhTCnz2X5jkvXeMpEOdDGihBlOy1NgaBXUXTkJvXhEnPEnc5GuRgZWN8Iu46jZNf/rIMyy08GvlRYN5vxOM=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR05MB3960.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(346002)(39860400002)(396003)(136003)(451199015)(83380400001)(122000001)(4326008)(86362001)(5660300002)(33656002)(38070700005)(41300700001)(2906002)(38100700002)(8936002)(8676002)(186003)(6506007)(53546011)(64756008)(6512007)(6916009)(54906003)(36756003)(66476007)(478600001)(66946007)(6486002)(316002)(76116006)(2616005)(71200400001)(66446008)(66556008)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/vyv772U1PFZvPppn+m2rKr52zI5IKcIKhge4dFR5Md/kabAPwZufjhn+3if?=
- =?us-ascii?Q?4xWGcUWDPzg6LZ7Ft0kJKLfF1ghb5lCcc/j56bDwTKHsGZZ9rD85vY36yvuN?=
- =?us-ascii?Q?2j0iJ65QWGWAAtxK0UYjIKUi86T/jRSf6atQTmsOz7qhfy9IA7fMYEl88pLQ?=
- =?us-ascii?Q?ywqipBX59MaQ2pE9WweozdvwLZWtidVPW8+zJ82ptpUhMuY3S6r0Ib1aJ+t3?=
- =?us-ascii?Q?JLPVVXzs1BUIXqOFkzCB0QxV0V8ciVRuiAihpH9RbEQfqAOrfaTYa6r5R5/O?=
- =?us-ascii?Q?JkyXHyXGVGIfaZICYuBUG1gDauTx14D2EBUM+pJeVo/UixTE5IHPRA9gsQpA?=
- =?us-ascii?Q?d15brHIMmWkxHJS8AFB06EEMnWvhY2T4gP2YK+5WIAoldHGFO+AO7VmVy+V9?=
- =?us-ascii?Q?GH8/ERP0Xunix9ihKxdoYvwfOWr0Z+Tm/h4KOJ9Vehl5rN05M++AwfMdC13h?=
- =?us-ascii?Q?7BiVReS5PIs6jr8haC6F15mu+ff8Lci8yJygGiJTqWiFOBZGnhI/Le56ZkYV?=
- =?us-ascii?Q?nJK3BAm6pjqgqLQnlnUVST5cieGr8353U0IB/yB/RmlvSDixoKVSMWwPrSTH?=
- =?us-ascii?Q?Eoic7GLY2NArWtisqqhvLHZZcMtcK6uk9khV187OGB+dWeF2GvYAJ0tVWgLF?=
- =?us-ascii?Q?2CkubnPeXU+WnL3aMIj0h+ErJT0lPW40e5ER9FVjg4isAUKKgh3VMX3fWEEo?=
- =?us-ascii?Q?2YKaS8mqy/oUJOlQZr9W7RmHZ45ir38d6CYyTemZm0BOjoS9ti3xvkgdIXNV?=
- =?us-ascii?Q?Ne5WP8juR1ne41FHPSDybUsmJ4A8OnHET+NtlxN3YZfUrpFbHU/etqQZs6/K?=
- =?us-ascii?Q?4KxSRz4/eYg/zfIWIClgYY/iGitzzmvKX1RNzqeOmEuz1LBhoiEyST43xxKM?=
- =?us-ascii?Q?72bQt4fGltK3nX4oxm3GqT9YMlzQ75DzyhtjqOFfuW7p7EpwYqlctMbmctSh?=
- =?us-ascii?Q?W6HKuTuLU9B7iXfL60z2N05GfWXtV8HP4eN5j+0ELqFEC0lqufKSXl5hQtKJ?=
- =?us-ascii?Q?mcyfkIX5SVDDwTFM0xXpMWBD8pBLP8xzl3DTIQOVQVdLQMVlFaxaC1MV3bgR?=
- =?us-ascii?Q?TcsscCrS2+LS2KMFRXQehwujiCfCAn9wvd9C3QQTGnEFvvZOHzTOWoddEfZ1?=
- =?us-ascii?Q?THkLRAKWK0ZFswSvfEKkMjPfgCrM+kqxj/EO5bSQo+W8nRvImarqaj/v8+XO?=
- =?us-ascii?Q?pAUPFOgrOPMhaQg1DBbWxhoqSjM1JvvA22KzSHLcLN/U3XyWvFA1kwEXuAhu?=
- =?us-ascii?Q?cUC5B0gKMJSd1feaK6NZ1cKBZvN4dWsAaSSsWkHBFzPZbLDQHYjQs4POXo6+?=
- =?us-ascii?Q?EW22mokAQrqFhWKgDDJQXQ4mduofOxOweUdEjUALwi3K3Q7erQl7+IPouWeR?=
- =?us-ascii?Q?2gL3v5Mhn9PHmX2XlnXju2HN4zWY8X28Drne3i5Ww8qd01/u8Be5JpxUr6V6?=
- =?us-ascii?Q?E4Bd0BnN0YQ37jQkKJo5I8vcyy8YIjMjgtqw/M+xKEr1iQ/9XmaqJDwC5MhC?=
- =?us-ascii?Q?7ZrYxiXi76pBb+PV+R2NtWNHFJEoTM/JKumqpVCeNoP7pXr7VnYImMc8B7ED?=
- =?us-ascii?Q?sDZvZFWN6Qh6g/+qyD8nz1gCdE+RwszdV/NHtQmbz/zdYmNcujcHkTDOQ1m8?=
- =?us-ascii?Q?m2G1REqczSE9kIXHqkRMthvY3C+ArbHUlxSyBptVBo+I?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <0A050E6A132D6549A60727D6FD326561@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S233987AbiLEXLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 18:11:01 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C1AE220D3
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 15:09:30 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id y15so12585352qtv.5
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 15:09:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=DQLseRrDsuHhJKXmiFys7qH07OqzY4Hx7l1zed9yTws=;
+        b=Hynz74lJMld2z9j11EU1ziNd3+JQObTszXSyCpWnltfh0nnOgB/J2zTML0yN7Oil1G
+         LLmP2+HuHvVdqQEOyP0T2WnVh7Im9STjectLWxqgfaRDSfUMl/5rWkx0yR9+BG6TKObp
+         j8Gwz8Ea1oHTBhQ/5Hpai4rcePH/BJT1/Lq6WIcUomZ53bdwaUkZWL2WkGbLTM6Oi0Kd
+         mPpGwDYvfLB9N9OFeU7Xehc6xKQ+z3tt9hqCcMfdxatvsfx1Wx0w2kRFQ2XnEbWjjaz1
+         bfkkWGHeWAHQAyUXsnaLlyeAp5WZvCTucbj7bliUKp5I5QA30+yuH1PTcmTNdqLfGlvE
+         XUGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DQLseRrDsuHhJKXmiFys7qH07OqzY4Hx7l1zed9yTws=;
+        b=XaYzad4UzfLJJ5ej8nl9Iuw4FEi/x9ulykvZMt6vn/jyWFINWRRL3gZXDiNdYz3USi
+         w1TTZrbgMIwWXAMTaHaw6j64KaPTjw2b1hDHii/E6GNgtnldhn5ZsmDzq/ugD5syb4oM
+         v4edL7/Vsxs9RT7LqQoaywMqVgloK+4fTGVtOHDvL6TS8y6WVfkN3b2Op4Y5TUaDgvaE
+         hXxDNIZUrZriYpIUlOOjq+WgcoVSVhdTrHpy8K5QZ47NfL+d9zekT+FbWYc8RJ967xdi
+         A+tK5BGYJRu+ptBpui04Do69VnWH7SD1zFjPwG4PqW5MKISh21EduMXYXp/dCqanfLMO
+         3Tgw==
+X-Gm-Message-State: ANoB5pm3ETrjR01yXk7aYo6YIic/m9g/YwqynQ3HaVrU96hvJv0ei2QF
+        vHE1BAB5r+PH5eazweHhBBIOqYZhjXc=
+X-Google-Smtp-Source: AA0mqf5FrR/n5f50XNi+1k+k9TSwMJt35ArNuMZ4d2bpvg2vGgEzT1V75Blo9rRpilvL9Kcg0K13LA==
+X-Received: by 2002:ac8:7097:0:b0:3a6:6b05:d067 with SMTP id y23-20020ac87097000000b003a66b05d067mr45048747qto.335.1670281769011;
+        Mon, 05 Dec 2022 15:09:29 -0800 (PST)
+Received: from willemb.c.googlers.com.com (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id ge12-20020a05622a5c8c00b003a6a7a20575sm5172673qtb.73.2022.12.05.15.09.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 15:09:28 -0800 (PST)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, soheil@google.com,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net-next] net_tstamp: add SOF_TIMESTAMPING_OPT_ID_TCP
+Date:   Mon,  5 Dec 2022 18:09:25 -0500
+Message-Id: <20221205230925.3002558-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.39.0.rc0.267.gcb52ba06e7-goog
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR05MB3960.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62b149bc-6bef-4528-2974-08dad714f762
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Dec 2022 23:03:47.5757
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IcvulvCte2P47MsfkLuKtVdHfjt10A2ax2N4BfijTaM6kNEXKZCtSG3/KlFQ0h3afoDN/1XOtxSAcVwBJ2uQeA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR05MB5971
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -125,63 +69,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Willem de Bruijn <willemb@google.com>
 
-> On Dec 5, 2022, at 3:52 AM, Artem Chernyshev <artem.chernyshev@red-soft.r=
-u> wrote:
->=20
-> vmci_transport_dgram_enqueue() does not check the return value
-> of memcpy_from_msg(). Return with an error if the memcpy fails.
+Add an option to initialize SOF_TIMESTAMPING_OPT_ID for TCP from
+write_seq sockets instead of snd_una.
 
-I think we can add some more information in the description.  Sorry, I
-should've said this earlier.
+Intuitively the contract is that the counter is zero after the
+setsockopt, so that the next write N results in a notification for
+last byte N - 1.
 
-vmci_transport_dgram_enqueue() does not check the return value
-of memcpy_from_msg().  If memcpy_from_msg() fails, it is possible that
-uninitialized memory contents are sent unintentionally instead of user's
-message in the datagram to the destination.  Return with an error if
-memcpy_from_msg() fails.
+On idle sockets snd_una == write_seq so this holds for both. But on
+sockets with data in transmission, snd_una depends on the ACK response
+from the peer. A process cannot learn this in a race free manner
+(ioctl SIOCOUTQ is one racy approach).
 
->=20
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
->=20
-> Fixes: 0f7db23a07af ("vmci_transport: switch ->enqeue_dgram, ->enqueue_st=
-ream and ->dequeue_stream to msghdr")
-> Signed-off-by: Artem Chernyshev <artem.chernyshev@red-soft.ru>
+write_seq is a better starting point because based on the seqno of
+data written by the process only.
 
-Thanks, Artem!  This version looks good to me modulo my suggestion
-about the description above.
+But the existing behavior may already be relied upon. So make the new
+behavior optional behind a flag.
 
-Reviewed-by: Vishnu Dasa <vdasa@vmware.com>
+The new timestamp flag necessitates increasing sk_tsflags to 32 bits.
+Move the field in struct sock to avoid growing the socket (for some
+common CONFIG variants). The UAPI interface so_timestamping.flags is
+already int, so 32 bits wide.
 
-Regards,
-Vishnu
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
 
-> ---
-> V1->V2 Fix memory leaking and updates for description
-> V2->V3 Return the value of memcpy_from_msg()
->=20
-> net/vmw_vsock/vmci_transport.c | 6 +++++-
-> 1 file changed, 5 insertions(+), 1 deletion(-)
->=20
-> diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transpor=
-t.c
-> index 842c94286d31..36eb16a40745 100644
-> --- a/net/vmw_vsock/vmci_transport.c
-> +++ b/net/vmw_vsock/vmci_transport.c
-> @@ -1711,7 +1711,11 @@ static int vmci_transport_dgram_enqueue(
-> 	if (!dg)
-> 		return -ENOMEM;
->=20
-> -	memcpy_from_msg(VMCI_DG_PAYLOAD(dg), msg, len);
-> +	err =3D memcpy_from_msg(VMCI_DG_PAYLOAD(dg), msg, len);
-> +	if (err) {
-> +		kfree(dg);
-> +		return err;
-> +	}
->=20
-> 	dg->dst =3D vmci_make_handle(remote_addr->svm_cid,
-> 				   remote_addr->svm_port);
-> --=20
-> 2.30.3
->=20
+---
+
+Alternative solutions are
+
+* make the change unconditionally: a one line change.
+* make the condition a (per netns) sysctl instead of flag
+* make SOF_TIMESTAMPING_OPT_ID_TCP not a modifier of, but alternative
+  to SOF_TIMESTAMPING_OPT_ID. That requires also updating all existing
+  code that now tests OPT_ID to test a new OPT_ID_MASK.
+
+Weighing the variants, this seemed the best option to me.
+---
+ Documentation/networking/timestamping.rst | 19 +++++++++++++++++++
+ include/net/sock.h                        |  6 +++---
+ include/uapi/linux/net_tstamp.h           |  3 ++-
+ net/core/sock.c                           |  9 ++++++++-
+ net/ethtool/common.c                      |  1 +
+ 5 files changed, 33 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
+index be4eb1242057..578f24731be5 100644
+--- a/Documentation/networking/timestamping.rst
++++ b/Documentation/networking/timestamping.rst
+@@ -192,6 +192,25 @@ SOF_TIMESTAMPING_OPT_ID:
+   among all possibly concurrently outstanding timestamp requests for
+   that socket.
+ 
++SOF_TIMESTAMPING_OPT_ID_TCP:
++  Pass this modifier along with SOF_TIMESTAMPING_OPT_ID for new TCP
++  timestamping applications. SOF_TIMESTAMPING_OPT_ID defines how the
++  counter increments for stream sockets, but its starting point is
++  not entirely trivial. This modifier option changes that point.
++
++  A reasonable expectation is that the counter is reset to zero with
++  the system call, so that a subsequent write() of N bytes generates
++  a timestamp with counter N-1. SOF_TIMESTAMPING_OPT_ID_TCP
++  implements this behavior under all conditions.
++
++  SOF_TIMESTAMPING_OPT_ID without modifier often reports the same,
++  especially when the socket option is set when no data is in
++  transmission. If data is being transmitted, it may be off by the
++  length of the output queue (SIOCOUTQ) due to being based on snd_una
++  rather than write_seq. That offset depends on factors outside of
++  process control, including network RTT and peer response time. The
++  difference is subtle and unlikely to be noticed when confiugred at
++  initial socket creation. But .._OPT_ID behavior is more predictable.
+ 
+ SOF_TIMESTAMPING_OPT_CMSG:
+   Support recv() cmsg for all timestamped packets. Control messages
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 6d207e7c4ad0..ecea3dcc2217 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -503,10 +503,10 @@ struct sock {
+ #if BITS_PER_LONG==32
+ 	seqlock_t		sk_stamp_seq;
+ #endif
+-	u16			sk_tsflags;
+-	u8			sk_shutdown;
+ 	atomic_t		sk_tskey;
+ 	atomic_t		sk_zckey;
++	u32			sk_tsflags;
++	u8			sk_shutdown;
+ 
+ 	u8			sk_clockid;
+ 	u8			sk_txtime_deadline_mode : 1,
+@@ -1899,7 +1899,7 @@ static inline void sock_replace_proto(struct sock *sk, struct proto *proto)
+ struct sockcm_cookie {
+ 	u64 transmit_time;
+ 	u32 mark;
+-	u16 tsflags;
++	u32 tsflags;
+ };
+ 
+ static inline void sockcm_init(struct sockcm_cookie *sockc,
+diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
+index 55501e5e7ac8..a2c66b3d7f0f 100644
+--- a/include/uapi/linux/net_tstamp.h
++++ b/include/uapi/linux/net_tstamp.h
+@@ -31,8 +31,9 @@ enum {
+ 	SOF_TIMESTAMPING_OPT_PKTINFO = (1<<13),
+ 	SOF_TIMESTAMPING_OPT_TX_SWHW = (1<<14),
+ 	SOF_TIMESTAMPING_BIND_PHC = (1 << 15),
++	SOF_TIMESTAMPING_OPT_ID_TCP = (1 << 16),
+ 
+-	SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_BIND_PHC,
++	SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_OPT_ID_TCP,
+ 	SOF_TIMESTAMPING_MASK = (SOF_TIMESTAMPING_LAST - 1) |
+ 				 SOF_TIMESTAMPING_LAST
+ };
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 4571914a4aa8..b0ab841e0aed 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -901,13 +901,20 @@ int sock_set_timestamping(struct sock *sk, int optname,
+ 	if (val & ~SOF_TIMESTAMPING_MASK)
+ 		return -EINVAL;
+ 
++	if (val & SOF_TIMESTAMPING_OPT_ID_TCP &&
++	    !(val & SOF_TIMESTAMPING_OPT_ID))
++		return -EINVAL;
++
+ 	if (val & SOF_TIMESTAMPING_OPT_ID &&
+ 	    !(sk->sk_tsflags & SOF_TIMESTAMPING_OPT_ID)) {
+ 		if (sk_is_tcp(sk)) {
+ 			if ((1 << sk->sk_state) &
+ 			    (TCPF_CLOSE | TCPF_LISTEN))
+ 				return -EINVAL;
+-			atomic_set(&sk->sk_tskey, tcp_sk(sk)->snd_una);
++			if (val & SOF_TIMESTAMPING_OPT_ID_TCP)
++				atomic_set(&sk->sk_tskey, tcp_sk(sk)->write_seq);
++			else
++				atomic_set(&sk->sk_tskey, tcp_sk(sk)->snd_una);
+ 		} else {
+ 			atomic_set(&sk->sk_tskey, 0);
+ 		}
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index 21cfe8557205..6f399afc2ff2 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -417,6 +417,7 @@ const char sof_timestamping_names[][ETH_GSTRING_LEN] = {
+ 	[const_ilog2(SOF_TIMESTAMPING_OPT_PKTINFO)]  = "option-pktinfo",
+ 	[const_ilog2(SOF_TIMESTAMPING_OPT_TX_SWHW)]  = "option-tx-swhw",
+ 	[const_ilog2(SOF_TIMESTAMPING_BIND_PHC)]     = "bind-phc",
++	[const_ilog2(SOF_TIMESTAMPING_OPT_ID_TCP)]   = "option-id-tcp",
+ };
+ static_assert(ARRAY_SIZE(sof_timestamping_names) == __SOF_TIMESTAMPING_CNT);
+ 
+-- 
+2.39.0.rc0.267.gcb52ba06e7-goog
 
