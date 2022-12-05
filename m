@@ -2,614 +2,365 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 332E4642149
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 02:59:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94E9D64215C
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 03:05:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbiLEB7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Dec 2022 20:59:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47738 "EHLO
+        id S230488AbiLECFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Dec 2022 21:05:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230402AbiLEB7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 20:59:01 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBD111470;
-        Sun,  4 Dec 2022 17:58:59 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id s5so13782834edc.12;
-        Sun, 04 Dec 2022 17:58:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cbpjXJzdTAO9JepFbvBnD12JSSi+Xmb+zn7Y3aMVEdg=;
-        b=loDp1iQtLEbaCHmgMyZGgod69uS8OjIxFIQIKXkenQZ4eMfKOIuFIEd5JiLKT5Fg0M
-         jGPfbY8fuIj/gINT1hUpQBhWhy1HRxVtytR/O2WSZPMXBjTc9Rv/jc9ppMBc1qdGJRG+
-         +77fNve+Ugbg6SLU7JeP26LdR9w5T9WwFx8ig53W6MSpaYDg91FDnGQHcmOiNzWdFTJR
-         Qm5c2MI9U3615e0wCAZuXDgKmD5IwzGZtt0R5QBnxiEwqad7PuIpjv1BM5iy7xUMH/mb
-         pzfs08PRT3ZldFEN6nxitvgvPMpQaJZen+6iWve0qG7/1MGq959c1N4lywfW+nReSeMu
-         4/uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cbpjXJzdTAO9JepFbvBnD12JSSi+Xmb+zn7Y3aMVEdg=;
-        b=FvXIsLXyoZR1lKP81QAVu1fu1PlkUmX63+dBaCQ2fqZYJKcDEK/WCXMXvMwsEb681T
-         aoluQLL6/nK/1ER861xnGF+qtRnQP5THrf7oNHDgLeEXWcPdhqcWYvWbVSIJhTrpb5EM
-         CM59SYMSkr+VLVS0R2dK8gjx0HoiM3dWP0REwM566nCGiF4Tukv3NvZrDakWjIO9m/mC
-         HK5OGCmk85ElGL3KwqS1XszAqjJt8S2SAt+zXlc3Apb7L1iBOTS3Ibht8H2d2BIyMzxG
-         fZ5Wwl9zlmzk2UtzqZqGT2qSxd/y1MydXbdcm8/plT8Yqm7wqp0NnN3GIhYIG76vT8CV
-         v5MQ==
-X-Gm-Message-State: ANoB5pmGS40wmJgcS6R/aATAtwXGuSCeDULPE9EFqAkKUGWPYlhHGx5d
-        dK/ZyhXXJDMMNgPviQXZ8gg=
-X-Google-Smtp-Source: AA0mqf40ZSrRvD53vUvcWhfGWhRLGYeLibdiu5BHiDxNLp9mxQIsaV5zP5oJTeAk5PxW2ftESVvRwg==
-X-Received: by 2002:a05:6402:1013:b0:463:f3a:32ce with SMTP id c19-20020a056402101300b004630f3a32cemr56522888edu.366.1670205537859;
-        Sun, 04 Dec 2022 17:58:57 -0800 (PST)
-Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
-        by smtp.gmail.com with ESMTPSA id g1-20020a17090604c100b0073dc5bb7c32sm5687352eja.64.2022.12.04.17.58.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Dec 2022 17:58:57 -0800 (PST)
-Date:   Mon, 5 Dec 2022 02:59:06 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: [PATCH ethtool-next 2/2] add support for IEEE 802.3cg-2019 Clause
- 148 - PLCA RS
-Message-ID: <fc8c905af3c68df563a281d3b69ae02e5e939a65.1670205306.git.piergiorgio.beruto@gmail.com>
-References: <f9712cc0a62fb1a2e4ab5016b2dc91a26b0e3891.1670205306.git.piergiorgio.beruto@gmail.com>
+        with ESMTP id S230307AbiLECE7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 21:04:59 -0500
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B052926E7;
+        Sun,  4 Dec 2022 18:04:55 -0800 (PST)
+Received: from ([60.208.111.195])
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id ZEJ00039;
+        Mon, 05 Dec 2022 10:04:39 +0800
+Received: from localhost.localdomain (10.180.204.101) by
+ jtjnmail201608.home.langchao.com (10.100.2.8) with Microsoft SMTP Server id
+ 15.1.2507.16; Mon, 5 Dec 2022 10:04:39 +0800
+From:   wangchuanlei <wangchuanlei@inspur.com>
+To:     <echaudro@redhat.com>
+CC:     <simon.horman@corigine.com>, <kuba@kernel.org>,
+        <alexandr.lobakin@intel.com>, <pabeni@redhat.com>,
+        <pshelar@ovn.org>, <davem@davemloft.net>, <edumazet@google.com>,
+        <wangpeihui@inspur.com>, <netdev@vger.kernel.org>,
+        <dev@openvswitch.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] [PATCH v6 net-next] net: openvswitch: Add support to count upcall packets
+Date:   Sun, 4 Dec 2022 21:04:37 -0500
+Message-ID: <20221205020437.3958934-1-wangchuanlei@inspur.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f9712cc0a62fb1a2e4ab5016b2dc91a26b0e3891.1670205306.git.piergiorgio.beruto@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="y"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.180.204.101]
+tUid:   202212051004397ebaa9072c1cab7f088d8179e151692e
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for the Physical Layer Collision Avoidance
-Reconciliation Sublayer which was introduced in the IEEE 802.3
-standard by the 802.3cg working group in 2019.
+Hi, Eelco,
+    Thank you for review again !  I will give a new version of patch based on your comments 
+today!
 
-The ethtool interface has been extended as follows:
-- show if the device supports PLCA when ethtool is invoked without FLAGS
-   - additionally show what PLCA version is supported
-   - show the current PLCA status
-- add FLAGS for getting and setting the PLCA configuration
+Best regards!
+wangchuanlei
 
-Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
----
- Makefile.am        |   1 +
- ethtool.c          |  21 ++++
- netlink/extapi.h   |   6 +
- netlink/plca.c     | 304 +++++++++++++++++++++++++++++++++++++++++++++
- netlink/settings.c |  89 ++++++++++++-
- 5 files changed, 419 insertions(+), 2 deletions(-)
- create mode 100644 netlink/plca.c
+-------------------------------------------------------------------------
 
-diff --git a/Makefile.am b/Makefile.am
-index fcc912edd7e4..b184b8ceb28a 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -41,6 +41,7 @@ ethtool_SOURCES += \
- 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
- 		  netlink/module-eeprom.c netlink/module.c \
- 		  netlink/desc-rtnl.c netlink/cable_test.c netlink/tunnels.c \
-+		  netlink/plca.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
- 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-diff --git a/ethtool.c b/ethtool.c
-index 3207e49137c4..d23406f54a37 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -6075,6 +6075,27 @@ static const struct option args[] = {
- 		.help	= "Set transceiver module settings",
- 		.xhelp	= "		[ power-mode-policy high|auto ]\n"
- 	},
-+	{
-+		.opts	= "--get-plca-cfg",
-+		.nlfunc	= nl_plca_get_cfg,
-+		.help	= "Get PLCA configuration",
-+	},
-+	{
-+		.opts	= "--set-plca-cfg",
-+		.nlfunc	= nl_plca_set_cfg,
-+		.help	= "Set PLCA configuration",
-+		.xhelp  = "             [ enable on|off ]\n"
-+			  "             [ node-id N ]\n"
-+			  "             [ node-cnt N ]\n"
-+			  "             [ to-tmr N ]\n"
-+			  "             [ burst-cnt N ]\n"
-+			  "             [ burst-tmr N ]\n"
-+	},
-+	{
-+		.opts	= "--get-plca-status",
-+		.nlfunc	= nl_plca_get_status,
-+		.help	= "Get PLCA status information",
-+	},
- 	{
- 		.opts	= "-h|--help",
- 		.no_dev	= true,
-diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 1bb580a889a8..0add156e644a 100644
---- a/netlink/extapi.h
-+++ b/netlink/extapi.h
-@@ -47,6 +47,9 @@ int nl_gmodule(struct cmd_context *ctx);
- int nl_smodule(struct cmd_context *ctx);
- int nl_monitor(struct cmd_context *ctx);
- int nl_getmodule(struct cmd_context *ctx);
-+int nl_plca_get_cfg(struct cmd_context *ctx);
-+int nl_plca_set_cfg(struct cmd_context *ctx);
-+int nl_plca_get_status(struct cmd_context *ctx);
- 
- void nl_monitor_usage(void);
- 
-@@ -114,6 +117,9 @@ nl_get_eeprom_page(struct cmd_context *ctx __maybe_unused,
- #define nl_getmodule		NULL
- #define nl_gmodule		NULL
- #define nl_smodule		NULL
-+#define nl_get_plca_cfg		NULL
-+#define nl_set_plca_cfg		NULL
-+#define nl_get_plca_status	NULL
- 
- #endif /* ETHTOOL_ENABLE_NETLINK */
- 
-diff --git a/netlink/plca.c b/netlink/plca.c
-new file mode 100644
-index 000000000000..215638959502
---- /dev/null
-+++ b/netlink/plca.c
-@@ -0,0 +1,304 @@
-+/*
-+ * plca.c - netlink implementation of plca command
-+ *
-+ * Implementation of "ethtool --show-plca <dev>" and
-+ * "ethtool --set-plca <dev> ..."
-+ */
-+
-+#include <errno.h>
-+#include <string.h>
-+#include <stdio.h>
-+
-+#include "../internal.h"
-+#include "../common.h"
-+#include "netlink.h"
-+#include "bitset.h"
-+#include "parser.h"
-+
-+/* PLCA_GET_CFG */
-+
-+int plca_get_cfg_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_PLCA_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct nl_context *nlctx = data;
-+	bool silent;
-+	int err_ret;
-+	u8 id = 255;
-+	int ret;
-+	u8 val;
-+
-+	silent = nlctx->is_dump || nlctx->is_monitor;
-+	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return err_ret;
-+
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_PLCA_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return err_ret;
-+
-+	if (silent)
-+		putchar('\n');
-+
-+	printf("PLCA settings for %s:\n", nlctx->devname);
-+
-+	// check if PLCA is enabled
-+	printf("\tEnabled: ");
-+
-+	if (!tb[ETHTOOL_A_PLCA_ENABLED]) {
-+		printf("not supported");
-+	} else {
-+		val = mnl_attr_get_u8(tb[ETHTOOL_A_PLCA_ENABLED]);
-+		printf(val ? "Yes" : "No");
-+	}
-+	putchar('\n');
-+
-+	// get node ID
-+	printf("\tlocal node ID: ");
-+
-+	if (!tb[ETHTOOL_A_PLCA_NODE_ID]) {
-+		printf("not supported");
-+	} else {
-+		id = mnl_attr_get_u8(tb[ETHTOOL_A_PLCA_NODE_ID]);
-+		printf("%u (%s)", (unsigned int)id,
-+		       id == 0 ? "coordinator" :
-+		       id == 255 ? "unconfigured" : "follower");
-+	}
-+	putchar('\n');
-+
-+	// get node count
-+	printf("\tNode count: ");
-+	if (!tb[ETHTOOL_A_PLCA_NODE_CNT]) {
-+		printf("not supported");
-+	} else {
-+		val = mnl_attr_get_u8(tb[ETHTOOL_A_PLCA_NODE_CNT]);
-+		printf("%u", (unsigned int)val);
-+
-+		// The node count is ignored by follower nodes. However, it can
-+		// be pre-set to enable fast coordinator role switchover.
-+		// Therefore, on a follower node we still wanto to show it,
-+		// indicating it is not currently used.
-+		if (tb[ETHTOOL_A_PLCA_NODE_ID] && id != 0)
-+			printf(" (ignored)");
-+	}
-+	putchar('\n');
-+
-+	// get TO timer (transmit opportunity timer)
-+	printf("\tTO timer: ");
-+	if (!tb[ETHTOOL_A_PLCA_TO_TMR]) {
-+		printf("not supported");
-+	} else {
-+		val = mnl_attr_get_u8(tb[ETHTOOL_A_PLCA_TO_TMR]);
-+		printf("%u BT", (unsigned int) val);
-+	}
-+	putchar('\n');
-+
-+	// get burst count
-+	printf("\tBurst count: ");
-+	if (!tb[ETHTOOL_A_PLCA_BURST_CNT]) {
-+		printf("not supported");
-+	} else {
-+		val = mnl_attr_get_u8(tb[ETHTOOL_A_PLCA_BURST_CNT]);
-+		printf("%u (%s)", (unsigned int) val,
-+		       val > 0 ? "enabled" : "disabled");
-+	}
-+	putchar('\n');
-+
-+	// get burst timer
-+	printf("\tBurst timer: ");
-+	if (!tb[ETHTOOL_A_PLCA_BURST_TMR]) {
-+		printf("not supported");
-+	} else {
-+		val = mnl_attr_get_u8(tb[ETHTOOL_A_PLCA_BURST_TMR]);
-+		printf("%u BT", (unsigned int) val);
-+	}
-+	putchar('\n');
-+
-+	return MNL_CB_OK;
-+}
-+
-+
-+int nl_plca_get_cfg(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	int ret;
-+
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_PLCA_GET_CFG, true))
-+		return -EOPNOTSUPP;
-+
-+	if (ctx->argc > 0) {
-+		fprintf(stderr, "ethtool: unexpected parameter '%s'\n",
-+			*ctx->argp);
-+		return 1;
-+	}
-+
-+	ret = nlsock_prep_get_request(
-+				      nlsk,
-+				      ETHTOOL_MSG_PLCA_GET_CFG,
-+				      ETHTOOL_A_PLCA_HEADER,
-+				      0
-+				     );
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	return nlsock_send_get_request(nlsk, plca_get_cfg_reply_cb);
-+}
-+
-+/* PLCA_SET_CFG */
-+
-+static const struct param_parser set_plca_params[] = {
-+	{
-+		.arg		= "enable",
-+		.type		= ETHTOOL_A_PLCA_ENABLED,
-+		.handler	= nl_parse_u8bool,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "node-id",
-+		.type		= ETHTOOL_A_PLCA_NODE_ID,
-+		.handler	= nl_parse_direct_u8,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "node-cnt",
-+		.type		= ETHTOOL_A_PLCA_NODE_CNT,
-+		.handler	= nl_parse_direct_u8,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "to-tmr",
-+		.type		= ETHTOOL_A_PLCA_TO_TMR,
-+		.handler	= nl_parse_direct_u8,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "burst-cnt",
-+		.type		= ETHTOOL_A_PLCA_BURST_CNT,
-+		.handler	= nl_parse_direct_u8,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "burst-tmr",
-+		.type		= ETHTOOL_A_PLCA_BURST_TMR,
-+		.handler	= nl_parse_direct_u8,
-+		.min_argc	= 1,
-+	},
-+	{}
-+};
-+
-+int nl_plca_set_cfg(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_msg_buff *msgbuff;
-+	struct nl_socket *nlsk;
-+	int ret;
-+
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_PLCA_SET_CFG, false))
-+		return -EOPNOTSUPP;
-+	if (!ctx->argc) {
-+		fprintf(stderr,
-+			"ethtool (--set-plca-cfg): parameters missing\n");
-+		return 1;
-+	}
-+
-+	nlctx->cmd = "--set-plca-cfg";
-+	nlctx->argp = ctx->argp;
-+	nlctx->argc = ctx->argc;
-+	nlctx->devname = ctx->devname;
-+	nlsk = nlctx->ethnl_socket;
-+	msgbuff = &nlsk->msgbuff;
-+
-+	ret = msg_init(nlctx, msgbuff, ETHTOOL_MSG_PLCA_SET_CFG,
-+		       NLM_F_REQUEST | NLM_F_ACK);
-+	if (ret < 0)
-+		return 2;
-+	if (ethnla_fill_header(msgbuff, ETHTOOL_A_PLCA_HEADER,
-+			       ctx->devname, 0))
-+		return -EMSGSIZE;
-+
-+	ret = nl_parser(nlctx, set_plca_params, NULL, PARSER_GROUP_NONE, NULL);
-+	if (ret < 0)
-+		return 1;
-+
-+	ret = nlsock_sendmsg(nlsk, NULL);
-+	if (ret < 0)
-+		return 76;
-+	ret = nlsock_process_reply(nlsk, nomsg_reply_cb, nlctx);
-+	if (ret == 0)
-+		return 0;
-+	else
-+		return nlctx->exit_code ?: 76;
-+}
-+
-+/* PLCA_GET_STATUS */
-+
-+int plca_get_status_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_PLCA_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct nl_context *nlctx = data;
-+	bool silent;
-+	int err_ret;
-+	int ret;
-+	u8 val;
-+
-+	silent = nlctx->is_dump || nlctx->is_monitor;
-+	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return err_ret;
-+
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_PLCA_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return err_ret;
-+
-+	if (silent)
-+		putchar('\n');
-+
-+	printf("PLCA status of %s:\n", nlctx->devname);
-+
-+	// check whether the Open Alliance TC14 standard memory map is supported
-+	printf("\tStatus: ");
-+
-+	if (!tb[ETHTOOL_A_PLCA_STATUS]) {
-+		printf("not supported");
-+	} else {
-+		val = mnl_attr_get_u8(tb[ETHTOOL_A_PLCA_STATUS]);
-+		printf(val ? "on" : "off");
-+	}
-+	putchar('\n');
-+
-+	return MNL_CB_OK;
-+}
-+
-+
-+int nl_plca_get_status(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	int ret;
-+
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_PLCA_GET_STATUS, true))
-+		return -EOPNOTSUPP;
-+
-+	if (ctx->argc > 0) {
-+		fprintf(stderr, "ethtool: unexpected parameter '%s'\n",
-+			*ctx->argp);
-+		return 1;
-+	}
-+
-+	ret = nlsock_prep_get_request(
-+				      nlsk,
-+				      ETHTOOL_MSG_PLCA_GET_STATUS,
-+				      ETHTOOL_A_PLCA_HEADER,
-+				      0
-+				     );
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	return nlsock_send_get_request(nlsk, plca_get_status_reply_cb);
-+}
-diff --git a/netlink/settings.c b/netlink/settings.c
-index 14ad0b46e102..e0ed827547a0 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -166,6 +166,9 @@ static const struct link_mode_info link_modes[] = {
- 	[ETHTOOL_LINK_MODE_100baseFX_Half_BIT]		= __HALF_DUPLEX(100),
- 	[ETHTOOL_LINK_MODE_100baseFX_Full_BIT]		= __REAL(100),
- 	[ETHTOOL_LINK_MODE_10baseT1L_Full_BIT]		= __REAL(10),
-+	[ETHTOOL_LINK_MODE_10baseT1S_Full_BIT]		= __REAL(10),
-+	[ETHTOOL_LINK_MODE_10baseT1S_Half_BIT]		= __REAL(10),
-+	[ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT]	= __REAL(10),
- };
- const unsigned int link_modes_count = ARRAY_SIZE(link_modes);
- 
-@@ -890,6 +893,73 @@ int debug_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 	return MNL_CB_OK;
- }
- 
-+int plca_cfg_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_PLCA_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct nl_context *nlctx = data;
-+	int ret;
-+
-+	if (nlctx->is_dump || nlctx->is_monitor)
-+		nlctx->no_banner = false;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return ret;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_PLCA_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return MNL_CB_OK;
-+
-+	print_banner(nlctx);
-+	printf("\tPLCA support: ");
-+
-+	if (tb[ETHTOOL_A_PLCA_VERSION]) {
-+		uint16_t val = mnl_attr_get_u16(tb[ETHTOOL_A_PLCA_VERSION]);
-+
-+		if ((val >> 8) == 0x0A) {
-+			printf("OPEN Alliance v%u.%u",
-+			       (unsigned int)((val >> 4) & 0xF),
-+			       (unsigned int)(val & 0xF));
-+		} else
-+			printf("unknown standard");
-+	} else
-+		printf("non-standard");
-+
-+	printf("\n");
-+
-+	return MNL_CB_OK;
-+}
-+
-+int plca_status_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_PLCA_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct nl_context *nlctx = data;
-+	int ret;
-+
-+	if (nlctx->is_dump || nlctx->is_monitor)
-+		nlctx->no_banner = false;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return ret;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_PLCA_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return MNL_CB_OK;
-+
-+	print_banner(nlctx);
-+	printf("\tPLCA status: ");
-+
-+	if (tb[ETHTOOL_A_PLCA_STATUS]) {
-+		uint8_t val = mnl_attr_get_u8(tb[ETHTOOL_A_PLCA_STATUS]);
-+
-+		printf(val ? "up" : "down");
-+	} else
-+		printf("unknown");
-+
-+	printf("\n");
-+
-+	return MNL_CB_OK;
-+}
-+
- static int gset_request(struct nl_context *nlctx, uint8_t msg_type,
- 			uint16_t hdr_attr, mnl_cb_t cb)
- {
-@@ -914,7 +984,10 @@ int nl_gset(struct cmd_context *ctx)
- 	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKINFO_GET, true) ||
- 	    netlink_cmd_check(ctx, ETHTOOL_MSG_WOL_GET, true) ||
- 	    netlink_cmd_check(ctx, ETHTOOL_MSG_DEBUG_GET, true) ||
--	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKSTATE_GET, true))
-+	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKSTATE_GET, true) ||
-+	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKSTATE_GET, true) ||
-+	    netlink_cmd_check(ctx, ETHTOOL_MSG_PLCA_GET_CFG, true) ||
-+	    netlink_cmd_check(ctx, ETHTOOL_MSG_PLCA_GET_STATUS, true))
- 		return -EOPNOTSUPP;
- 
- 	nlctx->suppress_nlerr = 1;
-@@ -934,6 +1007,12 @@ int nl_gset(struct cmd_context *ctx)
- 	if (ret == -ENODEV)
- 		return ret;
- 
-+	ret = gset_request(nlctx, ETHTOOL_MSG_PLCA_GET_CFG,
-+			   ETHTOOL_A_PLCA_HEADER, plca_cfg_reply_cb);
-+
-+	if (ret == -ENODEV)
-+		return ret;
-+
- 	ret = gset_request(nlctx, ETHTOOL_MSG_DEBUG_GET, ETHTOOL_A_DEBUG_HEADER,
- 			   debug_reply_cb);
- 	if (ret == -ENODEV)
-@@ -941,6 +1020,13 @@ int nl_gset(struct cmd_context *ctx)
- 
- 	ret = gset_request(nlctx, ETHTOOL_MSG_LINKSTATE_GET,
- 			   ETHTOOL_A_LINKSTATE_HEADER, linkstate_reply_cb);
-+
-+	if (ret == -ENODEV)
-+		return ret;
-+
-+
-+	ret = gset_request(nlctx, ETHTOOL_MSG_PLCA_GET_STATUS,
-+			   ETHTOOL_A_PLCA_HEADER, plca_status_reply_cb);
- 	if (ret == -ENODEV)
- 		return ret;
- 
-@@ -949,7 +1035,6 @@ int nl_gset(struct cmd_context *ctx)
- 		return 75;
- 	}
- 
--
- 	return 0;
- }
- 
--- 
-2.35.1
+
+On 30 Nov 2022, at 10:15, wangchuanlei wrote:
+
+> Add support to count upall packets, when kmod of openvswitch upcall to 
+> userspace , here count the number of packets for upcall succeed and 
+> failed, which is a better way to see how many packets upcalled to 
+> userspace(ovs-vswitchd) on every interfaces.
+>
+> Here modify format of code used by comments of v6.
+>
+> Changes since v4 & v5:
+> - optimize the function used by comments
+>
+> Changes since v3:
+> - use nested NLA_NESTED attribute in netlink message
+>
+> Changes since v2:
+> - add count of upcall failed packets
+>
+> Changes since v1:
+> - add count of upcall succeed packets
+>
+> Signed-off-by: wangchuanlei <wangchuanlei@inspur.com>
+> ---
+>  include/uapi/linux/openvswitch.h | 14 +++++++++
+>  net/openvswitch/datapath.c       | 50 ++++++++++++++++++++++++++++++++
+>  net/openvswitch/vport.c          | 44 ++++++++++++++++++++++++++++
+>  net/openvswitch/vport.h          | 24 +++++++++++++++
+>  4 files changed, 132 insertions(+)
+>
+> diff --git a/include/uapi/linux/openvswitch.h 
+> b/include/uapi/linux/openvswitch.h
+> index 94066f87e9ee..8422ebf6885b 100644
+> --- a/include/uapi/linux/openvswitch.h
+> +++ b/include/uapi/linux/openvswitch.h
+> @@ -277,11 +277,25 @@ enum ovs_vport_attr {
+>  	OVS_VPORT_ATTR_PAD,
+>  	OVS_VPORT_ATTR_IFINDEX,
+>  	OVS_VPORT_ATTR_NETNSID,
+> +	OVS_VPORT_ATTR_UPCALL_STATS,
+>  	__OVS_VPORT_ATTR_MAX
+>  };
+>
+>  #define OVS_VPORT_ATTR_MAX (__OVS_VPORT_ATTR_MAX - 1)
+>
+> +/**
+> + * enum ovs_vport_upcall_attr - attributes for %OVS_VPORT_UPCALL* 
+> +commands
+> + * @OVS_VPORT_UPCALL_SUCCESS: 64-bit upcall success packets.
+> + * @OVS_VPORT_UPCALL_FAIL: 64-bit upcall fail packets.
+> + */
+> +enum ovs_vport_upcall_attr {
+> +	OVS_VPORT_UPCALL_SUCCESS,
+> +	OVS_VPORT_UPCALL_FAIL,
+> +	__OVS_VPORT_UPCALL_MAX
+> +};
+> +
+> +#define OVS_VPORT_UPCALL_MAX (__OVS_VPORT_UPCALL_MAX - 1)
+> +
+>  enum {
+>  	OVS_VXLAN_EXT_UNSPEC,
+>  	OVS_VXLAN_EXT_GBP,	/* Flag or __u32 */
+> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c 
+> index c8a9075ddd0a..f9279aee2adb 100644
+> --- a/net/openvswitch/datapath.c
+> +++ b/net/openvswitch/datapath.c
+> @@ -209,6 +209,26 @@ static struct vport *new_vport(const struct vport_parms *parms)
+>  	return vport;
+>  }
+>
+> +static void ovs_vport_upcalls(struct sk_buff *skb,
+
+This function name does not really represent what this function does.
+It’s only taking care of statistics, so it should probably be called something like:
+
+  ovs_vport_update_upcall_stats() or ovs_vport_inc_upcall_stats()
+
+> +			      const struct dp_upcall_info *upcall_info,
+> +			      bool upcall_result)
+> +{
+> +	struct vport *p = OVS_CB(skb)->input_vport;
+> +	struct vport_upcall_stats_percpu *vport_stats;
+
+If you just call vport_stats, stats, the reverse Christmas tree order is achieved.
+
+> +
+> +	if (upcall_info->cmd != OVS_PACKET_CMD_MISS &&
+> +	    upcall_info->cmd != OVS_PACKET_CMD_ACTION)
+> +		return;
+> +
+> +	vport_stats = this_cpu_ptr(p->upcall_stats);
+> +	u64_stats_update_begin(&vport_stats->syncp);
+> +	if (upcall_result)
+> +		u64_stats_inc(&vport_stats->n_success);
+> +	else
+> +		u64_stats_inc(&vport_stats->n_fail);
+> +	u64_stats_update_end(&vport_stats->syncp);
+> +}
+> +
+>  void ovs_dp_detach_port(struct vport *p)  {
+>  	ASSERT_OVSL();
+> @@ -216,6 +236,9 @@ void ovs_dp_detach_port(struct vport *p)
+>  	/* First drop references to device. */
+>  	hlist_del_rcu(&p->dp_hash_node);
+>
+> +	/* Free percpu memory */
+> +	free_percpu(p->upcall_stats);
+> +
+>  	/* Then destroy it. */
+>  	ovs_vport_del(p);
+>  }
+> @@ -305,6 +328,8 @@ int ovs_dp_upcall(struct datapath *dp, struct sk_buff *skb,
+>  		err = queue_userspace_packet(dp, skb, key, upcall_info, cutlen);
+>  	else
+>  		err = queue_gso_packets(dp, skb, key, upcall_info, cutlen);
+> +
+> +	ovs_vport_upcalls(skb, upcall_info, !err);
+>  	if (err)
+>  		goto err;
+>
+> @@ -1825,6 +1850,12 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+>  		goto err_destroy_portids;
+>  	}
+>
+> +	vport->upcall_stats = netdev_alloc_pcpu_stats(struct vport_upcall_stats_percpu);
+> +	if (!vport->upcall_stats) {
+> +		err = -ENOMEM;
+> +		goto err_destroy_portids;
+> +	}
+> +
+>  	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+>  				   info->snd_seq, 0, OVS_DP_CMD_NEW);
+>  	BUG_ON(err < 0);
+> @@ -2068,6 +2099,8 @@ static int ovs_vport_cmd_fill_info(struct vport 
+> *vport, struct sk_buff *skb,  {
+>  	struct ovs_header *ovs_header;
+>  	struct ovs_vport_stats vport_stats;
+> +	struct ovs_vport_upcall_stats stat;
+> +	struct nlattr *nla;
+>  	int err;
+>
+>  	ovs_header = genlmsg_put(skb, portid, seq, &dp_vport_genl_family, @@ 
+> -2097,6 +2130,15 @@ static int ovs_vport_cmd_fill_info(struct vport *vport, struct sk_buff *skb,
+>  			  OVS_VPORT_ATTR_PAD))
+>  		goto nla_put_failure;
+>
+> +	nla = nla_nest_start_noflag(skb, OVS_VPORT_ATTR_UPCALL_STATS);
+> +	if (!nla)
+> +		goto nla_put_failure;
+> +
+> +	ovs_vport_get_upcall_stats(vport, &stat);
+> +	if (ovs_vport_put_upcall_stats(skb, &stat))
+> +		goto nla_put_failure;
+> +	nla_nest_end(skb, nla);
+> +
+
+See the comment below, as I think this all should be wrapped in ovs_vport_get_upcall_stats(vport, skb).
+
+>  	if (ovs_vport_get_upcall_portids(vport, skb))
+>  		goto nla_put_failure;
+>
+> @@ -2278,6 +2320,13 @@ static int ovs_vport_cmd_new(struct sk_buff *skb, struct genl_info *info)
+>  		goto exit_unlock_free;
+>  	}
+>
+> +	vport->upcall_stats = netdev_alloc_pcpu_stats(struct 
+> +vport_upcall_stats_percpu);
+> +
+
+nit: I think the extra new line is not needed.
+
+> +	if (!vport->upcall_stats) {
+> +		err = -ENOMEM;
+> +		goto exit_unlock_free;
+> +	}
+> +
+>  	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
+>  				      info->snd_portid, info->snd_seq, 0,
+>  				      OVS_VPORT_CMD_NEW, GFP_KERNEL); @@ -2507,6 +2556,7 @@ 
+> static const struct nla_policy vport_policy[OVS_VPORT_ATTR_MAX + 1] = {
+>  	[OVS_VPORT_ATTR_OPTIONS] = { .type = NLA_NESTED },
+>  	[OVS_VPORT_ATTR_IFINDEX] = { .type = NLA_U32 },
+>  	[OVS_VPORT_ATTR_NETNSID] = { .type = NLA_S32 },
+> +	[OVS_VPORT_ATTR_UPCALL_STATS] = { .type = NLA_NESTED },
+>  };
+>
+>  static const struct genl_small_ops dp_vport_genl_ops[] = { diff --git 
+> a/net/openvswitch/vport.c b/net/openvswitch/vport.c index 
+> 82a74f998966..fd95536b35ef 100644
+> --- a/net/openvswitch/vport.c
+> +++ b/net/openvswitch/vport.c
+> @@ -284,6 +284,50 @@ void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
+>  	stats->tx_packets = dev_stats->tx_packets;  }
+>
+> +/**
+> + *	ovs_vport_get_upcall_stats - retrieve upcall stats
+> + *
+> + * @vport: vport from which to retrieve the stats
+> + * @ovs_vport_upcall_stats: location to store stats
+> + *
+> + * Retrieves upcall stats for the given device.
+> + *
+> + * Must be called with ovs_mutex or rcu_read_lock.
+> + */
+> +void ovs_vport_get_upcall_stats(struct vport *vport, struct 
+> +ovs_vport_upcall_stats *stats) {
+> +	int i;
+> +
+> +	stats->tx_success = 0;
+> +	stats->tx_fail = 0;
+> +
+> +	for_each_possible_cpu(i) {
+> +		const struct vport_upcall_stats_percpu *upcall_stats;
+> +		unsigned int start;
+> +
+> +		upcall_stats = per_cpu_ptr(vport->upcall_stats, i);
+> +		do {
+> +			start = u64_stats_fetch_begin(&upcall_stats->syncp);
+> +			stats->tx_success += u64_stats_read(&upcall_stats->n_success);
+> +			stats->tx_fail += u64_stats_read(&upcall_stats->n_fail);
+> +		} while (u64_stats_fetch_retry(&upcall_stats->syncp, start));
+> +	}
+> +}
+> +
+> +int ovs_vport_put_upcall_stats(struct sk_buff *skb,
+> +			       struct ovs_vport_upcall_stats *stats) {
+> +	if (nla_put_u64_64bit(skb, OVS_VPORT_UPCALL_SUCCESS, stats->tx_success,
+> +			      OVS_VPORT_ATTR_PAD))
+> +		return -EMSGSIZE;
+> +
+> +	if (nla_put_u64_64bit(skb, OVS_VPORT_UPCALL_FAIL, stats->tx_fail,
+> +			      OVS_VPORT_ATTR_PAD))
+> +		return -EMSGSIZE;
+> +
+> +	return 0;
+> +}
+
+I think we should wrap ovs_vport_put_upcall_stats() into ovs_vport_get_upcall_stats(), so we have a single function. This would be similar to ovs_vport_get_options(). This way we will also get rid of the extra “struct ovs_vport_upcall_stats” definition, i.e.,
+
+  ovs_vport_get_upcall_stats(struct vport *vport, struct sk_buff *skb)
+
+> +
+>  /**
+>   *	ovs_vport_get_options - retrieve device options
+>   *
+> diff --git a/net/openvswitch/vport.h b/net/openvswitch/vport.h index 
+> 7d276f60c000..5ba9f14df55a 100644
+> --- a/net/openvswitch/vport.h
+> +++ b/net/openvswitch/vport.h
+> @@ -32,6 +32,16 @@ struct vport *ovs_vport_locate(const struct net 
+> *net, const char *name);
+>
+>  void ovs_vport_get_stats(struct vport *, struct ovs_vport_stats *);
+>
+> +struct ovs_vport_upcall_stats {
+> +	__u64   tx_success;	/* total packets upcalls succeed */
+> +	__u64   tx_fail;	/* total packets upcalls failed  */
+> +};
+> +
+> +void ovs_vport_get_upcall_stats(struct vport *vport,
+> +				struct ovs_vport_upcall_stats *stats); int 
+> +ovs_vport_put_upcall_stats(struct sk_buff *skb,
+> +			       struct ovs_vport_upcall_stats *stats);
+> +
+>  int ovs_vport_set_options(struct vport *, struct nlattr *options);  
+> int ovs_vport_get_options(const struct vport *, struct sk_buff *);
+>
+> @@ -65,6 +75,7 @@ struct vport_portids {
+>   * @hash_node: Element in @dev_table hash table in vport.c.
+>   * @dp_hash_node: Element in @datapath->ports hash table in datapath.c.
+>   * @ops: Class structure.
+> + * @upcall_stats: Upcall stats of every ports.
+>   * @detach_list: list used for detaching vport in net-exit call.
+>   * @rcu: RCU callback head for deferred destruction.
+>   */
+> @@ -78,6 +89,7 @@ struct vport {
+>  	struct hlist_node hash_node;
+>  	struct hlist_node dp_hash_node;
+>  	const struct vport_ops *ops;
+> +	struct vport_upcall_stats_percpu __percpu *upcall_stats;
+>
+>  	struct list_head detach_list;
+>  	struct rcu_head rcu;
+> @@ -137,6 +149,18 @@ struct vport_ops {
+>  	struct list_head list;
+>  };
+>
+> +/**
+> + * struct vport_upcall_stats_percpu - per-cpu packet upcall 
+> +statistics for
+> + * a given vport.
+> + * @n_success: Number of packets that upcall to userspace succeed.
+> + * @n_fail:    Number of packets that upcall to userspace failed.
+> + */
+> +struct vport_upcall_stats_percpu {
+> +	struct u64_stats_sync syncp;
+> +	u64_stats_t n_success;
+> +	u64_stats_t n_fail;
+> +};
+> +
+>  struct vport *ovs_vport_alloc(int priv_size, const struct vport_ops *,
+>  			      const struct vport_parms *);  void ovs_vport_free(struct 
+> vport *);
+> --
+> 2.27.0
+
 
