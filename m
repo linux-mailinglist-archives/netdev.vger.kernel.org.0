@@ -2,104 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54BB864276A
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 12:23:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 526D964278B
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 12:34:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbiLELXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 06:23:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43238 "EHLO
+        id S230110AbiLELeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 06:34:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbiLELWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 06:22:53 -0500
-Received: from gw.red-soft.ru (red-soft.ru [188.246.186.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C56B8E46;
-        Mon,  5 Dec 2022 03:22:48 -0800 (PST)
-Received: from localhost.localdomain (unknown [10.81.81.211])
-        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by gw.red-soft.ru (Postfix) with ESMTPSA id 65B053E606E;
-        Mon,  5 Dec 2022 14:22:45 +0300 (MSK)
-Date:   Mon, 5 Dec 2022 14:22:44 +0300
-From:   Artem Chernyshev <artem.chernyshev@red-soft.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Vishnu Dasa <vdasa@vmware.com>, Bryan Tan <bryantan@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        lvc-project@linuxtesting.org
-Subject: Re: [PATCH v2] net: vmw_vsock: vmci: Check memcpy_from_msg()
-Message-ID: <Y43UhNq/WQEuTD8V@localhost.localdomain>
-References: <702BBCBE-6E80-4B12-A996-4A2CB7C66D70@vmware.com>
- <20221203083312.923029-1-artem.chernyshev@red-soft.ru>
- <20221205094736.k3yuwk7emijpitvw@sgarzare-redhat>
+        with ESMTP id S231151AbiLELeM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 06:34:12 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808311901C
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 03:34:11 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id td2so27003414ejc.5
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 03:34:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=f1KimoZD/4pavk1dyfC2nM/GPdOAWDB3KJt4OBapbgc=;
+        b=vF/EYPE/s4UMEImbM1WcGc2QpHWPUutT4y0hzMF3fU1Z7SKZvXYIwqx6ykqUwVjl8u
+         tE5Bx1dI3CNYT2l/Nan1Haaur+FZ6A20v0opucHaJaTBOvq/nW9oMBfdL0JyblInAEMr
+         1Rs3tN1qWElrFK0mb4g57VQ9mZ8OwAKr8eQqB1S2/FJXwYnPbgcR9HUy5m0ScLYsVKMy
+         rRwkalwWKEIHOQduY1vWyZEk2sG1KUioy1Es4No8994tnN+37yj+AmkjY2pMXw6yGNFH
+         x/BRRpviy2neOE5kMGHQWgwdaHlkN6hMDJwkr/dKwREfStJRB2OC+7iIqTbGXJ1JsZAP
+         rNyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=f1KimoZD/4pavk1dyfC2nM/GPdOAWDB3KJt4OBapbgc=;
+        b=JoVkd/TuScLEBRWHc5vZWpZ1biaSTiajwEFXO7kl6e9FRUi5ABoiE2SECtXB7NSw6O
+         jzvSqssmrB54jYS8MIrn/2N1VerdA3N1ITllM0GmaRUErpa4YiuIQvsh7bhbugzd/6QK
+         h6I5+BtTYmOxcF4rfHcOeBGxm3zUofMEJel4i73T8JCuSWeSOr2+woxRkA5mfgEtL0Xx
+         Of4SQdnIZvcLoK5Lqw/Je+Mr9vnb3kVgnXz91Wfk/gRxZkIuRSKfelDQxUiXzvioOiEY
+         VFAr+1i2NUUxFeGQmKmkP5hWmQ9V2MZwcLAVCO7YFxh7A7INgv1Z5DoFvvvPo2BAoaf/
+         SUTg==
+X-Gm-Message-State: ANoB5pmuULOK6NGjmTW5En1u/S14zSKCoywk/Q/MZwVcjRMM1zNnC/P/
+        n6OfhnFT4ZnZZkOyxU5ilOA1/n1suBc8nJWjqYw=
+X-Google-Smtp-Source: AA0mqf7ar/XI0+WI39H1bgr9OR9Mzf2AP8OZhn5NKeiNRab+7W1BUaRN9WJX+1oNO2NYuc4y6o73Ug==
+X-Received: by 2002:a17:907:3117:b0:7ae:6746:f26b with SMTP id wl23-20020a170907311700b007ae6746f26bmr68863115ejb.171.1670240049834;
+        Mon, 05 Dec 2022 03:34:09 -0800 (PST)
+Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
+        by smtp.gmail.com with ESMTPSA id e15-20020a170906c00f00b0078c213ad441sm6182846ejz.101.2022.12.05.03.34.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Dec 2022 03:34:09 -0800 (PST)
+Message-ID: <06490c08-bf5e-1714-f56c-1a6068fb2ec9@blackwall.org>
+Date:   Mon, 5 Dec 2022 13:34:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221205094736.k3yuwk7emijpitvw@sgarzare-redhat>
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 173924 [Dec 05 2022]
-X-KLMS-AntiSpam-Version: 5.9.59.0
-X-KLMS-AntiSpam-Envelope-From: artem.chernyshev@red-soft.ru
-X-KLMS-AntiSpam-Rate: 0
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6, {Tracking_from_domain_doesnt_match_to}, 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;red-soft.ru:7.1.1
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2022/12/05 07:18:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2022/12/05 09:01:00 #20651080
-X-KLMS-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net-next 1/8] bridge: mcast: Centralize netlink attribute
+ parsing
+Content-Language: en-US
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, roopa@nvidia.com, mlxsw@nvidia.com
+References: <20221205074251.4049275-1-idosch@nvidia.com>
+ <20221205074251.4049275-2-idosch@nvidia.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20221205074251.4049275-2-idosch@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-On Mon, Dec 05, 2022 at 10:47:36AM +0100, Stefano Garzarella wrote:
-> On Sat, Dec 03, 2022 at 11:33:12AM +0300, Artem Chernyshev wrote:
-> > vmci_transport_dgram_enqueue() does not check the return value
-> > of memcpy_from_msg(). Return with an error if the memcpy fails.
-> > 
-> > Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> > 
-> > Fixes: 0f7db23a07af ("vmci_transport: switch ->enqeue_dgram, ->enqueue_stream and ->dequeue_stream to msghdr")
-> > Signed-off-by: Artem Chernyshev <artem.chernyshev@red-soft.ru>
-> > ---
-> > V1->V2 Fix memory leaking and updates for description
-> > 
-> > net/vmw_vsock/vmci_transport.c | 5 ++++-
-> > 1 file changed, 4 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-> > index 842c94286d31..c94c3deaa09d 100644
-> > --- a/net/vmw_vsock/vmci_transport.c
-> > +++ b/net/vmw_vsock/vmci_transport.c
-> > @@ -1711,7 +1711,10 @@ static int vmci_transport_dgram_enqueue(
-> > 	if (!dg)
-> > 		return -ENOMEM;
-> > 
-> > -	memcpy_from_msg(VMCI_DG_PAYLOAD(dg), msg, len);
-> > +	if (memcpy_from_msg(VMCI_DG_PAYLOAD(dg), msg, len)) {
-> > +		kfree(dg);
-> > +		return -EFAULT;
+On 05/12/2022 09:42, Ido Schimmel wrote:
+> Netlink attributes are currently passed deep in the MDB creation call
+> chain, making it difficult to add new attributes. In addition, some
+> validity checks are performed under the multicast lock although they can
+> be performed before it is ever acquired.
 > 
-> Since memcpy_from_msg() is a wrapper of copy_from_iter_full() that simply
-> returns -EFAULT in case of an error, perhaps it would be better here to
-> return the value of memcpy_from_msg() instead of wiring the error.
+> As a first step towards solving these issues, parse the RTM_{NEW,DEL}MDB
+> messages into a configuration structure, relieving other functions from
+> the need to handle raw netlink attributes.
 > 
-> However in the end the behavior is the same, so even if you don't want to
-> change it I'll leave my R-b:
+> Subsequent patches will convert the MDB code to use this configuration
+> structure.
 > 
-> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> This is consistent with how other rtnetlink objects are handled, such as
+> routes and nexthops.
 > 
-> Thanks,
-> Stefano
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/bridge/br_mdb.c     | 120 ++++++++++++++++++++++++++++++++++++++++
+>  net/bridge/br_private.h |   7 +++
+>  2 files changed, 127 insertions(+)
+> 
+> diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
+> index 321be94c445a..c53050e47a0f 100644
+> --- a/net/bridge/br_mdb.c
+> +++ b/net/bridge/br_mdb.c
+> @@ -974,6 +974,116 @@ static int __br_mdb_add(struct net *net, struct net_bridge *br,
+>  	return ret;
+>  }
+>  
+> +static int br_mdb_config_attrs_init(struct nlattr *set_attrs,
+> +				    struct br_mdb_config *cfg,
+> +				    struct netlink_ext_ack *extack)
+> +{
+> +	struct nlattr *mdb_attrs[MDBE_ATTR_MAX + 1];
+> +	int err;
+> +
+> +	err = nla_parse_nested(mdb_attrs, MDBE_ATTR_MAX, set_attrs,
+> +			       br_mdbe_attrs_pol, extack);
+> +	if (err)
+> +		return err;
+> +
+> +	if (mdb_attrs[MDBE_ATTR_SOURCE] &&
+> +	    !is_valid_mdb_source(mdb_attrs[MDBE_ATTR_SOURCE],
+> +				 cfg->entry->addr.proto, extack))
+> +		return -EINVAL;
+> +
+> +	__mdb_entry_to_br_ip(cfg->entry, &cfg->group, mdb_attrs);
+> +
+> +	return 0;
+> +}
+> +
+> +static int br_mdb_config_init(struct net *net, struct sk_buff *skb,
+> +			      struct nlmsghdr *nlh, struct br_mdb_config *cfg,
+> +			      struct netlink_ext_ack *extack)
+> +{
 
-Thank you for review. Sure, I will change that in V3
+I just noticed the skb argument is unused. Does it get used in a future change?
+Also a minor nit - I think nlh can be a const, nlmsg_parse_deprecated already uses a const nlh.
 
-Artem
+
