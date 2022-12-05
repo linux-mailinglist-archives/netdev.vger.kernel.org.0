@@ -2,233 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DACD6437C7
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 23:11:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D75D6437BE
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 23:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233501AbiLEWLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 17:11:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
+        id S233398AbiLEWKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 17:10:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233303AbiLEWLd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 17:11:33 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A434B17E33
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 14:11:32 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id ay27-20020a05600c1e1b00b003d070f4060bso11336919wmb.2
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 14:11:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vfJyjQH6Qly3zbvWfcSWgezdbGXYLhLITb4c4nyFl60=;
-        b=ifbSTSU0il64gXhtN1KnceCqVNTmwaX82wuu/7Es9avtKxHhfh4UcP0NVIEmIP64d6
-         88Jp/f92NTJsMBYNY2TuQ+LgwdF4W/WOeKWKb7SZRCaDE6ML+yFXml5HS8dh/5Oc/nJg
-         nO2S3mB948KOXFeax/8AaMWh8EFKVChm8dOmJaFFnzkUGEU6bcmMfDh4QeHN2VEO2oqo
-         qwYfRTBOABeyuHXps8G1k4Gl3cIjghWRN5CIFhNXeRqinnTpHmlD72H9HEUoVJFmvsIe
-         vxWngceU5/3L+nPe/7sjvw1MEGnwv/iFLChbUDPBwLgzjk4jmwDX08l7YzAnvAroWBvb
-         by1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vfJyjQH6Qly3zbvWfcSWgezdbGXYLhLITb4c4nyFl60=;
-        b=yJVlWPPfflK95/ymBAFCAJqt2oMqnQqzRLFw2lxpa9pcnhMQSG7CO4T59GZ9jiDatz
-         j8+WVyMoRlDQYdCJGAlzijAl+y5fDcBXz+2IROovKta0omNpLe5IXfVUyCzWnrvQsIVp
-         5W3NmxvTgIZZs2Cg/DRV/IRt8zrc+QqbdjuwkeU4fq7QglK0xpL+MCeP0NA1LwkSHTel
-         QOUIo9v3oSCZIFfsD4Amt3Y9u4RD4woJBO4HSsiIM+fIfWofgL9n8RKDiNEqBE2+0ULC
-         8DtVfKKj2Vg2GN5rsIunMTqVJ+yVIN2mHju26tLlOFR1KHXmSymgK64e2Evflp7BdFZa
-         kquA==
-X-Gm-Message-State: ANoB5plOcPF+KvT9WvcU6KiMKQMtRW6+fD74ZIxjjzC6cA8HHQrcGrva
-        LNngnnabe9R9IyixgwBBIqk=
-X-Google-Smtp-Source: AA0mqf6aOKCZRyrIESxo+gCvsknBMi6NDS671HQv20ByhKSu/P8U3PrrtHcueOmVwxehKL0eGLhsAQ==
-X-Received: by 2002:a7b:c00a:0:b0:3cf:e8f0:ad11 with SMTP id c10-20020a7bc00a000000b003cfe8f0ad11mr65765028wmb.65.1670278290950;
-        Mon, 05 Dec 2022 14:11:30 -0800 (PST)
-Received: from niros.localdomain ([176.231.147.83])
-        by smtp.gmail.com with ESMTPSA id k4-20020adfd844000000b0023659925b2asm15390915wrl.51.2022.12.05.14.11.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 14:11:30 -0800 (PST)
-From:   Nir Levy <bhr166@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, leon@kernel.org
-Cc:     bhr166@gmail.com
-Subject: [PATCH net] net: atm: Fix use-after-free bug in atm_dev_register()
-Date:   Tue,  6 Dec 2022 00:11:09 +0200
-Message-Id: <20221205221109.435680-1-bhr166@gmail.com>
+        with ESMTP id S230092AbiLEWKb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 17:10:31 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4035417E33
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 14:10:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1670278230; x=1701814230;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qJEHBfGF80KxANbfxFC3uEr2+gRaIYLDW3uzV2ZMwQ8=;
+  b=mfLlIGCfSLwlPBS6JfL1m5CItr0tsKcr62TvirUmkrbuc5u6KkpKW/cG
+   E/MFPhihOU7e0DeGhId9AU8y4llDpcnul3yH1Y5BbcfD21otUHiiPWHho
+   JceVuOWIWUnofykyH3FGi8l/qCl/2Vw/PIb7jJDkZiwC3S1nsCGiDNo6J
+   x+Cuz3XS3uMGGE9LUEJtFLr7pm8QpPyvXzekZ/n2kYQ38Pnlwz67IzPP3
+   BDuJ7cl3tKFaYOyKrH6dm4FrK2HDcFiJ9yUAs78fTjncxL5M+POn96d65
+   aZd4X9nJQINm2o0jZHRceaqdeHO3oPY2NtQCSh3XVx7V+RrrQ2syIHCQf
+   A==;
+X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
+   d="scan'208";a="126603513"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Dec 2022 15:10:14 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 5 Dec 2022 15:10:13 -0700
+Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Mon, 5 Dec 2022 15:10:11 -0700
+From:   Daniel Machon <daniel.machon@microchip.com>
+To:     <netdev@vger.kernel.org>
+CC:     <dsahern@kernel.org>, <stephen@networkplumber.org>,
+        <petrm@nvidia.com>, <maxime.chevallier@bootlin.com>,
+        <vladimir.oltean@nxp.com>, <UNGLinuxDriver@microchip.com>,
+        Daniel Machon <daniel.machon@microchip.com>
+Subject: [PATCH iproute2-next v4 0/2] Add pcp-prio and new apptrust subcommand
+Date:   Mon, 5 Dec 2022 23:21:43 +0100
+Message-ID: <20221205222145.753826-1-daniel.machon@microchip.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When device_register() return failed in atm_register_sysfs,
-the program will return to atm_dev_register and will kfree
-the device. As the comment of device_register() says,
-put_device() needs to be used to give up the reference
-in the error path. Using kfree instead triggers a UAF,
-as shown by the following KASAN report, obtained by causing
-device_register() to fail. This patch calls put_device
-when atm_register_sysfs has failed, and call kfree
-only when atm_proc_dev_register has failed.
+This patch series makes use of the newly introduced [1] DCB_APP_SEL_PCP
+selector, for PCP/DEI prioritization, and DCB_ATTR_IEEE_APP_TRUST
+attribute for configuring per-selector trust and trust-order.
 
-KASAN report details as below:
+========================================================================
+New parameter "pcp-prio" to existing "app" subcommand:
+========================================================================
 
-[   94.341664] BUG: KASAN: use-after-free in sysfs_kf_seq_show+0x306/0x440
-[   94.341674] Read of size 8 at addr ffff88819a8a30e8 by task systemd-udevd/484
+A new pcp-prio parameter has been added to the app subcommand, which can
+be used to classify traffic based on PCP and DEI from the VLAN header.
+PCP and DEI is specified in a combination of numerical and symbolic
+form, where 'de' (drop-eligible) means DEI=1 and 'nd' (not-drop-eligible)
+means DEI=0.
 
-[   94.341680] CPU: 3 PID: 484 Comm: systemd-udevd Tainted: G            E      6.1.0-rc1+ #1
-[   94.341684] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 02/27/2020
-[   94.341703] Call Trace:
-[   94.341705]  <TASK>
-[   94.341707]  dump_stack_lvl+0x49/0x63
-[   94.341713]  print_report+0x177/0x46e
-[   94.341717]  ? kasan_complete_mode_report_info+0x7c/0x210
-[   94.341720]  ? sysfs_kf_seq_show+0x306/0x440
-[   94.341753]  kasan_report+0xb0/0x140
-[   94.341757]  ? sysfs_kf_seq_show+0x306/0x440
-[   94.341760]  __asan_report_load8_noabort+0x14/0x20
-[   94.341763]  sysfs_kf_seq_show+0x306/0x440
-[   94.341766]  kernfs_seq_show+0x145/0x1b0
-[   94.341769]  seq_read_iter+0x408/0x1080
-[   94.341774]  kernfs_fop_read_iter+0x3d5/0x540
-[   94.341794]  vfs_read+0x542/0x800
-[   94.341797]  ? kernel_read+0x130/0x130
-[   94.341800]  ? __kasan_check_read+0x11/0x20
-[   94.341824]  ? get_nth_filter.part.0+0x200/0x200
-[   94.341828]  ksys_read+0x116/0x220
-[   94.341831]  ? __ia32_sys_pwrite64+0x1f0/0x1f0
-[   94.341849]  ? __secure_computing+0x17c/0x2d0
-[   94.341852]  __x64_sys_read+0x72/0xb0
-[   94.341875]  do_syscall_64+0x59/0x90
-[   94.341878]  ? exc_page_fault+0x72/0xf0
-[   94.341881]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-[   94.341885] RIP: 0033:0x7fc391f14992
-[   94.341888] Code: c0 e9 b2 fe ff ff 50 48 8d 3d fa b2 0c 00 e8 c5 1d 02 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24
-[   94.341891] RSP: 002b:00007ffe33fed818 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[   94.341896] RAX: ffffffffffffffda RBX: 0000000000001018 RCX: 00007fc391f14992
-[   94.341898] RDX: 0000000000001018 RSI: 0000558a696b0880 RDI: 000000000000000e
-[   94.341900] RBP: 0000558a696b0880 R08: 0000000000000000 R09: 0000558a696b0880
-[   94.341902] R10: 00007fc39201a300 R11: 0000000000000246 R12: 000000000000000e
-[   94.341904] R13: 0000000000001017 R14: 0000000000000002 R15: 00007ffe33fed840
-[   94.341908]  </TASK>
+Map PCP 1 and DEI 0 to priority 1
+$ dcb app add dev eth0 pcp-prio 1nd:1
 
-[   94.341911] Allocated by task 2613:
-[   94.341914]  kasan_save_stack+0x26/0x50
-[   94.341932]  kasan_set_track+0x25/0x40
-[   94.341934]  kasan_save_alloc_info+0x1e/0x30
-[   94.341936]  __kasan_kmalloc+0xb4/0xc0
-[   94.341938]  kmalloc_trace+0x4a/0xb0
-[   94.341941]  atm_dev_register+0x5d/0x700 [atm]
-[   94.341949]  atmtcp_create+0x77/0x1f0 [atmtcp]
-[   94.341953]  atmtcp_ioctl+0x12d/0xb9f [atmtcp]
-[   94.341957]  do_vcc_ioctl+0xfe/0x640 [atm]
-[   94.341962]  vcc_ioctl+0x10/0x20 [atm]
-[   94.341968]  svc_ioctl+0x587/0x6c0 [atm]
-[   94.341973]  sock_do_ioctl+0xd7/0x1e0
-[   94.341977]  sock_ioctl+0x1b5/0x560
-[   94.341979]  __x64_sys_ioctl+0x132/0x1b0
-[   94.341981]  do_syscall_64+0x59/0x90
-[   94.341983]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Map PCP 1 and DEI 1 to priority 1
+$ dcb app add dev eth0 pcp-prio 1de:1
 
-[   94.341986] Freed by task 2613:
-[   94.341988]  kasan_save_stack+0x26/0x50
-[   94.341991]  kasan_set_track+0x25/0x40
-[   94.341993]  kasan_save_free_info+0x2e/0x50
-[   94.341995]  ____kasan_slab_free+0x174/0x1e0
-[   94.341997]  __kasan_slab_free+0x12/0x20
-[   94.342000]  slab_free_freelist_hook+0xd0/0x1a0
-[   94.342002]  __kmem_cache_free+0x193/0x2c0
-[   94.342005]  kfree+0x79/0x120
-[   94.342007]  atm_dev_register.cold+0x46/0x64 [atm]
-[   94.342013]  atmtcp_create+0x77/0x1f0 [atmtcp]
-[   94.342016]  atmtcp_ioctl+0x12d/0xb9f [atmtcp]
-[   94.342020]  do_vcc_ioctl+0xfe/0x640 [atm]
-[   94.342077]  vcc_ioctl+0x10/0x20 [atm]
-[   94.342083]  svc_ioctl+0x587/0x6c0 [atm]
-[   94.342088]  sock_do_ioctl+0xd7/0x1e0
-[   94.342091]  sock_ioctl+0x1b5/0x560
-[   94.342093]  __x64_sys_ioctl+0x132/0x1b0
-[   94.342095]  do_syscall_64+0x59/0x90
-[   94.342098]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+========================================================================
+New apptrust subcommand for configuring per-selector trust and trust
+order:
+========================================================================
 
-[   94.342102] The buggy address belongs to the object at ffff88819a8a3000 which belongs to the cache kmalloc-1k of size 1024
-[   94.342105] The buggy address is located 232 bytes inside of 1024-byte region [ffff88819a8a3000, ffff88819a8a3400)
+This new command currently has a single parameter, which lets you
+specify an ordered list of trusted selectors. The microchip sparx5
+driver is already enabled to offload said list of trusted selectors. The
+new command has been given the name apptrust, to indicate that the trust
+covers APP table selectors only. I found that 'apptrust' was better than
+plain 'trust' as the latter does not indicate the scope of what is to be
+trusted.
 
-[   94.342109] The buggy address belongs to the physical page:
-[   94.342111] page:0000000099993f0a refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x19a8a0
-[   94.342114] head:0000000099993f0a order:3 compound_mapcount:0 compound_pincount:0
-[   94.342116] flags: 0x17ffffc0010200(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
-[   94.342136] raw: 0017ffffc0010200 dead000000000100 dead000000000122 ffff888100042dc0
-[   94.342138] raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
-[   94.342139] page dumped because: kasan: bad access detected
+Example:
 
-[   94.342141] Memory state around the buggy address:
-[   94.342143]  ffff88819a8a2f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   94.342145]  ffff88819a8a3000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   94.342147] >ffff88819a8a3080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   94.342148]                                                           ^
-[   94.342150]  ffff88819a8a3100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   94.342152]  ffff88819a8a3180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+Trust selectors dscp and pcp, in that order:
+$ dcb apptrust set dev eth0 order dscp pcp
 
-Fixes: 656d98b09d57 ([ATM]: basic sysfs support for ATM devices)
-Signed-off-by: Nir Levy <bhr166@gmail.com>
----
- net/atm/atm_sysfs.c | 5 ++++-
- net/atm/resources.c | 2 +-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+Trust selectors ethtype, stream-port and pcp, in that order
+$ dcb apptrust set dev eth0 order ethtype stream-port pcp
 
-diff --git a/net/atm/atm_sysfs.c b/net/atm/atm_sysfs.c
-index 0fdbdfd19474..df881d70ba86 100644
---- a/net/atm/atm_sysfs.c
-+++ b/net/atm/atm_sysfs.c
-@@ -150,7 +150,10 @@ int atm_register_sysfs(struct atm_dev *adev, struct device *parent)
- 	dev_set_name(cdev, "%s%d", adev->type, adev->number);
- 	err = device_register(cdev);
- 	if (err < 0)
-+	{
-+		put_device(cdev);
- 		return err;
-+	}
- 
- 	for (i = 0; atm_attrs[i]; i++) {
- 		err = device_create_file(cdev, atm_attrs[i]);
-@@ -163,7 +166,7 @@ int atm_register_sysfs(struct atm_dev *adev, struct device *parent)
- err_out:
- 	for (j = 0; j < i; j++)
- 		device_remove_file(cdev, atm_attrs[j]);
--	device_del(cdev);
-+	device_unregister(cdev);
- 	return err;
- }
- 
-diff --git a/net/atm/resources.c b/net/atm/resources.c
-index 2b2d33eeaf20..485ad9a571e1 100644
---- a/net/atm/resources.c
-+++ b/net/atm/resources.c
-@@ -112,6 +112,7 @@ struct atm_dev *atm_dev_register(const char *type, struct device *parent,
- 
- 	if (atm_proc_dev_register(dev) < 0) {
- 		pr_err("atm_proc_dev_register failed for dev %s\n", type);
-+		kfree(dev);
- 		goto out_fail;
- 	}
- 
-@@ -128,7 +129,6 @@ struct atm_dev *atm_dev_register(const char *type, struct device *parent,
- 	return dev;
- 
- out_fail:
--	kfree(dev);
- 	dev = NULL;
- 	goto out;
- }
--- 
+Show the trust order
+$ dcb apptrust show dev eth0 order order: ethtype stream-port pcp
+
+A concern was raised here [2], that 'apptrust' would not work well with
+matches(), so instead strcmp() has been used to match for the new
+subcommand, as suggested here [3]. Same goes with pcp-prio parameter for
+dcb app.
+
+The man page for dcb_app has been extended to cover the new pcp-prio
+parameter, and a new man page for dcb_apptrust has been created.
+
+[1] https://lore.kernel.org/netdev/20221101094834.2726202-1-daniel.machon@microchip.com/
+[2] https://lore.kernel.org/netdev/20220909080631.6941a770@hermes.local/
+[3] https://lore.kernel.org/netdev/Y0fP+9C0tE7P2xyK@shredder/
+
+================================================================================
+v3-> v4:
+  - Remove print warning in dcb_app_print_key_pcp()
+  - Add Petr's Reviewed-By tag
+
+v2 -> v3:
+  - Add macro for maximum pcp/dei value.
+
+v1 -> v2:
+  - Modified dcb_cmd_apptrust_set() to allow multiple consecutive parameters.
+  - Added dcb_apptrust_print() to print everything in case of no argument.
+  - Renamed pcp keys 0-7 to 0nd-7nd.
+  - Renamed selector names in dcb-apptrust to reflect names used in dcb-app.
+  - Updated dcb-app manpage to reflect new selector names, and removed part
+    about hardware offload.
+  - Updated dcb-apptrust manpage to reflect new selector names, and modified the
+    description of the 'order' parameter.
+  - Replaced uses of parse_one_of() with loops, for new 1nd:1 semantics to be
+    parsed correctly, and not printing an error if selector was not found in
+    list.
+
+
+Daniel Machon (2):
+  dcb: add new pcp-prio parameter to dcb app
+  dcb: add new subcommand for apptrust
+
+ dcb/Makefile            |   3 +-
+ dcb/dcb.c               |   4 +-
+ dcb/dcb.h               |   7 +
+ dcb/dcb_app.c           | 138 +++++++++++++++++-
+ dcb/dcb_apptrust.c      | 307 ++++++++++++++++++++++++++++++++++++++++
+ man/man8/dcb-app.8      |  32 +++++
+ man/man8/dcb-apptrust.8 | 109 ++++++++++++++
+ 7 files changed, 592 insertions(+), 8 deletions(-)
+ create mode 100644 dcb/dcb_apptrust.c
+ create mode 100644 man/man8/dcb-apptrust.8
+
+--
 2.34.1
 
