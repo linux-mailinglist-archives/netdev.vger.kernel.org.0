@@ -2,74 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4DF7642E86
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:19:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 257E9642E8C
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:20:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231583AbiLERTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 12:19:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44366 "EHLO
+        id S231783AbiLERUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 12:20:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbiLERTD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:19:03 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0FBB1DE;
-        Mon,  5 Dec 2022 09:19:00 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id t17so189557eju.1;
-        Mon, 05 Dec 2022 09:19:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hYght3fdVuKTMkD4EadBcYlK1QQIxDjJ6pzxyl1HCHE=;
-        b=Uhjfv+hYBX9TFqPlmA3IWuu3dxnOzuH9QdU4klP3N9VkShSiu19qXZEQh3GGqvlvtP
-         yD1D7AQ6tZ+fgyx4yC4kZYRO4nFC7YR1+uyK0//3q8R/dGRjq5FZjgYc/32uEzUFCbp4
-         HjD0BsnvpeNveEBaWGbljrNLNUwh9K+LI0I2Rt7hwd+Va9XGLGRej+1Rqz/teQ6nliyQ
-         uETS/GhO98RWMrt7rE9Cc/Vma5pUgI12egLIxKr0q6H3KV8wjO5bhLEffhgqYsOei9sJ
-         gaYnvuYuOGaZBq8Vq7kFqDIXhLuAYMzj9KP+yuQ3K9+ClOhEIU9v/aocdzA4UyLToWND
-         YkIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hYght3fdVuKTMkD4EadBcYlK1QQIxDjJ6pzxyl1HCHE=;
-        b=3z7mIuNeHxa9KiHGKuy/95cTqvl4C/7/KeB3EgbpC9hcSBriELiGyfHvpKzQVTatCy
-         aqRP0+Z74Gv0jF5Iuf1SrOUWunDA3xb8k46amLa9612ifFWtsJqfJDJPKsBLvLK5SNHk
-         8FLiAiE18Kkw/PnW9bQt7HXe+LpavoNkn/eey8gWj1zT3YeJsi6EAx4Ih8Ul/zPVPbJ2
-         i3AYu6/GXisVY+rTA5qma/3UqhT+BqTz/wD8h71O8Y/AlM8St3FH3vzBgLU0l90JLhp5
-         98taI25K05QHxqKIQDtEis6xr7rE5XKm4hULeym9uup7qUwXfvPfbbF+z77canakRyS3
-         zetg==
-X-Gm-Message-State: ANoB5plYzKehQTVYMicF1rgjGtiZxje8cxW4HeMxUd+MJU0RhmG3es9R
-        LNbo/0qilAGjiu1BiMC+/xs=
-X-Google-Smtp-Source: AA0mqf69bEzqOcqm3MpRwL8FGxMs5ZWrBqKcRvqksRc/wnGzlvgshdbUNbThUdKTdWemBq77CxaA6w==
-X-Received: by 2002:a17:906:60d0:b0:78d:3f87:1725 with SMTP id f16-20020a17090660d000b0078d3f871725mr19506001ejk.492.1670260739030;
-        Mon, 05 Dec 2022 09:18:59 -0800 (PST)
-Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
-        by smtp.gmail.com with ESMTPSA id k17-20020aa7c051000000b0046bd3b366f9sm26617edo.32.2022.12.05.09.18.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 09:18:58 -0800 (PST)
-Date:   Mon, 5 Dec 2022 18:19:07 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231814AbiLERTw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:19:52 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2071.outbound.protection.outlook.com [40.107.6.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06336B49A
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:19:52 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i68mp+90reRWnJAxg9V0MNzPDk+IwLcV8hSPkZ3YqVfIF3oem+bAmnYCJlih+5xz7M6J2HJc8JsyCnWBKhLdB7cezftW+gmWdz5TUlhuGhPKi/GEkZ2BO7MAiw2+5P0Cl1mBNhGYowj4+hxCHiYzo4eeFP8Pr86RnEsVs6goWSfaUJTiVxfRrc6Wo7XYk17K0Ixu3FG98gtxwI+ficrwAPLBlb07rn0/c0Y+KvrUAmE//U5xAXzEuaGAQdFjmzyRG30hx51YxFbQq3a/jPzefCJQYFJHZDhxrwFlu1r3PCQIxH2p6oWvPMC3i0ZAKZSKkAhPKYx6bpy/4LlNMZar9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qdvPPchvfnrcCmHRuVOxVqU9RKLpcp8xsqy+dP/7fSQ=;
+ b=TeC7CEWB2l1yN+AIgN5eNo0s9Q8HSNDDgFEc3rPPtcroxsDQ6dExrsqoJfwhgiNy41rQfZ2HfgqVwouRY7TroBWTh59GYdYFf6QzHElhk74xuK4/hOXjILZOHJsGSX+XDhMSnkoR3Y8TaoDDxrNJkcz1gR76I3ni9PBfMhUUg5ZO1e4T12jyuiQpJ8Iwva0iZf0oBqHTc+KLSv4cgTsRGrnuQJ5UcgMgJtOoxWKs4vAIJtrRDCnytHxSQZbVJNxGwzoK0/WkNOHmgTyPAl9+2ByvCtb1BeWoZJ9t0e8hdymhmxtfxv027CMfzbAZZ3RXybbm9gQkhxHSNf32CQrsVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qdvPPchvfnrcCmHRuVOxVqU9RKLpcp8xsqy+dP/7fSQ=;
+ b=BhR8aman51SKjTlYtQGQUfVhPAekLOK2hupx7SFsO+RnZpTKQrmSSg4QMBC6CZti/vlQc967a+tztrR6fNjgPtC/jM0QpGRTcofVuk5/RCb6o4PRmEpxbSe/K96oHBdNNGXr0RsdfN40EiO2CD1ONi3D4o8JuzEvD2RfQvvZ9bA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by PAXPR04MB8158.eurprd04.prod.outlook.com (2603:10a6:102:1c3::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10; Mon, 5 Dec
+ 2022 17:19:49 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5857.023; Mon, 5 Dec 2022
+ 17:19:49 +0000
+Date:   Mon, 5 Dec 2022 19:19:45 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Maxim Kochetkov <fido_max@inbox.ru>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: [PATCH v3 net-next 4/4] drivers/net/phy: add driver for the onsemi
- NCN26000 10BASE-T1S PHY
-Message-ID: <10deddd6e74acf4b76e8087fbe40eb2d03e01fae.1670259123.git.piergiorgio.beruto@gmail.com>
-References: <d53ffecdde8d3950a24155228a3439f2c9b10b9b.1670259123.git.piergiorgio.beruto@gmail.com>
-MIME-Version: 1.0
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Raag Jadav <raagjadav@gmail.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Marek Behun <marek.behun@nic.cz>,
+        Maxim Kiselev <bigunclemax@gmail.com>
+Subject: Re: [PATCH v4 net-next 0/8] Let phylink manage in-band AN for the PHY
+Message-ID: <20221205171945.t7kvgryhxffpqckd@skbuf>
+References: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
+ <1edc2a6a-d827-91fc-0941-b8b8cbfdf76b@inbox.ru>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d53ffecdde8d3950a24155228a3439f2c9b10b9b.1670259123.git.piergiorgio.beruto@gmail.com>
+In-Reply-To: <1edc2a6a-d827-91fc-0941-b8b8cbfdf76b@inbox.ru>
+X-ClientProxiedBy: BE0P281CA0036.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:14::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8158:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0e424b69-4cea-4a0c-7002-08dad6e4ea2b
+X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jMBFExRl1dDtnHvFSMmGcjwEVA4ykH61E1I961aKpSF7xu50rjp3KCLT5mNFmv32DKgqw1AE95GI1bu5xgK2yyF9DPXOX6rhif0lieEYgifr+ubO0+CYuJ5AZ4Cp9W6sF3TqyfpUikS64GDHMZNXaEjWuxE9zpseq/yQGtvcExc+WuDCgLMqJzjwlPsjn1YJCrTB12XgVuyNf2P2gAhxIb99jaQEdIqy3Ya16llGYfKFgZGe1+p6JneBQe1iou2Z/YavLiIUtCzh2suizxFon3XaydzqkDsqI2xwn3IHkG5n/POw/jwz4C4h8n42Rt4YXWg8+7xgHFWIgFxax8MDy8hSvfCaZRaKM+Qx5qtG4X0Ja9Vs7Wst8rYFKEhsaHRlM2EbNjN8u8Cpb8DKAohvq0uiTFYWF+I9drUUbfkEONYa5mVdp46Zp8/UW76dPhFKY5zmFcbDC1UmQKCq4iHI+EQdIH9hWZV4x8sFpW/q9bdnZMdQjMEv3iFe+hv90ch5SVrgIAs5IPVWjfmZsoTK9aoewZx49phTOGKS5ktkpR1+E9vcirK9Tu/I+Gd2Gj8hWdqu9tS4iDl685u4Z5odjYUQrSVw7ZHs8PwR2MzWFF4XcoNniTmr29kzZEu1Mm2GdzyQ4a5fPfrIo58Jc0ITig==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(346002)(376002)(366004)(39860400002)(396003)(136003)(451199015)(2906002)(83380400001)(558084003)(66946007)(41300700001)(186003)(1076003)(86362001)(66476007)(38100700002)(26005)(6512007)(9686003)(33716001)(44832011)(5660300002)(7416002)(66556008)(8676002)(8936002)(4326008)(316002)(478600001)(6666004)(6486002)(6916009)(54906003)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TkGFH356fiZLOnrVgFs3QEUxLyHmdFytPsgvT4kwqJ/Gemd5l/letpLqwMQQ?=
+ =?us-ascii?Q?a+DKxtGSxrJNBsxx41iDT+Y24xkYfAa9mGDJ2wErgPNwUh3MtLz0OOdFeMgi?=
+ =?us-ascii?Q?h7DMQcbORYZZbK+0Imq2DG0gYFq80A5YcjjrzlJIu4aGVC1Su5zraoccL7KO?=
+ =?us-ascii?Q?rnxY4s9tbaqPgXktRvXIvGbwzh1BjtR0uO/xKmHVjEdDeaVJrO53HDRJTyLX?=
+ =?us-ascii?Q?lifZOhxTYy6LT5EseF5K2Es07qwrNrN//9vLjvCDwBoT73/JPoZ4gL0aIN5C?=
+ =?us-ascii?Q?TjJdq0ItATF8MTbK/vB8cUMA+bjAUw+z8N/ujIa32KJ1oMYgpY8RJuZ2Dm1Q?=
+ =?us-ascii?Q?yphiWL7SB5ZNJ6jo1rfMG5cRXwqGR9WdxPL60KOMLBnjjyLum/IFFdXm4n0k?=
+ =?us-ascii?Q?XuKVg13IA2UQqAT2Ml0eo4nMsHBziaFir2/1E611gESavOXnqmOPJmrzkrYc?=
+ =?us-ascii?Q?4qtXrOs5TiCQjYZ1BdmkqGH1e2UIGDsjgSYE9588nhqvSrKDankIxnm07h6/?=
+ =?us-ascii?Q?FyDA1IJ0upXnBoJ4b36Qv8XJNfbSROvmbcWIv51UGVycb19Ev3/qmxuh019c?=
+ =?us-ascii?Q?52RCWjKxrN0xtaWyGdLOSev2L53vqKKEFsgn2yN6XYlIoaylujfTBOY5RUvZ?=
+ =?us-ascii?Q?p5gG6IjxxKLizZ07EHJzl7GFxS0jvR5YvHcNH/9v4keJYZMGAoiU5YBqmyzl?=
+ =?us-ascii?Q?G5yolVzZdOP/MVKRYJAkpG2Jvf4oZPN0jhR9yKUaAtQbKhJDnNMkXskV+E7P?=
+ =?us-ascii?Q?rWbMHJo3WJ4AEiNLzj07bEs3nPVTpt7VMnejdCv/JVa2qmT1HVpGCMMPP+1c?=
+ =?us-ascii?Q?jBSioFUI1+lfroO2yvRaJANTAosiyc0ds0DPZ0MHU890UAxf+zda8jtMFUv6?=
+ =?us-ascii?Q?EG/RyLlkGTzbcs5JVq1ygZGbIs5XqY3qMBkB76bbIjzW2jdXuSKAlC6fNlZs?=
+ =?us-ascii?Q?O0urzZwU4Kquhzc1LzO52cs6vxO24vaWYof3Kft9e2PRVlNP8TzfqpWIEOjr?=
+ =?us-ascii?Q?wkaUCG9UMtRiaqE6cCxQ6ZKfk4WBoBTVkMpnIe/BijHg2ZmH1mw/x9NiFYzf?=
+ =?us-ascii?Q?9hwf4nYlTxQUUx9/T92yN/oHUBHjz5uE2V79wnO8lyVh/naRE9NNZ/DLKB5L?=
+ =?us-ascii?Q?Exn6w3Tt9UY369dBIKwGsaNGZr2vKP1kI6QZs9zoPnl3yCHzkWgzkuRXZF/A?=
+ =?us-ascii?Q?e+thORjnl47is15V0lgnx/vHEi0KZsd6cNbWskACpY0WgF93Nurc9y2eqVAF?=
+ =?us-ascii?Q?uybf2NDK5cB214a3n4XoNYcXxE1DIaEPzIi84k7REydfIyeWV0VDwy+ldwqr?=
+ =?us-ascii?Q?RH+PALrNKU66/tvesd9Zllz9ZNkcoTGj6mTxd+F+MH6Ib4s4F4fpvYudpz3V?=
+ =?us-ascii?Q?JxtjcPxs3YWoqDZd8ZMy/ziQh6owg4XQiM0hGnYqFh+FLZmTohUs8+26V0VO?=
+ =?us-ascii?Q?Dq2XEqCBGdJvPSbxVe1880zJAHPnJkzULc2CuTIJ7KOTg7SxXenSH/gmWOqW?=
+ =?us-ascii?Q?oq+Fk8gO6wijqz5swERQDW6vQrRhzdAdsci3Rey4MnVA+pH/Iyxeaw1uYmLe?=
+ =?us-ascii?Q?3+KonmVv0EogWZiJoNAgwShybN0R5PUDQsPE9xhhLb+UiVED7yoLe6GOlqVF?=
+ =?us-ascii?Q?hg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e424b69-4cea-4a0c-7002-08dad6e4ea2b
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2022 17:19:49.7980
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: e8Tj4HK013DeI4lrSnbWAzWjtyR+3L0oTI7a+Esojv7U+7nvMO3hb38bhbS/WHEcMI4GEkSvTSFoejn6ynurMg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8158
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,544 +135,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the onsemi NCN26000 10BASE-T1S industrial Ethernet PHY.
-The driver supports Point-to-Multipoint operation without
-auto-negotiation and with link control handling. The PLCA RS support
-will be included on a separate patch.
+On Fri, Dec 02, 2022 at 03:16:19PM +0300, Maxim Kochetkov wrote:
+> Hi!
+> 
+> Please add Maxim Kiselev <bigunclemax@gmail.com> to the CC in next versions.
+> Because I have no more access to T1040 SoC. Maxim can help with testing.
 
-Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
----
- MAINTAINERS                          |   8 ++
- drivers/net/phy/Kconfig              |   7 +
- drivers/net/phy/Makefile             |   1 +
- drivers/net/phy/mdio-open-alliance.h |  44 ++++++
- drivers/net/phy/ncn26000.c           | 193 +++++++++++++++++++++++++++
- drivers/net/phy/phy-c45.c            | 180 +++++++++++++++++++++++++
- include/linux/phy.h                  |   6 +
- 7 files changed, 439 insertions(+)
- create mode 100644 drivers/net/phy/mdio-open-alliance.h
- create mode 100644 drivers/net/phy/ncn26000.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7952243e4b43..09f0bfa3ae64 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15357,6 +15357,13 @@ L:	linux-mips@vger.kernel.org
- S:	Maintained
- F:	arch/mips/boot/dts/ralink/omega2p.dts
- 
-+ONSEMI ETHERNET PHY DRIVERS
-+M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+W:	http://www.onsemi.com
-+F:	drivers/net/phy/ncn*
-+
- OP-TEE DRIVER
- M:	Jens Wiklander <jens.wiklander@linaro.org>
- L:	op-tee@lists.trustedfirmware.org
-@@ -16400,6 +16407,7 @@ PLCA RECONCILIATION SUBLAYER (IEEE802.3 Clause 148)
- M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
-+F:	drivers/net/phy/mdio-open-alliance.h
- F:	net/ethtool/plca.c
- 
- PLDMFW LIBRARY
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index af00cf44cd97..7c466830c611 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -267,6 +267,13 @@ config NATIONAL_PHY
- 	help
- 	  Currently supports the DP83865 PHY.
- 
-+config NCN26000_PHY
-+	tristate "onsemi 10BASE-T1S Ethernet PHY"
-+	help
-+	  Adds support for the onsemi 10BASE-T1S Ethernet PHY.
-+	  Currently supports the NCN26000 10BASE-T1S Industrial PHY
-+	  with MII interface.
-+
- config NXP_C45_TJA11XX_PHY
- 	tristate "NXP C45 TJA11XX PHYs"
- 	depends on PTP_1588_CLOCK_OPTIONAL
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index f7138d3c896b..b5138066ba04 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -77,6 +77,7 @@ obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
- obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
- obj-$(CONFIG_MOTORCOMM_PHY)	+= motorcomm.o
- obj-$(CONFIG_NATIONAL_PHY)	+= national.o
-+obj-$(CONFIG_NCN26000_PHY)	+= ncn26000.o
- obj-$(CONFIG_NXP_C45_TJA11XX_PHY)	+= nxp-c45-tja11xx.o
- obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
- obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
-diff --git a/drivers/net/phy/mdio-open-alliance.h b/drivers/net/phy/mdio-open-alliance.h
-new file mode 100644
-index 000000000000..565f4162611d
---- /dev/null
-+++ b/drivers/net/phy/mdio-open-alliance.h
-@@ -0,0 +1,44 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * mdio-open-alliance.h - definition of OPEN Alliance SIG standard registers
-+ */
-+
-+#ifndef __MDIO_OPEN_ALLIANCE__
-+#define __MDIO_OPEN_ALLIANCE__
-+
-+#include <linux/mdio.h>
-+
-+/* MDIO Manageable Devices (MMDs). */
-+#define MDIO_MMD_OATC14		MDIO_MMD_VEND2
-+
-+/* Open Alliance TC14 (10BASE-T1S) registers */
-+#define MDIO_OATC14_PLCA_IDVER	0xca00  /* PLCA ID and version */
-+#define MDIO_OATC14_PLCA_CTRL0	0xca01	/* PLCA Control register 0 */
-+#define MDIO_OATC14_PLCA_CTRL1	0xca02	/* PLCA Control register 1 */
-+#define MDIO_OATC14_PLCA_STATUS	0xca03	/* PLCA Status register */
-+#define MDIO_OATC14_PLCA_TOTMR	0xca04	/* PLCA TO Timer register */
-+#define MDIO_OATC14_PLCA_BURST	0xca05	/* PLCA BURST mode register */
-+
-+/* Open Alliance TC14 PLCA IDVER register */
-+#define MDIO_OATC14_PLCA_IDM	0xff00	/* PLCA MAP ID */
-+#define MDIO_OATC14_PLCA_VER	0x00ff	/* PLCA MAP version */
-+
-+/* Open Alliance TC14 PLCA CTRL0 register */
-+#define MDIO_OATC14_PLCA_EN	0x8000  /* PLCA enable */
-+#define MDIO_OATC14_PLCA_RST	0x4000  /* PLCA reset */
-+
-+/* Open Alliance TC14 PLCA CTRL1 register */
-+#define MDIO_OATC14_PLCA_NCNT	0xff00	/* PLCA node count */
-+#define MDIO_OATC14_PLCA_ID	0x00ff	/* PLCA local node ID */
-+
-+/* Open Alliance TC14 PLCA STATUS register */
-+#define MDIO_OATC14_PLCA_PST	0x8000	/* PLCA status indication */
-+
-+/* Open Alliance TC14 PLCA TOTMR register */
-+#define MDIO_OATC14_PLCA_TOT	0x00ff
-+
-+/* Open Alliance TC14 PLCA BURST register */
-+#define MDIO_OATC14_PLCA_MAXBC	0xff00
-+#define MDIO_OATC14_PLCA_BTMR	0x00ff
-+
-+#endif /* __MDIO_OPEN_ALLIANCE__ */
-diff --git a/drivers/net/phy/ncn26000.c b/drivers/net/phy/ncn26000.c
-new file mode 100644
-index 000000000000..9e02c5c55244
---- /dev/null
-+++ b/drivers/net/phy/ncn26000.c
-@@ -0,0 +1,193 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-+/*
-+ *  Driver for the onsemi 10BASE-T1S NCN26000 PHYs family.
-+ *
-+ * Copyright 2022 onsemi
-+ */
-+#include <linux/kernel.h>
-+#include <linux/bitfield.h>
-+#include <linux/errno.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/mii.h>
-+#include <linux/phy.h>
-+
-+#include "mdio-open-alliance.h"
-+
-+#define PHY_ID_NCN26000			0x180FF5A1
-+
-+#define NCN26000_REG_IRQ_CTL            16
-+#define NCN26000_REG_IRQ_STATUS         17
-+
-+// the NCN26000 maps link_ctrl to BMCR_ANENABLE
-+#define NCN26000_BCMR_LINK_CTRL_BIT	BMCR_ANENABLE
-+
-+// the NCN26000 maps link_status to BMSR_ANEGCOMPLETE
-+#define NCN26000_BMSR_LINK_STATUS_BIT	BMSR_ANEGCOMPLETE
-+
-+#define NCN26000_IRQ_LINKST_BIT		BIT(0)
-+#define NCN26000_IRQ_PLCAST_BIT		BIT(1)
-+#define NCN26000_IRQ_LJABBER_BIT	BIT(2)
-+#define NCN26000_IRQ_RJABBER_BIT	BIT(3)
-+#define NCN26000_IRQ_PLCAREC_BIT	BIT(4)
-+#define NCN26000_IRQ_PHYSCOL_BIT	BIT(5)
-+
-+#define TO_TMR_DEFAULT			32
-+
-+struct ncn26000_priv {
-+	u16 enabled_irqs;
-+};
-+
-+// module parameter: if set, the link status is derived from the PLCA status
-+// default: false
-+static bool link_status_plca;
-+module_param(link_status_plca, bool, 0644);
-+
-+// driver callbacks
-+
-+static int ncn26000_config_init(struct phy_device *phydev)
-+{
-+	/* HW bug workaround: the default value of the PLCA TO_TIMER should be
-+	 * 32, where the current version of NCN26000 reports 24. This will be
-+	 * fixed in future PHY versions. For the time being, we force the
-+	 * correct default here.
-+	 */
-+	return phy_write_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_TOTMR,
-+			     TO_TMR_DEFAULT);
-+}
-+
-+static int ncn26000_config_aneg(struct phy_device *phydev)
-+{
-+	// Note: the NCN26000 supports only P2MP link mode. Therefore, AN is not
-+	// supported. However, this function is invoked by phylib to enable the
-+	// PHY, regardless of the AN support.
-+	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-+	phydev->mdix = ETH_TP_MDI;
-+
-+	// bring up the link
-+	return phy_write(phydev, MII_BMCR, NCN26000_BCMR_LINK_CTRL_BIT);
-+}
-+
-+static int ncn26000_get_features(struct phy_device *phydev)
-+{
-+	linkmode_zero(phydev->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_MII_BIT, phydev->supported);
-+
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
-+			 phydev->supported);
-+
-+	linkmode_copy(phydev->advertising, phydev->supported);
-+	return 0;
-+}
-+
-+static int ncn26000_read_status(struct phy_device *phydev)
-+{
-+	// The NCN26000 reports NCN26000_LINK_STATUS_BIT if the link status of
-+	// the PHY is up. It further reports the logical AND of the link status
-+	// and the PLCA status in the BMSR_LSTATUS bit. Thus, report the link
-+	// status by testing the appropriate BMSR bit according to the module's
-+	// parameter configuration.
-+	const int lstatus_flag = link_status_plca ?
-+		BMSR_LSTATUS : NCN26000_BMSR_LINK_STATUS_BIT;
-+
-+	int ret;
-+
-+	ret = phy_read(phydev, MII_BMSR);
-+	if (unlikely(ret < 0))
-+		return ret;
-+
-+	// update link status
-+	phydev->link = (ret & lstatus_flag) ? 1 : 0;
-+
-+	// handle more IRQs here
-+
-+	return 0;
-+}
-+
-+static irqreturn_t ncn26000_handle_interrupt(struct phy_device *phydev)
-+{
-+	const struct ncn26000_priv *const priv = phydev->priv;
-+	int ret;
-+
-+	// clear the latched bits in MII_BMSR
-+	phy_read(phydev, MII_BMSR);
-+
-+	// read and aknowledge the IRQ status register
-+	ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
-+
-+	if (unlikely(ret < 0) || (ret & priv->enabled_irqs) == 0)
-+		return IRQ_NONE;
-+
-+	phy_trigger_machine(phydev);
-+	return IRQ_HANDLED;
-+}
-+
-+static int ncn26000_config_intr(struct phy_device *phydev)
-+{
-+	int ret;
-+	struct ncn26000_priv *priv = phydev->priv;
-+
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		// acknowledge IRQs
-+		ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
-+		if (ret < 0)
-+			return ret;
-+
-+		// get link status notifications
-+		priv->enabled_irqs = NCN26000_IRQ_LINKST_BIT;
-+	} else {
-+		// disable all IRQs
-+		priv->enabled_irqs = 0;
-+	}
-+
-+	ret = phy_write(phydev, NCN26000_REG_IRQ_CTL, priv->enabled_irqs);
-+	if (ret != 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int ncn26000_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct ncn26000_priv *priv;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	phydev->priv = priv;
-+
-+	return 0;
-+}
-+
-+static struct phy_driver ncn26000_driver[] = {
-+	{
-+		PHY_ID_MATCH_MODEL(PHY_ID_NCN26000),
-+		.name			= "NCN26000",
-+		.probe                  = ncn26000_probe,
-+		.get_features		= ncn26000_get_features,
-+		.config_init            = ncn26000_config_init,
-+		.config_intr            = ncn26000_config_intr,
-+		.config_aneg		= ncn26000_config_aneg,
-+		.read_status		= ncn26000_read_status,
-+		.handle_interrupt       = ncn26000_handle_interrupt,
-+		.get_plca_cfg		= genphy_c45_plca_get_cfg,
-+		.set_plca_cfg		= genphy_c45_plca_set_cfg,
-+		.get_plca_status	= genphy_c45_plca_get_status,
-+		.soft_reset             = genphy_soft_reset,
-+	},
-+};
-+
-+module_phy_driver(ncn26000_driver);
-+
-+static struct mdio_device_id __maybe_unused ncn26000_tbl[] = {
-+	{ PHY_ID_MATCH_MODEL(PHY_ID_NCN26000) },
-+	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(mdio, ncn26000_tbl);
-+
-+MODULE_AUTHOR("Piergiorgio Beruto");
-+MODULE_DESCRIPTION("onsemi 10BASE-T1S PHY driver");
-+MODULE_LICENSE("Dual BSD/GPL");
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index a87a4b3ffce4..dace5d3b29ad 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -8,6 +8,8 @@
- #include <linux/mii.h>
- #include <linux/phy.h>
- 
-+#include "mdio-open-alliance.h"
-+
- /**
-  * genphy_c45_baset1_able - checks if the PMA has BASE-T1 extended abilities
-  * @phydev: target phy_device struct
-@@ -931,6 +933,184 @@ int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable)
- }
- EXPORT_SYMBOL_GPL(genphy_c45_fast_retrain);
- 
-+/**
-+ * genphy_c45_plca_get_cfg - get PLCA configuration from standard registers
-+ * @phydev: target phy_device struct
-+ * @plca_cfg: output structure to store the PLCA configuration
-+ *
-+ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
-+ *   Management Registers specifications, this function can be used to retrieve
-+ *   the current PLCA configuration from the standard registers in MMD 31.
-+ */
-+int genphy_c45_plca_get_cfg(struct phy_device *phydev,
-+			    struct phy_plca_cfg *plca_cfg)
-+{
-+	int ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_IDVER);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_cfg->version = ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_CTRL0);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_cfg->enabled = !!(ret & MDIO_OATC14_PLCA_EN);
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_CTRL1);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_cfg->node_cnt = (ret & MDIO_OATC14_PLCA_NCNT) >> 8;
-+	plca_cfg->node_id = (ret & MDIO_OATC14_PLCA_ID);
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_TOTMR);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_cfg->to_tmr = ret & MDIO_OATC14_PLCA_TOT;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_BURST);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_cfg->burst_cnt = (ret & MDIO_OATC14_PLCA_MAXBC) >> 8;
-+	plca_cfg->burst_tmr = (ret & MDIO_OATC14_PLCA_BTMR);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(genphy_c45_plca_get_cfg);
-+
-+/**
-+ * genphy_c45_plca_set_cfg - set PLCA configuration using standard registers
-+ * @phydev: target phy_device struct
-+ * @plca_cfg: structure containing the PLCA configuration. Fields set to -1 are
-+ * not to be changed.
-+ *
-+ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
-+ *   Management Registers specifications, this function can be used to modify
-+ *   the PLCA configuration using the standard registers in MMD 31.
-+ */
-+int genphy_c45_plca_set_cfg(struct phy_device *phydev,
-+			    const struct phy_plca_cfg *plca_cfg)
-+{
-+	int ret;
-+	u16 val;
-+
-+	// PLCA IDVER is read-only
-+	if (plca_cfg->version >= 0)
-+		return -EINVAL;
-+
-+	// first of all, disable PLCA if required
-+	if (plca_cfg->enabled == 0) {
-+		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_OATC14,
-+					 MDIO_OATC14_PLCA_CTRL0,
-+					 MDIO_OATC14_PLCA_EN);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	if (plca_cfg->node_cnt >= 0 || plca_cfg->node_id >= 0) {
-+		if (plca_cfg->node_cnt < 0 || plca_cfg->node_id < 0) {
-+			ret = phy_read_mmd(phydev, MDIO_MMD_OATC14,
-+					   MDIO_OATC14_PLCA_CTRL1);
-+
-+			if (ret < 0)
-+				return ret;
-+
-+			val = ret;
-+		}
-+
-+		if (plca_cfg->node_cnt >= 0)
-+			val = (val & ~MDIO_OATC14_PLCA_NCNT) |
-+			      (plca_cfg->node_cnt << 8);
-+
-+		if (plca_cfg->node_id >= 0)
-+			val = (val & ~MDIO_OATC14_PLCA_ID) |
-+			      (plca_cfg->node_id);
-+
-+		ret = phy_write_mmd(phydev, MDIO_MMD_OATC14,
-+				    MDIO_OATC14_PLCA_CTRL1, val);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	if (plca_cfg->to_tmr >= 0) {
-+		ret = phy_write_mmd(phydev, MDIO_MMD_OATC14,
-+				    MDIO_OATC14_PLCA_TOTMR,
-+				    plca_cfg->to_tmr);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	if (plca_cfg->burst_cnt >= 0 || plca_cfg->burst_tmr >= 0) {
-+		if (plca_cfg->burst_cnt < 0 || plca_cfg->burst_tmr < 0) {
-+			ret = phy_read_mmd(phydev, MDIO_MMD_OATC14,
-+					   MDIO_OATC14_PLCA_BURST);
-+
-+			if (ret < 0)
-+				return ret;
-+
-+			val = ret;
-+		}
-+
-+		if (plca_cfg->burst_cnt >= 0)
-+			val = (val & ~MDIO_OATC14_PLCA_MAXBC) |
-+			      (plca_cfg->burst_cnt << 8);
-+
-+		if (plca_cfg->burst_tmr >= 0)
-+			val = (val & ~MDIO_OATC14_PLCA_BTMR) |
-+			      (plca_cfg->burst_tmr);
-+
-+		ret = phy_write_mmd(phydev, MDIO_MMD_OATC14,
-+				    MDIO_OATC14_PLCA_BURST, val);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	// if we need to enable PLCA, do it at the end
-+	if (plca_cfg->enabled > 0) {
-+		ret = phy_set_bits_mmd(phydev, MDIO_MMD_OATC14,
-+				       MDIO_OATC14_PLCA_CTRL0,
-+				       MDIO_OATC14_PLCA_EN);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(genphy_c45_plca_set_cfg);
-+
-+/**
-+ * genphy_c45_plca_get_status - get PLCA status from standard registers
-+ * @phydev: target phy_device struct
-+ * @plca_st: output structure to store the PLCA status
-+ *
-+ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
-+ *   Management Registers specifications, this function can be used to retrieve
-+ *   the current PLCA status information from the standard registers in MMD 31.
-+ */
-+int genphy_c45_plca_get_status(struct phy_device *phydev,
-+			       struct phy_plca_status *plca_st)
-+{
-+	int ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_STATUS);
-+	if (ret < 0)
-+		return ret;
-+
-+	plca_st->pst = !!(ret & MDIO_OATC14_PLCA_PST);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(genphy_c45_plca_get_status);
-+
- struct phy_driver genphy_c45_driver = {
- 	.phy_id         = 0xffffffff,
- 	.phy_id_mask    = 0xffffffff,
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 49d0488bf480..4548c8e8f6a9 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1745,6 +1745,12 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable);
- int genphy_c45_pma_resume(struct phy_device *phydev);
- int genphy_c45_pma_suspend(struct phy_device *phydev);
- int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable);
-+int genphy_c45_plca_get_cfg(struct phy_device *phydev,
-+			    struct phy_plca_cfg *plca_cfg);
-+int genphy_c45_plca_set_cfg(struct phy_device *phydev,
-+			    const struct phy_plca_cfg *plca_cfg);
-+int genphy_c45_plca_get_status(struct phy_device *phydev,
-+			       struct phy_plca_status *plca_st);
- 
- /* Generic C45 PHY driver */
- extern struct phy_driver genphy_c45_driver;
--- 
-2.35.1
-
+Ok, thanks for your contribution to the T1040 switch driver.
