@@ -2,53 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2282264353B
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 21:05:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0504D643545
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 21:08:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231960AbiLEUFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 15:05:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47246 "EHLO
+        id S232230AbiLEUIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 15:08:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiLEUFK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 15:05:10 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D77E13DCD;
-        Mon,  5 Dec 2022 12:05:08 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 73D08124C;
-        Mon,  5 Dec 2022 21:05:06 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1670270706;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=BFvk8I8NGgkaO68NHQ+fUIWKW1Nsx3uLB2VUw+ynUEY=;
-        b=gZRPOpBiyUI76mQOJZmOPSvWIZrxFJxcUxzC930S9BMxmoieXElMVBS4GFlnmPoHICeluA
-        dTIGwz6dQMuAa8xFLkBKIlIEJPbZz4bCXnG+yRAnuh9tUmduq7UAq2RaZSQEXQ7eXg+xS7
-        5iwny52gApiRzS7M8Eio5eqnndncWxSObJbsHK6/zw/7OeuAYkrLVv9mZIPdgRyc6aH2IC
-        9iermRUlnAwMyYwne1ggZ6L38eKAiShgLAWqWncPrfl5AX8WTo4lANOfL5npZ5/GbWPNsM
-        /ltgj4/z+SLwUz649XlPCmMP5sI9RDpX1bIdYUX2NdfF4wtyuB6lRxggpvWiAw==
-From:   Michael Walle <michael@walle.cc>
-To:     Xu Liang <lxu@maxlinear.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 net] net: phy: mxl-gpy: add MDINT workaround
-Date:   Mon,  5 Dec 2022 21:04:53 +0100
-Message-Id: <20221205200453.3447866-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S232327AbiLEUIo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 15:08:44 -0500
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2113.outbound.protection.outlook.com [40.107.8.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCAB2315F
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 12:08:43 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=akO7GPvU21wRGzybPDAnDu59BrToWOqLuQ6IcxmtIHgHxkbIR0mcbL5fgrAWJ/nkrmS9e3ujUPGYrN7AGAZdrvRc6bvbPvrWLOC6CuZ+a5JbvogUORvcnWb1PXnFM12tgU5ooDss7g0FxKLb2vyVcO+9RuweAToMHx9Odz/2r/ZnDHGQ+QWpHjjRKFka1Ir/DhVu8kRytDKWh8bKeFuM0gld6j3DNDdy3BM2FnKwTaylRkYsaKnU5m7ZvbKzktBRWr2L/tBZDp1nyLEURUJGl20Fl0W2d6EnKb/7Eipa+OaOoITApK2QJFh4pLg1PpmP0gpzs9UNZC6vLBmS193yMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V3XX2dzyO+83BbAdbXu2hvRoEZAd7UGPfVE407CGIMg=;
+ b=U4GwWqcOrKkaxndvsJkfqvLij9baYaD45bR6tsYE6nGFMY/S4ON+572V02wclU7jhObHgizxa23WtxxukAojvXEXORmlMPxihpgGuqleHAuXIFS5vLxKWdT7BGb8HQ18oTCRTEZ16pnwByVufUUfpmk6i/oUQsx8GyttnwXo5M2w7jRYX8v/Ic5hSTmLHT4cJ47iBoxaPn0WVlW4rnvtOyGYNeXOtfgqxf9vDUl/cjjf8QpT4FV9iA1RQz9BuxSDCV8cvqCGySfVWB8cOm7haZFOAD1wQ3Il94O1hYipDRZ1aMUklhopzG/uUV6IZMPMzuO7pcRmBjksy/XePMF0sg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 217.111.95.7) smtp.rcpttodomain=gmail.com smtp.mailfrom=arri.de; dmarc=none
+ action=none header.from=arri.de; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=arrigroup.onmicrosoft.com; s=selector1-arrigroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V3XX2dzyO+83BbAdbXu2hvRoEZAd7UGPfVE407CGIMg=;
+ b=cmrFYEWNi6JgRCx/VegIAwMuG1YYA/4STuO2k+azb7eThVP9QuwhOXLMIcNvKSCgHykEiEvBXw7n4ke9aiqWHdTa1SIRNkX2+d+5nyXpyug+ZYj530k+7/WhPRDJA8kqi69num1dAW4296EAQozDbp81u2UZCtO2H45urjE/61E=
+Received: from DUZPR01CA0002.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:3c3::8) by AM9PR07MB7811.eurprd07.prod.outlook.com
+ (2603:10a6:20b:303::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.13; Mon, 5 Dec
+ 2022 20:08:40 +0000
+Received: from DB5EUR02FT011.eop-EUR02.prod.protection.outlook.com
+ (2603:10a6:10:3c3:cafe::c2) by DUZPR01CA0002.outlook.office365.com
+ (2603:10a6:10:3c3::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.13 via Frontend
+ Transport; Mon, 5 Dec 2022 20:08:39 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 217.111.95.7)
+ smtp.mailfrom=arri.de; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arri.de;
+Received-SPF: Fail (protection.outlook.com: domain of arri.de does not
+ designate 217.111.95.7 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.111.95.7; helo=mta.arri.de;
+Received: from mta.arri.de (217.111.95.7) by
+ DB5EUR02FT011.mail.protection.outlook.com (10.13.58.70) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5880.14 via Frontend Transport; Mon, 5 Dec 2022 20:08:39 +0000
+Received: from n95hx1g2.localnet (192.168.54.14) by mta.arri.de (10.10.18.5)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 5 Dec
+ 2022 21:08:38 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <netdev@vger.kernel.org>
+Subject: Re: Using a bridge for DSA and non-DSA devices
+Date:   Mon, 5 Dec 2022 21:08:38 +0100
+Message-ID: <3213598.44csPzL39Z@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <20221205190805.vwcv6z7ize3z64j2@skbuf>
+References: <2269377.ElGaqSPkdT@n95hx1g2> <20221205190805.vwcv6z7ize3z64j2@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.14]
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB5EUR02FT011:EE_|AM9PR07MB7811:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7ceaa535-6b31-48ad-db8b-08dad6fc800d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yllQFiwNQvSqY1ngCp1BZosBVMMmyEHTnNOIVGqoi5XYGoqfxgJScFHImmsoRw44a5MlZG5pWB0VRUbOUpXTychR+ABAjQdpiyp0jKfAwrUwOMIqlbi6TyyGMB5SbfKsTKX5B2l8byue9cDPZ/tdYQWF7A40Mbgadz5hoGZFOw+d6BifiTRNUC4czQzV8nNIA3CiewUbUeLrlf7JCRaqhfHd7tIpZpvTupkTcZsEvuBf4exHKOGKFW3EkbXuuSmeWlVhYx+B5SsODAJGupCBF5jMW9+Pb/6LBHWSEP722lfW9/g106sO5t2bF/BTwSwGpIjLTEW9ujxZhmjg8Fp5YDTS+MXHPBXjSzqLm/PJ+NnMA2BBonwYEACqfP4r5x0gArUvQ8HU/0ft0L1D5PlZntCj1/DohD9/sCOJuYQai4+l8hHJEJcxSJjLieQPJXI+KIWZbjxDQg0y5zJMrhc1RLhLWmrfb107pGSCbGHoPnbECpSnz1DkU0WyQoJYtrvEZAHcesrJ/0bF1H0buMxKSUnc3kzl/8nOUeOcACUVRunF75j6Nv2bEXClf0Dl/okSeapl3zxsf6ctR/YDqbp7kfx6JqdNVC/6gWHE7Mm0t6LjFQ5YXdOhCqWmHwZQBXWOJApKQ1Xk9gtP0/wSIreJITcO2RPOIbCnjURtbqvIPy4R6ttDrAi/xxFDXZOXwltVJ0ppLSNDJ/Ri1wOgFj+D0TsIvngCSL8UVWzFjUFht+Q=
+X-Forefront-Antispam-Report: CIP:217.111.95.7;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mta.arri.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(396003)(346002)(136003)(451199015)(46966006)(36840700001)(2906002)(83380400001)(47076005)(316002)(426003)(86362001)(26005)(186003)(9686003)(36916002)(16526019)(81166007)(478600001)(356005)(82740400003)(6862004)(9576002)(8936002)(5660300002)(41300700001)(4326008)(36860700001)(336012)(70206006)(70586007)(8676002)(82310400005)(33716001)(40480700001)(39026012)(36900700001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: arri.de
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2022 20:08:39.0778
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ceaa535-6b31-48ad-db8b-08dad6fc800d
+X-MS-Exchange-CrossTenant-Id: e6a73a5a-614d-4c51-b3e3-53b660a9433a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e6a73a5a-614d-4c51-b3e3-53b660a9433a;Ip=[217.111.95.7];Helo=[mta.arri.de]
+X-MS-Exchange-CrossTenant-AuthSource: DB5EUR02FT011.eop-EUR02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR07MB7811
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,175 +94,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At least the GPY215B and GPY215C has a bug where it is still driving the
-interrupt line (MDINT) even after the interrupt status register is read
-and its bits are cleared. This will cause an interrupt storm.
+Hi Vladimir,
 
-Although the MDINT is multiplexed with a GPIO pin and theoretically we
-could switch the pinmux to GPIO input mode, this isn't possible because
-the access to this register will stall exactly as long as the interrupt
-line is asserted. We exploit this very fact and just read a random
-internal register in our interrupt handler. This way, it will be delayed
-until the external interrupt line is released and an interrupt storm is
-avoided.
+On Monday, 5 December 2022, 20:08:05 CET, Vladimir Oltean wrote:
+> Hi Christian,
+> 
+> In the model that the DSA core tries to impose, software bridging is
+> possible, as long as you understand the physical constraints (throughput
+> will be limited by the link speed of the CPU ports), and as long as the
+> switch doesn't use DSA_TAG_PROTO_NONE (a remnant of the past).
 
-The internal register access via the mailbox was deduced by looking at
-the downstream PHY API because the datasheet doesn't mention any of
-this.
+my hope was that a "combined" mode would be possible where traffic
+between the DSA slave ports is forwarded in hardware and only other
+traffic requires CPU intervention. Our embedded device uses the
+KSZ9563 3-port switch with two DSA slave ports. The intention is
+that the customer can daisy chain multiple of our devices without
+the need for extra Ethernet switches. For reasonable performance,
+forwarding shall be done in hardware, especially as the external
+port a 1 GBit Ethernet whilst the CPU port is only 100 MBit/s.
 
-Fixes: 7d901a1e878a ("net: phy: add Maxlinear GPY115/21x/24x driver")
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-changes since v1:
- - split from
-   https://lore.kernel.org/netdev/20221202151204.3318592-1-michael@walle.cc/
- - rebase to net queue
- - add Fixes tag
- - remove unused phydev pointer in priv struct
- - add comment on the gpy_mbox_read polling period
+Beside the Ethernet interfaces I would like to add further connectivity
+options (like USB gadget, WiFi, Bluetooth, ...). I consider these
+interfaces as "secondary" in terms of performance and I think that
+forwarding will not be an use case here. Currently, each secondary
+interface has its own subnet (no bridging), but for every interface I add,
+I have to "invent" new IP ranges which eventually collide with other
+networks of the customers.
 
- drivers/net/phy/mxl-gpy.c | 85 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 85 insertions(+)
+I already took the "lets use IP4LL" joker on one interface but I
+learned today, that I cannot do this for further ones
+(at least not without bridging). To make things even worse, we decided
+to always configure IP4LL as a secondary address on the Ethernet
+interfaces (NetworkManager just gained support for this). That's
+why I estimate whether it makes sense to put all external interfaces
+below a common bridge with only one IP address at all (or one pair
+of DHCP+IP4LL).
 
-diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
-index 24bae27eedef..cae24091fb6f 100644
---- a/drivers/net/phy/mxl-gpy.c
-+++ b/drivers/net/phy/mxl-gpy.c
-@@ -9,6 +9,7 @@
- #include <linux/module.h>
- #include <linux/bitfield.h>
- #include <linux/hwmon.h>
-+#include <linux/mutex.h>
- #include <linux/phy.h>
- #include <linux/polynomial.h>
- #include <linux/netdevice.h>
-@@ -70,6 +71,14 @@
- #define VPSPEC1_TEMP_STA	0x0E
- #define VPSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
- 
-+/* Mailbox */
-+#define VSPEC1_MBOX_DATA	0x5
-+#define VSPEC1_MBOX_ADDRLO	0x6
-+#define VSPEC1_MBOX_CMD		0x7
-+#define VSPEC1_MBOX_CMD_ADDRHI	GENMASK(7, 0)
-+#define VSPEC1_MBOX_CMD_RD	(0 << 8)
-+#define VSPEC1_MBOX_CMD_READY	BIT(15)
-+
- /* WoL */
- #define VPSPEC2_WOL_CTL		0x0E06
- #define VPSPEC2_WOL_AD01	0x0E08
-@@ -77,7 +86,13 @@
- #define VPSPEC2_WOL_AD45	0x0E0A
- #define WOL_EN			BIT(0)
- 
-+/* Internal registers, access via mbox */
-+#define REG_GPIO0_OUT		0xd3ce00
-+
- struct gpy_priv {
-+	/* serialize mailbox acesses */
-+	struct mutex mbox_lock;
-+
- 	u8 fw_major;
- 	u8 fw_minor;
- };
-@@ -187,6 +202,45 @@ static int gpy_hwmon_register(struct phy_device *phydev)
- }
- #endif
- 
-+static int gpy_mbox_read(struct phy_device *phydev, u32 addr)
-+{
-+	struct gpy_priv *priv = phydev->priv;
-+	int val, ret;
-+	u16 cmd;
-+
-+	mutex_lock(&priv->mbox_lock);
-+
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_MBOX_ADDRLO,
-+			    addr);
-+	if (ret)
-+		goto out;
-+
-+	cmd = VSPEC1_MBOX_CMD_RD;
-+	cmd |= FIELD_PREP(VSPEC1_MBOX_CMD_ADDRHI, addr >> 16);
-+
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_MBOX_CMD, cmd);
-+	if (ret)
-+		goto out;
-+
-+	/* The mbox read is used in the interrupt workaround. It was observed
-+	 * that a read might take up to 2.5ms. This is also the time for which
-+	 * the interrupt line is stuck low. To be on the safe side, poll the
-+	 * ready bit for 10ms.
-+	 */
-+	ret = phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1,
-+					VSPEC1_MBOX_CMD, val,
-+					(val & VSPEC1_MBOX_CMD_READY),
-+					500, 10000, false);
-+	if (ret)
-+		goto out;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_MBOX_DATA);
-+
-+out:
-+	mutex_unlock(&priv->mbox_lock);
-+	return ret;
-+}
-+
- static int gpy_config_init(struct phy_device *phydev)
- {
- 	int ret;
-@@ -201,6 +255,13 @@ static int gpy_config_init(struct phy_device *phydev)
- 	return ret < 0 ? ret : 0;
- }
- 
-+static bool gpy_has_broken_mdint(struct phy_device *phydev)
-+{
-+	/* At least these PHYs are known to have broken interrupt handling */
-+	return phydev->drv->phy_id == PHY_ID_GPY215B ||
-+	       phydev->drv->phy_id == PHY_ID_GPY215C;
-+}
-+
- static int gpy_probe(struct phy_device *phydev)
- {
- 	struct device *dev = &phydev->mdio.dev;
-@@ -218,6 +279,7 @@ static int gpy_probe(struct phy_device *phydev)
- 	if (!priv)
- 		return -ENOMEM;
- 	phydev->priv = priv;
-+	mutex_init(&priv->mbox_lock);
- 
- 	fw_version = phy_read(phydev, PHY_FWV);
- 	if (fw_version < 0)
-@@ -492,6 +554,29 @@ static irqreturn_t gpy_handle_interrupt(struct phy_device *phydev)
- 	if (!(reg & PHY_IMASK_MASK))
- 		return IRQ_NONE;
- 
-+	/* The PHY might leave the interrupt line asserted even after PHY_ISTAT
-+	 * is read. To avoid interrupt storms, delay the interrupt handling as
-+	 * long as the PHY drives the interrupt line. An internal bus read will
-+	 * stall as long as the interrupt line is asserted, thus just read a
-+	 * random register here.
-+	 * Because we cannot access the internal bus at all while the interrupt
-+	 * is driven by the PHY, there is no way to make the interrupt line
-+	 * unstuck (e.g. by changing the pinmux to GPIO input) during that time
-+	 * frame. Therefore, polling is the best we can do and won't do any more
-+	 * harm.
-+	 * It was observed that this bug happens on link state and link speed
-+	 * changes on a GPY215B and GYP215C independent of the firmware version
-+	 * (which doesn't mean that this list is exhaustive).
-+	 */
-+	if (gpy_has_broken_mdint(phydev) &&
-+	    (reg & (PHY_IMASK_LSTC | PHY_IMASK_LSPC))) {
-+		reg = gpy_mbox_read(phydev, REG_GPIO0_OUT);
-+		if (reg < 0) {
-+			phy_error(phydev);
-+			return IRQ_NONE;
-+		}
-+	}
-+
- 	phy_trigger_machine(phydev);
- 
- 	return IRQ_HANDLED;
--- 
-2.30.2
+> 
+> Unfortunately the results might depend on which switch driver you use
+> for this, since some driver cooperation is needed for smooth sailing,
+> and we don't see perfect uniformity. See the
+> ds->assisted_learning_on_cpu_port flag for some more details.
+
+Thanks for the pointer, unfortunately this hasn't been implemented
+yet for the KSZ switches.
+
+> Did you already try to experiment with software bridging and faced any
+> issues?
+
+No, I didn't. But just to make it clear: Will the DSA framework
+change to "pure software" switching as soon I add the first non-DSA
+slave to an exisiting DSA bridge?
+
+regards
+Christian
+
+
 
