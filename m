@@ -2,84 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A9664209A
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 00:50:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A87E6420EA
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 01:57:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbiLDXuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Dec 2022 18:50:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
+        id S231224AbiLEA5u convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 4 Dec 2022 19:57:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229970AbiLDXuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 18:50:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E626612775
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 15:50:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D47360F2C
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 23:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D3B02C433D7;
-        Sun,  4 Dec 2022 23:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670197814;
-        bh=63xdwZ2OXMqXjO/8Zvjx5mlI8FbKSwJHDJ/XQW4gtDU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=P4K7/4mIm2CjYYZQHCqmqkqbnRM2LrZOkR6Q5y3oBChVhvva1yAVK/qE5A7Bg/fg+
-         gfpoThDrc4k5lQj2yU4/pILwv/MdKhJr+m87GycSQqugiXabUKu6ssWjAOqW/1xSCF
-         ka+KC4sTce9ZdjzQ+u3zza6EUHzkmnw9mHOCMTHUJEZsutnsRxAHJgNr6/Z6vp79CW
-         gcsb7IJrOQMHJCXU8GEreLqllD45HHDMt6DaBdkw3uBxFhh/Fnyn2/z2YG1+5ZtkK/
-         UgIAwDwT0tPu9NQTwWOWwmPuWToMRUahpHwd46pzN/LWw5AtpIryEftUg0NW35roLu
-         X+4Wgct+JgmkQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B7ACDE270CF;
-        Sun,  4 Dec 2022 23:50:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231207AbiLEA5q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 19:57:46 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 528F9E15;
+        Sun,  4 Dec 2022 16:57:39 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B50u9unD008662, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B50u9unD008662
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 5 Dec 2022 08:56:09 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.9; Mon, 5 Dec 2022 08:56:56 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 5 Dec 2022 08:56:55 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Mon, 5 Dec 2022 08:56:55 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Sascha Hauer <s.hauer@pengutronix.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Martin Blumenstingl" <martin.blumenstingl@googlemail.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        Alexander Hochbaum <alex@appudo.com>,
+        Da Xue <da@libre.computer>, Bernie Huang <phhuang@realtek.com>,
+        Viktor Petrenko <g0000ga@gmail.com>
+Subject: RE: [PATCH v5 00/11] RTW88: Add support for USB variants
+Thread-Topic: [PATCH v5 00/11] RTW88: Add support for USB variants
+Thread-Index: AQHZBiXvpU4mc8ctT0ib2Q+wyiNTpq5eehsg
+Date:   Mon, 5 Dec 2022 00:56:55 +0000
+Message-ID: <3cce7a0cabd94aa7af270ce502fcc6bf@realtek.com>
+References: <20221202081224.2779981-1-s.hauer@pengutronix.de>
+In-Reply-To: <20221202081224.2779981-1-s.hauer@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/12/4_=3F=3F_10:00:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] nfp: correct desc type when header dma len is 4096
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167019781474.13667.6835006524449338517.git-patchwork-notify@kernel.org>
-Date:   Sun, 04 Dec 2022 23:50:14 +0000
-References: <20221202134646.311108-1-simon.horman@corigine.com>
-In-Reply-To: <20221202134646.311108-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        yinjun.zhang@corigine.com, richard.donkin@corigine.com,
-        niklas.soderlund@corigine.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_PASS,
+        T_SPF_HELO_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri,  2 Dec 2022 14:46:46 +0100 you wrote:
-> From: Yinjun Zhang <yinjun.zhang@corigine.com>
+> -----Original Message-----
+> From: Sascha Hauer <s.hauer@pengutronix.de>
+> Sent: Friday, December 2, 2022 4:12 PM
+> To: linux-wireless@vger.kernel.org
+> Cc: Neo Jou <neojou@gmail.com>; Hans Ulli Kroll <linux@ulli-kroll.de>; Ping-Ke Shih <pkshih@realtek.com>;
+> Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; Martin Blumenstingl <martin.blumenstingl@googlemail.com>;
+> kernel@pengutronix.de; Alexander Hochbaum <alex@appudo.com>; Da Xue <da@libre.computer>; Bernie Huang
+> <phhuang@realtek.com>; Viktor Petrenko <g0000ga@gmail.com>; Sascha Hauer <s.hauer@pengutronix.de>
+> Subject: [PATCH v5 00/11] RTW88: Add support for USB variants
 > 
-> When there's only one buffer to dma and its length is 4096, then
-> only one data descriptor is needed to carry it according to current
-> descriptor definition. So the descriptor type should be `simple`
-> instead of `gather`, the latter requires more than one descriptor,
-> otherwise it'll be dropped by application firmware.
+> This has only small changes to the last version. I dropped the endless
+> loop check again and added the "Edimax EW-7611ULB V2" to the rtw8723du
+> id table.
 > 
-> [...]
 
-Here is the summary with links:
-  - [net] nfp: correct desc type when header dma len is 4096
-    https://git.kernel.org/netdev/net/c/5c306de8f787
+v5 looks good to me, and I have tested 8822CE to confirm there is no regression
+on PCI devices. Thank you for this nice work!
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Reviewed-and-Tested-by: Ping-Ke Shih <pkshih@realtek.com>
 
+--
+Ping-Ke
 
