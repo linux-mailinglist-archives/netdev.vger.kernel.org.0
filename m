@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3F1264213D
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 02:53:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08020642147
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 02:58:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231292AbiLEBxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Dec 2022 20:53:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42946 "EHLO
+        id S231171AbiLEB6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Dec 2022 20:58:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231138AbiLEBxB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 20:53:01 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3547DA1BF
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 17:53:00 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id w4-20020a17090ac98400b002186f5d7a4cso13433608pjt.0
-        for <netdev@vger.kernel.org>; Sun, 04 Dec 2022 17:53:00 -0800 (PST)
+        with ESMTP id S231130AbiLEB6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 20:58:22 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15C41144E;
+        Sun,  4 Dec 2022 17:58:21 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id s5so13781708edc.12;
+        Sun, 04 Dec 2022 17:58:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Cv01xP8yD1pLQdBMiW8llxOgvujaBzqApEAeFFToLyg=;
-        b=Niy6NB+a9RaUEzO4zJBaJsUSsRFmkNuhitheOCLY6vvObVYl8dWZiIUXLkZu5GVZXh
-         1okwS/ABV5ZyOnw86Ji3LCHk5EKcte9X1QpZYToWIgWbcoDEXn1aP617cZAOokpD2pj/
-         W+i2AfZMGavMdMuwMRml0pjBVTvY/hRPdq4NBbNoWmAy+wrtWvSI9auvmWXUcPz0Evlu
-         0RaBzi6dGdS7bpMV6uR+1I/yBsBb4rPG7lzceBxobY/99300AXmsHfRahxE8XU6UCEH7
-         EnrXl2KpFYj6PhZdL/IAmUHit/sbg8xghOGKkf6S09QzesjxJyOcZPB+vj5vgSGgpZW7
-         eNNQ==
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Tiw1kR5Fj9mSQPY+/a11FtsTXdBXPQZ0NfAI3+WT5gw=;
+        b=oV6A5niSrMlQaL/PRvwZQFEdjN8kUtbgvZjJMo8UyV8eYM9Tb5m07Cyj3JQ38U7kYs
+         VCu56GImf0EKcN38n1hyDdlqkHf6IQC2UKdM+D8nMIhvWo4yV0iBGL+EbZ7IRCxGvrwc
+         IjQQ5Zx5U7w5NbZrL+9IjhLAN/i5BexKpb56t1KeKuY41/DvahoRbURlBiIbInCkAsHb
+         3aodawn6qIBAxnb7aYjQz1WLvb1qMp4/T+/vyXEii9SWqZ63HFqeXOtPNz69Bf9yp3O6
+         uX9nnnxI3U9oGmX18PE3mM4g1lSBcfzy5rC4UaKW88SUCAcyWJmw5qISead1L+p2EGzL
+         EJcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Cv01xP8yD1pLQdBMiW8llxOgvujaBzqApEAeFFToLyg=;
-        b=g2TsP8Zm0DKafBLWke3UT5l6E3SOoHtzf+YZTkfKls4yY8FX1NZWpOG+o89gtR6MuY
-         uRZ2XhYgaWEkr/19cNCDQ/5Axb9dpS672cbL3QMsQCeZBk9Z7sOLe4px+EEazf68I6qq
-         yObEI7tfhelU9q00gfREU4J7AEu/xiOR4Wqu5RLdVLEodXy4SZon923EbRx6u6hOEBGg
-         va2lhMBFQH1hOcKxK+5/hSN+2PYr7LJ2yNCZ6N6M0VDWtAVkRpW4NwFmVBRQzd2F+vvm
-         8oRXsUxou7+FDrJmvAja5UK7W1a3szLVYhdFp1EKhshyza/j2uts5ho3MbyTIntO2afB
-         mc6w==
-X-Gm-Message-State: ANoB5pnI0FmPjAlC1fRRgHengYiWRrkQepGi2Sw7S1lf6eedH8Xom4RN
-        c37FdKetnmTkIuZWtx+dDzWDGg==
-X-Google-Smtp-Source: AA0mqf7FmmYt0zqBRqFJKdQO8vG64ajZLzxYh4Kh1onKH9BzesKfOGYmOZxLYntQya6IFN/ff8e28Q==
-X-Received: by 2002:a17:90a:c68d:b0:219:d415:d787 with SMTP id n13-20020a17090ac68d00b00219d415d787mr2849223pjt.127.1670205179639;
-        Sun, 04 Dec 2022 17:52:59 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id x17-20020aa79ad1000000b005736209dc01sm8597713pfp.47.2022.12.04.17.52.58
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Tiw1kR5Fj9mSQPY+/a11FtsTXdBXPQZ0NfAI3+WT5gw=;
+        b=5KtFzvg6VxTIwzjTjKyyUPCd+MPnFMvX09rjJK30lL3eym8OZsnjoHF0YyZ77mG/xf
+         vYIX3riupbN26BjSFnjW3jntD4Q6gY7uSMYVFXcpTx7fXdOy5EEOgGDMsiqf8GTuokxB
+         SHBhp0ZguKsS8jr3R+AEi+LACZw2OWES2M31GhlcBwcQe1vzR2Te1UuCEg6JXSxlt8yV
+         2EjP/EyQfN9mIbcIKNqsXrXU+9GBRKepEm1/h0RfSx7+fPU216wLgov8xqwTkCPGGYQx
+         Bf6IJJGvl94VbbBtw3DRcSG/EEYpRMCby1ywY/e1kK/NsAgYL55nt3/95yx2AFPXOhZr
+         cjsw==
+X-Gm-Message-State: ANoB5pkC/OTPr4zoOuXhIEKtZ9hxnUNzJe6R4If74HcqnKHaXDRLrm7Y
+        S04C3lPb/X53LzG8/jpvXTe1KaI11DpuAvyu
+X-Google-Smtp-Source: AA0mqf4+vIIcd4V+SIYvFiklshQgnV8pEbbMRR6/A4Oi+RVWGjOPp43eRTlDgu4pT0vzTikVSJwWlA==
+X-Received: by 2002:a05:6402:221b:b0:46c:6707:1036 with SMTP id cq27-20020a056402221b00b0046c67071036mr6528109edb.308.1670205500480;
+        Sun, 04 Dec 2022 17:58:20 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id 18-20020a170906219200b0078d22b0bcf2sm5650505eju.168.2022.12.04.17.58.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Dec 2022 17:52:59 -0800 (PST)
-Date:   Sun, 4 Dec 2022 17:52:57 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     <Daniel.Machon@microchip.com>
-Cc:     <netdev@vger.kernel.org>, <dsahern@kernel.org>, <petrm@nvidia.com>,
-        <maxime.chevallier@bootlin.com>, <vladimir.oltean@nxp.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH iproute2-next v3 1/2] dcb: add new pcp-prio parameter to
- dcb app
-Message-ID: <20221204175257.75e09ff1@hermes.local>
-In-Reply-To: <Y40hjAoN4VcUCatp@DEN-LT-70577>
-References: <20221202092235.224022-1-daniel.machon@microchip.com>
-        <20221202092235.224022-2-daniel.machon@microchip.com>
-        <20221203090052.65ff3bf1@hermes.local>
-        <Y40hjAoN4VcUCatp@DEN-LT-70577>
+        Sun, 04 Dec 2022 17:58:20 -0800 (PST)
+Date:   Mon, 5 Dec 2022 02:58:29 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: [PATCH ethtool-next 1/2] update UAPI header copies
+Message-ID: <f9712cc0a62fb1a2e4ab5016b2dc91a26b0e3891.1670205306.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UPPERCASE_50_75 autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,40 +73,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 4 Dec 2022 22:27:40 +0000
-<Daniel.Machon@microchip.com> wrote:
+Update to kernel commit b71fb5b0b802.
 
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > On Fri, 2 Dec 2022 10:22:34 +0100
-> > Daniel Machon <daniel.machon@microchip.com> wrote:
-> >   
-> > > +static int dcb_app_print_key_pcp(__u16 protocol)
-> > > +{
-> > > +     /* Print in numerical form, if protocol value is out-of-range */
-> > > +     if (protocol > DCB_APP_PCP_MAX) {
-> > > +             fprintf(stderr, "Unknown PCP key: %d\n", protocol);
-> > > +             return print_uint(PRINT_ANY, NULL, "%d:", protocol);
-> > > +     }
-> > > +
-> > > +     return print_string(PRINT_ANY, NULL, "%s:", pcp_names[protocol]);
-> > > +}  
-> > 
-> > This is not an application friendly way to produce JSON output.
-> > You need to put a key on each one, and value should not contain colon.  
-> 
-> Hi Stephen,
-> 
-> Trying to understand your comment.
-> 
-> Are you talking about not producing any JSON output with the symbolic
-> PCP values? eg. ["1de", 1] -> [8, 1]. So basically print with PRINT_FP
-> in case of printing in JSON context?
-> 
-> /Daniel
+Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+---
+ uapi/linux/ethtool.h         |  3 +++
+ uapi/linux/ethtool_netlink.h | 25 +++++++++++++++++++++++++
+ 2 files changed, 28 insertions(+)
 
-What does output look like in json and non-json versions?
-My concern that the json version would be awkward and have colons in it, but looks
-like it won't.
+diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
+index d1748702bddc..78bf6fad9e02 100644
+--- a/uapi/linux/ethtool.h
++++ b/uapi/linux/ethtool.h
+@@ -1739,6 +1739,9 @@ enum ethtool_link_mode_bit_indices {
+ 	ETHTOOL_LINK_MODE_800000baseDR8_2_Full_BIT	 = 96,
+ 	ETHTOOL_LINK_MODE_800000baseSR8_Full_BIT	 = 97,
+ 	ETHTOOL_LINK_MODE_800000baseVR8_Full_BIT	 = 98,
++	ETHTOOL_LINK_MODE_10baseT1S_Full_BIT		 = 99,
++	ETHTOOL_LINK_MODE_10baseT1S_Half_BIT		 = 100,
++	ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT	 = 101,
+ 
+ 	/* must be last entry */
+ 	__ETHTOOL_LINK_MODE_MASK_NBITS
+diff --git a/uapi/linux/ethtool_netlink.h b/uapi/linux/ethtool_netlink.h
+index d581c43d592d..11a0efbf815c 100644
+--- a/uapi/linux/ethtool_netlink.h
++++ b/uapi/linux/ethtool_netlink.h
+@@ -51,6 +51,9 @@ enum {
+ 	ETHTOOL_MSG_MODULE_SET,
+ 	ETHTOOL_MSG_PSE_GET,
+ 	ETHTOOL_MSG_PSE_SET,
++	ETHTOOL_MSG_PLCA_GET_CFG,
++	ETHTOOL_MSG_PLCA_SET_CFG,
++	ETHTOOL_MSG_PLCA_GET_STATUS,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_USER_CNT,
+@@ -97,6 +100,9 @@ enum {
+ 	ETHTOOL_MSG_MODULE_GET_REPLY,
+ 	ETHTOOL_MSG_MODULE_NTF,
+ 	ETHTOOL_MSG_PSE_GET_REPLY,
++	ETHTOOL_MSG_PLCA_GET_CFG_REPLY,
++	ETHTOOL_MSG_PLCA_GET_STATUS_REPLY,
++	ETHTOOL_MSG_PLCA_NTF,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_KERNEL_CNT,
+@@ -880,6 +886,25 @@ enum {
+ 	ETHTOOL_A_PSE_MAX = (__ETHTOOL_A_PSE_CNT - 1)
+ };
+ 
++/* PLCA */
++
++enum {
++	ETHTOOL_A_PLCA_UNSPEC,
++	ETHTOOL_A_PLCA_HEADER,				/* nest - _A_HEADER_* */
++	ETHTOOL_A_PLCA_VERSION,				/* u16 */
++	ETHTOOL_A_PLCA_ENABLED,				/* u8 */
++	ETHTOOL_A_PLCA_STATUS,				/* u8 */
++	ETHTOOL_A_PLCA_NODE_CNT,			/* u8 */
++	ETHTOOL_A_PLCA_NODE_ID,				/* u8 */
++	ETHTOOL_A_PLCA_TO_TMR,				/* u8 */
++	ETHTOOL_A_PLCA_BURST_CNT,			/* u8 */
++	ETHTOOL_A_PLCA_BURST_TMR,			/* u8 */
++
++	/* add new constants above here */
++	__ETHTOOL_A_PLCA_CNT,
++	ETHTOOL_A_PLCA_MAX = (__ETHTOOL_A_PLCA_CNT - 1)
++};
++
+ /* generic netlink info */
+ #define ETHTOOL_GENL_NAME "ethtool"
+ #define ETHTOOL_GENL_VERSION 1
+-- 
+2.35.1
 
-For the unknown key type is printing error necessary? Maybe just show it in numeric form.
