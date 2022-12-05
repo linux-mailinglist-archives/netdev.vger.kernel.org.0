@@ -2,87 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54CA8643739
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 22:44:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C6AE64373C
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 22:45:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234120AbiLEVoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 16:44:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43136 "EHLO
+        id S234134AbiLEVo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 16:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234158AbiLEVn2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 16:43:28 -0500
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F552D77D;
-        Mon,  5 Dec 2022 13:42:24 -0800 (PST)
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-1322d768ba7so15086666fac.5;
-        Mon, 05 Dec 2022 13:42:24 -0800 (PST)
+        with ESMTP id S233934AbiLEVo0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 16:44:26 -0500
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B3F38A2;
+        Mon,  5 Dec 2022 13:42:37 -0800 (PST)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-1445ca00781so8487636fac.1;
+        Mon, 05 Dec 2022 13:42:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PNGr0I77rqwyAC8AXud43K7iOEl8cm1zQzmCR6XwoTA=;
-        b=v8uB9poEjkO2y3zmcUdDNIze/TafNWODQ7KqC9mJhz0CnwYe/sXGrVkZidjjLDUqpV
-         M6PolbzAa6uX3ypTWXO4OxjCFueMy80eqeCoZN3pRlH6bn4NqqW5NM1GN1xjeWO68K5Q
-         bLZgqDi6CmJx7nrBzZQMwek8Jp35VHKdKdBqpEGjcXlN0+a3ktiDo4KpmH/wnW6c0VIP
-         Gq7SgdXJ/9fa2wDRboO+fDyMVsuEJ95KeFqEfh3dZ/1MZviy/iyfySZVs0+Y7fyCs5Ts
-         pSItRC1bzw7BuBXr6XS39OOMy0hSQr8U6ibnipPIFZGaRIlxnsKXiphTkblKKIDAUHHV
-         4mLA==
-X-Gm-Message-State: ANoB5pkFPpn/VkmFfB3sK9plonRj38IdGTX9mmlIMY2945RY26YDP2aw
-        gGqD4flNf7dwH7z9usfMgg==
-X-Google-Smtp-Source: AA0mqf7hwLNcWO6bZt8FX+2pOdAAkaDRY2N5Cp1AwZT3A0cQlaZQR1AeANmbE7FqmKtksp2OPcT/og==
-X-Received: by 2002:a05:6870:3b8f:b0:144:2395:41b9 with SMTP id gi15-20020a0568703b8f00b00144239541b9mr10882014oab.294.1670276543724;
-        Mon, 05 Dec 2022 13:42:23 -0800 (PST)
+        bh=y3FyNfYivQwMLOF6RUZwmkn/sgZ3GskW73HlQfJ4j1s=;
+        b=HZy6SjmfjR1Csxsp+pdPNfvepDFGxO065IbxAaCuGjON8RkAeAF95CaMczX9ZOuit7
+         oRxyVvA/MgQmr7sUK4ljZBs5x5u3mzI7eh7SJdskHJYOZYSaZj8b/CY1H6pXWS+zzG5T
+         UGcCDDju87HTRS1+57KDMXkiL9hRdkSAicK+iS0v22o6OQhBYXnNGRh2Bh3QuQa0Z985
+         XrrxQ5u1WxnXJXYfQ/DPmIUKR3H9UCmoGybWDC3GscMPwjBZE5FWRtyvkJCI3hOAt41v
+         6HrXM2ON3hLiukdw35B0kbAR8T81wakAeNHYizOu30cEBxwGj7zR0lOUyV1ArD0z5cvG
+         2Tpw==
+X-Gm-Message-State: ANoB5pn2mrN7vG2cY1+1OWuebug95D+ac12An3n85VAoZmh3Op0S1bTq
+        q82c2PpwjJkpKhDA5ncnjg==
+X-Google-Smtp-Source: AA0mqf5lL0R7+W+RHjbcvEkN74SVEW9xDKe8Lo/rK/nX1nK5gtfCsbsVFuNwy7AFbJIFsEkverQ85w==
+X-Received: by 2002:a05:6870:179d:b0:13a:fa4a:27d0 with SMTP id r29-20020a056870179d00b0013afa4a27d0mr37686866oae.255.1670276556697;
+        Mon, 05 Dec 2022 13:42:36 -0800 (PST)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bh8-20020a056830380800b006621427ecc7sm8120175otb.60.2022.12.05.13.42.22
+        by smtp.gmail.com with ESMTPSA id 123-20020aca0781000000b0035028730c90sm7616822oih.1.2022.12.05.13.42.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 13:42:23 -0800 (PST)
-Received: (nullmailer pid 2674969 invoked by uid 1000);
-        Mon, 05 Dec 2022 21:42:22 -0000
-Date:   Mon, 5 Dec 2022 15:42:22 -0600
+        Mon, 05 Dec 2022 13:42:36 -0800 (PST)
+Received: (nullmailer pid 2675372 invoked by uid 1000);
+        Mon, 05 Dec 2022 21:42:35 -0000
+Date:   Mon, 5 Dec 2022 15:42:35 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     Landen Chao <Landen.Chao@mediatek.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        linux-mediatek@lists.infradead.org,
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        John Crispin <john@phrozen.org>, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        ", Kurt Kanzenbach" <kurt@linutronix.de>,
-        George McCollister <george.mccollister@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
         =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Marek Vasut <marex@denx.de>,
-        =?UTF-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>
-Subject: Re: [PATCH v4 net-next 4/9] dt-bindings: net: dsa: allow additional
- ethernet-port properties
-Message-ID: <167027654137.2674912.5511174194632704012.robh@kernel.org>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-mediatek@lists.infradead.org,
+        George McCollister <george.mccollister@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org,
+        John Crispin <john@phrozen.org>, UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?B?LG7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        linux-renesas-soc@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH v4 net-next 5/9] dt-bindings: net: dsa: qca8k: utilize
+ shared dsa.yaml
+Message-ID: <167027655461.2675313.2465931055798706710.robh@kernel.org>
 References: <20221202204559.162619-1-colin.foster@in-advantage.com>
- <20221202204559.162619-5-colin.foster@in-advantage.com>
+ <20221202204559.162619-6-colin.foster@in-advantage.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221202204559.162619-5-colin.foster@in-advantage.com>
+In-Reply-To: <20221202204559.162619-6-colin.foster@in-advantage.com>
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -90,31 +89,36 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On Fri, 02 Dec 2022 12:45:54 -0800, Colin Foster wrote:
-> Explicitly allow additional properties for both the ethernet-port and
-> ethernet-ports properties. This specifically will allow the qca8k.yaml
-> binding to use shared properties.
+On Fri, 02 Dec 2022 12:45:55 -0800, Colin Foster wrote:
+> The dsa.yaml binding contains duplicated bindings for address and size
+> cells, as well as the reference to dsa-port.yaml. Instead of duplicating
+> this information, remove the reference to dsa-port.yaml and include the
+> full reference to dsa.yaml.
 > 
 > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
 > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 > ---
 > 
 > v3 -> v4
->   * Change ethernet-ports node to have "unevaluatedProperties: false"
->     instead of "additionalProperties: true"
->   * Change ethernet-port node to have "additionalProperties: true" instead
->     of "unevaluatedProperties: true"
 >   * Add Reviewed tag
+>   * Remove unnecessary blank line deletion
 > 
 > v2 -> v3
->   * No change
+>   * Remove #address-cells and #size-cells from v2. The examples were
+>     incorrect and fixed elsewhere.
+>   * Remove erroneous unevaluatedProperties: true under Ethernet Port.
+>   * Add back ref: dsa-port.yaml#.
 > 
 > v1 -> v2
->   * New patch
+>   * Add #address-cells and #size-cells to the switch layer. They aren't
+>     part of dsa.yaml.
+>   * Add unevaluatedProperties: true to the ethernet-port layer so it can
+>     correctly read properties from dsa.yaml.
 > 
 > ---
->  Documentation/devicetree/bindings/net/dsa/dsa.yaml | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  Documentation/devicetree/bindings/net/dsa/qca8k.yaml | 10 +++-------
+>  1 file changed, 3 insertions(+), 7 deletions(-)
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
