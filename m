@@ -2,199 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1650064259F
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:19:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07F246425AB
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:21:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbiLEJTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 04:19:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
+        id S230350AbiLEJV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 04:21:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbiLEJTU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:19:20 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC3113D4D
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:19:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670231956; x=1701767956;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=02DzCcD45zDpFkQo+18EFs9gmC3EpKCe08gBIeW1JQw=;
-  b=S/aMD/iCRwoUnjJtgmiJEolw2WWYb8YDOGwxLWkbPEEhvqFsXzvvpOYt
-   0xFKfOYe5DIClrO0t1V5SsVKvb8jAiv9V93Nv0xM2NmpcKve/HQVCyPZ9
-   /Hkcid08ZyfoL45Txb8HvaY8YDGsPH/zYveSqG+BjL0Qcad855Y4YLs8l
-   5BGhGmcNl5OizGEGtRdeR8SxjmN2nFyUZJ2DDBRPgHqTuWLOEvbmkFsAb
-   5y4LIfYw4vOAw2gjpiEiyaFVeB5h4JQIA/tw87OL2BYPq3HOROW2ofVRV
-   kKvVkWWFQNRMux5GwCfRm5k1oYhK3qkO5pRj4tsUeJlQ9BRrytJ1U/OJM
-   w==;
-X-IronPort-AV: E=Sophos;i="5.96,219,1665471600"; 
-   d="scan'208";a="202600522"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Dec 2022 02:19:15 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 5 Dec 2022 02:19:15 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
- Transport; Mon, 5 Dec 2022 02:19:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EshJUvjrOU79ao2GCDHJs1cEhNbYS2iOpSQg+L+SpsMJAS6nv1IuSpaqPyQBgcrMKmD02n//8EpM0S/eeBbL/26TftnEAOnmO1N1XCaWrHMQtcRbhhDA7TLkRDxwAQdjfWqesXBI1B5pyKSsOcSt1UQ4lqbiKDXKXIARkcPEXndMJ/bBYa9xorgRJQ6yl5yQ3Ae5kLYh1SR9AYVimRuHBlVyREEZe3kPtHvs3XmntTu6htr/W2zHIVrXSJi33iivuMYyU+0lGbKDPIxDrNPfcjVrfFzsHCM1Le0Y069T4WRGCfLx35RpZf9s7wuZ/O15l4EOhK52Wp/j0qLbS4Kcvw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P2qLfjE6F42FVTBmSPOqqr/3Rz4pnQp3nZ296wMPsGc=;
- b=QXm+u9lOX3PM/QDz1tKRbMXOCenvj10/g3Zj+lnnLQ5rFTOGVWJoIwZdC2UhfuLuCWEQRpabzI5i5qv4XzKdjQuTEEHirRN/wEj5aVkZoWRmwkGyCPRldgTsK/qK9Ggc7jF/WCS/GeW0W1Uh0JaOOeu+b2UHolIZ6Npg0HhQYD4v2eVlGM9fQHuWIVL1sRnXBF9uxlNYL53euScyudgoG0koZMKz9edE0Dbbeb8DW5LUbr8ezoazDAyeqcD86QPLwpQ+zKxW4N8gPfnX/Uo11MFF+zisD8oey9dEF+O0sMAZOteks6YB27cyr8QwibHtwOZXZ6394/XpvDk/xim86Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P2qLfjE6F42FVTBmSPOqqr/3Rz4pnQp3nZ296wMPsGc=;
- b=As0csATX22apglkZ7gY4Gsiu3ZkMWG7gMONmJcXkFZlETWvRcCZVX0wdpbLTWxEASrmmA6jykFtfEX4Zh7MitNtxKTc1ivaphLwLY+S87F0ptTRqHkTqe8FqOLVO4hDa3E34MxrpS7MjWgAbH6AapYtWVc/2Y2zK2ypgCCOFEdE=
-Received: from CO6PR11MB5569.namprd11.prod.outlook.com (2603:10b6:303:139::20)
- by DS0PR11MB7406.namprd11.prod.outlook.com (2603:10b6:8:136::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.13; Mon, 5 Dec
- 2022 09:19:06 +0000
-Received: from CO6PR11MB5569.namprd11.prod.outlook.com
- ([fe80::72d6:72a6:b14:e620]) by CO6PR11MB5569.namprd11.prod.outlook.com
- ([fe80::72d6:72a6:b14:e620%4]) with mapi id 15.20.5880.014; Mon, 5 Dec 2022
- 09:19:06 +0000
-From:   <Daniel.Machon@microchip.com>
-To:     <stephen@networkplumber.org>
-CC:     <netdev@vger.kernel.org>, <dsahern@kernel.org>, <petrm@nvidia.com>,
-        <maxime.chevallier@bootlin.com>, <vladimir.oltean@nxp.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH iproute2-next v3 1/2] dcb: add new pcp-prio parameter to
- dcb app
-Thread-Topic: [PATCH iproute2-next v3 1/2] dcb: add new pcp-prio parameter to
- dcb app
-Thread-Index: AQHZBi4aQTbgRosZIUWfrfvxERABnq5cZT0AgAHw1wCAADYngIAAf+KA
-Date:   Mon, 5 Dec 2022 09:19:06 +0000
-Message-ID: <Y426Pzdw5341RbCP@DEN-LT-70577>
-References: <20221202092235.224022-1-daniel.machon@microchip.com>
- <20221202092235.224022-2-daniel.machon@microchip.com>
- <20221203090052.65ff3bf1@hermes.local> <Y40hjAoN4VcUCatp@DEN-LT-70577>
- <20221204175257.75e09ff1@hermes.local>
-In-Reply-To: <20221204175257.75e09ff1@hermes.local>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CO6PR11MB5569:EE_|DS0PR11MB7406:EE_
-x-ms-office365-filtering-correlation-id: 491f6c7c-8a64-4444-5592-08dad6a1c254
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uEQnDjjiwTohiY4i8KAh4ti4cu8f+LVf+4qDpkkGND8iRfeJT7hvGJtfA59LsYgkhhDy4Im3tiUUGqczdcUb5uisabKRKlxKQvhayv+aIIpE13l6PK6SUbXZjQfvKufBFzy4RN5UCiW4ds1xDTk+AWn1oDMTOMrG8vrFkvGCcycwnKu0Sccgz81IUZQ2pZWBDIYtOoj7aGEh2MTiE8eyjImdUEI63qgQAe0ADWOL0Enh0pzbJZkCzrbwmn5Sfu+/V2jbEisjFPho3teo5NpRLgte3tq5gANMifYLu1+opiVP1Dwa7IH7seCgemYgGSYwzWJhe51xi+nylI/kaDWl/v0xx6/s3YSdxIbMd1rmGQM/5noe2FkATy66/YBCQeKa/5Sl70SNY3BqnwS93IwMicKy2vfSVCdXerd8Uh0DaR+uDPAqk3jV1j4QAZ6GPul13yjhe/Bz+m6VQfOq65mfOfqJyc3xuHaqksCTn+nVWfoNkz7KZls+4FdXqHN6OnK53G0WQOPwfczaaJnHqzSeZpUwllNsNuyrdHS6dn1w59IASD8xZEOcBad/sPy7B+DHhy69PGbdC7FASxy8sizKgrgQkG7zm8YncWGmhDe5iO0vWm0+STk1Z7ZB5htMBwCoXM3lasgEaRc+FpFW9eRNDSLYdM32MMd6vsXCbeOum5hkP6sBJjoxncChOqIvG6PdiIgHe89Ood8cxql/Y2uJdQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5569.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(376002)(366004)(39860400002)(346002)(396003)(136003)(451199015)(33716001)(6486002)(86362001)(478600001)(71200400001)(38070700005)(38100700002)(122000001)(4326008)(8676002)(5660300002)(6506007)(107886003)(186003)(26005)(2906002)(6916009)(9686003)(66946007)(6512007)(64756008)(91956017)(76116006)(66446008)(66476007)(66556008)(54906003)(41300700001)(8936002)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?J5HpXyNrzeI1MSgh69ysBLp7rS/73KqMWY2wNMVTzJIFVI4k4o814gR9qyU9?=
- =?us-ascii?Q?5f8d2PCotQwzl8Dy6e9WpAmWpawHzi7p8KVNT/KgUT465UMnfQ0HAYmbG1if?=
- =?us-ascii?Q?YhtWnXuLfU102GYmZ61jd4n+ITuWYduxOBCClOLPsAre8PihwWdgzrJCvz/G?=
- =?us-ascii?Q?n20NfkLmuz1LX66jiAkf2Odc6yMGrVMveCWSdyIsfkHT5Wzg6lF3eDE5G64f?=
- =?us-ascii?Q?r4Afw5Nc/T8l6EZNcSvX9c4+GLrjK3Xfv7rThrtr38xHIOuXyFC3ygTXNcPk?=
- =?us-ascii?Q?PiBNIY3AnybY222Hm3FIlbqc81CzpUmji6isjtIgMRADCtZWODX0IjKbdJVm?=
- =?us-ascii?Q?/qqHGLOvpAMvymnF/qOeeOvmIN1p+msNor5WzLu6x6BHH/FkbUr5MRGGRUSv?=
- =?us-ascii?Q?BA/bV5Hqyg0jC0IX5e1lKJNx6kng6vXDpr2YJxg2TAHohTLx/jhcm32sVR4W?=
- =?us-ascii?Q?gh0VLMPV+C17+peEVRQd4Jo6Y2bsf6fT5TNCtM1T5s3pWvM3ITgFrgBx8hvZ?=
- =?us-ascii?Q?yuZJVY43QJJao4sm8CfXJdbyKnrF/tpkLFZMUcvOIWy/YRoAIgdvY27APNq9?=
- =?us-ascii?Q?4SWWMdCmxyguFAX8UGs1i2HkDDbkjQmbrYEk3V9e9vKTCEprx6LHwYyPu7m/?=
- =?us-ascii?Q?GZWoE8jmRQqghPF5SHWNtij/nfc05Jzgqs7dbJnrEJaXawHOaBO+YG+JBKbv?=
- =?us-ascii?Q?qhQjtyrPMfwbBFw6C5w87x+RfVlc/+KA7JyLk5rtQMZjgp2oMDlNdgrQgD6q?=
- =?us-ascii?Q?i5EmTqFAYf4NwsRUUMh8cthRCSJ1lo9Qxza3ME7SON8B5yI+G4ux8w81jzF1?=
- =?us-ascii?Q?ZiEZVWD9nZcCYoj5IhJMKfJEbyRY6riG3dFoQzKBAuke73jrLNVE1zIjs7gH?=
- =?us-ascii?Q?6pSQdpAqsb4i3gmd2ArGu0srGIUqZFHxhNEVKQyTaEn9+aK74JlhEc5qgCjp?=
- =?us-ascii?Q?1brVyZZnZH7cbBn1bAkjCvJ5XCYqdsc7ZimITK7g7rV1CBsjPWhjUl93Mfdn?=
- =?us-ascii?Q?rENYxBO68MrDW+uDOineOiQIySgGRJBJd1BmldiAaUg/48v4vT3h7X/ZnSyX?=
- =?us-ascii?Q?XCEGYVUoZVZkwMjnWsPJWN/KQ5RNrdhi8agLG9ncszUSWMxRdW6ENLU1bMk+?=
- =?us-ascii?Q?2imoE0EaxX5YGy6q+08uAqR4H8s+HSFLJIsuise8HktkMoop/maKPkonDnf6?=
- =?us-ascii?Q?1fLMNUx0BfnTjdBCxX4NUSJravY0nxs+pY5rsFZb2drzntZb4mKrUJw4tm5T?=
- =?us-ascii?Q?MoqkZPp8L4aOcQk9jE9+xjqc5RpVD5RmBA0HDt77II97KyYkXs8+OkAXMfnz?=
- =?us-ascii?Q?79oCKaaj7bKLdYHzZ0sqeMjOI1hBHoANbPfZ/rrvbMSuVsOY6QFtFeAaONND?=
- =?us-ascii?Q?Bl4LlZOvq9cNv4dQuG9v99Xkk+EXIr/3wgFKXNwssTqgW2lgaV0bl2Q1wlak?=
- =?us-ascii?Q?u7PO3HBE0X5IuFbfhLX9muhugMX3nrHzYTJ13gvCJQlmvU+a459IpuiF2bPn?=
- =?us-ascii?Q?hccF2gtzJsaHtcrjduml8O/a4QBWLAqANACtppOhwGPaeQEqWGM3lDktXhq2?=
- =?us-ascii?Q?Kz5yc9gnS9g4p6Sn2WC0VKxW5WS4ceQZw2xORAPIZ6uCgF/eIFqzaL1cH3Xx?=
- =?us-ascii?Q?IlsBOxMwYKbJqm91X2Mn7xs=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <28394A4BA0C8C44384B1EEE2E4ED1F15@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S230479AbiLEJVV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:21:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD4F13E26
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:21:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38AE260FCE
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:21:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21A76C433C1;
+        Mon,  5 Dec 2022 09:21:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670232078;
+        bh=91sBqhz266oCTUL/hCzrHgfDmBQLlj5ftaEAiWXeJu4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X1QPgAabjNrnrqCRryjKKlDrmo/HbVXpinjHeAHwTrSs/bTackR1ReJ7ojDrP73jx
+         YZhubuRvQVNvoIHA5dq98cff+P9v3lp9FO35lhxTI574sysI1ugNKUeW1s9wVTFDz7
+         qYCkfulAhwLeUXYllein0yPJWEaJAgulXOZx3jonlZNKj6Rw/t78EVfpQICEFjPbVp
+         o3r+d/p2MeCuae21UXefR4MnB5AOky2wHTtjRJJoCehoY7dbb+TrcP8a+l+rpI8rhT
+         jXZMeBTubWr+RdaIIgDUirLZGX9rf/05YVJNEeLQjFTu3di0jC0NQw4GfktSEqky5W
+         ECb+SAFZwqCAw==
+Date:   Mon, 5 Dec 2022 11:21:14 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, sujuan.chen@mediatek.com,
+        lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH net-next] net: ethernet: mtk_wed: add reset to
+ rx_ring_setup callback
+Message-ID: <Y424Cr8rTXtSUzAz@unreal>
+References: <26fa16f2f212bff5edfdbe8a4f41dba7a132b0be.1670072570.git.lorenzo@kernel.org>
+ <Y42Yz2hhwk1Rw1hz@unreal>
+ <Y42xlcjeuys4pW4j@lore-desk>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5569.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 491f6c7c-8a64-4444-5592-08dad6a1c254
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Dec 2022 09:19:06.4419
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: reAUS3khTXUe1igIVnWT5Qo57wkSb5qw9At20iWcd7LwH6y8fZHF8JAxwfml9bRn1DQ3lRxxObiupv6ryoHms73OIMXPK38gXMtDuu1o6qA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7406
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <Y42xlcjeuys4pW4j@lore-desk>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > On Fri, 2 Dec 2022 10:22:34 +0100
-> > > Daniel Machon <daniel.machon@microchip.com> wrote:
-> > >
-> > > > +static int dcb_app_print_key_pcp(__u16 protocol)
-> > > > +{
-> > > > +     /* Print in numerical form, if protocol value is out-of-range=
- */
-> > > > +     if (protocol > DCB_APP_PCP_MAX) {
-> > > > +             fprintf(stderr, "Unknown PCP key: %d\n", protocol);
-> > > > +             return print_uint(PRINT_ANY, NULL, "%d:", protocol);
-> > > > +     }
-> > > > +
-> > > > +     return print_string(PRINT_ANY, NULL, "%s:", pcp_names[protoco=
-l]);
-> > > > +}
-> > >
-> > > This is not an application friendly way to produce JSON output.
-> > > You need to put a key on each one, and value should not contain colon=
-.
-> >
-> > Hi Stephen,
-> >
-> > Trying to understand your comment.
-> >
-> > Are you talking about not producing any JSON output with the symbolic
-> > PCP values? eg. ["1de", 1] -> [8, 1]. So basically print with PRINT_FP
-> > in case of printing in JSON context?
-> >
-> > /Daniel
+On Mon, Dec 05, 2022 at 09:53:41AM +0100, Lorenzo Bianconi wrote:
+> > On Sat, Dec 03, 2022 at 02:06:30PM +0100, Lorenzo Bianconi wrote:
+> > > Introduce reset parameter to mtk_wed_rx_ring_setup signature.
+> > > This is a preliminary patch to add Wireless Ethernet Dispatcher reset
+> > > support.
+> >=20
+> > So please submit it as part the relevant series.
 >=20
-> What does output look like in json and non-json versions?
+> I have not included this patch in my previous reset series since mt76 bit
+> were missing (merged now in net-next). I posted this now as standalone pa=
+tch
+> to be aligned with mtk_wed_tx_ring_setup counterpart that is already merg=
+ed
+> into net-next.
+>=20
+> @Dave,Eric,Jakub,Paolo: I am fine both ways, what do you prefer?
 
-non-JSON: pcp-prio 1de:1
-JSON    : {"pcp_prio":[["1de",1]]}
+Just update commit message from being "preliminary patch" to be "update,
+align, e.t.c" with pointer to the series which needs it.
 
-> My concern that the json version would be awkward and have colons in it, =
-but looks
-> like it won't.
-
-Yeah, the "%s:" format is only used in non-JSON context, so we are good
-here.
+Thanks
 
 >=20
-> For the unknown key type is printing error necessary? Maybe just show it =
-in numeric form.
+> Regards,
+> Lorenzo
+>=20
+> >=20
+> > Thanks
+> >=20
+> > >=20
+> > > Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
+> > > Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
+> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > ---
+> > >  drivers/net/ethernet/mediatek/mtk_wed.c  | 20 +++++++++++++-------
+> > >  drivers/net/wireless/mediatek/mt76/dma.c |  2 +-
+> > >  include/linux/soc/mediatek/mtk_wed.h     |  8 ++++----
+> > >  3 files changed, 18 insertions(+), 12 deletions(-)
+> > >=20
+> > > diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/et=
+hernet/mediatek/mtk_wed.c
+> > > index 6352abd4157e..b1ec3f353b66 100644
+> > > --- a/drivers/net/ethernet/mediatek/mtk_wed.c
+> > > +++ b/drivers/net/ethernet/mediatek/mtk_wed.c
+> > > @@ -1216,7 +1216,8 @@ mtk_wed_wdma_rx_ring_setup(struct mtk_wed_devic=
+e *dev, int idx, int size,
+> > >  }
+> > > =20
+> > >  static int
+> > > -mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int =
+size)
+> > > +mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int =
+size,
+> > > +			   bool reset)
+> > >  {
+> > >  	u32 desc_size =3D sizeof(struct mtk_wdma_desc) * dev->hw->version;
+> > >  	struct mtk_wed_ring *wdma;
+> > > @@ -1225,8 +1226,8 @@ mtk_wed_wdma_tx_ring_setup(struct mtk_wed_devic=
+e *dev, int idx, int size)
+> > >  		return -EINVAL;
+> > > =20
+> > >  	wdma =3D &dev->tx_wdma[idx];
+> > > -	if (mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE, desc_size,
+> > > -			       true))
+> > > +	if (!reset && mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE,
+> > > +					 desc_size, true))
+> > >  		return -ENOMEM;
+> > > =20
+> > >  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_BASE,
+> > > @@ -1236,6 +1237,9 @@ mtk_wed_wdma_tx_ring_setup(struct mtk_wed_devic=
+e *dev, int idx, int size)
+> > >  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_CPU_IDX, 0);
+> > >  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_DMA_IDX, 0);
+> > > =20
+> > > +	if (reset)
+> > > +		mtk_wed_ring_reset(wdma, MTK_WED_WDMA_RING_SIZE, true);
+> > > +
+> > >  	if (!idx)  {
+> > >  		wed_w32(dev, MTK_WED_WDMA_RING_TX + MTK_WED_RING_OFS_BASE,
+> > >  			wdma->desc_phys);
+> > > @@ -1577,18 +1581,20 @@ mtk_wed_txfree_ring_setup(struct mtk_wed_devi=
+ce *dev, void __iomem *regs)
+> > >  }
+> > > =20
+> > >  static int
+> > > -mtk_wed_rx_ring_setup(struct mtk_wed_device *dev, int idx, void __io=
+mem *regs)
+> > > +mtk_wed_rx_ring_setup(struct mtk_wed_device *dev, int idx, void __io=
+mem *regs,
+> > > +		      bool reset)
+> > >  {
+> > >  	struct mtk_wed_ring *ring =3D &dev->rx_ring[idx];
+> > > =20
+> > >  	if (WARN_ON(idx >=3D ARRAY_SIZE(dev->rx_ring)))
+> > >  		return -EINVAL;
+> > > =20
+> > > -	if (mtk_wed_ring_alloc(dev, ring, MTK_WED_RX_RING_SIZE,
+> > > -			       sizeof(*ring->desc), false))
+> > > +	if (!reset && mtk_wed_ring_alloc(dev, ring, MTK_WED_RX_RING_SIZE,
+> > > +					 sizeof(*ring->desc), false))
+> > >  		return -ENOMEM;
+> > > =20
+> > > -	if (mtk_wed_wdma_tx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE))
+> > > +	if (mtk_wed_wdma_tx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE,
+> > > +				       reset))
+> > >  		return -ENOMEM;
+> > > =20
+> > >  	ring->reg_base =3D MTK_WED_RING_RX_DATA(idx);
+> > > diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/w=
+ireless/mediatek/mt76/dma.c
+> > > index 3f8c0845fcca..f795548562f5 100644
+> > > --- a/drivers/net/wireless/mediatek/mt76/dma.c
+> > > +++ b/drivers/net/wireless/mediatek/mt76/dma.c
+> > > @@ -648,7 +648,7 @@ mt76_dma_wed_setup(struct mt76_dev *dev, struct m=
+t76_queue *q)
+> > >  			q->wed_regs =3D wed->txfree_ring.reg_base;
+> > >  		break;
+> > >  	case MT76_WED_Q_RX:
+> > > -		ret =3D mtk_wed_device_rx_ring_setup(wed, ring, q->regs);
+> > > +		ret =3D mtk_wed_device_rx_ring_setup(wed, ring, q->regs, false);
+> > >  		if (!ret)
+> > >  			q->wed_regs =3D wed->rx_ring[ring].reg_base;
+> > >  		break;
+> > > diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc=
+/mediatek/mtk_wed.h
+> > > index beb190449704..a0746d4aec20 100644
+> > > --- a/include/linux/soc/mediatek/mtk_wed.h
+> > > +++ b/include/linux/soc/mediatek/mtk_wed.h
+> > > @@ -160,7 +160,7 @@ struct mtk_wed_ops {
+> > >  	int (*tx_ring_setup)(struct mtk_wed_device *dev, int ring,
+> > >  			     void __iomem *regs, bool reset);
+> > >  	int (*rx_ring_setup)(struct mtk_wed_device *dev, int ring,
+> > > -			     void __iomem *regs);
+> > > +			     void __iomem *regs, bool reset);
+> > >  	int (*txfree_ring_setup)(struct mtk_wed_device *dev,
+> > >  				 void __iomem *regs);
+> > >  	int (*msg_update)(struct mtk_wed_device *dev, int cmd_id,
+> > > @@ -228,8 +228,8 @@ mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
+> > >  	(_dev)->ops->irq_get(_dev, _mask)
+> > >  #define mtk_wed_device_irq_set_mask(_dev, _mask) \
+> > >  	(_dev)->ops->irq_set_mask(_dev, _mask)
+> > > -#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs) \
+> > > -	(_dev)->ops->rx_ring_setup(_dev, _ring, _regs)
+> > > +#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) \
+> > > +	(_dev)->ops->rx_ring_setup(_dev, _ring, _regs, _reset)
+> > >  #define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash) \
+> > >  	(_dev)->ops->ppe_check(_dev, _skb, _reason, _hash)
+> > >  #define mtk_wed_device_update_msg(_dev, _id, _msg, _len) \
+> > > @@ -249,7 +249,7 @@ static inline bool mtk_wed_device_active(struct m=
+tk_wed_device *dev)
+> > >  #define mtk_wed_device_reg_write(_dev, _reg, _val) do {} while (0)
+> > >  #define mtk_wed_device_irq_get(_dev, _mask) 0
+> > >  #define mtk_wed_device_irq_set_mask(_dev, _mask) do {} while (0)
+> > > -#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs) -ENODEV
+> > > +#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) -EN=
+ODEV
+> > >  #define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash)  do {} =
+while (0)
+> > >  #define mtk_wed_device_update_msg(_dev, _id, _msg, _len) -ENODEV
+> > >  #define mtk_wed_device_stop(_dev) do {} while (0)
+> > > --=20
+> > > 2.38.1
+> > >=20
 
-No not necessary, I'll get rid of it.
 
-/ Daniel=
