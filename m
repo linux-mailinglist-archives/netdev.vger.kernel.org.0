@@ -2,49 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B655A6421B1
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 03:52:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50BDD6421B5
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 03:55:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231270AbiLECwM convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 4 Dec 2022 21:52:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47672 "EHLO
+        id S231302AbiLECza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Dec 2022 21:55:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbiLECwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 21:52:10 -0500
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EFB10577
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 18:52:07 -0800 (PST)
-X-QQ-mid: bizesmtp65t1670208704tkgiy5b2
-Received: from smtpclient.apple ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 05 Dec 2022 10:51:43 +0800 (CST)
-X-QQ-SSF: 00400000000000M0M000000A0000000
-X-QQ-FEAT: 1t5IJXnad8Y0syhQtJKN0Ye588Im0v1Z3kB6EQliXy0XLW75nSLVQSKEf7F6j
-        rASddGDcm+ziij/uNbAvAOXCckhvhd953rnC1VBN4845YxHYf2oqO1x8B7kNY5BeyZ+LWCb
-        bBWJWmX9AN6LmfbMjfLkY3sotffnuEQN3BO+xq9Bxw1U3xnGksyJMmcbEPOFrH2bmJCQd1X
-        AQF7Dx/R3OHPRyaKFzQr5YS2mwf8TzQlyvoS1FfBxoJG6EyEsUO6Q9PCEe+8qb8ANoOn8Ux
-        R9+5EhrxYJmhaS9W4WA9/9XeR5HCFYqvIrvz9aT4fxqGYp7KBI/ZXz3iup9XZO3vf+GljYQ
-        U5bDngYnpeEHH2XsJ0uLJNB+j2jGt5xhuRVfDUGwvgphJPd3LLU10p/ww37Jt6YRdXN6rU/
-X-QQ-GoodBg: 2
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.300.51\))
-Subject: Re: [PATCH net-next] net: ngbe: Add mdio bus driver.
-From:   "mengyuanlou@net-swift.com" <mengyuanlou@net-swift.com>
-In-Reply-To: <Y4p0dQWijzQMlBmW@lunn.ch>
-Date:   Mon, 5 Dec 2022 10:51:33 +0800
-Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
-Content-Transfer-Encoding: 8BIT
-Message-Id: <B561CAB9-E99D-473E-95AC-C6B13BCB5701@net-swift.com>
-References: <20221202083558.57618-1-mengyuanlou@net-swift.com>
- <Y4p0dQWijzQMlBmW@lunn.ch>
-To:     Andrew Lunn <andrew@lunn.ch>
-X-Mailer: Apple Mail (2.3731.300.51)
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S230307AbiLECz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 21:55:29 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4551910578;
+        Sun,  4 Dec 2022 18:55:28 -0800 (PST)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4NQSl62qfgz6883t;
+        Mon,  5 Dec 2022 10:52:34 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Mon, 5 Dec 2022 02:55:25 +0000
+Message-ID: <e1e81fc5-40af-8373-0def-926870691c0e@huawei.com>
+Date:   Mon, 5 Dec 2022 05:55:24 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v8 08/12] landlock: Implement TCP network hooks
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
+        <willemdebruijn.kernel@gmail.com>
+CC:     <gnoack3000@gmail.com>, <linux-security-module@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
+        <artem.kuzin@huawei.com>, <linux-api@vger.kernel.org>,
+        "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+References: <20221021152644.155136-1-konstantin.meskhidze@huawei.com>
+ <20221021152644.155136-9-konstantin.meskhidze@huawei.com>
+ <3452964b-04d3-b297-92a1-1220e087323e@digikod.net>
+ <335a5372-e444-5deb-c04d-664cbc7cdc2e@huawei.com>
+ <6071d053-a4b4-61f0-06f6-f94e6ce1e6d6@digikod.net>
+ <56f9af17-f824-ff5d-7fee-8de0ae520cc2@huawei.com>
+ <200bd6ce-de44-7335-63d9-04c17b1b1cf9@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <200bd6ce-de44-7335-63d9-04c17b1b1cf9@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhrpeml100001.china.huawei.com (7.191.160.183) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -53,254 +60,175 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-> 2022年12月3日 05:56，Andrew Lunn <andrew@lunn.ch> 写道：
+12/2/2022 4:01 PM, Mickaël Salaün пишет:
 > 
->> --- a/drivers/net/ethernet/wangxun/Kconfig
->> +++ b/drivers/net/ethernet/wangxun/Kconfig
->> @@ -25,6 +25,9 @@ config NGBE
->> tristate "Wangxun(R) GbE PCI Express adapters support"
->> depends on PCI
->> select LIBWX
->> + select PHYLIB
->> + select MARVELL_PHY
->> + select MOTORCOMM_PHY
+> On 02/12/2022 04:13, Konstantin Meskhidze (A) wrote:
+>> 
+>> 
+>> 11/29/2022 12:00 AM, Mickaël Salaün пишет:
+>>> The previous commit provides an interface to theoretically restrict
+>>> network access (i.e. ruleset handled network accesses), but in fact this
+>>> is not enforced until this commit. I like this split but to avoid any
+>>> inconsistency, please squash this commit into the previous one: "7/12
+>>> landlock: Add network rules support"
+>>> You should keep all the commit messages but maybe tweak them a bit.
+>>>
+>>     Ok. Will be squashed.
+>>>
+>>> On 28/11/2022 09:21, Konstantin Meskhidze (A) wrote:
+>>>>
+>>>>
+>>>> 11/17/2022 9:43 PM, Mickaël Salaün пишет:
+>>>>>
+>>>>> On 21/10/2022 17:26, Konstantin Meskhidze wrote:
+>>>>>> This patch adds support of socket_bind() and socket_connect() hooks.
+>>>>>> It's possible to restrict binding and connecting of TCP sockets to
+>>>>>> particular ports.
+>>>>>
+>>>>> Implement socket_bind() and socket_connect LSM hooks, which enable to
+>>>>> restrict TCP socket binding and connection to specific ports.
+>>>>>
+>>>>      Ok. Thanks.
+>>>>>
+>>>>>>
+>>>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>>>> ---
+>>>
+>>> [...]
+>>>
+>>>>>> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address,
+>>>>>> +			       int addrlen)
+>>>>>> +{
+>>>>>> +	const struct landlock_ruleset *const dom =
+>>>>>> +		landlock_get_current_domain();
+>>>>>> +
+>>>>>> +	if (!dom)
+>>>>>> +		return 0;
+>>>>>> +
+>>>>>> +	/* Check if it's a TCP socket. */
+>>>>>> +	if (sock->type != SOCK_STREAM)
+>>>>>> +		return 0;
+>>>>>> +
+>>>>>> +	/* Check if the hook is AF_INET* socket's action. */
+>>>>>> +	switch (address->sa_family) {
+>>>>>> +	case AF_INET:
+>>>>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>>>>> +	case AF_INET6:
+>>>>>> +#endif
+>>>>>> +		return check_socket_access(dom, get_port(address),
+>>>>>> +					   LANDLOCK_ACCESS_NET_CONNECT_TCP);
+>>>>>> +	case AF_UNSPEC: {
+>>>>>> +		u16 i;
+>>>>>
+>>>>> You can move "i" after the "dom" declaration to remove the extra braces.
+>>>>>
+>>>>      Ok. Thanks.
+>>>>>
+>>>>>> +
+>>>>>> +		/*
+>>>>>> +		 * If just in a layer a mask supports connect access,
+>>>>>> +		 * the socket_connect() hook with AF_UNSPEC family flag
+>>>>>> +		 * must be banned. This prevents from disconnecting already
+>>>>>> +		 * connected sockets.
+>>>>>> +		 */
+>>>>>> +		for (i = 0; i < dom->num_layers; i++) {
+>>>>>> +			if (landlock_get_net_access_mask(dom, i) &
+>>>>>> +			    LANDLOCK_ACCESS_NET_CONNECT_TCP)
+>>>>>> +				return -EACCES;
+>>>>>
+>>>>> I'm wondering if this is the right error code for this case. EPERM may
+>>>>> be more appropriate.
+>>>>
+>>>>      Ok. Will be refactored.
+>>>>>
+>>>>> Thinking more about this case, I don't understand what is the rationale
+>>>>> to deny such action. What would be the consequence to always allow
+>>>>> connection with AF_UNSPEC (i.e. to disconnect a socket)?
+>>>>>
+>>>>      I thought we have come to a conclusion about connect(...AF_UNSPEC..)
+>>>>     behaviour in the patchset V3:
+>>>> https://lore.kernel.org/linux-security-module/19ad3a01-d76e-0e73-7833-99acd4afd97e@huawei.com/
+>>>
+>>> The conclusion was that AF_UNSPEC disconnects a socket, but I'm asking
+>>> if this is a security issue. I don't think it is more dangerous than a
+>>> new (unconnected) socket. Am I missing something? Which kind of rule
+>>> could be bypassed? What are we protecting against by restricting AF_UNSPEC?
+>> 
+>> I just follow Willem de Bruijn concerns about this issue:
+>> 
+>> quote: "It is valid to pass an address with AF_UNSPEC to a PF_INET(6)
+>> socket. And there are legitimate reasons to want to deny this. Such as
+>> passing a connection to a unprivileged process and disallow it from
+>> disconnect and opening a different new connection."
+>> 
+>> https://lore.kernel.org/linux-security-module/CA+FuTSf4EjgjBCCOiu-PHJcTMia41UkTh8QJ0+qdxL_J8445EA@mail.gmail.com/
 > 
-> Don't select specific PHYs. Distros build them all as modules.
-> 
->> +int ngbe_phy_led_oem_hostif(struct ngbe_hw *hw, u32 *data)
->> +{
->> + struct wx_hic_read_shadow_ram buffer;
->> + struct wx_hw *wxhw = &hw->wxhw;
->> + int status;
-> 
-> Please break the patch up into smaller chunks and write good commit
-> messages. I've no idea what this has to do with MDIO or PHY. Something
-> to do with controlling the PHYs LEDS?
-> 
-> It seems like you could have one patch adding the MDIO bus support,
-> and one patch adding calls to phylib. And then try to break the rest
-> up into logical collections of changes.
-> 
->> + ret = wx_stop_adapter(wxhw);
->> + if (ret != 0)
->> + return ret;
->> + val = WX_MIS_RST_LAN_RST(wxhw->bus.func);
->> + wr32(wxhw, WX_MIS_RST, val | rd32(wxhw, WX_MIS_RST));
->> +
->> + ret = read_poll_timeout(rd32, val,
->> + !(val & (BIT(9) << wxhw->bus.func)), 1000,
->> + 100000, false, wxhw, 0x10028);
->> + if (ret)
->> + wx_dbg(wxhw, "Lan reset exceed s maximum times.\n");
->> +
->> + wr32(wxhw, NGBE_PHY_CONFIG(0x1f), 0xa43);
->> + ret = read_poll_timeout(rd32, val, val & 0x20, 1000,
->> + 100000, false, wxhw, NGBE_PHY_CONFIG(0x1d));
->> + if (ret)
->> + wx_dbg(wxhw, "Gphy reset failed.\n");
-> 
-> What is this doing? Toggling a GPIO which is connected to the PHY
-> reset input?
-> 
-Waittiing for internal phy can access through the mdio
-
->> - /* reset num_rar_entries to 128 */
->> + /* reset num_rar_entries to 32 */
-> 
-> This looks like an unrelated change, nothing to do with MDIO or PHY.
-> 
->> switch (type_mask) {
->> case NGBE_SUBID_M88E1512_SFP:
->> case NGBE_SUBID_LY_M88E1512_SFP:
->> - hw->phy.type = ngbe_phy_m88e1512_sfi;
->> + hw->phy.type = ngbe_phy_mv_sfi;
->> break;
->> case NGBE_SUBID_M88E1512_RJ45:
->> - hw->phy.type = ngbe_phy_m88e1512;
->> + hw->phy.type = ngbe_phy_mv;
->> break;
->> case NGBE_SUBID_M88E1512_MIX:
->> - hw->phy.type = ngbe_phy_m88e1512_unknown;
->> + hw->phy.type = ngbe_phy_mv_mix;
->> break;
->> case NGBE_SUBID_YT8521S_SFP:
->> case NGBE_SUBID_YT8521S_SFP_GPIO:
->> case NGBE_SUBID_LY_YT8521S_SFP:
->> - hw->phy.type = ngbe_phy_yt8521s_sfi;
->> + hw->phy.type = ngbe_phy_yt_mix;
->> break;
->> case NGBE_SUBID_INTERNAL_YT8521S_SFP:
->> case NGBE_SUBID_INTERNAL_YT8521S_SFP_GPIO:
->> - hw->phy.type = ngbe_phy_internal_yt8521s_sfi;
->> + hw->phy.type = ngbe_phy_internal_yt_sfi;
->> break;
->> case NGBE_SUBID_RGMII_FPGA:
->> case NGBE_SUBID_OCP_CARD:
-> 
-> Generally, a MAC driver does not care what sort of PHY is connected to
-> it. The PHY driver does all that is needed. So it is not clear to me
-> why you need this.
-> 
-Because the mac driver wants to configure the phy on special boards.
-> 
->> @@ -481,6 +539,8 @@ static int ngbe_probe(struct pci_dev *pdev,
->>   "PHY: %s, PBA No: Wang Xun GbE Family Controller\n",
->>   hw->phy.type == ngbe_phy_internal ? "Internal" : "External");
->> netif_info(adapter, probe, netdev, "%pM\n", netdev->dev_addr);
->> + /* print PCI link speed and width */
->> + pcie_print_link_status(pdev);
-> 
-> Also seems unrelated.
-> 
->> +static int ngbe_phy_read_reg_mdi(struct mii_bus *bus, int phy_addr, int regnum)
->> +{
->> + u32 command = 0, device_type = 0;
->> + struct ngbe_hw *hw = bus->priv;
->> + struct wx_hw *wxhw = &hw->wxhw;
->> + u32 phy_data = 0;
->> + u32 val = 0;
->> + int ret = 0;
->> +
->> + /* setup and write the address cycle command */
->> + command = NGBE_MSCA_RA(regnum) |
->> +  NGBE_MSCA_PA(phy_addr) |
->> +  NGBE_MSCA_DA(device_type);
->> + wr32(wxhw, NGBE_MSCA, command);
->> +
->> + command = NGBE_MSCC_CMD(NGBE_MSCA_CMD_READ) |
->> +  NGBE_MSCC_BUSY |
->> +  NGBE_MDIO_CLK(6);
->> + wr32(wxhw, NGBE_MSCC, command);
-> 
-> It looks like you don't support C45? If so, please return -EOPNOTSUPP
-> if asked to do a C45 transaction.
-> 
->> +static int ngbe_phy_read_reg(struct mii_bus *bus, int phy_addr, int regnum)
->> +{
->> + struct ngbe_hw *hw = bus->priv;
->> + u16 phy_data = 0;
->> +
->> + if (hw->mac_type == ngbe_mac_type_mdi)
->> + phy_data = ngbe_phy_read_reg_internal(bus, phy_addr, regnum);
->> + else if (hw->mac_type == ngbe_mac_type_rgmii)
->> + phy_data = ngbe_phy_read_reg_mdi(bus, phy_addr, regnum);
-> 
-> Do you have two mdio busses?
-There are two different ways to access the internal and external PHYs.
-
-> 
->> +static void ngbe_gphy_wait_mdio_access_on(struct phy_device *phydev)
->> +{
->> + u16 val;
->> + int ret;
->> +
->> + /* select page to 0xa43*/
->> + phy_write(phydev, 0x1f, 0x0a43);
->> + /* wait to phy can access */
->> + ret = read_poll_timeout(phy_read, val, val & 0x20, 100,
->> + 2000, false, phydev, 0x1d);
-> 
-> What is this doing? The MAC should not be directly accessing the PHY.
-> 
-We need to do some work around it, the phy driver can not do what I want.
-
->> +
->> + if (ret)
->> + phydev_err(phydev, "Access to phy timeout\n");
->> +}
->> +
->> +static void ngbe_gphy_dis_eee(struct phy_device *phydev)
->> +{
->> + phy_write(phydev, 0x1f, 0x0a4b);
->> + phy_write(phydev, 0x11, 0x1110);
->> + phy_write(phydev, 0x1f, 0x0000);
->> + phy_write(phydev, 0xd, 0x0007);
->> + phy_write(phydev, 0xe, 0x003c);
->> + phy_write(phydev, 0xd, 0x4007);
->> + phy_write(phydev, 0xe, 0x0000);
-> 
-> Again, the MAC should not be accessing the PHY. From the name, i'm
-> guessing your MAC does not support EEE? So you want to stop the PHY
-> advertising EEE?
-> 
-> This is how other MAC drivers do this:
-> 
-> /* disable EEE autoneg, EEE not supported by TSNEP */
-> memset(&ethtool_eee, 0, sizeof(ethtool_eee));
-> phy_ethtool_set_eee(adapter->phydev, &ethtool_eee);
-> 
-> Please delete all code which directly access the PHY. You might need
-> to add new functionality to the PHY driver, but in general, it is not
-> needed, the existing PHY drivers should do what you need.
-> 
-For internal phy: The phy cannot be automatically ready, we need to manually set the Special calibration and then make the phy up.
-For external phy: phy_reset clear all, we need to reconfigure phy led oem configuration
-
->> +int ngbe_phy_connect(struct ngbe_hw *hw)
->> +{
->> + struct ngbe_adapter *adapter = container_of(hw,
->> +    struct ngbe_adapter,
->> +    hw);
->> + int ret;
->> +
->> + ret = phy_connect_direct(adapter->netdev,
->> + hw->phydev,
->> + ngbe_handle_link_change,
->> + PHY_INTERFACE_MODE_RGMII);
-> 
-> Who is responsible for RGMII delays? In general, the PHY adds the
-> delay, so you pass PHY_INTERFACE_MODE_RGMII_ID here.
-> 
->> +int ngbe_mdio_init(struct ngbe_hw *hw)
->> +{
->> + struct pci_dev *pdev = hw->wxhw.pdev;
->> + int ret;
->> +
->> + hw->mii_bus = devm_mdiobus_alloc(&pdev->dev);
->> + if (!hw->mii_bus)
->> + return -ENOMEM;
->> +
->> + hw->mii_bus->name = "ngbe_mii_bus";
->> + hw->mii_bus->read = &ngbe_phy_read_reg;
->> + hw->mii_bus->write = &ngbe_phy_write_reg;
->> + hw->mii_bus->phy_mask = 0xfffffffe;
->> + hw->mii_bus->parent = &pdev->dev;
->> + hw->mii_bus->priv = hw;
->> +
->> + snprintf(hw->mii_bus->id, MII_BUS_ID_SIZE, "ngbe-%x",
->> + (pdev->bus->number << 8) |
->> + pdev->devfn);
->> +
->> + ret = devm_mdiobus_register(&pdev->dev, hw->mii_bus);
->> + if (ret)
->> + return ret;
->> +
->> + hw->phydev = mdiobus_get_phy(hw->mii_bus, 0);
-> 
-> Is this a hardware limitation? Only address 0 is supported?
-0-3 address is supported.
- 
-
-> 
->> + if (!hw->phydev) {
->> + return -ENODEV;
->> + } else if (!hw->phydev->drv) {
->> + wx_err(&hw->wxhw,
->> +       "No dedicated PHY driver found for PHY ID 0x%08x.\n",
->> +       hw->phydev->phy_id);
->> + return -EUNATCH;
->> + }
-> 
-> That is probably wrong. The module could still be loading. It is only
-> when you connect the MAC to the PHY does it need to have a PHY
-> driver. At that point, if there is no driver loaded it will fall back
-> to the generic PHY driver. You don't see any other MAC driver with
-> code like this.
-> 
-> As a general comment, if you do something which no other driver does,
-> you are probably doing something you should not do.
-> 
->    Andrew
-> 
+> I agree with the fact that we want to deny this, but in this example the
+> new connection should still be restricted by the Landlock domain. Using
+> AF_UNSPEC on a connected socket should not make this socket allowed to
+> create any connection if the process is restricted with TCP_CONNECT.
+> Being allowed to close a connection should not be an issue, and any new
+> connection must be vetted by Landlock.
 > 
 
+   You are right. This makes sense. Thanks for the comment.
+>> 
+>> 
+>> quote: "The intended use-case is for a privileged process to open a
+>> connection (i.e., bound and connected socket) and pass that to a
+>> restricted process. The intent is for that process to only be allowed to
+>> communicate over this pre-established channel.
+>> 
+>> In practice, it is able to disconnect (while staying bound) and
+>> elevate its privileges to that of a listening server: ..."
+>> 
+>> https://lore.kernel.org/linux-security-module/CA+FuTScaoby-=xRKf_Dz3koSYHqrMN0cauCg4jMmy_nDxwPADA@mail.gmail.com/
+>> 
+>> Looks like it's a security issue here.
+> 
+> It the provided example, if child_process() is restricted with
+> TCP_CONNECT and TCP_BIND, any call to connect() or bind() will return an
+> access error. listen() and accept() would work if the socket is bound,
+> which is the case here, and then implicitly allowed by the parent
+> process. I don' see any security issue. Am I missing something?
+> 
+> In fact, connect with AF_UNSPEC should always be allowed to be
+> consistent with close(2), which is a way to drop privileges.
+> 
+
+  It should be allowed with checking:
+"return check_socket_access(dom, get_port(address),
+                                  LANDLOCK_ACCESS_NET_CONNECT_TCP);
+> 
+> What Willem said:
+>> It would be good to also
+>> ensure that a now-bound socket cannot call listen.
+> 
+> This is not relevant for Landlock because the security model is to check
+> process's requests to get new accesses (e.g. create a new file
+> descriptor), but not to check passed accesses (e.g. inherited from a
+> parent process, or pass through a unix socket) which are delegated to
+> the sender/parent. The goal of a sandbox is to limit the set of new
+> access requested (to the kernel) from within this sandbox. All already
+> opened file descriptors were previously vetted by Landlock (and other
+> access control systems).
+
+    I got your point. Thanks.
+> 
+>> 
+>>>
+>>> We could then reduce the hook codes to just:
+>>> return current_check_access_socket(sock, address, LANDLOCK_ACCESS_NET_*);
+>>> .
+> 
+> As for SELinux, the connect hook should first do this check (with an
+> appropriate comment):
+> if (address->sa_family == AF_UNSPEC)
+> 	return 0;
+
+   In case of Landlock it looks like a landlocked process could connnect 
+to the ports it's not allowed to connect to.
+So we need just to return check_socket_access(dom, get_port(address),
+				   LANDLOCK_ACCESS_NET_CONNECT_TCP);
+I'm I correct? Did I miss something?
+> .
