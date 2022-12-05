@@ -2,132 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BEB664262D
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:55:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60B61642638
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231464AbiLEJza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 04:55:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
+        id S231375AbiLEJ6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 04:58:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231265AbiLEJz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:55:28 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F231742E
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:55:26 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id e13so14945694edj.7
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 01:55:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=5t8Zxcrb+H4S05AQ/AraVBApneGFb/IHc/5E++wpWSU=;
-        b=WiqRSkcWL+Sj7ba2AZFBTP5DcCJeqY9WedM96JIxUrFKuF5kiFaV7lxTwhppkhGO6k
-         6KPbo3SwEoDafrCAIwTuN9DNuznXsDnp3NmJMVWiXKDZOYYABg5xY7sP5AHBAy1LpSvO
-         vYXMnlrKcqDFBcKJ+TiaTEib0whUIy0Odr5FBXuOFEQCtZyzOzPEid34L1SF6P3NDxHJ
-         xK/LaJqP6BaYski375Xfb/D1gV3wIy/Fje+sVfa/XawH+j9dGuaKSWXHHzUzNgLTopm/
-         sJHn52sRE5ULE7Yn3ED8M6IVkv4iNeGGZPE8zaQyMnDzTJuqfk1Axaq18Ww8u6NVcdp1
-         pkeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5t8Zxcrb+H4S05AQ/AraVBApneGFb/IHc/5E++wpWSU=;
-        b=CY5eCkvccpPItfaO0fTC9cbmpYfNMFKSjx9YdFOYAxOonAC58WHecfm/CiT2HxrFiV
-         L50t4HqN+j27oh6/5kE9YEGfJach9SW7gECExKQd4bzhUfdNUfEo5fypbGQof63gzYwk
-         N4WqWsPey3ko5fO+6TV9vYwVK4iGj/37XPXK6/Jvr+iOjEP/8i8Q9F/35pNbOZHZwriM
-         4or0c9G9DLUS49SyauqPTrI4U1y5aNKcxT4FFfhzKnq6gUFOL21vgLolLX+I9TX45bIS
-         D3uxJmXoKGXK8ldY9MKZtKoJYzmT8Faowprv/6eK9mI1uCuVbZFLjuoEW6O3r6y09hke
-         AJhg==
-X-Gm-Message-State: ANoB5pnpMPPNqAoUNGsZKJs7ua41KRvAk0GjGo8lt5T8T3sBanhSdBTz
-        pbL0QPwYhQ4pdAeFBefqAXi8dQ==
-X-Google-Smtp-Source: AA0mqf4+Vr8oNX+baEGQRy7Gf9y/wATbL4bIBvFJ4WJaG+PANkrG5kyQRbVd/BXSJpsV5lR6P9oyyQ==
-X-Received: by 2002:aa7:c042:0:b0:462:2f5a:8618 with SMTP id k2-20020aa7c042000000b004622f5a8618mr73787160edo.42.1670234124657;
-        Mon, 05 Dec 2022 01:55:24 -0800 (PST)
-Received: from blmsp ([185.238.219.8])
-        by smtp.gmail.com with ESMTPSA id c7-20020a056402120700b0046b94e67b4bsm6050822edw.86.2022.12.05.01.55.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 01:55:24 -0800 (PST)
-Date:   Mon, 5 Dec 2022 10:55:23 +0100
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 14/15] can: tcan4x5x: Fix register range of first block
-Message-ID: <20221205095523.sy3piugsrvik2zz3@blmsp>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-15-msp@baylibre.com>
- <20221202142810.kmd5m26fnm6lw2jh@pengutronix.de>
- <20221205093013.kpsqyb3fhd5njubm@blmsp>
- <20221205094458.xkvlvp7fnygf23fq@pengutronix.de>
+        with ESMTP id S230092AbiLEJ6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:58:01 -0500
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7AE388C;
+        Mon,  5 Dec 2022 01:57:59 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 9E4024000E;
+        Mon,  5 Dec 2022 09:57:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1670234277;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4Gxz7WoOpZc0oMoubYIgxVAsBpiZ8Y3OlcwRGN7ckt8=;
+        b=cWl+MEYxC7EUwcQ8ogqjr6IoLd4jUvzjzg26vj7RG6MHklpBrsd0jcCjmcWY8swzpOoAT5
+        aDOHeyPjx6R68TdVlwlNrstEBefSKoH3X1DtXfBtzNBcdReyR0TlgKtwsTOspgTH1AEUSK
+        lAHUZpit6hr9Zh1xN1b8M1njrJIZ8WppmkooKFGHFVT1xMQIsk90+TP3XL2P3zDK2BQ1pf
+        5+lWFSu/pcBQKzqRf3WJas5CrGLjdwo1n8wwxtZK8WQQMfRg1GQMbM3eoFCI+lFreO09hf
+        kHIpTQeHchO/yTkAqB5QmygnzbekNnEPHwL8UREUiZr5sYJqyhVavoGF1mO/Ug==
+Date:   Mon, 5 Dec 2022 10:57:52 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning
+ requests
+Message-ID: <20221205105752.6ce87721@xps-13>
+In-Reply-To: <CAK-6q+hjXKmOrf-p=hRzuD=4pOJeWNUu46iU8YAVL4BqWC437A@mail.gmail.com>
+References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
+        <20221129160046.538864-2-miquel.raynal@bootlin.com>
+        <CAK-6q+hjXKmOrf-p=hRzuD=4pOJeWNUu46iU8YAVL4BqWC437A@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221205094458.xkvlvp7fnygf23fq@pengutronix.de>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 05, 2022 at 10:44:58AM +0100, Marc Kleine-Budde wrote:
-> On 05.12.2022 10:30:13, Markus Schneider-Pargmann wrote:
-> > Hi Marc,
-> > 
-> > On Fri, Dec 02, 2022 at 03:28:10PM +0100, Marc Kleine-Budde wrote:
-> > > On 16.11.2022 21:53:07, Markus Schneider-Pargmann wrote:
-> > > > According to the datasheet 0x1c is the last register in the first block,
-> > > > not register 0x2c.
-> > > 
-> > > The datasheet "SLLSF91A – DECEMBER 2018 – REVISED JANUARY 2020" says:
-> > > 
-> > > | 8.6.1 Device ID and Interrupt/Diagnostic Flag Registers: 16'h0000 to
-> > > | 16'h002F
-> > > 
-> > > While the last described register is at 0xc.
-> > 
-> > Sorry, not sure what I looked up here. The last described register is
-> > 0x10 SPI Error status mask in my datasheet:
-> > 'SLLSEZ5D – JANUARY 2018 – REVISED JUNE 2022'
-> 
-> The TCAN4550-Q1 variant has the 0x10 register documented, while the
-> TCAN4550 (w/o -Q1) doesn't have.
+Hi Alexander,
 
-Ah haven't noticed, thank you.
+aahringo@redhat.com wrote on Sun, 4 Dec 2022 17:44:24 -0500:
 
-> 
-> > I would prefer using the actual registers if that is ok with you, so
-> > 0x10 here because I assume the remaining registers have internal use or
-> > maybe don't exist at all?! If there is an undocumented register that
-> > needs to be used at some point we can still modify the ranges.
-> 
-> I'm fine with using 0x10 as the last register.
-> 
-> > Also it seems the existing ranges are following the same logic and don't
-> > list the whole range, just the documented registers.
-> > 
-> > The second range is wrong as well. The last register is 0x830, will
-> > fix.
-> 
-> IIRC I used the register ranges from the section titles ("8.6.1 Device
-> ID and Interrupt/Diagnostic Flag Registers: 16'h0000 to 16'h002F") when
-> I added the {wr,rd}_table.
+> Hi,
+>=20
+> On Tue, Nov 29, 2022 at 11:02 AM Miquel Raynal
+> <miquel.raynal@bootlin.com> wrote:
+> >
+> > The ieee802154 layer should be able to scan a set of channels in order
+> > to look for beacons advertizing PANs. Supporting this involves adding
+> > two user commands: triggering scans and aborting scans. The user should
+> > also be notified when a new beacon is received and also upon scan
+> > termination.
+> >
+> > A scan request structure is created to list the requirements and to be
+> > accessed asynchronously when changing channels or receiving beacons.
+> >
+> > Mac layers may now implement the ->trigger_scan() and ->abort_scan()
+> > hooks.
+> >
+> > Co-developed-by: David Girault <david.girault@qorvo.com>
+> > Signed-off-by: David Girault <david.girault@qorvo.com>
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  include/linux/ieee802154.h |   3 +
+> >  include/net/cfg802154.h    |  25 +++++
+> >  include/net/nl802154.h     |  49 +++++++++
+> >  net/ieee802154/nl802154.c  | 215 +++++++++++++++++++++++++++++++++++++
+> >  net/ieee802154/nl802154.h  |   3 +
+> >  net/ieee802154/rdev-ops.h  |  28 +++++
+> >  net/ieee802154/trace.h     |  40 +++++++
+> >  7 files changed, 363 insertions(+)
+> >
+> > diff --git a/include/linux/ieee802154.h b/include/linux/ieee802154.h
+> > index 0303eb84d596..b22e4147d334 100644
+> > --- a/include/linux/ieee802154.h
+> > +++ b/include/linux/ieee802154.h
+> > @@ -44,6 +44,9 @@
+> >  #define IEEE802154_SHORT_ADDR_LEN      2
+> >  #define IEEE802154_PAN_ID_LEN          2
+> >
+> > +/* Duration in superframe order */
+> > +#define IEEE802154_MAX_SCAN_DURATION   14
+> > +#define IEEE802154_ACTIVE_SCAN_DURATION        15
+> >  #define IEEE802154_LIFS_PERIOD         40
+> >  #define IEEE802154_SIFS_PERIOD         12
+> >  #define IEEE802154_MAX_SIFS_FRAME_SIZE 18
+> > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+> > index d09c393d229f..76d4f95e9974 100644
+> > --- a/include/net/cfg802154.h
+> > +++ b/include/net/cfg802154.h
+> > @@ -18,6 +18,7 @@
+> >
+> >  struct wpan_phy;
+> >  struct wpan_phy_cca;
+> > +struct cfg802154_scan_request;
+> >
+> >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+> >  struct ieee802154_llsec_device_key;
+> > @@ -67,6 +68,10 @@ struct cfg802154_ops {
+> >                                 struct wpan_dev *wpan_dev, bool mode);
+> >         int     (*set_ackreq_default)(struct wpan_phy *wpan_phy,
+> >                                       struct wpan_dev *wpan_dev, bool a=
+ckreq);
+> > +       int     (*trigger_scan)(struct wpan_phy *wpan_phy,
+> > +                               struct cfg802154_scan_request *request);
+> > +       int     (*abort_scan)(struct wpan_phy *wpan_phy,
+> > +                             struct wpan_dev *wpan_dev);
+> >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+> >         void    (*get_llsec_table)(struct wpan_phy *wpan_phy,
+> >                                    struct wpan_dev *wpan_dev,
+> > @@ -278,6 +283,26 @@ struct ieee802154_coord_desc {
+> >         bool gts_permit;
+> >  };
+> >
+> > +/**
+> > + * struct cfg802154_scan_request - Scan request
+> > + *
+> > + * @type: type of scan to be performed
+> > + * @page: page on which to perform the scan
+> > + * @channels: channels in te %page to be scanned
+> > + * @duration: time spent on each channel, calculated with:
+> > + *            aBaseSuperframeDuration * (2 ^ duration + 1)
+> > + * @wpan_dev: the wpan device on which to perform the scan
+> > + * @wpan_phy: the wpan phy on which to perform the scan
+> > + */
+> > +struct cfg802154_scan_request {
+> > +       enum nl802154_scan_types type;
+> > +       u8 page;
+> > +       u32 channels;
+> > +       u8 duration;
+> > +       struct wpan_dev *wpan_dev;
+> > +       struct wpan_phy *wpan_phy;
+> > +};
+> > +
+> >  struct ieee802154_llsec_key_id {
+> >         u8 mode;
+> >         u8 id;
+> > diff --git a/include/net/nl802154.h b/include/net/nl802154.h
+> > index b79a89d5207c..79fbd820b25a 100644
+> > --- a/include/net/nl802154.h
+> > +++ b/include/net/nl802154.h
+> > @@ -73,6 +73,9 @@ enum nl802154_commands {
+> >         NL802154_CMD_DEL_SEC_LEVEL,
+> >
+> >         NL802154_CMD_SCAN_EVENT,
+> > +       NL802154_CMD_TRIGGER_SCAN,
+> > +       NL802154_CMD_ABORT_SCAN,
+> > +       NL802154_CMD_SCAN_DONE, =20
+>=20
+> Is NL802154_CMD_SCAN_DONE reserved now? I don't see it implemented in
+> this series and I think we had some discussion about the need of abort
+> vs done. Is the event now?
 
-The second range in the driver was specified as 0x800-0x83c in the
-driver. The last documented register is 0x830 in both normal and Q1
-versions while the range in the title is 0x800-0x8ff. That's why I
-thought it was using the last register, just because it is closer.
+To be very honest I went back and forth about the "abort" information
+so I don't remember exactly what was supposed to be implemented. The
+current implementation forwards to userspace the reason (whether the
+scan was finished or was aborted for an external reason). So it is
+implemented this way:
 
-Anyways not really important.
+* Patch 6/6 adds in mac802154/scan.c:
 
-I can put in whatever you feel comfortable with or keep as it is.
++       cmd =3D aborted ? NL802154_CMD_ABORT_SCAN : NL802154_CMD_SCAN_DONE;
++       nl802154_scan_done(wpan_phy, wpan_dev, cmd);
+
+* And in patch 1/6, in ieee802154/nl802154.c:
+
++static int nl802154_send_scan_msg(struct cfg802154_registered_device *rdev,
++                                 struct wpan_dev *wpan_dev, u8 cmd)
++{
+[...]
++
++       ret =3D nl802154_prep_scan_msg(msg, rdev, wpan_dev, 0, 0, 0, cmd);
+
+Is this working for you?
 
 Thanks,
-Markus
+Miqu=C3=A8l
