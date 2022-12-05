@@ -2,99 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96C906435EA
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 21:43:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC1076435F2
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 21:44:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233465AbiLEUng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 15:43:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
+        id S232690AbiLEUoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 15:44:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233494AbiLEUnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 15:43:31 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E8AEE3B
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 12:43:30 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id qk9so1406877ejc.3
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 12:43:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9qEJFfOgR2et4aLDCUXqyd67PYkCwHrO8dl0qn34Yos=;
-        b=A6jhkXo6wq5cct1FstU4Yfb7yApGF8BTvQE4h8HEYORMMBGBR0qHKV3YVZrrpa03vs
-         LkI1z8QjgVe+3ynh5TORgXz0K/MEG0q5GZEeUcQslxbA7lnB7m2rDc4JC1HeCbDP86lO
-         fqTFBcQD+InTRcW70I8VWirpzINiXniq0b1RzWAX4hseGPC7soQKncRcXbx9slKAeAWw
-         vr/lZLqRlfImds8d+xh4/We4NGMPmiOZZTPAmYsWRQEG5Yjfe+qgekVXeH2l1RDGPKWg
-         lnAHsYd6rx17Fl0HmzMKtBN89li868FLiIzlV1g6Bmta6YoxytHJwJzVB6rDpCnfs7in
-         3JSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9qEJFfOgR2et4aLDCUXqyd67PYkCwHrO8dl0qn34Yos=;
-        b=mLZUKbHcY68qh4le423/DIto78/JAMg72WcH/2jKt5DThztp03rNN/L1kfqE/7Y36t
-         DY9Alx6bGPkXJbMl/MAkw6RbgziGcwx5JkbCKJeIgTyaew7TbX7S7pqeUIBjOVTgGYpw
-         O1ZVYjOK8p0QMasZN6AgFWChDnrRO+vFzzgxptDDXNzqbu6esRh9rWBYM+jROMjV0Uql
-         nQK6V3d2amPAp72+6qLK0XKAxuvEvg8BKjOVShVRrq3CYVa+YPmOHqOxjXm+aKHl+JhK
-         wVmv5FFNhCQJkaPwIK2Nx+6/LH/h8axaO8xsP2UuGwcAd2h3BRtFwPtjk0SWzYRs6HTQ
-         Y9IQ==
-X-Gm-Message-State: ANoB5pn1I1GppLAY6goDRpcZ+cS4m83DHdtfEFp4FgeF6YBLQnaloRYA
-        g5/4BSrMA2Mj3+77z/e7vDQ+SxXBYf0UkQ==
-X-Google-Smtp-Source: AA0mqf6h0shDmdGlF1kbOc8RaXSW+kQuTb7XYJs9DDmbU1SmgkXCDVpvVOabrZVmkf3YU7uXkV6IEQ==
-X-Received: by 2002:a17:907:9b04:b0:7c0:d125:1fe6 with SMTP id kn4-20020a1709079b0400b007c0d1251fe6mr10997996ejc.514.1670273008662;
-        Mon, 05 Dec 2022 12:43:28 -0800 (PST)
-Received: from skbuf ([188.26.185.87])
-        by smtp.gmail.com with ESMTPSA id f8-20020a056402150800b0046146c730easm192533edw.75.2022.12.05.12.43.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 12:43:28 -0800 (PST)
-Date:   Mon, 5 Dec 2022 22:43:26 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: Using a bridge for DSA and non-DSA devices
-Message-ID: <20221205204326.peigjeahfy54t34r@skbuf>
-References: <2269377.ElGaqSPkdT@n95hx1g2>
- <20221205190805.vwcv6z7ize3z64j2@skbuf>
- <3213598.44csPzL39Z@n95hx1g2>
+        with ESMTP id S230254AbiLEUoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 15:44:19 -0500
+Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63ED1FAFC;
+        Mon,  5 Dec 2022 12:44:14 -0800 (PST)
+Received: from [192.168.1.33] (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 1C837200DFB5;
+        Mon,  5 Dec 2022 21:44:10 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 1C837200DFB5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1670273050;
+        bh=R7NAWbc/sCBj7lLILmPIAKDv17G+CxjF70h+S1ur3pE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ScRccmwLvxLkuysid38gAxQs6B/OVTvBrnpvsLDUNMIHiy0GVE7so4w71oxGDvb8K
+         4iAE0MziaRR6bx/tccIZrrMzR5WSrh3QqLyMwb81RjdjjJB7vzDfeFit6O+/2eM7E6
+         1JpSIh6aXOJH6dnQSmdgYPhrrMHi95+hgm16jYktxjcvF7XGqnSt45RZYDtn0Puo5E
+         m+I1BlK8A1YROzJgpKI/z2Hk9GVlEB6dlCvY3GDvQRnFwrzldrL7KFTMELn+D9mr5O
+         U9JdHUkyqLexlZDjjDP9fXeIz9/xmHFflhURD9j+IdUV7SpQCXHO19l9ZKWL12/R7G
+         lNIoNIxGDIrFQ==
+Message-ID: <d579c817-50c7-5bd5-4b28-f044daabf7f6@uliege.be>
+Date:   Mon, 5 Dec 2022 21:44:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3213598.44csPzL39Z@n95hx1g2>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue
+ depth data field")
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        stable@vger.kernel.org
+References: <20221205153557.28549-1-justin.iurman@uliege.be>
+ <CANn89iLjGnyh0GgW_5kkMQJBCi-KfgwyvZwT1ou2FMY4ZDcMXw@mail.gmail.com>
+ <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com>
+ <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
+ <CANn89iKgeVFRAstW3QRwOdn8SV_EbHqcKYqmoWT6m5nGQwPWUg@mail.gmail.com>
+From:   Justin Iurman <justin.iurman@uliege.be>
+In-Reply-To: <CANn89iKgeVFRAstW3QRwOdn8SV_EbHqcKYqmoWT6m5nGQwPWUg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 05, 2022 at 09:08:38PM +0100, Christian Eggers wrote:
-> No, I didn't. But just to make it clear: Will the DSA framework
-> change to "pure software" switching as soon I add the first non-DSA
-> slave to an exisiting DSA bridge?
+On 12/5/22 19:34, Eric Dumazet wrote:
+> On Mon, Dec 5, 2022 at 7:24 PM Justin Iurman <justin.iurman@uliege.be> wrote:
+>>
+>> On 12/5/22 17:50, Eric Dumazet wrote:
+>>> On Mon, Dec 5, 2022 at 5:30 PM Eric Dumazet <edumazet@google.com> wrote:
+>>>>
+>>>> Patch title seems
+>>>>
+>>>> On Mon, Dec 5, 2022 at 4:36 PM Justin Iurman <justin.iurman@uliege.be> wrote:
+>>>>>
+>>>>> This patch fixes a NULL qdisc pointer when retrieving the TX queue depth
+>>>>> for IOAM.
+>>>>>
+>>>>> IMPORTANT: I suspect this fix is local only and the bug goes deeper (see
+>>>>> reasoning below).
+>>>>>
+>>>>> Kernel panic:
+>>>>> [...]
+>>>>> RIP: 0010:ioam6_fill_trace_data+0x54f/0x5b0
+>>>>> [...]
+>>>>>
+>>>>> ...which basically points to the call to qdisc_qstats_qlen_backlog
+>>>>> inside net/ipv6/ioam6.c.
+>>>>>
+>>>>>   From there, I directly thought of a NULL pointer (queue->qdisc). To make
+>>>>> sure, I added some printk's to know exactly *why* and *when* it happens.
+>>>>> Here is the (summarized by queue) output:
+>>>>>
+>>>>> skb for TX queue 1, qdisc is ffff8b375eee9800, qdisc_sleeping is ffff8b375eee9800
+>>>>> skb for TX queue 2, qdisc is ffff8b375eeefc00, qdisc_sleeping is ffff8b375eeefc00
+>>>>> skb for TX queue 3, qdisc is ffff8b375eeef800, qdisc_sleeping is ffff8b375eeef800
+>>>>> skb for TX queue 4, qdisc is ffff8b375eeec800, qdisc_sleeping is ffff8b375eeec800
+>>>>> skb for TX queue 5, qdisc is ffff8b375eeea400, qdisc_sleeping is ffff8b375eeea400
+>>>>> skb for TX queue 6, qdisc is ffff8b375eeee000, qdisc_sleeping is ffff8b375eeee000
+>>>>> skb for TX queue 7, qdisc is ffff8b375eee8800, qdisc_sleeping is ffff8b375eee8800
+>>>>> skb for TX queue 8, qdisc is ffff8b375eeedc00, qdisc_sleeping is ffff8b375eeedc00
+>>>>> skb for TX queue 9, qdisc is ffff8b375eee9400, qdisc_sleeping is ffff8b375eee9400
+>>>>> skb for TX queue 10, qdisc is ffff8b375eee8000, qdisc_sleeping is ffff8b375eee8000
+>>>>> skb for TX queue 11, qdisc is ffff8b375eeed400, qdisc_sleeping is ffff8b375eeed400
+>>>>> skb for TX queue 12, qdisc is ffff8b375eeea800, qdisc_sleeping is ffff8b375eeea800
+>>>>> skb for TX queue 13, qdisc is ffff8b375eee8c00, qdisc_sleeping is ffff8b375eee8c00
+>>>>> skb for TX queue 14, qdisc is ffff8b375eeea000, qdisc_sleeping is ffff8b375eeea000
+>>>>> skb for TX queue 15, qdisc is ffff8b375eeeb800, qdisc_sleeping is ffff8b375eeeb800
+>>>>> skb for TX queue 16, qdisc is NULL, qdisc_sleeping is NULL
+>>>>>
+>>>>> What the hell? So, not sure why queue #16 would *never* have a qdisc
+>>>>> attached. Is it something expected I'm not aware of? As an FYI, here is
+>>>>> the output of "tc qdisc list dev xxx":
+>>>>>
+>>>>> qdisc mq 0: root
+>>>>> qdisc fq_codel 0: parent :10 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :f limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :e limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :d limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :c limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :b limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :a limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :9 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :8 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :7 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :6 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :5 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>> qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>>>
+>>>>> By the way, the NIC is an Intel XL710 40GbE QSFP+ (i40e driver, firmware
+>>>>> version 8.50 0x8000b6c7 1.3082.0) and it was tested on latest "net"
+>>>>> version (6.1.0-rc7+). Is this a bug in the i40e driver?
+>>>>>
+>>>>
+>>>>> Cc: stable@vger.kernel.org
+>>>>
+>>>> Patch title is mangled. The Fixes: tag should appear here, not in the title.
+>>>>
+>>>>
+>>>> Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue depth data field")
+>>>>
+>>>>> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+>>>>> ---
+>>>>>    net/ipv6/ioam6.c | 11 +++++++----
+>>>>>    1 file changed, 7 insertions(+), 4 deletions(-)
+>>>>>
+>>>>> diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
+>>>>> index 571f0e4d9cf3..2472a8a043c4 100644
+>>>>> --- a/net/ipv6/ioam6.c
+>>>>> +++ b/net/ipv6/ioam6.c
+>>>>> @@ -727,10 +727,13 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+>>>>>                           *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+>>>>>                   } else {
+>>>>>                           queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
+>>>>
+>>>> Are you sure skb_dst(skb)->dev is correct at this stage, what about
+>>>> stacked devices ?
+>>>>
+>>>>> -                       qdisc = rcu_dereference(queue->qdisc);
+>>>>> -                       qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
+>>>>> -
+>>>>> -                       *(__be32 *)data = cpu_to_be32(backlog);
+>>>>> +                       if (!queue->qdisc) {
+>>>>
+>>>> This is racy.
+>>>>
+>>>>> +                               *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+>>>>> +                       } else {
+>>>>> +                               qdisc = rcu_dereference(queue->qdisc);
+>>>>> +                               qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
+>>>>> +                               *(__be32 *)data = cpu_to_be32(backlog);
+>>>>> +                       }
+>>>>>                   }
+>>>>>                   data += sizeof(__be32);
+>>>>>           }
+>>>>> --
+>>>>> 2.25.1
+>>>>>
+>>>>
+>>>> Quite frankly I suggest to revert b63c5478e9cb completely.
+>>>>
+>>>> The notion of Queue depth can not be properly gathered in Linux with a
+>>>> multi queue model,
+>>>> so why trying to get a wrong value ?
+>>>
+>>> Additional reason for a revert is that qdisc_qstats_qlen_backlog() is
+>>> reserved for net/sched
+>>
+>> If by "reserved" you mean "only used by at the moment", then yes (with
+>> the only exception being IOAM). But some other functions are defined as
+>> well, and some are used elsewhere than the "net/sched" context. So I
+>> don't think it's really an issue to use this function "from somewhere else".
+>>
+>>> code, I think it needs the qdisc lock to be held.
+>>
+>> Good point. But is it really needed when called with rcu_read_lock?
+> 
+> It is needed.
 
-No, DSA doesn't change to pure software switching when foreign interfaces
-are added to the bridge. The forwarding decision (hardware or software)
-is taken per packet. From the perspective of the DSA switch, a station
-behind a foreign bridge port is just behind the CPU port, hence the idea
-of managing FDB entries towards that port. Packets forwarded by hardware
-are simply not seen by software (if not flooded). Or if they're flooded,
-software will set the skb->offload_fwd_mark flag, and this will tell the
-bridge that the packet was already flooded to the ksz bridge ports, but
-not to other (foreign) bridge ports. So the bridge will clone this skb
-and send it to the USB adapter bridge port and what not.
+So I guess I could just submit a patch to wrap that part with:
 
-But I'm not sure that you're asking the right question with that bridge,
-since you don't seem to need Ethernet bridging with these other technologies.
+spin_lock(qdisc_lock(qdisc));
+[...]
+spin_unlock(qdisc_lock(qdisc));
 
-I don't know what is the most civilized way to solve what you're trying
-to achieve ("too many IP addresses when I just want to access the board
-over one of the available point-to-point links"?!). Have you considered
-putting a unique (routable) IP address on the loopback interface of
-your board? If you put 1.2.3.4/32 on lo, Linux should respond to a ping
-towards 1.2.3.4 no matter which interface the ICMP request came from.
-Granted, the ICMP reply will have the IP address of the connected
-interface as source.
+Anyway, there'd still be that queue-without-qdisc bug out there that I'd 
+like to discuss but which seems to be avoided in the conversation somehow.
+
+> Please revert this patch.
+> 
+> Many people use FQ qdisc, where packets are waiting for their Earliest
+> Departure Time to be released.
+
+The IOAM queue depth is a very important value and is already used. Just 
+reverting the patch is not really an option. Besides, if IOAM is not 
+used, then what you described above would not be a problem (probably 
+most of the time as IOAM is enabled on limited domains). Not to mention 
+that you probably don't need the queue depth in every packet.
+
+> Also, the draft says:
+> 
+> 5.4.2.7.  queue depth
+> 
+>     The "queue depth" field is a 4-octet unsigned integer field.  This
+>     field indicates the current length of the egress interface queue of
+>     the interface from where the packet is forwarded out.  The queue
+>     depth is expressed as the current amount of memory buffers used by
+>     the queue (a packet could consume one or more memory buffers,
+>     depending on its size).
+> 
+>      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+>     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+>     |                       queue depth                             |
+>     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> 
+> 
+> It is relatively clear that the egress interface is the aggregate
+> egress interface,
+> not a subset of the interface.
+
+Correct, even though the definition of an interface in RFC 9197 is quite 
+abstract (see the end of section 4.4.2.2: "[...] could represent a 
+physical interface, a virtual or logical interface, or even a queue").
+
+> If you have 32 TX queues on a NIC, all of them being backlogged (line rate),
+> sensing the queue length of one of the queues would give a 97% error
+> on the measure.
+
+Why would it? Not sure I get your idea based on that example.
+
+> To properly implement that 'Queue depth' metric, you would need to use
+> the backlog of the MQ qdisc.
+> That would be very expensive.
+
+Could be a solution, thanks for the suggestion. But if it's too 
+expensive, I'd rather have the current solution (with locks) than 
+nothing at all. At least it has provided an acceptable solution so far.
