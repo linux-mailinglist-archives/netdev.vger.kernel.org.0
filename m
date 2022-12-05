@@ -2,245 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B208643083
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 19:38:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95068643091
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 19:40:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233351AbiLESif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 13:38:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57712 "EHLO
+        id S233224AbiLESkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 13:40:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232720AbiLESiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 13:38:19 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E5E2CDD1;
-        Mon,  5 Dec 2022 10:31:25 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1670265002; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=d39PER/uA0WU7GJHb00ysvyLArJZ6UUUuKcmZ84WE9VEHbhHR2Q4D9NcZ6+x5W6zfAXtxaVtNmYTNH7ZFDAtIQJOi6bS/u0crLgjLNK6RPBRr3IQMUT6rtnKRVSjtqJtxaPLJ1ol0baxxOFSzKAaQSe6O54UswOlJug2jrWrjjI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1670265002; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=9HVdrBThZ7f9kI3x9rrZ++0Pvhvtd65Mi6XXfbUOn9c=; 
-        b=AL2nQEsnMcKMtUOYykXfMvmcbkQLcpedDcvrdxyjy5fiMTZjK9pMeg2rBO0+1j3NHRi63c57ikBPN3sRl+oOZeAJ972EMH22w9j6SOReZFHsmkKwGE66XzMS4AYafqoRXU53e/pbMsaZPJ9SDvnh5G6oqVQ6kmUllHPfzuJylmI=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1670265002;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=9HVdrBThZ7f9kI3x9rrZ++0Pvhvtd65Mi6XXfbUOn9c=;
-        b=XhdGy4YeG9Falqel0Qndo43n2Mp+f7bOMMrpz6rL/JRYMsWSXTxLZRYkakSfPPhG
-        CICCMMpu3VUk1yS49eAIOUYLP0i2pGDGwB+m34k7Zg0pVoCgUzqvBCilnadCSLJb/UA
-        N6hPXawTLamOoRrjmsBVoQmHwVI7JHubtr63QQoQ=
-Received: from [192.168.100.172] (86.121.172.71 [86.121.172.71]) by mx.zohomail.com
-        with SMTPS id 1670264999977312.89271187774307; Mon, 5 Dec 2022 10:29:59 -0800 (PST)
-Message-ID: <25804819-f767-6272-4ef1-9b9e92d825cb@arinc9.com>
-Date:   Mon, 5 Dec 2022 21:29:50 +0300
+        with ESMTP id S233236AbiLESjj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 13:39:39 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD9522BFA
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 10:34:29 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id s11so1084119ybe.2
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 10:34:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=/KTDin13ixzj9gzcGPR26WW9tnHp7xsWUEmc0bE7eKI=;
+        b=j+eF1Qgh7b6PTVeY0YzZtXMJPoUuj/00o531HG9eWGm7rALiOMc4uq7eKJKt2k/eGR
+         XeXdbhHxSgP9kEBLAVtHxwydo0y5l9+JbpLKcaWxKnNiEBsdi/dztYNOUWbRNpXIeUKG
+         +UR6uMj3W+cKqQ5HmBZVhAVtuAHapxSwKmcLKj2tCVN6OwHfOcJW61u4k6xBV/WRligR
+         YxLEdyFw2zpHyYOn2gTNy3jeECJRDEARP4O2zmtt/rS77dHKbcTnTuHEtPr32Y+F/JSP
+         T6k6VgiYOCtLV3BLwhzp7l5Lz5J9f2vkGYKg5qXzRijfD9MDx6t7RFjGpZtU6r5ZsNEG
+         zUdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/KTDin13ixzj9gzcGPR26WW9tnHp7xsWUEmc0bE7eKI=;
+        b=vo4i2bzFjWiKW56WnYNZTCr3mVsT14kDSCA6XIFwSuXLRVg0vBPg1kDgO1ZCJBcWGW
+         5aU/3Hvn1cQgnSlVQEQge+k577kNGoUpsDJa2EjA7iwdw41F3KCBs+wzTTHfStq5ZK+f
+         C/PF16h8fNP86KKB5zT9zgDZ0xb2zAYvdeHagh93YRLzQotJtenebv4QECE4SYCDJ4SZ
+         Njj5xFSltgsQnrwEWYW6x2qwe8ujH3JNZucliFwMOLNFizgw46SpyPK2VdwDSphVevjn
+         2Is3WzsT/HW0Q0oYCoHWAfa5hKXPs/1ZF4C58IlRk2X7/YiRzF76+ReUcSK7ErjDw7GK
+         4q0Q==
+X-Gm-Message-State: ANoB5pn47b1z7II0lwA84i4v/10sfJQ3T2KPkscBIraVu6CY78GJC7av
+        FmcZN2RkeCTMzdFWja/tANvk88hQmA1zgxm+TEOJCg==
+X-Google-Smtp-Source: AA0mqf7SH/eXDwoLZLD4TlFTi6FH7rr8OeWm4lh20nDPOr/e1oZ66yT75rQXvP/oRvbhVTPMh2bKoB2yPNIFRbmSw48=
+X-Received: by 2002:a25:bf8f:0:b0:6fa:fe1f:f031 with SMTP id
+ l15-20020a25bf8f000000b006fafe1ff031mr22758238ybk.231.1670265268733; Mon, 05
+ Dec 2022 10:34:28 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v4 net-next 3/9] dt-bindings: net: dsa: utilize base
- definitions for standard dsa switches
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>,
-        Rob Herring <robh@kernel.org>
-References: <20221202204559.162619-1-colin.foster@in-advantage.com>
- <20221202204559.162619-4-colin.foster@in-advantage.com>
- <bfc6810b-3c21-201b-3c4f-a0def3928597@arinc9.com>
- <Y46m3/oqtoqJWFlv@COLIN-DESKTOP1.localdomain>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <Y46m3/oqtoqJWFlv@COLIN-DESKTOP1.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221205153557.28549-1-justin.iurman@uliege.be>
+ <CANn89iLjGnyh0GgW_5kkMQJBCi-KfgwyvZwT1ou2FMY4ZDcMXw@mail.gmail.com>
+ <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com> <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
+In-Reply-To: <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 5 Dec 2022 19:34:17 +0100
+Message-ID: <CANn89iKgeVFRAstW3QRwOdn8SV_EbHqcKYqmoWT6m5nGQwPWUg@mail.gmail.com>
+Subject: Re: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue
+ depth data field")
+To:     Justin Iurman <justin.iurman@uliege.be>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6.12.2022 05:20, Colin Foster wrote:
-> On Sat, Dec 03, 2022 at 12:45:34AM +0300, Arınç ÜNAL wrote:
->> On 2.12.2022 23:45, Colin Foster wrote:
->>> DSA switches can fall into one of two categories: switches where all ports
->>> follow standard '(ethernet-)?port' properties, and switches that have
->>> additional properties for the ports.
->>>
->>> The scenario where DSA ports are all standardized can be handled by
->>> swtiches with a reference to the new 'dsa.yaml#/$defs/ethernet-ports'.
->>>
->>> The scenario where DSA ports require additional properties can reference
->>> '$dsa.yaml#' directly. This will allow switches to reference these standard
->>> defitions of the DSA switch, but add additional properties under the port
->>> nodes.
->>>
->>> Suggested-by: Rob Herring <robh@kernel.org>
->>> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
->>> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
->>> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
->>> Acked-by: Alvin Šipraga <alsi@bang-olufsen.dk> # realtek
->>> ---
->>>
->>> v3 -> v4
->>>     * Rename "$defs/base" to "$defs/ethernet-ports" to avoid implication of a
->>>       "base class" and fix commit message accordingly
->>>     * Add the following to the common etherent-ports node:
->>>         "additionalProperties: false"
->>>         "#address-cells" property
->>>         "#size-cells" property
->>>     * Fix "etherenet-ports@[0-9]+" to correctly be "ethernet-port@[0-9]+"
->>>     * Remove unnecessary newline
->>>     * Apply changes to mediatek,mt7530.yaml that were previously in a separate patch
->>>     * Add Reviewed and Acked tags
->>>
->>> v3
->>>     * New patch
->>>
->>> ---
->>>    .../bindings/net/dsa/arrow,xrs700x.yaml       |  2 +-
->>>    .../devicetree/bindings/net/dsa/brcm,b53.yaml |  2 +-
->>>    .../devicetree/bindings/net/dsa/dsa.yaml      | 25 ++++++++++++++++---
->>>    .../net/dsa/hirschmann,hellcreek.yaml         |  2 +-
->>>    .../bindings/net/dsa/mediatek,mt7530.yaml     | 16 +++---------
->>>    .../bindings/net/dsa/microchip,ksz.yaml       |  2 +-
->>>    .../bindings/net/dsa/microchip,lan937x.yaml   |  2 +-
->>>    .../bindings/net/dsa/mscc,ocelot.yaml         |  2 +-
->>>    .../bindings/net/dsa/nxp,sja1105.yaml         |  2 +-
->>>    .../devicetree/bindings/net/dsa/realtek.yaml  |  2 +-
->>>    .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  2 +-
->>>    11 files changed, 35 insertions(+), 24 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
->>> index 259a0c6547f3..5888e3a0169a 100644
->>> --- a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
->>> +++ b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
->>> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->>>    title: Arrow SpeedChips XRS7000 Series Switch Device Tree Bindings
->>>    allOf:
->>> -  - $ref: dsa.yaml#
->>> +  - $ref: dsa.yaml#/$defs/ethernet-ports
->>>    maintainers:
->>>      - George McCollister <george.mccollister@gmail.com>
->>> diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
->>> index 1219b830b1a4..5bef4128d175 100644
->>> --- a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
->>> +++ b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
->>> @@ -66,7 +66,7 @@ required:
->>>      - reg
->>>    allOf:
->>> -  - $ref: dsa.yaml#
->>> +  - $ref: dsa.yaml#/$defs/ethernet-ports
->>>      - if:
->>>          properties:
->>>            compatible:
->>> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
->>> index b9d48e357e77..b9e366e46aed 100644
->>> --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
->>> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
->>> @@ -19,9 +19,6 @@ description:
->>>    select: false
->>>    properties:
->>> -  $nodename:
->>> -    pattern: "^(ethernet-)?switch(@.*)?$"
->>> -
->>>      dsa,member:
->>>        minItems: 2
->>>        maxItems: 2
->>> @@ -58,4 +55,26 @@ oneOf:
->>>    additionalProperties: true
->>> +$defs:
->>> +  ethernet-ports:
->>> +    description: A DSA switch without any extra port properties
->>> +    $ref: '#/'
->>> +
->>> +    patternProperties:
->>> +      "^(ethernet-)?ports$":
->>> +        type: object
->>> +        additionalProperties: false
->>> +
->>> +        properties:
->>> +          '#address-cells':
->>> +            const: 1
->>> +          '#size-cells':
->>> +            const: 0
->>> +
->>> +        patternProperties:
->>> +          "^(ethernet-)?port@[0-9]+$":
->>> +            description: Ethernet switch ports
->>> +            $ref: dsa-port.yaml#
->>> +            unevaluatedProperties: false
->>> +
->>>    ...
->>> diff --git a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
->>> index 73b774eadd0b..748ef9983ce2 100644
->>> --- a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
->>> +++ b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
->>> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->>>    title: Hirschmann Hellcreek TSN Switch Device Tree Bindings
->>>    allOf:
->>> -  - $ref: dsa.yaml#
->>> +  - $ref: dsa.yaml#/$defs/ethernet-ports
->>>    maintainers:
->>>      - Andrew Lunn <andrew@lunn.ch>
->>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->>> index f2e9ff3f580b..b815272531fa 100644
->>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->>> @@ -156,17 +156,6 @@ patternProperties:
->>>        patternProperties:
->>>          "^(ethernet-)?port@[0-9]+$":
->>> -        type: object
->>> -        description: Ethernet switch ports
->>> -
->>> -        unevaluatedProperties: false
->>> -
->>> -        properties:
->>> -          reg:
->>> -            description:
->>> -              Port address described must be 5 or 6 for CPU port and from 0 to 5
->>> -              for user ports.
->>
->> This shouldn't be moved. Please reread our conversation on the previous
->> version.
-> 
-> I see - I missed your point. My apologies. This binding should keep the
-> reg properties where they were. I'll wait a few more days for any
-> additional feedback.
+On Mon, Dec 5, 2022 at 7:24 PM Justin Iurman <justin.iurman@uliege.be> wrote:
+>
+> On 12/5/22 17:50, Eric Dumazet wrote:
+> > On Mon, Dec 5, 2022 at 5:30 PM Eric Dumazet <edumazet@google.com> wrote:
+> >>
+> >> Patch title seems
+> >>
+> >> On Mon, Dec 5, 2022 at 4:36 PM Justin Iurman <justin.iurman@uliege.be> wrote:
+> >>>
+> >>> This patch fixes a NULL qdisc pointer when retrieving the TX queue depth
+> >>> for IOAM.
+> >>>
+> >>> IMPORTANT: I suspect this fix is local only and the bug goes deeper (see
+> >>> reasoning below).
+> >>>
+> >>> Kernel panic:
+> >>> [...]
+> >>> RIP: 0010:ioam6_fill_trace_data+0x54f/0x5b0
+> >>> [...]
+> >>>
+> >>> ...which basically points to the call to qdisc_qstats_qlen_backlog
+> >>> inside net/ipv6/ioam6.c.
+> >>>
+> >>>  From there, I directly thought of a NULL pointer (queue->qdisc). To make
+> >>> sure, I added some printk's to know exactly *why* and *when* it happens.
+> >>> Here is the (summarized by queue) output:
+> >>>
+> >>> skb for TX queue 1, qdisc is ffff8b375eee9800, qdisc_sleeping is ffff8b375eee9800
+> >>> skb for TX queue 2, qdisc is ffff8b375eeefc00, qdisc_sleeping is ffff8b375eeefc00
+> >>> skb for TX queue 3, qdisc is ffff8b375eeef800, qdisc_sleeping is ffff8b375eeef800
+> >>> skb for TX queue 4, qdisc is ffff8b375eeec800, qdisc_sleeping is ffff8b375eeec800
+> >>> skb for TX queue 5, qdisc is ffff8b375eeea400, qdisc_sleeping is ffff8b375eeea400
+> >>> skb for TX queue 6, qdisc is ffff8b375eeee000, qdisc_sleeping is ffff8b375eeee000
+> >>> skb for TX queue 7, qdisc is ffff8b375eee8800, qdisc_sleeping is ffff8b375eee8800
+> >>> skb for TX queue 8, qdisc is ffff8b375eeedc00, qdisc_sleeping is ffff8b375eeedc00
+> >>> skb for TX queue 9, qdisc is ffff8b375eee9400, qdisc_sleeping is ffff8b375eee9400
+> >>> skb for TX queue 10, qdisc is ffff8b375eee8000, qdisc_sleeping is ffff8b375eee8000
+> >>> skb for TX queue 11, qdisc is ffff8b375eeed400, qdisc_sleeping is ffff8b375eeed400
+> >>> skb for TX queue 12, qdisc is ffff8b375eeea800, qdisc_sleeping is ffff8b375eeea800
+> >>> skb for TX queue 13, qdisc is ffff8b375eee8c00, qdisc_sleeping is ffff8b375eee8c00
+> >>> skb for TX queue 14, qdisc is ffff8b375eeea000, qdisc_sleeping is ffff8b375eeea000
+> >>> skb for TX queue 15, qdisc is ffff8b375eeeb800, qdisc_sleeping is ffff8b375eeeb800
+> >>> skb for TX queue 16, qdisc is NULL, qdisc_sleeping is NULL
+> >>>
+> >>> What the hell? So, not sure why queue #16 would *never* have a qdisc
+> >>> attached. Is it something expected I'm not aware of? As an FYI, here is
+> >>> the output of "tc qdisc list dev xxx":
+> >>>
+> >>> qdisc mq 0: root
+> >>> qdisc fq_codel 0: parent :10 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :f limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :e limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :d limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :c limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :b limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :a limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :9 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :8 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :7 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :6 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :5 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>> qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >>>
+> >>> By the way, the NIC is an Intel XL710 40GbE QSFP+ (i40e driver, firmware
+> >>> version 8.50 0x8000b6c7 1.3082.0) and it was tested on latest "net"
+> >>> version (6.1.0-rc7+). Is this a bug in the i40e driver?
+> >>>
+> >>
+> >>> Cc: stable@vger.kernel.org
+> >>
+> >> Patch title is mangled. The Fixes: tag should appear here, not in the title.
+> >>
+> >>
+> >> Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue depth data field")
+> >>
+> >>> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+> >>> ---
+> >>>   net/ipv6/ioam6.c | 11 +++++++----
+> >>>   1 file changed, 7 insertions(+), 4 deletions(-)
+> >>>
+> >>> diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
+> >>> index 571f0e4d9cf3..2472a8a043c4 100644
+> >>> --- a/net/ipv6/ioam6.c
+> >>> +++ b/net/ipv6/ioam6.c
+> >>> @@ -727,10 +727,13 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+> >>>                          *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+> >>>                  } else {
+> >>>                          queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
+> >>
+> >> Are you sure skb_dst(skb)->dev is correct at this stage, what about
+> >> stacked devices ?
+> >>
+> >>> -                       qdisc = rcu_dereference(queue->qdisc);
+> >>> -                       qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
+> >>> -
+> >>> -                       *(__be32 *)data = cpu_to_be32(backlog);
+> >>> +                       if (!queue->qdisc) {
+> >>
+> >> This is racy.
+> >>
+> >>> +                               *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+> >>> +                       } else {
+> >>> +                               qdisc = rcu_dereference(queue->qdisc);
+> >>> +                               qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
+> >>> +                               *(__be32 *)data = cpu_to_be32(backlog);
+> >>> +                       }
+> >>>                  }
+> >>>                  data += sizeof(__be32);
+> >>>          }
+> >>> --
+> >>> 2.25.1
+> >>>
+> >>
+> >> Quite frankly I suggest to revert b63c5478e9cb completely.
+> >>
+> >> The notion of Queue depth can not be properly gathered in Linux with a
+> >> multi queue model,
+> >> so why trying to get a wrong value ?
+> >
+> > Additional reason for a revert is that qdisc_qstats_qlen_backlog() is
+> > reserved for net/sched
+>
+> If by "reserved" you mean "only used by at the moment", then yes (with
+> the only exception being IOAM). But some other functions are defined as
+> well, and some are used elsewhere than the "net/sched" context. So I
+> don't think it's really an issue to use this function "from somewhere else".
+>
+> > code, I think it needs the qdisc lock to be held.
+>
+> Good point. But is it really needed when called with rcu_read_lock?
 
-Feel free to add my acked-by with the next version.
+It is needed.
 
-Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Please revert this patch.
 
-Arınç
+Many people use FQ qdisc, where packets are waiting for their Earliest
+Departure Time to be released.
+
+Also, the draft says:
+
+5.4.2.7.  queue depth
+
+   The "queue depth" field is a 4-octet unsigned integer field.  This
+   field indicates the current length of the egress interface queue of
+   the interface from where the packet is forwarded out.  The queue
+   depth is expressed as the current amount of memory buffers used by
+   the queue (a packet could consume one or more memory buffers,
+   depending on its size).
+
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       queue depth                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+It is relatively clear that the egress interface is the aggregate
+egress interface,
+not a subset of the interface.
+
+If you have 32 TX queues on a NIC, all of them being backlogged (line rate),
+sensing the queue length of one of the queues would give a 97% error
+on the measure.
+
+To properly implement that 'Queue depth' metric, you would need to use
+the backlog of the MQ qdisc.
+That would be very expensive.
