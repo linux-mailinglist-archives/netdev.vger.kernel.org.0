@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F11EC6423CE
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:45:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 447FE6423D1
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:47:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231639AbiLEHpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 02:45:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43758 "EHLO
+        id S231720AbiLEHrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 02:47:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiLEHpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:45:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9D012761
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 23:45:13 -0800 (PST)
+        with ESMTP id S231528AbiLEHrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:47:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C8212761;
+        Sun,  4 Dec 2022 23:47:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEB4D60F98
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:45:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47FC9C433C1;
-        Mon,  5 Dec 2022 07:45:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72190B80D5F;
+        Mon,  5 Dec 2022 07:47:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D5CBC433C1;
+        Mon,  5 Dec 2022 07:47:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670226312;
-        bh=GvaD5zsBva7v2B+iqjF99NwdyBB2t465+NtpNiSq8b4=;
+        s=k20201202; t=1670226437;
+        bh=XJcX69GGs4sfa8CI4cIXi9zjr1DKHpxfdL4uRgkTwQI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bXPHyOb04a7hp30NAlGMjZS+kprdpHDx+2Ua1v7MRt4bMistybV0ci0l9PwJOaU6p
-         +QocxFncSAGABW4f+qWXa33LK9r+2/pbRo75frxJGc2+EOvwO+AigF5pqRFH1X6O+7
-         1jAQNXcbUTmr5Sw+HEKPVSjx53nUgntdmnGoUg/xILecwzX8peBZqoLIjNbS+BZaBv
-         7vzOOBbIX3jCKCkeBfDjuEx7oh51YGfffXJRDaWfA/1kwiqSmQyf09Ku3uxwJE3LE3
-         i9e4CeYbsSCtN30SP/82k05GmXEhctME9OWsS6lsG4EmpPGgtoiRI0Gd+OVD7/w6XM
-         omhnOPCRK2b1w==
-Date:   Mon, 5 Dec 2022 09:45:07 +0200
+        b=fxdED2gEdRRIhsQUuvTDRrNJj9VpHDVbA3lh0eDGhKf3B1Eo4x+EGpUbHt5f47NRC
+         xYVVLaQ/tqC355xve9eeI8sdiWUPVe7DJAavYhZRW0JLlwAyVhS3oSflPmKgDHpUWR
+         y99tZ9eMXzCtL7xQS28BH34l/n3OHsfFUl9ahzx7WNYKLlme6i0k1qZQZW8DIe9wr0
+         j6qVvg9iJHrRXOAG3i9s2+n41Q6JXO0SmLCEuPvoBVqxIGSpo+mECMZ5TnKaG1CS1M
+         rI8y8GQAKwVBFtzycIu4z1JafMqVwQ1x0I7qmMPvf35wGQjK/f03STShkceI3vj5sz
+         dOyVo1WbSmqZA==
+Date:   Mon, 5 Dec 2022 09:47:12 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>,
-        netdev@vger.kernel.org, mkubecek@suse.cz, andrew@lunn.ch,
-        corbet@lwn.net, sridhar.samudrala@intel.com,
-        anthony.l.nguyen@intel.com
-Subject: Re: [PATCH net-next v7] ethtool: add netlink based get rss support
-Message-ID: <Y42hg4MsATH/07ED@unreal>
-References: <20221202002555.241580-1-sudheer.mogilappagari@intel.com>
- <Y4yPwR2vBSepDNE+@unreal>
- <20221204153850.42640ac2@kernel.org>
+To:     ye.xingchen@zte.com.cn
+Cc:     davem@davemloft.net, ecree.xilinx@gmail.com,
+        habetsm.xilinx@gmail.com, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, petrm@nvidia.com, khalasa@piap.pl,
+        shayagr@amazon.com, wsa+renesas@sang-engineering.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] sfc: use sysfs_emit() to instead of
+ scnprintf()
+Message-ID: <Y42iAAH7Yvk6rOP+@unreal>
+References: <202212051021451139126@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221204153850.42640ac2@kernel.org>
+In-Reply-To: <202212051021451139126@zte.com.cn>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,44 +56,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 04, 2022 at 03:38:50PM -0800, Jakub Kicinski wrote:
-> On Sun, 4 Dec 2022 14:17:05 +0200 Leon Romanovsky wrote:
-> > On Thu, Dec 01, 2022 at 04:25:55PM -0800, Sudheer Mogilappagari wrote:
-> > > Add netlink based support for "ethtool -x <dev> [context x]"
-> > > command by implementing ETHTOOL_MSG_RSS_GET netlink message.
-> > > This is equivalent to functionality provided via ETHTOOL_GRSSH
-> > > in ioctl path. It sends RSS table, hash key and hash function
-> > > of an interface to user space.
-> > > 
-> > > This patch implements existing functionality available
-> > > in ioctl path and enables addition of new RSS context
-> > > based parameters in future.  
-> > 
-> > But why do you do this conversion now? Was this "future" already
-> > discussed on the ML?
+On Mon, Dec 05, 2022 at 10:21:45AM +0800, ye.xingchen@zte.com.cn wrote:
+> From: ye xingchen <ye.xingchen@zte.com.cn>
 > 
-> Conversion to netlink stands on its own.
-
-It doesn't answer on my question. The answer is "we do, just because we
-can" is nice but doesn't remove my worries that such "future" extension
-will work with real future feature. From my experience, many UAPI designs
-without real use case in hand will require adaptions and won't work out-of-box.
-
-IMHO, it is the same sin as premature optimization.
-
+> Follow the advice of the Documentation/filesystems/sysfs.rst and show()
+> should only use sysfs_emit() or sysfs_emit_at() when formatting the
+> value to be returned to user space.
 > 
-> > > +	u8 *rss_config;
-> > > +	int ret;  
-> > 
-> > <...>
-> > 
-> > > +		data->indir_table = (u32 *)rss_config;  
-> > 
-> > Please use correct type from the beginning.
+> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+> ---
+> v1 -> v2
+> Fix the Subject.
+>  drivers/net/ethernet/sfc/efx_common.c       | 2 +-
+>  drivers/net/ethernet/sfc/siena/efx_common.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> There are two tables in this memory, the second one is u8.
-> So one of them will need the cast, the code is fine AFAICT.
 
-Right, I missed hkey.
-
-Thanks
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
