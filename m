@@ -2,145 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 558F1642C51
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:53:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DE8642C2F
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:45:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbiLEPxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 10:53:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
+        id S231687AbiLEPpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 10:45:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230235AbiLEPxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:53:54 -0500
-X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 05 Dec 2022 07:53:50 PST
-Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252AB1208A;
-        Mon,  5 Dec 2022 07:53:50 -0800 (PST)
-Received: from ubuntu.home (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id DE4CC200DF9A;
-        Mon,  5 Dec 2022 16:36:20 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be DE4CC200DF9A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1670254581;
-        bh=9RCpom6IfP/9eHB8wsuAhrtCGUOdEGP7ADW4IxYZHfs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=1CQbneuAakFYezm9c49Pe85BrUfEgHmlUWWiJymF+Mj0VyLhPmDGvk4jFGtMA2NCl
-         NNf6pra9lKs6aOzcrpfQSokivThebnH2bn/0CHsq2kM86DyAhRkgXTE81//a32CV9E
-         RHZom6WGKuBgKqtCDKKaTzGzKpKZv12kWkaGLyj+tfJXzKhNRV4ue8QGJSsDl5wsUH
-         Rz0w59W/epwIvfz4kOAFrSzmSHXgp28uAh6A8cldID5qZXlJt4Sl2VgOGpPjIPlWfm
-         kYJxcUfkzKIstyNpheyanVQyV2Mzm+RlEVTsFqWjBbx1rNVM+pd6/o8O0u+gKtfbYd
-         kuY/huEGvddRg==
-From:   Justin Iurman <justin.iurman@uliege.be>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        justin.iurman@uliege.be, stable@vger.kernel.org
-Subject: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue depth data field")
-Date:   Mon,  5 Dec 2022 16:35:57 +0100
-Message-Id: <20221205153557.28549-1-justin.iurman@uliege.be>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S233122AbiLEPpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:45:03 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14771F03F
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:44:51 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id i15so8147649edf.2
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 07:44:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tfKmzFIivR84aG/YhA8CfmmH6xgvFirRXWP7JuK1YUk=;
+        b=hSdrSzdOE8XumiTKevu/I2QmD9fnTqdEpFHE7Bhai9aUZc47b27E5de7lctXQ7Fcj3
+         9jQs2Lr8eQ+4Jm7YM9e0/FC7O26OeJGq848cC88gEvBgilLMOfF/3hYgw4PPSIPtrrdn
+         flaTluZsylwF1L/KClqXYZAnMYdA7FsPx9DleDMgKsssWBuCDDoiwVdnjH/DJJMgnYS+
+         snJFEQ0Zb7xWJoyhP0ufhkMLSGdKwVTBKtRGBIAP34JmDPZKFeFmj+q4QvIfILulSBXp
+         X9ZTENd+ZMDJKbRmY6gxyKzqayNA7ihrSWeZ+jlBP7gf4uDhJn1nmvRv/UkSRl6inZ7j
+         PpMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tfKmzFIivR84aG/YhA8CfmmH6xgvFirRXWP7JuK1YUk=;
+        b=uFNwothikejo1ZOejRCQSpbooJIlE3LUbpRKPx5NyCYx2UpZV2PCHE/ir4vz3YCl9y
+         wPSIf3QCR4Kb16B31HH6utI58JZ35m9/UsAO3t6EtETeaTfzcE3mIs9NVf5uTQgOHu4V
+         wqKWlgHLmqjLAA4uzk+MUL4+HX0TotrwD5yzq02AMoTegtfbhTBUOCWDWVwF82/ywuZE
+         uYMrqLo/nPL913T5lW7ZULkjgBpolgMc/WEsfgb3RdKDG/h6kizOllrowQY/X427cDFo
+         LIrC9XdzuWpaGK820HEDK73/I7JvH9GYM3BCFDuduP5e8bKHjsDIUlkNKbC7YYLPJMqP
+         fcCQ==
+X-Gm-Message-State: ANoB5pk/kQV34+cjHP7FkJk/IuF8pZrcSBL7tuVEktV3cyH6JX4cxmRE
+        G87TXxjRP/I5iY2XqV7WFtLl5aTtRAEg0DLN
+X-Google-Smtp-Source: AA0mqf7666734hzhIG2U/KjYgpyCj3PeIQsVAQsQWgZsDLq7p5iFn62D/zuoL/PagwGLpE4HJBpAkQ==
+X-Received: by 2002:a05:6402:4284:b0:461:8156:e0ca with SMTP id g4-20020a056402428400b004618156e0camr19351579edc.271.1670255089592;
+        Mon, 05 Dec 2022 07:44:49 -0800 (PST)
+Received: from hera (ppp078087234022.access.hol.gr. [78.87.234.22])
+        by smtp.gmail.com with ESMTPSA id 10-20020a170906200a00b007ae243c3f05sm6221749ejo.189.2022.12.05.07.44.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 07:44:49 -0800 (PST)
+Date:   Mon, 5 Dec 2022 17:44:46 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>, brouer@redhat.com,
+        netdev@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 00/24] Split page pools from struct page
+Message-ID: <Y44R7i65ftm+uGdF@hera>
+References: <20221130220803.3657490-1-willy@infradead.org>
+ <cfe0b2ca-824d-3a52-423a-f8262f12fabe@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HEXHASH_WORD,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cfe0b2ca-824d-3a52-423a-f8262f12fabe@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a NULL qdisc pointer when retrieving the TX queue depth
-for IOAM.
+Hi Jesper,
 
-IMPORTANT: I suspect this fix is local only and the bug goes deeper (see
-reasoning below).
+On Mon, Dec 05, 2022 at 04:34:10PM +0100, Jesper Dangaard Brouer wrote:
+> 
+> On 30/11/2022 23.07, Matthew Wilcox (Oracle) wrote:
+> > The MM subsystem is trying to reduce struct page to a single pointer.
+> > The first step towards that is splitting struct page by its individual
+> > users, as has already been done with folio and slab.  This attempt chooses
+> > 'netmem' as a name, but I am not even slightly committed to that name,
+> > and will happily use another.
+> 
+> I've not been able to come-up with a better name, so I'm okay with
+> 'netmem'.  Others are of-cause free to bikesheet this ;-)
 
-Kernel panic:
+Same here. But if anyone has a better name please shout.
+
+> 
+> > There are some relatively significant reductions in kernel text
+> > size from these changes.  I'm not qualified to judge how they
+> > might affect performance, but every call to put_page() includes
+> > a call to compound_head(), which is now rather more complex
+> > than it once was (at least in a distro config which enables
+> > CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP).
+> > 
+> 
+> I have a micro-benchmark [1][2], that I want to run on this patchset.
+> Reducing the asm code 'text' size is less likely to improve a
+> microbenchmark. The 100Gbit mlx5 driver uses page_pool, so perhaps I can
+> run a packet benchmark that can show the (expected) performance improvement.
+> 
+> [1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
+> [2] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_cross_cpu.c
+> 
+
+If you could give it a spin it would be great.  I did apply the patchset
+and was running fine on my Arm box. I was about to run these tests, but then
+I remembered that this only works for x86.  I don't have any cards supported
+by page pool around.
+
+> > I've only converted one user of the page_pool APIs to use the new netmem
+> > APIs, all the others continue to use the page based ones.
+> > 
+> 
+> I guess we/netdev-devels need to update the NIC drivers that uses page_pool.
+> 
+ 
 [...]
-RIP: 0010:ioam6_fill_trace_data+0x54f/0x5b0
-[...]
 
-...which basically points to the call to qdisc_qstats_qlen_backlog
-inside net/ipv6/ioam6.c.
-
-From there, I directly thought of a NULL pointer (queue->qdisc). To make
-sure, I added some printk's to know exactly *why* and *when* it happens.
-Here is the (summarized by queue) output:
-
-skb for TX queue 1, qdisc is ffff8b375eee9800, qdisc_sleeping is ffff8b375eee9800
-skb for TX queue 2, qdisc is ffff8b375eeefc00, qdisc_sleeping is ffff8b375eeefc00
-skb for TX queue 3, qdisc is ffff8b375eeef800, qdisc_sleeping is ffff8b375eeef800
-skb for TX queue 4, qdisc is ffff8b375eeec800, qdisc_sleeping is ffff8b375eeec800
-skb for TX queue 5, qdisc is ffff8b375eeea400, qdisc_sleeping is ffff8b375eeea400
-skb for TX queue 6, qdisc is ffff8b375eeee000, qdisc_sleeping is ffff8b375eeee000
-skb for TX queue 7, qdisc is ffff8b375eee8800, qdisc_sleeping is ffff8b375eee8800
-skb for TX queue 8, qdisc is ffff8b375eeedc00, qdisc_sleeping is ffff8b375eeedc00
-skb for TX queue 9, qdisc is ffff8b375eee9400, qdisc_sleeping is ffff8b375eee9400
-skb for TX queue 10, qdisc is ffff8b375eee8000, qdisc_sleeping is ffff8b375eee8000
-skb for TX queue 11, qdisc is ffff8b375eeed400, qdisc_sleeping is ffff8b375eeed400
-skb for TX queue 12, qdisc is ffff8b375eeea800, qdisc_sleeping is ffff8b375eeea800
-skb for TX queue 13, qdisc is ffff8b375eee8c00, qdisc_sleeping is ffff8b375eee8c00
-skb for TX queue 14, qdisc is ffff8b375eeea000, qdisc_sleeping is ffff8b375eeea000
-skb for TX queue 15, qdisc is ffff8b375eeeb800, qdisc_sleeping is ffff8b375eeeb800
-skb for TX queue 16, qdisc is NULL, qdisc_sleeping is NULL
-
-What the hell? So, not sure why queue #16 would *never* have a qdisc
-attached. Is it something expected I'm not aware of? As an FYI, here is
-the output of "tc qdisc list dev xxx":
-
-qdisc mq 0: root
-qdisc fq_codel 0: parent :10 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :f limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :e limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :d limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :c limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :b limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :a limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :9 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :8 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :7 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :6 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :5 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-
-By the way, the NIC is an Intel XL710 40GbE QSFP+ (i40e driver, firmware
-version 8.50 0x8000b6c7 1.3082.0) and it was tested on latest "net"
-version (6.1.0-rc7+). Is this a bug in the i40e driver?
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
----
- net/ipv6/ioam6.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
-index 571f0e4d9cf3..2472a8a043c4 100644
---- a/net/ipv6/ioam6.c
-+++ b/net/ipv6/ioam6.c
-@@ -727,10 +727,13 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
- 			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
- 		} else {
- 			queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
--			qdisc = rcu_dereference(queue->qdisc);
--			qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
--
--			*(__be32 *)data = cpu_to_be32(backlog);
-+			if (!queue->qdisc) {
-+				*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
-+			} else {
-+				qdisc = rcu_dereference(queue->qdisc);
-+				qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
-+				*(__be32 *)data = cpu_to_be32(backlog);
-+			}
- 		}
- 		data += sizeof(__be32);
- 	}
--- 
-2.25.1
-
+Regards
+/Ilias
