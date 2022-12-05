@@ -2,211 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75A3D642E27
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:04:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78359642E4B
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:07:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231774AbiLEREd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 12:04:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
+        id S231774AbiLERG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 12:06:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiLEREc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:04:32 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF2A1758C
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:04:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1XtzUoipYQsWDe7i+sH8w/wi6ZW1iuV1z/Xc8cA+j68=; b=HOFPpDZtBGoI0HyiFlIWYj+JNi
-        0jPYUtTUK3NMPYKoXJXycmUCvUl9qFLm7la16U6w9RjcGmwwvIuZJTHdIKqPkKfUDCNcKfr1NVcTH
-        veK+elCv7NQXG49mekC4PySw4HBHsMpYWfBHSKaHSYb/Mx5h6l6uJ+A7gmi/+zwHN7pk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p2EtH-004QUA-39; Mon, 05 Dec 2022 18:04:27 +0100
-Date:   Mon, 5 Dec 2022 18:04:27 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "mengyuanlou@net-swift.com" <mengyuanlou@net-swift.com>
-Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
-Subject: Re: [PATCH net-next] net: ngbe: Add mdio bus driver.
-Message-ID: <Y44kmyE3Lw7/vxcS@lunn.ch>
-References: <20221202083558.57618-1-mengyuanlou@net-swift.com>
- <Y4p0dQWijzQMlBmW@lunn.ch>
- <B561CAB9-E99D-473E-95AC-C6B13BCB5701@net-swift.com>
+        with ESMTP id S230232AbiLERGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:06:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCA4167CD
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:05:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670259954;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b7DJBD9damnXune0Kig2UnZuVv4B+QVYF3QsLQNl4lw=;
+        b=UUsNwlmKz2+h9+R1HXpjHrWWM1WQ9r1Vll2R9Cd7mBU8N3O6VoUAdkZUkz5iCMGIZEB4Zl
+        dbdK9BintL35ymKvl6nvAEWqIDgueTFxx76NHZjnNxPZmPSd+EJPPXzVNzkiwosP4AWO5x
+        CEfBNcdU+Nrw6HofsSLePq/gOT68B3Y=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-220-jlmXkEInPzKBl1L85InULw-1; Mon, 05 Dec 2022 12:05:53 -0500
+X-MC-Unique: jlmXkEInPzKBl1L85InULw-1
+Received: by mail-wr1-f71.google.com with SMTP id a7-20020adfbc47000000b002421f817287so2513398wrh.4
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 09:05:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=b7DJBD9damnXune0Kig2UnZuVv4B+QVYF3QsLQNl4lw=;
+        b=MX4Ivqbq6o4wya7HcUFFqFSzZGLGmbTsDG1H9SypRBG6cSKtWJGGAkLi17BpEUmsZx
+         iQd4o2r+cQ4zsGkVnFdsvFjMlT8rnFw0ZKUuIApUSoKOSyD+35QE6WHCsqW5bFe6SkgG
+         G3vAEwtewtIH4MPYJMeteHNJUkJoT9iM4RwZDBidb7p9uKA2E3SftGGAub2uKIKjyei0
+         JzGbzqfTJJoasKf33TJotk2jk2LahFMD1ZP0XNLMZJ76XDuRMVLQb1s8vJsyX8Ogg27X
+         OQU4ZfNpm9V8Q978yQbvkD8oOSM127D3c19ejA1AwIuEdabBpH2g345F1FpcQ6DEzNYC
+         HyIQ==
+X-Gm-Message-State: ANoB5pln0omBx/1KWhja6HjGaqSx1BcYf1fpQkIGqh5qGFzbIMmtahZ4
+        twcZBlK/mFiRCgs9C8XwTd1B3HNJH7CZ+Acop+L8szIycNO3yxRpzmDSY61hgFuZk2AZFt+I85O
+        /uTPJip17mG7FERH6
+X-Received: by 2002:adf:f5c3:0:b0:242:3427:bb51 with SMTP id k3-20020adff5c3000000b002423427bb51mr12712964wrp.635.1670259952261;
+        Mon, 05 Dec 2022 09:05:52 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6gLa1e/CtnmUdAsov448g+X+01PUiazUSLlfkKZnHFzLMa2kEDqD+6fmSR4sa3jKiCKSwh/w==
+X-Received: by 2002:adf:f5c3:0:b0:242:3427:bb51 with SMTP id k3-20020adff5c3000000b002423427bb51mr12712943wrp.635.1670259951991;
+        Mon, 05 Dec 2022 09:05:51 -0800 (PST)
+Received: from localhost (net-188-216-77-84.cust.vodafonedsl.it. [188.216.77.84])
+        by smtp.gmail.com with ESMTPSA id g16-20020a7bc4d0000000b003d1b4d957aasm6318137wmk.36.2022.12.05.09.05.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 09:05:51 -0800 (PST)
+Date:   Mon, 5 Dec 2022 18:05:49 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, sujuan.chen@mediatek.com
+Subject: Re: [PATCH v2 net-next] net: ethernet: mtk_wed: fix possible
+ deadlock if mtk_wed_wo_init fails
+Message-ID: <Y44k7X5YYbuSntd2@lore-desk>
+References: <5a29aae6c4a26e807844210d4ddac7950ca5f63d.1670238731.git.lorenzo@kernel.org>
+ <Y44jO1ZT9RgqYtxF@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tHgY236u4P316zYr"
 Content-Disposition: inline
-In-Reply-To: <B561CAB9-E99D-473E-95AC-C6B13BCB5701@net-swift.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y44jO1ZT9RgqYtxF@unreal>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> + ret = wx_stop_adapter(wxhw);
-> >> + if (ret != 0)
-> >> + return ret;
-> >> + val = WX_MIS_RST_LAN_RST(wxhw->bus.func);
-> >> + wr32(wxhw, WX_MIS_RST, val | rd32(wxhw, WX_MIS_RST));
-> >> +
-> >> + ret = read_poll_timeout(rd32, val,
-> >> + !(val & (BIT(9) << wxhw->bus.func)), 1000,
-> >> + 100000, false, wxhw, 0x10028);
-> >> + if (ret)
-> >> + wx_dbg(wxhw, "Lan reset exceed s maximum times.\n");
-> >> +
-> >> + wr32(wxhw, NGBE_PHY_CONFIG(0x1f), 0xa43);
-> >> + ret = read_poll_timeout(rd32, val, val & 0x20, 1000,
-> >> + 100000, false, wxhw, NGBE_PHY_CONFIG(0x1d));
-> >> + if (ret)
-> >> + wx_dbg(wxhw, "Gphy reset failed.\n");
-> > 
-> > What is this doing? Toggling a GPIO which is connected to the PHY
-> > reset input?
-> > 
-> Waittiing for internal phy can access through the mdio
 
-An MDIO bus driver has this member:
+--tHgY236u4P316zYr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-	/** @reset: Perform a reset of the bus */
-	int (*reset)(struct mii_bus *bus);
+> On Mon, Dec 05, 2022 at 12:14:41PM +0100, Lorenzo Bianconi wrote:
+> > Introduce __mtk_wed_detach() in order to avoid a possible deadlock in
+> > mtk_wed_attach routine if mtk_wed_wo_init fails.
+> > Check wo pointer is properly allocated before running mtk_wed_wo_reset()
+> > and mtk_wed_wo_deinit() in __mtk_wed_detach routine.
+> > Honor mtk_wed_mcu_send_msg return value in mtk_wed_wo_reset().
+> >=20
+> > Fixes: 4c5de09eb0d0 ("net: ethernet: mtk_wed: add configure wed wo supp=
+ort")
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> > Changes since v1:
+> > - move wo pointer checks in __mtk_wed_detach()
+> > ---
+> >  drivers/net/ethernet/mediatek/mtk_wed.c     | 30 ++++++++++++++-------
+> >  drivers/net/ethernet/mediatek/mtk_wed_mcu.c |  3 +++
+> >  2 files changed, 23 insertions(+), 10 deletions(-)
+> >=20
+> > diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethe=
+rnet/mediatek/mtk_wed.c
+> > index d041615b2bac..2ce9fbb1c66d 100644
+> > --- a/drivers/net/ethernet/mediatek/mtk_wed.c
+> > +++ b/drivers/net/ethernet/mediatek/mtk_wed.c
+> > @@ -174,9 +174,10 @@ mtk_wed_wo_reset(struct mtk_wed_device *dev)
+> >  	mtk_wdma_tx_reset(dev);
+> >  	mtk_wed_reset(dev, MTK_WED_RESET_WED);
+> > =20
+> > -	mtk_wed_mcu_send_msg(wo, MTK_WED_MODULE_ID_WO,
+> > -			     MTK_WED_WO_CMD_CHANGE_STATE, &state,
+> > -			     sizeof(state), false);
+> > +	if (mtk_wed_mcu_send_msg(wo, MTK_WED_MODULE_ID_WO,
+> > +				 MTK_WED_WO_CMD_CHANGE_STATE, &state,
+> > +				 sizeof(state), false))
+> > +		return;
+> > =20
+> >  	if (readx_poll_timeout(mtk_wed_wo_read_status, dev, val,
+> >  			       val =3D=3D MTK_WED_WOIF_DISABLE_DONE,
+> > @@ -576,12 +577,10 @@ mtk_wed_deinit(struct mtk_wed_device *dev)
+> >  }
+> > =20
+> >  static void
+> > -mtk_wed_detach(struct mtk_wed_device *dev)
+> > +__mtk_wed_detach(struct mtk_wed_device *dev)
+> >  {
+> >  	struct mtk_wed_hw *hw =3D dev->hw;
+> > =20
+> > -	mutex_lock(&hw_lock);
+> > -
+> >  	mtk_wed_deinit(dev);
+> > =20
+> >  	mtk_wdma_rx_reset(dev);
+> > @@ -590,9 +589,11 @@ mtk_wed_detach(struct mtk_wed_device *dev)
+> >  	mtk_wed_free_tx_rings(dev);
+> > =20
+> >  	if (mtk_wed_get_rx_capa(dev)) {
+> > -		mtk_wed_wo_reset(dev);
+> > +		if (hw->wed_wo)
+> > +			mtk_wed_wo_reset(dev);
+> >  		mtk_wed_free_rx_rings(dev);
+> > -		mtk_wed_wo_deinit(hw);
+> > +		if (hw->wed_wo)
+> > +			mtk_wed_wo_deinit(hw);
+> >  	}
+> > =20
+> >  	if (dev->wlan.bus_type =3D=3D MTK_WED_BUS_PCIE) {
+> > @@ -612,6 +613,13 @@ mtk_wed_detach(struct mtk_wed_device *dev)
+> >  	module_put(THIS_MODULE);
+> > =20
+> >  	hw->wed_dev =3D NULL;
+> > +}
+> > +
+> > +static void
+> > +mtk_wed_detach(struct mtk_wed_device *dev)
+> > +{
+> > +	mutex_lock(&hw_lock);
+> > +	__mtk_wed_detach(dev);
+> >  	mutex_unlock(&hw_lock);
+> >  }
+> > =20
+> > @@ -1490,8 +1498,10 @@ mtk_wed_attach(struct mtk_wed_device *dev)
+> >  		ret =3D mtk_wed_wo_init(hw);
+> >  	}
+> >  out:
+> > -	if (ret)
+> > -		mtk_wed_detach(dev);
+> > +	if (ret) {
+> > +		dev_err(dev->hw->dev, "failed to attach wed device\n");
+> > +		__mtk_wed_detach(dev);
+> > +	}
+> >  unlock:
+> >  	mutex_unlock(&hw_lock);
+> > =20
+> > diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/drivers/net/=
+ethernet/mediatek/mtk_wed_mcu.c
+> > index f9539e6233c9..3dd02889d972 100644
+> > --- a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+> > +++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+> > @@ -207,6 +207,9 @@ int mtk_wed_mcu_msg_update(struct mtk_wed_device *d=
+ev, int id, void *data,
+> >  	if (dev->hw->version =3D=3D 1)
+> >  		return 0;
+> > =20
+> > +	if (!wo)
+> > +		return -ENODEV;
+> > +
+>=20
+> Can you please help me to understand how and when this mtk_wed_mcu_msg_up=
+date()
+> function is called?
+>=20
+> I see this line .msg_update =3D mtk_wed_mcu_msg_update, and
+> relevant mtk_wed_device_update_msg() define, but nothing calls to this
+> define.
 
-It seems like this function should be used here. That is why i'm
-asking what this is doing.
+mtk_wed_device_update_msg() is currently run by mt7915 driver in
+mt7915_mcu_wed_enable_rx_stats() and in mt76_connac_mcu_sta_wed_update().
+At the moment we always run mtk_wed_mcu_msg_update with non-NULL wo pointer,
+but I would prefer to add this safety check.
 
-> >> switch (type_mask) {
-> >> case NGBE_SUBID_M88E1512_SFP:
-> >> case NGBE_SUBID_LY_M88E1512_SFP:
-> >> - hw->phy.type = ngbe_phy_m88e1512_sfi;
-> >> + hw->phy.type = ngbe_phy_mv_sfi;
-> >> break;
-> >> case NGBE_SUBID_M88E1512_RJ45:
-> >> - hw->phy.type = ngbe_phy_m88e1512;
-> >> + hw->phy.type = ngbe_phy_mv;
-> >> break;
-> >> case NGBE_SUBID_M88E1512_MIX:
-> >> - hw->phy.type = ngbe_phy_m88e1512_unknown;
-> >> + hw->phy.type = ngbe_phy_mv_mix;
-> >> break;
-> >> case NGBE_SUBID_YT8521S_SFP:
-> >> case NGBE_SUBID_YT8521S_SFP_GPIO:
-> >> case NGBE_SUBID_LY_YT8521S_SFP:
-> >> - hw->phy.type = ngbe_phy_yt8521s_sfi;
-> >> + hw->phy.type = ngbe_phy_yt_mix;
-> >> break;
-> >> case NGBE_SUBID_INTERNAL_YT8521S_SFP:
-> >> case NGBE_SUBID_INTERNAL_YT8521S_SFP_GPIO:
-> >> - hw->phy.type = ngbe_phy_internal_yt8521s_sfi;
-> >> + hw->phy.type = ngbe_phy_internal_yt_sfi;
-> >> break;
-> >> case NGBE_SUBID_RGMII_FPGA:
-> >> case NGBE_SUBID_OCP_CARD:
-> > 
-> > Generally, a MAC driver does not care what sort of PHY is connected to
-> > it. The PHY driver does all that is needed. So it is not clear to me
-> > why you need this.
-> > 
-> Because the mac driver wants to configure the phy on special boards.
+Regards,
+Lorenzo
 
-That is not how it works in Mainline linux. You have a MAC driver, and
-a collection of PHY drivers. phylib sits in the middle. The MAC driver
-should not care what PHY driver is being used, phylib abstracts all
-access to it.
+>=20
+>=20
+>=20
+> >  	return mtk_wed_mcu_send_msg(wo, MTK_WED_MODULE_ID_WO, id, data, len,
+> >  				    true);
+> >  }
+> > --=20
+> > 2.38.1
+> >=20
+>=20
 
-> >> +static int ngbe_phy_read_reg(struct mii_bus *bus, int phy_addr, int regnum)
-> >> +{
-> >> + struct ngbe_hw *hw = bus->priv;
-> >> + u16 phy_data = 0;
-> >> +
-> >> + if (hw->mac_type == ngbe_mac_type_mdi)
-> >> + phy_data = ngbe_phy_read_reg_internal(bus, phy_addr, regnum);
-> >> + else if (hw->mac_type == ngbe_mac_type_rgmii)
-> >> + phy_data = ngbe_phy_read_reg_mdi(bus, phy_addr, regnum);
-> > 
-> > Do you have two mdio busses?
-> There are two different ways to access the internal and external PHYs.
+--tHgY236u4P316zYr
+Content-Type: application/pgp-signature; name="signature.asc"
 
-So you have two MDIO busses. An internal MDIO bus and an external MDIO
-bus. This is not that uncommon. Some Marvell switches are like this.
-Is there anything stopping both being used at the same time?
+-----BEGIN PGP SIGNATURE-----
 
-Since you hardware has two MDIO busses, you should be registering them
-both.
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY44k7QAKCRA6cBh0uS2t
+rNOxAQC8q/k7mo1XbnKQjrPmumhdva9w1PIRQTguMeFrdfq49gEAz4D/Ss1vGRP3
+ASHrz5HBFxuwDrzOuG8Y6oFRoOAHvQo=
+=PUML
+-----END PGP SIGNATURE-----
 
-> >> +static void ngbe_gphy_wait_mdio_access_on(struct phy_device *phydev)
-> >> +{
-> >> + u16 val;
-> >> + int ret;
-> >> +
-> >> + /* select page to 0xa43*/
-> >> + phy_write(phydev, 0x1f, 0x0a43);
-> >> + /* wait to phy can access */
-> >> + ret = read_poll_timeout(phy_read, val, val & 0x20, 100,
-> >> + 2000, false, phydev, 0x1d);
-> > 
-> > What is this doing? The MAC should not be directly accessing the PHY.
-> > 
-> We need to do some work around it, the phy driver can not do what I want.
+--tHgY236u4P316zYr--
 
-Heiner suggested this is an errata fix for a specific PHY. Why cannot
-the PHY driver do it? Why should every MAC driver using this PHY need
-its own copy of the errata fix?
-
-> > This is how other MAC drivers do this:
-> > 
-> > /* disable EEE autoneg, EEE not supported by TSNEP */
-> > memset(&ethtool_eee, 0, sizeof(ethtool_eee));
-> > phy_ethtool_set_eee(adapter->phydev, &ethtool_eee);
-> > 
-> > Please delete all code which directly access the PHY. You might need
-> > to add new functionality to the PHY driver, but in general, it is not
-> > needed, the existing PHY drivers should do what you need.
-> > 
-> For internal phy: The phy cannot be automatically ready, we need to manually set the Special calibration and then make the phy up.
-
-Why cannot the PHY driver do this?
-
-> For external phy: phy_reset clear all, we need to reconfigure phy led oem configuration
-
-Please give more details. We can then figure out the correct way to do
-this in Linux.
-
-> >> +int ngbe_mdio_init(struct ngbe_hw *hw)
-> >> +{
-> >> + struct pci_dev *pdev = hw->wxhw.pdev;
-> >> + int ret;
-> >> +
-> >> + hw->mii_bus = devm_mdiobus_alloc(&pdev->dev);
-> >> + if (!hw->mii_bus)
-> >> + return -ENOMEM;
-> >> +
-> >> + hw->mii_bus->name = "ngbe_mii_bus";
-> >> + hw->mii_bus->read = &ngbe_phy_read_reg;
-> >> + hw->mii_bus->write = &ngbe_phy_write_reg;
-> >> + hw->mii_bus->phy_mask = 0xfffffffe;
-> >> + hw->mii_bus->parent = &pdev->dev;
-> >> + hw->mii_bus->priv = hw;
-> >> +
-> >> + snprintf(hw->mii_bus->id, MII_BUS_ID_SIZE, "ngbe-%x",
-> >> + (pdev->bus->number << 8) |
-> >> + pdev->devfn);
-> >> +
-> >> + ret = devm_mdiobus_register(&pdev->dev, hw->mii_bus);
-> >> + if (ret)
-> >> + return ret;
-> >> +
-> >> + hw->phydev = mdiobus_get_phy(hw->mii_bus, 0);
-> > 
-> > Is this a hardware limitation? Only address 0 is supported?
-> 0-3 address is supported.
-
-So why 0xfffffffe ?
-
-And why on 0-3? What happens with the other 28 addresses on the bus?
-Does the hardware explode? Lock up?
-
-    Andrew
