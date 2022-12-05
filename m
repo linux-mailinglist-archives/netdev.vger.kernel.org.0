@@ -2,146 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 436DD64269D
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 11:22:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 763EA6426B7
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 11:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230502AbiLEKWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 05:22:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57170 "EHLO
+        id S230200AbiLEKcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 05:32:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbiLEKWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 05:22:23 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A01192A0
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 02:22:21 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1p28bz-0001Qv-C5; Mon, 05 Dec 2022 11:22:11 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1p28bx-0005bw-DV; Mon, 05 Dec 2022 11:22:09 +0100
-Date:   Mon, 5 Dec 2022 11:22:09 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 1/4] net/ethtool: add netlink interface for
- the PLCA RS
-Message-ID: <20221205102209.GA17619@pengutronix.de>
-References: <fc3ac4f2d0c28d9c24b909e97791d1f784502a4a.1670204277.git.piergiorgio.beruto@gmail.com>
- <20221205060057.GA10297@pengutronix.de>
- <Y43CDqAjvlAfLK1v@gvm01>
+        with ESMTP id S229954AbiLEKcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 05:32:09 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A8FBE38
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 02:32:07 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id v8so15137828edi.3
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 02:32:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5fpoZJPaIxa+iAwbcp/aUZH0HPeDz4PPni1VjWgLtZs=;
+        b=tG60iLLOTJzz/wdBJOABaJkp41N7vWZuGWo3OfpG0y4mIn7iLlr5LFlGFQ4LRWN9de
+         fDT6GRKZ4OX820ZQpxodCU4W02sEr/McVZbEDygubp1Ui5LNvYQTkGeNdzlpDYNu0maG
+         Fk7M4xL8VDo29lS8R8rFx54ErIwc+FUFW8zzxaTWdtoXrKYXWi4kpKbJpezqJtc+dgK6
+         nJys8tdoOw/0x8XvDw+VRnMtOE/yHDAesRrniTEMims89aIfmN6G1iDUBfylhlFn/9Pu
+         fItBBy4HYjnpo2aFww0sDxbgDL5vWXHHEspLoq0vKky7e7PJo1RR0tBqyjtc9tl398Hm
+         F84g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5fpoZJPaIxa+iAwbcp/aUZH0HPeDz4PPni1VjWgLtZs=;
+        b=qXWu5b+xondiBCdX1k7xPhvD4I4rWxuNs2W3Ibj1XM68d4ZnHmNrJRf2XNMZsq/A/P
+         TWTJFQej0C3WqIgSc2140AByu4fIhAxET1DR6H1AjLXpvjkg2QaVmMyWR19KajGnXWVd
+         dL48nIlE0jkGswzCLvdIvFWWi281b2Y2G235ZdnPCOmbmcJ1aEFR6OSnTY8qvpOmF1+2
+         0+EIfrILWi96oUpmcBh1fp+4xlQBfAN64zzJcGktMakc+GhonjC45VkEwmBoVsIp2wVv
+         b7DvBCvO0p6aIUsVWejkNOFQpHRNvMocr+tbdJM5/rHzPqKiDiSrhYX4PPBQp7ge/gyX
+         W/UA==
+X-Gm-Message-State: ANoB5pkoywU4gLgfoSPzTPIGj+VOxq+hytzf2gzROXj12pJ2mB+Ik+5w
+        0ooKQRbE9mfLI9topQZn2SYDLw==
+X-Google-Smtp-Source: AA0mqf6uqbOB5OxqzEMjwdQ0h5HDWCr4Cs7UQe0Ido3SB9WNJ7dIV7UGBAws/2Jm7WwGS9+B1EuQZA==
+X-Received: by 2002:aa7:c502:0:b0:46c:6bdc:40fd with SMTP id o2-20020aa7c502000000b0046c6bdc40fdmr7258470edq.74.1670236325970;
+        Mon, 05 Dec 2022 02:32:05 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id l2-20020a056402124200b004615f7495e0sm6109204edw.8.2022.12.05.02.32.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 02:32:05 -0800 (PST)
+Date:   Mon, 5 Dec 2022 11:32:04 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vadim Fedorenko <vadfed@fb.com>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        "Olech, Milena" <milena.olech@intel.com>,
+        "Michalik, Michal" <michal.michalik@intel.com>
+Subject: Re: [RFC PATCH v4 2/4] dpll: Add DPLL framework base functions
+Message-ID: <Y43IpIQ3C0vGzHQW@nanopsycho>
+References: <20221129213724.10119-1-vfedorenko@novek.ru>
+ <20221129213724.10119-3-vfedorenko@novek.ru>
+ <Y4eGxb2i7uwdkh1T@nanopsycho>
+ <DM6PR11MB4657DE713E4E83E09DFCFA4B9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <Y4nyBwNPjuJFB5Km@nanopsycho>
+ <DM6PR11MB4657C8417DEB0B14EC35802E9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <Y4okm5TrBj+JAJrV@nanopsycho>
+ <20221202212206.3619bd5f@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y43CDqAjvlAfLK1v@gvm01>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20221202212206.3619bd5f@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 05, 2022 at 11:03:58AM +0100, Piergiorgio Beruto wrote:
-> Hello Oleksij, and thank you for your review!
-> Please see my comments below.
-> 
-> On Mon, Dec 05, 2022 at 07:00:57AM +0100, Oleksij Rempel wrote:
-> > > diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-> > > index aaf7c6963d61..81e3d7b42d0f 100644
-> > > --- a/include/uapi/linux/ethtool_netlink.h
-> > > +++ b/include/uapi/linux/ethtool_netlink.h
-> > > @@ -51,6 +51,9 @@ enum {
-> > >  	ETHTOOL_MSG_MODULE_SET,
-> > >  	ETHTOOL_MSG_PSE_GET,
-> > >  	ETHTOOL_MSG_PSE_SET,
-> > > +	ETHTOOL_MSG_PLCA_GET_CFG,
-> > > +	ETHTOOL_MSG_PLCA_SET_CFG,
-> > > +	ETHTOOL_MSG_PLCA_GET_STATUS,
-> > >  
-> > >  	/* add new constants above here */
-> > >  	__ETHTOOL_MSG_USER_CNT,
-> > > @@ -97,6 +100,9 @@ enum {
-> > >  	ETHTOOL_MSG_MODULE_GET_REPLY,
-> > >  	ETHTOOL_MSG_MODULE_NTF,
-> > >  	ETHTOOL_MSG_PSE_GET_REPLY,
-> > > +	ETHTOOL_MSG_PLCA_GET_CFG_REPLY,
-> > > +	ETHTOOL_MSG_PLCA_GET_STATUS_REPLY,
-> > > +	ETHTOOL_MSG_PLCA_NTF,
-> > >  
-> > >  	/* add new constants above here */
-> > >  	__ETHTOOL_MSG_KERNEL_CNT,
-> > > @@ -880,6 +886,25 @@ enum {
-> > >  	ETHTOOL_A_PSE_MAX = (__ETHTOOL_A_PSE_CNT - 1)
-> > >  };
-> > >  
-> > > +/* PLCA */
-> > > +
-> > 
-> > Please use names used in the specification as close as possible and
-> > document in comments real specification names.
-> I was actually following the names in the OPEN Alliance SIG
-> specifications which I referenced. Additionally, the OPEN names are more
-> similar to those that you can find in Clause 147. As I was trying to
-> explain in other threads, the names in Clause 30 were sort of a workaround
-> because we were not allowed to add registers in Clause 45.
-> 
-> I can change the names if you really want to, but I'm inclined to keep
-> it simple and "user-friendly". People using this technology are more
-> used to these names, and they totally ignore Clause 30.
-> 
-> Please, let me know what you think.
+Sat, Dec 03, 2022 at 06:22:06AM CET, kuba@kernel.org wrote:
+>On Fri, 2 Dec 2022 17:15:23 +0100 Jiri Pirko wrote:
+>> >OK, I now see your point what is the confusion.
+>> >Thanks for explanation.
+>> >But I am still not sure how to make it this way in Linux, if interface added to
+>> >netns uses original netdev ifindex, and driver after reload receives new
+>> >(previously unused ifindex) what would be the steps/commands to make it as you
+>> >described?
+>>
+>> As I said, I don't see a way to have the ifindex exposed throught dpll
+>> at all.
+>
+>We can quite easily only report ifindexes in the same namespace
+>as the socket, right?
 
-A comment about name mapping to specification, spec version and reason
-to take one variants instead of other one will be enough Somewhat similar to
-what i did for PoDL. See ETHTOOL_A_PODL_* in
-Documentation/networking/ethtool-netlink.rst and include/uapi/linux/ethtool.h
+Sure, hmm, thinkign about it more, this would be probably a good start.
 
-It will help people who use spec to review or extend this UAPI. 
 
-> > > +
-> > > +	/* add new constants above here */
-> > > +	__ETHTOOL_A_PLCA_CNT,
-> > > +	ETHTOOL_A_PLCA_MAX = (__ETHTOOL_A_PLCA_CNT - 1)
-> > > +};
-> > 
-> > Should we have access to 30.16.1.2.2 acPLCAReset in user space?
-> I omitted that parameter on purpose. The reason is that again, we were
-> "forced" to do this in IEEE802.3cg, but it was a poor choice. I
-> understand purity of the specifications, but in the real-world where
-> PLCA is implemented in the PHY, resetting the PLCA layer independently
-> of the PCS/PMA is all but a good idea: it does more harm than good. As a
-> matter of fact, PHY vendors typically map the PLCA reset bit to the PHY
-> soft reset bit, or at least to the PCS reset bit.
-> 
-> I'm inclined to keep this as-is and see in the future if and why someone
-> would need this feature. What you think?
+>
+>> I believe we should do it only the other way around. Assign
+>> dpll_pin pointer to struct net_device and expose this over new attr
+>> IFLA_DPLL_PIN over RT netlink.
+>
+>The ID table is global, what's the relationship between DPLLs
+>and net namespaces? We tie DPLLs to a devlink instance which
+>has a namespace? We pretend namespaces don't exist? :S
 
-Ok. Sounds good.
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Well, if would be odd to put dpll itself into a namespace. It might not
+have anything to do with networking, for example in case of ptp_ocp.
+What would mean for a dpll to be in a net namespace?
