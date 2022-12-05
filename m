@@ -2,122 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6DE8642C2F
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:45:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2660D642C56
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:58:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231687AbiLEPpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 10:45:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51714 "EHLO
+        id S232132AbiLEP6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 10:58:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233122AbiLEPpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:45:03 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14771F03F
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:44:51 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id i15so8147649edf.2
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 07:44:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tfKmzFIivR84aG/YhA8CfmmH6xgvFirRXWP7JuK1YUk=;
-        b=hSdrSzdOE8XumiTKevu/I2QmD9fnTqdEpFHE7Bhai9aUZc47b27E5de7lctXQ7Fcj3
-         9jQs2Lr8eQ+4Jm7YM9e0/FC7O26OeJGq848cC88gEvBgilLMOfF/3hYgw4PPSIPtrrdn
-         flaTluZsylwF1L/KClqXYZAnMYdA7FsPx9DleDMgKsssWBuCDDoiwVdnjH/DJJMgnYS+
-         snJFEQ0Zb7xWJoyhP0ufhkMLSGdKwVTBKtRGBIAP34JmDPZKFeFmj+q4QvIfILulSBXp
-         X9ZTENd+ZMDJKbRmY6gxyKzqayNA7ihrSWeZ+jlBP7gf4uDhJn1nmvRv/UkSRl6inZ7j
-         PpMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tfKmzFIivR84aG/YhA8CfmmH6xgvFirRXWP7JuK1YUk=;
-        b=uFNwothikejo1ZOejRCQSpbooJIlE3LUbpRKPx5NyCYx2UpZV2PCHE/ir4vz3YCl9y
-         wPSIf3QCR4Kb16B31HH6utI58JZ35m9/UsAO3t6EtETeaTfzcE3mIs9NVf5uTQgOHu4V
-         wqKWlgHLmqjLAA4uzk+MUL4+HX0TotrwD5yzq02AMoTegtfbhTBUOCWDWVwF82/ywuZE
-         uYMrqLo/nPL913T5lW7ZULkjgBpolgMc/WEsfgb3RdKDG/h6kizOllrowQY/X427cDFo
-         LIrC9XdzuWpaGK820HEDK73/I7JvH9GYM3BCFDuduP5e8bKHjsDIUlkNKbC7YYLPJMqP
-         fcCQ==
-X-Gm-Message-State: ANoB5pk/kQV34+cjHP7FkJk/IuF8pZrcSBL7tuVEktV3cyH6JX4cxmRE
-        G87TXxjRP/I5iY2XqV7WFtLl5aTtRAEg0DLN
-X-Google-Smtp-Source: AA0mqf7666734hzhIG2U/KjYgpyCj3PeIQsVAQsQWgZsDLq7p5iFn62D/zuoL/PagwGLpE4HJBpAkQ==
-X-Received: by 2002:a05:6402:4284:b0:461:8156:e0ca with SMTP id g4-20020a056402428400b004618156e0camr19351579edc.271.1670255089592;
-        Mon, 05 Dec 2022 07:44:49 -0800 (PST)
-Received: from hera (ppp078087234022.access.hol.gr. [78.87.234.22])
-        by smtp.gmail.com with ESMTPSA id 10-20020a170906200a00b007ae243c3f05sm6221749ejo.189.2022.12.05.07.44.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 07:44:49 -0800 (PST)
-Date:   Mon, 5 Dec 2022 17:44:46 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>, brouer@redhat.com,
-        netdev@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH 00/24] Split page pools from struct page
-Message-ID: <Y44R7i65ftm+uGdF@hera>
-References: <20221130220803.3657490-1-willy@infradead.org>
- <cfe0b2ca-824d-3a52-423a-f8262f12fabe@redhat.com>
+        with ESMTP id S231688AbiLEP6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:58:09 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B02CFCDD;
+        Mon,  5 Dec 2022 07:58:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jfwGyu4ve1j0oVhiOWykH2evozLZYPU0bSyGSUzM28M=; b=bnKhfYlvkdihXqIw0aPE1in3Q4
+        mVseSJdI4DmZ+GP+Z1xoKGH6EnJqz58opFiElt2nfI4b0Nwk80PJNMcd8iUE7Yjk6feiCjmx6poKK
+        ZxkvLHGLbToWDHmoYFJ5t+ax1nnKf0IwyUwLEU7n5OHOn8Vq2yhPA+lvLOiQYc4iKdrxQFjIsguj7
+        ZFaqvMUmfmYE4CfcqHEO0eYg2qmEeU7eDrXZPaZXdtw1f1HfTB9aMt6G0xAyiuOQFW0gFYR809G+Q
+        nwNyvw1Fq2BuI+ksEU+w7CHVRkql5jd8C9wmA57SIwDUEYaZfG/uepl1PsrML6g11vx36oHQdAPN/
+        LD7gUW0A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35580)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1p2Dqt-0006vr-QB; Mon, 05 Dec 2022 15:57:55 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1p2Dqr-0007M9-R6; Mon, 05 Dec 2022 15:57:53 +0000
+Date:   Mon, 5 Dec 2022 15:57:53 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, sergiu.moga@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] net: phylink: add helper to initialize phylink's
+ phydev
+Message-ID: <Y44VATEVPpEOBz/3@shell.armlinux.org.uk>
+References: <20221205153328.503576-1-claudiu.beznea@microchip.com>
+ <20221205153328.503576-2-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cfe0b2ca-824d-3a52-423a-f8262f12fabe@redhat.com>
+In-Reply-To: <20221205153328.503576-2-claudiu.beznea@microchip.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jesper,
+On Mon, Dec 05, 2022 at 05:33:27PM +0200, Claudiu Beznea wrote:
+> Add helper to initialize phydev embedded in a phylink object.
+> 
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
+>  drivers/net/phy/phylink.c | 10 ++++++++++
+>  include/linux/phylink.h   |  1 +
+>  2 files changed, 11 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 09cc65c0da93..1e2478b8cd5f 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -2541,6 +2541,16 @@ int phylink_ethtool_set_eee(struct phylink *pl, struct ethtool_eee *eee)
+>  }
+>  EXPORT_SYMBOL_GPL(phylink_ethtool_set_eee);
+>  
+> +/**
+> + * phylink_init_phydev() - initialize phydev associated to phylink
+> + * @pl: a pointer to a &struct phylink returned from phylink_create()
+> + */
+> +int phylink_init_phydev(struct phylink *pl)
+> +{
+> +	return phy_init_hw(pl->phydev);
+> +}
+> +EXPORT_SYMBOL_GPL(phylink_init_phydev);
 
-On Mon, Dec 05, 2022 at 04:34:10PM +0100, Jesper Dangaard Brouer wrote:
-> 
-> On 30/11/2022 23.07, Matthew Wilcox (Oracle) wrote:
-> > The MM subsystem is trying to reduce struct page to a single pointer.
-> > The first step towards that is splitting struct page by its individual
-> > users, as has already been done with folio and slab.  This attempt chooses
-> > 'netmem' as a name, but I am not even slightly committed to that name,
-> > and will happily use another.
-> 
-> I've not been able to come-up with a better name, so I'm okay with
-> 'netmem'.  Others are of-cause free to bikesheet this ;-)
+I'd guess this is something that many MAC drivers will need to do when
+resuming if the PHY has lost power.
 
-Same here. But if anyone has a better name please shout.
+Maybe a better solution would be to integrate it into phylink_resume(),
+when we know that the PHY has lost power - maybe the MAC driver can
+tell phylink that detail, and be updated to use phylink_suspend() and
+phylink_resume() ?
 
-> 
-> > There are some relatively significant reductions in kernel text
-> > size from these changes.  I'm not qualified to judge how they
-> > might affect performance, but every call to put_page() includes
-> > a call to compound_head(), which is now rather more complex
-> > than it once was (at least in a distro config which enables
-> > CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP).
-> > 
-> 
-> I have a micro-benchmark [1][2], that I want to run on this patchset.
-> Reducing the asm code 'text' size is less likely to improve a
-> microbenchmark. The 100Gbit mlx5 driver uses page_pool, so perhaps I can
-> run a packet benchmark that can show the (expected) performance improvement.
-> 
-> [1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
-> [2] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_cross_cpu.c
-> 
+macb_set_wol() sets bp->wol's MACB_WOL_ENABLED flag depending on
+whether WAKE_MAGIC is set in wolopts. No other wolopts are supported.
+Generic code sets netdev->wol_enabled if set_wol() was successful and
+wolopts is nonzero, indicating that WoL is enabled, and thus
+phylink_stop() won't be called if WoL is enabled (similar to what
+macb_suspend() is doing.)
 
-If you could give it a spin it would be great.  I did apply the patchset
-and was running fine on my Arm box. I was about to run these tests, but then
-I remembered that this only works for x86.  I don't have any cards supported
-by page pool around.
+Given that the macb MAC seems to be implementing WoL, it should call
+phylink_suspend() with mac_wol=true.
 
-> > I've only converted one user of the page_pool APIs to use the new netmem
-> > APIs, all the others continue to use the page based ones.
-> > 
-> 
-> I guess we/netdev-devels need to update the NIC drivers that uses page_pool.
-> 
- 
-[...]
+Please can you look into this, thanks.
 
-Regards
-/Ilias
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
