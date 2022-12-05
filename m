@@ -2,106 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F30D56425CC
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:30:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 559456425D4
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:32:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230519AbiLEJaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 04:30:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        id S231164AbiLEJcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 04:32:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbiLEJaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:30:17 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9049415738
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:30:16 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id vp12so26264662ejc.8
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 01:30:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=FDSrwTaiYkeBidVUL1wtnaARBnuugrDybG4J4B7KjRQ=;
-        b=Ek0fC49oSagD3Ul+L5jopBmUBuROZhyg8VcZqkQLTLLSW289nCIWsDjmqkq4Lfw3jn
-         6JTFUVwUuz/ucY7tHQ7rjwKWqiLvK4QBoG2qCjn/7uTS+IxdOeI19s/gXRup1X8kZZTq
-         NHkqvHENyjPX4T6Ko8Z0crqu/RPwk48aBb4ZhEv8pAjM1BZTGxx9FlYJfTEp57nCwAhy
-         sB9Ntjtk70cgt8Zpy4oHiVoRCcCWyNwGuyvebX9d7ovvFMpTNf4VlyXVEl2QIm3wkPch
-         s84BmvXPo33pDnXrac/2nfzR/irs9Ufr+UFiGKtljIbiwaTllL77iZJsEL4SSshmW1xY
-         z4hA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FDSrwTaiYkeBidVUL1wtnaARBnuugrDybG4J4B7KjRQ=;
-        b=UkntLjNaR2Tb7PZ3EFuKrIh/Uhc7Nb5RmXvDAIYZfHiaeLVyHGqaLbaeIyZyOpQdP6
-         MD+ur4XsHC6qcTm4AYOFFWWmFvRwiupes3GcDPHkZs0cdl4UZRXiESPIJvUQP7NBLtlL
-         ZyuM80qT7avpUmj18ma5PvE03600rlfUdOBMKcYby6Ajd1FyAIrsuy9wq0ymG0vxcjX1
-         pDpS78EVvGrKQoYgPf9If/p3t2LZiYezjUa2/ytelMWJ1ZkyAZHsGwlKc9SPf2AVR3ti
-         SjTTYq3pLgBdZ8kMLev3/WK2/8FdkhsR9zP4GwblG2SK1deaLVd4PFAKT1pcKqT5FgG4
-         MymA==
-X-Gm-Message-State: ANoB5pnJSDupnBNwDgTCeCOXDLtzsOvzEydCbVOqiR15wclRbzVUZ8kS
-        BTBs7NevfaMHXL8Nmu/G2D2LVw==
-X-Google-Smtp-Source: AA0mqf4TucuADXPXXqE+4vnUK9TP8V9mLlh1wYufLkkd/GzpBoGLKx7nJ3ZNqqhERafJoj9+vyiZjg==
-X-Received: by 2002:a17:906:a1a:b0:79e:9aea:7b60 with SMTP id w26-20020a1709060a1a00b0079e9aea7b60mr70679116ejf.444.1670232615061;
-        Mon, 05 Dec 2022 01:30:15 -0800 (PST)
-Received: from blmsp ([185.238.219.11])
-        by smtp.gmail.com with ESMTPSA id o26-20020a170906289a00b007415f8ffcbbsm6136319ejd.98.2022.12.05.01.30.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 01:30:14 -0800 (PST)
-Date:   Mon, 5 Dec 2022 10:30:13 +0100
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 14/15] can: tcan4x5x: Fix register range of first block
-Message-ID: <20221205093013.kpsqyb3fhd5njubm@blmsp>
-References: <20221116205308.2996556-1-msp@baylibre.com>
- <20221116205308.2996556-15-msp@baylibre.com>
- <20221202142810.kmd5m26fnm6lw2jh@pengutronix.de>
+        with ESMTP id S231182AbiLEJcL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:32:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2370915800
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:32:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF7F2B80CAC
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:32:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 157C6C433C1;
+        Mon,  5 Dec 2022 09:32:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670232727;
+        bh=WOC4NGSKcpE3psehYws6xoUdfp+/+TNrXzZHo7XVmas=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iG0XrvLqHIBCkpesgAG8ZeHH6uezRpKKkjKF9WI4v0UClNi5HBuISupRm/Ef+8Tik
+         Njn2VtTYhiFN7uEc++EJQL0fbANBwl+ktGrYI/8VZlpLHQ9h6rlhcynpYyZJ1xcUq6
+         vV1qXs1hVmUTr0c7cNWbUEIDICFhLRxGPNokTjoo0O7N8DHWin8qE3bkE79QXknXKl
+         Qv3CaKYDH7cjy5pxsLn41lNSLydVBV4TVAqqsbNNRIai2GCGyk1PC74G5NLWkQOylt
+         AN+wGUfM6NMRajwivjHyLOVksmaFKfFCssOs9oZnpcw9TxNx3bV1Y/woXoHSqePkZt
+         aqktQI2JhZUUQ==
+Date:   Mon, 5 Dec 2022 11:32:03 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH net-next] net: ethernet: mtk_wed: fix possible deadlock
+ if mtk_wed_wo_init fails
+Message-ID: <Y426k9VzOzYlXuOo@unreal>
+References: <a87f05e60ea1a94b571c9c87b69cc5b0e94943f2.1669999089.git.lorenzo@kernel.org>
+ <Y4ybbkn+nXkGsqWe@unreal>
+ <Y4y4If8XXu+wErIj@lore-desk>
+ <Y42d2us5Pv1UqhEj@unreal>
+ <Y420B4/IpwFHJAck@lore-desk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221202142810.kmd5m26fnm6lw2jh@pengutronix.de>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <Y420B4/IpwFHJAck@lore-desk>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+On Mon, Dec 05, 2022 at 10:04:07AM +0100, Lorenzo Bianconi wrote:
+> On Dec 05, Leon Romanovsky wrote:
+> > On Sun, Dec 04, 2022 at 04:09:21PM +0100, Lorenzo Bianconi wrote:
+> > > > On Fri, Dec 02, 2022 at 06:36:33PM +0100, Lorenzo Bianconi wrote:
+> > > > > Introduce __mtk_wed_detach() in order to avoid a possible deadloc=
+k in
+> > > > > mtk_wed_attach routine if mtk_wed_wo_init fails.
+> > > > >=20
+> > > > > Fixes: 4c5de09eb0d0 ("net: ethernet: mtk_wed: add configure wed w=
+o support")
+> > > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > > > ---
+> > > > >  drivers/net/ethernet/mediatek/mtk_wed.c     | 24 ++++++++++++++-=
+------
+> > > > >  drivers/net/ethernet/mediatek/mtk_wed_mcu.c | 10 ++++++---
+> > > > >  drivers/net/ethernet/mediatek/mtk_wed_wo.c  |  3 +++
+> > > > >  3 files changed, 26 insertions(+), 11 deletions(-)
+> > > >=20
+> > > > <...>
+> > > >=20
+> > > > > diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/driver=
+s/net/ethernet/mediatek/mtk_wed_mcu.c
+> > > > > index f9539e6233c9..b084009a32f9 100644
+> > > > > --- a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+> > > > > +++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+> > > > > @@ -176,6 +176,9 @@ int mtk_wed_mcu_send_msg(struct mtk_wed_wo *w=
+o, int id, int cmd,
+> > > > >  	u16 seq;
+> > > > >  	int ret;
+> > > > > =20
+> > > > > +	if (!wo)
+> > > > > +		return -ENODEV;
+> > > >=20
+> > > > <...>
+> > > >=20
+> > > > >  static void
+> > > > >  mtk_wed_wo_hw_deinit(struct mtk_wed_wo *wo)
+> > > > >  {
+> > > > > +	if (!wo)
+> > > > > +		return;
+> > > >=20
+> > > > How are these changes related to the written in deadlock?
+> > > > How is it possible to get internal mtk functions without valid wo?
+> > >=20
+> > > Hi Leon,
+> > >=20
+> > > if mtk_wed_rro_alloc() fails in mtk_wed_attach(), we will end up runn=
+ing
+> > > __mtk_wed_detach() when wo struct is not allocated yet (wo is allocat=
+ed in
+> > > mtk_wed_wo_init()).
+> >=20
+> > IMHO, it is a culprit, proper error unwind means that you won't call to
+> > uninit functions for something that is not initialized yet. It is better
+> > to fix it instead of adding "if (!wo) ..." checks.
+>=20
+> So, iiuc, you would prefer to do something like:
+>=20
+> __mtk_wed_detach()
+> {
+> 	...
+> 	if (mtk_wed_get_rx_capa(dev) && wo) {
+> 		mtk_wed_wo_reset(dev);
+> 		mtk_wed_free_rx_rings(dev);
+> 		mtk_wed_wo_deinit(hw);
+> 	}
+> 	...
+> =09
+> Right? I am fine both ways :)
 
-On Fri, Dec 02, 2022 at 03:28:10PM +0100, Marc Kleine-Budde wrote:
-> On 16.11.2022 21:53:07, Markus Schneider-Pargmann wrote:
-> > According to the datasheet 0x1c is the last register in the first block,
-> > not register 0x2c.
-> 
-> The datasheet "SLLSF91A – DECEMBER 2018 – REVISED JANUARY 2020" says:
-> 
-> | 8.6.1 Device ID and Interrupt/Diagnostic Flag Registers: 16'h0000 to
-> | 16'h002F
-> 
-> While the last described register is at 0xc.
+Yes
 
-Sorry, not sure what I looked up here. The last described register is
-0x10 SPI Error status mask in my datasheet:
-'SLLSEZ5D – JANUARY 2018 – REVISED JUNE 2022'
+>=20
+> >=20
+> > > Moreover __mtk_wed_detach() can run mtk_wed_wo_reset() and mtk_wed_wo=
+_deinit()
+> >=20
+> > This is another side of same coin. If you can run them in parallel, you
+> > need locking protection and ability to cancel work, so nothing is going
+> > to be executed once cleanup succeeded.
+>=20
+> Sorry, I did not get what you mean here with 'in parallel'. __mtk_wed_det=
+ach()
+> always run with hw_lock mutex help in both mtk_wed_attach() or
+> mtk_wed_detach().
 
-I would prefer using the actual registers if that is ok with you, so
-0x10 here because I assume the remaining registers have internal use or
-maybe don't exist at all?! If there is an undocumented register that
-needs to be used at some point we can still modify the ranges.
+Lock is not enough, you need to make sure that no underlying code is
+called without wo. You suggestion above is fine. The less low level code
+will have "if (!wo) ...", the better will be.
 
-Also it seems the existing ranges are following the same logic and don't
-list the whole range, just the documented registers.
+Thanks
 
-The second range is wrong as well. The last register is 0x830, will fix.
+>=20
+> Regards,
+> Lorenzo
+>=20
+> >=20
+> > These were my 2 cents, totally IMHO.
+> >=20
+> > Thanks
 
-Best,
-Markus
+
