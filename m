@@ -2,57 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23B6B643845
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 23:43:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6B5B643852
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 23:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbiLEWnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 17:43:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39598 "EHLO
+        id S232481AbiLEWry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 17:47:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233778AbiLEWnK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 17:43:10 -0500
-Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745A9EE17;
-        Mon,  5 Dec 2022 14:43:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
-      content-type;
-    bh=l2wRLhIEBDsfPv3cERhwpGHkEzokdwLhIG0YQM1eeac=;
-    b=hCVv28x95yCVSi+A7Fm3v3Tt5AmcNRvR5LFQoIXvbml06Jm01NIA2TnUcCGesF
-      fzTysYjx1JmmPS5LFM7wpA559VaOJAEX2nWTdTkeeRmOALFr6vHcRJl3RphIFa
-      +n7DaNz98dLf8T29MaFzVp86ERH5VyoAjLZItcFW4XYjSpA=
-Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
- EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Mon, 5 Dec 2022 14:42:45 -0800
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 8B54720248;
-        Mon,  5 Dec 2022 14:43:01 -0800 (PST)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 86A07AE1A8; Mon,  5 Dec 2022 14:43:01 -0800 (PST)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Guolin Yang <gyang@vmware.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 net  2/2] vmxnet3: use correct intrConf reference when using extended queues
-Date:   Mon, 5 Dec 2022 14:42:55 -0800
-Message-ID: <20221205224256.22830-3-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20221205224256.22830-1-doshir@vmware.com>
-References: <20221205224256.22830-1-doshir@vmware.com>
+        with ESMTP id S230090AbiLEWrw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 17:47:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2B113E36;
+        Mon,  5 Dec 2022 14:47:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42406B81211;
+        Mon,  5 Dec 2022 22:47:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A8AC433D7;
+        Mon,  5 Dec 2022 22:47:48 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Sv1+xdk2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1670280466;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1MQ3jVf0OM9VGCaDYuk2IzBHCGdJRv1IhHaHOfSmowk=;
+        b=Sv1+xdk2FWGT08UiCRWDpgU9oXKtdkhdu7l3gfy62hn94WYdJfGZIq/HfoQkydKN9RbDRy
+        7dxTCllaO6bKugQoLHwFr6ZFgj9PSPm6jL+oYroN5BBsANE/y+loQa4tMTGiMTgFGxbOqz
+        3L+C2upAFS02vSbAcnq2TO4pzhpDXhI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 552cf31e (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Mon, 5 Dec 2022 22:47:46 +0000 (UTC)
+Date:   Mon, 5 Dec 2022 23:47:44 +0100
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>
+Subject: Re: [PATCH] bpf: call get_random_u32() for random integers
+Message-ID: <Y451ENAK7BQQDJc/@zx2c4.com>
+References: <20221205181534.612702-1-Jason@zx2c4.com>
+ <730fd355-ad86-a8fa-6583-df23d39e0c23@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <730fd355-ad86-a8fa-6583-df23d39e0c23@iogearbox.net>
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,55 +58,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 39f9895a00f4 ("vmxnet3: add support for 32 Tx/Rx queues")
-added support for 32Tx/Rx queues. As a part of this patch, intrConf
-structure was extended to incorporate increased queues.
+On Mon, Dec 05, 2022 at 11:21:51PM +0100, Daniel Borkmann wrote:
+> On 12/5/22 7:15 PM, Jason A. Donenfeld wrote:
+> > Since BPF's bpf_user_rnd_u32() was introduced, there have been three
+> > significant developments in the RNG: 1) get_random_u32() returns the
+> > same types of bytes as /dev/urandom, eliminating the distinction between
+> > "kernel random bytes" and "userspace random bytes", 2) get_random_u32()
+> > operates mostly locklessly over percpu state, 3) get_random_u32() has
+> > become quite fast.
+> 
+> Wrt "quite fast", do you have a comparison between the two? Asking as its
+> often used in networking worst case on per packet basis (e.g. via XDP), would
+> be useful to state concrete numbers for the two on a given machine.
 
-This patch fixes the issue where incorrect reference is being used.
-
-Fixes: 39f9895a00f4 ("vmxnet3: add support for 32 Tx/Rx queues")
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 3111a8a6b26a..6f1e560fb15c 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -75,8 +75,14 @@ vmxnet3_enable_all_intrs(struct vmxnet3_adapter *adapter)
- 
- 	for (i = 0; i < adapter->intr.num_intrs; i++)
- 		vmxnet3_enable_intr(adapter, i);
--	adapter->shared->devRead.intrConf.intrCtrl &=
-+	if (!VMXNET3_VERSION_GE_6(adapter) ||
-+	    !adapter->queuesExtEnabled) {
-+		adapter->shared->devRead.intrConf.intrCtrl &=
- 					cpu_to_le32(~VMXNET3_IC_DISABLE_ALL);
-+	} else {
-+		adapter->shared->devReadExt.intrConfExt.intrCtrl &=
-+					cpu_to_le32(~VMXNET3_IC_DISABLE_ALL);
-+	}
- }
- 
- 
-@@ -85,8 +91,14 @@ vmxnet3_disable_all_intrs(struct vmxnet3_adapter *adapter)
- {
- 	int i;
- 
--	adapter->shared->devRead.intrConf.intrCtrl |=
-+	if (!VMXNET3_VERSION_GE_6(adapter) ||
-+	    !adapter->queuesExtEnabled) {
-+		adapter->shared->devRead.intrConf.intrCtrl |=
- 					cpu_to_le32(VMXNET3_IC_DISABLE_ALL);
-+	} else {
-+		adapter->shared->devReadExt.intrConfExt.intrCtrl |=
-+					cpu_to_le32(VMXNET3_IC_DISABLE_ALL);
-+	}
- 	for (i = 0; i < adapter->intr.num_intrs; i++)
- 		vmxnet3_disable_intr(adapter, i);
- }
--- 
-2.11.0
-
+Median of 25 cycles vs median of 38, on my Tiger Lake machine. So a
+little slower, but too small of a difference to matter.
