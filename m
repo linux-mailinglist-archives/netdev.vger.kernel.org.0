@@ -2,191 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B7C5642FDF
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 19:24:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5100F643072
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 19:32:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232018AbiLESYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 13:24:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
+        id S232700AbiLEScy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 13:32:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232230AbiLESY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 13:24:29 -0500
-Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9900AD67;
-        Mon,  5 Dec 2022 10:24:27 -0800 (PST)
-Received: from [192.168.1.33] (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 4AF24200AA55;
-        Mon,  5 Dec 2022 19:24:26 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 4AF24200AA55
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1670264666;
-        bh=oegBx7D9n9UZeLT5ZPWyzKQlRqgn7avVd5TC0coCwdQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=LLQVA6R2QqfN70BMJnbVkm+7a0rJK6/1IKDDI98N4BuHpvUnaflGVghahjrCzdPkT
-         rUvkDicF388iRZjwaBS1WI2pa7w+WkFILC4fZt9qMEFAtYOS/H/Gvc+hFGIYbp8FNI
-         3sIbM+GjPoJJHNiRbyjWvlC7l/xoBqZl/6ggvZVs7UhSif2wVW3sggcH8mwq4d9ezk
-         YR+z/gEFt+Cpq4Ut0e/JP5vceWJIcubg9+5Hu1e1LioBneWTLr3BxgexX+DzjMBHP/
-         in9SHu/pWTq5Fh0H3Jmw6S28Un36BhIIWSU3HFYqAwnAzPWhU+ctNG/MUeQhjKVDbO
-         du8CwYsuRIipQ==
-Message-ID: <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
-Date:   Mon, 5 Dec 2022 19:24:26 +0100
+        with ESMTP id S234018AbiLEScf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 13:32:35 -0500
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23A45FE4
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 10:27:51 -0800 (PST)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-3c21d6e2f3aso126917727b3.10
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 10:27:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=jgHTNoclBo7XcdqsDEYBgw3XYE3gmdvuSaq1OLPx4sE=;
+        b=ZTO1JWwXrLTIK80q8gpuay0KF+eOQ16dO4jaVAHpn/eCgsmHppAj6y1963h6YFwFL8
+         k5os3RBS5B7axNC1jmt60h3YY9b7sl/z62b7pEFyJzsg4Vgk61KcrQDRqNS9uxxb18qb
+         kr7CHNvHbJ1u+ahh/iezDjZgSZjEBFM4EyyNGu7a2IHpIRfAO8LwcnM2qDOEahj9FyJa
+         Ffa0JoCcg3V8RkN2SI0y0STpP54HdaBy+wbPs0P7oR731XY928aGf/wxEERNXavgjO7I
+         GBYvp609E4K/RgA+6p2ZTgwH5epn30YemO0NGPZhjEZPrqxfb5QkubtVQjWk3R1ZI6dv
+         mNww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jgHTNoclBo7XcdqsDEYBgw3XYE3gmdvuSaq1OLPx4sE=;
+        b=ZNRBNluQ285RzJE1+F+L8f77x/i6gR0YvaFA4XisaT9pUWFKj4kuEoKQyBvDMeKYwu
+         iUDaC90MkvwmdnkKJzh/X5y7mqK0gVUqjEPS3X/1KRuLFqYwvPzcgcUSZ6g49JJrYXsY
+         Z11wIf9v5t/Y/6+kfyhFU3eNmay+4fcnp3gKZR5so+F4AfHIU8K/Gp4xs+MkDLYFsKlv
+         zYK7+bcjVxyfuAqCxPYG+xZXs00z6IlsxjDZr+p5cneO67+vpXPe32afUDOZbtQSOEHN
+         FazHJWK1fRr5NJQOTxVHIgPsAVJRax/S5OYBtSgFYUM4UBRJ2+sj1IdQ+3CzTHS6trOw
+         ptXw==
+X-Gm-Message-State: ANoB5pnGWletLuDPhAgmGMGjiSHJ8mHUtuifKcaWXJclaQo7UahwPooL
+        Alwj+yDlF1Z7Gb+3Sb86aWUni0Jo3oFh1RIVQJc9Aw==
+X-Google-Smtp-Source: AA0mqf7eGlChvtKv5NiRNv+t1QAbY6+gQ6kPTdKa7x4EHmB7mE7vxaEDm07A4DfGV/nfu4rFS/9ldj4qJT1wd9JAWd0=
+X-Received: by 2002:a81:1e44:0:b0:370:7a9a:564 with SMTP id
+ e65-20020a811e44000000b003707a9a0564mr13360302ywe.278.1670264844243; Mon, 05
+ Dec 2022 10:27:24 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue
- depth data field")
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
-        stable@vger.kernel.org
-References: <20221205153557.28549-1-justin.iurman@uliege.be>
- <CANn89iLjGnyh0GgW_5kkMQJBCi-KfgwyvZwT1ou2FMY4ZDcMXw@mail.gmail.com>
- <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com>
-From:   Justin Iurman <justin.iurman@uliege.be>
-In-Reply-To: <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <Y44xdN3zH4f+BZCD@zwp-5820-Tower>
+In-Reply-To: <Y44xdN3zH4f+BZCD@zwp-5820-Tower>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 5 Dec 2022 19:27:12 +0100
+Message-ID: <CANn89iKF5+8=-jDm3j=A65egYt=BY-er7YzJ32NcWPFKYv9Ckw@mail.gmail.com>
+Subject: Re: [RFC PATCH] tcp: correct srtt and mdev_us calculation
+To:     Weiping Zhang <zhangweiping@didiglobal.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        zwp10758@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/5/22 17:50, Eric Dumazet wrote:
-> On Mon, Dec 5, 2022 at 5:30 PM Eric Dumazet <edumazet@google.com> wrote:
->>
->> Patch title seems
->>
->> On Mon, Dec 5, 2022 at 4:36 PM Justin Iurman <justin.iurman@uliege.be> wrote:
->>>
->>> This patch fixes a NULL qdisc pointer when retrieving the TX queue depth
->>> for IOAM.
->>>
->>> IMPORTANT: I suspect this fix is local only and the bug goes deeper (see
->>> reasoning below).
->>>
->>> Kernel panic:
->>> [...]
->>> RIP: 0010:ioam6_fill_trace_data+0x54f/0x5b0
->>> [...]
->>>
->>> ...which basically points to the call to qdisc_qstats_qlen_backlog
->>> inside net/ipv6/ioam6.c.
->>>
->>>  From there, I directly thought of a NULL pointer (queue->qdisc). To make
->>> sure, I added some printk's to know exactly *why* and *when* it happens.
->>> Here is the (summarized by queue) output:
->>>
->>> skb for TX queue 1, qdisc is ffff8b375eee9800, qdisc_sleeping is ffff8b375eee9800
->>> skb for TX queue 2, qdisc is ffff8b375eeefc00, qdisc_sleeping is ffff8b375eeefc00
->>> skb for TX queue 3, qdisc is ffff8b375eeef800, qdisc_sleeping is ffff8b375eeef800
->>> skb for TX queue 4, qdisc is ffff8b375eeec800, qdisc_sleeping is ffff8b375eeec800
->>> skb for TX queue 5, qdisc is ffff8b375eeea400, qdisc_sleeping is ffff8b375eeea400
->>> skb for TX queue 6, qdisc is ffff8b375eeee000, qdisc_sleeping is ffff8b375eeee000
->>> skb for TX queue 7, qdisc is ffff8b375eee8800, qdisc_sleeping is ffff8b375eee8800
->>> skb for TX queue 8, qdisc is ffff8b375eeedc00, qdisc_sleeping is ffff8b375eeedc00
->>> skb for TX queue 9, qdisc is ffff8b375eee9400, qdisc_sleeping is ffff8b375eee9400
->>> skb for TX queue 10, qdisc is ffff8b375eee8000, qdisc_sleeping is ffff8b375eee8000
->>> skb for TX queue 11, qdisc is ffff8b375eeed400, qdisc_sleeping is ffff8b375eeed400
->>> skb for TX queue 12, qdisc is ffff8b375eeea800, qdisc_sleeping is ffff8b375eeea800
->>> skb for TX queue 13, qdisc is ffff8b375eee8c00, qdisc_sleeping is ffff8b375eee8c00
->>> skb for TX queue 14, qdisc is ffff8b375eeea000, qdisc_sleeping is ffff8b375eeea000
->>> skb for TX queue 15, qdisc is ffff8b375eeeb800, qdisc_sleeping is ffff8b375eeeb800
->>> skb for TX queue 16, qdisc is NULL, qdisc_sleeping is NULL
->>>
->>> What the hell? So, not sure why queue #16 would *never* have a qdisc
->>> attached. Is it something expected I'm not aware of? As an FYI, here is
->>> the output of "tc qdisc list dev xxx":
->>>
->>> qdisc mq 0: root
->>> qdisc fq_codel 0: parent :10 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :f limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :e limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :d limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :c limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :b limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :a limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :9 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :8 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :7 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :6 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :5 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>> qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
->>>
->>> By the way, the NIC is an Intel XL710 40GbE QSFP+ (i40e driver, firmware
->>> version 8.50 0x8000b6c7 1.3082.0) and it was tested on latest "net"
->>> version (6.1.0-rc7+). Is this a bug in the i40e driver?
->>>
->>
->>> Cc: stable@vger.kernel.org
->>
->> Patch title is mangled. The Fixes: tag should appear here, not in the title.
->>
->>
->> Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue depth data field")
->>
->>> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
->>> ---
->>>   net/ipv6/ioam6.c | 11 +++++++----
->>>   1 file changed, 7 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
->>> index 571f0e4d9cf3..2472a8a043c4 100644
->>> --- a/net/ipv6/ioam6.c
->>> +++ b/net/ipv6/ioam6.c
->>> @@ -727,10 +727,13 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
->>>                          *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
->>>                  } else {
->>>                          queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
->>
->> Are you sure skb_dst(skb)->dev is correct at this stage, what about
->> stacked devices ?
->>
->>> -                       qdisc = rcu_dereference(queue->qdisc);
->>> -                       qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
->>> -
->>> -                       *(__be32 *)data = cpu_to_be32(backlog);
->>> +                       if (!queue->qdisc) {
->>
->> This is racy.
->>
->>> +                               *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
->>> +                       } else {
->>> +                               qdisc = rcu_dereference(queue->qdisc);
->>> +                               qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
->>> +                               *(__be32 *)data = cpu_to_be32(backlog);
->>> +                       }
->>>                  }
->>>                  data += sizeof(__be32);
->>>          }
->>> --
->>> 2.25.1
->>>
->>
->> Quite frankly I suggest to revert b63c5478e9cb completely.
->>
->> The notion of Queue depth can not be properly gathered in Linux with a
->> multi queue model,
->> so why trying to get a wrong value ?
-> 
-> Additional reason for a revert is that qdisc_qstats_qlen_backlog() is
-> reserved for net/sched
+On Mon, Dec 5, 2022 at 6:59 PM Weiping Zhang
+<zhangweiping@didiglobal.com> wrote:
+>
+> From the comments we can see that, rtt = 7/8 rtt + 1/8 new,
+> but there is an mistake,
+>
+> m -= (srtt >> 3);
+> srtt += m;
+>
+> explain:
+> m -= (srtt >> 3); //use t stands for new m
+> t = m - srtt/8;
+>
+> srtt = srtt + t
+> = srtt + m - srtt/8
+> = srtt 7/8 + m
+>
+> Test code:
+>
+>  #include<stdio.h>
+>
+>  #define u32 unsigned int
+>
+> static void test_old(u32 srtt, long mrtt_us)
+> {
+>         long m = mrtt_us;
+>         u32 old = srtt;
+>
+>         m -= (srtt >> 3);
+>         srtt += m;
+>
+>         printf("%s old_srtt: %u mrtt_us: %ld new_srtt: %u\n", __func__,  old, mrtt_us, srtt);
+> }
+>
+> static void test_new(u32 srtt, long mrtt_us)
+> {
+>         long m = mrtt_us;
+>         u32 old = srtt;
+>
+>         m = ((m - srtt) >> 3);
+>         srtt += m;
+>
+>         printf("%s old_srtt: %u mrtt_us: %ld new_srtt: %u\n", __func__,  old, mrtt_us, srtt);
+> }
+>
+> int main(int argc, char **argv)
+> {
+>         u32 srtt = 100;
+>         long mrtt_us = 90;
+>
+>         test_old(srtt, mrtt_us);
+>         test_new(srtt, mrtt_us);
+>
+>         return 0;
+> }
+>
+> ./a.out
+> test_old old_srtt: 100 mrtt_us: 90 new_srtt: 178
+> test_new old_srtt: 100 mrtt_us: 90 new_srtt: 98
+>
+> Signed-off-by: Weiping Zhang <zhangweiping@didiglobal.com>
+> ---
+>  net/ipv4/tcp_input.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 0640453fce54..0242bb31e1ce 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -848,7 +848,7 @@ static void tcp_rtt_estimator(struct sock *sk, long mrtt_us)
+>          * that VJ failed to avoid. 8)
+>          */
+>         if (srtt != 0) {
+> -               m -= (srtt >> 3);       /* m is now error in rtt est */
+> +               m = (m - srtt >> 3);    /* m is now error in rtt est */
+>                 srtt += m;              /* rtt = 7/8 rtt + 1/8 new */
+>                 if (m < 0) {
+>                         m = -m;         /* m is now abs(error) */
+> @@ -864,7 +864,7 @@ static void tcp_rtt_estimator(struct sock *sk, long mrtt_us)
+>                         if (m > 0)
+>                                 m >>= 3;
+>                 } else {
+> -                       m -= (tp->mdev_us >> 2);   /* similar update on mdev */
+> +                       m = (m - tp->mdev_us >> 2);   /* similar update on mdev */
+>                 }
+>                 tp->mdev_us += m;               /* mdev = 3/4 mdev + 1/4 new */
+>                 if (tp->mdev_us > tp->mdev_max_us) {
+> --
+> 2.34.1
+>
 
-If by "reserved" you mean "only used by at the moment", then yes (with 
-the only exception being IOAM). But some other functions are defined as 
-well, and some are used elsewhere than the "net/sched" context. So I 
-don't think it's really an issue to use this function "from somewhere else".
-
-> code, I think it needs the qdisc lock to be held.
-
-Good point. But is it really needed when called with rcu_read_lock?
+Sorry, this makes no sense to me.
