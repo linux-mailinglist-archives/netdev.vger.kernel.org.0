@@ -2,108 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE6BC642376
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:13:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C2C964237E
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:18:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231731AbiLEHNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 02:13:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52142 "EHLO
+        id S231421AbiLEHST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 02:18:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231582AbiLEHNn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:13:43 -0500
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BD8DF00;
-        Sun,  4 Dec 2022 23:13:41 -0800 (PST)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 40ED9C009; Mon,  5 Dec 2022 08:13:49 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1670224429; bh=2/E7M28jlzB+tOHKj9EI5rF1sUTSmV05NM5sZZy2Ges=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B0zWuxAWobbgFEMxbhwX4lp5iaDuYpVNfYEbFdypNE9BAEAUfyDNFOZ9FJxGQIdsa
-         b8O8XLAwsW93DcGQ3Q4PU3/Lta6koQ9lky6cmm3lfMhbiiA46TsCstjXBH999VsiNu
-         +g+UGbZ/ZI0sN+KWbwUv/pRW69a6gCgVxnjLgvbFBVlTAWRndzp8T/zJdsaVi0zHgy
-         w5r04KLoMbSVP7SFddKajyEj99IP8NkLmjCPuzsE1nZVZ5mvPDyRV144nm9oICY2Cy
-         1whWO7gJ3/KnNTjVIH5LIa0I6FJlll7IosmDfBEZKVNGoLLzb0Wyt/2gFNpM4NB9uD
-         TY9Y5Y2mDRT+g==
+        with ESMTP id S230037AbiLEHSS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:18:18 -0500
+X-Greylist: delayed 183 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 04 Dec 2022 23:18:14 PST
+Received: from hfcrelay.icp-osb-irony-out8.external.iinet.net.au (hfcrelay.icp-osb-irony-out8.external.iinet.net.au [203.59.1.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F333EE17
+        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 23:18:13 -0800 (PST)
+IronPort-SDR: V9fknfqS3qV63liEyjfM0VZZ515I35kUq9qZcuVSQpxxGxBno9ZcMhpaF9c2jPjPs0Cg+sPVz5
+ JIY7ZyHoQL6U2q9HSmCYprhkW8vyL8o7pNuRY0ihR8Tah6nOZiXAsgup5gt4Nhoc0WgzA3B1Tk
+ kg7p5KGALVif9SIgIIv9OBq6m8eOCoO6wIcSGMGWXF+4MKFUt3/4/YhvfybFMgoTJvUyBxoapS
+ 3dPH1u3saKX4Fv4mzoOTK0tq/IV49jEND2dP+QYZ6AdrNfRMqf70LYicl3dNfWAgZp/F/2fFRx
+ WPg=
+X-SMTP-MATCH: 1
+IronPort-Data: A9a23:IKRPqazsm3yZ1NiN9sB6t+c7xyrEfRIJ4+MujC+fZmUNrF6WrkU3e
+ hirod39jgY+HhL3funC5f239Uo2DfZgF+fXKXJsnZ1XZysiRfHtWJLIcC8cAwvIdpeZFRg/s
+ 51EAjX9BJtcokH090/F3ofJ8CEUOZGgHtIQ38adZ0id7Sc9IMsQoUoLd9wR2+aEsvDga++5g
+ u4eluWEULOTN5+YBUpPg06LgEsHUP3a5GhC5gRmDRxBlAe2e3I9VPrzKYntdCGgGtE88uOSH
+ 47+IL+FEmzx8E8iBcGktpHBckBQRa6VYyino3xQYv336vRCjnRaPqcTB6NNMwEO1WXPx5Yrk
+ uAlWZ6YEFZyePSVxqJDDV8BQ34W0a5uodcrJVCwq8Gc0kvJfmHh2d1xAVoqO4AEvO1wBCdH6
+ JT0LRhRMkve3Lrrnu/Tpu9EjcASdNLqF78k/VZQ7GDpHbEcbM/xTPCfjTNf9HJq7ixUJt7aZ
+ swEeRJ1ZQ/FfgZRO1MTBZc5kfzuinqXWyRZoVSavKsx7C7BzAV335DrIMKTcduPLe1Zl1iVo
+ 0rK9nr0BxUdOsDZzzeZmlqhivLKlDH2RKodE7q38vMsi1qWrkQQFRcffVi2u/+0jgi5Qd03A
+ 1Qd8CcorIAo+UCrR8W7VBq9yFaCswIQVsR4DeI38keOx7DS7gLfAXILJhZFado7pIo1SCYs2
+ 1uhgdzkH3psvaeTRHbb8a2bxQ5eIgBMfDRHPHZaCFVbpoCz/8cvlh3OCN1kFei8k7UZBA3N/
+ txDlwBm7517sCLB//jTEYzv6950mqX0cw==
+IronPort-HdrOrdr: A9a23:g20XiKzUTP0NMIuZrGVlKrPwBL1zdoMgy1knxilNoH1uHvBw8v
+ rEoB1173DJYVoqNk3I++rhBEDwexLhHPdOiOF6UItKOjOW2ldAR7sSjrcKrQeQYhHWx6pw0r
+ phbrg7KPCYNykDsS6siDPId+rIGeP3l5xAU92uqUuEV2lRGsRd0zs=
+X-IronPort-AV: E=Sophos;i="5.96,218,1665417600"; 
+   d="scan'208";a="443530565"
+Received: from 193-116-66-187.tpgi.com.au (HELO [192.168.0.22]) ([193.116.66.187])
+  by icp-osb-irony-out8.iinet.net.au with ESMTP; 05 Dec 2022 15:15:05 +0800
+Message-ID: <c69c1ff1-4da9-89f8-df2e-824cb7183fe9@westnet.com.au>
+Date:   Mon, 5 Dec 2022 17:15:04 +1000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Content-Language: en-US
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Greg Ungerer <gregungerer@westnet.com.au>
+Subject: Re: [PATCH] net: fec: don't reset irq coalesce settings to defaults
+ on "ip link up"
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 60CC5C009;
-        Mon,  5 Dec 2022 08:13:45 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1670224428; bh=2/E7M28jlzB+tOHKj9EI5rF1sUTSmV05NM5sZZy2Ges=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KxQeiB3TMfEP8TdHuiQ+mAFsfqmEjCtnUMdRLDavqny0AJ9quC85bvFEBSntRx1EW
-         kjheht3Ihlt2CF/xQPWMOwq5Hp75OT1K383041mHB0mzWog1mpMI4WaQBmkJkYT7Ut
-         qc0RVIfxvC04axDWpXmw086FQ2t/l35XCHSiqlIzYMqDz+K9YUpMXV5nxgGYli3Hrw
-         Kgq6sdVe8hA1CS/X51+825I4x+cBiWzHHw2YUdFUClSMpRA3HGpm2UG+i+a0wx3vZb
-         xKkm9DY1ftW3CzJ8CI0eeoJ+3T+iZoug4LvDwB+Nn8oZ4GFo/0dv5qbuFR9SS2ESgJ
-         QV9Y9Zr30M2zg==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id d99753f1;
-        Mon, 5 Dec 2022 07:13:32 +0000 (UTC)
-Date:   Mon, 5 Dec 2022 16:13:17 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Marco Elver <elver@google.com>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        rcu <rcu@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        kunit-dev@googlegroups.com, lkft-triage@lists.linaro.org,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-Subject: Re: arm64: allmodconfig: BUG: KCSAN: data-race in p9_client_cb /
- p9_client_rpc
-Message-ID: <Y42aDQ0ZOUt4dvYc@codewreck.org>
-References: <CA+G9fYsK5WUxs6p9NaE4e3p7ew_+s0SdW0+FnBgiLWdYYOvoMg@mail.gmail.com>
- <CANpmjNOQxZ--jXZdqN3tjKE=sd4X6mV4K-PyY40CMZuoB5vQTg@mail.gmail.com>
- <CA+G9fYs55N3J8TRA557faxvAZSnCTUqnUx+p1GOiCiG+NVfqnw@mail.gmail.com>
- <Y4e3WC4UYtszfFBe@codewreck.org>
- <CA+G9fYuJZ1C3802+uLvqJYMjGged36wyW+G1HZJLzrtmbi1bJA@mail.gmail.com>
- <Y4ttC/qESg7Np9mR@codewreck.org>
- <CANpmjNNcY0LQYDuMS2pG2R3EJ+ed1t7BeWbLK2MNxnzPcD=wZw@mail.gmail.com>
- <Y4vW4CncDucES8m+@codewreck.org>
- <CANpmjNPXhEB6GeMT70UT1e-8zTHf3gY21E3wx-27VjChQ0x2gA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CANpmjNPXhEB6GeMT70UT1e-8zTHf3gY21E3wx-27VjChQ0x2gA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marco Elver wrote on Mon, Dec 05, 2022 at 08:00:00AM +0100:
-> > Should I just update the wrapped condition, as below?
-> >
-> > -       err = wait_event_killable(req->wq, req->status >= REQ_STATUS_RCVD);
-> > +       err = wait_event_killable(req->wq,
-> > +                                 READ_ONCE(req->status) >= REQ_STATUS_RCVD);
-> 
-> Yes, this looks good!
-> 
-> > The writes all are straightforward, there's all the error paths to
-> > convert to WRITE_ONCE too but that's not difficult (leaving only the
-> > init without such a marker); I'll send a patch when you've confirmed the
-> > read looks good.
-> > (the other reads are a bit less obvious as some are protected by a lock
-> > in trans_fd, which should cover all cases of possible concurrent updates
-> > there as far as I can see, but this mixed model is definitely hard to
-> > reason with... Well, that's how it was written and I won't ever have time
-> > to rewrite any of this. Enough ranting.)
-> 
-> If the lock-protected accesses indeed are non-racy, they should be
-> left unmarked. If some assumption here turns out to be wrong, KCSAN
-> would (hopefully) tell us one way or another.
+Hi Rasmus,
 
-Great, that makes sense.
+On 23 Nov 2022, Rasmus Villemoes <linux@rasmusvillemoes.dk> wrote:
+> Currently, when a FEC device is brought up, the irq coalesce settings
+> are reset to their default values (1000us, 200 frames). That's
+> unexpected, and breaks for example use of an appropriate .link file to
+> make systemd-udev apply the desired
+> settings (https://www.freedesktop.org/software/systemd/man/systemd.link.html),
+> or any other method that would do a one-time setup during early boot.
+> 
+> Refactor the code so that fec_restart() instead uses
+> fec_enet_itr_coal_set(), which simply applies the settings that are
+> stored in the private data, and initialize that private data with the
+> default values.
+> 
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-I've left the commit at home, will submit it tonight -- you and Naresh
-will be in Cc from suggested/reported-by tags.
+This breaks The ColdFire parts that use the FEC hardware module at the
+very least. It results in an access to a register (FEC_TXIC0) that does
+not exist in the ColdFire FEC. Reverting this change fixes it.
 
--- 
-Dominique
+So for me this is now broken in 6.1-rc8.
+
+Regards
+Greg
+
+
+> ---
+>  drivers/net/ethernet/freescale/fec_main.c | 22 ++++++----------------
+>  1 file changed, 6 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index f623c12eaf95..2ca2b61b451f 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -74,7 +74,7 @@
+>  #include "fec.h"
+>  
+>  static void set_multicast_list(struct net_device *ndev);
+> -static void fec_enet_itr_coal_init(struct net_device *ndev);
+> +static void fec_enet_itr_coal_set(struct net_device *ndev);
+>  
+>  #define DRIVER_NAME	"fec"
+>  
+> @@ -1220,8 +1220,7 @@ fec_restart(struct net_device *ndev)
+>  		writel(0, fep->hwp + FEC_IMASK);
+>  
+>  	/* Init the interrupt coalescing */
+> -	fec_enet_itr_coal_init(ndev);
+> -
+> +	fec_enet_itr_coal_set(ndev);
+>  }
+>  
+>  static int fec_enet_ipc_handle_init(struct fec_enet_private *fep)
+> @@ -2856,19 +2855,6 @@ static int fec_enet_set_coalesce(struct net_device *ndev,
+>  	return 0;
+>  }
+>  
+> -static void fec_enet_itr_coal_init(struct net_device *ndev)
+> -{
+> -	struct ethtool_coalesce ec;
+> -
+> -	ec.rx_coalesce_usecs = FEC_ITR_ICTT_DEFAULT;
+> -	ec.rx_max_coalesced_frames = FEC_ITR_ICFT_DEFAULT;
+> -
+> -	ec.tx_coalesce_usecs = FEC_ITR_ICTT_DEFAULT;
+> -	ec.tx_max_coalesced_frames = FEC_ITR_ICFT_DEFAULT;
+> -
+> -	fec_enet_set_coalesce(ndev, &ec, NULL, NULL);
+> -}
+> -
+>  static int fec_enet_get_tunable(struct net_device *netdev,
+>  				const struct ethtool_tunable *tuna,
+>  				void *data)
+> @@ -3623,6 +3609,10 @@ static int fec_enet_init(struct net_device *ndev)
+>  	fep->rx_align = 0x3;
+>  	fep->tx_align = 0x3;
+>  #endif
+> +	fep->rx_pkts_itr = FEC_ITR_ICFT_DEFAULT;
+> +	fep->tx_pkts_itr = FEC_ITR_ICFT_DEFAULT;
+> +	fep->rx_time_itr = FEC_ITR_ICTT_DEFAULT;
+> +	fep->tx_time_itr = FEC_ITR_ICTT_DEFAULT;
+>  
+>  	/* Check mask of the streaming and coherent API */
+>  	ret = dma_set_mask_and_coherent(&fep->pdev->dev, DMA_BIT_MASK(32));
+> -- 
+> 2.37.2
+
