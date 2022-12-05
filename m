@@ -2,67 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D99464284C
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 13:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38D2664285A
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 13:23:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231774AbiLEMWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 07:22:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
+        id S231891AbiLEMXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 07:23:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiLEMWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 07:22:14 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEE9FAC5
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 04:22:08 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id c17so6956357edj.13
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 04:22:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9tH9W6688V7YxZPE80AcFWtdnNsVJu69tH/v5pMx+3s=;
-        b=SI20m68ij9Zp6tQ4Zwmknbqtm1g/rWN9AaJ2zmXdQKCexUoDIDmVhHLSYSASYjZ6u/
-         6fOHl1B3WoWEq/TLVO6vJS7rCCZxhFMA0EwyAE27deAvvNFQNvpIYBUb4p3ar0CS3xfZ
-         aGyvZvxSU1PHpLd+PmcKeC9wnZL7uq200PCbXx4IYA9oCykCsiDgl+DGf551B+iPEaN8
-         HgBM3zxjZ7f85axABkyTp5C+uyQuJgCBUZnpIEVcQutaDFLMWUeW1oLNR7M1E8R4CfgH
-         pZ4dOOfPG5pXoCBgA2IS8j2cziWpJBd8Aexv/uxk8PsFDNKY4+UrDgrwm8dqJl8XeCI4
-         48EQ==
+        with ESMTP id S231906AbiLEMXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 07:23:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D24FCC4
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 04:22:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670242943;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9Fpu1oLPXixRs8SXVb53vX2+k8zH4l62xyUnVTqnhLI=;
+        b=dMQDya763huKerwxVobS6BeuX5jwLh9sQmd5qcfnPClbwBVx8yBdagBmHsg+b5mbEkJNXc
+        K4DK0CEW1n7hWM9c3lSrcmOh0sLluMksnVYL5Mjf2zTMy6DZ/1EjjENFcS/fODCQ66UNxt
+        LzdZEWEsm413uh3xEkoGR26459G0584=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-586-hGSTzwylOvywMlU4GD5Vdw-1; Mon, 05 Dec 2022 07:22:21 -0500
+X-MC-Unique: hGSTzwylOvywMlU4GD5Vdw-1
+Received: by mail-wm1-f70.google.com with SMTP id bg25-20020a05600c3c9900b003cf3ed7e27bso6793434wmb.4
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 04:22:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9tH9W6688V7YxZPE80AcFWtdnNsVJu69tH/v5pMx+3s=;
-        b=XAPo/Rw4MU+RuQnVCpBZjjS6GrmXor9mzsd6/rY7GMfdt55TcIx7KvplWdeyAvYn5A
-         nck8Xy0JCYCmuzuohV7RVk7zyGs5CawqJ+gdNz6bKrSB1NJtuy5LmHHX4uiEcCaqwjNZ
-         0c5OEvRJB33GgtetV6kqtFUqhzNYTdZz4athZJcACIaJmLyJyhImS1Txk9vfhCQaXuoY
-         4y2brM5SWznAIcR4Wsar1h82BHXmedAjeisHDALKk5R3brMVp0VdfL8ipH05ZP50ZCnV
-         oh6Iq03Ar1d4N5scQLcmZ4C2J5oCDM769xt7+YybfKRDi8/IuEt8QtdbqTU8aYteJKJI
-         6P3g==
-X-Gm-Message-State: ANoB5pnGB7hBc9YwDdZ8Hnms4Ii0DikIqQvElykAxfnBMfBy/0b5Mb6m
-        Xyu2iN/TaYgQ8Fc13SoHJ3sJkalLI/QdRkVzwhQ=
-X-Google-Smtp-Source: AA0mqf4kYvtgIrWRb9U3sNVf2CBfUsFwwHWO4As7pT3FNiFoQaOTFI/vfYySCIMUfAQB5Eh5PpNOBA==
-X-Received: by 2002:aa7:d58e:0:b0:46c:3f7e:d7a5 with SMTP id r14-20020aa7d58e000000b0046c3f7ed7a5mr11057519edq.363.1670242927118;
-        Mon, 05 Dec 2022 04:22:07 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id kx4-20020a170907774400b0079e11b8e891sm6135803ejc.125.2022.12.05.04.22.06
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9Fpu1oLPXixRs8SXVb53vX2+k8zH4l62xyUnVTqnhLI=;
+        b=6sjdALzQ7yoJg3NeHYWc+ANOu6KMjVRr54blQd9t90RW8gEURch0HtRpe+cLL4DKNL
+         1p4JjHW4+Xwz0HcMgutXDqmKofqr9ldvSWsDb8r3ZL6l7aj1IxXYS8UqNnE6L1F2wcGN
+         /2QW1uXB7NRues/JTn/7LP2s6xYk7GPKPfYYaea3TmwIvuZTcmFfle+98qkeXgURPnRz
+         RwnbrvUKCxFUCNUAaRV/gNgVhy93gQN0Wrhd94GTcmguoTjBCLo/Xo+iuilNw/8owwf7
+         oj/bQF9Oj97WoYjc5lMIqJvi2EvhsrtbNikpDkBVKSyOAOxdmYFeRtiB+pygCLDS4Dbt
+         6pbA==
+X-Gm-Message-State: ANoB5plk4e2Y/0sjox1M8iyzv1aoBs5DaiKF8GBGfMiY9BskGBFjcvMj
+        DLwoCY94gkr50B6klAogkqWkgMTE/Q3bqB9Lf0NUvbWqDinRsadgoBTx59V8vcLJJtc9Cn/P1DK
+        ONUmQVseEH6eRgo8M
+X-Received: by 2002:a05:6000:1b86:b0:241:9606:1123 with SMTP id r6-20020a0560001b8600b0024196061123mr45199175wru.537.1670242940856;
+        Mon, 05 Dec 2022 04:22:20 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6lXoHQqNZ83Ji7T4v0uWQIKCS1P748eGLo9Jfj6gSuWt8L17oynW4Eb8SDldK2I9Z85TIOMg==
+X-Received: by 2002:a05:6000:1b86:b0:241:9606:1123 with SMTP id r6-20020a0560001b8600b0024196061123mr45199150wru.537.1670242940594;
+        Mon, 05 Dec 2022 04:22:20 -0800 (PST)
+Received: from sgarzare-redhat (host-87-11-6-51.retail.telecomitalia.it. [87.11.6.51])
+        by smtp.gmail.com with ESMTPSA id a3-20020adffac3000000b0024245e543absm8823432wrs.88.2022.12.05.04.22.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 04:22:06 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com, kuba@kernel.org,
-        moshe@nvidia.com, saeedm@nvidia.com
-Subject: [patch iproute2/net-next 4/4] devlink: update ifname map when message contains DEVLINK_ATTR_PORT_NETDEV_NAME
-Date:   Mon,  5 Dec 2022 13:21:58 +0100
-Message-Id: <20221205122158.437522-5-jiri@resnulli.us>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20221205122158.437522-1-jiri@resnulli.us>
-References: <20221205122158.437522-1-jiri@resnulli.us>
+        Mon, 05 Dec 2022 04:22:20 -0800 (PST)
+Date:   Mon, 5 Dec 2022 13:22:14 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Bobby Eshleman <bobby.eshleman@bytedance.com>
+Cc:     Bobby Eshleman <bobbyeshleman@gmail.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5] virtio/vsock: replace virtio_vsock_pkt with sk_buff
+Message-ID: <20221205122214.bky3oxipck4hsqqe@sgarzare-redhat>
+References: <20221202173520.10428-1-bobby.eshleman@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20221202173520.10428-1-bobby.eshleman@bytedance.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,108 +87,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+On Fri, Dec 02, 2022 at 09:35:18AM -0800, Bobby Eshleman wrote:
+>This commit changes virtio/vsock to use sk_buff instead of
+>virtio_vsock_pkt. Beyond better conforming to other net code, using
+>sk_buff allows vsock to use sk_buff-dependent features in the future
+>(such as sockmap) and improves throughput.
+>
+>This patch introduces the following performance changes:
+>
+>Tool/Config: uperf w/ 64 threads, SOCK_STREAM
+>Test Runs: 5, mean of results
+>Before: commit 95ec6bce2a0b ("Merge branch 'net-ipa-more-endpoints'")
+>
+>Test: 64KB, g2h
+>Before: 21.63 Gb/s
+>After: 25.59 Gb/s (+18%)
+>
+>Test: 16B, g2h
+>Before: 11.86 Mb/s
+>After: 17.41 Mb/s (+46%)
+>
+>Test: 64KB, h2g
+>Before: 2.15 Gb/s
+>After: 3.6 Gb/s (+67%)
+>
+>Test: 16B, h2g
+>Before: 14.38 Mb/s
+>After: 18.43 Mb/s (+28%)
+>
+>Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+>---
+>Changes in v5:
+>- last_skb instead of skb: last_hdr->len = cpu_to_le32(last_skb->len)
 
-Recent kernels send PORT_NEW message with when ifname changes,
-so benefit from that by having ifnames updated.
+With this issue fixed, I confirm that all the tests passed:
 
-Whenever there is a message containing DEVLINK_ATTR_PORT_NETDEV_NAME
-attribute, use it to update ifname map.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- devlink/devlink.c | 34 ++++++++++++++++++++++++++++------
- 1 file changed, 28 insertions(+), 6 deletions(-)
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 2d9ba32b4140..3125a3db98dc 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -242,6 +242,18 @@ static void ifname_map_free(struct ifname_map *ifname_map)
- 	free(ifname_map);
- }
- 
-+static int ifname_map_update(struct ifname_map *ifname_map, const char *ifname)
-+{
-+	char *new_ifname;
-+
-+	new_ifname = strdup(ifname);
-+	if (!new_ifname)
-+		return -ENOMEM;
-+	free(ifname_map->ifname);
-+	ifname_map->ifname = new_ifname;
-+	return 0;
-+}
-+
- #define DL_OPT_HANDLE		BIT(0)
- #define DL_OPT_HANDLEP		BIT(1)
- #define DL_OPT_PORT_TYPE	BIT(2)
-@@ -985,7 +997,7 @@ static int ifname_map_lookup(struct dl *dl, const char *ifname,
- 
- static int ifname_map_rev_lookup(struct dl *dl, const char *bus_name,
- 				 const char *dev_name, uint32_t port_index,
--				 char **p_ifname)
-+				 const char **p_ifname)
- {
- 	struct ifname_map *ifname_map;
- 
-@@ -999,6 +1011,12 @@ static int ifname_map_rev_lookup(struct dl *dl, const char *bus_name,
- 		if (strcmp(bus_name, ifname_map->bus_name) == 0 &&
- 		    strcmp(dev_name, ifname_map->dev_name) == 0 &&
- 		    port_index == ifname_map->port_index) {
-+			/* In case non-NULL ifname is passed, update the
-+			 * looked-up entry.
-+			 */
-+			if (*p_ifname)
-+				return ifname_map_update(ifname_map, *p_ifname);
-+
- 			*p_ifname = ifname_map->ifname;
- 			return 0;
- 		}
-@@ -2715,11 +2733,10 @@ static bool should_arr_last_port_handle_end(struct dl *dl,
- 
- static void __pr_out_port_handle_start(struct dl *dl, const char *bus_name,
- 				       const char *dev_name,
--				       uint32_t port_index, bool try_nice,
--				       bool array)
-+				       uint32_t port_index, const char *ifname,
-+				       bool try_nice, bool array)
- {
- 	static char buf[64];
--	char *ifname = NULL;
- 
- 	if (dl->no_nice_names || !try_nice ||
- 	    ifname_map_rev_lookup(dl, bus_name, dev_name,
-@@ -2767,6 +2784,7 @@ static void __pr_out_port_handle_start(struct dl *dl, const char *bus_name,
- static void __pr_out_port_handle_start_tb(struct dl *dl, struct nlattr **tb,
- 					  bool try_nice, bool array)
- {
-+	const char *ifname = NULL;
- 	const char *bus_name;
- 	const char *dev_name;
- 	uint32_t port_index;
-@@ -2774,7 +2792,10 @@ static void __pr_out_port_handle_start_tb(struct dl *dl, struct nlattr **tb,
- 	bus_name = mnl_attr_get_str(tb[DEVLINK_ATTR_BUS_NAME]);
- 	dev_name = mnl_attr_get_str(tb[DEVLINK_ATTR_DEV_NAME]);
- 	port_index = mnl_attr_get_u32(tb[DEVLINK_ATTR_PORT_INDEX]);
--	__pr_out_port_handle_start(dl, bus_name, dev_name, port_index, try_nice, array);
-+	if (tb[DEVLINK_ATTR_PORT_NETDEV_NAME])
-+		ifname = mnl_attr_get_str(tb[DEVLINK_ATTR_PORT_NETDEV_NAME]);
-+	__pr_out_port_handle_start(dl, bus_name, dev_name, port_index,
-+				   ifname, try_nice, array);
- }
- 
- static void pr_out_port_handle_start(struct dl *dl, struct nlattr **tb, bool try_nice)
-@@ -6160,7 +6181,8 @@ static void pr_out_occ_show(struct occ_show *occ_show)
- 
- 	list_for_each_entry(occ_port, &occ_show->port_list, list) {
- 		__pr_out_port_handle_start(dl, opts->bus_name, opts->dev_name,
--					   occ_port->port_index, true, false);
-+					   occ_port->port_index, NULL,
-+					   true, false);
- 		pr_out_occ_show_port(dl, occ_port);
- 		pr_out_port_handle_end(dl);
- 	}
--- 
-2.37.3
+As pointed out in v4, this is net-next material, so you should use the 
+net-next tag and base the patch on the net-next tree:
+https://www.kernel.org/doc/html/v6.0/process/maintainer-netdev.html#netdev-faq
+
+I locally applied the patch on net-next and everything is fine, so maybe 
+the maintainers can apply it, otherwise you should resend it with the 
+right tag.
+Ah, in that case I suggest you send it before the next merge window 
+opens (I guess next week), because net-next closes and you'll have to 
+wait for the next cycle.
+
+Thanks,
+Stefano
 
