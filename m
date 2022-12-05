@@ -2,132 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 257E9642E8C
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D52AC642E93
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbiLERUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 12:20:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
+        id S231756AbiLERX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 12:23:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231814AbiLERTw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:19:52 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2071.outbound.protection.outlook.com [40.107.6.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06336B49A
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:19:52 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i68mp+90reRWnJAxg9V0MNzPDk+IwLcV8hSPkZ3YqVfIF3oem+bAmnYCJlih+5xz7M6J2HJc8JsyCnWBKhLdB7cezftW+gmWdz5TUlhuGhPKi/GEkZ2BO7MAiw2+5P0Cl1mBNhGYowj4+hxCHiYzo4eeFP8Pr86RnEsVs6goWSfaUJTiVxfRrc6Wo7XYk17K0Ixu3FG98gtxwI+ficrwAPLBlb07rn0/c0Y+KvrUAmE//U5xAXzEuaGAQdFjmzyRG30hx51YxFbQq3a/jPzefCJQYFJHZDhxrwFlu1r3PCQIxH2p6oWvPMC3i0ZAKZSKkAhPKYx6bpy/4LlNMZar9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qdvPPchvfnrcCmHRuVOxVqU9RKLpcp8xsqy+dP/7fSQ=;
- b=TeC7CEWB2l1yN+AIgN5eNo0s9Q8HSNDDgFEc3rPPtcroxsDQ6dExrsqoJfwhgiNy41rQfZ2HfgqVwouRY7TroBWTh59GYdYFf6QzHElhk74xuK4/hOXjILZOHJsGSX+XDhMSnkoR3Y8TaoDDxrNJkcz1gR76I3ni9PBfMhUUg5ZO1e4T12jyuiQpJ8Iwva0iZf0oBqHTc+KLSv4cgTsRGrnuQJ5UcgMgJtOoxWKs4vAIJtrRDCnytHxSQZbVJNxGwzoK0/WkNOHmgTyPAl9+2ByvCtb1BeWoZJ9t0e8hdymhmxtfxv027CMfzbAZZ3RXybbm9gQkhxHSNf32CQrsVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qdvPPchvfnrcCmHRuVOxVqU9RKLpcp8xsqy+dP/7fSQ=;
- b=BhR8aman51SKjTlYtQGQUfVhPAekLOK2hupx7SFsO+RnZpTKQrmSSg4QMBC6CZti/vlQc967a+tztrR6fNjgPtC/jM0QpGRTcofVuk5/RCb6o4PRmEpxbSe/K96oHBdNNGXr0RsdfN40EiO2CD1ONi3D4o8JuzEvD2RfQvvZ9bA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PAXPR04MB8158.eurprd04.prod.outlook.com (2603:10a6:102:1c3::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10; Mon, 5 Dec
- 2022 17:19:49 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5857.023; Mon, 5 Dec 2022
- 17:19:49 +0000
-Date:   Mon, 5 Dec 2022 19:19:45 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Maxim Kochetkov <fido_max@inbox.ru>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        bcm-kernel-feedback-list@broadcom.com,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Camelia Groza <camelia.groza@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Michael Walle <michael@walle.cc>,
-        Raag Jadav <raagjadav@gmail.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Marek Behun <marek.behun@nic.cz>,
-        Maxim Kiselev <bigunclemax@gmail.com>
-Subject: Re: [PATCH v4 net-next 0/8] Let phylink manage in-band AN for the PHY
-Message-ID: <20221205171945.t7kvgryhxffpqckd@skbuf>
-References: <20221118000124.2754581-1-vladimir.oltean@nxp.com>
- <1edc2a6a-d827-91fc-0941-b8b8cbfdf76b@inbox.ru>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1edc2a6a-d827-91fc-0941-b8b8cbfdf76b@inbox.ru>
-X-ClientProxiedBy: BE0P281CA0036.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:14::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S231737AbiLERX0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:23:26 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7948B63DC
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:23:25 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id d128so15326455ybf.10
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 09:23:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=u7DALn6YJ91hCJ6DhaegfrEN/nsHxi4kaqnBuBZM/6c=;
+        b=ePAb41hu7bNeENouChJCOPV42gfUVe+ubAJGR4y4IrIcKx3AznFi18UyWdh3t9JCER
+         rwC2zAlgAgt+afYkpwZDOq6w8J8Qu9NRZmZ7O5GSJHeepdTyIJxK2XPRfPgeiYR/Mb9R
+         v9ltFDPYjtU5FNs+NfD7Juve4x7mxZrpOqcTniV8840rfm5qPs/wFtnPE3qqLReMsR9x
+         drCSJT2MlDECLCQzkibTmD0fojhPYy+9n019rDuFeOaMI8AICw6QEusphU3UJxazeqlb
+         Zv1ab9b7lg4RjsCeeeSldPeDo9bIJTO6VRIZCJpstdnyC6bI/I51ePvOT6vT0ueP9Es2
+         RO0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=u7DALn6YJ91hCJ6DhaegfrEN/nsHxi4kaqnBuBZM/6c=;
+        b=ikVqcAaDPKkHMUbtZDQL9xyniWXmiUtuL+9+7RSiv7e8nIXmQe1+JQCU8Y6l0f67hQ
+         qh7+g4AqhIBkTWotUULnbxvM+4NktnXYUOQToiixXPOpIV24g2BqhhUI6mtPXbHfWz4t
+         fySUJnR5clpQwzCYB3kXELeavZ3K1OQYAAd9NDUTPs/jKnr/DZVrAiO1XyVs5ZOq4b50
+         u8i3FKg0BNfPi4/30kr0Qg8cIy4mU9vb6sX5wfYBDYiHHQxBXVvxrToXfDvLepXfzIW3
+         zqoQw5EzLr75bk2j6mLcgIXlsiG4SZ8BeJQvaXX2QGbeqT014GUIDwXPjKmcyg3tBgRT
+         1CBw==
+X-Gm-Message-State: ANoB5pkn2G3rq5sH+tDI5WZN/3JPdD4fAkuWNmctRrF3CopN8Vcfk0De
+        YbUH2qwXcvsaSRNT0zrbfsVYjq6dIQDIqUoC+P0G6w==
+X-Google-Smtp-Source: AA0mqf4TyLILdoz3IGEzu/oZZTJ1Ufqjjb5cOl7fiRCdudrU6I7UquCDEOzJMjcMGZ1N2u+qHtehmkrEjg6QX+GdVd0=
+X-Received: by 2002:a25:24d:0:b0:6fd:2917:cf60 with SMTP id
+ 74-20020a25024d000000b006fd2917cf60mr13876617ybc.427.1670261003568; Mon, 05
+ Dec 2022 09:23:23 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8158:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0e424b69-4cea-4a0c-7002-08dad6e4ea2b
-X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jMBFExRl1dDtnHvFSMmGcjwEVA4ykH61E1I961aKpSF7xu50rjp3KCLT5mNFmv32DKgqw1AE95GI1bu5xgK2yyF9DPXOX6rhif0lieEYgifr+ubO0+CYuJ5AZ4Cp9W6sF3TqyfpUikS64GDHMZNXaEjWuxE9zpseq/yQGtvcExc+WuDCgLMqJzjwlPsjn1YJCrTB12XgVuyNf2P2gAhxIb99jaQEdIqy3Ya16llGYfKFgZGe1+p6JneBQe1iou2Z/YavLiIUtCzh2suizxFon3XaydzqkDsqI2xwn3IHkG5n/POw/jwz4C4h8n42Rt4YXWg8+7xgHFWIgFxax8MDy8hSvfCaZRaKM+Qx5qtG4X0Ja9Vs7Wst8rYFKEhsaHRlM2EbNjN8u8Cpb8DKAohvq0uiTFYWF+I9drUUbfkEONYa5mVdp46Zp8/UW76dPhFKY5zmFcbDC1UmQKCq4iHI+EQdIH9hWZV4x8sFpW/q9bdnZMdQjMEv3iFe+hv90ch5SVrgIAs5IPVWjfmZsoTK9aoewZx49phTOGKS5ktkpR1+E9vcirK9Tu/I+Gd2Gj8hWdqu9tS4iDl685u4Z5odjYUQrSVw7ZHs8PwR2MzWFF4XcoNniTmr29kzZEu1Mm2GdzyQ4a5fPfrIo58Jc0ITig==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(346002)(376002)(366004)(39860400002)(396003)(136003)(451199015)(2906002)(83380400001)(558084003)(66946007)(41300700001)(186003)(1076003)(86362001)(66476007)(38100700002)(26005)(6512007)(9686003)(33716001)(44832011)(5660300002)(7416002)(66556008)(8676002)(8936002)(4326008)(316002)(478600001)(6666004)(6486002)(6916009)(54906003)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TkGFH356fiZLOnrVgFs3QEUxLyHmdFytPsgvT4kwqJ/Gemd5l/letpLqwMQQ?=
- =?us-ascii?Q?a+DKxtGSxrJNBsxx41iDT+Y24xkYfAa9mGDJ2wErgPNwUh3MtLz0OOdFeMgi?=
- =?us-ascii?Q?h7DMQcbORYZZbK+0Imq2DG0gYFq80A5YcjjrzlJIu4aGVC1Su5zraoccL7KO?=
- =?us-ascii?Q?rnxY4s9tbaqPgXktRvXIvGbwzh1BjtR0uO/xKmHVjEdDeaVJrO53HDRJTyLX?=
- =?us-ascii?Q?lifZOhxTYy6LT5EseF5K2Es07qwrNrN//9vLjvCDwBoT73/JPoZ4gL0aIN5C?=
- =?us-ascii?Q?TjJdq0ItATF8MTbK/vB8cUMA+bjAUw+z8N/ujIa32KJ1oMYgpY8RJuZ2Dm1Q?=
- =?us-ascii?Q?yphiWL7SB5ZNJ6jo1rfMG5cRXwqGR9WdxPL60KOMLBnjjyLum/IFFdXm4n0k?=
- =?us-ascii?Q?XuKVg13IA2UQqAT2Ml0eo4nMsHBziaFir2/1E611gESavOXnqmOPJmrzkrYc?=
- =?us-ascii?Q?4qtXrOs5TiCQjYZ1BdmkqGH1e2UIGDsjgSYE9588nhqvSrKDankIxnm07h6/?=
- =?us-ascii?Q?FyDA1IJ0upXnBoJ4b36Qv8XJNfbSROvmbcWIv51UGVycb19Ev3/qmxuh019c?=
- =?us-ascii?Q?52RCWjKxrN0xtaWyGdLOSev2L53vqKKEFsgn2yN6XYlIoaylujfTBOY5RUvZ?=
- =?us-ascii?Q?p5gG6IjxxKLizZ07EHJzl7GFxS0jvR5YvHcNH/9v4keJYZMGAoiU5YBqmyzl?=
- =?us-ascii?Q?G5yolVzZdOP/MVKRYJAkpG2Jvf4oZPN0jhR9yKUaAtQbKhJDnNMkXskV+E7P?=
- =?us-ascii?Q?rWbMHJo3WJ4AEiNLzj07bEs3nPVTpt7VMnejdCv/JVa2qmT1HVpGCMMPP+1c?=
- =?us-ascii?Q?jBSioFUI1+lfroO2yvRaJANTAosiyc0ds0DPZ0MHU890UAxf+zda8jtMFUv6?=
- =?us-ascii?Q?EG/RyLlkGTzbcs5JVq1ygZGbIs5XqY3qMBkB76bbIjzW2jdXuSKAlC6fNlZs?=
- =?us-ascii?Q?O0urzZwU4Kquhzc1LzO52cs6vxO24vaWYof3Kft9e2PRVlNP8TzfqpWIEOjr?=
- =?us-ascii?Q?wkaUCG9UMtRiaqE6cCxQ6ZKfk4WBoBTVkMpnIe/BijHg2ZmH1mw/x9NiFYzf?=
- =?us-ascii?Q?9hwf4nYlTxQUUx9/T92yN/oHUBHjz5uE2V79wnO8lyVh/naRE9NNZ/DLKB5L?=
- =?us-ascii?Q?Exn6w3Tt9UY369dBIKwGsaNGZr2vKP1kI6QZs9zoPnl3yCHzkWgzkuRXZF/A?=
- =?us-ascii?Q?e+thORjnl47is15V0lgnx/vHEi0KZsd6cNbWskACpY0WgF93Nurc9y2eqVAF?=
- =?us-ascii?Q?uybf2NDK5cB214a3n4XoNYcXxE1DIaEPzIi84k7REydfIyeWV0VDwy+ldwqr?=
- =?us-ascii?Q?RH+PALrNKU66/tvesd9Zllz9ZNkcoTGj6mTxd+F+MH6Ib4s4F4fpvYudpz3V?=
- =?us-ascii?Q?JxtjcPxs3YWoqDZd8ZMy/ziQh6owg4XQiM0hGnYqFh+FLZmTohUs8+26V0VO?=
- =?us-ascii?Q?Dq2XEqCBGdJvPSbxVe1880zJAHPnJkzULc2CuTIJ7KOTg7SxXenSH/gmWOqW?=
- =?us-ascii?Q?oq+Fk8gO6wijqz5swERQDW6vQrRhzdAdsci3Rey4MnVA+pH/Iyxeaw1uYmLe?=
- =?us-ascii?Q?3+KonmVv0EogWZiJoNAgwShybN0R5PUDQsPE9xhhLb+UiVED7yoLe6GOlqVF?=
- =?us-ascii?Q?hg=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e424b69-4cea-4a0c-7002-08dad6e4ea2b
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2022 17:19:49.7980
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e8Tj4HK013DeI4lrSnbWAzWjtyR+3L0oTI7a+Esojv7U+7nvMO3hb38bhbS/WHEcMI4GEkSvTSFoejn6ynurMg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8158
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+References: <20221205171520.1731689-1-pctammela@mojatatu.com> <20221205171520.1731689-3-pctammela@mojatatu.com>
+In-Reply-To: <20221205171520.1731689-3-pctammela@mojatatu.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 5 Dec 2022 18:23:12 +0100
+Message-ID: <CANn89iKdd74NMuJgzy+Hd22RNBuYVxyw9Tw4JOMY8nMVUhD8CA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/4] net/sched: add retpoline wrapper for tc
+To:     Pedro Tammela <pctammela@mojatatu.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, kuniyu@amazon.com,
+        Victor Nogueira <victor@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -135,10 +69,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 02, 2022 at 03:16:19PM +0300, Maxim Kochetkov wrote:
-> Hi!
-> 
-> Please add Maxim Kiselev <bigunclemax@gmail.com> to the CC in next versions.
-> Because I have no more access to T1040 SoC. Maxim can help with testing.
+On Mon, Dec 5, 2022 at 6:16 PM Pedro Tammela <pctammela@mojatatu.com> wrote:
+>
+> On kernels compiled with CONFIG_RETPOLINE and CONFIG_NET_TC_INDIRECT_WRAPPER,
+> optimize actions and filters that are compiled as built-ins into a direct call.
+> The calls are ordered according to relevance. Testing data shows that
+> the pps difference between first and last is between 0.5%-1.0%.
+>
+> On subsequent patches we expose the classifiers and actions functions
+> and wire up the wrapper into tc.
+>
+> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> Reviewed-by: Victor Nogueira <victor@mojatatu.com>
+> ---
+>  include/net/tc_wrapper.h | 226 +++++++++++++++++++++++++++++++++++++++
+>  net/sched/Kconfig        |  13 +++
+>  2 files changed, 239 insertions(+)
+>  create mode 100644 include/net/tc_wrapper.h
+>
+> diff --git a/include/net/tc_wrapper.h b/include/net/tc_wrapper.h
+> new file mode 100644
+> index 000000000000..3bdebbfdf9d2
+> --- /dev/null
+> +++ b/include/net/tc_wrapper.h
+> @@ -0,0 +1,226 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef __NET_TC_WRAPPER_H
+> +#define __NET_TC_WRAPPER_H
+> +
+> +#include <linux/indirect_call_wrapper.h>
+> +#include <net/pkt_cls.h>
+> +
+> +#if IS_ENABLED(CONFIG_NET_TC_INDIRECT_WRAPPER)
+> +
+> +#define TC_INDIRECT_SCOPE
+> +
+> +/* TC Actions */
+> +#ifdef CONFIG_NET_CLS_ACT
+> +
+> +#define TC_INDIRECT_ACTION_DECLARE(fname)                              \
+> +       INDIRECT_CALLABLE_DECLARE(int fname(struct sk_buff *skb,       \
+> +                                           const struct tc_action *a, \
+> +                                           struct tcf_result *res))
+> +
+> +TC_INDIRECT_ACTION_DECLARE(tcf_bpf_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_connmark_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_csum_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_ct_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_ctinfo_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_gact_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_gate_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_ife_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_ipt_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_mirred_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_mpls_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_nat_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_pedit_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_police_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_sample_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_simp_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_skbedit_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_skbmod_act);
+> +TC_INDIRECT_ACTION_DECLARE(tcf_vlan_act);
+> +TC_INDIRECT_ACTION_DECLARE(tunnel_key_act);
+> +
+> +static inline int tc_act(struct sk_buff *skb, const struct tc_action *a,
+> +                          struct tcf_result *res)
+> +{
 
-Ok, thanks for your contribution to the T1040 switch driver.
+Perhaps you could add a static key to enable this retpoline avoidance only
+on cpus without hardware support.  (IBRS enabled cpus would basically
+use a jump to
+directly go to the
+
+return a->ops->act(skb, a, res);
