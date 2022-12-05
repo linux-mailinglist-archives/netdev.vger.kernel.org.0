@@ -2,119 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FC016439A1
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 00:38:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42BD16439B0
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 00:55:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231774AbiLEXiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 18:38:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
+        id S231599AbiLEXzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 18:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233354AbiLEXht (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 18:37:49 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2088.outbound.protection.outlook.com [40.107.220.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A356DF37
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 15:37:48 -0800 (PST)
+        with ESMTP id S230381AbiLEXzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 18:55:40 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272511D308
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 15:55:39 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VNhFUL9JZWe/hTdsBT5rgN92Gy63kBdeHGGyrr+7ZFROKgz8E4JYqAaKlynuTNVKOSO81vmX1vclBkYf06BUeAUc/zHp4GeYESg+QVlpAUfvtspwZxmf4Np2T5tVXxztz3SEvPAf3FsHIHlani+wmw75cJBq1EfzyU9lrXR9braJFR1GOvcpkwRPZSdtsmvgFmv+hjbUtpyAc49OhK9JeESD5wUSiukIzcu/eassxbwpf3LDfGlRCs0OL7RzFdrfD9U6bqPNBAAQQHlAwL0x3amBWjLZ5YGFSPCsVBAIg/Dn/3IASiNPxcrxHn+7tqbVMQM7QffUUHAKJbtbWW6aSQ==
+ b=XUaIOsGfagHoQvmXIrZZ9P/12+PVma+y4XDBMzgFPAqXaDRoy+9o/z/WEeLR5SiwisUm5JzPAI5lBZHg7yeKF8xL6bMr8+QlWMi3TQh8QLODZDvLXWhRovQAo1sVU+Aiags1fZyIvnzDFpp4cfZhFNDUmxAF1AEFP/UJ3R8dOU6L+EAtEBe7o4FKSDD7YjfndCytBQJv4s4MY1gCSvmQjWnb8oWI4IMyEFqIJdW96Saf9bonzhZt/HtAynj3nW7nwR0LPgQED6lss0GCmnDBqpBC14uYjA5Lb5ZqW9tumGeHb6IvsvXlflnJhhMbbCbUhSNcg8BdnmHY1seq8nYjlA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wACtw72BcviLe8lLSHosBls5kPDOj85RK9UyxuizInA=;
- b=WzG4MVUJXfxegIwqZ8JaxQzSjWv6WvOAFuYzgiWyYpjVB57s3obT1Ju0ZTvTOn+MeaW2qZJsVg7GZiZVixj6snGQX70BtBHxLRt033jQBZ8dZjhteL3b5oOCXsft/15WW62L7B25B15RVF/aTQdGc5Pfg99gS5zio+JDiFFIuH/wtRHK66KmQdLRRc+qM1bZ/uvTiiSFDInZZATicoWYw1TudsPAixSfw8HM6O7Ho02dyeZMTdccdCwmZjFMoLaN9pn9EwAutfdC3AzWb5pjYF8+F/d+NItNfUWIaz+A1YHpplLfWpCL2vOizuqK+QD9VBNw+D/FblkXmyV5O9STcw==
+ bh=7tvHgpv0MANGfJP5nogZEsMB6082fq2putjaTk5M0Kw=;
+ b=UIChyash6UF7a7j+jUBS849gAAK9SQmkAAldQxYHbKWLjmt6dgGgzYvd309d/TQUSj09zUX+TivKVcguY06ABch8S7HNbiM3cWOph22nUQdO7TYw4d0oi93/M6vOiMYzOHr/y3mLUzFF1GOx3eEz5a/fEH1TUItUe7WXkZ5+5/1nq19I+A3tsbmd832JGzfBnleRFh9fwmjrkFF18xfQTeunE6xbRkdCmUHem8wTZKr3Kpuwyj/3tBMHeMs2CoxzsQzr3/dMuDy97O5oRONGP0/NwAiiniJTQE7JTMHbdIpM41aKMFX9SOUN01+5sMmxc1kmTp6zXAyfqTomnaJSHg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wACtw72BcviLe8lLSHosBls5kPDOj85RK9UyxuizInA=;
- b=qeun9Y6jO3tYx12sv7t/JenElF07UxBC5UiXjVKE/9YH+UjOa4mW0qyEx00OxXT2ft8qWgCvRP5jIWAuaoqau8s/iXPENeJ15wSd7v3GI/kXSgUJ9i7sAhvjxhXDizZQfazfNW8HTGHzRHoVoZFogzKOwdGINZhJdygxTt0i5Ck=
+ bh=7tvHgpv0MANGfJP5nogZEsMB6082fq2putjaTk5M0Kw=;
+ b=Z1nt+ZfL//HOcY3PVORwBRcEXNHEdQdm3JuUOIqUie3PX7/F8A1EXYE2ZgbqI8+9hEKmvuUMUWPXonoRzGEYgFuUTkgI+fKpCAuaZvpJFo/U/z3EEGITNLks7au/bn6c4aoBz5L2swqweu5j3CvqjTXN0KDqPxNF9S/TzV2stiM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- DM8PR12MB5429.namprd12.prod.outlook.com (2603:10b6:8:29::23) with Microsoft
+ MN0PR12MB6078.namprd12.prod.outlook.com (2603:10b6:208:3ca::6) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.14; Mon, 5 Dec 2022 23:37:46 +0000
+ 15.20.5880.13; Mon, 5 Dec 2022 23:55:36 +0000
 Received: from DS0PR12MB6583.namprd12.prod.outlook.com
  ([fe80::6aee:c2b3:2eb1:7c7b]) by DS0PR12MB6583.namprd12.prod.outlook.com
  ([fe80::6aee:c2b3:2eb1:7c7b%7]) with mapi id 15.20.5880.014; Mon, 5 Dec 2022
- 23:37:46 +0000
-Message-ID: <7e3deb3a-a3fd-d954-3b6f-8d2547e036d5@amd.com>
-Date:   Mon, 5 Dec 2022 15:37:44 -0800
+ 23:55:36 +0000
+Message-ID: <5e97d5b5-3df4-c9b5-bca4-c82c75d353e8@amd.com>
+Date:   Mon, 5 Dec 2022 15:55:32 -0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
  Gecko/20100101 Thunderbird/102.5.1
-Subject: Re: [PATCH net-next V3 7/8] devlink: Expose port function commands to
- control migratable
+Subject: Re: [patch net-next 1/8] devlink: call
+ devlink_port_register/unregister() on registered instance
 Content-Language: en-US
-To:     Shay Drory <shayd@nvidia.com>, netdev@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net
-Cc:     danielj@nvidia.com, yishaih@nvidia.com, jiri@nvidia.com,
-        saeedm@nvidia.com, parav@nvidia.com
-References: <20221204141632.201932-1-shayd@nvidia.com>
- <20221204141632.201932-8-shayd@nvidia.com>
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, michael.chan@broadcom.com,
+        ioana.ciornei@nxp.com, dmichail@fungible.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        tchornyi@marvell.com, tariqt@nvidia.com, saeedm@nvidia.com,
+        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
+        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, simon.horman@corigine.com,
+        shannon.nelson@amd.com, brett.creeley@amd.com
+References: <20221205152257.454610-1-jiri@resnulli.us>
+ <20221205152257.454610-2-jiri@resnulli.us>
 From:   Shannon Nelson <shnelson@amd.com>
-In-Reply-To: <20221204141632.201932-8-shayd@nvidia.com>
+In-Reply-To: <20221205152257.454610-2-jiri@resnulli.us>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR05CA0077.namprd05.prod.outlook.com
- (2603:10b6:a03:e0::18) To DS0PR12MB6583.namprd12.prod.outlook.com
+X-ClientProxiedBy: BYAPR02CA0050.namprd02.prod.outlook.com
+ (2603:10b6:a03:54::27) To DS0PR12MB6583.namprd12.prod.outlook.com
  (2603:10b6:8:d1::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|DM8PR12MB5429:EE_
-X-MS-Office365-Filtering-Correlation-Id: f3e9c1a5-5eb7-4d48-353d-08dad719b6d4
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|MN0PR12MB6078:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1c0e45e1-a9d8-4257-e320-08dad71c3447
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KPWyw30HUySv+4tj7HMuPFEC4+8T/srcavh9A104TSwh2zqcwWrdL+nolYr8eFnQZx0Eqm6DhsSRuNb9QlyfXfFVyH/p9e6YQ8l8OyR5nsIjxfQwjoohN0eHwNUAWszQ+883emt3uCuFX/iZJXehhKTlLbBaEZw/0SGzGFk/WzT10HDx228dMN7YISWzf+deJjdo/ZMp7/Kkd29QxVRfGcjVXWV/OoOFBvspkjby4No/i0NNwWjfoxMK9+IJK+NKgoZ6MlplD8XSIuADIXNpTWSs2mj6GCQFXQul6SQjWXy6hcmFnmBqHoE/Ib8YgtiW5+T+BCXVHgrsY9SsAR6lRmCLbjxKj2XJLo+hKhy8rRzpBHxzeliFNVdKd/bk5y2Mv09ug79/dnOZK5mhXaPXhbi6HqYkcI5A+wqfKC3eKs4jkGp/9zw6VrP6fAfxugirwyuTNkcMvUBwDK9qjapgr/EGZRNi5CsBjLh5Dx77oNZg834K9hQplgV0WGmH9evfDkE62S5McLmVI6ibj7zTfsrQAFOFL1rMcBJa60bLo7BD5ZiE7AabctYmndwSYksrwlFcLbwYBPFAQy2mv0Few7Lk+vP0cvsT0GRNNjbtwy4f0PaVm9OnJu2gn3OrO0QE+d2D7w+l4Spr2hyhGLqTN7bsunM3rdMDoeRAIZMozhvzB2WA5pi+2+jb0VKRANP0g+Ml14t5hXVoxRU8vSTQm4GiIZqWG1qw6LYNdgGiuKM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(39860400002)(346002)(366004)(376002)(451199015)(83380400001)(31696002)(38100700002)(5660300002)(8936002)(41300700001)(2906002)(4326008)(8676002)(26005)(6506007)(53546011)(186003)(6512007)(316002)(2616005)(66556008)(66946007)(6486002)(66476007)(478600001)(31686004)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 77+olzdrOA5O/fx9wUmZ8Y7bdCRjeAkmTQZHNuAtcnlbgHwtNxz46CdsTSqNoNvjcGmILr9aPmVzIEw84CWegF7HOXmJSvS7TtJOWG7Aaj7qqd3nNre+Wm2k1Bw47HrFMsza/0UY2F/HavoOwJUvFW9BwVkAjw8wQJD4JxLzH1gyKhye2R3i6ph23DfNHrondoQP14PvmkXPA4+bF0ZgJKpDLDVp3q265GwU7izJRsjHFTYnaJpFC3omFGeEMrWColaq7z17bc6lLmabo4f7X5+O1xaz1xsx07MqM6anF3p4/6A/kTfPJBElduYiPhtZlWoaYWZTy2geAur517A+45BmmFEP7ZkLnpwfxxstAY4L1ngyIPFHlgex0l3ANpemjAdDS2jazBwTOiI4BQvPm8F1tdnPvRn9ZZEU9bklc+2dPl2VUB0UQtwUuSnmn3uOQKYpvdsGCWHf2+rRVy8n2TGYG5VRMzM1Co6Wp/QXDVoK4stdE4Sy/VIAK0Gar/LEU5GRhPSwAtDJ0jSsZREmh4uv3JSmTTVK5WRFknXjG5+Fid1v1MqnrWfumRSgo2poeigvwHuOTNkbAdjUdrP60ooWfUHVT4+u9HS0cB5ldf01dx1iXG20RokVvZoWAdSEUcucT4cGneajKY12Yyt5lm/BMAf01sW9ed/vM4WA6p/2WPERMQUoZOef9dyMo7BMPM8oDU8uP4FZoD45OrHS/DJWfpUzrIF6mPS4LS1hCmaz41vghD2dAHfNRv09T89i
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(346002)(39860400002)(136003)(366004)(451199015)(38100700002)(7416002)(5660300002)(8936002)(8676002)(4326008)(41300700001)(31686004)(26005)(31696002)(6506007)(53546011)(316002)(36756003)(2906002)(66476007)(6486002)(83380400001)(66946007)(966005)(66556008)(6512007)(6666004)(478600001)(186003)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RnpMRElQc0wrRGYwOGM1NVdyaU1KTkN6dmhGeWVybWRSSENIY3UrL1FkV2ho?=
- =?utf-8?B?ZHBxaldnaTVGcUcybXZFS2NMaXhvcFcyMWlVOXQ0OUNHS241R1RHQmR2L2g5?=
- =?utf-8?B?UnNUcUZJZFBIR2E1OEVBOG9FS2theEJSelFkbCttYWdWUEFjMGdyTldvekZr?=
- =?utf-8?B?L2hqVXJTMk5Id0xtNmJhQndDOFdvL29ZeGkvRmdSbkpTVmV4ZWhleW41cHhs?=
- =?utf-8?B?anVWRWVtWnd1THlLMlRxK3hXTjlOTDNJQkpVZUYvWFFsSk5YQm55TXUvWjVK?=
- =?utf-8?B?WXRMRG13VjJ1Qjg3Wk9vQ2NBVGttRHI1NWFhb1VsdTM0dzk2UVhtNEpaMnZK?=
- =?utf-8?B?djlUVnltb3hnRGlLc2RCcTJhNlV0NVEwRWd6b3RHZ3IrL2t1VjlqNW5Ycll5?=
- =?utf-8?B?eUdEQmFHVmJCVlUyK0RmQzVRbXM0dE1iaGhPMXBEY0E5WUJFblhIVEdYUzBx?=
- =?utf-8?B?ODA3ODF0bXNYNTBrMWtJZGJPTmN4azNEZEI0WHdoV2FYZVFEOGUwcm5XWnJo?=
- =?utf-8?B?QmNNMmZ3OHFsOVpWNTFpQ3h5bGhobmtIdzROdU1DTWlXejArc0tIRWlBRXJ4?=
- =?utf-8?B?R3ZoMVY2WDkxSm5mTldXSEtNUFkwLzRHUG15dHVmTVlZNUxyZGo2SGhUQjlh?=
- =?utf-8?B?bzNiU3VEWGFWbmJMVzEvOHlPRWxVY2FxWXI3VC9aeStVdStBME9ydXhXbFpo?=
- =?utf-8?B?c0kvdTF4YVRuSmoxS2dCUTI3ZWhpVFExeFFEOWc2U1NaMzdCRkkzamFCODVC?=
- =?utf-8?B?MXJ5VGVmdG4zY0NBeklrMVVhYzRYNEgzTERnUDVUUXJXTjI2UXlrYWNaSkpJ?=
- =?utf-8?B?NEwyUjVRbmk0WGtxY2hNNmZiZXcwRTZWZENpTEpzZll1S3RZUFljZzJwY1N5?=
- =?utf-8?B?N2V0WGJyMm5LTFd2TkJ3ZFFVMS9DbWRkKzY3YUFKMUpCSWduZ21vOXF2Yy92?=
- =?utf-8?B?cjRodGVDWVc0WEMzU0ZTQURGOU5GZFI2T3MwT2o2WmpuZC9ubUs2VU9EYVVt?=
- =?utf-8?B?R2VEWGt0VDhYTGh2SW9yRkNqa1N0QW5wLzIwRXVrb2NWSzBVMWZFa2hKd1gy?=
- =?utf-8?B?VHZ6NzBEaDdUVUh6YzNOcVBkQ1hFb0lkbG9LSEVQdU42V1ZyWXNMQUNVRFdn?=
- =?utf-8?B?ZkhYcVNDS1Z2eGFWT2ErRWU1MStvMHpQUTJlNGVyWHVCY2svUUxXOXpFeVh1?=
- =?utf-8?B?a0FlcFBlMGZ5UVJCanBGN3loN1NWa3kzRjc3a2F4Y05TMDFVeXRjNHlHTUpB?=
- =?utf-8?B?ZzFTdHFQWW16V3dlKzNhTnY2TUp1bTNpTFRtSlZSbVcwZzAvS0NFSW9Hb09t?=
- =?utf-8?B?cXpWZ1kyTWpPWkZha3ptdis5SzV5ekRDU0FrQ2Z3eUZRYTNtV3NIZGtwN2VH?=
- =?utf-8?B?M0R5NTh0eVUvNGF5eXFUYVM5b0F0Y2pvOXAvWXU1ZmtWaDBZTFU4QU5lVHVI?=
- =?utf-8?B?aHFYNHh6dnVwZ1lTcWRkMDRCaUY0VjIwRWZ1UGZiQXlYd095WGRQQ09GWlVD?=
- =?utf-8?B?VkJFWXJnOHVGU2M2dlozck1RWlBIeE8xb1U1bEhvdFQ0eURoblRRcU1xVXl0?=
- =?utf-8?B?aGs5UGxNejU4UkM4OTlXaG5lN1JWMGExYmxxUURnK2FTazJvY2lBWGtZOVpT?=
- =?utf-8?B?dk1yOVhreVg0SGQwMEE1TlYzVmxjUlRyU3FmdjZESFdXTWw4bFZTV2xIZGRR?=
- =?utf-8?B?aC9jbTZKQ05STG9EbWh3REdlMVFWSnB3blp1MHdNVkRRekY3NUQ2bXFvc09Y?=
- =?utf-8?B?VUY4dktoNTB4SWZWNDM1cFJJMFZiRmxZaWJSNW84N2M4TytKWmV6bUlHUTUx?=
- =?utf-8?B?SUpBU1UyNWRMQXgxNUVjMi9VM205azhTMGkzTlg5SGxRSDlVODcvR1BWSGNV?=
- =?utf-8?B?ZUUzTVRrdWltYzJzVU5qbSsybG5sLy9FWEt3Z3h5dGw1RlY2UE1QL1c4eWxQ?=
- =?utf-8?B?d3hFNHg2OHlkWmRNRk1qdzRnbkZIVTYwcUM3b3FzMzNzQTJsQkZNVVhWQTdY?=
- =?utf-8?B?TkJJWVo5QjMwcDRSVG9jVzRQU3FTR3UwR2tDd1RMUzkyRWVhQzYvaTVGZjdI?=
- =?utf-8?B?QnJzMGFyK2xLczRNd1JKSk5PNytXVTVBUjR1N09iVEVsNEhQd0tpeitieVNQ?=
- =?utf-8?Q?AaB+mnDvPjLgJIHmvFIs9CheG?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bS9hdzY4bmlzM0dRK1o1YlIvRElOM1J2bmlIakVHSWpQWHY0d3NoRW1CcGpv?=
+ =?utf-8?B?OThra2tmbGQvVllZM0lxNWViU3RBdTZCbmpYZEo4ZTg1a3VLTkdHcWJYd01z?=
+ =?utf-8?B?NzRIMnkrUjA5cUtVZHRvN0RWMUhPVkJ5Mk9SL1V5T0g4Vnc3Q3k1ejZ0amdR?=
+ =?utf-8?B?WmJ0V3hraVJBdjB0Tkg5alo0TXFQVk5ydU9zWFNlK3k5clk3bEhRK2hKdkx5?=
+ =?utf-8?B?R0VscmNZaU05eHZiSnpvTU1LK2l4TlUwNnhINEw0alMyckNpa2s2ck9QR2ly?=
+ =?utf-8?B?Z2ZraWlFQTkvekdnalpiWTNPdUM3dk93VG1ZYTRPbEp6d2p2TGZUbmdhZ2Fl?=
+ =?utf-8?B?UVFGMGxvR0VtbHIyNjlML3dGc29nWkZCTWtCNUFuR2l0NEp0WVd5NStETmFs?=
+ =?utf-8?B?Qnl0QjVETnQxdjE2YVNOZEJvTE1oTmt0cTFLNzhrVmxNK2wvZkhFS2RHTXY0?=
+ =?utf-8?B?UDRBbzZIQjJkT1FRQWhlSXRXeGtkYXNac053YW1TcU1JSTVjVUxQWThUYkp5?=
+ =?utf-8?B?Y0ZQYm85b1VkR3lDQlduZXcvRVVyYkExZEtYQ29qaC9pVGgvRHliTVlzcFVF?=
+ =?utf-8?B?ajY1R2dwTUtJcXNUd3pDbll2d292RTBzVDJmdFBra0oydjBXbUxsaGJLSGtm?=
+ =?utf-8?B?TDhMaGEyRmJMK3dXNUVqUjhTQktIVjNUMmxDQkJPMHV0SWtaemd0K004bDVC?=
+ =?utf-8?B?OE9rdnBCeWlWUjBkYTNoRlU0NFY4M0c5b1RTVWJ4VlUzTmdLVFlENW1WNm9B?=
+ =?utf-8?B?a1NRQ2NCR01pdmJ3NG9rcmdheWZmNU5CaC9NdmptR1VwU04yM3J5V0ltU3pZ?=
+ =?utf-8?B?QUxyYnZYdEIvMkphbmVCd3BtUmFidnlEa0ZlNFFHWk9sdEdwL3JBR3QxakNJ?=
+ =?utf-8?B?bXhlTnZ3SGVhT0lyWll0Z1M4eHV0WDNMcTVmODNUbkhZSkhGbEYyRDZJLytK?=
+ =?utf-8?B?N3J5bk0vWHllZUw5ZTdtK3Rjcm50dXR2cSt6QTBJL0d4aWFkL2t0ZWdtQlkv?=
+ =?utf-8?B?bHNDSE5iSnlhTG9UeTRXT2ZXc212YnFzQzVEbnpqQ0hxcE91RmZYZ084OWRV?=
+ =?utf-8?B?dDR3dHIwRmVvWkxKdlpBK0NkcTJjcnJoVVFEMjdzR0lzZzVGTXJ6akVWYTRp?=
+ =?utf-8?B?bjhqdituNjZKMTVtRDhHVCtuazArYy9tYitURGY2UDN2TjV1YnFPQUZMRnBk?=
+ =?utf-8?B?SWxFUGpXSzBzeHJ4aGMraFQ4YkdEMVhLbmNzVXlySFB3cXg4cFE2VG9MQ05R?=
+ =?utf-8?B?ekZvSVFJZ1dydUZMNjc3ZHBoZkdwM3R3SW1GY0syR0s1U08rRmx3a2NKQkd0?=
+ =?utf-8?B?Q0Z4VytnSmptaTNQMWFwRXR1OWQvSU43R2xJY0VqNFZnQUxueG4rYU5HdHNx?=
+ =?utf-8?B?YWh3ZVNnWC9pL2xaY3lTTmVxM0V2TU9VM1JYNkVuTkpsV0g2K21nYVo0MFpk?=
+ =?utf-8?B?WE83azg4NTRFdzJKMU53VHhkemVxU29aWWdKa0lmaVRIV3IzREtVbUFseU9J?=
+ =?utf-8?B?RDlKMGtaK3hiNEFweEJnLzRjWnI2ODB2VTBYV0xKQTZoNlRuN2F4azVvK0Jz?=
+ =?utf-8?B?Z3JXTTcvbGoxWm1IdXowbVpPOWUwM1k1eDI5VTY3a05hNmR1akkyS3VlUFpp?=
+ =?utf-8?B?N2lCUVlidTUzYlYxL21qNlRBeWRuOExYcmthOENTYU56UU9meTcxSW1kWDc5?=
+ =?utf-8?B?UFlmdjI3Y3hVYzMyK0NxSTBGbSttY1lLSlQ1a2xJNE04bjdneE5iQ1gzbFZp?=
+ =?utf-8?B?T1dFdElRNUtjYm85UlZZa3hWUjY1K1FFNVRDcmJrZDVUQVVZaXZqL1F5RElP?=
+ =?utf-8?B?NjJuL3VMOXEwYm9JVTlLemU4ajdBNjR1dzFza0xIRVBqaTN4QlRRdnczYTN0?=
+ =?utf-8?B?dnp2cmpUWVpuK0ljY09UZkJPODV6Wkc5bDVrYlNEcjNEOWRvR1NzS3lEeXpr?=
+ =?utf-8?B?TWxBK0p2dFAzaWU5OGJpMnZKQnFMbEV6ejd1ek84em9vYkx0elR4aUp2bS9I?=
+ =?utf-8?B?NlFXYjNSTDJVUy9NMXYzdjJPZjBiYmZmYUliUU9ySFJrblJhNlFFYnFnT1k2?=
+ =?utf-8?B?RTM4WW84NXpuQVprTU1Lb2dxQU1ZM0ZZWnEyTzZzWXJYYVdha1BGdHM2anpl?=
+ =?utf-8?Q?hdvFHy1zO0eRmWrNR8ITqVFAq?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3e9c1a5-5eb7-4d48-353d-08dad719b6d4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c0e45e1-a9d8-4257-e320-08dad71c3447
 X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2022 23:37:46.8799
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2022 23:55:36.4091
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eYzJ8ppBlmecbRPiFl1H8yRxtf6EsKv7k5am8xHIf8u2Mw7Z7mKICLTKHA9Ylx18zjoUX7h0/mmZI4yBZXyFIw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5429
+X-MS-Exchange-CrossTenant-UserPrincipalName: oN41sSEHjgPMnRxpsPDjDn8pslHifJV5V6mOVLLdfP3myF817Ho0eQMQslh/X3cnQxnV/9qttDiXWXdJBs9Azw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6078
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -125,44 +131,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/4/22 6:16 AM, Shay Drory wrote:
-> Expose port function commands to enable / disable migratable
-> capability, this is used to set the port function as migratable.
-
-Since most or the devlink attributes, parameters, etc are named as nouns 
-or verbs (e.g. roce, running, rate, err_count, enable_sriov, etc), 
-seeing this term in an adjective form is a bit jarring.  This may seem 
-like a picky thing, but can we use "migrate" or "migration" throughout 
-this patch rather than "migratable"?
-
+On 12/5/22 7:22 AM, Jiri Pirko wrote:
 > 
-> Live migration is the process of transferring a live virtual machine
-> from one physical host to another without disrupting its normal
-> operation.
+> From: Jiri Pirko <jiri@nvidia.com>
 > 
-> In order for a VM to be able to perform LM, all the VM components must
-> be able to perform migration. e.g.: to be migratable.
-> In order for VF to be migratable, VF must be bound to VFIO driver with
-> migration support.
+> Change the drivers that use devlink_port_register/unregister() to call
+> these functions only in case devlink is registered.
 > 
-> When migratable capability is enable for a function of the port, the
-
-s/enable/enabled/
-
-
-
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> ---
+> RFC->v1:
+> - shortened patch subject
+> ---
+>   .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 29 ++++++++++---------
+>   .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  7 +++--
+>   .../ethernet/fungible/funeth/funeth_main.c    | 17 +++++++----
+>   drivers/net/ethernet/intel/ice/ice_main.c     | 21 ++++++++------
+>   .../ethernet/marvell/prestera/prestera_main.c |  6 ++--
+>   drivers/net/ethernet/mscc/ocelot_vsc7514.c    | 10 +++----
+>   .../ethernet/pensando/ionic/ionic_devlink.c   |  6 ++--
+>   drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  7 +++--
+>   8 files changed, 60 insertions(+), 43 deletions(-)
 > 
-> diff --git a/include/net/devlink.h b/include/net/devlink.h
-> index 20306fb8a1d9..fdb5e8da33ce 100644
-> --- a/include/net/devlink.h
-> +++ b/include/net/devlink.h
-> @@ -1470,6 +1470,27 @@ struct devlink_ops {
->          int (*port_function_roce_set)(struct devlink_port *devlink_port,
->                                        bool enable,
->                                        struct netlink_ext_ack *extack);
-> +       /**
-> +        * @port_function_mig_get: Port function's migratable get function.
 
-I would prefer to see 'mig' spelled out as 'migration'
+
+
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+> index e6ff757895ab..06670343f90b 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+> @@ -78,16 +78,18 @@ int ionic_devlink_register(struct ionic *ionic)
+>          struct devlink_port_attrs attrs = {};
+>          int err;
+> 
+> +       devlink_register(dl);
+> +
+>          attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+>          devlink_port_attrs_set(&ionic->dl_port, &attrs);
+>          err = devlink_port_register(dl, &ionic->dl_port, 0);
+>          if (err) {
+>                  dev_err(ionic->dev, "devlink_port_register failed: %d\n", err);
+> +               devlink_unregister(dl);
+>                  return err;
+>          }
+> 
+>          SET_NETDEV_DEVLINK_PORT(ionic->lif->netdev, &ionic->dl_port);
+> -       devlink_register(dl);
+>          return 0;
+>   }
+> 
+> @@ -95,6 +97,6 @@ void ionic_devlink_unregister(struct ionic *ionic)
+>   {
+>          struct devlink *dl = priv_to_devlink(ionic);
+> 
+> -       devlink_unregister(dl);
+>          devlink_port_unregister(&ionic->dl_port);
+> +       devlink_unregister(dl);
+>   }
+
+I don't know about the rest of the drivers, but this seems to be the 
+exact opposite of what Leon did in this patch over a year ago:
+https://lore.kernel.org/netdev/cover.1632565508.git.leonro@nvidia.com/
+
+I haven't kept up on all the discussion about this, but is there no 
+longer a worry about registering the devlink object before all the 
+related configuration bits are in place?
+
+Does this open any potential issues with userland programs seeing the 
+devlink device and trying to access port before they get registered?
 
 sln
+
+
