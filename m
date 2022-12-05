@@ -2,102 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3350C642560
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:05:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3A76642565
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:05:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbiLEJFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 04:05:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        id S230252AbiLEJFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 04:05:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231858AbiLEJEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:04:02 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838DB2AF3;
-        Mon,  5 Dec 2022 01:03:51 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id i131-20020a1c3b89000000b003d1cb516ce0so1832162wma.4;
-        Mon, 05 Dec 2022 01:03:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=e/CZbUfVc92ihBtnZodjLsSvk+mrxIQEYUtjx/OCLL0=;
-        b=pp81H3Yt4+1Cpj1ilPVV5q62Hnu0Hs+IllFYW/m+/vT08VtOey0TfVE/2v45ADNlcQ
-         D2KEciG6R58sCSq6WpgF9WuGrW78vDv/pPdnHijjo+szCjfpNbXNwAeWC2wlZ8GFk1WS
-         jfBQrOPEcmPo+w1S4unbFEQXa6koPY732HFKyANAwbkXoH+K6UXUjZbJ4kWER+fJyiy6
-         xI7GPzNBwd7H+3GeQZAoBZR4vch+d74YG2sOEl/1GmZUGE3s17EcnPzz6tfY9C4iWqEL
-         38VpXzK5iowBW7JfTbBt7OJPGvvRm4yx4MBQoTWaDRhSgcogwQyy9JPhy0Ym+Pel7PV8
-         OI4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=e/CZbUfVc92ihBtnZodjLsSvk+mrxIQEYUtjx/OCLL0=;
-        b=V+iwY+/7mM+TiBGVb83tM+KC/RNs2MutZLWCrOXohEUiKxZ1PHWIlYGzysJaNVbDTH
-         Uo1RaChCW1owgnoflkOWwtbwnQR6ZU/d5q4DYxBGbA6AuqyqN+Nicnn1JcR1pIC/8M3b
-         A1q9qpmVvTzzeVrEJe532bzfNVglFqic7dh6Wujw717QY7NnvgbYdkC4JnlNSLb+8Xpn
-         vhM2pZ0vhHnJkb/d8LnM9seg0LDh/0BlpOXG7+uk2WRESlUxup1SHep7fXiMpDyY73PB
-         mCzpAxEJ1cbol9my4H8AHlEHi4CZiGAm8uB1C9yN/v0BLB/SB/B8+heFLiIdMHxBRCUu
-         UCzQ==
-X-Gm-Message-State: ANoB5pkgl5ZRHnptX2uWvNG3SYVN+X2hLfcRbUnqo0K7frZL4u62S9mr
-        ob89Utr8BfRDTez4/JAGYQ7ezhvjb1SEdg==
-X-Google-Smtp-Source: AA0mqf4WTCIUBsC2Punap4p9avd5YzN7MONDVYDrH2H3jVmXQQH7sy5+uw60icPc4KqRQlK1T0xoLw==
-X-Received: by 2002:a05:600c:3acd:b0:3cf:550e:d7a2 with SMTP id d13-20020a05600c3acd00b003cf550ed7a2mr1585649wms.97.1670231029911;
-        Mon, 05 Dec 2022 01:03:49 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id g6-20020a05600c4ec600b003b49bd61b19sm23638795wmq.15.2022.12.05.01.03.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 01:03:49 -0800 (PST)
-Date:   Mon, 5 Dec 2022 12:03:46 +0300
-From:   Dan Carpenter <error27@gmail.com>
+        with ESMTP id S232523AbiLEJES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:04:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51960BF6E
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:04:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA59760FDE
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:04:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF379C433D7;
+        Mon,  5 Dec 2022 09:04:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670231051;
+        bh=bENrYC1DUTi7/2KslKN/oLUt/KX6fo/YMhSWxvmhlaw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZL43+Lq34QOg/cUthOBkNfdFvVxoqsstjEkm5gMcUEF03/Nrqx0mHux/j/9fxEMuZ
+         Huzet9AsWE4xdhPoj+UguELC+L6mprvVsSOLB1dIsz0OYAhgmBu2conyuUOWS9oDWG
+         fhNscjeuOmsHaTYTF3ofeN8mGq8r9HQjxfRE2Q3fWjjiwb0pcJXMTfzxFfOe0gBpiQ
+         9cIzoinnhF38qU1kqqk+xjZKPg8KkpBZ6u1C7DIWPlmIt3FliJ3SWYyylXh1gfDqwt
+         0WG+JRXi4kYYyka2D+fMvWPOivJqn+VdV09rJJJFPPk4/IiT1rn+p3onfLCRQcWTNk
+         k+gbEuaJkqc2g==
+Date:   Mon, 5 Dec 2022 10:04:07 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] net: mvneta: Prevent out of bounds read in
- mvneta_config_rss()
-Message-ID: <Y42z8kv8ehkk6YKf@kadam>
-References: <Y4nMQuEtuVO+rlQy@kili>
- <Y4yW0fhKuoG3i7w3@unreal>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH net-next] net: ethernet: mtk_wed: fix possible deadlock
+ if mtk_wed_wo_init fails
+Message-ID: <Y420B4/IpwFHJAck@lore-desk>
+References: <a87f05e60ea1a94b571c9c87b69cc5b0e94943f2.1669999089.git.lorenzo@kernel.org>
+ <Y4ybbkn+nXkGsqWe@unreal>
+ <Y4y4If8XXu+wErIj@lore-desk>
+ <Y42d2us5Pv1UqhEj@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="b7kiYn5Wg7Rk9JEy"
 Content-Disposition: inline
-In-Reply-To: <Y4yW0fhKuoG3i7w3@unreal>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <Y42d2us5Pv1UqhEj@unreal>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 04, 2022 at 02:47:13PM +0200, Leon Romanovsky wrote:
-> On Fri, Dec 02, 2022 at 12:58:26PM +0300, Dan Carpenter wrote:
-> > The pp->indir[0] value comes from the user.  It is passed to:
-> > 
-> > 	if (cpu_online(pp->rxq_def))
-> > 
-> > inside the mvneta_percpu_elect() function.  It needs bounds checkeding
-> > to ensure that it is not beyond the end of the cpu bitmap.
-> > 
-> > Fixes: cad5d847a093 ("net: mvneta: Fix the CPU choice in mvneta_percpu_elect")
-> > Signed-off-by: Dan Carpenter <error27@gmail.com>
-> > ---
-> >  drivers/net/ethernet/marvell/mvneta.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> 
-> I would expect that ethtool_copy_validate_indir() will prevent this.
-> 
 
-Huh...  Sort of, but in the strictest sense, no.  mvneta_ethtool_get_rxnfc()
-sets the cap at 8 by default or an unvalidated module parameter.
+--b7kiYn5Wg7Rk9JEy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-regards,
-dan carpenter
+On Dec 05, Leon Romanovsky wrote:
+> On Sun, Dec 04, 2022 at 04:09:21PM +0100, Lorenzo Bianconi wrote:
+> > > On Fri, Dec 02, 2022 at 06:36:33PM +0100, Lorenzo Bianconi wrote:
+> > > > Introduce __mtk_wed_detach() in order to avoid a possible deadlock =
+in
+> > > > mtk_wed_attach routine if mtk_wed_wo_init fails.
+> > > >=20
+> > > > Fixes: 4c5de09eb0d0 ("net: ethernet: mtk_wed: add configure wed wo =
+support")
+> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > > ---
+> > > >  drivers/net/ethernet/mediatek/mtk_wed.c     | 24 ++++++++++++++---=
+----
+> > > >  drivers/net/ethernet/mediatek/mtk_wed_mcu.c | 10 ++++++---
+> > > >  drivers/net/ethernet/mediatek/mtk_wed_wo.c  |  3 +++
+> > > >  3 files changed, 26 insertions(+), 11 deletions(-)
+> > >=20
+> > > <...>
+> > >=20
+> > > > diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/drivers/=
+net/ethernet/mediatek/mtk_wed_mcu.c
+> > > > index f9539e6233c9..b084009a32f9 100644
+> > > > --- a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+> > > > +++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+> > > > @@ -176,6 +176,9 @@ int mtk_wed_mcu_send_msg(struct mtk_wed_wo *wo,=
+ int id, int cmd,
+> > > >  	u16 seq;
+> > > >  	int ret;
+> > > > =20
+> > > > +	if (!wo)
+> > > > +		return -ENODEV;
+> > >=20
+> > > <...>
+> > >=20
+> > > >  static void
+> > > >  mtk_wed_wo_hw_deinit(struct mtk_wed_wo *wo)
+> > > >  {
+> > > > +	if (!wo)
+> > > > +		return;
+> > >=20
+> > > How are these changes related to the written in deadlock?
+> > > How is it possible to get internal mtk functions without valid wo?
+> >=20
+> > Hi Leon,
+> >=20
+> > if mtk_wed_rro_alloc() fails in mtk_wed_attach(), we will end up running
+> > __mtk_wed_detach() when wo struct is not allocated yet (wo is allocated=
+ in
+> > mtk_wed_wo_init()).
+>=20
+> IMHO, it is a culprit, proper error unwind means that you won't call to
+> uninit functions for something that is not initialized yet. It is better
+> to fix it instead of adding "if (!wo) ..." checks.
 
+So, iiuc, you would prefer to do something like:
+
+__mtk_wed_detach()
+{
+	...
+	if (mtk_wed_get_rx_capa(dev) && wo) {
+		mtk_wed_wo_reset(dev);
+		mtk_wed_free_rx_rings(dev);
+		mtk_wed_wo_deinit(hw);
+	}
+	...
+=09
+Right? I am fine both ways :)
+
+>=20
+> > Moreover __mtk_wed_detach() can run mtk_wed_wo_reset() and mtk_wed_wo_d=
+einit()
+>=20
+> This is another side of same coin. If you can run them in parallel, you
+> need locking protection and ability to cancel work, so nothing is going
+> to be executed once cleanup succeeded.
+
+Sorry, I did not get what you mean here with 'in parallel'. __mtk_wed_detac=
+h()
+always run with hw_lock mutex help in both mtk_wed_attach() or
+mtk_wed_detach().
+
+Regards,
+Lorenzo
+
+>=20
+> These were my 2 cents, totally IMHO.
+>=20
+> Thanks
+
+--b7kiYn5Wg7Rk9JEy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY420BwAKCRA6cBh0uS2t
+rP7CAQCPV9L7X9gyMO52Hg3Vpt1Z75bnZXcBgH59ibA6g58pYAD/XNFOw9soq3Jx
+MzkDWh5S2ZvFTFPXP7n4sxpJ+HAbMwE=
+=n8lE
+-----END PGP SIGNATURE-----
+
+--b7kiYn5Wg7Rk9JEy--
