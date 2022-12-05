@@ -2,57 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61F28642E57
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:07:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D623C642E63
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:10:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231737AbiLERHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 12:07:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34626 "EHLO
+        id S230246AbiLERKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 12:10:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbiLERHV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:07:21 -0500
-Received: from forward503o.mail.yandex.net (forward503o.mail.yandex.net [37.140.190.205])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7102B167CD
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:07:19 -0800 (PST)
-Received: from myt5-18b0513eae63.qloud-c.yandex.net (myt5-18b0513eae63.qloud-c.yandex.net [IPv6:2a02:6b8:c12:571f:0:640:18b0:513e])
-        by forward503o.mail.yandex.net (Yandex) with ESMTP id 2B7F45C3FCF;
-        Mon,  5 Dec 2022 20:07:14 +0300 (MSK)
-Received: by myt5-18b0513eae63.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id C7auKgaVdW21-E1SinOQS;
-        Mon, 05 Dec 2022 20:07:13 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1670260033;
-        bh=wFiPXk6NHQrpBHOuQZNOpLPgYLZ2iuqPm89dvwpn3YE=;
-        h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
-        b=XSo7WmNHomzt7TGvVaT2+UcGyAxcICyxegfFm12G4vkO/SyxwIO0DYOB8nRfTfw50
-         lMSIcHfJu5I0W9lJmZNKvNIveTKhfPfUcUE6yOxlAqG1UvLpqyqEg/KVxfFYoYKIv3
-         4BqL7ULzAQ4xNSX6JjFjOUSraI1XTXosye0gVjq0=
-Authentication-Results: myt5-18b0513eae63.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
-Message-ID: <6e1cb672-cfe4-8adb-e618-1915f04562c0@ya.ru>
-Date:   Mon, 5 Dec 2022 20:07:10 +0300
+        with ESMTP id S229891AbiLERKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:10:37 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD26B7DE;
+        Mon,  5 Dec 2022 09:10:36 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id s8so19616498lfc.8;
+        Mon, 05 Dec 2022 09:10:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=O7MqUoslkh62iX3F4jHk5zmRkkCLZUGOXpp/72m0ZYQ=;
+        b=L/sbtUbwlL7jLQjroEol9toJppHAmxI+SH3euz2PPkW3ryQ/6SUEL8wfh2IARBdjMG
+         C1t39YVnuHneEZeInhV+8LsFSarPrXGntU+LAIzSrElEs93DnpnP6IoxCyvunG5xkCnA
+         y9Y3w0zJVbvet61G0fIwl1XUgB6EzsGvCN3GzcII+hrM0YgJXs9Leh0fGNaOqWyaHVvq
+         M3NB0ytvYZpRl8pwawytZdxayxfetl9DvlHgsoTQpCitppcgHvzZBIzCI5pyoZQl0eEC
+         F49/482FXqdQ3rJd1qjy7G8jCr1Bb/iWUFEd4P1lE4fanlIOxuIoNOIGuplWJz7qFK6K
+         XXfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=O7MqUoslkh62iX3F4jHk5zmRkkCLZUGOXpp/72m0ZYQ=;
+        b=7QP9UxyNufXH4ANhXRvOlBhnlF5+rretHtG1BdAKLHBId141UXkcp34H+qbyUTDInx
+         LsuHSF5x3kmB2j20F5aGfgS0EUjZqqTah581H/DjpCKmFVb5sRV7/jR3sNBjhjpbGZ8N
+         kU3HRlc1U9LVYGgawma2FnF8elqLkY7gh2HnvBs1FOC1ayFzg8jMjS41TyAn1AjbbG01
+         lD71OfURq2vngso4s6WDXmRUaVyzesblgDSuP9CORa904bY8hI903nccQahBj4FfqMyy
+         h6lRNv6OvbYD+DWW6X3DhEIP8j76TQN3x5vzhbTkFVDB/7dxcBFw09tzxcMInUjKp9b+
+         5IXQ==
+X-Gm-Message-State: ANoB5pmuxe/uk79epwzkghJ8Pd55jOUzH6FsnhqjPRa8hx/zHs8ySLUC
+        TsYgHZf3fMDdZ20I5+0JGYE=
+X-Google-Smtp-Source: AA0mqf6Lu25sKO/cOgh4PoYE6VpIIAK0cgasiCf20DSqDLNXX8Bx5U11k/Dkfr8ktgmNK+xp7S5lnw==
+X-Received: by 2002:a05:6512:33ce:b0:4b5:ff:4050 with SMTP id d14-20020a05651233ce00b004b500ff4050mr16768988lfg.476.1670260234867;
+        Mon, 05 Dec 2022 09:10:34 -0800 (PST)
+Received: from pc636 (host-90-235-25-230.mobileonline.telia.com. [90.235.25.230])
+        by smtp.gmail.com with ESMTPSA id z16-20020a0565120c1000b004b577877286sm389613lfu.50.2022.12.05.09.10.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 09:10:34 -0800 (PST)
+From:   Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc636>
+Date:   Mon, 5 Dec 2022 18:10:32 +0100
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Uladzislau Rezki <urezki@gmail.com>, paulmck@kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, Dmitry Safonov <dima@arista.com>,
+        rcu@vger.kernel.org
+Subject: Re: [PATCH net-next] tcp: use 2-arg optimal variant of kfree_rcu()
+Message-ID: <Y44mCDh2eweZD74I@pc636>
+References: <CAEXW_YRW+ZprkN7nE1yJK_g6UhsWBWGUVfzW+gFnjKabgevZWg@mail.gmail.com>
+ <21A10014-22D8-4107-8C6C-14102478D19B@joelfernandes.org>
+ <Y43RXNu0cck6wo/0@pc636>
+ <CANn89i+RNj0gaJCyNUyrMBpSTsxSgjW1YN_FuRW_pMUOMiQtuQ@mail.gmail.com>
+ <Y44HNfuR5OgfEXxV@pc636>
+ <CANn89i+8Au1+Wa_F0QGAz2zfA7UYcCF_9a0BqCpdAqMOrNVbsw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH net v2] unix: Fix race in SOCK_SEQPACKET's
- unix_dgram_sendmsg()
-To:     Paolo Abeni <pabeni@redhat.com>,
-        "Iwashima, Kuniyuki" <kuniyu@amazon.co.jp>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <bd4d533b-15d2-6c0a-7667-70fd95dbea20@ya.ru>
- <7f1277b54a76280cfdaa25d0765c825d665146b9.camel@redhat.com>
- <b7172d71-5f64-104e-48cc-3e6b07ba75ac@ya.ru>
- <53BD8023-E114-4B3E-BB07-C1889C8A3E95@amazon.co.jp>
- <216de1827267077a19c5ed3e540b7db74afd1fc0.camel@redhat.com>
-Content-Language: en-US
-From:   Kirill Tkhai <tkhai@ya.ru>
-In-Reply-To: <216de1827267077a19c5ed3e540b7db74afd1fc0.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89i+8Au1+Wa_F0QGAz2zfA7UYcCF_9a0BqCpdAqMOrNVbsw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,80 +80,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05.12.2022 12:22, Paolo Abeni wrote:
-> On Fri, 2022-12-02 at 23:18 +0000, Iwashima, Kuniyuki wrote:
->>
->>> On Dec 3, 2022, at 7:44, Kirill Tkhai <tkhai@ya.ru> wrote:
->>>> On 01.12.2022 12:30, Paolo Abeni wrote:
->>>>> On Sun, 2022-11-27 at 01:46 +0300, Kirill Tkhai wrote:
->>>>> There is a race resulting in alive SOCK_SEQPACKET socket
->>>>> may change its state from TCP_ESTABLISHED to TCP_CLOSE:
->>>>>
->>>>> unix_release_sock(peer)                  unix_dgram_sendmsg(sk)
->>>>>  sock_orphan(peer)
->>>>>    sock_set_flag(peer, SOCK_DEAD)
->>>>>                                           sock_alloc_send_pskb()
->>>>>                                             if !(sk->sk_shutdown & SEND_SHUTDOWN)
->>>>>                                               OK
->>>>>                                           if sock_flag(peer, SOCK_DEAD)
->>>>>                                             sk->sk_state = TCP_CLOSE
->>>>>  sk->sk_shutdown = SHUTDOWN_MASK
->>>>>
->>>>>
->>>>> After that socket sk remains almost normal: it is able to connect, listen, accept
->>>>> and recvmsg, while it can't sendmsg.
->>>>>
->>>>> Since this is the only possibility for alive SOCK_SEQPACKET to change
->>>>> the state in such way, we should better fix this strange and potentially
->>>>> danger corner case.
->>>>>
->>>>> Also, move TCP_CLOSE assignment for SOCK_DGRAM sockets under state lock
->>>>> to fix race with unix_dgram_connect():
->>>>>
->>>>> unix_dgram_connect(other)            unix_dgram_sendmsg(sk)
->>>>>                                       unix_peer(sk) = NULL
->>>>>                                       unix_state_unlock(sk)
->>>>>  unix_state_double_lock(sk, other)
->>>>>  sk->sk_state  = TCP_ESTABLISHED
->>>>>  unix_peer(sk) = other
->>>>>  unix_state_double_unlock(sk, other)
->>>>>                                       sk->sk_state  = TCP_CLOSED
->>>>>
->>>>> This patch fixes both of these races.
->>>>>
->>>>> Fixes: 83301b5367a9 ("af_unix: Set TCP_ESTABLISHED for datagram sockets too")
->>>>
->>>> I don't think this commmit introduces the issues, both behavior
->>>> described above appear to be present even before?
->>>
->>> 1)Hm, I pointed to the commit suggested by Kuniyuki without checking it.
->>>
->>> Possible, the real problem commit is dc56ad7028c5 "af_unix: fix potential NULL deref in unix_dgram_connect()",
->>> since it added TCP_CLOSED assignment to unix_dgram_sendmsg().
->>
->> The commit just moved the assignment.
->>
->> Note unix_dgram_disconnected() is called for SOCK_SEQPACKET 
->> after releasing the lock, and 83301b5367a9 introduced the 
->> TCP_CLOSE assignment.
+> On Mon, Dec 5, 2022 at 3:59 PM Uladzislau Rezki <urezki@gmail.com> wrote:
 > 
-> I'm sorry for the back and forth, I think I initally misread the code.
-> I agree 83301b5367a9 is good fixes tag.
+> > So it was a typo then. How did you identify that BUG? Simple go through
+> > the code? Or some test coverage?
 > 
->>> 2)What do you think about initial version of fix?
->>>
->>> https://patchwork.kernel.org/project/netdevbpf/patch/38a920a7-cfba-7929-886d-c3c6effc0c43@ya.ru/
->>>
->>> Despite there are some arguments, I'm not still sure that v2 is better.
+> Code review. I am the TCP maintainer, in case you do not know.
 > 
-> v1 introduces quite a few behavior changes (different error code,
-> different cleanup schema) that could be IMHO more risky for a stable
-> patch. I suggest to pick the minimal change that addresses the issue
-> (v2 in this case).
+OK, thank you.
 
-Hm, not exactly. EPIPE is regular return value, which is normally returned from
-unix_dgram_sendmsg()->sock_alloc_send_pskb (see SEND_SHUTDOWN check).
-ECONNREFUSED is a race case return value, it does not returned normally.
-
-What different cleanup scheme do you mean? IMO, there is the same behavior
-as we get, when race is failed, and sock_alloc_send_pskb() returns EPIPE as in regular case. 
+--
+Uladzislau Rezki
