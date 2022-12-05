@@ -2,226 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F246425AB
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:21:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 539E86425B7
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:23:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbiLEJV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 04:21:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        id S230503AbiLEJX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 04:23:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230479AbiLEJVV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:21:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD4F13E26
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:21:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38AE260FCE
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:21:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21A76C433C1;
-        Mon,  5 Dec 2022 09:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670232078;
-        bh=91sBqhz266oCTUL/hCzrHgfDmBQLlj5ftaEAiWXeJu4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=X1QPgAabjNrnrqCRryjKKlDrmo/HbVXpinjHeAHwTrSs/bTackR1ReJ7ojDrP73jx
-         YZhubuRvQVNvoIHA5dq98cff+P9v3lp9FO35lhxTI574sysI1ugNKUeW1s9wVTFDz7
-         qYCkfulAhwLeUXYllein0yPJWEaJAgulXOZx3jonlZNKj6Rw/t78EVfpQICEFjPbVp
-         o3r+d/p2MeCuae21UXefR4MnB5AOky2wHTtjRJJoCehoY7dbb+TrcP8a+l+rpI8rhT
-         jXZMeBTubWr+RdaIIgDUirLZGX9rf/05YVJNEeLQjFTu3di0jC0NQw4GfktSEqky5W
-         ECb+SAFZwqCAw==
-Date:   Mon, 5 Dec 2022 11:21:14 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, sujuan.chen@mediatek.com,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH net-next] net: ethernet: mtk_wed: add reset to
- rx_ring_setup callback
-Message-ID: <Y424Cr8rTXtSUzAz@unreal>
-References: <26fa16f2f212bff5edfdbe8a4f41dba7a132b0be.1670072570.git.lorenzo@kernel.org>
- <Y42Yz2hhwk1Rw1hz@unreal>
- <Y42xlcjeuys4pW4j@lore-desk>
+        with ESMTP id S231148AbiLEJXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:23:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4D995B9
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 01:22:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670232140;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wpHSIT71aPbIpJ11tJPadV7DNh1RKePeuvvcXPGN05o=;
+        b=KTdxNxlVDotEqJVbvC+7A37jvOPCBG4bmCKHE4IHNmZd7hmjElUAfZFUIAjX85/3a4EfLC
+        voUGztKYp7+i7t7sEXhASU4d4b7b2l/1b+Vu7rhAl72IpnH4qecifAtan7lPfL2wE5tbAP
+        CsL/RCSJmdjhj9I0Ep18GW6hkfuQX1I=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-632-4mSupBXCMq-nciFWB5_t8Q-1; Mon, 05 Dec 2022 04:22:18 -0500
+X-MC-Unique: 4mSupBXCMq-nciFWB5_t8Q-1
+Received: by mail-ej1-f69.google.com with SMTP id hs18-20020a1709073e9200b007c0f9ac75f9so696600ejc.9
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 01:22:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wpHSIT71aPbIpJ11tJPadV7DNh1RKePeuvvcXPGN05o=;
+        b=CvUOPhqORChjQAEPV3ony0uNpZa2kT6lh3t4onUZduos8rRODgCI4bjjyDJWpPGuWD
+         BPPXcRTNxjuTlJhMWGyPNfV708rWLae8N4MOBUxXWVmrsRYeXkINcEjDfWaDAy2Jx5pT
+         qF1G4m3Vqc9I25w8AHAaKFw2Y35X/wGm3yKWDg4066AfEGCd7nRuJ7zqFPpJ2/U2oRlW
+         bUhrqgkj6p+cB6MD1aYicYIYziViYHvW2ZyZdSR/1LZ3qgMT8n361ZnNDQJ3dZsUfJfX
+         zhuWSe7QM3hWIdzkFm8CRLAWNOlw+bceA9tp4itVSwYmcS1+k4QQ6Lda3rlGTAd/gWsx
+         qHOw==
+X-Gm-Message-State: ANoB5pkbFbPR7aqCyA5zL6oKlUwI8qW9d4rFv5b9+H1KOunT++uSSlOI
+        3hWu95b3AlSVWCMsKsMx1HvwfX+RDAzLBot3iAfsHcvN8FIlVWahYk9AvOIn8yd1ELCKGYOBfEY
+        6RroprJXf5sFeXJk9
+X-Received: by 2002:a17:906:fc9:b0:7ae:ef99:6fb2 with SMTP id c9-20020a1709060fc900b007aeef996fb2mr68019879ejk.761.1670232136939;
+        Mon, 05 Dec 2022 01:22:16 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4/g8UyaTqIzNCTJBnwP8F+FMgZxlFT0KeLXMGm2vErvuEBOqDPOczXOntNCfZjgG2KKmrOYw==
+X-Received: by 2002:a17:906:fc9:b0:7ae:ef99:6fb2 with SMTP id c9-20020a1709060fc900b007aeef996fb2mr68019863ejk.761.1670232136682;
+        Mon, 05 Dec 2022 01:22:16 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-105-166.dyn.eolo.it. [146.241.105.166])
+        by smtp.gmail.com with ESMTPSA id 9-20020a170906318900b007b839689adesm6008400ejy.166.2022.12.05.01.22.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 01:22:16 -0800 (PST)
+Message-ID: <216de1827267077a19c5ed3e540b7db74afd1fc0.camel@redhat.com>
+Subject: Re: [PATCH net v2] unix: Fix race in SOCK_SEQPACKET's
+ unix_dgram_sendmsg()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     "Iwashima, Kuniyuki" <kuniyu@amazon.co.jp>,
+        Kirill Tkhai <tkhai@ya.ru>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Date:   Mon, 05 Dec 2022 10:22:15 +0100
+In-Reply-To: <53BD8023-E114-4B3E-BB07-C1889C8A3E95@amazon.co.jp>
+References: <bd4d533b-15d2-6c0a-7667-70fd95dbea20@ya.ru>
+         <7f1277b54a76280cfdaa25d0765c825d665146b9.camel@redhat.com>
+        ,<b7172d71-5f64-104e-48cc-3e6b07ba75ac@ya.ru>
+         <53BD8023-E114-4B3E-BB07-C1889C8A3E95@amazon.co.jp>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <Y42xlcjeuys4pW4j@lore-desk>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 05, 2022 at 09:53:41AM +0100, Lorenzo Bianconi wrote:
-> > On Sat, Dec 03, 2022 at 02:06:30PM +0100, Lorenzo Bianconi wrote:
-> > > Introduce reset parameter to mtk_wed_rx_ring_setup signature.
-> > > This is a preliminary patch to add Wireless Ethernet Dispatcher reset
-> > > support.
-> >=20
-> > So please submit it as part the relevant series.
->=20
-> I have not included this patch in my previous reset series since mt76 bit
-> were missing (merged now in net-next). I posted this now as standalone pa=
-tch
-> to be aligned with mtk_wed_tx_ring_setup counterpart that is already merg=
-ed
-> into net-next.
->=20
-> @Dave,Eric,Jakub,Paolo: I am fine both ways, what do you prefer?
+On Fri, 2022-12-02 at 23:18 +0000, Iwashima, Kuniyuki wrote:
+> 
+> > On Dec 3, 2022, at 7:44, Kirill Tkhai <tkhai@ya.ru> wrote:
+> > > On 01.12.2022 12:30, Paolo Abeni wrote:
+> > > > On Sun, 2022-11-27 at 01:46 +0300, Kirill Tkhai wrote:
+> > > > There is a race resulting in alive SOCK_SEQPACKET socket
+> > > > may change its state from TCP_ESTABLISHED to TCP_CLOSE:
+> > > > 
+> > > > unix_release_sock(peer)                  unix_dgram_sendmsg(sk)
+> > > >  sock_orphan(peer)
+> > > >    sock_set_flag(peer, SOCK_DEAD)
+> > > >                                           sock_alloc_send_pskb()
+> > > >                                             if !(sk->sk_shutdown & SEND_SHUTDOWN)
+> > > >                                               OK
+> > > >                                           if sock_flag(peer, SOCK_DEAD)
+> > > >                                             sk->sk_state = TCP_CLOSE
+> > > >  sk->sk_shutdown = SHUTDOWN_MASK
+> > > > 
+> > > > 
+> > > > After that socket sk remains almost normal: it is able to connect, listen, accept
+> > > > and recvmsg, while it can't sendmsg.
+> > > > 
+> > > > Since this is the only possibility for alive SOCK_SEQPACKET to change
+> > > > the state in such way, we should better fix this strange and potentially
+> > > > danger corner case.
+> > > > 
+> > > > Also, move TCP_CLOSE assignment for SOCK_DGRAM sockets under state lock
+> > > > to fix race with unix_dgram_connect():
+> > > > 
+> > > > unix_dgram_connect(other)            unix_dgram_sendmsg(sk)
+> > > >                                       unix_peer(sk) = NULL
+> > > >                                       unix_state_unlock(sk)
+> > > >  unix_state_double_lock(sk, other)
+> > > >  sk->sk_state  = TCP_ESTABLISHED
+> > > >  unix_peer(sk) = other
+> > > >  unix_state_double_unlock(sk, other)
+> > > >                                       sk->sk_state  = TCP_CLOSED
+> > > > 
+> > > > This patch fixes both of these races.
+> > > > 
+> > > > Fixes: 83301b5367a9 ("af_unix: Set TCP_ESTABLISHED for datagram sockets too")
+> > > 
+> > > I don't think this commmit introduces the issues, both behavior
+> > > described above appear to be present even before?
+> > 
+> > 1)Hm, I pointed to the commit suggested by Kuniyuki without checking it.
+> > 
+> > Possible, the real problem commit is dc56ad7028c5 "af_unix: fix potential NULL deref in unix_dgram_connect()",
+> > since it added TCP_CLOSED assignment to unix_dgram_sendmsg().
+> 
+> The commit just moved the assignment.
+> 
+> Note unix_dgram_disconnected() is called for SOCK_SEQPACKET 
+> after releasing the lock, and 83301b5367a9 introduced the 
+> TCP_CLOSE assignment.
 
-Just update commit message from being "preliminary patch" to be "update,
-align, e.t.c" with pointer to the series which needs it.
+I'm sorry for the back and forth, I think I initally misread the code.
+I agree 83301b5367a9 is good fixes tag.
 
-Thanks
+> > 2)What do you think about initial version of fix?
+> > 
+> > https://patchwork.kernel.org/project/netdevbpf/patch/38a920a7-cfba-7929-886d-c3c6effc0c43@ya.ru/
+> > 
+> > Despite there are some arguments, I'm not still sure that v2 is better.
 
->=20
-> Regards,
-> Lorenzo
->=20
-> >=20
-> > Thanks
-> >=20
-> > >=20
-> > > Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> > > Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > ---
-> > >  drivers/net/ethernet/mediatek/mtk_wed.c  | 20 +++++++++++++-------
-> > >  drivers/net/wireless/mediatek/mt76/dma.c |  2 +-
-> > >  include/linux/soc/mediatek/mtk_wed.h     |  8 ++++----
-> > >  3 files changed, 18 insertions(+), 12 deletions(-)
-> > >=20
-> > > diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/et=
-hernet/mediatek/mtk_wed.c
-> > > index 6352abd4157e..b1ec3f353b66 100644
-> > > --- a/drivers/net/ethernet/mediatek/mtk_wed.c
-> > > +++ b/drivers/net/ethernet/mediatek/mtk_wed.c
-> > > @@ -1216,7 +1216,8 @@ mtk_wed_wdma_rx_ring_setup(struct mtk_wed_devic=
-e *dev, int idx, int size,
-> > >  }
-> > > =20
-> > >  static int
-> > > -mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int =
-size)
-> > > +mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int =
-size,
-> > > +			   bool reset)
-> > >  {
-> > >  	u32 desc_size =3D sizeof(struct mtk_wdma_desc) * dev->hw->version;
-> > >  	struct mtk_wed_ring *wdma;
-> > > @@ -1225,8 +1226,8 @@ mtk_wed_wdma_tx_ring_setup(struct mtk_wed_devic=
-e *dev, int idx, int size)
-> > >  		return -EINVAL;
-> > > =20
-> > >  	wdma =3D &dev->tx_wdma[idx];
-> > > -	if (mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE, desc_size,
-> > > -			       true))
-> > > +	if (!reset && mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE,
-> > > +					 desc_size, true))
-> > >  		return -ENOMEM;
-> > > =20
-> > >  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_BASE,
-> > > @@ -1236,6 +1237,9 @@ mtk_wed_wdma_tx_ring_setup(struct mtk_wed_devic=
-e *dev, int idx, int size)
-> > >  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_CPU_IDX, 0);
-> > >  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_DMA_IDX, 0);
-> > > =20
-> > > +	if (reset)
-> > > +		mtk_wed_ring_reset(wdma, MTK_WED_WDMA_RING_SIZE, true);
-> > > +
-> > >  	if (!idx)  {
-> > >  		wed_w32(dev, MTK_WED_WDMA_RING_TX + MTK_WED_RING_OFS_BASE,
-> > >  			wdma->desc_phys);
-> > > @@ -1577,18 +1581,20 @@ mtk_wed_txfree_ring_setup(struct mtk_wed_devi=
-ce *dev, void __iomem *regs)
-> > >  }
-> > > =20
-> > >  static int
-> > > -mtk_wed_rx_ring_setup(struct mtk_wed_device *dev, int idx, void __io=
-mem *regs)
-> > > +mtk_wed_rx_ring_setup(struct mtk_wed_device *dev, int idx, void __io=
-mem *regs,
-> > > +		      bool reset)
-> > >  {
-> > >  	struct mtk_wed_ring *ring =3D &dev->rx_ring[idx];
-> > > =20
-> > >  	if (WARN_ON(idx >=3D ARRAY_SIZE(dev->rx_ring)))
-> > >  		return -EINVAL;
-> > > =20
-> > > -	if (mtk_wed_ring_alloc(dev, ring, MTK_WED_RX_RING_SIZE,
-> > > -			       sizeof(*ring->desc), false))
-> > > +	if (!reset && mtk_wed_ring_alloc(dev, ring, MTK_WED_RX_RING_SIZE,
-> > > +					 sizeof(*ring->desc), false))
-> > >  		return -ENOMEM;
-> > > =20
-> > > -	if (mtk_wed_wdma_tx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE))
-> > > +	if (mtk_wed_wdma_tx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE,
-> > > +				       reset))
-> > >  		return -ENOMEM;
-> > > =20
-> > >  	ring->reg_base =3D MTK_WED_RING_RX_DATA(idx);
-> > > diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/w=
-ireless/mediatek/mt76/dma.c
-> > > index 3f8c0845fcca..f795548562f5 100644
-> > > --- a/drivers/net/wireless/mediatek/mt76/dma.c
-> > > +++ b/drivers/net/wireless/mediatek/mt76/dma.c
-> > > @@ -648,7 +648,7 @@ mt76_dma_wed_setup(struct mt76_dev *dev, struct m=
-t76_queue *q)
-> > >  			q->wed_regs =3D wed->txfree_ring.reg_base;
-> > >  		break;
-> > >  	case MT76_WED_Q_RX:
-> > > -		ret =3D mtk_wed_device_rx_ring_setup(wed, ring, q->regs);
-> > > +		ret =3D mtk_wed_device_rx_ring_setup(wed, ring, q->regs, false);
-> > >  		if (!ret)
-> > >  			q->wed_regs =3D wed->rx_ring[ring].reg_base;
-> > >  		break;
-> > > diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc=
-/mediatek/mtk_wed.h
-> > > index beb190449704..a0746d4aec20 100644
-> > > --- a/include/linux/soc/mediatek/mtk_wed.h
-> > > +++ b/include/linux/soc/mediatek/mtk_wed.h
-> > > @@ -160,7 +160,7 @@ struct mtk_wed_ops {
-> > >  	int (*tx_ring_setup)(struct mtk_wed_device *dev, int ring,
-> > >  			     void __iomem *regs, bool reset);
-> > >  	int (*rx_ring_setup)(struct mtk_wed_device *dev, int ring,
-> > > -			     void __iomem *regs);
-> > > +			     void __iomem *regs, bool reset);
-> > >  	int (*txfree_ring_setup)(struct mtk_wed_device *dev,
-> > >  				 void __iomem *regs);
-> > >  	int (*msg_update)(struct mtk_wed_device *dev, int cmd_id,
-> > > @@ -228,8 +228,8 @@ mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
-> > >  	(_dev)->ops->irq_get(_dev, _mask)
-> > >  #define mtk_wed_device_irq_set_mask(_dev, _mask) \
-> > >  	(_dev)->ops->irq_set_mask(_dev, _mask)
-> > > -#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs) \
-> > > -	(_dev)->ops->rx_ring_setup(_dev, _ring, _regs)
-> > > +#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) \
-> > > +	(_dev)->ops->rx_ring_setup(_dev, _ring, _regs, _reset)
-> > >  #define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash) \
-> > >  	(_dev)->ops->ppe_check(_dev, _skb, _reason, _hash)
-> > >  #define mtk_wed_device_update_msg(_dev, _id, _msg, _len) \
-> > > @@ -249,7 +249,7 @@ static inline bool mtk_wed_device_active(struct m=
-tk_wed_device *dev)
-> > >  #define mtk_wed_device_reg_write(_dev, _reg, _val) do {} while (0)
-> > >  #define mtk_wed_device_irq_get(_dev, _mask) 0
-> > >  #define mtk_wed_device_irq_set_mask(_dev, _mask) do {} while (0)
-> > > -#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs) -ENODEV
-> > > +#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) -EN=
-ODEV
-> > >  #define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash)  do {} =
-while (0)
-> > >  #define mtk_wed_device_update_msg(_dev, _id, _msg, _len) -ENODEV
-> > >  #define mtk_wed_device_stop(_dev) do {} while (0)
-> > > --=20
-> > > 2.38.1
-> > >=20
+v1 introduces quite a few behavior changes (different error code,
+different cleanup schema) that could be IMHO more risky for a stable
+patch. I suggest to pick the minimal change that addresses the issue
+(v2 in this case).
 
+Thanks,
+
+Paolo
 
