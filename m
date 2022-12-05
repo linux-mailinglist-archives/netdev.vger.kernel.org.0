@@ -2,80 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CF7B642FD1
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 19:22:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B7C5642FDF
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 19:24:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232135AbiLESWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 13:22:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37022 "EHLO
+        id S232018AbiLESYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 13:24:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232156AbiLESWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 13:22:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCD2205F2
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 10:22:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S232230AbiLESY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 13:24:29 -0500
+Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9900AD67;
+        Mon,  5 Dec 2022 10:24:27 -0800 (PST)
+Received: from [192.168.1.33] (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 485AF612F3
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 18:22:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29621C433C1;
-        Mon,  5 Dec 2022 18:22:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670264548;
-        bh=RK/+0PlEr7cFSyz8PvMFDqfwdLNxNLs5m5cEyAwT7qk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YmdZbNFFcHqtqtiBnChSLfGWLkrNoBowiSfs2hMAKeZyjRlI+2OcRwzRr7fKlE+he
-         W89fZwe8ubXDMS42TpV6QH6UuqmAr199wnR+0WqtBBht5AdVTk2QX1D3a+1zyQUzJb
-         79Kik3V8u8lssvsSGbZJoggy0Z/VDz0BPLMft6niTuRRWADg+LD0O6dme1Ke70hHaL
-         0T58/zEi4G16SYs1FQMIf+vGQF6zxuIfVKnWNttdn7PQzUW/yUgnMUcATnmRyKLkiB
-         HMuHKn6MSaf1eQyiddfFs5Gw92fL0p1ts/PRFZQq4ig8LB/bXTRtPXBs2lG9FDLkac
-         7nQ5lRP4anpoQ==
-Date:   Mon, 5 Dec 2022 20:22:24 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shannon Nelson <shannon.nelson@amd.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com
-Subject: Re: [PATCH net-next 0/2] devlink: add params FW_BANK and
- ENABLE_MIGRATION
-Message-ID: <Y4424LOnXn+JXtiS@unreal>
-References: <20221205172627.44943-1-shannon.nelson@amd.com>
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 4AF24200AA55;
+        Mon,  5 Dec 2022 19:24:26 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 4AF24200AA55
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1670264666;
+        bh=oegBx7D9n9UZeLT5ZPWyzKQlRqgn7avVd5TC0coCwdQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=LLQVA6R2QqfN70BMJnbVkm+7a0rJK6/1IKDDI98N4BuHpvUnaflGVghahjrCzdPkT
+         rUvkDicF388iRZjwaBS1WI2pa7w+WkFILC4fZt9qMEFAtYOS/H/Gvc+hFGIYbp8FNI
+         3sIbM+GjPoJJHNiRbyjWvlC7l/xoBqZl/6ggvZVs7UhSif2wVW3sggcH8mwq4d9ezk
+         YR+z/gEFt+Cpq4Ut0e/JP5vceWJIcubg9+5Hu1e1LioBneWTLr3BxgexX+DzjMBHP/
+         in9SHu/pWTq5Fh0H3Jmw6S28Un36BhIIWSU3HFYqAwnAzPWhU+ctNG/MUeQhjKVDbO
+         du8CwYsuRIipQ==
+Message-ID: <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
+Date:   Mon, 5 Dec 2022 19:24:26 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221205172627.44943-1-shannon.nelson@amd.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue
+ depth data field")
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        stable@vger.kernel.org
+References: <20221205153557.28549-1-justin.iurman@uliege.be>
+ <CANn89iLjGnyh0GgW_5kkMQJBCi-KfgwyvZwT1ou2FMY4ZDcMXw@mail.gmail.com>
+ <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com>
+From:   Justin Iurman <justin.iurman@uliege.be>
+In-Reply-To: <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 05, 2022 at 09:26:25AM -0800, Shannon Nelson wrote:
-> Some discussions of a recent new driver RFC [1] suggested that these
-> new parameters would be a good addition to the generic devlink list.
-> If accepted, they will be used in the next version of the discussed
-> driver patchset.
+On 12/5/22 17:50, Eric Dumazet wrote:
+> On Mon, Dec 5, 2022 at 5:30 PM Eric Dumazet <edumazet@google.com> wrote:
+>>
+>> Patch title seems
+>>
+>> On Mon, Dec 5, 2022 at 4:36 PM Justin Iurman <justin.iurman@uliege.be> wrote:
+>>>
+>>> This patch fixes a NULL qdisc pointer when retrieving the TX queue depth
+>>> for IOAM.
+>>>
+>>> IMPORTANT: I suspect this fix is local only and the bug goes deeper (see
+>>> reasoning below).
+>>>
+>>> Kernel panic:
+>>> [...]
+>>> RIP: 0010:ioam6_fill_trace_data+0x54f/0x5b0
+>>> [...]
+>>>
+>>> ...which basically points to the call to qdisc_qstats_qlen_backlog
+>>> inside net/ipv6/ioam6.c.
+>>>
+>>>  From there, I directly thought of a NULL pointer (queue->qdisc). To make
+>>> sure, I added some printk's to know exactly *why* and *when* it happens.
+>>> Here is the (summarized by queue) output:
+>>>
+>>> skb for TX queue 1, qdisc is ffff8b375eee9800, qdisc_sleeping is ffff8b375eee9800
+>>> skb for TX queue 2, qdisc is ffff8b375eeefc00, qdisc_sleeping is ffff8b375eeefc00
+>>> skb for TX queue 3, qdisc is ffff8b375eeef800, qdisc_sleeping is ffff8b375eeef800
+>>> skb for TX queue 4, qdisc is ffff8b375eeec800, qdisc_sleeping is ffff8b375eeec800
+>>> skb for TX queue 5, qdisc is ffff8b375eeea400, qdisc_sleeping is ffff8b375eeea400
+>>> skb for TX queue 6, qdisc is ffff8b375eeee000, qdisc_sleeping is ffff8b375eeee000
+>>> skb for TX queue 7, qdisc is ffff8b375eee8800, qdisc_sleeping is ffff8b375eee8800
+>>> skb for TX queue 8, qdisc is ffff8b375eeedc00, qdisc_sleeping is ffff8b375eeedc00
+>>> skb for TX queue 9, qdisc is ffff8b375eee9400, qdisc_sleeping is ffff8b375eee9400
+>>> skb for TX queue 10, qdisc is ffff8b375eee8000, qdisc_sleeping is ffff8b375eee8000
+>>> skb for TX queue 11, qdisc is ffff8b375eeed400, qdisc_sleeping is ffff8b375eeed400
+>>> skb for TX queue 12, qdisc is ffff8b375eeea800, qdisc_sleeping is ffff8b375eeea800
+>>> skb for TX queue 13, qdisc is ffff8b375eee8c00, qdisc_sleeping is ffff8b375eee8c00
+>>> skb for TX queue 14, qdisc is ffff8b375eeea000, qdisc_sleeping is ffff8b375eeea000
+>>> skb for TX queue 15, qdisc is ffff8b375eeeb800, qdisc_sleeping is ffff8b375eeeb800
+>>> skb for TX queue 16, qdisc is NULL, qdisc_sleeping is NULL
+>>>
+>>> What the hell? So, not sure why queue #16 would *never* have a qdisc
+>>> attached. Is it something expected I'm not aware of? As an FYI, here is
+>>> the output of "tc qdisc list dev xxx":
+>>>
+>>> qdisc mq 0: root
+>>> qdisc fq_codel 0: parent :10 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :f limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :e limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :d limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :c limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :b limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :a limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :9 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :8 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :7 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :6 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :5 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>> qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+>>>
+>>> By the way, the NIC is an Intel XL710 40GbE QSFP+ (i40e driver, firmware
+>>> version 8.50 0x8000b6c7 1.3082.0) and it was tested on latest "net"
+>>> version (6.1.0-rc7+). Is this a bug in the i40e driver?
+>>>
+>>
+>>> Cc: stable@vger.kernel.org
+>>
+>> Patch title is mangled. The Fixes: tag should appear here, not in the title.
+>>
+>>
+>> Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue depth data field")
+>>
+>>> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+>>> ---
+>>>   net/ipv6/ioam6.c | 11 +++++++----
+>>>   1 file changed, 7 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
+>>> index 571f0e4d9cf3..2472a8a043c4 100644
+>>> --- a/net/ipv6/ioam6.c
+>>> +++ b/net/ipv6/ioam6.c
+>>> @@ -727,10 +727,13 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+>>>                          *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+>>>                  } else {
+>>>                          queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
+>>
+>> Are you sure skb_dst(skb)->dev is correct at this stage, what about
+>> stacked devices ?
+>>
+>>> -                       qdisc = rcu_dereference(queue->qdisc);
+>>> -                       qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
+>>> -
+>>> -                       *(__be32 *)data = cpu_to_be32(backlog);
+>>> +                       if (!queue->qdisc) {
+>>
+>> This is racy.
+>>
+>>> +                               *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+>>> +                       } else {
+>>> +                               qdisc = rcu_dereference(queue->qdisc);
+>>> +                               qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
+>>> +                               *(__be32 *)data = cpu_to_be32(backlog);
+>>> +                       }
+>>>                  }
+>>>                  data += sizeof(__be32);
+>>>          }
+>>> --
+>>> 2.25.1
+>>>
+>>
+>> Quite frankly I suggest to revert b63c5478e9cb completely.
+>>
+>> The notion of Queue depth can not be properly gathered in Linux with a
+>> multi queue model,
+>> so why trying to get a wrong value ?
 > 
-> [1] https://lore.kernel.org/netdev/20221118225656.48309-1-snelson@pensando.io/
-> 
-> Shannon Nelson (2):
->   devlink: add fw bank select parameter
->   devlink: add enable_migration parameter
+> Additional reason for a revert is that qdisc_qstats_qlen_backlog() is
+> reserved for net/sched
 
-You was CCed on this more mature version, but didn't express any opinion.
-https://lore.kernel.org/netdev/20221204141632.201932-8-shayd@nvidia.com/
+If by "reserved" you mean "only used by at the moment", then yes (with 
+the only exception being IOAM). But some other functions are defined as 
+well, and some are used elsewhere than the "net/sched" context. So I 
+don't think it's really an issue to use this function "from somewhere else".
 
-Thanks
+> code, I think it needs the qdisc lock to be held.
 
-> 
->  Documentation/networking/devlink/devlink-params.rst |  8 ++++++++
->  include/net/devlink.h                               |  8 ++++++++
->  net/core/devlink.c                                  | 10 ++++++++++
->  3 files changed, 26 insertions(+)
-> 
-> -- 
-> 2.17.1
-> 
+Good point. But is it really needed when called with rcu_read_lock?
