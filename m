@@ -2,79 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B9A642BE5
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:35:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 558F1642C51
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:53:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231175AbiLEPfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 10:35:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36918 "EHLO
+        id S231688AbiLEPxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 10:53:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbiLEPfa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:35:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7FBDC0
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:34:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670254456;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=muzN8WEUVh1Z0hOwGhW5wqwCu57eFzBWrtNL2xNCBTc=;
-        b=Ol5Zl0kpwY/pMr16AJQc//IIQEfUW8RuEtafPPmKY56HoDl5ylkNogkIDgo4vIMMLNc26N
-        q/yUti072DBG2gGtfuWMnhLtfly3E/NgJ0KKs8fzVaOMr3gYQar1hMBLFVROSEymXTGb6g
-        2yCPmDx69UpvPsBQmZEMQkn4lXz4jig=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-35-x_ipDhHiNdup3tjNP9ufbA-1; Mon, 05 Dec 2022 10:34:14 -0500
-X-MC-Unique: x_ipDhHiNdup3tjNP9ufbA-1
-Received: by mail-ej1-f70.google.com with SMTP id ga41-20020a1709070c2900b007aef14e8fd7so7737561ejc.21
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 07:34:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=muzN8WEUVh1Z0hOwGhW5wqwCu57eFzBWrtNL2xNCBTc=;
-        b=XCF4z1vUifLqaauLF3TUbcu1aSY05b7GxoF7WM9aC8kb5sLQeEQqbFHJAh81f8Tw4A
-         BY9U+IANwdoBQ+HodF4EuRVWd982PTTuf1XveLpqojrwWi+anipAGx2+Xay+IMxbDQoS
-         /r+eYNILJvgUjRj/NxBOWXGv2NkeruQK1Zc3Cgwgo9E9CzMyDImmFtt1QdLrWhAWuhHb
-         APhH6vH2z/257f8MxossIJMm2J1Pr9HghB/ZKndUH6qQPJDGsAQCsG41lNfRNF/QI7jO
-         T6s/Z5Pih10ho3qdxxuNl2b4SErQ/VE/GFIxe9HhKmtnU00q8YWTB4T3DxJ85eKven4w
-         W+KQ==
-X-Gm-Message-State: ANoB5pnqV8rDhzxEQ5ObE4VIItTpTFkN6zf+F++OheLwS2OVpB5AEGrb
-        ZHsGYBo3U2Gf35vu8jK0u7ELsbiFbNJbfftLxqJSJxCJDW9HladNNTX8IBjtgW0n+NaVNm+Kfyx
-        V+bxbVH5UbXUaQEva
-X-Received: by 2002:a17:906:7244:b0:7ae:2964:72dc with SMTP id n4-20020a170906724400b007ae296472dcmr45976476ejk.111.1670254452824;
-        Mon, 05 Dec 2022 07:34:12 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4YSL+fUvabB9FXexYRha1NrlEMMAkmKnUeYM8sAueMcqb0lGmkqOQXVjTmnT31HWfW7O5Gpg==
-X-Received: by 2002:a17:906:7244:b0:7ae:2964:72dc with SMTP id n4-20020a170906724400b007ae296472dcmr45976464ejk.111.1670254452609;
-        Mon, 05 Dec 2022 07:34:12 -0800 (PST)
-Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id si1-20020a170906cec100b007c0dcb30103sm2659470ejb.103.2022.12.05.07.34.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Dec 2022 07:34:12 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <cfe0b2ca-824d-3a52-423a-f8262f12fabe@redhat.com>
-Date:   Mon, 5 Dec 2022 16:34:10 +0100
+        with ESMTP id S230235AbiLEPxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:53:54 -0500
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 05 Dec 2022 07:53:50 PST
+Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252AB1208A;
+        Mon,  5 Dec 2022 07:53:50 -0800 (PST)
+Received: from ubuntu.home (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id DE4CC200DF9A;
+        Mon,  5 Dec 2022 16:36:20 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be DE4CC200DF9A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1670254581;
+        bh=9RCpom6IfP/9eHB8wsuAhrtCGUOdEGP7ADW4IxYZHfs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=1CQbneuAakFYezm9c49Pe85BrUfEgHmlUWWiJymF+Mj0VyLhPmDGvk4jFGtMA2NCl
+         NNf6pra9lKs6aOzcrpfQSokivThebnH2bn/0CHsq2kM86DyAhRkgXTE81//a32CV9E
+         RHZom6WGKuBgKqtCDKKaTzGzKpKZv12kWkaGLyj+tfJXzKhNRV4ue8QGJSsDl5wsUH
+         Rz0w59W/epwIvfz4kOAFrSzmSHXgp28uAh6A8cldID5qZXlJt4Sl2VgOGpPjIPlWfm
+         kYJxcUfkzKIstyNpheyanVQyV2Mzm+RlEVTsFqWjBbx1rNVM+pd6/o8O0u+gKtfbYd
+         kuY/huEGvddRg==
+From:   Justin Iurman <justin.iurman@uliege.be>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        justin.iurman@uliege.be, stable@vger.kernel.org
+Subject: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue depth data field")
+Date:   Mon,  5 Dec 2022 16:35:57 +0100
+Message-Id: <20221205153557.28549-1-justin.iurman@uliege.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH 00/24] Split page pools from struct page
-Content-Language: en-US
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-References: <20221130220803.3657490-1-willy@infradead.org>
-In-Reply-To: <20221130220803.3657490-1-willy@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HEXHASH_WORD,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,86 +52,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch fixes a NULL qdisc pointer when retrieving the TX queue depth
+for IOAM.
 
-On 30/11/2022 23.07, Matthew Wilcox (Oracle) wrote:
-> The MM subsystem is trying to reduce struct page to a single pointer.
-> The first step towards that is splitting struct page by its individual
-> users, as has already been done with folio and slab.  This attempt chooses
-> 'netmem' as a name, but I am not even slightly committed to that name,
-> and will happily use another.
+IMPORTANT: I suspect this fix is local only and the bug goes deeper (see
+reasoning below).
 
-I've not been able to come-up with a better name, so I'm okay with
-'netmem'.  Others are of-cause free to bikesheet this ;-)
+Kernel panic:
+[...]
+RIP: 0010:ioam6_fill_trace_data+0x54f/0x5b0
+[...]
 
-> There are some relatively significant reductions in kernel text
-> size from these changes.  I'm not qualified to judge how they
-> might affect performance, but every call to put_page() includes
-> a call to compound_head(), which is now rather more complex
-> than it once was (at least in a distro config which enables
-> CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP).
-> 
+...which basically points to the call to qdisc_qstats_qlen_backlog
+inside net/ipv6/ioam6.c.
 
-I have a micro-benchmark [1][2], that I want to run on this patchset.
-Reducing the asm code 'text' size is less likely to improve a
-microbenchmark. The 100Gbit mlx5 driver uses page_pool, so perhaps I can
-run a packet benchmark that can show the (expected) performance improvement.
+From there, I directly thought of a NULL pointer (queue->qdisc). To make
+sure, I added some printk's to know exactly *why* and *when* it happens.
+Here is the (summarized by queue) output:
 
-[1] 
-https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
-[2] 
-https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_cross_cpu.c
+skb for TX queue 1, qdisc is ffff8b375eee9800, qdisc_sleeping is ffff8b375eee9800
+skb for TX queue 2, qdisc is ffff8b375eeefc00, qdisc_sleeping is ffff8b375eeefc00
+skb for TX queue 3, qdisc is ffff8b375eeef800, qdisc_sleeping is ffff8b375eeef800
+skb for TX queue 4, qdisc is ffff8b375eeec800, qdisc_sleeping is ffff8b375eeec800
+skb for TX queue 5, qdisc is ffff8b375eeea400, qdisc_sleeping is ffff8b375eeea400
+skb for TX queue 6, qdisc is ffff8b375eeee000, qdisc_sleeping is ffff8b375eeee000
+skb for TX queue 7, qdisc is ffff8b375eee8800, qdisc_sleeping is ffff8b375eee8800
+skb for TX queue 8, qdisc is ffff8b375eeedc00, qdisc_sleeping is ffff8b375eeedc00
+skb for TX queue 9, qdisc is ffff8b375eee9400, qdisc_sleeping is ffff8b375eee9400
+skb for TX queue 10, qdisc is ffff8b375eee8000, qdisc_sleeping is ffff8b375eee8000
+skb for TX queue 11, qdisc is ffff8b375eeed400, qdisc_sleeping is ffff8b375eeed400
+skb for TX queue 12, qdisc is ffff8b375eeea800, qdisc_sleeping is ffff8b375eeea800
+skb for TX queue 13, qdisc is ffff8b375eee8c00, qdisc_sleeping is ffff8b375eee8c00
+skb for TX queue 14, qdisc is ffff8b375eeea000, qdisc_sleeping is ffff8b375eeea000
+skb for TX queue 15, qdisc is ffff8b375eeeb800, qdisc_sleeping is ffff8b375eeeb800
+skb for TX queue 16, qdisc is NULL, qdisc_sleeping is NULL
 
-> I've only converted one user of the page_pool APIs to use the new netmem
-> APIs, all the others continue to use the page based ones.
-> 
+What the hell? So, not sure why queue #16 would *never* have a qdisc
+attached. Is it something expected I'm not aware of? As an FYI, here is
+the output of "tc qdisc list dev xxx":
 
-I guess we/netdev-devels need to update the NIC drivers that uses page_pool.
+qdisc mq 0: root
+qdisc fq_codel 0: parent :10 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :f limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :e limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :d limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :c limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :b limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :a limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :9 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :8 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :7 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :6 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :5 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
 
-> Uh, I see I left netmem_to_virt() as its own commit instead of squashing
-> it into "netmem: Add utility functions".  I'll fix that in the next
-> version, because I'm sure you'll want some changes anyway.
-> 
-> Happy to answer questions.
-> 
-> Matthew Wilcox (Oracle) (24):
->    netmem: Create new type
->    netmem: Add utility functions
->    page_pool: Add netmem_set_dma_addr() and netmem_get_dma_addr()
->    page_pool: Convert page_pool_release_page() to
->      page_pool_release_netmem()
->    page_pool: Start using netmem in allocation path.
->    page_pool: Convert page_pool_return_page() to
->      page_pool_return_netmem()
->    page_pool: Convert __page_pool_put_page() to __page_pool_put_netmem()
->    page_pool: Convert pp_alloc_cache to contain netmem
->    page_pool: Convert page_pool_defrag_page() to
->      page_pool_defrag_netmem()
->    page_pool: Convert page_pool_put_defragged_page() to netmem
->    page_pool: Convert page_pool_empty_ring() to use netmem
->    page_pool: Convert page_pool_alloc_pages() to page_pool_alloc_netmem()
->    page_pool: Convert page_pool_dma_sync_for_device() to take a netmem
->    page_pool: Convert page_pool_recycle_in_cache() to netmem
->    page_pool: Remove page_pool_defrag_page()
->    page_pool: Use netmem in page_pool_drain_frag()
->    page_pool: Convert page_pool_return_skb_page() to use netmem
->    page_pool: Convert frag_page to frag_nmem
->    xdp: Convert to netmem
->    mm: Remove page pool members from struct page
->    netmem_to_virt
->    page_pool: Pass a netmem to init_callback()
->    net: Add support for netmem in skb_frag
->    mvneta: Convert to netmem
-> 
->   drivers/net/ethernet/marvell/mvneta.c |  48 ++---
->   include/linux/mm_types.h              |  22 ---
->   include/linux/skbuff.h                |  11 ++
->   include/net/page_pool.h               | 181 ++++++++++++++---
->   include/trace/events/page_pool.h      |  28 +--
->   net/bpf/test_run.c                    |   4 +-
->   net/core/page_pool.c                  | 274 +++++++++++++-------------
->   net/core/xdp.c                        |   7 +-
->   8 files changed, 344 insertions(+), 231 deletions(-)
-> 
-> 
-> base-commit: 13ee7ef407cfcf63f4f047460ac5bb6ba5a3447d
+By the way, the NIC is an Intel XL710 40GbE QSFP+ (i40e driver, firmware
+version 8.50 0x8000b6c7 1.3082.0) and it was tested on latest "net"
+version (6.1.0-rc7+). Is this a bug in the i40e driver?
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+---
+ net/ipv6/ioam6.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
+index 571f0e4d9cf3..2472a8a043c4 100644
+--- a/net/ipv6/ioam6.c
++++ b/net/ipv6/ioam6.c
+@@ -727,10 +727,13 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+ 			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+ 		} else {
+ 			queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
+-			qdisc = rcu_dereference(queue->qdisc);
+-			qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
+-
+-			*(__be32 *)data = cpu_to_be32(backlog);
++			if (!queue->qdisc) {
++				*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++			} else {
++				qdisc = rcu_dereference(queue->qdisc);
++				qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
++				*(__be32 *)data = cpu_to_be32(backlog);
++			}
+ 		}
+ 		data += sizeof(__be32);
+ 	}
+-- 
+2.25.1
 
