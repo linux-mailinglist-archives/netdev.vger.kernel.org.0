@@ -2,92 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89C6A6421F6
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 04:46:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45AF2642201
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 04:53:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231205AbiLEDqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Dec 2022 22:46:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
+        id S231417AbiLEDxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Dec 2022 22:53:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231161AbiLEDqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 22:46:04 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80F2E090
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 19:46:03 -0800 (PST)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NQTr22s5MzqSrc;
-        Mon,  5 Dec 2022 11:41:54 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
- (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 5 Dec
- 2022 11:46:01 +0800
-From:   Yuan Can <yuancan@huawei.com>
-To:     <nbd@nbd.name>, <john@phrozen.org>, <sean.wang@mediatek.com>,
-        <Mark-MC.Lee@mediatek.com>, <lorenzo@kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <matthias.bgg@gmail.com>,
-        <sujuan.chen@mediatek.com>, <leon@kernel.org>,
-        <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-CC:     <yuancan@huawei.com>
-Subject: [PATCH net-next v2] net: ethernet: mtk_wed: Fix missing of_node_put() in mtk_wed_wo_hardware_init()
-Date:   Mon, 5 Dec 2022 03:43:39 +0000
-Message-ID: <20221205034339.112163-1-yuancan@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231415AbiLEDxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Dec 2022 22:53:04 -0500
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA7149580;
+        Sun,  4 Dec 2022 19:53:03 -0800 (PST)
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4NQV4s2BVyz8R03d;
+        Mon,  5 Dec 2022 11:53:01 +0800 (CST)
+Received: from xaxapp01.zte.com.cn ([10.88.40.50])
+        by mse-fl2.zte.com.cn with SMTP id 2B53qtAN034087;
+        Mon, 5 Dec 2022 11:52:55 +0800 (+08)
+        (envelope-from ye.xingchen@zte.com.cn)
+Received: from mapi (xaxapp01[null])
+        by mapi (Zmail) with MAPI id mid31;
+        Mon, 5 Dec 2022 11:52:56 +0800 (CST)
+Date:   Mon, 5 Dec 2022 11:52:56 +0800 (CST)
+X-Zmail-TransId: 2af9638d6b186bfdc340
+X-Mailer: Zmail v1.0
+Message-ID: <202212051152565871940@zte.com.cn>
+Mime-Version: 1.0
+From:   <ye.xingchen@zte.com.cn>
+To:     <wintera@linux.ibm.com>
+Cc:     <wenjia@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
+        <agordeev@linux.ibm.com>, <borntraeger@linux.ibm.com>,
+        <svens@linux.ibm.com>, <linux-s390@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: =?UTF-8?B?W1BBVENIIG5ldC1uZXh0XSBzMzkwL3FldGg6IHVzZSBzeXNmc19lbWl0KCkgdG8gaW5zdGVhZCBvZiBzY25wcmludGYoKQ==?=
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl2.zte.com.cn 2B53qtAN034087
+X-Fangmail-Gw-Spam-Type: 0
+X-FangMail-Miltered: at cgslv5.04-192.168.250.137.novalocal with ID 638D6B1D.000 by FangMail milter!
+X-FangMail-Envelope: 1670212381/4NQV4s2BVyz8R03d/638D6B1D.000/10.5.228.133/[10.5.228.133]/mse-fl2.zte.com.cn/<ye.xingchen@zte.com.cn>
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 638D6B1D.000/4NQV4s2BVyz8R03d
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The np needs to be released through of_node_put() in the error handling
-path of mtk_wed_wo_hardware_init().
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-Fixes: 799684448e3e ("net: ethernet: mtk_wed: introduce wed wo support")
-Signed-off-by: Yuan Can <yuancan@huawei.com>
+Follow the advice of the Documentation/filesystems/sysfs.rst and show()
+should only use sysfs_emit() or sysfs_emit_at() when formatting the
+value to be returned to user space.
+
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
 ---
-Changes in v2:
-- Replace IS_ERR_OR_NULL() with IS_ERR() to check wo->mmio.regs.
-- Add net-next tag.
+ drivers/s390/net/qeth_l3_sys.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/net/ethernet/mediatek/mtk_wed_wo.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+diff --git a/drivers/s390/net/qeth_l3_sys.c b/drivers/s390/net/qeth_l3_sys.c
+index 1082380b21f8..65eea667e469 100644
+--- a/drivers/s390/net/qeth_l3_sys.c
++++ b/drivers/s390/net/qeth_l3_sys.c
+@@ -395,7 +395,7 @@ static ssize_t qeth_l3_dev_ipato_add_show(char *buf, struct qeth_card *card,
+ 	}
+ 	mutex_unlock(&card->ip_lock);
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed_wo.c b/drivers/net/ethernet/mediatek/mtk_wed_wo.c
-index 4754b6db009e..fcc4b3206d2d 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed_wo.c
-+++ b/drivers/net/ethernet/mediatek/mtk_wed_wo.c
-@@ -407,8 +407,10 @@ mtk_wed_wo_hardware_init(struct mtk_wed_wo *wo)
- 		return -ENODEV;
- 
- 	wo->mmio.regs = syscon_regmap_lookup_by_phandle(np, NULL);
--	if (IS_ERR_OR_NULL(wo->mmio.regs))
--		return PTR_ERR(wo->mmio.regs);
-+	if (IS_ERR(wo->mmio.regs)) {
-+		ret = PTR_ERR(wo->mmio.regs);
-+		goto error_put;
-+	}
- 
- 	wo->mmio.irq = irq_of_parse_and_map(np, 0);
- 	wo->mmio.irq_mask = MTK_WED_WO_ALL_INT_MASK;
-@@ -456,7 +458,8 @@ mtk_wed_wo_hardware_init(struct mtk_wed_wo *wo)
- 
- error:
- 	devm_free_irq(wo->hw->dev, wo->mmio.irq, wo);
--
-+error_put:
-+	of_node_put(np);
- 	return ret;
+-	return str_len ? str_len : scnprintf(buf, PAGE_SIZE, "\n");
++	return str_len ? str_len : sysfs_emit(buf, "\n");
  }
- 
--- 
-2.17.1
 
+ static ssize_t qeth_l3_dev_ipato_add4_show(struct device *dev,
+@@ -614,7 +614,7 @@ static ssize_t qeth_l3_dev_ip_add_show(struct device *dev, char *buf,
+ 	}
+ 	mutex_unlock(&card->ip_lock);
+
+-	return str_len ? str_len : scnprintf(buf, PAGE_SIZE, "\n");
++	return str_len ? str_len : sysfs_emit(buf, "\n");
+ }
+
+ static ssize_t qeth_l3_dev_vipa_add4_show(struct device *dev,
+-- 
+2.25.1
