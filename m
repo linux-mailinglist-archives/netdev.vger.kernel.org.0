@@ -2,48 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69AB36437F6
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 23:22:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA303643844
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 23:43:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232878AbiLEWWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 17:22:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        id S233841AbiLEWnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 17:43:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbiLEWWE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 17:22:04 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B192A14D1B;
-        Mon,  5 Dec 2022 14:22:03 -0800 (PST)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p2JqR-000OjL-Ty; Mon, 05 Dec 2022 23:21:51 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p2JqR-000VX3-Nb; Mon, 05 Dec 2022 23:21:51 +0100
-Subject: Re: [PATCH] bpf: call get_random_u32() for random integers
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-References: <20221205181534.612702-1-Jason@zx2c4.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <730fd355-ad86-a8fa-6583-df23d39e0c23@iogearbox.net>
-Date:   Mon, 5 Dec 2022 23:21:51 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S230235AbiLEWnI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 17:43:08 -0500
+Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFD0EE1C;
+        Mon,  5 Dec 2022 14:43:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:mime-version:content-type;
+    bh=TAOkuzxYZ2oQznXV3h5EbfdfvseqlORBdvFGaoPH/tg=;
+    b=BuYoAqe+ZoJ3oXfZ2SyUeegM8EecDbNzyiBiOMepnmnU8F7EGO9flxe1d63ANT
+      IYRTrSVUVQ45wSdozJ9PGDFoJSBOqrxAvi/BTcVzrVw5wDV6bEXwdfFBKG3xxo
+      fcRBVU72fpncC3+UEVnwno+GbRiwchXWwtnWRYtmVNYm8/k=
+Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
+ EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
+ 15.1.2308.14; Mon, 5 Dec 2022 14:42:44 -0800
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id E58A2201FE;
+        Mon,  5 Dec 2022 14:43:00 -0800 (PST)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id DCEA2AE1A8; Mon,  5 Dec 2022 14:43:00 -0800 (PST)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     <stable@vger.kernel.org>, Ronak Doshi <doshir@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 net  0/2] vmxnet3: couple of fixes
+Date:   Mon, 5 Dec 2022 14:42:53 -0800
+Message-ID: <20221205224256.22830-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-In-Reply-To: <20221205181534.612702-1-Jason@zx2c4.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.7/26741/Mon Dec  5 09:16:09 2022)
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,17 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/5/22 7:15 PM, Jason A. Donenfeld wrote:
-> Since BPF's bpf_user_rnd_u32() was introduced, there have been three
-> significant developments in the RNG: 1) get_random_u32() returns the
-> same types of bytes as /dev/urandom, eliminating the distinction between
-> "kernel random bytes" and "userspace random bytes", 2) get_random_u32()
-> operates mostly locklessly over percpu state, 3) get_random_u32() has
-> become quite fast.
+This series fixes following issues:
 
-Wrt "quite fast", do you have a comparison between the two? Asking as its
-often used in networking worst case on per packet basis (e.g. via XDP), would
-be useful to state concrete numbers for the two on a given machine.
+Patch 1:
+  This patch provides a fix to correctly report encapsulated LRO'ed
+  packet.
 
-> So rather than using the old clunky Tausworthe prandom code, just call
-> get_random_u32(), which should fit BPF uses perfectly.
+Patch 2:
+  This patch provides a fix to use correct intrConf reference.
+
+Changes in v2:
+- declare generic descriptor to be used
+- remove white spaces
+- remove single quote around commit reference in patch 2
+- remove if check for encap_lro
+
+Ronak Doshi (2):
+  vmxnet3: correctly report encapsulated LRO packet
+  vmxnet3: use correct intrConf reference when using extended queues
+
+ drivers/net/vmxnet3/vmxnet3_drv.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
+
+-- 
+2.11.0
+
