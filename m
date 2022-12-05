@@ -2,110 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D52E2642547
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:01:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45E55642571
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 10:09:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232367AbiLEJBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 04:01:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48968 "EHLO
+        id S229999AbiLEJJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 04:09:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232307AbiLEJAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:00:25 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4B26551;
-        Mon,  5 Dec 2022 00:58:42 -0800 (PST)
-Received: from [192.168.2.51] (p5dd0dfce.dip0.t-ipconnect.de [93.208.223.206])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id C2E92C02F8;
-        Mon,  5 Dec 2022 09:58:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1670230720;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LOJOfm4gp0B6IgwZ7e2DWz6uGr5bR1VtG8wjN4Lfar8=;
-        b=jHaQndNySlooz6ETFJI+730TQJFgMffCi1bR4NRcg/SJ1HbZPNbCRmwOJmNk+Uldpn/hZE
-        xI1EoxEDDtl1GvDxPDMzobthE8Tn0jSrp+a/I1YJ1ItgT5VFPV0ZVxu1Htwm77CuxHk4G1
-        J13sD+rHoTFtUE91nwpc+odfJdQOpiz2UuK41zepER2AFLhj2JHnwx88kZiSu16/mR63Kt
-        xa2xYtNZbswgNmPWQoTV2Mexmt9I2PHPQipguZQ29bvMuqoUnJFC9UBQEKamno1H7NE0Nl
-        MBzURgIN2YrjlcDpxPsJryPJwdi04/dogCZ1zutF9L+F6WQVCWTkPAKnda68Cw==
-Message-ID: <d51c02cf-c20f-b983-d760-bf97ce76e33a@datenfreihafen.org>
-Date:   Mon, 5 Dec 2022 09:58:39 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH wpan] mac802154: fix missing INIT_LIST_HEAD in
- ieee802154_if_add()
-Content-Language: en-US
-To:     Alexander Aring <aahringo@redhat.com>,
-        Wei Yongjun <weiyongjun@huaweicloud.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
+        with ESMTP id S229892AbiLEJIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 04:08:35 -0500
+X-Greylist: delayed 808 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 05 Dec 2022 01:08:17 PST
+Received: from forward105j.mail.yandex.net (forward105j.mail.yandex.net [5.45.198.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DBA11C3D;
+        Mon,  5 Dec 2022 01:08:17 -0800 (PST)
+Received: from myt6-bd59def10a3e.qloud-c.yandex.net (myt6-bd59def10a3e.qloud-c.yandex.net [IPv6:2a02:6b8:c12:2487:0:640:bd59:def1])
+        by forward105j.mail.yandex.net (Yandex) with ESMTP id 6B5204ECA42D;
+        Mon,  5 Dec 2022 11:53:48 +0300 (MSK)
+Received: by myt6-bd59def10a3e.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id hrRE5NnYLGk1-jjaJR5Oi;
+        Mon, 05 Dec 2022 11:53:47 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1670230427;
+        bh=nlHUmVYpdftndnegSElvuzQFYDoRyQq2iItNKu1ivvk=;
+        h=Message-Id:Date:Cc:Subject:To:From;
+        b=gKqBBB63dzgbuvZ/QR3Kl0SILSBrpIp/v4Z2BgpD9dtEXRleuFo893iPsY2DYSKdZ
+         bRSRu9NjS/KSl/Qjwk3ZK9Ys9/HSuK/jLPLSneX+vn26L+thpCFlUOYafomEmEjFnj
+         e1eKxRk/mXiXOHotxWwuk2ZTvLuqE52gwCrrii7c=
+Authentication-Results: myt6-bd59def10a3e.qloud-c.yandex.net; dkim=pass header.i=@yandex.ru
+From:   Peter Kosyh <pkosyh@yandex.ru>
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     Peter Kosyh <pkosyh@yandex.ru>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Kalle Valo <kvalo@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-References: <20221130091705.1831140-1-weiyongjun@huaweicloud.com>
- <CAK-6q+gN9d2_=bN9tvCqCxSbymMfyJjF0j=gj4kUbi-bfSnF4g@mail.gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <CAK-6q+gN9d2_=bN9tvCqCxSbymMfyJjF0j=gj4kUbi-bfSnF4g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: [PATCH] rtlwifi: rtl8192se: remove redundant rtl_get_bbreg call
+Date:   Mon,  5 Dec 2022 11:53:42 +0300
+Message-Id: <20221205085342.677329-1-pkosyh@yandex.ru>
+X-Mailer: git-send-email 2.38.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Extra rtl_get_bbreg looks like redundant reading. The read has
+already been done in the "else" branch. Compile test only.
 
-On 04.12.22 23:49, Alexander Aring wrote:
-> Hi,
-> 
-> On Wed, Nov 30, 2022 at 4:19 AM Wei Yongjun <weiyongjun@huaweicloud.com> wrote:
->>
->> From: Wei Yongjun <weiyongjun1@huawei.com>
->>
->> Kernel fault injection test reports null-ptr-deref as follows:
->>
->> BUG: kernel NULL pointer dereference, address: 0000000000000008
->> RIP: 0010:cfg802154_netdev_notifier_call+0x120/0x310 include/linux/list.h:114
->> Call Trace:
->>   <TASK>
->>   raw_notifier_call_chain+0x6d/0xa0 kernel/notifier.c:87
->>   call_netdevice_notifiers_info+0x6e/0xc0 net/core/dev.c:1944
->>   unregister_netdevice_many_notify+0x60d/0xcb0 net/core/dev.c:1982
->>   unregister_netdevice_queue+0x154/0x1a0 net/core/dev.c:10879
->>   register_netdevice+0x9a8/0xb90 net/core/dev.c:10083
->>   ieee802154_if_add+0x6ed/0x7e0 net/mac802154/iface.c:659
->>   ieee802154_register_hw+0x29c/0x330 net/mac802154/main.c:229
->>   mcr20a_probe+0xaaa/0xcb1 drivers/net/ieee802154/mcr20a.c:1316
->>
->> ieee802154_if_add() allocates wpan_dev as netdev's private data, but not
->> init the list in struct wpan_dev. cfg802154_netdev_notifier_call() manage
->> the list when device register/unregister, and may lead to null-ptr-deref.
->>
->> Use INIT_LIST_HEAD() on it to initialize it correctly.
->>
->> Fixes: fcf39e6e88e9 ("ieee802154: add wpan_dev_list")
->> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-> 
-> Nice catch. :)
-> 
-> Acked-by: Alexander Aring <aahringo@redhat.com>
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
+Signed-off-by: Peter Kosyh <pkosyh@yandex.ru>
+---
+If this code is important for the operation of the hardware, then it would
+be nice to comment on it.
 
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
+ drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-regards
-Stefan Schmidt
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c
+index aaa004d4d6d0..09591a0b5a81 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c
+@@ -115,9 +115,6 @@ static u32 _rtl92s_phy_rf_serial_read(struct ieee80211_hw *hw,
+ 		retvalue = rtl_get_bbreg(hw, pphyreg->rf_rb,
+ 					 BLSSI_READBACK_DATA);
+ 
+-	retvalue = rtl_get_bbreg(hw, pphyreg->rf_rb,
+-				 BLSSI_READBACK_DATA);
+-
+ 	rtl_dbg(rtlpriv, COMP_RF, DBG_TRACE, "RFR-%d Addr[0x%x]=0x%x\n",
+ 		rfpath, pphyreg->rf_rb, retvalue);
+ 
+-- 
+2.38.1
+
