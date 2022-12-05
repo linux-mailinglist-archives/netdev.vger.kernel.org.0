@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44C61642BA1
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:26:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C928F642B9E
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbiLEP0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 10:26:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
+        id S230505AbiLEP0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 10:26:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231774AbiLEP0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:26:02 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8556C1F62D
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:23:21 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id s5so16190547edc.12
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 07:23:21 -0800 (PST)
+        with ESMTP id S232424AbiLEPZ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:25:57 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0771D12B
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:23:13 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id fc4so21682077ejc.12
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 07:23:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=VOFNZ9+P1OJPh5tiaCUdPCQ2B64/GXpoReTjh58BXUA=;
-        b=55Sc71SnzujnrauDT5SPpdhmSzPKOeUYThxWRQG40Z03RR1NjUgkU6mvlgbcfgiSOE
-         U658kJDcRTFfW1dxnenF4+1bySMz2MS6j6C18V/OGbWs3Mm5o3RA3GgDPN3kO2am0Bmw
-         GLXbzVFZsvyY8he0h3SgG91B6m8RQfEwatk5y/euyQzLw24mzuH0B2qTN/4/JyT1eIr+
-         9/HFoQbx0wdnKthCbYACrX5vjOw7eQEI85XitJ4S6q7tcU4WYh77ERuUPcl2VuqnVZBx
-         IHJpYfb3phCCLSgCcKpJUEfvqomb9D2Z2McGNFHOJcymVQCxg54K7Q7AlggvK/cM1ceq
-         GQ7Q==
+        bh=1fQOzQmdtJtJphV1WnJCoypGLDQ/TQpRvNat9pQyTmA=;
+        b=auPwTUmpjzATv6rnR72FLaYGmGZvyQ5Z61dWRmYm63PpPAZDZ99+9iyNSWMh3Vrk/A
+         W88RDAuOjVuHH8ddvR0h1F/PcyITXx+vxUXnAmCZwswnO52Cfqb+6Nb7VCG+7lXWXPqJ
+         dU/Fn8y08UfpcRQUC5xvb7TNz7aXZr63pKAaA8OMaI6zWLrRiDJ+ZwArF0lmVdzLGsn3
+         izfWzFCuaXECa9pAutJn7XRy+yDZV4mDOzt7ngf8XWhzGWaTLQh+r1/EZzkYpci7Uoof
+         5Eczfx64Go6vuVxna+h4r2wlzSdQiwGH+eOMmpIJNnNRldahrVle9AqSQmYSJVFa+/Fd
+         y4uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=VOFNZ9+P1OJPh5tiaCUdPCQ2B64/GXpoReTjh58BXUA=;
-        b=RA13m4a/F2u3FywVz+tQSNdr6ck1ZvcIIOkWrkEZMz3ILM//r5PYbCKy0TUMUaPNVM
-         1/xL2fiP7v3a2OWJ/I0nwM57rGvxolV5TGw49fTzkID2x0QfBHvq8BS1iOZrqHPbUs0e
-         k1s/vsonCxZsiHxwriNyJDvfJTRt5bMzDSkypVTb+1a07SlIqfQlLq1tfl1DZe95Uxon
-         BqHitgPO3sQwnW2pZv548DgVNk8qVt4cZOcHlOCQ+us0OHv2XJMtsXXurFs1L3ZNKi9a
-         j5Edw3zc8ToZgh1QknrpFrQDvC4Wl1YH9TJQCEVA2khRTwelWGXtXCYKcfAD8GWls4ND
-         BSBg==
-X-Gm-Message-State: ANoB5pnmyuprjSomtsMIM6lSlSfeFZcsvDyrd0yL4LBiEGT9V0lDJFLz
-        U0wWlukItojpydIJaL7APcQX5rbTalXIBKpsjB6jlA==
-X-Google-Smtp-Source: AA0mqf54ADbJ8KPq2J6okxVBZqOt7Gkkz8PBYQhBgNI60HjD4ibzK7ZPmSHQXSBbqpGfJ0YtWx1jFg==
-X-Received: by 2002:aa7:db47:0:b0:46b:1ed0:2702 with SMTP id n7-20020aa7db47000000b0046b1ed02702mr31550532edt.177.1670253790174;
-        Mon, 05 Dec 2022 07:23:10 -0800 (PST)
+        bh=1fQOzQmdtJtJphV1WnJCoypGLDQ/TQpRvNat9pQyTmA=;
+        b=qpfR3VGlCsjzt+aCgarFU1yTCZzAXEjOG8xvVvaQGihzg2L0GPlRQeJzraHqa3qx7p
+         BtwQO+KIAc4hGvevagzWeE7TaORmNdjqg6udlNmuQ4VPhW/g5dSEi811HC0yDg7Fn61q
+         OUn6OM/d/k2rb5TsMhfIyA32dL3+5i0EkGTUg3CuzTcORkd1F2lv18Hp7NEULYvsFQ1y
+         znepOZL5yI7eKrXI38Cgk8EEUhiTvkxNnp0L4yFsUU/PXG/u43k29cGrUB1aSr3nIjqO
+         Eu0xJHGRiEJY2apJYtKhplZ27s2BmzrfTO4gIzM2urvKcFMydQtwdyW9Dh9QgiX3Zc8z
+         sITg==
+X-Gm-Message-State: ANoB5pkcImPlxY9KYem910XdK0lwd8oWyGjnFZ8GwFp9QOjfBSUJW/pJ
+        xZteiShvqci+Wv6bvdt/Tc7OjtVLDyYW2urZl7GoDA==
+X-Google-Smtp-Source: AA0mqf7xFLWAKOTZAQA7+bM2vJp0uu8oSAkXzQ43ZzOngA/RmL2stXpBWf7aFoGGzbCUOE+l7l+J1g==
+X-Received: by 2002:a17:906:2851:b0:78d:88c7:c1bf with SMTP id s17-20020a170906285100b0078d88c7c1bfmr54349568ejc.299.1670253792222;
+        Mon, 05 Dec 2022 07:23:12 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id 13-20020a170906328d00b007c0abe46deasm5521165ejw.81.2022.12.05.07.23.08
+        by smtp.gmail.com with ESMTPSA id fi22-20020a1709073ad600b007c0d4d3a0c1sm3151745ejc.32.2022.12.05.07.23.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 07:23:09 -0800 (PST)
+        Mon, 05 Dec 2022 07:23:11 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -60,9 +60,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
         alexandre.belloni@bootlin.com, simon.horman@corigine.com,
         shannon.nelson@amd.com, brett.creeley@amd.com
-Subject: [patch net-next 5/8] mlx4: call devl_port_register/unregister() on registered instance
-Date:   Mon,  5 Dec 2022 16:22:54 +0100
-Message-Id: <20221205152257.454610-6-jiri@resnulli.us>
+Subject: [patch net-next 6/8] mlx5: call devl_port_register/unregister() on registered instance
+Date:   Mon,  5 Dec 2022 16:22:55 +0100
+Message-Id: <20221205152257.454610-7-jiri@resnulli.us>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221205152257.454610-1-jiri@resnulli.us>
 References: <20221205152257.454610-1-jiri@resnulli.us>
@@ -87,163 +87,132 @@ Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 RFC->v1:
 - shortened patch subject
 ---
- drivers/net/ethernet/mellanox/mlx4/main.c | 60 +++++++++++++----------
- 1 file changed, 33 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c   | 10 ++++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/main.c  | 17 ++++++++++-------
+ .../ethernet/mellanox/mlx5/core/sf/dev/driver.c |  9 +++++++++
+ 3 files changed, 27 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index 3ae246391549..14f1c76a50eb 100644
---- a/drivers/net/ethernet/mellanox/mlx4/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -3730,14 +3730,13 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+index 0571e40c6ee5..dd3801198898 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+@@ -444,11 +444,14 @@ int mlx5_register_device(struct mlx5_core_dev *dev)
+ {
+ 	int ret;
+ 
+-	devl_assert_locked(priv_to_devlink(dev));
++	devl_lock(priv_to_devlink(dev));
++	mutex_lock(&dev->intf_state_mutex);
+ 	mutex_lock(&mlx5_intf_mutex);
+ 	dev->priv.flags &= ~MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV;
+ 	ret = mlx5_rescan_drivers_locked(dev);
+ 	mutex_unlock(&mlx5_intf_mutex);
++	mutex_unlock(&dev->intf_state_mutex);
++	devl_unlock(priv_to_devlink(dev));
+ 	if (ret)
+ 		mlx5_unregister_device(dev);
+ 
+@@ -457,11 +460,14 @@ int mlx5_register_device(struct mlx5_core_dev *dev)
+ 
+ void mlx5_unregister_device(struct mlx5_core_dev *dev)
+ {
+-	devl_assert_locked(priv_to_devlink(dev));
++	devl_lock(priv_to_devlink(dev));
++	mutex_lock(&dev->intf_state_mutex);
+ 	mutex_lock(&mlx5_intf_mutex);
+ 	dev->priv.flags = MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV;
+ 	mlx5_rescan_drivers_locked(dev);
+ 	mutex_unlock(&mlx5_intf_mutex);
++	mutex_unlock(&dev->intf_state_mutex);
++	devl_unlock(priv_to_devlink(dev));
  }
  
- static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
--			   struct mlx4_priv *priv)
-+			   unsigned int *total_vfs,
-+			   int *nvfs, struct mlx4_priv *priv)
- {
- 	int err;
--	int nvfs[MLX4_MAX_PORTS + 1] = {0, 0, 0};
- 	int prb_vf[MLX4_MAX_PORTS + 1] = {0, 0, 0};
- 	const int param_map[MLX4_MAX_PORTS + 1][MLX4_MAX_PORTS + 1] = {
- 		{2, 0, 0}, {0, 1, 2}, {0, 1, 2} };
--	unsigned total_vfs = 0;
- 	unsigned int i;
- 
- 	pr_info(DRV_NAME ": Initializing %s\n", pci_name(pdev));
-@@ -3752,8 +3751,8 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
- 	 * per port, we must limit the number of VFs to 63 (since their are
- 	 * 128 MACs)
- 	 */
--	for (i = 0; i < ARRAY_SIZE(nvfs) && i < num_vfs_argc;
--	     total_vfs += nvfs[param_map[num_vfs_argc - 1][i]], i++) {
-+	for (i = 0; i <= MLX4_MAX_PORTS && i < num_vfs_argc;
-+	     *total_vfs += nvfs[param_map[num_vfs_argc - 1][i]], i++) {
- 		nvfs[param_map[num_vfs_argc - 1][i]] = num_vfs[i];
- 		if (nvfs[i] < 0) {
- 			dev_err(&pdev->dev, "num_vfs module parameter cannot be negative\n");
-@@ -3770,10 +3769,10 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
- 			goto err_disable_pdev;
- 		}
- 	}
--	if (total_vfs > MLX4_MAX_NUM_VF) {
-+	if (*total_vfs > MLX4_MAX_NUM_VF) {
- 		dev_err(&pdev->dev,
- 			"Requested more VF's (%d) than allowed by hw (%d)\n",
--			total_vfs, MLX4_MAX_NUM_VF);
-+			*total_vfs, MLX4_MAX_NUM_VF);
- 		err = -EINVAL;
- 		goto err_disable_pdev;
- 	}
-@@ -3828,14 +3827,14 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
- 		/* When acting as pf, we normally skip vfs unless explicitly
- 		 * requested to probe them.
- 		 */
--		if (total_vfs) {
-+		if (*total_vfs) {
- 			unsigned vfs_offset = 0;
- 
--			for (i = 0; i < ARRAY_SIZE(nvfs) &&
-+			for (i = 0; i <= MLX4_MAX_PORTS &&
- 			     vfs_offset + nvfs[i] < extended_func_num(pdev);
- 			     vfs_offset += nvfs[i], i++)
- 				;
--			if (i == ARRAY_SIZE(nvfs)) {
-+			if (i == MLX4_MAX_PORTS + 1) {
- 				err = -ENODEV;
- 				goto err_release_regions;
- 			}
-@@ -3857,15 +3856,8 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
+ static int add_drivers(struct mlx5_core_dev *dev)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 7f5db13e3550..f6f37289b49d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1392,16 +1392,10 @@ int mlx5_init_one(struct mlx5_core_dev *dev)
  	if (err)
- 		goto err_crdump;
+ 		goto err_devlink_reg;
  
--	err = mlx4_load_one(pdev, pci_dev_data, total_vfs, nvfs, priv, 0);
+-	err = mlx5_register_device(dev);
 -	if (err)
--		goto err_catas;
+-		goto err_register;
 -
+ 	mutex_unlock(&dev->intf_state_mutex);
+ 	devl_unlock(devlink);
  	return 0;
  
--err_catas:
--	mlx4_catas_end(&priv->dev);
--
- err_crdump:
- 	mlx4_crdump_end(&priv->dev);
- 
-@@ -3994,6 +3986,8 @@ static const struct devlink_ops mlx4_devlink_ops = {
- 
- static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
- {
-+	int nvfs[MLX4_MAX_PORTS + 1] = {0, 0, 0};
-+	unsigned int total_vfs = 0;
- 	struct devlink *devlink;
- 	struct mlx4_priv *priv;
- 	struct mlx4_dev *dev;
-@@ -4024,9 +4018,9 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
- 	ret = devlink_params_register(devlink, mlx4_devlink_params,
- 				      ARRAY_SIZE(mlx4_devlink_params));
- 	if (ret)
--		goto err_devlink_unregister;
-+		goto err_persist_free;
- 	mlx4_devlink_set_params_init_values(devlink);
--	ret =  __mlx4_init_one(pdev, id->driver_data, priv);
-+	ret =  __mlx4_init_one(pdev, id->driver_data, &total_vfs, nvfs, priv);
- 	if (ret)
- 		goto err_params_unregister;
- 
-@@ -4034,12 +4028,21 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
- 	devlink_set_features(devlink, DEVLINK_F_RELOAD);
- 	devl_unlock(devlink);
- 	devlink_register(devlink);
-+	devl_lock(devlink);
-+	ret = mlx4_load_one(pdev, priv->pci_dev_data, total_vfs, nvfs, priv, 0);
-+	devl_unlock(devlink);
-+	if (ret)
-+		goto err_devlink_unregister;
-+
- 	return 0;
- 
-+err_devlink_unregister:
-+	devlink_unregister(devlink);
-+	devl_lock(devlink);
- err_params_unregister:
- 	devlink_params_unregister(devlink, mlx4_devlink_params,
- 				  ARRAY_SIZE(mlx4_devlink_params));
--err_devlink_unregister:
-+err_persist_free:
- 	kfree(dev->persist);
- err_devlink_free:
- 	devl_unlock(devlink);
-@@ -4146,6 +4149,16 @@ static void mlx4_remove_one(struct pci_dev *pdev)
- 	struct devlink *devlink = priv_to_devlink(priv);
- 	int active_vfs = 0;
- 
-+	/* device marked to be under deletion running now without the lock
-+	 * letting other tasks to be terminated
-+	 */
-+	devl_lock(devlink);
-+	if (persist->interface_state & MLX4_INTERFACE_STATE_UP)
-+		mlx4_unload_one(pdev);
-+	else
-+		mlx4_info(dev, "%s: interface is down\n", __func__);
-+	devl_unlock(devlink);
-+
- 	devlink_unregister(devlink);
- 
+-err_register:
+-	mlx5_devlink_unregister(priv_to_devlink(dev));
+ err_devlink_reg:
+ 	clear_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state);
+ 	mlx5_unload(dev);
+@@ -1423,7 +1417,6 @@ void mlx5_uninit_one(struct mlx5_core_dev *dev)
  	devl_lock(devlink);
-@@ -4165,13 +4178,6 @@ static void mlx4_remove_one(struct pci_dev *pdev)
- 		}
- 	}
+ 	mutex_lock(&dev->intf_state_mutex);
  
--	/* device marked to be under deletion running now without the lock
--	 * letting other tasks to be terminated
--	 */
--	if (persist->interface_state & MLX4_INTERFACE_STATE_UP)
--		mlx4_unload_one(pdev);
--	else
--		mlx4_info(dev, "%s: interface is down\n", __func__);
- 	mlx4_catas_end(dev);
- 	mlx4_crdump_end(dev);
- 	if (dev->flags & MLX4_FLAG_SRIOV && !active_vfs) {
+-	mlx5_unregister_device(dev);
+ 	mlx5_devlink_unregister(priv_to_devlink(dev));
+ 
+ 	if (!test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state)) {
+@@ -1747,8 +1740,17 @@ static int probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	pci_save_state(pdev);
+ 	devlink_register(devlink);
++	err = mlx5_register_device(dev);
++	if (err) {
++		mlx5_core_err(dev, "mlx5_register_device failed with error code %d\n",
++			      err);
++		goto err_register_device;
++	}
++
+ 	return 0;
+ 
++err_register_device:
++	devlink_unregister(devlink);
+ err_init_one:
+ 	mlx5_pci_close(dev);
+ pci_init_err:
+@@ -1771,6 +1773,7 @@ static void remove_one(struct pci_dev *pdev)
+ 	 */
+ 	mlx5_drain_fw_reset(dev);
+ 	set_bit(MLX5_BREAK_FW_WAIT, &dev->intf_state);
++	mlx5_unregister_device(dev);
+ 	devlink_unregister(devlink);
+ 	mlx5_sriov_disable(pdev);
+ 	mlx5_crdump_disable(dev);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+index 7b4783ce213e..90fcb30f7481 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+@@ -46,9 +46,17 @@ static int mlx5_sf_dev_probe(struct auxiliary_device *adev, const struct auxilia
+ 		mlx5_core_warn(mdev, "mlx5_init_one err=%d\n", err);
+ 		goto init_one_err;
+ 	}
++
+ 	devlink_register(devlink);
++
++	err = mlx5_register_device(mdev);
++	if (err)
++		goto register_device_err;
++
+ 	return 0;
+ 
++register_device_err:
++	devlink_unregister(devlink);
+ init_one_err:
+ 	iounmap(mdev->iseg);
+ remap_err:
+@@ -63,6 +71,7 @@ static void mlx5_sf_dev_remove(struct auxiliary_device *adev)
+ 	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
+ 	struct devlink *devlink = priv_to_devlink(sf_dev->mdev);
+ 
++	mlx5_unregister_device(sf_dev->mdev);
+ 	devlink_unregister(devlink);
+ 	mlx5_uninit_one(sf_dev->mdev);
+ 	iounmap(sf_dev->mdev->iseg);
 -- 
 2.37.3
 
