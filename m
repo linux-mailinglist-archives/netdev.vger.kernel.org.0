@@ -2,52 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B283642732
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 12:10:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDE9464274F
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 12:15:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231453AbiLELKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 06:10:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34602 "EHLO
+        id S230209AbiLELPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 06:15:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231475AbiLELK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 06:10:27 -0500
+        with ESMTP id S230000AbiLELPK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 06:15:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC26C17412;
-        Mon,  5 Dec 2022 03:10:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89F9E0F8
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 03:15:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63501B80ED6;
-        Mon,  5 Dec 2022 11:10:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E85AC433B5;
-        Mon,  5 Dec 2022 11:10:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74878B80ED0
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 11:15:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADE52C433C1;
+        Mon,  5 Dec 2022 11:15:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670238623;
-        bh=SGrY2VbBiY8EvXHZCofJcL9wewiXKh5c/vxkaEVzX0o=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=doUfkrL/n+6merTwuFKH3n4knBMFUFaP9che/oZyBEt00wqNckzQkyI9csUTHc3xd
-         WUvBq+MegNEY7byrutOkETwXM4uNKYbvUjLKJOLXib3k0H3MheYaNgfJBJqtH8Jf2N
-         pC01rVKd9cG+vIrmtdiaLiuzb8klDZUUMy3AnehmTybiKhWGTajfngZkwOwZ9RPUd2
-         k7RZ14Knge7ckl3tkpjcCBOt7uw8fD2+Aufpq6vQvRZ5Ib/ADIZfWQavWcGDf+ONKk
-         zLxnFLxKBFK9VzYAfGGN3SUbficDAHg6L4W2zKf5na/ypRideEGqOZpszDVUzNhoZn
-         +NjafdEjsnvdg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1C65BC395E5;
-        Mon,  5 Dec 2022 11:10:23 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1670238907;
+        bh=riHuklEKAwmEh3x95+Jgzycyd0+Q9KNqoZ6sYFQILDI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LeJsa7NFeKNIQ8uPAOszmfSI7d0Zg5FsZVjr06AvusaoWb0XXm9bgUB87r0xpq7tm
+         UuaLz1Gy8yEUUOCwDOlNYgsXVnNxgLeF6ptuAwfHKdEhz+nJXFTs6C4snShgI7oKEK
+         mZeRkR/QI4zs/tkODyBAbkKqi7PdNnBokuQ70xliKtOOIXN5u2cEgbKn5pse5vsa5T
+         I2qD4U6ZZFfDNOygWOaS4OiatLRLvzwIdviBA5YwWWK24PdAC1us9XYIDTRK5xCPfw
+         pXwfi09jgGwmqJSEBw+O2bFIEa4b1kkMi2u4XQkSg+VqP6e4F0Gihcn4A2LUl9De9O
+         O+9JM7LHV43TA==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        leon@kernel.org, sujuan.chen@mediatek.com
+Subject: [PATCH v2 net-next] net: ethernet: mtk_wed: fix possible deadlock if mtk_wed_wo_init fails
+Date:   Mon,  5 Dec 2022 12:14:41 +0100
+Message-Id: <5a29aae6c4a26e807844210d4ddac7950ca5f63d.1670238731.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/36] rxrpc: Increasing SACK size and moving away
- from softirq, parts 2 & 3
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167023862311.18576.967367568555185874.git-patchwork-notify@kernel.org>
-Date:   Mon, 05 Dec 2022 11:10:23 +0000
-References: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
-In-Reply-To: <166994010342.1732290.13771061038178613124.stgit@warthog.procyon.org.uk>
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
-        marc.dionne@auristor.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,99 +53,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Introduce __mtk_wed_detach() in order to avoid a possible deadlock in
+mtk_wed_attach routine if mtk_wed_wo_init fails.
+Check wo pointer is properly allocated before running mtk_wed_wo_reset()
+and mtk_wed_wo_deinit() in __mtk_wed_detach routine.
+Honor mtk_wed_mcu_send_msg return value in mtk_wed_wo_reset().
 
-This series was applied to netdev/net-next.git (master)
-by David Howells <dhowells@redhat.com>:
+Fixes: 4c5de09eb0d0 ("net: ethernet: mtk_wed: add configure wed wo support")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+Changes since v1:
+- move wo pointer checks in __mtk_wed_detach()
+---
+ drivers/net/ethernet/mediatek/mtk_wed.c     | 30 ++++++++++++++-------
+ drivers/net/ethernet/mediatek/mtk_wed_mcu.c |  3 +++
+ 2 files changed, 23 insertions(+), 10 deletions(-)
 
-On Fri, 02 Dec 2022 00:15:03 +0000 you wrote:
-> Here are the second and third parts of patches in the process of moving
-> rxrpc from doing a lot of its stuff in softirq context to doing it in an
-> I/O thread in process context and thereby making it easier to support a
-> larger SACK table.
-> 
-> The full description is in the description for the first part[1] which is
-> already in net-next.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,01/36] rxrpc: Fix checker warning
-    https://git.kernel.org/netdev/net-next/c/84924aac08a4
-  - [net-next,02/36] rxrpc: Implement an in-kernel rxperf server for testing purposes
-    https://git.kernel.org/netdev/net-next/c/75bfdbf2fca3
-  - [net-next,03/36] rxrpc: Fix call leak
-    https://git.kernel.org/netdev/net-next/c/49df54a6b295
-  - [net-next,04/36] rxrpc: Remove decl for rxrpc_kernel_call_is_complete()
-    https://git.kernel.org/netdev/net-next/c/2ed83ed2be1b
-  - [net-next,05/36] rxrpc: Remove handling of duplicate packets in recvmsg_queue
-    https://git.kernel.org/netdev/net-next/c/30efa3ce109d
-  - [net-next,06/36] rxrpc: Remove the [k_]proto() debugging macros
-    https://git.kernel.org/netdev/net-next/c/2ebdb26e6abd
-  - [net-next,07/36] rxrpc: Remove the [_k]net() debugging macros
-    https://git.kernel.org/netdev/net-next/c/e969c92ce597
-  - [net-next,08/36] rxrpc: Drop rxrpc_conn_parameters from rxrpc_connection and rxrpc_bundle
-    https://git.kernel.org/netdev/net-next/c/2cc800863c49
-  - [net-next,09/36] rxrpc: Extract the code from a received ABORT packet much earlier
-    https://git.kernel.org/netdev/net-next/c/f14febd8df5a
-  - [net-next,10/36] rxrpc: trace: Don't use __builtin_return_address for rxrpc_local tracing
-    https://git.kernel.org/netdev/net-next/c/0fde882fc9ee
-  - [net-next,11/36] rxrpc: trace: Don't use __builtin_return_address for rxrpc_peer tracing
-    https://git.kernel.org/netdev/net-next/c/47c810a79844
-  - [net-next,12/36] rxrpc: trace: Don't use __builtin_return_address for rxrpc_conn tracing
-    https://git.kernel.org/netdev/net-next/c/7fa25105b2d3
-  - [net-next,13/36] rxrpc: trace: Don't use __builtin_return_address for rxrpc_call tracing
-    https://git.kernel.org/netdev/net-next/c/cb0fc0c9722c
-  - [net-next,14/36] rxrpc: Trace rxrpc_bundle refcount
-    https://git.kernel.org/netdev/net-next/c/fa3492abb64b
-  - [net-next,15/36] rxrpc: trace: Don't use __builtin_return_address for sk_buff tracing
-    https://git.kernel.org/netdev/net-next/c/9a36a6bc22ca
-  - [net-next,16/36] rxrpc: Don't hold a ref for call timer or workqueue
-    https://git.kernel.org/netdev/net-next/c/3feda9d69c83
-  - [net-next,17/36] rxrpc: Don't hold a ref for connection workqueue
-    https://git.kernel.org/netdev/net-next/c/3cec055c5695
-  - [net-next,18/36] rxrpc: Split the receive code
-    https://git.kernel.org/netdev/net-next/c/96b2d69b43a0
-  - [net-next,19/36] rxrpc: Create a per-local endpoint receive queue and I/O thread
-    https://git.kernel.org/netdev/net-next/c/a275da62e8c1
-  - [net-next,20/36] rxrpc: Move packet reception processing into I/O thread
-    https://git.kernel.org/netdev/net-next/c/446b3e14525b
-  - [net-next,21/36] rxrpc: Move error processing into the local endpoint I/O thread
-    https://git.kernel.org/netdev/net-next/c/ff7348254e70
-  - [net-next,22/36] rxrpc: Remove call->input_lock
-    https://git.kernel.org/netdev/net-next/c/4041a8ff653e
-  - [net-next,23/36] rxrpc: Don't use sk->sk_receive_queue.lock to guard socket state changes
-    https://git.kernel.org/netdev/net-next/c/81f2e8adc0fd
-  - [net-next,24/36] rxrpc: Implement a mechanism to send an event notification to a call
-    https://git.kernel.org/netdev/net-next/c/15f661dc95da
-  - [net-next,25/36] rxrpc: Copy client call parameters into rxrpc_call earlier
-    https://git.kernel.org/netdev/net-next/c/f3441d4125fc
-  - [net-next,26/36] rxrpc: Move DATA transmission into call processor work item
-    https://git.kernel.org/netdev/net-next/c/cf37b5987508
-  - [net-next,27/36] rxrpc: Remove RCU from peer->error_targets list
-    https://git.kernel.org/netdev/net-next/c/29fb4ec385f1
-  - [net-next,28/36] rxrpc: Simplify skbuff accounting in receive path
-    https://git.kernel.org/netdev/net-next/c/2d1faf7a0ca3
-  - [net-next,29/36] rxrpc: Reduce the use of RCU in packet input
-    https://git.kernel.org/netdev/net-next/c/cd21effb0552
-  - [net-next,30/36] rxrpc: Extract the peer address from an incoming packet earlier
-    https://git.kernel.org/netdev/net-next/c/393a2a2007d1
-  - [net-next,31/36] rxrpc: Make the I/O thread take over the call and local processor work
-    https://git.kernel.org/netdev/net-next/c/5e6ef4f1017c
-  - [net-next,32/36] rxrpc: Remove the _bh annotation from all the spinlocks
-    https://git.kernel.org/netdev/net-next/c/3dd9c8b5f09f
-  - [net-next,33/36] rxrpc: Trace/count transmission underflows and cwnd resets
-    https://git.kernel.org/netdev/net-next/c/32cf8edb079a
-  - [net-next,34/36] rxrpc: Move the cwnd degradation after transmitting packets
-    https://git.kernel.org/netdev/net-next/c/5086d9a9dfec
-  - [net-next,35/36] rxrpc: Fold __rxrpc_unuse_local() into rxrpc_unuse_local()
-    https://git.kernel.org/netdev/net-next/c/a2cf3264f331
-  - [net-next,36/36] rxrpc: Transmit ACKs at the point of generation
-    https://git.kernel.org/netdev/net-next/c/b0346843b107
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
+index d041615b2bac..2ce9fbb1c66d 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed.c
+@@ -174,9 +174,10 @@ mtk_wed_wo_reset(struct mtk_wed_device *dev)
+ 	mtk_wdma_tx_reset(dev);
+ 	mtk_wed_reset(dev, MTK_WED_RESET_WED);
+ 
+-	mtk_wed_mcu_send_msg(wo, MTK_WED_MODULE_ID_WO,
+-			     MTK_WED_WO_CMD_CHANGE_STATE, &state,
+-			     sizeof(state), false);
++	if (mtk_wed_mcu_send_msg(wo, MTK_WED_MODULE_ID_WO,
++				 MTK_WED_WO_CMD_CHANGE_STATE, &state,
++				 sizeof(state), false))
++		return;
+ 
+ 	if (readx_poll_timeout(mtk_wed_wo_read_status, dev, val,
+ 			       val == MTK_WED_WOIF_DISABLE_DONE,
+@@ -576,12 +577,10 @@ mtk_wed_deinit(struct mtk_wed_device *dev)
+ }
+ 
+ static void
+-mtk_wed_detach(struct mtk_wed_device *dev)
++__mtk_wed_detach(struct mtk_wed_device *dev)
+ {
+ 	struct mtk_wed_hw *hw = dev->hw;
+ 
+-	mutex_lock(&hw_lock);
+-
+ 	mtk_wed_deinit(dev);
+ 
+ 	mtk_wdma_rx_reset(dev);
+@@ -590,9 +589,11 @@ mtk_wed_detach(struct mtk_wed_device *dev)
+ 	mtk_wed_free_tx_rings(dev);
+ 
+ 	if (mtk_wed_get_rx_capa(dev)) {
+-		mtk_wed_wo_reset(dev);
++		if (hw->wed_wo)
++			mtk_wed_wo_reset(dev);
+ 		mtk_wed_free_rx_rings(dev);
+-		mtk_wed_wo_deinit(hw);
++		if (hw->wed_wo)
++			mtk_wed_wo_deinit(hw);
+ 	}
+ 
+ 	if (dev->wlan.bus_type == MTK_WED_BUS_PCIE) {
+@@ -612,6 +613,13 @@ mtk_wed_detach(struct mtk_wed_device *dev)
+ 	module_put(THIS_MODULE);
+ 
+ 	hw->wed_dev = NULL;
++}
++
++static void
++mtk_wed_detach(struct mtk_wed_device *dev)
++{
++	mutex_lock(&hw_lock);
++	__mtk_wed_detach(dev);
+ 	mutex_unlock(&hw_lock);
+ }
+ 
+@@ -1490,8 +1498,10 @@ mtk_wed_attach(struct mtk_wed_device *dev)
+ 		ret = mtk_wed_wo_init(hw);
+ 	}
+ out:
+-	if (ret)
+-		mtk_wed_detach(dev);
++	if (ret) {
++		dev_err(dev->hw->dev, "failed to attach wed device\n");
++		__mtk_wed_detach(dev);
++	}
+ unlock:
+ 	mutex_unlock(&hw_lock);
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+index f9539e6233c9..3dd02889d972 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+@@ -207,6 +207,9 @@ int mtk_wed_mcu_msg_update(struct mtk_wed_device *dev, int id, void *data,
+ 	if (dev->hw->version == 1)
+ 		return 0;
+ 
++	if (!wo)
++		return -ENODEV;
++
+ 	return mtk_wed_mcu_send_msg(wo, MTK_WED_MODULE_ID_WO, id, data, len,
+ 				    true);
+ }
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.38.1
 
