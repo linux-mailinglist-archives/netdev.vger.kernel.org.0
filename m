@@ -2,210 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 352FF642352
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:04:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F40CA642353
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:05:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231573AbiLEHEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 02:04:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
+        id S231551AbiLEHFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 02:05:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbiLEHEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:04:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D23DC767
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 23:04:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6C8860F85
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:04:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67690C433C1;
-        Mon,  5 Dec 2022 07:04:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670223869;
-        bh=ew6SME2iZnd4VGhKxcng93VncjtjPCH9MqEPTJE39Bw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UfGk7p2SinwFxp843mB6ichZNpiHXEGiMfM5vIWo/x4hZ3xSWfIU/7L7e+Wc5t54v
-         WzeidTI/eQ3yl+qpQOWZog+iVC1BH9dO9+KJKdvZxHHGzcx91VS8r4+qE7hhrfvyYA
-         iQJyoH3mf1kqaH27vL4txGFFLppikW6eQtNd5DYTkZlY6ctQY+wKlgXKsLXeAUqgS2
-         5v+/RvEUCIIsiscejbC632/MOXcx5uVh4exwW7J+q6ioyCgeomjefHuGJTDRAlw47S
-         AB0R8SNXTOSDAiS6urStCoAOYFSOAPM8m8lOr9mT3408ONGOLfLNgwphn3ZE74M8Qt
-         kt4tNFHwpHKvQ==
-Date:   Mon, 5 Dec 2022 09:04:24 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Nir Levy <bhr166@gmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] atm: Fix use-after-free bug in atm_dev_register()
-Message-ID: <Y42X+OMcsHiht/jv@unreal>
-References: <20221203110924.7759-1-bhr166@gmail.com>
+        with ESMTP id S231365AbiLEHFj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:05:39 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF391BC93;
+        Sun,  4 Dec 2022 23:05:38 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2B4NRLY5032413;
+        Sun, 4 Dec 2022 23:05:29 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=J51TjlbGZxngqrd64GNJBARAUG5iCA1resE94iExrZI=;
+ b=graz+9WY4V4jVIBgF8J13Wbqua4vlwGjdfyen6dUjHuUosJGyg9cbkQDbq0z7bR6j+2o
+ tnO+/Rn+nJRQ8/Fti8dQKLVz6Pasm3C6GAlwJzvcsc+dghhjRcVybzdMGPyiJVuviusi
+ GqH0HMWVD5cI8JeMPSXr1rNYu/c8qHaJM2CmWmRZsWyNNqZ43uxSQE43rAngWtEj7+7b
+ uZijmlZf0U5DuCGDkdcLuvW5Qosk/NIAFtrRIXr0nBhFrm7m0xuw/iy7KhiyuAUbITNH
+ 8B/2H+khYIfE5dGAuKxx1R4+FtSHQ/qWXQWmdX/VAhpKJVClnizt1fYskoIe/qy3hdtu dg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3m84pumnvr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 04 Dec 2022 23:05:29 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 4 Dec
+ 2022 23:05:25 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 4 Dec 2022 23:05:25 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 7EE803F707A;
+        Sun,  4 Dec 2022 23:05:22 -0800 (PST)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>
+Subject: [net-next Patch v4 0/4] CN10KB MAC block support
+Date:   Mon, 5 Dec 2022 12:35:17 +0530
+Message-ID: <20221205070521.21860-1-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221203110924.7759-1-bhr166@gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: TAQatKYat40nPoe5_SEq1ZpJkPPOeftT
+X-Proofpoint-GUID: TAQatKYat40nPoe5_SEq1ZpJkPPOeftT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-05_01,2022-12-01_01,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 03, 2022 at 01:09:24PM +0200, Nir Levy wrote:
-> When device_register() return failed in atm_register_sysfs,
-> the program will return to atm_dev_register and will kfree
-> the device. As the comment of device_register() says,
-> put_device() needs to be used to give up the reference
-> in the error path. Using kfree instead triggers a UAF,
-> as shown by the following KASAN report, obtained by causing
-> device_register() to fail. This patch calls put_device instead
-> of kfree when atm_register_sysfs has failed, and call kfree
-> only when atm_proc_dev_register has failed.
-> 
-> KASAN report details as below:
-> 
-> [   94.341664] BUG: KASAN: use-after-free in sysfs_kf_seq_show+0x306/0x440
-> [   94.341674] Read of size 8 at addr ffff88819a8a30e8 by task systemd-udevd/484
-> 
-> [   94.341680] CPU: 3 PID: 484 Comm: systemd-udevd Tainted: G            E      6.1.0-rc1+ #1
-> [   94.341684] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 02/27/2020
-> [   94.341703] Call Trace:
-> [   94.341705]  <TASK>
-> [   94.341707]  dump_stack_lvl+0x49/0x63
-> [   94.341713]  print_report+0x177/0x46e
-> [   94.341717]  ? kasan_complete_mode_report_info+0x7c/0x210
-> [   94.341720]  ? sysfs_kf_seq_show+0x306/0x440
-> [   94.341753]  kasan_report+0xb0/0x140
-> [   94.341757]  ? sysfs_kf_seq_show+0x306/0x440
-> [   94.341760]  __asan_report_load8_noabort+0x14/0x20
-> [   94.341763]  sysfs_kf_seq_show+0x306/0x440
-> [   94.341766]  kernfs_seq_show+0x145/0x1b0
-> [   94.341769]  seq_read_iter+0x408/0x1080
-> [   94.341774]  kernfs_fop_read_iter+0x3d5/0x540
-> [   94.341794]  vfs_read+0x542/0x800
-> [   94.341797]  ? kernel_read+0x130/0x130
-> [   94.341800]  ? __kasan_check_read+0x11/0x20
-> [   94.341824]  ? get_nth_filter.part.0+0x200/0x200
-> [   94.341828]  ksys_read+0x116/0x220
-> [   94.341831]  ? __ia32_sys_pwrite64+0x1f0/0x1f0
-> [   94.341849]  ? __secure_computing+0x17c/0x2d0
-> [   94.341852]  __x64_sys_read+0x72/0xb0
-> [   94.341875]  do_syscall_64+0x59/0x90
-> [   94.341878]  ? exc_page_fault+0x72/0xf0
-> [   94.341881]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> [   94.341885] RIP: 0033:0x7fc391f14992
-> [   94.341888] Code: c0 e9 b2 fe ff ff 50 48 8d 3d fa b2 0c 00 e8 c5 1d 02 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24
-> [   94.341891] RSP: 002b:00007ffe33fed818 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-> [   94.341896] RAX: ffffffffffffffda RBX: 0000000000001018 RCX: 00007fc391f14992
-> [   94.341898] RDX: 0000000000001018 RSI: 0000558a696b0880 RDI: 000000000000000e
-> [   94.341900] RBP: 0000558a696b0880 R08: 0000000000000000 R09: 0000558a696b0880
-> [   94.341902] R10: 00007fc39201a300 R11: 0000000000000246 R12: 000000000000000e
-> [   94.341904] R13: 0000000000001017 R14: 0000000000000002 R15: 00007ffe33fed840
-> [   94.341908]  </TASK>
-> 
-> [   94.341911] Allocated by task 2613:
-> [   94.341914]  kasan_save_stack+0x26/0x50
-> [   94.341932]  kasan_set_track+0x25/0x40
-> [   94.341934]  kasan_save_alloc_info+0x1e/0x30
-> [   94.341936]  __kasan_kmalloc+0xb4/0xc0
-> [   94.341938]  kmalloc_trace+0x4a/0xb0
-> [   94.341941]  atm_dev_register+0x5d/0x700 [atm]
-> [   94.341949]  atmtcp_create+0x77/0x1f0 [atmtcp]
-> [   94.341953]  atmtcp_ioctl+0x12d/0xb9f [atmtcp]
-> [   94.341957]  do_vcc_ioctl+0xfe/0x640 [atm]
-> [   94.341962]  vcc_ioctl+0x10/0x20 [atm]
-> [   94.341968]  svc_ioctl+0x587/0x6c0 [atm]
-> [   94.341973]  sock_do_ioctl+0xd7/0x1e0
-> [   94.341977]  sock_ioctl+0x1b5/0x560
-> [   94.341979]  __x64_sys_ioctl+0x132/0x1b0
-> [   94.341981]  do_syscall_64+0x59/0x90
-> [   94.341983]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> [   94.341986] Freed by task 2613:
-> [   94.341988]  kasan_save_stack+0x26/0x50
-> [   94.341991]  kasan_set_track+0x25/0x40
-> [   94.341993]  kasan_save_free_info+0x2e/0x50
-> [   94.341995]  ____kasan_slab_free+0x174/0x1e0
-> [   94.341997]  __kasan_slab_free+0x12/0x20
-> [   94.342000]  slab_free_freelist_hook+0xd0/0x1a0
-> [   94.342002]  __kmem_cache_free+0x193/0x2c0
-> [   94.342005]  kfree+0x79/0x120
-> [   94.342007]  atm_dev_register.cold+0x46/0x64 [atm]
-> [   94.342013]  atmtcp_create+0x77/0x1f0 [atmtcp]
-> [   94.342016]  atmtcp_ioctl+0x12d/0xb9f [atmtcp]
-> [   94.342020]  do_vcc_ioctl+0xfe/0x640 [atm]
-> [   94.342077]  vcc_ioctl+0x10/0x20 [atm]
-> [   94.342083]  svc_ioctl+0x587/0x6c0 [atm]
-> [   94.342088]  sock_do_ioctl+0xd7/0x1e0
-> [   94.342091]  sock_ioctl+0x1b5/0x560
-> [   94.342093]  __x64_sys_ioctl+0x132/0x1b0
-> [   94.342095]  do_syscall_64+0x59/0x90
-> [   94.342098]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> [   94.342102] The buggy address belongs to the object at ffff88819a8a3000 which belongs to the cache kmalloc-1k of size 1024
-> [   94.342105] The buggy address is located 232 bytes inside of 1024-byte region [ffff88819a8a3000, ffff88819a8a3400)
-> 
-> [   94.342109] The buggy address belongs to the physical page:
-> [   94.342111] page:0000000099993f0a refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x19a8a0
-> [   94.342114] head:0000000099993f0a order:3 compound_mapcount:0 compound_pincount:0
-> [   94.342116] flags: 0x17ffffc0010200(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
-> [   94.342136] raw: 0017ffffc0010200 dead000000000100 dead000000000122 ffff888100042dc0
-> [   94.342138] raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
-> [   94.342139] page dumped because: kasan: bad access detected
-> 
-> [   94.342141] Memory state around the buggy address:
-> [   94.342143]  ffff88819a8a2f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> [   94.342145]  ffff88819a8a3000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [   94.342147] >ffff88819a8a3080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [   94.342148]                                                           ^
-> [   94.342150]  ffff88819a8a3100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [   94.342152]  ffff88819a8a3180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> 
-> Signed-off-by: Nir Levy <bhr166@gmail.com>
-> ---
->  net/atm/resources.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+OcteonTx2's next gen platform the CN10KB has RPM_USX MAC which has a
+different serdes when compared to RPM MAC. Though the underlying
+HW is different, the CSR interface has been designed largely inline
+with RPM MAC, with few exceptions though. So we are using the same
+CGX driver for RPM_USX MAC as well and will have a different set of APIs
+for RPM_USX where ever necessary.
 
-Please add target in patch title - {PATCH net] ...
-There is a need to add Fixes line too.
+The RPM and RPM_USX blocks support a different number of LMACS.
+RPM_USX support 8 LMACS per MAC block whereas legacy RPM supports only 4
+LMACS per MAC. with this RPM_USX support double the number of DMAC filters
+and fifo size.
 
-> 
-> diff --git a/net/atm/resources.c b/net/atm/resources.c
-> index 2b2d33eeaf20..9ec07d66783b 100644
-> --- a/net/atm/resources.c
-> +++ b/net/atm/resources.c
-> @@ -112,12 +112,14 @@ struct atm_dev *atm_dev_register(const char *type, struct device *parent,
->  
->  	if (atm_proc_dev_register(dev) < 0) {
->  		pr_err("atm_proc_dev_register failed for dev %s\n", type);
-> +		kfree(dev);
->  		goto out_fail;
->  	}
->  
->  	if (atm_register_sysfs(dev, parent) < 0) {
->  		pr_err("atm_register_sysfs failed for dev %s\n", type);
->  		atm_proc_dev_deregister(dev);
-> +		put_device(&dev->class_dev);
+This patchset adds initial support for CN10KB's RPM_USX  MAC i.e
+registering the driver and defining MAC operations (mac_ops). With these
+changes PF and VF netdev packet path will work and PF and VF netdev drivers
+are able to configure MAC features like pause frames,PFC and loopback etc.
 
-The right fix is to change atm_register_sysfs() to call this put_device
-and worth to get rid from device_del() which should be replaced with
-device_unregister().
+Also implements FEC stats for CN10K Mac block RPM and CN10KB Mac block
+RPM_USX and extends ethtool support for PF and VF drivers by defining
+get_fec_stats API to display FEC stats.
 
-Thanks
+Hariprasad Kelam (3):
+  octeontx2-af: cn10kb: Add RPM_USX MAC support
+  octeontx2-pf: ethtool: Implement get_fec_stats
+  octeontx2-af: Add FEC stats for RPM/RPM_USX block
 
->  		goto out_fail;
->  	}
->  
-> @@ -128,7 +130,6 @@ struct atm_dev *atm_dev_register(const char *type, struct device *parent,
->  	return dev;
->  
->  out_fail:
-> -	kfree(dev);
->  	dev = NULL;
->  	goto out;
->  }
-> -- 
-> 2.34.1
-> 
+Rakesh Babu Saladi (1):
+  octeontx2-af: Support variable number of lmacs
+
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   |  78 ++++--
+ .../net/ethernet/marvell/octeontx2/af/cgx.h   |   9 +-
+ .../marvell/octeontx2/af/lmac_common.h        |  15 +-
+ .../net/ethernet/marvell/octeontx2/af/rpm.c   | 262 ++++++++++++++++--
+ .../net/ethernet/marvell/octeontx2/af/rpm.h   |  36 ++-
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  12 +-
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |  49 +++-
+ .../marvell/octeontx2/af/rvu_debugfs.c        |   2 +-
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  10 +-
+ .../marvell/octeontx2/af/rvu_npc_hash.c       |   4 +-
+ .../marvell/octeontx2/nic/otx2_ethtool.c      |  34 +++
+ 11 files changed, 428 insertions(+), 83 deletions(-)
+
+--
+2.17.1
