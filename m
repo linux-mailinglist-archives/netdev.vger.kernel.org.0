@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E057E6436CA
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 22:25:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D573E6436CC
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 22:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233902AbiLEVY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 16:24:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
+        id S233946AbiLEVZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 16:25:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233342AbiLEVYe (ORCPT
+        with ESMTP id S233431AbiLEVYe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 16:24:34 -0500
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2B02CC94
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 13:24:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D362CC99
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 13:24:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670275471; x=1701811471;
+  t=1670275472; x=1701811472;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Bqz0yQKvMarmUSeWVnuSZorZrIT1YJWATujzHCXh4dY=;
-  b=PIvCQRXylvkptD1eX1mxb4uMvFzzFcQePvMtIDKjQrM828yOrm4hHAku
-   f1KuDdbtBHAeu3CKjGAXIj83E7ziRFW8tE/V1iupGjGze4XOtNXFxciht
-   iN93a02dNSi3Ddjm5NTyWFd2jnlD/Tu7J57dHtKUtY9qfwlltzVmutz4n
-   bnmu4dy2SHlY1VjL9XGTguAk91Oa/+dMnLjMOUHayXBnCCKtEWJIk1FyA
-   dWK1YdqcH2B8Azcy7U+Y4NJsTrHqL0rDgS8/OMlBe4aYvLL6iGHLPSd/O
-   +f0aEWdzNlR++IqtKuDFmB7mzb5YyppyudjD1cFb/KouEY6aCcIbOiLSH
+  bh=a2uLCOBAQXL0ck5XzCFYertwfNsVUQBEFPCOy3vhzBE=;
+  b=HxFPp5ByU4BPUGHliZk5+yimB5bZqEeBTIQeJy/gm6pvWJLnK3mEfA3F
+   YMMdOlFT5sXcuLJWKUVIHIBafPmHVfAxBw4rL+LtVylZDBgs20u1UjPgw
+   s8F+cUnQ0wrfm5XHNc1zDAMQjcYzB++H54JprYFXZq8HNyPn1ge0G0HiC
+   yg0TDw5VdBl9Hl/ry4zguvqFuKGhAUDT2iEa7V76jbQuL1YiLgFCHxsXE
+   eTsPaTDAMqU0OCHv/42tFcTRdbsGhit1vC/+D1BsxxlKI6/SqfShhydlS
+   fFgq1WMWj4k+dVV5NsAB2fEs5gICXDO23e+vx2nWsJii/wGVcZZjQVIHj
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="296157806"
+X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="296157814"
 X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
-   d="scan'208";a="296157806"
+   d="scan'208";a="296157814"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 13:24:29 -0800
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 13:24:30 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="734744956"
+X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="734744962"
 X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
-   d="scan'208";a="734744956"
+   d="scan'208";a="734744962"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 Dec 2022 13:24:28 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 05 Dec 2022 13:24:29 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sasha.neftin@intel.com, Naama Meir <naamax.meir@linux.intel.com>
-Subject: [PATCH net-next 3/8] igc: Add checking for basetime less than zero
-Date:   Mon,  5 Dec 2022 13:24:09 -0800
-Message-Id: <20221205212414.3197525-4-anthony.l.nguyen@intel.com>
+Cc:     Tan Tee Min <tee.min.tan@linux.intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sasha.neftin@intel.com,
+        Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>
+Subject: [PATCH net-next 4/8] igc: recalculate Qbv end_time by considering cycle time
+Date:   Mon,  5 Dec 2022 13:24:10 -0800
+Message-Id: <20221205212414.3197525-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221205212414.3197525-1-anthony.l.nguyen@intel.com>
 References: <20221205212414.3197525-1-anthony.l.nguyen@intel.com>
@@ -61,32 +62,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+From: Tan Tee Min <tee.min.tan@linux.intel.com>
 
-Using the tc qdisc command, the user can set basetime to any value.
-Checking should be done on the driver's side to prevent registering
-basetime values that are less than zero.
+Qbv users can specify a cycle time that is not equal to the total GCL
+intervals. Hence, recalculation is necessary here to exclude the time
+interval that exceeds the cycle time. As those GCL which exceeds the
+cycle time will be truncated.
 
+According to IEEE Std. 802.1Q-2018 section 8.6.9.2, once the end of
+the list is reached, it will switch to the END_OF_CYCLE state and
+leave the gates in the same state until the next cycle is started.
+
+Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
 Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
 Tested-by: Naama Meir <naamax.meir@linux.intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/igc/igc_main.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index eb4b916a609d..35c473703950 100644
+index 35c473703950..5aa72eac2a35 100644
 --- a/drivers/net/ethernet/intel/igc/igc_main.c
 +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -5934,6 +5934,9 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
- 	if (!qopt->enable)
- 		return igc_tsn_clear_schedule(adapter);
+@@ -5952,6 +5952,21 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
  
-+	if (qopt->base_time < 0)
-+		return -ERANGE;
+ 		end_time += e->interval;
+ 
++		/* If any of the conditions below are true, we need to manually
++		 * control the end time of the cycle.
++		 * 1. Qbv users can specify a cycle time that is not equal
++		 * to the total GCL intervals. Hence, recalculation is
++		 * necessary here to exclude the time interval that
++		 * exceeds the cycle time.
++		 * 2. According to IEEE Std. 802.1Q-2018 section 8.6.9.2,
++		 * once the end of the list is reached, it will switch
++		 * to the END_OF_CYCLE state and leave the gates in the
++		 * same state until the next cycle is started.
++		 */
++		if (end_time > adapter->cycle_time ||
++		    n + 1 == qopt->num_entries)
++			end_time = adapter->cycle_time;
 +
- 	if (adapter->base_time)
- 		return -EALREADY;
+ 		for (i = 0; i < adapter->num_tx_queues; i++) {
+ 			struct igc_ring *ring = adapter->tx_ring[i];
  
 -- 
 2.35.1
