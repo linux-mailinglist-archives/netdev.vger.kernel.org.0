@@ -2,93 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5FB4642982
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 14:37:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3BEA6429AF
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 14:42:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232318AbiLENhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 08:37:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
+        id S230404AbiLENmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 08:42:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232202AbiLENhh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 08:37:37 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362052639
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 05:37:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670247457; x=1701783457;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cEybTad5XPcGhVf+yDf6G8480NcjKfuh/ThkTuApRVw=;
-  b=k3jBGXwdnBbiNOFTqRKCjB+TkMSvp5yZ6FkNJseBdD7YTwDV268OVDTz
-   xMqcswmBMxOw2xqTys8tY8R/hOIrNnWg5IMgy0ZkO+0AEgdAGMZjKn2mZ
-   eDOuj2zlvKUl0pgIjKvDaaA6aY1dhIE4riAJHUWewNQZ/7ZzyENHzOFHH
-   Ud0QnzTvp793/mufS+FaN0vVS4icTV3JK2DYnVW7y5ANiqe1g65eg+PEm
-   oHvwFnzLSZHiy3z86n0FoML9kBOGbPyfru8FNJiehYLCMx19DJDvI/tED
-   7Y0y5XFozVB2FMiS49HPpZkBPeWr6ttxSZMAzLV2aSmmuH/wDiMUyqXrz
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10551"; a="402621543"
-X-IronPort-AV: E=Sophos;i="5.96,219,1665471600"; 
-   d="scan'208";a="402621543"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 05:37:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10551"; a="788074379"
-X-IronPort-AV: E=Sophos;i="5.96,219,1665471600"; 
-   d="scan'208";a="788074379"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 05 Dec 2022 05:37:34 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 8682FF4; Mon,  5 Dec 2022 15:38:01 +0200 (EET)
-Date:   Mon, 5 Dec 2022 15:38:01 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, michael.jamet@intel.com,
-        YehezkelShB@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-Subject: Re: [PATCH net] net: thunderbolt: fix memory leak in tbnet_open()
-Message-ID: <Y430Od5z5gNI2p0G@black.fi.intel.com>
-References: <20221205115559.3189177-1-shaozhengchao@huawei.com>
+        with ESMTP id S232055AbiLENmb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 08:42:31 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A53D2F2;
+        Mon,  5 Dec 2022 05:42:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=wV7UwztxOnwBjLx4UlGsMD6gs4ljlBwmQRIlqbtKjYc=; b=xK2390t2TA9x1AxvFAR+QX6cz6
+        HfVFNFtcUxYHfz1NNfwyDI4FZiGoL+gu8nx/QuZr3MXI+sMnY8c86crDAa6u4aGmPEuQWWsb78ScK
+        R6wWm4/3NkQpNprw0Awkpyize8fwiZvXwRcMWQpQgGU5CEtaAuYCgave33hmTYqmrkZ4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p2Bjh-004POS-4P; Mon, 05 Dec 2022 14:42:21 +0100
+Date:   Mon, 5 Dec 2022 14:42:21 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Divya Koppera <Divya.Koppera@microchip.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        richardcochran@gmail.com, UNGLinuxDriver@microchip.com,
+        Madhuri.Sripada@microchip.com
+Subject: Re: [PATCH v4 net-next 2/2] net: phy: micrel: Fix warn: passing zero
+ to PTR_ERR
+Message-ID: <Y431PXknftwxwX3f@lunn.ch>
+References: <20221205103550.24944-1-Divya.Koppera@microchip.com>
+ <20221205103550.24944-3-Divya.Koppera@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221205115559.3189177-1-shaozhengchao@huawei.com>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221205103550.24944-3-Divya.Koppera@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon, Dec 05, 2022 at 07:55:59PM +0800, Zhengchao Shao wrote:
-> When tb_ring_alloc_rx() failed in tbnet_open(), it doesn't free ida.
+On Mon, Dec 05, 2022 at 04:05:50PM +0530, Divya Koppera wrote:
+> Handle the NULL pointer case
 > 
-> Fixes: 180b0689425c ("thunderbolt: Allow multiple DMA tunnels over a single XDomain connection")
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> Fixes New smatch warnings:
+> drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero to 'PTR_ERR'
+> 
+> vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
+> Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
 > ---
->  drivers/net/thunderbolt.c | 1 +
->  1 file changed, 1 insertion(+)
+> v3 -> v4:
+> - Split the patch for different warnings
+> - Renamed variable from shared_priv to shared.
 > 
-> diff --git a/drivers/net/thunderbolt.c b/drivers/net/thunderbolt.c
-> index a52ee2bf5575..70fd61ce15c6 100644
-> --- a/drivers/net/thunderbolt.c
-> +++ b/drivers/net/thunderbolt.c
-> @@ -916,6 +916,7 @@ static int tbnet_open(struct net_device *dev)
->  		netdev_err(dev, "failed to allocate Rx ring\n");
->  		tb_ring_free(net->tx_ring.ring);
->  		net->tx_ring.ring = NULL;
-> +		tb_xdomain_release_out_hopid(xd, hopid);
+> v2 -> v3:
+> - Changed subject line from net to net-next
+> - Removed config check for ptp and clock configuration
+>   instead added null check for ptp_clock
+> - Fixed one more warning related to initialisaton.
+> 
+> v1 -> v2:
+> - Handled NULL pointer case
+> - Changed subject line with net-next to net
+> ---
+>  drivers/net/phy/micrel.c | 15 ++++++++-------
+>  1 file changed, 8 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index 1bcdb828db56..0399f3830700 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -2971,12 +2971,13 @@ static int lan8814_config_intr(struct phy_device *phydev)
+>  
+>  static void lan8814_ptp_init(struct phy_device *phydev)
+>  {
+> +	struct lan8814_shared_priv *shared = phydev->shared->priv;
+>  	struct kszphy_priv *priv = phydev->priv;
+>  	struct kszphy_ptp_priv *ptp_priv = &priv->ptp_priv;
+>  	u32 temp;
+>  
+> -	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
+> -	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
+> +	/* Check if PHC support is missing at the configuration level */
+> +	if (!shared->ptp_clock)
+>  		return;
 
-Can you move this before tb_ring_free()? Like this:
+Can you somehow keep the IS_ENABLED() ? It gets evaluated at compile
+time. The optimizer can see the function will always return here, and
+all the code that follows is pointless, and so remove it. By turning
+this into a runtime test, you have made the image bigger.
 
-  		netdev_err(dev, "failed to allocate Rx ring\n");
- 		tb_xdomain_release_out_hopid(xd, hopid);
-  		tb_ring_free(net->tx_ring.ring);
-  		net->tx_ring.ring = NULL;
-
-Otherwise looks good to me.
+     Andrew
