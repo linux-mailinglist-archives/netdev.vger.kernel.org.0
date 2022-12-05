@@ -2,65 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7CA8642E8A
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:19:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4DF7642E86
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 18:19:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbiLERTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 12:19:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44828 "EHLO
+        id S231583AbiLERTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 12:19:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232058AbiLERTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:19:32 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C89BA190
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 09:19:28 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-360b9418f64so126706127b3.7
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 09:19:28 -0800 (PST)
+        with ESMTP id S229982AbiLERTD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 12:19:03 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0FBB1DE;
+        Mon,  5 Dec 2022 09:19:00 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id t17so189557eju.1;
+        Mon, 05 Dec 2022 09:19:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7HOZBo2FkpTQK/wzaVOqgsgawVFWCVv/X4/41Zvt4Kw=;
-        b=W23UNgS6wyKLIk8DObQbq44PiMyXwwch5rAPdq3Q77WEnH4LuEaUj0RJj7JFrEtxuG
-         0ybi5f2wAiFb7dSR8SPoLYJDeF5rc20ADneurdGOUPp67o1psG95BqPlJtnXSlXIpa/q
-         pJW/Pg+JjBQ240DqtqPz16CsUGjnc3gV/DC3Lcovv7u0hRA/ocErX+LG9Jfz2Hrezik+
-         oztl1g7xIlnAja30lfJypwLKXCyJLzmNyR5e6Mq4gNWIGgw2BNjB/X0QkQMyBjWv6Zr+
-         TngWmUChJnZOKKO3rA6PlojSA1fXZw6lIQnN2yQVIHdXZU5tS/lTSZ5Ugfext0yUc6PQ
-         Tu4Q==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hYght3fdVuKTMkD4EadBcYlK1QQIxDjJ6pzxyl1HCHE=;
+        b=Uhjfv+hYBX9TFqPlmA3IWuu3dxnOzuH9QdU4klP3N9VkShSiu19qXZEQh3GGqvlvtP
+         yD1D7AQ6tZ+fgyx4yC4kZYRO4nFC7YR1+uyK0//3q8R/dGRjq5FZjgYc/32uEzUFCbp4
+         HjD0BsnvpeNveEBaWGbljrNLNUwh9K+LI0I2Rt7hwd+Va9XGLGRej+1Rqz/teQ6nliyQ
+         uETS/GhO98RWMrt7rE9Cc/Vma5pUgI12egLIxKr0q6H3KV8wjO5bhLEffhgqYsOei9sJ
+         gaYnvuYuOGaZBq8Vq7kFqDIXhLuAYMzj9KP+yuQ3K9+ClOhEIU9v/aocdzA4UyLToWND
+         YkIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7HOZBo2FkpTQK/wzaVOqgsgawVFWCVv/X4/41Zvt4Kw=;
-        b=HiQEp1Et80NNWqZ95E0GKRx2LGJCTFMrrIad3a59kT2DKHW5doIlbEJHDH8agU67t0
-         k6ijMAe6AV8jAY2BL+OEGGz9ylqOg/3Dse34jU4DuLRYsCvAtc4BUdIC2NS3WjE6uevg
-         eFMVpJRYhi7D5kbmBIGZfzJ9HtuBn9Pg++qU0qv0KkCDuMx1qpjzzWsF029q8FLR1djy
-         h98eFB/LQWdouc2NQ3uDhWO2JFh1z9bkX3W6S+q7u/S6ZnJfPOlabXJlRtgs06bTIhra
-         0UChVgesB3v9yCdy4F9OFat9DgkTuHQMSvIKcwHR9QesRmR2NBL8THB3AMtB68pGbZq1
-         6trQ==
-X-Gm-Message-State: ANoB5pmut2XynTsGmBoLXtJP3cyLRFG//b6fSnWxJFmBPhX64xs+mWNZ
-        I4vT5dICfs5nY6FkxSjiY9cdozr3Zig=
-X-Google-Smtp-Source: AA0mqf6A6vPaAFvyrQa54rlwVp0jZuw3wIic3PehgttUZ/rSHBDZqp8zeNseBtIloWXdkDl7j8fdvGGnURo=
-X-Received: from jaewan.seo.corp.google.com ([2401:fa00:d:11:79be:314e:4538:ae86])
- (user=jaewan job=sendgmr) by 2002:a81:1c51:0:b0:3c3:58c:90da with SMTP id
- c78-20020a811c51000000b003c3058c90damr38458547ywc.169.1670260767400; Mon, 05
- Dec 2022 09:19:27 -0800 (PST)
-Date:   Tue,  6 Dec 2022 02:18:51 +0900
-In-Reply-To: <20221205171851.2811239-1-jaewan@google.com>
-Mime-Version: 1.0
-References: <20221205171851.2811239-1-jaewan@google.com>
-X-Mailer: git-send-email 2.39.0.rc0.267.gcb52ba06e7-goog
-Message-ID: <20221205171851.2811239-2-jaewan@google.com>
-Subject: [PATCH 2/2] mac80211_hwsim: handle RTT requests with virtio
-From:   Jaewan Kim <jaewan@google.com>
-To:     johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     kernel-team@android.com, adelva@google.com,
-        Jaewan Kim <jaewan@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hYght3fdVuKTMkD4EadBcYlK1QQIxDjJ6pzxyl1HCHE=;
+        b=3z7mIuNeHxa9KiHGKuy/95cTqvl4C/7/KeB3EgbpC9hcSBriELiGyfHvpKzQVTatCy
+         aqRP0+Z74Gv0jF5Iuf1SrOUWunDA3xb8k46amLa9612ifFWtsJqfJDJPKsBLvLK5SNHk
+         8FLiAiE18Kkw/PnW9bQt7HXe+LpavoNkn/eey8gWj1zT3YeJsi6EAx4Ih8Ul/zPVPbJ2
+         i3AYu6/GXisVY+rTA5qma/3UqhT+BqTz/wD8h71O8Y/AlM8St3FH3vzBgLU0l90JLhp5
+         98taI25K05QHxqKIQDtEis6xr7rE5XKm4hULeym9uup7qUwXfvPfbbF+z77canakRyS3
+         zetg==
+X-Gm-Message-State: ANoB5plYzKehQTVYMicF1rgjGtiZxje8cxW4HeMxUd+MJU0RhmG3es9R
+        LNbo/0qilAGjiu1BiMC+/xs=
+X-Google-Smtp-Source: AA0mqf69bEzqOcqm3MpRwL8FGxMs5ZWrBqKcRvqksRc/wnGzlvgshdbUNbThUdKTdWemBq77CxaA6w==
+X-Received: by 2002:a17:906:60d0:b0:78d:3f87:1725 with SMTP id f16-20020a17090660d000b0078d3f871725mr19506001ejk.492.1670260739030;
+        Mon, 05 Dec 2022 09:18:59 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id k17-20020aa7c051000000b0046bd3b366f9sm26617edo.32.2022.12.05.09.18.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 09:18:58 -0800 (PST)
+Date:   Mon, 5 Dec 2022 18:19:07 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: [PATCH v3 net-next 4/4] drivers/net/phy: add driver for the onsemi
+ NCN26000 10BASE-T1S PHY
+Message-ID: <10deddd6e74acf4b76e8087fbe40eb2d03e01fae.1670259123.git.piergiorgio.beruto@gmail.com>
+References: <d53ffecdde8d3950a24155228a3439f2c9b10b9b.1670259123.git.piergiorgio.beruto@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d53ffecdde8d3950a24155228a3439f2c9b10b9b.1670259123.git.piergiorgio.beruto@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,945 +77,544 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This CL adds PMSR (peer measurement) support,
-which is generic measurement between peers.
-And also adds its one and only mearsurement type - RTT (Round Trip Time).
+Add support for the onsemi NCN26000 10BASE-T1S industrial Ethernet PHY.
+The driver supports Point-to-Multipoint operation without
+auto-negotiation and with link control handling. The PLCA RS support
+will be included on a separate patch.
 
-Signed-off-by: Jaewan Kim <jaewan@google.com>
+Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 678 +++++++++++++++++++++++++-
- drivers/net/wireless/mac80211_hwsim.h |  54 +-
- include/net/cfg80211.h                |  10 +
- net/wireless/nl80211.c                |  11 +-
- 4 files changed, 736 insertions(+), 17 deletions(-)
+ MAINTAINERS                          |   8 ++
+ drivers/net/phy/Kconfig              |   7 +
+ drivers/net/phy/Makefile             |   1 +
+ drivers/net/phy/mdio-open-alliance.h |  44 ++++++
+ drivers/net/phy/ncn26000.c           | 193 +++++++++++++++++++++++++++
+ drivers/net/phy/phy-c45.c            | 180 +++++++++++++++++++++++++
+ include/linux/phy.h                  |   6 +
+ 7 files changed, 439 insertions(+)
+ create mode 100644 drivers/net/phy/mdio-open-alliance.h
+ create mode 100644 drivers/net/phy/ncn26000.c
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index c7e314935023..e0249464fc61 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -721,6 +721,8 @@ struct mac80211_hwsim_data {
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7952243e4b43..09f0bfa3ae64 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15357,6 +15357,13 @@ L:	linux-mips@vger.kernel.org
+ S:	Maintained
+ F:	arch/mips/boot/dts/ralink/omega2p.dts
  
- 	/* only used when pmsr capability is supplied */
- 	struct cfg80211_pmsr_capabilities pmsr_capa;
-+	struct cfg80211_pmsr_request *pmsr_request;
-+	struct wireless_dev *pmsr_request_wdev;
++ONSEMI ETHERNET PHY DRIVERS
++M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
++L:	netdev@vger.kernel.org
++S:	Supported
++W:	http://www.onsemi.com
++F:	drivers/net/phy/ncn*
++
+ OP-TEE DRIVER
+ M:	Jens Wiklander <jens.wiklander@linaro.org>
+ L:	op-tee@lists.trustedfirmware.org
+@@ -16400,6 +16407,7 @@ PLCA RECONCILIATION SUBLAYER (IEEE802.3 Clause 148)
+ M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
++F:	drivers/net/phy/mdio-open-alliance.h
+ F:	net/ethtool/plca.c
  
- 	struct mac80211_hwsim_link_data link_data[IEEE80211_MLD_MAX_NUM_LINKS];
- };
-@@ -750,6 +752,13 @@ struct hwsim_radiotap_ack_hdr {
- 	__le16 rt_chbitmask;
- } __packed;
+ PLDMFW LIBRARY
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index af00cf44cd97..7c466830c611 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -267,6 +267,13 @@ config NATIONAL_PHY
+ 	help
+ 	  Currently supports the DP83865 PHY.
  
-+static struct mac80211_hwsim_data *get_hwsim_data_ref_from_addr(const u8 *addr)
-+{
-+	return rhashtable_lookup_fast(&hwsim_radios_rht,
-+				      addr,
-+				      hwsim_rht_params);
-+}
-+
- /* MAC80211_HWSIM netlink family */
- static struct genl_family hwsim_genl_family;
- 
-@@ -763,6 +772,81 @@ static const struct genl_multicast_group hwsim_mcgrps[] = {
- 
- /* MAC80211_HWSIM netlink policy */
- 
-+static const struct nla_policy
-+hwsim_rate_info_policy[HWSIM_RATE_INFO_ATTR_MAX + 1] = {
-+	[HWSIM_RATE_INFO_ATTR_FLAGS] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_MCS] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_LEGACY] = { .type = NLA_U16 },
-+	[HWSIM_RATE_INFO_ATTR_NSS] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_BW] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_HE_GI] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_HE_DCM] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_EHT_GI] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC] = { .type = NLA_U8 },
-+};
-+
-+static const struct nla_policy
-+hwsim_ftm_result_policy[NL80211_PMSR_FTM_RESP_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX] = { .type = NLA_U16 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE] =
-+		NLA_POLICY_NESTED(hwsim_rate_info_policy),
-+	[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE] =
-+		NLA_POLICY_NESTED(hwsim_rate_info_policy),
-+	[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_LCI] = { .type = NLA_STRING },
-+	[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC] = { .type = NLA_STRING },
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_resp_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
-+	[NL80211_PMSR_TYPE_FTM] = NLA_POLICY_NESTED(hwsim_ftm_result_policy),
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_resp_policy[NL80211_PMSR_RESP_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_RESP_ATTR_STATUS] = { .type = NLA_U32 },
-+	[NL80211_PMSR_RESP_ATTR_HOST_TIME] = { .type = NLA_U64 },
-+	[NL80211_PMSR_RESP_ATTR_AP_TSF] = { .type = NLA_U64 },
-+	[NL80211_PMSR_RESP_ATTR_FINAL] = { .type = NLA_FLAG },
-+	[NL80211_PMSR_RESP_ATTR_DATA] =
-+		NLA_POLICY_NESTED(hwsim_pmsr_resp_type_policy),
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_peer_result_policy[NL80211_PMSR_PEER_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_PEER_ATTR_ADDR] = NLA_POLICY_ETH_ADDR_COMPAT,
-+	[NL80211_PMSR_PEER_ATTR_CHAN] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_PEER_ATTR_REQ] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_PEER_ATTR_RESP] =
-+		NLA_POLICY_NESTED(hwsim_pmsr_resp_policy),
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_peers_result_policy[NL80211_PMSR_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_ATTR_MAX_PEERS] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_REPORT_AP_TSF] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_TYPE_CAPA] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_PEERS] =
-+		NLA_POLICY_NESTED_ARRAY(hwsim_pmsr_peer_result_policy),
-+};
-+
- static const struct nla_policy
- hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] = {
- 	[NL80211_PMSR_FTM_CAPA_ATTR_ASAP] = { .type = NLA_FLAG },
-@@ -780,7 +864,7 @@ hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] = {
- };
- 
- static const struct nla_policy
--hwsim_pmsr_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
-+hwsim_pmsr_capa_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
- 	[NL80211_PMSR_TYPE_FTM] = NLA_POLICY_NESTED(hwsim_ftm_capa_policy),
- };
- 
-@@ -790,7 +874,7 @@ hwsim_pmsr_capa_policy[NL80211_PMSR_ATTR_MAX + 1] = {
- 	[NL80211_PMSR_ATTR_REPORT_AP_TSF] = { .type = NLA_FLAG },
- 	[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] = { .type = NLA_FLAG },
- 	[NL80211_PMSR_ATTR_TYPE_CAPA] =
--		NLA_POLICY_NESTED(hwsim_pmsr_type_policy),
-+		NLA_POLICY_NESTED(hwsim_pmsr_capa_type_policy),
- 	[NL80211_PMSR_ATTR_PEERS] = { .type = NLA_REJECT }, // only for request.
- };
- 
-@@ -823,6 +907,7 @@ static const struct nla_policy hwsim_genl_policy[HWSIM_ATTR_MAX + 1] = {
- 	[HWSIM_ATTR_CIPHER_SUPPORT] = { .type = NLA_BINARY },
- 	[HWSIM_ATTR_MLO_SUPPORT] = { .type = NLA_FLAG },
- 	[HWSIM_ATTR_PMSR_SUPPORT] = NLA_POLICY_NESTED(hwsim_pmsr_capa_policy),
-+	[HWSIM_ATTR_PMSR_RESULT] = NLA_POLICY_NESTED(hwsim_pmsr_peers_result_policy),
- };
- 
- #if IS_REACHABLE(CONFIG_VIRTIO)
-@@ -3142,16 +3227,577 @@ static int mac80211_hwsim_change_sta_links(struct ieee80211_hw *hw,
- 	return 0;
- }
- 
--static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-+static int mac80211_hwsim_send_pmsr_ftm_request_peer(struct sk_buff *msg,
-+						     struct cfg80211_pmsr_ftm_request_peer *request)
-+{
-+	void *ftm;
-+
-+	if (!request->requested)
-+		return -EINVAL;
-+
-+	ftm = nla_nest_start(msg, NL80211_PMSR_TYPE_FTM);
-+	if (!request)
-+		return -ENOBUFS;
-+
-+	if (nla_put_u32(msg, NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE,
-+			request->preamble))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u16(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_PERIOD,
-+			request->burst_period))
-+		return -ENOBUFS;
-+
-+	if (request->asap &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_ASAP))
-+		return -ENOBUFS;
-+
-+	if (request->request_lci &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_REQUEST_LCI))
-+		return -ENOBUFS;
-+
-+	if (request->request_civicloc &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_REQUEST_CIVICLOC))
-+		return -ENOBUFS;
-+
-+	if (request->trigger_based &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_TRIGGER_BASED))
-+		return -ENOBUFS;
-+
-+	if (request->non_trigger_based &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_NON_TRIGGER_BASED))
-+		return -ENOBUFS;
-+
-+	if (request->lmr_feedback &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_LMR_FEEDBACK))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_BURSTS_EXP,
-+		       request->num_bursts_exp))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_DURATION,
-+		       request->burst_duration))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_FTMS_PER_BURST,
-+		       request->ftms_per_burst))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_FTMR_RETRIES,
-+		       request->ftmr_retries))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_DURATION,
-+		       request->burst_duration))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BSS_COLOR,
-+		       request->bss_color))
-+		return -ENOBUFS;
-+
-+	nla_nest_end(msg, ftm);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_send_pmsr_request_peer(struct sk_buff *msg,
-+						 struct cfg80211_pmsr_request_peer *request)
-+{
-+	void *peer, *chandef, *req, *data;
-+	int err;
-+
-+	peer = nla_nest_start(msg, NL80211_PMSR_ATTR_PEERS);
-+	if (!peer)
-+		return -ENOBUFS;
-+
-+	if (nla_put(msg, NL80211_PMSR_PEER_ATTR_ADDR, ETH_ALEN,
-+		    request->addr))
-+		return -ENOBUFS;
-+
-+	chandef = nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_CHAN);
-+	if (!chandef)
-+		return -ENOBUFS;
-+
-+	err = cfg80211_send_chandef(msg, &request->chandef);
-+	if (err)
-+		return err;
-+
-+	nla_nest_end(msg, chandef);
-+
-+	req = nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_REQ);
-+	if (request->report_ap_tsf &&
-+	    nla_put_flag(msg, NL80211_PMSR_REQ_ATTR_GET_AP_TSF))
-+		return -ENOBUFS;
-+
-+	data = nla_nest_start(msg, NL80211_PMSR_REQ_ATTR_DATA);
-+	if (!data)
-+		return -ENOBUFS;
-+
-+	mac80211_hwsim_send_pmsr_ftm_request_peer(msg, &request->ftm);
-+	nla_nest_end(msg, data);
-+	nla_nest_end(msg, req);
-+	nla_nest_end(msg, peer);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_send_pmsr_request(struct sk_buff *msg,
-+					    struct cfg80211_pmsr_request *request)
-+{
-+	int err;
-+	void *pmsr;
-+
-+	pmsr = nla_nest_start(msg, NL80211_ATTR_PEER_MEASUREMENTS);
-+	if (!pmsr)
-+		return -ENOBUFS;
-+
-+	if (nla_put_u32(msg, NL80211_ATTR_TIMEOUT, request->timeout))
-+		return -ENOBUFS;
-+
-+	if (!is_zero_ether_addr(request->mac_addr)) {
-+		if (nla_put(msg, NL80211_ATTR_MAC, ETH_ALEN, request->mac_addr))
-+			return -ENOBUFS;
-+		if (nla_put(msg, NL80211_ATTR_MAC_MASK, ETH_ALEN,
-+			    request->mac_addr_mask))
-+			return -ENOBUFS;
-+	}
-+
-+	for (int i = 0; i < request->n_peers; i++) {
-+		err = mac80211_hwsim_send_pmsr_request_peer(msg,
-+							    &request->peers[i]);
-+		if (err)
-+			return err;
-+	}
-+
-+	nla_nest_end(msg, pmsr);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw,
-+				     struct ieee80211_vif *vif,
- 				     struct cfg80211_pmsr_request *request)
- {
--	return -EOPNOTSUPP;
-+	struct mac80211_hwsim_data *data = hw->priv;
-+	u32 _portid = READ_ONCE(data->wmediumd);
-+	int err = 0;
-+	struct sk_buff *skb = NULL;
-+	void *msg_head;
-+	void *pmsr;
-+
-+	if (!_portid && !hwsim_virtio_enabled)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&data->mutex);
-+
-+	if (data->pmsr_request) {
-+		err = -EBUSY;
-+		goto out_err;
-+	}
-+
-+	skb = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+
-+	if (!skb) {
-+		err = -ENOMEM;
-+		goto out_err;
-+	}
-+
-+	msg_head = genlmsg_put(skb, 0, 0, &hwsim_genl_family, 0,
-+			       HWSIM_CMD_START_PMSR);
-+
-+	if (nla_put(skb, HWSIM_ATTR_ADDR_TRANSMITTER,
-+		    ETH_ALEN, data->addresses[1].addr)) {
-+		err = -ENOMEM;
-+		goto out_err;
-+	}
-+
-+	pmsr = nla_nest_start(skb, HWSIM_ATTR_PMSR_REQUEST);
-+	if (!pmsr) {
-+		err = -ENOMEM;
-+		goto out_err;
-+	}
-+
-+	err = mac80211_hwsim_send_pmsr_request(skb, request);
-+	if (err)
-+		goto out_err;
-+
-+	nla_nest_end(skb, pmsr);
-+
-+	genlmsg_end(skb, msg_head);
-+	if (hwsim_virtio_enabled)
-+		hwsim_tx_virtio(data, skb);
-+	else
-+		hwsim_unicast_netgroup(data, skb, _portid);
-+
-+out_err:
-+	if (err && skb)
-+		nlmsg_free(skb);
-+
-+	if (!err) {
-+		data->pmsr_request = request;
-+		data->pmsr_request_wdev = ieee80211_vif_to_wdev(vif);
-+	}
-+
-+	mutex_unlock(&data->mutex);
-+	return err;
- }
- 
--static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-+static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw,
-+				      struct ieee80211_vif *vif,
- 				      struct cfg80211_pmsr_request *request)
- {
--	// Do nothing for now.
-+	struct mac80211_hwsim_data *data = hw->priv;
-+	u32 _portid = READ_ONCE(data->wmediumd);
-+	struct sk_buff *skb = NULL;
-+	int err = 0;
-+	void *msg_head;
-+	void *pmsr;
-+
-+	if (!_portid && !hwsim_virtio_enabled)
-+		return;
-+
-+	mutex_lock(&data->mutex);
-+
-+	if (data->pmsr_request != request) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	if (err)
-+		return;
-+
-+	skb = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!skb)
-+		return;
-+
-+	msg_head = genlmsg_put(skb, 0, 0, &hwsim_genl_family, 0,
-+			       HWSIM_CMD_ABORT_PMSR);
-+
-+	if (nla_put(skb, HWSIM_ATTR_ADDR_TRANSMITTER,
-+		    ETH_ALEN, data->addresses[1].addr))
-+		goto out_err;
-+
-+	pmsr = nla_nest_start(skb, HWSIM_ATTR_PMSR_REQUEST);
-+	if (!pmsr) {
-+		err = -ENOMEM;
-+		goto out_err;
-+	}
-+
-+	err = mac80211_hwsim_send_pmsr_request(skb, request);
-+	if (err)
-+		goto out_err;
-+
-+	err = nla_nest_end(skb, pmsr);
-+	if (err)
-+		goto out_err;
-+
-+	genlmsg_end(skb, msg_head);
-+	if (hwsim_virtio_enabled)
-+		hwsim_tx_virtio(data, skb);
-+	else
-+		hwsim_unicast_netgroup(data, skb, _portid);
-+
-+out_err:
-+	if (err && skb)
-+		nlmsg_free(skb);
-+
-+	mutex_unlock(&data->mutex);
-+}
-+
-+static int mac80211_hwsim_parse_rate_info(struct nlattr *rateattr,
-+					  struct rate_info *rate_info,
-+					  struct genl_info *info)
-+{
-+	struct nlattr *tb[HWSIM_RATE_INFO_ATTR_MAX + 1];
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, HWSIM_RATE_INFO_ATTR_MAX,
-+			       rateattr, hwsim_rate_info_policy, info->extack);
-+	if (ret)
-+		return ret;
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_FLAGS])
-+		rate_info->flags = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_FLAGS]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_MCS])
-+		rate_info->mcs = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_MCS]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_LEGACY])
-+		rate_info->legacy = nla_get_u16(tb[HWSIM_RATE_INFO_ATTR_LEGACY]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_NSS])
-+		rate_info->nss = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_NSS]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_BW])
-+		rate_info->bw = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_BW]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_HE_GI])
-+		rate_info->he_gi = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_GI]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_HE_DCM])
-+		rate_info->he_dcm = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_DCM]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC])
-+		rate_info->he_ru_alloc =
-+			nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH])
-+		rate_info->n_bonded_ch =
-+			nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_EHT_GI])
-+		rate_info->eht_gi = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_EHT_GI]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC])
-+		rate_info->eht_ru_alloc =
-+			nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC]);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_parse_ftm_result(struct nlattr *ftm,
-+					   struct cfg80211_pmsr_ftm_result *result,
-+					   struct genl_info *info)
-+{
-+	struct nlattr *tb[NL80211_PMSR_FTM_RESP_ATTR_MAX + 1];
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, NL80211_PMSR_FTM_RESP_ATTR_MAX,
-+			       ftm, hwsim_ftm_result_policy, info->extack);
-+	if (ret)
-+		return ret;
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON])
-+		result->failure_reason =
-+			nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX])
-+		result->burst_index =
-+			nla_get_u16(tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS]) {
-+		result->num_ftmr_attempts_valid = 1;
-+		result->num_ftmr_attempts =
-+			nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES]) {
-+		result->num_ftmr_successes_valid = 1;
-+		result->num_ftmr_successes =
-+			nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME])
-+		result->busy_retry_time =
-+			nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP])
-+		result->num_bursts_exp =
-+			nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION])
-+		result->burst_duration =
-+			nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST])
-+		result->ftms_per_burst =
-+			nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG]) {
-+		result->rssi_avg_valid = 1;
-+		result->rssi_avg =
-+			nla_get_s32(tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD]) {
-+		result->rssi_spread_valid = 1;
-+		result->rssi_spread =
-+			nla_get_s32(tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE]) {
-+		result->tx_rate_valid = 1;
-+		ret = mac80211_hwsim_parse_rate_info(tb[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE],
-+						     &result->tx_rate, info);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE]) {
-+		result->rx_rate_valid = 1;
-+		ret = mac80211_hwsim_parse_rate_info(tb[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE],
-+						     &result->rx_rate, info);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG]) {
-+		result->rtt_avg_valid = 1;
-+		result->rtt_avg =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE]) {
-+		result->rtt_variance_valid = 1;
-+		result->rtt_variance =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD]) {
-+		result->rtt_spread_valid = 1;
-+		result->rtt_spread =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG]) {
-+		result->dist_avg_valid = 1;
-+		result->dist_avg =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE]) {
-+		result->dist_variance_valid = 1;
-+		result->dist_variance =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD]) {
-+		result->dist_spread_valid = 1;
-+		result->dist_spread =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]) {
-+		result->lci = nla_data(tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]);
-+		result->lci_len = nla_len(tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]) {
-+		result->civicloc = nla_data(tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]);
-+		result->civicloc_len = nla_len(tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_parse_pmsr_resp(struct nlattr *resp,
-+					  struct cfg80211_pmsr_result *result,
-+					  struct genl_info *info)
-+{
-+	struct nlattr *tb[NL80211_PMSR_RESP_ATTR_MAX + 1];
-+	struct nlattr *pmsr;
-+	int rem;
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, NL80211_PMSR_RESP_ATTR_MAX, resp,
-+			       hwsim_pmsr_resp_policy, info->extack);
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_STATUS])
-+		result->status = nla_get_u32(tb[NL80211_PMSR_RESP_ATTR_STATUS]);
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_HOST_TIME])
-+		result->host_time = nla_get_u64(tb[NL80211_PMSR_RESP_ATTR_HOST_TIME]);
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_AP_TSF]) {
-+		result->ap_tsf_valid = 1;
-+		result->ap_tsf = nla_get_u64(tb[NL80211_PMSR_RESP_ATTR_AP_TSF]);
-+	}
-+
-+	result->final = !!tb[NL80211_PMSR_RESP_ATTR_FINAL];
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_DATA]) {
-+		nla_for_each_nested(pmsr, tb[NL80211_PMSR_RESP_ATTR_DATA], rem) {
-+			switch (nla_type(pmsr)) {
-+			case NL80211_PMSR_TYPE_FTM:
-+				result->type = NL80211_PMSR_TYPE_FTM;
-+				ret = mac80211_hwsim_parse_ftm_result(pmsr, &result->ftm, info);
-+				if (ret)
-+					return ret;
-+				break;
-+			default:
-+				NL_SET_ERR_MSG_ATTR(info->extack,
-+						    pmsr, "Unknown pmsr resp type");
-+				return -EINVAL;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_parse_pmsr_result(struct nlattr *peer,
-+					    struct cfg80211_pmsr_result *result,
-+					    struct genl_info *info)
-+{
-+	struct nlattr *tb[NL80211_PMSR_PEER_ATTR_MAX + 1];
-+	int ret;
-+
-+	if (!peer)
-+		return -EINVAL;
-+
-+	ret = nla_parse_nested(tb, NL80211_PMSR_PEER_ATTR_MAX, peer,
-+			       hwsim_pmsr_peer_result_policy, info->extack);
-+	if (ret)
-+		return ret;
-+
-+	if (tb[NL80211_PMSR_PEER_ATTR_ADDR])
-+		memcpy(result->addr, nla_data(tb[NL80211_PMSR_PEER_ATTR_ADDR]),
-+		       ETH_ALEN);
-+
-+	if (tb[NL80211_PMSR_PEER_ATTR_RESP]) {
-+		ret = mac80211_hwsim_parse_pmsr_resp(tb[NL80211_PMSR_PEER_ATTR_RESP], result, info);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+};
-+
-+static int hwsim_pmsr_report_nl(struct sk_buff *msg, struct genl_info *info)
-+{
-+	struct nlattr *reqattr;
-+	const u8 *src;
-+	int err, rem;
-+	struct nlattr *peers, *peer;
-+	struct mac80211_hwsim_data *data;
-+
-+	src = nla_data(info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER]);
-+	data = get_hwsim_data_ref_from_addr(src);
-+	if (!data)
-+		return -EINVAL;
-+
-+	mutex_lock(&data->mutex);
-+	if (!data->pmsr_request) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	reqattr = info->attrs[HWSIM_ATTR_PMSR_RESULT];
-+	if (!reqattr) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	peers = nla_find_nested(reqattr, NL80211_PMSR_ATTR_PEERS);
-+	if (!peers) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	nla_for_each_nested(peer, peers, rem) {
-+		struct cfg80211_pmsr_result result;
-+
-+		err = mac80211_hwsim_parse_pmsr_result(peer, &result, info);
-+		if (err)
-+			goto out_err;
-+
-+		cfg80211_pmsr_report(data->pmsr_request_wdev,
-+				     data->pmsr_request, &result, GFP_KERNEL);
-+	}
-+
-+	cfg80211_pmsr_complete(data->pmsr_request_wdev, data->pmsr_request,
-+			       GFP_KERNEL);
-+
-+out_err:
-+	data->pmsr_request = NULL;
-+	data->pmsr_request_wdev = NULL;
-+
-+	mutex_unlock(&data->mutex);
-+	return err;
- }
- 
- #define HWSIM_COMMON_OPS					\
-@@ -4828,13 +5474,6 @@ static void hwsim_mon_setup(struct net_device *dev)
- 	eth_hw_addr_set(dev, addr);
- }
- 
--static struct mac80211_hwsim_data *get_hwsim_data_ref_from_addr(const u8 *addr)
--{
--	return rhashtable_lookup_fast(&hwsim_radios_rht,
--				      addr,
--				      hwsim_rht_params);
--}
--
- static void hwsim_register_wmediumd(struct net *net, u32 portid)
- {
- 	struct mac80211_hwsim_data *data;
-@@ -5508,6 +6147,11 @@ static const struct genl_small_ops hwsim_ops[] = {
- 		.doit = hwsim_get_radio_nl,
- 		.dumpit = hwsim_dump_radio_nl,
- 	},
-+	{
-+		.cmd = HWSIM_CMD_REPORT_PMSR,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit = hwsim_pmsr_report_nl,
-+	}
- };
- 
- static struct genl_family hwsim_genl_family __ro_after_init = {
-@@ -5519,7 +6163,7 @@ static struct genl_family hwsim_genl_family __ro_after_init = {
- 	.module = THIS_MODULE,
- 	.small_ops = hwsim_ops,
- 	.n_small_ops = ARRAY_SIZE(hwsim_ops),
--	.resv_start_op = HWSIM_CMD_DEL_MAC_ADDR + 1,
-+	.resv_start_op = __HWSIM_CMD_MAX,
- 	.mcgrps = hwsim_mcgrps,
- 	.n_mcgrps = ARRAY_SIZE(hwsim_mcgrps),
- };
-@@ -5663,6 +6307,7 @@ static int hwsim_virtio_handle_cmd(struct sk_buff *skb)
- 	struct genlmsghdr *gnlh;
- 	struct nlattr *tb[HWSIM_ATTR_MAX + 1];
- 	struct genl_info info = {};
-+	struct netlink_ext_ack extack;
- 	int err;
- 
- 	nlh = nlmsg_hdr(skb);
-@@ -5679,6 +6324,7 @@ static int hwsim_virtio_handle_cmd(struct sk_buff *skb)
- 	}
- 
- 	info.attrs = tb;
-+	info.extack = &extack;
- 
- 	switch (gnlh->cmd) {
- 	case HWSIM_CMD_FRAME:
-@@ -5687,10 +6333,14 @@ static int hwsim_virtio_handle_cmd(struct sk_buff *skb)
- 	case HWSIM_CMD_TX_INFO_FRAME:
- 		hwsim_tx_info_frame_received_nl(skb, &info);
- 		break;
-+	case HWSIM_CMD_REPORT_PMSR:
-+		hwsim_pmsr_report_nl(skb, &info);
-+		break;
- 	default:
- 		pr_err_ratelimited("hwsim: invalid cmd: %d\n", gnlh->cmd);
- 		return -EPROTO;
- 	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/wireless/mac80211_hwsim.h b/drivers/net/wireless/mac80211_hwsim.h
-index 81cd02d2555c..1d54fe4c402f 100644
---- a/drivers/net/wireless/mac80211_hwsim.h
-+++ b/drivers/net/wireless/mac80211_hwsim.h
-@@ -81,6 +81,9 @@ enum hwsim_tx_control_flags {
-  *	to this receiver address for a given station.
-  * @HWSIM_CMD_DEL_MAC_ADDR: remove the MAC address again, the attributes
-  *	are the same as to @HWSIM_CMD_ADD_MAC_ADDR.
-+ * @HWSIM_CMD_START_PMSR: start PMSR
-+ * @HWSIM_CMD_ABORT_PMSR: abort PMSR
-+ * @HWSIM_CMD_REPORT_PMSR: report PMSR results
-  * @__HWSIM_CMD_MAX: enum limit
-  */
- enum {
-@@ -93,6 +96,9 @@ enum {
- 	HWSIM_CMD_GET_RADIO,
- 	HWSIM_CMD_ADD_MAC_ADDR,
- 	HWSIM_CMD_DEL_MAC_ADDR,
-+	HWSIM_CMD_START_PMSR,
-+	HWSIM_CMD_ABORT_PMSR,
-+	HWSIM_CMD_REPORT_PMSR,
- 	__HWSIM_CMD_MAX,
- };
- #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
-@@ -143,10 +149,11 @@ enum {
-  * @HWSIM_ATTR_MLO_SUPPORT: claim MLO support (exact parameters TBD) for
-  *	the new radio
-  * @HWSIM_ATTR_PMSR_SUPPORT: claim peer measurement support
-+ * @HWSIM_ATTR_PMSR_REQUEST: peer measurement request
-+ * @HWSIM_ATTR_PMSR_RESULT: peer measurement result
-  * @__HWSIM_ATTR_MAX: enum limit
-  */
- 
--
- enum {
- 	HWSIM_ATTR_UNSPEC,
- 	HWSIM_ATTR_ADDR_RECEIVER,
-@@ -175,6 +182,8 @@ enum {
- 	HWSIM_ATTR_CIPHER_SUPPORT,
- 	HWSIM_ATTR_MLO_SUPPORT,
- 	HWSIM_ATTR_PMSR_SUPPORT,
-+	HWSIM_ATTR_PMSR_REQUEST,
-+	HWSIM_ATTR_PMSR_RESULT,
- 	__HWSIM_ATTR_MAX,
- };
- #define HWSIM_ATTR_MAX (__HWSIM_ATTR_MAX - 1)
-@@ -279,4 +288,47 @@ enum {
- 	HWSIM_VQ_RX,
- 	HWSIM_NUM_VQS,
- };
-+
-+/**
-+ * enum hwsim_rate_info -- bitrate information.
-+ *
-+ * Information about a receiving or transmitting bitrate
-+ * that can be mapped to struct rate_info
-+ *
-+ * @HWSIM_RATE_INFO_ATTR_FLAGS: bitflag of flags from &enum rate_info_flags
-+ * @HWSIM_RATE_INFO_ATTR_MCS: mcs index if struct describes an HT/VHT/HE rate
-+ * @HWSIM_RATE_INFO_ATTR_LEGACY: bitrate in 100kbit/s for 802.11abg
-+ * @HWSIM_RATE_INFO_ATTR_NSS: number of streams (VHT & HE only)
-+ * @HWSIM_RATE_INFO_ATTR_BW: bandwidth (from &enum rate_info_bw)
-+ * @HWSIM_RATE_INFO_ATTR_HE_GI: HE guard interval (from &enum nl80211_he_gi)
-+ * @HWSIM_RATE_INFO_ATTR_HE_DCM: HE DCM value
-+ * @HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC:  HE RU allocation (from &enum nl80211_he_ru_alloc,
-+ *	only valid if bw is %RATE_INFO_BW_HE_RU)
-+ * @HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH: In case of EDMG the number of bonded channels (1-4)
-+ * @HWSIM_RATE_INFO_ATTR_EHT_GI: EHT guard interval (from &enum nl80211_eht_gi)
-+ * @HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC: EHT RU allocation (from &enum nl80211_eht_ru_alloc,
-+ *	only valid if bw is %RATE_INFO_BW_EHT_RU)
-+ * @NUM_HWSIM_RATE_INFO_ATTRS: internal
-+ * @HWSIM_RATE_INFO_ATTR_MAX: highest attribute number
++config NCN26000_PHY
++	tristate "onsemi 10BASE-T1S Ethernet PHY"
++	help
++	  Adds support for the onsemi 10BASE-T1S Ethernet PHY.
++	  Currently supports the NCN26000 10BASE-T1S Industrial PHY
++	  with MII interface.
++
+ config NXP_C45_TJA11XX_PHY
+ 	tristate "NXP C45 TJA11XX PHYs"
+ 	depends on PTP_1588_CLOCK_OPTIONAL
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index f7138d3c896b..b5138066ba04 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -77,6 +77,7 @@ obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
+ obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
+ obj-$(CONFIG_MOTORCOMM_PHY)	+= motorcomm.o
+ obj-$(CONFIG_NATIONAL_PHY)	+= national.o
++obj-$(CONFIG_NCN26000_PHY)	+= ncn26000.o
+ obj-$(CONFIG_NXP_C45_TJA11XX_PHY)	+= nxp-c45-tja11xx.o
+ obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
+ obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
+diff --git a/drivers/net/phy/mdio-open-alliance.h b/drivers/net/phy/mdio-open-alliance.h
+new file mode 100644
+index 000000000000..565f4162611d
+--- /dev/null
++++ b/drivers/net/phy/mdio-open-alliance.h
+@@ -0,0 +1,44 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * mdio-open-alliance.h - definition of OPEN Alliance SIG standard registers
 + */
-+enum hwsim_rate_info_attributes {
-+	__HWSIM_RATE_INFO_ATTR_INVALID,
 +
-+	HWSIM_RATE_INFO_ATTR_FLAGS,
-+	HWSIM_RATE_INFO_ATTR_MCS,
-+	HWSIM_RATE_INFO_ATTR_LEGACY,
-+	HWSIM_RATE_INFO_ATTR_NSS,
-+	HWSIM_RATE_INFO_ATTR_BW,
-+	HWSIM_RATE_INFO_ATTR_HE_GI,
-+	HWSIM_RATE_INFO_ATTR_HE_DCM,
-+	HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC,
-+	HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH,
-+	HWSIM_RATE_INFO_ATTR_EHT_GI,
-+	HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC,
++#ifndef __MDIO_OPEN_ALLIANCE__
++#define __MDIO_OPEN_ALLIANCE__
 +
-+	/* keep last */
-+	NUM_HWSIM_RATE_INFO_ATTRS,
-+	HWSIM_RATE_INFO_ATTR_MAX = NUM_HWSIM_RATE_INFO_ATTRS - 1
++#include <linux/mdio.h>
++
++/* MDIO Manageable Devices (MMDs). */
++#define MDIO_MMD_OATC14		MDIO_MMD_VEND2
++
++/* Open Alliance TC14 (10BASE-T1S) registers */
++#define MDIO_OATC14_PLCA_IDVER	0xca00  /* PLCA ID and version */
++#define MDIO_OATC14_PLCA_CTRL0	0xca01	/* PLCA Control register 0 */
++#define MDIO_OATC14_PLCA_CTRL1	0xca02	/* PLCA Control register 1 */
++#define MDIO_OATC14_PLCA_STATUS	0xca03	/* PLCA Status register */
++#define MDIO_OATC14_PLCA_TOTMR	0xca04	/* PLCA TO Timer register */
++#define MDIO_OATC14_PLCA_BURST	0xca05	/* PLCA BURST mode register */
++
++/* Open Alliance TC14 PLCA IDVER register */
++#define MDIO_OATC14_PLCA_IDM	0xff00	/* PLCA MAP ID */
++#define MDIO_OATC14_PLCA_VER	0x00ff	/* PLCA MAP version */
++
++/* Open Alliance TC14 PLCA CTRL0 register */
++#define MDIO_OATC14_PLCA_EN	0x8000  /* PLCA enable */
++#define MDIO_OATC14_PLCA_RST	0x4000  /* PLCA reset */
++
++/* Open Alliance TC14 PLCA CTRL1 register */
++#define MDIO_OATC14_PLCA_NCNT	0xff00	/* PLCA node count */
++#define MDIO_OATC14_PLCA_ID	0x00ff	/* PLCA local node ID */
++
++/* Open Alliance TC14 PLCA STATUS register */
++#define MDIO_OATC14_PLCA_PST	0x8000	/* PLCA status indication */
++
++/* Open Alliance TC14 PLCA TOTMR register */
++#define MDIO_OATC14_PLCA_TOT	0x00ff
++
++/* Open Alliance TC14 PLCA BURST register */
++#define MDIO_OATC14_PLCA_MAXBC	0xff00
++#define MDIO_OATC14_PLCA_BTMR	0x00ff
++
++#endif /* __MDIO_OPEN_ALLIANCE__ */
+diff --git a/drivers/net/phy/ncn26000.c b/drivers/net/phy/ncn26000.c
+new file mode 100644
+index 000000000000..9e02c5c55244
+--- /dev/null
++++ b/drivers/net/phy/ncn26000.c
+@@ -0,0 +1,193 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
++/*
++ *  Driver for the onsemi 10BASE-T1S NCN26000 PHYs family.
++ *
++ * Copyright 2022 onsemi
++ */
++#include <linux/kernel.h>
++#include <linux/bitfield.h>
++#include <linux/errno.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/mii.h>
++#include <linux/phy.h>
++
++#include "mdio-open-alliance.h"
++
++#define PHY_ID_NCN26000			0x180FF5A1
++
++#define NCN26000_REG_IRQ_CTL            16
++#define NCN26000_REG_IRQ_STATUS         17
++
++// the NCN26000 maps link_ctrl to BMCR_ANENABLE
++#define NCN26000_BCMR_LINK_CTRL_BIT	BMCR_ANENABLE
++
++// the NCN26000 maps link_status to BMSR_ANEGCOMPLETE
++#define NCN26000_BMSR_LINK_STATUS_BIT	BMSR_ANEGCOMPLETE
++
++#define NCN26000_IRQ_LINKST_BIT		BIT(0)
++#define NCN26000_IRQ_PLCAST_BIT		BIT(1)
++#define NCN26000_IRQ_LJABBER_BIT	BIT(2)
++#define NCN26000_IRQ_RJABBER_BIT	BIT(3)
++#define NCN26000_IRQ_PLCAREC_BIT	BIT(4)
++#define NCN26000_IRQ_PHYSCOL_BIT	BIT(5)
++
++#define TO_TMR_DEFAULT			32
++
++struct ncn26000_priv {
++	u16 enabled_irqs;
 +};
 +
- #endif /* __MAC80211_HWSIM_H */
-diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 1d3368e409d6..57b1c812fb29 100644
---- a/include/net/cfg80211.h
-+++ b/include/net/cfg80211.h
-@@ -938,6 +938,16 @@ int cfg80211_chandef_dfs_required(struct wiphy *wiphy,
- 				  const struct cfg80211_chan_def *chandef,
- 				  enum nl80211_iftype iftype);
++// module parameter: if set, the link status is derived from the PLCA status
++// default: false
++static bool link_status_plca;
++module_param(link_status_plca, bool, 0644);
++
++// driver callbacks
++
++static int ncn26000_config_init(struct phy_device *phydev)
++{
++	/* HW bug workaround: the default value of the PLCA TO_TIMER should be
++	 * 32, where the current version of NCN26000 reports 24. This will be
++	 * fixed in future PHY versions. For the time being, we force the
++	 * correct default here.
++	 */
++	return phy_write_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_TOTMR,
++			     TO_TMR_DEFAULT);
++}
++
++static int ncn26000_config_aneg(struct phy_device *phydev)
++{
++	// Note: the NCN26000 supports only P2MP link mode. Therefore, AN is not
++	// supported. However, this function is invoked by phylib to enable the
++	// PHY, regardless of the AN support.
++	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
++	phydev->mdix = ETH_TP_MDI;
++
++	// bring up the link
++	return phy_write(phydev, MII_BMCR, NCN26000_BCMR_LINK_CTRL_BIT);
++}
++
++static int ncn26000_get_features(struct phy_device *phydev)
++{
++	linkmode_zero(phydev->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_MII_BIT, phydev->supported);
++
++	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
++			 phydev->supported);
++
++	linkmode_copy(phydev->advertising, phydev->supported);
++	return 0;
++}
++
++static int ncn26000_read_status(struct phy_device *phydev)
++{
++	// The NCN26000 reports NCN26000_LINK_STATUS_BIT if the link status of
++	// the PHY is up. It further reports the logical AND of the link status
++	// and the PLCA status in the BMSR_LSTATUS bit. Thus, report the link
++	// status by testing the appropriate BMSR bit according to the module's
++	// parameter configuration.
++	const int lstatus_flag = link_status_plca ?
++		BMSR_LSTATUS : NCN26000_BMSR_LINK_STATUS_BIT;
++
++	int ret;
++
++	ret = phy_read(phydev, MII_BMSR);
++	if (unlikely(ret < 0))
++		return ret;
++
++	// update link status
++	phydev->link = (ret & lstatus_flag) ? 1 : 0;
++
++	// handle more IRQs here
++
++	return 0;
++}
++
++static irqreturn_t ncn26000_handle_interrupt(struct phy_device *phydev)
++{
++	const struct ncn26000_priv *const priv = phydev->priv;
++	int ret;
++
++	// clear the latched bits in MII_BMSR
++	phy_read(phydev, MII_BMSR);
++
++	// read and aknowledge the IRQ status register
++	ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
++
++	if (unlikely(ret < 0) || (ret & priv->enabled_irqs) == 0)
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++	return IRQ_HANDLED;
++}
++
++static int ncn26000_config_intr(struct phy_device *phydev)
++{
++	int ret;
++	struct ncn26000_priv *priv = phydev->priv;
++
++	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
++		// acknowledge IRQs
++		ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
++		if (ret < 0)
++			return ret;
++
++		// get link status notifications
++		priv->enabled_irqs = NCN26000_IRQ_LINKST_BIT;
++	} else {
++		// disable all IRQs
++		priv->enabled_irqs = 0;
++	}
++
++	ret = phy_write(phydev, NCN26000_REG_IRQ_CTL, priv->enabled_irqs);
++	if (ret != 0)
++		return ret;
++
++	return 0;
++}
++
++static int ncn26000_probe(struct phy_device *phydev)
++{
++	struct device *dev = &phydev->mdio.dev;
++	struct ncn26000_priv *priv;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	phydev->priv = priv;
++
++	return 0;
++}
++
++static struct phy_driver ncn26000_driver[] = {
++	{
++		PHY_ID_MATCH_MODEL(PHY_ID_NCN26000),
++		.name			= "NCN26000",
++		.probe                  = ncn26000_probe,
++		.get_features		= ncn26000_get_features,
++		.config_init            = ncn26000_config_init,
++		.config_intr            = ncn26000_config_intr,
++		.config_aneg		= ncn26000_config_aneg,
++		.read_status		= ncn26000_read_status,
++		.handle_interrupt       = ncn26000_handle_interrupt,
++		.get_plca_cfg		= genphy_c45_plca_get_cfg,
++		.set_plca_cfg		= genphy_c45_plca_set_cfg,
++		.get_plca_status	= genphy_c45_plca_get_status,
++		.soft_reset             = genphy_soft_reset,
++	},
++};
++
++module_phy_driver(ncn26000_driver);
++
++static struct mdio_device_id __maybe_unused ncn26000_tbl[] = {
++	{ PHY_ID_MATCH_MODEL(PHY_ID_NCN26000) },
++	{ }
++};
++
++MODULE_DEVICE_TABLE(mdio, ncn26000_tbl);
++
++MODULE_AUTHOR("Piergiorgio Beruto");
++MODULE_DESCRIPTION("onsemi 10BASE-T1S PHY driver");
++MODULE_LICENSE("Dual BSD/GPL");
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index a87a4b3ffce4..dace5d3b29ad 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -8,6 +8,8 @@
+ #include <linux/mii.h>
+ #include <linux/phy.h>
  
-+/**
-+ * cfg80211_send_chandef - sends the channel definition.
-+ * @msg: the msg to send channel definition
-+ * @chandef: the channel definition to check
-+ *
-+ * Returns: 0 if sent the channel definition to msg, < 0 on error
-+ **/
-+int cfg80211_send_chandef(struct sk_buff *msg,
-+			  const struct cfg80211_chan_def *chandef);
++#include "mdio-open-alliance.h"
 +
  /**
-  * ieee80211_chanwidth_rate_flags - return rate flags for channel width
-  * @width: the channel width of the channel
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 922586138025..e6491a5c910b 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -3742,8 +3742,8 @@ static int nl80211_set_wiphy(struct sk_buff *skb, struct genl_info *info)
- 	return result;
+  * genphy_c45_baset1_able - checks if the PMA has BASE-T1 extended abilities
+  * @phydev: target phy_device struct
+@@ -931,6 +933,184 @@ int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable)
  }
+ EXPORT_SYMBOL_GPL(genphy_c45_fast_retrain);
  
--static int nl80211_send_chandef(struct sk_buff *msg,
--				const struct cfg80211_chan_def *chandef)
-+int cfg80211_send_chandef(struct sk_buff *msg,
-+			  const struct cfg80211_chan_def *chandef)
- {
- 	if (WARN_ON(!cfg80211_chandef_valid(chandef)))
- 		return -EINVAL;
-@@ -3774,6 +3774,13 @@ static int nl80211_send_chandef(struct sk_buff *msg,
- 		return -ENOBUFS;
- 	return 0;
- }
-+EXPORT_SYMBOL(cfg80211_send_chandef);
-+
-+static int nl80211_send_chandef(struct sk_buff *msg,
-+				const struct cfg80211_chan_def *chandef)
++/**
++ * genphy_c45_plca_get_cfg - get PLCA configuration from standard registers
++ * @phydev: target phy_device struct
++ * @plca_cfg: output structure to store the PLCA configuration
++ *
++ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
++ *   Management Registers specifications, this function can be used to retrieve
++ *   the current PLCA configuration from the standard registers in MMD 31.
++ */
++int genphy_c45_plca_get_cfg(struct phy_device *phydev,
++			    struct phy_plca_cfg *plca_cfg)
 +{
-+	return cfg80211_send_chandef(msg, chandef);
++	int ret;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_IDVER);
++	if (ret < 0)
++		return ret;
++
++	plca_cfg->version = ret;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_CTRL0);
++	if (ret < 0)
++		return ret;
++
++	plca_cfg->enabled = !!(ret & MDIO_OATC14_PLCA_EN);
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_CTRL1);
++	if (ret < 0)
++		return ret;
++
++	plca_cfg->node_cnt = (ret & MDIO_OATC14_PLCA_NCNT) >> 8;
++	plca_cfg->node_id = (ret & MDIO_OATC14_PLCA_ID);
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_TOTMR);
++	if (ret < 0)
++		return ret;
++
++	plca_cfg->to_tmr = ret & MDIO_OATC14_PLCA_TOT;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_BURST);
++	if (ret < 0)
++		return ret;
++
++	plca_cfg->burst_cnt = (ret & MDIO_OATC14_PLCA_MAXBC) >> 8;
++	plca_cfg->burst_tmr = (ret & MDIO_OATC14_PLCA_BTMR);
++
++	return 0;
 +}
++EXPORT_SYMBOL_GPL(genphy_c45_plca_get_cfg);
++
++/**
++ * genphy_c45_plca_set_cfg - set PLCA configuration using standard registers
++ * @phydev: target phy_device struct
++ * @plca_cfg: structure containing the PLCA configuration. Fields set to -1 are
++ * not to be changed.
++ *
++ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
++ *   Management Registers specifications, this function can be used to modify
++ *   the PLCA configuration using the standard registers in MMD 31.
++ */
++int genphy_c45_plca_set_cfg(struct phy_device *phydev,
++			    const struct phy_plca_cfg *plca_cfg)
++{
++	int ret;
++	u16 val;
++
++	// PLCA IDVER is read-only
++	if (plca_cfg->version >= 0)
++		return -EINVAL;
++
++	// first of all, disable PLCA if required
++	if (plca_cfg->enabled == 0) {
++		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_OATC14,
++					 MDIO_OATC14_PLCA_CTRL0,
++					 MDIO_OATC14_PLCA_EN);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	if (plca_cfg->node_cnt >= 0 || plca_cfg->node_id >= 0) {
++		if (plca_cfg->node_cnt < 0 || plca_cfg->node_id < 0) {
++			ret = phy_read_mmd(phydev, MDIO_MMD_OATC14,
++					   MDIO_OATC14_PLCA_CTRL1);
++
++			if (ret < 0)
++				return ret;
++
++			val = ret;
++		}
++
++		if (plca_cfg->node_cnt >= 0)
++			val = (val & ~MDIO_OATC14_PLCA_NCNT) |
++			      (plca_cfg->node_cnt << 8);
++
++		if (plca_cfg->node_id >= 0)
++			val = (val & ~MDIO_OATC14_PLCA_ID) |
++			      (plca_cfg->node_id);
++
++		ret = phy_write_mmd(phydev, MDIO_MMD_OATC14,
++				    MDIO_OATC14_PLCA_CTRL1, val);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	if (plca_cfg->to_tmr >= 0) {
++		ret = phy_write_mmd(phydev, MDIO_MMD_OATC14,
++				    MDIO_OATC14_PLCA_TOTMR,
++				    plca_cfg->to_tmr);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	if (plca_cfg->burst_cnt >= 0 || plca_cfg->burst_tmr >= 0) {
++		if (plca_cfg->burst_cnt < 0 || plca_cfg->burst_tmr < 0) {
++			ret = phy_read_mmd(phydev, MDIO_MMD_OATC14,
++					   MDIO_OATC14_PLCA_BURST);
++
++			if (ret < 0)
++				return ret;
++
++			val = ret;
++		}
++
++		if (plca_cfg->burst_cnt >= 0)
++			val = (val & ~MDIO_OATC14_PLCA_MAXBC) |
++			      (plca_cfg->burst_cnt << 8);
++
++		if (plca_cfg->burst_tmr >= 0)
++			val = (val & ~MDIO_OATC14_PLCA_BTMR) |
++			      (plca_cfg->burst_tmr);
++
++		ret = phy_write_mmd(phydev, MDIO_MMD_OATC14,
++				    MDIO_OATC14_PLCA_BURST, val);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	// if we need to enable PLCA, do it at the end
++	if (plca_cfg->enabled > 0) {
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_OATC14,
++				       MDIO_OATC14_PLCA_CTRL0,
++				       MDIO_OATC14_PLCA_EN);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(genphy_c45_plca_set_cfg);
++
++/**
++ * genphy_c45_plca_get_status - get PLCA status from standard registers
++ * @phydev: target phy_device struct
++ * @plca_st: output structure to store the PLCA status
++ *
++ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
++ *   Management Registers specifications, this function can be used to retrieve
++ *   the current PLCA status information from the standard registers in MMD 31.
++ */
++int genphy_c45_plca_get_status(struct phy_device *phydev,
++			       struct phy_plca_status *plca_st)
++{
++	int ret;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_STATUS);
++	if (ret < 0)
++		return ret;
++
++	plca_st->pst = !!(ret & MDIO_OATC14_PLCA_PST);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(genphy_c45_plca_get_status);
++
+ struct phy_driver genphy_c45_driver = {
+ 	.phy_id         = 0xffffffff,
+ 	.phy_id_mask    = 0xffffffff,
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 49d0488bf480..4548c8e8f6a9 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1745,6 +1745,12 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable);
+ int genphy_c45_pma_resume(struct phy_device *phydev);
+ int genphy_c45_pma_suspend(struct phy_device *phydev);
+ int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable);
++int genphy_c45_plca_get_cfg(struct phy_device *phydev,
++			    struct phy_plca_cfg *plca_cfg);
++int genphy_c45_plca_set_cfg(struct phy_device *phydev,
++			    const struct phy_plca_cfg *plca_cfg);
++int genphy_c45_plca_get_status(struct phy_device *phydev,
++			       struct phy_plca_status *plca_st);
  
- static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flags,
- 			      struct cfg80211_registered_device *rdev,
+ /* Generic C45 PHY driver */
+ extern struct phy_driver genphy_c45_driver;
 -- 
-2.39.0.rc0.267.gcb52ba06e7-goog
+2.35.1
 
