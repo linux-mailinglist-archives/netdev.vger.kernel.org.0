@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95068643091
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 19:40:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAFD9643092
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 19:40:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233224AbiLESkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 13:40:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
+        id S232720AbiLESkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 13:40:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233236AbiLESjj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 13:39:39 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD9522BFA
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 10:34:29 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id s11so1084119ybe.2
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 10:34:29 -0800 (PST)
+        with ESMTP id S230295AbiLESjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 13:39:43 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B710722B35;
+        Mon,  5 Dec 2022 10:35:10 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id fc4so564867ejc.12;
+        Mon, 05 Dec 2022 10:35:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=/KTDin13ixzj9gzcGPR26WW9tnHp7xsWUEmc0bE7eKI=;
-        b=j+eF1Qgh7b6PTVeY0YzZtXMJPoUuj/00o531HG9eWGm7rALiOMc4uq7eKJKt2k/eGR
-         XeXdbhHxSgP9kEBLAVtHxwydo0y5l9+JbpLKcaWxKnNiEBsdi/dztYNOUWbRNpXIeUKG
-         +UR6uMj3W+cKqQ5HmBZVhAVtuAHapxSwKmcLKj2tCVN6OwHfOcJW61u4k6xBV/WRligR
-         YxLEdyFw2zpHyYOn2gTNy3jeECJRDEARP4O2zmtt/rS77dHKbcTnTuHEtPr32Y+F/JSP
-         T6k6VgiYOCtLV3BLwhzp7l5Lz5J9f2vkGYKg5qXzRijfD9MDx6t7RFjGpZtU6r5ZsNEG
-         zUdA==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=K0Pz7z9Of4EXIWcqlWFyc4frtFe9XDNLDU6rlxGKy64=;
+        b=gH5C4Dx7Fn/K58xCRUqDMImP3lfARcST7X9QQ70IVAzCCijzqJkzYWRjbBLHxZ/sH+
+         C9TXzumfbru/sp/PaqODIb5QkUUY8K0HKI6VREyeQVsTT0Nqgpo3WirixuDxy60ZHy3h
+         Pvm4wm8uE0zdQYtbU/T44TQpZjxc9lOCIfb/sZmgP+LZAlpuF/D9ZI5lfcEeYv4pc3JF
+         R0vSKQPgvNcopkYSVToyhvF6iyrINuRgGOddC9mLmYkdyTw5C27UuUN+NB6bEKUBxPOl
+         pZNFyjZ9ECCb02O4bl/0sPRoPz2VdOANWu3XYUm4NgdhVU1Iq/q9JLkmYqe3aRuEtBHq
+         eOCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/KTDin13ixzj9gzcGPR26WW9tnHp7xsWUEmc0bE7eKI=;
-        b=vo4i2bzFjWiKW56WnYNZTCr3mVsT14kDSCA6XIFwSuXLRVg0vBPg1kDgO1ZCJBcWGW
-         5aU/3Hvn1cQgnSlVQEQge+k577kNGoUpsDJa2EjA7iwdw41F3KCBs+wzTTHfStq5ZK+f
-         C/PF16h8fNP86KKB5zT9zgDZ0xb2zAYvdeHagh93YRLzQotJtenebv4QECE4SYCDJ4SZ
-         Njj5xFSltgsQnrwEWYW6x2qwe8ujH3JNZucliFwMOLNFizgw46SpyPK2VdwDSphVevjn
-         2Is3WzsT/HW0Q0oYCoHWAfa5hKXPs/1ZF4C58IlRk2X7/YiRzF76+ReUcSK7ErjDw7GK
-         4q0Q==
-X-Gm-Message-State: ANoB5pn47b1z7II0lwA84i4v/10sfJQ3T2KPkscBIraVu6CY78GJC7av
-        FmcZN2RkeCTMzdFWja/tANvk88hQmA1zgxm+TEOJCg==
-X-Google-Smtp-Source: AA0mqf7SH/eXDwoLZLD4TlFTi6FH7rr8OeWm4lh20nDPOr/e1oZ66yT75rQXvP/oRvbhVTPMh2bKoB2yPNIFRbmSw48=
-X-Received: by 2002:a25:bf8f:0:b0:6fa:fe1f:f031 with SMTP id
- l15-20020a25bf8f000000b006fafe1ff031mr22758238ybk.231.1670265268733; Mon, 05
- Dec 2022 10:34:28 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=K0Pz7z9Of4EXIWcqlWFyc4frtFe9XDNLDU6rlxGKy64=;
+        b=1iRkSvYTcmSI3cxquFiTKtvuohJOsnuYw16Wt2LEA1SXg9bBT/nyiIObt5KDpceE2G
+         xlkX+c43JnmqOZaz5xFRCpBgdUhgeqnOhHpRWr+oD3ULBMxMd/r4Z9TbpXO1dgnwL6R4
+         GfCbKU8MDW6qCc0zlDfyvptawNEhnnrC6Jl8KB3Mk4eZRjSxzuPSy/f+2+lHQwJUx0Rm
+         lBuC1UMfB6/BCNgQQCuPRp9TAUiVegHJNU84JdDFDxm1Gmk6qxkRyG/zccY3+6UO3qZn
+         DLmSb1dsaf2iYMI6cn71sKVPwGtdVPJMTqEpz2yTldchOxDaZto1eHA+KquaqxOp2qbR
+         TYjg==
+X-Gm-Message-State: ANoB5pl4v4cyGED/3+oRyd+SGmOb4lpclABRvTQsWntO4mT/DlF9LhCo
+        H/lXwWX78F+Je4zDtdIVDm9HsHygMEvexnAA
+X-Google-Smtp-Source: AA0mqf5JgdtOy64lEsSGxkVOg6fJkLgntjMSHlgtwIfPGR8N4yp4br4I1QNSL3EdPT/5ddS6sHSVGg==
+X-Received: by 2002:a17:906:7f09:b0:7c0:b3a8:a5f9 with SMTP id d9-20020a1709067f0900b007c0b3a8a5f9mr16379127ejr.154.1670265309253;
+        Mon, 05 Dec 2022 10:35:09 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id g15-20020a170906348f00b007bf86800a0asm6440907ejb.28.2022.12.05.10.35.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 10:35:08 -0800 (PST)
+Date:   Mon, 5 Dec 2022 19:35:18 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH v3 net-next 1/4] net/ethtool: add netlink interface for
+ the PLCA RS
+Message-ID: <Y4455r631my4LNIU@gvm01>
+References: <d53ffecdde8d3950a24155228a3439f2c9b10b9b.1670259123.git.piergiorgio.beruto@gmail.com>
+ <Y44y05M+6NGod+4x@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20221205153557.28549-1-justin.iurman@uliege.be>
- <CANn89iLjGnyh0GgW_5kkMQJBCi-KfgwyvZwT1ou2FMY4ZDcMXw@mail.gmail.com>
- <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com> <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
-In-Reply-To: <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 5 Dec 2022 19:34:17 +0100
-Message-ID: <CANn89iKgeVFRAstW3QRwOdn8SV_EbHqcKYqmoWT6m5nGQwPWUg@mail.gmail.com>
-Subject: Re: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue
- depth data field")
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y44y05M+6NGod+4x@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,172 +77,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 5, 2022 at 7:24 PM Justin Iurman <justin.iurman@uliege.be> wrote:
->
-> On 12/5/22 17:50, Eric Dumazet wrote:
-> > On Mon, Dec 5, 2022 at 5:30 PM Eric Dumazet <edumazet@google.com> wrote:
-> >>
-> >> Patch title seems
-> >>
-> >> On Mon, Dec 5, 2022 at 4:36 PM Justin Iurman <justin.iurman@uliege.be> wrote:
-> >>>
-> >>> This patch fixes a NULL qdisc pointer when retrieving the TX queue depth
-> >>> for IOAM.
-> >>>
-> >>> IMPORTANT: I suspect this fix is local only and the bug goes deeper (see
-> >>> reasoning below).
-> >>>
-> >>> Kernel panic:
-> >>> [...]
-> >>> RIP: 0010:ioam6_fill_trace_data+0x54f/0x5b0
-> >>> [...]
-> >>>
-> >>> ...which basically points to the call to qdisc_qstats_qlen_backlog
-> >>> inside net/ipv6/ioam6.c.
-> >>>
-> >>>  From there, I directly thought of a NULL pointer (queue->qdisc). To make
-> >>> sure, I added some printk's to know exactly *why* and *when* it happens.
-> >>> Here is the (summarized by queue) output:
-> >>>
-> >>> skb for TX queue 1, qdisc is ffff8b375eee9800, qdisc_sleeping is ffff8b375eee9800
-> >>> skb for TX queue 2, qdisc is ffff8b375eeefc00, qdisc_sleeping is ffff8b375eeefc00
-> >>> skb for TX queue 3, qdisc is ffff8b375eeef800, qdisc_sleeping is ffff8b375eeef800
-> >>> skb for TX queue 4, qdisc is ffff8b375eeec800, qdisc_sleeping is ffff8b375eeec800
-> >>> skb for TX queue 5, qdisc is ffff8b375eeea400, qdisc_sleeping is ffff8b375eeea400
-> >>> skb for TX queue 6, qdisc is ffff8b375eeee000, qdisc_sleeping is ffff8b375eeee000
-> >>> skb for TX queue 7, qdisc is ffff8b375eee8800, qdisc_sleeping is ffff8b375eee8800
-> >>> skb for TX queue 8, qdisc is ffff8b375eeedc00, qdisc_sleeping is ffff8b375eeedc00
-> >>> skb for TX queue 9, qdisc is ffff8b375eee9400, qdisc_sleeping is ffff8b375eee9400
-> >>> skb for TX queue 10, qdisc is ffff8b375eee8000, qdisc_sleeping is ffff8b375eee8000
-> >>> skb for TX queue 11, qdisc is ffff8b375eeed400, qdisc_sleeping is ffff8b375eeed400
-> >>> skb for TX queue 12, qdisc is ffff8b375eeea800, qdisc_sleeping is ffff8b375eeea800
-> >>> skb for TX queue 13, qdisc is ffff8b375eee8c00, qdisc_sleeping is ffff8b375eee8c00
-> >>> skb for TX queue 14, qdisc is ffff8b375eeea000, qdisc_sleeping is ffff8b375eeea000
-> >>> skb for TX queue 15, qdisc is ffff8b375eeeb800, qdisc_sleeping is ffff8b375eeeb800
-> >>> skb for TX queue 16, qdisc is NULL, qdisc_sleeping is NULL
-> >>>
-> >>> What the hell? So, not sure why queue #16 would *never* have a qdisc
-> >>> attached. Is it something expected I'm not aware of? As an FYI, here is
-> >>> the output of "tc qdisc list dev xxx":
-> >>>
-> >>> qdisc mq 0: root
-> >>> qdisc fq_codel 0: parent :10 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :f limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :e limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :d limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :c limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :b limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :a limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :9 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :8 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :7 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :6 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :5 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>> qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-> >>>
-> >>> By the way, the NIC is an Intel XL710 40GbE QSFP+ (i40e driver, firmware
-> >>> version 8.50 0x8000b6c7 1.3082.0) and it was tested on latest "net"
-> >>> version (6.1.0-rc7+). Is this a bug in the i40e driver?
-> >>>
-> >>
-> >>> Cc: stable@vger.kernel.org
-> >>
-> >> Patch title is mangled. The Fixes: tag should appear here, not in the title.
-> >>
-> >>
-> >> Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue depth data field")
-> >>
-> >>> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
-> >>> ---
-> >>>   net/ipv6/ioam6.c | 11 +++++++----
-> >>>   1 file changed, 7 insertions(+), 4 deletions(-)
-> >>>
-> >>> diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
-> >>> index 571f0e4d9cf3..2472a8a043c4 100644
-> >>> --- a/net/ipv6/ioam6.c
-> >>> +++ b/net/ipv6/ioam6.c
-> >>> @@ -727,10 +727,13 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
-> >>>                          *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
-> >>>                  } else {
-> >>>                          queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
-> >>
-> >> Are you sure skb_dst(skb)->dev is correct at this stage, what about
-> >> stacked devices ?
-> >>
-> >>> -                       qdisc = rcu_dereference(queue->qdisc);
-> >>> -                       qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
-> >>> -
-> >>> -                       *(__be32 *)data = cpu_to_be32(backlog);
-> >>> +                       if (!queue->qdisc) {
-> >>
-> >> This is racy.
-> >>
-> >>> +                               *(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
-> >>> +                       } else {
-> >>> +                               qdisc = rcu_dereference(queue->qdisc);
-> >>> +                               qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
-> >>> +                               *(__be32 *)data = cpu_to_be32(backlog);
-> >>> +                       }
-> >>>                  }
-> >>>                  data += sizeof(__be32);
-> >>>          }
-> >>> --
-> >>> 2.25.1
-> >>>
-> >>
-> >> Quite frankly I suggest to revert b63c5478e9cb completely.
-> >>
-> >> The notion of Queue depth can not be properly gathered in Linux with a
-> >> multi queue model,
-> >> so why trying to get a wrong value ?
-> >
-> > Additional reason for a revert is that qdisc_qstats_qlen_backlog() is
-> > reserved for net/sched
->
-> If by "reserved" you mean "only used by at the moment", then yes (with
-> the only exception being IOAM). But some other functions are defined as
-> well, and some are used elsewhere than the "net/sched" context. So I
-> don't think it's really an issue to use this function "from somewhere else".
->
-> > code, I think it needs the qdisc lock to be held.
->
-> Good point. But is it really needed when called with rcu_read_lock?
+On Mon, Dec 05, 2022 at 06:05:07PM +0000, Russell King (Oracle) wrote:
+> On Mon, Dec 05, 2022 at 06:17:37PM +0100, Piergiorgio Beruto wrote:
+> > diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> > index e5b6cb1a77f9..99e3497b6aa1 100644
+> > --- a/drivers/net/phy/phy.c
+> > +++ b/drivers/net/phy/phy.c
+> > @@ -543,6 +543,40 @@ int phy_ethtool_get_stats(struct phy_device *phydev,
+> >  }
+> >  EXPORT_SYMBOL(phy_ethtool_get_stats);
+> >  
+> > +/**
+> > + *
+> > + */
+> > +int phy_ethtool_get_plca_cfg(struct phy_device *dev,
+> > +			     struct phy_plca_cfg *plca_cfg)
+> > +{
+> > +	// TODO
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL(phy_ethtool_get_plca_cfg);
+> > +
+> > +/**
+> > + *
+> > + */
+> > +int phy_ethtool_set_plca_cfg(struct phy_device *dev,
+> > +			     struct netlink_ext_ack *extack,
+> > +			     const struct phy_plca_cfg *plca_cfg)
+> > +{
+> > +	// TODO
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL(phy_ethtool_set_plca_cfg);
+> > +
+> > +/**
+> > + *
+> > + */
+> > +int phy_ethtool_get_plca_status(struct phy_device *dev,
+> > +				struct phy_plca_status *plca_st)
+> > +{
+> > +	// TODO
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL(phy_ethtool_get_plca_status);
+> > +
+> >  /**
+> >   * phy_start_cable_test - Start a cable test
+> >   *
+> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > index 716870a4499c..f248010c403d 100644
+> > --- a/drivers/net/phy/phy_device.c
+> > +++ b/drivers/net/phy/phy_device.c
+> > @@ -3262,6 +3262,9 @@ static const struct ethtool_phy_ops phy_ethtool_phy_ops = {
+> >  	.get_sset_count		= phy_ethtool_get_sset_count,
+> >  	.get_strings		= phy_ethtool_get_strings,
+> >  	.get_stats		= phy_ethtool_get_stats,
+> > +	.get_plca_cfg		= phy_ethtool_get_plca_cfg,
+> > +	.set_plca_cfg		= phy_ethtool_set_plca_cfg,
+> > +	.get_plca_status	= phy_ethtool_get_plca_status,
+> >  	.start_cable_test	= phy_start_cable_test,
+> >  	.start_cable_test_tdr	= phy_start_cable_test_tdr,
+> >  };
+> 
+> From what I can see, none of the above changes need to be part of
+> patch 1 - nothing in the rest of the patch requires these members to be
+> filled in, since you explicitly test to see whether they are before
+> calling them.
+My apologies, in my understanding of this process (which is new to me)
+the idea of dividing the patches into smaller parts is to facilitate the
+review. It was not clear to me that the single patches had to be
+self-consistent also from a formal perspective. I was assuming that a
+patchset can be accepted or rejected as a whole. Is this the case, or
+can you accept only a subset of patches in a set?
 
-It is needed.
+In short, I did this because I -thought- it would help the reader
+understanding what the intention of the change would be. If this is not
+the case, fair enough, I'll not do this in the future.
 
-Please revert this patch.
+> 
+> So, rather than introducing docbook stubs and stub functions that
+> do nothing, marked with "TODO" comments, just merge these changes
+> above with patch 3, where you actually populate these functions.
+Clear. Do you want me to regenerate the patches into a v4 or do you
+think we can move forward with v3 anyway?
 
-Many people use FQ qdisc, where packets are waiting for their Earliest
-Departure Time to be released.
+> Also, why do they need to be exported to modules? From what I can see,
+> the only user of these functions is phy_device.c, which is part of
+> the same module as phy.c where the functions live, meaning that they
+> don't need to be exported.
+I did this because similar functions in the same file are all exported
+to modules (e.g. phy_config_aneg, phy_speed_down, phy_start_cable_test).
+Therefore, I assumed the intention was to let modules (maybe out-of-tree
+modules?) make use of these functions. If you think we should not do
+this, would kindly explain why for example the phy_start_cable_test is
+exported? I'm really asking because I'm trying to learn the rationales
+behind the architectural choices that I see here.
 
-Also, the draft says:
+> 
+> It's also surely wrong to introduce stubs that return success but
+> do nothing.
+No doubt it would be wrong if the patch can be integrated regardless of
+the other patches in the same set.
 
-5.4.2.7.  queue depth
-
-   The "queue depth" field is a 4-octet unsigned integer field.  This
-   field indicates the current length of the egress interface queue of
-   the interface from where the packet is forwarded out.  The queue
-   depth is expressed as the current amount of memory buffers used by
-   the queue (a packet could consume one or more memory buffers,
-   depending on its size).
-
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                       queue depth                             |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-
-It is relatively clear that the egress interface is the aggregate
-egress interface,
-not a subset of the interface.
-
-If you have 32 TX queues on a NIC, all of them being backlogged (line rate),
-sensing the queue length of one of the queues would give a 97% error
-on the measure.
-
-To properly implement that 'Queue depth' metric, you would need to use
-the backlog of the MQ qdisc.
-That would be very expensive.
+> 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
