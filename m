@@ -2,186 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BB7E64236D
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:08:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE6BC642376
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:13:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231426AbiLEHIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 02:08:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49108 "EHLO
+        id S231731AbiLEHNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 02:13:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231636AbiLEHIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:08:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0E6DECF
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 23:08:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58DA560F8A
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:08:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE76BC433D6;
-        Mon,  5 Dec 2022 07:08:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670224083;
-        bh=xaI8ieGkNVAf5EJVbnS5sOjm4WQ5ODJeLJQADAuVQX0=;
+        with ESMTP id S231582AbiLEHNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:13:43 -0500
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BD8DF00;
+        Sun,  4 Dec 2022 23:13:41 -0800 (PST)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 40ED9C009; Mon,  5 Dec 2022 08:13:49 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1670224429; bh=2/E7M28jlzB+tOHKj9EI5rF1sUTSmV05NM5sZZy2Ges=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NPw92dDrNNI0Z8iydBPT9xBzg1BJCX2TW/mLVdFP3v31qcp9KumxxSG+L8drhjuVj
-         a2v8o1/ZHxmLoQcATOF4zyY+7qrG9Las7OK4SoqLv/8ivr1JqTmx9GNl/51PSfLpeV
-         mqWqMUII/i2i9Z+0wWn5eMhxwuJfD8keDK5foO6V7mXIq1nr5CaoaTDwZ2G9h2WD4I
-         P+TsFlIioCOOvOghUNF3BNjMNjJTsDrAJc1MrbNNK5qTnQAD+sDj7WzO0pOp7Pnqdn
-         LTTA8HaVHHJbI5PoWKAP7yEV9EgSbUQ64sUdFjt+dNZKZIhkUJW0RITyjwYr/WTvfZ
-         vmfBITKPm/8zA==
-Date:   Mon, 5 Dec 2022 09:07:59 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, sujuan.chen@mediatek.com,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH net-next] net: ethernet: mtk_wed: add reset to
- rx_ring_setup callback
-Message-ID: <Y42Yz2hhwk1Rw1hz@unreal>
-References: <26fa16f2f212bff5edfdbe8a4f41dba7a132b0be.1670072570.git.lorenzo@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <26fa16f2f212bff5edfdbe8a4f41dba7a132b0be.1670072570.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        b=B0zWuxAWobbgFEMxbhwX4lp5iaDuYpVNfYEbFdypNE9BAEAUfyDNFOZ9FJxGQIdsa
+         b8O8XLAwsW93DcGQ3Q4PU3/Lta6koQ9lky6cmm3lfMhbiiA46TsCstjXBH999VsiNu
+         +g+UGbZ/ZI0sN+KWbwUv/pRW69a6gCgVxnjLgvbFBVlTAWRndzp8T/zJdsaVi0zHgy
+         w5r04KLoMbSVP7SFddKajyEj99IP8NkLmjCPuzsE1nZVZ5mvPDyRV144nm9oICY2Cy
+         1whWO7gJ3/KnNTjVIH5LIa0I6FJlll7IosmDfBEZKVNGoLLzb0Wyt/2gFNpM4NB9uD
+         TY9Y5Y2mDRT+g==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 60CC5C009;
+        Mon,  5 Dec 2022 08:13:45 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1670224428; bh=2/E7M28jlzB+tOHKj9EI5rF1sUTSmV05NM5sZZy2Ges=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KxQeiB3TMfEP8TdHuiQ+mAFsfqmEjCtnUMdRLDavqny0AJ9quC85bvFEBSntRx1EW
+         kjheht3Ihlt2CF/xQPWMOwq5Hp75OT1K383041mHB0mzWog1mpMI4WaQBmkJkYT7Ut
+         qc0RVIfxvC04axDWpXmw086FQ2t/l35XCHSiqlIzYMqDz+K9YUpMXV5nxgGYli3Hrw
+         Kgq6sdVe8hA1CS/X51+825I4x+cBiWzHHw2YUdFUClSMpRA3HGpm2UG+i+a0wx3vZb
+         xKkm9DY1ftW3CzJ8CI0eeoJ+3T+iZoug4LvDwB+Nn8oZ4GFo/0dv5qbuFR9SS2ESgJ
+         QV9Y9Zr30M2zg==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id d99753f1;
+        Mon, 5 Dec 2022 07:13:32 +0000 (UTC)
+Date:   Mon, 5 Dec 2022 16:13:17 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Marco Elver <elver@google.com>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        rcu <rcu@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        kunit-dev@googlegroups.com, lkft-triage@lists.linaro.org,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: Re: arm64: allmodconfig: BUG: KCSAN: data-race in p9_client_cb /
+ p9_client_rpc
+Message-ID: <Y42aDQ0ZOUt4dvYc@codewreck.org>
+References: <CA+G9fYsK5WUxs6p9NaE4e3p7ew_+s0SdW0+FnBgiLWdYYOvoMg@mail.gmail.com>
+ <CANpmjNOQxZ--jXZdqN3tjKE=sd4X6mV4K-PyY40CMZuoB5vQTg@mail.gmail.com>
+ <CA+G9fYs55N3J8TRA557faxvAZSnCTUqnUx+p1GOiCiG+NVfqnw@mail.gmail.com>
+ <Y4e3WC4UYtszfFBe@codewreck.org>
+ <CA+G9fYuJZ1C3802+uLvqJYMjGged36wyW+G1HZJLzrtmbi1bJA@mail.gmail.com>
+ <Y4ttC/qESg7Np9mR@codewreck.org>
+ <CANpmjNNcY0LQYDuMS2pG2R3EJ+ed1t7BeWbLK2MNxnzPcD=wZw@mail.gmail.com>
+ <Y4vW4CncDucES8m+@codewreck.org>
+ <CANpmjNPXhEB6GeMT70UT1e-8zTHf3gY21E3wx-27VjChQ0x2gA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CANpmjNPXhEB6GeMT70UT1e-8zTHf3gY21E3wx-27VjChQ0x2gA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 03, 2022 at 02:06:30PM +0100, Lorenzo Bianconi wrote:
-> Introduce reset parameter to mtk_wed_rx_ring_setup signature.
-> This is a preliminary patch to add Wireless Ethernet Dispatcher reset
-> support.
-
-So please submit it as part the relevant series.
-
-Thanks
-
+Marco Elver wrote on Mon, Dec 05, 2022 at 08:00:00AM +0100:
+> > Should I just update the wrapped condition, as below?
+> >
+> > -       err = wait_event_killable(req->wq, req->status >= REQ_STATUS_RCVD);
+> > +       err = wait_event_killable(req->wq,
+> > +                                 READ_ONCE(req->status) >= REQ_STATUS_RCVD);
 > 
-> Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/mediatek/mtk_wed.c  | 20 +++++++++++++-------
->  drivers/net/wireless/mediatek/mt76/dma.c |  2 +-
->  include/linux/soc/mediatek/mtk_wed.h     |  8 ++++----
->  3 files changed, 18 insertions(+), 12 deletions(-)
+> Yes, this looks good!
 > 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
-> index 6352abd4157e..b1ec3f353b66 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_wed.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_wed.c
-> @@ -1216,7 +1216,8 @@ mtk_wed_wdma_rx_ring_setup(struct mtk_wed_device *dev, int idx, int size,
->  }
->  
->  static int
-> -mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int size)
-> +mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int size,
-> +			   bool reset)
->  {
->  	u32 desc_size = sizeof(struct mtk_wdma_desc) * dev->hw->version;
->  	struct mtk_wed_ring *wdma;
-> @@ -1225,8 +1226,8 @@ mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int size)
->  		return -EINVAL;
->  
->  	wdma = &dev->tx_wdma[idx];
-> -	if (mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE, desc_size,
-> -			       true))
-> +	if (!reset && mtk_wed_ring_alloc(dev, wdma, MTK_WED_WDMA_RING_SIZE,
-> +					 desc_size, true))
->  		return -ENOMEM;
->  
->  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_BASE,
-> @@ -1236,6 +1237,9 @@ mtk_wed_wdma_tx_ring_setup(struct mtk_wed_device *dev, int idx, int size)
->  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_CPU_IDX, 0);
->  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_DMA_IDX, 0);
->  
-> +	if (reset)
-> +		mtk_wed_ring_reset(wdma, MTK_WED_WDMA_RING_SIZE, true);
-> +
->  	if (!idx)  {
->  		wed_w32(dev, MTK_WED_WDMA_RING_TX + MTK_WED_RING_OFS_BASE,
->  			wdma->desc_phys);
-> @@ -1577,18 +1581,20 @@ mtk_wed_txfree_ring_setup(struct mtk_wed_device *dev, void __iomem *regs)
->  }
->  
->  static int
-> -mtk_wed_rx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs)
-> +mtk_wed_rx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs,
-> +		      bool reset)
->  {
->  	struct mtk_wed_ring *ring = &dev->rx_ring[idx];
->  
->  	if (WARN_ON(idx >= ARRAY_SIZE(dev->rx_ring)))
->  		return -EINVAL;
->  
-> -	if (mtk_wed_ring_alloc(dev, ring, MTK_WED_RX_RING_SIZE,
-> -			       sizeof(*ring->desc), false))
-> +	if (!reset && mtk_wed_ring_alloc(dev, ring, MTK_WED_RX_RING_SIZE,
-> +					 sizeof(*ring->desc), false))
->  		return -ENOMEM;
->  
-> -	if (mtk_wed_wdma_tx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE))
-> +	if (mtk_wed_wdma_tx_ring_setup(dev, idx, MTK_WED_WDMA_RING_SIZE,
-> +				       reset))
->  		return -ENOMEM;
->  
->  	ring->reg_base = MTK_WED_RING_RX_DATA(idx);
-> diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
-> index 3f8c0845fcca..f795548562f5 100644
-> --- a/drivers/net/wireless/mediatek/mt76/dma.c
-> +++ b/drivers/net/wireless/mediatek/mt76/dma.c
-> @@ -648,7 +648,7 @@ mt76_dma_wed_setup(struct mt76_dev *dev, struct mt76_queue *q)
->  			q->wed_regs = wed->txfree_ring.reg_base;
->  		break;
->  	case MT76_WED_Q_RX:
-> -		ret = mtk_wed_device_rx_ring_setup(wed, ring, q->regs);
-> +		ret = mtk_wed_device_rx_ring_setup(wed, ring, q->regs, false);
->  		if (!ret)
->  			q->wed_regs = wed->rx_ring[ring].reg_base;
->  		break;
-> diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
-> index beb190449704..a0746d4aec20 100644
-> --- a/include/linux/soc/mediatek/mtk_wed.h
-> +++ b/include/linux/soc/mediatek/mtk_wed.h
-> @@ -160,7 +160,7 @@ struct mtk_wed_ops {
->  	int (*tx_ring_setup)(struct mtk_wed_device *dev, int ring,
->  			     void __iomem *regs, bool reset);
->  	int (*rx_ring_setup)(struct mtk_wed_device *dev, int ring,
-> -			     void __iomem *regs);
-> +			     void __iomem *regs, bool reset);
->  	int (*txfree_ring_setup)(struct mtk_wed_device *dev,
->  				 void __iomem *regs);
->  	int (*msg_update)(struct mtk_wed_device *dev, int cmd_id,
-> @@ -228,8 +228,8 @@ mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
->  	(_dev)->ops->irq_get(_dev, _mask)
->  #define mtk_wed_device_irq_set_mask(_dev, _mask) \
->  	(_dev)->ops->irq_set_mask(_dev, _mask)
-> -#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs) \
-> -	(_dev)->ops->rx_ring_setup(_dev, _ring, _regs)
-> +#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) \
-> +	(_dev)->ops->rx_ring_setup(_dev, _ring, _regs, _reset)
->  #define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash) \
->  	(_dev)->ops->ppe_check(_dev, _skb, _reason, _hash)
->  #define mtk_wed_device_update_msg(_dev, _id, _msg, _len) \
-> @@ -249,7 +249,7 @@ static inline bool mtk_wed_device_active(struct mtk_wed_device *dev)
->  #define mtk_wed_device_reg_write(_dev, _reg, _val) do {} while (0)
->  #define mtk_wed_device_irq_get(_dev, _mask) 0
->  #define mtk_wed_device_irq_set_mask(_dev, _mask) do {} while (0)
-> -#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs) -ENODEV
-> +#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) -ENODEV
->  #define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash)  do {} while (0)
->  #define mtk_wed_device_update_msg(_dev, _id, _msg, _len) -ENODEV
->  #define mtk_wed_device_stop(_dev) do {} while (0)
-> -- 
-> 2.38.1
+> > The writes all are straightforward, there's all the error paths to
+> > convert to WRITE_ONCE too but that's not difficult (leaving only the
+> > init without such a marker); I'll send a patch when you've confirmed the
+> > read looks good.
+> > (the other reads are a bit less obvious as some are protected by a lock
+> > in trans_fd, which should cover all cases of possible concurrent updates
+> > there as far as I can see, but this mixed model is definitely hard to
+> > reason with... Well, that's how it was written and I won't ever have time
+> > to rewrite any of this. Enough ranting.)
 > 
+> If the lock-protected accesses indeed are non-racy, they should be
+> left unmarked. If some assumption here turns out to be wrong, KCSAN
+> would (hopefully) tell us one way or another.
+
+Great, that makes sense.
+
+I've left the commit at home, will submit it tonight -- you and Naresh
+will be in Cc from suggested/reported-by tags.
+
+-- 
+Dominique
