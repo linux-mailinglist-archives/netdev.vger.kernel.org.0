@@ -2,93 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEFDC642938
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 14:21:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D96464292D
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 14:20:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232165AbiLENVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 08:21:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46376 "EHLO
+        id S231290AbiLENUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 08:20:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiLENVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 08:21:20 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2009D1C404;
-        Mon,  5 Dec 2022 05:21:18 -0800 (PST)
-Received: from localhost.localdomain.datenfreihafen.local (p5dd0dfce.dip0.t-ipconnect.de [93.208.223.206])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 2B6DBC05B3;
-        Mon,  5 Dec 2022 14:21:17 +0100 (CET)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org
-Subject: pull-request: ieee802154-next 2022-12-05
-Date:   Mon,  5 Dec 2022 14:19:09 +0100
-Message-Id: <20221205131909.1871790-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S231387AbiLENUA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 08:20:00 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23F71C110;
+        Mon,  5 Dec 2022 05:19:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=XfIznegA6qJZCWzI3fzIHBwouvJOzrpLk24zY96/t7o=; b=nXrRWpsC4aMsPa3N+TohPJGdBL
+        k+j78NCONsR32nJVObh2KeI9K31mNIVLs7Hv2mq0242s/PcO951slY2zAE6sk5wxY4WB9WQaOR8EY
+        SeYDo/jLMFHZKKGtyBBP6A4m5EF7DtvsgoZRNEcZN8mpbBPWD9Sc+BS02BDuYEc7D+aA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p2BNd-004PFp-8B; Mon, 05 Dec 2022 14:19:33 +0100
+Date:   Mon, 5 Dec 2022 14:19:33 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Greg Ungerer <gregungerer@westnet.com.au>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: fec: don't reset irq coalesce settings to defaults
+ on "ip link up"
+Message-ID: <Y43v5UEAmZYl/T3z@lunn.ch>
+References: <c69c1ff1-4da9-89f8-df2e-824cb7183fe9@westnet.com.au>
+ <72eb4e63-10a8-702b-1113-7588fcade9fc@rasmusvillemoes.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <72eb4e63-10a8-702b-1113-7588fcade9fc@rasmusvillemoes.dk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave, Jakub.
+> Either way, I don't know if it's too late to apply this fix, or if
+> df727d4547 should just be reverted for 6.1 and then redone properly?
 
-An update from ieee802154 for *net-next*
+Since the fix is simple, do the fix. Even if it misses 6.1.0 it will
+be in 6.1.1.
 
-This is the second pull request from wpan-next this cycle. Hoping its still on
-time we have a few follow ups from the first, bigger pull request.
-
-Miquel continued his work towards full scanning support. For this, we now allow
-the creation of dedicated coordinator interfaces to allow a PAN coordinator to
-serve in the network and set the needed address filters with the hardware.
-
-On top of this we have the first part to allow scanning for available 15.4
-networks. A new netlink scan group, within the existing nl802154 API, was added.
-
-In addition Miquel fixed two issues that have been introduced in the former
-patches to free an skb correctly and clarifying an expression in the stack.
-
-From David Girault we got tracing support when registering new PANs.
-
-regards
-Stefan Schmidt
-
-The following changes since commit 95d9a3dab109f2806980d55634972120824a5a5a:
-
-  selftests: tc-testing: Add matchJSON to tdc (2022-10-26 20:22:33 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan-next.git tags/ieee802154-for-net-next-2022-12-05
-
-for you to fetch changes up to e29e3c7ce6d4b2f164ebd717e4794c626fc1c954:
-
-  mac802154: Trace the registration of new PANs (2022-11-29 15:34:32 +0100)
-
-----------------------------------------------------------------
-David Girault (1):
-      mac802154: Trace the registration of new PANs
-
-Miquel Raynal (4):
-      mac802154: Move an skb free within the rx path
-      mac802154: Clarify an expression
-      mac802154: Allow the creation of coordinator interfaces
-      ieee802154: Advertize coordinators discovery
-
- include/net/cfg802154.h   |  18 ++++++++
- include/net/nl802154.h    |  43 +++++++++++++++++++
- net/ieee802154/nl802154.c | 103 ++++++++++++++++++++++++++++++++++++++++++++++
- net/ieee802154/nl802154.h |   2 +
- net/mac802154/iface.c     |  15 +++----
- net/mac802154/main.c      |   2 +-
- net/mac802154/rx.c        |  24 +++++------
- net/mac802154/trace.h     |  25 +++++++++++
- 8 files changed, 211 insertions(+), 21 deletions(-)
+   Andrew
