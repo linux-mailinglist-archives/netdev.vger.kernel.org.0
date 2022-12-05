@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 239AE642B8B
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:22:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ABC1642B98
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 16:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbiLEPWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 10:22:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51120 "EHLO
+        id S232559AbiLEP0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 10:26:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232670AbiLEPVo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:21:44 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9451EC7C;
-        Mon,  5 Dec 2022 07:20:04 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id g10so11087552plo.11;
-        Mon, 05 Dec 2022 07:20:04 -0800 (PST)
+        with ESMTP id S232378AbiLEPZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 10:25:52 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE9ED1F2FF
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:23:00 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id td2so28598999ejc.5
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 07:23:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dV7aKa56ibaWCF0fScgffCWPLWMG3qY+09NbkLnEHyw=;
-        b=aomiFspej4HizuZJYTvyarnC8Vhm2Pd9q93oE30Ve+E/rqqWLB0hFEzOivHHXQ4Qc2
-         Td93qQXrEP5w1Lycb5ce7g3FVcwhKAWKZMN+jUbAjExlRbnWHVt29ujjVbv/3AHe42Rl
-         dWcmf8BeFiFMw2yxEB3uduHQq8g3k0tDf2Ihdr00fMChc4CELf8JZB2k+3WQUMh31wtU
-         57olOyg+WwrJF7dSPDU5eXDb/hNOOOXeoOclmt4BZc1OxFOZTaukZMalzh37TWcBJUUJ
-         jnI/pufbuah0u73N37rrHxHLqcxchq+iy/St0GonOpZUkR0qQ8Y6WTlWKxih68RWPMPg
-         jLRQ==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=20NnQXfQ6xH/6rPBdmFO/uzZlwozCEZtbv9LHnEth3s=;
+        b=sXP0M6IxT4yUO/RdRAgcvUoiAeRMIl2b4b/GUE7zGSB5g+hKqXURVUjOpmIAC6MJ2k
+         0ni+uB2jkGeCIzaNHS05eywTWV7xOqRz2j2jE2aMzHGwE+76iAwRckuObPJhi9S7jNSx
+         OcwkRExtKYippXSK9Gc/tV7UfA4xTwh2l9Hj0QFfToqzi4cE7GHOObRp5KOG0AWQTrla
+         khDrCmVXvN/+njSC2nJMwFzfHgTpvcBCyNnG2nwI1uyqjIeuP7G0wClvQgoRVB+hT1Dt
+         Gg/e3XQRqU2CDw4N1AsU1HhHhw/TMa2S0aWf7Y8znqchbhbgYU4x51vb2DAEHgwLrMTY
+         RHvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dV7aKa56ibaWCF0fScgffCWPLWMG3qY+09NbkLnEHyw=;
-        b=JNYL1ClfusLMRXDMEyEvA02mH0B9VK246Ouird1xAmrImeS93uVoKWXhdR7o/J39FF
-         8Ea2qzaexE4kgDlUIfOMcfwtTtO4YJgfyL6w1Mjsay2+WrBDlSmXqr6BSL7nFL2zt5DU
-         B7/u8V31l7kL6Uv0Q3WstQ+w/MM5f8xGsLeSOti3kKVFchn2j/pcudr7j6WfgxnS7nGm
-         RigETXqUAeYAG8gmlF1Gbztfr7aYVgjy6hH6ccdfF33v5c0Jt9LIY6VYl6nCNkLY7WUt
-         DIhKg3dfez7z9hcC0WuTgBx/CndznIjB1vUbELXaUNhLuUq1mhOibD8yfkQEATYcZydE
-         rLEg==
-X-Gm-Message-State: ANoB5pk0TdLfDAEnEPWQ3m/vwaOI8TuyAeOz+CA37/o7PNpCTtKiAcPT
-        sLymKaQ+xUXA8PqvCBpmUh0=
-X-Google-Smtp-Source: AA0mqf5aPYhGHwQpk/9/19rKsVis29Hjb8LZbiqLXx/XQ7kq+tRVSYO9QdhX7wKDAb4OGBlESOS+7Q==
-X-Received: by 2002:a17:90a:5103:b0:219:b374:6a7d with SMTP id t3-20020a17090a510300b00219b3746a7dmr10307602pjh.22.1670253604200;
-        Mon, 05 Dec 2022 07:20:04 -0800 (PST)
-Received: from localhost ([1.83.244.162])
-        by smtp.gmail.com with ESMTPSA id s9-20020a170902b18900b0017f8094a52asm10696595plr.29.2022.12.05.07.20.01
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=20NnQXfQ6xH/6rPBdmFO/uzZlwozCEZtbv9LHnEth3s=;
+        b=OIAjI+4aruzwEa2A+UMteqgMvh/iGzxa/P58HZAOJ4Dj/AVX/AeRUIIWCCQjAzXM1/
+         r4NRMIHxqdPF9jf/ym3ftYDxjR+wESZiIwtcjLyxh2V+98irxVPXaXYsR5Fi/sDH4Fv2
+         1o2Q1/VHbwvTfqDtBmYLMDrc0SBdEFA+9ZPvoVUbpWmDJqvprOi3GiYgG8G5qmI4mwK4
+         eJfKzaR0xERPv0p68PerQH8M9UciJuDEGbnenoXHdYItUwc/95CdF/4S8dknD+1ymwoy
+         JYnyFJ75sF039O4Musva20kJyytCn3jMY/YbGRJA75dsAI1Ok8zr8Moqjjaf09Nl4ovI
+         oCTQ==
+X-Gm-Message-State: ANoB5pluZhfuxuf1kjit8dDIsJ1PErLrCJ4syKc+b9tVgAfXe3awEk87
+        u3q7L9dH4148/Kkp/OfazyN48s69jqBsJ39t43eS0g==
+X-Google-Smtp-Source: AA0mqf7MCMSdrcLpdhLxl6jlMBePQVdtTBy3p8JJhk0utkJhxf1qXT6+bV7hEiuH4R3WQ3NYKkw14Q==
+X-Received: by 2002:a17:906:bcda:b0:7c0:80b0:7f67 with SMTP id lw26-20020a170906bcda00b007c080b07f67mr27641806ejb.462.1670253779335;
+        Mon, 05 Dec 2022 07:22:59 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id u2-20020a1709061da200b007b8a8fc6674sm6326201ejh.12.2022.12.05.07.22.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 07:20:03 -0800 (PST)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     xiyou.wangcong@gmail.com
-Cc:     18801353760@163.com, cong.wang@bytedance.com, davem@davemloft.net,
-        dvyukov@google.com, edumazet@google.com, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
-Subject: Re: [PATCH v3] net: sched: fix memory leak in tcindex_set_parms
-Date:   Mon,  5 Dec 2022 23:19:56 +0800
-Message-Id: <20221205151956.28422-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <Y4uvQA2xxtJXltSM@pop-os.localdomain>
-References: <Y4uvQA2xxtJXltSM@pop-os.localdomain>
+        Mon, 05 Dec 2022 07:22:58 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, michael.chan@broadcom.com,
+        ioana.ciornei@nxp.com, dmichail@fungible.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        tchornyi@marvell.com, tariqt@nvidia.com, saeedm@nvidia.com,
+        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
+        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, simon.horman@corigine.com,
+        shannon.nelson@amd.com, brett.creeley@amd.com
+Subject: [patch net-next 0/8] devlink: make sure devlink port registers/unregisters only for registered instance
+Date:   Mon,  5 Dec 2022 16:22:49 +0100
+Message-Id: <20221205152257.454610-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,160 +74,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 4 Dec 2022 at 04:19, Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Tue, Nov 29, 2022 at 10:52:49AM +0800, Hawkins Jiawei wrote:
-> > Kernel uses tcindex_change() to change an existing
-> > filter properties. During the process of changing,
-> > kernel uses tcindex_alloc_perfect_hash() to newly
-> > allocate filter results, uses tcindex_filter_result_init()
-> > to clear the old filter result.
-> >
-> > Yet the problem is that, kernel clears the old
-> > filter result, without destroying its tcf_exts structure,
-> > which triggers the above memory leak.
-> >
-> > Considering that there already extis a tc_filter_wq workqueue
-> > to destroy the old tcindex_data by tcindex_partial_destroy_work()
-> > at the end of tcindex_set_parms(), this patch solves this memory
-> > leak bug by removing this old filter result clearing part,
-> > and delegating it to the tc_filter_wq workqueue.
->
-> Hmm?? The tcindex_partial_destroy_work() is to destroy 'oldp' which is
-> different from 'old_r'. I mean, you seem assuming that struct
-> tcindex_filter_result is always from struct tcindex_data, which is not
-> true, check the following tcindex_lookup() which retrieves tcindex_filter_result
-> from struct tcindex_filter.
->
-> static struct tcindex_filter_result *tcindex_lookup(struct tcindex_data *p,
->                                                     u16 key)
-> {
->         if (p->perfect) {
->                 struct tcindex_filter_result *f = p->perfect + key;
->
->                 return tcindex_filter_is_set(f) ? f : NULL;
->         } else if (p->h) {
->                 struct tcindex_filter __rcu **fp;
->                 struct tcindex_filter *f;
->
->                 fp = &p->h[key % p->hash];
->                 for (f = rcu_dereference_bh_rtnl(*fp);
->                      f;
->                      fp = &f->next, f = rcu_dereference_bh_rtnl(*fp))
->                         if (f->key == key)
->                                 return &f->result;
->         }
->
->         return NULL;
-> }
+From: Jiri Pirko <jiri@nvidia.com>
 
-Oh, thanks for correcting me! You are right, I wrongly assuming that
-struct tcindex_filter_result is always from struct tcindex_data
-`perfect` field.
+Currently, the devlink_register() is called as the last thing during
+driver init phase. For devlink objects, this is fine as the
+notifications of objects creations are withheld to be send only after
+devlink instance is registered. Until devlink is registered it is not
+visible to userspace.
 
-But I think this patch still can fix this problem, after reviewing
-the tcindex_set_parms(). Because only the `tcindex_filter_result` is
-from `struct tcindex_data`, can the code reaches the deleted part
-in this patch.
+But if a  netdev is registered before, user gets a notification with
+a link to devlink, which is not visible to the user yet.
+This is the event order user sees:
+ * new netdev event over RT netlink
+ * new devlink event over devlink netlink
+ * new devlink_port event over devlink netlink
 
-To be more specific, the simplified logic about original
-tcindex_set_parms() is as below:
+Also, this is not consistent with devlink port split or devlink reload
+flows, where user gets notifications in following order:
+ * new devlink event over devlink netlink
+and then during port split or reload operation:
+ * new devlink_port event over devlink netlink
+ * new netdev event over RT netlink
 
-static int
-tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
-		  u32 handle, struct tcindex_data *p,
-		  struct tcindex_filter_result *r, struct nlattr **tb,
-		  struct nlattr *est, u32 flags, struct netlink_ext_ack *extack)
-{
-	...
-	if (p->perfect) {
-		int i;
+In this case, devlink port and related netdev are registered on already
+registered devlink instance.
 
-		if (tcindex_alloc_perfect_hash(net, cp) < 0)
-			goto errout;
-		cp->alloc_hash = cp->hash;
-		for (i = 0; i < min(cp->hash, p->hash); i++)
-			cp->perfect[i].res = p->perfect[i].res;
-		balloc = 1;
-	}
-	cp->h = p->h;
+Purpose of this patchset is to fix the drivers init flow so devlink port
+gets registered only after devlink instance is registered.
 
-	...
+Jiri Pirko (8):
+  devlink: call devlink_port_register/unregister() on registered
+    instance
+  netdevsim: call devl_port_register/unregister() on registered instance
+  mlxsw: call devl_port_register/unregister() on registered instance
+  nfp: call devl_port_register/unregister() on registered instance
+  mlx4: call devl_port_register/unregister() on registered instance
+  mlx5: call devl_port_register/unregister() on registered instance
+  devlink: assert if devl_port_register/unregister() is called on
+    unregistered devlink instance
+  devlink: remove port notifications from devlink_register/unregister()
 
-	if (cp->perfect)
-		r = cp->perfect + handle;
-	else
-		r = tcindex_lookup(cp, handle) ? : &new_filter_result;
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 29 +++++----
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  7 ++-
+ .../ethernet/fungible/funeth/funeth_main.c    | 17 ++++--
+ drivers/net/ethernet/intel/ice/ice_main.c     | 21 ++++---
+ .../ethernet/marvell/prestera/prestera_main.c |  6 +-
+ drivers/net/ethernet/mellanox/mlx4/main.c     | 60 ++++++++++---------
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c | 10 +++-
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 17 +++---
+ .../mellanox/mlx5/core/sf/dev/driver.c        |  9 +++
+ drivers/net/ethernet/mellanox/mlxsw/core.c    | 24 ++++++++
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  2 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 38 +++++++++---
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c    | 10 ++--
+ .../net/ethernet/netronome/nfp/nfp_net_main.c | 22 +++++--
+ .../ethernet/pensando/ionic/ionic_devlink.c   |  6 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  7 ++-
+ drivers/net/netdevsim/dev.c                   | 31 ++++++++--
+ net/core/devlink.c                            |  7 +--
+ 18 files changed, 218 insertions(+), 105 deletions(-)
 
-	if (old_r && old_r != r) {
-		err = tcindex_filter_result_init(old_r, cp, net);
-		if (err < 0) {
-			kfree(f);
-			goto errout_alloc;
-		}
-	}
-	...
-}
+-- 
+2.37.3
 
-- cp's h field is directly copied from p's h field
-
-- if `old_r` is retrieved from struct tcindex_filter, in other word,
-is retrieved from p's h field. Then the `r` should get the same value
-from `tcindex_loopup(cp, handle)`.
-
-- so `old_r == r` is true, code will never uses tcindex_filter_result_init()
-to clear the old_r in such case.
-
-So I think this patch still can fix this memory leak caused by 
-tcindex_filter_result_init(), But maybe I need to improve my
-commit message.
-
-Please correct me If I am wrong.
-
-> > diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-> > index 1c9eeb98d826..3f4e7a6cdd96 100644
-> > --- a/net/sched/cls_tcindex.c
-> > +++ b/net/sched/cls_tcindex.c
-> > @@ -478,14 +478,6 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
-> >               tcf_bind_filter(tp, &cr, base);
-> >       }
-> > 
-> > -     if (old_r && old_r != r) {
-> > -             err = tcindex_filter_result_init(old_r, cp, net);
-> > -             if (err < 0) {
-> > -                     kfree(f);
-> > -                     goto errout_alloc;
-> > -             }
-> > -     }
-> > -
->
-> Even if your above analysis is correct, 'old_r' becomes unused (set but not used)
-> now, I think you should get some compiler warning.
-
-
-Oh, it actually didn't trigger any compiler warning,
-because there is still a used place as below:
-
-static int
-tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
-		  u32 handle, struct tcindex_data *p,
-		  struct tcindex_filter_result *r, struct nlattr **tb,
-		  struct nlattr *est, u32 flags, struct netlink_ext_ack *extack)
-{
-	struct tcindex_filter_result new_filter_result, *old_r = r;
-	...
-	err = tcindex_filter_result_init(&new_filter_result, cp, net);
-	if (err < 0)
-		goto errout_alloc;
-	if (old_r)
-		cr = r->res;
-	...
-}
-
-But the `old_r` and `r` has the same value here, so we can just replace
-the `old_r` with `r` here, and delete the `old_r` as you suggested.
-
-Thanks for your suggestion!
-
->
-> Thanks.
