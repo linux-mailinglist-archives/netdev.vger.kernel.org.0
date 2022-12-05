@@ -2,141 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD9E642347
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:01:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 352FF642352
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 08:04:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231537AbiLEHBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 02:01:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41592 "EHLO
+        id S231573AbiLEHEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 02:04:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231528AbiLEHAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:00:48 -0500
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C118DBF78
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 23:00:46 -0800 (PST)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-3c21d6e2f3aso108246787b3.10
-        for <netdev@vger.kernel.org>; Sun, 04 Dec 2022 23:00:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=coRXOHRNz//WTvn8iz/sAzTb1yJBt0dUNQrHlt2mpPs=;
-        b=cp2c4vLvpDWA0mcSMbgN+VRWTA9DqaDSNKkxVBxIu7MdTZray7sSNLrIl20bdFnlL0
-         KuswNgOgKZuar9qFfg3zDSP4eB3V30hL4u4a+vthyZ1dLzDdOwLeqFzDA1SxC2oD2F/K
-         c5K1UCDm42XTnU8MaTGaMgVCR9zjcLmPb/VNuXAGVsFac9utRPXA7IvkYQ1vxJtAhX/z
-         PkdIujfBoBkGmeir5HfFGNu1a0u5KsmdQEUE0YEc2CvTj7XseBcUhWCeqaREWYmEz8Ow
-         6Hivt5EJmmtmp6I60cJKxtybuRswUNjkPAK69gPiKXRrGAl++llFBfg3Fyh5/C2ZxsSz
-         xquA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=coRXOHRNz//WTvn8iz/sAzTb1yJBt0dUNQrHlt2mpPs=;
-        b=XFWPN3L0G7rADH+XkXF78Q1G46HDuHRC7BXynSF/cjGdSfZZ3qZ89KdOrOcji3Sxlv
-         TnGfXCL6ABnPFzUXiT/oe4NQdhTUSABNT1gX8Pv+zGs98L0l2kTxZJvVNhsg5Ws3qWV+
-         Op85V69GQezZK3QYCSxken1OgJ8RdsVXXAN4MPSJj5m/Zajak6qQVAp28yqva5Nl++he
-         jlNpIyTGPLRjR6GssSTJPDEWDrTivoFLkDkrw3X5CTDf63m4c0LU/P1Z2TpXcjiBm8JR
-         l5qtPnZpm9pJfIOs6Jf8LAG6osyRrsO9dSyONy2qHFaCwml2XHVoYzYIaLvaioHUR3L2
-         u3yg==
-X-Gm-Message-State: ANoB5pmKujJlI2k0bqFTEhVlSIOV+1/k5YpEDMcl/rXtoYhF8rWASTjz
-        2QfQndih+86DN+xHO/JQrjucJHHfYE2i/sNkO7h82g==
-X-Google-Smtp-Source: AA0mqf4ZStaU2n0mz3tYU7jDd0FFF3gERFNnwStcE0ObpDr+z9rd9bCvhr7OcdlOgWqCo28NPuV1ZIRM2HRWjs21t78=
-X-Received: by 2002:a81:1915:0:b0:3bf:9e45:1139 with SMTP id
- 21-20020a811915000000b003bf9e451139mr39230763ywz.267.1670223645646; Sun, 04
- Dec 2022 23:00:45 -0800 (PST)
+        with ESMTP id S231572AbiLEHEc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 02:04:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D23DC767
+        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 23:04:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6C8860F85
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 07:04:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67690C433C1;
+        Mon,  5 Dec 2022 07:04:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670223869;
+        bh=ew6SME2iZnd4VGhKxcng93VncjtjPCH9MqEPTJE39Bw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UfGk7p2SinwFxp843mB6ichZNpiHXEGiMfM5vIWo/x4hZ3xSWfIU/7L7e+Wc5t54v
+         WzeidTI/eQ3yl+qpQOWZog+iVC1BH9dO9+KJKdvZxHHGzcx91VS8r4+qE7hhrfvyYA
+         iQJyoH3mf1kqaH27vL4txGFFLppikW6eQtNd5DYTkZlY6ctQY+wKlgXKsLXeAUqgS2
+         5v+/RvEUCIIsiscejbC632/MOXcx5uVh4exwW7J+q6ioyCgeomjefHuGJTDRAlw47S
+         AB0R8SNXTOSDAiS6urStCoAOYFSOAPM8m8lOr9mT3408ONGOLfLNgwphn3ZE74M8Qt
+         kt4tNFHwpHKvQ==
+Date:   Mon, 5 Dec 2022 09:04:24 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Nir Levy <bhr166@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-atm-general@lists.sourceforge.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] atm: Fix use-after-free bug in atm_dev_register()
+Message-ID: <Y42X+OMcsHiht/jv@unreal>
+References: <20221203110924.7759-1-bhr166@gmail.com>
 MIME-Version: 1.0
-References: <CA+G9fYsK5WUxs6p9NaE4e3p7ew_+s0SdW0+FnBgiLWdYYOvoMg@mail.gmail.com>
- <CANpmjNOQxZ--jXZdqN3tjKE=sd4X6mV4K-PyY40CMZuoB5vQTg@mail.gmail.com>
- <CA+G9fYs55N3J8TRA557faxvAZSnCTUqnUx+p1GOiCiG+NVfqnw@mail.gmail.com>
- <Y4e3WC4UYtszfFBe@codewreck.org> <CA+G9fYuJZ1C3802+uLvqJYMjGged36wyW+G1HZJLzrtmbi1bJA@mail.gmail.com>
- <Y4ttC/qESg7Np9mR@codewreck.org> <CANpmjNNcY0LQYDuMS2pG2R3EJ+ed1t7BeWbLK2MNxnzPcD=wZw@mail.gmail.com>
- <Y4vW4CncDucES8m+@codewreck.org>
-In-Reply-To: <Y4vW4CncDucES8m+@codewreck.org>
-From:   Marco Elver <elver@google.com>
-Date:   Mon, 5 Dec 2022 08:00:00 +0100
-Message-ID: <CANpmjNPXhEB6GeMT70UT1e-8zTHf3gY21E3wx-27VjChQ0x2gA@mail.gmail.com>
-Subject: Re: arm64: allmodconfig: BUG: KCSAN: data-race in p9_client_cb / p9_client_rpc
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        rcu <rcu@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        kunit-dev@googlegroups.com, lkft-triage@lists.linaro.org,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221203110924.7759-1-bhr166@gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 4 Dec 2022 at 00:08, Dominique Martinet <asmadeus@codewreck.org> wrote:
->
-> Marco Elver wrote on Sat, Dec 03, 2022 at 05:46:46PM +0100:
-> > > But I can't really find a problem with what KCSAN complains about --
-> > > we are indeed accessing status from two threads without any locks.
-> > > Instead of a lock, we're using a barrier so that:
-> > >  - recv thread/cb: writes to req stuff || write to req status
-> > >  - p9_client_rpc: reads req status || reads other fields from req
-> > >
-> > > Which has been working well enough (at least, without the barrier things
-> > > blow up quite fast).
-> > >
-> > > So can I'll just consider this a false positive, but if someone knows
-> > > how much one can read into this that'd be appreciated.
-> >
-> > The barriers only ensure ordering, but not atomicity of the accesses
-> > themselves (for one, the compiler is well in its right to transform
-> > plain accesses in ways that the concurrent algorithm wasn't designed
-> > for). In this case it looks like it's just missing
-> > READ_ONCE()/WRITE_ONCE().
->
-> Aha! Thanks for this!
->
-> I've always believed plain int types accesses are always atomic and the
-> only thing to watch for would be compilers reordering instrucions, which
-> would be ensured by the barrier in this case, but I guess there are some
-> architectures or places where this isn't true?
->
->
-> I'm a bit confused though, I can only see five places where wait_event*
-> functions use READ_ONCE and I believe they more or less all would
-> require such a marker -- I guess non-equality checks might be safe
-> (waiting for a value to change from a known value) but if non-atomic
-> updates are on the table equality and comparisons checks all would need
-> to be decorated with READ_ONCE; afaiu, unlike usespace loops with
-> pthread_cond_wait there is nothing protecting the condition itself.
->
-> Should I just update the wrapped condition, as below?
->
-> -       err = wait_event_killable(req->wq, req->status >= REQ_STATUS_RCVD);
-> +       err = wait_event_killable(req->wq,
-> +                                 READ_ONCE(req->status) >= REQ_STATUS_RCVD);
+On Sat, Dec 03, 2022 at 01:09:24PM +0200, Nir Levy wrote:
+> When device_register() return failed in atm_register_sysfs,
+> the program will return to atm_dev_register and will kfree
+> the device. As the comment of device_register() says,
+> put_device() needs to be used to give up the reference
+> in the error path. Using kfree instead triggers a UAF,
+> as shown by the following KASAN report, obtained by causing
+> device_register() to fail. This patch calls put_device instead
+> of kfree when atm_register_sysfs has failed, and call kfree
+> only when atm_proc_dev_register has failed.
+> 
+> KASAN report details as below:
+> 
+> [   94.341664] BUG: KASAN: use-after-free in sysfs_kf_seq_show+0x306/0x440
+> [   94.341674] Read of size 8 at addr ffff88819a8a30e8 by task systemd-udevd/484
+> 
+> [   94.341680] CPU: 3 PID: 484 Comm: systemd-udevd Tainted: G            E      6.1.0-rc1+ #1
+> [   94.341684] Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 02/27/2020
+> [   94.341703] Call Trace:
+> [   94.341705]  <TASK>
+> [   94.341707]  dump_stack_lvl+0x49/0x63
+> [   94.341713]  print_report+0x177/0x46e
+> [   94.341717]  ? kasan_complete_mode_report_info+0x7c/0x210
+> [   94.341720]  ? sysfs_kf_seq_show+0x306/0x440
+> [   94.341753]  kasan_report+0xb0/0x140
+> [   94.341757]  ? sysfs_kf_seq_show+0x306/0x440
+> [   94.341760]  __asan_report_load8_noabort+0x14/0x20
+> [   94.341763]  sysfs_kf_seq_show+0x306/0x440
+> [   94.341766]  kernfs_seq_show+0x145/0x1b0
+> [   94.341769]  seq_read_iter+0x408/0x1080
+> [   94.341774]  kernfs_fop_read_iter+0x3d5/0x540
+> [   94.341794]  vfs_read+0x542/0x800
+> [   94.341797]  ? kernel_read+0x130/0x130
+> [   94.341800]  ? __kasan_check_read+0x11/0x20
+> [   94.341824]  ? get_nth_filter.part.0+0x200/0x200
+> [   94.341828]  ksys_read+0x116/0x220
+> [   94.341831]  ? __ia32_sys_pwrite64+0x1f0/0x1f0
+> [   94.341849]  ? __secure_computing+0x17c/0x2d0
+> [   94.341852]  __x64_sys_read+0x72/0xb0
+> [   94.341875]  do_syscall_64+0x59/0x90
+> [   94.341878]  ? exc_page_fault+0x72/0xf0
+> [   94.341881]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> [   94.341885] RIP: 0033:0x7fc391f14992
+> [   94.341888] Code: c0 e9 b2 fe ff ff 50 48 8d 3d fa b2 0c 00 e8 c5 1d 02 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24
+> [   94.341891] RSP: 002b:00007ffe33fed818 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+> [   94.341896] RAX: ffffffffffffffda RBX: 0000000000001018 RCX: 00007fc391f14992
+> [   94.341898] RDX: 0000000000001018 RSI: 0000558a696b0880 RDI: 000000000000000e
+> [   94.341900] RBP: 0000558a696b0880 R08: 0000000000000000 R09: 0000558a696b0880
+> [   94.341902] R10: 00007fc39201a300 R11: 0000000000000246 R12: 000000000000000e
+> [   94.341904] R13: 0000000000001017 R14: 0000000000000002 R15: 00007ffe33fed840
+> [   94.341908]  </TASK>
+> 
+> [   94.341911] Allocated by task 2613:
+> [   94.341914]  kasan_save_stack+0x26/0x50
+> [   94.341932]  kasan_set_track+0x25/0x40
+> [   94.341934]  kasan_save_alloc_info+0x1e/0x30
+> [   94.341936]  __kasan_kmalloc+0xb4/0xc0
+> [   94.341938]  kmalloc_trace+0x4a/0xb0
+> [   94.341941]  atm_dev_register+0x5d/0x700 [atm]
+> [   94.341949]  atmtcp_create+0x77/0x1f0 [atmtcp]
+> [   94.341953]  atmtcp_ioctl+0x12d/0xb9f [atmtcp]
+> [   94.341957]  do_vcc_ioctl+0xfe/0x640 [atm]
+> [   94.341962]  vcc_ioctl+0x10/0x20 [atm]
+> [   94.341968]  svc_ioctl+0x587/0x6c0 [atm]
+> [   94.341973]  sock_do_ioctl+0xd7/0x1e0
+> [   94.341977]  sock_ioctl+0x1b5/0x560
+> [   94.341979]  __x64_sys_ioctl+0x132/0x1b0
+> [   94.341981]  do_syscall_64+0x59/0x90
+> [   94.341983]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> [   94.341986] Freed by task 2613:
+> [   94.341988]  kasan_save_stack+0x26/0x50
+> [   94.341991]  kasan_set_track+0x25/0x40
+> [   94.341993]  kasan_save_free_info+0x2e/0x50
+> [   94.341995]  ____kasan_slab_free+0x174/0x1e0
+> [   94.341997]  __kasan_slab_free+0x12/0x20
+> [   94.342000]  slab_free_freelist_hook+0xd0/0x1a0
+> [   94.342002]  __kmem_cache_free+0x193/0x2c0
+> [   94.342005]  kfree+0x79/0x120
+> [   94.342007]  atm_dev_register.cold+0x46/0x64 [atm]
+> [   94.342013]  atmtcp_create+0x77/0x1f0 [atmtcp]
+> [   94.342016]  atmtcp_ioctl+0x12d/0xb9f [atmtcp]
+> [   94.342020]  do_vcc_ioctl+0xfe/0x640 [atm]
+> [   94.342077]  vcc_ioctl+0x10/0x20 [atm]
+> [   94.342083]  svc_ioctl+0x587/0x6c0 [atm]
+> [   94.342088]  sock_do_ioctl+0xd7/0x1e0
+> [   94.342091]  sock_ioctl+0x1b5/0x560
+> [   94.342093]  __x64_sys_ioctl+0x132/0x1b0
+> [   94.342095]  do_syscall_64+0x59/0x90
+> [   94.342098]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> [   94.342102] The buggy address belongs to the object at ffff88819a8a3000 which belongs to the cache kmalloc-1k of size 1024
+> [   94.342105] The buggy address is located 232 bytes inside of 1024-byte region [ffff88819a8a3000, ffff88819a8a3400)
+> 
+> [   94.342109] The buggy address belongs to the physical page:
+> [   94.342111] page:0000000099993f0a refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x19a8a0
+> [   94.342114] head:0000000099993f0a order:3 compound_mapcount:0 compound_pincount:0
+> [   94.342116] flags: 0x17ffffc0010200(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
+> [   94.342136] raw: 0017ffffc0010200 dead000000000100 dead000000000122 ffff888100042dc0
+> [   94.342138] raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
+> [   94.342139] page dumped because: kasan: bad access detected
+> 
+> [   94.342141] Memory state around the buggy address:
+> [   94.342143]  ffff88819a8a2f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> [   94.342145]  ffff88819a8a3000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [   94.342147] >ffff88819a8a3080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [   94.342148]                                                           ^
+> [   94.342150]  ffff88819a8a3100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [   94.342152]  ffff88819a8a3180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> 
+> Signed-off-by: Nir Levy <bhr166@gmail.com>
+> ---
+>  net/atm/resources.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Yes, this looks good!
+Please add target in patch title - {PATCH net] ...
+There is a need to add Fixes line too.
 
-> The writes all are straightforward, there's all the error paths to
-> convert to WRITE_ONCE too but that's not difficult (leaving only the
-> init without such a marker); I'll send a patch when you've confirmed the
-> read looks good.
-> (the other reads are a bit less obvious as some are protected by a lock
-> in trans_fd, which should cover all cases of possible concurrent updates
-> there as far as I can see, but this mixed model is definitely hard to
-> reason with... Well, that's how it was written and I won't ever have time
-> to rewrite any of this. Enough ranting.)
+> 
+> diff --git a/net/atm/resources.c b/net/atm/resources.c
+> index 2b2d33eeaf20..9ec07d66783b 100644
+> --- a/net/atm/resources.c
+> +++ b/net/atm/resources.c
+> @@ -112,12 +112,14 @@ struct atm_dev *atm_dev_register(const char *type, struct device *parent,
+>  
+>  	if (atm_proc_dev_register(dev) < 0) {
+>  		pr_err("atm_proc_dev_register failed for dev %s\n", type);
+> +		kfree(dev);
+>  		goto out_fail;
+>  	}
+>  
+>  	if (atm_register_sysfs(dev, parent) < 0) {
+>  		pr_err("atm_register_sysfs failed for dev %s\n", type);
+>  		atm_proc_dev_deregister(dev);
+> +		put_device(&dev->class_dev);
 
-If the lock-protected accesses indeed are non-racy, they should be
-left unmarked. If some assumption here turns out to be wrong, KCSAN
-would (hopefully) tell us one way or another.
+The right fix is to change atm_register_sysfs() to call this put_device
+and worth to get rid from device_del() which should be replaced with
+device_unregister().
 
-Thanks!
+Thanks
 
--- Marco
+>  		goto out_fail;
+>  	}
+>  
+> @@ -128,7 +130,6 @@ struct atm_dev *atm_dev_register(const char *type, struct device *parent,
+>  	return dev;
+>  
+>  out_fail:
+> -	kfree(dev);
+>  	dev = NULL;
+>  	goto out;
+>  }
+> -- 
+> 2.34.1
+> 
