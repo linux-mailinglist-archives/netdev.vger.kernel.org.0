@@ -2,121 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFBE76422B6
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 06:26:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5476422B8
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 06:29:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231654AbiLEFZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 00:25:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
+        id S231458AbiLEF3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 00:29:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231757AbiLEFZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 00:25:30 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03D19591
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 21:25:02 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id v206so13108369ybv.7
-        for <netdev@vger.kernel.org>; Sun, 04 Dec 2022 21:25:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=h8AkiS2Qfxp4kAJlb5zxEpYsW01DD5z1qyB1/NcGlCU=;
-        b=jRMfCPVIXHdaUPlDFQX14oqQwK/ECBMzc+1qN6zwVN90FJM+Uee6n6QODpuu3UhVfY
-         1klgUmDInvjv/yf5Fd79wrynLJeg0sfU7gtF+0iawuIY8wYTib+HWsyDuBQc0psygD1L
-         q8V3Ltl3iEXghaA1Crzyg8EnHSBfUGBT9ll+7xoX9ZH55t+YNIWGk79B8Lt9m1Qe+yGf
-         Qgc2teWHmNo5j3rvOccKHA1orS36SbOKU1vN/o+LjOudpRy72n42CzPgjzkmGeTe8Z/9
-         91Aku0G41bWd2XJZJotted3NkqW0UybR64KuC7l0EOk18PPyzWyHlQn+mLackLiAVPvm
-         aZ9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=h8AkiS2Qfxp4kAJlb5zxEpYsW01DD5z1qyB1/NcGlCU=;
-        b=GY2y+G5GqDw/LMnU9Lgpa5oDOEvH2vZquYI1/kD3Q4N5Y9yL/bDnYNhqVs72YdIXH7
-         TwymnY/uPmRSHG5+OtxgzRxQnPlMQQ83u2BqsPHO9RoxUhqP3jWCoFZTs12RFmnro2ZD
-         QUc0cH5aM7rLCGnD4YtDpM6rp4zVkU5ecBsddvCrk8+4cC3/L91h/VebL16E13tIi1CL
-         P8+uW+/f84K77YbcZu6anE9SJEbhRi6j4FdgkbJ9TIab1vowlT/AfSogdQPGaxkWKES3
-         YgDWawlsQvDOCzsU9jIROk+Wr2WHxH5r/TsdMAGrTV2JInnfMILs7jg3KkQ8HeVc0WEO
-         xGOw==
-X-Gm-Message-State: ANoB5pkCs/6xshJEeBv6HIEItjGmkEFUKv1Z94B5k3NE8sJKzIMAzwSN
-        y2MeMePTUcmytz+zCkfhe2kxd1QxodGTbxd5dkR8Sg==
-X-Google-Smtp-Source: AA0mqf6CuUZoAffgj4lZ4AOfj/mxkdpNHXOHGtOqAIbKcbvfSRxACN2WnuOEJVOcB3Z2Hbx1dX8FUOOTGLV7sH1tqL0=
-X-Received: by 2002:a25:d655:0:b0:6fc:1c96:c9fe with SMTP id
- n82-20020a25d655000000b006fc1c96c9femr16557533ybg.36.1670217901547; Sun, 04
- Dec 2022 21:25:01 -0800 (PST)
-MIME-Version: 1.0
-References: <adc33d6c7dd01e29c848b9519b6a601219ba6780.1670086158.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <adc33d6c7dd01e29c848b9519b6a601219ba6780.1670086158.git.christophe.jaillet@wanadoo.fr>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 5 Dec 2022 06:24:50 +0100
-Message-ID: <CANn89i+YnmoAunWzwG1KvCH0WUOCXfA6SztW3Xdf0vN4QktRGQ@mail.gmail.com>
-Subject: Re: [PATCH] packet: Don't include <linux/rculist.h>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231393AbiLEF3Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 00:29:16 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA9D10B5F
+        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 21:29:15 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1p242O-0005F6-28; Mon, 05 Dec 2022 06:29:08 +0100
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1p242L-002OOZ-Tt; Mon, 05 Dec 2022 06:29:06 +0100
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1p242M-00BtW6-0P; Mon, 05 Dec 2022 06:29:06 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com
+Subject: [PATCH net-next v1 1/1] net: dsa: microchip: add stats64 support for ksz8 series of switches
+Date:   Mon,  5 Dec 2022 06:29:04 +0100
+Message-Id: <20221205052904.2834962-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 3, 2022 at 5:49 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> There is no need to include <linux/rculist.h> here.
->
-> Prefer the less invasive <linux/types.h> which is needed for 'hlist_head'.
->
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> Let see if build-bots agree with me!
->
+Add stats64 support for ksz8xxx series of switches.
 
-net/packet/af_packet.c does not explicitly include linux/rculist.h
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 87 ++++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h |  1 +
+ 2 files changed, 88 insertions(+)
 
-It might be provided by include/linux/netdevice.h, but I wonder if
-this is best practice.
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index f39b041765fb..423f944cc34c 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -70,6 +70,43 @@ struct ksz_stats_raw {
+ 	u64 tx_discards;
+ };
+ 
++struct ksz88xx_stats_raw {
++	u64 rx;
++	u64 rx_hi;
++	u64 rx_undersize;
++	u64 rx_fragments;
++	u64 rx_oversize;
++	u64 rx_jabbers;
++	u64 rx_symbol_err;
++	u64 rx_crc_err;
++	u64 rx_align_err;
++	u64 rx_mac_ctrl;
++	u64 rx_pause;
++	u64 rx_bcast;
++	u64 rx_mcast;
++	u64 rx_ucast;
++	u64 rx_64_or_less;
++	u64 rx_65_127;
++	u64 rx_128_255;
++	u64 rx_256_511;
++	u64 rx_512_1023;
++	u64 rx_1024_1522;
++	u64 tx;
++	u64 tx_hi;
++	u64 tx_late_col;
++	u64 tx_pause;
++	u64 tx_bcast;
++	u64 tx_mcast;
++	u64 tx_ucast;
++	u64 tx_deferred;
++	u64 tx_total_col;
++	u64 tx_exc_col;
++	u64 tx_single_col;
++	u64 tx_mult_col;
++	u64 rx_discards;
++	u64 tx_discards;
++};
++
+ static const struct ksz_mib_names ksz88xx_mib_names[] = {
+ 	{ 0x00, "rx" },
+ 	{ 0x01, "rx_hi" },
+@@ -156,6 +193,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
+ 	.w_phy = ksz8_w_phy,
+ 	.r_mib_cnt = ksz8_r_mib_cnt,
+ 	.r_mib_pkt = ksz8_r_mib_pkt,
++	.r_mib_stat64 = ksz88xx_r_mib_stats64,
+ 	.freeze_mib = ksz8_freeze_mib,
+ 	.port_init_cnt = ksz8_port_init_cnt,
+ 	.fdb_dump = ksz8_fdb_dump,
+@@ -1583,6 +1621,55 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
+ 	spin_unlock(&mib->stats64_lock);
+ }
+ 
++void ksz88xx_r_mib_stats64(struct ksz_device *dev, int port)
++{
++	struct ethtool_pause_stats *pstats;
++	struct rtnl_link_stats64 *stats;
++	struct ksz88xx_stats_raw *raw;
++	struct ksz_port_mib *mib;
++
++	mib = &dev->ports[port].mib;
++	stats = &mib->stats64;
++	pstats = &mib->pause_stats;
++	raw = (struct ksz88xx_stats_raw *)mib->counters;
++
++	spin_lock(&mib->stats64_lock);
++
++	stats->rx_packets = raw->rx_bcast + raw->rx_mcast + raw->rx_ucast +
++		raw->rx_pause;
++	stats->tx_packets = raw->tx_bcast + raw->tx_mcast + raw->tx_ucast +
++		raw->tx_pause;
++
++	/* HW counters are counting bytes + FCS which is not acceptable
++	 * for rtnl_link_stats64 interface
++	 */
++	stats->rx_bytes = raw->rx + raw->rx_hi - stats->rx_packets * ETH_FCS_LEN;
++	stats->tx_bytes = raw->tx + raw->tx_hi - stats->tx_packets * ETH_FCS_LEN;
++
++	stats->rx_length_errors = raw->rx_undersize + raw->rx_fragments +
++		raw->rx_oversize;
++
++	stats->rx_crc_errors = raw->rx_crc_err;
++	stats->rx_frame_errors = raw->rx_align_err;
++	stats->rx_dropped = raw->rx_discards;
++	stats->rx_errors = stats->rx_length_errors + stats->rx_crc_errors +
++		stats->rx_frame_errors  + stats->rx_dropped;
++
++	stats->tx_window_errors = raw->tx_late_col;
++	stats->tx_fifo_errors = raw->tx_discards;
++	stats->tx_aborted_errors = raw->tx_exc_col;
++	stats->tx_errors = stats->tx_window_errors + stats->tx_fifo_errors +
++		stats->tx_aborted_errors;
++
++	stats->multicast = raw->rx_mcast;
++	stats->collisions = raw->tx_total_col;
++
++	pstats->tx_pause_frames = raw->tx_pause;
++	pstats->rx_pause_frames = raw->rx_pause;
++
++	spin_unlock(&mib->stats64_lock);
++}
++
+ static void ksz_get_stats64(struct dsa_switch *ds, int port,
+ 			    struct rtnl_link_stats64 *s)
+ {
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index cb27f5a180c7..055d61ff3fb8 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -345,6 +345,7 @@ void ksz_switch_remove(struct ksz_device *dev);
+ 
+ void ksz_init_mib_timer(struct ksz_device *dev);
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
++void ksz88xx_r_mib_stats64(struct ksz_device *dev, int port);
+ void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
+ bool ksz_get_gbit(struct ksz_device *dev, int port);
+ phy_interface_t ksz_get_xmii(struct ksz_device *dev, int port, bool gbit);
+-- 
+2.30.2
 
-> Just declaring 'struct mutex' and 'struct hlist_head' would also be an
-> option.
-
-I do not get it, see [1]
-
-> It would remove the need of any include, but is more likely to break
-> something.
-
-I do not see why you are even trying this ?
-
-> ---
->  include/net/netns/packet.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/include/net/netns/packet.h b/include/net/netns/packet.h
-> index aae69bb43cde..74750865df36 100644
-> --- a/include/net/netns/packet.h
-> +++ b/include/net/netns/packet.h
-> @@ -5,8 +5,8 @@
->  #ifndef __NETNS_PACKET_H__
->  #define __NETNS_PACKET_H__
->
-> -#include <linux/rculist.h>
->  #include <linux/mutex.h>
-> +#include <linux/types.h>
->
->  struct netns_packet {
->         struct mutex            sklist_lock;
-
-[1] Definition of 'struct mutex' is definitely needed here.
-
-> --
-> 2.34.1
->
