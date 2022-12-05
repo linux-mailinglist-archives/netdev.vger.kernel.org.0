@@ -2,204 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42BD16439B0
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 00:55:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B276439B4
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 00:57:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbiLEXzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 18:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
+        id S232548AbiLEX5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 18:57:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230381AbiLEXzk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 18:55:40 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272511D308
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 15:55:39 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XUaIOsGfagHoQvmXIrZZ9P/12+PVma+y4XDBMzgFPAqXaDRoy+9o/z/WEeLR5SiwisUm5JzPAI5lBZHg7yeKF8xL6bMr8+QlWMi3TQh8QLODZDvLXWhRovQAo1sVU+Aiags1fZyIvnzDFpp4cfZhFNDUmxAF1AEFP/UJ3R8dOU6L+EAtEBe7o4FKSDD7YjfndCytBQJv4s4MY1gCSvmQjWnb8oWI4IMyEFqIJdW96Saf9bonzhZt/HtAynj3nW7nwR0LPgQED6lss0GCmnDBqpBC14uYjA5Lb5ZqW9tumGeHb6IvsvXlflnJhhMbbCbUhSNcg8BdnmHY1seq8nYjlA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7tvHgpv0MANGfJP5nogZEsMB6082fq2putjaTk5M0Kw=;
- b=UIChyash6UF7a7j+jUBS849gAAK9SQmkAAldQxYHbKWLjmt6dgGgzYvd309d/TQUSj09zUX+TivKVcguY06ABch8S7HNbiM3cWOph22nUQdO7TYw4d0oi93/M6vOiMYzOHr/y3mLUzFF1GOx3eEz5a/fEH1TUItUe7WXkZ5+5/1nq19I+A3tsbmd832JGzfBnleRFh9fwmjrkFF18xfQTeunE6xbRkdCmUHem8wTZKr3Kpuwyj/3tBMHeMs2CoxzsQzr3/dMuDy97O5oRONGP0/NwAiiniJTQE7JTMHbdIpM41aKMFX9SOUN01+5sMmxc1kmTp6zXAyfqTomnaJSHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7tvHgpv0MANGfJP5nogZEsMB6082fq2putjaTk5M0Kw=;
- b=Z1nt+ZfL//HOcY3PVORwBRcEXNHEdQdm3JuUOIqUie3PX7/F8A1EXYE2ZgbqI8+9hEKmvuUMUWPXonoRzGEYgFuUTkgI+fKpCAuaZvpJFo/U/z3EEGITNLks7au/bn6c4aoBz5L2swqweu5j3CvqjTXN0KDqPxNF9S/TzV2stiM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- MN0PR12MB6078.namprd12.prod.outlook.com (2603:10b6:208:3ca::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.13; Mon, 5 Dec 2022 23:55:36 +0000
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b]) by DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b%7]) with mapi id 15.20.5880.014; Mon, 5 Dec 2022
- 23:55:36 +0000
-Message-ID: <5e97d5b5-3df4-c9b5-bca4-c82c75d353e8@amd.com>
-Date:   Mon, 5 Dec 2022 15:55:32 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.5.1
-Subject: Re: [patch net-next 1/8] devlink: call
- devlink_port_register/unregister() on registered instance
-Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, michael.chan@broadcom.com,
-        ioana.ciornei@nxp.com, dmichail@fungible.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tchornyi@marvell.com, tariqt@nvidia.com, saeedm@nvidia.com,
-        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
-        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, simon.horman@corigine.com,
-        shannon.nelson@amd.com, brett.creeley@amd.com
-References: <20221205152257.454610-1-jiri@resnulli.us>
- <20221205152257.454610-2-jiri@resnulli.us>
-From:   Shannon Nelson <shnelson@amd.com>
-In-Reply-To: <20221205152257.454610-2-jiri@resnulli.us>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR02CA0050.namprd02.prod.outlook.com
- (2603:10b6:a03:54::27) To DS0PR12MB6583.namprd12.prod.outlook.com
- (2603:10b6:8:d1::12)
+        with ESMTP id S232384AbiLEX5w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 18:57:52 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35D165E5
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 15:57:50 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id q190so3599531iod.10
+        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 15:57:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=GSIqPXduJlFanom97XBLoEuLvh8SiPtbTgxfQXMpbc0=;
+        b=kkNSWN2zeC0fdFsxdmzfipXeOEUbzILOt6EOpxumoJHrTAPZ0+VK8dI4YAfrt/x3Vj
+         bD2vugxlIPivNs94+1JmU2kQhkNfkJelQhRN6Kh6mAUpm5HuNKWpp3/Am305Pvi03tkq
+         1UJ4F995pxzAwdmAF2yiwfmtZdXbllziUDo54=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GSIqPXduJlFanom97XBLoEuLvh8SiPtbTgxfQXMpbc0=;
+        b=QmuTg7I0/BM+qYtJsV1k9KkjKCwbtrcQ7o8aIc/1nIW8J4ms8CYh8mdgt8sFY/96cc
+         GmegUt//T5dlHXlY+bAZsE3TGnMZZUornMihCos4PL+3cv9sFnApFagF4s1HJJMW8oXR
+         ME29Q+kOL/xgM3O2nNQwwNkIH3fOtxGpeTBAnDR9EBDUCB+6hpNqBBgXjFY8VFOfXU/o
+         n3HULWnx5tY17C+o3kNKg+LCCuNtw02t0w9xrcgJcH+4BbSvleYFjFgAcayTx55BR7CO
+         1tyaVkDJnqHQOuqe6AhBFlVvjL/h1bjRxWKHWo5cA4VLm693bGd8MyZ3aHt2ylWXC8jV
+         BojA==
+X-Gm-Message-State: ANoB5pl5yKgEn5utyrZakn64SgEzC9AtwTjUTxbWqSOlWiagu76OdXoB
+        ykwBado3xKM0JhVn0fUkQ785Jaj//QrQ+sQ5w2rtOw==
+X-Google-Smtp-Source: AA0mqf5VoIOH9QFbpAB4o5gTYC527MWyFJflUGxzkBDyOuWYxJkHGOEqztGfwWZZIsMDaPdg2v2T/g3kgrpW4+z/cTo=
+X-Received: by 2002:a02:ce9a:0:b0:389:e42b:89fb with SMTP id
+ y26-20020a02ce9a000000b00389e42b89fbmr17113953jaq.281.1670284669913; Mon, 05
+ Dec 2022 15:57:49 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|MN0PR12MB6078:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1c0e45e1-a9d8-4257-e320-08dad71c3447
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 77+olzdrOA5O/fx9wUmZ8Y7bdCRjeAkmTQZHNuAtcnlbgHwtNxz46CdsTSqNoNvjcGmILr9aPmVzIEw84CWegF7HOXmJSvS7TtJOWG7Aaj7qqd3nNre+Wm2k1Bw47HrFMsza/0UY2F/HavoOwJUvFW9BwVkAjw8wQJD4JxLzH1gyKhye2R3i6ph23DfNHrondoQP14PvmkXPA4+bF0ZgJKpDLDVp3q265GwU7izJRsjHFTYnaJpFC3omFGeEMrWColaq7z17bc6lLmabo4f7X5+O1xaz1xsx07MqM6anF3p4/6A/kTfPJBElduYiPhtZlWoaYWZTy2geAur517A+45BmmFEP7ZkLnpwfxxstAY4L1ngyIPFHlgex0l3ANpemjAdDS2jazBwTOiI4BQvPm8F1tdnPvRn9ZZEU9bklc+2dPl2VUB0UQtwUuSnmn3uOQKYpvdsGCWHf2+rRVy8n2TGYG5VRMzM1Co6Wp/QXDVoK4stdE4Sy/VIAK0Gar/LEU5GRhPSwAtDJ0jSsZREmh4uv3JSmTTVK5WRFknXjG5+Fid1v1MqnrWfumRSgo2poeigvwHuOTNkbAdjUdrP60ooWfUHVT4+u9HS0cB5ldf01dx1iXG20RokVvZoWAdSEUcucT4cGneajKY12Yyt5lm/BMAf01sW9ed/vM4WA6p/2WPERMQUoZOef9dyMo7BMPM8oDU8uP4FZoD45OrHS/DJWfpUzrIF6mPS4LS1hCmaz41vghD2dAHfNRv09T89i
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(346002)(39860400002)(136003)(366004)(451199015)(38100700002)(7416002)(5660300002)(8936002)(8676002)(4326008)(41300700001)(31686004)(26005)(31696002)(6506007)(53546011)(316002)(36756003)(2906002)(66476007)(6486002)(83380400001)(66946007)(966005)(66556008)(6512007)(6666004)(478600001)(186003)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bS9hdzY4bmlzM0dRK1o1YlIvRElOM1J2bmlIakVHSWpQWHY0d3NoRW1CcGpv?=
- =?utf-8?B?OThra2tmbGQvVllZM0lxNWViU3RBdTZCbmpYZEo4ZTg1a3VLTkdHcWJYd01z?=
- =?utf-8?B?NzRIMnkrUjA5cUtVZHRvN0RWMUhPVkJ5Mk9SL1V5T0g4Vnc3Q3k1ejZ0amdR?=
- =?utf-8?B?WmJ0V3hraVJBdjB0Tkg5alo0TXFQVk5ydU9zWFNlK3k5clk3bEhRK2hKdkx5?=
- =?utf-8?B?R0VscmNZaU05eHZiSnpvTU1LK2l4TlUwNnhINEw0alMyckNpa2s2ck9QR2ly?=
- =?utf-8?B?Z2ZraWlFQTkvekdnalpiWTNPdUM3dk93VG1ZYTRPbEp6d2p2TGZUbmdhZ2Fl?=
- =?utf-8?B?UVFGMGxvR0VtbHIyNjlML3dGc29nWkZCTWtCNUFuR2l0NEp0WVd5NStETmFs?=
- =?utf-8?B?Qnl0QjVETnQxdjE2YVNOZEJvTE1oTmt0cTFLNzhrVmxNK2wvZkhFS2RHTXY0?=
- =?utf-8?B?UDRBbzZIQjJkT1FRQWhlSXRXeGtkYXNac053YW1TcU1JSTVjVUxQWThUYkp5?=
- =?utf-8?B?Y0ZQYm85b1VkR3lDQlduZXcvRVVyYkExZEtYQ29qaC9pVGgvRHliTVlzcFVF?=
- =?utf-8?B?ajY1R2dwTUtJcXNUd3pDbll2d292RTBzVDJmdFBra0oydjBXbUxsaGJLSGtm?=
- =?utf-8?B?TDhMaGEyRmJMK3dXNUVqUjhTQktIVjNUMmxDQkJPMHV0SWtaemd0K004bDVC?=
- =?utf-8?B?OE9rdnBCeWlWUjBkYTNoRlU0NFY4M0c5b1RTVWJ4VlUzTmdLVFlENW1WNm9B?=
- =?utf-8?B?a1NRQ2NCR01pdmJ3NG9rcmdheWZmNU5CaC9NdmptR1VwU04yM3J5V0ltU3pZ?=
- =?utf-8?B?QUxyYnZYdEIvMkphbmVCd3BtUmFidnlEa0ZlNFFHWk9sdEdwL3JBR3QxakNJ?=
- =?utf-8?B?bXhlTnZ3SGVhT0lyWll0Z1M4eHV0WDNMcTVmODNUbkhZSkhGbEYyRDZJLytK?=
- =?utf-8?B?N3J5bk0vWHllZUw5ZTdtK3Rjcm50dXR2cSt6QTBJL0d4aWFkL2t0ZWdtQlkv?=
- =?utf-8?B?bHNDSE5iSnlhTG9UeTRXT2ZXc212YnFzQzVEbnpqQ0hxcE91RmZYZ084OWRV?=
- =?utf-8?B?dDR3dHIwRmVvWkxKdlpBK0NkcTJjcnJoVVFEMjdzR0lzZzVGTXJ6akVWYTRp?=
- =?utf-8?B?bjhqdituNjZKMTVtRDhHVCtuazArYy9tYitURGY2UDN2TjV1YnFPQUZMRnBk?=
- =?utf-8?B?SWxFUGpXSzBzeHJ4aGMraFQ4YkdEMVhLbmNzVXlySFB3cXg4cFE2VG9MQ05R?=
- =?utf-8?B?ekZvSVFJZ1dydUZMNjc3ZHBoZkdwM3R3SW1GY0syR0s1U08rRmx3a2NKQkd0?=
- =?utf-8?B?Q0Z4VytnSmptaTNQMWFwRXR1OWQvSU43R2xJY0VqNFZnQUxueG4rYU5HdHNx?=
- =?utf-8?B?YWh3ZVNnWC9pL2xaY3lTTmVxM0V2TU9VM1JYNkVuTkpsV0g2K21nYVo0MFpk?=
- =?utf-8?B?WE83azg4NTRFdzJKMU53VHhkemVxU29aWWdKa0lmaVRIV3IzREtVbUFseU9J?=
- =?utf-8?B?RDlKMGtaK3hiNEFweEJnLzRjWnI2ODB2VTBYV0xKQTZoNlRuN2F4azVvK0Jz?=
- =?utf-8?B?Z3JXTTcvbGoxWm1IdXowbVpPOWUwM1k1eDI5VTY3a05hNmR1akkyS3VlUFpp?=
- =?utf-8?B?N2lCUVlidTUzYlYxL21qNlRBeWRuOExYcmthOENTYU56UU9meTcxSW1kWDc5?=
- =?utf-8?B?UFlmdjI3Y3hVYzMyK0NxSTBGbSttY1lLSlQ1a2xJNE04bjdneE5iQ1gzbFZp?=
- =?utf-8?B?T1dFdElRNUtjYm85UlZZa3hWUjY1K1FFNVRDcmJrZDVUQVVZaXZqL1F5RElP?=
- =?utf-8?B?NjJuL3VMOXEwYm9JVTlLemU4ajdBNjR1dzFza0xIRVBqaTN4QlRRdnczYTN0?=
- =?utf-8?B?dnp2cmpUWVpuK0ljY09UZkJPODV6Wkc5bDVrYlNEcjNEOWRvR1NzS3lEeXpr?=
- =?utf-8?B?TWxBK0p2dFAzaWU5OGJpMnZKQnFMbEV6ejd1ek84em9vYkx0elR4aUp2bS9I?=
- =?utf-8?B?NlFXYjNSTDJVUy9NMXYzdjJPZjBiYmZmYUliUU9ySFJrblJhNlFFYnFnT1k2?=
- =?utf-8?B?RTM4WW84NXpuQVprTU1Lb2dxQU1ZM0ZZWnEyTzZzWXJYYVdha1BGdHM2anpl?=
- =?utf-8?Q?hdvFHy1zO0eRmWrNR8ITqVFAq?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c0e45e1-a9d8-4257-e320-08dad71c3447
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2022 23:55:36.4091
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oN41sSEHjgPMnRxpsPDjDn8pslHifJV5V6mOVLLdfP3myF817Ho0eQMQslh/X3cnQxnV/9qttDiXWXdJBs9Azw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6078
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <CABWYdi0G7cyNFbndM-ELTDAR3x4Ngm0AehEp5aP0tfNkXUE+Uw@mail.gmail.com>
+ <Y30rdnZ+lrfOxjTB@cmpxchg.org> <CABWYdi3PqipLxnqeepXeZ471pfeBg06-PV0Uw04fU-LHnx_A4g@mail.gmail.com>
+ <CABWYdi0qhWs56WK=k+KoQBAMh+Tb6Rr0nY4kJN+E5YqfGhKTmQ@mail.gmail.com> <Y4T43Tc54vlKjTN0@cmpxchg.org>
+In-Reply-To: <Y4T43Tc54vlKjTN0@cmpxchg.org>
+From:   Ivan Babrou <ivan@cloudflare.com>
+Date:   Mon, 5 Dec 2022 15:57:39 -0800
+Message-ID: <CABWYdi0z6-46PrNWumSXWki6Xf4G_EP1Nvc-2t00nEi0PiOU3Q@mail.gmail.com>
+Subject: Re: Low TCP throughput due to vmpressure with swap enabled
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, cgroups@vger.kernel.org,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/5/22 7:22 AM, Jiri Pirko wrote:
-> 
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> Change the drivers that use devlink_port_register/unregister() to call
-> these functions only in case devlink is registered.
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> ---
-> RFC->v1:
-> - shortened patch subject
-> ---
->   .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 29 ++++++++++---------
->   .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  7 +++--
->   .../ethernet/fungible/funeth/funeth_main.c    | 17 +++++++----
->   drivers/net/ethernet/intel/ice/ice_main.c     | 21 ++++++++------
->   .../ethernet/marvell/prestera/prestera_main.c |  6 ++--
->   drivers/net/ethernet/mscc/ocelot_vsc7514.c    | 10 +++----
->   .../ethernet/pensando/ionic/ionic_devlink.c   |  6 ++--
->   drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  7 +++--
->   8 files changed, 60 insertions(+), 43 deletions(-)
-> 
+On Mon, Nov 28, 2022 at 10:07 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
+>
+> On Tue, Nov 22, 2022 at 05:28:24PM -0800, Ivan Babrou wrote:
+> > On Tue, Nov 22, 2022 at 2:11 PM Ivan Babrou <ivan@cloudflare.com> wrote:
+> > >
+> > > On Tue, Nov 22, 2022 at 12:05 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
+> > > >
+> > > > On Mon, Nov 21, 2022 at 04:53:43PM -0800, Ivan Babrou wrote:
+> > > > > Hello,
+> > > > >
+> > > > > We have observed a negative TCP throughput behavior from the following commit:
+> > > > >
+> > > > > * 8e8ae645249b mm: memcontrol: hook up vmpressure to socket pressure
+> > > > >
+> > > > > It landed back in 2016 in v4.5, so it's not exactly a new issue.
+> > > > >
+> > > > > The crux of the issue is that in some cases with swap present the
+> > > > > workload can be unfairly throttled in terms of TCP throughput.
+> > > >
+> > > > Thanks for the detailed analysis, Ivan.
+> > > >
+> > > > Originally, we pushed back on sockets only when regular page reclaim
+> > > > had completely failed and we were about to OOM. This patch was an
+> > > > attempt to be smarter about it and equalize pressure more smoothly
+> > > > between socket memory, file cache, anonymous pages.
+> > > >
+> > > > After a recent discussion with Shakeel, I'm no longer quite sure the
+> > > > kernel is the right place to attempt this sort of balancing. It kind
+> > > > of depends on the workload which type of memory is more imporant. And
+> > > > your report shows that vmpressure is a flawed mechanism to implement
+> > > > this, anyway.
+> > > >
+> > > > So I'm thinking we should delete the vmpressure thing, and go back to
+> > > > socket throttling only if an OOM is imminent. This is in line with
+> > > > what we do at the system level: sockets get throttled only after
+> > > > reclaim fails and we hit hard limits. It's then up to the users and
+> > > > sysadmin to allocate a reasonable amount of buffers given the overall
+> > > > memory budget.
+> > > >
+> > > > Cgroup accounting, limiting and OOM enforcement is still there for the
+> > > > socket buffers, so misbehaving groups will be contained either way.
+> > > >
+> > > > What do you think? Something like the below patch?
+> > >
+> > > The idea sounds very reasonable to me. I can't really speak for the
+> > > patch contents with any sort of authority, but it looks ok to my
+> > > non-expert eyes.
+> > >
+> > > There were some conflicts when cherry-picking this into v5.15. I think
+> > > the only real one was for the "!sc->proactive" condition not being
+> > > present there. For the rest I just accepted the incoming change.
+> > >
+> > > I'm going to be away from my work computer until December 5th, but
+> > > I'll try to expedite my backported patch to a production machine today
+> > > to confirm that it makes the difference. If I can get some approvals
+> > > on my internal PRs, I should be able to provide the results by EOD
+> > > tomorrow.
+> >
+> > I tried the patch and something isn't right here.
+>
+> Thanks for giving it a sping.
+>
+> > With the patch applied I'm capped at ~120MB/s, which is a symptom of a
+> > clamped window.
+> >
+> > I can't find any sockets with memcg->socket_pressure = 1, but at the
+> > same time I only see the following rcv_ssthresh assigned to sockets:
+>
+> Hm, I don't see how socket accounting would alter the network behavior
+> other than through socket_pressure=1.
+>
+> How do you look for that flag? If you haven't yet done something
+> comparable, can you try with tracing to rule out sampling errors?
 
+Apologies for a delayed reply, I took a week off away from computers.
 
+I looked with bpftrace (from my bash_history):
 
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> index e6ff757895ab..06670343f90b 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> @@ -78,16 +78,18 @@ int ionic_devlink_register(struct ionic *ionic)
->          struct devlink_port_attrs attrs = {};
->          int err;
-> 
-> +       devlink_register(dl);
-> +
->          attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
->          devlink_port_attrs_set(&ionic->dl_port, &attrs);
->          err = devlink_port_register(dl, &ionic->dl_port, 0);
->          if (err) {
->                  dev_err(ionic->dev, "devlink_port_register failed: %d\n", err);
-> +               devlink_unregister(dl);
->                  return err;
->          }
-> 
->          SET_NETDEV_DEVLINK_PORT(ionic->lif->netdev, &ionic->dl_port);
-> -       devlink_register(dl);
->          return 0;
->   }
-> 
-> @@ -95,6 +97,6 @@ void ionic_devlink_unregister(struct ionic *ionic)
->   {
->          struct devlink *dl = priv_to_devlink(ionic);
-> 
-> -       devlink_unregister(dl);
->          devlink_port_unregister(&ionic->dl_port);
-> +       devlink_unregister(dl);
->   }
+$ sudo bpftrace -e 'kprobe:tcp_try_rmem_schedule { @sk[cpu] = arg0; }
+kretprobe:tcp_try_rmem_schedule { $arg = @sk[cpu]; if ($arg) { $sk =
+(struct sock *) $arg; $id = $sk->sk_memcg->css.cgroup->kn->id;
+$socket_pressure = $sk->sk_memcg->socket_pressure; if ($id == 21379) {
+printf("id = %d, socket_pressure = %d\n", $id, $socket_pressure); } }
+}'
 
-I don't know about the rest of the drivers, but this seems to be the 
-exact opposite of what Leon did in this patch over a year ago:
-https://lore.kernel.org/netdev/cover.1632565508.git.leonro@nvidia.com/
+I tried your patch on top of v6.1-rc8 (where it produced no conflicts)
+in my vm and it still gave me low numbers and nothing in
+/sys/kernel/debug/tracing/trace. To be extra sure, I changed it from
+trace_printk to just printk and it still didn't show up in dmesg, even
+with constant low throughput:
 
-I haven't kept up on all the discussion about this, but is there no 
-longer a worry about registering the devlink object before all the 
-related configuration bits are in place?
+ivan@vm:~$ curl -o /dev/null https://sim.cfperf.net/cached-assets/zero-5g.bin
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+ 14 4768M   14  685M    0     0  12.9M      0  0:06:08  0:00:52  0:05:16 13.0M
 
-Does this open any potential issues with userland programs seeing the 
-devlink device and trying to access port before they get registered?
+I still saw clamped rcv_ssthresh:
 
-sln
+$ sudo ss -tinm dport 443
+State                  Recv-Q                  Send-Q
+                 Local Address:Port
+  Peer Address:Port                  Process
+ESTAB                  0                       0
+                     10.2.0.15:35800
+162.159.136.82:443
+skmem:(r0,rb2577228,t0,tb46080,f0,w0,o0,bl0,d0) cubic rto:201
+rtt:0.42/0.09 ato:40 mss:1460 pmtu:1500 rcvmss:1440 advmss:1460
+cwnd:10 bytes_sent:12948 bytes_acked:12949 bytes_received:2915062731
+segs_out:506592 segs_in:2025111 data_segs_out:351 data_segs_in:2024911
+send 278095238bps lastsnd:824 lastrcv:154 lastack:154 pacing_rate
+556190472bps delivery_rate 47868848bps delivered:352 app_limited
+busy:147ms rcv_rtt:0.011 rcv_space:82199 rcv_ssthresh:5840
+minrtt:0.059 snd_wnd:65535 tcp-ulp-tls rxconf: none txconf: none
 
+I also tried with my detection program for ebpf_exporter (fexit based version):
 
+* https://github.com/cloudflare/ebpf_exporter/pull/172/files
+
+Which also showed signs of a clamped window:
+
+# HELP ebpf_exporter_tcp_window_clamps_total Number of times that TCP
+window was clamped to a low value
+# TYPE ebpf_exporter_tcp_window_clamps_total counter
+ebpf_exporter_tcp_window_clamps_total 53887
+
+In fact, I can replicate this with just curl to a public URL and fio running,
+
+> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> index 066166aebbef..134b623bee6a 100644
+> --- a/mm/memcontrol.c
+> +++ b/mm/memcontrol.c
+> @@ -7211,6 +7211,7 @@ bool mem_cgroup_charge_skmem(struct mem_cgroup *memcg, unsigned int nr_pages,
+>                 goto success;
+>         }
+>         memcg->socket_pressure = 1;
+> +       trace_printk("skmem charge failed nr_pages=%u gfp=%pGg\n", nr_pages, &gfp_mask);
+>         if (gfp_mask & __GFP_NOFAIL) {
+>                 try_charge(memcg, gfp_mask, nr_pages);
+>                 goto success;
