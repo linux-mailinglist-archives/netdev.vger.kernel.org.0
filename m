@@ -2,115 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B89A66431C5
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 20:18:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86301643225
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 20:24:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233686AbiLETRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 14:17:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
+        id S233236AbiLETYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 14:24:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233837AbiLETRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 14:17:03 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D37264AC;
-        Mon,  5 Dec 2022 11:15:34 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1670267721; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=NP/gnuKezwin1OHhYsmf2ATZliiOCtNCFKoXTYzLH7BFyOXHMSzChcl0T1Aq6Pk013EOTEhIPVieqJNyp/ZJg6CkUw2KbYe8Yo64vRDV1jNfsHr8MQrm2pCXhKvILdIveTXCkSv4z8oUySkngPWB9Aj+wkEduOwp5bjcBSAy3CI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1670267721; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=lfH3IahUHjmYwDm63oJKTTzFOCu7YAYcClnY9WZt9/M=; 
-        b=FXv3K4z7UYzBQRGqigcbQsO6xLWN3XHlu+cOWnwRJOjJu1SFe0oJKDsZYueickpcKAvjBEPiXvqafpZvFtlVADDaBNIpaqvIoAaUqMJRQ7woVTe1iw1V4ivnPHuxXQBvvTiyLYF5wCwoE1GkelmMU17vheDC+7Hb2B8/5bj3YT0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1670267721;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=lfH3IahUHjmYwDm63oJKTTzFOCu7YAYcClnY9WZt9/M=;
-        b=dsN8wK9uZkXcvK0LcXsBL/whokUfqHcwWsBtyrf7LCsT70tQrOkp9jhT1L/vza5v
-        hhbPaQrT8B7iBg2bkmYRsZ7tdVz2tSl7Eonp9P1UorLvtWlwa4jXRRLcpZ+Ik+CZbb0
-        IhoZEhANl+xsjiDyuKj7y4imOoyytUA0lMvhMrwc=
-Received: from [192.168.100.172] (86.121.172.71 [86.121.172.71]) by mx.zohomail.com
-        with SMTPS id 1670267720324784.9784413037605; Mon, 5 Dec 2022 11:15:20 -0800 (PST)
-Message-ID: <84ce6297-5aff-4d6e-8d31-da3f25dc8690@arinc9.com>
-Date:   Mon, 5 Dec 2022 22:15:16 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH 5/5] powerpc: dts: remove label = "cpu" from DSA
- dt-binding
+        with ESMTP id S232926AbiLETYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 14:24:20 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5FF26135
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 11:19:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1670267978; x=1701803978;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=JfeYVyi0J7kuld6IrzE7ctehTdtLIhB2gQK5GBpHbUY=;
+  b=rb9jlOYreOLsOE7I6FkRey/YApR5rMhshSZU6k2g2CKWdFeYlxpzmeX9
+   UEBYRs427gqT3UV4R+PnTCv1g8JgKhVVcPFmPDldEtFAmBRUb/Z6daqet
+   Ax5wYTyQaPM9DJUWj8Ms7TqXNUvJB8rmQK3VC2zdlhZU2j0aJ4upzNLZd
+   iehAZ22oQI+9dVFi/gyKBUOFMnAwFzA2bodWbur/4uWZOpiiQqlKk9mHu
+   RfKEdUdwK+dsV8xWjJE+8Yh/UDsBvWonM3HjQa+jYw3jxbWXCUnJqxdu4
+   vqiuoOTzn+c6Y1hXnhTA5K3ZBVHpI9GmLCoAQZYgA7SKrFuMM/4VdBizA
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
+   d="scan'208";a="191796788"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Dec 2022 12:19:37 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 5 Dec 2022 12:19:37 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
+ Transport; Mon, 5 Dec 2022 12:19:37 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OBrJNl83Pv44oiV980UtTDffd0ss9U17abVqUgrzih84QZhBkRaUFyY5mLwtcawW6f8U4Cac2mY2gGxOtjHq3GfeQc6bysmUrhpB8JVWRCthdK/2UmO69UrIFAwz2tlJxJHj1LCANd6o5sa06wndo6Ma8EtrSA4WvTlGXQgLOjf/9XwstfdAxD1GVGyeKDBQeu6qGAroISyV93HmqmOKMAJ4LCPjXqTimem9W1xdYSQVU1PQg1daVsmr+r7NvLP0ESmqpQxy3YPMuINII/F9VX9xPk3shrVPugpnHkuZ58oz/6qkHIgMOlwtUe2e9AlSs08pB/2pOiFTe/nWInVaJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RN11mdGS3M2Xcfy91ATnOQSSgRXYxdIzXyV+Z6NA0Fg=;
+ b=gA1a7yup/gKoKvVbUczRGVXYQ67EOpfpwx8R4CXpHSvInv+EluCW6B9YCQ6ESu+zqwSQyk8ajLb86y031wQvX120fjEvyuGETypQT/5hyOu74XF3OvDSc/BYmrKWt1JZSeGm8R9rjIOOYZ8DZF7zPeTkvje+0jJS9IjizI4YPuN4OSxIYu3hXlaEsR1g742Sb1bJnGo391ILtZ2zr+2QYTArEvZM8k4K7ZB2v49M70eBzpqqXAoJc/xRM15jcNsCkFD0alvypAUZldtHtZbY6dUT120Zw5jbCc9eMoWAadGLE7UEu7IR3Nqyu2l3yv6J2Hn3bP61nekVOTaGX7yOHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RN11mdGS3M2Xcfy91ATnOQSSgRXYxdIzXyV+Z6NA0Fg=;
+ b=LnhHw5tBFvvtdDmnDkclp/otkqXV1yTNkOeXabSL0fGnqVJH2qk6RHb1n4AGy+O+gTbrTyWJsC/GaDlIbvVizj870slsUK1UXc7VoE0ZUUFlN9anNfEC4SlSu4Ej5gXwo6GV5XU35a2xz3LRxHefxUTf6LCbYoGqWEFUq8GqTYM=
+Received: from CO6PR11MB5569.namprd11.prod.outlook.com (2603:10b6:303:139::20)
+ by CH0PR11MB5396.namprd11.prod.outlook.com (2603:10b6:610:bb::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Mon, 5 Dec
+ 2022 19:19:35 +0000
+Received: from CO6PR11MB5569.namprd11.prod.outlook.com
+ ([fe80::72d6:72a6:b14:e620]) by CO6PR11MB5569.namprd11.prod.outlook.com
+ ([fe80::72d6:72a6:b14:e620%4]) with mapi id 15.20.5880.014; Mon, 5 Dec 2022
+ 19:19:35 +0000
+From:   <Daniel.Machon@microchip.com>
+To:     <stephen@networkplumber.org>
+CC:     <netdev@vger.kernel.org>, <dsahern@kernel.org>, <petrm@nvidia.com>,
+        <maxime.chevallier@bootlin.com>, <vladimir.oltean@nxp.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH iproute2-next v3 1/2] dcb: add new pcp-prio parameter to
+ dcb app
+Thread-Topic: [PATCH iproute2-next v3 1/2] dcb: add new pcp-prio parameter to
+ dcb app
+Thread-Index: AQHZBi4aQTbgRosZIUWfrfvxERABnq5cZT0AgAHw1wCAADYngIAAf+KAgABzO4CAADSNAA==
+Date:   Mon, 5 Dec 2022 19:19:35 +0000
+Message-ID: <Y45G/t9V3luxRDGF@DEN-LT-70577>
+References: <20221202092235.224022-1-daniel.machon@microchip.com>
+ <20221202092235.224022-2-daniel.machon@microchip.com>
+ <20221203090052.65ff3bf1@hermes.local> <Y40hjAoN4VcUCatp@DEN-LT-70577>
+ <20221204175257.75e09ff1@hermes.local> <Y426Pzdw5341RbCP@DEN-LT-70577>
+ <20221205082305.51964674@hermes.local>
+In-Reply-To: <20221205082305.51964674@hermes.local>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Jonas Gorski <jonas.gorski@gmail.com>
-References: <20221130141040.32447-1-arinc.unal@arinc9.com>
- <20221130141040.32447-6-arinc.unal@arinc9.com>
- <87a647s8zg.fsf@mpe.ellerman.id.au> <20221201173902.zrtpeq4mkk3i3vpk@pali>
- <20221201234400.GA1692656-robh@kernel.org>
- <20221202193552.vehqk6u53n36zxwl@pali>
- <20221204185924.a4q6cifhpyxaur6f@skbuf>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20221204185924.a4q6cifhpyxaur6f@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO6PR11MB5569:EE_|CH0PR11MB5396:EE_
+x-ms-office365-filtering-correlation-id: b5f559a0-5dd1-43d1-51f1-08dad6f5a513
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VHgVriuvImQevfyGO4HArSK9DmDUTaJ02qviwTiIBth3JZOA3dsVpRjdLrXuNK6YoHpx66FSND7+fG82y0939EpjupG5Y3hwnkJSoEF5nf3QCZfjGTPVsnAmXev+DvoLxZU5HggDnEo2EQtk+MzwgO8FH5grAcJej2wSblqMPF1ovXzitAWtsNhqEd8nBWVLwCbfp59k96BEGkwA95bbTiJIxl2gAlO8lBmvQFWUXuqUaqjGjZKTvA0o39V5w8Gb5ZHwF89T13nQHC6kQGqH51w3aAKp+o6hAWAbGV/6Hp5rvJ3PP323I4UDxuXW/ekK4V1oWG6NnQEE1rAX+Q/vca9sQZ7bIltM3tmbIGpFi/KZtVFIc88xmo72belnKs2fTOFDea+JRgQ9vGB34Xuwa5KW79EhTfKjBO+mkefRtNpnQWtx6BitWf4reFgAlOmBGSFGjPjgGkuWR8fsBmZA7dw7mB5RBBPCDll2v+UdClBoXzXVTd1QYF+3S21k+azAX+XyjmgSRjn5GFnKS3lcGMWCH/WDAkMpYpPPG2sNFFzjMTLiL+NDZrUOcwIZ3p9aefC51ZwtRndq4eYl760vBLedjJJDm8NwymeXWLTr/gEuO41lpUKSX2+1MhOQciZhfydR3uo20azfpIuicJw2JpPnvZPSGU7KI17zXOpWHs9IguuJ2BDicSObC7+F13nssIQeFRUDM2lbzrjH7blRPQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5569.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(396003)(366004)(39860400002)(136003)(346002)(376002)(451199015)(38100700002)(41300700001)(38070700005)(33716001)(186003)(2906002)(83380400001)(122000001)(5660300002)(8936002)(478600001)(6486002)(107886003)(71200400001)(76116006)(91956017)(86362001)(8676002)(66946007)(66476007)(66446008)(66556008)(64756008)(4326008)(6506007)(26005)(9686003)(6512007)(316002)(6916009)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3QZS5oAIBZPlH7483XmGNgGxPSAxEQTbou8DJSdsrChhoBchwjHUoLcIFD5J?=
+ =?us-ascii?Q?pyGYNbUuzXgjDzg4h/MIsaCVc1tb3Um9HrFLfotSR2j0zNbFAWAPlqGjHKzt?=
+ =?us-ascii?Q?K912aAspNpiGVQHdVlJzdDgIiYoVGAW066TEigo+X0bmtl/wWrdLRnXJ6Slc?=
+ =?us-ascii?Q?RGk5Z4wxr4Poak62dJo2QsUoU2HwmfCLnFEAEGd+mVCX/GjJIOnja49zJYW3?=
+ =?us-ascii?Q?nd9nidG+rn1YB8xfDB3Jt9bsTfsZ4Fb2B2LQYh/xaB3nNNvRjK6tbXWf9gAA?=
+ =?us-ascii?Q?N04C1SAZyE69vPYeifY+YyO/nVEYR+RlIT9zUraPCmjBvLCoudN2JP6Yu5Qj?=
+ =?us-ascii?Q?glE5Mxa24KlBcDBVt+eJW3BDVac06byHwgNeUsJNRSR0PEzFLWYeMSIAah0T?=
+ =?us-ascii?Q?YDrtGoHb50F6AstnX8evZNOLF6oqV2fFPBy0ShDM4IqMMBWRKc5iLZOVmUOD?=
+ =?us-ascii?Q?+IG7dVKfuTM9fAgvZojUpnxIans0SVhlAaeMrc0iWkKhNMZsJ2S9epli2VvD?=
+ =?us-ascii?Q?1/P/MmIxHlmcY/yShnAQiX3ngqDngdBb5nzOs4+CefuWzvl/VaXP0Kqfg9bp?=
+ =?us-ascii?Q?d9T2oLNzyuGoaXZpn3eFjQkFG2VRR5f5nmGc9mQ2jFzdGc9+ybryu5St1mv4?=
+ =?us-ascii?Q?hHRJq0RD9bRj2mwhLSOsLZ6SHrIBlP7/svlNdZEKtH5Qlhm9LLOzMGEOTqd5?=
+ =?us-ascii?Q?UYk05VANV5HCLTqH5TuENi9SBN7Nqd9nTCUtd0anv9e9M74Cm8+1TgHvBETp?=
+ =?us-ascii?Q?ooCnME3W1j5HfdvAHW6BWYAnLxgrs7A4M7bsgsikUagZJnartjkxs6cXPpxy?=
+ =?us-ascii?Q?umSUJ2kwzWzw2x3eFR4QxcBOnIkQjWoyB4P7mHpaNUjOpdCNCaN+3P4yN8th?=
+ =?us-ascii?Q?cxXgAklrJVsqkHfCzJt9zhFy8WCuaxm/hFry4a7hqRCEZ2Bm0nRBRqQPgwBP?=
+ =?us-ascii?Q?kW6x+4XGSXBx6xGf/gom/Aqn8RksIO3HXlD4kNMiUDg3gym32sMrnNCNEdOX?=
+ =?us-ascii?Q?2pmzdZA9esZBCpddIFEf4Zd/KfBGq3PCZLS2zsxumUUnQ5ZckUiqALRRhFRV?=
+ =?us-ascii?Q?UbewT5PGUmc2oL3rT56yLZwBCYxQGfZLAEwNIAWYIpeq2hF0JM+e1wBuKApm?=
+ =?us-ascii?Q?sBEX41cUbcMjdfl9fZJ8+oapCfvl0/JQce/LqPqXv7eF8VIbomLZGsdk+uvW?=
+ =?us-ascii?Q?8XxrQEoOzqEWur5KGr8+R4oy8CWhM+wnARXNLa1Jw9XEAu1+N6ZjwGKCkjx8?=
+ =?us-ascii?Q?CJEIAeI8bFZynFKF7l5dNtUrvJTkl3lXHo9QjAR7uJkVNHpeJSdg7c3+viUY?=
+ =?us-ascii?Q?O7pA9PyPwy7SkZlxCqyGNebW5wIagv15z9PnN50ydE6zmVw/bMmPYNPRTaeM?=
+ =?us-ascii?Q?8IdbU80ppW+EalQOzgHiJ2/H/CPYX7A2IsNFqVnEwYw82Go09VUzUU/eE8VS?=
+ =?us-ascii?Q?jYlMUgjMzjE7DtoImCtPSzr44z1CLNmXMvsc4df9AUsgVrOO9H0NbPKX5Qqq?=
+ =?us-ascii?Q?gSAN+OhdU+qIubar3yf1VYchkZ8qCzZju0jEuOcYmX93dxWZxyTvfJ5rMk3Q?=
+ =?us-ascii?Q?ayOsqf4dsa7rI0ivOuvpKp03lNIDO9Al5BN769SOnl77YZziFtziQCwQl4SJ?=
+ =?us-ascii?Q?nlmy0pKn04Rf7iOEmVP20i4=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <E3CF807ADD45584A8C15B3E32F4C4ABE@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5569.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5f559a0-5dd1-43d1-51f1-08dad6f5a513
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Dec 2022 19:19:35.0403
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: m9/HbbzPj7Hv4vSScbVOM6/6jR3YShwTJ8ujUdV83hv6yu9CsB2foxzwgoigLCowNc19I3KidQxkAanSqh7GlytoYvFXcchDPw5BCJH45MI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5396
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4.12.2022 21:59, Vladimir Oltean wrote:
-> Hi Pali,
-> 
-> On Fri, Dec 02, 2022 at 08:35:52PM +0100, Pali Rohár wrote:
->> On Thursday 01 December 2022 17:44:00 Rob Herring wrote:
->>> On Thu, Dec 01, 2022 at 06:39:02PM +0100, Pali Rohár wrote:
->>>> I was told by Marek (CCed) that DSA port connected to CPU should have
->>>> label "cpu" and not "cpu<number>". Modern way for specifying CPU port is
->>>> by defining reference to network device, which there is already (&enet1
->>>> and &enet0). So that change just "fixed" incorrect naming cpu0 and cpu1.
->>>>
->>>> So probably linux kernel does not need label = "cpu" in DTS anymore. But
->>>> this is not the reason to remove this property. Linux kernel does not
->>>> use lot of other nodes and properties too... Device tree should describe
->>>> hardware and not its usage in Linux. "label" property is valid in device
->>>> tree and it exactly describes what or where is this node connected. And
->>>> it may be used for other systems.
->>>>
->>>> So I do not see a point in removing "label" properties from turris1x.dts
->>>> file, nor from any other dts file.
->>>
->>> Well, it seems like a bit of an abuse of 'label' to me. 'label' should
->>> be aligned with a sticker or other identifier identifying something to a
->>> human. Software should never care what the value of 'label' is.
->>
->> But it already does. "label" property is used for setting (initial)
->> network interface name for DSA drivers. And you can try to call e.g.
->> git grep '"cpu"' net/dsa drivers/net/dsa to see that cpu is still
->> present on some dsa places (probably relict or backward compatibility
->> before eth reference).
-> 
-> Can you try to eliminate the word "probably" from the information you
-> transmit and be specific about when did the DSA binding parse or require
-> the 'label = "cpu"' property for CPU ports in any way?
+> On Mon, 5 Dec 2022 09:19:06 +0000
+> <Daniel.Machon@microchip.com> wrote:
+>=20
+> > > > Trying to understand your comment.
+> > > >
+> > > > Are you talking about not producing any JSON output with the symbol=
+ic
+> > > > PCP values? eg. ["1de", 1] -> [8, 1]. So basically print with PRINT=
+_FP
+> > > > in case of printing in JSON context?
+> > > >
+> > > > /Daniel
+> > >
+> > > What does output look like in json and non-json versions?
+> >
+> > non-JSON: pcp-prio 1de:1
+> > JSON    : {"pcp_prio":[["1de",1]]}
+>=20
+> Would the JSON be better as:
+>         { "pcp_prio" :[ { "1de":1 } ] }
+>=20
+> It looks like the PCP values are both unique and used in a name/value man=
+ner.
 
-As Jonas (on CC) pointed out, I only see this being used in the swconfig 
-b53 driver which uses the label to identify the cpu port.
+In this case I think it would be best to stay consistent with the rest
+of the dcb app code. All priority mappings are printed using the
+dcb_app_print_filtered() (now also the pcp-prio), which creates an
+array, for whatever reason.=20
 
-https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=target/linux/generic/files/drivers/net/phy/b53/b53_common.c;h=87d731ec3e2a868dc8389f554b1dc9ab42c30be2;hb=HEAD#l1508
+If you are OK with this, I will go ahead and create v4, with the print
+warning removed.
 
-Maybe this got into DSA dt-bindings unchecked before it was decided to 
-move forward with DSA instead of swconfig on Linux.
+/Daniel
 
-Arınç
+>=20
+> >
+> > > My concern that the json version would be awkward and have colons in =
+it, but looks
+> > > like it won't.
+> >
+> > Yeah, the "%s:" format is only used in non-JSON context, so we are good
+> > here.
+> >
+> > >
+> > > For the unknown key type is printing error necessary? Maybe just show=
+ it in numeric form.
+> >
+> > No not necessary, I'll get rid of it.
+> =
