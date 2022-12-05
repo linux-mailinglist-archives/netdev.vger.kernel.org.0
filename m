@@ -2,93 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08A226422F4
-	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 07:17:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 453E46422FB
+	for <lists+netdev@lfdr.de>; Mon,  5 Dec 2022 07:22:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbiLEGRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 01:17:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
+        id S231661AbiLEGWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 01:22:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231270AbiLEGRl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 01:17:41 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83CC25F
-        for <netdev@vger.kernel.org>; Sun,  4 Dec 2022 22:17:38 -0800 (PST)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NQYGq0lTlz15N5G;
-        Mon,  5 Dec 2022 14:16:51 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
- (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 5 Dec
- 2022 14:17:36 +0800
-From:   Yuan Can <yuancan@huawei.com>
-To:     <ioana.ciornei@nxp.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>
-CC:     <yuancan@huawei.com>
-Subject: [PATCH] dpaa2-switch: Fix memory leak in dpaa2_switch_acl_entry_add() and dpaa2_switch_acl_entry_remove()
-Date:   Mon, 5 Dec 2022 06:15:15 +0000
-Message-ID: <20221205061515.115012-1-yuancan@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231239AbiLEGWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 01:22:30 -0500
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BBD21208F;
+        Sun,  4 Dec 2022 22:22:29 -0800 (PST)
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxct.zte.com.cn (FangMail) with ESMTPS id 4NQYPG65Pkz4y0vG;
+        Mon,  5 Dec 2022 14:22:26 +0800 (CST)
+Received: from xaxapp01.zte.com.cn ([10.88.40.50])
+        by mse-fl2.zte.com.cn with SMTP id 2B56MEdi047231;
+        Mon, 5 Dec 2022 14:22:14 +0800 (+08)
+        (envelope-from zhang.songyi@zte.com.cn)
+Received: from mapi (xaxapp01[null])
+        by mapi (Zmail) with MAPI id mid31;
+        Mon, 5 Dec 2022 14:22:15 +0800 (CST)
+Date:   Mon, 5 Dec 2022 14:22:15 +0800 (CST)
+X-Zmail-TransId: 2af9638d8e1757bab12e
+X-Mailer: Zmail v1.0
+Message-ID: <202212051422158113766@zte.com.cn>
+Mime-Version: 1.0
+From:   <zhang.songyi@zte.com.cn>
+To:     <kuba@kernel.org>
+Cc:     <lars.povlsen@microchip.com>, <steen.hegelund@microchip.com>,
+        <daniel.machon@microchip.com>, <unglinuxdriver@microchip.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: =?UTF-8?B?W1BBVENIIG5ldC1uZXh0IHYyXSBuZXQ6IG1pY3JvY2hpcDogdmNhcDogUmVtb3ZlIHVubmVlZGVkIHNlbWljb2xvbnM=?=
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl2.zte.com.cn 2B56MEdi047231
+X-Fangmail-Gw-Spam-Type: 0
+X-FangMail-Miltered: at cgslv5.04-192.168.251.13.novalocal with ID 638D8E22.001 by FangMail milter!
+X-FangMail-Envelope: 1670221346/4NQYPG65Pkz4y0vG/638D8E22.001/10.5.228.133/[10.5.228.133]/mse-fl2.zte.com.cn/<zhang.songyi@zte.com.cn>
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 638D8E22.001/4NQYPG65Pkz4y0vG
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cmd_buff needs to be freed when error happened in
-dpaa2_switch_acl_entry_add() and dpaa2_switch_acl_entry_remove().
+From: zhang songyi <zhang.songyi@zte.com.cn>
 
-Fixes: 1110318d83e8 ("dpaa2-switch: add tc flower hardware offload on ingress traffic")
-Signed-off-by: Yuan Can <yuancan@huawei.com>
+Semicolons after "}" are not needed.
+
+Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/microchip/vcap/vcap_api.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-index cacd454ac696..c39b866e2582 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-@@ -132,6 +132,7 @@ int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *filter_block,
- 						 DMA_TO_DEVICE);
- 	if (unlikely(dma_mapping_error(dev, acl_entry_cfg->key_iova))) {
- 		dev_err(dev, "DMA mapping failed\n");
-+		kfree(cmd_buff);
- 		return -EFAULT;
- 	}
- 
-@@ -142,6 +143,7 @@ int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *filter_block,
- 			 DMA_TO_DEVICE);
- 	if (err) {
- 		dev_err(dev, "dpsw_acl_add_entry() failed %d\n", err);
-+		kfree(cmd_buff);
- 		return err;
- 	}
- 
-@@ -172,6 +174,7 @@ dpaa2_switch_acl_entry_remove(struct dpaa2_switch_filter_block *block,
- 						 DMA_TO_DEVICE);
- 	if (unlikely(dma_mapping_error(dev, acl_entry_cfg->key_iova))) {
- 		dev_err(dev, "DMA mapping failed\n");
-+		kfree(cmd_buff);
- 		return -EFAULT;
- 	}
- 
-@@ -182,6 +185,7 @@ dpaa2_switch_acl_entry_remove(struct dpaa2_switch_filter_block *block,
- 			 DMA_TO_DEVICE);
- 	if (err) {
- 		dev_err(dev, "dpsw_acl_remove_entry() failed %d\n", err);
-+		kfree(cmd_buff);
- 		return err;
- 	}
- 
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+index f2435d7ab515..88ae263beeb0 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+@@ -1389,7 +1389,7 @@ static void vcap_copy_from_client_keyfield(struct vcap_rule *rule,
+ 		vcap_copy_to_w32be(field->data.u128.value, data->u128.value, size);
+ 		vcap_copy_to_w32be(field->data.u128.mask,  data->u128.mask, size);
+ 		break;
+-	};
++	}
+ }
+
+ /* Check if the keyfield is already in the rule */
+@@ -1579,7 +1579,7 @@ static void vcap_copy_from_client_actionfield(struct vcap_rule *rule,
+ 	case VCAP_FIELD_U128:
+ 		vcap_copy_to_w32be(field->data.u128.value, data->u128.value, size);
+ 		break;
+-	};
++	}
+ }
+
+ /* Check if the actionfield is already in the rule */
 -- 
-2.17.1
-
+2.15.2
