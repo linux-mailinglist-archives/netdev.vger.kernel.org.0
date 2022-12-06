@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0265B644C07
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 19:52:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E823644C0B
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 19:52:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiLFSwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 13:52:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
+        id S229778AbiLFSwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 13:52:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbiLFSv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 13:51:59 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2074.outbound.protection.outlook.com [40.107.94.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39023B9CE
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 10:51:54 -0800 (PST)
+        with ESMTP id S229769AbiLFSwH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 13:52:07 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2059.outbound.protection.outlook.com [40.107.237.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433BA3D92B
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 10:52:05 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CjxrnS1RT2yy95cKE+V/LtUyIXna+jH7/Es32JyEa25ed9zhRRPkWh1NDVQFnv2nRF4kbjxG/c2nNl+awACLiLiJljpUhxauD5eB1YsFNL1WvKCI6u66FssIzvXDT8NLZs62FVft7Mis4/HX7FMmNebVIlqUbJ3MHfnE3+d2FoiahO+REa79rZeIk2lvxL5D7OSC4Jn/EIHfpAQjLTZzGFAeQlYVRV+jdszLjXB94fyq6uiAycgijXgyghKsKhsiXKf7k2+JzK4rlmpImZlgUyPx67GXjA6hbqiuoZMYx1ME9+aH4eQ1Z5R+L9efE7L4M8vaezStbwK09nD5htSGjw==
+ b=bmsma7UA4654NgJBqa8nzCcRtm6lqzNpkMqcx2jD7EUfwViab8EQzcDLb1AOw0avVX5K93DxSO3AKYN/dMo83uLtm5CPsRtFgDPkKI4PaB9Bx6QpS1kwV3AjMzgjc0MQX8K5UZfYd+AuuHZRaDtP0oOkaQgZAT5qMEoVVAgEUgQ/lFf16QZHLxu8fwwGlNrW9/44gQmHPkTDRP9cK0BTrBQX11HzaRvNCsWjxFo0bi16oE2pQriuNZeRE5Gk3LNw+cO8nxed4yv03FyF7dQb+81hhQe3hyzpZcr+pqrc88tRzDCyTDjhYv62Xho4pUCZXcdXAjFxbOuhtw+IMvdeNA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zpRDAUU0UvG5X5FYsrar0ok1kKUQteygubuyxk1Lo1M=;
- b=P9eOocMzJwVz3U8KabeGTyiTvEjc84iXsKHDDeaj6QoxkkLxdh7AHWIaWxsQFcXtpZuHsymc8azI626Nsm6GIlQFQZ3ju/Vsr4QGIBFFb01axKLzaLNDjyHS7ER2/y3rvAVyAYD8cIA1rTH+IRZEgFEzsuAPqvk40SUAFSWj3w7Eu1g0fT2uSVvQ/NgeoORD9Otr4PJqdRBluLuJu9SQO89yqBy/OrTfklf6+eo47k04v8Zed7QyWQs915WV2Wxb/Ltgh4qpZMBWsgwDHNFZrhCXe35PcUQMeM7HP6ZLWs3JqCUpAyq1M/D6F8uGvvf+hCZ/do0ZtynlDS/8usMCjQ==
+ bh=qXr1jEd66S007qgvs1TkJOlAZxpix6qcG4dezthwF4E=;
+ b=H958ZYs1XWLKJ91+gCrhU8WvFWV/a7vrimFZ7q/JaK/A7y7efg4Gn3Ds5rTBI5Hx78kwiHLsAVX3faRbx/MaZrhMcnR8ezEWhVICV6LqOxWMnTJRO34QoI3xHW4+OkCohvSVF9kDm1XhG1fWOlE6DiotnrTZ1Sg+CIUOPxAvWhTLEiUpP3b+1MCKk1KZG5fk7w6dw6mNYxMCUgVNmbr4nsQZJBRec78j4Qr/32PS1bbS42TnOaPck/dbZPyJ1RfTvJaR0wbUk/YG2DyYpFsnZi677avBKiTfMI3qWYoetWI4BYHaLsqvcRy4X6OBSBAaWQUHiW96oBz44ZWZFg5UKg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zpRDAUU0UvG5X5FYsrar0ok1kKUQteygubuyxk1Lo1M=;
- b=os/1gctkBwgP2MzuY50JtFro82ulmu2rMgHfeW7dLm5/PyEX/+nP5jnjZrbbd7DuIc63ybdNVVk2cC8sTTzaZd8M+NVqUhb8bUBvocEngP/NIR9fB/Ag53aEONZzkZyx+X0gno6yDivoTqhknIKCIGmDASjfoMxy9cW0BEF5eAf35AN/tcJ1ehA2ElG8s+CeYPcdH2/2bUXn/wj+sX0e88MnBEpMh+eZ7gUFWlsnA3dxYn6g2KKEFAqwnAAOOtPE/V9saIvo1FesjXH6xx0+XRZBcAk16H05PWqD+jEMhKEACqESyB/JW8JV1B1l6F5CK5ZlYWIUw3EPAFqoDrxmWg==
-Received: from DM6PR17CA0032.namprd17.prod.outlook.com (2603:10b6:5:1b3::45)
- by CO6PR12MB5426.namprd12.prod.outlook.com (2603:10b6:5:35d::9) with
+ bh=qXr1jEd66S007qgvs1TkJOlAZxpix6qcG4dezthwF4E=;
+ b=qmj27x2SvPxQnTPcgBsoFxd8g2Sn45z7OA7zjsH+1tEKnNXG5AIsPXFuhAA0hrZpjUutAyNTCXYmOw3dVyQ22yNuUeybJgX+e79wUxt57OCgJK2vhTbFcIPhR3+YF6+fcqCVYX+AO7F6jVFyXTuHKS1E7+C5ey4e8Tqiv1e1KF1keLKoak2KkVhJoE932APYQF5CLxxqwg/pyrv0x4bOIkQTRmNj9qQVhlhskXLJXBA/OYeNnz3RgESStaTMe90OSFWb4VDpLXWWIaxxUjLAkJq1MyVNNVIrp5yDNfr+HMNAvQuQ7HZnUDh+bSTQxmAAyXyhut2J0n3vKkP5S9oovw==
+Received: from BN7PR02CA0016.namprd02.prod.outlook.com (2603:10b6:408:20::29)
+ by DM4PR12MB6136.namprd12.prod.outlook.com (2603:10b6:8:a9::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Tue, 6 Dec
- 2022 18:51:53 +0000
-Received: from DS1PEPF0000E643.namprd02.prod.outlook.com
- (2603:10b6:5:1b3:cafe::cf) by DM6PR17CA0032.outlook.office365.com
- (2603:10b6:5:1b3::45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8 via Frontend
- Transport; Tue, 6 Dec 2022 18:51:52 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ 2022 18:52:02 +0000
+Received: from BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:20:cafe::d5) by BN7PR02CA0016.outlook.office365.com
+ (2603:10b6:408:20::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14 via Frontend
+ Transport; Tue, 6 Dec 2022 18:52:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DS1PEPF0000E643.mail.protection.outlook.com (10.167.17.197) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.8 via Frontend Transport; Tue, 6 Dec 2022 18:51:52 +0000
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT064.mail.protection.outlook.com (10.13.176.160) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5901.14 via Frontend Transport; Tue, 6 Dec 2022 18:52:02 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 6 Dec 2022
- 10:51:43 -0800
+ 10:51:46 -0800
 Received: from nps-server-23.mtl.labs.mlnx (10.126.231.35) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Tue, 6 Dec 2022 10:51:40 -0800
+ 15.2.986.36; Tue, 6 Dec 2022 10:51:43 -0800
 From:   Shay Drory <shayd@nvidia.com>
 To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>
 CC:     <danielj@nvidia.com>, <yishaih@nvidia.com>, <jiri@nvidia.com>,
         <saeedm@nvidia.com>, <parav@nvidia.com>,
         Shay Drory <shayd@nvidia.com>
-Subject: [PATCH net-next V4 4/8] devlink: Expose port function commands to control RoCE
-Date:   Tue, 6 Dec 2022 20:51:15 +0200
-Message-ID: <20221206185119.380138-5-shayd@nvidia.com>
+Subject: [PATCH net-next V4 5/8] net/mlx5: Add generic getters for other functions caps
+Date:   Tue, 6 Dec 2022 20:51:16 +0200
+Message-ID: <20221206185119.380138-6-shayd@nvidia.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221206185119.380138-1-shayd@nvidia.com>
 References: <20221206185119.380138-1-shayd@nvidia.com>
@@ -77,23 +77,23 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E643:EE_|CO6PR12MB5426:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4f3243c9-3ed1-48bc-e32d-08dad7baf0bc
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT064:EE_|DM4PR12MB6136:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2cf46d94-948d-484f-9bec-08dad7baf662
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 62dx1VnxEq16GF3nmVwE2XbCSkQzDHG3nIrvwZbT7hvR/Ovf8nmyWGKzncqcFxDKIJSPR+1bq3uHyfuyMoB90PaCJR0eyRi+lwozi80d0X/prd4T7aQWZVFHnbeS0yep7hjvoBM71S+42qrSR3+epykfZB5Co2SrY2lZy9i3UCXcGA+JXyrVq7WClyaRnCxxntbrZd3uAoddcma9HLLuDx8BaVjf9yKk3JHHfA47i2RJehdqHPlnuhy3P7Jocdccdn9i76IcGpqE0zdiSdlh2zLw14mRLt/9ek2gIrS/NTXQTXrnTD1YrwHa6wHG93mOgF8KFXxlX6dSOQkIspiAhgm3TDiojZylTIzflATP7KBULOiVDWIm2oc7HEN2Y403W8p+HEg/3tB3iURpiFhMDxlOv1mIawJj5V9qzL0bpptR30KU4QzuPPzRYh+Cz2M/ZZj79GwRC3xs5IyhRjrBLlbK8NgYQY1ph4ZRpTkATLoEhvAzw2iWTmHIZpeH6RsjMeUQzqVNsCMnP/cFYP3F7qylq3l028b20cERBHs66JNtExo/VFwgFB3b9dttK8l6dO5uzP4sMOvt608RarNUTILWYaSNZcPXYGsn7ZFdJvvHhQkhYpFBzjaR366yVR94qzs3hWvKBIV6ALXlZX4w4bKBJVvp5MdAGNdpojszQ6VFFLhjbsdrW5XZg6PHAGvVFUn2c/fu5gENNhCvAISu9w==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(396003)(136003)(39860400002)(451199015)(40470700004)(46966006)(36840700001)(36756003)(82740400003)(5660300002)(86362001)(7636003)(356005)(8936002)(40460700003)(4326008)(41300700001)(30864003)(2906002)(36860700001)(83380400001)(54906003)(70586007)(316002)(70206006)(2616005)(110136005)(40480700001)(8676002)(16526019)(82310400005)(478600001)(107886003)(6666004)(426003)(1076003)(47076005)(186003)(26005)(336012);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: W/Z3nyRYlqxFTVqNsS9t/poRJ0Laz8CZYLcMX9oO2SHPmcJkro9NdtL/D5jYtQY5z3EZN/yXbXHlq65CioGHbY2wJeWI/J8QrX/B98MbDKV3sK5ivCPVcIuF03tRQAXrqQCNOLbw+MQO5WYfx5scvnQPrvJR4IhHOkZMnf0qEHFy8UrIctsYrva9/t1fyDHlW1ksFKUSPE3x0JILidGxVNPxBeS3UHt0CYdPgYb4EOV3GFf34/L9Q2tQiEMnHKSVaYoYWpSPWaUMzxpdYa2K7kaojCDYwA/aFpold00cZ44gmoEJQQXxgglreK/B3PSmAnBPtK25qo7p4hebxeZcW/xfVqVImCrEhk1h86+4frs1T9+DMuOxoKmGX2wBsWOpcrjcyT2ekaLERxmLLOxj+574M9lby0IewotJDUVQ9yASgH0d4RvZbenMdPQDbbrwV8XK2ddXmzDfSVDFlE7DISFssZX46BKTb20vf3/qz/oj/TAlly92V48J6VNcvY/H0RrpjXJs3ZWt4+W+QZuGNhEu5SqYj9PH9dS1DRbBgCNwNBQj+wvya4mDho73DL3tD6B2TuOW+yHFGNRXTYi9E86PlwPdajEBQ2fjXtXBEqmmPCmji9UT6jcovJ2e6ZWIVNk6ZdpOUCxkMsZmt8z0WJQsmOcSIeylwaPRyeLMEwxL6CI8b/RjASG6XCGPalw3nPJ4NwWHuZs3OKDJLV/z3pReAY+pbQIkj4a7Z9j5jBo=
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(39860400002)(396003)(136003)(346002)(451199015)(36840700001)(46966006)(40470700004)(36756003)(2616005)(7636003)(36860700001)(336012)(82740400003)(6666004)(356005)(478600001)(54906003)(110136005)(40480700001)(1076003)(83380400001)(2906002)(26005)(86362001)(107886003)(82310400005)(40460700003)(316002)(5660300002)(8676002)(4326008)(8936002)(47076005)(16526019)(426003)(70206006)(70586007)(186003)(41300700001)(41533002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2022 18:51:52.7583
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2022 18:52:02.1861
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f3243c9-3ed1-48bc-e32d-08dad7baf0bc
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2cf46d94-948d-484f-9bec-08dad7baf662
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E643.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5426
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6136
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -104,333 +104,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose port function commands to enable / disable RoCE, this is used to
-control the port RoCE device capabilities.
-
-When RoCE is disabled for a function of the port, function cannot create
-any RoCE specific resources (e.g GID table).
-It also saves system memory utilization. For example disabling RoCE enable a
-VF/SF saves 1 Mbytes of system memory per function.
-
-Example of a PCI VF port which supports function configuration:
-Set RoCE of the VF's port function.
-
-$ devlink port show pci/0000:06:00.0/2
-pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0
-vfnum 1
-    function:
-        hw_addr 00:00:00:00:00:00 roce enable
-
-$ devlink port function set pci/0000:06:00.0/2 roce disable
-
-$ devlink port show pci/0000:06:00.0/2
-pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0
-vfnum 1
-    function:
-        hw_addr 00:00:00:00:00:00 roce disable
+Downstream patch requires to get other function GENERAL2 caps while
+mlx5_vport_get_other_func_cap() gets only one type of caps (general).
+Rename it to represent this and introduce a generic implementation
+of mlx5_vport_get_other_func_cap().
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Acked-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-v3-v4:
- - change port_function_roce to port_fn_roce.
-v2->v3:
- - change DEVLINK_PORT_FN_SET_CAP to devlink_port_fn_cap_fill.
- - move out DEVLINK_PORT_FN_CAPS_VALID_MASK from UAPI.
- - introduce DEVLINK_PORT_FN_CAP_ROCE and add _BIT suffix to
-   devlink_port_fn_attr_cap.
----
- .../networking/devlink/devlink-port.rst       |  34 +++++-
- include/net/devlink.h                         |  18 +++
- include/uapi/linux/devlink.h                  |  10 ++
- net/core/devlink.c                            | 113 ++++++++++++++++++
- 4 files changed, 174 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h        | 3 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c          | 3 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/vport.c            | 6 ++++--
+ include/linux/mlx5/vport.h                                 | 2 ++
+ 5 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/networking/devlink/devlink-port.rst b/Documentation/networking/devlink/devlink-port.rst
-index 2c637f4aae8e..c3302d23e480 100644
---- a/Documentation/networking/devlink/devlink-port.rst
-+++ b/Documentation/networking/devlink/devlink-port.rst
-@@ -110,7 +110,7 @@ devlink ports for both the controllers.
- Function configuration
- ======================
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 9b6fbb19c22a..33dffcb8bdd7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -3889,7 +3889,7 @@ static int mlx5_esw_query_vport_vhca_id(struct mlx5_eswitch *esw, u16 vport_num,
+ 	if (!query_ctx)
+ 		return -ENOMEM;
  
--A user can configure the function attribute before enumerating the PCI
-+Users can configure one or more function attributes before enumerating the PCI
- function. Usually it means, user should configure function attribute
- before a bus specific device for the function is created. However, when
- SRIOV is enabled, virtual function devices are created on the PCI bus.
-@@ -122,6 +122,9 @@ A user may set the hardware address of the function using
- `devlink port function set hw_addr` command. For Ethernet port function
- this means a MAC address.
- 
-+Users may also set the RoCE capability of the function using
-+`devlink port function set roce` command.
-+
- Function attributes
- ===================
- 
-@@ -162,6 +165,35 @@ device created for the PCI VF/SF.
-       function:
-         hw_addr 00:00:00:00:88:88
- 
-+RoCE capability setup
-+---------------------
-+Not all PCI VFs/SFs require RoCE capability.
-+
-+When RoCE capability is disabled, it saves system memory per PCI VF/SF.
-+
-+When user disables RoCE capability for a VF/SF, user application cannot send or
-+receive any RoCE packets through this VF/SF and RoCE GID table for this PCI
-+will be empty.
-+
-+When RoCE capability is disabled in the device using port function attribute,
-+VF/SF driver cannot override it.
-+
-+- Get RoCE capability of the VF device::
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+        function:
-+            hw_addr 00:00:00:00:00:00 roce enable
-+
-+- Set RoCE capability of the VF device::
-+
-+    $ devlink port function set pci/0000:06:00.0/2 roce disable
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+        function:
-+            hw_addr 00:00:00:00:00:00 roce disable
-+
- Subfunction
- ============
- 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 5f6eca5e4a40..ce4c65d2f2e7 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1451,6 +1451,24 @@ struct devlink_ops {
- 	int (*port_function_hw_addr_set)(struct devlink_port *port,
- 					 const u8 *hw_addr, int hw_addr_len,
- 					 struct netlink_ext_ack *extack);
-+	/**
-+	 * @port_fn_roce_get: Port function's roce get function.
-+	 *
-+	 * Query RoCE state of a function managed by the devlink port.
-+	 * Return -EOPNOTSUPP if port function RoCE handling is not supported.
-+	 */
-+	int (*port_fn_roce_get)(struct devlink_port *devlink_port,
-+				bool *is_enable,
-+				struct netlink_ext_ack *extack);
-+	/**
-+	 * @port_fn_roce_set: Port function's roce set function.
-+	 *
-+	 * Enable/Disable the RoCE state of a function managed by the devlink
-+	 * port.
-+	 * Return -EOPNOTSUPP if port function RoCE handling is not supported.
-+	 */
-+	int (*port_fn_roce_set)(struct devlink_port *devlink_port,
-+				bool enable, struct netlink_ext_ack *extack);
- 	/**
- 	 * port_new() - Add a new port function of a specified flavor
- 	 * @devlink: Devlink instance
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 70191d96af89..6cc2925bd478 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -658,11 +658,21 @@ enum devlink_resource_unit {
- 	DEVLINK_RESOURCE_UNIT_ENTRY,
- };
- 
-+enum devlink_port_fn_attr_cap {
-+	DEVLINK_PORT_FN_ATTR_CAP_ROCE_BIT,
-+
-+	/* Add new caps above */
-+	__DEVLINK_PORT_FN_ATTR_CAPS_MAX,
-+};
-+
-+#define DEVLINK_PORT_FN_CAP_ROCE _BITUL(DEVLINK_PORT_FN_ATTR_CAP_ROCE_BIT)
-+
- enum devlink_port_function_attr {
- 	DEVLINK_PORT_FUNCTION_ATTR_UNSPEC,
- 	DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR,	/* binary */
- 	DEVLINK_PORT_FN_ATTR_STATE,	/* u8 */
- 	DEVLINK_PORT_FN_ATTR_OPSTATE,	/* u8 */
-+	DEVLINK_PORT_FN_ATTR_CAPS,	/* bitfield32 */
- 
- 	__DEVLINK_PORT_FUNCTION_ATTR_MAX,
- 	DEVLINK_PORT_FUNCTION_ATTR_MAX = __DEVLINK_PORT_FUNCTION_ATTR_MAX - 1
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 035249c5dd17..8c0ad52431c5 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -195,11 +195,16 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_hwmsg);
- EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_hwerr);
- EXPORT_TRACEPOINT_SYMBOL_GPL(devlink_trap_report);
- 
-+#define DEVLINK_PORT_FN_CAPS_VALID_MASK \
-+	(_BITUL(__DEVLINK_PORT_FN_ATTR_CAPS_MAX) - 1)
-+
- static const struct nla_policy devlink_function_nl_policy[DEVLINK_PORT_FUNCTION_ATTR_MAX + 1] = {
- 	[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR] = { .type = NLA_BINARY },
- 	[DEVLINK_PORT_FN_ATTR_STATE] =
- 		NLA_POLICY_RANGE(NLA_U8, DEVLINK_PORT_FN_STATE_INACTIVE,
- 				 DEVLINK_PORT_FN_STATE_ACTIVE),
-+	[DEVLINK_PORT_FN_ATTR_CAPS] =
-+		NLA_POLICY_BITFIELD32(DEVLINK_PORT_FN_CAPS_VALID_MASK),
- };
- 
- static const struct nla_policy devlink_selftest_nl_policy[DEVLINK_ATTR_SELFTEST_ID_MAX + 1] = {
-@@ -680,6 +685,60 @@ devlink_sb_tc_index_get_from_attrs(struct devlink_sb *devlink_sb,
- 	return 0;
- }
- 
-+static void devlink_port_fn_cap_fill(struct nla_bitfield32 *caps,
-+				     u32 cap, bool is_enable)
-+{
-+	caps->selector |= cap;
-+	if (is_enable)
-+		caps->value |= cap;
-+}
-+
-+static int devlink_port_fn_roce_fill(const struct devlink_ops *ops,
-+				     struct devlink_port *devlink_port,
-+				     struct nla_bitfield32 *caps,
-+				     struct netlink_ext_ack *extack)
-+{
-+	bool is_enable;
-+	int err;
-+
-+	if (!ops->port_fn_roce_get)
-+		return 0;
-+
-+	err = ops->port_fn_roce_get(devlink_port, &is_enable, extack);
-+	if (err) {
-+		if (err == -EOPNOTSUPP)
-+			return 0;
-+		return err;
-+	}
-+
-+	devlink_port_fn_cap_fill(caps, DEVLINK_PORT_FN_CAP_ROCE, is_enable);
-+	return 0;
-+}
-+
-+static int devlink_port_fn_caps_fill(const struct devlink_ops *ops,
-+				     struct devlink_port *devlink_port,
-+				     struct sk_buff *msg,
-+				     struct netlink_ext_ack *extack,
-+				     bool *msg_updated)
-+{
-+	struct nla_bitfield32 caps = {};
-+	int err;
-+
-+	err = devlink_port_fn_roce_fill(ops, devlink_port, &caps, extack);
-+	if (err)
-+		return err;
-+
-+	if (!caps.selector)
-+		return 0;
-+	err = nla_put_bitfield32(msg, DEVLINK_PORT_FN_ATTR_CAPS, caps.value,
-+				 caps.selector);
-+	if (err)
-+		return err;
-+
-+	*msg_updated = true;
-+	return 0;
-+}
-+
- static int
- devlink_sb_tc_index_get_from_info(struct devlink_sb *devlink_sb,
- 				  struct genl_info *info,
-@@ -1263,6 +1322,35 @@ static int devlink_port_fn_state_fill(const struct devlink_ops *ops,
- 	return 0;
- }
- 
-+static int
-+devlink_port_fn_roce_set(struct devlink_port *devlink_port, bool enable,
-+			 struct netlink_ext_ack *extack)
-+{
-+	const struct devlink_ops *ops = devlink_port->devlink->ops;
-+
-+	return ops->port_fn_roce_set(devlink_port, enable, extack);
-+}
-+
-+static int devlink_port_fn_caps_set(struct devlink_port *devlink_port,
-+				    const struct nlattr *attr,
-+				    struct netlink_ext_ack *extack)
-+{
-+	struct nla_bitfield32 caps;
-+	u32 caps_value;
-+	int err;
-+
-+	caps = nla_get_bitfield32(attr);
-+	caps_value = caps.value & caps.selector;
-+	if (caps.selector & DEVLINK_PORT_FN_CAP_ROCE) {
-+		err = devlink_port_fn_roce_set(devlink_port,
-+					       caps_value & DEVLINK_PORT_FN_CAP_ROCE,
-+					       extack);
-+		if (err)
-+			return err;
-+	}
-+	return 0;
-+}
-+
- static int
- devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *port,
- 				   struct netlink_ext_ack *extack)
-@@ -1281,6 +1369,10 @@ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *por
- 					   &msg_updated);
+-	err = mlx5_vport_get_other_func_cap(esw->dev, vport_num, query_ctx);
++	err = mlx5_vport_get_other_func_general_cap(esw->dev, vport_num, query_ctx);
  	if (err)
+ 		goto out_free;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+index a806e3de7b7c..09473983778f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+@@ -324,7 +324,8 @@ void mlx5_unload_one_devl_locked(struct mlx5_core_dev *dev);
+ int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery);
+ int mlx5_load_one_devl_locked(struct mlx5_core_dev *dev, bool recovery);
+ 
+-int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, void *out);
++#define mlx5_vport_get_other_func_general_cap(dev, fid, out)		\
++	mlx5_vport_get_other_func_cap(dev, fid, out, MLX5_CAP_GENERAL)
+ 
+ void mlx5_events_work_enqueue(struct mlx5_core_dev *dev, struct work_struct *work);
+ static inline u32 mlx5_sriov_get_vf_total_msix(struct pci_dev *pdev)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+index 662f1d55e30e..6bde18bcd42f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+@@ -4,6 +4,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/notifier.h>
+ #include <linux/mlx5/driver.h>
++#include <linux/mlx5/vport.h>
+ #include "mlx5_core.h"
+ #include "mlx5_irq.h"
+ #include "pci_irq.h"
+@@ -101,7 +102,7 @@ int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int function_id,
  		goto out;
-+	err = devlink_port_fn_caps_fill(ops, port, msg, extack,
-+					&msg_updated);
-+	if (err)
-+		goto out;
- 	err = devlink_port_fn_state_fill(ops, port, msg, extack, &msg_updated);
- out:
- 	if (err || !msg_updated)
-@@ -1653,6 +1745,7 @@ static int devlink_port_function_validate(struct devlink_port *devlink_port,
- 					  struct netlink_ext_ack *extack)
- {
- 	const struct devlink_ops *ops = devlink_port->devlink->ops;
-+	struct nlattr *attr;
- 
- 	if (tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR] &&
- 	    !ops->port_function_hw_addr_set) {
-@@ -1665,6 +1758,18 @@ static int devlink_port_function_validate(struct devlink_port *devlink_port,
- 				    "Function does not support state setting");
- 		return -EOPNOTSUPP;
  	}
-+	attr = tb[DEVLINK_PORT_FN_ATTR_CAPS];
-+	if (attr) {
-+		struct nla_bitfield32 caps;
-+
-+		caps = nla_get_bitfield32(attr);
-+		if (caps.selector & DEVLINK_PORT_FN_CAP_ROCE &&
-+		    !ops->port_fn_roce_set) {
-+			NL_SET_ERR_MSG_ATTR(extack, attr,
-+					    "Port doesn't support RoCE function attribute");
-+			return -EOPNOTSUPP;
-+		}
-+	}
- 	return 0;
+ 
+-	ret = mlx5_vport_get_other_func_cap(dev, function_id, query_cap);
++	ret = mlx5_vport_get_other_func_general_cap(dev, function_id, query_cap);
+ 	if (ret)
+ 		goto out;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/vport.c b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
+index d5c317325030..7eca7582f243 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/vport.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
+@@ -1160,14 +1160,16 @@ u64 mlx5_query_nic_system_image_guid(struct mlx5_core_dev *mdev)
  }
+ EXPORT_SYMBOL_GPL(mlx5_query_nic_system_image_guid);
  
-@@ -1692,6 +1797,14 @@ static int devlink_port_function_set(struct devlink_port *port,
- 		if (err)
- 			return err;
- 	}
-+
-+	attr = tb[DEVLINK_PORT_FN_ATTR_CAPS];
-+	if (attr) {
-+		err = devlink_port_fn_caps_set(port, attr, extack);
-+		if (err)
-+			return err;
-+	}
-+
- 	/* Keep this as the last function attribute set, so that when
- 	 * multiple port function attributes are set along with state,
- 	 * Those can be applied first before activating the state.
+-int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, void *out)
++int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, void *out,
++				  u16 opmod)
+ {
+-	u16 opmod = (MLX5_CAP_GENERAL << 1) | (HCA_CAP_OPMOD_GET_MAX & 0x01);
+ 	u8 in[MLX5_ST_SZ_BYTES(query_hca_cap_in)] = {};
+ 
++	opmod = (opmod << 1) | (HCA_CAP_OPMOD_GET_MAX & 0x01);
+ 	MLX5_SET(query_hca_cap_in, in, opcode, MLX5_CMD_OP_QUERY_HCA_CAP);
+ 	MLX5_SET(query_hca_cap_in, in, op_mod, opmod);
+ 	MLX5_SET(query_hca_cap_in, in, function_id, function_id);
+ 	MLX5_SET(query_hca_cap_in, in, other_function, true);
+ 	return mlx5_cmd_exec_inout(dev, query_hca_cap, in, out);
+ }
++EXPORT_SYMBOL_GPL(mlx5_vport_get_other_func_cap);
+diff --git a/include/linux/mlx5/vport.h b/include/linux/mlx5/vport.h
+index aad53cb72f17..7f31432f44c2 100644
+--- a/include/linux/mlx5/vport.h
++++ b/include/linux/mlx5/vport.h
+@@ -132,4 +132,6 @@ int mlx5_nic_vport_affiliate_multiport(struct mlx5_core_dev *master_mdev,
+ int mlx5_nic_vport_unaffiliate_multiport(struct mlx5_core_dev *port_mdev);
+ 
+ u64 mlx5_query_nic_system_image_guid(struct mlx5_core_dev *mdev);
++int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, void *out,
++				  u16 opmod);
+ #endif /* __MLX5_VPORT_H__ */
 -- 
 2.38.1
 
