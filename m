@@ -2,234 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97568644B25
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 19:20:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E49644BB8
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 19:28:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229819AbiLFST7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 13:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33816 "EHLO
+        id S230023AbiLFS2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 13:28:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbiLFSTr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 13:19:47 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A93B7F9
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 10:19:46 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id b11so15241026pjp.2
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 10:19:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:subject:user-agent:references:in-reply-to:message-id
-         :date:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=b/z0Rb+C0sxyg9neH+odBjSqOSqcc+cpLiYcYsH34Lc=;
-        b=TsweV9E0v8K9+vTa4dge624bnVUIPhwLaralTVBWZYxlnjbFJtj8Fwx3tZSF799uQ6
-         O9jvLo2dgaFA8Vqzn1unFLhD7tU/9EqGLiheZ0DiBHnjDnk08x+zF8tP33IJ6eda4EgE
-         Unzgxc/T/M5NOKuCkzVVZxRQQA1l/5WhXjVEY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:subject:user-agent:references:in-reply-to:message-id
-         :date:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=b/z0Rb+C0sxyg9neH+odBjSqOSqcc+cpLiYcYsH34Lc=;
-        b=J+zNr9I4oQWf4q/IjfY22l+M1SGFBoI6b4fZbrAeu0Gz0ivXF+M94DxQsw76gyjKJ3
-         m3Xbz/qVgYr70U1w8i2lvQpVEqLAHmlsNZbezd4lScG2/4X2Z/yAjju6+10iy1H4iWy5
-         Upd6EaJRHHPe0tt4h8VpLWOve9Y3eSn9W2dSaONjT/Lahhqr+xR8RZ8ySyxu64jXkm4H
-         YhmINy7NsjrIUwblLlotvAvnKptLSxLmFqLYdIQVb16GJ5nM6ibC/y1gs/z2L9nd+1OI
-         ZC4FF8GuO95WHWn1rRm+fMdYYKgJt/f/ginazdN7KqZNMV40rxXLc01JFw55h9HjJPcl
-         z1Nw==
-X-Gm-Message-State: ANoB5plKKwTVmTlGrzjjgyJGtrcj9MOd5+lZzNJ4kyOSEWQrqiOs8ZEA
-        owQgOs95qfGQA+omDtSOb+FVvj3DU8OI0uBaLqo=
-X-Google-Smtp-Source: AA0mqf49jcJyVboO+FFu4CdGEXj1OUeh9B3nBloKVWiBokj13rudzyWR/VHcd+bDDsx7bzKUoZZtLA==
-X-Received: by 2002:a17:902:dacd:b0:189:6889:c309 with SMTP id q13-20020a170902dacd00b001896889c309mr54175119plx.3.1670350786288;
-        Tue, 06 Dec 2022 10:19:46 -0800 (PST)
-Received: from [192.168.178.38] (f215227.upc-f.chello.nl. [80.56.215.227])
-        by smtp.gmail.com with ESMTPSA id fa13-20020a17090af0cd00b00218abadb6a8sm11118786pjb.49.2022.12.06.10.19.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 06 Dec 2022 10:19:45 -0800 (PST)
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-To:     Bitterblue Smith <rtl8821cerfe2@gmail.com>,
-        JunASAKA <JunASAKA@zzy040330.moe>, <Jes.Sorensen@gmail.com>
-CC:     <kvalo@kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Date:   Tue, 06 Dec 2022 19:19:39 +0100
-Message-ID: <184e8aa3278.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-In-Reply-To: <184e897cf70.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-References: <20221129043442.14717-1-JunASAKA@zzy040330.moe>
- <9dc328a1-1d76-6b8b-041e-d20479f4ff56@gmail.com>
- <184e897cf70.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-User-Agent: AquaMail/1.40.1 (build: 104001224)
-Subject: Re: [PATCH] drivers: rewrite and remove a superfluous parameter.
+        with ESMTP id S230003AbiLFS21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 13:28:27 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2065.outbound.protection.outlook.com [40.107.93.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596224B74D
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 10:23:47 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DbcAVjcvDu5shZQaEiDf3NKD12eRDEErNdyOZxlYFBzPlsJb42G89WAgRlQU3c+5H1Uh9fPJ0unZLq5slDZGDcMbQPhON7tAc3nG6uVx4b4sFeWHxJjopegumaU9TvZqYOnq7vId2SBXltJvaqS5CmvuxwqDD1SI2MO/ZWKnifES7bhMTWf/Zd1ZpAO5/ZnxYSbzhGV6W7FyGmF5PsTrSZw7mwYv++O9T2d4mtirY6eIR/FhSD9tfW6i9AvS4hpRLBfSEDBoOXorrbRlt5kpAoypwrQ1TKAfvPCFNbsLSVH/+FSvik8wt16VAymwObpYK4V182qvylBwaFGIyHeJ3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6K6T02OBqWWMkgSEJaT7yP+lvZy6uGYE+qOjePlAo1M=;
+ b=QIkm9rtFFqFQnyJirK86sB36VB3U/cN/KF5RS5A3g166QjCuO+wDZVGqjFz3W4yj8fyQrxFEDgrLWH62bxKDJlVwj38s/BznmQA6rE3sYnfialMcK8slPmQRsiCsvn/jnhhSN+nJYZQozpUflN8MnjInDPKMiqUAIllAjRJ5rgvnugNpuf8E8lw9VWZsnl0sfttB9og9bD1Ok1C/WdQllGLY2KkFK7+d7UAj0yV7vzsnxsyS9CNPtshW2JCEkLRmldR4S+dR8uGihig+Uiu9y9i3dDIowrbHSDGNUmTXq2SX1pWQwUFZoet0ZKwavGD6URbrx4LOnqZikF3vCUnhGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6K6T02OBqWWMkgSEJaT7yP+lvZy6uGYE+qOjePlAo1M=;
+ b=NAdO6JzbrfLM/EIMbSlQ9HxJ3OIHimK05kHdt7n1cl6EGaA8tJRdvXFUTtP7oC7Dr2vFFCqLXKxkmrG+9JmiDVHyvRexI57x/BCHvxby3rtGqMwQbpxXz6wGdHSAsYFg9M2xwETYQMuz42rkdFgWNr6brrV6B0FNziHjW9MXh5A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
+ CH2PR12MB4071.namprd12.prod.outlook.com (2603:10b6:610:7b::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5880.14; Tue, 6 Dec 2022 18:21:26 +0000
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::6aee:c2b3:2eb1:7c7b]) by DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::6aee:c2b3:2eb1:7c7b%7]) with mapi id 15.20.5880.014; Tue, 6 Dec 2022
+ 18:21:26 +0000
+Message-ID: <b916302e-8654-2e00-0618-0a2cb8fc757c@amd.com>
+Date:   Tue, 6 Dec 2022 10:21:24 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.5.1
+Subject: Re: [PATCH net-next 0/2] devlink: add params FW_BANK and
+ ENABLE_MIGRATION
+Content-Language: en-US
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com
+References: <20221205172627.44943-1-shannon.nelson@amd.com>
+ <Y48EwzdfkwWsw7/q@nanopsycho>
+From:   Shannon Nelson <shannon.nelson@amd.com>
+In-Reply-To: <Y48EwzdfkwWsw7/q@nanopsycho>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR01CA0038.prod.exchangelabs.com (2603:10b6:a03:94::15)
+ To DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12)
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000049ec2405ef2cd952"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|CH2PR12MB4071:EE_
+X-MS-Office365-Filtering-Correlation-Id: e72fb0e4-b4e6-4cb2-7345-08dad7b6b013
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jrp79IZyZ8Sviwm9aYfPBcyxFov1Ior7sV2gw6nX7eONhu+QCZXDxt6kJLsMVDD2LumeV4bP8H7/IhxVMCKfhfO/rf3GwcD8QlrgaYRaNwADeki9fgDYFR9N6D94V9Xv2aRrycW6ENUPHQleR5JeuLc+JE1HO8mxgmgKEljH/kBveBw0pfhHtoleJL8VK3uDz4gTWgpBu2qj/xTgdlKP05HMSgFvvFYuj9+2kALjjU+qQW7nhupNJgQQoTBtpEo/CMtm/3exuZdAfJPl+dUWAWjojtZRsmos/KurtNP+d48lpQxkgU1Y5GWO1ckEKlIM8/7nR876jYlLpMlhUDd9gxiA1lVNsjSNQOMuR9LgWIkYekyha13G37DiXtN+L79t/gz31Bcv8/MCIWChyi9jHsGlC0l3Kb/vvLkfRDUtKczg9u14lAgFHWG+v3RdWSInmpA1gf7YMjoPy9ioKPFakrHENHaeVlDhyfRbqkm8L5N7e7lujajGoDc8xQKJHRGeq7iqT7sp53oJ/Pmy/YII9blZyU2ehZIVx2FvP11uWBHMbQl+Qh25nBYNLtZrK67exrKYVyAIVML7QO9JiyyzdXstEfG+YROHquju3rRUX1H+rrszK6QENrwlMKn3A6/Nr2I623HC1/HwWtxCVcrvGjxRbSnvdEe4MQAOmJt7oWmTV5IvPAiUgVA0/ANvziacfIKsHoSzj6WmzfdN8794sfuz1aWtsfnFpNFaaS0op0bQWmgZ8VvRIr6YIGNd3QUm
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199015)(31686004)(4744005)(2906002)(44832011)(5660300002)(186003)(83380400001)(2616005)(8936002)(86362001)(41300700001)(31696002)(4326008)(8676002)(66556008)(66476007)(66946007)(26005)(6512007)(53546011)(6506007)(36756003)(316002)(6916009)(478600001)(38100700002)(6486002)(966005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bE9IdE42N2d5OHN6NHJaUnVNQW9XT2N3dVRJQlUvdzU3MWFlRnJya2d0dEd5?=
+ =?utf-8?B?SjcyUklqektvZy94OXYvc29DeXRjWVF5aXF0eDRIZjV2aU5UMXpKTysvMkZ4?=
+ =?utf-8?B?OTVaMThsZU9CTUpMUnNtS0JlSUQxUGpneUFLQlpzMkhGZGJESGxvUWptK0x3?=
+ =?utf-8?B?MjVibnFleU1QL3lxOWlHd280VTVsWTcrTVgzZlYxZWdWRHpyTkp6SzVScm1i?=
+ =?utf-8?B?NnIvYW1LKzREWjVUS0YxNG96MXd6Y1FYRTFlWDZxRU5FdVF6L3RhV09keUly?=
+ =?utf-8?B?OER0aUJFeGhnMXVMUTJWSzh4Q01EVDFNamg5U2xVWkdVNU10UHIwdmhQb0Nj?=
+ =?utf-8?B?VDY3b1lhL0MwQ1d0Y0Jkck05WGlYV1BpN1hnRUh4elROeHdCeE9wZ0VUZFI5?=
+ =?utf-8?B?Z0Z4eE9BQ0c5bm9RSjZyMzk1TUlHSjM2VHlmQm0wRVZYN3p0Y0ovOXdhc2lF?=
+ =?utf-8?B?NzM2ZkNaRnVBaTdLRk1tRy9DZCtMNGlGK1lRUFpIMnFjdmJZeE9Dbnd3d2lw?=
+ =?utf-8?B?VlBvVG1hRTkzOElJbmh4cnBUbndZRmVVYjZ0R043WE5jczUxK3AwTEpxZThi?=
+ =?utf-8?B?UGhDK3ptVHd4aDRJVFFEU2RmTDhQTGcvdGM5VXJpcjE0S01kd25HUm9sRkpM?=
+ =?utf-8?B?bExidEtKWEZJalBJSFB5clc1S0NEbjY5d2RvWWJxU3k3Q2pFY01aYlR1VGJ5?=
+ =?utf-8?B?UVpOdGV5cWFVUU91RzVxOTczZk16anRxc25idWNEdGxVaTcwVHU4REtrZm1M?=
+ =?utf-8?B?c0FtZUZXMDRRb3Q0NDhIRklHVW1JNGROem1veGE1eEpGa2sxS1d5YVVHMkUz?=
+ =?utf-8?B?QWh4ZUxCYzZkVGVTSE9qbEI0N20xbnAzUUwrRGEzc2pMNlF2SEV0RmhoZHlI?=
+ =?utf-8?B?U2pwT01HcjZLL3NHNGJYUi9HbzE5UzlidFg3dUkzQ0YzOXQyTzhPcmppaWNN?=
+ =?utf-8?B?UWJRRm9CL0tSL3RveGkrQ204OFAydWNEeHAwd0Zjd0tFMGY3Uk84RjI5ODYr?=
+ =?utf-8?B?dVdWVVVKRG14dGdSZjdSamFKcVV5RGhacnYwSnoyb25ReUYwU3dUQ04zMEo1?=
+ =?utf-8?B?YU85ckluQ1FXMFhqOFQ4Z1g1SmhYV0VVeERBWm96dWRmazhock5MYnVRSzN5?=
+ =?utf-8?B?ejdkaXFoeG1meHUrZnJ4V2FyZG4zdVlSODFPU210eTdvZHk0eXN1MnhQMVJM?=
+ =?utf-8?B?RWNHcFg0QUErN0ZGbE1IMGJMeXlkdCtJNUd5dHpFSjNvRm5OSGVxc3ptLzZH?=
+ =?utf-8?B?S2lRK2ljMFdkemoxMkFGMWJhWC95RW5IazdvZzVUdHdUN2xVSU9oMkY5ZGVx?=
+ =?utf-8?B?ZWtocDA4L2REMzBaU0ZXWG41YkVmYmMrZExPUm52NlA4WjcwTTU1bDhVMFNa?=
+ =?utf-8?B?YnNZSW1OM1Q4U21Oa3U2R1BiOUdITUQ5QzE3dDMzSmJtVkVNSHVLNGZhYnF4?=
+ =?utf-8?B?aFBKd0dDT3c1dXg1MUpiNVpkSExNYzd2SGs5OHhkcjhaZTc4QmF0ZkVpSGt1?=
+ =?utf-8?B?aGtCVTF2Rk56ZjdCNjloWW1VV29DWE9KdXdVelJzZ2QrdlVKMEphUDV3cFJn?=
+ =?utf-8?B?ellwTjBDQ0Z3czNoYVpTNVh6V1lTMWdLUzM3NzZLU0QweTNLMWh1OUFmRmto?=
+ =?utf-8?B?QVhFKzR4SW5YU0J4alJKa2FJL0xjY0w2WWNwMU5ITWluUmhuR0dNTkFmVWFr?=
+ =?utf-8?B?Qm1DTXpLRHlTL05BUDBVVlp6QkpjMCtxT21LOElHN1U1OWthOUdrNHhvMW5U?=
+ =?utf-8?B?elV6WjlNNEM0V0t0Y3ZUbXFDcVJmZTBTS2FlRTliT1pLQUUvWGxuWFZUQVJt?=
+ =?utf-8?B?RmJFMWdjQUVzMTNSZW4rbHkraHFFb2ZFMUlRN0hRbkdDZGNtZ1Q5cjFGNnla?=
+ =?utf-8?B?eTg4UUpFY0plekRaODBRdTNiRnRNVnFqdFkrR2xESFQyZkh4cUF5THJRWUNU?=
+ =?utf-8?B?clREY0Q0SGVrSkxYZytSYTNPU25GSE5Ea1FjVTVrQ1IzYXc2bXltSnJFbTIx?=
+ =?utf-8?B?c1VWQ0Q1OHhwUy96VitTVnFKMktYYjFRTFdNaGhGTWVLV3dYUW9EOURXYWR5?=
+ =?utf-8?B?UWNpcXRPazhDVnpKajRFVDNNSDZ5MXZ3ZXRrSnB1UVRQY2NaUU5DV2ZuRGZ0?=
+ =?utf-8?Q?0ITlbbQ9sJAJWJTfm+7VOXPJv?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e72fb0e4-b4e6-4cb2-7345-08dad7b6b013
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2022 18:21:26.5680
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6QgybSb29Euw42Dy5ZKrjkpLPqXKV8W//2rXxvHmW+70TWx/KEi4i7nSajeuspFaOJyCs2xSViyHUYJVLiHC9g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4071
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000049ec2405ef2cd952
-Content-Type: text/plain; format=flowed; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
-
-On December 6, 2022 6:59:36 PM Arend Van Spriel 
-<arend.vanspriel@broadcom.com> wrote:
-
-> On November 29, 2022 3:06:37 PM Bitterblue Smith <rtl8821cerfe2@gmail.com>
-> wrote:
->
->> On 29/11/2022 06:34, JunASAKA wrote:
->>> I noticed there is a superfluous "*hdr" parameter in rtl8xxxu module
->>> when I am trying to fix some bugs for the rtl8192eu wifi dongle. This
->>> parameter can be removed and then gained from the skb object to make the
->>> function more beautiful.
->>>
->>> Signed-off-by: JunASAKA <JunASAKA@zzy040330.moe>
->>> ---
->>> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 5 +++--
->>> 1 file changed, 3 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
->>> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
->>> index ac641a56efb0..4c3d97e8e51f 100644
->>> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
->>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
->>> @@ -4767,9 +4767,10 @@ static u32 rtl8xxxu_80211_to_rtl_queue(u32 queue)
->>> return rtlqueue;
->>> }
->>>
->>> -static u32 rtl8xxxu_queue_select(struct ieee80211_hdr *hdr, struct sk_buff
->>> *skb)
->>> +static u32 rtl8xxxu_queue_select(struct sk_buff *skb)
->>> {
->>> u32 queue;
->>> + struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
->>>
->>> if (ieee80211_is_mgmt(hdr->frame_control))
->>> queue = TXDESC_QUEUE_MGNT;
->>> @@ -5118,7 +5119,7 @@ static void rtl8xxxu_tx(struct ieee80211_hw *hw,
->>> if (control && control->sta)
->>> sta = control->sta;
->>>
->>> - queue = rtl8xxxu_queue_select(hdr, skb);
->>> + queue = rtl8xxxu_queue_select(skb);
->>>
->>> tx_desc = skb_push(skb, tx_desc_size);
+On 12/6/22 1:00 AM, Jiri Pirko wrote:
+> Mon, Dec 05, 2022 at 06:26:25PM CET, shannon.nelson@amd.com wrote:
+>> Some discussions of a recent new driver RFC [1] suggested that these
+>> new parameters would be a good addition to the generic devlink list.
+>> If accepted, they will be used in the next version of the discussed
+>> driver patchset.
 >>
->> See the recent discussion about this here:
->> https://lore.kernel.org/linux-wireless/acd30174-4541-7343-e49a-badd199f4151@gmail.com/
->> https://lore.kernel.org/linux-wireless/2af44c28-1c12-46b9-85b9-011560bf7f7e@gmail.com/
->
-> Not sure why I looked but I did. You may want to look at rtl8xxxu_tx()
-> which is the .tx callback that mac80211 uses and the first statement in
-> there is also assuming skb->data points to the 802.11 header.
-
-Here the documentation of the .tx callback:
-
-@tx: Handler that 802.11 module calls for each transmitted frame.
- * skb contains the buffer *starting from the IEEE 802.11 header*.
- * The low-level driver should send the frame out based on
- * configuration in the TX control data. This handler should,
- * preferably, never fail and stop queues appropriately.
- * Must be atomic.
-
-I don't see any pushes or pulls before the queue select so that would mean 
-mac80211 is not complying to the described behavior.
-
-Regards,
-Arend
-
->
-> Regards,
-> Arend
+>> [1] https://lore.kernel.org/netdev/20221118225656.48309-11-snelson@pensando.io/
 >>
+>> Shannon Nelson (2):
+>>   devlink: add fw bank select parameter
+>>   devlink: add enable_migration parameter
+> 
+> Where's the user? You need to introduce it alongside in this patchset.
+
+I'll put them at the beginning of the next version of the pds_core patchset.
 
 
-
-
---00000000000049ec2405ef2cd952
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-2Gzj3QNJRLsZu1TLyOyBBIr/BE7UiY3RabgRzknBGAPmzhS+fmyM8OtM5BYBsFBrSUFtZZO2p/tf
-Nbc24J2zf2peoZ8MK+7WQqummYlOnz+FyDkA9EybeNMcS5C+xi/PAgMBAAGjggHdMIIB2TAOBgNV
-HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
-Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
-KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
-Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
-dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
-OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
-MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
-BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFIikAXd8CEtv
-ZbDflDRnf3tuStPuMA0GCSqGSIb3DQEBCwUAA4IBAQCdS5XCYx6k2GGZui9DlFsFm75khkqAU7rT
-zBX04sJU1+B1wtgmWTVIzW7ugdtDZ4gzaV0S9xRhpDErjJaltxPbCylb1DEsLj+AIvBR34caW6ZG
-sQk444t0HPb29HnWYj+OllIGMbdJWr0/P95ZrKk2bP24ub3ZP/8SyzrohfIba9WZKMq6g2nTLZE3
-BtkeSGJx/8dy0h8YmRn+adOrxKXHxhSL8BNn8wsmIZyYWe6fRcBtO3Ks2DOLyHCdkoFlN8x9VUQF
-N2ulEgqCbRKkx+qNirW86eF138lr1gRxzclu/38ko//MmkAYR/+hP3WnBll7zbpIt0jc9wyFkSqH
-p8a1MYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
-YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMTv1t
-bpIzNUky46LXMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCBlSFpOXydLUwTPKe/9
-tpt/z6MfbWOhBDyzHtXWpinWwTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0yMjEyMDYxODE5NDZaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
-AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
-BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEA6944+6OQPpdSrm/tQp+NJi1U1fuCaFAz3+Xb
-OoiqiLSKPUtYrm8aOiCpuzgx1volHxJ7BLNOBx3RJveL9/fu8EorjutG01vqyR0FGNhGJwVRUDTz
-mVb8PscEz0T2w9tbO6HvYKe+fMy9dO6vXrBlGL5nnoeTni2tFvT33/2U98r1Vap00SL/mi5HTPnz
-DrQviNIDL2srzpOShhX0l0k0Q6MBgxfscS8+uCTbgQEx5YkAabZbzrxI1tNW/+qYb+uriUhPH+0J
-VeJAjRQ8rPc2uRkqUyvrbPl1tRtlhTT26rxxjbByrg3LSshQhtG7JvGSO+ZIjoJG0kFcyE3YQsrx
-2A==
---00000000000049ec2405ef2cd952--
+> 
+>>
+>> Documentation/networking/devlink/devlink-params.rst |  8 ++++++++
+>> include/net/devlink.h                               |  8 ++++++++
+>> net/core/devlink.c                                  | 10 ++++++++++
+>> 3 files changed, 26 insertions(+)
+>>
+>> --
+>> 2.17.1
+>>
