@@ -2,217 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2F2644BC8
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 19:33:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89A95644BCF
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 19:34:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbiLFSdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 13:33:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
+        id S229628AbiLFSd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 13:33:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbiLFScg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 13:32:36 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2086.outbound.protection.outlook.com [40.107.223.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2630A42191
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 10:28:39 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E4CvkQnLkN9AbpRj248nQkVEnro36JdmeFYzqJNQLmVm8i8FEiu54Ok2HRbIiiQGgQG8i7XDQA90KSJ4o6HJ8NWxrSMd6LFojBHprHxOZ6hcn56Rg5l2rJX4bT/xqCFrXwl5LJHkLFo66sftm7tKjpylGUdJykEQEjsVci/aIzcBcSlnMishg9JlWZIDrHzpOiChO85uymcGNrb/aLDn61uoh/vZvQlfzRf2sszIHCJPEz5BuAkAjzUO46yYVFXLA+yxAsC2p510pgec0+yb+C0jmhfoVuodJYLg7gVqoL/MHLmuyUSCqJv95ZTqQjL50StQrW7PGjCDFE5Mh4sOLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ss5s+LAltiyBj1k2ZxZiTvg3J31Ow0VMIElBxp1/qi0=;
- b=SOP4+8wmQF2VTG6O6jXkymqzJx/SR3VpeS4PPqon+s62xbyFbOA8krFBgsvQ4B4VnaERPo00BX2pX9WsbaiRSra/AWlULI6S4sHa+jpNxAn/Hz73R3RjZBL8h4qrc2Ys2vrpeYPyJ3x5c8p/T3D0rIjn0Rnx2vPvjVAc8O906INUBzdVIVIIYEW6hrXj82dxTcTFeiQ1uSvt4Bh2MoZGOUvvqI1GM7mNO/rDa5FMV7Juj1h8WZ50mLO7lb6xf3JUXSsKjHdzbI6aJrvvtbq5qZUHabmxOggzB5fKIM9TnkZVeI4Voy7cR7DEGGHzbcSlNDhxGEpLcF3F158GHoactg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ss5s+LAltiyBj1k2ZxZiTvg3J31Ow0VMIElBxp1/qi0=;
- b=O6UxAlpMzgu4S7DLa4N5t2POzWjLSYHe76fKoHmh8bowmAyCuYBYpG8PW4gA++7PhbX5gZ42IhcNlisWvfUtHN2bRBOP/GUT1JlXD0filzt3aAjuMyBj48O9+6LxF7fibJRJ8EZVeXcmoil4V868JdGIp487Cf5LOW8Q+A+VJMA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- PH7PR12MB5927.namprd12.prod.outlook.com (2603:10b6:510:1da::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.14; Tue, 6 Dec 2022 18:28:36 +0000
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b]) by DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b%7]) with mapi id 15.20.5880.014; Tue, 6 Dec 2022
- 18:28:36 +0000
-Message-ID: <4bf5baa0-d0c7-7600-7d59-605dc6504fd0@amd.com>
-Date:   Tue, 6 Dec 2022 10:28:33 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.5.1
-Subject: Re: [PATCH net-next 2/2] devlink: add enable_migration parameter
-Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com
-References: <20221205172627.44943-1-shannon.nelson@amd.com>
- <20221205172627.44943-3-shannon.nelson@amd.com> <Y48FrgEvbj21eIMS@nanopsycho>
-From:   Shannon Nelson <shannon.nelson@amd.com>
-In-Reply-To: <Y48FrgEvbj21eIMS@nanopsycho>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY3PR04CA0002.namprd04.prod.outlook.com
- (2603:10b6:a03:217::7) To DS0PR12MB6583.namprd12.prod.outlook.com
- (2603:10b6:8:d1::12)
+        with ESMTP id S229776AbiLFSdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 13:33:38 -0500
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25CF2B0
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 10:31:59 -0800 (PST)
+Received: by mail-qv1-xf2f.google.com with SMTP id i12so11028116qvs.2
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 10:31:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=KqUAYb/fXjf+DnnONFt9R7wczdlGsDniuWCIhYP8EcQ=;
+        b=TNO6BxsIVU6eCOU2Do84isXfsLDc0DgZ8a10aCZhInQH6K7nuMPuT3blwZdef3Xzhm
+         9wtnCP+z5u02o9pxfWhXV7P0UeDUWn2R85ZUTA261U3VpMRCbpUKdlN8wYox6DkUk/JR
+         Xr3fAkNmZJpL/Me3+wknDBYGuZNhx15gLdTCY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KqUAYb/fXjf+DnnONFt9R7wczdlGsDniuWCIhYP8EcQ=;
+        b=5rTx6oQ4U9KxlYiiqU21G4n8S3NJnbH+sh35Avfkvm8tvLJF/a6QPD4vGStaGlsF52
+         rXlZafGMsSPG/UVgT3n1HRLDpoYIkZUyfxzBKREhawARehM5JjfTWX8+UaiD5eoRYNBm
+         Yef553ZD2OoJH7jd2WPNLd2dbtlg1gb+MJisaYjbiQdBd8oH6t7DSLYfr19opqnAFLel
+         T5Xe9HkJGtzXlSgOlQob/TfNuLYRsWqm03IMzZGBgXvoit+8uRkBh3+/p2wFBJAuTNTZ
+         SqLQ6pT+2aIrl/YLr2QctUNqkieJwW2bpvsiovGIOrRJutJcaq5ifmZKIvM4q3neyP3a
+         J/Rg==
+X-Gm-Message-State: ANoB5pmSDb04tG/G9EYFVie2xvafT4iivyZ1wE6CWNkthB+WwpXE01VI
+        txM+RB+jg8jYfVR8Hwr+ULvUC2HrByuFDFEg
+X-Google-Smtp-Source: AA0mqf4gO4Fbn7nNMhKpAzX0wOEbrLvjXUslMwTkLhw4w7R7HYJ8XGT/PLj57bibIsR9Ne2k6gSlVA==
+X-Received: by 2002:a05:6214:84c:b0:4c7:7514:676b with SMTP id dg12-20020a056214084c00b004c77514676bmr6628861qvb.16.1670351518554;
+        Tue, 06 Dec 2022 10:31:58 -0800 (PST)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id bn36-20020a05620a2ae400b006fafaac72a6sm4781964qkb.84.2022.12.06.10.31.58
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Dec 2022 10:31:58 -0800 (PST)
+Received: by mail-yb1-f174.google.com with SMTP id d131so16317154ybh.4
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 10:31:58 -0800 (PST)
+X-Received: by 2002:a81:8644:0:b0:3c7:3c2b:76b5 with SMTP id
+ w65-20020a818644000000b003c73c2b76b5mr39379193ywf.22.1670351506938; Tue, 06
+ Dec 2022 10:31:46 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|PH7PR12MB5927:EE_
-X-MS-Office365-Filtering-Correlation-Id: 653d3263-d9be-4688-c4d5-08dad7b7b04e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cO+8RovLTBYcN18e390IxQWNxm7rBMY4ZMZsi/4bG+DjOVCltWSyziZIT8Jy71A/hNmEYS9xhmHLu8K91a44pzwPPyCN7nmSPewo5KyJ/VtoxOMPCH+xm1ulfC6Wj2Z0JsAyAIa/MWuaWkvmGkattCqQ5FS4vZDr21FtNVub8Kug+gu0ek54/X+Pxo4WoG8le+wiez5uOXaPxZqnzmBDuAjI8wzmpsIkvuHmqtYBUVopBBVKCNT3wWch8esnt4m0+ucJzZlSw69q+gg72RkywZUMz39kDjnktGP8RQYwBBxFIqTSCNeUuqtwLeU12wCgnqFn+fSYI3TEjNh2sIrJHUH11H9M0yP92hXKyN2n4QdKDxyhHbyXfVRx7NgHRiVAwZmx2PDrFcuviTcK4LhjOfKEAmQQ0421A3NtLHq8r8a6T6m8RotAo6sqPlDSgMs8nQFIhYaOQIl3sU6jdBWqZXbzgZyQtbStGiRWFlpzBkMgRkxRkKQNrDPPvSK1wFyuIs419roHX+my3YX0onFgDRqdcPrKeElOVJpIerVkGEdY7LqWXSLZYQMr3hAaJt+Z/ZqTxec1TNd4rYzFqlWmYMBnt62YQFTZ84ibrjrfcCVj2rVRlMamvO7ZX/p5p9rXoup5xgpYlqYJSjJSWtUq5AvfB6MUlwR3FT/RhCPqdQK9rEeVZeVTxheSrqic9ulS/bJhEOu0g2VCFMhGvyRIO9WF9iIStc7oLXNRs05GTQcCzIdTyeFT59bEWZJHURP7
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(39860400002)(136003)(346002)(396003)(451199015)(31686004)(66556008)(66476007)(66946007)(478600001)(8676002)(4326008)(38100700002)(6666004)(6486002)(966005)(2906002)(6512007)(186003)(26005)(31696002)(86362001)(6916009)(6506007)(83380400001)(53546011)(8936002)(5660300002)(36756003)(41300700001)(2616005)(316002)(44832011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cGM2NG1lYmxrb2pTUmVsU2VBRW9TOHcwUG9ZNTU5MTRmdUVPOHpkWXlUalhU?=
- =?utf-8?B?UlcyaUR6bnRpbTF1K2Z2OHA5V3E1c1VXSlViRmRGcVRHb0NQLzQvVytCdHZz?=
- =?utf-8?B?cXduYm5KSW9tQ3hhWkdDS25wc0s4eWp1cE42K0t5YUxJeHd6WWczOGhYWk4w?=
- =?utf-8?B?TjA4SVhyWkp5SjdRa1h0WWJhTnV5Z3R4NlBHQm9mQ2RJS1VtNjBqNzU1TTF2?=
- =?utf-8?B?YkFlS2JwejdZQ1NETWdGL1lhd29ab3IvQUZVUUozR2VENm10VjAxMFBTQTZ0?=
- =?utf-8?B?VXBvYTZKQ29pM0wyckU3cU91ZlNQblp3MERiQ2piTTVOd0g3bm9EY1BpSno1?=
- =?utf-8?B?NXN6K29acXVhdmovcXpCWEk5dW5rRXhHQld1U3R5RkhTV25PUlhlbzNaSE1t?=
- =?utf-8?B?dzZRNlNNVU9LWUlSSEphZ21NSEhvWTBVR3l2Q2ZEeFZXbmdPMkFaQzU4MjEx?=
- =?utf-8?B?b0ZFVHlPY0JCSGNjN040bDFYeDRQL1V5VEZWRXNaaENjdjZWSEs3bFZZaW1H?=
- =?utf-8?B?TUtMWHdnL0R0SjFWRkt1RURuM1U5WHg2djNNTWpMSGNtcTBoN3JCYS9BclNv?=
- =?utf-8?B?dy94MDRTb3Z2UG13S2dNQi9Xa1pISTkxSG1tQ1lvQ1IrRE50RFFhYnB0c0pu?=
- =?utf-8?B?b21rR3hNYUhwTzY0MDVBZ2k2Wk9iekcvSnZSUnRMRUV3WVRiYXhpaGJtVmdR?=
- =?utf-8?B?QUFnbU56MHF4U2NkcWVRNVA5RzZKbXdDNVRIN1orNUJ4SmNVd1YzMnhGMVJn?=
- =?utf-8?B?VThUUWRmQ3pzQVRPcEhGdjJ6cDhta3JXc1JjQnpKYVNMbDdzRHRMS2xYcU02?=
- =?utf-8?B?OGlRN3lXVEt0NjFOL050SHNId1B6KzVnUjZ6MjJEdnVJZWVSVHFoN3dLbUx1?=
- =?utf-8?B?RmJrZUdHTXE0SmtEc0Y2aGFpTDlNeFRLdGQxSlF5UFNONlNXaGNYblladkJC?=
- =?utf-8?B?bVRkdHUzK2NRbjV0VDFkRkJ6N2VnTHVBTWlGWWZLVGZNRGlhQW9RY2d3OGwy?=
- =?utf-8?B?RDJzSEVjU0RFSXdOSXd2ZndzYkJEZ0ljVGlxdVh5QXZ6V25qRmw1WFlKeStP?=
- =?utf-8?B?YUhKOTZuMHBYeENCeFRQTDkvSC9CVlU3c3ZBMzVxRllQOTBvR1FaY2EzWTdr?=
- =?utf-8?B?TDRNQjN5MjhzMGNJUDNzTFNjRlNuVi9xeXdMUlFoa1Z2dkdIdURMN3pIUUl6?=
- =?utf-8?B?Z09TbWFvL0pacWVIazNYYXlaL29WN2pRWHprUGduUE11MFpXc3ZGRnd3LzBi?=
- =?utf-8?B?RWVyY3lSK29lWFo3WHZqZU50eEZUNkJ0Q2sxVTRZeWJKM29LaUpzWTVWNW9U?=
- =?utf-8?B?bGNJYVZBMTF3Z2RMWlNqMlJZNm8yWndjTjhJRlpwbE5FNk5MKzQ1MElhSEM2?=
- =?utf-8?B?Q3dwSjZKYjAzR1BzRk40Y0lpdGdJK2Y4Wmsvd25TaHBOU2J4MFJyY21xOE1Q?=
- =?utf-8?B?YUQrTi9UelJZR0p4aDUzdFZDMXhLQ1R6cFphMlMyYTlpVkgwZmV3OFd4VjhF?=
- =?utf-8?B?by9aaFpJLzgrQlFNT0s0N2VmMDA1ZHhYdmtNMjFPcFhEWk1xY3RqL29KN0xQ?=
- =?utf-8?B?YlZSYVBtanh2RXBlSEpSUlFrNmpTNldoZ28yQWEySEJUQ1JzblVHWG1TZ2tq?=
- =?utf-8?B?V2NmWCtvbFJnYlIrV01NTm5yUjB5dlpLRFBLMGF2OHhnN3Q2YjNmTjlmSnpi?=
- =?utf-8?B?NG1nV2tjSXNMOE80eW5YSTkzOWMvb21uNVk1OU9yZ0NlbVEyaktISlNyVC9v?=
- =?utf-8?B?TXdBL21oV2NycXM1SlBadzlQWEpwVXdIeGJIVnF2a3BGcGFBNzEwd0tlbmV2?=
- =?utf-8?B?QzBYN1Y0NTllNHoreEh6MHFxNVN4WHQyTlNucHVXTE9MaElwS2hySXRZTktp?=
- =?utf-8?B?RGpnS1pGbWJTRUcwWTVRa09DL1IwR3I3ejI4dENZUVJpQ3F1WTRyeUhSSG5r?=
- =?utf-8?B?VjRFeGxtd1ZORHo5RU96MHJGb2hPUkcxdEdleDZXRzVHanAyeHMyMG1jYnVn?=
- =?utf-8?B?cENiWmRTL0xZZGt5eWN6dytWcERrTlRVUFE4ck1SZjluRzU2ZWg4QS96OXdS?=
- =?utf-8?B?ZW12RFdXNzlyRlBqQjRid015Mzh2OG9DRnFDZTIvVXR6ZWloeUkvNXdvaTlw?=
- =?utf-8?Q?70Bx19itCtd271lWpyPKi8AC+?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 653d3263-d9be-4688-c4d5-08dad7b7b04e
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2022 18:28:36.4692
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ts4lSPKEQLhIS0j3UyuzCuC/71isFooWirG9OdAHAXLj+qhuCJTLCTh3AFrOcma0fnu2N37zfgVvzQjUm6hUWw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5927
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <000000000000fa798505ee880a25@google.com> <ac0d8823-e7b3-4524-8864-89b4c85315b5n@googlegroups.com>
+ <CACT4Y+bz-z9s+sDh916rfw9ezW0XROkAKfMDvdVi-wDuf849MQ@mail.gmail.com>
+In-Reply-To: <CACT4Y+bz-z9s+sDh916rfw9ezW0XROkAKfMDvdVi-wDuf849MQ@mail.gmail.com>
+From:   Kees Cook <keescook@chromium.org>
+Date:   Tue, 6 Dec 2022 10:31:10 -0800
+X-Gmail-Original-Message-ID: <CAGXu5jLCdfVLz9PLVs4XkyOY3=V=W8x7WF=E+yRUnsE=425vAw@mail.gmail.com>
+Message-ID: <CAGXu5jLCdfVLz9PLVs4XkyOY3=V=W8x7WF=E+yRUnsE=425vAw@mail.gmail.com>
+Subject: Re: [syzbot] KASAN: slab-out-of-bounds Write in __build_skb_around
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     pepsipu <soopthegoop@gmail.com>,
+        syzbot+fda18eaa8c12534ccb3b@syzkaller.appspotmail.com,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Andrii Nakryiko <andrii@kernel.org>, ast@kernel.org,
+        bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Hao Luo <haoluo@google.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, jolsa@kernel.org,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, martin.lau@linux.dev,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Stanislav Fomichev <sdf@google.com>, song@kernel.org,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/6/22 1:04 AM, Jiri Pirko wrote:
-> Mon, Dec 05, 2022 at 06:26:27PM CET, shannon.nelson@amd.com wrote:
->> To go along with existing enable_eth, enable_roce,
->> enable_vnet, etc., we add an enable_migration parameter.
-> 
-> In the patch description, you should be alwyas imperative to the
-> codebase. Tell it what to do, don't describe what you (plural) do :)
+On Mon, Dec 5, 2022 at 12:04 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Sun, 4 Dec 2022 at 19:16, pepsipu <soopthegoop@gmail.com> wrote:
+> >
+> > I believe this is a KASAN bug.
+> >
+> > I made an easier to read version that still triggers KASAN:
+> >
+> > #define _GNU_SOURCE
+> >
+> > #include <stdio.h>
+> > #include <stdlib.h>
+> > #include <string.h>
+> > #include <sys/syscall.h>
+> > #include <sys/types.h>
+> > #include <linux/bpf.h>
+> > #include <unistd.h>
+> >
+> > #include "bpf.h"
+> >
+> > int main(void)
+> > {
+> >     __u64 insns[] = {
+> >         (BPF_CALL | BPF_JMP) | ((__u64)0x61 << 32),
+> >         (BPF_AND | BPF_ALU),
+> >         (BPF_EXIT | BPF_JMP),
+> >     };
+> >     bpf_load_attr_t load_attr = {
+> >         .prog_type = BPF_PROG_TYPE_CGROUP_SKB,
+> >         .insn_cnt = sizeof(insns) / sizeof(__u64),
+> >         .insns = (__u64)insns,
+> >         .license = (__u64) "GPL",
+> >     };
+> >     long prog_fd = syscall(__NR_bpf, BPF_PROG_LOAD, &load_attr, sizeof(bpf_load_attr_t));
+> >     if (prog_fd == -1)
+> >     {
+> >         printf("could not load bpf prog");
+> >         exit(-1);
+> >     }
+> >     bpf_trun_attr_t trun_attr = {
+> >         .prog_fd = prog_fd,
+> >         .data_size_in = 0x81,
+> >         .data_size_out = -1,
+> >         .data_in = (__u64) "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+> >     };
+> >
+> >     syscall(__NR_bpf, BPF_PROG_TEST_RUN, &trun_attr, sizeof(bpf_trun_attr_t));
+> >     return 0;
+> > }
+> >
+> > It looks like KASAN believes the tail access of SKB's backing buffer, the SKB shared info struct, allocated by bpf_test_init is out-of-bounds.
+> > This is likely because when the SKB is setup, in build_skb, the tail is calculated as "data + ksize(data) - sizeof(skb_shared_info)". ksize returns the size of the slab, not the allocation, so the tail is much further past the allocation.
+> > However, KASAN is usually supposed to correct for ksize calls by unpoisioning the entire slab it's called on... I'm not sure why this is happening.
+>
+> Hi,
+>
+> [+orignal CC list, please keep it in replies, almost none of relevant
+> receivers read syzkaller-bugs@ mailing list]
+>
+> Also +Kees and kasan-dev for ksize.
+>
+> After the following patch the behavior has changed and KASAN does not
+> unpoison the fail of the object:
+>
+> mm: Make ksize() a reporting-only function
+> https://lore.kernel.org/all/20221118035656.gonna.698-kees@kernel.org/
+>
+> Kees, is this bpf case is a remaining ksize() use that needs to be fixed?
+>
 
-This will be better described when rolled up in the pds_core patchset.
+Hi, yes, this seems like a missed ksize() usage. I will take a look at
+it -- nothing should be using ksize() to resize the allocation any
+more: it should either fully allocate the bucket at the start, or use
+krealloc().
 
-> 
-> 
->>
->> This follows from the discussion of this RFC patch
->> https://lore.kernel.org/netdev/20221118225656.48309-11-snelson@pensando.io/
->>
->> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
->> ---
->> Documentation/networking/devlink/devlink-params.rst | 4 ++++
->> include/net/devlink.h                               | 4 ++++
->> net/core/devlink.c                                  | 5 +++++
->> 3 files changed, 13 insertions(+)
->>
->> diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
->> index ed62c8a92f17..c56caad32a7c 100644
->> --- a/Documentation/networking/devlink/devlink-params.rst
->> +++ b/Documentation/networking/devlink/devlink-params.rst
->> @@ -141,3 +141,7 @@ own name.
->>       - u8
->>       - In a multi-bank flash device, select the FW memory bank to be
->>         loaded from on the next device boot/reset.
->> +   * - ``enable_migration``
->> +     - Boolean
->> +     - When enabled, the device driver will instantiate a live migration
->> +       specific auxiliary device of the devlink device.
-> 
-> Devlink has not notion of auxdev. Use objects and terms relevant to
-> devlink please.
-> 
-> I don't really understand what is the semantics of this param at all.
+-Kees
 
-Perhaps we need to update the existing descriptions for enable_eth, 
-enable_vnet, etc, as well?  Probably none of them should mention the aux 
-device, tho' I know they all came in together after a long discussion.
+> > On Monday, November 28, 2022 at 5:42:31 AM UTC-8 syzbot wrote:
+> >>
+> >> Hello,
+> >>
+> >> syzbot found the following issue on:
+> >>
+> >> HEAD commit: c35bd4e42885 Add linux-next specific files for 20221124
+> >> git tree: linux-next
+> >> console+strace: https://syzkaller.appspot.com/x/log.txt?x=15e5d7e5880000
+> >> kernel config: https://syzkaller.appspot.com/x/.config?x=11e19c740a0b2926
+> >> dashboard link: https://syzkaller.appspot.com/bug?extid=fda18eaa8c12534ccb3b
+> >> compiler: gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> >> syz repro: https://syzkaller.appspot.com/x/repro.syz?x=1096f205880000
+> >> C reproducer: https://syzkaller.appspot.com/x/repro.c?x=10b2d68d880000
+> >>
+> >> Downloadable assets:
+> >> disk image: https://storage.googleapis.com/syzbot-assets/968fee464d14/disk-c35bd4e4.raw.xz
+> >> vmlinux: https://storage.googleapis.com/syzbot-assets/4f46fe801b5b/vmlinux-c35bd4e4.xz
+> >> kernel image: https://storage.googleapis.com/syzbot-assets/c2cdf8fb264e/bzImage-c35bd4e4.xz
+> >>
+> >> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> >> Reported-by: syzbot+fda18e...@syzkaller.appspotmail.com
+> >>
+> >> ==================================================================
+> >> BUG: KASAN: slab-out-of-bounds in __build_skb_around+0x235/0x340 net/core/skbuff.c:294
+> >> Write of size 32 at addr ffff88802aa172c0 by task syz-executor413/5295
+> >>
+> >> CPU: 0 PID: 5295 Comm: syz-executor413 Not tainted 6.1.0-rc6-next-20221124-syzkaller #0
+> >> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+> >> Call Trace:
+> >> <TASK>
+> >> __dump_stack lib/dump_stack.c:88 [inline]
+> >> dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+> >> print_address_description mm/kasan/report.c:253 [inline]
+> >> print_report+0x15e/0x45d mm/kasan/report.c:364
+> >> kasan_report+0xbf/0x1f0 mm/kasan/report.c:464
+> >> check_region_inline mm/kasan/generic.c:183 [inline]
+> >> kasan_check_range+0x141/0x190 mm/kasan/generic.c:189
+> >> memset+0x24/0x50 mm/kasan/shadow.c:44
+> >> __build_skb_around+0x235/0x340 net/core/skbuff.c:294
+> >> __build_skb+0x4f/0x60 net/core/skbuff.c:328
+> >> build_skb+0x22/0x280 net/core/skbuff.c:340
+> >> bpf_prog_test_run_skb+0x343/0x1e10 net/bpf/test_run.c:1131
+> >> bpf_prog_test_run kernel/bpf/syscall.c:3644 [inline]
+> >> __sys_bpf+0x1599/0x4ff0 kernel/bpf/syscall.c:4997
+> >> __do_sys_bpf kernel/bpf/syscall.c:5083 [inline]
+> >> __se_sys_bpf kernel/bpf/syscall.c:5081 [inline]
+> >> __x64_sys_bpf+0x79/0xc0 kernel/bpf/syscall.c:5081
+> >> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >> do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+> >> entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> >> RIP: 0033:0x7f30de9aad19
+> >> Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+> >> RSP: 002b:00007ffeaee34318 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+> >> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f30de9aad19
+> >> RDX: 0000000000000028 RSI: 0000000020000180 RDI: 000000000000000a
+> >> RBP: 00007f30de96eec0 R08: 0000000000000000 R09: 0000000000000000
+> >> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f30de96ef50
+> >> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+> >> </TASK>
+> >>
+> >> Allocated by task 5295:
+> >> kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+> >> kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+> >> ____kasan_kmalloc mm/kasan/common.c:376 [inline]
+> >> ____kasan_kmalloc mm/kasan/common.c:335 [inline]
+> >> __kasan_kmalloc+0xa5/0xb0 mm/kasan/common.c:385
+> >> kasan_kmalloc include/linux/kasan.h:212 [inline]
+> >> __do_kmalloc_node mm/slab_common.c:955 [inline]
+> >> __kmalloc+0x5a/0xd0 mm/slab_common.c:968
+> >> kmalloc include/linux/slab.h:575 [inline]
+> >> kzalloc include/linux/slab.h:711 [inline]
+> >> bpf_test_init.isra.0+0xa5/0x150 net/bpf/test_run.c:778
+> >> bpf_prog_test_run_skb+0x22e/0x1e10 net/bpf/test_run.c:1097
+> >> bpf_prog_test_run kernel/bpf/syscall.c:3644 [inline]
+> >> __sys_bpf+0x1599/0x4ff0 kernel/bpf/syscall.c:4997
+> >> __do_sys_bpf kernel/bpf/syscall.c:5083 [inline]
+> >> __se_sys_bpf kernel/bpf/syscall.c:5081 [inline]
+> >> __x64_sys_bpf+0x79/0xc0 kernel/bpf/syscall.c:5081
+> >> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >> do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+> >> entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-I'll work this to be more generic to the result and not the underlying 
-specifics of how.
-
-sln
-
-> 
-> 
->> diff --git a/include/net/devlink.h b/include/net/devlink.h
->> index 8a1430196980..1d35056a558d 100644
->> --- a/include/net/devlink.h
->> +++ b/include/net/devlink.h
->> @@ -511,6 +511,7 @@ enum devlink_param_generic_id {
->>        DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
->>        DEVLINK_PARAM_GENERIC_ID_EVENT_EQ_SIZE,
->>        DEVLINK_PARAM_GENERIC_ID_FW_BANK,
->> +      DEVLINK_PARAM_GENERIC_ID_ENABLE_MIGRATION,
->>
->>        /* add new param generic ids above here*/
->>        __DEVLINK_PARAM_GENERIC_ID_MAX,
->> @@ -572,6 +573,9 @@ enum devlink_param_generic_id {
->> #define DEVLINK_PARAM_GENERIC_FW_BANK_NAME "fw_bank"
->> #define DEVLINK_PARAM_GENERIC_FW_BANK_TYPE DEVLINK_PARAM_TYPE_U8
->>
->> +#define DEVLINK_PARAM_GENERIC_ENABLE_MIGRATION_NAME "enable_migration"
->> +#define DEVLINK_PARAM_GENERIC_ENABLE_MIGRATION_TYPE DEVLINK_PARAM_TYPE_BOOL
->> +
->> #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)    \
->> {                                                                     \
->>        .id = DEVLINK_PARAM_GENERIC_ID_##_id,                           \
->> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index 6872d678be5b..0e32a4fe7a66 100644
->> --- a/net/core/devlink.c
->> +++ b/net/core/devlink.c
->> @@ -5236,6 +5236,11 @@ static const struct devlink_param devlink_param_generic[] = {
->>                .name = DEVLINK_PARAM_GENERIC_FW_BANK_NAME,
->>                .type = DEVLINK_PARAM_GENERIC_FW_BANK_TYPE,
->>        },
->> +      {
->> +              .id = DEVLINK_PARAM_GENERIC_ID_ENABLE_MIGRATION,
->> +              .name = DEVLINK_PARAM_GENERIC_ENABLE_MIGRATION_NAME,
->> +              .type = DEVLINK_PARAM_GENERIC_ENABLE_MIGRATION_TYPE,
->> +      },
->> };
->>
->> static int devlink_param_generic_verify(const struct devlink_param *param)
->> --
->> 2.17.1
->>
+-- 
+Kees Cook
