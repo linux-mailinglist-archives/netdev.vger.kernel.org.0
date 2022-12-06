@@ -2,208 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D749644D86
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 21:51:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB30644D88
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 21:52:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiLFUv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 15:51:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
+        id S229752AbiLFUwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 15:52:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbiLFUv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 15:51:28 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C1C45094
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 12:51:26 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id kw15so5871823ejc.10
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 12:51:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MhNNBuU3zhWHic7xb6ZOwSKSyK5OVL6db6+6pmE+Q3M=;
-        b=ew9hSEgOp7zxS5LHySeYnEzHgmaD+v212Cb4Fd4PwkYBPj5pH62iZWOulKd0ei+VIF
-         hG4aPrHYGGD2WjWCwTeiUbs4eJpgiBWAD11E9kH3ukMi930ryVJILwhbma6Z6EzrMM05
-         mLbvFWbLYmMuszo96rfDjQSt3bGw11HgQ5uhXrEPsPukevWYu9Se1bCczpK+/vleLV5K
-         AGPm4VSO4i06JLwAL1yP1lr+XAgD8QZhihWIylphT7Vy0PwUMDgG1DNbLcgxqTsHQe/q
-         icM80qePTJzH/mDe7I8K1001EPbcfyl2/qvXn1BCmCuF8HDKBXbdkhqjrLXdTuledxeF
-         tJ2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MhNNBuU3zhWHic7xb6ZOwSKSyK5OVL6db6+6pmE+Q3M=;
-        b=F7AoWxWVTBRyvtxO7tvLVVAA+A3gdWsuckm0PDbwS7E7sM8a7GukMpECDqn5dibTDg
-         nkISAXL13oVElUPy/SKqtLaZ0eSsWVL4ICj/db3DQFRiqSDO0tMYJjKJ9Gv8ainDT2MT
-         3OkmCBSmJ9k/Cwt4ouAVrbxXy+mWM0CRzI8yVZYt7bQRg8bWxLzo85XQSjI9FnB77c/e
-         VaQ63kqtasP8LUkKOO87Uhwv6GFQ3ihWMFftWVASmM/C9k+cbNvm+BI3qDrgWEiTzmGv
-         P9DkqcVv7w4rQVTq3bXv1QEcyoiFhx9MXfGk5rw+9FnOGBodg+8/9OCDPYbDDJAa+6j8
-         vzRA==
-X-Gm-Message-State: ANoB5pkumoa+Cyg36q7+4vl0qpkhu/DpJBgIt6wNMCGy/Doozm0Pa347
-        hBgE3+kmfUHfUhakUzexNZ+Law==
-X-Google-Smtp-Source: AA0mqf5xxsOgNUB2YZXbcbbtJVAVE6QcQm9i9oyuo3Txh3iXPhEwR4ypb+UnCsY8aq8y04JS3YdgNA==
-X-Received: by 2002:a17:906:fa11:b0:7c0:d94c:f9f with SMTP id lo17-20020a170906fa1100b007c0d94c0f9fmr12177439ejb.542.1670359885503;
-        Tue, 06 Dec 2022 12:51:25 -0800 (PST)
-Received: from localhost ([2a02:8070:6387:ab20:15aa:3c87:c206:d15e])
-        by smtp.gmail.com with ESMTPSA id fi22-20020a1709073ad600b007c0d4d3a0c1sm4576925ejc.32.2022.12.06.12.51.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 12:51:25 -0800 (PST)
-Date:   Tue, 6 Dec 2022 21:51:01 +0100
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Ivan Babrou <ivan@cloudflare.com>, Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S229724AbiLFUwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 15:52:42 -0500
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8F7A479;
+        Tue,  6 Dec 2022 12:52:38 -0800 (PST)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 8DA8D5FD0B;
+        Tue,  6 Dec 2022 23:52:36 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1670359956;
+        bh=ANEKJ6F8QuXnin42o/uUpelhBVJ43NT/3G5MapBsZtg=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=VSRYewO4ZnFOMhGBmBEjjPysIYDVwqFbS+YlxFMtwIgBXbzBAC6dUqKQkLUj56o/e
+         /SLTHEsJep6gSk/4ltN7thokkeSU7ookXMzrV5hHnFBFRKwShPhEqRFLD/lxaQqxgx
+         euMOK5WWVwN3Wj+fZm3NudtAuUkVoC0y/CdAiWjGXr0ws1eX0C2Y3XWL+hjommVpUb
+         +HKY7OKGYJgSRkRV3h92GD/Wfpiv5uQMqPbu1k9i5dXujGd37ej0ogCMo3zI03cEOV
+         67cS2dNCd4k3uWR4qqWxPZpGLnhJFXeJJeTqJab/cMfOXkxm5cd4Mq16or3dTAum0x
+         iluyl/tpO02PA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Tue,  6 Dec 2022 23:52:36 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, cgroups@vger.kernel.org,
-        kernel-team <kernel-team@cloudflare.com>
-Subject: Re: Low TCP throughput due to vmpressure with swap enabled
-Message-ID: <Y4+rNYF9WZyJyBQp@cmpxchg.org>
-References: <CABWYdi0G7cyNFbndM-ELTDAR3x4Ngm0AehEp5aP0tfNkXUE+Uw@mail.gmail.com>
- <Y30rdnZ+lrfOxjTB@cmpxchg.org>
- <CABWYdi3PqipLxnqeepXeZ471pfeBg06-PV0Uw04fU-LHnx_A4g@mail.gmail.com>
- <CABWYdi0qhWs56WK=k+KoQBAMh+Tb6Rr0nY4kJN+E5YqfGhKTmQ@mail.gmail.com>
- <Y4T43Tc54vlKjTN0@cmpxchg.org>
- <CABWYdi0z6-46PrNWumSXWki6Xf4G_EP1Nvc-2t00nEi0PiOU3Q@mail.gmail.com>
- <CABWYdi25hricmGUqaK1K0EB-pAm04vGTg=eiqRF99RJ7hM7Gyg@mail.gmail.com>
- <Y4+RPry2tfbWFdSA@cmpxchg.org>
- <CANn89iJfx4QdVBqJ23oFJoz5DJKou=ZwVBNNXFNDJRNAqNvzwQ@mail.gmail.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>
+CC:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: [RFC PATCH v4 3/4] test/vsock: add big message test
+Thread-Topic: [RFC PATCH v4 3/4] test/vsock: add big message test
+Thread-Index: AQHZCbSr2bnIIlY35UW+VJDGuGgMEw==
+Date:   Tue, 6 Dec 2022 20:52:35 +0000
+Message-ID: <e237f5e7-29fa-3cc5-c34c-3f6e35a85398@sberdevices.ru>
+In-Reply-To: <6be11122-7cf2-641f-abd8-6e379ee1b88f@sberdevices.ru>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <1A7603658B9C1847B4037C9E1CECEA39@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iJfx4QdVBqJ23oFJoz5DJKou=ZwVBNNXFNDJRNAqNvzwQ@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/12/06 12:14:00 #20663216
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 06, 2022 at 08:13:50PM +0100, Eric Dumazet wrote:
-> On Tue, Dec 6, 2022 at 8:00 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
-> > @@ -1701,10 +1701,10 @@ void mem_cgroup_sk_alloc(struct sock *sk);
-> >  void mem_cgroup_sk_free(struct sock *sk);
-> >  static inline bool mem_cgroup_under_socket_pressure(struct mem_cgroup *memcg)
-> >  {
-> > -       if (!cgroup_subsys_on_dfl(memory_cgrp_subsys) && memcg->tcpmem_pressure)
-> > +       if (!cgroup_subsys_on_dfl(memory_cgrp_subsys) && memcg->socket_pressure)
-> 
-> && READ_ONCE(memcg->socket_pressure))
-> 
-> >                 return true;
-> >         do {
-> > -               if (time_before(jiffies, READ_ONCE(memcg->socket_pressure)))
-> > +               if (memcg->socket_pressure)
-> 
-> if (READ_ONCE(...))
-
-Good point, I'll add those.
-
-> > @@ -7195,10 +7194,10 @@ bool mem_cgroup_charge_skmem(struct mem_cgroup *memcg, unsigned int nr_pages,
-> >                 struct page_counter *fail;
-> >
-> >                 if (page_counter_try_charge(&memcg->tcpmem, nr_pages, &fail)) {
-> > -                       memcg->tcpmem_pressure = 0;
-> 
-> Orthogonal to your patch, but:
-> 
-> Maybe avoid touching this cache line too often and use READ/WRITE_ONCE() ?
-> 
->     if (READ_ONCE(memcg->socket_pressure))
->       WRITE_ONCE(memcg->socket_pressure, false);
-
-Ah, that's a good idea.
-
-I think it'll be fine in the failure case, since that's associated
-with OOM and total performance breakdown anyway.
-
-But certainly, in the common case of the charge succeeding, we should
-not keep hammering false into that variable over and over.
-
-How about the delta below? I also flipped the branches around to keep
-the common path at the first indentation level, hopefully making that
-a bit clearer too.
-
-Thanks for taking a look, Eric!
-
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index ef1c388be5b3..13ae10116895 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -1701,10 +1701,11 @@ void mem_cgroup_sk_alloc(struct sock *sk);
- void mem_cgroup_sk_free(struct sock *sk);
- static inline bool mem_cgroup_under_socket_pressure(struct mem_cgroup *memcg)
- {
--	if (!cgroup_subsys_on_dfl(memory_cgrp_subsys) && memcg->socket_pressure)
-+	if (!cgroup_subsys_on_dfl(memory_cgrp_subsys) &&
-+	    READ_ONCE(memcg->socket_pressure))
- 		return true;
- 	do {
--		if (memcg->socket_pressure)
-+		if (READ_ONCE(memcg->socket_pressure))
- 			return true;
- 	} while ((memcg = parent_mem_cgroup(memcg)));
- 	return false;
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 0d4b9dbe775a..96c4ec0f11ca 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -7193,31 +7193,29 @@ bool mem_cgroup_charge_skmem(struct mem_cgroup *memcg, unsigned int nr_pages,
- 	if (!cgroup_subsys_on_dfl(memory_cgrp_subsys)) {
- 		struct page_counter *fail;
- 
--		if (page_counter_try_charge(&memcg->tcpmem, nr_pages, &fail)) {
--			memcg->socket_pressure = false;
--			return true;
-+		if (!page_counter_try_charge(&memcg->tcpmem, nr_pages, &fail)) {
-+			WRITE_ONCE(memcg->socket_pressure, true);
-+			if (gfp_mask & __GFP_FAIL) {
-+				page_counter_charge(&memcg->tcpmem, nr_pages);
-+				return true;
-+			}
-+			return false;
- 		}
--		memcg->socket_pressure = true;
-+		if (unlikely(READ_ONCE(memcg->socket_pressure)))
-+			WRITE_ONCE(memcg->socket_pressure, false);
-+	}
-+
-+	if (try_charge(memcg, gfp_mask & ~__GFP_NOFAIL, nr_pages) < 0) {
-+		WRITE_ONCE(memcg->socket_pressure, true);
- 		if (gfp_mask & __GFP_NOFAIL) {
--			page_counter_charge(&memcg->tcpmem, nr_pages);
-+			try_charge(memcg, gfp_mask, nr_pages);
-+			mod_memcg_state(memcg, MEMCG_SOCK, nr_pages);
- 			return true;
- 		}
- 		return false;
- 	}
--
--	if (try_charge(memcg, gfp_mask & ~__GFP_NOFAIL, nr_pages) == 0) {
--		memcg->socket_pressure = false;
--		goto success;
--	}
--	memcg->socket_pressure = true;
--	if (gfp_mask & __GFP_NOFAIL) {
--		try_charge(memcg, gfp_mask, nr_pages);
--		goto success;
--	}
--
--	return false;
--
--success:
-+	if (unlikely(READ_ONCE(memcg->socket_pressure)))
-+		WRITE_ONCE(memcg->socket_pressure, false);
- 	mod_memcg_state(memcg, MEMCG_SOCK, nr_pages);
- 	return true;
- }
+VGhpcyBhZGRzIHRlc3QgZm9yIHNlbmRpbmcgbWVzc2FnZSwgYmlnZ2VyIHRoYW4gcGVlcidzIGJ1
+ZmZlciBzaXplLg0KRm9yIFNPQ0tfU0VRUEFDS0VUIHNvY2tldCBpdCBtdXN0IGZhaWwsIGFzIHRo
+aXMgdHlwZSBvZiBzb2NrZXQgaGFzDQptZXNzYWdlIHNpemUgbGltaXQuDQoNClNpZ25lZC1vZmYt
+Ynk6IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1Pg0KUmV2aWV3ZWQt
+Ynk6IFN0ZWZhbm8gR2FyemFyZWxsYSA8c2dhcnphcmVAcmVkaGF0LmNvbT4NCi0tLQ0KIHRvb2xz
+L3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jIHwgNjkgKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysNCiAxIGZpbGUgY2hhbmdlZCwgNjkgaW5zZXJ0aW9ucygrKQ0KDQpkaWZmIC0tZ2l0
+IGEvdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMgYi90b29scy90ZXN0aW5nL3Zzb2Nr
+L3Zzb2NrX3Rlc3QuYw0KaW5kZXggMjZjMzhhZDlkMDdiLi42N2U5ZjlkZjNhOGMgMTAwNjQ0DQot
+LS0gYS90b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rlc3QuYw0KKysrIGIvdG9vbHMvdGVzdGlu
+Zy92c29jay92c29ja190ZXN0LmMNCkBAIC01NjksNiArNTY5LDcwIEBAIHN0YXRpYyB2b2lkIHRl
+c3Rfc2VxcGFja2V0X3RpbWVvdXRfc2VydmVyKGNvbnN0IHN0cnVjdCB0ZXN0X29wdHMgKm9wdHMp
+DQogCWNsb3NlKGZkKTsNCiB9DQogDQorc3RhdGljIHZvaWQgdGVzdF9zZXFwYWNrZXRfYmlnbXNn
+X2NsaWVudChjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRzKQ0KK3sNCisJdW5zaWduZWQgbG9u
+ZyBzb2NrX2J1Zl9zaXplOw0KKwlzc2l6ZV90IHNlbmRfc2l6ZTsNCisJc29ja2xlbl90IGxlbjsN
+CisJdm9pZCAqZGF0YTsNCisJaW50IGZkOw0KKw0KKwlsZW4gPSBzaXplb2Yoc29ja19idWZfc2l6
+ZSk7DQorDQorCWZkID0gdnNvY2tfc2VxcGFja2V0X2Nvbm5lY3Qob3B0cy0+cGVlcl9jaWQsIDEy
+MzQpOw0KKwlpZiAoZmQgPCAwKSB7DQorCQlwZXJyb3IoImNvbm5lY3QiKTsNCisJCWV4aXQoRVhJ
+VF9GQUlMVVJFKTsNCisJfQ0KKw0KKwlpZiAoZ2V0c29ja29wdChmZCwgQUZfVlNPQ0ssIFNPX1ZN
+X1NPQ0tFVFNfQlVGRkVSX1NJWkUsDQorCQkgICAgICAgJnNvY2tfYnVmX3NpemUsICZsZW4pKSB7
+DQorCQlwZXJyb3IoImdldHNvY2tvcHQiKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0K
+Kw0KKwlzb2NrX2J1Zl9zaXplKys7DQorDQorCWRhdGEgPSBtYWxsb2Moc29ja19idWZfc2l6ZSk7
+DQorCWlmICghZGF0YSkgew0KKwkJcGVycm9yKCJtYWxsb2MiKTsNCisJCWV4aXQoRVhJVF9GQUlM
+VVJFKTsNCisJfQ0KKw0KKwlzZW5kX3NpemUgPSBzZW5kKGZkLCBkYXRhLCBzb2NrX2J1Zl9zaXpl
+LCAwKTsNCisJaWYgKHNlbmRfc2l6ZSAhPSAtMSkgew0KKwkJZnByaW50ZihzdGRlcnIsICJleHBl
+Y3RlZCAnc2VuZCgyKScgZmFpbHVyZSwgZ290ICV6aVxuIiwNCisJCQlzZW5kX3NpemUpOw0KKwkJ
+ZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCWlmIChlcnJubyAhPSBFTVNHU0laRSkgew0K
+KwkJZnByaW50ZihzdGRlcnIsICJleHBlY3RlZCBFTVNHU0laRSBpbiAnZXJybm8nLCBnb3QgJWlc
+biIsDQorCQkJZXJybm8pOw0KKwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCWNvbnRy
+b2xfd3JpdGVsbigiQ0xJU0VOVCIpOw0KKw0KKwlmcmVlKGRhdGEpOw0KKwljbG9zZShmZCk7DQor
+fQ0KKw0KK3N0YXRpYyB2b2lkIHRlc3Rfc2VxcGFja2V0X2JpZ21zZ19zZXJ2ZXIoY29uc3Qgc3Ry
+dWN0IHRlc3Rfb3B0cyAqb3B0cykNCit7DQorCWludCBmZDsNCisNCisJZmQgPSB2c29ja19zZXFw
+YWNrZXRfYWNjZXB0KFZNQUREUl9DSURfQU5ZLCAxMjM0LCBOVUxMKTsNCisJaWYgKGZkIDwgMCkg
+ew0KKwkJcGVycm9yKCJhY2NlcHQiKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0K
+Kwljb250cm9sX2V4cGVjdGxuKCJDTElTRU5UIik7DQorDQorCWNsb3NlKGZkKTsNCit9DQorDQog
+I2RlZmluZSBCVUZfUEFUVEVSTl8xICdhJw0KICNkZWZpbmUgQlVGX1BBVFRFUk5fMiAnYicNCiAN
+CkBAIC04NTEsNiArOTE1LDExIEBAIHN0YXRpYyBzdHJ1Y3QgdGVzdF9jYXNlIHRlc3RfY2FzZXNb
+XSA9IHsNCiAJCS5ydW5fY2xpZW50ID0gdGVzdF9zdHJlYW1fcG9sbF9yY3Zsb3dhdF9jbGllbnQs
+DQogCQkucnVuX3NlcnZlciA9IHRlc3Rfc3RyZWFtX3BvbGxfcmN2bG93YXRfc2VydmVyLA0KIAl9
+LA0KKwl7DQorCQkubmFtZSA9ICJTT0NLX1NFUVBBQ0tFVCBiaWcgbWVzc2FnZSIsDQorCQkucnVu
+X2NsaWVudCA9IHRlc3Rfc2VxcGFja2V0X2JpZ21zZ19jbGllbnQsDQorCQkucnVuX3NlcnZlciA9
+IHRlc3Rfc2VxcGFja2V0X2JpZ21zZ19zZXJ2ZXIsDQorCX0sDQogCXt9LA0KIH07DQogDQotLSAN
+CjIuMjUuMQ0K
