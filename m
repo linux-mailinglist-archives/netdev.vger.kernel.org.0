@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9140643B22
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 03:02:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C055643B26
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 03:05:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233678AbiLFCCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 21:02:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        id S233701AbiLFCFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 21:05:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231274AbiLFCCn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 21:02:43 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC92109D
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 18:02:40 -0800 (PST)
+        with ESMTP id S232616AbiLFCFb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 21:05:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEF8233B7;
+        Mon,  5 Dec 2022 18:05:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C19F9CE16C1
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 02:02:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B07C433C1;
-        Tue,  6 Dec 2022 02:02:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83E9B61407;
+        Tue,  6 Dec 2022 02:05:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7893CC433D6;
+        Tue,  6 Dec 2022 02:05:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670292156;
-        bh=Y7FBk3MJw036RbymRzlGzg4cWU43CIn+UXqI5r1dqPA=;
+        s=k20201202; t=1670292328;
+        bh=qiuErOcN7JUc2YO13uuK4+UNytnm71xxkRzs+qlmYAc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OUk095gpFu6uj6wAz7ijiTen65RknF4IykV3wwE1M7H4iHORV1Do8jP4LNaSCcdzL
-         b1k/UwslUej2W/VNdebnOaQ9P68/J3B1UsNJsDf9bx56f2cSRP2uoXaEFUdGRGFbQn
-         y0vqsV0NOn2UjeruPrJzbRZ2ux6I+DbcEkw/hhHpS7qpC8pX5kaWK+AuyCp+2NN0gc
-         Q9gfZvOxQrcgKmMIGqCX34XmssagQrpp9o7ED7Z0763ZmuDAXhjdY7HOY8SyGlSsW6
-         d8eHodxqH50RGP8xTm39nzu92z85uUNdzf5tQgjXn31W0VeI8K749XkpuTRb2gdchD
-         Vp//If01ntOOQ==
-Date:   Mon, 5 Dec 2022 18:02:34 -0800
+        b=rBWL30/swqRnqprtZuHKVMIO0pc6S1Zz7E9dv7U88GXShlo6tJZCdkqjMX7KrOZPS
+         wqIZFTNe/Sjd7/VlKpOMXBvslmVP8KMMN0QUiIlpwtCarSNbZhC1QTx+CJS108vaex
+         0Ts5K4vddBR36iQHYT5jf/spklsr7ygum2mE5XvYv2dLK2brGFkhNsE4lHgrz43KvA
+         xcf3Sf3+E40EGHt7x6bURIR6H2qymmRzHvYJgklbU0qNVnD67ifHRJE1nA7YeXCSNh
+         4MMypwHYHoRk0cFxP5JR5hfJFs21nnJ8cMZzm+kFLsDm3zNMdXbUO9Q5KHpxS/rgrM
+         01IFukhHYpH1A==
+Date:   Mon, 5 Dec 2022 18:05:27 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <shnelson@amd.com>
-Cc:     Shay Drory <shayd@nvidia.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, danielj@nvidia.com, yishaih@nvidia.com,
-        jiri@nvidia.com, saeedm@nvidia.com, parav@nvidia.com
-Subject: Re: [PATCH net-next V3 4/8] devlink: Expose port function commands
- to control RoCE
-Message-ID: <20221205180234.2a8a5423@kernel.org>
-In-Reply-To: <34381666-a7b5-9507-211a-162827b86153@amd.com>
-References: <20221204141632.201932-1-shayd@nvidia.com>
-        <20221204141632.201932-5-shayd@nvidia.com>
-        <34381666-a7b5-9507-211a-162827b86153@amd.com>
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH net-next 0/2] ethtool: add PLCA RS support
+Message-ID: <20221205180527.7cad354c@kernel.org>
+In-Reply-To: <cover.1670121214.git.piergiorgio.beruto@gmail.com>
+References: <cover.1670121214.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,21 +57,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 5 Dec 2022 15:37:26 -0800 Shannon Nelson wrote:
-> >   enum devlink_port_function_attr {
-> >          DEVLINK_PORT_FUNCTION_ATTR_UNSPEC,
-> >          DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR,     /* binary */
-> >          DEVLINK_PORT_FN_ATTR_STATE,     /* u8 */
-> >          DEVLINK_PORT_FN_ATTR_OPSTATE,   /* u8 */
-> > +       DEVLINK_PORT_FN_ATTR_CAPS,      /* bitfield32 */  
-> 
-> Will 32 bits be enough, or should we start off with u64?  It will 
-> probably be fine, but since we're setting a uapi thing here we probably 
-> want to be sure we won't need to change it in the future.
+On Sun, 4 Dec 2022 03:37:57 +0100 Piergiorgio Beruto wrote:
+> This patchset is related to the proposed "add PLCA RS support and onsemi
+> NCN26000" patchset on the kernel. It adds userland support for
+> getting/setting the configuration of the Physical Layer Collision
+> Avoidance (PLCA) Reconciliation Sublayer (RS) defined in the IEEE 802.3
+> specifications, amended by IEEE802.3cg-2019.
 
-Ah, if only variable size integer types from Olek were ready :(
-
-Unfortunately there is no bf64 today, so we'd either have to add soon
-to be deprecated bf64 or hold off waiting for Olek...
-I reckon the dumb thing of merging bf32 may be the best choice right
-now :(
+nit: for the user space patches use the tool name in the subject tag
+[PATCH ethtool-next], I bet quite a few people looked at your set
+expecting kernel changes ;)
