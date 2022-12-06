@@ -2,166 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50538644AC1
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 19:03:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD06644ACA
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 19:05:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229625AbiLFSDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 13:03:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51488 "EHLO
+        id S229650AbiLFSF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 13:05:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiLFSDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 13:03:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433F72BB11;
-        Tue,  6 Dec 2022 10:03:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3D81B81AFB;
-        Tue,  6 Dec 2022 18:03:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1058EC433D6;
-        Tue,  6 Dec 2022 18:03:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670349781;
-        bh=2JAY0I8Yke92H0rl3Spq8SaFxazboLLiSf1FZUBkq1k=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=hytW3HmfSV2cBVl/7D54hGAYVAsAqrDfCRdP8K6+UpzYdzLcoMtZDaJcF3wPXIjUe
-         uHAmTEyboirA+vVbP37Twq6whqRoIOQf5h0YElpIWYIIxQEMfSRpmnr1WIYM8i77mp
-         Czzik94S1ja0g/vi/7CufNV78/EZ65XI2MTHmxwX/L7AzkXEDE299CXjCA8bNCOB4/
-         jsuop4hFgUHjmGZXFLSRH3R9p8+AdBDJwZPkdFUEK0S4ObpCzP4Jn75WWLL3UqsaMW
-         aiviUcUERrqP/RuUjzXDrMzrkHnQ3ORp+pVmOvBZGURjQc2DdIjblim4fung/ib9hQ
-         5v0mkLnG/dFKg==
-From:   =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-To:     Yonghong Song <yhs@meta.com>, Ilya Leoshkevich <iii@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@rivosinc.com>,
-        Brendan Jackman <jackmanb@google.com>
-Subject: Re: [PATCH bpf] bpf: Proper R0 zero-extension for BPF_CALL
- instructions
-In-Reply-To: <d26622c6-d51e-e280-6c8a-38c893c49446@meta.com>
-References: <20221202103620.1915679-1-bjorn@kernel.org>
- <3b77aa12a864ab2db081e99aec1bfad78e3b9b51.camel@linux.ibm.com>
- <d26622c6-d51e-e280-6c8a-38c893c49446@meta.com>
-Date:   Tue, 06 Dec 2022 19:02:58 +0100
-Message-ID: <87o7sg1kbx.fsf@all.your.base.are.belong.to.us>
+        with ESMTP id S229646AbiLFSFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 13:05:55 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E2A37207;
+        Tue,  6 Dec 2022 10:05:53 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id c66so15138535edf.5;
+        Tue, 06 Dec 2022 10:05:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Sohc/zRaRTqav4RQHNdtoi5gvQOfb1wdHDNBf897pn8=;
+        b=FWPrMTJbrbqTVJbF7sMesUIossLBZlIIFHOkuIkQyTuJdSUSySW6JovFUXer9TFEDj
+         uyGDeZVp+tcSuOkaEjzqaNeWvQSBAw/ysrWVfgx53fYcJ0wW8j603job3g354QpwZQmk
+         3Q+I/NwzI5HDHVNrbGwbmXzmdCEAy72VwOKfBrWuZoQAxbpROMxk3LauZzk497DsoTR/
+         sspyBjpgAeFeryguTxJgPTh4+t1+cuh+WtBJleQNiG9bWKw8pIhih2uWIvVKJaxoK4vZ
+         CHUqrAOAgmjFFatwUomDx9YyRnLf65wnbdbQ0SSkqWCsDPqzlkTNYI59i5K5moKcRgG3
+         CF4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Sohc/zRaRTqav4RQHNdtoi5gvQOfb1wdHDNBf897pn8=;
+        b=7O9rgBX5JF1J3FwEEYAhGOZlPNovsLZeseVxSCujiXrBiheYlVTrIG6TRaVmP5KJiZ
+         TfkMPSGbErycUu9Bk34CBUJnMGXVFP4ooRuYrsEgXUL/iDEjULIbuHl7894C0Nh0SDeN
+         ywlzpIilaUO6bOZygICN5aWkZcybljnvGLQZcn9cISGidINGljOM5iRelDdL0iVaaVVh
+         BsHVlro2HiF4aTB/T30ymPSmR3XvJRGhJfT6/4TLtfINRIduNpvF2BjEciRhlW9h0Yik
+         iO1EmOk12+G3Tnitmqrn9eJsiUqSrSi6tF2JO8dzd+1av8Q+7Dvnm+/v9lfNisbc5CR4
+         /fgw==
+X-Gm-Message-State: ANoB5pl1EIngJBiqeMwOyJX1OmdHhOBRNPWgyToRtKaS7AGiq/gNKnd/
+        xNrBfI0wbEisfyNg9ZQZExo=
+X-Google-Smtp-Source: AA0mqf59PKndTCyH52fJ89lLaqCTgsUnjxUMmQX1tqSED0A3O1MyB32N8WKziur1XHq6+qQqTT3IHw==
+X-Received: by 2002:a05:6402:2912:b0:46a:c132:8a25 with SMTP id ee18-20020a056402291200b0046ac1328a25mr46431327edb.205.1670349952189;
+        Tue, 06 Dec 2022 10:05:52 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id g2-20020a170906538200b0078d9cd0d2d6sm7789623ejo.11.2022.12.06.10.05.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 10:05:51 -0800 (PST)
+Date:   Tue, 6 Dec 2022 19:06:02 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH v4 net-next 5/5] drivers/net/phy: add driver for the
+ onsemi NCN26000 10BASE-T1S PHY
+Message-ID: <Y4+Eigd6PZ3tgFzG@gvm01>
+References: <cover.1670329232.git.piergiorgio.beruto@gmail.com>
+ <1816cb14213fc2050b1a7e97a68be7186340d994.1670329232.git.piergiorgio.beruto@gmail.com>
+ <Y49IBR8ByMQH6oVt@lunn.ch>
+ <Y49THkXZdLBR6Mxv@gvm01>
+ <Y49YQOOhAslQQ9zt@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y49YQOOhAslQQ9zt@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yonghong Song <yhs@meta.com> writes:
+On Tue, Dec 06, 2022 at 02:57:04PM +0000, Russell King (Oracle) wrote:
+> On Tue, Dec 06, 2022 at 03:35:10PM +0100, Piergiorgio Beruto wrote:
+> > On Tue, Dec 06, 2022 at 02:47:49PM +0100, Andrew Lunn wrote:
+> > > > +static int ncn26000_read_status(struct phy_device *phydev)
+> > > > +{
+> > > > +	// The NCN26000 reports NCN26000_LINK_STATUS_BIT if the link status of
+> > > > +	// the PHY is up. It further reports the logical AND of the link status
+> > > > +	// and the PLCA status in the BMSR_LSTATUS bit. Thus, report the link
+> > > > +	// status by testing the appropriate BMSR bit according to the module's
+> > > > +	// parameter configuration.
+> > > > +	const int lstatus_flag = link_status_plca ?
+> > > > +		BMSR_LSTATUS : NCN26000_BMSR_LINK_STATUS_BIT;
+> > > > +
+> > > > +	int ret;
+> > > > +
+> > > > +	ret = phy_read(phydev, MII_BMSR);
+> > > > +	if (unlikely(ret < 0))
+> > > > +		return ret;
+> > > > +
+> > > > +	// update link status
+> > > > +	phydev->link = (ret & lstatus_flag) ? 1 : 0;
+> > > 
+> > > What about the latching behaviour of LSTATUS?
+> > See further down.
+> > 
+> > > 
+> > > https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phy_device.c#L2289
+> > > 
+> > > > +
+> > > > +	// handle more IRQs here
+> > > 
+> > > You are not in an IRQ handler...
+> > Right, this is just a left-over when I moved the code from the ISR to
+> > this functions. Fixed.
+> > 
+> > > You should also be setting speed and duplex. I don't think they are
+> > > guaranteed to have any specific value if you don't set them.
+> > Ah, I got that before, but I removed it after comment from Russell
+> > asking me not to do this. Testing on my HW, this seems to work, although
+> > I'm not sure whether this is correct or it is working 'by chance' ?
+> 
+> I asked you to get rid of them in the config function, which was
+> setting them to "unknown" values. I thought I explained why it was
+> wrong to set them there - but again...
+> 
+> If you force the values in the config function, then when userspace
+> does a read-modify-write of the settings via ethtool, you will end
+> up wiping out the PHYs link settings, despite maybe nothing having
+> actually been changed. It is also incorrect to set them in the
+> config function, because those writes to those variables can race
+> with users reading them - the only place they should be set by a
+> PHY driver is in the .read_status method.
+Ok, I must have misunderstood what the problem was. This is clear to me
+now, I'm going to add this back in the read_status() method.
 
-> On 12/6/22 5:21 AM, Ilya Leoshkevich wrote:
->> On Fri, 2022-12-02 at 11:36 +0100, Bj=C3=B6rn T=C3=B6pel wrote:
->>> From: Bj=C3=B6rn T=C3=B6pel <bjorn@rivosinc.com>
->>>
->>> A BPF call instruction can be, correctly, marked with zext_dst set to
->>> true. An example of this can be found in the BPF selftests
->>> progs/bpf_cubic.c:
->>>
->>>  =C2=A0 ...
->>>  =C2=A0 extern __u32 tcp_reno_undo_cwnd(struct sock *sk) __ksym;
->>>
->>>  =C2=A0 __u32 BPF_STRUCT_OPS(bpf_cubic_undo_cwnd, struct sock *sk)
->>>  =C2=A0 {
->>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return tcp_reno=
-_undo_cwnd(sk);
->>>  =C2=A0 }
->>>  =C2=A0 ...
->>>
->>> which compiles to:
->>>  =C2=A0 0:=C2=A0 r1 =3D *(u64 *)(r1 + 0x0)
->>>  =C2=A0 1:=C2=A0 call -0x1
->>>  =C2=A0 2:=C2=A0 exit
->>>
->>> The call will be marked as zext_dst set to true, and for some
->>> backends
->>> (bpf_jit_needs_zext() returns true) expanded to:
->>>  =C2=A0 0:=C2=A0 r1 =3D *(u64 *)(r1 + 0x0)
->>>  =C2=A0 1:=C2=A0 call -0x1
->>>  =C2=A0 2:=C2=A0 w0 =3D w0
->>>  =C2=A0 3:=C2=A0 exit
->>=20
->> In the verifier, the marking is done by check_kfunc_call() (added in
->> e6ac2450d6de), right? So the problem occurs only for kfuncs?
->>=20
->>          /* Check return type */
->>          t =3D btf_type_skip_modifiers(desc_btf, func_proto->type, NULL);
->>=20
->>          ...
->>=20
->>          if (btf_type_is_scalar(t)) {
->>                  mark_reg_unknown(env, regs, BPF_REG_0);
->>                  mark_btf_func_reg_size(env, BPF_REG_0, t->size);
->>=20
->> I tried to find some official information whether the eBPF calling
->> convention requires sign- or zero- extending return values and
->> arguments, but unfortunately [1] doesn't mention this.
->>=20
->> LLVM's lib/Target/BPF/BPFCallingConv.td mentions both R* and W*
->> registers, but since assigning to W* leads to zero-extension, it seems
->> to me that this is the case.
->
-> We actually follow the clang convention, the zero-extension is either
-> done in caller or callee, but not both. See=20
-> https://reviews.llvm.org/D131598 how the convention could be changed.
->
-> The following is an example.
->
-> $ cat t.c
-> extern unsigned foo(void);
-> unsigned bar1(void) {
->      return foo();
-> }
-> unsigned bar2(void) {
->      if (foo()) return 10; else return 20;
-> }
-> $ clang -target bpf -mcpu=3Dv3 -O2 -c t.c && llvm-objdump -d t.o
->
-> t.o:    file format elf64-bpf
->
-> Disassembly of section .text:
->
-> 0000000000000000 <bar1>:
->         0:       85 10 00 00 ff ff ff ff call -0x1
->         1:       95 00 00 00 00 00 00 00 exit
->
-> 0000000000000010 <bar2>:
->         2:       85 10 00 00 ff ff ff ff call -0x1
->         3:       bc 01 00 00 00 00 00 00 w1 =3D w0
->         4:       b4 00 00 00 14 00 00 00 w0 =3D 0x14
->         5:       16 01 01 00 00 00 00 00 if w1 =3D=3D 0x0 goto +0x1 <LBB1=
-_2>
->         6:       b4 00 00 00 0a 00 00 00 w0 =3D 0xa
->
-> 0000000000000038 <LBB1_2>:
->         7:       95 00 00 00 00 00 00 00 exit
-> $
->
-> If the return value of 'foo()' is actually used in the bpf program, the
-> proper zero extension will be done. Otherwise, it is not done.
->
-> This is with latest llvm16. I guess we need to check llvm whether
-> we could enforce to add a w0 =3D w0 in bar1().
->
-> Otherwise, with this patch, it will add w0 =3D w0 in all cases which
-> is not necessary in most of practical cases.
-
-Thanks, Yonghong! So, what would the correct fix be? We don't want the
-verifier to mark the call for zext_dst in my commit message example,
-since the zext will be properly done by LLVM.
-
-Wdyt about Ilya's suggestion marking R0 as 64b? That avoids hitting my
-"verifier bug", but I'm not well versed enough in verifier land to say
-whether that breaks something else... I.e. is setting reg->subreg_def to
-DEF_NOT_SUBREG for R0 correct?
+Thanks,
+Piergiorgio
