@@ -2,178 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B50606449C2
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 17:54:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B7576449E0
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 18:02:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235178AbiLFQyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 11:54:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
+        id S234835AbiLFRCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 12:02:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231990AbiLFQym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 11:54:42 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B1E223
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 08:54:41 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id vv4so7729348ejc.2
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 08:54:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vzqbbTfvlcGhXkAxJtWVnd12rliOcj/M8dWbh5Wuvz8=;
-        b=GJ9AXpHrzyHNWZ6MD0ZKBtWOC77CgcraKLQMZ+UAAVh6cVD9RV1f9PFoqbC/l6EEeN
-         kqNVp9G8BiAXSJ150ElWkmihb6vSyeoMqAeVOUve+AR2T+X1SR0oaul2/RbKdc3pEDl2
-         VQ2FmToTfHcLnNjppG08XLXCWZwfEHBi4JA3/oCzm7ASotT9SqA2aM09JXkcZ3hu8GcW
-         iYVwbqiaRZC0UkeGFyzQPO8LBnZP0Pi1tJVALEMF/Sct4/hW8wnbjZpYxF1DEQcWZ3TN
-         qDOJjZmJ+0jxk5dwGOWR+F68gGe9iIndiVVhPRa7XjiWYw5TfFZIwpWcjgCK831A6krG
-         xphw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vzqbbTfvlcGhXkAxJtWVnd12rliOcj/M8dWbh5Wuvz8=;
-        b=4DpzNyiKUwcogR5C6cBAOu0ukQibSrCUjXL7eWInmCvfcvc5QG9tW4JvAE9OoBUB4d
-         5wwvuP10qfgP1bExKrloSkHZ61fQFOvy50oIAvr6n4oayihto+9WdWH28uP0zda9A4Rk
-         Zx6rpW2ScGhIX0iZYTqGAxGAJf3l7s7FC2sPV2T71Qc4Rh5kMWi5whpMEtliTK/2u/Nq
-         xuPRC70RcHDk3dgGm1SRHQjIUNR0NlXC7+Z7aafYYBeLLC+sGkpVUXbldktGdpcfrBee
-         dVtx/IdsfzlqzzwtUg7rJ70zbqYucnH0IWqTtF9THu5EKf8gFUGxenVAUuiHMlIYJnkX
-         FDSg==
-X-Gm-Message-State: ANoB5pnsEG31TAWaaH2O5nqurCjHWayZtDBKSgvLMKzfs0sQbdMZN/9z
-        icNWpDOz/l65SlNrvpJuFr7uMw==
-X-Google-Smtp-Source: AA0mqf53Gsku8H34rrDGggPtq7Dg4wvL+h11DxRKD8UDk1B2WOwck1mMU1uN/IJ7meXkmnyqUDZ1Tw==
-X-Received: by 2002:a17:907:20e2:b0:7c0:bc26:45e1 with SMTP id rh2-20020a17090720e200b007c0bc2645e1mr17673807ejb.645.1670345680181;
-        Tue, 06 Dec 2022 08:54:40 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id b19-20020a17090630d300b007adade0e9easm4907203ejb.85.2022.12.06.08.54.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 08:54:39 -0800 (PST)
-Date:   Tue, 6 Dec 2022 17:54:38 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Yuan Can <yuancan@huawei.com>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, alice.michael@intel.com,
-        piotr.marczak@intel.com, jeffrey.t.kirsher@intel.com,
-        leon@kernel.org, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v3] intel/i40e: Fix potential memory leak in
- i40e_init_recovery_mode()
-Message-ID: <Y49zzo/L9oY1v8OB@nanopsycho>
-References: <20221206134146.36465-1-yuancan@huawei.com>
+        with ESMTP id S233884AbiLFRCT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 12:02:19 -0500
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5042928E11
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 09:02:18 -0800 (PST)
+Received: from quatroqueijos.cascardo.eti.br (1.general.cascardo.us.vpn [10.172.70.58])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 4C6C2423FA;
+        Tue,  6 Dec 2022 17:02:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1670346136;
+        bh=t5ZTI+98t3tAEd/ZGbRGAp2frX9gFQQIE82itS5fp9k=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Type:In-Reply-To;
+        b=Va8F9E4qZJUTf0xFCHxkY6kxdXaSWRQL7dW5O+F6ORT7NRpxdEUMDHDAQKm7wqp0Y
+         9EdptXKR7Z/zbOw8bpffGj/DAc0zeibxVmp+nfU4dooq8gLvVCGYyLNeNvl+OEDSN3
+         uL+BsyP1nY8O9u4FPXWxmge9V+rjAu/DUxqwREr1HHaP53x378fAcWbD9cxXzWUhmd
+         gV7HQzj8K4YNq7483z3ANpICTDRD2oYLsyux2wHY0KM2XEJg/WGehnq3KWZmyqJZHN
+         VyTtx4mVpQJbJD8n2+DvuvQbpg1lZI1g8oNmtG1DBi+3NsnB0NQvSdPLrF4km1RdT5
+         yIWoYrgpmqHUA==
+Date:   Tue, 6 Dec 2022 14:02:09 -0300
+From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+To:     "Guilherme G. Piccoli" <kernel@gpiccoli.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Douglas Miller <dougmill@linux.ibm.com>,
+        netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, kernel@pengutronix.de,
+        gpiccoli@igalia.com
+Subject: Re: Strangeness in ehea network driver's shutdown
+Message-ID: <Y491kVZdw2lLB3yU@quatroqueijos.cascardo.eti.br>
+References: <20221001143131.6ondbff4r7ygokf2@pengutronix.de>
+ <20221003093606.75a78f22@kernel.org>
+ <CALJn8nN-5DZZkwrJurtT2NOUXGdEQa-aQt+MHvsii2oC_w5+FA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20221206134146.36465-1-yuancan@huawei.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALJn8nN-5DZZkwrJurtT2NOUXGdEQa-aQt+MHvsii2oC_w5+FA@mail.gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Dec 06, 2022 at 02:41:46PM CET, yuancan@huawei.com wrote:
->The error handling path of i40e_init_recovery_mode() does not handle the
->vsi->netdev and pf->vsi, and resource leak can happen if error occurs.
->
->In the meantime, the i40e_probe() returns directly without release
->pf->qp_pile when i40e_init_recovery_mode() failed.
->
->Fix by properly releasing vsi->netdev in the error handling path of
->i40e_init_recovery_mode() and relying on the error handling path of
->i40e_probe() to release pf->vsi and pf->qp_pile if anything goes wrong.
->
->Fixes: 4ff0ee1af016 ("i40e: Introduce recovery mode support")
->Signed-off-by: Yuan Can <yuancan@huawei.com>
->---
->Changes in v3:
->- Introduce more error handling path to handle vsi->netdev
->- Rely on error path of i40e_probe() instead of do all cleanup in
->  i40e_init_recovery_mode() to make sure pf->qp_pile is not leaked
->
->Changes in v2:
->- Add net in patch title
->- Add Leon Romanovsky's reviewed by
->
-> drivers/net/ethernet/intel/i40e/i40e_main.c | 21 ++++++++++++---------
-> 1 file changed, 12 insertions(+), 9 deletions(-)
->
->diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
->index b5dcd15ced36..d1aadd298ea7 100644
->--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
->+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
->@@ -15511,13 +15511,13 @@ static int i40e_init_recovery_mode(struct i40e_pf *pf, struct i40e_hw *hw)
-> 		goto err_switch_setup;
-> 	err = register_netdev(vsi->netdev);
-> 	if (err)
->-		goto err_switch_setup;
->+		goto free_netdev;
-> 	vsi->netdev_registered = true;
-> 	i40e_dbg_pf_init(pf);
-> 
-> 	err = i40e_setup_misc_vector_for_recovery_mode(pf);
-> 	if (err)
->-		goto err_switch_setup;
->+		goto unreg_netdev;
-> 
-> 	/* tell the firmware that we're starting */
-> 	i40e_send_version(pf);
->@@ -15528,15 +15528,15 @@ static int i40e_init_recovery_mode(struct i40e_pf *pf, struct i40e_hw *hw)
-> 
-> 	return 0;
-> 
->+unreg_netdev:
->+	unregister_netdev(vsi->netdev);
->+free_netdev:
->+	free_netdev(vsi->netdev);
+On Tue, Dec 06, 2022 at 01:49:01PM -0300, Guilherme G. Piccoli wrote:
+> On Mon, Oct 3, 2022 at 1:36 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Sat, 1 Oct 2022 16:31:31 +0200 Uwe Kleine-König wrote:
+> > > Hello,
+> > >
+> > > while doing some cleanup I stumbled over a problem in the ehea network
+> > > driver.
+> > >
+> > > In the driver's probe function (ehea_probe_adapter() via
+> > > ehea_register_memory_hooks()) a reboot notifier is registered. When this
+> > > notifier is triggered (ehea_reboot_notifier()) it unregisters the
+> > > driver. I'm unsure what is the order of the actions triggered by that.
+> > > Maybe the driver is unregistered twice if there are two bound devices?
+
+I see how you would think it might be called for every bound device. That's
+because ehea_register_memory_hooks is called by ehea_probe_adapter. However,
+there is this test here that leads it the reboot_notifier to be registered only
+once:
 
 [...]
+static int ehea_register_memory_hooks(void)
+{
+	int ret = 0;
 
-> err_switch_setup:
-> 	i40e_reset_interrupt_capability(pf);
-> 	del_timer_sync(&pf->service_timer);
-> 	i40e_shutdown_adminq(hw);
-
-These are on a error patch in i40e_probe(). Again, you should cleanup
-here only what you initialized.
+	if (atomic_inc_return(&ehea_memory_hooks_registered) > 1)
+	^^^^^^^^^^^^^^^^^^^^^^
+		return 0;
+[...]
 
 
->-	iounmap(hw->hw_addr);
->-	pci_disable_pcie_error_reporting(pf->pdev);
->-	pci_release_mem_regions(pf->pdev);
->-	pci_disable_device(pf->pdev);
->-	kfree(pf);
->+	kfree(pf->vsi);
+> > > Or the reboot notifier is called under a lock and unregistering the
+> > > driver (and so the devices) tries to unregister the notifier that is
+> > > currently locked and so results in a deadlock? Maybe Greg or Rafael can
+> > > tell about the details here?
+> > >
+> > > Whatever the effect is, it's strange. It makes me wonder why it's
+> > > necessary to free all the resources of the driver on reboot?! I don't
+
+As for why:
+
+commit 2a6f4e4983918b18fe5d3fb364afe33db7139870
+Author: Jan-Bernd Themann <ossthema@de.ibm.com>
+Date:   Fri Oct 26 14:37:28 2007 +0200
+
+    ehea: add kexec support
+    
+    eHEA resources that are allocated via H_CALLs have a unique identifier each.
+    These identifiers are necessary to free the resources. A reboot notifier
+    is used to free all eHEA resources before the indentifiers get lost, i.e
+    before kexec starts a new kernel.
+    
+    Signed-off-by: Jan-Bernd Themann <themann@de.ibm.com>
+    Signed-off-by: Jeff Garzik <jeff@garzik.org>
+
+> > > know anything about the specifics of the affected machines, but I guess
+> > > doing just the necessary stuff on reboot would be easier to understand,
+> > > quicker to execute and doesn't have such strange side effects.
+> > >
+> > > With my lack of knowledge about the machine, the best I can do is report
+> > > my findings. So don't expect a patch or testing from my side.
+> >
+> > Last meaningful commit to this driver FWIW:
+> >
+> > commit 29ab5a3b94c87382da06db88e96119911d557293
+> > Author: Guilherme G. Piccoli <kernel@gpiccoli.net>
+> > Date:   Thu Nov 3 08:16:20 2016 -0200
+> >
+> > Also that's the last time we heard from Douglas AFAICT..
 > 
-> 	return err;
-> }
->@@ -15789,8 +15789,11 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-> 		goto err_sw_init;
-> 	}
+> Hey folks, thanks for CCing me.
 > 
->-	if (test_bit(__I40E_RECOVERY_MODE, pf->state))
->-		return i40e_init_recovery_mode(pf, hw);
->+	if (test_bit(__I40E_RECOVERY_MODE, pf->state)) {
->+		err = i40e_init_recovery_mode(pf, hw);
->+		if (err)
->+			goto err_init_lan_hmc;
-
-Use a new label here.
-
-
-Also, you need to return 0 here in case of success. Did you test the
-patch?
-
-
-
-
-
->+	}
+> I've worked a bit with ehea some time ago, will need to dig up a bit
+> to understand things again.
+> But I'm cc'ing Cascardo - which have(/had?) a more deep knowledge on
+> that - in the hopes he can discuss the issue without requiring that
+> much study heh
 > 
-> 	err = i40e_init_lan_hmc(hw, hw->func_caps.num_tx_qp,
-> 				hw->func_caps.num_rx_qp, 0, 0);
->-- 
->2.17.1
->
+> Cheers,
+> 
+> 
+> Guilherme
