@@ -2,133 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD6C56444E1
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:48:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 768046444E9
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234255AbiLFNsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 08:48:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42504 "EHLO
+        id S234536AbiLFNtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 08:49:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234522AbiLFNsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:48:06 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B3B2B246;
-        Tue,  6 Dec 2022 05:48:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=INa+kDPeRtDGTKkXfOH4U8T/bFqxRT7X+F58KC5R7Zo=; b=6RaELbF/PVhJaQy+0ascCjBHbQ
-        bREm0vLFZkn/Afl1cdEMUGrDM24BaidGn85e6IXijKnnpLqGN5SqJocD7c/gEviEZ3ApU55zFPefi
-        U+0bkZPPWuE2YUEd83bD/DyO4NCq42ln45Va7q+vVdeW8iA8WSS9yzFR6XNKx5zH/XH4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p2YIX-004X38-Cn; Tue, 06 Dec 2022 14:47:49 +0100
-Date:   Tue, 6 Dec 2022 14:47:49 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [PATCH v4 net-next 5/5] drivers/net/phy: add driver for the
- onsemi NCN26000 10BASE-T1S PHY
-Message-ID: <Y49IBR8ByMQH6oVt@lunn.ch>
-References: <cover.1670329232.git.piergiorgio.beruto@gmail.com>
- <1816cb14213fc2050b1a7e97a68be7186340d994.1670329232.git.piergiorgio.beruto@gmail.com>
+        with ESMTP id S232511AbiLFNtc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:49:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4F1BCB1;
+        Tue,  6 Dec 2022 05:49:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36F676176D;
+        Tue,  6 Dec 2022 13:49:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25883C433D6;
+        Tue,  6 Dec 2022 13:49:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670334565;
+        bh=qu2NW/pCbqvdSkQpAYjtcD2GsCPpzDNkBsC1GiYTkl8=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=ntGP+GW4w9vbKvqxWryIO/T4a7B4oqrqdwN4FxFZRlYKIqPpL35ikAOuzNKlBkCkc
+         9+R8uRGBpcmgG2vc19rT4qo1qFxGLyA34afE6ELnfbXfTYPT1EnT1K7TmfC362Yd5k
+         vGvPGmvyEq/bgUs0qzpTMCxR4oYONSYH0wPTQyBAezReNYeGd6KwKgaMzmfssqFERV
+         8nVS5Z3L+OBqpDWr36cVk8NGk7ebq91y7MlUm6fwcU5j/KmQAbnxitirRDrFT8YgFK
+         Vu6qZHF7NbM+vFyT2C0f/HYOnblvCPpf/H7W8OIL3Uq9hZdyvBc9wagVzzCdNLhfO1
+         ybVVNOsvFE65g==
+From:   =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+To:     Ilya Leoshkevich <iii@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@rivosinc.com>,
+        Brendan Jackman <jackmanb@google.com>
+Subject: Re: [PATCH bpf] bpf: Proper R0 zero-extension for BPF_CALL
+ instructions
+In-Reply-To: <3b77aa12a864ab2db081e99aec1bfad78e3b9b51.camel@linux.ibm.com>
+References: <20221202103620.1915679-1-bjorn@kernel.org>
+ <3b77aa12a864ab2db081e99aec1bfad78e3b9b51.camel@linux.ibm.com>
+Date:   Tue, 06 Dec 2022 14:49:22 +0100
+Message-ID: <87sfhs3an1.fsf@all.your.base.are.belong.to.us>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1816cb14213fc2050b1a7e97a68be7186340d994.1670329232.git.piergiorgio.beruto@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +// module parameter: if set, the link status is derived from the PLCA status
-> +// default: false
-> +static bool link_status_plca;
-> +module_param(link_status_plca, bool, 0644);
+Ilya Leoshkevich <iii@linux.ibm.com> writes:
 
-No module parameters, they are considered a bad user interface.
+> On Fri, 2022-12-02 at 11:36 +0100, Bj=C3=B6rn T=C3=B6pel wrote:
+>> From: Bj=C3=B6rn T=C3=B6pel <bjorn@rivosinc.com>
+>>=20
+>> A BPF call instruction can be, correctly, marked with zext_dst set to
+>> true. An example of this can be found in the BPF selftests
+>> progs/bpf_cubic.c:
+>>=20
+>> =C2=A0 ...
+>> =C2=A0 extern __u32 tcp_reno_undo_cwnd(struct sock *sk) __ksym;
+>>=20
+>> =C2=A0 __u32 BPF_STRUCT_OPS(bpf_cubic_undo_cwnd, struct sock *sk)
+>> =C2=A0 {
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return tcp_reno_u=
+ndo_cwnd(sk);
+>> =C2=A0 }
+>> =C2=A0 ...
+>>=20
+>> which compiles to:
+>> =C2=A0 0:=C2=A0 r1 =3D *(u64 *)(r1 + 0x0)
+>> =C2=A0 1:=C2=A0 call -0x1
+>> =C2=A0 2:=C2=A0 exit
+>>=20
+>> The call will be marked as zext_dst set to true, and for some
+>> backends
+>> (bpf_jit_needs_zext() returns true) expanded to:
+>> =C2=A0 0:=C2=A0 r1 =3D *(u64 *)(r1 + 0x0)
+>> =C2=A0 1:=C2=A0 call -0x1
+>> =C2=A0 2:=C2=A0 w0 =3D w0
+>> =C2=A0 3:=C2=A0 exit
+>
+> In the verifier, the marking is done by check_kfunc_call() (added in
+> e6ac2450d6de), right? So the problem occurs only for kfuncs?
 
-> +static int ncn26000_get_features(struct phy_device *phydev)
-> +{
-> +	linkmode_zero(phydev->supported);
-> +	linkmode_set_bit(ETHTOOL_LINK_MODE_MII_BIT, phydev->supported);
-> +
-> +	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
-> +			 phydev->supported);
-> +
-> +	linkmode_copy(phydev->advertising, phydev->supported);
+I've only seen it for kfuncs, yes.
 
-That should not be needed.
+>
+>         /* Check return type */
+>         t =3D btf_type_skip_modifiers(desc_btf, func_proto->type, NULL);
+>
+>         ...
+>
+>         if (btf_type_is_scalar(t)) {
+>                 mark_reg_unknown(env, regs, BPF_REG_0);
+>                 mark_btf_func_reg_size(env, BPF_REG_0, t->size);
+>
+> I tried to find some official information whether the eBPF calling
+> convention requires sign- or zero- extending return values and
+> arguments, but unfortunately [1] doesn't mention this.
+>
+> LLVM's lib/Target/BPF/BPFCallingConv.td mentions both R* and W*
+> registers, but since assigning to W* leads to zero-extension, it seems
+> to me that this is the case.
+>
+> If the above is correct, then shouldn't we rather use sizeof(void *) in
+> the mark_btf_func_reg_size() call above?
 
-Also, look at PHY_BASIC_T1_FEATURES, and how it is used in
-microchip_t1.c.
+Hmm, or rather sizeof(u64) if I'm reading you correctly?
 
-> +static int ncn26000_read_status(struct phy_device *phydev)
-> +{
-> +	// The NCN26000 reports NCN26000_LINK_STATUS_BIT if the link status of
-> +	// the PHY is up. It further reports the logical AND of the link status
-> +	// and the PLCA status in the BMSR_LSTATUS bit. Thus, report the link
-> +	// status by testing the appropriate BMSR bit according to the module's
-> +	// parameter configuration.
-> +	const int lstatus_flag = link_status_plca ?
-> +		BMSR_LSTATUS : NCN26000_BMSR_LINK_STATUS_BIT;
-> +
-> +	int ret;
-> +
-> +	ret = phy_read(phydev, MII_BMSR);
-> +	if (unlikely(ret < 0))
-> +		return ret;
-> +
-> +	// update link status
-> +	phydev->link = (ret & lstatus_flag) ? 1 : 0;
 
-What about the latching behaviour of LSTATUS?
-
-https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phy_device.c#L2289
-
-> +
-> +	// handle more IRQs here
-
-You are not in an IRQ handler...
-
-You should also be setting speed and duplex. I don't think they are
-guaranteed to have any specific value if you don't set them.
-
-> +
-> +	return 0;
-> +}
-> +
-> +static irqreturn_t ncn26000_handle_interrupt(struct phy_device *phydev)
-> +{
-> +	const struct ncn26000_priv *const priv = phydev->priv;
-> +	int ret;
-> +
-> +	// clear the latched bits in MII_BMSR
-> +	phy_read(phydev, MII_BMSR);
-
-Why?
-
-> +
-> +	// read and aknowledge the IRQ status register
-> +	ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
-> +
-> +	if (unlikely(ret < 0) || (ret & priv->enabled_irqs) == 0)
-
-How does NCN26000_REG_IRQ_STATUS work? Can it have bits set which are
-not in NCN26000_REG_IRQ_CTL ? That does happen sometimes, but is
-pretty unusual. If not, you don't need to track priv->enabled_irqs,
-just ensure ret is not 0.
-
-     Andrew
+Thanks for having a look!
+Bj=C3=B6rn
