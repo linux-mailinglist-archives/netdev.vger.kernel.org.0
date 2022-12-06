@@ -2,102 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71277644D78
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 21:48:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB141644D7D
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 21:49:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbiLFUsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 15:48:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
+        id S229702AbiLFUtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 15:49:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbiLFUsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 15:48:01 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A4C2614;
-        Tue,  6 Dec 2022 12:47:59 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id fc4so9221686ejc.12;
-        Tue, 06 Dec 2022 12:47:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=GAFKa0B2H6/6w0dZm7aNy9JXnPwcNQKFrtyaRPOt4YU=;
-        b=cG23+e+VAgZFD5pniBKKHjKlAS5M0vzmeBJ41ucPyhDlJYTX4Hf4aeq2rKXZcEuZxN
-         aUu3KcITn/NFEA0V+nIHXAlaiFc9ZkhA55pdNlnbLq+9mgitglmcXYip8KUWzodPb+iD
-         aopk7bBZaDs97BcSnMQPqx3ZH2w/bdjOB+zDYxRNOrIzPxacx29gY2GRc+5selB0ULbD
-         gzmqmrOvN96mVCjlBcBjUyxiX8HeZhi7UanP6BfyMQpTzBmfqerYe8WVYpMrh3SUoya9
-         8VZvdr4BtdJWIhF4+XoM833QkrQEPbGXgwnUavHnisi8WyPUsoQh/PLc2wgg2KVfRdfO
-         nmKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GAFKa0B2H6/6w0dZm7aNy9JXnPwcNQKFrtyaRPOt4YU=;
-        b=Obtj5tNcZk5xiQE4XnwedPOTDU9UYauUFKAe+APKJWnchCtkZWgotTATb5mdr+6I9e
-         k71yGPURmT+huhUd7kUTiXPhbbyCFFTPy59cevO+pES+ilsarvKNKYOHp8QhHxo/0yaJ
-         ZNGZ9CJhyRBNLFjPksWDG6NSityyo+x3BFNA0tT1Dz6xoSdgFKe/Yg85pXf7GZJebVlq
-         H6sgGUtGwFhd6yW/lfBq1ztgqnv5XoYFxlqpwa/tsmHv+6SPsGH2QEMZswjhF+N4PUlH
-         YOQuma9MoCqjdKUX/1RFceSxfoBcZcRl2/DwOchtids/BZ0fnDerEVoB5YaSO7reEKn5
-         RMyQ==
-X-Gm-Message-State: ANoB5pnlSTHb2K5Vx2K5gBdJDcI/51HxgoVOGbA6b4AU/3oQzB6pGSS8
-        AJagitBuZUuQCUgt23xfo1AD67WiRP7+0lHsvNE=
-X-Google-Smtp-Source: AA0mqf5/CzGdIF2RvANNjyLWBnuvFbiOFe/om863zc7GXRF8WqatzYmvTX1GkO6cT99Qc/xoyAliP5jsh880a3rjtS8=
-X-Received: by 2002:a17:906:fc5:b0:7c0:8b4c:e30f with SMTP id
- c5-20020a1709060fc500b007c08b4ce30fmr29322582ejk.502.1670359678327; Tue, 06
- Dec 2022 12:47:58 -0800 (PST)
+        with ESMTP id S229699AbiLFUtX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 15:49:23 -0500
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F8043AD2;
+        Tue,  6 Dec 2022 12:49:22 -0800 (PST)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 8CF5C5FD0B;
+        Tue,  6 Dec 2022 23:49:20 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1670359760;
+        bh=0st0OtNKvLNHxb42ZDSNL0oBxw5QegXYyh0QDx6NkXU=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=YJ90tUWKjberRXpA+lsN5hE4pGiZvV+nDpV2/2Yf8p/JvpNIRIxX0M+Bf9rzsci5R
+         7OYXOK8yioTIH9pxu+x7rnUbAoP8Sl2rHVYE8lBAIEx7bQX2JyAIYeCoSj7IRMqbbE
+         BVNx/6Y6e7f3PAGXsCVY6F3sALeSX2HHTw2Sk7BEn/EHNzREY36yeH67Wi9iDtIc1E
+         /Fcd+8cVPI08cPWEB90rtMFg73JQdpTmaJRSjCZuxKvLFmQNj5u2S6jWSMpKf02pQQ
+         l3rviQmGnFdUMQz1DLFp32BlJd17ziCgEepuqUHP5nReCvFtGy7TIWHEAEG1UwZTQf
+         oLUcvT7Mf6BpA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Tue,  6 Dec 2022 23:49:20 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: [RFC PATCH v4 1/4] vsock: return errors other than -ENOMEM to socket
+Thread-Topic: [RFC PATCH v4 1/4] vsock: return errors other than -ENOMEM to
+ socket
+Thread-Index: AQHZCbQ2qBrFeLHJokud7/6u9taBOw==
+Date:   Tue, 6 Dec 2022 20:49:19 +0000
+Message-ID: <727f2c9e-a909-a3d3-c04f-a16529df7bb2@sberdevices.ru>
+In-Reply-To: <6be11122-7cf2-641f-abd8-6e379ee1b88f@sberdevices.ru>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <05667300B7E0DB499FEA5DE844DEF0F9@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20221206145936.922196-1-benjamin.tissoires@redhat.com> <20221206145936.922196-2-benjamin.tissoires@redhat.com>
-In-Reply-To: <20221206145936.922196-2-benjamin.tissoires@redhat.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 6 Dec 2022 12:47:47 -0800
-Message-ID: <CAADnVQKTQMo3wvJWajQSgT5fTsH-rNsz1z8n9yeM3fx+015-jA@mail.gmail.com>
-Subject: Re: [PATCH HID for-next v3 1/5] bpf: do not rely on
- ALLOW_ERROR_INJECTION for fmod_ret
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Florent Revest <revest@chromium.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/12/06 12:14:00 #20663216
+X-KSMG-AntiVirus-Status: Clean, skipped
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 6, 2022 at 6:59 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> The current way of expressing that a non-bpf kernel component is willing
-> to accept that bpf programs can be attached to it and that they can change
-> the return value is to abuse ALLOW_ERROR_INJECTION.
-> This is debated in the link below, and the result is that it is not a
-> reasonable thing to do.
->
-> Reuse the kfunc declaration structure to also tag the kernel functions
-> we want to be fmodret. This way we can control from any subsystem which
-> functions are being modified by bpf without touching the verifier.
->
->
-> Link: https://lore.kernel.org/all/20221121104403.1545f9b5@gandalf.local.home/
-> Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-
-BPF CI couldn't do its job because of a merge conflict.
-CI only tries to apply the whole series.
-But I tested the patch 1 manually.
-Everything is green on x86-64 and the patch looks good.
-
-Acked-by: Alexei Starovoitov <ast@kernel.org>
-
-Please send the set during the merge window.
-If not we can take just this patch,
-since the series from Viktor Malik would need this patch too.
+RnJvbTogQm9iYnkgRXNobGVtYW4gPGJvYmJ5LmVzaGxlbWFuQGJ5dGVkYW5jZS5jb20+DQoNClRo
+aXMgcmVtb3ZlcyBiZWhhdmlvdXIsIHdoZXJlIGVycm9yIGNvZGUgcmV0dXJuZWQgZnJvbSBhbnkg
+dHJhbnNwb3J0DQp3YXMgYWx3YXlzIHN3aXRjaGVkIHRvIEVOT01FTS4gRm9yIGV4YW1wbGUgd2hl
+biB1c2VyIHRyaWVzIHRvIHNlbmQgdG9vDQpiaWcgbWVzc2FnZSB2aWEgU0VRUEFDS0VUIHNvY2tl
+dCwgdHJhbnNwb3J0IGxheWVycyByZXR1cm4gRU1TR1NJWkUsIGJ1dA0KdGhpcyBlcnJvciBjb2Rl
+IHdpbGwgYmUgcmVwbGFjZWQgdG8gRU5PTUVNIGFuZCByZXR1cm5lZCB0byB1c2VyLg0KDQpTaWdu
+ZWQtb2ZmLWJ5OiBCb2JieSBFc2hsZW1hbiA8Ym9iYnkuZXNobGVtYW5AYnl0ZWRhbmNlLmNvbT4N
+ClNpZ25lZC1vZmYtYnk6IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1
+Pg0KLS0tDQogbmV0L3Ztd192c29jay9hZl92c29jay5jIHwgMyArKy0NCiAxIGZpbGUgY2hhbmdl
+ZCwgMiBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQoNCmRpZmYgLS1naXQgYS9uZXQvdm13
+X3Zzb2NrL2FmX3Zzb2NrLmMgYi9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMNCmluZGV4IDg4NGVj
+YTdmNjc0My4uNjFkZGFiNjY0YzMzIDEwMDY0NA0KLS0tIGEvbmV0L3Ztd192c29jay9hZl92c29j
+ay5jDQorKysgYi9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMNCkBAIC0xODYyLDggKzE4NjIsOSBA
+QCBzdGF0aWMgaW50IHZzb2NrX2Nvbm5lY3RpYmxlX3NlbmRtc2coc3RydWN0IHNvY2tldCAqc29j
+aywgc3RydWN0IG1zZ2hkciAqbXNnLA0KIAkJCXdyaXR0ZW4gPSB0cmFuc3BvcnQtPnN0cmVhbV9l
+bnF1ZXVlKHZzaywNCiAJCQkJCW1zZywgbGVuIC0gdG90YWxfd3JpdHRlbik7DQogCQl9DQorDQog
+CQlpZiAod3JpdHRlbiA8IDApIHsNCi0JCQllcnIgPSAtRU5PTUVNOw0KKwkJCWVyciA9IHdyaXR0
+ZW47DQogCQkJZ290byBvdXRfZXJyOw0KIAkJfQ0KIA0KLS0gDQoyLjI1LjENCg==
