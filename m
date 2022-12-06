@@ -2,89 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C1E464436F
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 13:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0A20644373
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 13:52:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232530AbiLFMuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 07:50:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
+        id S233928AbiLFMwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 07:52:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230327AbiLFMuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 07:50:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B969DFA8;
-        Tue,  6 Dec 2022 04:50:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 261B1B815A6;
-        Tue,  6 Dec 2022 12:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 966D2C433C1;
-        Tue,  6 Dec 2022 12:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670331013;
-        bh=5fkVXllCSjBZuVo8Uv46ZK/hvRL1/H1PEhU3z7MLu9U=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=Pl0mLg6/LiKcbhhSy0QHR1e32ydRmRC+61dwkYzb/s06blHeIrSqAXDAOUctG6l6C
-         0Z5tCluonCZ66PUPkB3+flY/v5c7MLvc4CQ3JR45gOtJdw5g8PGq3lQMqY7acWIcFt
-         wRrkj0B/xseEs/Y5odZNwPgYoFP7D0li3cLTAy1DbRzNnQVOzCHZBOXJY6OCok8GBf
-         HO51IJjrXBsZtjXmzw1O/u5j+iEwVXknWuJWqRCD0JoaRvlYOHAmvljkDgSlXCwt+4
-         bZ0VQ68sTh91wcjEYe9MZ9mcajrf55N8sUL4OtWWOd1QM74NANjuiU1nJ8jnj780wg
-         xkjBZkpxi9Nlg==
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7A6E982E386; Tue,  6 Dec 2022 13:50:10 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-Subject: Re: [PATCH] bpf: call get_random_u32() for random integers
-In-Reply-To: <Y451ENAK7BQQDJc/@zx2c4.com>
-References: <20221205181534.612702-1-Jason@zx2c4.com>
- <730fd355-ad86-a8fa-6583-df23d39e0c23@iogearbox.net>
- <Y451ENAK7BQQDJc/@zx2c4.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 06 Dec 2022 13:50:10 +0100
-Message-ID: <87lenku265.fsf@toke.dk>
+        with ESMTP id S230327AbiLFMwH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 07:52:07 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2C812AD8;
+        Tue,  6 Dec 2022 04:52:05 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id m18so4381074eji.5;
+        Tue, 06 Dec 2022 04:52:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=51QssTzfadvu9MbJIavM+zYO5rlyPy5FsJ0qUzBEE+4=;
+        b=FMinxXABhkCBk/+6+8lBxAEZskm4Tjpm7cGQMzN4II6hrwCXo2YGphcUbW41gbTlqM
+         v+hmI55npuoRclSLEbmyteS0VFOQyaKKkkw3DpS6MOsa3MJ+9pmZxp3FHuS3gwPeP7eG
+         9D0pVJMOeSKXd6f72M4LjZcs4iy3kY26oJG+pzmr+Mob1Y8tLAUpkhBT88rzOBdGIoxR
+         e1hWV49L/VTVDogmQcJEJ9ajVzscfF9aiBlKCZ90nDPp6ApwEW5sCFwD7VnjVkBdGNi7
+         fXrPxXwOYBPfDa4NpUBgt4q56bqt35dASb4vpf3Gl0S2+M/7ITket7q7iY2/j48a6oP4
+         Vnzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=51QssTzfadvu9MbJIavM+zYO5rlyPy5FsJ0qUzBEE+4=;
+        b=cBrIRXnzSlNGyExjhRb+pr+wLzW98eeranKvM594hY2AaKQ7t7FdKcKhEtzEqVhjA1
+         WlHv618HatvzH/5DyAd0KDIqzqbQ5/8D4n63j/KbVob8YCK/9Mr+n+C97WZLxaHtPSmW
+         meLCRQD1351zjfzDDeCJbyZL7NLcDZLtWpjgse+YrTvZJf2xtpt8enc87gfYDazA8A7l
+         px9oalbek3lKA73Z8xY72BqnjfZsGnvxRdijcpw01xeMKs/PPBPTmkdGkbIolBTXGoSo
+         PRr95/nwEh9UEL/wVKmyVedqLJPmaxFXyBYPBcHIMNk+fBY9pvJ/jom2mgBstzBVEb4O
+         lphw==
+X-Gm-Message-State: ANoB5pn8plk8iJRu4TTVuZcz5Cz3pe/mZTZKF8LIHqG11T7McS3QJMqb
+        0eNyVmfYb6PHwYzFRYMu7Tw=
+X-Google-Smtp-Source: AA0mqf7v809hh8emV7VAW7lcHVQgxNKRWs+9aq9wdve4yIPv0rU73ShiMR6tafNpQXoExB8FykWlnw==
+X-Received: by 2002:a17:906:6d8a:b0:7ad:69eb:923b with SMTP id h10-20020a1709066d8a00b007ad69eb923bmr10925466ejt.19.1670331123718;
+        Tue, 06 Dec 2022 04:52:03 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id f8-20020a056402150800b0046146c730easm928170edw.75.2022.12.06.04.52.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 04:52:03 -0800 (PST)
+Date:   Tue, 6 Dec 2022 13:52:13 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: [PATCH v4 net-next 0/5] add PLCA RS support and onsemi NCN26000
+Message-ID: <cover.1670329232.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+This patchset adds support for getting/setting the Physical Layer 
+Collision Avoidace (PLCA) Reconciliation Sublayer (RS) configuration and
+status on Ethernet PHYs that supports it.
 
-> On Mon, Dec 05, 2022 at 11:21:51PM +0100, Daniel Borkmann wrote:
->> On 12/5/22 7:15 PM, Jason A. Donenfeld wrote:
->> > Since BPF's bpf_user_rnd_u32() was introduced, there have been three
->> > significant developments in the RNG: 1) get_random_u32() returns the
->> > same types of bytes as /dev/urandom, eliminating the distinction between
->> > "kernel random bytes" and "userspace random bytes", 2) get_random_u32()
->> > operates mostly locklessly over percpu state, 3) get_random_u32() has
->> > become quite fast.
->> 
->> Wrt "quite fast", do you have a comparison between the two? Asking as its
->> often used in networking worst case on per packet basis (e.g. via XDP), would
->> be useful to state concrete numbers for the two on a given machine.
->
-> Median of 25 cycles vs median of 38, on my Tiger Lake machine. So a
-> little slower, but too small of a difference to matter.
+PLCA is a feature that provides improved media-access performance in terms
+of throughput, latency and fairness for multi-drop (P2MP) half-duplex PHYs.
+PLCA is defined in Clause 148 of the IEEE802.3 specifications as amended
+by 802.3cg-2019. Currently, PLCA is supported by the 10BASE-T1S single-pair
+Ethernet PHY defined in the same standard and related amendments. The OPEN
+Alliance SIG TC14 defines additional specifications for the 10BASE-T1S PHY,
+including a standard register map for PHYs that embeds the PLCA RS (see
+PLCA management registers at https://www.opensig.org/about/specifications/).
 
-Assuming a 3Ghz CPU clock (so 3 cycles per nanosecond), that's an
-additional overhead of ~4.3 ns. When processing 10 Gbps at line rate
-with small packets, the per-packet processing budget is 67.2 ns, so
-those extra 4.3 ns will eat up ~6.4% of the budget.
+The changes proposed herein add the appropriate ethtool netlink interface
+for configuring the PLCA RS on PHYs that supports it. A separate patchset
+further modifies the ethtool userspace program to show and modify the
+configuration/status of the PLCA RS.
 
-So in other words, "too small a difference to matter" is definitely not
-true in general. It really depends on the use case; if someone is using
-this to, say, draw per-packet random numbers to compute a drop frequency
-on ingress, that extra processing time will most likely result in a
-quite measurable drop in performance.
+Additionally, this patchset adds support for the onsemi NCN26000
+Industrial Ethernet 10BASE-T1S PHY that uses the newly added PLCA
+infrastructure.
 
--Toke
+Piergiorgio Beruto (5):
+  net/ethtool: add netlink interface for the PLCA RS
+  drivers/net/phy: add the link modes for the 10BASE-T1S Ethernet PHY
+  drivers/net/phy: add connection between ethtool and phylib for PLCA
+  drivers/net/phy: add helpers to get/set PLCA configuration
+  drivers/net/phy: add driver for the onsemi NCN26000 10BASE-T1S PHY
+
+ Documentation/networking/ethtool-netlink.rst | 133 +++++++++
+ MAINTAINERS                                  |  14 +
+ drivers/net/phy/Kconfig                      |   7 +
+ drivers/net/phy/Makefile                     |   1 +
+ drivers/net/phy/mdio-open-alliance.h         |  44 +++
+ drivers/net/phy/ncn26000.c                   | 193 ++++++++++++
+ drivers/net/phy/phy-c45.c                    | 180 ++++++++++++
+ drivers/net/phy/phy-core.c                   |   5 +-
+ drivers/net/phy/phy.c                        | 175 +++++++++++
+ drivers/net/phy/phy_device.c                 |   3 +
+ drivers/net/phy/phylink.c                    |   6 +-
+ include/linux/ethtool.h                      |  11 +
+ include/linux/phy.h                          |  81 ++++++
+ include/uapi/linux/ethtool.h                 |   3 +
+ include/uapi/linux/ethtool_netlink.h         |  25 ++
+ net/ethtool/Makefile                         |   2 +-
+ net/ethtool/common.c                         |   8 +
+ net/ethtool/netlink.c                        |  30 ++
+ net/ethtool/netlink.h                        |   6 +
+ net/ethtool/plca.c                           | 290 +++++++++++++++++++
+ 20 files changed, 1214 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/phy/mdio-open-alliance.h
+ create mode 100644 drivers/net/phy/ncn26000.c
+ create mode 100644 net/ethtool/plca.c
+
+-- 
+2.35.1
+
