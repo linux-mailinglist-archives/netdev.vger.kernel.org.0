@@ -2,52 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E167644077
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:52:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F7BF64408C
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:52:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233314AbiLFJwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 04:52:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
+        id S235186AbiLFJwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 04:52:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235425AbiLFJvz (ORCPT
+        with ESMTP id S235418AbiLFJvz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 04:51:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94977233A2;
-        Tue,  6 Dec 2022 01:51:12 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C36E23BC5;
+        Tue,  6 Dec 2022 01:51:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B60561601;
-        Tue,  6 Dec 2022 09:51:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6134C433C1;
-        Tue,  6 Dec 2022 09:51:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E359CB818E3;
+        Tue,  6 Dec 2022 09:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F37C433C1;
+        Tue,  6 Dec 2022 09:51:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670320271;
-        bh=Wk80OsS7/oJplZMF+q0zueeHGjU6cyXH6SZgm+dYPO8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A+Bi0vYSO2Z6huA9ItEGnGGDejND+dcDN5UHPQEIrLE1FnH1fvpnLB1kMXYIlnTLe
-         65Bcbad+ePj2T4wnNjxLl7MOkXCCDBuJxU37UiaREBq6tSHYJmvmUequPWf8lpxAfF
-         ulm4aZcBea4msE4h7psnZZKtUQTIlE89QG9c1Q8qAmavlsQRWDjNkGHGVID+muZkVE
-         asLmin0uG/pcnDgy67UvDOeEVrrnuh5ZYujZiH+Yiw0VLDkvSIMEMzK0U/maMYLAVL
-         GDiv+O9B2Aqukiq9g/E3TDaIp/jE2vPJiiwWhoTxODVCQIohxNauWVUehYEmM6yRge
-         hATnWLoTWcyDw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 5/5] net: loopback: use NET_NAME_PREDICTABLE for name_assign_type
-Date:   Tue,  6 Dec 2022 04:50:55 -0500
-Message-Id: <20221206095055.987728-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221206095055.987728-1-sashal@kernel.org>
-References: <20221206095055.987728-1-sashal@kernel.org>
+        s=k20201202; t=1670320266;
+        bh=OqXrkel/gqs5cVlkVunVtxkFHQXH2a23IGjNXD5nSpI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=T5ZMe/9QlZREU2UsUVObCC+9cMPh7m08dwqr+1zNIaV6sDQk1hx3E92N/9nMDhFNu
+         KDYxsor+tV0TRZrRf0zH+wDiLdkKfj5VVM7ZKm+rjrfnHN7u7ULZAsHbCGKEeWRG2W
+         BEJy71fgXwcSW1cTVa13KKD0Rx+uigtvFCQBx1VU+nXLfMijyQCXtVzD7XgyLQJkzK
+         iTQCRn/zQrjCWmYrKMHU1iY67jRYUwAvfB24iS6bd8/DcJvmi7NCkGhQdOtXFFZegI
+         /3AjwjnVIbkdrsWvLL8TX0bGLNn6A4/UjC40xdksSdwlxEWzg5I1i25ytbIOI01fNL
+         A+/hzHR5FdROw==
+Date:   Tue, 6 Dec 2022 11:51:02 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] ice: Add check for kzalloc
+Message-ID: <Y48QhnqUEfNEcC8u@unreal>
+References: <20221206030805.15934-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221206030805.15934-1-jiasheng@iscas.ac.cn>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,48 +54,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+On Tue, Dec 06, 2022 at 11:08:05AM +0800, Jiasheng Jiang wrote:
+> As kzalloc may fail and return NULL pointer,
+> it should be better to check the return value
+> in order to avoid the NULL pointer dereference.
+> 
+> Fixes: d6b98c8d242a ("ice: add write functionality for GNSS TTY")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_gnss.c | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
 
-[ Upstream commit 31d929de5a112ee1b977a89c57de74710894bbbf ]
+The idea is correct, but please change an implementation to use goto
+and proper unwind for whole function. It will remove duplication in the
+code which handles tty_port destroys.
 
-When the name_assign_type attribute was introduced (commit
-685343fc3ba6, "net: add name_assign_type netdev attribute"), the
-loopback device was explicitly mentioned as one which would make use
-of NET_NAME_PREDICTABLE:
+Thanks
 
-    The name_assign_type attribute gives hints where the interface name of a
-    given net-device comes from. These values are currently defined:
-...
-      NET_NAME_PREDICTABLE:
-        The ifname has been assigned by the kernel in a predictable way
-        that is guaranteed to avoid reuse and always be the same for a
-        given device. Examples include statically created devices like
-        the loopback device [...]
-
-Switch to that so that reading /sys/class/net/lo/name_assign_type
-produces something sensible instead of returning -EINVAL.
-
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/loopback.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-index 14545a8797a8..7788f72c262e 100644
---- a/drivers/net/loopback.c
-+++ b/drivers/net/loopback.c
-@@ -206,7 +206,7 @@ static __net_init int loopback_net_init(struct net *net)
- 	int err;
- 
- 	err = -ENOMEM;
--	dev = alloc_netdev(0, "lo", NET_NAME_UNKNOWN, loopback_setup);
-+	dev = alloc_netdev(0, "lo", NET_NAME_PREDICTABLE, loopback_setup);
- 	if (!dev)
- 		goto out;
- 
--- 
-2.35.1
-
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
+> index b5a7f246d230..6d3d5e75726b 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_gnss.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
+> @@ -421,7 +421,7 @@ static struct tty_driver *ice_gnss_create_tty_driver(struct ice_pf *pf)
+>  	const int ICE_TTYDRV_NAME_MAX = 14;
+>  	struct tty_driver *tty_driver;
+>  	char *ttydrv_name;
+> -	unsigned int i;
+> +	unsigned int i, j;
+>  	int err;
+>  
+>  	tty_driver = tty_alloc_driver(ICE_GNSS_TTY_MINOR_DEVICES,
+> @@ -462,6 +462,17 @@ static struct tty_driver *ice_gnss_create_tty_driver(struct ice_pf *pf)
+>  					       GFP_KERNEL);
+>  		pf->gnss_serial[i] = NULL;
+>  
+> +		if (!pf->gnss_tty_port[i]) {
+> +			for (j = 0; j < i; j++) {
+> +				tty_port_destroy(pf->gnss_tty_port[j]);
+> +				kfree(pf->gnss_tty_port[j]);
+> +			}
+> +			kfree(ttydrv_name);
+> +			tty_driver_kref_put(pf->ice_gnss_tty_driver);
+> +
+> +			return NULL;
+> +		}
+> +
+>  		tty_port_init(pf->gnss_tty_port[i]);
+>  		tty_port_link_device(pf->gnss_tty_port[i], tty_driver, i);
+>  	}
+> -- 
+> 2.25.1
+> 
