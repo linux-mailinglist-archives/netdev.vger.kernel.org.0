@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 635A7644384
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 13:54:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92D87644387
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 13:54:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234586AbiLFMyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 07:54:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
+        id S234693AbiLFMyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 07:54:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234553AbiLFMxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 07:53:52 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DCFF6D;
-        Tue,  6 Dec 2022 04:53:49 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id z92so20177591ede.1;
-        Tue, 06 Dec 2022 04:53:49 -0800 (PST)
+        with ESMTP id S234565AbiLFMyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 07:54:00 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58B562CC;
+        Tue,  6 Dec 2022 04:53:55 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id bj12so5865310ejb.13;
+        Tue, 06 Dec 2022 04:53:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=HcQpLIgk7FDe8TDre+fsogLWbAMYx7kboeWg7OjsK2E=;
-        b=TQh3CMmY28sMVz0h70oZ+26STyNmlXcIVBmb5mNb7YxavyaSssn+VGOxRY5u4e6+X5
-         MGCTdoJea2Z8zX4fC6T/YA1WIGsPpxG4z23RpoYUDhcdWgfJ0ZwnPBuXOC/cByRgzTXP
-         0FtGB+hmD5p/vRKbXTQRdbX8SL2ybxgxBfYfJxIgUxtZ4k3LeR0/u4NEcegx6Q87GAbD
-         CneDjcbqYNlAv8D/KWXoeoyw3pxysmasqu+wkOhdRaail7lTN2FdhqBA3BUzXLJ+BlDR
-         N27SJp7unEcvpr2guOZzjMU2O1MK9/KG7cZg1+gNin6LN7RUCQYgRuBKGYjmaSmxbDTT
-         VFqQ==
+        bh=vtmK9mWiq87BtwWKXZvJqVPU4p1Dd/y6RGKbmSiy148=;
+        b=HtxvEH5dKBCXLe4DbnWPWFk+DyJq5ujOjCHJosyNoP7VgEJtDsyKezoqupW6IQBpq3
+         zvMBT7t71JQD8/5wbU725kdxpUmV/ugobB/ZHhrTodWhqiT/8MmV0khzm8/x27lEB1fm
+         LI0bhU9llE1cXyYD1ZB8UgBKzKnS1eEjqGkYT67A8iPKRIq+KXxQ3JR/ZIef37SMt0+A
+         /XOxkQM7Vakqui3a66qQfuOR4caXTnC6Uepod3UmL72QXBTmPTHWKNkVZY1CeCZ/m/9M
+         ev+uKl+uWBLady3+HteAs7LBRq8FQVioAbPcwUAr2YLMmSPTSapKKX7kX9LfgxDNIh8n
+         aFaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HcQpLIgk7FDe8TDre+fsogLWbAMYx7kboeWg7OjsK2E=;
-        b=yvi9Z2Rp/tUuZ76eHyi0Fil5fcDNnNsVRd/ZOKk/gsWqTYQzS0DIxg5lwLsSRZMsQm
-         Hp7EaMtYjVZEyIDVgl0k+syP8q/Z5UogE0ciFXs6v4wOaFBnh3zZiFAC3BNlMzAQ15V+
-         sK8gAky/9Q9PyV4O+ZcrijeUww73vbVDnYe86wUMRgDkV6PkQoQ1LMV5gB7RvENP8y84
-         VaY7twXWpU9DyRB12N0NQezuEtvR978aPCpGerg5IquhNaNR0rFCP3w3NLoRJrPj8dK4
-         TaXeePSMQV1NYSzSeNNJkw0Bxyr2p5Uvw/nZKeNTBiKwlsson/N6BkDxx06uaHAj0tHR
-         w1Sw==
-X-Gm-Message-State: ANoB5pmCrVU3lPVbAIrWqiR4m6VHXw8tbMUt7jye1sSDxv/vLYWAAZMH
-        92zYISOrbCeQh/5LtuDjdwo=
-X-Google-Smtp-Source: AA0mqf7vsZ6Mt8VWaagYQp8hD3OgQSyGl+BrXBxApQHL+A8P6g1R8wBUU0bk1FcDxQwhVAsUUtKDTQ==
-X-Received: by 2002:aa7:d601:0:b0:46c:7da6:7320 with SMTP id c1-20020aa7d601000000b0046c7da67320mr11222860edr.227.1670331227752;
-        Tue, 06 Dec 2022 04:53:47 -0800 (PST)
-Received: from skbuf ([188.26.184.215])
-        by smtp.gmail.com with ESMTPSA id b17-20020a1709063cb100b007b4bc423b41sm7233152ejh.190.2022.12.06.04.53.46
+        bh=vtmK9mWiq87BtwWKXZvJqVPU4p1Dd/y6RGKbmSiy148=;
+        b=OrYnmaNkX97hVrT8BQxjYrH/m//QL6Qtr1RW47dGikfXITz16Vpfq9vHAMFChfQbBk
+         Eo7ZZpeigg3uGJsGwSPaKNFnOJRYISUodBvd0+WDuonV6BOOduf1bKk1nEe5hoZrK7Sm
+         HCJm4ETU+nnv40yihrr55Iac7PKU6kEO9eFxAXFDH+5vt0vAOKvkA7D8+4wCWsRgfNyh
+         qYSGiTQ5aXqjO30Cpr+koUWNAUNBly2utkJGrZiIPoa+e6AASgERPTVNj2ujauI4JpIz
+         V1C0T5yZ+wU3q1m2ADj0H1Yea3ndd0ObXv8Qy34o0EJyJSZl2K75+f92woiMeH0liFcd
+         38cQ==
+X-Gm-Message-State: ANoB5pmLVeDGT/X1Z6Vy0S6fHhHbx3CO/JNI74/yJ0HdWpZzslvQweCU
+        jinqtMnWfzgDgI9VyyGmii4=
+X-Google-Smtp-Source: AA0mqf7T5qbqjZjJ0XEPJN0VQd0dBwxxUDpb7vsrCpHVdMK6djrHmF5mpQ/q8gQU8j+14ftSTL/6yg==
+X-Received: by 2002:a17:906:2cd3:b0:7bf:b675:ffdd with SMTP id r19-20020a1709062cd300b007bfb675ffddmr33108707ejr.610.1670331234207;
+        Tue, 06 Dec 2022 04:53:54 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id g1-20020a17090604c100b0073dc5bb7c32sm7331993eja.64.2022.12.06.04.53.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 04:53:47 -0800 (PST)
-Date:   Tue, 6 Dec 2022 14:53:44 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+        Tue, 06 Dec 2022 04:53:53 -0800 (PST)
+Date:   Tue, 6 Dec 2022 13:54:04 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com, richardcochran@gmail.com,
-        ceggers@arri.de
-Subject: Re: [Patch net-next v2 07/13] net: dsa: microchip: ptp: add packet
- reception timestamping
-Message-ID: <20221206125344.rwheovbxdoad2duv@skbuf>
-References: <20221206091428.28285-1-arun.ramadoss@microchip.com>
- <20221206091428.28285-8-arun.ramadoss@microchip.com>
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: [PATCH v4 net-next 5/5] drivers/net/phy: add driver for the onsemi
+ NCN26000 10BASE-T1S PHY
+Message-ID: <1816cb14213fc2050b1a7e97a68be7186340d994.1670329232.git.piergiorgio.beruto@gmail.com>
+References: <cover.1670329232.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221206091428.28285-8-arun.ramadoss@microchip.com>
+In-Reply-To: <cover.1670329232.git.piergiorgio.beruto@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -77,80 +77,267 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 06, 2022 at 02:44:22PM +0530, Arun Ramadoss wrote:
-> +static void ksz_rcv_timestamp(struct sk_buff *skb, u8 *tag,
-> +			      struct net_device *dev, unsigned int port)
-> +{
-> +	struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
-> +	struct dsa_switch *ds = dev->dsa_ptr->ds;
-> +	u8 *tstamp_raw = tag - KSZ_PTP_TAG_LEN;
-> +	struct ksz_tagger_data *tagger_data;
-> +	struct ptp_header *ptp_hdr;
-> +	unsigned int ptp_type;
-> +	u8 ptp_msg_type;
-> +	ktime_t tstamp;
-> +	s64 correction;
-> +
-> +	tagger_data = ksz_tagger_data(ds);
-> +	if (!tagger_data->meta_tstamp_handler)
-> +		return;
+This patch adds support for the onsemi NCN26000 10BASE-T1S industrial
+Ethernet PHY. The driver supports Point-to-Multipoint operation without
+auto-negotiation and with link control handling. The PHY also features
+PLCA for improving performance in P2MP mode.
 
-The meta_tstamp_handler doesn't seem to be needed.
+Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+---
+ MAINTAINERS                |   7 ++
+ drivers/net/phy/Kconfig    |   7 ++
+ drivers/net/phy/Makefile   |   1 +
+ drivers/net/phy/ncn26000.c | 193 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 208 insertions(+)
+ create mode 100644 drivers/net/phy/ncn26000.c
 
-Just save the partial timestamp in KSZ_SKB_CB(), and reconstruct that
-timestamp with the full PTP time in the ds->ops->port_rxtstamp() method.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ed626cbdf5af..09f0bfa3ae64 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15357,6 +15357,13 @@ L:	linux-mips@vger.kernel.org
+ S:	Maintained
+ F:	arch/mips/boot/dts/ralink/omega2p.dts
+ 
++ONSEMI ETHERNET PHY DRIVERS
++M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
++L:	netdev@vger.kernel.org
++S:	Supported
++W:	http://www.onsemi.com
++F:	drivers/net/phy/ncn*
++
+ OP-TEE DRIVER
+ M:	Jens Wiklander <jens.wiklander@linaro.org>
+ L:	op-tee@lists.trustedfirmware.org
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index af00cf44cd97..7c466830c611 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -267,6 +267,13 @@ config NATIONAL_PHY
+ 	help
+ 	  Currently supports the DP83865 PHY.
+ 
++config NCN26000_PHY
++	tristate "onsemi 10BASE-T1S Ethernet PHY"
++	help
++	  Adds support for the onsemi 10BASE-T1S Ethernet PHY.
++	  Currently supports the NCN26000 10BASE-T1S Industrial PHY
++	  with MII interface.
++
+ config NXP_C45_TJA11XX_PHY
+ 	tristate "NXP C45 TJA11XX PHYs"
+ 	depends on PTP_1588_CLOCK_OPTIONAL
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index f7138d3c896b..b5138066ba04 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -77,6 +77,7 @@ obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
+ obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
+ obj-$(CONFIG_MOTORCOMM_PHY)	+= motorcomm.o
+ obj-$(CONFIG_NATIONAL_PHY)	+= national.o
++obj-$(CONFIG_NCN26000_PHY)	+= ncn26000.o
+ obj-$(CONFIG_NXP_C45_TJA11XX_PHY)	+= nxp-c45-tja11xx.o
+ obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
+ obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
+diff --git a/drivers/net/phy/ncn26000.c b/drivers/net/phy/ncn26000.c
+new file mode 100644
+index 000000000000..9e02c5c55244
+--- /dev/null
++++ b/drivers/net/phy/ncn26000.c
+@@ -0,0 +1,193 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
++/*
++ *  Driver for the onsemi 10BASE-T1S NCN26000 PHYs family.
++ *
++ * Copyright 2022 onsemi
++ */
++#include <linux/kernel.h>
++#include <linux/bitfield.h>
++#include <linux/errno.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/mii.h>
++#include <linux/phy.h>
++
++#include "mdio-open-alliance.h"
++
++#define PHY_ID_NCN26000			0x180FF5A1
++
++#define NCN26000_REG_IRQ_CTL            16
++#define NCN26000_REG_IRQ_STATUS         17
++
++// the NCN26000 maps link_ctrl to BMCR_ANENABLE
++#define NCN26000_BCMR_LINK_CTRL_BIT	BMCR_ANENABLE
++
++// the NCN26000 maps link_status to BMSR_ANEGCOMPLETE
++#define NCN26000_BMSR_LINK_STATUS_BIT	BMSR_ANEGCOMPLETE
++
++#define NCN26000_IRQ_LINKST_BIT		BIT(0)
++#define NCN26000_IRQ_PLCAST_BIT		BIT(1)
++#define NCN26000_IRQ_LJABBER_BIT	BIT(2)
++#define NCN26000_IRQ_RJABBER_BIT	BIT(3)
++#define NCN26000_IRQ_PLCAREC_BIT	BIT(4)
++#define NCN26000_IRQ_PHYSCOL_BIT	BIT(5)
++
++#define TO_TMR_DEFAULT			32
++
++struct ncn26000_priv {
++	u16 enabled_irqs;
++};
++
++// module parameter: if set, the link status is derived from the PLCA status
++// default: false
++static bool link_status_plca;
++module_param(link_status_plca, bool, 0644);
++
++// driver callbacks
++
++static int ncn26000_config_init(struct phy_device *phydev)
++{
++	/* HW bug workaround: the default value of the PLCA TO_TIMER should be
++	 * 32, where the current version of NCN26000 reports 24. This will be
++	 * fixed in future PHY versions. For the time being, we force the
++	 * correct default here.
++	 */
++	return phy_write_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_TOTMR,
++			     TO_TMR_DEFAULT);
++}
++
++static int ncn26000_config_aneg(struct phy_device *phydev)
++{
++	// Note: the NCN26000 supports only P2MP link mode. Therefore, AN is not
++	// supported. However, this function is invoked by phylib to enable the
++	// PHY, regardless of the AN support.
++	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
++	phydev->mdix = ETH_TP_MDI;
++
++	// bring up the link
++	return phy_write(phydev, MII_BMCR, NCN26000_BCMR_LINK_CTRL_BIT);
++}
++
++static int ncn26000_get_features(struct phy_device *phydev)
++{
++	linkmode_zero(phydev->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_MII_BIT, phydev->supported);
++
++	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
++			 phydev->supported);
++
++	linkmode_copy(phydev->advertising, phydev->supported);
++	return 0;
++}
++
++static int ncn26000_read_status(struct phy_device *phydev)
++{
++	// The NCN26000 reports NCN26000_LINK_STATUS_BIT if the link status of
++	// the PHY is up. It further reports the logical AND of the link status
++	// and the PLCA status in the BMSR_LSTATUS bit. Thus, report the link
++	// status by testing the appropriate BMSR bit according to the module's
++	// parameter configuration.
++	const int lstatus_flag = link_status_plca ?
++		BMSR_LSTATUS : NCN26000_BMSR_LINK_STATUS_BIT;
++
++	int ret;
++
++	ret = phy_read(phydev, MII_BMSR);
++	if (unlikely(ret < 0))
++		return ret;
++
++	// update link status
++	phydev->link = (ret & lstatus_flag) ? 1 : 0;
++
++	// handle more IRQs here
++
++	return 0;
++}
++
++static irqreturn_t ncn26000_handle_interrupt(struct phy_device *phydev)
++{
++	const struct ncn26000_priv *const priv = phydev->priv;
++	int ret;
++
++	// clear the latched bits in MII_BMSR
++	phy_read(phydev, MII_BMSR);
++
++	// read and aknowledge the IRQ status register
++	ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
++
++	if (unlikely(ret < 0) || (ret & priv->enabled_irqs) == 0)
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++	return IRQ_HANDLED;
++}
++
++static int ncn26000_config_intr(struct phy_device *phydev)
++{
++	int ret;
++	struct ncn26000_priv *priv = phydev->priv;
++
++	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
++		// acknowledge IRQs
++		ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
++		if (ret < 0)
++			return ret;
++
++		// get link status notifications
++		priv->enabled_irqs = NCN26000_IRQ_LINKST_BIT;
++	} else {
++		// disable all IRQs
++		priv->enabled_irqs = 0;
++	}
++
++	ret = phy_write(phydev, NCN26000_REG_IRQ_CTL, priv->enabled_irqs);
++	if (ret != 0)
++		return ret;
++
++	return 0;
++}
++
++static int ncn26000_probe(struct phy_device *phydev)
++{
++	struct device *dev = &phydev->mdio.dev;
++	struct ncn26000_priv *priv;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	phydev->priv = priv;
++
++	return 0;
++}
++
++static struct phy_driver ncn26000_driver[] = {
++	{
++		PHY_ID_MATCH_MODEL(PHY_ID_NCN26000),
++		.name			= "NCN26000",
++		.probe                  = ncn26000_probe,
++		.get_features		= ncn26000_get_features,
++		.config_init            = ncn26000_config_init,
++		.config_intr            = ncn26000_config_intr,
++		.config_aneg		= ncn26000_config_aneg,
++		.read_status		= ncn26000_read_status,
++		.handle_interrupt       = ncn26000_handle_interrupt,
++		.get_plca_cfg		= genphy_c45_plca_get_cfg,
++		.set_plca_cfg		= genphy_c45_plca_set_cfg,
++		.get_plca_status	= genphy_c45_plca_get_status,
++		.soft_reset             = genphy_soft_reset,
++	},
++};
++
++module_phy_driver(ncn26000_driver);
++
++static struct mdio_device_id __maybe_unused ncn26000_tbl[] = {
++	{ PHY_ID_MATCH_MODEL(PHY_ID_NCN26000) },
++	{ }
++};
++
++MODULE_DEVICE_TABLE(mdio, ncn26000_tbl);
++
++MODULE_AUTHOR("Piergiorgio Beruto");
++MODULE_DESCRIPTION("onsemi 10BASE-T1S PHY driver");
++MODULE_LICENSE("Dual BSD/GPL");
+-- 
+2.35.1
 
-Biggest advantage is that ptp_classify_raw() won't be called twice in
-the RX path for the same packet, as will currently happen with your code.
-
-> +
-> +	/* convert time stamp and write to skb */
-> +	tstamp = ksz_decode_tstamp(get_unaligned_be32(tstamp_raw));
-> +	memset(hwtstamps, 0, sizeof(*hwtstamps));
-> +	hwtstamps->hwtstamp = tagger_data->meta_tstamp_handler(ds, tstamp);
-> +
-> +	if (skb_headroom(skb) < ETH_HLEN)
-> +		return;
-> +
-> +	__skb_push(skb, ETH_HLEN);
-> +	ptp_type = ptp_classify_raw(skb);
-> +	__skb_pull(skb, ETH_HLEN);
-> +
-> +	if (ptp_type == PTP_CLASS_NONE)
-> +		return;
-> +
-> +	ptp_hdr = ptp_parse_header(skb, ptp_type);
-> +	if (!ptp_hdr)
-> +		return;
-> +
-> +	ptp_msg_type = ptp_get_msgtype(ptp_hdr, ptp_type);
-> +	if (ptp_msg_type != PTP_MSGTYPE_PDELAY_REQ)
-> +		return;
-> +
-> +	/* Only subtract the partial time stamp from the correction field.  When
-> +	 * the hardware adds the egress time stamp to the correction field of
-> +	 * the PDelay_Resp message on tx, also only the partial time stamp will
-> +	 * be added.
-> +	 */
-> +	correction = (s64)get_unaligned_be64(&ptp_hdr->correction);
-> +	correction -= ktime_to_ns(tstamp) << 16;
-> +
-> +	ptp_header_update_correction(skb, ptp_type, ptp_hdr, correction);
-> +}
-> +
->  /* Time stamp tag *needs* to be inserted if PTP is enabled in hardware.
->   * Regardless of Whether it is a PTP frame or not.
->   */
-> @@ -215,8 +268,10 @@ static struct sk_buff *ksz9477_rcv(struct sk_buff *skb, struct net_device *dev)
->  	unsigned int len = KSZ_EGRESS_TAG_LEN;
->  
->  	/* Extra 4-bytes PTP timestamp */
-> -	if (tag[0] & KSZ9477_PTP_TAG_INDICATION)
-> -		len += KSZ9477_PTP_TAG_LEN;
-> +	if (tag[0] & KSZ9477_PTP_TAG_INDICATION) {
-> +		ksz_rcv_timestamp(skb, tag, dev, port);
-> +		len += KSZ_PTP_TAG_LEN;
-> +	}
->  
->  	return ksz_common_rcv(skb, dev, port, len);
->  }
