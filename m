@@ -2,91 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C30643B85
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 03:48:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0915D643B9E
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 04:04:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233941AbiLFCs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 21:48:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54760 "EHLO
+        id S233571AbiLFDEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 22:04:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234048AbiLFCsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 21:48:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D147222530;
-        Mon,  5 Dec 2022 18:47:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F10DDB81609;
-        Tue,  6 Dec 2022 02:47:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09152C433D6;
-        Tue,  6 Dec 2022 02:47:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670294863;
-        bh=U3jMWo8UOIlXRtrpHAUyzh+FgiPs3PjKBCtkUu1R5B4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lmEyK/yLEa/mUttm4uKQUHisF8in+OHCKto8WjfW1KDBAoIoYNPiNhrfE1Eqrnqe2
-         2DZGKjbGK5UFrBU418bqlW9dtM8lDwHmgYFYI+E/KMW9iq7FyHIIRWEOPuCZxMjO3N
-         /Jq24dMTln+BwtgJ/LTramROt0i/64lAJRNlwL+tEPPVSFB76ZtdvDF18/zXnJJXlA
-         hHksAcNqQqM9O3nlGMy6loO7nrVxzSY2gl3iE9R6NuiJqbg70H4u/lP7Wt1UoJZ2vF
-         RSDwgq001wApQlG7QVQZ5Y809YzDFk5fi5fat79lfVx87yuOJTPmRI6Pf0g4V5lPng
-         fzJoGfxyp8laQ==
-Date:   Mon, 5 Dec 2022 18:47:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <yang.yang29@zte.com.cn>
-Cc:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <bigeasy@linutronix.de>, <imagedong@tencent.com>,
-        <kuniyu@amazon.com>, <petrm@nvidia.com>, <liu3101@purdue.edu>,
-        <wujianguo@chinatelecom.cn>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <tedheadster@gmail.com>
-Subject: Re: [PATCH linux-next] net: record times of netdev_budget exhausted
-Message-ID: <20221205184742.0952fc75@kernel.org>
-In-Reply-To: <202212061035074041030@zte.com.cn>
-References: <20221205175314.0487527a@kernel.org>
-        <202212061035074041030@zte.com.cn>
+        with ESMTP id S230035AbiLFDEo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 22:04:44 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92288B486;
+        Mon,  5 Dec 2022 19:04:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=knlKMQxu2kigd4KXDxW0Ewl4mzT6NSR6mAtv/z2qQcw=; b=r1DQ7eAPTdvXGxIH2eFI+ItaLM
+        NWx9JL+5znG2RQGIkm5g/TY1ivfSzB5HjwvkBa5bFJlfqZsez/ARFtXRyqjyH7wd1qQEKrQB9krcc
+        Yx+y84XcercxCnzaHwWewc4lAcsmYpEHkl6Gv0NXeZJcmphmTc9l0qFaQpP2Zt/aZA8s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p2OF3-004TRN-Ji; Tue, 06 Dec 2022 04:03:33 +0100
+Date:   Tue, 6 Dec 2022 04:03:33 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH v3 net-next 1/4] net/ethtool: add netlink interface for
+ the PLCA RS
+Message-ID: <Y46xBVuv9iaUdNLs@lunn.ch>
+References: <d53ffecdde8d3950a24155228a3439f2c9b10b9b.1670259123.git.piergiorgio.beruto@gmail.com>
+ <Y44y05M+6NGod+4x@shell.armlinux.org.uk>
+ <Y4455r631my4LNIU@gvm01>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y4455r631my4LNIU@gvm01>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 6 Dec 2022 10:35:07 +0800 (CST) yang.yang29@zte.com.cn wrote:
-> The author of "Replace 2 jiffies with sysctl netdev_budget_usecs
-> to enable softirq tuning" is Matthew Whitehead, he said this in
-> git log: Constants used for tuning are generally a bad idea, especially
-> as hardware changes over time...For example, a very fast machine
-> might tune this to 1000 microseconds, while my regression testing
-> 486DX-25 needs it to be 4000 microseconds on a nearly idle network
-> to prevent time_squeeze from being incremented.
+> > Also, why do they need to be exported to modules? From what I can see,
+> > the only user of these functions is phy_device.c, which is part of
+> > the same module as phy.c where the functions live, meaning that they
+> > don't need to be exported.
+> I did this because similar functions in the same file are all exported
+> to modules (e.g. phy_config_aneg, phy_speed_down, phy_start_cable_test).
+> Therefore, I assumed the intention was to let modules (maybe out-of-tree
+> modules?) make use of these functions. If you think we should not do
+> this, would kindly explain why for example the phy_start_cable_test is
+> exported?
 
-Let's just ignore that on the basis that it mentions prehistoric HW ;)
+phy_start_cable_test probably should not be exported. I probably got
+this wrong. At one point, it might of been called directly from
+net/ethtool/cabletest.c, but not any more. It is now accessed via
+phy_ethtool_phy_ops.
 
-> And on my systems there are huge packets on the intranet, and we
-> came accross with lots of time_squeeze. The idea is that, netdev_budget*
-> are selections between throughput and real-time. If we care throughput
-> and not care real-time so much, we may want bigger netdev_budget*.
+Each kernel module is its own name space. You can only reference
+something within a kernel module if it is exported. So you will find
+all the helper functions in phy_device.c which are used by PHY drivers
+are exported, for example.
 
-But are you seeing actual performance wins in terms of throughput 
-or latency? 
+You need to watch out for circular dependencies between modules, since
+they are loaded sequentially. PHYs are generally leaves, they depend
+on phylib and nothing else, so that is simple. The phylib module is
+loaded first, and then the PHY drivers.
 
-As I said time_squeeze is very noisy. In my experience it's very
-sensitive to issues with jiffies, like someone masking interrupts on
-the timekeeper CPU for a long time (which if you use cgroups happens
-_a lot_ :/).
+But there are more complex scenarios. A built in driver cannot
+reference a module, that would result in undefined symbols. That is
+probably what i got wrong with cable tests. I did all my testing with
+it built in. But phylib can be built as a module. But that then
+implies the core ethtool code cannot be built in, otherwise you get
+undefined reference. So it was reworked to reference phylib via
+phy_ethtool_phy_ops.
 
-Have you tried threaded NAPI? (find files called 'threaded' in sysfs)
-It will let you do any such tuning much more flexibly.
+So as Russell says, if a function is only referenced within a module,
+there is no need to export it, so keeping the kernel namespace clean.
 
-> In this scenario, we want to tune netdev_budget* and see their effect
-> separately.
->
-> By the way, if netdev_budget* are useless, should they be deleted?
-
-Well, we can't be sure if there's really nobody that uses them :(
-It's very risky to remove stuff that's exposed to user space.
+      Andrew
