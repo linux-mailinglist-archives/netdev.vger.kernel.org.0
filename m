@@ -2,81 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3395C6448E7
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 17:13:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1662C6448FF
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 17:17:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235269AbiLFQNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 11:13:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60808 "EHLO
+        id S232910AbiLFQRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 11:17:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235185AbiLFQN1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 11:13:27 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F46132BB9
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 08:08:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3QwSqDt++m9/zROdaadAwgLq1cg/29F6bPU0ttuj7tI=; b=CMBgEFYOyS3y4QN9/81ROmNl5o
-        15hL2UwsY9qP7a96tTeXPTM6DkywPCxjImVWpqZBs/61aHFK17OaD0miE9xujioc7krVBHUAnroIU
-        L/YeYuLxiKGAIMbnf3KIolkRAz+WDyrv9vPhekiCpOQM8wFXlZMxpTgYVDmPQlzrqhPpJsJo1iDlS
-        3W01kyob5g+akPa/S4vm/jkt9GeknBrWUZjlhvDZRUuLmXJiaPvC2sS3qre8stYU4b+F/piy50E8N
-        BHdkGfnWfnMT7IPanqJHbtRKGnD5xgWujIk4PEwByinBqIv1tz+CxKXMVj2ZB1icINSg6yc+m4IaH
-        rOhudT7Q==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1p2aUT-004aIf-Og; Tue, 06 Dec 2022 16:08:17 +0000
-Date:   Tue, 6 Dec 2022 16:08:17 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     brouer@redhat.com, Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH 00/24] Split page pools from struct page
-Message-ID: <Y49o8e6F5SP4h+wF@casper.infradead.org>
-References: <20221130220803.3657490-1-willy@infradead.org>
- <cfe0b2ca-824d-3a52-423a-f8262f12fabe@redhat.com>
- <Y44c1KKE797U3kCM@casper.infradead.org>
- <7cfbcde0-9d17-0a89-49ae-942a80c63feb@redhat.com>
+        with ESMTP id S235445AbiLFQQd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 11:16:33 -0500
+Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B22A3D927
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 08:11:57 -0800 (PST)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-297-lcRVJWkiNiqOitCyiKt17A-1; Tue, 06 Dec 2022 11:11:37 -0500
+X-MC-Unique: lcRVJWkiNiqOitCyiKt17A-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1A48E1C008B0;
+        Tue,  6 Dec 2022 16:11:37 +0000 (UTC)
+Received: from hog (unknown [10.39.192.162])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6E3C71121315;
+        Tue,  6 Dec 2022 16:11:34 +0000 (UTC)
+Date:   Tue, 6 Dec 2022 17:10:32 +0100
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Emeel Hakim <ehakim@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Raed Salem <raeds@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2] macsec: Add support for IFLA_MACSEC_OFFLOAD
+ in the netlink layer
+Message-ID: <Y49peLs4FJSFW1HR@hog>
+References: <20221206085757.5816-1-ehakim@nvidia.com>
+ <Y48IVReEUBmQza81@nanopsycho>
+ <IA1PR12MB6353D358E112EE09C4DD770CAB1B9@IA1PR12MB6353.namprd12.prod.outlook.com>
+ <Y49FGzwBdyC/xHxH@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <7cfbcde0-9d17-0a89-49ae-942a80c63feb@redhat.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y49FGzwBdyC/xHxH@nanopsycho>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_VALIDITY_RPBL,RDNS_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 06, 2022 at 10:43:05AM +0100, Jesper Dangaard Brouer wrote:
+2022-12-06, 14:35:23 +0100, Jiri Pirko wrote:
+> Tue, Dec 06, 2022 at 01:31:54PM CET, ehakim@nvidia.com wrote:
+> >> Tue, Dec 06, 2022 at 09:57:57AM CET, ehakim@nvidia.com wrote:
+> >> >From: Emeel Hakim <ehakim@nvidia.com>
+> >> >
+> >> >This adds support for configuring Macsec offload through the
+> >> 
+> >> Tell the codebase what to do. Be imperative in your patch descriptions so it is clear
+> >> what are the intensions of the patch.
+> >
+> >Ack
+> >
+> >> 
+> >> 
+> >> >netlink layer by:
+> >> >- Considering IFLA_MACSEC_OFFLOAD in macsec_fill_info.
+> >> >- Handling IFLA_MACSEC_OFFLOAD in macsec_changelink.
+> >> >- Adding IFLA_MACSEC_OFFLOAD to the netlink policy.
+> >> >- Adjusting macsec_get_size.
+> >> 
+> >> 4 patches then?
+> >
+> >Ack, I will change the commit message to be imperative and will replace the list with a good description.
+> >I still believe it should be a one patch since splitting this could break a bisect process.
 > 
-> 
-> On 05/12/2022 17.31, Matthew Wilcox wrote:
-> > On Mon, Dec 05, 2022 at 04:34:10PM +0100, Jesper Dangaard Brouer wrote:
-> > > I have a micro-benchmark [1][2], that I want to run on this patchset.
-> > > Reducing the asm code 'text' size is less likely to improve a
-> > > microbenchmark. The 100Gbit mlx5 driver uses page_pool, so perhaps I can
-> > > run a packet benchmark that can show the (expected) performance improvement.
-> > > 
-> > > [1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
-> > > [2] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_cross_cpu.c
-> > 
-> > Appreciate it!  I'm not expecting any performance change outside noise,
-> > but things do surprise me.  I'd appreciate it if you'd test with a
-> > "distro" config, ie enabling CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP so
-> > we show the most expensive case.
-> > 
-> 
-> I have CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP=y BUT it isn't default
-> runtime enabled.
+> Well, when you split, you have to make sure you don't break bisection,
+> always. Please try to figure that out.
 
-That's fine.  I think the vast majority of machines won't actually have
-it enabled.  It's mostly useful for hosting setups where allocating 1GB
-pages for VMs is common.
+I think this can be split pretty nicely into 3 patches:
+ - add IFLA_MACSEC_OFFLOAD to macsec_rtnl_policy (probably for net
+   with a Fixes tag on the commit that introduced IFLA_MACSEC_OFFLOAD)
+ - add offload to macsec_fill_info/macsec_get_size
+ - add IFLA_MACSEC_OFFLOAD support to changelink
 
-The mlx5 driver was straightforward, but showed some gaps in the API.
-You'd already got the majority of the wins by using page_ref_inc()
-instead of get_page(), but I did find one put_page() ;-)
+The subject of the last patch should also make it clear that it's only
+adding IFLA_MACSEC_OFFLOAD to changelink. As it's written, someone
+could assume there's no support at all via rtnl ops and wonder why
+this patch isn't doing anything to newlink, and whether/why this
+IFLA_MACSEC_OFFLOAD already exists.
+
+-- 
+Sabrina
+
