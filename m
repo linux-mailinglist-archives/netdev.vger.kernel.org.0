@@ -2,56 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D616439C9
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 01:09:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BF806439D4
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 01:16:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbiLFAJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 19:09:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38954 "EHLO
+        id S232599AbiLFAQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 19:16:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229938AbiLFAJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 19:09:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03E51834E
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 16:09:18 -0800 (PST)
+        with ESMTP id S231149AbiLFAQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 19:16:31 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDB01BE92;
+        Mon,  5 Dec 2022 16:16:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51411B815A9
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 00:09:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88283C433D7;
-        Tue,  6 Dec 2022 00:09:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 557D3CE16A1;
+        Tue,  6 Dec 2022 00:16:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E34E6C433D6;
+        Tue,  6 Dec 2022 00:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670285355;
-        bh=2r93YR1jOiA1Dld4/nkskILZFtlnZ5fBuXCKBUIq9wA=;
+        s=k20201202; t=1670285787;
+        bh=wUq3BeoLoaITAfE64KunVIjHQPEjL/jsg2nBIhtKxfg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oXSgsy0Zdiwfol4FnM2RcuEdausL5abQQ2cmeEsZfmJuFbIinl3DBttnqoHEqqsya
-         bdRey8VFHjjrqNGaIsHCDrZj/Q/QvvWn7jNPa2v7gDcf9gvrAS15ILb11Ad98b8PKk
-         a3Z/1/RvZyt4evCSIhLIlkNQNEN8Q/blaqfqhLoKSIGtPXNj5yYD0r5Zd2p1rvfI6d
-         s8SmakN9AeX/GwAakQaqA25ZemPmG8RSIy5rsdYH5GB5VnvU2o3uWkSn2aZvY/bzq+
-         XGaMO/Euqb64XX8TOvnZtLY/TnFHNHUsXhMQjZstD3jZK5tzJCCOEx6WBJHVnhnV96
-         VyDHxOSOJfFPA==
-Date:   Mon, 5 Dec 2022 16:09:14 -0800
+        b=dCYTyAXDjP0Y1wQnuAxqLoxAMy2jGwugcum/KFMSsuH5/Jf1AmfMRq2flojgISRmw
+         3Tufh3NMS1EVxJzGSJMw4JrgYVyUv2mdA98Z1JbrpjAuj9AfJSyvtCPfGPEcROz16v
+         u7FsHL7hOpJ2sa8GrlcATulnO5scrMK5d2+kFkqaWn3WdO6UOe2fltA3UoL9ynGHc7
+         IGLHAU1LvmGFhYNZp95bkw7H+5PEFLtsau+QSZ3yQA3UB0AF5QC816bXZb80vllgWz
+         C6wLlxLPPzVsf/cG3OjUfQjyu1h8pZnZ25EodTaNQgV7F1d/DTnTzgooBnEWLrbndT
+         IHEWJBYkiIHsw==
+Date:   Mon, 5 Dec 2022 16:16:26 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Veerasenareddy Burru <vburru@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        <netdev@vger.kernel.org>, Bharat Bhushan <bbhushan2@marvell.com>
-Subject: Re: [PATCH xfrm-next v9 0/8] Extend XFRM core to allow packet
- offload configuration
-Message-ID: <20221205160914.37021a13@kernel.org>
-In-Reply-To: <20221205092304.GC704954@gauss3.secunet.de>
-References: <cover.1669547603.git.leonro@nvidia.com>
-        <20221202094243.GA704954@gauss3.secunet.de>
-        <Y4o+X0bOz0hHh9bL@unreal>
-        <20221202101000.0ece5e81@kernel.org>
-        <Y4pEknq2Whbw/Z2S@unreal>
-        <20221202112607.5c55033a@kernel.org>
-        <Y4pV6+LxhyDO2Ufz@unreal>
-        <20221202115213.0055aa4a@kernel.org>
-        <20221205092304.GC704954@gauss3.secunet.de>
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Liron Himi <lironh@marvell.com>,
+        Abhijit Ayarekar <aayarekar@marvell.com>,
+        Sathesh B Edara <sedara@marvell.com>,
+        Satananda Burla <sburla@marvell.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH net-next v2 2/9] octeon_ep: poll for control
+ messages
+Message-ID: <20221205161626.088e383f@kernel.org>
+In-Reply-To: <Y42nerLmNeAIn5w9@unreal>
+References: <20221129130933.25231-1-vburru@marvell.com>
+        <20221129130933.25231-3-vburru@marvell.com>
+        <Y4cirWdJipOxmNaT@unreal>
+        <BYAPR18MB242397C352B0086140106A46CC159@BYAPR18MB2423.namprd18.prod.outlook.com>
+        <Y4hhpFVsENaM45Ho@unreal>
+        <BYAPR18MB2423229A66D1C98C6C744EE1CC189@BYAPR18MB2423.namprd18.prod.outlook.com>
+        <Y42nerLmNeAIn5w9@unreal>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,9 +68,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 5 Dec 2022 10:23:04 +0100 Steffen Klassert wrote:
-> The two driver series and the core series would be about 40
-> patches. If you are ok with taking such a last minute PR
-> into net-next, we can go that way.
+On Mon, 5 Dec 2022 10:10:34 +0200 Leon Romanovsky wrote:
+> > These messages include periodic keep alive (heartbeat) messages
+> > from FW and control messages from VFs. Every PF will be listening
+> > for its own control messages.  
+> 
+> @netdev, as I said, I don't know if it is valid behaviour in netdev.
+> Can you please comment?
 
-Fine by me.
+Polling for control messages every 100ms?  Sure.
+
+You say "valid in netdev" so perhaps you can educate us where/why it
+would not be?
