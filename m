@@ -2,126 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DB25644480
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:26:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D758C644483
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:28:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232572AbiLFN0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 08:26:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60294 "EHLO
+        id S234260AbiLFN2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 08:28:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiLFN0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:26:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEEB1AF26;
-        Tue,  6 Dec 2022 05:26:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B234B81A19;
-        Tue,  6 Dec 2022 13:26:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD112C433D6;
-        Tue,  6 Dec 2022 13:26:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670333202;
-        bh=PcKOxuA0F9qMRIEIAfbWnBs4yrfRxfF69kZ501yYJ6k=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=Lr7w0LFmSgs7qGhQdQNn21s8pwOoa13xFjdER4w4qqW4RCyQfWtspTCi+wH4oEdS6
-         JL5cybmAys92B1Pr/mBZ2hmHbdNb00LSCpc2uu68MmeCGPhUQxNc0eFcTQpC7Y3PKv
-         IJ3xu4SNgcLWZ1scGEgK+FKgz4kzx4J3704Gc/ByV91RHr3+0UNQG1vRqwe6bIm99f
-         B2yXv2RzeyGnMYbN5VIMliigYniBR2TbqSp16hVPIG6C9UoLbIJjcuGF4U5dwupS39
-         zbOhdMTZBvMS9Mfx8/77Z7ouO7pAG6HrmTXfiBy29QVxPcCf081gFJuY45JZwv8R8W
-         RuuN0hJMaOQUA==
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D32C382E38E; Tue,  6 Dec 2022 14:26:38 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-Subject: Re: [PATCH] bpf: call get_random_u32() for random integers
-In-Reply-To: <CAHmME9poicgpHhXJ1ieWbDTFBu=ApSFaQKShhHezDmA0A5ajKQ@mail.gmail.com>
-References: <20221205181534.612702-1-Jason@zx2c4.com>
- <730fd355-ad86-a8fa-6583-df23d39e0c23@iogearbox.net>
- <Y451ENAK7BQQDJc/@zx2c4.com> <87lenku265.fsf@toke.dk>
- <CAHmME9poicgpHhXJ1ieWbDTFBu=ApSFaQKShhHezDmA0A5ajKQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 06 Dec 2022 14:26:38 +0100
-Message-ID: <87iliou0hd.fsf@toke.dk>
+        with ESMTP id S234131AbiLFN17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:27:59 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D336C2250B
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 05:27:52 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id k22-20020a05600c1c9600b003d1ee3a6289so1110243wms.2
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 05:27:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=uycol23sLMJvKSN/Uf+hAHaSexrmgv6QP0a0Ox9Q4o4=;
+        b=i0qmxSRb3waD4rxuHBCB4ucip+pAeuTwiZiojywQQLgL57PhZxX709w+IATXT/K62P
+         0fRN9Kl0PLOMfFWahzeM3pD8VBNEgoQSqLodQ6CogsuhWlA5nkzSl5wVMl+KP0cUNnTo
+         SLIeTPxs/WSD7LrrKwWm5du/ggUj38ZuFPnNknFZNZd9TDzaOXANwQ32QEcVauqRor78
+         t/QS7meh8yvSUiSnLHoCWxFXGawsCVEvXN0tqRUvFAnh7HSjJQR87bTopt5XOycvhBzu
+         G9zEv2YRt9kqOI9VPhrjz2Rx3i3NcaqZTdWvXs0teBvJN+jpdOOfY9qKAYJjnQCkcFfp
+         oP9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uycol23sLMJvKSN/Uf+hAHaSexrmgv6QP0a0Ox9Q4o4=;
+        b=pnF4q3BTY27sppjxKccYyz3c73Ev8cNGxHteV3ISnzY2VapvzRDRzbPnDAcabUtTsp
+         E6QKqXt9z2HfOB+I6wnuFdsb8xGEP5p69owTDGHDXzdugnp1BE1Kq3BSAOY39d5pIcNf
+         OsLIgeU5ghypMBB6lf67uGq4CyJDiBxYRJJwAlS433+6lpIK4FcC+zosJkFLZjf1flz+
+         osq3G9FuLUsitgl5jT+XuwQbmF+bjKb5mrhRGUaFacbUD7hqJ1C+5uNdte0VZwOtxWq1
+         8yMqUnuNdjW9QSrZaYWu37ZKrT0/SekO5902ZpYk9Pa7phLPa/fWpUyHTw7Bw7dQLUnD
+         NPOQ==
+X-Gm-Message-State: ANoB5pn9JA6lVPfep/QwbS5ybmRaP+DyUovHI5zCO823trSJALeFr5Vd
+        VS2+6ZFbMj3H8lzwtUebtYNlMg==
+X-Google-Smtp-Source: AA0mqf5W3612gH3fFbqiHPC1BGF8Y+BrWOxXdZ0XfxjlNvvZ6nazP6Wx9Jyd9dGJf/2+ofVWqAbTmA==
+X-Received: by 2002:a05:600c:1c09:b0:3d0:4fcb:253b with SMTP id j9-20020a05600c1c0900b003d04fcb253bmr33255121wms.199.1670333270983;
+        Tue, 06 Dec 2022 05:27:50 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id i1-20020a05600c354100b003b4868eb71bsm26978780wmq.25.2022.12.06.05.27.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 05:27:50 -0800 (PST)
+Date:   Tue, 6 Dec 2022 14:27:49 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] ice: switch: fix potential memleak in
+ ice_add_adv_recipe()
+Message-ID: <Y49DVUIaZhoky0B1@nanopsycho>
+References: <1670225902-10923-1-git-send-email-zhangchangzhong@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1670225902-10923-1-git-send-email-zhangchangzhong@huawei.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
-
-> Hi Toke,
+Mon, Dec 05, 2022 at 08:38:22AM CET, zhangchangzhong@huawei.com wrote:
+>When ice_add_special_words() fails, the 'rm' is not released, which will
+>lead to a memory leak. Fix this up by going to 'err_unroll' label.
 >
-> On Tue, Dec 6, 2022 at 1:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@ker=
-nel.org> wrote:
->>
->> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
->>
->> > On Mon, Dec 05, 2022 at 11:21:51PM +0100, Daniel Borkmann wrote:
->> >> On 12/5/22 7:15 PM, Jason A. Donenfeld wrote:
->> >> > Since BPF's bpf_user_rnd_u32() was introduced, there have been three
->> >> > significant developments in the RNG: 1) get_random_u32() returns the
->> >> > same types of bytes as /dev/urandom, eliminating the distinction be=
-tween
->> >> > "kernel random bytes" and "userspace random bytes", 2) get_random_u=
-32()
->> >> > operates mostly locklessly over percpu state, 3) get_random_u32() h=
-as
->> >> > become quite fast.
->> >>
->> >> Wrt "quite fast", do you have a comparison between the two? Asking as=
- its
->> >> often used in networking worst case on per packet basis (e.g. via XDP=
-), would
->> >> be useful to state concrete numbers for the two on a given machine.
->> >
->> > Median of 25 cycles vs median of 38, on my Tiger Lake machine. So a
->> > little slower, but too small of a difference to matter.
->>
->> Assuming a 3Ghz CPU clock (so 3 cycles per nanosecond), that's an
->> additional overhead of ~4.3 ns. When processing 10 Gbps at line rate
->> with small packets, the per-packet processing budget is 67.2 ns, so
->> those extra 4.3 ns will eat up ~6.4% of the budget.
->>
->> So in other words, "too small a difference to matter" is definitely not
->> true in general. It really depends on the use case; if someone is using
->> this to, say, draw per-packet random numbers to compute a drop frequency
->> on ingress, that extra processing time will most likely result in a
->> quite measurable drop in performance.
+>Compile tested only.
 >
-> Huh, neat calculation, I'll keep that method in mind.
+>Fixes: 8b032a55c1bd ("ice: low level support for tunnels")
+>Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 
-Yeah, I find that thinking in "time budget per packet" helps a lot! For
-completeness, the 67.2 ns comes from 10 Gbps / 84 bytes (that's 64-byte
-packets + 20 bytes of preamble and inter-packet gap), which is 14.8
-Mpps, or 67.2 ns/pkt.
-
-> Alright, sorry for the noise here. I'll check back in if I ever manage
-> to eliminate that performance gap.
-
-One approach that we use generally for XDP (and which may or may not
-help for this case) is that we try to amortise as much fixed cost as we
-can over a batch of packets. Because XDP processing always happens in
-the NAPI receive poll loop, we have a natural batching mechanism, and we
-know that for that whole loop we'll keep running on the same CPU.
-
-So for instance, if there's a large fixed component of the overhead of
-get_random_u32(), we could have bpf_user_rnd_u32() populate a larger
-per-CPU buffer and then just emit u32 chunks of that as long as we're
-still in the same NAPI loop as the first call. Or something to that
-effect. Not sure if this makes sense for this use case, but figured I'd
-throw the idea out there :)
-
--Toke
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
