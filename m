@@ -2,122 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE15D644914
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 17:21:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44A22644926
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 17:26:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235089AbiLFQVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 11:21:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35698 "EHLO
+        id S234242AbiLFQ0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 11:26:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233745AbiLFQUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 11:20:43 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC81E89
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 08:20:17 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1p2afz-0002op-Fm; Tue, 06 Dec 2022 17:20:11 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:5a7d:17af:a898:e292])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B9BBB137DC1;
-        Tue,  6 Dec 2022 16:20:09 +0000 (UTC)
-Date:   Tue, 6 Dec 2022 17:20:01 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 11/11] can: tcan4x5x: Specify separate read/write
- ranges
-Message-ID: <20221206162001.3cgtod46h5d5j7fx@pengutronix.de>
-References: <20221206115728.1056014-1-msp@baylibre.com>
- <20221206115728.1056014-12-msp@baylibre.com>
+        with ESMTP id S231600AbiLFQ0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 11:26:01 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7722981F;
+        Tue,  6 Dec 2022 08:26:00 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id e13so20995195edj.7;
+        Tue, 06 Dec 2022 08:26:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8ViQYjW1jYkpQ2+Xc5Y6fwo4Stf0Elolu0/yZsrAy48=;
+        b=H4lUG3gOM5sTbfhgudKZ1J1OlMQuJTGv+gCztYmFNmxXkmHdALNXy5tMoe1oeSVkD0
+         EhgOJfF5raKo+SUinm3p4eIDK9dh5CfIZH79Xac2Qd3TkXUvNRfaIqqESID7bF4zN6oK
+         dEdW1Fgg5j2U6+ecv0AYDzA2uFAxM1N0CHGQHeqzzAaBpR1Yj4D8fEdfS+CyZ/O6pFBi
+         CqEC62abGZn3YkQJrVxgqkVzdjzBMzdEZzqjReTt5eKj2lyZfQOOk7Hxljcs2tHHEvrR
+         hEKgvX1Ywh/pKFDVSS0S/BLRKSfc7YvKIJ1nxd0aQjno5DIDJtsHfholo4gzmEtKgh1U
+         S01w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8ViQYjW1jYkpQ2+Xc5Y6fwo4Stf0Elolu0/yZsrAy48=;
+        b=cc7+3JqwgKqyutmfYa9xVvjEd2t8elcfTX6PL4hICH8ULxXhTdjPQFbWVfPzZ1BTmN
+         qEbAwCz6BX32EVa0wiWNr7H7YiOtJg034CD/3ad9BOfmD8eb4H0T/OjLycmhByey3puB
+         2YIvUp19h8aXtzlpNQ7Du7FBjURbA4qNz+NYf0eSplSMsMG2O8isuln2BWZceoB7rDv1
+         yjm9XzpgadccrQPmfJ4M263ntw/xu68WsmmHYp9XRdnj39dqaaMTTbba/IBMxyAvDV7G
+         rVI2xShLpIb9JPhUglddhkgmNOOftRZYVB1svXWBhVDWP3hbEjk44772lOuPqdCiC5jW
+         Y8xQ==
+X-Gm-Message-State: ANoB5pmVSx88Jip9asW3aDB1awUI91r4bM+A7OAMi9iPEx19XR5YIQvE
+        +BwtjJtt7I9G8EVXm27n6hg=
+X-Google-Smtp-Source: AA0mqf5Oxb98rjN5v25OlaRPuvniN9NYq+HO0r/Wcmfq932mmgmnboLJlOBWoHcrs6Acp+onFY6d9w==
+X-Received: by 2002:aa7:d7c4:0:b0:46c:751a:faad with SMTP id e4-20020aa7d7c4000000b0046c751afaadmr11846895eds.163.1670343958817;
+        Tue, 06 Dec 2022 08:25:58 -0800 (PST)
+Received: from skbuf ([188.26.184.215])
+        by smtp.gmail.com with ESMTPSA id lb26-20020a170907785a00b00781e7d364ebsm7624651ejc.144.2022.12.06.08.25.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 08:25:58 -0800 (PST)
+Date:   Tue, 6 Dec 2022 18:25:56 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        "Radu Nicolae Pirea (OSS)" <radu-nicolae.pirea@oss.nxp.com>
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch, pabeni@redhat.com,
+        kuba@kernel.org, edumazet@google.com, davem@davemloft.net,
+        f.fainelli@gmail.com, Radu Pirea <radu-nicolae.pirea@nxp.com>
+Subject: Re: [PATCH] net: dsa: sja1105: fix slab-out-of-bounds in
+ sja1105_setup
+Message-ID: <20221206162556.ibgw6xyi7jnjwbsg@skbuf>
+References: <20221206151136.802344-1-radu-nicolae.pirea@oss.nxp.com>
+ <Y49oaMcgstaa+l5G@kroah.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vhdmre27vzom3pem"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221206115728.1056014-12-msp@baylibre.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <Y49oaMcgstaa+l5G@kroah.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Dec 06, 2022 at 05:06:00PM +0100, Greg KH wrote:
+> On Tue, Dec 06, 2022 at 05:11:36PM +0200, Radu Nicolae Pirea (OSS) wrote:
+> > From: Radu Pirea <radu-nicolae.pirea@nxp.com>
+> > 
+> > Fix slab-out-of-bounds in sja1105_setup.
+> > 
+> > Kernel log:
+> 
+> <snip>
+> 
+> This log doesn't say much, sorry.  Please read the kernel documentation
+> for how to write a good changelog text and how to submit a patch to the
+> stable trees (hint, this isn't how...)
 
---vhdmre27vzom3pem
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Agree with Greg.
 
-On 06.12.2022 12:57:28, Markus Schneider-Pargmann wrote:
-> Specify exactly which registers are read/writeable in the chip. This
-> is supposed to help detect any violations in the future.
->=20
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> ---
->  drivers/net/can/m_can/tcan4x5x-regmap.c | 43 +++++++++++++++++++++----
->  1 file changed, 37 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/net/can/m_can/tcan4x5x-regmap.c b/drivers/net/can/m_=
-can/tcan4x5x-regmap.c
-> index 33aed989e42a..2b218ce04e9f 100644
-> --- a/drivers/net/can/m_can/tcan4x5x-regmap.c
-> +++ b/drivers/net/can/m_can/tcan4x5x-regmap.c
-> @@ -90,16 +90,47 @@ static int tcan4x5x_regmap_read(void *context,
->  	return 0;
->  }
-> =20
-> -static const struct regmap_range tcan4x5x_reg_table_yes_range[] =3D {
-> +static const struct regmap_range tcan4x5x_reg_table_wr_range[] =3D {
-> +	/* Device ID and SPI Registers */
-> +	regmap_reg_range(0x000c, 0x0010),
+The commit description should say that the SJA1105 family has 45 L2
+policing table entries (SJA1105_MAX_L2_POLICING_COUNT) and SJA1110 has
+110 (SJA1110_MAX_L2_POLICING_COUNT). Keeping the table structure but
+accounting for the difference in port count (5 in SJA1105 vs 10 in SJA1110)
+does not fully explain the difference. Rather, the SJA1110 also has L2
+ingress policers for multicast traffic. If a packet is classified as
+multicast, it will be processed by the policer index 99 + SRCPORT.
 
-According to "Table 8-8" 0xc is RO, but in "8.6.1.4 Status (address =3D
-h000C) [reset =3D h0000000U]" it clearly says it has write 1 to clear bits
-:/.
+The sja1105_setup() function initializes all L2 policers such that they
+don't interfere with normal packet reception by default. To have common
+code between SJA1105 and SJA1110, the index of the multicast policer for
+the port is calculated, and because it's an index that is out of bounds
+for SJA1105 but in bounds for SJA1110, a bounds check is performed.
 
-> +	/* Device configuration registers and Interrupt Flags*/
-> +	regmap_reg_range(0x0800, 0x080c),
-> +	regmap_reg_range(0x0814, 0x0814),
+The code fails to do the proper thing when determining what to do with
+the multicast policer of port 0 on SJA1105 (ds->num_ports = 5). The
+"mcast" index will be equal to 45, which is also equal to
+table->ops->max_entry_count (SJA1105_MAX_L2_POLICING_COUNT). So it
+passes through the check. But at the same time, SJA1105 doesn't have
+multicast policers. So the code programs the SHARINDX field of an
+out-of-bounds element in the L2 Policing table of the static config.
 
-0x814 is marked as reserved in "SLLSEZ5D =E2=80=93 JANUARY 2018 =E2=80=93 R=
-EVISED JUNE
-2022"?
+The comparison between index 45 and 45 entries should have determined
+the code to not access this policer index on SJA1105, since its memory
+wasn't even allocated.
 
-Marc
+With enough bad luck, the out of bounds write could even overwrite other
+valid kernel data, but in this case the issue was detected using KASAN.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---vhdmre27vzom3pem
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOPa60ACgkQrX5LkNig
-0112+Af7BOqOSxIaDypn/eWvKpPXDEoWBJDRw//U96c0zVlAJIAbGwHFlK07FXrJ
-HERKtcMv6hvZV8qzrUyLKN7yM7APgHcCLZyhHKNLyubvODjMfDhhda5BvhEik6SK
-eS2vYXnifaGtzDvgekNO17wQGxZ7WI1dm8XxjJ2+SXWXJ3lMHtp+F0zrBZW1heTr
-P8Vd+RyvfMJzB1NHBFBLAaLSmCzJUCzhRhDyhiBgZ5Wc0rdVsSLJ7wGhbe6/yi4i
-O8/XV+iUYWUUxryL/AzbdVlVvA5tA/fTGBw0n2LMEVNcS2u8Evead947Er4JoQD4
-cuLUlD6on7FIGKdmV+c+wcEP4fSaNA==
-=jsBQ
------END PGP SIGNATURE-----
-
---vhdmre27vzom3pem--
+Or something like that. The point is that you should use the commit
+description to prove to yourself (and also to readers) that the change
+is correct.
