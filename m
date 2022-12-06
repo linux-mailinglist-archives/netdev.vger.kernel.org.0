@@ -2,65 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16EA5643A4F
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 01:37:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DA16643A6B
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 01:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233084AbiLFAhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 19:37:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50758 "EHLO
+        id S233037AbiLFArZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 19:47:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233495AbiLFAg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 19:36:28 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E14822536
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 16:35:30 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-3704852322fso135918747b3.8
-        for <netdev@vger.kernel.org>; Mon, 05 Dec 2022 16:35:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=7G5CHiR496YVUXXpoP9e5YDyxv15U/LRRwW8TUxr5lk=;
-        b=IwGa5dFDzqFEupijFaBdM50ByRMPGBKPw9eEjKY8xQn2JvKO0ZB0ikg5TShrtpP2GG
-         wd8YBqD9aklcHvfrTT9e8GgG/+2wZHOL76/kz1o3pbXc0TOv6e38KpiKLYc4ATZIAgot
-         lD+gSgT0TfuZbb3PZIQd9vIwuqVMUYCD2GCTOEbOkVWJmRsViHmfzw8M7xRfI1AB4Ilp
-         04YYVJrrqSpWZc0YozI54UC43nQ1F+4ZnS5K2oeSfGqhpDDtuTJ1BF1sMDwQv1G71njn
-         mHkT7gXewLb4e9IOy6FLIVNqCXjBWrQALOAVNqeYmOSNBYgukuiIU7uwQ0JKqxR4wE/b
-         YBjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7G5CHiR496YVUXXpoP9e5YDyxv15U/LRRwW8TUxr5lk=;
-        b=bswTfhU7Ui2/Jbq0y0bzKMmVaJZnGfvPNxMlZVN8Wl/HibxRgqINVnUbtPP/1Klche
-         jGK+4f9v7S1+8Ju+IHHXfXyPh+6otSzlpLZcCZNkH8XpeVFdh3ktgMoB39eVobDNMfnm
-         +xa1zVUzLcATZzLbPZyQGuRpSk3UKiJhM7Ech5GLw3Dwob1f0Sz7N3mmnkI5HOM8xlcC
-         ymKaDEgu3zO4pOtlh0bU9QMvJAPp7ra/3uKzXnTClHhGdJFWYCiFhsgIQq01/kQCEB7Y
-         yJ24rMSORhrH0KmCsithybuAiqtPbpX86Tmdi4fKwrK+LRgutWxX1MpXMxAzZwSdpzTO
-         1gOA==
-X-Gm-Message-State: ANoB5pkK9vTwoxZYGFn/5mRxd1yXINNMj/UW2nfiqQT3wtPZFvxll2n/
-        97KBL2o4Hc4JdkPacqHJe6vIojuRHPx/OFKUfX5h0g==
-X-Google-Smtp-Source: AA0mqf7PzK4I7V/iPv/4jz0+9AzCyb8s1yMvVd+ivacyw/LPq0VsxXjzlImQG6+BspDKUAgs40L3uYeYtwtzGk6AijE=
-X-Received: by 2002:a81:798f:0:b0:37a:e8f:3cd3 with SMTP id
- u137-20020a81798f000000b0037a0e8f3cd3mr14989484ywc.187.1670286928064; Mon, 05
- Dec 2022 16:35:28 -0800 (PST)
+        with ESMTP id S233171AbiLFArC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 19:47:02 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D3C1F2FF
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 16:46:55 -0800 (PST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NR1tk3vL4z15N5d;
+        Tue,  6 Dec 2022 08:46:06 +0800 (CST)
+Received: from [10.174.178.66] (10.174.178.66) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 6 Dec 2022 08:46:53 +0800
+Message-ID: <7988ace0-a5a8-8a2f-44e3-f406cd7a33ac@huawei.com>
+Date:   Tue, 6 Dec 2022 08:46:52 +0800
 MIME-Version: 1.0
-References: <20221205230925.3002558-1-willemdebruijn.kernel@gmail.com>
-In-Reply-To: <20221205230925.3002558-1-willemdebruijn.kernel@gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Mon, 5 Dec 2022 19:34:51 -0500
-Message-ID: <CACSApvYNXtJOkCXv+rs_O_VKzqu8xuRKzK3sKVcA3GFpwU0qDg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net_tstamp: add SOF_TIMESTAMPING_OPT_ID_TCP
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH net] net: thunderbolt: fix memory leak in tbnet_open()
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+CC:     <netdev@vger.kernel.org>, <michael.jamet@intel.com>,
+        <YehezkelShB@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
+References: <20221205115559.3189177-1-shaozhengchao@huawei.com>
+ <Y430Od5z5gNI2p0G@black.fi.intel.com>
+From:   shaozhengchao <shaozhengchao@huawei.com>
+In-Reply-To: <Y430Od5z5gNI2p0G@black.fi.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.66]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,169 +51,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 5, 2022 at 6:09 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> From: Willem de Bruijn <willemb@google.com>
->
-> Add an option to initialize SOF_TIMESTAMPING_OPT_ID for TCP from
-> write_seq sockets instead of snd_una.
->
-> Intuitively the contract is that the counter is zero after the
-> setsockopt, so that the next write N results in a notification for
-> last byte N - 1.
->
-> On idle sockets snd_una == write_seq so this holds for both. But on
-> sockets with data in transmission, snd_una depends on the ACK response
-> from the peer. A process cannot learn this in a race free manner
-> (ioctl SIOCOUTQ is one racy approach).
->
-> write_seq is a better starting point because based on the seqno of
-> data written by the process only.
->
-> But the existing behavior may already be relied upon. So make the new
-> behavior optional behind a flag.
->
-> The new timestamp flag necessitates increasing sk_tsflags to 32 bits.
-> Move the field in struct sock to avoid growing the socket (for some
-> common CONFIG variants). The UAPI interface so_timestamping.flags is
-> already int, so 32 bits wide.
->
-> Reported-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-Thanks for the fix!
+On 2022/12/5 21:38, Mika Westerberg wrote:
+> Hi,
+> 
+> On Mon, Dec 05, 2022 at 07:55:59PM +0800, Zhengchao Shao wrote:
+>> When tb_ring_alloc_rx() failed in tbnet_open(), it doesn't free ida.
+>>
+>> Fixes: 180b0689425c ("thunderbolt: Allow multiple DMA tunnels over a single XDomain connection")
+>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+>> ---
+>>   drivers/net/thunderbolt.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/net/thunderbolt.c b/drivers/net/thunderbolt.c
+>> index a52ee2bf5575..70fd61ce15c6 100644
+>> --- a/drivers/net/thunderbolt.c
+>> +++ b/drivers/net/thunderbolt.c
+>> @@ -916,6 +916,7 @@ static int tbnet_open(struct net_device *dev)
+>>   		netdev_err(dev, "failed to allocate Rx ring\n");
+>>   		tb_ring_free(net->tx_ring.ring);
+>>   		net->tx_ring.ring = NULL;
+>> +		tb_xdomain_release_out_hopid(xd, hopid);
+> 
+> Can you move this before tb_ring_free()? Like this:
+> 
+>    		netdev_err(dev, "failed to allocate Rx ring\n");
+>   		tb_xdomain_release_out_hopid(xd, hopid);
+>    		tb_ring_free(net->tx_ring.ring);
+>    		net->tx_ring.ring = NULL;
+> 
+> Otherwise looks good to me.
+> 
+Hi Mika:
+	Thank you for your advice. I will send V2.
 
-> ---
->
-> Alternative solutions are
->
-> * make the change unconditionally: a one line change.
-> * make the condition a (per netns) sysctl instead of flag
-> * make SOF_TIMESTAMPING_OPT_ID_TCP not a modifier of, but alternative
->   to SOF_TIMESTAMPING_OPT_ID. That requires also updating all existing
->   code that now tests OPT_ID to test a new OPT_ID_MASK.
->
-> Weighing the variants, this seemed the best option to me.
-> ---
->  Documentation/networking/timestamping.rst | 19 +++++++++++++++++++
->  include/net/sock.h                        |  6 +++---
->  include/uapi/linux/net_tstamp.h           |  3 ++-
->  net/core/sock.c                           |  9 ++++++++-
->  net/ethtool/common.c                      |  1 +
->  5 files changed, 33 insertions(+), 5 deletions(-)
->
-> diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
-> index be4eb1242057..578f24731be5 100644
-> --- a/Documentation/networking/timestamping.rst
-> +++ b/Documentation/networking/timestamping.rst
-> @@ -192,6 +192,25 @@ SOF_TIMESTAMPING_OPT_ID:
->    among all possibly concurrently outstanding timestamp requests for
->    that socket.
->
-> +SOF_TIMESTAMPING_OPT_ID_TCP:
-> +  Pass this modifier along with SOF_TIMESTAMPING_OPT_ID for new TCP
-> +  timestamping applications. SOF_TIMESTAMPING_OPT_ID defines how the
-> +  counter increments for stream sockets, but its starting point is
-> +  not entirely trivial. This modifier option changes that point.
-> +
-> +  A reasonable expectation is that the counter is reset to zero with
-> +  the system call, so that a subsequent write() of N bytes generates
-> +  a timestamp with counter N-1. SOF_TIMESTAMPING_OPT_ID_TCP
-> +  implements this behavior under all conditions.
-> +
-> +  SOF_TIMESTAMPING_OPT_ID without modifier often reports the same,
-> +  especially when the socket option is set when no data is in
-> +  transmission. If data is being transmitted, it may be off by the
-> +  length of the output queue (SIOCOUTQ) due to being based on snd_una
-> +  rather than write_seq. That offset depends on factors outside of
-> +  process control, including network RTT and peer response time. The
-> +  difference is subtle and unlikely to be noticed when confiugred at
-> +  initial socket creation. But .._OPT_ID behavior is more predictable.
->
->  SOF_TIMESTAMPING_OPT_CMSG:
->    Support recv() cmsg for all timestamped packets. Control messages
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 6d207e7c4ad0..ecea3dcc2217 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -503,10 +503,10 @@ struct sock {
->  #if BITS_PER_LONG==32
->         seqlock_t               sk_stamp_seq;
->  #endif
-> -       u16                     sk_tsflags;
-> -       u8                      sk_shutdown;
->         atomic_t                sk_tskey;
->         atomic_t                sk_zckey;
-> +       u32                     sk_tsflags;
-> +       u8                      sk_shutdown;
->
->         u8                      sk_clockid;
->         u8                      sk_txtime_deadline_mode : 1,
-> @@ -1899,7 +1899,7 @@ static inline void sock_replace_proto(struct sock *sk, struct proto *proto)
->  struct sockcm_cookie {
->         u64 transmit_time;
->         u32 mark;
-> -       u16 tsflags;
-> +       u32 tsflags;
->  };
->
->  static inline void sockcm_init(struct sockcm_cookie *sockc,
-> diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
-> index 55501e5e7ac8..a2c66b3d7f0f 100644
-> --- a/include/uapi/linux/net_tstamp.h
-> +++ b/include/uapi/linux/net_tstamp.h
-> @@ -31,8 +31,9 @@ enum {
->         SOF_TIMESTAMPING_OPT_PKTINFO = (1<<13),
->         SOF_TIMESTAMPING_OPT_TX_SWHW = (1<<14),
->         SOF_TIMESTAMPING_BIND_PHC = (1 << 15),
-> +       SOF_TIMESTAMPING_OPT_ID_TCP = (1 << 16),
->
-> -       SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_BIND_PHC,
-> +       SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_OPT_ID_TCP,
->         SOF_TIMESTAMPING_MASK = (SOF_TIMESTAMPING_LAST - 1) |
->                                  SOF_TIMESTAMPING_LAST
->  };
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 4571914a4aa8..b0ab841e0aed 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -901,13 +901,20 @@ int sock_set_timestamping(struct sock *sk, int optname,
->         if (val & ~SOF_TIMESTAMPING_MASK)
->                 return -EINVAL;
->
-> +       if (val & SOF_TIMESTAMPING_OPT_ID_TCP &&
-> +           !(val & SOF_TIMESTAMPING_OPT_ID))
-> +               return -EINVAL;
-> +
->         if (val & SOF_TIMESTAMPING_OPT_ID &&
->             !(sk->sk_tsflags & SOF_TIMESTAMPING_OPT_ID)) {
->                 if (sk_is_tcp(sk)) {
->                         if ((1 << sk->sk_state) &
->                             (TCPF_CLOSE | TCPF_LISTEN))
->                                 return -EINVAL;
-> -                       atomic_set(&sk->sk_tskey, tcp_sk(sk)->snd_una);
-> +                       if (val & SOF_TIMESTAMPING_OPT_ID_TCP)
-> +                               atomic_set(&sk->sk_tskey, tcp_sk(sk)->write_seq);
-> +                       else
-> +                               atomic_set(&sk->sk_tskey, tcp_sk(sk)->snd_una);
->                 } else {
->                         atomic_set(&sk->sk_tskey, 0);
->                 }
-> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-> index 21cfe8557205..6f399afc2ff2 100644
-> --- a/net/ethtool/common.c
-> +++ b/net/ethtool/common.c
-> @@ -417,6 +417,7 @@ const char sof_timestamping_names[][ETH_GSTRING_LEN] = {
->         [const_ilog2(SOF_TIMESTAMPING_OPT_PKTINFO)]  = "option-pktinfo",
->         [const_ilog2(SOF_TIMESTAMPING_OPT_TX_SWHW)]  = "option-tx-swhw",
->         [const_ilog2(SOF_TIMESTAMPING_BIND_PHC)]     = "bind-phc",
-> +       [const_ilog2(SOF_TIMESTAMPING_OPT_ID_TCP)]   = "option-id-tcp",
->  };
->  static_assert(ARRAY_SIZE(sof_timestamping_names) == __SOF_TIMESTAMPING_CNT);
->
-> --
-> 2.39.0.rc0.267.gcb52ba06e7-goog
->
+Zhengchao Shao
