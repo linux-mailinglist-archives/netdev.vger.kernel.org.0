@@ -2,59 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B1F46439DA
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 01:19:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CFC96439E6
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 01:24:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbiLFATj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 19:19:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
+        id S230348AbiLFAYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 19:24:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiLFATi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 19:19:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300DCFAFE;
-        Mon,  5 Dec 2022 16:19:37 -0800 (PST)
+        with ESMTP id S229456AbiLFAYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 19:24:17 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE451EAFD
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 16:24:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8A64B8125A;
-        Tue,  6 Dec 2022 00:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B244C433D6;
-        Tue,  6 Dec 2022 00:19:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EBF4DCE168C
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 00:24:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6FD8C433D6;
+        Tue,  6 Dec 2022 00:24:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670285974;
-        bh=dLQQ0NWaWk52bmt/xT4H3e0ztNisUGBWj/+Cz/N6eJc=;
+        s=k20201202; t=1670286253;
+        bh=R/NAs/yH9iyc0AcGhnuB+33KVMbiRY9VLGZvLrqLHcw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IAewbV2I0ijd6AwZgCGYqfcwpr/mnsPvs+LJpPtl8/EDfdf+sGkxnOjVZZOlY7N4V
-         N/l9aVxWIVgnNLSq2mkEa125lYI7CjSuJ9E5MwCWNCSvrgDh2e5yhciKE6AEuzSrt4
-         nXQ//j4VRO3OP62IElpc4kIxTXgkIIcSby10mK40TnQnIaxPMQLLtxGq4n4ab8xcg8
-         /eo1hLP6K08B9CHN/Z3XvG4ZDWmiYapldPyt5XaktjmQpoDB1Ks8IvBTDmp5Q+JOTP
-         LGHKs741J9pr+Q/j1811cwQCMBN5Kp8ACpbuWwwwp0g/C5/4RjGyjMDByPO1LnhnU1
-         4w6V1x226XDdg==
-Date:   Mon, 5 Dec 2022 16:19:33 -0800
+        b=mOwlrKFR9oJxe9+ybTdy168GBu97t3M3nhqKFTVkRVFgVhHK6iMyfdg2eySBysDww
+         5gqjyEkog8SJ+HwJ6CvzrMjiDortleLZ8uiKRrZ2YivUaTtI6gyf7Yu2lZw89YseDt
+         dF0c/hfvfu5oIjIYHBdg/nvUE2E7nA/vlBrZsNvy8C2aYYSDtde1OYlnR54z4+dUpL
+         XmfSE5HKoRrDqHi0uJ2Nt876weyp1vguFyq+OcFETILpLWTG6mAFYR+a0nPj/piqnj
+         ML2yiG4jYlvtKpqofcEha3YsoGeI0UzOX6zGpAbSkpu9ok6efBSgb3fEHOL/8cNtUc
+         1hOX0l89cgW8g==
+Date:   Mon, 5 Dec 2022 16:24:11 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vadim Fedorenko <vadfed@fb.com>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        "Olech, Milena" <milena.olech@intel.com>,
-        "Michalik, Michal" <michal.michalik@intel.com>
-Subject: Re: [RFC PATCH v4 2/4] dpll: Add DPLL framework base functions
-Message-ID: <20221205161933.663ea611@kernel.org>
-In-Reply-To: <Y43IpIQ3C0vGzHQW@nanopsycho>
-References: <20221129213724.10119-1-vfedorenko@novek.ru>
-        <20221129213724.10119-3-vfedorenko@novek.ru>
-        <Y4eGxb2i7uwdkh1T@nanopsycho>
-        <DM6PR11MB4657DE713E4E83E09DFCFA4B9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
-        <Y4nyBwNPjuJFB5Km@nanopsycho>
-        <DM6PR11MB4657C8417DEB0B14EC35802E9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
-        <Y4okm5TrBj+JAJrV@nanopsycho>
-        <20221202212206.3619bd5f@kernel.org>
-        <Y43IpIQ3C0vGzHQW@nanopsycho>
+To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>
+Cc:     <netdev@vger.kernel.org>, <alexandr.lobakin@intel.com>,
+        <przemyslaw.kitszel@intel.com>, <jiri@resnulli.us>,
+        <wojciech.drewek@intel.com>, <dsahern@gmail.com>,
+        <stephen@networkplumber.org>
+Subject: Re: [PATCH iproute2-next v2 0/4] Implement new netlink attributes
+ for devlink-rate in iproute2
+Message-ID: <20221205162411.1b016789@kernel.org>
+In-Reply-To: <24bca169-1f7b-4034-9893-5cd1f1c0ad1b@intel.com>
+References: <20221201102626.56390-1-michal.wilczynski@intel.com>
+        <20221201085330.5c6cb642@kernel.org>
+        <24bca169-1f7b-4034-9893-5cd1f1c0ad1b@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -67,21 +57,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 5 Dec 2022 11:32:04 +0100 Jiri Pirko wrote:
-> >> I believe we should do it only the other way around. Assign
-> >> dpll_pin pointer to struct net_device and expose this over new attr
-> >> IFLA_DPLL_PIN over RT netlink.  
-> >
-> >The ID table is global, what's the relationship between DPLLs
-> >and net namespaces? We tie DPLLs to a devlink instance which
-> >has a namespace? We pretend namespaces don't exist? :S  
+On Mon, 5 Dec 2022 09:41:26 +0100 Wilczynski, Michal wrote:
+> On 12/1/2022 5:53 PM, Jakub Kicinski wrote:
+> > On Thu,  1 Dec 2022 11:26:22 +0100 Michal Wilczynski wrote:  
+> >> Patch implementing new netlink attributes for devlink-rate got merged to
+> >> net-next.
+> >> https://lore.kernel.org/netdev/20221115104825.172668-1-michal.wilczynski@intel.com/
+> >>
+> >> Now there is a need to support these new attributes in the userspace
+> >> tool. Implement tx_priority and tx_weight in devlink userspace tool. Update
+> >> documentation.  
+> > I forgot to ask you - is there anything worth adding to the netdevsim
+> > rate selftests to make sure devlink refactoring doesn't break your use
+> > case? Probably the ability for the driver to create and destroy the
+> > hierarchy?  
 > 
-> Well, if would be odd to put dpll itself into a namespace. It might not
-> have anything to do with networking, for example in case of ptp_ocp.
-> What would mean for a dpll to be in a net namespace?
+> I think it's a great idea, possibility to export the hierarchy from the driver
+> is key for our use case. Would you like me to add this to netdevism ?
 
-Yeah, that's a slightly tricky one. We'd probably need some form 
-of second order association. Easiest if we link it to a devlink
-instance, I reckon. The OCP clock card does not have netdevs so we
-can't follow the namespace of netdevs (which would be the second
-option).
+Great! Yes, netdevsim and a script that exercises it. There are some
+rate tests already in
+
+ tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+
+Either just extend that or factor it out to its own script, if the rate
+testing gets big. You don't have to be too "unit-testy" it's mostly
+about exercising the functionality so that we can catch refactoring
+errors.
