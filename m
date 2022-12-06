@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92D87644387
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 13:54:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7E46443BB
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 13:59:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234693AbiLFMyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 07:54:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57852 "EHLO
+        id S235067AbiLFM7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 07:59:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234565AbiLFMyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 07:54:00 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58B562CC;
-        Tue,  6 Dec 2022 04:53:55 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id bj12so5865310ejb.13;
-        Tue, 06 Dec 2022 04:53:55 -0800 (PST)
+        with ESMTP id S235072AbiLFM7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 07:59:00 -0500
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87127103B
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 04:58:40 -0800 (PST)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-1445ca00781so10690603fac.1
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 04:58:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vtmK9mWiq87BtwWKXZvJqVPU4p1Dd/y6RGKbmSiy148=;
-        b=HtxvEH5dKBCXLe4DbnWPWFk+DyJq5ujOjCHJosyNoP7VgEJtDsyKezoqupW6IQBpq3
-         zvMBT7t71JQD8/5wbU725kdxpUmV/ugobB/ZHhrTodWhqiT/8MmV0khzm8/x27lEB1fm
-         LI0bhU9llE1cXyYD1ZB8UgBKzKnS1eEjqGkYT67A8iPKRIq+KXxQ3JR/ZIef37SMt0+A
-         /XOxkQM7Vakqui3a66qQfuOR4caXTnC6Uepod3UmL72QXBTmPTHWKNkVZY1CeCZ/m/9M
-         ev+uKl+uWBLady3+HteAs7LBRq8FQVioAbPcwUAr2YLMmSPTSapKKX7kX9LfgxDNIh8n
-         aFaw==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=AXABF6GahJ5uOpVbSZV8u0ecAMpQJGAQnzmKRSLwYEk=;
+        b=ex1EdoqiAJc4tjbN/Tz4YyF0KO4oTAn7mgHjIfTRRnHA1cVzEGSK/B9ir+AJCaNP1Q
+         X4M0OHzPhyNPJPBglGSE9QXE+igy80R/4T4mz3yZQLdKvMQWYb3ps/pYH5Bbwju/xUNS
+         wADteRoHzPRm+wrUC61NhyIYyLJeYZ7DjWMvSkJE2xvsVph2OX0N0lqU7FK7F1ZwtVPx
+         A99MQ7aHbn5HFaB3qlY7UnnnYKp93QPqs7z9p5gxldpVyi/Dqx1U6BpTT2f1AqftNvbD
+         yLK7lHQsyobd9mdGp513JF3Bd6FP53MQwABbDuaK/PI9bM83FAWYygTQOsox2PaIkDVr
+         LhdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vtmK9mWiq87BtwWKXZvJqVPU4p1Dd/y6RGKbmSiy148=;
-        b=OrYnmaNkX97hVrT8BQxjYrH/m//QL6Qtr1RW47dGikfXITz16Vpfq9vHAMFChfQbBk
-         Eo7ZZpeigg3uGJsGwSPaKNFnOJRYISUodBvd0+WDuonV6BOOduf1bKk1nEe5hoZrK7Sm
-         HCJm4ETU+nnv40yihrr55Iac7PKU6kEO9eFxAXFDH+5vt0vAOKvkA7D8+4wCWsRgfNyh
-         qYSGiTQ5aXqjO30Cpr+koUWNAUNBly2utkJGrZiIPoa+e6AASgERPTVNj2ujauI4JpIz
-         V1C0T5yZ+wU3q1m2ADj0H1Yea3ndd0ObXv8Qy34o0EJyJSZl2K75+f92woiMeH0liFcd
-         38cQ==
-X-Gm-Message-State: ANoB5pmLVeDGT/X1Z6Vy0S6fHhHbx3CO/JNI74/yJ0HdWpZzslvQweCU
-        jinqtMnWfzgDgI9VyyGmii4=
-X-Google-Smtp-Source: AA0mqf7T5qbqjZjJ0XEPJN0VQd0dBwxxUDpb7vsrCpHVdMK6djrHmF5mpQ/q8gQU8j+14ftSTL/6yg==
-X-Received: by 2002:a17:906:2cd3:b0:7bf:b675:ffdd with SMTP id r19-20020a1709062cd300b007bfb675ffddmr33108707ejr.610.1670331234207;
-        Tue, 06 Dec 2022 04:53:54 -0800 (PST)
-Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
-        by smtp.gmail.com with ESMTPSA id g1-20020a17090604c100b0073dc5bb7c32sm7331993eja.64.2022.12.06.04.53.53
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AXABF6GahJ5uOpVbSZV8u0ecAMpQJGAQnzmKRSLwYEk=;
+        b=ej+HpQo2SEAAPSprsKFOVJbFj3Eq9izSKk+4WWwaGOAlMThJ9FKNWLLzzIlJI8Kgbd
+         u4QXSdDhYVtgjNgTuBbJhnq+WvPanRRQXPiA+TPoL94l1ct8nLHMC/nYNAFr+TpkMMVg
+         QiTyiZ0nFF73Lo8qL3LGENuObk3l6JvSng0Idg8tNNq8nYPqAkVJRFVMKGkpPF/aD6Xs
+         RGOE2X000PVvAxHYW/ix/QszUbzy1cBdoysptRXFPP3hVOx0WQ7souvd5M39YjcRZg4t
+         4QzxO+/PArs862vldWELy+2AKHOLMXt+qLSkkaam+L9o3WJry/7x5jiJVp/FkaMD1RUc
+         3IDw==
+X-Gm-Message-State: ANoB5pnL3UEgf7jgVwWCwxglU8Vl3oa1wPQboQO+jZsEkkj+3GLK8JAb
+        hQ+f2mcAmEL2Yk+3WD/Oz/HCbVwlHPJ5gK8k
+X-Google-Smtp-Source: AA0mqf40eH9/qycqllTU3A9EOqnVU51GRG5wJLyI7Y9tymEtPGy6GiT1U1rr37aJI/qSh0SwKL+OOQ==
+X-Received: by 2002:a05:6870:9a08:b0:144:af5:915a with SMTP id fo8-20020a0568709a0800b001440af5915amr15510583oab.115.1670331519626;
+        Tue, 06 Dec 2022 04:58:39 -0800 (PST)
+Received: from localhost.localdomain ([2804:14d:5c5e:4698:6544:c4a9:5a4c:3545])
+        by smtp.gmail.com with ESMTPSA id cm5-20020a056830650500b0066b9a6bf3bcsm8944770otb.12.2022.12.06.04.58.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 04:53:53 -0800 (PST)
-Date:   Tue, 6 Dec 2022 13:54:04 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: [PATCH v4 net-next 5/5] drivers/net/phy: add driver for the onsemi
- NCN26000 10BASE-T1S PHY
-Message-ID: <1816cb14213fc2050b1a7e97a68be7186340d994.1670329232.git.piergiorgio.beruto@gmail.com>
-References: <cover.1670329232.git.piergiorgio.beruto@gmail.com>
+        Tue, 06 Dec 2022 04:58:39 -0800 (PST)
+From:   Pedro Tammela <pctammela@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, kuniyu@amazon.com,
+        Pedro Tammela <pctammela@mojatatu.com>
+Subject: [PATCH net-next v5 0/4] net/sched: retpoline wrappers for tc
+Date:   Tue,  6 Dec 2022 09:58:23 -0300
+Message-Id: <20221206125827.1832477-1-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1670329232.git.piergiorgio.beruto@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,267 +69,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for the onsemi NCN26000 10BASE-T1S industrial
-Ethernet PHY. The driver supports Point-to-Multipoint operation without
-auto-negotiation and with link control handling. The PHY also features
-PLCA for improving performance in P2MP mode.
+In tc all qdics, classifiers and actions can be compiled as modules.
+This results today in indirect calls in all transitions in the tc hierarchy.
+Due to CONFIG_RETPOLINE, CPUs with mitigations=on might pay an extra cost on
+indirect calls. For newer Intel cpus with IBRS the extra cost is
+nonexistent, but AMD Zen cpus and older x86 cpus still go through the
+retpoline thunk.
 
-Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
----
- MAINTAINERS                |   7 ++
- drivers/net/phy/Kconfig    |   7 ++
- drivers/net/phy/Makefile   |   1 +
- drivers/net/phy/ncn26000.c | 193 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 208 insertions(+)
- create mode 100644 drivers/net/phy/ncn26000.c
+Known built-in symbols can be optimized into direct calls, thus
+avoiding the retpoline thunk. So far, tc has not been leveraging this
+build information and leaving out a performance optimization for some
+CPUs. In this series we wire up 'tcf_classify()' and 'tcf_action_exec()'
+with direct calls when known modules are compiled as built-in as an
+opt-in optimization.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ed626cbdf5af..09f0bfa3ae64 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15357,6 +15357,13 @@ L:	linux-mips@vger.kernel.org
- S:	Maintained
- F:	arch/mips/boot/dts/ralink/omega2p.dts
- 
-+ONSEMI ETHERNET PHY DRIVERS
-+M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+W:	http://www.onsemi.com
-+F:	drivers/net/phy/ncn*
-+
- OP-TEE DRIVER
- M:	Jens Wiklander <jens.wiklander@linaro.org>
- L:	op-tee@lists.trustedfirmware.org
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index af00cf44cd97..7c466830c611 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -267,6 +267,13 @@ config NATIONAL_PHY
- 	help
- 	  Currently supports the DP83865 PHY.
- 
-+config NCN26000_PHY
-+	tristate "onsemi 10BASE-T1S Ethernet PHY"
-+	help
-+	  Adds support for the onsemi 10BASE-T1S Ethernet PHY.
-+	  Currently supports the NCN26000 10BASE-T1S Industrial PHY
-+	  with MII interface.
-+
- config NXP_C45_TJA11XX_PHY
- 	tristate "NXP C45 TJA11XX PHYs"
- 	depends on PTP_1588_CLOCK_OPTIONAL
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index f7138d3c896b..b5138066ba04 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -77,6 +77,7 @@ obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
- obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
- obj-$(CONFIG_MOTORCOMM_PHY)	+= motorcomm.o
- obj-$(CONFIG_NATIONAL_PHY)	+= national.o
-+obj-$(CONFIG_NCN26000_PHY)	+= ncn26000.o
- obj-$(CONFIG_NXP_C45_TJA11XX_PHY)	+= nxp-c45-tja11xx.o
- obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
- obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
-diff --git a/drivers/net/phy/ncn26000.c b/drivers/net/phy/ncn26000.c
-new file mode 100644
-index 000000000000..9e02c5c55244
---- /dev/null
-+++ b/drivers/net/phy/ncn26000.c
-@@ -0,0 +1,193 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-+/*
-+ *  Driver for the onsemi 10BASE-T1S NCN26000 PHYs family.
-+ *
-+ * Copyright 2022 onsemi
-+ */
-+#include <linux/kernel.h>
-+#include <linux/bitfield.h>
-+#include <linux/errno.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/mii.h>
-+#include <linux/phy.h>
-+
-+#include "mdio-open-alliance.h"
-+
-+#define PHY_ID_NCN26000			0x180FF5A1
-+
-+#define NCN26000_REG_IRQ_CTL            16
-+#define NCN26000_REG_IRQ_STATUS         17
-+
-+// the NCN26000 maps link_ctrl to BMCR_ANENABLE
-+#define NCN26000_BCMR_LINK_CTRL_BIT	BMCR_ANENABLE
-+
-+// the NCN26000 maps link_status to BMSR_ANEGCOMPLETE
-+#define NCN26000_BMSR_LINK_STATUS_BIT	BMSR_ANEGCOMPLETE
-+
-+#define NCN26000_IRQ_LINKST_BIT		BIT(0)
-+#define NCN26000_IRQ_PLCAST_BIT		BIT(1)
-+#define NCN26000_IRQ_LJABBER_BIT	BIT(2)
-+#define NCN26000_IRQ_RJABBER_BIT	BIT(3)
-+#define NCN26000_IRQ_PLCAREC_BIT	BIT(4)
-+#define NCN26000_IRQ_PHYSCOL_BIT	BIT(5)
-+
-+#define TO_TMR_DEFAULT			32
-+
-+struct ncn26000_priv {
-+	u16 enabled_irqs;
-+};
-+
-+// module parameter: if set, the link status is derived from the PLCA status
-+// default: false
-+static bool link_status_plca;
-+module_param(link_status_plca, bool, 0644);
-+
-+// driver callbacks
-+
-+static int ncn26000_config_init(struct phy_device *phydev)
-+{
-+	/* HW bug workaround: the default value of the PLCA TO_TIMER should be
-+	 * 32, where the current version of NCN26000 reports 24. This will be
-+	 * fixed in future PHY versions. For the time being, we force the
-+	 * correct default here.
-+	 */
-+	return phy_write_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_TOTMR,
-+			     TO_TMR_DEFAULT);
-+}
-+
-+static int ncn26000_config_aneg(struct phy_device *phydev)
-+{
-+	// Note: the NCN26000 supports only P2MP link mode. Therefore, AN is not
-+	// supported. However, this function is invoked by phylib to enable the
-+	// PHY, regardless of the AN support.
-+	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-+	phydev->mdix = ETH_TP_MDI;
-+
-+	// bring up the link
-+	return phy_write(phydev, MII_BMCR, NCN26000_BCMR_LINK_CTRL_BIT);
-+}
-+
-+static int ncn26000_get_features(struct phy_device *phydev)
-+{
-+	linkmode_zero(phydev->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_MII_BIT, phydev->supported);
-+
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
-+			 phydev->supported);
-+
-+	linkmode_copy(phydev->advertising, phydev->supported);
-+	return 0;
-+}
-+
-+static int ncn26000_read_status(struct phy_device *phydev)
-+{
-+	// The NCN26000 reports NCN26000_LINK_STATUS_BIT if the link status of
-+	// the PHY is up. It further reports the logical AND of the link status
-+	// and the PLCA status in the BMSR_LSTATUS bit. Thus, report the link
-+	// status by testing the appropriate BMSR bit according to the module's
-+	// parameter configuration.
-+	const int lstatus_flag = link_status_plca ?
-+		BMSR_LSTATUS : NCN26000_BMSR_LINK_STATUS_BIT;
-+
-+	int ret;
-+
-+	ret = phy_read(phydev, MII_BMSR);
-+	if (unlikely(ret < 0))
-+		return ret;
-+
-+	// update link status
-+	phydev->link = (ret & lstatus_flag) ? 1 : 0;
-+
-+	// handle more IRQs here
-+
-+	return 0;
-+}
-+
-+static irqreturn_t ncn26000_handle_interrupt(struct phy_device *phydev)
-+{
-+	const struct ncn26000_priv *const priv = phydev->priv;
-+	int ret;
-+
-+	// clear the latched bits in MII_BMSR
-+	phy_read(phydev, MII_BMSR);
-+
-+	// read and aknowledge the IRQ status register
-+	ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
-+
-+	if (unlikely(ret < 0) || (ret & priv->enabled_irqs) == 0)
-+		return IRQ_NONE;
-+
-+	phy_trigger_machine(phydev);
-+	return IRQ_HANDLED;
-+}
-+
-+static int ncn26000_config_intr(struct phy_device *phydev)
-+{
-+	int ret;
-+	struct ncn26000_priv *priv = phydev->priv;
-+
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		// acknowledge IRQs
-+		ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
-+		if (ret < 0)
-+			return ret;
-+
-+		// get link status notifications
-+		priv->enabled_irqs = NCN26000_IRQ_LINKST_BIT;
-+	} else {
-+		// disable all IRQs
-+		priv->enabled_irqs = 0;
-+	}
-+
-+	ret = phy_write(phydev, NCN26000_REG_IRQ_CTL, priv->enabled_irqs);
-+	if (ret != 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int ncn26000_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct ncn26000_priv *priv;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	phydev->priv = priv;
-+
-+	return 0;
-+}
-+
-+static struct phy_driver ncn26000_driver[] = {
-+	{
-+		PHY_ID_MATCH_MODEL(PHY_ID_NCN26000),
-+		.name			= "NCN26000",
-+		.probe                  = ncn26000_probe,
-+		.get_features		= ncn26000_get_features,
-+		.config_init            = ncn26000_config_init,
-+		.config_intr            = ncn26000_config_intr,
-+		.config_aneg		= ncn26000_config_aneg,
-+		.read_status		= ncn26000_read_status,
-+		.handle_interrupt       = ncn26000_handle_interrupt,
-+		.get_plca_cfg		= genphy_c45_plca_get_cfg,
-+		.set_plca_cfg		= genphy_c45_plca_set_cfg,
-+		.get_plca_status	= genphy_c45_plca_get_status,
-+		.soft_reset             = genphy_soft_reset,
-+	},
-+};
-+
-+module_phy_driver(ncn26000_driver);
-+
-+static struct mdio_device_id __maybe_unused ncn26000_tbl[] = {
-+	{ PHY_ID_MATCH_MODEL(PHY_ID_NCN26000) },
-+	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(mdio, ncn26000_tbl);
-+
-+MODULE_AUTHOR("Piergiorgio Beruto");
-+MODULE_DESCRIPTION("onsemi 10BASE-T1S PHY driver");
-+MODULE_LICENSE("Dual BSD/GPL");
+We measured these changes in one AMD Zen 4 cpu (Retpoline), one AMD Zen 3 cpu (Retpoline),
+one Intel 10th Gen CPU (IBRS), one Intel 3rd Gen cpu (Retpoline) and one
+Intel Xeon CPU (IBRS) using pktgen with 64b udp packets. Our test setup is a
+dummy device with clsact and matchall in a kernel compiled with every
+tc module as built-in.  We observed a 3-8% speed up on the retpoline CPUs,
+when going through 1 tc filter, and a 60-100% speed up when going through 100 filters.
+For the IBRS cpus we observed a 1-2% degradation in both scenarios, we believe
+the extra branches check introduced a small overhead therefore we added
+a static key that bypasses the wrapper on kernels not using the retpoline mitigation,
+but compiled with CONFIG_RETPOLINE.
+
+1 filter:
+CPU        | before (pps) | after (pps) | diff
+R9 7950X   | 5914980      | 6380227     | +7.8%
+R9 5950X   | 4237838      | 4412241     | +4.1%
+R9 5950X   | 4265287      | 4413757     | +3.4%   [*]
+i5-3337U   | 1580565      | 1682406     | +6.4%
+i5-10210U  | 3006074      | 3006857     | +0.0%
+i5-10210U  | 3160245      | 3179945     | +0.6%   [*]
+Xeon 6230R | 3196906      | 3197059     | +0.0%
+Xeon 6230R | 3190392      | 3196153     | +0.01%  [*]
+
+100 filters:
+CPU        | before (pps) | after (pps) | diff
+R9 7950X   | 373598       | 820396      | +119.59%
+R9 5950X   | 313469       | 633303      | +102.03%
+R9 5950X   | 313797       | 633150      | +101.77% [*]
+i5-3337U   | 127454       | 211210      | +65.71%
+i5-10210U  | 389259       | 381765      | -1.9%
+i5-10210U  | 408812       | 412730      | +0.9%    [*]
+Xeon 6230R | 415420       | 406612      | -2.1%
+Xeon 6230R | 416705       | 405869      | -2.6%    [*]
+
+[*] In these tests we ran pktgen with clone set to 1000.
+
+On the 7950x system we also tested the impact of filters if iteration order
+placement varied, first by compiling a kernel with the filter under test being
+the first one in the static iteration and then repeating it with being last (of 15 classifiers existing today).
+We saw a difference of +0.5-1% in pps between being the first in the iteration vs being the last.
+Therefore we order the classifiers and actions according to relevance per our current thinking.
+
+v4->v5:
+- Rebase
+
+v3->v4:
+- Address Eric Dumazet suggestions
+
+v2->v3:
+- Address suggestions by Jakub, Paolo and Eric
+- Dropped RFC tag (I forgot to add it on v2)
+
+v1->v2:
+- Fix build errors found by the bots
+- Address Kuniyuki Iwashima suggestions
+
+
+Pedro Tammela (4):
+  net/sched: move struct action_ops definition out of ifdef
+  net/sched: add retpoline wrapper for tc
+  net/sched: avoid indirect act functions on retpoline kernels
+  net/sched: avoid indirect classify functions on retpoline kernels
+
+ include/net/act_api.h      |  10 +-
+ include/net/tc_wrapper.h   | 250 +++++++++++++++++++++++++++++++++++++
+ net/sched/act_api.c        |   5 +-
+ net/sched/act_bpf.c        |   6 +-
+ net/sched/act_connmark.c   |   6 +-
+ net/sched/act_csum.c       |   6 +-
+ net/sched/act_ct.c         |   5 +-
+ net/sched/act_ctinfo.c     |   6 +-
+ net/sched/act_gact.c       |   6 +-
+ net/sched/act_gate.c       |   6 +-
+ net/sched/act_ife.c        |   6 +-
+ net/sched/act_ipt.c        |   6 +-
+ net/sched/act_mirred.c     |   6 +-
+ net/sched/act_mpls.c       |   6 +-
+ net/sched/act_nat.c        |   7 +-
+ net/sched/act_pedit.c      |   6 +-
+ net/sched/act_police.c     |   6 +-
+ net/sched/act_sample.c     |   6 +-
+ net/sched/act_simple.c     |   6 +-
+ net/sched/act_skbedit.c    |   6 +-
+ net/sched/act_skbmod.c     |   6 +-
+ net/sched/act_tunnel_key.c |   6 +-
+ net/sched/act_vlan.c       |   6 +-
+ net/sched/cls_api.c        |   5 +-
+ net/sched/cls_basic.c      |   6 +-
+ net/sched/cls_bpf.c        |   6 +-
+ net/sched/cls_cgroup.c     |   6 +-
+ net/sched/cls_flow.c       |   6 +-
+ net/sched/cls_flower.c     |   6 +-
+ net/sched/cls_fw.c         |   6 +-
+ net/sched/cls_matchall.c   |   6 +-
+ net/sched/cls_route.c      |   6 +-
+ net/sched/cls_rsvp.c       |   2 +
+ net/sched/cls_rsvp.h       |   6 +-
+ net/sched/cls_rsvp6.c      |   2 +
+ net/sched/cls_tcindex.c    |   7 +-
+ net/sched/cls_u32.c        |   6 +-
+ 37 files changed, 389 insertions(+), 72 deletions(-)
+ create mode 100644 include/net/tc_wrapper.h
+
 -- 
-2.35.1
+2.34.1
 
