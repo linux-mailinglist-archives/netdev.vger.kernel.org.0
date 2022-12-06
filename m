@@ -2,131 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55E8B644277
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 12:50:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EF0B644270
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 12:50:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235053AbiLFLuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 06:50:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46634 "EHLO
+        id S234917AbiLFLuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 06:50:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234949AbiLFLuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 06:50:18 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F76D27FC5
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 03:50:17 -0800 (PST)
-Received: from kwepemi500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NRJXw3Rt9zJp6d;
-        Tue,  6 Dec 2022 19:46:40 +0800 (CST)
-Received: from [10.174.179.163] (10.174.179.163) by
- kwepemi500024.china.huawei.com (7.221.188.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 6 Dec 2022 19:49:37 +0800
-Message-ID: <dc48342f-7a01-13e3-18c3-7c7a9f1ec41b@huawei.com>
-Date:   Tue, 6 Dec 2022 19:49:37 +0800
+        with ESMTP id S234857AbiLFLt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 06:49:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB5C1CFFE;
+        Tue,  6 Dec 2022 03:49:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC22D616D4;
+        Tue,  6 Dec 2022 11:49:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9F47C433C1;
+        Tue,  6 Dec 2022 11:49:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670327395;
+        bh=Mwq5NuUta+wRMLWCv1J/+EfioKOtv+vyJzohqHnIx/Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iaQE+6AEDlB+uXpLw/GQu62g48FT/7nlHQ+9v8EwFMYhGKEoK5xw+ROVYN41XspLY
+         2FVUzSPuNaxt1vN3rghloroJCGx5ImeopcQbXdc63ILKYJFTNta2IsQ+IHN9XQEvhX
+         spIAeEpTsjZ8gbSIKwoWEawQ3u6zefLpeYZ6+xpZN701120ChN/tYkvu/Oq2BQGFtw
+         eF+32F3cmZNzU4mOhVQEigHyWx3XE4wWJ3Ufr7C63RGp6OwVzKmSOf8Q5gymsYgLEd
+         1SgMzE4IXTKQ+Fc/8ehDBL68//F5dxxvlYUuZovAchMr5qiDhVYduVc2jKMWafNQfq
+         n8HZ9xaFgIsCw==
+Date:   Tue, 6 Dec 2022 13:49:50 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Roger Quadros <rogerq@kernel.org>
+Cc:     davem@davemloft.net, maciej.fijalkowski@intel.com, kuba@kernel.org,
+        andrew@lunn.ch, edumazet@google.com, pabeni@redhat.com,
+        vigneshr@ti.com, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 0/6] net: ethernet: ti: am65-cpsw: Fix set
+ channel operation
+Message-ID: <Y48sXm0B67u/hSQI@unreal>
+References: <20221206094419.19478-1-rogerq@kernel.org>
+ <Y48T4OduISrVD4HR@unreal>
+ <fed09b42-7891-0a5e-3fd9-1ab65d090271@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH v2] net: mdio: fix unbalanced fwnode reference count in
- mdio_device_release()
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, <hkallweit1@gmail.com>,
-        <edumazet@google.com>, <kuba@kernel.org>, <davem@davemloft.net>,
-        <andrew@lunn.ch>, <f.fainelli@gmail.com>, <linux@armlinux.org.uk>,
-        Yang Yingliang <yangyingliang@huawei.com>
-CC:     <liwei391@huawei.com>, <netdev@vger.kernel.org>
-References: <20221203073441.3885317-1-zengheng4@huawei.com>
- <a1df3cb4676ce4f51680b9ead3dcf01d561eed99.camel@redhat.com>
-From:   Zeng Heng <zengheng4@huawei.com>
-In-Reply-To: <a1df3cb4676ce4f51680b9ead3dcf01d561eed99.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.163]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500024.china.huawei.com (7.221.188.100)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fed09b42-7891-0a5e-3fd9-1ab65d090271@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Dec 06, 2022 at 12:15:17PM +0200, Roger Quadros wrote:
+> On 06/12/2022 12:05, Leon Romanovsky wrote:
+> > On Tue, Dec 06, 2022 at 11:44:13AM +0200, Roger Quadros wrote:
+> >> Hi,
+> >>
+> >> This contains a critical bug fix for the recently merged suspend/resume
+> >> support [1] that broke set channel operation. (ethtool -L eth0 tx <n>)
+> >>
+> >> As there were 2 dependent patches on top of the offending commit [1]
+> >> first revert them and then apply them back after the correct fix.
+> > 
+> > Why did you chose revert and reapply almost same patch instead of simply
+> > fixing what is missing?
+> 
+> v1 & 2 of this series were doing that but it was difficult to review.
+> This is because we are taking a different approach so we have to undo
+> most of the things done earlier.
+> 
+> It was suggested during review that reverting and fresh patch was better.
 
-On 2022/12/6 19:34, Paolo Abeni wrote:
-> Hello,
-> On Sat, 2022-12-03 at 15:34 +0800, Zeng Heng wrote:
->> There is warning report about of_node refcount leak
->> while probing mdio device:
->>
->> OF: ERROR: memory leak, expected refcount 1 instead of 2,
->> of_node_get()/of_node_put() unbalanced - destroy cset entry:
->> attach overlay node /spi/soc@0/mdio@710700c0/ethernet@4
->>
->> In of_mdiobus_register_device(), we increase fwnode refcount
->> by fwnode_handle_get() before associating the of_node with
->> mdio device, but it has never been decreased in normal path.
->> Since that, in mdio_device_release(), it needs to call
->> fwnode_handle_put() in addition instead of calling kfree()
->> directly.
->>
->> After above, just calling mdio_device_free() in the error handle
->> path of of_mdiobus_register_device() is enough to keep the
->> refcount balanced.
->>
->> Fixes: a9049e0c513c ("mdio: Add support for mdio drivers.")
->> Signed-off-by: Zeng Heng <zengheng4@huawei.com>
->> Reviewed-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   changes in v2:
->>    - Add operation about setting device node as NULL-pointer.
->>      There is no practical changes.
->>    - Add reviewed-by tag.
->> ---
->>   drivers/net/mdio/of_mdio.c    | 3 ++-
->>   drivers/net/phy/mdio_device.c | 2 ++
->>   2 files changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
->> index 796e9c7857d0..510822d6d0d9 100644
->> --- a/drivers/net/mdio/of_mdio.c
->> +++ b/drivers/net/mdio/of_mdio.c
->> @@ -68,8 +68,9 @@ static int of_mdiobus_register_device(struct mii_bus *mdio,
->>   	/* All data is now stored in the mdiodev struct; register it. */
->>   	rc = mdio_device_register(mdiodev);
->>   	if (rc) {
->> +		device_set_node(&mdiodev->dev, NULL);
->> +		fwnode_handle_put(fwnode);
->>   		mdio_device_free(mdiodev);
->> -		of_node_put(child);
->>   		return rc;
->>   	}
->>   
->> diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
->> index 250742ffdfd9..044828d081d2 100644
->> --- a/drivers/net/phy/mdio_device.c
->> +++ b/drivers/net/phy/mdio_device.c
->> @@ -21,6 +21,7 @@
->>   #include <linux/slab.h>
->>   #include <linux/string.h>
->>   #include <linux/unistd.h>
->> +#include <linux/property.h>
->>   
->>   void mdio_device_free(struct mdio_device *mdiodev)
->>   {
->> @@ -30,6 +31,7 @@ EXPORT_SYMBOL(mdio_device_free);
->>   
->>   static void mdio_device_release(struct device *dev)
->>   {
->> +	fwnode_handle_put(dev->fwnode);
->>   	kfree(to_mdio_device(dev));
->>   }
->>
-> The patch LGTM, but I'll wait a bit more just in case Andrew want to
-> comment on it.
->
-> Cheers,
->
-> Paolo
-+CC Yang Yingliang <yangyingliang@huawei.com>
+Thanks.
