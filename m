@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A62664450A
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:55:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0CAE64450B
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:55:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbiLFNzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 08:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48354 "EHLO
+        id S234390AbiLFNzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 08:55:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231756AbiLFNzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:55:35 -0500
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDC12BB0C
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 05:55:32 -0800 (PST)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-144bd860fdbso4324244fac.0
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 05:55:32 -0800 (PST)
+        with ESMTP id S234288AbiLFNzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:55:41 -0500
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D8E2C653
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 05:55:35 -0800 (PST)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-1441d7d40c6so17424270fac.8
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 05:55:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Rid02IRhR3h1FXJHifEtRjb++cO+TmZI45dj68ry7uw=;
-        b=ZXz9lTR/g2sHUt5mIaHTrKYdvRHku0OogW7+vxJ/UmyrAqFYKfjxiI9luqptepzVR0
-         VrZgxaWSLnxwmaGeZoej8HfBDmmIwfnVfOLilvxQoJX8wVvvu96DG+LOZRkFyuSDbKay
-         zxgS9SX1s9biKcDURvONRAhoBHlIznNqx5rylJx9DwAlb/6yl/pmfs5M0lXgFx6EGNi5
-         8P74eJmsj9DF0UVhY+4naFqPc23Dm0jmmv3U6wnrwTw/s5C4ISR4IhmhvABzKnWe6r1L
-         y4/yEK6lDsrKJ0fQCTCmU+ACD/KTdfHcu89xRgTWp9yPyaZ0oUahaBlt5ca+ryS7fGBQ
-         QLqw==
+        bh=stRPDrkw9P96wDo1VX1aBcd/Kx7CRdKjNHPvblQApps=;
+        b=uJ9NhRCyBtgIMPvo7D16zFAgNHLW27omF/r3niBXvp/tylMn3gNv68euQgBPy0soFj
+         dSPgxJtAFIgIPuw9QBpO7GxhLYhWRBdCYAekwiIj8rqORZFaYBKYH7JrkimYzvYj/ob8
+         fyQE5FBSeAez8/TwUetFtBG6mHgKj11ITSybCRbWt/fjfrWjm3700EngJDgZhV+ggc6p
+         pF/sS3RqK+B9lWfw0+UEkaXDC1YcnnHFq889qv5CitgHwHLiPtho1RhNH4X61HzEEJWw
+         CByjL/Iq3vUNifV5uHrVP7afQ4KZeDVQp6de8JhFWaJwLs8wF55ev6+WjXEq3yssVxmy
+         dnUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Rid02IRhR3h1FXJHifEtRjb++cO+TmZI45dj68ry7uw=;
-        b=3UJTaGv53EQDF4RvpGHvmtQyHmVbr4l/LD82eNoBO6AfJqExFABaE4smJ7ojfmHU3z
-         6TH+j1leYJKqHeEx6Ght90c20T/4OCmRWkaGxjWji5aWQAmR7cocruUu4gCYuPjvReUC
-         Es6ru7FxYFKNHCQvNLK7vT0RsiSdJ7HMzykiyne8JMAR/nKA+M6siTHPa2BT8a55zy3D
-         ugnWDbtyqFld8qkhIjxC8y4saGx+RBDUlUfvSh+CjReIn3N7MeCdxA6LrnRFSWVUZUnr
-         NDPPQaMKC5aCpmIkKH83AQXg16H7bu+k/WrYtQkokn9EVLJyxKGi3Hso4rTZId2ApV8Q
-         RWEA==
-X-Gm-Message-State: ANoB5pl5+3qDnkRSx/zRzsq1Sq8e0YPW6C1icNtX9mCSNfLRwHhm964O
-        ClZofcGrW02CbvY0rEJ+3Y/Iag+Rx6Du2zxD
-X-Google-Smtp-Source: AA0mqf58HGPlYiuxmvvs1JGih39atK5gYQChHGbNBlxhsPseSBGnSywSX4VvqqHuPU8njVYuxCzOOQ==
-X-Received: by 2002:a05:6870:f613:b0:142:7fc7:7f3f with SMTP id ek19-20020a056870f61300b001427fc77f3fmr41485228oab.43.1670334931422;
-        Tue, 06 Dec 2022 05:55:31 -0800 (PST)
+        bh=stRPDrkw9P96wDo1VX1aBcd/Kx7CRdKjNHPvblQApps=;
+        b=TC5EP5qUNxiXBlYuFx1Jm+DDM/TLuTwH7XsfbbzgfyfViiX/2xvP54LywUloFGFnar
+         AVi07X8xaP30YrtR8rnUyVGrwpRRhNVlJSbBuBz9ibHe5pzVxR6SC66opLg0zX/NCq1x
+         IGEqNvmnwn1GkoDLC54GNDgJY2osP1zt87RTA8ewAtfS5HCCZZ+qFI8hK+g3OL+OKlb+
+         ztqXkf+ziqyOy/m4gkQPlc5tt7Dy0wKFMivBfPvAIiKQ51ktQJg7KoeyUc1xBTeWi0Fn
+         DQaByLWSV8TbWxaJKVd8iAM7DUX8HFp4ynRgMUZL20TtebGP8HQTOUFxP/BN1DO9LIHJ
+         xSYw==
+X-Gm-Message-State: ANoB5pnEH+QgWeL293YYIy/6LKr6CB55DsCBakSepv9+kDgQcAhs3lrr
+        RuyBnDZd1scrGIxNoIYSoUDECsT4XIb6NyNk
+X-Google-Smtp-Source: AA0mqf55YarRiqb42SivpixUdiMm1ou7Ql8OIc44Cw+xif8D3n2yoW7eWHwZ4CEP5UKWNPiAlHUECQ==
+X-Received: by 2002:a05:6870:ac85:b0:141:ff52:72d5 with SMTP id ns5-20020a056870ac8500b00141ff5272d5mr40711332oab.267.1670334934815;
+        Tue, 06 Dec 2022 05:55:34 -0800 (PST)
 Received: from localhost.localdomain ([2804:14d:5c5e:4698:6544:c4a9:5a4c:3545])
-        by smtp.gmail.com with ESMTPSA id h5-20020a056830164500b00667ff6b7e9esm9319792otr.40.2022.12.06.05.55.28
+        by smtp.gmail.com with ESMTPSA id h5-20020a056830164500b00667ff6b7e9esm9319792otr.40.2022.12.06.05.55.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 05:55:31 -0800 (PST)
+        Tue, 06 Dec 2022 05:55:34 -0800 (PST)
 From:   Pedro Tammela <pctammela@mojatatu.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -56,9 +56,9 @@ Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         jiri@resnulli.us, kuniyu@amazon.com,
         Pedro Tammela <pctammela@mojatatu.com>,
         Victor Nogueira <victor@mojatatu.com>
-Subject: [PATCH net-next v6 2/4] net/sched: add retpoline wrapper for tc
-Date:   Tue,  6 Dec 2022 10:55:11 -0300
-Message-Id: <20221206135513.1904815-3-pctammela@mojatatu.com>
+Subject: [PATCH net-next v6 3/4] net/sched: avoid indirect act functions on retpoline kernels
+Date:   Tue,  6 Dec 2022 10:55:12 -0300
+Message-Id: <20221206135513.1904815-4-pctammela@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221206135513.1904815-1-pctammela@mojatatu.com>
 References: <20221206135513.1904815-1-pctammela@mojatatu.com>
@@ -73,308 +73,534 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On kernels using retpoline as a spectrev2 mitigation,
-optimize actions and filters that are compiled as built-ins into a direct call.
-
-On subsequent patches we expose the classifiers and actions functions
-and wire up the wrapper into tc.
+Expose the necessary tc act functions and wire up act_api to use
+direct calls in retpoline kernels.
 
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Reviewed-by: Victor Nogueira <victor@mojatatu.com>
 ---
- include/net/tc_wrapper.h | 251 +++++++++++++++++++++++++++++++++++++++
- net/sched/sch_api.c      |   5 +
- 2 files changed, 256 insertions(+)
- create mode 100644 include/net/tc_wrapper.h
+ net/sched/act_api.c        | 3 ++-
+ net/sched/act_bpf.c        | 6 ++++--
+ net/sched/act_connmark.c   | 6 ++++--
+ net/sched/act_csum.c       | 6 ++++--
+ net/sched/act_ct.c         | 5 +++--
+ net/sched/act_ctinfo.c     | 6 ++++--
+ net/sched/act_gact.c       | 6 ++++--
+ net/sched/act_gate.c       | 6 ++++--
+ net/sched/act_ife.c        | 6 ++++--
+ net/sched/act_ipt.c        | 6 ++++--
+ net/sched/act_mirred.c     | 6 ++++--
+ net/sched/act_mpls.c       | 6 ++++--
+ net/sched/act_nat.c        | 7 ++++---
+ net/sched/act_pedit.c      | 6 ++++--
+ net/sched/act_police.c     | 6 ++++--
+ net/sched/act_sample.c     | 6 ++++--
+ net/sched/act_simple.c     | 6 ++++--
+ net/sched/act_skbedit.c    | 6 ++++--
+ net/sched/act_skbmod.c     | 6 ++++--
+ net/sched/act_tunnel_key.c | 6 ++++--
+ net/sched/act_vlan.c       | 6 ++++--
+ 21 files changed, 81 insertions(+), 42 deletions(-)
 
-diff --git a/include/net/tc_wrapper.h b/include/net/tc_wrapper.h
-new file mode 100644
-index 000000000000..ceed2fc089ff
---- /dev/null
-+++ b/include/net/tc_wrapper.h
-@@ -0,0 +1,251 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __NET_TC_WRAPPER_H
-+#define __NET_TC_WRAPPER_H
-+
-+#include <net/pkt_cls.h>
-+
-+#if IS_ENABLED(CONFIG_RETPOLINE)
-+
-+#include <linux/cpufeature.h>
-+#include <linux/static_key.h>
-+#include <linux/indirect_call_wrapper.h>
-+
-+#define TC_INDIRECT_SCOPE
-+
-+extern struct static_key_false tc_skip_wrapper;
-+
-+/* TC Actions */
-+#ifdef CONFIG_NET_CLS_ACT
-+
-+#define TC_INDIRECT_ACTION_DECLARE(fname)                              \
-+	INDIRECT_CALLABLE_DECLARE(int fname(struct sk_buff *skb,       \
-+					    const struct tc_action *a, \
-+					    struct tcf_result *res))
-+
-+TC_INDIRECT_ACTION_DECLARE(tcf_bpf_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_connmark_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_csum_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_ct_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_ctinfo_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_gact_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_gate_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_ife_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_ipt_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_mirred_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_mpls_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_nat_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_pedit_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_police_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_sample_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_simp_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_skbedit_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_skbmod_act);
-+TC_INDIRECT_ACTION_DECLARE(tcf_vlan_act);
-+TC_INDIRECT_ACTION_DECLARE(tunnel_key_act);
-+
-+static inline int tc_act(struct sk_buff *skb, const struct tc_action *a,
-+			   struct tcf_result *res)
-+{
-+	if (static_branch_likely(&tc_skip_wrapper))
-+		goto skip;
-+
-+#if IS_BUILTIN(CONFIG_NET_ACT_GACT)
-+	if (a->ops->act == tcf_gact_act)
-+		return tcf_gact_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_MIRRED)
-+	if (a->ops->act == tcf_mirred_act)
-+		return tcf_mirred_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_PEDIT)
-+	if (a->ops->act == tcf_pedit_act)
-+		return tcf_pedit_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_SKBEDIT)
-+	if (a->ops->act == tcf_skbedit_act)
-+		return tcf_skbedit_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_SKBMOD)
-+	if (a->ops->act == tcf_skbmod_act)
-+		return tcf_skbmod_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_POLICE)
-+	if (a->ops->act == tcf_police_act)
-+		return tcf_police_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_BPF)
-+	if (a->ops->act == tcf_bpf_act)
-+		return tcf_bpf_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_CONNMARK)
-+	if (a->ops->act == tcf_connmark_act)
-+		return tcf_connmark_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_CSUM)
-+	if (a->ops->act == tcf_csum_act)
-+		return tcf_csum_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_CT)
-+	if (a->ops->act == tcf_ct_act)
-+		return tcf_ct_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_CTINFO)
-+	if (a->ops->act == tcf_ctinfo_act)
-+		return tcf_ctinfo_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_GATE)
-+	if (a->ops->act == tcf_gate_act)
-+		return tcf_gate_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_MPLS)
-+	if (a->ops->act == tcf_mpls_act)
-+		return tcf_mpls_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_NAT)
-+	if (a->ops->act == tcf_nat_act)
-+		return tcf_nat_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_TUNNEL_KEY)
-+	if (a->ops->act == tunnel_key_act)
-+		return tunnel_key_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_VLAN)
-+	if (a->ops->act == tcf_vlan_act)
-+		return tcf_vlan_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_IFE)
-+	if (a->ops->act == tcf_ife_act)
-+		return tcf_ife_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_IPT)
-+	if (a->ops->act == tcf_ipt_act)
-+		return tcf_ipt_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_SIMP)
-+	if (a->ops->act == tcf_simp_act)
-+		return tcf_simp_act(skb, a, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_ACT_SAMPLE)
-+	if (a->ops->act == tcf_sample_act)
-+		return tcf_sample_act(skb, a, res);
-+#endif
-+
-+skip:
-+	return a->ops->act(skb, a, res);
-+}
-+
-+#endif /* CONFIG_NET_CLS_ACT */
-+
-+/* TC Filters */
-+#ifdef CONFIG_NET_CLS
-+
-+#define TC_INDIRECT_FILTER_DECLARE(fname)                               \
-+	INDIRECT_CALLABLE_DECLARE(int fname(struct sk_buff *skb,        \
-+					    const struct tcf_proto *tp, \
-+					    struct tcf_result *res))
-+
-+TC_INDIRECT_FILTER_DECLARE(basic_classify);
-+TC_INDIRECT_FILTER_DECLARE(cls_bpf_classify);
-+TC_INDIRECT_FILTER_DECLARE(cls_cgroup_classify);
-+TC_INDIRECT_FILTER_DECLARE(fl_classify);
-+TC_INDIRECT_FILTER_DECLARE(flow_classify);
-+TC_INDIRECT_FILTER_DECLARE(fw_classify);
-+TC_INDIRECT_FILTER_DECLARE(mall_classify);
-+TC_INDIRECT_FILTER_DECLARE(route4_classify);
-+TC_INDIRECT_FILTER_DECLARE(rsvp_classify);
-+TC_INDIRECT_FILTER_DECLARE(rsvp6_classify);
-+TC_INDIRECT_FILTER_DECLARE(tcindex_classify);
-+TC_INDIRECT_FILTER_DECLARE(u32_classify);
-+
-+static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
-+				struct tcf_result *res)
-+{
-+	if (static_branch_likely(&tc_skip_wrapper))
-+		goto skip;
-+
-+#if IS_BUILTIN(CONFIG_NET_CLS_BPF)
-+	if (tp->classify == cls_bpf_classify)
-+		return cls_bpf_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_U32)
-+	if (tp->classify == u32_classify)
-+		return u32_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_FLOWER)
-+	if (tp->classify == fl_classify)
-+		return fl_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_FW)
-+	if (tp->classify == fw_classify)
-+		return fw_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_MATCHALL)
-+	if (tp->classify == mall_classify)
-+		return mall_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_BASIC)
-+	if (tp->classify == basic_classify)
-+		return basic_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_CGROUP)
-+	if (tp->classify == cls_cgroup_classify)
-+		return cls_cgroup_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_FLOW)
-+	if (tp->classify == flow_classify)
-+		return flow_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_ROUTE4)
-+	if (tp->classify == route4_classify)
-+		return route4_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_RSVP)
-+	if (tp->classify == rsvp_classify)
-+		return rsvp_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_RSVP6)
-+	if (tp->classify == rsvp6_classify)
-+		return rsvp6_classify(skb, tp, res);
-+#endif
-+#if IS_BUILTIN(CONFIG_NET_CLS_TCINDEX)
-+	if (tp->classify == tcindex_classify)
-+		return tcindex_classify(skb, tp, res);
-+#endif
-+
-+skip:
-+	return tp->classify(skb, tp, res);
-+}
-+
-+static inline void tc_wrapper_init(void)
-+{
-+#ifdef CONFIG_X86
-+	if (!cpu_feature_enabled(X86_FEATURE_RETPOLINE))
-+		static_branch_enable(&tc_skip_wrapper);
-+#endif
-+}
-+
-+#endif /* CONFIG_NET_CLS */
-+
-+#else
-+
-+#define TC_INDIRECT_SCOPE static
-+
-+static inline int tc_act(struct sk_buff *skb, const struct tc_action *a,
-+			   struct tcf_result *res)
-+{
-+	return a->ops->act(skb, a, res);
-+}
-+
-+static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
-+				struct tcf_result *res)
-+{
-+	return tp->classify(skb, tp, res);
-+}
-+
-+static inline void tc_wrapper_init(void)
-+{
-+}
-+
-+#endif
-+
-+#endif /* __NET_TC_WRAPPER_H */
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 4a27dfb1ba0f..2317db02c764 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -31,6 +31,7 @@
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 9b31a10cc639..5b3c0ac495be 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -23,6 +23,7 @@
+ #include <net/act_api.h>
+ #include <net/netlink.h>
+ #include <net/flow_offload.h>
++#include <net/tc_wrapper.h>
+ 
+ #ifdef CONFIG_INET
+ DEFINE_STATIC_KEY_FALSE(tcf_frag_xmit_count);
+@@ -1080,7 +1081,7 @@ int tcf_action_exec(struct sk_buff *skb, struct tc_action **actions,
+ 
+ 		repeat_ttl = 32;
+ repeat:
+-		ret = a->ops->act(skb, a, res);
++		ret = tc_act(skb, a, res);
+ 		if (unlikely(ret == TC_ACT_REPEAT)) {
+ 			if (--repeat_ttl != 0)
+ 				goto repeat;
+diff --git a/net/sched/act_bpf.c b/net/sched/act_bpf.c
+index b79eee44e24e..b0455fda7d0b 100644
+--- a/net/sched/act_bpf.c
++++ b/net/sched/act_bpf.c
+@@ -18,6 +18,7 @@
+ 
+ #include <linux/tc_act/tc_bpf.h>
+ #include <net/tc_act/tc_bpf.h>
++#include <net/tc_wrapper.h>
+ 
+ #define ACT_BPF_NAME_LEN	256
+ 
+@@ -31,8 +32,9 @@ struct tcf_bpf_cfg {
+ 
+ static struct tc_action_ops act_bpf_ops;
+ 
+-static int tcf_bpf_act(struct sk_buff *skb, const struct tc_action *act,
+-		       struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_bpf_act(struct sk_buff *skb,
++				  const struct tc_action *act,
++				  struct tcf_result *res)
+ {
+ 	bool at_ingress = skb_at_tc_ingress(skb);
+ 	struct tcf_bpf *prog = to_bpf(act);
+diff --git a/net/sched/act_connmark.c b/net/sched/act_connmark.c
+index d41002e4613f..7e63ff7e3ed7 100644
+--- a/net/sched/act_connmark.c
++++ b/net/sched/act_connmark.c
+@@ -20,6 +20,7 @@
+ #include <net/pkt_cls.h>
+ #include <uapi/linux/tc_act/tc_connmark.h>
+ #include <net/tc_act/tc_connmark.h>
++#include <net/tc_wrapper.h>
+ 
+ #include <net/netfilter/nf_conntrack.h>
+ #include <net/netfilter/nf_conntrack_core.h>
+@@ -27,8 +28,9 @@
+ 
+ static struct tc_action_ops act_connmark_ops;
+ 
+-static int tcf_connmark_act(struct sk_buff *skb, const struct tc_action *a,
+-			    struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_connmark_act(struct sk_buff *skb,
++				       const struct tc_action *a,
++				       struct tcf_result *res)
+ {
+ 	const struct nf_conntrack_tuple_hash *thash;
+ 	struct nf_conntrack_tuple tuple;
+diff --git a/net/sched/act_csum.c b/net/sched/act_csum.c
+index 1366adf9b909..95e9304024b7 100644
+--- a/net/sched/act_csum.c
++++ b/net/sched/act_csum.c
+@@ -32,6 +32,7 @@
+ 
+ #include <linux/tc_act/tc_csum.h>
+ #include <net/tc_act/tc_csum.h>
++#include <net/tc_wrapper.h>
+ 
+ static const struct nla_policy csum_policy[TCA_CSUM_MAX + 1] = {
+ 	[TCA_CSUM_PARMS] = { .len = sizeof(struct tc_csum), },
+@@ -563,8 +564,9 @@ static int tcf_csum_ipv6(struct sk_buff *skb, u32 update_flags)
+ 	return 0;
+ }
+ 
+-static int tcf_csum_act(struct sk_buff *skb, const struct tc_action *a,
+-			struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_csum_act(struct sk_buff *skb,
++				   const struct tc_action *a,
++				   struct tcf_result *res)
+ {
+ 	struct tcf_csum *p = to_tcf_csum(a);
+ 	bool orig_vlan_tag_present = false;
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index dd5ae7551956..f6df0168c91f 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -24,6 +24,7 @@
+ #include <net/ipv6_frag.h>
+ #include <uapi/linux/tc_act/tc_ct.h>
+ #include <net/tc_act/tc_ct.h>
++#include <net/tc_wrapper.h>
+ 
+ #include <net/netfilter/nf_flow_table.h>
+ #include <net/netfilter/nf_conntrack.h>
+@@ -1038,8 +1039,8 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
+ #endif
+ }
+ 
+-static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+-		      struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
++				 struct tcf_result *res)
+ {
+ 	struct net *net = dev_net(skb->dev);
+ 	enum ip_conntrack_info ctinfo;
+diff --git a/net/sched/act_ctinfo.c b/net/sched/act_ctinfo.c
+index eaa02f098d1c..4b1b59da5c0b 100644
+--- a/net/sched/act_ctinfo.c
++++ b/net/sched/act_ctinfo.c
+@@ -18,6 +18,7 @@
+ #include <net/pkt_cls.h>
+ #include <uapi/linux/tc_act/tc_ctinfo.h>
+ #include <net/tc_act/tc_ctinfo.h>
++#include <net/tc_wrapper.h>
+ 
+ #include <net/netfilter/nf_conntrack.h>
+ #include <net/netfilter/nf_conntrack_core.h>
+@@ -75,8 +76,9 @@ static void tcf_ctinfo_cpmark_set(struct nf_conn *ct, struct tcf_ctinfo *ca,
+ 	skb->mark = READ_ONCE(ct->mark) & cp->cpmarkmask;
+ }
+ 
+-static int tcf_ctinfo_act(struct sk_buff *skb, const struct tc_action *a,
+-			  struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_ctinfo_act(struct sk_buff *skb,
++				     const struct tc_action *a,
++				     struct tcf_result *res)
+ {
+ 	const struct nf_conntrack_tuple_hash *thash = NULL;
+ 	struct tcf_ctinfo *ca = to_ctinfo(a);
+diff --git a/net/sched/act_gact.c b/net/sched/act_gact.c
+index 62d682b96b88..54f1b13b2360 100644
+--- a/net/sched/act_gact.c
++++ b/net/sched/act_gact.c
+@@ -18,6 +18,7 @@
+ #include <net/pkt_cls.h>
+ #include <linux/tc_act/tc_gact.h>
+ #include <net/tc_act/tc_gact.h>
++#include <net/tc_wrapper.h>
+ 
+ static struct tc_action_ops act_gact_ops;
+ 
+@@ -145,8 +146,9 @@ static int tcf_gact_init(struct net *net, struct nlattr *nla,
+ 	return err;
+ }
+ 
+-static int tcf_gact_act(struct sk_buff *skb, const struct tc_action *a,
+-			struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_gact_act(struct sk_buff *skb,
++				   const struct tc_action *a,
++				   struct tcf_result *res)
+ {
+ 	struct tcf_gact *gact = to_gact(a);
+ 	int action = READ_ONCE(gact->tcf_action);
+diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
+index 3049878e7315..9b8def0be41e 100644
+--- a/net/sched/act_gate.c
++++ b/net/sched/act_gate.c
+@@ -14,6 +14,7 @@
+ #include <net/netlink.h>
+ #include <net/pkt_cls.h>
+ #include <net/tc_act/tc_gate.h>
++#include <net/tc_wrapper.h>
+ 
+ static struct tc_action_ops act_gate_ops;
+ 
+@@ -113,8 +114,9 @@ static enum hrtimer_restart gate_timer_func(struct hrtimer *timer)
+ 	return HRTIMER_RESTART;
+ }
+ 
+-static int tcf_gate_act(struct sk_buff *skb, const struct tc_action *a,
+-			struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_gate_act(struct sk_buff *skb,
++				   const struct tc_action *a,
++				   struct tcf_result *res)
+ {
+ 	struct tcf_gate *gact = to_gate(a);
+ 
+diff --git a/net/sched/act_ife.c b/net/sched/act_ife.c
+index 41d63b33461d..bc7611b0744c 100644
+--- a/net/sched/act_ife.c
++++ b/net/sched/act_ife.c
+@@ -29,6 +29,7 @@
+ #include <net/tc_act/tc_ife.h>
+ #include <linux/etherdevice.h>
+ #include <net/ife.h>
++#include <net/tc_wrapper.h>
+ 
+ static int max_metacnt = IFE_META_MAX + 1;
+ static struct tc_action_ops act_ife_ops;
+@@ -861,8 +862,9 @@ static int tcf_ife_encode(struct sk_buff *skb, const struct tc_action *a,
+ 	return action;
+ }
+ 
+-static int tcf_ife_act(struct sk_buff *skb, const struct tc_action *a,
+-		       struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_ife_act(struct sk_buff *skb,
++				  const struct tc_action *a,
++				  struct tcf_result *res)
+ {
+ 	struct tcf_ife_info *ife = to_ife(a);
+ 	struct tcf_ife_params *p;
+diff --git a/net/sched/act_ipt.c b/net/sched/act_ipt.c
+index 1625e1037416..5d96ffebd40f 100644
+--- a/net/sched/act_ipt.c
++++ b/net/sched/act_ipt.c
+@@ -20,6 +20,7 @@
+ #include <net/pkt_sched.h>
+ #include <linux/tc_act/tc_ipt.h>
+ #include <net/tc_act/tc_ipt.h>
++#include <net/tc_wrapper.h>
+ 
+ #include <linux/netfilter_ipv4/ip_tables.h>
+ 
+@@ -216,8 +217,9 @@ static int tcf_xt_init(struct net *net, struct nlattr *nla,
+ 			      a, &act_xt_ops, tp, flags);
+ }
+ 
+-static int tcf_ipt_act(struct sk_buff *skb, const struct tc_action *a,
+-		       struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_ipt_act(struct sk_buff *skb,
++				  const struct tc_action *a,
++				  struct tcf_result *res)
+ {
+ 	int ret = 0, result = 0;
+ 	struct tcf_ipt *ipt = to_ipt(a);
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index b8ad6ae282c0..7284bcea7b0b 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -24,6 +24,7 @@
+ #include <net/pkt_cls.h>
+ #include <linux/tc_act/tc_mirred.h>
+ #include <net/tc_act/tc_mirred.h>
++#include <net/tc_wrapper.h>
+ 
+ static LIST_HEAD(mirred_list);
+ static DEFINE_SPINLOCK(mirred_list_lock);
+@@ -217,8 +218,9 @@ static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
+ 	return err;
+ }
+ 
+-static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+-			  struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
++				     const struct tc_action *a,
++				     struct tcf_result *res)
+ {
+ 	struct tcf_mirred *m = to_mirred(a);
+ 	struct sk_buff *skb2 = skb;
+diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
+index 8ad25cc8ccd5..ff47ce4d3968 100644
+--- a/net/sched/act_mpls.c
++++ b/net/sched/act_mpls.c
+@@ -14,6 +14,7 @@
+ #include <net/pkt_sched.h>
+ #include <net/pkt_cls.h>
+ #include <net/tc_act/tc_mpls.h>
++#include <net/tc_wrapper.h>
+ 
+ static struct tc_action_ops act_mpls_ops;
+ 
+@@ -49,8 +50,9 @@ static __be32 tcf_mpls_get_lse(struct mpls_shim_hdr *lse,
+ 	return cpu_to_be32(new_lse);
+ }
+ 
+-static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
+-			struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_mpls_act(struct sk_buff *skb,
++				   const struct tc_action *a,
++				   struct tcf_result *res)
+ {
+ 	struct tcf_mpls *m = to_mpls(a);
+ 	struct tcf_mpls_params *p;
+diff --git a/net/sched/act_nat.c b/net/sched/act_nat.c
+index 9265145f1040..74c74be33048 100644
+--- a/net/sched/act_nat.c
++++ b/net/sched/act_nat.c
+@@ -24,7 +24,7 @@
+ #include <net/tc_act/tc_nat.h>
+ #include <net/tcp.h>
+ #include <net/udp.h>
+-
++#include <net/tc_wrapper.h>
+ 
+ static struct tc_action_ops act_nat_ops;
+ 
+@@ -98,8 +98,9 @@ static int tcf_nat_init(struct net *net, struct nlattr *nla, struct nlattr *est,
+ 	return err;
+ }
+ 
+-static int tcf_nat_act(struct sk_buff *skb, const struct tc_action *a,
+-		       struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_nat_act(struct sk_buff *skb,
++				  const struct tc_action *a,
++				  struct tcf_result *res)
+ {
+ 	struct tcf_nat *p = to_tcf_nat(a);
+ 	struct iphdr *iph;
+diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
+index 94ed5857ce67..a0378e9f0121 100644
+--- a/net/sched/act_pedit.c
++++ b/net/sched/act_pedit.c
+@@ -20,6 +20,7 @@
+ #include <net/tc_act/tc_pedit.h>
+ #include <uapi/linux/tc_act/tc_pedit.h>
+ #include <net/pkt_cls.h>
++#include <net/tc_wrapper.h>
+ 
+ static struct tc_action_ops act_pedit_ops;
+ 
+@@ -319,8 +320,9 @@ static int pedit_skb_hdr_offset(struct sk_buff *skb,
+ 	return ret;
+ }
+ 
+-static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
+-			 struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
++				    const struct tc_action *a,
++				    struct tcf_result *res)
+ {
+ 	struct tcf_pedit *p = to_pedit(a);
+ 	u32 max_offset;
+diff --git a/net/sched/act_police.c b/net/sched/act_police.c
+index 0adb26e366a7..227cba58ce9f 100644
+--- a/net/sched/act_police.c
++++ b/net/sched/act_police.c
+@@ -19,6 +19,7 @@
+ #include <net/netlink.h>
+ #include <net/pkt_cls.h>
+ #include <net/tc_act/tc_police.h>
++#include <net/tc_wrapper.h>
+ 
+ /* Each policer is serialized by its individual spinlock */
+ 
+@@ -242,8 +243,9 @@ static bool tcf_police_mtu_check(struct sk_buff *skb, u32 limit)
+ 	return len <= limit;
+ }
+ 
+-static int tcf_police_act(struct sk_buff *skb, const struct tc_action *a,
+-			  struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_police_act(struct sk_buff *skb,
++				     const struct tc_action *a,
++				     struct tcf_result *res)
+ {
+ 	struct tcf_police *police = to_police(a);
+ 	s64 now, toks, ppstoks = 0, ptoks = 0;
+diff --git a/net/sched/act_sample.c b/net/sched/act_sample.c
+index 7a25477f5d99..98dea08c1764 100644
+--- a/net/sched/act_sample.c
++++ b/net/sched/act_sample.c
+@@ -20,6 +20,7 @@
+ #include <net/tc_act/tc_sample.h>
+ #include <net/psample.h>
+ #include <net/pkt_cls.h>
++#include <net/tc_wrapper.h>
+ 
+ #include <linux/if_arp.h>
+ 
+@@ -153,8 +154,9 @@ static bool tcf_sample_dev_ok_push(struct net_device *dev)
+ 	}
+ }
+ 
+-static int tcf_sample_act(struct sk_buff *skb, const struct tc_action *a,
+-			  struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_sample_act(struct sk_buff *skb,
++				     const struct tc_action *a,
++				     struct tcf_result *res)
+ {
+ 	struct tcf_sample *s = to_sample(a);
+ 	struct psample_group *psample_group;
+diff --git a/net/sched/act_simple.c b/net/sched/act_simple.c
+index 18d376135461..4b84514534f3 100644
+--- a/net/sched/act_simple.c
++++ b/net/sched/act_simple.c
+@@ -14,6 +14,7 @@
  #include <net/netlink.h>
  #include <net/pkt_sched.h>
  #include <net/pkt_cls.h>
 +#include <net/tc_wrapper.h>
  
- #include <trace/events/qdisc.h>
+ #include <linux/tc_act/tc_defact.h>
+ #include <net/tc_act/tc_defact.h>
+@@ -21,8 +22,9 @@
+ static struct tc_action_ops act_simp_ops;
  
-@@ -2273,6 +2274,8 @@ static struct pernet_operations psched_net_ops = {
- 	.exit = psched_net_exit,
- };
- 
-+DEFINE_STATIC_KEY_FALSE(tc_skip_wrapper);
-+
- static int __init pktsched_init(void)
+ #define SIMP_MAX_DATA	32
+-static int tcf_simp_act(struct sk_buff *skb, const struct tc_action *a,
+-			struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_simp_act(struct sk_buff *skb,
++				   const struct tc_action *a,
++				   struct tcf_result *res)
  {
- 	int err;
-@@ -2300,6 +2303,8 @@ static int __init pktsched_init(void)
- 	rtnl_register(PF_UNSPEC, RTM_GETTCLASS, tc_ctl_tclass, tc_dump_tclass,
- 		      0);
+ 	struct tcf_defact *d = to_defact(a);
  
-+	tc_wrapper_init();
-+
- 	return 0;
+diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
+index 1710780c908a..ce7008cf291c 100644
+--- a/net/sched/act_skbedit.c
++++ b/net/sched/act_skbedit.c
+@@ -16,6 +16,7 @@
+ #include <net/ipv6.h>
+ #include <net/dsfield.h>
+ #include <net/pkt_cls.h>
++#include <net/tc_wrapper.h>
+ 
+ #include <linux/tc_act/tc_skbedit.h>
+ #include <net/tc_act/tc_skbedit.h>
+@@ -36,8 +37,9 @@ static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
+ 	return netdev_cap_txqueue(skb->dev, queue_mapping);
  }
  
+-static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+-			   struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_skbedit_act(struct sk_buff *skb,
++				      const struct tc_action *a,
++				      struct tcf_result *res)
+ {
+ 	struct tcf_skbedit *d = to_skbedit(a);
+ 	struct tcf_skbedit_params *params;
+diff --git a/net/sched/act_skbmod.c b/net/sched/act_skbmod.c
+index d98758a63934..dffa990a9629 100644
+--- a/net/sched/act_skbmod.c
++++ b/net/sched/act_skbmod.c
+@@ -15,14 +15,16 @@
+ #include <net/netlink.h>
+ #include <net/pkt_sched.h>
+ #include <net/pkt_cls.h>
++#include <net/tc_wrapper.h>
+ 
+ #include <linux/tc_act/tc_skbmod.h>
+ #include <net/tc_act/tc_skbmod.h>
+ 
+ static struct tc_action_ops act_skbmod_ops;
+ 
+-static int tcf_skbmod_act(struct sk_buff *skb, const struct tc_action *a,
+-			  struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_skbmod_act(struct sk_buff *skb,
++				     const struct tc_action *a,
++				     struct tcf_result *res)
+ {
+ 	struct tcf_skbmod *d = to_skbmod(a);
+ 	int action, max_edit_len, err;
+diff --git a/net/sched/act_tunnel_key.c b/net/sched/act_tunnel_key.c
+index 2691a3d8e451..2d12d2626415 100644
+--- a/net/sched/act_tunnel_key.c
++++ b/net/sched/act_tunnel_key.c
+@@ -16,14 +16,16 @@
+ #include <net/pkt_sched.h>
+ #include <net/dst.h>
+ #include <net/pkt_cls.h>
++#include <net/tc_wrapper.h>
+ 
+ #include <linux/tc_act/tc_tunnel_key.h>
+ #include <net/tc_act/tc_tunnel_key.h>
+ 
+ static struct tc_action_ops act_tunnel_key_ops;
+ 
+-static int tunnel_key_act(struct sk_buff *skb, const struct tc_action *a,
+-			  struct tcf_result *res)
++TC_INDIRECT_SCOPE int tunnel_key_act(struct sk_buff *skb,
++				     const struct tc_action *a,
++				     struct tcf_result *res)
+ {
+ 	struct tcf_tunnel_key *t = to_tunnel_key(a);
+ 	struct tcf_tunnel_key_params *params;
+diff --git a/net/sched/act_vlan.c b/net/sched/act_vlan.c
+index 7b24e898a3e6..0251442f5f29 100644
+--- a/net/sched/act_vlan.c
++++ b/net/sched/act_vlan.c
+@@ -12,14 +12,16 @@
+ #include <net/netlink.h>
+ #include <net/pkt_sched.h>
+ #include <net/pkt_cls.h>
++#include <net/tc_wrapper.h>
+ 
+ #include <linux/tc_act/tc_vlan.h>
+ #include <net/tc_act/tc_vlan.h>
+ 
+ static struct tc_action_ops act_vlan_ops;
+ 
+-static int tcf_vlan_act(struct sk_buff *skb, const struct tc_action *a,
+-			struct tcf_result *res)
++TC_INDIRECT_SCOPE int tcf_vlan_act(struct sk_buff *skb,
++				   const struct tc_action *a,
++				   struct tcf_result *res)
+ {
+ 	struct tcf_vlan *v = to_vlan(a);
+ 	struct tcf_vlan_params *p;
 -- 
 2.34.1
 
