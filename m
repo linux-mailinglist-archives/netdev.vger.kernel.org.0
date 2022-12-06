@@ -2,93 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A67EF6444FB
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:53:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D850644507
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:55:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233978AbiLFNx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 08:53:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
+        id S230093AbiLFNza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 08:55:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233495AbiLFNx2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:53:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6F62B19D;
-        Tue,  6 Dec 2022 05:53:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B122B80DF3;
-        Tue,  6 Dec 2022 13:53:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19BDDC433C1;
-        Tue,  6 Dec 2022 13:53:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670334805;
-        bh=pLK21N5d/EKb/syw7sI9+Uws4wdPPOjQjHEhyt51XUU=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=nO+bo8un+V+ofnRZf16zv9tcWuY2QT1r4KaWAHFjvB4zhdNlHOs0P7x48LTLInYdo
-         ZJPXalJcwpWZvZkF/+tET+dbFBmLEGZI1i9qflg73cO2OL3VVqJP8DszO/zo2nnkUe
-         fZZmojkVMq5EtU6tqsezgJH3MJ4bS0FLY1e76kUofcj+x0xnCBCPAdRuv47ITB4ISX
-         a7UlNZIy/04HGnwExrFBORnxC9BPSoFUZnl9m35meQWaNisFSWjlmjMohi2He+l6Su
-         L4KqmG7N3mdvvuBrbzEPXcD1G+HTS5cMKWoCJ+S4UprT/lj4cU4znD3x/kH7ORFBv4
-         u2zRcq0kvCA5A==
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1C00582E399; Tue,  6 Dec 2022 14:53:22 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-Subject: Re: [PATCH] bpf: call get_random_u32() for random integers
-In-Reply-To: <CAHmME9pQoHBLob306ta4jswr5HnPX73Uq0GDK8bZBtYOLHVwbQ@mail.gmail.com>
-References: <20221205181534.612702-1-Jason@zx2c4.com>
- <730fd355-ad86-a8fa-6583-df23d39e0c23@iogearbox.net>
- <Y451ENAK7BQQDJc/@zx2c4.com> <87lenku265.fsf@toke.dk>
- <CAHmME9poicgpHhXJ1ieWbDTFBu=ApSFaQKShhHezDmA0A5ajKQ@mail.gmail.com>
- <87iliou0hd.fsf@toke.dk>
- <CAHmME9pQoHBLob306ta4jswr5HnPX73Uq0GDK8bZBtYOLHVwbQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 06 Dec 2022 14:53:22 +0100
-Message-ID: <87edtctz8t.fsf@toke.dk>
+        with ESMTP id S229782AbiLFNz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:55:29 -0500
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BD32B1AB
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 05:55:26 -0800 (PST)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-1445ca00781so10868400fac.1
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 05:55:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pZhxE150SHkJCSmvG/YdSeMxl52A9bb/N0Xr3x+XpAY=;
+        b=x0MYc5QABJsr+ubWWy612avpPgN249BpqLnMf+MMoTTj3tAUSTfuI61TJl9gFQzXnD
+         gObONyL6bIBy6i2lug+hjNhjRbCTycq7VPkFAWTBrANKlKi4WKtJyeK5m4LkvzjgE4la
+         dZDCcgdeITMPbY1dbDaTrAdGM6N7L8IOGfq2ujr8ODo2zur103NcRzp/TZtDCs5tXXga
+         UhKFQ+QfH28e2y+feRhmXXv1Yki3azh90rdUe0p0L/RGRQmQT2zS8YPd/fUa8GyOrnnd
+         K1CSfTVfIKh2UIjHNbUQCLfdB81MtBZqk7JR6SVwYWqsJ+yn6biyfSSgESnQNJkmxImG
+         LyHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pZhxE150SHkJCSmvG/YdSeMxl52A9bb/N0Xr3x+XpAY=;
+        b=ZuaElyAeGDjb/0w3QrfFMSzJU9nSA3AqRKdv3UiIVEBnpP+6gQjCdo0tN0+GMVqCgi
+         yI7GF4WdaGER+qvlauPwjfgxoMPVDFAibZz6mY1FuWj4mMv/EETChOeF92x+CqN1cz6b
+         udoHXvYN5ioCrHaTD+FgBSmOCy+7mzukH5UxKoEbn0mVbP/cnCQ3DHXNwSGTzLmFUI8n
+         LPQdOyQKYt6b8SFuHmq5dD9akKzdTS1H+qHn48yVghxyvcrYg9ehkgf5qbcfxV86wahe
+         ysCwFxCbkBu2c9cb+GNSoSeUlu3vrm06pjyV9u3+LgCYiAoSxrOlEYz5EgJr1AKzfOSe
+         kyZQ==
+X-Gm-Message-State: ANoB5pnr7AOIfRZHChCIhrqC5XCzvStpcA6oUW0xMsH3nCxl4EwDsUn3
+        D2Xx+QQYr3m5yDd8jsRoofB/+6Uac6q1/z0r
+X-Google-Smtp-Source: AA0mqf4OQ9IkW5LjGCN3c+eIE9Ti2iNv/kxoR8YDH/LdrP4TnlDIeRmjfQPjVvCMIJvcFdnichi67Q==
+X-Received: by 2002:a05:6870:4625:b0:13c:c80:6b46 with SMTP id z37-20020a056870462500b0013c0c806b46mr47815815oao.194.1670334924820;
+        Tue, 06 Dec 2022 05:55:24 -0800 (PST)
+Received: from localhost.localdomain ([2804:14d:5c5e:4698:6544:c4a9:5a4c:3545])
+        by smtp.gmail.com with ESMTPSA id h5-20020a056830164500b00667ff6b7e9esm9319792otr.40.2022.12.06.05.55.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 05:55:24 -0800 (PST)
+From:   Pedro Tammela <pctammela@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, kuniyu@amazon.com,
+        Pedro Tammela <pctammela@mojatatu.com>
+Subject: [PATCH net-next v6 0/4] net/sched: retpoline wrappers for tc
+Date:   Tue,  6 Dec 2022 10:55:09 -0300
+Message-Id: <20221206135513.1904815-1-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+In tc all qdics, classifiers and actions can be compiled as modules.
+This results today in indirect calls in all transitions in the tc hierarchy.
+Due to CONFIG_RETPOLINE, CPUs with mitigations=on might pay an extra cost on
+indirect calls. For newer Intel cpus with IBRS the extra cost is
+nonexistent, but AMD Zen cpus and older x86 cpus still go through the
+retpoline thunk.
 
-> Hi Toke,
->
-> On Tue, Dec 6, 2022 at 2:26 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@ker=
-nel.org> wrote:
->> So for instance, if there's a large fixed component of the overhead of
->> get_random_u32(), we could have bpf_user_rnd_u32() populate a larger
->> per-CPU buffer and then just emit u32 chunks of that as long as we're
->> still in the same NAPI loop as the first call. Or something to that
->> effect. Not sure if this makes sense for this use case, but figured I'd
->> throw the idea out there :)
->
-> Actually, this already is how get_random_u32() works! It buffers a
-> bunch of u32s in percpu batches, and doles them out as requested.
+Known built-in symbols can be optimized into direct calls, thus
+avoiding the retpoline thunk. So far, tc has not been leveraging this
+build information and leaving out a performance optimization for some
+CPUs. In this series we wire up 'tcf_classify()' and 'tcf_action_exec()'
+with direct calls when known modules are compiled as built-in as an
+opt-in optimization.
 
-Ah, right. Not terribly surprised you already did this!
+We measured these changes in one AMD Zen 4 cpu (Retpoline), one AMD Zen 3 cpu (Retpoline),
+one Intel 10th Gen CPU (IBRS), one Intel 3rd Gen cpu (Retpoline) and one
+Intel Xeon CPU (IBRS) using pktgen with 64b udp packets. Our test setup is a
+dummy device with clsact and matchall in a kernel compiled with every
+tc module as built-in.  We observed a 3-8% speed up on the retpoline CPUs,
+when going through 1 tc filter, and a 60-100% speed up when going through 100 filters.
+For the IBRS cpus we observed a 1-2% degradation in both scenarios, we believe
+the extra branches check introduced a small overhead therefore we added
+a static key that bypasses the wrapper on kernels not using the retpoline mitigation,
+but compiled with CONFIG_RETPOLINE.
 
-> However, this API currently works in all contexts, including in
-> interrupts. So each call results in disabling irqs and reenabling
-> them. If I bifurcated batches into irq batches and non-irq batches, so
-> that we only needed to disable preemption for the non-irq batches,
-> that'd probably improve things quite a bit, since then the overhead
-> really would reduce to just a memcpy for the majority of calls. But I
-> don't know if adding that duplication of all code paths is really
-> worth the huge hassle.
+1 filter:
+CPU        | before (pps) | after (pps) | diff
+R9 7950X   | 5914980      | 6380227     | +7.8%
+R9 5950X   | 4237838      | 4412241     | +4.1%
+R9 5950X   | 4265287      | 4413757     | +3.4%   [*]
+i5-3337U   | 1580565      | 1682406     | +6.4%
+i5-10210U  | 3006074      | 3006857     | +0.0%
+i5-10210U  | 3160245      | 3179945     | +0.6%   [*]
+Xeon 6230R | 3196906      | 3197059     | +0.0%
+Xeon 6230R | 3190392      | 3196153     | +0.01%  [*]
 
-Right, makes sense; happy to leave that decision entirely up to you :)
+100 filters:
+CPU        | before (pps) | after (pps) | diff
+R9 7950X   | 373598       | 820396      | +119.59%
+R9 5950X   | 313469       | 633303      | +102.03%
+R9 5950X   | 313797       | 633150      | +101.77% [*]
+i5-3337U   | 127454       | 211210      | +65.71%
+i5-10210U  | 389259       | 381765      | -1.9%
+i5-10210U  | 408812       | 412730      | +0.9%    [*]
+Xeon 6230R | 415420       | 406612      | -2.1%
+Xeon 6230R | 416705       | 405869      | -2.6%    [*]
 
--Toke
+[*] In these tests we ran pktgen with clone set to 1000.
+
+On the 7950x system we also tested the impact of filters if iteration order
+placement varied, first by compiling a kernel with the filter under test being
+the first one in the static iteration and then repeating it with being last (of 15 classifiers existing today).
+We saw a difference of +0.5-1% in pps between being the first in the iteration vs being the last.
+Therefore we order the classifiers and actions according to relevance per our current thinking.
+
+v5->v6:
+- Address Eric Dumazet suggestions
+
+v4->v5:
+- Rebase
+
+v3->v4:
+- Address Eric Dumazet suggestions
+
+v2->v3:
+- Address suggestions by Jakub, Paolo and Eric
+- Dropped RFC tag (I forgot to add it on v2)
+
+v1->v2:
+- Fix build errors found by the bots
+- Address Kuniyuki Iwashima suggestions
+
+Pedro Tammela (4):
+  net/sched: move struct action_ops definition out of ifdef
+  net/sched: add retpoline wrapper for tc
+  net/sched: avoid indirect act functions on retpoline kernels
+  net/sched: avoid indirect classify functions on retpoline kernels
+
+ include/net/act_api.h      |  10 +-
+ include/net/tc_wrapper.h   | 251 +++++++++++++++++++++++++++++++++++++
+ net/sched/act_api.c        |   3 +-
+ net/sched/act_bpf.c        |   6 +-
+ net/sched/act_connmark.c   |   6 +-
+ net/sched/act_csum.c       |   6 +-
+ net/sched/act_ct.c         |   5 +-
+ net/sched/act_ctinfo.c     |   6 +-
+ net/sched/act_gact.c       |   6 +-
+ net/sched/act_gate.c       |   6 +-
+ net/sched/act_ife.c        |   6 +-
+ net/sched/act_ipt.c        |   6 +-
+ net/sched/act_mirred.c     |   6 +-
+ net/sched/act_mpls.c       |   6 +-
+ net/sched/act_nat.c        |   7 +-
+ net/sched/act_pedit.c      |   6 +-
+ net/sched/act_police.c     |   6 +-
+ net/sched/act_sample.c     |   6 +-
+ net/sched/act_simple.c     |   6 +-
+ net/sched/act_skbedit.c    |   6 +-
+ net/sched/act_skbmod.c     |   6 +-
+ net/sched/act_tunnel_key.c |   6 +-
+ net/sched/act_vlan.c       |   6 +-
+ net/sched/cls_api.c        |   3 +-
+ net/sched/cls_basic.c      |   6 +-
+ net/sched/cls_bpf.c        |   6 +-
+ net/sched/cls_cgroup.c     |   6 +-
+ net/sched/cls_flow.c       |   6 +-
+ net/sched/cls_flower.c     |   6 +-
+ net/sched/cls_fw.c         |   6 +-
+ net/sched/cls_matchall.c   |   6 +-
+ net/sched/cls_route.c      |   6 +-
+ net/sched/cls_rsvp.c       |   2 +
+ net/sched/cls_rsvp.h       |   6 +-
+ net/sched/cls_rsvp6.c      |   2 +
+ net/sched/cls_tcindex.c    |   7 +-
+ net/sched/cls_u32.c        |   6 +-
+ net/sched/sch_api.c        |   5 +
+ 38 files changed, 391 insertions(+), 72 deletions(-)
+ create mode 100644 include/net/tc_wrapper.h
+
+-- 
+2.34.1
+
