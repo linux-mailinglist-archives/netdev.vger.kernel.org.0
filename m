@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19ADC6440CF
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:55:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D55F6440DC
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:56:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235653AbiLFJzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 04:55:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58154 "EHLO
+        id S235678AbiLFJ4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 04:56:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235627AbiLFJyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 04:54:36 -0500
+        with ESMTP id S235492AbiLFJzZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 04:55:25 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE3E26AFA;
-        Tue,  6 Dec 2022 01:51:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488B72529B;
+        Tue,  6 Dec 2022 01:51:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D67261601;
-        Tue,  6 Dec 2022 09:51:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99076C433D6;
-        Tue,  6 Dec 2022 09:51:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8DDE615FD;
+        Tue,  6 Dec 2022 09:51:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9823DC433C1;
+        Tue,  6 Dec 2022 09:51:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670320302;
-        bh=+8+Ux6nDxDfufnP+0mYx0tNmTaU1NGMLxRJgPue+i+I=;
+        s=k20201202; t=1670320311;
+        bh=S4+UT8GkuJ4PzXxSBbT8i+fIYskK9yjtDXGzJ/x9qJc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fs8HwPI2BvbF493Moyt1kquastMJC1vx4MMZNdHz5h1yOSu+ltH5piXZRH8/cJ/YM
-         kYvwgaDpJkGaRmbKftoWNQirUdlOjE7NP+PYTvbN+IltvhGuJ+FQjpFNuXOVHeY5H6
-         Nbj3voxAi7e3qZf352fWy3N79HJg9hlylLEa3Nk9eyz5StqOzYq6jCwITlq0IkGuRj
-         kNLhFm858JnmIMnkHzV3ucBlhtNW5jR1yXj8qRQ5FFjJbP8hS+JtmSbJy4PxL7A3z1
-         qe+p72OJJ3iZ8A3UuEQ6AWbYQjhz3e+duLs+eFlaAnUHdy9xpN/kPhlw8zwPyU1pPN
-         siyiLalmJS2aA==
+        b=sYVq+hGBPIuvdc9RMu5t9ClnFWigH6vac4T2PdncbXbf3jsfMVnV5oHmOcAq6/O4p
+         qoXXVlJPy8/QxB+dNm3Tl/1OjLTyrde8WT6KfokLFPSswOTcuAe6cQ9zVkEFwO8aZX
+         9Cx2iqDYiAIkNznYxpDeBOYrWhrvU1tdp6x3U0jgbDUGTgpe7pn2ffzoFcRbOGlAqf
+         rLEValvy9QcuIjc30d23BDCw95wDhfpj5MSmHUYRpXhipaXbU3yN1uABGY43jv2Stb
+         LXOIrLf3QHOkHlbE3XiPPRvxEE5UkMcVMnmGvKKgAeuEJOxSb+3x0Ovqen4A+vXxW8
+         98qe3neNGt30A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
@@ -38,12 +38,12 @@ Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 4/4] net: loopback: use NET_NAME_PREDICTABLE for name_assign_type
-Date:   Tue,  6 Dec 2022 04:51:28 -0500
-Message-Id: <20221206095128.987873-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 3/3] net: loopback: use NET_NAME_PREDICTABLE for name_assign_type
+Date:   Tue,  6 Dec 2022 04:51:42 -0500
+Message-Id: <20221206095143.987934-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221206095128.987873-1-sashal@kernel.org>
-References: <20221206095128.987873-1-sashal@kernel.org>
+In-Reply-To: <20221206095143.987934-1-sashal@kernel.org>
+References: <20221206095143.987934-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -87,10 +87,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-index 30612497643c..daef41ce2349 100644
+index 1b65f0f975cf..f04f9a87840e 100644
 --- a/drivers/net/loopback.c
 +++ b/drivers/net/loopback.c
-@@ -206,7 +206,7 @@ static __net_init int loopback_net_init(struct net *net)
+@@ -194,7 +194,7 @@ static __net_init int loopback_net_init(struct net *net)
  	int err;
  
  	err = -ENOMEM;
