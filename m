@@ -2,70 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 047C26443BF
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 13:59:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE0566443CA
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:00:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234876AbiLFM7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 07:59:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
+        id S235167AbiLFNAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 08:00:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235016AbiLFM7E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 07:59:04 -0500
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD591057E
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 04:58:52 -0800 (PST)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-1442977d77dso16154113fac.6
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 04:58:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=g1Z91YzsanF8U0ilh0dm0yoWMW+J7/pQLJRrhggoUNE=;
-        b=m04LQN+vmgwoOTnOtDKV+9/qBsx7thy4psq1vtp/n5ANrwRUuob3772lBoRYqe4p9N
-         3lpyWzddGAzdVUOpfZRfHadx7FTGfwC3vkvs/iqtyN7g++1LIM5gjjUeHhOO6P4Qnll+
-         zsk67HF3fj1YMNYeiw3fMle/Ljot1YwbDfmISCtDjiEu9EMFPs3NcaqjiBa8ZTc1Sw7d
-         cUeoylk9GSBjY1P1sPDk3MFpJYZf9jPPwZqfQpDmR42tnN/2mmKLwLy0it6ucw6kvaDy
-         mWQu46hmoFxAmhuEiC8oAlT2zKXAQdsVQXJwDGxWNbSZjRYNOLXs04KWt+RdWkp3fQQD
-         OmcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=g1Z91YzsanF8U0ilh0dm0yoWMW+J7/pQLJRrhggoUNE=;
-        b=BEcOsrlx0SNSken5ZtRQaE6KZKvuXRm+Ap7pyPdogshmeFnNVMIyAfTHCFyR2yQ/Iq
-         yJE048NprgiA8I3DVG4e63M8pypiO+dF3gp6ZwBmHpwNa+MaFzHh7xc0VMW832AuKR0n
-         OBz9n/9/KS1CmlOMZbJuMoRtZ14abOvGszMt3OpOPPFBENsuU1T8oqPqEAh9VILjKSaC
-         kzDP/feppDDv3UkqzLtqmj4Fi6aBCIFGLf4OZJLWEzlLS0DQjYrrZ218irxzsRTfzHzS
-         KNMl9iNlr2yrAYukK0tHnHpuQC342dBFiltuHqCcA46cXco57IWmPMoN5xHFS8bUfAsN
-         Qh1g==
-X-Gm-Message-State: ANoB5pnTfNA+MsNohPbX+Rax8bviLORr3dUbEq3TzXPUw6D2oK0c+Auj
-        kim0XlF6E/c6UU+Vcjex2GvA52D1ilp3mRFu
-X-Google-Smtp-Source: AA0mqf7p3A9T1yOFiKJx2KiTiTsrsRv3BJ5Al/oH4Jd6ameEVhbbtD/Ff3oUdsocWTCnsKXHTdgNyw==
-X-Received: by 2002:a05:6871:410d:b0:144:4557:320a with SMTP id la13-20020a056871410d00b001444557320amr9263952oab.112.1670331531929;
-        Tue, 06 Dec 2022 04:58:51 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:6544:c4a9:5a4c:3545])
-        by smtp.gmail.com with ESMTPSA id cm5-20020a056830650500b0066b9a6bf3bcsm8944770otb.12.2022.12.06.04.58.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 04:58:51 -0800 (PST)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, kuniyu@amazon.com,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Victor Nogueira <victor@mojatatu.com>
-Subject: [PATCH net-next v5 4/4] net/sched: avoid indirect classify functions on retpoline kernels
-Date:   Tue,  6 Dec 2022 09:58:27 -0300
-Message-Id: <20221206125827.1832477-5-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221206125827.1832477-1-pctammela@mojatatu.com>
-References: <20221206125827.1832477-1-pctammela@mojatatu.com>
+        with ESMTP id S235099AbiLFNAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:00:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333582B62C;
+        Tue,  6 Dec 2022 04:59:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C392B616F9;
+        Tue,  6 Dec 2022 12:59:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DF22C433C1;
+        Tue,  6 Dec 2022 12:59:45 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="WzIqeR0x"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1670331584;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZNUzYjUW6V3f6PQmilZnZflLBsJyR+1UzQ8srN624zM=;
+        b=WzIqeR0x3SP/rDucMSwPkfclZ+IrtFSGEkcT7IYMUQLS/dJnTsPjU9cSqXp4SdHjy5+vZe
+        PJm3aZGqMl1btR//EPVqf972fnDpKyJOzEntU8Cg+sHrNHUeYzTJwoygLJW+iS8zzf/yAq
+        MxKEEv9+aNgGU0mB2/Z87gKmO72+QmI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 948cecd0 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 6 Dec 2022 12:59:43 +0000 (UTC)
+Received: by mail-yb1-f178.google.com with SMTP id 189so18439769ybe.8;
+        Tue, 06 Dec 2022 04:59:43 -0800 (PST)
+X-Gm-Message-State: ANoB5pnAzmcEJdODEEfYf2+Ud8Krrm2GQB98ClEN9wrslKR4ApFbGvTm
+        MyoZZcPsDQqV8Wsib97BtfU+S19NxcuBgcVelbw=
+X-Google-Smtp-Source: AA0mqf5PgdyHvYKtmLmiy3GxoC+5azt9FTkeTfLeiK3M263s02W0opjgv+CiZzTuRFuYZS931Vca8NSiF6HxoBwggVs=
+X-Received: by 2002:a25:d4f:0:b0:703:8a9c:fd with SMTP id 76-20020a250d4f000000b007038a9c00fdmr1846744ybn.231.1670331582891;
+ Tue, 06 Dec 2022 04:59:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <20221205181534.612702-1-Jason@zx2c4.com> <730fd355-ad86-a8fa-6583-df23d39e0c23@iogearbox.net>
+ <Y451ENAK7BQQDJc/@zx2c4.com> <87lenku265.fsf@toke.dk>
+In-Reply-To: <87lenku265.fsf@toke.dk>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 6 Dec 2022 13:59:31 +0100
+X-Gmail-Original-Message-ID: <CAHmME9poicgpHhXJ1ieWbDTFBu=ApSFaQKShhHezDmA0A5ajKQ@mail.gmail.com>
+Message-ID: <CAHmME9poicgpHhXJ1ieWbDTFBu=ApSFaQKShhHezDmA0A5ajKQ@mail.gmail.com>
+Subject: Re: [PATCH] bpf: call get_random_u32() for random integers
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,349 +68,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose the necessary tc classifier functions and wire up cls_api to use
-direct calls in retpoline kernels.
+Hi Toke,
 
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Reviewed-by: Victor Nogueira <victor@mojatatu.com>
----
- net/sched/cls_api.c      | 3 ++-
- net/sched/cls_basic.c    | 6 ++++--
- net/sched/cls_bpf.c      | 6 ++++--
- net/sched/cls_cgroup.c   | 6 ++++--
- net/sched/cls_flow.c     | 6 ++++--
- net/sched/cls_flower.c   | 6 ++++--
- net/sched/cls_fw.c       | 6 ++++--
- net/sched/cls_matchall.c | 6 ++++--
- net/sched/cls_route.c    | 6 ++++--
- net/sched/cls_rsvp.c     | 2 ++
- net/sched/cls_rsvp.h     | 6 +++---
- net/sched/cls_rsvp6.c    | 2 ++
- net/sched/cls_tcindex.c  | 7 ++++---
- net/sched/cls_u32.c      | 6 ++++--
- 14 files changed, 49 insertions(+), 25 deletions(-)
+On Tue, Dec 6, 2022 at 1:50 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@kerne=
+l.org> wrote:
+>
+> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+>
+> > On Mon, Dec 05, 2022 at 11:21:51PM +0100, Daniel Borkmann wrote:
+> >> On 12/5/22 7:15 PM, Jason A. Donenfeld wrote:
+> >> > Since BPF's bpf_user_rnd_u32() was introduced, there have been three
+> >> > significant developments in the RNG: 1) get_random_u32() returns the
+> >> > same types of bytes as /dev/urandom, eliminating the distinction bet=
+ween
+> >> > "kernel random bytes" and "userspace random bytes", 2) get_random_u3=
+2()
+> >> > operates mostly locklessly over percpu state, 3) get_random_u32() ha=
+s
+> >> > become quite fast.
+> >>
+> >> Wrt "quite fast", do you have a comparison between the two? Asking as =
+its
+> >> often used in networking worst case on per packet basis (e.g. via XDP)=
+, would
+> >> be useful to state concrete numbers for the two on a given machine.
+> >
+> > Median of 25 cycles vs median of 38, on my Tiger Lake machine. So a
+> > little slower, but too small of a difference to matter.
+>
+> Assuming a 3Ghz CPU clock (so 3 cycles per nanosecond), that's an
+> additional overhead of ~4.3 ns. When processing 10 Gbps at line rate
+> with small packets, the per-packet processing budget is 67.2 ns, so
+> those extra 4.3 ns will eat up ~6.4% of the budget.
+>
+> So in other words, "too small a difference to matter" is definitely not
+> true in general. It really depends on the use case; if someone is using
+> this to, say, draw per-packet random numbers to compute a drop frequency
+> on ingress, that extra processing time will most likely result in a
+> quite measurable drop in performance.
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index a2c276116244..39b6f6331dee 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -40,6 +40,7 @@
- #include <net/tc_act/tc_mpls.h>
- #include <net/tc_act/tc_gate.h>
- #include <net/flow_offload.h>
-+#include <net/tc_wrapper.h>
- 
- extern const struct nla_policy rtm_tca_policy[TCA_MAX + 1];
- 
-@@ -1564,7 +1565,7 @@ static inline int __tcf_classify(struct sk_buff *skb,
- 		    tp->protocol != htons(ETH_P_ALL))
- 			continue;
- 
--		err = tp->classify(skb, tp, res);
-+		err = tc_classify(skb, tp, res);
- #ifdef CONFIG_NET_CLS_ACT
- 		if (unlikely(err == TC_ACT_RECLASSIFY && !compat_mode)) {
- 			first_tp = orig_tp;
-diff --git a/net/sched/cls_basic.c b/net/sched/cls_basic.c
-index d229ce99e554..1b92c33b5f81 100644
---- a/net/sched/cls_basic.c
-+++ b/net/sched/cls_basic.c
-@@ -18,6 +18,7 @@
- #include <net/netlink.h>
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- struct basic_head {
- 	struct list_head	flist;
-@@ -36,8 +37,9 @@ struct basic_filter {
- 	struct rcu_work		rwork;
- };
- 
--static int basic_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			  struct tcf_result *res)
-+TC_INDIRECT_SCOPE int basic_classify(struct sk_buff *skb,
-+				     const struct tcf_proto *tp,
-+				     struct tcf_result *res)
- {
- 	int r;
- 	struct basic_head *head = rcu_dereference_bh(tp->root);
-diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-index bc317b3eac12..466c26df853a 100644
---- a/net/sched/cls_bpf.c
-+++ b/net/sched/cls_bpf.c
-@@ -19,6 +19,7 @@
- #include <net/rtnetlink.h>
- #include <net/pkt_cls.h>
- #include <net/sock.h>
-+#include <net/tc_wrapper.h>
- 
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Daniel Borkmann <dborkman@redhat.com>");
-@@ -77,8 +78,9 @@ static int cls_bpf_exec_opcode(int code)
- 	}
- }
- 
--static int cls_bpf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			    struct tcf_result *res)
-+TC_INDIRECT_SCOPE int cls_bpf_classify(struct sk_buff *skb,
-+				       const struct tcf_proto *tp,
-+				       struct tcf_result *res)
- {
- 	struct cls_bpf_head *head = rcu_dereference_bh(tp->root);
- 	bool at_ingress = skb_at_tc_ingress(skb);
-diff --git a/net/sched/cls_cgroup.c b/net/sched/cls_cgroup.c
-index ed00001b528a..bd9322d71910 100644
---- a/net/sched/cls_cgroup.c
-+++ b/net/sched/cls_cgroup.c
-@@ -13,6 +13,7 @@
- #include <net/pkt_cls.h>
- #include <net/sock.h>
- #include <net/cls_cgroup.h>
-+#include <net/tc_wrapper.h>
- 
- struct cls_cgroup_head {
- 	u32			handle;
-@@ -22,8 +23,9 @@ struct cls_cgroup_head {
- 	struct rcu_work		rwork;
- };
- 
--static int cls_cgroup_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			       struct tcf_result *res)
-+TC_INDIRECT_SCOPE int cls_cgroup_classify(struct sk_buff *skb,
-+					  const struct tcf_proto *tp,
-+					  struct tcf_result *res)
- {
- 	struct cls_cgroup_head *head = rcu_dereference_bh(tp->root);
- 	u32 classid = task_get_classid(skb);
-diff --git a/net/sched/cls_flow.c b/net/sched/cls_flow.c
-index 014cd3de7b5d..535668e1f748 100644
---- a/net/sched/cls_flow.c
-+++ b/net/sched/cls_flow.c
-@@ -24,6 +24,7 @@
- #include <net/ip.h>
- #include <net/route.h>
- #include <net/flow_dissector.h>
-+#include <net/tc_wrapper.h>
- 
- #if IS_ENABLED(CONFIG_NF_CONNTRACK)
- #include <net/netfilter/nf_conntrack.h>
-@@ -292,8 +293,9 @@ static u32 flow_key_get(struct sk_buff *skb, int key, struct flow_keys *flow)
- 			  (1 << FLOW_KEY_NFCT_PROTO_SRC) |	\
- 			  (1 << FLOW_KEY_NFCT_PROTO_DST))
- 
--static int flow_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			 struct tcf_result *res)
-+TC_INDIRECT_SCOPE int flow_classify(struct sk_buff *skb,
-+				    const struct tcf_proto *tp,
-+				    struct tcf_result *res)
- {
- 	struct flow_head *head = rcu_dereference_bh(tp->root);
- 	struct flow_filter *f;
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 25bc57ee6ea1..0b15698b3531 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -27,6 +27,7 @@
- #include <net/vxlan.h>
- #include <net/erspan.h>
- #include <net/gtp.h>
-+#include <net/tc_wrapper.h>
- 
- #include <net/dst.h>
- #include <net/dst_metadata.h>
-@@ -305,8 +306,9 @@ static u16 fl_ct_info_to_flower_map[] = {
- 					TCA_FLOWER_KEY_CT_FLAGS_NEW,
- };
- 
--static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--		       struct tcf_result *res)
-+TC_INDIRECT_SCOPE int fl_classify(struct sk_buff *skb,
-+				  const struct tcf_proto *tp,
-+				  struct tcf_result *res)
- {
- 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
- 	bool post_ct = tc_skb_cb(skb)->post_ct;
-diff --git a/net/sched/cls_fw.c b/net/sched/cls_fw.c
-index a32351da968c..ae9439a6c56c 100644
---- a/net/sched/cls_fw.c
-+++ b/net/sched/cls_fw.c
-@@ -21,6 +21,7 @@
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
- #include <net/sch_generic.h>
-+#include <net/tc_wrapper.h>
- 
- #define HTSIZE 256
- 
-@@ -47,8 +48,9 @@ static u32 fw_hash(u32 handle)
- 	return handle % HTSIZE;
- }
- 
--static int fw_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--		       struct tcf_result *res)
-+TC_INDIRECT_SCOPE int fw_classify(struct sk_buff *skb,
-+				  const struct tcf_proto *tp,
-+				  struct tcf_result *res)
- {
- 	struct fw_head *head = rcu_dereference_bh(tp->root);
- 	struct fw_filter *f;
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index 39a5d9c170de..705f63da2c21 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -12,6 +12,7 @@
- 
- #include <net/sch_generic.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- struct cls_mall_head {
- 	struct tcf_exts exts;
-@@ -24,8 +25,9 @@ struct cls_mall_head {
- 	bool deleting;
- };
- 
--static int mall_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			 struct tcf_result *res)
-+TC_INDIRECT_SCOPE int mall_classify(struct sk_buff *skb,
-+				    const struct tcf_proto *tp,
-+				    struct tcf_result *res)
- {
- 	struct cls_mall_head *head = rcu_dereference_bh(tp->root);
- 
-diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
-index 9e43b929d4ca..d0c53724d3e8 100644
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -17,6 +17,7 @@
- #include <net/netlink.h>
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- /*
-  * 1. For now we assume that route tags < 256.
-@@ -121,8 +122,9 @@ static inline int route4_hash_wild(void)
- 	return 0;						\
- }
- 
--static int route4_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			   struct tcf_result *res)
-+TC_INDIRECT_SCOPE int route4_classify(struct sk_buff *skb,
-+				      const struct tcf_proto *tp,
-+				      struct tcf_result *res)
- {
- 	struct route4_head *head = rcu_dereference_bh(tp->root);
- 	struct dst_entry *dst;
-diff --git a/net/sched/cls_rsvp.c b/net/sched/cls_rsvp.c
-index de1c1d4da597..03d8619bd9c6 100644
---- a/net/sched/cls_rsvp.c
-+++ b/net/sched/cls_rsvp.c
-@@ -15,10 +15,12 @@
- #include <net/netlink.h>
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- #define RSVP_DST_LEN	1
- #define RSVP_ID		"rsvp"
- #define RSVP_OPS	cls_rsvp_ops
-+#define RSVP_CLS	rsvp_classify
- 
- #include "cls_rsvp.h"
- MODULE_LICENSE("GPL");
-diff --git a/net/sched/cls_rsvp.h b/net/sched/cls_rsvp.h
-index b00a7dbd0587..869efba9f834 100644
---- a/net/sched/cls_rsvp.h
-+++ b/net/sched/cls_rsvp.h
-@@ -124,8 +124,8 @@ static inline unsigned int hash_src(__be32 *src)
- 		return r;				\
- }
- 
--static int rsvp_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			 struct tcf_result *res)
-+TC_INDIRECT_SCOPE int RSVP_CLS(struct sk_buff *skb, const struct tcf_proto *tp,
-+			       struct tcf_result *res)
- {
- 	struct rsvp_head *head = rcu_dereference_bh(tp->root);
- 	struct rsvp_session *s;
-@@ -738,7 +738,7 @@ static void rsvp_bind_class(void *fh, u32 classid, unsigned long cl, void *q,
- 
- static struct tcf_proto_ops RSVP_OPS __read_mostly = {
- 	.kind		=	RSVP_ID,
--	.classify	=	rsvp_classify,
-+	.classify	=	RSVP_CLS,
- 	.init		=	rsvp_init,
- 	.destroy	=	rsvp_destroy,
- 	.get		=	rsvp_get,
-diff --git a/net/sched/cls_rsvp6.c b/net/sched/cls_rsvp6.c
-index 64078846000e..e627cc32d633 100644
---- a/net/sched/cls_rsvp6.c
-+++ b/net/sched/cls_rsvp6.c
-@@ -15,10 +15,12 @@
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
- #include <net/netlink.h>
-+#include <net/tc_wrapper.h>
- 
- #define RSVP_DST_LEN	4
- #define RSVP_ID		"rsvp6"
- #define RSVP_OPS	cls_rsvp6_ops
-+#define RSVP_CLS rsvp6_classify
- 
- #include "cls_rsvp.h"
- MODULE_LICENSE("GPL");
-diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-index 1c9eeb98d826..eb0e9458e722 100644
---- a/net/sched/cls_tcindex.c
-+++ b/net/sched/cls_tcindex.c
-@@ -16,6 +16,7 @@
- #include <net/netlink.h>
- #include <net/pkt_cls.h>
- #include <net/sch_generic.h>
-+#include <net/tc_wrapper.h>
- 
- /*
-  * Passing parameters to the root seems to be done more awkwardly than really
-@@ -98,9 +99,9 @@ static struct tcindex_filter_result *tcindex_lookup(struct tcindex_data *p,
- 	return NULL;
- }
- 
--
--static int tcindex_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			    struct tcf_result *res)
-+TC_INDIRECT_SCOPE int tcindex_classify(struct sk_buff *skb,
-+				       const struct tcf_proto *tp,
-+				       struct tcf_result *res)
- {
- 	struct tcindex_data *p = rcu_dereference_bh(tp->root);
- 	struct tcindex_filter_result *f;
-diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-index 34d25f7a0687..4e2e269f121f 100644
---- a/net/sched/cls_u32.c
-+++ b/net/sched/cls_u32.c
-@@ -39,6 +39,7 @@
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
- #include <linux/idr.h>
-+#include <net/tc_wrapper.h>
- 
- struct tc_u_knode {
- 	struct tc_u_knode __rcu	*next;
-@@ -100,8 +101,9 @@ static inline unsigned int u32_hash_fold(__be32 key,
- 	return h;
- }
- 
--static int u32_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			struct tcf_result *res)
-+TC_INDIRECT_SCOPE int u32_classify(struct sk_buff *skb,
-+				   const struct tcf_proto *tp,
-+				   struct tcf_result *res)
- {
- 	struct {
- 		struct tc_u_knode *knode;
--- 
-2.34.1
+Huh, neat calculation, I'll keep that method in mind.
 
+Alright, sorry for the noise here. I'll check back in if I ever manage
+to eliminate that performance gap.
+
+Jason
