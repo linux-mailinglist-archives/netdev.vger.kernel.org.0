@@ -2,148 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB547643FB1
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:19:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E89AE643F9E
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:17:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234971AbiLFJTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 04:19:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60706 "EHLO
+        id S234810AbiLFJRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 04:17:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235166AbiLFJRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 04:17:34 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E9920F56;
-        Tue,  6 Dec 2022 01:17:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670318225; x=1701854225;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zC77ODYsqU5uz9yzj6RxvYZSPIW3Xhfnrn+9xfr6/Cs=;
-  b=DLduuU9mDqsA1PBGp0auPUQET5v2kCaOxd914rOSrNxPYf7G6srYaeKz
-   hJF6HG2IPGXILNv2id8T1C8OQtG+KTizGuOOALhpT2H+w5uQR9ctnbmbs
-   iQYF+QeMpkPTsfuBMIUAVqHAD8cuVkIdjOQrZvpbz5AS9INcQ5SStxSnr
-   NnF4O7BKLTXEubt2uz9opSqsEJa9DdmaOAT9NQ+LXZxRUi3yHkOPZCqri
-   hj53fzISXhl0vuRuXRUIkUlhe+9NMpfyB2cTRV6MfN/4AScJqRxVBdOlR
-   NEftaY4+f3iHBP3YI+rrR3YVj8z6niZox6Tb/rRh56PKreAsxmnNon59T
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
-   d="scan'208";a="190235842"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Dec 2022 02:17:04 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 6 Dec 2022 02:17:03 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 6 Dec 2022 02:16:57 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
-        <richardcochran@gmail.com>, <ceggers@arri.de>
-Subject: [Patch net-next v2 13/13] net: dsa: microchip: ptp: lan937x: Enable periodic output in LED pins
-Date:   Tue, 6 Dec 2022 14:44:28 +0530
-Message-ID: <20221206091428.28285-14-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20221206091428.28285-1-arun.ramadoss@microchip.com>
-References: <20221206091428.28285-1-arun.ramadoss@microchip.com>
+        with ESMTP id S234768AbiLFJQ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 04:16:28 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCDA21E25
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 01:16:08 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id d20so19447766edn.0
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 01:16:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=m9covplz1FXHTmQsH1JfjKP6msyoK/uzDf0KnqUp54Q=;
+        b=ZZ0V2CLofoZjipLPa+LqpIOUdNrZJcZ7OlOlHq+lMqAkHRVmUFOKGcbb7vc/Wzbp4s
+         FUtLEeFiR/KNhWwj/dygnuuHo5CC7atfJQMmQuilC2xAOO7MuzZ4wiN0s+cix/kmdBtK
+         Rxiba1HkVX0+BNVTkRa6AKDhbQ6ca6L2OcLGxMnBGApozFBUF1mWuYa00N+MxmEfGfrp
+         kC3LdjGfGYXcD6w3f2eJKseTqJb754O81tt9x6LmZF4+THbGMZIF9o8UqSugodLU3fCC
+         x6IWIZnyZR7L1gSG4yCbX+QP+IJdftJUABIuycuZllqkUWt314s7Vnnjd/as8l4+IkLu
+         xVnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m9covplz1FXHTmQsH1JfjKP6msyoK/uzDf0KnqUp54Q=;
+        b=CMiM3OGwhH3x6DxueiY/Q2HNyH0LcUPCPRCNwowpwqWuX/whmX2iZS89u/KzlZVBlc
+         H3n5gyZ5FqgsruOHb/skLfbg1NONIhUWX8E1y0ngoX5xmKS5K855bA3psUQ2H0N6soAw
+         dd4eo5V+Ag0VqC8To2VPd8fgao0oLRrBVDfpKZuh/fqq2mkdAhg9P3Sz4U+LjcIBCojl
+         CGPU9lT+PJAxxSg2swEwWrj3Boq8l7c7Vo2VdCpL4045MWXdNLrxKa77kAKkLf3HsuAN
+         EgHya+uEGDiZ2wdpqmtSKPXPupJVPU12Dw6/li6wKHPV4qozh21jASTKVLxEL2MnCSyz
+         BK9A==
+X-Gm-Message-State: ANoB5pkimkck1LCdRRVZR7z/WtI1U/A+olUwEEH3aMtuFFhnkC85x8Pl
+        iPryBhW4PMZLC+DUvcyJHR23Wg==
+X-Google-Smtp-Source: AA0mqf7IPGmPB36CpbdNZRHBx9nue7y+ccfqXiDjjE4b3Ik+XteR0TQC2OsOOYqM37uiZ3yxt7fkmQ==
+X-Received: by 2002:a05:6402:64b:b0:46c:11ef:7b72 with SMTP id u11-20020a056402064b00b0046c11ef7b72mr16568581edx.235.1670318167113;
+        Tue, 06 Dec 2022 01:16:07 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id du1-20020a17090772c100b007c07909eb9asm7155608ejc.1.2022.12.06.01.16.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 01:16:06 -0800 (PST)
+Date:   Tue, 6 Dec 2022 10:16:05 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     ehakim@nvidia.com
+Cc:     linux-kernel@vger.kernel.org, raeds@nvidia.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, sd@queasysnail.net
+Subject: Re: [PATCH net-next v2] macsec: Add support for IFLA_MACSEC_OFFLOAD
+ in the netlink layer
+Message-ID: <Y48IVReEUBmQza81@nanopsycho>
+References: <20221206085757.5816-1-ehakim@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221206085757.5816-1-ehakim@nvidia.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is difference in implementation of per_out pins between KSZ9563
-and LAN937x. In KSZ9563, Timestamping control register (0x052C) bit 6,
-if 1 - timestamp input and 0 - trigger output. But it is opposite for
-LAN937x 1 - trigger output and 0 - timestamp input.
-As per per_out gpio pins, KSZ9563 has four Led pins and two dedicated
-gpio pins. But in LAN937x dedicated gpio pins are removed instead there
-are up to 10 LED pins out of which LED_0 and LED_1 can be mapped to PTP
-tou 0, 1 or 2. This patch sets the bit 6 in 0x052C register and
-configure the LED override and source register for LAN937x series of
-switches alone.
+Tue, Dec 06, 2022 at 09:57:57AM CET, ehakim@nvidia.com wrote:
+>From: Emeel Hakim <ehakim@nvidia.com>
+>
+>This adds support for configuring Macsec offload through the
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz_ptp.c     | 26 +++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_ptp_reg.h |  8 ++++++++
- 2 files changed, 34 insertions(+)
+Tell the codebase what to do. Be imperative in your patch descriptions
+so it is clear what are the intensions of the patch.
 
-diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-index 8392962311e2..a19fd00d549e 100644
---- a/drivers/net/dsa/microchip/ksz_ptp.c
-+++ b/drivers/net/dsa/microchip/ksz_ptp.c
-@@ -31,6 +31,28 @@
- 
- static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts);
- 
-+static int ksz_ptp_tou_gpio(struct ksz_device *dev)
-+{
-+	int ret;
-+
-+	if (!is_lan937x(dev))
-+		return 0;
-+
-+	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, GPIO_OUT,
-+			GPIO_OUT);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz_rmw32(dev, REG_SW_GLOBAL_LED_OVR__4, LED_OVR_1 | LED_OVR_2,
-+			LED_OVR_1 | LED_OVR_2);
-+	if (ret)
-+		return ret;
-+
-+	return ksz_rmw32(dev, REG_SW_GLOBAL_LED_SRC__4,
-+			 LED_SRC_PTP_GPIO_1 | LED_SRC_PTP_GPIO_2,
-+			 LED_SRC_PTP_GPIO_1 | LED_SRC_PTP_GPIO_2);
-+}
-+
- static int ksz_ptp_tou_reset(struct ksz_device *dev, u8 unit)
- {
- 	u32 data;
-@@ -227,6 +249,10 @@ static int ksz_ptp_enable_perout(struct ksz_device *dev,
- 	if (ret)
- 		return ret;
- 
-+	ret = ksz_ptp_tou_gpio(dev);
-+	if (ret)
-+		return ret;
-+
- 	ret = ksz_ptp_tou_start(dev, request->index);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-index dbccfedf89e4..6fea39629460 100644
---- a/drivers/net/dsa/microchip/ksz_ptp_reg.h
-+++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-@@ -6,6 +6,14 @@
- #ifndef __KSZ_PTP_REGS_H
- #define __KSZ_PTP_REGS_H
- 
-+#define REG_SW_GLOBAL_LED_OVR__4	0x0120
-+#define LED_OVR_2			BIT(1)
-+#define LED_OVR_1			BIT(0)
-+
-+#define REG_SW_GLOBAL_LED_SRC__4	0x0128
-+#define LED_SRC_PTP_GPIO_1		BIT(3)
-+#define LED_SRC_PTP_GPIO_2		BIT(2)
-+
- /* 5 - PTP Clock */
- #define REG_PTP_CLK_CTRL		0x0500
- 
--- 
-2.36.1
 
+>netlink layer by:
+>- Considering IFLA_MACSEC_OFFLOAD in macsec_fill_info.
+>- Handling IFLA_MACSEC_OFFLOAD in macsec_changelink.
+>- Adding IFLA_MACSEC_OFFLOAD to the netlink policy.
+>- Adjusting macsec_get_size.
+
+4 patches then?
+
+I mean really, not a macsec person, but I should be able to follow what
+are your intensions looking and description&code right away.
+
+
+>
+>The handling in macsec_changlink is similar to
+
+s/macsec_changlink/macsec_changelink/
+
+>macsec_upd_offload.
+>Update macsec_upd_offload to use a common helper function
+>to avoid duplication.
+>
+>Example for setting offload for a macsec device
+>    ip link set macsec0 type macsec offload mac
+>
+>Reviewed-by: Raed Salem <raeds@nvidia.com>
+>Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+>---
+>V1 -> V2: Add common helper to avoid duplicating code
+> drivers/net/macsec.c | 114 ++++++++++++++++++++++++++++---------------
+> 1 file changed, 74 insertions(+), 40 deletions(-)
+>
+>diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+>index d73b9d535b7a..afd6ff47ba56 100644
+>--- a/drivers/net/macsec.c
+>+++ b/drivers/net/macsec.c
+>@@ -2583,16 +2583,45 @@ static bool macsec_is_configured(struct macsec_dev *macsec)
+> 	return false;
+> }
+> 
+>+static int macsec_update_offload(struct macsec_dev *macsec, enum macsec_offload offload)
+>+{
+>+	enum macsec_offload prev_offload;
+>+	const struct macsec_ops *ops;
+>+	struct macsec_context ctx;
+>+	int ret = 0;
+>+
+>+	prev_offload = macsec->offload;
+>+
+>+	/* Check if the device already has rules configured: we do not support
+>+	 * rules migration.
+>+	 */
+>+	if (macsec_is_configured(macsec))
+>+		return -EBUSY;
+>+
+>+	ops = __macsec_get_ops(offload == MACSEC_OFFLOAD_OFF ? prev_offload : offload,
+>+			       macsec, &ctx);
+>+	if (!ops)
+>+		return -EOPNOTSUPP;
+>+
+>+	macsec->offload = offload;
+>+
+>+	ctx.secy = &macsec->secy;
+>+	ret = (offload == MACSEC_OFFLOAD_OFF) ? macsec_offload(ops->mdo_del_secy, &ctx) :
+>+		      macsec_offload(ops->mdo_add_secy, &ctx);
+>+
+>+	if (ret)
+>+		macsec->offload = prev_offload;
+>+
+>+	return ret;
+>+}
+>+
+> static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
+> {
+> 	struct nlattr *tb_offload[MACSEC_OFFLOAD_ATTR_MAX + 1];
+>-	enum macsec_offload offload, prev_offload;
+>-	int (*func)(struct macsec_context *ctx);
+> 	struct nlattr **attrs = info->attrs;
+>-	struct net_device *dev;
+>-	const struct macsec_ops *ops;
+>-	struct macsec_context ctx;
+>+	enum macsec_offload offload;
+> 	struct macsec_dev *macsec;
+>+	struct net_device *dev;
+> 	int ret;
+> 
+> 	if (!attrs[MACSEC_ATTR_IFINDEX])
+>@@ -2629,39 +2658,7 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
+> 
+> 	rtnl_lock();
+> 
+>-	prev_offload = macsec->offload;
+>-	macsec->offload = offload;
+>-
+>-	/* Check if the device already has rules configured: we do not support
+>-	 * rules migration.
+>-	 */
+>-	if (macsec_is_configured(macsec)) {
+>-		ret = -EBUSY;
+>-		goto rollback;
+>-	}
+>-
+>-	ops = __macsec_get_ops(offload == MACSEC_OFFLOAD_OFF ? prev_offload : offload,
+>-			       macsec, &ctx);
+>-	if (!ops) {
+>-		ret = -EOPNOTSUPP;
+>-		goto rollback;
+>-	}
+>-
+>-	if (prev_offload == MACSEC_OFFLOAD_OFF)
+>-		func = ops->mdo_add_secy;
+>-	else
+>-		func = ops->mdo_del_secy;
+>-
+>-	ctx.secy = &macsec->secy;
+>-	ret = macsec_offload(func, &ctx);
+>-	if (ret)
+>-		goto rollback;
+>-
+>-	rtnl_unlock();
+>-	return 0;
+>-
+>-rollback:
+>-	macsec->offload = prev_offload;
+>+	ret = macsec_update_offload(macsec, offload);
+> 
+> 	rtnl_unlock();
+> 	return ret;
+>@@ -3698,6 +3695,7 @@ static const struct nla_policy macsec_rtnl_policy[IFLA_MACSEC_MAX + 1] = {
+> 	[IFLA_MACSEC_SCB] = { .type = NLA_U8 },
+> 	[IFLA_MACSEC_REPLAY_PROTECT] = { .type = NLA_U8 },
+> 	[IFLA_MACSEC_VALIDATION] = { .type = NLA_U8 },
+>+	[IFLA_MACSEC_OFFLOAD] = { .type = NLA_U8 },
+> };
+> 
+> static void macsec_free_netdev(struct net_device *dev)
+>@@ -3803,6 +3801,29 @@ static int macsec_changelink_common(struct net_device *dev,
+> 	return 0;
+> }
+> 
+>+static int macsec_changelink_upd_offload(struct net_device *dev, struct nlattr *data[])
+>+{
+>+	enum macsec_offload offload;
+>+	struct macsec_dev *macsec;
+>+
+>+	macsec = macsec_priv(dev);
+>+	offload = nla_get_u8(data[IFLA_MACSEC_OFFLOAD]);
+>+
+>+	if (macsec->offload == offload)
+>+		return 0;
+>+
+>+	/* Check if the offloading mode is supported by the underlying layers */
+>+	if (offload != MACSEC_OFFLOAD_OFF &&
+>+	    !macsec_check_offload(offload, macsec))
+>+		return -EOPNOTSUPP;
+>+
+>+	/* Check if the net device is busy. */
+>+	if (netif_running(dev))
+>+		return -EBUSY;
+>+
+>+	return macsec_update_offload(macsec, offload);
+>+}
+>+
+> static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
+> 			     struct nlattr *data[],
+> 			     struct netlink_ext_ack *extack)
+>@@ -3831,6 +3852,12 @@ static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
+> 	if (ret)
+> 		goto cleanup;
+> 
+>+	if (data[IFLA_MACSEC_OFFLOAD]) {
+>+		ret = macsec_changelink_upd_offload(dev, data);
+>+		if (ret)
+>+			goto cleanup;
+>+	}
+>+
+> 	/* If h/w offloading is available, propagate to the device */
+> 	if (macsec_is_offloaded(macsec)) {
+> 		const struct macsec_ops *ops;
+>@@ -4231,16 +4258,22 @@ static size_t macsec_get_size(const struct net_device *dev)
+> 		nla_total_size(1) + /* IFLA_MACSEC_SCB */
+> 		nla_total_size(1) + /* IFLA_MACSEC_REPLAY_PROTECT */
+> 		nla_total_size(1) + /* IFLA_MACSEC_VALIDATION */
+>+		nla_total_size(1) + /* IFLA_MACSEC_OFFLOAD */
+> 		0;
+> }
+> 
+> static int macsec_fill_info(struct sk_buff *skb,
+> 			    const struct net_device *dev)
+> {
+>-	struct macsec_secy *secy = &macsec_priv(dev)->secy;
+>-	struct macsec_tx_sc *tx_sc = &secy->tx_sc;
+>+	struct macsec_tx_sc *tx_sc;
+>+	struct macsec_dev *macsec;
+>+	struct macsec_secy *secy;
+> 	u64 csid;
+> 
+>+	macsec = macsec_priv(dev);
+>+	secy = &macsec->secy;
+>+	tx_sc = &secy->tx_sc;
+>+
+> 	switch (secy->key_len) {
+> 	case MACSEC_GCM_AES_128_SAK_LEN:
+> 		csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_128 : MACSEC_DEFAULT_CIPHER_ID;
+>@@ -4265,6 +4298,7 @@ static int macsec_fill_info(struct sk_buff *skb,
+> 	    nla_put_u8(skb, IFLA_MACSEC_SCB, tx_sc->scb) ||
+> 	    nla_put_u8(skb, IFLA_MACSEC_REPLAY_PROTECT, secy->replay_protect) ||
+> 	    nla_put_u8(skb, IFLA_MACSEC_VALIDATION, secy->validate_frames) ||
+>+	    nla_put_u8(skb, IFLA_MACSEC_OFFLOAD, macsec->offload) ||
+> 	    0)
+> 		goto nla_put_failure;
+> 
+>-- 
+>2.21.3
+>
