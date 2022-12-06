@@ -2,136 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD5D5643B21
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 03:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9140643B22
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 03:02:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233637AbiLFCCo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Dec 2022 21:02:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
+        id S233678AbiLFCCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 21:02:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbiLFCCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 21:02:42 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7646103E;
-        Mon,  5 Dec 2022 18:02:37 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B621C0L0016505, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B621C0L0016505
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 6 Dec 2022 10:01:12 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Tue, 6 Dec 2022 10:01:59 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Tue, 6 Dec 2022 10:01:59 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Tue, 6 Dec 2022 10:01:59 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Peter Kosyh <pkosyh@yandex.ru>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
-Subject: RE: [PATCH] rtlwifi: rtl8192se: remove redundant rtl_get_bbreg call
-Thread-Topic: [PATCH] rtlwifi: rtl8192se: remove redundant rtl_get_bbreg call
-Thread-Index: AQHZCIlNZy/RMGZSW0e7asaR+s5GG65gGCIQ
-Date:   Tue, 6 Dec 2022 02:01:58 +0000
-Message-ID: <cf3d07ff543d4c009dbf51ad7a4d4b21@realtek.com>
-References: <20221205085342.677329-1-pkosyh@yandex.ru>
-In-Reply-To: <20221205085342.677329-1-pkosyh@yandex.ru>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/12/5_=3F=3F_10:48:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S231274AbiLFCCn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 21:02:43 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC92109D
+        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 18:02:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C19F9CE16C1
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 02:02:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B07C433C1;
+        Tue,  6 Dec 2022 02:02:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670292156;
+        bh=Y7FBk3MJw036RbymRzlGzg4cWU43CIn+UXqI5r1dqPA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OUk095gpFu6uj6wAz7ijiTen65RknF4IykV3wwE1M7H4iHORV1Do8jP4LNaSCcdzL
+         b1k/UwslUej2W/VNdebnOaQ9P68/J3B1UsNJsDf9bx56f2cSRP2uoXaEFUdGRGFbQn
+         y0vqsV0NOn2UjeruPrJzbRZ2ux6I+DbcEkw/hhHpS7qpC8pX5kaWK+AuyCp+2NN0gc
+         Q9gfZvOxQrcgKmMIGqCX34XmssagQrpp9o7ED7Z0763ZmuDAXhjdY7HOY8SyGlSsW6
+         d8eHodxqH50RGP8xTm39nzu92z85uUNdzf5tQgjXn31W0VeI8K749XkpuTRb2gdchD
+         Vp//If01ntOOQ==
+Date:   Mon, 5 Dec 2022 18:02:34 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shannon Nelson <shnelson@amd.com>
+Cc:     Shay Drory <shayd@nvidia.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, danielj@nvidia.com, yishaih@nvidia.com,
+        jiri@nvidia.com, saeedm@nvidia.com, parav@nvidia.com
+Subject: Re: [PATCH net-next V3 4/8] devlink: Expose port function commands
+ to control RoCE
+Message-ID: <20221205180234.2a8a5423@kernel.org>
+In-Reply-To: <34381666-a7b5-9507-211a-162827b86153@amd.com>
+References: <20221204141632.201932-1-shayd@nvidia.com>
+        <20221204141632.201932-5-shayd@nvidia.com>
+        <34381666-a7b5-9507-211a-162827b86153@amd.com>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> -----Original Message-----
-> From: Peter Kosyh <pkosyh@yandex.ru>
-> Sent: Monday, December 5, 2022 4:54 PM
-> To: Ping-Ke Shih <pkshih@realtek.com>
-> Cc: Peter Kosyh <pkosyh@yandex.ru>; David S. Miller <davem@davemloft.net>; Eric Dumazet
-> <edumazet@google.com>; Kalle Valo <kvalo@kernel.org>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni
-> <pabeni@redhat.com>; linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org; lvc-project@linuxtesting.org
-> Subject: [PATCH] rtlwifi: rtl8192se: remove redundant rtl_get_bbreg call
+On Mon, 5 Dec 2022 15:37:26 -0800 Shannon Nelson wrote:
+> >   enum devlink_port_function_attr {
+> >          DEVLINK_PORT_FUNCTION_ATTR_UNSPEC,
+> >          DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR,     /* binary */
+> >          DEVLINK_PORT_FN_ATTR_STATE,     /* u8 */
+> >          DEVLINK_PORT_FN_ATTR_OPSTATE,   /* u8 */
+> > +       DEVLINK_PORT_FN_ATTR_CAPS,      /* bitfield32 */  
 > 
-> Extra rtl_get_bbreg looks like redundant reading. The read has
-> already been done in the "else" branch. Compile test only.
+> Will 32 bits be enough, or should we start off with u64?  It will 
+> probably be fine, but since we're setting a uapi thing here we probably 
+> want to be sure we won't need to change it in the future.
 
-Originally, the code is 
+Ah, if only variable size integer types from Olek were ready :(
 
-01 if (rfpi_enable)
-02     val = get_from_interface_A();
-03 else
-04    val = get_from_interface_B();
-05
-06 val = get_from_interface_B();
-
-This patch is to remove line 06, and it looks like logic is changed. However,
-'rfpi_enable' is decided by 0x820[8] and 0x828[8] set by rtl8192sephy_reg_2t2rarray[]
-table, and 'rfpi_enable' is always false. I think this is why nobody can't
-encounter problem and find this bug.
-
-> 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> 
-> Signed-off-by: Peter Kosyh <pkosyh@yandex.ru>
-
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
-
-> ---
-> If this code is important for the operation of the hardware, then it would
-> be nice to comment on it.
-> 
->  drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c
-> index aaa004d4d6d0..09591a0b5a81 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/phy.c
-> @@ -115,9 +115,6 @@ static u32 _rtl92s_phy_rf_serial_read(struct ieee80211_hw *hw,
->  		retvalue = rtl_get_bbreg(hw, pphyreg->rf_rb,
->  					 BLSSI_READBACK_DATA);
-> 
-> -	retvalue = rtl_get_bbreg(hw, pphyreg->rf_rb,
-> -				 BLSSI_READBACK_DATA);
-> -
->  	rtl_dbg(rtlpriv, COMP_RF, DBG_TRACE, "RFR-%d Addr[0x%x]=0x%x\n",
->  		rfpath, pphyreg->rf_rb, retvalue);
-> 
-> --
-> 2.38.1
-
+Unfortunately there is no bf64 today, so we'd either have to add soon
+to be deprecated bf64 or hold off waiting for Olek...
+I reckon the dumb thing of merging bf32 may be the best choice right
+now :(
