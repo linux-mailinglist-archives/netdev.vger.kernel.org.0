@@ -2,63 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4FB5644E3B
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 22:53:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8552F644E61
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 23:12:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbiLFVx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 16:53:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
+        id S229744AbiLFWMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 17:12:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbiLFVxY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 16:53:24 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083EC42F7C
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 13:53:24 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id s186so18407034oia.5
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 13:53:24 -0800 (PST)
+        with ESMTP id S229646AbiLFWMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 17:12:45 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C521717043;
+        Tue,  6 Dec 2022 14:12:42 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id d14so17446485edj.11;
+        Tue, 06 Dec 2022 14:12:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ixVQz31A6SNro0IMQ4m/V3KBYAQXKGqXgeNzq68MklA=;
-        b=SYxofyzy1Z0mv6fUYqEclR0kQ4/D8roHjbClzmQGncLjtvkX0pU20urOgUDCvOO0sb
-         jIqa8N1adWiFm4xaoWVf1rJiAp9xB4A/JA29AU0QLF7TkQdsIVEWN6c2lPTTHU6iSlTv
-         d5gYVo+PakMJ+Jiqrg00ZrG0c3j3qanbnUoSbOIDjirQHCHUGgolEPf8RyXISmoDTUKO
-         6317gMtNMeTeb25bOBLHNMO4QA2IYjmnKQzk8qULdfee8YGiJ3BFEDcBsC+nHVjyworA
-         sSMldL2EggVePEPgLotesK6yF8hOCgGe1jeIWcwelHj3aSG8xfkJOn4eb4UQlx8I5Vwf
-         YDpw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=iYXLmwmRWqCyzAqnG3aNR/0AAohD2KWeWKOH7EUJLow=;
+        b=PBhzGIZ+ATOupWPKL5grDJCU68MrkeDJpiKg0onlWWcqUyo1Mv2L+ykCaleiVc6vBO
+         S+2Wu/oqBIqTGID6spdgTgGQn/1IOgqILcfzdQmiL8dZU0ZsrEtI7U8mh3I1czV59kFD
+         E/A0kji4qFDVudma8gMbdf/O0+DQrHwYFyfypBnG8S0OJqurIcx5Rh+X9yRCRmVmp+xe
+         q916Yru6yAvStgs01hw/2EVwYgHZugkfCQL3M1Cat+KDlE81qy+W4V37LS+FYfgUlQ1A
+         N2ixhucuYHEYG5qKSmbN9dQwMAHrettbepTX3JWEzvBo1VLEUaxbxYs3MYJSBTD7z1OY
+         TsfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ixVQz31A6SNro0IMQ4m/V3KBYAQXKGqXgeNzq68MklA=;
-        b=7B15iMPB6NKQOD9prreYLQ+S02tolj8zVk13dQFthG49jVg9f7mNPjF1Nr+ZYihI5j
-         CoLzPwPVMdSoNWR5cLv3T0uoRWt/1ei+CAyuyfcOTEUWCnXTvHoC3VKZM1cGb4SYVUOL
-         KjikIk0M5lUePx7hVyILbOamVA0IPIUEu5Wt3REmkLzIC18V2W67btPu5+XcAAVHS/n9
-         5XmIWQdVuIHsXj6dtsfdLtm+mRwc1rKE3cEcCiTbFK6AEO+zem5+iV7aqCO1uXfHGbVW
-         1kTuN6uP/dJ5HVif+rBnuwbSiWfdCsPJkVWtT43X0Sd+vbIR/FNYoDwTfJzxzPoJE2zm
-         PHlg==
-X-Gm-Message-State: ANoB5pmQVetWYOqC7VWI9mJPLwk7ygGUH7oE50d8PAyCMfl4EljdOiMr
-        jT1Em0l0fDxe81MtOrHfo9ZdgREUtjeX30h5G5o=
-X-Google-Smtp-Source: AA0mqf4p5HqqFxS2VHqqBo9aEhCudoblBdqTgWeFJr1BFlG5keaq9mj1IQyg06TVDr5ksfWQAAydHdr5WJB12bDjYLM=
-X-Received: by 2002:aca:2801:0:b0:35a:13f4:d875 with SMTP id
- 1-20020aca2801000000b0035a13f4d875mr45928766oix.190.1670363603284; Tue, 06
- Dec 2022 13:53:23 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iYXLmwmRWqCyzAqnG3aNR/0AAohD2KWeWKOH7EUJLow=;
+        b=3n9jLaNxkNJmEKq2NKpzgUM3nm6GuNiBLUruZNLI663uWj3cFOL7Jv3yfmHWotTbfc
+         V3LqXk/F5LbRAyrxhLeMd42r0bC4DS/aegDRINjC7VWXKk6R3iWlpkGBrwsOzUgYUIUc
+         WdjwA+8niA7hvravzZuiWEgSKkIMoJjNhqjYaw9RDFm1peb8kEne4m+sa+WNyj3uvqVG
+         RYAxR5UnLT5sR5ftxVByUjITmtlUZ9iXw4lUPG75MGxSFWGOkMs/TlIZEWkNO2ZVZWmA
+         4qbHrR6lmiyYjdC++HmDI0uYC9XRu6AYTY62Pf5kAzWcCqcQuN7gEj/8MMvivrHOHUSM
+         hL4w==
+X-Gm-Message-State: ANoB5pmKqWMO7QwuqZwwm92J05fNMkUl6G9OcPQTQCk9ChXdkGBKC5q9
+        fIiU/02HLYYk8VBFlzixkSc=
+X-Google-Smtp-Source: AA0mqf5mkqk5k/z5QmE6FQqCbFxEGSqZxp3bArtHGiABx2k5B/hMwQgmCDCIwBHreNIf13tELMH63g==
+X-Received: by 2002:a05:6402:1013:b0:463:f3a:32ce with SMTP id c19-20020a056402101300b004630f3a32cemr63753523edu.366.1670364761155;
+        Tue, 06 Dec 2022 14:12:41 -0800 (PST)
+Received: from skbuf ([188.26.184.215])
+        by smtp.gmail.com with ESMTPSA id 10-20020a170906200a00b007ae243c3f05sm7664381ejo.189.2022.12.06.14.12.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 14:12:40 -0800 (PST)
+Date:   Wed, 7 Dec 2022 00:12:38 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Jerry Ray <jerry.ray@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 2/2] dsa: lan9303: Move to PHYLINK
+Message-ID: <20221206221238.5p4wv472wwcjowy5@skbuf>
+References: <20221206183500.6898-1-jerry.ray@microchip.com>
+ <20221206183500.6898-1-jerry.ray@microchip.com>
+ <20221206183500.6898-3-jerry.ray@microchip.com>
+ <20221206183500.6898-3-jerry.ray@microchip.com>
+ <20221206193224.f3obnsjtphbxole4@skbuf>
+ <Y4+vKh8EfA9vtC2B@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <32ee765d2240163f1cbd5d99db6233f276857ccb.1670262365.git.lucien.xin@gmail.com>
- <Y4731q0/oqwhHZod@nanopsycho> <CADvbK_e6dFT6L69g63FOu=uE7b48rubaYOBL0RDTmKRUBFDCjw@mail.gmail.com>
-In-Reply-To: <CADvbK_e6dFT6L69g63FOu=uE7b48rubaYOBL0RDTmKRUBFDCjw@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 6 Dec 2022 16:52:33 -0500
-Message-ID: <CADvbK_eaEb9vQ9h34WNcibULBFHAZcPB05dNztV=+QOUzOYBwQ@mail.gmail.com>
-Subject: Re: [PATCH net] team: prevent ipv6 link local address on port devices
-To:     Jiri Pirko <jiri@resnulli.us>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, LiLiang <liali@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y4+vKh8EfA9vtC2B@shell.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -69,53 +80,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 6, 2022 at 8:32 AM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Tue, Dec 6, 2022 at 3:05 AM Jiri Pirko <jiri@resnulli.us> wrote:
-> >
-> > Mon, Dec 05, 2022 at 06:46:05PM CET, lucien.xin@gmail.com wrote:
-> > >The similar fix from commit c2edacf80e15 ("bonding / ipv6: no addrconf
-> > >for slaves separately from master") is also needed in Team. Otherwise,
-> > >DAD and RS packets to be sent from the slaves in turn can confuse the
-> > >switches and cause them to incorrectly update their forwarding tables
-> > >as Liang noticed in the test with activebackup mode.
-> > >
-> > >Note that the patch also sets IFF_MASTER flag for Team dev accordingly
-> > >while IFF_SLAVE flag is set for port devs. Although IFF_MASTER flag is
-> > >not really used in Team, it's good to show in 'ip link':
-> > >
-> > >  eth1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP>
-> > >  team0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP>
-> > >
-> > >Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
-> > >Reported-by: LiLiang <liali@redhat.com>
-> > >Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> >
-> > Nack. Please don't do this. IFF_MASTER and IFF_SLAVE are historical
-> > flags used by bonding and eql. Should not be used for other devices.
-> I see. I was wondering why it was not used in Team at the beginning. :)
->
-> >
-> > addrconf_addr_gen() should not check IFF_SLAVE. It should use:
-> > netif_is_lag_port() and netif_is_failover_slave() helpers.
-Hi Jiri,
+On Tue, Dec 06, 2022 at 09:07:54PM +0000, Russell King (Oracle) wrote:
+> > Are you going to explain why modifying this register is no longer needed?
+> 
+> ... otherwise it is a fixed link, so the PHY is configured for the fixed
+> link setting - which I think would end up writing to the an emulation of
+> the PHY, and would end up writing the same settings back to the PHY as
+> the PHY was already configured.
 
-Sorry, it seems not to work with this.
+To be clear, when you say "an emulation of the PHY", are you talking
+about the swphy behind the fixed-link, or about the LAN9303_VIRT_PHY_BASE
+registers, which correspond to the RevMII Virtual PHY of the switch CPU port?
 
-As addrconf_addr_gen() is also called in NETDEV_UP event where
-IFF_TEAM_PORT and IFF_BONDING haven't yet been set before
-dev_open() when adding the port.
+As far as I can understand the Microchip LAN9303 documentation, the DSA
+master can have a phy-handle to the switch node (which
+devicetree/bindings/net/dsa/lan9303.txt seems to confirm), and the
+switch can pretend it's a PHY when accessed by a switch-unaware
+(Generic) PHY driver at the usual PHY MDIO registers. Through the
+Virtual PHY feature and registers, it can also pretend it's the "other"
+PHY, and this MII_BMCR register of the Virtual PHY can ultimately
+autoneg with "itself" and control what the DSA master sees in terms of
+reported speed, duplex, and AN complete.
 
-If we move IFF_TEAM_PORT setting ahead of dev_open(), it will revert
-the fix in:
+Prior to this change, the driver, when given a DT blob with a fixed-link
+on the switch CPU port, would disable BMCR_ANENABLE in the Virtual PHY.
+After the change, it would leave things as they are (which is not
+necessarily the way things are out of reset). Which way is better?
+Does it matter? Is it a stupid question? No clue.
 
-commit d7d3c05135f37d8fdf73f9966d27155cada36e56
-Author: Jiri Pirko <jiri@resnulli.us>
-Date:   Mon Aug 25 21:38:27 2014 +0200
+> So, I don't think adjust_link does anything useful, and I think this is
+> an entirely appropriate change.
 
-    team: set IFF_TEAM_PORT priv_flag after rx_handler is registered
+That it may well be, but its presentation is entirely inappropriate.
+Andrew has told Jerry before that it's important to split, describe and
+justify his changes accordingly, so it's not like the things I'm
+complaining about are news to him. Things would go a lot smoother if
+Jerry explained his patches better.
 
-Can we keep IFF_SLAVE here only for no ipv6 addrconf?
-or do you see a better solution?
-
-Thanks.
+Reviewing patches which do stuff that isn't explained in the commit
+message reminds me of Forrest Gump. Life is like a box of chocolates,
+you never know what you're going to get. That's not how it's supposed to
+work, a box of chocolates should contain chocolates, at least here.
