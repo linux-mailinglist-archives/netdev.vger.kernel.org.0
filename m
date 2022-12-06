@@ -2,100 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB87C644FB1
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 00:37:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB45644FB8
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 00:38:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229500AbiLFXhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 18:37:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
+        id S229626AbiLFXiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 18:38:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiLFXhI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 18:37:08 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AD7429BE
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 15:37:07 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id g10so15453633plo.11
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 15:37:07 -0800 (PST)
+        with ESMTP id S229583AbiLFXiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 18:38:12 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE8545A20
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 15:38:10 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3e45d25de97so112919417b3.6
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 15:38:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=otCW253l7ot84a9vVRmiVoG+lIxgrQNkYbdDhCOtC9c=;
-        b=haGQ+FidVA17wTfx2NQ/Pqq/OpXe0/1Dzr59IUgqxAZNDk/WVBWDpcWJ3Z0fulUStb
-         c9584Lh0t96uOzS0fNsUaG3BeUFW/tFfU14Y5naNZYWEGRdecx0Ipv+sGXFNxH6hWuys
-         qqWvECLFxx4lkR87n0Itr+zaBfL1HXV8FGs7A=
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=iMeYuP/IHBLdEkldut+tJt83tnk8BcGmkM9CbSyHlFA=;
+        b=r33OvNK2vouj/RUCapruSqB5z+SEWuKjo/v0FtdmTHNEiB1bhsl3LKwcWGxRLJxfQv
+         QDXi9cX4aQk4XRdSOH/7iUu6Bl+b+eitsw2i3ooxmBigZvONyt8BVpbrLTdYkK+ATc0/
+         kcdJD16MIbGQE1nJImcppwey7pxm/r1Ny2ZVFC+55SIiRPwqaD+aaGGyGtI6Ll1ztqX7
+         XDAJKRp8iEyQfKuo9unh2ZHFeGRmEmGTfb+b7/FE/wPkNIDHNxovfvHeLPRjyAN0oSrE
+         54rZpWflr8ixj07RdC+xedXQQjcSr9g41aWmZOBQXaw9cE/jK/klIvYe4Q9+KQNwAyMP
+         C7CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=otCW253l7ot84a9vVRmiVoG+lIxgrQNkYbdDhCOtC9c=;
-        b=LGAKgKL9Wuavw40ZMJk5ZZSSsImK8iwcGV7G1Du2+8Z5u3QJFw4XOSGrQ9mkuYo9We
-         5ZqGSvvkMlT8POPEitw5CPpN35cwgJNIf6we6VSqkyXxafbLVhNWIlVDjdf9ve5HIQOp
-         GJc/tLElwlsRrCDmW4PxYpTicBzFYz50vWoEWVD+26vGWCATlQWwIUCKKiA6shDvxn++
-         leGU3r7wQ81Qig/piMJDTSNO1mrdLZJ9Z3HaunoM8SZdV64CguUCmBZDRevkHkRg8FHi
-         9l8Ig75ftpL9ugGceLKBR6N7D21lbQT4uhCIlkneElWF5wFzIdyuphZQQqg0zr1dw9xn
-         iuQQ==
-X-Gm-Message-State: ANoB5plhhVl5UYBMTmnAB+SNyT+rgrc12Po0/kLhP4VJToOCVfQR1IGJ
-        w4/9l6Vb26z4DPCv8zRobx2g1A==
-X-Google-Smtp-Source: AA0mqf4q1OYKyKIO9N36w2rvWCO+pr3fDJLBXlCWFivm02RH39BnlErnrXEIOx2DhnvBhvDcTwOt7w==
-X-Received: by 2002:a17:90a:d383:b0:219:c8d3:c503 with SMTP id q3-20020a17090ad38300b00219c8d3c503mr14436340pju.65.1670369827082;
-        Tue, 06 Dec 2022 15:37:07 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id w10-20020a62820a000000b00574cf11aaf3sm12178022pfd.208.2022.12.06.15.37.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 15:37:06 -0800 (PST)
-Date:   Tue, 6 Dec 2022 15:37:05 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Ryder Lee <Ryder.Lee@mediatek.com>
-Cc:     Shayne Chen =?utf-8?B?KOmZs+i7kuS4nik=?= 
-        <Shayne.Chen@mediatek.com>,
-        StanleyYP Wang =?utf-8?B?KOeOi+S+kemCpik=?= 
-        <StanleyYP.Wang@mediatek.com>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Howard-YH Hsu =?utf-8?B?KOioseiCsuixqik=?= 
-        <Howard-YH.Hsu@mediatek.com>,
-        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
-        Evelyn Tsai =?utf-8?B?KOiUoeePiumIuik=?= 
-        <Evelyn.Tsai@mediatek.com>,
-        Money Wang =?utf-8?B?KOeOi+S/oeWuiSk=?= 
-        <Money.Wang@mediatek.com>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
-        "nbd@nbd.name" <nbd@nbd.name>,
-        MeiChia Chiu =?utf-8?B?KOmCsee+juWYiSk=?= 
-        <MeiChia.Chiu@mediatek.com>,
-        "lorenzo@kernel.org" <lorenzo@kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Sujuan Chen =?utf-8?B?KOmZiOe0oOWonyk=?= 
-        <Sujuan.Chen@mediatek.com>,
-        Chui-hao Chiu =?utf-8?B?KOmCseWegua1qSk=?= 
-        <Chui-hao.Chiu@mediatek.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Bo Jiao =?utf-8?B?KOeEpuazoik=?= <Bo.Jiao@mediatek.com>
-Subject: Re: Coverity: mt7996_hw_queue_read(): Integer handling issues
-Message-ID: <202212061535.5D3DA489FB@keescook>
-References: <202212021411.A5E618D3@keescook>
- <786eff1a1751a5bc0dc68d6567be585b635bddb1.camel@mediatek.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=iMeYuP/IHBLdEkldut+tJt83tnk8BcGmkM9CbSyHlFA=;
+        b=CMQwk1yuVZvE2tWVSG2ddG9vGoz5L5WZCILKXD/JJ+uaHuouEDv+iOqeZQ1kl6Y+4D
+         r9AWiX3JsQcpoXK+CQJWE1XA5wmsRQyTJF03ftIQnRymWjNAOCVYklTM7obqvzSSTgZy
+         H1U74aIK+wO3Ui4uKgcNsRwQBoewenaHPu97AxQ0bhqcaYkWYV+im6Q9nj+s+tog8Xc5
+         a+T2+/VUDQAFTrVPttaHlZlr/6Hs5SM7FHn9CPFEYPFHRnnhssdf2MFTo+anK0aQ05bo
+         5/fzt4VXiy290/f0rQiC+9jlJ2V7eMNqv7oxRxeDEvi8fqTnYsZrJpB50oybd9skEea/
+         vsOw==
+X-Gm-Message-State: ANoB5pmT6p+E5nlxqVZZLjDU3eHdF19PPYvGMVjo0RKGCJE0bxUxmhNO
+        ExeZ/ctzTkfDrumZ13vvT42VqZ361CXVoOVE1P0W5A==
+X-Google-Smtp-Source: AA0mqf4GTH7r4BUD6E/vaD6DN9DWu08A2GD9X5LPfQeXKoAkdHS4YGuN+yaVSSkQbETQkqd4MnVh0mCw8oLrPP71MPQ=
+X-Received: by 2002:a81:798f:0:b0:37a:e8f:3cd3 with SMTP id
+ u137-20020a81798f000000b0037a0e8f3cd3mr19373621ywc.187.1670369889710; Tue, 06
+ Dec 2022 15:38:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <786eff1a1751a5bc0dc68d6567be585b635bddb1.camel@mediatek.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
+ <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org> <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st>
+ <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org> <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com>
+ <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk> <87sfke32pc.fsf@kernel.org>
+ <4592f87a-bb61-1c28-13f0-d041a6e7d3bf@linaro.org> <CACRpkdax-3VVDd29iH51mfumakqM7jyEc8Pbb=AQwAgp2WsqFQ@mail.gmail.com>
+ <d03bd4d4-e4ef-681b-b4a5-02822e1eee75@linaro.org> <87fse76yig.fsf@kernel.org>
+ <fc2812b1-db96-caa6-2ecb-c5bb2c33246a@linaro.org> <87bkov6x1q.fsf@kernel.org>
+ <CACRpkdbpJ8fw0UsuHXGX43JRyPy6j8P41_5gesXOmitHvyoRwQ@mail.gmail.com>
+ <28991d2d-d917-af47-4f5f-4e8183569bb1@linaro.org> <c83d7496-7547-2ab4-571a-60e16aa2aa3d@broadcom.com>
+ <6e4f1795-08b5-7644-d1fa-102d6d6b47fb@linaro.org> <af489711-6849-6f87-8ea3-6c8216f0007b@broadcom.com>
+ <62566987-6bd2-eed3-7c2f-ec13c5d34d1b@gmail.com> <21fc5c0e-f880-7a14-7007-2d28d5e66c7d@linaro.org>
+In-Reply-To: <21fc5c0e-f880-7a14-7007-2d28d5e66c7d@linaro.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 7 Dec 2022 00:37:57 +0100
+Message-ID: <CACRpkdbNssF5c7oJnm-EbjAJnD25kv2V7wp+TCKQZnVHJsni-g@mail.gmail.com>
+Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
+To:     Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Arend Van Spriel <aspriel@gmail.com>
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        Hector Martin <marcan@marcan.st>,
+        "martin.botka@somainline.org" <martin.botka@somainline.org>,
+        "angelogioacchino.delregno@somainline.org" 
+        <angelogioacchino.delregno@somainline.org>,
+        "marijn.suijten@somainline.org" <marijn.suijten@somainline.org>,
+        "jamipkettunen@somainline.org" <jamipkettunen@somainline.org>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Marek Vasut <marex@denx.de>,
+        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, phone-devel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -104,51 +100,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 03, 2022 at 04:40:09AM +0000, Ryder Lee wrote:
-> On Fri, 2022-12-02 at 14:11 -0800, coverity-bot wrote:
-> > Hello!
-> > 
-> > This is an experimental semi-automated report about issues detected
-> > by
-> > Coverity from a scan of next-20221202 as part of the linux-next scan
-> > project:
-> > 
-> https://urldefense.com/v3/__https://scan.coverity.com/projects/linux-next-weekly-scan__;!!CTRNKA9wMg0ARbw!jBOoj6LMqqA8E0AyjKQTa-0rVzcFiZ3BbpciEIn7so974kcMBeG4zZm-QU4AudLXY7-jNUSt0unzAt2zirSF$ 
-> >  
-> > 
-> > You're getting this email because you were associated with the
-> > identified
-> > lines of code (noted below) that were touched by commits:
-> > 
-> >   Thu Dec 1 17:29:14 2022 +0100
-> >     98686cd21624 ("wifi: mt76: mt7996: add driver for MediaTek Wi-Fi
-> > 7 (802.11be) devices")
-> > 
-> > Coverity reported the following:
-> > 
-> > *** CID 1527813:  Integer handling issues  (SIGN_EXTENSION)
-> > drivers/net/wireless/mediatek/mt76/mt7996/debugfs.c:460 in
-> > mt7996_hw_queue_read()
-> > 454     	for (i = 0; i < size; i++) {
-> > 455     		u32 ctrl, head, tail, queued;
-> > 456
-> > 457     		if (val & BIT(map[i].index))
-> > 458     			continue;
-> > 459
-> > vvv     CID 1527813:  Integer handling issues  (SIGN_EXTENSION)
-> > vvv     Suspicious implicit sign extension: "map[i].qid" with type
-> > "u8" (8 bits, unsigned) is promoted in "map[i].qid << 24" to type
-> > "int" (32 bits, signed), then sign-extended to type "unsigned long"
-> > (64 bits, unsigned).  If "map[i].qid << 24" is greater than
-> > 0x7FFFFFFF, the upper bits of the result will all be 1.
-> > 460     		ctrl = BIT(31) | (map[i].pid << 10) |
-> > (map[i].qid << 24);
-> 
-> u32 ctrl = BIT(31) | (map[i].pid << 10) | (map[i].qid << 24);
-> 
-> Hmm ...where's type "int" (32 bits, signed) from?
+On Tue, Dec 6, 2022 at 10:59 AM Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
 
-	map[i].qid is promoted to int before the "<< 24".
+> Yes, it does seem to work just fine! The kernel now looks for
+> brcm/brcmfmac4359c-pcie.sony,kagura-row.bin as we would expect.
 
--- 
-Kees Cook
+So the Sony kagura needs a special brcmfmac firmware like so many
+other mobile phones. There are a few Samsungs with custom firmware
+as well.
+
+Arend: what is the legal situation with these custom firmwares?
+
+I was under the impression that Broadcom actually made these,
+so they could in theory be given permission for redistribution in
+linux-firmware?
+
+Some that I have are newer versions than what is in Linux-firmware,
+e.g this from linux-firmware:
+
+brcm/brcmfmac4330-sdio.bin
+4330b2-roml/sdio-ag-pool-ccx-btamp-p2p-idsup-idauth-proptxstatus-pno-aoe-toe-pktfilter-keepalive
+Version: 5.90.125.104 CRC: 2570e6a3 Date: Tue 2011-10-25 19:34:26 PDT
+
+There is this found in Samsung Codina GT-I8160:
+4330b2-roml/sdio-g-p2p-aoe-pktfilter-keepalive-pno-ccx-wepso Version:
+5.99.10.0 CRC: 4f7fccf Date: Wed 2012-12-05 01:02:50 PST FWID
+01-52653ba9
+
+Or:
+brcmfmac4334-sdio.bin
+4334b1min-roml/sdio-ag-pno-p2p-ccx-extsup-proptxstatus-dmatxrc-rxov-pktfilter-keepalive-aoe-vsdb-wapi-wl11d
+Version: 6.10.0.0 CRC: 31410dd4 Date: Tue 2012-06-26 11:33:07 PDT FWID
+01-8ee3be86
+
+There is this found in Samsung Golden GT-I8190N:
+4334b1-roml/sdio-ag-p2p-extsup-aoe-pktfilter-keepalive-pno-dmatxrc-rxov-proptxstatus-vsdb-mchan-okc-rcc-fmc-wepso-txpwr-autoabn-sr
+Version: 6.10.58.99 CRC: 828f9174 Date: Mon 2013-08-26 02:13:44 PDT
+FWID 01-e39d4d77
+
+So in some cases more than a year newer firmware versions
+compared to linux-firmware, I guess also customized for the
+phones, but I can't really tell because we don't have anything
+of similar date in linux-firmware.
+
+Yours,
+Linus Walleij
