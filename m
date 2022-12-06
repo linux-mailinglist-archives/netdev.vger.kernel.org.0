@@ -2,420 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFF1664450C
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:55:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FDB364452E
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:59:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234701AbiLFNzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 08:55:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
+        id S234462AbiLFN7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 08:59:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232037AbiLFNzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:55:42 -0500
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC01F2CDD9
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 05:55:38 -0800 (PST)
-Received: by mail-oi1-x236.google.com with SMTP id q186so16957074oia.9
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 05:55:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RsC3jEZPa005IGR2XyaQwaWVDEqVqodxtBL7yZjYaXk=;
-        b=uD39Y4rKi/SbN2vILu73A/aU2zSrRIdGeSChVcOJeVRzKwerhWztqPElv3vqv7RS8Y
-         3pJKJDfiw/tnJ99lJ595p8Us44Qn1bNrrVVL4yAAm8/5hPsWsMj+aOEuGaYkPOn/Rx9L
-         xLWu6RVBJMGK1a0fE32MwDwfP1Jp7nSJ5XgUmCkvzKpS8WGr/V8N2yXsjN0tFb77yYIN
-         z6K/je+mwabN97jAJAY4R8CIl6eEUKLud8RCw8VJK+FaoGtEZNbSkvbG7h5i6QtUzf4T
-         UJOQDBnC6ojuXGiVBk00m884m3OYuanZAK+FUnzJ8H8qjd7GM168+ASuHIDSo/E26mhe
-         nQRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RsC3jEZPa005IGR2XyaQwaWVDEqVqodxtBL7yZjYaXk=;
-        b=3PfFSRP4A/DuG0YAW3gxIPcxRRH+lhf2FwEV0XaxIIRdsdLLmHnhmrDkNDbpchVHRe
-         oFvY7W66cm6+TnLXCrJxDOnANWidlbx4h6aushot6KCoC6Y64CzVXPnMfVe58fKZSlRq
-         YROky+M79LEanilwE0o2HJQhziFrH/pWsFQkO5GvBejyYE9sZU6BChGlQ04/N5cgeQ38
-         trv5P+Bi6AQb1+jLnLYUZs15IzWszLkrW28MJNe+fuIiefDXlpil2yYPAdy1RNtENCAU
-         ODG6ryyWX3jCcir0LikqQDr4aBEffRR0cfjB2p/12+95boVD0db4okvpG1aA/RLrzr9s
-         B75Q==
-X-Gm-Message-State: ANoB5pkqfm3fQskzsfz13kE8iBuF4YcD9A6FkvwE3I6b13wjHkfo94M6
-        zz5AV2CmUfk+TBbftIY+BfiX60cvcya7yYnx
-X-Google-Smtp-Source: AA0mqf6py+eWPrlFKw4ES+GBQuOW19x7BIbgrkLaoWDqjZUS9metcrhcNek7Tz6KDPSE3A7lJiMypA==
-X-Received: by 2002:a05:6808:1902:b0:35d:d646:3d00 with SMTP id bf2-20020a056808190200b0035dd6463d00mr2679600oib.194.1670334938078;
-        Tue, 06 Dec 2022 05:55:38 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:6544:c4a9:5a4c:3545])
-        by smtp.gmail.com with ESMTPSA id h5-20020a056830164500b00667ff6b7e9esm9319792otr.40.2022.12.06.05.55.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 05:55:37 -0800 (PST)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, kuniyu@amazon.com,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Victor Nogueira <victor@mojatatu.com>
-Subject: [PATCH net-next v6 4/4] net/sched: avoid indirect classify functions on retpoline kernels
-Date:   Tue,  6 Dec 2022 10:55:13 -0300
-Message-Id: <20221206135513.1904815-5-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221206135513.1904815-1-pctammela@mojatatu.com>
-References: <20221206135513.1904815-1-pctammela@mojatatu.com>
+        with ESMTP id S231255AbiLFN7u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:59:50 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289816163;
+        Tue,  6 Dec 2022 05:59:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=XzTi/+CPlea6BjgH4HGU1K3zrFmzxH8ADOjRkaoqvyA=; b=uiQoxcvtSwPnG69c5tBO8nP9vu
+        MHeKXPRZyfstw3pLHawm908KSlhUCLPMKSGiHBiyNppN7tSNI4GYnOcTH/a/WwN7PrnSJXDCvQ/jY
+        EUf5fvaJHUBsELZccHfH/xhtcwrr28LbZTV/31LXxkh8Q3ySpIF/UD9LulMcFE2QuILs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p2YTz-004X8E-4t; Tue, 06 Dec 2022 14:59:39 +0100
+Date:   Tue, 6 Dec 2022 14:59:39 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH v4 net-next 4/5] drivers/net/phy: add helpers to get/set
+ PLCA configuration
+Message-ID: <Y49Ky7aCUZxE5Fwg@lunn.ch>
+References: <cover.1670329232.git.piergiorgio.beruto@gmail.com>
+ <4c6bb420c2169edb31abd5c4d5fe04090ed329e4.1670329232.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4c6bb420c2169edb31abd5c4d5fe04090ed329e4.1670329232.git.piergiorgio.beruto@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose the necessary tc classifier functions and wire up cls_api to use
-direct calls in retpoline kernels.
+> +/* MDIO Manageable Devices (MMDs). */
+> +#define MDIO_MMD_OATC14		MDIO_MMD_VEND2
 
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Reviewed-by: Victor Nogueira <victor@mojatatu.com>
----
- net/sched/cls_api.c      | 3 ++-
- net/sched/cls_basic.c    | 6 ++++--
- net/sched/cls_bpf.c      | 6 ++++--
- net/sched/cls_cgroup.c   | 6 ++++--
- net/sched/cls_flow.c     | 6 ++++--
- net/sched/cls_flower.c   | 6 ++++--
- net/sched/cls_fw.c       | 6 ++++--
- net/sched/cls_matchall.c | 6 ++++--
- net/sched/cls_route.c    | 6 ++++--
- net/sched/cls_rsvp.c     | 2 ++
- net/sched/cls_rsvp.h     | 6 +++---
- net/sched/cls_rsvp6.c    | 2 ++
- net/sched/cls_tcindex.c  | 7 ++++---
- net/sched/cls_u32.c      | 6 ++++--
- 14 files changed, 49 insertions(+), 25 deletions(-)
+As i said in a comment somewhere, i would prefer you use
+MDIO_MMD_VEND2, not MDIO_MMD_OATC14. We want the gentle reminder that
+these registers can contain anything the vendor wants, including, but
+not limited to, PLCA.
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 23d1cfa4f58c..668130f08903 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -40,6 +40,7 @@
- #include <net/tc_act/tc_mpls.h>
- #include <net/tc_act/tc_gate.h>
- #include <net/flow_offload.h>
-+#include <net/tc_wrapper.h>
- 
- extern const struct nla_policy rtm_tca_policy[TCA_MAX + 1];
- 
-@@ -1564,7 +1565,7 @@ static inline int __tcf_classify(struct sk_buff *skb,
- 		    tp->protocol != htons(ETH_P_ALL))
- 			continue;
- 
--		err = tp->classify(skb, tp, res);
-+		err = tc_classify(skb, tp, res);
- #ifdef CONFIG_NET_CLS_ACT
- 		if (unlikely(err == TC_ACT_RECLASSIFY && !compat_mode)) {
- 			first_tp = orig_tp;
-diff --git a/net/sched/cls_basic.c b/net/sched/cls_basic.c
-index d229ce99e554..1b92c33b5f81 100644
---- a/net/sched/cls_basic.c
-+++ b/net/sched/cls_basic.c
-@@ -18,6 +18,7 @@
- #include <net/netlink.h>
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- struct basic_head {
- 	struct list_head	flist;
-@@ -36,8 +37,9 @@ struct basic_filter {
- 	struct rcu_work		rwork;
- };
- 
--static int basic_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			  struct tcf_result *res)
-+TC_INDIRECT_SCOPE int basic_classify(struct sk_buff *skb,
-+				     const struct tcf_proto *tp,
-+				     struct tcf_result *res)
- {
- 	int r;
- 	struct basic_head *head = rcu_dereference_bh(tp->root);
-diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-index bc317b3eac12..466c26df853a 100644
---- a/net/sched/cls_bpf.c
-+++ b/net/sched/cls_bpf.c
-@@ -19,6 +19,7 @@
- #include <net/rtnetlink.h>
- #include <net/pkt_cls.h>
- #include <net/sock.h>
-+#include <net/tc_wrapper.h>
- 
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Daniel Borkmann <dborkman@redhat.com>");
-@@ -77,8 +78,9 @@ static int cls_bpf_exec_opcode(int code)
- 	}
- }
- 
--static int cls_bpf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			    struct tcf_result *res)
-+TC_INDIRECT_SCOPE int cls_bpf_classify(struct sk_buff *skb,
-+				       const struct tcf_proto *tp,
-+				       struct tcf_result *res)
- {
- 	struct cls_bpf_head *head = rcu_dereference_bh(tp->root);
- 	bool at_ingress = skb_at_tc_ingress(skb);
-diff --git a/net/sched/cls_cgroup.c b/net/sched/cls_cgroup.c
-index ed00001b528a..bd9322d71910 100644
---- a/net/sched/cls_cgroup.c
-+++ b/net/sched/cls_cgroup.c
-@@ -13,6 +13,7 @@
- #include <net/pkt_cls.h>
- #include <net/sock.h>
- #include <net/cls_cgroup.h>
-+#include <net/tc_wrapper.h>
- 
- struct cls_cgroup_head {
- 	u32			handle;
-@@ -22,8 +23,9 @@ struct cls_cgroup_head {
- 	struct rcu_work		rwork;
- };
- 
--static int cls_cgroup_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			       struct tcf_result *res)
-+TC_INDIRECT_SCOPE int cls_cgroup_classify(struct sk_buff *skb,
-+					  const struct tcf_proto *tp,
-+					  struct tcf_result *res)
- {
- 	struct cls_cgroup_head *head = rcu_dereference_bh(tp->root);
- 	u32 classid = task_get_classid(skb);
-diff --git a/net/sched/cls_flow.c b/net/sched/cls_flow.c
-index 014cd3de7b5d..535668e1f748 100644
---- a/net/sched/cls_flow.c
-+++ b/net/sched/cls_flow.c
-@@ -24,6 +24,7 @@
- #include <net/ip.h>
- #include <net/route.h>
- #include <net/flow_dissector.h>
-+#include <net/tc_wrapper.h>
- 
- #if IS_ENABLED(CONFIG_NF_CONNTRACK)
- #include <net/netfilter/nf_conntrack.h>
-@@ -292,8 +293,9 @@ static u32 flow_key_get(struct sk_buff *skb, int key, struct flow_keys *flow)
- 			  (1 << FLOW_KEY_NFCT_PROTO_SRC) |	\
- 			  (1 << FLOW_KEY_NFCT_PROTO_DST))
- 
--static int flow_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			 struct tcf_result *res)
-+TC_INDIRECT_SCOPE int flow_classify(struct sk_buff *skb,
-+				    const struct tcf_proto *tp,
-+				    struct tcf_result *res)
- {
- 	struct flow_head *head = rcu_dereference_bh(tp->root);
- 	struct flow_filter *f;
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 25bc57ee6ea1..0b15698b3531 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -27,6 +27,7 @@
- #include <net/vxlan.h>
- #include <net/erspan.h>
- #include <net/gtp.h>
-+#include <net/tc_wrapper.h>
- 
- #include <net/dst.h>
- #include <net/dst_metadata.h>
-@@ -305,8 +306,9 @@ static u16 fl_ct_info_to_flower_map[] = {
- 					TCA_FLOWER_KEY_CT_FLAGS_NEW,
- };
- 
--static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--		       struct tcf_result *res)
-+TC_INDIRECT_SCOPE int fl_classify(struct sk_buff *skb,
-+				  const struct tcf_proto *tp,
-+				  struct tcf_result *res)
- {
- 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
- 	bool post_ct = tc_skb_cb(skb)->post_ct;
-diff --git a/net/sched/cls_fw.c b/net/sched/cls_fw.c
-index a32351da968c..ae9439a6c56c 100644
---- a/net/sched/cls_fw.c
-+++ b/net/sched/cls_fw.c
-@@ -21,6 +21,7 @@
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
- #include <net/sch_generic.h>
-+#include <net/tc_wrapper.h>
- 
- #define HTSIZE 256
- 
-@@ -47,8 +48,9 @@ static u32 fw_hash(u32 handle)
- 	return handle % HTSIZE;
- }
- 
--static int fw_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--		       struct tcf_result *res)
-+TC_INDIRECT_SCOPE int fw_classify(struct sk_buff *skb,
-+				  const struct tcf_proto *tp,
-+				  struct tcf_result *res)
- {
- 	struct fw_head *head = rcu_dereference_bh(tp->root);
- 	struct fw_filter *f;
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index 39a5d9c170de..705f63da2c21 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -12,6 +12,7 @@
- 
- #include <net/sch_generic.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- struct cls_mall_head {
- 	struct tcf_exts exts;
-@@ -24,8 +25,9 @@ struct cls_mall_head {
- 	bool deleting;
- };
- 
--static int mall_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			 struct tcf_result *res)
-+TC_INDIRECT_SCOPE int mall_classify(struct sk_buff *skb,
-+				    const struct tcf_proto *tp,
-+				    struct tcf_result *res)
- {
- 	struct cls_mall_head *head = rcu_dereference_bh(tp->root);
- 
-diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
-index 9e43b929d4ca..d0c53724d3e8 100644
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -17,6 +17,7 @@
- #include <net/netlink.h>
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- /*
-  * 1. For now we assume that route tags < 256.
-@@ -121,8 +122,9 @@ static inline int route4_hash_wild(void)
- 	return 0;						\
- }
- 
--static int route4_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			   struct tcf_result *res)
-+TC_INDIRECT_SCOPE int route4_classify(struct sk_buff *skb,
-+				      const struct tcf_proto *tp,
-+				      struct tcf_result *res)
- {
- 	struct route4_head *head = rcu_dereference_bh(tp->root);
- 	struct dst_entry *dst;
-diff --git a/net/sched/cls_rsvp.c b/net/sched/cls_rsvp.c
-index de1c1d4da597..03d8619bd9c6 100644
---- a/net/sched/cls_rsvp.c
-+++ b/net/sched/cls_rsvp.c
-@@ -15,10 +15,12 @@
- #include <net/netlink.h>
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
-+#include <net/tc_wrapper.h>
- 
- #define RSVP_DST_LEN	1
- #define RSVP_ID		"rsvp"
- #define RSVP_OPS	cls_rsvp_ops
-+#define RSVP_CLS	rsvp_classify
- 
- #include "cls_rsvp.h"
- MODULE_LICENSE("GPL");
-diff --git a/net/sched/cls_rsvp.h b/net/sched/cls_rsvp.h
-index b00a7dbd0587..869efba9f834 100644
---- a/net/sched/cls_rsvp.h
-+++ b/net/sched/cls_rsvp.h
-@@ -124,8 +124,8 @@ static inline unsigned int hash_src(__be32 *src)
- 		return r;				\
- }
- 
--static int rsvp_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			 struct tcf_result *res)
-+TC_INDIRECT_SCOPE int RSVP_CLS(struct sk_buff *skb, const struct tcf_proto *tp,
-+			       struct tcf_result *res)
- {
- 	struct rsvp_head *head = rcu_dereference_bh(tp->root);
- 	struct rsvp_session *s;
-@@ -738,7 +738,7 @@ static void rsvp_bind_class(void *fh, u32 classid, unsigned long cl, void *q,
- 
- static struct tcf_proto_ops RSVP_OPS __read_mostly = {
- 	.kind		=	RSVP_ID,
--	.classify	=	rsvp_classify,
-+	.classify	=	RSVP_CLS,
- 	.init		=	rsvp_init,
- 	.destroy	=	rsvp_destroy,
- 	.get		=	rsvp_get,
-diff --git a/net/sched/cls_rsvp6.c b/net/sched/cls_rsvp6.c
-index 64078846000e..e627cc32d633 100644
---- a/net/sched/cls_rsvp6.c
-+++ b/net/sched/cls_rsvp6.c
-@@ -15,10 +15,12 @@
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
- #include <net/netlink.h>
-+#include <net/tc_wrapper.h>
- 
- #define RSVP_DST_LEN	4
- #define RSVP_ID		"rsvp6"
- #define RSVP_OPS	cls_rsvp6_ops
-+#define RSVP_CLS rsvp6_classify
- 
- #include "cls_rsvp.h"
- MODULE_LICENSE("GPL");
-diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-index 1c9eeb98d826..eb0e9458e722 100644
---- a/net/sched/cls_tcindex.c
-+++ b/net/sched/cls_tcindex.c
-@@ -16,6 +16,7 @@
- #include <net/netlink.h>
- #include <net/pkt_cls.h>
- #include <net/sch_generic.h>
-+#include <net/tc_wrapper.h>
- 
- /*
-  * Passing parameters to the root seems to be done more awkwardly than really
-@@ -98,9 +99,9 @@ static struct tcindex_filter_result *tcindex_lookup(struct tcindex_data *p,
- 	return NULL;
- }
- 
--
--static int tcindex_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			    struct tcf_result *res)
-+TC_INDIRECT_SCOPE int tcindex_classify(struct sk_buff *skb,
-+				       const struct tcf_proto *tp,
-+				       struct tcf_result *res)
- {
- 	struct tcindex_data *p = rcu_dereference_bh(tp->root);
- 	struct tcindex_filter_result *f;
-diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-index 34d25f7a0687..4e2e269f121f 100644
---- a/net/sched/cls_u32.c
-+++ b/net/sched/cls_u32.c
-@@ -39,6 +39,7 @@
- #include <net/act_api.h>
- #include <net/pkt_cls.h>
- #include <linux/idr.h>
-+#include <net/tc_wrapper.h>
- 
- struct tc_u_knode {
- 	struct tc_u_knode __rcu	*next;
-@@ -100,8 +101,9 @@ static inline unsigned int u32_hash_fold(__be32 key,
- 	return h;
- }
- 
--static int u32_classify(struct sk_buff *skb, const struct tcf_proto *tp,
--			struct tcf_result *res)
-+TC_INDIRECT_SCOPE int u32_classify(struct sk_buff *skb,
-+				   const struct tcf_proto *tp,
-+				   struct tcf_result *res)
- {
- 	struct {
- 		struct tc_u_knode *knode;
--- 
-2.34.1
+> +/* Open Alliance TC14 PLCA CTRL0 register */
+> +#define MDIO_OATC14_PLCA_EN	0x8000  /* PLCA enable */
+> +#define MDIO_OATC14_PLCA_RST	0x4000  /* PLCA reset */
 
+These are bits, so use the BIT macro. When this was part of mii.h,
+that file used this hex format so it made sense to follow that
+format. Now you are in a few file, you should use the macro.
+
+> +/* Open Alliance TC14 PLCA CTRL1 register */
+> +#define MDIO_OATC14_PLCA_NCNT	0xff00	/* PLCA node count */
+> +#define MDIO_OATC14_PLCA_ID	0x00ff	/* PLCA local node ID */
+> +
+> +/* Open Alliance TC14 PLCA STATUS register */
+> +#define MDIO_OATC14_PLCA_PST	0x8000	/* PLCA status indication */
+> +
+> +/* Open Alliance TC14 PLCA TOTMR register */
+> +#define MDIO_OATC14_PLCA_TOT	0x00ff
+> +
+> +/* Open Alliance TC14 PLCA BURST register */
+> +#define MDIO_OATC14_PLCA_MAXBC	0xff00
+> +#define MDIO_OATC14_PLCA_BTMR	0x00ff
+> +
+> +#endif /* __MDIO_OPEN_ALLIANCE__ */
+> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+> index a87a4b3ffce4..dace5d3b29ad 100644
+> --- a/drivers/net/phy/phy-c45.c
+> +++ b/drivers/net/phy/phy-c45.c
+> @@ -8,6 +8,8 @@
+>  #include <linux/mii.h>
+>  #include <linux/phy.h>
+>  
+> +#include "mdio-open-alliance.h"
+> +
+>  /**
+>   * genphy_c45_baset1_able - checks if the PMA has BASE-T1 extended abilities
+>   * @phydev: target phy_device struct
+> @@ -931,6 +933,184 @@ int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable)
+>  }
+>  EXPORT_SYMBOL_GPL(genphy_c45_fast_retrain);
+>  
+> +/**
+> + * genphy_c45_plca_get_cfg - get PLCA configuration from standard registers
+> + * @phydev: target phy_device struct
+> + * @plca_cfg: output structure to store the PLCA configuration
+> + *
+> + * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
+> + *   Management Registers specifications, this function can be used to retrieve
+> + *   the current PLCA configuration from the standard registers in MMD 31.
+> + */
+> +int genphy_c45_plca_get_cfg(struct phy_device *phydev,
+> +			    struct phy_plca_cfg *plca_cfg)
+> +{
+> +	int ret;
+> +
+> +	ret = phy_read_mmd(phydev, MDIO_MMD_OATC14, MDIO_OATC14_PLCA_IDVER);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	plca_cfg->version = ret;
+
+It would be good to verify this value, and return -ENODEV if it is not
+valid.
+
+	Andrew
