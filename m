@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EF52643F9C
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:17:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 863D2643FA2
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:17:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234735AbiLFJRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 04:17:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
+        id S234853AbiLFJRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 04:17:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235037AbiLFJRN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 04:17:13 -0500
+        with ESMTP id S235072AbiLFJRQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 04:17:16 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A3620BD7;
-        Tue,  6 Dec 2022 01:16:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2BF209B9;
+        Tue,  6 Dec 2022 01:16:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670318207; x=1701854207;
+  t=1670318215; x=1701854215;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=CrRObtODg0JplsAbj5woAn4ZSHnUUFWo8Oft1XoyNAo=;
-  b=tO0fw8bp587Nuj2Pmpa0TIHw8Xn+cq6FtTW5kucNqnP6qBjJmEGIQf31
-   h+Hy1tzi3fxjB/UUJE8BjKf/a0Uxon/Nql6KNU2jA0fF7HnZgRFVgyqhG
-   UJ7nNPVShOw0HjI54UfcoibzoVgStDpSbCfDMmqCMWGEghqSsXRB+dJOs
-   IztLskR0ylA+vYXlTT9pd8Kmy9PqzztWSgOcLlUWHUbDJ3eOy368lgC9q
-   VEB6bDvH0IL2HpwFrvnxzNZT9XfNO0EuGTUII89Jnhh+ZeMMQXY2l2r1C
-   L6aTVbYW9BdVZd0YSCCJ+g4fMdswjFX9FzBooBL3L/cCzbaIR9FDRUguV
-   Q==;
+  bh=9P6lUpYRndzs0KeFuie6uAlnS7WtAwh8LsJWCdKzIas=;
+  b=LZ6El4I7O7NSdPV6GcnzaChlZ0qQQ5niw1z8blWo9N04byCFurGRrMVp
+   +sd/AUvn9PZBPJpEcrsEMrSsHuyOJJrpJeCJRAoD1C54vNaneKrSc3EmA
+   7RCRqtD70mLBeBSPOjjpuZoQY8DK4vjYlIRY1IpT9cj8lFQCbQV0n57eR
+   lmUtvXY8eHmbCV/Pr101SYooLt8/CiuH+0nQ8P6TunFOqwmRXJX+XAwRh
+   nbokwhaKntN9f+YsRcC1h/2DzZLOp+woNvRbs//MUdahZmLuWeSHrsSV8
+   kHkungmp57I5wn//AjmSBh7l/PuMhTqQewspVTm7jXmjka52KvrDoIS+t
+   A==;
 X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
-   d="scan'208";a="191878020"
+   d="scan'208";a="202773064"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Dec 2022 02:16:47 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Dec 2022 02:16:55 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 6 Dec 2022 02:16:46 -0700
+ 15.1.2507.12; Tue, 6 Dec 2022 02:16:54 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 6 Dec 2022 02:16:40 -0700
+ 15.1.2507.12 via Frontend Transport; Tue, 6 Dec 2022 02:16:48 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
@@ -46,9 +46,9 @@ CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
         <richardcochran@gmail.com>, <ceggers@arri.de>
-Subject: [Patch net-next v2 11/13] net: dsa: microchip: ptp: add support for perout programmable pins
-Date:   Tue, 6 Dec 2022 14:44:26 +0530
-Message-ID: <20221206091428.28285-12-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v2 12/13] net: dsa: microchip: ptp: lan937x: add 2 step timestamping
+Date:   Tue, 6 Dec 2022 14:44:27 +0530
+Message-ID: <20221206091428.28285-13-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20221206091428.28285-1-arun.ramadoss@microchip.com>
 References: <20221206091428.28285-1-arun.ramadoss@microchip.com>
@@ -65,122 +65,190 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two programmable pins available for Trigger output unit to
-generate periodic pulses. This patch add verify_pin for the available 2
-pins and configure it with respect to GPIO index for the TOU unit.
-
-Tested using testptp
-./testptp -i 0 -L 0,2
-./testptp -i 0 -d /dev/ptp0 -p 1000000000
-./testptp -i 1 -L 1,2
-./testptp -i 1 -d /dev/ptp0 -p 100000000
+LAN937x series of switches support 2 step timestamping mechanism. There
+are timestamp correction calculation performed in ksz_rcv_timestamp and
+ksz_xmit_timestamp which are applicable only for p2p1step. To check
+whether the 2 step is enabled or not in tag_ksz.c introduced the helper
+function in taggger_data to query it from ksz_ptp.c. Based on whether 2
+step is enabled or not, timestamp calculation are performed.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
-v1 - v2
-- checkpatch warning to limit 80 chars
+v1 -> v2
+- declard is_ptp_twostep as macro NULL for ptp disabled case
+- Moved the patch in series to have continuity for lan937x updates 9/11
+  to 12/13
+- enable PTP_1STEP bit based on tx timestamping
 
 Patch v1
-- patch is new
+- Patch is new.
 ---
- drivers/net/dsa/microchip/ksz_ptp.c | 35 +++++++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_ptp.h |  3 +++
- 2 files changed, 38 insertions(+)
+ drivers/net/dsa/microchip/ksz_common.c |  1 +
+ drivers/net/dsa/microchip/ksz_ptp.c    | 36 ++++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_ptp.h    |  3 +++
+ include/linux/dsa/ksz_common.h         |  1 +
+ net/dsa/tag_ksz.c                      | 14 ++++++++++
+ 5 files changed, 55 insertions(+)
 
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 3b578a4a33de..91f998fab231 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -2462,6 +2462,7 @@ static int ksz_connect_tag_protocol(struct dsa_switch *ds,
+ 	tagger_data = ksz_tagger_data(ds);
+ 	tagger_data->xmit_work_fn = ksz_port_deferred_xmit;
+ 	tagger_data->meta_tstamp_handler = ksz_tstamp_reconstruct;
++	tagger_data->is_ptp_twostep = ksz_is_ptp_twostep;
+ 
+ 	return 0;
+ }
 diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-index 286ee367d8b2..25b0f09753ce 100644
+index 25b0f09753ce..8392962311e2 100644
 --- a/drivers/net/dsa/microchip/ksz_ptp.c
 +++ b/drivers/net/dsa/microchip/ksz_ptp.c
-@@ -173,6 +173,10 @@ static int ksz_ptp_enable_perout(struct ksz_device *dev,
- 	    ptp_data->tou_mode != KSZ_PTP_TOU_IDLE)
- 		return -EBUSY;
+@@ -329,6 +329,9 @@ int ksz_get_ts_info(struct dsa_switch *ds, int port, struct ethtool_ts_info *ts)
  
-+	pin = ptp_find_pin(ptp_data->clock, PTP_PF_PEROUT, request->index);
-+	if (pin < 0)
-+		return -EINVAL;
+ 	ts->tx_types = BIT(HWTSTAMP_TX_OFF) | BIT(HWTSTAMP_TX_ONESTEP_P2P);
+ 
++	if (is_lan937x(dev))
++		ts->tx_types |= BIT(HWTSTAMP_TX_ON);
 +
- 	data32 = FIELD_PREP(PTP_GPIO_INDEX, pin) |
- 		 FIELD_PREP(PTP_TOU_INDEX, request->index);
- 	ret = ksz_rmw32(dev, REG_PTP_UNIT_INDEX__4,
-@@ -685,6 +689,23 @@ static int ksz_ptp_enable(struct ptp_clock_info *ptp,
- 	return ret;
+ 	ts->rx_filters = BIT(HWTSTAMP_FILTER_NONE) |
+ 			 BIT(HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
+ 			 BIT(HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
+@@ -356,6 +359,8 @@ static int ksz_set_hwtstamp_config(struct ksz_device *dev,
+ 				   struct ksz_port *prt,
+ 				   struct hwtstamp_config *config)
+ {
++	int ret;
++
+ 	if (config->flags)
+ 		return -EINVAL;
+ 
+@@ -371,6 +376,25 @@ static int ksz_set_hwtstamp_config(struct ksz_device *dev,
+ 		prt->ptpmsg_irq[KSZ_XDREQ_MSG].ts_en = 1;
+ 		prt->ptpmsg_irq[KSZ_PDRES_MSG].ts_en = 0;
+ 		prt->hwts_tx_en = true;
++
++		ret = ksz_rmw16(dev, REG_PTP_MSG_CONF1, PTP_1STEP, PTP_1STEP);
++		if (ret)
++			return ret;
++
++		break;
++	case HWTSTAMP_TX_ON:
++		if (!is_lan937x(dev))
++			return -ERANGE;
++
++		prt->ptpmsg_irq[KSZ_SYNC_MSG].ts_en  = 1;
++		prt->ptpmsg_irq[KSZ_XDREQ_MSG].ts_en = 1;
++		prt->ptpmsg_irq[KSZ_PDRES_MSG].ts_en = 1;
++		prt->hwts_tx_en = true;
++
++		ret = ksz_rmw16(dev, REG_PTP_MSG_CONF1, PTP_1STEP, 0);
++		if (ret)
++			return ret;
++
+ 		break;
+ 	default:
+ 		return -ERANGE;
+@@ -403,6 +427,14 @@ static int ksz_set_hwtstamp_config(struct ksz_device *dev,
+ 	return ksz_ptp_enable_mode(dev);
  }
  
-+static int ksz_ptp_verify_pin(struct ptp_clock_info *ptp, unsigned int pin,
-+			      enum ptp_pin_function func, unsigned int chan)
++bool ksz_is_ptp_twostep(struct dsa_switch *ds, unsigned int port)
 +{
-+	int ret = 0;
++	struct ksz_device *dev	= ds->priv;
++	struct ksz_port *prt = &dev->ports[port];
 +
-+	switch (func) {
-+	case PTP_PF_NONE:
-+	case PTP_PF_PEROUT:
-+		break;
-+	default:
-+		ret = -1;
-+		break;
-+	}
-+
-+	return ret;
++	return (prt->tstamp_config.tx_type == HWTSTAMP_TX_ON);
 +}
 +
- /*  Function is pointer to the do_aux_work in the ptp_clock capability */
- static long ksz_ptp_do_aux_work(struct ptp_clock_info *ptp)
+ int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr)
  {
-@@ -791,6 +812,7 @@ int ksz_ptp_clock_register(struct dsa_switch *ds)
  	struct ksz_device *dev = ds->priv;
- 	struct ksz_ptp_data *ptp_data;
- 	int ret;
-+	u8 i;
+@@ -451,6 +483,10 @@ void ksz_port_txtstamp(struct dsa_switch *ds, int port,
+ 	ptp_msg_type = ptp_get_msgtype(hdr, type);
  
- 	ptp_data = &dev->ptp_data;
- 	mutex_init(&ptp_data->lock);
-@@ -805,12 +827,25 @@ int ksz_ptp_clock_register(struct dsa_switch *ds)
- 	ptp_data->caps.adjtime		= ksz_ptp_adjtime;
- 	ptp_data->caps.do_aux_work	= ksz_ptp_do_aux_work;
- 	ptp_data->caps.enable		= ksz_ptp_enable;
-+	ptp_data->caps.verify		= ksz_ptp_verify_pin;
-+	ptp_data->caps.n_pins		= KSZ_PTP_N_GPIO;
- 	ptp_data->caps.n_per_out	= 3;
- 
- 	ret = ksz_ptp_start_clock(dev);
- 	if (ret)
- 		return ret;
- 
-+	for (i = 0; i < KSZ_PTP_N_GPIO; i++) {
-+		struct ptp_pin_desc *ptp_pin = &ptp_data->pin_config[i];
-+
-+		snprintf(ptp_pin->name,
-+			 sizeof(ptp_pin->name), "ksz_ptp_pin_%02d", i);
-+		ptp_pin->index = i;
-+		ptp_pin->func = PTP_PF_NONE;
-+	}
-+
-+	ptp_data->caps.pin_config = ptp_data->pin_config;
-+
- 	/* Currently only P2P mode is supported */
- 	ret = ksz_rmw16(dev, REG_PTP_MSG_CONF1, PTP_TC_P2P, PTP_TC_P2P);
- 	if (ret)
+ 	switch (ptp_msg_type) {
++	case PTP_MSGTYPE_SYNC:
++		if (prt->tstamp_config.tx_type == HWTSTAMP_TX_ONESTEP_P2P)
++			return;
++		 fallthrough;
+ 	case PTP_MSGTYPE_PDELAY_REQ:
+ 		 fallthrough;
+ 	case PTP_MSGTYPE_PDELAY_RESP:
 diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
-index 08769b9baaf2..5a71c826c7d8 100644
+index 5a71c826c7d8..abad072b7032 100644
 --- a/drivers/net/dsa/microchip/ksz_ptp.h
 +++ b/drivers/net/dsa/microchip/ksz_ptp.h
-@@ -12,6 +12,8 @@
+@@ -46,6 +46,7 @@ int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p);
+ void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p);
+ void ksz_port_deferred_xmit(struct kthread_work *work);
+ ktime_t ksz_tstamp_reconstruct(struct dsa_switch *ds, ktime_t tstamp);
++bool ksz_is_ptp_twostep(struct dsa_switch *ds, unsigned int port);
  
- #include <linux/ptp_clock_kernel.h>
+ #else
  
-+#define KSZ_PTP_N_GPIO		2
+@@ -80,6 +81,8 @@ static inline void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p) {}
+ 
+ #define ksz_port_deferred_xmit NULL
+ 
++#define ksz_is_ptp_twostep NULL
 +
- enum ksz_ptp_tou_mode {
- 	KSZ_PTP_TOU_IDLE,
- 	KSZ_PTP_TOU_PEROUT,
-@@ -20,6 +22,7 @@ enum ksz_ptp_tou_mode {
- struct ksz_ptp_data {
- 	struct ptp_clock_info caps;
- 	struct ptp_clock *clock;
-+	struct ptp_pin_desc pin_config[KSZ_PTP_N_GPIO];
- 	/* Serializes all operations on the PTP hardware clock */
- 	struct mutex lock;
- 	/* lock for accessing the clock_time */
+ #endif	/* End of CONFIG_NET_DSA_MICROCHIP_KSZ_PTP */
+ 
+ #endif
+diff --git a/include/linux/dsa/ksz_common.h b/include/linux/dsa/ksz_common.h
+index b180eb3429bd..be1a850c82fb 100644
+--- a/include/linux/dsa/ksz_common.h
++++ b/include/linux/dsa/ksz_common.h
+@@ -33,6 +33,7 @@ struct ksz_tagger_data {
+ 	void (*xmit_work_fn)(struct kthread_work *work);
+ 	void (*hwtstamp_set_state)(struct dsa_switch *ds, bool on);
+ 	ktime_t (*meta_tstamp_handler)(struct dsa_switch *ds, ktime_t tstamp);
++	bool (*is_ptp_twostep)(struct dsa_switch *ds, unsigned int port);
+ };
+ 
+ struct ksz_skb_cb {
+diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+index e57066f3947e..e2aa438437a0 100644
+--- a/net/dsa/tag_ksz.c
++++ b/net/dsa/tag_ksz.c
+@@ -216,6 +216,12 @@ static void ksz_rcv_timestamp(struct sk_buff *skb, u8 *tag,
+ 	if (!ptp_hdr)
+ 		return;
+ 
++	if (!tagger_data->is_ptp_twostep)
++		return;
++
++	if (tagger_data->is_ptp_twostep(ds, port))
++		return;
++
+ 	ptp_msg_type = ptp_get_msgtype(ptp_hdr, ptp_type);
+ 	if (ptp_msg_type != PTP_MSGTYPE_PDELAY_REQ)
+ 		return;
+@@ -237,6 +243,7 @@ static void ksz_rcv_timestamp(struct sk_buff *skb, u8 *tag,
+ static void ksz_xmit_timestamp(struct dsa_port *dp, struct sk_buff *skb)
+ {
+ 	struct sk_buff *clone = KSZ_SKB_CB(skb)->clone;
++	struct ksz_tagger_data *tagger_data;
+ 	struct ksz_tagger_private *priv;
+ 	struct ptp_header *ptp_hdr;
+ 	unsigned int ptp_type;
+@@ -252,6 +259,13 @@ static void ksz_xmit_timestamp(struct dsa_port *dp, struct sk_buff *skb)
+ 	if (!clone)
+ 		goto output_tag;
+ 
++	tagger_data = ksz_tagger_data(dp->ds);
++	if (!tagger_data->is_ptp_twostep)
++		goto output_tag;
++
++	if (tagger_data->is_ptp_twostep(dp->ds, dp->index))
++		goto output_tag;
++
+ 	ptp_type = KSZ_SKB_CB(clone)->ptp_type;
+ 	if (ptp_type == PTP_CLASS_NONE)
+ 		goto output_tag;
 -- 
 2.36.1
 
