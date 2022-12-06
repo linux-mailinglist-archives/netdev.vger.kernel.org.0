@@ -2,82 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7429E644476
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:21:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F430644479
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:22:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233864AbiLFNVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 08:21:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58236 "EHLO
+        id S234603AbiLFNWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 08:22:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233317AbiLFNV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:21:29 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6211000
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 05:21:26 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id gh17so6116900ejb.6
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 05:21:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4A1/sDedsEMhpagiaSYGQZ4/VZF9EUw1mfdyYLwspKc=;
-        b=tMrnWhIwGP2Gl0gqajcIBQAKu/fg+d/y+m834Den0uq6uTqk882e3GGanbCPQz9l53
-         Wggili/p7rOQ1tdOE/ypHaUqzeJtfY5OT1/PjU5AP5cmIXD1/DF5vTQ6J08NqhdQcI8E
-         /434huhN80gdnAoCbFzDp7Vy3YUJ76rnZue5bIeuOAk2ckE7hxqraYVeGep93lAKDHUA
-         0AjfJvFc8PhO0EJwqR4FN1/UW/xDyYVm60JulEag5a+3rB7LrX4+am7V4Rb43wSqR8Hm
-         avLlOMLpNMJ679jODgRoB3yjQjBo4gZjmNQvuSaPVmHiKFDcAEA2ROg6PA/c3ZCmmA4k
-         i8ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4A1/sDedsEMhpagiaSYGQZ4/VZF9EUw1mfdyYLwspKc=;
-        b=Mn5kJV5JneOgbgWV1uRC+Iw0KFHuD9NDuMG4H9GpGrxadfuPL2oJPKqpHY3HhLLPZ6
-         XjHWX7OTylQtRR9yeKfNLs2axlD5mbErJ//Mx6Zb4ELcWbygqaNEoDA5ir1bFzBZqtCi
-         7WO0SpHk6uj8uj1b17R/STLokNwZP5nYR7c10zr4/RzNB4N6HHeH0iPiXVHWcYDhGH09
-         /hjQp4ew8GzzPfbuv9HNI7Mxbe8Aiov4h0AvzNofMjJsXK3E2Z0iD4HISuInLJFIiBA5
-         9IezdqXltcIYuBGvKMvwYftcD9GT6Q7vmbd/PpbRER4S0R5Ci6jRXxO9IjIHYOznEwJA
-         EvqA==
-X-Gm-Message-State: ANoB5pk4basxzxKTjAurfKjZx+Vv8hzj880Fwy/bpmqSDRxVhJ98c/SW
-        9WjCf73+zsfD23n80rZwSNW5yg==
-X-Google-Smtp-Source: AA0mqf6NthG9z1ImHJdswLixYqxWNP9T87diFnLhKiaSRGZswGtMAb061dUvXpe8zghf6GqecOlNww==
-X-Received: by 2002:a17:906:ee2:b0:78d:3f96:b7aa with SMTP id x2-20020a1709060ee200b0078d3f96b7aamr58012848eji.74.1670332885277;
-        Tue, 06 Dec 2022 05:21:25 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id y20-20020a50eb94000000b004589da5e5cesm973328edr.41.2022.12.06.05.21.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 05:21:24 -0800 (PST)
-Date:   Tue, 6 Dec 2022 14:21:23 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     zhang.songyi@zte.com.cn
-Cc:     leon@kernel.org, saeedm@nvidia.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        kliteyn@nvidia.com, shunh@nvidia.com, rongweil@nvidia.com,
-        valex@nvidia.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net/mlx5: remove redundant ret variable
-Message-ID: <Y49B08qoVY5WT0s3@nanopsycho>
-References: <202212051424013653827@zte.com.cn>
+        with ESMTP id S231168AbiLFNWW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:22:22 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9133AEB8;
+        Tue,  6 Dec 2022 05:22:20 -0800 (PST)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2B6Bxcim024328;
+        Tue, 6 Dec 2022 13:22:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=ebCnlux+96ksM5zPKoRnRob4fbCGJZT59f1yr9KTJIY=;
+ b=coD+XsnSRKBv/y5toP9LJWpqJjyNkcXmxbrKmb0xCYGXlCCO4eneSkTtNYPbsdp0yKOr
+ sNFgcmbHrawzttE27XP00iyX7DdjmjALkb4fBylk1mTnE43PIWWHvkWTYtId+puMm+bW
+ TMo93O4VeSn3Py9bUsrkkP+LSRITxLpN/VB/BAAnLh7E7x25UGfbGwegS6DWgZ2Owk3D
+ oBcJOtgjsv2nsRpUh1k+s1PZK+bXmGx2bfdfzsG+Y4iD0Js54GZ+3lljIciUW40xRqwu
+ 2PmY+eCriZhM4iR9G9CHLE8I0+npzlXyb46xblnKfTyp/l/oKvE0tIMTfVWeDv/ybLwZ +w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ma59bt63p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 06 Dec 2022 13:22:00 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2B6CqF99008000;
+        Tue, 6 Dec 2022 13:22:00 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ma59bt62r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 06 Dec 2022 13:21:59 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 2B5K5aDY003030;
+        Tue, 6 Dec 2022 13:21:57 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+        by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3m9kur128b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 06 Dec 2022 13:21:57 +0000
+Received: from d06av26.portsmouth.uk.ibm.com ([9.149.105.62])
+        by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2B6DLtoh23790282
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 6 Dec 2022 13:21:55 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1C4E6AE04D;
+        Tue,  6 Dec 2022 13:21:55 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A9015AE045;
+        Tue,  6 Dec 2022 13:21:54 +0000 (GMT)
+Received: from [9.171.16.157] (unknown [9.171.16.157])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  6 Dec 2022 13:21:54 +0000 (GMT)
+Message-ID: <3b77aa12a864ab2db081e99aec1bfad78e3b9b51.camel@linux.ibm.com>
+Subject: Re: [PATCH bpf] bpf: Proper R0 zero-extension for BPF_CALL
+ instructions
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@rivosinc.com>,
+        Brendan Jackman <jackmanb@google.com>
+Date:   Tue, 06 Dec 2022 14:21:54 +0100
+In-Reply-To: <20221202103620.1915679-1-bjorn@kernel.org>
+References: <20221202103620.1915679-1-bjorn@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.46.1 (3.46.1-1.fc37) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: nHeNlSXTIcfStJ5JmGK2XIjWsAqfL1AO
+X-Proofpoint-ORIG-GUID: wGUpdwcrUBBAL4FoXea0jfhBDAxouiox
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202212051424013653827@zte.com.cn>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-06_09,2022-12-06_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ lowpriorityscore=0 adultscore=0 priorityscore=1501 phishscore=0
+ impostorscore=0 malwarescore=0 mlxscore=0 suspectscore=0 bulkscore=0
+ mlxlogscore=881 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2210170000 definitions=main-2212060107
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Dec 05, 2022 at 07:24:01AM CET, zhang.songyi@zte.com.cn wrote:
->From: zhang songyi <zhang.songyi@zte.com.cn>
->
->Return value from mlx5dr_send_postsend_action() directly instead of taking
->this in another redundant variable.
->
->Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
+On Fri, 2022-12-02 at 11:36 +0100, Bj=C3=B6rn T=C3=B6pel wrote:
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn@rivosinc.com>
+>=20
+> A BPF call instruction can be, correctly, marked with zext_dst set to
+> true. An example of this can be found in the BPF selftests
+> progs/bpf_cubic.c:
+>=20
+> =C2=A0 ...
+> =C2=A0 extern __u32 tcp_reno_undo_cwnd(struct sock *sk) __ksym;
+>=20
+> =C2=A0 __u32 BPF_STRUCT_OPS(bpf_cubic_undo_cwnd, struct sock *sk)
+> =C2=A0 {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return tcp_reno_un=
+do_cwnd(sk);
+> =C2=A0 }
+> =C2=A0 ...
+>=20
+> which compiles to:
+> =C2=A0 0:=C2=A0 r1 =3D *(u64 *)(r1 + 0x0)
+> =C2=A0 1:=C2=A0 call -0x1
+> =C2=A0 2:=C2=A0 exit
+>=20
+> The call will be marked as zext_dst set to true, and for some
+> backends
+> (bpf_jit_needs_zext() returns true) expanded to:
+> =C2=A0 0:=C2=A0 r1 =3D *(u64 *)(r1 + 0x0)
+> =C2=A0 1:=C2=A0 call -0x1
+> =C2=A0 2:=C2=A0 w0 =3D w0
+> =C2=A0 3:=C2=A0 exit
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+In the verifier, the marking is done by check_kfunc_call() (added in
+e6ac2450d6de), right? So the problem occurs only for kfuncs?
+
+        /* Check return type */
+        t =3D btf_type_skip_modifiers(desc_btf, func_proto->type, NULL);
+
+        ...
+
+        if (btf_type_is_scalar(t)) {
+                mark_reg_unknown(env, regs, BPF_REG_0);
+                mark_btf_func_reg_size(env, BPF_REG_0, t->size);
+
+I tried to find some official information whether the eBPF calling
+convention requires sign- or zero- extending return values and
+arguments, but unfortunately [1] doesn't mention this.
+
+LLVM's lib/Target/BPF/BPFCallingConv.td mentions both R* and W*
+registers, but since assigning to W* leads to zero-extension, it seems
+to me that this is the case.
+
+If the above is correct, then shouldn't we rather use sizeof(void *) in
+the mark_btf_func_reg_size() call above?
+
+> The opt_subreg_zext_lo32_rnd_hi32() function which is responsible for
+> the zext patching, relies on insn_def_regno() to fetch the register
+> to
+> zero-extend. However, this function does not handle call instructions
+> correctly, and opt_subreg_zext_lo32_rnd_hi32() fails the
+> verification.
+>=20
+> Make sure that R0 is correctly resolved for (BPF_JMP | BPF_CALL)
+> instructions.
+>=20
+> Fixes: 83a2881903f3 ("bpf: Account for BPF_FETCH in
+> insn_has_def32()")
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn@rivosinc.com>
+> ---
+> I'm not super happy about the additional special case -- first
+> cmpxchg, and now call. :-( A more elegant/generic solution is
+> welcome!
+> ---
+> =C2=A0kernel/bpf/verifier.c | 3 +++
+> =C2=A01 file changed, 3 insertions(+)
+>=20
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 264b3dc714cc..4f9660eafc72 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -13386,6 +13386,9 @@ static int
+> opt_subreg_zext_lo32_rnd_hi32(struct bpf_verifier_env *env,
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0if (!bpf_jit_needs_zext() && !is_cmpxchg_insn(&insn=
+))
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0con=
+tinue;
+> =C2=A0
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0if (insn.code =3D=3D (BPF_JMP | BPF_CALL))
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0load_reg =
+=3D BPF_REG_0;
+> +
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0if (WARN_ON(load_reg =3D=3D -1)) {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ver=
+bose(env, "verifier bug. zext_dst is set,
+> but no reg is defined\n");
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ret=
+urn -EFAULT;
+>=20
+> base-commit: 01f856ae6d0ca5ad0505b79bf2d22d7ca439b2a1
+
+[1]
+https://docs.kernel.org/bpf/instruction-set.html#registers-and-calling-conv=
+ention
