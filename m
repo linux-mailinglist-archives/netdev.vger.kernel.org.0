@@ -2,683 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66C6D644249
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 12:41:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D2E1644250
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 12:43:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232584AbiLFLlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 06:41:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41364 "EHLO
+        id S233366AbiLFLnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 06:43:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiLFLky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 06:40:54 -0500
-Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508A26550
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 03:40:52 -0800 (PST)
-X-QQ-mid: bizesmtp78t1670326847ts216q4f
-Received: from localhost.localdomain ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 06 Dec 2022 19:40:37 +0800 (CST)
-X-QQ-SSF: 01400000000000M0N000000A0000000
-X-QQ-FEAT: dcYQFNbI8vE//aRUHKpYFKsbcMv/C55L3JDSsoEm19Xx8dBNgWLrJErhhI6Gw
-        1UqdBYioLrEb+BIPJGCB2aaVkatfNMLa2IRYBsL/OFXEPQPoKQf0mH9Q5xgyrEsqO5JxLmO
-        79Kf3rC93MaCt1nlfUwHklJyKj+Nr6hXswaY5SDVlvzg2kTVqd/1ngqdZmjlcjgmCZVrrEN
-        JWubmM1bOXPVat8pmEe0ikuVTCKr5Jtimd7e4PpStBbBrddJhLkaSGOF3j96i862bxWI3q0
-        Ip7aS3SQD0dB2ydhOTOcCqFUb1daYrGNPJnjgn0/crHWkqhfi/N4MS2+A4iy/GqofvJ1aUF
-        F1mHd0uhHRPWIcc5P1c0Db6fi1T862woKGKWhJv9w4N2Hxt1INO26MI9oDSIoBkt7iEztk1
-        VTkhbGhSfx1TVOmmdvB39Q==
-X-QQ-GoodBg: 2
-From:   Mengyuan Lou <mengyuanlou@net-swift.com>
-To:     netdev@vger.kernel.org
-Cc:     jiawenwu@trustnetic.com, Mengyuan Lou <mengyuanlou@net-swift.com>
-Subject: [PATCH net-next v2] net: ngbe: Add ngbe mdio bus driver.
-Date:   Tue,  6 Dec 2022 19:40:35 +0800
-Message-Id: <20221206114035.66260-1-mengyuanlou@net-swift.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S231669AbiLFLnI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 06:43:08 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD30FB7F
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 03:43:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=fn2994NVnPPwcrod3UljTzuyzolBUgmBvvsZZmE+6z4=; b=G4rogoF9o6dn/8+KueGYGow0Lx
+        oi+MALkiLhBpaqck/Ls9DachjGvnDW1EC2DDWnevMm+AkmIwrjWFylOr1AUMuGHwQ5WIg4qKJfmMc
+        G/riSZUVfXF621BAovi/Gzj34m/gtT1kmqWObttIxBv+m/cMIV3n8pmvniHFD0dvJ1LOiuLihknvg
+        Y3+1fFYEzg0k/0UpLNeYolpm7QZZc8QAuKM9Q0R+mkJf42b4EDIFNgQAvAshP71nXiwU6x99/3BYK
+        7YUrY/8yfxlostKAK6QWTrMAAhHn0Qy7RPCXaBlhmocyXOlsZ6jZkHYzqMLCKidaF8UOOV94nO1vL
+        cLrp/KSQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35596)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1p2WLZ-0007rl-P2; Tue, 06 Dec 2022 11:42:49 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1p2WLM-0008Af-F9; Tue, 06 Dec 2022 11:42:36 +0000
+Date:   Tue, 6 Dec 2022 11:42:36 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Zeng Heng <zengheng4@huawei.com>
+Cc:     hkallweit1@gmail.com, edumazet@google.com, pabeni@redhat.com,
+        kuba@kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        f.fainelli@gmail.com, liwei391@huawei.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v2] net: mdio: fix unbalanced fwnode reference count in
+ mdio_device_release()
+Message-ID: <Y48qrNjmRT7iIx1Z@shell.armlinux.org.uk>
+References: <20221203073441.3885317-1-zengheng4@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221203073441.3885317-1-zengheng4@huawei.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add mdio bus register for ngbe.
-The internal phy and external phy need to be handled separately.
-Add phy changed event detection.
+On Sat, Dec 03, 2022 at 03:34:41PM +0800, Zeng Heng wrote:
+> There is warning report about of_node refcount leak
+> while probing mdio device:
+> 
+> OF: ERROR: memory leak, expected refcount 1 instead of 2,
+> of_node_get()/of_node_put() unbalanced - destroy cset entry:
+> attach overlay node /spi/soc@0/mdio@710700c0/ethernet@4
+> 
+> In of_mdiobus_register_device(), we increase fwnode refcount
+> by fwnode_handle_get() before associating the of_node with
+> mdio device, but it has never been decreased in normal path.
+> Since that, in mdio_device_release(), it needs to call
+> fwnode_handle_put() in addition instead of calling kfree()
+> directly.
+> 
+> After above, just calling mdio_device_free() in the error handle
+> path of of_mdiobus_register_device() is enough to keep the
+> refcount balanced.
+> 
+> Fixes: a9049e0c513c ("mdio: Add support for mdio drivers.")
+> Signed-off-by: Zeng Heng <zengheng4@huawei.com>
+> Reviewed-by: Yang Yingliang <yangyingliang@huawei.com>
 
-Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
----
-Change log:
-v2: address comments:
-        Andrew Lunn: https://lore.kernel.org/netdev/Y4p0dQWijzQMlBmW@lunn.ch/
+LGTM, thanks!
 
- drivers/net/ethernet/wangxun/Kconfig          |   1 +
- drivers/net/ethernet/wangxun/libwx/wx_type.h  |   4 +
- drivers/net/ethernet/wangxun/ngbe/Makefile    |   2 +-
- drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c   |  23 +-
- drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  88 +++---
- drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c | 264 ++++++++++++++++++
- drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h |  12 +
- drivers/net/ethernet/wangxun/ngbe/ngbe_type.h |  52 ++--
- 8 files changed, 379 insertions(+), 67 deletions(-)
- create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c
- create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
-index 86310588c6c1..0922beac3ec0 100644
---- a/drivers/net/ethernet/wangxun/Kconfig
-+++ b/drivers/net/ethernet/wangxun/Kconfig
-@@ -25,6 +25,7 @@ config NGBE
- 	tristate "Wangxun(R) GbE PCI Express adapters support"
- 	depends on PCI
- 	select LIBWX
-+	select PHYLIB
- 	help
- 	  This driver supports Wangxun(R) GbE PCI Express family of
- 	  adapters.
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index 1cbeef8230bf..3908f64ae9e7 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -133,11 +133,15 @@
- /************************************* ETH MAC *****************************/
- #define WX_MAC_TX_CFG                0x11000
- #define WX_MAC_TX_CFG_TE             BIT(0)
-+#define WX_MAC_TX_CFG_SPEED_MASK     GENMASK(30, 29)
-+#define WX_MAC_TX_CFG_SPEED_10G      (0x0 << 29)
-+#define WX_MAC_TX_CFG_SPEED_1G       (0x3 << 29)
- #define WX_MAC_RX_CFG                0x11004
- #define WX_MAC_RX_CFG_RE             BIT(0)
- #define WX_MAC_RX_CFG_JE             BIT(8)
- #define WX_MAC_PKT_FLT               0x11008
- #define WX_MAC_PKT_FLT_PR            BIT(0) /* promiscuous mode */
-+#define WX_MAC_WDG_TIMEOUT           0x1100C
- #define WX_MAC_RX_FLOW_CTRL          0x11090
- #define WX_MAC_RX_FLOW_CTRL_RFE      BIT(0) /* receive fc enable */
- #define WX_MMC_CONTROL               0x11800
-diff --git a/drivers/net/ethernet/wangxun/ngbe/Makefile b/drivers/net/ethernet/wangxun/ngbe/Makefile
-index 391c2cbc1bb4..50fdca87d2a5 100644
---- a/drivers/net/ethernet/wangxun/ngbe/Makefile
-+++ b/drivers/net/ethernet/wangxun/ngbe/Makefile
-@@ -6,4 +6,4 @@
- 
- obj-$(CONFIG_NGBE) += ngbe.o
- 
--ngbe-objs := ngbe_main.o ngbe_hw.o
-+ngbe-objs := ngbe_main.o ngbe_hw.o ngbe_mdio.o
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
-index 0e3923b3737e..a3047801bcee 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
-@@ -64,15 +64,24 @@ static int ngbe_reset_misc(struct ngbe_hw *hw)
- int ngbe_reset_hw(struct ngbe_hw *hw)
- {
- 	struct wx_hw *wxhw = &hw->wxhw;
--	int status = 0;
--	u32 reset = 0;
-+	u32 val = 0;
-+	int ret = 0;
- 
- 	/* Call adapter stop to disable tx/rx and clear interrupts */
--	status = wx_stop_adapter(wxhw);
--	if (status != 0)
--		return status;
--	reset = WX_MIS_RST_LAN_RST(wxhw->bus.func);
--	wr32(wxhw, WX_MIS_RST, reset | rd32(wxhw, WX_MIS_RST));
-+	ret = wx_stop_adapter(wxhw);
-+	if (ret != 0)
-+		return ret;
-+
-+	if (hw->mac_type != ngbe_mac_type_mdi) {
-+		val = WX_MIS_RST_LAN_RST(wxhw->bus.func);
-+		wr32(wxhw, WX_MIS_RST, val | rd32(wxhw, WX_MIS_RST));
-+
-+		ret = read_poll_timeout(rd32, val,
-+					!(val & (BIT(9) << wxhw->bus.func)), 1000,
-+					100000, false, wxhw, 0x10028);
-+		if (ret)
-+			wx_dbg(wxhw, "Lan reset exceed s maximum times.\n");
-+	}
- 	ngbe_reset_misc(hw);
- 
- 	/* Store the permanent mac address */
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-index f0b24366da18..059cef619beb 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
-@@ -9,10 +9,12 @@
- #include <linux/aer.h>
- #include <linux/etherdevice.h>
- #include <net/ip.h>
-+#include <linux/phy.h>
- 
- #include "../libwx/wx_type.h"
- #include "../libwx/wx_hw.h"
- #include "ngbe_type.h"
-+#include "ngbe_mdio.h"
- #include "ngbe_hw.h"
- #include "ngbe.h"
- char ngbe_driver_name[] = "ngbe";
-@@ -61,46 +63,17 @@ static void ngbe_init_type_code(struct ngbe_hw *hw)
- 	int wol_mask = 0, ncsi_mask = 0;
- 	struct wx_hw *wxhw = &hw->wxhw;
- 	u16 type_mask = 0;
-+	u16 val;
- 
- 	wxhw->mac.type = wx_mac_em;
- 	type_mask = (u16)(wxhw->subsystem_device_id & NGBE_OEM_MASK);
- 	ncsi_mask = wxhw->subsystem_device_id & NGBE_NCSI_MASK;
- 	wol_mask = wxhw->subsystem_device_id & NGBE_WOL_MASK;
- 
--	switch (type_mask) {
--	case NGBE_SUBID_M88E1512_SFP:
--	case NGBE_SUBID_LY_M88E1512_SFP:
--		hw->phy.type = ngbe_phy_m88e1512_sfi;
--		break;
--	case NGBE_SUBID_M88E1512_RJ45:
--		hw->phy.type = ngbe_phy_m88e1512;
--		break;
--	case NGBE_SUBID_M88E1512_MIX:
--		hw->phy.type = ngbe_phy_m88e1512_unknown;
--		break;
--	case NGBE_SUBID_YT8521S_SFP:
--	case NGBE_SUBID_YT8521S_SFP_GPIO:
--	case NGBE_SUBID_LY_YT8521S_SFP:
--		hw->phy.type = ngbe_phy_yt8521s_sfi;
--		break;
--	case NGBE_SUBID_INTERNAL_YT8521S_SFP:
--	case NGBE_SUBID_INTERNAL_YT8521S_SFP_GPIO:
--		hw->phy.type = ngbe_phy_internal_yt8521s_sfi;
--		break;
--	case NGBE_SUBID_RGMII_FPGA:
--	case NGBE_SUBID_OCP_CARD:
--		fallthrough;
--	default:
--		hw->phy.type = ngbe_phy_internal;
--		break;
--	}
--
--	if (hw->phy.type == ngbe_phy_internal ||
--	    hw->phy.type == ngbe_phy_internal_yt8521s_sfi)
--		hw->mac_type = ngbe_mac_type_mdi;
--	else
--		hw->mac_type = ngbe_mac_type_rgmii;
--
-+	val = rd32(&hw->wxhw, NGBE_CFG_PORT_ST);
-+	hw->mac_type = (val & BIT(7)) >> 7 ?
-+			ngbe_mac_type_rgmii :
-+			ngbe_mac_type_mdi;
- 	hw->wol_enabled = (wol_mask == NGBE_WOL_SUP) ? 1 : 0;
- 	hw->ncsi_enabled = (ncsi_mask == NGBE_NCSI_MASK ||
- 			   type_mask == NGBE_SUBID_OCP_CARD) ? 1 : 0;
-@@ -203,12 +176,39 @@ static int ngbe_sw_init(struct ngbe_adapter *adapter)
- 	return 0;
- }
- 
-+static void ngbe_disable_device(struct ngbe_adapter *adapter)
-+{
-+	struct net_device *netdev = adapter->netdev;
-+	struct ngbe_hw *hw = &adapter->hw;
-+
-+	wx_disable_pcie_master(&hw->wxhw);
-+	/* disable receives */
-+	wx_disable_rx(&hw->wxhw);
-+	netif_tx_disable(netdev);
-+	if (hw->gpio_ctrl)
-+		/* gpio0 is used to power off control*/
-+		wr32(&hw->wxhw, NGBE_GPIO_DR, NGBE_GPIO_DR_0);
-+}
-+
- static void ngbe_down(struct ngbe_adapter *adapter)
- {
--	netif_carrier_off(adapter->netdev);
--	netif_tx_disable(adapter->netdev);
-+	struct ngbe_hw *hw = &adapter->hw;
-+
-+	phy_stop(hw->phydev);
-+	ngbe_disable_device(adapter);
- };
- 
-+static void ngbe_up(struct ngbe_adapter *adapter)
-+{
-+	struct ngbe_hw *hw = &adapter->hw;
-+
-+	pci_set_master(adapter->pdev);
-+	if (hw->gpio_ctrl)
-+		/* gpio0 is used to power on control*/
-+		wr32(&hw->wxhw, NGBE_GPIO_DR, 0);
-+	phy_start(hw->phydev);
-+}
-+
- /**
-  * ngbe_open - Called when a network interface is made active
-  * @netdev: network interface device structure
-@@ -223,8 +223,13 @@ static int ngbe_open(struct net_device *netdev)
- 	struct ngbe_adapter *adapter = netdev_priv(netdev);
- 	struct ngbe_hw *hw = &adapter->hw;
- 	struct wx_hw *wxhw = &hw->wxhw;
-+	int ret;
- 
- 	wx_control_hw(wxhw, true);
-+	ret = ngbe_phy_connect(hw);
-+	if (ret)
-+		return ret;
-+	ngbe_up(adapter);
- 
- 	return 0;
- }
-@@ -243,9 +248,11 @@ static int ngbe_open(struct net_device *netdev)
- static int ngbe_close(struct net_device *netdev)
- {
- 	struct ngbe_adapter *adapter = netdev_priv(netdev);
-+	struct ngbe_hw *hw = &adapter->hw;
- 
- 	ngbe_down(adapter);
--	wx_control_hw(&adapter->hw.wxhw, false);
-+	phy_disconnect(hw->phydev);
-+	wx_control_hw(&hw->wxhw, false);
- 
- 	return 0;
- }
-@@ -471,6 +478,11 @@ static int ngbe_probe(struct pci_dev *pdev,
- 	eth_hw_addr_set(netdev, wxhw->mac.perm_addr);
- 	ngbe_mac_set_default_filter(adapter, wxhw->mac.perm_addr);
- 
-+	/* phy Interface Configuration */
-+	err = ngbe_mdio_init(hw);
-+	if (err)
-+		goto err_free_mac_table;
-+
- 	err = register_netdev(netdev);
- 	if (err)
- 		goto err_register;
-@@ -479,7 +491,7 @@ static int ngbe_probe(struct pci_dev *pdev,
- 
- 	netif_info(adapter, probe, netdev,
- 		   "PHY: %s, PBA No: Wang Xun GbE Family Controller\n",
--		   hw->phy.type == ngbe_phy_internal ? "Internal" : "External");
-+		   hw->mac_type == ngbe_mac_type_mdi ? "Internal" : "External");
- 	netif_info(adapter, probe, netdev, "%pM\n", netdev->dev_addr);
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c
-new file mode 100644
-index 000000000000..139623f4845a
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.c
-@@ -0,0 +1,264 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#include <linux/ethtool.h>
-+#include <linux/iopoll.h>
-+#include <linux/pci.h>
-+#include <linux/phy.h>
-+
-+#include "../libwx/wx_type.h"
-+#include "../libwx/wx_hw.h"
-+#include "ngbe_type.h"
-+#include "ngbe_mdio.h"
-+#include "ngbe.h"
-+
-+static int ngbe_phy_read_reg_internal(struct mii_bus *bus, int phy_addr, int regnum)
-+{
-+	struct ngbe_hw *hw = bus->priv;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+	return (u16)rd32(&hw->wxhw, NGBE_PHY_CONFIG(regnum));
-+}
-+
-+static int ngbe_phy_write_reg_internal(struct mii_bus *bus, int phy_addr, int regnum, u16 value)
-+{
-+	struct ngbe_hw *hw = bus->priv;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+	wr32(&hw->wxhw, NGBE_PHY_CONFIG(regnum), value);
-+	return 0;
-+}
-+
-+static int ngbe_phy_read_reg_mdi(struct mii_bus *bus, int phy_addr, int regnum)
-+{
-+	u32 command = 0, device_type = 0;
-+	struct ngbe_hw *hw = bus->priv;
-+	struct wx_hw *wxhw = &hw->wxhw;
-+	u32 phy_data = 0;
-+	u32 val = 0;
-+	int ret = 0;
-+
-+	if (regnum & MII_ADDR_C45) {
-+		wr32(wxhw, NGBE_MDIO_CLAUSE_SELECT, 0x0);
-+		/* setup and write the address cycle command */
-+		command = NGBE_MSCA_RA(mdiobus_c45_regad(regnum)) |
-+			  NGBE_MSCA_PA(phy_addr) |
-+			  NGBE_MSCA_DA(mdiobus_c45_devad(regnum));
-+	} else {
-+		wr32(wxhw, NGBE_MDIO_CLAUSE_SELECT, 0xF);
-+		/* setup and write the address cycle command */
-+		command = NGBE_MSCA_RA(regnum) |
-+			  NGBE_MSCA_PA(phy_addr) |
-+			  NGBE_MSCA_DA(device_type);
-+	}
-+	wr32(wxhw, NGBE_MSCA, command);
-+	command = NGBE_MSCC_CMD(NGBE_MSCA_CMD_READ) |
-+		  NGBE_MSCC_BUSY |
-+		  NGBE_MDIO_CLK(6);
-+	wr32(wxhw, NGBE_MSCC, command);
-+
-+	/* wait to complete */
-+	ret = read_poll_timeout(rd32, val, !(val & NGBE_MSCC_BUSY), 1000,
-+				100000, false, wxhw, NGBE_MSCC);
-+
-+	if (ret)
-+		wx_dbg(wxhw, "PHY address command did not complete.\n");
-+
-+	/* read data from MSCC */
-+	phy_data = 0xffff & rd32(wxhw, NGBE_MSCC);
-+
-+	return phy_data;
-+}
-+
-+static int ngbe_phy_write_reg_mdi(struct mii_bus *bus, int phy_addr, int regnum, u16 value)
-+{
-+	u32 command = 0, device_type = 0;
-+	struct ngbe_hw *hw = bus->priv;
-+	struct wx_hw *wxhw = &hw->wxhw;
-+	int ret = 0;
-+	u16 val = 0;
-+
-+	if (regnum & MII_ADDR_C45) {
-+		wr32(wxhw, NGBE_MDIO_CLAUSE_SELECT, 0x0);
-+		/* setup and write the address cycle command */
-+		command = NGBE_MSCA_RA(mdiobus_c45_regad(regnum)) |
-+			  NGBE_MSCA_PA(phy_addr) |
-+			  NGBE_MSCA_DA(mdiobus_c45_devad(regnum));
-+	} else {
-+		wr32(wxhw, NGBE_MDIO_CLAUSE_SELECT, 0xF);
-+		/* setup and write the address cycle command */
-+		command = NGBE_MSCA_RA(regnum) |
-+			  NGBE_MSCA_PA(phy_addr) |
-+			  NGBE_MSCA_DA(device_type);
-+	}
-+	wr32(wxhw, NGBE_MSCA, command);
-+	command = value |
-+		  NGBE_MSCC_CMD(NGBE_MSCA_CMD_WRITE) |
-+		  NGBE_MSCC_BUSY |
-+		  NGBE_MDIO_CLK(6);
-+	wr32(wxhw, NGBE_MSCC, command);
-+
-+	/* wait to complete */
-+	ret = read_poll_timeout(rd32, val, !(val & NGBE_MSCC_BUSY), 1000,
-+				100000, false, wxhw, NGBE_MSCC);
-+
-+	if (ret)
-+		wx_dbg(wxhw, "PHY address command did not complete.\n");
-+
-+	return ret;
-+}
-+
-+static int ngbe_phy_read_reg(struct mii_bus *bus, int phy_addr, int regnum)
-+{
-+	struct ngbe_hw *hw = bus->priv;
-+	u16 phy_data = 0;
-+
-+	if (hw->mac_type == ngbe_mac_type_mdi)
-+		phy_data = ngbe_phy_read_reg_internal(bus, phy_addr, regnum);
-+	else if (hw->mac_type == ngbe_mac_type_rgmii)
-+		phy_data = ngbe_phy_read_reg_mdi(bus, phy_addr, regnum);
-+
-+	return phy_data;
-+}
-+
-+static int ngbe_phy_write_reg(struct mii_bus *bus, int phy_addr, int regnum, u16 value)
-+{
-+	struct ngbe_hw *hw = bus->priv;
-+	int ret = 0;
-+
-+	if (hw->mac_type == ngbe_mac_type_mdi)
-+		ret = ngbe_phy_write_reg_internal(bus, phy_addr, regnum, value);
-+	else if (hw->mac_type == ngbe_mac_type_rgmii)
-+		ret = ngbe_phy_write_reg_mdi(bus, phy_addr, regnum, value);
-+	return ret;
-+}
-+
-+static void ngbe_handle_link_change(struct net_device *dev)
-+{
-+	struct ngbe_adapter *adapter = netdev_priv(dev);
-+	struct ngbe_hw *hw = &adapter->hw;
-+	struct wx_hw *wxhw = &hw->wxhw;
-+	u32 lan_speed = 2, reg;
-+	bool changed = false;
-+
-+	struct phy_device *phydev = hw->phydev;
-+
-+	if (hw->link != phydev->link ||
-+	    hw->speed != phydev->speed ||
-+	    hw->duplex != phydev->duplex) {
-+		changed = true;
-+		hw->link = phydev->link;
-+		hw->speed = phydev->speed;
-+		hw->duplex = phydev->duplex;
-+	}
-+
-+	if (!changed)
-+		return;
-+
-+	switch (phydev->speed) {
-+	case SPEED_1000:
-+		lan_speed = 2;
-+		break;
-+	case SPEED_100:
-+		lan_speed = 1;
-+		break;
-+	case SPEED_10:
-+		lan_speed = 0;
-+		break;
-+	default:
-+		break;
-+	}
-+	wr32m(wxhw, NGBE_CFG_LAN_SPEED, 0x3, lan_speed);
-+
-+	if (phydev->link) {
-+		if (phydev->speed & (SPEED_1000 | SPEED_100 | SPEED_10)) {
-+			reg = rd32(wxhw, WX_MAC_TX_CFG);
-+			reg &= ~WX_MAC_TX_CFG_SPEED_MASK;
-+			reg |= WX_MAC_TX_CFG_SPEED_1G | WX_MAC_TX_CFG_TE;
-+			wr32(wxhw, WX_MAC_TX_CFG, reg);
-+		}
-+		/* Re configure MAC RX */
-+		reg = rd32(wxhw, WX_MAC_RX_CFG);
-+		wr32(wxhw, WX_MAC_RX_CFG, reg);
-+		wr32(wxhw, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
-+		reg = rd32(wxhw, WX_MAC_WDG_TIMEOUT);
-+		wr32(wxhw, WX_MAC_WDG_TIMEOUT, reg);
-+	}
-+	phy_print_status(phydev);
-+}
-+
-+int ngbe_phy_connect(struct ngbe_hw *hw)
-+{
-+	struct ngbe_adapter *adapter = container_of(hw,
-+						    struct ngbe_adapter,
-+						    hw);
-+	int ret;
-+
-+	ret = phy_connect_direct(adapter->netdev,
-+				 hw->phydev,
-+				 ngbe_handle_link_change,
-+				 PHY_INTERFACE_MODE_RGMII_ID);
-+	if (ret) {
-+		wx_err(&hw->wxhw,
-+		       "PHY connect failed.\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void ngbe_phy_fixup(struct ngbe_hw *hw)
-+{
-+	struct phy_device *phydev = hw->phydev;
-+	struct ethtool_eee eee;
-+
-+	if (hw->mac_type != ngbe_mac_type_mdi)
-+		return;
-+	/* disable EEE, EEE not supported by mac */
-+	memset(&eee, 0, sizeof(eee));
-+	phy_ethtool_set_eee(phydev, &eee);
-+
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-+}
-+
-+int ngbe_mdio_init(struct ngbe_hw *hw)
-+{
-+	struct pci_dev *pdev = hw->wxhw.pdev;
-+	int ret;
-+
-+	hw->mii_bus = devm_mdiobus_alloc(&pdev->dev);
-+	if (!hw->mii_bus)
-+		return -ENOMEM;
-+
-+	hw->mii_bus->name = "ngbe_mii_bus";
-+	hw->mii_bus->read = &ngbe_phy_read_reg;
-+	hw->mii_bus->write = &ngbe_phy_write_reg;
-+	hw->mii_bus->phy_mask = GENMASK(31, 4);
-+	hw->mii_bus->probe_capabilities = MDIOBUS_C22_C45;
-+	hw->mii_bus->parent = &pdev->dev;
-+	hw->mii_bus->priv = hw;
-+
-+	snprintf(hw->mii_bus->id, MII_BUS_ID_SIZE, "ngbe-%x",
-+		 (pdev->bus->number << 8) |
-+		 pdev->devfn);
-+
-+	ret = devm_mdiobus_register(&pdev->dev, hw->mii_bus);
-+	if (ret)
-+		return ret;
-+
-+	hw->phydev = phy_find_first(hw->mii_bus);
-+	if (!hw->phydev)
-+		return -ENODEV;
-+	phy_attached_info(hw->phydev);
-+	ngbe_phy_fixup(hw);
-+
-+	hw->link = 0;
-+	hw->speed = 0;
-+	hw->duplex = 0;
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h
-new file mode 100644
-index 000000000000..9095f2183d92
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * WangXun Gigabit PCI Express Linux driver
-+ * Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd.
-+ */
-+
-+#ifndef _NGBE_MDIO_H_
-+#define _NGBE_MDIO_H_
-+
-+int ngbe_phy_connect(struct ngbe_hw *hw);
-+int ngbe_mdio_init(struct ngbe_hw *hw);
-+#endif /* _NGBE_HW_H_ */
-diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
-index 39f6c03f1a54..a24284f53dbb 100644
---- a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
-+++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
-@@ -63,6 +63,26 @@
- /* Media-dependent registers. */
- #define NGBE_MDIO_CLAUSE_SELECT			0x11220
- 
-+/* mdio access */
-+#define NGBE_MSCA				0x11200
-+#define NGBE_MSCA_RA(v)				((0xFFFF & (v)))
-+#define NGBE_MSCA_PA(v)				((0x1F & (v)) << 16)
-+#define NGBE_MSCA_DA(v)				((0x1F & (v)) << 21)
-+#define NGBE_MSCC				0x11204
-+#define NGBE_MSCC_DATA(v)			((0xFFFF & (v)))
-+#define NGBE_MSCC_CMD(v)			((0x3 & (v)) << 16)
-+
-+enum NGBE_MSCA_CMD_value {
-+	NGBE_MSCA_CMD_RSV = 0,
-+	NGBE_MSCA_CMD_WRITE,
-+	NGBE_MSCA_CMD_POST_READ,
-+	NGBE_MSCA_CMD_READ,
-+};
-+
-+#define NGBE_MSCC_SADDR				BIT(18)
-+#define NGBE_MSCC_BUSY				BIT(22)
-+#define NGBE_MDIO_CLK(v)			((0x7 & (v)) << 19)
-+
- /* GPIO Registers */
- #define NGBE_GPIO_DR				0x14800
- #define NGBE_GPIO_DDR				0x14804
-@@ -90,25 +110,10 @@
- #define NGBE_FW_CMD_ST_PASS			0x80658383
- #define NGBE_FW_CMD_ST_FAIL			0x70657376
- 
--enum ngbe_phy_type {
--	ngbe_phy_unknown = 0,
--	ngbe_phy_none,
--	ngbe_phy_internal,
--	ngbe_phy_m88e1512,
--	ngbe_phy_m88e1512_sfi,
--	ngbe_phy_m88e1512_unknown,
--	ngbe_phy_yt8521s,
--	ngbe_phy_yt8521s_sfi,
--	ngbe_phy_internal_yt8521s_sfi,
--	ngbe_phy_generic
--};
-+#define NGBE_PHY_CONFIG(reg_offset)		(0x14000 + ((reg_offset) * 4))
-+#define NGBE_CFG_LAN_SPEED			0x14440
- 
--enum ngbe_media_type {
--	ngbe_media_type_unknown = 0,
--	ngbe_media_type_fiber,
--	ngbe_media_type_copper,
--	ngbe_media_type_backplane,
--};
-+#define NGBE_CFG_PORT_ST			0x14404
- 
- enum ngbe_mac_type {
- 	ngbe_mac_type_unknown = 0,
-@@ -117,9 +122,6 @@ enum ngbe_mac_type {
- };
- 
- struct ngbe_phy_info {
--	enum ngbe_phy_type type;
--	enum ngbe_media_type media_type;
--
- 	u32 addr;
- 	u32 id;
- 
-@@ -132,6 +134,14 @@ struct ngbe_hw {
- 	struct ngbe_phy_info phy;
- 	enum ngbe_mac_type mac_type;
- 
-+	/* PHY stuff */
-+	struct mii_bus *mii_bus;
-+	unsigned int link;
-+	int speed;
-+	int duplex;
-+
-+	struct phy_device *phydev;
-+
- 	bool wol_enabled;
- 	bool ncsi_enabled;
- 	bool gpio_ctrl;
 -- 
-2.38.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
