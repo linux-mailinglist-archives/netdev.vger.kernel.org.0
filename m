@@ -2,115 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA49D644839
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 16:43:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A57AE644860
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 16:51:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235186AbiLFPnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 10:43:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
+        id S229867AbiLFPvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 10:51:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232897AbiLFPnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 10:43:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744C864D3
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 07:42:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670341361;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xqv9uRFg/HKdZhDUKeLP7zieO3tFQjhNIhtl1kY75aI=;
-        b=YSVXHLm/tJmBg2oEkrsfU9fpcmJO+0O35aI8JPJLfO2hCvVwFAPz51FxRtlXXGg/IZdPe/
-        lsNLbuWer4yVjzrN6uB38f7haGhAbsAxWs4GbOCBNvs3Z986n21JEBtu10JoG2fsx6sWtr
-        39gjbpaDuj0vTkAHQi0flWY+LwKsZpU=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-629-ODrEk-zeM5aHk-TBp3nHDA-1; Tue, 06 Dec 2022 10:42:40 -0500
-X-MC-Unique: ODrEk-zeM5aHk-TBp3nHDA-1
-Received: by mail-qk1-f197.google.com with SMTP id bq13-20020a05620a468d00b006fa5a75759aso21477102qkb.13
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 07:42:37 -0800 (PST)
+        with ESMTP id S234995AbiLFPu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 10:50:56 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42E325C7D;
+        Tue,  6 Dec 2022 07:50:54 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id n21so7191089ejb.9;
+        Tue, 06 Dec 2022 07:50:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gkGehtIKQE8uxV5Z4uBASA+aiRLMN5paI1hFstSLrgQ=;
+        b=TBDwZnBz/4Mon2JP6L6swPkQ7sf+kwIkSX9SwD/IvkprcGQ3pY00vHLqpU4ArVNyVC
+         jONmDwZrzN4cHba3tNIgepcthUaSI1APAhhO1WRrV00Yqcn+DdR9sRD1XTCGumiAkhRK
+         9tfLjxyuYLHcvEAM8e83zZ4L0MwwR83xLAUR9zyYHx8amYYuBjasy2SAJ1a/Pw5CPaRn
+         RjurCkOZxdvKAKkziPcIyXaPjDj5mMuUR7WF1QG3DEtFz7BGsQ7/34cl5mg3mP5VYeq1
+         fRTCNEdLhW+JJ7Zzq9RzMTNUHbBT2OCt+VJNLi0Yu+TEkenTNM5A0gdPuzIA6DN0jzjT
+         uabA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xqv9uRFg/HKdZhDUKeLP7zieO3tFQjhNIhtl1kY75aI=;
-        b=TyrgJB3kYv5MAA6F00HohUNvBBdKJFoxu0KiiGYBV1DnU46Pb0aGpvkHEUSR0D6c1a
-         VIgSSa6eIPY14ntlWsn4RYen/KKkdB5f2YsDvilPDZuCVteBUCfbc8/giyPINv2yTql8
-         eK4TUA49C00OR8fbOGL3JyOtFe6HQyXIRo+qFNNOguDabZLCvKyht85IH1FLKXL2Nri/
-         FAkm8XSa7gIdlNlgDkxOu0H57czSMekLmoSXPH2NdMUGGvmYBUuY22BlurOj4fSaW9h8
-         LyG7+jYcGT4n8uLRjhoAhefbmCGCaOIc2okm74BvfA3MCXBEz42vGnsj4NIfkD6YedTA
-         8lOw==
-X-Gm-Message-State: ANoB5pmL+ZzMrRVHLXX6enwcWKJ+qjM0anmu1tgOZz/4xsIYWldq/u1Z
-        yVFHgAQFwEdnnPC6efZi/uaBqiX7IQ7dUs+Rmsosn4nsQOw8NarY4/IRchO3HD65XNOa1bJuDMZ
-        fZfSePpOTaTfR0FbW
-X-Received: by 2002:a0c:f947:0:b0:4c7:8c20:9ec1 with SMTP id i7-20020a0cf947000000b004c78c209ec1mr752002qvo.91.1670341357014;
-        Tue, 06 Dec 2022 07:42:37 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6CMH8+4e/Hnp4WmzMYrwwE36t3yir4U9wv6FziCmGo/cZjMxBzHs/xLTxG5Sgino5R5tHYtA==
-X-Received: by 2002:a0c:f947:0:b0:4c7:8c20:9ec1 with SMTP id i7-20020a0cf947000000b004c78c209ec1mr751985qvo.91.1670341356786;
-        Tue, 06 Dec 2022 07:42:36 -0800 (PST)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id j1-20020a05620a410100b006fec1c0754csm5113836qko.87.2022.12.06.07.42.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Dec 2022 07:42:36 -0800 (PST)
-Message-ID: <c7be4ae2-f55e-0277-3c1c-cecad5cc9262@redhat.com>
-Date:   Tue, 6 Dec 2022 10:42:35 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH net] bonding: get correct NA dest address
-Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gkGehtIKQE8uxV5Z4uBASA+aiRLMN5paI1hFstSLrgQ=;
+        b=g15m81XXRnk0FTmYLOSU3p0fyn06GF7gvyCEJfLJfUR0lGtN+sfV5JNTf5s+1hJr8m
+         4aq6hWXY9JfiiiCECSYe3zqDG2/YjOMI832b7euVKdDDSCFuHFZZXar9Mc0FGFYpuhsO
+         +oCvXNarcba2S95NGQhf/7ay9i8uzOZSuaeNQM0kPxZ1qz/UgEu5ZuCx6F57r6jkKaIn
+         JmQhy6HlHS//VOPX/LWKZBz9UVja+1HxZ6AlV/hGPAXoQLwWnEf8fIv8FtXDGIwAJlo3
+         FCo64IePU6eXq0wKEUq8Nf5upT8wI0cmiS1AuG7GiEBqXUDoyNCL6DbkgWPuDVwH2kDY
+         TYAw==
+X-Gm-Message-State: ANoB5pnZ7+nQtCZoISGQkzLEFuJ4q/Nn+2eMuOojjfIb1Gm/4KEON9NL
+        KL4GbYTY0A2Q8GX0G4kvxMs=
+X-Google-Smtp-Source: AA0mqf5Wotg5UVEAMIiAbOYNAEvmOAnCLhajHTyN0396nlcqXTN6Vv3F2TQlD45B7NeIHFHOS1FltQ==
+X-Received: by 2002:a17:906:5649:b0:7ad:a2ef:c62 with SMTP id v9-20020a170906564900b007ada2ef0c62mr12075176ejr.126.1670341852933;
+        Tue, 06 Dec 2022 07:50:52 -0800 (PST)
+Received: from skbuf ([188.26.184.215])
+        by smtp.gmail.com with ESMTPSA id du1-20020a17090772c100b007c07909eb9asm7523498ejc.1.2022.12.06.07.50.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 07:50:52 -0800 (PST)
+Date:   Tue, 6 Dec 2022 17:50:49 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-renesas-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        John Crispin <john@phrozen.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Marek Vasut <marex@denx.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        =?utf-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <20221206032055.7517-1-liuhangbin@gmail.com>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <20221206032055.7517-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        George McCollister <george.mccollister@gmail.com>
+Subject: Re: [PATCH v4 net-next 8/9] dt-bindings: net: add generic
+ ethernet-switch-port binding
+Message-ID: <20221206155049.erpgwrvt5gzdf2e6@skbuf>
+References: <20221202204559.162619-1-colin.foster@in-advantage.com>
+ <20221202204559.162619-1-colin.foster@in-advantage.com>
+ <20221202204559.162619-9-colin.foster@in-advantage.com>
+ <20221202204559.162619-9-colin.foster@in-advantage.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221202204559.162619-9-colin.foster@in-advantage.com>
+ <20221202204559.162619-9-colin.foster@in-advantage.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/5/22 22:20, Hangbin Liu wrote:
-> In commit 4d633d1b468b ("bonding: fix ICMPv6 header handling when receiving
-> IPv6 messages"), there is a copy/paste issue for NA daddr. I found that
-> in my testing and fixed it in my local branch. But I forgot to re-format
-> the patch and sent the wrong mail.
+On Fri, Dec 02, 2022 at 12:45:58PM -0800, Colin Foster wrote:
+> The dsa-port.yaml binding had several references that can be common to all
+> ethernet ports, not just dsa-specific ones. Break out the generic bindings
+> to ethernet-switch-port.yaml they can be used by non-dsa drivers.
 > 
-> Fix it by reading the correct dest address.
-> 
-> Fixes: 4d633d1b468b ("bonding: fix ICMPv6 header handling when receiving IPv6 messages")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-
-Acked-by: Jonathan Toppins <jtoppins@redhat.com>
-
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 > ---
->   drivers/net/bonding/bond_main.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index f298b9b3eb77..b9a882f182d2 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -3247,7 +3247,7 @@ static int bond_na_rcv(const struct sk_buff *skb, struct bonding *bond,
->   		goto out;
->   
->   	saddr = &combined->ip6.saddr;
-> -	daddr = &combined->ip6.saddr;
-> +	daddr = &combined->ip6.daddr;
->   
->   	slave_dbg(bond->dev, slave->dev, "%s: %s/%d av %d sv %d sip %pI6c tip %pI6c\n",
->   		  __func__, slave->dev->name, bond_slave_state(slave),
+> v3 -> v4
+>   * Add Florian Reviewed tag
+> 
+> v2 -> v3
+>   * Change dsa-port title from "DSA Switch port Device Tree Bindings"
+>     to "Generic DSA Switch port"
+>   * Add reference to ethernet-switch-port.yaml# in dsa-port.yaml
+>   * Change title of ethernet-switch-port.yaml from "Ethernet Switch
+>     port Device Tree Bindings" to "Generic Ethernet Switch port"
+>   * Remove most properties from ethernet-switch-port.yaml. They're
+>     all in ethernet-controller, and are all allowed.
+>   * ethernet-switch.yaml now only references ethernet-switch-port.yaml#
+>     under the port node.
+> 
+> v1 -> v2
+>   * Remove accidental addition of
+>     "$ref: /schemas/net/ethernet-switch-port.yaml" which should be kept
+>     out of dsa-port so that it doesn't get referenced multiple times
+>     through both ethernet-switch and dsa-port.
+> 
+> ---
+>  .../devicetree/bindings/net/dsa/dsa-port.yaml | 24 ++----------------
+>  .../bindings/net/ethernet-switch-port.yaml    | 25 +++++++++++++++++++
+>  .../bindings/net/ethernet-switch.yaml         |  6 +----
+>  MAINTAINERS                                   |  1 +
+>  4 files changed, 29 insertions(+), 27 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/ethernet-switch-port.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+> index 9abb8eba5fad..5b457f41273a 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+> @@ -4,7 +4,7 @@
+>  $id: http://devicetree.org/schemas/net/dsa/dsa-port.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: Ethernet Switch port Device Tree Bindings
+> +title: Generic DSA Switch port
+
+What are the capitalization rules in titles? Looks odd that "port" is
+lowercase but "switch" isn't.
+
+>  
+>  maintainers:
+>    - Andrew Lunn <andrew@lunn.ch>
+> @@ -14,8 +14,7 @@ maintainers:
+>  description:
+>    Ethernet switch port Description
+>  
+> -allOf:
+> -  - $ref: /schemas/net/ethernet-controller.yaml#
+> +$ref: /schemas/net/ethernet-switch-port.yaml#
+>  
+>  properties:
+>    reg:
+> @@ -58,25 +57,6 @@ properties:
+>        - rtl8_4t
+>        - seville
+>  
+> -  phy-handle: true
+> -
+> -  phy-mode: true
+> -
+> -  fixed-link: true
+> -
+> -  mac-address: true
+> -
+> -  sfp: true
+> -
+> -  managed: true
+> -
+> -  rx-internal-delay-ps: true
+> -
+> -  tx-internal-delay-ps: true
+> -
+> -required:
+> -  - reg
+> -
+>  # CPU and DSA ports must have phylink-compatible link descriptions
+>  if:
+>    oneOf:
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-switch-port.yaml b/Documentation/devicetree/bindings/net/ethernet-switch-port.yaml
+> new file mode 100644
+> index 000000000000..3d7da6916fb8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/ethernet-switch-port.yaml
+> @@ -0,0 +1,25 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/ethernet-switch-port.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Generic Ethernet Switch port
+> +
+> +maintainers:
+> +  - Andrew Lunn <andrew@lunn.ch>
+> +  - Florian Fainelli <f.fainelli@gmail.com>
+> +  - Vivien Didelot <vivien.didelot@gmail.com>
+> +
+> +description:
+> +  Ethernet switch port Description
+
+Sounds a bit too "lorem ipsum dolor sit amet". You can say that a port
+is a component of a switch which manages one MAC, and can pass Ethernet
+frames.
+
+> +
+> +$ref: ethernet-controller.yaml#
+> +
+> +properties:
+> +  reg:
+> +    description: Port number
+> +
+> +additionalProperties: true
+> +
+> +...
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-switch.yaml b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
+> index afeb9ffd84c8..1e8b7649a9b2 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-switch.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
+> @@ -40,10 +40,6 @@ patternProperties:
+>          type: object
+>          description: Ethernet switch ports
+>  
+> -        $ref: ethernet-controller.yaml#
+> -
+> -        additionalProperties: true
+> -
+>  oneOf:
+>    - required:
+>        - ports
+> @@ -60,7 +56,7 @@ $defs:
+>      patternProperties:
+>        "^(ethernet-)?port@[0-9]+$":
+>          description: Ethernet switch ports
+> -        $ref: ethernet-controller.yaml#
+> +        $ref: ethernet-switch-port.yaml#
+>          unevaluatedProperties: false
+>  
+>  ...
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d574cae901b3..fe5f52c9864a 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14337,6 +14337,7 @@ M:	Florian Fainelli <f.fainelli@gmail.com>
+>  M:	Vladimir Oltean <olteanv@gmail.com>
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/net/dsa/
+> +F:	Documentation/devicetree/bindings/net/ethernet-switch-port.yaml
+>  F:	Documentation/devicetree/bindings/net/ethernet-switch.yaml
+>  F:	drivers/net/dsa/
+>  F:	include/linux/dsa/
+> -- 
+> 2.25.1
+> 
 
