@@ -2,53 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EC89644C9D
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 20:41:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24446644CA5
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 20:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbiLFTlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 14:41:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        id S229658AbiLFTuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 14:50:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiLFTlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 14:41:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9747C303DA;
-        Tue,  6 Dec 2022 11:41:35 -0800 (PST)
+        with ESMTP id S229452AbiLFTuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 14:50:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68DB2EF3E;
+        Tue,  6 Dec 2022 11:50:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2733161851;
-        Tue,  6 Dec 2022 19:41:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11A7EC433D7;
-        Tue,  6 Dec 2022 19:41:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 621D8B81A2B;
+        Tue,  6 Dec 2022 19:49:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9840EC433C1;
+        Tue,  6 Dec 2022 19:49:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670355694;
-        bh=wIpp5xJ3aOk1YINDuDXnwzybQsgEaelfXPcy1Neahms=;
+        s=k20201202; t=1670356197;
+        bh=n6Uq2l+P+LiuaIXlR0NKpX/qv3KPbggTYHrNNCyGgd0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ou4A6q7x/+PsvK3XmFDZW7TmK0TTj1wZCPz0MtzBjyNx4vO+4OqWMHObEP7jxMQji
-         l5sJnlYbq6kJdtNGkIND291wJiEmW14HC7cpzqBp40fqQgHahXV1QgeYpeg0KszFor
-         McnyCRuN2Nw0oQ+unBXc2h5BP1vuBffMEyl+QlIw6WnWp3IAJM4cxmQ3aw2pAS+6Dq
-         PaKPRJ39YHTEQXPcw29tZHE2DZUIr43X3jBDPP9JuF27t8cteQQ3vUHNxcScJl/CEo
-         Wx1AfMNJLo/+lmvuf7EtMeqlLKcZljnS1bi9t3+60q5eKC/CdGok8anzWcgYwZYBjx
-         4lK9vlmEmS61Q==
-Date:   Tue, 6 Dec 2022 11:41:33 -0800
+        b=prwXr7EcJP6bfEzPvLBS9IMyn8Fmm4Ey8MmnFcDsY4cT/txnRCLlPNALfP6fc6oJw
+         ThOfT/KkvKSnVry2UBLV9Xib+DQVGiFxA32LqOr7M67ZM8nqlv9A33Zb/6ZnHCahcE
+         9pcHHfdDKoe2FEvSIb6TWHpgbe05HxGxzLXklM2RQAfd/dnffWS9J+05OB8exlGTAd
+         WaJo31TBn0AAzeYuutkmyzsueTrQaCzPxInjX/07xbU7jhT5J8aOuSUewDNa8gGlAL
+         inJniHfo1d9eEYcA0EpZxFxWz6uzNE66RXQj9MxVfMyswaAebK+lLX4yZBx9rP2Uxm
+         scrsx0FxZ+NxQ==
+Date:   Tue, 6 Dec 2022 11:49:56 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com
-Subject: Re: [PATCH net-next v1 1/1] net: dsa: microchip: add stats64
- support for ksz8 series of switches
-Message-ID: <20221206114133.291881a4@kernel.org>
-In-Reply-To: <20221205052904.2834962-1-o.rempel@pengutronix.de>
-References: <20221205052904.2834962-1-o.rempel@pengutronix.de>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        "David S . Miller" <davem@davemloft.net>, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 6.0 09/13] net: loopback: use
+ NET_NAME_PREDICTABLE for name_assign_type
+Message-ID: <20221206114956.4c5a3605@kernel.org>
+In-Reply-To: <20221206094916.987259-9-sashal@kernel.org>
+References: <20221206094916.987259-1-sashal@kernel.org>
+        <20221206094916.987259-9-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,13 +57,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  5 Dec 2022 06:29:04 +0100 Oleksij Rempel wrote:
-> +	stats->rx_packets = raw->rx_bcast + raw->rx_mcast + raw->rx_ucast +
-> +		raw->rx_pause;
-> +	stats->tx_packets = raw->tx_bcast + raw->tx_mcast + raw->tx_ucast +
-> +		raw->tx_pause;
+On Tue,  6 Dec 2022 04:49:12 -0500 Sasha Levin wrote:
+> From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> 
+> [ Upstream commit 31d929de5a112ee1b977a89c57de74710894bbbf ]
+> 
+> When the name_assign_type attribute was introduced (commit
+> 685343fc3ba6, "net: add name_assign_type netdev attribute"), the
+> loopback device was explicitly mentioned as one which would make use
+> of NET_NAME_PREDICTABLE:
+> 
+>     The name_assign_type attribute gives hints where the interface name of a
+>     given net-device comes from. These values are currently defined:
+> ...
+>       NET_NAME_PREDICTABLE:
+>         The ifname has been assigned by the kernel in a predictable way
+>         that is guaranteed to avoid reuse and always be the same for a
+>         given device. Examples include statically created devices like
+>         the loopback device [...]
+> 
+> Switch to that so that reading /sys/class/net/lo/name_assign_type
+> produces something sensible instead of returning -EINVAL.
 
-FWIW for normal netdevs / NICs the rtnl_link_stat pkts do not include
-pause frames, normally. Otherwise one can't maintain those stats in SW
-(and per-ring stats, if any, don't add up to the full link stats).
-But if you have a good reason to do this - I won't nack..
+Yeah... we should have applied it to -next, I think backporting it is 
+a good idea but I wish it had more time in the -next tree since it's 
+a "uAPI alignment" :( 
+
+Oh, well, very unlikely it will break anything, tho, so let's do it.
