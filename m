@@ -2,91 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 124F864413D
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 11:28:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF61A644141
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 11:28:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231630AbiLFK2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 05:28:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34128 "EHLO
+        id S233933AbiLFK26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 05:28:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbiLFK2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 05:28:35 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA19615FF4
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 02:28:34 -0800 (PST)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NRGnm0qnPzFqv0;
-        Tue,  6 Dec 2022 18:27:39 +0800 (CST)
-Received: from [10.174.178.41] (10.174.178.41) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 6 Dec 2022 18:28:27 +0800
-Message-ID: <e9f5eeae-6785-5fb8-06a4-3d846e8658c9@huawei.com>
-Date:   Tue, 6 Dec 2022 18:28:26 +0800
+        with ESMTP id S233896AbiLFK2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 05:28:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3D917581;
+        Tue,  6 Dec 2022 02:28:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 623E0B818E3;
+        Tue,  6 Dec 2022 10:28:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D745C433D6;
+        Tue,  6 Dec 2022 10:28:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670322530;
+        bh=oEIEMz9chzh0pt9Xq/JSwkrnlGW5wav7o7/ZYyrUiFI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tcLPzU+gfzRUL+uWqaJQQ6nMp0IJtNh+v8wEWfIXd7RltK+3MnEf9GozcgTEzC0I9
+         S6zivf5Zh6t0Cor6ZnmCkatp48WA58jH46Fc8wWY8orzyWaXVb9bEaDXw4JtDZ9QvL
+         qK53ylvsVBqR5K2rf+JfjxEwCRHG9f/Nt9c4xCqAq1P+oZaXoRHAsuiWrslKIoCELE
+         H6w983gSoFviErehZHqgaJ0r3dnnHOzo/UFJg8rbfCHtbK1ZZeB5lg1f8M6yL2T/Qm
+         LEVjKCUwQKRG90vjrLHJxtBhtt7MWg6BCe3GixIm2rQT8XLLSvjz30H0K0OGTaigjf
+         gIuZ41vQCfa1g==
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@rivosinc.com>,
+        Lina Wang <lina.wang@mediatek.com>,
+        linux-kselftest@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next] selftests: net: Fix O=dir builds
+Date:   Tue,  6 Dec 2022 11:28:38 +0100
+Message-Id: <20221206102838.272584-1-bjorn@kernel.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH] intel/i40e: Fix potential memory leak in
- i40e_init_recovery_mode()
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <jeffrey.t.kirsher@intel.com>,
-        <alice.michael@intel.com>, <piotr.marczak@intel.com>,
-        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>
-References: <20221206092613.122952-1-yuancan@huawei.com>
- <Y48TO7s0K9J0kVh0@unreal>
-From:   Yuan Can <yuancan@huawei.com>
-In-Reply-To: <Y48TO7s0K9J0kVh0@unreal>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.41]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Björn Töpel <bjorn@rivosinc.com>
 
-在 2022/12/6 18:02, Leon Romanovsky 写道:
-> On Tue, Dec 06, 2022 at 09:26:13AM +0000, Yuan Can wrote:
->> If i40e_vsi_mem_alloc() failed in i40e_init_recovery_mode(), the pf will be
->> freed with the pf->vsi leaked.
->> Fix by free pf->vsi in the error handling path.
->>
->> Fixes: 4ff0ee1af016 ("i40e: Introduce recovery mode support")
->> Signed-off-by: Yuan Can <yuancan@huawei.com>
->> ---
->>   drivers/net/ethernet/intel/i40e/i40e_main.c | 1 +
->>   1 file changed, 1 insertion(+)
-> The patch title needs to be "[PATCH net]..."
->
->> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
->> index b5dcd15ced36..d23081c224d6 100644
->> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
->> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
->> @@ -15536,6 +15536,7 @@ static int i40e_init_recovery_mode(struct i40e_pf *pf, struct i40e_hw *hw)
->>   	pci_disable_pcie_error_reporting(pf->pdev);
->>   	pci_release_mem_regions(pf->pdev);
->>   	pci_disable_device(pf->pdev);
->> +	kfree(pf->vsi);
->>   	kfree(pf);
->>   
->>   	return err;
-> The change is ok, but it is worth to cleanup error flow of i40e_probe and i40e_remove
-> as they are not really in the same order.
->
-> Thanks,
-> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Thanks for the review, the title problem will be fixed in the next version.
+The BPF Makefile in net/bpf did incorrect path substitution for O=dir
+builds, e.g.
 
+  make O=/tmp/kselftest headers
+  make O=/tmp/kselftest -C tools/testing/selftests
+
+would fail in selftest builds [1] net/ with
+
+  clang-16: error: no such file or directory: 'kselftest/net/bpf/nat6to4.c'
+  clang-16: error: no input files
+
+Add a pattern prerequisite and an order-only-prerequisite (for
+creating the directory), to resolve the issue.
+
+[1] https://lore.kernel.org/all/202212060009.34CkQmCN-lkp@intel.com/
+
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 837a3d66d698 ("selftests: net: Add cross-compilation support for BPF programs")
+Signed-off-by: Björn Töpel <bjorn@rivosinc.com>
+---
+ tools/testing/selftests/net/bpf/Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
+index a26cb94354f6..4abaf16d2077 100644
+--- a/tools/testing/selftests/net/bpf/Makefile
++++ b/tools/testing/selftests/net/bpf/Makefile
+@@ -12,7 +12,7 @@ CCINCLUDE += -I$(SCRATCH_DIR)/include
+ 
+ BPFOBJ := $(BUILD_DIR)/libbpf/libbpf.a
+ 
+-MAKE_DIRS := $(BUILD_DIR)/libbpf
++MAKE_DIRS := $(BUILD_DIR)/libbpf $(OUTPUT)/bpf
+ $(MAKE_DIRS):
+ 	mkdir -p $@
+ 
+@@ -37,8 +37,8 @@ endif
+ 
+ CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG),$(CLANG_TARGET_ARCH))
+ 
+-$(TEST_CUSTOM_PROGS): $(BPFOBJ)
+-	$(CLANG) -O2 -target bpf -c $(@:.o=.c) $(CCINCLUDE) $(CLANG_SYS_INCLUDES) -o $@
++$(TEST_CUSTOM_PROGS): $(OUTPUT)/%.o: %.c $(BPFOBJ) | $(MAKE_DIRS)
++	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) $(CLANG_SYS_INCLUDES) -o $@
+ 
+ $(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       \
+ 	   $(APIDIR)/linux/bpf.h					       \
+
+base-commit: c9f8d73645b6f76c8d14f49bc860f7143d001cb7
 -- 
-Best regards,
-Yuan Can
+2.37.2
 
