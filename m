@@ -2,93 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 427C3644325
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 13:30:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B99644338
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 13:33:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232543AbiLFMam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 07:30:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44626 "EHLO
+        id S234261AbiLFMdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 07:33:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231888AbiLFMak (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 07:30:40 -0500
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EFD28E2C;
-        Tue,  6 Dec 2022 04:30:38 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id D970C32009D6;
-        Tue,  6 Dec 2022 07:30:36 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Tue, 06 Dec 2022 07:30:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1670329836; x=1670416236; bh=jE2AKhiday7rIVXVatfMZmacEC94
-        FeR0G3T3H1swJ8Y=; b=Ny7jLi5P8j4TjF5rVK3gvSYaXgEW6vskaSmN3qdDP2iQ
-        5nmHAUY5r8RySL+guzL//8B9pYMy5aASBysH0BW4/wlAsJDqvAtHMKL3ABnsQgSa
-        BMgKqhJgI36dhqlYSsQgcvyGxhPtaWJL1SqaUkDBV7gI+qezOd4AidpS964O90A0
-        zogMaWgu/FfmN7aD8YJi+Os6W/viOxWlCYkqIPeh1DpbhXUc7YZA3aspKRyD4TTS
-        3BnjrlpyuAXZhPfkytGsj2d9cGOrYa8Qi8e3yRF9N1TFGEm3CLyt7BWKsD6qdl/K
-        Li7NE1Ul/MR80TvoctNk3f4qZcxP+PoC1qtRdMN2dg==
-X-ME-Sender: <xms:6zWPYwFgRhGbbzL4DmSOOtWwGOTpok2rDk7xbk-u2GGU0YDKlQuT3Q>
-    <xme:6zWPY5XiGTz4j8w8S6tzXCD3dobyBZ7GtIfj6cAr9vu4pBVpcguVhBSqufN8letXn
-    o-m66Ywmh8-lEw>
-X-ME-Received: <xmr:6zWPY6KvU-fQvWm-y5_xi7QT1MF3jrMTcn4m49VNDHXqSzTjtuwz6cMhcedASreOiCRUbuQEjiehgzX6gwJogIzVHxQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudeigdegtdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
-    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:6zWPYyHAqFj7Px3AppSXu2E-FAD5IwZrCJQdNTa7zQTqh6XUMJKilQ>
-    <xmx:6zWPY2U4J1XwMqmYlU5mD2L3BMREVFiLfPguTfhQnO5mmXB_LIfClA>
-    <xmx:6zWPY1NdYJIQTxmjnTZwKvheiglADn2AXUtvK-Ub6u-Idx8SIw0GBg>
-    <xmx:7DWPYxE8RfRCpUY6gsqDaEyncwaISF4tF6EByuG0CdOPUq1ubGG6xQ>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 6 Dec 2022 07:30:34 -0500 (EST)
-Date:   Tue, 6 Dec 2022 14:30:29 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     "Hans J. Schultz" <netdev@kapio-technology.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/3] net: dsa: mv88e6xxx: change default return
- of mv88e6xxx_port_bridge_flags
-Message-ID: <Y4815esuJ0H9tx7s@shredder>
-References: <20221205185908.217520-1-netdev@kapio-technology.com>
- <20221205185908.217520-3-netdev@kapio-technology.com>
+        with ESMTP id S233178AbiLFMdA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 07:33:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9264629375
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 04:31:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670329917;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DHp3x7R/guV3hbeucoqTiz42buTvLFKB8vI9+m0vRAc=;
+        b=XB0qFKtjp2diqKIbXbrDl+Hv2+SalZyn5OoK9sftT4BuLhO3yeerbX0hUijlaxu0DkdOUL
+        m/7PR/be5spjmMN3FUZRwuqLF4SJ05dnKB8s8C1V0aRc71ntiE5Za7ycjXfo6IjHIApYvt
+        /wAgHeQ87CAUgUlp+raTSU0nr0N5bVM=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-203-wpDmphp8P0aa6CGP0Y93zQ-1; Tue, 06 Dec 2022 07:31:56 -0500
+X-MC-Unique: wpDmphp8P0aa6CGP0Y93zQ-1
+Received: by mail-wr1-f72.google.com with SMTP id k1-20020adfb341000000b0024215e0f486so3175120wrd.21
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 04:31:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=DHp3x7R/guV3hbeucoqTiz42buTvLFKB8vI9+m0vRAc=;
+        b=zEgfVI07ZA2fXXJGlRszrG8XARk359EoaSG8x7DC6xm2C0yZjUAhA0ddDt8eaosR2I
+         tfanDqiiAb+SLiz9BcVFElp60vtNT+pAugKCFCe7jl8aXBr5waKXtA1RYrrsU1h9w5OD
+         JfSH9RVIlOqU8kbnSiU1HDz317+yGt3qBNS62SW1I9LRePSjyI5ID/Szg9oMTxkAUxur
+         lkdGhfra4xH8d+9ffHF3HNTnlAoFvLD0+Eqzt2XwZrI63J27jbpiS2SdHSxkLN9DhuVL
+         T3As4bf5WfPeaASVYnI8zZGokWsRqZk8wQEAJRDDcDZcn+KthV2Pp0V/xBzcEzj9IOdI
+         SKCw==
+X-Gm-Message-State: ANoB5pkHoqN0NoR0Rz6lf8cWzrafpgjOjmcxEG8TfAV7BBmgg9mGNSGm
+        x/383msGS+gZgHPB5kdY1GZNCLkFAaxUob+5v1s/mh47txEDyhedwT/DyRggOJaLsExcMJUEGe+
+        uoJ55hBHjuzT+pnJ5
+X-Received: by 2002:adf:db85:0:b0:241:bfd7:de7 with SMTP id u5-20020adfdb85000000b00241bfd70de7mr50298119wri.254.1670329915715;
+        Tue, 06 Dec 2022 04:31:55 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7/qzzr0VuvbP4qZ7Yd3q9rLNeZH+c2AL9jutLoNZnaid8y/nFTvCdzJr8fgsaFlM4wi8oyFQ==
+X-Received: by 2002:adf:db85:0:b0:241:bfd7:de7 with SMTP id u5-20020adfdb85000000b00241bfd70de7mr50298102wri.254.1670329915442;
+        Tue, 06 Dec 2022 04:31:55 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-106-100.dyn.eolo.it. [146.241.106.100])
+        by smtp.gmail.com with ESMTPSA id r2-20020a056000014200b002422bc69111sm20743265wrx.9.2022.12.06.04.31.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 04:31:55 -0800 (PST)
+Message-ID: <256f533f019b6392b41701707eb7aa056b2f16c0.camel@redhat.com>
+Subject: Re: [PATCH net-next v3 1/4] net: microchip: vcap: Add vcap_get_rule
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        Steen.Hegelund@microchip.com, lars.povlsen@microchip.com,
+        daniel.machon@microchip.com, richardcochran@gmail.com,
+        UNGLinuxDriver@microchip.com, olteanv@gmail.com
+Date:   Tue, 06 Dec 2022 13:31:53 +0100
+In-Reply-To: <20221203104348.1749811-2-horatiu.vultur@microchip.com>
+References: <20221203104348.1749811-1-horatiu.vultur@microchip.com>
+         <20221203104348.1749811-2-horatiu.vultur@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221205185908.217520-3-netdev@kapio-technology.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 05, 2022 at 07:59:07PM +0100, Hans J. Schultz wrote:
-> The default return value -EOPNOTSUPP of mv88e6xxx_port_bridge_flags()
-> came from the return value of the DSA method port_egress_floods() in
-> commit 4f85901f0063 ("net: dsa: mv88e6xxx: add support for bridge flags"),
-> but the DSA API was changed in commit a8b659e7ff75 ("net: dsa: act as
-> passthrough for bridge port flags"), resulting in the return value
-> -EOPNOTSUPP not being valid anymore.
+Hello,
 
-The commit message needs to explain the motivation for the change and
-why the change is not a bug fix / safe. I guess the motivation is the
-next patch where a change in the MAB flag cannot fail and therefore it
-has no reason to reset the 'err' variable. The change is only safe if
-upper layers only invoke the operation when supported bridge port flags
-are changed. That is, the default error code is never used.
+On Sat, 2022-12-03 at 11:43 +0100, Horatiu Vultur wrote:
+> @@ -632,32 +264,22 @@ static int vcap_show_admin(struct vcap_control *vctrl,
+>  			   struct vcap_admin *admin,
+>  			   struct vcap_output_print *out)
+>  {
+> -	struct vcap_rule_internal *elem, *ri;
+> +	struct vcap_rule_internal *elem;
+> +	struct vcap_rule *vrule;
+>  	int ret = 0;
+>  
+>  	vcap_show_admin_info(vctrl, admin, out);
+> -	mutex_lock(&admin->lock);
+>  	list_for_each_entry(elem, &admin->rules, list) {
+
+Not strictly related to this patch, as the patter is AFAICS already
+there in other places, but I'd like to understand the admin->rules
+locking schema.
+
+It looks like addition/removal are protected by admin->lock, but
+traversal is usually lockless, which in turn looks buggy ?!?
+
+Note: as this patch does not introduce the mentioned behavior, I'm not
+going to block the series for the above.
+
+Thanks,
+
+Paolo
+> -		ri = vcap_dup_rule(elem);
+> -		if (IS_ERR(ri)) {
+> -			ret = PTR_ERR(ri);
+> -			goto err_unlock;
+> +		vrule = vcap_get_rule(vctrl, elem->data.id);
+> +		if (IS_ERR_OR_NULL(vrule)) {
+> +			ret = PTR_ERR(vrule);
+> +			break;
+>  		}
+> -		/* Read data from VCAP */
+> -		ret = vcap_read_rule(ri);
+> -		if (ret)
+> -			goto err_free_rule;
+> +
+>  		out->prf(out->dst, "\n");
+> -		vcap_show_admin_rule(vctrl, admin, out, ri);
+> -		vcap_free_rule((struct vcap_rule *)ri);
+> +		vcap_show_admin_rule(vctrl, admin, out, to_intrule(vrule));
+> +		vcap_free_rule(vrule);
+>  	}
+> -	mutex_unlock(&admin->lock);
+> -	return 0;
+> -
+> -err_free_rule:
+> -	vcap_free_rule((struct vcap_rule *)ri);
+> -err_unlock:
+> -	mutex_unlock(&admin->lock);
+>  	return ret;
+>  }
+
