@@ -2,73 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D758C644483
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:28:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A22A644481
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 14:27:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234260AbiLFN2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 08:28:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33122 "EHLO
+        id S231781AbiLFN1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 08:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234131AbiLFN17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:27:59 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D336C2250B
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 05:27:52 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id k22-20020a05600c1c9600b003d1ee3a6289so1110243wms.2
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 05:27:52 -0800 (PST)
+        with ESMTP id S231641AbiLFN1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 08:27:47 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33926AE68;
+        Tue,  6 Dec 2022 05:27:42 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id x22so6117314ejs.11;
+        Tue, 06 Dec 2022 05:27:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uycol23sLMJvKSN/Uf+hAHaSexrmgv6QP0a0Ox9Q4o4=;
-        b=i0qmxSRb3waD4rxuHBCB4ucip+pAeuTwiZiojywQQLgL57PhZxX709w+IATXT/K62P
-         0fRN9Kl0PLOMfFWahzeM3pD8VBNEgoQSqLodQ6CogsuhWlA5nkzSl5wVMl+KP0cUNnTo
-         SLIeTPxs/WSD7LrrKwWm5du/ggUj38ZuFPnNknFZNZd9TDzaOXANwQ32QEcVauqRor78
-         t/QS7meh8yvSUiSnLHoCWxFXGawsCVEvXN0tqRUvFAnh7HSjJQR87bTopt5XOycvhBzu
-         G9zEv2YRt9kqOI9VPhrjz2Rx3i3NcaqZTdWvXs0teBvJN+jpdOOfY9qKAYJjnQCkcFfp
-         oP9Q==
+        bh=8gGm5AvWlpFGL9MI7cu+T1k82OabJfNpmbCFTAalHdc=;
+        b=RadXzTZ7omYsfiEgzDAl49cDFWa7za/xIUbGvXGFuM9rVCKqKhRLqm1aLbayIK9c8h
+         LB2CwJ6t8vepNuYaKeOloYMVR8J6g+yP1Rnwjib++yuT2hw5EbgmqwC794+eGvQqSK9p
+         5uy7ZKcOvH8f36QcYrKz/jVxRukIR24Vl5ir4C/CUjFvPMR8h29rQ13oVVsF5a/YqLLP
+         RDf22Vh0NNqoJHvlcQyoUzQi57+vL0BvkGdrqt9PYVsorCAK9LCxJdewaUGsLjT47E4W
+         394D7V2BgOmpxMv7EOYaiwta8smfzTZaKnbwC8PgGe8XkI5fbhgyF8CWKyD+pZm2aBNS
+         H10g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=uycol23sLMJvKSN/Uf+hAHaSexrmgv6QP0a0Ox9Q4o4=;
-        b=pnF4q3BTY27sppjxKccYyz3c73Ev8cNGxHteV3ISnzY2VapvzRDRzbPnDAcabUtTsp
-         E6QKqXt9z2HfOB+I6wnuFdsb8xGEP5p69owTDGHDXzdugnp1BE1Kq3BSAOY39d5pIcNf
-         OsLIgeU5ghypMBB6lf67uGq4CyJDiBxYRJJwAlS433+6lpIK4FcC+zosJkFLZjf1flz+
-         osq3G9FuLUsitgl5jT+XuwQbmF+bjKb5mrhRGUaFacbUD7hqJ1C+5uNdte0VZwOtxWq1
-         8yMqUnuNdjW9QSrZaYWu37ZKrT0/SekO5902ZpYk9Pa7phLPa/fWpUyHTw7Bw7dQLUnD
-         NPOQ==
-X-Gm-Message-State: ANoB5pn9JA6lVPfep/QwbS5ybmRaP+DyUovHI5zCO823trSJALeFr5Vd
-        VS2+6ZFbMj3H8lzwtUebtYNlMg==
-X-Google-Smtp-Source: AA0mqf5W3612gH3fFbqiHPC1BGF8Y+BrWOxXdZ0XfxjlNvvZ6nazP6Wx9Jyd9dGJf/2+ofVWqAbTmA==
-X-Received: by 2002:a05:600c:1c09:b0:3d0:4fcb:253b with SMTP id j9-20020a05600c1c0900b003d04fcb253bmr33255121wms.199.1670333270983;
-        Tue, 06 Dec 2022 05:27:50 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id i1-20020a05600c354100b003b4868eb71bsm26978780wmq.25.2022.12.06.05.27.49
+        bh=8gGm5AvWlpFGL9MI7cu+T1k82OabJfNpmbCFTAalHdc=;
+        b=ilBYkYtdeIx+MFnfgbWiY9/b7/hw49gQop7TAp1JmYtCZ5PF8QV3fJrae2IJQs0HqC
+         ZTLCWqY6GFHvVz1wVHMSnuJOypDTIaoeAE5qvKhKqBlovzkhv4lDEAKtmDCNxy8PIVa/
+         hRaHUDX1HKPtBTgNCpgjfXYVllXmuByMiRxaghvXL/mQLIrJIM1vkLHZGf73XylWHOom
+         H7oo+IfQEs5HJG1bsCKO0qO0tUmsLWnsNAs8WTMcU0OdrsXUGMFCzPtCeLORf7Hem+rI
+         ACVyaGtEDFKHJ3alOoVUcETc9P+/uS/IZkafontYxlf7Ofq0lOXiTKZFUklHVLT21Ff8
+         seBA==
+X-Gm-Message-State: ANoB5pmGUw+8MwNk1pf0JZ4viLnsRiXIVmPGh4neEcIqp+ZoqIJrSZUF
+        33c3GweWCDySjrlFVb2J6nE=
+X-Google-Smtp-Source: AA0mqf4MUqc7enU8xV43/Jc/1OKvAAjNXgI7lJ2oWUsp0NI/WMSCfEaKw0eOXLy/TBpDMLX5Q4ehLg==
+X-Received: by 2002:a17:906:48c9:b0:7c0:eb33:e7c2 with SMTP id d9-20020a17090648c900b007c0eb33e7c2mr9196428ejt.666.1670333260625;
+        Tue, 06 Dec 2022 05:27:40 -0800 (PST)
+Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
+        by smtp.gmail.com with ESMTPSA id d36-20020a056402402400b004585eba4baesm975704eda.80.2022.12.06.05.27.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 05:27:50 -0800 (PST)
-Date:   Tue, 6 Dec 2022 14:27:49 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Tue, 06 Dec 2022 05:27:40 -0800 (PST)
+Date:   Tue, 6 Dec 2022 14:27:50 +0100
+From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] ice: switch: fix potential memleak in
- ice_add_adv_recipe()
-Message-ID: <Y49DVUIaZhoky0B1@nanopsycho>
-References: <1670225902-10923-1-git-send-email-zhangchangzhong@huawei.com>
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH net-next 0/2] ethtool: add PLCA RS support
+Message-ID: <Y49DVmIp7CpdQRfe@gvm01>
+References: <cover.1670121214.git.piergiorgio.beruto@gmail.com>
+ <20221205180527.7cad354c@kernel.org>
+ <20221205201152.4577d15d@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1670225902-10923-1-git-send-email-zhangchangzhong@huawei.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <20221205201152.4577d15d@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,13 +77,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Dec 05, 2022 at 08:38:22AM CET, zhangchangzhong@huawei.com wrote:
->When ice_add_special_words() fails, the 'rm' is not released, which will
->lead to a memory leak. Fix this up by going to 'err_unroll' label.
->
->Compile tested only.
->
->Fixes: 8b032a55c1bd ("ice: low level support for tunnels")
->Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+On Mon, Dec 05, 2022 at 08:11:52PM -0800, Jakub Kicinski wrote:
+> On Mon, 5 Dec 2022 18:05:27 -0800 Jakub Kicinski wrote:
+> > On Sun, 4 Dec 2022 03:37:57 +0100 Piergiorgio Beruto wrote:
+> > > This patchset is related to the proposed "add PLCA RS support and onsemi
+> > > NCN26000" patchset on the kernel. It adds userland support for
+> > > getting/setting the configuration of the Physical Layer Collision
+> > > Avoidance (PLCA) Reconciliation Sublayer (RS) defined in the IEEE 802.3
+> > > specifications, amended by IEEE802.3cg-2019.  
+> > 
+> > nit: for the user space patches use the tool name in the subject tag
+> > [PATCH ethtool-next], I bet quite a few people looked at your set
+> > expecting kernel changes ;)
+> 
+> ... which you already figured out / was told. Is a very bad day 
+> for my ability to spot next postings of the same set it seems :S
+Thanks Jakub, don't worry, I am still learning the process, so better
+one more feedback than none!
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+BTW, I've just updated the patchset to include all the feedback I did
+receiver so far. Hopefully this one is good :-)
+
+Kind Regards,
+Piergiorgio
