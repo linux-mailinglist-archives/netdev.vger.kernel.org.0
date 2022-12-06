@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFD2C643C10
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 05:06:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29107643C17
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 05:12:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229982AbiLFEGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Dec 2022 23:06:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
+        id S232748AbiLFEMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Dec 2022 23:12:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233417AbiLFEGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 23:06:19 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD9322BC0
-        for <netdev@vger.kernel.org>; Mon,  5 Dec 2022 20:06:17 -0800 (PST)
+        with ESMTP id S229938AbiLFEL6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Dec 2022 23:11:58 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CFB209A4;
+        Mon,  5 Dec 2022 20:11:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6F1D8CE1732
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 04:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E39FFC433C1;
-        Tue,  6 Dec 2022 04:06:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 38672CE1732;
+        Tue,  6 Dec 2022 04:11:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12DF3C433D6;
+        Tue,  6 Dec 2022 04:11:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670299573;
-        bh=9U3j7hSH4wqOdBO3aTet59xyKCFfbzxpZ7Q1SJSaPMc=;
+        s=k20201202; t=1670299913;
+        bh=oHyQEKDCZJCHzZrjfqpySFld26mpywWljhHt4iOUg3Y=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uw/Ml6Du6NcyFZ9wa3qD0fzoQ56XWq4dO8JUPuipzqE2QdLRvXGMqVyI3v1wcgyrd
-         c0Toj38+0QlYS+N2e/EJjjGti1F+mhnGcWkQUqbQOIhWPQwaBGzYEnXhNghu13hB8U
-         DQxN9zMXXq1B0nKS/MTwrJfU9jvs+y0t1b5HdNRCsX4uXQbGZ26Sdxq+0dDQuwDrqo
-         najZfHYLQ2OD+88dU/johwV+VquX6h6rpODWX3webeM4e60jQVWwgzaBBbVxnMbQrX
-         hqCnSOsQyQRdIYvaVliV1vLpInlWmaLZnHcSsba1fcnS6HmFKLDZ+Y5/V9VkhQnRH4
-         NEyZNiYx7FrOQ==
-Date:   Mon, 5 Dec 2022 20:06:11 -0800
+        b=j5yZ/B8xAFf3+t90iBRLhKfQsZpzC4mVtXAC+XEHhNikiJpT/YrovfrCA72aRPbtc
+         jiI6qJQSJ49Bd6BM/dJNqJMbXsZ5a5FYfCzpVyYoFzd8O5A8XrrfdbKlwsFOeUXXeo
+         Oxc8qwB6JziQZgm/kDCM0fu9X/bZZ3GZDTeevqLSCHjTBpAMGT9XUDJplYRQaNE79+
+         NvP4F7aeADX1HBXl5/73ngnodZJm3QjCn6UnxoS7DY08u6KmyXBHHAZDfzXzXdtL9y
+         BSIfbtI6RyE5KwlWXazXgXvnhnmg2+Sl3DA0cAnu/jL/Qt3CJaG7SXTtLIv9QslLlq
+         A/5Xd+JL+HlKA==
+Date:   Mon, 5 Dec 2022 20:11:52 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     linux-mediatek@lists.infradead.org,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        sujuan.chen@mediatek.com, lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH net-next] net: mtk_eth_soc: enable flow offload support
- fot MT7986 SoC
-Message-ID: <20221205200611.6b488918@kernel.org>
-In-Reply-To: <70E22A48-DEE2-403A-975F-AD7D418B78CA@public-files.de>
-References: <fdcaacd827938e6a8c4aa1ac2c13e46d2c08c821.1670072898.git.lorenzo@kernel.org>
-        <70E22A48-DEE2-403A-975F-AD7D418B78CA@public-files.de>
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH net-next 0/2] ethtool: add PLCA RS support
+Message-ID: <20221205201152.4577d15d@kernel.org>
+In-Reply-To: <20221205180527.7cad354c@kernel.org>
+References: <cover.1670121214.git.piergiorgio.beruto@gmail.com>
+        <20221205180527.7cad354c@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,9 +58,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 03 Dec 2022 16:38:15 +0100 Frank Wunderlich wrote:
-> thanks for the Patch, i only noticed a typo in Subject (s/fot/for/).
-> regards Frank
+On Mon, 5 Dec 2022 18:05:27 -0800 Jakub Kicinski wrote:
+> On Sun, 4 Dec 2022 03:37:57 +0100 Piergiorgio Beruto wrote:
+> > This patchset is related to the proposed "add PLCA RS support and onsemi
+> > NCN26000" patchset on the kernel. It adds userland support for
+> > getting/setting the configuration of the Physical Layer Collision
+> > Avoidance (PLCA) Reconciliation Sublayer (RS) defined in the IEEE 802.3
+> > specifications, amended by IEEE802.3cg-2019.  
+> 
+> nit: for the user space patches use the tool name in the subject tag
+> [PATCH ethtool-next], I bet quite a few people looked at your set
+> expecting kernel changes ;)
 
-The message from the bot does not reflect that but FWIW
- - fixed when applying.
+... which you already figured out / was told. Is a very bad day 
+for my ability to spot next postings of the same set it seems :S
