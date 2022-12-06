@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E95066448A6
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 17:04:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 408116448A7
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 17:04:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232135AbiLFQEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 11:04:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        id S235056AbiLFQEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 11:04:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235341AbiLFQCU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 11:02:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2822ED6A
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 08:01:17 -0800 (PST)
+        with ESMTP id S233863AbiLFQC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 11:02:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EA7240B3
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 08:01:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670342476;
+        s=mimecast20190719; t=1670342486;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WW1ee118uoQ3cBoNOc38dhC0xhsUT8De7VLuxxcefi8=;
-        b=TA07fwhoLU6H+pxVqlR/rxGUwsVzm5L8lTzTFfQpsDYC0mhO0BOMqbuirsw5MUP6RDjnos
-        pPZrU80lyMvxDBUwoL3JZeBOXGMqibMoST/ZHhV0AmJv3WsAgzSXE2UNbEI93RSfG9XG5q
-        /KpJnmrFEdkzoHLubbeDbXYawaISoIU=
+        bh=xyMJU0zPv3CwtJEFI3fq9r//RZkVzS7vkDP3RQzQTFw=;
+        b=FPJAN/4VVRchepG7zmkJO0H76O3JM0XehAq2rdApsNLlusQh6mqfDwfUbseI8fzv1lhfXX
+        qITcANsNYko7HpapIN75Vkvo8Zo3SvLOiel2xv+Guf5UXrhi/l3QVHvwttHr/LuTv6kze6
+        G26fCZI/8Vhxs4J/ULDluxxHxjKJliQ=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-581-4qjHR9I1MR2s_CtpT8wJvQ-1; Tue, 06 Dec 2022 11:01:13 -0500
-X-MC-Unique: 4qjHR9I1MR2s_CtpT8wJvQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-636-E3lObi4COeiWzPfraYzPIQ-1; Tue, 06 Dec 2022 11:01:21 -0500
+X-MC-Unique: E3lObi4COeiWzPfraYzPIQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7FCC186EB21;
-        Tue,  6 Dec 2022 16:01:12 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1631D86EB22;
+        Tue,  6 Dec 2022 16:01:21 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C1777C15BA4;
-        Tue,  6 Dec 2022 16:01:11 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 578C01121315;
+        Tue,  6 Dec 2022 16:01:20 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 18/32] rxrpc: Stash the network namespace pointer in
- rxrpc_local
+Subject: [PATCH net-next 19/32] rxrpc: Make the set of connection IDs per
+ local endpoint
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Marc Dionne <marc.dionne@auristor.com>,
         linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Tue, 06 Dec 2022 16:01:09 +0000
-Message-ID: <167034246900.1105287.913631596294374964.stgit@warthog.procyon.org.uk>
+Date:   Tue, 06 Dec 2022 16:01:17 +0000
+Message-ID: <167034247767.1105287.2181920855570975717.stgit@warthog.procyon.org.uk>
 In-Reply-To: <167034231605.1105287.1693064952174322878.stgit@warthog.procyon.org.uk>
 References: <167034231605.1105287.1693064952174322878.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,194 +67,252 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stash the network namespace pointer in the rxrpc_local struct in addition
-to a pointer to the rxrpc-specific net namespace info.  Use this to remove
-some places where the socket is passed as a parameter.
+Make the set of connection IDs per local endpoint so that endpoints don't
+cause each other's connections to get dismissed.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- net/rxrpc/ar-internal.h  |    8 ++++----
- net/rxrpc/call_accept.c  |    2 +-
- net/rxrpc/conn_client.c  |    2 +-
- net/rxrpc/local_object.c |    7 ++++---
- net/rxrpc/peer_object.c  |   23 ++++++++++-------------
- 5 files changed, 20 insertions(+), 22 deletions(-)
+ net/rxrpc/af_rxrpc.c     |    8 --------
+ net/rxrpc/ar-internal.h  |    5 +++--
+ net/rxrpc/conn_client.c  |   44 +++++++++++++++++++-------------------------
+ net/rxrpc/conn_object.c  |    6 +++---
+ net/rxrpc/local_object.c |   10 ++++++++++
+ 5 files changed, 35 insertions(+), 38 deletions(-)
 
+diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
+index b9dadc89fede..c82af5ebc2b3 100644
+--- a/net/rxrpc/af_rxrpc.c
++++ b/net/rxrpc/af_rxrpc.c
+@@ -957,16 +957,9 @@ static const struct net_proto_family rxrpc_family_ops = {
+ static int __init af_rxrpc_init(void)
+ {
+ 	int ret = -1;
+-	unsigned int tmp;
+ 
+ 	BUILD_BUG_ON(sizeof(struct rxrpc_skb_priv) > sizeof_field(struct sk_buff, cb));
+ 
+-	get_random_bytes(&tmp, sizeof(tmp));
+-	tmp &= 0x3fffffff;
+-	if (tmp == 0)
+-		tmp = 1;
+-	idr_set_cursor(&rxrpc_client_conn_ids, tmp);
+-
+ 	ret = -ENOMEM;
+ 	rxrpc_call_jar = kmem_cache_create(
+ 		"rxrpc_call_jar", sizeof(struct rxrpc_call), 0,
+@@ -1062,7 +1055,6 @@ static void __exit af_rxrpc_exit(void)
+ 	 * are released.
+ 	 */
+ 	rcu_barrier();
+-	rxrpc_destroy_client_conn_ids();
+ 
+ 	destroy_workqueue(rxrpc_workqueue);
+ 	rxrpc_exit_security();
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index f2ab2d8044bd..1e6e11fb3a90 100644
+index 1e6e11fb3a90..4f4dc3d49c35 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -282,7 +282,8 @@ struct rxrpc_local {
- 	struct rcu_head		rcu;
- 	atomic_t		active_users;	/* Number of users of the local endpoint */
- 	refcount_t		ref;		/* Number of references to the structure */
--	struct rxrpc_net	*rxnet;		/* The network ns in which this resides */
-+	struct net		*net;		/* The network namespace */
-+	struct rxrpc_net	*rxnet;		/* Our bits in the network namespace */
- 	struct hlist_node	link;
- 	struct socket		*socket;	/* my UDP socket */
- 	struct task_struct	*io_thread;
-@@ -1088,12 +1089,11 @@ void rxrpc_peer_keepalive_worker(struct work_struct *);
-  */
- struct rxrpc_peer *rxrpc_lookup_peer_rcu(struct rxrpc_local *,
- 					 const struct sockaddr_rxrpc *);
--struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *, struct rxrpc_local *,
-+struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_local *,
- 				     struct sockaddr_rxrpc *, gfp_t);
- struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *, gfp_t,
- 				    enum rxrpc_peer_trace);
--void rxrpc_new_incoming_peer(struct rxrpc_sock *, struct rxrpc_local *,
--			     struct rxrpc_peer *);
-+void rxrpc_new_incoming_peer(struct rxrpc_local *, struct rxrpc_peer *);
- void rxrpc_destroy_all_peers(struct rxrpc_net *);
- struct rxrpc_peer *rxrpc_get_peer(struct rxrpc_peer *, enum rxrpc_peer_trace);
- struct rxrpc_peer *rxrpc_get_peer_maybe(struct rxrpc_peer *, enum rxrpc_peer_trace);
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index 5fa81bb4abfa..a132d486dea0 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -280,7 +280,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
- 					  (peer_tail + 1) &
- 					  (RXRPC_BACKLOG_MAX - 1));
+@@ -301,6 +301,8 @@ struct rxrpc_local {
+ 	int			debug_id;	/* debug ID for printks */
+ 	bool			dead;
+ 	bool			service_closed;	/* Service socket closed */
++	struct idr		conn_ids;	/* List of connection IDs */
++	spinlock_t		conn_lock;	/* Lock for client connection pool */
+ 	struct sockaddr_rxrpc	srx;		/* local address */
+ };
  
--			rxrpc_new_incoming_peer(rx, local, peer);
-+			rxrpc_new_incoming_peer(local, peer);
- 		}
+@@ -888,9 +890,8 @@ static inline bool rxrpc_is_client_call(const struct rxrpc_call *call)
+ extern unsigned int rxrpc_reap_client_connections;
+ extern unsigned long rxrpc_conn_idle_client_expiry;
+ extern unsigned long rxrpc_conn_idle_client_fast_expiry;
+-extern struct idr rxrpc_client_conn_ids;
  
- 		/* Now allocate and set up the connection */
+-void rxrpc_destroy_client_conn_ids(void);
++void rxrpc_destroy_client_conn_ids(struct rxrpc_local *);
+ struct rxrpc_bundle *rxrpc_get_bundle(struct rxrpc_bundle *, enum rxrpc_bundle_trace);
+ void rxrpc_put_bundle(struct rxrpc_bundle *, enum rxrpc_bundle_trace);
+ int rxrpc_connect_call(struct rxrpc_sock *, struct rxrpc_call *,
 diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index ec8913de42c9..4cfd8845df90 100644
+index 4cfd8845df90..66aca478290e 100644
 --- a/net/rxrpc/conn_client.c
 +++ b/net/rxrpc/conn_client.c
-@@ -378,7 +378,7 @@ static struct rxrpc_bundle *rxrpc_prep_call(struct rxrpc_sock *rx,
+@@ -34,12 +34,6 @@ __read_mostly unsigned int rxrpc_reap_client_connections = 900;
+ __read_mostly unsigned long rxrpc_conn_idle_client_expiry = 2 * 60 * HZ;
+ __read_mostly unsigned long rxrpc_conn_idle_client_fast_expiry = 2 * HZ;
  
- 	_enter("{%d,%lx},", call->debug_id, call->user_call_ID);
+-/*
+- * We use machine-unique IDs for our client connections.
+- */
+-DEFINE_IDR(rxrpc_client_conn_ids);
+-static DEFINE_SPINLOCK(rxrpc_conn_id_lock);
+-
+ static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle);
  
--	cp->peer = rxrpc_lookup_peer(rx, cp->local, srx, gfp);
-+	cp->peer = rxrpc_lookup_peer(cp->local, srx, gfp);
- 	if (!cp->peer)
+ /*
+@@ -51,65 +45,65 @@ static void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle);
+ static int rxrpc_get_client_connection_id(struct rxrpc_connection *conn,
+ 					  gfp_t gfp)
+ {
+-	struct rxrpc_net *rxnet = conn->rxnet;
++	struct rxrpc_local *local = conn->local;
+ 	int id;
+ 
+ 	_enter("");
+ 
+ 	idr_preload(gfp);
+-	spin_lock(&rxrpc_conn_id_lock);
++	spin_lock(&local->conn_lock);
+ 
+-	id = idr_alloc_cyclic(&rxrpc_client_conn_ids, conn,
++	id = idr_alloc_cyclic(&local->conn_ids, conn,
+ 			      1, 0x40000000, GFP_NOWAIT);
+ 	if (id < 0)
  		goto error;
  
+-	spin_unlock(&rxrpc_conn_id_lock);
++	spin_unlock(&local->conn_lock);
+ 	idr_preload_end();
+ 
+-	conn->proto.epoch = rxnet->epoch;
++	conn->proto.epoch = local->rxnet->epoch;
+ 	conn->proto.cid = id << RXRPC_CIDSHIFT;
+ 	set_bit(RXRPC_CONN_HAS_IDR, &conn->flags);
+ 	_leave(" [CID %x]", conn->proto.cid);
+ 	return 0;
+ 
+ error:
+-	spin_unlock(&rxrpc_conn_id_lock);
++	spin_unlock(&local->conn_lock);
+ 	idr_preload_end();
+ 	_leave(" = %d", id);
+ 	return id;
+ }
+ 
+ /*
+- * Release a connection ID for a client connection from the global pool.
++ * Release a connection ID for a client connection.
+  */
+-static void rxrpc_put_client_connection_id(struct rxrpc_connection *conn)
++static void rxrpc_put_client_connection_id(struct rxrpc_local *local,
++					   struct rxrpc_connection *conn)
+ {
+ 	if (test_bit(RXRPC_CONN_HAS_IDR, &conn->flags)) {
+-		spin_lock(&rxrpc_conn_id_lock);
+-		idr_remove(&rxrpc_client_conn_ids,
+-			   conn->proto.cid >> RXRPC_CIDSHIFT);
+-		spin_unlock(&rxrpc_conn_id_lock);
++		spin_lock(&local->conn_lock);
++		idr_remove(&local->conn_ids, conn->proto.cid >> RXRPC_CIDSHIFT);
++		spin_unlock(&local->conn_lock);
+ 	}
+ }
+ 
+ /*
+  * Destroy the client connection ID tree.
+  */
+-void rxrpc_destroy_client_conn_ids(void)
++void rxrpc_destroy_client_conn_ids(struct rxrpc_local *local)
+ {
+ 	struct rxrpc_connection *conn;
+ 	int id;
+ 
+-	if (!idr_is_empty(&rxrpc_client_conn_ids)) {
+-		idr_for_each_entry(&rxrpc_client_conn_ids, conn, id) {
++	if (!idr_is_empty(&local->conn_ids)) {
++		idr_for_each_entry(&local->conn_ids, conn, id) {
+ 			pr_err("AF_RXRPC: Leaked client conn %p {%d}\n",
+ 			       conn, refcount_read(&conn->ref));
+ 		}
+ 		BUG();
+ 	}
+ 
+-	idr_destroy(&rxrpc_client_conn_ids);
++	idr_destroy(&local->conn_ids);
+ }
+ 
+ /*
+@@ -225,7 +219,7 @@ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle, gfp_t gfp)
+ 	return conn;
+ 
+ error_1:
+-	rxrpc_put_client_connection_id(conn);
++	rxrpc_put_client_connection_id(bundle->local, conn);
+ error_0:
+ 	kfree(conn);
+ 	_leave(" = %d", ret);
+@@ -257,7 +251,7 @@ static bool rxrpc_may_reuse_conn(struct rxrpc_connection *conn)
+ 	 * times the maximum number of client conns away from the current
+ 	 * allocation point to try and keep the IDs concentrated.
+ 	 */
+-	id_cursor = idr_get_cursor(&rxrpc_client_conn_ids);
++	id_cursor = idr_get_cursor(&conn->local->conn_ids);
+ 	id = conn->proto.cid >> RXRPC_CIDSHIFT;
+ 	distance = id - id_cursor;
+ 	if (distance < 0)
+@@ -982,7 +976,7 @@ void rxrpc_kill_client_conn(struct rxrpc_connection *conn)
+ 	trace_rxrpc_client(conn, -1, rxrpc_client_cleanup);
+ 	atomic_dec(&rxnet->nr_client_conns);
+ 
+-	rxrpc_put_client_connection_id(conn);
++	rxrpc_put_client_connection_id(local, conn);
+ }
+ 
+ /*
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index b3cb85e0ed70..52fad0744239 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -100,10 +100,10 @@ struct rxrpc_connection *rxrpc_find_client_connection_rcu(struct rxrpc_local *lo
+ 
+ 	_enter(",%x", sp->hdr.cid & RXRPC_CIDMASK);
+ 
+-	/* Look up client connections by connection ID alone as their IDs are
+-	 * unique for this machine.
++	/* Look up client connections by connection ID alone as their
++	 * IDs are unique for this machine.
+ 	 */
+-	conn = idr_find(&rxrpc_client_conn_ids, sp->hdr.cid >> RXRPC_CIDSHIFT);
++	conn = idr_find(&local->conn_ids, sp->hdr.cid >> RXRPC_CIDSHIFT);
+ 	if (!conn || refcount_read(&conn->ref) == 0) {
+ 		_debug("no conn");
+ 		goto not_found;
 diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index 3ab68ae68954..3843418ea90f 100644
+index 3843418ea90f..57697adf52c6 100644
 --- a/net/rxrpc/local_object.c
 +++ b/net/rxrpc/local_object.c
-@@ -85,7 +85,7 @@ static long rxrpc_local_cmp_key(const struct rxrpc_local *local,
- /*
-  * Allocate a new local endpoint.
-  */
--static struct rxrpc_local *rxrpc_alloc_local(struct rxrpc_net *rxnet,
-+static struct rxrpc_local *rxrpc_alloc_local(struct net *net,
+@@ -89,6 +89,7 @@ static struct rxrpc_local *rxrpc_alloc_local(struct net *net,
  					     const struct sockaddr_rxrpc *srx)
  {
  	struct rxrpc_local *local;
-@@ -94,7 +94,8 @@ static struct rxrpc_local *rxrpc_alloc_local(struct rxrpc_net *rxnet,
++	u32 tmp;
+ 
+ 	local = kzalloc(sizeof(struct rxrpc_local), GFP_KERNEL);
  	if (local) {
- 		refcount_set(&local->ref, 1);
- 		atomic_set(&local->active_users, 1);
--		local->rxnet = rxnet;
-+		local->net = net;
-+		local->rxnet = rxrpc_net(net);
- 		INIT_HLIST_NODE(&local->link);
- #ifdef CONFIG_AF_RXRPC_INJECT_RX_DELAY
- 		skb_queue_head_init(&local->rx_delay_queue);
-@@ -249,7 +250,7 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- 		goto found;
+@@ -110,6 +111,14 @@ static struct rxrpc_local *rxrpc_alloc_local(struct net *net,
+ 		local->debug_id = atomic_inc_return(&rxrpc_debug_id);
+ 		memcpy(&local->srx, srx, sizeof(*srx));
+ 		local->srx.srx_service = 0;
++		idr_init(&local->conn_ids);
++		get_random_bytes(&tmp, sizeof(tmp));
++		tmp &= 0x3fffffff;
++		if (tmp == 0)
++			tmp = 1;
++		idr_set_cursor(&local->conn_ids, tmp);
++		spin_lock_init(&local->conn_lock);
++
+ 		trace_rxrpc_local(local->debug_id, rxrpc_local_new, 1, 1);
  	}
  
--	local = rxrpc_alloc_local(rxnet, srx);
-+	local = rxrpc_alloc_local(net, srx);
- 	if (!local)
- 		goto nomem;
+@@ -411,6 +420,7 @@ void rxrpc_destroy_local(struct rxrpc_local *local)
+ 	rxrpc_purge_queue(&local->rx_delay_queue);
+ #endif
+ 	rxrpc_purge_queue(&local->rx_queue);
++	rxrpc_destroy_client_conn_ids(local);
+ }
  
-diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
-index 608946dcc505..c3035f44e0ca 100644
---- a/net/rxrpc/peer_object.c
-+++ b/net/rxrpc/peer_object.c
-@@ -147,10 +147,10 @@ struct rxrpc_peer *rxrpc_lookup_peer_rcu(struct rxrpc_local *local,
-  * assess the MTU size for the network interface through which this peer is
-  * reached
-  */
--static void rxrpc_assess_MTU_size(struct rxrpc_sock *rx,
-+static void rxrpc_assess_MTU_size(struct rxrpc_local *local,
- 				  struct rxrpc_peer *peer)
- {
--	struct net *net = sock_net(&rx->sk);
-+	struct net *net = local->net;
- 	struct dst_entry *dst;
- 	struct rtable *rt;
- 	struct flowi fl;
-@@ -236,11 +236,11 @@ struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp,
  /*
-  * Initialise peer record.
-  */
--static void rxrpc_init_peer(struct rxrpc_sock *rx, struct rxrpc_peer *peer,
-+static void rxrpc_init_peer(struct rxrpc_local *local, struct rxrpc_peer *peer,
- 			    unsigned long hash_key)
- {
- 	peer->hash_key = hash_key;
--	rxrpc_assess_MTU_size(rx, peer);
-+	rxrpc_assess_MTU_size(local, peer);
- 	peer->mtu = peer->if_mtu;
- 	peer->rtt_last_req = ktime_get_real();
- 
-@@ -272,8 +272,7 @@ static void rxrpc_init_peer(struct rxrpc_sock *rx, struct rxrpc_peer *peer,
- /*
-  * Set up a new peer.
-  */
--static struct rxrpc_peer *rxrpc_create_peer(struct rxrpc_sock *rx,
--					    struct rxrpc_local *local,
-+static struct rxrpc_peer *rxrpc_create_peer(struct rxrpc_local *local,
- 					    struct sockaddr_rxrpc *srx,
- 					    unsigned long hash_key,
- 					    gfp_t gfp)
-@@ -285,7 +284,7 @@ static struct rxrpc_peer *rxrpc_create_peer(struct rxrpc_sock *rx,
- 	peer = rxrpc_alloc_peer(local, gfp, rxrpc_peer_new_client);
- 	if (peer) {
- 		memcpy(&peer->srx, srx, sizeof(*srx));
--		rxrpc_init_peer(rx, peer, hash_key);
-+		rxrpc_init_peer(local, peer, hash_key);
- 	}
- 
- 	_leave(" = %p", peer);
-@@ -304,14 +303,13 @@ static void rxrpc_free_peer(struct rxrpc_peer *peer)
-  * since we've already done a search in the list from the non-reentrant context
-  * (the data_ready handler) that is the only place we can add new peers.
-  */
--void rxrpc_new_incoming_peer(struct rxrpc_sock *rx, struct rxrpc_local *local,
--			     struct rxrpc_peer *peer)
-+void rxrpc_new_incoming_peer(struct rxrpc_local *local, struct rxrpc_peer *peer)
- {
- 	struct rxrpc_net *rxnet = local->rxnet;
- 	unsigned long hash_key;
- 
- 	hash_key = rxrpc_peer_hash_key(local, &peer->srx);
--	rxrpc_init_peer(rx, peer, hash_key);
-+	rxrpc_init_peer(local, peer, hash_key);
- 
- 	spin_lock(&rxnet->peer_hash_lock);
- 	hash_add_rcu(rxnet->peer_hash, &peer->hash_link, hash_key);
-@@ -322,8 +320,7 @@ void rxrpc_new_incoming_peer(struct rxrpc_sock *rx, struct rxrpc_local *local,
- /*
-  * obtain a remote transport endpoint for the specified address
-  */
--struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *rx,
--				     struct rxrpc_local *local,
-+struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_local *local,
- 				     struct sockaddr_rxrpc *srx, gfp_t gfp)
- {
- 	struct rxrpc_peer *peer, *candidate;
-@@ -343,7 +340,7 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_sock *rx,
- 		/* The peer is not yet present in hash - create a candidate
- 		 * for a new record and then redo the search.
- 		 */
--		candidate = rxrpc_create_peer(rx, local, srx, hash_key, gfp);
-+		candidate = rxrpc_create_peer(local, srx, hash_key, gfp);
- 		if (!candidate) {
- 			_leave(" = NULL [nomem]");
- 			return NULL;
 
 
