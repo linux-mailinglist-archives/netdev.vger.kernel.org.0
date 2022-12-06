@@ -2,86 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B558644555
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 15:09:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E4E7644595
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 15:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234462AbiLFOJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 09:09:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55776 "EHLO
+        id S231363AbiLFO0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 09:26:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiLFOJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 09:09:22 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D65D13E;
-        Tue,  6 Dec 2022 06:09:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Si6FRZb37FNbgQkWe+CseEcMrXZ2g2ulTkRB1hZr1Zo=; b=oe4qn6ecFfzMWs6oZprIQsIZ3e
-        eKXFpwE8PncL2qV4UIcBmkWkU1c/BNNupCMeMHgmbQgvEnTdIj1byexJgD3kjP3qa7pQofIqYXQZQ
-        kGd94ao/7JfPpy7grX4Vt2FrIHL7LkfvtZSGL8sSLIDwePo0sFTIKKwmL56BmHeWGRnY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1p2Yd1-004XDZ-0b; Tue, 06 Dec 2022 15:08:59 +0100
-Date:   Tue, 6 Dec 2022 15:08:59 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Divya.Koppera@microchip.com
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        richardcochran@gmail.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v5 net-next 2/2] net: phy: micrel: Fix warn: passing zero
- to PTR_ERR
-Message-ID: <Y49M++waEHLm0hEA@lunn.ch>
-References: <20221206073511.4772-1-Divya.Koppera@microchip.com>
- <20221206073511.4772-3-Divya.Koppera@microchip.com>
- <Y48+rLpF7Gre/s1P@lunn.ch>
- <CO1PR11MB47713C125F3D0E08B7A6A132E21B9@CO1PR11MB4771.namprd11.prod.outlook.com>
+        with ESMTP id S229461AbiLFO0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 09:26:23 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94817D7E;
+        Tue,  6 Dec 2022 06:26:19 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id m18so5045142eji.5;
+        Tue, 06 Dec 2022 06:26:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3Wg3wyhZI1iQp1XKP6mxboGBlL0AzpG0TjS50hdCrEM=;
+        b=GXTK4+2h3fN/c9v0DEiyJun1Nm1XyhVTLMlM/+Jyb9MoCD4lkOV3244RiR9LSbyLJX
+         LbNhGYfgwFPBa8egNdotONC1yQwlB6O4vyhif26Lj4p2u7Fj5yF6+6G1LaWgAy9ez6Ke
+         Sko3vIyWUxp/miDPqpmCCKejeMRsLzww3km1N5AjfxzzallZ+M+DIOeBTLWHtwfm22aT
+         trM+Ldfh27UrmzUX5BE1zA05xxBigSrTLULr1UC/Cg3he9npXJif4OEhIiOv0x79hJKd
+         LOEj7fwQylbKVnd8bijCOGEVPMdub6SHBZj+DXcavgwNY6mzgAunkrSPqQe1PnXv3Mwk
+         ejhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3Wg3wyhZI1iQp1XKP6mxboGBlL0AzpG0TjS50hdCrEM=;
+        b=h4H0uvZZbt7A+oew6595e2mSUIf7f6KPUlouZtMJDJnuUFIqgyWODi6q8599ddz2zx
+         N1dxo4/wuGqiRH0J/GYA/18FwiIW8ClbIqipAWkjwJoLZIb8t6LJhZuAQAzrX0vd+rjN
+         JBuAkOZNS+UarDdn2iAEUmuXV2rypofUiG1jshs38b6y1P6og7CWoqTtyiogLSAoSEXX
+         NoupXwRRIMngZqbaCANtkBiBUIkcYCFVmPX0OKXK+Vy4n+/NuVwsrSlEC8wMIslr2ZH0
+         PZW02nplB9n36WuFoQ34OIhbH+En6Z08C2314+pbD+XtOL+EG1+/FLoXPYqbtItXaDu4
+         L8zA==
+X-Gm-Message-State: ANoB5pmZQ7AgBaXWU83XWZz/uwiIJs6/9Qus7Q/p+T5HmuhnL1bv7gMX
+        gZDZOLxGQud2XL+Cc6FK/B0=
+X-Google-Smtp-Source: AA0mqf6J+3aSlpTEjQxJsHcNJ5xwvum3vCNI9XWcwh/QmnikWZfrelRh/I8Bad9Kos4CWkIgvIOCXA==
+X-Received: by 2002:a17:906:17c9:b0:782:fd8e:9298 with SMTP id u9-20020a17090617c900b00782fd8e9298mr56803474eje.640.1670336778026;
+        Tue, 06 Dec 2022 06:26:18 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id kw25-20020a170907771900b007c0ae8569d6sm1303612ejc.146.2022.12.06.06.26.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Dec 2022 06:26:17 -0800 (PST)
+Date:   Tue, 6 Dec 2022 17:26:05 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net: mvneta: Fix an out of bounds check
+Message-ID: <Y49Q/Z1X1PKxIFfx@kili>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CO1PR11MB47713C125F3D0E08B7A6A132E21B9@CO1PR11MB4771.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > -     if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
-> > > -         !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
-> > > -             return 0;
-> > > -
-> > 
-> > Why are you removing this ?
-> > 
-> 
-> I got review comment from Richard in v2 as below, making it as consistent by checking ptp_clock. So removed it in next revision.
-> 
-> " > static int lan8814_ptp_probe_once(struct phy_device *phydev)
-> > {
-> >         struct lan8814_shared_priv *shared = phydev->shared->priv;
-> > 
-> >         if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
-> >             !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
-> >                 return 0;
-> 
-> It is weird to use macros here, but not before calling ptp_clock_register.
-> Make it consistent by checking shared->ptp_clock instead.
-> That is also better form."
+In an earlier commit, I added a bounds check to prevent an out of bounds
+read and a WARN().  On further discussion and consideration that check
+was probably too aggressive.  Instead of returning -EINVAL, a better fix
+would be to just prevent the out of bounds read but continue the process.
 
-O.K. If Richard said this fine.
+Background: The value of "pp->rxq_def" is a number between 0-7 by default,
+or even higher depending on the value of "rxq_number", which is a module
+parameter. If the value is more than the number of available CPUs then
+it will trigger the WARN() in cpu_max_bits_warn().
 
-Just out of interest, could you disassemble lan8814_ptp_probe_once()
-when CONFIG_PTP_1588_CLOCK is disabled, with and without this check?
+Fixes: e8b4fc13900b ("net: mvneta: Prevent out of bounds read in mvneta_config_rss()")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
+---
+ drivers/net/ethernet/marvell/mvneta.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-My guess is, when PTP is disabled, the mutex still gets initialised,
-all the member of shared->ptp_clock_info are set. The optimise cannot
-remove it. With the macro check, the function is empty. So you end up
-with a slightly bigger text size.
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 66b7f27c9a48..5aefaaff0871 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -4271,7 +4271,7 @@ static void mvneta_percpu_elect(struct mvneta_port *pp)
+ 	/* Use the cpu associated to the rxq when it is online, in all
+ 	 * the other cases, use the cpu 0 which can't be offline.
+ 	 */
+-	if (cpu_online(pp->rxq_def))
++	if (pp->rxq_def < nr_cpu_ids && cpu_online(pp->rxq_def))
+ 		elected_cpu = pp->rxq_def;
+ 
+ 	max_cpu = num_present_cpus();
+@@ -4927,9 +4927,6 @@ static int  mvneta_config_rss(struct mvneta_port *pp)
+ 		napi_disable(&pp->napi);
+ 	}
+ 
+-	if (pp->indir[0] >= nr_cpu_ids)
+-		return -EINVAL;
+-
+ 	pp->rxq_def = pp->indir[0];
+ 
+ 	/* Update unicast mapping */
+-- 
+2.35.1
 
-       Andrew
