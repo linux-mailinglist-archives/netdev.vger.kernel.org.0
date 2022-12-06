@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D836D643F5D
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:09:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 887EC643F61
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 10:09:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234186AbiLFJJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 04:09:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
+        id S234523AbiLFJJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 04:09:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234372AbiLFJJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 04:09:01 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACE52AC9;
-        Tue,  6 Dec 2022 01:09:01 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id ay14-20020a05600c1e0e00b003cf6ab34b61so13798786wmb.2;
-        Tue, 06 Dec 2022 01:09:00 -0800 (PST)
+        with ESMTP id S234508AbiLFJJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 04:09:14 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C421DF0D;
+        Tue,  6 Dec 2022 01:09:03 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id h7so16503653wrs.6;
+        Tue, 06 Dec 2022 01:09:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=O23XHz16kQsggrfAT5R5+VpQORNxeVkJc7shnnA68O8=;
-        b=Qq9cgHxBsmvRwLNKZpRsSI+EN2xjAiGtaSDMB/26fL3N9nJLniHm5S+qurO1mpIO3M
-         qFAYtwkpmJ5jLhBifG+oQc+Om7iD+bQxe1A84EiUplbK357Bvw7IQRWY1vX10JR/AUwD
-         TFaIRn0/dSQuyjE6FA4PMhdVUgrwpJqb7wN7cjhQkKWKwNaU4PV8THN51CmK+4j3SwwX
-         ts+gwibB28JDgbwOidIy7gMpUFgo1TPH4vP3BdoDYi5/XJbtuupayWJuWPkYvFnVskpo
-         huFj4XqZGFSIdu+OuRkiVADOYhefLAnM6xYTi3bVmGSOOltM4bHrCCEeGvHHqKZ9uTa5
-         v55Q==
+        bh=k+t2bcEVl0DD/ffERxP1wbjyownau+yUhNiCVaeD73U=;
+        b=qAMYTrjnzZB55dtgbpCJ2J2F0D6mINc0cK3lijI+7xpuJomPiBpzfvoXOBgxOFSt8D
+         luC9vfyTJ5RGx0hTF3KuVmrG+vS2LfjXcVozs0GmXcepvIPuqxzPikV3k4DAGIIrK9Ct
+         Ls0Aq+uDOMAxgUVb/5pQPFiwViezCLiMMjVD3cUxdo/JGTX/pWnRdoDxEiS4Riupgq/z
+         au2ZnntiPB7DqXC7cfqdSqwZvUvUIRWq8GVLgGBayan8eZbNSXlVokxFgFnOrwF/TDa7
+         6KkreeMF1D2gu9qyZqVKrGwuMwCI3UF5MAn7OoahLRs31DNO78OVbFYbj8EQQe7irI27
+         0deQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=O23XHz16kQsggrfAT5R5+VpQORNxeVkJc7shnnA68O8=;
-        b=KuYlIfw16sQ5sl3cfxqQ9uvDfmgUDvOVYXZcjx/LXFJWj+GplVZGWsxrkbv9MV2hFZ
-         hxO04LSI6fQQzsjh5o8OPHSgPWAKUXzdG9L5KvIYtMaxbA6aoZrgW2fBmqxr2A2Lz8zb
-         zFfnnyNyZ0i98jDdROlW+VbQXkHFHawUDxI0P0UNbFXuJbnL45HqrzVKDYgnSdMwocNr
-         yPLZAfUL+dcZGbfoow17qMm2jFSs88p6xx65OD6r/G1lewHAN3HZzCxskwIwL3xp/Ssv
-         jhpUY9ikRqC8e+ctWJMGWQDzrV6HLNMZxyLODt40GkaZoGcwHNDOZEvAJy2wboE/LSc1
-         gJdQ==
-X-Gm-Message-State: ANoB5plBERu95QOGO2JwtvIup7K92oBh7B2+ESCTF4FfpIPpCILc7b3t
-        1JJ2qtlJVvYFDfP5iMt6lLI=
-X-Google-Smtp-Source: AA0mqf6U+TIJsGA0Vcqw9MSKIsotCU50KKw1BalzTHLr69nOLktDwpYPOxTbok6vIJwtHYlDHVqlrQ==
-X-Received: by 2002:a7b:c3c9:0:b0:3cf:5442:bbe with SMTP id t9-20020a7bc3c9000000b003cf54420bbemr67153962wmj.2.1670317739429;
-        Tue, 06 Dec 2022 01:08:59 -0800 (PST)
+        bh=k+t2bcEVl0DD/ffERxP1wbjyownau+yUhNiCVaeD73U=;
+        b=TlQYDjvz7eGWLDZz175r+3AVhEaUIMS+I6yfcNMKooHoiu+t4BTMIITTjijnLxDB1C
+         TVLYIZU2EfJPbzzWPepFerKXaJRG/+TUobECQakYP99pywm2b0lSBT9ZS5hgxqXzo9uz
+         tS/lYqlIamQlFMrueSNLcM3G1zHtMKSPiTkejhuvAu8YHzDkSjG7LNARDelm2uUsZ0Uo
+         xCrhv8UHWbsymoVF0nDdnt7pPP+gR8xaGAdF6R8pjm51XuoT5kyQPJHvMBMgmip1PGge
+         gii4qfedXNj3tsx7Y8mqZRNnI6tOqqyM/ckG5EIWmKmQwtFHzjJjzMg0ufua88Qq1TBc
+         C8Yw==
+X-Gm-Message-State: ANoB5pmFkFdU6qTgOeiGM/H7CQpCqbdv3qoGDGNCMa6wn7F5xlTLXtLf
+        RihYPE4C1QEh6Ci2qp8jlJk=
+X-Google-Smtp-Source: AA0mqf6qB0r5+fTMr+w/NpUZ04yD69rV3THnOvI3ZWK6a7QDAmaoB4Wm9yZTn2MgNRvWh4B7Ou04bg==
+X-Received: by 2002:adf:aad9:0:b0:242:6564:9b27 with SMTP id i25-20020adfaad9000000b0024265649b27mr4433711wrc.643.1670317741902;
+        Tue, 06 Dec 2022 01:09:01 -0800 (PST)
 Received: from localhost.localdomain (c-5eea761b-74736162.cust.telenor.se. [94.234.118.27])
-        by smtp.gmail.com with ESMTPSA id j23-20020a05600c1c1700b003cf57329221sm25065690wms.14.2022.12.06.01.08.57
+        by smtp.gmail.com with ESMTPSA id j23-20020a05600c1c1700b003cf57329221sm25065690wms.14.2022.12.06.01.08.59
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 06 Dec 2022 01:08:58 -0800 (PST)
+        Tue, 06 Dec 2022 01:09:01 -0800 (PST)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -57,9 +57,9 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
         haoluo@google.com, jolsa@kernel.org
 Cc:     jonathan.lemon@gmail.com
-Subject: [PATCH bpf-next 02/15] selftests/xsk: do not close unused file descriptors
-Date:   Tue,  6 Dec 2022 10:08:13 +0100
-Message-Id: <20221206090826.2957-3-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next 03/15] selftests/xsk: submit correct number of frames in populate_fill_ring
+Date:   Tue,  6 Dec 2022 10:08:14 +0100
+Message-Id: <20221206090826.2957-4-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221206090826.2957-1-magnus.karlsson@gmail.com>
 References: <20221206090826.2957-1-magnus.karlsson@gmail.com>
@@ -78,62 +78,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Do not close descriptors that have never been used. File descriptor
-fields that are not in use are erroneously marked with the number 0,
-which is a valid fd. Mark unused fds with -1 instead and do not close
-these when deleting the socket.
+Submit the correct number of frames in the function
+xsk_populate_fill_ring(). For the tests that set the flag
+use_addr_for_fill, uninitialized buffers were sent to the fill ring
+following the correct ones. This has no impact on the tests, since
+they only use the ones that were initialized. But for correctnes, this
+should be fixed.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- tools/testing/selftests/bpf/xsk.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/xskxceiver.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/xsk.c b/tools/testing/selftests/bpf/xsk.c
-index 39d349509ba4..5e4a6552ed37 100644
---- a/tools/testing/selftests/bpf/xsk.c
-+++ b/tools/testing/selftests/bpf/xsk.c
-@@ -35,6 +35,8 @@
- #include "xsk.h"
- #include "bpf_util.h"
+diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+index 2ff43b22180f..a239e975ab66 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.c
++++ b/tools/testing/selftests/bpf/xskxceiver.c
+@@ -1272,7 +1272,7 @@ static void xsk_populate_fill_ring(struct xsk_umem_info *umem, struct pkt_stream
  
-+#define FD_NOT_USED (-1)
-+
- #ifndef SOL_XDP
-  #define SOL_XDP 283
- #endif
-@@ -583,6 +585,9 @@ static void xsk_delete_bpf_maps(struct xsk_socket *xsk)
- {
- 	struct xsk_ctx *ctx = xsk->ctx;
- 
-+	if (ctx->xsks_map_fd == FD_NOT_USED)
-+		return;
-+
- 	bpf_map_delete_elem(ctx->xsks_map_fd, &ctx->queue_id);
- 	close(ctx->xsks_map_fd);
- }
-@@ -941,6 +946,9 @@ static struct xsk_ctx *xsk_create_ctx(struct xsk_socket *xsk,
- 	ctx->umem = umem;
- 	ctx->queue_id = queue_id;
- 	bpf_strlcpy(ctx->ifname, ifname, IFNAMSIZ);
-+	ctx->prog_fd = FD_NOT_USED;
-+	ctx->link_fd = FD_NOT_USED;
-+	ctx->xsks_map_fd = FD_NOT_USED;
- 
- 	ctx->fill = fill;
- 	ctx->comp = comp;
-@@ -1221,8 +1229,9 @@ void xsk_socket__delete(struct xsk_socket *xsk)
- 
- 	if (ctx->refcount == 1) {
- 		xsk_delete_bpf_maps(xsk);
--		close(ctx->prog_fd);
--		if (ctx->has_bpf_link)
-+		if (ctx->prog_fd != FD_NOT_USED)
-+			close(ctx->prog_fd);
-+		if (ctx->has_bpf_link && ctx->link_fd != FD_NOT_USED)
- 			close(ctx->link_fd);
+ 		*xsk_ring_prod__fill_addr(&umem->fq, idx++) = addr;
  	}
+-	xsk_ring_prod__submit(&umem->fq, buffers_to_fill);
++	xsk_ring_prod__submit(&umem->fq, i);
+ }
  
+ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
 -- 
 2.34.1
 
