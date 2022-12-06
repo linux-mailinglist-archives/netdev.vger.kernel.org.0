@@ -2,151 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E2AC644D2F
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 21:22:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 533A5644D3D
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 21:30:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbiLFUWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 15:22:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
+        id S229660AbiLFUa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 15:30:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiLFUWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 15:22:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9E4D2F2
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 12:22:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 392236155F
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 20:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 622EEC433D6;
-        Tue,  6 Dec 2022 20:22:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670358160;
-        bh=n/Ttm1jrcVUyuep5gdF6WEPIx4rJiAFWaz0/05XqFzI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tRv0sxGG36N/trrVvQN4kK4TKTjzvbKcJgPFR3m8PRJhZ1NFr3H1xhnIIOo1sHIaB
-         Ol3L5XmNuq+buLyE+FeHKXXH6s88HZ0RUa6kil+ytNqonA6pLCAlQd9EblfQ4BlVVJ
-         /e1yNDYf95H6IraLJl1Qukh9wWV3odxStRbUlpfQ2DJjez4Xkso7dQhChhQn6ZSxtJ
-         31kyYUyzERne1EGBSNYcwaauhd6r3hiTw+1HuEhZ71E79TYk0oWDoSc7m2wk2G0k0O
-         oLY9YmmGRWIdBfukVzSzWoUtENnGtdErpRyRJbyw+sojmV3e33cXIBInh/ZnmIhUAm
-         b5+5Tiy3GcKbA==
-Date:   Tue, 6 Dec 2022 12:22:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, soheil@google.com,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net-next] net_tstamp: add SOF_TIMESTAMPING_OPT_ID_TCP
-Message-ID: <20221206122239.58e16ae4@kernel.org>
-In-Reply-To: <20221205230925.3002558-1-willemdebruijn.kernel@gmail.com>
-References: <20221205230925.3002558-1-willemdebruijn.kernel@gmail.com>
+        with ESMTP id S229445AbiLFUaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 15:30:25 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7672340903;
+        Tue,  6 Dec 2022 12:30:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670358624; x=1701894624;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=cKNUhoCiYNYxcj4olMwEpjiNpmt1LAcQUcHFx6HzQpQ=;
+  b=SLFPOyb4xSgXi6DJPhwUK+7I7MdRjHEZV7rmBimV5AL2oCNvLiVxGpv2
+   GZa8SPq0yJNIgihvcg+HyoTNV8U4+18NiiBLE2Yt/cqDT5GAlAIXwEJxt
+   8UqfNAF1eVMmbbzEi4LR/F41VqunmPo1Xy477DQyBnSaz6nmk/j6wqYvm
+   +AiAqQggJMVIJYhMEhEwg2cJmb+oTpS9Y5Wpk5heV8QLZSsdGU/BpM1yb
+   hGQDb0fL3lUhq89bPBH2KVQLZlU3JA9XGfPtTWH7zelaHjiT5BI+c9uhS
+   4WnBt52vFtq57HYQ+yV2jsvJKX+0eDAflpYIjFf6cJ+OLCuU0trqyzcKp
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10553"; a="297080636"
+X-IronPort-AV: E=Sophos;i="5.96,223,1665471600"; 
+   d="scan'208";a="297080636"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2022 12:30:23 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10553"; a="788621078"
+X-IronPort-AV: E=Sophos;i="5.96,223,1665471600"; 
+   d="scan'208";a="788621078"
+Received: from smaslov-mobl3.amr.corp.intel.com (HELO [10.251.23.186]) ([10.251.23.186])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2022 12:30:21 -0800
+Message-ID: <ad273f8d-e6f5-16e1-0768-3a678b873202@linux.intel.com>
+Date:   Tue, 6 Dec 2022 12:30:21 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.4.2
+Subject: Re: [Patch v4 05/13] init: Call mem_encrypt_init() after Hyper-V
+ hypercall init is done
+Content-Language: en-US
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
+ <1669951831-4180-6-git-send-email-mikelley@microsoft.com>
+ <51fb66d6-f2e0-f11c-68a3-525723d56dd4@linux.intel.com>
+ <BYAPR21MB1688BD8EF5F5E7B572846116D71B9@BYAPR21MB1688.namprd21.prod.outlook.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <BYAPR21MB1688BD8EF5F5E7B572846116D71B9@BYAPR21MB1688.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  5 Dec 2022 18:09:25 -0500 Willem de Bruijn wrote:
-> Add an option to initialize SOF_TIMESTAMPING_OPT_ID for TCP from
-> write_seq sockets instead of snd_una.
+
+
+On 12/6/22 12:13 PM, Michael Kelley (LINUX) wrote:
+> From: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
+>>
+>>
+>>
+>> On 12/1/22 7:30 PM, Michael Kelley wrote:
+>>> Full Hyper-V initialization, including support for hypercalls, is done
+>>> as an apic_post_init callback via late_time_init().  mem_encrypt_init()
+>>> needs to make hypercalls when it marks swiotlb memory as decrypted.
+>>> But mem_encrypt_init() is currently called a few lines before
+>>> late_time_init(), so the hypercalls don't work.
+>>
+>> Did you consider moving hyper-v hypercall initialization before
+>>  mem_encrypt_init(). Is there any dependency issue?
 > 
-> Intuitively the contract is that the counter is zero after the
-> setsockopt, so that the next write N results in a notification for
-> last byte N - 1.
+> Hyper-V initialization has historically been done using the callbacks
+> that exist in the x86 initialization paths, rather than adding explicit
+> Hyper-V init calls.  As noted above, the full Hyper-V init is done on
+> the apic_post_init callback via late_time_init().  Conceivably we could
+> add an explicit call to do the Hyper-V init, but I think there's still a
+> problem in putting that Hyper-V init prior to the current location of
+> mem_encrypt_init().  I'd have to go check the history, but I think the
+> Hyper-V init needs to happen after the APIC is initialized.
+
+Ok. If there is a dependency or complexity issue, I recommend adding that
+detail in the commit log.
+
 > 
-> On idle sockets snd_una == write_seq so this holds for both. But on
-> sockets with data in transmission, snd_una depends on the ACK response
-> from the peer. A process cannot learn this in a race free manner
-> (ioctl SIOCOUTQ is one racy approach).
+> It seems like moving mem_encrypt_init() slightly later is the cleaner
+> long-term solution.  Are you aware of a likely problem arising in the
+> future with moving mem_encrypt_init()?
 
-We can't just copy back the value of 
+I did not investigate in depth, but there appears to be no problem with
+moving mem_encrypt_init(). But my point is, if it is possible to fix this
+easily by changing Hyper-v specific initialization, we should consider it
+first before considering moving the common mem_encrypt_init() function.
 
-	tcp_sk(sk)->snd_una - tcp_sk(sk)->write_seq
 
-to the user if the input of setsockopt is large enough (ie. extend the
-struct, if len >= sizeof(new struct) -> user is asking to get this?
-Or even add a bit somewhere that requests a copy back?
 
-Highly unlikely to break anything, I reckon? But whether setsockopt()
-can copy back is not 100% clear to me...
-
-> write_seq is a better starting point because based on the seqno of
-> data written by the process only.
 > 
-> But the existing behavior may already be relied upon. So make the new
-> behavior optional behind a flag.
+> Michael
 > 
-> The new timestamp flag necessitates increasing sk_tsflags to 32 bits.
-> Move the field in struct sock to avoid growing the socket (for some
-> common CONFIG variants). The UAPI interface so_timestamping.flags is
-> already int, so 32 bits wide.
-> 
-> Reported-by: Jakub Kicinski <kuba@kernel.org>
+>>
+>>>
+>>> Fix this by moving mem_encrypt_init() after late_time_init() and
+>>> related clock initializations. The intervening initializations don't
+>>> do any I/O that requires the swiotlb, so moving mem_encrypt_init()
+>>> slightly later has no impact.
+>>>
 
-Reported-by: Sotirios Delimanolis <sotodel@meta.com>
-
-I'm just a bad human information router.
-
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> 
-> ---
-> 
-> Alternative solutions are
-> 
-> * make the change unconditionally: a one line change.
-> * make the condition a (per netns) sysctl instead of flag
-> * make SOF_TIMESTAMPING_OPT_ID_TCP not a modifier of, but alternative
->   to SOF_TIMESTAMPING_OPT_ID. That requires also updating all existing
->   code that now tests OPT_ID to test a new OPT_ID_MASK.
-
- * copy back the SIOCOUTQ
-
-;)
-
-> Weighing the variants, this seemed the best option to me.
-> ---
->  Documentation/networking/timestamping.rst | 19 +++++++++++++++++++
->  include/net/sock.h                        |  6 +++---
->  include/uapi/linux/net_tstamp.h           |  3 ++-
->  net/core/sock.c                           |  9 ++++++++-
->  net/ethtool/common.c                      |  1 +
->  5 files changed, 33 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
-> index be4eb1242057..578f24731be5 100644
-> --- a/Documentation/networking/timestamping.rst
-> +++ b/Documentation/networking/timestamping.rst
-> @@ -192,6 +192,25 @@ SOF_TIMESTAMPING_OPT_ID:
->    among all possibly concurrently outstanding timestamp requests for
->    that socket.
->  
-> +SOF_TIMESTAMPING_OPT_ID_TCP:
-> +  Pass this modifier along with SOF_TIMESTAMPING_OPT_ID for new TCP
-> +  timestamping applications. SOF_TIMESTAMPING_OPT_ID defines how the
-> +  counter increments for stream sockets, but its starting point is
-> +  not entirely trivial. This modifier option changes that point.
-> +
-> +  A reasonable expectation is that the counter is reset to zero with
-> +  the system call, so that a subsequent write() of N bytes generates
-> +  a timestamp with counter N-1. SOF_TIMESTAMPING_OPT_ID_TCP
-> +  implements this behavior under all conditions.
-> +
-> +  SOF_TIMESTAMPING_OPT_ID without modifier often reports the same,
-> +  especially when the socket option is set when no data is in
-> +  transmission. If data is being transmitted, it may be off by the
-> +  length of the output queue (SIOCOUTQ) due to being based on snd_una
-> +  rather than write_seq. That offset depends on factors outside of
-> +  process control, including network RTT and peer response time. The
-> +  difference is subtle and unlikely to be noticed when confiugred at
-> +  initial socket creation. But .._OPT_ID behavior is more predictable.
-
-I reckon this needs to be more informative. Say how exactly they differ
-(written vs queued for transmission). And I'd add to
-SOF_TIMESTAMPING_OPT_ID docs a note to "see also .._OPT_ID_TCP version".
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
