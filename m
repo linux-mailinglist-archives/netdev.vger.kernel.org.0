@@ -2,161 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCFEF644A55
-	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 18:35:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13BA2644A98
+	for <lists+netdev@lfdr.de>; Tue,  6 Dec 2022 18:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235175AbiLFRfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 12:35:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34566 "EHLO
+        id S229500AbiLFRrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 12:47:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235144AbiLFRfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 12:35:40 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2044.outbound.protection.outlook.com [40.107.93.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C16A32BB4
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 09:35:38 -0800 (PST)
+        with ESMTP id S229551AbiLFRry (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 12:47:54 -0500
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16D0CC2;
+        Tue,  6 Dec 2022 09:47:51 -0800 (PST)
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.17.1.19/8.17.1.19) with ESMTP id 2B6FdCfO011293;
+        Tue, 6 Dec 2022 09:47:33 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=4l0k6NqtstJeyNjxilSrfg1ujsEg5J/m5R7P9h8QXVs=;
+ b=YNC9QUth0hDp30Rb1q1mraDDX2U5IFS/ajxGROkb84FUncy5WGiPArkWebCcdEyknlXv
+ ZjHaeK6cBLdy/zcIJBJ9BuB+phY9Ef7U9aTGUMRhmQrEI+u5VQdZlc9JcMTwTHHkxNb9
+ Bzq3jeAkntLtVCBKFE3gqDDgs051BWvj2OfkRrZIrSWS7rTiXLJ19v/33JL1XiSiSmNz
+ 9j2B/KAeFIpzDBJYd8mZYFihNqAzp3i6Q9+4Azy0E3fI+kMgOM1AuuhIQMYL+7dsGGvr
+ EFTDH9TLsbKmG3qs/F6/kcln59klT2DdogLoS25bNqksRrxXuradWDK3GsSpuvfIt8Um bg== 
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2177.outbound.protection.outlook.com [104.47.73.177])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3m9g8cb2r0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 06 Dec 2022 09:47:33 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n9aM8BMzRKd05PsBiiQDiA971n8ENQYLdKsfXfPyUQyX1p+1ylZ/8SKNx7yNawxyT/mLHQTwZPz0FPkN8jjuHW4QhSQHaK93bOBFbiY0XPSZ6yZ6+00/nyXoTckm9R/k6vXHzoOM1OTUIoNeOcGkUGA+U4LSsZ1U7l0I3SlVSgaLEINpF/fkliYE8KaeT62BGDiM2yiHhl5KnoPdzddTLU7dpoaOsFdlEIVf7//O/SjbHz4tEfTEemVEfFBVK4SLjm6EUpWx8b/jAbo5aYKSDxpcmrQi3dPw03vuRF47EjEcnYN4tcsHBgYXQ0SGnKBv12qbHTRpyK6Y7I2ZSnnzCA==
+ b=fBEzN/chYMPfOqsxPOBM5qhr2HkOB95bd4fjchXoZvh6aoBrm6kWpRQMRM9A1KPmfku3QA82IepFkEG4v2rPaFE059pqtaowF/S4TkXiqWhHiZwJ4a7zCqN1cgzw6ACTK8RdfA9Ug6uHxqZe0x1tkM51urXymwmHqBhTJH3KNGZ/cviDZT14DQB4t/qouzTtze+qvTFvzm2J4nYw5FWd2NMnn3+bsJjzYd+4/mMx3UjaQ90Rr1lazucCCe/xTBxTu/aFpHcbk885jJByQWuhFccGcwidOvKr+d5wTS2PSjlHf9mK6kwhaw0dHHP0elDJCuLbh/SlKMrpi3uMh39uQQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dcsBDEOtJU61DmfxO6nsN4q0qfEOOclImUtsuN+vl08=;
- b=OJC+4FJ9hN0vzKdXkMejMF3foEmfdWVcSpuZSmnAPbTnVi/zFrXaZtxSm7PsfKGzy0gS386QSzsZnzHHn2UYAxlN7Ii7iSK6QmijCy8Db2ObMYbTQlT7j8Xqkr3dP7Ez8S7G/JIKvIvgq6OZaQHlv8nE7U7LdW823KBSdvHjH1oy7PYUqa9zyzDWLHBhBEya5u2G7LoC36bH4Tr/XI4463e+Kt1bbhmQRuQb5zrip4p472LTJ0Od0yleq+1cbM9Vp4sFTclXs1pnaDWHCv+NCqtV7auDDP+aJmuyxbIp5Z2Yv31JSxa+mFeBWkj5Fr5mibXLdTp0cVy6EZDt7K9boA==
+ bh=4l0k6NqtstJeyNjxilSrfg1ujsEg5J/m5R7P9h8QXVs=;
+ b=i7KxlzSU+l7M4wt8h4C6VLBIDiNADmMVeF6RX2/Gg5lPgQo0wdUfpcwaNCsVHmMUF+76Oc3HrbCZSbOgPZsdjnCUQGA95FLNnbNlO9s8yGvdMtPvF9iBA2aOllMArBFHYsBqaWoFRAsYclJV3Yix4O/XRJjvDNnhI8gZPvVD5+k9FyI0Pee++ucLfY0/6+hU3KSDMlVz0+nxcK4ovs/Y8ZrqqaGo9FTrIWZ8dQ9vord3OViQ8ULOWKqknxPpAAvDXHYYPGOgQ64YL+iuF0pOfFg6MkxhnaeuUMIrqCzJ3WwNs4XrUFsrmJbsqsCDeFkEuUozIdvFePySaP02jNzeZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dcsBDEOtJU61DmfxO6nsN4q0qfEOOclImUtsuN+vl08=;
- b=J2O3jovLwF+Lm8EaT4u9yOSffhCvcdI8CmiT49z2Q1j5RO7rhm+B3B4uyoBt6ZTjl0YckZTS2SCCC4V84Fg3+Pq5HkumxANtBPk3exScKEJ7rx8VqDHHVL4um4dB6G6cJMdbbNdAaBzUwlblksk75C1AvUlaTYCq/8VlqkhVqI0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- BY5PR12MB4856.namprd12.prod.outlook.com (2603:10b6:a03:1d5::10) with
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by DM6PR15MB2698.namprd15.prod.outlook.com (2603:10b6:5:1af::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Tue, 6 Dec
- 2022 17:35:36 +0000
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b]) by DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::6aee:c2b3:2eb1:7c7b%7]) with mapi id 15.20.5880.014; Tue, 6 Dec 2022
- 17:35:36 +0000
-Message-ID: <a5c5b1f9-60e9-6e82-911e-03e56ff42da1@amd.com>
-Date:   Tue, 6 Dec 2022 09:35:32 -0800
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Tue, 6 Dec
+ 2022 17:47:24 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::d665:7e05:61d1:aebf]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::d665:7e05:61d1:aebf%7]) with mapi id 15.20.5880.014; Tue, 6 Dec 2022
+ 17:47:24 +0000
+Message-ID: <d26622c6-d51e-e280-6c8a-38c893c49446@meta.com>
+Date:   Tue, 6 Dec 2022 09:47:21 -0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
  Gecko/20100101 Thunderbird/102.5.1
-Subject: Re: [patch net-next 1/8] devlink: call
- devlink_port_register/unregister() on registered instance
+Subject: Re: [PATCH bpf] bpf: Proper R0 zero-extension for BPF_CALL
+ instructions
 Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, michael.chan@broadcom.com,
-        ioana.ciornei@nxp.com, dmichail@fungible.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tchornyi@marvell.com, tariqt@nvidia.com, saeedm@nvidia.com,
-        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
-        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, simon.horman@corigine.com,
-        shannon.nelson@amd.com, brett.creeley@amd.com
-References: <20221205152257.454610-1-jiri@resnulli.us>
- <20221205152257.454610-2-jiri@resnulli.us>
- <5e97d5b5-3df4-c9b5-bca4-c82c75d353e8@amd.com> <Y47yMItMuOfCrwiO@nanopsycho>
-From:   Shannon Nelson <shnelson@amd.com>
-In-Reply-To: <Y47yMItMuOfCrwiO@nanopsycho>
+To:     Ilya Leoshkevich <iii@linux.ibm.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@rivosinc.com>,
+        Brendan Jackman <jackmanb@google.com>
+References: <20221202103620.1915679-1-bjorn@kernel.org>
+ <3b77aa12a864ab2db081e99aec1bfad78e3b9b51.camel@linux.ibm.com>
+From:   Yonghong Song <yhs@meta.com>
+In-Reply-To: <3b77aa12a864ab2db081e99aec1bfad78e3b9b51.camel@linux.ibm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR06CA0024.namprd06.prod.outlook.com
- (2603:10b6:a03:d4::37) To DS0PR12MB6583.namprd12.prod.outlook.com
- (2603:10b6:8:d1::12)
-MIME-Version: 1.0
+X-ClientProxiedBy: BYAPR07CA0040.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::17) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|BY5PR12MB4856:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7bcac95b-d4a2-4f30-afd6-08dad7b0488a
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|DM6PR15MB2698:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4332736f-e180-4ef0-eeb6-08dad7b1ef02
+X-FB-Source: Internal
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KACrH16EDzg5LlfrPo/jZwiOpkmTjYDl2I1lXqrYqUnzyNP3nxuvZjFUP1x8c7t1CDEB1u0o8cxnP3nRqLAy2ZdChj+ykGa4WOoNcYf3uFD/93kFbTO0tzFripCebihNDT0ueElGjnFCO65Dq6SEyMAJxyLVSpf8LgHTZFTghSih3wbjqclH0nBKuM7pl9qvrAb0mA23kDfY6buUh2K/jYnXBMtDrLbgM/vQ5l8wAl/H+xN9gxuk9Mcr7OWebVibNs3MSwzsgsb/TdT1SolpA2a5nmcxsZWWOY/NsbW+GLhqdwx7K+mDTLErqBNGsLcM9u7uerlGSkDX+vDIQ8WopSWgTnzHPo5ZjdOtsSkIXXoHGQIxj59+tiHwwcBBXsQqo9tqOmjtQe7spQ3PFoUs0UAU4Rty4b+hjXGlH4X6XSE9+0vQUIXwCv7zEx8CJkW9GCBWhljjWtxP7u8LBNOMDOFP4NvH2gmmquXSRtG6Fs/S8J8c6IpTWMkItZDgAKA7bh7pb3dwV5HAQNMIGABkVv6BECkDqeA3F4wOKVMraoxk8QQRXiO4/uAXa+46WOn077kDu1ZcmpjCwV0pm+AdBtJtxZ8VDLgA6tnzi4CUk9MpzSEBDJbqYjod9zohTpNC+r/F/JH+3++IlG2xAf08vd4vaJPCTs5asgvr11N1V7d8IvxQUfSS27jqY/otaLWIHXVt8UxaB7KCQ2419d4dJu2GmpqYvjbe4WVCJv1/UVE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(136003)(366004)(39860400002)(376002)(451199015)(6506007)(83380400001)(2906002)(6916009)(31696002)(186003)(6512007)(26005)(2616005)(316002)(41300700001)(4744005)(53546011)(7416002)(5660300002)(36756003)(8936002)(66946007)(66476007)(66556008)(31686004)(6486002)(478600001)(8676002)(4326008)(38100700002)(6666004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: /JP8U6QJGG8VMbsBN8weldJO4axI74+73f32sqN32GKTwb443clBsBqYvhBNh4QJvncdWbm9Poyi+FW9B5zWzUQKT27h+M4l8SyxvNOyjeh4hDoLk9T+KrZRictetNBuAXxV8dxqNTlFC9iB0KRfGZCeVeBtL4IBCwrmNO28dDxnI7i1BuKW6X1oQ8nFzvYSgGO6mKTlFcho4dhLPUXI7JW1TJD4kTaYZ488jEBo7g4tlEM04enm/5/v1RkElSka7PnQyiwPjmN/3uEbBD5MwcFfRwLkM9ReSNLBQTcdKyWrg149X+Ubmo4OfzEnyl/AhITP+OH7KGBhXxwikBasyHqY86yd9MjEdgJf7zVruxIzK55UM7/WMxstYmBX7SSGY1o0HGOy8g71vIhSH526sQJQVjpAACRLjJKG0bR9Zu2LoMrs9MEf+oENOzXVki8Hj/i5sBRSBbjJxmH6r0A2X5aE4GdIALbsE26olWOMzKG+CfVfD5oOk4pPslQhNzejLY9v+kEobPNMUjg98GaaS2J4ttYNSp31AOQVpVbZYSc1zSIt7KYd7g9v4cQcHUbYGzXzbnzFrN7KCMKoWMN1ip+syI/POOpHQRjlTndPX00gPOxw/RwU2vSStZOc1RFQ8qLOWMmyxUsiqexyJ156K1i6aaGN0RDfH5vp2rCiEFQBYpsZUn56T/0M9lmSU5P0bTjz2uSEo2aqNbApYZ4OWJonQZvZFuazZDEfqy1nIkzHjraxM1WwbbetzxUqVGAn
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(451199015)(6666004)(478600001)(6506007)(31686004)(53546011)(66946007)(54906003)(6512007)(110136005)(966005)(6486002)(8676002)(66556008)(316002)(4326008)(66899015)(66476007)(8936002)(31696002)(41300700001)(5660300002)(66574015)(86362001)(2616005)(186003)(83380400001)(2906002)(36756003)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?b3lEL2xGWnlCVExBRWpWZGE5Z0xHNkgxTDZYSnl6TWRMaHN6UzZTckpPRE5P?=
- =?utf-8?B?cDllVndKTmJJTXNHOWpydVFSWmxsZUt1VHBla1RnaFZjSWNmUDMvU0hEWEU2?=
- =?utf-8?B?TDE4UElWOThkOC91L2g1dkFMOVpDeC9yQUF1KzFub3NVRUNYVWtCTG1YTUw2?=
- =?utf-8?B?VUV4ZnRXYmY5Sk9RNUZlUmVIU0d5MlhmbEZoTEFFdlYvNC9oVldHaFZ3VFFC?=
- =?utf-8?B?QWNzSkEwM2tBSkIyL29SekFyS2U5bnJUc2JBUk5rSnVWcll1Z2NFN28vN0Yz?=
- =?utf-8?B?UjBRZTducTZtUUNReU4vS1VseXJGemFRdDBzMmhmWlZJa2pwM2x0aFhYZEkz?=
- =?utf-8?B?d2RTaWcrUG5UTkd6aFN5Ymk0Uk5HRzF4UVJHczlOODJCQ0tIaU45NUs3cHN6?=
- =?utf-8?B?aVhMWHNyTlVWNk9VWVhkV05Oc1pUaVRYR2tleElSUDAzcHFmZ0ZVTHpsSlpn?=
- =?utf-8?B?ajUyeEdZVEM0SUNTSmo1aGRDVGJlMjhROGc4b3lNb1ZQd3ZwcVE2eGJSeTNX?=
- =?utf-8?B?OGZCSkhsS2RyMVBaYjliUlZ2NFo5dEVMZlM1VisvWTJwQWpwR1cyVDFwdFJ3?=
- =?utf-8?B?eWRqdXBRZFJmWmJKTTJUK2VhaHFnZ3Q1b1FVMUVycFVMNXBlNE9HTEV1Z3lE?=
- =?utf-8?B?dDd2ZGtVckhaRjZaSDFpb3FMZEhPNGtJZThuRHRaWjEzaUZWNXAyTyt5TjJU?=
- =?utf-8?B?akM0Mi9JejV1MWdSOEQvUmtVMitrMXRJNHV5ckFWNmQ4K2x4RVoySlFTem9t?=
- =?utf-8?B?dzNhZGRlcGhBUGdVQ24ydE9aUkYzbXhoVHFuenRGRE1vMEZzbTlTT1NuVzVX?=
- =?utf-8?B?NUQrVmpKSis0cjBkWGExQS8xUnh0czcwWndacWVtZVErS2dKS29ZN2xIcnRo?=
- =?utf-8?B?MzVhdyswc1l5Qy9nZ1RjbFQxTW1Udmk0VEVmNTdzVjloN0MwSHlSejk4cEND?=
- =?utf-8?B?dU12d3dESDBMRk1NMmZZdm00SjZKODNQT09CZjZKKzVXVVIra1hXU2h5aVBQ?=
- =?utf-8?B?SWdyNXBzZDNLRi8xeWVIaVpsa0FUcXA3YTc3YjNWV1Rjc2FFZFJuRTN0Z0Iz?=
- =?utf-8?B?NFJ6STJZWk9qaEs3T0h4azh4Z0g1Yk5yOXkzcDBEenRrQlNHUFVrQ2hlcjlM?=
- =?utf-8?B?UEFoeHVWekE4R1o5RFhSdENmbTQ0T3JCdzN6b1R3NzQwWGJJTHozSXg3bExi?=
- =?utf-8?B?OXZFNWNDUG5rYkdNYVBxV0pDQ0xtSlNpWXR4amVtejQ4ejkyWXBQKzVaWThj?=
- =?utf-8?B?b2NBMnN0cCtJZEZoWkhxcW0rR3MxT0dFT29UVWMyZ0lIWDB1TjRFa2VSeURV?=
- =?utf-8?B?cTNMOEY3WTN5TDhSTFE0UjV1Q3llb2FuSzR0NTFrSTA0NGNkaFNZQWxVekFk?=
- =?utf-8?B?bTlxVFpHdU91VmdHaHlKV0IwUVBGdkd5VW95TUxSVW5MUHBFWjc2UXFHdWp0?=
- =?utf-8?B?QTlZMjZ6SmhsdUtSbVBwdzBtWE44cHBMRnZxdVkvYlRGRGxmc0ZiT1VuSzkz?=
- =?utf-8?B?Ym9GNG5EalBjQk5kSW5pNnd3eXhTZ2pOelhXVHB0MnR5NnZsM01FdWpXb1BD?=
- =?utf-8?B?bU1Yb05XSXBlYkJCN0tDRFNnMFhpcFN6UkhCVmlBVDlQRlBsTnJhMW9LTitm?=
- =?utf-8?B?UHpVMTNjbGZOMHU0N1BIT1VFeFRsTm84TkJJNE96RUFneEFabkhjT0w2ZkhB?=
- =?utf-8?B?Q3R3M0tuM2hESjlwZ1UyanNkMFNwYXhlSmQ3THpUOGorVm4rZVNleFUwRGRq?=
- =?utf-8?B?bEcyOStSQjJyZU8vYmJ1V1JTYjF3dWpUcVM4K1E3YzRSNDZCbVZqYXBlTFpi?=
- =?utf-8?B?VWQwdEJxbW92dGE1TU94c0NKNWVDaGN2ZVkwOHh2eDAxeTdPMHB2MW1CYTFp?=
- =?utf-8?B?N3FtWnFDMVVadkEwdk4zTCtIY1ZITy9aRzZlVkhaVHpqclNQWWRmR2lIbWFS?=
- =?utf-8?B?bjU2ZHVBSVpQbmNYeEI1QU9lMzl5Qk5EMEMxZUZselFtdG1RY281cHBqdnRI?=
- =?utf-8?B?Y0xsb1ZLczVObjN3Mm5SVWlqNHN5Q2xqVkU1UW9DRnJJcDZudzlIRXlZMU0r?=
- =?utf-8?B?a1hwNWNjUGVhWEw3aDlzRVNBeTdJUHpsUGt3MThsRHFyMDlyYU9ESmZqZHZn?=
- =?utf-8?Q?G7XAr84VgrBg3UTMv1ivVK4Xg?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7bcac95b-d4a2-4f30-afd6-08dad7b0488a
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bVlVWEdIVlZZQlN3NlQ3cHFtSk5Zb3FYSk56akxsNzFWV203M2hRQ1lyK0N4?=
+ =?utf-8?B?bDRYQllaQ2FJcjViR1k1ZzBzVi9peUJhVUZjcTA1SFpBaEx5WkloVVVEbjQ2?=
+ =?utf-8?B?Z0hYcHZDMmEyQldsTlpGQkdFTDE4UlRWazBCNEZ3UlNkakdTWXV3RHdmSm1J?=
+ =?utf-8?B?cXpVSkg3Z1Yrbk9DYkNjcUFIZUdicHBhN1loZUxIejNBTzFVUSsxRnV4VzlG?=
+ =?utf-8?B?a2lud1htK1JPN0JTNk44L3NjS3NRaVBQNVBHMDJsVTdaVXRjYnFnRytjQ1A3?=
+ =?utf-8?B?Y05uMFpsUEREdGR0c0ZTWis3Nld4VTMrRENya3I0TGVQRjgrSU15ZE45N1F5?=
+ =?utf-8?B?aWhyeUJ6OEVtNTAwckxqbHB2MXVvUEFjNVMvYnlSVGtMSDFZN1pnSHFVZm5M?=
+ =?utf-8?B?UWduanZZdDdJVk5WUXpkejJpV2JUWUUwUEt5N2JNWmE3bU84dlBibGc1Zm9s?=
+ =?utf-8?B?NnJQcWc4TWp4akJwdEN5RFBFUjN6Z2FGWGpjVUloOU9VQ2NtUTVPWEJrOW45?=
+ =?utf-8?B?bFM2Qno2aXN0MWNjRmZqbDFVWHdvTHhFd2VieFUzdFV5QzZHMVpjblVVSXNr?=
+ =?utf-8?B?cm1UZVJzbmY2YzBjcFZMaUE4UmZnVnJBNVZwN2tSNU93R2N6MmJGZTRrTUta?=
+ =?utf-8?B?c2hVU2RkSjJ1Z2grYjJxMVRPV3R6N3ptTlhReXVQZTBqamVjNTJBV285R01r?=
+ =?utf-8?B?RXNHc3R1cXZBN0JJaFJHRFFYdjh5YllWQm5XVktoOTZiQ01LcFh4QmZiM2hZ?=
+ =?utf-8?B?YjNjVUZxWUNSUHZBQi90cExhU250S0lGMUs2d2tacGYybml3bGduZFhzNjk5?=
+ =?utf-8?B?Wlg2anJ6Ni9TYU5JMngrMStVck1TZDUwckNHcUtXbkJkSnFhdTFLbnZ5ZjBY?=
+ =?utf-8?B?NExZNlVXQXJrcm9BY2xOWG05UTUzbXY2cmJNZit4dGFMeFZiRzdpeDZnNjMv?=
+ =?utf-8?B?UTk5SEVHOG52Q3JQODV6Q0x3RHlHdkhhS3piV25MbFVMK1Z3UWZVUVRYRDUz?=
+ =?utf-8?B?RHVWTkJtVUd1Nk4rOHhabFZ1QXF2N21GMnZJbnVRTzZDYitYYXM0dHhiN0tr?=
+ =?utf-8?B?UHFScDVBZWpTWnV2S2VuTEQ2N3VJQlJJRmRRUGNjUUxyM1hqa003ZG9zWHR0?=
+ =?utf-8?B?TEY0YVJUZitEYVhjWmxnV0JxYU52aHlZY2tnVzE4WFBKaGJhWXJDWXM4WUpz?=
+ =?utf-8?B?WEJIVE9YOFFoU2ZHZG1oMFNySDI5R3NLMHBlTjZmUldleFpNTktnUmx1NE1T?=
+ =?utf-8?B?QVVrNXMxa1JicmdNbW85dU84cC9nNmxyQnE1SzNPQUpnckF4TDRtaFpoUUR0?=
+ =?utf-8?B?aVJ2elVhU3RtRlZ5SUJkN2NtTEUvTXJJeDlZTlBlZlk3SDVvb09ZT20vVThn?=
+ =?utf-8?B?TVo1ajE1ZTROeThOdWNMNitsUXZUMUhJR2FKRDAwOG1pckZ4MFlvTll4WTZQ?=
+ =?utf-8?B?TnZDa1hMcTBacnJOZnc5WHRydERpTmJPUVdIZ2wvdk9odHMyYWFYMWFzMGJz?=
+ =?utf-8?B?N1dhRVc2bFhhb0dlVTVveXh2SXkvVkRGL2pSYmZVaURDS01uV3o3eURCYVgr?=
+ =?utf-8?B?OEI1d2FJVjFSU250Y1NWUzJHa200a2tTYjJzUFVXZ0dFMG9CVnV2eWNtdFpG?=
+ =?utf-8?B?QWFaU3Mva29nOTZEOG5EMTY1Z0J2eXZmSkZPOXJLYUxiUXpCS2hsT2wzRGJV?=
+ =?utf-8?B?cFJaeTM0SXlURXdtT0hKN3l5MEV4cWhZeFZBUUtyOC9yZFZzdGs2OG9XcFJG?=
+ =?utf-8?B?WE8wVHZHVzZwUDlzanlOWDhsTll1cG16MUcxWUtQTmtnZVdROERVQWk3VW1m?=
+ =?utf-8?B?OWpQdGJtMkFuNUtXTkI5YjhWd3c1OFNScXdiT0E3T0Jad3gwUGowVlVZWlJj?=
+ =?utf-8?B?QXl5ZmczMWpnbGs0VWdXRWkyc251Tzd5ZHMyTzJuRmtEODdyb0hzK3pFOXoz?=
+ =?utf-8?B?eTIraVBla0s5UWRHeTV3b0lyZ0lvZ2FSY1Y2MW5MVmZ2c3JCV21heFFpZWRw?=
+ =?utf-8?B?VW5rUkdRczNnQkw5b0F6dk1qQTgySXBkNGhkNHlGVWdUcjlPc21XZ0IwL2dn?=
+ =?utf-8?B?MW9RQ0wvTkNRa0orN3lkVGFobGJPSjFTZDg1Zkk0K3IyL1pIakhwQVpVd3ha?=
+ =?utf-8?B?RVhaWjVpYVg3R0RZbVZ3bnorVkd6NHdZLzNXempBczNlc0QzUTFqYnNMZTRv?=
+ =?utf-8?B?N3c9PQ==?=
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4332736f-e180-4ef0-eeb6-08dad7b1ef02
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2022 17:35:35.9173
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2022 17:47:24.7038
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KvgnZBf1jUnzAy7/ta5fgUArw3j5dXvtG0943JtEkQ3hcFWLaLw2o5OFhmUPMhiiEFjIj36Jamrmg0xknk/3Mw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4856
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: A/4eSsn4EyulU5tHRaOhMqh/XALSXVGos0K2P0KLKnPHGiTHNHUsnwaz7ht+2zaW
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB2698
+X-Proofpoint-GUID: rXOwJjuA2eKXz_32YCyGvX_60JzRdEjI
+X-Proofpoint-ORIG-GUID: rXOwJjuA2eKXz_32YCyGvX_60JzRdEjI
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-06_11,2022-12-06_01,2022-06-22_01
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/5/22 11:41 PM, Jiri Pirko wrote:
-> Tue, Dec 06, 2022 at 12:55:32AM CET, shnelson@amd.com wrote:
->> On 12/5/22 7:22 AM, Jiri Pirko wrote:
->>>
->>> From: Jiri Pirko <jiri@nvidia.com>
->>>
->>> Change the drivers that use devlink_port_register/unregister() to call
->>> these functions only in case devlink is registered.
 
 
+On 12/6/22 5:21 AM, Ilya Leoshkevich wrote:
+> On Fri, 2022-12-02 at 11:36 +0100, Björn Töpel wrote:
+>> From: Björn Töpel <bjorn@rivosinc.com>
 >>
->> I haven't kept up on all the discussion about this, but is there no longer a
->> worry about registering the devlink object before all the related
->> configuration bits are in place?
+>> A BPF call instruction can be, correctly, marked with zext_dst set to
+>> true. An example of this can be found in the BPF selftests
+>> progs/bpf_cubic.c:
 >>
->> Does this open any potential issues with userland programs seeing the devlink
->> device and trying to access port before they get registered?
+>>    ...
+>>    extern __u32 tcp_reno_undo_cwnd(struct sock *sk) __ksym;
+>>
+>>    __u32 BPF_STRUCT_OPS(bpf_cubic_undo_cwnd, struct sock *sk)
+>>    {
+>>            return tcp_reno_undo_cwnd(sk);
+>>    }
+>>    ...
+>>
+>> which compiles to:
+>>    0:  r1 = *(u64 *)(r1 + 0x0)
+>>    1:  call -0x1
+>>    2:  exit
+>>
+>> The call will be marked as zext_dst set to true, and for some
+>> backends
+>> (bpf_jit_needs_zext() returns true) expanded to:
+>>    0:  r1 = *(u64 *)(r1 + 0x0)
+>>    1:  call -0x1
+>>    2:  w0 = w0
+>>    3:  exit
 > 
-> What exactly do you have in mind? Could you please describe it?
+> In the verifier, the marking is done by check_kfunc_call() (added in
+> e6ac2450d6de), right? So the problem occurs only for kfuncs?
+> 
+>          /* Check return type */
+>          t = btf_type_skip_modifiers(desc_btf, func_proto->type, NULL);
+> 
+>          ...
+> 
+>          if (btf_type_is_scalar(t)) {
+>                  mark_reg_unknown(env, regs, BPF_REG_0);
+>                  mark_btf_func_reg_size(env, BPF_REG_0, t->size);
+> 
+> I tried to find some official information whether the eBPF calling
+> convention requires sign- or zero- extending return values and
+> arguments, but unfortunately [1] doesn't mention this.
+> 
+> LLVM's lib/Target/BPF/BPFCallingConv.td mentions both R* and W*
+> registers, but since assigning to W* leads to zero-extension, it seems
+> to me that this is the case.
 
-It looks like this could be setting up a race condition that some 
-userland udev automation might hit if it notices the device, looks for 
-the port, but doesn't see the port yet.  Leon's patch turned this around 
-so that the ports would show up at the same time as the device.
+We actually follow the clang convention, the zero-extension is either
+done in caller or callee, but not both. See 
+https://reviews.llvm.org/D131598 how the convention could be changed.
 
-sln
+The following is an example.
 
+$ cat t.c
+extern unsigned foo(void);
+unsigned bar1(void) {
+     return foo();
+}
+unsigned bar2(void) {
+     if (foo()) return 10; else return 20;
+}
+$ clang -target bpf -mcpu=v3 -O2 -c t.c && llvm-objdump -d t.o
+
+t.o:    file format elf64-bpf
+
+Disassembly of section .text:
+
+0000000000000000 <bar1>:
+        0:       85 10 00 00 ff ff ff ff call -0x1
+        1:       95 00 00 00 00 00 00 00 exit
+
+0000000000000010 <bar2>:
+        2:       85 10 00 00 ff ff ff ff call -0x1
+        3:       bc 01 00 00 00 00 00 00 w1 = w0
+        4:       b4 00 00 00 14 00 00 00 w0 = 0x14
+        5:       16 01 01 00 00 00 00 00 if w1 == 0x0 goto +0x1 <LBB1_2>
+        6:       b4 00 00 00 0a 00 00 00 w0 = 0xa
+
+0000000000000038 <LBB1_2>:
+        7:       95 00 00 00 00 00 00 00 exit
+$
+
+If the return value of 'foo()' is actually used in the bpf program, the
+proper zero extension will be done. Otherwise, it is not done.
+
+This is with latest llvm16. I guess we need to check llvm whether
+we could enforce to add a w0 = w0 in bar1().
+
+Otherwise, with this patch, it will add w0 = w0 in all cases which
+is not necessary in most of practical cases.
+
+> 
+> If the above is correct, then shouldn't we rather use sizeof(void *) in
+> the mark_btf_func_reg_size() call above?
+> 
+>> The opt_subreg_zext_lo32_rnd_hi32() function which is responsible for
+>> the zext patching, relies on insn_def_regno() to fetch the register
+>> to
+>> zero-extend. However, this function does not handle call instructions
+>> correctly, and opt_subreg_zext_lo32_rnd_hi32() fails the
+>> verification.
+>>
+>> Make sure that R0 is correctly resolved for (BPF_JMP | BPF_CALL)
+>> instructions.
+>>
+>> Fixes: 83a2881903f3 ("bpf: Account for BPF_FETCH in
+>> insn_has_def32()")
+>> Signed-off-by: Björn Töpel <bjorn@rivosinc.com>
+>> ---
+>> I'm not super happy about the additional special case -- first
+>> cmpxchg, and now call. :-( A more elegant/generic solution is
+>> welcome!
+>> ---
+>>   kernel/bpf/verifier.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+>> index 264b3dc714cc..4f9660eafc72 100644
+>> --- a/kernel/bpf/verifier.c
+>> +++ b/kernel/bpf/verifier.c
+>> @@ -13386,6 +13386,9 @@ static int
+>> opt_subreg_zext_lo32_rnd_hi32(struct bpf_verifier_env *env,
+>>                  if (!bpf_jit_needs_zext() && !is_cmpxchg_insn(&insn))
+>>                          continue;
+>>   
+>> +               if (insn.code == (BPF_JMP | BPF_CALL))
+>> +                       load_reg = BPF_REG_0;
+>> +
+>>                  if (WARN_ON(load_reg == -1)) {
+>>                          verbose(env, "verifier bug. zext_dst is set,
+>> but no reg is defined\n");
+>>                          return -EFAULT;
+>>
+>> base-commit: 01f856ae6d0ca5ad0505b79bf2d22d7ca439b2a1
+> 
+> [1]
+> https://docs.kernel.org/bpf/instruction-set.html#registers-and-calling-convention
