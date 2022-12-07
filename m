@@ -2,332 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C22A645C3A
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:17:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36D1D645CBD
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:37:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbiLGORE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 09:17:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44110 "EHLO
+        id S230161AbiLGOhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 09:37:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbiLGORC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:17:02 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321D455A98
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:16:57 -0800 (PST)
-Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com [209.85.128.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id EA00B4166B
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 14:16:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1670422615;
-        bh=0TQumGkPBfGZkbUnE2eIaWNrjWJVr3n7Xa2FW9xBHzQ=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=WYpt88iMaJBsbjbmZ3RHxmRQincDSyvWYSjh42RGUUmfKfsdLcCLME4+KnaoewxE4
-         7V5esq7J72g3syejjSOpwaaGTZSS6xLa7/pXQ2ILzBwNlphCirmjoKewiQ39tsT6NZ
-         cp+y+HqROhzkufeoYHO2a7pBYayTF0+OXp1gOnuUKSFwoz8TrAanBiWMoudFkjbPct
-         GfE/SdfjamzO+SzhExEv00YHzTVmZs7V8o1gvg/VLBJcnvrZj2A6FHaBCTcikh703C
-         hpUQm/H6kUR2PCDbr45adYgb8OOOSD9ijcj3hEFhFqP5LzattXbs1qmSrjB4GMV5dh
-         +p/Qe3Z53J+jA==
-Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-3d3769a8103so192201797b3.17
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:16:55 -0800 (PST)
+        with ESMTP id S230193AbiLGOhG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:37:06 -0500
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE0A48418
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:37:05 -0800 (PST)
+Received: by mail-qt1-x833.google.com with SMTP id y15so16259735qtv.5
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:37:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Sa7p8qKalAmkiMSm1NVNiA0beSxZmi0VZZHRztUBhcU=;
+        b=KCL4s/kkRTWMFn7kw2Sr3kB8au3xPo89mzQaCVc8mHf+nMsRkthBaVY1DxUr0jrJMw
+         Ok6O8wQ2AhAgwaQj4tLUz7FKqoDoChunIEYYacj/tPEL1TFB/oztWy83pYZmOuMd5CCE
+         tWULM/KbYi0QBepMVMOJ5ucvxvvTceCvSMC/L2iHn1oQQi/GmBPv2aBDIFzITbiVgaSt
+         zJu/Hd6ED2DFmoweJofkvAnttkDjtpLFJWM5vddzkMYfPdxfGDtFXvtP69qTAge8daeX
+         kxlyd1vr1Bj6JQvPKJdbhoM4OmQfnFB2tf8dq85Hs6gjMB6mqIXCGaWaatlaQCvUpFkH
+         0WOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=0TQumGkPBfGZkbUnE2eIaWNrjWJVr3n7Xa2FW9xBHzQ=;
-        b=wpyUDYVS4LvzNyFsvRNws01UG5hXFqzkW9sJUW0aay7c8CsXBw4KyoxXtua2aTAYYr
-         NlGmxx7U4Q3YbSG3UC4NYDsqjhSd57tu/flq2pCtSj7tCRFUd8eLi0DkcjFx4VFPO+N4
-         cUm6ugl+VHeTrZOMqgl0L09Gzd/Jj3zAANfKY5XV/CjomvQfP9mJSnzNNu30axICOAca
-         aHvZIFONiDjNbxtuF0eIR8LipqjZPWz3R7gyceNOn9JExzJyVXaeeHh7myjs4rlqJcI9
-         aGRP0UYJ1RHUsIYhZkVNYNIgoBqsrg9av9MqKMG3q/8+RLvn0ubVmM0lbw8cekiAA9vi
-         SxAw==
-X-Gm-Message-State: ANoB5pn0YmlxrwdjGgjBH0UuPsIXoMf+Jqahqs2nUj9Vz6HLZXsXOPGh
-        059XD9xeS5iHU0vvnML9llcaZWIHEnyfOJvbdx4WIgh2O7BppYIr65ER51bzsii6yqL2qg1OO+R
-        UliVLJvxs4MsvCZDIE8B20noecUIX/kEbKipLOu27c9tDtrnQeg==
-X-Received: by 2002:a81:1e04:0:b0:391:fccf:db48 with SMTP id e4-20020a811e04000000b00391fccfdb48mr19742457ywe.257.1670422614382;
-        Wed, 07 Dec 2022 06:16:54 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5jJpSrSo/VPL2KWSG5PgoBvSpVrm0KRx1TI9YUKLQbZERI9ER36jaV4ypZMpKyQmKmqs8L1xzE8rxQNhfbb7A=
-X-Received: by 2002:a81:1e04:0:b0:391:fccf:db48 with SMTP id
- e4-20020a811e04000000b00391fccfdb48mr19742434ywe.257.1670422614064; Wed, 07
- Dec 2022 06:16:54 -0800 (PST)
+        bh=Sa7p8qKalAmkiMSm1NVNiA0beSxZmi0VZZHRztUBhcU=;
+        b=OuOkNbGGYKJyF2biQek48m9PwX4C/ozhXJgPqmIDgu3mT2z9K1huIiycyEtNVxvcdQ
+         Yp51nTZAfXU18G9plQqlHvGLpLSnoen1PUMBG6ygkxlgjY9umpWwAMmJBZIaTTkQLvzK
+         yvfEdgo3iEWwi1G5P0IMAXdiHE7fTO+MtPV/2fnUluQpjs0J60zg27CCft4DhIXyc4iX
+         6k9nmpQwEaRAQKeSShqhXc8o2+2ZM7c7otafoxpxxNztT2RunTebENLHnGFAn4zthX+y
+         DjP6J4MpMuhYBfeq8uxBx/UBat8zpzSpQiw+TVYm+Ty805g+O7h5lsfBCw82MJKdR2oQ
+         uD1g==
+X-Gm-Message-State: ANoB5pmCCJSBrSU/jQhiATaCeOub99CuJYOc4q5BqYDgvJWZy32QRL6l
+        tYtrPr5M++0LUrbDs7I6SPP4hla4NpU=
+X-Google-Smtp-Source: AA0mqf6mZ74IrMxlxM3zrF67TE2OrdUMlJcZlfJI80J5+M16Fa/EqnCLGQSXkdvq2bTebfSODd4RPA==
+X-Received: by 2002:ac8:4650:0:b0:39c:dcc6:bab7 with SMTP id f16-20020ac84650000000b0039cdcc6bab7mr85075065qto.491.1670423824781;
+        Wed, 07 Dec 2022 06:37:04 -0800 (PST)
+Received: from willemb.c.googlers.com.com (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id fc10-20020a05622a488a00b003a70a675066sm7623343qtb.79.2022.12.07.06.37.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 06:37:04 -0800 (PST)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, soheil@google.com, sotodel@meta.com,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net-next v2] net_tstamp: add SOF_TIMESTAMPING_OPT_ID_TCP
+Date:   Wed,  7 Dec 2022 09:37:01 -0500
+Message-Id: <20221207143701.29861-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.39.0.rc0.267.gcb52ba06e7-goog
 MIME-Version: 1.0
-References: <20221201090242.2381-1-yanhong.wang@starfivetech.com> <20221201090242.2381-6-yanhong.wang@starfivetech.com>
-In-Reply-To: <20221201090242.2381-6-yanhong.wang@starfivetech.com>
-From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Date:   Wed, 7 Dec 2022 15:16:37 +0100
-Message-ID: <CAJM55Z9bdpxLsKOM8UhE=b5Z2uPzL227N1-x6d8AuvkZHRajqA@mail.gmail.com>
-Subject: Re: [PATCH v1 5/7] net: stmmac: Add StarFive dwmac supoort
-To:     Yanhong Wang <yanhong.wang@starfivetech.com>
-Cc:     linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yanhong,
+From: Willem de Bruijn <willemb@google.com>
 
-Thanks for submitting this. Again please don't change the author of
-the commits you cherry-picked from my tree. This is why we have the
-Co-developed-by: tag so you can mark that you added or in this case
-removed code.
-I'd hoped you would still include the support for the JH7100 though.
+Add an option to initialize SOF_TIMESTAMPING_OPT_ID for TCP from
+write_seq sockets instead of snd_una.
 
-Also you seem to have changed the name of some of the functions.
-Please at least keep the prefix consistent if you do that. Now it's a
-mix of dwmac_starfive_, starfive_eth_ and starfive_eth_plat.
+This should have been the behavior from the start. Because processes
+may now exist that rely on the established behavior, do not change
+behavior of the existing option, but add the right behavior with a new
+flag. It is encouraged to always set SOF_TIMESTAMPING_OPT_ID_TCP on
+stream sockets along with the existing SOF_TIMESTAMPING_OPT_ID.
 
-On Thu, 1 Dec 2022 at 10:07, Yanhong Wang <yanhong.wang@starfivetech.com> wrote:
->
-> This adds StarFive dwmac driver support on the StarFive JH7110 SoCs.
->
-> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
-> ---
->  MAINTAINERS                                   |   1 +
->  drivers/net/ethernet/stmicro/stmmac/Kconfig   |  11 ++
->  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
->  .../stmicro/stmmac/dwmac-starfive-plat.c      | 147 ++++++++++++++++++
->  4 files changed, 160 insertions(+)
->  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 7eaaec8d3b96..36cb00cf860b 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19610,6 +19610,7 @@ STARFIVE DWMAC GLUE LAYER
->  M:     Yanhong Wang <yanhong.wang@starfivetech.com>
->  S:     Maintained
->  F:     Documentation/devicetree/bindings/net/starfive,dwmac-plat.yaml
-> +F:     drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c
->
->  STARFIVE PINCTRL DRIVER
->  M:     Emil Renner Berthing <kernel@esmil.dk>
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> index 31ff35174034..1e29cd3770b9 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> @@ -235,6 +235,17 @@ config DWMAC_INTEL_PLAT
->           the stmmac device driver. This driver is used for the Intel Keem Bay
->           SoC.
->
-> +config DWMAC_STARFIVE_PLAT
+Intuitively the contract is that the counter is zero after the
+setsockopt, so that the next write N results in a notification for
+the last byte N - 1.
 
-Why did you add the _PLAT suffix? None of the other SoC wrappers have this..
+On idle sockets snd_una == write_seq and this holds for both. But on
+sockets with data in transmission, snd_una records the unacked offset
+in the stream. This depends on the ACK response from the peer. A
+process cannot learn this in a race free manner (ioctl SIOCOUTQ is one
+racy approach).
 
-> +       tristate "StarFive dwmac support"
-> +       depends on OF && COMMON_CLK
-> +       depends on STMMAC_ETH
-> +       default SOC_STARFIVE
-> +       help
-> +         Support for ethernet controllers on StarFive RISC-V SoCs
-> +
-> +         This selects the StarFive platform specific glue layer support for
-> +         the stmmac device driver. This driver is used for StarFive RISC-V SoCs.
-> +
->  config DWMAC_VISCONTI
->         tristate "Toshiba Visconti DWMAC support"
->         default ARCH_VISCONTI
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
-> index d4e12e9ace4f..a63ab0ab5071 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-> +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-> @@ -31,6 +31,7 @@ obj-$(CONFIG_DWMAC_DWC_QOS_ETH)       += dwmac-dwc-qos-eth.o
->  obj-$(CONFIG_DWMAC_INTEL_PLAT) += dwmac-intel-plat.o
->  obj-$(CONFIG_DWMAC_GENERIC)    += dwmac-generic.o
->  obj-$(CONFIG_DWMAC_IMX8)       += dwmac-imx.o
-> +obj-$(CONFIG_DWMAC_STARFIVE_PLAT)      += dwmac-starfive-plat.o
->  obj-$(CONFIG_DWMAC_VISCONTI)   += dwmac-visconti.o
->  stmmac-platform-objs:= stmmac_platform.o
->  dwmac-altr-socfpga-objs := altr_tse_pcs.o dwmac-socfpga.o
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c
-> new file mode 100644
-> index 000000000000..8fbf584d4e19
-> --- /dev/null
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive-plat.c
-> @@ -0,0 +1,147 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * StarFive DWMAC platform driver
-> + *
-> + * Copyright(C) 2022 StarFive Technology Co., Ltd.
+write_seq records the offset at the last byte written by the process.
+This is a better starting point. It matches the intuitive contract in
+all circumstances, unaffected by external behavior.
 
-Hmm.. where did my copyright go?
+The new timestamp flag necessitates increasing sk_tsflags to 32 bits.
+Move the field in struct sock to avoid growing the socket (for some
+common CONFIG variants). The UAPI interface so_timestamping.flags is
+already int, so 32 bits wide.
 
-> + *
-> + */
-> +
-> +#include <linux/of_device.h>
-> +#include "stmmac_platform.h"
-> +
-> +struct starfive_dwmac {
-> +       struct device *dev;
-> +       struct clk *clk_tx;
-> +       struct clk *clk_gtx;
-> +       struct clk *clk_gtxc;
-> +};
-> +
-> +static void starfive_eth_fix_mac_speed(void *priv, unsigned int speed)
-> +{
-> +       struct starfive_dwmac *dwmac = priv;
-> +       unsigned long rate;
-> +       int err;
-> +
-> +       switch (speed) {
-> +       case SPEED_1000:
-> +               rate = 125000000;
-> +               break;
-> +       case SPEED_100:
-> +               rate = 25000000;
-> +               break;
-> +       case SPEED_10:
-> +               rate = 2500000;
-> +               break;
-> +       default:
-> +               dev_err(dwmac->dev, "invalid speed %u\n", speed);
-> +               return;
-> +       }
-> +
-> +       err = clk_set_rate(dwmac->clk_gtx, rate);
-> +       if (err)
-> +               dev_err(dwmac->dev, "failed to set tx rate %lu\n", rate);
-> +}
-> +
-> +static void dwmac_starfive_clk_disable(void *clk)
-> +{
-> +       clk_disable_unprepare(clk);
-> +}
-> +
-> +static int starfive_eth_plat_probe(struct platform_device *pdev)
-> +{
-> +       struct plat_stmmacenet_data *plat_dat;
-> +       struct stmmac_resources stmmac_res;
-> +       struct starfive_dwmac *dwmac;
-> +       int err;
-> +
-> +       err = stmmac_get_platform_resources(pdev, &stmmac_res);
-> +       if (err)
-> +               return err;
-> +
-> +       plat_dat = stmmac_probe_config_dt(pdev, stmmac_res.mac);
-> +       if (IS_ERR(plat_dat)) {
-> +               dev_err(&pdev->dev, "dt configuration failed\n");
-> +               return PTR_ERR(plat_dat);
-> +       }
-> +
-> +       dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
-> +       if (!dwmac)
-> +               return -ENOMEM;
-> +
-> +       dwmac->clk_tx = devm_clk_get(&pdev->dev, "tx");
-> +       if (IS_ERR(dwmac->clk_tx))
-> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_tx),
-> +                                               "error getting tx clock\n");
-> +
-> +       err = devm_add_action(&pdev->dev, dwmac_starfive_clk_disable,
-> +                             dwmac->clk_tx);
-> +       if (err)
-> +               return err;
-> +
-> +       err = clk_prepare_enable(dwmac->clk_tx);
-> +       if (err)
-> +               return dev_err_probe(&pdev->dev, err, "error enabling tx clock\n");
-> +
-> +       dwmac->clk_gtx = devm_clk_get(&pdev->dev, "gtx");
-> +       if (IS_ERR(dwmac->clk_gtx))
-> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_gtx),
-> +                                               "error getting gtx clock\n");
-> +
-> +       err = devm_add_action(&pdev->dev, dwmac_starfive_clk_disable,
-> +                             dwmac->clk_gtx);
-> +       if (err)
-> +               return err;
-> +
-> +       err = clk_prepare_enable(dwmac->clk_gtx);
-> +       if (err)
-> +               return dev_err_probe(&pdev->dev, err, "error enabling gtx clock\n");
+Reported-by: Sotirios Delimanolis <sotodel@meta.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
 
-I think the 3 calls above can be simplified to devm_clk_get_enabled().
+---
 
-> +       dwmac->clk_gtxc = devm_clk_get(&pdev->dev, "gtxc");
-> +       if (IS_ERR(dwmac->clk_gtxc))
-> +               return dev_err_probe(&pdev->dev, PTR_ERR(dwmac->clk_gtxc),
-> +                                               "error getting gtxc clock\n");
-> +
-> +       err = devm_add_action(&pdev->dev, dwmac_starfive_clk_disable,
-> +                             dwmac->clk_gtxc);
-> +       if (err)
-> +               return err;
-> +
-> +       err = clk_prepare_enable(dwmac->clk_gtxc);
-> +       if (err)
-> +               return dev_err_probe(&pdev->dev, err, "error enabling gtxc clock\n");
+Changes v1->v2 (no code changes)
+  - Refine documentation and commit message
+  - Change reporter
+  - Fix small typo
+---
+ Documentation/networking/timestamping.rst | 32 ++++++++++++++++++++++-
+ include/net/sock.h                        |  6 ++---
+ include/uapi/linux/net_tstamp.h           |  3 ++-
+ net/core/sock.c                           |  9 ++++++-
+ net/ethtool/common.c                      |  1 +
+ 5 files changed, 45 insertions(+), 6 deletions(-)
 
-Same here.
+diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
+index be4eb1242057..f17c01834a12 100644
+--- a/Documentation/networking/timestamping.rst
++++ b/Documentation/networking/timestamping.rst
+@@ -179,7 +179,8 @@ SOF_TIMESTAMPING_OPT_ID:
+   identifier and returns that along with the timestamp. The identifier
+   is derived from a per-socket u32 counter (that wraps). For datagram
+   sockets, the counter increments with each sent packet. For stream
+-  sockets, it increments with every byte.
++  sockets, it increments with every byte. For stream sockets, also set
++  SOF_TIMESTAMPING_OPT_ID_TCP, see the section below.
+ 
+   The counter starts at zero. It is initialized the first time that
+   the socket option is enabled. It is reset each time the option is
+@@ -192,6 +193,35 @@ SOF_TIMESTAMPING_OPT_ID:
+   among all possibly concurrently outstanding timestamp requests for
+   that socket.
+ 
++SOF_TIMESTAMPING_OPT_ID_TCP:
++  Pass this modifier along with SOF_TIMESTAMPING_OPT_ID for new TCP
++  timestamping applications. SOF_TIMESTAMPING_OPT_ID defines how the
++  counter increments for stream sockets, but its starting point is
++  not entirely trivial. This option fixes that.
++
++  For stream sockets, if SOF_TIMESTAMPING_OPT_ID is set, this should
++  always be set too. On datagram sockets the option has no effect.
++
++  A reasonable expectation is that the counter is reset to zero with
++  the system call, so that a subsequent write() of N bytes generates
++  a timestamp with counter N-1. SOF_TIMESTAMPING_OPT_ID_TCP
++  implements this behavior under all conditions.
++
++  SOF_TIMESTAMPING_OPT_ID without modifier often reports the same,
++  especially when the socket option is set when no data is in
++  transmission. If data is being transmitted, it may be off by the
++  length of the output queue (SIOCOUTQ).
++
++  The difference is due to being based on snd_una versus write_seq.
++  snd_una is the offset in the stream acknowledged by the peer. This
++  depends on factors outside of process control, such as network RTT.
++  write_seq is the last byte written by the process. This offset is
++  not affected by external inputs.
++
++  The difference is subtle and unlikely to be noticed when configured
++  at initial socket creation, when no data is queued or sent. But
++  SOF_TIMESTAMPING_OPT_ID_TCP behavior is more robust regardless of
++  when the socket option is set.
+ 
+ SOF_TIMESTAMPING_OPT_CMSG:
+   Support recv() cmsg for all timestamped packets. Control messages
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 6d207e7c4ad0..ecea3dcc2217 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -503,10 +503,10 @@ struct sock {
+ #if BITS_PER_LONG==32
+ 	seqlock_t		sk_stamp_seq;
+ #endif
+-	u16			sk_tsflags;
+-	u8			sk_shutdown;
+ 	atomic_t		sk_tskey;
+ 	atomic_t		sk_zckey;
++	u32			sk_tsflags;
++	u8			sk_shutdown;
+ 
+ 	u8			sk_clockid;
+ 	u8			sk_txtime_deadline_mode : 1,
+@@ -1899,7 +1899,7 @@ static inline void sock_replace_proto(struct sock *sk, struct proto *proto)
+ struct sockcm_cookie {
+ 	u64 transmit_time;
+ 	u32 mark;
+-	u16 tsflags;
++	u32 tsflags;
+ };
+ 
+ static inline void sockcm_init(struct sockcm_cookie *sockc,
+diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
+index 55501e5e7ac8..a2c66b3d7f0f 100644
+--- a/include/uapi/linux/net_tstamp.h
++++ b/include/uapi/linux/net_tstamp.h
+@@ -31,8 +31,9 @@ enum {
+ 	SOF_TIMESTAMPING_OPT_PKTINFO = (1<<13),
+ 	SOF_TIMESTAMPING_OPT_TX_SWHW = (1<<14),
+ 	SOF_TIMESTAMPING_BIND_PHC = (1 << 15),
++	SOF_TIMESTAMPING_OPT_ID_TCP = (1 << 16),
+ 
+-	SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_BIND_PHC,
++	SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_OPT_ID_TCP,
+ 	SOF_TIMESTAMPING_MASK = (SOF_TIMESTAMPING_LAST - 1) |
+ 				 SOF_TIMESTAMPING_LAST
+ };
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 4571914a4aa8..b0ab841e0aed 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -901,13 +901,20 @@ int sock_set_timestamping(struct sock *sk, int optname,
+ 	if (val & ~SOF_TIMESTAMPING_MASK)
+ 		return -EINVAL;
+ 
++	if (val & SOF_TIMESTAMPING_OPT_ID_TCP &&
++	    !(val & SOF_TIMESTAMPING_OPT_ID))
++		return -EINVAL;
++
+ 	if (val & SOF_TIMESTAMPING_OPT_ID &&
+ 	    !(sk->sk_tsflags & SOF_TIMESTAMPING_OPT_ID)) {
+ 		if (sk_is_tcp(sk)) {
+ 			if ((1 << sk->sk_state) &
+ 			    (TCPF_CLOSE | TCPF_LISTEN))
+ 				return -EINVAL;
+-			atomic_set(&sk->sk_tskey, tcp_sk(sk)->snd_una);
++			if (val & SOF_TIMESTAMPING_OPT_ID_TCP)
++				atomic_set(&sk->sk_tskey, tcp_sk(sk)->write_seq);
++			else
++				atomic_set(&sk->sk_tskey, tcp_sk(sk)->snd_una);
+ 		} else {
+ 			atomic_set(&sk->sk_tskey, 0);
+ 		}
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index 21cfe8557205..6f399afc2ff2 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -417,6 +417,7 @@ const char sof_timestamping_names[][ETH_GSTRING_LEN] = {
+ 	[const_ilog2(SOF_TIMESTAMPING_OPT_PKTINFO)]  = "option-pktinfo",
+ 	[const_ilog2(SOF_TIMESTAMPING_OPT_TX_SWHW)]  = "option-tx-swhw",
+ 	[const_ilog2(SOF_TIMESTAMPING_BIND_PHC)]     = "bind-phc",
++	[const_ilog2(SOF_TIMESTAMPING_OPT_ID_TCP)]   = "option-id-tcp",
+ };
+ static_assert(ARRAY_SIZE(sof_timestamping_names) == __SOF_TIMESTAMPING_CNT);
+ 
+-- 
+2.39.0.rc0.267.gcb52ba06e7-goog
 
-> +
-> +       dwmac->dev = &pdev->dev;
-> +       plat_dat->fix_mac_speed = starfive_eth_fix_mac_speed;
-> +       plat_dat->init = NULL;
-> +       plat_dat->bsp_priv = dwmac;
-> +       plat_dat->dma_cfg->dche = true;
-> +
-> +       err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
-> +       if (err) {
-> +               stmmac_remove_config_dt(pdev, plat_dat);
-> +               return err;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static const struct of_device_id starfive_eth_plat_match[] = {
-> +       {.compatible = "starfive,dwmac"},
-> +       { }
-> +};
-> +
-> +static struct platform_driver starfive_eth_plat_driver = {
-> +       .probe  = starfive_eth_plat_probe,
-> +       .remove = stmmac_pltfr_remove,
-> +       .driver = {
-> +               .name = "starfive-eth-plat",
-> +               .pm = &stmmac_pltfr_pm_ops,
-> +               .of_match_table = starfive_eth_plat_match,
-> +       },
-> +};
-> +
-> +module_platform_driver(starfive_eth_plat_driver);
-> +
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("StarFive DWMAC platform driver");
-
-Here you also seem to have removed me.
-
-> +MODULE_AUTHOR("Yanhong Wang <yanhong.wang@starfivetech.com>");
-> --
-> 2.17.1
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
