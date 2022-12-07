@@ -2,86 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84D1764531E
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 05:40:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A94EA645324
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 05:43:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229700AbiLGEk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 23:40:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34958 "EHLO
+        id S229785AbiLGEnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 23:43:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbiLGEkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 23:40:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F9E56EE6
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 20:40:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55CA461A18
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 04:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8737FC43470;
-        Wed,  7 Dec 2022 04:40:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670388016;
-        bh=8C/lJTVQMdPXqiWQ6YdAbjArwkD9z1Zq8KoDiAafbIU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gxZagwgSf2wxTlAvDg3CROINzfGqJtKtY1Rcjt4amfVV88icFswC2dQe3qYpJQ1hL
-         COQmQ/rNs0kASGdLKFDn37OsCKgeAeb4QssHuxM6ApzGLqSdfLDOglVM9hJVaElhI1
-         xeiR3ty0FPA2zlIyQEpXesSTTkF4Z+ECDJrUJW+q7Iim0kE890DL53reaV3ZNi7z/U
-         e3xC02UPrYf8lcrVRafIsloJBRBMsfXbacaZcZ7tiVLC4+ZDZIJ+8QAS/1MQmh+5aV
-         OPvmrav6oVOzwMdlG3zlqiDkw0lqpUz9jfO95G455LOEUDc2kXY3cQK0eDcbWQ1nop
-         oViBdUC1XeXZg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 61F7BE4D02C;
-        Wed,  7 Dec 2022 04:40:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229638AbiLGEnM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 23:43:12 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5D756EC1
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 20:43:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=PZrVyvFlOMGvQsYAox31piE8Yb0sq/qIYSP8QqMcS3M=; b=r9mU9F0HJTEwPpQ8tx3pzhfITn
+        4Z8PZ6/9kP9Y8ggwkvsssGEhR/ZFL1Hh9Tuki2PXnH8EgCVLBOjJUr2ORAGic51qEfmAwhoItjibi
+        2uloCslBfrDfY+kKxIsbNx8u7y1DuuIis+mpsRkUCh09KgtpNDkZKNbVEHxd2EVSBSjMJW8RXZQYz
+        XTw2OK2jKVqCnM1isPGPtPdTeQpZ1Dck9HLuvC+oxhK1pXc2fKfEm/beTrCU9DvxEHv6AO8rakCv6
+        61+OybXnReu9JJdlnC+dapIp8NQm83xlB1IRhajv6Y9sVyGdjkTUYeFd6mJWFBSLAWyjPrre0MZO+
+        +O9w1N8g==;
+Received: from [2601:1c2:d80:3110::a2e7] (helo=casper.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1p2mH0-0058CH-Ax; Wed, 07 Dec 2022 04:43:10 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH] net: phy: remove redundant "depends on" lines
+Date:   Tue,  6 Dec 2022 20:42:57 -0800
+Message-Id: <20221207044257.30036-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] ipv4: Two bug fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167038801639.19727.8599688624920791761.git-patchwork-notify@kernel.org>
-Date:   Wed, 07 Dec 2022 04:40:16 +0000
-References: <20221204075045.3780097-1-idosch@nvidia.com>
-In-Reply-To: <20221204075045.3780097-1-idosch@nvidia.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, dsahern@kernel.org,
-        mark.tomlinson@alliedtelesis.co.nz, sharpd@nvidia.com,
-        mlxsw@nvidia.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Delete a few lines of "depends on PHYLIB" since they are inside
+an "if PHYLIB / endif # PHYLIB" block, i.e., they are redundant
+and the other 50+ drivers there don't use "depends on PHYLIB"
+since it is not needed.
 
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>
+---
+ drivers/net/phy/Kconfig |    3 ---
+ 1 file changed, 3 deletions(-)
 
-On Sun,  4 Dec 2022 09:50:43 +0200 you wrote:
-> Two small fixes for bugs in IPv4 routing code.
-> 
-> A variation of the second bug was reported by an FRR 5.0 (released
-> 06/18) user as this version was setting a table ID of 0 for the default
-> VRF, unlike iproute2 and newer FRR versions.
-> 
-> The first bug was discovered while fixing the second.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,1/2] ipv4: Fix incorrect route flushing when source address is deleted
-    https://git.kernel.org/netdev/net/c/f96a3d74554d
-  - [net,2/2] ipv4: Fix incorrect route flushing when table ID 0 is used
-    https://git.kernel.org/netdev/net/c/c0d999348e01
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+diff -- a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -47,7 +47,6 @@ config LED_TRIGGER_PHY
+ 
+ config FIXED_PHY
+ 	tristate "MDIO Bus/PHY emulation with fixed speed/link PHYs"
+-	depends on PHYLIB
+ 	select SWPHY
+ 	help
+ 	  Adds the platform "fixed" MDIO Bus to cover the boards that use
+@@ -112,7 +111,6 @@ config BROADCOM_PHY
+ 
+ config BCM54140_PHY
+ 	tristate "Broadcom BCM54140 PHY"
+-	depends on PHYLIB
+ 	depends on HWMON || HWMON=n
+ 	select BCM_NET_PHYLIB
+ 	help
+@@ -137,7 +135,6 @@ config BCM7XXX_PHY
+ 
+ config BCM84881_PHY
+ 	tristate "Broadcom BCM84881 PHY"
+-	depends on PHYLIB
+ 	help
+ 	  Support the Broadcom BCM84881 PHY.
+ 
