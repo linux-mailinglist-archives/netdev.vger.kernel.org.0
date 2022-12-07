@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D84B64557B
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 09:36:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75979645594
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 09:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbiLGIgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 03:36:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36050 "EHLO
+        id S229551AbiLGImq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 03:42:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiLGIgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 03:36:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1CF614D;
-        Wed,  7 Dec 2022 00:36:09 -0800 (PST)
+        with ESMTP id S229589AbiLGImo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 03:42:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5900811831
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 00:42:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A87FB815D2;
-        Wed,  7 Dec 2022 08:36:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56C48C433D6;
-        Wed,  7 Dec 2022 08:36:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBE8860B5C
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 08:42:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 818E7C433D6;
+        Wed,  7 Dec 2022 08:42:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670402167;
-        bh=E2k/S4IWq4268SqoF+jsOx7+AvY9SyZ6/+luz3zQmZY=;
+        s=k20201202; t=1670402563;
+        bh=Z8I26HdwXwrL46lIBCvAfS8t1Fkz1ez9XuNjctW+Qac=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p/JiMyBqjevkUJdnmY2aWRkVd17UAyK6bPKA6BIr+groClPZ910t7m576Y2B2cqlq
-         m4aoAy5gCCl+R3Jh58dc3oXacb4HIO21EC+oxo7IVbpyv1dxuEc7gyRAR+mlxUw8XD
-         xo8qYpiziGTWyxc3C6py25v99bPJ7wmcWA7vv0ke2CM7ayk3mEOU8svoV2CEVwGN1s
-         Q8BPmKPvDdM03jjDb96Y8XT8W3EGV/PWfMIObnqj1YwyjBb5ULxHzkSgBkV+aSVnlb
-         4/m4H7gTACIrgHfd3Bzf7rcT9anTfqLYP3RSz09T0wFnKOQVhUAl5y4wsMGkHfDq2n
-         vDHwFO27r0bwg==
-Date:   Wed, 7 Dec 2022 10:36:02 +0200
+        b=icrz2/h/kAkISPfa56Kj71a2gvF+4qx8v0j/kaK3TZ3W9chfgjnaHZ3T2yDXEr6kc
+         y3jY0hyxrl+75w4Q5vP/+s2ljeMSt7FdOjqSXLelmAwR3RcC1E3BzHBsVmuhGorrYz
+         CdWKHbSgrvbwZbvMQUfUCfie+cCedCNSzN3AZr3GY09u9rIFBakg/9NvrdwVOJt3Uc
+         PFDetUb3Ai05cX0SOSPzzbkYQSsnRA+MDe7Uu5+/izEi3iBegi5KXul71DsWbwBDP/
+         cqDPecK28/TVbJcFzHK9BqysNkFPgTiVvUkSnEP/LhjxH5eRKqaX31w85JnbAlfT+N
+         P0O6mB0+d1X1w==
+Date:   Wed, 7 Dec 2022 10:42:38 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Alexandra Winter <wintera@linux.ibm.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>
-Subject: Re: [PATCH net] s390/qeth: fix use-after-free in hsci
-Message-ID: <Y5BQctZgtUoYzW92@unreal>
-References: <20221206145614.1401170-1-wintera@linux.ibm.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>,
+        netdev@vger.kernel.org, andrew@lunn.ch, corbet@lwn.net,
+        sridhar.samudrala@intel.com, anthony.l.nguyen@intel.com
+Subject: Re: [PATCH net-next v7] ethtool: add netlink based get rss support
+Message-ID: <Y5BR/n7/rqQ+q8gm@unreal>
+References: <20221202002555.241580-1-sudheer.mogilappagari@intel.com>
+ <Y4yPwR2vBSepDNE+@unreal>
+ <20221204153850.42640ac2@kernel.org>
+ <Y42hg4MsATH/07ED@unreal>
+ <20221206161441.ziprba72sfydmjrk@lion.mk-sys.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221206145614.1401170-1-wintera@linux.ibm.com>
+In-Reply-To: <20221206161441.ziprba72sfydmjrk@lion.mk-sys.cz>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,43 +58,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 06, 2022 at 03:56:14PM +0100, Alexandra Winter wrote:
-> KASAN found that addr was dereferenced after br2dev_event_work was freed.
+On Tue, Dec 06, 2022 at 05:14:41PM +0100, Michal Kubecek wrote:
+> On Mon, Dec 05, 2022 at 09:45:07AM +0200, Leon Romanovsky wrote:
+> > On Sun, Dec 04, 2022 at 03:38:50PM -0800, Jakub Kicinski wrote:
+> > > Conversion to netlink stands on its own.
+> > 
+> > It doesn't answer on my question. The answer is "we do, just because
+> > we can" is nice but doesn't remove my worries that such "future"
+> > extension will work with real future feature. From my experience, many
+> > UAPI designs without real use case in hand will require adaptions and
+> > won't work out-of-box.
+> > 
+> > IMHO, it is the same sin as premature optimization.
+> 
+> Extensibility is likely the most obvious benefit of the netlink
+> interface but it's not the only one, even without an immediate need to
+> add a new feature, there are other benefits, e.g.
+> 
+>   - avoiding the inherently racy get/modify/set cycle
 
-Please add KASAN report to be part of commit message.
+How? IMHO, it is achieved in netlink by holding relevant locks, it can
+be rtnl lock or specific to that netlink interface lock (devl). You cam
+and should have same locking protection for legacy flow as well.
+
+>   - more detailed error reporting thanks to extack
+
+This is extremely good argument. 
+
+>   - notifications (ethtool --monitor)
+> 
+> And I'm pretty sure the list is not complete. Thus I believe converting
+> the ioctl UAPI to netlink is useful even without waiting until we need
+> to add new features that would require it.
 
 Thanks
 
 > 
-> Fixes: f7936b7b2663 ("s390/qeth: Update MACs of LEARNING_SYNC device")
-> Reported-by: Thorsten Winkler <twinkler@linux.ibm.com>
-> Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-> Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
-> Reviewed-by: Thorsten Winkler <twinkler@linux.ibm.com>
-> ---
->  drivers/s390/net/qeth_l2_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-> index 9dc935886e9f..c6ded3fdd715 100644
-> --- a/drivers/s390/net/qeth_l2_main.c
-> +++ b/drivers/s390/net/qeth_l2_main.c
-> @@ -758,7 +758,6 @@ static void qeth_l2_br2dev_worker(struct work_struct *work)
->  	struct list_head *iter;
->  	int err = 0;
->  
-> -	kfree(br2dev_event_work);
->  	QETH_CARD_TEXT_(card, 4, "b2dw%04lx", event);
->  	QETH_CARD_TEXT_(card, 4, "ma%012llx", ether_addr_to_u64(addr));
->  
-> @@ -815,6 +814,7 @@ static void qeth_l2_br2dev_worker(struct work_struct *work)
->  	dev_put(brdev);
->  	dev_put(lsyncdev);
->  	dev_put(dstdev);
-> +	kfree(br2dev_event_work);
->  }
->  
->  static int qeth_l2_br2dev_queue_work(struct net_device *brdev,
-> -- 
-> 2.34.1
-> 
+> Michal
