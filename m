@@ -2,82 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CBE1645BFB
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:05:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A64E4645C01
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:06:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230288AbiLGOFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 09:05:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
+        id S230161AbiLGOGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 09:06:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbiLGOFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:05:31 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC315FB95
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:04:20 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id n20so14351652ejh.0
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:04:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yLEQ1iziXxnm8tB1YfDZj59/p6SSPcwuVFJkFGvSq1g=;
-        b=dzpKqLY84Dr7Ud955bgc9eOFeA7FKkqyevWEX9bPYQYNfiQPXWBeFs7jmaIfYkncte
-         ap72TfM03WBZ22MFWrf9U6C2OFZWIKTZ5Z98jMrmvHyA336Cpu5KyLOs9zu3liPYJAhJ
-         +bwye+1znCiXHtxai+tl0/agLChGg3DrkXlTYx+OdiVtz1eI/JUtyQDD9VFYinsEOMR0
-         Ch7gGXu/BjX69v9MzRRg7Sv7CtHNWS9Fn/XjGmJfLXZAHO6nSGDjfuyaX5xw0FPb1p7L
-         XSS1zUb8Ab/fv6aNXj9nR60g2HjlvzXMvMbmd9+TYqrt+Pk0poQVjYmjnXBUsasAetpO
-         ArHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yLEQ1iziXxnm8tB1YfDZj59/p6SSPcwuVFJkFGvSq1g=;
-        b=u2nBUwnYOqVSihXCjzxydaJC8UdSzaoKBPC6gGRJg6ew/wLiT6vLHSixtNMO0JqCbP
-         A7siukQbHu3nmD7A5OkzQbsC7N4LV/k5gGIBt84W/pmxlR/JEbfh2dlVUeZc3F8mb0r5
-         +xya/jbPz5/p4HilHGI/Sf/kb3ujeXsRZbz67tEE+2EQDm/j/maUg4V2Rl+pnMBcjGv1
-         Oo4xOSY/GDauJq7slvR3amqAO0nw/6enTvlZuha+mBAt5mwIDe4uaqtzl8vLIrhhbyh5
-         TexEFkcIocu030hmZO5xhP7kuC12wx+I8w1JI0k9bnxUWrHMIpP/nwIVOnecITNM78MG
-         q+hw==
-X-Gm-Message-State: ANoB5pmit3qjrvRdh5h7Cz3rsAk4a4DLtFezQvPd15PKQkn65mtM2PBl
-        W2hrrruhnIRz1MIPkcxWxxy+YA==
-X-Google-Smtp-Source: AA0mqf6u3BZDsigCe1eE4YZ5zUn3KvdPVP/j/ewkyVT3pq/rT1ZFfyAPgBDFioYpogO/OwrHjvQROg==
-X-Received: by 2002:a17:906:50a:b0:7c0:b995:8f8b with SMTP id j10-20020a170906050a00b007c0b9958f8bmr21986259eja.55.1670421855380;
-        Wed, 07 Dec 2022 06:04:15 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id r10-20020a17090609ca00b007ad94422cf6sm8448157eje.198.2022.12.07.06.04.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 06:04:14 -0800 (PST)
-Date:   Wed, 7 Dec 2022 15:04:13 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     ehakim@nvidia.com
-Cc:     linux-kernel@vger.kernel.org, raeds@nvidia.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, sd@queasysnail.net,
-        atenart@kernel.org
-Subject: Re: [PATCH net] macsec: add missing attribute validation for offload
-Message-ID: <Y5CdXd9KkKDq+uIo@nanopsycho>
-References: <20221207101618.989-1-ehakim@nvidia.com>
+        with ESMTP id S230169AbiLGOGF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:06:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463C715A3C
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:05:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D503C617A9
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 14:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8C46C433D6;
+        Wed,  7 Dec 2022 14:05:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670421930;
+        bh=tk8utmezOtdizzCIxzZGRejLD+Uzjwoe5RBptBuevsw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bUkQeV27Si8FU4OixZdGd1V+seLWc8uDGu/wajrQRYEC94sP3+xvc8Tcw4kbnsN7S
+         PKDSp4uq+G/Cd1LbDkj/RdvXsOXAy7Ub/nHtrCZUFZj1ZW9sEwoMLF/p3jwdQzYjZU
+         CSibi3L4PQ3LbFtUjhi1aG7qZlp6NTjKEeNTfcBt2lisI9IEdrw8Ec8mtRbUNzBwz6
+         ezeRuekg7SUgcFpPFf9trpYY6rBJg+Z7h6aQ8V6bf71JmSn+mSQg8GbDiiwNd7mKlD
+         mO24NNFQAb7WLhgVLQ81kMD9zIhRPGFpCjG1eISb7gnq6GD5rCPtJ+0hAsHlyIjZhf
+         merBWXBRlbWvQ==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        leon@kernel.org, sujuan.chen@mediatek.com
+Subject: [PATCH v3 net-next 0/2] fix possible deadlock during WED attach
+Date:   Wed,  7 Dec 2022 15:04:53 +0100
+Message-Id: <cover.1670421354.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221207101618.989-1-ehakim@nvidia.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Dec 07, 2022 at 11:16:18AM CET, ehakim@nvidia.com wrote:
->From: Emeel Hakim <ehakim@nvidia.com>
->
->Add missing attribute validation for IFLA_MACSEC_OFFLOAD
->to the netlink policy.
->
->Fixes: 791bb3fcafce ("net: macsec: add support for specifying offload upon link creation")
->Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+Fix a possible deadlock in mtk_wed_attach if mtk_wed_wo_init routine fails.
+Check wo pointer is properly allocated before running mtk_wed_wo_reset() and
+mtk_wed_wo_deinit().
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Changes sice v2:
+- add WARN_ON in mtk_wed_mcu_msg_update()
+- split in two patches
+Changes since v1:
+- move wo pointer checks in __mtk_wed_detach()
+
+Lorenzo Bianconi (2):
+  net: ethernet: mtk_wed: fix some possible NULL pointer dereferences
+  net: ethernet: mtk_wed: fix possible deadlock if mtk_wed_wo_init fails
+
+ drivers/net/ethernet/mediatek/mtk_wed.c     | 30 ++++++++++++++-------
+ drivers/net/ethernet/mediatek/mtk_wed_mcu.c |  3 +++
+ 2 files changed, 23 insertions(+), 10 deletions(-)
+
+-- 
+2.38.1
+
