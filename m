@@ -2,56 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E21645F4F
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 17:54:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D3F645F87
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 18:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229757AbiLGQyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 11:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40446 "EHLO
+        id S229901AbiLGRAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 12:00:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbiLGQx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 11:53:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4777761755;
-        Wed,  7 Dec 2022 08:53:57 -0800 (PST)
+        with ESMTP id S229795AbiLGQ74 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 11:59:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05DB6931C;
+        Wed,  7 Dec 2022 08:59:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E193761B00;
-        Wed,  7 Dec 2022 16:53:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE2B8C433C1;
-        Wed,  7 Dec 2022 16:53:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A99D61ACE;
+        Wed,  7 Dec 2022 16:59:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 496CBC433C1;
+        Wed,  7 Dec 2022 16:59:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670432036;
-        bh=YcRVQii9ZsxDcJbAKwxvX3D6KPuwOh3l/4wLOGYgwDA=;
+        s=k20201202; t=1670432382;
+        bh=UOTMAATjpNxXnTsgAzUbM8B4waAQT2pl6BE2XR4t/K4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=icz0KAvi2zy9CLPwzPrSksMu+tYU7xEWRUYa587UyT6TVIyG2boR3Poj/FZWHrjAY
-         xRUY3D24NFSU+nIQSqbU9CvIdx/KFU1asLutSIskldQ7szFV3nVVQD7/5LJ8RXvh/j
-         7JYxnXuYS7a92jV9z5QBLwVgQRHGrHrUOvxJi9JxjKF8qUpYg60WOm8bL4zXaGPAqJ
-         MiU4s1hgUycVPCcP/wx0w83KEiVtdHwwfuubV0RQYW75HFRxBiec3dNUaAznmHCkuj
-         kgBpuSP+WSSJRJVzzkgrP/Sw9GzQCODu78eUF4iFrY/HBgSVHSF+iP5axDyM2mi+18
-         UCAVZ152d3JQA==
-Date:   Wed, 7 Dec 2022 08:53:54 -0800
+        b=XhC0mmciJkcpwLG7sYOOaGKrWKwIVpdwqR/Dn9xSR635jBTpIfxxIFXzwfXPYVpEz
+         vGBuzGWW7ET8W+aDFMjo/7nqquvc5C14fBzF2ICGG5AHL3B1tPic0PhuElEjw5MePz
+         dSGQz57sc87bI7czj63nZHx4zLOn8UmGQMh3IEmE76m18pKx/b9m2mltqiwwyA8t38
+         xX3r6WcL8IFg/Fft1OPCDBrsOr6TrDx7KzneN2T6feczbHYDqLBBpf/qgF4i0lOQLA
+         sakSWPZtM/QutnbGlBUiCypq4x/a3Vcl3DdQl7k+tGNM2RgJ9kEkzJKqhnG29KJC6B
+         RuZyGWjftleCw==
+Date:   Wed, 7 Dec 2022 08:59:41 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Taras Chornyi <taras.chornyi@plvision.eu>
-Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Elad Nachman <enachman@marvell.com>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>
-Subject: Re: [PATCH v2] MAINTAINERS: Update maintainer for Marvell Prestera
- Ethernet Switch driver
-Message-ID: <20221207085354.6cab0e98@kernel.org>
-In-Reply-To: <dc9fb975-6258-0473-3ed9-58d3a74e501a@plvision.eu>
-References: <20221128093934.1631570-1-vadym.kochan@plvision.eu>
-        <20221129211405.7d6de0d5@kernel.org>
-        <96e3d5fc-ab8c-2344-3266-3b73664499f1@plvision.eu>
-        <20221201131744.6e94c5f7@kernel.org>
-        <dc9fb975-6258-0473-3ed9-58d3a74e501a@plvision.eu>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vadim Fedorenko <vadfed@fb.com>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        "Olech, Milena" <milena.olech@intel.com>,
+        "Michalik, Michal" <michal.michalik@intel.com>
+Subject: Re: [RFC PATCH v4 2/4] dpll: Add DPLL framework base functions
+Message-ID: <20221207085941.3b56bc8c@kernel.org>
+In-Reply-To: <Y5CQ0qddxuUQg8R8@nanopsycho>
+References: <Y4eGxb2i7uwdkh1T@nanopsycho>
+        <DM6PR11MB4657DE713E4E83E09DFCFA4B9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+        <Y4nyBwNPjuJFB5Km@nanopsycho>
+        <DM6PR11MB4657C8417DEB0B14EC35802E9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+        <Y4okm5TrBj+JAJrV@nanopsycho>
+        <20221202212206.3619bd5f@kernel.org>
+        <Y43IpIQ3C0vGzHQW@nanopsycho>
+        <20221205161933.663ea611@kernel.org>
+        <Y48CS98KYCMJS9uM@nanopsycho>
+        <20221206092705.108ded86@kernel.org>
+        <Y5CQ0qddxuUQg8R8@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,9 +69,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Dec 2022 14:36:02 +0200 Taras Chornyi wrote:
-> So we will drop this patch and create a new one with changing my email=20
-> to PLVision one.
+On Wed, 7 Dec 2022 14:10:42 +0100 Jiri Pirko wrote:
+> >> Why do we need this association at all?  
+> >
+> >Someone someday may want netns delegation and if we don't have the
+> >support from the start we may break backward compat introducing it.  
+> 
+> Hmm. Can you imagine a usecase?
 
-Hah, I was so proud of my nice and polite email, and yet this is all
-the engagement we get.. :)  Oh, well =F0=9F=A4=B7=EF=B8=8F
+Running DPLL control in a namespace / container.
+
+I mean - I generally think netns is overused, but yes, it's what
+containers use, so I think someone may want to develop their
+timer controller SW in as a container?
+
+> Link to devlink instance btw might be a problem. In case of mlx5, one
+> dpll instance is going to be created for 2 (or more) PFs. 1 per ConnectX
+> ASIC as there is only 1 clock there. And PF devlinks can come and go,
+> does not make sense to link it to any of them.
+
+If only we stuck to the "one devlink instance per ASIC", huh? :)
+
+> Thinking about it a bit more, DPLL itself has no network notion. The
+> special case is SyncE pin, which is linked to netdevice. Just a small
+> part of dpll device. And the netdevice already has notion of netns.
+> Isn't that enough?
+
+So we can't use devlink or netdev. Hm. So what do we do?
+Make DPLLs only visible in init_net? And require init_net admin?
+And when someone comes asking we add an explicit "move to netns"
+command to DPLL?
