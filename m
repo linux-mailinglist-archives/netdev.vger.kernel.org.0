@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4BAC645D11
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:58:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 065C5645D12
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:58:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbiLGO6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 09:58:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
+        id S229696AbiLGO6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 09:58:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230171AbiLGO61 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:58:27 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2066.outbound.protection.outlook.com [40.107.92.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054D5286C9;
-        Wed,  7 Dec 2022 06:57:32 -0800 (PST)
+        with ESMTP id S229513AbiLGO6a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:58:30 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE0F6388;
+        Wed,  7 Dec 2022 06:57:39 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QO2AFiHcp7FsPca032sRGVisIb6Dng0k6krhrNmhpncOcgQe8F4SconpcF1PnJmE+zh9GdDsuNAAJXG+Os5sZxbjLzQvJwGCa0IhK1pKzfz3I5teQH52L03q3x1Oj/lKeX6MlENpMrhHi2ol5WPFZqntv4J2ClIRCsiHvmsvnQHfR3iCpRpiQDt/RcHtYB91cJS6zUBTb0GHg63birSEeyfu0EwXpyZ7KXQL1kBec43t/6HI/4AcAh3aMwGBwIl3hYWRqG7R/tlelLVPDnXt3zLs5XDY9NCPP28FCU57t7Ekt+jgrnuRtmC8yG8c26ciMU0k+oeopearabYttOT3Tw==
+ b=UPOc27J6yXX0KPjtKHhur/njFqw+Ty7ADZuiXd8wvZ2gUtV8w1efmBNGQehG3LzcI1SQs+l1h8ad2AZlqVapsEtTrvERpBEzJOWTVNEyzIChEM4wPTV24s9pN/8Akxam8OfSLzcepOcAdyvivkMaw19Ik5lub76fbM+pufBgUjC5gK7SgwcBSFBhRzfoiBawtsP4af42EGSO2JuF/JmZ0afzt8byjpg3bty86ZcLOXK5WhfFR1FLxNTwVRWewC38aewb7s2ge59pkk0qZA27pId6IDMLganvKdGMELH1UJK6j9rGC6hVLZ5i5x1Vd7ojcsQGZYev7gV+xQKmo+BW8Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pBP928L7PbICB3GBzOJVIoT4VDNI03KsNRLoodNlAhg=;
- b=eMkiv/GkhvM7Xqz1ML1eUzgI0l+7NQwKODrR4OsP9ae3GsI7CBEk8JYD0JvjlWp5W2HNJ7arI5yoyv6fXfBARPGgUObAA8CWZSS4lQ9YXNcjDh+/le7nE82wHnswOCL/1sGyZt2cyyimZt9X2QEQANizT7jgEB4HoWvg7C2wGRqc8yg2EdJJ3cPSk8yQxWnACq+PhKPbqEigSdP/AVnXRBNYqNCyOaVCKdf50IS82H9Yo20fs2XwS1u/rXmfl+YwpQ6NijecyoJTxI1ikBe6Z2/GgjOEIHsZir13QHF4yiC6ktPMfdSj1ak3lz75Ego5yunntz5hzqwgCqVny+VdGA==
+ bh=oeYlK7TeC5QObliScKEh48xLWbBSlHY1Z26BEvD/iKI=;
+ b=ZXS1CSWKCYQyu+qUSjZiAS/eFZ+gTnMCpahp3P3Z7HLzv+WkaAP9fID4ysrKEL3IDkmb5sGqc7xivwZCcdQ4ZG15MIkaVzjs5S+IXGF98r1Y4QyvOS2yuqUplO2EOuEq4xPOK0bzUfoNZy7ZiqKpLOh2ihq2eUswWLdTV4gy04KffJMLr3tBmD7kaCyivHEB+UMYrKD0qSD7PhXaFdoXdqjQI22Sc7+Fki/w6kXRr3Dr1ae+paGj2rieaNKNDmFeI+4qxwWMedtX+qQ1y1Tl1nNVri1gRcYM7AHLVPuvv2FtirEcKqg7V4593BBVTrP6ErWsIQVr59HxavQMplvl4Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pBP928L7PbICB3GBzOJVIoT4VDNI03KsNRLoodNlAhg=;
- b=3mMVMRJQ0ewbC5n23YNfKdDUHdyBoiT/RrqtIenS5qQ818EifBZbHlbiQMbUYD1NcvafflkNyAW5905mLOFTWjwCx6mAGU+FVoOH33jpsjPx/cA5jiUZ1+FmzreatDs/L3DCoyilqBhiNAcCCWWdRQvtnAXUkPes1vtyZru+ZEw=
-Received: from DM6PR03CA0039.namprd03.prod.outlook.com (2603:10b6:5:100::16)
- by BL0PR12MB4929.namprd12.prod.outlook.com (2603:10b6:208:1c4::7) with
+ bh=oeYlK7TeC5QObliScKEh48xLWbBSlHY1Z26BEvD/iKI=;
+ b=rf/POx1TkO8tuRgYG9lgpAtJRm85W9xh0yEAaFtW8c2Xpyq2jTYhK9lVc8pm7CfrRav+KSkh0shqckgmczyzxL5QPit1tTc47oYIjH4BZVsVo11pk4+zRd4JFCZjX28nlMDKeQrAJ/AeceLkyDyIkxwa2YNSjk1wDCbvcqQfx4Y=
+Received: from DS7PR03CA0301.namprd03.prod.outlook.com (2603:10b6:8:2b::8) by
+ SA1PR12MB5615.namprd12.prod.outlook.com (2603:10b6:806:229::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Wed, 7 Dec
- 2022 14:57:29 +0000
-Received: from DS1PEPF0000E652.namprd02.prod.outlook.com
- (2603:10b6:5:100:cafe::f4) by DM6PR03CA0039.outlook.office365.com
- (2603:10b6:5:100::16) with Microsoft SMTP Server (version=TLS1_2,
+ 2022 14:57:36 +0000
+Received: from DS1PEPF0000E630.namprd02.prod.outlook.com
+ (2603:10b6:8:2b:cafe::8f) by DS7PR03CA0301.outlook.office365.com
+ (2603:10b6:8:2b::8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14 via Frontend
- Transport; Wed, 7 Dec 2022 14:57:29 +0000
+ Transport; Wed, 7 Dec 2022 14:57:36 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- DS1PEPF0000E652.mail.protection.outlook.com (10.167.18.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5880.8 via Frontend Transport; Wed, 7 Dec 2022 14:57:29 +0000
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DS1PEPF0000E630.mail.protection.outlook.com (10.167.17.134) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5880.8 via Frontend Transport; Wed, 7 Dec 2022 14:57:36 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 7 Dec
- 2022 08:57:27 -0600
+ 2022 08:57:32 -0600
 Received: from xndengvm004102.xilinx.com (10.180.168.240) by
  SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34
- via Frontend Transport; Wed, 7 Dec 2022 08:57:23 -0600
+ via Frontend Transport; Wed, 7 Dec 2022 08:57:28 -0600
 From:   Gautam Dawar <gautam.dawar@amd.com>
 To:     <linux-net-drivers@amd.com>, <netdev@vger.kernel.org>,
         <jasowang@redhat.com>, <eperezma@redhat.com>
@@ -67,9 +67,9 @@ CC:     <tanuj.kamde@amd.com>, <Koushik.Dutta@amd.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 09/11] sfc: implement iova rbtree to store dma mappings
-Date:   Wed, 7 Dec 2022 20:24:25 +0530
-Message-ID: <20221207145428.31544-10-gautam.dawar@amd.com>
+Subject: [PATCH net-next 10/11] sfc: implement vdpa config_ops for dma operations
+Date:   Wed, 7 Dec 2022 20:24:26 +0530
+Message-ID: <20221207145428.31544-11-gautam.dawar@amd.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20221207145428.31544-1-gautam.dawar@amd.com>
 References: <20221207145428.31544-1-gautam.dawar@amd.com>
@@ -78,23 +78,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E652:EE_|BL0PR12MB4929:EE_
-X-MS-Office365-Filtering-Correlation-Id: a5b0856c-55dd-4e24-9768-08dad8635cda
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E630:EE_|SA1PR12MB5615:EE_
+X-MS-Office365-Filtering-Correlation-Id: fcd64626-3044-4793-ee99-08dad86360d7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ipiim5mvAGn0SCUyc4iU+nRkxk1AlfI1q9zCp5zRjPvZhg/Fas43pgtEZQNWcZD1fOtLCPAl48T7vOnCAA6BVNMa3PGXsjPVI2BJo0TZXGw8NnAZGcbZQ+brHNKoqQq7GEGvtpkT9kf/Uw4N+RM5bbMsf3qEE+ihMe7eAlkdIUJ/QOiaBLNT5zLnRDwnWoPPfe9f7Hyp2eqcSfn9dfqCB3fZux89s3t8fsNk4ARZADkvA2ropBjs3z/T6uRZI/5apAd9Oj9s77d9s2YcpNcEAAoiOtwH6SWQLsrok0xDi6PPDGeSE5/VW/uXS1c16OqAmSCjgH9ArOTEnjwXv1EzRycoXm4DskCZRfRaMDbpur7fUkbvjNgWnfjct6EAroe0entYMWVDJX/nOiHqRzPfMXRsIUaOhJuX4/b2jGmySmpMF4i5ySOjYT1YHZJiSq5tLGYlQcJAwRZCG1tE1jWT72VjXuJjVPaCTEdyEF6ZolCmi6dz1aCrLlGu6uG7F4vagrHpzWkaLXWFdX71kmU5S/cjgz0stUj2HR8nmH+NYxV3xueW54YAYW5lfy//WXnYAzI2PCPV9Z14/mHYPdBEJgU7s/SKWahripmEt1FoOYSr8zLsefUpbt13MKbEJjnC3NRxxIgJxNPMjTiCkAbIHN3xrSO5ZFf729Ll2xdG5YMwS/rI2+T+y39ZUgzjh/aC5sdwjIfsJ0wl3yQJXSGa3Hj2qfA4yW5rpYx6a5cuKpGgIfmzxSUnOYwaA1CgMin9
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(136003)(346002)(376002)(451199015)(36840700001)(46966006)(40470700004)(86362001)(36756003)(2616005)(70206006)(4326008)(41300700001)(2906002)(8676002)(40460700003)(7416002)(5660300002)(8936002)(30864003)(356005)(44832011)(81166007)(316002)(40480700001)(82740400003)(110136005)(83380400001)(36860700001)(54906003)(426003)(336012)(478600001)(1076003)(26005)(82310400005)(70586007)(47076005)(186003)(2004002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: cMMcKSdxwIb6lh/2dohh3HZC6Apez31TxBCwxRuwletRDwBMLTkBe4N6/mcZw7ljdyH9C3ltotBGc5HNx/ne7IEH5NBBne6cQ9oAlj0qBmkRt9AntWdVIDE1X7MY9tgCSgiEUPvGDvN5rBXdcjot35mmm70oc+57V8RleQldiwSqCeZ+GHnLUXRxSc8N7gxeI1pCj/7vns6ewoCaczhxW/nlAGZQSPr2A+SzfaQ5Tz17lgY9OXhr6tKZye3z+xQs7cD7xTYl8UAPxrtJbMMLmyU9L0/XX/jAx0UbfDtxQQhkO2/crh92A/Afqp708XOpjpRmYoJSGYnvMI1lx/KXwn17qjFPKPK0YFufNyhwKAZtlfFFYj/5nGozok6uCZJWmv8vo35eaDH+Dz1qv4DTB7XStOQ9ZMYj0G+fUasLVbNrY19s+Z6TFGq2C/Z9IJNjbc5aRErBxbCl/dvj1YwBU1gS78wUlaX3XQvF438AafW5QU4J7q6exJQOAv6jNOlT1pPUAuanKZeNDoc2Y5xXUADka1npFI0jgX9uJklaBBsvTaxoHKG1kCLixekla6oNMzMT5jqQdLPItn+5Xetokm7a6aqtFG836Pc1dSLxRxrURYA+94YoJiuOlUSmP1cAhiiadWUoe4UoiYpiC04sZrCO7fby+FwCZfTXOuSxpYRlEsEfSSTTuUUZ3Fi6R3leFaQvXnI2Lrv4udyFk3sHoZvHMMiiqY1lMRCBr0MhhmA=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(376002)(346002)(39860400002)(451199015)(40470700004)(36840700001)(46966006)(5660300002)(7416002)(70206006)(66899015)(2906002)(30864003)(316002)(41300700001)(44832011)(4326008)(70586007)(8676002)(8936002)(54906003)(36756003)(478600001)(26005)(110136005)(36860700001)(186003)(82310400005)(1076003)(2616005)(336012)(83380400001)(40460700003)(40480700001)(47076005)(86362001)(426003)(82740400003)(356005)(81166007)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 14:57:29.6756
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 14:57:36.3534
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5b0856c-55dd-4e24-9768-08dad8635cda
+X-MS-Exchange-CrossTenant-Network-Message-Id: fcd64626-3044-4793-ee99-08dad86360d7
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E652.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E630.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4929
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB5615
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -105,386 +105,171 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sfc uses a MCDI DMA buffer that is allocated on the host
-for communicating with the Firmware. The MCDI buffer IOVA
-could overlap with the IOVA used by the guest for the
-virtqueue buffers. To detect such overlap, the DMA mappings
-from the guest will be stored in a IOVA rbtree and every
-such mapping will be compared against the MCDI buffer IOVA
-range. If an overlap is detected, the MCDI buffer will be
-relocated to a different IOVA.
+Although sfc uses the platform IOMMU but it still
+implements the DMA config operations to deal with
+possible IOVA overlap with the MCDI DMA buffer and
+relocates the latter if such overlap is detected.
 
 Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
 ---
- drivers/net/ethernet/sfc/Makefile         |   3 +-
- drivers/net/ethernet/sfc/ef100_iova.c     | 205 ++++++++++++++++++++++
- drivers/net/ethernet/sfc/ef100_iova.h     |  40 +++++
- drivers/net/ethernet/sfc/ef100_nic.c      |   1 -
- drivers/net/ethernet/sfc/ef100_vdpa.c     |  38 ++++
- drivers/net/ethernet/sfc/ef100_vdpa.h     |  15 ++
- drivers/net/ethernet/sfc/ef100_vdpa_ops.c |   5 +
- drivers/net/ethernet/sfc/mcdi.h           |   3 +
- 8 files changed, 308 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/sfc/ef100_iova.c
- create mode 100644 drivers/net/ethernet/sfc/ef100_iova.h
+ drivers/net/ethernet/sfc/ef100_vdpa.c     | 140 ++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_vdpa.h     |   3 +
+ drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 111 +++++++++++++++++
+ drivers/net/ethernet/sfc/net_driver.h     |  12 ++
+ 4 files changed, 266 insertions(+)
 
-diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
-index a10eac91ab23..85852ff50b7c 100644
---- a/drivers/net/ethernet/sfc/Makefile
-+++ b/drivers/net/ethernet/sfc/Makefile
-@@ -11,7 +11,8 @@ sfc-$(CONFIG_SFC_MTD)	+= mtd.o
- sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o \
-                            mae.o tc.o tc_bindings.o tc_counters.o
+diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
+index b9368eb1acd5..16681d164fd1 100644
+--- a/drivers/net/ethernet/sfc/ef100_vdpa.c
++++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
+@@ -309,6 +309,140 @@ static int vdpa_update_domain(struct ef100_vdpa_nic *vdpa_nic)
+ 					  vdpa_nic->geo_aper_end + 1, 0);
+ }
  
--sfc-$(CONFIG_SFC_VDPA)	+= mcdi_vdpa.o ef100_vdpa.o ef100_vdpa_ops.o
-+sfc-$(CONFIG_SFC_VDPA)	+= mcdi_vdpa.o ef100_vdpa.o ef100_vdpa_ops.o \
-+			   ef100_iova.o
- obj-$(CONFIG_SFC)	+= sfc.o
- 
- obj-$(CONFIG_SFC_FALCON) += falcon/
-diff --git a/drivers/net/ethernet/sfc/ef100_iova.c b/drivers/net/ethernet/sfc/ef100_iova.c
-new file mode 100644
-index 000000000000..863314c5b9b5
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/ef100_iova.c
-@@ -0,0 +1,205 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Driver for Xilinx network controllers and boards
-+ * Copyright(C) 2020-2022 Xilinx, Inc.
-+ * Copyright(C) 2022 Advanced Micro Devices, Inc.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation, incorporated herein by reference.
-+ */
-+
-+#include "ef100_iova.h"
-+
-+static void update_free_list_node(struct ef100_vdpa_iova_node *target_node,
-+				  struct ef100_vdpa_iova_node *next_node,
-+				  struct ef100_vdpa_nic *vdpa_nic)
++static int ef100_vdpa_alloc_buffer(struct efx_nic *efx, struct efx_buffer *buf)
 +{
-+	unsigned long target_node_end;
-+	unsigned long free_area;
-+	bool in_list;
++	struct ef100_vdpa_nic *vdpa_nic = efx->vdpa_nic;
++	struct device *dev = &vdpa_nic->vdpa_dev.dev;
++	int rc;
 +
-+	target_node_end = target_node->iova + target_node->size;
-+	free_area = next_node->iova - target_node_end;
-+	in_list = !(list_empty(&target_node->free_node));
++	buf->addr = kzalloc(buf->len, GFP_KERNEL);
++	if (!buf->addr)
++		return -ENOMEM;
 +
-+	if (!in_list && free_area >= MCDI_BUF_LEN) {
-+		list_add(&target_node->free_node,
-+			 &vdpa_nic->free_list);
-+	} else if (in_list && free_area < MCDI_BUF_LEN) {
-+		list_del_init(&target_node->free_node);
-+	}
-+}
++	rc = iommu_map(vdpa_nic->domain, buf->dma_addr,
++		       virt_to_phys(buf->addr), buf->len,
++		       IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
++	if (rc)
++		dev_err(dev, "iommu_map failed, rc: %d\n", rc);
 +
-+static void update_free_list(struct ef100_vdpa_iova_node *iova_node,
-+			     struct ef100_vdpa_nic *vdpa_nic,
-+			     bool add_node)
-+{
-+	struct ef100_vdpa_iova_node *prev_in = NULL;
-+	struct ef100_vdpa_iova_node *next_in = NULL;
-+	struct rb_node *prev_node;
-+	struct rb_node *next_node;
-+
-+	prev_node = rb_prev(&iova_node->node);
-+	next_node = rb_next(&iova_node->node);
-+
-+	if (prev_node)
-+		prev_in = rb_entry(prev_node,
-+				   struct ef100_vdpa_iova_node, node);
-+	if (next_node)
-+		next_in = rb_entry(next_node,
-+				   struct ef100_vdpa_iova_node, node);
-+
-+	if (add_node) {
-+		if (prev_in)
-+			update_free_list_node(prev_in, iova_node, vdpa_nic);
-+
-+		if (next_in)
-+			update_free_list_node(iova_node, next_in, vdpa_nic);
-+	} else {
-+		if (next_in && prev_in)
-+			update_free_list_node(prev_in, next_in, vdpa_nic);
-+		if (!list_empty(&iova_node->free_node))
-+			list_del_init(&iova_node->free_node);
-+	}
-+}
-+
-+int efx_ef100_insert_iova_node(struct ef100_vdpa_nic *vdpa_nic,
-+			       u64 iova, u64 size)
-+{
-+	struct ef100_vdpa_iova_node *iova_node;
-+	struct ef100_vdpa_iova_node *new_node;
-+	struct rb_node *parent;
-+	struct rb_node **link;
-+	struct rb_root *root;
-+	int rc = 0;
-+
-+	mutex_lock(&vdpa_nic->iova_lock);
-+
-+	root = &vdpa_nic->iova_root;
-+	link = &root->rb_node;
-+	parent = *link;
-+	/* Go to the bottom of the tree */
-+	while (*link) {
-+		parent = *link;
-+		iova_node = rb_entry(parent, struct ef100_vdpa_iova_node, node);
-+
-+		/* handle duplicate node */
-+		if (iova_node->iova == iova) {
-+			rc = -EEXIST;
-+			goto out_unlock;
-+		}
-+
-+		if (iova_node->iova > iova)
-+			link = &(*link)->rb_left;
-+		else
-+			link = &(*link)->rb_right;
-+	}
-+
-+	new_node = kzalloc(sizeof(*new_node), GFP_KERNEL);
-+	if (!new_node) {
-+		rc = -ENOMEM;
-+		goto out_unlock;
-+	}
-+
-+	new_node->iova = iova;
-+	new_node->size = size;
-+	INIT_LIST_HEAD(&new_node->free_node);
-+
-+	/* Put the new node here */
-+	rb_link_node(&new_node->node, parent, link);
-+	rb_insert_color(&new_node->node, root);
-+
-+	update_free_list(new_node, vdpa_nic, true);
-+
-+out_unlock:
-+	mutex_unlock(&vdpa_nic->iova_lock);
 +	return rc;
 +}
 +
-+static struct ef100_vdpa_iova_node*
-+ef100_rbt_search_node(struct ef100_vdpa_nic *vdpa_nic,
-+		      unsigned long iova)
++static void ef100_vdpa_free_buffer(struct ef100_vdpa_nic *vdpa_nic,
++				   struct efx_buffer *buf)
 +{
-+	struct ef100_vdpa_iova_node *iova_node;
-+	struct rb_node *rb_node;
-+	struct rb_root *root;
++	struct device *dev = &vdpa_nic->vdpa_dev.dev;
++	int rc;
 +
-+	root = &vdpa_nic->iova_root;
-+	if (!root)
-+		return NULL;
++	rc = iommu_unmap(vdpa_nic->domain, buf->dma_addr, buf->len);
++	if (rc < 0)
++		dev_err(dev, "iommu_unmap failed, rc: %d\n", rc);
 +
-+	rb_node = root->rb_node;
++	kfree(buf->addr);
++}
 +
-+	while (rb_node) {
-+		iova_node = rb_entry(rb_node, struct ef100_vdpa_iova_node,
-+				     node);
-+		if (iova_node->iova > iova)
-+			rb_node = rb_node->rb_left;
-+		else if (iova_node->iova < iova)
-+			rb_node = rb_node->rb_right;
-+		else
-+			return iova_node;
++int ef100_setup_ef100_mcdi_buffer(struct ef100_vdpa_nic *vdpa_nic)
++{
++	struct efx_nic *efx = vdpa_nic->efx;
++	struct ef100_nic_data *nic_data;
++	struct efx_mcdi_iface *mcdi;
++	struct efx_buffer mcdi_buf;
++	enum efx_mcdi_mode mode;
++	struct device *dev;
++	int rc;
++
++	/* Switch to poll mode MCDI mode */
++	nic_data = efx->nic_data;
++	dev = &vdpa_nic->vdpa_dev.dev;
++	mcdi = efx_mcdi(efx);
++	mode = mcdi->mode;
++	efx_mcdi_mode_poll(efx);
++	efx_mcdi_flush_async(efx);
++
++	/* First, allocate the MCDI buffer for EF100 mode */
++	rc = efx_nic_alloc_buffer(efx, &mcdi_buf,
++				  MCDI_BUF_LEN, GFP_KERNEL);
++	if (rc) {
++		dev_err(dev, "nic alloc buf failed, rc: %d\n", rc);
++		goto restore_mode;
 +	}
 +
-+	return NULL;
++	/* unmap and free the vDPA MCDI buffer now */
++	ef100_vdpa_free_buffer(vdpa_nic, &nic_data->mcdi_buf);
++	memcpy(&nic_data->mcdi_buf, &mcdi_buf, sizeof(struct efx_buffer));
++	efx->mcdi_buf_mode = EFX_BUF_MODE_EF100;
++
++restore_mode:
++	if (mode == MCDI_MODE_EVENTS)
++		efx_mcdi_mode_event(efx);
++
++	return rc;
 +}
 +
-+void efx_ef100_remove_iova_node(struct ef100_vdpa_nic *vdpa_nic,
-+				unsigned long iova)
++int ef100_setup_vdpa_mcdi_buffer(struct efx_nic *efx, u64 mcdi_iova)
 +{
-+	struct ef100_vdpa_iova_node *iova_node;
++	struct ef100_nic_data *nic_data = efx->nic_data;
++	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
++	enum efx_mcdi_mode mode = mcdi->mode;
++	struct efx_buffer mcdi_buf;
++	int rc;
 +
-+	mutex_lock(&vdpa_nic->iova_lock);
-+	iova_node = ef100_rbt_search_node(vdpa_nic, iova);
-+	if (!iova_node)
-+		goto out_unlock;
++	efx_mcdi_mode_poll(efx);
++	efx_mcdi_flush_async(efx);
 +
-+	update_free_list(iova_node, vdpa_nic, false);
-+
-+	rb_erase(&iova_node->node, &vdpa_nic->iova_root);
-+	kfree(iova_node);
-+
-+out_unlock:
-+	mutex_unlock(&vdpa_nic->iova_lock);
-+}
-+
-+void efx_ef100_delete_iova(struct ef100_vdpa_nic *vdpa_nic)
-+{
-+	struct ef100_vdpa_iova_node *iova_node;
-+	struct rb_root *iova_root;
-+	struct rb_node *node;
-+
-+	mutex_lock(&vdpa_nic->iova_lock);
-+
-+	iova_root = &vdpa_nic->iova_root;
-+	while (!RB_EMPTY_ROOT(iova_root)) {
-+		node = rb_first(iova_root);
-+		iova_node = rb_entry(node, struct ef100_vdpa_iova_node, node);
-+		if (!list_empty(&iova_node->free_node))
-+			list_del_init(&iova_node->free_node);
-+		if (vdpa_nic->domain)
-+			iommu_unmap(vdpa_nic->domain, iova_node->iova,
-+				    iova_node->size);
-+		rb_erase(node, iova_root);
-+		kfree(iova_node);
++	/* First, prepare the MCDI buffer for vDPA mode */
++	mcdi_buf.dma_addr = mcdi_iova;
++	/* iommu_map requires page aligned memory */
++	mcdi_buf.len = PAGE_ALIGN(MCDI_BUF_LEN);
++	rc = ef100_vdpa_alloc_buffer(efx, &mcdi_buf);
++	if (rc) {
++		pci_err(efx->pci_dev, "alloc vdpa buf failed, rc: %d\n", rc);
++		goto restore_mode;
 +	}
 +
-+	mutex_unlock(&vdpa_nic->iova_lock);
++	/* All set-up, free the EF100 MCDI buffer now */
++	efx_nic_free_buffer(efx, &nic_data->mcdi_buf);
++	memcpy(&nic_data->mcdi_buf, &mcdi_buf, sizeof(struct efx_buffer));
++	efx->mcdi_buf_mode = EFX_BUF_MODE_VDPA;
++
++restore_mode:
++	if (mode == MCDI_MODE_EVENTS)
++		efx_mcdi_mode_event(efx);
++	return rc;
 +}
 +
-+int efx_ef100_find_new_iova(struct ef100_vdpa_nic *vdpa_nic,
-+			    unsigned int buf_len,
-+			    u64 *new_iova)
++int ef100_remap_vdpa_mcdi_buffer(struct efx_nic *efx, u64 mcdi_iova)
 +{
-+	struct ef100_vdpa_iova_node *iova_node;
++	struct ef100_nic_data *nic_data = efx->nic_data;
++	struct ef100_vdpa_nic *vdpa_nic = efx->vdpa_nic;
++	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
++	struct efx_buffer *mcdi_buf;
++	int rc;
 +
-+	/* pick the first node from freelist */
-+	iova_node = list_first_entry_or_null(&vdpa_nic->free_list,
-+					     struct ef100_vdpa_iova_node,
-+					     free_node);
-+	if (!iova_node)
-+		return -ENOENT;
++	mcdi_buf = &nic_data->mcdi_buf;
++	spin_lock_bh(&mcdi->iface_lock);
 +
-+	*new_iova = iova_node->iova + iova_node->size;
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/sfc/ef100_iova.h b/drivers/net/ethernet/sfc/ef100_iova.h
-new file mode 100644
-index 000000000000..68e39c4152c7
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/ef100_iova.h
-@@ -0,0 +1,40 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Driver for Xilinx network controllers and boards
-+ * Copyright(C) 2020-2022 Xilinx, Inc.
-+ * Copyright(C) 2022 Advanced Micro Devices, Inc.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation, incorporated herein by reference.
-+ */
-+#ifndef EFX_EF100_IOVA_H
-+#define EFX_EF100_IOVA_H
++	rc = iommu_unmap(vdpa_nic->domain, mcdi_buf->dma_addr, mcdi_buf->len);
++	if (rc < 0) {
++		pci_err(efx->pci_dev, "iommu_unmap failed, rc: %d\n", rc);
++		goto out;
++	}
 +
-+#include "ef100_nic.h"
-+#include "ef100_vdpa.h"
++	rc = iommu_map(vdpa_nic->domain, mcdi_iova,
++		       virt_to_phys(mcdi_buf->addr),
++		       mcdi_buf->len,
++		       IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
++	if (rc) {
++		pci_err(efx->pci_dev, "iommu_map failed, rc: %d\n", rc);
++		goto out;
++	}
 +
-+#if defined(CONFIG_SFC_VDPA)
-+/**
-+ * struct ef100_vdpa_iova_node - guest buffer iova entry
-+ *
-+ * @node: red black tree node
-+ * @iova: mapping's IO virtual address
-+ * @size: length of mapped region in bytes
-+ * @free_node: free list node
-+ */
-+struct ef100_vdpa_iova_node {
-+	struct rb_node node;
-+	unsigned long iova;
-+	size_t size;
-+	struct list_head free_node;
-+};
-+
-+int efx_ef100_insert_iova_node(struct ef100_vdpa_nic *vdpa_nic,
-+			       u64 iova, u64 size);
-+void efx_ef100_remove_iova_node(struct ef100_vdpa_nic *vdpa_nic,
-+				unsigned long iova);
-+void efx_ef100_delete_iova(struct ef100_vdpa_nic *vdpa_nic);
-+int efx_ef100_find_new_iova(struct ef100_vdpa_nic *vdpa_nic,
-+			    unsigned int buf_len, u64 *new_iova);
-+#endif  /* CONFIG_SFC_VDPA */
-+#endif	/* EFX_EF100_IOVA_H */
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index 41811c519275..72820d2fe19d 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.c
-+++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -33,7 +33,6 @@
- 
- #define EF100_MAX_VIS 4096
- #define EF100_NUM_MCDI_BUFFERS	1
--#define MCDI_BUF_LEN (8 + MCDI_CTL_SDU_LEN_MAX)
- 
- #define EF100_RESET_PORT ((ETH_RESET_MAC | ETH_RESET_PHY) << ETH_RESET_SHARED_SHIFT)
- 
-diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
-index 80bca281a748..b9368eb1acd5 100644
---- a/drivers/net/ethernet/sfc/ef100_vdpa.c
-+++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
-@@ -14,6 +14,7 @@
- #include <uapi/linux/vdpa.h>
- #include "ef100_vdpa.h"
- #include "mcdi_vdpa.h"
-+#include "ef100_iova.h"
- #include "mcdi_filters.h"
- #include "mcdi_functions.h"
- #include "ef100_netdev.h"
-@@ -280,6 +281,34 @@ static int get_net_config(struct ef100_vdpa_nic *vdpa_nic)
- 	return 0;
- }
- 
-+static int vdpa_update_domain(struct ef100_vdpa_nic *vdpa_nic)
-+{
-+	struct vdpa_device *vdpa = &vdpa_nic->vdpa_dev;
-+	struct iommu_domain_geometry *geo;
-+	struct device *dma_dev;
-+
-+	dma_dev = vdpa_get_dma_dev(vdpa);
-+	if (!device_iommu_capable(dma_dev, IOMMU_CAP_CACHE_COHERENCY))
-+		return -EOPNOTSUPP;
-+
-+	vdpa_nic->domain = iommu_get_domain_for_dev(dma_dev);
-+	if (!vdpa_nic->domain)
-+		return -ENODEV;
-+
-+	geo = &vdpa_nic->domain->geometry;
-+	/* save the geo aperture range for validation in dma_map */
-+	vdpa_nic->geo_aper_start = geo->aperture_start;
-+
-+	/* Handle the boundary case */
-+	if (geo->aperture_end == ~0ULL)
-+		geo->aperture_end -= 1;
-+	vdpa_nic->geo_aper_end = geo->aperture_end;
-+
-+	/* insert a sentinel node */
-+	return efx_ef100_insert_iova_node(vdpa_nic,
-+					  vdpa_nic->geo_aper_end + 1, 0);
++	mcdi_buf->dma_addr = mcdi_iova;
++out:
++	spin_unlock_bh(&mcdi->iface_lock);
++	return rc;
 +}
 +
  static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
  						const char *dev_name,
  						enum ef100_vdpa_class dev_type,
-@@ -316,6 +345,7 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
- 	}
- 
- 	mutex_init(&vdpa_nic->lock);
-+	mutex_init(&vdpa_nic->iova_lock);
- 	dev = &vdpa_nic->vdpa_dev.dev;
- 	efx->vdpa_nic = vdpa_nic;
- 	vdpa_nic->vdpa_dev.dma_dev = &efx->pci_dev->dev;
-@@ -325,9 +355,11 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
- 	vdpa_nic->pf_index = nic_data->pf_index;
- 	vdpa_nic->vf_index = nic_data->vf_index;
- 	vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
-+	vdpa_nic->iova_root = RB_ROOT;
- 	vdpa_nic->mac_address = (u8 *)&vdpa_nic->net_config.mac;
- 	ether_addr_copy(vdpa_nic->mac_address, mac);
- 	vdpa_nic->mac_configured = true;
-+	INIT_LIST_HEAD(&vdpa_nic->free_list);
- 
- 	for (i = 0; i < EF100_VDPA_MAC_FILTER_NTYPES; i++)
- 		vdpa_nic->filters[i].filter_id = EFX_INVALID_FILTER_ID;
-@@ -353,6 +385,12 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+@@ -391,6 +525,12 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
  		goto err_put_device;
  	}
  
-+	rc = vdpa_update_domain(vdpa_nic);
++	rc = ef100_setup_vdpa_mcdi_buffer(efx, EF100_VDPA_IOVA_BASE_ADDR);
 +	if (rc) {
-+		pci_err(efx->pci_dev, "update_domain failed, err: %d\n", rc);
++		pci_err(efx->pci_dev, "realloc mcdi failed, err: %d\n", rc);
 +		goto err_put_device;
 +	}
 +
@@ -492,100 +277,199 @@ index 80bca281a748..b9368eb1acd5 100644
  	if (rc)
  		goto err_put_device;
 diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
-index 1b0bbba88154..c3c77029973d 100644
+index c3c77029973d..f15d8739dcde 100644
 --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
 +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
-@@ -12,7 +12,9 @@
- #define __EF100_VDPA_H__
+@@ -202,6 +202,9 @@ int ef100_vdpa_add_filter(struct ef100_vdpa_nic *vdpa_nic,
+ int ef100_vdpa_irq_vectors_alloc(struct pci_dev *pci_dev, u16 nvqs);
+ void ef100_vdpa_irq_vectors_free(void *data);
+ int ef100_vdpa_reset(struct vdpa_device *vdev);
++int ef100_setup_ef100_mcdi_buffer(struct ef100_vdpa_nic *vdpa_nic);
++int ef100_setup_vdpa_mcdi_buffer(struct efx_nic *efx, u64 mcdi_iova);
++int ef100_remap_vdpa_mcdi_buffer(struct efx_nic *efx, u64 mcdi_iova);
  
- #include <linux/vdpa.h>
-+#include <linux/iommu.h>
- #include <uapi/linux/virtio_net.h>
-+#include <linux/rbtree.h>
- #include "net_driver.h"
- #include "ef100_nic.h"
- 
-@@ -155,6 +157,12 @@ struct ef100_vdpa_filter {
-  * @mac_configured: true after MAC address is configured
-  * @filters: details of all filters created on this vdpa device
-  * @cfg_cb: callback for config change
-+ * @domain: IOMMU domain
-+ * @iova_root: iova rbtree root
-+ * @iova_lock: lock to synchronize updates to rbtree and freelist
-+ * @free_list: list to store free iova areas of size >= MCDI buffer length
-+ * @geo_aper_start: start of valid IOVA range
-+ * @geo_aper_end: end of valid IOVA range
-  */
- struct ef100_vdpa_nic {
- 	struct vdpa_device vdpa_dev;
-@@ -174,6 +182,13 @@ struct ef100_vdpa_nic {
- 	bool mac_configured;
- 	struct ef100_vdpa_filter filters[EF100_VDPA_MAC_FILTER_NTYPES];
- 	struct vdpa_callback cfg_cb;
-+	struct iommu_domain *domain;
-+	struct rb_root iova_root;
-+	/* mutex to synchronize rbtree operations */
-+	struct mutex iova_lock;
-+	struct list_head free_list;
-+	u64 geo_aper_start;
-+	u64 geo_aper_end;
- };
- 
- int ef100_vdpa_init(struct efx_probe_data *probe_data);
+ static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
+ {
 diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-index 718b67f6da90..8c198d949fdb 100644
+index 8c198d949fdb..7c632f179bcf 100644
 --- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
 +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/vdpa.h>
+@@ -12,6 +12,7 @@
  #include "ef100_vdpa.h"
-+#include "ef100_iova.h"
+ #include "ef100_iova.h"
  #include "io.h"
++#include "ef100_iova.h"
  #include "mcdi_vdpa.h"
  
-@@ -260,6 +261,7 @@ static void ef100_reset_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
- 	if (!vdpa_nic->status)
- 		return;
+ /* Get the queue's function-local index of the associated VI
+@@ -739,14 +740,121 @@ static void ef100_vdpa_set_config(struct vdpa_device *vdev, unsigned int offset,
+ 	}
+ }
  
-+	efx_ef100_delete_iova(vdpa_nic);
- 	vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
- 	vdpa_nic->status = 0;
- 	vdpa_nic->features = 0;
-@@ -743,9 +745,12 @@ static void ef100_vdpa_free(struct vdpa_device *vdev)
++static bool is_iova_overlap(u64 iova1, u64 size1, u64 iova2, u64 size2)
++{
++	return max(iova1, iova2) < min(iova1 + size1, iova2 + size2);
++}
++
++static int ef100_vdpa_dma_map(struct vdpa_device *vdev,
++			      unsigned int asid,
++			      u64 iova, u64 size,
++			      u64 pa, u32 perm, void *opaque)
++{
++	struct ef100_vdpa_nic *vdpa_nic;
++	struct ef100_nic_data *nic_data;
++	unsigned int mcdi_buf_len;
++	dma_addr_t mcdi_buf_addr;
++	u64 mcdi_iova = 0;
++	int rc;
++
++	vdpa_nic = get_vdpa_nic(vdev);
++	nic_data = vdpa_nic->efx->nic_data;
++	mcdi_buf_addr = nic_data->mcdi_buf.dma_addr;
++	mcdi_buf_len = nic_data->mcdi_buf.len;
++
++	/* Validate the iova range against geo aperture */
++	if (iova < vdpa_nic->geo_aper_start ||
++	    ((iova + size - 1) > vdpa_nic->geo_aper_end)) {
++		dev_err(&vdpa_nic->vdpa_dev.dev,
++			"%s: iova range (%llx, %llx) not within geo aperture\n",
++			__func__, iova, (iova + size));
++		return -EINVAL;
++	}
++
++	rc = efx_ef100_insert_iova_node(vdpa_nic, iova, size);
++	if (rc) {
++		dev_err(&vdpa_nic->vdpa_dev.dev,
++			"%s: iova_node insert failure: %d\n", __func__, rc);
++		return rc;
++	}
++
++	if (is_iova_overlap(mcdi_buf_addr, mcdi_buf_len, iova, size)) {
++		dev_info(&vdpa_nic->vdpa_dev.dev,
++			 "%s: mcdi iova overlap detected: %llx\n",
++			 __func__, mcdi_buf_addr);
++		/* find the new iova for mcdi buffer */
++		rc = efx_ef100_find_new_iova(vdpa_nic, mcdi_buf_len,
++					     &mcdi_iova);
++		if (rc) {
++			dev_err(&vdpa_nic->vdpa_dev.dev,
++				"new mcdi iova not found, err: %d\n", rc);
++			goto fail;
++		}
++
++		if (vdpa_nic->efx->mcdi_buf_mode == EFX_BUF_MODE_VDPA)
++			rc = ef100_remap_vdpa_mcdi_buffer(vdpa_nic->efx,
++							  mcdi_iova);
++		else if (vdpa_nic->efx->mcdi_buf_mode == EFX_BUF_MODE_EF100)
++			rc = ef100_setup_vdpa_mcdi_buffer(vdpa_nic->efx,
++							  mcdi_iova);
++		else
++			goto fail;
++
++		if (rc) {
++			dev_err(&vdpa_nic->vdpa_dev.dev,
++				"mcdi buf update failed, err: %d\n", rc);
++			goto fail;
++		}
++	}
++
++	rc = iommu_map(vdpa_nic->domain, iova, pa, size, perm);
++	if (rc) {
++		dev_err(&vdev->dev,
++			"%s: iommu_map iova: %llx size: %llx rc: %d\n",
++			__func__, iova, size, rc);
++		goto fail;
++	}
++
++	return 0;
++
++fail:
++	efx_ef100_remove_iova_node(vdpa_nic, iova);
++	return rc;
++}
++
++static int ef100_vdpa_dma_unmap(struct vdpa_device *vdev,
++				unsigned int asid,
++				u64 iova, u64 size)
++{
++	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	int rc;
++
++	rc = iommu_unmap(vdpa_nic->domain, iova, size);
++	if (rc < 0)
++		dev_info(&vdev->dev,
++			 "%s: iommu_unmap iova: %llx size: %llx rc: %d\n",
++			 __func__, iova, size, rc);
++	efx_ef100_remove_iova_node(vdpa_nic, iova);
++	return rc;
++}
++
+ static void ef100_vdpa_free(struct vdpa_device *vdev)
+ {
+ 	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	int rc;
  	int i;
  
  	if (vdpa_nic) {
-+		/* clean-up the mappings and iova tree */
-+		efx_ef100_delete_iova(vdpa_nic);
+ 		/* clean-up the mappings and iova tree */
+ 		efx_ef100_delete_iova(vdpa_nic);
++		if (vdpa_nic->efx->mcdi_buf_mode == EFX_BUF_MODE_VDPA) {
++			rc = ef100_setup_ef100_mcdi_buffer(vdpa_nic);
++			if (rc) {
++				dev_err(&vdev->dev,
++					"setup_ef100_mcdi failed, err: %d\n",
++					rc);
++			}
++		}
  		for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++)
  			reset_vring(vdpa_nic, i);
  		ef100_vdpa_irq_vectors_free(vdpa_nic->efx->pci_dev);
-+		mutex_destroy(&vdpa_nic->iova_lock);
- 		mutex_destroy(&vdpa_nic->lock);
- 		vdpa_nic->efx->vdpa_nic = NULL;
- 	}
-diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
-index db4ca4975ada..7d977a58a0df 100644
---- a/drivers/net/ethernet/sfc/mcdi.h
-+++ b/drivers/net/ethernet/sfc/mcdi.h
-@@ -7,6 +7,7 @@
- #ifndef EFX_MCDI_H
- #define EFX_MCDI_H
- 
-+#include "mcdi_pcol.h"
- /**
-  * enum efx_mcdi_state - MCDI request handling state
-  * @MCDI_STATE_QUIESCENT: No pending MCDI requests. If the caller holds the
-@@ -40,6 +41,8 @@ enum efx_mcdi_mode {
- 	MCDI_MODE_FAIL,
+@@ -782,5 +890,8 @@ const struct vdpa_config_ops ef100_vdpa_config_ops = {
+ 	.get_config	     = ef100_vdpa_get_config,
+ 	.set_config	     = ef100_vdpa_set_config,
+ 	.get_generation      = NULL,
++	.set_map             = NULL,
++	.dma_map	     = ef100_vdpa_dma_map,
++	.dma_unmap           = ef100_vdpa_dma_unmap,
+ 	.free	             = ef100_vdpa_free,
+ };
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index 79356d614109..34b94372d9a6 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -846,6 +846,16 @@ enum efx_xdp_tx_queues_mode {
+ 	EFX_XDP_TX_QUEUES_BORROWED	/* queues borrowed from net stack */
  };
  
-+#define MCDI_BUF_LEN (8 + MCDI_CTL_SDU_LEN_MAX)
++/**
++ * enum efx_buf_alloc_mode - buffer allocation mode
++ * @EFX_BUF_MODE_EF100: buffer setup in ef100 mode
++ * @EFX_BUF_MODE_VDPA: buffer setup in vdpa mode
++ */
++enum efx_buf_alloc_mode {
++	EFX_BUF_MODE_EF100,
++	EFX_BUF_MODE_VDPA
++};
 +
  /**
-  * struct efx_mcdi_iface - MCDI protocol context
-  * @efx: The associated NIC.
+  * struct efx_nic - an Efx NIC
+  * @name: Device name (net device name or bus id before net device registered)
+@@ -997,6 +1007,7 @@ enum efx_xdp_tx_queues_mode {
+  * @tc: state for TC offload (EF100).
+  * @mem_bar: The BAR that is mapped into membase.
+  * @reg_base: Offset from the start of the bar to the function control window.
++ * @mcdi_buf_mode: mcdi buffer allocation mode
+  * @monitor_work: Hardware monitor workitem
+  * @biu_lock: BIU (bus interface unit) lock
+  * @last_irq_cpu: Last CPU to handle a possible test interrupt.  This
+@@ -1182,6 +1193,7 @@ struct efx_nic {
+ 
+ 	unsigned int mem_bar;
+ 	u32 reg_base;
++	enum efx_buf_alloc_mode mcdi_buf_mode;
+ #ifdef CONFIG_SFC_VDPA
+ 	/** @mgmt_dev: vDPA Management device */
+ 	struct vdpa_mgmt_dev *mgmt_dev;
 -- 
 2.30.1
 
