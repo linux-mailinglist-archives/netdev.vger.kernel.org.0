@@ -2,67 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81913645BC6
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2C86645BF5
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:03:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbiLGOAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 09:00:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
+        id S230178AbiLGODs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 09:03:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiLGOAE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:00:04 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5030A5CD0C
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:00:00 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id fc4so14126712ejc.12
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:00:00 -0800 (PST)
+        with ESMTP id S230261AbiLGOCv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:02:51 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD8B5FB8B;
+        Wed,  7 Dec 2022 06:01:27 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id b2so14172335eja.7;
+        Wed, 07 Dec 2022 06:01:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=973BvPTh1f6Kbx7ipPiwbV8z254q0zXYwIBL8xSZqoQ=;
-        b=CPc6kblyr3CeVsxE5gLakh18vY/7Knbh3X76uzoGoTYZkJWDTD/SfpeFkWylbzNIOL
-         5Fvm7gfBshzH9KU6GL1G+/q1Nu20N4o28NfMqx2SVfrg6yxcu4+OFVPW0nFuAb+0oceF
-         sSd42ScI8AXw4P55WliIL/qEDhfDN5LaIj2Q2T7w4echS4XlJmUM5Tt6LekgFeAS0V25
-         JeRF2tPemr7lz2wrhKNCubg7nEk73QQF9mP5+zp9KuN7GhVJ13eqjMdGUoIhshszEczj
-         ZQAdOHBWw1S/3xsIfkfYmRwQ85XiR6l7ZoOj4jvIJ4ocRgvbF2rJi3vASSyI3vK8GcTA
-         nNvg==
+        bh=CWIrJH4UoIoZiDf7F/vSiZ3gjhe55HNOLzi7v49e38Q=;
+        b=KTxCfa1p6hMuXO79BUyUaKZi9fdoUIy1ql/gWYLm+XaTdUQlVpN+TGZh8gg4e2Mgkz
+         vclE5n2y3/LhAasB8jIJYB+ELvF+vlPW9uPX9vg9PxYki+3DN291q387sL3AE7LYCz20
+         ztJJpekAnHucjdNoq5AUsT9e2QfMrYZjujg4DkhvY0o4HGa5e+v3bMAkACdo9Ta7FRed
+         RkvIxB0v4grpMBShJr2Zep4txSWuiwjsEJTiAZvtjD7Clu2KbZJsbpwnuke0/FYFBK+e
+         Fux+A5XMmu+JczVhlShF0LS1AZ4gOlLNQty7LK1PRFuOJ49k9xyzcwhJYD7Ci+nkoXZP
+         PGFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=973BvPTh1f6Kbx7ipPiwbV8z254q0zXYwIBL8xSZqoQ=;
-        b=Y2sVXhSRMMIjr715GagxE51grblTI1JiNdA/oUOMwLzTcwyGcXv/2oxn2VUrnwT5cX
-         XfUWak2mA2QIfp14P/aSmmWfMAmcwWqjnyBjf6vJm3QhuUn6/f7Rz8GfChqe20CzA4U5
-         7URwYTlU+/JaCtBM5fDXtPxsFvj+dUPAD+5iraqbL1OXvTo6+6qN/fBz+advf3EbHJE5
-         /rMTLpD/q8/ovMywWtHTGqRh6W+x+35bjpuIWRbIHgbYrrItSQMD40GE+XHcaujQAiRU
-         MP6POQLqRETBGFqFBUpiWeCD+6hEdDUXzNHvD97DScmDEsch7T+//V3k0KKRQRkRl4nf
-         7tWQ==
-X-Gm-Message-State: ANoB5pnxbKLD92H1w6630pHWDVMjCPrfxOqdCpOTpTwbQQrD3R4kffNJ
-        tkwy8wCTpl1neCt6yk6jNTgQjw==
-X-Google-Smtp-Source: AA0mqf7oUHn9ahfGCiPLFFQO3WLXsMA3PwKOGWZYkZ9N5KRELGhyeehxYsVnr/cSvtiWr0Mzq+RUNA==
-X-Received: by 2002:a17:907:c709:b0:7c0:fd1a:79ea with SMTP id ty9-20020a170907c70900b007c0fd1a79eamr4594574ejc.45.1670421598919;
-        Wed, 07 Dec 2022 05:59:58 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id i5-20020aa7c705000000b00463a83ce063sm2209476edq.96.2022.12.07.05.59.57
+        bh=CWIrJH4UoIoZiDf7F/vSiZ3gjhe55HNOLzi7v49e38Q=;
+        b=FsKPkVwKO13rf4eKpvttsXgXomXy8r8aQe+dv5imjjVGHgbT1QC3d11QAyDFU4XjnR
+         6RBe69lSpUjnaO8i29hOme4Mxt29hb/jwK0c3qQ3ME9UdtBO9bxvm6cotYWghzlAEktq
+         pkAJoesNhlKM5vWsK+BGZWSufJWVvw5h0tjSqzhoEBz/sDgUTmSe9BdQHbn3qNIap2xn
+         BJzV1qt6FQGr6kNJa5ZSWu2kK3EhhyjxF9SRi3fTSM+YnpzlScyCaaJWOi3Ewegc0ilR
+         4MvwBKY/wl5PcMqfxqaJ/AqoJ9OSNvMtEB6NfRUq2HyU7jJcI/rFXiLLkSRNbXMI6JbI
+         nZ1A==
+X-Gm-Message-State: ANoB5pkxFXd2177A89UUNAhTQ2CzlY+H+/8KPb6oIScztmF96Lq4HM4o
+        5NPhZKBqrQrQUAT1GAAAHeM=
+X-Google-Smtp-Source: AA0mqf6rBGqvRQsRou+yh2RvdQOdILMIX+g40OrtXH4aFEi+omtmw7algnxe3rbCsiAieWjCf9xHLw==
+X-Received: by 2002:a17:906:4704:b0:7c1:13b7:a5a1 with SMTP id y4-20020a170906470400b007c113b7a5a1mr374947ejq.46.1670421685525;
+        Wed, 07 Dec 2022 06:01:25 -0800 (PST)
+Received: from skbuf ([188.26.184.215])
+        by smtp.gmail.com with ESMTPSA id 18-20020a170906211200b007b29eb8a4dbsm8693074ejt.13.2022.12.07.06.01.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 05:59:58 -0800 (PST)
-Date:   Wed, 7 Dec 2022 14:59:56 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Roi Dayan <roid@nvidia.com>
-Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCH iproute2 1/1] tc: ct: Fix invalid pointer dereference
-Message-ID: <Y5CcXPfi+M629RcE@nanopsycho>
-References: <20221207082213.707577-1-roid@nvidia.com>
+        Wed, 07 Dec 2022 06:01:25 -0800 (PST)
+Date:   Wed, 7 Dec 2022 16:01:22 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jerry.Ray@microchip.com
+Cc:     linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 2/2] dsa: lan9303: Move to PHYLINK
+Message-ID: <20221207140122.usg7vvfutcpmy7py@skbuf>
+References: <20221206183500.6898-1-jerry.ray@microchip.com>
+ <20221206183500.6898-1-jerry.ray@microchip.com>
+ <20221206183500.6898-3-jerry.ray@microchip.com>
+ <20221206183500.6898-3-jerry.ray@microchip.com>
+ <20221206193224.f3obnsjtphbxole4@skbuf>
+ <Y4+vKh8EfA9vtC2B@shell.armlinux.org.uk>
+ <MWHPR11MB1693565E49EAB189C2084C58EF1B9@MWHPR11MB1693.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221207082213.707577-1-roid@nvidia.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <MWHPR11MB1693565E49EAB189C2084C58EF1B9@MWHPR11MB1693.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,13 +78,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Dec 07, 2022 at 09:22:13AM CET, roid@nvidia.com wrote:
->Using macro NEXT_ARG_FWD does not validate argc.
->Use macro NEXT_ARG which validates argc while parsing args
->in the same loop iteration.
->
->Fixes: c8a494314c40 ("tc: Introduce tc ct action")
->Signed-off-by: Roi Dayan <roid@nvidia.com>
->Reviewed-by: Paul Blakey <paulb@nvidia.com>
+On Tue, Dec 06, 2022 at 10:58:25PM +0000, Jerry.Ray@microchip.com wrote:
+> I, too, thought I would need phylink_mac_config and phylink_mac_link_up to
+> completely migrate away from PHYLIB to PHYLINK.  But it seems as though the
+> phylink layer is now taking care of the speed / duplex / etc settings of the
+> phy registers.  There is no DSA driver housecleaning needed at these other
+> phylink_ api hook functions.  At least, that's my current level of
+> understanding...
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Did you understand my request? To create a separate patch, not phylink
+conversion, which deletes the MII_BMCR writes to the Virtual PHY, which
+says that you don't know why they're there and you don't think that
+they're needed, but at least you thought about what you're doing?
