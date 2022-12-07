@@ -2,75 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF6D56464E0
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 00:16:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3AF76464ED
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 00:17:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbiLGXQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 18:16:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
+        id S229731AbiLGXRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 18:17:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbiLGXQV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 18:16:21 -0500
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1386088B68
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 15:16:21 -0800 (PST)
-Received: by mail-io1-f71.google.com with SMTP id g11-20020a6be60b000000b006e2c707e565so1043415ioh.14
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 15:16:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OPVql0dVm3BxrCwPiGc6AiQiIEcXU1yzGMmr3t8ps3c=;
-        b=rwdFfxe+f7Ad1Tg7nX3rv/0WNUxucS8ObWbh9zlqXxY3Pve46Q0wdEDknv2LNnfQTk
-         MrbpFnaSGgF0o3SypIA7hsCR1Is2fDFFEXCpiUzIAZl+DezitT7+48GT4ihk3bEMJhAM
-         XaAz82w0HATQgq2iZvgFbYHH23lYEwZtBeA9OxDPuCxqpiI1MoQKrjBri51vjWQBNtGw
-         4oEuAlYbbbPcYSD657EtrOkmYuA9lL9IH2SJllEbYAfVzmP2ZO9Qi6jXei4Vord0DfX9
-         64IUXYsjK70sKIpDFNEgUe0pyUw7kBs+lUnVrQfdmONv2CC9nb1dysefevHjGh2/Nscq
-         I7Mg==
-X-Gm-Message-State: ANoB5plLVL30N1vJb6mr45jNqvY/rNLXKxmdVPyPOhvqtM4pTDoZlQ8l
-        dG2VbzPsx0H7oJKHz1Pb7LahJkfKgSKMCA9ZIGiJ6RSS7d8b
-X-Google-Smtp-Source: AA0mqf7XpmJgyIxWRVMPWgwtWEezWbR9GRv3RL9k8HNQHy9fV7ck5KOFth0hSntK8RYoaEdFbb/GC+pNQ3+OUacdSw02DJIyQxmC
+        with ESMTP id S229470AbiLGXRq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 18:17:46 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B6F2720
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 15:17:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670455065; x=1701991065;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wks1MctEb+jqMbd5wfzAYbC+D1RpAd5A/dfT8NrKv80=;
+  b=JzdAeDGyau3iY7Kaqhvo46xXN5NGsDEL2390P4xPobhyLKAKT7/56zLP
+   6743hiCQ19gq/InUwXlhW4fiDcehKIR4b6qDCxd65PxrRRH/w+uFOk/5Y
+   aOfz6m9oqadFaIB09f0NlyAOFdEZ9SCyWOGqJ89stx3hauzVIol0DD5Mg
+   EKET5ITgshFlvYrdJCp+3f+hyLSD0RTKgY7ji1cUfnydJDA400ylfMvgY
+   wmcpaLxC+d4shWZN7wJNr4CCGyECYPF24CaNB7B3XOCVaQyTmhJ7ezGbY
+   /j8zU4PfajuaLsbffA2R/jw+7yZGwC4eIQLuHmNGmxP06D5FF6FNXsVQF
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="403293965"
+X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
+   d="scan'208";a="403293965"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 15:17:42 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="677539546"
+X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
+   d="scan'208";a="677539546"
+Received: from jbrandeb-coyote30.jf.intel.com ([10.166.29.19])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 15:17:41 -0800
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: [PATCH net-next v1 0/2] ethtool: use bits.h defines
+Date:   Wed,  7 Dec 2022 15:17:26 -0800
+Message-Id: <20221207231728.2331166-1-jesse.brandeburg@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-Received: by 2002:a6b:cd8d:0:b0:6e0:d9a:2898 with SMTP id
- d135-20020a6bcd8d000000b006e00d9a2898mr6682695iog.99.1670454980453; Wed, 07
- Dec 2022 15:16:20 -0800 (PST)
-Date:   Wed, 07 Dec 2022 15:16:20 -0800
-In-Reply-To: <1543008.1670434984@warthog.procyon.org.uk>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b92ca505ef451b46@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in rxrpc_lookup_local
-From:   syzbot <syzbot+3538a6a72efa8b059c38@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
-        kuba@kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Change the ethtool files in the kernel, including uapi header files, to
+use the kernel style BIT() and BIT_ULL() functions instead of
+open-coding bit shift operations.
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+Making this change results in a more consistent presentation of bit-
+shift operations as well as reduces the further likelihood of mistaken
+(1 << 31) usage which omits the 1UL that is necessary to get an unsigned
+result of the shift.
 
-Reported-and-tested-by: syzbot+3538a6a72efa8b059c38@syzkaller.appspotmail.com
+Jesse Brandeburg (2):
+  ethtool/uapi: use BIT for bit-shifts
+  ethtool: refactor bit-shifts
 
-Tested on:
+ include/linux/ethtool.h              |   2 +-
+ include/uapi/linux/ethtool.h         | 112 ++++++++++++++++-----------
+ include/uapi/linux/ethtool_netlink.h |   6 +-
+ net/ethtool/bitset.c                 |  14 ++--
+ net/ethtool/ioctl.c                  |   4 +-
+ net/ethtool/strset.c                 |   6 +-
+ 6 files changed, 84 insertions(+), 60 deletions(-)
 
-commit:         a2220b54 Merge branch 'cn10kb-mac-block-support'
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=1589fa4d880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c608c21151db14f2
-dashboard link: https://syzkaller.appspot.com/bug?extid=3538a6a72efa8b059c38
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1473515b880000
 
-Note: testing is done by a robot and is best-effort only.
+base-commit: 01d0e110f2365151d8e69ca4978128112637642d
+-- 
+2.31.1
+
