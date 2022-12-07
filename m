@@ -2,83 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56F43645B76
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:54:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45F3C645B94
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:56:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbiLGNyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 08:54:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50684 "EHLO
+        id S230061AbiLGN4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 08:56:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230148AbiLGNyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:54:46 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E084908F
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:54:44 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id kw15so10717228ejc.10
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 05:54:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=duUnwRItpG2/U2bWuMLcopd+jbHjjMzMKCoDTuyYmvQ=;
-        b=bvmljO2bCXC7q7aimtV+jvBdd41/vzXXNoWzdPzYbWcpyiLGQ43W5O7yeYLM8ltzhu
-         O/IhZ6KP/GpS01OOXYNYZY7luzgB2fZX+zL1JxXo2nVRMij8dl1Du8oG1q/OEFEwMTiT
-         ZFXZOUjb32Hgh71Xj7+7VAOMC2TjyQEwsxOtcr8gDnVDrSh/D8xChbCV781t7S0mBNLs
-         LjjWHsydwTs25LpizNLWsUxEdX1DwYI+YLqg7arjqmg/H5jg49apgFCCWFZZZpg7Trrs
-         UcIVdPi04RY31nmlauuAwQbJBgZen0h4tjB5TR9BQiGmvcHu+vfPuCQmsbGbWgcA3177
-         9zxA==
+        with ESMTP id S229954AbiLGN42 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:56:28 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AF35BD44
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:56:27 -0800 (PST)
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 332DE44348
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 13:56:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1670421386;
+        bh=AN5JF4JjPpOJkZ/tkyQphRahAoTXPLdfhR7No5Nhr94=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=jei3mGbblDEH/5cUMoQs+XxsOWdroGAdN8MOzYk/4MmToDd/v3XpTjLw36WVwO55G
+         0sSfVTsv7nubsXdxEBXlwjey81B5Z5ZoMLpbXQt5Lpkfyt4laVdSkNVCl22i8TgJ7F
+         ClM8wjpm0U0h99oceRXr1OHwcyTIV8C7NSL1kpoR1rUth1O6SBBwQWTh3U//FQJ3IH
+         PWWlAKikhhk2yi+8WXi7Fgg8AfnQi8k+ile9dCG1kmsSYnsdpcmO96c3TW296gJvO+
+         oblcufOjGuqPnAPlczDq8vmV2aAQLx+LcJCt0E1W2cGQpQ9S0sYDcB3uUZjBuOIwYM
+         9HXixBwxZlwyA==
+Received: by mail-il1-f199.google.com with SMTP id w9-20020a056e021c8900b0030247910269so16460387ill.4
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 05:56:26 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=duUnwRItpG2/U2bWuMLcopd+jbHjjMzMKCoDTuyYmvQ=;
-        b=vDrPmY9ZndUZ/cB0EMGEt2Vh5HZZoT9e1h0iCI9XgQsudEqIpFE/B0NJti46M+yYHz
-         s7mvRTKC/K0d+5xOeRDKWRki8ZaRzGJLbmCANluD2TToguF8SbYP8ypUvBIsO1Z1isxR
-         JCnnwxYUNuUUDhX7pKk/MXWOL3QnXJUBhRW1/4/eTUpuQDQrbBlP4XTGq1YM8bdo99b4
-         X37re3MQ9OLdsARtGO2VvNpSO0IR79huRoWkacmY+3YXNJ5iI3A8YbQ8g7V2F6Xgrcna
-         OwpYj1TlzqmVQ2n5SPI/9XlWUVSfJq7Gq+hcagMHpTjurDMGF1pyYs97AlhTGr0DeK7y
-         3Xqg==
-X-Gm-Message-State: ANoB5pkbMMQ+hFyMBxk5u+x/N+BpwDqCswHQvHDQnstDwMVKTorPiQCp
-        PjHLQ4dd4uE3ajfqvSD4+ixZwA==
-X-Google-Smtp-Source: AA0mqf62uyZQit6rwOIbsPfG+g/Hl1c7/RiYWfKXAZYXdEywQSoTJObWzB+FJ6537lEGknfFlR68mw==
-X-Received: by 2002:a17:906:1445:b0:7a1:6786:444f with SMTP id q5-20020a170906144500b007a16786444fmr59772408ejc.409.1670421283062;
-        Wed, 07 Dec 2022 05:54:43 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id o3-20020a170906768300b007b27fc3a1ffsm8521518ejm.121.2022.12.07.05.54.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 05:54:42 -0800 (PST)
-Date:   Wed, 7 Dec 2022 14:54:41 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net v2] net: plip: don't call kfree_skb/dev_kfree_skb()
- under spin_lock_irq()
-Message-ID: <Y5CbIW/6LsHGbQg3@nanopsycho>
-References: <20221207015310.2984909-1-yangyingliang@huawei.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AN5JF4JjPpOJkZ/tkyQphRahAoTXPLdfhR7No5Nhr94=;
+        b=gaa8msc1AWbIywkG7BxO0X49hIl3sb2IJO9o8Z1T10ETSzUxf407jfdUAjWxMxY6u9
+         kkzDNftzQcdieC6TqY324Q4R5zxhG9pQXfofZPGGc4LZ/XVIAzPNzvJF2rqF5GwvzcFG
+         cNZTSUB5xGXsawBR8YO6knQ+9pUnpb+AGYag+0W0jYU97hPNd0sxCfGxae2xwm14q8ng
+         FbZN3v4D1TAK9i/FFZlo9ameXvybsLlAyOn2kkkPPqZDesrDpX96/WCPsdIaLA67kjVE
+         TgvzqBI+fn7g5GxTtuEi/yERSyYtaf60yeqbr3etyWtaXKCZQZesUTiA8jHceJ4/A65w
+         aB8Q==
+X-Gm-Message-State: ANoB5pld2qTGFLdgIyTpTUwd0I4BZTVwmkDDqH7zr+ie9JCt6CjtgbsD
+        eP7rjVyC7UD3sZwXqhe8dIGqUyKikHNK022WfrJdVb/W1Tz0fS2B55hFE2IrVCwnM+f6cEcb+Nz
+        h24jStBYCl09a0brMohu3wqGtaArht8tAsAqRI7QAM1WGB2Dx0A==
+X-Received: by 2002:a92:cd43:0:b0:303:2fd2:f612 with SMTP id v3-20020a92cd43000000b003032fd2f612mr15125914ilq.144.1670421384613;
+        Wed, 07 Dec 2022 05:56:24 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf68T1FZSxevGnNf72rEE0f+xwVzoSCPSjB0SLRGWkB37LRAqopLc6DAcKKSJpFo/ZWVkn24R+SZbWzdDyZVHaY=
+X-Received: by 2002:a92:cd43:0:b0:303:2fd2:f612 with SMTP id
+ v3-20020a92cd43000000b003032fd2f612mr15125908ilq.144.1670421384463; Wed, 07
+ Dec 2022 05:56:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221207015310.2984909-1-yangyingliang@huawei.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
+ <20221201090242.2381-2-yanhong.wang@starfivetech.com> <277f9665-e691-b0ad-e6ef-e11acddc2006@linaro.org>
+ <22123903-ee95-a82e-d792-01417ceb63b1@starfivetech.com> <3a9ef360-73c3-cf26-3eca-4903b9a04ea3@linaro.org>
+In-Reply-To: <3a9ef360-73c3-cf26-3eca-4903b9a04ea3@linaro.org>
+From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Date:   Wed, 7 Dec 2022 14:56:07 +0100
+Message-ID: <CAJM55Z-iLy1fZmoyk3FU7oDQcKBk6APYf-cbamKr7Gjx+NaoTQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/7] dt-bindings: net: snps,dwmac: Add compatible
+ string for dwmac-5.20 version.
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     yanhong wang <yanhong.wang@starfivetech.com>,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Dec 07, 2022 at 02:53:10AM CET, yangyingliang@huawei.com wrote:
->It is not allowed to call kfree_skb() or consume_skb() from
->hardware interrupt context or with interrupts being disabled.
->So replace kfree_skb/dev_kfree_skb() with dev_kfree_skb_irq()
->and dev_consume_skb_irq() under spin_lock_irq().
+On Fri, 2 Dec 2022 at 09:04, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
 >
->Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
->Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> On 02/12/2022 03:53, yanhong wang wrote:
+> >
+> >
+> > On 2022/12/2 0:18, Krzysztof Kozlowski wrote:
+> >> On 01/12/2022 10:02, Yanhong Wang wrote:
+> >>> Add dwmac-5.20 version to snps.dwmac.yaml
+> >>
+> >> Drop full stop from subject and add it here instead.
+> >>
+> >
+> > Will update in the next version.
+> >
+> >>>
+> >>> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+> >>> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
+> >>
+> >> Two people contributed this one single line?
+> >>
+> >
+> > Emil made this patch and I submitted it.
+>
+> If Emil made this patch, then your From field is incorrect.
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Yes, please don't change the author of the commits you cherry-picked
+from my tree.
 
-I wonder if anyone is actually using PLIP these days :)
+But now I'm curious. Did you check with your colleagues that the dwmac
+IP on the SoC is in fact version 5.20?
+This was just an educated guess from my side.
+
+/Emil
+
+> Best regards,
+> Krzysztof
+>
+>
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
