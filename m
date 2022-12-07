@@ -2,133 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 191E9645947
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 12:51:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B66F645986
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 12:57:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbiLGLvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 06:51:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52354 "EHLO
+        id S229646AbiLGL5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 06:57:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiLGLve (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 06:51:34 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2102.outbound.protection.outlook.com [40.107.92.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430C04FF9B;
-        Wed,  7 Dec 2022 03:51:33 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KWmYKToMB059JK5QxXYpwC0P7FKO8AA581pBrr4hfNlN8Jl0NXkZpRQf8iaYLgAyThOmDYFh88bA576DkZIh9CeqGHUUhJN5qEx3OXfimshDrgiywWxpYVxHwGhPsrHpqWjzMed0mnOYXuLG3u+cuA2cAJOWAGREDxnYg8VRezBslCmmHu5GAaC6EuCCmFlsIis01tw57mBXxJvpj7niNAy0wwbNxnEZGKbFksNsvTrf1th3zMF80KIHJXylcVpZ2hBoTT8DSrCBE6kUeaQnO/qVeVGLA1PDtt9bthohzza9y8EgKa9wiW2pklriwmhTTRmr2J5CAbNkT8jB98Tp8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fJreNJUmAB5ziO0IkkJna+UqDqVgAO37LZKJiqVfLG4=;
- b=KzLAqgWpa43fNvZJGAaYs7VhBWGZJhJHh4gfVEwP1JHR5+EoGo16qG90e2W+7FiejAEgCCusyOnjHvf84fkVGT1xTxUdmB1y8I/zorbb8ccKgrsrai9BrtkGWcZK28mC99bJfU4vzul4rYdwuZRRyMwhqxGkjHBcOa/kzi4XGsHZpsi35HIkLBZuk45jBs+buSYEQtGdl1uBa9y5ZwY2ie4V8YcdfNY5EuPiV0PkQsU0kLLx3h/XwpWrrLGOPixm1KuaeuHtqXyKNE7w0j6eJtdSmEusR2ZBmVwL2xQVCyuFOFWsL/UJl5oFjMovveeXUFrBm4RleYxmYPkUpZhseg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S230264AbiLGL41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 06:56:27 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D23431ED2
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 03:55:50 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id x22so13344840ejs.11
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 03:55:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fJreNJUmAB5ziO0IkkJna+UqDqVgAO37LZKJiqVfLG4=;
- b=Q44PCi6bZnzlF5Awechl8pBPBq/JW4rxc5giNZes/NmG2IuBIgiL5WVZI04DNknNLEOyChpry3SJskhbJo3VpclbpxkE0jwvMTdk+dbNHcJwwq429OS6ae2Rg8jrjD2oAbI7ZyPCrzsPzYnS9LhT5cafN+p3QG6xO74MVSI80EE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BY3PR13MB5042.namprd13.prod.outlook.com (2603:10b6:a03:366::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Wed, 7 Dec
- 2022 11:51:19 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::483b:9e84:fadc:da30]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::483b:9e84:fadc:da30%9]) with mapi id 15.20.5880.014; Wed, 7 Dec 2022
- 11:51:19 +0000
-Date:   Wed, 7 Dec 2022 12:51:10 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Huanhuan Wang <huanhuan.wang@corigine.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        oss-drivers@corigine.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] xfrm: Fix spelling mistake "tyoe" -> "type"
-Message-ID: <Y5B+Lo+xaKx71p+n@corigine.com>
-References: <20221207091919.2278416-1-colin.i.king@gmail.com>
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=h6WWykpRMQ08oH10k+rNonxniUiSXTcIouS51JxmPrI=;
+        b=peuuBganjvykUkVBRllB90W0SXhfb+aR1kMNgffUhCHyFSTdW9mwcG5RwsUHWfSst+
+         pxryXMV6ZF/ZuPOtkBTYUAr+KhN7/ipvQZMNYW92Boa4FRZ/QnPIhBpyH0qUd8ciaWQI
+         +Jj14YTvSeilCKzNldbEMyfHoK1kAVutuZyYQMl/NyU4XpLTNpNyS/RD/HW0vqlXKjIS
+         Xynpcz+kACFy7wT+zvYrSb4PdbWrXql8MfYbrue1JRvdN3UlExbVIta0zHcsq11g8IEV
+         ibZF6CAa+O3f8YEnSCO3JURdcA3lr10Tcm5iPEoQfceanwMECbAxHJ9LbgXWulDacPwu
+         T7AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=h6WWykpRMQ08oH10k+rNonxniUiSXTcIouS51JxmPrI=;
+        b=VvasuXMi54armCTznJKRbbTY4lMr7Xh1jxv3x/vyFVPTJd9qK7z4peSST6gq++FZnY
+         FteewfTy8vdLORgzlA5wD4PtTEZCtXZ5mNlVCDXNR6HtQP3+IEMYTPeGotiA0LJU9LTJ
+         kQrEXA8kpYSC6BrKXwvuG2L8WJeqtMjSvc5zRwIAhLeN7629+zu9AU6eeuCUs5QcmoZn
+         DB1lt5HDDG9neCWRb9YQB4gCI7m5Q0cadhg/XMc35YnAMWX+AmZKkMSjAeqDEIwE2Rju
+         DZuQaw1DL5Ae+tjGvH/mkqnhMp1XA1brLlh5aZhXZEcctQa+U3rysm5ZmHuFWMqsgNMl
+         AXtg==
+X-Gm-Message-State: ANoB5plyNmaNv1dUf0/3+lTOYuXS5MQhLzjMGmP5bvIjbunNZPlva9HO
+        fvHA/2HtFexnj8M+5ipwUao=
+X-Google-Smtp-Source: AA0mqf7RWI32jBGmUWfVlXnyf87o+i8oUJuGk2zIwTg4EoX2hs1AwkGLUmXAbrWS6gniwgXqtmBBlg==
+X-Received: by 2002:a17:906:e2d4:b0:7c1:532:f420 with SMTP id gr20-20020a170906e2d400b007c10532f420mr7477323ejb.679.1670414148369;
+        Wed, 07 Dec 2022 03:55:48 -0800 (PST)
+Received: from skbuf ([188.26.184.215])
+        by smtp.gmail.com with ESMTPSA id k24-20020a1709065fd800b0078d76ee7543sm8448037ejv.222.2022.12.07.03.55.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 03:55:48 -0800 (PST)
+Date:   Wed, 7 Dec 2022 13:55:37 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Yuan Can <yuancan@huawei.com>
+Cc:     ioana.ciornei@nxp.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: Re: [PATCH] dpaa2-switch: Fix memory leak in
+ dpaa2_switch_acl_entry_add() and dpaa2_switch_acl_entry_remove()
+Message-ID: <20221207115537.zf2ikns77bxyt74m@skbuf>
+References: <20221205061515.115012-1-yuancan@huawei.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221207091919.2278416-1-colin.i.king@gmail.com>
-X-ClientProxiedBy: AM0PR04CA0065.eurprd04.prod.outlook.com
- (2603:10a6:208:1::42) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY3PR13MB5042:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4952e2fc-3dca-439b-1303-08dad8495aaf
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: O9jpspLVMaUpDAUDkuhKJOkLpwd0sEIiLTjrOwKCT4u52+F8fNOQJKbCQz9juJPcFAUHMaKcyUxDtGfqQYpL4V18/vRlQqSacs+C3gA81u7HE3f5KcEOPyMMobB0QH13izoyxY35d2f5eVtU9ttxGPCIGrMMSxUvKV9DZeoSryiZsb/9P1GcLZG7MNiy5toC2lPO/CAA/Niz4ivQvcn9uP8Gjxm2ZBFy8ijIonGnWSEsaQFfdF8tyFcNv09ON+7nIBngDZkDxnjDbPEBtjZYNmAmkxv9TwFf9SH17Ctw6md20qx5YfAc5QLQI2I9ksCp+xFBdrq1YgJPTXvc6K6CpjDgJqykGKrqJyBL2xvxx6vPJYqvAdFZWCvW0+++QZh6fNra5tV971Bo1QQ2dQbumadVHISGWUJmsgKHPPwnHigfBWi4iTSHnX+fscTJ+48AC3VvrThHxuhaSomOvvUpr7lNWzl8mtCoK8vW9ynG1GcZJ6UqlY6cFjZs8SvSDlbdPhWXd/AQBOFh0PRXrDlNISGuLy8dLGjlcj33cvXroTVvG2DNkNKRB1PNjx+//H/moiKy5wBSbyVfD8ME1wCLe/EmrcbuiU9l17q/14aRZbUD4NpunBjE5siW1Qc1/AHP2e/0KsFWrT4fmSUJYteJG4L/9amjnqlO/5GNHRkqdC9mWqs9sqeTYqCOJOKDuNKt
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(346002)(376002)(366004)(39840400004)(451199015)(36756003)(4326008)(86362001)(8936002)(66476007)(66556008)(2906002)(4744005)(66946007)(478600001)(41300700001)(8676002)(44832011)(38100700002)(83380400001)(54906003)(6916009)(316002)(6486002)(2616005)(966005)(5660300002)(186003)(6506007)(6666004)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aaRGLKpvGMwXbK2N6vdLhTWzvMJg/K8OvoL4UIDcrGId25E96nqu5mmy19J2?=
- =?us-ascii?Q?qRd6cwfzI4yfzEEhspDXMZ8z5FJj7zJtGKapRULNlS13GlKwcNUH00Lt79XL?=
- =?us-ascii?Q?V0QNQWMmvcdUp4Wob92psIxlg3CDD4k+JsOx+nC+R18Ibc4yK2KnUSqHmslY?=
- =?us-ascii?Q?v9fgLXEds47nOlzIyLl9rdJyZ/agBQj+R9xfs+x5sFHuKbffCtH2yTXeN8dr?=
- =?us-ascii?Q?9jV84MlrqbtR3oTNKl1ywgqCOwYc7DvFNRnhsqAtAM0fpnjXJgud4Un9z245?=
- =?us-ascii?Q?XVWTHocUDb8fo14uxSrRYmjQa6HUL/43OkBeo6ZrhSFdDTiUCDE6S8cZLNWC?=
- =?us-ascii?Q?m1YJrzv8XqfagpHNAwZCBIVUnPiWfQH8KUuAsPpNNch5HKkKvGjxsz6Ivj5O?=
- =?us-ascii?Q?5FsbJ5Bcskcv61wo8U6qYMjGjCTwNzRtsAkvHvT1jV3izao6dWW/0Ae2o26+?=
- =?us-ascii?Q?je1Bd6GsCmGX9MisWBDi/6GfhO43nx88EV4G3ESFR0DXrqn5UJDEkWBwJFN0?=
- =?us-ascii?Q?sPvYS6F462WRRBJAGHHNVrvn0mcV+a5xVL4v0RG6B2/CbgGPnyP8A0vf5W6E?=
- =?us-ascii?Q?+LNW0jH86NGl3qsixljKtClTS15wI2c6vqer/Dv8t3e9uT9DW2co+JRw1STD?=
- =?us-ascii?Q?FEi1IwOtdwsmJIBd6B1sD+fitUUi51adWex8pjooCbM/3uDntWEpOsQhS4An?=
- =?us-ascii?Q?Z8nqyx6ONnCml9Yg+UhAsgmREoL506Kcyi/q1p/CDXVTWbOeuPB51zudQ9w+?=
- =?us-ascii?Q?xaE9QqR1SEwqgc7c3JAQukWkMk8sAv0ioScMlTEeQBotJGaIuH+GJT75MFEO?=
- =?us-ascii?Q?XVrW5+orNBJ4r8I17hsDuGFtkjsaV9mvQxRe45/ZRFrmdfalucDuphJNP4rL?=
- =?us-ascii?Q?GN3FQrO+2UtbKyvLr6Ra3xrAaESFQWGWuimO8hEFpgE5BFW4IT1VqcJLrO3x?=
- =?us-ascii?Q?B6sgIqW17MhGQn/GmJ8FTlzQLzGAPk3BSiEW827SBjdVEQddwtPKstFYS0Ne?=
- =?us-ascii?Q?98i9EehXph0AeSv7TqyfUFzdpkltIn7KQ89mNrCi95ZoFcqcUNWFUz6c2sMl?=
- =?us-ascii?Q?oM/Yb1RlTtnEFLYIheT1H4JCf0n4x5+Jpq5BuNHSgf7DccFAXARZY50PGMUM?=
- =?us-ascii?Q?0mcrurLEcvLAcbfpo84jIgonTPbDzyAMfC58pbbMZ7L+KRcXVhcFpRouDp1i?=
- =?us-ascii?Q?u65P93f6mWeIVigp7k2786YGpiGAm+PW+XPFxgkEvhzKGotNiw2wjqI1Va20?=
- =?us-ascii?Q?FkGUvixapDevrN009g44/OWJO2cpBatDulx1bD6xnLHIfW6H0UQjeDdN4QBH?=
- =?us-ascii?Q?gky69aCqxpYC+bAq2zlbUy7rikZOJ3j1F/TX5PLyR3uy5NVi6eiZbTskMib7?=
- =?us-ascii?Q?vc1HVSAhrk699WfgqnuFrHLXwRGgXmf1fk9VvjEobwGC9D7zQZcerJW+IWQb?=
- =?us-ascii?Q?Wxsv0xHF4TAT1Bf9JUGCKZcjm4fpBzmWmy4r9Px/1+bXydUp4UHIQAI/48BW?=
- =?us-ascii?Q?0vCtKJE7C5QMZr+RE9z22t5alZ2yay95EBHS4Mya0rIogbLc8SRwTXZnocna?=
- =?us-ascii?Q?KDVx99avFm3VdiBUIZ6G/3wEGwR5M7k/96aTcIQgIdH/9xFAYCkxcpVljJfm?=
- =?us-ascii?Q?8F6453AxMcXiL657x/zVxQcS/18jDCxRMqZLmWZy/MsZ29KXRkcNep6lrgX4?=
- =?us-ascii?Q?qQD7PA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4952e2fc-3dca-439b-1303-08dad8495aaf
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 11:51:19.3700
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QNowr2uH7EKa1JlkN2AqQAg9/b19Xf4Lcx2qJQlN9ySx1kf9b6t77wljtdYJL21xjCNpLVBaH767ARC+/7pQuWUjLGWU6LnBG9dSvKnRvqA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR13MB5042
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221205061515.115012-1-yuancan@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 07, 2022 at 09:19:19AM +0000, Colin Ian King wrote:
-> [Some people who received this message don't often get email from colin.i.king@gmail.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+Hi Yuan,
+
+On Mon, Dec 05, 2022 at 06:15:15AM +0000, Yuan Can wrote:
+> The cmd_buff needs to be freed when error happened in
+> dpaa2_switch_acl_entry_add() and dpaa2_switch_acl_entry_remove().
 > 
-> There is a spelling mistake in a nn_err message. Fix it.
+> Fixes: 1110318d83e8 ("dpaa2-switch: add tc flower hardware offload on ingress traffic")
+> Signed-off-by: Yuan Can <yuancan@huawei.com>
+> ---
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
+> index cacd454ac696..c39b866e2582 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
+> @@ -132,6 +132,7 @@ int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *filter_block,
+>  						 DMA_TO_DEVICE);
+>  	if (unlikely(dma_mapping_error(dev, acl_entry_cfg->key_iova))) {
+>  		dev_err(dev, "DMA mapping failed\n");
+> +		kfree(cmd_buff);
+>  		return -EFAULT;
+>  	}
+>  
+> @@ -142,6 +143,7 @@ int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *filter_block,
+>  			 DMA_TO_DEVICE);
+>  	if (err) {
+>  		dev_err(dev, "dpsw_acl_add_entry() failed %d\n", err);
+> +		kfree(cmd_buff);
 
-Hi Colin,
+To reduce the number of kfree() calls, this last one can be put right
+before checking for error, and we could remove the kfree(cmd_buff) call at
+the very end. I mean that was already the intention, if you look at the
+dma_unmap_single() call compared to the error checking. Like this:
 
-Thanks for fixing this.
+	err = dpsw_acl_add_entry(...);
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+	dma_unmap_single(dev, acl_entry_cfg->key_iova, sizeof(cmd_buff),
+			 DMA_TO_DEVICE);
+	kfree(cmd_buff);
+
+	if (err) {
+		dev_err(dev, "dpsw_acl_add_entry() failed %d\n", err);
+		return err;
+	}
+
+	return 0;
+}
+
+>  		return err;
+>  	}
+>  
+> @@ -172,6 +174,7 @@ dpaa2_switch_acl_entry_remove(struct dpaa2_switch_filter_block *block,
+>  						 DMA_TO_DEVICE);
+>  	if (unlikely(dma_mapping_error(dev, acl_entry_cfg->key_iova))) {
+>  		dev_err(dev, "DMA mapping failed\n");
+> +		kfree(cmd_buff);
+>  		return -EFAULT;
+>  	}
+>  
+> @@ -182,6 +185,7 @@ dpaa2_switch_acl_entry_remove(struct dpaa2_switch_filter_block *block,
+>  			 DMA_TO_DEVICE);
+>  	if (err) {
+>  		dev_err(dev, "dpsw_acl_remove_entry() failed %d\n", err);
+> +		kfree(cmd_buff);
+
+Similar here:
+
+	err = dpsw_acl_remove_entry(ethsw->mc_io, 0, ethsw->dpsw_handle,
+				    block->acl_id, acl_entry_cfg);
+
+	dma_unmap_single(dev, acl_entry_cfg->key_iova, sizeof(cmd_buff),
+			 DMA_TO_DEVICE);
+	kfree(cmd_buff);
+
+	if (err) {
+		dev_err(dev, "dpsw_acl_remove_entry() failed %d\n", err);
+		return err;
+	}
+
+	return 0;
+}
+
+>  		return err;
+>  	}
+>  
+> -- 
+> 2.17.1
+> 
