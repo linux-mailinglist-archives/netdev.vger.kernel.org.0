@@ -2,96 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 778C2645486
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 08:22:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4205564548C
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 08:24:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229807AbiLGHWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 02:22:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
+        id S229623AbiLGHYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 02:24:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbiLGHWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 02:22:18 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4272D3FBAF;
-        Tue,  6 Dec 2022 23:21:02 -0800 (PST)
-Received: from dggpeml500005.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NRpW7243LzgYyh;
-        Wed,  7 Dec 2022 15:16:51 +0800 (CST)
-Received: from huawei.com (10.175.112.125) by dggpeml500005.china.huawei.com
- (7.185.36.59) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 7 Dec
- 2022 15:20:55 +0800
-From:   Yongqiang Liu <liuyongqiang13@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <macro@orcam.me.uk>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <ralf@linux-mips.org>,
-        <jeff@garzik.org>, <akpm@linux-foundation.org>,
-        <liuyongqiang13@huawei.com>, <zhangxiaoxu5@huawei.com>
-Subject: [PATCH net] net: defxx: Fix missing err handling in dfx_init()
-Date:   Wed, 7 Dec 2022 07:20:45 +0000
-Message-ID: <20221207072045.604872-1-liuyongqiang13@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229456AbiLGHYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 02:24:01 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CBDB3D;
+        Tue,  6 Dec 2022 23:23:58 -0800 (PST)
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3F2D821C24;
+        Wed,  7 Dec 2022 07:23:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1670397837; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=8z7/YudCGGKCXhaRYUEabm0CJvk7asrQBPAqjkCdK1A=;
+        b=JqFhNl/HgV93fIyw5L1DM8x9B/PUZf+bk70tC2kJ78oA38eB+MUhdsv6IrF0KwXrzXTiU9
+        s7jWV24du+vMIFJSIc7E5lDpoJtwCrgDAzCldKvixun7J1PNk1YgV0Mn65L1jxJrL2gZYn
+        066f6AQx0C41SQrKdTPASsx1Su23lNc=
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id E8F08136B4;
+        Wed,  7 Dec 2022 07:23:56 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap1.suse-dmz.suse.de with ESMTPSA
+        id uRpoN4w/kGPuLAAAGKfGzw
+        (envelope-from <jgross@suse.com>); Wed, 07 Dec 2022 07:23:56 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, xen-devel@lists.xenproject.org
+Subject: [PATCH] xen/netback: fix build warning
+Date:   Wed,  7 Dec 2022 08:23:49 +0100
+Message-Id: <20221207072349.28608-1-jgross@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500005.china.huawei.com (7.185.36.59)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When eisa_driver_register() or tc_register_driver() failed,
-the modprobe defxx would fail with some err log as follows:
+Commit ad7f402ae4f4 ("xen/netback: Ensure protocol headers don't fall in
+the non-linear area") introduced a (valid) build warning.
 
- Error: Driver 'defxx' is already registered, aborting...
+Fix it.
 
-Fix this issue by adding err hanling in dfx_init().
-
-Fixes: e89a2cfb7d7b5 ("[TC] defxx: TURBOchannel support")
-Signed-off-by: Yongqiang Liu <liuyongqiang13@huawei.com>
+Fixes: ad7f402ae4f4 ("xen/netback: Ensure protocol headers don't fall in the non-linear area")
+Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
- drivers/net/fddi/defxx.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+ drivers/net/xen-netback/netback.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/fddi/defxx.c b/drivers/net/fddi/defxx.c
-index b584ffe38ad6..1fef8a9b1a0f 100644
---- a/drivers/net/fddi/defxx.c
-+++ b/drivers/net/fddi/defxx.c
-@@ -3831,10 +3831,24 @@ static int dfx_init(void)
- 	int status;
+diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
+index 054ac0e897f6..bf627af723bf 100644
+--- a/drivers/net/xen-netback/netback.c
++++ b/drivers/net/xen-netback/netback.c
+@@ -530,7 +530,7 @@ static int xenvif_tx_check_gop(struct xenvif_queue *queue,
+ 	const bool sharedslot = nr_frags &&
+ 				frag_get_pending_idx(&shinfo->frags[0]) ==
+ 				    copy_pending_idx(skb, copy_count(skb) - 1);
+-	int i, err;
++	int i, err = 0;
  
- 	status = pci_register_driver(&dfx_pci_driver);
--	if (!status)
--		status = eisa_driver_register(&dfx_eisa_driver);
--	if (!status)
--		status = tc_register_driver(&dfx_tc_driver);
-+	if (status)
-+		goto err_pci_register;
-+
-+	status = eisa_driver_register(&dfx_eisa_driver);
-+	if (status)
-+		goto err_eisa_register;
-+
-+	status = tc_register_driver(&dfx_tc_driver);
-+	if (status)
-+		goto err_tc_register;
-+
-+	return 0;
-+
-+err_tc_register:
-+	eisa_driver_unregister(&dfx_eisa_driver);
-+err_eisa_register:
-+	pci_unregister_driver(&dfx_pci_driver);
-+err_pci_register:
- 	return status;
- }
- 
+ 	for (i = 0; i < copy_count(skb); i++) {
+ 		int newerr;
 -- 
-2.25.1
+2.35.3
 
