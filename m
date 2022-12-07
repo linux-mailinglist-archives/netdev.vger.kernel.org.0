@@ -2,130 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B74645BA4
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:58:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81913645BC6
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:00:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbiLGN6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 08:58:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
+        id S230036AbiLGOAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 09:00:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230210AbiLGN60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:58:26 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B0D11462
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:58:24 -0800 (PST)
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0A98B41678
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 13:58:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1670421503;
-        bh=9GCL3W6v/AmfhZbVCu5utEsH4vGz3v+tufp1/dYemRM=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=HH+h+3oTMqvrHGs5gWorf+M2Y70iE7rXMVv0cuMn1v0ZeZW4pdYr0rp20tKvWM6vK
-         1OV97b9qHBwDDkJcrGaiZ6k+tTR8ly1PGH7A0iqSeSCqMncmEJFhKnfwRuB+gtNU07
-         fHSAJwCSLLiweGlHBxI+VhZB2q6R0Tw+wWvpEkvvNbxySvjOJqkPtMHIhh5JwslTct
-         FOoVS381Kj++0iZard8yobdylgobqKrNIdTw8NoCKNxfnQ8tF78mV4FZf2SYERwQyT
-         L4rhMGElgBMgH/JbP37rm7z1aiRd1cCnulFBO0SYc6LA0RS1X3+iwHuGZMae5nA/h9
-         IRo08DD/8lnww==
-Received: by mail-il1-f197.google.com with SMTP id h20-20020a056e021d9400b00300581edaa5so16660884ila.12
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 05:58:22 -0800 (PST)
+        with ESMTP id S230160AbiLGOAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:00:04 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5030A5CD0C
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:00:00 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id fc4so14126712ejc.12
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:00:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=973BvPTh1f6Kbx7ipPiwbV8z254q0zXYwIBL8xSZqoQ=;
+        b=CPc6kblyr3CeVsxE5gLakh18vY/7Knbh3X76uzoGoTYZkJWDTD/SfpeFkWylbzNIOL
+         5Fvm7gfBshzH9KU6GL1G+/q1Nu20N4o28NfMqx2SVfrg6yxcu4+OFVPW0nFuAb+0oceF
+         sSd42ScI8AXw4P55WliIL/qEDhfDN5LaIj2Q2T7w4echS4XlJmUM5Tt6LekgFeAS0V25
+         JeRF2tPemr7lz2wrhKNCubg7nEk73QQF9mP5+zp9KuN7GhVJ13eqjMdGUoIhshszEczj
+         ZQAdOHBWw1S/3xsIfkfYmRwQ85XiR6l7ZoOj4jvIJ4ocRgvbF2rJi3vASSyI3vK8GcTA
+         nNvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9GCL3W6v/AmfhZbVCu5utEsH4vGz3v+tufp1/dYemRM=;
-        b=OTNlLFh96hymLnXnaXusxP162/UHM4Y8D3cJHl9IMztJYcqDdHleAn+NwXml4WgtZO
-         bpN+9GXGeLDzzUziz3rtZvfXsEz4h9StqrXkj7uXI4QgQy8+0QxB09tgSPid4kYQZ29N
-         fJ0fyBvpiB+ibFoYDTVr8knwraksVoS40HkY/r/K36cWsRQIuNgHI8DWRGXDH0TgQs7p
-         M7EE6r/k/S0LDjuIaixJU+Vr0LmnnDZFy3Sgaqg6INQhZmRHju1tSVegK25CDCIfHHUg
-         e1vQ12Wbr8c4NJzVPD76pKj52ZghfcMfL1ZOeYgzDz/LUf+8id/kiDyKPRcsJP16DHe7
-         6PvQ==
-X-Gm-Message-State: ANoB5pncZYmFQcXqlsz9TQXqvbhhzOnpCmzDJyFL+6kijmxmjtKHD3FA
-        UTX+pq2vMoxmK5TBA61nS+eJvycPF/Iv/HsymUaVy3romGTA3TXDkBx5XsJJYEfCO9H2JQeQaXZ
-        o+HTdBh2o74VJVUlyQzQEQh4Ql6K5UYBCZ3dItR3o/+T9P9mGUQ==
-X-Received: by 2002:a05:6638:15cb:b0:38a:a2c:5c1e with SMTP id i11-20020a05663815cb00b0038a0a2c5c1emr14812166jat.35.1670421501101;
-        Wed, 07 Dec 2022 05:58:21 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6oS4WtB4AY/x9xEAWaZszCLUNeiIhVzCL4QBdnRGkNjsZUkTVArtcl3+u1LcaAO1HHytY7Lk4DCTgXk2m0eYo=
-X-Received: by 2002:a05:6638:15cb:b0:38a:a2c:5c1e with SMTP id
- i11-20020a05663815cb00b0038a0a2c5c1emr14812154jat.35.1670421500857; Wed, 07
- Dec 2022 05:58:20 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=973BvPTh1f6Kbx7ipPiwbV8z254q0zXYwIBL8xSZqoQ=;
+        b=Y2sVXhSRMMIjr715GagxE51grblTI1JiNdA/oUOMwLzTcwyGcXv/2oxn2VUrnwT5cX
+         XfUWak2mA2QIfp14P/aSmmWfMAmcwWqjnyBjf6vJm3QhuUn6/f7Rz8GfChqe20CzA4U5
+         7URwYTlU+/JaCtBM5fDXtPxsFvj+dUPAD+5iraqbL1OXvTo6+6qN/fBz+advf3EbHJE5
+         /rMTLpD/q8/ovMywWtHTGqRh6W+x+35bjpuIWRbIHgbYrrItSQMD40GE+XHcaujQAiRU
+         MP6POQLqRETBGFqFBUpiWeCD+6hEdDUXzNHvD97DScmDEsch7T+//V3k0KKRQRkRl4nf
+         7tWQ==
+X-Gm-Message-State: ANoB5pnxbKLD92H1w6630pHWDVMjCPrfxOqdCpOTpTwbQQrD3R4kffNJ
+        tkwy8wCTpl1neCt6yk6jNTgQjw==
+X-Google-Smtp-Source: AA0mqf7oUHn9ahfGCiPLFFQO3WLXsMA3PwKOGWZYkZ9N5KRELGhyeehxYsVnr/cSvtiWr0Mzq+RUNA==
+X-Received: by 2002:a17:907:c709:b0:7c0:fd1a:79ea with SMTP id ty9-20020a170907c70900b007c0fd1a79eamr4594574ejc.45.1670421598919;
+        Wed, 07 Dec 2022 05:59:58 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id i5-20020aa7c705000000b00463a83ce063sm2209476edq.96.2022.12.07.05.59.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 05:59:58 -0800 (PST)
+Date:   Wed, 7 Dec 2022 14:59:56 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Roi Dayan <roid@nvidia.com>
+Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH iproute2 1/1] tc: ct: Fix invalid pointer dereference
+Message-ID: <Y5CcXPfi+M629RcE@nanopsycho>
+References: <20221207082213.707577-1-roid@nvidia.com>
 MIME-Version: 1.0
-References: <20221201090242.2381-1-yanhong.wang@starfivetech.com> <20221201090242.2381-3-yanhong.wang@starfivetech.com>
-In-Reply-To: <20221201090242.2381-3-yanhong.wang@starfivetech.com>
-From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Date:   Wed, 7 Dec 2022 14:58:04 +0100
-Message-ID: <CAJM55Z8ZDKWEkdWuRZfcMQDrySMh4vdB1UvkAC+q1GRKMbGuEw@mail.gmail.com>
-Subject: Re: [PATCH v1 2/7] net: stmmac: platform: Add snps,dwmac-5.20 IP
- compatible string
-To:     Yanhong Wang <yanhong.wang@starfivetech.com>
-Cc:     linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221207082213.707577-1-roid@nvidia.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 1 Dec 2022 at 10:05, Yanhong Wang <yanhong.wang@starfivetech.com> wrote:
+Wed, Dec 07, 2022 at 09:22:13AM CET, roid@nvidia.com wrote:
+>Using macro NEXT_ARG_FWD does not validate argc.
+>Use macro NEXT_ARG which validates argc while parsing args
+>in the same loop iteration.
 >
-> Add "snps,dwmac-5.20" compatible string for 5.20 version that can avoid
-> to define some platform data in the glue layer.
->
-> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
+>Fixes: c8a494314c40 ("tc: Introduce tc ct action")
+>Signed-off-by: Roi Dayan <roid@nvidia.com>
+>Reviewed-by: Paul Blakey <paulb@nvidia.com>
 
-Hi Yanhong.
-
-Thanks for submitting this.
-But just as a reminder. Please don't change the author of the commits
-you cherry-picked from my tree.
-
-/Emil
-
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-> index 50f6b4a14be4..cc3b701af802 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-> @@ -519,7 +519,8 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
->         if (of_device_is_compatible(np, "snps,dwmac-4.00") ||
->             of_device_is_compatible(np, "snps,dwmac-4.10a") ||
->             of_device_is_compatible(np, "snps,dwmac-4.20a") ||
-> -           of_device_is_compatible(np, "snps,dwmac-5.10a")) {
-> +           of_device_is_compatible(np, "snps,dwmac-5.10a") ||
-> +           of_device_is_compatible(np, "snps,dwmac-5.20")) {
->                 plat->has_gmac4 = 1;
->                 plat->has_gmac = 0;
->                 plat->pmt = 1;
-> --
-> 2.17.1
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
