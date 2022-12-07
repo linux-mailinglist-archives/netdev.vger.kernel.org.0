@@ -2,138 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0738F646085
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 18:44:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2462646080
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 18:43:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbiLGRo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 12:44:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
+        id S229769AbiLGRnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 12:43:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiLGRoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 12:44:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6BC855CBE
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 09:43:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670434994;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zDbg1E4iQ8iZrWi8icOJENxqpZHADn0utZrnGIpmHdg=;
-        b=bWm4oeSUREJVrzgTvzH7bmlZCOYVWpZrc+vitz9GPNY0qpScHlvyOtlzR4Ls2pBVn+jsw9
-        8r2c0onGj0mtvUIFl3+RIoFrS4EoG5WCORagIUsrgkbNeKBdG65Zac+3lVF2qaGC4EYBbX
-        IwTmtTf7I9CCIXP5Ts3N9+Eo+mSmATw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-240-YuaXwoa-P9aTenAEJ_l2Iw-1; Wed, 07 Dec 2022 12:43:09 -0500
-X-MC-Unique: YuaXwoa-P9aTenAEJ_l2Iw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2A3A38582B9;
-        Wed,  7 Dec 2022 17:43:09 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BFD8940C6EC2;
-        Wed,  7 Dec 2022 17:43:07 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <000000000000229f1505ef2b6159@google.com>
-References: <000000000000229f1505ef2b6159@google.com>
-To:     syzbot <syzbot+3538a6a72efa8b059c38@syzkaller.appspotmail.com>
-Cc:     dhowells@redhat.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] KASAN: use-after-free Read in rxrpc_lookup_local
+        with ESMTP id S230004AbiLGRnm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 12:43:42 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16957554FC
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 09:43:41 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B7HgozgF024433, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B7HgozgF024433
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 8 Dec 2022 01:42:50 +0800
+Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.9; Thu, 8 Dec 2022 01:43:37 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 8 Dec 2022 01:43:36 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Thu, 8 Dec 2022 01:43:36 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: RE: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
+Thread-Topic: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a)
+ + rtl8211fs fiber application
+Thread-Index: AQHZBZK0jNmNF43ANUm+ON2R2qDGTK5d0aqAgATjHlA=
+Date:   Wed, 7 Dec 2022 17:43:36 +0000
+Message-ID: <df3bf48baf6946f4a75c5c4287e6efa7@realtek.com>
+References: <20221201143911.4449-1-hau@realtek.com>
+ <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
+In-Reply-To: <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.74]
+x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzcg5LiL5Y2IIDAyOjU4OjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1543007.1670434984.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Wed, 07 Dec 2022 17:43:04 +0000
-Message-ID: <1543008.1670434984@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next=
-.git master
-
-diff --git a/kernel/kthread.c b/kernel/kthread.c
-index f97fd01a2932..1335c89c6225 100644
---- a/kernel/kthread.c
-+++ b/kernel/kthread.c
-@@ -336,7 +336,6 @@ static int kthread(void *_create)
- 	void *data =3D create->data;
- 	struct completion *done;
- 	struct kthread *self;
--	int ret;
- =
-
- 	self =3D to_kthread(current);
- =
-
-@@ -365,17 +364,20 @@ static int kthread(void *_create)
- 	 * or the creator may spend more time in wait_task_inactive().
- 	 */
- 	preempt_disable();
-+	if (test_bit(KTHREAD_SHOULD_STOP, &self->flags)) {
-+		preempt_enable();
-+		create->result =3D ERR_PTR(-EINTR);
-+		complete(done);
-+		do_exit(0);
-+	}
- 	complete(done);
- 	schedule_preempt_disabled();
- 	preempt_enable();
- =
-
--	ret =3D -EINTR;
--	if (!test_bit(KTHREAD_SHOULD_STOP, &self->flags)) {
--		cgroup_kthread_ready();
--		__kthread_parkme(self);
--		ret =3D threadfn(data);
--	}
--	kthread_exit(ret);
-+	cgroup_kthread_ready();
-+	__kthread_parkme(self);
-+	/* Run the actual thread function. */
-+	kthread_exit(threadfn(data));
- }
- =
-
- /* called from kernel_clone() to get node information for about to be cre=
-ated task */
-diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index 44222923c0d1..24ee585d9aaf 100644
---- a/net/rxrpc/local_object.c
-+++ b/net/rxrpc/local_object.c
-@@ -357,10 +357,11 @@ struct rxrpc_local *rxrpc_use_local(struct rxrpc_loc=
-al *local,
-  */
- void rxrpc_unuse_local(struct rxrpc_local *local, enum rxrpc_local_trace =
-why)
- {
--	unsigned int debug_id =3D local->debug_id;
-+	unsigned int debug_id;
- 	int r, u;
- =
-
- 	if (local) {
-+		debug_id =3D local->debug_id;
- 		r =3D refcount_read(&local->ref);
- 		u =3D atomic_dec_return(&local->active_users);
- 		trace_rxrpc_local(debug_id, why, r, u);
-
+PiANCj4gT24gMDEuMTIuMjAyMiAxNTozOSwgQ2h1bmhhbyBMaW4gd3JvdGU6DQo+ID4gcnRsODE2
+OGgocmV2aWQgMHgyYSkgKyBydGw4MjExZnMgaXMgZm9yIHV0cCB0byBmaWJlciBhcHBsaWNhdGlv
+bi4NCj4gPiBydGw4MTY4aCBpcyBjb25uZWN0ZWQgdG8gcnRsODIxMWZzIHV0cCBpbnRlcmZhY2Uu
+IEFuZCBmaWJlciBpcw0KPiA+IGNvbm5lY3RlZCB0byBydGw4MjExZnMgc2ZwIGludGVyZmFjZS4g
+cnRsODE2OGggdXNlIGl0cyBlZXBybSBvciBncG8NCj4gPiBwaW5zIHRvIGNvbnRyb2wgcnRsODIx
+MWZzIG1kaW8gYnVzLg0KPiA+DQo+IA0KPiBJIGZvdW5kIGEgZGF0YXNoZWV0IGZvciBSVEw4MjEx
+RlMgYW5kIGl0IGRvZXNuJ3QgbWVudGlvbiBTRlAgc3VwcG9ydC4NCj4gRm9yIHRoZSBmaWJlciB1
+c2UgY2FzZSBpdCBtZW50aW9ucyBSR01JSSBmb3IgTUFDL1BIWSBjb25uZWN0aW9uIGFuZA0KPiBT
+ZXJEZXMgZm9yIGNvbm5lY3RpbmcgdGhlIFBIWSB0byB0aGUgZmliZXIgbW9kdWxlLiBJcyB0aGlz
+IHRoZSBtb2RlIHlvdSdkDQo+IGxpa2UgdG8gc3VwcG9ydD8NCj4gInV0cCB0byBmaWJlciIgc291
+bmRzIGxpa2UgdGhlIG1lZGlhIGNvbnZlcnRlciBhcHBsaWNhdGlvbiwgYW5kIEkgdGhpbmsgdGhh
+dCdzDQo+IG5vdCB3aGF0IHdlIHdhbnQgaGVyZS4gU28gaXQncyBtaXNsZWFkaW5nLg0KVGhpcyBh
+cHBsaWNhdGlvbiBpcyBub3QgbGlzdGVkIGluIGRhdGFzaGVldC4gQnV0IGl0IGlzIHNpbWlsYXIg
+dG8gdXRwIHRvIGZpYmVyIGFwcGxpY2F0aW9uLiBGaWJlciBjb25uZWN0cyB0byBydGw4MjExZnMg
+dGhyb3VnaCBTZXJEZXMgaW50ZXJmYWNlLg0KcnRsODE2OGggY29ubmVjdHMgdG8gcnRsODIxMWZz
+IHRocm91Z2ggbWRpIGludGVyZmFjZS4gcnRsODE2OGggYWxzbyBjb25uZWN0cyB0byBydGw4MjEx
+ZnMgbWRjL21kaW8gaW50ZXJmYWNlIHRocm91Z2ggaXRzIGVlcHJvbSBvciBncG8gcGlucw0KIGZv
+ciBjb250cm9sbGluZyBydGw4MjExZnMuIFRoZSBsaW5rIGJldHdlZW4gcnRsODIxMWZzIGFuZCBm
+aWJlciwgYW5kIHRoZSBsaW5rIGJldHdlZW4gcnRsODIxMWZzIGFuZCBydGw4MTY4aCBzaG91bGQg
+YmUgdGhlIHNhbWUuDQogRHJpdmVyIGp1c3QgbmVlZHMgdG8gc2V0IHRoZSBsaW5rIGNhcGFiaWxp
+dHkgb2YgcnRsODE2OGggdG8gYXV0byBuZWdhdGlvbiBhbmQgcnRsODIxMWZzIHdpbGwgcHJvcGFn
+YXRlIHRoZSBsaW5rIHN0YXR1cyBiZXR3ZWVuIGZpYmVyIGFuZCBpdHNlbGYgdG8gcnRsODE2OGgu
+IA0KQnV0IHJ0bDgxNjhoIHdpbGwgbm90IGtub3cgdGhlIGxpbmsgY2FwYWJpbGl0eSBvZiBmaWJl
+ci4gU28gd2hlbiBzeXN0ZW0gc3VzcGVuZCwgaWYgd29sIGlzIGVuYWJsZWQsIGRyaXZlciBjYW5u
+b3Qgc3BlZWQgZG93biBydGw4MTY4aCdzIHBoeS4NCk9yIHJ0bDgxNjhoIGNhbm5vdCBiZSB3YWtl
+biB1cC4NCg0KSSB3aWxsIHN1Ym1pdCBhIG5ldyBwYXRjaCBhY2NvcmRpbmcgeW91ciBhZHZpY2Uu
+IEJ1dCB3ZSBhcmUgY29uc2lkZXJpbmcgbm90IHRvIHVzZSBkcml2ZXIocjgxNjkpIHRvIHNldHVw
+IHJ0bDgyMTFmcy4gU28gbmV4dCBwYXRjaCBtYXliZSBzaW1wbGVyLg0KDQotLS0tLS1QbGVhc2Ug
+Y29uc2lkZXIgdGhlIGVudmlyb25tZW50IGJlZm9yZSBwcmludGluZyB0aGlzIGUtbWFpbC4NCg==
