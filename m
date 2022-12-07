@@ -2,241 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA832646514
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 00:28:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53A4D646519
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 00:29:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbiLGX2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 18:28:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
+        id S229790AbiLGX3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 18:29:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiLGX2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 18:28:36 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CE189327;
-        Wed,  7 Dec 2022 15:28:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670455712; x=1701991712;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version;
-  bh=wFDv46KZwpq5kcmb3lOLiRlcLrD0XlNZKiv+rENbNkg=;
-  b=H9HtDNL3Lh6lFx9SyWm0foVkBReqqjRRMSeOOG+JmbWdWKGrVSAFM8oD
-   N3aRm716qALKJz/D63AT9hZLiTibHyhgevo+6PekGonqYc8OCfVSPoqKe
-   pI7FtSYlD3dYtcftkM2BOcrWfNSQ/i/6kCAXZIbpA13xI0oBzRHqO3xa9
-   /Kj/P30KYfOMz5orUjVHYj4abxmBT5jb6gI88beox5FXn/foYze5Za/Ah
-   jAtotlpPhI3rqdqE41H+R0Ruz0bPJ7dls5cuEYMFRREV9s2PBQ42kxyp7
-   9X3kQ9AqY7YvNy44dJJBQaZpYQOZlbOCe9yeR4Sh3Hv0dlqDXdtf9vIx7
-   w==;
-X-IronPort-AV: E=Sophos;i="5.96,226,1665471600"; 
-   d="scan'208";a="203062278"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2022 16:28:31 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 7 Dec 2022 16:28:31 -0700
-Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 7 Dec 2022 16:28:30 -0700
-From:   Jerry Ray <jerry.ray@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        Jerry Ray <jerry.ray@microchip.com>
-Subject: [PATCH net-next v4 2/2] dsa: lan9303: Migrate to PHYLINK
-Date:   Wed, 7 Dec 2022 17:28:28 -0600
-Message-ID: <20221207232828.7367-3-jerry.ray@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221207232828.7367-1-jerry.ray@microchip.com>
-References: <20221207232828.7367-1-jerry.ray@microchip.com>
+        with ESMTP id S230132AbiLGX32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 18:29:28 -0500
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9618AACD
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 15:29:26 -0800 (PST)
+Received: by mail-qk1-x731.google.com with SMTP id k2so11129923qkk.7
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 15:29:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5ZZkG+Qh1aym6roTCOMKJrBzIlZ6e3/h1nx0KB0nWZQ=;
+        b=IRJAvdL9bJF5wa8TKb3lIIaMfcZthRa4Fc2FYH47GAAjDWMn2r1EPs/rUni0ul4bdw
+         +ktgYf6lGNHZep5JAWZ2GKR/BirfY/H1W6cNn8e9zTlmor3SELgt2lwviGTfPCXXZSFW
+         Na9knU0EmPNJ25f43LKjBc5MiF8+JzPDCKsRTU7BSwXFNnhYcNQDe4Ushc5+NflEC7mo
+         2r43GY6fHxCmgrXjp+j3xglshE9k16ojaaLMkfROJFwXtfZ+/Pep1O0IUlBK3IA1Ta+p
+         pXe5UZOSkpQYP+RYgYjGqKd1oktcdNECS6hJICcUFd6lga/9b9a8WGa4GfZeyTRy4jyn
+         ZKCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5ZZkG+Qh1aym6roTCOMKJrBzIlZ6e3/h1nx0KB0nWZQ=;
+        b=xWwMJJf+rUHhduiIZkJihgLxXFEzG8T+Eue8UPSeRGfYbuTwj6ASwmGhYOt2EVFzK7
+         TT0gE5klQzbKeaEQ8tyGT8SqyhdiJhM7IrUwMCVpKjhH/LGke4UZQAHKjI3gO7kKUBAL
+         ssMgDF8SqErzMZlrRnFRyHGdEPLlX+mRaDOmBVznwqhxWUovSW/et63h9yQvU79y5GkZ
+         W+dTsMDlDdYBX0KCOIZ2S8tevHQyLzHV17svm+cJhq7ffC3zi48FrrBF4LEVkBKcMsMP
+         V6BdnC19v2W4XDMCDXFDxAfU2+1DMqsU2KNdLIRtFQ6BPjl1kdCQNIggxgSkR3zQy0J+
+         ZH+Q==
+X-Gm-Message-State: ANoB5pkmNNacDmBVbY5RGui3wiiaWhC4fmxZLcxwbNuHGsKu8GYHKWld
+        tdxwK/safpZIW+cCAweHImDSPw==
+X-Google-Smtp-Source: AA0mqf5xHesK9HKgeRl+kujJdBiEK8wc+Z0M14t1KBrJH1kV7mMFGwyJ6QpQ3tfjCqVF+oqx4wgSuQ==
+X-Received: by 2002:a05:620a:43a9:b0:6fa:18a5:376d with SMTP id a41-20020a05620a43a900b006fa18a5376dmr57362219qkp.220.1670455765571;
+        Wed, 07 Dec 2022 15:29:25 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-47-55-122-23.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.122.23])
+        by smtp.gmail.com with ESMTPSA id d14-20020a05622a15ce00b0035cd6a4ba3csm14542842qty.39.2022.12.07.15.29.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 15:29:24 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1p33qu-005Qvt-DN;
+        Wed, 07 Dec 2022 19:29:24 -0400
+Date:   Wed, 7 Dec 2022 19:29:24 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Brett Creeley <bcreeley@amd.com>
+Cc:     Brett Creeley <brett.creeley@amd.com>, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, alex.williamson@redhat.com,
+        cohuck@redhat.com, yishaih@nvidia.com,
+        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
+        shannon.nelson@amd.com, drivers@pensando.io
+Subject: Re: [RFC PATCH vfio 3/7] vfio/pds: Add VFIO live migration support
+Message-ID: <Y5Eh1Doh0d98wz2v@ziepe.ca>
+References: <20221207010705.35128-1-brett.creeley@amd.com>
+ <20221207010705.35128-4-brett.creeley@amd.com>
+ <Y5DIvM1Ca0qLNzPt@ziepe.ca>
+ <a94d3456-a7cf-164c-74f1-c946883534cf@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a94d3456-a7cf-164c-74f1-c946883534cf@amd.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch replaces the adjust_link api with the phylink apis to provide
-equivalent functionality.
+On Wed, Dec 07, 2022 at 01:32:34PM -0800, Brett Creeley wrote:
 
-The functionality from the adjust_link is moved to the phylink_mac_link_up
-api.  The code being removed only affected the cpu port.
+> > Please implement the P2P states in your device. After long discussions
+> > we really want to see all VFIO migrations implementations support
+> > this.
+> > 
+> > It is still not clear what qemu will do when it sees devices that do
+> > not support P2P, but it will not be nice.
+> 
+> Does that mean VFIO_MIGRATION_P2P is going to be required going forward or
+> do we just need to handle the P2P transitions? Can you point me to where
+> this is being discussed?
 
-Removes:
-.adjust_link
-Adds:
-.phylink_get_caps
-.phylink_mac_link_up
+It means the device has to support a state where it is not issuing any
+outgoing DMA but continuing to process incoming DMA.
 
-Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
----
-v3-> v4:
-  - Reworked the implementation to preserve the adjust_link functionality
-    by including it in the phylink_mac_link_up api.
-v2-> v3:
-  Added back in disabling Turbo Mode on the CPU MII interface.
-  Removed the unnecessary clearing of the phy supported interfaces.
----
- drivers/net/dsa/lan9303-core.c | 123 +++++++++++++++++++++++----------
- 1 file changed, 86 insertions(+), 37 deletions(-)
+This is mandatory to properly support multiple VFIO devices in the
+same VM, which is why we want to see all devices implementing it. If
+the devices don't support it we may assume it means the device is
+broken and qemu will have to actively block P2P at the IOMMU.
 
-diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-index d9f7b554a423..a800448c9433 100644
---- a/drivers/net/dsa/lan9303-core.c
-+++ b/drivers/net/dsa/lan9303-core.c
-@@ -1047,42 +1047,6 @@ static int lan9303_phy_write(struct dsa_switch *ds, int phy, int regnum,
- 	return chip->ops->phy_write(chip, phy, regnum, val);
- }
- 
--static void lan9303_adjust_link(struct dsa_switch *ds, int port,
--				struct phy_device *phydev)
--{
--	struct lan9303 *chip = ds->priv;
--	int ctl;
--
--	if (!phy_is_pseudo_fixed_link(phydev))
--		return;
--
--	ctl = lan9303_phy_read(ds, port, MII_BMCR);
--
--	ctl &= ~BMCR_ANENABLE;
--
--	if (phydev->speed == SPEED_100)
--		ctl |= BMCR_SPEED100;
--	else if (phydev->speed == SPEED_10)
--		ctl &= ~BMCR_SPEED100;
--	else
--		dev_err(ds->dev, "unsupported speed: %d\n", phydev->speed);
--
--	if (phydev->duplex == DUPLEX_FULL)
--		ctl |= BMCR_FULLDPLX;
--	else
--		ctl &= ~BMCR_FULLDPLX;
--
--	lan9303_phy_write(ds, port, MII_BMCR, ctl);
--
--	if (port == chip->phy_addr_base) {
--		/* Virtual Phy: Remove Turbo 200Mbit mode */
--		lan9303_read(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, &ctl);
--
--		ctl &= ~LAN9303_VIRT_SPECIAL_TURBO;
--		regmap_write(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, ctl);
--	}
--}
--
- static int lan9303_port_enable(struct dsa_switch *ds, int port,
- 			       struct phy_device *phy)
- {
-@@ -1279,13 +1243,98 @@ static int lan9303_port_mdb_del(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
-+static void lan9303_phylink_get_caps(struct dsa_switch *ds, int port,
-+				     struct phylink_config *config)
-+{
-+	struct lan9303 *chip = ds->priv;
-+
-+	dev_dbg(chip->dev, "%s(%d) entered.", __func__, port);
-+
-+	config->mac_capabilities = MAC_10 | MAC_100 | MAC_ASYM_PAUSE |
-+				   MAC_SYM_PAUSE;
-+
-+	if (dsa_is_cpu_port(ds, port)) {
-+		__set_bit(PHY_INTERFACE_MODE_RMII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_MII,
-+			  config->supported_interfaces);
-+	} else {
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
-+		/* Compatibility for phylib's default interface type when the
-+		 * phy-mode property is absent
-+		 */
-+		__set_bit(PHY_INTERFACE_MODE_GMII,
-+			  config->supported_interfaces);
-+	}
-+
-+	/* This driver does not make use of the speed, duplex, pause or the
-+	 * advertisement in its mac_config, so it is safe to mark this driver
-+	 * as non-legacy.
-+	 */
-+	config->legacy_pre_march2020 = false;
-+}
-+
-+static void lan9303_phylink_mac_link_up(struct dsa_switch *ds, int port,
-+					unsigned int mode,
-+					phy_interface_t interface,
-+					struct phy_device *phydev, int speed,
-+					int duplex, bool tx_pause,
-+					bool rx_pause)
-+{
-+	struct lan9303 *chip = ds->priv;
-+	u32 ctl;
-+	int ret;
-+
-+	dev_dbg(chip->dev, "%s(%d) entered - %s.", __func__, port,
-+		phy_modes(interface));
-+
-+	/* if this is not the cpu port, then simply return. */
-+	if (!dsa_port_is_cpu(dsa_to_port(ds, port)))
-+		return;
-+
-+	ctl = lan9303_phy_read(ds, port, MII_BMCR);
-+
-+	ctl &= ~BMCR_ANENABLE;
-+
-+	if (speed == SPEED_100)
-+		ctl |= BMCR_SPEED100;
-+	else if (speed == SPEED_10)
-+		ctl &= ~BMCR_SPEED100;
-+	else
-+		dev_err(ds->dev, "unsupported speed: %d\n", speed);
-+
-+	if (duplex == DUPLEX_FULL)
-+		ctl |= BMCR_FULLDPLX;
-+	else
-+		ctl &= ~BMCR_FULLDPLX;
-+
-+	lan9303_phy_write(ds, port, MII_BMCR, ctl);
-+
-+	if (port == chip->phy_addr_base) {
-+		/* Virtual Phy: Remove Turbo 200Mbit mode */
-+		ret = lan9303_read(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL,
-+				   &ctl);
-+		if (ret)
-+			return;
-+
-+		/* Clear the TURBO Mode bit if it was set. */
-+		if (ctl & LAN9303_VIRT_SPECIAL_TURBO) {
-+			ctl &= ~LAN9303_VIRT_SPECIAL_TURBO;
-+			regmap_write(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL,
-+				     ctl);
-+		}
-+	}
-+}
-+
- static const struct dsa_switch_ops lan9303_switch_ops = {
- 	.get_tag_protocol	= lan9303_get_tag_protocol,
- 	.setup			= lan9303_setup,
- 	.get_strings		= lan9303_get_strings,
- 	.phy_read		= lan9303_phy_read,
- 	.phy_write		= lan9303_phy_write,
--	.adjust_link		= lan9303_adjust_link,
-+	.phylink_get_caps	= lan9303_phylink_get_caps,
-+	.phylink_mac_link_up	= lan9303_phylink_mac_link_up,
- 	.get_ethtool_stats	= lan9303_get_ethtool_stats,
- 	.get_sset_count		= lan9303_get_sset_count,
- 	.port_enable		= lan9303_port_enable,
--- 
-2.17.1
+There was lots of long threads in around Dec 2021 if I recall, lore
+could probably find them. Somewhere around here based on the search
 
+https://lore.kernel.org/kvm/20220215155602.GB1046125@nvidia.com/
+
+Jason
