@@ -2,47 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4A9645B5A
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:49:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D65E3645B48
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:48:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbiLGNt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 08:49:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45748 "EHLO
+        id S229798AbiLGNsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 08:48:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiLGNt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:49:27 -0500
-X-Greylist: delayed 102 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 07 Dec 2022 05:49:23 PST
-Received: from forwardcorp1c.mail.yandex.net (forwardcorp1c.mail.yandex.net [178.154.239.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D5B5B59A;
-        Wed,  7 Dec 2022 05:49:23 -0800 (PST)
-Received: from myt6-23a5e62c0090.qloud-c.yandex.net (myt6-23a5e62c0090.qloud-c.yandex.net [IPv6:2a02:6b8:c12:1da3:0:640:23a5:e62c])
-        by forwardcorp1c.mail.yandex.net (Yandex) with ESMTP id F07875E5DC;
-        Wed,  7 Dec 2022 16:47:29 +0300 (MSK)
-Received: from d-tatianin-nix.yandex-team.ru (unknown [2a02:6b8:b081:a404::1:33])
-        by myt6-23a5e62c0090.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id PlYMLB0QbOs1-3FCNEUJ4;
-        Wed, 07 Dec 2022 16:47:29 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1670420849; bh=wlk/kmPiuhOJpnEViTq2iNMZ0ypTYk84Ra5N6RKEQ/k=;
-        h=Message-Id:Date:Cc:Subject:To:From;
-        b=f/HHtHQVdLIpVtShc4A4WVXU/m0EHk61x5nJpWj6ef1LaW4XdrqbyceSexlP4QhEq
-         xEz1uZE0nzEOpaF8zYi4FUYiOGoE9flTvPnjpnfFJRLWsW5y2tUvXa3/COvtxxhht3
-         KNm3BncBffkauH4lYDuNanylUXJLJlTTl9dq8Nx8=
-Authentication-Results: myt6-23a5e62c0090.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] drivers/vhost/vhost: fix overflow checks in vhost_overflow
-Date:   Wed,  7 Dec 2022 16:46:31 +0300
-Message-Id: <20221207134631.907221-1-d-tatianin@yandex-team.ru>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229891AbiLGNs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:48:29 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19008A19A
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:48:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=6xh1Sw7LBhI6dc4X5YjEiKcLbK9RNDnGZGqrPt2Zouc=; b=1HnoJ7aK+xEGtEzBgQwDkYsskb
+        gLmenTi8919dnyfHLvPaAKjDMiZ77BjaTCrhrSakejUtGT6gcY1RMXfC8GOMJ5rj2g4IDQ0PyQpIj
+        QEsC+uKgUy/x+6Z5GC+CNoX3le+SkEyBIzC/oiQni84KIObMYkGy4WDB11BoJA1//mNQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p2umd-004eoE-8x; Wed, 07 Dec 2022 14:48:23 +0100
+Date:   Wed, 7 Dec 2022 14:48:23 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
+        netdev@vger.kernel.org, peppe.cavallaro@st.com,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Antonio Borneo <antonio.borneo@st.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [PATCH net] stmmac: fix potential division by 0
+Message-ID: <Y5CZp0QJVejOpWSY@lunn.ch>
+References: <Y4f3NGAZ2rqHkjWV@gvm01>
+ <Y4gFt9GBRyv3kl2Y@lunn.ch>
+ <Y4iA6mwSaZw+PKHZ@gvm01>
+ <Y4i/Aeqh94ZP/mA0@lunn.ch>
+ <20221206182823.08e5f917@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221206182823.08e5f917@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,30 +56,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The if statement would erroneously check for > ULONG_MAX, which could
-never evaluate to true. Check for equality instead.
+On Tue, Dec 06, 2022 at 06:28:23PM -0800, Jakub Kicinski wrote:
+> On Thu, 1 Dec 2022 15:49:37 +0100 Andrew Lunn wrote:
+> > > The root cause is the MAC using the internal clock as a PTP reference
+> > > (default), which should be allowed since the connection to an external
+> > > PTP clock is optional from an HW perspective. The internal clock seems
+> > > to be derived from the MII clock speed, which is 2.5 MHz at 10 Mb/s.  
+> > 
+> > I think we need help from somebody who understands PTP on this device.
+> > The clock is clearly out of range, but how important is that to PTP?
+> > Will PTP work if the value is clamped to 0xff? Or should we be
+> > returning -EINVAL and disabling PTP because it has no chance of
+> > working?
+> 
+> Indeed, we need some more info here :( Like does the PTP actually
+> work with 2.5 MHz clock? The frequency adjustment only cares about 
+> the addend, what is sub_second_inc thing?
 
-Found by Linux Verification Center (linuxtesting.org) with the SVACE
-static analysis tool.
+Hi Jakub
 
-Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
----
- drivers/vhost/vhost.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I Cc: many of the people who worked on PTP with this hardware, and
+nobody has replied.
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 40097826cff0..8df706e7bc6c 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -730,7 +730,7 @@ static bool log_access_ok(void __user *log_base, u64 addr, unsigned long sz)
- /* Make sure 64 bit math will not overflow. */
- static bool vhost_overflow(u64 uaddr, u64 size)
- {
--	if (uaddr > ULONG_MAX || size > ULONG_MAX)
-+	if (uaddr == ULONG_MAX || size == ULONG_MAX)
- 		return true;
- 
- 	if (!size)
--- 
-2.25.1
+I think we should wait a couple more days, and then add a range check,
+and disable PTP for invalid clocks. That might provoke feedback.
 
+    Andrew
