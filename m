@@ -2,110 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA266459C3
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:23:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A3D56459C5
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:24:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbiLGMXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 07:23:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44896 "EHLO
+        id S229696AbiLGMYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 07:24:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiLGMW7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:22:59 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24099B1CC;
-        Wed,  7 Dec 2022 04:22:58 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id n20so13691565ejh.0;
-        Wed, 07 Dec 2022 04:22:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OjJciw5c5k5i5I8nV9Emm78QGFtozJnpE2rZf+okvEw=;
-        b=JX+AyE/Gh4oTLCWh2hYRkz/7d/O0wfCfyBjQCq6ZS+HFtAZ/Q0251B/Q3SQlZ1lyeR
-         hnGXo0E9yivOeYYrtHWhbjv6QqQje7FqtcPMlcf6az0iX14ZBeh71+xwZNgoWUxVdumb
-         +EvqJML3xt+YoaZLZz5G+QWTNSvq8v+1XikopCSnv+VJpp1uzp7IrbK4IqgbxFRMg2QI
-         3GEyNeBD2gu25s/DxgmSZHjdcjEizd3mm+W2r4/Zz1zTGKoPyhaFnlO1lcr76Q2FD2Gs
-         W9FK2rXYWyQ9fzakL3LUg8rlK0qFIoPNc3iB28D5bl+oR9iPCaooMIFPvUQ/YJO566Ur
-         OJoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OjJciw5c5k5i5I8nV9Emm78QGFtozJnpE2rZf+okvEw=;
-        b=sbmL6hiCGQL89QeEdnU2Q0ZIazs7HDVjfIJgkmE3r9y5RwIjHoIpnlmNYTFWemrzNG
-         1PFiPXUpPHGXUKzdyYs5sGgcrEy4DE2ahVfgZWKFnDc+S1+FaSIUvX/M9UvS9pb1Ak7I
-         NCwTTgcrKcQASvli49x2+2Ir29Ac2+6XaC2AoApNqFphRHCkOo77sDMgyF2ZS6r8Rguf
-         ZIKh0QVYHwicl+IfYe3b0XV3ZhFtxavTZZyKf335L5pxKohmzQCaliHtMYWX+sC86nHE
-         FzgpFhICFOzrrI9RhepDXgAtQGJhh+ISAh+LEbL/vMncAdoGi7r2IWh5uLRVIfKK5+uV
-         dJaQ==
-X-Gm-Message-State: ANoB5pljwg9K84mOpAphS1MWFikUnTjWjxWc0YpMIWXpJa3bwcMw3XvE
-        P4qb1XdQoleC2v6ZGSW0ZZU=
-X-Google-Smtp-Source: AA0mqf657+cJDewCmsFCvlBxUlOj+AQNbfKwjaC0G10FfBZ9vOyPSMjq2LeMqfyUoqO0T90FTeV6xQ==
-X-Received: by 2002:a17:906:2302:b0:7b9:de77:f0ef with SMTP id l2-20020a170906230200b007b9de77f0efmr55702952eja.5.1670415776654;
-        Wed, 07 Dec 2022 04:22:56 -0800 (PST)
-Received: from skbuf ([188.26.184.215])
-        by smtp.gmail.com with ESMTPSA id y20-20020a50eb94000000b004589da5e5cesm2144897edr.41.2022.12.07.04.22.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 04:22:56 -0800 (PST)
-Date:   Wed, 7 Dec 2022 14:22:54 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] lib: packing: fix shift wrapping in bit_reverse()
-Message-ID: <20221207122254.otq7biekqz2nzhgl@skbuf>
-References: <Y5B3sAcS6qKSt+lS@kili>
- <Y5B3sAcS6qKSt+lS@kili>
- <20221207121936.bajyi5igz2kum4v3@skbuf>
- <Y5CFMIGsZmB1TRni@kadam>
+        with ESMTP id S229650AbiLGMYG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:24:06 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005873FB95;
+        Wed,  7 Dec 2022 04:24:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=KFLaoTEu2QQ7MxUXT6CC0pCM2Cxx17l+86Z3LioNIDY=; b=0hB7SpXoLqzcTZJ32Y1iyQCB/j
+        pWg3jx8euI4i0JpMPqaZG11jHKHmYq/bIMMzcf3SnT+ayo9vhBCsHHyFIJfVPA9ANpWwO9/8aIq3C
+        71Q5BW69Jq9U7ta4PA1aBEx3dQeBIO1CCKsE+fOD4tqLgoDz8y3+5BlD0H5wV1CXDUKBMpiOLVo8C
+        3SRHbLiiWwo2I+PfGIw+RYKn4K8kKEJEJMX8hMh29jwtSeeUXRd+T4nnQ/Zt7izMqvgeU1G3g51LR
+        ilawPcHRvuro+Z+BQLuR9LNuMZqkk4BfokilaXFOAg1x91K+FKO6jkwn3K3Es4x8t08WlqY9VwpTf
+        eHso3NGQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35614)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1p2tSs-0000cJ-Aa; Wed, 07 Dec 2022 12:23:54 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1p2tSp-0000jD-8b; Wed, 07 Dec 2022 12:23:51 +0000
+Date:   Wed, 7 Dec 2022 12:23:51 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Claudiu.Beznea@microchip.com
+Cc:     Nicolas.Ferre@microchip.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, Sergiu.Moga@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] net: phylink: add helper to initialize phylink's
+ phydev
+Message-ID: <Y5CF15Yk1ndwO/+a@shell.armlinux.org.uk>
+References: <20221205153328.503576-1-claudiu.beznea@microchip.com>
+ <20221205153328.503576-2-claudiu.beznea@microchip.com>
+ <Y44VATEVPpEOBz/3@shell.armlinux.org.uk>
+ <4375d733-ed49-869c-635f-0f0ba7304283@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y5CFMIGsZmB1TRni@kadam>
+In-Reply-To: <4375d733-ed49-869c-635f-0f0ba7304283@microchip.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 07, 2022 at 03:21:04PM +0300, Dan Carpenter wrote:
-> On Wed, Dec 07, 2022 at 02:19:36PM +0200, Vladimir Oltean wrote:
-> > On Wed, Dec 07, 2022 at 02:23:28PM +0300, Dan Carpenter wrote:
-> > > The bit_reverse() function is clearly supposed to be able to handle
-> > > 64 bit values, but the types for "(1 << i)" and "bit << (width - i - 1)"
-> > > are not enough to handle more than 32 bits.
-> > > 
-> > > Fixes: 554aae35007e ("lib: Add support for generic packing operations")
-> > > Signed-off-by: Dan Carpenter <error27@gmail.com>
-> > > ---
-> > >  lib/packing.c | 5 ++---
-> > >  1 file changed, 2 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/lib/packing.c b/lib/packing.c
-> > > index 9a72f4bbf0e2..9d7418052f5a 100644
-> > > --- a/lib/packing.c
-> > > +++ b/lib/packing.c
-> > > @@ -32,12 +32,11 @@ static int get_reverse_lsw32_offset(int offset, size_t len)
-> > >  static u64 bit_reverse(u64 val, unsigned int width)
-> > >  {
-> > >  	u64 new_val = 0;
-> > > -	unsigned int bit;
-> > >  	unsigned int i;
-> > >  
-> > >  	for (i = 0; i < width; i++) {
-> > > -		bit = (val & (1 << i)) != 0;
-> > > -		new_val |= (bit << (width - i - 1));
-> > > +		if (val & BIT_ULL(1))
-> > 
-> > hmm, why 1 and not i?
-> 
-> Because I'm a moron.  Let me resend.
+Hi,
 
-Wait a second, I deliberately wrote the code without conditionals.
-Let me look at the code disassembly before and after the patch and see
-what they look like.
+On Wed, Dec 07, 2022 at 10:49:39AM +0000, Claudiu.Beznea@microchip.com wrote:
+> On 05.12.2022 17:57, Russell King (Oracle) wrote:
+> > when we know that the PHY has lost power - maybe the MAC driver can
+> > tell phylink that detail, and be updated to use phylink_suspend() and
+> > phylink_resume() ?
+> 
+> Cutting the power is arch specific and it may depends on the PM mode that
+> system will go (at least for AT91 architecture). At the moment there is no
+> way for drivers to know about architecture specific power management mode.
+> There was an attempt to implement this (few years ago, see [1]) but it
+> wasn't accepted (from what I can see in the source code at the moment).
+> 
+> So, in case we choose to move it to phylink_resume() we will have to
+> reinitialize the PHY unconditionally (see below). Would this be OK?
+
+I guess it would - off the top of my head, I can't think why a call to
+phy_init_hw() would cause an issue, but maybe my fellow phylib
+maintainers have a different opinion.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
