@@ -2,130 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A1E64555D
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 09:22:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E4464555E
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 09:23:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbiLGIWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 03:22:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
+        id S229685AbiLGIXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 03:23:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiLGIWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 03:22:40 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2070.outbound.protection.outlook.com [40.107.94.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D050C2DDF
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 00:22:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HgdjOtpySfcHiMdv3H3LEN5FxE8T0nl5p+Ttwn1vZiZl1sRatq6tQiYqTpHRlDQqUSs9j9qqSqSrKNo2SE7QfHL/iaFvmRmoP5aiqLiaZo3Hsd1Zp1zFrzSsL8aj8gWONXHZAF1q4e1yM5vTd3rPTAb5GL52WBRv1HmrtObKqK+tyjb2OUtJLePYGbe+/s7loH9GVEv8NsQDPyzzGgYtntM1srngiMaO/2/LsKvpZ2lW5pBlCWIMgkKcH4/atP/QbU9TnSwYDtZfZpVQhFHYHp3+kr19k1dVfCwZFx8xN+3hkiGgtPRkNVDip7b6RcZ66jK2x38wA79dGVpIHUnU1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=91aWAFM34usa7EyDIRc45iUAk+bCWuNwDgpyupOam0Q=;
- b=aK749B9U3eTkA8atjzqJZJLzGaDntBI7Wbub9AcWdMVpyM6zZSGv5d3gOiKsAd3AvcsER1Yo1n/k2McuujsSG5NuJtPtX1ynSfDQKXvMZAJGzpeYDTJTvgAR6KfqdiOzG130asXU4I89X806eRXXmXpwoIFpCtfZ9QK/2sRST0n9jjem4Tb2icU4ythnQbEsy6QlhF5a57ilq1mL/Rw90fd0RMtUqqkd+TUtdabvRwZHTccozKhLB1X2gSat1oBq9zU5R6OnEmmLSCZVzsZ45WIQ6N7z1+QcTAGVbrhPrKaKHD+O1KYv169E5va4hJyH/mFAqyU9hAPspJGgsLiqbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=91aWAFM34usa7EyDIRc45iUAk+bCWuNwDgpyupOam0Q=;
- b=cSoWgzPr2DgqaTFRR+glyJYtkTKBkjvO2dpctSv4N0T7J4dQ3ytwFOlZ/B+BFOYjuv5lrqD1itlrhHLnHWjjd2DWNVD3JI6pbuccJ9IoxVUuD519QbMS1mTPQDPVTVyp09QIqhZSPyUXaHV9ZqFAV3JfKe1G81uVPIjnclKYv9Y7iNf57I84STh/RelQV0wnFm34fVAMGFCCRZ2aBgG4R2yFDBZTEN6679uEgpeHcWtu2SC3/VLn4UuQ8gs7lEJm3a85OJ0q7QU4p++xqtNNSjNB42LITRelYLT42Bxym44NtQNDpu0RQF26aDnrngCx/jNMrDGtHgMxAk/NN4N4ZQ==
-Received: from DM6PR21CA0006.namprd21.prod.outlook.com (2603:10b6:5:174::16)
- by CH3PR12MB8281.namprd12.prod.outlook.com (2603:10b6:610:128::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Wed, 7 Dec
- 2022 08:22:37 +0000
-Received: from DM6NAM11FT098.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:174:cafe::50) by DM6PR21CA0006.outlook.office365.com
- (2603:10b6:5:174::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.4 via Frontend
- Transport; Wed, 7 Dec 2022 08:22:37 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT098.mail.protection.outlook.com (10.13.173.61) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5901.15 via Frontend Transport; Wed, 7 Dec 2022 08:22:36 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 7 Dec 2022
- 00:22:20 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 7 Dec 2022
- 00:22:20 -0800
-Received: from dev-r-vrt-138.mtr.labs.mlnx (10.127.8.10) by mail.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server id 15.2.986.36 via Frontend
- Transport; Wed, 7 Dec 2022 00:22:18 -0800
-From:   Roi Dayan <roid@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     Roi Dayan <roid@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        "Stephen Hemminger" <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Subject: [PATCH iproute2 1/1] tc: ct: Fix invalid pointer dereference
-Date:   Wed, 7 Dec 2022 10:22:13 +0200
-Message-ID: <20221207082213.707577-1-roid@nvidia.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229565AbiLGIXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 03:23:07 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F2A248EB
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 00:23:06 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1p2pho-0001kH-DL; Wed, 07 Dec 2022 09:23:04 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1p2phl-002scw-4p; Wed, 07 Dec 2022 09:23:01 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1p2phl-003Eno-7q; Wed, 07 Dec 2022 09:23:01 +0100
+Date:   Wed, 7 Dec 2022 09:23:01 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc:     "Guilherme G. Piccoli" <kernel@gpiccoli.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, netdev@vger.kernel.org,
+        Douglas Miller <dougmill@linux.ibm.com>, gpiccoli@igalia.com,
+        kernel@pengutronix.de,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: Strangeness in ehea network driver's shutdown
+Message-ID: <20221207082301.vfkh2zoty54rhhsv@pengutronix.de>
+References: <20221001143131.6ondbff4r7ygokf2@pengutronix.de>
+ <20221003093606.75a78f22@kernel.org>
+ <CALJn8nN-5DZZkwrJurtT2NOUXGdEQa-aQt+MHvsii2oC_w5+FA@mail.gmail.com>
+ <Y491kVZdw2lLB3yU@quatroqueijos.cascardo.eti.br>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT098:EE_|CH3PR12MB8281:EE_
-X-MS-Office365-Filtering-Correlation-Id: 77347c76-31ab-430e-f598-08dad82c32ee
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kb5gm/S6oebuXsqOdbAHUKM4q1hKa/IpZyapAuKqdo1hTAPf/Wv2FIbkYH4hrVL9hIoGUXd6XitxlrXXVwRcvPYbgogygbnHdy8d0HH9fJpUVWu3vQTrynNG8EzGC6yPPIgIORZM7TrJUR1PYudH2p2Tuv829RnuZZphGWq9b8CQT+tbHGDPh2ifqLVwm99hQs6sTlavqMgZdH3I4CJg0V2ylkhXFH0gwJQDVAXqObtbI6wUfaO6KlWPkPvedr6iTjT+Oz5rzxxNhKCw42lm14X1jWEgvV/w8CrnmrdtSTcb0EGlXaVQAP0ZfGCMmNHzAePElcpSIDFnRSYFee+L0ruoP/gxR5BCInFv9cRrSY1nYTcRDI7uM3+oByk+n7Xyw3V9FGTuywQMIel+NiF39GGju194WxycSgMHHQ73idXOxICEcebB0bv63vcxeIfI9eQncYiAgFENsd0yA+q7QgLj9ohdSFsPZlMODpvhC7oJaavLZ3cNedyqSwODRVWvsvOytWuwiKROzn+E3fQiGsu92Zdk8PMIIh1E64ZOyxi4ZoRyLJi9l75L/A/TorAd+w0E2DTeDC2jDs5aETfZSL6LG36Jrpwl6uoi6UruAX58Aqc95OBzsfA/NJhgwaGSbXdDYm4Gj9/QOYwfqSKyTYNi/kwpr//9gS8r6N+FffKw54F/a7Tp11CMfy7i3erTBeeYxK4TtG/eAtcQQxRWkg==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(136003)(376002)(396003)(451199015)(36840700001)(40470700004)(46966006)(36860700001)(83380400001)(356005)(7636003)(40460700003)(8936002)(86362001)(5660300002)(2906002)(4744005)(4326008)(41300700001)(478600001)(186003)(40480700001)(82310400005)(26005)(336012)(1076003)(426003)(6666004)(47076005)(2616005)(8676002)(6916009)(54906003)(70206006)(70586007)(316002)(82740400003)(36756003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 08:22:36.9309
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77347c76-31ab-430e-f598-08dad82c32ee
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT098.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8281
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5exu7kd75hueigfs"
+Content-Disposition: inline
+In-Reply-To: <Y491kVZdw2lLB3yU@quatroqueijos.cascardo.eti.br>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using macro NEXT_ARG_FWD does not validate argc.
-Use macro NEXT_ARG which validates argc while parsing args
-in the same loop iteration.
 
-Fixes: c8a494314c40 ("tc: Introduce tc ct action")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Paul Blakey <paulb@nvidia.com>
----
- tc/m_ct.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--5exu7kd75hueigfs
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/tc/m_ct.c b/tc/m_ct.c
-index a02bf0cc1655..54d64867abcb 100644
---- a/tc/m_ct.c
-+++ b/tc/m_ct.c
-@@ -243,7 +243,7 @@ parse_ct(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
- 				return -1;
- 			}
- 
--			NEXT_ARG_FWD();
-+			NEXT_ARG();
- 			if (matches(*argv, "port") != 0)
- 				continue;
- 
--- 
-2.38.0
+On Tue, Dec 06, 2022 at 02:02:09PM -0300, Thadeu Lima de Souza Cascardo wro=
+te:
+> On Tue, Dec 06, 2022 at 01:49:01PM -0300, Guilherme G. Piccoli wrote:
+> > On Mon, Oct 3, 2022 at 1:36 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > >
+> > > On Sat, 1 Oct 2022 16:31:31 +0200 Uwe Kleine-K=F6nig wrote:
+> > > > Hello,
+> > > >
+> > > > while doing some cleanup I stumbled over a problem in the ehea netw=
+ork
+> > > > driver.
+> > > >
+> > > > In the driver's probe function (ehea_probe_adapter() via
+> > > > ehea_register_memory_hooks()) a reboot notifier is registered. When=
+ this
+> > > > notifier is triggered (ehea_reboot_notifier()) it unregisters the
+> > > > driver. I'm unsure what is the order of the actions triggered by th=
+at.
+> > > > Maybe the driver is unregistered twice if there are two bound devic=
+es?
+>=20
+> I see how you would think it might be called for every bound device. That=
+'s
+> because ehea_register_memory_hooks is called by ehea_probe_adapter. Howev=
+er,
+> there is this test here that leads it the reboot_notifier to be registere=
+d only
+> once:
+>=20
+> [...]
+> static int ehea_register_memory_hooks(void)
+> {
+> 	int ret =3D 0;
+>=20
+> 	if (atomic_inc_return(&ehea_memory_hooks_registered) > 1)
+> 	^^^^^^^^^^^^^^^^^^^^^^
+> 		return 0;
+> [...]
 
+Ah, I see.
+
+> > > > Or the reboot notifier is called under a lock and unregistering the
+> > > > driver (and so the devices) tries to unregister the notifier that is
+> > > > currently locked and so results in a deadlock? Maybe Greg or Rafael=
+ can
+> > > > tell about the details here?
+> > > >
+> > > > Whatever the effect is, it's strange. It makes me wonder why it's
+> > > > necessary to free all the resources of the driver on reboot?! I don=
+'t
+>=20
+> As for why:
+>=20
+> commit 2a6f4e4983918b18fe5d3fb364afe33db7139870
+> Author: Jan-Bernd Themann <ossthema@de.ibm.com>
+> Date:   Fri Oct 26 14:37:28 2007 +0200
+>=20
+>     ehea: add kexec support
+>    =20
+>     eHEA resources that are allocated via H_CALLs have a unique identifie=
+r each.
+>     These identifiers are necessary to free the resources. A reboot notif=
+ier
+>     is used to free all eHEA resources before the indentifiers get lost, =
+i.e
+>     before kexec starts a new kernel.
+>    =20
+>     Signed-off-by: Jan-Bernd Themann <themann@de.ibm.com>
+>     Signed-off-by: Jeff Garzik <jeff@garzik.org>
+
+I don't understand that, but that's fine for me.
+
+As you're happy with the state as is, I consider the Case closed. Thanks
+for looking into my bug report.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--5exu7kd75hueigfs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmOQTWIACgkQwfwUeK3K
+7Am1Jwf+PQlJ5ujwgwNBXbeZeKDIz7xVWI/ly2U2uEfLFFa56sKeCfA6aqIY+6lQ
+sbKJmMe6bUZ2TZKrb5SvX9yh8duggwEmD+iMNvSKiRG8YZ7x212Xq/lYTGmQYh+3
+hszj9XQwdHyBYogumKNfZBg4nIAjVBVp1HrGsx1tiYT9gvQQfZkdoTyiAePhTZSc
+82NuBJ0aTjJcF+mEP2HQYKB2OVkuJXnx9pE02s6RZ5P0vrqSmftq9Al1nc3ev3PF
+aHJl1tSoyGhjhhpHHQRT0x0DyaywggCzwLPVaObGDV8zb7VqqzVjH0pC8G6lWfkk
+C6vi8FbUYfMoS+6cRHC4fp6D3ivKqg==
+=3mgO
+-----END PGP SIGNATURE-----
+
+--5exu7kd75hueigfs--
