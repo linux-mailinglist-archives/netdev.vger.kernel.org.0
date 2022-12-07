@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51C8E645C22
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:12:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05147645C24
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:13:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbiLGOMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 09:12:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41566 "EHLO
+        id S230093AbiLGOM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 09:12:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230192AbiLGOMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:12:45 -0500
+        with ESMTP id S230193AbiLGOMs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:12:48 -0500
 Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F62430547
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:12:44 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id f11-20020a5b01cb000000b0070374b66537so5103877ybp.14
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:12:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859B263EC
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:12:45 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id a5-20020a25af05000000b006e450a5e507so19397336ybh.22
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:12:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z0Y6R8MJmFOTORaqeUXjZKoyrZuFPm8b7UShjzzFan0=;
-        b=jndSP6lWO+TkuSBRJNopdk90z69DoB9ZweoDe6KJogaEjcGqVzqXxGaN/mDzare91p
-         SaCXJ3yxx74S+dZB7GVQTYyuzg82ZhF7rplQkyfZCPK+pNyeF47q6wECxY8Om9FzTJJV
-         FlOgICWuiZySYUHERTcfRHs1YRD1RTTTaAeBMtToK5mrzCy0+JN1t/x2yBsb4eYYJp/S
-         4wCvS/cD61JtgeaI5pU9FZ/LKEUqlOyajWoPhhZz7PnnKS4BrdhSbmPwP/oZPrsBbBS1
-         pTRPpbZbK90UsgptCd4CRBihqaJsEfqb/NXq4hvHewOCDP+UUcJ/tzPTztVUN4qrdprx
-         zUuA==
+        bh=8Eaz0b8Ne/t46erZUnPI8xk8Al1zhW7z2bfzwuvD1jY=;
+        b=WwJxzjqqYg6HHycnbCc816IYY7sNB0rMdITmc8Y0UcJXZcixK+Rou6hc+/d5DS8nw0
+         6sLIe7ZhnIjmwnS2oXnjGZ0BO5T7dm5HHLreK5ER+OIzqr9Xeyz3vsmIM7MUh+QpNVNC
+         1lDxp+Bpn13Ad6lg8jyEYIJQVXCqTNV5Zt9nHbn5d3eeABeqNVjdd9x+8hW80nMEGbXh
+         MKh7a+ptOQilhBJ6e/GXelkiRfi/3am9Zz13qUHJib/+UGzB0LjW9VFLiIWTuPj5PxUc
+         d2eW0LRZv5G8RzFiHCf6OEVlkdYHwKvtlALvlzYHlEvl52rpip0aQLj06F+F9KwrjYcL
+         13hA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z0Y6R8MJmFOTORaqeUXjZKoyrZuFPm8b7UShjzzFan0=;
-        b=XAdy1HeRxq1eJlraDNsOxawu83aneisSSxEGR8tASZEaJ4RhVKIbzO7/3bRkriX0nI
-         KBdvHJ3EEDhU3HiO/PvmJZvoK7bvaJmN4Q57PvbXLq8zY4KkJJ4HjphWGaxcW+Z3nezw
-         WYKTbCM4PRCbq1JT0US4fanDd4SaljGCsRIz4qlHzF5DTM3sf+Ejb/OEPPUToLizUKij
-         u7WTzCT9oszm7brwsUAkud9fbJxe1Yaycf7ZKWhJKIYJdlXOyyQRh33oKjnumcCWpXO8
-         JXkeHNmtwogCMq1VGkrMH49IKjk2Y3uz0rbct2EdneLLmTBHnZ7KzNsYxQEK0wRzlkmQ
-         L4ZQ==
-X-Gm-Message-State: ANoB5pkIE8Xa1Xzmio4x9z95DVK4dB5pGUH0kl0KlybroQl7IC0ACt/Q
-        B/xasZvyJIddXB25pmxwkUyx7LZYLx1VCQ==
-X-Google-Smtp-Source: AA0mqf4Zxnmkhs19p/sUIasx7lsU3rjOjRNFfhUuABNknGaolJiu/ayMr0IvAmIl2mXHw9moN5DBScxj8X62xw==
+        bh=8Eaz0b8Ne/t46erZUnPI8xk8Al1zhW7z2bfzwuvD1jY=;
+        b=O+DrzZ0a3BL8GGxmn7VDMVYi11Dp6pZKGT+vmmWns3O/WqntMgDjTavjlooHUM9/kk
+         WVXWrsYrN2Tb9NWkU88FOoneiqlBiKRq6+KuAUjmGDBIg4ZA09/XZSmBeQ5Mz6oVuQgQ
+         HTdDrW1lMQ4xHQopxxCX0C0OqQKEtRVzp9LE4OAyx3kjDQH/HYbUBk0APUmWnIWv8u9B
+         OxEFIJCJA12oKpEqndzZ8pRHUO6kqo9OqvPLXaOD5gqA3S8EQPqH1XNMbRVXo27mzDGB
+         u65VScH+f1M13nVbM79UEhDV/IGluWCV3fZAv2IfjrplLaSNsovcsy+puKDjn4ARksfJ
+         /uHQ==
+X-Gm-Message-State: ANoB5pnoqKZ6NBWDrj0vbeGItee9QYyDycM0roqZUo1sSC6610d15QQN
+        V2M0Pb127cL+09sOP1R8nrYz87l6PDPOrg==
+X-Google-Smtp-Source: AA0mqf7oksI4o807wH9li3eh//UygXtCs8Vqu7doXqm2N3k+9Y3LNQEefGBHfF+8WOhCbA7U8iXq6uosnKdeSA==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a5b:4e:0:b0:701:823f:4098 with SMTP id
- e14-20020a5b004e000000b00701823f4098mr12086395ybp.37.1670422363497; Wed, 07
- Dec 2022 06:12:43 -0800 (PST)
-Date:   Wed,  7 Dec 2022 14:12:36 +0000
+ (user=edumazet job=sendgmr) by 2002:a5b:505:0:b0:6e6:6f6e:95ff with SMTP id
+ o5-20020a5b0505000000b006e66f6e95ffmr66411202ybp.582.1670422365018; Wed, 07
+ Dec 2022 06:12:45 -0800 (PST)
+Date:   Wed,  7 Dec 2022 14:12:37 +0000
 In-Reply-To: <20221207141237.2575012-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20221207141237.2575012-1-edumazet@google.com>
 X-Mailer: git-send-email 2.39.0.rc0.267.gcb52ba06e7-goog
-Message-ID: <20221207141237.2575012-3-edumazet@google.com>
-Subject: [PATCH v2 net-next 2/3] net/mlx4: MLX4_TX_BOUNCE_BUFFER_SIZE depends
- on MAX_SKB_FRAGS
+Message-ID: <20221207141237.2575012-4-edumazet@google.com>
+Subject: [PATCH v2 net-next 3/3] net/mlx4: small optimization in mlx4_en_xmit()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -72,65 +71,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Google production kernel has increased MAX_SKB_FRAGS to 45
-for BIG-TCP rollout.
-
-Unfortunately mlx4 TX bounce buffer is not big enough whenever
-an skb has up to 45 page fragments.
-
-This can happen often with TCP TX zero copy, as one frag usually
-holds 4096 bytes of payload (order-0 page).
-
-Tested:
- Kernel built with MAX_SKB_FRAGS=45
- ip link set dev eth0 gso_max_size 185000
- netperf -t TCP_SENDFILE
-
-I made sure that "ethtool -G eth0 tx 64" was properly working,
-ring->full_size being set to 15.
+Test against MLX4_MAX_DESC_TXBBS only matters if the TX
+bounce buffer is going to be used.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Wei Wang <weiwan@google.com>
 Cc: Tariq Toukan <tariqt@nvidia.com>
+Cc: Wei Wang <weiwan@google.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/en_tx.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-index 7cc288db2a64f75ffe64882e3c25b90715e68855..3d4226ddba5e6582e9420d853b6535b806219e55 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-@@ -89,8 +89,18 @@
- #define MLX4_EN_FILTER_HASH_SHIFT 4
- #define MLX4_EN_FILTER_EXPIRY_QUOTA 60
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+index 8372aeb392a28cf36a454e1b8a4783bc2b2056eb..c5758637b7bed67021a9f3e9c5283033f68639a3 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+@@ -911,11 +911,6 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	/* Align descriptor to TXBB size */
+ 	desc_size = ALIGN(real_size, TXBB_SIZE);
+ 	nr_txbb = desc_size >> LOG_TXBB_SIZE;
+-	if (unlikely(nr_txbb > MLX4_MAX_DESC_TXBBS)) {
+-		if (netif_msg_tx_err(priv))
+-			en_warn(priv, "Oversized header or SG list\n");
+-		goto tx_drop_count;
+-	}
  
--/* Typical TSO descriptor with 16 gather entries is 352 bytes... */
--#define MLX4_TX_BOUNCE_BUFFER_SIZE 512
-+#define CTRL_SIZE	sizeof(struct mlx4_wqe_ctrl_seg)
-+#define DS_SIZE		sizeof(struct mlx4_wqe_data_seg)
-+
-+/* Maximal size of the bounce buffer:
-+ * 256 bytes for LSO headers.
-+ * CTRL_SIZE for control desc.
-+ * DS_SIZE if skb->head contains some payload.
-+ * MAX_SKB_FRAGS frags.
-+ */
-+#define MLX4_TX_BOUNCE_BUFFER_SIZE \
-+	ALIGN(256 + CTRL_SIZE + DS_SIZE + MAX_SKB_FRAGS * DS_SIZE, TXBB_SIZE)
-+
- #define MLX4_MAX_DESC_TXBBS	   (MLX4_TX_BOUNCE_BUFFER_SIZE / TXBB_SIZE)
- 
- /*
-@@ -217,9 +227,7 @@ struct mlx4_en_tx_info {
- 
- 
- #define MLX4_EN_BIT_DESC_OWN	0x80000000
--#define CTRL_SIZE	sizeof(struct mlx4_wqe_ctrl_seg)
- #define MLX4_EN_MEMTYPE_PAD	0x100
--#define DS_SIZE		sizeof(struct mlx4_wqe_data_seg)
- 
- 
- struct mlx4_en_tx_desc {
+ 	bf_ok = ring->bf_enabled;
+ 	if (skb_vlan_tag_present(skb)) {
+@@ -943,6 +938,11 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	if (likely(index + nr_txbb <= ring->size))
+ 		tx_desc = ring->buf + (index << LOG_TXBB_SIZE);
+ 	else {
++		if (unlikely(nr_txbb > MLX4_MAX_DESC_TXBBS)) {
++			if (netif_msg_tx_err(priv))
++				en_warn(priv, "Oversized header or SG list\n");
++			goto tx_drop_count;
++		}
+ 		tx_desc = (struct mlx4_en_tx_desc *) ring->bounce_buf;
+ 		bounce = true;
+ 		bf_ok = false;
 -- 
 2.39.0.rc0.267.gcb52ba06e7-goog
 
