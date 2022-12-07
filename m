@@ -2,196 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90736645DA0
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:29:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A91645DB3
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229776AbiLGP3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 10:29:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37874 "EHLO
+        id S229665AbiLGPdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 10:33:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiLGP3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:29:05 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05olkn2058.outbound.protection.outlook.com [40.92.89.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A17101CB;
-        Wed,  7 Dec 2022 07:29:03 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NFJOTpYa8cMif8UoVobmNuRp1btEwACqSbqz5DMOhDxzwjMGQRY5omogfXmUlJAy9nznoew0dzMtTcA0gss9h9ZQ+3QjvjSHllr17bkz1em7U+gu6z3BeyPdsWOnBjLyn9Xdd1oKl4oLf8rvRv55oH8x81lI4PsoyxF1qgC87hkjC81hv0y4KdvwC5VHvo2kKuPkzBGxJmPf4YpLO2emIoZ7T0Up9vbMdVemNxOPP5r3ecL6moVyR//2bjtWIB7jqOic4rqZz5LPYNWe2bSqKHr3yYTascpvk0tY2XBsmrEi/5+8QdvO6EmlOBnq1jc10e2m2wk7uOAoAGpdm/adOA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AuZ21kH4NGW4q33dGSpTBj49Xh/eRujGvaiqZPQ/trM=;
- b=ab4capwCmFuKzo3jCbnKDJ9pmyHb4dIiC0EXnDiL5YTFk8dM+EPdSd/2odCy1QgxmRPZ1DCflnR5r2BxDaSi0zzcNaDHLy5z+1YMDUSFz41HcNjGePYEArEzJKc5X3h3RGLAH3RzTC5syaaLjlBf1a2upVoxeLKHXFhvuhdUQmvz+z9SYcNo26WqMaqYZWGeynY5VXIJ4t1LswgUMa979K0ZeBQ3k3mExsScElMKsH+4+1nWdijuMk/AwfNmwz8uCVsDBDMk/nj09G6Jn1hAl1GTq32GrQfEnk+bXeE903IjJaMwAWzkv94Qw9wRJjsyjtqLVfen4YZMagDJZvl6kQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AuZ21kH4NGW4q33dGSpTBj49Xh/eRujGvaiqZPQ/trM=;
- b=ZPjSjkTlq1eWtm0Q4O6mjKvssakCOi96xjie/j+fMiQgEuY4/g8RUBys+GRd5TES7pnFZonks1GpnG4X4FGqNaTWW0fwS9LaT4chIyVlqLMVX5qj4JU73OotPXI4uX/eIhaY7R4FD06gF/2eTNSpNx/jXs1pC4Pzown+uVc1L7hbZem2DeDquKyBAsk7lxgHF3aSp6BNwEjTMKjMiu3Vqn1z7EQQ2r6lIN6xDqEpJ6FTOfkFSSS/1Lmx4oso9GDAAGUGaktE/Nh2Mi0fmPwLthgJMRpRC1av/CFWSHSctVJpnMcMYg/R7AO0xjn/gOh2zrL0NJyv1kKezjOmFWDgIA==
-Received: from DU0P192MB1547.EURP192.PROD.OUTLOOK.COM (2603:10a6:10:34b::15)
- by PRAP192MB1458.EURP192.PROD.OUTLOOK.COM (2603:10a6:102:29c::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Wed, 7 Dec
- 2022 15:29:01 +0000
-Received: from DU0P192MB1547.EURP192.PROD.OUTLOOK.COM
- ([fe80::a67b:5da2:88f8:f28b]) by DU0P192MB1547.EURP192.PROD.OUTLOOK.COM
- ([fe80::a67b:5da2:88f8:f28b%9]) with mapi id 15.20.5880.014; Wed, 7 Dec 2022
- 15:29:01 +0000
-Message-ID: <DU0P192MB15479DE3A186319F999748E3D61A9@DU0P192MB1547.EURP192.PROD.OUTLOOK.COM>
-Date:   Wed, 7 Dec 2022 23:28:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH bpf-next v2] bpf: Upgrade bpf_{g,s}etsockopt return values
-Content-Language: en-US
-From:   Ji Rongfeng <SikoJobs@outlook.com>
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        andrii@kernel.org, song@kernel.org, yhs@fb.com, kpsingh@kernel.org,
-        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
+        with ESMTP id S229515AbiLGPdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:33:17 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD4E113D
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 07:33:15 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id d14so20447799edj.11
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 07:33:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=LwrUVb9xSURXqii8hhhP6vjXiWv8GEEp5vfAQ1wLtCk=;
+        b=QuaimEhCdfsub+L2H5uXjfZi+XE6U9sSBvyt8pqyP1McpoPW3Of7RAiBdotiqP+ohm
+         eeXuS4XeNOmTyGtCwffJVhZv4DotkrmsEOhu1cr2kqRWHq+PylSAENYSiXTdIj4NDbBz
+         R1+WTIT6ueiARDqNTaEFocunpxSqxtRIkoLFBym52RKVtBhJdSjg0bjhdE21itfPV7jz
+         o7Crq5vsapbf2ZlH3gURsWW2coe9vo0tcU6QWi3d9APVQ1GMcdZKNuuK0ORHBfKOiTIj
+         /p/uYFF9P0pwExq73u9JLjdtGAJf93KNifYFlz4Eht1uHG7SAliXu9qK0FmVbQjbIfb7
+         BXig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LwrUVb9xSURXqii8hhhP6vjXiWv8GEEp5vfAQ1wLtCk=;
+        b=VfTSYLRxNkbW1wlBusq3sGIJal94iXwHWBw1/6I/2uaMZcuRSL/9R/EB0nE83HCW+e
+         9mkwAkzsHKjDLsX7Wf1xGH7wj0bV9jw3QWd1bRXumFBL+hrYejoVLFLB30ZBl9tt1pDe
+         ThdKimuk5Q+NsLVBZWME0jiphx9Fu86Envloli6J4nyfq+vXxxNMTKpMQ+akBbeG/N0t
+         PaVD1lHWPy+6jFh8fvZueoHhbNEqmbVn2tHorKysLkGvLYhERE+Sa44Mo3/XcQpRCC7w
+         q+w7FI9N2+zyQTuwlCKg6LJ7G0qpUrYdinxFroSb12pQUZEWPta/DHCSVPSEj7rWbf07
+         DldA==
+X-Gm-Message-State: ANoB5pkLSoIfYB2bfE71v6cES0J/66YDShmWpdgMRdoFOI/8cL19faYn
+        o7IoARyPz9X6isfi53wMuSbKcQ==
+X-Google-Smtp-Source: AA0mqf67dVTwYV80bONLAbvxjUes+JRylYF8m9rIg+bo8mtFry9R7QBMuxs3i5LYQH5UdFCBACZvNA==
+X-Received: by 2002:a05:6402:48d:b0:461:c3d9:c6a3 with SMTP id k13-20020a056402048d00b00461c3d9c6a3mr64263633edv.154.1670427194077;
+        Wed, 07 Dec 2022 07:33:14 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id s26-20020a056402015a00b00461bacee867sm2337366edu.25.2022.12.07.07.33.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 07:33:13 -0800 (PST)
+Date:   Wed, 7 Dec 2022 16:33:12 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     ehakim@nvidia.com
+Cc:     linux-kernel@vger.kernel.org, raeds@nvidia.com,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <DU0P192MB1547FE6F35CC1A3EEA1AFDECD6179@DU0P192MB1547.EURP192.PROD.OUTLOOK.COM>
- <deb77161-3091-a134-4b82-78fef06efe85@linux.dev>
- <7901fd2a-e6d5-8176-73bd-b910f8abee33@outlook.com>
-In-Reply-To: <7901fd2a-e6d5-8176-73bd-b910f8abee33@outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TMN:  [xmLTBxQN79R/Mzxphkbf3KP9t61C69Mz]
-X-ClientProxiedBy: SJ0PR05CA0053.namprd05.prod.outlook.com
- (2603:10b6:a03:33f::28) To DU0P192MB1547.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:10:34b::15)
-X-Microsoft-Original-Message-ID: <291c6431-05b7-3709-68eb-3aa92ea80913@outlook.com>
+        pabeni@redhat.com, netdev@vger.kernel.org, sd@queasysnail.net,
+        atenart@kernel.org
+Subject: Re: [PATCH net-next 2/2] macsec: dump IFLA_MACSEC_OFFLOAD attribute
+ as part of macsec dump
+Message-ID: <Y5CyOLlsB0/ZdyDS@nanopsycho>
+References: <20221207101017.533-1-ehakim@nvidia.com>
+ <20221207101017.533-2-ehakim@nvidia.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DU0P192MB1547:EE_|PRAP192MB1458:EE_
-X-MS-Office365-Filtering-Correlation-Id: bd84bd63-9dd3-42b8-34c4-08dad867c460
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kfavVOOpeqPlyMqUN7M3FTgZ8xfyDYHZZ70dDC8ZmKx45Jy75M8ue8CnX0CZ6ecsZ36R84S+UBJ/oUWtnOhNOhh8OnmImK+5cyLTll5XpmU0k1zX896LY0uvl9YfH2uAOWnP88wI/Ymu36heJWMtJxrcl75zvGjFSixE/oqYKPjuAjztJVhcAe79apaVwMUagv3nc6PL4rIGe48tIJLZft++X+IvfZHQsDvnEL8OvcvJaouln60/9JZbgMBrt8xoeniGj+YU4/sa7R60S8QlsobHkig2mXkt5BbAiab/9q57OkbiD1CB95ZRUBwTUI3qkhMwAeLp5t9k8KYeKgZakPwguzJmmWwHLJ50tvatH7nyjCSF4Yjl4AlCicR+SHwRs+Q0Rvx26AOLt/K7CRW9pqMdqz78jMoyCi4iIiO1BoCr+HY/lQTpy8Kid9luSw7mLRZNFZLuKQBqUN1BWHE5NsMDD/mAKLkejkXskJf3zJAmZ39/Ki4wlkA/a7vQePYJKF/CYtRantEB8+qtJmUwtG3EaKtI/E/RBuNoRYS+CLL0B68uJ34vwOjdoYJK4iNU1W074qRAmDsFbebnm0Ht3spYoqYYAGftaYQYMpae24OrBwbcOaa8IZ5NDRIfPAwPW9973xzbEb0FpPmSFEp5+w==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZExIOFEyeUpDTlE4SzZzL1IrOGJlOEhSYTFndVhnQytaTS8zMU5zcFNzTVRl?=
- =?utf-8?B?RHFNM1ZZZERNdTJ5UFRKSUVKV20rWSt3ZjI3MDk2a3dFRWx4NmpETmRZeWxB?=
- =?utf-8?B?dXBPU2YweFZxc2ZyN0tjY1FVVGFRMEJYdUFNazZ6bGJ6YkVTTWJhQVpENWp1?=
- =?utf-8?B?SmhNcytXdXU2ZzNoRElHM3BsOFBPbUFQVjlXL1RTb1p2a0gya2M3WmJ1akFv?=
- =?utf-8?B?WXFsUmFjYlVtMlFDUEh2NTg1cCtaVWl0ZmxrbFNMb0lSNUQ0c29WaTJFTldj?=
- =?utf-8?B?SEZ3ZDhZZDlzZ2hKOWphYjRzTFRyanRscDFLdENmUU1JVHhtR3ZUdTdjTXA3?=
- =?utf-8?B?YTFSVElLdkdGQWR4V1U1M1dudnZZdmJpejJCdFlYWURKQWtVR0IwS1E3bnYy?=
- =?utf-8?B?eXM3cWx1OWc1eDJKTkt2UkRCRUg2amt4b1VxY05LMGZkYk9vNXJGWFN5d210?=
- =?utf-8?B?cEhnb0NQVndkQ1BDbnZlalRzWGFpN0NsOVg0TVc0S2lNbHV6OUlCa3lwNG5r?=
- =?utf-8?B?OWdncTVLbmNXQ0g0U0VhQkREM3kwR1N1dmUrU2czaElUejRSREZ3Yk42SWFi?=
- =?utf-8?B?RkZzb1o3WThFMmJNWnVqRU45bXJ3WVp3NUxnTTJNM3ovQXMyMTg5Z0lITEJX?=
- =?utf-8?B?L0IzT1dLcUsxL1YzR0piY3R4NVBjSUFweEplWVRJOHU4S2hyU3k2WFRPY0hS?=
- =?utf-8?B?Vy9xeDRLTUJrajlOV0kxYmFkbDlick1oOXdzb0l1UWFaTnVIakc4REZVVXp0?=
- =?utf-8?B?cHVnV0pBQkVETW9UY3M4Y2lCeXVuWDQ5ZHpKMmpGWGx0ZzZvN2hxd0pWek5B?=
- =?utf-8?B?Zk1VdTRuSDJxdEJ3TmlnajhaV0twOHVidDJmSkROaHAraTFaV3JUT1dMbk9L?=
- =?utf-8?B?N2JYZmZpQU1JS1FNakJzV1E5RWdUeUtUOVJ5WGUvQnB3VHZFaFlxL1NMWHhL?=
- =?utf-8?B?QWlWRXc5S0toMGJ2MmNHS1RXNlZ1bU9kZ29Cc054RkFqK3RHZWVpMmdnOXpL?=
- =?utf-8?B?NE5uWjNmVUpiVUZPT283b3gzYkxSZ0hUelZCZHdtdWNTNVBpTW5pK1hXM2Fp?=
- =?utf-8?B?VlU1d0NiamdGWmdLVTZQeklIZkwrOFd4a0RWRU1XdVoyVG1MUFovQlFsVEpu?=
- =?utf-8?B?Y3dHWDZSdUR6UHNnWTdnM1d3MG1IY2trL1I0OEhXeW5KYkU2MTQ5ZFBhMVBM?=
- =?utf-8?B?OWdpY0szV1pYRzRkUjNmMjhzT2xxVTdjaWhoZG1aOVBMcnM2bXRwZE9YQzNS?=
- =?utf-8?B?UzVGcHd4WmVvTGNHVWRSTTQ0eERJUS8rUFdHOTRPRGtxbFhZRG45Y1VUdmtW?=
- =?utf-8?B?SEFyTnNPUURUU1FEN2JFVTA1cHBUU3N0UDVMdlg0TWtFZG8zV2FSNGc1WEpm?=
- =?utf-8?B?bjNWWE13RDBudVhRTmY5M3hTZ3BFTksxMWZXOGpMcDNGSG1uVTI5elcva2lS?=
- =?utf-8?B?SmY0UUd1RVJXd1FCakJxWnk5UnYwU2k4S3plczlYaWEwTUxjZ0dPUW9HaTFh?=
- =?utf-8?B?Qy80bkRYcTkzd3pzRDV2VTViZzRYc2ZJTWtaZ2pXSTk5dVE3TVBmUjZjTHNF?=
- =?utf-8?B?SUtYZUFGRzAyakRweCtwWmxIZW4rN2M0T2psWTFkdS9ReWxMN2ZFTjFVYzMr?=
- =?utf-8?B?VGZTdU84SDNiNWxvOGlhZW4rUkpId3pNWER3Qlc3YW0zYlVCSjFtTm83NjJB?=
- =?utf-8?B?ZHJheFZYMmJiVDljOXlmL2ozbTBTRjQvUVc1QjdWbmI4VWQreHlzbWt3PT0=?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bd84bd63-9dd3-42b8-34c4-08dad867c460
-X-MS-Exchange-CrossTenant-AuthSource: DU0P192MB1547.EURP192.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 15:29:01.7809
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PRAP192MB1458
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_MUA_MOZILLA,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221207101017.533-2-ehakim@nvidia.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/12/7 19:19, Ji Rongfeng wrote:
-> On 2022/12/7 2:36, Martin KaFai Lau wrote:
->> On 12/2/22 9:39 AM, Ji Rongfeng wrote:
->>> Returning -EINVAL almost all the time when error occurs is not very
->>> helpful for the bpf prog to figure out what is wrong. This patch
->>> upgrades some return values so that they will be much more helpful.
->>>
->>> * return -ENOPROTOOPT when optname is unsupported
->>>
->>>    The same as {g,s}etsockopt() syscall does. Before this patch,
->>>    bpf_setsockopt(TCP_SAVED_SYN) already returns -ENOPROTOOPT, which
->>>    may confuse the user, as -EINVAL is returned on other unsupported
->>>    optnames. This patch also rejects TCP_SAVED_SYN right in
->>>    sol_tcp_sockopt() when getopt is false, since do_tcp_setsockopt()
->>>    is just the executor and it's not its duty to discover such error
->>>    in bpf. We should maintain a precise allowlist to control whether
->>>    an optname is supported and allowed to enter the executor or not.
->>>    Functions like do_tcp_setsockopt(), their behaviour are not fully
->>>    controllable by bpf. Imagine we let an optname pass, expecting
->>>    -ENOPROTOOPT will be returned, but someday that optname is
->>>    actually processed and unfortunately causes deadlock when calling
->>>    from bpf. Thus, precise access control is essential.
->>
->> Please leave the current -EINVAL to distinguish between optnames 
->> rejected by bpf and optnames rejected by the do_*_{get,set}sockopt().
-> 
-> To reach that goal, it would be better for us to pick a value other than 
-> -ENOPROTOOPT or -EINVAL. This patch actually makes sk-related errors, 
-> level-reletad errors, optname-related errors and opt{val,len}-related 
-> errors distinguishable, as they should be, by leaving -EINVAL to 
-> opt{val,len}-related errors only. man setsockopt:
-> 
->  > EINVAL optlen invalid in setsockopt().  In some cases this error
->  >        can also occur for an invalid value in optval (e.g., for
->  >        the IP_ADD_MEMBERSHIP option described in ip(7)).
-> 
-> With an unique return value, the bpf prog developer will be able to know 
-> that the error is "unsupported or unknown optname" for sure, saving time 
-> on figuring the actual cause of the error. In production environment, 
-> the bpf prog will be able to test whether an optname is available in 
-> current bpf env and decide what to do next also, which is very useful.
-> 
->>
->>>
->>> * return -EOPNOTSUPP on level-related errors
->>>
->>>    In do_ip_getsockopt(), -EOPNOTSUPP will be returned if level !=
->>>    SOL_IP. In ipv6_getsockopt(), -ENOPROTOOPT will be returned if
->>>    level != SOL_IPV6. To be distinguishable, the former is chosen.
->>
->> I would leave this one as is also.  Are you sure the do_ip_*sockopt 
->> cannot handle sk_family == AF_INET6?  afaict, bpf is rejecting those 
->> optnames instead.
-> 
-> -EOPNOTSUPP is just picked here as an unique return value representing 
-> "unknown level or unsupported sk_family or mismatched protocol in 
-> bpf_{g,s}etsockopt()". I'm ok if you want to pick another unique value 
-> for them or pick three unique values for each type of error : )
+Wed, Dec 07, 2022 at 11:10:17AM CET, ehakim@nvidia.com wrote:
+>From: Emeel Hakim <ehakim@nvidia.com>
+>
+>consider IFLA_MACSEC_OFFLOAD in macsec's device dump,
 
-Sorry, I meant "three unique values for three types of error", which is 
-growing more and more sensible in my mind as I'm thinking about it.
+Sentense starts with capital letter.
 
-> 
->>
->>>
->>> * return -EBADFD when sk is not a full socket
->>>
->>>    -EPERM or -EBUSY was an option, but in many cases one of them
->>>    will be returned, especially under level SOL_TCP. -EBADFD is the
->>>    better choice, since it is hardly returned in all cases. The bpf
->>>    prog will be able to recognize it and decide what to do next.
->>
->> This one makes sense and is useful.
->>
-> 
 
+>this mandates a change at macsec_get_size to consider the
+>additional attribute.
+
+I'm unable to understand what you mean by this description. What should
+the codebase consider and why?
+
+Code looks fine.
+
+>
+>Reviewed-by: Raed Salem <raeds@nvidia.com>
+>Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+>---
+> drivers/net/macsec.c | 11 +++++++++--
+> 1 file changed, 9 insertions(+), 2 deletions(-)
+>
+>diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+>index 1850a1ee4380..0b8613576383 100644
+>--- a/drivers/net/macsec.c
+>+++ b/drivers/net/macsec.c
+>@@ -4257,16 +4257,22 @@ static size_t macsec_get_size(const struct net_device *dev)
+> 		nla_total_size(1) + /* IFLA_MACSEC_SCB */
+> 		nla_total_size(1) + /* IFLA_MACSEC_REPLAY_PROTECT */
+> 		nla_total_size(1) + /* IFLA_MACSEC_VALIDATION */
+>+		nla_total_size(1) + /* IFLA_MACSEC_OFFLOAD */
+> 		0;
+> }
+> 
+> static int macsec_fill_info(struct sk_buff *skb,
+> 			    const struct net_device *dev)
+> {
+>-	struct macsec_secy *secy = &macsec_priv(dev)->secy;
+>-	struct macsec_tx_sc *tx_sc = &secy->tx_sc;
+>+	struct macsec_tx_sc *tx_sc;
+>+	struct macsec_dev *macsec;
+>+	struct macsec_secy *secy;
+> 	u64 csid;
+> 
+>+	macsec = macsec_priv(dev);
+>+	secy = &macsec->secy;
+>+	tx_sc = &secy->tx_sc;
+>+
+> 	switch (secy->key_len) {
+> 	case MACSEC_GCM_AES_128_SAK_LEN:
+> 		csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_128 : MACSEC_DEFAULT_CIPHER_ID;
+>@@ -4291,6 +4297,7 @@ static int macsec_fill_info(struct sk_buff *skb,
+> 	    nla_put_u8(skb, IFLA_MACSEC_SCB, tx_sc->scb) ||
+> 	    nla_put_u8(skb, IFLA_MACSEC_REPLAY_PROTECT, secy->replay_protect) ||
+> 	    nla_put_u8(skb, IFLA_MACSEC_VALIDATION, secy->validate_frames) ||
+>+	    nla_put_u8(skb, IFLA_MACSEC_OFFLOAD, macsec->offload) ||
+> 	    0)
+> 		goto nla_put_failure;
+> 
+>-- 
+>2.21.3
+>
