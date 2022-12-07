@@ -2,237 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 675A6645A18
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:47:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8137645A1D
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:48:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbiLGMrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 07:47:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
+        id S229646AbiLGMsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 07:48:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiLGMrF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:47:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B76CF31
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 04:46:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670417168;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OQyAmSUNZyFmd3qPXFCQdcuOPQovsZlF3qScABKGPX4=;
-        b=bNqTWvS2okydDbwCvCZ0OzW4TWNcL7dWY3+9foM9G+1duK8BWBZMH8lEG1+OgTrLA/rrbb
-        6DDngNlswqwW2bWlvWKHtAW/RDDhjY2OgeYaZ2ZjiHzH3exgYTGuEDdAx58wHH2ZNXbeqq
-        boyZAzNhCOtcrulzekgpGaBkMgjfi6A=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-53-X18iHUXjM4iC_0lLgUcK7A-1; Wed, 07 Dec 2022 07:46:01 -0500
-X-MC-Unique: X18iHUXjM4iC_0lLgUcK7A-1
-Received: by mail-wm1-f72.google.com with SMTP id r7-20020a1c4407000000b003d153a83d27so1416385wma.0
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 04:46:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=OQyAmSUNZyFmd3qPXFCQdcuOPQovsZlF3qScABKGPX4=;
-        b=Llxunzf/uFPIhKASDgy1aAZ2bZf1lgULHJvvfXgVZoDQywyBKU3X/sJg3lm2uyURZ1
-         rZY8C04UQPjBKsuGs4YACWeRyuYVlyvwh2/oKOV8CFkFTx8HCzr1tq264vAY5FsWgSn6
-         zz2xHYNkJfqyH8/D6ShKIjAskFASFMNMY29DIUag5+bKyrxUiE3LqouPtrvde/Vmcp2b
-         g5YokAapd3Is3jJXBRZpQ1m9VMaXKLwt3ljkQX/q4nvwhuSxpvISub+jtEF8CI4+ErfE
-         AQfCmQGv6fyVgHYUpb8GSq2+8wXfJgzJC4hCNKnlAnIZC41qGCiKcCLNXUrDou5hjSg5
-         qcUQ==
-X-Gm-Message-State: ANoB5pluR6q07MrO1FzQDJHpkIp4tjSnjxz82BUwGdPoDzIJj8ZHPI9E
-        xff3N2sS2tJ1ZVfsyX0pyYk+zAFhn618PAa/gHBcbVaVEySsP/XGD8goXxXXV3uxvzgadS+UOVT
-        7YKcg4ZGvbb63Z3uG
-X-Received: by 2002:a5d:6b8d:0:b0:236:4c14:4e4c with SMTP id n13-20020a5d6b8d000000b002364c144e4cmr55543903wrx.634.1670417160609;
-        Wed, 07 Dec 2022 04:46:00 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf44OzE67jrmbSsa9k3tB5WxLZpIQN+EuYaFBzO50on46kYiKBBvQ7wqtIOieqSg8ctcKFsqmA==
-X-Received: by 2002:a5d:6b8d:0:b0:236:4c14:4e4c with SMTP id n13-20020a5d6b8d000000b002364c144e4cmr55543884wrx.634.1670417160331;
-        Wed, 07 Dec 2022 04:46:00 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-106-100.dyn.eolo.it. [146.241.106.100])
-        by smtp.gmail.com with ESMTPSA id ck14-20020a5d5e8e000000b0023677e1157fsm8155277wrb.56.2022.12.07.04.45.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 04:45:59 -0800 (PST)
-Message-ID: <ad410abb19bdbcdac617878d14a4e37228f1157b.camel@redhat.com>
-Subject: Re: [PATCH net-next v3 2/3] net: qualcomm: rmnet: add tx packets
- aggregation
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Daniele Palmas <dnlplm@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229660AbiLGMs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:48:29 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2056.outbound.protection.outlook.com [40.107.220.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636692C641
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 04:48:28 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O+XX/rj8p15et+XPDd5xKH1KpPwxEjVAbKgu04OOIzEZX15zZegy2y1+ieUvOQgwcNH+0pBh34SV8ELru287L4S3PnIMxdIO94tHWBEH+0YkHShax/FqXIDuJ1gYpaDwhqiM6qhHAECy+oAiLQzxTr/yjfUXQPpfdGm9gM6+N6jPQkAnrPK+NqSC9RsYr7ud7peiXEYnKvUIUNiG3HnbvDIZqTmHVG0R322HQ18tnwXGRiWbj5+KIxe7in0xTzsNwa1YWCEyWFu5wD4PyHum765LKz0r966pJfZX06bSxbr6bIFi+dWk/rTRo8e6qMg8i3iBjP8iIn4m/l/cvfrsPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=t4qKKk+KDNi4qGciPx8cj5B0yhDDvE8FrGDFALSVRAQ=;
+ b=iuClEQbXneAVVdxuiMet19p1fsqyjAvkafBq7VDWlPkPYhkGWe+1kq237C9JPilQe7+p/HJjfFsPtWFyK/l2XMUurHhUKzB2vyJrpij53hFp3R/ytuLwnewKqf0O9E+mAJqZhnoeXV+7n5LSWraZCK6aAz3S1pi62mlawMR13qZx4AHFX97nt+OIOFu6Noc7kR3afvSY3zlsC0BRHmwjeYV+fXQ9AmHNBjbJWwNjvaBIzUCwPew1Xr+n4MLE3JmOAonGxliesQg1pzhjFt6Lc8XOiHHS8V2pH2JF4gXupbVIYu58tlNGRWwTzvia6nGlzUa0x4F+UTKNi2TDvs1mlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t4qKKk+KDNi4qGciPx8cj5B0yhDDvE8FrGDFALSVRAQ=;
+ b=TFlYkX9EaTR1EN1+C+MWLF4DQoFvtr47hG4kZk6hqnXIxsXMaQSFFlSoLK1w8ya6stQOXkvtpH/zHfSVhg2EvcSTnnPi0N5XkjLCGki2iEfNJ7Lu2mJjPuFj7x8rYX2gDjOrJMiK82xxS4cZjeNVfGq3blv2ZyQlqG6xI3QcZTjNiAR+KhVP+wex+ABOnd5t4BkG2oGPG4dprlznqXelxlfxwFmlN12wZwGjWQySRuXlKNvvl68ie7app0x6XDnKl71idNYI5Gt49P7JNcP3WXhOnQKkwNh9czF3sjcBUk7VHX3NQTNJP0y7Ii3vRinSESpMiDGCWa+EiLHCp+0yEA==
+Received: from DM6PR12MB3707.namprd12.prod.outlook.com (2603:10b6:5:1c1::28)
+ by DS7PR12MB5960.namprd12.prod.outlook.com (2603:10b6:8:7f::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.13; Wed, 7 Dec
+ 2022 12:48:26 +0000
+Received: from DM6PR12MB3707.namprd12.prod.outlook.com
+ ([fe80::a78a:1514:2c4d:b81c]) by DM6PR12MB3707.namprd12.prod.outlook.com
+ ([fe80::a78a:1514:2c4d:b81c%3]) with mapi id 15.20.5880.014; Wed, 7 Dec 2022
+ 12:48:26 +0000
+From:   Petr Machata <petrm@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
-        Sean Tranchetti <quic_stranche@quicinc.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Gal Pressman <gal@nvidia.com>
-Cc:     =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dave Taht <dave.taht@gmail.com>, netdev@vger.kernel.org
-Date:   Wed, 07 Dec 2022 13:45:58 +0100
-In-Reply-To: <20221205093359.49350-3-dnlplm@gmail.com>
-References: <20221205093359.49350-1-dnlplm@gmail.com>
-         <20221205093359.49350-3-dnlplm@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Ido Schimmel <idosch@nvidia.com>, Amit Cohen <amcohen@nvidia.com>,
+        mlxsw <mlxsw@nvidia.com>
+Subject: Re: [PATCH net 0/6] mlxsw: Add Spectrum-1 ip6gre support
+Thread-Topic: [PATCH net 0/6] mlxsw: Add Spectrum-1 ip6gre support
+Thread-Index: AQHZCji3L70Xhz2PfUSA+sH5vtzlba5iXw+y
+Date:   Wed, 7 Dec 2022 12:48:26 +0000
+Message-ID: <DM6PR12MB3707A92FE5BC70218ED0ECB6D61A9@DM6PR12MB3707.namprd12.prod.outlook.com>
+References: <cover.1670414573.git.petrm@nvidia.com>
+In-Reply-To: <cover.1670414573.git.petrm@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR12MB3707:EE_|DS7PR12MB5960:EE_
+x-ms-office365-filtering-correlation-id: 46c7573c-8f6f-4725-1cb2-08dad85155aa
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ey7dPIkkHH4js7wDd63bY/ZHozQ4zg3nMUpBfr314JsCLbwxTA6h7pr5wYJRYEHlVn/RUFuK9g1tL6noS/7wCctY8M+FfHhA3JlzlUbl6s9OIMeLV55+RBy4zdxTMha2K3fo3qZLbJOS9r7uJ1YVQt0SMSctc6a0e+Sx7XWskqwzYruoXfXeIdSJ6VNlgxE3YOBsD+GZtqWqNysZD+CDjM4rpaqrxqWmk/5OKwHclVJbMq3bB9f90nweFFzWwpq1uKzdSpgXBbohNzVl8YsMZMN4gpyhFYaKrGAa3UU55+m6WuHsQgTPpdVFyk6g1+UBMBjd/S48F9FPFgZ/T9cSl5un7aPxd11nJZjJD/UQuzUzfhxUYq7hFYyfChcZB4sxGqoFUXeMce84HgjuetYqlHZjS9gaPdcduxUd/y48IaQKRJHcPCcdfpwrrVb8Prig9aJ+AAUgRmR7JwzvMhZstF4U3ZujUb3FPYu2QkEEVkh1B8LAkpHK1AQRfF2OJIXS2xD9ZGwxvOXkgUK5CKUFD6HgavpfOgkom2YFgJjsmfArtQkzNclkhJW3KJf49oZyh95O2zDhLF65TunK2++MSCEHL1lVp4DRIsjAJhQfrOKoM/XUo5kLbNyD4u8xQLnlj6WZLOZNywD1rpQ20wKY8xD/SWbWCjOWIZWNSRYTicr5zaIflpkp/d1/STKcTQ7G4xvoiiDyq6bSIbG1VWSAK5ZzkwQcF3OiV7EWr5dxNCo=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3707.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(346002)(396003)(39860400002)(136003)(451199015)(2906002)(76116006)(558084003)(186003)(55016003)(33656002)(66946007)(66476007)(41300700001)(86362001)(91956017)(9686003)(4270600006)(26005)(110136005)(38070700005)(52536014)(66446008)(64756008)(316002)(8676002)(122000001)(66556008)(4326008)(38100700002)(71200400001)(478600001)(5660300002)(54906003)(6506007)(8936002)(107886003)(7696005)(32563001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?qawTzZ1Ywa0vPmctUSaHt0WoKHw+d3CxiKER9/s1/sa+KZNNXGh5eYeZmN?=
+ =?iso-8859-1?Q?revWnDd4ZpWyvfkHcrQ/RB7KMlJFqSodJzlWuK8fkgzawUevjb9rEXpj/0?=
+ =?iso-8859-1?Q?hfns1DZf/DP668YMni3L+LDtr/mrY9p7Qc/9L1Tq8L8aksCM4/+og9lv7V?=
+ =?iso-8859-1?Q?L9/9ZAycawxqTE7vgP3RGl5cYgdLV1OnE7Sh6mY+Kr+rnEhEDNrHms0cbI?=
+ =?iso-8859-1?Q?GBECvujJfVLFu671e2kkjo2kN4ZP9H1tjyaPiO0YwmD7k5+Hjk99zJNsRa?=
+ =?iso-8859-1?Q?w7/EHlqftnd6HKZfsAwrvn5i8qUQmTRiyqTdQ3bBJSDYvO1eM4DQm2/X3k?=
+ =?iso-8859-1?Q?+oAUOmFschKNIOWvAhLfB5nVp50QvW1JBRmQ1H+2SyA0E0dFluOaGH27+i?=
+ =?iso-8859-1?Q?K+ajAXE93uiMkxP44x3AIn6xTpmhlMao22udE2JCAbCOEH+d+vAE61XOKk?=
+ =?iso-8859-1?Q?lgSb2AfuuaMuXyVt2+zU5ogYdz5BpVq3OnGLGmkJeHm1uAlk9zdlHTxKk8?=
+ =?iso-8859-1?Q?+0ziNXccmnZef+dJwpV6/5SIQa/r9/eFR9vCiOD2Ffeo+NdGSSP+2FEz8T?=
+ =?iso-8859-1?Q?srjCclFmxE8ZO9eVE5vSUpFLyLyo6hmchxg+FhEtg7N3nZBGIhSORbjy6t?=
+ =?iso-8859-1?Q?PZ4c2fUcvGUDzk9KS9OfnsgINQI5X47Il1+zd+psaDR9AAUYbbhajZcfKA?=
+ =?iso-8859-1?Q?Zpz17YDEjMuMbms/DdcePIDSQ3DXlm0JGrg5EWpaInKbFQviRf6vRMw1fz?=
+ =?iso-8859-1?Q?FjOs/JqI5ujNjjsISYD0XlIAWQxlqoeUuHnvh/bo5m0LGHN+m6Flk6boCf?=
+ =?iso-8859-1?Q?jJ0ziNmYUl3uDeoPUsFuh5/pK7+oU9d5VOE/h4Po9lsAQt++W9quhzGhj1?=
+ =?iso-8859-1?Q?se9oGUYQW9ascjQvYKKJW11RTyxdRahBrFqjpRgHCTFaNjfxywGM4B1Dmj?=
+ =?iso-8859-1?Q?GvgstXz2FJEgrJXMkaW0WAYtCiYaO2vUrzaSl+9k8qYX2yZpTGPpSgEosE?=
+ =?iso-8859-1?Q?jXgITbRwE8UssiBSN0nGzjOhLJiiAevGZiRccNh0Kp3j8YXovvdzjj15Cc?=
+ =?iso-8859-1?Q?OdSwUaldnFSFZ8/fxThECvaenjmry94N8zmdDhUjK6DgCgX97jJdLhb3oQ?=
+ =?iso-8859-1?Q?Pj2ESA07xu4PQDAmzn2NQmF18x51/kIZkHe0trJ7zZvhngVGwyXjud1ZIL?=
+ =?iso-8859-1?Q?yqXLI8WIhTuzTIrbnDLodtvzIgU52n5//z62mK9Doem2oU0brnhK/mJVTE?=
+ =?iso-8859-1?Q?0YcemDqeIrCYiDq0+Pav1y1wRTo82m8KA6IQhUuRv660hRYBHYjcQf1I8J?=
+ =?iso-8859-1?Q?NnkFwooVDidgmzE6mAiaSUhv2uQHorTbo3zMP4mpEjOcd4X9fk7SGLjsJJ?=
+ =?iso-8859-1?Q?HBZc+pEVW/3i7K7ql2LG4tzRbCCv7iH3oIWLMtMTB9GwNPrsapap7wRQLa?=
+ =?iso-8859-1?Q?RdSl0HMGjZc2MBgNri3Zl31nK8ZnqnH7epwAVUh2+PvlrYiup7UBXWgAQx?=
+ =?iso-8859-1?Q?HmrA61wi3+WMkfsfiSkVwN+0E9nH+JMK0EgiwYLjvCpuIvbf5lDAj8z93O?=
+ =?iso-8859-1?Q?M+HOPW4HKARSdalt1arOM5R02BazPtQXQYlEjPAZHzzxGt9qg/UXqh63je?=
+ =?iso-8859-1?Q?XFQDOSv1ItE4w=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3707.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 46c7573c-8f6f-4725-1cb2-08dad85155aa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Dec 2022 12:48:26.7352
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LJUWKcfYFANbbGsyoO6yBSOZ4Q/llj34Q42haQzqEQpDH9vT6jFXxOlAUB3QkK+iJ0Fs+c4xOCP0ulF9D/rolw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5960
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-12-05 at 10:33 +0100, Daniele Palmas wrote:
-> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-> index a313242a762e..914ef03b5438 100644
-> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-> @@ -164,8 +164,18 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
->  
->  	map_header->mux_id = mux_id;
->  
-> -	skb->protocol = htons(ETH_P_MAP);
-> +	if (port->egress_agg_params.count > 1) {
-
-This is racy. Here you read 'count' outside the 'agg_lock' lock and
-later, in rmnet_map_tx_aggregate() the code assumes the above condition
-helds, but ethtool could have changed the value in the meantime.
-
-You need a READ_ONCE() above, a WRITE_ONCE() on update and cope with 0
-value in rmnet_map_tx_aggregate().
-
-[...]
-
-> +static void rmnet_map_flush_tx_packet_work(struct work_struct *work)
-> +{
-> +	struct sk_buff *skb = NULL;
-> +	struct rmnet_port *port;
-> +
-> +	port = container_of(work, struct rmnet_port, agg_wq);
-> +
-> +	spin_lock_bh(&port->agg_lock);
-> +	if (likely(port->agg_state == -EINPROGRESS)) {
-> +		/* Buffer may have already been shipped out */
-> +		if (likely(port->skbagg_head)) {
-> +			skb = port->skbagg_head;
-> +			reset_aggr_params(port);
-> +		}
-> +		port->agg_state = 0;
-> +	}
-> +
-> +	spin_unlock_bh(&port->agg_lock);
-> +	if (skb)
-> +		rmnet_send_skb(port, skb);
-> +}
-> +
-> +static enum hrtimer_restart rmnet_map_flush_tx_packet_queue(struct hrtimer *t)
-> +{
-> +	struct rmnet_port *port;
-> +
-> +	port = container_of(t, struct rmnet_port, hrtimer);
-> +
-> +	schedule_work(&port->agg_wq);
-
-Why you need to schedule a work and you can't instead call the core of
-rmnet_map_flush_tx_packet_work() here? it looks like the latter does
-not need process context...
-
-> +
-> +	return HRTIMER_NORESTART;
-> +}
-> +
-> +unsigned int rmnet_map_tx_aggregate(struct sk_buff *skb, struct rmnet_port *port,
-> +				    struct net_device *orig_dev)
-> +{
-> +	struct timespec64 diff, last;
-> +	unsigned int len = skb->len;
-> +	struct sk_buff *agg_skb;
-> +	int size;
-> +
-> +	spin_lock_bh(&port->agg_lock);
-> +	memcpy(&last, &port->agg_last, sizeof(struct timespec64));
-> +	ktime_get_real_ts64(&port->agg_last);
-> +
-> +	if (!port->skbagg_head) {
-> +		/* Check to see if we should agg first. If the traffic is very
-> +		 * sparse, don't aggregate.
-> +		 */
-> +new_packet:
-> +		diff = timespec64_sub(port->agg_last, last);
-> +		size = port->egress_agg_params.bytes - skb->len;
-> +
-> +		if (size < 0) {
-> +			/* dropped */
-> +			spin_unlock_bh(&port->agg_lock);
-> +			return 0;
-> +		}
-> +
-> +		if (diff.tv_sec > 0 || diff.tv_nsec > RMNET_AGG_BYPASS_TIME_NSEC ||
-> +		    size == 0) {
-
-You can avoid some code duplication moving the following lines under an
-'error' label and jumping to it here and in the next error case.
-
-> +			spin_unlock_bh(&port->agg_lock);
-> +			skb->protocol = htons(ETH_P_MAP);
-> +			dev_queue_xmit(skb);
-> +			return len;
-> +		}
-> +
-> +		port->skbagg_head = skb_copy_expand(skb, 0, size, GFP_ATOMIC);
-> +		if (!port->skbagg_head) {
-> +			spin_unlock_bh(&port->agg_lock);
-> +			skb->protocol = htons(ETH_P_MAP);
-> +			dev_queue_xmit(skb);
-> +			return len;
-> +		}
-> +		dev_kfree_skb_any(skb);
-> +		port->skbagg_head->protocol = htons(ETH_P_MAP);
-> +		port->agg_count = 1;
-> +		ktime_get_real_ts64(&port->agg_time);
-> +		skb_frag_list_init(port->skbagg_head);
-> +		goto schedule;
-> +	}
-> +	diff = timespec64_sub(port->agg_last, port->agg_time);
-> +	size = port->egress_agg_params.bytes - port->skbagg_head->len;
-> +
-> +	if (skb->len > size) {
-> +		agg_skb = port->skbagg_head;
-> +		reset_aggr_params(port);
-> +		spin_unlock_bh(&port->agg_lock);
-> +		hrtimer_cancel(&port->hrtimer);
-> +		rmnet_send_skb(port, agg_skb);
-> +		spin_lock_bh(&port->agg_lock);
-> +		goto new_packet;
-> +	}
-> +
-> +	if (skb_has_frag_list(port->skbagg_head))
-> +		port->skbagg_tail->next = skb;
-> +	else
-> +		skb_shinfo(port->skbagg_head)->frag_list = skb;
-> +
-> +	port->skbagg_head->len += skb->len;
-> +	port->skbagg_head->data_len += skb->len;
-> +	port->skbagg_head->truesize += skb->truesize;
-> +	port->skbagg_tail = skb;
-> +	port->agg_count++;
-> +
-> +	if (diff.tv_sec > 0 || diff.tv_nsec > port->egress_agg_params.time_nsec ||
-> +	    port->agg_count == port->egress_agg_params.count ||
-
-At this point port->egress_agg_params.count can be 0, you need to check
-for:
-	port->agg_count >= port->egress_agg_params.count	
-
-
-Cheers,
-
-Paolo
-
+Sorry, this is meant for "net-next", not "net".=
