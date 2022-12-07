@@ -2,85 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 994BC645E11
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:54:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A55C645E56
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 17:07:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229777AbiLGPx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 10:53:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
+        id S229691AbiLGQGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 11:06:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbiLGPxj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:53:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 061673B9F8;
-        Wed,  7 Dec 2022 07:53:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C97960BC6;
-        Wed,  7 Dec 2022 15:53:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB84EC433C1;
-        Wed,  7 Dec 2022 15:53:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670428413;
-        bh=7RkxkZPydmgY+dUiToX4cyTrMbv8PtEIFaaPH+OJyTw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZUIDnibXsEXYoil1UjplZDSbfOPyvQ/M/UUun9HG+gHEHwIThD7mzfhP22CT6r5/h
-         AQmWvJ3hmTVfm1YF6y4X3KirTz5pkTwXyOtC00Nxf/EVe0Iotwev4sMI0PYnMVTBPo
-         QalrKnOI7AxjWiHUtZ5nxblvTuAFNx83GzLx6ibFSaqL9vsUjoCZNMJpbRZy2k8kam
-         eR0wrngFG16fM0bNDOFMPivuYqk9IYuFkuEcHFqYwmQ31/mg2dDGMNUIm49NvX0kwI
-         7AtoMCDigza+HDFjwViZEploqAZdYZwsQZyvhCAixAZFswwHL7/tfCC4XvHBWbKFj4
-         2RQdtFhOH67dQ==
-From:   Bjorn Andersson <andersson@kernel.org>
-To:     srinivas.kandagatla@linaro.org, kuba@kernel.org,
-        konrad.dybcio@somainline.org, elder@kernel.org, kvalo@kernel.org,
-        edumazet@google.com, quic_jjohnson@quicinc.com,
-        mathieu.poirier@linaro.org, davem@davemloft.net, agross@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v2 0/4] Make QMI message rules const
-Date:   Wed,  7 Dec 2022 09:53:26 -0600
-Message-Id: <167042840342.3235426.4288324926729574883.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220914234705.28405-1-quic_jjohnson@quicinc.com>
-References: <20220912232526.27427-1-quic_jjohnson@quicinc.com> <20220914234705.28405-1-quic_jjohnson@quicinc.com>
+        with ESMTP id S229530AbiLGQGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 11:06:53 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE534D5EC;
+        Wed,  7 Dec 2022 08:06:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=IBl7I+bm4N23cZMr7HzDMt6ZBiLVvosl810hoZvQYJ8=; b=0O
+        gSVb4o5McwsHUzBLJeASdc4XDq5SzALJb2ai6opiyY1BmIbsAgGqPOWq81VeEhtI3gZzVsaXzCeuV
+        o4KGHBW9K2VBqudeYGy27N6MjClP9OfdoRoYfLH5b3/Xc0Vm99gdL8MDZYxhBcLsIu35k3rRdb7v/
+        sV3lSlwdxBbILbE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p2wwU-004fZS-66; Wed, 07 Dec 2022 17:06:42 +0100
+Date:   Wed, 7 Dec 2022 17:06:42 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH v5 net-next 1/5] net/ethtool: add netlink interface for
+ the PLCA RS
+Message-ID: <Y5C6EomkdTuyjJex@lunn.ch>
+References: <cover.1670371013.git.piergiorgio.beruto@gmail.com>
+ <350e640b5c3c7b9c25f6fd749dc0237e79e1c573.1670371013.git.piergiorgio.beruto@gmail.com>
+ <20221206195014.10d7ec82@kernel.org>
+ <Y5CQY0pI+4DobFSD@gvm01>
+ <Y5CgIL+cu4Fv43vy@lunn.ch>
+ <Y5C0V52DjS+1GNhJ@gvm01>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y5C0V52DjS+1GNhJ@gvm01>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Sep 2022 16:47:01 -0700, Jeff Johnson wrote:
-> Commit ff6d365898d4 ("soc: qcom: qmi: use const for struct
-> qmi_elem_info") allows QMI message encoding/decoding rules to be
-> const. So now update the definitions in the various clients to take
-> advantage of this. Patches for ath10k and ath11k were previously sent
-> separately.
-> 
-> This series depends upon:
-> https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/commit/?h=for-next&id=ff6d365898d4d31bd557954c7fc53f38977b491c
-> 
-> [...]
+On Wed, Dec 07, 2022 at 04:42:15PM +0100, Piergiorgio Beruto wrote:
+> On Wed, Dec 07, 2022 at 03:16:00PM +0100, Andrew Lunn wrote:
+> > > > TBH I can't parse the "ETHTOOL_A_PLCA_VERSION is reported as 0Axx
+> > > > where.." sentence. Specifically I'm confused about what the 0A is.
+> > > How about this: "When this standard is supported, the upper byte of
+> > > ``ETHTOOL_A_PLCA_VERSION`` shall be 0x0A (see Table A.1.0 — IDVER 
+> > > bits assignment).
+> > 
+> > I think the 0x0A is pointless and should not be included here. If the
+> > register does not contain 0x0A, the device does not follow the open
+> > alliance standard, and hence the lower part of the register is
+> > meaningless.
+> > 
+> > This is why i suggested -ENODEV should actually be returned on invalid
+> > values in this register.
+> I already integrated this change in v5 (returning -ENODEV). Give what you're
+> saying, I can just remove that sentence from the documentations. Agreed?
 
-Applied, thanks!
+And only return the actual version value, not the 0x0A.
 
-[1/4] net: ipa: Make QMI message rules const
-      (no commit info)
-[2/4] remoteproc: sysmon: Make QMI message rules const
-      commit: 7bd156cbbd0add4b869a7d997d057b76c329f4e5
-[3/4] slimbus: qcom-ngd-ctrl: Make QMI message rules const
-      (no commit info)
-[4/4] soc: qcom: pdr: Make QMI message rules const
-      (no commit info)
-
-Best regards,
--- 
-Bjorn Andersson <andersson@kernel.org>
+    Andrew
