@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5856E6460B1
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 18:53:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C2F6460B4
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 18:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbiLGRx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 12:53:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56062 "EHLO
+        id S230174AbiLGRxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 12:53:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230146AbiLGRxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 12:53:20 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D2E2E6B3
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 09:53:18 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id cm20so18366186pjb.1
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 09:53:18 -0800 (PST)
+        with ESMTP id S229475AbiLGRxV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 12:53:21 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1583B2FFDB
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 09:53:20 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id b13-20020a17090a5a0d00b0021906102d05so2407926pjd.5
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 09:53:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7zN5Vz1ZtvDFuRBQk0kMH3pZiQr0J+BW9YSUk+12aeM=;
-        b=c2BdcmHTyTORzhXdxruhIA7hkFqEJ/ugAbA2FXRwNrb/fbHdceFc31hS/tWjmV9P0I
-         2ac1mNcw86AxylLTRYO16sJZSVWFOxeN3ZTClktm3jjY9acI7KFR68pc2nXPE87Fn5Hk
-         O54Vm9njF4EQFDKQFToVZGm+kz0CApDaDcbGQ=
+        bh=8cTriZC7dG7Cv3sWQbJQ6cOQZPbm8lQrqAhbST45CPg=;
+        b=Liqy9UXm+nIqZv514OzCO+3frH46vWpYEvfUHBxqj+cNmV5vUkjvqdRB5u3QUfi4TJ
+         ME0R4Hje/OZIjBHOkn6VdOV5FIqpCJrW0gDdfoATVaXO8JR7xbV3wrpPBYSgZ9qNlXdd
+         7zDnUD/CFWwawIAMMjXM8X+4QX4K72Ui3W1tk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7zN5Vz1ZtvDFuRBQk0kMH3pZiQr0J+BW9YSUk+12aeM=;
-        b=JJ77HdUZMjP6SnZ3H1Xpco59CPon9Q9m9klAAp9nMbzk4cePkc+ckRTkcpxLFWnm0X
-         5Mtm8eyKfE7bg2PLCKK0jKsL3p2ISozTfCm+o3h9U6j7OGZ61J7a6lkRucaI6bcToXtx
-         vz6NFg9kwg2J9n9/eMGeY6v0XpOfvsTD/OpY//BEkluvpanhqdlND5RhyN3frrPX2wr/
-         qGQGjf+KpDwbhV4AkpemIUyJuuH4THTXvcBbYOMRstNr66iVsr5c7afLrIwStrmBVmhN
-         8EYZSuJvyLqjNzuoVBCbFjKzw3EuZxtO46mYxMXOlj34N8gX6SDPWgaC8xHyFyjKxXmK
-         aKVg==
-X-Gm-Message-State: ANoB5plVOjFv6TY/1T3CoVDf6dYvouFh2ATRbH1dpcqiKjd7OmynSd79
-        cbFxmNDCScDctSn2f15I/rXpEQ==
-X-Google-Smtp-Source: AA0mqf6t87kRUZ5z72BmSR6QlfAmNy3Vgad5/4otQpF4oij+QNA52rR3HMOlmX50G/YNS9/dTO70UA==
-X-Received: by 2002:a17:902:d389:b0:189:cea0:bc98 with SMTP id e9-20020a170902d38900b00189cea0bc98mr18470152pld.70.1670435597639;
-        Wed, 07 Dec 2022 09:53:17 -0800 (PST)
+        bh=8cTriZC7dG7Cv3sWQbJQ6cOQZPbm8lQrqAhbST45CPg=;
+        b=YM5pdKyrvx1xbaF2twWtKNwHEcCMdqcdR2rfsQTNyp2AKDN+WFmAS1bXuJrd66VCJ3
+         KiCqIygK7dzq2dHOiPTrY7x7RMiZyVVBPu5w6O9TnedzXVVwGCOe7dk9CsJF8ZXwZmrL
+         Zurw8EXurbrJhVco/Z/alA8+trQRz/J9tkuOPy9OiBDMAPKxwbZ/5hdQgwBa/dF/5L6Z
+         iCAF2+oKQ8lT/oW1XTrOOCLyCb90zt9dRbKj+5N2iy0w5bjCnhuNOthbiWq6oiUfqA1H
+         abGdsRRdXLTTyN5V9tXezKgcasJz1NyiCSw4i3ZbP4fNdEE/kSrbaru3yt7p842YrdLM
+         jtoA==
+X-Gm-Message-State: ANoB5pk7MPVZ6lQQk1Z4LZIZ+IC/IbRRIX7LwEk8A2pW0KiQXKxfOhJC
+        oiNhdDAPEmUhVVmgYNtR2fDKgQ==
+X-Google-Smtp-Source: AA0mqf78eZmZYQJ5sniu/rToNh0m0O+Ykf96ZwuM1sm0kEt9Re30onH1fiQg6bjKcJS3vbVR/wVNWw==
+X-Received: by 2002:a17:903:555:b0:189:959a:84cc with SMTP id jo21-20020a170903055500b00189959a84ccmr43918708plb.41.1670435599376;
+        Wed, 07 Dec 2022 09:53:19 -0800 (PST)
 Received: from C02GC2QQMD6T.wifi.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l6-20020a622506000000b005748aca80fesm13862242pfl.32.2022.12.07.09.53.16
+        by smtp.gmail.com with ESMTPSA id l6-20020a622506000000b005748aca80fesm13862242pfl.32.2022.12.07.09.53.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 09:53:17 -0800 (PST)
+        Wed, 07 Dec 2022 09:53:18 -0800 (PST)
 From:   Ajit Khaparde <ajit.khaparde@broadcom.com>
 To:     ajit.khaparde@broadcom.com
 Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
@@ -52,15 +52,15 @@ Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
         linux-rdma@vger.kernel.org, michael.chan@broadcom.com,
         netdev@vger.kernel.org, pabeni@redhat.com,
         selvin.xavier@broadcom.com
-Subject: [PATCH v5 1/7] bnxt_en: Add auxiliary driver support
-Date:   Wed,  7 Dec 2022 09:53:04 -0800
-Message-Id: <20221207175310.23656-2-ajit.khaparde@broadcom.com>
+Subject: [PATCH v5 2/7] RDMA/bnxt_re: Use auxiliary driver interface
+Date:   Wed,  7 Dec 2022 09:53:05 -0800
+Message-Id: <20221207175310.23656-3-ajit.khaparde@broadcom.com>
 X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 In-Reply-To: <20221207175310.23656-1-ajit.khaparde@broadcom.com>
 References: <20221207175310.23656-1-ajit.khaparde@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000702a3505ef409858"
+        boundary="0000000000008c89d105ef409825"
 X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SORTED_RECIPS,SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no
@@ -71,415 +71,731 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000702a3505ef409858
+--0000000000008c89d105ef409825
 Content-Transfer-Encoding: 8bit
 
-Add auxiliary driver support.
-An auxiliary device will be created if the hardware indicates
-support for RDMA.
-The bnxt_ulp_probe() function has been removed and a new
-bnxt_rdma_aux_device_add() function has been added.
-The bnxt_free_msix_vecs() and bnxt_req_msix_vecs() will now hold
-the RTNL lock when they call the bnxt_close_nic()and bnxt_open_nic()
-since the device close and open need to be protected under RTNL lock.
-The operations between the bnxt_en and bnxt_re will be protected
-using the en_ops_lock.
-This will be used by the bnxt_re driver in a follow-on patch
-to create ROCE interfaces.
+Use auxiliary driver interface for driver load, unload ROCE driver.
+The driver does not need to register the interface using the netdev
+notifier anymore. Removed the bnxt_re_dev_list which is not needed.
+Currently probe, remove and shutdown ops have been implemented for
+the auxiliary device.
+Also remove exccessve validation checks for rdev.
 
 Signed-off-by: Ajit Khaparde <ajit.khaparde@broadcom.com>
 Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 Reviewed-by: Selvin Xavier <selvin.xavier@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   8 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   8 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 177 +++++++++++++++---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |   7 +-
- 4 files changed, 169 insertions(+), 31 deletions(-)
+ drivers/infiniband/hw/bnxt_re/bnxt_re.h       |   9 +-
+ drivers/infiniband/hw/bnxt_re/main.c          | 395 ++++++------------
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c |  29 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |   3 -
+ 4 files changed, 132 insertions(+), 304 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 0fe164b42c5d..2769d36b7d39 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -13154,6 +13154,9 @@ static void bnxt_remove_one(struct pci_dev *pdev)
- 	struct net_device *dev = pci_get_drvdata(pdev);
- 	struct bnxt *bp = netdev_priv(dev);
+diff --git a/drivers/infiniband/hw/bnxt_re/bnxt_re.h b/drivers/infiniband/hw/bnxt_re/bnxt_re.h
+index 785c37cae3c0..b0465c8d229a 100644
+--- a/drivers/infiniband/hw/bnxt_re/bnxt_re.h
++++ b/drivers/infiniband/hw/bnxt_re/bnxt_re.h
+@@ -89,13 +89,6 @@ struct bnxt_re_ring_attr {
+ 	u8		mode;
+ };
  
-+	bnxt_rdma_aux_device_uninit(bp->aux_dev);
-+	bnxt_aux_dev_free(bp);
-+
- 	if (BNXT_PF(bp))
- 		bnxt_sriov_disable(bp);
- 
-@@ -13747,11 +13750,13 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	bnxt_dl_fw_reporters_create(bp);
- 
-+	bnxt_rdma_aux_device_init(bp);
-+
- 	bnxt_print_device_info(bp);
- 
- 	pci_save_state(pdev);
--	return 0;
- 
-+	return 0;
- init_err_cleanup:
- 	bnxt_dl_unregister(bp);
- init_err_dl:
-@@ -13795,7 +13800,6 @@ static void bnxt_shutdown(struct pci_dev *pdev)
- 	if (netif_running(dev))
- 		dev_close(dev);
- 
--	bnxt_ulp_shutdown(bp);
- 	bnxt_clear_int_mode(bp);
- 	pci_disable_device(pdev);
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 41c6dd0ae447..04181f6e8a17 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -24,6 +24,7 @@
- #include <linux/interrupt.h>
- #include <linux/rhashtable.h>
- #include <linux/crash_dump.h>
+-struct bnxt_re_work {
+-	struct work_struct	work;
+-	unsigned long		event;
+-	struct bnxt_re_dev      *rdev;
+-	struct net_device	*vlan_dev;
+-};
+-
+ struct bnxt_re_sqp_entries {
+ 	struct bnxt_qplib_sge sge;
+ 	u64 wrid;
+@@ -132,6 +125,7 @@ struct bnxt_re_dev {
+ #define BNXT_RE_FLAG_ERR_DEVICE_DETACHED       17
+ #define BNXT_RE_FLAG_ISSUE_ROCE_STATS          29
+ 	struct net_device		*netdev;
++	struct notifier_block		nb;
+ 	unsigned int			version, major, minor;
+ 	struct bnxt_qplib_chip_ctx	*chip_ctx;
+ 	struct bnxt_en_dev		*en_dev;
+@@ -194,5 +188,4 @@ static inline struct device *rdev_to_dev(struct bnxt_re_dev *rdev)
+ 		return  &rdev->ibdev.dev;
+ 	return NULL;
+ }
+-
+ #endif
+diff --git a/drivers/infiniband/hw/bnxt_re/main.c b/drivers/infiniband/hw/bnxt_re/main.c
+index 8c0c80a8d338..165ae11b927d 100644
+--- a/drivers/infiniband/hw/bnxt_re/main.c
++++ b/drivers/infiniband/hw/bnxt_re/main.c
+@@ -48,6 +48,7 @@
+ #include <net/ipv6.h>
+ #include <net/addrconf.h>
+ #include <linux/if_ether.h>
 +#include <linux/auxiliary_bus.h>
- #include <net/devlink.h>
- #include <net/dst_metadata.h>
- #include <net/xdp.h>
-@@ -1623,6 +1624,12 @@ struct bnxt_fw_health {
- #define BNXT_FW_IF_RETRY		10
- #define BNXT_FW_SLOT_RESET_RETRY	4
  
-+struct bnxt_aux_dev {
-+	struct auxiliary_device aux_dev;
-+	struct bnxt_en_dev *edev;
-+	int id;
-+};
+ #include <rdma/ib_verbs.h>
+ #include <rdma/ib_user_verbs.h>
+@@ -74,14 +75,14 @@ MODULE_DESCRIPTION(BNXT_RE_DESC " Driver");
+ MODULE_LICENSE("Dual BSD/GPL");
+ 
+ /* globals */
+-static struct list_head bnxt_re_dev_list = LIST_HEAD_INIT(bnxt_re_dev_list);
+-/* Mutex to protect the list of bnxt_re devices added */
+-static DEFINE_MUTEX(bnxt_re_dev_lock);
+-static struct workqueue_struct *bnxt_re_wq;
+-static void bnxt_re_remove_device(struct bnxt_re_dev *rdev);
+-static void bnxt_re_dealloc_driver(struct ib_device *ib_dev);
++static DEFINE_MUTEX(bnxt_re_mutex);
 +
- enum board_idx {
- 	BCM57301,
- 	BCM57302,
-@@ -1844,6 +1851,7 @@ struct bnxt {
- #define BNXT_CHIP_P4_PLUS(bp)			\
- 	(BNXT_CHIP_P4(bp) || BNXT_CHIP_P5(bp))
+ static void bnxt_re_stop_irq(void *handle);
+ static void bnxt_re_dev_stop(struct bnxt_re_dev *rdev);
++static int bnxt_re_netdev_event(struct notifier_block *notifier,
++				unsigned long event, void *ptr);
++static struct bnxt_re_dev *bnxt_re_from_netdev(struct net_device *netdev);
++static void bnxt_re_dev_uninit(struct bnxt_re_dev *rdev);
  
-+	struct bnxt_aux_dev	*aux_dev;
- 	struct bnxt_en_dev	*edev;
- 
- 	struct bnxt_napi	**bnapi;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-index 2e54bf4fc7a7..7ffd61ec2683 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-@@ -25,32 +25,37 @@
- #include "bnxt_hwrm.h"
- #include "bnxt_ulp.h"
- 
-+static DEFINE_IDA(bnxt_aux_dev_ids);
-+
- static int bnxt_register_dev(struct bnxt_en_dev *edev, unsigned int ulp_id,
- 			     struct bnxt_ulp_ops *ulp_ops, void *handle)
+ static void bnxt_re_set_drv_mode(struct bnxt_re_dev *rdev, u8 mode)
  {
- 	struct net_device *dev = edev->net;
- 	struct bnxt *bp = netdev_priv(dev);
- 	struct bnxt_ulp *ulp;
-+	int rc = 0;
+@@ -233,7 +234,6 @@ static void bnxt_re_stop(void *p)
  
+ 	if (!rdev)
+ 		return;
 -	ASSERT_RTNL();
- 	if (ulp_id >= BNXT_MAX_ULP)
- 		return -EINVAL;
  
- 	ulp = &edev->ulp_tbl[ulp_id];
- 	if (rcu_access_pointer(ulp->ulp_ops)) {
- 		netdev_err(bp->dev, "ulp id %d already registered\n", ulp_id);
--		return -EBUSY;
-+		rc = -EBUSY;
-+		goto exit;
+ 	/* L2 driver invokes this callback during device error/crash or device
+ 	 * reset. Current RoCE driver doesn't recover the device in case of
+@@ -269,9 +269,6 @@ static void bnxt_re_sriov_config(void *p, int num_vfs)
+ {
+ 	struct bnxt_re_dev *rdev = p;
+ 
+-	if (!rdev)
+-		return;
+-
+ 	if (test_bit(BNXT_RE_FLAG_ERR_DEVICE_DETACHED, &rdev->flags))
+ 		return;
+ 	rdev->num_vfs = num_vfs;
+@@ -282,16 +279,14 @@ static void bnxt_re_sriov_config(void *p, int num_vfs)
  	}
- 	if (ulp_id == BNXT_ROCE_ULP) {
- 		unsigned int max_stat_ctxs;
+ }
  
- 		max_stat_ctxs = bnxt_get_max_func_stat_ctxs(bp);
- 		if (max_stat_ctxs <= BNXT_MIN_ROCE_STAT_CTXS ||
--		    bp->cp_nr_rings == max_stat_ctxs)
--			return -ENOMEM;
-+		    bp->cp_nr_rings == max_stat_ctxs) {
-+			rc = -ENOMEM;
-+			goto exit;
-+		}
+-static void bnxt_re_shutdown(void *p)
++static void bnxt_re_shutdown(struct auxiliary_device *adev)
+ {
+-	struct bnxt_re_dev *rdev = p;
++	struct bnxt_re_dev *rdev = auxiliary_get_drvdata(adev);
+ 
+ 	if (!rdev)
+ 		return;
+-	ASSERT_RTNL();
+-	/* Release the MSIx vectors before queuing unregister */
+-	bnxt_re_stop_irq(rdev);
+-	ib_unregister_device_queued(&rdev->ibdev);
++	ib_unregister_device(&rdev->ibdev);
++	bnxt_re_dev_uninit(rdev);
+ }
+ 
+ static void bnxt_re_stop_irq(void *handle)
+@@ -346,11 +341,9 @@ static void bnxt_re_start_irq(void *handle, struct bnxt_msix_entry *ent)
+ }
+ 
+ static struct bnxt_ulp_ops bnxt_re_ulp_ops = {
+-	.ulp_async_notifier = NULL,
+ 	.ulp_stop = bnxt_re_stop,
+ 	.ulp_start = bnxt_re_start,
+ 	.ulp_sriov_config = bnxt_re_sriov_config,
+-	.ulp_shutdown = bnxt_re_shutdown,
+ 	.ulp_irq_stop = bnxt_re_stop_irq,
+ 	.ulp_irq_restart = bnxt_re_start_irq
+ };
+@@ -380,9 +373,6 @@ static int bnxt_re_register_netdev(struct bnxt_re_dev *rdev)
+ 	struct bnxt_en_dev *en_dev;
+ 	int rc = 0;
+ 
+-	if (!rdev)
+-		return -EINVAL;
+-
+ 	en_dev = rdev->en_dev;
+ 
+ 	rc = en_dev->en_ops->bnxt_register_device(en_dev, BNXT_ROCE_ULP,
+@@ -401,7 +391,6 @@ static int bnxt_re_free_msix(struct bnxt_re_dev *rdev)
+ 
+ 	en_dev = rdev->en_dev;
+ 
+-
+ 	rc = en_dev->en_ops->bnxt_free_msix(rdev->en_dev, BNXT_ROCE_ULP);
+ 
+ 	return rc;
+@@ -412,9 +401,6 @@ static int bnxt_re_request_msix(struct bnxt_re_dev *rdev)
+ 	int rc = 0, num_msix_want = BNXT_RE_MAX_MSIX, num_msix_got;
+ 	struct bnxt_en_dev *en_dev;
+ 
+-	if (!rdev)
+-		return -EINVAL;
+-
+ 	en_dev = rdev->en_dev;
+ 
+ 	num_msix_want = min_t(u32, BNXT_RE_MAX_MSIX, num_online_cpus());
+@@ -458,12 +444,17 @@ static void bnxt_re_fill_fw_msg(struct bnxt_fw_msg *fw_msg, void *msg,
+ static int bnxt_re_net_ring_free(struct bnxt_re_dev *rdev,
+ 				 u16 fw_ring_id, int type)
+ {
+-	struct bnxt_en_dev *en_dev = rdev->en_dev;
++	struct bnxt_en_dev *en_dev;
+ 	struct hwrm_ring_free_input req = {0};
+ 	struct hwrm_ring_free_output resp;
+ 	struct bnxt_fw_msg fw_msg;
+ 	int rc = -EINVAL;
+ 
++	if (!rdev)
++		return rc;
++
++	en_dev = rdev->en_dev;
++
+ 	if (!en_dev)
+ 		return rc;
+ 
+@@ -584,21 +575,6 @@ static int bnxt_re_net_stats_ctx_alloc(struct bnxt_re_dev *rdev,
+ 
+ /* Device */
+ 
+-static bool is_bnxt_re_dev(struct net_device *netdev)
+-{
+-	struct ethtool_drvinfo drvinfo;
+-
+-	if (netdev->ethtool_ops && netdev->ethtool_ops->get_drvinfo) {
+-		memset(&drvinfo, 0, sizeof(drvinfo));
+-		netdev->ethtool_ops->get_drvinfo(netdev, &drvinfo);
+-
+-		if (strcmp(drvinfo.driver, "bnxt_en"))
+-			return false;
+-		return true;
+-	}
+-	return false;
+-}
+-
+ static struct bnxt_re_dev *bnxt_re_from_netdev(struct net_device *netdev)
+ {
+ 	struct ib_device *ibdev =
+@@ -609,31 +585,6 @@ static struct bnxt_re_dev *bnxt_re_from_netdev(struct net_device *netdev)
+ 	return container_of(ibdev, struct bnxt_re_dev, ibdev);
+ }
+ 
+-static struct bnxt_en_dev *bnxt_re_dev_probe(struct net_device *netdev)
+-{
+-	struct bnxt_en_dev *en_dev;
+-	struct pci_dev *pdev;
+-
+-	en_dev = bnxt_ulp_probe(netdev);
+-	if (IS_ERR(en_dev))
+-		return en_dev;
+-
+-	pdev = en_dev->pdev;
+-	if (!pdev)
+-		return ERR_PTR(-EINVAL);
+-
+-	if (!(en_dev->flags & BNXT_EN_FLAG_ROCE_CAP)) {
+-		dev_info(&pdev->dev,
+-			"%s: probe error: RoCE is not supported on this device",
+-			ROCE_DRV_MODULE_NAME);
+-		return ERR_PTR(-ENODEV);
+-	}
+-
+-	dev_hold(netdev);
+-
+-	return en_dev;
+-}
+-
+ static ssize_t hw_rev_show(struct device *device, struct device_attribute *attr,
+ 			   char *buf)
+ {
+@@ -679,7 +630,6 @@ static const struct ib_device_ops bnxt_re_dev_ops = {
+ 	.create_qp = bnxt_re_create_qp,
+ 	.create_srq = bnxt_re_create_srq,
+ 	.create_user_ah = bnxt_re_create_ah,
+-	.dealloc_driver = bnxt_re_dealloc_driver,
+ 	.dealloc_pd = bnxt_re_dealloc_pd,
+ 	.dealloc_ucontext = bnxt_re_dealloc_ucontext,
+ 	.del_gid = bnxt_re_del_gid,
+@@ -744,18 +694,7 @@ static int bnxt_re_register_ib(struct bnxt_re_dev *rdev)
+ 	return ib_register_device(ibdev, "bnxt_re%d", &rdev->en_dev->pdev->dev);
+ }
+ 
+-static void bnxt_re_dev_remove(struct bnxt_re_dev *rdev)
+-{
+-	dev_put(rdev->netdev);
+-	rdev->netdev = NULL;
+-	mutex_lock(&bnxt_re_dev_lock);
+-	list_del_rcu(&rdev->list);
+-	mutex_unlock(&bnxt_re_dev_lock);
+-
+-	synchronize_rcu();
+-}
+-
+-static struct bnxt_re_dev *bnxt_re_dev_add(struct net_device *netdev,
++static struct bnxt_re_dev *bnxt_re_dev_add(struct bnxt_aux_dev *aux_dev,
+ 					   struct bnxt_en_dev *en_dev)
+ {
+ 	struct bnxt_re_dev *rdev;
+@@ -768,8 +707,8 @@ static struct bnxt_re_dev *bnxt_re_dev_add(struct net_device *netdev,
+ 		return NULL;
  	}
+ 	/* Default values */
+-	rdev->netdev = netdev;
+-	dev_hold(rdev->netdev);
++	rdev->nb.notifier_call = NULL;
++	rdev->netdev = en_dev->net;
+ 	rdev->en_dev = en_dev;
+ 	rdev->id = rdev->en_dev->pdev->devfn;
+ 	INIT_LIST_HEAD(&rdev->qp_list);
+@@ -784,9 +723,6 @@ static struct bnxt_re_dev *bnxt_re_dev_add(struct net_device *netdev,
+ 	rdev->cosq[0] = 0xFFFF;
+ 	rdev->cosq[1] = 0xFFFF;
  
--	atomic_set(&ulp->ref_count, 0);
-+	atomic_set(&ulp->ref_count, 1);
- 	ulp->handle = handle;
- 	rcu_assign_pointer(ulp->ulp_ops, ulp_ops);
+-	mutex_lock(&bnxt_re_dev_lock);
+-	list_add_tail_rcu(&rdev->list, &bnxt_re_dev_list);
+-	mutex_unlock(&bnxt_re_dev_lock);
+ 	return rdev;
+ }
  
-@@ -59,7 +64,8 @@ static int bnxt_register_dev(struct bnxt_en_dev *edev, unsigned int ulp_id,
- 			bnxt_hwrm_vnic_cfg(bp, 0);
+@@ -1323,7 +1259,7 @@ static int bnxt_re_ib_init(struct bnxt_re_dev *rdev)
+ 		pr_err("Failed to register with IB: %#x\n", rc);
+ 		return rc;
  	}
+-	dev_info(rdev_to_dev(rdev), "Device registered successfully");
++	dev_info(rdev_to_dev(rdev), "Device registered with IB successfully");
+ 	ib_get_eth_speed(&rdev->ibdev, 1, &rdev->active_speed,
+ 			 &rdev->active_width);
+ 	set_bit(BNXT_RE_FLAG_ISSUE_ROCE_STATS, &rdev->flags);
+@@ -1541,135 +1477,43 @@ static int bnxt_re_dev_init(struct bnxt_re_dev *rdev, u8 wqe_mode)
+ 	return rc;
+ }
  
--	return 0;
-+exit:
+-static void bnxt_re_dev_unreg(struct bnxt_re_dev *rdev)
+-{
+-	struct net_device *netdev = rdev->netdev;
+-
+-	bnxt_re_dev_remove(rdev);
+-
+-	if (netdev)
+-		dev_put(netdev);
+-}
+-
+-static int bnxt_re_dev_reg(struct bnxt_re_dev **rdev, struct net_device *netdev)
++static int bnxt_re_add_device(struct auxiliary_device *adev, u8 wqe_mode)
+ {
++	struct bnxt_aux_dev *aux_dev =
++		container_of(adev, struct bnxt_aux_dev, aux_dev);
+ 	struct bnxt_en_dev *en_dev;
++	struct bnxt_re_dev *rdev;
+ 	int rc = 0;
+ 
+-	if (!is_bnxt_re_dev(netdev))
+-		return -ENODEV;
++	/* en_dev should never be NULL as long as adev and aux_dev are valid. */
++	en_dev = aux_dev->edev;
+ 
+-	en_dev = bnxt_re_dev_probe(netdev);
+-	if (IS_ERR(en_dev)) {
+-		if (en_dev != ERR_PTR(-ENODEV))
+-			ibdev_err(&(*rdev)->ibdev, "%s: Failed to probe\n",
+-				  ROCE_DRV_MODULE_NAME);
+-		rc = PTR_ERR(en_dev);
+-		goto exit;
+-	}
+-	*rdev = bnxt_re_dev_add(netdev, en_dev);
+-	if (!*rdev) {
++	rdev = bnxt_re_dev_add(aux_dev, en_dev);
++	if (!rdev || !rdev_to_dev(rdev)) {
+ 		rc = -ENOMEM;
+-		dev_put(netdev);
+ 		goto exit;
+ 	}
+-exit:
+-	return rc;
+-}
+-
+-static void bnxt_re_remove_device(struct bnxt_re_dev *rdev)
+-{
+-	bnxt_re_dev_uninit(rdev);
+-	pci_dev_put(rdev->en_dev->pdev);
+-	bnxt_re_dev_unreg(rdev);
+-}
+-
+-static int bnxt_re_add_device(struct bnxt_re_dev **rdev,
+-			      struct net_device *netdev, u8 wqe_mode)
+-{
+-	int rc;
+ 
+-	rc = bnxt_re_dev_reg(rdev, netdev);
+-	if (rc == -ENODEV)
+-		return rc;
+-	if (rc) {
+-		pr_err("Failed to register with the device %s: %#x\n",
+-		       netdev->name, rc);
+-		return rc;
+-	}
++	rc = bnxt_re_dev_init(rdev, wqe_mode);
++	if (rc)
++		goto re_dev_dealloc;
+ 
+-	pci_dev_get((*rdev)->en_dev->pdev);
+-	rc = bnxt_re_dev_init(*rdev, wqe_mode);
++	rc = bnxt_re_ib_init(rdev);
+ 	if (rc) {
+-		pci_dev_put((*rdev)->en_dev->pdev);
+-		bnxt_re_dev_unreg(*rdev);
++		pr_err("Failed to register with IB: %s",
++			aux_dev->aux_dev.name);
++		goto re_dev_uninit;
+ 	}
++	auxiliary_set_drvdata(adev, rdev);
+ 
+-	return rc;
+-}
+-
+-static void bnxt_re_dealloc_driver(struct ib_device *ib_dev)
+-{
+-	struct bnxt_re_dev *rdev =
+-		container_of(ib_dev, struct bnxt_re_dev, ibdev);
+-
+-	dev_info(rdev_to_dev(rdev), "Unregistering Device");
+-
+-	rtnl_lock();
+-	bnxt_re_remove_device(rdev);
+-	rtnl_unlock();
+-}
+-
+-/* Handle all deferred netevents tasks */
+-static void bnxt_re_task(struct work_struct *work)
+-{
+-	struct bnxt_re_work *re_work;
+-	struct bnxt_re_dev *rdev;
+-	int rc = 0;
+-
+-	re_work = container_of(work, struct bnxt_re_work, work);
+-	rdev = re_work->rdev;
+-
+-	if (re_work->event == NETDEV_REGISTER) {
+-		rc = bnxt_re_ib_init(rdev);
+-		if (rc) {
+-			ibdev_err(&rdev->ibdev,
+-				  "Failed to register with IB: %#x", rc);
+-			rtnl_lock();
+-			bnxt_re_remove_device(rdev);
+-			rtnl_unlock();
+-			goto exit;
+-		}
+-		goto exit;
+-	}
+-
+-	if (!ib_device_try_get(&rdev->ibdev))
+-		goto exit;
++	return 0;
+ 
+-	switch (re_work->event) {
+-	case NETDEV_UP:
+-		bnxt_re_dispatch_event(&rdev->ibdev, NULL, 1,
+-				       IB_EVENT_PORT_ACTIVE);
+-		break;
+-	case NETDEV_DOWN:
+-		bnxt_re_dev_stop(rdev);
+-		break;
+-	case NETDEV_CHANGE:
+-		if (!netif_carrier_ok(rdev->netdev))
+-			bnxt_re_dev_stop(rdev);
+-		else if (netif_carrier_ok(rdev->netdev))
+-			bnxt_re_dispatch_event(&rdev->ibdev, NULL, 1,
+-					       IB_EVENT_PORT_ACTIVE);
+-		ib_get_eth_speed(&rdev->ibdev, 1, &rdev->active_speed,
+-				 &rdev->active_width);
+-		break;
+-	default:
+-		break;
+-	}
+-	ib_device_put(&rdev->ibdev);
++re_dev_uninit:
++	bnxt_re_dev_uninit(rdev);
++re_dev_dealloc:
++	ib_dealloc_device(&rdev->ibdev);
+ exit:
+-	put_device(&rdev->ibdev.dev);
+-	kfree(re_work);
 +	return rc;
  }
  
- static int bnxt_unregister_dev(struct bnxt_en_dev *edev, unsigned int ulp_id)
-@@ -69,10 +75,11 @@ static int bnxt_unregister_dev(struct bnxt_en_dev *edev, unsigned int ulp_id)
- 	struct bnxt_ulp *ulp;
- 	int i = 0;
- 
--	ASSERT_RTNL();
- 	if (ulp_id >= BNXT_MAX_ULP)
- 		return -EINVAL;
- 
-+	edev->flags |= BNXT_EN_FLAG_ULP_STOPPED;
-+
- 	ulp = &edev->ulp_tbl[ulp_id];
- 	if (!rcu_access_pointer(ulp->ulp_ops)) {
- 		netdev_err(bp->dev, "ulp id %d not registered\n", ulp_id);
-@@ -126,7 +133,6 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id,
- 	int total_vecs;
- 	int rc = 0;
- 
--	ASSERT_RTNL();
- 	if (ulp_id != BNXT_ROCE_ULP)
- 		return -EINVAL;
- 
-@@ -149,6 +155,7 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id,
- 		max_idx = min_t(int, bp->total_irqs, max_cp_rings);
- 		idx = max_idx - avail_msix;
- 	}
-+
- 	edev->ulp_tbl[ulp_id].msix_base = idx;
- 	edev->ulp_tbl[ulp_id].msix_requested = avail_msix;
- 	hw_resc = &bp->hw_resc;
-@@ -156,8 +163,10 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id,
- 	if (bp->total_irqs < total_vecs ||
- 	    (BNXT_NEW_RM(bp) && hw_resc->resv_irqs < total_vecs)) {
- 		if (netif_running(dev)) {
-+			rtnl_lock();
- 			bnxt_close_nic(bp, true, false);
- 			rc = bnxt_open_nic(bp, true, false);
-+			rtnl_unlock();
- 		} else {
- 			rc = bnxt_reserve_rings(bp, true);
- 		}
-@@ -184,7 +193,6 @@ static int bnxt_free_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id)
- 	struct net_device *dev = edev->net;
- 	struct bnxt *bp = netdev_priv(dev);
- 
--	ASSERT_RTNL();
- 	if (ulp_id != BNXT_ROCE_ULP)
- 		return -EINVAL;
- 
-@@ -194,9 +202,12 @@ static int bnxt_free_msix_vecs(struct bnxt_en_dev *edev, unsigned int ulp_id)
- 	edev->ulp_tbl[ulp_id].msix_requested = 0;
- 	edev->flags &= ~BNXT_EN_FLAG_MSIX_REQUESTED;
- 	if (netif_running(dev) && !(edev->flags & BNXT_EN_FLAG_ULP_STOPPED)) {
-+		rtnl_lock();
- 		bnxt_close_nic(bp, true, false);
- 		bnxt_open_nic(bp, true, false);
-+		rtnl_unlock();
- 	}
-+
- 	return 0;
- }
- 
-@@ -347,25 +358,6 @@ void bnxt_ulp_sriov_cfg(struct bnxt *bp, int num_vfs)
- 	}
- }
- 
--void bnxt_ulp_shutdown(struct bnxt *bp)
--{
--	struct bnxt_en_dev *edev = bp->edev;
--	struct bnxt_ulp_ops *ops;
--	int i;
--
--	if (!edev)
--		return;
--
--	for (i = 0; i < BNXT_MAX_ULP; i++) {
--		struct bnxt_ulp *ulp = &edev->ulp_tbl[i];
--
--		ops = rtnl_dereference(ulp->ulp_ops);
--		if (!ops || !ops->ulp_shutdown)
--			continue;
--		ops->ulp_shutdown(ulp->handle);
--	}
--}
--
- void bnxt_ulp_irq_stop(struct bnxt *bp)
+ /*
+@@ -1690,109 +1534,130 @@ static int bnxt_re_netdev_event(struct notifier_block *notifier,
+ 				unsigned long event, void *ptr)
  {
- 	struct bnxt_en_dev *edev = bp->edev;
-@@ -475,6 +467,135 @@ static const struct bnxt_en_ops bnxt_en_ops_tbl = {
- 	.bnxt_register_fw_async_events	= bnxt_register_async_events,
- };
+ 	struct net_device *real_dev, *netdev = netdev_notifier_info_to_dev(ptr);
+-	struct bnxt_re_work *re_work;
+ 	struct bnxt_re_dev *rdev;
+-	int rc = 0;
+-	bool sch_work = false;
+-	bool release = true;
  
-+void bnxt_aux_dev_free(struct bnxt *bp)
-+{
-+	kfree(bp->aux_dev);
-+	bp->aux_dev = NULL;
-+}
-+
-+static struct bnxt_aux_dev *bnxt_aux_dev_alloc(struct bnxt *bp)
-+{
-+	struct bnxt_aux_dev *bnxt_adev;
-+
-+	bnxt_adev =  kzalloc(sizeof(*bnxt_adev), GFP_KERNEL);
-+	if (!bnxt_adev)
-+		return ERR_PTR(-ENOMEM);
-+
-+	return bnxt_adev;
-+}
-+
-+void bnxt_rdma_aux_device_uninit(struct bnxt_aux_dev *bnxt_adev)
-+{
-+	struct auxiliary_device *adev;
-+
-+	if (IS_ERR_OR_NULL(bnxt_adev))
+ 	real_dev = rdma_vlan_dev_real_dev(netdev);
+ 	if (!real_dev)
+ 		real_dev = netdev;
+ 
+-	rdev = bnxt_re_from_netdev(real_dev);
+-	if (!rdev && event != NETDEV_REGISTER)
+-		return NOTIFY_OK;
+-
+ 	if (real_dev != netdev)
+ 		goto exit;
+ 
+-	switch (event) {
+-	case NETDEV_REGISTER:
+-		if (rdev)
+-			break;
+-		rc = bnxt_re_add_device(&rdev, real_dev,
+-					BNXT_QPLIB_WQE_MODE_STATIC);
+-		if (!rc)
+-			sch_work = true;
+-		release = false;
+-		break;
++	rdev = bnxt_re_from_netdev(real_dev);
++	if (!rdev)
++		return NOTIFY_DONE;
+ 
+-	case NETDEV_UNREGISTER:
+-		ib_unregister_device_queued(&rdev->ibdev);
+-		break;
+ 
++	switch (event) {
++	case NETDEV_UP:
++	case NETDEV_DOWN:
++	case NETDEV_CHANGE:
++		bnxt_re_dispatch_event(&rdev->ibdev, NULL, 1,
++					netif_carrier_ok(real_dev) ?
++					IB_EVENT_PORT_ACTIVE :
++					IB_EVENT_PORT_ERR);
++		break;
+ 	default:
+-		sch_work = true;
+ 		break;
+ 	}
+-	if (sch_work) {
+-		/* Allocate for the deferred task */
+-		re_work = kzalloc(sizeof(*re_work), GFP_KERNEL);
+-		if (re_work) {
+-			get_device(&rdev->ibdev.dev);
+-			re_work->rdev = rdev;
+-			re_work->event = event;
+-			re_work->vlan_dev = (real_dev == netdev ?
+-					     NULL : netdev);
+-			INIT_WORK(&re_work->work, bnxt_re_task);
+-			queue_work(bnxt_re_wq, &re_work->work);
+-		}
+-	}
+-
++	ib_device_put(&rdev->ibdev);
+ exit:
+-	if (rdev && release)
+-		ib_device_put(&rdev->ibdev);
+ 	return NOTIFY_DONE;
+ }
+ 
+-static struct notifier_block bnxt_re_netdev_notifier = {
+-	.notifier_call = bnxt_re_netdev_event
+-};
++#define BNXT_ADEV_NAME "bnxt_en"
+ 
+-static int __init bnxt_re_mod_init(void)
++static void bnxt_re_remove(struct auxiliary_device *adev)
+ {
+-	int rc = 0;
++	struct bnxt_re_dev *rdev = auxiliary_get_drvdata(adev);
+ 
+-	pr_info("%s: %s", ROCE_DRV_MODULE_NAME, version);
++	if (!rdev)
 +		return;
+ 
+-	bnxt_re_wq = create_singlethread_workqueue("bnxt_re");
+-	if (!bnxt_re_wq)
+-		return -ENOMEM;
++	mutex_lock(&bnxt_re_mutex);
++	if (rdev->nb.notifier_call) {
++		unregister_netdevice_notifier(&rdev->nb);
++		rdev->nb.notifier_call = NULL;
++	} else {
++		/* If notifier is null, we should have already done a
++		 * clean up before coming here.
++		 */
++		goto skip_remove;
++	}
 +
-+	adev = &bnxt_adev->aux_dev;
-+	auxiliary_device_delete(adev);
-+	auxiliary_device_uninit(adev);
-+	if (bnxt_adev->id >= 0)
-+		ida_free(&bnxt_aux_dev_ids, bnxt_adev->id);
++	ib_unregister_device(&rdev->ibdev);
++	ib_dealloc_device(&rdev->ibdev);
++	bnxt_re_dev_uninit(rdev);
++skip_remove:
++	mutex_unlock(&bnxt_re_mutex);
 +}
 +
-+void bnxt_rdma_aux_device_init(struct bnxt *bp)
++static int bnxt_re_probe(struct auxiliary_device *adev,
++			 const struct auxiliary_device_id *id)
 +{
-+	struct net_device *dev = bp->dev;
++	struct bnxt_re_dev *rdev;
 +	int rc;
 +
-+	if (bp->flags & BNXT_FLAG_ROCE_CAP) {
-+		bp->aux_dev = bnxt_aux_dev_alloc(bp);
-+		if (IS_ERR_OR_NULL(bp->aux_dev)) {
-+			netdev_warn(dev, "Failed to init auxiliary device for ROCE\n");
-+			goto skip_aux_init;
-+		}
-+
-+		bp->aux_dev->id = ida_alloc(&bnxt_aux_dev_ids, GFP_KERNEL);
-+		if (bp->aux_dev->id < 0) {
-+			netdev_warn(dev, "ida alloc failed for ROCE auxiliary device\n");
-+			bnxt_aux_dev_free(bp);
-+			goto skip_aux_init;
-+		}
-+
-+		/* If aux bus init fails, continue with netdev init. */
-+		rc = bnxt_rdma_aux_device_add(bp);
-+		if (rc) {
-+			netdev_warn(dev, "Failed to add auxiliary device for ROCE\n");
-+			ida_free(&bnxt_aux_dev_ids, bp->aux_dev->id);
-+			bnxt_aux_dev_free(bp);
-+		}
++	mutex_lock(&bnxt_re_mutex);
++	rc = bnxt_re_add_device(adev, BNXT_QPLIB_WQE_MODE_STATIC);
++	if (rc) {
++		mutex_unlock(&bnxt_re_mutex);
++		return rc;
 +	}
-+skip_aux_init:
-+	return;
-+}
+ 
+-	INIT_LIST_HEAD(&bnxt_re_dev_list);
++	rdev = auxiliary_get_drvdata(adev);
+ 
+-	rc = register_netdevice_notifier(&bnxt_re_netdev_notifier);
++	rdev->nb.notifier_call = bnxt_re_netdev_event;
++	rc = register_netdevice_notifier(&rdev->nb);
+ 	if (rc) {
++		rdev->nb.notifier_call = NULL;
+ 		pr_err("%s: Cannot register to netdevice_notifier",
+ 		       ROCE_DRV_MODULE_NAME);
+-		goto err_netdev;
++		goto err;
+ 	}
 +
-+void bnxt_aux_dev_release(struct device *dev)
-+{
-+	struct bnxt_aux_dev *bnxt_adev =
-+		container_of(dev, struct bnxt_aux_dev, aux_dev.dev);
-+	struct bnxt *bp = netdev_priv(bnxt_adev->edev->net);
++	mutex_unlock(&bnxt_re_mutex);
+ 	return 0;
+ 
+-err_netdev:
+-	destroy_workqueue(bnxt_re_wq);
++err:
++	mutex_unlock(&bnxt_re_mutex);
++	bnxt_re_remove(adev);
+ 
+ 	return rc;
+ }
+ 
+-static void __exit bnxt_re_mod_exit(void)
++static const struct auxiliary_device_id bnxt_re_id_table[] = {
++	{ .name = BNXT_ADEV_NAME ".rdma", },
++	{},
++};
 +
-+	bnxt_adev->edev->en_ops = NULL;
-+	kfree(bnxt_adev->edev);
-+	bnxt_adev->edev = NULL;
-+	bp->edev = NULL;
-+}
++MODULE_DEVICE_TABLE(auxiliary, bnxt_re_id_table);
 +
-+static inline void bnxt_set_edev_info(struct bnxt_en_dev *edev, struct bnxt *bp)
-+{
-+	edev->en_ops = &bnxt_en_ops_tbl;
-+	edev->net = bp->dev;
-+	edev->pdev = bp->pdev;
-+	edev->l2_db_size = bp->db_size;
-+	edev->l2_db_size_nc = bp->db_size;
++static struct auxiliary_driver bnxt_re_driver = {
++	.name = "rdma",
++	.probe = bnxt_re_probe,
++	.remove = bnxt_re_remove,
++	.shutdown = bnxt_re_shutdown,
++	.id_table = bnxt_re_id_table,
++};
 +
-+	if (bp->flags & BNXT_FLAG_ROCEV1_CAP)
-+		edev->flags |= BNXT_EN_FLAG_ROCEV1_CAP;
-+	if (bp->flags & BNXT_FLAG_ROCEV2_CAP)
-+		edev->flags |= BNXT_EN_FLAG_ROCEV2_CAP;
-+}
-+
-+int bnxt_rdma_aux_device_add(struct bnxt *bp)
-+{
-+	struct bnxt_aux_dev *bnxt_adev = bp->aux_dev;
-+	struct bnxt_en_dev *edev = bnxt_adev->edev;
-+	struct auxiliary_device *aux_dev;
-+	int ret;
-+
-+	aux_dev = &bnxt_adev->aux_dev;
-+	aux_dev->id = bnxt_adev->id;
-+	aux_dev->name = "rdma";
-+	aux_dev->dev.parent = &bp->pdev->dev;
-+	aux_dev->dev.release = bnxt_aux_dev_release;
-+
-+	if (!edev) {
-+		edev = kzalloc(sizeof(*edev), GFP_KERNEL);
-+		if (!edev)
-+			return -ENOMEM;
-+	}
-+
-+	bnxt_set_edev_info(edev, bp);
-+	bnxt_adev->edev = edev;
-+	bp->edev = edev;
-+
-+	ret = auxiliary_device_init(aux_dev);
-+	if (ret) {
-+		kfree(edev);
-+		kfree(bnxt_adev);
-+		return ret;
-+	}
-+
-+	ret = auxiliary_device_add(aux_dev);
-+	if (ret) {
-+		kfree(edev);
-+		kfree(bnxt_adev);
-+		auxiliary_device_uninit(aux_dev);
-+		return ret;
-+	}
-+
++static int __init bnxt_re_mod_init(void)
+ {
+-	struct bnxt_re_dev *rdev;
++	int rc = 0;
+ 
+-	unregister_netdevice_notifier(&bnxt_re_netdev_notifier);
+-	if (bnxt_re_wq)
+-		destroy_workqueue(bnxt_re_wq);
+-	list_for_each_entry(rdev, &bnxt_re_dev_list, list) {
+-		/* VF device removal should be called before the removal
+-		 * of PF device. Queue VFs unregister first, so that VFs
+-		 * shall be removed before the PF during the call of
+-		 * ib_unregister_driver.
+-		 */
+-		if (rdev->is_virtfn)
+-			ib_unregister_device(&rdev->ibdev);
++	pr_info("%s: %s", ROCE_DRV_MODULE_NAME, version);
++	rc = auxiliary_driver_register(&bnxt_re_driver);
++	if (rc) {
++		pr_err("%s: Failed to register auxiliary driver\n",
++			ROCE_DRV_MODULE_NAME);
++		return rc;
+ 	}
+-	ib_unregister_driver(RDMA_DRIVER_BNXT_RE);
 +	return 0;
 +}
 +
- struct bnxt_en_dev *bnxt_ulp_probe(struct net_device *dev)
- {
- 	struct bnxt *bp = netdev_priv(dev);
++static void __exit bnxt_re_mod_exit(void)
++{
++	auxiliary_driver_unregister(&bnxt_re_driver);
+ }
+ 
+ module_init(bnxt_re_mod_init);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+index 7ffd61ec2683..1d2d30f97ed9 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+@@ -19,6 +19,7 @@
+ #include <linux/irq.h>
+ #include <asm/byteorder.h>
+ #include <linux/bitmap.h>
++#include <linux/auxiliary_bus.h>
+ 
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
+@@ -78,8 +79,6 @@ static int bnxt_unregister_dev(struct bnxt_en_dev *edev, unsigned int ulp_id)
+ 	if (ulp_id >= BNXT_MAX_ULP)
+ 		return -EINVAL;
+ 
+-	edev->flags |= BNXT_EN_FLAG_ULP_STOPPED;
+-
+ 	ulp = &edev->ulp_tbl[ulp_id];
+ 	if (!rcu_access_pointer(ulp->ulp_ops)) {
+ 		netdev_err(bp->dev, "ulp id %d not registered\n", ulp_id);
+@@ -595,29 +594,3 @@ int bnxt_rdma_aux_device_add(struct bnxt *bp)
+ 
+ 	return 0;
+ }
+-
+-struct bnxt_en_dev *bnxt_ulp_probe(struct net_device *dev)
+-{
+-	struct bnxt *bp = netdev_priv(dev);
+-	struct bnxt_en_dev *edev;
+-
+-	edev = bp->edev;
+-	if (!edev) {
+-		edev = kzalloc(sizeof(*edev), GFP_KERNEL);
+-		if (!edev)
+-			return ERR_PTR(-ENOMEM);
+-		edev->en_ops = &bnxt_en_ops_tbl;
+-		edev->net = dev;
+-		edev->pdev = bp->pdev;
+-		edev->l2_db_size = bp->db_size;
+-		edev->l2_db_size_nc = bp->db_size;
+-		bp->edev = edev;
+-	}
+-	edev->flags &= ~BNXT_EN_FLAG_ROCE_CAP;
+-	if (bp->flags & BNXT_FLAG_ROCEV1_CAP)
+-		edev->flags |= BNXT_EN_FLAG_ROCEV1_CAP;
+-	if (bp->flags & BNXT_FLAG_ROCEV2_CAP)
+-		edev->flags |= BNXT_EN_FLAG_ROCEV2_CAP;
+-	return bp->edev;
+-}
+-EXPORT_SYMBOL(bnxt_ulp_probe);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
-index 42b50abc3e91..8b85c663d881 100644
+index 8b85c663d881..aaf55d847505 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
-@@ -17,6 +17,7 @@
- #define BNXT_MIN_ROCE_STAT_CTXS	1
- 
- struct hwrm_async_event_cmpl;
-+struct bnxt_aux_dev;
- struct bnxt;
- 
- struct bnxt_msix_entry {
-@@ -102,10 +103,14 @@ int bnxt_get_ulp_stat_ctxs(struct bnxt *bp);
- void bnxt_ulp_stop(struct bnxt *bp);
- void bnxt_ulp_start(struct bnxt *bp, int err);
- void bnxt_ulp_sriov_cfg(struct bnxt *bp, int num_vfs);
--void bnxt_ulp_shutdown(struct bnxt *bp);
- void bnxt_ulp_irq_stop(struct bnxt *bp);
- void bnxt_ulp_irq_restart(struct bnxt *bp, int err);
- void bnxt_ulp_async_events(struct bnxt *bp, struct hwrm_async_event_cmpl *cmpl);
-+void bnxt_aux_dev_release(struct device *dev);
-+int bnxt_rdma_aux_device_add(struct bnxt *bp);
-+void bnxt_rdma_aux_device_uninit(struct bnxt_aux_dev *bnxt_adev);
-+void bnxt_rdma_aux_device_init(struct bnxt *bp);
-+void bnxt_aux_dev_free(struct bnxt *bp);
- struct bnxt_en_dev *bnxt_ulp_probe(struct net_device *dev);
- 
+@@ -32,7 +32,6 @@ struct bnxt_ulp_ops {
+ 	void (*ulp_stop)(void *);
+ 	void (*ulp_start)(void *);
+ 	void (*ulp_sriov_config)(void *, int);
+-	void (*ulp_shutdown)(void *);
+ 	void (*ulp_irq_stop)(void *);
+ 	void (*ulp_irq_restart)(void *, struct bnxt_msix_entry *);
+ };
+@@ -111,6 +110,4 @@ int bnxt_rdma_aux_device_add(struct bnxt *bp);
+ void bnxt_rdma_aux_device_uninit(struct bnxt_aux_dev *bnxt_adev);
+ void bnxt_rdma_aux_device_init(struct bnxt *bp);
+ void bnxt_aux_dev_free(struct bnxt *bp);
+-struct bnxt_en_dev *bnxt_ulp_probe(struct net_device *dev);
+-
  #endif
 -- 
 2.37.1 (Apple Git-137.1)
 
 
---000000000000702a3505ef409858
+--0000000000008c89d105ef409825
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -550,13 +866,13 @@ KlMYg/Deg9xo3wddCqQIsztHSkR4XaANdn+dbLRQpctZ13BY1lim4uz5bYn3M0IxyZWkQ1JuPHCK
 aRJv0SfR88PoI4RB7NCEHqFwARTj1KvFPQi8pK/YISFydZYbZrxQdyWDidqm4wSuJfpE6i0cWvCd
 u50xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNh
 MTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwM2Vrj
-4nZK0WWosNswDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFkwSpVZidpRIUhU2dV4
-kpdAOadddeZjLXZG8chtTy2AMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTIyMTIwNzE3NTMxN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUD
+4nZK0WWosNswDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINfBK93gthRiZgpfS59k
+UGOUCilPEYRcNqd5/8oX9MatMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
+MQ8XDTIyMTIwNzE3NTMxOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUD
 BAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsG
-CWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBvvDMQ7/qzxiNdho6/jVLO6t+1k71sJeeT/JBj
-wtslU+HATQDYcgMnW+hQpMaq07mn3aHOvRcaPT6W7bx2Kd4uI/bO6dHPjBqsKujiIp7E4ks/WANj
-hRHYV4tsDM1VxEN4Bv6FL/5RU5ol1oxRP9gV3X912+9YHuuhYoT6q4h0cb64fMvzTaXknH1ukIN3
-zlxQVVFOYUuniKfBjaJOaXGemmWA24LGH/ffYSS8RSdDuG/p/vuqVx4WSWr8f+zYCCxlAhsAub/d
-qTU9EzEU3lc3ZjAfc7/Jp/Q9NqgbL9UjgG/LXVivL5XFK5vKpdkrO0n2IQYq6Binl8ieML3pxZ5/
---000000000000702a3505ef409858--
+CWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQAlQn8yIJSJAmx5bbIRVck8Sq8pHAcmFeTa0Tep
+wtK0XdagibWSp/QIrxDZftdCozOkLd+OGvH6xGARnmiKvXmKz22y6qKN5ZAcpbysUdpx8iU/5cJm
+ULhOJKrtHU3sKNSVbXiPTwr0Xy7QzzNTmnku/XzteWHmJsWxlCdtydk16MHP7v7SXT/f+SnHaZEn
+x9MJgOlqiJ/KwDWtkemFn13F5oe3Lk4Skl9LRcDnnhGFIL4JUCC1FgQNp4hPz9c3+0OuIPEKCoEf
+Py+u51vN7lkdJGXgfrxGQUPr3OjYf5u/9JQMHEVgyKM8zKg/ySvxZx55A7BAd8G/OvucVqbHVNyX
+--0000000000008c89d105ef409825--
