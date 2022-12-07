@@ -2,82 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 887F26458D6
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 12:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 388536458DB
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 12:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230053AbiLGLVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 06:21:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
+        id S229851AbiLGLWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 06:22:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiLGLUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 06:20:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A260F391D4
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 03:20:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CD2A61510
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 11:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 95627C43470;
-        Wed,  7 Dec 2022 11:20:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670412016;
-        bh=+72nWTn85/izLqXwpU34WCXWrEgmyKWFe0862Z77rBM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RhG8unkovTyG7zBR4GqA7LGTcz5gXbaEFSynZS8JwzuASLh3c7VveuhFO6YDz2t8s
-         3Bg3FK0IOp8stNBU0N7MpvVjOsY56ElpnJKzcvD5oW2XSROcfCK2KKSsRO3ZE5HryL
-         gx09SJc5chOCyE58cPxLhhPMUYaZMIavwoUtt0hp6XMEMY7VO+Z+HgqNVuRE348g+8
-         M+4/K9oo1Wu0MC3kjQ0cYBPhicyuPtqsrbRtdoRYH5iX9YfYYWYokzPJJyIWlW8Dgb
-         FrbuH8D8abv04BaYGglLJ9d+KKHP3whnsGNt4Yt83b/ZBVqDUFuN9Adq7Ca792Nj0R
-         ZigauXMlQx0Cw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 792BDE4D02D;
-        Wed,  7 Dec 2022 11:20:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229853AbiLGLV5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 06:21:57 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A922AE3E;
+        Wed,  7 Dec 2022 03:21:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=VKfIZ8jyySPsQarwiJ7nK7I1JiZjo0stjyrVyrUEEiY=; b=ZhnMlGppE0Bj+Bf18ja/bEy35G
+        2A8MUJqRvy+tY7HbuwHBcfxmt/LEgqiFw8K55WXlTsrqwK/sFjKfYS/N4FjUNsBQ9si2KlMy8GjEk
+        FloDj3tQYrxrbJUY2EGQQ61YTsh0kHvhS37N6tCzdO8hxMT6cjGussLnMeenCLejigoT4gDuDYWDT
+        htwvDx3Set0wkyHUWmLxTtjdiAlKCtDCLZGLZVLdzs5KViFcpFe3Dj0OOBDfjmrQEW5PAkRrh/9pN
+        gG6YzbpS5rYLcI67NzoxU8aDopIxBIkEYwZ6SWxHpHbIe4aGVjAs+4GjJXDhcNejUa01pMyRsX/3y
+        Yp/5zClQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35612)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1p2sUo-0000Za-T6; Wed, 07 Dec 2022 11:21:50 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1p2sUl-0000gl-Uq; Wed, 07 Dec 2022 11:21:47 +0000
+Date:   Wed, 7 Dec 2022 11:21:47 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Paolo Abeni <pabeni@redhat.com>, Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH RFC 0/2] Add I2C fwnode lookup/get interfaces
+Message-ID: <Y5B3S6KZTrYlIH8g@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] dpaa2-switch: Fix memory leak in dpaa2_switch_acl_entry_add()
- and dpaa2_switch_acl_entry_remove()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167041201649.19214.12810270575196199146.git-patchwork-notify@kernel.org>
-Date:   Wed, 07 Dec 2022 11:20:16 +0000
-References: <20221205061515.115012-1-yuancan@huawei.com>
-In-Reply-To: <20221205061515.115012-1-yuancan@huawei.com>
-To:     Yuan Can <yuancan@huawei.com>
-Cc:     ioana.ciornei@nxp.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+This RFC series is not intended for the coming merge window, and we
+will need to decide how to merge it as it is split across two
+subsystems. These patches have been generated against the net-next,
+since patch 2 depends on a recently merged patch in that tree.
 
-On Mon, 5 Dec 2022 06:15:15 +0000 you wrote:
-> The cmd_buff needs to be freed when error happened in
-> dpaa2_switch_acl_entry_add() and dpaa2_switch_acl_entry_remove().
-> 
-> Fixes: 1110318d83e8 ("dpaa2-switch: add tc flower hardware offload on ingress traffic")
-> Signed-off-by: Yuan Can <yuancan@huawei.com>
-> ---
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c | 4 ++++
->  1 file changed, 4 insertions(+)
+Currently, the SFP code attempts to work out what kind of fwnode we
+found when looking up the I2C bus for the SFP cage, converts the fwnode
+to the appropriate firmware specific representation to then call the
+appropriate I2C layer function. This is inefficient, since the device
+model provides a way to locate items on a bus_type by fwnode.
 
-Here is the summary with links:
-  - dpaa2-switch: Fix memory leak in dpaa2_switch_acl_entry_add() and dpaa2_switch_acl_entry_remove()
-    https://git.kernel.org/netdev/net/c/4fad22a1281c
+In order to reduce this complexity, this series adds fwnode interfaces
+to the I2C subsystem to allow I2C adapters to be looked up. I also
+accidentally also converted the I2C clients to also be looked up, so
+I've left that in patch 1 if people think that could be useful - if
+not, I'll remove it.
 
-You are awesome, thank you!
+We could also convert the of_* functions to be inline in i2c.h and
+remove the stub of_* functions and exports.
+
+Do we want these to live in i2c-core-fwnode.c ? I don't see a Kconfig
+symbol that indicates whether we want fwnode support, and I know there
+are people looking to use software nodes to lookup the SFP I2C bus
+(which is why the manual firmware-specific code in sfp.c is a problem.)
+
+Thanks!
+
+ drivers/i2c/i2c-core-acpi.c | 13 +-------
+ drivers/i2c/i2c-core-base.c | 72 +++++++++++++++++++++++++++++++++++++++++++++
+ drivers/i2c/i2c-core-of.c   | 51 ++------------------------------
+ drivers/net/phy/sfp.c       | 13 +-------
+ include/linux/i2c.h         |  9 ++++++
+ 5 files changed, 86 insertions(+), 72 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
