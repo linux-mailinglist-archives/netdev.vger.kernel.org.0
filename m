@@ -2,101 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4099D645A35
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:54:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F693645A52
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:02:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbiLGMyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 07:54:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
+        id S229606AbiLGNCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 08:02:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbiLGMyI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:54:08 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938BE5217D;
-        Wed,  7 Dec 2022 04:54:07 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id fc4so13684006ejc.12;
-        Wed, 07 Dec 2022 04:54:07 -0800 (PST)
+        with ESMTP id S229739AbiLGNCq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:02:46 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800F116498;
+        Wed,  7 Dec 2022 05:02:45 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id x22so13755081ejs.11;
+        Wed, 07 Dec 2022 05:02:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3wHEueCe02/dFo7mDV34CjEc4Hqty62444bWhBRSbJ4=;
-        b=VzNNWJf1AddOafMP3bB5Jbnh04AX1NzHjVhFQA7rKO7lzu+Y9HTI9wgx2Xl9ojcDzK
-         s+D3GU5oT6JD3rhB7arH48dXPoYnxgzLx4GlXrIqnVwsg6sgG/A8DHkkwgdgYZygW7LJ
-         WYdrR6JS3jYsPycNHsP0LFCt5DDkSeO7BcCrLeaW8H8/QasiZR0aC3uGtSzkLkPWWXIg
-         m9w3hTuF188F9NDur0WwC+CpYuj3ubkJQ0N7GqsYEnrg80OFVwex3ofZlMf014sOi5ja
-         VZ5QHiSsXgaOLa0vqbc8QZMlNd52akbeeHaaH7OQVMOb8VrFpw7h0ouL06vw6ZPVJxLy
-         4Bjw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fZf8Ip8KDjMA4XH3s9oD0RHIMIP28yiN4IeA3BSkBys=;
+        b=qbuHTBWM9ebTxZTC40eXpJqNbiYRpqkNwBpxK1qfZhxoCnVTv3uY2C2rt95ao9+f9c
+         D7D/6kCh50WZnHVG+StwEIUmd4BffC+lPwCZGhte7WH4p5+4JQ7qMyWdFIvoMGX9tGA5
+         n5f92wwA9pocp0UIMwlzNexXQozK+xycBvaqazhGhSVq+EMpl1GXcRrBJWUaFdIpZ/j3
+         E/Mbgr6ckGDE9ZNKX37OHzzyQWaMadtzQeUrLDsMEx3UaxGHtDZXGjN90uAXMX5ti/R3
+         hSa2vW/mxgXauanzPc/jLI9SoNjRmbh5peCpqOw1V9Y0O6wtch/O7gXv+2i/LWCFD8eg
+         xVjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3wHEueCe02/dFo7mDV34CjEc4Hqty62444bWhBRSbJ4=;
-        b=opo9NHeulkFpvm8P4XUVFI6U7CLROf0GLJUps7yE1+MGFml3ixNEwKU3HlVT0dpbVg
-         jB9A0keTD6MrocBUd1P299ixlkd4VKhRPOqRyz0cPwhuB9VVVkUsQusiLxENc5OkTsdJ
-         pH8c90Y3/9hzKcy1bF6f4T7Am+uBbd8WFD7hqTLjM5bJzCXnhg45srCyi+4QdFe6nm7W
-         xcDCJR86i5aVnPRcYoBnHq6tRbUGEHiZWuzhMANl+f6Ok7N5QYrPgrSsMLtqRul6IURc
-         zBReUMHYx+4OsQteqH4teawOyMM2vftFbl/u1Ky5ef4wiVpv5nbKiL7zLSHV48FG0uQ7
-         imnQ==
-X-Gm-Message-State: ANoB5pmcZ5d522NBfXGVcqhZg8YRfYLT20uBGtFtDpumQLWiL93dpp7U
-        c9rlo5h/MwtZWR8GvsrFnC8=
-X-Google-Smtp-Source: AA0mqf5rJ8Y2G5K8J77Da+1fY6fh0SokcCUuw7mN1S5LXHOpp/KJnxOL0OG+9lxX8aLNgrMq9yk9mA==
-X-Received: by 2002:a17:906:258d:b0:7c0:aea3:a9a8 with SMTP id m13-20020a170906258d00b007c0aea3a9a8mr23156206ejb.718.1670417645965;
-        Wed, 07 Dec 2022 04:54:05 -0800 (PST)
-Received: from [192.168.0.105] ([77.126.19.155])
-        by smtp.gmail.com with ESMTPSA id j16-20020a170906535000b007c0f2c4cdffsm3671712ejo.44.2022.12.07.04.54.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Dec 2022 04:54:05 -0800 (PST)
-Message-ID: <19cbfb5e-22b1-d9c1-8d50-38714e3eaf7d@gmail.com>
-Date:   Wed, 7 Dec 2022 14:53:58 +0200
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fZf8Ip8KDjMA4XH3s9oD0RHIMIP28yiN4IeA3BSkBys=;
+        b=kpvryqibTnVTEQZzaUK3shC2J5vM8Un2AajTG/O+mvgnPsCwRnXdBUV5ESM8cuA6ie
+         eNib3jIj7kou4CNYVyrygC6eWfXUOwOj3ZqPg5HHu0ym0t16HrVL0EN3PbM666cGmRr7
+         PM/OJTs66IfIbPRrq210lay+c7+EdwpxE/h5TrgBEC0fi0GXnUL1lr/0TKRYsJiXFHm9
+         ySmAUBF3RSFLM00D5jojdsu1R1bKXuLGTKuDjoMCOVUdIk8+2kxr4TeZnupulmq+v5pf
+         eyNYclx2ttk45+/grFwpkNceT7sO07cu1hjORNvwUTakXPGsUNrUHHhpzjdzMHeEKjHG
+         BoBg==
+X-Gm-Message-State: ANoB5pnFgq4Ujrk3iU6FMMLdoyt5iZk2ECUHMJvML4pYEAuox5QFLacK
+        gPxgRc/Nh4gB/kVweA0O3L4HY7/995GAKw==
+X-Google-Smtp-Source: AA0mqf6/yFShyR8oIl+NhzrlP0lxrNuNVPamhMuER9NJefO1n1bE5++74DyReyB9/b2pgVQMjKNxIQ==
+X-Received: by 2002:a17:906:94e:b0:7ba:4617:3f17 with SMTP id j14-20020a170906094e00b007ba46173f17mr54627840ejd.226.1670418163916;
+        Wed, 07 Dec 2022 05:02:43 -0800 (PST)
+Received: from skbuf ([188.26.184.215])
+        by smtp.gmail.com with ESMTPSA id k3-20020a17090632c300b007aece68483csm8424367ejk.193.2022.12.07.05.02.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 05:02:43 -0800 (PST)
+Date:   Wed, 7 Dec 2022 15:02:40 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] lib: packing: fix shift wrapping in bit_reverse()
+Message-ID: <20221207130240.aoojta5n5enec72y@skbuf>
+References: <Y5B3sAcS6qKSt+lS@kili>
+ <Y5B3sAcS6qKSt+lS@kili>
+ <20221207121936.bajyi5igz2kum4v3@skbuf>
+ <Y5CFMIGsZmB1TRni@kadam>
+ <20221207122254.otq7biekqz2nzhgl@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v2 0/4] cpumask: improve on cpumask_local_spread()
- locality
-Content-Language: en-US
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Valentin Schneider <vschneid@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Barry Song <baohua@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        haniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-References: <20221112190946.728270-1-yury.norov@gmail.com>
- <xhsmh7czwyvtj.mognet@vschneid.remote.csb> <Y3PXw8Hqn+RCMg2J@yury-laptop>
- <xhsmho7t5ydke.mognet@vschneid.remote.csb>
- <665b6081-be55-de9a-1f7f-70a143df329d@gmail.com>
- <Y4a2MBVEYEY+alO8@yury-laptop>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <Y4a2MBVEYEY+alO8@yury-laptop>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221207122254.otq7biekqz2nzhgl@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -105,63 +74,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Dec 07, 2022 at 02:22:54PM +0200, Vladimir Oltean wrote:
+> Wait a second, I deliberately wrote the code without conditionals.
+> Let me look at the code disassembly before and after the patch and see
+> what they look like.
+
+Before (make lib/packing.lst on arm64):
+
+	for (i = 0; i < width; i++) {
+  1c:	310004ec 	adds	w12, w7, #0x1
+  20:	540001c0 	b.eq	58 <adjust_for_msb_right_quirk+0x58>  // b.none
+  24:	52800004 	mov	w4, #0x0                   	// #0
+		bit = (val & (1 << i)) != 0;
+  28:	5280002b 	mov	w11, #0x1                   	// #1
+  2c:	d503201f 	nop
+  30:	1ac42166 	lsl	w6, w11, w4
+		new_val |= (bit << (width - i - 1));
+  34:	4b0400e9 	sub	w9, w7, w4
+		bit = (val & (1 << i)) != 0;
+  38:	93407cc6 	sxtw	x6, w6		/* We don't want sign extension */
+  3c:	ea0a00df 	tst	x6, x10
+  40:	1a9f07e6 	cset	w6, ne  // ne = any
+	for (i = 0; i < width; i++) {
+  44:	6b07009f 	cmp	w4, w7
+  48:	11000484 	add	w4, w4, #0x1
+		new_val |= (bit << (width - i - 1));
+  4c:	1ac920c6 	lsl	w6, w6, w9
+  50:	aa060108 	orr	x8, x8, x6
+	for (i = 0; i < width; i++) {
+  54:	54fffee1 	b.ne	30 <adjust_for_msb_right_quirk+0x30>  // b.any
 
 
-On 11/30/2022 3:47 AM, Yury Norov wrote:
-> On Mon, Nov 28, 2022 at 08:39:24AM +0200, Tariq Toukan wrote:
->>
->>
->> On 11/17/2022 2:23 PM, Valentin Schneider wrote:
->>> On 15/11/22 10:32, Yury Norov wrote:
->>>> On Tue, Nov 15, 2022 at 05:24:56PM +0000, Valentin Schneider wrote:
->>>>>
->>>>> Is this meant as a replacement for [1]?
->>>>
->>>> No. Your series adds an iterator, and in my experience the code that
->>>> uses iterators of that sort is almost always better and easier to
->>>> understand than cpumask_nth() or cpumask_next()-like users.
->>>>
->>>> My series has the only advantage that it allows keep existing codebase
->>>> untouched.
->>>>
->>>
->>> Right
->>>
->>>>> I like that this is changing an existing interface so that all current
->>>>> users directly benefit from the change. Now, about half of the users of
->>>>> cpumask_local_spread() use it in a loop with incremental @i parameter,
->>>>> which makes the repeated bsearch a bit of a shame, but then I'm tempted to
->>>>> say the first point makes it worth it.
->>>>>
->>>>> [1]: https://lore.kernel.org/all/20221028164959.1367250-1-vschneid@redhat.com/
->>>>
->>>> In terms of very common case of sequential invocation of local_spread()
->>>> for cpus from 0 to nr_cpu_ids, the complexity of my approach is n * log n,
->>>> and your approach is amortized O(n), which is better. Not a big deal _now_,
->>>> as you mentioned in the other email. But we never know how things will
->>>> evolve, right?
->>>>
->>>> So, I would take both and maybe in comment to cpumask_local_spread()
->>>> mention that there's a better alternative for those who call the
->>>> function for all CPUs incrementally.
->>>>
->>>
->>> Ack, sounds good.
->>>
->>
->> Good.
->> Is a respin needed, to add the comment mentioned above?
-> 
-> If you think it's worth the effort.
+Then this modified code:
 
-No, not sure it is...
+static u64 bit_reverse(u64 val, unsigned int width)
+{
+	u64 new_val = 0;
+	unsigned int i;
 
-I asked because this mail thread was inactive for a while, with the 
-patches not accepted to the kernel yet.
+	for (i = 0; i < width; i++)
+		if (val & BIT_ULL(i))
+			new_val |= BIT_ULL(width - i - 1);
 
-If everyone is happy with it, let's make it to this kernel while possible.
+	return new_val;
+}
 
-To which tree should it go?
+compiles to this:
 
-Thanks,
-Tariq
+	for (i = 0; i < width; i++) {
+  1c:	310004eb 	adds	w11, w7, #0x1
+  20:	540001c0 	b.eq	58 <adjust_for_msb_right_quirk+0x58>  // b.none
+  24:	52800005 	mov	w5, #0x0                   	// #0
+			new_val |= BIT_ULL(width - i - 1);
+  28:	d280002a 	mov	x10, #0x1                   	// #1
+  2c:	14000002 	b	34 <adjust_for_msb_right_quirk+0x34>	/* this is an unconditional jump to "sub w4, w7, w5", skipping the assignment to w5 */
+  30:	2a0803e5 	mov	w5, w8			/* this is only hit by the backwards jump b.ne 30 at the end */
+  34:	4b0500e4 	sub	w4, w7, w5
+		if (val & BIT_ULL(i))
+  38:	9ac52528 	lsr	x8, x9, x5
+			new_val |= BIT_ULL(width - i - 1);
+  3c:	f240011f 	tst	x8, #0x1
+	for (i = 0; i < width; i++) {
+  40:	110004a8 	add	w8, w5, #0x1
+			new_val |= BIT_ULL(width - i - 1);
+  44:	9ac42144 	lsl	x4, x10, x4
+  48:	aa0400c4 	orr	x4, x6, x4
+  4c:	9a861086 	csel	x6, x4, x6, ne  // ne = any
+	for (i = 0; i < width; i++) {
+  50:	6b0700bf 	cmp	w5, w7
+  54:	54fffee1 	b.ne	30 <adjust_for_msb_right_quirk+0x30>  // b.any
+
+which indeed has no branch in the main loop (between 0x30 and 0x54),
+because as I explained, the "b 34" doesn't count - it's not in the loop.
+
+Additionally, this rewritten code which is considerably more obscure in C:
+
+static u64 bit_reverse(u64 val, unsigned int width)
+{
+	u64 new_val = 0;
+	unsigned int i;
+
+	for (i = 0; i < width; i++)
+		new_val |= !!(val & BIT_ULL(i)) ?
+			   BIT_ULL(width - i - 1) : 0;
+
+	return new_val;
+}
+
+compiles to the exact same assembly code as the variant with "if":
+
+	for (i = 0; i < width; i++)
+  1c:	310004eb 	adds	w11, w7, #0x1
+  20:	540001c0 	b.eq	58 <adjust_for_msb_right_quirk+0x58>  // b.none
+  24:	52800005 	mov	w5, #0x0                   	// #0
+		new_val |= !!(val & BIT_ULL(i)) ?
+  28:	d280002a 	mov	x10, #0x1                   	// #1
+  2c:	14000002 	b	34 <adjust_for_msb_right_quirk+0x34>
+  30:	2a0803e5 	mov	w5, w8
+  34:	4b0500e4 	sub	w4, w7, w5
+  38:	9ac52528 	lsr	x8, x9, x5
+  3c:	f240011f 	tst	x8, #0x1
+	for (i = 0; i < width; i++)
+  40:	110004a8 	add	w8, w5, #0x1
+		new_val |= !!(val & BIT_ULL(i)) ?
+  44:	9ac42144 	lsl	x4, x10, x4
+  48:	aa0400c4 	orr	x4, x6, x4
+  4c:	9a861086 	csel	x6, x4, x6, ne  // ne = any
+	for (i = 0; i < width; i++)
+  50:	6b0700bf 	cmp	w5, w7
+  54:	54fffee1 	b.ne	30 <adjust_for_msb_right_quirk+0x30>  // b.any
+
+So this is good with the "if".
