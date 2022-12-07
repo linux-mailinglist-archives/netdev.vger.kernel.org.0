@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06685645207
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 03:28:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC019645211
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 03:33:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229513AbiLGC23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 21:28:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        id S229614AbiLGCdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 21:33:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiLGC22 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 21:28:28 -0500
+        with ESMTP id S229479AbiLGCdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 21:33:17 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20F7101CD
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 18:28:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4EA3C6FD;
+        Tue,  6 Dec 2022 18:33:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DAE3B81BBA
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 02:28:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF8CC433D6;
-        Wed,  7 Dec 2022 02:28:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86E7DB81BEE;
+        Wed,  7 Dec 2022 02:33:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD980C433D6;
+        Wed,  7 Dec 2022 02:33:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670380105;
-        bh=51irAAigSD8CTDChPJsIxhxIBXW+6KYBypkfWAsuqf8=;
+        s=k20201202; t=1670380394;
+        bh=uau8K4Bi989Gk/f36wEfZYxbGAyT5HJO4AKtGNiCC9c=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OJN7aWbAFsRQgpHgd5tPi3CdalyIvOEKVqloL2USZs4fjByDwY+Ljo5XpmZaYH734
-         C3lvM498NFD+gkCjM2udnH8751A7hvRC9peKzOWQO4FOyiw5rDjxUVlEn38LAsqtc/
-         dKdQ5I+KCvu2izsBgDRca/XMWeXHiNtUyvdNL557iFdflLVYhEiFhKY63obWqznuKh
-         iNeDL+5uE0Q7fbX3Z+yWnAVIqAmybYgpb7+sXuC8RRO/yhmeJOxzA8lypuf5o16e2/
-         +qmxqbWplpupKPtQR6nsqAth1wvVweldKPjyD6XSz3EAKfa0WQXtALuLZuBluJ6jy9
-         bEgRq7ApvCzGg==
-Date:   Tue, 6 Dec 2022 18:28:23 -0800
+        b=trP45bn61KSi/RVwH9HOyQY4Wz/UfZKELUj3Kh00u1+iHR94MxndXVGBscHiF6PkX
+         wi4bbLKa25j6SuRbmE2ZMvxM0jubQMGiuNAJqqrmutp2ytXsKYVej4OAUxrxAUqCA3
+         Ds/IiIX0f+GeigueQ5oOHXxfiUgrE8EOeoKsj2TdHmRlhYJUqZRs/xUL+cOuYbA+kr
+         9QyBe1TJrc7YzY+kF8PPEwlnq5X3x7beo1410Vg4A56VrtvN1d/h1e3cYwFp65XGxx
+         LK/RZMDJrcIHGqg9tFxWlKVYHpicexSGM+zZK536y4BOGo1m8RnO/4FeQ3ipID/aSl
+         +plXP7ybcd7XA==
+Date:   Tue, 6 Dec 2022 18:33:13 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
-        netdev@vger.kernel.org, peppe.cavallaro@st.com,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Antonio Borneo <antonio.borneo@st.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [PATCH net] stmmac: fix potential division by 0
-Message-ID: <20221206182823.08e5f917@kernel.org>
-In-Reply-To: <Y4i/Aeqh94ZP/mA0@lunn.ch>
-References: <Y4f3NGAZ2rqHkjWV@gvm01>
-        <Y4gFt9GBRyv3kl2Y@lunn.ch>
-        <Y4iA6mwSaZw+PKHZ@gvm01>
-        <Y4i/Aeqh94ZP/mA0@lunn.ch>
+To:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vadim Fedorenko <vadfed@fb.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: Re: [RFC PATCH v4 4/4] ptp_ocp: implement DPLL ops
+Message-ID: <20221206183313.713656f8@kernel.org>
+In-Reply-To: <DM6PR11MB465721310114ECA13F556E8A9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+References: <20221129213724.10119-1-vfedorenko@novek.ru>
+        <20221129213724.10119-5-vfedorenko@novek.ru>
+        <Y4dPaHx1kT3A80n/@nanopsycho>
+        <DM6PR11MB4657D9753412AD9DEE7FAB7D9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+        <Y4n0H9BbzaX5pCpQ@nanopsycho>
+        <DM6PR11MB465721310114ECA13F556E8A9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,18 +64,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 1 Dec 2022 15:49:37 +0100 Andrew Lunn wrote:
-> > The root cause is the MAC using the internal clock as a PTP reference
-> > (default), which should be allowed since the connection to an external
-> > PTP clock is optional from an HW perspective. The internal clock seems
-> > to be derived from the MII clock speed, which is 2.5 MHz at 10 Mb/s.  
+On Fri, 2 Dec 2022 14:39:17 +0000 Kubalewski, Arkadiusz wrote:
+> >>>Btw, did you consider having dpll instance here as and auxdev? It
+> >>>would be suitable I believe. It is quite simple to do it. See
+> >>>following patch as an example:  
+> >>
+> >>I haven't think about it, definetly gonna take a look to see if there
+> >>any benefits in ice.  
+> >
+> >Please do. The proper separation and bus/device modelling is at least one
+> >of the benefits. The other one is that all dpll drivers would happily live
+> >in drivers/dpll/ side by side.
 > 
-> I think we need help from somebody who understands PTP on this device.
-> The clock is clearly out of range, but how important is that to PTP?
-> Will PTP work if the value is clamped to 0xff? Or should we be
-> returning -EINVAL and disabling PTP because it has no chance of
-> working?
+> Well, makes sense, but still need to take a closer look on that.
+> I could do that on ice-driver part, don't feel strong enough yet to introduce
+> Changes here in ptp_ocp.
 
-Indeed, we need some more info here :( Like does the PTP actually
-work with 2.5 MHz clock? The frequency adjustment only cares about 
-the addend, what is sub_second_inc thing?
+FWIW auxdev makes absolutely no sense to me for DPLL :/
+So Jiri, please say why.
+
