@@ -2,124 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96E606460A2
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 18:49:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44BE26460AE
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 18:53:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbiLGRtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 12:49:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
+        id S230138AbiLGRxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 12:53:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbiLGRtn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 12:49:43 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA6369A9A
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 09:49:42 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id y17so17726720plp.3
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 09:49:42 -0800 (PST)
+        with ESMTP id S230133AbiLGRxR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 12:53:17 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806D12A97A
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 09:53:16 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id a14so14080465pfa.1
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 09:53:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=KLmxTKMkNMNO9AYipAYv3uGbWMHxs9vXK3x8YnvDU8s=;
-        b=ZGFmelqWcjzJKMvKuymwwAKiPzLHJqb7OoLD8WDEsTyCmcpIOQPeJd/4C0DGHqGADO
-         6CNykzPxF7fQoJ1NB77i0nBWjTD7Kf2jwSPhcqsDzBOe4Ak1t6tssDTAqCY7J7y/f4fF
-         0xnVr/q+y3c1eKRLaZswWLgNxVaj5VQMW/gb4=
+        h=mime-version:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=swtkDqCMzGL7KJODaWK5a3S51Xy+2PbXBnaSciPTN5w=;
+        b=OIl4qrdp9nxLSjicrZzyqoQAKB6RjpJqCR7oRv9l8k6IwRxKHwk0dA1n73kcMsqHu5
+         9sb+xmyugkWOeBP6Jz01KuL7EgRMhl8TJMu5Tr+pu5TxyAfLMZSFgOBCu9URKY7WlW0U
+         JaI2JaibcRRqfNe5aulg0mkPBccr9/4D4GC3k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=KLmxTKMkNMNO9AYipAYv3uGbWMHxs9vXK3x8YnvDU8s=;
-        b=6mSRE2ZiuJMYRqSmYmrbreB7XzUtYHDos2EC7G9DL07G8W4Btuxx7xfAJ5amoYnx1J
-         +8xbOCUdowbAmatgI+AiZHJwfaIGj63Vd8z+gD7obBMz1hRmCtMDRou8scz/Gx6PINLW
-         IMz72O3oEKzqVGy7JhITtvQdKUKrpjFU1rnSsQlNs/r7PLPZwQIZTxjaym8dbbcTKaj4
-         8In97v+qKWsUtkagAJgBA1GBISp1mF6bncP6WdbLhR49BGltH/+tY+nh9fQaSAEa/62r
-         +/ANiLVY/8Tnl+WKlkuC973Zn9ttmbeG0YSe3cO5qJ2OzpNcIwJ9G/ogrzSwSts4A3tg
-         3huw==
-X-Gm-Message-State: ANoB5pm+CQdMhPZU+xmYUdcsHfmhMMZouHNtAQ7zfjezVtG2HTpCsHP3
-        GSn2y2lDpG+5ayU9oQBm/AKAuHbiohFRbcva8wNpEQ==
-X-Google-Smtp-Source: AA0mqf6Jec+BV32PawqxyCKhdJcUXmZ/RKDowT11RNYNv1j4ZJEdrGiT81JrGbP3mwHIMdTQ58+F8XjRbkav02c5nOk=
-X-Received: by 2002:a17:90a:4745:b0:213:1442:24be with SMTP id
- y5-20020a17090a474500b00213144224bemr103534897pjg.15.1670435382094; Wed, 07
- Dec 2022 09:49:42 -0800 (PST)
-MIME-Version: 1.0
-References: <20221109184244.7032-1-ajit.khaparde@broadcom.com>
- <Y2zYPOUKgoArq7mM@unreal> <CACZ4nhu_2FoOTmXPuq+amRYAipusq1XcobavytN0cFK=TSE5mQ@mail.gmail.com>
- <Y3Tj/BrskSJPuTFw@unreal> <CACZ4nhsv4zyzANrGh90WGKORz0Su=i7+Jmsk6nWoOq4or7Y0=Q@mail.gmail.com>
- <Y33ErZHAsX76y34Z@unreal> <CACZ4nhvJV32pmOU7mRfaYYnatN6Ef5T3M=nVTYjuk7mnqcUxtw@mail.gmail.com>
- <Y4XNSBO+2/YOL9+C@unreal>
-In-Reply-To: <Y4XNSBO+2/YOL9+C@unreal>
+        h=mime-version:message-id:date:subject:cc:to:from:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=swtkDqCMzGL7KJODaWK5a3S51Xy+2PbXBnaSciPTN5w=;
+        b=n2UIZopqsfb58RXkt2hlL3bTeKbx8nPFjQxoxEiVK7eKBke2sjQqYAeiEZevaM0mXm
+         eTzKQVc7HXI3Hc4UarnK8vGODQ3pN9HEmwmKpId4q4Y9cmkY3EesfxU/kH/Q6Wzbra0e
+         hnxN2K5mefSmdPJYq2LkacZQbkfC9w9f26woPid2XL/6OlBbKMh91uN82lqB0FRwjAME
+         Ykpq0J3lJ4ZoHUKMqnxyVxWERX9528fIhxyLa+zhaSyudaephB4S88rXn2PgpvwOlhoD
+         79+mC2RHZ8BWLFISUh1LfprlrJ0+FyZrpgFEbH6lJuIb3QJEdE2j3TmYdJrMH8e4zgW+
+         1Htw==
+X-Gm-Message-State: ANoB5pmO0FkA+7FAI4x/C4YYl+NrKu7yxDOac04ufzsUDkKJtgpy7FTc
+        lTBTS8nb0jMWJxrojpDGkW3dUA==
+X-Google-Smtp-Source: AA0mqf4saveSfSsdHGRXE01QkPkXCTTTEG0gyd+5J6EyHwudyKeLq3ip2HNmR+gJrQhyfZGNi8XIxw==
+X-Received: by 2002:aa7:8c0b:0:b0:577:5b2:5ee7 with SMTP id c11-20020aa78c0b000000b0057705b25ee7mr13870971pfd.74.1670435595883;
+        Wed, 07 Dec 2022 09:53:15 -0800 (PST)
+Received: from C02GC2QQMD6T.wifi.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id l6-20020a622506000000b005748aca80fesm13862242pfl.32.2022.12.07.09.53.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 09:53:14 -0800 (PST)
 From:   Ajit Khaparde <ajit.khaparde@broadcom.com>
-Date:   Wed, 7 Dec 2022 09:49:24 -0800
-Message-ID: <CACZ4nhtOkCDEhONdR-dX7CnLq44bn=OsRirkKxdcxaUYzvyUjw@mail.gmail.com>
-Subject: Re: [PATCH v4 0/6] Add Auxiliary driver support
-To:     Leon Romanovsky <leon@kernel.org>
+To:     ajit.khaparde@broadcom.com
 Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
         edumazet@google.com, jgg@ziepe.ca, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        michael.chan@broadcom.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, selvin.xavier@broadcom.com
+        leon@kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, michael.chan@broadcom.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        selvin.xavier@broadcom.com
+Subject: [PATCH v5 0/7] Add Auxiliary driver support
+Date:   Wed,  7 Dec 2022 09:53:03 -0800
+Message-Id: <20221207175310.23656-1-ajit.khaparde@broadcom.com>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
+MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000971ebe05ef408b19"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        boundary="000000000000558d1b05ef409845"
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MIME_NO_TEXT,
+        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000971ebe05ef408b19
-Content-Type: text/plain; charset="UTF-8"
+--000000000000558d1b05ef409845
+Content-Transfer-Encoding: 8bit
 
-On Tue, Nov 29, 2022 at 1:13 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Mon, Nov 28, 2022 at 06:01:13PM -0800, Ajit Khaparde wrote:
-> > On Tue, Nov 22, 2022 at 10:59 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > >
-::: snip :::
-> >
-> > >
-> > > > So we are trying to call the
-> > > > bnxt_re_sriov_config in the context of handling the PF's
-> > > > sriov_configure implementation.  Having the ulp_ops is allowing us to
-> > > > avoid resource wastage and assumptions in the bnxt_re driver.
-> > >
-> > > To which resource wastage are you referring?
-> > Essentially the PF driver reserves a set of above resources for the PF,
-> > and divides the remaining resources among the VFs.
-> > If the calculation is based on sriov_totalvfs instead of sriov_numvfs,
-> > there can be a difference in the resources provisioned for a VF.
-> > And that is because a user may create a subset of VFs instead of the
-> > total VFs allowed in the PCI SR-IOV capability register.
-> > I was referring to the resource wastage in that deployment scenario.
->
-> It is ok, set all needed limits in bnxt_en. You don't need to call to
-> bnxt_re for that.
-Thanks. We have removed the sriov_config callback.
-I will send the fresh patchset in a few minutes.
+Add auxiliary device driver for Broadcom devices.
+The bnxt_en driver will register and initialize an aux device
+if RDMA is enabled in the underlying device.
+The bnxt_re driver will then probe and initialize the
+RoCE interfaces with the infiniband stack.
 
->
-> >
-> > Thanks
-> > Ajit
-> >
-> > >
-> > > There are no differences if same limits will be in bnxt_en driver when
-> > > RDMA bnxt device is created or in bnxt_re which will be called once RDMA
-> > > device is created.
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > > ::snip::
-> > >
-> > >
->
->
+We got rid of the bnxt_en_ops which the bnxt_re driver used to
+communicate with bnxt_en.
+Similarly  We have tried to clean up most of the bnxt_ulp_ops.
+In most of the cases we used the functions and entry points provided
+by the auxiliary bus driver framework.
+And now these are the minimal functions needed to support the functionality.
 
---000000000000971ebe05ef408b19
+We will try to work on getting rid of the remaining if we find any
+other viable option in future.
+
+v1->v2:
+- Incorporated review comments including usage of ulp_id &
+  complex function indirections.
+- Used function calls provided by the auxiliary bus interface
+  instead of proprietary calls.
+- Refactor code to remove ROCE driver's access to bnxt structure.
+
+v2->v3:
+- Addressed review comments including cleanup of some unnecessary wrappers
+- Fixed warnings seen during cross compilation
+
+v3->v4:
+- Cleaned up bnxt_ulp.c and bnxt_ulp.h further
+- Removed some more dead code
+- Sending the patchset as a standalone series
+
+v4->v5:
+- Removed the SRIOV config callback which bnxt_en driver was calling into
+  bnxt_re driver.
+- Removed excessive checks for rdev and other pointers.
+
+Please apply. Thanks.
+
+Ajit Khaparde (6):
+  bnxt_en: Add auxiliary driver support
+  RDMA/bnxt_re: Use auxiliary driver interface
+  bnxt_en: Remove usage of ulp_id
+  bnxt_en: Use direct API instead of indirection
+  bnxt_en: Use auxiliary bus calls over proprietary calls
+  RDMA/bnxt_re: Remove the sriov config callback
+
+Hongguang Gao (1):
+  bnxt_en: Remove struct bnxt access from RoCE driver
+
+ drivers/infiniband/hw/bnxt_re/bnxt_re.h       |   9 +-
+ drivers/infiniband/hw/bnxt_re/main.c          | 591 +++++++-----------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  10 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   8 +
+ .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   |   7 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 413 ++++++------
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |  53 +-
+ 7 files changed, 490 insertions(+), 601 deletions(-)
+
+-- 
+2.37.1 (Apple Git-137.1)
+
+
+--000000000000558d1b05ef409845
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -190,13 +207,13 @@ KlMYg/Deg9xo3wddCqQIsztHSkR4XaANdn+dbLRQpctZ13BY1lim4uz5bYn3M0IxyZWkQ1JuPHCK
 aRJv0SfR88PoI4RB7NCEHqFwARTj1KvFPQi8pK/YISFydZYbZrxQdyWDidqm4wSuJfpE6i0cWvCd
 u50xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNh
 MTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwM2Vrj
-4nZK0WWosNswDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDZ4q+kOZPmwKfPY4f+4
-ittD9mKQf6bbiYBDgrmOJpj9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTIyMTIwNzE3NDk0MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUD
+4nZK0WWosNswDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIZYao0u6Z6Bkl2w8zhD
+rq3Dd5gr1FT/0vHCjxNetBrlMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
+MQ8XDTIyMTIwNzE3NTMxNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUD
 BAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsG
-CWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBHd54PVU5nhfPQkvd6QUcpJ53ROXdNlCVBOaDM
-hQK6cRwxWnUs4h7ZrTD+kQv7N0rnARbJeGlFGYW7jJWOiYmgl962Mi/kSXYg25feo0tWws1WP6fl
-jHPqUXq7I4cp8AWSoAN2K1Xqr5+iEIutzWY1ZkyPKxm/MVyjNTNoIR1g3d8OAUbPRVPPoeb/kyi5
-xaPkJUfahfTK1nf14KEX580QLhMP9YBdKRcR16ErqBZFGgpp33YDfHdRRAM1N8EkfeeWqZ/kh3Xl
-kGp0EyEXUhwn0qQwloRILBgY8ExTJkPvuVO5w3efmHXhABpUhv6XGzxCynw6XKYUbTf61SQqEHMh
---000000000000971ebe05ef408b19--
+CWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBvgTYcWDH4eyNKNuZvqFb8IGHwAFCTKBfsbA6x
+Ncuwg97mN69RklERshMNoen3yRbcle3PTmCNmpALoFA/Z9Bj1zpJ6yaeW0BnBEDJAp/YkjCrLBjl
+8thOgK/3DWrxKJ7uMvXCZ5rIjmJsbl5ok7Fa9t9z0MHe2c6bqV3NheTlIZmLng/muF2/+ztFGguj
+B+mtgoU/wzwDPrIulRvxn5NOY/QCFVRr6WJxPcI64wb4Z7DrmzdJQW5QipDyaAKGmhuP38I6iI0Y
+GG1EP3RL2Xb5dvhsPDSIZYmj3OIyKS3ojAAyWLZzS5u6tOpvYG8LzQxvXw6CNSmekBN84LpX5X43
+--000000000000558d1b05ef409845--
