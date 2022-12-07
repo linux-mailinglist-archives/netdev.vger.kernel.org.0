@@ -2,76 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 373F764580D
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 11:38:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5553A645818
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 11:41:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229589AbiLGKi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 05:38:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35410 "EHLO
+        id S229701AbiLGKlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 05:41:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229783AbiLGKiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 05:38:13 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BE04667A;
-        Wed,  7 Dec 2022 02:38:12 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id i15so16092116edf.2;
-        Wed, 07 Dec 2022 02:38:12 -0800 (PST)
+        with ESMTP id S229497AbiLGKlA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 05:41:00 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668E310B6A;
+        Wed,  7 Dec 2022 02:40:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/vdOUq/hueGf9q04U2z4nVzVdAzw30oN6SpxZVu/XGc=;
-        b=UD/XNwZFSHd5Nm0bGWgegEzUA2p7zIX4KEPlAZ5edg96CM5eayxHGUz+0AeXiIHsU5
-         fB3ybtWHYakn9OQGNON8DUC/yIbxekcNiiBT/Dd9mPGf+jOZvvxwq+X75yy9iXnEzBLO
-         P0GnIr3etA0EddcMY1DMqHff3camCmf1mtih3EPNiilBr8n1HERTjk+mLgblpwlrDAF5
-         4aMj/EGakQKwuFvQSvmvXzEktO+cOI890Ig7Gv/Ddo2iC120Sfq2H7XGAsQ8ug7ZoGDS
-         nwBipkeoYbDKbVQPR2tlB5oATI5P/2QnKD/uUtoVRC2geNOdbX4HvWNWjjAPgiv7iA9O
-         jIkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/vdOUq/hueGf9q04U2z4nVzVdAzw30oN6SpxZVu/XGc=;
-        b=Ae4c4vIBiq7NtQmH+z4jq4TQAvQVjkqFPGP9uZtBaUOQwrMdo4ay3J+3AlJ6XEkgjC
-         iMXQNHMqD1TC3iePYhe3DKlIOxrp2wTL9HVSSnyLROQr+HwSyPMfKuFx+sanoVPWwvjo
-         GF29yr/Rh6HCyi3c8pKi6RbsJvPmiob/ZQUZwQd9CNb3rHBN/Fe2GFvvjwGrzAcw7qXL
-         2LNTkhBt+BL7+CEqdGxOMKJIX0g7TgZpEH9CldvRWOHYjfprJap2p5+AfIAvmLNYoGcT
-         MFqh36gwyWGS8Vxl2WPTvAzQTlAZ9ucDtAxX7eFcDo/5yGWvRQzeCHzMZl7SR018S8zD
-         y4Dg==
-X-Gm-Message-State: ANoB5plY6lMk62ykLFQJLzRpJidQ3PrFJrTylGwXmkTtI9G4pjo41ylu
-        H0FrzEMT8WYZfxJhsgOtvsw=
-X-Google-Smtp-Source: AA0mqf7NZM4xj8rhfnuTtDvE+jQMy5TIAydlmPrToDuKD3X5TcbbG+sHDo6w1ElOA8B8q3nadQiQRg==
-X-Received: by 2002:aa7:db90:0:b0:459:aa70:d4fd with SMTP id u16-20020aa7db90000000b00459aa70d4fdmr78260533edt.162.1670409491255;
-        Wed, 07 Dec 2022 02:38:11 -0800 (PST)
-Received: from skbuf ([188.26.184.215])
-        by smtp.gmail.com with ESMTPSA id j17-20020a17090623f100b007c0d0dad9c6sm5431418ejg.108.2022.12.07.02.38.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 02:38:10 -0800 (PST)
-Date:   Wed, 7 Dec 2022 12:38:08 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun.Ramadoss@microchip.com
-Cc:     andrew@lunn.ch, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        linux@armlinux.org.uk, ceggers@arri.de, Tristram.Ha@microchip.com,
-        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org, Woojung.Huh@microchip.com,
-        davem@davemloft.net
-Subject: Re: [Patch net-next v2 07/13] net: dsa: microchip: ptp: add packet
- reception timestamping
-Message-ID: <20221207103808.nfkvr2hwv5yud4uc@skbuf>
-References: <20221206091428.28285-1-arun.ramadoss@microchip.com>
- <20221206091428.28285-8-arun.ramadoss@microchip.com>
- <20221206125344.rwheovbxdoad2duv@skbuf>
- <148ee662f8def0e63b81d9164d2fd7c0f7029cf7.camel@microchip.com>
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1670409658; x=1701945658;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Xk5goH3/wEb7wDqojnwzNi5RZQ/mTp7ePcv/KyIwGtk=;
+  b=Lu/8SbVYERU2ypF1xeTQ7401jEkMArfHWLW6mpUFFg0Yo6NjzUxll/mu
+   l0S6ud2WlVnEbhpsEQ/ZzgoUcg9WQhDSuKdC1aNIjNyEMsOjp3ph0C6PB
+   FIVtIrmOpsLUR0mLfp/tLRm2axrycW2rzjBqzVST81vqtL1zrjy9gnJcl
+   96Fswwds7avpzXzA/SJZFkNBk/uXk7l9MZ3IsNeAtdbivKBzsEFyObCUs
+   B/+IROuwvG0o2keYDx3C6fmY7ZOjCAhfesK/MVPfLDgTJ06UmIMrZWS0E
+   AqsOGX/Pi/wof/3Kvxd/Yxt0gi+wO2rQff3PAWQ1EYQL9NZh5lavnnjNG
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,225,1665439200"; 
+   d="scan'208";a="27807287"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 07 Dec 2022 11:40:56 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Wed, 07 Dec 2022 11:40:56 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Wed, 07 Dec 2022 11:40:56 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1670409656; x=1701945656;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Xk5goH3/wEb7wDqojnwzNi5RZQ/mTp7ePcv/KyIwGtk=;
+  b=Cc25EGHsoxmorVkUmO/qr+rRB+xUGdR4Ip4NgCkQ5fvqyvZ5tudvxNNr
+   MPa1ubhkMsa/+HGjaiv/RUuWVtYUBF5zq4QuD8KBIVb2FEmFgPeBcgvWN
+   /0d64aa1zuw9lgXuJuxEy5x2u6M7DhlPO3E4SnOmkD46PG8KW182j/+wo
+   PBf7KBM0Qi3Xu4ITi7n8hH2HgUupZhh7gKqeE5OT4REPkYAvzJafVpb3A
+   6jNqbKnJMSDQn0zO6K1x8+7hX9Huy/ZNiD6z7a+ESlUgCaCUgHsk2pC4X
+   SWedk4Ju15x1iZWTC2U5u9lE5qxsTK4hQkerucjfCRPOH6Su1WwNwdjOb
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,225,1665439200"; 
+   d="scan'208";a="27807286"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 07 Dec 2022 11:40:55 +0100
+Received: from steina-w.localnet (unknown [10.123.53.21])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 8A2FE280071;
+        Wed,  7 Dec 2022 11:40:55 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Tim Harvey <tharvey@gateworks.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH 0/3] add dt configuration for dp83867 led modes
+Date:   Wed, 07 Dec 2022 11:40:51 +0100
+Message-ID: <4792263.31r3eYUQgx@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <6388f4ab.5d0a0220.a137.068e@mx.google.com>
+References: <20221118001548.635752-1-tharvey@gateworks.com> <CAJ+vNU2AbaDAMhQ0-mDh6ROC7rdkbmXoiSijRTN2ryEgT=QHiQ@mail.gmail.com> <6388f4ab.5d0a0220.a137.068e@mx.google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <148ee662f8def0e63b81d9164d2fd7c0f7029cf7.camel@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,28 +89,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 07, 2022 at 06:00:27AM +0000, Arun.Ramadoss@microchip.com wrote:
-> I looked into the sja1105 and hellcreek rxtstamp() implementation.
-> Here, SKB is queued in rxtstamp() and ptp_schedule_worker is started.
-> In the work queue, skb is dequeued and current ptp hardware clock is
-> read. Using the partial time stamp and phc clock, absolute time stamp
-> is calculated and posted.
-> In this KSZ implementation, ptp_schedule_worker is used for maintaining
-> the ptp software clock which read value from hardware clock every
-> second for faster access of clock value.
-> 
-> Based on the above observation, I have doubt on how to implement. Below
-> are the algorithm. Kindly suggest which one to proceed.
-> 1. Remove the existing ptp software clock mainpulation using
-> ptp_schedule_worker. Instead in the ptp_schedule_worker, dequeue the
-> skb and timestamp the rx packets by directly reading from the ptp
-> hardware clock.
-> 2. Keep the existing implementation, add the rxtstamp() where it will
-> not queue skb instead just process the timestamping with using software
-> clock and KSZ_SKB_CB()->tstamp.
+Hello Ansuel,
 
-Search more, you'll find felix_rxtstamp() which is closer to (2) and to
-what you need. There, reading the 64-bit PTP time is done in NET_RX
-softirq context because the register access is over MMIO. That might
-change in the future with the introduction of the SPI controlled VSC7512,
-but for now it is a good example.
+Am Donnerstag, 1. Dezember 2022, 19:38:36 CET schrieb Christian Marangi:
+> On Thu, Dec 01, 2022 at 10:35:46AM -0800, Tim Harvey wrote:
+> > On Thu, Dec 1, 2022 at 10:31 AM Christian Marangi <ansuelsmth@gmail.com> 
+wrote:
+> > > On Thu, Dec 01, 2022 at 10:26:09AM -0800, Tim Harvey wrote:
+> > > > On Sun, Nov 20, 2022 at 3:35 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > > > > On Fri, Nov 18, 2022 at 11:57:00AM -0800, Tim Harvey wrote:
+> > > > > > On Fri, Nov 18, 2022 at 5:11 AM Andrew Lunn <andrew@lunn.ch> 
+wrote:
+> > > > > > > > Andrew,
+> > > > > > > > 
+> > > > > > > > I completely agree with you but I haven't seen how that can be
+> > > > > > > > done
+> > > > > > > > yet. What support exists for a PHY driver to expose their LED
+> > > > > > > > configuration to be used that way? Can you point me to an
+> > > > > > > > example?
+> > > > > > > 
+> > > > > > > Nobody has actually worked on this long enough to get code
+> > > > > > > merged. e.g.
+> > > > > > > https://lore.kernel.org/netdev/20201004095852.GB1104@bug/T/
+> > > > > > > https://lists.archive.carbon60.com/linux/kernel/3396223
+> > > > > > > 
+> > > > > > > This is probably the last attempt, which was not too far away
+> > > > > > > from getting merged:
+> > > > > > > https://patches.linaro.org/project/linux-leds/cover/20220503151
+> > > > > > > 633.18760-1-ansuelsmth@gmail.com/
+> > > > > > > 
+> > > > > > > I seem to NACK a patch like yours every couple of months. If all
+> > > > > > > that
+> > > > > > > wasted time was actually spent on a common framework, this would
+> > > > > > > of
+> > > > > > > been solved years ago.
+> > > > > > > 
+> > > > > > > How important is it to you to control these LEDs? Enough to
+> > > > > > > finish
+> > > > > > > this code and get it merged?
+> > > > > > 
+> > > > > > Andrew,
+> > > > > > 
+> > > > > > Thanks for the links - the most recent attempt does look
+> > > > > > promising.
+> > > > > > For whatever reason I don't have that series in my mail history so
+> > > > > > it's not clear how I can respond to it.
+> > > > > 
+> > > > > apt-get install b4
+> > > > > 
+> > > > > > Ansuel, are you planning on posting a v7 of 'Adds support for PHY
+> > > > > > LEDs
+> > > > > > with offload triggers' [1]?
+> > > > > > 
+> > > > > > I'm not all that familiar with netdev led triggers. Is there a way
+> > > > > > to
+> > > > > > configure the default offload blink mode via dt with your series?
+> > > > > > I
+> > > > > > didn't quite follow how the offload function/blink-mode gets set.
+> > > > > 
+> > > > > The idea is that the PHY LEDs are just LEDs in the Linux LED
+> > > > > framework. So read
+> > > > > Documentation/devicetree/bindings/leds/common.yaml.
+> > > > > The PHY should make use of these standard DT properties, including
+> > > > > linux,default-trigger.
+> > > > > 
+> > > > >         Andrew
+> > > > 
+> > > > Ansuel,
+> > > > 
+> > > > Are you planning on posting a v7 of 'Adds support for PHY LEDs with
+> > > > offload triggers' [1]?
+> > > > 
+> > > > Best Regards,
+> > > > 
+> > > > Tim
+> > > > [1] https://patches.linaro.org/project/linux-leds/list/?series=174704
+> > > 
+> > > I can consider that only if there is a real interest for it and would
+> > > love some help by the netdev team to actually have a review from the
+> > > leds team...
+> > > 
+> > > I tried multiple time to propose it but I never got a review... only a
+> > > review from an external guy that wanted to follow his idea in every way
+> > > possible with the only intention of applying his code (sorry to be rude
+> > > about that but i'm more than happy to recover the work and search for a
+> > > common solution)
+> > > 
+> > > So yes this is still in my TODO list but it would help if others can
+> > > tell me that they want to actually review it. That would put that
+> > > project on priority and I would recover and push a v7.
+> > > 
+> > > --
+> > > 
+> > >         Ansuel
+> > 
+> > Ansuel,
+> > 
+> > Considering Andrew is nak'ing any phy code to configure LED's until a
+> > solution using via /sys/class/leds is provided I would say there is
+> > real interest.
+> > 
+> > It seems to me that you got very positive feedback for this last
+> > series. I would think if you submitted without RFC it would catch more
+> > eyes as well.
+> 
+> Well yes that's the fun part. netdev really liked the concept and how it
+> was implemented (and actually also liked the use of a dedicated trigger
+> instead of bloating the netdev trigger)
+> 
+> But I never got a review from LED team and that result in having the
+> patch stalled and never merged... But ok I will recover the work and
+> recheck/retest everything from the start hoping to get more traction
+> now...
+
+I was just trying to use your RFC patchset from May 2022 for dp83867 as well, 
+with some success at least.
+I have some comments, fixes and uncertainties. How do you want to progress? 
+Resend so I can rebase on that? Anyway, put me on CC.
+
+Best regards,
+Alexander
+
+
+
