@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F08CC644FE9
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 01:02:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A5C6644FEB
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 01:02:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiLGAB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 19:01:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52230 "EHLO
+        id S229692AbiLGACP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 19:02:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbiLGABk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 19:01:40 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534BC4B742;
-        Tue,  6 Dec 2022 16:01:39 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id s5so22609093edc.12;
-        Tue, 06 Dec 2022 16:01:38 -0800 (PST)
+        with ESMTP id S229798AbiLGAB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 19:01:57 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DAC49083;
+        Tue,  6 Dec 2022 16:01:55 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id x22so10157928ejs.11;
+        Tue, 06 Dec 2022 16:01:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=FXBmcabeWV8OKzX28uoLmsQs7tuaar1G2adsb2jdhL4=;
-        b=c7vzTRxQSnZoRISAo82+IjXKqlOtGXLUM6Uv7qUlfiM1A/ETrJ3R0R58xRW276iiyY
-         4vRTvsR19viiYSN8Ioa9umFuWRgQ9RkxS64BgEPfjCA8Nagv7AvT8LBTQwUJYZW6vQua
-         6tWfP6G9Rm552A1rERVLVw9y06bZwytcrRFBX8uq1t66IgsXJ/o+Vskereh9i6wjn+HG
-         93qRwj5h3CXNgcnjkhwnAP8mbfShSzgBuAU5+VkAMnc5EzyPoC0IcOb9fft65vVl5JtP
-         f43WHLSUFTusCltumcxfsmNjQd9obQlMKM4JIcZOKMgZG9WKnFmRFITEfjB+c+SFUaff
-         2mqg==
+        bh=Hp7aegHQL/VcwqFRTSdu/GwDmHSFMjOcY3IIQ3kMIu8=;
+        b=UJhwcvQ+n8+9IMB0kLRfudqjlvimCczsjSAJrv1GITLNr5YLPF+PMxizkZzMiB2RXH
+         rBa++Dk8hL/9Q8voetmnRIIdpfUF+dpp1g87kJ5I3OC14F48w7xJuXyTVAMRhXQ1/Hyx
+         8lVYTkRvQdGVHtpevYNphfwNqirUS+e49ckj739Z4p4g5eNKoNaEtd2OknTcL0Kgw1Nu
+         3koEu7SdUEM2ugUTnjH0cclTvRt07BGTDmlI45vkdgRpDYAmNcFabHEtWFMynePi+jbQ
+         sRxTKslkSNhDU2V7Lyx66LE1OTBLgDfJAuNQZw2dzBUnp1hIqHKd8rcmF5UwJlOerWJt
+         eSKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FXBmcabeWV8OKzX28uoLmsQs7tuaar1G2adsb2jdhL4=;
-        b=UdJzlvoEDm6ScZdVID3ZDX/g64Kgr/rPpGIZezldUaa5csKmX78EvVVd/23T3a7SA6
-         UVf34eSFUhyshfvfsgcX03ltvZ01s52oz9S5MlXBnjNNrG+44xOz7/HlvZG+vdwBcaVj
-         tyFhNQpp3VQYKFTq/8kjBx4eT02p5CSGs/2OPU8QTYT/hdjTB06Eo2Ndj8G0WemTtK6L
-         +zE/wHCIuJdmtRBSMWbipbN8dZSSg922IkITuvjuHrFcI9bnjOg5r7S0/Q/I+T8RyQNr
-         JdMGY4ohJ6U4fw8rKbb6GknsoJuePSLepqNYw5l3WxTVXTsbma/MsY6QmNkhkZ6kwmYa
-         uv5w==
-X-Gm-Message-State: ANoB5pnydLgFFItmyWRJEcskxdzpSmvXOT5nyzyF5Ne8Yybc9gH+jXlc
-        X12rW8OFqKn5u5eJUQKU71M=
-X-Google-Smtp-Source: AA0mqf6bV+zjjE37Fi8ASWvVcz0/aN6IUD6BvPWrDK3Gyub3ccPoqzWoWI/rQfqluSSVpu+7pk8Znw==
-X-Received: by 2002:a05:6402:370d:b0:462:1a67:75ef with SMTP id ek13-20020a056402370d00b004621a6775efmr62464663edb.16.1670371297372;
-        Tue, 06 Dec 2022 16:01:37 -0800 (PST)
+        bh=Hp7aegHQL/VcwqFRTSdu/GwDmHSFMjOcY3IIQ3kMIu8=;
+        b=hEFs9nHH4sA0Akm0tQ0gyUq35ssFUhUiXZnlIreQdX32hbWQKPXCE3ufHlG+ofaN+s
+         SeLunc9GR4o+lN2sKO3agOtbzVtUAoS2M92Wo89L2qoae0wIffeqyTuo4LBHm77CEmKT
+         61teoCosRRNNbpl7WTQOBWVOfSda28HHuMdLdOC6bMThPnPKJauK2i99JpJRyi+V+7q7
+         teLSi93e8s72AcpX/4Bc22nrLgP0Y1/cNDdekVCSSDNvisFi89z4G/q8VNlvuuzj6nBP
+         tT64GLIemZYSBo2dAiaILfXL/boEXKC5wB5VlpgOTcIOByliouLXxv0BSQWSehxGUzKB
+         GFxw==
+X-Gm-Message-State: ANoB5pnyLG4zG8CXg1eLGcIB0uX/KdhxhSeYko0/Mwfr+DlC/mxIe2g2
+        dxuGRFs+psFwzc9erbj3XVQ=
+X-Google-Smtp-Source: AA0mqf5d0RCz32YPznfSo5jFSzVVF1CGLU8LgBMU3SoFPl+m8tnvavPv9J3j6Cv0CbfjSG5ft+6TRA==
+X-Received: by 2002:a17:906:404:b0:781:f54c:1947 with SMTP id d4-20020a170906040400b00781f54c1947mr63563316eja.69.1670371314410;
+        Tue, 06 Dec 2022 16:01:54 -0800 (PST)
 Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
-        by smtp.gmail.com with ESMTPSA id z3-20020a170906240300b007aef930360asm7956216eja.59.2022.12.06.16.01.36
+        by smtp.gmail.com with ESMTPSA id p10-20020a170906838a00b007c0dacbe00bsm4279034ejx.115.2022.12.06.16.01.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 16:01:37 -0800 (PST)
-Date:   Wed, 7 Dec 2022 01:01:48 +0100
+        Tue, 06 Dec 2022 16:01:54 -0800 (PST)
+Date:   Wed, 7 Dec 2022 01:02:05 +0100
 From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -59,9 +59,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: [PATCH v5 net-next 2/5] drivers/net/phy: add the link modes for the
- 10BASE-T1S Ethernet PHY
-Message-ID: <36b2fff3e660eb19485b434e5880eeec22542865.1670371013.git.piergiorgio.beruto@gmail.com>
+Subject: [PATCH v5 net-next 3/5] drivers/net/phy: add connection between
+ ethtool and phylib for PLCA
+Message-ID: <cbca831071bfe60a34a84b45b945efd4ce3b4449.1670371013.git.piergiorgio.beruto@gmail.com>
 References: <cover.1670371013.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -77,134 +77,215 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the link modes for the IEEE 802.3cg Clause 147 10BASE-T1S
-Ethernet PHY. According to the specifications, the 10BASE-T1S supports
-Point-To-Point Full-Duplex, Point-To-Point Half-Duplex and/or
-Point-To-Multipoint (AKA Multi-Drop) Half-Duplex operations.
+This patch adds the required connection between netlink ethtool and
+phylib to resolve PLCA get/set config and get status messages.
 
 Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 ---
- drivers/net/phy/phy-core.c   |  5 ++++-
- drivers/net/phy/phylink.c    |  6 +++++-
- include/linux/phy.h          | 11 +++++++++++
- include/uapi/linux/ethtool.h |  3 +++
- net/ethtool/common.c         |  8 ++++++++
- 5 files changed, 31 insertions(+), 2 deletions(-)
+ drivers/net/phy/phy.c        | 175 +++++++++++++++++++++++++++++++++++
+ drivers/net/phy/phy_device.c |   3 +
+ 2 files changed, 178 insertions(+)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 5d08c627a516..a64186dc53f8 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -13,7 +13,7 @@
-  */
- const char *phy_speed_to_str(int speed)
- {
--	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 99,
-+	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 102,
- 		"Enum ethtool_link_mode_bit_indices and phylib are out of sync. "
- 		"If a speed or mode has been added please update phy_speed_to_str "
- 		"and the PHY settings array.\n");
-@@ -260,6 +260,9 @@ static const struct phy_setting settings[] = {
- 	PHY_SETTING(     10, FULL,     10baseT_Full		),
- 	PHY_SETTING(     10, HALF,     10baseT_Half		),
- 	PHY_SETTING(     10, FULL,     10baseT1L_Full		),
-+	PHY_SETTING(     10, FULL,     10baseT1S_Full		),
-+	PHY_SETTING(     10, HALF,     10baseT1S_Half		),
-+	PHY_SETTING(     10, HALF,     10baseT1S_P2MP_Half	),
- };
- #undef PHY_SETTING
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index e5b6cb1a77f9..3fc251f5de26 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -543,6 +543,181 @@ int phy_ethtool_get_stats(struct phy_device *phydev,
+ }
+ EXPORT_SYMBOL(phy_ethtool_get_stats);
  
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 09cc65c0da93..319790221d7f 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -241,12 +241,16 @@ void phylink_caps_to_linkmodes(unsigned long *linkmodes, unsigned long caps)
- 	if (caps & MAC_ASYM_PAUSE)
- 		__set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, linkmodes);
- 
--	if (caps & MAC_10HD)
-+	if (caps & MAC_10HD) {
- 		__set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10baseT1S_Half_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT, linkmodes);
-+	}
- 
- 	if (caps & MAC_10FD) {
- 		__set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, linkmodes);
- 		__set_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT, linkmodes);
-+		__set_bit(ETHTOOL_LINK_MODE_10baseT1S_Full_BIT, linkmodes);
- 	}
- 
- 	if (caps & MAC_100HD) {
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index f3ecc9a86e67..49d0488bf480 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1036,6 +1036,17 @@ struct phy_driver {
- 	int (*get_sqi)(struct phy_device *dev);
- 	/** @get_sqi_max: Get the maximum signal quality indication */
- 	int (*get_sqi_max)(struct phy_device *dev);
++/**
++ * phy_ethtool_get_plca_cfg - Get PLCA RS configuration
++ *
++ * @phydev: the phy_device struct
++ * @plca_cfg: where to store the retrieved configuration
++ */
++int phy_ethtool_get_plca_cfg(struct phy_device *phydev,
++			     struct phy_plca_cfg *plca_cfg)
++{
++	int ret;
 +
-+	/* PLCA RS interface */
-+	/** @get_plca_cfg: Return the current PLCA configuration */
-+	int (*get_plca_cfg)(struct phy_device *dev,
-+			    struct phy_plca_cfg *plca_cfg);
-+	/** @set_plca_cfg: Set the PLCA configuration */
-+	int (*set_plca_cfg)(struct phy_device *dev,
-+			    const struct phy_plca_cfg *plca_cfg);
-+	/** @get_plca_status: Return the current PLCA status info */
-+	int (*get_plca_status)(struct phy_device *dev,
-+			       struct phy_plca_status *plca_st);
++	if (!phydev->drv) {
++		ret = -EIO;
++		goto out;
++	}
++
++	if (!phydev->drv->get_plca_cfg) {
++		ret = -EOPNOTSUPP;
++		goto out;
++	}
++
++	memset(plca_cfg, 0xFF, sizeof(*plca_cfg));
++
++	mutex_lock(&phydev->lock);
++	ret = phydev->drv->get_plca_cfg(phydev, plca_cfg);
++
++	if (ret)
++		goto out_drv;
++
++out_drv:
++	mutex_unlock(&phydev->lock);
++out:
++	return ret;
++}
++
++/**
++ * phy_ethtool_set_plca_cfg - Set PLCA RS configuration
++ *
++ * @phydev: the phy_device struct
++ * @extack: extack for reporting useful error messages
++ * @plca_cfg: new PLCA configuration to apply
++ */
++int phy_ethtool_set_plca_cfg(struct phy_device *phydev,
++			     struct netlink_ext_ack *extack,
++			     const struct phy_plca_cfg *plca_cfg)
++{
++	int ret;
++	struct phy_plca_cfg *curr_plca_cfg = 0;
++
++	if (!phydev->drv) {
++		ret = -EIO;
++		goto out;
++	}
++
++	if (!phydev->drv->set_plca_cfg ||
++	    !phydev->drv->get_plca_cfg) {
++		ret = -EOPNOTSUPP;
++		goto out;
++	}
++
++	curr_plca_cfg = kmalloc(sizeof(*curr_plca_cfg), GFP_KERNEL);
++	memset(curr_plca_cfg, 0xFF, sizeof(*curr_plca_cfg));
++
++	mutex_lock(&phydev->lock);
++
++	ret = phydev->drv->get_plca_cfg(phydev, curr_plca_cfg);
++	if (ret)
++		goto out_drv;
++
++	if (curr_plca_cfg->enabled < 0 && plca_cfg->enabled >= 0) {
++		NL_SET_ERR_MSG(extack,
++			       "PHY does not support changing the PLCA 'enable' attribute");
++		ret = -EINVAL;
++		goto out_drv;
++	}
++
++	if (curr_plca_cfg->node_id < 0 && plca_cfg->node_id >= 0) {
++		NL_SET_ERR_MSG(extack,
++			       "PHY does not support changing the PLCA 'local node ID' attribute");
++		ret = -EINVAL;
++		goto out_drv;
++	}
++
++	if (curr_plca_cfg->node_cnt < 0 && plca_cfg->node_cnt >= 0) {
++		NL_SET_ERR_MSG(extack,
++			       "PHY does not support changing the PLCA 'node count' attribute");
++		ret = -EINVAL;
++		goto out_drv;
++	}
++
++	if (curr_plca_cfg->to_tmr < 0 && plca_cfg->to_tmr >= 0) {
++		NL_SET_ERR_MSG(extack,
++			       "PHY does not support changing the PLCA 'TO timer' attribute");
++		ret = -EINVAL;
++		goto out_drv;
++	}
++
++	if (curr_plca_cfg->burst_cnt < 0 && plca_cfg->burst_cnt >= 0) {
++		NL_SET_ERR_MSG(extack,
++			       "PHY does not support changing the PLCA 'burst count' attribute");
++		ret = -EINVAL;
++		goto out_drv;
++	}
++
++	if (curr_plca_cfg->burst_tmr < 0 && plca_cfg->burst_tmr >= 0) {
++		NL_SET_ERR_MSG(extack,
++			       "PHY does not support changing the PLCA 'burst timer' attribute");
++		ret = -EINVAL;
++		goto out_drv;
++	}
++
++	// if enabling PLCA, perform additional sanity checks
++	if (plca_cfg->enabled > 0) {
++		if (!linkmode_test_bit(ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
++				       phydev->advertising)) {
++			ret = -EOPNOTSUPP;
++			NL_SET_ERR_MSG(extack,
++				       "Point to Multi-Point mode is not enabled");
++		}
++
++		// allow setting node_id concurrently with enabled
++		if (plca_cfg->node_id >= 0)
++			curr_plca_cfg->node_id = plca_cfg->node_id;
++
++		if (curr_plca_cfg->node_id >= 255) {
++			NL_SET_ERR_MSG(extack, "PLCA node ID is not set");
++			ret = -EINVAL;
++			goto out_drv;
++		}
++	}
++
++	ret = phydev->drv->set_plca_cfg(phydev, plca_cfg);
++	if (ret)
++		goto out_drv;
++
++out_drv:
++	kfree(curr_plca_cfg);
++	mutex_unlock(&phydev->lock);
++out:
++	return ret;
++}
++
++/**
++ * phy_ethtool_get_plca_status - Get PLCA RS status information
++ *
++ * @phydev: the phy_device struct
++ * @plca_st: where to store the retrieved status information
++ */
++int phy_ethtool_get_plca_status(struct phy_device *phydev,
++				struct phy_plca_status *plca_st)
++{
++	int ret;
++
++	if (!phydev->drv) {
++		ret = -EIO;
++		goto out;
++	}
++
++	if (!phydev->drv->get_plca_status) {
++		ret = -EOPNOTSUPP;
++		goto out;
++	}
++
++	mutex_lock(&phydev->lock);
++	ret = phydev->drv->get_plca_status(phydev, plca_st);
++
++	if (ret)
++		goto out_drv;
++
++out_drv:
++	mutex_unlock(&phydev->lock);
++out:
++	return ret;
++}
++
+ /**
+  * phy_start_cable_test - Start a cable test
+  *
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 716870a4499c..f248010c403d 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -3262,6 +3262,9 @@ static const struct ethtool_phy_ops phy_ethtool_phy_ops = {
+ 	.get_sset_count		= phy_ethtool_get_sset_count,
+ 	.get_strings		= phy_ethtool_get_strings,
+ 	.get_stats		= phy_ethtool_get_stats,
++	.get_plca_cfg		= phy_ethtool_get_plca_cfg,
++	.set_plca_cfg		= phy_ethtool_set_plca_cfg,
++	.get_plca_status	= phy_ethtool_get_plca_status,
+ 	.start_cable_test	= phy_start_cable_test,
+ 	.start_cable_test_tdr	= phy_start_cable_test_tdr,
  };
- #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
- 				      struct phy_driver, mdiodrv)
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index 58e587ba0450..5f414deacf23 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -1741,6 +1741,9 @@ enum ethtool_link_mode_bit_indices {
- 	ETHTOOL_LINK_MODE_800000baseDR8_2_Full_BIT	 = 96,
- 	ETHTOOL_LINK_MODE_800000baseSR8_Full_BIT	 = 97,
- 	ETHTOOL_LINK_MODE_800000baseVR8_Full_BIT	 = 98,
-+	ETHTOOL_LINK_MODE_10baseT1S_Full_BIT		 = 99,
-+	ETHTOOL_LINK_MODE_10baseT1S_Half_BIT		 = 100,
-+	ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT	 = 101,
- 
- 	/* must be last entry */
- 	__ETHTOOL_LINK_MODE_MASK_NBITS
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index 21cfe8557205..c586db0c5e68 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -208,6 +208,9 @@ const char link_mode_names[][ETH_GSTRING_LEN] = {
- 	__DEFINE_LINK_MODE_NAME(800000, DR8_2, Full),
- 	__DEFINE_LINK_MODE_NAME(800000, SR8, Full),
- 	__DEFINE_LINK_MODE_NAME(800000, VR8, Full),
-+	__DEFINE_LINK_MODE_NAME(10, T1S, Full),
-+	__DEFINE_LINK_MODE_NAME(10, T1S, Half),
-+	__DEFINE_LINK_MODE_NAME(10, T1S_P2MP, Half),
- };
- static_assert(ARRAY_SIZE(link_mode_names) == __ETHTOOL_LINK_MODE_MASK_NBITS);
- 
-@@ -244,6 +247,8 @@ static_assert(ARRAY_SIZE(link_mode_names) == __ETHTOOL_LINK_MODE_MASK_NBITS);
- #define __LINK_MODE_LANES_X		1
- #define __LINK_MODE_LANES_FX		1
- #define __LINK_MODE_LANES_T1L		1
-+#define __LINK_MODE_LANES_T1S		1
-+#define __LINK_MODE_LANES_T1S_P2MP	1
- #define __LINK_MODE_LANES_VR8		8
- #define __LINK_MODE_LANES_DR8_2		8
- 
-@@ -366,6 +371,9 @@ const struct link_mode_info link_mode_params[] = {
- 	__DEFINE_LINK_MODE_PARAMS(800000, DR8_2, Full),
- 	__DEFINE_LINK_MODE_PARAMS(800000, SR8, Full),
- 	__DEFINE_LINK_MODE_PARAMS(800000, VR8, Full),
-+	__DEFINE_LINK_MODE_PARAMS(10, T1S, Full),
-+	__DEFINE_LINK_MODE_PARAMS(10, T1S, Half),
-+	__DEFINE_LINK_MODE_PARAMS(10, T1S_P2MP, Half),
- };
- static_assert(ARRAY_SIZE(link_mode_params) == __ETHTOOL_LINK_MODE_MASK_NBITS);
- 
 -- 
 2.35.1
 
