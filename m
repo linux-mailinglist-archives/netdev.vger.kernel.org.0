@@ -2,115 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8920645466
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 08:11:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3BB264547F
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 08:21:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbiLGHLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 02:11:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47266 "EHLO
+        id S229878AbiLGHVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 02:21:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiLGHK5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 02:10:57 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2E42A25C;
-        Tue,  6 Dec 2022 23:10:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 836D9CE0E76;
-        Wed,  7 Dec 2022 07:10:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3558CC433C1;
-        Wed,  7 Dec 2022 07:10:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670397052;
-        bh=amS9oEo0HeTqK7LmZ7Ty216uHQ4HJbHJB3WpUsAOqQc=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=OiFq9hyIg+TeoBIFZaZm5kAo8OxNK5FiPjVZ1VAFUxhC0FyfpxyEpeclnOz6RukkS
-         x/yqSNAGCQPYTTVJT6voDR/cxZagzGp8JRV/z0mlJFrYVWXHELqNuelTQO6uxUbudV
-         66MwSbMB5AsH3j8nGfjiHhc2ZkiZ4NG3Yw2gs1n7hVAoDpUX/YwCboUMa55hglV3xZ
-         xHaeSqu3Ol7seyyrQRoiAawSK/oMevZFVreip5G0DOpxRYJzaWs/kW2jr1WDRFIbWu
-         8Gt2lzgBno+xm4cGpTGLaImZk5o6C6Kw1yIaNjXd3rtgH5L4bEp/rYvDm43Vri6gwG
-         H2Niq0fyUWfDA==
-From:   =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-To:     Yonghong Song <yhs@meta.com>, Ilya Leoshkevich <iii@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@rivosinc.com>,
-        Brendan Jackman <jackmanb@google.com>
-Subject: Re: [PATCH bpf] bpf: Proper R0 zero-extension for BPF_CALL
- instructions
-In-Reply-To: <cd7a6e8d-2de1-d5a0-cf4a-09188f01fa7e@meta.com>
-References: <20221202103620.1915679-1-bjorn@kernel.org>
- <3b77aa12a864ab2db081e99aec1bfad78e3b9b51.camel@linux.ibm.com>
- <d26622c6-d51e-e280-6c8a-38c893c49446@meta.com>
- <9af1b919-ea15-e44c-b9cc-765c743dd617@meta.com>
- <87v8mos7gw.fsf@all.your.base.are.belong.to.us>
- <cd7a6e8d-2de1-d5a0-cf4a-09188f01fa7e@meta.com>
-Date:   Wed, 07 Dec 2022 08:10:49 +0100
-Message-ID: <878rjjn0xy.fsf@all.your.base.are.belong.to.us>
+        with ESMTP id S229807AbiLGHUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 02:20:44 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398FE3B9FE;
+        Tue,  6 Dec 2022 23:20:09 -0800 (PST)
+Received: from dggpemm500015.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NRpYy0D6xzJqHW;
+        Wed,  7 Dec 2022 15:19:18 +0800 (CST)
+Received: from [10.174.177.133] (10.174.177.133) by
+ dggpemm500015.china.huawei.com (7.185.36.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 7 Dec 2022 15:19:53 +0800
+Subject: Re: [syzbot] memory leak in tcindex_set_parms (3)
+To:     syzbot <syzbot+2f9183cb6f89b0e16586@syzkaller.appspotmail.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <jhs@mojatatu.com>,
+        <jiri@resnulli.us>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <syzkaller-bugs@googlegroups.com>,
+        <xiyou.wangcong@gmail.com>, "liwei (GF)" <liwei391@huawei.com>
+References: <000000000000e0df2d05ef2d8b91@google.com>
+From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
+Message-ID: <1ad68075-c293-bdb4-950b-5d4c138e5ff5@huawei.com>
+Date:   Wed, 7 Dec 2022 15:19:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <000000000000e0df2d05ef2d8b91@google.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.133]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500015.china.huawei.com (7.185.36.181)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yonghong Song <yhs@meta.com> writes:
+it looks like a invalid problem,
+as tc_new_tfilter->...tcf_exts_change() will destroy and free former action.
 
->>>>>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->>>>>> index 264b3dc714cc..4f9660eafc72 100644
->>>>>> --- a/kernel/bpf/verifier.c
->>>>>> +++ b/kernel/bpf/verifier.c
->>>>>> @@ -13386,6 +13386,9 @@ static int
->>>>>> opt_subreg_zext_lo32_rnd_hi32(struct bpf_verifier_env *env,
->>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!bpf_jit_needs_zext() && !is_cmpxch=
-g_insn(&insn))
->>>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0continue;
->>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0if (insn.code =3D=3D (BPF_JMP | BPF_CALL))
->>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0loa=
-d_reg =3D BPF_REG_0;
->>>
->>> Want to double check. Do we actually have a problem here?
->>> For example, on x64, we probably won't have this issue.
->>=20
->> The "problem" is that I hit this:
->> 		if (WARN_ON(load_reg =3D=3D -1)) {
->> 			verbose(env, "verifier bug. zext_dst is set, but no reg is defined\n"=
-);
->> 			return -EFAULT;
->> 		}
->>=20
->> This path is only taken for archs which have bpf_jit_needs_zext() =3D=3D
->> true. In my case it's riscv64, but it should hit i386, sparc, s390, ppc,
->> mips, and arm.
->>=20
->> My reading of this thread has been that "marking the call has
->> zext_dst=3Dtrue, is incorrect", i.e. that LLVM will insert the correct
->> zext instructions.
->
-> Your interpretation is correct. Yes, for func return values, the
-> llvm will insert correct zext/sext instructions if the return
-> value is used. Otherwise, if the return value simply passes
-> through, the caller call site should handle that properly.
->
-> So, yes changing t->size to sizeof(u64) in below code in
-> check_kfunc_call() should work. But the fix sounds like a hack
-> and we might have some side effect during verification, now
-> or future.
->
-> Maybe we could check BPF_PSEUDO_KFUNC_CALL in appropriate place to=20
-> prevent zext.
-
-Thanks for all the input! I'll digest it, and get back with a v2.
+在 2022/12/7 3:09, syzbot 写道:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    355479c70a48 Merge tag 'efi-fixes-for-v6.1-4' of git://git..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=16aef6bd880000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=979161df0e247659
+> dashboard link: https://syzkaller.appspot.com/bug?extid=2f9183cb6f89b0e16586
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16d1ac47880000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=154f3bad880000
+> 
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/104ddf75422d/disk-355479c7.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/d32483369fdb/vmlinux-355479c7.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/f10fb444c08d/bzImage-355479c7.xz
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+2f9183cb6f89b0e16586@syzkaller.appspotmail.com
+> 
+> executing program
+> BUG: memory leak
+> unreferenced object 0xffff888107813900 (size 256):
+>    comm "syz-executor147", pid 3623, jiffies 4294944130 (age 12.710s)
+>    hex dump (first 32 bytes):
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>    backtrace:
+>      [<ffffffff814eda10>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1045
+>      [<ffffffff83c0dda7>] kmalloc include/linux/slab.h:553 [inline]
+>      [<ffffffff83c0dda7>] kmalloc_array include/linux/slab.h:604 [inline]
+>      [<ffffffff83c0dda7>] kcalloc include/linux/slab.h:636 [inline]
+>      [<ffffffff83c0dda7>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
+>      [<ffffffff83c0dda7>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
+>      [<ffffffff83c0e9bf>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
+>      [<ffffffff83b91842>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
+>      [<ffffffff83ae1b6c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
+>      [<ffffffff83c2fae7>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
+>      [<ffffffff83c2ec07>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>      [<ffffffff83c2ec07>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
+>      [<ffffffff83c2f0c6>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
+>      [<ffffffff83a812f6>] sock_sendmsg_nosec net/socket.c:714 [inline]
+>      [<ffffffff83a812f6>] sock_sendmsg+0x56/0x80 net/socket.c:734
+>      [<ffffffff83a81668>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
+>      [<ffffffff83a86218>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
+>      [<ffffffff83a86565>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
+>      [<ffffffff83a867b4>] __do_sys_sendmmsg net/socket.c:2651 [inline]
+>      [<ffffffff83a867b4>] __se_sys_sendmmsg net/socket.c:2648 [inline]
+>      [<ffffffff83a867b4>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
+>      [<ffffffff8485b3b5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>      [<ffffffff8485b3b5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>      [<ffffffff84a00087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> BUG: memory leak
+> unreferenced object 0xffff88810ea1af00 (size 256):
+>    comm "syz-executor147", pid 3623, jiffies 4294944131 (age 12.700s)
+>    hex dump (first 32 bytes):
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>    backtrace:
+>      [<ffffffff814eda10>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1045
+>      [<ffffffff83c0dda7>] kmalloc include/linux/slab.h:553 [inline]
+>      [<ffffffff83c0dda7>] kmalloc_array include/linux/slab.h:604 [inline]
+>      [<ffffffff83c0dda7>] kcalloc include/linux/slab.h:636 [inline]
+>      [<ffffffff83c0dda7>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
+>      [<ffffffff83c0dda7>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
+>      [<ffffffff83c0e9bf>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
+>      [<ffffffff83b91842>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
+>      [<ffffffff83ae1b6c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
+>      [<ffffffff83c2fae7>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
+>      [<ffffffff83c2ec07>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>      [<ffffffff83c2ec07>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
+>      [<ffffffff83c2f0c6>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
+>      [<ffffffff83a812f6>] sock_sendmsg_nosec net/socket.c:714 [inline]
+>      [<ffffffff83a812f6>] sock_sendmsg+0x56/0x80 net/socket.c:734
+>      [<ffffffff83a81668>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
+>      [<ffffffff83a86218>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
+>      [<ffffffff83a86565>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
+>      [<ffffffff83a867b4>] __do_sys_sendmmsg net/socket.c:2651 [inline]
+>      [<ffffffff83a867b4>] __se_sys_sendmmsg net/socket.c:2648 [inline]
+>      [<ffffffff83a867b4>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
+>      [<ffffffff8485b3b5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>      [<ffffffff8485b3b5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>      [<ffffffff84a00087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> BUG: memory leak
+> unreferenced object 0xffff88810a452680 (size 64):
+>    comm "kworker/0:1", pid 42, jiffies 4294944576 (age 8.250s)
+>    hex dump (first 32 bytes):
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>      ff ff ff ff 00 00 00 00 00 00 00 00 30 30 00 00  ............00..
+>    backtrace:
+>      [<ffffffff814eda10>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1045
+>      [<ffffffff842bb5c2>] kmalloc include/linux/slab.h:553 [inline]
+>      [<ffffffff842bb5c2>] kzalloc include/linux/slab.h:689 [inline]
+>      [<ffffffff842bb5c2>] regulatory_hint_core+0x22/0x60 net/wireless/reg.c:3248
+>      [<ffffffff842c1720>] restore_regulatory_settings+0x690/0x910 net/wireless/reg.c:3582
+>      [<ffffffff842c1aad>] crda_timeout_work+0x1d/0x30 net/wireless/reg.c:540
+>      [<ffffffff8129197a>] process_one_work+0x2ba/0x5f0 kernel/workqueue.c:2289
+>      [<ffffffff81292299>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+>      [<ffffffff8129c315>] kthread+0x125/0x160 kernel/kthread.c:376
+>      [<ffffffff8100224f>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+> 
+> BUG: memory leak
+> unreferenced object 0xffff88810e11c100 (size 256):
+>    comm "syz-executor147", pid 3629, jiffies 4294944659 (age 7.420s)
+>    hex dump (first 32 bytes):
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>    backtrace:
+>      [<ffffffff814eda10>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1045
+>      [<ffffffff83c0dda7>] kmalloc include/linux/slab.h:553 [inline]
+>      [<ffffffff83c0dda7>] kmalloc_array include/linux/slab.h:604 [inline]
+>      [<ffffffff83c0dda7>] kcalloc include/linux/slab.h:636 [inline]
+>      [<ffffffff83c0dda7>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
+>      [<ffffffff83c0dda7>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
+>      [<ffffffff83c0e9bf>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
+>      [<ffffffff83b91842>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
+>      [<ffffffff83ae1b6c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
+>      [<ffffffff83c2fae7>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
+>      [<ffffffff83c2ec07>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>      [<ffffffff83c2ec07>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
+>      [<ffffffff83c2f0c6>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
+>      [<ffffffff83a812f6>] sock_sendmsg_nosec net/socket.c:714 [inline]
+>      [<ffffffff83a812f6>] sock_sendmsg+0x56/0x80 net/socket.c:734
+>      [<ffffffff83a81668>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
+>      [<ffffffff83a86218>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
+>      [<ffffffff83a86565>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
+>      [<ffffffff83a867b4>] __do_sys_sendmmsg net/socket.c:2651 [inline]
+>      [<ffffffff83a867b4>] __se_sys_sendmmsg net/socket.c:2648 [inline]
+>      [<ffffffff83a867b4>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
+>      [<ffffffff8485b3b5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>      [<ffffffff8485b3b5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>      [<ffffffff84a00087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+> 
+> .
+> 
