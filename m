@@ -2,73 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0090864625D
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 21:29:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BA8E646298
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 21:45:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229832AbiLGU3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 15:29:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48368 "EHLO
+        id S229635AbiLGUpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 15:45:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbiLGU3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 15:29:40 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8769130563;
-        Wed,  7 Dec 2022 12:29:39 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id fc4so16659176ejc.12;
-        Wed, 07 Dec 2022 12:29:39 -0800 (PST)
+        with ESMTP id S229562AbiLGUpQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 15:45:16 -0500
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2C6286CE;
+        Wed,  7 Dec 2022 12:45:15 -0800 (PST)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-1442977d77dso21604168fac.6;
+        Wed, 07 Dec 2022 12:45:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nn9DbrBt5zFvvuKZFZtzTIGCaDA/3AtXgkoS+oaC8A0=;
-        b=HZw2VldoZwMX855M5VvSrV4MycKX+RzwP6X1yHeudVKt0Q8DGtJ85iv2rEaaqu3GRF
-         KEZ8Z/B185XweHodw49ajVnUCInWd+ZOtv/Fz/n7eO+zphH3BN6u93H3p9S3UDyNbFzv
-         ynCFoMy7jQhrKJD10LZOT0E3VvRveYYrlJLD/uEUNbIrZLjnuxqPAo1AM+5wjxdHmqZO
-         SqjZopbnHg7Cg3P3Vcn4Ni5IOGKwH8VA0dEhpF+1+nQgaM486s/wfY02CM+8OOJsCxxb
-         kVCTUPBdgy4mnH24EzfCPxiCrIytfTMq+VUQIhiYuFnwe1daEmAR7AmflvF1CtOR8TZy
-         hsww==
+        bh=4kebxzXFDbxKV/u+zjtuQ7wmCbGMAgePV5kIke3Uuk8=;
+        b=UbfuNEyjpbepGYS/zuCDyvw/S1WDjbUKxzogfI7Gm1k+tMzeClUNJZFHw3PYtD9fNt
+         XjkRgZ137NueagyajRVRPzP+1DeRQMspHdipbtvqo1hPYwYyjyiEABlwQ2SmZT1a9pFn
+         4spl9BoFWh3nFmWjiAyCwkWB/B/91DSqV3qEFlVgz6jBpRlFnk9hgGBbQI9qp/ZOMfVu
+         fbYiDEg9ro/0bSgAMhsF/MXqtI3Zv7ZIDkGtfen1SxnqSO5ivVVsr4qssn+v/XExi26G
+         67E1IH/t/pZCSy8bHwEygj69ZChEGJlWIB44P2anapOh1/Inku4fBKgfsREEAhuISsZD
+         Uwjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=nn9DbrBt5zFvvuKZFZtzTIGCaDA/3AtXgkoS+oaC8A0=;
-        b=5yXAT8QXHyXVBiYeDZWwQXFN6ZfxPwMiahQwNG1ZrCSsFBmWSLK8UNwpEIXfhx9mQT
-         pqHys71IaSPL87JLxsYx5rGnJlg99tLKdFxmi4YV0U7ucsIgFFcQa3pSqHYzPFsM0/zW
-         UlBg+Xv9/vq9A0dV3iQZC8+yUSVe06MbhtHrpeAVQY4VNEskhP8S1o69jGyipIU2aBxS
-         faZYwlc46QLZfEWduh03MppKV7hNHaN/0CKa1p3Z9EDtWtqMhfVxD1lKDFtVu3peMFbc
-         1EIQGhj2Ni/cQ+pEgRHQsENb/qy/D958kZcLroBGVUz/RQDXFBTtd2RWL2eEg6g2do6v
-         VbEA==
-X-Gm-Message-State: ANoB5pm9UlP4eBpmfwKeycz39yKaif0dINzAZj6H+BNXkCGzMTk1NX0B
-        o+fTPuETb5ZBqUg9+oBmM+E=
-X-Google-Smtp-Source: AA0mqf5TWjdWyACQTbauFE/5tpXUtZeS5dXiSRX9p/9NF6M3B2iKUN8lRY2UpEFGIuF4BB5/KcVQLA==
-X-Received: by 2002:a17:906:3493:b0:7c0:bd68:ce30 with SMTP id g19-20020a170906349300b007c0bd68ce30mr675315ejb.54.1670444977991;
-        Wed, 07 Dec 2022 12:29:37 -0800 (PST)
-Received: from skbuf ([188.26.184.215])
-        by smtp.gmail.com with ESMTPSA id c10-20020a17090618aa00b0077b523d309asm8823148ejf.185.2022.12.07.12.29.37
+        bh=4kebxzXFDbxKV/u+zjtuQ7wmCbGMAgePV5kIke3Uuk8=;
+        b=nKFuzVDvOylrn6N2WAEBI/eHmxLNeVmOsMkpSY3u7TGz4rj3rwgYqmgoSJyYWjj2Kn
+         0QnJwMxvtZ0yYvzU5zX2ea+MnKGOUI3ZkWsq28gfCbGaZ3aFxSQ7FWdryjIfrtcAy1r9
+         dZbQmEFh82yfF18NpI6vhJi+vRZsF3HEif7y0Pr+nqk8GOLSzj6OobniBycp0QRZvYu4
+         w0CgAI/cPE2Tlx1W3+M9RRersPGHSUu4LhLs91h9mXh6C5hxZfwBoA1dUy605/wQzhQH
+         89vBUIsDKZ4+UnoxxdkO3t+eMw6PXcpjKcGFEA0iRyQ+MfEbB8w6bbrvia1+/EuWPsZA
+         dQGg==
+X-Gm-Message-State: ANoB5pm+Hk1W2mudc49kmCSWEg3GfoVIVqXHPyDG1AUvKJVGgDUl1wQO
+        X1XCwQg5uZ1JG1FoAsjQDkQ=
+X-Google-Smtp-Source: AA0mqf48D+LgwdxzCWLyMNMHGCauciTixEbl58o1DsLRuAANDl2lXpeubbD80FxHqciRMOPlxoZmww==
+X-Received: by 2002:a05:6870:8a2b:b0:144:bf10:eecd with SMTP id p43-20020a0568708a2b00b00144bf10eecdmr6090328oaq.204.1670445914434;
+        Wed, 07 Dec 2022 12:45:14 -0800 (PST)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id q13-20020a056808200d00b0035b4b6d1bbfsm10019786oiw.28.2022.12.07.12.45.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 12:29:37 -0800 (PST)
-Date:   Wed, 7 Dec 2022 22:29:35 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@kapio-technology.com
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20221207202935.eil7swy4osu65qlb@skbuf>
-References: <20221205185908.217520-1-netdev@kapio-technology.com>
- <20221205185908.217520-4-netdev@kapio-technology.com>
- <Y487T+pUl7QFeL60@shredder>
- <580f6bd5ee7df0c8f0c7623a5b213d8f@kapio-technology.com>
+        Wed, 07 Dec 2022 12:45:13 -0800 (PST)
+Date:   Wed, 7 Dec 2022 12:45:10 -0800
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Tariq Toukan <ttoukan.linux@gmail.com>
+Cc:     Valentin Schneider <vschneid@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Barry Song <baohua@kernel.org>,
+        Ben Segall <bsegall@google.com>,
+        haniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH v2 0/4] cpumask: improve on cpumask_local_spread()
+ locality
+Message-ID: <Y5D7VvNIG8AKXuC6@yury-laptop>
+References: <20221112190946.728270-1-yury.norov@gmail.com>
+ <xhsmh7czwyvtj.mognet@vschneid.remote.csb>
+ <Y3PXw8Hqn+RCMg2J@yury-laptop>
+ <xhsmho7t5ydke.mognet@vschneid.remote.csb>
+ <665b6081-be55-de9a-1f7f-70a143df329d@gmail.com>
+ <Y4a2MBVEYEY+alO8@yury-laptop>
+ <19cbfb5e-22b1-d9c1-8d50-38714e3eaf7d@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <580f6bd5ee7df0c8f0c7623a5b213d8f@kapio-technology.com>
+In-Reply-To: <19cbfb5e-22b1-d9c1-8d50-38714e3eaf7d@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -79,13 +103,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 06, 2022 at 05:36:42PM +0100, netdev@kapio-technology.com wrote:
-> > I was under the impression that we agreed that the locking change will
-> > be split to a separate patch.
+On Wed, Dec 07, 2022 at 02:53:58PM +0200, Tariq Toukan wrote:
 > 
-> Sorry, I guess that because of the quite long time that has passed as I
-> needed to get this FID=0 issue sorted out, and had many other different
-> changes to attend, I forgot.
+> 
+> On 11/30/2022 3:47 AM, Yury Norov wrote:
+> > On Mon, Nov 28, 2022 at 08:39:24AM +0200, Tariq Toukan wrote:
+> > > 
+> > > 
+> > > On 11/17/2022 2:23 PM, Valentin Schneider wrote:
+> > > > On 15/11/22 10:32, Yury Norov wrote:
+> > > > > On Tue, Nov 15, 2022 at 05:24:56PM +0000, Valentin Schneider wrote:
+> > > > > > 
+> > > > > > Is this meant as a replacement for [1]?
+> > > > > 
+> > > > > No. Your series adds an iterator, and in my experience the code that
+> > > > > uses iterators of that sort is almost always better and easier to
+> > > > > understand than cpumask_nth() or cpumask_next()-like users.
+> > > > > 
+> > > > > My series has the only advantage that it allows keep existing codebase
+> > > > > untouched.
+> > > > > 
+> > > > 
+> > > > Right
+> > > > 
+> > > > > > I like that this is changing an existing interface so that all current
+> > > > > > users directly benefit from the change. Now, about half of the users of
+> > > > > > cpumask_local_spread() use it in a loop with incremental @i parameter,
+> > > > > > which makes the repeated bsearch a bit of a shame, but then I'm tempted to
+> > > > > > say the first point makes it worth it.
+> > > > > > 
+> > > > > > [1]: https://lore.kernel.org/all/20221028164959.1367250-1-vschneid@redhat.com/
+> > > > > 
+> > > > > In terms of very common case of sequential invocation of local_spread()
+> > > > > for cpus from 0 to nr_cpu_ids, the complexity of my approach is n * log n,
+> > > > > and your approach is amortized O(n), which is better. Not a big deal _now_,
+> > > > > as you mentioned in the other email. But we never know how things will
+> > > > > evolve, right?
+> > > > > 
+> > > > > So, I would take both and maybe in comment to cpumask_local_spread()
+> > > > > mention that there's a better alternative for those who call the
+> > > > > function for all CPUs incrementally.
+> > > > > 
+> > > > 
+> > > > Ack, sounds good.
+> > > > 
+> > > 
+> > > Good.
+> > > Is a respin needed, to add the comment mentioned above?
+> > 
+> > If you think it's worth the effort.
+> 
+> No, not sure it is...
+> 
+> I asked because this mail thread was inactive for a while, with the patches
+> not accepted to the kernel yet.
+> 
+> If everyone is happy with it, let's make it to this kernel while possible.
+> 
+> To which tree should it go?
 
-Well, at least you got the FID=0 issue sorted out... right?
-What was the cause, what is the solution?
+I've got bitmap tree and can move it there, but this series is related to
+scheduler and NUMA as well, and I'd prefer move it in those trees.
+
+If moving through bitmaps, I'd like to collect more reviews and testing.
+
+Thanks,
+Yury
