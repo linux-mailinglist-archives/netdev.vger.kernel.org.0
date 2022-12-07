@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C7AB645097
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 01:46:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A2764508C
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 01:45:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbiLGApd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 19:45:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50104 "EHLO
+        id S229811AbiLGAp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 19:45:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiLGApY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 19:45:24 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on20608.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe59::608])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1723207C
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 16:45:13 -0800 (PST)
+        with ESMTP id S229719AbiLGApN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 19:45:13 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2052.outbound.protection.outlook.com [40.107.243.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B8A32051
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 16:45:12 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KfNB1oyKQweOkz4Mh7i94EQC2LMZzcl4t+eG+7a3LiSkBIiIm6URQav3AVy7qlslNNJBF3areaGCaBfZJeW6Z3Qw1g/lc0dsi7gjmYkP7mxaP3AgiBMqktndP62Ez/u/Z8+AC6tbfkR+32QrbwN/cyKeYUuVBZ4y3QUbOKLn6JAK8mODE6cVCRlGmOTxnN6G3vMYjs7d9zD8tz7BiWXNxgKJmBIBKhwz9fC6G8K4VAnXssF92Zze/nEQ+BUPNOhX1c3IEI1YUlJ/0Ui7jO24RldxsnmMfi3CUW0McLTqw5JQfG/C4Y3vG7InVmBYhLMXQ/k/ELhx3PU23MYNztbdHg==
+ b=TaVs4f2rl8SaBH33yBxEGYdV4bLtUwS5SAqHwMsz8RUnnboQJ774LjPZRXVmFjV3nKytz7X7z+rM1ZtW+v03kPYfaQQJGJRpMUNfYj267BbvAeAcOe4J0DMb0KrYSucab4y5wOle9GEAWHskClow7J5EGh1g1MrsEhj4KnDdjSIVPhaC8dXdIxz5Pmm7SwH81fYZOwckHyKC6Q87Qv+tgzmvBc6brSvf+7XNlt0soveCGY/2xkt64R09Ua1Udu2J5WnRzTOwjmHTvfZxeUo3Fao0HPogAvvYhiHo1TpNJGniOjR5x9KIEqT2lSBSMgqFvbZYwiFX0kTVQBMbs4SJcw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sKTZ1F37KVZpCQ1jvkSXGve4fl4em3gXNcA+z/oE0CU=;
- b=gcleSncCtMRMsRZ4lzLYlaVhY376dN2l0rTPFgBTEAgxs9s6T96D3D/s3qdi4A9RcoIm0U1r+d6YU/FFRhfbBS7jm/zvgSaZDG0AyWqKS+i5UftGzkTe6ly7aUA5L8PtE67uKz93KCcWNcV5JFYP5wK3kGgBlW4O9H0IVCUVHJIqAvqvev87mqquR29+q+CEl8DYVFq0pt/3muHxckGfZUg8KwMJUpeiHLfgh6tXLTpIOykInok3OpnNCdzep40IfbzndBD1Yg1JgvaAEqqtdhJVBVpAU5H8NN8x4npwQC759DsMt4rYYFSTPRx7LPDiggjk7TjinT4T7K/BHGXipQ==
+ bh=HWbWQ++unlN+XhCdTD+fXVkmSciqcCrecxDLmHgrzWw=;
+ b=NCP3BvJWtfJ6gIyL18bx1FcV5eRbgbHmkbRekiMYh4UyjamY0Ci1nMTAkdKeowPrICS3EA/uOI/qHK5mBfWIixjCEzVGB0Ugm1HYHtf2UDZ4FkmBhDxY60ASgObx5zkPI11nWoXICS6/g3IBMp/hxT+8xrW/1djmzzM1Z0Szz/CuRJylRgyO1EOcYHDBWjzSJzKX076PBG+BQUtozOyL8lu5fQ0yuCAExioJmZ9nwSIs2C/qchj+5VnPCyt7mW+suyO+Jt8z9HmQOEtpSsIgHfuQS0AuUTi4DTa8ETxxTX8JUwHAxZtHmt0K8VwPB8MgNh7K6uM5+YG8FXbGvkebhw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sKTZ1F37KVZpCQ1jvkSXGve4fl4em3gXNcA+z/oE0CU=;
- b=FUVs9Bs3+zHgVk7JP5XcX+iuZaPsE1JEdXvwvyKXasDtKjIwbKRVRysm4XowhMlx2yoeWld/zXeEaHT2nXqZW+TX7PufXqsBwLnTs+l7ZKYj8njIR5NZHl8vnbw0HRtRiovyrRPAvgSetA9d6eoK1S561W4ucp3oHxbyB2cAGAk=
-Received: from BN9PR03CA0263.namprd03.prod.outlook.com (2603:10b6:408:ff::28)
- by PH8PR12MB6771.namprd12.prod.outlook.com (2603:10b6:510:1c6::6) with
+ bh=HWbWQ++unlN+XhCdTD+fXVkmSciqcCrecxDLmHgrzWw=;
+ b=ffweg+q8Ik1kt2jliQK9aKy7AUf8qcc8VaC6Ztkx347IXbkGJAnCZATZnWd2c/T7xwJY3UUZoK6Idd8ymd8QiuM2OkBk1WokXKhthbDXepX4kwY1OOMZWmWG4UA0WBKx9nE0pdXkwK5vmM1mlj+fuV4sLkCcaFzWDmnYKQXNpko=
+Received: from BN9PR03CA0262.namprd03.prod.outlook.com (2603:10b6:408:ff::27)
+ by IA1PR12MB6555.namprd12.prod.outlook.com (2603:10b6:208:3a1::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Wed, 7 Dec
  2022 00:45:10 +0000
 Received: from BN8NAM11FT112.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ff:cafe::2) by BN9PR03CA0263.outlook.office365.com
- (2603:10b6:408:ff::28) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:408:ff:cafe::ae) by BN9PR03CA0262.outlook.office365.com
+ (2603:10b6:408:ff::27) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14 via Frontend
  Transport; Wed, 7 Dec 2022 00:45:10 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
@@ -56,9 +56,9 @@ Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <drivers@pensando.io>, Shannon Nelson <shannon.nelson@amd.com>
-Subject: [PATCH v2 net-next 07/16] pds_core: Add adminq processing and commands
-Date:   Tue, 6 Dec 2022 16:44:34 -0800
-Message-ID: <20221207004443.33779-8-shannon.nelson@amd.com>
+Subject: [PATCH v2 net-next 08/16] pds_core: add fw bank select
+Date:   Tue, 6 Dec 2022 16:44:35 -0800
+Message-ID: <20221207004443.33779-9-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221207004443.33779-1-shannon.nelson@amd.com>
 References: <20221207004443.33779-1-shannon.nelson@amd.com>
@@ -69,397 +69,142 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT112:EE_|PH8PR12MB6771:EE_
-X-MS-Office365-Filtering-Correlation-Id: 941db0f2-6dbd-4821-a29f-08dad7ec4b4e
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT112:EE_|IA1PR12MB6555:EE_
+X-MS-Office365-Filtering-Correlation-Id: 989ae6a3-23de-494a-ea32-08dad7ec4bb9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fxJ+DdGioJpDFU6caweEI/FrtTfqcFQvH3Q2mcFyUo5maeokzfTtJFZB2zzF5j8/RTFHCb4PdtYpn9A5c6MsmQNaG5+IrMLOFCLUOxjh/2rwHBJU1D692htwvsQt+Ei5GGpQgvbo0xRYXxshOXzY89tZ+hnBT22VVRMuq5yaaZ5Qc9MQ5Zr7VIk06gAuDzUlNtItedPj/m4iB4sFuIPjS7vYZIQA+9H9Aev4p+Dv9p4qvZNZ2Z8n6qwFKeWQpqlhZMm2HOFCjF7KwFiJ5E+pZvCgZvZHqOrvR1rhT9fP/PHDcZ/I3eCyodRPkb72EFmaJ8ZbrEBeRKJO0XQd9x40HxMt4fOv11sGIGtUa8AV38k7bwLaoNqJZjSXrZBrK/49rpQ1cbtLtaQeQLTYPlcOTdsC5l8t4ZpryuMDSKbSDRs22+OXvdhkyN2xlxJ1Nrcwbi/jwcc0iloKif5DsgG2GjvQ1rCsK7EUHE0tccwtemFLqIQ7IJRJI6ent6fyUI1p2k1D6Sg5lkQf7lH2MGkNTIeoiSU492iNNwK/FYGuk49/EcQ8btxVOE/xIjftmnNL3yjVFlWVDO2Z1UVLTtWCX0usfVuKSj1FG8DBWEIfs81FILZgJ6dlsK4GK50N6+qemiy2DMXCBXRNQXxbr66seheeYznKnC+074XuGI1K4AI+B9eeB9lx8xOrw17qgP/MpEmqcDdoEITal0zPT8vV0haXwQH+/3pWu0GM19lAR2c=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(136003)(39860400002)(396003)(451199015)(36840700001)(40470700004)(46966006)(36756003)(316002)(41300700001)(81166007)(40460700003)(86362001)(8936002)(4326008)(2906002)(5660300002)(82740400003)(30864003)(44832011)(36860700001)(83380400001)(356005)(70206006)(478600001)(70586007)(2616005)(54906003)(110136005)(40480700001)(82310400005)(8676002)(6666004)(47076005)(426003)(1076003)(16526019)(186003)(336012)(26005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 5UlFMs6z6I+LkPQO8Jo5idI+4vR49io6+BklOO4bqRxu1pOQxIbTBjqqD6kvWUegaidwgmm5FPDsQZZeBIP2rLChESknl5tTpei3WBJi9YygXI/qmW8Akl4cYEdSv/X5Jgy17fk6tEi8qng0E1/Y4JXw0/qgyDmEEdFfY6nTnuzwx2sBZf1Q5tiaZMK13CKczppdDYynZT+jXxA1eafm99//FcRE3vVkNDXKK6cb0nN8uM1v7Al2X64ric9K8sG6sRfd0C/vWIhy+uLq5gKYJ/2XdeyDlJ2t2rc7LUgJfs6DqYzvlIxu1WZ67dt3DVrM3W6LrZELDCr75vD9hxbPiyY67cFY8BFT/YkLt6VlwHqNj2tM9WKdqq9RjL5BYU2CjkXEzsCjR/fxi5ZrmSt8lY66VdGdLMF/jin2qDXcW57RbMhsE1jIVGVXhhulgBHZDCqEvIE1F+t1nItuKi7mjhkZE4ClQav0CAw1aLQT9Zg8D91dPfO3/ZTEOMyHUuqEyHIJVj0uQFv+BPfQtCg8dNgnK0FTZDWRd7Eq6S6thdB/O/5eCntHDGQzws3KSkIKWWmVu3aephRno8KGr3J9cGsG9IyfVPpVN3HrC7kcSDCx3QzfkxTXpvTmY+6yw6mTGwcsj8hucUFEDKtZosilu+WbkfJJoSTdaKdvk6JBpw5boDHRbAzW6sfoGhrUgbKQf9xREzd9YkpGXoJz+YDq/mI0UagbL2j5UTA99Kl2T4o=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(346002)(39860400002)(396003)(376002)(136003)(451199015)(46966006)(36840700001)(40470700004)(15650500001)(2906002)(8936002)(44832011)(83380400001)(8676002)(86362001)(36756003)(70206006)(4326008)(16526019)(81166007)(356005)(426003)(41300700001)(186003)(47076005)(82310400005)(2616005)(82740400003)(1076003)(5660300002)(336012)(110136005)(26005)(316002)(54906003)(36860700001)(6666004)(70586007)(478600001)(40460700003)(40480700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 00:45:10.1576
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 00:45:10.8763
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 941db0f2-6dbd-4821-a29f-08dad7ec4b4e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 989ae6a3-23de-494a-ea32-08dad7ec4bb9
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT112.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6771
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6555
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the service routines for submitting and processing
-the adminq messages and for handling notifyq events.
+Add support for the fw_bank parameter to select the next
+bootup firmware.  This can be selected at any time, and is
+also selected automatically when a new firmware is flashed
+into the device.
+
+There are three banks available in this device: 1 and 2 are
+the primaries for normal operations, while bank 3 has 'gold'
+firmware that can be selected and used as recovery fw
+in the case that both 1 and 2 become corrupt.
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- .../net/ethernet/pensando/pds_core/Makefile   |   1 +
- .../net/ethernet/pensando/pds_core/adminq.c   | 282 ++++++++++++++++++
- drivers/net/ethernet/pensando/pds_core/core.c |  11 -
- drivers/net/ethernet/pensando/pds_core/core.h |   6 +
- include/linux/pds/pds_adminq.h                |   2 +
- 5 files changed, 291 insertions(+), 11 deletions(-)
- create mode 100644 drivers/net/ethernet/pensando/pds_core/adminq.c
+ .../net/ethernet/pensando/pds_core/devlink.c  | 71 +++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
-diff --git a/drivers/net/ethernet/pensando/pds_core/Makefile b/drivers/net/ethernet/pensando/pds_core/Makefile
-index 446054206b6a..c7a722f7d9b8 100644
---- a/drivers/net/ethernet/pensando/pds_core/Makefile
-+++ b/drivers/net/ethernet/pensando/pds_core/Makefile
-@@ -6,6 +6,7 @@ obj-$(CONFIG_PDS_CORE) := pds_core.o
- pds_core-y := main.o \
- 	      devlink.o \
- 	      dev.o \
-+	      adminq.o \
- 	      core.o
+diff --git a/drivers/net/ethernet/pensando/pds_core/devlink.c b/drivers/net/ethernet/pensando/pds_core/devlink.c
+index 78fe657f6532..cd132573cbe0 100644
+--- a/drivers/net/ethernet/pensando/pds_core/devlink.c
++++ b/drivers/net/ethernet/pensando/pds_core/devlink.c
+@@ -8,6 +8,69 @@
  
- pds_core-$(CONFIG_DEBUG_FS) += debugfs.o
-diff --git a/drivers/net/ethernet/pensando/pds_core/adminq.c b/drivers/net/ethernet/pensando/pds_core/adminq.c
-new file mode 100644
-index 000000000000..ba9e84a7ca92
---- /dev/null
-+++ b/drivers/net/ethernet/pensando/pds_core/adminq.c
-@@ -0,0 +1,282 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2022 Pensando Systems, Inc */
+ #include "core.h"
+ 
++static int pdsc_dl_fw_bank_get(struct devlink *dl, u32 id,
++			       struct devlink_param_gset_ctx *ctx)
++{
++	struct pdsc *pdsc = devlink_priv(dl);
++	union pds_core_dev_cmd cmd = {
++		.fw_control.opcode = PDS_CORE_CMD_FW_CONTROL,
++		.fw_control.oper = PDS_CORE_FW_GET_BOOT,
++	};
++	union pds_core_dev_comp comp;
++	int err;
 +
-+#include <linux/kernel.h>
-+#include <linux/types.h>
-+#include <linux/errno.h>
-+#include <linux/pci.h>
++	err = pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
++	if (err)
++		return err;
 +
-+#include "core.h"
++	ctx->val.vu8 = comp.fw_control.slot;
 +
-+#include <linux/pds/pds_adminq.h>
++	return 0;
++}
 +
-+struct pdsc_wait_context {
-+	struct pdsc_qcq *qcq;
-+	struct completion wait_completion;
++static int pdsc_dl_fw_bank_set(struct devlink *dl, u32 id,
++			       struct devlink_param_gset_ctx *ctx)
++{
++	struct pdsc *pdsc = devlink_priv(dl);
++	union pds_core_dev_cmd cmd = {
++		.fw_control.opcode = PDS_CORE_CMD_FW_CONTROL,
++		.fw_control.oper = PDS_CORE_FW_SET_BOOT,
++	};
++	union pds_core_dev_comp comp;
++	int timeout;
++
++	cmd.fw_control.slot = ctx->val.vu8;
++
++	/* This is known to be a longer running command, so be sure
++	 * to use a larger timeout on the command than usual
++	 */
++#define PDSC_SET_BOOT_TIMEOUT	10
++	timeout = max_t(int, PDSC_SET_BOOT_TIMEOUT, pdsc->devcmd_timeout);
++	return pdsc_devcmd(pdsc, &cmd, &comp, timeout);
++}
++
++static int pdsc_dl_fw_bank_validate(struct devlink *dl, u32 id,
++				    union devlink_param_value val,
++				    struct netlink_ext_ack *extack)
++{
++	switch (val.vu8) {
++	case PDS_CORE_FW_SLOT_A:
++	case PDS_CORE_FW_SLOT_B:
++	case PDS_CORE_FW_SLOT_GOLD:
++		return 0;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct devlink_param pdsc_dl_params[] = {
++	DEVLINK_PARAM_GENERIC(FW_BANK,
++			      BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			      pdsc_dl_fw_bank_get,
++			      pdsc_dl_fw_bank_set,
++			      pdsc_dl_fw_bank_validate),
 +};
 +
-+static int pdsc_process_notifyq(struct pdsc_qcq *qcq)
-+{
-+	union pds_core_notifyq_comp *comp;
-+	struct pdsc *pdsc = qcq->pdsc;
-+	struct pdsc_cq *cq = &qcq->cq;
-+	struct pdsc_cq_info *cq_info;
-+	int nq_work = 0;
-+	u64 eid;
-+
-+	cq_info = &cq->info[cq->tail_idx];
-+	comp = cq_info->comp;
-+	eid = le64_to_cpu(comp->event.eid);
-+	while (eid > pdsc->last_eid) {
-+		u16 ecode = le16_to_cpu(comp->event.ecode);
-+
-+		switch (ecode) {
-+		case PDS_EVENT_LINK_CHANGE:
-+			dev_info(pdsc->dev, "NotifyQ LINK_CHANGE ecode %d eid %lld\n",
-+				 ecode, eid);
-+			break;
-+
-+		case PDS_EVENT_RESET:
-+			dev_info(pdsc->dev, "NotifyQ RESET ecode %d eid %lld\n",
-+				 ecode, eid);
-+			break;
-+
-+		case PDS_EVENT_XCVR:
-+			dev_info(pdsc->dev, "NotifyQ XCVR ecode %d eid %lld\n",
-+				 ecode, eid);
-+			break;
-+
-+		default:
-+			dev_info(pdsc->dev, "NotifyQ ecode %d eid %lld\n",
-+				 ecode, eid);
-+			break;
-+		}
-+
-+		pdsc->last_eid = eid;
-+		cq->tail_idx = (cq->tail_idx + 1) & (cq->num_descs - 1);
-+		cq_info = &cq->info[cq->tail_idx];
-+		comp = cq_info->comp;
-+		eid = le64_to_cpu(comp->event.eid);
-+
-+		nq_work++;
-+	}
-+
-+	qcq->accum_work += nq_work;
-+
-+	return nq_work;
-+}
-+
-+void pdsc_process_adminq(struct pdsc_qcq *qcq)
-+{
-+	union pds_core_adminq_comp *comp;
-+	struct pdsc_queue *q = &qcq->q;
-+	struct pdsc *pdsc = qcq->pdsc;
-+	struct pdsc_cq *cq = &qcq->cq;
-+	struct pdsc_q_info *q_info;
-+	unsigned long irqflags;
-+	int nq_work = 0;
-+	int aq_work = 0;
-+	int credits;
-+	u32 index;
-+
-+	/* Check for NotifyQ event */
-+	nq_work = pdsc_process_notifyq(&pdsc->notifyqcq);
-+
-+	/* Check for empty queue, which can happen if the interrupt was
-+	 * for a NotifyQ event and there are no new AdminQ completions.
-+	 */
-+	if (q->tail_idx == q->head_idx)
-+		goto credits;
-+
-+	/* Find the first completion to clean,
-+	 * run the callback in the related q_info,
-+	 * and continue while we still match done color
-+	 */
-+	spin_lock_irqsave(&pdsc->adminq_lock, irqflags);
-+	comp = cq->info[cq->tail_idx].comp;
-+	while (pdsc_color_match(comp->color, cq->done_color)) {
-+		q_info = &q->info[q->tail_idx];
-+		index = q->tail_idx;
-+		q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
-+
-+		/* Copy out the completion data */
-+		memcpy(q_info->dest, comp, sizeof(*comp));
-+
-+		complete_all(&q_info->wc->wait_completion);
-+
-+		if (cq->tail_idx == cq->num_descs - 1)
-+			cq->done_color = !cq->done_color;
-+		cq->tail_idx = (cq->tail_idx + 1) & (cq->num_descs - 1);
-+		comp = cq->info[cq->tail_idx].comp;
-+
-+		aq_work++;
-+	}
-+	spin_unlock_irqrestore(&pdsc->adminq_lock, irqflags);
-+
-+	qcq->accum_work += aq_work;
-+
-+credits:
-+	/* Return the interrupt credits, one for each completion */
-+	credits = nq_work + aq_work;
-+	if (credits)
-+		pds_core_intr_credits(&pdsc->intr_ctrl[qcq->intx],
-+				      credits,
-+				      PDS_CORE_INTR_CRED_REARM);
-+}
-+
-+void pdsc_work_thread(struct work_struct *work)
-+{
-+	struct pdsc_qcq *qcq = container_of(work, struct pdsc_qcq, work);
-+
-+	pdsc_process_adminq(qcq);
-+}
-+
-+irqreturn_t pdsc_adminq_isr(int irq, void *data)
-+{
-+	struct pdsc_qcq *qcq = data;
-+	struct pdsc *pdsc = qcq->pdsc;
-+
-+	/* Don't process AdminQ when shutting down */
-+	if (pdsc->state & BIT_ULL(PDSC_S_STOPPING_DRIVER)) {
-+		pr_err("%s: called while PDSC_S_STOPPING_DRIVER\n", __func__);
-+		return IRQ_HANDLED;
-+	}
-+
-+	queue_work(pdsc->wq, &qcq->work);
-+	pds_core_intr_mask(&pdsc->intr_ctrl[irq], PDS_CORE_INTR_MASK_CLEAR);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int __pdsc_adminq_post(struct pdsc *pdsc,
-+			      struct pdsc_qcq *qcq,
-+			      union pds_core_adminq_cmd *cmd,
-+			      union pds_core_adminq_comp *comp,
-+			      struct pdsc_wait_context *wc)
-+{
-+	struct pdsc_queue *q = &qcq->q;
-+	struct pdsc_q_info *q_info;
-+	unsigned long irqflags;
-+	unsigned int avail;
-+	int ret = 0;
-+	int index;
-+
-+	spin_lock_irqsave(&pdsc->adminq_lock, irqflags);
-+
-+	/* Check for space in the queue */
-+	avail = q->tail_idx;
-+	if (q->head_idx >= avail)
-+		avail += q->num_descs - q->head_idx - 1;
-+	else
-+		avail -= q->head_idx + 1;
-+	if (!avail) {
-+		ret = -ENOSPC;
-+		goto err_out;
-+	}
-+
-+	/* Check that the FW is running */
-+	if (!pdsc_is_fw_running(pdsc)) {
-+		u8 fw_status = ioread8(&pdsc->info_regs->fw_status);
-+
-+		dev_info(pdsc->dev, "%s: post failed - fw not running %#02x:\n",
-+			 __func__, fw_status);
-+		ret = -ENXIO;
-+
-+		goto err_out;
-+	}
-+
-+	/* Post the request */
-+	index = q->head_idx;
-+	q_info = &q->info[index];
-+	q_info->wc = wc;
-+	q_info->dest = comp;
-+	memcpy(q_info->desc, cmd, sizeof(*cmd));
-+
-+	dev_dbg(pdsc->dev, "head_idx %d tail_idx %d\n", q->head_idx, q->tail_idx);
-+	dev_dbg(pdsc->dev, "post admin queue command:\n");
-+	dynamic_hex_dump("cmd ", DUMP_PREFIX_OFFSET, 16, 1,
-+			 cmd, sizeof(*cmd), true);
-+
-+	q->head_idx = (q->head_idx + 1) & (q->num_descs - 1);
-+
-+	pds_core_dbell_ring(pdsc->kern_dbpage, q->hw_type, q->dbval | q->head_idx);
-+	ret = index;
-+
-+err_out:
-+	spin_unlock_irqrestore(&pdsc->adminq_lock, irqflags);
-+	return ret;
-+}
-+
-+int pdsc_adminq_post(struct pdsc *pdsc,
-+		     struct pdsc_qcq *qcq,
-+		     union pds_core_adminq_cmd *cmd,
-+		     union pds_core_adminq_comp *comp,
-+		     bool fast_poll)
-+{
-+	struct pdsc_wait_context wc = {
-+		.wait_completion = COMPLETION_INITIALIZER_ONSTACK(wc.wait_completion),
-+		.qcq = qcq,
-+	};
-+	unsigned long poll_interval = 1;
-+	unsigned long time_limit;
-+	unsigned long time_start;
-+	unsigned long time_done;
-+	unsigned long remaining;
-+	int err = 0;
-+	int index;
-+
-+	index = __pdsc_adminq_post(pdsc, qcq, cmd, comp, &wc);
-+	if (index < 0) {
-+		err = index;
-+		goto out;
-+	}
-+
-+	time_start = jiffies;
-+	time_limit = time_start + HZ * pdsc->devcmd_timeout;
-+	do {
-+		/* Timeslice the actual wait to catch IO errors etc early */
-+		remaining = wait_for_completion_timeout(&wc.wait_completion,
-+							msecs_to_jiffies(poll_interval));
-+		if (remaining)
-+			break;
-+
-+		if (!pdsc_is_fw_running(pdsc)) {
-+			u8 fw_status = ioread8(&pdsc->info_regs->fw_status);
-+
-+			dev_dbg(pdsc->dev, "%s: post wait failed - fw not running %#02x:\n",
-+				__func__, fw_status);
-+			err = -ENXIO;
-+			break;
-+		}
-+
-+		/* When fast_poll is not requested, prevent aggressive polling
-+		 * on failures due to timeouts by doing exponential back off.
-+		 */
-+		if (!fast_poll && poll_interval < PDSC_ADMINQ_MAX_POLL_INTERVAL)
-+			poll_interval <<= 1;
-+	} while (time_before(jiffies, time_limit));
-+	time_done = jiffies;
-+	dev_dbg(pdsc->dev, "%s: elapsed %d msecs\n",
-+		__func__, jiffies_to_msecs(time_done - time_start));
-+
-+	/* Check the results */
-+	if (time_after_eq(time_done, time_limit))
-+		err = -ETIMEDOUT;
-+
-+	dev_dbg(pdsc->dev, "read admin queue completion idx %d:\n", index);
-+	dynamic_hex_dump("comp ", DUMP_PREFIX_OFFSET, 16, 1,
-+			 comp, sizeof(*comp), true);
-+
-+	if (remaining && comp->status)
-+		err = pdsc_err_to_errno(comp->status);
-+
-+out:
-+	if (err) {
-+		dev_dbg(pdsc->dev, "%s: opcode %d status %d err %pe\n",
-+			__func__, cmd->opcode, comp->status, ERR_PTR(err));
-+		if (err == -ENXIO || err == -ETIMEDOUT)
-+			pdsc_queue_health_check(pdsc);
-+	}
-+
-+	return err;
-+}
-diff --git a/drivers/net/ethernet/pensando/pds_core/core.c b/drivers/net/ethernet/pensando/pds_core/core.c
-index 507f718bc8ab..e2017cee8284 100644
---- a/drivers/net/ethernet/pensando/pds_core/core.c
-+++ b/drivers/net/ethernet/pensando/pds_core/core.c
-@@ -12,17 +12,6 @@
- 
- #include <linux/pds/pds_adminq.h>
- 
--void pdsc_work_thread(struct work_struct *work)
--{
--	/* stub */
--}
--
--irqreturn_t pdsc_adminq_isr(int irq, void *data)
--{
--	/* stub */
--	return IRQ_HANDLED;
--}
--
- void pdsc_intr_free(struct pdsc *pdsc, int index)
+ static int pdsc_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 			    struct netlink_ext_ack *extack)
  {
- 	struct pdsc_intr_info *intr_info;
-diff --git a/drivers/net/ethernet/pensando/pds_core/core.h b/drivers/net/ethernet/pensando/pds_core/core.h
-index 3d1023f0eeb2..bdb3a29d789e 100644
---- a/drivers/net/ethernet/pensando/pds_core/core.h
-+++ b/drivers/net/ethernet/pensando/pds_core/core.h
-@@ -260,6 +260,12 @@ int pdsc_devcmd_reset(struct pdsc *pdsc);
- int pdsc_dev_reinit(struct pdsc *pdsc);
- int pdsc_dev_init(struct pdsc *pdsc);
- 
-+int pdsc_adminq_post(struct pdsc *pdsc,
-+		     struct pdsc_qcq *qcq,
-+		     union pds_core_adminq_cmd *cmd,
-+		     union pds_core_adminq_comp *comp,
-+		     bool fast_poll);
+@@ -87,6 +150,12 @@ void pdsc_dl_free(struct pdsc *pdsc)
+ int pdsc_dl_register(struct pdsc *pdsc)
+ {
+ 	struct devlink *dl = priv_to_devlink(pdsc);
++	int err;
 +
- int pdsc_intr_alloc(struct pdsc *pdsc, char *name,
- 		    irq_handler_t handler, void *data);
- void pdsc_intr_free(struct pdsc *pdsc, int index);
-diff --git a/include/linux/pds/pds_adminq.h b/include/linux/pds/pds_adminq.h
-index b06d28d0f906..19070099eb35 100644
---- a/include/linux/pds/pds_adminq.h
-+++ b/include/linux/pds/pds_adminq.h
-@@ -4,6 +4,8 @@
- #ifndef _PDS_CORE_ADMINQ_H_
- #define _PDS_CORE_ADMINQ_H_
++	err = devlink_params_register(dl, pdsc_dl_params,
++				      ARRAY_SIZE(pdsc_dl_params));
++	if (err)
++		return err;
  
-+#define PDSC_ADMINQ_MAX_POLL_INTERVAL	256
-+
- enum pds_core_adminq_flags {
- 	PDS_AQ_FLAG_FASTPOLL	= BIT(1),	/* poll for completion at 1ms intervals */
- };
+ 	devlink_register(dl);
+ 
+@@ -98,4 +167,6 @@ void pdsc_dl_unregister(struct pdsc *pdsc)
+ 	struct devlink *dl = priv_to_devlink(pdsc);
+ 
+ 	devlink_unregister(dl);
++	devlink_params_unregister(dl, pdsc_dl_params,
++				  ARRAY_SIZE(pdsc_dl_params));
+ }
 -- 
 2.17.1
 
