@@ -2,76 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28080645CEC
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:51:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2667F645CF5
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:55:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229489AbiLGOvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 09:51:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
+        id S229868AbiLGOzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 09:55:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiLGOvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:51:50 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4294E6B9
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:51:45 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id ud5so14586323ejc.4
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:51:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YOoLyltdiLP2JEEnnOjDDBjmowt4f2XyOeFTDUjuF0o=;
-        b=8LPvLa5f8GWVmsFwwTg1U5kbOjmfPOIweDVg0JgDkU66U1Ai1CbGUzeH5erXRynjOi
-         bpCw2zeV3JTSuD4QxVcpaCSD65NM5j/LicODL+gOZ/fyGnZm2JdE/LAmtPIs08k3OafD
-         gzY126/r2xXz3k3USm6gxKL86ySXNxid+nHRkNG9XNIXdoisTW6DyfyWeTrF+CE7MuvH
-         phmUUNN96h8w6chWW22UHnVkGmKHWUs1ME3SN0+GJGAZs1eY3Peh+8H1UGD9QwSobNdY
-         kNDYVcWIBg/M02ThYpRLRfaSzbvWC9q7qVOtW8q9ueoTalt19EPU8s/8Tbgnk1gMB+Bs
-         oX/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YOoLyltdiLP2JEEnnOjDDBjmowt4f2XyOeFTDUjuF0o=;
-        b=1Q2kQ3SnaFzJODUnjWzkczUvhLwX3WBO3MQH59ECs472+OvjlHqPypi5S/D3OC2mLO
-         GlphAd+oxO4/7sKtNy9vOuaHXqMaHuKrPuq2W9snU3hH0Pqmwd7YdN+3bIaza1RJn95o
-         /fgx/kzRa1Uk2PgU3185bl0Bs3xpJF2PgvmwGwCp1K1aoFGEQxp378p04cF5UsQWSeE+
-         wmOeZloCrQbMTxtUCNmwK24lqn01R8FYYNEQ6e1HXunxkVz2OSKsZQZyTDuDeELLtQgk
-         rWeeCgOGSPvbss8pSzwqpM/3WBvOA8zcVj037Xa1mNd6VsZue3hGC1LAFP9D9H8IESU1
-         YB9A==
-X-Gm-Message-State: ANoB5pk6W633maLJcqWjqiBIQ0jrhtjD1YUgJ/Tvue8Vp11qXDFN3V3N
-        EqFzbr2V4u6zbpvONl/8zUZVvg==
-X-Google-Smtp-Source: AA0mqf4OhmBvoNlAGnMbABNrcBrV4WGf+zkPhfefEbSuw49mlb/2DuiPLNVZwEQyVvDzmJlJx3pPTA==
-X-Received: by 2002:a17:906:39c8:b0:7ad:79c0:5482 with SMTP id i8-20020a17090639c800b007ad79c05482mr67114184eje.730.1670424704218;
-        Wed, 07 Dec 2022 06:51:44 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id s26-20020a056402015a00b00461bacee867sm2294555edu.25.2022.12.07.06.51.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 06:51:43 -0800 (PST)
-Date:   Wed, 7 Dec 2022 15:51:42 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: Re: [RFC PATCH v4 0/4] Create common DPLL/clock configuration API
-Message-ID: <Y5CofhLCykjsFie6@nanopsycho>
-References: <20221129213724.10119-1-vfedorenko@novek.ru>
- <Y4dNV14g7dzIQ3x7@nanopsycho>
- <DM6PR11MB4657003794552DC98ACF31669B179@DM6PR11MB4657.namprd11.prod.outlook.com>
- <Y4oj1q3VtcQdzeb3@nanopsycho>
- <20221206184740.28cb7627@kernel.org>
+        with ESMTP id S229606AbiLGOzh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:55:37 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2072.outbound.protection.outlook.com [40.107.220.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E984E6AD;
+        Wed,  7 Dec 2022 06:55:35 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KIz9APdPd6Ww86l97BD8guJJyM6oaKHhP3zM9FmcCPE44A9Sq3jvidcOntTfaLq3PpDosJvR0WypiLhFSl3CCjPSuduv8Zr662SO819VFe+nar+gtTectoEBI26xvIJBRDyL0Vvjjg2xy/ODDXL+162lkVHFs4d6SJ6eajCQ2sU/XRl+DlU4WXycABcKrjoNH1H7mrOxz1cYZrXg8sTJYmggzvAw9JlwGsvL62dKRYVss+aixPAMAIZj82exci6VvTlb9GS7k+DILweiImlV2nGZC/OC/S4epYeEsO2+Qv1MLwFVas8UaagRF6Ppb1N+2rdxqWR2bfER6DX+xt197g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Xr3BBTUqancdT4JZNTXiuj2xuYuGSAcrxZD4d88bvp0=;
+ b=RYGzE7wf68vc75QCKlRuV9idGOx4YC+Ead7kjs0hzqf4ocalEfrCrmQOs1cgbqT3Tit95eUMJj51L5vQZ/rb/HQ7ZeU4zUdQ3M6LycXpMS6t4usIEiXZxRnneohqTRkSLX01BvlZLBEtBwMrv9BL4KLWifvuPnxQL7wDYzB57kEXOvD+Wh0Tt5Gr86P8QGu1t/Oh2soEiCeYiueOFlaiGAI+UrzENvPVXq+cgKJSzfg22J3noAtSDOYh3JwZwLfef3y1wd8ycWBUwfNUE7RGiqhtWtBKu57Lo2Ikiuo1+Nc71JQfnNNAt5yX0kElqsvm/HGX4K/jOAqtwZ3F5jhh9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Xr3BBTUqancdT4JZNTXiuj2xuYuGSAcrxZD4d88bvp0=;
+ b=nFIYcljk4w3QuP/IhRtC4RTOldfoYs5ndoQjel2G1bRqhIxD1mFQJpr65sqSbLhRUQ9oZoXSb9+HLq8gLNB6oRKE5oTrxAtkxasZhJZe/knQziRFfhEhwGMVkovoZ4VmBDCvlo31JfAqLBtiAnW/w54atV6tBLNPqO5yNbYQAnc=
+Received: from MW4PR03CA0012.namprd03.prod.outlook.com (2603:10b6:303:8f::17)
+ by SJ0PR12MB5504.namprd12.prod.outlook.com (2603:10b6:a03:3ad::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Wed, 7 Dec
+ 2022 14:55:33 +0000
+Received: from CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8f:cafe::e1) by MW4PR03CA0012.outlook.office365.com
+ (2603:10b6:303:8f::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14 via Frontend
+ Transport; Wed, 7 Dec 2022 14:55:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT053.mail.protection.outlook.com (10.13.175.63) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5901.14 via Frontend Transport; Wed, 7 Dec 2022 14:55:33 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 7 Dec
+ 2022 08:55:32 -0600
+Received: from xndengvm004102.xilinx.com (10.180.168.240) by
+ SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34
+ via Frontend Transport; Wed, 7 Dec 2022 08:55:28 -0600
+From:   Gautam Dawar <gautam.dawar@amd.com>
+To:     <linux-net-drivers@amd.com>, <netdev@vger.kernel.org>,
+        <jasowang@redhat.com>, <eperezma@redhat.com>
+CC:     <tanuj.kamde@amd.com>, <Koushik.Dutta@amd.com>,
+        <harpreet.anand@amd.com>, Gautam Dawar <gautam.dawar@amd.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 00/11] sfc: add vDPA support for EF100 devices
+Date:   Wed, 7 Dec 2022 20:24:16 +0530
+Message-ID: <20221207145428.31544-1-gautam.dawar@amd.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221206184740.28cb7627@kernel.org>
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT053:EE_|SJ0PR12MB5504:EE_
+X-MS-Office365-Filtering-Correlation-Id: c0b99add-be67-4dc1-15c0-08dad86317c1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SviVNqf9/YpMh3S1Q18/s8MlyQmmhu7xXyF5eHhH8Ba0uP20gK7LEHyKHVQEkOiVyVVAqIeaHdc/vkptYzdJ09w3sl1RVw7g7dO9VVQcJI0t4DEEI8/ewO6d065DqcJTrc807dVcjGZH+BAQ/p9dsG7gQ4HwzEadfzkG4gz0gpS5cVvt67KRHuNa0j7t3siCrbLJkPGZfQ5NGMW888PMHdujIa9qL+VmyjvutjyczVw7r4sLRKnybjv6lTaPvJFdwHwmMD0IrKVMV7jYGSfhH4KbYyaSOYl+HTfWmX18F8ymweOWCcREHZXbDuljAyc6niJcw8n2isqw+fgYJHk/bYy2UCeBIwtzLtA1ujZueSwlD6VL9kp+/4Zd5apMedNF7/3JfJdiFGvggf0OWREJ+XlhDIacn2+8jWjlGUD5vL8uYS2/r8V6Qcx2F8JPCvjN2H7NvMUV6NjJRFpp5qQ+1VtxJQmEiyeJMx7h2VjE9+eLrDpupyG706gVTU5Jjxf/aPn6W9juiyq8wwtPPxLikC3TVEO+bbfbiAfsCsovp5vYGrZbRjWxh3J40/6ZckOHOfLFGRxTyV9x256IzRa5dasqhFW+9FoYAUUYI3geMleKJRdXWeL7jRkydD5fXoCw5ypm+2lLtM3HnmKbLEev6a88bOi/dqFVHDqidfLzkL9NzvtuQMOIfloKWV8PEVH3Hc9Yt0SAQAwxLydoF2ETtfUS3xzXcjJUmfeiNrYJU9E=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(376002)(136003)(346002)(451199015)(46966006)(40470700004)(36840700001)(478600001)(36860700001)(83380400001)(356005)(8936002)(81166007)(70586007)(86362001)(2906002)(54906003)(40460700003)(5660300002)(7416002)(4326008)(44832011)(41300700001)(40480700001)(47076005)(8676002)(1076003)(82310400005)(26005)(186003)(336012)(6666004)(426003)(110136005)(2616005)(316002)(70206006)(82740400003)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 14:55:33.6746
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c0b99add-be67-4dc1-15c0-08dad86317c1
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5504
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,154 +103,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Dec 07, 2022 at 03:47:40AM CET, kuba@kernel.org wrote:
->On Fri, 2 Dec 2022 17:12:06 +0100 Jiri Pirko wrote:
->> >But this is only doable with assumption, that the board is internally capable
->> >of such internal board level communication, which in case of separated
->> >firmwares handling multiple dplls might not be the case, or it would require
->> >to have some other sw component feel that gap.  
->> 
->> Yep, you have the knowledge of sharing inside the driver, so you should
->> do it there. For multiple instances, use in-driver notifier for example.
->
->No, complexity in the drivers is not a good idea. The core should cover
->the complexity and let the drivers be simple.
+Hi All,
 
-Really, even in case only one driver actually consumes the complexicity?
-I understand having a "libs" to do common functionality for drivers,
-even in case there is one. But this case, I don't see any benefit.
+This series adds the vdpa support for EF100 devices.
+For now, only a network class of vdpa device is supported and
+they can be created only on a VF. Each EF100 VF can have one
+of the three function personalities (EF100, vDPA & None) at
+any time with EF100 being the default. A VF's function personality
+is changed to vDPA while creating the vdpa device using vdpa tool.
 
+A vDPA management device is created per VF to allow selection of
+the desired VF for vDPA device creation. The MAC address for the
+target net device must be specified at the device creation time
+via the `mac` parameter of the `vdpa dev add` command as the control
+virtqueue is not supported yet.
 
->
->> >For complex boards with multiple dplls/sync channels, multiple ports,
->> >multiple firmware instances, it seems to be complicated to share a pin if
->> >each driver would have own copy and should notify all the other about changes.
->> >
->> >To summarize, that is certainly true, shared pins idea complicates stuff
->> >inside of dpll subsystem.
->> >But at the same time it removes complexity from all the drivers which would use  
->> 
->> There are currently 3 drivers for dpll I know of. This in ptp_ocp and
->> mlx5 there is no concept of sharing pins. You you are talking about a
->> single driver.
->> 
->> What I'm trying to say is, looking at the code, the pin sharing,
->> references and locking makes things uncomfortably complex. You are so
->> far the only driver to need this, do it internally. If in the future
->> other driver appears, this code would be eventually pushed into dpll
->> core. No impact on UAPI from what I see. Please keep things as simple as
->> possible.
->
->But the pin is shared for one driver. Who cares if it's not shared in
->another. The user space must be able to reason about the constraints.
+To use with vhost-vdpa, QEMU version 6.1.0 or later must be used
+as it fixes the incorrect feature negotiation (vhost-vdpa backend)
+without which VIRTIO_F_IN_ORDER feature bit is negotiated but not
+honored when using the guest kernel virtio driver.
 
-Sorry, I don't follow :/ Could you please explain what do you mean by
-this?
+Gautam Dawar (11):
+  sfc: add function personality support for EF100 devices
+  sfc: implement MCDI interface for vDPA operations
+  sfc: implement init and fini functions for vDPA personality
+  sfc: implement vDPA management device operations
+  sfc: implement vdpa device config operations
+  sfc: implement vdpa vring config operations
+  sfc: implement filters for receiving traffic
+  sfc: implement device status related vdpa config operations
+  sfc: implement iova rbtree to store dma mappings
+  sfc: implement vdpa config_ops for dma operations
+  sfc: register the vDPA device
 
->
->You are suggesting drivers to magically flip state in core objects
->because of some hidden dependencies?!
+ drivers/net/ethernet/sfc/Kconfig          |   8 +
+ drivers/net/ethernet/sfc/Makefile         |   2 +
+ drivers/net/ethernet/sfc/ef10.c           |   2 +-
+ drivers/net/ethernet/sfc/ef100.c          |   6 +-
+ drivers/net/ethernet/sfc/ef100_iova.c     | 205 +++++
+ drivers/net/ethernet/sfc/ef100_iova.h     |  40 +
+ drivers/net/ethernet/sfc/ef100_nic.c      | 126 ++-
+ drivers/net/ethernet/sfc/ef100_nic.h      |  22 +
+ drivers/net/ethernet/sfc/ef100_vdpa.c     | 693 +++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_vdpa.h     | 241 ++++++
+ drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 897 ++++++++++++++++++++++
+ drivers/net/ethernet/sfc/mcdi.h           |   7 +
+ drivers/net/ethernet/sfc/mcdi_filters.c   |  51 +-
+ drivers/net/ethernet/sfc/mcdi_functions.c |   9 +-
+ drivers/net/ethernet/sfc/mcdi_functions.h |   3 +-
+ drivers/net/ethernet/sfc/mcdi_vdpa.c      | 268 +++++++
+ drivers/net/ethernet/sfc/mcdi_vdpa.h      |  84 ++
+ drivers/net/ethernet/sfc/net_driver.h     |  19 +
+ 18 files changed, 2650 insertions(+), 33 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/ef100_iova.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_iova.h
+ create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.h
+ create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+ create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.c
+ create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.h
 
-It's not a state flip. It's more like a well propagated event of a state
-change. The async changes may happen anyway, so the userspace needs
-to handle them. Why is this different?
-
-
->
->> >it and is easier for the userspace due to common identification of pins.  
->> 
->> By identification, you mean "description" right? I see no problem of 2
->> instances have the same pin "description"/label.
->>
->> >This solution scales up without any additional complexity in the driver,
->> >and without any need for internal per-board communication channels.
->> >
->> >Not sure if this is good or bad, but with current version, both approaches are
->> >possible, so it pretty much depending on the driver to initialize dplls with
->> >separated pin objects as you have suggested (and take its complexity into
->> >driver) or just share them.
->> >  
->> >>
->> >>3) I don't like the concept of muxed pins and hierarchies of pins. Why
->> >>   does user care? If pin is muxed, the rest of the pins related to this
->> >>   one should be in state disabled/disconnected. The user only cares
->> >>   about to see which pins are related to each other. It can be easily
->> >>   exposed by "muxid" like this:
->> >>   pin 1
->> >>   pin 2
->> >>   pin 3 muxid 100
->> >>   pin 4 muxid 100
->> >>   pin 5 muxid 101
->> >>   pin 6 muxid 101
->> >>   In this example pins 3,4 and 5,6 are muxed, therefore the user knows
->> >>   if he connects one, the other one gets disconnected (or will have to
->> >>   disconnect the first one explicitly first).
->> >
->> >Currently DPLLA_PIN_PARENT_IDX is doing the same thing as you described, it
->> >groups MUXed pins, the parent pin index here was most straightforward to me,  
->> 
->> There is a big difference if we model flat list of pins with a set of
->> attributes for each, comparing to a tree of pins, some acting as leaf,
->> node and root. Do we really need such complexicity? What value does it
->> bring to the user to expose this?
->
->The fact that you can't auto select from devices behind muxes.
-
-Why? What's wrong with the mechanism I described in another part of this
-thread?
-
-Extending my example from above
-
-   pin 1 source
-   pin 2 output
-   pin 3 muxid 100 source
-   pin 4 muxid 100 source
-   pin 5 muxid 101 source
-   pin 6 muxid 101 source
-   pin 7 output
-
-User now can set individial prios for sources:
-
-dpll x pin 1 set prio 10
-etc
-The result would be:
-
-   pin 1 source prio 10
-   pin 2 output
-   pin 3 muxid 100 source prio 8
-   pin 4 muxid 100 source prio 20
-   pin 5 muxid 101 source prio 50
-   pin 6 muxid 101 source prio 60
-   pin 7 output
-
-Now when auto is enabled, the pin 3 is selected. Why would user need to
-manually select between 3 and 4? This is should be abstracted out by the
-driver.
-
-Actually, this is neat as you have one cmd to do selection in manual
-mode and you have uniform way of configuring/monitoring selection in
-autosel. Would the muxed pin make this better?
-
-For muxed pin being output, only one pin from mux would be set:
-
-   pin 1 source
-   pin 2 output
-   pin 3 muxid 100 disconnected
-   pin 4 muxid 100 disconnected
-   pin 5 muxid 101 output
-   pin 6 muxid 101 disconnected
-   pin 7 output
-
-
->The HW topology is of material importance to user space.
-
-Interesting. When I was working on linecards, you said that the user
-does not care about the inner HW topology. And it makes sense. When
-things could be abstracted out to make iface clean, I think they should.
-
-
->How many times does Arkadiusz have to explain this :|
-
-Pardon my ignorance, I don't see why exactly we need mux hierarchy
-(trees) exposed to user.
+-- 
+2.30.1
 
