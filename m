@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C91B9645AEB
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:27:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DED6645AED
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:28:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229952AbiLGN1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 08:27:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
+        id S229938AbiLGN2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 08:28:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbiLGN1x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:27:53 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C595A3AC3F
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:27:51 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id d20so24947232edn.0
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 05:27:51 -0800 (PST)
+        with ESMTP id S229956AbiLGN2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:28:24 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349ED3B9D5
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:28:22 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id m18so12430021eji.5
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 05:28:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Yv1iH2aNoHCv96T/l2EkVrXhJMSx9sWTmJz9/IJmT0g=;
-        b=ymZhY6Y6lMSV25NHFA+4rnfjNwHfeW2hwMCBSu5t61KOuBNsbVCRGzAkjcxvvJ1NFM
-         sKE0O8mJGDpaWNLBfMO6OshjbOn+N/mPqyAUm6S2rN/qCqrsxSBlatADinBqWl/OTnfk
-         rt+8Dyko21cXaa7daRpJ4QTYVb67iCnfeXmoOhAwzocCcl77ctl4plwftGI97/mVTiDe
-         /fg862GFvKGMmtEcACBFgPKg7/1grpbOxq6UANeK/oFvOknhFaWy6CDCeGnm/kFoOWkg
-         +PbS18iLAVODNdzK/ywu/bqEOaqarqxznsW7tSJc2W0FhMq3su2d8+H7IJVrfwnZv7aw
-         KaVQ==
+        bh=mrZ3BGsfaA32811go0kCKtKR+PUZof+SC4fHx7E1Rus=;
+        b=nmUd9khxZnwExuxkqPp8/QfSy3uUl1d1E0Gi57Xrw9cSYQ3s7dCr1MIlKz6och0sW9
+         XKRK1NJjONY97Sy1Z9XAZhUVdEA8n4RsRZoID4y0qPyPGEMwJzo+rnQe+1jATQc/upe9
+         jf7I8nKgtJdprOMJFd/HFtka3+aXpsXgiBCt+NH7U7J9O4hgE0d2+qYl8EJ6/lJCFrpz
+         kK+NWeYv6xhWIlexmrRiKnVbT4lBkU3oe7B0JNffKH66eEiwn8aJRXT/K/GU7tXdvX/c
+         2TanbEYcfjIfY/VH8SzqZVdugHfrlnctOpcxwVNH7KKGyr3pucUxUnvfroQSrczQVMmQ
+         xdCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Yv1iH2aNoHCv96T/l2EkVrXhJMSx9sWTmJz9/IJmT0g=;
-        b=1EhfFe5hWeSaucdfUv3jYyeWhcHxrA7usOuVtwiEV+t1nEpE11w2i0N2/ZNcFF1SFc
-         JwAkppTA8NpObi9m3VDorx1r9eYC00ujFxcnlSx3vBKsWvqKlxcJL5+s7AOeFd401Fuv
-         Qdrn8IAs7e7UxWvxpPrHFOqHIAP8zvLYsvt/53AXj3xqA7R0laD/2hTjTUE85H5X9Ffx
-         EX8rg63ZbuaS02HcoRE3FDi69ivHFwoq97RitArCvayvXEeME7doCWxfd1rqXXpP1x9V
-         qgDnAYAFdu2IcJvcn/dhUyaK9N3fqB50dFKJ5lkjDfpdn0BbbJ1XCyLcfRI2SdGHwIiN
-         xN0Q==
-X-Gm-Message-State: ANoB5pm1WHvYWxlPacejKZxuYbIoNocWcdju24MHs8ssm68PpqlJVpYO
-        wVRubolzcdWEyyCEAlzUrq6now==
-X-Google-Smtp-Source: AA0mqf6WWahQRvq38gAac4RgCGCEF2pAcAFMqxipMW5rf1/JQnK8MCkjI4ppIlWFpVxEipL/oBjO0Q==
-X-Received: by 2002:a50:e603:0:b0:46c:ff45:68e9 with SMTP id y3-20020a50e603000000b0046cff4568e9mr7819746edm.90.1670419670356;
-        Wed, 07 Dec 2022 05:27:50 -0800 (PST)
+        bh=mrZ3BGsfaA32811go0kCKtKR+PUZof+SC4fHx7E1Rus=;
+        b=QyvqG/u8PNDF7YNrRvgnYoRyQi1Ltw05DIv0raGqLjBsio1ptuRpSO9TD50rcD5PtH
+         qoJgeov57TXAZdo9TsVdrJPj0x+hVBC3DbPNTeivdM9xK6zcU/NUislPlLEs1ePHD4Iu
+         /LsLLQKWfUB0+1zlarUK9nDYhS3o75Oj+rhttgW/pLahiGKpONXeRBz/fFIs0CwG/rIR
+         a3dj0R5zkn6tpr/XNDiP5m3k93bm1ryNYzZyGaAJdoc19Ny09fVjlKJmhOkQjQCsn4q/
+         4MT6D8/pYHtYzPFAUITK+w7u29FgLu0D9q1sBIKWBi95L58MAqszULd0mjAjMIU9/4bH
+         a7SA==
+X-Gm-Message-State: ANoB5pm/NElme375e2Y4s2o+S6YwOkCpqSSIlMcYhS5KQhtbR8+Tt+9I
+        Jh0pDGjvvI1bd2msEPj1gUFeOw==
+X-Google-Smtp-Source: AA0mqf5y3GZ6RJJUHAc13DXeDPm82KLE0rrb8kerhA7uBIfNc59g5jJH7chDXlN2F6mK12Xg/2eMxQ==
+X-Received: by 2002:a17:906:5583:b0:78d:b3ef:656c with SMTP id y3-20020a170906558300b0078db3ef656cmr58684353ejp.627.1670419700812;
+        Wed, 07 Dec 2022 05:28:20 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id v18-20020a170906293200b0077b2b0563f4sm8654467ejd.173.2022.12.07.05.27.49
+        by smtp.gmail.com with ESMTPSA id k2-20020a170906680200b0077077c62cadsm8437961ejr.31.2022.12.07.05.28.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 05:27:49 -0800 (PST)
-Date:   Wed, 7 Dec 2022 14:27:48 +0100
+        Wed, 07 Dec 2022 05:28:20 -0800 (PST)
+Date:   Wed, 7 Dec 2022 14:28:19 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Shannon Nelson <shnelson@amd.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, michael.chan@broadcom.com,
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, michael.chan@broadcom.com,
         ioana.ciornei@nxp.com, dmichail@fungible.com,
         jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
         tchornyi@marvell.com, tariqt@nvidia.com, saeedm@nvidia.com,
@@ -60,18 +60,17 @@ Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
         alexandre.belloni@bootlin.com, simon.horman@corigine.com,
         shannon.nelson@amd.com, brett.creeley@amd.com
-Subject: Re: [patch net-next 1/8] devlink: call
- devlink_port_register/unregister() on registered instance
-Message-ID: <Y5CU1DkXVRoz3PcQ@nanopsycho>
+Subject: Re: [patch net-next 0/8] devlink: make sure devlink port
+ registers/unregisters only for registered instance
+Message-ID: <Y5CU81h+NDjUVVSJ@nanopsycho>
 References: <20221205152257.454610-1-jiri@resnulli.us>
- <20221205152257.454610-2-jiri@resnulli.us>
- <5e97d5b5-3df4-c9b5-bca4-c82c75d353e8@amd.com>
- <Y47yMItMuOfCrwiO@nanopsycho>
- <a5c5b1f9-60e9-6e82-911e-03e56ff42da1@amd.com>
+ <20221205170826.17c78e90@kernel.org>
+ <Y47y0FZQxPDK3B5X@nanopsycho>
+ <20221206121226.21de7ca3@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a5c5b1f9-60e9-6e82-911e-03e56ff42da1@amd.com>
+In-Reply-To: <20221206121226.21de7ca3@kernel.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -81,32 +80,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Dec 06, 2022 at 06:35:32PM CET, shnelson@amd.com wrote:
->On 12/5/22 11:41 PM, Jiri Pirko wrote:
->> Tue, Dec 06, 2022 at 12:55:32AM CET, shnelson@amd.com wrote:
->> > On 12/5/22 7:22 AM, Jiri Pirko wrote:
->> > > 
->> > > From: Jiri Pirko <jiri@nvidia.com>
->> > > 
->> > > Change the drivers that use devlink_port_register/unregister() to call
->> > > these functions only in case devlink is registered.
->
->
->> > 
->> > I haven't kept up on all the discussion about this, but is there no longer a
->> > worry about registering the devlink object before all the related
->> > configuration bits are in place?
->> > 
->> > Does this open any potential issues with userland programs seeing the devlink
->> > device and trying to access port before they get registered?
+Tue, Dec 06, 2022 at 09:12:26PM CET, kuba@kernel.org wrote:
+>On Tue, 6 Dec 2022 08:44:16 +0100 Jiri Pirko wrote:
+>>> I didn't reply because I don't have much to add beyond what 
+>>> I've already said too many times. I prefer to move to my
+>>> initial full refcounting / full locking design. I haven't posted 
+>>> any patches because I figured it's too low priority and too risky
+>>> to be doing right before the merge window.  
 >> 
->> What exactly do you have in mind? Could you please describe it?
+>> I'm missing how what you describe is relevant to this patchset and to
+>> the issue it is trying to solve :/ 
+>> 
+>>> I agree that reordering is a good idea but not as a fix, and hopefully  
+>> 
+>> I don't see other way to fix the netdev/devlink events ordering problem
+>> I described above. Do you?
 >
->It looks like this could be setting up a race condition that some userland
->udev automation might hit if it notices the device, looks for the port, but
->doesn't see the port yet.  Leon's patch turned this around so that the ports
->would show up at the same time as the device.
+>Just hold off with your patches until I post mine. Which as I said will
+>be during/after the merge window. I've been explaining this for a year now.
 
-Any userland automation should not rely on that. Ports may come and go
-with the current code as well, see port split/unsplit, linecard
-provision unprovision.
+Sure, no problem.
