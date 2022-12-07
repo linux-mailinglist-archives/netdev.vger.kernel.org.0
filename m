@@ -2,82 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30170645A79
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:10:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C651645A7E
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiLGNKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 08:10:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45432 "EHLO
+        id S229640AbiLGNNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 08:13:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbiLGNKr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:10:47 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0121C56543
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:10:45 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id x22so13810540ejs.11
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 05:10:45 -0800 (PST)
+        with ESMTP id S229437AbiLGNNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:13:35 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF5B50D5C;
+        Wed,  7 Dec 2022 05:13:34 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id e13so24797510edj.7;
+        Wed, 07 Dec 2022 05:13:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ou3Fk2Irg7eK6b3UgZwKC8kZv42UyPRCF5b6cACD0ek=;
-        b=EOcoZ2gqOYri3OdNf2eWcBugPym4istQe0643ZN2qwHGnqbETuuiTVNmINAfKvTCAq
-         +bDAXaLNv7TsiPwYbOLR2UJBEm9gFa9eXl+NP+KWr5NaS/hUrKHZMfHBRQBaseneJRL8
-         yJLmPKL3nt4+fS0kqHPKwIqyN1kXr8OQCEjjcrslq9b331+DsFCgwFxsSaiTzGGUuJzN
-         qVLohUxswngg5r4Px4ggawMda66lbEyfSz3BDmQQ5j6XAiOVHtfv3TDLToZNUkGFI21L
-         zEHiHNG17eoWeLIZdp1VUcwGX2Z/31FqfO/t7QXvC793WwnmWVDX0+TzAPvd0i+fxtw2
-         eaBw==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=KIJTn6uf5ipjBKv9CY5vtV1Hkp+oVF6IKDi1Z1ze17U=;
+        b=VMJLjAN+QCvNePbdKUldGx4XeyoaC26IemMCfR80C0u4Il56h62+63la6BndXvHG+u
+         7EFhxaqVTPyvlxk3lLlUG+/FX7te2J6nWv7N/IRi3n0hyk1TVEh3PbjvFSbTJVRH5FIm
+         204Ws5Xo2Cm/3UvrVgpnoXIMAWUTMpv3AtBphjio4u6wQfioOOTisL0AiwHy3GOX+vy2
+         6i4sCSCtAtkfYi8/YwjLxg8G/HjwLZSPch5/0hxlPEc0axnRMGgxipmWLznIIEdze2AA
+         6YX6ZXqjDvsYNHc9UQHlg5MTbCsnj26iYo8WT9M7KuUZu1F6Tuj77clfbPx+a5IxQMk5
+         m8TA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ou3Fk2Irg7eK6b3UgZwKC8kZv42UyPRCF5b6cACD0ek=;
-        b=iktguCycWSe5UvnPH5GdQGuxWprnZ2ZjXytZgqN0qbEblgWjYOZU0nfdSdY21g8+Su
-         lML+QPp1kug84rl0zSqYpub9pqmo0Lx7Dg1PRCiM8HuOI8jIVve+OqhW756vdHbpPzcI
-         F9Xi5i232M0Lwo4Z9j/fa3Jwkp4K0wZG/z3xh3albdEkpFLqhYDIrwznbvdR7pLGWrt3
-         zpQmc7koKwA7wHenytgTKBw/Qy7jwTWwBOktHpujfUSJUoSCVf1Env7ouBRE3F1PXSoO
-         06uZwlnxg/BVqAKw5hSyezg0lVNvh7oP35NDCB9dmhwEweZeuIeH0CN0zp8v2GMUqfU/
-         z0wg==
-X-Gm-Message-State: ANoB5pnQlMxxDF+vyc+Wj9KGTV3rwxRphrqV31HOt0YzqDlJJFdH3JXT
-        Hj2EXlSJgef+FP6af/VPrYILHg==
-X-Google-Smtp-Source: AA0mqf4C2loeS6wG8nSTXbNYNX13ovAzfSYxgB9gpooa66WdeXRavQ7+9LKyrDQmomGPeGEgLzuLaQ==
-X-Received: by 2002:a17:906:bc4a:b0:7c0:eb36:5225 with SMTP id s10-20020a170906bc4a00b007c0eb365225mr12713164ejv.229.1670418644424;
-        Wed, 07 Dec 2022 05:10:44 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id r1-20020a1709061ba100b00779a605c777sm8488129ejg.192.2022.12.07.05.10.43
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KIJTn6uf5ipjBKv9CY5vtV1Hkp+oVF6IKDi1Z1ze17U=;
+        b=tLnGOdzAxDiF+AxeH6EWMPkPgV0oGzQS9emooVImmFIWIKGqx7fUkETg30LV2LYi7a
+         udDbC3kJuyOm700Wlr22hbEJZiHzf2WETZpmlzGcu6a2Fdatz/3MgcSfMf43N3Lr+FUh
+         vuIpicBjp5mkQw55d/mLYHhdPZW1JD2JQ8NCko8X2X3D/2dVNLtyRv9mhhr8FLsG1nFH
+         7hi8SyXGyCgskwz3TFo4wHHhGhh/Cw0hjzpphyK/BDGPEJNuFxAgcXQh5deqyM7njTvB
+         roDEmRTiaKUIqOysZOO609Jy2jZH3bYbLzGqZV6nJnUrpBxL3sBtVX/0jfE3Gr9/YaPb
+         XZmQ==
+X-Gm-Message-State: ANoB5pnwbVUUFwDTflapq7wNNFomMuY4hQ4GdFaMGWFzRwn7eyBWBo4N
+        JswfTJ1ywiuM5KCFTb1er/U=
+X-Google-Smtp-Source: AA0mqf5dEGRQGRPIJU+djVze2ytX4k7QuRVTwoOo+q8OUe7Dpgl3TXGIbeQddai1A9gh6sueqqq3ng==
+X-Received: by 2002:a05:6402:2993:b0:462:845:ba98 with SMTP id eq19-20020a056402299300b004620845ba98mr1778270edb.12.1670418813147;
+        Wed, 07 Dec 2022 05:13:33 -0800 (PST)
+Received: from skbuf ([188.26.184.215])
+        by smtp.gmail.com with ESMTPSA id dk21-20020a0564021d9500b0045723aa48ccsm2176388edb.93.2022.12.07.05.13.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 05:10:43 -0800 (PST)
-Date:   Wed, 7 Dec 2022 14:10:42 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vadim Fedorenko <vadfed@fb.com>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        "Olech, Milena" <milena.olech@intel.com>,
-        "Michalik, Michal" <michal.michalik@intel.com>
-Subject: Re: [RFC PATCH v4 2/4] dpll: Add DPLL framework base functions
-Message-ID: <Y5CQ0qddxuUQg8R8@nanopsycho>
-References: <Y4eGxb2i7uwdkh1T@nanopsycho>
- <DM6PR11MB4657DE713E4E83E09DFCFA4B9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
- <Y4nyBwNPjuJFB5Km@nanopsycho>
- <DM6PR11MB4657C8417DEB0B14EC35802E9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
- <Y4okm5TrBj+JAJrV@nanopsycho>
- <20221202212206.3619bd5f@kernel.org>
- <Y43IpIQ3C0vGzHQW@nanopsycho>
- <20221205161933.663ea611@kernel.org>
- <Y48CS98KYCMJS9uM@nanopsycho>
- <20221206092705.108ded86@kernel.org>
+        Wed, 07 Dec 2022 05:13:32 -0800 (PST)
+Date:   Wed, 7 Dec 2022 15:13:30 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Jonas Gorski <jonas.gorski@gmail.com>
+Subject: Re: [PATCH 5/5] powerpc: dts: remove label = "cpu" from DSA
+ dt-binding
+Message-ID: <20221207131330.pehewfwmr6pv2sln@skbuf>
+References: <20221130141040.32447-1-arinc.unal@arinc9.com>
+ <20221130141040.32447-6-arinc.unal@arinc9.com>
+ <87a647s8zg.fsf@mpe.ellerman.id.au>
+ <20221201173902.zrtpeq4mkk3i3vpk@pali>
+ <20221201234400.GA1692656-robh@kernel.org>
+ <20221202193552.vehqk6u53n36zxwl@pali>
+ <20221204185924.a4q6cifhpyxaur6f@skbuf>
+ <84ce6297-5aff-4d6e-8d31-da3f25dc8690@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20221206092705.108ded86@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <84ce6297-5aff-4d6e-8d31-da3f25dc8690@arinc9.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,27 +85,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Dec 06, 2022 at 06:27:05PM CET, kuba@kernel.org wrote:
->On Tue, 6 Dec 2022 09:50:19 +0100 Jiri Pirko wrote:
->>> Yeah, that's a slightly tricky one. We'd probably need some form 
->>> of second order association. Easiest if we link it to a devlink
->>> instance, I reckon. The OCP clock card does not have netdevs so we
->>> can't follow the namespace of netdevs (which would be the second
->>> option).  
->> 
->> Why do we need this association at all?
->
->Someone someday may want netns delegation and if we don't have the
->support from the start we may break backward compat introducing it.
+On Mon, Dec 05, 2022 at 10:15:16PM +0300, Arınç ÜNAL wrote:
+> As Jonas (on CC) pointed out, I only see this being used in the swconfig b53
+> driver which uses the label to identify the cpu port.
+> 
+> https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=target/linux/generic/files/drivers/net/phy/b53/b53_common.c;h=87d731ec3e2a868dc8389f554b1dc9ab42c30be2;hb=HEAD#l1508
+> 
+> Maybe this got into DSA dt-bindings unchecked before it was decided to move
+> forward with DSA instead of swconfig on Linux.
 
-Hmm. Can you imagine a usecase?
-
-Link to devlink instance btw might be a problem. In case of mlx5, one
-dpll instance is going to be created for 2 (or more) PFs. 1 per ConnectX
-ASIC as there is only 1 clock there. And PF devlinks can come and go,
-does not make sense to link it to any of them.
-
-Thinking about it a bit more, DPLL itself has no network notion. The
-special case is SyncE pin, which is linked to netdevice. Just a small
-part of dpll device. And the netdevice already has notion of netns.
-Isn't that enough?
+Yes, but swconfig is not DSA and their bindings are not compatible
+anyway (swconfig lacks an ethernet = <&phandle> property that would
+allow DSA to work). Still waiting for Pali to clarify what he had in mind.
