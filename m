@@ -2,73 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE22645AB2
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:21:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 483CB645AC5
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:23:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbiLGNVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 08:21:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
+        id S229929AbiLGNXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 08:23:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiLGNVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:21:14 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028A01408A;
-        Wed,  7 Dec 2022 05:21:12 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id kw15so10491512ejc.10;
-        Wed, 07 Dec 2022 05:21:11 -0800 (PST)
+        with ESMTP id S229952AbiLGNXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:23:40 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E08421A9;
+        Wed,  7 Dec 2022 05:23:38 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id t17so13995103eju.1;
+        Wed, 07 Dec 2022 05:23:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Oue94+Ik3eRv7cdb5g71pdk/j0xTlBWe2Mf1/zKEImI=;
-        b=H3muc0jE053evwd95r//iMIDA0r9fh85T9SrJO9RMnfjaaEilI02fYT4y90uKCrER9
-         cch1B/7qotOMQdGfCRcEGmnN6G/EN4l0hbiBeQdpHo03hYA5BWdJJGK/9P/6hUSYeRyO
-         mdaaD5HU2eJAAwaaTR1hkHujW+FfZP3Yxy/848qutO6K4k9uY93UwU5jxNAOXaxze/bV
-         ZgsSXeLP3eC4qEuJuQoPksZWxe4zAjv/xRNKZ3TdIEq+dkoy4ovMGVdCSpA99rdTpUR4
-         rz+tH7eLvAfIII7Boq79rPmEljRGJET7lhoKn6mh7hrIZxvSlu5zsl6+xJXTbLsVKqYg
-         LE0g==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VK4oX/zlkDf1Sawu/Y3PEllktpoDkp3XrcBiUizrnfE=;
+        b=BQXt8tbxEISTzk4tvDnUXevwzxf8kyTmV+G3AwWllACrMHNBNxgOujQrnwRhBY4SBA
+         9evguVLnCzaOcQMmApuT1GzbPR55M1zsDMSsLOdyB4S1IZQTy1N9tcOr4SWVLCHOK7z0
+         adzfrOosp01BpE08C2ZstemQyr9taEqfmkwBiyL570jaEQ1i3ZFGK94ZgJc6/Fk0cizv
+         TmhR402UgHlZeAgb8C/L64cDYNEmx210LsleK7YV9D/G4lS5J2k+sP/vGrTxtizSw/MY
+         8yOQlgmdgGJpux3ScytALgyhL/aHbmiu0M3BId55eRaaWxkAht7fdx9223SQNpJAKP1D
+         C5DA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Oue94+Ik3eRv7cdb5g71pdk/j0xTlBWe2Mf1/zKEImI=;
-        b=fSfL5k8hKav5R/5WU9VKUjVHu6s5xnUpmHCGfGvZkgM4j4PySCxO90ZNZVYXArZUsw
-         vDv72OlKCLSS3Hw8VMnEt36rVbVU9s+P/hN0QHJ8uzk14FHU4KqWa0Cd/mlG2NeEy61S
-         KwQwLgMdEgewd3iS/CMe60u0Cj74p2NjQ+86ucDqiObHvEUErkuVeZILb+hLzAMU6rij
-         M9p9CSEOMzjEtCyhONUT+Zg2OtPzrae/DjRCrEy+ti7o1onPsVIQtBXYyLhvlPe2gskE
-         Vd/D9GwtD4kgItNwerv7U61KRudZe62OZ51y6Tz5E9mLD9hBRaVyXULri8Nq1/SMpwkW
-         3SWA==
-X-Gm-Message-State: ANoB5pn66qITppXnUXJxsnUOy23HSPFJZ1IRjxvWP3pmkSL5WSOvjVGf
-        nnxoZSr4EJv40smyauwNUdE=
-X-Google-Smtp-Source: AA0mqf4kelmdfcsQEqZDqeJZLIam9TGWR0kzr38FgakyfUf+P2hxBMT1ddbfCFpEA7BpInWYnYFMYA==
-X-Received: by 2002:a17:907:c296:b0:78d:fd4e:5da6 with SMTP id tk22-20020a170907c29600b0078dfd4e5da6mr341117ejc.26.1670419270531;
-        Wed, 07 Dec 2022 05:21:10 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VK4oX/zlkDf1Sawu/Y3PEllktpoDkp3XrcBiUizrnfE=;
+        b=Amohtw3DdtecvPHqVOXcxGkNGICEqFg93gU8j6maYz+wXyJSxQ2cy5q19tuLwqAkB5
+         SD5Yc4xOQ+1MG6bbmDhupwzD3jdfXJaVxp2XLQ9nbC+BKUNlEW6ksgCFW+hLY5IEd94C
+         TNelRI9jEItGSv0mFvxAXvjsxApohFk9K91m7c5EbxNjDqLxcn+5emuys+McF1BIYg9Y
+         QpOzipDNt2LceLQrGzqCd/iEyGLTo1cedrHkrRpJQz9Khj3nO1/UK2iekN3O8AP2uNKe
+         ZM+vKUJ4AmoYyE4tUcwUTrsZLyQ49njchuEBdHmVEV6Vjn1FD73gwzzxGU7q9HoVaE9E
+         jFvQ==
+X-Gm-Message-State: ANoB5pkur19vDxYqSuh4OIBugO2sW+KkKcILoU29DBMlda1LS+eVZYmx
+        nuwyxuNd9G2CCTnIFa3RkqQ=
+X-Google-Smtp-Source: AA0mqf6OP9dplKn8vk3d31E1D/DuZQneONai1DCAFEVM3G/XqrLE0T5AJ40R8zx6Uo0RZl+mLVkEhg==
+X-Received: by 2002:a17:906:b19a:b0:7ad:bc7e:3ffd with SMTP id w26-20020a170906b19a00b007adbc7e3ffdmr388025ejy.42.1670419417276;
+        Wed, 07 Dec 2022 05:23:37 -0800 (PST)
 Received: from skbuf ([188.26.184.215])
-        by smtp.gmail.com with ESMTPSA id vk2-20020a170907cbc200b007bf5250b515sm8535888ejc.29.2022.12.07.05.21.09
+        by smtp.gmail.com with ESMTPSA id i16-20020a170906251000b007c10fe64c5dsm1693265ejb.86.2022.12.07.05.23.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 05:21:10 -0800 (PST)
-Date:   Wed, 7 Dec 2022 15:21:07 +0200
+        Wed, 07 Dec 2022 05:23:36 -0800 (PST)
+Date:   Wed, 7 Dec 2022 15:23:33 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Rakesh.Sankaranarayanan@microchip.com
-Cc:     kuba@kernel.org, andrew@lunn.ch, davem@davemloft.net,
-        Woojung.Huh@microchip.com, linux-kernel@vger.kernel.org,
-        f.fainelli@gmail.com, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, edumazet@google.com,
-        pabeni@redhat.com, Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [RFC Patch net-next 3/5] net: dsa: microchip: add eth mac
- grouping for ethtool statistics
-Message-ID: <20221207132107.3lefphupzpty4uoa@skbuf>
+To:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [RFC Patch net-next 1/5] net: dsa: microchip: add rmon grouping
+ for ethtool statistics
+Message-ID: <20221207132333.tw3ztzfgo7i3cf5x@skbuf>
 References: <20221130132902.2984580-1-rakesh.sankaranarayanan@microchip.com>
- <20221130132902.2984580-4-rakesh.sankaranarayanan@microchip.com>
- <20221201200230.0f1054fe@kernel.org>
- <6c1a53a825bee2b22f7e532885e6e777685c0726.camel@microchip.com>
+ <20221130132902.2984580-2-rakesh.sankaranarayanan@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6c1a53a825bee2b22f7e532885e6e777685c0726.camel@microchip.com>
+In-Reply-To: <20221130132902.2984580-2-rakesh.sankaranarayanan@microchip.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -79,27 +75,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 02, 2022 at 11:53:33AM +0000, Rakesh.Sankaranarayanan@microchip.com wrote:
-> Hi Jakub,
-> 
-> Thanks for the review comment.
-> 
-> On Thu, 2022-12-01 at 20:02 -0800, Jakub Kicinski wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you
-> > know the content is safe
-> > 
-> > On Wed, 30 Nov 2022 18:59:00 +0530 Rakesh Sankaranarayanan wrote:
-> > > +     mac_stats->FramesTransmittedOK = ctr[ksz9477_tx_mcast] +
-> > > +                                      ctr[ksz9477_tx_bcast] +
-> > > +                                      ctr[ksz9477_tx_ucast] +
-> > > +                                      ctr[ksz9477_tx_pause];
-> > 
-> > do control frames count towards FramesTransmittedOK?
-> > Please check the standard I don't recall.
-> > 
-> Yeah, I will check with the documentation.
+On Wed, Nov 30, 2022 at 06:58:58PM +0530, Rakesh Sankaranarayanan wrote:
+> diff --git a/drivers/net/dsa/microchip/ksz_ethtool.c b/drivers/net/dsa/microchip/ksz_ethtool.c
+> new file mode 100644
+> index 000000000000..7e1f1b4d1e98
+> --- /dev/null
+> +++ b/drivers/net/dsa/microchip/ksz_ethtool.c
+> @@ -0,0 +1,178 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Microchip KSZ series ethtool statistics
+> + *
+> + * Copyright (C) 2022 Microchip Technology Inc.
+> + */
+> +
+> +#include "ksz_common.h"
+> +#include "ksz_ethtool.h"
+> +
+> +enum ksz8_mib_entry {
+> +	ksz8_rx,
+> +	ksz8_rx_hi,
+> +	ksz8_rx_undersize,
+> +	ksz8_rx_fragments,
+> +	ksz8_rx_oversize,
+> +	ksz8_rx_jabbers,
+> +	ksz8_rx_symbol_err,
+> +	ksz8_rx_crc_err,
+> +	ksz8_rx_align_err,
+> +	ksz8_rx_mac_ctrl,
+> +	ksz8_rx_pause,
+> +	ksz8_rx_bcast,
+> +	ksz8_rx_mcast,
+> +	ksz8_rx_ucast,
+> +	ksz8_rx_64_or_less,
+> +	ksz8_rx_65_127,
+> +	ksz8_rx_128_255,
+> +	ksz8_rx_256_511,
+> +	ksz8_rx_512_1023,
+> +	ksz8_rx_1024_1522,
+> +	ksz8_tx,
+> +	ksz8_tx_hi,
+> +	ksz8_tx_late_col,
+> +	ksz8_tx_pause,
+> +	ksz8_tx_bcast,
+> +	ksz8_tx_mcast,
+> +	ksz8_tx_ucast,
+> +	ksz8_tx_deferred,
+> +	ksz8_tx_total_col,
+> +	ksz8_tx_exc_col,
+> +	ksz8_tx_single_col,
+> +	ksz8_tx_mult_col,
+> +	ksz8_rx_discards = 0x100,
+> +	ksz8_tx_discards,
+> +};
+> +
+> +enum ksz9477_mib_entry {
+> +	ksz9477_rx_hi,
+> +	ksz9477_rx_undersize,
+> +	ksz9477_rx_fragments,
+> +	ksz9477_rx_oversize,
+> +	ksz9477_rx_jabbers,
+> +	ksz9477_rx_symbol_err,
+> +	ksz9477_rx_crc_err,
+> +	ksz9477_rx_align_err,
+> +	ksz9477_rx_mac_ctrl,
+> +	ksz9477_rx_pause,
+> +	ksz9477_rx_bcast,
+> +	ksz9477_rx_mcast,
+> +	ksz9477_rx_ucast,
+> +	ksz9477_rx_64_or_less,
+> +	ksz9477_rx_65_127,
+> +	ksz9477_rx_128_255,
+> +	ksz9477_rx_256_511,
+> +	ksz9477_rx_512_1023,
+> +	ksz9477_rx_1024_1522,
+> +	ksz9477_rx_1523_2000,
+> +	ksz9477_rx_2001,
+> +	ksz9477_tx_hi,
+> +	ksz9477_tx_late_col,
+> +	ksz9477_tx_pause,
+> +	ksz9477_tx_bcast,
+> +	ksz9477_tx_mcast,
+> +	ksz9477_tx_ucast,
+> +	ksz9477_tx_deferred,
+> +	ksz9477_tx_total_col,
+> +	ksz9477_tx_exc_col,
+> +	ksz9477_tx_single_col,
+> +	ksz9477_tx_mult_col,
+> +	ksz9477_rx_total = 0x80,
+> +	ksz9477_tx_total,
+> +	ksz9477_rx_discards,
+> +	ksz9477_tx_discards,
+> +};
 
-Oleksij said that the hardware counts pause frames for the byte
-counters, so at least for consistency, they should be counted in frame
-counters too.
-https://patchwork.kernel.org/project/netdevbpf/patch/20221205052904.2834962-1-o.rempel@pengutronix.de/
+We usually name constants using all capitals.
+
+Can you do something to reuse the ksz_mib_names structures?
