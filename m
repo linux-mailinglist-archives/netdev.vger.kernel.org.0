@@ -2,65 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78397646510
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 00:28:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E22FF646513
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 00:28:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiLGX2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 18:28:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41092 "EHLO
+        id S230090AbiLGX2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 18:28:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiLGX2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 18:28:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B995089AF4;
-        Wed,  7 Dec 2022 15:28:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D87BB82194;
-        Wed,  7 Dec 2022 23:28:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92149C433D7;
-        Wed,  7 Dec 2022 23:28:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670455696;
-        bh=lTnduRhi6AJ1bKCZCzLAjjxfjNoQ64rLfod75d7qxMQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HhETiRr6Gk1uY6kkRdQOr+MhsEzUYpb3zlvsEfujqPVg8b4r6ldGU3cWKvh79M+fL
-         3yxLLqJ1cRq3h6F6+qLpft0X00Cy+IsNPFW7P6awMDFIl9uoYwGAXnMoWHXh6DR9fJ
-         U70HMb/8C+QyllHv3373FtxF2jrQ6t/XosMJ0BP5eYb4g9WQM4rkk9zc1gfotIy9PV
-         2HcTe4/K2nn+kl9NpsNUyb6OmuNj8ts4NfgM/hKWjEtYVd8KGtzzrASxyzmPQS5fNO
-         gsIwf60OnVZ6bC1oZINxb0DJfLl4LjP/YkVhA2xGqS7fmEXcYGlpwVSfrae1VYhMzH
-         vMwAQPC6Dxspg==
-Date:   Wed, 7 Dec 2022 15:28:14 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <yang.yang29@zte.com.cn>
-Cc:     <edumazet@google.com>, <davem@davemloft.net>, <pabeni@redhat.com>,
-        <bigeasy@linutronix.de>, <imagedong@tencent.com>,
-        <kuniyu@amazon.com>, <petrm@nvidia.com>, <liu3101@purdue.edu>,
-        <wujianguo@chinatelecom.cn>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <tedheadster@gmail.com>
-Subject: Re: [PATCH linux-next] net: record times of netdev_budget exhausted
-Message-ID: <20221207152814.2aa324d8@kernel.org>
-In-Reply-To: <202212071617323068233@zte.com.cn>
-References: <CANn89iKqb64sLT2r+2YrpDyMfZ8T6z2Ygtby-ruVNNYvniaV0g@mail.gmail.com>
-        <202212071617323068233@zte.com.cn>
+        with ESMTP id S230036AbiLGX2g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 18:28:36 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B3F89AC7;
+        Wed,  7 Dec 2022 15:28:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1670455715; x=1701991715;
+  h=from:to:subject:date:message-id:mime-version;
+  bh=qz5rae1Q2S/l+fQL4xiiI1frvBOmHUOqX0qK9BuuZEs=;
+  b=ucCf8/vqWCxwXijYIY1pwALnWWOsibsxPR7OAuAjRoGBmxNyqaf6WcBc
+   xVewE9oKy23GDZT/9v6FDz73fkCEU9joYV9Yvu5iaFrFsxJLIzViahs3e
+   j/UacuLdCZmhoW6JTyTGyR7fHTi1zLaupOuCGXQlrz4TVvIBB2g8YbvOv
+   5JStBHGEdfaiPcFpqbh8J/gdAdrWo4uvBs5qtkSzBJfWIMj0kOtsBBwqM
+   bz36ihkwLxFbs5xO7xEjNnG6P+enRYSFlDtxPOn7vBlts7WFtSNzQjDVs
+   BMbc/h4mxon1cs0q9UpwRVaYin7EjW1tNXIPVo2AajJfvwEbhgDzAppTp
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,226,1665471600"; 
+   d="scan'208";a="127028534"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2022 16:28:34 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 7 Dec 2022 16:28:29 -0700
+Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 7 Dec 2022 16:28:28 -0700
+From:   Jerry Ray <jerry.ray@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
+        Jerry Ray <jerry.ray@microchip.com>
+Subject: [PATCH net-next v4 0/2] dsa: lan9303: Move to PHYLINK
+Date:   Wed, 7 Dec 2022 17:28:26 -0600
+Message-ID: <20221207232828.7367-1-jerry.ray@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Dec 2022 16:17:32 +0800 (CST) yang.yang29@zte.com.cn wrote:
-> > We prefer not changing /proc file format as much as we can, they are
-> > deprecated/legacy.  
-> 
-> Should we add some explain of the deprecation in code or doc?
-> As it's deprecated, I think it's NAK for this patch.
+This patch series moves the lan9303 driver to use the phylink
+api away from phylib.
 
-Correct, it is a NAK.
+Note a preparatory patch addresses whitespace issues to make the
+dsa_switch_ops code consistent.
+
+Note the .port_max_mtu api patch is now removed from this series.  It
+was unrelated and has little to no value if the api is never being
+called for the cpu port.
+
+Migrating to phylink means removing the .adjust_link api. The
+functionality from the adjust_link is moved to the phylink_mac_link_up
+api.  The code being removed only affected the cpu port.
+
+---
+v3-> v4:
+  - Addressed whitespace issues as a separate patch.
+  - Removed port_max_mtu api patch as it is unrelated to phylink migration.
+  - Reworked the implementation to preserve the adjust_link functionality
+    by including it in the phylink_mac_link_up api.
+
+v2-> v3:
+  Added back in disabling Turbo Mode on the CPU MII interface.
+  Removed the unnecessary clearing of the phyvsupported interfaces.
+v1-> v2:
+  corrected the reported mtu size, removing ETH_HLEN and ETH_FCS_LEN
+
+ drivers/net/dsa/lan9303-core.c | 93 ++++++++++++--------
+ 1 file changed, 56 insertions(+), 37 deletions(-)
+
