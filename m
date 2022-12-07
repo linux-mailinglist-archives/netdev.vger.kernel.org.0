@@ -2,89 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D831564598E
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:00:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C2F64599C
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:07:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbiLGMAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 07:00:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34272 "EHLO
+        id S229671AbiLGMH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 07:07:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbiLGMAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:00:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA356152;
-        Wed,  7 Dec 2022 04:00:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229565AbiLGMH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:07:27 -0500
+Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22882496D;
+        Wed,  7 Dec 2022 04:07:23 -0800 (PST)
+Received: from [192.168.1.62] (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9E9E6151B;
-        Wed,  7 Dec 2022 12:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F0856C4314A;
-        Wed,  7 Dec 2022 12:00:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670414417;
-        bh=wTplOzez9AR5etPwMVDNyWyYGeCbRtsDqhvi5w63gpQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uGcNkYLIjfbzXlC9L6HhoSvuI6PR2CZ9LDxT+jDw3ExIBCq8AdeYT9jWsYN37Clh/
-         rZa+i01F367jnBcb9fSDzsevRy3/uvylL4EScmvHyzSp054ofuUMYvtsOVGEeK3S0W
-         28Gg2rCSNM4/1c7WymtPE4V6Js0Mxk2GusUF1euFdMoesC2jDz1M6889Rievowvhd1
-         fquoZjAA6tFzrNu+C9AKSLwqbwsWRCOeaEufclyxfZQemLcj5In0dcEfWX2Ap2XTsl
-         rjnzD1p2ry6nOs70UCpA1gB67gPBxEaWvEqkN5rNmqT8MmSCJ9a7aE5pSegKI3yoht
-         YtkdkhVBsj6yw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CDBCAE49BBD;
-        Wed,  7 Dec 2022 12:00:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id DF66D200CCF8;
+        Wed,  7 Dec 2022 13:07:18 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be DF66D200CCF8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1670414839;
+        bh=5BPTayxXRKqAAhE8zhDQCIMNiD7/wo2T8VQlB/f5FTQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=rd6a3yWsoYfRcH3jma8SeGW/Wr5UXWC3W1zK4pNiSqWpnXTJ9xU2wV/hr6XYbp8K6
+         qxdFaiHCLPqZU81vhWRMQPhX8nk/vHr7FVp29+uYvSd+mqdOmPUIsKHyoU3S0ZC8rP
+         lgQGntf3yZn4uAx2inOy/XW6MbRUmTCpUbEhQxqihvQNswq/49rloQ2dltkuUuoKKK
+         AvSRE6bORNM3l8egkR1ol+TDmRfpOb7nQ3OdPK0hQIBtVMFRwOxJ48MG/4Icl2ONKS
+         aOoixDWRfdAAyeyOeNdz8wouHfcPguqwNQ0UDLNiOn4QktHrz6SDA1Dz10/33PBImY
+         q9L/+LqHxYpTA==
+Message-ID: <1328d117-70b5-b03c-c0be-cd046d728d53@uliege.be>
+Date:   Wed, 7 Dec 2022 13:07:18 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next Patch v4 0/4] CN10KB MAC block support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167041441683.7994.13511760581149404295.git-patchwork-notify@kernel.org>
-Date:   Wed, 07 Dec 2022 12:00:16 +0000
-References: <20221205070521.21860-1-hkelam@marvell.com>
-In-Reply-To: <20221205070521.21860-1-hkelam@marvell.com>
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, sgoutham@marvell.com, lcherian@marvell.com,
-        gakula@marvell.com, jerinj@marvell.com, sbhatta@marvell.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue
+ depth data field")
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        pabeni@redhat.com, stable@vger.kernel.org
+References: <20221205153557.28549-1-justin.iurman@uliege.be>
+ <CANn89iLjGnyh0GgW_5kkMQJBCi-KfgwyvZwT1ou2FMY4ZDcMXw@mail.gmail.com>
+ <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com>
+ <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
+ <CANn89iKgeVFRAstW3QRwOdn8SV_EbHqcKYqmoWT6m5nGQwPWUg@mail.gmail.com>
+ <d579c817-50c7-5bd5-4b28-f044daabf7f6@uliege.be>
+ <20221206124342.7f429399@kernel.org>
+From:   Justin Iurman <justin.iurman@uliege.be>
+In-Reply-To: <20221206124342.7f429399@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Mon, 5 Dec 2022 12:35:17 +0530 you wrote:
-> OcteonTx2's next gen platform the CN10KB has RPM_USX MAC which has a
-> different serdes when compared to RPM MAC. Though the underlying
-> HW is different, the CSR interface has been designed largely inline
-> with RPM MAC, with few exceptions though. So we are using the same
-> CGX driver for RPM_USX MAC as well and will have a different set of APIs
-> for RPM_USX where ever necessary.
+On 12/6/22 21:43, Jakub Kicinski wrote:
+> On Mon, 5 Dec 2022 21:44:09 +0100 Justin Iurman wrote:
+>>> Please revert this patch.
+>>>
+>>> Many people use FQ qdisc, where packets are waiting for their Earliest
+>>> Departure Time to be released.
+>>
+>> The IOAM queue depth is a very important value and is already used.
 > 
-> [...]
+> Can you say more about the use? What signal do you derive from it?
+> I do track qlen on Meta's servers but haven't found a strong use
+> for it yet (I did for backlog drops but not the qlen itself).
 
-Here is the summary with links:
-  - [net-next,v4,1/4] octeontx2-af: Support variable number of lmacs
-    https://git.kernel.org/netdev/net-next/c/f2e664ad503d
-  - [net-next,v4,2/4] octeontx2-af: cn10kb: Add RPM_USX MAC support
-    https://git.kernel.org/netdev/net-next/c/b9d0fedc6234
-  - [net-next,v4,3/4] octeontx2-pf: ethtool: Implement get_fec_stats
-    (no matching commit)
-  - [net-next,v4,4/4] octeontx2-af: Add FEC stats for RPM/RPM_USX block
-    https://git.kernel.org/netdev/net-next/c/84ad3642115d
+The specification goal of the queue depth was initially to be able to 
+track the entire path with a detailed view for packets or flows (kind of 
+a zoom on the interface to have details about its queues). With the 
+current definition/implementation of the queue depth, if only one queue 
+is congested, you're able to know it. Which doesn't necessarily mean 
+that all queues are full, but this one is and there might be something 
+going on. And this is something operators might want to be able to 
+detect precisely, for a lot of use cases depending on the situation. On 
+the contrary, if all queues are full, then you could deduce that as well 
+for each queue separately, as soon as a packet is assigned to it. So I 
+think that with "queue depth = sum(queues)", you don't have details and 
+you're not able to detect a single queue congestion, while with "queue 
+depth = queue" you could detect both. One might argue that it's fine to 
+only have the aggregation in some situation. I'd say that we might need 
+both, actually. Which is technically possible (even though expensive, as 
+Eric mentioned) thanks to the way it is specified by the RFC, where some 
+freedom was intentionally given. I could come up with a solution for that.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>>> Also, the draft says:
+>>>
+>>> 5.4.2.7.  queue depth
+>>>
+>>>      The "queue depth" field is a 4-octet unsigned integer field.  This
+>>>      field indicates the current length of the egress interface queue of
+>>>      the interface from where the packet is forwarded out.  The queue
+>>>      depth is expressed as the current amount of memory buffers used by
+>>>      the queue (a packet could consume one or more memory buffers,
+>>>      depending on its size).
+>>>
+>>>       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+>>>      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+>>>      |                       queue depth                             |
+>>>      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+>>>
+>>>
+>>> It is relatively clear that the egress interface is the aggregate
+>>> egress interface,
+>>> not a subset of the interface.
+>>
+>> Correct, even though the definition of an interface in RFC 9197 is quite
+>> abstract (see the end of section 4.4.2.2: "[...] could represent a
+>> physical interface, a virtual or logical interface, or even a queue").
+>>
+>>> If you have 32 TX queues on a NIC, all of them being backlogged (line rate),
+>>> sensing the queue length of one of the queues would give a 97% error
+>>> on the measure.
+>>
+>> Why would it? Not sure I get your idea based on that example.
+> 
+> Because it measures the length of a single queue not the device.
 
+Yep, I figured that out after the off-list discussion we've had with Eric.
 
+So my plan would be, if you all agree with, to correct and repost this 
+patch to fix the NULL qdisc issue. Then, I'd come with a solution to 
+allow both (with and without aggregation of queues) and post it on 
+net-next. But again, if the consensus is to revert this patch (which I 
+think would bring no benefit IMHO), then so be it. Thoughts?
