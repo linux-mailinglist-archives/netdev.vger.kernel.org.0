@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB9BF6454D6
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 08:49:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B0F36454FA
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 08:56:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229677AbiLGHtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 02:49:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41034 "EHLO
+        id S229896AbiLGH45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 02:56:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiLGHtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 02:49:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195902F392
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 23:49:09 -0800 (PST)
+        with ESMTP id S229640AbiLGH4u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 02:56:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5ABC303E9
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 23:56:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8D61B8013C
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 07:49:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2361C433C1;
-        Wed,  7 Dec 2022 07:49:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38ED760A39
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 07:56:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A558C433D6;
+        Wed,  7 Dec 2022 07:56:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670399346;
-        bh=bB6My/PRtokI7IVPufQQ2Xl/5LAQPJjFYUdcYuhJaA0=;
+        s=k20201202; t=1670399808;
+        bh=w0x+p26eGSVWfPaOAVMcn9rzf/NKP4LFWsEPsRiCqQg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sb+MrucsnffmrCIwayDRCJ4EMRBLh7Qwd6rPcLjbNJJn1T7EWonTgMgiTJM83Wyit
-         haX6vw/EuWmbBb4RW63HKDCHRpKOQgQUM4ZsHZiSxwi4e7EDYLdOSaPIkIimWlm1P8
-         ygS/CG7K5UMjMVdeMB1r3j1YpconHX64m8gftKMaGkgnzC/f2pD+vzvicx/BN1JEuA
-         FNsnsWJo7lX21/8BTuW9FTMNltrSGEcNwPYy1OFSzy0dQ6R1PvQSOr7yi9aaA5lNnE
-         sJkFH4cLmXLWQdnIaPHxSY0PzPKD7w8rgpVfI//wzgiE9Hu/NmmLLZLSTjDia3ki23
-         UQjQqJOblz3fw==
-Date:   Wed, 7 Dec 2022 09:49:01 +0200
+        b=PjI/z0XAecuj1FOswH7yUC67gS6GLtcQuKS8gTpoFq2v9xB0Uyi7wt5CQf2H4p0U7
+         9NZ8oHMFS+I6XPqIybp/PnVWC2zWHs3JiMpFd4jLKTY9bAs+VhRci1MPUxTAKIao4e
+         PDCpuBz70M0bwacXJ4GvqRukfecTHTQkhUzuKy5KhgipSDLeuurHorpKSJEHLe4QrA
+         HDr/hLbxyUWpacBFuJedDWYsZm9FWAtjOG9JGg2I42GtIMeRnEUtIUzpGiQvwF9zr3
+         JJhLYLcRxNE1w4owRj6N7U6OJ0ieFWxE1pUSGiMXz+Tiof2uJOSHfQsfl7ndYwVVI1
+         R2pYSLPET4NIA==
+Date:   Wed, 7 Dec 2022 09:56:44 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>, Wei Wang <weiwan@google.com>,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com
-Subject: Re: [PATCH net-next 0/3] mlx4: better BIG-TCP support
-Message-ID: <Y5BFbc0hhLhTLILF@unreal>
-References: <20221206055059.1877471-1-edumazet@google.com>
+To:     Yuan Can <yuancan@huawei.com>
+Cc:     shshaikh@marvell.com, manishc@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        sucheta.chakraborty@qlogic.com, rajesh.borundia@qlogic.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] drivers: net: qlcnic: Fix potential memory leak in
+ qlcnic_sriov_init()
+Message-ID: <Y5BHPCE5rfQ0cmne@unreal>
+References: <20221206103031.20609-1-yuancan@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221206055059.1877471-1-edumazet@google.com>
+In-Reply-To: <20221206103031.20609-1-yuancan@huawei.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,22 +56,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 06, 2022 at 05:50:56AM +0000, Eric Dumazet wrote:
-> mlx4 uses a bounce buffer in TX whenever the tx descriptors
-> wrap around the right edge of the ring.
+On Tue, Dec 06, 2022 at 10:30:31AM +0000, Yuan Can wrote:
+> If vp alloc failed in qlcnic_sriov_init(), all previously allocated vp
+> needs to be freed.
 > 
-> Size of this bounce buffer was hard coded and can be
-> increased if/when needed.
+> Fixes: f197a7aa6288 ("qlcnic: VF-PF communication channel implementation")
+> Signed-off-by: Yuan Can <yuancan@huawei.com>
+> ---
+>  drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> Eric Dumazet (3):
->   net/mlx4: rename two constants
->   net/mlx4: MLX4_TX_BOUNCE_BUFFER_SIZE depends on MAX_SKB_FRAGS
->   net/mlx4: small optimization in mlx4_en_xmit()
-> 
->  drivers/net/ethernet/mellanox/mlx4/en_tx.c   | 18 ++++++++++--------
->  drivers/net/ethernet/mellanox/mlx4/mlx4_en.h | 18 +++++++++++++-----
->  2 files changed, 23 insertions(+), 13 deletions(-)
-> 
+> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
+> index 9282321c2e7f..d0470c62e1b2 100644
+> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
+> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
+> @@ -222,6 +222,8 @@ int qlcnic_sriov_init(struct qlcnic_adapter *adapter, int num_vfs)
+>  
+>  qlcnic_destroy_async_wq:
+>  	destroy_workqueue(bc->bc_async_wq);
+> +	while (i--)
+> +		kfree(sriov->vf_info[i].vp);
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+These lines should be before destroy_workqueue(bc->bc_async_wq);
+
+Thanks
+
+>  
+>  qlcnic_destroy_trans_wq:
+>  	destroy_workqueue(bc->bc_trans_wq);
+> -- 
+> 2.17.1
+> 
