@@ -2,130 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEAC64575B
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 11:17:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ACDF64576F
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 11:19:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230344AbiLGKRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 05:17:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45044 "EHLO
+        id S230389AbiLGKTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 05:19:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230346AbiLGKQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 05:16:44 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2043.outbound.protection.outlook.com [40.107.243.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E15127CE9;
-        Wed,  7 Dec 2022 02:16:41 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cZvjUsbUFLGPYifgJU8+oIH+Ey65s42WTFV5B1uyBttgQ21jHCMBJfuxbaTRFhhSlA+ovQ60+Zc/vxWNJ05MZ8V5jhxCxb9e9QSOzpiyqRkVQbV3GwJls+ZlkfQJOdEFi16dNjXLP0z1eOc4vpkLvcNGQSgh/CXNByxPa5/Vmxgcu1TfC+yBjbpjFqQh3a89hukn+cPr4+lI4BuEvlOdkhEqteXLf4RXdN5EexiAStS2AxZ/aFz3ZwCqOYHWY97gS6s6O4dnzvq1xn+heZB4M1YsdFzhWqBuX/4ZQ8xDtpKfobaI4KeNIpnsTgWJAzHOVWW82XQFpTtjM2oDXmmWEg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Gt7dhv2pW/5/6dT3CxspJemJ1HsRAi5H2KOA1MsgmkE=;
- b=a2SNo6OGlHfI+3cUfXU8ISOROEi6e6JnRgam7vzp/L+qCmRiFEOXxBa9UbBkB+rDTHuJTWgfrd9Oe0VBB1iLOBOcAgscwR1qrsjK/35wa6fgwD8kpa5rDQvM4r/5pfQG4FWodw9mTVM7THiU+2cIQtA4s5RDOtptw/z54wvjHxIh/YL4/uBXgB14V4Y/zvFXI3r88V5rioNRJHMIrDSI8kGOm9hMhSbsZ5XIgQOR8Usg9oS41o/ZuDvx9znvcuevxwKurRSpCgVYzh9+54TNN1bOK0F+sPLrLsXArgBrzgYonO8WX9YDfBTEEaLf3CF/u+QTkY8i4ebCiZPvSx02cw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gt7dhv2pW/5/6dT3CxspJemJ1HsRAi5H2KOA1MsgmkE=;
- b=rdCz2sw1KSCAF4NFmPrmsSm+RNxwyCVwTKKLls1k0Wg+G/RYXC9KibxatjKSDFlSP3DonhZ6IpFZeT6AvFvWl8O4LPwhEgOIylyTzUE71Z1CzAnjhO807RZGlpaSMzCLllcl6tCXL5hvMdRAURBZMez3HSndk/MaIpWoY1l0JURh5htEgixaFnnUkUvJR7LvGZOJGEZQ9Rng3sa4BVf3l8cb2PoBAcqRIp58lzF+QlMfQF9JShrCadHEEU0ZZ6Rd31LVTotyeIzu0cadO6PxjK8tsNO3yAJcbZSjDTt3h+kgPLoey1n6+guUHSnBho1FzuEOmqUU3r1Hu7xOY/XS3Q==
-Received: from DS7PR03CA0060.namprd03.prod.outlook.com (2603:10b6:5:3b5::35)
- by SJ0PR12MB5661.namprd12.prod.outlook.com (2603:10b6:a03:422::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Wed, 7 Dec
- 2022 10:16:40 +0000
-Received: from DS1PEPF0000E641.namprd02.prod.outlook.com
- (2603:10b6:5:3b5:cafe::ca) by DS7PR03CA0060.outlook.office365.com
- (2603:10b6:5:3b5::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14 via Frontend
- Transport; Wed, 7 Dec 2022 10:16:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- DS1PEPF0000E641.mail.protection.outlook.com (10.167.17.201) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.8 via Frontend Transport; Wed, 7 Dec 2022 10:16:39 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 7 Dec 2022
- 02:16:29 -0800
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Wed, 7 Dec 2022 02:16:29 -0800
-Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Wed, 7 Dec
- 2022 02:16:26 -0800
-From:   <ehakim@nvidia.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <raeds@nvidia.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <sd@queasysnail.net>, <atenart@kernel.org>, <jiri@resnulli.us>,
-        Emeel Hakim <ehakim@nvidia.com>
-Subject: [PATCH net] macsec: add missing attribute validation for offload
-Date:   Wed, 7 Dec 2022 12:16:18 +0200
-Message-ID: <20221207101618.989-1-ehakim@nvidia.com>
-X-Mailer: git-send-email 2.21.3
+        with ESMTP id S230314AbiLGKTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 05:19:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F6711A0A
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 02:18:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670408299;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9XN+oYBwg/FzBMOO+a8ZKj9oWdJbSN9hLcGMA4//8H8=;
+        b=hjPrMJXashGlnDC+QACBmCJkCG5gFyq0x2g33+SowGhaGbBTL9uoTyO9fQI9G9GruTotg0
+        efg8uwTSSjdUaftQOF38ZfjHI3iAD6xq0Ic5gWJ5PMIoPlzixwxYq6jXNaSrjfJJm8+0F1
+        NiDFFnO3BrcSGkQwcMlhloPvAps9i1A=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-645-8J9aoAinNRW2RkU2UcBfBg-1; Wed, 07 Dec 2022 05:18:18 -0500
+X-MC-Unique: 8J9aoAinNRW2RkU2UcBfBg-1
+Received: by mail-wm1-f69.google.com with SMTP id o5-20020a05600c510500b003cfca1a327fso9768225wms.8
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 02:18:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9XN+oYBwg/FzBMOO+a8ZKj9oWdJbSN9hLcGMA4//8H8=;
+        b=Veuzrhxzzd/RJskGlUATVQb7EcyuopWhwyrHulUnzj+cGyGaH/LnDPqgoON2375Oyw
+         ctCHfkADXQ815E+KLFIQH+jyQ9PcEDOHTCSd0L8/OakZ35mDgFkzQBWxOnso6iWi/gpb
+         2ihGmaj6FhfW7gthNF80djpWDhbHTsql0vgRZDOlyuh+QhWCg5f2O8I7n8UP8K/Ir6nl
+         qoBrPwfd7m2KRgrJV6Ww15+e4YThYN00WPgXhDTW5P2SxPBxguCGWviQsUqYQu1KDL33
+         p+jS9xjjx+PjnNLZclm50ze7+OoVcrZ5LQ8jHdAMVnYtnujx1ETeZor0ccd2Vcsqn/Cb
+         GZaw==
+X-Gm-Message-State: ANoB5pmuaIOvKrkAYQzZkE4rHkQzpe11WlVlyHzf1133h7TSlEJox5yr
+        j0/KBmIgKpiomj7s4fuCr2+vSrJNWatT7XyxHszvsvcIuM6EwJ2MmVEacEYrmH8NHlVNeIxxgg4
+        +7SpdRNdQcUbBjCdA
+X-Received: by 2002:a7b:c011:0:b0:3cf:633e:bf6a with SMTP id c17-20020a7bc011000000b003cf633ebf6amr53494652wmb.63.1670408297577;
+        Wed, 07 Dec 2022 02:18:17 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6uytFf4a3LcfdsXtFVT3dWZv2Xsu0MR3+X+lq5orXO9nyT7Wph3RgtwIYprNzcrs9muELhzQ==
+X-Received: by 2002:a7b:c011:0:b0:3cf:633e:bf6a with SMTP id c17-20020a7bc011000000b003cf633ebf6amr53494633wmb.63.1670408297327;
+        Wed, 07 Dec 2022 02:18:17 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-106-100.dyn.eolo.it. [146.241.106.100])
+        by smtp.gmail.com with ESMTPSA id t25-20020a1c7719000000b003cfd58409desm1201000wmi.13.2022.12.07.02.18.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 02:18:16 -0800 (PST)
+Message-ID: <989e6b10fb188b015b040f6df2b19c4ecfb8bb91.camel@redhat.com>
+Subject: Re: [PATCH net-next 6/6] tsnep: Add XDP RX support
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com
+Date:   Wed, 07 Dec 2022 11:18:15 +0100
+In-Reply-To: <20221203215416.13465-7-gerhard@engleder-embedded.com>
+References: <20221203215416.13465-1-gerhard@engleder-embedded.com>
+         <20221203215416.13465-7-gerhard@engleder-embedded.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E641:EE_|SJ0PR12MB5661:EE_
-X-MS-Office365-Filtering-Correlation-Id: 93cebb62-54ae-49f7-8f22-08dad83c21a9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hWlge+WZTGtzML2mf+nUsgI47HzAhzrSA3e8K/gKGt9GVMqPHV5UO+rqpbQrsty2xkmLww0MRd59a1q/OY2RZzENV0xGx+PDTuOEjxyHJQzVAKmCj+XOXb876yF2BruzMXJK/PlFZLuKWNXdJqlbAjXruUbBRlSkbaACx0W7MPq0y+ZjU9z7ZHK7OeBzLQB4BMCH4R0InSVTG3by8AUM0ePj2SC0d7QORP8s/aggl5JK5xN+ZsqSe0i3Jcrj0FgMFHFAfuxaZzezlyInpUqAIFISiXl2oFJiCXXV5QzNLowdwac5bOuXAfW8gEh+eIqkSquzdhSPjr2EwU17wHVLZNzyfDLP6mT5x9136zPs4EcYBvmWIl9R77AT20prYQv7EKwbMFl350KzltmvJQtIEv9qcay9Kqc067npt3iro9OsfwHSPgOnKGUShjRfrqUoSEK1In6wBprOlJsq1oeRUc8S2Z+DZnGMz+5Z/W9Pb12gg88Jw1aRjACmV+NOBbbnCSCp4QEstK4Jw4ZmyvyptV7WcUYIOMJuhATtIQWCmkA4ZjWcgEdoctyJEzjoDkwFlBWnlmXRNR7yG1luE2JoOoeWvSIt8TM10PflIERXCasMg9MEfuG8SAzSfuyNHZqlFOLThpeBMlTsz7MWlXpmsXmaePIqx4qBB1dgII9rw/Y1r1yqrmO5X3l8spGMM/lneGdFHA6P9e29LV+DnYYVgw==
-X-Forefront-Antispam-Report: CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(346002)(396003)(136003)(451199015)(36840700001)(46966006)(40470700004)(47076005)(426003)(86362001)(82740400003)(7696005)(478600001)(40460700003)(40480700001)(36756003)(8936002)(2616005)(36860700001)(1076003)(82310400005)(336012)(186003)(7636003)(4744005)(356005)(6666004)(4326008)(107886003)(8676002)(5660300002)(26005)(70206006)(41300700001)(2906002)(70586007)(316002)(2876002)(6916009)(54906003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 10:16:39.9337
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93cebb62-54ae-49f7-8f22-08dad83c21a9
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E641.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5661
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emeel Hakim <ehakim@nvidia.com>
+On Sat, 2022-12-03 at 22:54 +0100, Gerhard Engleder wrote:
+> If BPF program is set up, then run BPF program for every received frame
+> and execute the selected action.
+> 
+> Test results with A53 1.2GHz:
+> 
+> XDP_DROP (samples/bpf/xdp1)
+> proto 17:     865683 pkt/s
+> 
+> XDP_TX (samples/bpf/xdp2)
+> proto 17:     253594 pkt/s
+> 
+> XDP_REDIRECT (samples/bpf/xdpsock)
+>  sock0@eth2:0 rxdrop xdp-drv
+>                    pps            pkts           1.00
+> rx                 862,258        4,514,166
+> tx                 0              0
+> 
+> XDP_REDIRECT (samples/bpf/xdp_redirect)
+> eth2->eth1         608,895 rx/s   0 err,drop/s   608,895 xmit/s
+> 
+> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> ---
+>  drivers/net/ethernet/engleder/tsnep_main.c | 100 +++++++++++++++++++++
+>  1 file changed, 100 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
+> index 725b2a1e7be4..4e3c6bd3dc9f 100644
+> --- a/drivers/net/ethernet/engleder/tsnep_main.c
+> +++ b/drivers/net/ethernet/engleder/tsnep_main.c
+> @@ -27,6 +27,7 @@
+>  #include <linux/phy.h>
+>  #include <linux/iopoll.h>
+>  #include <linux/bpf.h>
+> +#include <linux/bpf_trace.h>
+>  
+>  #define TSNEP_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
+>  #define TSNEP_HEADROOM ALIGN(max(TSNEP_SKB_PAD, XDP_PACKET_HEADROOM), 4)
+> @@ -44,6 +45,11 @@
+>  #define TSNEP_COALESCE_USECS_MAX     ((ECM_INT_DELAY_MASK >> ECM_INT_DELAY_SHIFT) * \
+>  				      ECM_INT_DELAY_BASE_US + ECM_INT_DELAY_BASE_US - 1)
+>  
+> +#define TSNEP_XDP_PASS		0
+> +#define TSNEP_XDP_CONSUMED	BIT(0)
+> +#define TSNEP_XDP_TX		BIT(1)
+> +#define TSNEP_XDP_REDIRECT	BIT(2)
+> +
+>  enum {
+>  	__TSNEP_DOWN,
+>  };
+> @@ -819,6 +825,11 @@ static inline unsigned int tsnep_rx_offset(struct tsnep_rx *rx)
+>  	return TSNEP_SKB_PAD;
+>  }
+>  
+> +static inline unsigned int tsnep_rx_offset_xdp(void)
 
-Add missing attribute validation for IFLA_MACSEC_OFFLOAD
-to the netlink policy.
+Please, no 'inline' in c files, the complier will do a better job
+without.
 
-Fixes: 791bb3fcafce ("net: macsec: add support for specifying offload upon link creation")
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
----
- drivers/net/macsec.c | 1 +
- 1 file changed, 1 insertion(+)
+> +{
+> +	return XDP_PACKET_HEADROOM;
+> +}
+> +
+>  static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
+>  {
+>  	struct device *dmadev = rx->adapter->dmadev;
+> @@ -1024,6 +1035,65 @@ static int tsnep_rx_refill(struct tsnep_rx *rx, int count, bool reuse)
+>  	return i;
+>  }
+>  
+> +static int tsnep_xdp_run_prog(struct tsnep_rx *rx, struct bpf_prog *prog,
+> +			      struct xdp_buff *xdp)
+> +{
+> +	unsigned int length;
+> +	unsigned int sync;
+> +	u32 act;
+> +
+> +	length = xdp->data_end - xdp->data_hard_start - tsnep_rx_offset_xdp();
+> +
+> +	act = bpf_prog_run_xdp(prog, xdp);
+> +
+> +	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
+> +	sync = xdp->data_end - xdp->data_hard_start - tsnep_rx_offset_xdp();
+> +	sync = max(sync, length);
+> +
+> +	switch (act) {
+> +	case XDP_PASS:
+> +		return TSNEP_XDP_PASS;
+> +	case XDP_TX:
+> +		if (tsnep_xdp_xmit_back(rx->adapter, xdp) < 0)
+> +			goto out_failure;
+> +		return TSNEP_XDP_TX;
+> +	case XDP_REDIRECT:
+> +		if (xdp_do_redirect(rx->adapter->netdev, xdp, prog) < 0)
+> +			goto out_failure;
+> +		return TSNEP_XDP_REDIRECT;
+> +	default:
+> +		bpf_warn_invalid_xdp_action(rx->adapter->netdev, prog, act);
+> +		fallthrough;
+> +	case XDP_ABORTED:
+> +out_failure:
+> +		trace_xdp_exception(rx->adapter->netdev, prog, act);
+> +		fallthrough;
+> +	case XDP_DROP:
+> +		page_pool_put_page(rx->page_pool, virt_to_head_page(xdp->data),
+> +				   sync, true);
+> +		return TSNEP_XDP_CONSUMED;
+> +	}
+> +}
+> +
+> +static void tsnep_finalize_xdp(struct tsnep_adapter *adapter, int status)
+> +{
+> +	int cpu = smp_processor_id();
+> +	int queue;
+> +	struct netdev_queue *nq;
+> +
+> +	if (status & TSNEP_XDP_TX) {
+> +		queue = cpu % adapter->num_tx_queues;
+> +		nq = netdev_get_tx_queue(adapter->netdev, queue);
+> +
+> +		__netif_tx_lock(nq, cpu);
+> +		tsnep_xdp_xmit_flush(&adapter->tx[queue]);
+> +		__netif_tx_unlock(nq);
+> +	}
+> +
+> +	if (status & TSNEP_XDP_REDIRECT)
+> +		xdp_do_flush();
+> +}
+> +
+>  static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
+>  				       int length)
+>  {
+> @@ -1062,12 +1132,17 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
+>  	int desc_available;
+>  	int done = 0;
+>  	enum dma_data_direction dma_dir;
+> +	struct bpf_prog *prog;
+>  	struct tsnep_rx_entry *entry;
+> +	struct xdp_buff xdp;
+> +	int xdp_status = 0;
+>  	struct sk_buff *skb;
+>  	int length;
+> +	int retval;
+>  
+>  	desc_available = tsnep_rx_desc_available(rx);
+>  	dma_dir = page_pool_get_dma_dir(rx->page_pool);
+> +	prog = READ_ONCE(rx->adapter->xdp_prog);
+>  
+>  	while (likely(done < budget) && (rx->read != rx->write)) {
+>  		entry = &rx->entry[rx->read];
+> @@ -1111,6 +1186,28 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
+>  		rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
+>  		desc_available++;
+>  
+> +		if (prog) {
+> +			xdp_init_buff(&xdp, PAGE_SIZE, &rx->xdp_rxq);
+> +			xdp_prepare_buff(&xdp, page_address(entry->page),
+> +					 tsnep_rx_offset_xdp() + TSNEP_RX_INLINE_METADATA_SIZE,
+> +					 length - TSNEP_RX_INLINE_METADATA_SIZE,
+> +					 false);
+> +			retval = tsnep_xdp_run_prog(rx, prog, &xdp);
+> +		} else {
+> +			retval = TSNEP_XDP_PASS;
+> +		}
+> +		if (retval) {
+> +			if (retval & (TSNEP_XDP_TX | TSNEP_XDP_REDIRECT))
+> +				xdp_status |= retval;
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index f41f67b583db..2fbac51b9b19 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -3698,6 +3698,7 @@ static const struct nla_policy macsec_rtnl_policy[IFLA_MACSEC_MAX + 1] = {
- 	[IFLA_MACSEC_SCB] = { .type = NLA_U8 },
- 	[IFLA_MACSEC_REPLAY_PROTECT] = { .type = NLA_U8 },
- 	[IFLA_MACSEC_VALIDATION] = { .type = NLA_U8 },
-+	[IFLA_MACSEC_OFFLOAD] = { .type = NLA_U8 },
- };
- 
- static void macsec_free_netdev(struct net_device *dev)
--- 
-2.21.3
+Here you could avoid a couple of conditionals passing xdp_status as an
+additional tsnep_xdp_run_prog() argument, let the latter update it
+under the existing switch, returning a single consumed/pass up bool and
+testing such value just after tsnep_xdp_run_prog().
+
+Mostly a matter of personal tasted I guess.
+
+
+Cheers,
+
+Paolo
 
