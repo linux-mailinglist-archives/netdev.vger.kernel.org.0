@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C2A86454FE
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 08:58:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF29645545
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 09:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiLGH6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 02:58:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47594 "EHLO
+        id S229824AbiLGINS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 03:13:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiLGH6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 02:58:24 -0500
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D271837B
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 23:58:23 -0800 (PST)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-3b10392c064so178099107b3.0
-        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 23:58:23 -0800 (PST)
+        with ESMTP id S229753AbiLGINP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 03:13:15 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC4231FBB
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 00:13:12 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id 189so21714276ybe.8
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 00:13:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=YsEzFVYWNb3PSDqX7gS5EcXxQ26G4nv0tvB50of4rR4=;
-        b=bl0LUe4BpedaJkvYgS3xhG2L/TRZR7Kr+X+zOk4HQGtaQuG5wOLRHc5Cmq4KZfoWVc
-         Wy98e/8RQunRXYgCxyXqGQqOWeTjgpWDEag2U3fSI0w8shSBSXf7+ciCl6oRPcce3mlL
-         qiPusHjOGl33yPEreHDFoaozVg5vnc8B4PbsWg5vSMAvjpnOn3vLdQLW+iB+Q9JoqjKz
-         rzi0DufB/Vo+a5NK/wToL/hx1FjNKyQ3sWyFYq/J+7KhgKKagMuW64zLwcXh0ZdcHqI1
-         YGmb7lzZn+wO7foQRYQwu6xLEEnGA6alh2eD4O8DpQZIhqSkOR9dmoMp13OCiJMTUkQw
-         k5PA==
+        bh=Q9PwBs2OW6KV67ZD6N5qY5Z5ZOtyNNcvY0UpEdencGE=;
+        b=YvoabhEN5LkAlnAsj7FwPTX3hCLmWY46IgIkXkXbBLJzjwSepXsWfZFLj6pY8g6C63
+         PQsgbo5hbcEG9ffKMMMalFfu70ZsB+x3oAZA1HYrQtSmB/1T6mydnloFZfQvknM99heQ
+         tT2z487cne4nZ5KkxSWi11IWyeJBWFUCF5ZZd3utLKyBMYmhDAn41LLBY8+zWOJh/PL2
+         U0MODsrglmbnb6z1EILfAjO7urtuBzcmupKyIDCHUtph2j3Vv/5/lpAscyf6uXEy8VeJ
+         vQUhXYaOEqg3qnkjnHOzg491BRk9NY92NIzAlfUfeU/Dt5CHUK9iMKiJYhwg/3ubln0c
+         0gSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=YsEzFVYWNb3PSDqX7gS5EcXxQ26G4nv0tvB50of4rR4=;
-        b=2UuqoWuG8sFg8CQUhKdqKBLbw1MpYYNCks2/k7/n4waZvsgDaIH3wV4j3K1N+ZPXHZ
-         YXStudch6Vm0cpKxcbjP0BXDDGZrQSBg2FbcIe7Dm2/g3cA0reD3EFP8oQVFfrmc5ywp
-         ZFiMsRQknoUWIRg4y7WB6IwGzlFmSCapL/68BEleiEYZWBbBs+MYwFJs3O+z5EgVmtUi
-         FlJJLGw0WunUj5D43Cz2ozP+2uR1qV9tNTAYJkUddyIp6n6EottvqwhXRn04Ih96ngzy
-         McQ6jHUL6FGFq34iuOUr77kVkVOapTpIDCfPznMHUM/WwYdOYmPeewRoOik87BwOyR9v
-         Flqw==
-X-Gm-Message-State: ANoB5pn7GWuDd+6BReYsogPaP8VbmQYPLUmSYfkZ/kXA9gD5Y5kLZVGN
-        3y6V4DJ035Fm7rsNBKHQDGHSHAzYw4pb+/Uo+3JySQ==
-X-Google-Smtp-Source: AA0mqf6J9chWLNqURxSv/bkiORvCD6QhQ2HABa8D/n90JoAuxIa5UCEjPDppjQ5IskzLdHp8YPNuS4CxUPZIovb05bE=
-X-Received: by 2002:a81:a8a:0:b0:37e:6806:a5f9 with SMTP id
- 132-20020a810a8a000000b0037e6806a5f9mr5115644ywk.47.1670399902402; Tue, 06
- Dec 2022 23:58:22 -0800 (PST)
+        bh=Q9PwBs2OW6KV67ZD6N5qY5Z5ZOtyNNcvY0UpEdencGE=;
+        b=U7yVs8kav0IDULk5FvngVmBCvaHOGdAP8zM8ylbXzzxpf6zTu6srbsuZFoFMudEWKU
+         qOq4NPo+lo14IwADnywd9D7/XZGSDh0o04WU5Bua2ha+yBjfYulRQdjmkI2y1VzmVaVF
+         //tfH1u91PnPy46/N9qmBf1azGCgrFmoh9M6t0Oy3+QNZxtNfq5cuIc+yWkc+jLdGKbN
+         PiJ0SO01aV+OUef6uF8umlE8dBo2SHEP4PY8kLdZJUaqaK0+Wg/ellQrLA34WQlPhH9P
+         a6Jv1h9xgD7WzEDMTDPi6E97ucKiuTpIAlgTLZTHlFa5xGTCr0IVzluHCQ1o9tczc+kt
+         dWsg==
+X-Gm-Message-State: ANoB5pkaEiHSgWGIYliN43sl8nfaYWTZdIxx6YE+l3M4wvY0Oa9idnuL
+        LfhCUZOsS965neaQHcta3pnjit4A14pnYG2AwysFog==
+X-Google-Smtp-Source: AA0mqf60uLxT8YTLpBIXQE3IHpdSFumG4AgCRXD/7v6KrWZDTPRMYpjKDtwszvVrwSJB+SiUy1iAwHu+5U4PJc9XZqM=
+X-Received: by 2002:a25:24d:0:b0:6fd:2917:cf60 with SMTP id
+ 74-20020a25024d000000b006fd2917cf60mr20430226ybc.427.1670400791161; Wed, 07
+ Dec 2022 00:13:11 -0800 (PST)
 MIME-Version: 1.0
-References: <20221205184742.0952fc75@kernel.org> <202212071527223155626@zte.com.cn>
-In-Reply-To: <202212071527223155626@zte.com.cn>
+References: <00000000000073b14905ef2e7401@google.com> <639034dda7f92_bb36208f5@john.notmuch>
+In-Reply-To: <639034dda7f92_bb36208f5@john.notmuch>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 7 Dec 2022 08:58:11 +0100
-Message-ID: <CANn89iKqb64sLT2r+2YrpDyMfZ8T6z2Ygtby-ruVNNYvniaV0g@mail.gmail.com>
-Subject: Re: [PATCH linux-next] net: record times of netdev_budget exhausted
-To:     yang.yang29@zte.com.cn
-Cc:     kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        bigeasy@linutronix.de, imagedong@tencent.com, kuniyu@amazon.com,
-        petrm@nvidia.com, liu3101@purdue.edu, wujianguo@chinatelecom.cn,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tedheadster@gmail.com
+Date:   Wed, 7 Dec 2022 09:12:59 +0100
+Message-ID: <CANn89iK2UN1FmdUcH12fv_xiZkv2G+Nskvmq7fG6aA_6VKRf6g@mail.gmail.com>
+Subject: Re: [syzbot] BUG: stack guard page was hit in inet6_release
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     syzbot <syzbot+04c21ed96d861dccc5cd@syzkaller.appspotmail.com>,
+        bpf@vger.kernel.org, davem@davemloft.net, jakub@cloudflare.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
@@ -70,70 +70,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 7, 2022 at 8:28 AM <yang.yang29@zte.com.cn> wrote:
+On Wed, Dec 7, 2022 at 7:38 AM John Fastabend <john.fastabend@gmail.com> wrote:
 >
-> On Tue, 6 Dec 2022 10:47:07 +0800 (CST) kuba@kernel.org wrote:
-> > But are you seeing actual performance wins in terms of throughput
-> > or latency?
+> syzbot wrote:
+> > Hello,
+> >
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    6a30d3e3491d selftests: net: Use "grep -E" instead of "egr..
+> > git tree:       net
+> > console+strace: https://syzkaller.appspot.com/x/log.txt?x=1576b11d880000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=cc4b2e0a8e8a8366
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=04c21ed96d861dccc5cd
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14e1656b880000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1077da23880000
+> >
+> > Downloadable assets:
+> > disk image: https://storage.googleapis.com/syzbot-assets/bbee3d5fc908/disk-6a30d3e3.raw.xz
+> > vmlinux: https://storage.googleapis.com/syzbot-assets/bf9e258de70e/vmlinux-6a30d3e3.xz
+> > kernel image: https://storage.googleapis.com/syzbot-assets/afaa6696b9e0/bzImage-6a30d3e3.xz
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+04c21ed96d861dccc5cd@syzkaller.appspotmail.com
+> >
+> > BUG: TASK stack guard page was hit at ffffc90003cd7fa8 (stack is ffffc90003cd8000..ffffc90003ce0000)
+> > stack guard page: 0000 [#1] PREEMPT SMP KASAN
+> > CPU: 0 PID: 3636 Comm: syz-executor238 Not tainted 6.1.0-rc7-syzkaller-00135-g6a30d3e3491d #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+> > RIP: 0010:mark_lock.part.0+0x26/0x1910 kernel/locking/lockdep.c:4593
+> > Code: 00 00 00 00 41 57 41 56 41 55 41 89 d5 48 ba 00 00 00 00 00 fc ff df 41 54 49 89 f4 55 53 48 81 ec 38 01 00 00 48 8d 5c 24 38 <48> 89 3c 24 48 c7 44 24 38 b3 8a b5 41 48 c1 eb 03 48 c7 44 24 40
+> > RSP: 0018:ffffc90003cd7fb8 EFLAGS: 00010096
+> > RAX: 0000000000000004 RBX: ffffc90003cd7ff0 RCX: ffffffff8162a7bf
+> > RDX: dffffc0000000000 RSI: ffff88801f65e238 RDI: ffff88801f65d7c0
+> > RBP: ffff88801f65e25a R08: 0000000000000000 R09: ffffffff910f4aff
+> > R10: fffffbfff221e95f R11: 0000000000000000 R12: ffff88801f65e238
+> > R13: 0000000000000002 R14: 0000000000000000 R15: 0000000000040000
+> > FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: ffffc90003cd7fa8 CR3: 000000000c28e000 CR4: 00000000003506f0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >  <TASK>
+> >  mark_lock kernel/locking/lockdep.c:4598 [inline]
+> >  mark_usage kernel/locking/lockdep.c:4543 [inline]
+> >  __lock_acquire+0x847/0x56d0 kernel/locking/lockdep.c:5009
+> >  lock_acquire kernel/locking/lockdep.c:5668 [inline]
+> >  lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
+> >  lock_sock_nested+0x3a/0xf0 net/core/sock.c:3447
+> >  lock_sock include/net/sock.h:1721 [inline]
+> >  sock_map_close+0x75/0x7b0 net/core/sock_map.c:1610
 >
-> I did a test and see 7~8% of performance difference with small and big
-> netdev_budget. Detail:
-> 1. machine
-> In qemu. CPU is QEMU TCG CPU version 2.5+.
-> 2. kernel
-> Linux (none) 5.14.0-rc6+ #91 SMP Tue Dec 6 19:55:14 CST 2022 x86_64 GNU/Linux
-> 3. test condition
-> Run 5 rt tasks to simulate workload, task is test.sh:
-> ---
-> #!/bin/bash
->
-> while [ 1 ]
-> do
->       ls  > /dev/null
-> done
-> ---
-> 4. test method
-> Use ping -f to flood.
-> # ping -f 192.168.1.201 -w 1800
->
-> With netdev_buget is 500, and netdev_budget_usecs is 2000:
-> 497913 packets transmitted, 497779 received, 0% packet loss, time 1799992ms
-> rtt min/avg/max/mdev = 0.181/114.417/1915.343/246.098 ms, pipe 144, ipg/ewma 3.615/0.273 ms
->
-> With netdev_budget is 1, and netdev_budget_usecs is 2000:
-> 457530 packets transmitted, 457528 received, 0% packet loss, time 1799997ms
-> rtt min/avg/max/mdev = 0.180/123.287/1914.186/253.883 ms, pipe 147, ipg/ewma 3.934/0.301 ms
->
+> I'll take a look likely something recent.
 
-Sure, but netdev_budget set to 1 is extreme, don't you think ???
+Fact that sock_map_close  can call itself seems risky.
+We might issue a one time warning and keep the host alive.
 
-Has anyone used such a setting ?
-
-> With small netdev_budget, avg latency increases 7%, packets transmitted
-> decreases 8%.
->
-> > Have you tried threaded NAPI? (find files called 'threaded' in sysfs)
->
-> Thanks, we had researched on threaded NAPI, much applaud for it!
-> But we think someone maynot use it because some kinds of reasons.
-> One is threaded NAPI is good for control, but maynot good for
-> throughput, especially for those who not care real-time too much.
-> Another reason is distribution kernel may too old to support
-> threaded NAPI?
->
-> >Well, we can't be sure if there's really nobody that uses them :(
->
-> As we still retain netdev_budget*, and there maybe some using it,
-> should it be improve? Netdev_budget* are sysctl for administrator,
-> when administrator adjust them, they may want to see the effect in
-> a direct or easy way. That's what this patch's purpose.
-
-We prefer not changing /proc file format as much as we can, they are
-deprecated/legacy.
-
-Presumably, modern tracing techniques can let you do what you want
-without adding new counters.
-
-I think that a per-cpu counter is old-fashioned, and incurs a cost for
-the vast majority of users who will
-never look at the counters.
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index 81beb16ab1ebfcb166f51f89a029fe1c28a629a4..a79771a6627b9b2f38ae6ce153ceff9e8c0be8d4
+100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -1612,17 +1612,25 @@ void sock_map_close(struct sock *sk, long timeout)
+        psock = sk_psock_get(sk);
+        if (unlikely(!psock)) {
+                rcu_read_unlock();
++               saved_close = sk->sk_prot->close;
+                release_sock(sk);
+-               return sk->sk_prot->close(sk, timeout);
++       } else {
++               saved_close = psock->saved_close;
++               sock_map_remove_links(sk, psock);
++               rcu_read_unlock();
++               sk_psock_stop(psock);
++               release_sock(sk);
++               cancel_work_sync(&psock->work);
++               sk_psock_put(sk, psock);
++       }
++       /* Make sure we do not recurse to us.
++        * This is a bug, we can leak the socket instead
++        * of crashing on a stack overflow.
++        */
++       if (saved_close == sock_map_close) {
++               WARN_ON_ONCE(1);
++               return;
+        }
+-
+-       saved_close = psock->saved_close;
+-       sock_map_remove_links(sk, psock);
+-       rcu_read_unlock();
+-       sk_psock_stop(psock);
+-       release_sock(sk);
+-       cancel_work_sync(&psock->work);
+-       sk_psock_put(sk, psock);
+        saved_close(sk, timeout);
+ }
+ EXPORT_SYMBOL_GPL(sock_map_close);
