@@ -2,69 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D95B1645A32
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:53:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4099D645A35
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:54:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbiLGMxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 07:53:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
+        id S229705AbiLGMyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 07:54:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiLGMxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:53:48 -0500
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AE21275E
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 04:53:47 -0800 (PST)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-3bf4ade3364so185031417b3.3
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 04:53:47 -0800 (PST)
+        with ESMTP id S229753AbiLGMyI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:54:08 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938BE5217D;
+        Wed,  7 Dec 2022 04:54:07 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id fc4so13684006ejc.12;
+        Wed, 07 Dec 2022 04:54:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZDODjGhBMLvVb1MoKlzH8N7I+N1MGa99AoScKVClC+w=;
-        b=l3l51uABhEfohyeMdDsC1g6ZsmBgW1vGILouCiwB1tAkYfro+vYnFlSbLU12IPJ9A5
-         WclP42LJByBsqh88sTnUGi+29prdRT/sRe7F27OSUlJ1hi6WBW7v79nKna2R5DclGx9+
-         F4l6j5vhpAIKtExRKAf+c9ZrOArPXtk0NpLczS40CBEd77pnjvxb8He3CmGa7QKlmZOz
-         2YORJs6RlN7XXgSJwGj3IQgFpYCn6BR13C5tHr1WiY5Vw1bWAeJMD9cV8UYyckUTQJ3X
-         8iO4byHgvV2pJ+x4mrlcgKf8FevHvLBeahTvizrGWTOGqhaHfQr1nonmgoYrretVmQ53
-         4BoQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3wHEueCe02/dFo7mDV34CjEc4Hqty62444bWhBRSbJ4=;
+        b=VzNNWJf1AddOafMP3bB5Jbnh04AX1NzHjVhFQA7rKO7lzu+Y9HTI9wgx2Xl9ojcDzK
+         s+D3GU5oT6JD3rhB7arH48dXPoYnxgzLx4GlXrIqnVwsg6sgG/A8DHkkwgdgYZygW7LJ
+         WYdrR6JS3jYsPycNHsP0LFCt5DDkSeO7BcCrLeaW8H8/QasiZR0aC3uGtSzkLkPWWXIg
+         m9w3hTuF188F9NDur0WwC+CpYuj3ubkJQ0N7GqsYEnrg80OFVwex3ofZlMf014sOi5ja
+         VZ5QHiSsXgaOLa0vqbc8QZMlNd52akbeeHaaH7OQVMOb8VrFpw7h0ouL06vw6ZPVJxLy
+         4Bjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZDODjGhBMLvVb1MoKlzH8N7I+N1MGa99AoScKVClC+w=;
-        b=g+hHDfEW7RT6IFib7e2H3u1bBSXKmu1J5eQ2Rr0QuoQ9OgGOJGYDzAY60bRysl/dS7
-         Oc/iOhOweco2XRvMWM/xhspMWJNoOJakGFWWx9KaIbteioOovaz+BV3CTifGjYayil42
-         Mfzp5zECav5nIXLY88ffj4U9oQkEvgInkwN+t7G3SYdMtgRfdArqZurjghuCr034JlOd
-         aNb2DTaRfZ/d4N9tvChWuOK20J5arHvdqJqwjQRDb/anP3zwwten12edrntjNnSBfZFE
-         SbyzdhyNJ/xNkr+CD6mO3U4FB944dXwLFBrdmTVF3UZ521zSP05QaJRPACI2MlY/0hFc
-         iw2g==
-X-Gm-Message-State: ANoB5plIorM3eenCpvXSp9wiRas7T4JErAX7Fu83jo1MW2i7jRp/0oDm
-        m94RyE5aggAO+3toWxsqGHGG+zxLR8GRNQByMHBkUg==
-X-Google-Smtp-Source: AA0mqf6iqL9UXb/lvn8VCKjnkcAZSgzpSbGgtji30BQnlKrZfJEGiHDnVR7nDe+0chYh+G87PEzydP2ST5BptDg0zyY=
-X-Received: by 2002:a81:1e44:0:b0:370:7a9a:564 with SMTP id
- e65-20020a811e44000000b003707a9a0564mr20984563ywe.278.1670417626546; Wed, 07
- Dec 2022 04:53:46 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3wHEueCe02/dFo7mDV34CjEc4Hqty62444bWhBRSbJ4=;
+        b=opo9NHeulkFpvm8P4XUVFI6U7CLROf0GLJUps7yE1+MGFml3ixNEwKU3HlVT0dpbVg
+         jB9A0keTD6MrocBUd1P299ixlkd4VKhRPOqRyz0cPwhuB9VVVkUsQusiLxENc5OkTsdJ
+         pH8c90Y3/9hzKcy1bF6f4T7Am+uBbd8WFD7hqTLjM5bJzCXnhg45srCyi+4QdFe6nm7W
+         xcDCJR86i5aVnPRcYoBnHq6tRbUGEHiZWuzhMANl+f6Ok7N5QYrPgrSsMLtqRul6IURc
+         zBReUMHYx+4OsQteqH4teawOyMM2vftFbl/u1Ky5ef4wiVpv5nbKiL7zLSHV48FG0uQ7
+         imnQ==
+X-Gm-Message-State: ANoB5pmcZ5d522NBfXGVcqhZg8YRfYLT20uBGtFtDpumQLWiL93dpp7U
+        c9rlo5h/MwtZWR8GvsrFnC8=
+X-Google-Smtp-Source: AA0mqf5rJ8Y2G5K8J77Da+1fY6fh0SokcCUuw7mN1S5LXHOpp/KJnxOL0OG+9lxX8aLNgrMq9yk9mA==
+X-Received: by 2002:a17:906:258d:b0:7c0:aea3:a9a8 with SMTP id m13-20020a170906258d00b007c0aea3a9a8mr23156206ejb.718.1670417645965;
+        Wed, 07 Dec 2022 04:54:05 -0800 (PST)
+Received: from [192.168.0.105] ([77.126.19.155])
+        by smtp.gmail.com with ESMTPSA id j16-20020a170906535000b007c0f2c4cdffsm3671712ejo.44.2022.12.07.04.54.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Dec 2022 04:54:05 -0800 (PST)
+Message-ID: <19cbfb5e-22b1-d9c1-8d50-38714e3eaf7d@gmail.com>
+Date:   Wed, 7 Dec 2022 14:53:58 +0200
 MIME-Version: 1.0
-References: <20221206055059.1877471-1-edumazet@google.com> <20221206055059.1877471-3-edumazet@google.com>
- <40ca4e2e-8f34-545a-7063-09aee0a5dd4c@gmail.com>
-In-Reply-To: <40ca4e2e-8f34-545a-7063-09aee0a5dd4c@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 7 Dec 2022 13:53:35 +0100
-Message-ID: <CANn89iKUYMb_4vJ5GAE0-BUmM7JNuHo_p8oHbfJfatYKBX8ouw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] net/mlx4: MLX4_TX_BOUNCE_BUFFER_SIZE depends
- on MAX_SKB_FRAGS
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v2 0/4] cpumask: improve on cpumask_local_spread()
+ locality
+Content-Language: en-US
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Valentin Schneider <vschneid@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Barry Song <baohua@kernel.org>,
+        Ben Segall <bsegall@google.com>,
+        haniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>, Wei Wang <weiwan@google.com>,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+References: <20221112190946.728270-1-yury.norov@gmail.com>
+ <xhsmh7czwyvtj.mognet@vschneid.remote.csb> <Y3PXw8Hqn+RCMg2J@yury-laptop>
+ <xhsmho7t5ydke.mognet@vschneid.remote.csb>
+ <665b6081-be55-de9a-1f7f-70a143df329d@gmail.com>
+ <Y4a2MBVEYEY+alO8@yury-laptop>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <Y4a2MBVEYEY+alO8@yury-laptop>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,82 +105,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 7, 2022 at 1:40 PM Tariq Toukan <ttoukan.linux@gmail.com> wrote:
->
->
->
-> On 12/6/2022 7:50 AM, Eric Dumazet wrote:
-> > Google production kernel has increased MAX_SKB_FRAGS to 45
-> > for BIG-TCP rollout.
-> >
-> > Unfortunately mlx4 TX bounce buffer is not big enough whenever
-> > an skb has up to 45 page fragments.
-> >
-> > This can happen often with TCP TX zero copy, as one frag usually
-> > holds 4096 bytes of payload (order-0 page).
-> >
-> > Tested:
-> >   Kernel built with MAX_SKB_FRAGS=45
-> >   ip link set dev eth0 gso_max_size 185000
-> >   netperf -t TCP_SENDFILE
-> >
-> > I made sure that "ethtool -G eth0 tx 64" was properly working,
-> > ring->full_size being set to 16.
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Reported-by: Wei Wang <weiwan@google.com>
-> > Cc: Tariq Toukan <tariqt@nvidia.com>
-> > ---
-> >   drivers/net/ethernet/mellanox/mlx4/mlx4_en.h | 16 ++++++++++++----
-> >   1 file changed, 12 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-> > index 7cc288db2a64f75ffe64882e3c25b90715e68855..120b8c361e91d443f83f100a1afabcabc776a92a 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-> > +++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-> > @@ -89,8 +89,18 @@
-> >   #define MLX4_EN_FILTER_HASH_SHIFT 4
-> >   #define MLX4_EN_FILTER_EXPIRY_QUOTA 60
-> >
-> > -/* Typical TSO descriptor with 16 gather entries is 352 bytes... */
-> > -#define MLX4_TX_BOUNCE_BUFFER_SIZE 512
-> > +#define CTRL_SIZE    sizeof(struct mlx4_wqe_ctrl_seg)
-> > +#define DS_SIZE              sizeof(struct mlx4_wqe_data_seg)
-> > +
-> > +/* Maximal size of the bounce buffer:
-> > + * 256 bytes for LSO headers.
-> > + * CTRL_SIZE for control desc.
-> > + * DS_SIZE if skb->head contains some payload.
-> > + * MAX_SKB_FRAGS frags.
-> > + */
-> > +#define MLX4_TX_BOUNCE_BUFFER_SIZE (256 + CTRL_SIZE + DS_SIZE +              \
-> > +                                 MAX_SKB_FRAGS * DS_SIZE)
-> > +
-> >   #define MLX4_MAX_DESC_TXBBS    (MLX4_TX_BOUNCE_BUFFER_SIZE / TXBB_SIZE)
-> >
->
-> Now as MLX4_TX_BOUNCE_BUFFER_SIZE might not be a multiple of TXBB_SIZE,
-> simple integer division won't work to calculate the max num of TXBBs.
-> Roundup is needed.
 
-I do not see why a roundup is needed. This seems like obfuscation to me.
 
-A divide by TXBB_SIZE always "works".
+On 11/30/2022 3:47 AM, Yury Norov wrote:
+> On Mon, Nov 28, 2022 at 08:39:24AM +0200, Tariq Toukan wrote:
+>>
+>>
+>> On 11/17/2022 2:23 PM, Valentin Schneider wrote:
+>>> On 15/11/22 10:32, Yury Norov wrote:
+>>>> On Tue, Nov 15, 2022 at 05:24:56PM +0000, Valentin Schneider wrote:
+>>>>>
+>>>>> Is this meant as a replacement for [1]?
+>>>>
+>>>> No. Your series adds an iterator, and in my experience the code that
+>>>> uses iterators of that sort is almost always better and easier to
+>>>> understand than cpumask_nth() or cpumask_next()-like users.
+>>>>
+>>>> My series has the only advantage that it allows keep existing codebase
+>>>> untouched.
+>>>>
+>>>
+>>> Right
+>>>
+>>>>> I like that this is changing an existing interface so that all current
+>>>>> users directly benefit from the change. Now, about half of the users of
+>>>>> cpumask_local_spread() use it in a loop with incremental @i parameter,
+>>>>> which makes the repeated bsearch a bit of a shame, but then I'm tempted to
+>>>>> say the first point makes it worth it.
+>>>>>
+>>>>> [1]: https://lore.kernel.org/all/20221028164959.1367250-1-vschneid@redhat.com/
+>>>>
+>>>> In terms of very common case of sequential invocation of local_spread()
+>>>> for cpus from 0 to nr_cpu_ids, the complexity of my approach is n * log n,
+>>>> and your approach is amortized O(n), which is better. Not a big deal _now_,
+>>>> as you mentioned in the other email. But we never know how things will
+>>>> evolve, right?
+>>>>
+>>>> So, I would take both and maybe in comment to cpumask_local_spread()
+>>>> mention that there's a better alternative for those who call the
+>>>> function for all CPUs incrementally.
+>>>>
+>>>
+>>> Ack, sounds good.
+>>>
+>>
+>> Good.
+>> Is a respin needed, to add the comment mentioned above?
+> 
+> If you think it's worth the effort.
 
-A round up is already done in mlx4_en_xmit()
+No, not sure it is...
 
-/* Align descriptor to TXBB size */
-desc_size = ALIGN(real_size, TXBB_SIZE);
-nr_txbb = desc_size >> LOG_TXBB_SIZE;
+I asked because this mail thread was inactive for a while, with the 
+patches not accepted to the kernel yet.
 
-Then the check is :
+If everyone is happy with it, let's make it to this kernel while possible.
 
-if (unlikely(nr_txbb > MLX4_MAX_DESC_TXBBS)) {
-   if (netif_msg_tx_err(priv))
-       en_warn(priv, "Oversized header or SG list\n");
-   goto tx_drop_count;
-}
+To which tree should it go?
 
-If we allocate X extra bytes (in case MLX4_TX_BOUNCE_BUFFER_SIZE %
-TXBB_SIZE == X),
-we are not going to use them anyway.
+Thanks,
+Tariq
