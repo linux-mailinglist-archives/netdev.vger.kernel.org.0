@@ -2,119 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC1596460DC
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 19:06:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 294976460E3
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 19:09:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbiLGSGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 13:06:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35538 "EHLO
+        id S229896AbiLGSJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 13:09:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiLGSGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 13:06:00 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556C55E9FD
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 10:05:59 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id 6so17051926pgm.6
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 10:05:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=C3DV9l9zsQfHltjnuJ5yMubwGSae2S2bmpGgboE2nP8=;
-        b=Prd6LTqRLZeS8XTw/gvJ8Q2gfHm1a5NPKg+JTD0/GTWchbjrAbYTQ5V9AeyT7EJM9R
-         durRWfVvMEdRtO/jdT33KU3R03JL3vLoNpiAMW4UZu/vbTajASHlSfbQ4Ej5+0vcRAt4
-         5/I6XAxEef25yBisdlJ10CtucOW+YzKoN6SruxL7O/MVe23ShZiOpx0+5x3NdNciP+Gr
-         xLliSHt1QbVRGvJHoWQ4S4wnkse0PQ2cMshCe0J3YqcCx/s3eghN9aZau+g+IKs5r9Ed
-         yVvGeENXNWqYYV45QSNHmyJHJS1HM8YWVezFReXZUxZbkyAYbbNBArGrhHJic5x4u4gs
-         9qbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=C3DV9l9zsQfHltjnuJ5yMubwGSae2S2bmpGgboE2nP8=;
-        b=NJKEWXRS7GF4aT6dipZU5mtTDqvf/AmeyzBlvW31xaUOY3Q5+lqFthu7PZedwfluTl
-         0juX8BI3LafV9VQkHNlj0chP/upXfeDLmM811+HOZduwxxszcK6Y1i2dMhfjhuM4l59+
-         m11IpHFb4EdbTS8yZ+hr9+kFUEKWjM1gSTGyPu2OiPReJRg02IJx2PeMr1piA5TuBf5a
-         2Ry+NSESmpI2KbTvM1NG+z2R7NhXH/3riDsCX6YP2TjwGi/SbAlasW6M4IttzQo1nj5K
-         0XiSBqpDjvdeXhrTlxXTISROvCyrw9s3aB/WMJcEYTtI3D36gvWVxhvXfJMktu2IzSwM
-         aJGw==
-X-Gm-Message-State: ANoB5pkaLVwrCftYAhjKdVw1jBvMpOhusbpo6sMghQOenpZcDIA2mqN+
-        nMuromRSQYt0iwIvx6rQiGcWPxKkQlvBpxTXe5oYfw==
-X-Google-Smtp-Source: AA0mqf6V98W1Ea96QHbk4wRxDCKU/FpjbtMSK4RNn96lTbLyo7G5+5AtMHilaQI2eAgDXLqxNz2hHPUDW+FUaLdQDNo=
-X-Received: by 2002:a63:1747:0:b0:478:1391:fd14 with SMTP id
- 7-20020a631747000000b004781391fd14mr44296746pgx.112.1670436358455; Wed, 07
- Dec 2022 10:05:58 -0800 (PST)
+        with ESMTP id S229456AbiLGSJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 13:09:27 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC0C60B48;
+        Wed,  7 Dec 2022 10:09:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670436565; x=1701972565;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=idqy2HRU6tmwtuR+qUgNNt0yOvW5tRF3NyzRxMjpUQs=;
+  b=jHQyQCiKign1m0I1ktLsAS/3U41mJIrFfEdSbo9Uk4wcmUGfX/tBQiEj
+   Kc364VgSAozm+t1RIRDCmzufRtdvxs2QFqP5mX+ktm9o5YmH8rt0FZNsL
+   cdq4HxGSBThFOprdPY0t/rN43mNrLMiSP838Qf8tCLWtYcVKlamks92Gs
+   hv3QkxhkII+UJfC9vVuEd4N+oVV90aN09UApuWF3utDy6WM4Pv2I5Cbd1
+   AJ8r87+FTZ7qt+Cna/wnzC2a60MQhG9zNFHhzhC7cZ05dr7/5W+o+MnpQ
+   1bJekC1A6XfFIzttEBRz2t5rOA6Fe/B398XWRkH8BI3OnHyl5W7cTrAMV
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="296656096"
+X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
+   d="scan'208";a="296656096"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 10:08:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="735484051"
+X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
+   d="scan'208";a="735484051"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by FMSMGA003.fm.intel.com with ESMTP; 07 Dec 2022 10:08:53 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Bartosz Staszewski <bartoszx.staszewski@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        bjorn@kernel.org, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, bpf@vger.kernel.org,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Shwetha Nagaraju <Shwetha.nagaraju@intel.com>
+Subject: [PATCH net v2 1/1] i40e: Fix the inability to attach XDP program on downed interface
+Date:   Wed,  7 Dec 2022 10:08:42 -0800
+Message-Id: <20221207180842.1096243-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20221206024554.3826186-1-sdf@google.com> <20221206024554.3826186-4-sdf@google.com>
- <Y5AWkAYVEBqi5jy3@macbook-pro-6.dhcp.thefacebook.com> <CAKH8qBuzJsmOGroS+wfb3vY_y1jksishztsiU2nV7Ts2TJ37bg@mail.gmail.com>
- <dfcfd47a-808f-ee1c-c04a-dcfedd9a2b23@linux.dev>
-In-Reply-To: <dfcfd47a-808f-ee1c-c04a-dcfedd9a2b23@linux.dev>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Wed, 7 Dec 2022 10:05:46 -0800
-Message-ID: <CAKH8qBuNM_A65LEi6G+wyU5sUEsX1AmAr8J3kKd58AFOADnW0w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX kfuncs
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 6, 2022 at 11:24 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->
-> On 12/6/22 8:52 PM, Stanislav Fomichev wrote:
-> > On Tue, Dec 6, 2022 at 8:29 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> >>
-> >> On Mon, Dec 05, 2022 at 06:45:45PM -0800, Stanislav Fomichev wrote:
-> >>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> >>> index fc4e313a4d2e..00951a59ee26 100644
-> >>> --- a/kernel/bpf/verifier.c
-> >>> +++ b/kernel/bpf/verifier.c
-> >>> @@ -15323,6 +15323,24 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
-> >>>                return -EINVAL;
-> >>>        }
-> >>>
-> >>> +     *cnt = 0;
-> >>> +
-> >>> +     if (resolve_prog_type(env->prog) == BPF_PROG_TYPE_XDP) {
-> >>> +             if (bpf_prog_is_offloaded(env->prog->aux)) {
-> >>> +                     verbose(env, "no metadata kfuncs offload\n");
-> >>> +                     return -EINVAL;
-> >>> +             }
-> >>
-> >> If I'm reading this correctly than this error will trigger
-> >> for any XDP prog trying to use a kfunc?
-> >
-> > bpf_prog_is_offloaded() should return true only when the program is
-> > fully offloaded to the device (like nfp). So here the intent is to
-> > reject kfunc programs because nft should somehow implement them first.
-> > Unless I'm not setting offload_requested somewhere, not sure I see the
-> > problem. LMK if I missed something.
->
-> It errors out for all kfunc here though. or it meant to error out for the
-> XDP_METADATA_KFUNC_* only?
+From: Bartosz Staszewski <bartoszx.staszewski@intel.com>
 
-Ah, good point, I was somewhat assuming that xdp doesn't use kfuncs
-right now and I can just assume that kfunc == metadata_kfunc.
-Will make this more selective, thanks!
+Whenever trying to load XDP prog on downed interface, function i40e_xdp
+was passing vsi->rx_buf_len field to i40e_xdp_setup() which was equal 0.
+i40e_open() calls i40e_vsi_configure_rx() which configures that field,
+but that only happens when interface is up. When it is down, i40e_open()
+is not being called, thus vsi->rx_buf_len is not set.
+
+Solution for this is calculate buffer length in newly created
+function - i40e_calculate_vsi_rx_buf_len() that return actual buffer
+length. Buffer length is being calculated based on the same rules
+applied previously in i40e_vsi_configure_rx() function.
+
+Fixes: 613142b0bb88 ("i40e: Log error for oversized MTU on device")
+Fixes: 0c8493d90b6b ("i40e: add XDP support for pass and drop actions")
+Signed-off-by: Bartosz Staszewski <bartoszx.staszewski@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Shwetha Nagaraju <Shwetha.nagaraju@intel.com>
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+v2:
+- Change title and rework commit message
+- Dropped, previous, patch 1
+
+v1: https://lore.kernel.org/netdev/20221115000324.3040207-1-anthony.l.nguyen@intel.com/
+
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 42 +++++++++++++++------
+ 1 file changed, 30 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 6416322d7c18..b8a8098110eb 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -3693,6 +3693,30 @@ static int i40e_vsi_configure_tx(struct i40e_vsi *vsi)
+ 	return err;
+ }
+ 
++/**
++ * i40e_calculate_vsi_rx_buf_len - Calculates buffer length
++ *
++ * @vsi: VSI to calculate rx_buf_len from
++ */
++static u16 i40e_calculate_vsi_rx_buf_len(struct i40e_vsi *vsi)
++{
++	u16 ret;
++
++	if (!vsi->netdev || (vsi->back->flags & I40E_FLAG_LEGACY_RX)) {
++		ret = I40E_RXBUFFER_2048;
++#if (PAGE_SIZE < 8192)
++	} else if (!I40E_2K_TOO_SMALL_WITH_PADDING &&
++		   (vsi->netdev->mtu <= ETH_DATA_LEN)) {
++		ret = I40E_RXBUFFER_1536 - NET_IP_ALIGN;
++#endif
++	} else {
++		ret = (PAGE_SIZE < 8192) ? I40E_RXBUFFER_3072 :
++					   I40E_RXBUFFER_2048;
++	}
++
++	return ret;
++}
++
+ /**
+  * i40e_vsi_configure_rx - Configure the VSI for Rx
+  * @vsi: the VSI being configured
+@@ -3704,20 +3728,14 @@ static int i40e_vsi_configure_rx(struct i40e_vsi *vsi)
+ 	int err = 0;
+ 	u16 i;
+ 
+-	if (!vsi->netdev || (vsi->back->flags & I40E_FLAG_LEGACY_RX)) {
+-		vsi->max_frame = I40E_MAX_RXBUFFER;
+-		vsi->rx_buf_len = I40E_RXBUFFER_2048;
++	vsi->max_frame = I40E_MAX_RXBUFFER;
++	vsi->rx_buf_len = i40e_calculate_vsi_rx_buf_len(vsi);
++
+ #if (PAGE_SIZE < 8192)
+-	} else if (!I40E_2K_TOO_SMALL_WITH_PADDING &&
+-		   (vsi->netdev->mtu <= ETH_DATA_LEN)) {
++	if (vsi->netdev && !I40E_2K_TOO_SMALL_WITH_PADDING &&
++	    vsi->netdev->mtu <= ETH_DATA_LEN)
+ 		vsi->max_frame = I40E_RXBUFFER_1536 - NET_IP_ALIGN;
+-		vsi->rx_buf_len = I40E_RXBUFFER_1536 - NET_IP_ALIGN;
+ #endif
+-	} else {
+-		vsi->max_frame = I40E_MAX_RXBUFFER;
+-		vsi->rx_buf_len = (PAGE_SIZE < 8192) ? I40E_RXBUFFER_3072 :
+-						       I40E_RXBUFFER_2048;
+-	}
+ 
+ 	/* set up individual rings */
+ 	for (i = 0; i < vsi->num_queue_pairs && !err; i++)
+@@ -13282,7 +13300,7 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi, struct bpf_prog *prog,
+ 	int i;
+ 
+ 	/* Don't allow frames that span over multiple buffers */
+-	if (frame_size > vsi->rx_buf_len) {
++	if (frame_size > i40e_calculate_vsi_rx_buf_len(vsi)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "MTU too large to enable XDP");
+ 		return -EINVAL;
+ 	}
+-- 
+2.35.1
+
