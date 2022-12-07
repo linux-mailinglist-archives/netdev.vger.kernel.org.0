@@ -2,109 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 930A46458E4
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 12:22:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F626458ED
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 12:23:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229997AbiLGLWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 06:22:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36348 "EHLO
+        id S229930AbiLGLXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 06:23:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229896AbiLGLWh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 06:22:37 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062441025;
-        Wed,  7 Dec 2022 03:22:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=lXNSg2HTXkNzB0XUSh5RAc5wn6uXBjCnHSQ7TYqat2M=; b=yMX0qV/ZeHNMh1vWestZfJ4Tpf
-        +TugrSleTexv9+tj8NbjlboXs8lK3zz0Kjr0e0Na43hai6keA68NbepseO6DxLEkg3ydhdFuZIkfX
-        5Vdeq8YlVEteF0wk98S5s3l73n856mgJkEo99RpV7Ip/MZZWeXmlBy2urNy3HNqX5mJSgiMjau4Gy
-        H1zJOq16WR2Gu16RswDn1pcASTxuAV7gbdZP/6ZJOJn1pLeT4Y+hz0F9PfcgY0GizM2HQt/GI4eMX
-        zdN2bWWPptZgp4QntNr2v2EdDlr4gasK4bVXGftrFcq3AyUQbzo+A8BegMxtovydlZ/ZUmsiiLK9e
-        saIPyX+g==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:57726 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1p2sVS-0000a2-PG; Wed, 07 Dec 2022 11:22:30 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1p2sVS-009tqG-4g; Wed, 07 Dec 2022 11:22:30 +0000
-In-Reply-To: <Y5B3S6KZTrYlIH8g@shell.armlinux.org.uk>
-References: <Y5B3S6KZTrYlIH8g@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Paolo Abeni <pabeni@redhat.com>, Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH RFC 2/2] net: sfp: use i2c_get_adapter_by_fwnode()
+        with ESMTP id S229813AbiLGLXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 06:23:40 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D5CFC6;
+        Wed,  7 Dec 2022 03:23:38 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id d14so19489209edj.11;
+        Wed, 07 Dec 2022 03:23:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Swxnqm3Yd6IphquwUVUjDbZqjsoRJONegiUpMUBVzbI=;
+        b=HYxWXiXhINqH8bCJs4SmMewv5g8Ur2E0DRr8gIwW12/0KK4qTfP5z59eS4QT8nStom
+         /EkDq+Tm7TELmiMhkrf5PqXt7YxQu0DPQ4W72ASsxVWhhuKhlPFMondPKLLQmhr7f/Q1
+         szN+UjpPqSMfqdT29m3C4nk0GmQn59Y78UFMY/Xhp46FBIeOMzpu+iLWGi4mFfw37L2k
+         TOB/rqpmia7dsWAgOAdFo3Im+C0xXflKP44KCK6tfikKdpCvzjX6Nf2kD+/gnXd/geYk
+         gXNxrpP6hipS4G5NkFzdbm9l7m8DDue++k/VWjlsjB5l8qAiM94C5lAXdDoRxyGf6+Rr
+         j4wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Swxnqm3Yd6IphquwUVUjDbZqjsoRJONegiUpMUBVzbI=;
+        b=D3AP79h39VUPYfP9UaNi4/eN3CXWn89gdVpexfw52XPLub3o1JUnl7bydqzt82S200
+         vkPBHw8kdZQZzk8u18KDgEkH5qNB/kjFHi8K8lES7EGNxd+qUIOASjAew2FVTes5QpDG
+         11gkh0slBnuz3KgdJsPjE8laRpVQr6/488P8naRbkeZgtNPVDw/+XHj3Ul5SfVkKqQPK
+         yKENvUxTh6sQUFbwOrFdu7I8dV/Q8msJYAg1oC27UtoaqpvdFOz3iZuWFerxcFF/dl69
+         TL4zNwOPDgu984+cSdvjXh2DQjTzbqLKraFrQyUg7GWfoIx9UH7YV/fuEBSh8p6veeZ0
+         s44w==
+X-Gm-Message-State: ANoB5plGUr2/ed2xedYXiFKVDPdfYcN37UWU2hTmnpMozvO9Oj6sebyK
+        9OhqahIwi1Bxj5tHO2dk+uccqm2me6cnUg==
+X-Google-Smtp-Source: AA0mqf5HAtg0GE5OsFF3c0vQQ0Lz9CGfSlS0+QSwQa5Bicln7DNek7IMvwQAAEuPZ1pLMl4hryWeQg==
+X-Received: by 2002:a05:6402:e0d:b0:466:4168:6ea7 with SMTP id h13-20020a0564020e0d00b0046641686ea7mr20466056edh.273.1670412216884;
+        Wed, 07 Dec 2022 03:23:36 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id f6-20020a056402004600b0046776f98d0csm2051450edu.79.2022.12.07.03.23.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 03:23:36 -0800 (PST)
+Date:   Wed, 7 Dec 2022 14:23:28 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] lib: packing: fix shift wrapping in bit_reverse()
+Message-ID: <Y5B3sAcS6qKSt+lS@kili>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1p2sVS-009tqG-4g@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 07 Dec 2022 11:22:30 +0000
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the newly introduced i2c_get_adapter_by_fwnode() API, so that we
-can retrieve the I2C adapter in a firmware independent manner once we
-have the fwnode handle for the adapter.
+The bit_reverse() function is clearly supposed to be able to handle
+64 bit values, but the types for "(1 << i)" and "bit << (width - i - 1)"
+are not enough to handle more than 32 bits.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Fixes: 554aae35007e ("lib: Add support for generic packing operations")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
 ---
- drivers/net/phy/sfp.c | 13 +------------
- 1 file changed, 1 insertion(+), 12 deletions(-)
+ lib/packing.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 83b99d95b278..aa2f7ebbdebc 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -2644,10 +2644,8 @@ static void sfp_cleanup(void *data)
- 
- static int sfp_i2c_get(struct sfp *sfp)
+diff --git a/lib/packing.c b/lib/packing.c
+index 9a72f4bbf0e2..9d7418052f5a 100644
+--- a/lib/packing.c
++++ b/lib/packing.c
+@@ -32,12 +32,11 @@ static int get_reverse_lsw32_offset(int offset, size_t len)
+ static u64 bit_reverse(u64 val, unsigned int width)
  {
--	struct acpi_handle *acpi_handle;
- 	struct fwnode_handle *h;
- 	struct i2c_adapter *i2c;
--	struct device_node *np;
- 	int err;
+ 	u64 new_val = 0;
+-	unsigned int bit;
+ 	unsigned int i;
  
- 	h = fwnode_find_reference(dev_fwnode(sfp->dev), "i2c-bus", 0);
-@@ -2656,16 +2654,7 @@ static int sfp_i2c_get(struct sfp *sfp)
- 		return -ENODEV;
+ 	for (i = 0; i < width; i++) {
+-		bit = (val & (1 << i)) != 0;
+-		new_val |= (bit << (width - i - 1));
++		if (val & BIT_ULL(1))
++			new_val |= BIT_ULL(width - i - 1);
  	}
- 
--	if (is_acpi_device_node(h)) {
--		acpi_handle = ACPI_HANDLE_FWNODE(h);
--		i2c = i2c_acpi_find_adapter_by_handle(acpi_handle);
--	} else if ((np = to_of_node(h)) != NULL) {
--		i2c = of_find_i2c_adapter_by_node(np);
--	} else {
--		err = -EINVAL;
--		goto put;
--	}
--
-+	i2c = i2c_get_adapter_by_fwnode(h);
- 	if (!i2c) {
- 		err = -EPROBE_DEFER;
- 		goto put;
+ 	return new_val;
+ }
 -- 
-2.30.2
+2.35.1
 
