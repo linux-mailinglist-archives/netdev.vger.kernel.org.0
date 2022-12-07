@@ -2,226 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0ACB645845
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 11:53:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B49645853
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 11:58:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbiLGKxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 05:53:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43982 "EHLO
+        id S229674AbiLGK6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 05:58:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229851AbiLGKxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 05:53:38 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 355794B760;
-        Wed,  7 Dec 2022 02:53:23 -0800 (PST)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2B79vtea016766;
-        Wed, 7 Dec 2022 10:53:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=W/NxrVN+hsZ5+tOtcE6Gfa4nFVgZdIeiP4MldHCmx8s=;
- b=jK2EYJqkLTV1kVVqBc7516clOpu+qXI5Y+fbwgdR00HDq+bzdSApoAjphuYl9161X1TX
- jGCA3Nid1heNKLiqeyziVBbGUBZoNshEcDMDW0DN0lOVzjdtrz1IHYdyyQ3AdrCpsM0x
- m8/cWFo+nVSTfGEjwl8vPDGtsb6M/Q81w0PyqmMI3+49TwlinWdBLElaIDqLGMQ4YIB4
- zAicmyrJ7z6acTKo5Vc0CCl9Txt3dIWS30FARSyCo8jaHzBmQcMtpnFHGvX1QU8fggzi
- cDO6oMlguS400mpvlzXriTYB98SAaq8RrYOlTvHkvia/k4N165j9rtSga0mKRppMAVyf vw== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3mapx1m7tj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 07 Dec 2022 10:53:14 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 2B6LhHbX010333;
-        Wed, 7 Dec 2022 10:53:12 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-        by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3m9ks42tjc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 07 Dec 2022 10:53:12 +0000
-Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
-        by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2B7Ar8qj39453110
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 7 Dec 2022 10:53:08 GMT
-Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9807B2004B;
-        Wed,  7 Dec 2022 10:53:08 +0000 (GMT)
-Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 01BC320049;
-        Wed,  7 Dec 2022 10:53:08 +0000 (GMT)
-Received: from Alexandras-MBP.fritz.box.com (unknown [9.171.51.222])
-        by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Wed,  7 Dec 2022 10:53:07 +0000 (GMT)
-From:   Alexandra Winter <wintera@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>
-Subject: [PATCH net v2] s390/qeth: fix use-after-free in hsci
-Date:   Wed,  7 Dec 2022 11:53:04 +0100
-Message-Id: <20221207105304.20494-1-wintera@linux.ibm.com>
-X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
+        with ESMTP id S229497AbiLGK6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 05:58:19 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2098.outbound.protection.outlook.com [40.107.94.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8774063C8;
+        Wed,  7 Dec 2022 02:58:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TNh0VYriwx7RYj/PZfXuBut/U+koEp4xio+XIWFhchC32N25wWfu4a5sAxFNMDsBArfvcdDtRukB8cyfwRp0ma3Pu1UgTCYiQvC4JQOzR6zgYL1vk+/wQJpTw8qrWf+uoXB4tSEG5hww4TZN5JUuHXRu4GYPtDw00WrbV1bLCaLKT64hokQr4nXFCcyComwKGoLNoU5uATKxoaaahl15dB7aARgWBODgA7act7XEli2EGXgDskEJZLV510jb/kDxR4fPJ0XJWMtHl/O8IggZ7CZdcntNmJ6XNaSEwM7FDrHBLwJg0INKuWEs7tGDIl0MdczpMNnM5GKSwlpBaytbjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4Aampry3pGa9rTqn6qMTVIc66Gro31d+eGqt/6LkbsI=;
+ b=Qfd4yi7Ib/Z9SEmLLvyZY3mwiNjX2fCx/BS+B1ZFgTSRcbbqmkYjtDl0dbMbza8Sl79eWB+b7z82UcswBLjcgE7OgNpbpD7tJK0JYjH4qVuTHcUYux5/cIBgpv+xkcAKu7dg8mDUTjK5kNdXKNbD6nX25Ri1CvAHCPdYWRxJmAUg7SINBv1En6rB6aSaUSUrq8HSUD+lQuUe5G3rzcVSapjCtw7DYUYku+lv7AQcEZcEL0mkeUxBeZD7cy4CrWLo7gi702VeTUs7pdwiCcSesPvStQMznMFv/bccm9YZisSRj6qDwtrlFHf3+SdLr7n0AsnAwWwiPQfZnnFwhl//mA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4Aampry3pGa9rTqn6qMTVIc66Gro31d+eGqt/6LkbsI=;
+ b=aoQyqVkR4vupeo3HUAfJRcodNyOtXnEDlzRMTqPOi4wVW+kLZXQP8jDNAOrZgT9umOiv5LGlO3tDmJW1gDSfpGyr7Emp4b+4XnXwSz+18rrvwF8bZqUaXoutb/J9IUjyhgxRzYYZi7w8T3KaCAvIQrCbNw9cuboZDY/0I/DaA9A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SN4PR13MB5710.namprd13.prod.outlook.com (2603:10b6:806:1ee::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Wed, 7 Dec
+ 2022 10:58:15 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::483b:9e84:fadc:da30]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::483b:9e84:fadc:da30%9]) with mapi id 15.20.5880.014; Wed, 7 Dec 2022
+ 10:58:15 +0000
+Date:   Wed, 7 Dec 2022 11:58:10 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, oss-drivers@corigine.com,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] nfp: Fix spelling mistake "tha" -> "the"
+Message-ID: <Y5BxwtW1hC78/VC8@corigine.com>
+References: <20221207094312.2281493-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221207094312.2281493-1-colin.i.king@gmail.com>
+X-ClientProxiedBy: AS4P195CA0005.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5e2::14) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 9vhbU2XVaSGQQDVE5W6JPOAsSOu5NgF1
-X-Proofpoint-ORIG-GUID: 9vhbU2XVaSGQQDVE5W6JPOAsSOu5NgF1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-12-07_04,2022-12-07_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- priorityscore=1501 clxscore=1011 adultscore=0 mlxlogscore=999
- lowpriorityscore=0 spamscore=0 bulkscore=0 impostorscore=0 mlxscore=0
- phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2210170000 definitions=main-2212070089
-X-Spam-Status: No, score=-1.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEXHASH_WORD,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB5710:EE_
+X-MS-Office365-Filtering-Correlation-Id: b10a6a34-32ee-4504-4d75-08dad841f10f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KCRV6pw9pGCSVxZntlZnRLem3SrT36sBUXHb5PPY5lfVYwCvkLq9T1C5CmQ/pUuQT4HZpCYlqJTUL3Ri4pyR0j4yaWEmmItgUpPR82ZQfkD0Z55H1IRSfuvPx3GRq8oACUa8lkwr4sBDEJVB7QAN/3UBl/N3CUh2Avuz83rCLPJHHuYfQe5/2vkEnO3kzrZvliGoRMUvrRzBXx4P9nzx2BS7ITUaY3b4vaK9E9ryaSH7sekotkioNdSZA/WbYrMRfHTNiRJP/WGzoli34dOQe4H3EnYr0+UGkE9MRbXfJgLwFaLonP+sSXoablPdWkIed/r/hBMANDBBOoiPOvVUYo2qk2naGHPRiGjT6ORTQV5Jpm+tw27HyYBgG1nY8neWSxW7zBcLvAgkuLglkH5OSZSVcW/aim9+NVlSnWqixLzThnF0T8GPBlOmKzYCxHkI4trh7zBdL1wQ7FRaPwEu5cSRJUbzTfD5viv650mb6fR+KcluiBd8yX1xBTVoHZuPcndqz3aZ8E+Y9oIhQbkLAsuZRbUWe7za9uQ2kN+z6VwUzRYFAhfoH4/Pp/EufQFRnflSfpE8qy+IXziiZSldn+XtfKLwE2aYtpQIafwnAOoNzVUcEFcD/JmtxZvdOUDNCvjTmOwZDQvHscuMbL39gJgp8AUfVS7zaJk49pf7KfpCcCTP4fXMXywWVica8K47
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39840400004)(346002)(396003)(136003)(376002)(366004)(451199015)(558084003)(36756003)(38100700002)(2906002)(5660300002)(44832011)(8936002)(186003)(2616005)(86362001)(83380400001)(54906003)(6916009)(316002)(478600001)(66476007)(66556008)(66946007)(41300700001)(4326008)(6486002)(8676002)(6512007)(6666004)(6506007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?P43HvwUn/9FbpcWfvNnJKwK8h2Sv1oyais7YpMcXeGsUNakd0y+rJNzbq4qP?=
+ =?us-ascii?Q?3XANbjNhYxw2s4mKowTIj22ylUguah9RFIK/34weS33L1Y/PEykCHpUNL7qy?=
+ =?us-ascii?Q?EsI1cTqXFegYvLvtNTrMs7UIjahyMRSzHcz+tlQzWPOW+BOZio1dEfqRXpRG?=
+ =?us-ascii?Q?UkQGzTawVT+ubSX/SGhAi/vXzdNnB3bP/4T0WdsqHhFI6tMZJNEEI+OMEJqA?=
+ =?us-ascii?Q?meqSdXlhT4nxUlL4dqyM/1wRdIE3IDmhlT73g6JlLZRfIS43kChveipglJtz?=
+ =?us-ascii?Q?miJ6tmSoUgu5GLajBoqOEvo0cVWXy1PWQWA1UF9zGjMqABxqusf0nyOm2vg4?=
+ =?us-ascii?Q?vv27pPt2xe07PxYFsfO643D/Zg43wKIciBX649G3Dd+keIe4BoAdz0jvwula?=
+ =?us-ascii?Q?nxugn7VSc0Bd16Hkg3ALLXj47BW/Jz9PM6XwTx0A7RALveKkZ8ypT0ec1lno?=
+ =?us-ascii?Q?iaMM7wcKHIBftbtjPflmfRSpSPlFfvAZuLxVQCrEjkQm5jOtuk7i60OkH1UE?=
+ =?us-ascii?Q?L0/rWCRlxD82RI/bD01Zhj/mhuH+kvAaogjO3itmdaT8vZSkJNZ9kYgWhohS?=
+ =?us-ascii?Q?hW2h15e03TLlVbMF48OgvlR/h8BJ3sFB+GoU14OBhwGwRPzGpNRVWPT+gz5r?=
+ =?us-ascii?Q?OstSlS37+X6xtpdci3Ut9BHh6qhRwgnVGNhQeMYaPXa8d+9phgbyySCxqJBG?=
+ =?us-ascii?Q?BESufeV+kgFlU4AHYPKQJnT5IgBAGeDjOxS6q5gzs1nWUtHB+cOEw8Q7Xdin?=
+ =?us-ascii?Q?f9cJspS94jrf6vY6muGIjAXhyGrbtsV/KsnADiI9nvvXN6Qh1LdTUW94EhCw?=
+ =?us-ascii?Q?6c7GzG9H7Qxc7WR5n6TkXdev2FAl75lGraR0KK94q3bOv/uP8TvwMprP35cN?=
+ =?us-ascii?Q?NZoJ6qCuQk58+Xm/E1rvSyMf8UUyF566k3MPK8TGED1TRqzmv22hiPfWq68d?=
+ =?us-ascii?Q?tgrW9Ruv2DVKTbslM70Pk/Zt36t92awv3IFEnPwHpJQB50MlUxmB69RfNPqZ?=
+ =?us-ascii?Q?2DoDBScJme8SY+OQfB44EZqnO4xYv+Qk9XjP8m70J2p9SJ9OwxSgaXCPyPtl?=
+ =?us-ascii?Q?kqCTDlQm+cnrA7G38lajc1SksIiLkJ0cdCzU02ycvicHcVz3dC95+FXkRmS2?=
+ =?us-ascii?Q?c5UEK1ccGu1IazkJOqgahV4eBeoprQWC1p04lM5ywGyq0ie0wO3yCQ2NvwwR?=
+ =?us-ascii?Q?Ko3gfmoP8rbdUjfje98myw/9Xd2jTB8UD6B0fBSxbWWRMtT3ANLyf4nKOnFE?=
+ =?us-ascii?Q?+nv4DWQ8DWykHbF5HlB7n7KXCp5lC9Li1uUahFAu9JguXj399kDKWgjf1KBs?=
+ =?us-ascii?Q?ti57hv6edYfEOcqAxG1FKoeoa1nEi+OofRmYiZKzr9uTjWZw+i7+DZ5AYzY7?=
+ =?us-ascii?Q?cop4RXu8uDXjZWEPQZ+ovKo00HP0yzTgBY6VdakYI0UVAQpFjgfUmJCjHoJ0?=
+ =?us-ascii?Q?JzdgDxpygyIoxSeZU8cBvaHmnsUGa4R1kVNYEgUudCNfU+jIuO+6cgLlvf+h?=
+ =?us-ascii?Q?vAJdAPVPA1zbsXOwXoH+/cpx5+3qyZvH8W6VHnW5/WztBmDKXFeknxecbT46?=
+ =?us-ascii?Q?AHr/ywZsu106VALLnkLmPoullf+KV1xgWXieIy073Bz1KJAl3SR3fTfNR4OF?=
+ =?us-ascii?Q?Rei2k3MSPYY2sljNCWvTHgu6iGzIOOTerpobk58PKVR4igqWVfpy0lhsiZed?=
+ =?us-ascii?Q?AD4J7Q=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b10a6a34-32ee-4504-4d75-08dad841f10f
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2022 10:58:15.6694
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7jxCh3dZz4Jzmqn+kegvUZHKRIJp7DZ4lmbs0Otu8W6ULpm8CnjUXdu6+jblwXP1KUUEoqefdaqn2ufwiHRHSnr5T+cAs/Aa5uaBZvugx+w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5710
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KASAN found that addr was dereferenced after br2dev_event_work was freed.
+On Wed, Dec 07, 2022 at 09:43:12AM +0000, Colin Ian King wrote:
+> There is a spelling mistake in a nn_dp_warn message. Fix it.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-==================================================================
-BUG: KASAN: use-after-free in qeth_l2_br2dev_worker+0x5ba/0x6b0
-Read of size 1 at addr 00000000fdcea440 by task kworker/u760:4/540
-CPU: 17 PID: 540 Comm: kworker/u760:4 Tainted: G            E      6.1.0-20221128.rc7.git1.5aa3bed4ce83.300.fc36.s390x+kasan #1
-Hardware name: IBM 8561 T01 703 (LPAR)
-Workqueue: 0.0.8000_event qeth_l2_br2dev_worker
-Call Trace:
- [<000000016944d4ce>] dump_stack_lvl+0xc6/0xf8
- [<000000016942cd9c>] print_address_description.constprop.0+0x34/0x2a0
- [<000000016942d118>] print_report+0x110/0x1f8
- [<0000000167a7bd04>] kasan_report+0xfc/0x128
- [<000000016938d79a>] qeth_l2_br2dev_worker+0x5ba/0x6b0
- [<00000001673edd1e>] process_one_work+0x76e/0x1128
- [<00000001673ee85c>] worker_thread+0x184/0x1098
- [<000000016740718a>] kthread+0x26a/0x310
- [<00000001672c606a>] __ret_from_fork+0x8a/0xe8
- [<00000001694711da>] ret_from_fork+0xa/0x40
-Allocated by task 108338:
- kasan_save_stack+0x40/0x68
- kasan_set_track+0x36/0x48
- __kasan_kmalloc+0xa0/0xc0
- qeth_l2_switchdev_event+0x25a/0x738
- atomic_notifier_call_chain+0x9c/0xf8
- br_switchdev_fdb_notify+0xf4/0x110
- fdb_notify+0x122/0x180
- fdb_add_entry.constprop.0.isra.0+0x312/0x558
- br_fdb_add+0x59e/0x858
- rtnl_fdb_add+0x58a/0x928
- rtnetlink_rcv_msg+0x5f8/0x8d8
- netlink_rcv_skb+0x1f2/0x408
- netlink_unicast+0x570/0x790
- netlink_sendmsg+0x752/0xbe0
- sock_sendmsg+0xca/0x110
- ____sys_sendmsg+0x510/0x6a8
- ___sys_sendmsg+0x12a/0x180
- __sys_sendmsg+0xe6/0x168
- __do_sys_socketcall+0x3c8/0x468
- do_syscall+0x22c/0x328
- __do_syscall+0x94/0xf0
- system_call+0x82/0xb0
-Freed by task 540:
- kasan_save_stack+0x40/0x68
- kasan_set_track+0x36/0x48
- kasan_save_free_info+0x4c/0x68
- ____kasan_slab_free+0x14e/0x1a8
- __kasan_slab_free+0x24/0x30
- __kmem_cache_free+0x168/0x338
- qeth_l2_br2dev_worker+0x154/0x6b0
- process_one_work+0x76e/0x1128
- worker_thread+0x184/0x1098
- kthread+0x26a/0x310
- __ret_from_fork+0x8a/0xe8
- ret_from_fork+0xa/0x40
-Last potentially related work creation:
- kasan_save_stack+0x40/0x68
- __kasan_record_aux_stack+0xbe/0xd0
- insert_work+0x56/0x2e8
- __queue_work+0x4ce/0xd10
- queue_work_on+0xf4/0x100
- qeth_l2_switchdev_event+0x520/0x738
- atomic_notifier_call_chain+0x9c/0xf8
- br_switchdev_fdb_notify+0xf4/0x110
- fdb_notify+0x122/0x180
- fdb_add_entry.constprop.0.isra.0+0x312/0x558
- br_fdb_add+0x59e/0x858
- rtnl_fdb_add+0x58a/0x928
- rtnetlink_rcv_msg+0x5f8/0x8d8
- netlink_rcv_skb+0x1f2/0x408
- netlink_unicast+0x570/0x790
- netlink_sendmsg+0x752/0xbe0
- sock_sendmsg+0xca/0x110
- ____sys_sendmsg+0x510/0x6a8
- ___sys_sendmsg+0x12a/0x180
- __sys_sendmsg+0xe6/0x168
- __do_sys_socketcall+0x3c8/0x468
- do_syscall+0x22c/0x328
- __do_syscall+0x94/0xf0
- system_call+0x82/0xb0
-Second to last potentially related work creation:
- kasan_save_stack+0x40/0x68
- __kasan_record_aux_stack+0xbe/0xd0
- kvfree_call_rcu+0xb2/0x760
- kernfs_unlink_open_file+0x348/0x430
- kernfs_fop_release+0xc2/0x320
- __fput+0x1ae/0x768
- task_work_run+0x1bc/0x298
- exit_to_user_mode_prepare+0x1a0/0x1a8
- __do_syscall+0x94/0xf0
- system_call+0x82/0xb0
-The buggy address belongs to the object at 00000000fdcea400
- which belongs to the cache kmalloc-96 of size 96
-The buggy address is located 64 bytes inside of
- 96-byte region [00000000fdcea400, 00000000fdcea460)
-The buggy address belongs to the physical page:
-page:000000005a9c26e8 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0xfdcea
-flags: 0x3ffff00000000200(slab|node=0|zone=1|lastcpupid=0x1ffff)
-raw: 3ffff00000000200 0000000000000000 0000000100000122 000000008008cc00
-raw: 0000000000000000 0020004100000000 ffffffff00000001 0000000000000000
-page dumped because: kasan: bad access detected
-Memory state around the buggy address:
- 00000000fdcea300: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
- 00000000fdcea380: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
->00000000fdcea400: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-                                           ^
- 00000000fdcea480: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
- 00000000fdcea500: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-==================================================================
+Hi Colin,
 
-Fixes: f7936b7b2663 ("s390/qeth: Update MACs of LEARNING_SYNC device")
-Reported-by: Thorsten Winkler <twinkler@linux.ibm.com>
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
-Reviewed-by: Thorsten Winkler <twinkler@linux.ibm.com>
----
- drivers/s390/net/qeth_l2_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks for fixing this.
 
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index 9dc935886e9f..c6ded3fdd715 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -758,7 +758,6 @@ static void qeth_l2_br2dev_worker(struct work_struct *work)
- 	struct list_head *iter;
- 	int err = 0;
- 
--	kfree(br2dev_event_work);
- 	QETH_CARD_TEXT_(card, 4, "b2dw%04lx", event);
- 	QETH_CARD_TEXT_(card, 4, "ma%012llx", ether_addr_to_u64(addr));
- 
-@@ -815,6 +814,7 @@ static void qeth_l2_br2dev_worker(struct work_struct *work)
- 	dev_put(brdev);
- 	dev_put(lsyncdev);
- 	dev_put(dstdev);
-+	kfree(br2dev_event_work);
- }
- 
- static int qeth_l2_br2dev_queue_work(struct net_device *brdev,
--- 
-2.37.1 (Apple Git-137.1)
-
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
