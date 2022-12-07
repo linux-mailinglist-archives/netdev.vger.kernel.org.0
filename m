@@ -2,184 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB37F645654
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 10:19:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA06D645657
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 10:19:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbiLGJTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 04:19:22 -0500
+        id S229893AbiLGJT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 04:19:28 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbiLGJTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 04:19:08 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38978293;
-        Wed,  7 Dec 2022 01:19:06 -0800 (PST)
-Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D08EF1FDBC;
-        Wed,  7 Dec 2022 09:19:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1670404744; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ijRcVYqPEjBAfgioAlVUgPdPwzo/HNYZ8f5vv1ik9Sk=;
-        b=0aPcXOex+E1M4o5no6RISe8VqofletEFf1ZLxOzclSAm166hTjcp044ed4Rk8MMu10x/ZH
-        znpNvLXbFsWDBTpxbzJ++83/YyeTTFyQgugQNowkuppSWZYwXP+8Zl51tBMActTQWYjsPN
-        roICipK+C606GpImLgg2eO9107E39AI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1670404744;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ijRcVYqPEjBAfgioAlVUgPdPwzo/HNYZ8f5vv1ik9Sk=;
-        b=wXLCuKSsXGXdou8O/5nq6Vbdd4/23AOh0ptXIuoTwKXjGMkUD4Qo0FU5yWrazDnWuGDPxv
-        8nRPcyblUsJPCeAQ==
-Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id 63842136B4;
-        Wed,  7 Dec 2022 09:19:04 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap1.suse-dmz.suse.de with ESMTPSA
-        id EnylF4hakGOjZgAAGKfGzw
-        (envelope-from <vbabka@suse.cz>); Wed, 07 Dec 2022 09:19:04 +0000
-Message-ID: <ef7c0afb-cc93-e171-d439-bf2a7b960db4@suse.cz>
-Date:   Wed, 7 Dec 2022 10:19:04 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH] skbuff: Reallocate to ksize() in __build_skb_around()
-Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     syzbot+fda18eaa8c12534ccb3b@syzkaller.appspotmail.com,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229813AbiLGJTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 04:19:22 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECB8248;
+        Wed,  7 Dec 2022 01:19:21 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id d1so27127095wrs.12;
+        Wed, 07 Dec 2022 01:19:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=yk+01Q5hHrzjtzXY624bUUvdeMShY716sfcUJDXSwKg=;
+        b=O8dAy4F4NMkE1i/p/ypI70kJIQgWtxRJ/NNVonelkZ3zTrSvsZ3oYoiyXrrDlff9En
+         H4yH5zVTgR28Ad37YhCcVYUs0M2xMmNVMAU4t6PImcToM4VWsTt0Uh/21poLG17MNgT1
+         /wlnTI4kseap6HDWgA3HH4f5RS4zKsb1wgCzx7HlBz29Fr94+Lrq4M0d6lx0QlCeiepg
+         RwJnqlxk/dbHOEx4NCf259WQBIubYYZQa5Fbwn5Ymqa7VK8rGP2UH0wAixlDZMZ20CfF
+         bUuP3k7jk5D7hmFHLQexGng6cL/fQ8SnTeRhoZXr+5GRe+T8BzQ2tFYyawtsVyQ2AEuF
+         zvxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yk+01Q5hHrzjtzXY624bUUvdeMShY716sfcUJDXSwKg=;
+        b=KFfNw3SoiKSw1+99wbfLQcEMsSzUPyqw3E0nVep/eWyiVvBE4yrD/HLa3tWk+0raOH
+         3/sc3I1s15NwEC7dYRMtFXbbVfXPxUzexdQ2Z9ut4beRLPXJnZh5d6ZQx7THT+tum5wH
+         e3ZSVZ6GB9tyLfH7cRWDFoOB2JtaJP7XmGJ8yfR7yjXFdCnFvNcNeSU9hXfXQu+HJrRW
+         memo1Qrq5cxjA6JJRPXpWnX9k6nMCNNXWXRhJ6+CqcgrSg6s12uOUtnrT3FWciKpMDmq
+         C+5uMIFxHMXlMKIm9OrcYo5V3OSB5s05GtetRntLP/JATtnyIHeBi5im12A4hjBR0BQ5
+         TdhA==
+X-Gm-Message-State: ANoB5plD2pJHPQwNdfwE6KzSODcuRajKWmJaMOZtubR0+r9wBj3Xut1o
+        hMLvEekYCKRAhBE3TpzdY2Q=
+X-Google-Smtp-Source: AA0mqf7p3ejbcewgNSyVTrvdicC8SFx2IBdkYmatYw/nRnWSivQak6ErtxEUTf2R0z4jWRVPqE/B5A==
+X-Received: by 2002:adf:db87:0:b0:242:2719:5784 with SMTP id u7-20020adfdb87000000b0024227195784mr21046332wri.130.1670404760305;
+        Wed, 07 Dec 2022 01:19:20 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id u19-20020a05600c19d300b003d07de1698asm1054951wmq.46.2022.12.07.01.19.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 01:19:19 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Simon Horman <simon.horman@corigine.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        pepsipu <soopthegoop@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Andrii Nakryiko <andrii@kernel.org>, ast@kernel.org,
-        bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hao Luo <haoluo@google.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, jolsa@kernel.org,
-        KP Singh <kpsingh@kernel.org>, martin.lau@linux.dev,
-        Stanislav Fomichev <sdf@google.com>, song@kernel.org,
-        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        David Ahern <dsahern@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Richard Gobert <richardbgobert@gmail.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        David Rientjes <rientjes@google.com>,
-        linux-hardening@vger.kernel.org
-References: <20221206231659.never.929-kees@kernel.org>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20221206231659.never.929-kees@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Huanhuan Wang <huanhuan.wang@corigine.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        oss-drivers@corigine.com, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] xfrm: Fix spelling mistake "tyoe" -> "type"
+Date:   Wed,  7 Dec 2022 09:19:19 +0000
+Message-Id: <20221207091919.2278416-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.38.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/7/22 00:17, Kees Cook wrote:
-> When build_skb() is passed a frag_size of 0, it means the buffer came
-> from kmalloc. In these cases, ksize() is used to find its actual size,
-> but since the allocation may not have been made to that size, actually
-> perform the krealloc() call so that all the associated buffer size
-> checking will be correctly notified. For example, syzkaller reported:
-> 
->   BUG: KASAN: slab-out-of-bounds in __build_skb_around+0x235/0x340 net/core/skbuff.c:294
->   Write of size 32 at addr ffff88802aa172c0 by task syz-executor413/5295
-> 
-> For bpf_prog_test_run_skb(), which uses a kmalloc()ed buffer passed to
-> build_skb().
+There is a spelling mistake in a nn_err message. Fix it.
 
-Weren't all such kmalloc() users converted to kmalloc_size_roundup() to
-prevent this?
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/ethernet/netronome/nfp/crypto/ipsec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Reported-by: syzbot+fda18eaa8c12534ccb3b@syzkaller.appspotmail.com
-> Link: https://groups.google.com/g/syzkaller-bugs/c/UnIKxTtU5-0/m/-wbXinkgAQAJ
-> Fixes: 38931d8989b5 ("mm: Make ksize() a reporting-only function")
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Pavel Begunkov <asml.silence@gmail.com>
-> Cc: pepsipu <soopthegoop@gmail.com>
-> Cc: syzbot+fda18eaa8c12534ccb3b@syzkaller.appspotmail.com
-> Cc: Vlastimil Babka <vbabka@suse.cz>
-> Cc: kasan-dev <kasan-dev@googlegroups.com>
-> Cc: Andrii Nakryiko <andrii@kernel.org>
-> Cc: ast@kernel.org
-> Cc: bpf <bpf@vger.kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Hao Luo <haoluo@google.com>
-> Cc: Jesper Dangaard Brouer <hawk@kernel.org>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: jolsa@kernel.org
-> Cc: KP Singh <kpsingh@kernel.org>
-> Cc: martin.lau@linux.dev
-> Cc: Stanislav Fomichev <sdf@google.com>
-> Cc: song@kernel.org
-> Cc: Yonghong Song <yhs@fb.com>
-> Cc: netdev@vger.kernel.org
-> Cc: LKML <linux-kernel@vger.kernel.org>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  net/core/skbuff.c | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 1d9719e72f9d..b55d061ed8b4 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -274,7 +274,23 @@ static void __build_skb_around(struct sk_buff *skb, void *data,
->  			       unsigned int frag_size)
->  {
->  	struct skb_shared_info *shinfo;
-> -	unsigned int size = frag_size ? : ksize(data);
-> +	unsigned int size = frag_size;
-> +
-> +	/* When frag_size == 0, the buffer came from kmalloc, so we
-> +	 * must find its true allocation size (and grow it to match).
-> +	 */
-> +	if (unlikely(size == 0)) {
-> +		void *resized;
-> +
-> +		size = ksize(data);
-> +		/* krealloc() will immediate return "data" when
-> +		 * "ksize(data)" is requested: it is the existing upper
-> +		 * bounds. As a result, GFP_ATOMIC will be ignored.
-> +		 */
-> +		resized = krealloc(data, size, GFP_ATOMIC);
-> +		if (WARN_ON(resized != data))
-
-WARN_ON_ONCE() could be sufficient as either this is impossible to hit by
-definition, or something went very wrong (a patch screwed ksize/krealloc?)
-and it can be hit many times?
-
-> +			data = resized;
-
-In that "impossible" case, this could also end up as NULL due to GFP_ATOMIC
-allocation failure, but maybe it's really impractical to do anything about it...
-
-> +	}
->  
->  	size -= SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->  
+diff --git a/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c b/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
+index 4632268695cb..266368386836 100644
+--- a/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
+[next]+++ b/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
+@@ -303,7 +303,7 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x)
+ 	}
+ 
+ 	if (x->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
+-		nn_err(nn, "Unsupported xfrm offload tyoe\n");
++		nn_err(nn, "Unsupported xfrm offload type\n");
+ 		return -EINVAL;
+ 	}
+ 
+-- 
+2.38.1
 
