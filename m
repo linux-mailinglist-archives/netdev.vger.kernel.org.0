@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A5C6644FEB
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 01:02:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E75A644FEE
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 01:02:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiLGACP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 19:02:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52266 "EHLO
+        id S229843AbiLGAC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 19:02:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiLGAB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 19:01:57 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DAC49083;
-        Tue,  6 Dec 2022 16:01:55 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id x22so10157928ejs.11;
-        Tue, 06 Dec 2022 16:01:55 -0800 (PST)
+        with ESMTP id S229771AbiLGACS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 19:02:18 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBEB4B752;
+        Tue,  6 Dec 2022 16:02:15 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id qk9so10239640ejc.3;
+        Tue, 06 Dec 2022 16:02:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hp7aegHQL/VcwqFRTSdu/GwDmHSFMjOcY3IIQ3kMIu8=;
-        b=UJhwcvQ+n8+9IMB0kLRfudqjlvimCczsjSAJrv1GITLNr5YLPF+PMxizkZzMiB2RXH
-         rBa++Dk8hL/9Q8voetmnRIIdpfUF+dpp1g87kJ5I3OC14F48w7xJuXyTVAMRhXQ1/Hyx
-         8lVYTkRvQdGVHtpevYNphfwNqirUS+e49ckj739Z4p4g5eNKoNaEtd2OknTcL0Kgw1Nu
-         3koEu7SdUEM2ugUTnjH0cclTvRt07BGTDmlI45vkdgRpDYAmNcFabHEtWFMynePi+jbQ
-         sRxTKslkSNhDU2V7Lyx66LE1OTBLgDfJAuNQZw2dzBUnp1hIqHKd8rcmF5UwJlOerWJt
-         eSKA==
+        bh=Z2EbBwSlHkeOv9K6OBTtLrBx/nZj0aDJxKWtSJD6mb0=;
+        b=Ag31lr8bOym77k8qVeuZIWLSlowABH610ig0+eKEMVWh2JhqoSfCRwbKBi/UQ2gT5o
+         UaH5PHaLCjr9DUfQIdc9a/EOBVecZkzf9QEPR+OFg5XDOK0wY2/d8P+8fuyHPu33UJYc
+         sbcDthS91GcbKNmnvPiDCtgjUf60QNa5NU/tFWvQnJkAIoqL/Ob5Qwud8ZQkTLCpaAD9
+         Lg2allU8J+Td/TvrOPoD+qcdr6jduCnpcrD9MnWRV22hhlVLzU9a0GGoi75Qx6CnqcrQ
+         4MyDU8K/wxSz+3bw95Y00ZeDqPbZ7pCVRa888n3n5b2FCzSbbr3xt7XpzN8qrHncwLfZ
+         xdug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Hp7aegHQL/VcwqFRTSdu/GwDmHSFMjOcY3IIQ3kMIu8=;
-        b=hEFs9nHH4sA0Akm0tQ0gyUq35ssFUhUiXZnlIreQdX32hbWQKPXCE3ufHlG+ofaN+s
-         SeLunc9GR4o+lN2sKO3agOtbzVtUAoS2M92Wo89L2qoae0wIffeqyTuo4LBHm77CEmKT
-         61teoCosRRNNbpl7WTQOBWVOfSda28HHuMdLdOC6bMThPnPKJauK2i99JpJRyi+V+7q7
-         teLSi93e8s72AcpX/4Bc22nrLgP0Y1/cNDdekVCSSDNvisFi89z4G/q8VNlvuuzj6nBP
-         tT64GLIemZYSBo2dAiaILfXL/boEXKC5wB5VlpgOTcIOByliouLXxv0BSQWSehxGUzKB
-         GFxw==
-X-Gm-Message-State: ANoB5pnyLG4zG8CXg1eLGcIB0uX/KdhxhSeYko0/Mwfr+DlC/mxIe2g2
-        dxuGRFs+psFwzc9erbj3XVQ=
-X-Google-Smtp-Source: AA0mqf5d0RCz32YPznfSo5jFSzVVF1CGLU8LgBMU3SoFPl+m8tnvavPv9J3j6Cv0CbfjSG5ft+6TRA==
-X-Received: by 2002:a17:906:404:b0:781:f54c:1947 with SMTP id d4-20020a170906040400b00781f54c1947mr63563316eja.69.1670371314410;
-        Tue, 06 Dec 2022 16:01:54 -0800 (PST)
+        bh=Z2EbBwSlHkeOv9K6OBTtLrBx/nZj0aDJxKWtSJD6mb0=;
+        b=gUhs6OV9PTMUdjtruP1s64SP0airmQrT2GTxCjDoAFNJw/lEA2rKgYY0x7nLvVLyUB
+         EBZQUd0Gk5bHBbbmhhVkrFcgoW5eHTR7ogV1i1TKCRWKCktTXba+ZdK7Fv19Xo/6WoBM
+         AJY6rTJ6iFu05lMo/hoG6mYQMopH/QLO2Ows4qjwo6nIqU/KXhDTgTuF6GFXzVRZAEkr
+         6A+KUPhegRPtWT3inq2WnIDJF8djlzsZ/010nqgu0gYSJ3nCCM0y3VfEm6TnsJ0zFEB0
+         +2S5P8WaOxd+vFpRzDHsbWcHUG5xAeJIYi9L+hw5bnHOVTWhvhQZu7lp6qy/nN+luitS
+         HsEw==
+X-Gm-Message-State: ANoB5pnIWZF+WNIyxtv7WWOpMb3QIRJ7mZG+GGoGirwbsMhlqxumN8Xo
+        C9QznJ/WTeDt5W6XRFuFT60=
+X-Google-Smtp-Source: AA0mqf7ezYMyOZHxNiWaDw/TzbcGytGoKARkA9JaYE39Twc8r0kis9NGCAr6EN7p14Iajw41ZIYVfQ==
+X-Received: by 2002:a17:906:7852:b0:7b7:718d:22c with SMTP id p18-20020a170906785200b007b7718d022cmr61174561ejm.507.1670371334391;
+        Tue, 06 Dec 2022 16:02:14 -0800 (PST)
 Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
-        by smtp.gmail.com with ESMTPSA id p10-20020a170906838a00b007c0dacbe00bsm4279034ejx.115.2022.12.06.16.01.53
+        by smtp.gmail.com with ESMTPSA id o17-20020a170906769100b00782fbb7f5f7sm7856475ejm.113.2022.12.06.16.02.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Dec 2022 16:01:54 -0800 (PST)
-Date:   Wed, 7 Dec 2022 01:02:05 +0100
+        Tue, 06 Dec 2022 16:02:14 -0800 (PST)
+Date:   Wed, 7 Dec 2022 01:02:25 +0100
 From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -59,9 +59,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: [PATCH v5 net-next 3/5] drivers/net/phy: add connection between
- ethtool and phylib for PLCA
-Message-ID: <cbca831071bfe60a34a84b45b945efd4ce3b4449.1670371013.git.piergiorgio.beruto@gmail.com>
+Subject: [PATCH v5 net-next 4/5] drivers/net/phy: add helpers to get/set PLCA
+ configuration
+Message-ID: <005d0c5d8be7732e90b1ce4ee00099c126556d82.1670371013.git.piergiorgio.beruto@gmail.com>
 References: <cover.1670371013.git.piergiorgio.beruto@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -77,215 +77,303 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the required connection between netlink ethtool and
-phylib to resolve PLCA get/set config and get status messages.
+This patch adds support in phylib to read/write PLCA configuration for
+Ethernet PHYs that support the OPEN Alliance "10BASE-T1S PLCA
+Management Registers" specifications. These can be found at
+https://www.opensig.org/about/specifications/
 
 Signed-off-by: Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
 ---
- drivers/net/phy/phy.c        | 175 +++++++++++++++++++++++++++++++++++
- drivers/net/phy/phy_device.c |   3 +
- 2 files changed, 178 insertions(+)
+ MAINTAINERS                          |   1 +
+ drivers/net/phy/mdio-open-alliance.h |  47 +++++++
+ drivers/net/phy/phy-c45.c            | 183 +++++++++++++++++++++++++++
+ include/linux/phy.h                  |   6 +
+ 4 files changed, 237 insertions(+)
+ create mode 100644 drivers/net/phy/mdio-open-alliance.h
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index e5b6cb1a77f9..3fc251f5de26 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -543,6 +543,181 @@ int phy_ethtool_get_stats(struct phy_device *phydev,
- }
- EXPORT_SYMBOL(phy_ethtool_get_stats);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7952243e4b43..ed626cbdf5af 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16400,6 +16400,7 @@ PLCA RECONCILIATION SUBLAYER (IEEE802.3 Clause 148)
+ M:	Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
++F:	drivers/net/phy/mdio-open-alliance.h
+ F:	net/ethtool/plca.c
  
-+/**
-+ * phy_ethtool_get_plca_cfg - Get PLCA RS configuration
-+ *
-+ * @phydev: the phy_device struct
-+ * @plca_cfg: where to store the retrieved configuration
+ PLDMFW LIBRARY
+diff --git a/drivers/net/phy/mdio-open-alliance.h b/drivers/net/phy/mdio-open-alliance.h
+new file mode 100644
+index 000000000000..5f64514108b1
+--- /dev/null
++++ b/drivers/net/phy/mdio-open-alliance.h
+@@ -0,0 +1,47 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * mdio-open-alliance.h - definition of OPEN Alliance SIG standard registers
 + */
-+int phy_ethtool_get_plca_cfg(struct phy_device *phydev,
-+			     struct phy_plca_cfg *plca_cfg)
-+{
-+	int ret;
 +
-+	if (!phydev->drv) {
-+		ret = -EIO;
-+		goto out;
-+	}
++#ifndef __MDIO_OPEN_ALLIANCE__
++#define __MDIO_OPEN_ALLIANCE__
 +
-+	if (!phydev->drv->get_plca_cfg) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
++#include <linux/mdio.h>
 +
-+	memset(plca_cfg, 0xFF, sizeof(*plca_cfg));
++/* NOTE: all OATC14 registers are located in MDIO_MMD_VEND2 */
 +
-+	mutex_lock(&phydev->lock);
-+	ret = phydev->drv->get_plca_cfg(phydev, plca_cfg);
++/* Open Alliance TC14 (10BASE-T1S) registers */
++#define MDIO_OATC14_PLCA_IDVER	0xca00  /* PLCA ID and version */
++#define MDIO_OATC14_PLCA_CTRL0	0xca01	/* PLCA Control register 0 */
++#define MDIO_OATC14_PLCA_CTRL1	0xca02	/* PLCA Control register 1 */
++#define MDIO_OATC14_PLCA_STATUS	0xca03	/* PLCA Status register */
++#define MDIO_OATC14_PLCA_TOTMR	0xca04	/* PLCA TO Timer register */
++#define MDIO_OATC14_PLCA_BURST	0xca05	/* PLCA BURST mode register */
 +
-+	if (ret)
-+		goto out_drv;
++/* Open Alliance TC14 PLCA IDVER register */
++#define MDIO_OATC14_PLCA_IDM	0xff00	/* PLCA MAP ID */
++#define MDIO_OATC14_PLCA_VER	0x00ff	/* PLCA MAP version */
 +
-+out_drv:
-+	mutex_unlock(&phydev->lock);
-+out:
-+	return ret;
-+}
++/* Open Alliance TC14 PLCA CTRL0 register */
++#define MDIO_OATC14_PLCA_EN	BIT(15) /* PLCA enable */
++#define MDIO_OATC14_PLCA_RST	BIT(14) /* PLCA reset */
 +
-+/**
-+ * phy_ethtool_set_plca_cfg - Set PLCA RS configuration
-+ *
-+ * @phydev: the phy_device struct
-+ * @extack: extack for reporting useful error messages
-+ * @plca_cfg: new PLCA configuration to apply
-+ */
-+int phy_ethtool_set_plca_cfg(struct phy_device *phydev,
-+			     struct netlink_ext_ack *extack,
-+			     const struct phy_plca_cfg *plca_cfg)
-+{
-+	int ret;
-+	struct phy_plca_cfg *curr_plca_cfg = 0;
++/* Open Alliance TC14 PLCA CTRL1 register */
++#define MDIO_OATC14_PLCA_NCNT	0xff00	/* PLCA node count */
++#define MDIO_OATC14_PLCA_ID	0x00ff	/* PLCA local node ID */
 +
-+	if (!phydev->drv) {
-+		ret = -EIO;
-+		goto out;
-+	}
++/* Open Alliance TC14 PLCA STATUS register */
++#define MDIO_OATC14_PLCA_PST	BIT(15)	/* PLCA status indication */
 +
-+	if (!phydev->drv->set_plca_cfg ||
-+	    !phydev->drv->get_plca_cfg) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
++/* Open Alliance TC14 PLCA TOTMR register */
++#define MDIO_OATC14_PLCA_TOT	0x00ff
 +
-+	curr_plca_cfg = kmalloc(sizeof(*curr_plca_cfg), GFP_KERNEL);
-+	memset(curr_plca_cfg, 0xFF, sizeof(*curr_plca_cfg));
++/* Open Alliance TC14 PLCA BURST register */
++#define MDIO_OATC14_PLCA_MAXBC	0xff00
++#define MDIO_OATC14_PLCA_BTMR	0x00ff
 +
-+	mutex_lock(&phydev->lock);
++/* Version Identifiers */
++#define OATC14_IDM		0x0a00
 +
-+	ret = phydev->drv->get_plca_cfg(phydev, curr_plca_cfg);
-+	if (ret)
-+		goto out_drv;
 +
-+	if (curr_plca_cfg->enabled < 0 && plca_cfg->enabled >= 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "PHY does not support changing the PLCA 'enable' attribute");
-+		ret = -EINVAL;
-+		goto out_drv;
-+	}
-+
-+	if (curr_plca_cfg->node_id < 0 && plca_cfg->node_id >= 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "PHY does not support changing the PLCA 'local node ID' attribute");
-+		ret = -EINVAL;
-+		goto out_drv;
-+	}
-+
-+	if (curr_plca_cfg->node_cnt < 0 && plca_cfg->node_cnt >= 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "PHY does not support changing the PLCA 'node count' attribute");
-+		ret = -EINVAL;
-+		goto out_drv;
-+	}
-+
-+	if (curr_plca_cfg->to_tmr < 0 && plca_cfg->to_tmr >= 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "PHY does not support changing the PLCA 'TO timer' attribute");
-+		ret = -EINVAL;
-+		goto out_drv;
-+	}
-+
-+	if (curr_plca_cfg->burst_cnt < 0 && plca_cfg->burst_cnt >= 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "PHY does not support changing the PLCA 'burst count' attribute");
-+		ret = -EINVAL;
-+		goto out_drv;
-+	}
-+
-+	if (curr_plca_cfg->burst_tmr < 0 && plca_cfg->burst_tmr >= 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "PHY does not support changing the PLCA 'burst timer' attribute");
-+		ret = -EINVAL;
-+		goto out_drv;
-+	}
-+
-+	// if enabling PLCA, perform additional sanity checks
-+	if (plca_cfg->enabled > 0) {
-+		if (!linkmode_test_bit(ETHTOOL_LINK_MODE_10baseT1S_P2MP_Half_BIT,
-+				       phydev->advertising)) {
-+			ret = -EOPNOTSUPP;
-+			NL_SET_ERR_MSG(extack,
-+				       "Point to Multi-Point mode is not enabled");
-+		}
-+
-+		// allow setting node_id concurrently with enabled
-+		if (plca_cfg->node_id >= 0)
-+			curr_plca_cfg->node_id = plca_cfg->node_id;
-+
-+		if (curr_plca_cfg->node_id >= 255) {
-+			NL_SET_ERR_MSG(extack, "PLCA node ID is not set");
-+			ret = -EINVAL;
-+			goto out_drv;
-+		}
-+	}
-+
-+	ret = phydev->drv->set_plca_cfg(phydev, plca_cfg);
-+	if (ret)
-+		goto out_drv;
-+
-+out_drv:
-+	kfree(curr_plca_cfg);
-+	mutex_unlock(&phydev->lock);
-+out:
-+	return ret;
-+}
-+
-+/**
-+ * phy_ethtool_get_plca_status - Get PLCA RS status information
-+ *
-+ * @phydev: the phy_device struct
-+ * @plca_st: where to store the retrieved status information
-+ */
-+int phy_ethtool_get_plca_status(struct phy_device *phydev,
-+				struct phy_plca_status *plca_st)
-+{
-+	int ret;
-+
-+	if (!phydev->drv) {
-+		ret = -EIO;
-+		goto out;
-+	}
-+
-+	if (!phydev->drv->get_plca_status) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
-+	mutex_lock(&phydev->lock);
-+	ret = phydev->drv->get_plca_status(phydev, plca_st);
-+
-+	if (ret)
-+		goto out_drv;
-+
-+out_drv:
-+	mutex_unlock(&phydev->lock);
-+out:
-+	return ret;
-+}
++#endif /* __MDIO_OPEN_ALLIANCE__ */
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index a87a4b3ffce4..1a00d7e07817 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -8,6 +8,8 @@
+ #include <linux/mii.h>
+ #include <linux/phy.h>
+ 
++#include "mdio-open-alliance.h"
 +
  /**
-  * phy_start_cable_test - Start a cable test
-  *
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 716870a4499c..f248010c403d 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -3262,6 +3262,9 @@ static const struct ethtool_phy_ops phy_ethtool_phy_ops = {
- 	.get_sset_count		= phy_ethtool_get_sset_count,
- 	.get_strings		= phy_ethtool_get_strings,
- 	.get_stats		= phy_ethtool_get_stats,
-+	.get_plca_cfg		= phy_ethtool_get_plca_cfg,
-+	.set_plca_cfg		= phy_ethtool_set_plca_cfg,
-+	.get_plca_status	= phy_ethtool_get_plca_status,
- 	.start_cable_test	= phy_start_cable_test,
- 	.start_cable_test_tdr	= phy_start_cable_test_tdr,
- };
+  * genphy_c45_baset1_able - checks if the PMA has BASE-T1 extended abilities
+  * @phydev: target phy_device struct
+@@ -931,6 +933,187 @@ int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable)
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_fast_retrain);
+ 
++/**
++ * genphy_c45_plca_get_cfg - get PLCA configuration from standard registers
++ * @phydev: target phy_device struct
++ * @plca_cfg: output structure to store the PLCA configuration
++ *
++ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
++ *   Management Registers specifications, this function can be used to retrieve
++ *   the current PLCA configuration from the standard registers in MMD 31.
++ */
++int genphy_c45_plca_get_cfg(struct phy_device *phydev,
++			    struct phy_plca_cfg *plca_cfg)
++{
++	int ret;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_IDVER);
++	if (ret < 0)
++		return ret;
++
++	if ((ret & MDIO_OATC14_PLCA_IDM) != OATC14_IDM)
++		return -ENODEV;
++
++	plca_cfg->version = ret;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_CTRL0);
++	if (ret < 0)
++		return ret;
++
++	plca_cfg->enabled = !!(ret & MDIO_OATC14_PLCA_EN);
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_CTRL1);
++	if (ret < 0)
++		return ret;
++
++	plca_cfg->node_cnt = (ret & MDIO_OATC14_PLCA_NCNT) >> 8;
++	plca_cfg->node_id = (ret & MDIO_OATC14_PLCA_ID);
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_TOTMR);
++	if (ret < 0)
++		return ret;
++
++	plca_cfg->to_tmr = ret & MDIO_OATC14_PLCA_TOT;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_BURST);
++	if (ret < 0)
++		return ret;
++
++	plca_cfg->burst_cnt = (ret & MDIO_OATC14_PLCA_MAXBC) >> 8;
++	plca_cfg->burst_tmr = (ret & MDIO_OATC14_PLCA_BTMR);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(genphy_c45_plca_get_cfg);
++
++/**
++ * genphy_c45_plca_set_cfg - set PLCA configuration using standard registers
++ * @phydev: target phy_device struct
++ * @plca_cfg: structure containing the PLCA configuration. Fields set to -1 are
++ * not to be changed.
++ *
++ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
++ *   Management Registers specifications, this function can be used to modify
++ *   the PLCA configuration using the standard registers in MMD 31.
++ */
++int genphy_c45_plca_set_cfg(struct phy_device *phydev,
++			    const struct phy_plca_cfg *plca_cfg)
++{
++	int ret;
++	u16 val;
++
++	// PLCA IDVER is read-only
++	if (plca_cfg->version >= 0)
++		return -EINVAL;
++
++	// first of all, disable PLCA if required
++	if (plca_cfg->enabled == 0) {
++		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
++					 MDIO_OATC14_PLCA_CTRL0,
++					 MDIO_OATC14_PLCA_EN);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	if (plca_cfg->node_cnt >= 0 || plca_cfg->node_id >= 0) {
++		if (plca_cfg->node_cnt < 0 || plca_cfg->node_id < 0) {
++			ret = phy_read_mmd(phydev, MDIO_MMD_VEND2,
++					   MDIO_OATC14_PLCA_CTRL1);
++
++			if (ret < 0)
++				return ret;
++
++			val = ret;
++		}
++
++		if (plca_cfg->node_cnt >= 0)
++			val = (val & ~MDIO_OATC14_PLCA_NCNT) |
++			      (plca_cfg->node_cnt << 8);
++
++		if (plca_cfg->node_id >= 0)
++			val = (val & ~MDIO_OATC14_PLCA_ID) |
++			      (plca_cfg->node_id);
++
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    MDIO_OATC14_PLCA_CTRL1, val);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	if (plca_cfg->to_tmr >= 0) {
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    MDIO_OATC14_PLCA_TOTMR,
++				    plca_cfg->to_tmr);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	if (plca_cfg->burst_cnt >= 0 || plca_cfg->burst_tmr >= 0) {
++		if (plca_cfg->burst_cnt < 0 || plca_cfg->burst_tmr < 0) {
++			ret = phy_read_mmd(phydev, MDIO_MMD_VEND2,
++					   MDIO_OATC14_PLCA_BURST);
++
++			if (ret < 0)
++				return ret;
++
++			val = ret;
++		}
++
++		if (plca_cfg->burst_cnt >= 0)
++			val = (val & ~MDIO_OATC14_PLCA_MAXBC) |
++			      (plca_cfg->burst_cnt << 8);
++
++		if (plca_cfg->burst_tmr >= 0)
++			val = (val & ~MDIO_OATC14_PLCA_BTMR) |
++			      (plca_cfg->burst_tmr);
++
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    MDIO_OATC14_PLCA_BURST, val);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	// if we need to enable PLCA, do it at the end
++	if (plca_cfg->enabled > 0) {
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
++				       MDIO_OATC14_PLCA_CTRL0,
++				       MDIO_OATC14_PLCA_EN);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(genphy_c45_plca_set_cfg);
++
++/**
++ * genphy_c45_plca_get_status - get PLCA status from standard registers
++ * @phydev: target phy_device struct
++ * @plca_st: output structure to store the PLCA status
++ *
++ * Description: if the PHY complies to the Open Alliance TC14 10BASE-T1S PLCA
++ *   Management Registers specifications, this function can be used to retrieve
++ *   the current PLCA status information from the standard registers in MMD 31.
++ */
++int genphy_c45_plca_get_status(struct phy_device *phydev,
++			       struct phy_plca_status *plca_st)
++{
++	int ret;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_STATUS);
++	if (ret < 0)
++		return ret;
++
++	plca_st->pst = !!(ret & MDIO_OATC14_PLCA_PST);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(genphy_c45_plca_get_status);
++
+ struct phy_driver genphy_c45_driver = {
+ 	.phy_id         = 0xffffffff,
+ 	.phy_id_mask    = 0xffffffff,
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 49d0488bf480..4548c8e8f6a9 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1745,6 +1745,12 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable);
+ int genphy_c45_pma_resume(struct phy_device *phydev);
+ int genphy_c45_pma_suspend(struct phy_device *phydev);
+ int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable);
++int genphy_c45_plca_get_cfg(struct phy_device *phydev,
++			    struct phy_plca_cfg *plca_cfg);
++int genphy_c45_plca_set_cfg(struct phy_device *phydev,
++			    const struct phy_plca_cfg *plca_cfg);
++int genphy_c45_plca_get_status(struct phy_device *phydev,
++			       struct phy_plca_status *plca_st);
+ 
+ /* Generic C45 PHY driver */
+ extern struct phy_driver genphy_c45_driver;
 -- 
 2.35.1
 
