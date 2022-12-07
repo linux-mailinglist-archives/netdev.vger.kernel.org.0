@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A367645644
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 10:16:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6751C645646
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 10:16:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbiLGJQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 04:16:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58812 "EHLO
+        id S230128AbiLGJQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 04:16:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbiLGJPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 04:15:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051BC1057B
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 01:14:49 -0800 (PST)
+        with ESMTP id S230134AbiLGJQd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 04:16:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560A92CE15
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 01:15:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A02560EF6
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 09:14:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27824C433D6;
-        Wed,  7 Dec 2022 09:14:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED6F6B8013C
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 09:15:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 306DAC433D6;
+        Wed,  7 Dec 2022 09:15:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670404488;
-        bh=Q2nlY4DhQIvrAVkliKtldVbnw1b0c1cgP9F7qRRC5J0=;
+        s=k20201202; t=1670404550;
+        bh=tiCuLh7ePXtppm4S+qJKNHvU9LhjpIATWhzzO5cPyBY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nKM3Sl8uveabsilbviZeEqlVpLBozTtfmd1entAligYhGie/zSiIKK2xEr/hEnmDo
-         uPagpAv4Q2gIgMGeuzEeCngofPjmKEJCDtbXehRAfGHNK9UIxO7WhSuXJAoIkZLTkO
-         ckQUYANpjSKO7XuiVxaa2cRFHhqQon9CZyXXQLPecha3C9Jd+5GRm0bxYzYwdlQ0G5
-         8L4O3vg2UQUE8+cCptGy4g8L8wQVdeLbE5jP2hdVQmkGf78+oa9ScOWXcWJS/bdLvT
-         +6wYzV7lGF/DX3ibC2IVbUr8drtGzXAVsWCmNkrG+lXnvXxTSamZ5vldswIb3SC+Aa
-         7FXYFdVIbDA6A==
-Date:   Wed, 7 Dec 2022 11:14:43 +0200
+        b=LEjqXpEUHXluvV5T7OLvwgsMDjvGcyJllfUT5dlW/dj0aeS44TA2kbZIoO4PDP0Sj
+         S4om1ac9Ox7R56/56voZwJDJYw4wNT3laYn8odk4W+vkX+UVtw2dqBUJjXSbNcJAS4
+         n82lS0cN1Upmip0720rKxzW2Vl9OASCP3h+Wqkl2ezxvNbYS+N/IBGN0WWo5woDKZ6
+         0HqC6yu1RAnIPMyhZ9vTH9o5bDnhcsnDwzONQYw/GNWINFHr9SDX2TRwFRXP/oNpP4
+         r90rCUK7GWwf+P3/xPP5eLr5/7sloBmnCKfHfcTyKTxUR8YqOglOYrKZ9MdJoKYPRc
+         3j3tLIgqAFskQ==
+Date:   Wed, 7 Dec 2022 11:15:46 +0200
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Yuan Can <yuancan@huawei.com>
-Cc:     shshaikh@marvell.com, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        rajesh.borundia@qlogic.com, sucheta.chakraborty@qlogic.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] drivers: net: qlcnic: Fix potential memory leak
- in qlcnic_sriov_init()
-Message-ID: <Y5BZg4kEl8X05tD2@unreal>
-References: <20221207085410.123938-1-yuancan@huawei.com>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, karol.kolacinski@intel.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net] ice: Fix potential memory leak in
+ ice_gnss_tty_write()
+Message-ID: <Y5BZwvttqgR2HBvF@unreal>
+References: <20221207085502.124810-1-yuancan@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221207085410.123938-1-yuancan@huawei.com>
+In-Reply-To: <20221207085502.124810-1-yuancan@huawei.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,15 +55,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 07, 2022 at 08:54:10AM +0000, Yuan Can wrote:
-> If vp alloc failed in qlcnic_sriov_init(), all previously allocated vp
-> needs to be freed.
+On Wed, Dec 07, 2022 at 08:55:02AM +0000, Yuan Can wrote:
+> The ice_gnss_tty_write() return directly if the write_buf alloc failed,
+> leaking the cmd_buf.
 > 
-> Fixes: f197a7aa6288 ("qlcnic: VF-PF communication channel implementation")
+> Fix by free cmd_buf if write_buf alloc failed.
+> 
+> Fixes: d6b98c8d242a ("ice: add write functionality for GNSS TTY")
 > Signed-off-by: Yuan Can <yuancan@huawei.com>
 > ---
-> Changes in v2:
-> - free all vp before destroy_workqueue(bc->bc_trans_wq)
+>  drivers/net/ethernet/intel/ice/ice_gnss.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
 Thanks,
