@@ -2,262 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ACDF64576F
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 11:19:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB0964576A
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 11:19:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbiLGKTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 05:19:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
+        id S230350AbiLGKTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 05:19:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230314AbiLGKTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 05:19:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F6711A0A
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 02:18:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670408299;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        with ESMTP id S230314AbiLGKTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 05:19:01 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BF12AA;
+        Wed,  7 Dec 2022 02:19:00 -0800 (PST)
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 01F8721CBC;
+        Wed,  7 Dec 2022 10:18:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1670408339; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=9XN+oYBwg/FzBMOO+a8ZKj9oWdJbSN9hLcGMA4//8H8=;
-        b=hjPrMJXashGlnDC+QACBmCJkCG5gFyq0x2g33+SowGhaGbBTL9uoTyO9fQI9G9GruTotg0
-        efg8uwTSSjdUaftQOF38ZfjHI3iAD6xq0Ic5gWJ5PMIoPlzixwxYq6jXNaSrjfJJm8+0F1
-        NiDFFnO3BrcSGkQwcMlhloPvAps9i1A=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-645-8J9aoAinNRW2RkU2UcBfBg-1; Wed, 07 Dec 2022 05:18:18 -0500
-X-MC-Unique: 8J9aoAinNRW2RkU2UcBfBg-1
-Received: by mail-wm1-f69.google.com with SMTP id o5-20020a05600c510500b003cfca1a327fso9768225wms.8
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 02:18:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=9XN+oYBwg/FzBMOO+a8ZKj9oWdJbSN9hLcGMA4//8H8=;
-        b=Veuzrhxzzd/RJskGlUATVQb7EcyuopWhwyrHulUnzj+cGyGaH/LnDPqgoON2375Oyw
-         ctCHfkADXQ815E+KLFIQH+jyQ9PcEDOHTCSd0L8/OakZ35mDgFkzQBWxOnso6iWi/gpb
-         2ihGmaj6FhfW7gthNF80djpWDhbHTsql0vgRZDOlyuh+QhWCg5f2O8I7n8UP8K/Ir6nl
-         qoBrPwfd7m2KRgrJV6Ww15+e4YThYN00WPgXhDTW5P2SxPBxguCGWviQsUqYQu1KDL33
-         p+jS9xjjx+PjnNLZclm50ze7+OoVcrZ5LQ8jHdAMVnYtnujx1ETeZor0ccd2Vcsqn/Cb
-         GZaw==
-X-Gm-Message-State: ANoB5pmuaIOvKrkAYQzZkE4rHkQzpe11WlVlyHzf1133h7TSlEJox5yr
-        j0/KBmIgKpiomj7s4fuCr2+vSrJNWatT7XyxHszvsvcIuM6EwJ2MmVEacEYrmH8NHlVNeIxxgg4
-        +7SpdRNdQcUbBjCdA
-X-Received: by 2002:a7b:c011:0:b0:3cf:633e:bf6a with SMTP id c17-20020a7bc011000000b003cf633ebf6amr53494652wmb.63.1670408297577;
-        Wed, 07 Dec 2022 02:18:17 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf6uytFf4a3LcfdsXtFVT3dWZv2Xsu0MR3+X+lq5orXO9nyT7Wph3RgtwIYprNzcrs9muELhzQ==
-X-Received: by 2002:a7b:c011:0:b0:3cf:633e:bf6a with SMTP id c17-20020a7bc011000000b003cf633ebf6amr53494633wmb.63.1670408297327;
-        Wed, 07 Dec 2022 02:18:17 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-106-100.dyn.eolo.it. [146.241.106.100])
-        by smtp.gmail.com with ESMTPSA id t25-20020a1c7719000000b003cfd58409desm1201000wmi.13.2022.12.07.02.18.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 02:18:16 -0800 (PST)
-Message-ID: <989e6b10fb188b015b040f6df2b19c4ecfb8bb91.camel@redhat.com>
-Subject: Re: [PATCH net-next 6/6] tsnep: Add XDP RX support
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com
-Date:   Wed, 07 Dec 2022 11:18:15 +0100
-In-Reply-To: <20221203215416.13465-7-gerhard@engleder-embedded.com>
-References: <20221203215416.13465-1-gerhard@engleder-embedded.com>
-         <20221203215416.13465-7-gerhard@engleder-embedded.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        bh=VTns5mAfIBsPHe6SwxUnoyr3mxRi46aBRRYfefLkl8I=;
+        b=SsswVE3VQg2fo2LdE5t48/DI4b2sVSHmk4iFjwNAK3DrOo/9zZAehgjYaSQfxtS4vCJXAG
+        vUptvu4qSuxoLyf1fT1sUhRbOmkaDJ66NUC+Hq6/bnJuVtItjrw6YlgTeIU2SgS0QU03js
+        qvDa6CQRrqFiLhFJBi/9ZMfTCghw1f8=
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id A702B136B4;
+        Wed,  7 Dec 2022 10:18:58 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap1.suse-dmz.suse.de with ESMTPSA
+        id /KslJ5JokGMVCAAAGKfGzw
+        (envelope-from <jgross@suse.com>); Wed, 07 Dec 2022 10:18:58 +0000
+Message-ID: <f1c89855-22d4-8605-e73e-6658aef148f9@suse.com>
+Date:   Wed, 7 Dec 2022 11:18:58 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH] xen/netback: fix build warning
+Content-Language: en-US
+To:     Jan Beulich <jbeulich@suse.com>
+Cc:     Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Ross Lagerwall <ross.lagerwall@citrix.com>
+References: <20221207072349.28608-1-jgross@suse.com>
+ <46128e5c-f616-38c5-0ab2-1825e72985a8@suse.com>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <46128e5c-f616-38c5-0ab2-1825e72985a8@suse.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------X9s9CczSxgpT0DRZthLtv02v"
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2022-12-03 at 22:54 +0100, Gerhard Engleder wrote:
-> If BPF program is set up, then run BPF program for every received frame
-> and execute the selected action.
-> 
-> Test results with A53 1.2GHz:
-> 
-> XDP_DROP (samples/bpf/xdp1)
-> proto 17:     865683 pkt/s
-> 
-> XDP_TX (samples/bpf/xdp2)
-> proto 17:     253594 pkt/s
-> 
-> XDP_REDIRECT (samples/bpf/xdpsock)
->  sock0@eth2:0 rxdrop xdp-drv
->                    pps            pkts           1.00
-> rx                 862,258        4,514,166
-> tx                 0              0
-> 
-> XDP_REDIRECT (samples/bpf/xdp_redirect)
-> eth2->eth1         608,895 rx/s   0 err,drop/s   608,895 xmit/s
-> 
-> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
-> ---
->  drivers/net/ethernet/engleder/tsnep_main.c | 100 +++++++++++++++++++++
->  1 file changed, 100 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-> index 725b2a1e7be4..4e3c6bd3dc9f 100644
-> --- a/drivers/net/ethernet/engleder/tsnep_main.c
-> +++ b/drivers/net/ethernet/engleder/tsnep_main.c
-> @@ -27,6 +27,7 @@
->  #include <linux/phy.h>
->  #include <linux/iopoll.h>
->  #include <linux/bpf.h>
-> +#include <linux/bpf_trace.h>
->  
->  #define TSNEP_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
->  #define TSNEP_HEADROOM ALIGN(max(TSNEP_SKB_PAD, XDP_PACKET_HEADROOM), 4)
-> @@ -44,6 +45,11 @@
->  #define TSNEP_COALESCE_USECS_MAX     ((ECM_INT_DELAY_MASK >> ECM_INT_DELAY_SHIFT) * \
->  				      ECM_INT_DELAY_BASE_US + ECM_INT_DELAY_BASE_US - 1)
->  
-> +#define TSNEP_XDP_PASS		0
-> +#define TSNEP_XDP_CONSUMED	BIT(0)
-> +#define TSNEP_XDP_TX		BIT(1)
-> +#define TSNEP_XDP_REDIRECT	BIT(2)
-> +
->  enum {
->  	__TSNEP_DOWN,
->  };
-> @@ -819,6 +825,11 @@ static inline unsigned int tsnep_rx_offset(struct tsnep_rx *rx)
->  	return TSNEP_SKB_PAD;
->  }
->  
-> +static inline unsigned int tsnep_rx_offset_xdp(void)
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------X9s9CczSxgpT0DRZthLtv02v
+Content-Type: multipart/mixed; boundary="------------PO1myFOge2RPMAYvTrRVDX0K";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Jan Beulich <jbeulich@suse.com>
+Cc: Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org, Ross Lagerwall <ross.lagerwall@citrix.com>
+Message-ID: <f1c89855-22d4-8605-e73e-6658aef148f9@suse.com>
+Subject: Re: [PATCH] xen/netback: fix build warning
+References: <20221207072349.28608-1-jgross@suse.com>
+ <46128e5c-f616-38c5-0ab2-1825e72985a8@suse.com>
+In-Reply-To: <46128e5c-f616-38c5-0ab2-1825e72985a8@suse.com>
 
-Please, no 'inline' in c files, the complier will do a better job
-without.
+--------------PO1myFOge2RPMAYvTrRVDX0K
+Content-Type: multipart/mixed; boundary="------------sIQofQieghq4Lzrazwt0fPcm"
 
-> +{
-> +	return XDP_PACKET_HEADROOM;
-> +}
-> +
->  static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
->  {
->  	struct device *dmadev = rx->adapter->dmadev;
-> @@ -1024,6 +1035,65 @@ static int tsnep_rx_refill(struct tsnep_rx *rx, int count, bool reuse)
->  	return i;
->  }
->  
-> +static int tsnep_xdp_run_prog(struct tsnep_rx *rx, struct bpf_prog *prog,
-> +			      struct xdp_buff *xdp)
-> +{
-> +	unsigned int length;
-> +	unsigned int sync;
-> +	u32 act;
-> +
-> +	length = xdp->data_end - xdp->data_hard_start - tsnep_rx_offset_xdp();
-> +
-> +	act = bpf_prog_run_xdp(prog, xdp);
-> +
-> +	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
-> +	sync = xdp->data_end - xdp->data_hard_start - tsnep_rx_offset_xdp();
-> +	sync = max(sync, length);
-> +
-> +	switch (act) {
-> +	case XDP_PASS:
-> +		return TSNEP_XDP_PASS;
-> +	case XDP_TX:
-> +		if (tsnep_xdp_xmit_back(rx->adapter, xdp) < 0)
-> +			goto out_failure;
-> +		return TSNEP_XDP_TX;
-> +	case XDP_REDIRECT:
-> +		if (xdp_do_redirect(rx->adapter->netdev, xdp, prog) < 0)
-> +			goto out_failure;
-> +		return TSNEP_XDP_REDIRECT;
-> +	default:
-> +		bpf_warn_invalid_xdp_action(rx->adapter->netdev, prog, act);
-> +		fallthrough;
-> +	case XDP_ABORTED:
-> +out_failure:
-> +		trace_xdp_exception(rx->adapter->netdev, prog, act);
-> +		fallthrough;
-> +	case XDP_DROP:
-> +		page_pool_put_page(rx->page_pool, virt_to_head_page(xdp->data),
-> +				   sync, true);
-> +		return TSNEP_XDP_CONSUMED;
-> +	}
-> +}
-> +
-> +static void tsnep_finalize_xdp(struct tsnep_adapter *adapter, int status)
-> +{
-> +	int cpu = smp_processor_id();
-> +	int queue;
-> +	struct netdev_queue *nq;
-> +
-> +	if (status & TSNEP_XDP_TX) {
-> +		queue = cpu % adapter->num_tx_queues;
-> +		nq = netdev_get_tx_queue(adapter->netdev, queue);
-> +
-> +		__netif_tx_lock(nq, cpu);
-> +		tsnep_xdp_xmit_flush(&adapter->tx[queue]);
-> +		__netif_tx_unlock(nq);
-> +	}
-> +
-> +	if (status & TSNEP_XDP_REDIRECT)
-> +		xdp_do_flush();
-> +}
-> +
->  static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
->  				       int length)
->  {
-> @@ -1062,12 +1132,17 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
->  	int desc_available;
->  	int done = 0;
->  	enum dma_data_direction dma_dir;
-> +	struct bpf_prog *prog;
->  	struct tsnep_rx_entry *entry;
-> +	struct xdp_buff xdp;
-> +	int xdp_status = 0;
->  	struct sk_buff *skb;
->  	int length;
-> +	int retval;
->  
->  	desc_available = tsnep_rx_desc_available(rx);
->  	dma_dir = page_pool_get_dma_dir(rx->page_pool);
-> +	prog = READ_ONCE(rx->adapter->xdp_prog);
->  
->  	while (likely(done < budget) && (rx->read != rx->write)) {
->  		entry = &rx->entry[rx->read];
-> @@ -1111,6 +1186,28 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
->  		rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
->  		desc_available++;
->  
-> +		if (prog) {
-> +			xdp_init_buff(&xdp, PAGE_SIZE, &rx->xdp_rxq);
-> +			xdp_prepare_buff(&xdp, page_address(entry->page),
-> +					 tsnep_rx_offset_xdp() + TSNEP_RX_INLINE_METADATA_SIZE,
-> +					 length - TSNEP_RX_INLINE_METADATA_SIZE,
-> +					 false);
-> +			retval = tsnep_xdp_run_prog(rx, prog, &xdp);
-> +		} else {
-> +			retval = TSNEP_XDP_PASS;
-> +		}
-> +		if (retval) {
-> +			if (retval & (TSNEP_XDP_TX | TSNEP_XDP_REDIRECT))
-> +				xdp_status |= retval;
+--------------sIQofQieghq4Lzrazwt0fPcm
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Here you could avoid a couple of conditionals passing xdp_status as an
-additional tsnep_xdp_run_prog() argument, let the latter update it
-under the existing switch, returning a single consumed/pass up bool and
-testing such value just after tsnep_xdp_run_prog().
+T24gMDcuMTIuMjIgMTA6MjUsIEphbiBCZXVsaWNoIHdyb3RlOg0KPiBPbiAwNy4xMi4yMDIy
+IDA4OjIzLCBKdWVyZ2VuIEdyb3NzIHdyb3RlOg0KPj4gQ29tbWl0IGFkN2Y0MDJhZTRmNCAo
+Inhlbi9uZXRiYWNrOiBFbnN1cmUgcHJvdG9jb2wgaGVhZGVycyBkb24ndCBmYWxsIGluDQo+
+PiB0aGUgbm9uLWxpbmVhciBhcmVhIikgaW50cm9kdWNlZCBhICh2YWxpZCkgYnVpbGQgd2Fy
+bmluZy4NCj4+DQo+PiBGaXggaXQuDQo+Pg0KPj4gRml4ZXM6IGFkN2Y0MDJhZTRmNCAoInhl
+bi9uZXRiYWNrOiBFbnN1cmUgcHJvdG9jb2wgaGVhZGVycyBkb24ndCBmYWxsIGluIHRoZSBu
+b24tbGluZWFyIGFyZWEiKQ0KPj4gU2lnbmVkLW9mZi1ieTogSnVlcmdlbiBHcm9zcyA8amdy
+b3NzQHN1c2UuY29tPg0KPiANCj4gUmV2aWV3ZWQtYnk6IEphbiBCZXVsaWNoIDxqYmV1bGlj
+aEBzdXNlLmNvbT4NCj4gDQo+PiAtLS0gYS9kcml2ZXJzL25ldC94ZW4tbmV0YmFjay9uZXRi
+YWNrLmMNCj4+ICsrKyBiL2RyaXZlcnMvbmV0L3hlbi1uZXRiYWNrL25ldGJhY2suYw0KPj4g
+QEAgLTUzMCw3ICs1MzAsNyBAQCBzdGF0aWMgaW50IHhlbnZpZl90eF9jaGVja19nb3Aoc3Ry
+dWN0IHhlbnZpZl9xdWV1ZSAqcXVldWUsDQo+PiAgIAljb25zdCBib29sIHNoYXJlZHNsb3Qg
+PSBucl9mcmFncyAmJg0KPj4gICAJCQkJZnJhZ19nZXRfcGVuZGluZ19pZHgoJnNoaW5mby0+
+ZnJhZ3NbMF0pID09DQo+PiAgIAkJCQkgICAgY29weV9wZW5kaW5nX2lkeChza2IsIGNvcHlf
+Y291bnQoc2tiKSAtIDEpOw0KPj4gLQlpbnQgaSwgZXJyOw0KPj4gKwlpbnQgaSwgZXJyID0g
+MDsNCj4+ICAgDQo+PiAgIAlmb3IgKGkgPSAwOyBpIDwgY29weV9jb3VudChza2IpOyBpKysp
+IHsNCj4+ICAgCQlpbnQgbmV3ZXJyOw0KPiANCj4gSSdtIGFmcmFpZCBvdGhlciBsb2dpYyAo
+YmVsb3cgaGVyZSkgaXMgbm93IHNsaWdodGx5IHdyb25nIGFzIHdlbGwsIGluDQo+IHBhcnRp
+Y3VsYXINCj4gDQo+IAkJCQkvKiBJZiB0aGUgbWFwcGluZyBvZiB0aGUgZmlyc3QgZnJhZyB3
+YXMgT0ssIGJ1dA0KPiAJCQkJICogdGhlIGhlYWRlcidzIGNvcHkgZmFpbGVkLCBhbmQgdGhl
+eSBhcmUNCj4gCQkJCSAqIHNoYXJpbmcgYSBzbG90LCBzZW5kIGFuIGVycm9yDQo+IAkJCQkg
+Ki8NCj4gCQkJCWlmIChpID09IDAgJiYgIWZpcnN0X3NoaW5mbyAmJiBzaGFyZWRzbG90KQ0K
+PiAJCQkJCXhlbnZpZl9pZHhfcmVsZWFzZShxdWV1ZSwgcGVuZGluZ19pZHgsDQo+IAkJCQkJ
+CQkgICBYRU5fTkVUSUZfUlNQX0VSUk9SKTsNCj4gCQkJCWVsc2UNCj4gCQkJCQl4ZW52aWZf
+aWR4X3JlbGVhc2UocXVldWUsIHBlbmRpbmdfaWR4LA0KPiAJCQkJCQkJICAgWEVOX05FVElG
+X1JTUF9PS0FZKTsNCj4gDQo+IHdoaWNoIGxvb2tzIHRvIGJlIGludGVuZGVkIHRvIGRlYWwg
+d2l0aCBfb25seV8gZmFpbHVyZSBvZiB0aGUgb25lIHNoYXJlZA0KPiBwYXJ0IG9mIHRoZSBo
+ZWFkZXIsIHdoZXJlYXMgImVyciIgbm93IGNhbiBpbmRpY2F0ZSBhbiBlcnJvciBvbiBhbnkg
+ZWFybGllcg0KPiBwYXJ0IGFzIHdlbGwuDQoNClRoZSBjb21tZW50IGF0IHRoZSBlbmQgb2Yg
+dGhhdCBsb29wIHNlZW1zIHRvIGltcGx5IHRoaXMgaXMgdGhlIGRlc2lyZWQNCmJlaGF2aW9y
+Og0KDQoJCS8qIFJlbWVtYmVyIHRoZSBlcnJvcjogaW52YWxpZGF0ZSBhbGwgc3Vic2VxdWVu
+dCBmcmFnbWVudHMuICovDQoJCWVyciA9IG5ld2VycjsNCgl9DQoNCg0KSnVlcmdlbg0KDQo=
 
-Mostly a matter of personal tasted I guess.
+--------------sIQofQieghq4Lzrazwt0fPcm
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-Cheers,
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
 
-Paolo
+--------------sIQofQieghq4Lzrazwt0fPcm--
 
+--------------PO1myFOge2RPMAYvTrRVDX0K--
+
+--------------X9s9CczSxgpT0DRZthLtv02v
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmOQaJIFAwAAAAAACgkQsN6d1ii/Ey9B
+Hwf/eK8jqoi004SJmfl+VLO0L9yoLn6D1oGCXg/IAzUD3MVa1x574MEBdFt/8icScTQcU9bsrZOy
+WOA/nkMeO+dZe/oETnke+y8mOm+49i+DUF23bxTEemXzvPtkS592p81P7Zd9P+HiO+DZ2sYI5j23
+096TlPbJgMZXM3pesCqafkexbnnQrFZ9KNnLZT9ghpSl6R1zE5fj1X+BjG8Ueal9HyzvNMJXdFsm
+jjjP+/TxQ3pmP+mPSNYzt3A3eXtcJCUcQ9aQLBukTA3lWKURy382a7841ZnFh4mlqPz5dSIiY0JJ
+5Qre3TCA06kkWwlfqSj1I41yINd2KDEoTQSSLM5+Ew==
+=wD3C
+-----END PGP SIGNATURE-----
+
+--------------X9s9CczSxgpT0DRZthLtv02v--
