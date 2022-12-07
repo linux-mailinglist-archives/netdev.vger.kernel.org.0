@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 388536458DB
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 12:22:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4F26458E1
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 12:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiLGLWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 06:22:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
+        id S229566AbiLGLWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 06:22:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbiLGLV5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 06:21:57 -0500
+        with ESMTP id S229888AbiLGLWf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 06:22:35 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A922AE3E;
-        Wed,  7 Dec 2022 03:21:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BB52B18A;
+        Wed,  7 Dec 2022 03:22:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=VKfIZ8jyySPsQarwiJ7nK7I1JiZjo0stjyrVyrUEEiY=; b=ZhnMlGppE0Bj+Bf18ja/bEy35G
-        2A8MUJqRvy+tY7HbuwHBcfxmt/LEgqiFw8K55WXlTsrqwK/sFjKfYS/N4FjUNsBQ9si2KlMy8GjEk
-        FloDj3tQYrxrbJUY2EGQQ61YTsh0kHvhS37N6tCzdO8hxMT6cjGussLnMeenCLejigoT4gDuDYWDT
-        htwvDx3Set0wkyHUWmLxTtjdiAlKCtDCLZGLZVLdzs5KViFcpFe3Dj0OOBDfjmrQEW5PAkRrh/9pN
-        gG6YzbpS5rYLcI67NzoxU8aDopIxBIkEYwZ6SWxHpHbIe4aGVjAs+4GjJXDhcNejUa01pMyRsX/3y
-        Yp/5zClQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35612)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=u54gIGhUJ+tNdq6xLif948p5v+I6bWPMXz1MarK3CEg=; b=MA10EUON8da+ZK02MNWeWsWReS
+        OZql7XZJIHjODI3hbQFyiI6iaPiDmLx2UpI8mXR2WH3BdOp47HuqW2mXB6a9oWa6AU+cXdObDjzF/
+        Ndf39UfhhcNqKqglJNj2NJ3vomwHktXsjjMWa8BdQGPaJX46doj7PNmir2W1Iu8ioVTerP4RComNC
+        qWht7r+Q2X86pewjF+/XfoVxcY5vIS50xon9jjWPCpPYJoIIDcPy5tZjCD7x/ADojOX3LypdH7nqT
+        vNnXIvUQeJ6i1oo19mL5rc91WBR+WjdlhGt76BHmDYofjgtGziKPh0vgCzNi0QfLhPLD39hWYCE5W
+        Y6ND2Aig==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:60788 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1p2sUo-0000Za-T6; Wed, 07 Dec 2022 11:21:50 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1p2sUl-0000gl-Uq; Wed, 07 Dec 2022 11:21:47 +0000
-Date:   Wed, 7 Dec 2022 11:21:47 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1p2sVN-0000Zo-Jb; Wed, 07 Dec 2022 11:22:25 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1p2sVM-009tqA-Vq; Wed, 07 Dec 2022 11:22:25 +0000
+In-Reply-To: <Y5B3S6KZTrYlIH8g@shell.armlinux.org.uk>
+References: <Y5B3S6KZTrYlIH8g@shell.armlinux.org.uk>
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 To:     linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -45,12 +46,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         Paolo Abeni <pabeni@redhat.com>, Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH RFC 0/2] Add I2C fwnode lookup/get interfaces
-Message-ID: <Y5B3S6KZTrYlIH8g@shell.armlinux.org.uk>
+Subject: [PATCH RFC 1/2] i2c: add fwnode APIs
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1p2sVM-009tqA-Vq@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Wed, 07 Dec 2022 11:22:24 +0000
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
@@ -60,42 +63,233 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add fwnode APIs for finding and getting I2C adapters, which will be
+used by the SFP code. These are passed the fwnode corresponding to
+the adapter, and return the I2C adapter. It is the responsibility of
+the caller to find the appropriate fwnode.
 
-This RFC series is not intended for the coming merge window, and we
-will need to decide how to merge it as it is split across two
-subsystems. These patches have been generated against the net-next,
-since patch 2 depends on a recently merged patch in that tree.
+We keep the DT and ACPI interfaces, but where appropriate, recode them
+to use the fwnode interfaces internally.
 
-Currently, the SFP code attempts to work out what kind of fwnode we
-found when looking up the I2C bus for the SFP cage, converts the fwnode
-to the appropriate firmware specific representation to then call the
-appropriate I2C layer function. This is inefficient, since the device
-model provides a way to locate items on a bus_type by fwnode.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/i2c/i2c-core-acpi.c | 13 +------
+ drivers/i2c/i2c-core-base.c | 72 +++++++++++++++++++++++++++++++++++++
+ drivers/i2c/i2c-core-of.c   | 51 ++------------------------
+ include/linux/i2c.h         |  9 +++++
+ 4 files changed, 85 insertions(+), 60 deletions(-)
 
-In order to reduce this complexity, this series adds fwnode interfaces
-to the I2C subsystem to allow I2C adapters to be looked up. I also
-accidentally also converted the I2C clients to also be looked up, so
-I've left that in patch 1 if people think that could be useful - if
-not, I'll remove it.
-
-We could also convert the of_* functions to be inline in i2c.h and
-remove the stub of_* functions and exports.
-
-Do we want these to live in i2c-core-fwnode.c ? I don't see a Kconfig
-symbol that indicates whether we want fwnode support, and I know there
-are people looking to use software nodes to lookup the SFP I2C bus
-(which is why the manual firmware-specific code in sfp.c is a problem.)
-
-Thanks!
-
- drivers/i2c/i2c-core-acpi.c | 13 +-------
- drivers/i2c/i2c-core-base.c | 72 +++++++++++++++++++++++++++++++++++++++++++++
- drivers/i2c/i2c-core-of.c   | 51 ++------------------------------
- drivers/net/phy/sfp.c       | 13 +-------
- include/linux/i2c.h         |  9 ++++++
- 5 files changed, 86 insertions(+), 72 deletions(-)
-
+diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
+index 4dd777cc0c89..d6037a328669 100644
+--- a/drivers/i2c/i2c-core-acpi.c
++++ b/drivers/i2c/i2c-core-acpi.c
+@@ -442,18 +442,7 @@ EXPORT_SYMBOL_GPL(i2c_acpi_find_adapter_by_handle);
+ 
+ static struct i2c_client *i2c_acpi_find_client_by_adev(struct acpi_device *adev)
+ {
+-	struct device *dev;
+-	struct i2c_client *client;
+-
+-	dev = bus_find_device_by_acpi_dev(&i2c_bus_type, adev);
+-	if (!dev)
+-		return NULL;
+-
+-	client = i2c_verify_client(dev);
+-	if (!client)
+-		put_device(dev);
+-
+-	return client;
++	return i2c_find_device_by_fwnode(acpi_fwnode_handle(adev));
+ }
+ 
+ static int i2c_acpi_notify(struct notifier_block *nb, unsigned long value,
+diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+index 9aa7b9d9a485..254ec043ce90 100644
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -1011,6 +1011,27 @@ void i2c_unregister_device(struct i2c_client *client)
+ }
+ EXPORT_SYMBOL_GPL(i2c_unregister_device);
+ 
++/* must call put_device() when done with returned i2c_client device */
++struct i2c_client *i2c_find_device_by_fwnode(struct fwnode_handle *fwnode)
++{
++	struct i2c_client *client;
++	struct device *dev;
++
++	if (!fwnode)
++		return NULL;
++
++	dev = bus_find_device_by_fwnode(&i2c_bus_type, fwnode);
++	if (!dev)
++		return NULL;
++
++	client = i2c_verify_client(dev);
++	if (!client)
++		put_device(dev);
++
++	return client;
++}
++EXPORT_SYMBOL(i2c_find_device_by_fwnode);
++
+ 
+ static const struct i2c_device_id dummy_id[] = {
+ 	{ "dummy", 0 },
+@@ -1761,6 +1782,57 @@ int devm_i2c_add_adapter(struct device *dev, struct i2c_adapter *adapter)
+ }
+ EXPORT_SYMBOL_GPL(devm_i2c_add_adapter);
+ 
++static int i2c_dev_or_parent_fwnode_match(struct device *dev, const void *data)
++{
++	if (dev_fwnode(dev) == data)
++		return 1;
++
++	if (dev->parent && dev_fwnode(dev->parent) == data)
++		return 1;
++
++	return 0;
++}
++
++/* must call put_device() when done with returned i2c_adapter device */
++struct i2c_adapter *i2c_find_adapter_by_fwnode(struct fwnode_handle *fwnode)
++{
++	struct i2c_adapter *adapter;
++	struct device *dev;
++
++	if (!fwnode)
++		return NULL;
++
++	dev = bus_find_device(&i2c_bus_type, NULL, fwnode,
++			      i2c_dev_or_parent_fwnode_match);
++	if (!dev)
++		return NULL;
++
++	adapter = i2c_verify_adapter(dev);
++	if (!adapter)
++		put_device(dev);
++
++	return adapter;
++}
++EXPORT_SYMBOL(i2c_find_adapter_by_fwnode);
++
++/* must call i2c_put_adapter() when done with returned i2c_adapter device */
++struct i2c_adapter *i2c_get_adapter_by_fwnode(struct fwnode_handle *fwnode)
++{
++	struct i2c_adapter *adapter;
++
++	adapter = i2c_find_adapter_by_fwnode(fwnode);
++	if (!adapter)
++		return NULL;
++
++	if (!try_module_get(adapter->owner)) {
++		put_device(&adapter->dev);
++		adapter = NULL;
++	}
++
++	return adapter;
++}
++EXPORT_SYMBOL(i2c_get_adapter_by_fwnode);
++
+ static void i2c_parse_timing(struct device *dev, char *prop_name, u32 *cur_val_p,
+ 			    u32 def_val, bool use_def)
+ {
+diff --git a/drivers/i2c/i2c-core-of.c b/drivers/i2c/i2c-core-of.c
+index 3ed74aa4b44b..c3e565e4bddf 100644
+--- a/drivers/i2c/i2c-core-of.c
++++ b/drivers/i2c/i2c-core-of.c
+@@ -113,69 +113,24 @@ void of_i2c_register_devices(struct i2c_adapter *adap)
+ 	of_node_put(bus);
+ }
+ 
+-static int of_dev_or_parent_node_match(struct device *dev, const void *data)
+-{
+-	if (dev->of_node == data)
+-		return 1;
+-
+-	if (dev->parent)
+-		return dev->parent->of_node == data;
+-
+-	return 0;
+-}
+-
+ /* must call put_device() when done with returned i2c_client device */
+ struct i2c_client *of_find_i2c_device_by_node(struct device_node *node)
+ {
+-	struct device *dev;
+-	struct i2c_client *client;
+-
+-	dev = bus_find_device_by_of_node(&i2c_bus_type, node);
+-	if (!dev)
+-		return NULL;
+-
+-	client = i2c_verify_client(dev);
+-	if (!client)
+-		put_device(dev);
+-
+-	return client;
++	return i2c_find_device_by_fwnode(of_fwnode_handle(node));
+ }
+ EXPORT_SYMBOL(of_find_i2c_device_by_node);
+ 
+ /* must call put_device() when done with returned i2c_adapter device */
+ struct i2c_adapter *of_find_i2c_adapter_by_node(struct device_node *node)
+ {
+-	struct device *dev;
+-	struct i2c_adapter *adapter;
+-
+-	dev = bus_find_device(&i2c_bus_type, NULL, node,
+-			      of_dev_or_parent_node_match);
+-	if (!dev)
+-		return NULL;
+-
+-	adapter = i2c_verify_adapter(dev);
+-	if (!adapter)
+-		put_device(dev);
+-
+-	return adapter;
++	return i2c_find_adapter_by_fwnode(of_fwnode_handle(node));
+ }
+ EXPORT_SYMBOL(of_find_i2c_adapter_by_node);
+ 
+ /* must call i2c_put_adapter() when done with returned i2c_adapter device */
+ struct i2c_adapter *of_get_i2c_adapter_by_node(struct device_node *node)
+ {
+-	struct i2c_adapter *adapter;
+-
+-	adapter = of_find_i2c_adapter_by_node(node);
+-	if (!adapter)
+-		return NULL;
+-
+-	if (!try_module_get(adapter->owner)) {
+-		put_device(&adapter->dev);
+-		adapter = NULL;
+-	}
+-
+-	return adapter;
++	return i2c_get_adapter_by_fwnode(of_fwnode_handle(node));
+ }
+ EXPORT_SYMBOL(of_get_i2c_adapter_by_node);
+ 
+diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+index d84e0e99f084..bcee9faaf2e6 100644
+--- a/include/linux/i2c.h
++++ b/include/linux/i2c.h
+@@ -965,6 +965,15 @@ int i2c_handle_smbus_host_notify(struct i2c_adapter *adap, unsigned short addr);
+ 
+ #endif /* I2C */
+ 
++/* must call put_device() when done with returned i2c_client device */
++struct i2c_client *i2c_find_device_by_fwnode(struct fwnode_handle *fwnode);
++
++/* must call put_device() when done with returned i2c_adapter device */
++struct i2c_adapter *i2c_find_adapter_by_fwnode(struct fwnode_handle *fwnode);
++
++/* must call i2c_put_adapter() when done with returned i2c_adapter device */
++struct i2c_adapter *i2c_get_adapter_by_fwnode(struct fwnode_handle *fwnode);
++
+ #if IS_ENABLED(CONFIG_OF)
+ /* must call put_device() when done with returned i2c_client device */
+ struct i2c_client *of_find_i2c_device_by_node(struct device_node *node);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
