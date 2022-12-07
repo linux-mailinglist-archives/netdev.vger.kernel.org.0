@@ -2,131 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 586F0645400
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 07:29:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFF78645411
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 07:37:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbiLGG31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 01:29:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56476 "EHLO
+        id S229600AbiLGGhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 01:37:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiLGG30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 01:29:26 -0500
-Received: from smtp.smtpout.orange.fr (smtp-26.smtpout.orange.fr [80.12.242.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8C85986C
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 22:29:23 -0800 (PST)
-Received: from [192.168.1.18] ([86.243.100.34])
-        by smtp.orange.fr with ESMTPA
-        id 2nvjps6kw1LdI2nvjpWyzz; Wed, 07 Dec 2022 07:29:20 +0100
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 07 Dec 2022 07:29:20 +0100
-X-ME-IP: 86.243.100.34
-Message-ID: <3ac4ee1a-b6ad-283d-6747-1b2e15fb27f3@wanadoo.fr>
-Date:   Wed, 7 Dec 2022 07:29:19 +0100
+        with ESMTP id S229489AbiLGGhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 01:37:38 -0500
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B0F285
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 22:37:34 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id a11-20020a92c54b000000b003034a80704fso9608619ilj.1
+        for <netdev@vger.kernel.org>; Tue, 06 Dec 2022 22:37:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jLB0Pkd9Nh7NeEoHOWKzVZZxxVBnkb2L55U5FarQQv8=;
+        b=CmARr7JCXB6mI/GEzQgJLvOCmrP+TOsEF93TYX9QjvAsudRIsVrBd3RJtpBji2jpE7
+         hzmYw3O/2A5n5+dYNKjd9l6XgpqfFZYLIeNLijHc8xAXud7qhVaDVymJs+KjVYADACzE
+         0tDbEUT01Pvn8m4bt3rwaL4axE/oZ4tfKASf14J7g+TWxJi13qSePsurChbtk6MWshDH
+         G4PAQCHJV/JJLZUU7UK64A9yR3r4mb01/SafpMqoQBdNN+JWjCdsLIEI6ffVkE61b1Nj
+         LydW44VNLVpWXYQQdQEVDWYerQ8F1rdYnAr/3xCfTaYIxW42MCRD79Gaz2UyYncJOUkn
+         XrDw==
+X-Gm-Message-State: ANoB5pl7iKvuS5EXY8f8J2yeaMNaD/lnBFEj+sMr166dJ3NIHXxHqNqH
+        o8lSnLj/3Qg7Qz0yJ/Uuanof23gYxVZxWmOB+lzRRSW7OrZ1
+X-Google-Smtp-Source: AA0mqf7TgXh5vylvADljQhqHaiwecRdnnuXzSGRvqsKbHwUxxxBnRYDILWnZ1LBovpOHkHsFGBZfJvxVTOJrmpE1AH3DeMLOUPvw
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH] packet: Don't include <linux/rculist.h>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
-References: <adc33d6c7dd01e29c848b9519b6a601219ba6780.1670086158.git.christophe.jaillet@wanadoo.fr>
- <CANn89i+YnmoAunWzwG1KvCH0WUOCXfA6SztW3Xdf0vN4QktRGQ@mail.gmail.com>
-Content-Language: fr, en-US
-In-Reply-To: <CANn89i+YnmoAunWzwG1KvCH0WUOCXfA6SztW3Xdf0vN4QktRGQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-Received: by 2002:a92:c852:0:b0:303:4797:d3f9 with SMTP id
+ b18-20020a92c852000000b003034797d3f9mr9039874ilq.36.1670395054280; Tue, 06
+ Dec 2022 22:37:34 -0800 (PST)
+Date:   Tue, 06 Dec 2022 22:37:34 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d878ce05ef372791@google.com>
+Subject: [syzbot] kernel BUG in rxrpc_destroy_all_locals
+From:   syzbot <syzbot+e1391a5bf3f779e31237@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
+        kuba@kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 05/12/2022 à 06:24, Eric Dumazet a écrit :
-> On Sat, Dec 3, 2022 at 5:49 PM Christophe JAILLET
-> <christophe.jaillet@wanadoo.fr> wrote:
->>
->> There is no need to include <linux/rculist.h> here.
->>
->> Prefer the less invasive <linux/types.h> which is needed for 'hlist_head'.
->>
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
->> Let see if build-bots agree with me!
->>
-> 
-> net/packet/af_packet.c does not explicitly include linux/rculist.h
-> 
-> It might be provided by include/linux/netdevice.h, but I wonder if
-> this is best practice.
+Hello,
 
-At least, it is not what I expect.
+syzbot found the following issue on:
 
-My goal is to avoid some unneeded includes AND the related indirect 
-needed includes that are buried somewhere in the dependency hell.
+HEAD commit:    15309fb26b87 net: sfp: clean up i2c-bus property parsing
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=15431383880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c608c21151db14f2
+dashboard link: https://syzkaller.appspot.com/bug?extid=e1391a5bf3f779e31237
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-I missed the one in af_packet.c
+Unfortunately, I don't have any reproducer for this issue yet.
 
-I'll repost a v2 with the fix for af_packet.c (and double-check if some 
-other are also needed)
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/2919f1040d37/disk-15309fb2.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/2fb3e2516436/vmlinux-15309fb2.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/5638fcd36798/bzImage-15309fb2.xz
 
-> 
->> Just declaring 'struct mutex' and 'struct hlist_head' would also be an
->> option.
-> 
-> I do not get it, see [1]
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e1391a5bf3f779e31237@syzkaller.appspotmail.com
 
-Just forget about it.
+------------[ cut here ]------------
+kernel BUG at net/rxrpc/local_object.c:438!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 4101 Comm: kworker/u4:7 Not tainted 6.1.0-rc7-syzkaller-01817-g15309fb26b87 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/26/2022
+Workqueue: netns cleanup_net
+RIP: 0010:rxrpc_destroy_all_locals+0xe8/0x180 net/rxrpc/local_object.c:438
+Code: e8 dd bb 98 f8 48 83 eb 20 49 bd 00 00 00 00 00 fc ff df e8 ca bb 98 f8 48 85 db 75 19 e8 c0 bb 98 f8 4c 89 e7 e8 a8 79 0b 01 <0f> 0b 48 89 ef e8 8e 79 e6 f8 eb be e8 a7 bb 98 f8 48 8d 6b 14 be
+RSP: 0018:ffffc9000d8a7be0 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff8880295b3a80
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffffc9000d8a7b28
+RBP: ffff8880494f3814 R08: 0000000000000001 R09: ffffc9000d8a7b2f
+R10: fffff52001b14f65 R11: 0000000000000000 R12: ffff8880215f42e8
+R13: dffffc0000000000 R14: dffffc0000000000 R15: fffffbfff1c2fe10
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fb41eed4620 CR3: 0000000027524000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ rxrpc_exit_net+0x174/0x300 net/rxrpc/net_ns.c:128
+ ops_exit_list+0xb0/0x170 net/core/net_namespace.c:169
+ cleanup_net+0x4ee/0xb10 net/core/net_namespace.c:606
+ process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
+ worker_thread+0x669/0x1090 kernel/workqueue.c:2436
+ kthread+0x2e8/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:rxrpc_destroy_all_locals+0xe8/0x180 net/rxrpc/local_object.c:438
+Code: e8 dd bb 98 f8 48 83 eb 20 49 bd 00 00 00 00 00 fc ff df e8 ca bb 98 f8 48 85 db 75 19 e8 c0 bb 98 f8 4c 89 e7 e8 a8 79 0b 01 <0f> 0b 48 89 ef e8 8e 79 e6 f8 eb be e8 a7 bb 98 f8 48 8d 6b 14 be
+RSP: 0018:ffffc9000d8a7be0 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff8880295b3a80
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffffc9000d8a7b28
+RBP: ffff8880494f3814 R08: 0000000000000001 R09: ffffc9000d8a7b2f
+R10: fffff52001b14f65 R11: 0000000000000000 R12: ffff8880215f42e8
+R13: dffffc0000000000 R14: dffffc0000000000 R15: fffffbfff1c2fe10
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fb41eed4620 CR3: 0000000026e44000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-Requirement for:
-    struct my_struct {
-           struct another_struct            x;
 
-and
-    struct my_struct {
-           struct another_struct            *x;
-                                           ~~~
-are not the same, even if 'my_struct' is not used at all...
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-(*ashamed *)
-
-CJ
-
-> 
->> It would remove the need of any include, but is more likely to break
->> something.
-> 
-> I do not see why you are even trying this ?
-> 
->> ---
->>   include/net/netns/packet.h | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/include/net/netns/packet.h b/include/net/netns/packet.h
->> index aae69bb43cde..74750865df36 100644
->> --- a/include/net/netns/packet.h
->> +++ b/include/net/netns/packet.h
->> @@ -5,8 +5,8 @@
->>   #ifndef __NETNS_PACKET_H__
->>   #define __NETNS_PACKET_H__
->>
->> -#include <linux/rculist.h>
->>   #include <linux/mutex.h>
->> +#include <linux/types.h>
->>
->>   struct netns_packet {
->>          struct mutex            sklist_lock;
-> 
-> [1] Definition of 'struct mutex' is definitely needed here.
-> 
->> --
->> 2.34.1
->>
-> 
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
