@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A94EA645324
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 05:43:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49AB2645333
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 05:50:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbiLGEnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 23:43:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        id S229583AbiLGEu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 23:50:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229638AbiLGEnM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 23:43:12 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5D756EC1
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 20:43:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=PZrVyvFlOMGvQsYAox31piE8Yb0sq/qIYSP8QqMcS3M=; b=r9mU9F0HJTEwPpQ8tx3pzhfITn
-        4Z8PZ6/9kP9Y8ggwkvsssGEhR/ZFL1Hh9Tuki2PXnH8EgCVLBOjJUr2ORAGic51qEfmAwhoItjibi
-        2uloCslBfrDfY+kKxIsbNx8u7y1DuuIis+mpsRkUCh09KgtpNDkZKNbVEHxd2EVSBSjMJW8RXZQYz
-        XTw2OK2jKVqCnM1isPGPtPdTeQpZ1Dck9HLuvC+oxhK1pXc2fKfEm/beTrCU9DvxEHv6AO8rakCv6
-        61+OybXnReu9JJdlnC+dapIp8NQm83xlB1IRhajv6Y9sVyGdjkTUYeFd6mJWFBSLAWyjPrre0MZO+
-        +O9w1N8g==;
-Received: from [2601:1c2:d80:3110::a2e7] (helo=casper.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1p2mH0-0058CH-Ax; Wed, 07 Dec 2022 04:43:10 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH] net: phy: remove redundant "depends on" lines
-Date:   Tue,  6 Dec 2022 20:42:57 -0800
-Message-Id: <20221207044257.30036-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229669AbiLGEuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 23:50:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3457328E00
+        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 20:50:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D060FB81CFD
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 04:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 81D63C433D7;
+        Wed,  7 Dec 2022 04:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670388616;
+        bh=w+iN9nQOPyQ8a9UGv0mJb5rAVG5BHm7gLalGUrJRzpU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OKH3lOIX9aRVvZZKuLtmISUIFihu4+SkBRLJcbjNShb7dcbDaCGSAdHuyrAChuSI4
+         A3LoU07aN8Jk2NgUuBaS7if3ZDzHXKWlatYnZ72cXaG7HDZFIgcODGZ7MyrbirgtV0
+         L2aDNubIlKzTaM7dDbgc5LnxdD4yndceCZ2hUJd5KIDC+zN5Uu4RP04Vd7xttCy9lh
+         UzSJLjaP87N/Y5PlsUKXxWrKDnZ5jJ01x/cmLZqgCTKziR/C9VGkz29o2UyY3QBhy3
+         wlrLg4RRUFr6MCxVprriFtWqnVdZfGpWgs7vJCe+dH4UuiNn+bovjPqsGdrmi+wuF/
+         zp2pNDm4l5drw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6DA0FC5C7C6;
+        Wed,  7 Dec 2022 04:50:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net 0/3][pull request] Intel Wired LAN Driver Updates
+ 2022-12-05 (i40e)
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167038861644.25696.8432380905804887657.git-patchwork-notify@kernel.org>
+Date:   Wed, 07 Dec 2022 04:50:16 +0000
+References: <20221205212523.3197565-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20221205212523.3197565-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Delete a few lines of "depends on PHYLIB" since they are inside
-an "if PHYLIB / endif # PHYLIB" block, i.e., they are redundant
-and the other 50+ drivers there don't use "depends on PHYLIB"
-since it is not needed.
+Hello:
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>
----
- drivers/net/phy/Kconfig |    3 ---
- 1 file changed, 3 deletions(-)
+This series was applied to netdev/net.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-diff -- a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -47,7 +47,6 @@ config LED_TRIGGER_PHY
- 
- config FIXED_PHY
- 	tristate "MDIO Bus/PHY emulation with fixed speed/link PHYs"
--	depends on PHYLIB
- 	select SWPHY
- 	help
- 	  Adds the platform "fixed" MDIO Bus to cover the boards that use
-@@ -112,7 +111,6 @@ config BROADCOM_PHY
- 
- config BCM54140_PHY
- 	tristate "Broadcom BCM54140 PHY"
--	depends on PHYLIB
- 	depends on HWMON || HWMON=n
- 	select BCM_NET_PHYLIB
- 	help
-@@ -137,7 +135,6 @@ config BCM7XXX_PHY
- 
- config BCM84881_PHY
- 	tristate "Broadcom BCM84881 PHY"
--	depends on PHYLIB
- 	help
- 	  Support the Broadcom BCM84881 PHY.
- 
+On Mon,  5 Dec 2022 13:25:20 -0800 you wrote:
+> This series contains updates to i40e driver only.
+> 
+> Michal clears XPS init flag on reset to allow for updated values to be
+> written.
+> 
+> Sylwester adds sleep to VF reset to resolve issue of VFs not getting
+> resources.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/3] i40e: Fix not setting default xps_cpus after reset
+    https://git.kernel.org/netdev/net/c/82e0572b2302
+  - [net,2/3] i40e: Fix for VF MAC address 0
+    https://git.kernel.org/netdev/net/c/085019704720
+  - [net,3/3] i40e: Disallow ip4 and ip6 l4_4_bytes
+    https://git.kernel.org/netdev/net/c/d64aaf3f7869
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
