@@ -2,128 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 959F6646532
+	by mail.lfdr.de (Postfix) with ESMTP id 41633646531
 	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 00:36:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbiLGXgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 18:36:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
+        id S230170AbiLGXgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 18:36:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiLGXgo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 18:36:44 -0500
-Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB498AAEA
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 15:36:39 -0800 (PST)
-Received: by mail-oo1-xc31.google.com with SMTP id o5-20020a4aa805000000b004a020f841cbso165666oom.3
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 15:36:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=4bM6SKRE6ik5tlaOBWLBJYdHHUJEelxxwN2ETMMhnlM=;
-        b=PAesO0oyso3RT03s+40SoCv07++5Q73wo7wdVXLLLoyFSgNpJT7KjNLBa0tMoe8e7C
-         MOvpxBAJaQyaTjMjKzxPDe7yI62KcGNEZO9bFOIJU8LSb0hIWdrEl0HWdHXIieeM/+uD
-         rsPDvJk3J7Dsmb4THWltIjdNKwmixKPfTMStllKijNyeOrRBOvVzH5b+7bqvgfDk7Dz3
-         /hIHEeetO+kvHtjSuzBRHYfvShEcaf00hU6cuSKUOooMGZWuF6XhtOZxLb3PjqTzsTpM
-         qI0q6WbWb2cF8bQm4v1L70UKiZlJi4OkPdGGYHY9iFAiLB9VxPxPftLoNfU5e4BEPN20
-         OhHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4bM6SKRE6ik5tlaOBWLBJYdHHUJEelxxwN2ETMMhnlM=;
-        b=FzEDmpnZmISNBVs41y//8cilEXsfkPlRSogq41KMZzkOMx1sKji87zcYUymT9e8JNG
-         ipK1YKsGfGOGSS2AOoiQ3GBre9rFIP0OQtfTzE3LKGQaM/UD3yVN5IC/EjiBzQyyM0Z3
-         i9NrU5UTnmog7/O0BWCGIGQXBi7vrJP3KlE9fy6bE+LuPVMACZuMAg5d+1BqTTV1tWGO
-         YtwcTezlB+VJ+AmFlXRsyd1iCndrtp/r2HACde/Z/wlP983Cn+Qq8Oar4+QfhQ0DuvL9
-         aVzWHG9Rjb8dIwbHhLEonTczRxLGnXny7oQw7XGXtU9Ei/FvBVehToC7DGJviPhFKDP3
-         zPJw==
-X-Gm-Message-State: ANoB5pnOCqjeLvBbsk8YmUGAWPo4KEuWjQSSWoaLpWuNBywqJq70bM0w
-        0ceFfHOW8aZlpjj1GV//ibfCUGlTXeXyynmXADA=
-X-Google-Smtp-Source: AA0mqf6tpQds8NrJuGmOcjzcQO41FnUo5W68RotULLJf3PXCgtJmDa3awHPigfwXZ4Xw/2WPDDr5ksCkVR1Mxe8bxD4=
-X-Received: by 2002:a4a:8c23:0:b0:47f:d445:b435 with SMTP id
- u32-20020a4a8c23000000b0047fd445b435mr32313994ooj.87.1670456198996; Wed, 07
- Dec 2022 15:36:38 -0800 (PST)
+        with ESMTP id S230119AbiLGXgj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 18:36:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025058AAE4
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 15:36:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 948DDB8218F
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 23:36:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39D7BC433C1;
+        Wed,  7 Dec 2022 23:36:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670456195;
+        bh=atdfWN2kc5BmwgBTd3SabIgE4g64/G+cR2OJqY2A5bs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GOUskRgdE+7VYGxhyQFXfLm8cmWdKrwA8OpyeZuacr9AWWenq/eArPBHeGD9wquuv
+         N9U+cz8YhFi1RZSmZHRJD/Rr3XQGBt2Q4YzoB7lV0DXVYTx1YflcIfCjYHbyXZ1ltk
+         lsxKb8xWBd4LyJevRNppqT3GTREKnFqHZKoIL/jpcffc8uI6e5vIrfLWsW8bUnp63u
+         vbFgH8j+Uv16XASjfdMNjwxQWa5YfcBj3Bq+7BkN5WCuosf2JnxhhALBJCDm0Dbt8v
+         FkgzGEJl8sJScDjlq/dv0s+hgXYJ4UlUkIdgSUPD0ZHdZeL/vjdTZbtqQxhCHhSw7Q
+         Bv8ZFBl3x8ukw==
+Date:   Wed, 7 Dec 2022 15:36:33 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, Jacob Keller <jacob.e.keller@intel.com>,
+        netdev@vger.kernel.org, richardcochran@gmail.com, leon@kernel.org,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: Re: [PATCH net-next v2 09/15] ice: protect init and calibrating
+ check in ice_ptp_request_ts
+Message-ID: <Y5Ejgb2P2f/PX0ym@x130>
+References: <20221207210937.1099650-1-anthony.l.nguyen@intel.com>
+ <20221207210937.1099650-10-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-References: <32ee765d2240163f1cbd5d99db6233f276857ccb.1670262365.git.lucien.xin@gmail.com>
- <Y4731q0/oqwhHZod@nanopsycho> <CADvbK_e6dFT6L69g63FOu=uE7b48rubaYOBL0RDTmKRUBFDCjw@mail.gmail.com>
- <CADvbK_eaEb9vQ9h34WNcibULBFHAZcPB05dNztV=+QOUzOYBwQ@mail.gmail.com> <Y5CVoc7vnKGg1KYj@nanopsycho>
-In-Reply-To: <Y5CVoc7vnKGg1KYj@nanopsycho>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 7 Dec 2022 18:35:48 -0500
-Message-ID: <CADvbK_dFAAd3=cBf9aonBbJcJ38V3=KDK5YzUd+=hBO2axkMBg@mail.gmail.com>
-Subject: Re: [PATCH net] team: prevent ipv6 link local address on port devices
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, LiLiang <liali@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20221207210937.1099650-10-anthony.l.nguyen@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 7, 2022 at 8:31 AM Jiri Pirko <jiri@resnulli.us> wrote:
+On 07 Dec 13:09, Tony Nguyen wrote:
+>From: Jacob Keller <jacob.e.keller@intel.com>
 >
-> Tue, Dec 06, 2022 at 10:52:33PM CET, lucien.xin@gmail.com wrote:
-> >On Tue, Dec 6, 2022 at 8:32 AM Xin Long <lucien.xin@gmail.com> wrote:
-> >>
-> >> On Tue, Dec 6, 2022 at 3:05 AM Jiri Pirko <jiri@resnulli.us> wrote:
-> >> >
-> >> > Mon, Dec 05, 2022 at 06:46:05PM CET, lucien.xin@gmail.com wrote:
-> >> > >The similar fix from commit c2edacf80e15 ("bonding / ipv6: no addrconf
-> >> > >for slaves separately from master") is also needed in Team. Otherwise,
-> >> > >DAD and RS packets to be sent from the slaves in turn can confuse the
-> >> > >switches and cause them to incorrectly update their forwarding tables
-> >> > >as Liang noticed in the test with activebackup mode.
-> >> > >
-> >> > >Note that the patch also sets IFF_MASTER flag for Team dev accordingly
-> >> > >while IFF_SLAVE flag is set for port devs. Although IFF_MASTER flag is
-> >> > >not really used in Team, it's good to show in 'ip link':
-> >> > >
-> >> > >  eth1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP>
-> >> > >  team0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP>
-> >> > >
-> >> > >Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
-> >> > >Reported-by: LiLiang <liali@redhat.com>
-> >> > >Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> >> >
-> >> > Nack. Please don't do this. IFF_MASTER and IFF_SLAVE are historical
-> >> > flags used by bonding and eql. Should not be used for other devices.
-> >> I see. I was wondering why it was not used in Team at the beginning. :)
-> >>
-> >> >
-> >> > addrconf_addr_gen() should not check IFF_SLAVE. It should use:
-> >> > netif_is_lag_port() and netif_is_failover_slave() helpers.
-> >Hi Jiri,
-> >
-> >Sorry, it seems not to work with this.
-> >
-> >As addrconf_addr_gen() is also called in NETDEV_UP event where
-> >IFF_TEAM_PORT and IFF_BONDING haven't yet been set before
-> >dev_open() when adding the port.
-> >
-> >If we move IFF_TEAM_PORT setting ahead of dev_open(), it will revert
-> >the fix in:
-> >
-> >commit d7d3c05135f37d8fdf73f9966d27155cada36e56
-> >Author: Jiri Pirko <jiri@resnulli.us>
-> >Date:   Mon Aug 25 21:38:27 2014 +0200
-> >
-> >    team: set IFF_TEAM_PORT priv_flag after rx_handler is registered
-> >
-> >Can we keep IFF_SLAVE here only for no ipv6 addrconf?
+>When requesting a new timestamp, the ice_ptp_request_ts function does not
+>hold the Tx tracker lock while checking init and calibrating. This means
+>that we might issue a new timestamp request just after the Tx timestamp
+>tracker starts being deinitialized. This could lead to incorrect access of
+>the timestamp structures. Correct this by moving the init and calibrating
+>checks under the lock, and updating the flows which modify these fields to
+>use the lock.
 >
-> So, shouldn't it be rather a new flag specifically for this purpose?
-Maybe IFF_NO_ADDRCONF in dev->priv_flags?
+>Note that we do not need to hold the lock while checking for tx->init in
+>ice_ptp_tstamp_tx. This is because the teardown function will use
+>synchronize_irq after clearing the flag to ensure that the threaded
 
-I will give it a try.
+FYI: couldn't find any ice_ptp_tstamp_tx(), and if it's running in xmit
+path sofritrq then sync_irq won't help you.
 
-Thanks.
+>interrupt completes. Either a) the tx->init flag will be cleared before the
+>ice_ptp_tx_tstamp function starts, thus it will exit immediately, or b) the
+>threaded interrupt will be executing and the synchronize_irq will wait
+>until the threaded interrupt has completed at which point we know the init
+>field has definitely been set and new interrupts will not execute the Tx
+>timestamp thread function.
+>
+>Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+>Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+>Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+>---
+> drivers/net/ethernet/intel/ice/ice_ptp.c | 36 ++++++++++++++++++++----
+> drivers/net/ethernet/intel/ice/ice_ptp.h |  2 +-
+> 2 files changed, 32 insertions(+), 6 deletions(-)
+>
+>diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+>index 0282ccc55819..481492d84e0e 100644
+>--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
+>+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+>@@ -599,6 +599,23 @@ static u64 ice_ptp_extend_40b_ts(struct ice_pf *pf, u64 in_tstamp)
+> 				     (in_tstamp >> 8) & mask);
+> }
+>
+>+/**
+>+ * ice_ptp_is_tx_tracker_up - Check if Tx tracker is ready for new timestamps
+>+ * @tx: the PTP Tx timestamp tracker to check
+>+ *
+>+ * Check that a given PTP Tx timestamp tracker is up, i.e. that it is ready
+>+ * to accept new timestamp requests.
+>+ *
+>+ * Assumes the tx->lock spinlock is already held.
+>+ */
+>+static bool
+>+ice_ptp_is_tx_tracker_up(struct ice_ptp_tx *tx)
+>+{
+>+	lockdep_assert_held(&tx->lock);
+>+
+>+	return tx->init && !tx->calibrating;
+>+}
+>+
+> /**
+>  * ice_ptp_tx_tstamp - Process Tx timestamps for a port
+>  * @tx: the PTP Tx timestamp tracker
+>@@ -788,10 +805,10 @@ ice_ptp_alloc_tx_tracker(struct ice_ptp_tx *tx)
+> 		return -ENOMEM;
+> 	}
+>
+>-	spin_lock_init(&tx->lock);
+>-
+> 	tx->init = 1;
+>
+>+	spin_lock_init(&tx->lock);
+>+
+
+this change is pointless. 
+
+> 	return 0;
+> }
+>
+>@@ -833,7 +850,9 @@ ice_ptp_flush_tx_tracker(struct ice_pf *pf, struct ice_ptp_tx *tx)
+> static void
+> ice_ptp_release_tx_tracker(struct ice_pf *pf, struct ice_ptp_tx *tx)
+> {
+>+	spin_lock(&tx->lock);
+> 	tx->init = 0;
+>+	spin_unlock(&tx->lock);
+>
+> 	/* wait for potentially outstanding interrupt to complete */
+> 	synchronize_irq(pf->msix_entries[pf->oicr_idx].vector);
+>@@ -1327,7 +1346,9 @@ ice_ptp_port_phy_restart(struct ice_ptp_port *ptp_port)
+> 	kthread_cancel_delayed_work_sync(&ptp_port->ov_work);
+>
+> 	/* temporarily disable Tx timestamps while calibrating PHY offset */
+>+	spin_lock(&ptp_port->tx.lock);
+> 	ptp_port->tx.calibrating = true;
+>+	spin_unlock(&ptp_port->tx.lock);
+> 	ptp_port->tx_fifo_busy_cnt = 0;
+>
+> 	/* Start the PHY timer in Vernier mode */
+>@@ -1336,7 +1357,9 @@ ice_ptp_port_phy_restart(struct ice_ptp_port *ptp_port)
+> 		goto out_unlock;
+>
+> 	/* Enable Tx timestamps right away */
+>+	spin_lock(&ptp_port->tx.lock);
+> 	ptp_port->tx.calibrating = false;
+>+	spin_unlock(&ptp_port->tx.lock);
+>
+> 	kthread_queue_delayed_work(pf->ptp.kworker, &ptp_port->ov_work, 0);
+>
+>@@ -2330,11 +2353,14 @@ s8 ice_ptp_request_ts(struct ice_ptp_tx *tx, struct sk_buff *skb)
+> {
+> 	u8 idx;
+>
+>-	/* Check if this tracker is initialized */
+>-	if (!tx->init || tx->calibrating)
+>+	spin_lock(&tx->lock);
+>+
+>+	/* Check that this tracker is accepting new timestamp requests */
+>+	if (!ice_ptp_is_tx_tracker_up(tx)) {
+>+		spin_unlock(&tx->lock);
+> 		return -1;
+>+	}
+>
+>-	spin_lock(&tx->lock);
+> 	/* Find and set the first available index */
+> 	idx = find_first_zero_bit(tx->in_use, tx->len);
+> 	if (idx < tx->len) {
+>diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
+>index 5052fc41bed3..0bfafaaab6c7 100644
+>--- a/drivers/net/ethernet/intel/ice/ice_ptp.h
+>+++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
+>@@ -110,7 +110,7 @@ struct ice_tx_tstamp {
+>
+> /**
+>  * struct ice_ptp_tx - Tracking structure for all Tx timestamp requests on a port
+>- * @lock: lock to prevent concurrent write to in_use bitmap
+>+ * @lock: lock to prevent concurrent access to fields of this struct
+>  * @tstamps: array of len to store outstanding requests
+>  * @in_use: bitmap of len to indicate which slots are in use
+>  * @block: which memory block (quad or port) the timestamps are captured in
+>-- 
+>2.35.1
+>
