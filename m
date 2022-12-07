@@ -2,163 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6E4464555E
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 09:23:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C451645560
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 09:23:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbiLGIXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 03:23:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59956 "EHLO
+        id S229762AbiLGIXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 03:23:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiLGIXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 03:23:07 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F2A248EB
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 00:23:06 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1p2pho-0001kH-DL; Wed, 07 Dec 2022 09:23:04 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1p2phl-002scw-4p; Wed, 07 Dec 2022 09:23:01 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1p2phl-003Eno-7q; Wed, 07 Dec 2022 09:23:01 +0100
-Date:   Wed, 7 Dec 2022 09:23:01 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc:     "Guilherme G. Piccoli" <kernel@gpiccoli.net>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, netdev@vger.kernel.org,
-        Douglas Miller <dougmill@linux.ibm.com>, gpiccoli@igalia.com,
-        kernel@pengutronix.de,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: Strangeness in ehea network driver's shutdown
-Message-ID: <20221207082301.vfkh2zoty54rhhsv@pengutronix.de>
-References: <20221001143131.6ondbff4r7ygokf2@pengutronix.de>
- <20221003093606.75a78f22@kernel.org>
- <CALJn8nN-5DZZkwrJurtT2NOUXGdEQa-aQt+MHvsii2oC_w5+FA@mail.gmail.com>
- <Y491kVZdw2lLB3yU@quatroqueijos.cascardo.eti.br>
+        with ESMTP id S229565AbiLGIXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 03:23:38 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9FF25EA5;
+        Wed,  7 Dec 2022 00:23:36 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id n21so12119799ejb.9;
+        Wed, 07 Dec 2022 00:23:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=1WGjEJwm3dqx8XsjIfiElv6H7t2zrb2ZfkTtnHZN3Ic=;
+        b=WB35YW7+zReBscyKvhxPvnkde2WZ0r40O4cYUkRcLaDHb/WzmDOejw9PbQubSt/IAs
+         7IYdIqebi/Q775bY81uKA31RLYQIJ3po0DLhN3BCfOgtLKPP+f+bfSw8G+82IXfCI+rV
+         Ak56sZkoMwDz8A8VhiL8gA9YvJx6lfR+481ckqRW+PiDnxooK4Zp1CqtvwkAg/bLMTu2
+         So/pw7ErajGqL593rEoOBZ4+HeLY3Sr5YIXjNY/FeKSdLlKSaSCt53FCSEhfu36kQtBw
+         2SrJ4Pt1Zh5tPHExOniA/xWojdfunTl4XAhT9qaB1GKnPX9fOPujQEk2QRmsvef1Swui
+         wtTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1WGjEJwm3dqx8XsjIfiElv6H7t2zrb2ZfkTtnHZN3Ic=;
+        b=EihWpVWE0nGkumqV7u38TrQAn5uFeKTejZdEZIuAorBJvs6KfGBqdphUwMkp8CVdg8
+         5rUo8sCyJ9KQWfiwUoSv/NsYSqkxwHEbBlAMLFfHxmy1oM60ZdF7nUocjVY/rNLhVepc
+         Emn2p25Q9sShZRJ/yElms1uEOOR/Y84zSdjDHD6RiwtYU42pm7v0+QqjYsGgEfxotBLh
+         Pb4vSnhMWpbGMWRpY9spxJqQHOLVYiJbs36xGM9591AAnIPMYmIt+BNAFiKLfs+EKWZv
+         oNO3A+9WWFfH1LSGP6GjrE8buVKqPo5292vnZfvuUu5m2Lq9aBFZ3jfiCWDhClcsm++7
+         Wa5g==
+X-Gm-Message-State: ANoB5pkOLh27WTq0FJLsWR4D1E0+n88uv7qzJgqV2Vyioj4MCKJw4Wio
+        qn46c69kNgqxfiBsVfhQthhdYng58recDaThOco=
+X-Google-Smtp-Source: AA0mqf78s91SIU3ZOFCaTqNG5YIgu6ZyJRasY5vtX8X1yjWD4TcUsy5pIkjAEuPvwpqu27O7YBeoMUyQlGBJoVS1GTM=
+X-Received: by 2002:a17:907:9d04:b0:7c1:1342:61b7 with SMTP id
+ kt4-20020a1709079d0400b007c1134261b7mr3903917ejc.524.1670401414979; Wed, 07
+ Dec 2022 00:23:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5exu7kd75hueigfs"
-Content-Disposition: inline
-In-Reply-To: <Y491kVZdw2lLB3yU@quatroqueijos.cascardo.eti.br>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221206090826.2957-1-magnus.karlsson@gmail.com>
+ <20221206090826.2957-8-magnus.karlsson@gmail.com> <3489505c-3e33-880e-6f19-1796ca897553@iogearbox.net>
+In-Reply-To: <3489505c-3e33-880e-6f19-1796ca897553@iogearbox.net>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 7 Dec 2022 09:23:22 +0100
+Message-ID: <CAJ8uoz0=nbs+rgU5kNi161=D5QU+oH383kieZOguBuTsivJYXQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 07/15] selftests/xsk: get rid of asm
+ store/release implementations
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        netdev@vger.kernel.org, maciej.fijalkowski@intel.com,
+        bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, jonathan.lemon@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Dec 7, 2022 at 12:48 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 12/6/22 10:08 AM, Magnus Karlsson wrote:
+> > From: Magnus Karlsson <magnus.karlsson@intel.com>
+> >
+> > Get rid of our own homegrown assembly store/release and load/acquire
+> > implementations. Use the HW agnositic APIs the compiler offers
+> > instead.
+>
+> The description is a bit terse. Could you add a bit more context, discussion
+> or reference on why it's safe to replace them with C11 atomics?
 
---5exu7kd75hueigfs
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Will do, though I will hold off on a v2 in case there are further comments.
 
-On Tue, Dec 06, 2022 at 02:02:09PM -0300, Thadeu Lima de Souza Cascardo wro=
-te:
-> On Tue, Dec 06, 2022 at 01:49:01PM -0300, Guilherme G. Piccoli wrote:
-> > On Mon, Oct 3, 2022 at 1:36 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > >
-> > > On Sat, 1 Oct 2022 16:31:31 +0200 Uwe Kleine-K=F6nig wrote:
-> > > > Hello,
-> > > >
-> > > > while doing some cleanup I stumbled over a problem in the ehea netw=
-ork
-> > > > driver.
-> > > >
-> > > > In the driver's probe function (ehea_probe_adapter() via
-> > > > ehea_register_memory_hooks()) a reboot notifier is registered. When=
- this
-> > > > notifier is triggered (ehea_reboot_notifier()) it unregisters the
-> > > > driver. I'm unsure what is the order of the actions triggered by th=
-at.
-> > > > Maybe the driver is unregistered twice if there are two bound devic=
-es?
->=20
-> I see how you would think it might be called for every bound device. That=
-'s
-> because ehea_register_memory_hooks is called by ehea_probe_adapter. Howev=
-er,
-> there is this test here that leads it the reboot_notifier to be registere=
-d only
-> once:
->=20
-> [...]
-> static int ehea_register_memory_hooks(void)
-> {
-> 	int ret =3D 0;
->=20
-> 	if (atomic_inc_return(&ehea_memory_hooks_registered) > 1)
-> 	^^^^^^^^^^^^^^^^^^^^^^
-> 		return 0;
-> [...]
-
-Ah, I see.
-
-> > > > Or the reboot notifier is called under a lock and unregistering the
-> > > > driver (and so the devices) tries to unregister the notifier that is
-> > > > currently locked and so results in a deadlock? Maybe Greg or Rafael=
- can
-> > > > tell about the details here?
-> > > >
-> > > > Whatever the effect is, it's strange. It makes me wonder why it's
-> > > > necessary to free all the resources of the driver on reboot?! I don=
-'t
->=20
-> As for why:
->=20
-> commit 2a6f4e4983918b18fe5d3fb364afe33db7139870
-> Author: Jan-Bernd Themann <ossthema@de.ibm.com>
-> Date:   Fri Oct 26 14:37:28 2007 +0200
->=20
->     ehea: add kexec support
->    =20
->     eHEA resources that are allocated via H_CALLs have a unique identifie=
-r each.
->     These identifiers are necessary to free the resources. A reboot notif=
-ier
->     is used to free all eHEA resources before the indentifiers get lost, =
-i.e
->     before kexec starts a new kernel.
->    =20
->     Signed-off-by: Jan-Bernd Themann <themann@de.ibm.com>
->     Signed-off-by: Jeff Garzik <jeff@garzik.org>
-
-I don't understand that, but that's fine for me.
-
-As you're happy with the state as is, I consider the Case closed. Thanks
-for looking into my bug report.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---5exu7kd75hueigfs
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmOQTWIACgkQwfwUeK3K
-7Am1Jwf+PQlJ5ujwgwNBXbeZeKDIz7xVWI/ly2U2uEfLFFa56sKeCfA6aqIY+6lQ
-sbKJmMe6bUZ2TZKrb5SvX9yh8duggwEmD+iMNvSKiRG8YZ7x212Xq/lYTGmQYh+3
-hszj9XQwdHyBYogumKNfZBg4nIAjVBVp1HrGsx1tiYT9gvQQfZkdoTyiAePhTZSc
-82NuBJ0aTjJcF+mEP2HQYKB2OVkuJXnx9pE02s6RZ5P0vrqSmftq9Al1nc3ev3PF
-aHJl1tSoyGhjhhpHHQRT0x0DyaywggCzwLPVaObGDV8zb7VqqzVjH0pC8G6lWfkk
-C6vi8FbUYfMoS+6cRHC4fp6D3ivKqg==
-=3mgO
------END PGP SIGNATURE-----
-
---5exu7kd75hueigfs--
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > ---
+> >   tools/testing/selftests/bpf/xsk.h | 80 ++-----------------------------
+> >   1 file changed, 4 insertions(+), 76 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/xsk.h b/tools/testing/selftests/bpf/xsk.h
+> > index 997723b0bfb2..24ee765aded3 100644
+> > --- a/tools/testing/selftests/bpf/xsk.h
+> > +++ b/tools/testing/selftests/bpf/xsk.h
+> > @@ -23,77 +23,6 @@
+> >   extern "C" {
+> >   #endif
+> >
+> > -/* This whole API has been deprecated and moved to libxdp that can be found at
+> > - * https://github.com/xdp-project/xdp-tools. The APIs are exactly the same so
+> > - * it should just be linking with libxdp instead of libbpf for this set of
+> > - * functionality. If not, please submit a bug report on the aforementioned page.
+> > - */
+> > -
+> > -/* Load-Acquire Store-Release barriers used by the XDP socket
+> > - * library. The following macros should *NOT* be considered part of
+> > - * the xsk.h API, and is subject to change anytime.
+> > - *
+> > - * LIBRARY INTERNAL
+> > - */
+> > -
+> > -#define __XSK_READ_ONCE(x) (*(volatile typeof(x) *)&x)
+> > -#define __XSK_WRITE_ONCE(x, v) (*(volatile typeof(x) *)&x) = (v)
+> > -
+> > -#if defined(__i386__) || defined(__x86_64__)
+> > -# define libbpf_smp_store_release(p, v)                                      \
+> > -     do {                                                            \
+> > -             asm volatile("" : : : "memory");                        \
+> > -             __XSK_WRITE_ONCE(*p, v);                                \
+> > -     } while (0)
+> > -# define libbpf_smp_load_acquire(p)                                  \
+> > -     ({                                                              \
+> > -             typeof(*p) ___p1 = __XSK_READ_ONCE(*p);                 \
+> > -             asm volatile("" : : : "memory");                        \
+> > -             ___p1;                                                  \
+> > -     })
+> > -#elif defined(__aarch64__)
+> > -# define libbpf_smp_store_release(p, v)                                      \
+> > -             asm volatile ("stlr %w1, %0" : "=Q" (*p) : "r" (v) : "memory")
+> > -# define libbpf_smp_load_acquire(p)                                  \
+> > -     ({                                                              \
+> > -             typeof(*p) ___p1;                                       \
+> > -             asm volatile ("ldar %w0, %1"                            \
+> > -                           : "=r" (___p1) : "Q" (*p) : "memory");    \
+> > -             ___p1;                                                  \
+> > -     })
+> > -#elif defined(__riscv)
+> > -# define libbpf_smp_store_release(p, v)                                      \
+> > -     do {                                                            \
+> > -             asm volatile ("fence rw,w" : : : "memory");             \
+> > -             __XSK_WRITE_ONCE(*p, v);                                \
+> > -     } while (0)
+> > -# define libbpf_smp_load_acquire(p)                                  \
+> > -     ({                                                              \
+> > -             typeof(*p) ___p1 = __XSK_READ_ONCE(*p);                 \
+> > -             asm volatile ("fence r,rw" : : : "memory");             \
+> > -             ___p1;                                                  \
+> > -     })
+> > -#endif
+> > -
+> > -#ifndef libbpf_smp_store_release
+> > -#define libbpf_smp_store_release(p, v)                                       \
+> > -     do {                                                            \
+> > -             __sync_synchronize();                                   \
+> > -             __XSK_WRITE_ONCE(*p, v);                                \
+> > -     } while (0)
+> > -#endif
+> > -
+> > -#ifndef libbpf_smp_load_acquire
+> > -#define libbpf_smp_load_acquire(p)                                   \
+> > -     ({                                                              \
+> > -             typeof(*p) ___p1 = __XSK_READ_ONCE(*p);                 \
+> > -             __sync_synchronize();                                   \
+> > -             ___p1;                                                  \
+> > -     })
+> > -#endif
+> > -
+> > -/* LIBRARY INTERNAL -- END */
+> > -
+> >   /* Do not access these members directly. Use the functions below. */
+> >   #define DEFINE_XSK_RING(name) \
+> >   struct name { \
+> > @@ -168,7 +97,7 @@ static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
+> >        * this function. Without this optimization it whould have been
+> >        * free_entries = r->cached_prod - r->cached_cons + r->size.
+> >        */
+> > -     r->cached_cons = libbpf_smp_load_acquire(r->consumer);
+> > +     r->cached_cons = __atomic_load_n(r->consumer, __ATOMIC_ACQUIRE);
+> >       r->cached_cons += r->size;
+> >
+> >       return r->cached_cons - r->cached_prod;
+> > @@ -179,7 +108,7 @@ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
+> >       __u32 entries = r->cached_prod - r->cached_cons;
+> >
+> >       if (entries == 0) {
+> > -             r->cached_prod = libbpf_smp_load_acquire(r->producer);
+> > +             r->cached_prod = __atomic_load_n(r->producer, __ATOMIC_ACQUIRE);
+> >               entries = r->cached_prod - r->cached_cons;
+> >       }
+> >
+> > @@ -202,7 +131,7 @@ static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, __u32 nb)
+> >       /* Make sure everything has been written to the ring before indicating
+> >        * this to the kernel by writing the producer pointer.
+> >        */
+> > -     libbpf_smp_store_release(prod->producer, *prod->producer + nb);
+> > +     __atomic_store_n(prod->producer, *prod->producer + nb, __ATOMIC_RELEASE);
+> >   }
+> >
+> >   static inline __u32 xsk_ring_cons__peek(struct xsk_ring_cons *cons, __u32 nb, __u32 *idx)
+> > @@ -227,8 +156,7 @@ static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, __u32 nb)
+> >       /* Make sure data has been read before indicating we are done
+> >        * with the entries by updating the consumer pointer.
+> >        */
+> > -     libbpf_smp_store_release(cons->consumer, *cons->consumer + nb);
+> > -
+> > +     __atomic_store_n(cons->consumer, *cons->consumer + nb, __ATOMIC_RELEASE);
+> >   }
+> >
+> >   static inline void *xsk_umem__get_data(void *umem_area, __u64 addr)
+> >
+>
