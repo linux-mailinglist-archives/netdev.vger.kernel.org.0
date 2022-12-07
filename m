@@ -2,79 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D5B5645A9F
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:19:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE22645AB2
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:21:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiLGNT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 08:19:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
+        id S229902AbiLGNVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 08:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiLGNT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:19:26 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71311277C
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:19:25 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id kw15so10479341ejc.10
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 05:19:25 -0800 (PST)
+        with ESMTP id S229479AbiLGNVO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:21:14 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028A01408A;
+        Wed,  7 Dec 2022 05:21:12 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id kw15so10491512ejc.10;
+        Wed, 07 Dec 2022 05:21:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8IsR/7BBSr99fNGUQc2zD3gScYgcXe04DZhFoUN8RzE=;
-        b=NqOLNQ99Mm5MnH16nxDcXzdPyAK+lhiZV5mfD4s1VWTntvNtRtx6hGLwU/igrx1dJT
-         QLBws3FchORmSVWVupm5ZsdVsRV/FjcPw676LKTLXR1Xg9HrQvLGvlpujYqKhoyEHc+A
-         vHECdlvEba2G1cJR7lcPpkUjIhB71bdo+ZsNdQkS/bv1DPO++HT3yj9iaxGXFUJ0QdcV
-         p4+7Te52kuwvF6GM8phr+op8Qkik+NUhl9GWR6PlP/bfU/vyg+iRk5nvEO8Hgdh3f+Fg
-         uWDYK01EOlPzwbaN7u5OIC4T74FMZZgoxLA4tpgdAumTMk/TGTMU6ZUXCIsL4c80pFgq
-         +ETQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Oue94+Ik3eRv7cdb5g71pdk/j0xTlBWe2Mf1/zKEImI=;
+        b=H3muc0jE053evwd95r//iMIDA0r9fh85T9SrJO9RMnfjaaEilI02fYT4y90uKCrER9
+         cch1B/7qotOMQdGfCRcEGmnN6G/EN4l0hbiBeQdpHo03hYA5BWdJJGK/9P/6hUSYeRyO
+         mdaaD5HU2eJAAwaaTR1hkHujW+FfZP3Yxy/848qutO6K4k9uY93UwU5jxNAOXaxze/bV
+         ZgsSXeLP3eC4qEuJuQoPksZWxe4zAjv/xRNKZ3TdIEq+dkoy4ovMGVdCSpA99rdTpUR4
+         rz+tH7eLvAfIII7Boq79rPmEljRGJET7lhoKn6mh7hrIZxvSlu5zsl6+xJXTbLsVKqYg
+         LE0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8IsR/7BBSr99fNGUQc2zD3gScYgcXe04DZhFoUN8RzE=;
-        b=N8MSX9Lv4OEumbbOzKZsPz2k5+H79HfiEgcdhlfISvss0hYOt6iDpB8JjTxzhraS4m
-         cWkdxjXpNz8S7IbRVxbTYyWAnHJ5L+eN0qESRuN3CAV5jpPwPedAXmHZUDYK1oazCleA
-         y1SrWli7uZtw9IRiL6JAH9hpr1CrnfUeBi9RobXPds19/soGdOaGzypk+KF8PaDhFqga
-         kjRLiJBdpfYo6JWsrJvvjfne6YtR3wnFQ99Y5h09soFjjO+8rU5p2QQ+/uMNTNdGlxbM
-         XQFj2Jpsbh/FdchjbZX20gCljHYAYam8AnY+1/CqF+yq6kauG1z1azZcEWzk9sSzWwtC
-         AQ4g==
-X-Gm-Message-State: ANoB5pnPkMTN0p2UaxZXRWmBMQAve3urrXMw+uhfbLfBzWcVFLlUkdjr
-        /eoVd8BEUfOiWDITdILQubv9SA==
-X-Google-Smtp-Source: AA0mqf65DnAvWOUpig9182b+xplZFrf2ffwn/LssCXLx6RHMw6LFoQVfWvmx3u5SXkByC4FDNxAMbw==
-X-Received: by 2002:a17:906:6c7:b0:78d:4061:5e1b with SMTP id v7-20020a17090606c700b0078d40615e1bmr67809617ejb.47.1670419164119;
-        Wed, 07 Dec 2022 05:19:24 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id i13-20020a17090639cd00b0073022b796a7sm8646766eje.93.2022.12.07.05.19.23
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Oue94+Ik3eRv7cdb5g71pdk/j0xTlBWe2Mf1/zKEImI=;
+        b=fSfL5k8hKav5R/5WU9VKUjVHu6s5xnUpmHCGfGvZkgM4j4PySCxO90ZNZVYXArZUsw
+         vDv72OlKCLSS3Hw8VMnEt36rVbVU9s+P/hN0QHJ8uzk14FHU4KqWa0Cd/mlG2NeEy61S
+         KwQwLgMdEgewd3iS/CMe60u0Cj74p2NjQ+86ucDqiObHvEUErkuVeZILb+hLzAMU6rij
+         M9p9CSEOMzjEtCyhONUT+Zg2OtPzrae/DjRCrEy+ti7o1onPsVIQtBXYyLhvlPe2gskE
+         Vd/D9GwtD4kgItNwerv7U61KRudZe62OZ51y6Tz5E9mLD9hBRaVyXULri8Nq1/SMpwkW
+         3SWA==
+X-Gm-Message-State: ANoB5pn66qITppXnUXJxsnUOy23HSPFJZ1IRjxvWP3pmkSL5WSOvjVGf
+        nnxoZSr4EJv40smyauwNUdE=
+X-Google-Smtp-Source: AA0mqf4kelmdfcsQEqZDqeJZLIam9TGWR0kzr38FgakyfUf+P2hxBMT1ddbfCFpEA7BpInWYnYFMYA==
+X-Received: by 2002:a17:907:c296:b0:78d:fd4e:5da6 with SMTP id tk22-20020a170907c29600b0078dfd4e5da6mr341117ejc.26.1670419270531;
+        Wed, 07 Dec 2022 05:21:10 -0800 (PST)
+Received: from skbuf ([188.26.184.215])
+        by smtp.gmail.com with ESMTPSA id vk2-20020a170907cbc200b007bf5250b515sm8535888ejc.29.2022.12.07.05.21.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 05:19:23 -0800 (PST)
-Date:   Wed, 7 Dec 2022 14:19:22 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vadim Fedorenko <vadfed@fb.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: Re: [RFC PATCH v4 4/4] ptp_ocp: implement DPLL ops
-Message-ID: <Y5CS2lO8WaoPmMbq@nanopsycho>
-References: <20221129213724.10119-1-vfedorenko@novek.ru>
- <20221129213724.10119-5-vfedorenko@novek.ru>
- <Y4dPaHx1kT3A80n/@nanopsycho>
- <DM6PR11MB4657D9753412AD9DEE7FAB7D9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
- <Y4n0H9BbzaX5pCpQ@nanopsycho>
- <DM6PR11MB465721310114ECA13F556E8A9B179@DM6PR11MB4657.namprd11.prod.outlook.com>
- <20221206183313.713656f8@kernel.org>
+        Wed, 07 Dec 2022 05:21:10 -0800 (PST)
+Date:   Wed, 7 Dec 2022 15:21:07 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Rakesh.Sankaranarayanan@microchip.com
+Cc:     kuba@kernel.org, andrew@lunn.ch, davem@davemloft.net,
+        Woojung.Huh@microchip.com, linux-kernel@vger.kernel.org,
+        f.fainelli@gmail.com, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, edumazet@google.com,
+        pabeni@redhat.com, Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [RFC Patch net-next 3/5] net: dsa: microchip: add eth mac
+ grouping for ethtool statistics
+Message-ID: <20221207132107.3lefphupzpty4uoa@skbuf>
+References: <20221130132902.2984580-1-rakesh.sankaranarayanan@microchip.com>
+ <20221130132902.2984580-4-rakesh.sankaranarayanan@microchip.com>
+ <20221201200230.0f1054fe@kernel.org>
+ <6c1a53a825bee2b22f7e532885e6e777685c0726.camel@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20221206183313.713656f8@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6c1a53a825bee2b22f7e532885e6e777685c0726.camel@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,34 +79,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Dec 07, 2022 at 03:33:13AM CET, kuba@kernel.org wrote:
->On Fri, 2 Dec 2022 14:39:17 +0000 Kubalewski, Arkadiusz wrote:
->> >>>Btw, did you consider having dpll instance here as and auxdev? It
->> >>>would be suitable I believe. It is quite simple to do it. See
->> >>>following patch as an example:  
->> >>
->> >>I haven't think about it, definetly gonna take a look to see if there
->> >>any benefits in ice.  
->> >
->> >Please do. The proper separation and bus/device modelling is at least one
->> >of the benefits. The other one is that all dpll drivers would happily live
->> >in drivers/dpll/ side by side.
->> 
->> Well, makes sense, but still need to take a closer look on that.
->> I could do that on ice-driver part, don't feel strong enough yet to introduce
->> Changes here in ptp_ocp.
->
->FWIW auxdev makes absolutely no sense to me for DPLL :/
->So Jiri, please say why.
+On Fri, Dec 02, 2022 at 11:53:33AM +0000, Rakesh.Sankaranarayanan@microchip.com wrote:
+> Hi Jakub,
+> 
+> Thanks for the review comment.
+> 
+> On Thu, 2022-12-01 at 20:02 -0800, Jakub Kicinski wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you
+> > know the content is safe
+> > 
+> > On Wed, 30 Nov 2022 18:59:00 +0530 Rakesh Sankaranarayanan wrote:
+> > > +     mac_stats->FramesTransmittedOK = ctr[ksz9477_tx_mcast] +
+> > > +                                      ctr[ksz9477_tx_bcast] +
+> > > +                                      ctr[ksz9477_tx_ucast] +
+> > > +                                      ctr[ksz9477_tx_pause];
+> > 
+> > do control frames count towards FramesTransmittedOK?
+> > Please check the standard I don't recall.
+> > 
+> Yeah, I will check with the documentation.
 
-Why not? It's a subdev of a device. In mlx5, we have separate auxdevs
-for eth, rdma, vnet, representors. DPLL is also a separate entity which
-could be instantiated independently (as it is not really dependent on
-eth/rdma/etc)). Auxdev looks like an awesome fit. Why do you think it is
-not?
-
-Also, what's good about auxdev is that you can maintain them quite
-independetly. So there is going to be driver/dpll/ directory which would
-contain all dpll drivers.
-
-
+Oleksij said that the hardware counts pause frames for the byte
+counters, so at least for consistency, they should be counted in frame
+counters too.
+https://patchwork.kernel.org/project/netdevbpf/patch/20221205052904.2834962-1-o.rempel@pengutronix.de/
