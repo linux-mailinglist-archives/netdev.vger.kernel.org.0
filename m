@@ -2,134 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45F3C645B94
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:56:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E9D4645B9E
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 14:58:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbiLGN4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 08:56:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51808 "EHLO
+        id S229785AbiLGN6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 08:58:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229954AbiLGN42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:56:28 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AF35BD44
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:56:27 -0800 (PST)
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 332DE44348
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 13:56:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1670421386;
-        bh=AN5JF4JjPpOJkZ/tkyQphRahAoTXPLdfhR7No5Nhr94=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=jei3mGbblDEH/5cUMoQs+XxsOWdroGAdN8MOzYk/4MmToDd/v3XpTjLw36WVwO55G
-         0sSfVTsv7nubsXdxEBXlwjey81B5Z5ZoMLpbXQt5Lpkfyt4laVdSkNVCl22i8TgJ7F
-         ClM8wjpm0U0h99oceRXr1OHwcyTIV8C7NSL1kpoR1rUth1O6SBBwQWTh3U//FQJ3IH
-         PWWlAKikhhk2yi+8WXi7Fgg8AfnQi8k+ile9dCG1kmsSYnsdpcmO96c3TW296gJvO+
-         oblcufOjGuqPnAPlczDq8vmV2aAQLx+LcJCt0E1W2cGQpQ9S0sYDcB3uUZjBuOIwYM
-         9HXixBwxZlwyA==
-Received: by mail-il1-f199.google.com with SMTP id w9-20020a056e021c8900b0030247910269so16460387ill.4
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 05:56:26 -0800 (PST)
+        with ESMTP id S230045AbiLGN54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 08:57:56 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA31B5B85D
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 05:57:55 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id m18so12626909eji.5
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 05:57:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6R6RPhEMnDDwr3AtfavGsulA8T0smLmthgPNwTxk7do=;
+        b=rFZLKzuxSCXL0/RVKoW+2JN4Rhlu7jPPPMgyWfU8TeLIsLHk1bujos1jkakP3oAw7p
+         0bemsdoifiqJFY069nVhiehDpd+hhgQPnV4RaSLdEJiEQ6Hgudm4NKoOxgoHWPoHHK8G
+         PjCHChNsPqqdvW2kF1dWmNzrQSPGOq7lqcy6+rqFOdRZ3SwMQqQLDNwbSMQ9qIoaHQJo
+         3dHSKfM4LAu81L+MBAw0oYiw7jaAHNuxK5AByyHBQMv9BND8lpLe76R24GF22PrRt6Uh
+         MagZbcVq7S0RWa9EFh2wA7A/G2kBOtOhlV5pg0THEOpcqV/EO001P1iFCFWfrHedZ7yr
+         UEyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=AN5JF4JjPpOJkZ/tkyQphRahAoTXPLdfhR7No5Nhr94=;
-        b=gaa8msc1AWbIywkG7BxO0X49hIl3sb2IJO9o8Z1T10ETSzUxf407jfdUAjWxMxY6u9
-         kkzDNftzQcdieC6TqY324Q4R5zxhG9pQXfofZPGGc4LZ/XVIAzPNzvJF2rqF5GwvzcFG
-         cNZTSUB5xGXsawBR8YO6knQ+9pUnpb+AGYag+0W0jYU97hPNd0sxCfGxae2xwm14q8ng
-         FbZN3v4D1TAK9i/FFZlo9ameXvybsLlAyOn2kkkPPqZDesrDpX96/WCPsdIaLA67kjVE
-         TgvzqBI+fn7g5GxTtuEi/yERSyYtaf60yeqbr3etyWtaXKCZQZesUTiA8jHceJ4/A65w
-         aB8Q==
-X-Gm-Message-State: ANoB5pld2qTGFLdgIyTpTUwd0I4BZTVwmkDDqH7zr+ie9JCt6CjtgbsD
-        eP7rjVyC7UD3sZwXqhe8dIGqUyKikHNK022WfrJdVb/W1Tz0fS2B55hFE2IrVCwnM+f6cEcb+Nz
-        h24jStBYCl09a0brMohu3wqGtaArht8tAsAqRI7QAM1WGB2Dx0A==
-X-Received: by 2002:a92:cd43:0:b0:303:2fd2:f612 with SMTP id v3-20020a92cd43000000b003032fd2f612mr15125914ilq.144.1670421384613;
-        Wed, 07 Dec 2022 05:56:24 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf68T1FZSxevGnNf72rEE0f+xwVzoSCPSjB0SLRGWkB37LRAqopLc6DAcKKSJpFo/ZWVkn24R+SZbWzdDyZVHaY=
-X-Received: by 2002:a92:cd43:0:b0:303:2fd2:f612 with SMTP id
- v3-20020a92cd43000000b003032fd2f612mr15125908ilq.144.1670421384463; Wed, 07
- Dec 2022 05:56:24 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6R6RPhEMnDDwr3AtfavGsulA8T0smLmthgPNwTxk7do=;
+        b=BBYaPRspAiVa/QcbwCWiMHev9nI0cWlAdnkyY/hojtmVcDf/ImWPMxLQudsS0IS8sB
+         AHe93njK6Z9IYPqZbI5ugULAxt6mr/8YQa9MyTLI9LXpjmn1Hn3q49JKsLy+/bu0EQTU
+         NoGPdB+NdPhK3d+Lc8KX0kEaybH2Luuq4qWupyjuf00O3//iMCBxqKZgN5jLyqOgN7Y2
+         Wki9/k7oE4SyKmPxn/GkbQEC+ni9Q1L8/izkHj0vWzeufKqFF9ft1xx3UeJQOxsAA1DY
+         OZ5abJQQ1RkqeIXnDXzfVv6MOq5cFiUJ8jIrBlmJJmSFH2GYbTA7QMJnz+aSdK5lnqlg
+         HaRQ==
+X-Gm-Message-State: ANoB5pleqUigCRYqkEe/klngGTmAVl4O8zypw1vIAkivaZhM8BsnALL9
+        Ai8D1ZAIU4JhZ6K6EtuQK6iEprH0DDepcIMQKXo=
+X-Google-Smtp-Source: AA0mqf4cs3jAxjVlM/djRjoy8ts1G83WugKPd01O9HoGR4w0IADcpL+ZW8XmzZBxKvAi0gGDSHR4Qg==
+X-Received: by 2002:a17:906:ef1:b0:78d:260d:a6e4 with SMTP id x17-20020a1709060ef100b0078d260da6e4mr75140483eji.93.1670421474344;
+        Wed, 07 Dec 2022 05:57:54 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id b7-20020a17090630c700b007b790c18264sm8500628ejb.159.2022.12.07.05.57.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 05:57:53 -0800 (PST)
+Date:   Wed, 7 Dec 2022 14:57:52 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Yongqiang Liu <liuyongqiang13@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        macro@orcam.me.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ralf@linux-mips.org,
+        jeff@garzik.org, akpm@linux-foundation.org, zhangxiaoxu5@huawei.com
+Subject: Re: [PATCH net] net: defxx: Fix missing err handling in dfx_init()
+Message-ID: <Y5Cb4EMML3f0Ivdx@nanopsycho>
+References: <20221207072045.604872-1-liuyongqiang13@huawei.com>
 MIME-Version: 1.0
-References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
- <20221201090242.2381-2-yanhong.wang@starfivetech.com> <277f9665-e691-b0ad-e6ef-e11acddc2006@linaro.org>
- <22123903-ee95-a82e-d792-01417ceb63b1@starfivetech.com> <3a9ef360-73c3-cf26-3eca-4903b9a04ea3@linaro.org>
-In-Reply-To: <3a9ef360-73c3-cf26-3eca-4903b9a04ea3@linaro.org>
-From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Date:   Wed, 7 Dec 2022 14:56:07 +0100
-Message-ID: <CAJM55Z-iLy1fZmoyk3FU7oDQcKBk6APYf-cbamKr7Gjx+NaoTQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/7] dt-bindings: net: snps,dwmac: Add compatible
- string for dwmac-5.20 version.
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     yanhong wang <yanhong.wang@starfivetech.com>,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221207072045.604872-1-liuyongqiang13@huawei.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2 Dec 2022 at 09:04, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+Wed, Dec 07, 2022 at 08:20:45AM CET, liuyongqiang13@huawei.com wrote:
+>When eisa_driver_register() or tc_register_driver() failed,
+>the modprobe defxx would fail with some err log as follows:
 >
-> On 02/12/2022 03:53, yanhong wang wrote:
-> >
-> >
-> > On 2022/12/2 0:18, Krzysztof Kozlowski wrote:
-> >> On 01/12/2022 10:02, Yanhong Wang wrote:
-> >>> Add dwmac-5.20 version to snps.dwmac.yaml
-> >>
-> >> Drop full stop from subject and add it here instead.
-> >>
-> >
-> > Will update in the next version.
-> >
-> >>>
-> >>> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-> >>> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
-> >>
-> >> Two people contributed this one single line?
-> >>
-> >
-> > Emil made this patch and I submitted it.
+> Error: Driver 'defxx' is already registered, aborting...
 >
-> If Emil made this patch, then your From field is incorrect.
-
-Yes, please don't change the author of the commits you cherry-picked
-from my tree.
-
-But now I'm curious. Did you check with your colleagues that the dwmac
-IP on the SoC is in fact version 5.20?
-This was just an educated guess from my side.
-
-/Emil
-
-> Best regards,
-> Krzysztof
+>Fix this issue by adding err hanling in dfx_init().
 >
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+>Fixes: e89a2cfb7d7b5 ("[TC] defxx: TURBOchannel support")
+>Signed-off-by: Yongqiang Liu <liuyongqiang13@huawei.com>
+
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
