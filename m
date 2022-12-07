@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A220645DBE
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:37:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 787F5645DC5
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:41:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229530AbiLGPhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 10:37:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44508 "EHLO
+        id S229713AbiLGPli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 10:41:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiLGPho (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:37:44 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1756459
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 07:37:40 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id m19so25384100edj.8
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 07:37:40 -0800 (PST)
+        with ESMTP id S229668AbiLGPlh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:41:37 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D1760E80
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 07:41:36 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3c090251d59so190377687b3.4
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 07:41:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=KADEt1AJxMnS6Vclnrq8xFKiHgJ7auDWm2ruhpiOIMA=;
-        b=TE7eUj716/8mR8Lg441E83bNAhDc+m9vbCYc7s8ZQ7PD+WezREL044LvoNojq6K8y+
-         5S9WMrvs+tu2pOKH/o1oil6Or3f5M1CDQZWZWKUaLg2Ci89s5tgKcmI7avovDFXJ/mLh
-         tYyLNUsvytiC8lL/sj+weNGCX1JlrYpSHrZ4d15UM3TS5enaJlmQ1/PR+5UdjpOzHHWb
-         7MtYvAMH/z3D2rx+utzr8EYSc/2/IEbByTuH41fS18GECAJiMKkJPQnucZEnPw+YnZpb
-         zdNAjuz2LjzDVe/Zk2YX41PQJFN2bGif1Kkh701ea+ltDbGSr6GHMAgQVO/sMefgvXPT
-         MQ7A==
+        bh=136w+/CKs8CAOt1UtFKmxeVbEFnT+kfKx76fyUq1Kv4=;
+        b=AgADPMpUD6xEQru7wyaMpatuQW64ewNuH926F3OmxGdANcsDYoeTqPMjgL3l5/vEuQ
+         w8/sQsLDQ1YBC4484rbm02Qy3VrZjemayVj5xSjScsCj1b2ohPXZe5Nwr2S00jRqysBS
+         aRJCUNBYDKfU3xmxuQFhjA8vp0HPld8wuyXuHLc/c1XdooHNwI5d8XxymdfOi6jffHsb
+         dVV21QL3uKg5fQmHlaXUT3RbYbaZib9SIUStxOkOaWD8Ddjky2aROS1QMs0Gzp3smWLI
+         7lqRfrF/7CK4FCHVbFHScynjT9L2Sq7rCcSp6PjXPS9+Vs0M2rtMv7v6sXxlwU8hLHjU
+         Oz5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=KADEt1AJxMnS6Vclnrq8xFKiHgJ7auDWm2ruhpiOIMA=;
-        b=IOzXATNKOdfGGs6iADRA56Y4iWcAwPgHqqClgpnEun0L0xGl390urdb9ZY+4zZZ9Ln
-         qJH4iBikV2ivGOe28V+y6iRk/jzTXA6ZedMgl5+WJr3RfBl0i1SHlYLenyjcx8CEddIl
-         jsaZfx8czwHbbhhCHvk9XRhxgWgrgzdRQcMq5diTi1W3Anlv7nIvr2tculCq6LJeqgsw
-         dOeh1spwENojtmewv8hgRsZddvh55EkXK10Ghr3ZincCLRFKK78F8kGh5J5j1jM7x6wA
-         5Fv6Ol1ppgY+UT5v6iqJc62CwWLwpdC34QtzM99ywVAfTo5BUUap2qVq8+K/kqoIvWu1
-         /u3Q==
-X-Gm-Message-State: ANoB5pkX8JQ/dpTUT/0LN0qnh0tv0j3A36wa32fFhzc1kuqjiIHadXfT
-        OrnQeDQhcU0Yv85onp9TE2pQE0qtBcMAAxoZWqt3xU2lHUOFNQ==
-X-Google-Smtp-Source: AA0mqf5+Ctqsk7afzWEXTdQfY6fboJ5zItMdW+JRgJoZH45/2gWU6LLKPHIRvcc07swbcnYv3VDo1Qp+0qR63P4pOhk=
-X-Received: by 2002:a05:6402:a52:b0:46b:d3b3:669f with SMTP id
- bt18-20020a0564020a5200b0046bd3b3669fmr26534253edb.414.1670427459197; Wed, 07
- Dec 2022 07:37:39 -0800 (PST)
+        bh=136w+/CKs8CAOt1UtFKmxeVbEFnT+kfKx76fyUq1Kv4=;
+        b=zQ+tOdL51Z/+d3s6dFp1VrY5KIutrFOc6MTzOVTV+ohMZzeYiogDJ8eqiAv0rEGX1k
+         VOLV08lZm4gKLXAePucIQnXrrjy7TTz33hg0R39EB38OuHUaQKD4Mynu8/WwEmhoQ7b9
+         DFqAhUg4mRcXwV93/djsbWf5c4GbKuJacqNcqJFuSuRzzoPWcLt/KF3nSzYxUrG+5Y7Q
+         u9rrzAvAaKQNshAG763DzyNx+yoJ2jmyMKr6Iktux+Y2mBW0xni56jCNvkF75MF26CbH
+         ruNeRyMPp3gWWyYy4R8HWsjO56v30HBSDM8IiaKGzHrzsFMrv2Io30JslrHm8f9fcjp5
+         YexQ==
+X-Gm-Message-State: ANoB5pnDj+vP8n5Qza/VnaVmoRGz0A9jss+1yFEnFTpfKkzP3KIm/9s4
+        jC/GLrbx8smhCIsovwdqJlj/s4HlJlHrLMWzOLYdfQIRwcZRjoQy
+X-Google-Smtp-Source: AA0mqf5eqr4pnyvAO/pZYS+AW4Gz7CXXLc4T/eMoMTA5WFi9UKUPaoahqcBK2bP381sI/qIgA7YsVhqTHzIrhruPbFY=
+X-Received: by 2002:a81:1e44:0:b0:370:7a9a:564 with SMTP id
+ e65-20020a811e44000000b003707a9a0564mr21561017ywe.278.1670427695877; Wed, 07
+ Dec 2022 07:41:35 -0800 (PST)
 MIME-Version: 1.0
-References: <20221118090306.48022-1-tirthendu.sarkar@intel.com>
- <Y3ytcGM2c52lzukO@unreal> <20221122155759.426568-1-alexandr.lobakin@intel.com>
- <MN2PR11MB404540A828EDDE82F00E8E2BEA1A9@MN2PR11MB4045.namprd11.prod.outlook.com>
-In-Reply-To: <MN2PR11MB404540A828EDDE82F00E8E2BEA1A9@MN2PR11MB4045.namprd11.prod.outlook.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 7 Dec 2022 16:37:27 +0100
-Message-ID: <CAJ8uoz1RjaGv=HEwmaZw1hKH_GpHA9u-sBvz-Cxb0W_wdYjDZg@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH intel-next v4] i40e: allow toggling
- loopback mode via ndo_set_features callback
-To:     "Rout, ChandanX" <chandanx.rout@intel.com>
-Cc:     "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>,
-        "tirtha@gmail.com" <tirtha@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Kuruvinakunnel, George" <george.kuruvinakunnel@intel.com>,
-        "Nagaraju, Shwetha" <shwetha.nagaraju@intel.com>,
-        "Nagraj, Shravan" <shravan.nagraj@intel.com>
+References: <20221206055059.1877471-1-edumazet@google.com> <20221206055059.1877471-3-edumazet@google.com>
+ <40ca4e2e-8f34-545a-7063-09aee0a5dd4c@gmail.com> <CANn89iKUYMb_4vJ5GAE0-BUmM7JNuHo_p8oHbfJfatYKBX8ouw@mail.gmail.com>
+ <CANn89iKpGwej5X_noxU+N7Y4o30dpfEFX_Ao6qZeahScvM7qGQ@mail.gmail.com> <eb076121-479b-ca4a-c13d-8adbdfdbc893@gmail.com>
+In-Reply-To: <eb076121-479b-ca4a-c13d-8adbdfdbc893@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 7 Dec 2022 16:41:24 +0100
+Message-ID: <CANn89iLTGFkZaZJHP08DPL7QCeAq11WCMfPwpvMAti6aEruJ2Q@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/3] net/mlx4: MLX4_TX_BOUNCE_BUFFER_SIZE depends
+ on MAX_SKB_FRAGS
+To:     Tariq Toukan <ttoukan.linux@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tariq Toukan <tariqt@nvidia.com>, Wei Wang <weiwan@google.com>,
+        netdev@vger.kernel.org, eric.dumazet@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,132 +73,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 7, 2022 at 4:01 PM Rout, ChandanX <chandanx.rout@intel.com> wrote:
+On Wed, Dec 7, 2022 at 4:14 PM Tariq Toukan <ttoukan.linux@gmail.com> wrote:
 >
-> Hi Team,
-> We observed some different result on i40e driver which are as follows
->
-> Issue Summary: Unable to find loopback test in "ethtool -t <interface> using i40e driver using latest next-queue.
-> Observations:
-> ===========
-> 1. we are able to enable loopback mode on i40e driver.
-> 2. We are unable to find loopback test in "ethtool -t <interface>" command while using i40e driver.
 
-That is correct, there is no loopback test in i40e. We chose not to
-add one since it was broken in ice (until Maciej fixed it), so we
-thought nobody actually used it. Instead, we have a much more thorough
-test shipped in tools/testing/selftests/bpf/xsk* that tests the
-loopback support in more ways than just sending a single message. I
-have run this test using Tirtha's patch and it passes. So can I sign
-off with a Tested-by? Would save you a lot of time, which is good.
-There is no point for you to run the same test as I did again. Just a
-waste of valuable testing time.
+> So what you're saying is, if all the elements of
+> MLX4_TX_BOUNCE_BUFFER_SIZE co-exist together for a TX descriptor, then
+> the actual "headers" part can go only up to 208 (similar to today), not
+> the whole 256 (as the new define documentation says).
+>
+> This keeps the current behavior, but makes the code a bit more confusing.
+>
+> IMO it is cleaner to have MLX4_TX_BOUNCE_BUFFER_SIZE explicitly defined
+> as a multiple of TXBB_SIZE in the first place. This way, both the
+> allocation size and the desc size limit will be in perfect sync, without
+> having assumptions on the amount X lost in the division.
+>
+> How about the below, to keep today's values for the defines?
+>
+> #define MLX4_TX_BOUNCE_BUFFER_SIZE \
+>         ALIGN(208 + CTRL_SIZE + DS_SIZE + \
+>               MAX_SKB_FRAGS * DS_SIZE, TXBB_SIZE)
 
-> 3. However, in ice driver we are able to enable loopback mode also we are able to see the loopback test using "ethtool -t <interface>".
->
-> Note: Detail Observation is attached in excel format.
->
-> On I40e
-> =======
-> [root@localhost admin]# ethtool -k ens802f3 | grep loopback
-> loopback: off
-> [root@localhost admin]# ethtool -K ens802f3 loopback on
-> [root@localhost admin]# ethtool -k ens802f3 | grep loopback
-> loopback: on
-> [root@localhost admin]# ethtool -t ens802f3 online
-> The test result is PASS
-> The test extra info:
-> Register test  (offline)         0
-> Eeprom test    (offline)         0
-> Interrupt test (offline)         0
-> Link test   (on/offline)         0
-> [root@localhost admin]# ethtool -t ens802f3 offline
-> The test result is PASS
-> The test extra info:
-> Register test  (offline)         0
-> Eeprom test    (offline)         0
-> Interrupt test (offline)         0
-> Link test   (on/offline)         0
->
-> On ice
-> =====
-> [root@localhost admin]# ethtool -k ens801f0np0 | grep loopback
-> loopback: off
-> [root@localhost admin]# ethtool -K ens801f0np0 loopback on
-> [root@localhost admin]# ethtool -k ens801f0np0 | grep loopback
-> loopback: on
-> [root@localhost admin]# ethtool -t ens801f0np0 online
-> The test result is PASS
-> The test extra info:
-> Register test  (offline)         0
-> EEPROM test    (offline)         0
-> Interrupt test (offline)         0
-> Loopback test  (offline)         0
-> Link test   (on/offline)         0
-> [root@localhost admin]# ethtool -t ens801f0np0 offline
-> The test result is PASS
-> The test extra info:
-> Register test  (offline)         0
-> EEPROM test    (offline)         0
-> Interrupt test (offline)         0
-> Loopback test  (offline)         0
-> Link test   (on/offline)         0
->
->
-> Thanks & Regards
-> Chandan Kumar Rout
->
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of Lobakin, Alexandr
-> Sent: 22 November 2022 21:28
-> To: Leon Romanovsky <leon@kernel.org>
-> Cc: Sarkar, Tirthendu <tirthendu.sarkar@intel.com>; tirtha@gmail.com; intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; Karlsson, Magnus <magnus.karlsson@intel.com>
-> Subject: Re: [Intel-wired-lan] [PATCH intel-next v4] i40e: allow toggling loopback mode via ndo_set_features callback
->
-> From: Leon Romanovsky <leon@kernel.org>
-> Date: Tue, 22 Nov 2022 13:07:28 +0200
->
-> > On Fri, Nov 18, 2022 at 02:33:06PM +0530, Tirthendu Sarkar wrote:
-> > > Add support for NETIF_F_LOOPBACK. This feature can be set via:
-> > > $ ethtool -K eth0 loopback <on|off>
-> > >
-> > > This sets the MAC Tx->Rx loopback.
-> > >
-> > > This feature is used for the xsk selftests, and might have other
-> > > uses too.
->
-> [...]
->
-> > > @@ -12960,6 +12983,9 @@ static int i40e_set_features(struct net_device *netdev,
-> > >     if (need_reset)
-> > >             i40e_do_reset(pf, I40E_PF_RESET_FLAG, true);
-> > >
-> > > +   if ((features ^ netdev->features) & NETIF_F_LOOPBACK)
-> > > +           return i40e_set_loopback(vsi, !!(features & NETIF_F_LOOPBACK));
-> >
-> > Don't you need to disable loopback if NETIF_F_LOOPBACK was cleared?
->
-> 0 ^ 1 == 1 -> call i40e_set_loopback()
-> !!(0) == 0 -> disable
->
-> >
-> > > +
-> > >     return 0;
-> > >  }
-> > >
-> > > @@ -13722,7 +13748,7 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
-> > >     if (!(pf->flags & I40E_FLAG_MFP_ENABLED))
-> > >             hw_features |= NETIF_F_NTUPLE | NETIF_F_HW_TC;
-> > >
-> > > -   netdev->hw_features |= hw_features;
-> > > +   netdev->hw_features |= hw_features | NETIF_F_LOOPBACK;
-> > >
->
-> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
->
-> Thanks,
-> Olek
-> _______________________________________________
-> Intel-wired-lan mailing list
-> Intel-wired-lan@osuosl.org
-> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
+I already sent a v2, with:
+
++#define MLX4_TX_BOUNCE_BUFFER_SIZE \
++       ALIGN(256 + CTRL_SIZE + DS_SIZE + MAX_SKB_FRAGS * DS_SIZE, TXBB_SIZE)
++
+
+Please take a look, thanks.
