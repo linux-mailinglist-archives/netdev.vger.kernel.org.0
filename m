@@ -2,41 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A97B645197
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 02:56:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FEE364519A
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 02:56:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiLGB4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 20:56:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
+        id S229923AbiLGB4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 20:56:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbiLGB4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 20:56:00 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C9A2ED
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 17:55:58 -0800 (PST)
-Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NRgMq3DRczJqHP;
-        Wed,  7 Dec 2022 09:55:03 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 7 Dec
- 2022 09:55:27 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-Subject: [PATCH net v2] net: plip: don't call kfree_skb/dev_kfree_skb() under spin_lock_irq()
-Date:   Wed, 7 Dec 2022 09:53:10 +0800
-Message-ID: <20221207015310.2984909-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229836AbiLGB4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 20:56:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58EB32ED;
+        Tue,  6 Dec 2022 17:56:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7B376068E;
+        Wed,  7 Dec 2022 01:55:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57939C433D6;
+        Wed,  7 Dec 2022 01:55:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670378159;
+        bh=/z+Iu62uP4cJGR3CTHqreL6Uha56POJb1QIiPp7cJ9Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=skStzngAaBq+LugCgiSvQgoYE632Mrtu89piWFC/pKdrCtyWcYSLK+DssC6Ko9Vtk
+         gLSo2Wj9mFS2oM+ZDthoSb7N30k++/sPaHRKPjKdLExCKhwtqoKvG9zKj2YGY37Xyc
+         I3NLSeRxE7aFN76JPSYbEPZV/uYWaXzR8BD9IMw0PNJHY0eId2tZghTVVW70ILExbm
+         GScSP9XWnvVWEba8O8BSCvGbj48Zxlla8xG+f4pv4qWxaVm4VlmF8nUfBSZ/V1VZ6D
+         XavSa2AbgFLJJkU3p6Rx58oEt4EAFRoHn8RoEjad9maFsQh8L4KLstesRo7s8fwDuq
+         ZIO1u6rFDTZTQ==
+Date:   Tue, 6 Dec 2022 17:55:57 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        syzbot+fda18eaa8c12534ccb3b@syzkaller.appspotmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        pepsipu <soopthegoop@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Andrii Nakryiko <andrii@kernel.org>, ast@kernel.org,
+        bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hao Luo <haoluo@google.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, jolsa@kernel.org,
+        KP Singh <kpsingh@kernel.org>, martin.lau@linux.dev,
+        Stanislav Fomichev <sdf@google.com>, song@kernel.org,
+        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        David Ahern <dsahern@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Richard Gobert <richardbgobert@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        David Rientjes <rientjes@google.com>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] skbuff: Reallocate to ksize() in __build_skb_around()
+Message-ID: <20221206175557.1cbd3baa@kernel.org>
+In-Reply-To: <20221206231659.never.929-kees@kernel.org>
+References: <20221206231659.never.929-kees@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -44,39 +76,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is not allowed to call kfree_skb() or consume_skb() from
-hardware interrupt context or with interrupts being disabled.
-So replace kfree_skb/dev_kfree_skb() with dev_kfree_skb_irq()
-and dev_consume_skb_irq() under spin_lock_irq().
+On Tue,  6 Dec 2022 15:17:14 -0800 Kees Cook wrote:
+> -	unsigned int size = frag_size ? : ksize(data);
+> +	unsigned int size = frag_size;
+> +
+> +	/* When frag_size == 0, the buffer came from kmalloc, so we
+> +	 * must find its true allocation size (and grow it to match).
+> +	 */
+> +	if (unlikely(size == 0)) {
+> +		void *resized;
+> +
+> +		size = ksize(data);
+> +		/* krealloc() will immediate return "data" when
+> +		 * "ksize(data)" is requested: it is the existing upper
+> +		 * bounds. As a result, GFP_ATOMIC will be ignored.
+> +		 */
+> +		resized = krealloc(data, size, GFP_ATOMIC);
+> +		if (WARN_ON(resized != data))
+> +			data = resized;
+> +	}
+>  
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v1 -> v2:
-  Add a fix tag.
----
- drivers/net/plip/plip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Aammgh. build_skb(0) is plain silly, AFAIK. The performance hit of
+using kmalloc()'ed heads is large because GRO can't free the metadata.
+So we end up carrying per-MTU skbs across to the application and then
+freeing them one by one. With pages we just aggregate up to 64k of data
+in a single skb.
 
-diff --git a/drivers/net/plip/plip.c b/drivers/net/plip/plip.c
-index c8791e9b451d..40ce8abe6999 100644
---- a/drivers/net/plip/plip.c
-+++ b/drivers/net/plip/plip.c
-@@ -450,12 +450,12 @@ plip_bh_timeout_error(struct net_device *dev, struct net_local *nl,
- 	}
- 	rcv->state = PLIP_PK_DONE;
- 	if (rcv->skb) {
--		kfree_skb(rcv->skb);
-+		dev_kfree_skb_irq(rcv->skb);
- 		rcv->skb = NULL;
- 	}
- 	snd->state = PLIP_PK_DONE;
- 	if (snd->skb) {
--		dev_kfree_skb(snd->skb);
-+		dev_consume_skb_irq(snd->skb);
- 		snd->skb = NULL;
- 	}
- 	spin_unlock_irq(&nl->lock);
--- 
-2.25.1
+I can only grep out 3 cases of build_skb(.. 0), could we instead
+convert them into a new build_skb_slab(), and handle all the silliness
+in such a new helper? That'd be a win both for the memory safety and one
+fewer branch for the fast path.
 
+I think it's worth doing, so LMK if you're okay to do this extra work,
+otherwise I can help (unless e.g. Eric tells me I'm wrong..).
