@@ -2,125 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64BE56463DC
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 23:06:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C36F16463F4
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 23:19:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbiLGWGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 17:06:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43298 "EHLO
+        id S229507AbiLGWTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 17:19:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230084AbiLGWFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 17:05:32 -0500
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABABB49B56
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 14:05:08 -0800 (PST)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-6-yD5IPmD2O_KCeTqYwEMREw-1; Wed, 07 Dec 2022 17:04:51 -0500
-X-MC-Unique: yD5IPmD2O_KCeTqYwEMREw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229486AbiLGWTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 17:19:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC1D62E94
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 14:19:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 87D0A29AA2ED;
-        Wed,  7 Dec 2022 22:04:50 +0000 (UTC)
-Received: from hog (unknown [10.39.192.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id ACF0439D7C;
-        Wed,  7 Dec 2022 22:04:48 +0000 (UTC)
-Date:   Wed, 7 Dec 2022 23:03:45 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Emeel Hakim <ehakim@nvidia.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Raed Salem <raeds@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "jiri@resnulli.us" <jiri@resnulli.us>
-Subject: Re: [PATCH net-next v3 1/2] macsec: add support for
- IFLA_MACSEC_OFFLOAD in macsec_changelink
-Message-ID: <Y5ENwSv4Q+A4O6lG@hog>
-References: <20221207101017.533-1-ehakim@nvidia.com>
- <Y5C1Hifsg3/lJJ8N@hog>
- <IA1PR12MB635345D00CDE8F81721EEC89AB1A9@IA1PR12MB6353.namprd12.prod.outlook.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39C83B8218E
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 22:19:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6C88C433C1;
+        Wed,  7 Dec 2022 22:19:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670451573;
+        bh=wYaRBqtoDtrMb8oFMZ4/e/GsAA3HkOtRdo3suSnd6yY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LNDmPpyMOGWLKeeZ6cbCfvVeA45dkHYxBsSfiBnsC7X7t35LOK52lVjQXVyF/Ua2u
+         eP066Zt27Mtm06Sdq9bO5lJXlBR/uAuf3B1UTp+vVo395yFeQyDDWJUY2cdUlwTLcm
+         TJDRWSGk92HhOyt9sHxEtviiyf09ZayinXyd/2X67ddfSsKOx2M9nQpooPvUpfa1kj
+         Q4+Fh++uI7B+w2908uoqTGE+iFjnzybQxppo56nkt6iCumsEGDrqJ5lnXjJ+QLlMNr
+         SWTPSu6osuJqdbsHcUI+xnbbVjEErRy4OXENg9COcLEwFMRs4QnWpxPC/OtDdJgOWY
+         sqO8L0MXfTMXA==
+Date:   Wed, 7 Dec 2022 14:19:30 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com,
+        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
+        netdev@vger.kernel.org, richardcochran@gmail.com,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: Re: [PATCH net 1/4] ice: Create a separate kthread to handle ptp
+ extts work
+Message-ID: <Y5ERcnar+H+xtYYC@x130>
+References: <20221207211040.1099708-1-anthony.l.nguyen@intel.com>
+ <20221207211040.1099708-2-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <IA1PR12MB635345D00CDE8F81721EEC89AB1A9@IA1PR12MB6353.namprd12.prod.outlook.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20221207211040.1099708-2-anthony.l.nguyen@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2022-12-07, 15:52:15 +0000, Emeel Hakim wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Sabrina Dubroca <sd@queasysnail.net>
-> > Sent: Wednesday, 7 December 2022 17:46
-> > To: Emeel Hakim <ehakim@nvidia.com>
-> > Cc: linux-kernel@vger.kernel.org; Raed Salem <raeds@nvidia.com>;
-> > davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> > pabeni@redhat.com; netdev@vger.kernel.org; atenart@kernel.org; jiri@resnulli.us
-> > Subject: Re: [PATCH net-next v3 1/2] macsec: add support for
-> > IFLA_MACSEC_OFFLOAD in macsec_changelink
-> > 
-> > External email: Use caution opening links or attachments
-> > 
-> > 
-> > 2022-12-07, 12:10:16 +0200, ehakim@nvidia.com wrote:
-> > [...]
-> > > +static int macsec_changelink_upd_offload(struct net_device *dev,
-> > > +struct nlattr *data[]) {
-> > > +     enum macsec_offload offload;
-> > > +     struct macsec_dev *macsec;
-> > > +
-> > > +     macsec = macsec_priv(dev);
-> > > +     offload = nla_get_u8(data[IFLA_MACSEC_OFFLOAD]);
-> > 
-> > All those checks are also present in macsec_upd_offload, why not move them into
-> > macsec_update_offload as well? (and then you don't really need
-> > macsec_changelink_upd_offload anymore)
-> > 
-> 
-> Right, I thought about it , but I realized that those checks are done before holding the lock in macsec_upd_offload
-> and if I move them to macsec_update_offload I will hold the lock for a longer time , I want to minimize the time
-> of holding the lock.
+On 07 Dec 13:10, Tony Nguyen wrote:
+>From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+>
+>ice_ptp_extts_work() and ice_ptp_periodic_work() are both scheduled on
+>the same kthread_worker pf.ptp.kworker. But, ice_ptp_periodic_work()
+>sends messages to AQ and waits for responses. This causes
+>ice_ptp_extts_work() to be blocked while waiting to be scheduled. This
+>causes problems with the reading of the incoming signal timestamps,
+>which disrupts a 100 Hz signal.
+>
 
-Those couple of tests are probably lost in the noise compared to what
-mdo_add_secy ends up doing. It also looks like a race condition
-between the "macsec->offload == offload" test in macsec_upd_offload
-(outside rtnl_lock) and updating macsec->offload via macsec_changelink
-is possible. (Currently we can only change it with macsec_upd_offload
-(called under genl_lock) so there's no issue until we add this patch)
+Sounds like an optimization rather than a bug fix, unless you explain what
+the symptoms are and how critical this patch is.
 
+code LGTM, although i find it wasteful to create a kthread per device event
+type, but i can't think of a better way.
 
-> > > +     if (macsec->offload == offload)
-> > > +             return 0;
-> > > +
-> > > +     /* Check if the offloading mode is supported by the underlying layers */
-> > > +     if (offload != MACSEC_OFFLOAD_OFF &&
-> > > +         !macsec_check_offload(offload, macsec))
-> > > +             return -EOPNOTSUPP;
-> > > +
-> > > +     /* Check if the net device is busy. */
-> > > +     if (netif_running(dev))
-> > > +             return -EBUSY;
-> > > +
-> > > +     return macsec_update_offload(macsec, offload); }
-> > > +
-> > 
-> > --
-> > Sabrina
-> 
-
--- 
-Sabrina
-
+>Create an additional kthread_worker pf.ptp.kworker_extts to service only
+>ice_ptp_extts_work() as soon as possible.
+>
+>Fixes: 77a781155a65 ("ice: enable receive hardware timestamping")
+>Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+>Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+>Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+>---
+> drivers/net/ethernet/intel/ice/ice_main.c |  5 ++++-
+> drivers/net/ethernet/intel/ice/ice_ptp.c  | 15 ++++++++++++++-
+> drivers/net/ethernet/intel/ice/ice_ptp.h  |  2 ++
+> 3 files changed, 20 insertions(+), 2 deletions(-)
+>
+>diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+>index ca2898467dcb..d0f14e73e8da 100644
+>--- a/drivers/net/ethernet/intel/ice/ice_main.c
+>+++ b/drivers/net/ethernet/intel/ice/ice_main.c
+>@@ -3106,7 +3106,10 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
+> 						     GLTSYN_STAT_EVENT1_M |
+> 						     GLTSYN_STAT_EVENT2_M);
+> 		ena_mask &= ~PFINT_OICR_TSYN_EVNT_M;
+>-		kthread_queue_work(pf->ptp.kworker, &pf->ptp.extts_work);
+>+
+>+		if (pf->ptp.kworker_extts)
+>+			kthread_queue_work(pf->ptp.kworker_extts,
+>+					   &pf->ptp.extts_work);
+> 	}
+>
+> #define ICE_AUX_CRIT_ERR (PFINT_OICR_PE_CRITERR_M | PFINT_OICR_HMC_ERR_M | PFINT_OICR_PE_PUSH_M)
+>diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+>index 0f668468d141..f9e20622ad9f 100644
+>--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
+>+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+>@@ -2604,7 +2604,7 @@ static int ice_ptp_init_owner(struct ice_pf *pf)
+>  */
+> static int ice_ptp_init_work(struct ice_pf *pf, struct ice_ptp *ptp)
+> {
+>-	struct kthread_worker *kworker;
+>+	struct kthread_worker *kworker, *kworker_extts;
+>
+> 	/* Initialize work functions */
+> 	kthread_init_delayed_work(&ptp->work, ice_ptp_periodic_work);
+>@@ -2620,6 +2620,13 @@ static int ice_ptp_init_work(struct ice_pf *pf, struct ice_ptp *ptp)
+>
+> 	ptp->kworker = kworker;
+>
+>+	kworker_extts = kthread_create_worker(0, "ice-ptp-extts-%s",
+>+					      dev_name(ice_pf_to_dev(pf)));
+>+	if (IS_ERR(kworker_extts))
+>+		return PTR_ERR(kworker_extts);
+>+
+>+	ptp->kworker_extts = kworker_extts;
+>+
+> 	/* Start periodic work going */
+> 	kthread_queue_delayed_work(ptp->kworker, &ptp->work, 0);
+>
+>@@ -2719,11 +2726,17 @@ void ice_ptp_release(struct ice_pf *pf)
+>
+> 	ice_ptp_port_phy_stop(&pf->ptp.port);
+> 	mutex_destroy(&pf->ptp.port.ps_lock);
+>+
+> 	if (pf->ptp.kworker) {
+> 		kthread_destroy_worker(pf->ptp.kworker);
+> 		pf->ptp.kworker = NULL;
+> 	}
+>
+>+	if (pf->ptp.kworker_extts) {
+>+		kthread_destroy_worker(pf->ptp.kworker_extts);
+>+		pf->ptp.kworker_extts = NULL;
+>+	}
+>+
+> 	if (!pf->ptp.clock)
+> 		return;
+>
+>diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
+>index 028349295b71..c63ad2c9af4c 100644
+>--- a/drivers/net/ethernet/intel/ice/ice_ptp.h
+>+++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
+>@@ -165,6 +165,7 @@ struct ice_ptp_port {
+>  * @ext_ts_chan: the external timestamp channel in use
+>  * @ext_ts_irq: the external timestamp IRQ in use
+>  * @kworker: kwork thread for handling periodic work
+>+ * @kworker_extts: kworker thread for handling extts work
+>  * @perout_channels: periodic output data
+>  * @info: structure defining PTP hardware capabilities
+>  * @clock: pointer to registered PTP clock device
+>@@ -186,6 +187,7 @@ struct ice_ptp {
+> 	u8 ext_ts_chan;
+> 	u8 ext_ts_irq;
+> 	struct kthread_worker *kworker;
+>+	struct kthread_worker *kworker_extts;
+> 	struct ice_perout_channel perout_channels[GLTSYN_TGT_H_IDX_MAX];
+> 	struct ptp_clock_info info;
+> 	struct ptp_clock *clock;
+>-- 
+>2.35.1
+>
