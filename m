@@ -2,141 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D5926459A0
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:10:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 393F86459B7
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229736AbiLGMKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 07:10:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38998 "EHLO
+        id S229515AbiLGMTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 07:19:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiLGMKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:10:48 -0500
-Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD26736C66;
-        Wed,  7 Dec 2022 04:10:46 -0800 (PST)
-Received: from [192.168.1.62] (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 56932200DBB3;
-        Wed,  7 Dec 2022 13:10:45 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 56932200DBB3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1670415045;
-        bh=z1bRtHorjKVQmxkQtm9H7dafDq0EWeh3vQ0UTqSTFJs=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=EO/p3UqmaYeYCfdniV1S6VFvaIqTLa2s/8v8Jm4P2Xw8wQa+yHyLKbStTnQlYXLPL
-         YrfmVLbJ0jN8bq1YBXwTKcRNswPTt1NjJq0qNaJHNQbOEOfu+WbjfuOWdMG62W5Dke
-         ElM82rYx+2olVvXlFZJM+0KPJzQ0MVR+3Yo2pLe1CBIhcezud77i5yPDzo8zScyWbp
-         TC3ytvYod7DziKE3O2oV03cZdH6KiZ4vIoaRJj+Jcj7xggPV7/2QlvmIFkI4OPKqkw
-         U81rL5OdxV0yFO336wV/5S96wJOVUvzAytmLRNMGafIgxYBYfVyfRsxJxwE4A4ZPdR
-         k9FEwDztV+lug==
-Message-ID: <d9269f66-17ee-2682-3a0a-94cbdc985614@uliege.be>
-Date:   Wed, 7 Dec 2022 13:10:45 +0100
+        with ESMTP id S229456AbiLGMTl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:19:41 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CE137239;
+        Wed,  7 Dec 2022 04:19:40 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id vv4so13590140ejc.2;
+        Wed, 07 Dec 2022 04:19:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=CmvTqKRfXOeoURV/WIPlQ7bnJ0f1gD5Beg1+F1mUpNc=;
+        b=cW6t/jpbIjWlAWC3U/V1Cs4laFfQKqbrnXK8gl3HFZymMIBqm3RPou+EUhZaiEn2BT
+         0U+/1VTkPBOR8KF/yzvzXwVf2TKidFJPG2m5gwyNfTj2oyqblLPeHpzf+qMJzUMv0tZE
+         w/Zu5ZvfOuIjQOzy1Xc4cK8Uwb7jy9udzTjr5kmUP1EJHqOhgP0NSArwF8U+Nj8pXNzO
+         7ytU4APQp6lCkVZMFpzPYLiUZ+PySwiUg1H9wC2medjJvLN4ujb5ohAQlYeWDSazowMC
+         bvqXP4yQkreqFrmFp3V6QP/5uBrEF5iijQ8Mw73nZv7E4WEKPlUiwStHnxjRXI9r2peE
+         w/dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CmvTqKRfXOeoURV/WIPlQ7bnJ0f1gD5Beg1+F1mUpNc=;
+        b=O9EDvzPqWNkEO50UQfadidCmOfeyhHI1XwghywKpGyJKxNPuc2De75XkcoZ1W2b62L
+         v42EC+64oFt5UXHwjRJx/SO35SdvOD8rfpbIHHEIyIwazmp/MUUQ2a53gp0Thn9YvAZB
+         c4zxUDIv1yzHl8QeItDGusejonMi8zbTvPwHQoIN9HEkqlfKeu4v/N6X8BjJlWQVODR0
+         7AIJfK8R848UrTR/c0I9/94/y868YS7MJG+6inU83Al+tDlVv6QyqfNGAeZy3T6l8cZs
+         gSfKwO4N3AO9xGRtdvQgIurM9tbFcrKs029a+nvRYPtJy6HWcFaOW3fc0lq27D4j6Giu
+         AktA==
+X-Gm-Message-State: ANoB5pnS2oGsRZDwjQCLZTXmTfreMTq4866BCl5mMDgHgwSvfg8tQZky
+        yl600HS8fG0ewtX8LjzjvQXi+sUWPpA5vA==
+X-Google-Smtp-Source: AA0mqf710KJyubfBfFDRySyEWxRYlhvTHvDg5EqXEu6Ekf4TW3mQL/90vCxzymeGqShMkUfq2dWoQQ==
+X-Received: by 2002:a17:907:a688:b0:7ba:ba67:f2f with SMTP id vv8-20020a170907a68800b007baba670f2fmr51927784ejc.199.1670415578714;
+        Wed, 07 Dec 2022 04:19:38 -0800 (PST)
+Received: from skbuf ([188.26.184.215])
+        by smtp.gmail.com with ESMTPSA id c10-20020a17090618aa00b007ad9c826d75sm8363992ejf.61.2022.12.07.04.19.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 04:19:38 -0800 (PST)
+Date:   Wed, 7 Dec 2022 14:19:36 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] lib: packing: fix shift wrapping in bit_reverse()
+Message-ID: <20221207121936.bajyi5igz2kum4v3@skbuf>
+References: <Y5B3sAcS6qKSt+lS@kili>
+ <Y5B3sAcS6qKSt+lS@kili>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue
- depth data field")
-Content-Language: en-US
-From:   Justin Iurman <justin.iurman@uliege.be>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        pabeni@redhat.com, stable@vger.kernel.org
-References: <20221205153557.28549-1-justin.iurman@uliege.be>
- <CANn89iLjGnyh0GgW_5kkMQJBCi-KfgwyvZwT1ou2FMY4ZDcMXw@mail.gmail.com>
- <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com>
- <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
- <CANn89iKgeVFRAstW3QRwOdn8SV_EbHqcKYqmoWT6m5nGQwPWUg@mail.gmail.com>
- <d579c817-50c7-5bd5-4b28-f044daabf7f6@uliege.be>
- <20221206124342.7f429399@kernel.org>
- <1328d117-70b5-b03c-c0be-cd046d728d53@uliege.be>
-In-Reply-To: <1328d117-70b5-b03c-c0be-cd046d728d53@uliege.be>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y5B3sAcS6qKSt+lS@kili>
+ <Y5B3sAcS6qKSt+lS@kili>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/7/22 13:07, Justin Iurman wrote:
-> On 12/6/22 21:43, Jakub Kicinski wrote:
->> On Mon, 5 Dec 2022 21:44:09 +0100 Justin Iurman wrote:
->>>> Please revert this patch.
->>>>
->>>> Many people use FQ qdisc, where packets are waiting for their Earliest
->>>> Departure Time to be released.
->>>
->>> The IOAM queue depth is a very important value and is already used.
->>
->> Can you say more about the use? What signal do you derive from it?
->> I do track qlen on Meta's servers but haven't found a strong use
->> for it yet (I did for backlog drops but not the qlen itself).
+On Wed, Dec 07, 2022 at 02:23:28PM +0300, Dan Carpenter wrote:
+> The bit_reverse() function is clearly supposed to be able to handle
+> 64 bit values, but the types for "(1 << i)" and "bit << (width - i - 1)"
+> are not enough to handle more than 32 bits.
 > 
-> The specification goal of the queue depth was initially to be able to 
-> track the entire path with a detailed view for packets or flows (kind of 
-> a zoom on the interface to have details about its queues). With the 
-> current definition/implementation of the queue depth, if only one queue 
-> is congested, you're able to know it. Which doesn't necessarily mean 
-> that all queues are full, but this one is and there might be something 
-> going on. And this is something operators might want to be able to 
-> detect precisely, for a lot of use cases depending on the situation. On 
-> the contrary, if all queues are full, then you could deduce that as well 
-> for each queue separately, as soon as a packet is assigned to it. So I 
-> think that with "queue depth = sum(queues)", you don't have details and 
-> you're not able to detect a single queue congestion, while with "queue 
-> depth = queue" you could detect both. One might argue that it's fine to 
-> only have the aggregation in some situation. I'd say that we might need 
-> both, actually. Which is technically possible (even though expensive, as 
-> Eric mentioned) thanks to the way it is specified by the RFC, where some 
-> freedom was intentionally given. I could come up with a solution for that.
+> Fixes: 554aae35007e ("lib: Add support for generic packing operations")
+> Signed-off-by: Dan Carpenter <error27@gmail.com>
+> ---
+>  lib/packing.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 > 
->>>> Also, the draft says:
->>>>
->>>> 5.4.2.7.  queue depth
->>>>
->>>>      The "queue depth" field is a 4-octet unsigned integer field.  This
->>>>      field indicates the current length of the egress interface 
->>>> queue of
->>>>      the interface from where the packet is forwarded out.  The queue
->>>>      depth is expressed as the current amount of memory buffers used by
->>>>      the queue (a packet could consume one or more memory buffers,
->>>>      depending on its size).
->>>>
->>>>       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
->>>>      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->>>>      |                       queue depth                             |
->>>>      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->>>>
->>>>
->>>> It is relatively clear that the egress interface is the aggregate
->>>> egress interface,
->>>> not a subset of the interface.
->>>
->>> Correct, even though the definition of an interface in RFC 9197 is quite
->>> abstract (see the end of section 4.4.2.2: "[...] could represent a
->>> physical interface, a virtual or logical interface, or even a queue").
->>>
->>>> If you have 32 TX queues on a NIC, all of them being backlogged 
->>>> (line rate),
->>>> sensing the queue length of one of the queues would give a 97% error
->>>> on the measure.
->>>
->>> Why would it? Not sure I get your idea based on that example.
->>
->> Because it measures the length of a single queue not the device.
-> 
-> Yep, I figured that out after the off-list discussion we've had with Eric.
-> 
-> So my plan would be, if you all agree with, to correct and repost this 
-> patch to fix the NULL qdisc issue. Then, I'd come with a solution to 
-> allow both (with and without aggregation of queues) and post it on 
-> net-next. But again, if the consensus is to revert this patch (which I 
-> think would bring no benefit IMHO), then so be it. Thoughts?
+> diff --git a/lib/packing.c b/lib/packing.c
+> index 9a72f4bbf0e2..9d7418052f5a 100644
+> --- a/lib/packing.c
+> +++ b/lib/packing.c
+> @@ -32,12 +32,11 @@ static int get_reverse_lsw32_offset(int offset, size_t len)
+>  static u64 bit_reverse(u64 val, unsigned int width)
+>  {
+>  	u64 new_val = 0;
+> -	unsigned int bit;
+>  	unsigned int i;
+>  
+>  	for (i = 0; i < width; i++) {
+> -		bit = (val & (1 << i)) != 0;
+> -		new_val |= (bit << (width - i - 1));
+> +		if (val & BIT_ULL(1))
 
-And by "revert this patch", I meant revert b63c5478e9cb, sorry.
+hmm, why 1 and not i?
+
+> +			new_val |= BIT_ULL(width - i - 1);
+>  	}
+>  	return new_val;
+>  }
+> -- 
+> 2.35.1
+> 
+
