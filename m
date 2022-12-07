@@ -2,74 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAB82645D27
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:01:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE1E7645D23
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:01:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbiLGPBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 10:01:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44014 "EHLO
+        id S229733AbiLGPBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 10:01:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbiLGPBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:01:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F87463D55
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:58:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670425116;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=81tx4Qu/i7V9KBQ9lAK66Q8QPlDEub1zKKTdHJd3xZc=;
-        b=NRDB5J4/KN3bL98sP1WSVkkjOrOmtZR+tNJsU1Rg2qzsZPLWtXWV/G2XzgMty4uMcAftFi
-        POgs5wUz16wskmtwtf9Fn/0xwMfJZRL8V4kia28T8JkecZSr/fVwkI9AYxg80qUk+namda
-        KxbIW2A9pDx5uJbm6GrTpt5SRAWpZRs=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-595-srFW8NbDMYe1DypeWLZtsw-1; Wed, 07 Dec 2022 09:58:33 -0500
-X-MC-Unique: srFW8NbDMYe1DypeWLZtsw-1
-Received: by mail-il1-f197.google.com with SMTP id l13-20020a056e021c0d00b003034e24b866so9814521ilh.22
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:58:32 -0800 (PST)
+        with ESMTP id S230132AbiLGPA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:00:57 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0588A1FCC7
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:59:26 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id vp12so14609134ejc.8
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:59:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=jMXRVGldTk7COdaP24MY28qt9bqJfNKNUcD2+DWf9Jc=;
+        b=CGx8xTYvJ2ijDdrLPSvnpvjZivSxCb2eS2a7gzI+SYI9MXev/9Kx7TKidmMRAKqOy3
+         HZOc1zRswaK0f6iW9+HSk5TyLWmbuZAkMStIqwiCDl5zGhf1U9OQ65sLT9R73u3dZ5z3
+         LkW8sz0/43loKcr3VcKCAMC0sWic81ysujgk0cxJDVC9eeC+oGJ+RSVAhq88k9mz3px3
+         umRfsGSCfq12iE/vOvXWUO5kXDYKcodqK+2iQCAyPByhyCL1e8Prw+B1q1HPu4eDEZAh
+         jCtaiWedx3JuR0bNjEwfm5UVTU8F5HefzR5dI+keSIkuTOw6mOLwruT+gLVffJ8TE/gY
+         yB6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=81tx4Qu/i7V9KBQ9lAK66Q8QPlDEub1zKKTdHJd3xZc=;
-        b=tT6xkCYKZ0HHnyEX/+d3+IDdshANaCkSvAHIGPlgwHxJcqYUVYYFQGFGQelsBSrFQX
-         DGy+zSIszbuIroU+h9fVBZwxOaXrgKx2ReWy5M6CdOrps7eU0iDPyZJHnqnxIY+U4BLZ
-         MY+hsH3VMghiPBkD7oUFo4pqDCRAFgTVHrnEia2nnYa1LA+JXwKIdSzC+plbDCbArUbw
-         xpFg2wp65Bv0+AcaD3tW7HS7LuMzQuRzVpq1ArKXdcpZxzL+LXalJFtrYSwRZI0749Tj
-         CqqtbZQMq3eHl3woBkxHco5W+y7fbrH/sve3oUZC86wdlGXZuNpGilU1SLG7MC2sDJsC
-         Tm0A==
-X-Gm-Message-State: ANoB5pm3sLJsrvOWy2BTTzcbkvHEiYHSLahR2Gq4S5vNN2Ur5GRygIpc
-        kvdbWCgQ6YIcOeTKgIQgGe/6HfqOM2g72vfqxuyNXbWCTY8TLyYKbCubPcIX5wk9w3pNJ9reFHf
-        l2dZbu4+ZfkjK5kWTyXzWPsWG+BhLM6l/
-X-Received: by 2002:a02:cc31:0:b0:389:f21d:ec44 with SMTP id o17-20020a02cc31000000b00389f21dec44mr16621885jap.106.1670425112455;
-        Wed, 07 Dec 2022 06:58:32 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4kM7WVmrniMvBfEcxbq+UC0cEZ9wYd5nOJPAwF5eggKPwWUOBHz/nl3G5o4x/8P8WXHDfEVEplpo9f2kjZxWE=
-X-Received: by 2002:a02:cc31:0:b0:389:f21d:ec44 with SMTP id
- o17-20020a02cc31000000b00389f21dec44mr16621879jap.106.1670425112254; Wed, 07
- Dec 2022 06:58:32 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jMXRVGldTk7COdaP24MY28qt9bqJfNKNUcD2+DWf9Jc=;
+        b=1nUhyPgoRpMmgLF+vufBaXgdrdipI6BSYqCgbKB9JSlE1m7tX+DIEFjq3pZOec0D1+
+         RS03N8VDYzDbs5wkkQzfoqm8Hp9A6Qhqg4yKmn9BMatUoD2SziGzyNUY1eJ216wrBYUq
+         cD0h5LcnVzcmHN/Gk1nMXB79WMXiqDG856w4nV+fM1XNZzrrrgU07DcYSobzRav30bNq
+         Y8ndGT4yNCUyrZ0TP2whbsjKb19zO5G7X6xEYeqtqYcKD2uvqwO/fcI5VcKN5eFHg+EG
+         flWhd/alXMBg4M5a0qSb0k8o5rW5wxG7F4yk6Ivq/8CtohEE2zJADSG7Jlc8dAR5FuUg
+         wdrA==
+X-Gm-Message-State: ANoB5pmkW6TKAeWMyvZKbyZDfpg6ZZ1OnkjMYjCa7A+6f0dxcTdTIykE
+        Maw8LeQZfm0t0rsYOcIvlf+1qTAbOn/BueJ9os8=
+X-Google-Smtp-Source: AA0mqf6ErRFQmK1cntQI6QCrFtJ3GfQhEtVifAs9d6yaF0QsUCpds2LyOFQyuf9VVKodil1f5LK4tA==
+X-Received: by 2002:a17:906:4f0c:b0:7c0:fd1a:6792 with SMTP id t12-20020a1709064f0c00b007c0fd1a6792mr9547232eju.431.1670425164604;
+        Wed, 07 Dec 2022 06:59:24 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id kq16-20020a170906abd000b007c09da0d773sm3056685ejb.100.2022.12.07.06.59.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Dec 2022 06:59:23 -0800 (PST)
+Date:   Wed, 7 Dec 2022 15:59:22 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netdev@vger.kernel.org, isdn@linux-pingi.de, davem@davemloft.net
+Subject: Re: [PATCH net 3/3] mISDN: hfcmulti: don't call dev_kfree_skb()
+ under spin_lock_irqsave()
+Message-ID: <Y5CqSjfN4fBhLLaH@nanopsycho>
+References: <20221207093239.3775457-1-yangyingliang@huawei.com>
+ <20221207093239.3775457-4-yangyingliang@huawei.com>
 MIME-Version: 1.0
-References: <20221206145936.922196-1-benjamin.tissoires@redhat.com> <20221206145936.922196-4-benjamin.tissoires@redhat.com>
-In-Reply-To: <20221206145936.922196-4-benjamin.tissoires@redhat.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Wed, 7 Dec 2022 15:58:21 +0100
-Message-ID: <CAO-hwJJq23V+ceJvX8zz-wGB6VgByuMY-xGu8VukiOmP+FfXHA@mail.gmail.com>
-Subject: Re: [PATCH HID for-next v3 3/5] HID: bpf: enforce HID_BPF dependencies
-To:     Jiri Kosina <jikos@kernel.org>,
-        Florent Revest <revest@chromium.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221207093239.3775457-4-yangyingliang@huawei.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,52 +70,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 6, 2022 at 3:59 PM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
+Wed, Dec 07, 2022 at 10:32:39AM CET, yangyingliang@huawei.com wrote:
+>It is not allowed to call consume_skb() from hardware interrupt context
+>or with interrupts being disabled. So replace dev_kfree_skb() with
+>dev_consume_skb_irq() under spin_lock_irqsave().
 >
-> As mentioned in the link below, having JIT and BPF is not enough to
-> have fentry/fexit/fmod_ret APIs. This resolves the error that
-> happens on a system without tracing enabled when hid-bpf tries to
-> load itself.
->
-> Link: https://lore.kernel.org/r/CABRcYmKyRchQhabi1Vd9RcMQFCcb=EtWyEbFDFRTc-L-U8WhgA@mail.gmail.com
-> Fixes: f5c27da4e3c8 ("HID: initial BPF implementation")
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
-> ---
->
-> no changes in v3
->
-> changes in v2:
-> - dropped ALLOW_ERROR_INJECTION requirement
+>Fixes: af69fb3a8ffa ("Add mISDN HFC multiport driver")
+>Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-Florent, can I keep your reviewed-by on this patch?
-
-Jon, may I ask you to do one more testing with the full v3 applied on
-top of for-next?
-
-Cheers,
-Benjamin
-
-> ---
->  drivers/hid/bpf/Kconfig | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/hid/bpf/Kconfig b/drivers/hid/bpf/Kconfig
-> index 298634fc3335..03f52145b83b 100644
-> --- a/drivers/hid/bpf/Kconfig
-> +++ b/drivers/hid/bpf/Kconfig
-> @@ -4,7 +4,8 @@ menu "HID-BPF support"
->  config HID_BPF
->         bool "HID-BPF support"
->         default HID_SUPPORT
-> -       depends on BPF && BPF_SYSCALL
-> +       depends on BPF && BPF_SYSCALL && \
-> +                  DYNAMIC_FTRACE_WITH_DIRECT_CALLS
->         help
->         This option allows to support eBPF programs on the HID subsystem.
->         eBPF programs can fix HID devices in a lighter way than a full
-> --
-> 2.38.1
->
-
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
