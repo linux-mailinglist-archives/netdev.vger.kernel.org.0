@@ -2,167 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B181645A2B
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:51:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F4F0645A2E
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 13:53:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbiLGMvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 07:51:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33216 "EHLO
+        id S229609AbiLGMxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 07:53:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiLGMvR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:51:17 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45ECF4E685;
-        Wed,  7 Dec 2022 04:51:15 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id r65-20020a1c4444000000b003d1e906ca23so952421wma.3;
-        Wed, 07 Dec 2022 04:51:15 -0800 (PST)
+        with ESMTP id S229586AbiLGMxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 07:53:06 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21E52B60D
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 04:53:04 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id n7so13507688wms.3
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 04:53:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EmAGgUk46Zi0pbhWz1FAYyEwTM+DUAARY75FlGYPEKA=;
-        b=IrKI+AlPoS/A7wUwucc/bLt1re4BAK1qtUe3AvvRmws7olKgOZnpx8tHf1JxgY9ltz
-         xwnn4A6iy1cygRdGmI/vFZjrp8mDeMz82wDgxVtS79t87wIAUp8He1ZD1zgcIgApBGIY
-         0XUbn83S2OI18uESyVaYsWvideuJY6CB5EhWPxES7uFJ53xWdie+ntzOrzBgDb49JU6p
-         z4iE2lVwPQliKQAIwaK9smHDgWdwGCoWn5OVq5+eg032CkhTIl0odxOdtxuHOlefQzRI
-         0MJsKEHsB0s14U4yUyTugZTzWbfiQrYDmYz0HgPyMxLlsV5YUh8BCoT4ZsCURHwwISQo
-         H8gQ==
+        bh=SaZKvzrELtZk2moYXHTejAAx0pVU4ccKfYCaOf5kf6s=;
+        b=Zn0bxdNAFoGshkFY4WWwXydY9YieUgDTNZ7UMeR67e3fjlwuS3bimPdqo+MlcClmlA
+         fLNNhn7lOtPh3kHboREx0u0pavIRPoZ8MPQtUqmVWQhHoWMnG69jDb8GbMwd6C7GFJsQ
+         NuSKOtY9XaouhxW8KB/Vri7ug8VeMKV2+LGU19xE5ea0m30ANCKbs/VGpcQEbVv40n9x
+         I985ZKWJvAV1wo2PsPaLr88Rk9C81QmEfEhpUq5bQA8od3/kVF2kWGBu0xyDFcEgAESi
+         qlcoV56MVSQKnM4xnFKdxcjsZ6xpA9yE+2XNVbWboluVsLgl9Hf4w/PNkj/u1euW8ww8
+         DS2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EmAGgUk46Zi0pbhWz1FAYyEwTM+DUAARY75FlGYPEKA=;
-        b=5E204OxyQgoSmKO99cZuSG2MDkAinH2FJaDuPkY2rgpihvsR1KCOkTWthl/fQ4Qz8e
-         F8ngMhI+f3JoO/+09BsY0PL/kV/PBgRMblYxW2MtamLmeGfa7VcB9lJQRsQ5nAcW0YDC
-         DlKhdWjSopY5sgBRtMBsFKvSDVx9YvdoZwWXIFedu7+pOSMMJcBCW9GMXO6ich1eiiO3
-         tWkkaqr5XK2x9eIN8HQ8QjvLFnHyDodtoEIobT2tF2Ojmgl21vC1D3N2Hq0TOAGS1wr+
-         wzS8fEju0CfM6mTmXqL3nq8IQFRy3jxSMz4D38SiUlDJYMMERWxhLPMxPRUHPVcaWiQg
-         e4YQ==
-X-Gm-Message-State: ANoB5pnBIGsZAAyFvf0Ii5Y4XQ3SetjmGSwXBF30/NqNUVJXKEZc/mCo
-        EhFQ0NH/6gM3m9Md8tQiO5Y=
-X-Google-Smtp-Source: AA0mqf5piDfabNZVMyogT+kODxjUb4BeltVpq1Fo4ZxMkEtn2MGFVPyF1AxS7JnFRT8xTyPodClcFw==
-X-Received: by 2002:a05:600c:3b24:b0:3cf:88df:d355 with SMTP id m36-20020a05600c3b2400b003cf88dfd355mr65800211wms.141.1670417473643;
-        Wed, 07 Dec 2022 04:51:13 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id g8-20020a5d46c8000000b0023662d97130sm19456173wrs.20.2022.12.07.04.51.12
+        bh=SaZKvzrELtZk2moYXHTejAAx0pVU4ccKfYCaOf5kf6s=;
+        b=khXP7rolV75uzN27s7j25/Iqhy3NFcossqWFPbhzs1Z6CcoJO9pvl6Uca6z6qiIIJN
+         +SYC3YO3+YDYcw5//RlRd6SwhIDGaDetoCt3OAnU30TOAloJUF6fdkE5+tDXb6ISM88A
+         Ny7bAJrHzCT4X8oaZEnimQ7aZI8+KbABE/k7R5HylWDeBSHAEm4pKZxlbK1o6qeSPVj0
+         3d/LBl+UqsJJIvw80TZ/D7CLbfEdXAcDPH8fa2/p5SnqYfbKyVCxRVZv5CoSneX4p16+
+         Ny/aB+EfRBNgszbs443tsx68I5p24KcYlBxWHO2NBvbae4moF2TutViReMOQGb6EOFQI
+         99Sg==
+X-Gm-Message-State: ANoB5pklbu+tzDFjARpPDQCgzk743v/SQRGfzGu9QqXyulleBLfdqCdk
+        5CHqvQRv3rxMD0pGoTGNZbn+O1jr2Rk+0JW4NwZumg==
+X-Google-Smtp-Source: AA0mqf6jVbDAqxIxt3K1pXrMoZOl/WacnQGFWIw2cU8q357bgB5/zhXEO0AhmwEdMCP8UHHxuv0l0g==
+X-Received: by 2002:a1c:6a02:0:b0:3cf:71e4:75b with SMTP id f2-20020a1c6a02000000b003cf71e4075bmr56055226wmc.114.1670417583450;
+        Wed, 07 Dec 2022 04:53:03 -0800 (PST)
+Received: from localhost (ip-046-005-139-011.um12.pools.vodafone-ip.de. [46.5.139.11])
+        by smtp.gmail.com with ESMTPSA id d5-20020a5d6445000000b002368f6b56desm23188922wrw.18.2022.12.07.04.53.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 04:51:13 -0800 (PST)
-Date:   Wed, 7 Dec 2022 15:51:08 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] lib: packing: fix shift wrapping in bit_reverse()
-Message-ID: <Y5CMPGrSuP+0ptdP@kadam>
-References: <Y5B3sAcS6qKSt+lS@kili>
- <Y5B3sAcS6qKSt+lS@kili>
- <20221207121936.bajyi5igz2kum4v3@skbuf>
- <Y5CFMIGsZmB1TRni@kadam>
- <20221207122254.otq7biekqz2nzhgl@skbuf>
+        Wed, 07 Dec 2022 04:53:03 -0800 (PST)
+Date:   Wed, 7 Dec 2022 13:53:00 +0100
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Ivan Babrou <ivan@cloudflare.com>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, cgroups@vger.kernel.org,
+        kernel-team <kernel-team@cloudflare.com>
+Subject: Re: Low TCP throughput due to vmpressure with swap enabled
+Message-ID: <Y5CMrPMDxngMZWN8@cmpxchg.org>
+References: <Y30rdnZ+lrfOxjTB@cmpxchg.org>
+ <CABWYdi3PqipLxnqeepXeZ471pfeBg06-PV0Uw04fU-LHnx_A4g@mail.gmail.com>
+ <CABWYdi0qhWs56WK=k+KoQBAMh+Tb6Rr0nY4kJN+E5YqfGhKTmQ@mail.gmail.com>
+ <Y4T43Tc54vlKjTN0@cmpxchg.org>
+ <CABWYdi0z6-46PrNWumSXWki6Xf4G_EP1Nvc-2t00nEi0PiOU3Q@mail.gmail.com>
+ <CABWYdi25hricmGUqaK1K0EB-pAm04vGTg=eiqRF99RJ7hM7Gyg@mail.gmail.com>
+ <Y4+RPry2tfbWFdSA@cmpxchg.org>
+ <CANn89iJfx4QdVBqJ23oFJoz5DJKou=ZwVBNNXFNDJRNAqNvzwQ@mail.gmail.com>
+ <Y4+rNYF9WZyJyBQp@cmpxchg.org>
+ <20221206231049.g35ltbxbk54izrie@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221207122254.otq7biekqz2nzhgl@skbuf>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20221206231049.g35ltbxbk54izrie@google.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 07, 2022 at 02:22:54PM +0200, Vladimir Oltean wrote:
-> On Wed, Dec 07, 2022 at 03:21:04PM +0300, Dan Carpenter wrote:
-> > On Wed, Dec 07, 2022 at 02:19:36PM +0200, Vladimir Oltean wrote:
-> > > On Wed, Dec 07, 2022 at 02:23:28PM +0300, Dan Carpenter wrote:
-> > > > The bit_reverse() function is clearly supposed to be able to handle
-> > > > 64 bit values, but the types for "(1 << i)" and "bit << (width - i - 1)"
-> > > > are not enough to handle more than 32 bits.
-> > > > 
-> > > > Fixes: 554aae35007e ("lib: Add support for generic packing operations")
-> > > > Signed-off-by: Dan Carpenter <error27@gmail.com>
-> > > > ---
-> > > >  lib/packing.c | 5 ++---
-> > > >  1 file changed, 2 insertions(+), 3 deletions(-)
-> > > > 
-> > > > diff --git a/lib/packing.c b/lib/packing.c
-> > > > index 9a72f4bbf0e2..9d7418052f5a 100644
-> > > > --- a/lib/packing.c
-> > > > +++ b/lib/packing.c
-> > > > @@ -32,12 +32,11 @@ static int get_reverse_lsw32_offset(int offset, size_t len)
-> > > >  static u64 bit_reverse(u64 val, unsigned int width)
+On Tue, Dec 06, 2022 at 11:10:49PM +0000, Shakeel Butt wrote:
+> On Tue, Dec 06, 2022 at 09:51:01PM +0100, Johannes Weiner wrote:
+> > On Tue, Dec 06, 2022 at 08:13:50PM +0100, Eric Dumazet wrote:
+> > > On Tue, Dec 6, 2022 at 8:00 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
+> > > > @@ -1701,10 +1701,10 @@ void mem_cgroup_sk_alloc(struct sock *sk);
+> > > >  void mem_cgroup_sk_free(struct sock *sk);
+> > > >  static inline bool mem_cgroup_under_socket_pressure(struct mem_cgroup *memcg)
 > > > >  {
-> > > >  	u64 new_val = 0;
-> > > > -	unsigned int bit;
-> > > >  	unsigned int i;
-> > > >  
-> > > >  	for (i = 0; i < width; i++) {
-> > > > -		bit = (val & (1 << i)) != 0;
-> > > > -		new_val |= (bit << (width - i - 1));
-> > > > +		if (val & BIT_ULL(1))
+> > > > -       if (!cgroup_subsys_on_dfl(memory_cgrp_subsys) && memcg->tcpmem_pressure)
+> > > > +       if (!cgroup_subsys_on_dfl(memory_cgrp_subsys) && memcg->socket_pressure)
 > > > 
-> > > hmm, why 1 and not i?
+> > > && READ_ONCE(memcg->socket_pressure))
+> > > 
+> > > >                 return true;
+> > > >         do {
+> > > > -               if (time_before(jiffies, READ_ONCE(memcg->socket_pressure)))
+> > > > +               if (memcg->socket_pressure)
+> > > 
+> > > if (READ_ONCE(...))
 > > 
-> > Because I'm a moron.  Let me resend.
+> > Good point, I'll add those.
+> > 
+> > > > @@ -7195,10 +7194,10 @@ bool mem_cgroup_charge_skmem(struct mem_cgroup *memcg, unsigned int nr_pages,
+> > > >                 struct page_counter *fail;
+> > > >
+> > > >                 if (page_counter_try_charge(&memcg->tcpmem, nr_pages, &fail)) {
+> > > > -                       memcg->tcpmem_pressure = 0;
+> > > 
+> > > Orthogonal to your patch, but:
+> > > 
+> > > Maybe avoid touching this cache line too often and use READ/WRITE_ONCE() ?
+> > > 
+> > >     if (READ_ONCE(memcg->socket_pressure))
+> > >       WRITE_ONCE(memcg->socket_pressure, false);
+> > 
+> > Ah, that's a good idea.
+> > 
+> > I think it'll be fine in the failure case, since that's associated
+> > with OOM and total performance breakdown anyway.
+> > 
+> > But certainly, in the common case of the charge succeeding, we should
+> > not keep hammering false into that variable over and over.
+> > 
+> > How about the delta below? I also flipped the branches around to keep
+> > the common path at the first indentation level, hopefully making that
+> > a bit clearer too.
+> > 
+> > Thanks for taking a look, Eric!
+> > 
 > 
-> Wait a second, I deliberately wrote the code without conditionals.
-> Let me look at the code disassembly before and after the patch and see
-> what they look like.
+> I still think we should not put a persistent state of socket pressure on
+> unsuccessful charge which will only get reset on successful charge. I
+> think the better approach would be to limit the pressure state by time
+> window same as today but set it on charge path. Something like below:
 
-My crappy benchmark says that the if statement is faster.  22 vs 26
-seconds.
+I don't mind doing that if necessary, but looking at the code I don't
+see why it would be.
 
-regards,
-dan carpenter
+The socket code sets protocol memory pressure on allocations that run
+into limits, and clears pressure on allocations that succeed and
+frees. Why shouldn't we do the same thing for memcg?
 
-#include <stdio.h>
-#include <limits.h>
-#include <stdbool.h>
-#include <string.h>
-
-#define BIT(n) (1 << (n))
-#define BIT_ULL(n) (1ULL << (n))
-
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8  unsigned char
-
-static u64 bit_reverse1(u64 val, unsigned int width)
-{
-	u64 new_val = 0;
-	unsigned int i;
-
-	for (i = 0; i < width; i++) {
-		if (val & BIT_ULL(i))
-			new_val |= BIT_ULL(width - i - 1);
-	}
-	return new_val;
-}
-
-static u64 bit_reverse2(u64 val, unsigned int width)
-{
-	u64 new_val = 0;
-	u64 bit;
-	unsigned int i;
-
-	for (i = 0; i < width; i++) {
-		bit = (val & BIT_ULL(i)) != 0;
-		new_val |= (bit << (width - i - 1));
-	}
-	return new_val;
-}
-
-int main(void)
-{
-	unsigned long long val;
-
-	for (val = ULLONG_MAX - INT_MAX; val; val++)
-		bit_reverse1(val, 2);
-
-	return 0;
-}
-
+@@ -7237,6 +7235,9 @@ void mem_cgroup_uncharge_skmem(struct mem_cgroup *memcg, unsigned int nr_pages)
+        mod_memcg_state(memcg, MEMCG_SOCK, -nr_pages);
+ 
+        refill_stock(memcg, nr_pages);
++
++       if (unlikely(READ_ONCE(memcg->socket_pressure)))
++               WRITE_ONCE(memcg->socket_pressure, false);
+ }
