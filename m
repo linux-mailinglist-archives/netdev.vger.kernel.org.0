@@ -2,80 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE1E7645D23
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:01:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24CF3645C41
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 15:19:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbiLGPBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 10:01:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
+        id S230153AbiLGOTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 09:19:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiLGPA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:00:57 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0588A1FCC7
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 06:59:26 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id vp12so14609134ejc.8
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 06:59:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jMXRVGldTk7COdaP24MY28qt9bqJfNKNUcD2+DWf9Jc=;
-        b=CGx8xTYvJ2ijDdrLPSvnpvjZivSxCb2eS2a7gzI+SYI9MXev/9Kx7TKidmMRAKqOy3
-         HZOc1zRswaK0f6iW9+HSk5TyLWmbuZAkMStIqwiCDl5zGhf1U9OQ65sLT9R73u3dZ5z3
-         LkW8sz0/43loKcr3VcKCAMC0sWic81ysujgk0cxJDVC9eeC+oGJ+RSVAhq88k9mz3px3
-         umRfsGSCfq12iE/vOvXWUO5kXDYKcodqK+2iQCAyPByhyCL1e8Prw+B1q1HPu4eDEZAh
-         jCtaiWedx3JuR0bNjEwfm5UVTU8F5HefzR5dI+keSIkuTOw6mOLwruT+gLVffJ8TE/gY
-         yB6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jMXRVGldTk7COdaP24MY28qt9bqJfNKNUcD2+DWf9Jc=;
-        b=1nUhyPgoRpMmgLF+vufBaXgdrdipI6BSYqCgbKB9JSlE1m7tX+DIEFjq3pZOec0D1+
-         RS03N8VDYzDbs5wkkQzfoqm8Hp9A6Qhqg4yKmn9BMatUoD2SziGzyNUY1eJ216wrBYUq
-         cD0h5LcnVzcmHN/Gk1nMXB79WMXiqDG856w4nV+fM1XNZzrrrgU07DcYSobzRav30bNq
-         Y8ndGT4yNCUyrZ0TP2whbsjKb19zO5G7X6xEYeqtqYcKD2uvqwO/fcI5VcKN5eFHg+EG
-         flWhd/alXMBg4M5a0qSb0k8o5rW5wxG7F4yk6Ivq/8CtohEE2zJADSG7Jlc8dAR5FuUg
-         wdrA==
-X-Gm-Message-State: ANoB5pmkW6TKAeWMyvZKbyZDfpg6ZZ1OnkjMYjCa7A+6f0dxcTdTIykE
-        Maw8LeQZfm0t0rsYOcIvlf+1qTAbOn/BueJ9os8=
-X-Google-Smtp-Source: AA0mqf6ErRFQmK1cntQI6QCrFtJ3GfQhEtVifAs9d6yaF0QsUCpds2LyOFQyuf9VVKodil1f5LK4tA==
-X-Received: by 2002:a17:906:4f0c:b0:7c0:fd1a:6792 with SMTP id t12-20020a1709064f0c00b007c0fd1a6792mr9547232eju.431.1670425164604;
-        Wed, 07 Dec 2022 06:59:24 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id kq16-20020a170906abd000b007c09da0d773sm3056685ejb.100.2022.12.07.06.59.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Dec 2022 06:59:23 -0800 (PST)
-Date:   Wed, 7 Dec 2022 15:59:22 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     netdev@vger.kernel.org, isdn@linux-pingi.de, davem@davemloft.net
-Subject: Re: [PATCH net 3/3] mISDN: hfcmulti: don't call dev_kfree_skb()
- under spin_lock_irqsave()
-Message-ID: <Y5CqSjfN4fBhLLaH@nanopsycho>
-References: <20221207093239.3775457-1-yangyingliang@huawei.com>
- <20221207093239.3775457-4-yangyingliang@huawei.com>
+        with ESMTP id S229936AbiLGOTD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 09:19:03 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEF755C94;
+        Wed,  7 Dec 2022 06:19:02 -0800 (PST)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NRzsG1HM3zmWSZ;
+        Wed,  7 Dec 2022 22:18:10 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 7 Dec
+ 2022 22:18:59 +0800
+From:   Li Zetao <lizetao1@huawei.com>
+To:     <pkshih@realtek.com>, <kvalo@kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <lizetao1@huawei.com>, <Larry.Finger@lwfinger.net>,
+        <linville@tuxdriver.com>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in _rtl8812ae_phy_set_txpower_limit()
+Date:   Wed, 7 Dec 2022 23:23:19 +0800
+Message-ID: <20221207152319.3135500-1-lizetao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221207093239.3775457-4-yangyingliang@huawei.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Dec 07, 2022 at 10:32:39AM CET, yangyingliang@huawei.com wrote:
->It is not allowed to call consume_skb() from hardware interrupt context
->or with interrupts being disabled. So replace dev_kfree_skb() with
->dev_consume_skb_irq() under spin_lock_irqsave().
->
->Fixes: af69fb3a8ffa ("Add mISDN HFC multiport driver")
->Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+There is a global-out-of-bounds reported by KASAN:
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+  BUG: KASAN: global-out-of-bounds in
+  _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
+  Read of size 1 at addr ffffffffa0773c43 by task NetworkManager/411
+
+  CPU: 6 PID: 411 Comm: NetworkManager Tainted: G      D
+  6.1.0-rc8+ #144 e15588508517267d37
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+  Call Trace:
+   <TASK>
+   ...
+   kasan_report+0xbb/0x1c0
+   _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
+   rtl8821ae_phy_bb_config.cold+0x346/0x641 [rtl8821ae]
+   rtl8821ae_hw_init+0x1f5e/0x79b0 [rtl8821ae]
+   ...
+   </TASK>
+
+The root cause of the problem is that the comparison order of
+"prate_section" in _rtl8812ae_phy_set_txpower_limit() is wrong. The
+_rtl8812ae_eq_n_byte() is used to compare the first n bytes of the two
+strings, so this requires the length of the two strings be greater
+than or equal to n. In the  _rtl8812ae_phy_set_txpower_limit(), it was
+originally intended to meet this requirement by carefully designing
+the comparison order. For example, "pregulation" and "pbandwidth" are
+compared in order of length from small to large, first is 3 and last
+is 4. However, the comparison order of "prate_section" dose not obey
+such order requirement, therefore when "prate_section" is "HT", it will
+lead to access out of bounds in _rtl8812ae_eq_n_byte().
+
+Fix it by adding a length check in _rtl8812ae_eq_n_byte(). Although it
+can be fixed by adjusting the comparison order of "prate_section", this
+may cause the value of "rate_section" to not be from 0 to 5. In
+addition, commit "21e4b0726dc6" not only moved driver from staging to
+regular tree, but also added setting txpower limit function during the
+driver config phase, so the problem was introduced by this commit.
+
+Fixes: 21e4b0726dc6 ("rtlwifi: rtl8821ae: Move driver from staging to regular tree")
+Signed-off-by: Li Zetao <lizetao1@huawei.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+index a29321e2fa72..720114a9ddb2 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+@@ -1600,7 +1600,7 @@ static bool _rtl8812ae_get_integer_from_string(const char *str, u8 *pint)
+ 
+ static bool _rtl8812ae_eq_n_byte(const char *str1, const char *str2, u32 num)
+ {
+-	if (num == 0)
++	if (num == 0 || strlen(str1) < num)
+ 		return false;
+ 	while (num > 0) {
+ 		num--;
+-- 
+2.31.1
+
