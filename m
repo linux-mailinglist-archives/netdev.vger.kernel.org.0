@@ -2,106 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35C83645D57
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:12:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61288645D60
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 16:14:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbiLGPMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 10:12:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
+        id S229643AbiLGPOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 10:14:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229728AbiLGPLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:11:54 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DC461B8C
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 07:11:51 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id a14so13657273pfa.1
-        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 07:11:51 -0800 (PST)
+        with ESMTP id S229513AbiLGPOX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 10:14:23 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F44F5FB96
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 07:14:20 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id b2so14706670eja.7
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 07:14:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=lN+y24HtPTtYsU4nJrvB6CVlWdApjZBrH5S1DCC2kXg=;
-        b=IFcVuLFIXQyhqB7xwRNHbt8wlXk/GKwZ+NAtI2ye9vGnU3euJUumbJIKXGyssRypFI
-         /xeN15jHdNFC+Nznb5rWm+oOs14M/9PXLMCqWXEa/mcxJyZp6a+XNMIG8ImuXsDpyl50
-         fByLpxnsTKAZu7FCkhxvobLNcqkoQHxtpIC7s=
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Z7jh/q6+EKvNsrzsOVnb4GKEWGMpO0PJkaRUW/Xnbzk=;
+        b=T4WP31fxnTkKAYZk1KuDzg4k8s47Eqk/EaQtgZTycKohB/8Jjrj6JWYWPGrpmho9ev
+         v9/GQ8GZzLfPk//u+jRgt7V11IvD/iINNqhA7blzyWmfSY1W685D2cCUTBWgNNBMimHx
+         encZmfZ7swwM3hDaRcMJjokpgl13m21iG14s3DnZ3t/enhBvMd698HjoreD4xRnexyQt
+         ZtMVvKkKdMbGCYp6d89FK7lyL5bM7Qfdkq4xZyKiwaMjuDl2jMnvUKpVO8btULUgCMW1
+         wuzTJmZX+BLtL4BgVWtd4rRy3IJj855/ygq8klwCecgJNZhAQPGWONOsAccUieXz9eZk
+         rPRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lN+y24HtPTtYsU4nJrvB6CVlWdApjZBrH5S1DCC2kXg=;
-        b=J6u+waizkxISJTPoLH1i7HrVHEF7/Bew7Xuml3t/mau24GKKWVgR7ofMppe+tgAAk8
-         kDcKvtwyPZjNc7XSaU95WQhjD6/7dZb0UibSUgGWfDAWABY780SsrCzXSVvAS6Epo+Ju
-         GlFtsYWC1CXxJR7RqZL2r9wkFDi9fv3WrjyRUMwuoMQ2ersLVk7jp3AuHRku34w3QQ4R
-         NDZurmx1VJyzdtLzqRicuZ3nNX6uLeYpKuU7EXV03DoIfZg/9yUqY3SqZr8e+LiLvxfK
-         07MYO46Iwyjco+eEdUvwsWPoWB9AC68Da7H5HKlyauXL6ET/FNSQ8d+nhFbuHQRK2gwS
-         +fSQ==
-X-Gm-Message-State: ANoB5pl6WLiOla4T/zXEZuMO7CigXBnwzn8zETTMrRWZyGZLRnzOwdAS
-        MuG4Wz69ou5oQpqShu7i375QQjAxcAqYFGAh+5YAzQ==
-X-Google-Smtp-Source: AA0mqf7aWAEOQCVyJoQT+sLcmLykvW+jmp5tFrVTULLQMFDGR0lVkdnDP5crGEOtMJ5nf8lGxlhb53dFKh5Q0j7rRrA=
-X-Received: by 2002:a63:180a:0:b0:470:63e5:5c59 with SMTP id
- y10-20020a63180a000000b0047063e55c59mr63840166pgl.172.1670425910989; Wed, 07
- Dec 2022 07:11:50 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z7jh/q6+EKvNsrzsOVnb4GKEWGMpO0PJkaRUW/Xnbzk=;
+        b=T1HmmqeFGDFEw4YYT4UR0T2CMxp15wOd5yofvKfMleVyAf8t10orenPP0afwjtp2Gn
+         /Jjyh2Nby4u8FADkLVMbILcQPaFsZ5NqtA5mMEeiOTKkgROPtYKFIZXjI6mDjfy6eAsA
+         ZKUlXn8VJQ3/feI1Gi1F14lS82eSg1n8MsRnITS2yN8XexwXVZCcEaSjWvhuQPcUA9//
+         2zUXfPFK9IZmZcTK8QfGh/bWDV3eXE3EluiWq+xLfP0zBy7qvPKhRZZ9G1WnJ8ek8we0
+         JNg67Hd/xOLWtEsuA0aDuYeqcUtmpxUMpS+z7UJJ7Ah3w+qQZ+Hi3TgthPtcqs6qjA2L
+         rqaQ==
+X-Gm-Message-State: ANoB5pkt2ks18titmmDf+bLjUukGhp5tJDFOueHhcedF5YqX6RWJztEs
+        sLWBBHujjlCVxpOfat3WL1k=
+X-Google-Smtp-Source: AA0mqf7g5254uAusxdiPyP7aAEmxWR4ZwHnLigQa3gS3Yqwgsh06yfvgwwj6tWYMgbXLWmuZfSCHyg==
+X-Received: by 2002:a17:906:38f:b0:7c1:31d:8b75 with SMTP id b15-20020a170906038f00b007c1031d8b75mr8537941eja.157.1670426059019;
+        Wed, 07 Dec 2022 07:14:19 -0800 (PST)
+Received: from [192.168.0.105] ([77.126.19.155])
+        by smtp.gmail.com with ESMTPSA id r22-20020aa7cfd6000000b0046ab2bd784csm2298055edy.64.2022.12.07.07.14.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Dec 2022 07:14:18 -0800 (PST)
+Message-ID: <eb076121-479b-ca4a-c13d-8adbdfdbc893@gmail.com>
+Date:   Wed, 7 Dec 2022 17:14:16 +0200
 MIME-Version: 1.0
-References: <20221206145936.922196-1-benjamin.tissoires@redhat.com>
- <20221206145936.922196-4-benjamin.tissoires@redhat.com> <CAO-hwJJq23V+ceJvX8zz-wGB6VgByuMY-xGu8VukiOmP+FfXHA@mail.gmail.com>
-In-Reply-To: <CAO-hwJJq23V+ceJvX8zz-wGB6VgByuMY-xGu8VukiOmP+FfXHA@mail.gmail.com>
-From:   Florent Revest <revest@chromium.org>
-Date:   Wed, 7 Dec 2022 16:11:39 +0100
-Message-ID: <CABRcYmL_hAyH0QY7bP1Eh7atXeFDYg3-orht=KK1Zjcj9RNpqg@mail.gmail.com>
-Subject: Re: [PATCH HID for-next v3 3/5] HID: bpf: enforce HID_BPF dependencies
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Jiri Kosina <jikos@kernel.org>, Jon Hunter <jonathanh@nvidia.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net-next 2/3] net/mlx4: MLX4_TX_BOUNCE_BUFFER_SIZE depends
+ on MAX_SKB_FRAGS
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tariq Toukan <tariqt@nvidia.com>, Wei Wang <weiwan@google.com>,
+        netdev@vger.kernel.org, eric.dumazet@gmail.com
+References: <20221206055059.1877471-1-edumazet@google.com>
+ <20221206055059.1877471-3-edumazet@google.com>
+ <40ca4e2e-8f34-545a-7063-09aee0a5dd4c@gmail.com>
+ <CANn89iKUYMb_4vJ5GAE0-BUmM7JNuHo_p8oHbfJfatYKBX8ouw@mail.gmail.com>
+ <CANn89iKpGwej5X_noxU+N7Y4o30dpfEFX_Ao6qZeahScvM7qGQ@mail.gmail.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <CANn89iKpGwej5X_noxU+N7Y4o30dpfEFX_Ao6qZeahScvM7qGQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 7, 2022 at 3:58 PM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> On Tue, Dec 6, 2022 at 3:59 PM Benjamin Tissoires
-> <benjamin.tissoires@redhat.com> wrote:
-> >
-> > As mentioned in the link below, having JIT and BPF is not enough to
-> > have fentry/fexit/fmod_ret APIs. This resolves the error that
-> > happens on a system without tracing enabled when hid-bpf tries to
-> > load itself.
-> >
-> > Link: https://lore.kernel.org/r/CABRcYmKyRchQhabi1Vd9RcMQFCcb=EtWyEbFDFRTc-L-U8WhgA@mail.gmail.com
-> > Fixes: f5c27da4e3c8 ("HID: initial BPF implementation")
-> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> >
-> > ---
-> >
-> > no changes in v3
-> >
-> > changes in v2:
-> > - dropped ALLOW_ERROR_INJECTION requirement
->
-> Florent, can I keep your reviewed-by on this patch?
 
-Yes! :)
-Reviewed-by: Florent Revest <revest@chromium.org>
 
-Thank you for the updated series, I think it's cleaner than relying on
-error injection indeed.
+On 12/7/2022 3:06 PM, Eric Dumazet wrote:
+> On Wed, Dec 7, 2022 at 1:53 PM Eric Dumazet <edumazet@google.com> wrote:
+>>
+>> On Wed, Dec 7, 2022 at 1:40 PM Tariq Toukan <ttoukan.linux@gmail.com> wrote:
+>>>
+>>>
+>>>
+>>> On 12/6/2022 7:50 AM, Eric Dumazet wrote:
+>>>> Google production kernel has increased MAX_SKB_FRAGS to 45
+>>>> for BIG-TCP rollout.
+>>>>
+>>>> Unfortunately mlx4 TX bounce buffer is not big enough whenever
+>>>> an skb has up to 45 page fragments.
+>>>>
+>>>> This can happen often with TCP TX zero copy, as one frag usually
+>>>> holds 4096 bytes of payload (order-0 page).
+>>>>
+>>>> Tested:
+>>>>    Kernel built with MAX_SKB_FRAGS=45
+>>>>    ip link set dev eth0 gso_max_size 185000
+>>>>    netperf -t TCP_SENDFILE
+>>>>
+>>>> I made sure that "ethtool -G eth0 tx 64" was properly working,
+>>>> ring->full_size being set to 16.
+>>>>
+>>>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>>>> Reported-by: Wei Wang <weiwan@google.com>
+>>>> Cc: Tariq Toukan <tariqt@nvidia.com>
+>>>> ---
+>>>>    drivers/net/ethernet/mellanox/mlx4/mlx4_en.h | 16 ++++++++++++----
+>>>>    1 file changed, 12 insertions(+), 4 deletions(-)
+>>>>
+>>>> diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+>>>> index 7cc288db2a64f75ffe64882e3c25b90715e68855..120b8c361e91d443f83f100a1afabcabc776a92a 100644
+>>>> --- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+>>>> +++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+>>>> @@ -89,8 +89,18 @@
+>>>>    #define MLX4_EN_FILTER_HASH_SHIFT 4
+>>>>    #define MLX4_EN_FILTER_EXPIRY_QUOTA 60
+>>>>
+>>>> -/* Typical TSO descriptor with 16 gather entries is 352 bytes... */
+>>>> -#define MLX4_TX_BOUNCE_BUFFER_SIZE 512
+>>>> +#define CTRL_SIZE    sizeof(struct mlx4_wqe_ctrl_seg)
+>>>> +#define DS_SIZE              sizeof(struct mlx4_wqe_data_seg)
+>>>> +
+>>>> +/* Maximal size of the bounce buffer:
+>>>> + * 256 bytes for LSO headers.
+>>>> + * CTRL_SIZE for control desc.
+>>>> + * DS_SIZE if skb->head contains some payload.
+>>>> + * MAX_SKB_FRAGS frags.
+>>>> + */
+>>>> +#define MLX4_TX_BOUNCE_BUFFER_SIZE (256 + CTRL_SIZE + DS_SIZE +              \
+>>>> +                                 MAX_SKB_FRAGS * DS_SIZE)
+>>>> +
+>>>>    #define MLX4_MAX_DESC_TXBBS    (MLX4_TX_BOUNCE_BUFFER_SIZE / TXBB_SIZE)
+>>>>
+>>>
+>>> Now as MLX4_TX_BOUNCE_BUFFER_SIZE might not be a multiple of TXBB_SIZE,
+>>> simple integer division won't work to calculate the max num of TXBBs.
+>>> Roundup is needed.
+>>
+>> I do not see why a roundup is needed. This seems like obfuscation to me.
+>>
+>> A divide by TXBB_SIZE always "works".
+>>
+>> A round up is already done in mlx4_en_xmit()
+>>
+>> /* Align descriptor to TXBB size */
+>> desc_size = ALIGN(real_size, TXBB_SIZE);
+>> nr_txbb = desc_size >> LOG_TXBB_SIZE;
+>>
+>> Then the check is :
+>>
+>> if (unlikely(nr_txbb > MLX4_MAX_DESC_TXBBS)) {
+>>     if (netif_msg_tx_err(priv))
+>>         en_warn(priv, "Oversized header or SG list\n");
+>>     goto tx_drop_count;
+>> }
+>>
+>> If we allocate X extra bytes (in case MLX4_TX_BOUNCE_BUFFER_SIZE %
+>> TXBB_SIZE == X),
+>> we are not going to use them anyway.
 
-I still believe that, in the future, BPF should offer a proxy config
-to expose if BPF tracing is supported because 1- the implementation of
-BPF tracing could someday change 2- to be exactly correct, ftrace
-direct call isn't _really_ a sufficient condition either: the BPF JIT
-also needs to implement the arch_prepare_bpf_trampoline function.
-Currently, there is no config to check if that feature is available.
-But as agreed in a previous thread, that consolidation can be done
-separately. For now your patch looks good enough to me already.
+Now the MLX4_MAX_DESC_TXBBS gives a stricter limit than the allocated 
+size MLX4_TX_BOUNCE_BUFFER_SIZE.
+
+> 
+> I guess you are worried about not having exactly 256 bytes for the headers ?
+> 
+> Currently, the amount of space for headers is  208 bytes.
+> 
+> If MAX_SKB_FRAGS is 17,  MLX4_TX_BOUNCE_BUFFER_SIZE would be 0x230
+> after my patch,
+> so the same usable space as before the patch.
+
+So what you're saying is, if all the elements of 
+MLX4_TX_BOUNCE_BUFFER_SIZE co-exist together for a TX descriptor, then 
+the actual "headers" part can go only up to 208 (similar to today), not 
+the whole 256 (as the new define documentation says).
+
+This keeps the current behavior, but makes the code a bit more confusing.
+
+IMO it is cleaner to have MLX4_TX_BOUNCE_BUFFER_SIZE explicitly defined 
+as a multiple of TXBB_SIZE in the first place. This way, both the 
+allocation size and the desc size limit will be in perfect sync, without 
+having assumptions on the amount X lost in the division.
+
+How about the below, to keep today's values for the defines?
+
+#define MLX4_TX_BOUNCE_BUFFER_SIZE \
+	ALIGN(208 + CTRL_SIZE + DS_SIZE + \
+	      MAX_SKB_FRAGS * DS_SIZE, TXBB_SIZE)
