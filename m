@@ -2,115 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F9F06452CB
-	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 05:01:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A5116452D5
+	for <lists+netdev@lfdr.de>; Wed,  7 Dec 2022 05:04:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbiLGEBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Dec 2022 23:01:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44806 "EHLO
+        id S229685AbiLGEEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Dec 2022 23:04:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbiLGEBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 23:01:39 -0500
-Received: from pv50p00im-ztdg10012101.me.com (pv50p00im-ztdg10012101.me.com [17.58.6.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7471954B02
-        for <netdev@vger.kernel.org>; Tue,  6 Dec 2022 20:01:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zzy040330.moe;
-        s=sig1; t=1670385696;
-        bh=RH16D7d4KZWO1+9ckND1BBAhK2hU1iiMrJQe/a56u8k=;
-        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-        b=XWzr9wllFyCncqLTw2WwfDhjlvlp1/HW3q4qRBRTnE2jweuQnruh87GmLd4lVexY9
-         bAz5325C4MnPUzk7BhvyDtjVEDmILTAOeyAHt9Vnrk0xaWTq6YoGUIVElw+GtGXyxM
-         LcS9fJpl+FspSu49rX4stwcbXZflAvEJUDfeot3VeTwUI6BuVOwUpIYnz1vx39hNTJ
-         gg7ZyHnBhPmJHjn8+nggtbq881Hx5voTV1dMuG/ylZZrH2RbDAp9QsNl9BcVmxHMPl
-         M5IZnLv1dNihic+I1W5gcIp88ZP5vTgNqLl/ezZ9M5TM6c3gZEsVyxWb3rPMx/zPu3
-         loqgE8yX4rPOQ==
-Received: from [192.168.1.28] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-        by pv50p00im-ztdg10012101.me.com (Postfix) with ESMTPSA id 1ED2C74064F;
-        Wed,  7 Dec 2022 04:01:32 +0000 (UTC)
-Message-ID: <363010d3-b9f4-cf83-11d1-20174e7c0d14@zzy040330.moe>
-Date:   Wed, 7 Dec 2022 12:01:30 +0800
+        with ESMTP id S229449AbiLGEEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Dec 2022 23:04:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E66510043;
+        Tue,  6 Dec 2022 20:04:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4728B81CBF;
+        Wed,  7 Dec 2022 04:04:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2BDCC433C1;
+        Wed,  7 Dec 2022 04:04:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670385856;
+        bh=hZuuBjFD5s3iT0ZcFcf+0PFFOJ4BHuMDbqodL+1hsnw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tGd2X79tBm9S3hp6wNB+GiMth5EDBmnMYb85fxhanjQfvkrQk9grXEugvvDbL+mlh
+         8fep0KofSNrT9N9KDEy8YYWWdOcricb4R4BQo5Xbqp5ef+puJLWZNV/+L8oqN1/AVz
+         UTt6cnAQ8KwBhqNGaUV+HNrvr8GsxNWoLtn8TE9sg1G3UpKK/yjRQhEzWdw/STxVrz
+         y8DHN+Jk+k1wvf7Ek6jcnKcm8jmHNHDOKrberhU+9NzFd2g9Vb8jUvAOMWghP8fDbl
+         zwu+yecNn2bwjhmYy3haMFokzqQKASd94vG7jJZD+v7JdSXCnMLEJH43cVTTEBZ7lc
+         Vx2CnNIs/pRgw==
+Date:   Tue, 6 Dec 2022 20:04:14 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kees Cook <kees@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        syzbot+fda18eaa8c12534ccb3b@syzkaller.appspotmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        pepsipu <soopthegoop@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Andrii Nakryiko <andrii@kernel.org>, ast@kernel.org,
+        bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hao Luo <haoluo@google.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, jolsa@kernel.org,
+        KP Singh <kpsingh@kernel.org>, martin.lau@linux.dev,
+        Stanislav Fomichev <sdf@google.com>, song@kernel.org,
+        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        David Ahern <dsahern@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Richard Gobert <richardbgobert@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        David Rientjes <rientjes@google.com>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] skbuff: Reallocate to ksize() in __build_skb_around()
+Message-ID: <20221206200414.5cd915d8@kernel.org>
+In-Reply-To: <67D5F9F1-3416-4E08-9D5A-369ED5B4EA95@kernel.org>
+References: <20221206231659.never.929-kees@kernel.org>
+        <20221206175557.1cbd3baa@kernel.org>
+        <67D5F9F1-3416-4E08-9D5A-369ED5B4EA95@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v5] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
-Content-Language: en-US
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>
-Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20221207033926.11777-1-JunASAKA@zzy040330.moe>
- <2ac07b1d6e06443b95befb79d27549d2@realtek.com>
- <b4b65c74-792f-4df1-18bf-5c6f80845814@zzy040330.moe>
- <159ac3a296164b05b319bfb254a7901b@realtek.com>
-From:   Jun ASAKA <JunASAKA@zzy040330.moe>
-In-Reply-To: <159ac3a296164b05b319bfb254a7901b@realtek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: iAiE7nLz3jMdDG1L84geIUJloUJCSIjn
-X-Proofpoint-ORIG-GUID: iAiE7nLz3jMdDG1L84geIUJloUJCSIjn
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.11.64.514.0000000_definitions?=
- =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2022-02-23?=
- =?UTF-8?Q?=5F01_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0 bulkscore=0
- clxscore=1030 mlxscore=0 spamscore=0 adultscore=0 mlxlogscore=277
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2212070029
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 06 Dec 2022 19:47:13 -0800 Kees Cook wrote:
+> >Aammgh. build_skb(0) is plain silly, AFAIK. The performance hit of
+> >using kmalloc()'ed heads is large because GRO can't free the metadata.
+> >So we end up carrying per-MTU skbs across to the application and then
+> >freeing them one by one. With pages we just aggregate up to 64k of data
+> >in a single skb.  
+> 
+> This isn't changed by this patch, though? The users of
+> kmalloc+build_skb are pre-existing.
 
-On 07/12/2022 11:55, Ping-Ke Shih wrote:
->
->> -----Original Message-----
->> From: Jun ASAKA <JunASAKA@zzy040330.moe>
->> Sent: Wednesday, December 7, 2022 11:51 AM
->> To: Ping-Ke Shih <pkshih@realtek.com>; Jes.Sorensen@gmail.com
->> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
->> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
->> Subject: Re: [PATCH v5] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
->>
->> On 07/12/2022 11:43, Ping-Ke Shih wrote:
->>>> -----Original Message-----
->>>> From: Jun ASAKA <JunASAKA@zzy040330.moe>
->>>> Sent: Wednesday, December 7, 2022 11:39 AM
->>>> To: Jes.Sorensen@gmail.com
->>>> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
->>>> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Jun ASAKA
->>>> <JunASAKA@zzy040330.moe>; Ping-Ke Shih <pkshih@realtek.com>
->>>> Subject: [PATCH v5] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
->>>>
->>>> Fixing "Path A RX IQK failed" and "Path B RX IQK failed"
->>>> issues for rtl8192eu chips by replacing the arguments with
->>>> the ones in the updated official driver as shown below.
->>>> 1. https://github.com/Mange/rtl8192eu-linux-driver
->>>> 2. vendor driver version: 5.6.4
->>>>
->>>> Tested-by: Jun ASAKA <JunASAKA@zzy040330.moe>
->>>> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
->>>> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
->>>> ---
->>>> v5:
->>>>    - no modification.
->>> Then, why do you need v5?
->> Well,  I just want to add the "Reviewed-By" line to the commit message.
->> Sorry for the noise if there is no need to do that.
->>
-> No need to add "Reviewed-By". Kalle will add it when this patch gets merged.
->
-> Ping-Ke
->
-Oh, I see. Sorry for bothering you.
+Yes.
+
+> >I can only grep out 3 cases of build_skb(.. 0), could we instead
+> >convert them into a new build_skb_slab(), and handle all the silliness
+> >in such a new helper? That'd be a win both for the memory safety and one
+> >fewer branch for the fast path.  
+> 
+> When I went through callers, it was many more than 3. Regardless, I
+> don't see the point: my patch has no more branches than the original
+> code (in fact, it may actually be faster because I made the initial
+> assignment unconditional, and zero-test-after-assign is almost free,
+> where as before it tested before the assign. And now it's marked as
+> unlikely to keep it out-of-line.
+
+Maybe.
+
+> >I think it's worth doing, so LMK if you're okay to do this extra
+> >work, otherwise I can help (unless e.g. Eric tells me I'm wrong..).  
+> 
+> I had been changing callers to round up (e.g. bnx2), but it seemed
+> like centralizing this makes more sense. I don't think a different
+> helper will clean this up.
+
+It's a combination of the fact that I think "0 is magic" falls in 
+the "garbage" category of APIs, and the fact that driver developers
+have many things to worry about, so they often don't know that using
+slab is a bad idea. So I want a helper out of the normal path, where 
+I can put a kdoc warning that says "if you're doing this - GRO will
+suck, use page frags".
