@@ -2,78 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BBCA646BD8
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 10:26:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EECC9646BD4
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 10:25:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229643AbiLHJ0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 04:26:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56066 "EHLO
+        id S229470AbiLHJZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 04:25:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiLHJ0b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 04:26:31 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27955D6A1
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 01:26:30 -0800 (PST)
-Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NSTG91fjVzJpCK;
-        Thu,  8 Dec 2022 17:22:57 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 8 Dec
- 2022 17:26:28 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <jdmason@kudzu.us>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <leon@kernel.org>
-Subject: [PATCH net v3] ethernet: s2io: don't call dev_kfree_skb() under spin_lock_irqsave()
-Date:   Thu, 8 Dec 2022 17:24:11 +0800
-Message-ID: <20221208092411.1961448-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229605AbiLHJZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 04:25:16 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26EE5D682
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 01:25:12 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id bx10so921995wrb.0
+        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 01:25:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=T9BSpVk3FQlke26NZvWque2HNK6zy0EJYdGH2Ux31DA=;
+        b=i5d5sg9qbLyzo09oRf8LtI4xkjKs1YRdBR0Gw3tOgcVlwzMCPuI6ykKbOuL4j9Yu8z
+         xmsAmoTKKMQeYJsdP0qh5XcAPi637qmxboB4sKMKCFNGEEYiLG8EfD8fXmZd64M8jUR9
+         6kyd28Eu54nzTKnb8iXl21tO8VPEoELspP3zK/OMc76ffkIofUwqQtadhdx2rKVSPN9y
+         gl2zXZy/oKrt4Gd0ZS++yPNlGXIZGPqMjEgTdNiobWlOrnbaaBEN0juPgwxW8V2pta4O
+         JPYWnh6I0ZS5LwOg4ltf50yG8+fP0O9sA4ecelWBmn9fMD4EYyjx2pkfbZ1cTa+OXaTd
+         i2Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=T9BSpVk3FQlke26NZvWque2HNK6zy0EJYdGH2Ux31DA=;
+        b=EEE5rcbsdCfdJ5oFMhCbfyshDAVTDYv8lRZaPwn59tvleG9j8xov+r61XCb9gL8PwS
+         dw8JgziSQpFdquGH3LjjUp5pRU7P2n+VRhxZ1JWWiTSwcJ8ZJ4Yd4R7C9akQy2K3eylr
+         0zz5nJ49wAArEMvl5hVCOINOEtHWcZsEUyt7hirKD+7nPkCdIv27roXiNhAO3SDmOoVY
+         sC8eN18J9XDlPOTym6LVVNHrj0g3dxUEdjHsrXAzBpwMKWh2ZrT+JgAde5hsIKHF+wct
+         xvsRlPLbG8v/e3Csb8CLoLGuqNl8fSprdaaLTEMw46cLcv6/2NwbE+hglmvH9hcBnqGU
+         E30A==
+X-Gm-Message-State: ANoB5plvxXmjR1nBIhisDwhQLQxhF2tiqlk4ptndGa08/VyoMJpSU7W6
+        17oWhJVmliWC3QyDxMYpjTXfOhuHo/Gf+in+Eb8=
+X-Google-Smtp-Source: AA0mqf4wBcuEVsn/HYuqHcPJh3zSvYSWQDohAi+Oz6IGtztMtyjEcliEjynQHb7OrNeMR95QtLPvDCPYPWdbmeL+zgY=
+X-Received: by 2002:adf:fa11:0:b0:242:13be:f6db with SMTP id
+ m17-20020adffa11000000b0024213bef6dbmr29797865wrr.690.1670491511319; Thu, 08
+ Dec 2022 01:25:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221208032655.1024032-1-yangyingliang@huawei.com> <20221208032655.1024032-2-yangyingliang@huawei.com>
+In-Reply-To: <20221208032655.1024032-2-yangyingliang@huawei.com>
+From:   Harini Katakam <harinikatakamlinux@gmail.com>
+Date:   Thu, 8 Dec 2022 14:55:00 +0530
+Message-ID: <CAFcVECLB_4mCyzaDUrxLWHSjnKZZmfSJevUVptqcY+GMYCh7xw@mail.gmail.com>
+Subject: Re: [PATCH v2 resend 1/4] net: emaclite: don't call dev_kfree_skb()
+ under spin_lock_irqsave()
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        Michal Simek <michal.simek@xilinx.com>,
+        John Linn <john.linn@xilinx.com>,
+        Sadanand M <sadanan@xilinx.com>,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The dev_kfree_skb() is defined as consume_skb(), and it is not allowed
-to call consume_skb() from hardware interrupt context or with interrupts
-being disabled. So replace dev_kfree_skb() with dev_consume_skb_irq()
-under spin_lock_irqsave().
+On Thu, Dec 8, 2022 at 9:04 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
+>
+> It is not allowed to call consume_skb() from hardware interrupt context
+> or with interrupts being disabled. So replace dev_kfree_skb() with
+> dev_consume_skb_irq() under spin_lock_irqsave().
+>
+> Fixes: bb81b2ddfa19 ("net: add Xilinx emac lite device driver")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2 -> v3:
-  Update commit message.
+Thanks for the patch Yang
+Reviewed-by: Harini Katakam <harini.katakam@amd.com>
 
-v1 -> v2:
-  Add fix tag.
----
- drivers/net/ethernet/neterion/s2io.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
-index 1d3c4474b7cb..a83d61d45936 100644
---- a/drivers/net/ethernet/neterion/s2io.c
-+++ b/drivers/net/ethernet/neterion/s2io.c
-@@ -2386,7 +2386,7 @@ static void free_tx_buffers(struct s2io_nic *nic)
- 			skb = s2io_txdl_getskb(&mac_control->fifos[i], txdp, j);
- 			if (skb) {
- 				swstats->mem_freed += skb->truesize;
--				dev_kfree_skb(skb);
-+				dev_consume_skb_irq(skb);
- 				cnt++;
- 			}
- 		}
--- 
-2.25.1
-
+Regards,
+Harini
