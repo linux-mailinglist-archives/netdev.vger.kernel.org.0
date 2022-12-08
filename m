@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3FEF6474BB
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:56:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 756AE6474BC
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbiLHQ4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 11:56:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
+        id S230265AbiLHQ4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 11:56:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiLHQ4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:56:17 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E4070BA8
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 08:56:16 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id c15so1500704qtw.8
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 08:56:16 -0800 (PST)
+        with ESMTP id S230105AbiLHQ4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:56:18 -0500
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F1B70BA8
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 08:56:17 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id cg5so1492251qtb.12
+        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 08:56:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=II3ttIizWuH7E1+OJmdAzRbHL4/p74C7Q3n9+fOu4Q0=;
-        b=P1lhu3XBXWbmf5SlM5ITk0qAtAyB7ewlOwY/NXBh5vczsix34Zvl/h3+FAHbOpr2o4
-         oYamljSicwVFgtptSobDmS+j20XYHpdoCk9mt7g5Py2srTN0VEaT+CbV8tBAYPwAmXoa
-         C7MU7KooNoQV5aX2VhtLvfUpbttYrfx03mMkvAS3SwGOZdF62LtpkyVFNd59nOedJkNK
-         BN4jKEGZtXnqGxhlklCk3vGHK/2ggbwpztRDhU8b9t/6PyHNVlmL2iA6l5NldZsjTagh
-         dOY8QdhPdNCaMB8LlUeGQnILvQq9+nCZFndJsHzQ05eZiN5gZ5xjpHQ1wYsyir6qW+OQ
-         PIIw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MuFGycqO6KGGXaG/l3CIzDYeGA82Mj83kPr3Jk7yWZs=;
+        b=Hhmmaf11TB/Ut5+CoSc7m1+DbfHtWTJEViBFU1PBJR6J7brPFfoX7yXkTkPI4tTfMC
+         hOV0KCu52YykY32eItSue8d5fgNe1BwiCgoDbeTpxwBJ6m8nycdWZ6jb7G2xsApAJKeC
+         pGbgnGzHK9r8lzkD8Vxy3maF7xREaLkzkOaSRo5QrZLipbUqCUJTk0At6jN6O088nZEW
+         0rEzkaNhl8O5d0/+SJaAbSmmfdNyrXskcvaFA4XRsPchjoz3wcdrDFKGG+OjwINFK4GT
+         pIhVAJAm9LqTtQK+r6Mdmk1tBzG7AZ5AUR541NtkIJI+OeEO/di2e9Oyiu0XJ79+Jcwu
+         3JGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=II3ttIizWuH7E1+OJmdAzRbHL4/p74C7Q3n9+fOu4Q0=;
-        b=bpVyBiRJr3X6NH/cMJOPZpk8I5HhCcTRrM9UcpX8z79oKmLI/0SdmUBwMW0UMVppsm
-         8dVPqsYLAfsuMJZKMuLdBGp6PDPhuIRnv1fEbYJ+H7IYxy2N/xcKCh5NwbFDBegmA9np
-         UFrlHnAedReQkpS0HAITTqhfDP67WQRv5OYlgT428nHLuyWg5dzlx0Hb5nIdOzpR5uZY
-         7E5vWPOh+BFEnJ31QNuC3VbS/9R2D+XF+m1PsAGCufIQvdRHMJdA0/hgnwGl9shrn6Xy
-         eV2778z9viXYgLdXE+a8Ot3fuCjZ2x9ec+Z1sODQejKiDdJe6x8SM+J8vY7cDY7Xq8Fa
-         9r1Q==
-X-Gm-Message-State: ANoB5pldhCh3cETDGZ5sxbI05p5EM4A+dBya8obJjEr9AXtpqWdrx3h3
-        Xq34TS9HFVXNCBEDUTOgH8dcCaqiAmOCAA==
-X-Google-Smtp-Source: AA0mqf5zxkTMKip3XuOxRzM3ZIeeQplcTtDL+fqjzMthQpNZDtTgqy4UTUMhlbOZl/3px0XyGUxtUw==
-X-Received: by 2002:ac8:5a8c:0:b0:3a5:460f:9650 with SMTP id c12-20020ac85a8c000000b003a5460f9650mr5742102qtc.46.1670518575101;
-        Thu, 08 Dec 2022 08:56:15 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MuFGycqO6KGGXaG/l3CIzDYeGA82Mj83kPr3Jk7yWZs=;
+        b=TsCBAWm2EU0qppLhIwOfQ+m0fOPg+c9yKo/dLPH9pqdApdk6TfcApmHjxuji/3rDpG
+         KfIDOJab+btR+WiCoClnqZ4eZh9G6rN/dQaEyw8/Y1nT291ZW2YvYkOIHMU5mf/2ZEGh
+         ie7dZe66WABMcr1FRwC9HoCTaYAdrEz/BagkmkYkOTM8ByNrRasvIhQA8oilG/4CJYdK
+         t6yddICcMT8vckbPCImvNnVoLtmUbHRjzyDYtCJep1lhsNkahXF2/QYMIQf1TSdPk+7V
+         kUsVD7yk0X4VaPMs4LQW11ENYMhMFun88Qq0c7IZTK2hGFxRPMOJVhg/7dnMIFDpEiV/
+         1GsQ==
+X-Gm-Message-State: ANoB5pl6miajOiKXTumd/k6phnPbop0cBFgJ9swZMT4uFxDAb/emsJEp
+        rUY+f92Qtzq3WuHjo4eLVmg100HHTBHPPQ==
+X-Google-Smtp-Source: AA0mqf5r8t3a+n48CpYl0OL+os0EzfcTPho+uLnVFy8UCV4BEl/HTajaGGp7I4o0YoJylfJCkwLxqQ==
+X-Received: by 2002:a05:622a:1818:b0:3a6:8da6:65bc with SMTP id t24-20020a05622a181800b003a68da665bcmr5332353qtc.13.1670518576603;
+        Thu, 08 Dec 2022 08:56:16 -0800 (PST)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id j13-20020a05620a288d00b006fbbdc6c68fsm20091298qkp.68.2022.12.08.08.56.13
+        by smtp.gmail.com with ESMTPSA id j13-20020a05620a288d00b006fbbdc6c68fsm20091298qkp.68.2022.12.08.08.56.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 08:56:14 -0800 (PST)
+        Thu, 08 Dec 2022 08:56:16 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -66,10 +67,12 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Eelco Chaudron <echaudro@redhat.com>,
         Aaron Conole <aconole@redhat.com>,
         Saeed Mahameed <saeed@kernel.org>
-Subject: [PATCHv4 net-next 0/5] net: eliminate the duplicate code in the ct nat functions of ovs and tc
-Date:   Thu,  8 Dec 2022 11:56:07 -0500
-Message-Id: <cover.1670518439.git.lucien.xin@gmail.com>
+Subject: [PATCHv4 net-next 1/5] openvswitch: delete the unncessary skb_pull_rcsum call in ovs_ct_nat_execute
+Date:   Thu,  8 Dec 2022 11:56:08 -0500
+Message-Id: <4ec38bb580f849e40e2ca32291ab86fffd26ab55.1670518439.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1670518439.git.lucien.xin@gmail.com>
+References: <cover.1670518439.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -82,58 +85,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The changes in the patchset:
+The calls to ovs_ct_nat_execute() are as below:
 
-  "net: add helper support in tc act_ct for ovs offloading"
+  ovs_ct_execute()
+    ovs_ct_lookup()
+      __ovs_ct_lookup()
+        ovs_ct_nat()
+          ovs_ct_nat_execute()
+    ovs_ct_commit()
+      __ovs_ct_lookup()
+        ovs_ct_nat()
+          ovs_ct_nat_execute()
 
-had moved some common ct code used by both OVS and TC into netfilter.
+and since skb_pull_rcsum() and skb_push_rcsum() are already
+called in ovs_ct_execute(), there's no need to do it again
+in ovs_ct_nat_execute().
 
-There are still some big functions pretty similar defined and used in
-each of OVS and TC. It is not good to maintain such big function in 2
-places. This patchset is to extract the functions for NAT processing
-from OVS and TC to netfilter.
+Reviewed-by: Saeed Mahameed <saeed@kernel.org>
+Acked-by: Aaron Conole <aconole@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/openvswitch/conntrack.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-To make this change clear and safe, this patchset gets the common code
-out of OVS and TC step by step: The patch 1-4 make some minor changes
-in OVS and TC to make the NAT code of them completely the same, then
-the patch 5 moves the common code to the netfilter and exports one
-function called by each of OVS and TC.
-
-v1->v2:
-  - Create nf_nat_ovs.c to include the nat functions, as Pablo suggested.
-v2->v3:
-  - fix a typo in subject of patch 2/5, as Marcelo noticed.
-  - fix in openvswitch to keep OVS ct nat and TC ct nat consistent in
-    patch 3/5 instead of in tc, as Marcelo noticed.
-  - use BIT(var) macro instead of (1 << var) in patch 5/5, as Marcelo
-    suggested.
-  - use ifdef in netfilter/Makefile to build nf_nat_ovs only when OVS
-    or TC ct action is enabled in patch 5/5, as Marcelo suggested.
-v3->v4:
-  - add NF_NAT_OVS in netfilter/Kconfig and add select NF_NAT_OVS in
-    OVS and TC Kconfig instead of using ifdef in netfilter/Makefile,
-    as Pablo suggested.
-
-Xin Long (5):
-  openvswitch: delete the unncessary skb_pull_rcsum call in
-    ovs_ct_nat_execute
-  openvswitch: return NF_ACCEPT when OVS_CT_NAT is not set in info nat
-  openvswitch: return NF_DROP when fails to add nat ext in ovs_ct_nat
-  net: sched: update the nat flag for icmp error packets in
-    ct_nat_execute
-  net: move the nat function to nf_nat_ovs for ovs and tc
-
- include/net/netfilter/nf_nat.h |   4 +
- net/netfilter/Kconfig          |   3 +
- net/netfilter/Makefile         |   1 +
- net/netfilter/nf_nat_ovs.c     | 135 ++++++++++++++++++++++++++++++
- net/openvswitch/Kconfig        |   1 +
- net/openvswitch/conntrack.c    | 146 +++------------------------------
- net/sched/Kconfig              |   1 +
- net/sched/act_ct.c             | 136 +++---------------------------
- 8 files changed, 169 insertions(+), 258 deletions(-)
- create mode 100644 net/netfilter/nf_nat_ovs.c
-
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index d78f0fc4337d..dff093a10d6d 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -735,10 +735,7 @@ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ 			      const struct nf_nat_range2 *range,
+ 			      enum nf_nat_manip_type maniptype, struct sw_flow_key *key)
+ {
+-	int hooknum, nh_off, err = NF_ACCEPT;
+-
+-	nh_off = skb_network_offset(skb);
+-	skb_pull_rcsum(skb, nh_off);
++	int hooknum, err = NF_ACCEPT;
+ 
+ 	/* See HOOK2MANIP(). */
+ 	if (maniptype == NF_NAT_MANIP_SRC)
+@@ -755,7 +752,7 @@ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ 			if (!nf_nat_icmp_reply_translation(skb, ct, ctinfo,
+ 							   hooknum))
+ 				err = NF_DROP;
+-			goto push;
++			goto out;
+ 		} else if (IS_ENABLED(CONFIG_IPV6) &&
+ 			   skb->protocol == htons(ETH_P_IPV6)) {
+ 			__be16 frag_off;
+@@ -770,7 +767,7 @@ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ 								     hooknum,
+ 								     hdrlen))
+ 					err = NF_DROP;
+-				goto push;
++				goto out;
+ 			}
+ 		}
+ 		/* Non-ICMP, fall thru to initialize if needed. */
+@@ -788,7 +785,7 @@ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ 				? nf_nat_setup_info(ct, range, maniptype)
+ 				: nf_nat_alloc_null_binding(ct, hooknum);
+ 			if (err != NF_ACCEPT)
+-				goto push;
++				goto out;
+ 		}
+ 		break;
+ 
+@@ -798,13 +795,11 @@ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ 
+ 	default:
+ 		err = NF_DROP;
+-		goto push;
++		goto out;
+ 	}
+ 
+ 	err = nf_nat_packet(ct, ctinfo, hooknum, skb);
+-push:
+-	skb_push_rcsum(skb, nh_off);
+-
++out:
+ 	/* Update the flow key if NAT successful. */
+ 	if (err == NF_ACCEPT)
+ 		ovs_nat_update_key(key, skb, maniptype);
 -- 
 2.31.1
 
