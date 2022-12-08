@@ -2,119 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E654646BDB
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 10:27:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE23646BE0
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 10:27:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbiLHJ1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 04:27:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
+        id S229883AbiLHJ1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 04:27:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiLHJ1H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 04:27:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C035E3EC
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 01:27:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229905AbiLHJ1x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 04:27:53 -0500
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9521DA42;
+        Thu,  8 Dec 2022 01:27:50 -0800 (PST)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64A8F61E32
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 09:27:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4117AC433D6;
-        Thu,  8 Dec 2022 09:27:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670491625;
-        bh=ESeskUdYBC9fgV8cGjaYD1AtAXlbrpoK3+yftPEuFms=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rnql24uJ7/39FhGtS47/s1ncKDVaSDGH4J3m679HTnkoGprk4AUXcNwGaZafh0VlF
-         zbXvZxP1kCnkRjWkjFUXkk0oD3JHTVC8csZnZ6CUmg2d/0MToUogU3SCYBVeVE1qUF
-         qYkZGQdkAgFTokJLJgt7ODVJ0IX/+aWFD6ySnmpVRcd/l/2SVQsFL83p3JCAVNF+lz
-         Ih7thp6ET6SmNMl/27K6SA0xbq2yaju0zQFo6wz0I32wasJsiFwpEBMrQqM1P4LIKN
-         dTVM6YFpTqI0IgMkEQEZ3wxh1MJvVLXss7GPOjW6oiofoPKJr7hEc5eUOMckJ90bBs
-         a0nhoPLIWVoiw==
-Date:   Thu, 8 Dec 2022 11:27:01 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     netdev@vger.kernel.org, jdmason@kudzu.us, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net v2] ethernet: s2io: don't call dev_kfree_skb() under
- spin_lock_irqsave()
-Message-ID: <Y5Gt5ZkfYPd+DHKI@unreal>
-References: <20221207012540.2717379-1-yangyingliang@huawei.com>
- <Y5GYqsgKxhUpfTn/@unreal>
- <f31d0ce3-50fc-6206-bc7a-2a67ec0951db@huawei.com>
- <Y5GlfDf9iQgFl8yc@unreal>
- <2e425086-b96e-65ac-f004-99f55af2e8d0@huawei.com>
+        by mail.3ffe.de (Postfix) with ESMTPSA id 1BC14448;
+        Thu,  8 Dec 2022 10:27:49 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1670491669;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2R1Bw6RSyNPWkO+Irjl7dtJBDdipXBznfHNFG4kiq4g=;
+        b=N9pz6Hulf8OSnpbXqumzH6zy4v1Im2Kssmr8IE/azJYuVa8JgNBgykOllJPdSf9S5YxdqT
+        uX+6Rx1sdJC7wPmi+SJLCpEDgIqP38XSprJ2jLQWrB821ldU2egvVKVuvkhMqkqsVxqHkC
+        qFiffa+iIZCtq5WzWuod7qnh54lx5b6OcnRF9AHDOJ7EjSyqkL8mIMWVdVUNfzkWoO8lJc
+        xKRhtsn8CeHVNDUXG8c9ocvIIfFYavCgtuN/wLMtp5TYH0snqYp5MsWIjeHDQCrBszKlHo
+        9KSsMTA9nXU/RkafAkqOS6M0I+LNC1W3AbG5AWip4HdSZOIm80pXLDS82JTYRg==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2e425086-b96e-65ac-f004-99f55af2e8d0@huawei.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Date:   Thu, 08 Dec 2022 10:27:48 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     horatiu.vultur@microchip.com
+Cc:     Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
+        daniel.machon@microchip.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, lars.povlsen@microchip.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, olteanv@gmail.com, pabeni@redhat.com,
+        richardcochran@gmail.com
+Subject: Re: [PATCH net-next v3 4/4] net: lan966x: Add ptp trap rules
+In-Reply-To: <20221208092511.4122746-1-michael@walle.cc>
+References: <20221203104348.1749811-5-horatiu.vultur@microchip.com>
+ <20221208092511.4122746-1-michael@walle.cc>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <c8b2ef73330c7bc5d823997dd1c8bf09@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 08, 2022 at 05:03:20PM +0800, Yang Yingliang wrote:
+Am 2022-12-08 10:25, schrieb Michael Walle:
+> Hi Horatiu,
 > 
-> On 2022/12/8 16:51, Leon Romanovsky wrote:
-> > On Thu, Dec 08, 2022 at 04:40:35PM +0800, Yang Yingliang wrote:
-> > > On 2022/12/8 15:56, Leon Romanovsky wrote:
-> > > > On Wed, Dec 07, 2022 at 09:25:40AM +0800, Yang Yingliang wrote:
-> > > > > It is not allowed to call consume_skb() from hardware interrupt context
-> > > > > or with interrupts being disabled. So replace dev_kfree_skb() with
-> > > > > dev_consume_skb_irq() under spin_lock_irqsave().
-> > > > > 
-> > > > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > > > > Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> > > > > ---
-> > > > > v1 -> v2:
-> > > > >     Add fix tag.
-> > > > > ---
-> > > > >    drivers/net/ethernet/neterion/s2io.c | 2 +-
-> > > > >    1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
-> > > > > index 1d3c4474b7cb..a83d61d45936 100644
-> > > > > --- a/drivers/net/ethernet/neterion/s2io.c
-> > > > > +++ b/drivers/net/ethernet/neterion/s2io.c
-> > > > > @@ -2386,7 +2386,7 @@ static void free_tx_buffers(struct s2io_nic *nic)
-> > > > >    			skb = s2io_txdl_getskb(&mac_control->fifos[i], txdp, j);
-> > > > >    			if (skb) {
-> > > > >    				swstats->mem_freed += skb->truesize;
-> > > > > -				dev_kfree_skb(skb);
-> > > > > +				dev_consume_skb_irq(skb);
-> > > > And why did you use dev_consume_skb_irq() and not dev_kfree_skb_irq()?
-> > > I chose dev_consume_skb_irq(), because dev_kfree_skb() is consume_skb().
-> > Your commit message, title and actual change are totally misleading.
-> > You replaced *_kfree_* with *_consume_* while talking about running it
-> > in interrupts disabled context.
-> I didn't mention dev_kfree_skb() is same as consume_skb(), I can add it to
-> my
-> commit message and send a new version.
-
-I need you to send patch with commit message which aligns to the actual change.
-Right now, it is not.
-
-Thanks
-
+>> Currently lan966x, doesn't allow to run PTP over interfaces that are
+>> part of the bridge. The reason is when the lan966x was receiving a
+>> PTP frame (regardless if L2/IPv4/IPv6) the HW it would flood this
+>> frame.
+>> Now that it is possible to add VCAP rules to the HW, such to trap 
+>> these
+>> frames to the CPU, it is possible to run PTP also over interfaces that
+>> are part of the bridge.
 > 
-> Thanks,
-> Yang
-> > 
-> > Thanks
-> > 
-> > > Thanks,
-> > > Yang
-> > > > Thanks
-> > > > 
-> > > > >    				cnt++;
-> > > > >    			}
-> > > > >    		}
-> > > > > -- 
-> > > > > 2.25.1
-> > > > > 
-> > > > .
-> > .
+> This gives me:
+> 
+> # /etc/init.d/S65ptp4l start
+> Starting linuxptp daemon: OK
+> [   44.136870] vcap_val_rule:1678: keyset was not updated: -22
+> [   44.140196] vcap_val_rule:1678: keyset was not updated: -22
+> #
+> 
+> # ptp4l -v
+> 3.1.1
+> # uname -a
+> Linux buildroot 6.1.0-rc8-next-20221208+ #924 SMP Thu Dec  8 10:08:58
+> CET 2022 armv7l GNU/Linux
+> 
+> I don't know whats going on, but I'm happy to help with debugging with 
+> some
+> guidance.
+
+Oh, and linuxptp is running on eth0, no bridges are set up. linuxptp
+is started with "/usr/sbin/ptp4l -f /etc/linuxptp.cfg"
+
+# cat /etc/linuxptp.cfg
+# LinuxPTP configuration file for synchronizing the system clock to
+# a remote PTP master in slave-only mode.
+#
+# By default synchronize time in slave-only mode using UDP and hardware 
+time
+# stamps on eth0. If the difference to master is >1.0 second correct by
+# stepping the clock instead of adjusting the frequency.
+#
+# If you change the configuration don't forget to update the phc2sys
+# parameters accordingly in linuxptp-system-clock.service (systemd)
+# or the linuxptp SysV init script.
+
+[global]
+slaveOnly		1
+delay_mechanism		Auto
+network_transport	UDPv4
+time_stamping		hardware
+step_threshold		1.0
+
+[eth0]
+
+-michael
