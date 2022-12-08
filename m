@@ -2,63 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D08E64669C
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 02:42:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B4D6466AA
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 02:50:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbiLHBmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 20:42:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57242 "EHLO
+        id S229798AbiLHBuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 20:50:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbiLHBm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 20:42:29 -0500
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8629E900F4;
-        Wed,  7 Dec 2022 17:42:28 -0800 (PST)
-Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id 6194224E25A;
-        Thu,  8 Dec 2022 09:42:27 +0800 (CST)
-Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX165.cuchost.com
- (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 8 Dec
- 2022 09:42:27 +0800
-Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
- (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 8 Dec
- 2022 09:42:25 +0800
-Message-ID: <bead78fb-dcc1-58b6-77a0-1440f9584163@starfivetech.com>
-Date:   Thu, 8 Dec 2022 09:42:25 +0800
+        with ESMTP id S229507AbiLHBuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 20:50:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336739074B;
+        Wed,  7 Dec 2022 17:50:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4D3761C4F;
+        Thu,  8 Dec 2022 01:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 225BAC433D7;
+        Thu,  8 Dec 2022 01:50:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670464217;
+        bh=UIHtKtHvTL/2n27bUw1jPwdAPQCKa3/iuuM/BF33/kY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=p0V45/98POz4vE5Lnesym4Q0XQEafZgG5t8YmQ/PDiSj7bYuL04f2rH7M/Y6xxXzz
+         9hCA+nZpxcQIkpI1SkP4EdusL5vBfk5KQDJ9g5chLhSpUQ1Do8DpOR1qBSrMnz0YX6
+         JxFLixfNNDqZKMHnSVIZjajN9uh7zcFwP52+Xv2Wm/WWI39FGByClWjsey31gsM/gc
+         ziQmoMzwP3alqWSqrljgt8SEd5MZ+BD0sRBYRbWCQUV88tM6XgAfH+92dCqM87ea/T
+         KLZcVt6DHF5iCC/uMdGOCOdiT8l+CcNJutJYnAvHAY3PfL/seQD5Ct2m3edjaHv2tf
+         nxa27wNKCtoUQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 06767E29F38;
+        Thu,  8 Dec 2022 01:50:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH v1 2/7] net: stmmac: platform: Add snps,dwmac-5.20 IP
- compatible string
-Content-Language: en-US
-To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
-CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
- <20221201090242.2381-3-yanhong.wang@starfivetech.com>
- <CAJM55Z8ZDKWEkdWuRZfcMQDrySMh4vdB1UvkAC+q1GRKMbGuEw@mail.gmail.com>
-From:   yanhong wang <yanhong.wang@starfivetech.com>
-In-Reply-To: <CAJM55Z8ZDKWEkdWuRZfcMQDrySMh4vdB1UvkAC+q1GRKMbGuEw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX173.cuchost.com
- (172.16.6.93)
-X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: ieee802154-next 2022-12-05
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167046421701.13767.2311529768713425185.git-patchwork-notify@kernel.org>
+Date:   Thu, 08 Dec 2022 01:50:17 +0000
+References: <20221205131909.1871790-1-stefan@datenfreihafen.org>
+In-Reply-To: <20221205131909.1871790-1-stefan@datenfreihafen.org>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
+        alex.aring@gmail.com, netdev@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,51 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
+
+This pull request was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon,  5 Dec 2022 14:19:09 +0100 you wrote:
+> Hello Dave, Jakub.
+> 
+> An update from ieee802154 for *net-next*
+> 
+> This is the second pull request from wpan-next this cycle. Hoping its still on
+> time we have a few follow ups from the first, bigger pull request.
+> 
+> [...]
+
+Here is the summary with links:
+  - pull-request: ieee802154-next 2022-12-05
+    https://git.kernel.org/netdev/net-next/c/cfbf877a338c
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-On 2022/12/7 21:58, Emil Renner Berthing wrote:
-> On Thu, 1 Dec 2022 at 10:05, Yanhong Wang <yanhong.wang@starfivetech.com> wrote:
->>
->> Add "snps,dwmac-5.20" compatible string for 5.20 version that can avoid
->> to define some platform data in the glue layer.
->>
->> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
->> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
-> 
-> Hi Yanhong.
-> 
-> Thanks for submitting this.
-> But just as a reminder. Please don't change the author of the commits
-> you cherry-picked from my tree.
-> 
-
-I will recover the author is you in the next version.
-
-> /Emil
-> 
->> ---
->>  drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
->> index 50f6b4a14be4..cc3b701af802 100644
->> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
->> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
->> @@ -519,7 +519,8 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
->>         if (of_device_is_compatible(np, "snps,dwmac-4.00") ||
->>             of_device_is_compatible(np, "snps,dwmac-4.10a") ||
->>             of_device_is_compatible(np, "snps,dwmac-4.20a") ||
->> -           of_device_is_compatible(np, "snps,dwmac-5.10a")) {
->> +           of_device_is_compatible(np, "snps,dwmac-5.10a") ||
->> +           of_device_is_compatible(np, "snps,dwmac-5.20")) {
->>                 plat->has_gmac4 = 1;
->>                 plat->has_gmac = 0;
->>                 plat->pmt = 1;
->> --
->> 2.17.1
->>
->>
->> _______________________________________________
->> linux-riscv mailing list
->> linux-riscv@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-riscv
