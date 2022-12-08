@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC9164758F
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 19:31:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F894647592
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 19:31:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229830AbiLHSbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 13:31:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46578 "EHLO
+        id S229870AbiLHSbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 13:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbiLHSbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 13:31:07 -0500
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2B985D22;
-        Thu,  8 Dec 2022 10:31:06 -0800 (PST)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-144bd860fdbso2851441fac.0;
-        Thu, 08 Dec 2022 10:31:06 -0800 (PST)
+        with ESMTP id S229835AbiLHSbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 13:31:10 -0500
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFCD9B2A7;
+        Thu,  8 Dec 2022 10:31:09 -0800 (PST)
+Received: by mail-ot1-x329.google.com with SMTP id s30-20020a056830439e00b0067052c70922so1362809otv.11;
+        Thu, 08 Dec 2022 10:31:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7GKu6nYSg2QuKfSdnsbd4k37yUZL8bwLA3bRTzpoaPY=;
-        b=Y15HafJbJTrLTuYdUm3i7HUjS0WiIKG+VAqL+nHDWm1wgXNnqc3nd5zCGz2jAnyQeM
-         XFIktIRnVOzIO3UCKzZW6YSDDH6n51hFOzeH1I5n4a36lrPgccDOhu5s/tT0Ok4GNlyH
-         r7+C4+igqjHDeDuej17Sqsivvjg+a7aexu/boogD3G4gUJmoYPcSx0xJXffDy0Qe8g4o
-         LDjBHzHGX7WhtP3If+O4WjybNGkXsZpkEYbW0IkwL+Y1kQMztK3S0EnbX+a0Z5qpeDXK
-         LPzmLfDhg2KRJUe12KECmbL4j4wrgIEfvgBGiWsR5h6DzOKzrTISjEqGsmJGXXc3Nh3d
-         bRmA==
+        bh=LbKgne40p2rihRA02W+HijcyMxRa1yUI8+yJKRvf/NQ=;
+        b=Bo31gsyp0J+TM4su3QjnRadwNIVXJy/+Lrdq6df32Kz4GdD2b0xgWMgT7N5K/DDwWU
+         jfqLjlaQ8YRbgzCn1ch/yeC8xrsJP1640IroCB9FHD16GRqM/Ta8ROXek+v9w7MaRM75
+         0DzIOVFzssMmPt50XPvrT+5BmlptjQscuSrI/lQ9xH+E5B1C5HJpwGBfktPgPoj2yWWG
+         m8woPWvOB0Zh38DJsq1tEjPsZ3FIN14HgQJJifleKRi22Bne5WnvlqgqBlJNVC2cUoPV
+         b/e4nq92OOcGXb7Yh5WF0V2sEAs+iWV1lXLQspuNK61QhRyKYDPqgkgrKfVVwTwaqIjK
+         69Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7GKu6nYSg2QuKfSdnsbd4k37yUZL8bwLA3bRTzpoaPY=;
-        b=UUqMbC3zwlvg9o/o/IMRqwyMuZGNplB8CHZE05oB7mdtqr/zD6eYqtC4lGLkYVexHH
-         SaUX4E5Itw21olMdC10jZYTj8r7+TenBLT/FGaW5y6+Tp6paw+WjJefioqlFv1znB62x
-         +zzVFpzDw62gOy6Db/hRiKN0G4AvTIEeXx6Q9E5S0EdBjT1wog5uKcwK2D6xX4u31C+W
-         rMpVN0V1HUmKjM4pAIasOkZKzO2nA+Rg3Al/i55edSQv4sTPQ4GFjeiwfowSm2prwcf/
-         CKmVfxayb77uUBaVSCeYkf1VilGbmTPuBJD3ZpehuOT2udJsSuzKTD0IWBS7WYNmhjh0
-         3QcA==
-X-Gm-Message-State: ANoB5pkwJqSKQ2olZ2Mx1fCHHlMNj+VtI9dcPewgNyLwsxe2343poh4O
-        ZmWARuhTNgYOPI0jHkrjuXhIcLpP8iU=
-X-Google-Smtp-Source: AA0mqf4cS0omche0WusJuRsm1M++bRMWf4geAAW8C6lPPHTypaUr2hXdeM8VNGIGdX1In1C2oFr4RQ==
-X-Received: by 2002:a05:6870:6088:b0:13b:85e:2a3a with SMTP id t8-20020a056870608800b0013b085e2a3amr1605938oae.12.1670524266217;
-        Thu, 08 Dec 2022 10:31:06 -0800 (PST)
+        bh=LbKgne40p2rihRA02W+HijcyMxRa1yUI8+yJKRvf/NQ=;
+        b=4b5g97O3OvTiF/2LL93J/fINjP2H1Nr9UZzMFEw2CnPpf9OttxXQ2v/bnLHp3kJywT
+         bX4kmhwL8lLl+wD5ktwvke6/rrF07/OeYKDnUrFRXbjQUicaSHCkWykEWTwi1d8U+bxA
+         99gy13kyuHR0xUNZ7mjKS/HPNAYSd8qio6RAqeovbxRhtmZx77MZppl4xucMTEln45HT
+         AaDTjhIBj9uyrW7twgXQwmX5mcXqj7V0QbsxefnIyry8X/QI2Aqzuw6jbkUFutUgbRZr
+         HGKDkFxPg+GKIbSEwlW3UAF6jD3cK6j+Nfmj4LtuyvMU74kQQl8yV/jLy/szTEyBFwK7
+         jY5g==
+X-Gm-Message-State: ANoB5pkDYXOR51k57zIepRCaExOfe8T8HagEfl8YsH/FoYgZS5HaJxX0
+        ZNZkNfikXMbq1X+3HxTnJvYx0dnjalc=
+X-Google-Smtp-Source: AA0mqf5S/KEvDVb/hsApCxLtfK1h78S1yk8iDwtF6DYH8dBGFneQlN/N/5/NO1fxSDgDkb8tg21Ovw==
+X-Received: by 2002:a05:6830:d8c:b0:66a:ea19:28ea with SMTP id bv12-20020a0568300d8c00b0066aea1928eamr2139337otb.38.1670524268597;
+        Thu, 08 Dec 2022 10:31:08 -0800 (PST)
 Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id d67-20020aca3646000000b0035a921f2093sm10834215oia.20.2022.12.08.10.31.05
+        by smtp.gmail.com with ESMTPSA id i21-20020a9d68d5000000b00662228a27d3sm11783552oto.57.2022.12.08.10.31.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 10:31:05 -0800 (PST)
+        Thu, 08 Dec 2022 10:31:08 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
@@ -79,9 +79,9 @@ To:     linux-kernel@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>
 Cc:     Yury Norov <yury.norov@gmail.com>, linux-crypto@vger.kernel.org,
         netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH v3 1/5] lib/find: introduce find_nth_and_andnot_bit
-Date:   Thu,  8 Dec 2022 10:30:57 -0800
-Message-Id: <20221208183101.1162006-2-yury.norov@gmail.com>
+Subject: [PATCH v3 2/5] cpumask: introduce cpumask_nth_and_andnot
+Date:   Thu,  8 Dec 2022 10:30:58 -0800
+Message-Id: <20221208183101.1162006-3-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221208183101.1162006-1-yury.norov@gmail.com>
 References: <20221208183101.1162006-1-yury.norov@gmail.com>
@@ -97,86 +97,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function is used to implement in-place bitmaps traversing without
-storing intermediate result in temporary bitmaps, in the following patches.
+Introduce cpumask_nth_and_andnot() based on find_nth_and_andnot_bit().
+It's used in the following patch to traverse cpumasks without storing
+intermediate result in temporary cpumask.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- include/linux/find.h | 33 +++++++++++++++++++++++++++++++++
- lib/find_bit.c       |  9 +++++++++
- 2 files changed, 42 insertions(+)
+ include/linux/cpumask.h | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/include/linux/find.h b/include/linux/find.h
-index 3f59c2fbe438..b594207a0010 100644
---- a/include/linux/find.h
-+++ b/include/linux/find.h
-@@ -23,6 +23,9 @@ unsigned long __find_nth_and_bit(const unsigned long *addr1, const unsigned long
- 				unsigned long size, unsigned long n);
- unsigned long __find_nth_andnot_bit(const unsigned long *addr1, const unsigned long *addr2,
- 					unsigned long size, unsigned long n);
-+unsigned long __find_nth_and_andnot_bit(const unsigned long *addr1, const unsigned long *addr2,
-+					const unsigned long *addr3, unsigned long size,
-+					unsigned long n);
- extern unsigned long _find_first_and_bit(const unsigned long *addr1,
- 					 const unsigned long *addr2, unsigned long size);
- extern unsigned long _find_first_zero_bit(const unsigned long *addr, unsigned long size);
-@@ -244,6 +247,36 @@ unsigned long find_nth_andnot_bit(const unsigned long *addr1, const unsigned lon
- 	return __find_nth_andnot_bit(addr1, addr2, size, n);
+diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+index 9543b22d6dc2..5c4905108d1b 100644
+--- a/include/linux/cpumask.h
++++ b/include/linux/cpumask.h
+@@ -391,6 +391,26 @@ unsigned int cpumask_nth_andnot(unsigned int cpu, const struct cpumask *srcp1,
+ 				nr_cpumask_bits, cpumask_check(cpu));
  }
  
 +/**
-+ * find_nth_and_andnot_bit - find N'th set bit in 2 memory regions,
-+ *			     excluding those set in 3rd region
-+ * @addr1: The 1st address to start the search at
-+ * @addr2: The 2nd address to start the search at
-+ * @addr3: The 3rd address to start the search at
-+ * @size: The maximum number of bits to search
-+ * @n: The number of set bit, which position is needed, counting from 0
++ * cpumask_nth_and_andnot - get the Nth cpu set in 1st and 2nd cpumask, and clear in 3rd.
++ * @srcp1: the cpumask pointer
++ * @srcp2: the cpumask pointer
++ * @srcp3: the cpumask pointer
++ * @cpu: the N'th cpu to find, starting from 0
 + *
-+ * Returns the bit number of the N'th set bit.
-+ * If no such, returns @size.
++ * Returns >= nr_cpu_ids if such cpu doesn't exist.
 + */
 +static __always_inline
-+unsigned long find_nth_and_andnot_bit(const unsigned long *addr1,
-+					const unsigned long *addr2,
-+					const unsigned long *addr3,
-+					unsigned long size, unsigned long n)
++unsigned int cpumask_nth_and_andnot(unsigned int cpu, const struct cpumask *srcp1,
++							const struct cpumask *srcp2,
++							const struct cpumask *srcp3)
 +{
-+	if (n >= size)
-+		return size;
-+
-+	if (small_const_nbits(size)) {
-+		unsigned long val =  *addr1 & *addr2 & (~*addr3) & GENMASK(size - 1, 0);
-+
-+		return val ? fns(val, n) : size;
-+	}
-+
-+	return __find_nth_and_andnot_bit(addr1, addr2, addr3, size, n);
++	return find_nth_and_andnot_bit(cpumask_bits(srcp1),
++					cpumask_bits(srcp2),
++					cpumask_bits(srcp3),
++					nr_cpumask_bits, cpumask_check(cpu));
 +}
 +
- #ifndef find_first_and_bit
- /**
-  * find_first_and_bit - find the first set bit in both memory regions
-diff --git a/lib/find_bit.c b/lib/find_bit.c
-index 18bc0a7ac8ee..c10920e66788 100644
---- a/lib/find_bit.c
-+++ b/lib/find_bit.c
-@@ -155,6 +155,15 @@ unsigned long __find_nth_andnot_bit(const unsigned long *addr1, const unsigned l
- }
- EXPORT_SYMBOL(__find_nth_andnot_bit);
- 
-+unsigned long __find_nth_and_andnot_bit(const unsigned long *addr1,
-+					const unsigned long *addr2,
-+					const unsigned long *addr3,
-+					unsigned long size, unsigned long n)
-+{
-+	return FIND_NTH_BIT(addr1[idx] & addr2[idx] & ~addr3[idx], size, n);
-+}
-+EXPORT_SYMBOL(__find_nth_and_andnot_bit);
-+
- #ifndef find_next_and_bit
- unsigned long _find_next_and_bit(const unsigned long *addr1, const unsigned long *addr2,
- 					unsigned long nbits, unsigned long start)
+ #define CPU_BITS_NONE						\
+ {								\
+ 	[0 ... BITS_TO_LONGS(NR_CPUS)-1] = 0UL			\
 -- 
 2.34.1
 
