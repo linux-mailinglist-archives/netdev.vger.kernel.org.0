@@ -2,130 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67D67646A73
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 09:26:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B7D8646A9D
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 09:35:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229486AbiLHI0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 03:26:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34864 "EHLO
+        id S229749AbiLHIe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 03:34:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiLHI0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 03:26:37 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389F813CD7
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 00:26:37 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id E8EE322D8E;
-        Thu,  8 Dec 2022 08:26:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1670487995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=x7s+9sySfkZmC7tHP9c6Zwy+gz2YstyyuPHCVXtGe/A=;
-        b=r8zilYSxRVtt6Y+FLPQ9gS6okhqq2uO3i/0+VD6N1C9RiYQXisI/M2WGiO9G+FKlPbrVKB
-        gM5uAjoxInHroa+B1dijHZi5RzRZJ1MtxEdhmmLGG1y0OBHmKZwJTqlMk8IP0bAQ2/wIsK
-        +q+sGDehl18dGZ1nkPnOVCB6VJT7/Fk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1670487995;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=x7s+9sySfkZmC7tHP9c6Zwy+gz2YstyyuPHCVXtGe/A=;
-        b=13gb5GugIwfA0INSAXqIztGs4JW3GVVyCSFc2EFMt2T3H1Z5tkjLSBBU2RjKdE2e9hk7LO
-        lbX2s6KhIRq1gKAQ==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DCBA32C141;
-        Thu,  8 Dec 2022 08:26:35 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 845536045E; Thu,  8 Dec 2022 09:26:35 +0100 (CET)
-Date:   Thu, 8 Dec 2022 09:26:35 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool v2 02/13] ethtool: fix trivial issue in allocation
-Message-ID: <20221208082635.2hplh3yejabllaao@lion.mk-sys.cz>
-References: <20221208011122.2343363-1-jesse.brandeburg@intel.com>
- <20221208011122.2343363-3-jesse.brandeburg@intel.com>
+        with ESMTP id S229462AbiLHIe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 03:34:57 -0500
+Received: from mx0.infotecs.ru (mx0.infotecs.ru [91.244.183.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4AD65E9E1;
+        Thu,  8 Dec 2022 00:34:55 -0800 (PST)
+Received: from mx0.infotecs-nt (localhost [127.0.0.1])
+        by mx0.infotecs.ru (Postfix) with ESMTP id CC69B1182B4F;
+        Thu,  8 Dec 2022 11:26:57 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx0.infotecs.ru CC69B1182B4F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infotecs.ru; s=mx;
+        t=1670488018; bh=s0kXhZ5QwF8NQVrywWavoH3BbIaBSkcol4p+WMzzHbA=;
+        h=From:To:CC:Subject:Date:From;
+        b=Odhxsp/yQQ9jHQH54WIsk46NzZXhtblFcJ6Ujtjvtjb8aYD/EZeLdV4DSDye3AlUL
+         VKlJ8qHPtW3mIhPrlyx8l9ugaezJiHpXk4kobWaxPgvg7AOtQcpWqvxtEb8YFXq/Oj
+         bcMsHGqEzgu2kKYvTTHTc/kECV9TU6q20ZrDAIdk=
+Received: from msk-exch-01.infotecs-nt (msk-exch-01.infotecs-nt [10.0.7.191])
+        by mx0.infotecs-nt (Postfix) with ESMTP id C9A80301A0D5;
+        Thu,  8 Dec 2022 11:26:57 +0300 (MSK)
+Received: from msk-exch-01.infotecs-nt (10.0.7.191) by msk-exch-01.infotecs-nt
+ (10.0.7.191) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.12; Thu, 8 Dec
+ 2022 11:26:57 +0300
+Received: from msk-exch-01.infotecs-nt ([fe80::89df:c35f:46be:fd07]) by
+ msk-exch-01.infotecs-nt ([fe80::89df:c35f:46be:fd07%14]) with mapi id
+ 15.02.1118.012; Thu, 8 Dec 2022 11:26:57 +0300
+From:   Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
+To:     Jiri Pirko <jiri@nvidia.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Arkadi Sharshevsky <arkadis@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net: devlink: Add missing error check to
+ devlink_resource_put()
+Thread-Topic: [PATCH] net: devlink: Add missing error check to
+ devlink_resource_put()
+Thread-Index: AQHZCt7VLcCQYXqvEkyWdGuOlfYO7w==
+Date:   Thu, 8 Dec 2022 08:26:57 +0000
+Message-ID: <20221208082338.3923376-1-Ilia.Gavrilov@infotecs.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.17.0.10]
+x-exclaimer-md-config: 208ac3cd-1ed4-4982-a353-bdefac89ac0a
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="resafrxjrepfisu2"
-Content-Disposition: inline
-In-Reply-To: <20221208011122.2343363-3-jesse.brandeburg@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-KLMS-Rule-ID: 1
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Lua-Profiles: 174026 [Dec 08 2022]
+X-KLMS-AntiSpam-Version: 5.9.59.0
+X-KLMS-AntiSpam-Envelope-From: Ilia.Gavrilov@infotecs.ru
+X-KLMS-AntiSpam-Rate: 0
+X-KLMS-AntiSpam-Status: not_detected
+X-KLMS-AntiSpam-Method: none
+X-KLMS-AntiSpam-Auth: dkim=none
+X-KLMS-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6, {Tracking_from_domain_doesnt_match_to}, infotecs.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
+X-MS-Exchange-Organization-SCL: -1
+X-KLMS-AntiSpam-Interceptor-Info: scan successful
+X-KLMS-AntiPhishing: Clean, bases: 2022/12/08 05:05:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2022/12/08 05:14:00 #20660675
+X-KLMS-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When the resource size changes, the return value of the
+'nla_put_u64_64bit' function is not checked. That has been fixed to avoid
+rechecking at the next step.
 
---resafrxjrepfisu2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Found by InfoTeCS on behalf of Linux Verification Center
+(linuxtesting.org) with SVACE.
 
-On Wed, Dec 07, 2022 at 05:11:11PM -0800, Jesse Brandeburg wrote:
-> Fix the following warning by changing the type being multiplied by to
-> the type being assigned to.
->=20
-> Description: Result of 'calloc' is converted to a pointer of type
-> 'unsigned long', which is incompatible with sizeof operand type 'long'
-> File: /home/jbrandeb/git/ethtool/rxclass.c
-> Line: 527
->=20
-> Fixes: 5a3279e43f2b ("rxclass: Replace global rmgr with automatic variabl=
-e/parameter")
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> ---
->  rxclass.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/rxclass.c b/rxclass.c
-> index 6cf81fdafc85..ebdd97960e5b 100644
-> --- a/rxclass.c
-> +++ b/rxclass.c
-> @@ -524,7 +524,7 @@ static int rmgr_init(struct cmd_context *ctx, struct =
-rmgr_ctrl *rmgr)
->  	}
-> =20
->  	/* initialize bitmap for storage of valid locations */
-> -	rmgr->slot =3D calloc(1, BITS_TO_LONGS(rmgr->size) * sizeof(long));
-> +	rmgr->slot =3D calloc(1, BITS_TO_LONGS(rmgr->size) * sizeof(unsigned lo=
-ng));
+Fixes: d9f9b9a4d05f ("devlink: Add support for resource abstraction")
+Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
+---
+ net/core/devlink.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-While at it, maybe we should take the cleanup one step further and use
-sizeof(*rmgr->slot) or sizeof(rmgr->slot[0]) instead. And perhaps it
-would also make sense to follow the logic of calloc() arguments and use
-
-	calloc(BITS_TO_LONGS(rmgr->size), sizeof(rmgr->slot[0]))
-
-Michal
-
-
->  	if (!rmgr->slot) {
->  		perror("rmgr: Cannot allocate memory for RX class rules");
->  		return -1;
-> --=20
-> 2.31.1
->=20
-
---resafrxjrepfisu2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmORn7cACgkQ538sG/LR
-dpWz2Af/e5T8IAdxbd1bpGZegtXGFO8ByP/S7mrEy+nbRuCkqDDWkGs0JpgWVVqn
-pX7xFwoivsFlucKjpSOGbOoUcGBl+N5teMzluQ4QPj2875EShFp246JyCnQ05DAQ
-ZHmQ+KxZnWZ+uV349GJq1wwCmGAWTRBfwEEgj35VTWvREMOcO++3+YlvjnRGOtUw
-T3LyGN4GGjfW60Q/nIxPZp8ZzmHjId6dSUgyAEnqXXQxJnhr6UucRbcaZUnTrNd/
-WXkdbzVqJaO3siy4uEK2AOCOmDKWVdYNo0nN+aqj28dHd6E+B/zqwnj/oxw2MVSV
-6kBCYDliVXiFCdsAUSeMaMq3DG/Q/w==
-=9MTO
------END PGP SIGNATURE-----
-
---resafrxjrepfisu2--
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 89baa7c0938b..ff078bcef9ba 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4193,9 +4193,10 @@ static int devlink_resource_put(struct devlink *devl=
+ink, struct sk_buff *skb,
+ 	    nla_put_u64_64bit(skb, DEVLINK_ATTR_RESOURCE_ID, resource->id,
+ 			      DEVLINK_ATTR_PAD))
+ 		goto nla_put_failure;
+-	if (resource->size !=3D resource->size_new)
+-		nla_put_u64_64bit(skb, DEVLINK_ATTR_RESOURCE_SIZE_NEW,
+-				  resource->size_new, DEVLINK_ATTR_PAD);
++	if (resource->size !=3D resource->size_new &&
++	    nla_put_u64_64bit(skb, DEVLINK_ATTR_RESOURCE_SIZE_NEW,
++			      resource->size_new, DEVLINK_ATTR_PAD))
++		goto nla_put_failure;
+ 	if (devlink_resource_occ_put(resource, skb))
+ 		goto nla_put_failure;
+ 	if (devlink_resource_size_params_put(resource, skb))
+--=20
+2.30.2
