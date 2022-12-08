@@ -2,49 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72321646A70
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 09:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67D67646A73
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 09:26:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiLHIZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 03:25:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34174 "EHLO
+        id S229486AbiLHI0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 03:26:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiLHIZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 03:25:35 -0500
-Received: from out199-8.us.a.mail.aliyun.com (out199-8.us.a.mail.aliyun.com [47.90.199.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD595E3DC;
-        Thu,  8 Dec 2022 00:25:22 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=hengqi@linux.alibaba.com;NM=0;PH=DS;RN=11;SR=0;TI=SMTPD_---0VWpUtXs_1670487916;
-Received: from 30.221.147.145(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VWpUtXs_1670487916)
-          by smtp.aliyun-inc.com;
-          Thu, 08 Dec 2022 16:25:17 +0800
-Message-ID: <ebf67352-d072-f004-97d1-184ca03933bb@linux.alibaba.com>
-Date:   Thu, 8 Dec 2022 16:25:15 +0800
+        with ESMTP id S229470AbiLHI0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 03:26:37 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389F813CD7
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 00:26:37 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id E8EE322D8E;
+        Thu,  8 Dec 2022 08:26:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1670487995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=x7s+9sySfkZmC7tHP9c6Zwy+gz2YstyyuPHCVXtGe/A=;
+        b=r8zilYSxRVtt6Y+FLPQ9gS6okhqq2uO3i/0+VD6N1C9RiYQXisI/M2WGiO9G+FKlPbrVKB
+        gM5uAjoxInHroa+B1dijHZi5RzRZJ1MtxEdhmmLGG1y0OBHmKZwJTqlMk8IP0bAQ2/wIsK
+        +q+sGDehl18dGZ1nkPnOVCB6VJT7/Fk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1670487995;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=x7s+9sySfkZmC7tHP9c6Zwy+gz2YstyyuPHCVXtGe/A=;
+        b=13gb5GugIwfA0INSAXqIztGs4JW3GVVyCSFc2EFMt2T3H1Z5tkjLSBBU2RjKdE2e9hk7LO
+        lbX2s6KhIRq1gKAQ==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id DCBA32C141;
+        Thu,  8 Dec 2022 08:26:35 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 845536045E; Thu,  8 Dec 2022 09:26:35 +0100 (CET)
+Date:   Thu, 8 Dec 2022 09:26:35 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool v2 02/13] ethtool: fix trivial issue in allocation
+Message-ID: <20221208082635.2hplh3yejabllaao@lion.mk-sys.cz>
+References: <20221208011122.2343363-1-jesse.brandeburg@intel.com>
+ <20221208011122.2343363-3-jesse.brandeburg@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:108.0)
- Gecko/20100101 Thunderbird/108.0
-Subject: Re: [RFC PATCH 5/9] virtio_net: build xdp_buff with multi buffers
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <20221122074348.88601-1-hengqi@linux.alibaba.com>
- <20221122074348.88601-6-hengqi@linux.alibaba.com>
- <CACGkMEvBDmGdP7e1c-8s2OQFEYQ2LLbhnDF+qN+yPVwvkxPjCw@mail.gmail.com>
-From:   Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <CACGkMEvBDmGdP7e1c-8s2OQFEYQ2LLbhnDF+qN+yPVwvkxPjCw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.2 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="resafrxjrepfisu2"
+Content-Disposition: inline
+In-Reply-To: <20221208011122.2343363-3-jesse.brandeburg@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -52,121 +63,69 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--resafrxjrepfisu2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-在 2022/12/6 下午2:14, Jason Wang 写道:
-> On Tue, Nov 22, 2022 at 3:44 PM Heng Qi <hengqi@linux.alibaba.com> wrote:
->> Support xdp for multi buffer packets.
->>
->> Putting the first buffer as the linear part for xdp_buff,
->> and the rest of the buffers as non-linear fragments to struct
->> skb_shared_info in the tailroom belonging to xdp_buff.
->>
->> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
->> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->> ---
->>   drivers/net/virtio_net.c | 74 ++++++++++++++++++++++++++++++++++++++++
->>   1 file changed, 74 insertions(+)
->>
->> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->> index cd65f85d5075..20784b1d8236 100644
->> --- a/drivers/net/virtio_net.c
->> +++ b/drivers/net/virtio_net.c
->> @@ -911,6 +911,80 @@ static struct sk_buff *receive_big(struct net_device *dev,
->>          return NULL;
->>   }
->>
->> +static int virtnet_build_xdp_buff(struct net_device *dev,
->> +                                 struct virtnet_info *vi,
->> +                                 struct receive_queue *rq,
->> +                                 struct xdp_buff *xdp,
->> +                                 void *buf,
->> +                                 unsigned int len,
->> +                                 unsigned int frame_sz,
->> +                                 u16 *num_buf,
->> +                                 unsigned int *xdp_frags_truesize,
->> +                                 struct virtnet_rq_stats *stats)
->> +{
->> +       unsigned int tailroom = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->> +       struct virtio_net_hdr_mrg_rxbuf *hdr = buf;
->> +       unsigned int truesize, headroom;
->> +       struct skb_shared_info *shinfo;
->> +       unsigned int xdp_frags_truesz = 0;
->> +       unsigned int cur_frag_size;
->> +       struct page *page;
->> +       skb_frag_t *frag;
->> +       int offset;
->> +       void *ctx;
->> +
->> +       xdp_init_buff(xdp, frame_sz, &rq->xdp_rxq);
->> +       xdp_prepare_buff(xdp, buf - VIRTIO_XDP_HEADROOM,
->> +                        VIRTIO_XDP_HEADROOM + vi->hdr_len, len - vi->hdr_len, true);
->> +       shinfo = xdp_get_shared_info_from_buff(xdp);
->> +       shinfo->nr_frags = 0;
->> +       shinfo->xdp_frags_size = 0;
->> +
->> +       if ((*num_buf - 1) > MAX_SKB_FRAGS)
->> +               return -EINVAL;
->> +
->> +       while ((--*num_buf) >= 1) {
->> +               buf = virtqueue_get_buf_ctx(rq->vq, &len, &ctx);
-> So this works only for a mergeable buffer, I wonder if it's worth it
-> to make it work for big mode as well. Or at least we can mention it as
-> a TODO somewhere and rename this function (with mergeable suffix).
+On Wed, Dec 07, 2022 at 05:11:11PM -0800, Jesse Brandeburg wrote:
+> Fix the following warning by changing the type being multiplied by to
+> the type being assigned to.
+>=20
+> Description: Result of 'calloc' is converted to a pointer of type
+> 'unsigned long', which is incompatible with sizeof operand type 'long'
+> File: /home/jbrandeb/git/ethtool/rxclass.c
+> Line: 527
+>=20
+> Fixes: 5a3279e43f2b ("rxclass: Replace global rmgr with automatic variabl=
+e/parameter")
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> ---
+>  rxclass.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/rxclass.c b/rxclass.c
+> index 6cf81fdafc85..ebdd97960e5b 100644
+> --- a/rxclass.c
+> +++ b/rxclass.c
+> @@ -524,7 +524,7 @@ static int rmgr_init(struct cmd_context *ctx, struct =
+rmgr_ctrl *rmgr)
+>  	}
+> =20
+>  	/* initialize bitmap for storage of valid locations */
+> -	rmgr->slot =3D calloc(1, BITS_TO_LONGS(rmgr->size) * sizeof(long));
+> +	rmgr->slot =3D calloc(1, BITS_TO_LONGS(rmgr->size) * sizeof(unsigned lo=
+ng));
 
-Yes, I'm leaning towards the latter, I'll rename it with a mergeable 
-suffix in the next version.
+While at it, maybe we should take the cleanup one step further and use
+sizeof(*rmgr->slot) or sizeof(rmgr->slot[0]) instead. And perhaps it
+would also make sense to follow the logic of calloc() arguments and use
 
-Thanks.
+	calloc(BITS_TO_LONGS(rmgr->size), sizeof(rmgr->slot[0]))
 
->
-> Others look good.
->
-> Thanks
->
->> +               if (unlikely(!buf)) {
->> +                       pr_debug("%s: rx error: %d buffers out of %d missing\n",
->> +                                dev->name, *num_buf,
->> +                                virtio16_to_cpu(vi->vdev, hdr->num_buffers));
->> +                       dev->stats.rx_length_errors++;
->> +                       return -EINVAL;
->> +               }
->> +
->> +               if (!xdp_buff_has_frags(xdp))
->> +                       xdp_buff_set_frags_flag(xdp);
->> +
->> +               stats->bytes += len;
->> +               page = virt_to_head_page(buf);
->> +               offset = buf - page_address(page);
->> +               truesize = mergeable_ctx_to_truesize(ctx);
->> +               headroom = mergeable_ctx_to_headroom(ctx);
->> +
->> +               cur_frag_size = truesize + (headroom ? (headroom + tailroom) : 0);
->> +               xdp_frags_truesz += cur_frag_size;
->> +               if (unlikely(len > truesize || cur_frag_size > PAGE_SIZE)) {
->> +                       pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
->> +                                dev->name, len, (unsigned long)ctx);
->> +                       dev->stats.rx_length_errors++;
->> +                       return -EINVAL;
->> +               }
->> +
->> +               frag = &shinfo->frags[shinfo->nr_frags++];
->> +               __skb_frag_set_page(frag, page);
->> +               skb_frag_off_set(frag, offset);
->> +               skb_frag_size_set(frag, len);
->> +               if (page_is_pfmemalloc(page))
->> +                       xdp_buff_set_frag_pfmemalloc(xdp);
->> +
->> +               shinfo->xdp_frags_size += len;
->> +       }
->> +
->> +       *xdp_frags_truesize = xdp_frags_truesz;
->> +       return 0;
->> +}
->> +
->>   static struct sk_buff *receive_mergeable(struct net_device *dev,
->>                                           struct virtnet_info *vi,
->>                                           struct receive_queue *rq,
->> --
->> 2.19.1.6.gb485710b
->>
+Michal
 
+
+>  	if (!rmgr->slot) {
+>  		perror("rmgr: Cannot allocate memory for RX class rules");
+>  		return -1;
+> --=20
+> 2.31.1
+>=20
+
+--resafrxjrepfisu2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmORn7cACgkQ538sG/LR
+dpWz2Af/e5T8IAdxbd1bpGZegtXGFO8ByP/S7mrEy+nbRuCkqDDWkGs0JpgWVVqn
+pX7xFwoivsFlucKjpSOGbOoUcGBl+N5teMzluQ4QPj2875EShFp246JyCnQ05DAQ
+ZHmQ+KxZnWZ+uV349GJq1wwCmGAWTRBfwEEgj35VTWvREMOcO++3+YlvjnRGOtUw
+T3LyGN4GGjfW60Q/nIxPZp8ZzmHjId6dSUgyAEnqXXQxJnhr6UucRbcaZUnTrNd/
+WXkdbzVqJaO3siy4uEK2AOCOmDKWVdYNo0nN+aqj28dHd6E+B/zqwnj/oxw2MVSV
+6kBCYDliVXiFCdsAUSeMaMq3DG/Q/w==
+=9MTO
+-----END PGP SIGNATURE-----
+
+--resafrxjrepfisu2--
