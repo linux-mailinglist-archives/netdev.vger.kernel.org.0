@@ -2,143 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FD9646CB6
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 11:28:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EF1A646CC2
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 11:31:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbiLHK22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 05:28:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
+        id S229776AbiLHKbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 05:31:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiLHK2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:28:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90BA1388F;
-        Thu,  8 Dec 2022 02:28:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DEE360F35;
-        Thu,  8 Dec 2022 10:28:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C685BC433D6;
-        Thu,  8 Dec 2022 10:28:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670495303;
-        bh=kVBPuZl/SCeQHmRkrQsC7oS+MPH0fShGve01Y+Suolw=;
-        h=Date:From:To:Cc:Subject:References:From;
-        b=F21buIGWYDxMdSJkX7V58LWjtEh8fYiHrAQxJ3pnYxGpAIyaGtE2AmvV2FOPrUAIf
-         jufCZfy983CAnVXu26h1hCvdoWHw5JvX35CCx7BbxrP+oWa801sMiffa+3q2E36ZJh
-         xrKQAZbzZXxWViV/caDuHOVHZ26ESHHTJvHtUPhyytWxjOvwsqzfLmL8ti/d98F2v0
-         VMhcpcO2z98yAqTIR+Ao32oMds81nqOR43HMxd2O20xJ8GL18Fh0KINiPBn5DzhHpt
-         6k3GidLJyqO5t95Be/M4Vlt+E3Em8wU16UyNPQ9nA7qNq2O6PZZAb1CX96rdQpJKAK
-         Xtm+IyT08mXVA==
-Date:   Thu, 8 Dec 2022 12:28:19 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
-Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, jgg@ziepe.ca, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        michael.chan@broadcom.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, selvin.xavier@broadcom.com
-Subject: Re: [PATCH v5 0/7] Add Auxiliary driver support
-Message-ID: <Y5G8Qzly9F3fP0Em@unreal>
-References: <20221207175310.23656-1-ajit.khaparde@broadcom.com>
+        with ESMTP id S229773AbiLHKbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:31:06 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290127DA63
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:31:03 -0800 (PST)
+Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NSVhd40kHzJp8s;
+        Thu,  8 Dec 2022 18:27:29 +0800 (CST)
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 8 Dec 2022 18:31:01 +0800
+Subject: Re: [PATCH net v3] ethernet: s2io: don't call dev_kfree_skb() under
+ spin_lock_irqsave()
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+References: <20221208092411.1961448-1-yangyingliang@huawei.com>
+ <Y5GxxIc9EY6h/qj2@unreal>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <840947dc-8560-ca51-f4d6-0e2628c181b1@huawei.com>
+Date:   Thu, 8 Dec 2022 18:31:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <Y5GxxIc9EY6h/qj2@unreal>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 07, 2022 at 09:53:03AM -0800, Ajit Khaparde wrote:
-> Add auxiliary device driver for Broadcom devices.
-> The bnxt_en driver will register and initialize an aux device
-> if RDMA is enabled in the underlying device.
-> The bnxt_re driver will then probe and initialize the
-> RoCE interfaces with the infiniband stack.
->=20
-> We got rid of the bnxt_en_ops which the bnxt_re driver used to
-> communicate with bnxt_en.
-> Similarly  We have tried to clean up most of the bnxt_ulp_ops.
-> In most of the cases we used the functions and entry points provided
-> by the auxiliary bus driver framework.
-> And now these are the minimal functions needed to support the functionali=
-ty.
->=20
-> We will try to work on getting rid of the remaining if we find any
-> other viable option in future.
->=20
-> v1->v2:
-> - Incorporated review comments including usage of ulp_id &
->   complex function indirections.
-> - Used function calls provided by the auxiliary bus interface
->   instead of proprietary calls.
-> - Refactor code to remove ROCE driver's access to bnxt structure.
 
-I still see wrong usage of auxiliary driver model, especially for RDMA
-device. That model mimics general driver model, where you should
-separate between device creation and configuration.=20
+On 2022/12/8 17:43, Leon Romanovsky wrote:
+> On Thu, Dec 08, 2022 at 05:24:11PM +0800, Yang Yingliang wrote:
+>> The dev_kfree_skb() is defined as consume_skb(), and it is not allowed
+>> to call consume_skb() from hardware interrupt context or with interrupts
+>> being disabled. So replace dev_kfree_skb() with dev_consume_skb_irq()
+>> under spin_lock_irqsave().
+> While dev_kfree_skb and consume_skb are the same, the dev_kfree_skb_irq
+> and dev_consume_skb_irq are not. You can't blindly replace
+> dev_kfree_skb with dev_consume_skb_irq. You should check every place, analyze
+> and document why specific option was chosen.
+While calling dev_kfree_skb(consume_skb), the SKB will not be marked as 
+dropped,
+to keep the same meaning, so replace it with dev_consume_skb_irq()
 
-I would expect that your bnxt_en create pre-configured devices with
-right amount of MSI-X, limits, capabilities e.t.c and RDMA driver will
-simply bind to it. It means that calls like bnxt_re_request_msix()
-should go too. All PCI-related logic needs to be in netdev.
-
-In addition, I saw IS_ERR_OR_NULL(..) and "if(dev)" checks in various
-uninit functions and it can be one of two: wrong unwind flow or wrong
-use of driver model. In right implementation, your driver will be called
-only on valid device and uninit won't be called for not-initialized device.
-
-Also I spotted .ulp_async_notifier, which is not used and
-bnxt_re_sriov_config() is prune to races due to separation between
-driver bind and device creation. You should configure SR-IOV in device
-creation stage.
-
-Thanks
-
->=20
-> v2->v3:
-> - Addressed review comments including cleanup of some unnecessary wrappers
-> - Fixed warnings seen during cross compilation
->=20
-> v3->v4:
-> - Cleaned up bnxt_ulp.c and bnxt_ulp.h further
-> - Removed some more dead code
-> - Sending the patchset as a standalone series
->=20
-> v4->v5:
-> - Removed the SRIOV config callback which bnxt_en driver was calling into
->   bnxt_re driver.
-> - Removed excessive checks for rdev and other pointers.
->=20
-> Please apply. Thanks.
->=20
-> Ajit Khaparde (6):
->   bnxt_en: Add auxiliary driver support
->   RDMA/bnxt_re: Use auxiliary driver interface
->   bnxt_en: Remove usage of ulp_id
->   bnxt_en: Use direct API instead of indirection
->   bnxt_en: Use auxiliary bus calls over proprietary calls
->   RDMA/bnxt_re: Remove the sriov config callback
->=20
-> Hongguang Gao (1):
->   bnxt_en: Remove struct bnxt access from RoCE driver
->=20
->  drivers/infiniband/hw/bnxt_re/bnxt_re.h       |   9 +-
->  drivers/infiniband/hw/bnxt_re/main.c          | 591 +++++++-----------
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  10 +-
->  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   8 +
->  .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   |   7 +-
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 413 ++++++------
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |  53 +-
->  7 files changed, 490 insertions(+), 601 deletions(-)
->=20
-> --=20
-> 2.37.1 (Apple Git-137.1)
->=20
+Thanks,
+Yang
+>
+>    3791 static inline void dev_kfree_skb_irq(struct sk_buff *skb)
+>    3792 {
+>    3793         __dev_kfree_skb_irq(skb, SKB_REASON_DROPPED);
+>    3794 }
+>    3795
+>    3796 static inline void dev_consume_skb_irq(struct sk_buff *skb)
+>    3797 {
+>    3798         __dev_kfree_skb_irq(skb, SKB_REASON_CONSUMED);
+>    3799 }
+>
+> Thanks
+>
+>
+>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+>> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+>> ---
+>> v2 -> v3:
+>>    Update commit message.
+>>
+>> v1 -> v2:
+>>    Add fix tag.
+>> ---
+>>   drivers/net/ethernet/neterion/s2io.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
+>> index 1d3c4474b7cb..a83d61d45936 100644
+>> --- a/drivers/net/ethernet/neterion/s2io.c
+>> +++ b/drivers/net/ethernet/neterion/s2io.c
+>> @@ -2386,7 +2386,7 @@ static void free_tx_buffers(struct s2io_nic *nic)
+>>   			skb = s2io_txdl_getskb(&mac_control->fifos[i], txdp, j);
+>>   			if (skb) {
+>>   				swstats->mem_freed += skb->truesize;
+>> -				dev_kfree_skb(skb);
+>> +				dev_consume_skb_irq(skb);
+>>   				cnt++;
+>>   			}
+>>   		}
+>> -- 
+>> 2.25.1
+>>
+> .
