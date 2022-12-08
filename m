@@ -2,87 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47A9F6474D1
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 18:05:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDC3A6474D9
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 18:08:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbiLHRFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 12:05:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
+        id S229896AbiLHRIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 12:08:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiLHRFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 12:05:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509CF2A711;
-        Thu,  8 Dec 2022 09:05:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09C0DB82569;
-        Thu,  8 Dec 2022 17:05:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 592BDC433D2;
-        Thu,  8 Dec 2022 17:05:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670519118;
-        bh=mVa4rAGYCODwDCVnY1411oDOU/OwbCxVWI/1gCV76L4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TVJAMl42DI3KGjqjl4yeG1Wb6wkYJ+HxG3Pl28rRAwWLrbFkeKsbGjSrXw5wYJOQw
-         Va7W/v57CD8QmKvGBsWThaTFS4pyk5a+1NVSc7aAtlFJ1E4OvTcIYHgCy7d7qmudi/
-         3gQ8Shs0AxWEmrIMBtlkjow+1GOdhiFcCuburUbDwqgbyB8bVD1mPo28Enl7zPXLXS
-         MsGC7E63EqRyb7lYqZ5kNjZ+lqeWMomsNqaP/kdEtnS1RjIbrYeTzQCUyrQEmqdvPW
-         mFrc5X3u9GoSuA1hlt9zsMVWCOOJPKw41Jp6cn1W0EQdRbtH/YAkEFWNa1XKIxj6UH
-         f6stCSkh8wQYA==
-Date:   Thu, 8 Dec 2022 09:05:17 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vadim Fedorenko <vadfed@fb.com>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        "Olech, Milena" <milena.olech@intel.com>,
-        "Michalik, Michal" <michal.michalik@intel.com>
-Subject: Re: [RFC PATCH v4 2/4] dpll: Add DPLL framework base functions
-Message-ID: <20221208090517.643277e8@kernel.org>
-In-Reply-To: <Y5IR2MzXfqgFXGHW@nanopsycho>
-References: <Y4okm5TrBj+JAJrV@nanopsycho>
-        <20221202212206.3619bd5f@kernel.org>
-        <Y43IpIQ3C0vGzHQW@nanopsycho>
-        <20221205161933.663ea611@kernel.org>
-        <Y48CS98KYCMJS9uM@nanopsycho>
-        <20221206092705.108ded86@kernel.org>
-        <Y5CQ0qddxuUQg8R8@nanopsycho>
-        <20221207085941.3b56bc8c@kernel.org>
-        <Y5Gc6E+mpWeVSBL7@nanopsycho>
-        <20221208081955.335ca36c@kernel.org>
-        <Y5IR2MzXfqgFXGHW@nanopsycho>
+        with ESMTP id S229685AbiLHRIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 12:08:10 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A1D85D11
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 09:08:09 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id s186so2016794oia.5
+        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 09:08:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=b8SQhv1HrvHF/UwzGYo8EpDfp9nVdvsuqFkA4JsYAdU=;
+        b=d2qB5MJgcwJuiou8UcZwfpLe5Mm8YljTi6OfBKxv48zUR64NBrbun+X5Pg0H8aMznL
+         OreAXc5VNF9A7lKpFw3hF5942WlCVAsA4JeR16mVhmR+B+guy9Nv1HTdNDGt4AZl45Rt
+         eT7owMC3bFTHoLZpz4sc+UmOpNiFVDfCXAl1yMgfAuBFQACS6im/c1Z2K/hYyIIpcgnB
+         qn2rtppn/SXxZIUIk/BaWN1p/ay36zXG7RSnnJ+djEwSB+Vs6Kx80iyYnXcAOk2sYKun
+         jDKkTXlrW4y2+UqudhXYgjxQeOLpOt9AA+BiBGWyt87HFCYHq2Fug1s8M58GE/6laHx8
+         e2NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=b8SQhv1HrvHF/UwzGYo8EpDfp9nVdvsuqFkA4JsYAdU=;
+        b=VQpOoR9MgqbqmBkpoiB+KCUqDjarud6KHiK9THnj+iTxCJYYhWbW8bCjzquQY76R+F
+         UdpMgb6EfSzf2uKeH7ckDqfi6AruhitWcE72KLYqi6CaRZ3ge2a9IGf5hFfVG9UpF+Zw
+         B+jgnY+ik/z6jQia7tebkiHFg7wPva6ZorvggRaCoR8XHkYw+GKargH+y3dHl3oMtYZ9
+         teLOXSIgMUlapmZoKiHzzCQV+ME33b1sue3dY7UnEKFPJpznyjLgTxAI7yQzEA9fZmnI
+         WUk+bK9JlrizcTOZq+Sz1+i9SN+nbEdIZf42GA4K++2qxVncq8MQZeSMmK0ZAGW0+w1u
+         Q8fg==
+X-Gm-Message-State: ANoB5pnX26XellfI7v5tT7khnTPTY1L/94tEy08F4/bqnYP7j21T9seQ
+        DcOWJhdgTM4GC/1EpAUWGu+X7SKPZoW8WqaoEQbMtc28syRkLF0s
+X-Google-Smtp-Source: AA0mqf7cq+vBjOcTuJszU2+aIxz0Wai+WLB3PE+VVmC0lvWlFgGmlTK0bN2sztGpnXCXu8WURaj1xDh2x40fmnNzmBA=
+X-Received: by 2002:aca:2801:0:b0:35a:13f4:d875 with SMTP id
+ 1-20020aca2801000000b0035a13f4d875mr48685797oix.190.1670519288817; Thu, 08
+ Dec 2022 09:08:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <32ee765d2240163f1cbd5d99db6233f276857ccb.1670262365.git.lucien.xin@gmail.com>
+ <Y4731q0/oqwhHZod@nanopsycho> <CADvbK_e6dFT6L69g63FOu=uE7b48rubaYOBL0RDTmKRUBFDCjw@mail.gmail.com>
+ <CADvbK_eaEb9vQ9h34WNcibULBFHAZcPB05dNztV=+QOUzOYBwQ@mail.gmail.com>
+ <Y5CVoc7vnKGg1KYj@nanopsycho> <CADvbK_dFAAd3=cBf9aonBbJcJ38V3=KDK5YzUd+=hBO2axkMBg@mail.gmail.com>
+ <Y5HIUiL7kYYSCgV8@nanopsycho>
+In-Reply-To: <Y5HIUiL7kYYSCgV8@nanopsycho>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 8 Dec 2022 12:07:17 -0500
+Message-ID: <CADvbK_euRvkO8iKmUojb+Vbf6F59VGGxyaDWg5ebLmP51-mj8g@mail.gmail.com>
+Subject: Re: [PATCH net] team: prevent ipv6 link local address on port devices
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, LiLiang <liali@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Dec 2022 17:33:28 +0100 Jiri Pirko wrote:
-> For any synce pin manipulation over dpll netlink, we can use the netns
-> check of the linked netdev. This is the netns aware leg of the dpll,
-> it should be checked for.
+On Thu, Dec 8, 2022 at 6:19 AM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> Thu, Dec 08, 2022 at 12:35:48AM CET, lucien.xin@gmail.com wrote:
+> >On Wed, Dec 7, 2022 at 8:31 AM Jiri Pirko <jiri@resnulli.us> wrote:
+> >>
+> >> Tue, Dec 06, 2022 at 10:52:33PM CET, lucien.xin@gmail.com wrote:
+> >> >On Tue, Dec 6, 2022 at 8:32 AM Xin Long <lucien.xin@gmail.com> wrote:
+> >> >>
+> >> >> On Tue, Dec 6, 2022 at 3:05 AM Jiri Pirko <jiri@resnulli.us> wrote:
+> >> >> >
+> >> >> > Mon, Dec 05, 2022 at 06:46:05PM CET, lucien.xin@gmail.com wrote:
+> >> >> > >The similar fix from commit c2edacf80e15 ("bonding / ipv6: no addrconf
+> >> >> > >for slaves separately from master") is also needed in Team. Otherwise,
+> >> >> > >DAD and RS packets to be sent from the slaves in turn can confuse the
+> >> >> > >switches and cause them to incorrectly update their forwarding tables
+> >> >> > >as Liang noticed in the test with activebackup mode.
+> >> >> > >
+> >> >> > >Note that the patch also sets IFF_MASTER flag for Team dev accordingly
+> >> >> > >while IFF_SLAVE flag is set for port devs. Although IFF_MASTER flag is
+> >> >> > >not really used in Team, it's good to show in 'ip link':
+> >> >> > >
+> >> >> > >  eth1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP>
+> >> >> > >  team0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP>
+> >> >> > >
+> >> >> > >Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
+> >> >> > >Reported-by: LiLiang <liali@redhat.com>
+> >> >> > >Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> >> >> >
+> >> >> > Nack. Please don't do this. IFF_MASTER and IFF_SLAVE are historical
+> >> >> > flags used by bonding and eql. Should not be used for other devices.
+> >> >> I see. I was wondering why it was not used in Team at the beginning. :)
+> >> >>
+> >> >> >
+> >> >> > addrconf_addr_gen() should not check IFF_SLAVE. It should use:
+> >> >> > netif_is_lag_port() and netif_is_failover_slave() helpers.
+> >> >Hi Jiri,
+> >> >
+> >> >Sorry, it seems not to work with this.
+> >> >
+> >> >As addrconf_addr_gen() is also called in NETDEV_UP event where
+> >> >IFF_TEAM_PORT and IFF_BONDING haven't yet been set before
+> >> >dev_open() when adding the port.
+> >> >
+> >> >If we move IFF_TEAM_PORT setting ahead of dev_open(), it will revert
+> >> >the fix in:
+> >> >
+> >> >commit d7d3c05135f37d8fdf73f9966d27155cada36e56
+> >> >Author: Jiri Pirko <jiri@resnulli.us>
+> >> >Date:   Mon Aug 25 21:38:27 2014 +0200
+> >> >
+> >> >    team: set IFF_TEAM_PORT priv_flag after rx_handler is registered
+> >> >
+> >> >Can we keep IFF_SLAVE here only for no ipv6 addrconf?
+> >>
+> >> So, shouldn't it be rather a new flag specifically for this purpose?
+> >Maybe IFF_NO_ADDRCONF in dev->priv_flags?
+>
+> Sounds fine to me.
+BTW, IFF_LIVE_RENAME_OK flag was just deleted in net-next.git by:
 
-The OCP card is an atomic clock, it does not have any networking.
+commit bd039b5ea2a91ea707ee8539df26456bd5be80af
+Author: Andy Ren <andy.ren@getcruise.com>
+Date:   Mon Nov 7 09:42:42 2022 -0800
 
-> I can't imagine practically havind the whole dpll instance netns aware.
-> Omitting the fact that it really has no meaning for non-synce pins, what
-> would be the behaviour when for example pin 1 is in netns a, pin 2 in
-> netns b and dpll itself in netns c?
+    net/core: Allow live renaming when an interface is up
 
-To be clear I don't think it's a bad idea in general, I've done 
-the same thing for my WIP PSP patches. But we already have one
-device without netdevs, hence I thought maybe devlink. So maybe
-we do the same thing with devlink? I mean - allow multiple devlink
-instances to be linked and require caps on any of them?
+do you think it is okay to use that vacance and define:
+
+IFF_NO_ADDRCONF = BIT_ULL(30)
+
+in netdev_priv_flags ?
+
+Thanks.
+
+>
+>
+> >
+> >I will give it a try.
+> >
+> >Thanks.
