@@ -2,159 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4926647380
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 16:47:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CA526473B6
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 16:59:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbiLHPrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 10:47:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36416 "EHLO
+        id S229571AbiLHP7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 10:59:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230157AbiLHPra (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 10:47:30 -0500
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4C75BD5A;
-        Thu,  8 Dec 2022 07:47:28 -0800 (PST)
-Received: by mail-ej1-f46.google.com with SMTP id gh17so5014964ejb.6;
-        Thu, 08 Dec 2022 07:47:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=VhgZCo6c+hsVZq5QVJKJQrJlxaKlhskVBf5ljnXV7/s=;
-        b=6XBh6yYtxgCM9R8i+LCjXfkjIvtFYFGnWwJ272ha4EKrLmmW2wMMADqoKCSfqhj1EE
-         qkpDO34TIKqjnorbZiuHOvTNtAnjZtg/87NHll8S7C/s3pRTsmmaAhREllP2Y++qPNE8
-         XhbV6RwRwXr5oqK7GFw0luhHdl9UmnvpXsFbfLOjUex/a7eSOvfgstNoUU99VyDMHivw
-         Abv84Gfp2E1PH08wSjhDCc32ETojNdPVyd9ViFHyvGfuliDJmHwV+ve8P4QhbNyh8XB4
-         7R8h6V5JUq0PSDND+kkJr7YmoLfO3CB/SuSv0X/0Z6s8XZu1YyeMA7/I/rn+Ae+Pp44X
-         USPg==
-X-Gm-Message-State: ANoB5pmF/ndPTdrme8/kXUzOtCIotT4i6umP3dVgCC4ZBsWb2JveCNTu
-        EgwtQ0+b8/yA4+wQtpsl57Vt0H/s7Mt9Zg==
-X-Google-Smtp-Source: AA0mqf5eMyMKDzm/jFfHdbUAF4mOs6k8K/3PS/3Esz5HRuKK1cmwrZ8CYtLMZE0P0OEAsRzoQJzqXg==
-X-Received: by 2002:a17:907:3e14:b0:7c0:f719:838d with SMTP id hp20-20020a1709073e1400b007c0f719838dmr2931457ejc.36.1670514446979;
-        Thu, 08 Dec 2022 07:47:26 -0800 (PST)
-Received: from localhost (fwdproxy-cln-118.fbsv.net. [2a03:2880:31ff:76::face:b00c])
-        by smtp.gmail.com with ESMTPSA id 22-20020a170906329600b007add28659b0sm9902685ejw.140.2022.12.08.07.47.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 07:47:26 -0800 (PST)
-From:   Breno Leitao <leitao@debian.org>
-To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, kuniyu@amazon.com
-Cc:     netdev@vger.kernel.org, leit@fb.com, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next] tcp: socket-specific version of WARN_ON_ONCE()
-Date:   Thu,  8 Dec 2022 07:46:56 -0800
-Message-Id: <20221208154656.60623-1-leitao@debian.org>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229470AbiLHP7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 10:59:35 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 069A04B775
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 07:59:30 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B8FwcqmF016275, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B8FwcqmF016275
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 8 Dec 2022 23:58:38 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.9; Thu, 8 Dec 2022 23:59:26 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 8 Dec 2022 23:59:25 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Thu, 8 Dec 2022 23:59:25 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: RE: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
+Thread-Topic: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a)
+ + rtl8211fs fiber application
+Thread-Index: AQHZBZK0jNmNF43ANUm+ON2R2qDGTK5d0aqAgATjHlD//8MxAIABsEYw
+Date:   Thu, 8 Dec 2022 15:59:25 +0000
+Message-ID: <cb897c69a9d74b77b34fc94b30dc6bdd@realtek.com>
+References: <20221201143911.4449-1-hau@realtek.com>
+ <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
+ <df3bf48baf6946f4a75c5c4287e6efa7@realtek.com>
+ <4fa4980c-906b-8fda-b29f-b2125c31304c@gmail.com>
+In-Reply-To: <4fa4980c-906b-8fda-b29f-b2125c31304c@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.74]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzgg5LiL5Y2IIDAyOjAwOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_PASS,
+        T_SPF_HELO_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are cases where we need relevant information about the socket
-during a warning, so, it could help us to find bugs that happens and do
-not have an easy repro.
-
-This patch creates a TCP-socket specific version of WARN_ON_ONCE(), which
-dumps revelant information about the TCP socket when it hits rare
-warnings, which is super useful for debugging purposes.
-
-Hooking this warning tcp_snd_cwnd_set() for now, but, the intent is to
-convert more TCP warnings to this helper later.
-
-Signed-off-by: Breno Leitao <leitao@debian.org>
----
- include/net/tcp.h       |  3 ++-
- include/net/tcp_debug.h | 10 ++++++++++
- net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
- 3 files changed, 42 insertions(+), 1 deletion(-)
- create mode 100644 include/net/tcp_debug.h
-
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 14d45661a84d..e490af8e6fdc 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -40,6 +40,7 @@
- #include <net/inet_ecn.h>
- #include <net/dst.h>
- #include <net/mptcp.h>
-+#include <net/tcp_debug.h>
- 
- #include <linux/seq_file.h>
- #include <linux/memcontrol.h>
-@@ -1229,7 +1230,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
- 
- static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
- {
--	WARN_ON_ONCE((int)val <= 0);
-+	TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
- 	tp->snd_cwnd = val;
- }
- 
-diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
-new file mode 100644
-index 000000000000..50e96d87d335
---- /dev/null
-+++ b/include/net/tcp_debug.h
-@@ -0,0 +1,10 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_TCP_DEBUG_H
-+#define _LINUX_TCP_DEBUG_H
-+
-+void tcp_sock_warn(const struct tcp_sock *tp);
-+
-+#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
-+		DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
-+
-+#endif  /* _LINUX_TCP_DEBUG_H */
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 54836a6b81d6..5985ba9c4231 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4705,6 +4705,36 @@ int tcp_abort(struct sock *sk, int err)
- }
- EXPORT_SYMBOL_GPL(tcp_abort);
- 
-+void tcp_sock_warn(const struct tcp_sock *tp)
-+{
-+	const struct sock *sk = (const struct sock *)tp;
-+	struct inet_sock *inet = inet_sk(sk);
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+
-+	WARN_ON(1);
-+
-+	pr_warn("Socket Info: family=%u state=%d ccname=%s cwnd=%u",
-+		sk->sk_family, sk->sk_state, icsk->icsk_ca_ops->name,
-+		tcp_snd_cwnd(tp));
-+
-+	switch (sk->sk_family) {
-+	case AF_INET:
-+		pr_warn("saddr=%pI4:%u daddr=%pI4:%u", &inet->inet_saddr,
-+			ntohs(inet->inet_sport), &inet->inet_daddr,
-+			ntohs(inet->inet_dport));
-+
-+		break;
-+#if IS_ENABLED(CONFIG_IPV6)
-+	case AF_INET6:
-+		pr_warn("saddr=[%pI6]:%u daddr=[%pI6]:%u", &sk->sk_v6_rcv_saddr,
-+			ntohs(inet->inet_sport), &sk->sk_v6_daddr,
-+			ntohs(inet->inet_dport));
-+		break;
-+#endif
-+	}
-+}
-+EXPORT_SYMBOL_GPL(tcp_sock_warn);
-+
- extern struct tcp_congestion_ops tcp_reno;
- 
- static __initdata unsigned long thash_entries;
--- 
-2.30.2
-
+PiBPbiAwNy4xMi4yMDIyIDE4OjQzLCBIYXUgd3JvdGU6DQo+ID4+DQo+ID4+IE9uIDAxLjEyLjIw
+MjIgMTU6MzksIENodW5oYW8gTGluIHdyb3RlOg0KPiA+Pj4gcnRsODE2OGgocmV2aWQgMHgyYSkg
+KyBydGw4MjExZnMgaXMgZm9yIHV0cCB0byBmaWJlciBhcHBsaWNhdGlvbi4NCj4gPj4+IHJ0bDgx
+NjhoIGlzIGNvbm5lY3RlZCB0byBydGw4MjExZnMgdXRwIGludGVyZmFjZS4gQW5kIGZpYmVyIGlz
+DQo+ID4+PiBjb25uZWN0ZWQgdG8gcnRsODIxMWZzIHNmcCBpbnRlcmZhY2UuIHJ0bDgxNjhoIHVz
+ZSBpdHMgZWVwcm0gb3IgZ3BvDQo+ID4+PiBwaW5zIHRvIGNvbnRyb2wgcnRsODIxMWZzIG1kaW8g
+YnVzLg0KPiA+Pj4NCj4gPj4NCj4gPj4gSSBmb3VuZCBhIGRhdGFzaGVldCBmb3IgUlRMODIxMUZT
+IGFuZCBpdCBkb2Vzbid0IG1lbnRpb24gU0ZQIHN1cHBvcnQuDQo+ID4+IEZvciB0aGUgZmliZXIg
+dXNlIGNhc2UgaXQgbWVudGlvbnMgUkdNSUkgZm9yIE1BQy9QSFkgY29ubmVjdGlvbiBhbmQNCj4g
+Pj4gU2VyRGVzIGZvciBjb25uZWN0aW5nIHRoZSBQSFkgdG8gdGhlIGZpYmVyIG1vZHVsZS4gSXMg
+dGhpcyB0aGUgbW9kZQ0KPiA+PiB5b3UnZCBsaWtlIHRvIHN1cHBvcnQ/DQo+ID4+ICJ1dHAgdG8g
+ZmliZXIiIHNvdW5kcyBsaWtlIHRoZSBtZWRpYSBjb252ZXJ0ZXIgYXBwbGljYXRpb24sIGFuZCBJ
+DQo+ID4+IHRoaW5rIHRoYXQncyBub3Qgd2hhdCB3ZSB3YW50IGhlcmUuIFNvIGl0J3MgbWlzbGVh
+ZGluZy4NCj4gPiBUaGlzIGFwcGxpY2F0aW9uIGlzIG5vdCBsaXN0ZWQgaW4gZGF0YXNoZWV0LiBC
+dXQgaXQgaXMgc2ltaWxhciB0byB1dHAgdG8gZmliZXINCj4gYXBwbGljYXRpb24uIEZpYmVyIGNv
+bm5lY3RzIHRvIHJ0bDgyMTFmcyB0aHJvdWdoIFNlckRlcyBpbnRlcmZhY2UuDQo+ID4gcnRsODE2
+OGggY29ubmVjdHMgdG8gcnRsODIxMWZzIHRocm91Z2ggbWRpIGludGVyZmFjZS4gcnRsODE2OGgg
+YWxzbw0KPiA+IGNvbm5lY3RzIHRvIHJ0bDgyMTFmcyBtZGMvbWRpbyBpbnRlcmZhY2UgdGhyb3Vn
+aCBpdHMgZWVwcm9tIG9yIGdwbyBwaW5zDQo+IGZvciBjb250cm9sbGluZyBydGw4MjExZnMuIFRo
+ZSBsaW5rIGJldHdlZW4gcnRsODIxMWZzIGFuZCBmaWJlciwgYW5kIHRoZSBsaW5rDQo+IGJldHdl
+ZW4gcnRsODIxMWZzIGFuZCBydGw4MTY4aCBzaG91bGQgYmUgdGhlIHNhbWUuDQo+ID4gIERyaXZl
+ciBqdXN0IG5lZWRzIHRvIHNldCB0aGUgbGluayBjYXBhYmlsaXR5IG9mIHJ0bDgxNjhoIHRvIGF1
+dG8gbmVnYXRpb24gYW5kDQo+IHJ0bDgyMTFmcyB3aWxsIHByb3BhZ2F0ZSB0aGUgbGluayBzdGF0
+dXMgYmV0d2VlbiBmaWJlciBhbmQgaXRzZWxmIHRvIHJ0bDgxNjhoLg0KPiA+IEJ1dCBydGw4MTY4
+aCB3aWxsIG5vdCBrbm93IHRoZSBsaW5rIGNhcGFiaWxpdHkgb2YgZmliZXIuIFNvIHdoZW4gc3lz
+dGVtDQo+IHN1c3BlbmQsIGlmIHdvbCBpcyBlbmFibGVkLCBkcml2ZXIgY2Fubm90IHNwZWVkIGRv
+d24gcnRsODE2OGgncyBwaHkuDQo+ID4gT3IgcnRsODE2OGggY2Fubm90IGJlIHdha2VuIHVwLg0K
+PiA+DQo+ID4gSSB3aWxsIHN1Ym1pdCBhIG5ldyBwYXRjaCBhY2NvcmRpbmcgeW91ciBhZHZpY2Uu
+IEJ1dCB3ZSBhcmUgY29uc2lkZXJpbmcgbm90DQo+IHRvIHVzZSBkcml2ZXIocjgxNjkpIHRvIHNl
+dHVwIHJ0bDgyMTFmcy4gU28gbmV4dCBwYXRjaCBtYXliZSBzaW1wbGVyLg0KPiA+DQo+IA0KPiBT
+b3VuZHMgc3RyYW5nZSB0aGF0IFJUTDgxNjhIIGNvbm5lY3RzIHRvIFJUTDgyMTFGUyB2aWEgTURJ
+LiBUeXBpY2FsbHkgeW91DQo+IHdvdWxkIHVzZSBSR01JSSBoZXJlLg0KPiBJcyBpdCBiZWNhdXNl
+IFJUTDgxNjhIIGhhcyBubyBwaW5zIGZvciBSR01JSSB0byBleHRlcm5hbCBQSFkncz8NCj4gDQo+
+IFRoZW4gbXkgdW5kZXJzdGFuZGluZyB3b3VsZCBiZSB0aGF0IHlvdSBkbyBpdCBsaWtlIHRoaXM6
+DQo+IFJUTDgxNjhIIE1BQyAtPiA8aW50ZXJuYWwgUkdNSUk+IC0+IFJUTDgxNjhIIFBIWSAtPiA8
+TURJPiAtPiBSVEw4MjExRlMgLQ0KPiA+IDxTZXJEZXM+IC0+IEZpYmVyIG1vZHVsZQ0KPiAgICB8
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHwNCj4gICAgIC0tLS0tLS0tLS0tLS0tLS0tLS1iaXQtYmFuZ2VkIE1ESU8tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0NCj4gDQo+IFNvdSB5b3Ugd291bGQgbmVlZCB0byBjb250cm9sIGJv
+dGggUEhZJ3MsIHJpZ2h0PyBCZWNhdXNlIHNldHVwIHdvdWxkbid0DQo+IHdvcmsgaWYgZS5nLiBS
+VEw4MTY4SC1pbnRlcm5hbCBQSFkgaXMgcG93ZXJlZCBkb3duLg0KPiBJcyB0aGUgUlRMODIxMUZT
+IGludGVycnVwdCBwaW4gY29ubmVjdGVkIHRvIFJUTDgxNjhIPyBPciBoYXMgcG9sbGluZyB0byBi
+ZQ0KPiB1c2VkIHRvIGdldCB0aGUgc3RhdHVzIGZyb20gUlRMODIxMUZTPw0KPiANCnJ0bDgxNjhI
+IGlzIGFuIGludGVncmF0ZWQgRXRoZXJuZXQgY29udHJvbGxlciwgaXQgY29udGFpbnMgTUFDIGFu
+ZCBQSFkuIEl0IGhhcyBubyBSR01JSSBpbnRlcmZhY2UgdG8gY29ubmVjdCB0byBleHRlcm5hbCBQ
+SFkuDQpJbiB0aGlzIGFwcGxpY2F0aW9uLCBkcml2ZXIgcjgxNjkgY29udHJvbHMgdHdvIFBIWS4g
+T25lIGlzIHJ0bDgxNjhoJ3MgUEhZLCBhbm90aGVyIFBIWSBpcyBydGw4MjExZnMuDQpXaGF0IHI4
+MTY5IGhhdmUgdG8gZG8gaXMgdG8gZW5hYmxlIGFsbCBsaW5rIGNhcGFiaWxpdHkuIHJ0bDgyMTFm
+cyBmaXJtd2FyZSB3aWxsIHByb3BhZ2F0ZSBmaWJlcidzIGxpbmsgc3RhdHVzIHRvIHJ0bDgxNjho
+LiANCnJ0bDgxNjhoIHdpbGwga25vdyB0aGUgZmliZXIncyBsaW5rIHN0YXR1cyBmcm9tIGl0cyBN
+QUMgcmVnaXN0ZXIgMHg2Yy4gVGhpcyB0aGUgc2FtZSBhcyBiZWZvcmUuIFNvIHJ0bDgyMTFmcydz
+IGludGVycnVwdCBwaW4gDQp3aWxsIG5vdCBjb25uZWN0IHRvIHJ0bDgxNjhoLiBBbmQgcnRsODE2
+OGggZG9lcyBub3QgaGF2ZSB0byBwb2xsaW5nIHRoZSBsaW5rIHN0YXR1cyBvZiBydGw4MjExZnMu
+DQoNClJUTDgxNjhIIE1BQyAtPiA8aW50ZXJuYWwgUkdNSUk+IC0+IFJUTDgxNjhIIFBIWSAtPiA8
+TURJPiAtPiBSVEw4MjExRlMgLT4gPFNlckRlcz4gLT4gRmliZXIgbW9kdWxlDQogICB8ICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgfA0KICAgIC0tLS0tLS0tLS0tLS0tLS0tLS1iaXQtYmFuZ2VkIE1ESU8odXNl
+IGVlcHJvbSBvciBncG8gcGluKS0tLS0tLS0tLS0tLS0tLS0tLS0tDQoNCkJlY2F1c2UgcnRsODIx
+MWZzJ3MgZmlybXdhcmUgd2lsbCBzZXQgbGluayBjYXBhYmlsaXR5IHRvIDEwME0gYW5kIEdJR0Eg
+d2hlbiBmaWJlciBsaW5rIGlzIGZyb20gb2ZmIHRvIG9uLi4NClNvIHdoZW4gc3lzdGVtIHN1c3Bl
+bmQsIGlmIHdvbCBpcyBlbmFibGVkLCBydGw4MTY4aCB3aWxsIHNwZWVkIGRvd24gdG8gMTAwTShi
+ZWNhdXNlIHJ0bDgyMTFmcyBhZHZlcnRpc2UgMTAwTSBhbmQgZ2lnYSB0byBydGw4MTY4aCkuDQpU
+aGUgbGluayBzcGVlZCBiZXR3ZWVuIHJ0bDgxNjhoIGFuZCBmaWJlciB3aWxsIG1pc21hdGNoLiBU
+aGF0IHdpbGwgY2F1c2Ugd29sIGZhaWwuDQoNCkFuZCBpbiB0aGUgYXBwbGljYXRpb24sIHdlIGFs
+c28gbmVlZCB0byBzZXR1cCBydGw4MjExZnMuIE9yIGl0IG1heSBhbHdheXMgbGluayBkb3duLg0K
+DQogLS0tLS0tUGxlYXNlIGNvbnNpZGVyIHRoZSBlbnZpcm9ubWVudCBiZWZvcmUgcHJpbnRpbmcg
+dGhpcyBlLW1haWwuDQo=
