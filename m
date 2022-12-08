@@ -2,314 +2,361 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABF41646C5F
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 11:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE902646C62
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 11:05:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbiLHKDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 05:03:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
+        id S229462AbiLHKFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 05:05:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbiLHKDk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:03:40 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BAA4E686;
-        Thu,  8 Dec 2022 02:03:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670493818; x=1702029818;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=T+eOy8kpGeFvv0C5bjdvd+Hz/oC/JRU1NsuROG9ParA=;
-  b=d3KvmhexqMDyXUVhr/Aw30Tx6iBcUpQ7YSLB2icz8T+HHvEntaGFmTQ9
-   otE74QWzaked8vGlbdWkg1M1c9RRjAFnUN7e444shopphyEtxWvrmT62A
-   KoA3zmgSDB5Sfy9y07ZkGncJnwna2306xkUmjJmHEuwqsebORh36PAZXN
-   B3OoyqIsZgNwyeqGQGU7fETwAi/MYlokIDCJk51YcZeyATKfuP8w1E6fg
-   faU1/nsyAMpkOn7+FFy/8C3CWAY9IkkQmBI9qTCNPTmGZthR699iop+XP
-   mImqV4L77XwkjbfOXzVDYLmajw9VcNq85h/CW0b6Ph8/tchIWuaCl9lbT
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="318271232"
-X-IronPort-AV: E=Sophos;i="5.96,227,1665471600"; 
-   d="scan'208";a="318271232"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 02:03:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="821282851"
-X-IronPort-AV: E=Sophos;i="5.96,227,1665471600"; 
-   d="scan'208";a="821282851"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 08 Dec 2022 02:03:34 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 5FC1411D; Thu,  8 Dec 2022 12:04:02 +0200 (EET)
-Date:   Thu, 8 Dec 2022 12:04:02 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Wolfram Sang <wsa@kernel.org>
-Subject: Re: [PATCH RFC 1/2] i2c: add fwnode APIs
-Message-ID: <Y5G2kkGC69FVWaiK@black.fi.intel.com>
-References: <Y5B3S6KZTrYlIH8g@shell.armlinux.org.uk>
- <E1p2sVM-009tqA-Vq@rmk-PC.armlinux.org.uk>
+        with ESMTP id S229550AbiLHKFl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:05:41 -0500
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5870C537F7
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:05:37 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id a13-20020a056e0208ad00b003034c36b8b5so770184ilt.9
+        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 02:05:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+KY4L7jare/peb7fKPYRZZs5P6RCWx1etCzqw0D7xFg=;
+        b=pPhvgx0EBLa9255jqKog5KWdtq9rHHmezlh8tIVPFsRWBnphS7GnV9EU2gJNXarAZW
+         ERbCcpshuZouwXHr+uYdMXRSBmfqiey6wVgBW+GSLnnSzl4S+LiRswZ68GwH0nxP+sGF
+         463PgLW6f534293lxIi0gw6fgrKSuFKvBNp8BUaYp4C6dFhQbvVgy9W+nJRO+UMz4155
+         iIh+92ngI+SNyc21wSS/6jBPOMN/pPZgO9HesHJiKLr/NP74/oEwWp5xzy5eMh04BU/8
+         5PMUUUicPqNT56Enc9OC8oWJnEFiHHRruJXP/OMqb63Xnn7Dtv7yMZn0aWlNVaeQk/GI
+         MFRg==
+X-Gm-Message-State: ANoB5pkO9+eq9YtrqxDvJDHuOV1FIqJcj1ZB8n9XHr+5aUvFQktb6X0v
+        s+UR7hjhRpl3HCx7BeLDf59CJa5bqveAivFoaPrv4E6sLjJJ
+X-Google-Smtp-Source: AA0mqf7587W62Cne3SRqk+4gFLegZDSjh4Ddc2iDIzQoQ1vtWpZ53J6TQzWERbzO+yZsFAjDdr/2hz53kl3MvzLxj11nAlFDEa8O
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <E1p2sVM-009tqA-Vq@rmk-PC.armlinux.org.uk>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a5d:9c81:0:b0:6de:c78b:6fd7 with SMTP id
+ p1-20020a5d9c81000000b006dec78b6fd7mr35575760iop.159.1670493936731; Thu, 08
+ Dec 2022 02:05:36 -0800 (PST)
+Date:   Thu, 08 Dec 2022 02:05:36 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b2d33705ef4e2d70@google.com>
+Subject: [syzbot] kernel stack overflow in sock_close
+From:   syzbot <syzbot+09329bd987ebca21bced@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        jakub@cloudflare.com, john.fastabend@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello,
 
-On Wed, Dec 07, 2022 at 11:22:24AM +0000, Russell King (Oracle) wrote:
-> Add fwnode APIs for finding and getting I2C adapters, which will be
-> used by the SFP code. These are passed the fwnode corresponding to
-> the adapter, and return the I2C adapter. It is the responsibility of
-> the caller to find the appropriate fwnode.
-> 
-> We keep the DT and ACPI interfaces, but where appropriate, recode them
-> to use the fwnode interfaces internally.
-> 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+syzbot found the following issue on:
 
-Looks good, just few minor comments below. :)
+HEAD commit:    e3cb714fb489 Merge branch 'for-next/core' into for-kernelci
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+console output: https://syzkaller.appspot.com/x/log.txt?x=13d5c11d880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ec7118319bfb771e
+dashboard link: https://syzkaller.appspot.com/bug?extid=09329bd987ebca21bced
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm64
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145daef3880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1313d497880000
 
-> ---
->  drivers/i2c/i2c-core-acpi.c | 13 +------
->  drivers/i2c/i2c-core-base.c | 72 +++++++++++++++++++++++++++++++++++++
->  drivers/i2c/i2c-core-of.c   | 51 ++------------------------
->  include/linux/i2c.h         |  9 +++++
->  4 files changed, 85 insertions(+), 60 deletions(-)
-> 
-> diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
-> index 4dd777cc0c89..d6037a328669 100644
-> --- a/drivers/i2c/i2c-core-acpi.c
-> +++ b/drivers/i2c/i2c-core-acpi.c
-> @@ -442,18 +442,7 @@ EXPORT_SYMBOL_GPL(i2c_acpi_find_adapter_by_handle);
->  
->  static struct i2c_client *i2c_acpi_find_client_by_adev(struct acpi_device *adev)
->  {
-> -	struct device *dev;
-> -	struct i2c_client *client;
-> -
-> -	dev = bus_find_device_by_acpi_dev(&i2c_bus_type, adev);
-> -	if (!dev)
-> -		return NULL;
-> -
-> -	client = i2c_verify_client(dev);
-> -	if (!client)
-> -		put_device(dev);
-> -
-> -	return client;
-> +	return i2c_find_device_by_fwnode(acpi_fwnode_handle(adev));
->  }
->  
->  static int i2c_acpi_notify(struct notifier_block *nb, unsigned long value,
-> diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-> index 9aa7b9d9a485..254ec043ce90 100644
-> --- a/drivers/i2c/i2c-core-base.c
-> +++ b/drivers/i2c/i2c-core-base.c
-> @@ -1011,6 +1011,27 @@ void i2c_unregister_device(struct i2c_client *client)
->  }
->  EXPORT_SYMBOL_GPL(i2c_unregister_device);
->  
-> +/* must call put_device() when done with returned i2c_client device */
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/832eb1866f2c/disk-e3cb714f.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/5fd572b7d96d/vmlinux-e3cb714f.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/34c82908beda/Image-e3cb714f.gz.xz
 
-I think proper kernel-doc would be better here and all the exported
-functions.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+09329bd987ebca21bced@syzkaller.appspotmail.com
 
-> +struct i2c_client *i2c_find_device_by_fwnode(struct fwnode_handle *fwnode)
-> +{
-> +	struct i2c_client *client;
-> +	struct device *dev;
-> +
-> +	if (!fwnode)
-> +		return NULL;
-> +
-> +	dev = bus_find_device_by_fwnode(&i2c_bus_type, fwnode);
-> +	if (!dev)
-> +		return NULL;
-> +
-> +	client = i2c_verify_client(dev);
-> +	if (!client)
-> +		put_device(dev);
-> +
-> +	return client;
-> +}
-> +EXPORT_SYMBOL(i2c_find_device_by_fwnode);
-> +
+x8 : 0000000000040574 x7 : ffff80000b22f58c x6 : 0000000000000000
+x5 : 0000000000000000 x4 : 0000000000000001 x3 : 0000000000000000
+x2 : 0000000000000002 x1 : ffff0000c60f3eb8 x0 : ffff0000c60f3480
+Kernel panic - not syncing: kernel stack overflow
+CPU: 1 PID: 3074 Comm: syz-executor169 Not tainted 6.1.0-rc7-syzkaller-33097-ge3cb714fb489 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/30/2022
+Call trace:
+ dump_backtrace+0x1c4/0x1f0 arch/arm64/kernel/stacktrace.c:156
+ show_stack+0x2c/0x54 arch/arm64/kernel/stacktrace.c:163
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x104/0x16c lib/dump_stack.c:106
+ dump_stack+0x1c/0x58 lib/dump_stack.c:113
+ panic+0x218/0x508 kernel/panic.c:274
+ nmi_panic+0xbc/0xf0 kernel/panic.c:169
+ panic_bad_stack+0x134/0x154 arch/arm64/kernel/traps.c:886
+ handle_bad_stack+0x34/0x48 arch/arm64/kernel/entry-common.c:849
+ __bad_stack+0x78/0x7c arch/arm64/kernel/entry.S:552
+ mark_lock+0x4/0x1b4 kernel/locking/lockdep.c:4595
+ lock_acquire+0x100/0x1f8 kernel/locking/lockdep.c:5668
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:126 [inline]
+ _raw_spin_lock_bh+0x54/0x6c kernel/locking/spinlock.c:178
+ spin_lock_bh include/linux/spinlock.h:355 [inline]
+ lock_sock_nested+0x88/0xd8 net/core/sock.c:3450
+ lock_sock include/net/sock.h:1721 [inline]
+ sock_map_close+0x30/0x4bc net/core/sock_map.c:1610
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ sock_map_close+0x400/0x4bc
+ inet_release+0xc8/0xe4 net/ipv4/af_inet.c:428
+ inet6_release+0x3c/0x58 net/ipv6/af_inet6.c:488
+ __sock_release net/socket.c:650 [inline]
+ sock_close+0x50/0xf0 net/socket.c:1365
+ __fput+0x198/0x3e4 fs/file_table.c:320
+ ____fput+0x20/0x30 fs/file_table.c:348
+ task_work_run+0x100/0x148 kernel/task_work.c:179
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0x2dc/0xcac kernel/exit.c:820
+ do_group_exit+0x98/0xcc kernel/exit.c:950
+ get_signal+0xabc/0xb2c kernel/signal.c:2858
+ do_signal+0x128/0x438 arch/arm64/kernel/signal.c:1076
+ do_notify_resume+0xc0/0x1f0 arch/arm64/kernel/signal.c:1129
+ prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
+ exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
+ el0_svc+0x9c/0x150 arch/arm64/kernel/entry-common.c:638
+ el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+ el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
+SMP: stopping secondary CPUs
+Kernel Offset: disabled
+CPU features: 0x00000,040e0108,4c017203
+Memory Limit: none
 
-Drop this empty line.
 
->  
->  static const struct i2c_device_id dummy_id[] = {
->  	{ "dummy", 0 },
-> @@ -1761,6 +1782,57 @@ int devm_i2c_add_adapter(struct device *dev, struct i2c_adapter *adapter)
->  }
->  EXPORT_SYMBOL_GPL(devm_i2c_add_adapter);
->  
-> +static int i2c_dev_or_parent_fwnode_match(struct device *dev, const void *data)
-> +{
-> +	if (dev_fwnode(dev) == data)
-> +		return 1;
-> +
-> +	if (dev->parent && dev_fwnode(dev->parent) == data)
-> +		return 1;
-> +
-> +	return 0;
-> +}
-> +
-> +/* must call put_device() when done with returned i2c_adapter device */
-> +struct i2c_adapter *i2c_find_adapter_by_fwnode(struct fwnode_handle *fwnode)
-> +{
-> +	struct i2c_adapter *adapter;
-> +	struct device *dev;
-> +
-> +	if (!fwnode)
-> +		return NULL;
-> +
-> +	dev = bus_find_device(&i2c_bus_type, NULL, fwnode,
-> +			      i2c_dev_or_parent_fwnode_match);
-> +	if (!dev)
-> +		return NULL;
-> +
-> +	adapter = i2c_verify_adapter(dev);
-> +	if (!adapter)
-> +		put_device(dev);
-> +
-> +	return adapter;
-> +}
-> +EXPORT_SYMBOL(i2c_find_adapter_by_fwnode);
-> +
-> +/* must call i2c_put_adapter() when done with returned i2c_adapter device */
-> +struct i2c_adapter *i2c_get_adapter_by_fwnode(struct fwnode_handle *fwnode)
-> +{
-> +	struct i2c_adapter *adapter;
-> +
-> +	adapter = i2c_find_adapter_by_fwnode(fwnode);
-> +	if (!adapter)
-> +		return NULL;
-> +
-> +	if (!try_module_get(adapter->owner)) {
-> +		put_device(&adapter->dev);
-> +		adapter = NULL;
-> +	}
-> +
-> +	return adapter;
-> +}
-> +EXPORT_SYMBOL(i2c_get_adapter_by_fwnode);
-> +
->  static void i2c_parse_timing(struct device *dev, char *prop_name, u32 *cur_val_p,
->  			    u32 def_val, bool use_def)
->  {
-> diff --git a/drivers/i2c/i2c-core-of.c b/drivers/i2c/i2c-core-of.c
-> index 3ed74aa4b44b..c3e565e4bddf 100644
-> --- a/drivers/i2c/i2c-core-of.c
-> +++ b/drivers/i2c/i2c-core-of.c
-> @@ -113,69 +113,24 @@ void of_i2c_register_devices(struct i2c_adapter *adap)
->  	of_node_put(bus);
->  }
->  
-> -static int of_dev_or_parent_node_match(struct device *dev, const void *data)
-> -{
-> -	if (dev->of_node == data)
-> -		return 1;
-> -
-> -	if (dev->parent)
-> -		return dev->parent->of_node == data;
-> -
-> -	return 0;
-> -}
-> -
->  /* must call put_device() when done with returned i2c_client device */
->  struct i2c_client *of_find_i2c_device_by_node(struct device_node *node)
->  {
-> -	struct device *dev;
-> -	struct i2c_client *client;
-> -
-> -	dev = bus_find_device_by_of_node(&i2c_bus_type, node);
-> -	if (!dev)
-> -		return NULL;
-> -
-> -	client = i2c_verify_client(dev);
-> -	if (!client)
-> -		put_device(dev);
-> -
-> -	return client;
-> +	return i2c_find_device_by_fwnode(of_fwnode_handle(node));
->  }
->  EXPORT_SYMBOL(of_find_i2c_device_by_node);
->  
->  /* must call put_device() when done with returned i2c_adapter device */
->  struct i2c_adapter *of_find_i2c_adapter_by_node(struct device_node *node)
->  {
-> -	struct device *dev;
-> -	struct i2c_adapter *adapter;
-> -
-> -	dev = bus_find_device(&i2c_bus_type, NULL, node,
-> -			      of_dev_or_parent_node_match);
-> -	if (!dev)
-> -		return NULL;
-> -
-> -	adapter = i2c_verify_adapter(dev);
-> -	if (!adapter)
-> -		put_device(dev);
-> -
-> -	return adapter;
-> +	return i2c_find_adapter_by_fwnode(of_fwnode_handle(node));
->  }
->  EXPORT_SYMBOL(of_find_i2c_adapter_by_node);
->  
->  /* must call i2c_put_adapter() when done with returned i2c_adapter device */
->  struct i2c_adapter *of_get_i2c_adapter_by_node(struct device_node *node)
->  {
-> -	struct i2c_adapter *adapter;
-> -
-> -	adapter = of_find_i2c_adapter_by_node(node);
-> -	if (!adapter)
-> -		return NULL;
-> -
-> -	if (!try_module_get(adapter->owner)) {
-> -		put_device(&adapter->dev);
-> -		adapter = NULL;
-> -	}
-> -
-> -	return adapter;
-> +	return i2c_get_adapter_by_fwnode(of_fwnode_handle(node));
->  }
->  EXPORT_SYMBOL(of_get_i2c_adapter_by_node);
->  
-> diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-> index d84e0e99f084..bcee9faaf2e6 100644
-> --- a/include/linux/i2c.h
-> +++ b/include/linux/i2c.h
-> @@ -965,6 +965,15 @@ int i2c_handle_smbus_host_notify(struct i2c_adapter *adap, unsigned short addr);
->  
->  #endif /* I2C */
->  
-> +/* must call put_device() when done with returned i2c_client device */
-> +struct i2c_client *i2c_find_device_by_fwnode(struct fwnode_handle *fwnode);
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-With the kernel-docs in place you probably can drop these comments.
-
-> +
-> +/* must call put_device() when done with returned i2c_adapter device */
-> +struct i2c_adapter *i2c_find_adapter_by_fwnode(struct fwnode_handle *fwnode);
-> +
-> +/* must call i2c_put_adapter() when done with returned i2c_adapter device */
-> +struct i2c_adapter *i2c_get_adapter_by_fwnode(struct fwnode_handle *fwnode);
-> +
->  #if IS_ENABLED(CONFIG_OF)
->  /* must call put_device() when done with returned i2c_client device */
->  struct i2c_client *of_find_i2c_device_by_node(struct device_node *node);
-> -- 
-> 2.30.2
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
