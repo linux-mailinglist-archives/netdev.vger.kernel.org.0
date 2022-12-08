@@ -2,157 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3415646D4C
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 11:42:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4792F646D81
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 11:48:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230149AbiLHKmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 05:42:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
+        id S230098AbiLHKso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 05:48:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbiLHKmZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:42:25 -0500
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8007389337
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:39:00 -0800 (PST)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-246-x9BSR9g2NXiugIB-TXS_rg-1; Thu, 08 Dec 2022 05:38:56 -0500
-X-MC-Unique: x9BSR9g2NXiugIB-TXS_rg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S230112AbiLHKsI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:48:08 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D6789313
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:43:20 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 2636933799;
+        Thu,  8 Dec 2022 10:43:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1670496199; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QPFxnL1pxomXaBvapjhCCtdbJlaUAdnMNKxdbQBIUs8=;
+        b=HST0j6CCq6GiKf+/HEcEpoTNoYFFFlIHq/099FK4fZWh49D/n6XaGqHagreUu/7rdSq+r9
+        76CimJSt7Ta+CsohUXlMOeaj9H6aVmn9Y5EJsm39X6VLSGIz5H/ql3TtAKDfipgp1hBW1U
+        fhlNgkUWpXpe97JTjO2zFAvNMEQzUrY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1670496199;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QPFxnL1pxomXaBvapjhCCtdbJlaUAdnMNKxdbQBIUs8=;
+        b=fz32wfecvHhbTmkI3BbVGKVFG/fCJNaUtqeZjhEuLzCJr+g6BKx654C6giUy6CM1E4KDdV
+        chwbQ7PVd8AauuCg==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0AF52805AC5;
-        Thu,  8 Dec 2022 10:38:56 +0000 (UTC)
-Received: from hog (unknown [10.39.192.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3439640C2065;
-        Thu,  8 Dec 2022 10:38:52 +0000 (UTC)
-Date:   Thu, 8 Dec 2022 11:37:49 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Emeel Hakim <ehakim@nvidia.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Raed Salem <raeds@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "jiri@resnulli.us" <jiri@resnulli.us>
-Subject: Re: [PATCH net-next v3 1/2] macsec: add support for
- IFLA_MACSEC_OFFLOAD in macsec_changelink
-Message-ID: <Y5G+feJ65XlY/FdT@hog>
-References: <20221207101017.533-1-ehakim@nvidia.com>
- <Y5C1Hifsg3/lJJ8N@hog>
- <IA1PR12MB635345D00CDE8F81721EEC89AB1A9@IA1PR12MB6353.namprd12.prod.outlook.com>
- <Y5ENwSv4Q+A4O6lG@hog>
- <IA1PR12MB6353847AB0BC0B15EFD46953AB1D9@IA1PR12MB6353.namprd12.prod.outlook.com>
+        by relay2.suse.de (Postfix) with ESMTPS id DF5592C27D;
+        Thu,  8 Dec 2022 10:43:16 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id CDC416045E; Thu,  8 Dec 2022 11:43:18 +0100 (CET)
+Date:   Thu, 8 Dec 2022 11:43:18 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool v2 05/13] ethtool: fix extra warnings
+Message-ID: <20221208104318.hq3ze7vaskbcpuix@lion.mk-sys.cz>
+References: <20221208011122.2343363-1-jesse.brandeburg@intel.com>
+ <20221208011122.2343363-6-jesse.brandeburg@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="mgpy4ahei62gwgas"
 Content-Disposition: inline
-In-Reply-To: <IA1PR12MB6353847AB0BC0B15EFD46953AB1D9@IA1PR12MB6353.namprd12.prod.outlook.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221208011122.2343363-6-jesse.brandeburg@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2022-12-08, 06:53:18 +0000, Emeel Hakim wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Sabrina Dubroca <sd@queasysnail.net>
-> > Sent: Thursday, 8 December 2022 0:04
-> > To: Emeel Hakim <ehakim@nvidia.com>
-> > Cc: linux-kernel@vger.kernel.org; Raed Salem <raeds@nvidia.com>;
-> > davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> > pabeni@redhat.com; netdev@vger.kernel.org; atenart@kernel.org; jiri@resnulli.us
-> > Subject: Re: [PATCH net-next v3 1/2] macsec: add support for
-> > IFLA_MACSEC_OFFLOAD in macsec_changelink
-> > 
-> > External email: Use caution opening links or attachments
-> > 
-> > 
-> > 2022-12-07, 15:52:15 +0000, Emeel Hakim wrote:
-> > >
-> > >
-> > > > -----Original Message-----
-> > > > From: Sabrina Dubroca <sd@queasysnail.net>
-> > > > Sent: Wednesday, 7 December 2022 17:46
-> > > > To: Emeel Hakim <ehakim@nvidia.com>
-> > > > Cc: linux-kernel@vger.kernel.org; Raed Salem <raeds@nvidia.com>;
-> > > > davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> > > > pabeni@redhat.com; netdev@vger.kernel.org; atenart@kernel.org;
-> > > > jiri@resnulli.us
-> > > > Subject: Re: [PATCH net-next v3 1/2] macsec: add support for
-> > > > IFLA_MACSEC_OFFLOAD in macsec_changelink
-> > > >
-> > > > External email: Use caution opening links or attachments
-> > > >
-> > > >
-> > > > 2022-12-07, 12:10:16 +0200, ehakim@nvidia.com wrote:
-> > > > [...]
-> > > > > +static int macsec_changelink_upd_offload(struct net_device *dev,
-> > > > > +struct nlattr *data[]) {
-> > > > > +     enum macsec_offload offload;
-> > > > > +     struct macsec_dev *macsec;
-> > > > > +
-> > > > > +     macsec = macsec_priv(dev);
-> > > > > +     offload = nla_get_u8(data[IFLA_MACSEC_OFFLOAD]);
-> > > >
-> > > > All those checks are also present in macsec_upd_offload, why not
-> > > > move them into macsec_update_offload as well? (and then you don't
-> > > > really need macsec_changelink_upd_offload anymore)
-> > > >
-> > >
-> > > Right, I thought about it , but I realized that those checks are done
-> > > before holding the lock in macsec_upd_offload and if I move them to
-> > > macsec_update_offload I will hold the lock for a longer time , I want to minimize
-> > the time of holding the lock.
-> > 
-> > Those couple of tests are probably lost in the noise compared to what
-> > mdo_add_secy ends up doing. It also looks like a race condition between the
-> > "macsec->offload == offload" test in macsec_upd_offload (outside rtnl_lock) and
-> > updating macsec->offload via macsec_changelink is possible. (Currently we can
-> > only change it with macsec_upd_offload (called under genl_lock) so there's no issue
-> > until we add this patch)
-> 
-> Ack, 
-> so getting rid of macsec_changelink_upd_offload and moving the locking inside macsec_update_offload
-> should handle this issue
 
-You mean moving rtnl_lock()/unlock inside macsec_update_offload?
-changelink is already under rtnl_lock. Just move the checks that you
-currently have in macsec_changelink_upd_offload into
-macsec_update_offload, and remove them from macsec_upd_offload.
+--mgpy4ahei62gwgas
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > 
-> > > > > +     if (macsec->offload == offload)
-> > > > > +             return 0;
-> > > > > +
-> > > > > +     /* Check if the offloading mode is supported by the underlying layers */
-> > > > > +     if (offload != MACSEC_OFFLOAD_OFF &&
-> > > > > +         !macsec_check_offload(offload, macsec))
-> > > > > +             return -EOPNOTSUPP;
-> > > > > +
-> > > > > +     /* Check if the net device is busy. */
-> > > > > +     if (netif_running(dev))
-> > > > > +             return -EBUSY;
-> > > > > +
-> > > > > +     return macsec_update_offload(macsec, offload); }
-> > > > > +
-> > > >
-> > > > --
-> > > > Sabrina
-> > >
-> > 
-> > --
-> > Sabrina
-> 
+On Wed, Dec 07, 2022 at 05:11:14PM -0800, Jesse Brandeburg wrote:
+> '$ scan-build make' reports
+>=20
+> netlink/permaddr.c:44:2: warning: Value stored to 'ifinfo' is never read =
+[deadcode.DeadStores]
+>         ifinfo =3D mnl_nlmsg_put_extra_header(nlhdr, sizeof(*ifinfo));
+>         ^        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>=20
+> So just remove the extra assignment which is never used.
+>=20
+> Fixes: 7f3585b22a4b ("netlink: add handler for permaddr (-P)")
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> ---
+>  netlink/permaddr.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/netlink/permaddr.c b/netlink/permaddr.c
+> index 006eac6c0094..dccb0c6cfdb7 100644
+> --- a/netlink/permaddr.c
+> +++ b/netlink/permaddr.c
+> @@ -41,7 +41,7 @@ static int permaddr_prep_request(struct nl_socket *nlsk)
+>  	nlhdr->nlmsg_type =3D RTM_GETLINK;
+>  	nlhdr->nlmsg_flags =3D nlm_flags;
+>  	msgbuff->nlhdr =3D nlhdr;
+> -	ifinfo =3D mnl_nlmsg_put_extra_header(nlhdr, sizeof(*ifinfo));
+> +	mnl_nlmsg_put_extra_header(nlhdr, sizeof(*ifinfo));
 
--- 
-Sabrina
+Good point. But looking at the code, the variable isn't in fact used
+at all, except of the two occurences of sizeof(*ifinfo). So we can
+just as well replace them with sizeof(struct ifinfomsg) and drop the
+variable.
 
+Michal
+
+> =20
+>  	if (devname) {
+>  		uint16_t type =3D IFLA_IFNAME;
+> --=20
+> 2.31.1
+>=20
+
+--mgpy4ahei62gwgas
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmORv8IACgkQ538sG/LR
+dpXXHQgAxsKmLKS+HY8neLZDJ/FO/gPRz5hdPGGw85aH/qgz50WP9OiX8PtH54Je
+52NQOYvMGShMX7P6/noOpzU6IrsOOLhQArqTnxhNkOPe8ij73MltR4P45NFQ8IkZ
+Q962QvKmbShQQv329eMtn+I2yUjEELu5IYS/7DMBFlYaP0zVcSrR0wM2f91qGk9f
+vT2K4H47tEeZmZ+KCtK7RyJ5DPyFKE2YDslyKsTEE0KdqG2PT+bHHZ+YPlcgdbt0
+XjYcoZw42wAQHszkffkNdnFFbNTrOuDKC04jU15s+xj4w+rDhIqjlpJFMk3bOXHF
+Hmb32tzZ8WJFIS2kVg4t1JxD2fuTyg==
+=wT5E
+-----END PGP SIGNATURE-----
+
+--mgpy4ahei62gwgas--
