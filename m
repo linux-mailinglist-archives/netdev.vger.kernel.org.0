@@ -2,123 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83050646DA1
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 11:55:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ED7C646DAF
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 12:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229915AbiLHKzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 05:55:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34046 "EHLO
+        id S230289AbiLHLAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 06:00:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230041AbiLHKyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:54:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445A7F7B
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:47:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S229753AbiLHK7x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:59:53 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A87C36C73
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:52:49 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 10ADD208AF;
+        Thu,  8 Dec 2022 10:52:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1670496768; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=U+u/iSPoWplrNQyCys3yJY6NJG9o1Cm72/uVVcd6U1M=;
+        b=mei3vjpzK6JGGDKRrGgzCXfj0vck0Z3sLo5gcbW4CUY7d9WByxUFSFqVhfBn3ffRcAZK1z
+        i+K+3VwgTjgoM/oZ9Eh/aN0LhkcmX7/RgJtrihn4rvF1BWK2fNMJ4YPdSzEIR54vyaQx6d
+        oj2520XNn2OApwzsUHkz+UwCaOUxCCg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1670496768;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=U+u/iSPoWplrNQyCys3yJY6NJG9o1Cm72/uVVcd6U1M=;
+        b=KFD4aq/5vKhdUppL/ASpw1xUb6TGhNvO0U/IcWbBA+2/ITCyUG0jqwpTX4iwj/d6fO78Zr
+        xO8lE1Dx47Ek4SCg==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEC2061ECF
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 10:47:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E488C433D6;
-        Thu,  8 Dec 2022 10:47:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670496476;
-        bh=U3wv/ZoFkxtYg0cs2bqh+1rePcoW6CrTAx6+QDj5EKA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=P/e3snFQswgZ7ynTAxMbNdwQg8r6WXWa+zgaI+1g0CWESyXYwilvnPAdoT1XPvXcN
-         SfbmOPWNMTvd4B+NiZ30svOUgXfjAAY9p6Rh01qgr3wdkvkY19hnetbATwTWD9Ngyp
-         cEAdukRdTurDr0b/IFA1Sk92dN88vmqvLxtLffiZA7Ev4pPzVTkkUcxwBe8TVsMzHU
-         32gQ4UdoyBcQYorsEVy1EhQLG0lRG8nfCC1QbIcuEcUXWqVykVPAO2d9sSFZmvqSIF
-         Nr4UFpavb7htqr0PlYXVflhms8UnsEdbXOvpwhl5eQ7f5eTwHOoOLvZss+n6fgKy4x
-         FE2m+XoiQ1+3w==
-Date:   Thu, 8 Dec 2022 12:47:51 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     netdev@vger.kernel.org, jdmason@kudzu.us, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net v3] ethernet: s2io: don't call dev_kfree_skb() under
- spin_lock_irqsave()
-Message-ID: <Y5HA10woHD9n8mpZ@unreal>
-References: <20221208092411.1961448-1-yangyingliang@huawei.com>
- <Y5GxxIc9EY6h/qj2@unreal>
- <840947dc-8560-ca51-f4d6-0e2628c181b1@huawei.com>
+        by relay2.suse.de (Postfix) with ESMTPS id CAD3F2C166;
+        Thu,  8 Dec 2022 10:52:45 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id D442B6045E; Thu,  8 Dec 2022 11:52:47 +0100 (CET)
+Date:   Thu, 8 Dec 2022 11:52:47 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool v2 11/13] ethtool: fix missing free of memory
+ after failure
+Message-ID: <20221208105247.vpb5aqn6hp3unjqx@lion.mk-sys.cz>
+References: <20221208011122.2343363-1-jesse.brandeburg@intel.com>
+ <20221208011122.2343363-12-jesse.brandeburg@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="xpvcux2yp4wfaijz"
 Content-Disposition: inline
-In-Reply-To: <840947dc-8560-ca51-f4d6-0e2628c181b1@huawei.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221208011122.2343363-12-jesse.brandeburg@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 08, 2022 at 06:31:00PM +0800, Yang Yingliang wrote:
-> 
-> On 2022/12/8 17:43, Leon Romanovsky wrote:
-> > On Thu, Dec 08, 2022 at 05:24:11PM +0800, Yang Yingliang wrote:
-> > > The dev_kfree_skb() is defined as consume_skb(), and it is not allowed
-> > > to call consume_skb() from hardware interrupt context or with interrupts
-> > > being disabled. So replace dev_kfree_skb() with dev_consume_skb_irq()
-> > > under spin_lock_irqsave().
-> > While dev_kfree_skb and consume_skb are the same, the dev_kfree_skb_irq
-> > and dev_consume_skb_irq are not. You can't blindly replace
-> > dev_kfree_skb with dev_consume_skb_irq. You should check every place, analyze
-> > and document why specific option was chosen.
-> While calling dev_kfree_skb(consume_skb), the SKB will not be marked as
-> dropped,
-> to keep the same meaning, so replace it with dev_consume_skb_irq()
 
-This annotation code is relatively new (from 2013), while you are
-changing code from pre-git era (<2005). 
+--xpvcux2yp4wfaijz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks
+On Wed, Dec 07, 2022 at 05:11:20PM -0800, Jesse Brandeburg wrote:
+> cppcheck warns:
+> test-common.c:106:2: error: Common realloc mistake: 'block' nulled but no=
+t freed upon failure [memleakOnRealloc]
+>  block =3D realloc(block, sizeof(*block) + size);
+>  ^
+>=20
+> Fix the issue by storing a local copy of the old pointer and using that
+> to free the original if the realloc fails, as the manual for realloc()
+> suggests.
+>=20
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-> 
-> Thanks,
-> Yang
-> > 
-> >    3791 static inline void dev_kfree_skb_irq(struct sk_buff *skb)
-> >    3792 {
-> >    3793         __dev_kfree_skb_irq(skb, SKB_REASON_DROPPED);
-> >    3794 }
-> >    3795
-> >    3796 static inline void dev_consume_skb_irq(struct sk_buff *skb)
-> >    3797 {
-> >    3798         __dev_kfree_skb_irq(skb, SKB_REASON_CONSUMED);
-> >    3799 }
-> > 
-> > Thanks
-> > 
-> > 
-> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > > Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> > > ---
-> > > v2 -> v3:
-> > >    Update commit message.
-> > > 
-> > > v1 -> v2:
-> > >    Add fix tag.
-> > > ---
-> > >   drivers/net/ethernet/neterion/s2io.c | 2 +-
-> > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
-> > > index 1d3c4474b7cb..a83d61d45936 100644
-> > > --- a/drivers/net/ethernet/neterion/s2io.c
-> > > +++ b/drivers/net/ethernet/neterion/s2io.c
-> > > @@ -2386,7 +2386,7 @@ static void free_tx_buffers(struct s2io_nic *nic)
-> > >   			skb = s2io_txdl_getskb(&mac_control->fifos[i], txdp, j);
-> > >   			if (skb) {
-> > >   				swstats->mem_freed += skb->truesize;
-> > > -				dev_kfree_skb(skb);
-> > > +				dev_consume_skb_irq(skb);
-> > >   				cnt++;
-> > >   			}
-> > >   		}
-> > > -- 
-> > > 2.25.1
-> > > 
-> > .
+Acked-by: Michal Kubecek <mkubecek@suse.cz>
+
+> ---
+>  test-common.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/test-common.c b/test-common.c
+> index e4dac3298577..b472027140f6 100644
+> --- a/test-common.c
+> +++ b/test-common.c
+> @@ -97,15 +97,18 @@ void test_free(void *ptr)
+> =20
+>  void *test_realloc(void *ptr, size_t size)
+>  {
+> -	struct list_head *block =3D NULL;
+> +	struct list_head *block =3D NULL, *oldblock;
+> =20
+>  	if (ptr) {
+>  		block =3D (struct list_head *)ptr - 1;
+>  		list_del(block);
+>  	}
+> -	block =3D realloc(block, sizeof(*block) + size);
+> -	if (!block)
+> +	oldblock =3D block;
+> +	block =3D realloc(oldblock, sizeof(*oldblock) + size);
+> +	if (!block) {
+> +		free(oldblock);
+>  		return NULL;
+> +	}
+>  	list_add(block, &malloc_list);
+>  	return block + 1;
+>  }
+> --=20
+> 2.31.1
+>=20
+
+--xpvcux2yp4wfaijz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmORwfsACgkQ538sG/LR
+dpUTUggAy6z+A0v3SDuVe1eEGOoTqmFJLAXzVPrLujGM/gbc9s6PUbAYX44NQAJT
+LkdfPgxlDEi6MXyLGFBD+AmtWfLP4vcm1YCYTxd2WOq1oMx/OfSmtulSLcVsc7Cc
+QJSJKiP/qh9WJaM0UJ079igVpRertfikr31FsLjvTeTnGNh5LZu/CyPH/plYlgKP
+6R2kJeQdlwDlwlx3xmUMVXtmVaoQaNaMCjXtVhD0jgxF2jfVYpKglPeOnAfqXd/3
+6A3X24sTkl8SbB9Wwuj/+82TXGSAmMY4B0SNYq0l0FlcP9VSStf8IIyNJdRfzICR
+emDhJTfFh+dhSLX4eN2rTJ4Akrl9MQ==
+=J8WJ
+-----END PGP SIGNATURE-----
+
+--xpvcux2yp4wfaijz--
