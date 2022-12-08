@@ -2,82 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B6B36473D1
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1D26473D7
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:04:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229848AbiLHQCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 11:02:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
+        id S229995AbiLHQEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 11:04:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbiLHQCN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:02:13 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F3889AEA
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 08:02:11 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id ud5so5127056ejc.4
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 08:02:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=PgTcP7Sb6G+mxt6RrmX5diGBUpEOwhypZwyQEkEjZUo=;
-        b=KLiZD2qBOu/qNsJ2cZjRu0xhRjkjzMUvesjTwJF+Nj34blnUwi+EXBP1laZJLS8qQj
-         cAr+pVGQEkgP7EGIXfq2cAWyFCTDfhDG4cfZCYyiuGXVclg4Ynx/DWUMEaRSTGz833dN
-         NCoHV26jGRcTcQFsYg2jyVoKA97rHaaFhk9n7HsPuWB/Tb8YKl8MTuMkV3zveMStl4JV
-         Fs1Hau6UHdvfP1TGdyZ2wg9UWxVTI+u/sCEEHMSHyEXMjnoVcHwKffCOiWvuQNiEBOqL
-         qxXGyjwsH7GGufZlywGdDJo7ICy0YGaGpAj92BiZSrgKRLKt3z8huikoi8IE9RYGETD6
-         s8fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PgTcP7Sb6G+mxt6RrmX5diGBUpEOwhypZwyQEkEjZUo=;
-        b=bHJofSfeHh84OdjKdGMmlbGxzsTqG9zXPeqQYaUygoMWABvNbwv2B6D98wIlXKKLUu
-         fJFdcpzAcLBiSyz9Z8UtnN3Teryp5Pp5ZI8AeRQ7wDQAuq25V2TrRuE5SdD6mdTDPW/t
-         Ty7+F2LGzAhMt5olA0cgAH/rJVGa3bvXl4y3chVe5BYVb3LADMzwkseZSlDV89/ZoFIB
-         UPmiUSe5Sobow3voKdwfAgMgS7wvT2ILRuDQKsD/jEUpJ0z7Kk6kCTztB0C7V68Q1uRQ
-         RZjMmjz7oARocDpk8uLpyBX2i/V+lleZFpQC6sacFHIbdxYMsJdl4dxPrDfOLFOBj/uV
-         Id8Q==
-X-Gm-Message-State: ANoB5pn1jsAFPczzshKoZNgT50SKv9/lyDz1hlSNKfEH9nlsbTERNNbH
-        wyzvT6SKVk/j0En8DzwFdehhBw==
-X-Google-Smtp-Source: AA0mqf7BntqxGCpKPwxV6jdJ+uAdbt8+2G6+VAMqcwwJNz/syMYkGpO94/UjsegtDWOy3jZydWHzVQ==
-X-Received: by 2002:a17:906:1e4d:b0:7c1:ac8:73a0 with SMTP id i13-20020a1709061e4d00b007c10ac873a0mr2285776ejj.51.1670515330398;
-        Thu, 08 Dec 2022 08:02:10 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id z16-20020a1709060f1000b007c1175334basm2675858eji.78.2022.12.08.08.02.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 08:02:08 -0800 (PST)
-Date:   Thu, 8 Dec 2022 17:02:04 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     leon@kernel.org, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v4] ice: Add check for kzalloc
-Message-ID: <Y5IKfOOhinE66+Kt@nanopsycho>
-References: <20221208133552.21915-1-jiasheng@iscas.ac.cn>
+        with ESMTP id S230018AbiLHQEF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:04:05 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4339B2AD;
+        Thu,  8 Dec 2022 08:04:01 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id DF03A1883A08;
+        Thu,  8 Dec 2022 16:03:59 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id CD4E825002E1;
+        Thu,  8 Dec 2022 16:03:59 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id BF2359EC0022; Thu,  8 Dec 2022 16:03:59 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221208133552.21915-1-jiasheng@iscas.ac.cn>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Date:   Thu, 08 Dec 2022 17:03:59 +0100
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+In-Reply-To: <20221208133524.uiqt3vwecrketc5y@skbuf>
+References: <20221205185908.217520-1-netdev@kapio-technology.com>
+ <20221205185908.217520-4-netdev@kapio-technology.com>
+ <Y487T+pUl7QFeL60@shredder>
+ <580f6bd5ee7df0c8f0c7623a5b213d8f@kapio-technology.com>
+ <20221207202935.eil7swy4osu65qlb@skbuf>
+ <1b0d42df6b3f2f17f77cfb45cf8339da@kapio-technology.com>
+ <20221208133524.uiqt3vwecrketc5y@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <7c7986329901730416b1505535ec3d36@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Dec 08, 2022 at 02:35:52PM CET, jiasheng@iscas.ac.cn wrote:
->Add the check for the return value of kzalloc in order to avoid
->NULL pointer dereference.
->Moreover, use the goto-label to share the clean code.
->
->Fixes: d6b98c8d242a ("ice: add write functionality for GNSS TTY")
->Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+On 2022-12-08 14:35, Vladimir Oltean wrote:
+> 
+> So it appears that frames which get a VTU miss will still also cause an
+> ATU miss, and that's what you're seeing.
+> 
+> The solution would be to acknowledge this fact, and not print any error
+> message from the ATU IRQ handler for unknown FID/VID, which would just
+> alarm the user.
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Thanks for clearing that up!
+
+At leisure, do you have an idea why it will encounter a VTU miss 
+violation at random?
+
+I guess I must check if FID != FID_STANDALONE instead then...
