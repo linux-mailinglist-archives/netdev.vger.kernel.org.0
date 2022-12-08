@@ -2,49 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7F2646678
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 02:26:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E74AE646686
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 02:34:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiLHB0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 20:26:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
+        id S229555AbiLHBeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 20:34:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbiLHB02 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 20:26:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C4A8E5A6;
-        Wed,  7 Dec 2022 17:26:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53C8B61D12;
-        Thu,  8 Dec 2022 01:26:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80312C433C1;
-        Thu,  8 Dec 2022 01:26:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670462786;
-        bh=3fXYsPC1fbYDxd/xYtvZBAzrsT7/Cn2L6Zj543M6XNw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gQVV9BFTEublja4Mdd5S1G6dI8lymevct4r0swz1XmhkGJ7HALzwI5tkcl85qLiDu
-         xxj2Kl14sxHHjwrEHKAj1ptSMsl6CQnato2NaQkPxCUqcXk9/MKH9TN2h6rznF4P5a
-         9hpkjQUOGz5hkIvq66bWsihzODybmJAitfeUn+A+vfniA+NhxyHhYp8gEcpMuU5pKg
-         el+HP47T+OUA4ubSp2DGnzak64IFXFT1VBrEomYtWJ46tYrb6MdlgQ9wX3fhuLvEcb
-         M4A3elCUKhK0kRqFVC8SdyVprI3Aw9xCljXW/iSMZ+Z3wW0NnezRseT313yIJgyZje
-         m35PJuZVuhp2w==
-Date:   Wed, 7 Dec 2022 17:26:25 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     davem@davemloft.net, linux-wpan@vger.kernel.org,
-        alex.aring@gmail.com, netdev@vger.kernel.org
-Subject: Re: pull-request: ieee802154 for net 2022-12-05
-Message-ID: <20221207172625.7da96708@kernel.org>
-In-Reply-To: <20221205122515.1720539-1-stefan@datenfreihafen.org>
-References: <20221205122515.1720539-1-stefan@datenfreihafen.org>
+        with ESMTP id S229501AbiLHBeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 20:34:23 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E47B88B41;
+        Wed,  7 Dec 2022 17:34:20 -0800 (PST)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 036A524E1BE;
+        Thu,  8 Dec 2022 09:34:18 +0800 (CST)
+Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 8 Dec
+ 2022 09:34:18 +0800
+Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
+ (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 8 Dec
+ 2022 09:34:16 +0800
+Message-ID: <c897c858-14d1-3059-7307-84df9460e86e@starfivetech.com>
+Date:   Thu, 8 Dec 2022 09:34:15 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [PATCH v1 1/7] dt-bindings: net: snps,dwmac: Add compatible
+ string for dwmac-5.20 version.
+Content-Language: en-US
+To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
+ <20221201090242.2381-2-yanhong.wang@starfivetech.com>
+ <277f9665-e691-b0ad-e6ef-e11acddc2006@linaro.org>
+ <22123903-ee95-a82e-d792-01417ceb63b1@starfivetech.com>
+ <3a9ef360-73c3-cf26-3eca-4903b9a04ea3@linaro.org>
+ <CAJM55Z-iLy1fZmoyk3FU7oDQcKBk6APYf-cbamKr7Gjx+NaoTQ@mail.gmail.com>
+From:   yanhong wang <yanhong.wang@starfivetech.com>
+In-Reply-To: <CAJM55Z-iLy1fZmoyk3FU7oDQcKBk6APYf-cbamKr7Gjx+NaoTQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX173.cuchost.com
+ (172.16.6.93)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,23 +70,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  5 Dec 2022 13:25:15 +0100 Stefan Schmidt wrote:
-> Hello Dave, Jakub.
-> 
-> An update from ieee802154 for your *net* tree:
-> 
-> Three small fixes this time around.
-> 
-> Ziyang Xuan fixed an error code for a timeout during initialization of the
-> cc2520 driver.
-> Hauke Mehrtens fixed a crash in the ca8210 driver SPI communication due
-> uninitialized SPI structures.
-> Wei Yongjun added INIT_LIST_HEAD ieee802154_if_add() to avoid a potential
-> null pointer dereference.
 
-Sorry for the lateness, we are backed up since the weekend :(
 
-I believe this is now in net:
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=92439a859000c6f4c74160a3c08c1a519e3ca125
+On 2022/12/7 21:56, Emil Renner Berthing wrote:
+> On Fri, 2 Dec 2022 at 09:04, Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> On 02/12/2022 03:53, yanhong wang wrote:
+>> >
+>> >
+>> > On 2022/12/2 0:18, Krzysztof Kozlowski wrote:
+>> >> On 01/12/2022 10:02, Yanhong Wang wrote:
+>> >>> Add dwmac-5.20 version to snps.dwmac.yaml
+>> >>
+>> >> Drop full stop from subject and add it here instead.
+>> >>
+>> >
+>> > Will update in the next version.
+>> >
+>> >>>
+>> >>> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+>> >>> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
+>> >>
+>> >> Two people contributed this one single line?
+>> >>
+>> >
+>> > Emil made this patch and I submitted it.
+>>
+>> If Emil made this patch, then your From field is incorrect.
+> 
+> Yes, please don't change the author of the commits you cherry-picked
+> from my tree.
+> 
+> But now I'm curious. Did you check with your colleagues that the dwmac
+> IP on the SoC is in fact version 5.20?
 
-But the bot has not replied?
+I can confirm that the IP version is 5.20 on JH7110 SoC.
+
+> This was just an educated guess from my side.
+> 
+> /Emil
+> 
+>> Best regards,
+>> Krzysztof
+>>
+>>
+>> _______________________________________________
+>> linux-riscv mailing list
+>> linux-riscv@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-riscv
