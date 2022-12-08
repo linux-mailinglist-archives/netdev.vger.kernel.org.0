@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B926C647463
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:34:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09EC764749A
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:48:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229989AbiLHQeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 11:34:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46164 "EHLO
+        id S230060AbiLHQsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 11:48:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230170AbiLHQd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:33:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5F61FCCD
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 08:33:58 -0800 (PST)
+        with ESMTP id S229752AbiLHQr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:47:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70C338A0
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 08:47:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D55BB824D2
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:33:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6FA8C433EF;
-        Thu,  8 Dec 2022 16:33:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 390FEB82511
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:47:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E56BC433D2;
+        Thu,  8 Dec 2022 16:47:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670517236;
-        bh=iqiJD35d76xukWCdOWd/vQtb4LhNvhJ8NgLo2lE96UM=;
+        s=k20201202; t=1670518074;
+        bh=6r4jJjUrky13iXNiDH8xNc4743RLEstwLqZMAaakrpc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gItihvERuzQRfaVHroh3G1tBP9opbvAX9MJ6c+QdFY+dz3nbh/0g1wvvg4z/L8PgH
-         9ACjxX/+vgzfmq3NoeWTZYOw3pJyNkpExa95oT9PPX/FRn2hHGX0sVpyXy5hY7Z+4l
-         Mh3cssbuJElqs2ximPM3H4ePqFuCj2emxL6dX0D+rl0eEz9TPI0PrHY/usLFZ8j6aE
-         USdUIczFnMDA38mSD1LVSgjmQC1/NtkRFdVeWrsqm+a22uVG/6Fo9lNB9Nb+1hWm2k
-         g8bF/mCnN/Wr2+kPL7L6JmIlsmr6jtoXv6ZIkgl9g8Iadd3ypl+IFuWwB0glJpQO9n
-         RnmRrfoUpxwag==
-Date:   Thu, 8 Dec 2022 08:33:55 -0800
+        b=oRk5+m5Xbq+JeNOW31QoWsQVeHerhzhTVQQc08r/T3QMoGde360ut9oLCDbJG+baB
+         ChyhHMbP2cj8nQB5xEX3TlAr0KqWXqiGdPi5PECv1DPpoAfyKewrHP3S9tGHFNeH/f
+         Rc8HnxRk7Hx+55j27BBkvM4rXP9WMpAZRkClF6bD3fOEn2XOFR1a72KaIvHEuKcvf4
+         AUw7O9BA8WrYBSLCkjVLVFxev1bXkl8pozRVjzLgkEvvZD6nVuaPbVlOKjNxpNRrlU
+         h2BUVGdi9h0rQI7B5qlpLSx46Xj0hOvClWwcdkm7Pvb7zp2KkzM0W021W9S0b8x5Hw
+         2XGnO+Cjh2VsA==
+Date:   Thu, 8 Dec 2022 08:47:53 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     Leon Romanovsky <leon@kernel.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>
-Subject: Re: [PATCH net v2 1/2] net: apple: mace: don't call dev_kfree_skb()
- under spin_lock_irqsave()
-Message-ID: <20221208083355.7ca2a99a@kernel.org>
-In-Reply-To: <0d01feea-973a-0331-e669-bc362ba93f56@huawei.com>
-References: <20221207012959.2800421-1-yangyingliang@huawei.com>
-        <Y5GZJ2rBuMZoZ0e7@unreal>
-        <0d01feea-973a-0331-e669-bc362ba93f56@huawei.com>
+Cc:     <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <leon@kernel.org>
+Subject: Re: [PATCH net v4] ethernet: s2io: don't call dev_kfree_skb() under
+ spin_lock_irqsave()
+Message-ID: <20221208084753.6523ff23@kernel.org>
+In-Reply-To: <20221208120121.2076486-1-yangyingliang@huawei.com>
+References: <20221208120121.2076486-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,18 +54,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Dec 2022 16:39:03 +0800 Yang Yingliang wrote:
-> >> @@ -846,7 +846,7 @@ static void mace_tx_timeout(struct timer_list *t)
-> >>       if (mp->tx_bad_runt) {
-> >>   	mp->tx_bad_runt = 0;
-> >>       } else if (i != mp->tx_fill) {
-> >> -	dev_kfree_skb(mp->tx_bufs[i]);
-> >> +	dev_consume_skb_irq(mp->tx_bufs[i]);  
-> > Same question, why did you chose dev_consume_skb_irq and not dev_kfree_skb_irq?  
-> I chose dev_consume_skb_irq(), because dev_kfree_skb() is consume_skb().
+On Thu, 8 Dec 2022 20:01:21 +0800 Yang Yingliang wrote:
+> It is not allowed to call kfree_skb() or consume_skb() from hardware
+> interrupt context or with hardware interrupts being disabled.
+> 
+> It should use dev_kfree_skb_irq() or dev_consume_skb_irq() instead.
+> The difference between them is free reason, dev_kfree_skb_irq() means
+> the SKB is dropped in error and dev_consume_skb_irq() means the SKB
+> is consumed in normal.
+> 
+> In this case, dev_kfree_skb() is called in free_tx_buffers() to drop
+> the SKBs in tx buffers, when the card is down, so replace it with
+> dev_kfree_skb_irq() here.
 
-kfree_skb() should be used on error paths, when packet is dropped.
-consume_skb() on normal paths, when packet left the system successfully.
+Make sure you read this:
 
-dev_kfree* helpers probably default to consume_skb() to avoid spamming
-drop monitor, but switching to dev_consume explicitly is not right.
+https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
