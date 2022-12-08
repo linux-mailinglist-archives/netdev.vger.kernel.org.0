@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8802A6471B4
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 15:26:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC0186471B0
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 15:26:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbiLHO0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 09:26:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
+        id S229876AbiLHO0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 09:26:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiLHOZf (ORCPT
+        with ESMTP id S230231AbiLHOZf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 09:25:35 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B28098E99
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 06:24:51 -0800 (PST)
-Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NSbxR3t7LzJqHJ;
-        Thu,  8 Dec 2022 22:23:55 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798B798E92;
+        Thu,  8 Dec 2022 06:24:50 -0800 (PST)
+Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NSbxS67xFzmW6v;
+        Thu,  8 Dec 2022 22:23:56 +0800 (CST)
 Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
  (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 8 Dec
- 2022 22:24:44 +0800
+ 2022 22:24:47 +0800
 From:   Yang Yingliang <yangyingliang@huawei.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <leon@kernel.org>,
         Yang Yingliang <yangyingliang@huawei.com>,
-        Ilya Yanok <yanok@emcraft.com>
-Subject: [PATCH net v3 2/4] net: ethernet: dnet: don't call dev_kfree_skb() under spin_lock_irqsave()
-Date:   Thu, 8 Dec 2022 22:21:45 +0800
-Message-ID: <20221208142147.2376671-3-yangyingliang@huawei.com>
+        Joerg Reuter <jreuter@yaina.de>, <linux-hams@vger.kernel.org>
+Subject: [PATCH net v3 3/4] hamradio: don't call dev_kfree_skb() under spin_lock_irqsave()
+Date:   Thu, 8 Dec 2022 22:21:46 +0800
+Message-ID: <20221208142147.2376671-4-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221208142147.2376671-1-yangyingliang@huawei.com>
 References: <20221208142147.2376671-1-yangyingliang@huawei.com>
@@ -51,33 +51,51 @@ X-Mailing-List: netdev@vger.kernel.org
 It is not allowed to call kfree_skb() or consume_skb() from hardware
 interrupt context or with hardware interrupts being disabled.
 
-In this case, the lock is used to protected 'bp', so we can move
-dev_kfree_skb() after the spin_unlock_irqrestore().
+It should use dev_kfree_skb_irq() or dev_consume_skb_irq() instead.
+The difference between them is free reason, dev_kfree_skb_irq() means
+the SKB is dropped in error and dev_consume_skb_irq() means the SKB
+is consumed in normal.
 
-Fixes: 4796417417a6 ("dnet: Dave DNET ethernet controller driver (updated)")
+In scc_discard_buffers(), dev_kfree_skb() is called to discard the SKBs,
+so replace it with dev_kfree_skb_irq().
+
+In scc_net_tx(), dev_kfree_skb() is called to drop the SKB that exceed
+queue length, so replace it with dev_kfree_skb_irq().
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/net/ethernet/dnet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/hamradio/scc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/dnet.c b/drivers/net/ethernet/dnet.c
-index 08184f20f510..151ca9573be9 100644
---- a/drivers/net/ethernet/dnet.c
-+++ b/drivers/net/ethernet/dnet.c
-@@ -550,11 +550,11 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/hamradio/scc.c b/drivers/net/hamradio/scc.c
+index f90830d3dfa6..bd80e8ca6c79 100644
+--- a/drivers/net/hamradio/scc.c
++++ b/drivers/net/hamradio/scc.c
+@@ -302,12 +302,12 @@ static inline void scc_discard_buffers(struct scc_channel *scc)
+ 	spin_lock_irqsave(&scc->lock, flags);	
+ 	if (scc->tx_buff != NULL)
+ 	{
+-		dev_kfree_skb(scc->tx_buff);
++		dev_kfree_skb_irq(scc->tx_buff);
+ 		scc->tx_buff = NULL;
+ 	}
+ 	
+ 	while (!skb_queue_empty(&scc->tx_queue))
+-		dev_kfree_skb(skb_dequeue(&scc->tx_queue));
++		dev_kfree_skb_irq(skb_dequeue(&scc->tx_queue));
  
- 	skb_tx_timestamp(skb);
- 
-+	spin_unlock_irqrestore(&bp->lock, flags);
-+
- 	/* free the buffer */
- 	dev_kfree_skb(skb);
- 
--	spin_unlock_irqrestore(&bp->lock, flags);
--
- 	return NETDEV_TX_OK;
+ 	spin_unlock_irqrestore(&scc->lock, flags);
  }
- 
+@@ -1668,7 +1668,7 @@ static netdev_tx_t scc_net_tx(struct sk_buff *skb, struct net_device *dev)
+ 	if (skb_queue_len(&scc->tx_queue) > scc->dev->tx_queue_len) {
+ 		struct sk_buff *skb_del;
+ 		skb_del = skb_dequeue(&scc->tx_queue);
+-		dev_kfree_skb(skb_del);
++		dev_kfree_skb_irq(skb_del);
+ 	}
+ 	skb_queue_tail(&scc->tx_queue, skb);
+ 	netif_trans_update(dev);
 -- 
 2.25.1
 
