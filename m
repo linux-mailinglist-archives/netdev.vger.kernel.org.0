@@ -2,103 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B74D6473E5
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:07:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B2C26473E6
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:08:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbiLHQHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 11:07:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
+        id S230049AbiLHQIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 11:08:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbiLHQHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:07:50 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F0914D34
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 08:07:48 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id z9so1162937ilu.10
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 08:07:48 -0800 (PST)
+        with ESMTP id S230023AbiLHQIA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:08:00 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2125.outbound.protection.outlook.com [40.107.220.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7F614036;
+        Thu,  8 Dec 2022 08:07:59 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eXydRQquRHjjGbQplLQzdGmDMj1KVB8pNzJAFIs8KX2ZoxUhpxdQX0e/AGK4c2piM2cAWD6gEn/ZD2n63tc7GA4Hevvxx8Dn3EVDosPv4nCmfsG7jK3NLSwYeBnRKP7NbHtTo+x/IsIwtah1cN3Btl0Izx1XlvDm+rk+o7v8BLmT+QGUfgXHBCPucIZjFrqqCOK7y/oJh9bNjzbWUsQMu3/dPiRQ9prdRILgA6NyhEcXqL7MieIYPJXVUu66ubPbFRJTKqi2g0YE54jp7mc/aQx/sA/P+Zca41HAZL8ORCQ1iFrxjiY1K6hkPyFRlKuAs1uYa4qyUTimDaC7G8iWwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3CLo0ILF8/1ADG1zY8fkk9R/OXrU1KerLEBEV/05uBE=;
+ b=KQr6jlNTSmqXgIEH/+3Y9VdciCdGhUP1ZZ2riujxbkVvPDF3szg+g8T4rj8xIEhnn6Zf4ilL5AHLrD8jL8VzLYptR4f4F46oHWcgoItL1lR4w5ehnVPrv95/FIbe2uSrgFTmoc+9dooMMc/GjoYBNx8MXTNT5b6Im1C8WJmcfhA2NgB/t7QnAAkmstuWG8+pHg4xgt+Zj9LpZRw0rOkGcas1HdfKM6M9S7NU9faEu+eDIvYP2K8PEJCyViDFRMl5HFlof/aIxrIV+8a9beJTulH2uLTYvO5dDJGAO0HG+f/J3N2hwkCKkwfda8gDx+nd4GVZpgBwQx7bFQJ9yb6rjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=MwFWqUJT8gv+Qi9XtXRvqgiJMG2LdrPKlJJeX/oYf3A=;
-        b=UZW/JB3KkxZd0+jACQAH6RaeLWFU+StWUlvk3zrGRFIJKQsqy0riy4dz6isxkfjQAO
-         mCWFB10nlDT2Tl21jdvddFYQH+nfSkv1C7PLdoqqm8C11ff4BMYNqTSuYM0GOvec22y/
-         PU13w7PzuHfbbIJrqIwTHliPeKcApkaZ76aPFj55KRUpvxLSO+NgIdchZJ4wGyO+sMNe
-         Oz0bcXpzfC78rQALWK4+vGcjjiPeRJImW93CRoLQyRl+ssDIW5cJF8XHN8652r3173Ow
-         XXsDZHSNAiFC8poUFFSTtbHuCNlK58QCJxz5CHMlz3t2RbQUL5/pqUubUjRH0SFvCmEg
-         bMHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MwFWqUJT8gv+Qi9XtXRvqgiJMG2LdrPKlJJeX/oYf3A=;
-        b=lY1TxTKmro3woIHS+UfEqusX9+UbJ9pJ965jExzyCmjVkn4U1mmlFkO3Df8fZec+o9
-         mXtqX3Sh4zr4WVRXZw4GH3YdQ0fnts2jA/yeGdQIHEBqG4BvkVuEAcjmb9/15BL3gEfs
-         chr7knbABl7iT3ccZrpzX0h3CWXV+YKhYV2Xh+lhSGVfEuIa5lFXh+UEvimSG8Cr3Z4V
-         y+6Loz0Od1esydg4g/Cn39ksgdpfOOuQamT/RflYL+7QESpm53wQQnl11K+yWfHGTGCC
-         LiBN/dbWYXfySqsn5F6PvuUnyWdZlp6AjDhINSb1KgvUDMtDNtUH7ncKMQ4Rx1x6DYaU
-         UrYA==
-X-Gm-Message-State: ANoB5pkGtUG4gX53MG6MSkvsmdPbdwV8Id+YCSDBw8nyPSG8CjXPOykl
-        fab9Tu+zXBgeXOX9sWV+n3K1mXV0Vz0=
-X-Google-Smtp-Source: AA0mqf6KqJdF5of0rESVHnLDKWiPGh/3C7cNHvQ5dD8VJ5I4rtfC5A0U3MuUAeElb3ZiHzohek52YQ==
-X-Received: by 2002:a92:c5d0:0:b0:302:c541:624b with SMTP id s16-20020a92c5d0000000b00302c541624bmr1593592ilt.15.1670515667963;
-        Thu, 08 Dec 2022 08:07:47 -0800 (PST)
-Received: from [172.16.99.146] (c-73-14-130-18.hsd1.co.comcast.net. [73.14.130.18])
-        by smtp.googlemail.com with ESMTPSA id ci7-20020a0566383d8700b00389e690d09esm8580558jab.74.2022.12.08.08.07.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Dec 2022 08:07:46 -0800 (PST)
-Message-ID: <2131854c-a23d-81a2-c9c4-5764e14b8afe@gmail.com>
-Date:   Thu, 8 Dec 2022 09:07:45 -0700
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3CLo0ILF8/1ADG1zY8fkk9R/OXrU1KerLEBEV/05uBE=;
+ b=uqtTldclGgXzLZrOXHkmr7tPpW2kzJN4zuszV1H+m3qC7pKUxeuVYZDRYGZSCZZrMubcdhSyBmZN/if4nVgDYdO3yRIX+UVrWKxwu4WkjnlYmlCzyyaKxl6X2YjjYmvxzBk4VTVnMI+0wTUOOwxN7ipMArFy7Rfx6JcbNnE+h9o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SN4PR13MB5726.namprd13.prod.outlook.com (2603:10b6:806:212::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Thu, 8 Dec
+ 2022 16:07:56 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::483b:9e84:fadc:da30]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::483b:9e84:fadc:da30%9]) with mapi id 15.20.5880.014; Thu, 8 Dec 2022
+ 16:07:56 +0000
+Date:   Thu, 8 Dec 2022 17:07:50 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     yang.yang29@zte.com.cn
+Cc:     dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xu.panda@zte.com.cn
+Subject: Re: [PATCH linux-next] net/liquidio: use strscpy() to instead of
+Message-ID: <Y5IL1up0Z4uT2TVc@corigine.com>
+References: <202212081955061873542@zte.com.cn>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202212081955061873542@zte.com.cn>
+X-ClientProxiedBy: AS4P192CA0014.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5da::14) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.5.1
-Subject: Re: [PATCH iproute2-next] libnetlink: Fix wrong netlink header
- placement
-To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, mlxsw@nvidia.com
-References: <20221208143816.936498-1-idosch@nvidia.com>
-Content-Language: en-US
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20221208143816.936498-1-idosch@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB5726:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0f0809ae-8730-4025-0090-08dad9365e4d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: oPV5Qal9vHN0zvpa0f2ItpLXnTtK/sqJvbIl1HN8ay5xeJZQSI+O0wtcGpJLshHwAKseCEX/tiPGblzosC57hwcjYq9035EhQqW47oNRLWBZ3ej6/hKDh7SKuDKJ1NvN1SQHUMaLQI5a8xDGX90KriFjpgdHq9Al31guh0dlNr1REBbTNS3oyfw+QX/+bZm2mcFrsIvnpKMLoh0MhS+zelfH0ZMW7C9cMCjnuftGTQ1vJI3vvfGzP2rdcNTr+5Xa9mTDMZXGNurZI8V7xPFYh9KUMuVpKecB/+xOttdUhjuXS5AWsVrBRe9zWplNyx/lqtubItz65+QyRkr1TpwLzE/b+Kkw0kwZzxPQTmc63s1Nq0ouwSIBAM8uNUhEQD1uVMbT28jcxLooxGdp6D6x41nKgkGTD2CEL68qaI4uuNdmp2/5lFBIg3++lU+LkEOymUo4LtGhxdDr2otD/CgBtjrYRX6NZ1Eybb7ANk4l4iGFvGY7xAmHq9Aymdg8n/ezbpjNNKAZlYExUI2fbFwHX7ivC+FF7oOwkSV14VWDgBnEj3qNM07FCrT/S5ITjZilbkxpna3RjLrYEhwsHiWWensFBKI1JcuzaIwdMEI/ijbOU1yHeD0xGk/cmFLbuh8/H5PkZ/LLtbr4w5tWxH87MWokX3+WBDn5sqnHuPbvRVC4ZKkwUir7kHB+JPqK5Xh8
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(39840400004)(136003)(366004)(346002)(376002)(451199015)(36756003)(86362001)(6506007)(6486002)(478600001)(6512007)(6666004)(8936002)(41300700001)(44832011)(7416002)(66476007)(2906002)(6916009)(4326008)(66556008)(8676002)(5660300002)(66946007)(83380400001)(38100700002)(186003)(316002)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nDhfQmUtxHIseOd2D36QhY6a2xD2Mj4xucL7HbOvvzVjGmkZ3gdV2yd501i8?=
+ =?us-ascii?Q?JfO2LzqbJsGtYB5ZBp8HSggEJs8g3tcpDRrUb7xga7ElecYQ+oS8pgDFrUnA?=
+ =?us-ascii?Q?BKN0ovFGaSzMVKTaSfO48hrsnwp6Y3i/A5NJ7HEFo4yNPnUVKXTAWYvdqfG4?=
+ =?us-ascii?Q?DwPgQdl8gFjoihJniE4W6IhpNV3yHFL4LDJyn2oNHX3+8HHM+rf1PRnVume/?=
+ =?us-ascii?Q?gRsx+bzAFiEyVrU+WK3vJdLy4AkgUX1FvL9pRkBOT8Iec0ujbuPIVnDr3HE8?=
+ =?us-ascii?Q?j1gInmIAUVNhIQTdgmUVTO3+ppqcPx5NDR60fPGJ5NGw5oRLcGmdBBhwfqTG?=
+ =?us-ascii?Q?UoYf2Wx6OCcevk3MwKxNAWzm1XuXtnD2kufF9IUgGe2QRSZPWMsK09aycQ3X?=
+ =?us-ascii?Q?Y5ltACWm/w4rl+yzxcM7uDUvaBy3Z7vJfmIl62OKkXoWbgtceQih1/36xWtO?=
+ =?us-ascii?Q?mIcKGxm3gS0ri4jR/wtvH5VSW/GKuczKE/KeJHou1/2Zjq4o1HUDH+7s/Ytn?=
+ =?us-ascii?Q?OOfqY/RwDnogBUAUcjxZj6pw2LRm7riE6smISr8LPAJxdsavyYJfiNdjUDXY?=
+ =?us-ascii?Q?q4GRlrlfrBA/PGMt5/i+sc4OhP5ZvVrBx4EmXoMAnfWXaqEt1V4wnzeG5gfP?=
+ =?us-ascii?Q?wVAEKeVKjngajxcewXx5JtraTsrPoHMMvOsYpwHj5FDOi5duMoG5TFvta+rK?=
+ =?us-ascii?Q?qnZhmlYWhVLwbcNsKyBAFnpylpN1aLsUyMHGNPTur+gw9jcJbI7wmrn7O3RI?=
+ =?us-ascii?Q?uzDb7rysgDdtaWS/kj23/eflsrGm+zg615kPI9dtSUUvKq4P2Q4OaxRi3XKE?=
+ =?us-ascii?Q?wMUhS8PpKo+6A+k5i9CV2s1h2ReErtjrcQTqIkgXSxitYkbblnAB4CqMNSE3?=
+ =?us-ascii?Q?ujwZFharScJXok+jtVs7LIl+jI7lw0nDERpqZX4H7ioCYsbtmGuMwvAUjnGt?=
+ =?us-ascii?Q?OqOx6TUxp9QGGvzj9UzU+r9kVkhpLLIIa9/hM9NXICrzDiJRBzgh8YJKFGeM?=
+ =?us-ascii?Q?5Xe2l8MOjhERKQNxUcDNkqZGajDAwv3GDX/4bKHMm8CDm2z0S16s4WR96F2K?=
+ =?us-ascii?Q?Un9sOMFnxXK2yzrwL4oePvV7/L0cnETWjz5rSuzSCSwlcXX1R37gnMiqnUHn?=
+ =?us-ascii?Q?LqNmXxBouRk4lM98UugYdxlZVhTRm8Ul4+M7rqdbDf2dmhI7FDPBofzJa8RH?=
+ =?us-ascii?Q?ILACZzCkk6aePRGKn6A7duA8zu7QuVhG1uuaDWBpf1fnGXBd7/TpuemlCg/8?=
+ =?us-ascii?Q?BgVSyHUimJJ97UakElTcnbNGYKeswQliGLqrkUfI5+tnQAsL4MXib5Y3xsf0?=
+ =?us-ascii?Q?f9BdgfjOH6Epc57mAu3FVejwwgTN/q6ocJg3AgxpWuQpFDZSLzuAndAqnpuz?=
+ =?us-ascii?Q?bsYLYgjixZ4kgYG6r49U1gUJE0VRDhSO0Rr88NqL0/htAtHw2vwZFCSPwvpV?=
+ =?us-ascii?Q?kn1wViEn3puFL5FHRhOPkPaRgAycnOiJHokX63ZXYut/CgHwdcuKcF3eKxTN?=
+ =?us-ascii?Q?rYQ2gGYf5IsjSPC7lLWf4OQW86FeDdtCR+UxxXhBWZfsjosjraOvRMyR6gRY?=
+ =?us-ascii?Q?p1VOSzPjVNXGugwzcICM9FmA6MJWIoquBWUzqnAcRWrNE696QLGyZRUIZN+n?=
+ =?us-ascii?Q?bk1PSVflu3LsXcP072f3wQdu/709/gic7KkK0EjNpgRLoYWYW6772Dmr/eGI?=
+ =?us-ascii?Q?3CXwpA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f0809ae-8730-4025-0090-08dad9365e4d
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2022 16:07:56.2412
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BOkwwx3XDn/+Ac6Sms79hJ5y4vNRythPAWFQCUtiQQE5EU/kOnN7Lcobe+mQdJoRBLgqgLygudkiOcfeyYHdPVH4VJznntV6ZvYtQ2ExaKE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5726
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/8/22 7:38 AM, Ido Schimmel wrote:
-> The netlink header must be first in the netlink message, so move it
-> there.
+On Thu, Dec 08, 2022 at 07:55:06PM +0800, yang.yang29@zte.com.cn wrote:
+> From: Xu Panda <xu.panda@zte.com.cn>
 > 
-> Fixes: fee4a56f0191 ("Update kernel headers")
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  include/libnetlink.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> The implementation of strscpy() is more robust and safer.
+> That's now the recommended way to copy NUL terminated strings.
 > 
-> diff --git a/include/libnetlink.h b/include/libnetlink.h
-> index 4d9696efa253..c91a22314548 100644
-> --- a/include/libnetlink.h
-> +++ b/include/libnetlink.h
-> @@ -38,9 +38,9 @@ struct nlmsg_chain {
->  };
->  
->  struct ipstats_req {
-> +	struct nlmsghdr nlh;
->  	struct if_stats_msg ifsm;
->  	char buf[128];
-> -	struct nlmsghdr nlh;
->  };
->  
->  extern int rcvbuf;
+> Signed-off-by: Xu Panda <xu.panda@zte.com.cn>
+> Signed-off-by: Yang Yang <yang.yang29@zte.com>
 
-thanks for noticing this. Must have been stale diff on the branch when I
-was looking into the flex-array problem.
+This change looks good to me, but I think the subject should be:
+
+[PATCH net-next] liquidio: use strscpy() to instead of strncpy()
+
+Also, in the same file, does this need attention?
+
+        /* Save off any leftovers */
+        if (line != &console_buffer[bytes_read]) {
+                console_buffer[bytes_read] = '\0';
+                len = strlen(console->leftover);
+                strncpy(&console->leftover[len], line,
+                        sizeof(console->leftover) - len);
+        }
+
+> ---
+>  drivers/net/ethernet/cavium/liquidio/octeon_console.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_console.c b/drivers/net/ethernet/cavium/liquidio/octeon_console.c
+> index 28feabec8fbb..076e11f7cbec 100644
+> --- a/drivers/net/ethernet/cavium/liquidio/octeon_console.c
+> +++ b/drivers/net/ethernet/cavium/liquidio/octeon_console.c
+> @@ -247,8 +247,7 @@ static const struct cvmx_bootmem_named_block_desc
+>  					struct cvmx_bootmem_named_block_desc,
+>  					size));
+> 
+> -		strncpy(desc->name, name, sizeof(desc->name));
+> -		desc->name[sizeof(desc->name) - 1] = 0;
+> +		strscpy(desc->name, name, sizeof(desc->name));
+>  		return &oct->bootmem_named_block_desc;
+>  	} else {
+>  		return NULL;
+> -- 
+> 2.15.2
+> 
