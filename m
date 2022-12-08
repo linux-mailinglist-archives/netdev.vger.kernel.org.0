@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A72646E4B
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 12:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA632646E5B
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 12:21:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbiLHLUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 06:20:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50184 "EHLO
+        id S229678AbiLHLVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 06:21:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbiLHLT6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 06:19:58 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2A360B74
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 03:19:49 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id v8so1647952edi.3
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 03:19:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=k0bU1R1P1t7TE4h8T9xV9N/WHr6QjC2yB8WU6NGRZ+0=;
-        b=Le2zQaIxm0lShjTtiqVEcfKoqb0thgfhB6Okru++1BAAjwMQLwkd2PBE6hWCYHWfbw
-         1myLrH8IitIkgrKFamOCqJiBnvbfTjGEyB3PC/IWOqbvPGH/Xqsxkn/YAwSLc3cOwua7
-         b8ln5J3V0ytN3/tSFITkLyq9vlrRpQUN7hKxcjVpc9vkpwBKbTorYd8zYHRTUMiBT+4W
-         TkKaAgdXOeqm4N2U1YJINPRZKoPFSOyiA8TAMOrIVPdTc0rgBTnTRLtQJm7XYM2Ptnai
-         hQ5cPeKD8mDIlUdVXMruJR18jortOAYrXITyFS3vfn3HRl74Apm2B3pT87+vZ1xhweij
-         LJJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=k0bU1R1P1t7TE4h8T9xV9N/WHr6QjC2yB8WU6NGRZ+0=;
-        b=Ub8WpmrtzIBdJrBw/X3fyzxzGsA7ff0yNG3d5/jBRGsJFwdgnkVsV/KqHBCWDbrJBY
-         t1CgVC2JLwOd95tIrXW5bypGpSGmDHl9DubgzgQXaZhqoMJ/atTPm6gKQTerNkRH84mN
-         8tR9lpPLbS5jvxi2ZDjD/n0aEdVVLbVlutFmUCLJg/y4ArlpnjnPLuxA9T+hj+8hqVpb
-         SMepxRSiC+c50Cl20x8DRtsN8V+n6D6cbGWRlFsig9Ah80BVyT8kThUMyYyKx1t8bnVb
-         P2uIUd74JpCAl2WSN12945UaWPJ/c85deHoJwzuD42bOxzxgEcNwOM54Turv+qhcOmfZ
-         6ULQ==
-X-Gm-Message-State: ANoB5plKsqoEAV07sLOOdww9HcNA/lM6wqWL7dBmpW7ZAB8vtgm0pxEg
-        Z/ptdMr2DYpIKU+7BQQX5QZl0g==
-X-Google-Smtp-Source: AA0mqf608/Zb0Asi9NafFpxotWsZOPSAXfg1ZankHlH1z0z+Xql1fL/M6irBYU+U+aqnPpwmg1sm+Q==
-X-Received: by 2002:a05:6402:1947:b0:462:7b9a:686f with SMTP id f7-20020a056402194700b004627b9a686fmr1528337edz.4.1670498388542;
-        Thu, 08 Dec 2022 03:19:48 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id bq4-20020a056402214400b00467481df198sm3255346edb.48.2022.12.08.03.19.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 03:19:47 -0800 (PST)
-Date:   Thu, 8 Dec 2022 12:19:46 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, LiLiang <liali@redhat.com>
-Subject: Re: [PATCH net] team: prevent ipv6 link local address on port devices
-Message-ID: <Y5HIUiL7kYYSCgV8@nanopsycho>
-References: <32ee765d2240163f1cbd5d99db6233f276857ccb.1670262365.git.lucien.xin@gmail.com>
- <Y4731q0/oqwhHZod@nanopsycho>
- <CADvbK_e6dFT6L69g63FOu=uE7b48rubaYOBL0RDTmKRUBFDCjw@mail.gmail.com>
- <CADvbK_eaEb9vQ9h34WNcibULBFHAZcPB05dNztV=+QOUzOYBwQ@mail.gmail.com>
- <Y5CVoc7vnKGg1KYj@nanopsycho>
- <CADvbK_dFAAd3=cBf9aonBbJcJ38V3=KDK5YzUd+=hBO2axkMBg@mail.gmail.com>
+        with ESMTP id S230017AbiLHLVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 06:21:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65C56037E
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 03:20:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670498418;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JdWrMzc4dK/3bKJEBuu39zZgc8/cJ70+F9DEjGv5gLw=;
+        b=BgER44Xw43nx5Z0tQTRUpSGC039olaSd/FU4+NKg1XD8In4dscP4QfSJdg0WDCMEWy8zXs
+        Qkfn0BA4NflZCvEVtWVDLpAoOAGdyLC0eYmPgI1JFneBVZmIGcKv5HS3HFrddLz4o/Tk25
+        HeY84d+pRkDTLwDfcwF4GDugQqwLda8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-302-UkN5dHHxM4y44upYdoPi7A-1; Thu, 08 Dec 2022 06:20:12 -0500
+X-MC-Unique: UkN5dHHxM4y44upYdoPi7A-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5BDEF803533;
+        Thu,  8 Dec 2022 11:20:12 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1619740C2065;
+        Thu,  8 Dec 2022 11:20:10 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <000000000000229f1505ef2b6159@google.com>
+References: <000000000000229f1505ef2b6159@google.com>
+To:     syzbot <syzbot+3538a6a72efa8b059c38@syzkaller.appspotmail.com>
+Cc:     dhowells@redhat.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] KASAN: use-after-free Read in rxrpc_lookup_local
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADvbK_dFAAd3=cBf9aonBbJcJ38V3=KDK5YzUd+=hBO2axkMBg@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1728522.1670498408.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Thu, 08 Dec 2022 11:20:08 +0000
+Message-ID: <1728523.1670498408@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,65 +68,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Dec 08, 2022 at 12:35:48AM CET, lucien.xin@gmail.com wrote:
->On Wed, Dec 7, 2022 at 8:31 AM Jiri Pirko <jiri@resnulli.us> wrote:
->>
->> Tue, Dec 06, 2022 at 10:52:33PM CET, lucien.xin@gmail.com wrote:
->> >On Tue, Dec 6, 2022 at 8:32 AM Xin Long <lucien.xin@gmail.com> wrote:
->> >>
->> >> On Tue, Dec 6, 2022 at 3:05 AM Jiri Pirko <jiri@resnulli.us> wrote:
->> >> >
->> >> > Mon, Dec 05, 2022 at 06:46:05PM CET, lucien.xin@gmail.com wrote:
->> >> > >The similar fix from commit c2edacf80e15 ("bonding / ipv6: no addrconf
->> >> > >for slaves separately from master") is also needed in Team. Otherwise,
->> >> > >DAD and RS packets to be sent from the slaves in turn can confuse the
->> >> > >switches and cause them to incorrectly update their forwarding tables
->> >> > >as Liang noticed in the test with activebackup mode.
->> >> > >
->> >> > >Note that the patch also sets IFF_MASTER flag for Team dev accordingly
->> >> > >while IFF_SLAVE flag is set for port devs. Although IFF_MASTER flag is
->> >> > >not really used in Team, it's good to show in 'ip link':
->> >> > >
->> >> > >  eth1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP>
->> >> > >  team0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP>
->> >> > >
->> >> > >Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
->> >> > >Reported-by: LiLiang <liali@redhat.com>
->> >> > >Signed-off-by: Xin Long <lucien.xin@gmail.com>
->> >> >
->> >> > Nack. Please don't do this. IFF_MASTER and IFF_SLAVE are historical
->> >> > flags used by bonding and eql. Should not be used for other devices.
->> >> I see. I was wondering why it was not used in Team at the beginning. :)
->> >>
->> >> >
->> >> > addrconf_addr_gen() should not check IFF_SLAVE. It should use:
->> >> > netif_is_lag_port() and netif_is_failover_slave() helpers.
->> >Hi Jiri,
->> >
->> >Sorry, it seems not to work with this.
->> >
->> >As addrconf_addr_gen() is also called in NETDEV_UP event where
->> >IFF_TEAM_PORT and IFF_BONDING haven't yet been set before
->> >dev_open() when adding the port.
->> >
->> >If we move IFF_TEAM_PORT setting ahead of dev_open(), it will revert
->> >the fix in:
->> >
->> >commit d7d3c05135f37d8fdf73f9966d27155cada36e56
->> >Author: Jiri Pirko <jiri@resnulli.us>
->> >Date:   Mon Aug 25 21:38:27 2014 +0200
->> >
->> >    team: set IFF_TEAM_PORT priv_flag after rx_handler is registered
->> >
->> >Can we keep IFF_SLAVE here only for no ipv6 addrconf?
->>
->> So, shouldn't it be rather a new flag specifically for this purpose?
->Maybe IFF_NO_ADDRCONF in dev->priv_flags?
+#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next=
+.git master
 
-Sounds fine to me.
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index e7dccab7b741..37f3aec784cc 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -287,6 +287,7 @@ struct rxrpc_local {
+ 	struct hlist_node	link;
+ 	struct socket		*socket;	/* my UDP socket */
+ 	struct task_struct	*io_thread;
++	struct completion	io_thread_ready; /* Indication that the I/O thread sta=
+rted */
+ 	struct rxrpc_sock __rcu	*service;	/* Service(s) listening on this endpoi=
+nt */
+ 	struct rw_semaphore	defrag_sem;	/* control re-enablement of IP DF bit */
+ 	struct sk_buff_head	rx_queue;	/* Received packets */
+diff --git a/net/rxrpc/io_thread.c b/net/rxrpc/io_thread.c
+index d83ae3193032..e460e4151c16 100644
+--- a/net/rxrpc/io_thread.c
++++ b/net/rxrpc/io_thread.c
+@@ -426,6 +426,8 @@ int rxrpc_io_thread(void *data)
+ 	struct rxrpc_call *call;
+ 	struct sk_buff *skb;
+ =
 
++	complete(&local->io_thread_ready);
++
+ 	skb_queue_head_init(&rx_queue);
+ =
 
->
->I will give it a try.
->
->Thanks.
+ 	set_user_nice(current, MIN_NICE);
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index 44222923c0d1..d8dfd5459f50 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -96,6 +96,7 @@ static struct rxrpc_local *rxrpc_alloc_local(struct rxrp=
+c_net *rxnet,
+ 		atomic_set(&local->active_users, 1);
+ 		local->rxnet =3D rxnet;
+ 		INIT_HLIST_NODE(&local->link);
++		init_completion(&local->io_thread_ready);
+ 		init_rwsem(&local->defrag_sem);
+ 		skb_queue_head_init(&local->rx_queue);
+ 		INIT_LIST_HEAD(&local->call_attend_q);
+@@ -189,6 +190,7 @@ static int rxrpc_open_socket(struct rxrpc_local *local=
+, struct net *net)
+ 		goto error_sock;
+ 	}
+ =
+
++	wait_for_completion(&local->io_thread_ready);
+ 	local->io_thread =3D io_thread;
+ 	_leave(" =3D 0");
+ 	return 0;
+@@ -357,10 +359,11 @@ struct rxrpc_local *rxrpc_use_local(struct rxrpc_loc=
+al *local,
+  */
+ void rxrpc_unuse_local(struct rxrpc_local *local, enum rxrpc_local_trace =
+why)
+ {
+-	unsigned int debug_id =3D local->debug_id;
++	unsigned int debug_id;
+ 	int r, u;
+ =
+
+ 	if (local) {
++		debug_id =3D local->debug_id;
+ 		r =3D refcount_read(&local->ref);
+ 		u =3D atomic_dec_return(&local->active_users);
+ 		trace_rxrpc_local(debug_id, why, r, u);
+
