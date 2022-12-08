@@ -2,113 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EF1A646CC2
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 11:31:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3415646D4C
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 11:42:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229776AbiLHKbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 05:31:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
+        id S230149AbiLHKmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 05:42:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiLHKbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:31:06 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290127DA63
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:31:03 -0800 (PST)
-Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NSVhd40kHzJp8s;
-        Thu,  8 Dec 2022 18:27:29 +0800 (CST)
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 8 Dec 2022 18:31:01 +0800
-Subject: Re: [PATCH net v3] ethernet: s2io: don't call dev_kfree_skb() under
- spin_lock_irqsave()
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-References: <20221208092411.1961448-1-yangyingliang@huawei.com>
- <Y5GxxIc9EY6h/qj2@unreal>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <840947dc-8560-ca51-f4d6-0e2628c181b1@huawei.com>
-Date:   Thu, 8 Dec 2022 18:31:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S229757AbiLHKmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 05:42:25 -0500
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8007389337
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:39:00 -0800 (PST)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-246-x9BSR9g2NXiugIB-TXS_rg-1; Thu, 08 Dec 2022 05:38:56 -0500
+X-MC-Unique: x9BSR9g2NXiugIB-TXS_rg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0AF52805AC5;
+        Thu,  8 Dec 2022 10:38:56 +0000 (UTC)
+Received: from hog (unknown [10.39.192.162])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3439640C2065;
+        Thu,  8 Dec 2022 10:38:52 +0000 (UTC)
+Date:   Thu, 8 Dec 2022 11:37:49 +0100
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Emeel Hakim <ehakim@nvidia.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Raed Salem <raeds@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "jiri@resnulli.us" <jiri@resnulli.us>
+Subject: Re: [PATCH net-next v3 1/2] macsec: add support for
+ IFLA_MACSEC_OFFLOAD in macsec_changelink
+Message-ID: <Y5G+feJ65XlY/FdT@hog>
+References: <20221207101017.533-1-ehakim@nvidia.com>
+ <Y5C1Hifsg3/lJJ8N@hog>
+ <IA1PR12MB635345D00CDE8F81721EEC89AB1A9@IA1PR12MB6353.namprd12.prod.outlook.com>
+ <Y5ENwSv4Q+A4O6lG@hog>
+ <IA1PR12MB6353847AB0BC0B15EFD46953AB1D9@IA1PR12MB6353.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <Y5GxxIc9EY6h/qj2@unreal>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <IA1PR12MB6353847AB0BC0B15EFD46953AB1D9@IA1PR12MB6353.namprd12.prod.outlook.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+2022-12-08, 06:53:18 +0000, Emeel Hakim wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Sabrina Dubroca <sd@queasysnail.net>
+> > Sent: Thursday, 8 December 2022 0:04
+> > To: Emeel Hakim <ehakim@nvidia.com>
+> > Cc: linux-kernel@vger.kernel.org; Raed Salem <raeds@nvidia.com>;
+> > davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> > pabeni@redhat.com; netdev@vger.kernel.org; atenart@kernel.org; jiri@resnulli.us
+> > Subject: Re: [PATCH net-next v3 1/2] macsec: add support for
+> > IFLA_MACSEC_OFFLOAD in macsec_changelink
+> > 
+> > External email: Use caution opening links or attachments
+> > 
+> > 
+> > 2022-12-07, 15:52:15 +0000, Emeel Hakim wrote:
+> > >
+> > >
+> > > > -----Original Message-----
+> > > > From: Sabrina Dubroca <sd@queasysnail.net>
+> > > > Sent: Wednesday, 7 December 2022 17:46
+> > > > To: Emeel Hakim <ehakim@nvidia.com>
+> > > > Cc: linux-kernel@vger.kernel.org; Raed Salem <raeds@nvidia.com>;
+> > > > davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> > > > pabeni@redhat.com; netdev@vger.kernel.org; atenart@kernel.org;
+> > > > jiri@resnulli.us
+> > > > Subject: Re: [PATCH net-next v3 1/2] macsec: add support for
+> > > > IFLA_MACSEC_OFFLOAD in macsec_changelink
+> > > >
+> > > > External email: Use caution opening links or attachments
+> > > >
+> > > >
+> > > > 2022-12-07, 12:10:16 +0200, ehakim@nvidia.com wrote:
+> > > > [...]
+> > > > > +static int macsec_changelink_upd_offload(struct net_device *dev,
+> > > > > +struct nlattr *data[]) {
+> > > > > +     enum macsec_offload offload;
+> > > > > +     struct macsec_dev *macsec;
+> > > > > +
+> > > > > +     macsec = macsec_priv(dev);
+> > > > > +     offload = nla_get_u8(data[IFLA_MACSEC_OFFLOAD]);
+> > > >
+> > > > All those checks are also present in macsec_upd_offload, why not
+> > > > move them into macsec_update_offload as well? (and then you don't
+> > > > really need macsec_changelink_upd_offload anymore)
+> > > >
+> > >
+> > > Right, I thought about it , but I realized that those checks are done
+> > > before holding the lock in macsec_upd_offload and if I move them to
+> > > macsec_update_offload I will hold the lock for a longer time , I want to minimize
+> > the time of holding the lock.
+> > 
+> > Those couple of tests are probably lost in the noise compared to what
+> > mdo_add_secy ends up doing. It also looks like a race condition between the
+> > "macsec->offload == offload" test in macsec_upd_offload (outside rtnl_lock) and
+> > updating macsec->offload via macsec_changelink is possible. (Currently we can
+> > only change it with macsec_upd_offload (called under genl_lock) so there's no issue
+> > until we add this patch)
+> 
+> Ack, 
+> so getting rid of macsec_changelink_upd_offload and moving the locking inside macsec_update_offload
+> should handle this issue
 
-On 2022/12/8 17:43, Leon Romanovsky wrote:
-> On Thu, Dec 08, 2022 at 05:24:11PM +0800, Yang Yingliang wrote:
->> The dev_kfree_skb() is defined as consume_skb(), and it is not allowed
->> to call consume_skb() from hardware interrupt context or with interrupts
->> being disabled. So replace dev_kfree_skb() with dev_consume_skb_irq()
->> under spin_lock_irqsave().
-> While dev_kfree_skb and consume_skb are the same, the dev_kfree_skb_irq
-> and dev_consume_skb_irq are not. You can't blindly replace
-> dev_kfree_skb with dev_consume_skb_irq. You should check every place, analyze
-> and document why specific option was chosen.
-While calling dev_kfree_skb(consume_skb), the SKB will not be marked as 
-dropped,
-to keep the same meaning, so replace it with dev_consume_skb_irq()
+You mean moving rtnl_lock()/unlock inside macsec_update_offload?
+changelink is already under rtnl_lock. Just move the checks that you
+currently have in macsec_changelink_upd_offload into
+macsec_update_offload, and remove them from macsec_upd_offload.
 
-Thanks,
-Yang
->
->    3791 static inline void dev_kfree_skb_irq(struct sk_buff *skb)
->    3792 {
->    3793         __dev_kfree_skb_irq(skb, SKB_REASON_DROPPED);
->    3794 }
->    3795
->    3796 static inline void dev_consume_skb_irq(struct sk_buff *skb)
->    3797 {
->    3798         __dev_kfree_skb_irq(skb, SKB_REASON_CONSUMED);
->    3799 }
->
-> Thanks
->
->
->> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->> v2 -> v3:
->>    Update commit message.
->>
->> v1 -> v2:
->>    Add fix tag.
->> ---
->>   drivers/net/ethernet/neterion/s2io.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
->> index 1d3c4474b7cb..a83d61d45936 100644
->> --- a/drivers/net/ethernet/neterion/s2io.c
->> +++ b/drivers/net/ethernet/neterion/s2io.c
->> @@ -2386,7 +2386,7 @@ static void free_tx_buffers(struct s2io_nic *nic)
->>   			skb = s2io_txdl_getskb(&mac_control->fifos[i], txdp, j);
->>   			if (skb) {
->>   				swstats->mem_freed += skb->truesize;
->> -				dev_kfree_skb(skb);
->> +				dev_consume_skb_irq(skb);
->>   				cnt++;
->>   			}
->>   		}
->> -- 
->> 2.25.1
->>
-> .
+> > 
+> > > > > +     if (macsec->offload == offload)
+> > > > > +             return 0;
+> > > > > +
+> > > > > +     /* Check if the offloading mode is supported by the underlying layers */
+> > > > > +     if (offload != MACSEC_OFFLOAD_OFF &&
+> > > > > +         !macsec_check_offload(offload, macsec))
+> > > > > +             return -EOPNOTSUPP;
+> > > > > +
+> > > > > +     /* Check if the net device is busy. */
+> > > > > +     if (netif_running(dev))
+> > > > > +             return -EBUSY;
+> > > > > +
+> > > > > +     return macsec_update_offload(macsec, offload); }
+> > > > > +
+> > > >
+> > > > --
+> > > > Sabrina
+> > >
+> > 
+> > --
+> > Sabrina
+> 
+
+-- 
+Sabrina
+
