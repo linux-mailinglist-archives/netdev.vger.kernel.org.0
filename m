@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49AED6475F9
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 20:07:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8D136475FB
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 20:08:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbiLHTHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 14:07:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
+        id S230033AbiLHTIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 14:08:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbiLHTHl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 14:07:41 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4458F0A4
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 11:07:31 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id 62so1905375pgb.13
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 11:07:31 -0800 (PST)
+        with ESMTP id S230028AbiLHTH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 14:07:57 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687474B745
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 11:07:55 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id g1so2040346pfk.2
+        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 11:07:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TNmZs7xdPt2yB6Pp3QzBpCh+NFgEVAZP45QZ6VnrGKk=;
-        b=fdeav+O+fgceEM0gL1i28BDJqyCedZUmtJCLgupSzgx8memqy09DHjFis8sE+lOQit
-         ZN5a4qs9u9f8cTJuS5jwsuQ/LbyBUxKJi+F7vr7th8mevH4wWMEgEvOpRdMzCcuHClg8
-         1u03uLl3BC0BSh5YJPiPj1bfsiMPqZNlQr+Q6tcXoeXkX0U8nkOI6+LRX7mQsw9dm2uw
-         DCSGcTK84Mh1XHMt81Xm1uRMN7AbDVVAY8Cm/EmKRaXKGuy+oCislH59/l5KjzIM/lpq
-         Ul5b9dA11uRv0WXW4hbfdmyw5CJW4zT2oJzh2snI6/BECRscMpa5aBrdW9ORg8slzUBS
-         GaUw==
+        bh=LJ7eeOZL8N+ixNEyuwLxJlm56Cp+9F6miXSVQSvbV1w=;
+        b=tBRJ1B4gYb29BzwSOqyC11vVld7yLj8K4I0/vHbVZtJt50a4MFZtk/GrPyKMGpU05v
+         JY2sNRF5IPmR5Mfcy8p0A8i+ld7MUgHhAuN/So2mkphayZOdLmkcHy9/C49qhQs2k8x1
+         grAs+nmD+MRtC5opnn2FBNBzGgXzpui4YgyAB1OK8UP1lv1S4PAGwNHlUR/tiAIDUf1N
+         TWIRKcZ1MFyamXIx65L96P5dgBRhIkwSQhIYN4wOtW+iqtRU2Yo8MlO1c8pMIJkJxvh0
+         2RtenYAgnvGCPOYr9YlmYiNArNC5pLX6rmM4d/SO9iv3lWLLJkPtHpj3iOjcGA/iVKL1
+         +iEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=TNmZs7xdPt2yB6Pp3QzBpCh+NFgEVAZP45QZ6VnrGKk=;
-        b=4MTzP/yDsTtjRhtpfy+uwAa/IekrVXxI+uGnRDQ6g0lEnRchEJr0g6JG3M+vNbTZR5
-         hCoYnfjxwYnzv2AeYEb426XhQxX72sXTg4e0kQqOfC4mxz6/e1C+XFz34GwnqJGPuRaY
-         lKYmxtH6pUFsB/GsIN7xi/3EaZzQGj9tZORjdeTMB3yMMl+jkpqgSJCwKqylo70fzsRR
-         gI2y1tES6Jl5hemf7AGQpB04eB13BoxhcoIhrNbrLE9hA5MD0HzcarVPbwAGLjUU2YBs
-         7iMqJmsV+W3guQ9n7dyyQK6XHdK88gXTjQarKgbNCRrFgBICa84TG1AswlCcbTULnQwZ
-         d6fg==
-X-Gm-Message-State: ANoB5plkKr3bOS3Fy3q8YGnpXKszGl31VpXW8amk05RgKnwQemJYKy1v
-        AopPczn/jDUMkkj15IwNyFraClr4e5HfcJGNCqNs5g==
-X-Google-Smtp-Source: AA0mqf5itnPfDBCS55IWprjW54xD/q90fOr4shbMYlG7KKpZ0bH/JY4+OMwAQnHeqtLOx7uqmn619LHGnVsZlbXdlZ4=
-X-Received: by 2002:aa7:820a:0:b0:574:a642:ad40 with SMTP id
- k10-20020aa7820a000000b00574a642ad40mr63992049pfi.42.1670526450848; Thu, 08
- Dec 2022 11:07:30 -0800 (PST)
+        bh=LJ7eeOZL8N+ixNEyuwLxJlm56Cp+9F6miXSVQSvbV1w=;
+        b=HpEL8vZdbYIGvPEyaU3ciORr5LM1/qvVA4MNc0HVYFxPFLFj5Hg3IW7XHB7GDmfoTD
+         yn0pHettcr26Ik+kiaJP9tU7DXQAOf+jvCGUvqhfHSnrbHiFYx2TlpCEQeWjvFcVFcVH
+         Xrb4qqeXwhh576SsgP9EDcKighS8muomYE2HiScENc7iCue6NVhbbqWO1CnkWgTaSanl
+         7Tw+G9cc56NNurbqUzpcbj2EIDMT0ie5xO6jhruT6CHj91LTOq+zchr7Ge08SRY6oLAd
+         iasWihM97GL2JmW7j5JsKhP0xDZ8aMUlsCkGYNWFFcgeA7T8UKi1zuZOddSrkz4Y/79K
+         wB7A==
+X-Gm-Message-State: ANoB5pklEkiX32dC5hjkDLUtl4ExFwNUKyp63JWf9EAbe3dEnWB/qVWS
+        PjscwTiL4gRi4W+W4bY+cgeqNu7A/HcIbPSj9dxBqQ==
+X-Google-Smtp-Source: AA0mqf7GfkAQ1EMUVVxDe6o/VMPnCRS///aZLSdE3MRghnCupekr3vOIvq1jseuMZGjXkH4/zM4SYYwwc0N0OtdWmdc=
+X-Received: by 2002:a62:5b43:0:b0:573:6cfc:2210 with SMTP id
+ p64-20020a625b43000000b005736cfc2210mr80595152pfb.55.1670526474708; Thu, 08
+ Dec 2022 11:07:54 -0800 (PST)
 MIME-Version: 1.0
 References: <20221206024554.3826186-1-sdf@google.com> <20221206024554.3826186-4-sdf@google.com>
- <391b9abf-c53a-623c-055f-60768c716baa@linux.dev>
-In-Reply-To: <391b9abf-c53a-623c-055f-60768c716baa@linux.dev>
+ <20221207210019.41dc9b6b@kernel.org>
+In-Reply-To: <20221207210019.41dc9b6b@kernel.org>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 8 Dec 2022 11:07:19 -0800
-Message-ID: <CAKH8qBvfNDo-+qB-CyvCjQAcTtftWoQJTPwVb4zdAMZs=TzG7w@mail.gmail.com>
+Date:   Thu, 8 Dec 2022 11:07:43 -0800
+Message-ID: <CAKH8qBtAQe=b1BLR5RKu7mBynQf0arp4G9+DtvcWVNKNK_27vA@mail.gmail.com>
 Subject: Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX kfuncs
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
         David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Willem de Bruijn <willemb@google.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Anatoly Burakov <anatoly.burakov@intel.com>,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         Magnus Karlsson <magnus.karlsson@gmail.com>,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
@@ -78,95 +78,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 7, 2022 at 6:47 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+On Wed, Dec 7, 2022 at 9:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On 12/5/22 6:45 PM, Stanislav Fomichev wrote:
-> > diff --git a/include/net/xdp.h b/include/net/xdp.h
-> > index 55dbc68bfffc..c24aba5c363b 100644
-> > --- a/include/net/xdp.h
-> > +++ b/include/net/xdp.h
-> > @@ -409,4 +409,33 @@ void xdp_attachment_setup(struct xdp_attachment_info *info,
-> >
-> >   #define DEV_MAP_BULK_SIZE XDP_BULK_QUEUE_SIZE
-> >
-> > +#define XDP_METADATA_KFUNC_xxx       \
-> > +     XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED, \
-> > +                        bpf_xdp_metadata_rx_timestamp_supported) \
-> > +     XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_TIMESTAMP, \
-> > +                        bpf_xdp_metadata_rx_timestamp) \
-> > +     XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_HASH_SUPPORTED, \
-> > +                        bpf_xdp_metadata_rx_hash_supported) \
-> > +     XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_HASH, \
-> > +                        bpf_xdp_metadata_rx_hash) \
-> > +
-> > +enum {
-> > +#define XDP_METADATA_KFUNC(name, str) name,
-> > +XDP_METADATA_KFUNC_xxx
-> > +#undef XDP_METADATA_KFUNC
-> > +MAX_XDP_METADATA_KFUNC,
-> > +};
-> > +
-> > +#ifdef CONFIG_NET
->
-> I think this is no longer needed because xdp_metadata_kfunc_id() is only used in
-> offload.c which should be CONFIG_NET only.
+> The offload tests still pass after this, right?
 
-Seems to be the case. At least my build tests with weird configs work,
-thank you!
+Yeah, had to bring them back in shape just for the purpose of making
+sure they're still happy:
+https://lore.kernel.org/bpf/20221206232739.2504890-1-sdf@google.com/
 
-> > +u32 xdp_metadata_kfunc_id(int id);
-> > +#else
-> > +static inline u32 xdp_metadata_kfunc_id(int id) { return 0; }
-> > +#endif
-> > +
-> > +struct xdp_md;
-> > +bool bpf_xdp_metadata_rx_timestamp_supported(const struct xdp_md *ctx);
-> > +u64 bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx);
-> > +bool bpf_xdp_metadata_rx_hash_supported(const struct xdp_md *ctx);
-> > +u32 bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx);
-> > +
-> >   #endif /* __LINUX_NET_XDP_H__ */
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index f89de51a45db..790650a81f2b 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -1156,6 +1156,11 @@ enum bpf_link_type {
-> >    */
-> >   #define BPF_F_XDP_HAS_FRAGS (1U << 5)
+> TBH I don't remember this code well enough to spot major issues.
+
+No worries! Appreciate the review and the comments on consistency; I'm
+also mostly unaware how this whole offloading works :-)
+
+> On Mon,  5 Dec 2022 18:45:45 -0800 Stanislav Fomichev wrote:
+> > There is an ndo handler per kfunc, the verifier replaces a call to the
+> > generic kfunc with a call to the per-device one.
 > >
-> > +/* If BPF_F_XDP_HAS_METADATA is used in BPF_PROG_LOAD command, the loaded
-> > + * program becomes device-bound but can access it's XDP metadata.
-> > + */
-> > +#define BPF_F_XDP_HAS_METADATA       (1U << 6)
-> > +
->
-> [ ... ]
->
-> > diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
-> > index f5769a8ecbee..bad8bab916eb 100644
-> > --- a/kernel/bpf/offload.c
-> > +++ b/kernel/bpf/offload.c
-> > @@ -41,7 +41,7 @@ struct bpf_offload_dev {
-> >   struct bpf_offload_netdev {
-> >       struct rhash_head l;
-> >       struct net_device *netdev;
-> > -     struct bpf_offload_dev *offdev;
-> > +     struct bpf_offload_dev *offdev; /* NULL when bound-only */
-> >       struct list_head progs;
-> >       struct list_head maps;
-> >       struct list_head offdev_netdevs;
-> > @@ -58,6 +58,12 @@ static const struct rhashtable_params offdevs_params = {
-> >   static struct rhashtable offdevs;
-> >   static bool offdevs_inited;
+> > For XDP, we define a new kfunc set (xdp_metadata_kfunc_ids) which
+> > implements all possible metatada kfuncs. Not all devices have to
+> > implement them. If kfunc is not supported by the target device,
+> > the default implementation is called instead.
 > >
+> > Upon loading, if BPF_F_XDP_HAS_METADATA is passed via prog_flags,
+> > we treat prog_index as target device for kfunc resolution.
+>
+> > @@ -2476,10 +2477,18 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
+> >                                      struct net_device *netdev);
+> >  bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
+> >
+> > +void *bpf_offload_resolve_kfunc(struct bpf_prog *prog, u32 func_id);
+>
+> There seems to be some mis-naming going on. I expected:
+>
+>   offloaded =~ nfp
+>   dev_bound == XDP w/ funcs
+>
+> *_offload_resolve_kfunc looks misnamed? Unless you want to resolve
+> for HW offload?
+
+Yeah, I had the same expectations, but I was also assuming that this
+bpf_offload_resolve_kfunc might also at some point handle offloaded
+metadata kfuncs.
+But looking at it again, agree that the following looks a bit off:
+
+if (bpf_prog_is_dev_bound()) {
+   xxx = bpf_offload_resolve_kfunc()
+}
+
+Let me use the dev_bound prefix more consistently here and in the
+other places you've pointed out.
+
+> >  void unpriv_ebpf_notify(int new_state);
+> >
+> >  #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
+> >  int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr);
+> > +void bpf_offload_bound_netdev_unregister(struct net_device *dev);
+>
+> ditto: offload_bound is a mix of terms no?
+
+Ack, will do bpf_dev_bound_netdev_unregister here, thanks!
+
+> > @@ -1611,6 +1612,10 @@ struct net_device_ops {
+> >       ktime_t                 (*ndo_get_tstamp)(struct net_device *dev,
+> >                                                 const struct skb_shared_hwtstamps *hwtstamps,
+> >                                                 bool cycles);
+> > +     bool                    (*ndo_xdp_rx_timestamp_supported)(const struct xdp_md *ctx);
+> > +     u64                     (*ndo_xdp_rx_timestamp)(const struct xdp_md *ctx);
+> > +     bool                    (*ndo_xdp_rx_hash_supported)(const struct xdp_md *ctx);
+> > +     u32                     (*ndo_xdp_rx_hash)(const struct xdp_md *ctx);
+> >  };
+>
+> Is this on the fast path? Can we do an indirection?
+
+No, we resolve them at load time from "generic"
+bpf_xdp_metadata_rx_<xxx> to ndo_xdp_rx_<xxx>.
+
+> Put these ops in their own struct and add a pointer to that struct
+> in net_device_ops? Purely for grouping reasons because the netdev
+> ops are getting orders of magnitude past the size where you can
+> actually find stuff in this struct.
+
+Oh, great idea, will do!
+
+> >       bpf_free_used_maps(aux);
+> >       bpf_free_used_btfs(aux);
+> > -     if (bpf_prog_is_offloaded(aux))
+> > +     if (bpf_prog_is_dev_bound(aux))
+> >               bpf_prog_offload_destroy(aux->prog);
+>
+> This also looks a touch like a mix of terms (condition vs function
+> called).
+
+Here, not sure, open to suggestions. These
+bpf_prog_offload_init/bpf_prog_offload_destroy are generic enough
+(now) that I'm calling them for both dev_bound/offloaded.
+
+The following paths trigger for both offloaded/dev_bound cases:
+
+if (bpf_prog_is_dev_bound()) bpf_prog_offload_init();
+if (bpf_prog_is_dev_bound()) bpf_prog_offload_destroy();
+
+Do you think it's worth it having completely separate
+dev_bound/offloaded paths? Or, alternatively, can rename to
+bpf_prog_dev_bound_{init,destroy} but still handle both cases?
+
 > > +static int __bpf_offload_init(void);
 > > +static int __bpf_offload_dev_netdev_register(struct bpf_offload_dev *offdev,
 > > +                                          struct net_device *netdev);
 > > +static void __bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
 > > +                                             struct net_device *netdev);
-> > +
-> >   static int bpf_dev_offload_check(struct net_device *netdev)
-> >   {
+>
+> fwd declarations are yuck
+
+SG, will move them here instead.
+
+> >  static int bpf_dev_offload_check(struct net_device *netdev)
+> >  {
 > >       if (!netdev)
 > > @@ -87,13 +93,17 @@ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr)
 > >           attr->prog_type != BPF_PROG_TYPE_XDP)
@@ -183,212 +211,79 @@ thank you!
 > > +     err = __bpf_offload_init();
 > > +     if (err)
 > > +             return err;
-> > +
-> >       offload->prog = prog;
-> >
-> >       offload->netdev = dev_get_by_index(current->nsproxy->net_ns,
-> > @@ -102,11 +112,25 @@ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr)
-> >       if (err)
-> >               goto err_maybe_put;
-> >
-> > +     prog->aux->offload_requested = !(attr->prog_flags & BPF_F_XDP_HAS_METADATA);
-> > +
 >
-> If I read the set correctly, bpf prog can either use metadata kfunc or offload
-> but not both. It is fine to start with only supporting metadata kfunc when there
-> is no offload but will be useful to understand the reason. I assume an offloaded
-> bpf prog should still be able to call the bpf helpers like adjust_head/tail and
-> the same should go for any kfunc?
+> leaks offload
 
-Yes, I'm assuming there should be some work on the offloaded device
-drivers to support metadata kfuncs.
-Offloaded kfuncs, in general, seem hard (how do we call kernel func
-from the device-offloaded prog?); so refusing kfuncs early for the
-offloaded case seems fair for now?
+Oops, let me actually move this to late_initcall as you suggest below.
 
-> Also, the BPF_F_XDP_HAS_METADATA feels like it is acting more like
-> BPF_F_XDP_DEV_BOUND_ONLY.
-
-SG. Seems like a better option in case in the future binding to
-devices might give some other nice perks besides the metadata..
-
-> >       down_write(&bpf_devs_lock);
-> >       ondev = bpf_offload_find_netdev(offload->netdev);
-> >       if (!ondev) {
-> > -             err = -EINVAL;
-> > -             goto err_unlock;
-> > +             if (!prog->aux->offload_requested) {
->
-> nit. bpf_prog_is_offloaded(prog->aux)
-
-Thx!
-
-> > +                     /* When only binding to the device, explicitly
-> > +                      * create an entry in the hashtable. See related
-> > +                      * maybe_remove_bound_netdev.
-> > +                      */
-> > +                     err = __bpf_offload_dev_netdev_register(NULL, offload->netdev);
-> > +                     if (err)
-> > +                             goto err_unlock;
-> > +                     ondev = bpf_offload_find_netdev(offload->netdev);
-> > +             }
-> > +             if (!ondev) {
-> > +                     err = -EINVAL;
-> > +                     goto err_unlock;
-> > +             }
-> >       }
-> >       offload->offdev = ondev->offdev;
-> >       prog->aux->offload = offload;
 > > @@ -209,6 +233,19 @@ bpf_prog_offload_remove_insns(struct bpf_verifier_env *env, u32 off, u32 cnt)
 > >       up_read(&bpf_devs_lock);
-> >   }
+> >  }
 > >
 > > +static void maybe_remove_bound_netdev(struct net_device *dev)
 > > +{
-> > +     struct bpf_offload_netdev *ondev;
-> > +
-> > +     rtnl_lock();
-> > +     down_write(&bpf_devs_lock);
-> > +     ondev = bpf_offload_find_netdev(dev);
-> > +     if (ondev && !ondev->offdev && list_empty(&ondev->progs))
-> > +             __bpf_offload_dev_netdev_unregister(NULL, dev);
-> > +     up_write(&bpf_devs_lock);
-> > +     rtnl_unlock();
-> > +}
-> > +
-> >   static void __bpf_prog_offload_destroy(struct bpf_prog *prog)
-> >   {
-> >       struct bpf_prog_offload *offload = prog->aux->offload;
-> > @@ -226,10 +263,17 @@ static void __bpf_prog_offload_destroy(struct bpf_prog *prog)
+>
+> func name prefix ?
+
+Good point, will rename to bpf_dev_bound_try_remove_netdev.
+
+> > -struct bpf_offload_dev *
+> > -bpf_offload_dev_create(const struct bpf_prog_offload_ops *ops, void *priv)
+> > +static int __bpf_offload_init(void)
+> >  {
+> > -     struct bpf_offload_dev *offdev;
+> >       int err;
 > >
-> >   void bpf_prog_offload_destroy(struct bpf_prog *prog)
-> >   {
-> > +     struct net_device *netdev = NULL;
-> > +
 > >       down_write(&bpf_devs_lock);
-> > -     if (prog->aux->offload)
-> > +     if (prog->aux->offload) {
-> > +             netdev = prog->aux->offload->netdev;
-> >               __bpf_prog_offload_destroy(prog);
-> > +     }
-> >       up_write(&bpf_devs_lock);
-> > +
-> > +     if (netdev)
->
-> May be I have missed a refcnt or lock somewhere.  Is it possible that netdev may
-> have been freed?
-
-Yeah, with the offload framework, there are no refcnts. We put an
-"offloaded" device into a separate hashtable (protected by
-rtnl/semaphore).
-maybe_remove_bound_netdev will re-grab the locks (due to ordering:
-rtnl->bpf_devs_lock) and remove the device from the hashtable if it's
-still there.
-At least this is how, I think, it should work; LMK if something is
-still fishy here...
-
-Or is the concern here that somebody might allocate new netdev reusing
-the same address? I think I have enough checks in
-maybe_remove_bound_netdev to guard against that. Or, at least, to make
-it safe :-)
-
-> > +             maybe_remove_bound_netdev(netdev);
-> >   }
-> >
->
-> [ ... ]
->
-> > +void *bpf_offload_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
-> > +{
-> > +     const struct net_device_ops *netdev_ops;
-> > +     void *p = NULL;
-> > +
-> > +     down_read(&bpf_devs_lock);
-> > +     if (!prog->aux->offload || !prog->aux->offload->netdev)
-> > +             goto out;
-> > +
-> > +     netdev_ops = prog->aux->offload->netdev->netdev_ops;
-> > +
-> > +     if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED))
-> > +             p = netdev_ops->ndo_xdp_rx_timestamp_supported;
-> > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP))
-> > +             p = netdev_ops->ndo_xdp_rx_timestamp;
-> > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH_SUPPORTED))
-> > +             p = netdev_ops->ndo_xdp_rx_hash_supported;
-> > +     else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_HASH))
-> > +             p = netdev_ops->ndo_xdp_rx_hash;
-> > +     /* fallback to default kfunc when not supported by netdev */
-> > +out:
-> > +     up_read(&bpf_devs_lock);
-> > +
-> > +     return p;
-> > +}
-> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > index 13bc96035116..b345a273f7d0 100644
-> > --- a/kernel/bpf/syscall.c
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -2491,7 +2491,8 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
-> >                                BPF_F_TEST_STATE_FREQ |
-> >                                BPF_F_SLEEPABLE |
-> >                                BPF_F_TEST_RND_HI32 |
-> > -                              BPF_F_XDP_HAS_FRAGS))
-> > +                              BPF_F_XDP_HAS_FRAGS |
-> > +                              BPF_F_XDP_HAS_METADATA))
-> >               return -EINVAL;
-> >
-> >       if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) &&
-> > @@ -2575,7 +2576,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
-> >       prog->aux->attach_btf = attach_btf;
-> >       prog->aux->attach_btf_id = attr->attach_btf_id;
-> >       prog->aux->dst_prog = dst_prog;
-> > -     prog->aux->offload_requested = !!attr->prog_ifindex;
-> > +     prog->aux->dev_bound = !!attr->prog_ifindex;
-> >       prog->aux->sleepable = attr->prog_flags & BPF_F_SLEEPABLE;
-> >       prog->aux->xdp_has_frags = attr->prog_flags & BPF_F_XDP_HAS_FRAGS;
-> >
-> > @@ -2598,7 +2599,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
-> >       atomic64_set(&prog->aux->refcnt, 1);
-> >       prog->gpl_compatible = is_gpl ? 1 : 0;
-> >
-> > -     if (bpf_prog_is_offloaded(prog->aux)) {
-> > +     if (bpf_prog_is_dev_bound(prog->aux)) {
-> >               err = bpf_prog_offload_init(prog, attr);
-> >               if (err)
-> >                       goto free_prog_sec;
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index fc4e313a4d2e..00951a59ee26 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -15323,6 +15323,24 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
-> >               return -EINVAL;
+> > @@ -680,12 +740,25 @@ bpf_offload_dev_create(const struct bpf_prog_offload_ops *ops, void *priv)
+> >               err = rhashtable_init(&offdevs, &offdevs_params);
+> >               if (err) {
+> >                       up_write(&bpf_devs_lock);
+> > -                     return ERR_PTR(err);
+> > +                     return err;
+> >               }
+> >               offdevs_inited = true;
 > >       }
+> >       up_write(&bpf_devs_lock);
 > >
-> > +     *cnt = 0;
-> > +
-> > +     if (resolve_prog_type(env->prog) == BPF_PROG_TYPE_XDP) {
+> > +     return 0;
+> > +}
 >
-> hmmm...does it need BPF_PROG_TYPE_XDP check? Is the below
-> bpf_prog_is_dev_bound() and the eariler
-> 'register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &xdp_metadata_kfunc_set)' good enough?
+> Would late_initcall() or some such not work for this?
 
-Should be enough, yeah, will drop. I was being a bit defensive here in
-case we have non-xdp device-bound programs in the future.
+Agreed, let's move it to the initcall instead.
 
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 5b221568dfd4..862e03fcffa6 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -9228,6 +9228,10 @@ static int dev_xdp_attach(struct net_device *dev, struct netlink_ext_ack *extack
+> >                       NL_SET_ERR_MSG(extack, "Using device-bound program without HW_MODE flag is not supported");
+>
+> extack should get updated here, I reckon, maybe in previous patch
 
-> > +             if (bpf_prog_is_offloaded(env->prog->aux)) {
-> > +                     verbose(env, "no metadata kfuncs offload\n");
+Oh, thanks for spotting, will fix.
+
+> >                       return -EINVAL;
+> >               }
+> > +             if (bpf_prog_is_dev_bound(new_prog->aux) && !bpf_offload_dev_match(new_prog, dev)) {
+>
+> bound_dev_match() ?
+
+Right, so this is another case where it works for both cases. Maybe
+rename to bpf_dev_bound_match and use for both offloaded/dev_bound? Or
+do you prefer completely separate paths?
+
+> > +                     NL_SET_ERR_MSG(extack, "Cannot attach to a different target device");
+>
+> different than.. ?
+
+Borrowing from netdevsim, lmk if the following won't work here:
+
+"Program bound to different device"
+
 > > +                     return -EINVAL;
 > > +             }
-> > +
-> > +             if (bpf_prog_is_dev_bound(env->prog->aux)) {
-> > +                     void *p = bpf_offload_resolve_kfunc(env->prog, insn->imm);
-> > +
-> > +                     if (p) {
-> > +                             insn->imm = BPF_CALL_IMM(p);
-> > +                             return 0;
-> > +                     }
-> > +             }
-> > +     }
-> > +
->
->
+> >               if (new_prog->expected_attach_type == BPF_XDP_DEVMAP) {
+> >                       NL_SET_ERR_MSG(extack, "BPF_XDP_DEVMAP programs can not be attached to a device");
+> >                       return -EINVAL;
