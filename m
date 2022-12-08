@@ -2,48 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B8CD64666E
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 02:23:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7F2646678
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 02:26:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiLHBX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 20:23:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47604 "EHLO
+        id S229628AbiLHB0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 20:26:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiLHBX0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 20:23:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138A7578F3;
-        Wed,  7 Dec 2022 17:23:26 -0800 (PST)
+        with ESMTP id S229735AbiLHB02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 20:26:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C4A8E5A6;
+        Wed,  7 Dec 2022 17:26:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7A7DB821CA;
-        Thu,  8 Dec 2022 01:23:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E73A9C433C1;
-        Thu,  8 Dec 2022 01:23:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53C8B61D12;
+        Thu,  8 Dec 2022 01:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80312C433C1;
+        Thu,  8 Dec 2022 01:26:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670462603;
-        bh=8rCjfbDiR4db16mymv7WYvtLQ9BVPlo1/EQLjBZWGd8=;
+        s=k20201202; t=1670462786;
+        bh=3fXYsPC1fbYDxd/xYtvZBAzrsT7/Cn2L6Zj543M6XNw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KOdnkIbzzTLcTZXg9tM25dfhkp9/dJD3YfXifWRD0C3Edh+rKDtO5+nMxNItsg/0C
-         dmvo+rTjqr1QfUMqwtODgZEn9W9miUgJqDViZfqKITVDqY/LDx74N5XwkG5RUmj6G8
-         5Dnrf6TJD3wiZn200GZR+Kq5OAxboAkC4b9iWHsOx6k+PO4FtcKLY9vY+UEGV5hF3s
-         Ew06cGr8FqeLt8JxfIlwOP45LV43wnrluHl0VYNSVezx5tvqWJ7I5MrDZ6D46L6LkD
-         BXbULLVOsWFlEQ7RsR9Y5jFaGN7wSovbm148RecouEC/eagZHA5WGxiKonIkpEu16R
-         vJCdBbY1ZjhQg==
-Date:   Wed, 7 Dec 2022 17:23:21 -0800
+        b=gQVV9BFTEublja4Mdd5S1G6dI8lymevct4r0swz1XmhkGJ7HALzwI5tkcl85qLiDu
+         xxj2Kl14sxHHjwrEHKAj1ptSMsl6CQnato2NaQkPxCUqcXk9/MKH9TN2h6rznF4P5a
+         9hpkjQUOGz5hkIvq66bWsihzODybmJAitfeUn+A+vfniA+NhxyHhYp8gEcpMuU5pKg
+         el+HP47T+OUA4ubSp2DGnzak64IFXFT1VBrEomYtWJ46tYrb6MdlgQ9wX3fhuLvEcb
+         M4A3elCUKhK0kRqFVC8SdyVprI3Aw9xCljXW/iSMZ+Z3wW0NnezRseT313yIJgyZje
+         m35PJuZVuhp2w==
+Date:   Wed, 7 Dec 2022 17:26:25 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     <yang.yang29@zte.com.cn>
-Cc:     <edumazet@google.com>, <davem@davemloft.net>, <pabeni@redhat.com>,
-        <bigeasy@linutronix.de>, <imagedong@tencent.com>,
-        <kuniyu@amazon.com>, <petrm@nvidia.com>, <liu3101@purdue.edu>,
-        <wujianguo@chinatelecom.cn>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <tedheadster@gmail.com>
-Subject: Re: [PATCH linux-next] net: record times of netdev_budget exhausted
-Message-ID: <20221207172321.7da162c7@kernel.org>
-In-Reply-To: <202212080912066313234@zte.com.cn>
-References: <20221207153256.6c0ec51a@kernel.org>
-        <202212080912066313234@zte.com.cn>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     davem@davemloft.net, linux-wpan@vger.kernel.org,
+        alex.aring@gmail.com, netdev@vger.kernel.org
+Subject: Re: pull-request: ieee802154 for net 2022-12-05
+Message-ID: <20221207172625.7da96708@kernel.org>
+In-Reply-To: <20221205122515.1720539-1-stefan@datenfreihafen.org>
+References: <20221205122515.1720539-1-stefan@datenfreihafen.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,30 +52,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Dec 2022 09:12:06 +0800 (CST) yang.yang29@zte.com.cn wrote:
-> > Sorry if this is too direct, but it seems to me like you're trying hard
-> > to find something useful to do in this area without a clear use case.
->   
-> I see maybe this is a too special scenes, not suitable. The motivation
-> is we see lots of time_squeeze on our working machines, and want to
-> tuning, but our kernel are not ready to use threaded NAPI. And we
-
-Ah, in that cases I indeed misjudged, sorry.
-
-> did see performance difference on different netdev_budget* in
-> preliminary tests.
-
-Right, the budget values < 100 are quite impractical. Also as I said
-time_squeeze is a terrible metric, if you can find a direct metric
-in terms of application latency or max PPS, that's much more valuable.
-
-> > We have coding tasks which would definitely be useful and which nobody
-> > has time to accomplish. Please ask if you're trying to find something
-> > to do.  
+On Mon,  5 Dec 2022 13:25:15 +0100 Stefan Schmidt wrote:
+> Hello Dave, Jakub.
 > 
-> We focus on 5G telecom machine, which has huge TIPC packets in the
-> intranet. If it's related, we are glad to do it with much appreciate of your
-> indicate!
+> An update from ieee802154 for your *net* tree:
+> 
+> Three small fixes this time around.
+> 
+> Ziyang Xuan fixed an error code for a timeout during initialization of the
+> cc2520 driver.
+> Hauke Mehrtens fixed a crash in the ca8210 driver SPI communication due
+> uninitialized SPI structures.
+> Wei Yongjun added INIT_LIST_HEAD ieee802154_if_add() to avoid a potential
+> null pointer dereference.
 
-Oh, unfortunately most of the tasks we have are around driver
-infrastructure.
+Sorry for the lateness, we are backed up since the weekend :(
+
+I believe this is now in net:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=92439a859000c6f4c74160a3c08c1a519e3ca125
+
+But the bot has not replied?
