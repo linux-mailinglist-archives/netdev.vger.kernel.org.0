@@ -2,77 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70AD1647A5A
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 00:52:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B77AE647A64
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 00:57:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230074AbiLHXwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 18:52:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
+        id S230191AbiLHX5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 18:57:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbiLHXwS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 18:52:18 -0500
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B1E7E80D
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 15:52:16 -0800 (PST)
-Received: by mail-il1-f197.google.com with SMTP id h20-20020a056e021d9400b00300581edaa5so2595508ila.12
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 15:52:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eyvNwceZF5z8ZR0dxpXEzRAKysxu2R1tYLIvKJOVfyI=;
-        b=azrT5rCneElKTO6AP2EXmdPinJUV1gwcDLBB6lEtWi7Oq8pJqN1JiPm+CvDmMAPCmp
-         V2qdWGvnwvr5SBiejBOAUEZQqFgWr4suiN6BjV6E7TUIJrlZOttYGjcInkma0px2kT5K
-         bwNGKejHZhb2r7FT2dtjdxTwsEivQtEs+3Io2ez1D7Ads6b4zfmDdjMOWuTpI6GvjFoe
-         sRhwj94+lh4dRyGauawrPrdsRsyHLs9CucWaqyhotNdFdl9qs6phUlkwsmNhWRl+uVUV
-         4WlWtTWRuYrG1QC7Zx6g6+YJQr8pIuzmvyv5MTRUYQ1nuDZeiinjz37/8bZFTD7jY6IP
-         8f6g==
-X-Gm-Message-State: ANoB5pm6HHu8D2JuLz99hyPVgfH086DfAJH2k7qQQ6QcSnitl9Og8Gl9
-        X3k7PSD8s7tGGX2FkZocgd4QLZWscl6HB305eaLJxry2Jlen
-X-Google-Smtp-Source: AA0mqf5eNp7hjb0FvQ5EQPFAIrGlfS3LdhxB+RcSrRifO8D2Fx2bnUdUgfZRoSFmRajDyx+hT2z4uiVEMbK/LXsfrO4yJuJdHBGF
-MIME-Version: 1.0
-X-Received: by 2002:a6b:8f43:0:b0:6e0:34ee:4e97 with SMTP id
- r64-20020a6b8f43000000b006e034ee4e97mr3798174iod.38.1670543536033; Thu, 08
- Dec 2022 15:52:16 -0800 (PST)
-Date:   Thu, 08 Dec 2022 15:52:16 -0800
-In-Reply-To: <1805058.1670508568@warthog.procyon.org.uk>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000c17c905ef59bad4@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in rxrpc_destroy_all_locals
-From:   syzbot <syzbot+1eb4232fca28c0a6d1c2@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
-        kuba@kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+        with ESMTP id S230393AbiLHX5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 18:57:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5AB2C10D;
+        Thu,  8 Dec 2022 15:57:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE599620DF;
+        Thu,  8 Dec 2022 23:57:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D0C7C433D2;
+        Thu,  8 Dec 2022 23:57:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670543860;
+        bh=wHlrvddxp86FlD0qGWJmfJxG8uK4aK2mx0VWiEW3AWg=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=R/pZUZ6E9cYT74XkXkihIxM5yRYsGlUX7Jdk0gRE/Ohw6ztBPNrQh+pfwvti+o0yN
+         UdZdyKJ0pRtVaNH8MGjedJtKPFqnXyGQRp/4M0ewCvP7lC0UOzvro3scFzz7rgxHQD
+         8oZUmwPTQ5JQ4qSO7bnu6ZXu6mbQi4rOy+QQbgwg3lYJgcsjH8UMIJcnmuJwsGj7Ub
+         UZzg16/TWpQN2CTkYaWRY6+HDZcd+VHNEtLyp9+NXUa4ZTzOpjnCiTa5prczcIwxHm
+         jY1ODNzz3XuXsaWXAt0NHS4fenU2jzsHyBBZ+skcC6tcxMEeApNg3Z5cPm2S/6WS7W
+         HvvUQGW9pf0Wg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 09E19E1B4D8;
+        Thu,  8 Dec 2022 23:57:40 +0000 (UTC)
+Subject: Re: [PULL] Networking for v6.1 final / v6.1-rc9
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20221208205639.1799257-1-kuba@kernel.org>
+References: <20221208205639.1799257-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20221208205639.1799257-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc9
+X-PR-Tracked-Commit-Id: f8bac7f9fdb0017b32157957ffffd490f95faa07
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 010b6761a9fc5006267d99abb6f9f196bf5d3d13
+Message-Id: <167054386002.21053.6125954924188621558.pr-tracker-bot@kernel.org>
+Date:   Thu, 08 Dec 2022 23:57:40 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The pull request you sent on Thu,  8 Dec 2022 12:56:39 -0800:
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-INFO: rcu detected stall in corrupted
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc9
 
-rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: { P4104 } 2661 jiffies s: 2777 root: 0x0/T
-rcu: blocking rcu_node structures (internal RCU debug):
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/010b6761a9fc5006267d99abb6f9f196bf5d3d13
 
+Thank you!
 
-Tested on:
-
-commit:         efb7555b rxrpc: Fix I/O thread stop
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/ afs-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=16b83997880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=fb14358c9774adf3
-dashboard link: https://syzkaller.appspot.com/bug?extid=1eb4232fca28c0a6d1c2
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Note: no patches were applied.
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
