@@ -2,176 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A1BE646ABB
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 09:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4967E646AB9
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 09:40:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229637AbiLHIkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 03:40:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
+        id S229591AbiLHIkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 03:40:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiLHIkk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 03:40:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1697E6176F
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 00:40:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D24D61DDF
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 08:40:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75269C433C1;
-        Thu,  8 Dec 2022 08:40:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670488839;
-        bh=0mzMvqt/N0FS9AffGIMeWfaZ37WKQbADudwTZRkYGEQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I4/HMl/9oyPySydbRq0bBNmlcqDUaNKCuMGV6vhMfF9G+JdIooZbyOzUN+UJIF0Gb
-         +cv6b00N20f9kQAkPqNt+GJJpiRdjbSV2Am8yivj4HB+jYy4C5Mi4LV9uKXrzYsXML
-         3mffTTpj5yC57zx3CVC2ePq5RGWvTycwJ5xQn4IIQ3OcmbwPxYGytlRsHL74XGc0MA
-         sqO642wUNa6139suM5uVf/T/tgt6BDVsegofkpEDW0m0RoaTObYA06DfOupf2ZhRTp
-         YR7WgyY4Vyh7z3sX0GNyw4lhD3WcFtq+vmu/qfXUvA/0Yk5riNoMgKmhx8PFb7Ygws
-         Xk5xrZkTFbI0A==
-Date:   Thu, 8 Dec 2022 10:40:34 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Corinna Vinschen <vinschen@redhat.com>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        mateusz.palczewski@intel.com, patryk.piotrowski@intel.com
-Subject: Re: [PATCH] igb: conditionalize I2C bit banging on external thermal
- sensor support
-Message-ID: <Y5GjAu4Uu6mg9a1I@unreal>
-References: <20221207104907.2626043-1-vinschen@redhat.com>
+        with ESMTP id S229530AbiLHIki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 03:40:38 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC88E6176F
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 00:40:37 -0800 (PST)
+Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NSSJL5yzQzJqN2;
+        Thu,  8 Dec 2022 16:39:46 +0800 (CST)
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 8 Dec 2022 16:40:35 +0800
+Subject: Re: [PATCH net v2] ethernet: s2io: don't call dev_kfree_skb() under
+ spin_lock_irqsave()
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+References: <20221207012540.2717379-1-yangyingliang@huawei.com>
+ <Y5GYqsgKxhUpfTn/@unreal>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <f31d0ce3-50fc-6206-bc7a-2a67ec0951db@huawei.com>
+Date:   Thu, 8 Dec 2022 16:40:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221207104907.2626043-1-vinschen@redhat.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y5GYqsgKxhUpfTn/@unreal>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 07, 2022 at 11:49:07AM +0100, Corinna Vinschen wrote:
-> Commit a97f8783a937 ("igb: unbreak I2C bit-banging on i350") introduced
-> code to change I2C settings to bit banging unconditionally.
-> 
-> However, this patch introduced a regression:  On an Intel S2600CWR
-> Server Board with three NICs:
-> 
-> - 1x dual-port copper
->   Intel I350 Gigabit Network Connection [8086:1521] (rev 01)
->   fw 1.63, 0x80000dda
-> 
-> - 2x quad-port SFP+ with copper SFP Avago ABCU-5700RZ
->   Intel I350 Gigabit Fiber Network Connection [8086:1522] (rev 01)
->   fw 1.52.0
-> 
-> the SFP NICs no longer get link at all.  Reverting commit a97f8783a937
-> or switching to the Intel out-of-tree driver both fix the problem.
-> 
-> Per the igb out-of-tree driver, I2C bit banging on i350 depends on
-> support for an external thermal sensor (ETS).  However, commit
-> a97f8783a937 added bit banging unconditionally.  Additionally, the
-> out-of-tree driver always calls init_thermal_sensor_thresh on probe,
-> while our driver only calls init_thermal_sensor_thresh only in
-> igb_reset(), and only if an ETS is present, ignoring the internal
-> thermal sensor.  The affected SFPs don't provide an ETS.  Per Intel,
-> the behaviour is a result of i350 firmware requirements.
-> 
-> This patch fixes the problem by aligning the behaviour to the
-> out-of-tree driver:
-> 
-> - split igb_init_i2c() into two functions:
->   - igb_init_i2c() only performs the basic I2C initialization.
->   - igb_set_i2c_bb() makes sure that E1000_CTRL_I2C_ENA is set
->     and enables bit-banging.
-> 
-> - igb_probe() only calls igb_set_i2c_bb() if an ETS is present.
-> 
-> - igb_probe() calls init_thermal_sensor_thresh() unconditionally.
-> 
-> - igb_reset() aligns its behaviour to igb_probe(), i. e., call
->   igb_set_i2c_bb() if an ETS is present and call
->   init_thermal_sensor_thresh() unconditionally.
-> 
-> Fixes: a97f8783a937 ("igb: unbreak I2C bit-banging on i350")
-> Co-authored-by: Jamie Bainbridge <jbainbri@redhat.com>
-> Tested-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-> Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
-> Signed-off-by: Jamie Bainbridge <jbainbri@redhat.com>
-> ---
->  drivers/net/ethernet/intel/igb/igb_main.c | 44 +++++++++++++++++------
->  1 file changed, 34 insertions(+), 10 deletions(-)
 
-The patch should have target in its title: "[PATCH net] ...."
+On 2022/12/8 15:56, Leon Romanovsky wrote:
+> On Wed, Dec 07, 2022 at 09:25:40AM +0800, Yang Yingliang wrote:
+>> It is not allowed to call consume_skb() from hardware interrupt context
+>> or with interrupts being disabled. So replace dev_kfree_skb() with
+>> dev_consume_skb_irq() under spin_lock_irqsave().
+>>
+>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+>> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+>> ---
+>> v1 -> v2:
+>>    Add fix tag.
+>> ---
+>>   drivers/net/ethernet/neterion/s2io.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
+>> index 1d3c4474b7cb..a83d61d45936 100644
+>> --- a/drivers/net/ethernet/neterion/s2io.c
+>> +++ b/drivers/net/ethernet/neterion/s2io.c
+>> @@ -2386,7 +2386,7 @@ static void free_tx_buffers(struct s2io_nic *nic)
+>>   			skb = s2io_txdl_getskb(&mac_control->fifos[i], txdp, j);
+>>   			if (skb) {
+>>   				swstats->mem_freed += skb->truesize;
+>> -				dev_kfree_skb(skb);
+>> +				dev_consume_skb_irq(skb);
+> And why did you use dev_consume_skb_irq() and not dev_kfree_skb_irq()?
+I chose dev_consume_skb_irq(), because dev_kfree_skb() is consume_skb().
 
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 4e65ffe3f4e3..7f56322b3ec2 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -138,6 +138,9 @@ static irqreturn_t igb_msix_ring(int irq, void *);
->  static void igb_update_dca(struct igb_q_vector *);
->  static void igb_setup_dca(struct igb_adapter *);
->  #endif /* CONFIG_IGB_DCA */
-> +#ifdef CONFIG_IGB_HWMON
-> +static void igb_set_i2c_bb(struct e1000_hw *);
-
-IMHO, it is better to follow kernel coding style for new code.
-The functions should have variable names too.
-
-> +#endif /* CONFIG_IGB_HWMON */
->  static int igb_poll(struct napi_struct *, int);
->  static bool igb_clean_tx_irq(struct igb_q_vector *, int);
->  static int igb_clean_rx_irq(struct igb_q_vector *, int);
-> @@ -2399,7 +2402,8 @@ void igb_reset(struct igb_adapter *adapter)
->  			 * interface.
->  			 */
->  			if (adapter->ets)
-> -				mac->ops.init_thermal_sensor_thresh(hw);
-> +				igb_set_i2c_bb(hw);
-> +			mac->ops.init_thermal_sensor_thresh(hw);
->  		}
->  	}
->  #endif
-> @@ -3116,21 +3120,12 @@ static void igb_init_mas(struct igb_adapter *adapter)
->   **/
->  static s32 igb_init_i2c(struct igb_adapter *adapter)
->  {
-> -	struct e1000_hw *hw = &adapter->hw;
->  	s32 status = 0;
-> -	s32 i2cctl;
->  
->  	/* I2C interface supported on i350 devices */
->  	if (adapter->hw.mac.type != e1000_i350)
->  		return 0;
->  
-> -	i2cctl = rd32(E1000_I2CPARAMS);
-> -	i2cctl |= E1000_I2CBB_EN
-> -		| E1000_I2C_CLK_OUT | E1000_I2C_CLK_OE_N
-> -		| E1000_I2C_DATA_OUT | E1000_I2C_DATA_OE_N;
-> -	wr32(E1000_I2CPARAMS, i2cctl);
-> -	wrfl();
-> -
->  	/* Initialize the i2c bus which is controlled by the registers.
->  	 * This bus will use the i2c_algo_bit structure that implements
->  	 * the protocol through toggling of the 4 bits in the register.
-> @@ -3146,6 +3141,30 @@ static s32 igb_init_i2c(struct igb_adapter *adapter)
->  	return status;
->  }
->  
-> +#ifdef CONFIG_IGB_HWMON
-> +/**
-> + *  igb_set_i2c_bb - Init I2C interface
-> + *  @adapter: pointer to adapter structure
-> + **/
-> +static void igb_set_i2c_bb(struct e1000_hw *hw)
-> +{
-> +	s32 i2cctl;
-> +	u32 ctrl_ext;
-
-Reversed Christmas tree, please.
-
-Thanks
+Thanks,
+Yang
+>
+> Thanks
+>
+>>   				cnt++;
+>>   			}
+>>   		}
+>> -- 
+>> 2.25.1
+>>
+> .
