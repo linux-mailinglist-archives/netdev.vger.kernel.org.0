@@ -2,97 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBF2A646708
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 03:34:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD60864670F
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 03:38:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229807AbiLHCet (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 21:34:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57752 "EHLO
+        id S229678AbiLHCiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 21:38:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiLHCer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 21:34:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D8F93A52;
-        Wed,  7 Dec 2022 18:34:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 576C4B821FF;
-        Thu,  8 Dec 2022 02:34:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51241C433D7;
-        Thu,  8 Dec 2022 02:34:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670466884;
-        bh=RvsfLC8WqgtbeeVSmrxsvGGOXLI1778nLXkBGvQAYvg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=elFqximTvljjIGzE9M0r4NCZQ2laKz5qzv89J0gAIeHSEPQSBryiDwAw85e/s+1jz
-         63CICI5rEJEiNv0PXKDAoZXd6DWe3G7P83FvjLKCcGhUVjiGEsoqMyM/j0cnavEH7i
-         P0GUNj2guTwNw5YZqxezHqqa6LKj+8l8JzKjrT2b1P30MywojkPK5+rf7zApxqPn/9
-         YqQtLg5JznswXGYFSu2i5bNOkDKH8R+RX43Jq824jblu3wmoxUn8M3GuABrFPcGIFY
-         pTZHfGQjkgr8OcLwNqR74ANhyLDB7+vooVne5jpBzrLs9A7MXtAoK3JryrYIq1q5l9
-         9EcIqSbi9eoxQ==
-Date:   Wed, 7 Dec 2022 18:34:40 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     syzbot+fda18eaa8c12534ccb3b@syzkaller.appspotmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        pepsipu <soopthegoop@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Andrii Nakryiko <andrii@kernel.org>, ast@kernel.org,
-        bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hao Luo <haoluo@google.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, jolsa@kernel.org,
-        KP Singh <kpsingh@kernel.org>, martin.lau@linux.dev,
-        Stanislav Fomichev <sdf@google.com>, song@kernel.org,
-        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Rasesh Mody <rmody@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        David Ahern <dsahern@kernel.org>,
-        Richard Gobert <richardbgobert@gmail.com>,
-        David Rientjes <rientjes@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        GR-Linux-NIC-Dev@marvell.com, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH net-next v2] skbuff: Introduce slab_build_skb()
-Message-ID: <20221207183440.4c80918b@kernel.org>
-In-Reply-To: <20221208000209.gonna.368-kees@kernel.org>
-References: <20221208000209.gonna.368-kees@kernel.org>
+        with ESMTP id S229626AbiLHCiW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 21:38:22 -0500
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC6BE03E
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 18:38:21 -0800 (PST)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-14449b7814bso397215fac.3
+        for <netdev@vger.kernel.org>; Wed, 07 Dec 2022 18:38:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=X1EI4xmQOLkF5+6teY/fXdXw69BCCe6XamlbUgv+AhM=;
+        b=DJchbrIAtw8KxjWQ0daH0FOTq6IxKJYbUCI/h7fetYmSXU5ru3/oYGpPHLKyz5OMoD
+         rKxI4fhiM7xjied6U36xjqJbGhAviK6J2eZc/1excZWIxeuaOW/nu+DzzvbCf+6LSgfG
+         R5AYA4teZiGaJaR8du/NNIPQUP/jMC0RBXhd1w5pwmovfD+XhNpCHnl/5rruXhiCu22F
+         LnNBmNvDHmNy+1VvwDnrm1IMY2AOxrZM/rbHt5vZB/C2FraUbBJrcV9kIY7FKNYT6pz/
+         1wfgQQ55TbERmTYKOUnhEaY3pUZoLu1gfH9M+ujXFsJn/SZ7wZbta3FaGfUxCqY/0n3O
+         sepg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=X1EI4xmQOLkF5+6teY/fXdXw69BCCe6XamlbUgv+AhM=;
+        b=NxsMzN3/ar+zNFRWr51XAIg3s1jZyVAnTgXkoLk9yFcYhaRzxu0jM6nAKwzkWJVgHD
+         bbok6BgvlxeXx4axg93Dm5ODkxLDjZ1EOIM3tFp+6nlsQtQsbX3+JMIUK5CpCj1D+sY/
+         kh3Vmhf8S9Nkm4kVEXC9mM5LeyfxfQeUTuatWxMOwRJurK+pzCIApYxU5BypNmJuB4Xn
+         VZaaoqeCkOryVut9EhZGWHVVpbN106nnTCGrzGnHlgv7VdOginWEyw8fYfAgjHFlvGD4
+         8yWzvsHuXHVPbdFypqfgnPWJyW3jDVy0NNgWP8/TN8/T+EZKuImPwkiptX/TUVNUC1FR
+         3hYQ==
+X-Gm-Message-State: ANoB5plGxgctedjbnWBZom4AjgOBrHjPbI6uQHBEuMjPDeI4g2Gj095t
+        UXoh6gAD0t5bMvnob1FCgeSqBD233+dkoExH5uo=
+X-Google-Smtp-Source: AA0mqf7ILVaWP7AlDQMpKFDhdQ2q7v9WBV1uCGqTVA6a6xUf3cWv6kUb5JdpC4B0BfndvDFI1coW04J8BL9aaqcg9kY=
+X-Received: by 2002:a05:6870:b426:b0:142:c277:2e94 with SMTP id
+ x38-20020a056870b42600b00142c2772e94mr42303923oap.129.1670467101172; Wed, 07
+ Dec 2022 18:38:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1670369327.git.lucien.xin@gmail.com> <bbaf96445e9e60136dfaacdc58726bfd3a9e5148.1670369327.git.lucien.xin@gmail.com>
+ <Y4/WNywqOPQlCQrz@salvia> <CADvbK_dEST=QdwkS0CdtnMWUAcF96XagezF2zuvRU_B7nB=aYw@mail.gmail.com>
+In-Reply-To: <CADvbK_dEST=QdwkS0CdtnMWUAcF96XagezF2zuvRU_B7nB=aYw@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 7 Dec 2022 21:37:29 -0500
+Message-ID: <CADvbK_da=Os1g6G1kWLyXMR=ANdbdOV5s3duCezDSsoUfNFE3w@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 5/5] net: move the nat function to nf_nat_ovs
+ for ovs and tc
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
+        davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Aaron Conole <aconole@redhat.com>,
+        Saeed Mahameed <saeed@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  7 Dec 2022 16:02:13 -0800 Kees Cook wrote:
-> Is this what you had in mind for this kind of change?
+On Tue, Dec 6, 2022 at 10:32 PM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> On Tue, Dec 6, 2022 at 6:54 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> >
+> > On Tue, Dec 06, 2022 at 06:31:16PM -0500, Xin Long wrote:
+> > [...]
+> > > diff --git a/net/netfilter/Makefile b/net/netfilter/Makefile
+> > > index 1d4db1943936..0976d34b1e5f 100644
+> > > --- a/net/netfilter/Makefile
+> > > +++ b/net/netfilter/Makefile
+> > > @@ -54,6 +54,12 @@ obj-$(CONFIG_NF_CONNTRACK_TFTP) += nf_conntrack_tftp.o
+> > >
+> > >  nf_nat-y     := nf_nat_core.o nf_nat_proto.o nf_nat_helper.o
+> > >
+> > > +ifdef CONFIG_OPENVSWITCH
+> > > +nf_nat-y += nf_nat_ovs.o
+> > > +else ifdef CONFIG_NET_ACT_CT
+> > > +nf_nat-y += nf_nat_ovs.o
+> > > +endif
+> >
+> > Maybe add CONFIG_NF_NAT_OVS and select it from OPENVSWITCH Kconfig
+> > (select is a hammer, but it should be fine in this case since
+> > OPENVSWITCH already depends on NF_NAT?).
+> not really completely depends, it's:
+>
+>   depends on (!NF_NAT || NF_NAT)
+>
+> but it's fine, the select will be:
+>
+>   select NF_NAT_OVS if NF_NAT
+>
+> >
+> > Then in Makefile:
+> >
+> > nf_nat-$(CONFIG_NF_NAT_OVS)  += nf_nat_ovs.o
+> >
+> > And CONFIG_NF_NAT_OVS depends on OPENVSWITCH.
+> Sounds great!
+> Then it will be:
+>
+> --- a/net/netfilter/Kconfig
+> +++ b/net/netfilter/Kconfig
+> @@ -459,6 +459,10 @@ config NF_NAT_REDIRECT
+>  config NF_NAT_MASQUERADE
+>         bool
+>
+> +config NF_NAT_OVS
+> +       bool
+> +       depends on OPENVSWITCH || NET_ACT_CT
+> +
+Just FYI, "depends on" is not necessary in this case.
+Even without this "depends on OPENVSWITCH || NET_ACT_CT",
+it will still be disabled automatically if OPENVSWITCH and
+NET_ACT_CT are disabled, and you can't enable it manually either.
 
-nice, thanks a lot!
+Thanks.
 
-the only thing left to do is kdoc updates:
- - the existing kdocs should no longer mention frag_size == 0
- - kdoc on the slab_build_skb() should say:
-
-  /* build_skb() variant which can operate on slab buffers.
-   * Note that this should be used sparingly as slab buffers
-   * cannot be combined efficiently by GRO!
-   */
-
-But this can all be done by us in a follow up, there's probably
-more cleaning we can do in those kdocs.
-
-> v2: introduce separate helper (kuba)
-> v1: https://lore.kernel.org/netdev/20221206231659.never.929-kees@kernel.org/
+>
+> --- a/net/netfilter/Makefile
+> +++ b/net/netfilter/Makefile
+> @@ -59,6 +59,7 @@ obj-$(CONFIG_NF_LOG_SYSLOG) += nf_log_syslog.o
+>  obj-$(CONFIG_NF_NAT) += nf_nat.o
+>  nf_nat-$(CONFIG_NF_NAT_REDIRECT) += nf_nat_redirect.o
+>  nf_nat-$(CONFIG_NF_NAT_MASQUERADE) += nf_nat_masquerade.o
+> +nf_nat-$(CONFIG_NF_NAT_OVS)  += nf_nat_ovs.o
+>
+> --- a/net/openvswitch/Kconfig
+> +++ b/net/openvswitch/Kconfig
+> @@ -15,6 +15,7 @@ config OPENVSWITCH
+>         select NET_MPLS_GSO
+>         select DST_CACHE
+>         select NET_NSH
+> +       select NF_NAT_OVS if NF_NAT
+>
+> --- a/net/sched/Kconfig
+> +++ b/net/sched/Kconfig
+> @@ -977,6 +977,7 @@ config NET_ACT_TUNNEL_KEY
+>  config NET_ACT_CT
+>         tristate "connection tracking tc action"
+>         depends on NET_CLS_ACT && NF_CONNTRACK && (!NF_NAT || NF_NAT)
+> && NF_FLOW_TABLE
+> +       select NF_NAT_OVS if NF_NAT
+>
+>
+> I will prepare v4, Thanks.
