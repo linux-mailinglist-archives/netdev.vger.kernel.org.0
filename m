@@ -2,170 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FBE4647550
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 19:07:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAD0364757D
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 19:23:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiLHSHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 13:07:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34316 "EHLO
+        id S229733AbiLHSXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 13:23:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiLHSHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 13:07:05 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBAC2FBCE;
-        Thu,  8 Dec 2022 10:07:04 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id a16so2876382edb.9;
-        Thu, 08 Dec 2022 10:07:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=zlZ5JYrfoxlWWhYLoRlXAX2lb7aDsHfABVN0GPpBHNM=;
-        b=lruSRpX2iU7Qy3Bybc+bFJcYPzpZBUHVHjfOKiYhVqC9kGN7RQfw/4mQ26JOMqEjdU
-         gfY+acMolufoIoWyhLrYmzpzzNRx+B6o7rsP9hBsHfMyfTI4g71ZEiGSWASeGtr3FR9g
-         AuF3W5S3rXfqbBHme3vWhMwKoiDPGaAPY1M0GsEPxqmORDknDR9YMWDRGsc78SLblTPB
-         HrviXQ/jWJdPMqerf/ZNft1pgViT2wWbhAh7QYcDGJDDijO2JzlnFDuVDc8utzEPw+Zq
-         PU1Ze8C5lLNq6gAsUoOlqxFZxf9NMXOzv1bKx3JxFWRjviEeWoKiufovPrvV/JaNut1k
-         yZCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zlZ5JYrfoxlWWhYLoRlXAX2lb7aDsHfABVN0GPpBHNM=;
-        b=u1/v1H+tyYMqdz/J0V4tgHWAN8CGYqTECu4RlGNXvjoMLFpw+b8m+0Csxijuk98UDJ
-         TT+cfVPOAXfW/eMxCb6HCUVulk3lIkR1hmESrk/4Qd+pM6q0knxfVexartviUwg0HuKa
-         8p8fvzxUFTHwQkTGSu0+eB8IeHoNtb2SKmINrpDySnJw0D1psk0Mxz6Fx+uHmnE0W2zL
-         Fq70wp6Sb1xMXfgvacgY00i0rvukRN4/RCPfRNQT5seYWuC9SjNaWCZIK3eDTXxmAmGC
-         846vl5Mq+47jFiADWpYrxc+m7ejsYnpwJN7DP/xLg0dx5dkVNmb8gJmatakbgmGbLVtr
-         vXQQ==
-X-Gm-Message-State: ANoB5pklgLJhyZoxCCUz1mooR/Zke+qezTmDLbZmlWEEufV2pCcga/n+
-        fu5WABu0tnJ7JnVoOXteMOs=
-X-Google-Smtp-Source: AA0mqf7DiOruFzawmpbEDX8sSceVWIPq+u8dLVRJ5tc0JilGkZFIMKpo9H0anA7MpyB5lchyygmvBg==
-X-Received: by 2002:a05:6402:370e:b0:463:398a:9fe7 with SMTP id ek14-20020a056402370e00b00463398a9fe7mr2413340edb.34.1670522822943;
-        Thu, 08 Dec 2022 10:07:02 -0800 (PST)
-Received: from krava (ip-78-102-146-30.bb.vodafone.cz. [78.102.146.30])
-        by smtp.gmail.com with ESMTPSA id x14-20020aa7cd8e000000b0046b00a9eeb5sm3634944edv.49.2022.12.08.10.07.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 10:07:02 -0800 (PST)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Thu, 8 Dec 2022 19:06:59 +0100
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <olsajiri@gmail.com>, Hao Sun <sunhao.th@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Thorsten Leemhuis <regressions@leemhuis.info>
-Subject: Re: BUG: unable to handle kernel paging request in bpf_dispatcher_xdp
-Message-ID: <Y5Inw4HtkA2ql8GF@krava>
-References: <CACkBjsYioeJLhJAZ=Sq4CAL2O_W+5uqcJynFgLSizWLqEjNrjw@mail.gmail.com>
- <CACkBjsbD4SWoAmhYFR2qkP1b6JHO3Og0Vyve0=FO-Jb2JGGRfw@mail.gmail.com>
- <Y49dMUsX2YgHK0J+@krava>
- <CAADnVQ+w-xtH=oWPYszG-TqxcHmbrKJK10C=P-o2Ouicx-9OUA@mail.gmail.com>
- <CAADnVQJ+9oiPEJaSgoXOmZwUEq9FnyLR3Kp38E_vuQo2PmDsbg@mail.gmail.com>
+        with ESMTP id S229478AbiLHSXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 13:23:36 -0500
+X-Greylist: delayed 903 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 08 Dec 2022 10:23:34 PST
+Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3114D5F2;
+        Thu,  8 Dec 2022 10:23:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1670522891; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=clSJvTgXI3YP5BwKy+RhSSz8KV/7/WlKN8jkv1vgDWLqjKvdw+VxronQE0ilzYXReEAPmrAUT4v1FfIV0wxfEgef9x3veI+5Bcl63iiAfAANKhp7DGDd5SQ1J/P/h1EMA7RcaBJQ7V0Ez32RBcc0+IwprwWlBgGDwGoEPk17XF8=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1670522891; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=lVl0AW6NjKtrDN8pXdhzjnNBt7YZtcamrLdGxj4L9Y4=; 
+        b=Ov44NLqvu0uUaN4cxaC5UUWXgDQBLazCzgeGT+8vMQJrJqsVJjSlbYE/0GnykbB+ndtAwJWwluCd45e7p6BIKYmASHCTx1FSJknwcoW2IazukLB/ksssbYR4Z9zVJyIBb8Issk/+689CYYsPzkjd49EY2ybZB959nK/8iklnhBA=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=machnikowski.net;
+        spf=pass  smtp.mailfrom=maciek@machnikowski.net;
+        dmarc=pass header.from=<maciek@machnikowski.net>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1670522891;
+        s=zoho; d=machnikowski.net; i=maciek@machnikowski.net;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=lVl0AW6NjKtrDN8pXdhzjnNBt7YZtcamrLdGxj4L9Y4=;
+        b=QVSEZbndRq3Zzufk8gnYWqfmBP3KeMuj09MZEdyjs7ElO+TfjiWSxzi7DOdi4vfb
+        6fimYWaP0E0IF4+3opGuV3IRifOrb0hm8miLsNfsqfSUp7eOfKAU/qTfobzqY5AqK7z
+        miahNHBuKvfGKHoCFJuPiScgYIY1aQ9ixjeXDzeh5a3WFDu9MkBDjMCvQjdU9QnTD6t
+        gEgqsAvDIap4MbXdQJrt4LajvVaoLs2Fou5e/3JDVzB2UN05kNKW427KNLoVCd3g0Da
+        Heaa8jXhadYJCI3aTUNNZZZykqqLQ2FFjrXSHjx/OUFgtvnfyFsfMetI6Wes0RKGHip
+        RuJbhIUA6w==
+Received: from [192.168.1.227] (83.8.188.9.ipv4.supernova.orange.pl [83.8.188.9]) by mx.zohomail.com
+        with SMTPS id 167052288851018.2093850153816; Thu, 8 Dec 2022 10:08:08 -0800 (PST)
+Message-ID: <6e252f6d-283e-7138-164f-092709bc1292@machnikowski.net>
+Date:   Thu, 8 Dec 2022 19:08:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAADnVQJ+9oiPEJaSgoXOmZwUEq9FnyLR3Kp38E_vuQo2PmDsbg@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [RFC PATCH v4 0/4] Create common DPLL/clock configuration API
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     'Jiri Pirko' <jiri@resnulli.us>,
+        "'Kubalewski, Arkadiusz'" <arkadiusz.kubalewski@intel.com>,
+        'Vadim Fedorenko' <vfedorenko@novek.ru>,
+        'Jonathan Lemon' <jonathan.lemon@gmail.com>,
+        'Paolo Abeni' <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+References: <20221129213724.10119-1-vfedorenko@novek.ru>
+ <Y4dNV14g7dzIQ3x7@nanopsycho>
+ <DM6PR11MB4657003794552DC98ACF31669B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <Y4oj1q3VtcQdzeb3@nanopsycho> <20221206184740.28cb7627@kernel.org>
+ <10bb01d90a45$77189060$6549b120$@gmail.com>
+ <20221207152157.6185b52b@kernel.org>
+From:   Maciek Machnikowski <maciek@machnikowski.net>
+In-Reply-To: <20221207152157.6185b52b@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 08, 2022 at 09:48:52AM -0800, Alexei Starovoitov wrote:
-> On Wed, Dec 7, 2022 at 11:57 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Dec 6, 2022 at 7:18 AM Jiri Olsa <olsajiri@gmail.com> wrote:
-> > >
-> > > On Tue, Dec 06, 2022 at 02:46:43PM +0800, Hao Sun wrote:
-> > > > Hao Sun <sunhao.th@gmail.com> 于2022年12月6日周二 11:28写道：
-> > > > >
-> > > > > Hi,
-> > > > >
-> > > > > The following crash can be triggered with the BPF prog provided.
-> > > > > It seems the verifier passed some invalid progs. I will try to simplify
-> > > > > the C reproducer, for now, the following can reproduce this:
-> > > > >
-> > > > > HEAD commit: ab0350c743d5 selftests/bpf: Fix conflicts with built-in
-> > > > > functions in bpf_iter_ksym
-> > > > > git tree: bpf-next
-> > > > > console log: https://pastebin.com/raw/87RCSnCs
-> > > > > kernel config: https://pastebin.com/raw/rZdWLcgK
-> > > > > Syz reproducer: https://pastebin.com/raw/4kbwhdEv
-> > > > > C reproducer: https://pastebin.com/raw/GFfDn2Gk
-> > > > >
-> > > >
-> > > > Simplified C reproducer: https://pastebin.com/raw/aZgLcPvW
-> > > >
-> > > > Only two syscalls are required to reproduce this, seems it's an issue
-> > > > in XDP test run. Essentially, the reproducer just loads a very simple
-> > > > prog and tests run repeatedly and concurrently:
-> > > >
-> > > > r0 = bpf$PROG_LOAD(0x5, &(0x7f0000000640)=@base={0x6, 0xb,
-> > > > &(0x7f0000000500)}, 0x80)
-> > > > bpf$BPF_PROG_TEST_RUN(0xa, &(0x7f0000000140)={r0, 0x0, 0x0, 0x0, 0x0,
-> > > > 0x0, 0xffffffff, 0x0, 0x0, 0x0, 0x0, 0x0}, 0x48)
-> > > >
-> > > > Loaded prog:
-> > > >    0: (18) r0 = 0x0
-> > > >    2: (18) r6 = 0x0
-> > > >    4: (18) r7 = 0x0
-> > > >    6: (18) r8 = 0x0
-> > > >    8: (18) r9 = 0x0
-> > > >   10: (95) exit
-> > >
-> > > hi,
-> > > I can reproduce with your config.. it seems related to the
-> > > recent static call change:
-> > >   c86df29d11df bpf: Convert BPF_DISPATCHER to use static_call() (not ftrace)
-> > >
-> > > I can't reproduce when I revert that commit.. Peter, any idea?
-> >
-> > Jiri,
-> >
-> > I see your tested-by tag on Peter's commit c86df29d11df.
-> > I assume you're actually tested it, but
-> > this syzbot oops shows that even empty bpf prog crashes,
-> > so there is something wrong with that commit.
-> >
-> > What is the difference between this new kconfig and old one that
-> > you've tested?
-> >
-> > I'm trying to understand the severity of the issues and
-> > whether we need to revert that commit asap since the merge window
-> > is about to start.
+On 12/8/2022 12:21 AM, Jakub Kicinski wrote:
+> On Wed, 7 Dec 2022 15:09:03 +0100 netdev.dump@gmail.com wrote:
+>>> -----Original Message-----
+>>> From: Jakub Kicinski <kuba@kernel.org>
+>> pins between the DPLLs exposed by a single driver, but not really outside of
+>> it.
+>> And that can be done simply by putting the pin ptr from the DPLLA into the
+>> pin
+>> list of DPLLB.
 > 
-> Jiri, Peter,
+> Are you saying within the driver it's somehow easier? The driver state
+> is mostly per bus device, so I don't see how.
 > 
-> ping.
+>> If we want the kitchen-and-sink solution, we need to think about corner
+>> cases.
+>> Which pin should the API give to the userspace app - original, or
+>> muxed/parent?
 > 
-> cc-ing Thorsten, since he's tracking it now.
+> IDK if I parse but I think both. If selected pin is not directly
+> attached the core should configure muxes.
 > 
-> The config has CONFIG_X86_KERNEL_IBT=y.
-> Is it related?
+>> How would a teardown look like - if Driver A registered DPLLA with Pin1 and
+>> Driver B added the muxed pin then how should Driver A properly
+>> release its pins? Should it just send a message to driver B and trust that
+>> it
+>> will receive it in time before we tear everything apart?
+> 
+> Trivial.
+> 
+>> There are many problems with that approach, and the submitted patch is not
+>> explaining any of them. E.g. it contains the dpll_muxed_pin_register but no
+>> free 
+>> counterpart + no flows.
+> 
+> SMOC.
+> 
+>> If we want to get shared pins, we need a good example of how this mechanism
+>> can be used.
+> 
+> Agreed.
 
-sorry for late reply.. I still did not find the reason,
-but I did not try with IBT yet, will test now
+My main complaint about the current pins implementation is that they put
+everything in a single bag. In a netdev world - it would be like we put
+TX queues and RX queues together, named them "Queues", expose a list to
+the userspace and let the user figure out which ones which by reading a
+"TX" flag.
 
-jirka
+All DPLLs I know have a Sources block, DPLLs and Output blocks. See:
+
+https://www.renesas.com/us/en/products/clocks-timing/jitter-attenuators-frequency-translation/8a34044-multichannel-dpll-dco-four-eight-channels#overview
+
+https://ww1.microchip.com/downloads/aemDocuments/documents/TIM/ProductDocuments/ProductBrief/ZL3063x-System-Synchronizers-with-up-to-5-Channels-10-Inputs-20-Outputs-Product-Brief-DS20006634.pdf
+
+https://www.sitime.com/support/resource-library/product-briefs/cascade-sit9514x-clock-system-chip-family
+
+https://www.ti.com/lit/ds/symlink/lmk5b33414.pdf?ts=1670516132647&ref_url=https%253A%252F%252Fwww.ti.com%252Fclocks-timing%252Fjitter-cleaners-synchronizers%252Fproducts.html
+
+If we model everything as "pins" we won't be able to correctly extend
+the API to add new features.
+
+Sources can configure the expected frequency, input signal monitoring
+(on multiple layers), expected signal levels, input termination and so
+on. Outputs will need the enable flag, signal format, frequency, phase
+offset etc. Multiple DPLLs can reuse a single source inside the same
+package simultaneously.
+
+A source should be able to link to a pin or directly to the netdev for
+some embedded solutions. We don't need to go through the pin abstraction
+at all.
+
+An optional pin entity should only represent a physical connection with
+a name and maybe a 3-state selection of In/Out/HiZ and then link to
+sources or output of the DPLL(s).
+
+Finally, the DPLL object should keep track of the source priority list,
+have a proper status (locked/unlocked/holdover/freerunning), implement
+the NCO mode, lock thresholds, bandwidths, auto-switch mode and so on.
+
+Current implementation creates a lot of ambiguity, mixes input pins with
+output pins and assigns priories to pins. Every SW entity will receive a
+big list of pins and will need to parse it.
+
+I prefer the approach that the ptp subsystem set - with its abstraction
+of input/output channels and pins that can be assigned to them. While
+not perfect - it represents reality much closer.
+
+Thanks
+Maciek
