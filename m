@@ -2,113 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E43A646FF0
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 13:44:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69AEC646FF5
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 13:48:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230028AbiLHMod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 07:44:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
+        id S229848AbiLHMsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 07:48:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiLHMob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 07:44:31 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8D5654FC
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 04:44:29 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id n20so3637792ejh.0
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 04:44:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9FMn7DnGnd415t5/zVDmH2WGI3qdVGllQ1F13Id+kms=;
-        b=N3PHHZKPMtRhWJcHG8ahux3NqOFKVCuPnVzu2/fmx3FtPiEihDyOV2Y4Yd6xvLpMGZ
-         ontPwuYzhiovO8JV8jCTikJPiWeo5rd3mDLWKAlxINJiRB//6topVeuby05CAmQD8tHG
-         nGBuNnWvCHfgFi5HedNixPLAYF78I2nflHwaoYRtu31dTH+aMC+xf+GqCl4bnejPeIDf
-         hwi7AS3zKINCcDtds71AxLI9lCUj6bP53iY4TKmsiu8meW/RIyq/KzFFbYeJJcgpKZkC
-         glXnzknwV5OVNrp+v/9ITKdbxgUJjojRp8ehOJtCCbLS6X41DFn+hpKqosBkyB51Wn8B
-         M6VA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9FMn7DnGnd415t5/zVDmH2WGI3qdVGllQ1F13Id+kms=;
-        b=Et+iNrHbmTqHGFuYNAiKqx9tMnDVqikedsg+8ADY01eEYIE+JQVDDXhzk6lzQzsQqi
-         TORn4ipst+ZJVQb21Bt2t5dPQ1Ytchp4xteuPcIYM/+oGYocRJTZBoLex639yeyaFr/f
-         RBwFtwoDPikwBCLibntE55t2C9mM6hPgSz+0SaglLOrsuby5xNjYc5Bkb6B0GmP9pF4T
-         /GSOKZT5dT7tMUmY4UZx/iaYlGn26MUqD1QxMqnlGlp1ihFwYYo7/lAmR1VXrn/5j7Vk
-         UxG/TYq69jd+zKqJrNNdcetTmcDi/IrYEoOGI7q7uPCPl9InVpeuM9roEyqRg+KEQCIc
-         /qCg==
-X-Gm-Message-State: ANoB5pkn7khZt4EEaPoFtWZ6Uz4QgGZb1a14WIzuASUDeZr4yM1Qv2Sr
-        BcXRUUjwaJaVA3oYRyJUDsSGiw==
-X-Google-Smtp-Source: AA0mqf75MCQ2MFPLMcwLvxGwTeg18btnHyLD07tdOwSbJT4aEqDf7vWslSG38U0SIdDbwZtqUYieBQ==
-X-Received: by 2002:a17:906:30d3:b0:78d:f454:ba10 with SMTP id b19-20020a17090630d300b0078df454ba10mr1719627ejb.15.1670503468502;
-        Thu, 08 Dec 2022 04:44:28 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id n11-20020a170906118b00b007be696512ecsm9544772eja.187.2022.12.08.04.44.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 04:44:27 -0800 (PST)
-Date:   Thu, 8 Dec 2022 13:44:26 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Li Zetao <lizetao1@huawei.com>
-Cc:     kevin.curtis@farsite.co.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: farsync: Fix kmemleak when rmmods farsync
-Message-ID: <Y5HcKlwQuzhpzZs9@nanopsycho>
-References: <20221208120540.3758720-1-lizetao1@huawei.com>
+        with ESMTP id S229640AbiLHMsD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 07:48:03 -0500
+Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08848E03C;
+        Thu,  8 Dec 2022 04:47:56 -0800 (PST)
+Received: from [192.168.1.62] (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 17312200F808;
+        Thu,  8 Dec 2022 13:47:51 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 17312200F808
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1670503671;
+        bh=9TKnWiK17TX0hRM16//Xc7kqS9ZHyCg6RgPTp/wd11U=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=CfV/H4Ctrf4nwD6aOORQRNSNglYsdH6ZJr2ZUCNtt6dyrdfYyXA22EVj1GNVS2pNx
+         6zNvJdW6i5mlfawEenZw/yiaoh65w5ek3xnnaVglNBa+BVetk8YFX8YoAMqkaDfBVu
+         F4DNqAIZUrHj1WRXJ7J/soB8GYskCX9Po7KDfaKAAwkT1X72Es/2HkNhLweBRhwKLR
+         vz4gtuG8tiJvay6cKEQAbNB5WB3tWb7672NDZxQQeY6cuWysNSuxzJoey1w/IwkPsV
+         6hvumVckygQyLjfgIzmahP8tt8TgyQsQNGcF4eTwVENjf6w4E9F4tUV3sXB2+QII5F
+         wr3xosgLAN52Q==
+Message-ID: <748a406d-642c-9aff-305d-bc3b8dfd0bed@uliege.be>
+Date:   Thu, 8 Dec 2022 13:47:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221208120540.3758720-1-lizetao1@huawei.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [RFC net] Fixes: b63c5478e9cb ("ipv6: ioam: Support for Queue
+ depth data field")
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        pabeni@redhat.com, stable@vger.kernel.org
+References: <20221205153557.28549-1-justin.iurman@uliege.be>
+ <CANn89iLjGnyh0GgW_5kkMQJBCi-KfgwyvZwT1ou2FMY4ZDcMXw@mail.gmail.com>
+ <CANn89iK3hMpJQ1w4peg2g35W+Oi3t499C5rUv7rcwzYtxDGBuw@mail.gmail.com>
+ <a8dcb88c-16be-058b-b890-5d479d22c8a8@uliege.be>
+ <CANn89iKgeVFRAstW3QRwOdn8SV_EbHqcKYqmoWT6m5nGQwPWUg@mail.gmail.com>
+ <d579c817-50c7-5bd5-4b28-f044daabf7f6@uliege.be>
+ <20221206124342.7f429399@kernel.org>
+ <1328d117-70b5-b03c-c0be-cd046d728d53@uliege.be>
+ <20221207160418.68e408c3@kernel.org>
+From:   Justin Iurman <justin.iurman@uliege.be>
+In-Reply-To: <20221207160418.68e408c3@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Dec 08, 2022 at 01:05:40PM CET, lizetao1@huawei.com wrote:
->There are two memory leaks reported by kmemleak:
->
->  unreferenced object 0xffff888114b20200 (size 128):
->    comm "modprobe", pid 4846, jiffies 4295146524 (age 401.345s)
->    hex dump (first 32 bytes):
->      e0 62 57 09 81 88 ff ff e0 62 57 09 81 88 ff ff  .bW......bW.....
->      01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff815bcd82>] kmalloc_trace+0x22/0x60
->      [<ffffffff83d35c78>] __hw_addr_add_ex+0x198/0x6c0
->      [<ffffffff83d3989d>] dev_addr_init+0x13d/0x230
->      [<ffffffff83d1063d>] alloc_netdev_mqs+0x10d/0xe50
->      [<ffffffff82b4a06e>] alloc_hdlcdev+0x2e/0x80
->      [<ffffffffa016a741>] fst_add_one+0x601/0x10e0 [farsync]
->      ...
->
->  unreferenced object 0xffff88810b85b000 (size 1024):
->    comm "modprobe", pid 4846, jiffies 4295146523 (age 401.346s)
->    hex dump (first 32 bytes):
->      00 00 b0 02 00 c9 ff ff 00 70 0a 00 00 c9 ff ff  .........p......
->      00 00 00 f2 00 00 00 f3 0a 00 00 00 02 00 00 00  ................
->    backtrace:
->      [<ffffffff815bcd82>] kmalloc_trace+0x22/0x60
->      [<ffffffffa016a294>] fst_add_one+0x154/0x10e0 [farsync]
->      [<ffffffff82060e83>] local_pci_probe+0xd3/0x170
->      ...
->
->The root cause is traced to the netdev and fst_card_info are not freed
->when removes one fst in fst_remove_one(), which may trigger oom if
->repeated insmod and rmmod module.
->
->Fix it by adding free_netdev() and kfree() in fst_remove_one(), just as
->the operations on the error handling path in fst_add_one().
->
->Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
->Signed-off-by: Li Zetao <lizetao1@huawei.com>
+On 12/8/22 01:04, Jakub Kicinski wrote:
+> On Wed, 7 Dec 2022 13:07:18 +0100 Justin Iurman wrote:
+>>> Can you say more about the use? What signal do you derive from it?
+>>> I do track qlen on Meta's servers but haven't found a strong use
+>>> for it yet (I did for backlog drops but not the qlen itself).
+>>
+>> The specification goal of the queue depth was initially to be able to
+>> track the entire path with a detailed view for packets or flows (kind of
+>> a zoom on the interface to have details about its queues). With the
+>> current definition/implementation of the queue depth, if only one queue
+>> is congested, you're able to know it. Which doesn't necessarily mean
+>> that all queues are full, but this one is and there might be something
+>> going on. And this is something operators might want to be able to
+>> detect precisely, for a lot of use cases depending on the situation. On
+>> the contrary, if all queues are full, then you could deduce that as well
+>> for each queue separately, as soon as a packet is assigned to it. So I
+>> think that with "queue depth = sum(queues)", you don't have details and
+>> you're not able to detect a single queue congestion, while with "queue
+>> depth = queue" you could detect both. One might argue that it's fine to
+>> only have the aggregation in some situation. I'd say that we might need
+>> both, actually. Which is technically possible (even though expensive, as
+>> Eric mentioned) thanks to the way it is specified by the RFC, where some
+>> freedom was intentionally given. I could come up with a solution for that.
+> 
+> Understood. My hope was that by now there was some in-field experience
+> which could help us judge how much signal can one derive from a single
+> queue. Or a user that could attest.
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+I asked the people concerned. I'll get back to you.
 
-On top, may be worth ordering the cleanup in fst_remove_one() to be
-aligned with the order in fst_add_one() error path.
+>>> Because it measures the length of a single queue not the device.
+>>
+>> Yep, I figured that out after the off-list discussion we've had with Eric.
+>>
+>> So my plan would be, if you all agree with, to correct and repost this
+>> patch to fix the NULL qdisc issue. Then, I'd come with a solution to
+>> allow both (with and without aggregation of queues) and post it on
+>> net-next. But again, if the consensus is to revert this patch (which I
+>> think would bring no benefit IMHO), then so be it. Thoughts?
+> 
+> To summarize - we have reservations about correctness and about
+
+Ack. And this is exactly why I proposed the alternative of having both 
+solutions implemented (i.e., a specific queue depth or an aggregation of 
+queues per interface).
+
+> breaking layering (ip6 calling down to net/sched).
+
+Indeed. Funny enough, this one's going to be hard to beat. How 
+frustrating when the value to be retrieved is there, but cannot be used. 
+Especially when it's probably one of the most important metric from 
+IOAM. I guess it's the price to pay when dealing with telemetry over 
+multiple layers. Anyway...
+
+> You can stick to your approach, respost and see if any of the other
+> maintainer is willing to pick this up (i.e. missed this nack).
+> If you ask for my option I'll side with Eric
+Got it, thanks.
