@@ -2,109 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3E5C646656
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 02:12:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70601646657
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 02:13:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229915AbiLHBMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 20:12:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
+        id S230004AbiLHBNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 20:13:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbiLHBLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 20:11:49 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998D78DFD6
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 17:11:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670461902; x=1701997902;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5ZlYFmdCnc7dmsRGYjQg4/KS5MxZqjmOAMz2DrOU7WM=;
-  b=i54OH/IXWOP2Y/llMANKXKwcZiPA9MhX6nVrS6tJxHb00G84oulGUyFG
-   A8WU2L8MiOJmh5LbanFvAhufVsJSwBMwH2hAt11ovAZtn9/2+siaBvh4k
-   Xjhl9uSTWeAz9Y6AU58vyjvRxwq4WZN4qCjekvbLTJSfTvSbyVXRZFjzt
-   HJzeEUZhFZ3GblI6xeivdsBlJ5UcjoXhvEbrDkcMQTeGrajDA6makOXnW
-   KFoAVHldwHBKZUUwe9zy46hWKeAcs5EXGFgwiwkBOrE/tQ5BuXg/XCNtM
-   ttgr9CJMA54tPeqsilxJdR6HwmxpYz2WUSeNUxyDwPGbSUkam/suMYARZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="304672899"
-X-IronPort-AV: E=Sophos;i="5.96,226,1665471600"; 
-   d="scan'208";a="304672899"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 17:11:34 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="640445383"
-X-IronPort-AV: E=Sophos;i="5.96,226,1665471600"; 
-   d="scan'208";a="640445383"
-Received: from jbrandeb-coyote30.jf.intel.com ([10.166.29.19])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 17:11:30 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     mkubecek@suse.cz
-Cc:     netdev@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: [PATCH ethtool v2 13/13] ethtool: fix bug and use standard string parsing
-Date:   Wed,  7 Dec 2022 17:11:22 -0800
-Message-Id: <20221208011122.2343363-14-jesse.brandeburg@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20221208011122.2343363-1-jesse.brandeburg@intel.com>
-References: <20221208011122.2343363-1-jesse.brandeburg@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230006AbiLHBMv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 20:12:51 -0500
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E968DFC9;
+        Wed,  7 Dec 2022 17:12:11 -0800 (PST)
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4NSGMs1fJpz8RV7D;
+        Thu,  8 Dec 2022 09:12:09 +0800 (CST)
+Received: from szxlzmapp03.zte.com.cn ([10.5.231.207])
+        by mse-fl2.zte.com.cn with SMTP id 2B81C5iX008747;
+        Thu, 8 Dec 2022 09:12:05 +0800 (+08)
+        (envelope-from yang.yang29@zte.com.cn)
+Received: from mapi (szxlzmapp02[null])
+        by mapi (Zmail) with MAPI id mid14;
+        Thu, 8 Dec 2022 09:12:06 +0800 (CST)
+Date:   Thu, 8 Dec 2022 09:12:06 +0800 (CST)
+X-Zmail-TransId: 2b04639139e6ffffffffe9ffab4d
+X-Mailer: Zmail v1.0
+Message-ID: <202212080912066313234@zte.com.cn>
+In-Reply-To: <20221207153256.6c0ec51a@kernel.org>
+References: CANn89iKqb64sLT2r+2YrpDyMfZ8T6z2Ygtby-ruVNNYvniaV0g@mail.gmail.com,20221207153256.6c0ec51a@kernel.org
+Mime-Version: 1.0
+From:   <yang.yang29@zte.com.cn>
+To:     <kuba@kernel.org>
+Cc:     <edumazet@google.com>, <davem@davemloft.net>, <pabeni@redhat.com>,
+        <bigeasy@linutronix.de>, <imagedong@tencent.com>,
+        <kuniyu@amazon.com>, <petrm@nvidia.com>, <liu3101@purdue.edu>,
+        <wujianguo@chinatelecom.cn>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <tedheadster@gmail.com>
+Subject: =?UTF-8?B?UmU6IFtQQVRDSCBsaW51eC1uZXh0XSBuZXQ6IHJlY29yZCB0aW1lcyBvZiBuZXRkZXZfYnVkZ2V0IGV4aGF1c3RlZA==?=
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl2.zte.com.cn 2B81C5iX008747
+X-Fangmail-Gw-Spam-Type: 0
+X-FangMail-Miltered: at cgslv5.04-192.168.250.137.novalocal with ID 639139E9.000 by FangMail milter!
+X-FangMail-Envelope: 1670461929/4NSGMs1fJpz8RV7D/639139E9.000/10.5.228.133/[10.5.228.133]/mse-fl2.zte.com.cn/<yang.yang29@zte.com.cn>
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 639139E9.000/4NSGMs1fJpz8RV7D
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The parse_reset function was open-coding string parsing routines and can
-be converted to using standard routines. It was trying to be tricky and
-parse partial strings to make things like "mgmt" and "mgmt-shared"
-strings mostly use the same code. This is better done with strncmp().
+> In my experience - no this is not useful.
 
-This also fixes an array overflow bug where it's possible for the for
-loop to access past the end of the input array, which is bad.
+Received, thanks!
 
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
----
- ethtool.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+> Sorry if this is too direct, but it seems to me like you're trying hard
+> to find something useful to do in this area without a clear use case. 
+I see maybe this is a too special scenes, not suitable. The motivation
+is we see lots of time_squeeze on our working machines, and want to
+tuning, but our kernel are not ready to use threaded NAPI. And we
+did see performance difference on different netdev_budget* in
+preliminary tests.
 
-diff --git a/ethtool.c b/ethtool.c
-index 4776afe89e23..d294b5f8d92a 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5280,17 +5280,21 @@ static int do_get_phy_tunable(struct cmd_context *ctx)
- static __u32 parse_reset(char *val, __u32 bitset, char *arg, __u32 *data)
- {
- 	__u32 bitval = 0;
--	int i;
-+	int vallen = strlen(val);
-+	int strret;
- 
- 	/* Check for component match */
--	for (i = 0; val[i] != '\0'; i++)
--		if (arg[i] != val[i])
--			return 0;
-+	strret = strncmp(arg, val, vallen);
-+	if (strret < 0)
-+		return 0;
- 
--	/* Check if component has -shared specified or not */
--	if (arg[i] == '\0')
-+	/* if perfect match to val
-+	 * else
-+	 * Check if component has -shared specified or not
-+	 */
-+	if (strret == 0)
- 		bitval = bitset;
--	else if (!strcmp(arg+i, "-shared"))
-+	else if (!strcmp(arg + vallen, "-shared"))
- 		bitval = bitset << ETH_RESET_SHARED_SHIFT;
- 
- 	if (bitval) {
--- 
-2.31.1
+> We have coding tasks which would definitely be useful and which nobody
+> has time to accomplish. Please ask if you're trying to find something
+> to do.
 
+We focus on 5G telecom machine, which has huge TIPC packets in the
+intranet. If it's related, we are glad to do it with much appreciate of your
+indicate!
+
+Thanks.
