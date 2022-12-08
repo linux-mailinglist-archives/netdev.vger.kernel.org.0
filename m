@@ -2,161 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC80864780F
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 22:35:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71AC7647819
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 22:39:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbiLHVfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 16:35:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44362 "EHLO
+        id S229809AbiLHVjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 16:39:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229678AbiLHVft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 16:35:49 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616A0AD310
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 13:35:48 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id n21so7069982ejb.9
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 13:35:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=piLUEObfwDZTNoM9jlAlVB7h1QGtnSpxWmpBB+6G9MI=;
-        b=QR/z3um6RV4VmJYqB4z+EtlxmwhYzLK2VK7rsXF336RTFqSl+gy4mEobXiCYxTf6se
-         zY64yJL50L5vgm/iIkhR6BTsk2PC41mRrwnzsEfs24O4hTtUN6D1+uGR+Kcxo58AkFmK
-         Jkqc5PS1YdJ4etgmM81mLfArQcLv9Z0jE/V3ZL9pNLNoOL+pyoQPyNmeJGsMWWo0wvXR
-         3l24LRGZKQbvJSCYtYeAP0LFZZOIVzOt/KMr8LQGv0XzTXg6UnpvwOEnbP8kIj+6w05u
-         iLEhhU3LQC0TD9mT+USWU8e5HKXINw3PgsS+1E+kKG/ACjoB+hKtCfaueg9CurRbOCAj
-         rbzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=piLUEObfwDZTNoM9jlAlVB7h1QGtnSpxWmpBB+6G9MI=;
-        b=Xx35Gzk0b3uH/t9ElIlQLh637oDdPlcWSsCnYT7fcgk2OKzuNGD6dGnlcWqcTp/KLr
-         jJAQotc45qUOpjOdVNUwN/o8v2rPaGjMQr5qZrZltc7yIY+WlVFmzu7tZ8ih2mo0LTLQ
-         Kgx0ltFoWZM2zS6AM6SQ8U/81sY1uj6jYzBieJ9hrREfZHfpG27V4Az2g/UrXtNjhmRo
-         TOwk+fu0cDQbsu4rfnzklZ5mULg+8cJF5cbYsTe72qjosE0/Ogw0gDz6Cl7ReD5OmYH5
-         wLKjah5kzOPQbyZXEDj2HahLaf9j9GCyh2EoEMmcdDcypZoMSUuOrvSlimHsDl8seTE9
-         vO9A==
-X-Gm-Message-State: ANoB5pkBzgrm7AviT8ps/aBSBbYA7GH8mVSqJo/Zm4en9L2HPCX1fhCq
-        S/AzSTswS7H1A9Ak/Hli1gM=
-X-Google-Smtp-Source: AA0mqf4/EcT6yXETi2zKK1xGHmTX1aPdBDYCG6bm1Cawh4UC/9cYhEveXAq5fdoWkxEBZTdOgvzGxw==
-X-Received: by 2002:a17:906:124d:b0:7ad:b822:d2e4 with SMTP id u13-20020a170906124d00b007adb822d2e4mr79581268eja.35.1670535346610;
-        Thu, 08 Dec 2022 13:35:46 -0800 (PST)
-Received: from ?IPV6:2a01:c22:728e:6100:5167:1b9:69ca:b10e? (dynamic-2a01-0c22-728e-6100-5167-01b9-69ca-b10e.c22.pool.telefonica.de. [2a01:c22:728e:6100:5167:1b9:69ca:b10e])
-        by smtp.googlemail.com with ESMTPSA id h26-20020a1709063b5a00b0078db5bddd9csm9546156ejf.22.2022.12.08.13.35.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Dec 2022 13:35:46 -0800 (PST)
-Message-ID: <7f460a37-d6f5-603f-2a6c-c65bae56f76b@gmail.com>
-Date:   Thu, 8 Dec 2022 22:35:43 +0100
+        with ESMTP id S229558AbiLHVjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 16:39:40 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867B6A1A7
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 13:39:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670535579; x=1702071579;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KD4ai2f3/mQQuci1l5YQz4WDyMQ8SbbPcNThZuy7bmY=;
+  b=oDLuyZYTti+Ey5UxKUtKhwIjchM3gtIQz810RPl+RtpES0mmU1nwkGAd
+   2Tg80iUTMqIL3Wv6vP2XhUa6kvqkP34anMg4OfgA/nW5gtGUYSXjYFY3T
+   /HUbAN0g+gYeANsB5esRsmRl1R6e7nsbYq6b6HDj5As9bt2yu97HM5tFC
+   C/vNv3ug24CiiY7ecZ7Fd4qBqAHya8DlZ6qjZuEQam5EledXM0Ip80zsc
+   izZ6B3I5OSVvv7MfqAbKYT6uFWSnwRPQQegmO9iVT0Qt+S2Xa5e0uXOS9
+   vVKgvq3AS+l1Uo8AxIUwK3WbceJt529cmq6prZsGLhm793uVeCr2+3yYc
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10555"; a="317328151"
+X-IronPort-AV: E=Sophos;i="5.96,228,1665471600"; 
+   d="scan'208";a="317328151"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 13:39:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10555"; a="624873967"
+X-IronPort-AV: E=Sophos;i="5.96,228,1665471600"; 
+   d="scan'208";a="624873967"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga006.jf.intel.com with ESMTP; 08 Dec 2022 13:39:38 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        jacob.e.keller@intel.com, richardcochran@gmail.com,
+        leon@kernel.org, saeed@kernel.org
+Subject: [PATCH net-next v3 00/14][pull request] Intel Wired LAN Driver Updates 2022-12-08 (ice)
+Date:   Thu,  8 Dec 2022 13:39:18 -0800
+Message-Id: <20221208213932.1274143-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Content-Language: en-US
-To:     Hau <hau@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>, Andrew Lunn <andrew@lunn.ch>
-References: <20221201143911.4449-1-hau@realtek.com>
- <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
- <df3bf48baf6946f4a75c5c4287e6efa7@realtek.com>
- <4fa4980c-906b-8fda-b29f-b2125c31304c@gmail.com>
- <cb897c69a9d74b77b34fc94b30dc6bdd@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) +
- rtl8211fs fiber application
-In-Reply-To: <cb897c69a9d74b77b34fc94b30dc6bdd@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.12.2022 16:59, Hau wrote:
->> On 07.12.2022 18:43, Hau wrote:
->>>>
->>>> On 01.12.2022 15:39, Chunhao Lin wrote:
->>>>> rtl8168h(revid 0x2a) + rtl8211fs is for utp to fiber application.
->>>>> rtl8168h is connected to rtl8211fs utp interface. And fiber is
->>>>> connected to rtl8211fs sfp interface. rtl8168h use its eeprm or gpo
->>>>> pins to control rtl8211fs mdio bus.
->>>>>
->>>>
->>>> I found a datasheet for RTL8211FS and it doesn't mention SFP support.
->>>> For the fiber use case it mentions RGMII for MAC/PHY connection and
->>>> SerDes for connecting the PHY to the fiber module. Is this the mode
->>>> you'd like to support?
->>>> "utp to fiber" sounds like the media converter application, and I
->>>> think that's not what we want here. So it's misleading.
->>> This application is not listed in datasheet. But it is similar to utp to fiber
->> application. Fiber connects to rtl8211fs through SerDes interface.
->>> rtl8168h connects to rtl8211fs through mdi interface. rtl8168h also
->>> connects to rtl8211fs mdc/mdio interface through its eeprom or gpo pins
->> for controlling rtl8211fs. The link between rtl8211fs and fiber, and the link
->> between rtl8211fs and rtl8168h should be the same.
->>>  Driver just needs to set the link capability of rtl8168h to auto negation and
->> rtl8211fs will propagate the link status between fiber and itself to rtl8168h.
->>> But rtl8168h will not know the link capability of fiber. So when system
->> suspend, if wol is enabled, driver cannot speed down rtl8168h's phy.
->>> Or rtl8168h cannot be waken up.
->>>
->>> I will submit a new patch according your advice. But we are considering not
->> to use driver(r8169) to setup rtl8211fs. So next patch maybe simpler.
->>>
->>
->> Sounds strange that RTL8168H connects to RTL8211FS via MDI. Typically you
->> would use RGMII here.
->> Is it because RTL8168H has no pins for RGMII to external PHY's?
->>
->> Then my understanding would be that you do it like this:
->> RTL8168H MAC -> <internal RGMII> -> RTL8168H PHY -> <MDI> -> RTL8211FS -
->>> <SerDes> -> Fiber module
->>    |                                                             |
->>     -------------------bit-banged MDIO---------------------------
->>
->> Sou you would need to control both PHY's, right? Because setup wouldn't
->> work if e.g. RTL8168H-internal PHY is powered down.
->> Is the RTL8211FS interrupt pin connected to RTL8168H? Or has polling to be
->> used to get the status from RTL8211FS?
->>
-> rtl8168H is an integrated Ethernet controller, it contains MAC and PHY. It has no RGMII interface to connect to external PHY.
-> In this application, driver r8169 controls two PHY. One is rtl8168h's PHY, another PHY is rtl8211fs.
-> What r8169 have to do is to enable all link capability. rtl8211fs firmware will propagate fiber's link status to rtl8168h. 
-> rtl8168h will know the fiber's link status from its MAC register 0x6c. This the same as before. So rtl8211fs's interrupt pin 
-> will not connect to rtl8168h. And rtl8168h does not have to polling the link status of rtl8211fs.
-> 
-> RTL8168H MAC -> <internal RGMII> -> RTL8168H PHY -> <MDI> -> RTL8211FS -> <SerDes> -> Fiber module
->    |                                                                                                                                    |
->     -------------------bit-banged MDIO(use eeprom or gpo pin)--------------------
-> 
-> Because rtl8211fs's firmware will set link capability to 100M and GIGA when fiber link is from off to on..
-> So when system suspend, if wol is enabled, rtl8168h will speed down to 100M(because rtl8211fs advertise 100M and giga to rtl8168h).
+Jacob Keller says:
 
-Can't you disable 100M advertising in RTL8211FS using the standard PHY advertisement register?
-This would be more straight-forward and the hack to disable speed-down isn't needed in r8169.
-The described firmware behavior to enable 100M advertisement even with 1Gbps speed on fiber side
-doesn't seem to make sense.
+This series of patches primarily consists of changes to fix some corner
+cases that can cause Tx timestamp failures. The issues were discovered and
+reported by Siddaraju DH and primarily affect E822 hardware, though this
+series also includes some improvements that affect E810 hardware as well.
 
-> The link speed between rtl8168h and fiber will mismatch. That will cause wol fail.
-> 
-> And in the application, we also need to setup rtl8211fs. Or it may always link down.
-> 
->  ------Please consider the environment before printing this e-mail.
+The primary issue is regarding the way that E822 determines when to generate
+timestamp interrupts. If the driver reads timestamp indexes which do not
+have a valid timestamp, the E822 interrupt tracking logic can get stuck.
+This is due to the way that E822 hardware tracks timestamp index reads
+internally. I was previously unaware of this behavior as it is significantly
+different in E810 hardware.
 
-OK, I think I get a better idea of your setup.
-So it seems RTL8211FS indeed acts as media converter. Link status on MDI side of RTL8211FS reflects link status on fiber/serdes side.
-RTL8168H PHY has no idea whether it's connected to RJ45 magnetics or to the MDI side of a RTL8211FS.
+Most of the fixes target refactors to ensure that the ice driver does not
+read timestamp indexes which are not valid on E822 hardware. This is done by
+using the Tx timestamp ready bitmap register from the PHY. This register
+indicates what timestamp indexes have outstanding timestamps waiting to be
+captured.
 
-I think for configuring RTL8211FS you have two options:
-1. Extend the Realtek PHY driver to support RTL8211FS fiber mode
-2. Configure RTL8211FS from userspace (phytool, mii-tool, ..). However to be able to do this you may need to add a dummy netdevice
-   that RTL8211FS is attached to. When going with this option it may be better to avoid phylib taking control of RTL8211FS.
-   This can be done by setting the phy_mask of the bit-banged mii_bus.
+Care must be taken in all cases where we read the timestamp registers, and
+thus all flows which might have read these registers are refactored. The
+ice_ptp_tx_tstamp function is modified to consolidate as much of the logic
+relating to these registers as possible. It now handles discarding stale
+timestamps which are old or which occurred after a PHC time update. This
+replaces previously standalone thread functions like the periodic work
+function and the ice_ptp_flush_tx_tracker function.
+
+In addition, some minor cleanups noticed while writing these refactors are
+included.
+
+The remaining patches refactor the E822 implementation to remove the
+"bypass" mode for timestamps. The E822 hardware has the ability to provide a
+more precise timestamp by making use of measurements of the precise way that
+packets flow through the hardware pipeline. These measurements are known as
+"Vernier" calibration. The "bypass" mode disables many of these measurements
+in favor of a faster start up time for Tx and Rx timestamping. Instead, once
+these measurements were captured, the driver tries to reconfigure the PHY to
+enable the vernier calibrations.
+
+Unfortunately this recalibration does not work. Testing indicates that the
+PHY simply remains in bypass mode without the increased timestamp precision.
+Remove the attempt at recalibration and always use vernier mode. This has
+one disadvantage that Tx and Rx timestamps cannot begin until after at least
+one packet of that type goes through the hardware pipeline. Because of this,
+further refactor the driver to separate Tx and Rx vernier calibration.
+Complete the Tx and Rx independently, enabling the appropriate type of
+timestamp as soon as the relevant packet has traversed the hardware
+pipeline. This was reported by Milena Olech.
+
+Note that although these might be considered "bug fixes", the required
+changes in order to appropriately resolve these issues is large. Thus it
+does not feel suitable to send this series to net.
+---
+v3:
+- Dropped patch 'ice: disable Tx timestamps while link is down'
+- Use bitmap_or function over for_each_set_bit
+- Change incorrect function name (ice_ptp_tstamp_tx()) to correct one
+(ice_ptp_tx_tstamp()) in patch 9 commit message
+
+v2: https://lore.kernel.org/netdev/20221207210937.1099650-1-anthony.l.nguyen@intel.com/
+- Dropped incorrect/useless locking around init in ice_ptp_tx_tstamp
+- Added patch to call sychronize_irq during teardown of Tx tracker
+- Renamed and refactored "ts_handled" into "more_timestamps" for clarity
+- Moved all initialization of Tx tracker to before spin_lock_init
+- Initialize raw_stamp to 0 and add check that it has been set
+
+v1: https://lore.kernel.org/netdev/20221130194330.3257836-1-anthony.l.nguyen@intel.com/
+
+The following are changes since commit bde55dd9ccda7a3f5f735d89e855691362745248:
+  net: dsa: microchip: add stats64 support for ksz8 series of switches
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Jacob Keller (10):
+  ice: fix misuse of "link err" with "link status"
+  ice: always call ice_ptp_link_change and make it void
+  ice: handle discarding old Tx requests in ice_ptp_tx_tstamp
+  ice: check Tx timestamp memory register for ready timestamps
+  ice: synchronize the misc IRQ when tearing down Tx tracker
+  ice: protect init and calibrating check in ice_ptp_request_ts
+  ice: cleanup allocations in ice_ptp_alloc_tx_tracker
+  ice: handle flushing stale Tx timestamps in ice_ptp_tx_tstamp
+  ice: only check set bits in ice_ptp_flush_tx_tracker
+  ice: reschedule ice_ptp_wait_for_offset_valid during reset
+
+Karol Kolacinski (1):
+  ice: Reset TS memory for all quads
+
+Milena Olech (1):
+  ice: Remove the E822 vernier "bypass" logic
+
+Sergey Temerkhanov (1):
+  ice: Use more generic names for ice_ptp_tx fields
+
+Siddaraju DH (1):
+  ice: make Tx and Rx vernier offset calibration independent
+
+ drivers/net/ethernet/intel/ice/ice_main.c   |   9 +-
+ drivers/net/ethernet/intel/ice/ice_ptp.c    | 546 ++++++++++----------
+ drivers/net/ethernet/intel/ice/ice_ptp.h    |  39 +-
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c | 336 ++++++------
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h |   8 +-
+ 5 files changed, 463 insertions(+), 475 deletions(-)
+
+-- 
+2.35.1
 
