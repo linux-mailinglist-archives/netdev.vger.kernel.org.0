@@ -2,77 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 837E764722A
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 15:48:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DB9564722C
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 15:49:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbiLHOsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 09:48:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        id S229948AbiLHOtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 09:49:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiLHOsh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 09:48:37 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2289B788;
-        Thu,  8 Dec 2022 06:48:36 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id b2so4586379eja.7;
-        Thu, 08 Dec 2022 06:48:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=00p7rONc2FkqSf20UtrjB58mPIeQEEbiYn3obv5eTxY=;
-        b=K9TOfSutGmKyR3W8mmUSWFqgX1rzGMRCRLdqWBjByh8biL990XcU8tRsgwWkAvkk2Q
-         ZcUp7QptmgWpFBON/09MHdaw+SfmZORqJz431zZRxB/QdVVZA37RgJj6PNORDVaGtn49
-         h1oaMywAj4/DqJINkjpHcaniKcGm8UB+AmDUFnpYWy5IobeBpKiQfm0TKFEf7CcAMo1V
-         X4+wbfg4E47lNnDnmtmUaC3UlNB9MZJM8XVvsEJfaCOen6wlJ+s4cLX9iex5DNeWmbGZ
-         W6oeQgQ7bl+XOPqBwuXs4QQ10TSftCLkQh4KO70mhomoqqtHidB8qvfnnf1gv8ZH9B7Q
-         DwLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=00p7rONc2FkqSf20UtrjB58mPIeQEEbiYn3obv5eTxY=;
-        b=uAniQpvYEDjuGdHoTA0oxtSZGsoX5yQPXSCFchNz7fkQfx0x69xiicLNrT2DGRltFZ
-         ZDnLPJMGV9BtMpMW4BFDJcJ+pSSR5A3VstD1gxYzvXupAxazvXShTzCOJYHEXByGG+IR
-         XZ4L+qLBfX5EM7HKDDRozWcA4RWaSJbQWaJUZ/T3ZmUzwIWLfhsvFj/0LwChnBu1gNCU
-         ry2c18oeFHC6X1qzyMaj9/+K6Sf6aarxssIadbahXa6MkN8VPXclHoOS5RTg/356jIc/
-         bOAK9Bl6pkig908JNJtDLI0ckW/SveRIkWgSQuktoKVilwP75mgL2zpUfMem4/CjYa4H
-         4sqQ==
-X-Gm-Message-State: ANoB5pnKATLB9DZnsoaty+1JrwFOReQLQ+9kqh+JKZfBa0wqImTejDnR
-        RlmpN9ZQTPYZZcZ8pmZZ+Us=
-X-Google-Smtp-Source: AA0mqf45zQwV75WmD2T2GxL1vHS9gvntk9mpDT+8urBxhaxB5DhQ8E9tpJyyrQ7atb0IPwSnrRhsfQ==
-X-Received: by 2002:a17:907:3ac2:b0:7c1:765:9cfc with SMTP id fi2-20020a1709073ac200b007c107659cfcmr1464382ejc.34.1670510914948;
-        Thu, 08 Dec 2022 06:48:34 -0800 (PST)
-Received: from gvm01 (net-2-45-26-236.cust.vodafonedsl.it. [2.45.26.236])
-        by smtp.gmail.com with ESMTPSA id v1-20020a1709063bc100b007ad84cf1346sm9708761ejf.110.2022.12.08.06.48.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 06:48:34 -0800 (PST)
-Date:   Thu, 8 Dec 2022 15:48:48 +0100
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S229982AbiLHOtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 09:49:13 -0500
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2053.outbound.protection.outlook.com [40.107.8.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4109A9E451
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 06:49:09 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jq6R6B8yOuGpwMuFkUm0eswdrmtdhr2hwveeiu9l41opkBB+1f2me8/YzFu3hmeHfYnI1jXwOuXxqMZhE0DwLhxL00Ygeo15rE/PQhGjD1MrGEcMNC/xKM4V3Yq//xJsKzcUbIlvN3jOMviUD/LIxDhPH8++LQP+kx/LstQFeVqVQHflhFHQqU285bcCBlptCx+phGw5anXbmbICyKNs2BgAOtV98AjxzWARjsJAxznCN6byrdrxVuBCFit04i98FgqjjOcWcRRa98lvN3NhLOtosEBvpqpMyXEYlU3mIq4y3UC0OifoNUL5MSAhcIi5td+jTKlV9xoKBguIiiTgQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QTUT4AIgtEaxI3i6ofw0LfGwBeBwqPjwJmD9C4X3IT0=;
+ b=Liww5iF9QaHk1jUKeoWLVrNes7TyZMEz4wgp3FDj5cyDN3sbxLZCPL8gPAUvr/lMaw7CDN0t7u+BuxSEdGUzMeryw5o7ge7eeQx4oPrfJ6NsPfncX9clySRabbxbWzi+g5sESNKawxbl+7oTJv3M7j6sXOepflXmI+hPaPIbK8CgyJxPgnZoaE5uFQrX/TCRP9wK38+PxwDMt6xIn7RIp0IN7kv6VExOwityPoRhdbbcEBZrVFINVDN2p3g8QJkzv45zVd9gVbJrI+NCWrd9GN/0czKdK6kOLMmI9k4HXFM9C5PW/KvJWxmrU/lddOcMlQ5X6tb+tVgF2d/3KkB9OQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QTUT4AIgtEaxI3i6ofw0LfGwBeBwqPjwJmD9C4X3IT0=;
+ b=Ml0ALotUHi40EQARAfvEYn5Z/arv3oeOH5syTVaM2P6ENb81C5ghN9EdetK2mkeHOqTu4KQSZ9VpBWhs/5yw0rvbZUaqBzUb89eGjpBdFrF6djicCBu6y0OkEwMmJ5qu4dOD0NxxzVeUyzF0+DfuKFzojAzayY5WTZhTlsgPkdU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB7927.eurprd04.prod.outlook.com (2603:10a6:20b:2ad::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10; Thu, 8 Dec
+ 2022 14:49:05 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5880.014; Thu, 8 Dec 2022
+ 14:49:05 +0000
+Date:   Thu, 8 Dec 2022 16:49:01 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [PATCH v5 net-next 1/5] net/ethtool: add netlink interface for
- the PLCA RS
-Message-ID: <Y5H5UJ3BSNdxkNJ4@gvm01>
-References: <cover.1670371013.git.piergiorgio.beruto@gmail.com>
- <350e640b5c3c7b9c25f6fd749dc0237e79e1c573.1670371013.git.piergiorgio.beruto@gmail.com>
- <20221206195014.10d7ec82@kernel.org>
- <Y5CQY0pI+4DobFSD@gvm01>
- <20221207181056.121cdf34@kernel.org>
-MIME-Version: 1.0
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Hans J. Schultz" <netdev@kapio-technology.com>
+Subject: Re: [PATCH net-next 2/3] net: dsa: mv88e6xxx: replace ATU violation
+ prints with trace points
+Message-ID: <20221208144901.tgdhp73n7g5uh7qj@skbuf>
+References: <20221207233954.3619276-1-vladimir.oltean@nxp.com>
+ <20221207233954.3619276-3-vladimir.oltean@nxp.com>
+ <Y5EsWNfVQrl8Nb71@x130>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221207181056.121cdf34@kernel.org>
+In-Reply-To: <Y5EsWNfVQrl8Nb71@x130>
+X-ClientProxiedBy: BE1P281CA0046.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:23::11) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7927:EE_
+X-MS-Office365-Filtering-Correlation-Id: 525c2c1d-0a79-4f81-426e-08dad92b5a54
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qgaSTTngns5rqgexPzoWfKAbP2Eiua5Khj/YyctvoA8DZURifwdlrS7PmzPfJw+jDEdVYTLpfuiMpBAysqbJtNzCADYn/G+SII24bHxtB5d7p5t/85JxnpLIQ7K9WCyXxO/3Uwz5x6sMldwm16VDkICwsXsJt6ZYzONX45WZwGwb3fv7IZzRbpVBjjFyNhV2GhQ3Ogf47JVWD22KBbUwe7yTvnFSK20RO1/DuxOPBPLtBIl2DlwGlWGltwSCY9o2JeJy7lNHhsrYtHV6Z+pdo06tNh9C8yLi2GEytI9Go+6yK3yD/t5czUwm87DKuUKaIj5wU47QeLKdHWILwvMI9PEhcazzllRfgzvUs3yffSjAmaGCKZFvzVGiVGGI5P+F45+TdoW22jQKEQCpc5rxopDZhm3BuT7J/zYMVcMcFwWiCBhAKkKUN86cDLJQRbN6fiPgIkNSoy99mVpkV+HTzKp1HTIQwidn8HcbMJRXn8V3wSS4Gwz/t3l4be550CMrFoPeUWJurTvK54Wk1s2b9R5kIjPKpsfAxDPt/vqpnaqK+rRLwtt1GKd0qtOJwUfMpMpp5BkbKk/UdGMyttRazCWz+GY+tXVN9mqdOtmPprKz7ZmUiWYBDci+3nhOZEHwYHiaZDJy59fm4zUkW6dElw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(376002)(346002)(366004)(39860400002)(396003)(136003)(451199015)(38100700002)(6916009)(8936002)(86362001)(4326008)(44832011)(4744005)(2906002)(5660300002)(83380400001)(66476007)(316002)(66946007)(6486002)(478600001)(66556008)(41300700001)(8676002)(1076003)(33716001)(54906003)(186003)(6666004)(26005)(9686003)(6512007)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D/lCKVSwe0seqNP+Vf7LxJ/s3hYlaO2YvcqHE2jGnalPX/gFOYOLxqHPZMjq?=
+ =?us-ascii?Q?xttGcbEycguBlJzbw9tTarRlmtX5ZmMRaKbRt4smhHQgWLQ0jpX1HGWS6bTk?=
+ =?us-ascii?Q?HNWwRkFNY+gUfghb4HMiJd4X7F35Eon3Ge5r/VHqVEh/iueH7OIL9KDJxcjX?=
+ =?us-ascii?Q?xdP1ec777j2IZTQECQTYGpG4wBOPE8SAXYa1tZerFc+Dj5NqgqdW+hSse2Ay?=
+ =?us-ascii?Q?b9o/nD6f8MdeC5mdB6BZ0lNOCQGunEa49hdxhN7Pmsg7ImFaLqW3mAinazQ/?=
+ =?us-ascii?Q?whcJIw+YNb+eelkrRqaHhy9YS/oBcexdrdxAy63+IlSetxAQOQV9N10yCtXp?=
+ =?us-ascii?Q?eXrmUjb/mp64DFIwFyKcyO1YKqRH+Yt7bvrqZ9bfunERyIPynMjNdEXg2lrg?=
+ =?us-ascii?Q?ZS87HUb3OhGNz+RJ5gnaLocnrXAF4Y7eUZuYTM467fcr+srA2Uy/TaEnPvgj?=
+ =?us-ascii?Q?MgiNXaFW9R3wq+mtdh69GKEenyT7yYJAp47kBR98kWhy68UODkiONitk/3pF?=
+ =?us-ascii?Q?gwcgJy/aS8CJFyB2to+v2rZ1DNJQ4N/ynLtswCqd5eD2JTqfJt/B5bvpai02?=
+ =?us-ascii?Q?XN1msO4kCpUOS1HxsDU+o713xpX/3/fq0raDzbS/NPpy0V0+g2R2kwrcoT02?=
+ =?us-ascii?Q?KOQBIWdWvf4RDFGePvtvV2I1cJ1NwWLB8oS2oNg6n7SJCF/qCa3OrGrFXpkx?=
+ =?us-ascii?Q?jv0oe4LpJqmyVWrU4MwYiFzJ13bME8ASeFZhGEsayX2HuP0UHH6UmN2/5zti?=
+ =?us-ascii?Q?HZqqhVKbRTSV0YaxYrkMe0uiPA4lB0GAewUHhtliY+vjrePeFQip3E8Bzwwl?=
+ =?us-ascii?Q?UAXglhtadjdCkDpqaH27QcGBtJwhSGrTApnZ85n0WHhf5a5nb4e5pcYBFNF3?=
+ =?us-ascii?Q?ie3Asvi6hGtnwCzinFkqPUnflFWjaFhKkTUfgVrTGdEMlXe50O1XkrHW9JiU?=
+ =?us-ascii?Q?9yD93JHNQvz6bpwkNPXfjZamPocrAUVnbU3NcBqEaA56r9Qacnp+nU421S7Y?=
+ =?us-ascii?Q?AnSYNz6Ha0JuqOOucXdPZVS0zBkKSs1JEvmsp/uIFaPlawD/TxAfJScd4CNT?=
+ =?us-ascii?Q?5l/7kycYu1iwPchlXVhNlix08ezW3ZjFyqxvoNbmRYjJyyIsDFB4njPScSka?=
+ =?us-ascii?Q?wP3igipcaEOnrJK7M7BhbS1urcSkpEVLXqsfZuGdsAAC9QFlm3gwHnHe3Wkd?=
+ =?us-ascii?Q?k0MJsWCiXXv9oFlHoALVf+yCLPEaY0Hc/+VlKlQHURqBz7XMuK0E4wwDA1fN?=
+ =?us-ascii?Q?UlOORDIANokM/gHRsqI9AQtYYsXfUjAJvX1/GUM0zOW/ev296exTUaq50C1X?=
+ =?us-ascii?Q?QCNf9W1iuCQAxAjafcnBmBzuVEeO9GUtzNjZCXjUxevBy6P8leaXldXFHIAK?=
+ =?us-ascii?Q?vj2EhYiyXo+tFcuONYjHO5p2bj6x+HXE2NHwk24nO0SWIdLtSmtom25lWNJO?=
+ =?us-ascii?Q?vIUp1BX64zbYu8zns5GFGUSCGWlbfEleQIsq+jFKezOZGALis4Z5yamT4uHJ?=
+ =?us-ascii?Q?fR7IZaWC4UBEuiGY/u1PF9Ffwy/akCqAz0/0AfmHJYNS6bLjr2g/BvultfkD?=
+ =?us-ascii?Q?twuN6pSh7T94ExrEtxXzvc+WGzkPYlut3wNfAs71GcY47nriHIvm6TvMo4lY?=
+ =?us-ascii?Q?GA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 525c2c1d-0a79-4f81-426e-08dad92b5a54
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2022 14:49:05.7700
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: T6X3YkQlLiK2hnlP2fBmmvvR2SO9wd0lO4CoebKpWZZZrOaZ2xTS7di6dKxYMhRZqqTii54Nb9/LJECpkE3Zfg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7927
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,125 +120,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > 
-> > > This is 30.16.1.1.3 aPLCANodeCount ? The phrasing of the help is quite
-> > > different than the standard. Pure count should be max node + 1 (IOW max
-> > > of 256, which won't fit into u8, hence the question)
-> > > Or is node 255 reserved?  
-> > This is indeed aPLCANodeCount. What standard are you referring to
-> > exactly? This is the excerpt from IEEE802.3cg-2019
-> > 
-> > "
-> > 30.16.1.1.3 aPLCANodeCount
-> > ATTRIBUTE
-> > APPROPRIATE SYNTAX:
-> > INTEGER
-> > BEHAVIOUR DEFINED AS:
-> > This value is assigned to define the number of nodes getting a transmit opportunity before a new
-> > BEACON is generated. Valid range is 0 to 255, inclusive. The default value is 8.;
+On Wed, Dec 07, 2022 at 04:14:16PM -0800, Saeed Mahameed wrote:
+> > 	if (val & MV88E6XXX_G1_ATU_OP_AGE_OUT_VIOLATION) {
+> > -		dev_err_ratelimited(chip->dev,
+> > -				    "ATU age out violation for %pM fid %u\n",
+> > -				    entry.mac, fid);
+> > +		trace_mv88e6xxx_atu_age_out_violation(chip->dev, spid,
+> > +						      entry.mac, fid);
 > 
-> FWIW this is what I was referring to. To a layperson this description
-> reads like a beacon interval. While the name and you documentation
-> sounds like the define max number of endpoints.
-I agree, the description is not friendly to the average user, it mostly
-comes from IEEE jargon. What it really means is that the coordinator
-(master) will count up to aPLCANodeCount TOs before generating a new
-BEACON. This means that nodes shall have IDs from 1 to plcaNodeCount - 1
-to get a TO. ID = 0 is reserved for the coordinator.
+> no stats here? tracepoints are disabled by default and this event will go
+> unnoticed, users usually monitor light weight indicators such as stats, then
+> turn on tracepoints to see what's actually happening..
 
-> 
-> > And this is what I can read in the OPEN Alliance documentation:
-> > 
-> > "
-> > 4.3.1 NCNT
-> > This field sets the maximum number of PLCA nodes supported on the multidrop
-> > network. On the node with PLCA ID = 0 (see 4.3.2), this value must be set at
-> > least to the number of nodes that may be plugged to the network in order for
-> > PLCA to operate properly. This bit maps to the aPLCANodeCount object in [1]
-> > Clause 30.
-> > "
-> > 
-> > So the valid range is actually 1..255. A value of 0 does not really mean
-> > anything. PHYs would just clamp this to 1. So maybe we should set a
-> > minimum limit in the kernel?
-> 
-> SG, loosing limits is easy. Introducing them once they are in 
-> a released kernel is almost impossible.
-Ok, so let's set the lower limit to 1.
+I believe that the ATU age out violation handler is dead code currently.
+The driver does not enable the MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT bit
+(interrupt on age out).
 
-> 
-> > Please, feel free to ask more questions here, it is important that we
-> > fully understand what this is. Fortunately, I am the guy who invented
-> > PLCA and wrote the specs, so I should be able to answer these questions :-D.
-> 
-> I am a little curious why beacon interval == node count here, but don't
-> want to take up too much of your time for explaining things I could
-> likely understand by reading the spec, rather than fuzzy-mapping onto
-> concepts I comprehend :(
-See also my answer above. The basic idea is that you have a concept of
-'cycle', similar to a TDMA system, and each node has a chance to
-transmit in turn (round-robin). The difference with a TDMA system is that
-the TO is only TO_TIMER bits by default, but once a node "commits" to
-the TO by initiating a transmission, the TO itself can be extended up to
-the MTU multiplied by the configured burst counter (which by default is
-0, meaning 1 as it is 0-based). In other words, the end of a TO is
-determined by the detection of the end-of-frame. Note that PLCA is a
-fully distributed system, meaning that each node counts the TOs on its
-own and no PLCA information is ever shared over the media. It is a full
-Layer 1 protocol.
-
-So the coordinator node is the one periodically sending a BEACON *which
-is a layer 1 signal) which indicates the start of a cycle, and its
-coding is made as such that it is easy to detect in noisy environments,
-and you can detect the end of it with a high precision.
-
-The node count is the only parameter that the coordinat shall know in
-order to send a new BEACON periodically (tracking the TOs based on what
-nodes transmit ofc).
-
-I am writing a wikipedia article as well to better explain all of these
-concepts. I will keep you posted if you're interested.
-
-In the meantime, you can check this for a general overview:
-https://www.dropbox.com/s/ao9m23s6fd7ytns/AEC2019%2010BASE-T1S%20Highlights%20on%20Key%20Figures%20of%20the%2010BASE-T1S%20Multidrop%20PHY.pptx?dl=0
-
->
-> This is completely unrelated to the series - do you know if any of
-> the new 10BASE stuff can easily run over a DC power rail within
-> a server rack? :)
-Well, the 10BASE-T1S does.
-I recall DELL presenting exactly this use-case in the IEEE.
-
-All xBASE-T1* PHYs support PoDL (power over data line).
-
-
-> > Are you referring to this?
-> > 
-> > "
-> > 45.2.3.68f.1 CorruptedTxCnt (3.2294.15:0)
-> > Bits 3.2294.15:0 count up at each positive edge of the MII signal COL.
-> > When the maximum allowed value (65 535) is reached, the count stops until
-> > this register is cleared by a read operation.
-> > "
-> > 
-> > This is the only one statistic counter I can think of. Although, it is a
-> > 10BASE-T1S PHY related register, it is not specific to PLCA, even if its
-> > main purpose is to help the user distinguish between logical and
-> > physical collisions.
-> > 
-> > I would be inclined to add this as a separate feature unrelated to PLCA.
-> > Please, let me know what you think.
-> 
-> Fair point, I just opened the standard and searched counters.
-> Indeed outside of the scope here.
-Ok, but still a thing to keep in mind, thanks for pointing this out.
-
-> > > extack is usually the last argument  
-> > I actually copied from the cable_test_tdr callback below. Do you still
-> > want me to change the order? Should we do this for cable test as well?
-> > (as a different patch maybe?). Please, let me know.
-> 
-> Let's not move it in the existing callbacks but yes, cable_test_tdr
-> is more of an exception than a rule here, I reckon.
-Ok, so I will change the order for the plca functions.
-
+I just converted the existing debugging prints to trace points. Open to
+more suggestions, but I believe that if I introduce a counter, it would
+always return 0.
