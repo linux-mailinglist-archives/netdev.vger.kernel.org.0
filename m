@@ -2,49 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4967E646AB9
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 09:40:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 551A7646AD7
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 09:44:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbiLHIkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 03:40:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44518 "EHLO
+        id S229937AbiLHIoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 03:44:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiLHIki (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 03:40:38 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC88E6176F
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 00:40:37 -0800 (PST)
-Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NSSJL5yzQzJqN2;
-        Thu,  8 Dec 2022 16:39:46 +0800 (CST)
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 8 Dec 2022 16:40:35 +0800
-Subject: Re: [PATCH net v2] ethernet: s2io: don't call dev_kfree_skb() under
- spin_lock_irqsave()
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-References: <20221207012540.2717379-1-yangyingliang@huawei.com>
- <Y5GYqsgKxhUpfTn/@unreal>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <f31d0ce3-50fc-6206-bc7a-2a67ec0951db@huawei.com>
-Date:   Thu, 8 Dec 2022 16:40:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S229888AbiLHIoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 03:44:04 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411FDCDC;
+        Thu,  8 Dec 2022 00:44:03 -0800 (PST)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1p3CVd-0005TO-LV; Thu, 08 Dec 2022 09:44:01 +0100
+Message-ID: <96ee7141-f09c-4df9-015b-6ae8f3588091@leemhuis.info>
+Date:   Thu, 8 Dec 2022 09:44:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <Y5GYqsgKxhUpfTn/@unreal>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: BUG: unable to handle kernel paging request in bpf_dispatcher_xdp
+ #forregzbot
+Content-Language: en-US, de-DE
+To:     bpf <bpf@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <CACkBjsYioeJLhJAZ=Sq4CAL2O_W+5uqcJynFgLSizWLqEjNrjw@mail.gmail.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <CACkBjsYioeJLhJAZ=Sq4CAL2O_W+5uqcJynFgLSizWLqEjNrjw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1670489043;d88ccd6f;
+X-HE-SMSGID: 1p3CVd-0005TO-LV
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,44 +45,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+[Note: this mail contains only information for Linux kernel regression
+tracking. Mails like these contain '#forregzbot' in the subject to make
+then easy to spot and filter out. The author also tried to remove most
+or all individuals from the list of recipients to spare them the hassle.]
 
-On 2022/12/8 15:56, Leon Romanovsky wrote:
-> On Wed, Dec 07, 2022 at 09:25:40AM +0800, Yang Yingliang wrote:
->> It is not allowed to call consume_skb() from hardware interrupt context
->> or with interrupts being disabled. So replace dev_kfree_skb() with
->> dev_consume_skb_irq() under spin_lock_irqsave().
->>
->> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->> v1 -> v2:
->>    Add fix tag.
->> ---
->>   drivers/net/ethernet/neterion/s2io.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
->> index 1d3c4474b7cb..a83d61d45936 100644
->> --- a/drivers/net/ethernet/neterion/s2io.c
->> +++ b/drivers/net/ethernet/neterion/s2io.c
->> @@ -2386,7 +2386,7 @@ static void free_tx_buffers(struct s2io_nic *nic)
->>   			skb = s2io_txdl_getskb(&mac_control->fifos[i], txdp, j);
->>   			if (skb) {
->>   				swstats->mem_freed += skb->truesize;
->> -				dev_kfree_skb(skb);
->> +				dev_consume_skb_irq(skb);
-> And why did you use dev_consume_skb_irq() and not dev_kfree_skb_irq()?
-I chose dev_consume_skb_irq(), because dev_kfree_skb() is consume_skb().
+On 06.12.22 04:28, Hao Sun wrote:
+> 
+> The following crash can be triggered with the BPF prog provided.
+> It seems the verifier passed some invalid progs. I will try to simplify
+> the C reproducer, for now, the following can reproduce this:
 
-Thanks,
-Yang
->
-> Thanks
->
->>   				cnt++;
->>   			}
->>   		}
->> -- 
->> 2.25.1
->>
-> .
+Thanks for the report. To be sure below issue doesn't fall through the
+cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
+tracking bot:
+
+#regzbot ^introduced c86df29d11df
+#regzbot title net/bpf: BUG: unable to handle kernel paging request in
+bpf_dispatcher_xdp
+#regzbot ignore-activity
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
