@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF0C646F1F
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 12:56:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2375A646F24
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 12:56:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbiLHL4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 06:56:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
+        id S229750AbiLHL4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 06:56:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbiLHLzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 06:55:43 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86456880E1;
-        Thu,  8 Dec 2022 03:55:42 -0800 (PST)
+        with ESMTP id S229893AbiLHLzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 06:55:53 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on20609.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8d::609])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31FC7DA48;
+        Thu,  8 Dec 2022 03:55:52 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ey30akczinEAGQrxcHPTX6uL1XoM5VAUtmnfciyGIN28OTAjoABfXW6qlaEdSd9dJSwr3rc+8V+wbkrEf0WAXA4zs2W0ZxnqWIjUTKipCgJw5QtzyJCXGPzDlHLxrL19r8mIeeocwCvRoGhmtqjioQaoVLBzaa2PF2gUpRQXsI4QOYbfW6+omUETvy//npBRMmDFRAMpku6kv0nVzS33l2Af8tVrLV1L93amrijPHb2+QI+MgavdFHKUtFLxUQe7dmiwaW6NBA5q3hAqnZEsKhS9fB+ew2Jl1j5a0dRBXK+PYoz6z+bON+BwcrJIB21FVMR/T7bFc0qQC7G/V/1bqA==
+ b=VqJt2veImlquT9FNAudtN2bbfm0IqzjRr70ZpjXdFFCtq03KqJe4xy0dg0d/Tl6JZrEV8LDJfpcwTxLSSRQo1I4ptu9piCZfOfbqNXB+kdlqDstxOafCU1ml59XSVbl33wQqsMMhLK/VYbxuMJ2x7JUBDizpA14omtS833Ne/XcwuXPUglz532iKiVnhXX70Ki5Dezc4DjvI2YYuddHIBQTUa2TNwMCnLTLPi/sCWKU3J86gEXbgxjSkqrU5oFmidaAjkUdX3ISxPeZis5fx0X0oes1KteQ/wOZ6metPPQdBlsxCWtLcmpw/SBY1rzee5PaWSPEZV+1PHK+K+QBpdQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4al1wQPMFFB+voxMfm94AVtyaEUR/eqIx4z821iB814=;
- b=cdmpav6duttG7f304TK9hmeyV/Xw6hwZVfFQzXRQgo7kiCz7vMECc+Ww5kyHxCZe4F5oMkM2z9tM1DdMU4ACiwMpQ73gF/sfvbR2SQszkbhYwt0xjTS41L9GnE5MCdQLl7eSsbWgznBxq1gr2AGNOdThOZ7/rmQ9S8bm44EzMKHSPUttzUM58n03QWWJorQMufHjP0wCeFwGhd+Jt6XYP4TzCpwKJ4HNUIs3g9F61FaViqQnr2zoT22KvVQwlavd9E+2a2UcGSGdsMD4iUednSDjIN1DX8O8z6LVh+uss4KH7holO5A4XArfK7b3Bevr7CnPfAsRQUDKYBMMOYVj9A==
+ bh=ER0TsY+H09EnNeaTAyoQsJqPtGQdMdKwYQBUIcLbVGw=;
+ b=jKFcL93cAjLWCxRgnGrhr99BaJ8t9y7pD/fp9VMphGcu3Mqw1pKc1/0bjT14IIe42j8IIOt1he5rMVPtEG7opu9GgzTmgeJ29Je5rTihx+yqHzZnujPgMxCLLs5/CfBAWdOHEFArwXBhKZCGP3E9s4aA6S8Cm6Xw6O6FVULRFqsmrmSLK75cjiMLB7cjHqH6WUOjbyS1ODShVrcrX8YjMCpv5NFoaBCVaBeB7iaZPfRIvT/ctIuse+czR5ybrNQ1TItdQQo2fgPTRnuGydUhvBK/pbdaneo/CymR7JwqHT5uLE/e63DqN2yeX5BcLU1Zez5C+5DaVOC4xnRCPpEQFQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4al1wQPMFFB+voxMfm94AVtyaEUR/eqIx4z821iB814=;
- b=OaK2wV8RZTOAfY0y5oVzcJlYSHr83osa01xgI2j/yXvSqySWH7/XiXxoQboxfyy2dyCjg72m4+2bIJ76UlZPAD2X5wPvKbnomJoqnhifCxSvT9Tlt8aC7hrht3C+BHN0Xoi1LhmS2sixJNbamZ6NvvZ+/GRHOX2cDTcnSU/w3AMpojzyiSqrIWkDTdOLX5OzVyhaQLhnJGsAJQGKOzeEs1KeoI+QVr4nCzzznIeFzdcpImtkA2HXL2HwHRYb7YIS2FXLaCEc9Mey2oEbsrGW7xTwGwf5lRSHTobfp1KnrF2JrNnMBM/bhucTbbfAhbOPnRXJDtviSLDJdEpAJ3yWFw==
-Received: from BL0PR1501CA0012.namprd15.prod.outlook.com
- (2603:10b6:207:17::25) by DM6PR12MB4404.namprd12.prod.outlook.com
- (2603:10b6:5:2a7::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.16; Thu, 8 Dec
- 2022 11:55:40 +0000
+ bh=ER0TsY+H09EnNeaTAyoQsJqPtGQdMdKwYQBUIcLbVGw=;
+ b=mUADWmeh+jK5p0y78bjGhKOtiVRP+DP6bqpIaXoQY3wYvrNNCzxlArxty+fme+roJmVhEJ7vTY3qNm6YS+S4Dh4dOa3Sa1b+k8rc+lJFPxYuqt4DI6q+xSxVN93i0Bd893N1aM2uo5Wz/5QOes84LPntzg59JoXWOMxF6tTLNhYFQ32LJ+G06K2eTFD9QKGDjpa/C1rzu2wbLUTSad9dT5ytMn1gSp3pTY/dI+osTKSSsWOgfNB2C1UoWWhcp3e1xMlLAxw6mnZIvqWTTNAifRCT5J82V/6ydU6r5SF1zISvl//Idlzp7yFER2kbDASLahL5QiNUXQbVNkWvJR7zYQ==
+Received: from MN2PR10CA0030.namprd10.prod.outlook.com (2603:10b6:208:120::43)
+ by BL0PR12MB4931.namprd12.prod.outlook.com (2603:10b6:208:17e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Thu, 8 Dec
+ 2022 11:55:50 +0000
 Received: from BL02EPF0000C409.namprd05.prod.outlook.com
- (2603:10b6:207:17:cafe::15) by BL0PR1501CA0012.outlook.office365.com
- (2603:10b6:207:17::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10 via Frontend
- Transport; Thu, 8 Dec 2022 11:55:40 +0000
+ (2603:10b6:208:120:cafe::60) by MN2PR10CA0030.outlook.office365.com
+ (2603:10b6:208:120::43) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14 via Frontend
+ Transport; Thu, 8 Dec 2022 11:55:50 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -49,54 +49,55 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.117.161) by
  BL02EPF0000C409.mail.protection.outlook.com (10.167.241.11) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5880.8 via Frontend Transport; Thu, 8 Dec 2022 11:55:40 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ 15.20.5880.8 via Frontend Transport; Thu, 8 Dec 2022 11:55:50 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 8 Dec 2022
- 03:55:27 -0800
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ 03:55:36 -0800
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 8 Dec 2022
- 03:55:27 -0800
+ 03:55:36 -0800
 Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.7)
  with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Thu, 8 Dec
- 2022 03:55:24 -0800
+ 2022 03:55:31 -0800
 From:   <ehakim@nvidia.com>
 To:     <linux-kernel@vger.kernel.org>
 CC:     <raeds@nvidia.com>, <davem@davemloft.net>, <edumazet@google.com>,
         <kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
         <sd@queasysnail.net>, <atenart@kernel.org>, <jiri@resnulli.us>,
         Emeel Hakim <ehakim@nvidia.com>
-Subject: [PATCH net-next v4 1/2] macsec: add support for IFLA_MACSEC_OFFLOAD in macsec_changelink
-Date:   Thu, 8 Dec 2022 13:55:16 +0200
-Message-ID: <20221208115517.14951-1-ehakim@nvidia.com>
+Subject: [PATCH net-next v2 2/2] macsec: dump IFLA_MACSEC_OFFLOAD attribute as part of macsec dump
+Date:   Thu, 8 Dec 2022 13:55:17 +0200
+Message-ID: <20221208115517.14951-2-ehakim@nvidia.com>
 X-Mailer: git-send-email 2.21.3
+In-Reply-To: <20221208115517.14951-1-ehakim@nvidia.com>
+References: <20221208115517.14951-1-ehakim@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF0000C409:EE_|DM6PR12MB4404:EE_
-X-MS-Office365-Filtering-Correlation-Id: 56122c5a-c36d-4b72-d846-08dad91320d6
+X-MS-TrafficTypeDiagnostic: BL02EPF0000C409:EE_|BL0PR12MB4931:EE_
+X-MS-Office365-Filtering-Correlation-Id: 899d6db3-fb4c-4713-b02f-08dad91326b9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xRK4HBLNC8zakedO5geCfEUdu/MHu6Ho8YfNA+nuQTIWoKEt9hIjs2wE/pG6euHL4rgMAyuSvOMK97nCXWm8zS6aRSRnT9HNs2eOM9gRHZR5VqA/vm5LJxzXc/mzMxIlQiyj9XlI1UlWBOZKTYozEYt3uxlFWCo3NxWopnYXb/M7WKLaAixhw1EzCGEUbVYtluvw1bBi7pAyGcLjOU+Gboc+cOlQs20qoslpBGN3HFKyC+BmdPNHmHJYNZ/QX6OavaA4efq9TKNnU9awhrnNLl64S8KrrExiY7SZeQCFECpsriBklyvDMDrG0aMkkoEfnewcysytFvRhGq2H/6WCQRkRb0qlsx6FZkFXfUtfuKz/BsMoF7I7IY9I7E4j5/AEVUK93QVGdutMFnJOmbE2fBTkTJXNKNjPHOXkFOInwNQk+b/HcAvkEVI1KQe7ic/jA+q0VpaJTcqRap9mfBiVejvNMeTDd5fMgSvOBmFIP8NCNyrt7RJAiLVeTpXM60OWpR8RV1ugJdK1tomPouwo3aPEZ8i7KlAj5JkuK4iUByk6bmM9Q4MvqthFLrxucyREQ1+zm3E4qryty+UF1RBc9M4gypW8PXaXt/TvilaGqzm8Df3EjWNgr/k01cdGZEG1kSqyoRrHJSFDA3pw8Xb2+j1MP/bem6opGL4FdC8vV6yAb8ltCrSulbEA9LE1Za4PE0oV0rSVKmSwIs3abzguJg==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(396003)(346002)(39860400002)(451199015)(40470700004)(46966006)(36840700001)(316002)(82740400003)(36860700001)(36756003)(4326008)(8936002)(70206006)(70586007)(186003)(26005)(47076005)(426003)(8676002)(40460700003)(54906003)(6916009)(1076003)(7696005)(40480700001)(5660300002)(83380400001)(82310400005)(2616005)(86362001)(336012)(356005)(2906002)(7636003)(41300700001)(107886003)(2876002)(478600001)(6666004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zVbdUk7jq1oiG3GX3B6bW27FI5Kc1TTap7nP7Sj66n1+MrJSqHvlON2TuysPOQe+Lm8j9luTr3BFsV8KzvMzlt5RZyM/vBAzgyhVk5HWFxTrbdFv5GFt7AWsUcMNJMYET6i6f5qt8VF1qj64/Dv+u4/Qz6LdheFAe16Dcm25pwoWru/PWfgI6zhjGmX2Mf6025s+dEsFcVl8x4ypiMzwT+Ve/gxlWIlUuKok/Kql2AJ4EiU9bEu4nHNiDTBODySZM1d+fF46gXrNcDRUugGZLF3dZT8L6EmhTg7gcIElQPvjqiHt0XU7wE9j8nJxHj+bYEUE0AUFSrOddrjyRP7XLtyrM8Pr/VSQKRRolym/T8Ttd3MZCgR8c5AxG/6qCqNcSrfRRXncwdjqPbX6+T/RNC4f5h5NFC3YYv8g+JtL9PTDwWaFXGBvcW8j1j2QZG8YNQ+gow2EzZQXzWYQmMWX3oPDhPEYVYWLKgEFPfx/0SxXEHMafO04vBYCj9vPEGn7Yi6mLyx6lpu4mKc0276omVUFOk7V+BoBXdUXIUuOk73TcHJm9f01/b1ozrCZHPxG9A9ybywS0PIdeNfWhHNYqOjaS79WRGM8Eg+VIXezrnqLTmQFSSS7TMsWbj/WxRtGO3K68nGxMfFBFLdYyjy9td8oWxfgFl+hASr+ozCHYkqnlAjV/E/RXu9MzormHIIq/LQhzHDLi9ox6rvA0NRL2g==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(39860400002)(346002)(136003)(451199015)(40470700004)(46966006)(36840700001)(2616005)(86362001)(70206006)(83380400001)(2906002)(8676002)(41300700001)(4326008)(40460700003)(2876002)(5660300002)(7636003)(8936002)(36756003)(40480700001)(82740400003)(36860700001)(54906003)(316002)(426003)(6916009)(82310400005)(47076005)(1076003)(356005)(26005)(107886003)(186003)(478600001)(70586007)(336012)(6666004)(7696005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2022 11:55:40.2715
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2022 11:55:50.1469
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56122c5a-c36d-4b72-d846-08dad91320d6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 899d6db3-fb4c-4713-b02f-08dad91326b9
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: BL02EPF0000C409.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4404
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4931
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -105,179 +106,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Emeel Hakim <ehakim@nvidia.com>
 
-Add support for changing Macsec offload selection through the
-netlink layer by implementing the relevant changes in
-macsec_changelink.
-
-Since the handling in macsec_changelink is similar to macsec_upd_offload,
-update macsec_upd_offload to use a common helper function to avoid
-duplication.
-
-Example for setting offload for a macsec device:
-    ip link set macsec0 type macsec offload mac
+Support dumping offload netlink attribute in macsec's device
+attributes dump.
+Change macsec_get_size to consider the offload attribute in
+the calculations of the required room for dumping the device
+netlink attributes.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
 ---
-V3 -> V4: - Dont pass whole attributes data to macsec_update_offload, just pass relevant attribute.
-		  - Fix code style.
-		  - Remove macsec_changelink_upd_offload
-V2 -> V3: - Split the original patch into 3 patches, the macsec_rtnl_policy related change (separate patch)
-                       to be sent to "net" branch as a fix.
-                 - Change the original patch title to make it clear that it's only adding IFLA_MACSEC_OFFLOAD
-                   to changelink
-V1 -> V2: Add common helper to avoid duplicating code
+V1 -> V2: Update commit message
 
- drivers/net/macsec.c | 100 +++++++++++++++++++++++--------------------
- 1 file changed, 53 insertions(+), 47 deletions(-)
+ drivers/net/macsec.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index d73b9d535b7a..abfe4a612a2d 100644
+index abfe4a612a2d..85208a64f259 100644
 --- a/drivers/net/macsec.c
 +++ b/drivers/net/macsec.c
-@@ -2583,38 +2583,16 @@ static bool macsec_is_configured(struct macsec_dev *macsec)
- 	return false;
+@@ -4237,16 +4237,22 @@ static size_t macsec_get_size(const struct net_device *dev)
+ 		nla_total_size(1) + /* IFLA_MACSEC_SCB */
+ 		nla_total_size(1) + /* IFLA_MACSEC_REPLAY_PROTECT */
+ 		nla_total_size(1) + /* IFLA_MACSEC_VALIDATION */
++		nla_total_size(1) + /* IFLA_MACSEC_OFFLOAD */
+ 		0;
  }
  
--static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
-+static int macsec_update_offload(struct net_device *dev, enum macsec_offload offload)
+ static int macsec_fill_info(struct sk_buff *skb,
+ 			    const struct net_device *dev)
  {
--	struct nlattr *tb_offload[MACSEC_OFFLOAD_ATTR_MAX + 1];
--	enum macsec_offload offload, prev_offload;
--	int (*func)(struct macsec_context *ctx);
--	struct nlattr **attrs = info->attrs;
--	struct net_device *dev;
-+	enum macsec_offload prev_offload;
- 	const struct macsec_ops *ops;
- 	struct macsec_context ctx;
- 	struct macsec_dev *macsec;
--	int ret;
--
--	if (!attrs[MACSEC_ATTR_IFINDEX])
--		return -EINVAL;
--
--	if (!attrs[MACSEC_ATTR_OFFLOAD])
--		return -EINVAL;
--
--	if (nla_parse_nested_deprecated(tb_offload, MACSEC_OFFLOAD_ATTR_MAX,
--					attrs[MACSEC_ATTR_OFFLOAD],
--					macsec_genl_offload_policy, NULL))
--		return -EINVAL;
-+	int ret = 0;
+-	struct macsec_secy *secy = &macsec_priv(dev)->secy;
+-	struct macsec_tx_sc *tx_sc = &secy->tx_sc;
++	struct macsec_tx_sc *tx_sc;
++	struct macsec_dev *macsec;
++	struct macsec_secy *secy;
+ 	u64 csid;
  
--	dev = get_dev_from_nl(genl_info_net(info), attrs);
--	if (IS_ERR(dev))
--		return PTR_ERR(dev);
- 	macsec = macsec_priv(dev);
++	macsec = macsec_priv(dev);
++	secy = &macsec->secy;
++	tx_sc = &secy->tx_sc;
++
+ 	switch (secy->key_len) {
+ 	case MACSEC_GCM_AES_128_SAK_LEN:
+ 		csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_128 : MACSEC_DEFAULT_CIPHER_ID;
+@@ -4271,6 +4277,7 @@ static int macsec_fill_info(struct sk_buff *skb,
+ 	    nla_put_u8(skb, IFLA_MACSEC_SCB, tx_sc->scb) ||
+ 	    nla_put_u8(skb, IFLA_MACSEC_REPLAY_PROTECT, secy->replay_protect) ||
+ 	    nla_put_u8(skb, IFLA_MACSEC_VALIDATION, secy->validate_frames) ||
++	    nla_put_u8(skb, IFLA_MACSEC_OFFLOAD, macsec->offload) ||
+ 	    0)
+ 		goto nla_put_failure;
  
--	if (!tb_offload[MACSEC_OFFLOAD_ATTR_TYPE])
--		return -EINVAL;
--
--	offload = nla_get_u8(tb_offload[MACSEC_OFFLOAD_ATTR_TYPE]);
- 	if (macsec->offload == offload)
- 		return 0;
- 
-@@ -2627,43 +2605,65 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
- 	if (netif_running(dev))
- 		return -EBUSY;
- 
--	rtnl_lock();
--
--	prev_offload = macsec->offload;
--	macsec->offload = offload;
--
- 	/* Check if the device already has rules configured: we do not support
- 	 * rules migration.
- 	 */
--	if (macsec_is_configured(macsec)) {
--		ret = -EBUSY;
--		goto rollback;
--	}
-+	if (macsec_is_configured(macsec))
-+		return -EBUSY;
-+
-+	prev_offload = macsec->offload;
- 
- 	ops = __macsec_get_ops(offload == MACSEC_OFFLOAD_OFF ? prev_offload : offload,
- 			       macsec, &ctx);
--	if (!ops) {
-+	if (!ops)
- 		ret = -EOPNOTSUPP;
--		goto rollback;
--	}
- 
--	if (prev_offload == MACSEC_OFFLOAD_OFF)
--		func = ops->mdo_add_secy;
--	else
--		func = ops->mdo_del_secy;
-+	macsec->offload = offload;
- 
- 	ctx.secy = &macsec->secy;
--	ret = macsec_offload(func, &ctx);
-+	ret = offload == MACSEC_OFFLOAD_OFF ? macsec_offload(ops->mdo_del_secy, &ctx)
-+					    : macsec_offload(ops->mdo_add_secy, &ctx);
-+
- 	if (ret)
--		goto rollback;
-+		macsec->offload = prev_offload;
- 
--	rtnl_unlock();
--	return 0;
-+	return ret;
-+}
-+
-+static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct nlattr *tb_offload[MACSEC_OFFLOAD_ATTR_MAX + 1];
-+	struct nlattr **attrs = info->attrs;
-+	enum macsec_offload offload;
-+	struct net_device *dev;
-+	int ret;
-+
-+	if (!attrs[MACSEC_ATTR_IFINDEX])
-+		return -EINVAL;
-+
-+	if (!attrs[MACSEC_ATTR_OFFLOAD])
-+		return -EINVAL;
-+
-+	if (nla_parse_nested_deprecated(tb_offload, MACSEC_OFFLOAD_ATTR_MAX,
-+					attrs[MACSEC_ATTR_OFFLOAD],
-+					macsec_genl_offload_policy, NULL))
-+		return -EINVAL;
-+
-+	dev = get_dev_from_nl(genl_info_net(info), attrs);
-+	if (IS_ERR(dev))
-+		return PTR_ERR(dev);
- 
--rollback:
--	macsec->offload = prev_offload;
-+	if (!tb_offload[MACSEC_OFFLOAD_ATTR_TYPE])
-+		return -EINVAL;
-+
-+	offload = nla_get_u8(tb_offload[MACSEC_OFFLOAD_ATTR_TYPE]);
-+
-+	rtnl_lock();
-+
-+	ret = macsec_update_offload(dev, offload);
- 
- 	rtnl_unlock();
-+
- 	return ret;
- }
- 
-@@ -3831,6 +3831,12 @@ static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
- 	if (ret)
- 		goto cleanup;
- 
-+	if (data[IFLA_MACSEC_OFFLOAD]) {
-+		ret = macsec_update_offload(dev, nla_get_u8(data[IFLA_MACSEC_OFFLOAD]));
-+		if (ret)
-+			goto cleanup;
-+	}
-+
- 	/* If h/w offloading is available, propagate to the device */
- 	if (macsec_is_offloaded(macsec)) {
- 		const struct macsec_ops *ops;
 -- 
 2.21.3
 
