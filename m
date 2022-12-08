@@ -2,88 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECE2B647215
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 15:44:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E52C4647225
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 15:47:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbiLHOoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 09:44:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
+        id S229910AbiLHOrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 09:47:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbiLHOnz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 09:43:55 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F12A9FDB;
-        Thu,  8 Dec 2022 06:43:52 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id m19so2083783edj.8;
-        Thu, 08 Dec 2022 06:43:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hxx3hHyejbLeDuFDwXBpuhfnpA1JIN/KUaBCLSEkMeA=;
-        b=HTKA5wG6DmDi7F08nntDMIly7BQqtuJfK/I0e+nHC7DR1K7Nrte8VBhNTDJTrgBJjH
-         0nhq4VV1+LWJ6Rm4RCI6qFVS5WoezWedUC8NYDZJoHAHo+HDOa+1URCh2FfBrVVxW2r6
-         scaQ4aT5Wn325/Np9RB1LsYFH5KztRNULrlHOQoS94O0rwBopgUjBBKh51Io6VmZ2Wpy
-         ZV1o6PiqLc0kxvn5eo7e3ULcUk11Ul4cpKyNpH4WC0UukSg7heeEHay/R5ulgGSv0A12
-         pkfdQAwRhMysAYcWMHbhqIJiwZOqSrbyLJuG8kGUXv7OUJOAGVF/lTJBm4tDFtrPgux1
-         cA+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hxx3hHyejbLeDuFDwXBpuhfnpA1JIN/KUaBCLSEkMeA=;
-        b=KaSLwXAzn9+tvdjVh+hO92ZkmIS5wh1g03h14lCc0l21+2bTfJybxFn1Ru94/RxSLC
-         NhxPD7vUnMZgMbBZrtR+7xL7xwGMkkV+vQaNBmXD0/dnN6SJEFFUd3vGNtkmd/IW+3KW
-         ikQn36+oTnqy3UQECg448a2TuAUStAdajAHkOsQ5fLpqeOQcyz5UvHN/0sZfw0E+NOmO
-         Dqk2CpAnPdLaAZOMwHUekon1WcOS0YJcCnTX52FcqIBdlNOB8PadkiIn1tCXACJh5xPC
-         nQs6i/SCHdwH6mZGQ0MWdu7H1qFYaOnthWuSOAe/LApHIEnI+f3PGQUBbcUV8a/kvPCu
-         EMxQ==
-X-Gm-Message-State: ANoB5pn3WeesYKQwAa67pUEs0FymIMdIztmylphN4bUHtSSLHmQu4esx
-        VJhWvgDFuRTnEE7ZdmS7Gec=
-X-Google-Smtp-Source: AA0mqf4cgx2tq6G2SbUIWAFWFEhoZDuKQ2An308eQP7dSymXMr1Xp19aqJMhQxWkq46+lp4Wuw5OJg==
-X-Received: by 2002:a05:6402:c2:b0:468:9bc4:1c7 with SMTP id i2-20020a05640200c200b004689bc401c7mr2437790edu.38.1670510631079;
-        Thu, 08 Dec 2022 06:43:51 -0800 (PST)
-Received: from skbuf ([188.26.185.87])
-        by smtp.gmail.com with ESMTPSA id r8-20020a056402018800b0046cd3ba1336sm3469312edv.78.2022.12.08.06.43.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 06:43:50 -0800 (PST)
-Date:   Thu, 8 Dec 2022 16:43:48 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@kapio-technology.com
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20221208144348.lypst4vltnczswhm@skbuf>
-References: <20221205185908.217520-1-netdev@kapio-technology.com>
- <20221205185908.217520-4-netdev@kapio-technology.com>
- <Y487T+pUl7QFeL60@shredder>
- <580f6bd5ee7df0c8f0c7623a5b213d8f@kapio-technology.com>
- <20221207202935.eil7swy4osu65qlb@skbuf>
- <1b0d42df6b3f2f17f77cfb45cf8339da@kapio-technology.com>
- <20221208133524.uiqt3vwecrketc5y@skbuf>
- <c9dc3682dd9e4c2a9d81a7df0f3f9124@kapio-technology.com>
+        with ESMTP id S229898AbiLHOrF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 09:47:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3070A27CC7;
+        Thu,  8 Dec 2022 06:47:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAABF61F6E;
+        Thu,  8 Dec 2022 14:47:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0173C433C1;
+        Thu,  8 Dec 2022 14:47:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670510824;
+        bh=DGZdBg2k+c0lbYP2UZKfn7NakVnAY+qm3K+z9ZUzG1A=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=akW5tSpk2A9DJbUBKaMSgnTCK+d5lj5cplVyp4CCWolM45SCzt+7Z5Sff+yTZy/CU
+         3YlGC3HjEsbcSMYytNmwW/hADadUkbN3/jGx6xckGK3LDuLHE3BZk0+X9no7E1aS9r
+         j9opLw+A4vY+u9Gr2D6GLvypcvo1VV4P0J9w0S1N8qZFPP9TCOTrcsqYwLoL62Ks0b
+         k1Co4f3OJTPSAwjWa3b9HyUf+Lb0x5GxtJb+72gOKdzLYgiehMxk+JR43Z3HYioUcg
+         aHWRZhozrd1qtrOniKVF9J83z9WGbTMalLbZE9F45L/lyAWxHLBKBI9qMLLDzpNNMh
+         EpoVhlHKJ9NKQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c9dc3682dd9e4c2a9d81a7df0f3f9124@kapio-technology.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2] wifi: brcmfmac: Fix error return code in
+ brcmf_sdio_download_firmware()
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <1669959342-27144-1-git-send-email-wangyufen@huawei.com>
+References: <1669959342-27144-1-git-send-email-wangyufen@huawei.com>
+To:     Wang Yufen <wangyufen@huawei.com>
+Cc:     <aspriel@gmail.com>, <franky.lin@broadcom.com>,
+        <hante.meuleman@broadcom.com>, <davem@davemloft.net>,
+        <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
+        <arend@broadcom.com>, Wang Yufen <wangyufen@huawei.com>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <167051081967.9839.17101667158820995353.kvalo@kernel.org>
+Date:   Thu,  8 Dec 2022 14:47:01 +0000 (UTC)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 08, 2022 at 03:41:24PM +0100, netdev@kapio-technology.com wrote:
-> What else conclusion than it is the ATU op that fails?
+Wang Yufen <wangyufen@huawei.com> wrote:
 
-I don't have any more time than to say "read the rest of my email", sorry.
+> Fix to return a negative error code instead of 0 when
+> brcmf_chip_set_active() fails. In addition, change the return
+> value for brcmf_pcie_exit_download_state() to keep consistent.
+> 
+> Fixes: d380ebc9b6fb ("brcmfmac: rename chip download functions")
+> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+
+Patch applied to wireless-next.git, thanks.
+
+c2f2924bc7f9 wifi: brcmfmac: Fix error return code in brcmf_sdio_download_firmware()
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/1669959342-27144-1-git-send-email-wangyufen@huawei.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
