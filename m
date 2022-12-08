@@ -2,148 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B464646EFB
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 12:50:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4070D646F0F
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 12:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbiLHLuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 06:50:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40228 "EHLO
+        id S230171AbiLHLxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 06:53:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbiLHLt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 06:49:56 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB6489313
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 03:48:51 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 57831337B2;
-        Thu,  8 Dec 2022 11:48:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1670500129; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=p8FeT0GLMYEcKy8ISsrJOFDfnwXAjRZgV3cdFmFKuPA=;
-        b=DilmmwqlpiXJWoH3pUMQp7EEAYmk4NxNi5fwDHtEcDFPLV+6pKM/jPoi4UFBfn7soCjqZc
-        GqpkdSZxgDL8RlTBHQGv8z0vvfFGllTlsQVYtzuZVVZe+AiaWuvkRj/AVYjLXDM36rpOsi
-        +xjUxbdZAMWCz0uc9souEVgZTrwmOa8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1670500129;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=p8FeT0GLMYEcKy8ISsrJOFDfnwXAjRZgV3cdFmFKuPA=;
-        b=Hv65VcRnLyQebTx96k2sEvG6K71zBGlzGTf2MFjHSvz6h3exSNwBLGDn0lv0odjDrZFZyS
-        P3UWFBosdYcy5SAQ==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        with ESMTP id S230182AbiLHLxR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 06:53:17 -0500
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78108C683;
+        Thu,  8 Dec 2022 03:52:14 -0800 (PST)
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 539412C141;
-        Thu,  8 Dec 2022 11:48:49 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 21CB96045E; Thu,  8 Dec 2022 12:48:49 +0100 (CET)
-Date:   Thu, 8 Dec 2022 12:48:49 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool v2 13/13] ethtool: fix bug and use standard
- string parsing
-Message-ID: <20221208114849.xlanfoasf3ivzek2@lion.mk-sys.cz>
-References: <20221208011122.2343363-1-jesse.brandeburg@intel.com>
- <20221208011122.2343363-14-jesse.brandeburg@intel.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="bibpvbfelae7ngf5"
-Content-Disposition: inline
-In-Reply-To: <20221208011122.2343363-14-jesse.brandeburg@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        by mxct.zte.com.cn (FangMail) with ESMTPS id 4NSXZN5zWlz4y0vY;
+        Thu,  8 Dec 2022 19:52:12 +0800 (CST)
+Received: from szxlzmapp02.zte.com.cn ([10.5.231.79])
+        by mse-fl2.zte.com.cn with SMTP id 2B8Bq0sw020241;
+        Thu, 8 Dec 2022 19:52:00 +0800 (+08)
+        (envelope-from yang.yang29@zte.com.cn)
+Received: from mapi (szxlzmapp04[null])
+        by mapi (Zmail) with MAPI id mid14;
+        Thu, 8 Dec 2022 19:52:03 +0800 (CST)
+Date:   Thu, 8 Dec 2022 19:52:03 +0800 (CST)
+X-Zmail-TransId: 2b066391cfe33482c21d
+X-Mailer: Zmail v1.0
+Message-ID: <202212081952034833496@zte.com.cn>
+Mime-Version: 1.0
+From:   <yang.yang29@zte.com.cn>
+To:     <christopher.lee@cspi.com>
+Cc:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <xu.panda@zte.com.cn>,
+        <yang.yang29@zte.com.cn>
+Subject: =?UTF-8?B?W1BBVENIIGxpbnV4LW5leHRdIG5ldDogZXRoZXJuZXQ6IHVzZSBzdHJzY3B5KCkgdG8gaW5zdGVhZCBvZiBzdHJuY3B5KCnCoA==?=
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl2.zte.com.cn 2B8Bq0sw020241
+X-Fangmail-Gw-Spam-Type: 0
+X-FangMail-Miltered: at cgslv5.04-192.168.251.13.novalocal with ID 6391CFEC.000 by FangMail milter!
+X-FangMail-Envelope: 1670500332/4NSXZN5zWlz4y0vY/6391CFEC.000/10.5.228.133/[10.5.228.133]/mse-fl2.zte.com.cn/<yang.yang29@zte.com.cn>
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 6391CFEC.000/4NSXZN5zWlz4y0vY
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Xu Panda <xu.panda@zte.com.cn>
 
---bibpvbfelae7ngf5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The implementation of strscpy() is more robust and safer.
+That's now the recommended way to copy NUL terminated strings.
 
-On Wed, Dec 07, 2022 at 05:11:22PM -0800, Jesse Brandeburg wrote:
-> The parse_reset function was open-coding string parsing routines and can
-> be converted to using standard routines. It was trying to be tricky and
-> parse partial strings to make things like "mgmt" and "mgmt-shared"
-> strings mostly use the same code. This is better done with strncmp().
->=20
-> This also fixes an array overflow bug where it's possible for the for
-> loop to access past the end of the input array, which is bad.
->=20
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> ---
->  ethtool.c | 18 +++++++++++-------
->  1 file changed, 11 insertions(+), 7 deletions(-)
->=20
-> diff --git a/ethtool.c b/ethtool.c
-> index 4776afe89e23..d294b5f8d92a 100644
-> --- a/ethtool.c
-> +++ b/ethtool.c
-> @@ -5280,17 +5280,21 @@ static int do_get_phy_tunable(struct cmd_context =
-*ctx)
->  static __u32 parse_reset(char *val, __u32 bitset, char *arg, __u32 *data)
->  {
->  	__u32 bitval =3D 0;
-> -	int i;
-> +	int vallen =3D strlen(val);
-> +	int strret;
-> =20
->  	/* Check for component match */
-> -	for (i =3D 0; val[i] !=3D '\0'; i++)
-> -		if (arg[i] !=3D val[i])
-> -			return 0;
-> +	strret =3D strncmp(arg, val, vallen);
-> +	if (strret < 0)
-> +		return 0;
+Signed-off-by: Xu Panda <xu.panda@zte.com.cn>
+Signed-off-by: Yang Yang <yang.yang29@zte.com>
+---
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Shouldn't this be "if (strret)"? Unless I missed something, this would
-lead to e.g. "zzzz-shared" being matched for "mgmt-shared" (with usual
-locale) because you would get strret > 0 here and strcmp() =3D=3D 0 below.
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 9063e2e22cd5..8073d7a90a26 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -552,8 +552,7 @@ myri10ge_validate_firmware(struct myri10ge_priv *mgp,
+ 	}
 
-> =20
-> -	/* Check if component has -shared specified or not */
-> -	if (arg[i] =3D=3D '\0')
-> +	/* if perfect match to val
-> +	 * else
-> +	 * Check if component has -shared specified or not
-> +	 */
-> +	if (strret =3D=3D 0)
->  		bitval =3D bitset;
+ 	/* save firmware version for ethtool */
+-	strncpy(mgp->fw_version, hdr->version, sizeof(mgp->fw_version));
+-	mgp->fw_version[sizeof(mgp->fw_version) - 1] = '\0';
++	strscpy(mgp->fw_version, hdr->version, sizeof(mgp->fw_version));
 
-And this should be "if (!arg[vallen])", I believe.
-
-Michal
-
-> -	else if (!strcmp(arg+i, "-shared"))
-> +	else if (!strcmp(arg + vallen, "-shared"))
->  		bitval =3D bitset << ETH_RESET_SHARED_SHIFT;
-> =20
->  	if (bitval) {
-> --=20
-> 2.31.1
->=20
-
---bibpvbfelae7ngf5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmORzx0ACgkQ538sG/LR
-dpUFVQf/atMMfSU2SlYlHhOvw0hgedUhaewA/2Bz0cWAgq+srU6jxcioXNxglS9r
-oGvxbNTXpX9z03MvWXcVGOAemZdVVmEK+bFRYMksuDmiS19pd+/sqvklC1aXofpK
-iOMlzvUUWkE53pOZklWeYyhZlVTAxXbOQwu8eUG0CpbgLDkJ8ID8m23OQYVv+yv3
-ZzzXF5lOsZYysT5JSn3YJB7bvl/HYe0LbPGdwJa3tOy1VYh7tujDcyKYGDdPkIJv
-KGL1OEXZPb9Oua1wtyCL/xvMSCaAICfWAdgDqjxa6JOlZ6RPk/pibV7B69ThtR4z
-AUVupAxy9O6VKTTiKbPiL370kZRl/Q==
-=K6B8
------END PGP SIGNATURE-----
-
---bibpvbfelae7ngf5--
+ 	sscanf(mgp->fw_version, "%d.%d.%d", &mgp->fw_ver_major,
+ 	       &mgp->fw_ver_minor, &mgp->fw_ver_tiny);
+-- 
+2.15.2
