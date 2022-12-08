@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 589B5646833
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 05:20:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA722646836
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 05:21:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbiLHEU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 23:20:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
+        id S229867AbiLHEVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 23:21:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiLHEUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 23:20:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FBD93A77
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 20:20:20 -0800 (PST)
+        with ESMTP id S229602AbiLHEVY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 23:21:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29BF694910;
+        Wed,  7 Dec 2022 20:21:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7A54B8227A
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 04:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 869F0C433D6;
-        Thu,  8 Dec 2022 04:20:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B704E61D51;
+        Thu,  8 Dec 2022 04:21:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2EF9C433C1;
+        Thu,  8 Dec 2022 04:21:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670473217;
-        bh=rJP6NvNL1Qor4N6xl/X6UowgwnRPkffLD1RuGfKlYr0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Q86pZSnnShcEKdoXVFzR4Wi1b1m3QDgOZuzE0ZG6TYXqnzlLD7mIOn8iWcQW9icS1
-         bFqxTJgrQe3Lc8u10WmurHAaDRFAXXB0OWCZVdKOHYaMqzPPULPrOUYWJF7pQcTXsO
-         55SNyBiEZT9/YHxXIsHXAxm/l7/4/d8/MJVmaIuTJhInIMcgAr7sbia+0qi+u/EvmG
-         FlBoMYRyUpIbz2gMQ7toawQ/89si9zb/FtNBYkra6DkfIga56fcqCsORe66QU3UvfU
-         JxHnrPd982M/6VX8doeJaiUIx6M7QEa3PT+MlalKeIaQw/BRdWpe0sY1aiJTbH0fNI
-         N70DoxJdhcvyw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 700BCE4D02D;
-        Thu,  8 Dec 2022 04:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1670473282;
+        bh=l5UOLEKuYmhE4eDA/7viGkwppvnNQbHO0UIFUfLOG0k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EGhzVM9yUjfJB33ZZvJYcq9lywEhzWjCDfvT7cM3t8/EV1Ez7IX6eCaKs+oNkjkvh
+         n4A08huazr1QG7V5z/oeW9rIIAffpCtbWmexwQnGqHLwYtWqHZDRq+TMYkcEeLOwUw
+         5G05Xa4oKFUOuE8nJfDyD01U+4f8pTkaHZfugcfNuO4S7/DsX9ol62fDnlbnbORn4H
+         Ud0ytP79jkwys51AiZS5poJokOBSLXhdRNK74oAmCi/5IP6N9MEIbCLrLt/GpcmQob
+         DX9aWJfuNMdX7j8/YeWrnWeAFMj6HkcMbzcd64I9l3LZ+9/lgnrwyvPhcffLQrWM1w
+         0GbCUZjWrT69g==
+Date:   Wed, 7 Dec 2022 20:21:20 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Roger Quadros <rogerq@kernel.org>
+Cc:     davem@davemloft.net, maciej.fijalkowski@intel.com, andrew@lunn.ch,
+        edumazet@google.com, pabeni@redhat.com, vigneshr@ti.com,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 4/6] net: ethernet: ti: am65-cpsw: Add
+ suspend/resume support
+Message-ID: <20221207202120.12bc7c33@kernel.org>
+In-Reply-To: <20221206094419.19478-5-rogerq@kernel.org>
+References: <20221206094419.19478-1-rogerq@kernel.org>
+        <20221206094419.19478-5-rogerq@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next V4 0/8] devlink: Add port function attribute to
- enable/disable Roce and migratable
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167047321745.25577.15054374693408227752.git-patchwork-notify@kernel.org>
-Date:   Thu, 08 Dec 2022 04:20:17 +0000
-References: <20221206185119.380138-1-shayd@nvidia.com>
-In-Reply-To: <20221206185119.380138-1-shayd@nvidia.com>
-To:     Shay Drory <shayd@nvidia.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        danielj@nvidia.com, yishaih@nvidia.com, jiri@nvidia.com,
-        saeedm@nvidia.com, parav@nvidia.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,44 +56,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue,  6 Dec 2022 11:44:17 +0200 Roger Quadros wrote:
+>  	ret = pm_runtime_resume_and_get(common->dev);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	/* Idle MAC port */
+> +	cpsw_sl_ctl_set(port->slave.mac_sl, CPSW_SL_CTL_CMD_IDLE);
+> +	cpsw_sl_wait_for_idle(port->slave.mac_sl, 100);
+> +	cpsw_sl_ctl_reset(port->slave.mac_sl);
+> +
+> +	/* soft reset MAC */
+> +	cpsw_sl_reg_write(port->slave.mac_sl, CPSW_SL_SOFT_RESET, 1);
+> +	mdelay(1);
+> +	reg = cpsw_sl_reg_read(port->slave.mac_sl, CPSW_SL_SOFT_RESET);
+> +	if (reg) {
+> +		dev_err(common->dev, "soft RESET didn't complete\n");
+> +		return -ETIMEDOUT;
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 6 Dec 2022 20:51:11 +0200 you wrote:
-> This series is a complete rewrite of the series "devlink: Add port
-> function attribute to enable/disable roce"
-> link:
-> https://lore.kernel.org/netdev/20221102163954.279266-1-danielj@nvidia.com/
-> 
-> Currently mlx5 PCI VF and SF are enabled by default for RoCE
-> functionality. And mlx5 PCI VF is disable by dafault for migratable
-> functionality.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,V4,1/8] net/mlx5: Introduce IFC bits for migratable
-    https://git.kernel.org/netdev/net-next/c/df268f6ca7da
-  - [net-next,V4,2/8] devlink: Validate port function request
-    https://git.kernel.org/netdev/net-next/c/c0bea69d1ca7
-  - [net-next,V4,3/8] devlink: Move devlink port function hw_addr attr documentation
-    https://git.kernel.org/netdev/net-next/c/875cd5eeba96
-  - [net-next,V4,4/8] devlink: Expose port function commands to control RoCE
-    https://git.kernel.org/netdev/net-next/c/da65e9ff3bf6
-  - [net-next,V4,5/8] net/mlx5: Add generic getters for other functions caps
-    https://git.kernel.org/netdev/net-next/c/47d0c500d76c
-  - [net-next,V4,6/8] net/mlx5: E-Switch, Implement devlink port function cmds to control RoCE
-    https://git.kernel.org/netdev/net-next/c/7db98396ef45
-  - [net-next,V4,7/8] devlink: Expose port function commands to control migratable
-    https://git.kernel.org/netdev/net-next/c/a8ce7b26a51e
-  - [net-next,V4,8/8] net/mlx5: E-Switch, Implement devlink port function cmds to control migratable
-    https://git.kernel.org/netdev/net-next/c/e5b9642a33be
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Doesn't this function leak power management references on almost all
+error paths? Not really related to this set, tho.
