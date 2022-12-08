@@ -2,212 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 616EE646861
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 06:00:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6A166468A3
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 06:41:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbiLHFA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 00:00:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
+        id S229576AbiLHFlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 00:41:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiLHFAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 00:00:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DC987C92;
-        Wed,  7 Dec 2022 21:00:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF031B81CB2;
-        Thu,  8 Dec 2022 05:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CF72C433C1;
-        Thu,  8 Dec 2022 05:00:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670475621;
-        bh=sQYq03nBg7pcLjaJBeQDyFU+7cPsXzGvOTUuQd/G5HI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=o7AUIIgrU5v1v/1ZSIXoyYX/N/0iI3bigtfWiPFq2l8E+Ysl7w6spA/Nf+KplL+hF
-         sHQ8WG4y7qv3kC9I8KLNlDTIbjCRp5Ip8DHxBtbMfhStdYzTTbwgi0r7pynXQXPdiW
-         7eZJEIAxJv9gkNpQ0oYbRTEiaFfjN0q4SchK67GMqishaVXnB5Ktn5s6Bc+KrZpuAJ
-         sI+AEqfGPddwANwPWGGIYEI45ngCvqRO6dCFgowklRiRf77bI9r5wk7F05gyQD32Mt
-         ZueXTt12xhQnjbtBZUejKJtgcndSiLkt+j4J15x1m6krXgdYCJmaMgR8TqXqpbCqD9
-         7sGzMwToL/XaA==
-Date:   Wed, 7 Dec 2022 21:00:19 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX kfuncs
-Message-ID: <20221207210019.41dc9b6b@kernel.org>
-In-Reply-To: <20221206024554.3826186-4-sdf@google.com>
-References: <20221206024554.3826186-1-sdf@google.com>
-        <20221206024554.3826186-4-sdf@google.com>
+        with ESMTP id S229522AbiLHFlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 00:41:09 -0500
+Received: from mx02lb.world4you.com (mx02lb.world4you.com [81.19.149.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3905E81DB7;
+        Wed,  7 Dec 2022 21:41:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=blHgNHLOg0zzqk7/Dd1JvOCdXk5X+N0gS2mQmQD1Ka4=; b=gV6pH+x5RypvKHm+CUcEJUj3n3
+        kVWbLT6+L69XAoM+mdcPkSgXXBlLiavJpqMewg7cHnawbsEDi2+GDxVcZrkfr8dGW57KDkr/pCgre
+        mc+1ZMxlaiC3poX51YSiKI729HTVQfGM9oFteAaUakeZwaHIaGt7MtSmSkX8oyOYIDzI=;
+Received: from [88.117.56.227] (helo=hornet.engleder.at)
+        by mx02lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1p39eb-0002ut-F1; Thu, 08 Dec 2022 06:41:05 +0100
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v2 0/6] tsnep: XDP support
+Date:   Thu,  8 Dec 2022 06:40:39 +0100
+Message-Id: <20221208054045.3600-1-gerhard@engleder-embedded.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-AV-Do-Run: Yes
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The offload tests still pass after this, right?
-TBH I don't remember this code well enough to spot major issues.
+Implement XDP support for tsnep driver. I tried to follow existing
+drivers like igb/igc as far as possible. Some prework was already done
+in previous patch series, so in this series only actual XDP stuff is
+included.
 
-On Mon,  5 Dec 2022 18:45:45 -0800 Stanislav Fomichev wrote:
-> There is an ndo handler per kfunc, the verifier replaces a call to the
-> generic kfunc with a call to the per-device one.
-> 
-> For XDP, we define a new kfunc set (xdp_metadata_kfunc_ids) which
-> implements all possible metatada kfuncs. Not all devices have to
-> implement them. If kfunc is not supported by the target device,
-> the default implementation is called instead.
-> 
-> Upon loading, if BPF_F_XDP_HAS_METADATA is passed via prog_flags,
-> we treat prog_index as target device for kfunc resolution.
+Thanks for the NetDev 0x14 slides "Add XDP support on a NIC driver".
 
-> @@ -2476,10 +2477,18 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
->  				       struct net_device *netdev);
->  bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
->  
-> +void *bpf_offload_resolve_kfunc(struct bpf_prog *prog, u32 func_id);
+v2:
+- move tsnep_xdp_xmit_back() to commit where it is used (Paolo Abeni)
+- remove inline from tsnep_rx_offset() (Paolo Abeni)
+- remove inline from tsnep_rx_offset_xdp() (Paolo Abeni)
+- simplify tsnep_xdp_run_prog() call by moving xdp_status update to it (Paolo Abeni)
 
-There seems to be some mis-naming going on. I expected:
+Gerhard Engleder (6):
+  tsnep: Add adapter down state
+  tsnep: Add XDP TX support
+  tsnep: Support XDP BPF program setup
+  tsnep: Prepare RX buffer for XDP support
+  tsnep: Add RX queue info for XDP support
+  tsnep: Add XDP RX support
 
-  offloaded =~ nfp
-  dev_bound == XDP w/ funcs
+ drivers/net/ethernet/engleder/Makefile     |   2 +-
+ drivers/net/ethernet/engleder/tsnep.h      |  31 +-
+ drivers/net/ethernet/engleder/tsnep_main.c | 423 +++++++++++++++++++--
+ drivers/net/ethernet/engleder/tsnep_xdp.c  |  27 ++
+ 4 files changed, 453 insertions(+), 30 deletions(-)
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_xdp.c
 
-*_offload_resolve_kfunc looks misnamed? Unless you want to resolve 
-for HW offload?
+-- 
+2.30.2
 
->  void unpriv_ebpf_notify(int new_state);
->  
->  #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
->  int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr);
-> +void bpf_offload_bound_netdev_unregister(struct net_device *dev);
-
-ditto: offload_bound is a mix of terms no?
-
-> @@ -1611,6 +1612,10 @@ struct net_device_ops {
->  	ktime_t			(*ndo_get_tstamp)(struct net_device *dev,
->  						  const struct skb_shared_hwtstamps *hwtstamps,
->  						  bool cycles);
-> +	bool			(*ndo_xdp_rx_timestamp_supported)(const struct xdp_md *ctx);
-> +	u64			(*ndo_xdp_rx_timestamp)(const struct xdp_md *ctx);
-> +	bool			(*ndo_xdp_rx_hash_supported)(const struct xdp_md *ctx);
-> +	u32			(*ndo_xdp_rx_hash)(const struct xdp_md *ctx);
->  };
-
-Is this on the fast path? Can we do an indirection?
-Put these ops in their own struct and add a pointer to that struct 
-in net_device_ops? Purely for grouping reasons because the netdev
-ops are getting orders of magnitude past the size where you can
-actually find stuff in this struct.
-
->  	bpf_free_used_maps(aux);
->  	bpf_free_used_btfs(aux);
-> -	if (bpf_prog_is_offloaded(aux))
-> +	if (bpf_prog_is_dev_bound(aux))
->  		bpf_prog_offload_destroy(aux->prog);
-
-This also looks a touch like a mix of terms (condition vs function
-called).
-
-> +static int __bpf_offload_init(void);
-> +static int __bpf_offload_dev_netdev_register(struct bpf_offload_dev *offdev,
-> +					     struct net_device *netdev);
-> +static void __bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
-> +						struct net_device *netdev);
-
-fwd declarations are yuck
-
->  static int bpf_dev_offload_check(struct net_device *netdev)
->  {
->  	if (!netdev)
-> @@ -87,13 +93,17 @@ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr)
->  	    attr->prog_type != BPF_PROG_TYPE_XDP)
->  		return -EINVAL;
->  
-> -	if (attr->prog_flags)
-> +	if (attr->prog_flags & ~BPF_F_XDP_HAS_METADATA)
->  		return -EINVAL;
->  
->  	offload = kzalloc(sizeof(*offload), GFP_USER);
->  	if (!offload)
->  		return -ENOMEM;
->  
-> +	err = __bpf_offload_init();
-> +	if (err)
-> +		return err;
-
-leaks offload
-
-> @@ -209,6 +233,19 @@ bpf_prog_offload_remove_insns(struct bpf_verifier_env *env, u32 off, u32 cnt)
->  	up_read(&bpf_devs_lock);
->  }
->  
-> +static void maybe_remove_bound_netdev(struct net_device *dev)
-> +{
-
-func name prefix ?
-
-> -struct bpf_offload_dev *
-> -bpf_offload_dev_create(const struct bpf_prog_offload_ops *ops, void *priv)
-> +static int __bpf_offload_init(void)
->  {
-> -	struct bpf_offload_dev *offdev;
->  	int err;
->  
->  	down_write(&bpf_devs_lock);
-> @@ -680,12 +740,25 @@ bpf_offload_dev_create(const struct bpf_prog_offload_ops *ops, void *priv)
->  		err = rhashtable_init(&offdevs, &offdevs_params);
->  		if (err) {
->  			up_write(&bpf_devs_lock);
-> -			return ERR_PTR(err);
-> +			return err;
->  		}
->  		offdevs_inited = true;
->  	}
->  	up_write(&bpf_devs_lock);
->  
-> +	return 0;
-> +}
-
-Would late_initcall() or some such not work for this?
-
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 5b221568dfd4..862e03fcffa6 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -9228,6 +9228,10 @@ static int dev_xdp_attach(struct net_device *dev, struct netlink_ext_ack *extack
->  			NL_SET_ERR_MSG(extack, "Using device-bound program without HW_MODE flag is not supported");
-
-extack should get updated here, I reckon, maybe in previous patch
-
->  			return -EINVAL;
->  		}
-> +		if (bpf_prog_is_dev_bound(new_prog->aux) && !bpf_offload_dev_match(new_prog, dev)) {
-
-bound_dev_match() ?
-
-> +			NL_SET_ERR_MSG(extack, "Cannot attach to a different target device");
-
-different than.. ?
-
-> +			return -EINVAL;
-> +		}
->  		if (new_prog->expected_attach_type == BPF_XDP_DEVMAP) {
->  			NL_SET_ERR_MSG(extack, "BPF_XDP_DEVMAP programs can not be attached to a device");
->  			return -EINVAL;
