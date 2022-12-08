@@ -2,59 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6F0D64683F
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 05:27:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E8B646841
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 05:30:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbiLHE1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 23:27:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
+        id S229637AbiLHEa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 23:30:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229998AbiLHE0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 23:26:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055AB950F5;
-        Wed,  7 Dec 2022 20:26:41 -0800 (PST)
+        with ESMTP id S229437AbiLHEaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 23:30:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F9E92A1B;
+        Wed,  7 Dec 2022 20:30:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2D4AB822AE;
-        Thu,  8 Dec 2022 04:26:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F45C433D6;
-        Thu,  8 Dec 2022 04:26:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 362BA61D51;
+        Thu,  8 Dec 2022 04:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 85D3CC433D6;
+        Thu,  8 Dec 2022 04:30:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670473598;
-        bh=RyzXlE8FZTHRxWKOhSdmNe3GBd7LYFmC0GjbNRD4dFI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EAlJ8HWup9lLjccrdtk2rO2/h0aeRQ1dCjpZQW3WJypobdnXlHA4kywNRbtWBEEMT
-         tsenPKgZ0t98glbch0KRy/JHlCt2eEHE+zgJd2lbbyRM88qfuWWwc3X8h34e/gDau6
-         mZDSsZ0gTR+j/eHenEZd2cYlLCC2TH3dIj6GtWodWqfNFwZ2AkPnID297W8yjtUtEl
-         YX3QpRBXHEyPTcpVeYSopgtkway0h9Sjm8sr+dAVLxi6KpUmx13h3ejhdzTUnh8q/R
-         lzCaQBqhdcTOYP527gDB0P2OPkP3NQhaoIBXM+YNqI77Fm+hKuaM5g6ZFbPDSIKVgk
-         AZFAREhVOXCew==
-Date:   Wed, 7 Dec 2022 20:26:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 02/12] bpf: Rename
- bpf_{prog,map}_is_dev_bound to is_offloaded
-Message-ID: <20221207202636.31b049a4@kernel.org>
-In-Reply-To: <20221206024554.3826186-3-sdf@google.com>
-References: <20221206024554.3826186-1-sdf@google.com>
-        <20221206024554.3826186-3-sdf@google.com>
+        s=k20201202; t=1670473821;
+        bh=WB0iMmwrBqL9FFiL1qPJoUNeaNTu5aOGF/iqCnHw/rE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=U1v1V2PFe8N2vzVU12Hs2XiF1jl+fSRWz9LW12UUsP661dZOUMB+vuXMbtPzhIquq
+         hDUcxliLJkWcEYRbMj2FELvRh6JNwA8feeVwhP6B/atARc1hzK6FAXmb+zVQCOth+D
+         GGEFX7JiWBF5jPgdpq2V6H1Uha5RwpiZwk7cIPillprVZSQB+m9WZPzTcOOBUelUVl
+         xi5EX5hS1SLSgnP7NShg+5MzhlBsyKjh8nQXv4WA5xqSR60ir04NfY8RIfZwsezRfW
+         mYmLURhG45soyalInf4o/pkfIyeGewPSkUeUFRIpMgeGljXMuhjsvRA05FQRjh2j2/
+         e/V5kSaTip8Zg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5F6D3E4D02D;
+        Thu,  8 Dec 2022 04:30:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 net-next 0/6] net: ethernet: ti: am65-cpsw: Fix set channel
+ operation
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167047382138.31977.14618117526453334378.git-patchwork-notify@kernel.org>
+Date:   Thu, 08 Dec 2022 04:30:21 +0000
+References: <20221206094419.19478-1-rogerq@kernel.org>
+In-Reply-To: <20221206094419.19478-1-rogerq@kernel.org>
+To:     Roger Quadros <rogerq@kernel.org>
+Cc:     davem@davemloft.net, maciej.fijalkowski@intel.com, kuba@kernel.org,
+        andrew@lunn.ch, edumazet@google.com, pabeni@redhat.com,
+        vigneshr@ti.com, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -64,24 +58,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  5 Dec 2022 18:45:44 -0800 Stanislav Fomichev wrote:
-> BPF offloading infra will be reused to implement
-> bound-but-not-offloaded bpf programs. Rename existing
-> helpers for clarity. No functional changes.
-> 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Willem de Bruijn <willemb@google.com>
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> Cc: Maryam Tahhan <mtahhan@redhat.com>
-> Cc: xdp-hints@xdp-project.net
-> Cc: netdev@vger.kernel.org
-> 
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Hello:
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Tue,  6 Dec 2022 11:44:13 +0200 you wrote:
+> Hi,
+> 
+> This contains a critical bug fix for the recently merged suspend/resume
+> support [1] that broke set channel operation. (ethtool -L eth0 tx <n>)
+> 
+> As there were 2 dependent patches on top of the offending commit [1]
+> first revert them and then apply them back after the correct fix.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v5,net-next,1/6] Revert "net: ethernet: ti: am65-cpsw: Fix hardware switch mode on suspend/resume"
+    https://git.kernel.org/netdev/net-next/c/1a352596722a
+  - [v5,net-next,2/6] Revert "net: ethernet: ti: am65-cpsw: retain PORT_VLAN_REG after suspend/resume"
+    https://git.kernel.org/netdev/net-next/c/1bae8fa8c4f3
+  - [v5,net-next,3/6] Revert "net: ethernet: ti: am65-cpsw: Add suspend/resume support"
+    https://git.kernel.org/netdev/net-next/c/1a014663e7dd
+  - [v5,net-next,4/6] net: ethernet: ti: am65-cpsw: Add suspend/resume support
+    https://git.kernel.org/netdev/net-next/c/24bc19b05f1f
+  - [v5,net-next,5/6] net: ethernet: ti: am65-cpsw: retain PORT_VLAN_REG after suspend/resume
+    https://git.kernel.org/netdev/net-next/c/1581cd8b1174
+  - [v5,net-next,6/6] net: ethernet: ti: am65-cpsw: Fix hardware switch mode on suspend/resume
+    https://git.kernel.org/netdev/net-next/c/020b232f79e9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
