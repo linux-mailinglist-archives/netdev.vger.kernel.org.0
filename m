@@ -2,138 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 651716465BC
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 01:14:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6546465D2
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 01:26:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229609AbiLHAOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 19:14:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
+        id S229605AbiLHA0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 19:26:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbiLHAOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 19:14:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975297E409
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 16:14:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F0BB61D04
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 00:14:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BB86C433C1;
-        Thu,  8 Dec 2022 00:14:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670458458;
-        bh=DCEGKLNfem1gqKLQWfU/YDoO5j0GMLKqQCcSZ2b8A/0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XqouEWBC6q/wzBDOTSkjENRBdq1rKIg8pJP9CNahvH2sgiLAUZiHnJILFJOxKCAqt
-         +7s1T44xS3hKywqStYjA7SX3O1pAlS05m6SHSIh4H5+qUTmz2z/QMBFuyyBkZm4ifn
-         X3navjhruZ6xDZW6nTnKRho2XHryuECxrWZdITR35zgdGFwOO9u8fuaMO3vKVdamia
-         j3YoAdBUv7GJF4WCHKy+qUtAHuwVxXguWO4meGlljqZ4srR/pUHb19alvjDXenLRX4
-         9g3KokwVrnITc6lkILhyHXUHtEesVSh4x+GbSHe8M+CKSWneb1c0uRnOAFi78BOelE
-         MyxCykBm2fhBg==
-Date:   Wed, 7 Dec 2022 16:14:16 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Hans J. Schultz" <netdev@kapio-technology.com>
-Subject: Re: [PATCH net-next 2/3] net: dsa: mv88e6xxx: replace ATU violation
- prints with trace points
-Message-ID: <Y5EsWNfVQrl8Nb71@x130>
-References: <20221207233954.3619276-1-vladimir.oltean@nxp.com>
- <20221207233954.3619276-3-vladimir.oltean@nxp.com>
+        with ESMTP id S229479AbiLHA0p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 19:26:45 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B5C8D65C
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 16:26:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/lqRFtbsZAV7ATt0VUUzYtl/zsAii7JnGJkI8ZUNJbo=; b=6cB4zBuh37f/azpQ/DqQC36pxF
+        yO2ZYexzxxMWVfML9Be39OqBmRP40ZzbhSCeGt1Z3/lcrmzrtI9tBIvgixD+/JSPVes7dyvR3Q+17
+        3dwRaIbl1xSpbKMEtF/hEONQ3Za1Yey+nPqMJnET2t+BPBekPWV4UIeRv7xDvxYIUB/s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1p34jx-004hjB-Tu; Thu, 08 Dec 2022 01:26:17 +0100
+Date:   Thu, 8 Dec 2022 01:26:17 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
+        netdev@vger.kernel.org, peppe.cavallaro@st.com,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Antonio Borneo <antonio.borneo@st.com>,
+        Tan Tee Min <tee.min.tan@intel.com>
+Subject: Re: [PATCH net] stmmac: fix potential division by 0
+Message-ID: <Y5EvKciMg3Nkj8ln@lunn.ch>
+References: <Y4f3NGAZ2rqHkjWV@gvm01>
+ <Y4gFt9GBRyv3kl2Y@lunn.ch>
+ <Y4iA6mwSaZw+PKHZ@gvm01>
+ <Y4i/Aeqh94ZP/mA0@lunn.ch>
+ <20221206182823.08e5f917@kernel.org>
+ <Y5CZp0QJVejOpWSY@lunn.ch>
+ <87v8mne09m.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221207233954.3619276-3-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <87v8mne09m.fsf@kurt>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08 Dec 01:39, Vladimir Oltean wrote:
->In applications where the switch ports must perform 802.1X based
->authentication and are therefore locked, ATU violation interrupts are
->quite to be expected as part of normal operation. The problem is that
->they currently spam the kernel log, even if rate limited.
->
+On Wed, Dec 07, 2022 at 03:50:13PM +0100, Kurt Kanzenbach wrote:
+> On Wed Dec 07 2022, Andrew Lunn wrote:
+> > On Tue, Dec 06, 2022 at 06:28:23PM -0800, Jakub Kicinski wrote:
+> >> On Thu, 1 Dec 2022 15:49:37 +0100 Andrew Lunn wrote:
+> >> > > The root cause is the MAC using the internal clock as a PTP reference
+> >> > > (default), which should be allowed since the connection to an external
+> >> > > PTP clock is optional from an HW perspective. The internal clock seems
+> >> > > to be derived from the MII clock speed, which is 2.5 MHz at 10 Mb/s.  
+> >> > 
+> >> > I think we need help from somebody who understands PTP on this device.
+> >> > The clock is clearly out of range, but how important is that to PTP?
+> >> > Will PTP work if the value is clamped to 0xff? Or should we be
+> >> > returning -EINVAL and disabling PTP because it has no chance of
+> >> > working?
+> >> 
+> >> Indeed, we need some more info here :( Like does the PTP actually
+> >> work with 2.5 MHz clock? The frequency adjustment only cares about 
+> >> the addend, what is sub_second_inc thing?
+> >
+> > Hi Jakub
+> >
+> > I Cc: many of the people who worked on PTP with this hardware, and
+> > nobody has replied.
+> >
+> > I think we should wait a couple more days, and then add a range check,
+> > and disable PTP for invalid clocks. That might provoke feedback.
+> 
+> Here's the Altera manual:
+> 
+>  https://www.intel.com/content/www/us/en/docs/programmable/683126/21-2/functional-description-of-the-emac.html
+> 
+> Table 183 shows the minimum PTP frequencies and also states "Therefore,
+> a higher PTP clock frequency gives better system performance.".
+> 
+> So, I'd say using a clock of 2.5MHz seems possible, but will result in
+> suboptimal precision.
 
-+1 
+Thanks for the info. So i seems like the correct fix is to camp to
+0xff, rather than mask with 0xff.
 
->Create a series of trace points, all derived from the same event class,
->which log these violations to the kernel's trace buffer, which is both
->much faster and much easier to ignore than printing to a serial console.
->
->I've deliberately stopped reporting the portvec, since in my experience
->it contains redundant information with the spid (port) field: portvec ==
->1 << spid.
->
->New usage model:
->
->$ trace-cmd list | grep mv88e6xxx
->mv88e6xxx
->mv88e6xxx:mv88e6xxx_atu_full_violation
->mv88e6xxx:mv88e6xxx_atu_miss_violation
->mv88e6xxx:mv88e6xxx_atu_member_violation
->mv88e6xxx:mv88e6xxx_atu_age_out_violation
->$ trace-cmd record -e mv88e6xxx sleep 10
->
->Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
->---
-> drivers/net/dsa/mv88e6xxx/Makefile      |  4 ++
-> drivers/net/dsa/mv88e6xxx/global1_atu.c | 21 ++++----
-> drivers/net/dsa/mv88e6xxx/trace.c       |  6 +++
-> drivers/net/dsa/mv88e6xxx/trace.h       | 68 +++++++++++++++++++++++++
-> 4 files changed, 87 insertions(+), 12 deletions(-)
-> create mode 100644 drivers/net/dsa/mv88e6xxx/trace.c
-> create mode 100644 drivers/net/dsa/mv88e6xxx/trace.h
->
->diff --git a/drivers/net/dsa/mv88e6xxx/Makefile b/drivers/net/dsa/mv88e6xxx/Makefile
->index c8eca2b6f959..49bf358b9c4f 100644
->--- a/drivers/net/dsa/mv88e6xxx/Makefile
->+++ b/drivers/net/dsa/mv88e6xxx/Makefile
->@@ -15,3 +15,7 @@ mv88e6xxx-objs += port_hidden.o
-> mv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o
-> mv88e6xxx-objs += serdes.o
-> mv88e6xxx-objs += smi.o
->+mv88e6xxx-objs += trace.o
->+
->+# for tracing framework to find trace.h
->+CFLAGS_trace.o := -I$(src)
->diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
->index a9e2ff7d0e52..6ba65b723b42 100644
->--- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
->+++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
->@@ -12,6 +12,7 @@
->
-> #include "chip.h"
-> #include "global1.h"
->+#include "trace.h"
->
-> /* Offset 0x01: ATU FID Register */
->
->@@ -429,29 +430,25 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
-> 	spid = entry.state;
->
-> 	if (val & MV88E6XXX_G1_ATU_OP_AGE_OUT_VIOLATION) {
->-		dev_err_ratelimited(chip->dev,
->-				    "ATU age out violation for %pM fid %u\n",
->-				    entry.mac, fid);
->+		trace_mv88e6xxx_atu_age_out_violation(chip->dev, spid,
->+						      entry.mac, fid);
-
-no stats here? tracepoints are disabled by default and this event will go
-unnoticed, users usually monitor light weight indicators such as stats, then
-turn on tracepoints to see what's actually happening.. 
-
-> 	}
->
-
+      Andrew
