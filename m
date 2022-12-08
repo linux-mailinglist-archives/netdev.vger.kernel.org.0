@@ -2,92 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C933646AFC
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 09:49:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9AFB646B66
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 10:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbiLHItU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 03:49:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48878 "EHLO
+        id S230186AbiLHJGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 04:06:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbiLHItF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 03:49:05 -0500
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C24EC;
-        Thu,  8 Dec 2022 00:48:51 -0800 (PST)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4NSSVj4cnnz4f3r6C;
-        Thu,  8 Dec 2022 16:48:45 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.127.227])
-        by APP1 (Coremail) with SMTP id cCh0CgAnG6rupJFj_X4FBw--.10136S4;
-        Thu, 08 Dec 2022 16:48:48 +0800 (CST)
-From:   Ye Bin <yebin@huaweicloud.com>
-To:     socketcan@hartkopp.net, mkl@pengutronix.de, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Cc:     yebin10@huawei.com
-Subject: [PATCH net-next] net: af_can: remove useless parameter 'err' in 'can_rx_register()'
-Date:   Thu,  8 Dec 2022 17:09:40 +0800
-Message-Id: <20221208090940.3695670-1-yebin@huaweicloud.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: cCh0CgAnG6rupJFj_X4FBw--.10136S4
-X-Coremail-Antispam: 1UD129KBjvdXoWrtw4rtry8Jw4xWr1UKFW3ZFb_yoWDZrbE9r
-        yI9r18WF17tr43Kr15Cw4fXF1vk3yrGF4xXFySy34vv3WagFZ5Gw1kGF9xXr98Gryxtr15
-        Wwn8Xr92gr1fujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUboAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
-        Y4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
-        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x02
-        67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
-        0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-        0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Y
-        z7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zV
-        AF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4l
-        IxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s
-        0DMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBI
-        daVFxhVjvjDU0xZFpf9x07UWE__UUUUU=
-X-CM-SenderInfo: p1hex046kxt4xhlfz01xgou0bp/
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230183AbiLHJFx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 04:05:53 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF8A73F62;
+        Thu,  8 Dec 2022 01:04:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670490273; x=1702026273;
+  h=from:to:cc:subject:date:message-id;
+  bh=UA+smJjZZYbFnblJ4yJ0P96Z25fhqeBCuoWHkuOYe74=;
+  b=dK7sIzIncfCkR1apA+JyjDmSSCxolKWOYAHhM/KwWFZbj4wQ8I9gsgVE
+   kzLj2pc9WQqNGWXEoh+C1AEpaewa1Zl+DlJk7PRhCqQkpbzTVoATdOgbl
+   d6u4PXnvDoCK9ZvZAccQDbKN2jmdHko9HFhQcfpqsKQUcwjcxk/GK87Wm
+   Ba3fOinjO+l6/w9VcPKP+f4MWcdof7k1mW9mQlixgeF6TWu+1BRQqr4Ij
+   UaDtmk8ZGQhJNsHeq5vKCaqm6RqJwS3vkPJmRZrqEcgIfsHKci2a8NzgK
+   75SXPndmx+GsXKKt2HceLenbYtWYLENWW5RXmscbxxn1BqQZ6YQSzI1Ek
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="381413937"
+X-IronPort-AV: E=Sophos;i="5.96,227,1665471600"; 
+   d="scan'208";a="381413937"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 01:03:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="975786174"
+X-IronPort-AV: E=Sophos;i="5.96,227,1665471600"; 
+   d="scan'208";a="975786174"
+Received: from ssid-ilbpg3.png.intel.com ([10.88.227.111])
+  by fmsmga005.fm.intel.com with ESMTP; 08 Dec 2022 01:03:16 -0800
+From:   Lai Peter Jun Ann <jun.ann.lai@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Lai Peter Jun Ann <jun.ann.lai@intel.com>
+Subject: [PATCH net-next 1/1] net: stmmac: Add check for taprio basetime configuration
+Date:   Thu,  8 Dec 2022 17:03:15 +0800
+Message-Id: <1670490195-19367-1-git-send-email-jun.ann.lai@intel.com>
+X-Mailer: git-send-email 1.9.1
+X-Spam-Status: No, score=-1.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
 
-Since commit bdfb5765e45b remove NULL-ptr checks from users of
-can_dev_rcv_lists_find(). 'err' parameter is useless, so remove it.
+Adds a boundary check to prevent negative basetime input from user
+while configuring taprio.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
+Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Signed-off-by: Lai Peter Jun Ann <jun.ann.lai@intel.com>
 ---
- net/can/af_can.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index 27dcdcc0b808..ec3f7e658295 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -446,7 +446,6 @@ int can_rx_register(struct net *net, struct net_device *dev, canid_t can_id,
- 	struct hlist_head *rcv_list;
- 	struct can_dev_rcv_lists *dev_rcv_lists;
- 	struct can_rcv_lists_stats *rcv_lists_stats = net->can.rcv_lists_stats;
--	int err = 0;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+index 773e415..2cfb18c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+@@ -926,6 +926,9 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
+ 	int i, ret = 0;
+ 	u64 ctr;
  
- 	/* insert new receiver  (dev,canid,mask) -> (func,data) */
- 
-@@ -481,7 +480,7 @@ int can_rx_register(struct net *net, struct net_device *dev, canid_t can_id,
- 					       rcv_lists_stats->rcv_entries);
- 	spin_unlock_bh(&net->can.rcvlists_lock);
- 
--	return err;
-+	return 0;
- }
- EXPORT_SYMBOL(can_rx_register);
++	if (qopt->base_time < 0)
++		return -ERANGE;
++
+ 	if (!priv->dma_cap.estsel)
+ 		return -EOPNOTSUPP;
  
 -- 
-2.31.1
+1.9.1
 
