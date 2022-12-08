@@ -2,149 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B74FB647449
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:28:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B475647453
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 17:30:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229523AbiLHQ2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 11:28:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40714 "EHLO
+        id S230136AbiLHQaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 11:30:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiLHQ22 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:28:28 -0500
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 228BB10045
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 08:28:28 -0800 (PST)
-Received: (qmail 731998 invoked by uid 1000); 8 Dec 2022 11:28:24 -0500
-Date:   Thu, 8 Dec 2022 11:28:24 -0500
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Jungclaus <frank.jungclaus@esd.eu>, socketcan@esd.eu,
-        Yasushi SHOJI <yashi@spacecubics.com>,
-        Stefan =?iso-8859-1?Q?M=E4tje?= <stefan.maetje@esd.eu>,
-        Hangyu Hua <hbh25y@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Peter Fink <pfink@christ-es.de>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Christoph =?iso-8859-1?Q?M=F6hring?= <cmoehring@christ-es.de>,
-        John Whittington <git@jbrengineering.co.uk>,
-        Vasanth Sadhasivan <vasanth.sadhasivan@samsara.com>,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Anssi Hannula <anssi.hannula@bitwise.fi>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Sebastian Haas <haas@ems-wuensche.com>,
-        Maximilian Schneider <max@schneidersoft.net>,
-        Daniel Berglund <db@kvaser.com>,
-        Olivier Sobrie <olivier@sobrie.be>,
-        Remigiusz =?utf-8?B?S2/FgsWCxIV0YWo=?= 
-        <remigiusz.kollataj@mobica.com>,
-        Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
-        Martin Elshuber <martin.elshuber@theobroma-systems.com>,
-        Bernd Krumboeck <b.krumboeck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH 0/8] can: usb: remove all usb_set_intfdata(intf, NULL) in
- drivers' disconnect()
-Message-ID: <Y5IQqExJN9C9xQbF@rowland.harvard.edu>
-References: <20221203133159.94414-1-mailhol.vincent@wanadoo.fr>
- <9493232b-c8fa-5612-fb13-fccf58b01942@suse.com>
- <CAMZ6RqJejJCOUk+MSvxjw9Us0gYhTuoOB4MUTk9jji6Bk=ix3A@mail.gmail.com>
- <b5df2262-7a4f-0dcf-6460-793dad02401d@suse.com>
- <CAMZ6RqL9eKco+fAMZoQ6X9PNE7dDK3KnFZoMCXrjgvx_ZU8=Ew@mail.gmail.com>
+        with ESMTP id S230171AbiLHQaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 11:30:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E902CE1B;
+        Thu,  8 Dec 2022 08:30:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6611B824D5;
+        Thu,  8 Dec 2022 16:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7BFF4C433F0;
+        Thu,  8 Dec 2022 16:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670517015;
+        bh=jIHClrtH+bsQzKWr6c4SJ0wAfJTGHritbW/XGWOr/gs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=N3MwQqJfZMDqApiqxx0dWfd9Q+OjgaFcZNKbNYkwjlsHJBy8PguoqI/AY7aWQc/39
+         jyez09SrzReqd7Olw73+BsP3zSPg7CvfUNBuGD5N9pqRYykMCd/g5Uhcj+QAsu3Z+u
+         bTOw9hBoLyUN4/Fiz9HMM8DTFa6Uj+EzPL9yOLiD5dlpoLMWv4Lk2SnwrdXHz8OOkw
+         kjWk073dMBk2SjWAgYv2rlokZCBxeM1WII7utv5GMW6TewIXQzWs9BFXMOEv9asZXQ
+         x2QRYw3a7TI823PCgghP4qkBSUL9h5wWSoQftK1VlDS2hM1+LCs+U6t6jnBzvQ8CcE
+         zK9CHJzKUE+Qg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5FDFDE1B4D9;
+        Thu,  8 Dec 2022 16:30:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMZ6RqL9eKco+fAMZoQ6X9PNE7dDK3KnFZoMCXrjgvx_ZU8=Ew@mail.gmail.com>
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_PASS,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v1 1/1] net: dsa: microchip: add stats64 support for
+ ksz8 series of switches
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167051701538.25268.9186895326935961207.git-patchwork-notify@kernel.org>
+Date:   Thu, 08 Dec 2022 16:30:15 +0000
+References: <20221205052904.2834962-1-o.rempel@pengutronix.de>
+In-Reply-To: <20221205052904.2834962-1-o.rempel@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 09, 2022 at 12:44:51AM +0900, Vincent MAILHOL wrote:
-> On Thu. 8 Dec. 2022 at 20:04, Oliver Neukum <oneukum@suse.com> wrote:
+Hello:
 
-> > >> which is likely, then please also remove checks like this:
-> > >>
-> > >>          struct ems_usb *dev = usb_get_intfdata(intf);
-> > >>
-> > >>          usb_set_intfdata(intf, NULL);
-> > >>
-> > >>          if (dev) {
-> >
-> > Here. If you have a driver that uses usb_claim_interface().
-> > You need this check or you unregister an already unregistered
-> > netdev.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon,  5 Dec 2022 06:29:04 +0100 you wrote:
+> Add stats64 support for ksz8xxx series of switches.
 > 
-> Sorry, but with all my best intentions, I still do not get it. During
-> the second iteration, inft is NULL and:
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/dsa/microchip/ksz_common.c | 87 ++++++++++++++++++++++++++
+>  drivers/net/dsa/microchip/ksz_common.h |  1 +
+>  2 files changed, 88 insertions(+)
 
-No, intf is never NULL.  Rather, the driver-specific pointer stored in 
-intfdata may be NULL.
+Here is the summary with links:
+  - [net-next,v1,1/1] net: dsa: microchip: add stats64 support for ksz8 series of switches
+    https://git.kernel.org/netdev/net-next/c/bde55dd9ccda
 
-You seem to be confusing intf with intfdata(intf).
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
->         /* equivalent to dev = intf->dev.data. Because intf is NULL,
->          * this is a NULL pointer dereference */
->         struct ems_usb *dev = usb_get_intfdata(intf);
 
-So here dev will be NULL when the second interface's disconnect routine 
-runs, because the first time through the routine sets the intfdata to 
-NULL for both interfaces:
-
-	USB core calls ->disconnect(intf1)
-
-		disconnect routine sets intfdata(intf1) and 
-		intfdata(intf2) both to NULL and handles the
-		disconnection
-
-	USB core calls ->disconnect(intf2)
-
-		disconnect routine sees that intfdata(intf2) is
-		already NULL, so it knows that it doesn't need
-		to do anything more.
-
-As you can see in this scenario, neither intf1 nor intf2 is ever NULL.
-
->         /* OK, intf is already NULL */
->         usb_set_intfdata(intf, NULL);
-> 
->         /* follows a NULL pointer dereference so this is undefined
->          * behaviour */
->        if (dev) {
-> 
-> How is this a valid check that you entered the function for the second
-> time? If intf is the flag, you should check intf, not dev? Something
-> like this:
-
-intf is not a flag; it is the argument to the function and is never 
-NULL.  The flag is the intfdata.
-
->         struct ems_usb *dev;
-> 
->         if (!intf)
->                 return;
-> 
->         dev = usb_get_intfdata(intf);
->         /* ... */
-> 
-> I just can not see the connection between intf being NULL and the if
-> (dev) check. All I see is some undefined behaviour, sorry.
-
-Once you get it straightened out in your head, you will understand.
-
-Alan Stern
