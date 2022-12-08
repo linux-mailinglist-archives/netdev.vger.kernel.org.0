@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0F0646727
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 03:41:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CA3C646728
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 03:41:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbiLHCl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 21:41:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33014 "EHLO
+        id S229720AbiLHClq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Dec 2022 21:41:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229891AbiLHClC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 21:41:02 -0500
+        with ESMTP id S229724AbiLHClO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 21:41:14 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D48454352
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 18:40:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC7D950C7
+        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 18:41:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13CD6B820C3
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:40:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85FA8C433D6;
-        Thu,  8 Dec 2022 02:40:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24E59B821FF
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 02:41:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6179C433C1;
+        Thu,  8 Dec 2022 02:41:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670467230;
-        bh=CZ8SKXAhnxLGvNXF9CI07x3l1Jf8tvoiu836ZxReZX8=;
+        s=k20201202; t=1670467266;
+        bh=94jDSpUU8Q3Y/bToX3ieE98xeDC5cMOi+I6fdmiKH4A=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Hm2jUjM0SwlNazoHr0dcwyyvydzsx1p8eSZQWUoDaBIXVwAT9i7b8NFFhqlg6yENV
-         qI+LxzHkxnIzo8oeXcGzOc1ApkZ/ovSGFXBbeCgfKFz9nzIdBdzB2989wYrM9POz7a
-         AayWBlU5aa1XJuPoh4T5Rh1tN1M+flD9DTrEVN2v7sIZtT7JI7B6EkxmRhv5HTgkeU
-         hPak659nfU4TjOIS4QJzrfADHzrMUk3bGvmd4okmZXokZ04IuQlZw1Njk61nGiqZkY
-         ELPgeIV7wFYEfTIhTmoKJWww8tkA3G1k3cJTqFyU4FZoTmamvYifPLDxpbRuW76766
-         Cld8DprltwqOg==
-Date:   Wed, 7 Dec 2022 18:40:29 -0800
+        b=YXvs7bBFu1NYfn9ELTWVtFYd2HIgAk2c2dLJxLIb4WwBE826Ni7RYoyLU1ZpF3CSj
+         VEzsZZscg098YVWls3RR7Ehuv46uMow9NFn9wukLZYRNkLGDIVQQobGsKG4QQ7TcBU
+         cS3xC9cVi1HITHS/aODUcUs3F6g3xpjNTaxa+iitrlFhVxGcz4BSm1ozZ/b4yKd39i
+         iEAaigUXfMSSD33Nmeo6k/RkssvV1Y1b55dTBFZagV+Sv2h+EJnOZWII4KdXNWuELT
+         f49pEkaE/UQkT86lPDxrw7BqeqPYArlLLYYZUxy89lN+0EShLYbqJPoKHJqNAws1Ab
+         oVhTfjgouozcQ==
+Date:   Wed, 7 Dec 2022 18:41:05 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
 Cc:     davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org,
         mkubecek@suse.cz
-Subject: Re: [PATCH net-next v1 0/2] ethtool: use bits.h defines
-Message-ID: <20221207184029.3996bc5f@kernel.org>
-In-Reply-To: <20221207231728.2331166-1-jesse.brandeburg@intel.com>
+Subject: Re: [PATCH net-next v1 1/2] ethtool/uapi: use BIT for bit-shifts
+Message-ID: <20221207184105.74dfdd1c@kernel.org>
+In-Reply-To: <20221207231728.2331166-2-jesse.brandeburg@intel.com>
 References: <20221207231728.2331166-1-jesse.brandeburg@intel.com>
+        <20221207231728.2331166-2-jesse.brandeburg@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -52,15 +53,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  7 Dec 2022 15:17:26 -0800 Jesse Brandeburg wrote:
-> Change the ethtool files in the kernel, including uapi header files, to
-> use the kernel style BIT() and BIT_ULL() functions instead of
-> open-coding bit shift operations.
-> 
-> Making this change results in a more consistent presentation of bit-
-> shift operations as well as reduces the further likelihood of mistaken
-> (1 << 31) usage which omits the 1UL that is necessary to get an unsigned
-> result of the shift.
+On Wed,  7 Dec 2022 15:17:27 -0800 Jesse Brandeburg wrote:
+>  #define ETH_RSS_HASH_TOP	__ETH_RSS_HASH(TOP)
+> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> index 58e587ba0450..6ce5da444098 100644
+> --- a/include/uapi/linux/ethtool.h
+> +++ b/include/uapi/linux/ethtool.h
+> @@ -9,6 +9,7 @@
+>   *                                christopher.leech@intel.com,
+>   *                                scott.feldman@intel.com)
+>   * Portions Copyright (C) Sun Microsystems 2008
+> + * Portions Copyright (C) 2022 Intel Corporation
 
-Let's hear some opinions but the BIT / GENMASK macros are not
-universally loved so conversion == cleanup may not obvious.
+Is that appropriate?
+
+> +/* BIT() and BIT_ULL() are defined in include/linux/bits.h but we need a
+> + * local version to clean up this file and not break simultaneous
+> + * kernel/userspace where userspace doesn't have the BIT and BIT_ULL
+> + * defined. To avoid compiler issues we use the exact same definitions here
+> + * of the macros as defined in the file noted below, so that we don't get
+> + * 'duplicate define' or 'redefinition' errors.
+> + */
+> +/* include/uapi/linux/const.h */
+> +#define __AC(X,Y)	(X##Y)
+> +#define _AC(X,Y)	__AC(X,Y)
+> +#define _AT(T,X)	((T)(X))
+> +#define _UL(x)		(_AC(x, UL))
+> +#define _ULL(x)		(_AC(x, ULL))
+> +/* include/vdso/linux/const.h */
+> +#define UL(x)		(_UL(x))
+> +#define ULL(x)		(_ULL(x))
+> +/* include/vdso/bits.h */
+> +#define BIT(nr)		(UL(1) << (nr))
+> +/* include/linux/bits.h */
+> +#define BIT_ULL(nr)	(ULL(1) << (nr))
+
+include/uapi/linux/const.h
