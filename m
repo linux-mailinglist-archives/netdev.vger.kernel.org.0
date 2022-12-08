@@ -2,129 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88B536474DF
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 18:11:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 948236474EE
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 18:20:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbiLHRLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 12:11:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
+        id S229769AbiLHRUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 12:20:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbiLHRLT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 12:11:19 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DA985D16;
-        Thu,  8 Dec 2022 09:11:16 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id a16so2665138edb.9;
-        Thu, 08 Dec 2022 09:11:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=k4bdfAGPHD5NopBbK0mSRG4D2jLUJqcRHreo2Ghjs1Q=;
-        b=TLWJPLX3rY2ylAHDV+ogOEPxnV1k1s0YGYXp2j/arXARZvR04MR3nn1Gpy757lCc/J
-         3eu40m1dWWNt40O5kVfi5tzgIeEZAS4NycS2JIc+BRfR8n74CzgAuRx4IzfTBGBZ43hR
-         djOvjqtZ1Q0PDB9Bu+Mg0QqUQCgxdr7InGwLRaJ68fJq+OMc9pdQ6xhiH6Piz5eFW4Ac
-         ivC00pgQNCjfdnbty0TUT08g3tgSJhEVSmbgoJxHaCq2j8yIbKGB62bqav5vsOad3gji
-         y4YkUElKyLEgg9bE6yz0FbHXVpVeaCdsVdOim4GnqcsoC5RHNTyxBS8uLxDw85WAb6Md
-         +RYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=k4bdfAGPHD5NopBbK0mSRG4D2jLUJqcRHreo2Ghjs1Q=;
-        b=ZKUvhJZ3BPOuMQRhXRD2SQXxDme7EYGGDcLs0kHJgFET8zyVuZjC/EHAfvt6UwEg0g
-         d6aqIoFHgtF3e9GeddfPIZSFOv4OC5BWMuWMkZ5hc60+Lr/mH4vfmTMl7bAyX5/AT0py
-         nMj/oCf+eSZ1bDaGFbEKupV7MXRxRrpt4TEkHelgdHWo+3ItrVlTVD4/fifRBFoYbL1K
-         Q5mWie6yxQcEJdfXAANQtCMkJ4T7gSSq/+hPmOsMGHu4xkS/3EgfpAoemteMpxJECh+n
-         ykBVNBPI8dGOGZx8+dL9gaQOlmjVToCOLPiVrn0HmoQ0fD/Dn2/SLyZ8ZGw6VSx++IuI
-         vNKA==
-X-Gm-Message-State: ANoB5pm9OpRosSn5J/D2baQwcATmv7dhPo6NeH0lhSpm2OHoE6XDaUH9
-        gGUB7wXPSV/bfi/EMk/HKpQ=
-X-Google-Smtp-Source: AA0mqf4U4+f1vMJIprxDbefYWc/i3jMKoH/lVzpFK91FzVvTatgI0TnkogA7qE8YQ3zbNXfCjqF6QA==
-X-Received: by 2002:a05:6402:1002:b0:467:9384:a7aa with SMTP id c2-20020a056402100200b004679384a7aamr2813102edu.15.1670519475171;
-        Thu, 08 Dec 2022 09:11:15 -0800 (PST)
-Received: from skbuf ([188.26.185.87])
-        by smtp.gmail.com with ESMTPSA id n20-20020aa7c694000000b0045726e8a22bsm3573694edq.46.2022.12.08.09.11.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 09:11:14 -0800 (PST)
-Date:   Thu, 8 Dec 2022 19:11:12 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jerry Ray <jerry.ray@microchip.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk
-Subject: Re: [PATCH net-next v4 1/2] dsa: lan9303: Whitespace Only
-Message-ID: <20221208171112.eimyx4szcug5wr6u@skbuf>
-References: <20221207232828.7367-1-jerry.ray@microchip.com>
- <20221207232828.7367-2-jerry.ray@microchip.com>
+        with ESMTP id S229773AbiLHRUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 12:20:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806A58C6BD;
+        Thu,  8 Dec 2022 09:20:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0862461FBA;
+        Thu,  8 Dec 2022 17:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 45001C433EF;
+        Thu,  8 Dec 2022 17:20:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670520016;
+        bh=Myhj7x3OBvgAFVFPmiOWGlclDdnOshK5/oKIeoY96S0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=q+VZhW2RgvDiCw1aAq6X7BsbeOSUz8A9+NpsavnwH/41iKJ4XirEdjn1duYMsdGI8
+         eb5clJ94Ea3hAjG+WuevC/Mp94QZyDaCXPpjrVgzxtDc0Rgkun2+LJwd4c386iu7DP
+         gkBhY01vY63VAml3ZTPmqiOoFmHHDp6Q4oWXNxCG7gg78cIc1aU4kLJjuPTr4KTrbV
+         gSFLICJXX4wBBM8tVUyXlZ7q0YoMNsWZWCA7xfoi04fJUYWo4B3qZ8KjKzHVbKVDY4
+         Aq13mvDgxqXsKEqY3H58QtPtWVMOmmYlNFgj+ylmXUbAYj9L2NjA8rUVHZ58xRbFiZ
+         3/MU/UQ4d04zQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 17853C41606;
+        Thu,  8 Dec 2022 17:20:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221207232828.7367-2-jerry.ray@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] s390/qeth: fix use-after-free in hsci
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167052001608.19571.16534020446500665478.git-patchwork-notify@kernel.org>
+Date:   Thu, 08 Dec 2022 17:20:16 +0000
+References: <20221207105304.20494-1-wintera@linux.ibm.com>
+In-Reply-To: <20221207105304.20494-1-wintera@linux.ibm.com>
+To:     Alexandra Winter <wintera@linux.ibm.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, leon@kernel.org,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        hca@linux.ibm.com, twinkler@linux.ibm.com, wenjia@linux.ibm.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please name the commit message something more specific than "Whitespace Only",
-that is likely to not be confused with some other patch. A "Whitespace Only"
-patch can take place anywhere in this file. Like "align dsa_switch_ops members".
+Hello:
 
-On Wed, Dec 07, 2022 at 05:28:27PM -0600, Jerry Ray wrote:
-> Whitespace preparatory patch, making the dsa_switch_ops table consistent.
-> No code is added or removed.
-> 
-> Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
-> ---
->  drivers/net/dsa/lan9303-core.c | 20 ++++++++++----------
->  1 file changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-> index 80f07bd20593..d9f7b554a423 100644
-> --- a/drivers/net/dsa/lan9303-core.c
-> +++ b/drivers/net/dsa/lan9303-core.c
-> @@ -1280,16 +1280,16 @@ static int lan9303_port_mdb_del(struct dsa_switch *ds, int port,
->  }
->  
->  static const struct dsa_switch_ops lan9303_switch_ops = {
-> -	.get_tag_protocol = lan9303_get_tag_protocol,
-> -	.setup = lan9303_setup,
-> -	.get_strings = lan9303_get_strings,
-> -	.phy_read = lan9303_phy_read,
-> -	.phy_write = lan9303_phy_write,
-> -	.adjust_link = lan9303_adjust_link,
-> -	.get_ethtool_stats = lan9303_get_ethtool_stats,
-> -	.get_sset_count = lan9303_get_sset_count,
-> -	.port_enable = lan9303_port_enable,
-> -	.port_disable = lan9303_port_disable,
-> +	.get_tag_protocol	= lan9303_get_tag_protocol,
-> +	.setup			= lan9303_setup,
-> +	.get_strings		= lan9303_get_strings,
-> +	.phy_read		= lan9303_phy_read,
-> +	.phy_write		= lan9303_phy_write,
-> +	.adjust_link		= lan9303_adjust_link,
-> +	.get_ethtool_stats	= lan9303_get_ethtool_stats,
-> +	.get_sset_count		= lan9303_get_sset_count,
-> +	.port_enable		= lan9303_port_enable,
-> +	.port_disable		= lan9303_port_disable,
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Do you use a text editor which highlights tabs? The members above this
-line are aligned with tabs, the ones below with spaces. Still not
-exactly what I'd call "consistent".
-
->  	.port_bridge_join       = lan9303_port_bridge_join,
->  	.port_bridge_leave      = lan9303_port_bridge_leave,
->  	.port_stp_state_set     = lan9303_port_stp_state_set,
-> -- 
-> 2.17.1
+On Wed,  7 Dec 2022 11:53:04 +0100 you wrote:
+> KASAN found that addr was dereferenced after br2dev_event_work was freed.
 > 
+> ==================================================================
+> BUG: KASAN: use-after-free in qeth_l2_br2dev_worker+0x5ba/0x6b0
+> Read of size 1 at addr 00000000fdcea440 by task kworker/u760:4/540
+> CPU: 17 PID: 540 Comm: kworker/u760:4 Tainted: G            E      6.1.0-20221128.rc7.git1.5aa3bed4ce83.300.fc36.s390x+kasan #1
+> Hardware name: IBM 8561 T01 703 (LPAR)
+> Workqueue: 0.0.8000_event qeth_l2_br2dev_worker
+> Call Trace:
+>  [<000000016944d4ce>] dump_stack_lvl+0xc6/0xf8
+>  [<000000016942cd9c>] print_address_description.constprop.0+0x34/0x2a0
+>  [<000000016942d118>] print_report+0x110/0x1f8
+>  [<0000000167a7bd04>] kasan_report+0xfc/0x128
+>  [<000000016938d79a>] qeth_l2_br2dev_worker+0x5ba/0x6b0
+>  [<00000001673edd1e>] process_one_work+0x76e/0x1128
+>  [<00000001673ee85c>] worker_thread+0x184/0x1098
+>  [<000000016740718a>] kthread+0x26a/0x310
+>  [<00000001672c606a>] __ret_from_fork+0x8a/0xe8
+>  [<00000001694711da>] ret_from_fork+0xa/0x40
+> Allocated by task 108338:
+>  kasan_save_stack+0x40/0x68
+>  kasan_set_track+0x36/0x48
+>  __kasan_kmalloc+0xa0/0xc0
+>  qeth_l2_switchdev_event+0x25a/0x738
+>  atomic_notifier_call_chain+0x9c/0xf8
+>  br_switchdev_fdb_notify+0xf4/0x110
+>  fdb_notify+0x122/0x180
+>  fdb_add_entry.constprop.0.isra.0+0x312/0x558
+>  br_fdb_add+0x59e/0x858
+>  rtnl_fdb_add+0x58a/0x928
+>  rtnetlink_rcv_msg+0x5f8/0x8d8
+>  netlink_rcv_skb+0x1f2/0x408
+>  netlink_unicast+0x570/0x790
+>  netlink_sendmsg+0x752/0xbe0
+>  sock_sendmsg+0xca/0x110
+>  ____sys_sendmsg+0x510/0x6a8
+>  ___sys_sendmsg+0x12a/0x180
+>  __sys_sendmsg+0xe6/0x168
+>  __do_sys_socketcall+0x3c8/0x468
+>  do_syscall+0x22c/0x328
+>  __do_syscall+0x94/0xf0
+>  system_call+0x82/0xb0
+> Freed by task 540:
+>  kasan_save_stack+0x40/0x68
+>  kasan_set_track+0x36/0x48
+>  kasan_save_free_info+0x4c/0x68
+>  ____kasan_slab_free+0x14e/0x1a8
+>  __kasan_slab_free+0x24/0x30
+>  __kmem_cache_free+0x168/0x338
+>  qeth_l2_br2dev_worker+0x154/0x6b0
+>  process_one_work+0x76e/0x1128
+>  worker_thread+0x184/0x1098
+>  kthread+0x26a/0x310
+>  __ret_from_fork+0x8a/0xe8
+>  ret_from_fork+0xa/0x40
+> Last potentially related work creation:
+>  kasan_save_stack+0x40/0x68
+>  __kasan_record_aux_stack+0xbe/0xd0
+>  insert_work+0x56/0x2e8
+>  __queue_work+0x4ce/0xd10
+>  queue_work_on+0xf4/0x100
+>  qeth_l2_switchdev_event+0x520/0x738
+>  atomic_notifier_call_chain+0x9c/0xf8
+>  br_switchdev_fdb_notify+0xf4/0x110
+>  fdb_notify+0x122/0x180
+>  fdb_add_entry.constprop.0.isra.0+0x312/0x558
+>  br_fdb_add+0x59e/0x858
+>  rtnl_fdb_add+0x58a/0x928
+>  rtnetlink_rcv_msg+0x5f8/0x8d8
+>  netlink_rcv_skb+0x1f2/0x408
+>  netlink_unicast+0x570/0x790
+>  netlink_sendmsg+0x752/0xbe0
+>  sock_sendmsg+0xca/0x110
+>  ____sys_sendmsg+0x510/0x6a8
+>  ___sys_sendmsg+0x12a/0x180
+>  __sys_sendmsg+0xe6/0x168
+>  __do_sys_socketcall+0x3c8/0x468
+>  do_syscall+0x22c/0x328
+>  __do_syscall+0x94/0xf0
+>  system_call+0x82/0xb0
+> Second to last potentially related work creation:
+>  kasan_save_stack+0x40/0x68
+>  __kasan_record_aux_stack+0xbe/0xd0
+>  kvfree_call_rcu+0xb2/0x760
+>  kernfs_unlink_open_file+0x348/0x430
+>  kernfs_fop_release+0xc2/0x320
+>  __fput+0x1ae/0x768
+>  task_work_run+0x1bc/0x298
+>  exit_to_user_mode_prepare+0x1a0/0x1a8
+>  __do_syscall+0x94/0xf0
+>  system_call+0x82/0xb0
+> The buggy address belongs to the object at 00000000fdcea400
+>  which belongs to the cache kmalloc-96 of size 96
+> The buggy address is located 64 bytes inside of
+>  96-byte region [00000000fdcea400, 00000000fdcea460)
+> The buggy address belongs to the physical page:
+> page:000000005a9c26e8 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0xfdcea
+> flags: 0x3ffff00000000200(slab|node=0|zone=1|lastcpupid=0x1ffff)
+> raw: 3ffff00000000200 0000000000000000 0000000100000122 000000008008cc00
+> raw: 0000000000000000 0020004100000000 ffffffff00000001 0000000000000000
+> page dumped because: kasan: bad access detected
+> Memory state around the buggy address:
+>  00000000fdcea300: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+>  00000000fdcea380: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+> >00000000fdcea400: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+>                                            ^
+>  00000000fdcea480: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+>  00000000fdcea500: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+> ==================================================================
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2] s390/qeth: fix use-after-free in hsci
+    https://git.kernel.org/netdev/net/c/ebaaadc332cd
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
