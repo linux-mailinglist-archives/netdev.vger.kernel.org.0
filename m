@@ -2,129 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BFB364694D
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 07:34:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2AA6646951
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 07:35:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbiLHGeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 01:34:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41416 "EHLO
+        id S229779AbiLHGfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 01:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiLHGeg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 01:34:36 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C45AABA1E
-        for <netdev@vger.kernel.org>; Wed,  7 Dec 2022 22:34:34 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 0C33C22CE9;
-        Thu,  8 Dec 2022 06:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1670481273; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HSajmult3NexIlzG+tkwCWKMQl0a9OWw96iK+rEe3Oc=;
-        b=rIiTAlIswxzVpCRKONzrjeeI3MYACZZMWcfMwaNQPSBu58+xGr0Iia81iRwLamdNW0Hbge
-        Y4qIcF5/A3wFI2DpJK2xBdPX+SEIHQAAsVW59rH/dq7oAgtmf7lgD79xFLzmUhTi5lgCwd
-        8zxaPfLKsXleKKymnlz5djklBnjIkc8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1670481273;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HSajmult3NexIlzG+tkwCWKMQl0a9OWw96iK+rEe3Oc=;
-        b=FlCwG8jPSONF03+FfHPL8J9K/GzotmAyr2qxMbjiLls+sPIgko4POCej/9b43RDPj+AdIE
-        ZcxBLnfVwMTA0PBw==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 037292C141;
-        Thu,  8 Dec 2022 06:34:33 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id CC6786045E; Thu,  8 Dec 2022 07:34:32 +0100 (CET)
-Date:   Thu, 8 Dec 2022 07:34:32 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool v2 08/13] ethtool: fix runtime errors found by
- sanitizers
-Message-ID: <20221208063432.rt3iunzactq6bxcp@lion.mk-sys.cz>
-References: <20221208011122.2343363-1-jesse.brandeburg@intel.com>
- <20221208011122.2343363-9-jesse.brandeburg@intel.com>
+        with ESMTP id S229695AbiLHGfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 01:35:40 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1402719;
+        Wed,  7 Dec 2022 22:35:39 -0800 (PST)
+Received: from dggpemm500013.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NSPX64GMdzmWFZ;
+        Thu,  8 Dec 2022 14:34:46 +0800 (CST)
+Received: from [10.67.108.67] (10.67.108.67) by dggpemm500013.china.huawei.com
+ (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 8 Dec
+ 2022 14:35:37 +0800
+Message-ID: <ad702330-d0da-c096-0f37-1cb4e866ddae@huawei.com>
+Date:   Thu, 8 Dec 2022 14:35:37 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="btf7s52l3lzywb2u"
-Content-Disposition: inline
-In-Reply-To: <20221208011122.2343363-9-jesse.brandeburg@intel.com>
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_SOFTFAIL autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [PATCH net] net/sched: Fix memory leak in tcindex_set_parms
+To:     <syzbot+2f9183cb6f89b0e16586@syzkaller.appspotmail.com>,
+        <syzkaller-bugs@googlegroups.com>, <netdev@vger.kernel.org>,
+        <stable@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <gregkh@linuxfoundation.org>
+References: <20221208032216.63513-1-chenzhongjin@huawei.com>
+Content-Language: en-US
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+In-Reply-To: <20221208032216.63513-1-chenzhongjin@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.108.67]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
---btf7s52l3lzywb2u
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Dec 07, 2022 at 05:11:17PM -0800, Jesse Brandeburg wrote:
-> The sanitizers[1] found a couple of things, but this change addresses
-> some bit shifts that cannot be contained by the target type.
->=20
-> The mistake is that the code is using unsigned int a =3D (1 << N) all over
-> the place, but the appropriate way to code this is unsigned int an
-> assignment of (1UL << N) especially if N can ever be 31.
->=20
-> Fix the most egregious of these problems by changing "1" to "1UL", as
-> per it would be if we had used the BIT() macro.
->=20
-> [1] make CFLAGS+=3D'-fsanitize=3Daddress,undefined' \
->          LDFLAGS+=3D'-lubsan -lasan'
->=20
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+On 2022/12/8 11:22, Chen Zhongjin wrote:
+> syzkaller reported a memleak:
+> https://syzkaller.appspot.com/bug?id=e061e6cd46417ee6566dc249d8f982c0b5977a52
+>
+> unreferenced object 0xffff888107813900 (size 256):
+>    backtrace:
+>      kcalloc include/linux/slab.h:636 [inline]
+>      tcf_exts_init include/net/pkt_cls.h:250 [inline]
+>      tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
+>      tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
+>      tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
+>      ...
+>
+> The reproduce calls tc_new_tfilter() continuously:
+>
+> tc_new_tfilter()...
+> tcindex_set_parms()
+>    tcf_exts_init(&e, ...) // alloc e->actions
+>    tcf_exts_change(&r->exts, &e)
+>
+> tc_new_tfilter()...
+> tcindex_set_parms()
+>    old_r = r // same as first r
+>    tcindex_filter_result_init(old_r, cp, net);
+>    // old_r is holding e->actions but here it calls memset(old_r, 0)
+>    // so the previous e->actions is leaked
+>
+> So here tcf_exts_destroy() should be called to free old_r->exts.actions
+> before memset(old_r, 0) sets it to NULL.
+>
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Cc: stable@vger.kernel.org
+> Reported-by: syzbot+2f9183cb6f89b0e16586@syzkaller.appspotmail.com
+> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
 > ---
->  amd8111e.c         | 2 +-
->  internal.h         | 4 ++--
->  netlink/features.c | 4 ++--
->  3 files changed, 5 insertions(+), 5 deletions(-)
->=20
-> diff --git a/amd8111e.c b/amd8111e.c
-> index 175516bd2904..5a2fc2082e55 100644
-> --- a/amd8111e.c
-> +++ b/amd8111e.c
-> @@ -75,7 +75,7 @@ typedef enum {
->  }CMD3_BITS;
->  typedef enum {
-> =20
-> -	INTR			=3D (1 << 31),
-> +	INTR			=3D (1UL << 31),
->  	PCSINT			=3D (1 << 28),
->  	LCINT			=3D (1 << 27),
->  	APINT5			=3D (1 << 26),
+> #syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 355479c70a48
+> ---
+>   net/sched/cls_tcindex.c | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+> index 1c9eeb98d826..00a6c04a4b42 100644
+> --- a/net/sched/cls_tcindex.c
+> +++ b/net/sched/cls_tcindex.c
+> @@ -479,6 +479,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+>   	}
+>   
+>   	if (old_r && old_r != r) {
+> +		tcf_exts_destroy(&old_r->exts);
+>   		err = tcindex_filter_result_init(old_r, cp, net);
+>   		if (err < 0) {
+>   			kfree(f);
 
-While the signedness issue only directly affects only INTR value,
-I would rather prefer to keep the code consistent and fix the whole enum.
-Also, as you intend to introduce the BIT() macro in the series anyway,
-wouldn't it be cleaner to move this patch after the UAPI update and use
-BIT() instead?
+Just noticed that Hawkins has sent a patch for this. Please ignore mine.
 
-Michal
+Thanks!
 
---btf7s52l3lzywb2u
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmORhXMACgkQ538sG/LR
-dpWT6wf/R/p4U6iOf4fXAt+cVY4fBSRBEyvYxBio93xPFStm8yhtw0wF5hrAEGQ3
-VpV7Z31nWOZpUf+GqEz656U6xIUsjRD+zvii6gKai1Js4KW0Kvb39V7uyL7NKg5w
-TVEpYJZnMNdT8vkjnRnys/lVInOuFaqfpUbQDKkKwnlZE1F3hyWJAHnY375TKMyR
-cPr6rObz+WvnIv5apcsK8rqhyUWHakH8WmxsSuLGxoTrS0G6FBo/U/7Y0lXcfgyq
-uNj2LoDP6VXGiId8c7vD5BP4CAELpIDBjTe5lf3TOc4xExnFdEWmSbdzgpoh0X3q
-ThchXG3D1faD020SD8d7j7kqEO9+Fg==
-=4VkE
------END PGP SIGNATURE-----
-
---btf7s52l3lzywb2u--
