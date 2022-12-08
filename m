@@ -2,86 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1035D64736A
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 16:45:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4926647380
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 16:47:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbiLHPpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 10:45:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34196 "EHLO
+        id S230152AbiLHPrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 10:47:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbiLHPpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 10:45:08 -0500
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE015E9FB;
-        Thu,  8 Dec 2022 07:45:03 -0800 (PST)
-Received: by mail-pj1-f44.google.com with SMTP id hd14-20020a17090b458e00b0021909875bccso6019738pjb.1;
-        Thu, 08 Dec 2022 07:45:03 -0800 (PST)
+        with ESMTP id S230157AbiLHPra (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 10:47:30 -0500
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4C75BD5A;
+        Thu,  8 Dec 2022 07:47:28 -0800 (PST)
+Received: by mail-ej1-f46.google.com with SMTP id gh17so5014964ejb.6;
+        Thu, 08 Dec 2022 07:47:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=9um/CJ6zRIOkXvilsnHll/Sh2DZ2yqw/uWXa4YFjEDM=;
-        b=ppKMzZtR7U2SX3eLo2jxEZm1jMYhkoNMcmIlktkQ1QdUm+vfTi1IxZPm6Ro595eveB
-         aT1FBP7APhP9bYSxtCEZYw/cvLfqODc77Y/MONqraHS6i//3K0zWKwzih/Ip9cquqmsr
-         UUm76O24CdgUNXrj+JkOE9E+1i4XMolQHH0fjemd46d9sN+WfP0h33+t7puZ7d/FidSK
-         N5rxzif8eOUEnPcveMqqZILyM24pS8GZDJDReLoSUv4rfeNCtcfO/VcpQe7qW1QnvDwV
-         ul84vNy64lUItDP8TmBsCAa3hnzo145yy6C/hAfwUzELPAqYpVUsvHxqcaZTca6X+yfM
-         ALfA==
-X-Gm-Message-State: ANoB5plFcWlNRtM63UAwNi39uCDnFL9YrzdRv9QX/DEYnDn0IHS9A7Dm
-        eL3uJS+oAQbhRl9fm8srg1tDo3r/4d96u2j//AU=
-X-Google-Smtp-Source: AA0mqf6d8iiQ2ayQhca4bS8hOGwqFNQT8shEYRovzQD9oxZO/Qf7LC7I1Q483nsmWAVUcRRF92ihGjULWFpXF9ExaqA=
-X-Received: by 2002:a17:903:452:b0:189:6574:7ac2 with SMTP id
- iw18-20020a170903045200b0018965747ac2mr64784125plb.65.1670514303196; Thu, 08
- Dec 2022 07:45:03 -0800 (PST)
+        bh=VhgZCo6c+hsVZq5QVJKJQrJlxaKlhskVBf5ljnXV7/s=;
+        b=6XBh6yYtxgCM9R8i+LCjXfkjIvtFYFGnWwJ272ha4EKrLmmW2wMMADqoKCSfqhj1EE
+         qkpDO34TIKqjnorbZiuHOvTNtAnjZtg/87NHll8S7C/s3pRTsmmaAhREllP2Y++qPNE8
+         XhbV6RwRwXr5oqK7GFw0luhHdl9UmnvpXsFbfLOjUex/a7eSOvfgstNoUU99VyDMHivw
+         Abv84Gfp2E1PH08wSjhDCc32ETojNdPVyd9ViFHyvGfuliDJmHwV+ve8P4QhbNyh8XB4
+         7R8h6V5JUq0PSDND+kkJr7YmoLfO3CB/SuSv0X/0Z6s8XZu1YyeMA7/I/rn+Ae+Pp44X
+         USPg==
+X-Gm-Message-State: ANoB5pmF/ndPTdrme8/kXUzOtCIotT4i6umP3dVgCC4ZBsWb2JveCNTu
+        EgwtQ0+b8/yA4+wQtpsl57Vt0H/s7Mt9Zg==
+X-Google-Smtp-Source: AA0mqf5eMyMKDzm/jFfHdbUAF4mOs6k8K/3PS/3Esz5HRuKK1cmwrZ8CYtLMZE0P0OEAsRzoQJzqXg==
+X-Received: by 2002:a17:907:3e14:b0:7c0:f719:838d with SMTP id hp20-20020a1709073e1400b007c0f719838dmr2931457ejc.36.1670514446979;
+        Thu, 08 Dec 2022 07:47:26 -0800 (PST)
+Received: from localhost (fwdproxy-cln-118.fbsv.net. [2a03:2880:31ff:76::face:b00c])
+        by smtp.gmail.com with ESMTPSA id 22-20020a170906329600b007add28659b0sm9902685ejw.140.2022.12.08.07.47.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Dec 2022 07:47:26 -0800 (PST)
+From:   Breno Leitao <leitao@debian.org>
+To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, kuniyu@amazon.com
+Cc:     netdev@vger.kernel.org, leit@fb.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net-next] tcp: socket-specific version of WARN_ON_ONCE()
+Date:   Thu,  8 Dec 2022 07:46:56 -0800
+Message-Id: <20221208154656.60623-1-leitao@debian.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20221203133159.94414-1-mailhol.vincent@wanadoo.fr>
- <9493232b-c8fa-5612-fb13-fccf58b01942@suse.com> <CAMZ6RqJejJCOUk+MSvxjw9Us0gYhTuoOB4MUTk9jji6Bk=ix3A@mail.gmail.com>
- <b5df2262-7a4f-0dcf-6460-793dad02401d@suse.com>
-In-Reply-To: <b5df2262-7a4f-0dcf-6460-793dad02401d@suse.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Fri, 9 Dec 2022 00:44:51 +0900
-Message-ID: <CAMZ6RqL9eKco+fAMZoQ6X9PNE7dDK3KnFZoMCXrjgvx_ZU8=Ew@mail.gmail.com>
-Subject: Re: [PATCH 0/8] can: usb: remove all usb_set_intfdata(intf, NULL) in
- drivers' disconnect()
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Jungclaus <frank.jungclaus@esd.eu>, socketcan@esd.eu,
-        Yasushi SHOJI <yashi@spacecubics.com>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Hangyu Hua <hbh25y@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Peter Fink <pfink@christ-es.de>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        =?UTF-8?Q?Christoph_M=C3=B6hring?= <cmoehring@christ-es.de>,
-        John Whittington <git@jbrengineering.co.uk>,
-        Vasanth Sadhasivan <vasanth.sadhasivan@samsara.com>,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Anssi Hannula <anssi.hannula@bitwise.fi>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Sebastian Haas <haas@ems-wuensche.com>,
-        Maximilian Schneider <max@schneidersoft.net>,
-        Daniel Berglund <db@kvaser.com>,
-        Olivier Sobrie <olivier@sobrie.be>,
-        =?UTF-8?B?UmVtaWdpdXN6IEtvxYLFgsSFdGFq?= 
-        <remigiusz.kollataj@mobica.com>,
-        Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
-        Martin Elshuber <martin.elshuber@theobroma-systems.com>,
-        Bernd Krumboeck <b.krumboeck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alan Stern <stern@rowland.harvard.edu>,
-        linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
         FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
@@ -92,129 +58,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu. 8 Dec. 2022 at 20:04, Oliver Neukum <oneukum@suse.com> wrote:
-> On 08.12.22 10:00, Vincent MAILHOL wrote:
-> > On Mon. 5 Dec. 2022 at 17:39, Oliver Neukum <oneukum@suse.com> wrote:
-> >> On 03.12.22 14:31, Vincent Mailhol wrote:
->
-> Good Morning!
+There are cases where we need relevant information about the socket
+during a warning, so, it could help us to find bugs that happens and do
+not have an easy repro.
 
-Good night! (different time zone :))
+This patch creates a TCP-socket specific version of WARN_ON_ONCE(), which
+dumps revelant information about the TCP socket when it hits rare
+warnings, which is super useful for debugging purposes.
 
-> > ACK, but I do not see the connection.
-> Well, useless checks are bad. In particular, we should always
-> make it clear whether a pointer may or may not be NULL.
-> That is, I have no problem with what you were trying to do
-> with your patch set. It is a good idea and possibly slightly
-> overdue. The problem is the method.
->
-> > I can see that cdc-acm sets acm->control and acm->data to NULL in his
-> > disconnect(), but it doesn't set its own usb_interface to NULL.
->
-> You don't have to, but you can. I was explaining the two patterns for doing so.
->
-> >> which claim secondary interfaces disconnect() will be called a second time
-> >> for.
-> >
-> > Are you saying that the disconnect() of those CAN USB drivers is being
-> > called twice? I do not see this in the source code. The only caller of
-> > usb_driver::disconnect() I can see is:
-> >
-> >    https://elixir.bootlin.com/linux/v6.0/source/drivers/usb/core/driver.c#L458
->
-> If they use usb_claim_interface(), yes it is called twice. Once per
-> interface. That is in the case of ACM once for the originally probed
-> interface and a second time for the claimed interface.
-> But not necessarily in that order, as you can be kicked off an interface
-> via sysfs. Yet you need to cease operations as soon as you are disconnected
-> from any interface. That is annoying because it means you cannot use a
-> refcount. From that stems the widespread use of intfdata as a flag.
+Hooking this warning tcp_snd_cwnd_set() for now, but, the intent is to
+convert more TCP warnings to this helper later.
 
-Thank you for the details! I better understand this part now.
+Signed-off-by: Breno Leitao <leitao@debian.org>
+---
+ include/net/tcp.h       |  3 ++-
+ include/net/tcp_debug.h | 10 ++++++++++
+ net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
+ 3 files changed, 42 insertions(+), 1 deletion(-)
+ create mode 100644 include/net/tcp_debug.h
 
-> >> In addition, a driver can use setting intfdata to NULL as a flag
-> >> for disconnect() having proceeded to a point where certain things
-> >> can no longer be safely done.
-> >
-> > Any reference that a driver can do that? This pattern seems racy.
->
-> Technically that is exactly what drivers that use usb_claim_interface()
-> do. You free everything at the first call and use intfdata as a flag
-> to prevent a double free.
-> The race is prevented by usbcore locking, which guarantees that probe()
-> and disconnect() have mutual exclusion.
-> If you use intfdata in sysfs, yes additional locking is needed.
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 14d45661a84d..e490af8e6fdc 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -40,6 +40,7 @@
+ #include <net/inet_ecn.h>
+ #include <net/dst.h>
+ #include <net/mptcp.h>
++#include <net/tcp_debug.h>
+ 
+ #include <linux/seq_file.h>
+ #include <linux/memcontrol.h>
+@@ -1229,7 +1230,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
+ 
+ static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
+ {
+-	WARN_ON_ONCE((int)val <= 0);
++	TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
+ 	tp->snd_cwnd = val;
+ }
+ 
+diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
+new file mode 100644
+index 000000000000..50e96d87d335
+--- /dev/null
++++ b/include/net/tcp_debug.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_TCP_DEBUG_H
++#define _LINUX_TCP_DEBUG_H
++
++void tcp_sock_warn(const struct tcp_sock *tp);
++
++#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
++		DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
++
++#endif  /* _LINUX_TCP_DEBUG_H */
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 54836a6b81d6..5985ba9c4231 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4705,6 +4705,36 @@ int tcp_abort(struct sock *sk, int err)
+ }
+ EXPORT_SYMBOL_GPL(tcp_abort);
+ 
++void tcp_sock_warn(const struct tcp_sock *tp)
++{
++	const struct sock *sk = (const struct sock *)tp;
++	struct inet_sock *inet = inet_sk(sk);
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
++	WARN_ON(1);
++
++	pr_warn("Socket Info: family=%u state=%d ccname=%s cwnd=%u",
++		sk->sk_family, sk->sk_state, icsk->icsk_ca_ops->name,
++		tcp_snd_cwnd(tp));
++
++	switch (sk->sk_family) {
++	case AF_INET:
++		pr_warn("saddr=%pI4:%u daddr=%pI4:%u", &inet->inet_saddr,
++			ntohs(inet->inet_sport), &inet->inet_daddr,
++			ntohs(inet->inet_dport));
++
++		break;
++#if IS_ENABLED(CONFIG_IPV6)
++	case AF_INET6:
++		pr_warn("saddr=[%pI6]:%u daddr=[%pI6]:%u", &sk->sk_v6_rcv_saddr,
++			ntohs(inet->inet_sport), &sk->sk_v6_daddr,
++			ntohs(inet->inet_dport));
++		break;
++#endif
++	}
++}
++EXPORT_SYMBOL_GPL(tcp_sock_warn);
++
+ extern struct tcp_congestion_ops tcp_reno;
+ 
+ static __initdata unsigned long thash_entries;
+-- 
+2.30.2
 
-ACK for the mutual exclusion. My question was about what you said in
-your previous message:
-
-| In addition, a driver can use setting intfdata to NULL as a flag
-| for *disconnect() having proceeded to a point* where certain things
-| can no longer be safely done.
-
-How do you check that disconnect() has proceeded *to a given point*
-using intf without being racy? You can check if it has already
-completed once but not check how far it has proceeded, right?
-
-> > What makes you assume that I didn't check this in the first place? Or
-> > do you see something I missed?
->
-> That you did not put it into the changelogs.
-> That reads like the drivers are doing something obsolete or stupid.
-> They do not. They copied something that is necessary only under
-> some circumstances.
->
-> And that you did not remove the checks.
->
-> >> which is likely, then please also remove checks like this:
-> >>
-> >>          struct ems_usb *dev = usb_get_intfdata(intf);
-> >>
-> >>          usb_set_intfdata(intf, NULL);
-> >>
-> >>          if (dev) {
->
-> Here. If you have a driver that uses usb_claim_interface().
-> You need this check or you unregister an already unregistered
-> netdev.
-
-Sorry, but with all my best intentions, I still do not get it. During
-the second iteration, inft is NULL and:
-
-        /* equivalent to dev = intf->dev.data. Because intf is NULL,
-         * this is a NULL pointer dereference */
-        struct ems_usb *dev = usb_get_intfdata(intf);
-
-        /* OK, intf is already NULL */
-        usb_set_intfdata(intf, NULL);
-
-        /* follows a NULL pointer dereference so this is undefined
-         * behaviour */
-       if (dev) {
-
-How is this a valid check that you entered the function for the second
-time? If intf is the flag, you should check intf, not dev? Something
-like this:
-
-        struct ems_usb *dev;
-
-        if (!intf)
-                return;
-
-        dev = usb_get_intfdata(intf);
-        /* ... */
-
-I just can not see the connection between intf being NULL and the if
-(dev) check. All I see is some undefined behaviour, sorry.
-
-> The way this disconnect() method is coded is extremely defensive.
-> Most drivers do not need this check. But it is never
-> wrong in the strict sense.
->
-> Hence doing a mass removal with a change log that does
-> not say that this driver is using only a single interface
-> hence the check can be dropped to reduce code size
-> is not good.
->
->         Regards
->                 Oliver
