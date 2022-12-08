@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10945646B61
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 10:04:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 272F9646B76
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 10:08:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbiLHJEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 04:04:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
+        id S230246AbiLHJH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 04:07:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiLHJDy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 04:03:54 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4816A74A
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 01:03:23 -0800 (PST)
-Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NSSlT6RgVzJp3Q;
-        Thu,  8 Dec 2022 16:59:49 +0800 (CST)
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 8 Dec 2022 17:03:21 +0800
-Subject: Re: [PATCH net v2] ethernet: s2io: don't call dev_kfree_skb() under
- spin_lock_irqsave()
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-References: <20221207012540.2717379-1-yangyingliang@huawei.com>
- <Y5GYqsgKxhUpfTn/@unreal> <f31d0ce3-50fc-6206-bc7a-2a67ec0951db@huawei.com>
- <Y5GlfDf9iQgFl8yc@unreal>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <2e425086-b96e-65ac-f004-99f55af2e8d0@huawei.com>
-Date:   Thu, 8 Dec 2022 17:03:20 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S230247AbiLHJHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 04:07:23 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761044E6BE
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 01:06:53 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1p3CrR-0005XE-14; Thu, 08 Dec 2022 10:06:33 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:92e:b9fb:f0e7:2adf])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 786E713948F;
+        Thu,  8 Dec 2022 09:06:30 +0000 (UTC)
+Date:   Thu, 8 Dec 2022 10:06:22 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Ye Bin <yebin@huaweicloud.com>
+Cc:     socketcan@hartkopp.net, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, yebin10@huawei.com
+Subject: Re: [PATCH net-next] net: af_can: remove useless parameter 'err' in
+ 'can_rx_register()'
+Message-ID: <20221208090622.7vp6xjkyh26jzvpz@pengutronix.de>
+References: <20221208090940.3695670-1-yebin@huaweicloud.com>
 MIME-Version: 1.0
-In-Reply-To: <Y5GlfDf9iQgFl8yc@unreal>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nqaj6drbuy6wf66i"
+Content-Disposition: inline
+In-Reply-To: <20221208090940.3695670-1-yebin@huaweicloud.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -54,56 +55,43 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2022/12/8 16:51, Leon Romanovsky wrote:
-> On Thu, Dec 08, 2022 at 04:40:35PM +0800, Yang Yingliang wrote:
->> On 2022/12/8 15:56, Leon Romanovsky wrote:
->>> On Wed, Dec 07, 2022 at 09:25:40AM +0800, Yang Yingliang wrote:
->>>> It is not allowed to call consume_skb() from hardware interrupt context
->>>> or with interrupts being disabled. So replace dev_kfree_skb() with
->>>> dev_consume_skb_irq() under spin_lock_irqsave().
->>>>
->>>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
->>>> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->>>> ---
->>>> v1 -> v2:
->>>>     Add fix tag.
->>>> ---
->>>>    drivers/net/ethernet/neterion/s2io.c | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
->>>> index 1d3c4474b7cb..a83d61d45936 100644
->>>> --- a/drivers/net/ethernet/neterion/s2io.c
->>>> +++ b/drivers/net/ethernet/neterion/s2io.c
->>>> @@ -2386,7 +2386,7 @@ static void free_tx_buffers(struct s2io_nic *nic)
->>>>    			skb = s2io_txdl_getskb(&mac_control->fifos[i], txdp, j);
->>>>    			if (skb) {
->>>>    				swstats->mem_freed += skb->truesize;
->>>> -				dev_kfree_skb(skb);
->>>> +				dev_consume_skb_irq(skb);
->>> And why did you use dev_consume_skb_irq() and not dev_kfree_skb_irq()?
->> I chose dev_consume_skb_irq(), because dev_kfree_skb() is consume_skb().
-> Your commit message, title and actual change are totally misleading.
-> You replaced *_kfree_* with *_consume_* while talking about running it
-> in interrupts disabled context.
-I didn't mention dev_kfree_skb() is same as consume_skb(), I can add it 
-to my
-commit message and send a new version.
+--nqaj6drbuy6wf66i
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 08.12.2022 17:09:40, Ye Bin wrote:
+> From: Ye Bin <yebin10@huawei.com>
+>=20
+> Since commit bdfb5765e45b remove NULL-ptr checks from users of
+> can_dev_rcv_lists_find(). 'err' parameter is useless, so remove it.
+>=20
+> Signed-off-by: Ye Bin <yebin10@huawei.com>
+
+Applied to linux-can-next.
 
 Thanks,
-Yang
->
-> Thanks
->
->> Thanks,
->> Yang
->>> Thanks
->>>
->>>>    				cnt++;
->>>>    			}
->>>>    		}
->>>> -- 
->>>> 2.25.1
->>>>
->>> .
-> .
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--nqaj6drbuy6wf66i
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmORqQsACgkQrX5LkNig
+010ZUwf+MGBRuJnw3cRwCfUcjhjmK4LSK4B4C9xyb6aeorVds6iQ9kunEeZp/kUP
+c1JLeGBu48d+ruONAUgBfH0THAfYiiTJSjp6jfwsCM5N/nr2Z+Yex5TL2kTORVBU
+BFuT+POvP0HhCGgEHgrzKhCLmmAJYaCBc4y24pHuwqezEfJtnKX873OSOLIDLiQa
+Q+/EKlvmbHNNGOXjNFXn8itsSjNgntsdXulDc23d9lJQnw82FvQfORgjTOAf76HI
+FH8IB2C9CWrr0V3dQYzZ2IsdUZrVXVMDmZlJTG8/wHM3KVaT7tkV81uTnnlaOrC1
+g2Wnd7gsq6/tg7rg4A49mImf3AkT+A==
+=xiRa
+-----END PGP SIGNATURE-----
+
+--nqaj6drbuy6wf66i--
