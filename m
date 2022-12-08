@@ -2,77 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FA7164723F
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 15:54:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16E0F647244
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 15:55:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230053AbiLHOyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 09:54:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43164 "EHLO
+        id S230026AbiLHOzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 09:55:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230070AbiLHOxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 09:53:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ADE58C6B3;
-        Thu,  8 Dec 2022 06:53:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A03461F6E;
-        Thu,  8 Dec 2022 14:53:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B6C0C433B5;
-        Thu,  8 Dec 2022 14:53:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670511229;
-        bh=NFtkawferRCuVtsF/S8GA8PeJYS5gw8p6/Iw4nU7lBU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=jptKTexdF7ia3A1EWZpUy8IWWeby29awyP+el5cEnKFUgMiIcuSIZiTthOlfNAyIB
-         YYoBIfVhrrofG74bfSnPwDZm2ykOfZHTCjMHJRe/1oQT1420QtKX/dxZzIRIxOicYh
-         zoA/8cuRe4+pf+Xy3rey47SP8sfpwJ8BeolfIpjsxyG84Md0eau0JJdrEkF0yfHl+A
-         SynrC0nYUojWW/S/KfluRQkz9haaEa6dLMyEq8LjddXD9vEnxHGwk2LgfvUEllmUg+
-         Lfc36pBvR/nU92QEWMuNA2jivu1AeoQ6PS8xISPEVSMBKYHQflAaxmQj+FwE5Hr7ns
-         62GSo9JgUGgsA==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230014AbiLHOzF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 09:55:05 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D549D2D1;
+        Thu,  8 Dec 2022 06:55:04 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id ja4-20020a05600c556400b003cf6e77f89cso4405024wmb.0;
+        Thu, 08 Dec 2022 06:55:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:content-disposition:mime-version:message-id:subject:to
+         :from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=RqKvZUHndgJsmYSWYtOw+ggxUD/rVpTNob38zsmbVZU=;
+        b=MfpArdTIjl5P7RM6yxK+K3jPBoMjzdFj25G54OM4bTeC9GGq6t2dd9oOyg9mVTplwN
+         h0WLRH/L7RqOlTvTosGi5lhb++ui5We0HehEpipMR8Oy1Qcq2gvVrBiHVzfMNUZw/P1Z
+         8PMvPde4vN9/cJ9J/ph0lO88SxbmExnGQt2E8JyWgth4tCXVR3i4fHEBPtPk3JQyLuW6
+         03coqD/kwwGCMd3UuwtMVvu5CqDru9MUcZeokLcL+ePBF4VPX331564D1hsO4Jee8IxE
+         7DNM/lpumpGaUyh7glFSD7hpQhC7D2ufgvJ93klU+zuKYrENH4aP5o56btx3gEcaFI9N
+         0bBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:content-disposition:mime-version:message-id:subject:to
+         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=RqKvZUHndgJsmYSWYtOw+ggxUD/rVpTNob38zsmbVZU=;
+        b=22LWCjzecCZpqcyWwJUWOIbiTXmLmkraBJb7a5TcevWdy5Zv/0kRJv2niiEW816ux7
+         DdYLu377DrNPuWDHLQCyIteTZgCfJ0XcsSLdt8FqGNcqHBL9MTklGs9KMCoPQMel6QEF
+         BH4DTWedwTmevsBts5p2XP81szY8tMLazyAH4FZGd5RZ7JDooc10eq+Jq/lgUCOnu9uO
+         ES7WEnnEBi38jbyLUqZj2GvFtplbogOlDXIXnXZaPbSPufUA/rG8diGff/ssHMJ0/3s3
+         UZvW5USTU4inesNaFcAXkB5Llz+bkHP4LOldjtzz3FUN1R4T0ahvqZ1tvthZ2bIQPCTl
+         ChsQ==
+X-Gm-Message-State: ANoB5pmg4/ZQs/nwxZspB3DBBfRcsljQHLnZg4wpuXE3i0esencB9Hpu
+        WlFzIMGb5wNkbe9OIEVXC+Q=
+X-Google-Smtp-Source: AA0mqf5P6Hz7S/ua1E0aOellTp+0U2q5kIljZ/RQMIdYNFelzJwnvzeSOD06yYOPFcgOZudrGSFthA==
+X-Received: by 2002:a05:600c:1685:b0:3d1:f687:1fd0 with SMTP id k5-20020a05600c168500b003d1f6871fd0mr1833043wmn.12.1670511303112;
+        Thu, 08 Dec 2022 06:55:03 -0800 (PST)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id z13-20020a05600c220d00b003cf71b1f66csm5118588wml.0.2022.12.08.06.54.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Dec 2022 06:55:02 -0800 (PST)
+Date:   Thu, 8 Dec 2022 15:54:46 +0100
+From:   Richard Gobert <richardbgobert@gmail.com>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: setsockopt: fix IPV6_UNICAST_IF option for connected
+ sockets
+Message-ID: <20221208145437.GA75680@debian>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [v5] wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20221207033926.11777-1-JunASAKA@zzy040330.moe>
-References: <20221207033926.11777-1-JunASAKA@zzy040330.moe>
-To:     Jun ASAKA <JunASAKA@zzy040330.moe>
-Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jun ASAKA <JunASAKA@zzy040330.moe>,
-        Ping-Ke Shih <pkshih@realtek.com>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167051122141.9839.8256110387408123706.kvalo@kernel.org>
-Date:   Thu,  8 Dec 2022 14:53:46 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jun ASAKA <JunASAKA@zzy040330.moe> wrote:
+Change the behaviour of ip6_datagram_connect to consider the interface
+set by the IPV6_UNICAST_IF socket option, similarly to udpv6_sendmsg.
 
-> Fixing "Path A RX IQK failed" and "Path B RX IQK failed"
-> issues for rtl8192eu chips by replacing the arguments with
-> the ones in the updated official driver as shown below.
-> 1. https://github.com/Mange/rtl8192eu-linux-driver
-> 2. vendor driver version: 5.6.4
-> 
-> Signed-off-by: Jun ASAKA <JunASAKA@zzy040330.moe>
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+This change is the IPv6 counterpart of the fix for IP_UNICAST_IF.
+The tests introduced by that patch showed that the incorrect
+behavior is present in IPv6 as well.
+This patch fixes the broken test.
 
-Patch applied to wireless-next.git, thanks.
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Link: https://lore.kernel.org/r/202210062117.c7eef1a3-oliver.sang@intel.com
+Fixes: 0e4d354762ce ("net-next: Fix IP_UNICAST_IF option behavior for connected sockets")
 
-695c5d3a8055 wifi: rtl8xxxu: fixing IQK failures for rtl8192eu
+Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+---
+ net/ipv6/datagram.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
+diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
+index 7c7155b48f17..e624497fa992 100644
+--- a/net/ipv6/datagram.c
++++ b/net/ipv6/datagram.c
+@@ -42,24 +42,29 @@ static void ip6_datagram_flow_key_init(struct flowi6 *fl6, struct sock *sk)
+ {
+ 	struct inet_sock *inet = inet_sk(sk);
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
++	int oif = sk->sk_bound_dev_if;
+ 
+ 	memset(fl6, 0, sizeof(*fl6));
+ 	fl6->flowi6_proto = sk->sk_protocol;
+ 	fl6->daddr = sk->sk_v6_daddr;
+ 	fl6->saddr = np->saddr;
+-	fl6->flowi6_oif = sk->sk_bound_dev_if;
+ 	fl6->flowi6_mark = sk->sk_mark;
+ 	fl6->fl6_dport = inet->inet_dport;
+ 	fl6->fl6_sport = inet->inet_sport;
+ 	fl6->flowlabel = np->flow_label;
+ 	fl6->flowi6_uid = sk->sk_uid;
+ 
+-	if (!fl6->flowi6_oif)
+-		fl6->flowi6_oif = np->sticky_pktinfo.ipi6_ifindex;
++	if (!oif)
++		oif = np->sticky_pktinfo.ipi6_ifindex;
+ 
+-	if (!fl6->flowi6_oif && ipv6_addr_is_multicast(&fl6->daddr))
+-		fl6->flowi6_oif = np->mcast_oif;
++	if (!oif) {
++		if (ipv6_addr_is_multicast(&fl6->daddr))
++			oif = np->mcast_oif;
++		else
++			oif = np->ucast_oif;
++	}
+ 
++	fl6->flowi6_oif = oif;
+ 	security_sk_classify_flow(sk, flowi6_to_flowi_common(fl6));
+ }
+ 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20221207033926.11777-1-JunASAKA@zzy040330.moe/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.36.1
 
