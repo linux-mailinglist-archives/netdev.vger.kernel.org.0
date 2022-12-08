@@ -2,61 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9AFB646B66
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 10:06:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10945646B61
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 10:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230186AbiLHJGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 04:06:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
+        id S230125AbiLHJEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 04:04:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbiLHJFx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 04:05:53 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF8A73F62;
-        Thu,  8 Dec 2022 01:04:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670490273; x=1702026273;
-  h=from:to:cc:subject:date:message-id;
-  bh=UA+smJjZZYbFnblJ4yJ0P96Z25fhqeBCuoWHkuOYe74=;
-  b=dK7sIzIncfCkR1apA+JyjDmSSCxolKWOYAHhM/KwWFZbj4wQ8I9gsgVE
-   kzLj2pc9WQqNGWXEoh+C1AEpaewa1Zl+DlJk7PRhCqQkpbzTVoATdOgbl
-   d6u4PXnvDoCK9ZvZAccQDbKN2jmdHko9HFhQcfpqsKQUcwjcxk/GK87Wm
-   Ba3fOinjO+l6/w9VcPKP+f4MWcdof7k1mW9mQlixgeF6TWu+1BRQqr4Ij
-   UaDtmk8ZGQhJNsHeq5vKCaqm6RqJwS3vkPJmRZrqEcgIfsHKci2a8NzgK
-   75SXPndmx+GsXKKt2HceLenbYtWYLENWW5RXmscbxxn1BqQZ6YQSzI1Ek
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="381413937"
-X-IronPort-AV: E=Sophos;i="5.96,227,1665471600"; 
-   d="scan'208";a="381413937"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 01:03:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="975786174"
-X-IronPort-AV: E=Sophos;i="5.96,227,1665471600"; 
-   d="scan'208";a="975786174"
-Received: from ssid-ilbpg3.png.intel.com ([10.88.227.111])
-  by fmsmga005.fm.intel.com with ESMTP; 08 Dec 2022 01:03:16 -0800
-From:   Lai Peter Jun Ann <jun.ann.lai@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Lai Peter Jun Ann <jun.ann.lai@intel.com>
-Subject: [PATCH net-next 1/1] net: stmmac: Add check for taprio basetime configuration
-Date:   Thu,  8 Dec 2022 17:03:15 +0800
-Message-Id: <1670490195-19367-1-git-send-email-jun.ann.lai@intel.com>
-X-Mailer: git-send-email 1.9.1
-X-Spam-Status: No, score=-1.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
+        with ESMTP id S230000AbiLHJDy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 04:03:54 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4816A74A
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 01:03:23 -0800 (PST)
+Received: from dggpemm500007.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NSSlT6RgVzJp3Q;
+        Thu,  8 Dec 2022 16:59:49 +0800 (CST)
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 8 Dec 2022 17:03:21 +0800
+Subject: Re: [PATCH net v2] ethernet: s2io: don't call dev_kfree_skb() under
+ spin_lock_irqsave()
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+References: <20221207012540.2717379-1-yangyingliang@huawei.com>
+ <Y5GYqsgKxhUpfTn/@unreal> <f31d0ce3-50fc-6206-bc7a-2a67ec0951db@huawei.com>
+ <Y5GlfDf9iQgFl8yc@unreal>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <2e425086-b96e-65ac-f004-99f55af2e8d0@huawei.com>
+Date:   Thu, 8 Dec 2022 17:03:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <Y5GlfDf9iQgFl8yc@unreal>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,31 +53,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
 
-Adds a boundary check to prevent negative basetime input from user
-while configuring taprio.
+On 2022/12/8 16:51, Leon Romanovsky wrote:
+> On Thu, Dec 08, 2022 at 04:40:35PM +0800, Yang Yingliang wrote:
+>> On 2022/12/8 15:56, Leon Romanovsky wrote:
+>>> On Wed, Dec 07, 2022 at 09:25:40AM +0800, Yang Yingliang wrote:
+>>>> It is not allowed to call consume_skb() from hardware interrupt context
+>>>> or with interrupts being disabled. So replace dev_kfree_skb() with
+>>>> dev_consume_skb_irq() under spin_lock_irqsave().
+>>>>
+>>>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+>>>> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+>>>> ---
+>>>> v1 -> v2:
+>>>>     Add fix tag.
+>>>> ---
+>>>>    drivers/net/ethernet/neterion/s2io.c | 2 +-
+>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
+>>>> index 1d3c4474b7cb..a83d61d45936 100644
+>>>> --- a/drivers/net/ethernet/neterion/s2io.c
+>>>> +++ b/drivers/net/ethernet/neterion/s2io.c
+>>>> @@ -2386,7 +2386,7 @@ static void free_tx_buffers(struct s2io_nic *nic)
+>>>>    			skb = s2io_txdl_getskb(&mac_control->fifos[i], txdp, j);
+>>>>    			if (skb) {
+>>>>    				swstats->mem_freed += skb->truesize;
+>>>> -				dev_kfree_skb(skb);
+>>>> +				dev_consume_skb_irq(skb);
+>>> And why did you use dev_consume_skb_irq() and not dev_kfree_skb_irq()?
+>> I chose dev_consume_skb_irq(), because dev_kfree_skb() is consume_skb().
+> Your commit message, title and actual change are totally misleading.
+> You replaced *_kfree_* with *_consume_* while talking about running it
+> in interrupts disabled context.
+I didn't mention dev_kfree_skb() is same as consume_skb(), I can add it 
+to my
+commit message and send a new version.
 
-Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-Signed-off-by: Lai Peter Jun Ann <jun.ann.lai@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-index 773e415..2cfb18c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -926,6 +926,9 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 	int i, ret = 0;
- 	u64 ctr;
- 
-+	if (qopt->base_time < 0)
-+		return -ERANGE;
-+
- 	if (!priv->dma_cap.estsel)
- 		return -EOPNOTSUPP;
- 
--- 
-1.9.1
-
+Thanks,
+Yang
+>
+> Thanks
+>
+>> Thanks,
+>> Yang
+>>> Thanks
+>>>
+>>>>    				cnt++;
+>>>>    			}
+>>>>    		}
+>>>> -- 
+>>>> 2.25.1
+>>>>
+>>> .
+> .
