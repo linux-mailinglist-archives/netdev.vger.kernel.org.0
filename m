@@ -2,68 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1247D646852
-	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 05:47:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 616EE646861
+	for <lists+netdev@lfdr.de>; Thu,  8 Dec 2022 06:00:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbiLHErR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Dec 2022 23:47:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
+        id S229544AbiLHFA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 00:00:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiLHErQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Dec 2022 23:47:16 -0500
+        with ESMTP id S229478AbiLHFAZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 00:00:25 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A4F259;
-        Wed,  7 Dec 2022 20:47:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DC987C92;
+        Wed,  7 Dec 2022 21:00:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64946B82035;
-        Thu,  8 Dec 2022 04:47:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82677C433C1;
-        Thu,  8 Dec 2022 04:47:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF031B81CB2;
+        Thu,  8 Dec 2022 05:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CF72C433C1;
+        Thu,  8 Dec 2022 05:00:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670474833;
-        bh=pPEVBly9bfwd8dphaKuIkNzoSFzBZukDoXkitwRnVEE=;
+        s=k20201202; t=1670475621;
+        bh=sQYq03nBg7pcLjaJBeQDyFU+7cPsXzGvOTUuQd/G5HI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N5Rb44oVO9LtVec07iBkQLxBQ2ZAEuPj/95jjmfqdn2yPGHCpUxeIIRlwX9tRt8sd
-         o3tiZ+RtOVe2I9Lnt5aWsapT5pR6YeoJr9KeMRzqNryDf+HTPs592QXcGguATUUHV4
-         2vQhLweqtzolFWoZ/BUAv23F6gHoPw8Zyc80JP420P9FXiWw9EpqAqUIDXC8yQ2z2I
-         zz6s7/d9FwXcdATyGJKb3dUkJGDzJoNbv7SGCe9ptII8fN9ojA4ClB076pafzfMP1g
-         DJfboz7hDEEhS1R1Qa7Zk/WyYxQ8YPN6EGtzFQgC2A4cC6xdrTWaZDSMBs1CYi/KF4
-         04pJyCUj/frgA==
-Date:   Wed, 7 Dec 2022 20:47:11 -0800
+        b=o7AUIIgrU5v1v/1ZSIXoyYX/N/0iI3bigtfWiPFq2l8E+Ysl7w6spA/Nf+KplL+hF
+         sHQ8WG4y7qv3kC9I8KLNlDTIbjCRp5Ip8DHxBtbMfhStdYzTTbwgi0r7pynXQXPdiW
+         7eZJEIAxJv9gkNpQ0oYbRTEiaFfjN0q4SchK67GMqishaVXnB5Ktn5s6Bc+KrZpuAJ
+         sI+AEqfGPddwANwPWGGIYEI45ngCvqRO6dCFgowklRiRf77bI9r5wk7F05gyQD32Mt
+         ZueXTt12xhQnjbtBZUejKJtgcndSiLkt+j4J15x1m6krXgdYCJmaMgR8TqXqpbCqD9
+         7sGzMwToL/XaA==
+Date:   Wed, 7 Dec 2022 21:00:19 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Veerasenareddy Burru <vburru@marvell.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Liron Himi <lironh@marvell.com>,
-        Abhijit Ayarekar <aayarekar@marvell.com>,
-        Sathesh B Edara <sedara@marvell.com>,
-        Satananda Burla <sburla@marvell.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Subject: Re: [EXT] Re: [PATCH net-next v2 2/9] octeon_ep: poll for control
- messages
-Message-ID: <20221207204711.6599d8ba@kernel.org>
-In-Reply-To: <BYAPR18MB24231B717F9FF380623E74F4CC1D9@BYAPR18MB2423.namprd18.prod.outlook.com>
-References: <20221129130933.25231-1-vburru@marvell.com>
-        <20221129130933.25231-3-vburru@marvell.com>
-        <Y4cirWdJipOxmNaT@unreal>
-        <BYAPR18MB242397C352B0086140106A46CC159@BYAPR18MB2423.namprd18.prod.outlook.com>
-        <Y4hhpFVsENaM45Ho@unreal>
-        <BYAPR18MB2423229A66D1C98C6C744EE1CC189@BYAPR18MB2423.namprd18.prod.outlook.com>
-        <Y42nerLmNeAIn5w9@unreal>
-        <20221205161626.088e383f@kernel.org>
-        <Y48ERxYICkG9lQc1@unreal>
-        <20221206092352.7a86a744@kernel.org>
-        <BYAPR18MB24234E1E6566B47FCA609BF8CC1B9@BYAPR18MB2423.namprd18.prod.outlook.com>
-        <20221206172652.34ed158a@kernel.org>
-        <BYAPR18MB24234AE72EF29F506E0B7480CC1D9@BYAPR18MB2423.namprd18.prod.outlook.com>
-        <20221207200204.6819575a@kernel.org>
-        <BYAPR18MB24231B717F9FF380623E74F4CC1D9@BYAPR18MB2423.namprd18.prod.outlook.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX kfuncs
+Message-ID: <20221207210019.41dc9b6b@kernel.org>
+In-Reply-To: <20221206024554.3826186-4-sdf@google.com>
+References: <20221206024554.3826186-1-sdf@google.com>
+        <20221206024554.3826186-4-sdf@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -76,16 +63,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Dec 2022 04:41:56 +0000 Veerasenareddy Burru wrote:
-> > On Thu, 8 Dec 2022 03:17:33 +0000 Veerasenareddy Burru wrote:  
-> > > We have a follow up patch after this series implementing
-> > > ndo_get_vf_xxx() and ndo_set_vf_xxx().  
-> > 
-> > We don't accept new drivers which use those interfaces.  
+The offload tests still pass after this, right?
+TBH I don't remember this code well enough to spot major issues.
+
+On Mon,  5 Dec 2022 18:45:45 -0800 Stanislav Fomichev wrote:
+> There is an ndo handler per kfunc, the verifier replaces a call to the
+> generic kfunc with a call to the per-device one.
 > 
-> Kindly suggest the acceptable interface.
+> For XDP, we define a new kfunc set (xdp_metadata_kfunc_ids) which
+> implements all possible metatada kfuncs. Not all devices have to
+> implement them. If kfunc is not supported by the target device,
+> the default implementation is called instead.
+> 
+> Upon loading, if BPF_F_XDP_HAS_METADATA is passed via prog_flags,
+> we treat prog_index as target device for kfunc resolution.
 
-Kindly make the minimal effort to follow the list :/
+> @@ -2476,10 +2477,18 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
+>  				       struct net_device *netdev);
+>  bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
+>  
+> +void *bpf_offload_resolve_kfunc(struct bpf_prog *prog, u32 func_id);
 
-Perhaps others have the time to explain things to you, 
-I believe my time is best spent elsewhere.
+There seems to be some mis-naming going on. I expected:
+
+  offloaded =~ nfp
+  dev_bound == XDP w/ funcs
+
+*_offload_resolve_kfunc looks misnamed? Unless you want to resolve 
+for HW offload?
+
+>  void unpriv_ebpf_notify(int new_state);
+>  
+>  #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
+>  int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr);
+> +void bpf_offload_bound_netdev_unregister(struct net_device *dev);
+
+ditto: offload_bound is a mix of terms no?
+
+> @@ -1611,6 +1612,10 @@ struct net_device_ops {
+>  	ktime_t			(*ndo_get_tstamp)(struct net_device *dev,
+>  						  const struct skb_shared_hwtstamps *hwtstamps,
+>  						  bool cycles);
+> +	bool			(*ndo_xdp_rx_timestamp_supported)(const struct xdp_md *ctx);
+> +	u64			(*ndo_xdp_rx_timestamp)(const struct xdp_md *ctx);
+> +	bool			(*ndo_xdp_rx_hash_supported)(const struct xdp_md *ctx);
+> +	u32			(*ndo_xdp_rx_hash)(const struct xdp_md *ctx);
+>  };
+
+Is this on the fast path? Can we do an indirection?
+Put these ops in their own struct and add a pointer to that struct 
+in net_device_ops? Purely for grouping reasons because the netdev
+ops are getting orders of magnitude past the size where you can
+actually find stuff in this struct.
+
+>  	bpf_free_used_maps(aux);
+>  	bpf_free_used_btfs(aux);
+> -	if (bpf_prog_is_offloaded(aux))
+> +	if (bpf_prog_is_dev_bound(aux))
+>  		bpf_prog_offload_destroy(aux->prog);
+
+This also looks a touch like a mix of terms (condition vs function
+called).
+
+> +static int __bpf_offload_init(void);
+> +static int __bpf_offload_dev_netdev_register(struct bpf_offload_dev *offdev,
+> +					     struct net_device *netdev);
+> +static void __bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
+> +						struct net_device *netdev);
+
+fwd declarations are yuck
+
+>  static int bpf_dev_offload_check(struct net_device *netdev)
+>  {
+>  	if (!netdev)
+> @@ -87,13 +93,17 @@ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr)
+>  	    attr->prog_type != BPF_PROG_TYPE_XDP)
+>  		return -EINVAL;
+>  
+> -	if (attr->prog_flags)
+> +	if (attr->prog_flags & ~BPF_F_XDP_HAS_METADATA)
+>  		return -EINVAL;
+>  
+>  	offload = kzalloc(sizeof(*offload), GFP_USER);
+>  	if (!offload)
+>  		return -ENOMEM;
+>  
+> +	err = __bpf_offload_init();
+> +	if (err)
+> +		return err;
+
+leaks offload
+
+> @@ -209,6 +233,19 @@ bpf_prog_offload_remove_insns(struct bpf_verifier_env *env, u32 off, u32 cnt)
+>  	up_read(&bpf_devs_lock);
+>  }
+>  
+> +static void maybe_remove_bound_netdev(struct net_device *dev)
+> +{
+
+func name prefix ?
+
+> -struct bpf_offload_dev *
+> -bpf_offload_dev_create(const struct bpf_prog_offload_ops *ops, void *priv)
+> +static int __bpf_offload_init(void)
+>  {
+> -	struct bpf_offload_dev *offdev;
+>  	int err;
+>  
+>  	down_write(&bpf_devs_lock);
+> @@ -680,12 +740,25 @@ bpf_offload_dev_create(const struct bpf_prog_offload_ops *ops, void *priv)
+>  		err = rhashtable_init(&offdevs, &offdevs_params);
+>  		if (err) {
+>  			up_write(&bpf_devs_lock);
+> -			return ERR_PTR(err);
+> +			return err;
+>  		}
+>  		offdevs_inited = true;
+>  	}
+>  	up_write(&bpf_devs_lock);
+>  
+> +	return 0;
+> +}
+
+Would late_initcall() or some such not work for this?
+
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 5b221568dfd4..862e03fcffa6 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9228,6 +9228,10 @@ static int dev_xdp_attach(struct net_device *dev, struct netlink_ext_ack *extack
+>  			NL_SET_ERR_MSG(extack, "Using device-bound program without HW_MODE flag is not supported");
+
+extack should get updated here, I reckon, maybe in previous patch
+
+>  			return -EINVAL;
+>  		}
+> +		if (bpf_prog_is_dev_bound(new_prog->aux) && !bpf_offload_dev_match(new_prog, dev)) {
+
+bound_dev_match() ?
+
+> +			NL_SET_ERR_MSG(extack, "Cannot attach to a different target device");
+
+different than.. ?
+
+> +			return -EINVAL;
+> +		}
+>  		if (new_prog->expected_attach_type == BPF_XDP_DEVMAP) {
+>  			NL_SET_ERR_MSG(extack, "BPF_XDP_DEVMAP programs can not be attached to a device");
+>  			return -EINVAL;
