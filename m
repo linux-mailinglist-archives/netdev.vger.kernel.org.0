@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37828647A97
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:14:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60927647A96
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:14:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbiLIAOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 19:14:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48226 "EHLO
+        id S229650AbiLIAOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 19:14:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiLIAOi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:14:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D518D182
+        with ESMTP id S229564AbiLIAOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:14:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E5B8D190
         for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:14:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CD25B826B9
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A9C9C433D2;
-        Fri,  9 Dec 2022 00:14:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CD73620F5
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:14:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AF2CC433F1;
+        Fri,  9 Dec 2022 00:14:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670544874;
-        bh=+NrOD0kF6/GsTDzdSAzgHJr0uG9U3qnA2pafSbDRVRk=;
+        s=k20201202; t=1670544875;
+        bh=qAGx321CP3aM+kfNg+9xEhWYU6jHlQECtC/l25rbZJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t+pise6daEvbIqcAu64HA8CaHfylYlygoDjP7nmrFFd9eqdP7Ye1TqYQfiC2fh1I5
-         hzTWNoah8pSly8JdjVLQ1xvYMXhQ+wIr6MtKdlHzStgO4P1yqsl3iT3a+wNyVquulg
-         5aXNRwFUkT203GaZzj5rEdR9dAMaMi9hFhQjJwbgX29ylG/irZqrJeWTuvSIMPX88N
-         Hxy0fotib1SfrTHnazfQLnZgJbnd5n1cJi+AEc+sSgs+TxBWZvJmzfcp7t0bZgBSPA
-         HoaJYNh23eyHARQN8k4UOtQy06NLZpOE9vL2PG2u/Tx5XkJh5VcOMg2VtVTLOo39wt
-         Raem62CGspj6A==
+        b=SgiStvwEnxbV1NPLO1WIGQmt/xEZc2C6+sVMwaPHr/I9jP6VgiI8RriaFPzbgTnXu
+         FMPtUSFp/MWSxQAxRp+VcqnLNVcbpSXWCPpRg4bUXrbSpbrJlnfxsPFL9cBbHjdA23
+         LPwOOPL3rh/RXR2VUIFBwXQ03HP0sP2VpzYe/RHGuhXXhp4SY/6gbftLggUUhHBO+6
+         mMtjyGwYYXNus0qxy5HCES2vv6HMyqbZBFxUYFw5gOqG0IJexaMC2n9nRHQosKDhm0
+         iQsXfVgnf+U762oDHiSjOBeBwOgGOG5lb7ow4/RxbqAfcNjFpA3m1RqbZjIE+X8fDs
+         JV5GiBzOr2fIQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,10 +39,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>, Mark Bloch <mbloch@nvidia.com>
-Subject: [net-next 04/15] net/mlx5: DR, Rework is_fw_table function
-Date:   Thu,  8 Dec 2022 16:14:09 -0800
-Message-Id: <20221209001420.142794-5-saeed@kernel.org>
+        Alex Vesker <valex@nvidia.com>
+Subject: [net-next 05/15] net/mlx5: DR, Handle FT action in a separate function
+Date:   Thu,  8 Dec 2022 16:14:10 -0800
+Message-Id: <20221209001420.142794-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221209001420.142794-1-saeed@kernel.org>
 References: <20221209001420.142794-1-saeed@kernel.org>
@@ -59,141 +59,168 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-This patch handles the following two changes w.r.t. is_fw_table function:
-
-1. When SW steering is asked to create/destroy FW table, we allow for
-creation/destruction of only termination tables. Rename mlx5_dr_is_fw_table
-both to comply with the static function naming and to reflect that we're
-actually checking for FW termination table.
-
-2. When the action 'go to flow table' is created, the destination flow
-table can be any FW table, not only termination table. Adding function
-to check if the dest table is FW table. This function will also be used
-by the later creation of range match action, so putting it the header file.
+As preparation for range action support, moving the handling
+of final ICM address for flow table action to a separate function.
 
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Reviewed-by: Alex Vesker <valex@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_types.h    |  6 +++++
- .../mellanox/mlx5/core/steering/fs_dr.c       | 23 ++++++++++---------
- 2 files changed, 18 insertions(+), 11 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_action.c   | 127 +++++++++++-------
+ 1 file changed, 81 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 772ee747511f..804268b487d8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -1492,4 +1492,10 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
- 			    u32 flow_source);
- void mlx5dr_fw_destroy_md_tbl(struct mlx5dr_domain *dmn, u32 tbl_id,
- 			      u32 group_id);
-+
-+static inline bool mlx5dr_is_fw_table(struct mlx5_flow_table *ft)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+index b1dfad274a39..fc44fee2f9c2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+@@ -634,6 +634,83 @@ static void dr_action_print_sequence(struct mlx5dr_domain *dmn,
+ 			   actions[i]->action_type);
+ }
+ 
++static int dr_action_get_dest_fw_tbl_addr(struct mlx5dr_matcher *matcher,
++					  struct mlx5dr_action_dest_tbl *dest_tbl,
++					  bool is_rx_rule,
++					  u64 *final_icm_addr)
 +{
-+	return !ft->fs_dr_table.dr_table;
++	struct mlx5dr_cmd_query_flow_table_details output;
++	struct mlx5dr_domain *dmn = matcher->tbl->dmn;
++	int ret;
++
++	if (!dest_tbl->fw_tbl.rx_icm_addr) {
++		ret = mlx5dr_cmd_query_flow_table(dmn->mdev,
++						  dest_tbl->fw_tbl.type,
++						  dest_tbl->fw_tbl.id,
++						  &output);
++		if (ret) {
++			mlx5dr_err(dmn,
++				   "Failed mlx5_cmd_query_flow_table ret: %d\n",
++				   ret);
++			return ret;
++		}
++
++		dest_tbl->fw_tbl.tx_icm_addr = output.sw_owner_icm_root_1;
++		dest_tbl->fw_tbl.rx_icm_addr = output.sw_owner_icm_root_0;
++	}
++
++	*final_icm_addr = is_rx_rule ? dest_tbl->fw_tbl.rx_icm_addr :
++				       dest_tbl->fw_tbl.tx_icm_addr;
++	return 0;
 +}
 +
- #endif  /* _DR_TYPES_H_ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index 13b6d4721e17..c78fb016c245 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -7,10 +7,11 @@
- #include "fs_cmd.h"
- #include "mlx5dr.h"
- #include "fs_dr.h"
-+#include "dr_types.h"
++static int dr_action_get_dest_sw_tbl_addr(struct mlx5dr_matcher *matcher,
++					  struct mlx5dr_action_dest_tbl *dest_tbl,
++					  bool is_rx_rule,
++					  u64 *final_icm_addr)
++{
++	struct mlx5dr_domain *dmn = matcher->tbl->dmn;
++	struct mlx5dr_icm_chunk *chunk;
++
++	if (dest_tbl->tbl->dmn != dmn) {
++		mlx5dr_err(dmn,
++			   "Destination table belongs to a different domain\n");
++		return -EINVAL;
++	}
++
++	if (dest_tbl->tbl->level <= matcher->tbl->level) {
++		mlx5_core_dbg_once(dmn->mdev,
++				   "Connecting table to a lower/same level destination table\n");
++		mlx5dr_dbg(dmn,
++			   "Connecting table at level %d to a destination table at level %d\n",
++			   matcher->tbl->level,
++			   dest_tbl->tbl->level);
++	}
++
++	chunk = is_rx_rule ? dest_tbl->tbl->rx.s_anchor->chunk :
++			     dest_tbl->tbl->tx.s_anchor->chunk;
++
++	*final_icm_addr = mlx5dr_icm_pool_get_chunk_icm_addr(chunk);
++	return 0;
++}
++
++static int dr_action_get_dest_tbl_addr(struct mlx5dr_matcher *matcher,
++				       struct mlx5dr_action_dest_tbl *dest_tbl,
++				       bool is_rx_rule,
++				       u64 *final_icm_addr)
++{
++	if (dest_tbl->is_fw_tbl)
++		return dr_action_get_dest_fw_tbl_addr(matcher,
++						      dest_tbl,
++						      is_rx_rule,
++						      final_icm_addr);
++
++	return dr_action_get_dest_sw_tbl_addr(matcher,
++					      dest_tbl,
++					      is_rx_rule,
++					      final_icm_addr);
++}
++
+ #define WITH_VLAN_NUM_HW_ACTIONS 6
  
--static bool mlx5_dr_is_fw_table(u32 flags)
-+static bool dr_is_fw_term_table(struct mlx5_flow_table *ft)
- {
--	if (flags & MLX5_FLOW_TABLE_TERMINATION)
-+	if (ft->flags & MLX5_FLOW_TABLE_TERMINATION)
- 		return true;
+ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
+@@ -661,8 +738,6 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
+ 	action_domain = dr_action_get_action_domain(dmn->type, nic_dmn->type);
  
- 	return false;
-@@ -69,7 +70,7 @@ static int mlx5_cmd_dr_create_flow_table(struct mlx5_flow_root_namespace *ns,
- 	u32 flags;
- 	int err;
- 
--	if (mlx5_dr_is_fw_table(ft->flags))
-+	if (dr_is_fw_term_table(ft))
- 		return mlx5_fs_cmd_get_fw_cmds()->create_flow_table(ns, ft,
- 								    ft_attr,
- 								    next_ft);
-@@ -109,7 +110,7 @@ static int mlx5_cmd_dr_destroy_flow_table(struct mlx5_flow_root_namespace *ns,
- 	struct mlx5dr_action *action = ft->fs_dr_table.miss_action;
- 	int err;
- 
--	if (mlx5_dr_is_fw_table(ft->flags))
-+	if (dr_is_fw_term_table(ft))
- 		return mlx5_fs_cmd_get_fw_cmds()->destroy_flow_table(ns, ft);
- 
- 	err = mlx5dr_table_destroy(ft->fs_dr_table.dr_table);
-@@ -134,7 +135,7 @@ static int mlx5_cmd_dr_modify_flow_table(struct mlx5_flow_root_namespace *ns,
- 					 struct mlx5_flow_table *ft,
- 					 struct mlx5_flow_table *next_ft)
- {
--	if (mlx5_dr_is_fw_table(ft->flags))
-+	if (dr_is_fw_term_table(ft))
- 		return mlx5_fs_cmd_get_fw_cmds()->modify_flow_table(ns, ft, next_ft);
- 
- 	return set_miss_action(ns, ft, next_ft);
-@@ -153,7 +154,7 @@ static int mlx5_cmd_dr_create_flow_group(struct mlx5_flow_root_namespace *ns,
- 					    match_criteria_enable);
- 	struct mlx5dr_match_parameters mask;
- 
--	if (mlx5_dr_is_fw_table(ft->flags))
-+	if (dr_is_fw_term_table(ft))
- 		return mlx5_fs_cmd_get_fw_cmds()->create_flow_group(ns, ft, in,
- 								    fg);
- 
-@@ -178,7 +179,7 @@ static int mlx5_cmd_dr_destroy_flow_group(struct mlx5_flow_root_namespace *ns,
- 					  struct mlx5_flow_table *ft,
- 					  struct mlx5_flow_group *fg)
- {
--	if (mlx5_dr_is_fw_table(ft->flags))
-+	if (dr_is_fw_term_table(ft))
- 		return mlx5_fs_cmd_get_fw_cmds()->destroy_flow_group(ns, ft, fg);
- 
- 	return mlx5dr_matcher_destroy(fg->fs_dr_matcher.dr_matcher);
-@@ -209,7 +210,7 @@ static struct mlx5dr_action *create_ft_action(struct mlx5dr_domain *domain,
- {
- 	struct mlx5_flow_table *dest_ft = dst->dest_attr.ft;
- 
--	if (mlx5_dr_is_fw_table(dest_ft->flags))
-+	if (mlx5dr_is_fw_table(dest_ft))
- 		return mlx5dr_action_create_dest_flow_fw_table(domain, dest_ft);
- 	return mlx5dr_action_create_dest_table(dest_ft->fs_dr_table.dr_table);
- }
-@@ -260,7 +261,7 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
- 	int err = 0;
- 	int i;
- 
--	if (mlx5_dr_is_fw_table(ft->flags))
-+	if (dr_is_fw_term_table(ft))
- 		return mlx5_fs_cmd_get_fw_cmds()->create_fte(ns, ft, group, fte);
- 
- 	actions = kcalloc(MLX5_FLOW_CONTEXT_ACTION_MAX, sizeof(*actions),
-@@ -702,7 +703,7 @@ static int mlx5_cmd_dr_delete_fte(struct mlx5_flow_root_namespace *ns,
- 	int err;
- 	int i;
- 
--	if (mlx5_dr_is_fw_table(ft->flags))
-+	if (dr_is_fw_term_table(ft))
- 		return mlx5_fs_cmd_get_fw_cmds()->delete_fte(ns, ft, fte);
- 
- 	err = mlx5dr_rule_destroy(rule->dr_rule);
-@@ -727,7 +728,7 @@ static int mlx5_cmd_dr_update_fte(struct mlx5_flow_root_namespace *ns,
- 	struct fs_fte fte_tmp = {};
- 	int ret;
- 
--	if (mlx5_dr_is_fw_table(ft->flags))
-+	if (dr_is_fw_term_table(ft))
- 		return mlx5_fs_cmd_get_fw_cmds()->update_fte(ns, ft, group, modify_mask, fte);
- 
- 	/* Backup current dr rule details */
+ 	for (i = 0; i < num_actions; i++) {
+-		struct mlx5dr_action_dest_tbl *dest_tbl;
+-		struct mlx5dr_icm_chunk *chunk;
+ 		struct mlx5dr_action *action;
+ 		int max_actions_type = 1;
+ 		u32 action_type;
+@@ -676,50 +751,10 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
+ 			break;
+ 		case DR_ACTION_TYP_FT:
+ 			dest_action = action;
+-			dest_tbl = action->dest_tbl;
+-			if (!dest_tbl->is_fw_tbl) {
+-				if (dest_tbl->tbl->dmn != dmn) {
+-					mlx5dr_err(dmn,
+-						   "Destination table belongs to a different domain\n");
+-					return -EINVAL;
+-				}
+-				if (dest_tbl->tbl->level <= matcher->tbl->level) {
+-					mlx5_core_dbg_once(dmn->mdev,
+-							   "Connecting table to a lower/same level destination table\n");
+-					mlx5dr_dbg(dmn,
+-						   "Connecting table at level %d to a destination table at level %d\n",
+-						   matcher->tbl->level,
+-						   dest_tbl->tbl->level);
+-				}
+-				chunk = rx_rule ? dest_tbl->tbl->rx.s_anchor->chunk :
+-					dest_tbl->tbl->tx.s_anchor->chunk;
+-				attr.final_icm_addr = mlx5dr_icm_pool_get_chunk_icm_addr(chunk);
+-			} else {
+-				struct mlx5dr_cmd_query_flow_table_details output;
+-				int ret;
+-
+-				/* get the relevant addresses */
+-				if (!action->dest_tbl->fw_tbl.rx_icm_addr) {
+-					ret = mlx5dr_cmd_query_flow_table(dmn->mdev,
+-									  dest_tbl->fw_tbl.type,
+-									  dest_tbl->fw_tbl.id,
+-									  &output);
+-					if (!ret) {
+-						dest_tbl->fw_tbl.tx_icm_addr =
+-							output.sw_owner_icm_root_1;
+-						dest_tbl->fw_tbl.rx_icm_addr =
+-							output.sw_owner_icm_root_0;
+-					} else {
+-						mlx5dr_err(dmn,
+-							   "Failed mlx5_cmd_query_flow_table ret: %d\n",
+-							   ret);
+-						return ret;
+-					}
+-				}
+-				attr.final_icm_addr = rx_rule ?
+-					dest_tbl->fw_tbl.rx_icm_addr :
+-					dest_tbl->fw_tbl.tx_icm_addr;
+-			}
++			ret = dr_action_get_dest_tbl_addr(matcher, action->dest_tbl,
++							  rx_rule, &attr.final_icm_addr);
++			if (ret)
++				return ret;
+ 			break;
+ 		case DR_ACTION_TYP_QP:
+ 			mlx5dr_info(dmn, "Domain doesn't support QP\n");
 -- 
 2.38.1
 
