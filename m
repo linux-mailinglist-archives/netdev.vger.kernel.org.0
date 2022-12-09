@@ -2,117 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0A17648922
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 20:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D08364892D
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 20:48:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbiLITlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 14:41:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34916 "EHLO
+        id S229910AbiLITsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 14:48:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbiLITku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 14:40:50 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2060.outbound.protection.outlook.com [40.107.6.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14ECA84A2
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 11:40:49 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WoA3q5Yld0HUYC8Samji9j0dn8tSbsalsIqPIdsrKpYHRqxp57dVDT82Lzaar7bpGW5wvdSfau6Fcu/iWSWksRsaHuCvxozTowUQ/ltHHeYYt0+d9UcGL6Gn9uBXzWbhzAFLWElSuTPfSoi/bbyxAUkhcP1+7h024tbTOC2Y1vMdRrbY0c/gI55hfz4IiiMyef/OgL7OeoNcn6r6TDGffAwwzx2VPXiFMwP+d3JLII+B4IoDtu9dGy+laIPvML87j5qBGU5ZMd65HpEx8Bnjus/Isa25Mr4lVYqAqzeg8wcDPnL1dnamXoFctaH+NFBjvofSp46MhxpADQSZ0i0KJg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iS2z1Ov3+9EQjuuulWxaGlgXcj897/G1LAwmtEL1t50=;
- b=TEW3J9Gbijf5eEe5KPr8tQQoWGUz0+7+dvqq0EwHzUSgGNsx6lpdHhmeVvKouzHbSrc0zk2AjxLCy9YkWTGka/wC0PFaBy+p3zwSuBAQRwIOT1EmggzyQKPbMMsbgjPY56m6EdUeW+41z4s7Ml0pc4A08Wdmr/gNI9wb3XWw8Zh2EEdKp4DLHrsft1FbxFh26rK3BpHLfEd+SoidF1RiqilhztzZvyfXQmiD2b3c7//89Zy8szBTQCdl0TlneB9hvqu7zJhYM4MJnFVNfOc4lteRMquksYuGQooNgCxZQzH7MgQwV5TuXUBDZ08tIl+Q7cgBpx1kkozGsAwjTtyMig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iS2z1Ov3+9EQjuuulWxaGlgXcj897/G1LAwmtEL1t50=;
- b=XPqvaD1Zfv24vFZsiTiVTUa3GAb0mj2nTvamHQppC+kj90xP2Ua4Mb6mrHBq+3OKCXKEnHdlA+8F1zRg5XDUUfpjBUFZ00Y4f4DjP9ARmU3wYZD99wrFf4t06mR99lJ0EQBIrKa+KgNMXVmNEoCNMnEZoH6N+gv4D6Y2azBCQoI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PAXPR04MB8224.eurprd04.prod.outlook.com (2603:10a6:102:1cb::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8; Fri, 9 Dec
- 2022 19:40:46 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5880.014; Fri, 9 Dec 2022
- 19:40:45 +0000
-Date:   Fri, 9 Dec 2022 21:40:42 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S229873AbiLITsJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 14:48:09 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEFA02A264
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 11:48:07 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id z8-20020a17090abd8800b00219ed30ce47so9206789pjr.3
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 11:48:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zQu0xHmezona1yp0QM9dAtI9Szifegp4YTL0XeOL4ws=;
+        b=KxLrq1EpZy4M7WanlGgi3c9+zbE39YbH65vP0ep3ysHNOq02GB9CcLAGEZ2tpRTTo/
+         H9lXrY7cVOxAaEkbWbF8MpUBsNPGSog+dS/6vPOrNxeRiOG0vssepsytbE9TjqJZxzH8
+         has8/M+s2kNGv4kOUGYZ7b2SCcvuyfeU6ZTx8ywVnJaZ88Wm7LOL2N4Kt2FiCZTS+BTX
+         Et30yE0LQBeuGBsIc2eh3QWi94H4e0nmYbIN9emHgQYDUv7ofLWLwed7T+371PiZ3a6m
+         mUXzZT/h7khr0U2/GDXvO2+9zt9SY1WpDy8lkfm3EBTS3jy0xnFYftcWCwSsahPzeSJK
+         46hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zQu0xHmezona1yp0QM9dAtI9Szifegp4YTL0XeOL4ws=;
+        b=zZ78GiUdSNKK69xcqufmn4bAxmb1n8Ubf3nWPw+nA+28KKmrOBWkPouwtaQIiu9v88
+         XZVyT3xTQfDWKgYUjhssaZEsYsqTMdJFf8X+kcNhOva6PJSvgol9a5I1sLAFd9/u8/3G
+         2a9rlu4IB8fBvjZUSUXrrc/vBm5qzgI/Oy4T1Pho7WbMkzTxNWdSDmZBTw0OI9McpiIb
+         3u6SD88e19lFl8FNk2Foigix+jzZz0wWwpVQ/uDYUqb7yutJhlEiUjaH3ddy6XOjD1fA
+         P8TIJ83y8sN8t212bw3Oz8CwCY7UBNBr7u1vrRrmPfSCGWh5LZP68VM3OOwaItUDE0nb
+         6PyA==
+X-Gm-Message-State: ANoB5pmdRzN/QpE1n6lNpu5WeX1M5Sg9dVno5XeENCyiJmLqyl3HFBRj
+        XpadvqYVm9aMOuQinyXDaxKcLA==
+X-Google-Smtp-Source: AA0mqf4flq+i9Vp0qY22m1GEIanI9xM7ZT69Q14Lx9EyzntEQOicmXDaqINBBGm6QxR9fg3WhVu9Cw==
+X-Received: by 2002:a17:902:6ac4:b0:185:441e:90c9 with SMTP id i4-20020a1709026ac400b00185441e90c9mr6523389plt.47.1670615287052;
+        Fri, 09 Dec 2022 11:48:07 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id u2-20020a170902e5c200b0017ec1b1bf9fsm1677587plf.217.2022.12.09.11.48.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Dec 2022 11:48:06 -0800 (PST)
+Date:   Fri, 9 Dec 2022 19:48:02 +0000
+From:   Carlos Llamas <cmllamas@google.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org,
+        Ram Muthiah <rammuthiah@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Hans J. Schultz" <netdev@kapio-technology.com>
-Subject: Re: [PATCH v2 net-next 3/4] net: dsa: mv88e6xxx: replace ATU
- violation prints with trace points
-Message-ID: <20221209194042.hxsduaeutoe5wb3e@skbuf>
-References: <20221209172817.371434-1-vladimir.oltean@nxp.com>
- <20221209172817.371434-4-vladimir.oltean@nxp.com>
- <Y5OOwWIT/TL800aw@x130>
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, jiang.wang@bytedance.com
+Subject: Re: [PATCH 1/1] virtio/vsock: Make vsock virtio packet buff size
+ configurable
+Message-ID: <Y5OQ8jQsK2Dz8tPy@google.com>
+References: <20210721143001.182009-1-lee.jones@linaro.org>
+ <20210722125519.jzs7crke7yqfh73e@steredhat>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y5OOwWIT/TL800aw@x130>
-X-ClientProxiedBy: FR3P281CA0130.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:94::11) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8224:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2588bd8c-f296-4de6-6c9e-08dada1d4402
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oiQRi4yFigEiz5KJ81C4c6JlW90ONXaVu1UrcTywBEhCS9RNiV1FGWxO5TgX569DqIx1zbZqYgoBdvKax/yKAeOGcOuDLj2iQwUhBRkFoj/qhXJx+ZOWDWq0UIWlHaAWPMuMRtjAIq9kJQdsR2PGG8LM8u3g2RVmzmgSnBpyOJfpEOWIYcvkVQm/c8BTz2FtW5S5N7h9Lxm62WxX/lnR8wi6/vySDsYZmanwbif2lONkShnUGEuc08LGcDzgzu7TyDnMICfK0H2e3FvbsS0tv9cM+/Bd2/SN5Vt69Y/THMc+WW55Ed03fUchvCNzz8aajywd9vRbUV0eJyM1xJJIrN2oV/BlIp1Ngu71C5/WbmPg2+lqtP6ltik2rlJCY5lg72jONsEJr2SXXiG5lrxQGGNjqrE0QMUKh9yTpdgbmo0Iphy4spDJpxrTruiwU3HW7EbcTGNIp31C2HiLd5SrRFhNYFe4+kApHL2uyqhhnlkETjWLHDWpQ/8/BlPuEw3AvMFbfn8jDM615AMQdqrR7cPsEAnGCMWcMdjAxv4EJ2Ggxihyt6FVWyPRtD3D8YQ0fm3lQuBCHWAZhVkdPNF2O+xdA7f4ROqRppMUzzja/JxqPzYOUD3b25N/uS++m+HefRAG9ZOSKRgban0PzSQeMQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(396003)(136003)(346002)(376002)(39860400002)(366004)(451199015)(6916009)(8936002)(54906003)(316002)(4326008)(66476007)(66556008)(8676002)(66946007)(83380400001)(41300700001)(1076003)(38100700002)(6486002)(86362001)(186003)(6512007)(9686003)(26005)(478600001)(6506007)(6666004)(33716001)(2906002)(44832011)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FvNcO4jlMi3iUzMD/uTC5KwQFaIAdlHwbhJJsWrp90VI1Jk310o6yV7mAB6m?=
- =?us-ascii?Q?fpWYw/kiJ5XLLTbAUmK4/sogiVXK1kfB7Vj/Pv0nJNM2d+uszH4jeaoMeXUv?=
- =?us-ascii?Q?thfDTpqo8KZpMtzyy45Dc0AI1uREiH1YEZSEp2olpO7YBuRrLouzlunq5EN0?=
- =?us-ascii?Q?gOjlx9XNK1DsKQFO2VrJjXz6WQbdwXQs0OZscSmekWQsnLJD3s1J47KAVpv7?=
- =?us-ascii?Q?+RM/1DUN69ShdqK5bhkWhhHObIqcfd3mxkP+laY6SD9OdI/htdOsbHkuIu0t?=
- =?us-ascii?Q?DfZ3A+Dn6g7OC4KF3IsGzGa/rNu8bM9kWd3s3dtlDxbMnfzMNE/BOctwnnJB?=
- =?us-ascii?Q?Pko45sYPwfDDj+PJUVscuR2mVvQgBzoEUA+G49q8C91AVricfZ/6N5nvPJ+y?=
- =?us-ascii?Q?xt5mXf/swZZ1QrZNj8O9LXWYfOdVwXRK2etjNohwsoxB55Dop0pzkJVjNJC2?=
- =?us-ascii?Q?xo/sHj42upah33sN7Urws6NzXVeLCX0+UdEY/mGM5UKCH2Hc2wVUUKUOfpxK?=
- =?us-ascii?Q?g13wOuMNtcP/K5y33WLvmjZT1TNAF+PAuXr9efsGgqhRmifjpDM49l2/nImn?=
- =?us-ascii?Q?4U7h4YOgzgPRen3v2NlNCGhkoWh5m9N37e0hRPkzNpBOvWHO+s4WlWN5tmdp?=
- =?us-ascii?Q?zNeFWN+7ieSmljJJScRCWIMs7P/t1/pDp5vabtKPtM2W+XVi107H4ShW1niQ?=
- =?us-ascii?Q?xZwk3NQCPI6WeM5Lbuq9sKDW6cpKXMkQP7XTKN17UtOdVHyNe5jY6ywFxKUb?=
- =?us-ascii?Q?0YEPPEO6CiNTiKqcXgdp07nTRuh6f1xTYR6T9/bPxsRu41a+A3ai0m+GucU3?=
- =?us-ascii?Q?ZPSurWK/+azXNcCVuGDiwiFUKygIEz8MyMdTzYRt52aWWTtr6HFMuTT5z+Yy?=
- =?us-ascii?Q?dBg/aDM4W++GSI7mI6QEuwwAutGw8g2xZ+88STnDl3g4kw20CQeYYcIE7u8v?=
- =?us-ascii?Q?srR7HSf5tpVCz7gkgoeBz6iub1oCMC39AfYjH1TKtvczygtfwaic1Xy4oZNT?=
- =?us-ascii?Q?KmlMaOZtwcfg4uFSrcWrIcy7dSNDP9NZPv8OhTygSoRDISUbJ3qZ2SXcV+4u?=
- =?us-ascii?Q?4uK0VkJ7EudrAPq4wPG9h2zfIapdF3bceaZsv3QcIpmNB1qHp5XpFWKXFYDS?=
- =?us-ascii?Q?HiRgN+OF9SxI/8JRwd6wPS+6BY+m0OXyKSQ2DnpTopT7vRx338v4vRqoPi64?=
- =?us-ascii?Q?HRdyMW/INzF0f1456B7LU0I51eKu/RD60rVj0S5CSE//fIetQ++571tRrUZ2?=
- =?us-ascii?Q?yrTJgrtNcGSIiEOyrUsZ+6Lf+aWkxFYF/q77enJc5pQkJVkgaOSvMgcMwl3H?=
- =?us-ascii?Q?2rvkc/vDp9qEoApMQPYHiJyjxN7RTBS6BVL5adNEue64cwFfQfzbgI6KBWR7?=
- =?us-ascii?Q?nmjy1QbiljNfRYE07ANgOiJO5L+LialZkA34GMPYpVRdbRndY2wLymgiulKY?=
- =?us-ascii?Q?iV8hTIZ+jKnHpEehTDbbPRd8UEqx454D8uxqd5hIjUpRKiFeZtRDsQQmWTHf?=
- =?us-ascii?Q?d6wrnBojSoISOejItaW5ayonsSFkDedqUEkd/1IC58vCkcBxBYI3U2XXtTnC?=
- =?us-ascii?Q?MO1+RVJSvErx9vxHal3nvkXiXyNGXcCmGAu3fdCfIxKs8yAp6Yh0HK9h1+WP?=
- =?us-ascii?Q?Dg=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2588bd8c-f296-4de6-6c9e-08dada1d4402
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2022 19:40:45.7668
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Pj5LVTNWOQya+ZzMvrcD+BmPF23iwvzj0AffFF6ahPaG3eWy3LqoR/otGxodeFxFZuSFdN54D8zTtkR2VMrhwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8224
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+In-Reply-To: <20210722125519.jzs7crke7yqfh73e@steredhat>
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -120,32 +80,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 09, 2022 at 11:38:41AM -0800, Saeed Mahameed wrote:
-> On 09 Dec 19:28, Vladimir Oltean wrote:
-> > In applications where the switch ports must perform 802.1X based
-> > authentication and are therefore locked, ATU violation interrupts are
-> > quite to be expected as part of normal operation. The problem is that
-> > they currently spam the kernel log, even if rate limited.
+On Thu, Jul 22, 2021 at 02:55:19PM +0200, Stefano Garzarella wrote:
 > > 
-> > Create a series of trace points, all derived from the same event class,
-> > which log these violations to the kernel's trace buffer, which is both
-> > much faster and much easier to ignore than printing to a serial console.
-> > 
-> > New usage model:
-> > 
-> > $ trace-cmd list | grep mv88e6xxx
-> > mv88e6xxx
-> > mv88e6xxx:mv88e6xxx_atu_full_violation
-> > mv88e6xxx:mv88e6xxx_atu_miss_violation
-> > mv88e6xxx:mv88e6xxx_atu_member_violation
-> > $ trace-cmd record -e mv88e6xxx sleep 10
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > +uint virtio_transport_max_vsock_pkt_buf_size = 1024 * 64;
+> > +module_param(virtio_transport_max_vsock_pkt_buf_size, uint, 0444);
+> > +EXPORT_SYMBOL_GPL(virtio_transport_max_vsock_pkt_buf_size);
+> > +
+
+I'm interested on this functionality, so I could take this on.
+
 > 
-> My knowledge on dsa is very limited but for the tracepoints logic:
+> Maybe better to add an entry under sysfs similar to what Jiang proposed
+> here:
+> https://lists.linuxfoundation.org/pipermail/virtualization/2021-June/054769.html
 
-There's nothing to know about DSA here, really.
+Having a look at Jiang's RFC patch it seems the proposed sysfs node
+hangs off from the main kernel object e.g. /sys/kernel. So I wonder if
+there is a more appropriate parent for this knob?
 
-> Reviewed-by: Saeed Mahameed <saeed@kernel.org>
+Also, I noticed that Ram's patch here is using read-only permissions for
+the module parameter and switching to sysfs would mean opening this knob
+up to be dynamically configured? I'd need to be careful here.
 
-Thanks for the review.
+--
+Carlos Llamas
