@@ -2,78 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D737648687
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:34:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BCBA648715
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:55:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiLIQeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 11:34:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35972 "EHLO
+        id S229785AbiLIQzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 11:55:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiLIQeT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:34:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F2F7720A
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 08:34:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BD0EB82785
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:34:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63DD3C433EF;
-        Fri,  9 Dec 2022 16:34:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670603655;
-        bh=LcoCY2/p6vLZBiPVrQpjHYeN+HYYqSMWhdzAQTEqwXU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ybnjg3sGCftGQoE2nGaTAY1LKn0FUAagfEcWVMrTlf/UQk6HLX5jYyD47c7qDM+QQ
-         0pPOC3NUFrfWL28mZ71LOml9sNiLUUgaSTUNc4dAr/TIWPvEV+lNUON9yiCc020qt9
-         EE46UkuoMTZa2NFYQ0wek8Eq+WgzxK3poBI1VPiotTdIS7e966XiGs5EPkVydAEp/n
-         Vkw8CuAZ/RSY98y5bpyQsOjqroBBw7IC3PnDK+q+xh/to7qGnXO34dbkCdKQAPGJkG
-         0Z7DfJ5UL6VowQFqTC8ytVj6N+MCA+RJAPVr/hlB27PY9ZQLs6xBXD5n6/mpYbJI4Y
-         vjDpL4JbLlEsQ==
-Date:   Fri, 9 Dec 2022 08:34:14 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        with ESMTP id S229468AbiLIQzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:55:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D2B24BF6
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 08:54:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670604898;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=58/VjDZZoily/fkCPVeQuHIo3U3CJ3NHBYhVURQ6msE=;
+        b=Yd+y+3RxOX41ySqFUi9gdtAxxGSuOWzgwo0O5sjuTSA4KciVcl7tzgMDhJYhruFN8JN4kJ
+        v013RmpxhxBOjGB90nlFQbRyj/pdQBOMtbv6ammJ7PpxZi6WuBcMWZY+7av5+Q0vw8NVUj
+        1kA2YjYajTzoGTgSdAPrZX7g6i6Xsd0=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-557-BsV_17coMvCASvxAqJbWFQ-1; Fri, 09 Dec 2022 11:54:57 -0500
+X-MC-Unique: BsV_17coMvCASvxAqJbWFQ-1
+Received: by mail-qt1-f200.google.com with SMTP id cj6-20020a05622a258600b003a519d02f59so4818177qtb.5
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 08:54:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:user-agent:date:mime-version:references
+         :in-reply-to:cc:to:from:subject:message-id:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=58/VjDZZoily/fkCPVeQuHIo3U3CJ3NHBYhVURQ6msE=;
+        b=znrMMRKcl/gesm5mZ4hkQuG66/Tqd6eVL1mZdOYakjn/RqKRpPB8yr9ilmAG2S8yQM
+         Pr1cjGf1w7fsYq76khQ2XEvt09tKwTQpuOjZx2Jzr1vg99RLxBKTolAsw2HNvI7ubvJw
+         IoXvNv/5M+c4iTCvXqiV8mznlMHmPAme4czHotcDu4MK8d+pVHZgOMJnFN6U40MQs5hy
+         eH22PfPtshUTRKU4c2izeoovYpHLoccfz03ZlDJxHa/jxDEKhfYvvT+u+11VHSBQ4e+S
+         ig5Y4Awuvwx+CnU3bVQSG1mbwBiXqaxfhB/L0QYD2wMYR5ssy35mbLeAH534rfsSbCd2
+         hQhA==
+X-Gm-Message-State: ANoB5pmfy+Ord5hySAmj3SzM222rmjRZPUYAsyChkDr66fB80NqAkV2Q
+        uFmVpHeBu0kp4397RMeOFLGSL6U0wsu3qNT03z7qM2I/8rDTB19myUnjxQ8GmOj5Iu+sE375aX+
+        ncO/0icOpPk5+hZOw
+X-Received: by 2002:a05:622a:598f:b0:3a5:108b:4c0a with SMTP id gb15-20020a05622a598f00b003a5108b4c0amr8948878qtb.49.1670604896742;
+        Fri, 09 Dec 2022 08:54:56 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6OgXBm3yGAsctZK8WpJQz8t/1WUERRG3j0tTCoChZ3j4+dlJmSbvENPqDxg4y3AhOx9sGyBQ==
+X-Received: by 2002:a05:622a:598f:b0:3a5:108b:4c0a with SMTP id gb15-20020a05622a598f00b003a5108b4c0amr8948861qtb.49.1670604896470;
+        Fri, 09 Dec 2022 08:54:56 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-105-105.dyn.eolo.it. [146.241.105.105])
+        by smtp.gmail.com with ESMTPSA id h4-20020ac85484000000b0039cc64bcb53sm1192355qtq.27.2022.12.09.08.54.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Dec 2022 08:54:56 -0800 (PST)
+Message-ID: <9bb1cb8eff7d0e41230a48e01b1190a20602eb6a.camel@redhat.com>
+Subject: Re: [PATCH v1 3/3] net: simplify sk_page_frag
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Benjamin Coddington <bcodding@redhat.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>
-Subject: Re: [net-next 14/15] net/mlx5: SRIOV, Add 802.1ad VST support
-Message-ID: <20221209083414.4f6f1aac@kernel.org>
-In-Reply-To: <Y5LCE57xAaMQqOYd@x130>
-References: <20221203221337.29267-1-saeed@kernel.org>
-        <20221203221337.29267-15-saeed@kernel.org>
-        <20221206203414.1eaf417b@kernel.org>
-        <Y5AitsGhZdOdc/Fm@x130>
-        <20221207092517.3320f4b4@kernel.org>
-        <Y5GgNlYbZOiH3H6t@x130>
-        <20221208170459.538917da@kernel.org>
-        <Y5KWJYBij3bzg5hU@x130>
-        <20221208180442.2b2452fb@kernel.org>
-        <Y5LCE57xAaMQqOYd@x130>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+In-Reply-To: <79b1009812b753c3a82d09271c4d655d644d37a6.1669036433.git.bcodding@redhat.com>
+References: <cover.1669036433.git.bcodding@redhat.com>
+         <79b1009812b753c3a82d09271c4d655d644d37a6.1669036433.git.bcodding@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Date:   Fri, 09 Dec 2022 17:42:06 +0100
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Dec 2022 21:05:23 -0800 Saeed Mahameed wrote:
-> >I see, but that's the fix? Uniformly drop?
-> >Start stacking with just .1q?
-> >Auto-select the ethtype for .1ad if there's already a tag?  
+On Mon, 2022-11-21 at 08:35 -0500, Benjamin Coddington wrote:
+> Now that in-kernel socket users that may recurse during reclaim have benn
+> converted to sk_use_task_frag = false, we can have sk_page_frag() simply
+> check that value.
 > 
-> push the vst .1q tag. keep original tags intact.
-> per policy we won't have .1ad support :( .. 
+> Signed-off-by: Benjamin Coddington <bcodding@redhat.com>
+> ---
+>  include/net/sock.h | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+> 
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index ffba9e95470d..fac24c6ee30d 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -2539,19 +2539,14 @@ static inline void sk_stream_moderate_sndbuf(struct sock *sk)
+>   * Both direct reclaim and page faults can nest inside other
+>   * socket operations and end up recursing into sk_page_frag()
+>   * while it's already in use: explicitly avoid task page_frag
+> - * usage if the caller is potentially doing any of them.
+> - * This assumes that page fault handlers use the GFP_NOFS flags or
+> - * explicitly disable sk_use_task_frag.
+> + * when users disable sk_use_task_frag.
+>   *
+>   * Return: a per task page_frag if context allows that,
+>   * otherwise a per socket one.
+>   */
+>  static inline struct page_frag *sk_page_frag(struct sock *sk)
+>  {
+> -	if (sk->sk_use_task_frag &&
+> -	    (sk->sk_allocation & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC |
+> -				  __GFP_FS)) ==
+> -	    (__GFP_DIRECT_RECLAIM | __GFP_FS))
+> +	if (sk->sk_use_task_frag)
+>  		return &current->task_frag;
+>  
+>  	return &sk->sk_frag;
 
-Yup, stacking another .1q sounds okay to me.
-Not exactly standard-compliant but I bet there's already a device out
-there which does exactly this so meh..
+To make the above as safe as possible I think we should double-check
+the in-kernel users explicitly setting sk_allocation to GFP_ATOMIC, as
+that has the side effect of disabling the task_frag usage, too.
+
+Patch 2/3 already catches some of such users, and we can safely leave
+alone few others, (specifically l2tp, fou and inet_ctl_sock_create()).
+
+Even wireguard and tls looks safe IMHO.
+
+So the only left-over should be espintcp, I suggest updating patch 2/3
+clearing sk_use_task_frag even in espintcp_init_sk().
+
+Other than that LGTM.
+
+Cheers,
+
+Paolo
+
