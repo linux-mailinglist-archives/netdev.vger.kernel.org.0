@@ -2,93 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A98BB64858F
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:29:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7BBA648500
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229722AbiLIP35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 10:29:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51122 "EHLO
+        id S230375AbiLIPZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 10:25:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbiLIP3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:29:43 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3061FCC3
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 07:29:41 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B9FSgw76022852, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B9FSgw76022852
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 9 Dec 2022 23:28:43 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+        with ESMTP id S229696AbiLIPZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:25:08 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B188B1A6;
+        Fri,  9 Dec 2022 07:25:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1670599504; x=1702135504;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WmwpTYyxcVQtiW1tL9fJMr4BDXHV7YEW8emRKA6pCLM=;
+  b=FHKGNhcF5a/VoIsDn+xf7QSag4dlUuYqcc9B7X8JHvKzBa+4FQRqWd2D
+   ZPQJluuiEAJc2e5HOwuqIp1N6giVYbSTxv+TWQDknKimEXPf92piFEAck
+   5zVUUC4U8zPyJ/lp2Y5ZbFgjg6U2/qtVRXdzOZc+gs06kqvxtIdLk6jnU
+   vJSaLF7GPQr/TYxvpCuc3oe5Ug0KVhVK2N+766+zz7HFLhoqu/Ei9OqtM
+   tnpn6Fq6I3tiOHmEbnZjvO3YycLEF9nj9PCP4AFObm6d4M6LUYG60A+Y/
+   cpb13kEvfWeHtK6fGKBwMy/uX4Tb8SptGTW4BmMMpe+jb56fn3msW+C/z
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,230,1665471600"; 
+   d="scan'208";a="190905714"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2022 08:25:03 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Fri, 9 Dec 2022 23:29:30 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Fri, 9 Dec 2022 23:29:29 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Fri, 9 Dec 2022 23:29:29 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>, Andrew Lunn <andrew@lunn.ch>
-Subject: RE: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
-Thread-Topic: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a)
- + rtl8211fs fiber application
-Thread-Index: AQHZBZK0jNmNF43ANUm+ON2R2qDGTK5d0aqAgATjHlD//8MxAIABsEYw///gi4CAAbFP8A==
-Date:   Fri, 9 Dec 2022 15:29:29 +0000
-Message-ID: <8b38c9f4552346ed84ba204b3e5edd5d@realtek.com>
-References: <20221201143911.4449-1-hau@realtek.com>
- <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
- <df3bf48baf6946f4a75c5c4287e6efa7@realtek.com>
- <4fa4980c-906b-8fda-b29f-b2125c31304c@gmail.com>
- <cb897c69a9d74b77b34fc94b30dc6bdd@realtek.com>
- <7f460a37-d6f5-603f-2a6c-c65bae56f76b@gmail.com>
-In-Reply-To: <7f460a37-d6f5-603f-2a6c-c65bae56f76b@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.74]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzkg5LiL5Y2IIDAyOjAwOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ 15.1.2507.12; Fri, 9 Dec 2022 08:25:02 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Fri, 9 Dec 2022 08:25:02 -0700
+Date:   Fri, 9 Dec 2022 16:30:10 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Michael Walle <michael@walle.cc>, <Steen.Hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <daniel.machon@microchip.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <lars.povlsen@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next v3 4/4] net: lan966x: Add ptp trap rules
+Message-ID: <20221209153010.f4r577ilnlein77e@soft-dev3-1>
+References: <adb8e2312b169d13e756ff23c45872c3@walle.cc>
+ <20221209092904.asgka7zttvdtijub@soft-dev3-1>
+ <c8b755672e20c223a83bc3cd4332f8cd@walle.cc>
+ <20221209125857.yhsqt4nj5kmavhmc@soft-dev3-1>
+ <20221209125611.m5cp3depjigs7452@skbuf>
+ <a821d62e2ed2c6ec7b305f7d34abf0ba@walle.cc>
+ <20221209142058.ww7aijhsr76y3h2t@soft-dev3-1>
+ <20221209144328.m54ksmoeitmcjo5f@skbuf>
+ <20221209145720.ahjmercylzqo5tla@soft-dev3-1>
+ <20221209145637.nr6favnsofmwo45s@skbuf>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20221209145637.nr6favnsofmwo45s@skbuf>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiANCj4gT0ssIEkgdGhpbmsgSSBnZXQgYSBiZXR0ZXIgaWRlYSBvZiB5b3VyIHNldHVwLg0KPiBT
-byBpdCBzZWVtcyBSVEw4MjExRlMgaW5kZWVkIGFjdHMgYXMgbWVkaWEgY29udmVydGVyLiBMaW5r
-IHN0YXR1cyBvbiBNREkNCj4gc2lkZSBvZiBSVEw4MjExRlMgcmVmbGVjdHMgbGluayBzdGF0dXMg
-b24gZmliZXIvc2VyZGVzIHNpZGUuDQo+IFJUTDgxNjhIIFBIWSBoYXMgbm8gaWRlYSB3aGV0aGVy
-IGl0J3MgY29ubmVjdGVkIHRvIFJKNDUgbWFnbmV0aWNzIG9yIHRvIHRoZQ0KPiBNREkgc2lkZSBv
-ZiBhIFJUTDgyMTFGUy4NCj4gDQo+IEkgdGhpbmsgZm9yIGNvbmZpZ3VyaW5nIFJUTDgyMTFGUyB5
-b3UgaGF2ZSB0d28gb3B0aW9uczoNCj4gMS4gRXh0ZW5kIHRoZSBSZWFsdGVrIFBIWSBkcml2ZXIg
-dG8gc3VwcG9ydCBSVEw4MjExRlMgZmliZXIgbW9kZSAyLg0KPiBDb25maWd1cmUgUlRMODIxMUZT
-IGZyb20gdXNlcnNwYWNlIChwaHl0b29sLCBtaWktdG9vbCwgLi4pLiBIb3dldmVyIHRvIGJlDQo+
-IGFibGUgdG8gZG8gdGhpcyB5b3UgbWF5IG5lZWQgdG8gYWRkIGEgZHVtbXkgbmV0ZGV2aWNlDQo+
-ICAgIHRoYXQgUlRMODIxMUZTIGlzIGF0dGFjaGVkIHRvLiBXaGVuIGdvaW5nIHdpdGggdGhpcyBv
-cHRpb24gaXQgbWF5IGJlIGJldHRlcg0KPiB0byBhdm9pZCBwaHlsaWIgdGFraW5nIGNvbnRyb2wg
-b2YgUlRMODIxMUZTLg0KPiAgICBUaGlzIGNhbiBiZSBkb25lIGJ5IHNldHRpbmcgdGhlIHBoeV9t
-YXNrIG9mIHRoZSBiaXQtYmFuZ2VkIG1paV9idXMuDQoNClRoYW5rcyBmb3IgeW91ciBhZHZhaWNl
-Lg0KSXMgdGhhdCBwb3NzaWJsZSBmb3IgdXMgdG8gcmVnaXN0ZXIgYSBQSFkgZml4dXAgZnVuY3Rp
-b24ocGh5X3JlZ2lzdGVyX2ZpeHVwKCkpIHRvIHNldHVwIHJ0bDgyMTFmcyBpbnN0ZWFkIG9mIHNl
-dHVwIGl0IGluIFBIWSBkcml2ZXI/DQoNCiAtLS0tLS1QbGVhc2UgY29uc2lkZXIgdGhlIGVudmly
-b25tZW50IGJlZm9yZSBwcmludGluZyB0aGlzIGUtbWFpbC4NCg0K
+The 12/09/2022 16:56, Vladimir Oltean wrote:
+> 
+> On Fri, Dec 09, 2022 at 03:57:20PM +0100, Horatiu Vultur wrote:
+> > The 12/09/2022 16:43, Vladimir Oltean wrote:
+> > >
+> > > On Fri, Dec 09, 2022 at 03:20:58PM +0100, Horatiu Vultur wrote:
+> > > > On ocelot, the vcap is enabled at port initialization, while on other
+> > > > platforms(lan966x and sparx5) you have the option to enable or disable.
+> > >
+> > > Even if that wasn't the case, I'd still consider enabling/disabling VCAP
+> > > lookups privately in the ocelot driver when there are non-tc users of
+> > > traps, instead of requiring users to do anything with tc.
+> >
+> > I was thinking also about this, such the ptp to enable the VCAP
+> > privately. But then the issue would be if a user adds entries using tc
+> > and then start ptp, then suddently the rules that were added using tc
+> > could be hit. That is the reason why expected the user to enable the
+> > tcam manually.
+> 
+> I don't understand, tc rules which do what? Why would those rules only
+> be hit after PTP is enabled and not before?
+
+Because you have not enabled the vcap.
+
+For example this rule:
+tc filter add dev eth0 ingress chain 8000000 prio 1 handle 1 protocol all
+flower skip_sw dst_mac 00:11:22:33:44:55/ff:ff:ff:ff:ff:ff action trap
+action goto chain 8100000
+
+This will not be hit until you add this rule:
+tc filter add dev eth0 ingress prio 1 handle 2 matchall skip_sw action goto chain 8000000
+
+Because this rule will enable the HW. Just to aligned to a SW
+implementation of the tc, we don't enable the vcap until there is a rule
+in chain 0 that has an action to go to chain 8000000 were it resides
+IS2 rules.
+
+So for example, on a fresh started lan966x the user will add the following
+rule:
+tc filter add dev eth0 ingress chain 8000000 prio 1 handle 1 protocol
+all flower skip_sw dst_mac 00:11:22:33:44:55/ff:ff:ff:ff:ff:ff action
+trap action goto chain 8100000
+
+He expects this rule not to be hit as there is no rule in chain 0. Now if
+PTP is started and it would enable vcap, then suddenly this rule may be
+hit.
+
+I hope this helps a little bit.
+
+-- 
+/Horatiu
