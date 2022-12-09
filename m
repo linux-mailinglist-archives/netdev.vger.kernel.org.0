@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AD27647E83
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 08:27:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33358647E85
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 08:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230165AbiLIH1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 02:27:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
+        id S230204AbiLIH1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 02:27:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbiLIH1A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 02:27:00 -0500
+        with ESMTP id S230236AbiLIH1F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 02:27:05 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9448E396FA;
-        Thu,  8 Dec 2022 23:26:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC7331F99;
+        Thu,  8 Dec 2022 23:26:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670570792; x=1702106792;
+  t=1670570800; x=1702106800;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=CKuOQt4yU70z+5Gpv7VdxXsL9mjRLIjfWBDfRHeT1Uw=;
-  b=EvsxAvHQQjygaR8uwiHDI8Titel+nNRkcjq7GT1en1gVNjitKHQfzRIH
-   n1v4IQ5IWWc3YjgJMkG7DqMk03PCvD13OmbZfFWZ0o3h2Oq2cYSWC27x8
-   qJa1lpyXnelwQ7sKtSOL1Np6mZxfYV36wWTVj0bQbKL/ABy4UlCBKQ2sC
-   J3scRbgu5FIVYKgpHY/KXrojzrUNXBhYUHeKqscb40KeKpDqsoBvy3YRk
-   ht0gNTN+SiwPsZWLGnEFHwO/KOElsuh0KHwC2qEpB7nnkSCHUXQrnNiOH
-   7NhpPdjlFR0EicdRQkogLp9frYjfUo7vTjziVZWusc4W8nlMOgOorjAfW
-   A==;
+  bh=nw2MCybanfbraTNCDQp/REi0mo729PvQN/PhoiA4rcU=;
+  b=UaVNjUNk+OruTtlCh2X0SUurQL8LCdL/qvf2FJOYfUP0wreNcIox65+I
+   wyenH+2t8iscsLF0dk1ckwlE0oSIAoCmcG+oEgn/HnOW0AuBoD4t0Iihl
+   ejUWin0b331M+jweRsHh3JOO8rbAi7JR7U4/IHqjFab4OZcbaJuVIhZkv
+   cc/iYaa/d8xcsHwBgoXlVG98vC2IXsCUrBK+fdeBgor5wqRg2ekzi2EJm
+   p1IWAG2lMTobOFDgU5iV3oB6dqFb8KWj1CaEKlKKpkaJStAsa51PdzHfg
+   kVo45938E8uuGF6wsbD0QY4YH4h6hlvTJJ/EfmeqUogshSRxEwDUif+Bw
+   w==;
 X-IronPort-AV: E=Sophos;i="5.96,230,1665471600"; 
-   d="scan'208";a="203272848"
+   d="scan'208";a="192353256"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2022 00:26:32 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2022 00:26:39 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 9 Dec 2022 00:26:29 -0700
+ 15.1.2507.12; Fri, 9 Dec 2022 00:26:39 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 9 Dec 2022 00:26:24 -0700
+ 15.1.2507.12 via Frontend Transport; Fri, 9 Dec 2022 00:26:33 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
@@ -46,9 +46,9 @@ CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
         <richardcochran@gmail.com>, <ceggers@arri.de>
-Subject: [Patch net-next v3 09/13] net: dsa: microchip: ptp: move pdelay_rsp correction field to tail tag
-Date:   Fri, 9 Dec 2022 12:54:33 +0530
-Message-ID: <20221209072437.18373-10-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v3 10/13] net: dsa: microchip: ptp: add periodic output signal
+Date:   Fri, 9 Dec 2022 12:54:34 +0530
+Message-ID: <20221209072437.18373-11-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20221209072437.18373-1-arun.ramadoss@microchip.com>
 References: <20221209072437.18373-1-arun.ramadoss@microchip.com>
@@ -67,132 +67,488 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Christian Eggers <ceggers@arri.de>
 
-For PDelay_Resp messages we will likely have a negative value in the
-correction field. The switch hardware cannot correctly update such
-values (produces an off by one error in the UDP checksum), so it must be
-moved to the time stamp field in the tail tag. Format of the correction
-field is 48 bit ns + 16 bit fractional ns.  After updating the
-correction field, clone is no longer required hence it is freed.
+LAN937x and KSZ PTP supported switches has Three Trigger output unit.
+This TOU can used to generate the periodic signal for PTP. TOU has the
+cycle width register of 32 bit in size and period width register of 24
+bit, each value is of 8ns so the pulse width can be maximum 125ms.
+
+Tested using ./testptp -d /dev/ptp0 -p 1000000000 -w 100000000 for
+generating the 10ms pulse width
 
 Signed-off-by: Christian Eggers <ceggers@arri.de>
+Co-developed-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
-v2 -> v3
-- used update_correction variable in skb->cb instead of ptp_msg_type
-
 v1 -> v2
-- added fallthrough keyword in switch case to suppress checkpatch
-warning
-
-RFC v3 -> Patch v1
-- Patch is separated from transmission logic patch
+- In ksz_ptp_enable function, removed the check request->index since it
+is handled in upper layer. For the default case use -EOPNOSUPP instead
+of -EINVAL.
 ---
- drivers/net/dsa/microchip/ksz_ptp.c |  5 ++++
- include/linux/dsa/ksz_common.h      |  2 ++
- net/dsa/tag_ksz.c                   | 41 ++++++++++++++++++++++++++++-
- 3 files changed, 47 insertions(+), 1 deletion(-)
+ drivers/net/dsa/microchip/ksz_common.h  |  13 ++
+ drivers/net/dsa/microchip/ksz_ptp.c     | 296 ++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_ptp.h     |   8 +
+ drivers/net/dsa/microchip/ksz_ptp_reg.h |  63 +++++
+ 4 files changed, 380 insertions(+)
 
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 6809e1a76037..ecc186c857aa 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -477,6 +477,19 @@ static inline int ksz_rmw16(struct ksz_device *dev, u32 reg, u16 mask,
+ 	return ret;
+ }
+ 
++static inline int ksz_rmw32(struct ksz_device *dev, u32 reg, u32 mask,
++			    u32 value)
++{
++	int ret;
++
++	ret = regmap_update_bits(dev->regmap[2], reg, mask, value);
++	if (ret)
++		dev_err(dev->dev, "can't rmw 32bit reg 0x%x: %pe\n", reg,
++			ERR_PTR(ret));
++
++	return ret;
++}
++
+ static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
+ {
+ 	u32 val[2];
 diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-index 96927a699665..c9da2a735165 100644
+index c9da2a735165..6d7edc81909e 100644
 --- a/drivers/net/dsa/microchip/ksz_ptp.c
 +++ b/drivers/net/dsa/microchip/ksz_ptp.c
-@@ -267,6 +267,8 @@ void ksz_port_txtstamp(struct dsa_switch *ds, int port,
+@@ -31,6 +31,252 @@
  
- 	switch (ptp_msg_type) {
- 	case PTP_MSGTYPE_PDELAY_REQ:
-+		 fallthrough;
-+	case PTP_MSGTYPE_PDELAY_RESP:
- 		break;
+ #define KSZ_PTP_INT_START 13
  
- 	default:
-@@ -279,6 +281,9 @@ void ksz_port_txtstamp(struct dsa_switch *ds, int port,
- 
- 	/* caching the value to be used in tag_ksz.c */
- 	KSZ_SKB_CB(skb)->clone = clone;
-+	KSZ_SKB_CB(clone)->ptp_type = type;
-+	if (ptp_msg_type == PTP_MSGTYPE_PDELAY_RESP)
-+		KSZ_SKB_CB(clone)->update_correction = true;
- }
- 
- static void ksz_ptp_txtstamp_skb(struct ksz_device *dev,
-diff --git a/include/linux/dsa/ksz_common.h b/include/linux/dsa/ksz_common.h
-index b91beab5e138..576a99ca698d 100644
---- a/include/linux/dsa/ksz_common.h
-+++ b/include/linux/dsa/ksz_common.h
-@@ -36,6 +36,8 @@ struct ksz_tagger_data {
- 
- struct ksz_skb_cb {
- 	struct sk_buff *clone;
-+	unsigned int ptp_type;
-+	bool update_correction;
- 	u32 tstamp;
- };
- 
-diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
-index e14ee26bf6a0..7dd2133b0820 100644
---- a/net/dsa/tag_ksz.c
-+++ b/net/dsa/tag_ksz.c
-@@ -7,6 +7,7 @@
- #include <linux/dsa/ksz_common.h>
- #include <linux/etherdevice.h>
- #include <linux/list.h>
-+#include <linux/ptp_classify.h>
- #include <net/dsa.h>
- 
- #include "tag.h"
-@@ -194,14 +195,52 @@ static void ksz_rcv_timestamp(struct sk_buff *skb, u8 *tag)
-  */
- static void ksz_xmit_timestamp(struct dsa_port *dp, struct sk_buff *skb)
- {
-+	struct sk_buff *clone = KSZ_SKB_CB(skb)->clone;
- 	struct ksz_tagger_private *priv;
-+	struct ptp_header *ptp_hdr;
-+	bool update_correction;
-+	unsigned int ptp_type;
-+	u32 tstamp_raw = 0;
-+	s64 correction;
- 
- 	priv = ksz_tagger_private(dp->ds);
- 
- 	if (!test_bit(KSZ_HWTS_EN, &priv->state))
- 		return;
- 
--	put_unaligned_be32(0, skb_put(skb, KSZ_PTP_TAG_LEN));
-+	if (!clone)
-+		goto output_tag;
++static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts);
 +
-+	update_correction = KSZ_SKB_CB(clone)->update_correction;
-+	if (!update_correction)
-+		goto output_tag;
++static int ksz_ptp_tou_reset(struct ksz_device *dev, u8 unit)
++{
++	u32 data;
++	int ret;
 +
-+	ptp_type = KSZ_SKB_CB(clone)->ptp_type;
++	/* Reset trigger unit (clears TRIGGER_EN, but not GPIOSTATx) */
++	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, TRIG_RESET, TRIG_RESET);
 +
-+	ptp_hdr = ptp_parse_header(skb, ptp_type);
-+	if (!ptp_hdr)
-+		goto output_tag;
++	data = FIELD_PREP(TRIG_DONE_M, BIT(unit));
++	ret = ksz_write32(dev, REG_PTP_TRIG_STATUS__4, data);
++	if (ret)
++		return ret;
 +
-+	correction = (s64)get_unaligned_be64(&ptp_hdr->correction);
++	data = FIELD_PREP(TRIG_INT_M, BIT(unit));
++	ret = ksz_write32(dev, REG_PTP_INT_STATUS__4, data);
++	if (ret)
++		return ret;
 +
-+	if (correction < 0) {
-+		struct timespec64 ts;
++	/* Clear reset and set GPIO direction */
++	return ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, (TRIG_RESET | TRIG_ENABLE),
++			 0);
++}
 +
-+		ts = ns_to_timespec64(-correction >> 16);
-+		tstamp_raw = ((ts.tv_sec & 3) << 30) | ts.tv_nsec;
++static int ksz_ptp_tou_pulse_verify(u64 pulse_ns)
++{
++	u32 data;
 +
-+		/* Set correction field to 0 and update UDP checksum.  */
-+		ptp_header_update_correction(skb, ptp_type, ptp_hdr, 0);
++	if (pulse_ns & 0x3)
++		return -EINVAL;
++
++	data = (pulse_ns / 8);
++	if (!FIELD_FIT(TRIG_PULSE_WIDTH_M, data))
++		return -ERANGE;
++
++	return 0;
++}
++
++static int ksz_ptp_tou_target_time_set(struct ksz_device *dev,
++				       struct timespec64 const *ts)
++{
++	int ret;
++
++	/* Hardware has only 32 bit */
++	if ((ts->tv_sec & 0xffffffff) != ts->tv_sec)
++		return -EINVAL;
++
++	ret = ksz_write32(dev, REG_TRIG_TARGET_NANOSEC, ts->tv_nsec);
++	if (ret)
++		return ret;
++
++	ret = ksz_write32(dev, REG_TRIG_TARGET_SEC, ts->tv_sec);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static int ksz_ptp_tou_start(struct ksz_device *dev, u8 unit)
++{
++	u32 data;
++	int ret;
++
++	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, TRIG_ENABLE, TRIG_ENABLE);
++	if (ret)
++		return ret;
++
++	/* Check error flag:
++	 * - the ACTIVE flag is NOT cleared an error!
++	 */
++	ret = ksz_read32(dev, REG_PTP_TRIG_STATUS__4, &data);
++	if (ret)
++		return ret;
++
++	if (FIELD_GET(TRIG_ERROR_M, data) & (1 << unit)) {
++		dev_err(dev->dev, "%s: Trigger unit%d error!\n", __func__,
++			unit);
++		ret = -EIO;
++		/* Unit will be reset on next access */
++		return ret;
 +	}
 +
-+	/* For PDelay_Resp messages, the clone is not required in
-+	 * skb_complete_tx_timestamp() and should be freed here.
-+	 */
-+	kfree_skb(clone);
-+	KSZ_SKB_CB(skb)->clone = NULL;
++	return 0;
++}
 +
-+output_tag:
-+	put_unaligned_be32(tstamp_raw, skb_put(skb, KSZ_PTP_TAG_LEN));
++static int ksz_ptp_configure_perout(struct ksz_device *dev,
++				    u32 cycle_width_ns, u32 pulse_width_ns,
++				    struct timespec64 const *target_time,
++				    u8 index)
++{
++	u32 data;
++	int ret;
++
++	data = FIELD_PREP(TRIG_NOTIFY, 1) |
++		FIELD_PREP(TRIG_GPO_M, index) |
++		FIELD_PREP(TRIG_PATTERN_M, TRIG_POS_PERIOD);
++	ret = ksz_write32(dev, REG_TRIG_CTRL__4, data);
++	if (ret)
++		return ret;
++
++	ret = ksz_write32(dev, REG_TRIG_CYCLE_WIDTH, cycle_width_ns);
++	if (ret)
++		return ret;
++
++	/* Set cycle count 0 - Infinite */
++	ret = ksz_rmw32(dev, REG_TRIG_CYCLE_CNT, TRIG_CYCLE_CNT_M, 0);
++	if (ret)
++		return ret;
++
++	data = (pulse_width_ns / 8);
++	ret = ksz_write32(dev, REG_TRIG_PULSE_WIDTH__4, data);
++	if (ret)
++		return ret;
++
++	ret = ksz_ptp_tou_target_time_set(dev, target_time);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++#define KSZ_PEROUT_VALID_FLAGS ( \
++				 PTP_PEROUT_DUTY_CYCLE \
++				 )
++
++static int ksz_ptp_enable_perout(struct ksz_device *dev,
++				 struct ptp_perout_request const *request,
++				 int on)
++{
++	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
++	u64 cycle_width_ns;
++	u64 pulse_width_ns;
++	int pin = 0;
++	u32 data32;
++	int ret;
++
++	if (request->flags & ~KSZ_PEROUT_VALID_FLAGS)
++		return -EINVAL;
++
++	if (ptp_data->tou_mode != KSZ_PTP_TOU_PEROUT &&
++	    ptp_data->tou_mode != KSZ_PTP_TOU_IDLE)
++		return -EBUSY;
++
++	data32 = FIELD_PREP(PTP_GPIO_INDEX, pin) |
++		 FIELD_PREP(PTP_TOU_INDEX, request->index);
++	ret = ksz_rmw32(dev, REG_PTP_UNIT_INDEX__4,
++			PTP_GPIO_INDEX | PTP_TOU_INDEX, data32);
++	if (ret)
++		return ret;
++
++	ret = ksz_ptp_tou_reset(dev, request->index);
++	if (ret)
++		return ret;
++
++	if (!on) {
++		ptp_data->tou_mode = KSZ_PTP_TOU_IDLE;
++		return 0;
++	}
++
++	ptp_data->perout_target_time_first.tv_sec  = request->start.sec;
++	ptp_data->perout_target_time_first.tv_nsec = request->start.nsec;
++
++	ptp_data->perout_period.tv_sec = request->period.sec;
++	ptp_data->perout_period.tv_nsec = request->period.nsec;
++
++	cycle_width_ns = timespec64_to_ns(&ptp_data->perout_period);
++	if ((cycle_width_ns & TRIG_CYCLE_WIDTH_M) != cycle_width_ns)
++		return -EINVAL;
++
++	if (request->flags & PTP_PEROUT_DUTY_CYCLE) {
++		pulse_width_ns = request->on.sec * NSEC_PER_SEC +
++			request->on.nsec;
++	} else {
++		/* Use a duty cycle of 50%. Maximum pulse width supported by the
++		 * hardware is a little bit more than 125 ms.
++		 */
++		pulse_width_ns = min_t(u64,
++				       (request->period.sec * NSEC_PER_SEC
++					+ request->period.nsec) / 2
++				       / 8 * 8,
++				       125000000LL);
++	}
++
++	ret = ksz_ptp_tou_pulse_verify(pulse_width_ns);
++	if (ret)
++		return ret;
++
++	ret = ksz_ptp_configure_perout(dev, cycle_width_ns, pulse_width_ns,
++				       &ptp_data->perout_target_time_first,
++				       pin);
++	if (ret)
++		return ret;
++
++	ret = ksz_ptp_tou_start(dev, request->index);
++	if (ret)
++		return ret;
++
++	ptp_data->tou_mode = KSZ_PTP_TOU_PEROUT;
++
++	return 0;
++}
++
++static int ksz_ptp_restart_perout(struct ksz_device *dev)
++{
++	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
++	s64 now_ns, first_ns, period_ns, next_ns;
++	struct ptp_perout_request request;
++	struct timespec64 next;
++	struct timespec64 now;
++	unsigned int count;
++	int ret;
++
++	ret = _ksz_ptp_gettime(dev, &now);
++	if (ret)
++		return ret;
++
++	now_ns = timespec64_to_ns(&now);
++	first_ns = timespec64_to_ns(&ptp_data->perout_target_time_first);
++
++	/* Calculate next perout event based on start time and period */
++	period_ns = timespec64_to_ns(&ptp_data->perout_period);
++
++	if (first_ns < now_ns) {
++		count = div_u64(now_ns - first_ns, period_ns);
++		next_ns = first_ns + count * period_ns;
++	} else {
++		next_ns = first_ns;
++	}
++
++	/* Ensure 100 ms guard time prior next event */
++	while (next_ns < now_ns + 100000000)
++		next_ns += period_ns;
++
++	/* Restart periodic output signal */
++	next = ns_to_timespec64(next_ns);
++	request.start.sec  = next.tv_sec;
++	request.start.nsec = next.tv_nsec;
++	request.period.sec  = ptp_data->perout_period.tv_sec;
++	request.period.nsec = ptp_data->perout_period.tv_nsec;
++	request.index = 0;
++	request.flags = 0;
++
++	return ksz_ptp_enable_perout(dev, &request, 1);
++}
++
+ static int ksz_ptp_enable_mode(struct ksz_device *dev)
+ {
+ 	struct ksz_tagger_data *tagger_data = ksz_tagger_data(dev->ds);
+@@ -396,6 +642,20 @@ static int ksz_ptp_settime(struct ptp_clock_info *ptp,
+ 	if (ret)
+ 		goto unlock;
+ 
++	switch (ptp_data->tou_mode) {
++	case KSZ_PTP_TOU_IDLE:
++		break;
++
++	case KSZ_PTP_TOU_PEROUT:
++		dev_info(dev->dev, "Restarting periodic output signal\n");
++
++		ret = ksz_ptp_restart_perout(dev);
++		if (ret)
++			goto unlock;
++
++		break;
++	}
++
+ 	spin_lock_bh(&ptp_data->clock_lock);
+ 	ptp_data->clock_time = *ts;
+ 	spin_unlock_bh(&ptp_data->clock_lock);
+@@ -489,6 +749,20 @@ static int ksz_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	if (ret)
+ 		goto unlock;
+ 
++	switch (ptp_data->tou_mode) {
++	case KSZ_PTP_TOU_IDLE:
++		break;
++
++	case KSZ_PTP_TOU_PEROUT:
++		dev_info(dev->dev, "Restarting periodic output signal\n");
++
++		ret = ksz_ptp_restart_perout(dev);
++		if (ret)
++			goto unlock;
++
++		break;
++	}
++
+ 	spin_lock_bh(&ptp_data->clock_lock);
+ 	ptp_data->clock_time = timespec64_add(ptp_data->clock_time, delta64);
+ 	spin_unlock_bh(&ptp_data->clock_lock);
+@@ -498,6 +772,26 @@ static int ksz_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	return ret;
  }
  
- /* Defer transmit if waiting for egress time stamp is required.  */
++static int ksz_ptp_enable(struct ptp_clock_info *ptp,
++			  struct ptp_clock_request *req, int on)
++{
++	struct ksz_ptp_data *ptp_data = ptp_caps_to_data(ptp);
++	struct ksz_device *dev = ptp_data_to_ksz_dev(ptp_data);
++	int ret;
++
++	switch (req->type) {
++	case PTP_CLK_REQ_PEROUT:
++		mutex_lock(&ptp_data->lock);
++		ret = ksz_ptp_enable_perout(dev, &req->perout, on);
++		mutex_unlock(&ptp_data->lock);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return ret;
++}
++
+ /*  Function is pointer to the do_aux_work in the ptp_clock capability */
+ static long ksz_ptp_do_aux_work(struct ptp_clock_info *ptp)
+ {
+@@ -546,6 +840,8 @@ int ksz_ptp_clock_register(struct dsa_switch *ds)
+ 	ptp_data->caps.adjfine		= ksz_ptp_adjfine;
+ 	ptp_data->caps.adjtime		= ksz_ptp_adjtime;
+ 	ptp_data->caps.do_aux_work	= ksz_ptp_do_aux_work;
++	ptp_data->caps.enable		= ksz_ptp_enable;
++	ptp_data->caps.n_per_out	= 3;
+ 
+ 	ret = ksz_ptp_start_clock(dev);
+ 	if (ret)
+diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
+index 0b14aed71ec2..9451e3a76375 100644
+--- a/drivers/net/dsa/microchip/ksz_ptp.h
++++ b/drivers/net/dsa/microchip/ksz_ptp.h
+@@ -12,6 +12,11 @@
+ 
+ #include <linux/ptp_clock_kernel.h>
+ 
++enum ksz_ptp_tou_mode {
++	KSZ_PTP_TOU_IDLE,
++	KSZ_PTP_TOU_PEROUT,
++};
++
+ struct ksz_ptp_data {
+ 	struct ptp_clock_info caps;
+ 	struct ptp_clock *clock;
+@@ -20,6 +25,9 @@ struct ksz_ptp_data {
+ 	/* lock for accessing the clock_time */
+ 	spinlock_t clock_lock;
+ 	struct timespec64 clock_time;
++	enum ksz_ptp_tou_mode tou_mode;
++	struct timespec64 perout_target_time_first;  /* start of first pulse */
++	struct timespec64 perout_period;
+ };
+ 
+ int ksz_ptp_clock_register(struct dsa_switch *ds);
+diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
+index abe95bbefc12..dbccfedf89e4 100644
+--- a/drivers/net/dsa/microchip/ksz_ptp_reg.h
++++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
+@@ -49,6 +49,69 @@
+ #define PTP_MASTER			BIT(1)
+ #define PTP_1STEP			BIT(0)
+ 
++#define REG_PTP_UNIT_INDEX__4		0x0520
++
++#define PTP_GPIO_INDEX			GENMASK(19, 16)
++#define PTP_TSI_INDEX			BIT(8)
++#define PTP_TOU_INDEX			GENMASK(1, 0)
++
++#define REG_PTP_TRIG_STATUS__4		0x0524
++
++#define TRIG_ERROR_M			GENMASK(18, 16)
++#define TRIG_DONE_M			GENMASK(2, 0)
++
++#define REG_PTP_INT_STATUS__4		0x0528
++
++#define TRIG_INT_M			GENMASK(18, 16)
++#define TS_INT_M			GENMASK(1, 0)
++
++#define REG_PTP_CTRL_STAT__4           0x052C
++
++#define GPIO_IN                        BIT(7)
++#define GPIO_OUT                       BIT(6)
++#define TS_INT_ENABLE                  BIT(5)
++#define TRIG_ACTIVE                    BIT(4)
++#define TRIG_ENABLE                    BIT(3)
++#define TRIG_RESET                     BIT(2)
++#define TS_ENABLE                      BIT(1)
++#define TS_RESET                       BIT(0)
++
++#define REG_TRIG_TARGET_NANOSEC        0x0530
++#define REG_TRIG_TARGET_SEC            0x0534
++
++#define REG_TRIG_CTRL__4               0x0538
++
++#define TRIG_CASCADE_ENABLE            BIT(31)
++#define TRIG_CASCADE_TAIL              BIT(30)
++#define TRIG_CASCADE_UPS_M             GENMASK(29, 26)
++#define TRIG_NOW                       BIT(25)
++#define TRIG_NOTIFY                    BIT(24)
++#define TRIG_EDGE                      BIT(23)
++#define TRIG_PATTERN_M		       GENMASK(22, 20)
++#define TRIG_NEG_EDGE                  0
++#define TRIG_POS_EDGE                  1
++#define TRIG_NEG_PULSE                 2
++#define TRIG_POS_PULSE                 3
++#define TRIG_NEG_PERIOD                4
++#define TRIG_POS_PERIOD                5
++#define TRIG_REG_OUTPUT                6
++#define TRIG_GPO_M		       GENMASK(19, 16)
++#define TRIG_CASCADE_ITERATE_CNT_M     GENMASK(15, 0)
++
++#define REG_TRIG_CYCLE_WIDTH           0x053C
++#define TRIG_CYCLE_WIDTH_M	       GENMASK(31, 0)
++
++#define REG_TRIG_CYCLE_CNT             0x0540
++
++#define TRIG_CYCLE_CNT_M	       GENMASK(31, 16)
++#define TRIG_BIT_PATTERN_M             GENMASK(15, 0)
++
++#define REG_TRIG_ITERATE_TIME          0x0544
++
++#define REG_TRIG_PULSE_WIDTH__4        0x0548
++
++#define TRIG_PULSE_WIDTH_M             GENMASK(23, 0)
++
+ /* Port PTP Register */
+ #define REG_PTP_PORT_RX_DELAY__2	0x0C00
+ #define REG_PTP_PORT_TX_DELAY__2	0x0C02
 -- 
 2.36.1
 
