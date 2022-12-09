@@ -2,213 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66E4264822D
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 13:10:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F5F64826E
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 13:38:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229568AbiLIMKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 07:10:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40656 "EHLO
+        id S229865AbiLIMiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 07:38:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiLIMKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 07:10:24 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23CE3A2CF;
-        Fri,  9 Dec 2022 04:10:21 -0800 (PST)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 7E8FE254;
-        Fri,  9 Dec 2022 13:10:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1670587819;
+        with ESMTP id S229517AbiLIMiK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 07:38:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EF4663F6
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 04:37:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670589435;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HT7ybxn02MLDIESzonVfB+5+CEY92SUTINKnwpodGKo=;
-        b=EOBnYGK9CxTCj1isCC6lELwxv3rH0bjQI9P5F56uFU8pJ0CDEh3FSxNSeH4fICJbrbv44/
-        hZ0DutGE4+POl6njie2oaj5LaqIgE5beRYweX6+BEdcERR4g0mOrGxp/vNl5qFPG7+ikNp
-        uS9GzcF5HOby3dL46Fpq/rqFAJCxbcOAHPS1JudvV7hYUlYvoVPJfxJjb4oGUpWqCTd9+r
-        3VrY5zTJzQhj9PVf4CSC9Dyk9vFXkfJ2RCs6Q1ZuEeZ2u/y8XoUg0kncCASVKMJU0njv1x
-        Io7G4+C2xyyEPCjXugKaH+bHlXaxucpdwbGCQrYYKdSphfOcuBUI//jXxZWeBw==
+        bh=kKcc7XQPg0UZn1AHNfQ4N2d5zF9JzBW3g3hPGFAB4Kc=;
+        b=ZG3qqAatQhAgpOboJAhhAnXOsAls6GT3djKhXpAx8qhAmpWP+j5Ewoo4/diUxYxZxAhmAx
+        IsB4N7gRUZDNj5yOs+yBwaGHPcGpIAQwcjkCOeZuP6frx+KIOVT+ppWBotynfu9bGbnIWY
+        PFnFWXmmPhUxIB2B9Yq/ZGaPsueGibY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-98-iStCORDvOMO8XaybwRqR2A-1; Fri, 09 Dec 2022 07:37:14 -0500
+X-MC-Unique: iStCORDvOMO8XaybwRqR2A-1
+Received: by mail-wm1-f69.google.com with SMTP id b47-20020a05600c4aaf00b003d031aeb1b6so3878479wmp.9
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 04:37:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kKcc7XQPg0UZn1AHNfQ4N2d5zF9JzBW3g3hPGFAB4Kc=;
+        b=klRn49RT8pYm6TcqIPlirGBObIZsJmKsxRHDhZt+mIPoy8zu8Msk8Mi8Jev/FkHwvO
+         MXRey8mAAEyRHluwnfpmLRgu397BDNrJrTPHH+II8chPX2mPTv0LTrqweAM6swjMGEF1
+         jszU3dK8Qg7IP6NScwtttNtth77ScO7OheXSvfGGpPoTxFhuqvovnluGnDwsCSagH3El
+         1zlBEGDlFUkJKtm+BzfmvFujgeWpN/SczzrFgh0gJabpR4NEMNbGfJ3xICRCutyyAbs6
+         +frNjVmQ6xPTo9W8LrRBmv7KvXBJ4Uwt0Uh/PYM9zBvDGCIBFfUL30jzev47gg0bE/V+
+         hR/Q==
+X-Gm-Message-State: ANoB5pkZ/sI3vu4MmxSBUtT/VcOTFZHZc1zindHNa/0WTxhMCbv1g2g3
+        mrzWyW2YNWu55Sf8HTRsa4UctQIkkbBiqIL5T5y3degbSej6vV5absWSkdVMwVGpA7jelCZS3a3
+        IVmA/caquCllSFe15
+X-Received: by 2002:a05:600c:4fd0:b0:3d1:c0a1:4804 with SMTP id o16-20020a05600c4fd000b003d1c0a14804mr4752759wmq.17.1670589432845;
+        Fri, 09 Dec 2022 04:37:12 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf5DyMiYpWNcqaQueb0cVh7tJ5lH4JY75MZjLcmrbwYgfM+x/au0sr5C4m2hvq8cZrZMVyWo5g==
+X-Received: by 2002:a05:600c:4fd0:b0:3d1:c0a1:4804 with SMTP id o16-20020a05600c4fd000b003d1c0a14804mr4752714wmq.17.1670589432518;
+        Fri, 09 Dec 2022 04:37:12 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-106-22.dyn.eolo.it. [146.241.106.22])
+        by smtp.gmail.com with ESMTPSA id j10-20020a05600c1c0a00b003b49bd61b19sm9284355wms.15.2022.12.09.04.37.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Dec 2022 04:37:11 -0800 (PST)
+Message-ID: <d220402a232e204676d9100d6fe4c2ae08f753ee.camel@redhat.com>
+Subject: Re: [PATCH v1 2/3] Treewide: Stop corrupting socket's task_frag
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Benjamin Coddington <bcodding@redhat.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Christoph =?ISO-8859-1?Q?B=F6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Steve French <sfrench@samba.org>,
+        Christine Caulfield <ccaulfie@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Xiubo Li <xiubli@redhat.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org, nbd@other.debian.org,
+        linux-nvme@lists.infradead.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, cluster-devel@redhat.com,
+        ocfs2-devel@oss.oracle.com, v9fs-developer@lists.sourceforge.net,
+        ceph-devel@vger.kernel.org, linux-nfs@vger.kernel.org
+Date:   Fri, 09 Dec 2022 13:37:08 +0100
+In-Reply-To: <c2ec184226acd21a191ccc1aa46a1d7e43ca7104.1669036433.git.bcodding@redhat.com>
+References: <cover.1669036433.git.bcodding@redhat.com>
+         <c2ec184226acd21a191ccc1aa46a1d7e43ca7104.1669036433.git.bcodding@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Date:   Fri, 09 Dec 2022 13:10:19 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
-        daniel.machon@microchip.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, lars.povlsen@microchip.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, olteanv@gmail.com, pabeni@redhat.com,
-        richardcochran@gmail.com
-Subject: Re: [PATCH net-next v3 4/4] net: lan966x: Add ptp trap rules
-In-Reply-To: <20221209092904.asgka7zttvdtijub@soft-dev3-1>
-References: <20221203104348.1749811-5-horatiu.vultur@microchip.com>
- <20221208092511.4122746-1-michael@walle.cc>
- <c8b2ef73330c7bc5d823997dd1c8bf09@walle.cc>
- <20221208130444.xshazhpg4e2utvjs@soft-dev3-1>
- <adb8e2312b169d13e756ff23c45872c3@walle.cc>
- <20221209092904.asgka7zttvdtijub@soft-dev3-1>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <c8b755672e20c223a83bc3cd4332f8cd@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Am 2022-12-09 10:29, schrieb Horatiu Vultur:
-> The 12/08/2022 14:18, Michael Walle wrote:
->> Am 2022-12-08 14:04, schrieb Horatiu Vultur:
->> > > > > Currently lan966x, doesn't allow to run PTP over interfaces that are
->> > > > > part of the bridge. The reason is when the lan966x was receiving a
->> > > > > PTP frame (regardless if L2/IPv4/IPv6) the HW it would flood this
->> > > > > frame.
->> > > > > Now that it is possible to add VCAP rules to the HW, such to trap
->> > > > > these
->> > > > > frames to the CPU, it is possible to run PTP also over interfaces that
->> > > > > are part of the bridge.
->> > > >
->> > > > This gives me:
->> > > >
->> > > > # /etc/init.d/S65ptp4l start
->> > > > Starting linuxptp daemon: OK
->> > > > [   44.136870] vcap_val_rule:1678: keyset was not updated: -22
->> > > > [   44.140196] vcap_val_rule:1678: keyset was not updated: -22
->> > > > #
->> > > >
->> > > > # ptp4l -v
->> > > > 3.1.1
->> > > > # uname -a
->> > > > Linux buildroot 6.1.0-rc8-next-20221208+ #924 SMP Thu Dec  8 10:08:58
->> > > > CET 2022 armv7l GNU/Linux
->> > > >
->> > > > I don't know whats going on, but I'm happy to help with debugging with
->> > > > some
->> > > > guidance.
->> > >
->> > > Oh, and linuxptp is running on eth0, no bridges are set up. linuxptp
->> > > is started with "/usr/sbin/ptp4l -f /etc/linuxptp.cfg"
->> > >
->> > > # cat /etc/linuxptp.cfg
->> > > # LinuxPTP configuration file for synchronizing the system clock to
->> > > # a remote PTP master in slave-only mode.
->> > > #
->> > > # By default synchronize time in slave-only mode using UDP and
->> > > hardware
->> > > time
->> > > # stamps on eth0. If the difference to master is >1.0 second correct
->> > > by
->> > > # stepping the clock instead of adjusting the frequency.
->> > > #
->> > > # If you change the configuration don't forget to update the phc2sys
->> > > # parameters accordingly in linuxptp-system-clock.service (systemd)
->> > > # or the linuxptp SysV init script.
->> > >
->> > > [global]
->> > > slaveOnly               1
->> > > delay_mechanism         Auto
->> > > network_transport       UDPv4
->> > > time_stamping           hardware
->> > > step_threshold          1.0
->> > >
->> > > [eth0]
->> >
->> > Thanks for trying this!
->> 
->> Actually I was just booting my board which happens to have linuxptp
->> started by default. And the error messages were new. But I'm not so
->> sure anymore if PTP was really working. I'm still puzzled by reading
->> your commit message. Was it already working for interfaces which 
->> aren't
->> part of a bridge and this commit will make it work even for interfaces
->> which are part of a bridge?
+On Mon, 2022-11-21 at 08:35 -0500, Benjamin Coddington wrote:
+> Since moving to memalloc_nofs_save/restore, SUNRPC has stopped setting the
+> GFP_NOIO flag on sk_allocation which the networking system uses to decide
+> when it is safe to use current->task_frag.  The results of this are
+> unexpected corruption in task_frag when SUNRPC is involved in memory
+> reclaim.
 > 
-> Exactly!
-> This worked on interfaces that were not part of the bridge. And with
-> this commit will make it work even on interfaces that are part of the
-> bridge.
+> The corruption can be seen in crashes, but the root cause is often
+> difficult to ascertain as a crashing machine's stack trace will have no
+> evidence of being near NFS or SUNRPC code.  I believe this problem to
+> be much more pervasive than reports to the community may indicate.
 > 
->> 
->> > The issue is because you have not enabled the TCAM lookups per
->> > port. They can be enabled using this commands:
->> >
->> > tc qdisc add dev eth0 clsact
->> 
->> This gives me the following error, might be a missing kconfig option:
->> 
->> # tc qdisc add dev eth0 clsact
->> RTNETLINK answers: Operation not supported
+> Fix this by having kernel users of sockets that may corrupt task_frag due
+> to reclaim set sk_use_task_frag = false.  Preemptively correcting this
+> situation for users that still set sk_allocation allows them to convert to
+> memalloc_nofs_save/restore without the same unexpected corruptions that are
+> sure to follow, unlikely to show up in testing, and difficult to bisect.
 > 
-> Yes that should be the case, I think you are missing:
-> CONFIG_NET_SCHED
-> But may be others when you try to add the next rule.
-
-I guess I'd need to update my kernel config sometime. At the
-moment I just have a basic one, as there is still so much stuff
-missing for the lan9668. So I haven't come around testing anything
-else. As I said, I just noticed because my rootfs happens to have
-linuxptp started by default.
-
->> > tc filter add dev eth0 ingress prio 5 handle 5 matchall skip_sw action
->> > goto chain 8000000
->> >
->> > This will enable the lookup and then you should be able to start again
->> > the ptp4l. Sorry for not mention this, at least I should have written
->> > it
->> > somewhere that this is required.
->> >
->> > I was not sure if lan966x should or not enable tcam lookups
->> > automatically when a ptp trap action is added. I am open to suggestion
->> > here.
->> 
->> IMHO, from a user point of view this should just work. For a user
->> there is no connection between running linuxptp and some filtering
->> stuff with 'tc'.
->> 
->> Also, if the answer to my question above is yes, and ptp should
->> have worked on eth0 before, this is a regression then.
+> CC: Philipp Reisner <philipp.reisner@linbit.com>
+> CC: Lars Ellenberg <lars.ellenberg@linbit.com>
+> CC: "Christoph Böhmwalder" <christoph.boehmwalder@linbit.com>
+> CC: Jens Axboe <axboe@kernel.dk>
+> CC: Josef Bacik <josef@toxicpanda.com>
+> CC: Keith Busch <kbusch@kernel.org>
+> CC: Christoph Hellwig <hch@lst.de>
+> CC: Sagi Grimberg <sagi@grimberg.me>
+> CC: Lee Duncan <lduncan@suse.com>
+> CC: Chris Leech <cleech@redhat.com>
+> CC: Mike Christie <michael.christie@oracle.com>
+> CC: "James E.J. Bottomley" <jejb@linux.ibm.com>
+> CC: "Martin K. Petersen" <martin.petersen@oracle.com>
+> CC: Valentina Manea <valentina.manea.m@gmail.com>
+> CC: Shuah Khan <shuah@kernel.org>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> CC: David Howells <dhowells@redhat.com>
+> CC: Marc Dionne <marc.dionne@auristor.com>
+> CC: Steve French <sfrench@samba.org>
+> CC: Christine Caulfield <ccaulfie@redhat.com>
+> CC: David Teigland <teigland@redhat.com>
+> CC: Mark Fasheh <mark@fasheh.com>
+> CC: Joel Becker <jlbec@evilplan.org>
+> CC: Joseph Qi <joseph.qi@linux.alibaba.com>
+> CC: Eric Van Hensbergen <ericvh@gmail.com>
+> CC: Latchesar Ionkov <lucho@ionkov.net>
+> CC: Dominique Martinet <asmadeus@codewreck.org>
+> CC: "David S. Miller" <davem@davemloft.net>
+> CC: Eric Dumazet <edumazet@google.com>
+> CC: Jakub Kicinski <kuba@kernel.org>
+> CC: Paolo Abeni <pabeni@redhat.com>
+> CC: Ilya Dryomov <idryomov@gmail.com>
+> CC: Xiubo Li <xiubli@redhat.com>
+> CC: Chuck Lever <chuck.lever@oracle.com>
+> CC: Jeff Layton <jlayton@kernel.org>
+> CC: Trond Myklebust <trond.myklebust@hammerspace.com>
+> CC: Anna Schumaker <anna@kernel.org>
+> CC: drbd-dev@lists.linbit.com
+> CC: linux-block@vger.kernel.org
+> CC: linux-kernel@vger.kernel.org
+> CC: nbd@other.debian.org
+> CC: linux-nvme@lists.infradead.org
+> CC: open-iscsi@googlegroups.com
+> CC: linux-scsi@vger.kernel.org
+> CC: linux-usb@vger.kernel.org
+> CC: linux-afs@lists.infradead.org
+> CC: linux-cifs@vger.kernel.org
+> CC: samba-technical@lists.samba.org
+> CC: cluster-devel@redhat.com
+> CC: ocfs2-devel@oss.oracle.com
+> CC: v9fs-developer@lists.sourceforge.net
+> CC: netdev@vger.kernel.org
+> CC: ceph-devel@vger.kernel.org
+> CC: linux-nfs@vger.kernel.org
 > 
-> OK, I can see your point.
-> With the following diff, you should see the same behaviour as before:
+> Suggested-by: Guillaume Nault <gnault@redhat.com>
+> Signed-off-by: Benjamin Coddington <bcodding@redhat.com>
 
-Ok, I can say, I don't see the error message anymore. Haven't tested
-PTP though. I'd need to setup it up first.
+I think this is the most feasible way out of the existing issue, and I
+think this patchset should go via the networking tree, targeting the
+Linux 6.2.
 
-Does it also work out of the box with the following patch if
-the interface is part of a bridge or do you still have to do
-the tc magic from above?
+If someone has disagreement with the above, please speak! 
 
--michael
+Thanks,
 
-> ---
-> diff --git
-> a/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
-> b/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
-> index 904f5a3f636d3..538f4b76cf97a 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_impl.c
-> @@ -91,8 +91,6 @@ lan966x_vcap_is2_get_port_keysets(struct net_device
-> *dev, int lookup,
-> 
->         /* Check if the port keyset selection is enabled */
->         val = lan_rd(lan966x, ANA_VCAP_S2_CFG(port->chip_port));
-> -       if (!ANA_VCAP_S2_CFG_ENA_GET(val))
-> -               return -ENOENT;
-> 
->         /* Collect all keysets for the port in a list */
->         if (l3_proto == ETH_P_ALL)
-> ---
-> 
->> 
->> -michael
+Paolo
+
