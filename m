@@ -2,90 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B87946483BC
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 15:27:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A9C6483D0
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 15:30:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbiLIO1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 09:27:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53008 "EHLO
+        id S229939AbiLIOal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 09:30:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiLIO1r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 09:27:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37426DCE5
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 06:26:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670596008;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kOF+S3PHOW3IehcjpPDFE2HwwX4y4ZzChTg/OVZXIQ8=;
-        b=V1z76BfoVN3pZ+wcVIsgJEWou5opBoO0mHGIgpT2Az3lOVViqPTUGam9gQjpx1HvsHHCyn
-        lf7wwIZFMhyMqml7IYV6h0HkupEevdT2MN54k5r3/yd6nUpB8SzO3kCaYmJ3VGkSVN0c9U
-        8A8WBkze0ep2QwxtQpaJ526WwdFrqdo=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-206-xIDDBJsKMnCMZSZMSlFiWA-1; Fri, 09 Dec 2022 09:26:45 -0500
-X-MC-Unique: xIDDBJsKMnCMZSZMSlFiWA-1
-Received: by mail-ed1-f69.google.com with SMTP id j6-20020a05640211c600b0046d6960b266so1465462edw.6
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 06:26:45 -0800 (PST)
+        with ESMTP id S229873AbiLIOaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 09:30:30 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8E132BB7;
+        Fri,  9 Dec 2022 06:30:27 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id vp12so11887423ejc.8;
+        Fri, 09 Dec 2022 06:30:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cuA2yPf+ChfcfCglv6Ul1/eHJRw+DDn5TeyeY8RCIMk=;
+        b=XZ5aiS7J0L0YcnighJH4FbLcZQdAWCgk+XRT3yyaxd6yTQ2N1iR/NFMH3zc5oxoqyK
+         O2kdbDTlwT+kQgh31FJD6v7IRSY9cEwDemh0TDy4M9PNzmJnP4tdLbNTL6NEppFYZrii
+         idbE8Zc8W7KNK0WiNX2gF7XohHE1dE6K92a7aqMgXl3D0W5guFQ39loq1diDLsBpRD48
+         XwTEb5ir38Fx+fqf9lq7RhWtwNczI15clq6l9/LG09rOVrO2yOe5jVZqGc2SR4q1PhWI
+         PUzkgCoFEBMy3OBqcSZ+fCG9OTfcq9Qth4kFA8NfJ/NgRV7F/dE5U9W+jN0itIDueSlc
+         N6VA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kOF+S3PHOW3IehcjpPDFE2HwwX4y4ZzChTg/OVZXIQ8=;
-        b=3OcoLeYRQTHGX9QbFj/2IGUszhl0i99wYb3XkhbcH/5FoQpfp6jwhIOvrq40401T/H
-         YRRNJCnOAO+VJvxQ74TmcC9G9SEKsuYZrcSiR1Bqs5tlmc7virgMOaLgQaqYHe0Ca3D9
-         r0u6Ix1hdacOrEnM0QJhP4jzPBPME6Tr1gn/HUZI71OOEtoiCEbNVM/p31y/2/ZpRgxk
-         9WMtOi88fkVvMEiAPabmNheVgXVwHR6jE12Yj/CMldO7apFPyH4WxzFYkayFupxUli2J
-         8aTgD7T2XGPmZYMo5KmlbOfSk1HRuqnQjRNWUg4pGRfa9hJPOGJ50ADIKJ+YElT0N/Rs
-         lwxQ==
-X-Gm-Message-State: ANoB5pk81nRQLVuBLpopH5CwvqISP2JXZNSzPRvr/nD157xjNULUCIOY
-        mAOAuslCkHiBxq3hihNhA0ORH+jTPKUhfG8ULBBNelxLFvAUvXXKwJnV4V2PJq7IDMTCat8w4zo
-        mtVWlRLdhUNQyFf1F
-X-Received: by 2002:a17:907:2985:b0:7c0:f907:89a2 with SMTP id eu5-20020a170907298500b007c0f90789a2mr4852292ejc.61.1670596002704;
-        Fri, 09 Dec 2022 06:26:42 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf58kecm7GH89VsCVvR2KVQImLWpqMuMRJvCxyhdIn7HOLX36PJxFX0mpqP1eZGplH5iuFTCTg==
-X-Received: by 2002:a17:907:2985:b0:7c0:f907:89a2 with SMTP id eu5-20020a170907298500b007c0f90789a2mr4852228ejc.61.1670596001541;
-        Fri, 09 Dec 2022 06:26:41 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 10-20020a170906218a00b007815ca7ae57sm603417eju.212.2022.12.09.06.26.39
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cuA2yPf+ChfcfCglv6Ul1/eHJRw+DDn5TeyeY8RCIMk=;
+        b=qQtfoP0GA99ikHE5gsiLEdyPDVj1sJxtYmoST+yyPCHA3sfBK1VEC4ndHmoek9FD0V
+         u86z6o65SDyoPN0eeRHpPEwM0hdLuxtp4YjvUqTkmQLP6Agr9DpSYEsBAqkjieypiBgP
+         6uyfePl2Wp10Hbk17twSJ/iD4jcDc1Px7dIP8vzk20Qa3jz80kxq28J6VhBegtEx07yr
+         dUGwnCV9nquD1D09hbqU+3/450UTsrATKlE+aHlfkzxb7b5+6r6/Km4UAkXOKyXV9klY
+         B653hD9oJY+mQpcUpZG187HuBGQNyudNI4RNHaODZ9/By0YnjIE0SO8dN/VE0aQ45UHN
+         +0gQ==
+X-Gm-Message-State: ANoB5plWhu2o89jJ+39qkAwkAokyajK8G34nveaSHCYyf3hZWjtdUsfj
+        aOhABEm23CjWZ2SkpXDbqYw=
+X-Google-Smtp-Source: AA0mqf6a9KtAVVGSdOmc+5oXWjX8CuVNvMLv6UohalkXgvPQqtSu54aECYaS+1SuFdcWvyygfurYyQ==
+X-Received: by 2002:a17:907:9712:b0:78d:f459:7186 with SMTP id jg18-20020a170907971200b0078df4597186mr10344136ejc.49.1670596226850;
+        Fri, 09 Dec 2022 06:30:26 -0800 (PST)
+Received: from skbuf ([188.27.185.190])
+        by smtp.gmail.com with ESMTPSA id fu38-20020a170907b02600b007ae32daf4b9sm621192ejc.106.2022.12.09.06.30.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 06:26:40 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D0DCD82EB35; Fri,  9 Dec 2022 15:26:38 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Shuah Khan <shuah@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf v2 2/2] selftests/bpf: Add a test for using a cpumap from an freplace-to-XDP program
-Date:   Fri,  9 Dec 2022 15:26:22 +0100
-Message-Id: <20221209142622.154126-2-toke@redhat.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221209142622.154126-1-toke@redhat.com>
-References: <20221209142622.154126-1-toke@redhat.com>
+        Fri, 09 Dec 2022 06:30:26 -0800 (PST)
+Date:   Fri, 9 Dec 2022 16:30:24 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Uladzislau Koshchanka <koshchanka@gmail.com>
+Cc:     Dan Carpenter <error27@gmail.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] lib: packing: fix shift wrapping in bit_reverse()
+Message-ID: <20221209143024.ad4cckonv4c3yhxd@skbuf>
+References: <Y5B3sAcS6qKSt+lS@kili>
+ <CAHktU2C00J7wY5uDbbScxwb0fD2kwUH+-=hgS5o_Timemh0Auw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHktU2C00J7wY5uDbbScxwb0fD2kwUH+-=hgS5o_Timemh0Auw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,175 +71,283 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds a simple test for inserting an XDP program into a cpumap that is
-"owned" by an XDP program that was loaded as PROG_TYPE_EXT (as libxdp
-does). Prior to the kernel fix this would fail because the map type
-ownership would be set to PROG_TYPE_EXT instead of being resolved to
-PROG_TYPE_XDP.
+Hi Uladzislau,
 
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+On Fri, Dec 09, 2022 at 11:21:21AM +0300, Uladzislau Koshchanka wrote:
+> On Wed, 7 Dec 2022 at 14:30, Dan Carpenter <error27@gmail.com> wrote:
+> >
+> > The bit_reverse() function is clearly supposed to be able to handle
+> > 64 bit values, but the types for "(1 << i)" and "bit << (width - i - 1)"
+> > are not enough to handle more than 32 bits.
+> 
+> It seems from the surrounding code that this function is only called
+> for width of up to a byte (but correct me if I'm wrong).
+
+This observation is quite true. I was quite lazy to look and remember
+whether this is the case, but the comment says it quite clearly:
+
+		/* Bit indices into the currently accessed 8-bit box */
+		int box_start_bit, box_end_bit, box_addr;
+
+> There are fast implementations of bit-reverse in include/linux/bitrev.h.
+> It's better to just remove this function entirely and call bitrev8,
+> which is just a precalc-table lookup. While at it, also sort includes.
+
+The problem I see with bitrev8 is that the byte_rev_table[] can
+seemingly be built as a module (the BITREVERSE Kconfig knob is tristate,
+and btw your patch doesn't make PACKING select BITREVERSE). But PACKING
+is bool. IIRC, I got comments during review that it's not worth making
+packing a module, but I may remember wrong.
+
+> @@ -49,7 +37,7 @@ static void adjust_for_msb_right_quirk(u64
+> *to_write, int *box_start_bit,
+>         int new_box_start_bit, new_box_end_bit;
+> 
+>         *to_write >>= *box_end_bit;
+> -       *to_write = bit_reverse(*to_write, box_bit_width);
+> +       *to_write = bitrev8(*to_write) >> (8 - box_bit_width);
+>         *to_write <<= *box_end_bit;
+> 
+>         new_box_end_bit   = box_bit_width - *box_start_bit - 1;
+
+Anyway, the patch works in principle. I know this because I wrote the
+following patch to check:
+
+From 17099a86291713d2bcf8137473daea5f390a2ef4 Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Fri, 9 Dec 2022 16:23:35 +0200
+Subject: [PATCH] lib: packing: add boot-time selftests
+
+In case people want to make changes to the packing() implementation but
+they aren't sure it's going to keep working, provide 16 boot-time calls
+to packing() which exercise all combinations of quirks plus PACK |
+UNPACK.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  | 53 +++++++++++++++++++
- .../selftests/bpf/progs/freplace_progmap.c    | 24 +++++++++
- tools/testing/selftests/bpf/testing_helpers.c | 24 ++++++++-
- tools/testing/selftests/bpf/testing_helpers.h |  2 +
- 4 files changed, 101 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/freplace_progmap.c
+ lib/Kconfig   |   9 +++
+ lib/packing.c | 186 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 195 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-index d1e32e792536..dac088217f0f 100644
---- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-@@ -500,6 +500,57 @@ static void test_fentry_to_cgroup_bpf(void)
- 	bind4_prog__destroy(skel);
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 9bbf8a4b2108..54b8deaf44fc 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -39,6 +39,15 @@ config PACKING
+ 
+ 	  When in doubt, say N.
+ 
++config PACKING_SELFTESTS
++	bool "Selftests for packing library"
++	depends on PACKING
++	help
++	  Boot-time selftests to make sure that the packing and unpacking
++	  functions work properly.
++
++	  When in doubt, say N.
++
+ config BITREVERSE
+ 	tristate
+ 
+diff --git a/lib/packing.c b/lib/packing.c
+index 9a72f4bbf0e2..aff70853b0c4 100644
+--- a/lib/packing.c
++++ b/lib/packing.c
+@@ -210,5 +210,191 @@ int packing(void *pbuf, u64 *uval, int startbit, int endbit, size_t pbuflen,
  }
+ EXPORT_SYMBOL(packing);
  
-+static void test_func_replace_progmap(void)
++#if IS_ENABLED(CONFIG_PACKING_SELFTESTS)
++
++#define PBUF_LEN 16
++
++/* These selftests pack and unpack a magic 64-bit value (0xcafedeadbeefcafe) at
++ * a fixed logical offset (32) within an otherwise zero array of 128 bits
++ * (16 bytes). They test all possible bit layouts of the 128 bit buffer.
++ */
++static bool test_pack(u8 expected_pbuf[PBUF_LEN], u8 quirks)
 +{
-+	struct bpf_cpumap_val value = { .qsize = 1 };
-+	struct bpf_object *obj, *tgt_obj = NULL;
-+	struct bpf_program *drop, *redirect;
-+	struct bpf_map *cpumap;
-+	int err, tgt_fd;
-+	__u32 key = 0;
++	u64 uval = 0xcafedeadbeefcafe;
++	u8 pbuf[PBUF_LEN];
++	int err, i;
 +
-+	err = bpf_prog_test_open("freplace_progmap.bpf.o", BPF_PROG_TYPE_UNSPEC, &obj);
-+	if (!ASSERT_OK(err, "prog_open"))
-+		return;
++	memset(pbuf, 0, PBUF_LEN);
++	err = packing(pbuf, &uval, 95, 32, PBUF_LEN, PACK, quirks);
++	if (err) {
++		pr_err("packing() returned %pe\n", ERR_PTR(err));
++		return false;
++	}
 +
-+	err = bpf_prog_test_load("xdp_dummy.bpf.o", BPF_PROG_TYPE_UNSPEC, &tgt_obj, &tgt_fd);
-+	if (!ASSERT_OK(err, "tgt_prog_load"))
-+		goto out;
++	for (i = 0; i < PBUF_LEN; i++) {
++		if (pbuf[i] != expected_pbuf[i]) {
++			print_hex_dump(KERN_ERR, "pbuf:     ", DUMP_PREFIX_NONE,
++				       16, 1, pbuf, PBUF_LEN, false);
++			print_hex_dump(KERN_ERR, "expected: ", DUMP_PREFIX_NONE,
++				       16, 1, expected_pbuf, PBUF_LEN, false);
++			return false;
++		}
++	}
 +
-+	drop = bpf_object__find_program_by_name(obj, "xdp_drop_prog");
-+	redirect = bpf_object__find_program_by_name(obj, "xdp_cpumap_prog");
-+	cpumap = bpf_object__find_map_by_name(obj, "cpu_map");
-+
-+	if (!ASSERT_OK_PTR(drop, "drop") || !ASSERT_OK_PTR(redirect, "redirect") ||
-+	    !ASSERT_OK_PTR(cpumap, "cpumap"))
-+		goto out;
-+
-+	/* Change the 'redirect' program type to be a PROG_TYPE_EXT
-+	 * with an XDP target
-+	 */
-+	bpf_program__set_type(redirect, BPF_PROG_TYPE_EXT);
-+	bpf_program__set_expected_attach_type(redirect, 0);
-+	err = bpf_program__set_attach_target(redirect, tgt_fd, "xdp_dummy_prog");
-+	if (!ASSERT_OK(err, "set_attach_target"))
-+		goto out;
-+
-+	err = bpf_object__load(obj);
-+	if (!ASSERT_OK(err, "obj_load"))
-+		goto out;
-+
-+	/* This will fail if the map is "owned" by a PROG_TYPE_EXT program,
-+	 * which, prior to fixing the kernel, it will be since the map is used
-+	 * from the 'redirect' prog above
-+	 */
-+	value.bpf_prog.fd = bpf_program__fd(drop);
-+	err = bpf_map_update_elem(bpf_map__fd(cpumap), &key, &value, 0);
-+	ASSERT_OK(err, "map_update");
-+
-+out:
-+	bpf_object__close(tgt_obj);
-+	bpf_object__close(obj);
++	return true;
 +}
 +
- /* NOTE: affect other tests, must run in serial mode */
- void serial_test_fexit_bpf2bpf(void)
- {
-@@ -525,4 +576,6 @@ void serial_test_fexit_bpf2bpf(void)
- 		test_func_replace_global_func();
- 	if (test__start_subtest("fentry_to_cgroup_bpf"))
- 		test_fentry_to_cgroup_bpf();
-+	if (test__start_subtest("func_replace_progmap"))
-+		test_func_replace_progmap();
- }
-diff --git a/tools/testing/selftests/bpf/progs/freplace_progmap.c b/tools/testing/selftests/bpf/progs/freplace_progmap.c
-new file mode 100644
-index 000000000000..68174c3d7b37
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/freplace_progmap.c
-@@ -0,0 +1,24 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_CPUMAP);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(struct bpf_cpumap_val));
-+	__uint(max_entries, 1);
-+} cpu_map SEC(".maps");
-+
-+SEC("xdp/cpumap")
-+int xdp_drop_prog(struct xdp_md *ctx)
++static bool test_unpack(u8 pbuf[PBUF_LEN], u8 quirks)
 +{
-+	return XDP_DROP;
-+}
-+
-+SEC("xdp")
-+int xdp_cpumap_prog(struct xdp_md *ctx)
-+{
-+	return bpf_redirect_map(&cpu_map, 0, XDP_PASS);
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/testing_helpers.c b/tools/testing/selftests/bpf/testing_helpers.c
-index 9695318e8132..2050244e6f24 100644
---- a/tools/testing/selftests/bpf/testing_helpers.c
-+++ b/tools/testing/selftests/bpf/testing_helpers.c
-@@ -174,8 +174,8 @@ __u32 link_info_prog_id(const struct bpf_link *link, struct bpf_link_info *info)
- 
- int extra_prog_load_log_flags = 0;
- 
--int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
--		       struct bpf_object **pobj, int *prog_fd)
-+int bpf_prog_test_open(const char *file, enum bpf_prog_type type,
-+		       struct bpf_object **pobj)
- {
- 	LIBBPF_OPTS(bpf_object_open_opts, opts,
- 		.kernel_log_level = extra_prog_load_log_flags,
-@@ -201,6 +201,26 @@ int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
- 	flags = bpf_program__flags(prog) | BPF_F_TEST_RND_HI32;
- 	bpf_program__set_flags(prog, flags);
- 
-+	*pobj = obj;
-+	return 0;
-+err_out:
-+	bpf_object__close(obj);
-+	return err;
-+}
-+
-+int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
-+		       struct bpf_object **pobj, int *prog_fd)
-+{
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
++	u64 uval, expected_uval = 0xcafedeadbeefcafe;
 +	int err;
 +
-+	err = bpf_prog_test_open(file, type, &obj);
-+	if (err)
-+		return err;
++	err = packing(pbuf, &uval, 95, 32, PBUF_LEN, UNPACK, quirks);
++	if (err) {
++		pr_err("packing() returned %pe\n", ERR_PTR(err));
++		return false;
++	}
 +
-+	prog = bpf_object__next_program(obj, NULL);
++	if (uval != expected_uval) {
++		pr_err("uval: 0x%llx expected 0x%llx\n", uval, expected_uval);
++		return false;
++	}
 +
- 	err = bpf_object__load(obj);
- 	if (err)
- 		goto err_out;
-diff --git a/tools/testing/selftests/bpf/testing_helpers.h b/tools/testing/selftests/bpf/testing_helpers.h
-index 6ec00bf79cb5..977eb520d119 100644
---- a/tools/testing/selftests/bpf/testing_helpers.h
-+++ b/tools/testing/selftests/bpf/testing_helpers.h
-@@ -6,6 +6,8 @@
- 
- int parse_num_list(const char *s, bool **set, int *set_len);
- __u32 link_info_prog_id(const struct bpf_link *link, struct bpf_link_info *info);
-+int bpf_prog_test_open(const char *file, enum bpf_prog_type type,
-+		       struct bpf_object **pobj);
- int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
- 		       struct bpf_object **pobj, int *prog_fd);
- int bpf_test_load_program(enum bpf_prog_type type, const struct bpf_insn *insns,
++	return true;
++}
++
++static void test_no_quirks(void)
++{
++	u8 pbuf[PBUF_LEN] = {0x00, 0x00, 0x00, 0x00, 0xca, 0xfe, 0xde, 0xad,
++			     0xbe, 0xef, 0xca, 0xfe, 0x00, 0x00, 0x00, 0x00};
++	bool ret;
++
++	ret = test_pack(pbuf, 0);
++	pr_info("packing with no quirks: %s\n", ret ? "OK" : "FAIL");
++
++	ret = test_unpack(pbuf, 0);
++	pr_info("unpacking with no quirks: %s\n", ret ? "OK" : "FAIL");
++}
++
++static void test_msb_right(void)
++{
++	u8 pbuf[PBUF_LEN] = {0x00, 0x00, 0x00, 0x00, 0x53, 0x7f, 0x7b, 0xb5,
++			     0x7d, 0xf7, 0x53, 0x7f, 0x00, 0x00, 0x00, 0x00};
++	bool ret;
++
++	ret = test_pack(pbuf, QUIRK_MSB_ON_THE_RIGHT);
++	pr_info("packing with QUIRK_MSB_ON_THE_RIGHT: %s\n",
++		ret ? "OK" : "FAIL");
++
++	ret = test_unpack(pbuf, QUIRK_MSB_ON_THE_RIGHT);
++	pr_info("unpacking with QUIRK_MSB_ON_THE_RIGHT: %s\n",
++		ret ? "OK" : "FAIL");
++}
++
++static void test_le(void)
++{
++	u8 pbuf[PBUF_LEN] = {0x00, 0x00, 0x00, 0x00, 0xad, 0xde, 0xfe, 0xca,
++			     0xfe, 0xca, 0xef, 0xbe, 0x00, 0x00, 0x00, 0x00};
++	bool ret;
++
++	ret = test_pack(pbuf, QUIRK_LITTLE_ENDIAN);
++	pr_info("packing with QUIRK_LITTLE_ENDIAN: %s\n", ret ? "OK" : "FAIL");
++
++	ret = test_unpack(pbuf, QUIRK_LITTLE_ENDIAN);
++	pr_info("unpacking with QUIRK_LITTLE_ENDIAN: %s\n",
++		ret ? "OK" : "FAIL");
++}
++
++static void test_le_msb_right(void)
++{
++	u8 pbuf[PBUF_LEN] = {0x00, 0x00, 0x00, 0x00, 0xb5, 0x7b, 0x7f, 0x53,
++			     0x7f, 0x53, 0xf7, 0x7d, 0x00, 0x00, 0x00, 0x00};
++	bool ret;
++
++	ret = test_pack(pbuf, QUIRK_LITTLE_ENDIAN | QUIRK_MSB_ON_THE_RIGHT);
++	pr_info("packing with QUIRK_LITTLE_ENDIAN | QUIRK_MSB_ON_THE_RIGHT: %s\n",
++		ret ? "OK" : "FAIL");
++
++	ret = test_unpack(pbuf, QUIRK_LITTLE_ENDIAN | QUIRK_MSB_ON_THE_RIGHT);
++	pr_info("unpacking with QUIRK_LITTLE_ENDIAN | QUIRK_MSB_ON_THE_RIGHT: %s\n",
++		ret ? "OK" : "FAIL");
++}
++
++static void test_lsw32_first(void)
++{
++	u8 pbuf[PBUF_LEN] = {0x00, 0x00, 0x00, 0x00, 0xbe, 0xef, 0xca, 0xfe,
++			     0xca, 0xfe, 0xde, 0xad, 0x00, 0x00, 0x00, 0x00};
++	bool ret;
++
++	ret = test_pack(pbuf, QUIRK_LSW32_IS_FIRST);
++	pr_info("packing with QUIRK_LSW32_IS_FIRST: %s\n", ret ? "OK" : "FAIL");
++
++	ret = test_unpack(pbuf, QUIRK_LSW32_IS_FIRST);
++	pr_info("unpacking with QUIRK_LSW32_IS_FIRST: %s\n", ret ? "OK" : "FAIL");
++}
++
++static void test_lsw32_first_msb_right(void)
++{
++	u8 pbuf[PBUF_LEN] = {0x00, 0x00, 0x00, 0x00, 0x7d, 0xf7, 0x53, 0x7f,
++			     0x53, 0x7f, 0x7b, 0xb5, 0x00, 0x00, 0x00, 0x00};
++	bool ret;
++
++	ret = test_pack(pbuf, QUIRK_LSW32_IS_FIRST | QUIRK_MSB_ON_THE_RIGHT);
++	pr_info("packing with QUIRK_LSW32_IS_FIRST | QUIRK_MSB_ON_THE_RIGHT: %s\n",
++		ret ? "OK" : "FAIL");
++
++	ret = test_unpack(pbuf, QUIRK_LSW32_IS_FIRST | QUIRK_MSB_ON_THE_RIGHT);
++	pr_info("unpacking with QUIRK_LSW32_IS_FIRST | QUIRK_MSB_ON_THE_RIGHT: %s\n",
++		ret ? "OK" : "FAIL");
++}
++
++static void test_lsw32_first_le(void)
++{
++	u8 pbuf[PBUF_LEN] = {0x00, 0x00, 0x00, 0x00, 0xfe, 0xca, 0xef, 0xbe,
++			     0xad, 0xde, 0xfe, 0xca, 0x00, 0x00, 0x00, 0x00};
++	bool ret;
++
++	ret = test_pack(pbuf, QUIRK_LSW32_IS_FIRST | QUIRK_LITTLE_ENDIAN);
++	pr_info("packing with QUIRK_LSW32_IS_FIRST | QUIRK_LITTLE_ENDIAN: %s\n",
++		ret ? "OK" : "FAIL");
++
++	ret = test_unpack(pbuf, QUIRK_LSW32_IS_FIRST | QUIRK_LITTLE_ENDIAN);
++	pr_info("unpacking with QUIRK_LSW32_IS_FIRST | QUIRK_LITTLE_ENDIAN: %s\n",
++		ret ? "OK" : "FAIL");
++}
++
++static void test_lsw32_first_le_msb_right(void)
++{
++	u8 pbuf[PBUF_LEN] = {0x00, 0x00, 0x00, 0x00, 0x7f, 0x53, 0xf7, 0x7d,
++			     0xb5, 0x7b, 0x7f, 0x53, 0x00, 0x00, 0x00, 0x00};
++	bool ret;
++
++	ret = test_pack(pbuf, QUIRK_LSW32_IS_FIRST | QUIRK_LITTLE_ENDIAN |
++			QUIRK_MSB_ON_THE_RIGHT);
++	pr_info("packing with QUIRK_LSW32_IS_FIRST | QUIRK_LITTLE_ENDIAN | QUIRK_MSB_ON_THE_RIGHT: %s\n",
++		ret ? "OK" : "FAIL");
++
++	ret = test_unpack(pbuf, QUIRK_LSW32_IS_FIRST | QUIRK_LITTLE_ENDIAN |
++			  QUIRK_MSB_ON_THE_RIGHT);
++	pr_info("unpacking with QUIRK_LSW32_IS_FIRST | QUIRK_LITTLE_ENDIAN | QUIRK_MSB_ON_THE_RIGHT: %s\n",
++		ret ? "OK" : "FAIL");
++}
++
++static int __init packing_init(void)
++{
++	test_no_quirks();
++	test_msb_right();
++	test_le();
++	test_le_msb_right();
++	test_lsw32_first();
++	test_lsw32_first_msb_right();
++	test_lsw32_first_le();
++	test_lsw32_first_le_msb_right();
++
++	return 0;
++}
++module_init(packing_init);
++#endif
++
+ MODULE_LICENSE("GPL v2");
+ MODULE_DESCRIPTION("Generic bitfield packing and unpacking");
 -- 
-2.38.1
+2.34.1
 
+
+I've been meaning to do this for a while, but I'm not sure what is the
+best way to integrate such a thing. Does anyone have any idea?
