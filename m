@@ -2,88 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D57B564803D
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 10:40:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CAEA648091
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 11:02:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbiLIJkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 04:40:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52724 "EHLO
+        id S229775AbiLIKCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 05:02:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiLIJkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 04:40:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87333A2CF
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 01:40:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E5FAB82827
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 09:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1CAC1C433F0;
-        Fri,  9 Dec 2022 09:40:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670578819;
-        bh=OM+oCWSs4V9jlSbCOrBMcbIAjxSHnuvNXM1KPut1hY8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kBxdXQtK/kSmgIgvapLIQ46fUfsyE8uU54NhfsXy6gxuCdU5s7NqS5/H41k3VXAuZ
-         4+i0ye42OQKqJDz0jYb8cCfHdAiQvLdXVoB2Pfp1tlZYojh6eqjKUIKV9hHCE1yFLu
-         zN0W+ED8PAHDRRN/lDI/LI9YHDAVkl2U9HgmbVzabCKgh5jOWe/i4YvpX+3oUavXS+
-         UGbUPWYHb5MaOTOC8I3BkbQztfq8ykyjuTPhCsfev1vp87G41vqwwX6G37H2bHdp2o
-         HAtAKWYMlJJZIRjm7z2Hr+A42LC/sUSumw7eEe4ReHsXx3uti78r+8e3Jg0mcJneCi
-         EcNljDwNsf8kQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F38E1E1B4D9;
-        Fri,  9 Dec 2022 09:40:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229605AbiLIKCE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 05:02:04 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A24379D2
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 02:02:01 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id fc4so10254352ejc.12
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 02:02:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zVwm33p7IGnC1t4Ix5UJB9il1yTnApa1yovFHg3sYD0=;
+        b=TWRoqKOagURpFfubIXkAhfyYZkZRW0sVy7nYQZlMc70sJtkDIgxMF++XeSZXfJxaE6
+         Mte44bIKJn/WL1n2j5lYp+iLoRKfQXcV3TX29qonFg63gSs+0Bk1ZTmI/lknaD4KLG0K
+         Pn/GLMG83/GQ6IN0ug6HtUA/Ch28mxjl3wu7tyCksM0NAulWdM4wJirNuPniE41N4QkH
+         Ga3Ij85edxYg/XSvcL9bj9DN4OWLUTAHVnUUtl5/esIY9oHSK7SvkZEc2pvbdyxOuBqe
+         08tCUEqnsagZ4jhJbqfmVcC4OiDVUJVnogDdifPcVwcTI0YpWvY59uRc0qQK6gW7SR/j
+         Cmdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zVwm33p7IGnC1t4Ix5UJB9il1yTnApa1yovFHg3sYD0=;
+        b=MprBXAeXaeZVPsRGNIDJqCa/wtabIDikF7crRjoIWFxg4Zi8C3GPVLb32Y8/CwklSJ
+         9XmCag2mc898gbxLrd4jlmQ0snEEaGoksEmHBeZpvplxDEf20yA/MZYLDh1V/lydwUVO
+         mvNF1c0hNBtAUvhJOEleE3n5r0MFRb2D+W4cuH/RpjUwmTiLHyo51YbPq3RN0lYD7kVq
+         t4L9R8kcIJNtN64bt9J6NXL5VRBc1XgpcywyhxOzl4Ku/rrAjXakCbLIfb46aqJKZeDX
+         SONalVOL6uRQdAZHWQnRSGpxgyOw2CeU2KZLpp0DbzV4Umu2/mms9cqd3Siqt19JIKgg
+         pgaA==
+X-Gm-Message-State: ANoB5pmx8/YZ/KAlFFiMQVOsVqKGqVFY9KqB/HjVzd+uu46VU2H2Xipm
+        XFtAd1w54QKPlxxMBZHjQXatUg==
+X-Google-Smtp-Source: AA0mqf7c83i4dVG2FHNYlz696PaMxupCy3G07olPpuYy+hbIDHhTF7MhzWrtX1ApGrmVMNwu4Nf1eg==
+X-Received: by 2002:a17:906:b7c6:b0:7c0:d60b:2887 with SMTP id fy6-20020a170906b7c600b007c0d60b2887mr4277759ejb.69.1670580120417;
+        Fri, 09 Dec 2022 02:02:00 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id cm10-20020a0564020c8a00b0046c4553010fsm456932edb.1.2022.12.09.02.01.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Dec 2022 02:01:59 -0800 (PST)
+Date:   Fri, 9 Dec 2022 11:01:58 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: Re: [RFC PATCH v4 0/4] Create common DPLL/clock configuration API
+Message-ID: <Y5MHlrZYe11ZglUS@nanopsycho>
+References: <20221129213724.10119-1-vfedorenko@novek.ru>
+ <Y4dNV14g7dzIQ3x7@nanopsycho>
+ <DM6PR11MB4657003794552DC98ACF31669B179@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <Y4oj1q3VtcQdzeb3@nanopsycho>
+ <DM6PR11MB4657E9B921B67122DC884A529B1D9@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <Y5HRc+B2s4APZ2n2@nanopsycho>
+ <DM6PR11MB4657D2286838A5A287D20D3F9B1D9@DM6PR11MB4657.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v6 0/4] net/sched: retpoline wrappers for tc
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167057881899.16143.12680741866204985455.git-patchwork-notify@kernel.org>
-Date:   Fri, 09 Dec 2022 09:40:18 +0000
-References: <20221206135513.1904815-1-pctammela@mojatatu.com>
-In-Reply-To: <20221206135513.1904815-1-pctammela@mojatatu.com>
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuniyu@amazon.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR11MB4657D2286838A5A287D20D3F9B1D9@DM6PR11MB4657.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Fri, Dec 09, 2022 at 12:05:43AM CET, arkadiusz.kubalewski@intel.com wrote:
+>>From: Jiri Pirko <jiri@resnulli.us>
+>>Sent: Thursday, December 8, 2022 12:59 PM
+>>
+>>>>From: Jiri Pirko <jiri@resnulli.us>
+>>>>Sent: Friday, December 2, 2022 5:12 PM
+>>>>
+>>>>Fri, Dec 02, 2022 at 12:27:24PM CET, arkadiusz.kubalewski@intel.com
+>>wrote:
+>>>>>>From: Jiri Pirko <jiri@resnulli.us>
+>>>>>>Sent: Wednesday, November 30, 2022 1:32 PM
+>>>>>>
+>>>>>>Tue, Nov 29, 2022 at 10:37:20PM CET, vfedorenko@novek.ru wrote:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+[...]
 
-On Tue,  6 Dec 2022 10:55:09 -0300 you wrote:
-> In tc all qdics, classifiers and actions can be compiled as modules.
-> This results today in indirect calls in all transitions in the tc hierarchy.
-> Due to CONFIG_RETPOLINE, CPUs with mitigations=on might pay an extra cost on
-> indirect calls. For newer Intel cpus with IBRS the extra cost is
-> nonexistent, but AMD Zen cpus and older x86 cpus still go through the
-> retpoline thunk.
-> 
-> [...]
+>>>>This you have to clearly specify when you define driver API.
+>>>>This const attrs should be passed during pin creation/registration.
+>>>>
+>>>>Talking about dpll instance itself, the clock_id, clock_quality, these
+>>>>should be also const attrs.
+>>>>
+>>>
+>>>Actually, clock_quality can also vary on runtime (i.e. ext/synce). We
+>>cannot
+>>>determine what Quality Level signal user has connected to the SMA or was
+>>>received from the network. Only gnss/oscilattor could have const depending
+>>>on used HW. But generally it shall not be const.
+>>
+>>Sec. I'm talkign about the actual dpll quality, means the internal
+>>clock. How it can vary?
+>
+>Yes, the DPLL has some holdover capacity, thus can translate this into QL and
+>it shall not ever change. Sure, we could add this.
+>
+>I was thinking about a source Quality Level. If that would be available here,
+>the ptp-profiles implementation would be simpler, as ptp daemon could read it
+>and embed that information in its frames.
+>Although, this would have to be configurable from user space, at least for EXT
+>and SYNCE pin types.
 
-Here is the summary with links:
-  - [net-next,v6,1/4] net/sched: move struct action_ops definition out of ifdef
-    https://git.kernel.org/netdev/net-next/c/2a7d228f1ae7
-  - [net-next,v6,2/4] net/sched: add retpoline wrapper for tc
-    https://git.kernel.org/netdev/net-next/c/7f0e810220e2
-  - [net-next,v6,3/4] net/sched: avoid indirect act functions on retpoline kernels
-    https://git.kernel.org/netdev/net-next/c/871cf386dd16
-  - [net-next,v6,4/4] net/sched: avoid indirect classify functions on retpoline kernels
-    https://git.kernel.org/netdev/net-next/c/9f3101dca3a7
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+The kernel would serve as a holder or info shared from one daemon to
+another one. That does not sound correct. PTP should ask SyncE deamon
+directly, I believe.
 
