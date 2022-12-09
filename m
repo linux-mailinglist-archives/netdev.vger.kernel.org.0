@@ -2,73 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9196A647ECD
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 08:54:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22447647ED4
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 08:56:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiLIHyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 02:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        id S229460AbiLIH4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 02:56:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiLIHx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 02:53:59 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90101DA3
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 23:53:58 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id co23so4370178wrb.4
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 23:53:58 -0800 (PST)
+        with ESMTP id S230028AbiLIH4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 02:56:15 -0500
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF3852146;
+        Thu,  8 Dec 2022 23:56:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=DYM+UIuymwma5G6DYkw7/MsYdvWysx8+7uyf+N85amo=;
-        b=uMUfs0YhOECmMRpcaDtjHP0b5MCQYz0N2jamvkr0m5+tMEmHdCAOTRPIdrqV+X0ad/
-         kMYd0PKNMjmhPJoVj0+xI76eArlkMFfFR/HiwfOJxEc78IMQ9TXJuNqf/WHy2QNiJtPp
-         jVOywPlD45qkPWzxa5aK+qvXB8/OfhqQeJXOz0gFq0jAcbzsMQMHldLz5yrQWAakxv2o
-         GxoPM1SusHpUKNHgtI6ufT8l2vlEhk3mwuHR/+A7NOOf7hhaWu5YavN7cQxphZs5a+66
-         BRWrrL3wX2Q/aTgVqo90FN5DLFIS/t68kTx3sTTrV4gTP0AgZ/cpuH2xYnLDDzKyczPB
-         Sw4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DYM+UIuymwma5G6DYkw7/MsYdvWysx8+7uyf+N85amo=;
-        b=c+i+PWSfSyMdVnd/CVxvmPTdCmol1r7Gl8YaZ2C8rNxGHKjc+s1Caj82f0a9X96CEX
-         g8C00e3B0qrPqXkpUnu/iuwOwdvW5x5yNsTjaaXlT6vui5fzfHAsygxuEJFMjEp7nrPe
-         kOYmTU4BjT3TX1Dyyts46glCSujCkzl6Yvm2snmQFmXuruPzQ/ct/fIMZVI9HQuVMOyY
-         iFfJADr8TamIZL1+abEiCwaMiPfpcATBFvp9HiFk8UAzX+NdYngntttN2Lkbu7huYCMt
-         f+DE85P3FC9rJ1W8QOY/gmh703AWI8wsL4CTDb8mnSfCuo7bAPUMR2CwtROTpsalTQ2W
-         hsUg==
-X-Gm-Message-State: ANoB5pmXABOHXBjUQu6h57GlADJ3y5s3/sscnRQSZmIN4Vy8qK1NyZFt
-        kfOizTCxImhPuXA+jZ550S5smg==
-X-Google-Smtp-Source: AA0mqf6gj9OAClEPjKYJmCOrnMh0jFtlMDQWO8Mgo7y/sLRBAoPOZUaHYyYEenY5M2bTJefq+H/OMw==
-X-Received: by 2002:adf:eccd:0:b0:242:102c:c571 with SMTP id s13-20020adfeccd000000b00242102cc571mr3126504wro.19.1670572437027;
-        Thu, 08 Dec 2022 23:53:57 -0800 (PST)
-Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
-        by smtp.gmail.com with ESMTPSA id o11-20020a5d4a8b000000b002425be3c9e2sm682374wrq.60.2022.12.08.23.53.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Dec 2022 23:53:56 -0800 (PST)
-Message-ID: <8cbaccf9-2ca3-b15e-dd1e-85e344a89561@blackwall.org>
-Date:   Fri, 9 Dec 2022 09:53:55 +0200
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1670572569; x=1702108569;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CaMoi5NrXcmji+IIbLWKccOOUw+50Cx6EGVCxdT/MAQ=;
+  b=WKfZmXjcforYu+6MVH+QnAYlzB+rikDhUHAvayssFTqrgLRB5CpYlZ8d
+   rk83VfJKTxgHVlteFnO4uH57SWZJ3wzV933D4C+7+IFy2U8ARoTZlSLxo
+   tpNgImYkaR2yxtxPf04bEiUC1SP/AYs2XlG3VCAHS6ZvF2aC300RqI86C
+   A=;
+X-IronPort-AV: E=Sophos;i="5.96,230,1665446400"; 
+   d="scan'208";a="288754438"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-fa5fe5fb.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2022 07:56:03 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-m6i4x-fa5fe5fb.us-west-2.amazon.com (Postfix) with ESMTPS id 7514941999;
+        Fri,  9 Dec 2022 07:56:01 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Fri, 9 Dec 2022 07:55:59 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.83) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
+ Fri, 9 Dec 2022 07:55:55 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <leitao@debian.org>
+CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
+        <kuba@kernel.org>, <kuniyu@amazon.com>, <leit@fb.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v2 net-next] tcp: socket-specific version of WARN_ON_ONCE()
+Date:   Fri, 9 Dec 2022 16:55:44 +0900
+Message-ID: <20221209075544.34778-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20221208154656.60623-1-leitao@debian.org>
+References: <20221208154656.60623-1-leitao@debian.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 11/14] bridge: mcast: Allow user space to specify
- MDB entry routing protocol
-Content-Language: en-US
-To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, roopa@nvidia.com, mlxsw@nvidia.com
-References: <20221208152839.1016350-1-idosch@nvidia.com>
- <20221208152839.1016350-12-idosch@nvidia.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20221208152839.1016350-12-idosch@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.83]
+X-ClientProxiedBy: EX13D44UWC003.ant.amazon.com (10.43.162.138) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,52 +66,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/12/2022 17:28, Ido Schimmel wrote:
-> Add the 'MDBE_ATTR_RTPORT' attribute to allow user space to specify the
-> routing protocol of the MDB port group entry. Enforce a minimum value of
-> 'RTPROT_STATIC' to prevent user space from using protocol values that
-> should only be set by the kernel (e.g., 'RTPROT_KERNEL'). Maintain
-> backward compatibility by defaulting to 'RTPROT_STATIC'.
+From:   Breno Leitao <leitao@debian.org>
+Date:   Thu,  8 Dec 2022 07:46:56 -0800
+> There are cases where we need relevant information about the socket
+> during a warning, so, it could help us to find bugs that happens and do
+> not have an easy repro.
 > 
-> The protocol is already visible to user space in RTM_NEWMDB responses
-> and notifications via the 'MDBA_MDB_EATTR_RTPROT' attribute.
+> This patch creates a TCP-socket specific version of WARN_ON_ONCE(), which
+> dumps revelant information about the TCP socket when it hits rare
+> warnings, which is super useful for debugging purposes.
 > 
-> The routing protocol allows a routing daemon to distinguish between
-> entries configured by it and those configured by the administrator. Once
-> MDB flush is supported, the protocol can be used as a criterion
-> according to which the flush is performed.
+> Hooking this warning tcp_snd_cwnd_set() for now, but, the intent is to
+> convert more TCP warnings to this helper later.
 > 
-> Examples:
-> 
->  # bridge mdb add dev br0 port dummy10 grp 239.1.1.1 permanent proto kernel
->  Error: integer out of range.
-> 
->  # bridge mdb add dev br0 port dummy10 grp 239.1.1.1 permanent proto static
-> 
->  # bridge mdb add dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent proto zebra
-> 
->  # bridge mdb add dev br0 port dummy10 grp 239.1.1.2 permanent source_list 198.51.100.1,198.51.100.2 filter_mode include proto 250
-> 
->  # bridge -d mdb show
->  dev br0 port dummy10 grp 239.1.1.2 src 198.51.100.2 permanent filter_mode include proto 250
->  dev br0 port dummy10 grp 239.1.1.2 src 198.51.100.1 permanent filter_mode include proto 250
->  dev br0 port dummy10 grp 239.1.1.2 permanent filter_mode include source_list 198.51.100.2/0.00,198.51.100.1/0.00 proto 250
->  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto zebra
->  dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode exclude proto static
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> Signed-off-by: Breno Leitao <leitao@debian.org>
+
+Acked-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+
+Looks good to me, thank you.
+
+A minor comment below.
+
+
 > ---
+>  include/net/tcp.h       |  3 ++-
+>  include/net/tcp_debug.h | 10 ++++++++++
+>  net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
+>  3 files changed, 42 insertions(+), 1 deletion(-)
+>  create mode 100644 include/net/tcp_debug.h
 > 
-> Notes:
->     v1:
->     * Reject protocol for host entries.
-> 
->  include/uapi/linux/if_bridge.h |  1 +
->  net/bridge/br_mdb.c            | 15 +++++++++++++--
->  net/bridge/br_private.h        |  1 +
->  3 files changed, 15 insertions(+), 2 deletions(-)
-> 
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 14d45661a84d..e490af8e6fdc 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -40,6 +40,7 @@
+>  #include <net/inet_ecn.h>
+>  #include <net/dst.h>
+>  #include <net/mptcp.h>
+> +#include <net/tcp_debug.h>
+>  
+>  #include <linux/seq_file.h>
+>  #include <linux/memcontrol.h>
+> @@ -1229,7 +1230,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
+>  
+>  static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
+>  {
+> -	WARN_ON_ONCE((int)val <= 0);
+> +	TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
+>  	tp->snd_cwnd = val;
+>  }
+>  
+> diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
+> new file mode 100644
+> index 000000000000..50e96d87d335
+> --- /dev/null
+> +++ b/include/net/tcp_debug.h
+> @@ -0,0 +1,10 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _LINUX_TCP_DEBUG_H
+> +#define _LINUX_TCP_DEBUG_H
+> +
+> +void tcp_sock_warn(const struct tcp_sock *tp);
+> +
+> +#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
+> +		DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
+> +
+> +#endif  /* _LINUX_TCP_DEBUG_H */
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 54836a6b81d6..5985ba9c4231 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -4705,6 +4705,36 @@ int tcp_abort(struct sock *sk, int err)
+>  }
+>  EXPORT_SYMBOL_GPL(tcp_abort);
+>  
+> +void tcp_sock_warn(const struct tcp_sock *tp)
+> +{
+> +	const struct sock *sk = (const struct sock *)tp;
+> +	struct inet_sock *inet = inet_sk(sk);
+> +	struct inet_connection_sock *icsk = inet_csk(sk);
 
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+Let's keep the reverse christmas tree order.
+
+$ cat -n Documentation/process/maintainer-netdev.rst | grep xmas -C 30
 
 
+> +
+> +	WARN_ON(1);
+> +
+> +	pr_warn("Socket Info: family=%u state=%d ccname=%s cwnd=%u",
+> +		sk->sk_family, sk->sk_state, icsk->icsk_ca_ops->name,
+> +		tcp_snd_cwnd(tp));
+> +
+> +	switch (sk->sk_family) {
+> +	case AF_INET:
+> +		pr_warn("saddr=%pI4:%u daddr=%pI4:%u", &inet->inet_saddr,
+> +			ntohs(inet->inet_sport), &inet->inet_daddr,
+> +			ntohs(inet->inet_dport));
+> +
+> +		break;
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	case AF_INET6:
+> +		pr_warn("saddr=[%pI6]:%u daddr=[%pI6]:%u", &sk->sk_v6_rcv_saddr,
+> +			ntohs(inet->inet_sport), &sk->sk_v6_daddr,
+> +			ntohs(inet->inet_dport));
+> +		break;
+> +#endif
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(tcp_sock_warn);
+> +
+>  extern struct tcp_congestion_ops tcp_reno;
+>  
+>  static __initdata unsigned long thash_entries;
+> -- 
+> 2.30.2
