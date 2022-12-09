@@ -2,136 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87172648861
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 19:21:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28CD864885D
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 19:20:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbiLISVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 13:21:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47722 "EHLO
+        id S229628AbiLISUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 13:20:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbiLISUv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 13:20:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6591AA1D
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 10:19:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670609990;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=V/w30f9SkTUVDHK6i30ml4/BX4Rz/Na86rURXxxoeIo=;
-        b=XP6axeVWgpNYrQh0z9+T92TmtDpnAaZZpO2YDzGz7q+mSEKMFLQWgiIGY7JwOp01RS8gwl
-        ZnPOeR3al4TcLjIbWoRj0y2wSHgPfugUGCeusGENzcg4P1xp6UFzh1MNSt+CagvhJnOZSu
-        vbuiq5c3wlEG5KLMxiiBiI8zj/8nSWk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-517-3P1FfrzeOHSCJNAXUUCuNg-1; Fri, 09 Dec 2022 13:19:44 -0500
-X-MC-Unique: 3P1FfrzeOHSCJNAXUUCuNg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229517AbiLISUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 13:20:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E661211808
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 10:20:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AF71D185A7AD;
-        Fri,  9 Dec 2022 18:19:42 +0000 (UTC)
-Received: from bcodding.csb (unknown [10.22.50.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BB444C16922;
-        Fri,  9 Dec 2022 18:19:41 +0000 (UTC)
-Received: by bcodding.csb (Postfix, from userid 24008)
-        id 4F18A10C3101; Fri,  9 Dec 2022 13:19:39 -0500 (EST)
-From:   Benjamin Coddington <bcodding@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Philipp Reisner <philipp.reisner@linbit.com>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Valentina Manea <valentina.manea.m@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Steve French <sfrench@samba.org>,
-        Christine Caulfield <ccaulfie@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org
-Subject: [PATCH net v2 3/3] net: simplify sk_page_frag
-Date:   Fri,  9 Dec 2022 13:19:25 -0500
-Message-Id: <392d4a3cf4948af266d0cb02934d17c599787a56.1670609077.git.bcodding@redhat.com>
-In-Reply-To: <cover.1670609077.git.bcodding@redhat.com>
-References: <cover.1670609077.git.bcodding@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA67EB828D6
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 18:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 893BCC433F2;
+        Fri,  9 Dec 2022 18:20:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670610017;
+        bh=V1SXJwuuuB3cTB7U6C5e7WS1TfY6kTLyWrPodWzNgaE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DmogPcME4eu+I+QB3gCt1tsjPlvfvQhHbcIQwlrCZwfkWjPqT8Cl+/QACrkzBLQEv
+         xqr1oBtfdM54qCE4opB+PIE+CsXH+BVqH13ea0xXCOM4M4qaRg6JV0Azklr+CDEGbb
+         dPnZ+1Fj9RJtbXgSiQEfVltCNzJWO2VD1KJ9IhetmNgcVUaeAg5rsFKc42GsnGuSF+
+         s3J7rE+8YMLrKl/0CwrF2gtaoap4+Rjz5Di6DK7czUx1AsSwLtoNldBvThsEsv3USP
+         KVdw/jbNcehvmpJUXE9By6zD1VvVYsRliyFeCCGdQQTkYxesCzD+0ugR2/uhQWZG9F
+         lSZk+YRoL/Hmg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6CAA2E1B4D8;
+        Fri,  9 Dec 2022 18:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH iproute2] libnetlink: Fix memory leak in __rtnl_talk_iov()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167061001744.13827.14134499118420494295.git-patchwork-notify@kernel.org>
+Date:   Fri, 09 Dec 2022 18:20:17 +0000
+References: <20221205084741.3426393-1-gnaaman@drivenets.com>
+In-Reply-To: <20221205084741.3426393-1-gnaaman@drivenets.com>
+To:     Gilad Naaman <gnaaman@drivenets.com>
+Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
+        lschlesinger@drivenets.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that in-kernel socket users that may recurse during reclaim have benn
-converted to sk_use_task_frag = false, we can have sk_page_frag() simply
-check that value.
+Hello:
 
-Signed-off-by: Benjamin Coddington <bcodding@redhat.com>
----
- include/net/sock.h | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+This patch was applied to iproute2/iproute2.git (main)
+by Stephen Hemminger <stephen@networkplumber.org>:
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 1bdba14c208f..a705cefc96f0 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2564,19 +2564,14 @@ static inline void sk_stream_moderate_sndbuf(struct sock *sk)
-  * Both direct reclaim and page faults can nest inside other
-  * socket operations and end up recursing into sk_page_frag()
-  * while it's already in use: explicitly avoid task page_frag
-- * usage if the caller is potentially doing any of them.
-- * This assumes that page fault handlers use the GFP_NOFS flags or
-- * explicitly disable sk_use_task_frag.
-+ * when users disable sk_use_task_frag.
-  *
-  * Return: a per task page_frag if context allows that,
-  * otherwise a per socket one.
-  */
- static inline struct page_frag *sk_page_frag(struct sock *sk)
- {
--	if (sk->sk_use_task_frag &&
--	    (sk->sk_allocation & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC |
--				  __GFP_FS)) ==
--	    (__GFP_DIRECT_RECLAIM | __GFP_FS))
-+	if (sk->sk_use_task_frag)
- 		return &current->task_frag;
- 
- 	return &sk->sk_frag;
+On Mon,  5 Dec 2022 10:47:41 +0200 you wrote:
+> From: Lahav Schlesinger <lschlesinger@drivenets.com>
+> 
+> If `__rtnl_talk_iov` fails then callers are not expected to free `answer`.
+> 
+> Currently if `NLMSG_ERROR` was received with an error then the netlink
+> buffer was stored in `answer`, while still returning an error
+> 
+> [...]
+
+Here is the summary with links:
+  - [iproute2] libnetlink: Fix memory leak in __rtnl_talk_iov()
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=0faec4d050b6
+
+You are awesome, thank you!
 -- 
-2.31.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
