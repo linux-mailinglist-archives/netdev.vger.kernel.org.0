@@ -2,372 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B18C6480BA
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 11:13:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D946480C8
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 11:18:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229804AbiLIKNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 05:13:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
+        id S229691AbiLIKSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 05:18:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiLIKNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 05:13:32 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A68931F94
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 02:13:31 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id q71so3223428pgq.8
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 02:13:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=H/d5fgLnMhCA68tLhn5W2b4HZ2cd0sdQup4YVRvjD0E=;
-        b=bZ4H1bGqBm0n8F45B3AY4K7io05nHdAyvhOSdTv0UMP9XbufBtDQIgXosS/hahGTUi
-         uUPlFOzMmiKuewmKD1E6SmbqPG6NBWPly8HGuiuVBffdQ5I4u3r9OUigvUXQAjNUE/Ew
-         lAOALxZHQ2jYx4vngB8yOVfkrznxVGBiJcfuhaJUaZ1m4Y1eccoQO9GJow++yIdcNOJ+
-         9j5OkQEFPxZ79dtTGgMPm07HLLtFZ36gIdV+oypTfCcBqysSXLQrtU0WvYo/glYNW7bl
-         k1DKvb+DEReEBryPxqd9ESPY+HPrg9yPHx6uPY31swtxKMQ2d67FJwmdwe7FrsSWm79H
-         br+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=H/d5fgLnMhCA68tLhn5W2b4HZ2cd0sdQup4YVRvjD0E=;
-        b=btO1YzwytRAwxIdDTssiDWxF9wYF8HoweoSSMxUipbXE05oXvhEdt8stsfO+d+lm3q
-         bJMJlJ2GrDVYqdD+HlAeLqnxT826QPCrngoI9oBb3Rckr1UQEl9jnmPqOXzSxZz6EfWS
-         ykfo8JndInAzZ8Kr6zVL48QBSRQXmGqdHkRvYtaQcY5Eo+/VTFQ3UA2M2CqHSE3WNJIF
-         daMh7tARFycVB5mp1Ii7Fnl9QvJ7TGtbOPljWn2PJrItj877lnd/PrJgyQEOONS2B4vk
-         wcMyrBRPjcNrtXF5RWKMWHCVxwH2ChKxvfLtQVQ2KyhOeOViyeFsSx/fS1eWh6hSbuI8
-         oz2Q==
-X-Gm-Message-State: ANoB5pl8JNh//MyfSeWZJS2wo61cnUCupj6LyLHKcl3RyIMrRC0EtZV1
-        vI5mb8zsa8joy/KRu/jvJ5siKCjqq0XaJxnE
-X-Google-Smtp-Source: AA0mqf6VdOPxzDARlqZShixLXVV2ijKoJtp+osOHOMe04FbD4WgiII+2raPFI+lKwp7xQwY1c4sv8w==
-X-Received: by 2002:a62:e119:0:b0:576:ebde:78fa with SMTP id q25-20020a62e119000000b00576ebde78famr4692094pfh.9.1670580809897;
-        Fri, 09 Dec 2022 02:13:29 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id g204-20020a6252d5000000b00561d79f1064sm936677pfb.57.2022.12.09.02.13.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 02:13:28 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, liali <liali@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net 3/3] selftests: bonding: add bonding prio option test
-Date:   Fri,  9 Dec 2022 18:13:05 +0800
-Message-Id: <20221209101305.713073-4-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221209101305.713073-1-liuhangbin@gmail.com>
-References: <20221209101305.713073-1-liuhangbin@gmail.com>
+        with ESMTP id S229538AbiLIKSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 05:18:45 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2042.outbound.protection.outlook.com [40.107.220.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FAF396C4;
+        Fri,  9 Dec 2022 02:18:44 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AJ5lZmxqtrH5fvOk3GauwEbdgb71ZawXFrxscb1wO4UdoGnNJi1STJCig0p5//9JZYN8wIUUGXQ5zZHJqLDxA2yI0ktiNIIZjGabyT925bcbTjo0+UCW7bvSSvB1WHhgQcLu7TMkgVEXECjrdx2FQfQcD22n/IHBwnr6yWE21y72ez86hUVDgrKr9lxzxFwrMUtT8VW9rNaZzMMYq/P0S/ZPPmFP1tilNbZiCg+XNifCecFtWBdceto1wExBRG8dWtvaw9qZDc405hvLsuy4IhrTdJy2XqP1nhfiKiPGzm2l1IeHm4vWDM5UTAaSZANguIo5RLiqPcsygkPW+O6Psg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=d4lOvDmh1oAEUgdDdYjRDVaOwcEEgWhVUwhP6vr3HMc=;
+ b=FtSJOv0ssTOkxrD6NF3kyFvO+wFazBRIeMsfs/GNuzJJfog6uaoS3YgwtDK19LnBjCnkM+ba3Dm7Hzj5SH6hqPdcoRs+/RMMwpdUKH39rjR0/2prFytZIS4Us2R8RIczEEsoc44ssG0GxG9Y2eEnGoqq3NB0TspXx9m46Ns7ABxef+Kd534sqea0t+xOJAafRF45mhQ8ptf6EZwtGCZCFV5QS5CI3lwaVw7VgZDybPJ/X9a8ZLoe/xGB3EqgNWbrZDuzqQgCclKI9q3IwnszQR2aCf7ii5Pd2aKi4nM/bDVFrf7kAiMNLabTQbIplnQKYWSSG5LbSUH2MYM1HwUk5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=d4lOvDmh1oAEUgdDdYjRDVaOwcEEgWhVUwhP6vr3HMc=;
+ b=IHV2nQ7/vPo0Ub0kqz5mfQkD6G511rLN9te8GN0rfdIXxlcvGlC/0uC4YBqda7LHXHgb7rDy+uAfIWzdROqN0TfyN0hTKF1iWHGiQ7FiMS7/jvRtW0nzfjiLndLuqkFIsmwHc4yQnBSfWdGRC4w8NLjA97ZOjhf5fLnJoiV2bigOlHX0qqBvV+1wWM8RTQgRPGJ1zDIjQjSAx00ZtUM6EfaHPuwOY+37WJtQoVi6e6B+WhBAp8UVh8342O9AJDp2VsvPIabsvxXvMrI1RcDvrGz9Q4WaKS7oVmTRTpLM7tbN5f4c2YKBLiTyMCmycdoLi1JsZdcXC5BGVi3yGBXs+g==
+Received: from IA1PR12MB6353.namprd12.prod.outlook.com (2603:10b6:208:3e3::9)
+ by PH8PR12MB6699.namprd12.prod.outlook.com (2603:10b6:510:1ce::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.18; Fri, 9 Dec
+ 2022 10:18:40 +0000
+Received: from IA1PR12MB6353.namprd12.prod.outlook.com
+ ([fe80::349c:7f4b:b5a3:fc19]) by IA1PR12MB6353.namprd12.prod.outlook.com
+ ([fe80::349c:7f4b:b5a3:fc19%8]) with mapi id 15.20.5880.014; Fri, 9 Dec 2022
+ 10:18:39 +0000
+From:   Emeel Hakim <ehakim@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Raed Salem <raeds@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "jiri@resnulli.us" <jiri@resnulli.us>
+Subject: RE: [PATCH net-next v4 1/2] macsec: add support for
+ IFLA_MACSEC_OFFLOAD in macsec_changelink
+Thread-Topic: [PATCH net-next v4 1/2] macsec: add support for
+ IFLA_MACSEC_OFFLOAD in macsec_changelink
+Thread-Index: AQHZCvv/CYvpmkSg7ESdruoP4MuPZa5k1xAAgAAAMYCAAH2hEA==
+Date:   Fri, 9 Dec 2022 10:18:39 +0000
+Message-ID: <IA1PR12MB635381D5C6C3ACE64763C8D6AB1C9@IA1PR12MB6353.namprd12.prod.outlook.com>
+References: <20221208115517.14951-1-ehakim@nvidia.com>
+        <20221208183244.0365f63b@kernel.org> <20221208183325.3abe9104@kernel.org>
+In-Reply-To: <20221208183325.3abe9104@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA1PR12MB6353:EE_|PH8PR12MB6699:EE_
+x-ms-office365-filtering-correlation-id: d8b73427-e1a5-48b8-bb57-08dad9cebde5
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: LWp/9zZjdLO8Pc3+E5Zzv6epxoWgDGxkm5CJWpczDrhmaelYUxXD3NC3VI4du27yCNuq0ca9jBSDbdOeEkcj5F8hVZyD7Sv/mkUJqkMnQPbxP/aO9UMgMJx9B5nmJ5teOpptLNPYc74iQr7qgxOfZsbIUYucZCJDB0XyXzayuh50aDNxYG1N+bd0DoP6btry0ei/N/Hi7DSQ1titrgANpR69Opc0O3e+/7kVFsdsiJiEnwxSxnVsUxR2+6VAbQdeKRKapeQDXduACf8XeDbcvL/4ELouQ0bnSuZRIUZ3YBq9OSPx4nBKfUoF1eKhKtj1DJ86jDrwFm0GnQ3ER+OZW8Lh/v33V+LjC3YjLPJA0sgB+j+rkPIn8jgLN424fOHj+TwYOHIJDXsTvubrpYaHJ69/ShzbOEx+Yv5pFdUlJ72pAWRAvk5+3NRKsBkTQxKdL74SDg9CkL1FgoN7x0p4DGjhQ7VjQJLNhVAYPl8zPNlpTCTcJanz+WNg0UXclR6i7DesB/OpA+775XYpMdghtfro3BEzC3wCGj388GMsgzeLulygly/C71bTqLHqvL8Sly22U4Mdil6ODZ5rpnUiLCved8OIpxu7k3SKoKeEjfFysV3NbF2tJNh5H8jeasQRjDVGp0ZwVjMO06A6qwktuTGd4aUarYy6Kup0pyMYtKu0YeQ7TytlZ5m00Qo3iKO2flGbQnrowhI622BNePUbfQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6353.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(346002)(366004)(376002)(39860400002)(451199015)(76116006)(66476007)(52536014)(66946007)(4326008)(66556008)(64756008)(8676002)(66446008)(5660300002)(4744005)(8936002)(9686003)(41300700001)(26005)(71200400001)(33656002)(478600001)(2906002)(316002)(54906003)(6916009)(7696005)(53546011)(6506007)(186003)(38070700005)(55016003)(83380400001)(122000001)(86362001)(38100700002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TElZTmZGRzJQanQ1QkNmeWFTWmxkRjFvNlc0aGdZRkxiU0RFQzFkMlZPTnQ5?=
+ =?utf-8?B?RmZTcVNZRkRqQkhmL1AzQ2l2dk9ZK1NOSnJUSHQyMWJkdVQ5ZmZ3K0VteDlt?=
+ =?utf-8?B?eWcxNEhVa21BdzdmWDBpcDd5N2pOUVlTbVFUdzcybkdpdEdGQVFPR2trRWRP?=
+ =?utf-8?B?aGZQemVZbFFRdDZteDNiY2o0aTNwZlgwaXFBd2tZYU93VHVQUlNaWHJDYzVV?=
+ =?utf-8?B?LzlDUVN5T3lHSnd2WURTQWlXdlhRVTFqOGxpM0Q2N1gwRjBWWHlLYXlFUU82?=
+ =?utf-8?B?NVdoS0l0OWZlTDJDNDlYWEhtTy92aTVRM1BiUVRDT0dnangxNHJiRVBZVlk2?=
+ =?utf-8?B?MS9hZndPa2lTOXRrMjFYSkVzbTZaT0lkdXpteVJlYlhJcDlTTWJkSFJCbk1w?=
+ =?utf-8?B?OFoxakV0VWgvaFpTdHJlY1ZNNUJybzhxcmNxTmlMNnZOb1ZSSEFEY3JibDBl?=
+ =?utf-8?B?V0RESE9Tdlc1RWRKc0NqK3UvRnovclJEaDV3TVJZcXVkK2JrS1pkdU0zL2NG?=
+ =?utf-8?B?TDBJYjlORjQ0Z3VBaGtBSVQ2eFI4RmhkMDRNTzhOVEkyRlJ3TUZFR0NGOTJK?=
+ =?utf-8?B?R0xWMGdZMXFqcWN0YmQ4TjQyM3RWTHBjNVlQUEVwQWxLLzdhMHh1emtuVUVi?=
+ =?utf-8?B?U0MwdDRRSjB1MFU5SjNKelYwUEhNNWxoYTZDbElsQ0pmTFBGZ1VXR1puMmRO?=
+ =?utf-8?B?QkdVTWtWUVk5QjczV0ZyZ09WOWhBK044anpGZHh0UE1udDY5dXdvYSt3bzFa?=
+ =?utf-8?B?UElsT3ZmTlNNNFZjcUpaaEVqMXh5TnNhMjdwaW56ajR3QXU4MVNBVFkxQnNC?=
+ =?utf-8?B?bGg0aU9PaWtHVWM4ZFZla3VRV3J4NFBLYUFTSThTZHY2ZUV6Wk9IMzI4aEg0?=
+ =?utf-8?B?dFNRYXM3RkZRd2hhZzJuRURtYytjQ2laNkxsT2p3MFUwdFFqeUNJQ0dONlFu?=
+ =?utf-8?B?ZGFUMHdnak1UR3liSTBZQWpyRG9Mb3NEeDB0bUtwek1lYm9oZjBqTnhaU2Vl?=
+ =?utf-8?B?YWorSVA5b0YycmNSZTZrRFNyUmFDejRiNUgxcHhFaGVjeXN0eGtFUzh0MlhW?=
+ =?utf-8?B?L2Y0am9XenpXZk9IVjFGVlNRU041MVhKd1BvUmVWR3ljWG9Wc0tNRUkrRnZr?=
+ =?utf-8?B?K0syaWk2T0p1alNxdGtrTUludjM2L3poNEhvTFhlMEE0TXFoZGJmSGQ5SjhT?=
+ =?utf-8?B?WHNFcTl4WGJqLzhvUUJkdXZvbWdmeGkvZDJVMlhYcHJZWlgrVWRYaFFZRWth?=
+ =?utf-8?B?UEMvREovUE9kZExGVU1zRHdqYUdzSnFCaTQ4VmNKUDQ4ZWJEcDFDUEdoaWZy?=
+ =?utf-8?B?UHRYYUR0V2dlV0xrYmhGYU9LQ1Z3M042WmhQK2o3ZFY4MFBLV0FNZkExSUJ1?=
+ =?utf-8?B?Y2FXb2orOVVJOS9nKzVQNE82OENLdkNzY3dnR2U3TEh0VXBTandZbkt3cmlh?=
+ =?utf-8?B?VVQwMTlpMVhsZFFGdHowNTdiRWsvZ1FUNWNrdXMySWhtODVLSmoyZE80WC9R?=
+ =?utf-8?B?WGo2cEhHLyt2TnNOSmFPTkFxOUx5MW01ZTQ3U0E1bFVqYlZ4b3FlbkJoRVpm?=
+ =?utf-8?B?R2VlMUpmNVFlQUdpRDBQeWw3dU0vMGZkMnJ5UDVKQnRRd2tJa2dmQ3BpSVpC?=
+ =?utf-8?B?aXB1a09FSHgwYmF2Vk9uWWpac2FqNC9ETG8wbTRVbW8zMkZINFpzSWgydUYw?=
+ =?utf-8?B?UHgrdmdzbHFTbkFhME9sa0lmWEdYclhqVnd0dnVFS1dGZllhZzU3WmlGcHR1?=
+ =?utf-8?B?NXBGeFNtOHZCb3F1Y3hzRjFaZ3NMYWtiVFdvN1VHWUkxVWtIeW5BSmVwa0FD?=
+ =?utf-8?B?a3hWTUF3bVZvLzB4S05laE9ienlJbmJTWFBVVUJjbWtEa3dCaXV3MWQ5OU5T?=
+ =?utf-8?B?WHIzVXB1SlFtczAvVTlsSkcvZHkvVnkzQmpEbGFzMnVFRnluZnN3aWNZT3ZN?=
+ =?utf-8?B?ekl3RW1Yb205WXBHQkJtM0lNbW53ZDdMRTNKbGVsajNFcGN4N3FQMnYzSXZZ?=
+ =?utf-8?B?Nm9TS1pzblF6TGI3aFhGV2xtZnRtUnNOVi91eWVNL1ljbGVvSzJKcWpidGFy?=
+ =?utf-8?B?MmpZWkQ2S1pYamQ2NnVmWHl3ZWlMWnVxY3pHUVVGRU1YOTFMODc3cHZTOTNz?=
+ =?utf-8?Q?6LgQ=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6353.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8b73427-e1a5-48b8-bb57-08dad9cebde5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Dec 2022 10:18:39.8317
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LaNIa3hWH8/17h/+QC6544yG1jYwlf4C5l/aiRoxOiG5i8MBny++zgKyfJikr8806IZOiu1E/3R1IcTYnZfDsw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6699
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Liang Li <liali@redhat.com>
-
-Add a test for bonding prio option. Here is the test result:
-
-]# ./option_prio.sh
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=arp_ip_target and primary_reselect=0)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=arp_ip_target and primary_reselect=1)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=arp_ip_target and primary_reselect=2)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=miimon and primary_reselect=0)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=miimon and primary_reselect=1)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=1 monitor=miimon and primary_reselect=2)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=5 monitor=miimon and primary_reselect=0)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=5 monitor=miimon and primary_reselect=1)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=5 monitor=miimon and primary_reselect=2)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=6 monitor=miimon and primary_reselect=0)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=6 monitor=miimon and primary_reselect=1)  [ OK ]
-TEST: prio_test (Test bonding option 'prio' with mode=6 monitor=miimon and primary_reselect=2)  [ OK ]
-
-Signed-off-by: Liang Li <liali@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- .../selftests/drivers/net/bonding/Makefile    |   3 +-
- .../drivers/net/bonding/option_prio.sh        | 246 ++++++++++++++++++
- 2 files changed, 248 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/drivers/net/bonding/option_prio.sh
-
-diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
-index 6b8d2e2f23c2..82250dd7a25d 100644
---- a/tools/testing/selftests/drivers/net/bonding/Makefile
-+++ b/tools/testing/selftests/drivers/net/bonding/Makefile
-@@ -5,7 +5,8 @@ TEST_PROGS := \
- 	bond-arp-interval-causes-panic.sh \
- 	bond-break-lacpdu-tx.sh \
- 	bond-lladdr-target.sh \
--	dev_addr_lists.sh
-+	dev_addr_lists.sh \
-+	option_prio.sh
- 
- TEST_FILES := \
- 	lag_lib.sh \
-diff --git a/tools/testing/selftests/drivers/net/bonding/option_prio.sh b/tools/testing/selftests/drivers/net/bonding/option_prio.sh
-new file mode 100755
-index 000000000000..669a660a69b9
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/bonding/option_prio.sh
-@@ -0,0 +1,246 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test bonding option prio
-+#
-+
-+ALL_TESTS="
-+	prio_arp_ip_target_test
-+	prio_miimon_test
-+"
-+
-+REQUIRE_MZ=no
-+REQUIRE_JQ=no
-+NUM_NETIFS=0
-+lib_dir=$(dirname "$0")
-+source "$lib_dir"/net_forwarding_lib.sh
-+
-+destroy()
-+{
-+	ip link del bond0 &>/dev/null
-+	ip link del br0 &>/dev/null
-+	ip link del veth0 &>/dev/null
-+	ip link del veth1 &>/dev/null
-+	ip link del veth2 &>/dev/null
-+	ip netns del ns1 &>/dev/null
-+	ip link del veth3 &>/dev/null
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	destroy
-+}
-+
-+skip()
-+{
-+        local skip=1
-+	ip link add name bond0 type bond mode 1 miimon 100 &>/dev/null
-+	ip link add name veth0 type veth peer name veth0_p
-+	ip link set veth0 master bond0
-+
-+	# check if iproute support prio option
-+	ip link set dev veth0 type bond_slave prio 10
-+	[[ $? -ne 0 ]] && skip=0
-+
-+	# check if bonding support prio option
-+	ip -d link show veth0 | grep -q "prio 10"
-+	[[ $? -ne 0 ]] && skip=0
-+
-+	ip link del bond0 &>/dev/null
-+	ip link del veth0
-+
-+	return $skip
-+}
-+
-+active_slave=""
-+check_active_slave()
-+{
-+	local target_active_slave=$1
-+	active_slave="$(cat /sys/class/net/bond0/bonding/active_slave)"
-+	test "$active_slave" = "$target_active_slave"
-+	check_err $? "Current active slave is $active_slave but not $target_active_slave"
-+}
-+
-+
-+# Test bonding prio option with mode=$mode monitor=$monitor
-+# and primary_reselect=$primary_reselect
-+prio_test()
-+{
-+	RET=0
-+
-+	local monitor=$1
-+	local mode=$2
-+	local primary_reselect=$3
-+
-+	local bond_ip4="192.169.1.2"
-+	local peer_ip4="192.169.1.1"
-+	local bond_ip6="2009:0a:0b::02"
-+	local peer_ip6="2009:0a:0b::01"
-+
-+
-+	# create veths
-+	ip link add name veth0 type veth peer name veth0_p
-+	ip link add name veth1 type veth peer name veth1_p
-+	ip link add name veth2 type veth peer name veth2_p
-+
-+	# create bond
-+	if [[ "$monitor" == "miimon" ]];then
-+		ip link add name bond0 type bond mode $mode miimon 100 primary veth1 primary_reselect $primary_reselect
-+	elif [[ "$monitor" == "arp_ip_target" ]];then
-+		ip link add name bond0 type bond mode $mode arp_interval 1000 arp_ip_target $peer_ip4 primary veth1 primary_reselect $primary_reselect
-+	elif [[ "$monitor" == "ns_ip6_target" ]];then
-+		ip link add name bond0 type bond mode $mode arp_interval 1000 ns_ip6_target $peer_ip6 primary veth1 primary_reselect $primary_reselect
-+	fi
-+	ip link set bond0 up
-+	ip link set veth0 master bond0
-+	ip link set veth1 master bond0
-+	ip link set veth2 master bond0
-+	# check bonding member prio value
-+	ip link set dev veth0 type bond_slave prio 0
-+	ip link set dev veth1 type bond_slave prio 10
-+	ip link set dev veth2 type bond_slave prio 11
-+	ip -d link show veth0 | grep -q 'prio 0'
-+	check_err $? "veth0 prio is not 0"
-+	ip -d link show veth1 | grep -q 'prio 10'
-+	check_err $? "veth0 prio is not 10"
-+	ip -d link show veth2 | grep -q 'prio 11'
-+	check_err $? "veth0 prio is not 11"
-+
-+	ip link set veth0 up
-+	ip link set veth1 up
-+	ip link set veth2 up
-+	ip link set veth0_p up
-+	ip link set veth1_p up
-+	ip link set veth2_p up
-+
-+	# prepare ping target
-+	ip link add name br0 type bridge
-+	ip link set br0 up
-+	ip link set veth0_p master br0
-+	ip link set veth1_p master br0
-+	ip link set veth2_p master br0
-+	ip link add name veth3 type veth peer name veth3_p
-+	ip netns add ns1
-+	ip link set veth3_p master br0 up
-+	ip link set veth3 netns ns1 up
-+	ip netns exec ns1 ip addr add $peer_ip4/24 dev veth3
-+	ip netns exec ns1 ip addr add $peer_ip6/64 dev veth3
-+	ip addr add $bond_ip4/24 dev bond0
-+	ip addr add $bond_ip6/64 dev bond0
-+	sleep 5
-+
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 1."
-+	ping6 $peer_ip6 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping6 failed 1."
-+
-+	# active salve should be the primary slave
-+	check_active_slave veth1
-+
-+	# active slave should be the higher prio slave
-+	ip link set $active_slave down
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 2."
-+	check_active_slave veth2
-+
-+	# when only 1 slave is up
-+	ip link set $active_slave down
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 3."
-+	check_active_slave veth0
-+
-+	# when a higher prio slave change to up
-+	ip link set veth2 up
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 4."
-+	case $primary_reselect in
-+		"0")
-+			check_active_slave "veth2"
-+			;;
-+		"1")
-+			check_active_slave "veth0"
-+			;;
-+		"2")
-+			check_active_slave "veth0"
-+			;;
-+	esac
-+	local pre_active_slave=$active_slave
-+
-+	# when the primary slave change to up
-+	ip link set veth1 up
-+	ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+	check_err $? "ping failed 5."
-+	case $primary_reselect in
-+		"0")
-+			check_active_slave "veth1"
-+			;;
-+		"1")
-+			check_active_slave "$pre_active_slave"
-+			;;
-+		"2")
-+			check_active_slave "$pre_active_slave"
-+			ip link set $active_slave down
-+			ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+			check_err $? "ping failed 6."
-+			check_active_slave "veth1"
-+			;;
-+	esac
-+
-+	# Test changing bond salve prio
-+	if [[ "$primary_reselect" == "0" ]];then
-+		ip link set dev veth0 type bond_slave prio 1000000
-+		ip link set dev veth1 type bond_slave prio 0
-+		ip link set dev veth2 type bond_slave prio 50
-+		ip -d link show veth0 | grep -q 'prio 1000000'
-+		check_err $? "veth0 prio is not 1000000"
-+		ip -d link show veth1 | grep -q 'prio 0'
-+		check_err $? "veth1 prio is not 0"
-+		ip -d link show veth2 | grep -q 'prio 50'
-+		check_err $? "veth3 prio is not 50"
-+		check_active_slave "veth1"
-+
-+		ip link set $active_slave down
-+		ping $peer_ip4 -c5 -I bond0 &>/dev/null
-+		check_err $? "ping failed 7."
-+		check_active_slave "veth0"
-+	fi
-+
-+	cleanup
-+
-+	log_test "prio_test" "Test bonding option 'prio' with mode=$mode monitor=$monitor and primary_reselect=$primary_reselect"
-+}
-+
-+prio_miimon_test()
-+{
-+	local mode
-+	local primary_reselect
-+
-+	for mode in 1 5 6; do
-+		for primary_reselect in 0 1 2; do
-+			prio_test "miimon" $mode $primary_reselect
-+		done
-+	done
-+}
-+
-+prio_arp_ip_target_test()
-+{
-+	local primary_reselect
-+
-+	for primary_reselect in 0 1 2; do
-+		prio_test "arp_ip_target" 1 $primary_reselect
-+	done
-+}
-+
-+if skip;then
-+	log_test_skip "option_prio.sh" "Current iproute doesn't support 'prio'."
-+	exit 0
-+fi
-+
-+trap cleanup EXIT
-+
-+tests_run
-+
-+exit "$EXIT_STATUS"
-+
--- 
-2.38.1
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFrdWIgS2ljaW5za2kg
+PGt1YmFAa2VybmVsLm9yZz4NCj4gU2VudDogRnJpZGF5LCA5IERlY2VtYmVyIDIwMjIgNDozMw0K
+PiBUbzogRW1lZWwgSGFraW0gPGVoYWtpbUBudmlkaWEuY29tPg0KPiBDYzogbGludXgta2VybmVs
+QHZnZXIua2VybmVsLm9yZzsgUmFlZCBTYWxlbSA8cmFlZHNAbnZpZGlhLmNvbT47DQo+IGRhdmVt
+QGRhdmVtbG9mdC5uZXQ7IGVkdW1hemV0QGdvb2dsZS5jb207IHBhYmVuaUByZWRoYXQuY29tOw0K
+PiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBzZEBxdWVhc3lzbmFpbC5uZXQ7IGF0ZW5hcnRAa2Vy
+bmVsLm9yZzsgamlyaUByZXNudWxsaS51cw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIG5ldC1uZXh0
+IHY0IDEvMl0gbWFjc2VjOiBhZGQgc3VwcG9ydCBmb3INCj4gSUZMQV9NQUNTRUNfT0ZGTE9BRCBp
+biBtYWNzZWNfY2hhbmdlbGluaw0KPiANCj4gRXh0ZXJuYWwgZW1haWw6IFVzZSBjYXV0aW9uIG9w
+ZW5pbmcgbGlua3Mgb3IgYXR0YWNobWVudHMNCj4gDQo+IA0KPiBPbiBUaHUsIDggRGVjIDIwMjIg
+MTg6MzI6NDQgLTA4MDAgSmFrdWIgS2ljaW5za2kgd3JvdGU6DQo+ID4gSSB0aGluayB5b3UncmUg
+anVzdCBtb3ZpbmcgdGhpcyBjb2RlLCBidXQgc3RpbGwuDQo+IA0KPiBBbmQgYnkgImJ5IHN0aWxs
+IiBJIG1lYW4gLSBpdCdzIHN0aWxsIGEgYnVnLCBzbyBpdCBuZWVkcyB0byBiZSBmaXhlZCBmaXJz
+dC4NCg0KVGhlIGNvZGUgYWRkZWQgYnkgdGhvc2UgcGF0Y2hlcyBkb2VzIG5vdCB1c2UgdGhlIHJ0
+bmxfbG9jaywgdGhlIGxvY2sgaXMganVzdCBnZXR0aW5nIG1vdmVkIGFzIHBhcnQgb2Ygc2hhcmlu
+ZyBzaW1pbGFyIGNvZGUsDQpidXQgdGhlIG5ldyBjb2RlIGlzIHN0aWxsIG5vdCB1c2luZyBpdCwg
+SSBkb27igJl0IHRoaW5rIHRob3NlICBwYXRjaGVzIG5lZWQgdG8gd2FpdCB1bnRpbCBhIGZpeCBv
+ZiBhbiBleGlzdGluZyBsb2NraW5nIGlzc3VlIGFzIGxvbmcNCmFzIHRoZSBuZXcgY29kZSBpcyBu
+b3QgaW5zZXJ0aW5nIGFueSBidWdzLg0K
