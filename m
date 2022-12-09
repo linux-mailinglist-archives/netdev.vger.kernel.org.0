@@ -2,63 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7FE9647D66
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 06:44:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9B06647D78
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 06:49:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229573AbiLIFop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 00:44:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60874 "EHLO
+        id S229561AbiLIFtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 00:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiLIFon (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 00:44:43 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCDE18380;
-        Thu,  8 Dec 2022 21:44:42 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id kw15so9042921ejc.10;
-        Thu, 08 Dec 2022 21:44:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=tlYZR3ZAgmc6hHjlk+8dcH0CytRjrSRYrr/M//mA3ro=;
-        b=k4q7hKEUBTqfWGDBcbacsEt48PbWTKqp2BntffDDmq+b6b7zdSvbeTdK3KpuaYBvA6
-         y1ptJByCQRPdmf2wKYkFtmvG68QTDe5ndiP1bS1/sfWiYP0QN0Grh/6k8y3D47R6j3oR
-         Nb3IcttmXnqdktGSja0rXprnhdQwSz4tJ0U0NurQQMElCI0BjiL26m3dzIWc+eD8kdJE
-         GGp99mfrVNzyOwaXGSEaabwReQdLJwtKYVw8j+Mg7vWvAE/tdYhqMbaNNFET7aNuidCw
-         XgJE3VZoet+MhDwBO7RXB3/DJBQ6LSjFUAyUEo1Fbe1b9L3T8BqCKAAT4tkYIsRFcADi
-         bDPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tlYZR3ZAgmc6hHjlk+8dcH0CytRjrSRYrr/M//mA3ro=;
-        b=oocZeqt/PQSK9G3cgNodJovD0FUttIxOtXxsMz71ibwC33fkKSmbqHeiFPCiRWauUw
-         b5JNFPRjpQluPdcb95HmgTe3c5K5rbWSifmeiP4NjG9iCjjzdNd/p5EYYbOJbd6Ab8LV
-         Cj2jTWmlYHLbit3gfdSlhgX7KwwCt7pbugQTrGNhZ1Plh0G1YAERlR341Pi/gzU38DSi
-         iDO0IAlRl/hcDebNt0aC64taW5I+pTBdRswFaEobPL1iQVDjbpiddzFUVKbi+sCfizF3
-         LkCCG+jcppDX2knwEAg3QScAH7nJ2puBnoQ9vK+fsNXmm7vRt40m0k8iy65gmYVc3wld
-         yD8g==
-X-Gm-Message-State: ANoB5pnDgsg91fQaxMQJ1HceX3gmfFrMOcb4ua2K4377ltmV+VaYmKaV
-        Stz0VUAiNKdA1oLq96TEWExX+WeKmFCsCOQzeg7paHGHDtSvtA==
-X-Google-Smtp-Source: AA0mqf6evUxjaUXBXX54VWe9di7lKQ4fZa0LE01gZO3dMxVy82R3aCqx5CWvbZD+2WuDKr2R9XYB68pQSQGNw17xi84=
-X-Received: by 2002:a17:906:2851:b0:78d:88c7:c1bf with SMTP id
- s17-20020a170906285100b0078d88c7c1bfmr64041738ejc.299.1670564680562; Thu, 08
- Dec 2022 21:44:40 -0800 (PST)
+        with ESMTP id S229462AbiLIFtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 00:49:13 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2079.outbound.protection.outlook.com [40.107.7.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CC7379E6;
+        Thu,  8 Dec 2022 21:49:08 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=leEEkMrcnklRXNe0ddPFkkkKcrIn1k6cG2QjlsGxjUPN0sF0bYSCrZ3RhYr7xNjhToJzR8Te99MHKAlAiHmCNTqkbnY98SGPCHpQJ7OBR//iB2orkxjwloMPkS4hs5VeY3kny54OtUxi1+7wjKDdnzWeWio1ZUJo5tDt5BL/7RK7NDcL40xQ7EDYE+MWSTqMWmV3sOp9swEhr9uv+6i1xMHvjUWc0gPXLRqrHjlU0KynI1orYXoHOTaCumoC+dgY65o/6WtEYvH75xAkuy22BZT9b1okOnmqJnKzAWyf+PrN5Y03rcY2U3sPXUBMvg7rZLtE8iX+wnM9BAhseVqaxg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2hGjgZ/L5gjD7eDK7KLTJRK8Ec12wHm78IV9BLntFsA=;
+ b=YZ/t7HnEfQJQ0WiZK/YIVORznd4dfZ69uwLQFRWMw91P66yPhs6fxapPnRji7xwpCmnJgkJ0ndiCnX9EFYxmUqQKsbs7XOlb18C5bAG2m6B2I/6fGdqUGf5D0faxLIZ9jGB+U+clwv85YKBTsTD57ogd07/vKF3r6DdNeQ1hoR6/fEfT4lVwujjxkGntgCiA841CeAtaSPxRjLbAPc5nSGVyj4vQfrsGMUQTfFYOyIl990t9FVeYIrx5FtlrEzgbx/3r+CgOPcuyVtGNtXFcQkvnIbSRwk+B+2GYmFwWE1NctA9VN1C+C/BcwlNzgxiTSn0ox7xuh3+O2dDZK7bOnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2hGjgZ/L5gjD7eDK7KLTJRK8Ec12wHm78IV9BLntFsA=;
+ b=JOIFNfPcawUbJyqU1LXuCuxGntgB+Nrem6ZZOLjwcXSMKBIRPlQErKZ8n+Yf2eX/QViMkZNRBdwWEXxpg9EmhEXy3PSU7gZXIORjidn0bS2t/91u3QCLs3tTz9Xf93P4vSqBo2k+S7s0OOkGUd7REnbWU7Ye5hXb2A8fKDdfUh7B/px6FvzCAmGred8egLsKQoRPGfNPG69/LupOqGiR93ri+DBr/v0ZcFrR4eQZn3COjm22mkZsmvwNpG2+t26oaLtT3hjqi3k/cYcPeOhX5m/q08oferlTXkzVBrJ4+tAxGM+SwG/EEwkTMb5j4X1BWh/wye4AaPlp+L0lPLETTw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from AS8PR04MB9009.eurprd04.prod.outlook.com (2603:10a6:20b:42d::19)
+ by AM9PR04MB7491.eurprd04.prod.outlook.com (2603:10a6:20b:283::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10; Fri, 9 Dec
+ 2022 05:49:05 +0000
+Received: from AS8PR04MB9009.eurprd04.prod.outlook.com
+ ([fe80::696b:5418:b458:196a]) by AS8PR04MB9009.eurprd04.prod.outlook.com
+ ([fe80::696b:5418:b458:196a%4]) with mapi id 15.20.5880.014; Fri, 9 Dec 2022
+ 05:49:04 +0000
+From:   Firo Yang <firo.yang@suse.com>
+To:     marcelo.leitner@gmail.com, kuba@kernel.org, vyasevich@gmail.com,
+        nhorman@tuxdriver.com
+Cc:     mkubecek@suse.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        firogm@gmail.com, Firo Yang <firo.yang@suse.com>
+Subject: [PATCH v3 1/1] sctp: sysctl: make extra pointers netns aware
+Date:   Fri,  9 Dec 2022 13:48:54 +0800
+Message-Id: <20221209054854.23889-1-firo.yang@suse.com>
+X-Mailer: git-send-email 2.38.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TYAPR01CA0001.jpnprd01.prod.outlook.com (2603:1096:404::13)
+ To AS8PR04MB9009.eurprd04.prod.outlook.com (2603:10a6:20b:42d::19)
 MIME-Version: 1.0
-From:   Wei Chen <harperchen1110@gmail.com>
-Date:   Fri, 9 Dec 2022 13:44:04 +0800
-Message-ID: <CAO4mrffkMvj87eq1G5toL2nG=VWMPK0qxQ7FJ9WtpXfBzUtWiA@mail.gmail.com>
-Subject: general protection fault in phonet_device_notify
-To:     courmisch@gmail.com, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB9009:EE_|AM9PR04MB7491:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9b768b9a-dfec-4412-217b-08dad9a914b8
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jmt8Gf/gtur39bBpElUwzf0PiZ/G8U8CZ9KXq5aZGKtuXfBzmwXrhPEzJrlZ/SmrOdSx5NFVvx3DM6sGuIHKi4GGeatzBH3JbmEpQsEp0u9pk32h4vQ5EQI9RxeLLtEMKCMGig9rwGXzXEmvD0WDD0hD1e8aoAgEX5PJ9E3UpvgH7i/Dwldl7iQ7Ng4GPiwgst3DGKTCDj78ewEBSE7saARel7lXIbqanFAvDjyQiKUSA8VHbfx5yoRJuyAJiF2Qe9z83eS/zyJohHJf+gma+aJUbpfYXG7+9PZzPcn5F9XF8pNin6d7YpfjQ1LhNcqm898U1SOEr5SbBfo0aJOVl+12z1k8sXpxrX9ZO2JEQe71sKhPkBMW12YMMHu5OxvLyUhBrM2eoRSe+oOK+8CwXTXvCjJP+AR58UVNphNXAdXAO1NPMutFi5HbpQPuzedeE8sojiaZSlOp5W3V+ACSKwVHLf75KeBtnhV94nhaP7siwMwQdV4sUm0/h4+mIFi+uQ5IN84PEa84aokGT22c2BJlgbChOmbwqlcSu96FOnO8XJSPBEnynKs/isfEPhdvXc8TtSqxR/amd+clLEJvoCtgtsmMG/9MMIp+PpEM/AKYBoIhf1U/OdmnwfBpds4UgmY1qI2Cbg+M/OwqNj/78Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB9009.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(396003)(39860400002)(376002)(136003)(346002)(451199015)(2906002)(41300700001)(7416002)(5660300002)(44832011)(8936002)(83380400001)(86362001)(36756003)(38100700002)(6506007)(316002)(186003)(6512007)(6666004)(107886003)(478600001)(6486002)(66556008)(66946007)(4326008)(1076003)(2616005)(66476007)(8676002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iJJrHQeGRFLS6RDIm7rPA62+OpQ3pmXlA9AwL7lYoxrFj08JwWhuJt/06BzS?=
+ =?us-ascii?Q?j1PUOWQXf9fOWwTmCBhBV/0PF0CQLFP+6DiQ2/+K/dogykx/zF/VpfqCELP8?=
+ =?us-ascii?Q?10sgeZiBY1L3sumMcSFpr9P58BDvIl2E7sXr3b9tTLFALqourO/3Z7k9QObF?=
+ =?us-ascii?Q?NLCc33pG/C+obiJuT53AVnH5P0SMhcJgu++AjRzHCA8fG9TBtXmg97jL8YHg?=
+ =?us-ascii?Q?HuEVQDrNiXVdPjDiH+HrydNEL9X4WxqZ/vYk8ooY/bk7DNR7vqCGXCgKdj03?=
+ =?us-ascii?Q?QOLXOElF9dI+YNrjxScoKjohpuotDttYZ8V8k79YjVipJnzBLjjsXnsWEu2w?=
+ =?us-ascii?Q?VxqhnbL1DXZgwfCNMb1GBmwK4TFJ5U0prZftB+CHOBqcAqNt2YDjh1rYSX+Z?=
+ =?us-ascii?Q?UX8yRK1RcOTR1vlaGoSFo47sKVga365/O7C5R8ZhVnkCvC/BBJ1MUiUfnO6N?=
+ =?us-ascii?Q?0tgoA0pbdCWLm1La2QFXx+qOFcPUtyDeDnAYLLGD1saFgbgzD3p9/f1Xs+Ot?=
+ =?us-ascii?Q?UHdvkPLf+W7vT9pDxgRjaCcTU8pWWEDSXBs2kcGreThF8E+mpkcfF7DZYyS2?=
+ =?us-ascii?Q?WVE5kYyd91DpFIlI23jua3cIMEJbmvU4PHV/0/OcjjKDPdMKp76JU5o+YVd/?=
+ =?us-ascii?Q?ReyDaQV4grYyej4pNcIghGTot/F7JMzDtHe3VHxWNFjZTbdNRQwojjqmCevB?=
+ =?us-ascii?Q?Bqm//Z/ReIigkvTA7rzpqfrhgAcpBtl7TMAM1nYB4m4bluLrHsZf0NiCvMi9?=
+ =?us-ascii?Q?euCLOtX2oTW2+P3ZuuIRr+hAPZP5/wvEyxfpjd70KrBU577HrRUJaTBcvtf6?=
+ =?us-ascii?Q?7L043BZ/0EoeUUTOZAt9cTkhFCZkCYf8euUL1v9VHTjEMtPXB/IX3VQz3Oxd?=
+ =?us-ascii?Q?z2YNl69XcZNYtq88Pcmm94hq6zhqSBVr83H0D07QMJc/FNdyIgH/K4CuzGlD?=
+ =?us-ascii?Q?hclsbsTHjYwHG42yABHWgrsVDgB1B4m+W1aMZITTtMhKEVPOLOk+w2yl0IjQ?=
+ =?us-ascii?Q?zv69CiyDnsv9oWibefVN1BQuM+XF7ANrsvJaYwgCm4iKRRcw9IgMxc5HfBSr?=
+ =?us-ascii?Q?55xsEB95UDFFcWXqqRXiQJRorvRkopSvHd7omWPalyVQYn4AUqEbTO5vd4hl?=
+ =?us-ascii?Q?a6SHjTspdWQJR2pMKbckB73I2iOEj9x2M5/s/nwrDfiFMm3kZNWqBwMC1g1o?=
+ =?us-ascii?Q?rTIYh4CVpgY3t1nzDySc0d2HJyY3SzQrc609F7fSieDh0zzaGDMv2AuJNJXm?=
+ =?us-ascii?Q?+CLofQImG+RxxJBa9w7F6c8QlStxJFUjOCGiQGCb9cVKbMczzZpo0o9nLyY6?=
+ =?us-ascii?Q?ovBk7Mi9Deo+m+FNbcxcOceoTz74VPx1RZ9t/9S2qA5xBxZc72PuV4SeWX9m?=
+ =?us-ascii?Q?OWfIVTwCkCnWfN+ZDfn1VR9AV0Sp/wO6OQsKBgbHUAP145817zyiIXnqSyrY?=
+ =?us-ascii?Q?vIQWAm4KSKL2SXVL78ua0sElcXC+En/gLouJOs6yQt78KS1CVvTb1gCYDfWr?=
+ =?us-ascii?Q?eSZNAVHFaItsiq6bEZs6uxF4avbUli0BqmI4cQQJ89RdkwMOdsNWpBPVZn4j?=
+ =?us-ascii?Q?tjsayvxukkDwRW3iqW9YATuMXdZWUrqtBn9W4PWSPN/pTIUvs8tIQlraIqpl?=
+ =?us-ascii?Q?FSge0F7Qjo9utgH4IPbU5ulJOvFFmACYeHZEhiZsURvP?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9b768b9a-dfec-4412-217b-08dad9a914b8
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB9009.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2022 05:49:04.8376
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YIGShJtPSw96m0sADzcZ+Rf0CQ/nr7PDwzFmbhUceGxxaSpL13YhpoCopx8G8BXqrdw6Zq3PBMnfRfxtTe60tQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB7491
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,118 +114,160 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux Developers,
+Recently, a customer reported that from their container whose
+net namespace is different to the host's init_net, they can't set
+the container's net.sctp.rto_max to any value smaller than
+init_net.sctp.rto_min.
 
-Recently, when using our tool to fuzz kernel, the following crash was triggered.
+For instance,
+Host:
+sudo sysctl net.sctp.rto_min
+net.sctp.rto_min = 1000
 
-HEAD commit: 147307c69ba
-git tree: linux-next
-compiler: clang 12.0.0
-console output:
-https://drive.google.com/file/d/1RvsQqnpZcaUm_fww5nuUh5L8IeEDNeSM/view?usp=share_link
-kernel config: https://drive.google.com/file/d/1NAf4S43d9VOKD52xbrqw-PUP1Mbj8z-S/view?usp=share_link
+Container:
+echo 100 > /mnt/proc-net/sctp/rto_min
+echo 400 > /mnt/proc-net/sctp/rto_max
+echo: write error: Invalid argument
 
-Unfortunately, I didn't have a reproducer for this crash. When calling
-__phonet_get, some phonet devices are freed when going through
-pndevs->list, leading to invalid value of pnd, thus causing general
-protection fault when performing dereference. I'm wondering if there
-is a data race due to improper usage of lock.
+This is caused by the check made from this'commit 4f3fdf3bc59c
+("sctp: add check rto_min and rto_max in sysctl")'
+When validating the input value, it's always referring the boundary
+value set for the init_net namespace.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: Wei Chen <harperchen1110@gmail.com>
+Having container's rto_max smaller than host's init_net.sctp.rto_min
+does make sense. Consider that the rto between two containers on the
+same host is very likely smaller than it for two hosts.
 
-general protection fault, probably for non-canonical address
-0x20ce10294000010: 0000 [#1] PREEMPT SMP
-CPU: 0 PID: 9714 Comm: syz-executor.0 Not tainted 6.1.0-rc5-next-20221118 #2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
-RIP: 0010:__phonet_get net/phonet/pn_dev.c:69 [inline]
-RIP: 0010:phonet_device_destroy net/phonet/pn_dev.c:95 [inline]
-RIP: 0010:phonet_device_notify+0x239/0x6a0 net/phonet/pn_dev.c:289
-Code: 04 00 00 4c 89 ef e8 f6 85 f2 fc 49 8b 5d 00 4c 39 eb 74 33 66
-2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 8d 7b 10 e8 d7 85 f2 fc <4c> 39
-63 10 74 1e 48 89 df e8 c9 85 f2 fc 48 8b 1b 4c 39 eb 74 5e
-RSP: 0018:ffffc90004fdfa88 EFLAGS: 00010246
-RAX: ffff88800a583a48 RBX: 020ce10294000000 RCX: ffffffff84489989
-RDX: 00000000000008c3 RSI: 0000000000000000 RDI: 020ce10294000010
-RBP: 0000000000000051 R08: 0000e10294000017 R09: 0000000000000000
-R10: 0001ffffffffffff R11: ffff88800a583000 R12: ffff888127d3c000
-R13: ffff888106ec8c00 R14: ffff888127d3c530 R15: ffff888106ec8c10
-FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005643fdc4eaa8 CR3: 0000000104b97000 CR4: 00000000003506f0
-Call Trace:
- <TASK>
- notifier_call_chain kernel/notifier.c:87 [inline]
- raw_notifier_call_chain+0x53/0xb0 kernel/notifier.c:455
- call_netdevice_notifiers_info net/core/dev.c:1944 [inline]
- call_netdevice_notifiers_extack net/core/dev.c:1982 [inline]
- call_netdevice_notifiers net/core/dev.c:1996 [inline]
- netdev_wait_allrefs_any net/core/dev.c:10227 [inline]
- netdev_run_todo+0x4be/0x9a0 net/core/dev.c:10341
- rtnl_unlock+0xa/0x10 net/core/rtnetlink.c:148
- tun_detach drivers/net/tun.c:704 [inline]
- tun_chr_close+0x8f/0xa0 drivers/net/tun.c:3460
- __fput+0x2a2/0x560 fs/file_table.c:320
- ____fput+0x11/0x20 fs/file_table.c:348
- task_work_run+0xde/0x110 kernel/task_work.c:179
- exit_task_work include/linux/task_work.h:38 [inline]
- do_exit+0x5a0/0x16c0 kernel/exit.c:820
- do_group_exit+0xfe/0x140 kernel/exit.c:950
- get_signal+0xfd7/0x1100 kernel/signal.c:2858
- arch_do_signal_or_restart+0x85/0x280 arch/x86/kernel/signal.c:306
- exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
- exit_to_user_mode_prepare+0xb4/0x130 kernel/entry/common.c:203
- __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
- syscall_exit_to_user_mode+0x20/0x40 kernel/entry/common.c:296
- do_syscall_64+0x37/0x70 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x418d4e
-Code: Unable to access opcode bytes at 0x418d24.
-RSP: 002b:00007fca3c11a780 EFLAGS: 00000293 ORIG_RAX: 0000000000000101
-RAX: 0000000000000004 RBX: 6666666666666667 RCX: 0000000000418d4e
-RDX: 0000000000000002 RSI: 00007fca3c11a810 RDI: 00000000ffffff9c
-RBP: 00007fca3c11a810 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000293 R12: 000000000077c038
-R13: 0000000000000000 R14: 000000000077c038 R15: 00007fffc05f99c0
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__phonet_get net/phonet/pn_dev.c:69 [inline]
-RIP: 0010:phonet_device_destroy net/phonet/pn_dev.c:95 [inline]
-RIP: 0010:phonet_device_notify+0x239/0x6a0 net/phonet/pn_dev.c:289
-Code: 04 00 00 4c 89 ef e8 f6 85 f2 fc 49 8b 5d 00 4c 39 eb 74 33 66
-2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 8d 7b 10 e8 d7 85 f2 fc <4c> 39
-63 10 74 1e 48 89 df e8 c9 85 f2 fc 48 8b 1b 4c 39 eb 74 5e
-RSP: 0018:ffffc90004fdfa88 EFLAGS: 00010246
-RAX: ffff88800a583a48 RBX: 020ce10294000000 RCX: ffffffff84489989
-RDX: 00000000000008c3 RSI: 0000000000000000 RDI: 020ce10294000010
-RBP: 0000000000000051 R08: 0000e10294000017 R09: 0000000000000000
-R10: 0001ffffffffffff R11: ffff88800a583000 R12: ffff888127d3c000
-R13: ffff888106ec8c00 R14: ffff888127d3c530 R15: ffff888106ec8c10
-FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005643fdc4eaa8 CR3: 0000000104b97000 CR4: 00000000003506f0
-----------------
-Code disassembly (best guess):
-   0: 04 00                 add    $0x0,%al
-   2: 00 4c 89 ef           add    %cl,-0x11(%rcx,%rcx,4)
-   6: e8 f6 85 f2 fc       callq  0xfcf28601
-   b: 49 8b 5d 00           mov    0x0(%r13),%rbx
-   f: 4c 39 eb             cmp    %r13,%rbx
-  12: 74 33                 je     0x47
-  14: 66 2e 0f 1f 84 00 00 nopw   %cs:0x0(%rax,%rax,1)
-  1b: 00 00 00
-  1e: 0f 1f 00             nopl   (%rax)
-  21: 48 8d 7b 10           lea    0x10(%rbx),%rdi
-  25: e8 d7 85 f2 fc       callq  0xfcf28601
-* 2a: 4c 39 63 10           cmp    %r12,0x10(%rbx) <-- trapping instruction
-  2e: 74 1e                 je     0x4e
-  30: 48 89 df             mov    %rbx,%rdi
-  33: e8 c9 85 f2 fc       callq  0xfcf28601
-  38: 48 8b 1b             mov    (%rbx),%rbx
-  3b: 4c 39 eb             cmp    %r13,%rbx
-  3e: 74 5e                 je     0x9e
+So to fix this problem, as suggested by Marcelo, this patch makes the
+extra pointers of rto_min, rto_max, pf_retrans, and ps_retrans point
+to the corresponding variables from the newly created net namespace while
+the new net namespace is being registered in sctp_sysctl_net_register.
 
-Best,
-Wei
+Fixes: 4f3fdf3bc59c ("sctp: add check rto_min and rto_max in sysctl")
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Firo Yang <firo.yang@suse.com>
+---
+ net/sctp/sysctl.c | 73 ++++++++++++++++++++++++++++-------------------
+ 1 file changed, 44 insertions(+), 29 deletions(-)
+
+v2 -> v3: 
+ * Explicitly specifying indexes in sctp_net_table[].
+
+diff --git a/net/sctp/sysctl.c b/net/sctp/sysctl.c
+index b46a416787ec..43ebf090029d 100644
+--- a/net/sctp/sysctl.c
++++ b/net/sctp/sysctl.c
+@@ -84,17 +84,18 @@ static struct ctl_table sctp_table[] = {
+ 	{ /* sentinel */ }
+ };
+ 
++/* The following index defines are used in sctp_sysctl_net_register().
++ * If you add new items to the sctp_net_table, please ensure that
++ * the index values of these defines hold the same meaning indicated by
++ * their macro names when they appear in sctp_net_table.
++ */
++#define SCTP_RTO_MIN_IDX       0
++#define SCTP_RTO_MAX_IDX       1
++#define SCTP_PF_RETRANS_IDX    2
++#define SCTP_PS_RETRANS_IDX    3
++
+ static struct ctl_table sctp_net_table[] = {
+-	{
+-		.procname	= "rto_initial",
+-		.data		= &init_net.sctp.rto_initial,
+-		.maxlen		= sizeof(unsigned int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1         = SYSCTL_ONE,
+-		.extra2         = &timer_max
+-	},
+-	{
++	[SCTP_RTO_MIN_IDX] = {
+ 		.procname	= "rto_min",
+ 		.data		= &init_net.sctp.rto_min,
+ 		.maxlen		= sizeof(unsigned int),
+@@ -103,7 +104,7 @@ static struct ctl_table sctp_net_table[] = {
+ 		.extra1         = SYSCTL_ONE,
+ 		.extra2         = &init_net.sctp.rto_max
+ 	},
+-	{
++	[SCTP_RTO_MAX_IDX] =  {
+ 		.procname	= "rto_max",
+ 		.data		= &init_net.sctp.rto_max,
+ 		.maxlen		= sizeof(unsigned int),
+@@ -112,6 +113,33 @@ static struct ctl_table sctp_net_table[] = {
+ 		.extra1         = &init_net.sctp.rto_min,
+ 		.extra2         = &timer_max
+ 	},
++	[SCTP_PF_RETRANS_IDX] = {
++		.procname	= "pf_retrans",
++		.data		= &init_net.sctp.pf_retrans,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= &init_net.sctp.ps_retrans,
++	},
++	[SCTP_PS_RETRANS_IDX] = {
++		.procname	= "ps_retrans",
++		.data		= &init_net.sctp.ps_retrans,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= &init_net.sctp.pf_retrans,
++		.extra2		= &ps_retrans_max,
++	},
++	{
++		.procname	= "rto_initial",
++		.data		= &init_net.sctp.rto_initial,
++		.maxlen		= sizeof(unsigned int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1         = SYSCTL_ONE,
++		.extra2         = &timer_max
++	},
+ 	{
+ 		.procname	= "rto_alpha_exp_divisor",
+ 		.data		= &init_net.sctp.rto_alpha,
+@@ -207,24 +235,6 @@ static struct ctl_table sctp_net_table[] = {
+ 		.extra1		= SYSCTL_ONE,
+ 		.extra2		= SYSCTL_INT_MAX,
+ 	},
+-	{
+-		.procname	= "pf_retrans",
+-		.data		= &init_net.sctp.pf_retrans,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &init_net.sctp.ps_retrans,
+-	},
+-	{
+-		.procname	= "ps_retrans",
+-		.data		= &init_net.sctp.ps_retrans,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= &init_net.sctp.pf_retrans,
+-		.extra2		= &ps_retrans_max,
+-	},
+ 	{
+ 		.procname	= "sndbuf_policy",
+ 		.data		= &init_net.sctp.sndbuf_policy,
+@@ -586,6 +596,11 @@ int sctp_sysctl_net_register(struct net *net)
+ 	for (i = 0; table[i].data; i++)
+ 		table[i].data += (char *)(&net->sctp) - (char *)&init_net.sctp;
+ 
++	table[SCTP_RTO_MIN_IDX].extra2 = &net->sctp.rto_max;
++	table[SCTP_RTO_MAX_IDX].extra1 = &net->sctp.rto_min;
++	table[SCTP_PF_RETRANS_IDX].extra2 = &net->sctp.ps_retrans;
++	table[SCTP_PS_RETRANS_IDX].extra1 = &net->sctp.pf_retrans;
++
+ 	net->sctp.sysctl_header = register_net_sysctl(net, "net/sctp", table);
+ 	if (net->sctp.sysctl_header == NULL) {
+ 		kfree(table);
+-- 
+2.26.2
+
