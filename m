@@ -2,63 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F1AD647B42
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 02:20:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A004647B63
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 02:25:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbiLIBUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 20:20:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56986 "EHLO
+        id S229973AbiLIBZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 20:25:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229841AbiLIBUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 20:20:10 -0500
-Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2C9941AD;
-        Thu,  8 Dec 2022 17:20:06 -0800 (PST)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by fd01.gateway.ufhost.com (Postfix) with ESMTP id DB57824E041;
-        Fri,  9 Dec 2022 09:19:53 +0800 (CST)
-Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 9 Dec
- 2022 09:19:51 +0800
-Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
- (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 9 Dec
- 2022 09:19:49 +0800
-Message-ID: <ed2f5df6-66c4-26b4-b650-48a128760965@starfivetech.com>
-Date:   Fri, 9 Dec 2022 09:19:48 +0800
+        with ESMTP id S230041AbiLIBYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 20:24:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC28801C9
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 17:24:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32C27B826CD
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 01:24:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4EB8C433EF;
+        Fri,  9 Dec 2022 01:24:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670549064;
+        bh=BEYP4XxTC8bVZOysNK3+PQyW5SWU+1e9Fg55C8a+q80=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qfkSDgB338lCMwPdMwSGYCR8YzwNodZaDvJO/rB/eMPJCrYqPUts8SVDUHqTmnLSo
+         7SmrdQijsDTIKkzSjLzqSYoWfE/y9B17poR48wQad9BT6zcJGcJ511Ak2f5KytnZUF
+         9dyI8ZWYBf1Rv5kd1d8Ueu2Fi44xuCSjEJjguz+ExnQMmWOPy0hhwYC0qA+x+DFBon
+         YIlO37zKso+GolwDqpcZYDCm+OpK1noPBZL64KjmV9ZN5GYEtQpVhYq5HKs6b7Pzp4
+         l3pXDuxCaQbckfaTSRd0wFNqZezEzt3b5wmoimfku0OtwHPHDG95eSJmHQf5i/Vv7f
+         i0VeX9a02ykKQ==
+Date:   Thu, 8 Dec 2022 17:24:22 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Shannon Nelson <shannon.nelson@amd.com>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <jiri@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] devlink: add fw bank select parameter
+Message-ID: <20221208172422.37423144@kernel.org>
+In-Reply-To: <d194be5e-886b-d69b-7d8d-3894354abe7f@intel.com>
+References: <20221205172627.44943-1-shannon.nelson@amd.com>
+        <20221205172627.44943-2-shannon.nelson@amd.com>
+        <20221206174136.19af0e7e@kernel.org>
+        <7206bdc8-8d45-5e2d-f84d-d741deb6073e@amd.com>
+        <20221207163651.37ff316a@kernel.org>
+        <06865416-5094-e34f-d031-fa7d8b96ed9b@amd.com>
+        <d194be5e-886b-d69b-7d8d-3894354abe7f@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH v1 7/7] riscv: dts: starfive: visionfive-v2: Add phy
- delay_chain configuration
-Content-Language: en-US
-To:     Conor Dooley <conor@kernel.org>
-CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
- <20221201090242.2381-8-yanhong.wang@starfivetech.com> <Y4jpDvXo/uj9ygLR@spud>
-From:   yanhong wang <yanhong.wang@starfivetech.com>
-In-Reply-To: <Y4jpDvXo/uj9ygLR@spud>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX173.cuchost.com
- (172.16.6.93)
-X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,UPPERCASE_50_75 autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,91 +59,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/12/2 1:49, Conor Dooley wrote:
-> On Thu, Dec 01, 2022 at 05:02:42PM +0800, Yanhong Wang wrote:
->> Add phy delay_chain configuration to support motorcomm phy driver for
->> StarFive VisionFive 2 board.
->> 
->> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
->> ---
->>  .../jh7110-starfive-visionfive-v2.dts         | 46 +++++++++++++++++++
->>  1 file changed, 46 insertions(+)
->> 
->> diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
->> index c8946cf3a268..2868ef4c74ef 100644
->> --- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
->> +++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
->> @@ -15,6 +15,8 @@
->>  
->>  	aliases {
->>  		serial0 = &uart0;
->> +		ethernet0=&gmac0;
->> +		ethernet1=&gmac1;
+On Thu, 8 Dec 2022 16:47:31 -0800 Jacob Keller wrote:
+> This is what I was thinking of and looks good to me. As for how to add 
+> attributes to get us from the current netlink API to this, I'm not 100% 
+> sure.
 > 
-> Please match the whitespace usage of the existing entry.
-> 
+> I think we can mostly just add the bank ID and flags to indicate which 
+> one is active and which one will be programmed next.
 
-Will fix in the next version.
+Why flags, tho?
 
->>  	};
->>  
->>  	chosen {
->> @@ -114,3 +116,47 @@
->>  	pinctrl-0 = <&uart0_pins>;
->>  	status = "okay";
->>  };
->> +
->> +&gmac0 {
->> +	status = "okay";
->> +	#address-cells = <1>;
->> +	#size-cells = <0>;
->> +	phy-handle = <&phy0>;
->> +	status = "okay";
->> +	mdio0 {
-> 
-> A line of whitespace before the child nodes too please :)
-> 
+The current nesting is:
 
-Will fix.
+  DEVLINK_ATTR_INFO_DRIVER_NAME		[str]
+  DEVLINK_ATTR_INFO_SERIAL_NUMBER	[str]
+  DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER	[str]
 
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +		compatible = "snps,dwmac-mdio";
->> +		phy0: ethernet-phy@0 {
->> +			reg = <0>;
->> +			rxc_dly_en = <1>;
->> +			tx_delay_sel_fe = <5>;
->> +			tx_delay_sel = <0xa>;
->> +			tx_inverted_10 = <0x1>;
->> +			tx_inverted_100 = <0x1>;
->> +			tx_inverted_1000 = <0x1>;
->> +		};
->> +	};
->> +};
->> +
->> +&gmac1 {
->> +	status = "okay";
->> +	#address-cells = <1>;
->> +	#size-cells = <0>;
->> +	phy-handle = <&phy1>;
->> +	status = "okay";
->> +	mdio1 {
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +		compatible = "snps,dwmac-mdio";
->> +		phy1: ethernet-phy@1 {
->> +			reg = <1>;
->> +			tx_delay_sel_fe = <5>;
->> +			tx_delay_sel = <0>;
->> +			rxc_dly_en = <0>;
->> +			tx_inverted_10 = <0x1>;
->> +			tx_inverted_100 = <0x1>;
->> +			tx_inverted_1000 = <0x0>;
->> +		};
->> +	};
->> +};
->> -- 
->> 2.17.1
->> 
+  DEVLINK_ATTR_INFO_VERSION_FIXED	[nest] // multiple VERSION_* nests follow
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE	[str]
+  DEVLINK_ATTR_INFO_VERSION_FIXED	[nest]
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE	[str]
+  DEVLINK_ATTR_INFO_VERSION_RUNNING	[nest]
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE	[str]
+  DEVLINK_ATTR_INFO_VERSION_RUNNING	[nest]
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE	[str]
+
+
+Now we'd throw the bank into the nests, and add root attrs for the
+current / flash / active as top level attrs:
+
+  DEVLINK_ATTR_INFO_DRIVER_NAME		[str]
+  DEVLINK_ATTR_INFO_SERIAL_NUMBER	[str]
+  DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER	[str]
+  DEVLINK_ATTR_INFO_BANK_ACTIVE		[u32] // << optional
+  DEVLINK_ATTR_INFO_BANK_UPDATE_TGT	[u32] // << optional
+
+  DEVLINK_ATTR_INFO_VERSION_FIXED	[nest] // multiple VERSION_* nests follow
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE	[str]
+  DEVLINK_ATTR_INFO_VERSION_FIXED	[nest]
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE	[str]
+  DEVLINK_ATTR_INFO_VERSION_RUNNING	[nest]
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE	[str]
+  DEVLINK_ATTR_INFO_VERSION_RUNNING	[nest]
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE	[str]
+  DEVLINK_ATTR_INFO_VERSION_STORED	[nest]
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE	[str]
+    DEVLINK_ATTR_INFO_VERSION_BANK	[u32] // << optional
+  DEVLINK_ATTR_INFO_VERSION_STORED	[nest]
+    DEVLINK_ATTR_INFO_VERSION_NAME	[str]
+    DEVLINK_ATTR_INFO_VERSION_VALUE     [str]
+    DEVLINK_ATTR_INFO_VERSION_BANK	[u32] // << optional
+
+> I think we could also add a new attribute to both reload and flash which 
+> specify which bank to use. For flash, this would be which bank to 
+> program, and for update this would be which bank to load the firmware 
+> from when doing a "fw_activate".
+
+SG!
+
+> Is that reasonable? Do you still need a permanent "use this bank by 
+> default" parameter as well?
+
+I hope we cover all cases, so no param needed?
