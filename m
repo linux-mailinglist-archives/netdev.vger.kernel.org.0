@@ -2,203 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1445D64815F
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 12:12:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4346B648160
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 12:12:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbiLILL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 06:11:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39986 "EHLO
+        id S229703AbiLILMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 06:12:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbiLILL4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 06:11:56 -0500
+        with ESMTP id S229907AbiLILMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 06:12:02 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB045E3F1
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 03:11:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D8C5F6D1
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 03:11:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670584261;
+        s=mimecast20190719; t=1670584263;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=g7Xw+SjJpeMN8PiCtdlUQR+YT00BC5YxfDj735a9vIM=;
-        b=KpMNR9aoNKTl1BkEDo1qvkBNOKxQkCavmfiIK05zzQRPK5ApQg+0T1hKorvgSqqVUNxl2P
-        93xRgRT0v9UzOReS5GjkCTZUW4PXDeWTGizmeeRQLVFHHNsBnigJUjReiu7DPIqa8GBBxb
-        I7q3fffFM9hnDZEsh74iJdKIobTkF0s=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-58-aPTTVbFwP9q8hgdqLkQNKQ-1; Fri, 09 Dec 2022 06:10:55 -0500
-X-MC-Unique: aPTTVbFwP9q8hgdqLkQNKQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7DB691C087AB;
-        Fri,  9 Dec 2022 11:10:55 +0000 (UTC)
-Received: from calimero.vinschen.de (unknown [10.39.192.219])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 309D340C6EC2;
-        Fri,  9 Dec 2022 11:10:55 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id DC93FA8079F; Fri,  9 Dec 2022 12:10:51 +0100 (CET)
-From:   Corinna Vinschen <vinschen@redhat.com>
-To:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     mateusz.palczewski@intel.com, patryk.piotrowski@intel.com
-Subject: [PATCH net v3] igb: conditionalize I2C bit banging on external thermal sensor support
-Date:   Fri,  9 Dec 2022 12:10:51 +0100
-Message-Id: <20221209111051.3117836-1-vinschen@redhat.com>
-In-Reply-To: <b062430c-b827-3ea7-7836-ebf3aa5b0936@intel.com>
-References: <b062430c-b827-3ea7-7836-ebf3aa5b0936@intel.com>
+        bh=jE6Vr9F6IeGxtuQrcm6iX33balN6CUxBy/zMSS4pEK4=;
+        b=Nd+h8ZjIGTFtfNePHj3h0nDhZBmrQTpOAt9kZCiqf222kgudokBnka62NL96VN60s9VMNd
+        VaNIdZBkHUE2X/IbDfzqfeTpA/O7T42RPyOshi5kqlTTAEOOrq0IeIdkYdbt6vBOShU0y8
+        iIdmQhmcyMHMa274CSoGLZxr+LJ0hMQ=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-426-Vbv3FYR7M8u_2ty64wWUeA-1; Fri, 09 Dec 2022 06:11:02 -0500
+X-MC-Unique: Vbv3FYR7M8u_2ty64wWUeA-1
+Received: by mail-ej1-f70.google.com with SMTP id xc12-20020a170907074c00b007416699ea14so2888177ejb.19
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 03:11:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jE6Vr9F6IeGxtuQrcm6iX33balN6CUxBy/zMSS4pEK4=;
+        b=fIp3g81kKYtkkLsFjy51AVvzuYIqgjIkzZ2bQcHxfXtdur+WyW2TTGJhu1WhSWA/yM
+         nZvpr8T+GDoVg0YYMXBSNQzdpKHnPKxMeiIwk4DGbbpEGbNKAr01aiEnX7PipC4HQDtw
+         j03vw9QgD82JVCIE9FeRew2wta8dLOd/yC5BYAsyv1/6/czEhVfhaexIW5o8E3GTCZ6+
+         80mcS8m7hUeUvm9xxAtJMYCqihEzMJundV7LhpHIB5ne/1bH9otqkUBkG+w8B4cmNOr1
+         5XUxo0R0J+PQO76I+S3FjeVXIL+mFPJ5ogS4gF59Y1pt3YF94DyjK4T2K8g6RaafrpZv
+         wneA==
+X-Gm-Message-State: ANoB5pnIQxEPWcQe5yizhfhG8aOzpaolwOSVX1IXsTEw5WKCayo2AZjD
+        NwKYd9AUWMfcvR8PecWtKFttLZwNPZBDHp/kyK8uwWqu4DuSfApa5L0972Xv88vI92FisXgxRjX
+        Tm23zPL4++TSFZCUl
+X-Received: by 2002:a17:906:a0d4:b0:7ad:9f03:b330 with SMTP id bh20-20020a170906a0d400b007ad9f03b330mr4610175ejb.62.1670584261382;
+        Fri, 09 Dec 2022 03:11:01 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4ElsBLxzKJG5vL8JnhEQ9VfVgdKAWRF7Ozd6jNwS2dlIKePCJQ2Hw+qwhb3AfXEVccBU1Fkw==
+X-Received: by 2002:a17:906:a0d4:b0:7ad:9f03:b330 with SMTP id bh20-20020a170906a0d400b007ad9f03b330mr4610161ejb.62.1670584261096;
+        Fri, 09 Dec 2022 03:11:01 -0800 (PST)
+Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id d10-20020a50f68a000000b0045b3853c4b7sm515238edn.51.2022.12.09.03.10.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Dec 2022 03:11:00 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <f2c89c57-c377-2f8e-fb4d-b047e58d3d38@redhat.com>
+Date:   Fri, 9 Dec 2022 12:10:57 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Cc:     brouer@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX kfuncs
+Content-Language: en-US
+To:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org
+References: <20221206024554.3826186-1-sdf@google.com>
+ <20221206024554.3826186-4-sdf@google.com>
+In-Reply-To: <20221206024554.3826186-4-sdf@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit a97f8783a937 ("igb: unbreak I2C bit-banging on i350") introduced
-code to change I2C settings to bit banging unconditionally.
 
-However, this patch introduced a regression:  On an Intel S2600CWR
-Server Board with three NICs:
+On 06/12/2022 03.45, Stanislav Fomichev wrote:
+> There is an ndo handler per kfunc, the verifier replaces a call to the
+> generic kfunc with a call to the per-device one.
+> 
+> For XDP, we define a new kfunc set (xdp_metadata_kfunc_ids) which
+> implements all possible metatada kfuncs. Not all devices have to
+> implement them. If kfunc is not supported by the target device,
+> the default implementation is called instead.
+> 
+> Upon loading, if BPF_F_XDP_HAS_METADATA is passed via prog_flags,
+> we treat prog_index as target device for kfunc resolution.
+> 
 
-- 1x dual-port copper
-  Intel I350 Gigabit Network Connection [8086:1521] (rev 01)
-  fw 1.63, 0x80000dda
+[...cut...]
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 5aa35c58c342..2eabb9157767 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -74,6 +74,7 @@ struct udp_tunnel_nic_info;
+>   struct udp_tunnel_nic;
+>   struct bpf_prog;
+>   struct xdp_buff;
+> +struct xdp_md;
+>   
+>   void synchronize_net(void);
+>   void netdev_set_default_ethtool_ops(struct net_device *dev,
+> @@ -1611,6 +1612,10 @@ struct net_device_ops {
+>   	ktime_t			(*ndo_get_tstamp)(struct net_device *dev,
+>   						  const struct skb_shared_hwtstamps *hwtstamps,
+>   						  bool cycles);
+> +	bool			(*ndo_xdp_rx_timestamp_supported)(const struct xdp_md *ctx);
+> +	u64			(*ndo_xdp_rx_timestamp)(const struct xdp_md *ctx);
+> +	bool			(*ndo_xdp_rx_hash_supported)(const struct xdp_md *ctx);
+> +	u32			(*ndo_xdp_rx_hash)(const struct xdp_md *ctx);
+>   };
+>   
 
-- 2x quad-port SFP+ with copper SFP Avago ABCU-5700RZ
-  Intel I350 Gigabit Fiber Network Connection [8086:1522] (rev 01)
-  fw 1.52.0
+Would it make sense to add a 'flags' parameter to ndo_xdp_rx_timestamp
+and ndo_xdp_rx_hash ?
 
-the SFP NICs no longer get link at all.  Reverting commit a97f8783a937
-or switching to the Intel out-of-tree driver both fix the problem.
+E.g. we could have a "STORE" flag that asks the kernel to store this
+information for later. This will be helpful for both the SKB and
+redirect use-cases.
+For redirect e.g into a veth, then BPF-prog can use the same function
+bpf_xdp_metadata_rx_hash() to receive the RX-hash, as it can obtain the
+"stored" value (from the BPF-prog that did the redirect).
 
-Per the igb out-of-tree driver, I2C bit banging on i350 depends on
-support for an external thermal sensor (ETS).  However, commit
-a97f8783a937 added bit banging unconditionally.  Additionally, the
-out-of-tree driver always calls init_thermal_sensor_thresh on probe,
-while our driver only calls init_thermal_sensor_thresh only in
-igb_reset(), and only if an ETS is present, ignoring the internal
-thermal sensor.  The affected SFPs don't provide an ETS.  Per Intel,
-the behaviour is a result of i350 firmware requirements.
+(p.s. Hopefully a const 'flags' variable can be optimized when unrolling
+to eliminate store instructions when flags==0)
 
-This patch fixes the problem by aligning the behaviour to the
-out-of-tree driver:
-
-- split igb_init_i2c() into two functions:
-  - igb_init_i2c() only performs the basic I2C initialization.
-  - igb_set_i2c_bb() makes sure that E1000_CTRL_I2C_ENA is set
-    and enables bit-banging.
-
-- igb_probe() only calls igb_set_i2c_bb() if an ETS is present.
-
-- igb_probe() calls init_thermal_sensor_thresh() unconditionally.
-
-- igb_reset() aligns its behaviour to igb_probe(), i. e., call
-  igb_set_i2c_bb() if an ETS is present and call
-  init_thermal_sensor_thresh() unconditionally.
-
-v2: Add variable name in function declaration,
-    rearrange declaration of local variables
-v3: Co-authored-by: -> Co-developed-by:
-    Move igb_set_i2c_bb to avoid forward declaration
-    Fix comments
-    Fix indentation
-
-Fixes: a97f8783a937 ("igb: unbreak I2C bit-banging on i350")
-Tested-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Co-developed-by: Jamie Bainbridge <jbainbri@redhat.com>
-Signed-off-by: Jamie Bainbridge <jbainbri@redhat.com>
-Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 42 +++++++++++++++++------
- 1 file changed, 32 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index f8e32833226c..1a68a3e91e7f 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -2252,6 +2252,30 @@ static void igb_enable_mas(struct igb_adapter *adapter)
- 	}
- }
- 
-+#ifdef CONFIG_IGB_HWMON
-+/**
-+ *  igb_set_i2c_bb - Init I2C interface
-+ *  @hw: pointer to hardware structure
-+ **/
-+static void igb_set_i2c_bb(struct e1000_hw *hw)
-+{
-+	u32 ctrl_ext;
-+	s32 i2cctl;
-+
-+	ctrl_ext = rd32(E1000_CTRL_EXT);
-+	ctrl_ext |= E1000_CTRL_I2C_ENA;
-+	wr32(E1000_CTRL_EXT, ctrl_ext);
-+	wrfl();
-+
-+	i2cctl = rd32(E1000_I2CPARAMS);
-+	i2cctl |= E1000_I2CBB_EN
-+		| E1000_I2C_CLK_OE_N
-+		| E1000_I2C_DATA_OE_N;
-+	wr32(E1000_I2CPARAMS, i2cctl);
-+	wrfl();
-+}
-+#endif
-+
- void igb_reset(struct igb_adapter *adapter)
- {
- 	struct pci_dev *pdev = adapter->pdev;
-@@ -2396,7 +2420,8 @@ void igb_reset(struct igb_adapter *adapter)
- 			 * interface.
- 			 */
- 			if (adapter->ets)
--				mac->ops.init_thermal_sensor_thresh(hw);
-+				igb_set_i2c_bb(hw);
-+			mac->ops.init_thermal_sensor_thresh(hw);
- 		}
- 	}
- #endif
-@@ -3113,21 +3138,12 @@ static void igb_init_mas(struct igb_adapter *adapter)
-  **/
- static s32 igb_init_i2c(struct igb_adapter *adapter)
- {
--	struct e1000_hw *hw = &adapter->hw;
- 	s32 status = 0;
--	s32 i2cctl;
- 
- 	/* I2C interface supported on i350 devices */
- 	if (adapter->hw.mac.type != e1000_i350)
- 		return 0;
- 
--	i2cctl = rd32(E1000_I2CPARAMS);
--	i2cctl |= E1000_I2CBB_EN
--		| E1000_I2C_CLK_OUT | E1000_I2C_CLK_OE_N
--		| E1000_I2C_DATA_OUT | E1000_I2C_DATA_OE_N;
--	wr32(E1000_I2CPARAMS, i2cctl);
--	wrfl();
--
- 	/* Initialize the i2c bus which is controlled by the registers.
- 	 * This bus will use the i2c_algo_bit structure that implements
- 	 * the protocol through toggling of the 4 bits in the register.
-@@ -3517,6 +3533,12 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 			adapter->ets = true;
- 		else
- 			adapter->ets = false;
-+		/* Only enable I2C bit banging if an external thermal
-+		 * sensor is supported.
-+		 */
-+		if (adapter->ets)
-+			igb_set_i2c_bb(hw);
-+		hw->mac.ops.init_thermal_sensor_thresh(hw);
- 		if (igb_sysfs_init(adapter))
- 			dev_err(&pdev->dev,
- 				"failed to allocate sysfs resources\n");
--- 
-2.31.1
+>   /**
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 55dbc68bfffc..c24aba5c363b 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -409,4 +409,33 @@ void xdp_attachment_setup(struct xdp_attachment_info *info,
+>   
+>   #define DEV_MAP_BULK_SIZE XDP_BULK_QUEUE_SIZE
+>   
+> +#define XDP_METADATA_KFUNC_xxx	\
+> +	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_TIMESTAMP_SUPPORTED, \
+> +			   bpf_xdp_metadata_rx_timestamp_supported) \
+> +	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_TIMESTAMP, \
+> +			   bpf_xdp_metadata_rx_timestamp) \
+> +	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_HASH_SUPPORTED, \
+> +			   bpf_xdp_metadata_rx_hash_supported) \
+> +	XDP_METADATA_KFUNC(XDP_METADATA_KFUNC_RX_HASH, \
+> +			   bpf_xdp_metadata_rx_hash) \
+> +
+> +enum {
+> +#define XDP_METADATA_KFUNC(name, str) name,
+> +XDP_METADATA_KFUNC_xxx
+> +#undef XDP_METADATA_KFUNC
+> +MAX_XDP_METADATA_KFUNC,
+> +};
+> +
+> +#ifdef CONFIG_NET
+> +u32 xdp_metadata_kfunc_id(int id);
+> +#else
+> +static inline u32 xdp_metadata_kfunc_id(int id) { return 0; }
+> +#endif
+> +
+> +struct xdp_md;
+> +bool bpf_xdp_metadata_rx_timestamp_supported(const struct xdp_md *ctx);
+> +u64 bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx);
+> +bool bpf_xdp_metadata_rx_hash_supported(const struct xdp_md *ctx);
+> +u32 bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx);
+> +
 
