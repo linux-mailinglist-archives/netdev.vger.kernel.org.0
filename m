@@ -2,140 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34199647AAF
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:20:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17BB0647ABC
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:23:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbiLIAUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 19:20:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S229592AbiLIAXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 19:23:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiLIAUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:20:35 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1544792333;
-        Thu,  8 Dec 2022 16:20:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670545235; x=1702081235;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=dHem1ATkLRYFiJxaz4bVCi5xygpgc/hx55Rdz+UP1DU=;
-  b=H721B5y02yrbRqBJGCo+h1hZ+wRB7WarWTNx7Vws7B9mvK28Qj9xym2W
-   Q0MzRYRU1ZkjZivxpzyeFm02x6BaCm5hvJOJq3l6fGe8pHX0JteBmN4pl
-   GzTiPBkjhVUwOLSBs0jK+JOGWr/YTUZd1hiyq0EVvAfcVsthihoROq8Cv
-   s3mGGJDGnSgWZyCLTkMurn+0xCP7lGY2HNiXns2RjhN/BdlMVYGcikT5J
-   qYb1lEIb/9MTkWhe8ZvVu8a91udj6zNKFW8SgUFxuUM675eYM1kVQ2JcC
-   zqbA4J+aMjkFlsa2/D+LUAwDC+KkdNxOn+ljSfnkPgk0EewrQvmE0nRJu
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10555"; a="304983424"
-X-IronPort-AV: E=Sophos;i="5.96,228,1665471600"; 
-   d="scan'208";a="304983424"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 16:20:34 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10555"; a="710696748"
-X-IronPort-AV: E=Sophos;i="5.96,228,1665471600"; 
-   d="scan'208";a="710696748"
-Received: from djiang5-mobl2.amr.corp.intel.com (HELO [10.212.107.194]) ([10.212.107.194])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 16:20:33 -0800
-Message-ID: <b3bb2916-0b08-e7a7-f744-21469e32e080@intel.com>
-Date:   Thu, 8 Dec 2022 17:20:32 -0700
+        with ESMTP id S229710AbiLIAXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:23:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98133941A9
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:23:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 300E3620ED
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:23:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66895C433D2;
+        Fri,  9 Dec 2022 00:23:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670545390;
+        bh=h6vUY64dFcODlMHRFs8a/garRBzGx95vfAmCbNWg+yk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KdEFwux69UgexHuExYSH+3nLdkKshHl9Z2oNwSfWYSs2NGkMt6gfLu6Uo8FWUMzGP
+         HYv0ilHsMxBDKcXOKheYqt/dUbE5oh4JEUhRR0KTEvUcvGFD3nbaZyQdk+T0Lme6mJ
+         foP+wZoS3fzKrXMCJhwdAvPiZ7XF6CN4O7fh8eMj7SB3iiF8OoDZCiBwH0fOd0b40F
+         RYdd9Tf09wzYjrM34HhXQsUKdR6K3nyGPhad4xmwxWDJXY5Ygr72dP0+arDBBttJ5l
+         s3nhY2r0dEIVRbIvS7aXb7AYIpignnZjHUMTLxpl9FBOFZTD7eIFqCJzlihGFv1Bee
+         AI/QyhF5Trl1Q==
+Date:   Thu, 8 Dec 2022 16:23:09 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org,
+        jacob.e.keller@intel.com, richardcochran@gmail.com, leon@kernel.org
+Subject: Re: [PATCH net-next v3 00/14][pull request] Intel Wired LAN Driver
+ Updates 2022-12-08 (ice)
+Message-ID: <Y5J/7T2SH2geV9Og@x130>
+References: <20221208213932.1274143-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.5.1
-Subject: Re: [PATCH v2] ntb_netdev: Use dev_kfree_skb_any() in interrupt
- context
-Content-Language: en-US
-To:     epilmore@gigaio.com, netdev@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ntb@lists.linux.dev, allenbh@gmail.com, jdmason@kudzu.us
-References: <20221209000659.8318-1-epilmore@gigaio.com>
-From:   Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <20221209000659.8318-1-epilmore@gigaio.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20221208213932.1274143-1-anthony.l.nguyen@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 08 Dec 13:39, Tony Nguyen wrote:
+>Jacob Keller says:
+>
+>This series of patches primarily consists of changes to fix some corner
+>cases that can cause Tx timestamp failures. The issues were discovered and
+>reported by Siddaraju DH and primarily affect E822 hardware, though this
+>series also includes some improvements that affect E810 hardware as well.
+>
+>The primary issue is regarding the way that E822 determines when to generate
+>timestamp interrupts. If the driver reads timestamp indexes which do not
+>have a valid timestamp, the E822 interrupt tracking logic can get stuck.
+>This is due to the way that E822 hardware tracks timestamp index reads
+>internally. I was previously unaware of this behavior as it is significantly
+>different in E810 hardware.
+>
+>Most of the fixes target refactors to ensure that the ice driver does not
+>read timestamp indexes which are not valid on E822 hardware. This is done by
+>using the Tx timestamp ready bitmap register from the PHY. This register
+>indicates what timestamp indexes have outstanding timestamps waiting to be
+>captured.
+>
+>Care must be taken in all cases where we read the timestamp registers, and
+>thus all flows which might have read these registers are refactored. The
+>ice_ptp_tx_tstamp function is modified to consolidate as much of the logic
+>relating to these registers as possible. It now handles discarding stale
+>timestamps which are old or which occurred after a PHC time update. This
+>replaces previously standalone thread functions like the periodic work
+>function and the ice_ptp_flush_tx_tracker function.
+>
+>In addition, some minor cleanups noticed while writing these refactors are
+>included.
+>
+>The remaining patches refactor the E822 implementation to remove the
+>"bypass" mode for timestamps. The E822 hardware has the ability to provide a
+>more precise timestamp by making use of measurements of the precise way that
+>packets flow through the hardware pipeline. These measurements are known as
+>"Vernier" calibration. The "bypass" mode disables many of these measurements
+>in favor of a faster start up time for Tx and Rx timestamping. Instead, once
+>these measurements were captured, the driver tries to reconfigure the PHY to
+>enable the vernier calibrations.
+>
+>Unfortunately this recalibration does not work. Testing indicates that the
+>PHY simply remains in bypass mode without the increased timestamp precision.
+>Remove the attempt at recalibration and always use vernier mode. This has
+>one disadvantage that Tx and Rx timestamps cannot begin until after at least
+>one packet of that type goes through the hardware pipeline. Because of this,
+>further refactor the driver to separate Tx and Rx vernier calibration.
+>Complete the Tx and Rx independently, enabling the appropriate type of
+>timestamp as soon as the relevant packet has traversed the hardware
+>pipeline. This was reported by Milena Olech.
+>
+>Note that although these might be considered "bug fixes", the required
+>changes in order to appropriately resolve these issues is large. Thus it
+>does not feel suitable to send this series to net.
+>---
+>v3:
+>- Dropped patch 'ice: disable Tx timestamps while link is down'
+>- Use bitmap_or function over for_each_set_bit
+>- Change incorrect function name (ice_ptp_tstamp_tx()) to correct one
+>(ice_ptp_tx_tstamp()) in patch 9 commit message
+>
 
+LGTM
 
-On 12/8/2022 5:06 PM, epilmore@gigaio.com wrote:
-> From: Eric Pilmore <epilmore@gigaio.com>
-> 
-> TX/RX callback handlers (ntb_netdev_tx_handler(),
-> ntb_netdev_rx_handler()) can be called in interrupt
-> context via the DMA framework when the respective
-> DMA operations have completed. As such, any calls
-> by these routines to free skb's, should use the
-> interrupt context safe dev_kfree_skb_any() function.
-> 
-> Previously, these callback handlers would call the
-> interrupt unsafe version of dev_kfree_skb(). This has
-> not presented an issue on Intel IOAT DMA engines as
-> that driver utilizes tasklets rather than a hard
-> interrupt handler, like the AMD PTDMA DMA driver.
-> On AMD systems, a kernel WARNING message is
-> encountered, which is being issued from
-> skb_release_head_state() due to in_hardirq()
-> being true.
-> 
-> Besides the user visible WARNING from the kernel,
-> the other symptom of this bug was that TCP/IP performance
-> across the ntb_netdev interface was very poor, i.e.
-> approximately an order of magnitude below what was
-> expected. With the repair to use dev_kfree_skb_any(),
-> kernel WARNINGs from skb_release_head_state() ceased
-> and TCP/IP performance, as measured by iperf, was on
-> par with expected results, approximately 20 Gb/s on
-> AMD Milan based server. Note that this performance
-> is comparable with Intel based servers.
-> 
-> Fixes: 765ccc7bc3d91 ("ntb_netdev: correct skb leak")
-> Fixes: 548c237c0a997 ("net: Add support for NTB virtual ethernet device")
-> Signed-off-by: Eric Pilmore <epilmore@gigaio.com>
+Reviewed-by: Saeed Mahameed <saeed@kernel.org>
 
-Reviewed-by: Dave Jiang <dave.jiang@intel.com>
-
-As an FYI for future. Typically you would add the patch revision change 
-log under the "---" line just as an FYI for reviewers on what you've 
-changed and who suggested the change.
-
-> ---
-
-i.e.
-
-v2:
-- Use dev_kfree_skb_any() instead of dev_kfree_skb_irq(). (DaveJ)
-
-
->   drivers/net/ntb_netdev.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ntb_netdev.c b/drivers/net/ntb_netdev.c
-> index 80bdc07f2cd3..59250b7accfb 100644
-> --- a/drivers/net/ntb_netdev.c
-> +++ b/drivers/net/ntb_netdev.c
-> @@ -137,7 +137,7 @@ static void ntb_netdev_rx_handler(struct ntb_transport_qp *qp, void *qp_data,
->   enqueue_again:
->   	rc = ntb_transport_rx_enqueue(qp, skb, skb->data, ndev->mtu + ETH_HLEN);
->   	if (rc) {
-> -		dev_kfree_skb(skb);
-> +		dev_kfree_skb_any(skb);
->   		ndev->stats.rx_errors++;
->   		ndev->stats.rx_fifo_errors++;
->   	}
-> @@ -192,7 +192,7 @@ static void ntb_netdev_tx_handler(struct ntb_transport_qp *qp, void *qp_data,
->   		ndev->stats.tx_aborted_errors++;
->   	}
->   
-> -	dev_kfree_skb(skb);
-> +	dev_kfree_skb_any(skb);
->   
->   	if (ntb_transport_tx_free_entry(dev->qp) >= tx_start) {
->   		/* Make sure anybody stopping the queue after this sees the new
+>v2: https://lore.kernel.org/netdev/20221207210937.1099650-1-anthony.l.nguyen@intel.com/
+>- Dropped incorrect/useless locking around init in ice_ptp_tx_tstamp
+>- Added patch to call sychronize_irq during teardown of Tx tracker
+>- Renamed and refactored "ts_handled" into "more_timestamps" for clarity
+>- Moved all initialization of Tx tracker to before spin_lock_init
+>- Initialize raw_stamp to 0 and add check that it has been set
+>
+>v1: https://lore.kernel.org/netdev/20221130194330.3257836-1-anthony.l.nguyen@intel.com/
+>
+>The following are changes since commit bde55dd9ccda7a3f5f735d89e855691362745248:
+>  net: dsa: microchip: add stats64 support for ksz8 series of switches
+>and are available in the git repository at:
+>  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+>
+>Jacob Keller (10):
+>  ice: fix misuse of "link err" with "link status"
+>  ice: always call ice_ptp_link_change and make it void
+>  ice: handle discarding old Tx requests in ice_ptp_tx_tstamp
+>  ice: check Tx timestamp memory register for ready timestamps
+>  ice: synchronize the misc IRQ when tearing down Tx tracker
+>  ice: protect init and calibrating check in ice_ptp_request_ts
+>  ice: cleanup allocations in ice_ptp_alloc_tx_tracker
+>  ice: handle flushing stale Tx timestamps in ice_ptp_tx_tstamp
+>  ice: only check set bits in ice_ptp_flush_tx_tracker
+>  ice: reschedule ice_ptp_wait_for_offset_valid during reset
+>
+>Karol Kolacinski (1):
+>  ice: Reset TS memory for all quads
+>
+>Milena Olech (1):
+>  ice: Remove the E822 vernier "bypass" logic
+>
+>Sergey Temerkhanov (1):
+>  ice: Use more generic names for ice_ptp_tx fields
+>
+>Siddaraju DH (1):
+>  ice: make Tx and Rx vernier offset calibration independent
+>
+> drivers/net/ethernet/intel/ice/ice_main.c   |   9 +-
+> drivers/net/ethernet/intel/ice/ice_ptp.c    | 546 ++++++++++----------
+> drivers/net/ethernet/intel/ice/ice_ptp.h    |  39 +-
+> drivers/net/ethernet/intel/ice/ice_ptp_hw.c | 336 ++++++------
+> drivers/net/ethernet/intel/ice/ice_ptp_hw.h |   8 +-
+> 5 files changed, 463 insertions(+), 475 deletions(-)
+>
+>-- 
+>2.35.1
+>
