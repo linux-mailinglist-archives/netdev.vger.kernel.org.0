@@ -2,212 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4298C648ACD
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 23:41:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B353D648AD6
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 23:47:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbiLIWl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 17:41:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
+        id S229814AbiLIWrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 17:47:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbiLIWl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 17:41:26 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29EDA433D;
-        Fri,  9 Dec 2022 14:41:24 -0800 (PST)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p3m3N-000HgH-5y; Fri, 09 Dec 2022 23:41:13 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1p3m3M-0008wg-If; Fri, 09 Dec 2022 23:41:12 +0100
-Subject: Re: BUG: unable to handle kernel paging request in bpf_dispatcher_xdp
-To:     Jiri Olsa <olsajiri@gmail.com>, Yonghong Song <yhs@meta.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Song Liu <song@kernel.org>, Hao Sun <sunhao.th@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Yonghong Song <yhs@fb.com>, KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>,
-        David Miller <davem@davemloft.net>,
+        with ESMTP id S229478AbiLIWrT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 17:47:19 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0591C12A;
+        Fri,  9 Dec 2022 14:47:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1670626037; x=1702162037;
+  h=from:to:subject:date:message-id:mime-version;
+  bh=QscC73kq0p64g37vmGx5wDJw00wcjEIWLqcqcPelmAI=;
+  b=PQeCh/l7Xk0z+FA7CM+MyDird7H1tbJM3Maz+AZoMP4M9TmvdY4YcdGf
+   /wBo/wa1946sAGF5PwmPH0mUN2Vy7Qjo8xCoITyKAc6FZh81O77honc8j
+   +tyP+EUZHFWrfqT+EUgeTV2spF8kZS4wLEMnvoQp5FIkInC8Bsg5uZzOj
+   h4zc/0hXP0H+sBs5Sad6MoG6+xEmIlTc8KtAUrKQtQiS17mBwdqrJd6rf
+   EVKkx9JD1wmXyq5ziE4tXFOG3/h1m3niiL3ecQYOrg1QRiCwJtGvDEuLo
+   9TNERoqEooKuZiPvrOeRg6wOaCJdiT4R5uFBaHYJ/hofyQgWeZBn3LxyL
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,232,1665471600"; 
+   d="scan'208";a="187455845"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2022 15:47:16 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 9 Dec 2022 15:47:15 -0700
+Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Fri, 9 Dec 2022 15:47:14 -0700
+From:   Jerry Ray <jerry.ray@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Thorsten Leemhuis <regressions@leemhuis.info>
-References: <CAADnVQ+w-xtH=oWPYszG-TqxcHmbrKJK10C=P-o2Ouicx-9OUA@mail.gmail.com>
- <CAADnVQJ+9oiPEJaSgoXOmZwUEq9FnyLR3Kp38E_vuQo2PmDsbg@mail.gmail.com>
- <Y5Inw4HtkA2ql8GF@krava> <Y5JkomOZaCETLDaZ@krava> <Y5JtACA8ay5QNEi7@krava>
- <Y5LfMGbOHpaBfuw4@krava> <Y5MaffJOe1QtumSN@krava> <Y5M9P95l85oMHki9@krava>
- <Y5NSStSi7h9Vdo/j@krava> <5c9d77bf-75f5-954a-c691-39869bb22127@meta.com>
- <Y5OuQNmkoIvcV6IL@krava>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ee2a087e-b8c5-fc3e-a114-232490a6c3be@iogearbox.net>
-Date:   Fri, 9 Dec 2022 23:41:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        "Paolo Abeni" <pabeni@redhat.com>, <jbe@pengutronix.de>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux@armlinux.org.uk>, Jerry Ray <jerry.ray@microchip.com>
+Subject: [PATCH net-next v5 0/6] dsa: lan9303: Move to PHYLINK
+Date:   Fri, 9 Dec 2022 16:47:07 -0600
+Message-ID: <20221209224713.19980-1-jerry.ray@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <Y5OuQNmkoIvcV6IL@krava>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.7/26745/Fri Dec  9 12:50:19 2022)
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/9/22 10:53 PM, Jiri Olsa wrote:
-> On Fri, Dec 09, 2022 at 12:31:06PM -0800, Yonghong Song wrote:
->>
->>
->> On 12/9/22 7:20 AM, Jiri Olsa wrote:
->>> On Fri, Dec 09, 2022 at 02:50:55PM +0100, Jiri Olsa wrote:
->>>> On Fri, Dec 09, 2022 at 12:22:37PM +0100, Jiri Olsa wrote:
->>>>
->>>> SBIP
->>>>
->>>>>>>>>>>
->>>>>>>>>>> I'm trying to understand the severity of the issues and
->>>>>>>>>>> whether we need to revert that commit asap since the merge window
->>>>>>>>>>> is about to start.
->>>>>>>>>>
->>>>>>>>>> Jiri, Peter,
->>>>>>>>>>
->>>>>>>>>> ping.
->>>>>>>>>>
->>>>>>>>>> cc-ing Thorsten, since he's tracking it now.
->>>>>>>>>>
->>>>>>>>>> The config has CONFIG_X86_KERNEL_IBT=y.
->>>>>>>>>> Is it related?
->>>>>>>>>
->>>>>>>>> sorry for late reply.. I still did not find the reason,
->>>>>>>>> but I did not try with IBT yet, will test now
->>>>>>>>
->>>>>>>> no difference with IBT enabled, can't reproduce the issue
->>>>>>>>
->>>>>>>
->>>>>>> ok, scratch that.. the reproducer got stuck on wifi init :-\
->>>>>>>
->>>>>>> after I fix that I can now reproduce on my local config with
->>>>>>> IBT enabled or disabled.. it's something else
->>>>>>
->>>>>> I'm getting the error also when reverting the static call change,
->>>>>> looking for good commit, bisecting
->>>>>>
->>>>>> I'm getting fail with:
->>>>>>      f0c4d9fc9cc9 (tag: v6.1-rc4) Linux 6.1-rc4
->>>>>>
->>>>>> v6.1-rc1 is ok
->>>>>
->>>>> so far I narrowed it down between rc1 and rc3.. bisect got me nowhere so far
->>>>>
->>>>> attaching some more logs
->>>>
->>>> looking at the code.. how do we ensure that code running through
->>>> bpf_prog_run_xdp will not get dispatcher image changed while
->>>> it's being exetuted
->>>>
->>>> we use 'the other half' of the image when we add/remove programs,
->>>> but could bpf_dispatcher_update race with bpf_prog_run_xdp like:
->>>>
->>>>
->>>> cpu 0:                                  cpu 1:
->>>>
->>>> bpf_prog_run_xdp
->>>>      ...
->>>>      bpf_dispatcher_xdp_func
->>>>         start exec image at offset 0x0
->>>>
->>>>                                           bpf_dispatcher_update
->>>>                                                   update image at offset 0x800
->>>>                                           bpf_dispatcher_update
->>>>                                                   update image at offset 0x0
->>>>
->>>>         still in image at offset 0x0
->>>>
->>>>
->>>> that might explain why I wasn't able to trigger that on
->>>> bare metal just in qemu
->>>
->>> I tried patch below and it fixes the issue for me and seems
->>> to confirm the race above.. but not sure it's the best fix
->>>
->>> jirka
->>>
->>>
->>> ---
->>> diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
->>> index c19719f48ce0..6a2ced102fc7 100644
->>> --- a/kernel/bpf/dispatcher.c
->>> +++ b/kernel/bpf/dispatcher.c
->>> @@ -124,6 +124,7 @@ static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
->>>    	}
->>>    	__BPF_DISPATCHER_UPDATE(d, new ?: (void *)&bpf_dispatcher_nop_func);
->>> +	synchronize_rcu_tasks();
->>>    	if (new)
->>>    		d->image_off = noff;
->>
->> This might work. In arch/x86/kernel/alternative.c, we have following
->> code and comments. For text_poke, synchronize_rcu_tasks() might be able
->> to avoid concurrent execution and update.
-> 
-> so my idea was that we need to ensure all the current callers of
-> bpf_dispatcher_xdp_func (which should have rcu read lock, based
-> on the comment in bpf_prog_run_xdp) are gone before and new ones
-> execute the new image, so the next call to the bpf_dispatcher_update
-> will be safe to overwrite the other half of the image
+This patch series moves the lan9303 driver to use the phylink
+api away from phylib.
 
-If v6.1-rc1 was indeed okay, then it looks like this may be related to
-the trampoline patching for the static_call? Did it repro on v6.1-rc1
-just with dbe69b299884 ("bpf: Fix dispatcher patchable function entry
-to 5 bytes nop") cherry-picked?
+Migrating to phylink means removing the .adjust_link api. The
+functionality from the adjust_link is moved to the phylink_mac_link_up
+api.  The code being removed only affected the cpu port.  The other
+ports on the LAN9303 do not need anything from the phylink_mac_link_up api.
 
->> /**
->>   * text_poke_copy - Copy instructions into (an unused part of) RX memory
->>   * @addr: address to modify
->>   * @opcode: source of the copy
->>   * @len: length to copy, could be more than 2x PAGE_SIZE
->>   *
->>   * Not safe against concurrent execution; useful for JITs to dump
->>   * new code blocks into unused regions of RX memory. Can be used in
->>   * conjunction with synchronize_rcu_tasks() to wait for existing
->>   * execution to quiesce after having made sure no existing functions
->>   * pointers are live.
->>   */
->> void *text_poke_copy(void *addr, const void *opcode, size_t len)
->> {
->>          unsigned long start = (unsigned long)addr;
->>          size_t patched = 0;
->>
->>          if (WARN_ON_ONCE(core_kernel_text(start)))
->>                  return NULL;
->>
->>          mutex_lock(&text_mutex);
->>          while (patched < len) {
->>                  unsigned long ptr = start + patched;
->>                  size_t s;
->>
->>                  s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len -
->> patched);
->>
->>                  __text_poke(text_poke_memcpy, (void *)ptr, opcode + patched,
->> s);
->>                  patched += s;
->>          }
->>          mutex_unlock(&text_mutex);
->>          return addr;
->> }
+Patches:
+ 0001 - Whitespace only change aligning the dsa_switch_ops members.
+	No code changes.
+ 0002 - Moves the Turbo bit initialization out of the adjust_link api and
+	places it in a driver initialization execution path. It only needs
+	to be initialized once, it is never changed, and it is not a
+	per-port flag.
+ 0003 - Adds exception handling logic in the extremely unlikely event that
+	the read of the device fails.
+ 0004 - Performance optimization that skips a slow register write if there is
+	no need to perform it.
+ 0005 - Change the macro used to identify the cpu port as phydev will be NULL
+	when this logic is moved into phylink_mac_link_up.
+ 0006 - Removes adjust_link and begins using the phylink dsa_switch_ops apis.
+
+---
+v3->v5:
+  - Created prep patches to better show how things migrate.
+  - cleaned up comments.
+v3->v4:
+  - Addressed whitespace issues as a separate patch.
+  - Removed port_max_mtu api patch as it is unrelated to phylink migration.
+  - Reworked the implementation to preserve the adjust_link functionality
+    by including it in the phylink_mac_link_up api.
+v2->v3:
+  Added back in disabling Turbo Mode on the CPU MII interface.
+  Removed the unnecessary clearing of the phyvsupported interfaces.
+v1->v2:
+  corrected the reported mtu size, removing ETH_HLEN and ETH_FCS_LEN
+
+ drivers/net/dsa/lan9303-core.c | xx ++++++++++++--------
+ 1 file changed
 
