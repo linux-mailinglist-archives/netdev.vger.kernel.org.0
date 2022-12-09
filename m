@@ -2,148 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B826485C7
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:45:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAC40648616
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:04:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbiLIPpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 10:45:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
+        id S229940AbiLIQED (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 11:04:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiLIPpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:45:50 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2090.outbound.protection.outlook.com [40.107.6.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D503326CB
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 07:45:49 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kSixYkxKrbk1K0BVM6PbDII8mwxj7Q8s8oIwPmDwNcBdRgjuuQ75im2NwPkJcdtFLcW9i/RaRiPwkHs0jOdrEsWGen4ByIJko4w/Ztluhmzc6APRuG0LTMDQsGOgfjUFTw+tSsTzK17sUZ5yUj6MNYqvRxGYfFwK6Y5m9DE+C+vEh3gsV0JLMG731Hi4VgMeaCWE8Gm4/MkdhZTr7h3hlCEynobE2RXDC2HLrFr/0OVoLQEfaSlz8pb8WdtVcKbR6/X2Bn4NRChNuVPPzZbaPGmySPNwfaQrn/XY49cmqgxMZvFAON3Yf65dg66XXEuWa+w0sDHYid7eeHhPVJc+2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5dLOkC996BOFbo6cPVv4Up8z4LqDFXg4w/XpyWSFWLc=;
- b=am0lUqdKOxZ25oByFQpeK00an4hzmZj//59uQR/Zv493PAKD0vQb6tiSo/yjlnB8J/q/lNFV1P0841JcgBdQLg7l0vhs8I2KIC74jA9fLVsnnBs9mYDLqqvUdHg+q7asJW3VG7/LruRSQxJpCoMrHmUBO/lQRbti/JcI75NyFiqIrjsrrShC4LeISYeWLWbbrS0d6R9FgzWzXrci7zbS3+QaC5KORIvzeTlETEdF2ggkfBEW+KlO/EwswtgjNayzS9lYGnI95HLIceCHCPQET2ZBNbYkHuwU6e3vxowItBycLYle+hUsc5YEO5bJZeefFlyKO9atiDZ7M0PtDM5wHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5dLOkC996BOFbo6cPVv4Up8z4LqDFXg4w/XpyWSFWLc=;
- b=kH9oixcbWLp5igNB8TK9IIOn2DYVnk7zkIsWGBoI5lDwoThIh6b9wyUTGX5virQSLIP6sBXOpHlaiESJ4Hmqq8BLB2e07f+WTzEhOxMpTA+LZEAKxdZ0IQy+44yFzrF0B+PwOlAVF7rQuWiAL3gxllSBedZ4KFdxGsO8sn3NMw8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0317.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:38::26)
- by AS4P190MB1829.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:4b5::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Fri, 9 Dec
- 2022 15:45:47 +0000
-Received: from VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
- ([fe80::5912:e2b4:985e:265a]) by VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
- ([fe80::5912:e2b4:985e:265a%3]) with mapi id 15.20.5880.014; Fri, 9 Dec 2022
- 15:45:47 +0000
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Mickey Rachamim <mickeyr@marvell.com>,
-        Elad Nachman <enachman@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Serhii Boiko <serhii.boiko@plvision.eu>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>
-Subject: [PATCH net-next] MAINTAINERS: Update email address for Marvell Prestera Ethernet Switch driver
-Date:   Fri,  9 Dec 2022 17:45:21 +0200
-Message-Id: <20221209154521.1246881-1-vadym.kochan@plvision.eu>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: FR2P281CA0056.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:93::7) To VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:38::26)
+        with ESMTP id S229573AbiLIQEB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:04:01 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6329950D59;
+        Fri,  9 Dec 2022 08:03:59 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 98D88337F5;
+        Fri,  9 Dec 2022 16:03:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1670601838; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ACEb0peWm3spbIZkD6VxQeoNEBO3y0M6patrqqDV3Po=;
+        b=tBtgeiW1eSS/J9B9gcfYy+/v8vbO8NRaNKUU1zejqaPXv97ZTJaZK4xuAdsEOS1Lr0tAav
+        MSU8lMLDtNfRMUEoyp2Q47/FEwAYog1suVu8MBd1UU1/bwohc/fdQjbZFWyi9mGBkjtv8Y
+        64ox5KSY/AS4NHDKZD/D2fgykCfzTpA=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id CF9042C142;
+        Fri,  9 Dec 2022 16:03:56 +0000 (UTC)
+Date:   Fri, 9 Dec 2022 17:03:54 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, xuqiang36@huawei.com, linux-edac@vger.kernel.org,
+        Tony Luck <tony.luck@intel.com>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: Re: [PATCH V3 08/11] EDAC/altera: Skip the panic notifier if kdump
+ is loaded
+Message-ID: <Y5Ncaur0S4rEbath@alley>
+References: <20220819221731.480795-1-gpiccoli@igalia.com>
+ <20220819221731.480795-9-gpiccoli@igalia.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1P190MB0317:EE_|AS4P190MB1829:EE_
-X-MS-Office365-Filtering-Correlation-Id: 68d59723-9820-4c0d-ac46-08dad9fc7074
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WwIGnv6pztSK7/xodWkUJgIAvC/yU+oeOulndA0OUW36MzCmaUS2NSM0QMskhwV0d/R8eaNf/+bkfHGs3bJPu8/1CDknQGYrhiNFXX3rb5M0MQj+uKp4LDsXEzn13xHac7H7haHLwpBZkZ8L0DDI8Vb0c1er+6ihMgFBIA1lJ2pYygu92ByQMyRoOs0XVHeUtBZBt9R6YXw04qYQX21NJMNtTj6qtLcWQa+ciCrrO4XQlbdFLOPEOYokISA20K4aNtg3JDGAAJPOpGPUF0MLP9dKZT80/mq3x4Xcn5C1snhAbSjK7ysDnMNNsgTCB4wezJyxJGV+YUQmen4D9yICZh9CJdCk92dFJdSlYxvEAi9jnpr3aq9Vt0CHETca0cRNsRECYs3Gqw4Mj5U0/NPlUGeU+tY6C4Ehqp65VlaJqdfEvRcufsidamnCMSYSqXfcTqAKsFJAxjDK+Q9lpYXPQOhGanMX9Q5hhXphM57wpcnao2T+ANh1aC2zAepjFBQZS2Gds4UlZqj0mUGvNO4FxUF0U/80pyoT9/dfT/2XThUKauYOWad0OS9P3VpXkWvQKX+PGj/fWOP0MNFvqp8at5ql9ipXKSmUEAUWaMFVUmT5R2dzQYBnYzgJdIxKvzka9g8LhOYMjscUG4eAMVgYCUqv+DlUhcLjXyKZTBWAsA11ksKjdWocZ4zyyeD8rY9JzsyGuu+WJQcnq2GI5vle6PO0un4kKJuO1Pd61JDl9ds=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0317.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(396003)(39830400003)(376002)(136003)(451199015)(36756003)(66476007)(8936002)(4326008)(66946007)(2906002)(66556008)(8676002)(15650500001)(4744005)(44832011)(41300700001)(38100700002)(83380400001)(86362001)(38350700002)(107886003)(54906003)(2616005)(316002)(1076003)(110136005)(966005)(478600001)(6486002)(26005)(52116002)(6666004)(5660300002)(6512007)(186003)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DeqWmT1jwpbc8W/35+kp/0kX5LiI2hNxGrfH6edT7NIEHwFVS1zMAsdQMQR9?=
- =?us-ascii?Q?NCjRaEtMEMFewihN2gp/R7pK2v4PfLBCFFjnC9/xNtkt1gqZJDJsflx0ABkk?=
- =?us-ascii?Q?rNGNVOSkYPiGxFN72BjH7bCXGOST+D64rh/U36oMgXOzB/V+Y9w+I+yfejXn?=
- =?us-ascii?Q?We17L8PcHJIZWEoODMJcvV4n1Ab84HXg42RseETXPovMQ3bu82Yhk6HTcs4V?=
- =?us-ascii?Q?VxxvuqdBxr3nA10NYDmKt9WcAds3zV14Quxo0hWkYMhIMUZZBXZcMxIiZ2wI?=
- =?us-ascii?Q?XwKB21pyJC5b+H5ftpUD5q7bMy0ak0GvPGUt5Ibdk0WbIkb1kGneOoZcdg94?=
- =?us-ascii?Q?dGteuzIt3QvmHUK4U/n9E4C964hvRxIQaqFnMfOkhlKxCv3VklKLKB4yKhHg?=
- =?us-ascii?Q?U6z+Yjxt19odSDdKDKg7BRrUi/NTfhgD+dUEcA7lnW4Mpk+laaTSdmATPa/l?=
- =?us-ascii?Q?OSqbbycTA9UpkSxeeAAlfP6yuHDVGAnymG42TynPnNNPjRSacqin/cQ4EEpa?=
- =?us-ascii?Q?F/xldB6aRA6+5BCFrrA/pJrgPB72LrlsDQypPVauNxw3Mp1qrsVn4X9rMhK4?=
- =?us-ascii?Q?TBEv64yXdWZi5J2ai9DcodaYtnFNODXg+mDzGIOSK7zQHKSDF9N+S6KijYFv?=
- =?us-ascii?Q?XgkEnkSzMn1bK017LdROVCfK5OKPIacIbso4UJXQGO14eNsjjEzae1s+Yd1q?=
- =?us-ascii?Q?GKGLVthf0Dv93M9kRDmfwRo9fYDNeWehJ2YNMdDyLIWgJcp0ku74Xnk6H3Fh?=
- =?us-ascii?Q?tAzoPDpU+nKS/vLkNN+xCT0CK7NN8bU1GNl+HC2+gtXwabLNVYpxOWYbJXxU?=
- =?us-ascii?Q?ryf6ZQOTbHwZ1Rwz6IGoay1fAvGEk7DK8auetw1J2oTJQhGQc4lQlHZx/zEW?=
- =?us-ascii?Q?B5ALcoQq9y0R9g9t3E4anbCPw3E3TmwoabWwnM9jTKcNmt7wct0beGMGgjPh?=
- =?us-ascii?Q?C2VuI790IaI+di3iD1V9/KoidG+2maKC2Yh7XLyUGn5Gkwnn8HfI+xLf+9Gi?=
- =?us-ascii?Q?VTvU345CD3nBUL9ZAa00/V0PN26uU2kvYJ3ujSE0nlkHf+BVeDKU3LrN5WW+?=
- =?us-ascii?Q?Pg0q+JN87nG+y3lZYPFBag80l1LQQDRbb8yPuCILJvUpXVLHqv/5yr58G30w?=
- =?us-ascii?Q?T++mfUj/MZSMMIvuSl0eKfI3UivD9mpsbEXxTr2KtyanKrMBvhcNi20c1xJb?=
- =?us-ascii?Q?0oPmoCvOzEx9ND17eaUdS4i6qQ8+Erwq7BP2MQiLlMvwxXl4J2fXf6mtKAIW?=
- =?us-ascii?Q?uD7Anam22+HYHg8UGIg3LRCQbjRX5mm5kyD/lkNwScoik+JXCIiy8cytPlOJ?=
- =?us-ascii?Q?wHgSYf1mwO1xAEIgFUSvOCfvgM6kaV8UX/pi3zEK0NSRijhbbC2VTBGFZUj6?=
- =?us-ascii?Q?RyGkaUP64/AfwjO0I5m18xbr2XyU/XQQXMIDlsSumD5BbTrfXwqj2BEfZynx?=
- =?us-ascii?Q?nvYhM44sw02IpAKjynWYHbSNVNc1uWtLlAA8Em3S6ref7LpoXtxfgi3VBdII?=
- =?us-ascii?Q?lkSAe3ob8FITPFGH77PwrXB44gyZELMSKr9AjzZNkUNP9WwM4zE5tAkvC6PQ?=
- =?us-ascii?Q?dTFdAGRB4rL069dU8kXk6RPjPQJlBFwiljx1m6S2PFI/sSc3H9H7zwzMgT9C?=
- =?us-ascii?Q?8g=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 68d59723-9820-4c0d-ac46-08dad9fc7074
-X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2022 15:45:47.0370
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hs5R2oL3sQ/gwEe1C/hBt6Wa5u7mtqANFpaRWKRj8C1t8f+18NjHLzVWMHc6PL6GOJM4BtiiS5rvIzvtOKorJQoxC4CldX+r6euDINJYSqg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4P190MB1829
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819221731.480795-9-gpiccoli@igalia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taras Chornyi <taras.chornyi@plvision.eu>
+On Fri 2022-08-19 19:17:28, Guilherme G. Piccoli wrote:
+> The altera_edac panic notifier performs some data collection with
+> regards errors detected; such code relies in the regmap layer to
+> perform reads/writes, so the code is abstracted and there is some
+> risk level to execute that, since the panic path runs in atomic
+> context, with interrupts/preemption and secondary CPUs disabled.
+> 
+> Users want the information collected in this panic notifier though,
+> so in order to balance the risk/benefit, let's skip the altera panic
+> notifier if kdump is loaded. While at it, remove a useless header
+> and encompass a macro inside the sole ifdef block it is used.
+> 
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Petr Mladek <pmladek@suse.com>
+> Cc: Tony Luck <tony.luck@intel.com>
+> Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> 
+> ---
+> 
+> V3:
+> - added the ack tag from Dinh - thanks!
+> - had a good discussion with Boris about that in V2 [0],
+> hopefully we can continue and reach a consensus in this V3.
+> [0] https://lore.kernel.org/lkml/46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com/
+> 
+> V2:
+> - new patch, based on the discussion in [1].
+> [1] https://lore.kernel.org/lkml/62a63fc2-346f-f375-043a-fa21385279df@igalia.com/
+> 
+> 
+>  drivers/edac/altera_edac.c | 16 ++++++++++++----
+>  1 file changed, 12 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/edac/altera_edac.c b/drivers/edac/altera_edac.c
+> index e7e8e624a436..741fe5539154 100644
+> --- a/drivers/edac/altera_edac.c
+> +++ b/drivers/edac/altera_edac.c
+> @@ -16,7 +16,6 @@
+>  #include <linux/kernel.h>
+>  #include <linux/mfd/altera-sysmgr.h>
+>  #include <linux/mfd/syscon.h>
+> -#include <linux/notifier.h>
+>  #include <linux/of_address.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+> @@ -24,6 +23,7 @@
+>  #include <linux/platform_device.h>
+>  #include <linux/regmap.h>
+>  #include <linux/types.h>
+> +#include <linux/kexec.h>
+>  #include <linux/uaccess.h>
+>  
+>  #include "altera_edac.h"
+> @@ -2063,22 +2063,30 @@ static const struct irq_domain_ops a10_eccmgr_ic_ops = {
+>  };
+>  
+>  /************** Stratix 10 EDAC Double Bit Error Handler ************/
+> -#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
+> -
+>  #ifdef CONFIG_64BIT
+>  /* panic routine issues reboot on non-zero panic_timeout */
+>  extern int panic_timeout;
+>  
+> +#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
+> +
+>  /*
+>   * The double bit error is handled through SError which is fatal. This is
+>   * called as a panic notifier to printout ECC error info as part of the panic.
+> + *
+> + * Notice that if kdump is set, we take the risk avoidance approach and
+> + * skip the notifier, given that users are expected to have access to a
+> + * full vmcore.
+>   */
+>  static int s10_edac_dberr_handler(struct notifier_block *this,
+>  				  unsigned long event, void *ptr)
+>  {
+> -	struct altr_arria10_edac *edac = to_a10edac(this, panic_notifier);
+> +	struct altr_arria10_edac *edac;
+>  	int err_addr, dberror;
+>  
+> +	if (kexec_crash_loaded())
+> +		return NOTIFY_DONE;
 
-Taras's Marvell email account will be shut down soon so change it to Plvision.
+I have read the discussion about v2 [1] and this looks like a bad
+approach from my POV.
 
-Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
-Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+My understanding is that the information provided by this notifier
+could not be found in the crashdump. It means that people really
+want to run this before crashdump in principle.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 955c1be1efb2..88ffba1716a8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12365,7 +12365,7 @@ F:	Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
- F:	drivers/net/ethernet/marvell/octeontx2/af/
- 
- MARVELL PRESTERA ETHERNET SWITCH DRIVER
--M:	Taras Chornyi <tchornyi@marvell.com>
-+M:	Taras Chornyi <taras.chornyi@plvision.eu>
- S:	Supported
- W:	https://github.com/Marvell-switching/switchdev-prestera
- F:	drivers/net/ethernet/marvell/prestera/
--- 
-2.25.1
+Of course, there is the question how much safe this code is. I mean
+if the panic() code path might get blocked here.
 
+I see two possibilities.
+
+The best solution would be if we know that this is "always" safe or if
+it can be done a safe way. Then we could keep it as it is or implement
+the safe way.
+
+Alternative solution would be to create a kernel parameter that
+would enable/disable this particular report when kdump is enabled.
+The question would be the default. It would depend on how risky
+the code is and how useful the information is.
+
+[1] https://lore.kernel.org/r/20220719195325.402745-11-gpiccoli@igalia.com
+
+> +	edac = to_a10edac(this, panic_notifier);
+>  	regmap_read(edac->ecc_mgr_map, S10_SYSMGR_ECC_INTSTAT_DERR_OFST,
+>  		    &dberror);
+>  	regmap_write(edac->ecc_mgr_map, S10_SYSMGR_UE_VAL_OFST, dberror);
+
+Best Regards,
+Petr
