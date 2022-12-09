@@ -2,137 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0505A6486BA
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:46:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39BB36486B6
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:45:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229554AbiLIQqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 11:46:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
+        id S229793AbiLIQph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 11:45:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiLIQqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:46:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3712E9EA
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 08:45:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670604300;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=58/VjDZZoily/fkCPVeQuHIo3U3CJ3NHBYhVURQ6msE=;
-        b=PzRtTN5X7YRcFHoPlfEJJskdMRThbZ5WJbfXFoj3ArdYokYel7FjfFpxVOrAtdPY4Z4IWT
-        nCUlGepQV6/ed/+epBlTwOQFYBKGJpjDsbQfbVUQwUxNtrePJzKgO1JM9Tb9BesV9DFVJ9
-        44SUWQnEEpMVFeOV9fNfd/8z551aITo=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-629-KiPJ24ZaOvSA4O5wnZMo3w-1; Fri, 09 Dec 2022 11:44:57 -0500
-X-MC-Unique: KiPJ24ZaOvSA4O5wnZMo3w-1
-Received: by mail-wm1-f70.google.com with SMTP id c187-20020a1c35c4000000b003cfee3c91cdso128142wma.6
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 08:44:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=58/VjDZZoily/fkCPVeQuHIo3U3CJ3NHBYhVURQ6msE=;
-        b=KkviEh2zov6sxWHkWWh5nDMuQ3SOtsCYL+c752+JYKuHNdpAXaTIe/VEN0QZtFjqC7
-         RtsnWDIAN8zYPP8HSWmXwQ0UIVMDbX4kzMHoWumaqk+xePk6AYUFixBD9O3MhE8Z7+nx
-         Axe/DbsJJm2gHEroTXW5dOoot3hoQuZ99hmy7aZIANZIU3ZuJLnqf/WHWyXh4goT1GRc
-         rZFBNaOk88ox6Z9WetiG6etwcPN41qn6MDGXlTafbBwSMQ586+DPNKcYxGbOpSGfI5Q4
-         qokAUobCQWckTZRr0BGeex63V3NGSh/UYwtP/bsmXCGpjxq7BFjv2m4MX3G3BRGL7SCU
-         +/aw==
-X-Gm-Message-State: ANoB5pnZnzDGI5yM2M+xg1jDuV3THKAB6VMGQXdAZV+VKPtPy+OhwuF7
-        dBDu9EdW30zb6f/STGzfWwx0VO/6IxRW2+xj4hdOA4Gp9qE8IczZDsi1/MjgFRZAARD0BWvqx4l
-        ZM2KJSLb3ECZ0MD8u
-X-Received: by 2002:adf:e743:0:b0:242:1c58:8ea7 with SMTP id c3-20020adfe743000000b002421c588ea7mr4595256wrn.46.1670604296214;
-        Fri, 09 Dec 2022 08:44:56 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf7M4uXTnCh3Px4p8D2zZ8IXqC8Id1r2OTT+UqYnSv9gGzAfbxZ/ZwD5MDv5FMJsOfA2REEOqA==
-X-Received: by 2002:adf:e743:0:b0:242:1c58:8ea7 with SMTP id c3-20020adfe743000000b002421c588ea7mr4595249wrn.46.1670604296014;
-        Fri, 09 Dec 2022 08:44:56 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-105-105.dyn.eolo.it. [146.241.105.105])
-        by smtp.gmail.com with ESMTPSA id g4-20020a5d46c4000000b00228d52b935asm1808943wrs.71.2022.12.09.08.44.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 08:44:55 -0800 (PST)
-Message-ID: <42a810af3818f6ec3d62415c5e071e28a510ccba.camel@redhat.com>
-Subject: Re: [PATCH v1 3/3] net: simplify sk_page_frag
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Benjamin Coddington <bcodding@redhat.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Fri, 09 Dec 2022 17:44:54 +0100
-In-Reply-To: <79b1009812b753c3a82d09271c4d655d644d37a6.1669036433.git.bcodding@redhat.com>
-References: <cover.1669036433.git.bcodding@redhat.com>
-         <79b1009812b753c3a82d09271c4d655d644d37a6.1669036433.git.bcodding@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229704AbiLIQpa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:45:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F4289AE5;
+        Fri,  9 Dec 2022 08:45:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FE66622B2;
+        Fri,  9 Dec 2022 16:45:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BE0FC433D2;
+        Fri,  9 Dec 2022 16:45:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670604326;
+        bh=y9ju5uWeIvPH5xCPeQBcrFadw2lTaWjzkAGNG7iNTAQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fyE/CIxDGjWaUL0DLNshTMZ1OLUruLbVpHvrC61X21127DREq2ElfVR/r9oxf2evI
+         VE+faV6CiOQrmW+Q5IDLeEttgAIy3f9iLs0Bk8hB8uhjEK0/wSQjCYPLFdRA/wo+X9
+         jNx19EbIQj3FSi/15GyHrmQkaIyTJWXBQXAZld0+8NZPAQlGR9+AuzZL//huJJ/RuT
+         Bh4ek2x38/DIFZRNfDekKCyHTB1eWRG6e6tpIZUnyKppl5ORiKnkeAuLGydtR4MuTT
+         XNv/HG/4jv1y8EFUVbfSSgLIWdLaGV4k/valaLbAuyaBcL48VWWxbNwKpx/aAR9JEt
+         2QMlH8EDn1o1A==
+Date:   Fri, 9 Dec 2022 08:45:24 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 11/12] mlx5: Support RX XDP
+ metadata
+Message-ID: <20221209084524.01c09d9c@kernel.org>
+In-Reply-To: <87cz8sk59e.fsf@toke.dk>
+References: <20221206024554.3826186-1-sdf@google.com>
+        <20221206024554.3826186-12-sdf@google.com>
+        <875yellcx6.fsf@toke.dk>
+        <CAKH8qBv7nWdknuf3ap_ekpAhMgvtmoJhZ3-HRuL8Wv70SBWMSQ@mail.gmail.com>
+        <87359pl9zy.fsf@toke.dk>
+        <CAADnVQ+=71Y+ypQTOgFTJWY7w3YOUdY39is4vpo3aou11=eMmw@mail.gmail.com>
+        <87tu25ju77.fsf@toke.dk>
+        <CAADnVQ+MyE280Q-7iw2Y-P6qGs4xcDML-tUrXEv_EQTmeESVaQ@mail.gmail.com>
+        <87o7sdjt20.fsf@toke.dk>
+        <CAKH8qBswBu7QAWySWOYK4X41mwpdBj0z=6A9WBHjVYQFq9Pzjw@mail.gmail.com>
+        <87cz8sk59e.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-11-21 at 08:35 -0500, Benjamin Coddington wrote:
-> Now that in-kernel socket users that may recurse during reclaim have benn
-> converted to sk_use_task_frag = false, we can have sk_page_frag() simply
-> check that value.
-> 
-> Signed-off-by: Benjamin Coddington <bcodding@redhat.com>
-> ---
->  include/net/sock.h | 9 ++-------
->  1 file changed, 2 insertions(+), 7 deletions(-)
-> 
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index ffba9e95470d..fac24c6ee30d 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -2539,19 +2539,14 @@ static inline void sk_stream_moderate_sndbuf(struct sock *sk)
->   * Both direct reclaim and page faults can nest inside other
->   * socket operations and end up recursing into sk_page_frag()
->   * while it's already in use: explicitly avoid task page_frag
-> - * usage if the caller is potentially doing any of them.
-> - * This assumes that page fault handlers use the GFP_NOFS flags or
-> - * explicitly disable sk_use_task_frag.
-> + * when users disable sk_use_task_frag.
->   *
->   * Return: a per task page_frag if context allows that,
->   * otherwise a per socket one.
->   */
->  static inline struct page_frag *sk_page_frag(struct sock *sk)
->  {
-> -	if (sk->sk_use_task_frag &&
-> -	    (sk->sk_allocation & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC |
-> -				  __GFP_FS)) ==
-> -	    (__GFP_DIRECT_RECLAIM | __GFP_FS))
-> +	if (sk->sk_use_task_frag)
->  		return &current->task_frag;
->  
->  	return &sk->sk_frag;
+On Fri, 09 Dec 2022 15:42:37 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> If we expect the program to do out of band probing, we could just get
+> rid of the _supported() functions entirely?
+>=20
+> I mean, to me, the whole point of having the separate _supported()
+> function for each item was to have a lower-overhead way of checking if
+> the metadata item was supported. But if the overhead is not actually
+> lower (because both incur a function call), why have them at all? Then
+> we could just change the implementation from this:
+>=20
+> bool mlx5e_xdp_rx_hash_supported(const struct xdp_md *ctx)
+> {
+> 	const struct mlx5_xdp_buff *_ctx =3D (void *)ctx;
+>=20
+> 	return _ctx->xdp.rxq->dev->features & NETIF_F_RXHASH;
+> }
+>=20
+> u32 mlx5e_xdp_rx_hash(const struct xdp_md *ctx)
+> {
+> 	const struct mlx5_xdp_buff *_ctx =3D (void *)ctx;
+>=20
+> 	return be32_to_cpu(_ctx->cqe->rss_hash_result);
+> }
+>=20
+> to this:
+>=20
+> u32 mlx5e_xdp_rx_hash(const struct xdp_md *ctx)
+> {
+> 	const struct mlx5_xdp_buff *_ctx =3D (void *)ctx;
+>=20
+> 	if (!(_ctx->xdp.rxq->dev->features & NETIF_F_RXHASH))
+>                 return 0;
+>=20
+> 	return be32_to_cpu(_ctx->cqe->rss_hash_result);
+> }
 
-To make the above as safe as possible I think we should double-check
-the in-kernel users explicitly setting sk_allocation to GFP_ATOMIC, as
-that has the side effect of disabling the task_frag usage, too.
+Are there no corner cases? E.g. in case of an L2 frame you'd then
+expect a hash of 0? Rather than no hash?=20
 
-Patch 2/3 already catches some of such users, and we can safely leave
-alone few others, (specifically l2tp, fou and inet_ctl_sock_create()).
+If I understand we went for the _supported() thing to make inlining=20
+the check easier than inlining the actual read of the field.
+But we're told inlining is a bit of a wait.. so isn't the motivation
+for the _supported() pretty much gone? And we should we go back to
+returning an error from the actual read?
 
-Even wireguard and tls looks safe IMHO.
-
-So the only left-over should be espintcp, I suggest updating patch 2/3
-clearing sk_use_task_frag even in espintcp_init_sk().
-
-Other than that LGTM.
-
-Cheers,
-
-Paolo
-
+Is partial inlining hard? (inline just the check and generate a full
+call for the read, ending up with the same code as with _supported())
