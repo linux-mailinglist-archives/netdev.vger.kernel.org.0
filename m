@@ -2,161 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04166647D2A
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 06:14:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF376647D3A
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 06:29:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229568AbiLIFN6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 9 Dec 2022 00:13:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
+        id S229683AbiLIFYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 00:24:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiLIFN5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 00:13:57 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27D5B87417;
-        Thu,  8 Dec 2022 21:13:52 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B95B1n44016358, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B95B1n44016358
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 9 Dec 2022 13:11:01 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.9; Fri, 9 Dec 2022 13:11:48 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Fri, 9 Dec 2022 13:11:48 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Fri, 9 Dec 2022 13:11:48 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Li Zetao <lizetao1@huawei.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-CC:     "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
-        "linville@tuxdriver.com" <linville@tuxdriver.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in _rtl8812ae_phy_set_txpower_limit()
-Thread-Topic: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in
- _rtl8812ae_phy_set_txpower_limit()
-Thread-Index: AQHZCkbbXqqj5E4pa0em0g/eG4ORkq5lAS7w
-Date:   Fri, 9 Dec 2022 05:11:48 +0000
-Message-ID: <e985ead3ea7841b8b3a94201dfb18776@realtek.com>
-References: <20221207152319.3135500-1-lizetao1@huawei.com>
-In-Reply-To: <20221207152319.3135500-1-lizetao1@huawei.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/12/9_=3F=3F_02:22:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S229460AbiLIFYo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 00:24:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561C872870;
+        Thu,  8 Dec 2022 21:24:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12297B827A3;
+        Fri,  9 Dec 2022 05:24:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 905B4C433F0;
+        Fri,  9 Dec 2022 05:24:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670563480;
+        bh=l6X9ReiMPyE+az/ynxYJ+y9nV9wLSGN0chZF99FBGHg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nUshCn7fke74bdCIOhWKHo4xqPceq5KzthQGVZBydqTtNiRjxafSWCyi+EX0IpUS1
+         vYNHTLMxcSeZWu1aqDSlXniOHwN75xFyRsU2yl4zxMpsI38+HjiiBsY2Q8pH+ScVdr
+         oZ5+VnloW24/Nngn8/LrLuIDvHJKb0FFd1H2W0jKg/roAU4cFI1zgUT5nohR8y9udM
+         s1/Y8T5uCzm1jRumurB3sieCJuEbncFqIWBZmj/TnmxIRZuS7km84rBwK8HRuTQCsQ
+         tT2lkGc33dww2CvoPKDCUy15z0+aDY6oGCecrXzH+xefgT6/P6wn38vD9q+KVdousS
+         oYnGAxgOG3vcQ==
+Date:   Thu, 8 Dec 2022 21:24:38 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 11/12] mlx5: Support RX XDP
+ metadata
+Message-ID: <Y5LGlgpxpzSu701h@x130>
+References: <20221206024554.3826186-1-sdf@google.com>
+ <20221206024554.3826186-12-sdf@google.com>
+ <875yellcx6.fsf@toke.dk>
+ <CAKH8qBv7nWdknuf3ap_ekpAhMgvtmoJhZ3-HRuL8Wv70SBWMSQ@mail.gmail.com>
+ <87359pl9zy.fsf@toke.dk>
+ <CAADnVQ+=71Y+ypQTOgFTJWY7w3YOUdY39is4vpo3aou11=eMmw@mail.gmail.com>
+ <87tu25ju77.fsf@toke.dk>
+ <CAADnVQ+MyE280Q-7iw2Y-P6qGs4xcDML-tUrXEv_EQTmeESVaQ@mail.gmail.com>
+ <87o7sdjt20.fsf@toke.dk>
+ <CAKH8qBswBu7QAWySWOYK4X41mwpdBj0z=6A9WBHjVYQFq9Pzjw@mail.gmail.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKH8qBswBu7QAWySWOYK4X41mwpdBj0z=6A9WBHjVYQFq9Pzjw@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 08 Dec 18:57, Stanislav Fomichev wrote:
+>On Thu, Dec 8, 2022 at 4:54 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>
+>> > On Thu, Dec 8, 2022 at 4:29 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>> >>
+>> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>> >>
+>> >> > On Thu, Dec 8, 2022 at 4:02 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>> >> >>
+>> >> >> Stanislav Fomichev <sdf@google.com> writes:
+>> >> >>
+>> >> >> > On Thu, Dec 8, 2022 at 2:59 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>> >> >> >>
+>> >> >> >> Stanislav Fomichev <sdf@google.com> writes:
+>> >> >> >>
+>> >> >> >> > From: Toke Høiland-Jørgensen <toke@redhat.com>
+>> >> >> >> >
+>> >> >> >> > Support RX hash and timestamp metadata kfuncs. We need to pass in the cqe
+>> >> >> >> > pointer to the mlx5e_skb_from* functions so it can be retrieved from the
+>> >> >> >> > XDP ctx to do this.
+>> >> >> >>
+>> >> >> >> So I finally managed to get enough ducks in row to actually benchmark
+>> >> >> >> this. With the caveat that I suddenly can't get the timestamp support to
+>> >> >> >> work (it was working in an earlier version, but now
+>> >> >> >> timestamp_supported() just returns false). I'm not sure if this is an
+>> >> >> >> issue with the enablement patch, or if I just haven't gotten the
+>> >> >> >> hardware configured properly. I'll investigate some more, but figured
+>> >> >> >> I'd post these results now:
+>> >> >> >>
+>> >> >> >> Baseline XDP_DROP:         25,678,262 pps / 38.94 ns/pkt
+>> >> >> >> XDP_DROP + read metadata:  23,924,109 pps / 41.80 ns/pkt
+>> >> >> >> Overhead:                   1,754,153 pps /  2.86 ns/pkt
+>> >> >> >>
+>> >> >> >> As per the above, this is with calling three kfuncs/pkt
+>> >> >> >> (metadata_supported(), rx_hash_supported() and rx_hash()). So that's
+>> >> >> >> ~0.95 ns per function call, which is a bit less, but not far off from
+>> >> >> >> the ~1.2 ns that I'm used to. The tests where I accidentally called the
+>> >> >> >> default kfuncs cut off ~1.3 ns for one less kfunc call, so it's
+>> >> >> >> definitely in that ballpark.
+>> >> >> >>
+>> >> >> >> I'm not doing anything with the data, just reading it into an on-stack
+>> >> >> >> buffer, so this is the smallest possible delta from just getting the
+>> >> >> >> data out of the driver. I did confirm that the call instructions are
+>> >> >> >> still in the BPF program bytecode when it's dumped back out from the
+>> >> >> >> kernel.
+>> >> >> >>
+>> >> >> >> -Toke
+>> >> >> >>
+>> >> >> >
+>> >> >> > Oh, that's great, thanks for running the numbers! Will definitely
+>> >> >> > reference them in v4!
+>> >> >> > Presumably, we should be able to at least unroll most of the
+>> >> >> > _supported callbacks if we want, they should be relatively easy; but
+>> >> >> > the numbers look fine as is?
+>> >> >>
+>> >> >> Well, this is for one (and a half) piece of metadata. If we extrapolate
+>> >> >> it adds up quickly. Say we add csum and vlan tags, say, and maybe
+>> >> >> another callback to get the type of hash (l3/l4). Those would probably
+>> >> >> be relevant for most packets in a fairly common setup. Extrapolating
+>> >> >> from the ~1 ns/call figure, that's 8 ns/pkt, which is 20% of the
+>> >> >> baseline of 39 ns.
+>> >> >>
+>> >> >> So in that sense I still think unrolling makes sense. At least for the
+>> >> >> _supported() calls, as eating a whole function call just for that is
+>> >> >> probably a bit much (which I think was also Jakub's point in a sibling
+>> >> >> thread somewhere).
+>> >> >
+>> >> > imo the overhead is tiny enough that we can wait until
+>> >> > generic 'kfunc inlining' infra is ready.
+>> >> >
+>> >> > We're planning to dual-compile some_kernel_file.c
+>> >> > into native arch and into bpf arch.
+>> >> > Then the verifier will automatically inline bpf asm
+>> >> > of corresponding kfunc.
+>> >>
+>> >> Is that "planning" or "actively working on"? Just trying to get a sense
+>> >> of the time frames here, as this sounds neat, but also something that
+>> >> could potentially require quite a bit of fiddling with the build system
+>> >> to get to work? :)
+>> >
+>> > "planning", but regardless how long it takes I'd rather not
+>> > add any more tech debt in the form of manual bpf asm generation.
+>> > We have too much of it already: gen_lookup, convert_ctx_access, etc.
+>>
+>> Right, I'm no fan of the manual ASM stuff either. However, if we're
+>> stuck with the function call overhead for the foreseeable future, maybe
+>> we should think about other ways of cutting down the number of function
+>> calls needed?
+>>
+>> One thing I can think of is to get rid of the individual _supported()
+>> kfuncs and instead have a single one that lets you query multiple
+>> features at once, like:
+>>
+>> __u64 features_supported, features_wanted = XDP_META_RX_HASH | XDP_META_TIMESTAMP;
+>>
+>> features_supported = bpf_xdp_metadata_query_features(ctx, features_wanted);
+>>
+>> if (features_supported & XDP_META_RX_HASH)
+>>   hash = bpf_xdp_metadata_rx_hash(ctx);
+>>
+>> ...etc
+>
+>I'm not too happy about having the bitmasks tbh :-(
+>If we want to get rid of the cost of those _supported calls, maybe we
+>can do some kind of libbpf-like probing? That would require loading a
+>program + waiting for some packet though :-(
+>
+>Or maybe they can just be cached for now?
+>
+>if (unlikely(!got_first_packet)) {
+>  have_hash = bpf_xdp_metadata_rx_hash_supported();
+>  have_timestamp = bpf_xdp_metadata_rx_timestamp_supported();
+>  got_first_packet = true;
+>}
+
+hash/timestap/csum is per packet .. vlan as well depending how you look at
+it..
+
+Sorry I haven't been following the progress of xdp meta data, but why did
+we drop the idea of btf and driver copying metdata in front of the xdp
+frame ?
+
+hopefully future HW generations will do that for free .. 
+
+if btf is the problem then each vendor can provide a bpf func(s) that would
+parse the metdata inside of the xdp/bpf prog domain to help programs
+extract the vendor specific data.. 
 
 
-> -----Original Message-----
-> From: Li Zetao <lizetao1@huawei.com>
-> Sent: Wednesday, December 7, 2022 11:23 PM
-> To: Ping-Ke Shih <pkshih@realtek.com>; kvalo@kernel.org; davem@davemloft.net; edumazet@google.com;
-> kuba@kernel.org; pabeni@redhat.com
-> Cc: lizetao1@huawei.com; Larry.Finger@lwfinger.net; linville@tuxdriver.com;
-> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in _rtl8812ae_phy_set_txpower_limit()
-> 
-> There is a global-out-of-bounds reported by KASAN:
-> 
->   BUG: KASAN: global-out-of-bounds in
->   _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
->   Read of size 1 at addr ffffffffa0773c43 by task NetworkManager/411
-> 
->   CPU: 6 PID: 411 Comm: NetworkManager Tainted: G      D
->   6.1.0-rc8+ #144 e15588508517267d37
->   Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
->   Call Trace:
->    <TASK>
->    ...
->    kasan_report+0xbb/0x1c0
->    _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
->    rtl8821ae_phy_bb_config.cold+0x346/0x641 [rtl8821ae]
->    rtl8821ae_hw_init+0x1f5e/0x79b0 [rtl8821ae]
->    ...
->    </TASK>
-> 
-> The root cause of the problem is that the comparison order of
-> "prate_section" in _rtl8812ae_phy_set_txpower_limit() is wrong. The
-> _rtl8812ae_eq_n_byte() is used to compare the first n bytes of the two
-> strings, so this requires the length of the two strings be greater
-> than or equal to n. In the  _rtl8812ae_phy_set_txpower_limit(), it was
-> originally intended to meet this requirement by carefully designing
-> the comparison order. For example, "pregulation" and "pbandwidth" are
-> compared in order of length from small to large, first is 3 and last
-> is 4. However, the comparison order of "prate_section" dose not obey
-> such order requirement, therefore when "prate_section" is "HT", it will
-> lead to access out of bounds in _rtl8812ae_eq_n_byte().
-> 
-> Fix it by adding a length check in _rtl8812ae_eq_n_byte(). Although it
-> can be fixed by adjusting the comparison order of "prate_section", this
-> may cause the value of "rate_section" to not be from 0 to 5. In
-> addition, commit "21e4b0726dc6" not only moved driver from staging to
-> regular tree, but also added setting txpower limit function during the
-> driver config phase, so the problem was introduced by this commit.
-> 
-> Fixes: 21e4b0726dc6 ("rtlwifi: rtl8821ae: Move driver from staging to regular tree")
-> Signed-off-by: Li Zetao <lizetao1@huawei.com>
-> ---
->  drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-> index a29321e2fa72..720114a9ddb2 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-> @@ -1600,7 +1600,7 @@ static bool _rtl8812ae_get_integer_from_string(const char *str, u8 *pint)
-> 
->  static bool _rtl8812ae_eq_n_byte(const char *str1, const char *str2, u32 num)
->  {
-
-This can causes problem because it compares characters from tail to head, and
-we can't simply replace this by strncmp() that does similar work. But, I also
-don't like strlen() to loop 'str1' constantly.
-
-How about having a simple loop to compare characters forward:
-
-for (i = 0; i < num; i++)
-    if (str1[i] != str2[i])
-         return false;
-
-return true;
-
-> -	if (num == 0)
-> +	if (num == 0 || strlen(str1) < num)
->  		return false;
->  	while (num > 0) {
->  		num--;
-> --
-> 2.31.1
-> 
-> 
-> ------Please consider the environment before printing this e-mail.
+>
+>if (have_hash) {}
+>if (have_timestamp) {}
+>
+>That should hopefully work until generic inlining infra?
+>
+>> -Toke
+>>
