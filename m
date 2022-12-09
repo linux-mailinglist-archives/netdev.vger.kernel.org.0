@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50C606484AD
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:08:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 134876484D2
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:16:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbiLIPIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 10:08:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59600 "EHLO
+        id S229915AbiLIPQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 10:16:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230262AbiLIPIX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:08:23 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA9484B62;
-        Fri,  9 Dec 2022 07:08:22 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id n21so12139986ejb.9;
-        Fri, 09 Dec 2022 07:08:22 -0800 (PST)
+        with ESMTP id S229714AbiLIPQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:16:44 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE83B23;
+        Fri,  9 Dec 2022 07:16:43 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id qk9so12255678ejc.3;
+        Fri, 09 Dec 2022 07:16:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=v2VJkWbNKEh0A4pf7A2XrZCZejaLGhVFMMh2tfBWT6o=;
-        b=qbfi5thYQ/mx3gcgLXPFAHEWM8nedH40N+dssqFBXaYO+2MkoUYvp38WYHxrFCpKeA
-         kyzDs9geJbpWdCLgPQoRS0r9av3VvgvkHgrx5owyd4fQ+mzPJ8ggu/oaH3alILIkJzc8
-         xOx27QOK+c98Wib5FJXLxOn2v05z9ZahMcDO2phIuVUjbScKUTmecSDW/d75cYFzWD4o
-         eajoKJofwf66fi9/gEyaGu6I13yW85O7uhOoC15NB8tJufRkccp2S+lQNt66P0B7DTML
-         PBOiQEp6+iuTWkjORcAuSfjFcJEm3I0KsJodWNZFaQBqCs7FIpl/nNDgGOCWNsRjvYiW
-         JnmA==
+        bh=UPPFiRkIfTh9nkH6QSHejXNg4CpOfNg/sj/bnmWXHWY=;
+        b=crdXLdOJl3pQnKDOTpqxHeNef21lxGYj90rZNJkl+iFKBKn/cvNwhfzWEwmDxiCcn5
+         LoZhPOZh6rBGs+TQRqGTJLyW6UlF1QFrUaCciNTFnu0pR9Uiwn1LlNQa+Z3z9pmkXubd
+         CdQwxkr05ER4lPMhWAwsRj1+9of9QY4uo70x7jHCsKdnlW8MXybUA2VmBhL+OQe3KwsG
+         +zBPb4XtL+ty7UztVJR4vwfGy67fVfYa1GyVVrCmG8MzrjomVQWADTr7hM+1olxmK5JM
+         e6FwhxaaFd+NLT6KLifOUVe10gLKhckHUPYZ6YpYncYntvRdh/dEMP8UYJMMHYoPwVK7
+         l7TA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=v2VJkWbNKEh0A4pf7A2XrZCZejaLGhVFMMh2tfBWT6o=;
-        b=Mv7QkYNI9eosQqAI51ZIcDXCxVdFMvkbnDxjOooFPZFi9gJqA7JOfvHScS4qnXLX2+
-         VJqkcenfRSnbCWFbmzBvqBTlWe8Rt67ba3Inhln7I4kgFP/fAco5LtEYNrmM83eprwwh
-         lgieMtFOBtalhDK8HbESutnkyWxqsKKAsiYq9xnsfPFoOkQKfE4HCSF2+iCvS/BxE2w3
-         wyq+OfMKuzUMEXRxPcgw0d5wAS3c/+fzXOMqYbwIOLzfDaV/YfB+iWv3IJnj/kfzxCBy
-         2zJeFDYU23IjTvQ5iLs0jDY7zT0z8/EuXjDke4l0TSkI7ErugRB8n3SdSwHBK7VzeCLu
-         3nCg==
-X-Gm-Message-State: ANoB5pncUEUiDVcqF+w2yi3kR+y66N9TYxxRMY/DDEYvr88VTvNvc9sh
-        CTF2x9GqiiWvXofTOUzI5Ec=
-X-Google-Smtp-Source: AA0mqf59hGRMLyRxYK10EkDpol7tNadH8V3oG8GbyYzT2eDw2lHZCpXdSQPtMvlcHMLHLYlyz3WMyQ==
-X-Received: by 2002:a17:906:6c7:b0:78d:f455:b5dc with SMTP id v7-20020a17090606c700b0078df455b5dcmr4865255ejb.28.1670598500718;
-        Fri, 09 Dec 2022 07:08:20 -0800 (PST)
+        bh=UPPFiRkIfTh9nkH6QSHejXNg4CpOfNg/sj/bnmWXHWY=;
+        b=VpayJy7Ryhb80aV9mFfYz2hOzbQN2zsSucuSJOMwKKTEGnkh2NDF0F9jyaM5QDMU3u
+         G4+rtyIOm2V6Jxx0+KnKtqSYk12tZ/kqqzB/FWNUWoksxlTjO/0zo70l939yTJ4wwwNq
+         oTeWJgjU3HJb3F8XXByzsQadNDXc4eoLtsTWjRlQHKoVqM/aA6kPPofdpby6zif3YCOx
+         fTCEIVAkc5fGUKp2iNYuZBlCatfJ2+RBRk/iRP68I1xfSyXlYGOpKTt5YSHlkvU68BFu
+         Ce1+S96fZQc1bnUFidpxn9tOqtJF2+DKujmoP22s2s1PXdecUyvqzZ1i8ygeftnWuaCd
+         EySg==
+X-Gm-Message-State: ANoB5pkUHbyaUU2SwH73DtE+lkdVHOq3s58Jh8onsPhqsFaZlsTZg0Av
+        /GfsvQ2LwQsuhN7oBst+VDs=
+X-Google-Smtp-Source: AA0mqf4EZ10xxwTD+P7zsXz0Hk2fZrrNf779ktPya0w8ZkVl+vZWnwkbaa0Gr/xIwJMEDZ/vHKuXJA==
+X-Received: by 2002:a17:906:6ad7:b0:78d:f455:3105 with SMTP id q23-20020a1709066ad700b0078df4553105mr4400685ejs.45.1670599001423;
+        Fri, 09 Dec 2022 07:16:41 -0800 (PST)
 Received: from skbuf ([188.27.185.190])
-        by smtp.gmail.com with ESMTPSA id r17-20020a1709061bb100b007ae243c3f05sm632091ejg.189.2022.12.09.07.08.19
+        by smtp.gmail.com with ESMTPSA id 17-20020a170906201100b007bd0bb6423csm3534ejo.199.2022.12.09.07.16.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 07:08:20 -0800 (PST)
-Date:   Fri, 9 Dec 2022 17:08:18 +0200
+        Fri, 09 Dec 2022 07:16:41 -0800 (PST)
+Date:   Fri, 9 Dec 2022 17:16:38 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Arun Ramadoss <arun.ramadoss@microchip.com>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
@@ -58,18 +58,18 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         pabeni@redhat.com, linux@armlinux.org.uk,
         Tristram.Ha@microchip.com, richardcochran@gmail.com,
         ceggers@arri.de
-Subject: Re: [Patch net-next v3 09/13] net: dsa: microchip: ptp: move
- pdelay_rsp correction field to tail tag
-Message-ID: <20221209150818.jmva3syosfxjigpg@skbuf>
+Subject: Re: [Patch net-next v3 10/13] net: dsa: microchip: ptp: add periodic
+ output signal
+Message-ID: <20221209151638.cy7iwnjbqgju3tj3@skbuf>
 References: <20221209072437.18373-1-arun.ramadoss@microchip.com>
  <20221209072437.18373-1-arun.ramadoss@microchip.com>
- <20221209072437.18373-10-arun.ramadoss@microchip.com>
- <20221209072437.18373-10-arun.ramadoss@microchip.com>
+ <20221209072437.18373-11-arun.ramadoss@microchip.com>
+ <20221209072437.18373-11-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221209072437.18373-10-arun.ramadoss@microchip.com>
- <20221209072437.18373-10-arun.ramadoss@microchip.com>
+In-Reply-To: <20221209072437.18373-11-arun.ramadoss@microchip.com>
+ <20221209072437.18373-11-arun.ramadoss@microchip.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -80,16 +80,466 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 09, 2022 at 12:54:33PM +0530, Arun Ramadoss wrote:
-> From: Christian Eggers <ceggers@arri.de>
-> 
-> For PDelay_Resp messages we will likely have a negative value in the
-> correction field. The switch hardware cannot correctly update such
-> values (produces an off by one error in the UDP checksum), so it must be
-> moved to the time stamp field in the tail tag. Format of the correction
-> field is 48 bit ns + 16 bit fractional ns.  After updating the
-> correction field, clone is no longer required hence it is freed.
-> 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
+On Fri, Dec 09, 2022 at 12:54:34PM +0530, Arun Ramadoss wrote:
+> diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
+> index c9da2a735165..6d7edc81909e 100644
+> --- a/drivers/net/dsa/microchip/ksz_ptp.c
+> +++ b/drivers/net/dsa/microchip/ksz_ptp.c
+> @@ -31,6 +31,252 @@
+>  
+>  #define KSZ_PTP_INT_START 13
+>  
+> +static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts);
 
-Similar. This needs your sign off too.
+Can you enforce a natural function ordering from the beginning such that
+forward declarations are not needed?
+
+> +
+> +static int ksz_ptp_tou_reset(struct ksz_device *dev, u8 unit)
+> +{
+> +	u32 data;
+> +	int ret;
+> +
+> +	/* Reset trigger unit (clears TRIGGER_EN, but not GPIOSTATx) */
+> +	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, TRIG_RESET, TRIG_RESET);
+> +
+> +	data = FIELD_PREP(TRIG_DONE_M, BIT(unit));
+> +	ret = ksz_write32(dev, REG_PTP_TRIG_STATUS__4, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	data = FIELD_PREP(TRIG_INT_M, BIT(unit));
+> +	ret = ksz_write32(dev, REG_PTP_INT_STATUS__4, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Clear reset and set GPIO direction */
+> +	return ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, (TRIG_RESET | TRIG_ENABLE),
+> +			 0);
+> +}
+> +
+> +static int ksz_ptp_tou_pulse_verify(u64 pulse_ns)
+> +{
+> +	u32 data;
+> +
+> +	if (pulse_ns & 0x3)
+> +		return -EINVAL;
+> +
+> +	data = (pulse_ns / 8);
+> +	if (!FIELD_FIT(TRIG_PULSE_WIDTH_M, data))
+> +		return -ERANGE;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ksz_ptp_tou_target_time_set(struct ksz_device *dev,
+> +				       struct timespec64 const *ts)
+> +{
+> +	int ret;
+> +
+> +	/* Hardware has only 32 bit */
+> +	if ((ts->tv_sec & 0xffffffff) != ts->tv_sec)
+> +		return -EINVAL;
+> +
+> +	ret = ksz_write32(dev, REG_TRIG_TARGET_NANOSEC, ts->tv_nsec);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ksz_write32(dev, REG_TRIG_TARGET_SEC, ts->tv_sec);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ksz_ptp_tou_start(struct ksz_device *dev, u8 unit)
+> +{
+> +	u32 data;
+> +	int ret;
+> +
+> +	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, TRIG_ENABLE, TRIG_ENABLE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Check error flag:
+> +	 * - the ACTIVE flag is NOT cleared an error!
+> +	 */
+> +	ret = ksz_read32(dev, REG_PTP_TRIG_STATUS__4, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (FIELD_GET(TRIG_ERROR_M, data) & (1 << unit)) {
+> +		dev_err(dev->dev, "%s: Trigger unit%d error!\n", __func__,
+> +			unit);
+> +		ret = -EIO;
+> +		/* Unit will be reset on next access */
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int ksz_ptp_configure_perout(struct ksz_device *dev,
+> +				    u32 cycle_width_ns, u32 pulse_width_ns,
+> +				    struct timespec64 const *target_time,
+> +				    u8 index)
+> +{
+> +	u32 data;
+> +	int ret;
+> +
+> +	data = FIELD_PREP(TRIG_NOTIFY, 1) |
+> +		FIELD_PREP(TRIG_GPO_M, index) |
+> +		FIELD_PREP(TRIG_PATTERN_M, TRIG_POS_PERIOD);
+> +	ret = ksz_write32(dev, REG_TRIG_CTRL__4, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ksz_write32(dev, REG_TRIG_CYCLE_WIDTH, cycle_width_ns);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Set cycle count 0 - Infinite */
+> +	ret = ksz_rmw32(dev, REG_TRIG_CYCLE_CNT, TRIG_CYCLE_CNT_M, 0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	data = (pulse_width_ns / 8);
+> +	ret = ksz_write32(dev, REG_TRIG_PULSE_WIDTH__4, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ksz_ptp_tou_target_time_set(dev, target_time);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +#define KSZ_PEROUT_VALID_FLAGS ( \
+> +				 PTP_PEROUT_DUTY_CYCLE \
+> +				 )
+
+Do you have plans for more perout flags? If not, it looks odd for this
+to unravel on 3 lines.
+
+> +
+> +static int ksz_ptp_enable_perout(struct ksz_device *dev,
+> +				 struct ptp_perout_request const *request,
+> +				 int on)
+> +{
+> +	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
+> +	u64 cycle_width_ns;
+> +	u64 pulse_width_ns;
+> +	int pin = 0;
+> +	u32 data32;
+> +	int ret;
+> +
+> +	if (request->flags & ~KSZ_PEROUT_VALID_FLAGS)
+> +		return -EINVAL;
+> +
+> +	if (ptp_data->tou_mode != KSZ_PTP_TOU_PEROUT &&
+> +	    ptp_data->tou_mode != KSZ_PTP_TOU_IDLE)
+> +		return -EBUSY;
+> +
+> +	data32 = FIELD_PREP(PTP_GPIO_INDEX, pin) |
+> +		 FIELD_PREP(PTP_TOU_INDEX, request->index);
+> +	ret = ksz_rmw32(dev, REG_PTP_UNIT_INDEX__4,
+> +			PTP_GPIO_INDEX | PTP_TOU_INDEX, data32);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ksz_ptp_tou_reset(dev, request->index);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!on) {
+> +		ptp_data->tou_mode = KSZ_PTP_TOU_IDLE;
+> +		return 0;
+> +	}
+> +
+> +	ptp_data->perout_target_time_first.tv_sec  = request->start.sec;
+> +	ptp_data->perout_target_time_first.tv_nsec = request->start.nsec;
+> +
+> +	ptp_data->perout_period.tv_sec = request->period.sec;
+> +	ptp_data->perout_period.tv_nsec = request->period.nsec;
+> +
+> +	cycle_width_ns = timespec64_to_ns(&ptp_data->perout_period);
+> +	if ((cycle_width_ns & TRIG_CYCLE_WIDTH_M) != cycle_width_ns)
+> +		return -EINVAL;
+> +
+> +	if (request->flags & PTP_PEROUT_DUTY_CYCLE) {
+> +		pulse_width_ns = request->on.sec * NSEC_PER_SEC +
+> +			request->on.nsec;
+> +	} else {
+> +		/* Use a duty cycle of 50%. Maximum pulse width supported by the
+> +		 * hardware is a little bit more than 125 ms.
+> +		 */
+> +		pulse_width_ns = min_t(u64,
+> +				       (request->period.sec * NSEC_PER_SEC
+> +					+ request->period.nsec) / 2
+> +				       / 8 * 8,
+
+Coding style nitpick: operators aren't generally put at the beginning of
+a new line, but at the end of the previous one.
+
+> +				       125000000LL);
+
+You may want some helper macros for all of these magic constants, and
+maybe a helper that transforms the perout period to a pulse width?
+
+> +	}
+> +
+> +	ret = ksz_ptp_tou_pulse_verify(pulse_width_ns);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ksz_ptp_configure_perout(dev, cycle_width_ns, pulse_width_ns,
+> +				       &ptp_data->perout_target_time_first,
+> +				       pin);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ksz_ptp_tou_start(dev, request->index);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ptp_data->tou_mode = KSZ_PTP_TOU_PEROUT;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ksz_ptp_restart_perout(struct ksz_device *dev)
+> +{
+> +	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
+> +	s64 now_ns, first_ns, period_ns, next_ns;
+> +	struct ptp_perout_request request;
+> +	struct timespec64 next;
+> +	struct timespec64 now;
+> +	unsigned int count;
+> +	int ret;
+> +
+> +	ret = _ksz_ptp_gettime(dev, &now);
+> +	if (ret)
+> +		return ret;
+> +
+> +	now_ns = timespec64_to_ns(&now);
+> +	first_ns = timespec64_to_ns(&ptp_data->perout_target_time_first);
+> +
+> +	/* Calculate next perout event based on start time and period */
+> +	period_ns = timespec64_to_ns(&ptp_data->perout_period);
+> +
+> +	if (first_ns < now_ns) {
+> +		count = div_u64(now_ns - first_ns, period_ns);
+> +		next_ns = first_ns + count * period_ns;
+> +	} else {
+> +		next_ns = first_ns;
+> +	}
+> +
+> +	/* Ensure 100 ms guard time prior next event */
+> +	while (next_ns < now_ns + 100000000)
+> +		next_ns += period_ns;
+> +
+> +	/* Restart periodic output signal */
+> +	next = ns_to_timespec64(next_ns);
+> +	request.start.sec  = next.tv_sec;
+> +	request.start.nsec = next.tv_nsec;
+> +	request.period.sec  = ptp_data->perout_period.tv_sec;
+> +	request.period.nsec = ptp_data->perout_period.tv_nsec;
+> +	request.index = 0;
+> +	request.flags = 0;
+> +
+> +	return ksz_ptp_enable_perout(dev, &request, 1);
+> +}
+> +
+>  static int ksz_ptp_enable_mode(struct ksz_device *dev)
+>  {
+>  	struct ksz_tagger_data *tagger_data = ksz_tagger_data(dev->ds);
+> @@ -396,6 +642,20 @@ static int ksz_ptp_settime(struct ptp_clock_info *ptp,
+>  	if (ret)
+>  		goto unlock;
+>  
+> +	switch (ptp_data->tou_mode) {
+> +	case KSZ_PTP_TOU_IDLE:
+> +		break;
+> +
+> +	case KSZ_PTP_TOU_PEROUT:
+> +		dev_info(dev->dev, "Restarting periodic output signal\n");
+> +
+> +		ret = ksz_ptp_restart_perout(dev);
+> +		if (ret)
+> +			goto unlock;
+> +
+> +		break;
+> +	}
+> +
+>  	spin_lock_bh(&ptp_data->clock_lock);
+>  	ptp_data->clock_time = *ts;
+>  	spin_unlock_bh(&ptp_data->clock_lock);
+> @@ -489,6 +749,20 @@ static int ksz_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+>  	if (ret)
+>  		goto unlock;
+>  
+> +	switch (ptp_data->tou_mode) {
+> +	case KSZ_PTP_TOU_IDLE:
+> +		break;
+> +
+> +	case KSZ_PTP_TOU_PEROUT:
+> +		dev_info(dev->dev, "Restarting periodic output signal\n");
+
+How about absorbing the dev_info() into the ksz_ptp_restart_perout()
+call, so you don't have to duplicate it?
+
+> +
+> +		ret = ksz_ptp_restart_perout(dev);
+> +		if (ret)
+> +			goto unlock;
+> +
+> +		break;
+> +	}
+> +
+>  	spin_lock_bh(&ptp_data->clock_lock);
+>  	ptp_data->clock_time = timespec64_add(ptp_data->clock_time, delta64);
+>  	spin_unlock_bh(&ptp_data->clock_lock);
+> @@ -498,6 +772,26 @@ static int ksz_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+>  	return ret;
+>  }
+>  
+> +static int ksz_ptp_enable(struct ptp_clock_info *ptp,
+> +			  struct ptp_clock_request *req, int on)
+> +{
+> +	struct ksz_ptp_data *ptp_data = ptp_caps_to_data(ptp);
+> +	struct ksz_device *dev = ptp_data_to_ksz_dev(ptp_data);
+> +	int ret;
+> +
+> +	switch (req->type) {
+> +	case PTP_CLK_REQ_PEROUT:
+> +		mutex_lock(&ptp_data->lock);
+> +		ret = ksz_ptp_enable_perout(dev, &req->perout, on);
+> +		mutex_unlock(&ptp_data->lock);
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>  /*  Function is pointer to the do_aux_work in the ptp_clock capability */
+>  static long ksz_ptp_do_aux_work(struct ptp_clock_info *ptp)
+>  {
+> @@ -546,6 +840,8 @@ int ksz_ptp_clock_register(struct dsa_switch *ds)
+>  	ptp_data->caps.adjfine		= ksz_ptp_adjfine;
+>  	ptp_data->caps.adjtime		= ksz_ptp_adjtime;
+>  	ptp_data->caps.do_aux_work	= ksz_ptp_do_aux_work;
+> +	ptp_data->caps.enable		= ksz_ptp_enable;
+> +	ptp_data->caps.n_per_out	= 3;
+>  
+>  	ret = ksz_ptp_start_clock(dev);
+>  	if (ret)
+> diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
+> index 0b14aed71ec2..9451e3a76375 100644
+> --- a/drivers/net/dsa/microchip/ksz_ptp.h
+> +++ b/drivers/net/dsa/microchip/ksz_ptp.h
+> @@ -12,6 +12,11 @@
+>  
+>  #include <linux/ptp_clock_kernel.h>
+>  
+> +enum ksz_ptp_tou_mode {
+> +	KSZ_PTP_TOU_IDLE,
+> +	KSZ_PTP_TOU_PEROUT,
+> +};
+> +
+>  struct ksz_ptp_data {
+>  	struct ptp_clock_info caps;
+>  	struct ptp_clock *clock;
+> @@ -20,6 +25,9 @@ struct ksz_ptp_data {
+>  	/* lock for accessing the clock_time */
+>  	spinlock_t clock_lock;
+>  	struct timespec64 clock_time;
+> +	enum ksz_ptp_tou_mode tou_mode;
+> +	struct timespec64 perout_target_time_first;  /* start of first pulse */
+> +	struct timespec64 perout_period;
+>  };
+>  
+>  int ksz_ptp_clock_register(struct dsa_switch *ds);
+> diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
+> index abe95bbefc12..dbccfedf89e4 100644
+> --- a/drivers/net/dsa/microchip/ksz_ptp_reg.h
+> +++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
+> @@ -49,6 +49,69 @@
+>  #define PTP_MASTER			BIT(1)
+>  #define PTP_1STEP			BIT(0)
+>  
+> +#define REG_PTP_UNIT_INDEX__4		0x0520
+> +
+> +#define PTP_GPIO_INDEX			GENMASK(19, 16)
+> +#define PTP_TSI_INDEX			BIT(8)
+> +#define PTP_TOU_INDEX			GENMASK(1, 0)
+> +
+> +#define REG_PTP_TRIG_STATUS__4		0x0524
+> +
+> +#define TRIG_ERROR_M			GENMASK(18, 16)
+> +#define TRIG_DONE_M			GENMASK(2, 0)
+> +
+> +#define REG_PTP_INT_STATUS__4		0x0528
+> +
+> +#define TRIG_INT_M			GENMASK(18, 16)
+> +#define TS_INT_M			GENMASK(1, 0)
+> +
+> +#define REG_PTP_CTRL_STAT__4           0x052C
+> +
+> +#define GPIO_IN                        BIT(7)
+> +#define GPIO_OUT                       BIT(6)
+> +#define TS_INT_ENABLE                  BIT(5)
+> +#define TRIG_ACTIVE                    BIT(4)
+> +#define TRIG_ENABLE                    BIT(3)
+> +#define TRIG_RESET                     BIT(2)
+> +#define TS_ENABLE                      BIT(1)
+> +#define TS_RESET                       BIT(0)
+> +
+> +#define REG_TRIG_TARGET_NANOSEC        0x0530
+> +#define REG_TRIG_TARGET_SEC            0x0534
+> +
+> +#define REG_TRIG_CTRL__4               0x0538
+> +
+> +#define TRIG_CASCADE_ENABLE            BIT(31)
+> +#define TRIG_CASCADE_TAIL              BIT(30)
+> +#define TRIG_CASCADE_UPS_M             GENMASK(29, 26)
+> +#define TRIG_NOW                       BIT(25)
+> +#define TRIG_NOTIFY                    BIT(24)
+> +#define TRIG_EDGE                      BIT(23)
+> +#define TRIG_PATTERN_M		       GENMASK(22, 20)
+
+Nitpick: strange combination of tabs and spaces.
+
+> +#define TRIG_NEG_EDGE                  0
+> +#define TRIG_POS_EDGE                  1
+> +#define TRIG_NEG_PULSE                 2
+> +#define TRIG_POS_PULSE                 3
+> +#define TRIG_NEG_PERIOD                4
+> +#define TRIG_POS_PERIOD                5
+> +#define TRIG_REG_OUTPUT                6
+> +#define TRIG_GPO_M		       GENMASK(19, 16)
+> +#define TRIG_CASCADE_ITERATE_CNT_M     GENMASK(15, 0)
+> +
+> +#define REG_TRIG_CYCLE_WIDTH           0x053C
+> +#define TRIG_CYCLE_WIDTH_M	       GENMASK(31, 0)
+> +
+> +#define REG_TRIG_CYCLE_CNT             0x0540
+> +
+> +#define TRIG_CYCLE_CNT_M	       GENMASK(31, 16)
+> +#define TRIG_BIT_PATTERN_M             GENMASK(15, 0)
+> +
+> +#define REG_TRIG_ITERATE_TIME          0x0544
+> +
+> +#define REG_TRIG_PULSE_WIDTH__4        0x0548
+> +
+> +#define TRIG_PULSE_WIDTH_M             GENMASK(23, 0)
+> +
+>  /* Port PTP Register */
+>  #define REG_PTP_PORT_RX_DELAY__2	0x0C00
+>  #define REG_PTP_PORT_TX_DELAY__2	0x0C02
+> -- 
+> 2.36.1
+> 
+
