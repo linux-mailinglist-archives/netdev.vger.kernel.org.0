@@ -2,180 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96719648584
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:29:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A98BB64858F
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:29:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229891AbiLIP3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 10:29:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49626 "EHLO
+        id S229722AbiLIP35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 10:29:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbiLIP2x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:28:53 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2B3FAF1
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 07:28:50 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id b2so12290714eja.7
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 07:28:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=/CBIx7WhayGl8L5UnKkWTZlh8ccP3yQ9V2VOk1LDfuU=;
-        b=g3vLufSXkk6Bd3BbnBSvYEhasj4ZRFzeqITPpY1spDMrZTTsgQWtZjx0r+YQmw17sX
-         ZMkDKy6mms6/tQjTrYstAp0/HovfK/Wdhi7W+nl3VNNxpyBkOEG+0tB0gUOQ2tzglGPc
-         dYprSHDOKFiY7kDDop4pYjHpFp/ylftdANH3w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/CBIx7WhayGl8L5UnKkWTZlh8ccP3yQ9V2VOk1LDfuU=;
-        b=CtxvldqYmvFU8MavCTPaFAiOGIHQ2VTpS1EvJLOI5lJ1S6u7Yb4uqRzoUf0MfQqssW
-         AHCrSQ6+TwpqX2kOE+WKq5ziDdNQMuzl8NScUbOINJ8gQQU9655IJQXf27zlEyWAlmEM
-         KiXej6t7BBQJes93uHLnh2AVKSkMWzHswXfTrXkfXAf+HvIRVoltGORxlFMGrsycMNYv
-         IRlp4JyffYsBrvY3YO6Nm5+gHW42ZM3NhCxwIlfFFW91brTkEKLcPo8yBllkgGW1HPth
-         /F4xdc3eqkz7fjKrBHqfjdbiSk6ajPIyw2EBo/y1wsD6UML2Z4sH6nv0DSFQYgx5B5Zl
-         RH4w==
-X-Gm-Message-State: ANoB5pmKqMzI706F3hp/9VmOncR3Selg+Obm2UaRV68ciJmw4yCIH72A
-        M9kZUs60ur8zSZvxSqXh7ezHxQ==
-X-Google-Smtp-Source: AA0mqf5/vEoKDQ/I1fRr88dwfhK6CwIW9Llpcvbo3r/hM0pGFZJgqq3o3VphKB2jSTzL6JamOXrW0A==
-X-Received: by 2002:a17:906:2881:b0:7ad:d835:e822 with SMTP id o1-20020a170906288100b007add835e822mr4899301ejd.42.1670599729472;
-        Fri, 09 Dec 2022 07:28:49 -0800 (PST)
-Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id o20-20020a170906769400b0077a11b79b9bsm24901ejm.133.2022.12.09.07.28.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 07:28:49 -0800 (PST)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH next] wifi: nl80211: emit CMD_START_AP on multicast group when an AP is started
-Date:   Fri,  9 Dec 2022 16:28:36 +0100
-Message-Id: <20221209152836.1667196-1-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S230229AbiLIP3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:29:43 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3061FCC3
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 07:29:41 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B9FSgw76022852, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B9FSgw76022852
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Fri, 9 Dec 2022 23:28:43 +0800
+Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Fri, 9 Dec 2022 23:29:30 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Fri, 9 Dec 2022 23:29:29 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
+ RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
+ 15.01.2375.007; Fri, 9 Dec 2022 23:29:29 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>, Andrew Lunn <andrew@lunn.ch>
+Subject: RE: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
+Thread-Topic: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a)
+ + rtl8211fs fiber application
+Thread-Index: AQHZBZK0jNmNF43ANUm+ON2R2qDGTK5d0aqAgATjHlD//8MxAIABsEYw///gi4CAAbFP8A==
+Date:   Fri, 9 Dec 2022 15:29:29 +0000
+Message-ID: <8b38c9f4552346ed84ba204b3e5edd5d@realtek.com>
+References: <20221201143911.4449-1-hau@realtek.com>
+ <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
+ <df3bf48baf6946f4a75c5c4287e6efa7@realtek.com>
+ <4fa4980c-906b-8fda-b29f-b2125c31304c@gmail.com>
+ <cb897c69a9d74b77b34fc94b30dc6bdd@realtek.com>
+ <7f460a37-d6f5-603f-2a6c-c65bae56f76b@gmail.com>
+In-Reply-To: <7f460a37-d6f5-603f-2a6c-c65bae56f76b@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.74]
+x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEyLzkg5LiL5Y2IIDAyOjAwOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
-
-Userspace processes such as network daemons may wish to be informed when
-any AP interface is brought up on the system, for example to initiate a
-(re)configuration of IP settings or to start a DHCP server.
-
-Currently nl80211 does not broadcast any such event on its multicast
-groups, leaving userspace only two options:
-
-1. the process must be the one that actually issued the
-   NL80211_CMD_START_AP request, so that it can react on the response to
-   that request;
-
-2. the process must react to RTM_NEWLINK events indicating a change in
-   carrier state, and may query for further information about the AP and
-   react accordingly.
-
-Option (1) is robust, but it does not cover all scenarios. It is easy to
-imagine a situation where this is not the case (e.g. hostapd +
-systemd-networkd).
-
-Option (2) is not robust, because RTM_NEWLINK events may be silently
-discarded by the linkwatch logic (cf. linkwatch_fire_event()).
-Concretely, consider a scenario in which the carrier state flip-flops in
-the following way:
-
- ^ carrier state (high/low = carrier/no carrier)
- |
- |        _______      _______ ...
- |       |       |    |
- | ______| "foo" |____| "bar"             (SSID in "quotes")
- |
- +-------A-------B----C---------> time
-
-If the time interval between (A) and (C) is less than 1 second, then
-linkwatch may emit only a single RTM_NEWLINK event indicating carrier
-gain.
-
-This is problematic because it is possible that the network
-configuration that should be applied is a function of the AP's
-properties such as SSID (cf. SSID= in systemd.network(5)). As
-illustrated in the above diagram, it may be that the AP with SSID "bar"
-ends up being configured as though it had SSID "foo".
-
-Address the above issue by having nl80211 emit an NL80211_CMD_START_AP
-message on the MLME nl80211 multicast group. This allows for arbitrary
-processes to be reliably informed.
-
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
----
- net/wireless/nl80211.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
-
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 33a82ecab9d5..323b7e40d855 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -5770,6 +5770,39 @@ static bool nl80211_valid_auth_type(struct cfg80211_registered_device *rdev,
- 	}
- }
- 
-+static void nl80211_send_ap_started(struct wireless_dev *wdev)
-+{
-+	struct wiphy *wiphy = wdev->wiphy;
-+	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wiphy);
-+	struct sk_buff *msg;
-+	void *hdr;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return;
-+
-+	hdr = nl80211hdr_put(msg, 0, 0, 0, NL80211_CMD_START_AP);
-+	if (!hdr)
-+		goto out;
-+
-+	if (nla_put_u32(msg, NL80211_ATTR_WIPHY, rdev->wiphy_idx) ||
-+	    nla_put_u32(msg, NL80211_ATTR_IFINDEX, wdev->netdev->ifindex) ||
-+	    nla_put_u64_64bit(msg, NL80211_ATTR_WDEV, wdev_id(wdev),
-+			      NL80211_ATTR_PAD) ||
-+	    (wdev->u.ap.ssid_len &&
-+	     nla_put(msg, NL80211_ATTR_SSID, wdev->u.ap.ssid_len,
-+		     wdev->u.ap.ssid)))
-+		goto out;
-+
-+	genlmsg_end(msg, hdr);
-+
-+	genlmsg_multicast_netns(&nl80211_fam, wiphy_net(wiphy), msg, 0,
-+				NL80211_MCGRP_MLME, GFP_KERNEL);
-+	return;
-+out:
-+	nlmsg_free(msg);
-+}
-+
- static int nl80211_start_ap(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct cfg80211_registered_device *rdev = info->user_ptr[0];
-@@ -6050,6 +6083,8 @@ static int nl80211_start_ap(struct sk_buff *skb, struct genl_info *info)
- 
- 		if (info->attrs[NL80211_ATTR_SOCKET_OWNER])
- 			wdev->conn_owner_nlportid = info->snd_portid;
-+
-+		nl80211_send_ap_started(wdev);
- 	}
- out_unlock:
- 	wdev_unlock(wdev);
--- 
-2.37.3
-
+PiANCj4gT0ssIEkgdGhpbmsgSSBnZXQgYSBiZXR0ZXIgaWRlYSBvZiB5b3VyIHNldHVwLg0KPiBT
+byBpdCBzZWVtcyBSVEw4MjExRlMgaW5kZWVkIGFjdHMgYXMgbWVkaWEgY29udmVydGVyLiBMaW5r
+IHN0YXR1cyBvbiBNREkNCj4gc2lkZSBvZiBSVEw4MjExRlMgcmVmbGVjdHMgbGluayBzdGF0dXMg
+b24gZmliZXIvc2VyZGVzIHNpZGUuDQo+IFJUTDgxNjhIIFBIWSBoYXMgbm8gaWRlYSB3aGV0aGVy
+IGl0J3MgY29ubmVjdGVkIHRvIFJKNDUgbWFnbmV0aWNzIG9yIHRvIHRoZQ0KPiBNREkgc2lkZSBv
+ZiBhIFJUTDgyMTFGUy4NCj4gDQo+IEkgdGhpbmsgZm9yIGNvbmZpZ3VyaW5nIFJUTDgyMTFGUyB5
+b3UgaGF2ZSB0d28gb3B0aW9uczoNCj4gMS4gRXh0ZW5kIHRoZSBSZWFsdGVrIFBIWSBkcml2ZXIg
+dG8gc3VwcG9ydCBSVEw4MjExRlMgZmliZXIgbW9kZSAyLg0KPiBDb25maWd1cmUgUlRMODIxMUZT
+IGZyb20gdXNlcnNwYWNlIChwaHl0b29sLCBtaWktdG9vbCwgLi4pLiBIb3dldmVyIHRvIGJlDQo+
+IGFibGUgdG8gZG8gdGhpcyB5b3UgbWF5IG5lZWQgdG8gYWRkIGEgZHVtbXkgbmV0ZGV2aWNlDQo+
+ICAgIHRoYXQgUlRMODIxMUZTIGlzIGF0dGFjaGVkIHRvLiBXaGVuIGdvaW5nIHdpdGggdGhpcyBv
+cHRpb24gaXQgbWF5IGJlIGJldHRlcg0KPiB0byBhdm9pZCBwaHlsaWIgdGFraW5nIGNvbnRyb2wg
+b2YgUlRMODIxMUZTLg0KPiAgICBUaGlzIGNhbiBiZSBkb25lIGJ5IHNldHRpbmcgdGhlIHBoeV9t
+YXNrIG9mIHRoZSBiaXQtYmFuZ2VkIG1paV9idXMuDQoNClRoYW5rcyBmb3IgeW91ciBhZHZhaWNl
+Lg0KSXMgdGhhdCBwb3NzaWJsZSBmb3IgdXMgdG8gcmVnaXN0ZXIgYSBQSFkgZml4dXAgZnVuY3Rp
+b24ocGh5X3JlZ2lzdGVyX2ZpeHVwKCkpIHRvIHNldHVwIHJ0bDgyMTFmcyBpbnN0ZWFkIG9mIHNl
+dHVwIGl0IGluIFBIWSBkcml2ZXI/DQoNCiAtLS0tLS1QbGVhc2UgY29uc2lkZXIgdGhlIGVudmly
+b25tZW50IGJlZm9yZSBwcmludGluZyB0aGlzIGUtbWFpbC4NCg0K
