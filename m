@@ -2,52 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32775647D16
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 05:54:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6488647D20
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 06:05:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229634AbiLIEyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 23:54:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
+        id S229488AbiLIFF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 00:05:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiLIEyh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 23:54:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61EC7D05E;
-        Thu,  8 Dec 2022 20:54:36 -0800 (PST)
+        with ESMTP id S229460AbiLIFF1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 00:05:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BC46D7D1
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 21:05:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D70AB827A1;
-        Fri,  9 Dec 2022 04:54:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C4DDC433D2;
-        Fri,  9 Dec 2022 04:54:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AF56620DB
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 05:05:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC791C433EF;
+        Fri,  9 Dec 2022 05:05:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670561673;
-        bh=rSB5y5gfDM3Ow36b0u0/C60y2e6oDZ7NLUrrP88Fvw8=;
+        s=k20201202; t=1670562325;
+        bh=X2ldztFRWY1hBdbUyFOnPGgwPiJcnBDBau7Tk9viz7w=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kpi3f9V9c4bdztR9nKSHWOL7zKOIZAXYwTHtMpKKT9o3KR5YV5pYfEzxZ1bRPWZiW
-         xG78z0gPVMFgG++Kxgi1Ic7IbwUHNPufvT88q+LIS/fiF4tQi+Mn3HEGsLR7XQxJj6
-         edvJXJNDzp6fmSWq3dRUk/yHn9RBvPdqO1b3V4B5E7AqN/TGfGodFWR5wnZDTkdsen
-         SXJefYARubHiyglRodLXiqJNo0MACwaBFAxYzh1oE0kCNifGP0qtNwQM9fVFFD1puR
-         3mttmyLek4N8hrvlRrgkAGDWO0EPcWZx+09tXEBNDCHEv1TO+gYCm6a5V3M6Drngir
-         EseWRJJroxj7A==
-Date:   Thu, 8 Dec 2022 20:54:32 -0800
+        b=hhycTgVOiCln7x8enYOTiNCO+AWNO2hk9nPXnW5HT3WhWebLoUi+FSVZ0v0qf+iIY
+         iqwr9sWJSa1ty5D3UqqzenN2QP1m7mXiH5HsOSDAJGrcHyGcn91LYtr3NfzQKa2HnK
+         LGqaM+tL8i7LBF1CxLwztwi5Y3uAUR4ZNdJJX7rZS3XiNFMO8ArqdF63PRb5eNq98o
+         9WnnCjLa9nwrCHjNdZQvIF9ao4MoKONjWOqtY3aW6cOxC+EMEvMrbYC3vQX3ERG0Qt
+         MqM3QwDN0LAalIDBB2z41CZ3RLoSjuEDQooY55RAcYkNX8ZX7Z+LD+R1uQ2Fyb4wPi
+         KTWI4lCl9lkkA==
+Date:   Thu, 8 Dec 2022 21:05:23 -0800
 From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     wei.liu@kernel.org, paul@xen.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, xen-devel@lists.xenproject.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] xen-netback: Remove set but unused variable 'pending_idx'
-Message-ID: <Y5K/iE9oa3PIrsQx@x130>
-References: <20221209034036.37280-1-jiapeng.chong@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>
+Subject: Re: [net-next 14/15] net/mlx5: SRIOV, Add 802.1ad VST support
+Message-ID: <Y5LCE57xAaMQqOYd@x130>
+References: <20221203221337.29267-1-saeed@kernel.org>
+ <20221203221337.29267-15-saeed@kernel.org>
+ <20221206203414.1eaf417b@kernel.org>
+ <Y5AitsGhZdOdc/Fm@x130>
+ <20221207092517.3320f4b4@kernel.org>
+ <Y5GgNlYbZOiH3H6t@x130>
+ <20221208170459.538917da@kernel.org>
+ <Y5KWJYBij3bzg5hU@x130>
+ <20221208180442.2b2452fb@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221209034036.37280-1-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <20221208180442.2b2452fb@kernel.org>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,20 +65,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09 Dec 11:40, Jiapeng Chong wrote:
->Variable pending_idx is not effectively used in the function, so delete
->it.
+On 08 Dec 18:04, Jakub Kicinski wrote:
+>On Thu, 8 Dec 2022 17:57:57 -0800 Saeed Mahameed wrote:
+>> So the whole thing started from finding these gaps in our out of tree
+>> driver. there's the bug fix i will explain below, and the addition of .1ad
+>> both were found missing upstream when we convinced a customer to switch
+>> to upstream/inbox driver.
+>>
+>> vst .1q and vst .1ad are both totally separate scenarios and use cases for
+>> the customers.
+>>
+>> Currently upstream mlx5 only support VST for vlan proto .1q,
+>> but it's buggy when traffic from the guest comes with a vlan tag,
+>> depending on the HW/FW version, either the packets get dropped or
+>> the guest vlans get overridden with the VST host vlan, this is due to
+>> wrong interpretation of the hw steering rules in the initial driver
+>> implementation. in both cases it's a bug and the latter is even worse.
 >
->drivers/net/xen-netback/netback.c:886:7: warning: variable ‘pending_idx’ set but not used.
->
->Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3399
->Reported-by: Abaci Robot <abaci@linux.alibaba.com>
->Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+>I see, but that's the fix? Uniformly drop?
+>Start stacking with just .1q?
+>Auto-select the ethtype for .1ad if there's already a tag?
 
-Reviewed-by: Saeed Mahameed <saeed@kernel.org>
-
-Please mark your patch clearly with [PATCH net-next] or 
-[PATCH net] if it's a bug fix. 
-
-Thanks for the patch.
+push the vst .1q tag. keep original tags intact.
+per policy we won't have .1ad support :( .. 
 
