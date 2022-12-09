@@ -2,128 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39BB36486B6
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:45:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89BB964870D
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:53:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiLIQph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 11:45:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
+        id S229635AbiLIQxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 11:53:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiLIQpa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:45:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F4289AE5;
-        Fri,  9 Dec 2022 08:45:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FE66622B2;
-        Fri,  9 Dec 2022 16:45:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BE0FC433D2;
-        Fri,  9 Dec 2022 16:45:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670604326;
-        bh=y9ju5uWeIvPH5xCPeQBcrFadw2lTaWjzkAGNG7iNTAQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fyE/CIxDGjWaUL0DLNshTMZ1OLUruLbVpHvrC61X21127DREq2ElfVR/r9oxf2evI
-         VE+faV6CiOQrmW+Q5IDLeEttgAIy3f9iLs0Bk8hB8uhjEK0/wSQjCYPLFdRA/wo+X9
-         jNx19EbIQj3FSi/15GyHrmQkaIyTJWXBQXAZld0+8NZPAQlGR9+AuzZL//huJJ/RuT
-         Bh4ek2x38/DIFZRNfDekKCyHTB1eWRG6e6tpIZUnyKppl5ORiKnkeAuLGydtR4MuTT
-         XNv/HG/4jv1y8EFUVbfSSgLIWdLaGV4k/valaLbAuyaBcL48VWWxbNwKpx/aAR9JEt
-         2QMlH8EDn1o1A==
-Date:   Fri, 9 Dec 2022 08:45:24 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 11/12] mlx5: Support RX XDP
- metadata
-Message-ID: <20221209084524.01c09d9c@kernel.org>
-In-Reply-To: <87cz8sk59e.fsf@toke.dk>
-References: <20221206024554.3826186-1-sdf@google.com>
-        <20221206024554.3826186-12-sdf@google.com>
-        <875yellcx6.fsf@toke.dk>
-        <CAKH8qBv7nWdknuf3ap_ekpAhMgvtmoJhZ3-HRuL8Wv70SBWMSQ@mail.gmail.com>
-        <87359pl9zy.fsf@toke.dk>
-        <CAADnVQ+=71Y+ypQTOgFTJWY7w3YOUdY39is4vpo3aou11=eMmw@mail.gmail.com>
-        <87tu25ju77.fsf@toke.dk>
-        <CAADnVQ+MyE280Q-7iw2Y-P6qGs4xcDML-tUrXEv_EQTmeESVaQ@mail.gmail.com>
-        <87o7sdjt20.fsf@toke.dk>
-        <CAKH8qBswBu7QAWySWOYK4X41mwpdBj0z=6A9WBHjVYQFq9Pzjw@mail.gmail.com>
-        <87cz8sk59e.fsf@toke.dk>
+        with ESMTP id S229530AbiLIQxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:53:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCCA944C4
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 08:51:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670604671;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hEHtknj7G67yuPB9tWefZgr9ALjA/T5Vl29gdCA8cwI=;
+        b=SF4wB6nt06RO5Xq96UcWeUT8IuEj0EoUkuR8W1ZKvc7m+Cmv/sLKo61FfBJftwGHgAuecj
+        l7VKRADhWOjuDTPBoY/1aVKE1wmU+XiyyJOLZnkeXXDPEbdu5ZBS98saWn99+JXBwEJaAf
+        sA7n+e9NoPmRG+wCHcjv/P/LtafnBWE=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-296-Zl8OdUWNPrG-wIypRk8oHQ-1; Fri, 09 Dec 2022 11:51:10 -0500
+X-MC-Unique: Zl8OdUWNPrG-wIypRk8oHQ-1
+Received: by mail-wm1-f70.google.com with SMTP id o5-20020a05600c510500b003cfca1a327fso130732wms.8
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 08:51:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hEHtknj7G67yuPB9tWefZgr9ALjA/T5Vl29gdCA8cwI=;
+        b=VzAvl6cQuqbRyPtl4cVaCPP7S6sVWms+J+rR1I7cO6yipOJxXMx48NFsXnwDnvLpVM
+         5Cq9st1MyJ5FuZGMfApIK98Kfg45ECp8tUDl8EV3opDOeg1K/hAgm9wNao1uaSwNVXhO
+         cT0lreJwautTuDhOYRFRD09y6TvMZ2+Nf6Y4GesPaMDwXs+3IZDzp5Jp1phx+ALQpSDx
+         +M/LZTAQ6YnXmtPRx0KNuc/V0sceBpW0MyrvBrJ8wMTMYnuyo3Cu9EwJAkG6+pwigDiR
+         E3Eo4neKq6cPWToJA9Ukbn7A5UYLHcFgudwZvOFz16yBoy4PP5C2SJeJtC01VueEnMS2
+         U8EA==
+X-Gm-Message-State: ANoB5pk9JvmdzxRFXxWiyYqXlbPrldnV2kqRibzFqY3OWLSwSMFXwuXM
+        mqsLsRAmD0Buw+IO+YwRSmnWiY9tG5Jnx76Ii7U127qLpgnlFuSdP03IH6bMwXzy8fBbS36FWsy
+        Y1rSrcMt7GUjteBYL
+X-Received: by 2002:a05:600c:4f48:b0:3cf:e850:4435 with SMTP id m8-20020a05600c4f4800b003cfe8504435mr5700808wmq.13.1670604669158;
+        Fri, 09 Dec 2022 08:51:09 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4vPLwblTckd8B2URRNRbKIW7VqMLQd/PWlQAHufJr6jh2xD5egmlwfWsaGwQofLy1f6L/9tQ==
+X-Received: by 2002:a05:600c:4f48:b0:3cf:e850:4435 with SMTP id m8-20020a05600c4f4800b003cfe8504435mr5700758wmq.13.1670604668951;
+        Fri, 09 Dec 2022 08:51:08 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-105-105.dyn.eolo.it. [146.241.105.105])
+        by smtp.gmail.com with ESMTPSA id ay13-20020a05600c1e0d00b003c6bd91caa5sm302339wmb.17.2022.12.09.08.50.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Dec 2022 08:51:08 -0800 (PST)
+Message-ID: <73186bd6e1ad62da16726b95b1a266c0aeb39719.camel@redhat.com>
+Subject: Re: [PATCH v1 2/3] Treewide: Stop corrupting socket's task_frag
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Benjamin Coddington <bcodding@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Christoph =?ISO-8859-1?Q?B=F6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Steve French <sfrench@samba.org>,
+        Christine Caulfield <ccaulfie@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Xiubo Li <xiubli@redhat.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org, nbd@other.debian.org,
+        linux-nvme@lists.infradead.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, cluster-devel@redhat.com,
+        ocfs2-devel@oss.oracle.com, v9fs-developer@lists.sourceforge.net,
+        ceph-devel@vger.kernel.org, linux-nfs@vger.kernel.org
+Date:   Fri, 09 Dec 2022 17:50:53 +0100
+In-Reply-To: <20221209081101.7500478c@kernel.org>
+References: <cover.1669036433.git.bcodding@redhat.com>
+         <c2ec184226acd21a191ccc1aa46a1d7e43ca7104.1669036433.git.bcodding@redhat.com>
+         <d220402a232e204676d9100d6fe4c2ae08f753ee.camel@redhat.com>
+         <20221209081101.7500478c@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 09 Dec 2022 15:42:37 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> If we expect the program to do out of band probing, we could just get
-> rid of the _supported() functions entirely?
->=20
-> I mean, to me, the whole point of having the separate _supported()
-> function for each item was to have a lower-overhead way of checking if
-> the metadata item was supported. But if the overhead is not actually
-> lower (because both incur a function call), why have them at all? Then
-> we could just change the implementation from this:
->=20
-> bool mlx5e_xdp_rx_hash_supported(const struct xdp_md *ctx)
-> {
-> 	const struct mlx5_xdp_buff *_ctx =3D (void *)ctx;
->=20
-> 	return _ctx->xdp.rxq->dev->features & NETIF_F_RXHASH;
-> }
->=20
-> u32 mlx5e_xdp_rx_hash(const struct xdp_md *ctx)
-> {
-> 	const struct mlx5_xdp_buff *_ctx =3D (void *)ctx;
->=20
-> 	return be32_to_cpu(_ctx->cqe->rss_hash_result);
-> }
->=20
-> to this:
->=20
-> u32 mlx5e_xdp_rx_hash(const struct xdp_md *ctx)
-> {
-> 	const struct mlx5_xdp_buff *_ctx =3D (void *)ctx;
->=20
-> 	if (!(_ctx->xdp.rxq->dev->features & NETIF_F_RXHASH))
->                 return 0;
->=20
-> 	return be32_to_cpu(_ctx->cqe->rss_hash_result);
-> }
+On Fri, 2022-12-09 at 08:11 -0800, Jakub Kicinski wrote:
+> On Fri, 09 Dec 2022 13:37:08 +0100 Paolo Abeni wrote:
+> > I think this is the most feasible way out of the existing issue, and I
+> > think this patchset should go via the networking tree, targeting the
+> > Linux 6.2.
+> 
+> FWIW some fields had been moved so this will not longer apply cleanly,
+> see b534dc46c8ae016. But I think we can apply it to net since the merge
+> window is upon us? Just a heads up.
 
-Are there no corner cases? E.g. in case of an L2 frame you'd then
-expect a hash of 0? Rather than no hash?=20
+We will need an additional revision, see my reply to patch 3/3. I think
+the -net tree should be the appropriate target.
 
-If I understand we went for the _supported() thing to make inlining=20
-the check easier than inlining the actual read of the field.
-But we're told inlining is a bit of a wait.. so isn't the motivation
-for the _supported() pretty much gone? And we should we go back to
-returning an error from the actual read?
+Thanks,
 
-Is partial inlining hard? (inline just the check and generate a full
-call for the read, ending up with the same code as with _supported())
+Paolo
+
