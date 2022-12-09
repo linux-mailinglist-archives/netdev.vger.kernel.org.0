@@ -2,83 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2E3B647C8C
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 04:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 160B0647CC6
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 05:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229769AbiLIDSW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 8 Dec 2022 22:18:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
+        id S229938AbiLIDjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 22:39:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiLIDSV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 22:18:21 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6DA547D069;
-        Thu,  8 Dec 2022 19:18:17 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2B93GWplC026671, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2B93GWplC026671
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 9 Dec 2022 11:16:32 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Fri, 9 Dec 2022 11:17:20 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Fri, 9 Dec 2022 11:17:20 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Fri, 9 Dec 2022 11:17:20 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Kalle Valo <kvalo@kernel.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Martin Blumenstingl" <martin.blumenstingl@googlemail.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Alexander Hochbaum <alex@appudo.com>,
-        Da Xue <da@libre.computer>,
-        "Bernie Huang" <phhuang@realtek.com>,
-        Viktor Petrenko <g0000ga@gmail.com>
-Subject: RE: [PATCH v4 08/11] wifi: rtw88: Add rtw8821cu chipset support
-Thread-Topic: [PATCH v4 08/11] wifi: rtw88: Add rtw8821cu chipset support
-Thread-Index: AQHZA9p/gdNauXKGBEa6UnG4y/tPNK5VjnKAgAALtACADn7s0IAAx4yA
-Date:   Fri, 9 Dec 2022 03:17:19 +0000
-Message-ID: <7699d3f9e4a244349807a34b3981e26c@realtek.com>
-References: <20221129100754.2753237-1-s.hauer@pengutronix.de>
-        <20221129100754.2753237-9-s.hauer@pengutronix.de>
-        <20221129081753.087b7a35@kernel.org>
-        <d2113f20-d547-ce16-ff7f-2d1286321014@lwfinger.net>
- <87tu260yeb.fsf@kernel.org>
-In-Reply-To: <87tu260yeb.fsf@kernel.org>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/12/9_=3F=3F_02:13:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S229936AbiLIDjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 22:39:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A4F5CD05;
+        Thu,  8 Dec 2022 19:39:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 448B662139;
+        Fri,  9 Dec 2022 03:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8892DC433F0;
+        Fri,  9 Dec 2022 03:30:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670556620;
+        bh=tYbiGrrSL4Z2+K+l+yoYCFganFJL+UrpdaXom8rF+OM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YofdVnnBi8lviXA5NPj1OOZ0QOclRQsRgpyu3SO0qNNZtCFq9NfJsSzojs20fXo8w
+         OZ2t7qB/l3B2ZbgfjlKEwg/UUMT+ehKRjUsva/OLChEbJ+Q5zF4fW5AeAtsxdjryO/
+         OU//nZZCVyDYSEJaavsu4mOfxaOGHNAusYxnL8bly3biDzLr+zil+CRnCiBUdlyDM4
+         SD6HuSzDL4dwUZKv/KtrtY37HtrfvIxGTFZ8vheyuT7rE/dNpF8dWtD8MTTZcXI26H
+         5tK8z0nA6eH+W3D+FgxOPXezCak74vYAIO2W0Cv5vinIynZrStroo8zxXGLs2xhMwr
+         JLwbw+nmh0xjA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6B1ACC433D7;
+        Fri,  9 Dec 2022 03:30:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] selftests: net: Fix O=dir builds
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167055662042.24876.12916521521858694407.git-patchwork-notify@kernel.org>
+Date:   Fri, 09 Dec 2022 03:30:20 +0000
+References: <20221206102838.272584-1-bjorn@kernel.org>
+In-Reply-To: <20221206102838.272584-1-bjorn@kernel.org>
+To:     =?utf-8?b?QmrDtnJuIFTDtnBlbCA8Ympvcm5Aa2VybmVsLm9yZz4=?=@ci.codeaurora.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, bjorn@rivosinc.com,
+        lina.wang@mediatek.com, linux-kselftest@vger.kernel.org,
+        anders.roxell@linaro.org, lkp@intel.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,90 +57,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> -----Original Message-----
-> From: Kalle Valo <kvalo@kernel.org>
-> Sent: Thursday, December 8, 2022 10:21 PM
-> To: Larry Finger <Larry.Finger@lwfinger.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>; Sascha Hauer <s.hauer@pengutronix.de>;
-> linux-wireless@vger.kernel.org; Neo Jou <neojou@gmail.com>; Hans Ulli Kroll <linux@ulli-kroll.de>; Ping-Ke
-> Shih <pkshih@realtek.com>; Yan-Hsuan Chuang <tony0620emma@gmail.com>; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org; Martin Blumenstingl <martin.blumenstingl@googlemail.com>;
-> kernel@pengutronix.de; Johannes Berg <johannes@sipsolutions.net>; Alexander Hochbaum <alex@appudo.com>;
-> Da Xue <da@libre.computer>; Bernie Huang <phhuang@realtek.com>; Viktor Petrenko <g0000ga@gmail.com>
-> Subject: Re: [PATCH v4 08/11] wifi: rtw88: Add rtw8821cu chipset support
+On Tue,  6 Dec 2022 11:28:38 +0100 you wrote:
+> From: Björn Töpel <bjorn@rivosinc.com>
 > 
-> Larry Finger <Larry.Finger@lwfinger.net> writes:
+> The BPF Makefile in net/bpf did incorrect path substitution for O=dir
+> builds, e.g.
 > 
-> > On 11/29/22 10:17, Jakub Kicinski wrote:
-> >> On Tue, 29 Nov 2022 11:07:51 +0100 Sascha Hauer wrote:
-> >>> +config RTW88_8821CU
-> >>> +	tristate "Realtek 8821CU USB wireless network adapter"
-> >>> +	depends on USB
-> >>> +	select RTW88_CORE
-> >>> +	select RTW88_USB
-> >>> +	select RTW88_8821C
-> >>> +	help
-> >>> +	  Select this option will enable support for 8821CU chipset
-> >>> +
-> >>> +	  802.11ac USB wireless network adapter
-> >>
-> >> Those kconfig knobs add so little code, why not combine them all into
-> >> one? No point bothering the user with 4 different questions with amount
-> >> to almost nothing.
-> >
-> > I see only one knob there, name RTW88_8821CU. The other configuration
-> > variables select parts of the code that are shared with other drivers
-> > such as RTW88_8821CE and these parts must be there.
+>   make O=/tmp/kselftest headers
+>   make O=/tmp/kselftest -C tools/testing/selftests
 > 
-> I just test compiled these patches and we have four new questions:
-> 
->   Realtek 8822BU USB wireless network adapter (RTW88_8822BU) [N/m/?] (NEW) m
->   Realtek 8822CU USB wireless network adapter (RTW88_8822CU) [N/m/?] (NEW) m
->   Realtek 8723DU USB wireless network adapter (RTW88_8723DU) [N/m/?] (NEW) m
->   Realtek 8821CU USB wireless network adapter (RTW88_8821CU) [N/m/?] (NEW)
-> 
-> To me this looks too fine grained. Does it really make sense, for
-> example, to enable RTW88_8822BU but not RTW88_8822CU? Would just having
-> RTW88_USB containing all USB devices be more sensible? And the same for
-> PCI, and if we have in the future, SDIO devices.
-> 
+> [...]
 
-Summerize Realtek 802.11n/11ac WiFi drivers after this patchset:
+Here is the summary with links:
+  - [net-next] selftests: net: Fix O=dir builds
+    https://git.kernel.org/netdev/net-next/c/17961a37ce40
 
-                        Kconfig
-  driver      #-of-ko   knob   support chips
-  ---------------------------------------------------------------------
-  rtl8xxxu   1          1      8188fu, 8192cu, 8192eu, 8723au, 8723bu
-  rtlwifi    15         9      8192se, 8723ae, 8723be, 8192ee, 8192de, 8188ee, 8192ce, 8821ae
-                               8192cu
-  rtw88      15         8      8723de, 8821ce, 8822be, 8822ce
-                               8723du, 8821cu, 8822bu, 8822cu
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-If we merge into single one Kconfig knob, we could have a long list name
-
-"Realtek 8723DU/8821CU/8822BU/8822CU USB wireless network adapter"
-
-or an implicit name
-
-"Realtek 802.11n/802.11ac USB wireless network adapter"
-
-The string mixes "802.11n/802.11ac" because hardware architecture of
-Realtek WiFi chips change during 11n/11ac generations, so rtlwifi (old architecture)
-and rtw88 (new architecture) support both 11n and 11ac chips. That is a little
-bit inconvenient to people who wants to know which driver support his own WiFi
-module explicitly.
-
-Another thing is to save some compile time and disk space to build these .ko if
-we have separated knobs. For Ubuntu or other distros users, I think they
-may not care about this, because distros have already built drivers and disk
-of notebook or desktop is large. But, for embedded users, like Raspberry Pi
-or proprietary embedded system, they may want to highly customize drivers
-due to limit of hardware resource.
-
-Therefore, I prefer to preserve current Kconfig. Though single one knob is
-really simple for anything.
-
-Ping-Ke
 
