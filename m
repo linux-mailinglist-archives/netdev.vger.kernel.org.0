@@ -2,132 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB990647F23
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 09:21:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E38F8647F2C
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 09:24:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbiLIIVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 03:21:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39036 "EHLO
+        id S229655AbiLIIYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 03:24:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiLIIVd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 03:21:33 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58475CD12;
-        Fri,  9 Dec 2022 00:21:32 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id o127so4663185yba.5;
-        Fri, 09 Dec 2022 00:21:32 -0800 (PST)
+        with ESMTP id S229656AbiLIIYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 03:24:42 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A845F6E5
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:24:38 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id y25so5884471lfa.9
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 00:24:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=v3RTjeyyiRTAhODV0n3zXPIltUWeH9mdUsUulbRdH4Y=;
-        b=I68bjLoq30DDevaccoVyiJLwK3tJyRwlR9fqbgOdHs4H2JVNggn5W8x6NbNuSMDvnY
-         ckVYaPQLShPzebCxUZ8BOMxYriuK1YVcd71RiL5RxE+NsDuXVv659UwYHqwY718EEN40
-         qZv/mHl2310qGHETs0c6tQkrlXvJFXSdBdgIVVZfKDP07GnPooeFlfugPF4HUHt5NNz5
-         w9xKM/3OI7PmWW4h9y9WDJP6Ji3lUXfkmjGPKgPRqF8dvDzk4YZtVn/it9EuFYq5WYYY
-         ODT07mfIlA1g/aAFnQJFsT95A/Q6G8Jk6FT3AE6p/GCxayYFXCQNQG68nbZ7pbtL5bRp
-         ntEA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Pgtluh/qFWbybHqU1pIl0XhIK9Ltz3NWQ9TH4ULNdCI=;
+        b=G36fOEIYfuH+EBBgjd3NprynhcRlOGJBonsGn8oLy35Dqd2ZJm1vUwX6ocgi7ZqPMY
+         jeOZFevMryWdnMBbg9Ff6qpnUzT+z9en6w//DgHaA0lwl/Bs/WYW8Q9+qpWDZQxpF5Vl
+         6N1W6nkFu7wW0X1e7jjvPqb/KLWAc/3CJSij5EkPZd+kKxaoMwR1Ezyk+MZz5a87re6b
+         gLyRsUL+IaRWe6oTymVEfze7cUshq+wY+QpwB9jkk8x5WYK8Mttpbl7kcLKqVaS/v6ck
+         HcqPODHPNu84k3sMV3th4xF7SB1H419ZYPf9wB8JgAEJhPxKIN8qhLXxakKoIGnD0Zwg
+         wYiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=v3RTjeyyiRTAhODV0n3zXPIltUWeH9mdUsUulbRdH4Y=;
-        b=UXNIVnM/lEQ14JfqBHj1l76tDhB7B3KMKgNpW1if38phl6aXgKlVY644LtlVyjF1yL
-         WiCHignOfza/9GD+v4SIL9OpkOsXcsNZWCWj/tef+iTurWm8OXL4l+BHoWc9syKviWQd
-         gcw8L+fgNKlfh0YjTv01t0PQUW/PV9wrH+O13Hl3jqx2sxTjbN1Es8Igjz4ODg6CLjnh
-         3pS270tpQVOlZxMCU1yaAT79vEeu4Zi09btZ983HYE+Va2W90neqWMafnGuvlcrza85z
-         Ofna6N5FT2fp8cqF+0YOGXTmRdIgNFkHuW+7Hieh1K2YSorG4eovtRU2vJK9lBGXGsuG
-         tuvg==
-X-Gm-Message-State: ANoB5pnAHLvkkfgqBbdeX04dAue5uNrIDvi8w6lVCv9q9SeZxNvKL+GL
-        E6sb1z5F7cWa1YLRa7GUs7d9xtCE7+2JoixuKUoSHl98ZB7i/g==
-X-Google-Smtp-Source: AA0mqf6D7MOwK8V5FdIqJBWAUExRwwx4GNnORVJ1/nyWDDw+z5Nm6WTMCzcuG72Gkg3/kp50u2y1eF6hAyVtRb4k4qc=
-X-Received: by 2002:a25:53c5:0:b0:6fb:80c:fe0f with SMTP id
- h188-20020a2553c5000000b006fb080cfe0fmr32944286ybb.25.1670574092075; Fri, 09
- Dec 2022 00:21:32 -0800 (PST)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Pgtluh/qFWbybHqU1pIl0XhIK9Ltz3NWQ9TH4ULNdCI=;
+        b=pV1X3rPAZ4551gG2dtmIsDIFBnxxLTpBz3tjCCcYZ790KexKvvQXeDZ37Tfg7ecjnH
+         wmRjDJHCjrO2VthIS/5mNHbOWXFqFry6R5+7v/3JTXUc0obSndAk5EkbidnWagIeAs1p
+         EH5PbWVHBYOiytqqShPPBk8FGijGGNb+YdXKNhr7z/gKZKYLlKpUGF6DuobGUBgh2ttT
+         ghEg0m4juEIbzkpe9NQOg/oaSjfwlLsOf1JyCx2rForypEgIAx3kIf68Vwg21GSGunTj
+         jhWzjEhHahVHg05CCxVM8L01sohGNrvo7nt/ZwFZTfgmCgJJOfmTttmJ0u6NY2Gvsfcl
+         NcjA==
+X-Gm-Message-State: ANoB5pl+bEMffo7/Yfm1TwFiU63xB6PYmDkoZKs6ZGdGWwQ7fXyZG0nT
+        rRPT7Mm2qEtSlSPRIESAV5nWmg==
+X-Google-Smtp-Source: AA0mqf59zsEkuV6mRtwVCxKJ8kPshhmnfpMTK48L/4Lyt5MsxS8/oOM77BEHpexiBl5OfB0RVuLQ0g==
+X-Received: by 2002:ac2:539b:0:b0:4b5:5efb:7d26 with SMTP id g27-20020ac2539b000000b004b55efb7d26mr1228920lfh.37.1670574277319;
+        Fri, 09 Dec 2022 00:24:37 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id x18-20020a056512079200b004b54ca56cf9sm159499lfr.303.2022.12.09.00.24.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Dec 2022 00:24:36 -0800 (PST)
+Message-ID: <4413e2b4-7faf-fa0f-469f-bc90d3446cee@linaro.org>
+Date:   Fri, 9 Dec 2022 09:24:35 +0100
 MIME-Version: 1.0
-References: <Y5B3sAcS6qKSt+lS@kili>
-In-Reply-To: <Y5B3sAcS6qKSt+lS@kili>
-From:   Uladzislau Koshchanka <koshchanka@gmail.com>
-Date:   Fri, 9 Dec 2022 11:21:21 +0300
-Message-ID: <CAHktU2C00J7wY5uDbbScxwb0fD2kwUH+-=hgS5o_Timemh0Auw@mail.gmail.com>
-Subject: Re: [PATCH net] lib: packing: fix shift wrapping in bit_reverse()
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        olteanv@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: qcom,ipa: Add SM6350
+ compatible
+Content-Language: en-US
+To:     Alex Elder <elder@linaro.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     Luca Weiss <luca.weiss@fairphone.com>, andersson@kernel.org,
+        konrad.dybcio@linaro.org, agross@kernel.org, elder@kernel.org,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221208211529.757669-1-elder@linaro.org>
+ <20221208211529.757669-2-elder@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221208211529.757669-2-elder@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Dec 2022 at 14:30, Dan Carpenter <error27@gmail.com> wrote:
->
-> The bit_reverse() function is clearly supposed to be able to handle
-> 64 bit values, but the types for "(1 << i)" and "bit << (width - i - 1)"
-> are not enough to handle more than 32 bits.
+On 08/12/2022 22:15, Alex Elder wrote:
+> From: Luca Weiss <luca.weiss@fairphone.com>
+> 
+> Add support for SM6350, which uses IPA v4.7.
+> 
+> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+> Signed-off-by: Alex Elder <elder@linaro.org>
 
-It seems from the surrounding code that this function is only called
-for width of up to a byte (but correct me if I'm wrong). There are
-fast implementations of bit-reverse in include/linux/bitrev.h. It's
-better to just remove this function entirely and call bitrev8, which
-is just a precalc-table lookup. While at it, also sort includes.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Uladzislau Koshchanka <koshchanka@gmail.com>
+Best regards,
+Krzysztof
 
- lib/packing.c | 20 ++++----------------
- 1 file changed, 4 insertions(+), 16 deletions(-)
-
-diff --git a/lib/packing.c b/lib/packing.c
-index 9a72f4bbf0e2..47ea47c1198a 100644
---- a/lib/packing.c
-+++ b/lib/packing.c
-@@ -2,10 +2,11 @@
- /* Copyright 2016-2018 NXP
-  * Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
-  */
--#include <linux/packing.h>
--#include <linux/module.h>
- #include <linux/bitops.h>
-+#include <linux/bitrev.h>
- #include <linux/errno.h>
-+#include <linux/module.h>
-+#include <linux/packing.h>
- #include <linux/types.h>
-
- static int get_le_offset(int offset)
-@@ -29,19 +30,6 @@ static int get_reverse_lsw32_offset(int offset, size_t len)
-        return word_index * 4 + offset;
- }
-
--static u64 bit_reverse(u64 val, unsigned int width)
--{
--       u64 new_val = 0;
--       unsigned int bit;
--       unsigned int i;
--
--       for (i = 0; i < width; i++) {
--               bit = (val & (1 << i)) != 0;
--               new_val |= (bit << (width - i - 1));
--       }
--       return new_val;
--}
--
- static void adjust_for_msb_right_quirk(u64 *to_write, int *box_start_bit,
-                                       int *box_end_bit, u8 *box_mask)
- {
-@@ -49,7 +37,7 @@ static void adjust_for_msb_right_quirk(u64
-*to_write, int *box_start_bit,
-        int new_box_start_bit, new_box_end_bit;
-
-        *to_write >>= *box_end_bit;
--       *to_write = bit_reverse(*to_write, box_bit_width);
-+       *to_write = bitrev8(*to_write) >> (8 - box_bit_width);
-        *to_write <<= *box_end_bit;
-
-        new_box_end_bit   = box_bit_width - *box_start_bit - 1;
