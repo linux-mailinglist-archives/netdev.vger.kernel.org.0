@@ -2,87 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54D6364864F
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:11:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AD89648672
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:19:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbiLIQLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 11:11:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54340 "EHLO
+        id S229568AbiLIQTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 11:19:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiLIQLH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:11:07 -0500
+        with ESMTP id S229517AbiLIQTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:19:45 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AE660F7;
-        Fri,  9 Dec 2022 08:11:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E108801F6;
+        Fri,  9 Dec 2022 08:19:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CAE860EB0;
-        Fri,  9 Dec 2022 16:11:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B20FEC433EF;
-        Fri,  9 Dec 2022 16:11:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A81860EB0;
+        Fri,  9 Dec 2022 16:19:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14B2CC433EF;
+        Fri,  9 Dec 2022 16:19:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670602264;
-        bh=OclmnU1jYcdMFqciE3c6RyUB6hgvanpdH2l220bFhz4=;
+        s=k20201202; t=1670602783;
+        bh=VI1X+KqV+1YF/g9QdSwb46QdBvoGHfAFDaTzgHqOkEw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lP5pQ24T3IT2YBfVVAYFE/vlA14kPUGpHI19DQSbfMFFqcLV6yfVQX2yzf3FWU9BJ
-         DEPOy15CleSzGVLHHvdVrCdctgS6AMOlWyxNMtd1UP4Jl6EFRe7WSmHsdwacu3KmIi
-         3gphHYn83fw+acEzH9vRCOj48wMtBY8ejFf/mJMd7kxsJCGH1dwZt2JHDO6M2WNy+F
-         RxYdcuexGpRtzv/r3df/M1OzYPk521V8CVwEXUXt0ZTCVSTYNw6OFG3RfFVHJS6f4s
-         Cy+bJUuWARFf6RP5DMfx0m0W7Y2ou/9vrV6yP2gJYTEe5AantjuQErI6+6QNzX5szc
-         v2qI3ygfSsAtw==
-Date:   Fri, 9 Dec 2022 08:11:01 -0800
+        b=FGPFRjDqWBd9QbGMjxlLRfV0Q8l8aOR1AQE0EJ4jc1wWQ7banrCk9+fMzcPjnhH6V
+         0SmmbZt9y4Jpm9NoDFnqUNrWNHYR5p10xApoabNuBDhOUqUC1V+ZS0Q6w7jmpYLXtm
+         rzOE8Ow/8qeYCgxX/jV5zgJanYWyBp1njWLBVbucQqXNichzpEkX8PlaGr6kdvGvjN
+         SxxTeKMFsqy8xzQcM8k+Rquq0+U7+Kb/7EqpwUixUUpuPGnM9/hgudSH7EcI860cxh
+         lDsvcYpsGokgVbyOjoa/7Gv9PPn7XSkMfx40CxIfIcZumF9i3Rm4ub2mDSfwMGaJDm
+         GPhAyE77MzAXw==
+Date:   Fri, 9 Dec 2022 08:19:42 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Benjamin Coddington <bcodding@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        Christoph =?UTF-8?B?QsO2aG13?= =?UTF-8?B?YWxkZXI=?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Valentina Manea <valentina.manea.m@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Steve French <sfrench@samba.org>,
-        Christine Caulfield <ccaulfie@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>, drbd-dev@lists.linbit.com,
-        linux-block@vger.kernel.org, nbd@other.debian.org,
-        linux-nvme@lists.infradead.org, open-iscsi@googlegroups.com,
-        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
-        samba-technical@lists.samba.org, cluster-devel@redhat.com,
-        ocfs2-devel@oss.oracle.com, v9fs-developer@lists.sourceforge.net,
-        ceph-devel@vger.kernel.org, linux-nfs@vger.kernel.org
-Subject: Re: [PATCH v1 2/3] Treewide: Stop corrupting socket's task_frag
-Message-ID: <20221209081101.7500478c@kernel.org>
-In-Reply-To: <d220402a232e204676d9100d6fe4c2ae08f753ee.camel@redhat.com>
-References: <cover.1669036433.git.bcodding@redhat.com>
-        <c2ec184226acd21a191ccc1aa46a1d7e43ca7104.1669036433.git.bcodding@redhat.com>
-        <d220402a232e204676d9100d6fe4c2ae08f753ee.camel@redhat.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vadim Fedorenko <vadfed@fb.com>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        "Olech, Milena" <milena.olech@intel.com>,
+        "Michalik, Michal" <michal.michalik@intel.com>
+Subject: Re: [RFC PATCH v4 2/4] dpll: Add DPLL framework base functions
+Message-ID: <20221209081942.565bc422@kernel.org>
+In-Reply-To: <Y5MAEQ74trsNFQQc@nanopsycho>
+References: <Y43IpIQ3C0vGzHQW@nanopsycho>
+        <20221205161933.663ea611@kernel.org>
+        <Y48CS98KYCMJS9uM@nanopsycho>
+        <20221206092705.108ded86@kernel.org>
+        <Y5CQ0qddxuUQg8R8@nanopsycho>
+        <20221207085941.3b56bc8c@kernel.org>
+        <Y5Gc6E+mpWeVSBL7@nanopsycho>
+        <20221208081955.335ca36c@kernel.org>
+        <Y5IR2MzXfqgFXGHW@nanopsycho>
+        <20221208090517.643277e8@kernel.org>
+        <Y5MAEQ74trsNFQQc@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -95,11 +69,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 09 Dec 2022 13:37:08 +0100 Paolo Abeni wrote:
-> I think this is the most feasible way out of the existing issue, and I
-> think this patchset should go via the networking tree, targeting the
-> Linux 6.2.
+On Fri, 9 Dec 2022 10:29:53 +0100 Jiri Pirko wrote:
+> Thu, Dec 08, 2022 at 06:05:17PM CET, kuba@kernel.org wrote:
+> >On Thu, 8 Dec 2022 17:33:28 +0100 Jiri Pirko wrote:  
+> >> For any synce pin manipulation over dpll netlink, we can use the netns
+> >> check of the linked netdev. This is the netns aware leg of the dpll,
+> >> it should be checked for.  
+> >
+> >The OCP card is an atomic clock, it does not have any networking.  
+> 
+> Sure, so why it has to be netns aware if it has nothing to do with
+> networking?
 
-FWIW some fields had been moved so this will not longer apply cleanly,
-see b534dc46c8ae016. But I think we can apply it to net since the merge
-window is upon us? Just a heads up.
+That's a larger question, IDK if broadening the scope of the discussion
+will help us reach a conclusion. 
+
+The patchset as is uses network namespaces for permissions:
+
++		.flags	= GENL_UNS_ADMIN_PERM,
+
+so that's what I'm commenting on - aligning visibility of objects with
+already used permissions.
+
+> >> I can't imagine practically havind the whole dpll instance netns aware.
+> >> Omitting the fact that it really has no meaning for non-synce pins, what
+> >> would be the behaviour when for example pin 1 is in netns a, pin 2 in
+> >> netns b and dpll itself in netns c?  
+> >
+> >To be clear I don't think it's a bad idea in general, I've done 
+> >the same thing for my WIP PSP patches. But we already have one
+> >device without netdevs, hence I thought maybe devlink. So maybe
+> >we do the same thing with devlink? I mean - allow multiple devlink
+> >instances to be linked and require caps on any of them?  
+> 
+> I read this 5 times, I'm lost, don't understand what you mean :/
+
+Sorry I was replying to both paragraphs here, sorry.
+What I thought you suggested is we scope the DPLL to whatever the
+linked netdevs are scoped to? If netns has any of the netdevs attached
+to the DPLL then it can see the DPLL and control it as well.
+
+What I was saying is some DPLL have no netdevs. So we can do the same
+thing with devlinks. Let the driver link the DPLL to one or more
+devlink instances, and if any of the devlink instances is in current
+netns then you can see the DPLL.
