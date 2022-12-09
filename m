@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F407D647A9D
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:15:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CA8647A9F
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:15:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbiLIAPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 19:15:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48342 "EHLO
+        id S229808AbiLIAP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 19:15:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbiLIAOr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:14:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B138D1A8
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:14:45 -0800 (PST)
+        with ESMTP id S229704AbiLIAO6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:14:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5091B8F711
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:14:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF1F5B826BE
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:14:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FDE6C433D2;
-        Fri,  9 Dec 2022 00:14:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED631B826A7
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:14:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CEC1C433EF;
+        Fri,  9 Dec 2022 00:14:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670544884;
-        bh=K77CLk/hq2sk0fufElKcVrYFDepnACNMp0fFsThCLp4=;
+        s=k20201202; t=1670544885;
+        bh=d4Lmn6EMzEWjxtz5yB7zSXwoiE5nIDuRkZyXwrlAJ5U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=trvrLt0PcZR6wfcuPt9KI4qBEmCLybRJ8RDtO1J8EpmYmTgbeFgNCadVJedVSSZ42
-         HUCp9sv9r9BuLJ4CUZwERrYViIjk2AsC6lAdayOHz2uE0cDJK1DwW2n2r6duAXz5Xk
-         FyufLumQ+YVrmxT6lG2zFr3GmNwSKH9YeYNRVyLaGIvx2b3FWok6NdN0wQLBL6qh7A
-         R4J+xrSHM8YEurEGoYvCWQ1SfIpz/pjUMA82QRwo0KlyPGwYJmUN64dxE6T7Ii2Zw7
-         Rb4BPVXnKCuLC3HY6idJ5s9RtsLHbHTH1Hj6tY3OQcq2aEJIU/EAaDqQ5HdjGODIGT
-         RWklu+90dkHDA==
+        b=FfU2mymLAeWnScJSxCU5m48gPIFb2+ValjZFN9CUtQbVpiFbbXen6MHajKbzTiP2k
+         sYDx5NCPOiRAyUFg79/MsxEI5LNxCQJKFmbWrab7KVeQJ/PtE2aSPiYuPzRzql+/Jw
+         mlD77vBzPE+mJEsjQbSDh57I+UpLkaRNkjrGIMkFfz+em6YgLU6xyifT1Lec4NBlgu
+         7jLXcSv89nFLH6o2mWnixHVa8Z13helzWNaKrCYk1/I0x2C+MAhqro88PPqYnZJVR7
+         S/RRBsYEX9qmCUR/W1Hr/GeeKtj2nDTPwpOpEuBKYsN+1BVJBDSgwBPaQYc2LGI+mK
+         VCFEJVQwhHMFQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>
-Subject: [net-next 12/15] net/mlx5e: TC, add support for meter mtu offload
-Date:   Thu,  8 Dec 2022 16:14:17 -0800
-Message-Id: <20221209001420.142794-13-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>
+Subject: [net-next 13/15] net/mlx5e: multipath, support routes with more than 2 nexthops
+Date:   Thu,  8 Dec 2022 16:14:18 -0800
+Message-Id: <20221209001420.142794-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221209001420.142794-1-saeed@kernel.org>
 References: <20221209001420.142794-1-saeed@kernel.org>
@@ -56,316 +56,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oz Shlomo <ozsh@nvidia.com>
+From: Maor Dickman <maord@nvidia.com>
 
-Initialize the meter object with the TC police mtu parameter.
-Use the hardware range destination to compare the pkt len to the mtu setting.
-Assign the range destination hit/miss ft to the police conform/exceed
-attributes.
+Today multipath offload is only supported when the number of
+nexthops is 2 which block the use of it in case of system with
+2 NICs.
 
-Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
+This patch solve it by enabling multipath offload per NIC if
+2 nexthops of the route are its uplinks.
+
+Signed-off-by: Maor Dickman <maord@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en/tc/act/police.c     | 20 +++++++++++++---
- .../ethernet/mellanox/mlx5/core/en/tc/meter.c | 15 +++++++++---
- .../ethernet/mellanox/mlx5/core/en/tc/meter.h |  1 +
- .../mellanox/mlx5/core/en/tc/post_meter.c     | 12 ++++++++++
- .../mellanox/mlx5/core/en/tc/post_meter.h     | 24 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   |  9 ++++---
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  1 +
- .../mellanox/mlx5/core/eswitch_offloads.c     | 19 +++++++++++++++
- 8 files changed, 92 insertions(+), 9 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/lag/mp.c  | 79 +++++++++++--------
+ 1 file changed, 48 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
-index 898fe16a4384..512d43148922 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
-@@ -3,6 +3,7 @@
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
+index 0259a149a64c..d9fcb9ed726f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
+@@ -118,13 +118,41 @@ struct mlx5_fib_event_work {
+ 	};
+ };
  
- #include "act.h"
- #include "en/tc_priv.h"
-+#include "fs_core.h"
- 
- static bool police_act_validate_control(enum flow_action_id act_id,
- 					struct netlink_ext_ack *extack)
-@@ -71,6 +72,8 @@ fill_meter_params_from_act(const struct flow_action_entry *act,
- 		params->mode = MLX5_RATE_LIMIT_PPS;
- 		params->rate = act->police.rate_pkt_ps;
- 		params->burst = act->police.burst_pkt;
-+	} else if (act->police.mtu) {
-+		params->mtu = act->police.mtu;
- 	} else {
- 		return -EOPNOTSUPP;
- 	}
-@@ -84,14 +87,25 @@ tc_act_parse_police(struct mlx5e_tc_act_parse_state *parse_state,
- 		    struct mlx5e_priv *priv,
- 		    struct mlx5_flow_attr *attr)
- {
-+	enum mlx5_flow_namespace_type ns =  mlx5e_get_flow_namespace(parse_state->flow);
-+	struct mlx5e_flow_meter_params *params = &attr->meter_attr.params;
- 	int err;
- 
--	err = fill_meter_params_from_act(act, &attr->meter_attr.params);
-+	err = fill_meter_params_from_act(act, params);
- 	if (err)
- 		return err;
- 
--	attr->action |= MLX5_FLOW_CONTEXT_ACTION_EXECUTE_ASO;
--	attr->exe_aso_type = MLX5_EXE_ASO_FLOW_METER;
-+	if (params->mtu) {
-+		if (!(mlx5_fs_get_capabilities(priv->mdev, ns) &
-+		      MLX5_FLOW_STEERING_CAP_MATCH_RANGES))
-+			return -EOPNOTSUPP;
++static struct net_device*
++mlx5_lag_get_next_fib_dev(struct mlx5_lag *ldev,
++			  struct fib_info *fi,
++			  struct net_device *current_dev)
++{
++	struct net_device *fib_dev;
++	int i, ldev_idx, nhs;
 +
-+		attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-+		attr->flags |= MLX5_ATTR_FLAG_MTU;
-+	} else {
-+		attr->action |= MLX5_FLOW_CONTEXT_ACTION_EXECUTE_ASO;
-+		attr->exe_aso_type = MLX5_EXE_ASO_FLOW_METER;
++	nhs = fib_info_num_path(fi);
++	i = 0;
++	if (current_dev) {
++		for (; i < nhs; i++) {
++			fib_dev = fib_info_nh(fi, i)->fib_nh_dev;
++			if (fib_dev == current_dev) {
++				i++;
++				break;
++			}
++		}
++	}
++	for (; i < nhs; i++) {
++		fib_dev = fib_info_nh(fi, i)->fib_nh_dev;
++		ldev_idx = mlx5_lag_dev_get_netdev_idx(ldev, fib_dev);
++		if (ldev_idx >= 0)
++			return ldev->pf[ldev_idx].netdev;
++	}
++
++	return NULL;
++}
++
+ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev, unsigned long event,
+ 				     struct fib_entry_notifier_info *fen_info)
+ {
++	struct net_device *nh_dev0, *nh_dev1;
+ 	struct fib_info *fi = fen_info->fi;
+ 	struct lag_mp *mp = &ldev->lag_mp;
+-	struct fib_nh *fib_nh0, *fib_nh1;
+-	unsigned int nhs;
+ 
+ 	/* Handle delete event */
+ 	if (event == FIB_EVENT_ENTRY_DEL) {
+@@ -140,16 +168,25 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev, unsigned long event,
+ 	    fi->fib_priority >= mp->fib.priority)
+ 		return;
+ 
++	nh_dev0 = mlx5_lag_get_next_fib_dev(ldev, fi, NULL);
++	nh_dev1 = mlx5_lag_get_next_fib_dev(ldev, fi, nh_dev0);
++
+ 	/* Handle add/replace event */
+-	nhs = fib_info_num_path(fi);
+-	if (nhs == 1) {
+-		if (__mlx5_lag_is_active(ldev)) {
+-			struct fib_nh *nh = fib_info_nh(fi, 0);
+-			struct net_device *nh_dev = nh->fib_nh_dev;
+-			int i = mlx5_lag_dev_get_netdev_idx(ldev, nh_dev);
++	if (!nh_dev0) {
++		if (mp->fib.dst == fen_info->dst && mp->fib.dst_len == fen_info->dst_len)
++			mp->fib.mfi = NULL;
++		return;
 +	}
  
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-index 4e5f4aa44724..9c1c24da9453 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-@@ -241,7 +241,7 @@ mlx5e_flow_meter_destroy_aso_obj(struct mlx5_core_dev *mdev, u32 obj_id)
- }
- 
- static struct mlx5e_flow_meter_handle *
--__mlx5e_flow_meter_alloc(struct mlx5e_flow_meters *flow_meters)
-+__mlx5e_flow_meter_alloc(struct mlx5e_flow_meters *flow_meters, bool alloc_aso)
- {
- 	struct mlx5_core_dev *mdev = flow_meters->mdev;
- 	struct mlx5e_flow_meter_aso_obj *meters_obj;
-@@ -268,6 +268,9 @@ __mlx5e_flow_meter_alloc(struct mlx5e_flow_meters *flow_meters)
- 	}
- 	meter->act_counter = counter;
- 
-+	if (!alloc_aso)
-+		goto no_aso;
+-			if (i < 0)
+-				return;
++	if (nh_dev0 == nh_dev1) {
++		mlx5_core_warn(ldev->pf[MLX5_LAG_P1].dev,
++			       "Multipath offload doesn't support routes with multiple nexthops of the same device");
++		return;
++	}
 +
- 	meters_obj = list_first_entry_or_null(&flow_meters->partial_list,
- 					      struct mlx5e_flow_meter_aso_obj,
- 					      entry);
-@@ -300,11 +303,12 @@ __mlx5e_flow_meter_alloc(struct mlx5e_flow_meters *flow_meters)
++	if (!nh_dev1) {
++		if (__mlx5_lag_is_active(ldev)) {
++			int i = mlx5_lag_dev_get_netdev_idx(ldev, nh_dev0);
+ 
+ 			i++;
+ 			mlx5_lag_set_port_affinity(ldev, i);
+@@ -159,21 +196,6 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev, unsigned long event,
+ 		return;
  	}
  
- 	bitmap_set(meters_obj->meters_map, pos, 1);
--	meter->flow_meters = flow_meters;
- 	meter->meters_obj = meters_obj;
- 	meter->obj_id = meters_obj->base_id + pos / 2;
- 	meter->idx = pos % 2;
+-	if (nhs != 2)
+-		return;
+-
+-	/* Verify next hops are ports of the same hca */
+-	fib_nh0 = fib_info_nh(fi, 0);
+-	fib_nh1 = fib_info_nh(fi, 1);
+-	if (!(fib_nh0->fib_nh_dev == ldev->pf[MLX5_LAG_P1].netdev &&
+-	      fib_nh1->fib_nh_dev == ldev->pf[MLX5_LAG_P2].netdev) &&
+-	    !(fib_nh0->fib_nh_dev == ldev->pf[MLX5_LAG_P2].netdev &&
+-	      fib_nh1->fib_nh_dev == ldev->pf[MLX5_LAG_P1].netdev)) {
+-		mlx5_core_warn(ldev->pf[MLX5_LAG_P1].dev,
+-			       "Multipath offload require two ports of the same HCA\n");
+-		return;
+-	}
+-
+ 	/* First time we see multipath route */
+ 	if (!mp->fib.mfi && !__mlx5_lag_is_active(ldev)) {
+ 		struct lag_tracker tracker;
+@@ -268,7 +290,6 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
+ 	struct mlx5_fib_event_work *fib_work;
+ 	struct fib_entry_notifier_info *fen_info;
+ 	struct fib_nh_notifier_info *fnh_info;
+-	struct net_device *fib_dev;
+ 	struct fib_info *fi;
  
-+no_aso:
-+	meter->flow_meters = flow_meters;
- 	mlx5_core_dbg(mdev, "flow meter allocated, obj_id=0x%x, index=%d\n",
- 		      meter->obj_id, meter->idx);
- 
-@@ -332,6 +336,9 @@ __mlx5e_flow_meter_free(struct mlx5e_flow_meter_handle *meter)
- 	mlx5_fc_destroy(mdev, meter->act_counter);
- 	mlx5_fc_destroy(mdev, meter->drop_counter);
- 
-+	if (meter->params.mtu)
-+		goto out_no_aso;
+ 	if (info->family != AF_INET)
+@@ -285,11 +306,7 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
+ 		fi = fen_info->fi;
+ 		if (fi->nh)
+ 			return NOTIFY_DONE;
+-		fib_dev = fib_info_nh(fen_info->fi, 0)->fib_nh_dev;
+-		if (fib_dev != ldev->pf[MLX5_LAG_P1].netdev &&
+-		    fib_dev != ldev->pf[MLX5_LAG_P2].netdev) {
+-			return NOTIFY_DONE;
+-		}
 +
- 	meters_obj = meter->meters_obj;
- 	pos = (meter->obj_id - meters_obj->base_id) * 2 + meter->idx;
- 	bitmap_clear(meters_obj->meters_map, pos, 1);
-@@ -345,6 +352,7 @@ __mlx5e_flow_meter_free(struct mlx5e_flow_meter_handle *meter)
- 		list_add(&meters_obj->entry, &flow_meters->partial_list);
- 	}
- 
-+out_no_aso:
- 	mlx5_core_dbg(mdev, "flow meter freed, obj_id=0x%x, index=%d\n",
- 		      meter->obj_id, meter->idx);
- 	kfree(meter);
-@@ -409,12 +417,13 @@ mlx5e_tc_meter_alloc(struct mlx5e_flow_meters *flow_meters,
- {
- 	struct mlx5e_flow_meter_handle *meter;
- 
--	meter = __mlx5e_flow_meter_alloc(flow_meters);
-+	meter = __mlx5e_flow_meter_alloc(flow_meters, !params->mtu);
- 	if (IS_ERR(meter))
- 		return meter;
- 
- 	hash_add(flow_meters->hashtbl, &meter->hlist, params->index);
- 	meter->params.index = params->index;
-+	meter->params.mtu = params->mtu;
- 	meter->refcnt++;
- 
- 	return meter;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-index f16abf33bb51..9b795cd106bb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-@@ -20,6 +20,7 @@ struct mlx5e_flow_meter_params {
- 	u32 index;
- 	u64 rate;
- 	u64 burst;
-+	u32 mtu;
- };
- 
- struct mlx5e_flow_meter_handle {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.c
-index ffed3af7d01e..8d7d761482d2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.c
-@@ -43,6 +43,18 @@ mlx5e_post_meter_get_ft(struct mlx5e_post_meter_priv *post_meter)
- 	return post_meter->rate_steering_table.ft;
- }
- 
-+struct mlx5_flow_table *
-+mlx5e_post_meter_get_mtu_true_ft(struct mlx5e_post_meter_priv *post_meter)
-+{
-+	return post_meter->mtu_tables.green_table.ft;
-+}
-+
-+struct mlx5_flow_table *
-+mlx5e_post_meter_get_mtu_false_ft(struct mlx5e_post_meter_priv *post_meter)
-+{
-+	return post_meter->mtu_tables.red_table.ft;
-+}
-+
- static struct mlx5_flow_table *
- mlx5e_post_meter_table_create(struct mlx5e_priv *priv,
- 			      enum mlx5_flow_namespace_type ns_type)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.h
-index 0a3dbf5ed86d..e013b77186b2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_meter.h
-@@ -19,9 +19,17 @@ enum mlx5e_post_meter_type {
- 	MLX5E_POST_METER_MTU
- };
- 
-+#if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
-+
- struct mlx5_flow_table *
- mlx5e_post_meter_get_ft(struct mlx5e_post_meter_priv *post_meter);
- 
-+struct mlx5_flow_table *
-+mlx5e_post_meter_get_mtu_true_ft(struct mlx5e_post_meter_priv *post_meter);
-+
-+struct mlx5_flow_table *
-+mlx5e_post_meter_get_mtu_false_ft(struct mlx5e_post_meter_priv *post_meter);
-+
- struct mlx5e_post_meter_priv *
- mlx5e_post_meter_init(struct mlx5e_priv *priv,
- 		      enum mlx5_flow_namespace_type ns_type,
-@@ -35,4 +43,20 @@ mlx5e_post_meter_init(struct mlx5e_priv *priv,
- void
- mlx5e_post_meter_cleanup(struct mlx5_eswitch *esw, struct mlx5e_post_meter_priv *post_meter);
- 
-+#else /* CONFIG_MLX5_CLS_ACT */
-+
-+static inline struct mlx5_flow_table *
-+mlx5e_post_meter_get_mtu_true_ft(struct mlx5e_post_meter_priv *post_meter)
-+{
-+	return NULL;
-+}
-+
-+static inline struct mlx5_flow_table *
-+mlx5e_post_meter_get_mtu_false_ft(struct mlx5e_post_meter_priv *post_meter)
-+{
-+	return NULL;
-+}
-+
-+#endif
-+
- #endif /* __MLX5_EN_POST_METER_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index f66a2546003e..9af2aa2922f5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -402,8 +402,9 @@ mlx5_tc_rule_delete(struct mlx5e_priv *priv,
- static bool
- is_flow_meter_action(struct mlx5_flow_attr *attr)
- {
--	return ((attr->action & MLX5_FLOW_CONTEXT_ACTION_EXECUTE_ASO) &&
--		(attr->exe_aso_type == MLX5_EXE_ASO_FLOW_METER));
-+	return (((attr->action & MLX5_FLOW_CONTEXT_ACTION_EXECUTE_ASO) &&
-+		 (attr->exe_aso_type == MLX5_EXE_ASO_FLOW_METER)) ||
-+		attr->flags & MLX5_ATTR_FLAG_MTU);
- }
- 
- static int
-@@ -414,6 +415,7 @@ mlx5e_tc_add_flow_meter(struct mlx5e_priv *priv,
- 	struct mlx5e_post_meter_priv *post_meter;
- 	enum mlx5_flow_namespace_type ns_type;
- 	struct mlx5e_flow_meter_handle *meter;
-+	enum mlx5e_post_meter_type type;
- 
- 	meter = mlx5e_tc_meter_replace(priv->mdev, &attr->meter_attr.params);
- 	if (IS_ERR(meter)) {
-@@ -422,8 +424,9 @@ mlx5e_tc_add_flow_meter(struct mlx5e_priv *priv,
- 	}
- 
- 	ns_type = mlx5e_tc_meter_get_namespace(meter->flow_meters);
-+	type = meter->params.mtu ? MLX5E_POST_METER_MTU : MLX5E_POST_METER_RATE;
- 	post_meter = mlx5e_post_meter_init(priv, ns_type, post_act,
--					   MLX5E_POST_METER_RATE,
-+					   type,
- 					   meter->act_counter, meter->drop_counter,
- 					   attr->branch_true, attr->branch_false);
- 	if (IS_ERR(post_meter)) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index f2677d9ca0b4..50af70ef22f3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -114,6 +114,7 @@ enum {
- 	MLX5_ATTR_FLAG_ACCEPT        = BIT(5),
- 	MLX5_ATTR_FLAG_CT            = BIT(6),
- 	MLX5_ATTR_FLAG_TERMINATING   = BIT(7),
-+	MLX5_ATTR_FLAG_MTU           = BIT(8),
- };
- 
- /* Returns true if any of the flags that require skipping further TC/NF processing are set. */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 1987a9d9d40c..e455b215c708 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -50,6 +50,7 @@
- #include "en/mapping.h"
- #include "devlink.h"
- #include "lag/lag.h"
-+#include "en/tc/post_meter.h"
- 
- #define mlx5_esw_for_each_rep(esw, i, rep) \
- 	xa_for_each(&((esw)->offloads.vport_reps), i, rep)
-@@ -201,6 +202,21 @@ esw_cleanup_decap_indir(struct mlx5_eswitch *esw,
- 					 true);
- }
- 
-+static int
-+esw_setup_mtu_dest(struct mlx5_flow_destination *dest,
-+		   struct mlx5e_meter_attr *meter,
-+		   int i)
-+{
-+	dest[i].type = MLX5_FLOW_DESTINATION_TYPE_RANGE;
-+	dest[i].range.field = MLX5_FLOW_DEST_RANGE_FIELD_PKT_LEN;
-+	dest[i].range.min = 0;
-+	dest[i].range.max = meter->params.mtu;
-+	dest[i].range.hit_ft = mlx5e_post_meter_get_mtu_true_ft(meter->post_meter);
-+	dest[i].range.miss_ft = mlx5e_post_meter_get_mtu_false_ft(meter->post_meter);
-+
-+	return 0;
-+}
-+
- static int
- esw_setup_sampler_dest(struct mlx5_flow_destination *dest,
- 		       struct mlx5_flow_act *flow_act,
-@@ -491,6 +507,9 @@ esw_setup_dests(struct mlx5_flow_destination *dest,
- 	} else if (attr->flags & MLX5_ATTR_FLAG_ACCEPT) {
- 		esw_setup_accept_dest(dest, flow_act, chains, *i);
- 		(*i)++;
-+	} else if (attr->flags & MLX5_ATTR_FLAG_MTU) {
-+		err = esw_setup_mtu_dest(dest, &attr->meter_attr, *i);
-+		(*i)++;
- 	} else if (esw_is_indir_table(esw, attr)) {
- 		err = esw_setup_indir_table(dest, flow_act, esw, attr, spec, true, i);
- 	} else if (esw_is_chain_src_port_rewrite(esw, esw_attr)) {
+ 		fib_work = mlx5_lag_init_fib_work(ldev, event);
+ 		if (!fib_work)
+ 			return NOTIFY_DONE;
 -- 
 2.38.1
 
