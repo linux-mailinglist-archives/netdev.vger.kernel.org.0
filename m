@@ -2,74 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 134876484D2
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:16:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D632E6484E2
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:20:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229915AbiLIPQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 10:16:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
+        id S230288AbiLIPUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 10:20:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbiLIPQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:16:44 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE83B23;
-        Fri,  9 Dec 2022 07:16:43 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id qk9so12255678ejc.3;
-        Fri, 09 Dec 2022 07:16:42 -0800 (PST)
+        with ESMTP id S230287AbiLIPUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:20:14 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B87487C90;
+        Fri,  9 Dec 2022 07:20:11 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id ja4-20020a05600c556400b003cf6e77f89cso6119710wmb.0;
+        Fri, 09 Dec 2022 07:20:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UPPFiRkIfTh9nkH6QSHejXNg4CpOfNg/sj/bnmWXHWY=;
-        b=crdXLdOJl3pQnKDOTpqxHeNef21lxGYj90rZNJkl+iFKBKn/cvNwhfzWEwmDxiCcn5
-         LoZhPOZh6rBGs+TQRqGTJLyW6UlF1QFrUaCciNTFnu0pR9Uiwn1LlNQa+Z3z9pmkXubd
-         CdQwxkr05ER4lPMhWAwsRj1+9of9QY4uo70x7jHCsKdnlW8MXybUA2VmBhL+OQe3KwsG
-         +zBPb4XtL+ty7UztVJR4vwfGy67fVfYa1GyVVrCmG8MzrjomVQWADTr7hM+1olxmK5JM
-         e6FwhxaaFd+NLT6KLifOUVe10gLKhckHUPYZ6YpYncYntvRdh/dEMP8UYJMMHYoPwVK7
-         l7TA==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Fnk658isXxLTRluECFguKQ5bgT0PCiJCrq5n84WC07k=;
+        b=K+MfZumAJSaZQU1TD0ojk0O4rZR4zyXk4o19xiXGIkgO0zljC848vH1YNA8nsRUruz
+         AmWSFlqsd87TXySGrkkelC3YO7qeI062ivQulcmZ8U0hYOjRWW2qS5/Xk+m1njtCQso5
+         8EiPRL+x0q96nAk6XwvCUdx0t+TJjsfGTBq2p/8e3xbuTtlnPA2nsxXLxdoYpJzi/Sxx
+         1+SAKV7fE8rmwlT7NdT4pYpe9a4ltVu7e3XniB+qGyB2PMLyXW4W2eUawVSQkY/UQ1ww
+         1nkpFETZp2x7ld1assaFBudSkAR02IgTHImdoPez9XQS0ZfVOQCSn4hTbhbzqCbEZJkq
+         Le9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UPPFiRkIfTh9nkH6QSHejXNg4CpOfNg/sj/bnmWXHWY=;
-        b=VpayJy7Ryhb80aV9mFfYz2hOzbQN2zsSucuSJOMwKKTEGnkh2NDF0F9jyaM5QDMU3u
-         G4+rtyIOm2V6Jxx0+KnKtqSYk12tZ/kqqzB/FWNUWoksxlTjO/0zo70l939yTJ4wwwNq
-         oTeWJgjU3HJb3F8XXByzsQadNDXc4eoLtsTWjRlQHKoVqM/aA6kPPofdpby6zif3YCOx
-         fTCEIVAkc5fGUKp2iNYuZBlCatfJ2+RBRk/iRP68I1xfSyXlYGOpKTt5YSHlkvU68BFu
-         Ce1+S96fZQc1bnUFidpxn9tOqtJF2+DKujmoP22s2s1PXdecUyvqzZ1i8ygeftnWuaCd
-         EySg==
-X-Gm-Message-State: ANoB5pkUHbyaUU2SwH73DtE+lkdVHOq3s58Jh8onsPhqsFaZlsTZg0Av
-        /GfsvQ2LwQsuhN7oBst+VDs=
-X-Google-Smtp-Source: AA0mqf4EZ10xxwTD+P7zsXz0Hk2fZrrNf779ktPya0w8ZkVl+vZWnwkbaa0Gr/xIwJMEDZ/vHKuXJA==
-X-Received: by 2002:a17:906:6ad7:b0:78d:f455:3105 with SMTP id q23-20020a1709066ad700b0078df4553105mr4400685ejs.45.1670599001423;
-        Fri, 09 Dec 2022 07:16:41 -0800 (PST)
-Received: from skbuf ([188.27.185.190])
-        by smtp.gmail.com with ESMTPSA id 17-20020a170906201100b007bd0bb6423csm3534ejo.199.2022.12.09.07.16.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 07:16:41 -0800 (PST)
-Date:   Fri, 9 Dec 2022 17:16:38 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com, richardcochran@gmail.com,
-        ceggers@arri.de
-Subject: Re: [Patch net-next v3 10/13] net: dsa: microchip: ptp: add periodic
- output signal
-Message-ID: <20221209151638.cy7iwnjbqgju3tj3@skbuf>
-References: <20221209072437.18373-1-arun.ramadoss@microchip.com>
- <20221209072437.18373-1-arun.ramadoss@microchip.com>
- <20221209072437.18373-11-arun.ramadoss@microchip.com>
- <20221209072437.18373-11-arun.ramadoss@microchip.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Fnk658isXxLTRluECFguKQ5bgT0PCiJCrq5n84WC07k=;
+        b=eh9i/Y9JyzNBwwRZgsKSJE7jhZ5fM+YdsQ/UH0yBUNFnsZLOJzMGGdEypezXI3hi25
+         upV4CFC60YDIejH6sceOXD4x+n2S1MaP0Qe7L5Sp+P/vKQDI/B3Xmn2rj9OFK74Nm221
+         tjG//kYhD/W6IOkVIyZEh0tCGwI4JEB2CkxnRD8zUIiL4vvD0m4uTE2XUQ054wgWO9n+
+         9HaGwmLIFaqttyeRkTQfJrIyrj9lCow8fhFOo3+wrDcaWBZ9HkGf2xEWQoglVYlMPdCg
+         L3Cp3SL1cHS8kJwQzb0Zr1+oBg72infDE+rb9mgbS8VChBu+iTQDNwP2//frYlq4barV
+         FDkg==
+X-Gm-Message-State: ANoB5pmYPrkY+Ds7SMJem0Om2Qs2kR4L88P0LNjIz2LVf7dM031vLTfn
+        WzWSuWU9HQxh/4m/wjk1YZHPl5LSzEhe8PKt0No=
+X-Google-Smtp-Source: AA0mqf75/IKiFawBHnsg+wdRfijf2g8/Yt4wRqWY1Ci4HTXUXTORl7sQ8Ldy0g2LkgQjXLzLkpRoHXIgHla20z0BzL8=
+X-Received: by 2002:a7b:c3d3:0:b0:3d1:cec6:75a8 with SMTP id
+ t19-20020a7bc3d3000000b003d1cec675a8mr11511149wmj.206.1670599209880; Fri, 09
+ Dec 2022 07:20:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221209072437.18373-11-arun.ramadoss@microchip.com>
- <20221209072437.18373-11-arun.ramadoss@microchip.com>
+References: <20221206024554.3826186-1-sdf@google.com> <20221206024554.3826186-12-sdf@google.com>
+ <875yellcx6.fsf@toke.dk> <CAKH8qBv7nWdknuf3ap_ekpAhMgvtmoJhZ3-HRuL8Wv70SBWMSQ@mail.gmail.com>
+ <87359pl9zy.fsf@toke.dk> <CAADnVQ+=71Y+ypQTOgFTJWY7w3YOUdY39is4vpo3aou11=eMmw@mail.gmail.com>
+ <87tu25ju77.fsf@toke.dk> <CAADnVQ+MyE280Q-7iw2Y-P6qGs4xcDML-tUrXEv_EQTmeESVaQ@mail.gmail.com>
+ <87o7sdjt20.fsf@toke.dk> <CAKH8qBswBu7QAWySWOYK4X41mwpdBj0z=6A9WBHjVYQFq9Pzjw@mail.gmail.com>
+ <Y5LGlgpxpzSu701h@x130> <66fa1861-30dd-6d00-ed14-0cf4a6b39f3c@redhat.com>
+In-Reply-To: <66fa1861-30dd-6d00-ed14-0cf4a6b39f3c@redhat.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Fri, 9 Dec 2022 07:19:57 -0800
+Message-ID: <CAA93jw6NVU5FpLY13VrA7buaBCQ=+0=Cv2M-OkkXDBeZ-mgqjA@mail.gmail.com>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 11/12] mlx5: Support RX XDP metadata
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>, brouer@redhat.com,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -80,466 +92,252 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 09, 2022 at 12:54:34PM +0530, Arun Ramadoss wrote:
-> diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-> index c9da2a735165..6d7edc81909e 100644
-> --- a/drivers/net/dsa/microchip/ksz_ptp.c
-> +++ b/drivers/net/dsa/microchip/ksz_ptp.c
-> @@ -31,6 +31,252 @@
->  
->  #define KSZ_PTP_INT_START 13
->  
-> +static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts);
+On Fri, Dec 9, 2022 at 5:29 AM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
+>
+>
+> On 09/12/2022 06.24, Saeed Mahameed wrote:
+> > On 08 Dec 18:57, Stanislav Fomichev wrote:
+> >> On Thu, Dec 8, 2022 at 4:54 PM Toke H=C3=B8iland-J=C3=B8rgensen
+> >> <toke@redhat.com> wrote:
+> >>>
+> >>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> >>>
+> >>> > On Thu, Dec 8, 2022 at 4:29 PM Toke H=C3=B8iland-J=C3=B8rgensen <to=
+ke@redhat.com> wrote:
+> >>> >>
+> >>> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> >>> >>
+> >>> >> > On Thu, Dec 8, 2022 at 4:02 PM Toke H=C3=B8iland-J=C3=B8rgensen =
+<toke@redhat.com> wrote:
+> >>> >> >>
+> >>> >> >> Stanislav Fomichev <sdf@google.com> writes:
+> >>> >> >>
+> >>> >> >> > On Thu, Dec 8, 2022 at 2:59 PM Toke H=C3=B8iland-J=C3=B8rgens=
+en <toke@redhat.com> wrote:
+> >>> >> >> >>
+> >>> >> >> >> Stanislav Fomichev <sdf@google.com> writes:
+> >>> >> >> >>
+> >>> >> >> >> > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >>> >> >> >> >
+> >>> >> >> >> > Support RX hash and timestamp metadata kfuncs. We need to =
+pass in the cqe
+> >>> >> >> >> > pointer to the mlx5e_skb_from* functions so it can be retr=
+ieved from the
+> >>> >> >> >> > XDP ctx to do this.
+> >>> >> >> >>
+> >>> >> >> >> So I finally managed to get enough ducks in row to actually =
+benchmark
+> >>> >> >> >> this. With the caveat that I suddenly can't get the timestam=
+p support to
+> >>> >> >> >> work (it was working in an earlier version, but now
+> >>> >> >> >> timestamp_supported() just returns false). I'm not sure if t=
+his is an
+> >>> >> >> >> issue with the enablement patch, or if I just haven't gotten=
+ the
+> >>> >> >> >> hardware configured properly. I'll investigate some more, bu=
+t figured
+> >>> >> >> >> I'd post these results now:
+> >>> >> >> >>
+> >>> >> >> >> Baseline XDP_DROP:         25,678,262 pps / 38.94 ns/pkt
+> >>> >> >> >> XDP_DROP + read metadata:  23,924,109 pps / 41.80 ns/pkt
+> >>> >> >> >> Overhead:                   1,754,153 pps /  2.86 ns/pkt
+> >>> >> >> >>
+> >>> >> >> >> As per the above, this is with calling three kfuncs/pkt
+> >>> >> >> >> (metadata_supported(), rx_hash_supported() and rx_hash()). S=
+o that's
+> >>> >> >> >> ~0.95 ns per function call, which is a bit less, but not far=
+ off from
+> >>> >> >> >> the ~1.2 ns that I'm used to. The tests where I accidentally=
+ called the
+> >>> >> >> >> default kfuncs cut off ~1.3 ns for one less kfunc call, so i=
+t's
+> >>> >> >> >> definitely in that ballpark.
+> >>> >> >> >>
+> >>> >> >> >> I'm not doing anything with the data, just reading it into a=
+n on-stack
+> >>> >> >> >> buffer, so this is the smallest possible delta from just get=
+ting the
+> >>> >> >> >> data out of the driver. I did confirm that the call instruct=
+ions are
+> >>> >> >> >> still in the BPF program bytecode when it's dumped back out =
+from the
+> >>> >> >> >> kernel.
+> >>> >> >> >>
+> >>> >> >> >> -Toke
+> >>> >> >> >>
+> >>> >> >> >
+> >>> >> >> > Oh, that's great, thanks for running the numbers! Will defini=
+tely
+> >>> >> >> > reference them in v4!
+> >>> >> >> > Presumably, we should be able to at least unroll most of the
+> >>> >> >> > _supported callbacks if we want, they should be relatively ea=
+sy; but
+> >>> >> >> > the numbers look fine as is?
+> >>> >> >>
+> >>> >> >> Well, this is for one (and a half) piece of metadata. If we ext=
+rapolate
+> >>> >> >> it adds up quickly. Say we add csum and vlan tags, say, and may=
+be
+> >>> >> >> another callback to get the type of hash (l3/l4). Those would p=
+robably
+> >>> >> >> be relevant for most packets in a fairly common setup. Extrapol=
+ating
+> >>> >> >> from the ~1 ns/call figure, that's 8 ns/pkt, which is 20% of th=
+e
+> >>> >> >> baseline of 39 ns.
+> >>> >> >>
+> >>> >> >> So in that sense I still think unrolling makes sense. At least =
+for the
+> >>> >> >> _supported() calls, as eating a whole function call just for th=
+at is
+> >>> >> >> probably a bit much (which I think was also Jakub's point in a =
+sibling
+> >>> >> >> thread somewhere).
+> >>> >> >
+> >>> >> > imo the overhead is tiny enough that we can wait until
+> >>> >> > generic 'kfunc inlining' infra is ready.
+> >>> >> >
+> >>> >> > We're planning to dual-compile some_kernel_file.c
+> >>> >> > into native arch and into bpf arch.
+> >>> >> > Then the verifier will automatically inline bpf asm
+> >>> >> > of corresponding kfunc.
+> >>> >>
+> >>> >> Is that "planning" or "actively working on"? Just trying to get a =
+sense
+> >>> >> of the time frames here, as this sounds neat, but also something t=
+hat
+> >>> >> could potentially require quite a bit of fiddling with the build s=
+ystem
+> >>> >> to get to work? :)
+> >>> >
+> >>> > "planning", but regardless how long it takes I'd rather not
+> >>> > add any more tech debt in the form of manual bpf asm generation.
+> >>> > We have too much of it already: gen_lookup, convert_ctx_access, etc=
+.
+> >>>
+> >>> Right, I'm no fan of the manual ASM stuff either. However, if we're
+> >>> stuck with the function call overhead for the foreseeable future, may=
+be
+> >>> we should think about other ways of cutting down the number of functi=
+on
+> >>> calls needed?
+> >>>
+> >>> One thing I can think of is to get rid of the individual _supported()
+> >>> kfuncs and instead have a single one that lets you query multiple
+> >>> features at once, like:
+> >>>
+> >>> __u64 features_supported, features_wanted =3D XDP_META_RX_HASH |
+> >>> XDP_META_TIMESTAMP;
+> >>>
+> >>> features_supported =3D bpf_xdp_metadata_query_features(ctx,
+> >>> features_wanted);
+> >>>
+> >>> if (features_supported & XDP_META_RX_HASH)
+> >>>   hash =3D bpf_xdp_metadata_rx_hash(ctx);
+> >>>
+> >>> ...etc
+> >>
+> >> I'm not too happy about having the bitmasks tbh :-(
+> >> If we want to get rid of the cost of those _supported calls, maybe we
+> >> can do some kind of libbpf-like probing? That would require loading a
+> >> program + waiting for some packet though :-(
+> >>
+> >> Or maybe they can just be cached for now?
+> >>
+> >> if (unlikely(!got_first_packet)) {
+> >>  have_hash =3D bpf_xdp_metadata_rx_hash_supported();
+> >>  have_timestamp =3D bpf_xdp_metadata_rx_timestamp_supported();
+> >>  got_first_packet =3D true;
+> >> }
+> >
+> > hash/timestap/csum is per packet .. vlan as well depending how you look=
+ at
+> > it..
+>
+> True, we cannot cache this as it is *per packet* info.
+>
+> > Sorry I haven't been following the progress of xdp meta data, but why d=
+id
+> > we drop the idea of btf and driver copying metdata in front of the xdp
+> > frame ?
+> >
+>
+> It took me some time to understand this new approach, and why it makes
+> sense.  This is my understanding of the design direction change:
+>
+> This approach gives more control to the XDP BPF-prog to pick and choose
+> which XDP hints are relevant for the specific use-case.  BPF-prog can
+> also skip storing hints anywhere and just read+react on value (that e.g.
+> comes from RX-desc).
+>
+> For the use-cases redirect, AF_XDP, chained BPF-progs, XDP-to-TC,
+> SKB-creation, we *do* need to store hints somewhere, as RX-desc will be
+> out-of-scope.  I this patchset hand-waves and says BPF-prog can just
+> manually store this in a prog custom layout in metadata area.  I'm not
+> super happy with ignoring/hand-waving all these use-case, but I
+> hope/think we later can extend this some more structure to support these
+> use-cases better (with this patchset as a foundation).
+>
+> I actually like this kfunc design, because the BPF-prog's get an
+> intuitive API, and on driver side we can hide the details of howto
+> extract the HW hints.
+>
+>
+> > hopefully future HW generations will do that for free ..
+>
+> True.  I think it is worth repeating, that the approach of storing HW
+> hints in metadata area (in-front of packet data) was to allow future HW
+> generations to write this.  Thus, eliminating the 6 ns (that I showed it
+> cost), and then it would be up-to XDP BPF-prog to pick and choose which
+> to read, like this patchset already offers.
 
-Can you enforce a natural function ordering from the beginning such that
-forward declarations are not needed?
+As a hope for future generators of hw, being able to choose a cpu to interr=
+upt
+from a LPM table would be great. I keep hoping to find a card that can
+do this already...
 
-> +
-> +static int ksz_ptp_tou_reset(struct ksz_device *dev, u8 unit)
-> +{
-> +	u32 data;
-> +	int ret;
-> +
-> +	/* Reset trigger unit (clears TRIGGER_EN, but not GPIOSTATx) */
-> +	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, TRIG_RESET, TRIG_RESET);
-> +
-> +	data = FIELD_PREP(TRIG_DONE_M, BIT(unit));
-> +	ret = ksz_write32(dev, REG_PTP_TRIG_STATUS__4, data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	data = FIELD_PREP(TRIG_INT_M, BIT(unit));
-> +	ret = ksz_write32(dev, REG_PTP_INT_STATUS__4, data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Clear reset and set GPIO direction */
-> +	return ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, (TRIG_RESET | TRIG_ENABLE),
-> +			 0);
-> +}
-> +
-> +static int ksz_ptp_tou_pulse_verify(u64 pulse_ns)
-> +{
-> +	u32 data;
-> +
-> +	if (pulse_ns & 0x3)
-> +		return -EINVAL;
-> +
-> +	data = (pulse_ns / 8);
-> +	if (!FIELD_FIT(TRIG_PULSE_WIDTH_M, data))
-> +		return -ERANGE;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ksz_ptp_tou_target_time_set(struct ksz_device *dev,
-> +				       struct timespec64 const *ts)
-> +{
-> +	int ret;
-> +
-> +	/* Hardware has only 32 bit */
-> +	if ((ts->tv_sec & 0xffffffff) != ts->tv_sec)
-> +		return -EINVAL;
-> +
-> +	ret = ksz_write32(dev, REG_TRIG_TARGET_NANOSEC, ts->tv_nsec);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_write32(dev, REG_TRIG_TARGET_SEC, ts->tv_sec);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ksz_ptp_tou_start(struct ksz_device *dev, u8 unit)
-> +{
-> +	u32 data;
-> +	int ret;
-> +
-> +	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, TRIG_ENABLE, TRIG_ENABLE);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Check error flag:
-> +	 * - the ACTIVE flag is NOT cleared an error!
-> +	 */
-> +	ret = ksz_read32(dev, REG_PTP_TRIG_STATUS__4, &data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (FIELD_GET(TRIG_ERROR_M, data) & (1 << unit)) {
-> +		dev_err(dev->dev, "%s: Trigger unit%d error!\n", __func__,
-> +			unit);
-> +		ret = -EIO;
-> +		/* Unit will be reset on next access */
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int ksz_ptp_configure_perout(struct ksz_device *dev,
-> +				    u32 cycle_width_ns, u32 pulse_width_ns,
-> +				    struct timespec64 const *target_time,
-> +				    u8 index)
-> +{
-> +	u32 data;
-> +	int ret;
-> +
-> +	data = FIELD_PREP(TRIG_NOTIFY, 1) |
-> +		FIELD_PREP(TRIG_GPO_M, index) |
-> +		FIELD_PREP(TRIG_PATTERN_M, TRIG_POS_PERIOD);
-> +	ret = ksz_write32(dev, REG_TRIG_CTRL__4, data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_write32(dev, REG_TRIG_CYCLE_WIDTH, cycle_width_ns);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Set cycle count 0 - Infinite */
-> +	ret = ksz_rmw32(dev, REG_TRIG_CYCLE_CNT, TRIG_CYCLE_CNT_M, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	data = (pulse_width_ns / 8);
-> +	ret = ksz_write32(dev, REG_TRIG_PULSE_WIDTH__4, data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_ptp_tou_target_time_set(dev, target_time);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +#define KSZ_PEROUT_VALID_FLAGS ( \
-> +				 PTP_PEROUT_DUTY_CYCLE \
-> +				 )
+Also I would like to thank everyone working on this project so far for
+what you've
+accomplished. We're now pushing 20Gbit (through a vlan even) through
+libreqos.io for thousands of ISP subscribers using all this great stuff, on
+16 cores at only 24% of cpu through CAKE and also successfully monitoring
+TCP RTTs at this scale via ebpf pping.
 
-Do you have plans for more perout flags? If not, it looks odd for this
-to unravel on 3 lines.
+( https://www.yahoo.com/now/libreqoe-releases-version-1-3-214700756.html )
+"Our hat is off to the creators of CAKE and the new Linux XDP and eBPF
+subsystems!"
 
-> +
-> +static int ksz_ptp_enable_perout(struct ksz_device *dev,
-> +				 struct ptp_perout_request const *request,
-> +				 int on)
-> +{
-> +	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
-> +	u64 cycle_width_ns;
-> +	u64 pulse_width_ns;
-> +	int pin = 0;
-> +	u32 data32;
-> +	int ret;
-> +
-> +	if (request->flags & ~KSZ_PEROUT_VALID_FLAGS)
-> +		return -EINVAL;
-> +
-> +	if (ptp_data->tou_mode != KSZ_PTP_TOU_PEROUT &&
-> +	    ptp_data->tou_mode != KSZ_PTP_TOU_IDLE)
-> +		return -EBUSY;
-> +
-> +	data32 = FIELD_PREP(PTP_GPIO_INDEX, pin) |
-> +		 FIELD_PREP(PTP_TOU_INDEX, request->index);
-> +	ret = ksz_rmw32(dev, REG_PTP_UNIT_INDEX__4,
-> +			PTP_GPIO_INDEX | PTP_TOU_INDEX, data32);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_ptp_tou_reset(dev, request->index);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!on) {
-> +		ptp_data->tou_mode = KSZ_PTP_TOU_IDLE;
-> +		return 0;
-> +	}
-> +
-> +	ptp_data->perout_target_time_first.tv_sec  = request->start.sec;
-> +	ptp_data->perout_target_time_first.tv_nsec = request->start.nsec;
-> +
-> +	ptp_data->perout_period.tv_sec = request->period.sec;
-> +	ptp_data->perout_period.tv_nsec = request->period.nsec;
-> +
-> +	cycle_width_ns = timespec64_to_ns(&ptp_data->perout_period);
-> +	if ((cycle_width_ns & TRIG_CYCLE_WIDTH_M) != cycle_width_ns)
-> +		return -EINVAL;
-> +
-> +	if (request->flags & PTP_PEROUT_DUTY_CYCLE) {
-> +		pulse_width_ns = request->on.sec * NSEC_PER_SEC +
-> +			request->on.nsec;
-> +	} else {
-> +		/* Use a duty cycle of 50%. Maximum pulse width supported by the
-> +		 * hardware is a little bit more than 125 ms.
-> +		 */
-> +		pulse_width_ns = min_t(u64,
-> +				       (request->period.sec * NSEC_PER_SEC
-> +					+ request->period.nsec) / 2
-> +				       / 8 * 8,
+In our case, timestamp, and *3* hashes, are needed for cake, and interrupti=
+ng
+the right cpu would be great...
 
-Coding style nitpick: operators aren't generally put at the beginning of
-a new line, but at the end of the previous one.
+>
+> This patchset isn't incompatible with future HW generations doing this,
+> as the kfunc would hide the details and point to this area instead of
+> the RX-desc.  While we get the "store for free" from hardware, I do
+> worry that reading this memory area (which will part of DMA area) is
+> going to be slower than reading from RX-desc.
+>
+> > if btf is the problem then each vendor can provide a bpf func(s) that w=
+ould
+> > parse the metdata inside of the xdp/bpf prog domain to help programs
+> > extract the vendor specific data..
+> >
+>
+> In some sense, if unroll will becomes a thing, then this patchset is
+> partly doing this.
+>
+> I did imagine that after/followup on XDP-hints with BTF patchset, we
+> would allow drivers to load an BPF-prog that changed/selected which HW
+> hints were relevant, to reduce those 6 ns overhead we introduced.
+>
+> --Jesper
+>
 
-> +				       125000000LL);
 
-You may want some helper macros for all of these magic constants, and
-maybe a helper that transforms the perout period to a pulse width?
-
-> +	}
-> +
-> +	ret = ksz_ptp_tou_pulse_verify(pulse_width_ns);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_ptp_configure_perout(dev, cycle_width_ns, pulse_width_ns,
-> +				       &ptp_data->perout_target_time_first,
-> +				       pin);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ksz_ptp_tou_start(dev, request->index);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ptp_data->tou_mode = KSZ_PTP_TOU_PEROUT;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ksz_ptp_restart_perout(struct ksz_device *dev)
-> +{
-> +	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
-> +	s64 now_ns, first_ns, period_ns, next_ns;
-> +	struct ptp_perout_request request;
-> +	struct timespec64 next;
-> +	struct timespec64 now;
-> +	unsigned int count;
-> +	int ret;
-> +
-> +	ret = _ksz_ptp_gettime(dev, &now);
-> +	if (ret)
-> +		return ret;
-> +
-> +	now_ns = timespec64_to_ns(&now);
-> +	first_ns = timespec64_to_ns(&ptp_data->perout_target_time_first);
-> +
-> +	/* Calculate next perout event based on start time and period */
-> +	period_ns = timespec64_to_ns(&ptp_data->perout_period);
-> +
-> +	if (first_ns < now_ns) {
-> +		count = div_u64(now_ns - first_ns, period_ns);
-> +		next_ns = first_ns + count * period_ns;
-> +	} else {
-> +		next_ns = first_ns;
-> +	}
-> +
-> +	/* Ensure 100 ms guard time prior next event */
-> +	while (next_ns < now_ns + 100000000)
-> +		next_ns += period_ns;
-> +
-> +	/* Restart periodic output signal */
-> +	next = ns_to_timespec64(next_ns);
-> +	request.start.sec  = next.tv_sec;
-> +	request.start.nsec = next.tv_nsec;
-> +	request.period.sec  = ptp_data->perout_period.tv_sec;
-> +	request.period.nsec = ptp_data->perout_period.tv_nsec;
-> +	request.index = 0;
-> +	request.flags = 0;
-> +
-> +	return ksz_ptp_enable_perout(dev, &request, 1);
-> +}
-> +
->  static int ksz_ptp_enable_mode(struct ksz_device *dev)
->  {
->  	struct ksz_tagger_data *tagger_data = ksz_tagger_data(dev->ds);
-> @@ -396,6 +642,20 @@ static int ksz_ptp_settime(struct ptp_clock_info *ptp,
->  	if (ret)
->  		goto unlock;
->  
-> +	switch (ptp_data->tou_mode) {
-> +	case KSZ_PTP_TOU_IDLE:
-> +		break;
-> +
-> +	case KSZ_PTP_TOU_PEROUT:
-> +		dev_info(dev->dev, "Restarting periodic output signal\n");
-> +
-> +		ret = ksz_ptp_restart_perout(dev);
-> +		if (ret)
-> +			goto unlock;
-> +
-> +		break;
-> +	}
-> +
->  	spin_lock_bh(&ptp_data->clock_lock);
->  	ptp_data->clock_time = *ts;
->  	spin_unlock_bh(&ptp_data->clock_lock);
-> @@ -489,6 +749,20 @@ static int ksz_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
->  	if (ret)
->  		goto unlock;
->  
-> +	switch (ptp_data->tou_mode) {
-> +	case KSZ_PTP_TOU_IDLE:
-> +		break;
-> +
-> +	case KSZ_PTP_TOU_PEROUT:
-> +		dev_info(dev->dev, "Restarting periodic output signal\n");
-
-How about absorbing the dev_info() into the ksz_ptp_restart_perout()
-call, so you don't have to duplicate it?
-
-> +
-> +		ret = ksz_ptp_restart_perout(dev);
-> +		if (ret)
-> +			goto unlock;
-> +
-> +		break;
-> +	}
-> +
->  	spin_lock_bh(&ptp_data->clock_lock);
->  	ptp_data->clock_time = timespec64_add(ptp_data->clock_time, delta64);
->  	spin_unlock_bh(&ptp_data->clock_lock);
-> @@ -498,6 +772,26 @@ static int ksz_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
->  	return ret;
->  }
->  
-> +static int ksz_ptp_enable(struct ptp_clock_info *ptp,
-> +			  struct ptp_clock_request *req, int on)
-> +{
-> +	struct ksz_ptp_data *ptp_data = ptp_caps_to_data(ptp);
-> +	struct ksz_device *dev = ptp_data_to_ksz_dev(ptp_data);
-> +	int ret;
-> +
-> +	switch (req->type) {
-> +	case PTP_CLK_REQ_PEROUT:
-> +		mutex_lock(&ptp_data->lock);
-> +		ret = ksz_ptp_enable_perout(dev, &req->perout, on);
-> +		mutex_unlock(&ptp_data->lock);
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->  /*  Function is pointer to the do_aux_work in the ptp_clock capability */
->  static long ksz_ptp_do_aux_work(struct ptp_clock_info *ptp)
->  {
-> @@ -546,6 +840,8 @@ int ksz_ptp_clock_register(struct dsa_switch *ds)
->  	ptp_data->caps.adjfine		= ksz_ptp_adjfine;
->  	ptp_data->caps.adjtime		= ksz_ptp_adjtime;
->  	ptp_data->caps.do_aux_work	= ksz_ptp_do_aux_work;
-> +	ptp_data->caps.enable		= ksz_ptp_enable;
-> +	ptp_data->caps.n_per_out	= 3;
->  
->  	ret = ksz_ptp_start_clock(dev);
->  	if (ret)
-> diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
-> index 0b14aed71ec2..9451e3a76375 100644
-> --- a/drivers/net/dsa/microchip/ksz_ptp.h
-> +++ b/drivers/net/dsa/microchip/ksz_ptp.h
-> @@ -12,6 +12,11 @@
->  
->  #include <linux/ptp_clock_kernel.h>
->  
-> +enum ksz_ptp_tou_mode {
-> +	KSZ_PTP_TOU_IDLE,
-> +	KSZ_PTP_TOU_PEROUT,
-> +};
-> +
->  struct ksz_ptp_data {
->  	struct ptp_clock_info caps;
->  	struct ptp_clock *clock;
-> @@ -20,6 +25,9 @@ struct ksz_ptp_data {
->  	/* lock for accessing the clock_time */
->  	spinlock_t clock_lock;
->  	struct timespec64 clock_time;
-> +	enum ksz_ptp_tou_mode tou_mode;
-> +	struct timespec64 perout_target_time_first;  /* start of first pulse */
-> +	struct timespec64 perout_period;
->  };
->  
->  int ksz_ptp_clock_register(struct dsa_switch *ds);
-> diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-> index abe95bbefc12..dbccfedf89e4 100644
-> --- a/drivers/net/dsa/microchip/ksz_ptp_reg.h
-> +++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-> @@ -49,6 +49,69 @@
->  #define PTP_MASTER			BIT(1)
->  #define PTP_1STEP			BIT(0)
->  
-> +#define REG_PTP_UNIT_INDEX__4		0x0520
-> +
-> +#define PTP_GPIO_INDEX			GENMASK(19, 16)
-> +#define PTP_TSI_INDEX			BIT(8)
-> +#define PTP_TOU_INDEX			GENMASK(1, 0)
-> +
-> +#define REG_PTP_TRIG_STATUS__4		0x0524
-> +
-> +#define TRIG_ERROR_M			GENMASK(18, 16)
-> +#define TRIG_DONE_M			GENMASK(2, 0)
-> +
-> +#define REG_PTP_INT_STATUS__4		0x0528
-> +
-> +#define TRIG_INT_M			GENMASK(18, 16)
-> +#define TS_INT_M			GENMASK(1, 0)
-> +
-> +#define REG_PTP_CTRL_STAT__4           0x052C
-> +
-> +#define GPIO_IN                        BIT(7)
-> +#define GPIO_OUT                       BIT(6)
-> +#define TS_INT_ENABLE                  BIT(5)
-> +#define TRIG_ACTIVE                    BIT(4)
-> +#define TRIG_ENABLE                    BIT(3)
-> +#define TRIG_RESET                     BIT(2)
-> +#define TS_ENABLE                      BIT(1)
-> +#define TS_RESET                       BIT(0)
-> +
-> +#define REG_TRIG_TARGET_NANOSEC        0x0530
-> +#define REG_TRIG_TARGET_SEC            0x0534
-> +
-> +#define REG_TRIG_CTRL__4               0x0538
-> +
-> +#define TRIG_CASCADE_ENABLE            BIT(31)
-> +#define TRIG_CASCADE_TAIL              BIT(30)
-> +#define TRIG_CASCADE_UPS_M             GENMASK(29, 26)
-> +#define TRIG_NOW                       BIT(25)
-> +#define TRIG_NOTIFY                    BIT(24)
-> +#define TRIG_EDGE                      BIT(23)
-> +#define TRIG_PATTERN_M		       GENMASK(22, 20)
-
-Nitpick: strange combination of tabs and spaces.
-
-> +#define TRIG_NEG_EDGE                  0
-> +#define TRIG_POS_EDGE                  1
-> +#define TRIG_NEG_PULSE                 2
-> +#define TRIG_POS_PULSE                 3
-> +#define TRIG_NEG_PERIOD                4
-> +#define TRIG_POS_PERIOD                5
-> +#define TRIG_REG_OUTPUT                6
-> +#define TRIG_GPO_M		       GENMASK(19, 16)
-> +#define TRIG_CASCADE_ITERATE_CNT_M     GENMASK(15, 0)
-> +
-> +#define REG_TRIG_CYCLE_WIDTH           0x053C
-> +#define TRIG_CYCLE_WIDTH_M	       GENMASK(31, 0)
-> +
-> +#define REG_TRIG_CYCLE_CNT             0x0540
-> +
-> +#define TRIG_CYCLE_CNT_M	       GENMASK(31, 16)
-> +#define TRIG_BIT_PATTERN_M             GENMASK(15, 0)
-> +
-> +#define REG_TRIG_ITERATE_TIME          0x0544
-> +
-> +#define REG_TRIG_PULSE_WIDTH__4        0x0548
-> +
-> +#define TRIG_PULSE_WIDTH_M             GENMASK(23, 0)
-> +
->  /* Port PTP Register */
->  #define REG_PTP_PORT_RX_DELAY__2	0x0C00
->  #define REG_PTP_PORT_TX_DELAY__2	0x0C02
-> -- 
-> 2.36.1
-> 
-
+--=20
+This song goes out to all the folk that thought Stadia would work:
+https://www.linkedin.com/posts/dtaht_the-mushroom-song-activity-69813666656=
+07352320-FXtz
+Dave T=C3=A4ht CEO, TekLibre, LLC
