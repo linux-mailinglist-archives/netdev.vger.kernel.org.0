@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CD9C647AE6
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:44:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD302647AE7
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:44:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbiLIAok (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 19:44:40 -0500
+        id S229755AbiLIAom (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 19:44:42 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbiLIAoj (ORCPT
+        with ESMTP id S229479AbiLIAoj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:44:39 -0500
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08ECB51332
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:44:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032834F19E
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:44:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670546678; x=1702082678;
+  t=1670546679; x=1702082679;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=msV/M1wz+UVrq7h8FdkC4OUJp8FGohM+zY3ESmWi5ts=;
-  b=Xk5ZFfp+Lm3GQcHr8A66NdXZetU3tOYTiUYYTo1OCwUrUPIGxra06U2r
-   WFdlT4GFhtXM9A3lRoNCQbl3rMzXTGtu2RtmsVcpYD78PFOlfyiDz4K8s
-   d9ajxuJgKWZDjCRE+vT6DxMNnabAa8yiJNuY0qFcPbgNyiC1aUvy2CJmr
-   A4sNE79fsrS9qmT9tdYqPDB+hdss07BklSVjGzSSPQPkcsirjYJ3c9jz0
-   1JxmF6qY45SJBioriSVK5Tue+Z1WkFNisc6H95y8ARDvzl1PxFBsc8jca
-   lZGJF8P2H3afIWfH9LeswdZ1Homp7ADh7V9ljJiD0x4FPTft3T8Mvi2Fv
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10555"; a="317367581"
+  bh=hQBp37x+YF6P+lJ16BGpex90f7Ktlcv6uncn05y46Wo=;
+  b=PFgzqfqKwnF3tIwU3/kKHjppk8XiuEsMyO8l9as/zxkt62WpFpbqpudU
+   tTHiGFaPdqIpRXcgqBITfcU+tBsXKrxh493tWKxJ8GnNJQ7A9xckalgbV
+   CD5Rs/GEVIQwDhF9id9Dr1HqDw7LcDt6PnhuMQIGbthglqpvm3197gwJB
+   +eqEXVpRoGJN8sn1fpOg5c3c0ZVv9eZdStIYfoeu9+P+anI+Jjt1zFVC6
+   We+0qZ/Vmn+InCHVQm4yb1zGMMYXpvPCxBNIuIsfIPlsXG6MOP85jWI1u
+   V5PJZ2xSMsnRjTSfoa4TDLOM6/mh1ZOi7mRKSownRpVUDEVY7epG5hlcl
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10555"; a="317367591"
 X-IronPort-AV: E=Sophos;i="5.96,228,1665471600"; 
-   d="scan'208";a="317367581"
+   d="scan'208";a="317367591"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 16:44:37 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10555"; a="736027002"
+X-IronPort-AV: E=McAfee;i="6500,9779,10555"; a="736027008"
 X-IronPort-AV: E=Sophos;i="5.96,228,1665471600"; 
-   d="scan'208";a="736027002"
+   d="scan'208";a="736027008"
 Received: from mchombea-mobl1.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.102.119])
   by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 16:44:37 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
+Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, mptcp@lists.linux.dev,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <error27@gmail.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 1/2] mptcp: use nlmsg_free instead of kfree_skb
-Date:   Thu,  8 Dec 2022 16:44:30 -0800
-Message-Id: <20221209004431.143701-2-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 2/2] mptcp: return 0 instead of 'err' var
+Date:   Thu,  8 Dec 2022 16:44:31 -0800
+Message-Id: <20221209004431.143701-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221209004431.143701-1-mathew.j.martineau@linux.intel.com>
 References: <20221209004431.143701-1-mathew.j.martineau@linux.intel.com>
@@ -60,64 +62,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliang.tang@suse.com>
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-Use nlmsg_free() instead of kfree_skb() in pm_netlink.c.
+When 'err' is 0, it looks clearer to return '0' instead of the variable
+called 'err'.
 
-The SKB's have been created by nlmsg_new(). The proper cleaning way
-should then be done with nlmsg_free().
+The behaviour is then not modified, just a clearer code.
 
-For the moment, nlmsg_free() is simply calling kfree_skb() so we don't
-change the behaviour here.
+By doing this, we can also avoid false positive smatch warnings like
+this one:
 
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+  net/mptcp/pm_netlink.c:1169 mptcp_pm_parse_pm_addr_attr() warn: missing error code? 'err'
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <error27@gmail.com>
+Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/pm_netlink.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/mptcp/pm_netlink.c | 4 ++--
+ net/mptcp/sockopt.c    | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index eef69d0e44ec..08c65f3e70a3 100644
+index 08c65f3e70a3..2ea7eae43bdb 100644
 --- a/net/mptcp/pm_netlink.c
 +++ b/net/mptcp/pm_netlink.c
-@@ -2094,7 +2094,7 @@ void mptcp_event_addr_removed(const struct mptcp_sock *msk, uint8_t id)
- 	return;
+@@ -1190,7 +1190,7 @@ static int mptcp_pm_parse_pm_addr_attr(struct nlattr *tb[],
  
- nla_put_failure:
--	kfree_skb(skb);
-+	nlmsg_free(skb);
+ 	if (!tb[MPTCP_PM_ADDR_ATTR_FAMILY]) {
+ 		if (!require_family)
+-			return err;
++			return 0;
+ 
+ 		NL_SET_ERR_MSG_ATTR(info->extack, attr,
+ 				    "missing family");
+@@ -1224,7 +1224,7 @@ static int mptcp_pm_parse_pm_addr_attr(struct nlattr *tb[],
+ 	if (tb[MPTCP_PM_ADDR_ATTR_PORT])
+ 		addr->port = htons(nla_get_u16(tb[MPTCP_PM_ADDR_ATTR_PORT]));
+ 
+-	return err;
++	return 0;
  }
  
- void mptcp_event_addr_announced(const struct sock *ssk,
-@@ -2151,7 +2151,7 @@ void mptcp_event_addr_announced(const struct sock *ssk,
- 	return;
+ int mptcp_pm_parse_addr(struct nlattr *attr, struct genl_info *info,
+diff --git a/net/mptcp/sockopt.c b/net/mptcp/sockopt.c
+index a47423ebb33a..d4b1e6ec1b36 100644
+--- a/net/mptcp/sockopt.c
++++ b/net/mptcp/sockopt.c
+@@ -740,7 +740,7 @@ static int mptcp_setsockopt_v4_set_tos(struct mptcp_sock *msk, int optname,
+ 	}
+ 	release_sock(sk);
  
- nla_put_failure:
--	kfree_skb(skb);
-+	nlmsg_free(skb);
+-	return err;
++	return 0;
  }
  
- void mptcp_event_pm_listener(const struct sock *ssk,
-@@ -2203,7 +2203,7 @@ void mptcp_event_pm_listener(const struct sock *ssk,
- 	return;
- 
- nla_put_failure:
--	kfree_skb(skb);
-+	nlmsg_free(skb);
- }
- 
- void mptcp_event(enum mptcp_event_type type, const struct mptcp_sock *msk,
-@@ -2261,7 +2261,7 @@ void mptcp_event(enum mptcp_event_type type, const struct mptcp_sock *msk,
- 	return;
- 
- nla_put_failure:
--	kfree_skb(skb);
-+	nlmsg_free(skb);
- }
- 
- static const struct genl_small_ops mptcp_pm_ops[] = {
+ static int mptcp_setsockopt_v4(struct mptcp_sock *msk, int optname,
 -- 
 2.38.1
 
