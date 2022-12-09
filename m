@@ -2,122 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58571648831
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 19:09:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FB2764883B
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 19:13:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229563AbiLISJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 13:09:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40600 "EHLO
+        id S229591AbiLISNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 13:13:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiLISJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 13:09:36 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF43E140AC
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 10:09:35 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 6F5A722677;
-        Fri,  9 Dec 2022 18:09:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1670609374; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eSwjXkvn27L6bNzZwFWFuZVCUzCF3kXg/1zC0+doiLM=;
-        b=M1BSD5ZiXRTGdBF70qj1hibAw2vwQMuUpHGijmIlronzXc9meXqb/Mm3BHRbVBlNWX3TwU
-        rJT0tMEpePD2U38WVvHfvtNaAdZxDFgA353UieUWIIvADwGKuLc/lGhDo8mdiTwfI8lJDa
-        8QLLbjLfxzOPptlCQooGKMPSqKpHRcE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1670609374;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eSwjXkvn27L6bNzZwFWFuZVCUzCF3kXg/1zC0+doiLM=;
-        b=FfxknQQJOiQgZlur95+ZqPTUyuBcKLbadLgVMPPvyCiVHPzfshJFZlssSR71V0lTjLS1vY
-        hIUbbzsejcAdF8AA==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 65B482C141;
-        Fri,  9 Dec 2022 18:09:34 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 3B4F66045E; Fri,  9 Dec 2022 19:09:34 +0100 (CET)
-Date:   Fri, 9 Dec 2022 19:09:34 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+        with ESMTP id S229554AbiLISNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 13:13:21 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9EDA4308
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 10:13:20 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id x66so4268414pfx.3
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 10:13:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:subject:cc:to
+         :from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=pvfycwltgPHZI7Fpznfw7FyfA5x8ooB+LWWo1xUMJMM=;
+        b=UOxD9vCFTEAda7GUDOehw1t+7qeja1dXd1SA59DOSzQn++I/B4Dvc8QZCPUDzfapEv
+         Sl1JW/W0r4Oa9XqlZ9PMEnhgyh3XKorWtBXm/qkyR3FIdMq2Lu0prtBF3Or4DBgqr03O
+         66BhOC5HQAnWkxQInDcH/BG7QbrtaxlOCAHCsFIwuL5jSBEdgP0vy7270i1lmSiVgxul
+         2DJIF0843DfC3vTPEXVDLuxVwIL/VmU6A0IpfhG9C9NaBi86fc+9jtAvs72se2bMJzf6
+         arCtj4eVqjeBzQ7vFLNoUKWOI6RcqiKIp847tqIyDwF0C5WDtXN7kNjJAPX67RCKwr8e
+         K2Fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:subject:cc:to
+         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pvfycwltgPHZI7Fpznfw7FyfA5x8ooB+LWWo1xUMJMM=;
+        b=DdhoG+GB36DDtqVrvlgWPmqAIeZYB2Ol5pZ5bt62y3iQ3gHjXjdhT6Ai0JHEjfO9j0
+         /tBOfYRnxzSec1miXpfrkm3Ltrg+Ad9xAqhullytdZcyqf0l2bUB9AWGColM/sJ3dYaq
+         68JcuPa0yOX877rfVCBDwSzyk+xzcLtHNXwJtDEUjblrSx6JR2DKciuNTuCkBOV3cx6n
+         OquzetitSL1A6J4MqKUxJwkp1NGItGnIxHBQmmxyyFYWtV6A3bFp+YbpPYcTbaAPKxQ/
+         lwjdJDgaXpn5nc61LtqGNBL50UK2oDdynYc8jCxAQb8SJur3Qu9JCuzkI605tkepO1Gj
+         839g==
+X-Gm-Message-State: ANoB5pmUILo1ny0xzzwGYirXcNyo8yjYbKtQ0AX9rGHvVc1UjTJqAXWz
+        6CalCqkh6rUyIVvegLsC4e0nuA==
+X-Google-Smtp-Source: AA0mqf4jsNgvKNxTQJLn0S9GuIjZnWewGoqx+GusBh/+GdQqdEsA1PTHSBw+6OFmXGeqRi5n5xV47w==
+X-Received: by 2002:a62:687:0:b0:56c:eaa5:465c with SMTP id 129-20020a620687000000b0056ceaa5465cmr7612230pfg.17.1670609600127;
+        Fri, 09 Dec 2022 10:13:20 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id 81-20020a621954000000b0056b9ec7e2desm1510094pfz.125.2022.12.09.10.13.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Dec 2022 10:13:19 -0800 (PST)
+Date:   Fri, 9 Dec 2022 10:13:18 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Ahern <dsahern@gmail.com>
 Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool v2 08/13] ethtool: fix runtime errors found by
- sanitizers
-Message-ID: <20221209180934.cknkbvdr7gkphenf@lion.mk-sys.cz>
-References: <20221208011122.2343363-1-jesse.brandeburg@intel.com>
- <20221208011122.2343363-9-jesse.brandeburg@intel.com>
- <20221208063432.rt3iunzactq6bxcp@lion.mk-sys.cz>
- <52408830-e05b-03bd-3c3c-4195af1efbf2@intel.com>
+Subject: iproute2 - one line mode should be deprecated?
+Message-ID: <20221209101318.2c1b1359@hermes.local>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="flunrzz73u6j7s5u"
-Content-Disposition: inline
-In-Reply-To: <52408830-e05b-03bd-3c3c-4195af1efbf2@intel.com>
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_SOFTFAIL autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The one line output mode of iproute2 commands was invented before I was involved.
+It looks like the only real usage is for scripts to consume the output of commands.
+Now that JSON is supported, the one line mode is just lingering technical debt.
 
---flunrzz73u6j7s5u
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Does anyone still use oneline mode?
+Could it be removed in some future version of iproute?
 
-On Fri, Dec 09, 2022 at 09:42:59AM -0800, Jesse Brandeburg wrote:
-> On 12/7/2022 10:34 PM, Michal Kubecek wrote:
-> > On Wed, Dec 07, 2022 at 05:11:17PM -0800, Jesse Brandeburg wrote:
->=20
-> > > -	INTR			=3D (1 << 31),
-> > > +	INTR			=3D (1UL << 31),
-> > >   	PCSINT			=3D (1 << 28),
-> > >   	LCINT			=3D (1 << 27),
-> > >   	APINT5			=3D (1 << 26),
-> >=20
-> > While the signedness issue only directly affects only INTR value,
-> > I would rather prefer to keep the code consistent and fix the whole enu=
-m.
-> > Also, as you intend to introduce the BIT() macro in the series anyway,
-> > wouldn't it be cleaner to move this patch after the UAPI update and use
-> > BIT() instead?
->=20
-> I had done it this way to separate the "most minimal fix" from the
-> "refactor", as I figure that is a clearer way to delineate changes. Also,
-> this specifically addresses the issues found by the undefined behavior
-> sanitizer.
->=20
-> I'll do it whichever way you like, but you're correct, later in this seri=
-es
-> I fix up all the BIT() usages. Maybe we can just leave this patch as is,
-> knowing the full fix comes during the refactor in 10/13 ?
-
-As we end up with BIT() everywhere anyway, I'm OK with either option,
-leaving this patch as it is or dropping it. When I was writing that
-comment, I had seen 09/13 (introduction of BIT()) but not 10/13
-(refactoring everything to use it).
-
-Michal
-
---flunrzz73u6j7s5u
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmOTedoACgkQ538sG/LR
-dpVlPQgAhMjjHMjrl8qaixJJf4RtYX0Y7bSCN7JTJ7lM3ix/J0+0qzRTTzvJa5CE
-pHM2U+b4iqITzBJ39gYk86wRgrvnrQt0Mi0cyupofgyxq0MqmSYKziSy5A4ULoJR
-6ixtTGt4o3maLW/9eW9i2RhQg/oOQrk4RAXz83/Ci462IOSVOE1A0ariLh9QjqSB
-H1OpZ1fmwq41fFDpsgK9REKL42Fcdj7AAnVEZ3dcMew65vtLo/m0CmYUAPYC/U51
-FZH+qoP6QrQuBnT+rh6G0RN0FJuDoprLX4tI8tRdwRJ5fLdjk0avsjxEuFU4nOMM
-//DDSkcujsXPwPBUfSO73mlPERo8gw==
-=WGj/
------END PGP SIGNATURE-----
-
---flunrzz73u6j7s5u--
+There are still output format bugs in oneline, and some missing bits
+of JSON support as well.
