@@ -2,292 +2,367 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5FA26482A6
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 14:00:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36CE96482B3
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 14:15:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229815AbiLINAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 08:00:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
+        id S229918AbiLINPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 08:15:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbiLINAY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 08:00:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAEB1DF0A
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 04:59:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670590769;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IeC3V4Nv/NsdvdBX2htp9hv5uXYY+hSvBqMVRWFE8oI=;
-        b=T1FW7dXDFh7RVtAYOTOJLEJNf/H1wNwvzsY5w2CpIwVfI8vSXbEJ7emY/YlwsjG3a5Dcoa
-        BESFwiStHWuYGdvfrST3+2kKYpsEyQuEODSy7HF3656yJQd631wB3oXMnVIi4Mqa89PzT9
-        72MlGrgZgUERxb/lfcSz6hfXM59UecA=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-444-Tgmp1n3NNHqZR-dsk7rJkg-1; Fri, 09 Dec 2022 07:59:28 -0500
-X-MC-Unique: Tgmp1n3NNHqZR-dsk7rJkg-1
-Received: by mail-ed1-f69.google.com with SMTP id w22-20020a056402269600b0046b00a9ee5fso1328190edd.2
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 04:59:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IeC3V4Nv/NsdvdBX2htp9hv5uXYY+hSvBqMVRWFE8oI=;
-        b=FKccfYrt2SG1VP5vfTevR+DHftUfXRJyRuh35Os2KXaMXivfuemxvFCe1TiXK6O9Tc
-         4I8XgaJGgHFe69urkO+uPOLQfWKrs2pDJixkdicoVpNXdGMwxZ0bztw5mIQT9wrxE9Zo
-         MYqysfmX3C0iEpcwIw9jTP9dgHIam6sT9NGkcEjqSumm72iASY3CY1DMIJML0r09/QKF
-         OF0j0HuoSgbrKhrb/ZhdDJUPFanrz5z43MxjXoOrbocvtasf+P6SFqtXd9ZsraO18Ue0
-         sQ53uLnL/KrgbbDvgUrL5e91eJ8bG5LFt7xz6nIU0dGEWMBQYHiFcgavTkcNNji4bmRw
-         wewg==
-X-Gm-Message-State: ANoB5pnXUP4trtDz67eUwCssQPuKDF2rhRSsLbVnmGxMGx31WEoa9Gjf
-        8PLA4pLHNE5AHBR42ICkea4e2VC7IbuJG+SWytEgkJahYFm7+c8Km2db8hTOvVTBCTdg5mpVMqT
-        IIYK1M6Htg1CyVLhu
-X-Received: by 2002:aa7:cc09:0:b0:461:b2d7:46b5 with SMTP id q9-20020aa7cc09000000b00461b2d746b5mr4823465edt.7.1670590767249;
-        Fri, 09 Dec 2022 04:59:27 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf62yqbyHKMXuCwuCnCOSrMW7y2E0jvLw7+w8XTVt3ir1lQes3EUGT1RFAq952dNBRtdmzNRpQ==
-X-Received: by 2002:aa7:cc09:0:b0:461:b2d7:46b5 with SMTP id q9-20020aa7cc09000000b00461b2d746b5mr4823422edt.7.1670590766878;
-        Fri, 09 Dec 2022 04:59:26 -0800 (PST)
-Received: from [192.168.41.200] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id p4-20020aa7d304000000b00461cdda400esm624646edq.4.2022.12.09.04.59.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Dec 2022 04:59:26 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <66fa1861-30dd-6d00-ed14-0cf4a6b39f3c@redhat.com>
-Date:   Fri, 9 Dec 2022 13:59:23 +0100
+        with ESMTP id S229478AbiLINPr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 08:15:47 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFEFA27CCC;
+        Fri,  9 Dec 2022 05:15:44 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1554323A;
+        Fri,  9 Dec 2022 05:15:51 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.39.232])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 70B243F73B;
+        Fri,  9 Dec 2022 05:15:42 -0800 (PST)
+Date:   Fri, 9 Dec 2022 13:15:39 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     syzbot <syzbot+09329bd987ebca21bced@syzkaller.appspotmail.com>
+Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        jakub@cloudflare.com, john.fastabend@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [syzbot] kernel stack overflow in sock_close
+Message-ID: <Y5M0+1bJ/A/M3xKU@FVFF77S0Q05N>
+References: <000000000000b2d33705ef4e2d70@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Cc:     brouer@redhat.com,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 11/12] mlx5: Support RX XDP
- metadata
-Content-Language: en-US
-To:     Saeed Mahameed <saeed@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>
-References: <20221206024554.3826186-1-sdf@google.com>
- <20221206024554.3826186-12-sdf@google.com> <875yellcx6.fsf@toke.dk>
- <CAKH8qBv7nWdknuf3ap_ekpAhMgvtmoJhZ3-HRuL8Wv70SBWMSQ@mail.gmail.com>
- <87359pl9zy.fsf@toke.dk>
- <CAADnVQ+=71Y+ypQTOgFTJWY7w3YOUdY39is4vpo3aou11=eMmw@mail.gmail.com>
- <87tu25ju77.fsf@toke.dk>
- <CAADnVQ+MyE280Q-7iw2Y-P6qGs4xcDML-tUrXEv_EQTmeESVaQ@mail.gmail.com>
- <87o7sdjt20.fsf@toke.dk>
- <CAKH8qBswBu7QAWySWOYK4X41mwpdBj0z=6A9WBHjVYQFq9Pzjw@mail.gmail.com>
- <Y5LGlgpxpzSu701h@x130>
-In-Reply-To: <Y5LGlgpxpzSu701h@x130>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000b2d33705ef4e2d70@google.com>
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-On 09/12/2022 06.24, Saeed Mahameed wrote:
-> On 08 Dec 18:57, Stanislav Fomichev wrote:
->> On Thu, Dec 8, 2022 at 4:54 PM Toke Høiland-Jørgensen 
->> <toke@redhat.com> wrote:
->>>
->>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>>
->>> > On Thu, Dec 8, 2022 at 4:29 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>> >>
->>> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>> >>
->>> >> > On Thu, Dec 8, 2022 at 4:02 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>> >> >>
->>> >> >> Stanislav Fomichev <sdf@google.com> writes:
->>> >> >>
->>> >> >> > On Thu, Dec 8, 2022 at 2:59 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>> >> >> >>
->>> >> >> >> Stanislav Fomichev <sdf@google.com> writes:
->>> >> >> >>
->>> >> >> >> > From: Toke Høiland-Jørgensen <toke@redhat.com>
->>> >> >> >> >
->>> >> >> >> > Support RX hash and timestamp metadata kfuncs. We need to pass in the cqe
->>> >> >> >> > pointer to the mlx5e_skb_from* functions so it can be retrieved from the
->>> >> >> >> > XDP ctx to do this.
->>> >> >> >>
->>> >> >> >> So I finally managed to get enough ducks in row to actually benchmark
->>> >> >> >> this. With the caveat that I suddenly can't get the timestamp support to
->>> >> >> >> work (it was working in an earlier version, but now
->>> >> >> >> timestamp_supported() just returns false). I'm not sure if this is an
->>> >> >> >> issue with the enablement patch, or if I just haven't gotten the
->>> >> >> >> hardware configured properly. I'll investigate some more, but figured
->>> >> >> >> I'd post these results now:
->>> >> >> >>
->>> >> >> >> Baseline XDP_DROP:         25,678,262 pps / 38.94 ns/pkt
->>> >> >> >> XDP_DROP + read metadata:  23,924,109 pps / 41.80 ns/pkt
->>> >> >> >> Overhead:                   1,754,153 pps /  2.86 ns/pkt
->>> >> >> >>
->>> >> >> >> As per the above, this is with calling three kfuncs/pkt
->>> >> >> >> (metadata_supported(), rx_hash_supported() and rx_hash()). So that's
->>> >> >> >> ~0.95 ns per function call, which is a bit less, but not far off from
->>> >> >> >> the ~1.2 ns that I'm used to. The tests where I accidentally called the
->>> >> >> >> default kfuncs cut off ~1.3 ns for one less kfunc call, so it's
->>> >> >> >> definitely in that ballpark.
->>> >> >> >>
->>> >> >> >> I'm not doing anything with the data, just reading it into an on-stack
->>> >> >> >> buffer, so this is the smallest possible delta from just getting the
->>> >> >> >> data out of the driver. I did confirm that the call instructions are
->>> >> >> >> still in the BPF program bytecode when it's dumped back out from the
->>> >> >> >> kernel.
->>> >> >> >>
->>> >> >> >> -Toke
->>> >> >> >>
->>> >> >> >
->>> >> >> > Oh, that's great, thanks for running the numbers! Will definitely
->>> >> >> > reference them in v4!
->>> >> >> > Presumably, we should be able to at least unroll most of the
->>> >> >> > _supported callbacks if we want, they should be relatively easy; but
->>> >> >> > the numbers look fine as is?
->>> >> >>
->>> >> >> Well, this is for one (and a half) piece of metadata. If we extrapolate
->>> >> >> it adds up quickly. Say we add csum and vlan tags, say, and maybe
->>> >> >> another callback to get the type of hash (l3/l4). Those would probably
->>> >> >> be relevant for most packets in a fairly common setup. Extrapolating
->>> >> >> from the ~1 ns/call figure, that's 8 ns/pkt, which is 20% of the
->>> >> >> baseline of 39 ns.
->>> >> >>
->>> >> >> So in that sense I still think unrolling makes sense. At least for the
->>> >> >> _supported() calls, as eating a whole function call just for that is
->>> >> >> probably a bit much (which I think was also Jakub's point in a sibling
->>> >> >> thread somewhere).
->>> >> >
->>> >> > imo the overhead is tiny enough that we can wait until
->>> >> > generic 'kfunc inlining' infra is ready.
->>> >> >
->>> >> > We're planning to dual-compile some_kernel_file.c
->>> >> > into native arch and into bpf arch.
->>> >> > Then the verifier will automatically inline bpf asm
->>> >> > of corresponding kfunc.
->>> >>
->>> >> Is that "planning" or "actively working on"? Just trying to get a sense
->>> >> of the time frames here, as this sounds neat, but also something that
->>> >> could potentially require quite a bit of fiddling with the build system
->>> >> to get to work? :)
->>> >
->>> > "planning", but regardless how long it takes I'd rather not
->>> > add any more tech debt in the form of manual bpf asm generation.
->>> > We have too much of it already: gen_lookup, convert_ctx_access, etc.
->>>
->>> Right, I'm no fan of the manual ASM stuff either. However, if we're
->>> stuck with the function call overhead for the foreseeable future, maybe
->>> we should think about other ways of cutting down the number of function
->>> calls needed?
->>>
->>> One thing I can think of is to get rid of the individual _supported()
->>> kfuncs and instead have a single one that lets you query multiple
->>> features at once, like:
->>>
->>> __u64 features_supported, features_wanted = XDP_META_RX_HASH | 
->>> XDP_META_TIMESTAMP;
->>>
->>> features_supported = bpf_xdp_metadata_query_features(ctx, 
->>> features_wanted);
->>>
->>> if (features_supported & XDP_META_RX_HASH)
->>>   hash = bpf_xdp_metadata_rx_hash(ctx);
->>>
->>> ...etc
->>
->> I'm not too happy about having the bitmasks tbh :-(
->> If we want to get rid of the cost of those _supported calls, maybe we
->> can do some kind of libbpf-like probing? That would require loading a
->> program + waiting for some packet though :-(
->>
->> Or maybe they can just be cached for now?
->>
->> if (unlikely(!got_first_packet)) {
->>  have_hash = bpf_xdp_metadata_rx_hash_supported();
->>  have_timestamp = bpf_xdp_metadata_rx_timestamp_supported();
->>  got_first_packet = true;
->> }
+On Thu, Dec 08, 2022 at 02:05:36AM -0800, syzbot wrote:
+> Hello,
 > 
-> hash/timestap/csum is per packet .. vlan as well depending how you look at
-> it..
-
-True, we cannot cache this as it is *per packet* info.
-
-> Sorry I haven't been following the progress of xdp meta data, but why did
-> we drop the idea of btf and driver copying metdata in front of the xdp
-> frame ?
+> syzbot found the following issue on:
 > 
+> HEAD commit:    e3cb714fb489 Merge branch 'for-next/core' into for-kernelci
 
-It took me some time to understand this new approach, and why it makes
-sense.  This is my understanding of the design direction change:
+This commit has a known-broken parent where some uaccess copies appeared to
+result in stack corruption:
 
-This approach gives more control to the XDP BPF-prog to pick and choose
-which XDP hints are relevant for the specific use-case.  BPF-prog can
-also skip storing hints anywhere and just read+react on value (that e.g.
-comes from RX-desc).
+  https://lore.kernel.org/linux-arm-kernel/Y44gVm7IEMXqilef@FVFF77S0Q05N.cambridge.arm.com/
 
-For the use-cases redirect, AF_XDP, chained BPF-progs, XDP-to-TC,
-SKB-creation, we *do* need to store hints somewhere, as RX-desc will be
-out-of-scope.  I this patchset hand-waves and says BPF-prog can just
-manually store this in a prog custom layout in metadata area.  I'm not
-super happy with ignoring/hand-waving all these use-case, but I
-hope/think we later can extend this some more structure to support these
-use-cases better (with this patchset as a foundation).
+... which has now been dropped from the arm64 for-next/core branch, but
+anything found on commit e3cb714fb489 will be suspect due to that.
 
-I actually like this kfunc design, because the BPF-prog's get an
-intuitive API, and on driver side we can hide the details of howto
-extract the HW hints.
+This *might* a manifestation of the same issue; I'll have a go at reproducing
+it locally.
 
+Thanks,
+Mark.
 
-> hopefully future HW generations will do that for free ..
-
-True.  I think it is worth repeating, that the approach of storing HW
-hints in metadata area (in-front of packet data) was to allow future HW
-generations to write this.  Thus, eliminating the 6 ns (that I showed it
-cost), and then it would be up-to XDP BPF-prog to pick and choose which
-to read, like this patchset already offers.
-
-This patchset isn't incompatible with future HW generations doing this,
-as the kfunc would hide the details and point to this area instead of
-the RX-desc.  While we get the "store for free" from hardware, I do
-worry that reading this memory area (which will part of DMA area) is
-going to be slower than reading from RX-desc.
-
-> if btf is the problem then each vendor can provide a bpf func(s) that would
-> parse the metdata inside of the xdp/bpf prog domain to help programs
-> extract the vendor specific data..
+> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13d5c11d880000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=ec7118319bfb771e
+> dashboard link: https://syzkaller.appspot.com/bug?extid=09329bd987ebca21bced
+> compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+> userspace arch: arm64
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145daef3880000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1313d497880000
 > 
-
-In some sense, if unroll will becomes a thing, then this patchset is
-partly doing this.
-
-I did imagine that after/followup on XDP-hints with BTF patchset, we
-would allow drivers to load an BPF-prog that changed/selected which HW
-hints were relevant, to reduce those 6 ns overhead we introduced.
-
---Jesper
-
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/832eb1866f2c/disk-e3cb714f.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/5fd572b7d96d/vmlinux-e3cb714f.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/34c82908beda/Image-e3cb714f.gz.xz
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+09329bd987ebca21bced@syzkaller.appspotmail.com
+> 
+> x8 : 0000000000040574 x7 : ffff80000b22f58c x6 : 0000000000000000
+> x5 : 0000000000000000 x4 : 0000000000000001 x3 : 0000000000000000
+> x2 : 0000000000000002 x1 : ffff0000c60f3eb8 x0 : ffff0000c60f3480
+> Kernel panic - not syncing: kernel stack overflow
+> CPU: 1 PID: 3074 Comm: syz-executor169 Not tainted 6.1.0-rc7-syzkaller-33097-ge3cb714fb489 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/30/2022
+> Call trace:
+>  dump_backtrace+0x1c4/0x1f0 arch/arm64/kernel/stacktrace.c:156
+>  show_stack+0x2c/0x54 arch/arm64/kernel/stacktrace.c:163
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0x104/0x16c lib/dump_stack.c:106
+>  dump_stack+0x1c/0x58 lib/dump_stack.c:113
+>  panic+0x218/0x508 kernel/panic.c:274
+>  nmi_panic+0xbc/0xf0 kernel/panic.c:169
+>  panic_bad_stack+0x134/0x154 arch/arm64/kernel/traps.c:886
+>  handle_bad_stack+0x34/0x48 arch/arm64/kernel/entry-common.c:849
+>  __bad_stack+0x78/0x7c arch/arm64/kernel/entry.S:552
+>  mark_lock+0x4/0x1b4 kernel/locking/lockdep.c:4595
+>  lock_acquire+0x100/0x1f8 kernel/locking/lockdep.c:5668
+>  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:126 [inline]
+>  _raw_spin_lock_bh+0x54/0x6c kernel/locking/spinlock.c:178
+>  spin_lock_bh include/linux/spinlock.h:355 [inline]
+>  lock_sock_nested+0x88/0xd8 net/core/sock.c:3450
+>  lock_sock include/net/sock.h:1721 [inline]
+>  sock_map_close+0x30/0x4bc net/core/sock_map.c:1610
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  sock_map_close+0x400/0x4bc
+>  inet_release+0xc8/0xe4 net/ipv4/af_inet.c:428
+>  inet6_release+0x3c/0x58 net/ipv6/af_inet6.c:488
+>  __sock_release net/socket.c:650 [inline]
+>  sock_close+0x50/0xf0 net/socket.c:1365
+>  __fput+0x198/0x3e4 fs/file_table.c:320
+>  ____fput+0x20/0x30 fs/file_table.c:348
+>  task_work_run+0x100/0x148 kernel/task_work.c:179
+>  exit_task_work include/linux/task_work.h:38 [inline]
+>  do_exit+0x2dc/0xcac kernel/exit.c:820
+>  do_group_exit+0x98/0xcc kernel/exit.c:950
+>  get_signal+0xabc/0xb2c kernel/signal.c:2858
+>  do_signal+0x128/0x438 arch/arm64/kernel/signal.c:1076
+>  do_notify_resume+0xc0/0x1f0 arch/arm64/kernel/signal.c:1129
+>  prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
+>  exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
+>  el0_svc+0x9c/0x150 arch/arm64/kernel/entry-common.c:638
+>  el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
+>  el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:584
+> SMP: stopping secondary CPUs
+> Kernel Offset: disabled
+> CPU features: 0x00000,040e0108,4c017203
+> Memory Limit: none
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
