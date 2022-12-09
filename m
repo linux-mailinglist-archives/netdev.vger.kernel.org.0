@@ -2,82 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44B2964885C
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 19:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E002648869
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 19:25:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229815AbiLISUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 13:20:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47988 "EHLO
+        id S229762AbiLISZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 13:25:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiLISUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 13:20:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A745A11808
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 10:20:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 427E9622F8
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 18:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 92313C433F1;
-        Fri,  9 Dec 2022 18:20:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670610017;
-        bh=E9lnkjbSzFArOBRgEvAEobha87/xQuT8L7xnhaSDufw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gbz+zbdJMQ0g5kDctPsRFMsBa0QSAiLq5Wpq2C8g8/CXPNq9+OfTIA9PlzqXvKNX7
-         YaukCJEGc3jJjeO455xujNI3qYdtUCXr8RVqF2zrPvr4yxPDlHT/Nt0iQm7fcZMFmi
-         ZO54Yam1bQ9KbGRtZrQ9Q13oGm/NS/39w+DT35l1J6rNm+LINZv+OSQN1j3Sy3rppj
-         0nIb8n3euoJcOIAjOfL67c+ZKoFlOdD+I7KmETlVxo0v+Gg2kwdcRMrEjfvQs8EwAg
-         IFvz8ZJNwZRF3HT/wAPopziViAmBjJ6lVdY8BUmIFT9cOU73g0zRxd5e/7yF5cNc5g
-         23pbiITAVd4VQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73A33C41612;
-        Fri,  9 Dec 2022 18:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229640AbiLISZ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 13:25:29 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B141925EB9
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 10:25:27 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id q10so3577344qvt.10
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 10:25:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=p2tFGeL4IKHMOLG8K5mBjsPyTa/gwxZuO/Te7d5SkhM=;
+        b=R1vwKVYxDcZhuATY+em4HS+UfJ6NrYR93eYQSQkP/OWCN4igMlPzqxVqlrHNSJdMuk
+         /E0ywCJEKO+mIaZDAXA6HXw/X1TV964NRZrcyezSbFFg4WgU4w2lnAS1BSNf5QmFx0kz
+         1WkDjTNi3H5RBcykqyMCXLYk65nnMVhnooMyU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=p2tFGeL4IKHMOLG8K5mBjsPyTa/gwxZuO/Te7d5SkhM=;
+        b=ylccZV4ku8vX4i9Hz79XRTqg5GwV5QWLbYSwsrBGrz+SdUy+htck6HwNdA2trPKnGo
+         2ja+fzsc/jj8iqAL3E5izoxj+xoFjnmXj7ynE2I3uA1jkFXq77MRTvzKydX4tPeBbIob
+         Yfm/zwCz8Q5SFo2idz05FnEZaVlC5CdpXHYk2qvAVUnY6MrHSzmDmAMvtBSyhE0oL7pw
+         qetf7a/uaXkZyAfTrjn3O+x+a8rr8znDWxMKij/hQnegPpFnVVqi3aYxVFDQYxIi6ZBE
+         twZjuZ8cwDlJHzLaDrod2vs0RPCFxSLLEMax0fZi1JcwvBP7MIS0WP6asincgRMyexL0
+         uVzw==
+X-Gm-Message-State: ANoB5pmgeFW/cMiPhT4nPffE3x5Z16NyTQNr7bHVnOe0VJuq3N+T8ZUv
+        AENDumtjPxNPLnChxO2SRrREj7/gPVlHJ5cP
+X-Google-Smtp-Source: AA0mqf4kvGFT0/bl+vWU7+btuPTyF5sCwJpa3bFpo39xQ7TWXNhIc8W0IR0uCRhfXGkaa9+tDV9vzQ==
+X-Received: by 2002:a05:6214:3b13:b0:4c6:91f8:7093 with SMTP id nm19-20020a0562143b1300b004c691f87093mr8731131qvb.23.1670610326550;
+        Fri, 09 Dec 2022 10:25:26 -0800 (PST)
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com. [209.85.219.49])
+        by smtp.gmail.com with ESMTPSA id dm49-20020a05620a1d7100b006bbc3724affsm379784qkb.45.2022.12.09.10.25.25
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Dec 2022 10:25:25 -0800 (PST)
+Received: by mail-qv1-f49.google.com with SMTP id h10so3589914qvq.7
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 10:25:25 -0800 (PST)
+X-Received: by 2002:ad4:4101:0:b0:4b1:856b:4277 with SMTP id
+ i1-20020ad44101000000b004b1856b4277mr69642655qvp.129.1670610325096; Fri, 09
+ Dec 2022 10:25:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2] ip-link: man: Document existence of netns argument
- in add command
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167061001747.13827.8092969149707001850.git-patchwork-notify@kernel.org>
-Date:   Fri, 09 Dec 2022 18:20:17 +0000
-References: <25bdd4763e23c73aca71f17d43753311de0c268a.1670525490.git.dxu@dxuuu.xyz>
-In-Reply-To: <25bdd4763e23c73aca71f17d43753311de0c268a.1670525490.git.dxu@dxuuu.xyz>
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org,
-        stephen@networkplumber.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221208205639.1799257-1-kuba@kernel.org> <20221208210009.1799399-1-kuba@kernel.org>
+In-Reply-To: <20221208210009.1799399-1-kuba@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 9 Dec 2022 10:25:09 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wji_NB6hO+35Ruty3DjQkZ+0MkAG9RZpfXNTiWv4NZH3w@mail.gmail.com>
+Message-ID: <CAHk-=wji_NB6hO+35Ruty3DjQkZ+0MkAG9RZpfXNTiWv4NZH3w@mail.gmail.com>
+Subject: Re: [PULL] Networking for v6.1 final / v6.1-rc9 (with the diff stat :S)
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Dec 8, 2022 at 1:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> There is an outstanding regression in BPF / Peter's static calls stuff,
 
-This patch was applied to iproute2/iproute2.git (main)
-by Stephen Hemminger <stephen@networkplumber.org>:
+Looks like it's not related to the static calls. Jiri says that
+reverting that static call change makes no difference, and currently
+suspects a RCU race instead:
 
-On Thu,  8 Dec 2022 11:53:06 -0700 you wrote:
-> ip-link-add supports netns argument just like ip-link-set. This commit
-> documents the existence of netns in help text and man page.
-> 
-> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
-> ---
->  ip/iplink.c           | 1 +
->  man/man8/ip-link.8.in | 6 ++++++
->  2 files changed, 7 insertions(+)
+  https://lore.kernel.org/bpf/Y5M9P95l85oMHki9@krava/T/#t
 
-Here is the summary with links:
-  - [iproute2] ip-link: man: Document existence of netns argument in add command
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=1a408bda2eec
+Hmm?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+                  Linus
