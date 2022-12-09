@@ -2,148 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C85EC647E8D
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 08:28:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3044647E8A
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 08:28:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbiLIH2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 02:28:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60156 "EHLO
+        id S229977AbiLIH2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 02:28:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiLIH1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 02:27:19 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9097F40454;
-        Thu,  8 Dec 2022 23:27:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670570824; x=1702106824;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=kVJXGUEL1IK7sv2durqWviWr/jhrNhCEOoQFcMo4sd8=;
-  b=zMGGKyDHLuozSUdwYc7i9ahWTw/xU5Efu7hKXshU7aX0DVwflU0pz1Wz
-   WzLt4MPz16THpZ0XXbNBwaMOD0353nYV26UYcz7ALn/NaYvLCrbVQqugG
-   2js8GUeF8mYD824chs5Ev82SuxHECC7FTvjNXeWl3RxozsB1IIANK+GK3
-   spa6XGNAxLEQTRMy/qq4Ynu/7Gjy/adlGGq9EKjCmXDMB+Cuvat3KeS+w
-   byUDItCp3OzC3tixR+mWW6PtL7rRb9BlJp4xRChLBkGBI7Cy4zMML+MIO
-   +u78Z22a/CT/kaHP3CHFqN9RUk1PKHA5PWtfAmSjlVRckLRHTdyWQaEcL
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,230,1665471600"; 
-   d="scan'208";a="127292958"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2022 00:27:03 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 9 Dec 2022 00:27:03 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 9 Dec 2022 00:26:57 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
-        <richardcochran@gmail.com>, <ceggers@arri.de>
-Subject: [Patch net-next v3 13/13] net: dsa: microchip: ptp: lan937x: Enable periodic output in LED pins
-Date:   Fri, 9 Dec 2022 12:54:37 +0530
-Message-ID: <20221209072437.18373-14-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20221209072437.18373-1-arun.ramadoss@microchip.com>
-References: <20221209072437.18373-1-arun.ramadoss@microchip.com>
+        with ESMTP id S230092AbiLIH1U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 02:27:20 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9C940921
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 23:27:04 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id h12so4288712wrv.10
+        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 23:27:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KSkxp9G2CF6S5rppPANiUey7SnfmSrWPD2ZRfSXSe9c=;
+        b=wporLZhgoBS3JLFLF2lvV7ZmfJIVRMqul3s5HKG80kGORLsusrqamCFfWUi4gk//e7
+         6sAo17PByF0+HJALTxuNovlahMVA+t+gx8r76/bqrEuPYySgzz5+6x0ZLVuFOJwnQZS+
+         8Qejh6dBMku5x155Tx0Eosw3KFuIrnqjRcHX9LS62EZWDeM+8IU6q6plOSXvbtHJ+rIM
+         UNmYQe87Nkz4Jn+LeUnB7vbjVb85ApvduXTFEpXWjifr+wxImEHBxVwLAQnVhv0ufpHS
+         GpXBBcl6fu3s5B0D8W0ThrJH2hL3UZVtVwbJtqMuVKj2ukipe3nr9dyDqOIkbedwdL0t
+         dfqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KSkxp9G2CF6S5rppPANiUey7SnfmSrWPD2ZRfSXSe9c=;
+        b=Z4P9rLdMqiRuwGv9FJYnWPP8v+Ix1X25Jg5N1hUG73T2ekeJUllmIl0vz6wn/JI7Hz
+         5F64gdfulQKg292ft2tRJwqZ5Rlj7ifW9BrmqXaVArfOXG829S9WrqRU6H10B4iwYcC5
+         xs9RSSYbMkqYjPD6gGGePGCNoDFjYsJ//CHZoqKlVM9RgLtHM+Aq2XV+L2Z5T2J5GXrw
+         +TxbjHy+g7pQEFEZg4a0AD4c9VxPutrYpqHHXt0WWKbF0a8EBHdxvgDEO+5nGYs87xkZ
+         FZs+KEhvrN5Yoe3MOnGLua0+L3hdsjU9Jf7Hdu+82hbYn5CaqzGLuJiO90/FvgXHZNd7
+         RrGw==
+X-Gm-Message-State: ANoB5pkgxd8lCyETtAD12YQ3HOsNkOu9VXdQPnkaSZ8BTnKVZKKrM0/u
+        kC4n1uFBnmwEdo8l/kr27Sr5NQ==
+X-Google-Smtp-Source: AA0mqf55D9ni2lDtVr983PKyKzMmoHwLgw9rWJmy5wAILZnGl3Y4d2jpeaFjm06+4eyZL6iP/076Ow==
+X-Received: by 2002:a05:6000:1c1d:b0:236:8cca:d3c9 with SMTP id ba29-20020a0560001c1d00b002368ccad3c9mr3415610wrb.53.1670570823189;
+        Thu, 08 Dec 2022 23:27:03 -0800 (PST)
+Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
+        by smtp.gmail.com with ESMTPSA id j18-20020a5d5652000000b002427bfd17b6sm765297wrw.63.2022.12.08.23.27.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Dec 2022 23:27:02 -0800 (PST)
+Message-ID: <6f71f4e4-9224-efa0-dbe2-e1b35b5526e2@blackwall.org>
+Date:   Fri, 9 Dec 2022 09:27:01 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net-next 01/14] bridge: mcast: Do not derive entry type
+ from its filter mode
+Content-Language: en-US
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, roopa@nvidia.com, mlxsw@nvidia.com
+References: <20221208152839.1016350-1-idosch@nvidia.com>
+ <20221208152839.1016350-2-idosch@nvidia.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20221208152839.1016350-2-idosch@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is difference in implementation of per_out pins between KSZ9563
-and LAN937x. In KSZ9563, Timestamping control register (0x052C) bit 6,
-if 1 - timestamp input and 0 - trigger output. But it is opposite for
-LAN937x 1 - trigger output and 0 - timestamp input.
-As per per_out gpio pins, KSZ9563 has four Led pins and two dedicated
-gpio pins. But in LAN937x dedicated gpio pins are removed instead there
-are up to 10 LED pins out of which LED_0 and LED_1 can be mapped to PTP
-tou 0, 1 or 2. This patch sets the bit 6 in 0x052C register and
-configure the LED override and source register for LAN937x series of
-switches alone.
+On 08/12/2022 17:28, Ido Schimmel wrote:
+> Currently, the filter mode (i.e., INCLUDE / EXCLUDE) of MDB entries
+> cannot be set from user space. Instead, it is set by the kernel
+> according to the entry type: (*, G) entries are treated as EXCLUDE and
+> (S, G) entries are treated as INCLUDE. This allows the kernel to derive
+> the entry type from its filter mode.
+> 
+> Subsequent patches will allow user space to set the filter mode of (*,
+> G) entries, making the current assumption incorrect.
+> 
+> As a preparation, remove the current assumption and instead determine
+> the entry type from its key, which is a more direct way.
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/bridge/br_mdb.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
+> index ae7d93c08880..2b6921dbdc02 100644
+> --- a/net/bridge/br_mdb.c
+> +++ b/net/bridge/br_mdb.c
+> @@ -857,17 +857,14 @@ static int br_mdb_add_group(const struct br_mdb_config *cfg,
+>  	 * added to it for proper replication
+>  	 */
+>  	if (br_multicast_should_handle_mode(brmctx, group.proto)) {
+> -		switch (filter_mode) {
+> -		case MCAST_EXCLUDE:
+> -			br_multicast_star_g_handle_mode(p, MCAST_EXCLUDE);
+> -			break;
+> -		case MCAST_INCLUDE:
+> +		if (br_multicast_is_star_g(&group)) {
+> +			br_multicast_star_g_handle_mode(p, filter_mode);
+> +		} else {
+>  			star_group = p->key.addr;
+>  			memset(&star_group.src, 0, sizeof(star_group.src));
+>  			star_mp = br_mdb_ip_get(br, &star_group);
+>  			if (star_mp)
+>  				br_multicast_sg_add_exclude_ports(star_mp, p);
+> -			break;
+>  		}
+>  	}
+>  
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz_ptp.c     | 26 +++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_ptp_reg.h |  8 ++++++++
- 2 files changed, 34 insertions(+)
-
-diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
-index ccb635585721..99aae649c4a7 100644
---- a/drivers/net/dsa/microchip/ksz_ptp.c
-+++ b/drivers/net/dsa/microchip/ksz_ptp.c
-@@ -33,6 +33,28 @@
- 
- static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts);
- 
-+static int ksz_ptp_tou_gpio(struct ksz_device *dev)
-+{
-+	int ret;
-+
-+	if (!is_lan937x(dev))
-+		return 0;
-+
-+	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, GPIO_OUT,
-+			GPIO_OUT);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz_rmw32(dev, REG_SW_GLOBAL_LED_OVR__4, LED_OVR_1 | LED_OVR_2,
-+			LED_OVR_1 | LED_OVR_2);
-+	if (ret)
-+		return ret;
-+
-+	return ksz_rmw32(dev, REG_SW_GLOBAL_LED_SRC__4,
-+			 LED_SRC_PTP_GPIO_1 | LED_SRC_PTP_GPIO_2,
-+			 LED_SRC_PTP_GPIO_1 | LED_SRC_PTP_GPIO_2);
-+}
-+
- static int ksz_ptp_tou_reset(struct ksz_device *dev, u8 unit)
- {
- 	u32 data;
-@@ -229,6 +251,10 @@ static int ksz_ptp_enable_perout(struct ksz_device *dev,
- 	if (ret)
- 		return ret;
- 
-+	ret = ksz_ptp_tou_gpio(dev);
-+	if (ret)
-+		return ret;
-+
- 	ret = ksz_ptp_tou_start(dev, request->index);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-index dbccfedf89e4..6fea39629460 100644
---- a/drivers/net/dsa/microchip/ksz_ptp_reg.h
-+++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-@@ -6,6 +6,14 @@
- #ifndef __KSZ_PTP_REGS_H
- #define __KSZ_PTP_REGS_H
- 
-+#define REG_SW_GLOBAL_LED_OVR__4	0x0120
-+#define LED_OVR_2			BIT(1)
-+#define LED_OVR_1			BIT(0)
-+
-+#define REG_SW_GLOBAL_LED_SRC__4	0x0128
-+#define LED_SRC_PTP_GPIO_1		BIT(3)
-+#define LED_SRC_PTP_GPIO_2		BIT(2)
-+
- /* 5 - PTP Clock */
- #define REG_PTP_CLK_CTRL		0x0500
- 
--- 
-2.36.1
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
