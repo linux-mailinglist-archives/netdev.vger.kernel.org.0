@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B67EE6487B9
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 18:28:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6794D6487BA
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 18:28:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbiLIR2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 12:28:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48166 "EHLO
+        id S230133AbiLIR2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 12:28:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiLIR2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 12:28:36 -0500
+        with ESMTP id S230057AbiLIR2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 12:28:37 -0500
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2076.outbound.protection.outlook.com [40.107.20.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C5815709
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 09:28:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9425F5C0C0
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 09:28:36 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K3cyOStkIQO5qPeWyaxN+1TzHuFT7f5NsOmtHrFdGlSpEvIO9h3MKoPHd7B1Zt+XEIQhkTdcPHvZDyt41K+HaHz04MXqHGR2aO2gAgq8wDY2bfguFItGSr5g2Bb/yfjv2lgT9FsLL/jqR78mGE09wQ+ugMPkbTrUtrnuPbzGu+Whl/dmxmiSIR0vFPlU9KvTFJr8vqHgcV5XeQ57POCFNceDeTWGZVRDF4gcqaXylF84ZsjtXrDTdgz3OLlVrkpSbr/k5mL9vehntxz6EXGQcL8RlKqa6WgZ8NBBfbJH5+0e0Kp0NNLTS4eRR1xxTonBwbhOj2TEpwO8tfZLhqA/Yg==
+ b=QpiNzHdp1bPQuztAcPIV5VHyPlHcNs2kK+q8e5PXQxuI1zJYSw80c8+c0O9nLgbnDwd21u7nOABiC/q2KBtd+Sq5gQ9lCDEbfoqv8PC7Vdk6nzCk5Qd3u4lGk7N93H8AyCrV1mV/NMHlzarseaVRMMLn/25ssCUM0olk31CDL9ct5EhH2GN+4K0LpbOLJYO8fk6bxbUV5yHSFEVrrixk34NbP5O/Gwj+81QXUz7aJ875++N4RUGuIUB7LZluWqVgWGzRdRJS/8axDNMd8XpePNdrNFs2JRuQUAvr1b1s9ldtd1b1sXU2xAxz8poAC62xyP+BSwqI3i6FbeymMLUVTQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AT2WEYDOkBawaok8Nm2T8NPXUxbz6x56Bp5+A781204=;
- b=b2JhFV2txDviOoAfdRvnRQDuSo9zcq2zL3KO6Uht5OLVh8PLETSqGMtyvR4odZmR8idzzQSdePdO/BXHAXNPmikV6dwyST92LLDpJ08xZ3gQiwy6veZgpSm1UN2hbIXBrRozMOhWYe+MwZ/j/XXKil565uz8o0omulpHBMtdLAteRwcsNuJGQPiFbNFC13dY7mqQwEIUY1q8xJ8cw4xd6unaWlZt7XDKV/sJbue4+rjsCXSutfwJN9gHkwyTq8GzJhMGogkzxVxEeD53ZZ0MyN0gR8vEKLRfrDblg/8/Xi19nPopDxMBH8NmGgmQB3XpYhWWYdMn8Ij5a7RGH85YqA==
+ bh=5GsrLNG8T/9RnNWZFcWKvjFUL4UrGJiFenMMYP8uq4c=;
+ b=b1OgBJyqyrISKfU1DdqtmrEc+XGof4flXCHcKSn1GIldixF8Je0OevhcwthyFvmK7TsGdMARh/xJsLzAEzklxQfT7FixUX2efCvYIvIf7oT5gJbPSLjfxdqUuYcxF/65SAAiLjsrLQBpNm9JQkvYLhQuggrOUy39sB4hToKr0LE5MEKjG783SXlsH8fabXhBiLgmye1yl09XF8rSDDfC/Go2+yIjnBEP5iFKVa+EhHfmX3uyWV+tysuL3qpDQ3/L7u0fSvVqpX9SFz20aFmpFyKnt6+ew/LV+pUeQrAJrOpzHOyPKK5kPPJW98oC+nsaN2mC7auqtm2RlmmWrAQqgA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AT2WEYDOkBawaok8Nm2T8NPXUxbz6x56Bp5+A781204=;
- b=f9vhZXLBVyaYeZB14GBjMBRkYxEgz3eM1dbURCRvcU7W9eeneD5KVeImyKB6RkZpTJRG0ebSl3Q015RiAlSeTo2TMCmNJgWrMgX6l8qUkrvaejun/IqgTKtjFgyzejvAuOpSOZqKUOyy1OdyFQ+5FbTxvVc7zWMBK4G3xNPewWY=
+ bh=5GsrLNG8T/9RnNWZFcWKvjFUL4UrGJiFenMMYP8uq4c=;
+ b=TynA0KFDk9j3Pra/fvR5MhtHeNiuy7Ti0q/FZ2xrZTnnbC8die2AbollnXe4sxHJ8pJh277gF+AL6FKIdctndwC0mYVJ5ymoLF5AxMFurZf+hLIg18E+VI5pHkedZjog6x93v8l2j1gK1CLQnucPjp06m3OD1+FCTR2jB5eqYCU=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DBAPR04MB7253.eurprd04.prod.outlook.com (2603:10a6:10:1a2::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.10; Fri, 9 Dec
- 2022 17:28:31 +0000
+ 2022 17:28:33 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5880.014; Fri, 9 Dec 2022
- 17:28:31 +0000
+ 17:28:33 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -49,9 +49,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>,
         "Hans J. Schultz" <netdev@kapio-technology.com>,
         Saeed Mahameed <saeed@kernel.org>
-Subject: [PATCH v2 net-next 3/4] net: dsa: mv88e6xxx: replace ATU violation prints with trace points
-Date:   Fri,  9 Dec 2022 19:28:16 +0200
-Message-Id: <20221209172817.371434-4-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 4/4] net: dsa: mv88e6xxx: replace VTU violation prints with trace points
+Date:   Fri,  9 Dec 2022 19:28:17 +0200
+Message-Id: <20221209172817.371434-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221209172817.371434-1-vladimir.oltean@nxp.com>
 References: <20221209172817.371434-1-vladimir.oltean@nxp.com>
@@ -63,51 +63,51 @@ X-ClientProxiedBy: FR3P281CA0060.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DBAPR04MB7253:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2ce7a080-1794-49cc-c2d0-08dada0acae5
+X-MS-Office365-Filtering-Correlation-Id: ffeeb3ea-7961-4e2e-b8ed-08dada0acb80
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uh52DhvAX+CtQudxWAdx+GB781uqksZWr2090FrI0scJYu7v/QhBsR1Zk8OFQuhYevQu5ceZN7yfj0kC15bZG2p72NI2GquWaO5zXndZrguNAlON57aFxj4GeTzg5uuRr498iHO9V4u9NPdqC4UPRFMP0RzjFQVKlRn+BkfOT7b9rK8DadTmbVykgCfrdFLsu8HwGTA9oiU1VBC4cLxA5bIzLPKNx+hzx1LrvgG746gG1dESJdVrds9CzjnN+CIwmP+Lu+ukI/TJg0qF7K0rp7Fzt4SHKe6AKa37LPpYzgm68RvIujZfjNquiwayMpF3AXPh8yhR2MN7q8lCaFyWlhc4j+2ZeSe8X84JSyeXkwzlY8cLAvhY/GFpbrRjpNQOBclLvxH1a7LGmOS7PX1Rt3jjf4kznXDPPtdQFAf0Hpjgz2wJbijDE0+ieuSHBjU7rKjZyJ/Qzsix3SapIBYF5Y+Ez7M6ujdc/yhZDvTtRAOCBsd25S/IsPneTEjhuwvsEAe0nAQ6mqkQAX46Vv+JlF3dy+yjO4myj/SVeBwtPZcRtFcoVtwqYcYNN4no83rY3gillONYOIxRVNtCjW13l1uQUDx6i8CPWXBhmMGY8XDHz1yFoPaIDUN3P99NpuIQsgnnlEXJQ/TajdidF9m+5bOqzYFV3P2t4Aaz/PnUBTtXa2f9oTqRV4yKpSb0VG6oFQ0dKPVBcZPVMl4NxPQIrQ==
+X-Microsoft-Antispam-Message-Info: lXBa6nRcbgMvY4TNl9AzLb8TsmtPCTzRdF0ppH9JLZDOP+/6c1H7r5Y4bI7l3M4Ly4uYAq2d0apMKS1i/i1EjivP2svwQjJWO8leUudyUZL/JcKiLvfmdpIyoLWuZZhMTrFVB8qg3EXue4p1E4ixM6xrlnl9Dgl4Ej8BgbcGicVobZBWoxAkd65BZz9sHo4b4sI2LC2hNUGtYEijTeJ7ZnIOrCUV6Riqmz16d/495T6lAtTiEso7w/LmRnvgaQGCLRONQIjEaUC5Wdon7VEMuamI06/W3tSv3N4itsSfHyYIdNK+/UxsH/eDqBTf7p9XcLrTyvAUDq9U1TQtX5SDKonHFKfH0Isv+Ey2IMgAPssqzplkJZnKvKtFE0NLUoTuXIMgqAg+fdpwpvfuqUwW5AhM4OULCz7cvLDyoeY+xUIUk4shMuBfLiEeJcd393aPhEI8g2vQcZFmSEM1IxSIvyAnp62XSAu4IboT1S+a0tmajwYX85qUzM3B3xFAHA3jV9Zr886TJOvA03M9Usi5f13TlTEwPk2iRfUjKfI+1019B7gm6V8nzAQGsHz6ksWA/ATTkr54bzpO3s9ke3vpP7l/yNoWbuSRhaHHDCnwLJXejSyTWbgRMwYCFWWLYWFeBykCNPu6ea2IkvR7JYb9aiJuimvFx3Yais5a41ncRdig7yMwLugpEfjBegGdmg4M
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(136003)(396003)(376002)(346002)(451199015)(86362001)(8676002)(6512007)(26005)(6506007)(6486002)(6666004)(8936002)(52116002)(36756003)(66556008)(66476007)(66946007)(83380400001)(38100700002)(4326008)(54906003)(6916009)(316002)(5660300002)(41300700001)(38350700002)(44832011)(2616005)(478600001)(186003)(2906002)(1076003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DZMxqSlAqyegPSkhrMAWAVyISYzHlYDgeiNPfa0ClwuKaR8GxQbY+KuTsVrb?=
- =?us-ascii?Q?5G3o+lZ+ABUQaeX7Woblnxzbz50xynFpAt9C2iqFz/AXxNjNdsFriu9HcXEz?=
- =?us-ascii?Q?6OzXJdRcAH5EzgU0wm6Vl1pqY61DGADq5tnPvCeDI66OklyLalHNp1B+RHl4?=
- =?us-ascii?Q?46eppU5LXda+Ce+/GOerZGg5hNB+UcM0mY9R6IWNKJyz5J8yG4LqgSnkoQ+t?=
- =?us-ascii?Q?g7det1goVprcUwMKxsUrFsLqXa/MlE8gK+/HUafiMGU4JB1Hnic7BQWlAE8K?=
- =?us-ascii?Q?+rgEnGtQsq4EU4fk9AGLraGXh3neNVHhgE2MdRVhHhZuAjIAyozH1o+O0dO8?=
- =?us-ascii?Q?ThvEYcpqHfbuTnuPumo3WX6Ly7DJoKeEB34UjOJIRJpibWPK5uhep7Psp5t9?=
- =?us-ascii?Q?TgnOyd/CNASuZbRHgsnvn2o/g45hb5x7ClSvlAvx8rs4r+8HMg7wpqpTAMmj?=
- =?us-ascii?Q?lQkHhSip+jT/jvMUoc0C8njW/v9Ml1iAeyB9pycLv6yKQmSberSBxW/S8Hs0?=
- =?us-ascii?Q?YTE92b8iTViFk54F6ccgPDxfbPrTTwpRoR/Cs738P2M9+GE6DYkaG4QJQ9ac?=
- =?us-ascii?Q?LQzTDeeH8dIoKr7vW0EpFrO+TWLNVI3nrHJH/EgYmPf6BIyVBBI/8/8LluBP?=
- =?us-ascii?Q?OfV3crcasp3sm7e8ZRN8mRaIpUGvG0hpwo2cC0rlMfvAVlI+gkAY+OIW7/Hf?=
- =?us-ascii?Q?M2fY1pg7M1fkeHK29Gnb53NnxwnYiyT4oaFcVVf+4IfBBVwizeKhGEq1pbsT?=
- =?us-ascii?Q?1I7DuSr63LK+t34VhKtbNto2o17MBHdLxnx8hJvRZq74V/RT+gAhf6iZy5ZW?=
- =?us-ascii?Q?G6KbLiBQ7+YwTX92nTkXQSgZciU3sU/TzDn9ZHbUJJb7MtL4EATpqV4DVjlP?=
- =?us-ascii?Q?XvkVyu7P7anHOoBMYmcl1I4+GpFPCgy+xkGNWPNp2u2F5PciyZuJIDTRUYSq?=
- =?us-ascii?Q?VjEN7MAnRuI3WFb17SaYSehAu4fV0UYRXNGVi1BCp7iEdmhxj/k1ft3uGk8R?=
- =?us-ascii?Q?DAlGf8QgO5jZLQtA+uOJ3sN3up+doeClvFiy7b2yot7hQd7BILNxVeC3NDn8?=
- =?us-ascii?Q?4eXsGcokFFcjuKMiKspS5WZafhTjZayfdp4HugTOPXYfZiavHpkH3TF23Pgs?=
- =?us-ascii?Q?T0pstuftF+CXmLhh9x8tl3fR5vQD/7KMuEAKVySnEVB6E4Qf98SwO3cmbrqo?=
- =?us-ascii?Q?NL8CYh3XXNx23SwflF/f5N8PZbqeJC8CJXLeSlqqfcJ9aoK6UzCoHhq3QZp9?=
- =?us-ascii?Q?e4I0XgP+2oeU4vGpdlCr7i7zkshPUniw0PbHM3M6aABjbSiS8nFuJ+jduOhC?=
- =?us-ascii?Q?R9mP0rBoYa+pMtkcVcc8jNPBvWRImKkq/Csa5xVxBKWi7cZMMmme5GNTEdN9?=
- =?us-ascii?Q?T/0TutcK2nUhbMKQu9t+HGtNRRsTFHnO/kNCkTyDXvR6xIh2Qei0d1GCb4yM?=
- =?us-ascii?Q?QCCSCeEY4WOGJ/sfdcnBKKZqhZ5JJg7AoTs904TJkj63y14eWUJ9i44//HOo?=
- =?us-ascii?Q?Rh9RjkoN6AnBgm4Nzl4brXwlKHKBa+6Shd2sUCkde/0KayVWgjKpHymzydXA?=
- =?us-ascii?Q?8IU8GFWI8u0yCb1X/2RjNubIERMQAfkDm1kCnEB/AqUBhnchPNDdGgNdQrdM?=
- =?us-ascii?Q?gQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?K231cXXyKWJC+XoLAT8etOHZ+vmaXWXXFgRltOdRcNxFRwEiUgC9utjx2u10?=
+ =?us-ascii?Q?WVQ/3BkAw2LMmQ0/v6D3O/mYKnn8UU/eYtow3mv8fDmixzBC+LgiTIyU3bNf?=
+ =?us-ascii?Q?RVM9KR6E/1gNnZi4bfWGsyKvMKgjH2+Q0e7jLaR+Y8JcxThKswUtq2m5W+ei?=
+ =?us-ascii?Q?Mpbc2EvK3AAWtVbrZ6jDgr5Q1bkx91Sw+s5WWrrflcKW5k0dkmeNMw4KHx28?=
+ =?us-ascii?Q?JGGy/ID+Cje7VMvjBpTZJu0+hsBIFNvRjWoe3Q0WX8pc51RzoKtggf8ZSIkb?=
+ =?us-ascii?Q?QS7M3cDNmAk9W96XDIUsjJoy3LMfmwqvUtpihIjeXI7S0h422NsRtBQzPsIo?=
+ =?us-ascii?Q?IsgDKxfWngVf1ExjFQi4RlCdP+OnpJ+YygeMFj8pzRffwBWIMAPHW2Reu1Fp?=
+ =?us-ascii?Q?e2QYm/fzwRbkenK8SxOdOJV9Qdm8XHW4/H4QjaIg0K3jtuz6Ms6g3bJ9qd+Q?=
+ =?us-ascii?Q?ECVTx+s/Al3q8p74z8e8BUlDczpZcDq+Ym/dUJz5BmwQx37NH3OllbE6kYy3?=
+ =?us-ascii?Q?ESsuGH+Z77EP2sQ8U1bXyHslrynWsIHYR74jzgUtIuQGC0gVUI23cKsJ7Zip?=
+ =?us-ascii?Q?lmLqYp4939DcrXIRzlPmC+Py4XDY/Vbf7rcpjJG32Q/cUQkM4uF1eKo5LcTD?=
+ =?us-ascii?Q?5MAQwJCUpzwCnsxtJgDYADD1Dcrd+lvzT44M7Ok5aIm/VldhY6vmOUdQkQ6S?=
+ =?us-ascii?Q?rPGlMNEhUy9yVf9Nv5zsC7lQgA5wo4aynSlel7tADrPE3Otica0PpdXKr5Dn?=
+ =?us-ascii?Q?NHiKfzxwQ7YXi0bqWIq0JFeH6+QL19rGFDNZNSbAdak7xwMp7go8aSN4F0xv?=
+ =?us-ascii?Q?CJa3CC+IMZo4I4rNpJEPuov6t8HPf2fjgp5KO16VbrXQ6nsGF2cprw3eDLYl?=
+ =?us-ascii?Q?gpUFF06TBMTBfxlxIeiEgrs6UtO/i3WiPj8x99mTpPd0VJ50UxG8e6js9whW?=
+ =?us-ascii?Q?RcCh3BEIsdMnOm7my+t0xQxmlBP4ZIIvzsJB/JVkIexSKUe8IrQfmcyL5biE?=
+ =?us-ascii?Q?Cjy1oeT/capdB1qVVlRtsqP3wwPDZg3iEBi5bx2TF6zXgOi16ygyEJ3YL0CZ?=
+ =?us-ascii?Q?q+51OBmLJTXSojEVYBZ80DxWD/xD2C1PRRn3oVfz5huR4M9Ac1IQecADmfHu?=
+ =?us-ascii?Q?7rNZQh8g6s+m8w3nkjtAQSLzxLl16opOW7vtPBiubZF6syekEa/lUyqIxgm/?=
+ =?us-ascii?Q?7jDkL8ky5m2kiKaABG9nnwf/iKZ+ZWhIOKEY3T+Y9KkusnX0CGv9EGWg3zsd?=
+ =?us-ascii?Q?/Vl5GHXzN2viGmIQzIkn5QsxM0/bDDvbZ4MfwSV8Aiqc+x7ji474l/zbL1dD?=
+ =?us-ascii?Q?hqt75x8U30C2huSiVbRcEhYH48aH4kyPwawXhzSGcevoIAg9hqQht1hhSRkT?=
+ =?us-ascii?Q?4ujShUqn8I3TR+x/tpDdYfzruBtFo0nHtM63BPW+Dtfb4hReDyclaeMke+ua?=
+ =?us-ascii?Q?2jBAEDk2L+aYikqcW0WtvATwFhep+DlNplhCXn4QhyS0nPB8Uo4v26QlXav0?=
+ =?us-ascii?Q?UIex0xX2zIdgMNaIQ7BF8eTV/iPe7HRpdO1TSdpAwhvgEWkPZAD7nkIDsm0D?=
+ =?us-ascii?Q?mY45krVtk7gWbpYToR7D6llpjEQgXeZDzzDD1Dt353KXeUg6UtrqmhTIiMaB?=
+ =?us-ascii?Q?Bg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ce7a080-1794-49cc-c2d0-08dada0acae5
+X-MS-Exchange-CrossTenant-Network-Message-Id: ffeeb3ea-7961-4e2e-b8ed-08dada0acb80
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2022 17:28:31.7273
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2022 17:28:33.3834
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: thB8NShVqOl9Yu7oL5GOAzvoKvfFDRhwluoQYG+SaK2uk2VPSLiVzVvviiLW9Z5xvnTV70+4RzS9yNn+dTgFlw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: ke7gq0lplqH29MmKzGiwG8gyq1KVU/turw9wgyYj/aKGHCamLuzXR0icp3Fs/dfpc5TQmY+JocGO3K/CNda5Ww==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7253
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -119,179 +119,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In applications where the switch ports must perform 802.1X based
-authentication and are therefore locked, ATU violation interrupts are
-quite to be expected as part of normal operation. The problem is that
-they currently spam the kernel log, even if rate limited.
+It is possible to trigger these VTU violation messages very easily,
+it's only necessary to send packets with an unknown VLAN ID to a port
+that belongs to a VLAN-aware bridge.
 
-Create a series of trace points, all derived from the same event class,
-which log these violations to the kernel's trace buffer, which is both
-much faster and much easier to ignore than printing to a serial console.
+Do a similar thing as for ATU violation messages, and hide them in the
+kernel's trace buffer.
 
 New usage model:
 
 $ trace-cmd list | grep mv88e6xxx
 mv88e6xxx
-mv88e6xxx:mv88e6xxx_atu_full_violation
-mv88e6xxx:mv88e6xxx_atu_miss_violation
-mv88e6xxx:mv88e6xxx_atu_member_violation
-$ trace-cmd record -e mv88e6xxx sleep 10
+mv88e6xxx:mv88e6xxx_vtu_miss_violation
+mv88e6xxx:mv88e6xxx_vtu_member_violation
+$ trace-cmd report
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2:
-- keep reporting portvec and spid, rather than port
-- remove ATU age out tracepoint
+v1->v2: rename port to spid
 
- drivers/net/dsa/mv88e6xxx/Makefile      |  4 ++
- drivers/net/dsa/mv88e6xxx/global1_atu.c | 19 +++----
- drivers/net/dsa/mv88e6xxx/trace.c       |  6 +++
- drivers/net/dsa/mv88e6xxx/trace.h       | 66 +++++++++++++++++++++++++
- 4 files changed, 86 insertions(+), 9 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/trace.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/trace.h
+ drivers/net/dsa/mv88e6xxx/global1_vtu.c |  7 +++---
+ drivers/net/dsa/mv88e6xxx/trace.h       | 30 +++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/Makefile b/drivers/net/dsa/mv88e6xxx/Makefile
-index c8eca2b6f959..49bf358b9c4f 100644
---- a/drivers/net/dsa/mv88e6xxx/Makefile
-+++ b/drivers/net/dsa/mv88e6xxx/Makefile
-@@ -15,3 +15,7 @@ mv88e6xxx-objs += port_hidden.o
- mv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o
- mv88e6xxx-objs += serdes.o
- mv88e6xxx-objs += smi.o
-+mv88e6xxx-objs += trace.o
-+
-+# for tracing framework to find trace.h
-+CFLAGS_trace.o := -I$(src)
-diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-index b7e62ff4b599..61ae2d61e25c 100644
---- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-@@ -12,6 +12,7 @@
+diff --git a/drivers/net/dsa/mv88e6xxx/global1_vtu.c b/drivers/net/dsa/mv88e6xxx/global1_vtu.c
+index 38e18f5811bf..bcfb4a812055 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1_vtu.c
++++ b/drivers/net/dsa/mv88e6xxx/global1_vtu.c
+@@ -13,6 +13,7 @@
  
  #include "chip.h"
  #include "global1.h"
 +#include "trace.h"
  
- /* Offset 0x01: ATU FID Register */
+ /* Offset 0x02: VTU FID Register */
  
-@@ -429,23 +430,23 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
- 	spid = entry.state;
+@@ -628,14 +629,12 @@ static irqreturn_t mv88e6xxx_g1_vtu_prob_irq_thread_fn(int irq, void *dev_id)
+ 	spid = val & MV88E6XXX_G1_VTU_OP_SPID_MASK;
  
- 	if (val & MV88E6XXX_G1_ATU_OP_MEMBER_VIOLATION) {
--		dev_err_ratelimited(chip->dev,
--				    "ATU member violation for %pM fid %u portvec %x spid %d\n",
--				    entry.mac, fid, entry.portvec, spid);
-+		trace_mv88e6xxx_atu_member_violation(chip->dev, spid,
-+						     entry.portvec, entry.mac,
-+						     fid);
- 		chip->ports[spid].atu_member_violation++;
+ 	if (val & MV88E6XXX_G1_VTU_OP_MEMBER_VIOLATION) {
+-		dev_err_ratelimited(chip->dev, "VTU member violation for vid %d, source port %d\n",
+-				    vid, spid);
++		trace_mv88e6xxx_vtu_member_violation(chip->dev, spid, vid);
+ 		chip->ports[spid].vtu_member_violation++;
  	}
  
- 	if (val & MV88E6XXX_G1_ATU_OP_MISS_VIOLATION) {
--		dev_err_ratelimited(chip->dev,
--				    "ATU miss violation for %pM fid %u portvec %x spid %d\n",
--				    entry.mac, fid, entry.portvec, spid);
-+		trace_mv88e6xxx_atu_miss_violation(chip->dev, spid,
-+						   entry.portvec, entry.mac,
-+						   fid);
- 		chip->ports[spid].atu_miss_violation++;
+ 	if (val & MV88E6XXX_G1_VTU_OP_MISS_VIOLATION) {
+-		dev_dbg_ratelimited(chip->dev, "VTU miss violation for vid %d, source port %d\n",
+-				    vid, spid);
++		trace_mv88e6xxx_vtu_miss_violation(chip->dev, spid, vid);
+ 		chip->ports[spid].vtu_miss_violation++;
  	}
  
- 	if (val & MV88E6XXX_G1_ATU_OP_FULL_VIOLATION) {
--		dev_err_ratelimited(chip->dev,
--				    "ATU full violation for %pM fid %u portvec %x spid %d\n",
--				    entry.mac, fid, entry.portvec, spid);
-+		trace_mv88e6xxx_atu_full_violation(chip->dev, spid,
-+						   entry.portvec, entry.mac,
-+						   fid);
- 		chip->ports[spid].atu_full_violation++;
- 	}
- 	mv88e6xxx_reg_unlock(chip);
-diff --git a/drivers/net/dsa/mv88e6xxx/trace.c b/drivers/net/dsa/mv88e6xxx/trace.c
-new file mode 100644
-index 000000000000..7833cb50ca5d
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/trace.c
-@@ -0,0 +1,6 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/* Copyright 2022 NXP
-+ */
-+
-+#define CREATE_TRACE_POINTS
-+#include "trace.h"
 diff --git a/drivers/net/dsa/mv88e6xxx/trace.h b/drivers/net/dsa/mv88e6xxx/trace.h
-new file mode 100644
-index 000000000000..d9ab5c8dee55
---- /dev/null
+index d9ab5c8dee55..f59ca04768e7 100644
+--- a/drivers/net/dsa/mv88e6xxx/trace.h
 +++ b/drivers/net/dsa/mv88e6xxx/trace.h
-@@ -0,0 +1,66 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/* Copyright 2022 NXP
-+ */
+@@ -55,6 +55,36 @@ DEFINE_EVENT(mv88e6xxx_atu_violation, mv88e6xxx_atu_full_violation,
+ 		      const unsigned char *addr, u16 fid),
+ 	     TP_ARGS(dev, spid, portvec, addr, fid));
+ 
++DECLARE_EVENT_CLASS(mv88e6xxx_vtu_violation,
 +
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM	mv88e6xxx
++	TP_PROTO(const struct device *dev, int spid, u16 vid),
 +
-+#if !defined(_MV88E6XXX_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _MV88E6XXX_TRACE_H
-+
-+#include <linux/device.h>
-+#include <linux/if_ether.h>
-+#include <linux/tracepoint.h>
-+
-+DECLARE_EVENT_CLASS(mv88e6xxx_atu_violation,
-+
-+	TP_PROTO(const struct device *dev, int spid, u16 portvec,
-+		 const unsigned char *addr, u16 fid),
-+
-+	TP_ARGS(dev, spid, portvec, addr, fid),
++	TP_ARGS(dev, spid, vid),
 +
 +	TP_STRUCT__entry(
 +		__string(name, dev_name(dev))
 +		__field(int, spid)
-+		__field(u16, portvec)
-+		__array(unsigned char, addr, ETH_ALEN)
-+		__field(u16, fid)
++		__field(u16, vid)
 +	),
 +
 +	TP_fast_assign(
 +		__assign_str(name, dev_name(dev));
 +		__entry->spid = spid;
-+		__entry->portvec = portvec;
-+		memcpy(__entry->addr, addr, ETH_ALEN);
-+		__entry->fid = fid;
++		__entry->vid = vid;
 +	),
 +
-+	TP_printk("dev %s spid %d portvec 0x%x addr %pM fid %u",
-+		  __get_str(name), __entry->spid, __entry->portvec,
-+		  __entry->addr, __entry->fid)
++	TP_printk("dev %s spid %d vid %u",
++		  __get_str(name), __entry->spid, __entry->vid)
 +);
 +
-+DEFINE_EVENT(mv88e6xxx_atu_violation, mv88e6xxx_atu_member_violation,
-+	     TP_PROTO(const struct device *dev, int spid, u16 portvec,
-+		      const unsigned char *addr, u16 fid),
-+	     TP_ARGS(dev, spid, portvec, addr, fid));
++DEFINE_EVENT(mv88e6xxx_vtu_violation, mv88e6xxx_vtu_member_violation,
++	     TP_PROTO(const struct device *dev, int spid, u16 vid),
++	     TP_ARGS(dev, spid, vid));
 +
-+DEFINE_EVENT(mv88e6xxx_atu_violation, mv88e6xxx_atu_miss_violation,
-+	     TP_PROTO(const struct device *dev, int spid, u16 portvec,
-+		      const unsigned char *addr, u16 fid),
-+	     TP_ARGS(dev, spid, portvec, addr, fid));
++DEFINE_EVENT(mv88e6xxx_vtu_violation, mv88e6xxx_vtu_miss_violation,
++	     TP_PROTO(const struct device *dev, int spid, u16 vid),
++	     TP_ARGS(dev, spid, vid));
 +
-+DEFINE_EVENT(mv88e6xxx_atu_violation, mv88e6xxx_atu_full_violation,
-+	     TP_PROTO(const struct device *dev, int spid, u16 portvec,
-+		      const unsigned char *addr, u16 fid),
-+	     TP_ARGS(dev, spid, portvec, addr, fid));
-+
-+#endif /* _MV88E6XXX_TRACE_H */
-+
-+/* We don't want to use include/trace/events */
-+#undef TRACE_INCLUDE_PATH
-+#define TRACE_INCLUDE_PATH .
-+#undef TRACE_INCLUDE_FILE
-+#define TRACE_INCLUDE_FILE	trace
-+/* This part must be outside protection */
-+#include <trace/define_trace.h>
+ #endif /* _MV88E6XXX_TRACE_H */
+ 
+ /* We don't want to use include/trace/events */
 -- 
 2.34.1
 
