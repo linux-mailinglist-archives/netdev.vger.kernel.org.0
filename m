@@ -2,221 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF376647D3A
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 06:29:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7FE9647D66
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 06:44:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbiLIFYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 00:24:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
+        id S229573AbiLIFop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 00:44:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiLIFYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 00:24:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561C872870;
-        Thu,  8 Dec 2022 21:24:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12297B827A3;
-        Fri,  9 Dec 2022 05:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 905B4C433F0;
-        Fri,  9 Dec 2022 05:24:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670563480;
-        bh=l6X9ReiMPyE+az/ynxYJ+y9nV9wLSGN0chZF99FBGHg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nUshCn7fke74bdCIOhWKHo4xqPceq5KzthQGVZBydqTtNiRjxafSWCyi+EX0IpUS1
-         vYNHTLMxcSeZWu1aqDSlXniOHwN75xFyRsU2yl4zxMpsI38+HjiiBsY2Q8pH+ScVdr
-         oZ5+VnloW24/Nngn8/LrLuIDvHJKb0FFd1H2W0jKg/roAU4cFI1zgUT5nohR8y9udM
-         s1/Y8T5uCzm1jRumurB3sieCJuEbncFqIWBZmj/TnmxIRZuS7km84rBwK8HRuTQCsQ
-         tT2lkGc33dww2CvoPKDCUy15z0+aDY6oGCecrXzH+xefgT6/P6wn38vD9q+KVdousS
-         oYnGAxgOG3vcQ==
-Date:   Thu, 8 Dec 2022 21:24:38 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 11/12] mlx5: Support RX XDP
- metadata
-Message-ID: <Y5LGlgpxpzSu701h@x130>
-References: <20221206024554.3826186-1-sdf@google.com>
- <20221206024554.3826186-12-sdf@google.com>
- <875yellcx6.fsf@toke.dk>
- <CAKH8qBv7nWdknuf3ap_ekpAhMgvtmoJhZ3-HRuL8Wv70SBWMSQ@mail.gmail.com>
- <87359pl9zy.fsf@toke.dk>
- <CAADnVQ+=71Y+ypQTOgFTJWY7w3YOUdY39is4vpo3aou11=eMmw@mail.gmail.com>
- <87tu25ju77.fsf@toke.dk>
- <CAADnVQ+MyE280Q-7iw2Y-P6qGs4xcDML-tUrXEv_EQTmeESVaQ@mail.gmail.com>
- <87o7sdjt20.fsf@toke.dk>
- <CAKH8qBswBu7QAWySWOYK4X41mwpdBj0z=6A9WBHjVYQFq9Pzjw@mail.gmail.com>
+        with ESMTP id S229463AbiLIFon (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 00:44:43 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCDE18380;
+        Thu,  8 Dec 2022 21:44:42 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id kw15so9042921ejc.10;
+        Thu, 08 Dec 2022 21:44:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tlYZR3ZAgmc6hHjlk+8dcH0CytRjrSRYrr/M//mA3ro=;
+        b=k4q7hKEUBTqfWGDBcbacsEt48PbWTKqp2BntffDDmq+b6b7zdSvbeTdK3KpuaYBvA6
+         y1ptJByCQRPdmf2wKYkFtmvG68QTDe5ndiP1bS1/sfWiYP0QN0Grh/6k8y3D47R6j3oR
+         Nb3IcttmXnqdktGSja0rXprnhdQwSz4tJ0U0NurQQMElCI0BjiL26m3dzIWc+eD8kdJE
+         GGp99mfrVNzyOwaXGSEaabwReQdLJwtKYVw8j+Mg7vWvAE/tdYhqMbaNNFET7aNuidCw
+         XgJE3VZoet+MhDwBO7RXB3/DJBQ6LSjFUAyUEo1Fbe1b9L3T8BqCKAAT4tkYIsRFcADi
+         bDPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tlYZR3ZAgmc6hHjlk+8dcH0CytRjrSRYrr/M//mA3ro=;
+        b=oocZeqt/PQSK9G3cgNodJovD0FUttIxOtXxsMz71ibwC33fkKSmbqHeiFPCiRWauUw
+         b5JNFPRjpQluPdcb95HmgTe3c5K5rbWSifmeiP4NjG9iCjjzdNd/p5EYYbOJbd6Ab8LV
+         Cj2jTWmlYHLbit3gfdSlhgX7KwwCt7pbugQTrGNhZ1Plh0G1YAERlR341Pi/gzU38DSi
+         iDO0IAlRl/hcDebNt0aC64taW5I+pTBdRswFaEobPL1iQVDjbpiddzFUVKbi+sCfizF3
+         LkCCG+jcppDX2knwEAg3QScAH7nJ2puBnoQ9vK+fsNXmm7vRt40m0k8iy65gmYVc3wld
+         yD8g==
+X-Gm-Message-State: ANoB5pnDgsg91fQaxMQJ1HceX3gmfFrMOcb4ua2K4377ltmV+VaYmKaV
+        Stz0VUAiNKdA1oLq96TEWExX+WeKmFCsCOQzeg7paHGHDtSvtA==
+X-Google-Smtp-Source: AA0mqf6evUxjaUXBXX54VWe9di7lKQ4fZa0LE01gZO3dMxVy82R3aCqx5CWvbZD+2WuDKr2R9XYB68pQSQGNw17xi84=
+X-Received: by 2002:a17:906:2851:b0:78d:88c7:c1bf with SMTP id
+ s17-20020a170906285100b0078d88c7c1bfmr64041738ejc.299.1670564680562; Thu, 08
+ Dec 2022 21:44:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKH8qBswBu7QAWySWOYK4X41mwpdBj0z=6A9WBHjVYQFq9Pzjw@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+From:   Wei Chen <harperchen1110@gmail.com>
+Date:   Fri, 9 Dec 2022 13:44:04 +0800
+Message-ID: <CAO4mrffkMvj87eq1G5toL2nG=VWMPK0qxQ7FJ9WtpXfBzUtWiA@mail.gmail.com>
+Subject: general protection fault in phonet_device_notify
+To:     courmisch@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08 Dec 18:57, Stanislav Fomichev wrote:
->On Thu, Dec 8, 2022 at 4:54 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>
->> > On Thu, Dec 8, 2022 at 4:29 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->> >>
->> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->> >>
->> >> > On Thu, Dec 8, 2022 at 4:02 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->> >> >>
->> >> >> Stanislav Fomichev <sdf@google.com> writes:
->> >> >>
->> >> >> > On Thu, Dec 8, 2022 at 2:59 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->> >> >> >>
->> >> >> >> Stanislav Fomichev <sdf@google.com> writes:
->> >> >> >>
->> >> >> >> > From: Toke Høiland-Jørgensen <toke@redhat.com>
->> >> >> >> >
->> >> >> >> > Support RX hash and timestamp metadata kfuncs. We need to pass in the cqe
->> >> >> >> > pointer to the mlx5e_skb_from* functions so it can be retrieved from the
->> >> >> >> > XDP ctx to do this.
->> >> >> >>
->> >> >> >> So I finally managed to get enough ducks in row to actually benchmark
->> >> >> >> this. With the caveat that I suddenly can't get the timestamp support to
->> >> >> >> work (it was working in an earlier version, but now
->> >> >> >> timestamp_supported() just returns false). I'm not sure if this is an
->> >> >> >> issue with the enablement patch, or if I just haven't gotten the
->> >> >> >> hardware configured properly. I'll investigate some more, but figured
->> >> >> >> I'd post these results now:
->> >> >> >>
->> >> >> >> Baseline XDP_DROP:         25,678,262 pps / 38.94 ns/pkt
->> >> >> >> XDP_DROP + read metadata:  23,924,109 pps / 41.80 ns/pkt
->> >> >> >> Overhead:                   1,754,153 pps /  2.86 ns/pkt
->> >> >> >>
->> >> >> >> As per the above, this is with calling three kfuncs/pkt
->> >> >> >> (metadata_supported(), rx_hash_supported() and rx_hash()). So that's
->> >> >> >> ~0.95 ns per function call, which is a bit less, but not far off from
->> >> >> >> the ~1.2 ns that I'm used to. The tests where I accidentally called the
->> >> >> >> default kfuncs cut off ~1.3 ns for one less kfunc call, so it's
->> >> >> >> definitely in that ballpark.
->> >> >> >>
->> >> >> >> I'm not doing anything with the data, just reading it into an on-stack
->> >> >> >> buffer, so this is the smallest possible delta from just getting the
->> >> >> >> data out of the driver. I did confirm that the call instructions are
->> >> >> >> still in the BPF program bytecode when it's dumped back out from the
->> >> >> >> kernel.
->> >> >> >>
->> >> >> >> -Toke
->> >> >> >>
->> >> >> >
->> >> >> > Oh, that's great, thanks for running the numbers! Will definitely
->> >> >> > reference them in v4!
->> >> >> > Presumably, we should be able to at least unroll most of the
->> >> >> > _supported callbacks if we want, they should be relatively easy; but
->> >> >> > the numbers look fine as is?
->> >> >>
->> >> >> Well, this is for one (and a half) piece of metadata. If we extrapolate
->> >> >> it adds up quickly. Say we add csum and vlan tags, say, and maybe
->> >> >> another callback to get the type of hash (l3/l4). Those would probably
->> >> >> be relevant for most packets in a fairly common setup. Extrapolating
->> >> >> from the ~1 ns/call figure, that's 8 ns/pkt, which is 20% of the
->> >> >> baseline of 39 ns.
->> >> >>
->> >> >> So in that sense I still think unrolling makes sense. At least for the
->> >> >> _supported() calls, as eating a whole function call just for that is
->> >> >> probably a bit much (which I think was also Jakub's point in a sibling
->> >> >> thread somewhere).
->> >> >
->> >> > imo the overhead is tiny enough that we can wait until
->> >> > generic 'kfunc inlining' infra is ready.
->> >> >
->> >> > We're planning to dual-compile some_kernel_file.c
->> >> > into native arch and into bpf arch.
->> >> > Then the verifier will automatically inline bpf asm
->> >> > of corresponding kfunc.
->> >>
->> >> Is that "planning" or "actively working on"? Just trying to get a sense
->> >> of the time frames here, as this sounds neat, but also something that
->> >> could potentially require quite a bit of fiddling with the build system
->> >> to get to work? :)
->> >
->> > "planning", but regardless how long it takes I'd rather not
->> > add any more tech debt in the form of manual bpf asm generation.
->> > We have too much of it already: gen_lookup, convert_ctx_access, etc.
->>
->> Right, I'm no fan of the manual ASM stuff either. However, if we're
->> stuck with the function call overhead for the foreseeable future, maybe
->> we should think about other ways of cutting down the number of function
->> calls needed?
->>
->> One thing I can think of is to get rid of the individual _supported()
->> kfuncs and instead have a single one that lets you query multiple
->> features at once, like:
->>
->> __u64 features_supported, features_wanted = XDP_META_RX_HASH | XDP_META_TIMESTAMP;
->>
->> features_supported = bpf_xdp_metadata_query_features(ctx, features_wanted);
->>
->> if (features_supported & XDP_META_RX_HASH)
->>   hash = bpf_xdp_metadata_rx_hash(ctx);
->>
->> ...etc
->
->I'm not too happy about having the bitmasks tbh :-(
->If we want to get rid of the cost of those _supported calls, maybe we
->can do some kind of libbpf-like probing? That would require loading a
->program + waiting for some packet though :-(
->
->Or maybe they can just be cached for now?
->
->if (unlikely(!got_first_packet)) {
->  have_hash = bpf_xdp_metadata_rx_hash_supported();
->  have_timestamp = bpf_xdp_metadata_rx_timestamp_supported();
->  got_first_packet = true;
->}
+Dear Linux Developers,
 
-hash/timestap/csum is per packet .. vlan as well depending how you look at
-it..
+Recently, when using our tool to fuzz kernel, the following crash was triggered.
 
-Sorry I haven't been following the progress of xdp meta data, but why did
-we drop the idea of btf and driver copying metdata in front of the xdp
-frame ?
+HEAD commit: 147307c69ba
+git tree: linux-next
+compiler: clang 12.0.0
+console output:
+https://drive.google.com/file/d/1RvsQqnpZcaUm_fww5nuUh5L8IeEDNeSM/view?usp=share_link
+kernel config: https://drive.google.com/file/d/1NAf4S43d9VOKD52xbrqw-PUP1Mbj8z-S/view?usp=share_link
 
-hopefully future HW generations will do that for free .. 
+Unfortunately, I didn't have a reproducer for this crash. When calling
+__phonet_get, some phonet devices are freed when going through
+pndevs->list, leading to invalid value of pnd, thus causing general
+protection fault when performing dereference. I'm wondering if there
+is a data race due to improper usage of lock.
 
-if btf is the problem then each vendor can provide a bpf func(s) that would
-parse the metdata inside of the xdp/bpf prog domain to help programs
-extract the vendor specific data.. 
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: Wei Chen <harperchen1110@gmail.com>
 
+general protection fault, probably for non-canonical address
+0x20ce10294000010: 0000 [#1] PREEMPT SMP
+CPU: 0 PID: 9714 Comm: syz-executor.0 Not tainted 6.1.0-rc5-next-20221118 #2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
+RIP: 0010:__phonet_get net/phonet/pn_dev.c:69 [inline]
+RIP: 0010:phonet_device_destroy net/phonet/pn_dev.c:95 [inline]
+RIP: 0010:phonet_device_notify+0x239/0x6a0 net/phonet/pn_dev.c:289
+Code: 04 00 00 4c 89 ef e8 f6 85 f2 fc 49 8b 5d 00 4c 39 eb 74 33 66
+2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 8d 7b 10 e8 d7 85 f2 fc <4c> 39
+63 10 74 1e 48 89 df e8 c9 85 f2 fc 48 8b 1b 4c 39 eb 74 5e
+RSP: 0018:ffffc90004fdfa88 EFLAGS: 00010246
+RAX: ffff88800a583a48 RBX: 020ce10294000000 RCX: ffffffff84489989
+RDX: 00000000000008c3 RSI: 0000000000000000 RDI: 020ce10294000010
+RBP: 0000000000000051 R08: 0000e10294000017 R09: 0000000000000000
+R10: 0001ffffffffffff R11: ffff88800a583000 R12: ffff888127d3c000
+R13: ffff888106ec8c00 R14: ffff888127d3c530 R15: ffff888106ec8c10
+FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005643fdc4eaa8 CR3: 0000000104b97000 CR4: 00000000003506f0
+Call Trace:
+ <TASK>
+ notifier_call_chain kernel/notifier.c:87 [inline]
+ raw_notifier_call_chain+0x53/0xb0 kernel/notifier.c:455
+ call_netdevice_notifiers_info net/core/dev.c:1944 [inline]
+ call_netdevice_notifiers_extack net/core/dev.c:1982 [inline]
+ call_netdevice_notifiers net/core/dev.c:1996 [inline]
+ netdev_wait_allrefs_any net/core/dev.c:10227 [inline]
+ netdev_run_todo+0x4be/0x9a0 net/core/dev.c:10341
+ rtnl_unlock+0xa/0x10 net/core/rtnetlink.c:148
+ tun_detach drivers/net/tun.c:704 [inline]
+ tun_chr_close+0x8f/0xa0 drivers/net/tun.c:3460
+ __fput+0x2a2/0x560 fs/file_table.c:320
+ ____fput+0x11/0x20 fs/file_table.c:348
+ task_work_run+0xde/0x110 kernel/task_work.c:179
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0x5a0/0x16c0 kernel/exit.c:820
+ do_group_exit+0xfe/0x140 kernel/exit.c:950
+ get_signal+0xfd7/0x1100 kernel/signal.c:2858
+ arch_do_signal_or_restart+0x85/0x280 arch/x86/kernel/signal.c:306
+ exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+ exit_to_user_mode_prepare+0xb4/0x130 kernel/entry/common.c:203
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:285 [inline]
+ syscall_exit_to_user_mode+0x20/0x40 kernel/entry/common.c:296
+ do_syscall_64+0x37/0x70 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x418d4e
+Code: Unable to access opcode bytes at 0x418d24.
+RSP: 002b:00007fca3c11a780 EFLAGS: 00000293 ORIG_RAX: 0000000000000101
+RAX: 0000000000000004 RBX: 6666666666666667 RCX: 0000000000418d4e
+RDX: 0000000000000002 RSI: 00007fca3c11a810 RDI: 00000000ffffff9c
+RBP: 00007fca3c11a810 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000293 R12: 000000000077c038
+R13: 0000000000000000 R14: 000000000077c038 R15: 00007fffc05f99c0
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__phonet_get net/phonet/pn_dev.c:69 [inline]
+RIP: 0010:phonet_device_destroy net/phonet/pn_dev.c:95 [inline]
+RIP: 0010:phonet_device_notify+0x239/0x6a0 net/phonet/pn_dev.c:289
+Code: 04 00 00 4c 89 ef e8 f6 85 f2 fc 49 8b 5d 00 4c 39 eb 74 33 66
+2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 8d 7b 10 e8 d7 85 f2 fc <4c> 39
+63 10 74 1e 48 89 df e8 c9 85 f2 fc 48 8b 1b 4c 39 eb 74 5e
+RSP: 0018:ffffc90004fdfa88 EFLAGS: 00010246
+RAX: ffff88800a583a48 RBX: 020ce10294000000 RCX: ffffffff84489989
+RDX: 00000000000008c3 RSI: 0000000000000000 RDI: 020ce10294000010
+RBP: 0000000000000051 R08: 0000e10294000017 R09: 0000000000000000
+R10: 0001ffffffffffff R11: ffff88800a583000 R12: ffff888127d3c000
+R13: ffff888106ec8c00 R14: ffff888127d3c530 R15: ffff888106ec8c10
+FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005643fdc4eaa8 CR3: 0000000104b97000 CR4: 00000000003506f0
+----------------
+Code disassembly (best guess):
+   0: 04 00                 add    $0x0,%al
+   2: 00 4c 89 ef           add    %cl,-0x11(%rcx,%rcx,4)
+   6: e8 f6 85 f2 fc       callq  0xfcf28601
+   b: 49 8b 5d 00           mov    0x0(%r13),%rbx
+   f: 4c 39 eb             cmp    %r13,%rbx
+  12: 74 33                 je     0x47
+  14: 66 2e 0f 1f 84 00 00 nopw   %cs:0x0(%rax,%rax,1)
+  1b: 00 00 00
+  1e: 0f 1f 00             nopl   (%rax)
+  21: 48 8d 7b 10           lea    0x10(%rbx),%rdi
+  25: e8 d7 85 f2 fc       callq  0xfcf28601
+* 2a: 4c 39 63 10           cmp    %r12,0x10(%rbx) <-- trapping instruction
+  2e: 74 1e                 je     0x4e
+  30: 48 89 df             mov    %rbx,%rdi
+  33: e8 c9 85 f2 fc       callq  0xfcf28601
+  38: 48 8b 1b             mov    (%rbx),%rbx
+  3b: 4c 39 eb             cmp    %r13,%rbx
+  3e: 74 5e                 je     0x9e
 
->
->if (have_hash) {}
->if (have_timestamp) {}
->
->That should hopefully work until generic inlining infra?
->
->> -Toke
->>
+Best,
+Wei
