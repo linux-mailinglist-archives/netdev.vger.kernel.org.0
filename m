@@ -2,44 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BD77647B32
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 02:15:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D73647B6F
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 02:28:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbiLIBPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 20:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
+        id S229615AbiLIB2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 20:28:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbiLIBPo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 20:15:44 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA90CD2C0;
-        Thu,  8 Dec 2022 17:15:43 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NStKP2wF7zJpDQ;
-        Fri,  9 Dec 2022 09:12:09 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 9 Dec
- 2022 09:15:41 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <stas.yakovlev@gmail.com>, <kvalo@kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <linville@tuxdriver.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH v2] ipw2200: fix memory leak in ipw_wdev_init()
-Date:   Fri, 9 Dec 2022 09:24:22 +0800
-Message-ID: <20221209012422.182669-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229498AbiLIB2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 20:28:24 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2959801CF;
+        Thu,  8 Dec 2022 17:28:22 -0800 (PST)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 0C79924E1FF;
+        Fri,  9 Dec 2022 09:28:13 +0800 (CST)
+Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 9 Dec
+ 2022 09:28:13 +0800
+Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
+ (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 9 Dec
+ 2022 09:28:11 +0800
+Message-ID: <a2c6ff79-2d47-d0a1-d59a-716a1d212808@starfivetech.com>
+Date:   Fri, 9 Dec 2022 09:28:06 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [PATCH v1 7/7] riscv: dts: starfive: visionfive-v2: Add phy
+ delay_chain configuration
+Content-Language: en-US
+To:     Conor Dooley <conor@kernel.org>
+CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
+ <20221201090242.2381-8-yanhong.wang@starfivetech.com> <Y4jpDvXo/uj9ygLR@spud>
+ <Y4kAyAhBseNmmDo8@spud>
+From:   yanhong wang <yanhong.wang@starfivetech.com>
+In-Reply-To: <Y4kAyAhBseNmmDo8@spud>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX173.cuchost.com
+ (172.16.6.93)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -47,40 +66,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the error path of ipw_wdev_init(), exception value is returned, and
-the memory applied for in the function is not released. Also the memory
-is not released in ipw_pci_probe(). As a result, memory leakage occurs.
-So memory release needs to be added to the error path of ipw_wdev_init().
 
-Fixes: a3caa99e6c68 ("libipw: initiate cfg80211 API conversion (v2)")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
-v2: return value of wiphy_register() instead of -EIO
----
- drivers/net/wireless/intel/ipw2x00/ipw2200.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-index 5b483de18c81..4c317a7c93ac 100644
---- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-+++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-@@ -11397,9 +11397,14 @@ static int ipw_wdev_init(struct net_device *dev)
- 	set_wiphy_dev(wdev->wiphy, &priv->pci_dev->dev);
- 
- 	/* With that information in place, we can now register the wiphy... */
--	if (wiphy_register(wdev->wiphy))
--		rc = -EIO;
-+	rc = wiphy_register(wdev->wiphy);
-+	if (rc)
-+		goto out;
-+
-+	return 0;
- out:
-+	kfree(priv->ieee->a_band.channels);
-+	kfree(priv->ieee->bg_band.channels);
- 	return rc;
- }
- 
--- 
-2.34.1
+On 2022/12/2 3:30, Conor Dooley wrote:
+> On Thu, Dec 01, 2022 at 05:49:08PM +0000, Conor Dooley wrote:
+>> On Thu, Dec 01, 2022 at 05:02:42PM +0800, Yanhong Wang wrote:
+>> > riscv: dts: starfive: visionfive-v2: Add phy delay_chain configuration
+>> > 
+>> > Add phy delay_chain configuration to support motorcomm phy driver for
+>> > StarFive VisionFive 2 board.
+> 
+> nit: please re-word this commit next time around to actually say what
+> you're doing here. I didn't notice it initially, but this patch is doing
+> a lot more than adding `delay_chain` configuration. To my dwmac unaware
+> brain, there's nothing hits for that term outside of the changelog :(
+> 
 
+I will re-word the commit message and add another dt-binding to describe the details that such as "rxc_dly_en","tx_inverted_10" etc.
+
+> Thanks,
+> Conor.
+> 
+>> > 
+>> > Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
+>> > ---
+>> >  .../jh7110-starfive-visionfive-v2.dts         | 46 +++++++++++++++++++
+>> >  1 file changed, 46 insertions(+)
+>> > 
+>> > diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
+>> > index c8946cf3a268..2868ef4c74ef 100644
+>> > --- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
+>> > +++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
+>> > @@ -15,6 +15,8 @@
+>> >  
+>> >  	aliases {
+>> >  		serial0 = &uart0;
+>> > +		ethernet0=&gmac0;
+>> > +		ethernet1=&gmac1;
+>> 
+>> Please match the whitespace usage of the existing entry.
+>> 
+>> >  	};
+>> >  
+>> >  	chosen {
+>> > @@ -114,3 +116,47 @@
+>> >  	pinctrl-0 = <&uart0_pins>;
+>> >  	status = "okay";
+>> >  };
+>> > +
+>> > +&gmac0 {
+>> > +	status = "okay";
+>> > +	#address-cells = <1>;
+>> > +	#size-cells = <0>;
+>> > +	phy-handle = <&phy0>;
+>> > +	status = "okay";
+>> > +	mdio0 {
+>> 
+>> A line of whitespace before the child nodes too please :)
+>> 
+>> > +		#address-cells = <1>;
+>> > +		#size-cells = <0>;
+>> > +		compatible = "snps,dwmac-mdio";
+>> > +		phy0: ethernet-phy@0 {
+>> > +			reg = <0>;
+>> > +			rxc_dly_en = <1>;
+>> > +			tx_delay_sel_fe = <5>;
+>> > +			tx_delay_sel = <0xa>;
+>> > +			tx_inverted_10 = <0x1>;
+>> > +			tx_inverted_100 = <0x1>;
+>> > +			tx_inverted_1000 = <0x1>;
+>> > +		};
+>> > +	};
+>> > +};
+>> > +
+>> > +&gmac1 {
+>> > +	status = "okay";
+>> > +	#address-cells = <1>;
+>> > +	#size-cells = <0>;
+>> > +	phy-handle = <&phy1>;
+>> > +	status = "okay";
+>> > +	mdio1 {
+>> > +		#address-cells = <1>;
+>> > +		#size-cells = <0>;
+>> > +		compatible = "snps,dwmac-mdio";
+>> > +		phy1: ethernet-phy@1 {
+>> > +			reg = <1>;
+>> > +			tx_delay_sel_fe = <5>;
+>> > +			tx_delay_sel = <0>;
+>> > +			rxc_dly_en = <0>;
+>> > +			tx_inverted_10 = <0x1>;
+>> > +			tx_inverted_100 = <0x1>;
+>> > +			tx_inverted_1000 = <0x0>;
+>> > +		};
+>> > +	};
+>> > +};
+>> > -- 
+>> > 2.17.1
+>> > 
