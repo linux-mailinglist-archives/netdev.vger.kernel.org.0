@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4ED0647A7E
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:08:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9AB6647A7C
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:07:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229763AbiLIAIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 19:08:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43880 "EHLO
+        id S229760AbiLIAH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 19:07:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiLIAIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:08:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA791E3D8
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:07:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1670544464;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UnV9sHMygGeqceDB6oqgI6Lx3Hl0PuFE6k1V3XoJZrg=;
-        b=TVs+tM/z496wcnVrvP5o6/IEwNQbXGXSO6xhqF1+NDg+zMNTVBRTjE1L+Fj606In8Ta0Pb
-        ToVCv4Cydj2qDbdc+pmGwlFWvPoHEc7ESAE0YqbXqiqmy+1WIB/xHVbLMjq+MC1KI0JCv4
-        iRAF1PN1PbCUkjEwQhsrKiVVYpysxog=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-387-uMDts0w7O1OM9vDwOKAY7w-1; Thu, 08 Dec 2022 19:07:43 -0500
-X-MC-Unique: uMDts0w7O1OM9vDwOKAY7w-1
-Received: by mail-ed1-f71.google.com with SMTP id dz11-20020a0564021d4b00b0046cc3f565e5so397762edb.8
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 16:07:43 -0800 (PST)
+        with ESMTP id S229469AbiLIAHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:07:54 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC6422535;
+        Thu,  8 Dec 2022 16:07:53 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id n21so7797339ejb.9;
+        Thu, 08 Dec 2022 16:07:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=z1CwUhBKmLcc3xJp3He22HceM+mQGWDmDbOf77l5NqM=;
+        b=gxJbp+K+xSIY2Tw7y11kyN08+NF9vOjJGyOJz/OzimhKI+CYgouud592Mm0a3Z1aM6
+         +6i6BISH02DtViIB1QnVegxqZPIZvi640JecDglTb6WUp3OpBbGemk8ufEoHC0g9VnnO
+         GcM1DkDyyN40ZQ0UWvPusB1dKEh2a0u5w5Dil3VcXeRpbfz73eQRvl8+dmHCI7YsiYjP
+         ACK2zDeuIosWoDIIy8SlS6J3xvZ+grUvhfABUXskgtVt8ks+LPaLUy2ITv3iqahOPtjc
+         TeokU3Q3tq4j0BBAQaGI9wqf+UAzc5/3i2MI+XzoaeVgAkw5Ygr719TviaW4ubzB9zeG
+         72IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UnV9sHMygGeqceDB6oqgI6Lx3Hl0PuFE6k1V3XoJZrg=;
-        b=WB4XkD7AdjgoHbLMSZGj0fz6QQQgP9ic7zhHMbFyput5kkhaHOXIx987FVUACrLj/2
-         imCvNd2RWa7LgegSgQKgdOq/OjDcimbLzFmHF2M6ud3eaB64akiOsYgpZjw7KXZSQVxh
-         He0BsVa4UTJBXduguidth6cxE662Vr1rI5Md6mBHiCFjxgYX9l53wYOgzbAZHXrNvAPq
-         S1lQKlEUj2cz2mBNeUHh34FmxQvsjTfkcFR33aZIlQJdpBhHpxZj/KezNMrnv2thiXgc
-         T9NYjUZ4lgypT8RhdeRIYSPWpv8GbEHtRWwEstgD7yGPqWoJkJhrxoXh6/NcstxKtqZo
-         K7jQ==
-X-Gm-Message-State: ANoB5pnSsCPwSsomegJRyhmNVNhQ8Aj17Bg1m17CydwGHx3o14MXz287
-        xnffXsUEUNEWQmYfZKzgzjhW5/wu52le85YDyaDzpAA6+s37OjkWczL5T5DUkvWv0A7YV+TzmC6
-        QNXCTxO31ACb1ruFs
-X-Received: by 2002:a17:907:8a22:b0:7af:16b5:9af8 with SMTP id sc34-20020a1709078a2200b007af16b59af8mr4472676ejc.33.1670544461806;
-        Thu, 08 Dec 2022 16:07:41 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4jxNWVpUDFqe+Y4asR9M7ckORo70cpv13tgtmDSLBwLKzO+sRaQhDNDbBSqyQ9hON3IMdxMQ==
-X-Received: by 2002:a17:907:8a22:b0:7af:16b5:9af8 with SMTP id sc34-20020a1709078a2200b007af16b59af8mr4472566ejc.33.1670544459873;
-        Thu, 08 Dec 2022 16:07:39 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id k2-20020a170906680200b0077077c62cadsm10135739ejr.31.2022.12.08.16.07.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 16:07:38 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id A80B782E9C7; Fri,  9 Dec 2022 01:07:37 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        haoluo@google.com, jolsa@kernel.org,
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=z1CwUhBKmLcc3xJp3He22HceM+mQGWDmDbOf77l5NqM=;
+        b=58r2LvnAADeBLN0mRHpwdcdnAE5ICRuV/WPT7K1BDCHWXDg0J83oSWYAMP1A/wpyr6
+         P/7s4HdVpUIOpgppe9c+XnDq2vsE/AQu6E+xcpZhsvfM9sJmkfLar/mDObVzl2H5o1ME
+         2ujte85HQ3VRXGNrh74OPw0CJ5IcXsUHQa6L/GIaka3rTEe4SFdbMOSbF+0imoZVKWPY
+         lhcIYXIgTdx1fJsHuX3lrrqUlzgrM8LLnmtvPCAzAw9dcHY2nINnCq8gpxY3Webyezsk
+         4t3R3hRNzSDAnhf8CXjjygh0217Tfxg2mKMyG1f1ZykqYUYR/YloYPLM9T9ltxfO3XhG
+         1bKw==
+X-Gm-Message-State: ANoB5pkH3NLrxLVn3reAr0j7jN4Xy4l5Eh1cA+8Ip4rxeeeTAfyaIlBf
+        JS8yjeVvJeF6KL8LinsHlNJZveoebnk8g09XzA8=
+X-Google-Smtp-Source: AA0mqf5MBoRl5V/v1iYdBNTpKJISTGcSH8pQUcix3SxBfo+HxXBJiIUnBX1QhChef6NXc79hZt3TSPH2rCTGnvxh3Ro=
+X-Received: by 2002:a17:907:76cb:b0:7c0:870b:3dda with SMTP id
+ kf11-20020a17090776cb00b007c0870b3ddamr35410213ejc.676.1670544471573; Thu, 08
+ Dec 2022 16:07:51 -0800 (PST)
+MIME-Version: 1.0
+References: <20221206024554.3826186-1-sdf@google.com> <20221206024554.3826186-12-sdf@google.com>
+ <875yellcx6.fsf@toke.dk> <CAKH8qBv7nWdknuf3ap_ekpAhMgvtmoJhZ3-HRuL8Wv70SBWMSQ@mail.gmail.com>
+ <87359pl9zy.fsf@toke.dk>
+In-Reply-To: <87359pl9zy.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 8 Dec 2022 16:07:39 -0800
+Message-ID: <CAADnVQ+=71Y+ypQTOgFTJWY7w3YOUdY39is4vpo3aou11=eMmw@mail.gmail.com>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 11/12] mlx5: Support RX XDP metadata
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         David Ahern <dsahern@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Willem de Bruijn <willemb@google.com>,
@@ -69,21 +74,12 @@ Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         Magnus Karlsson <magnus.karlsson@gmail.com>,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX
- kfuncs
-In-Reply-To: <CAKH8qBvgkTXFEhd9hOa+SFtqKAXuD=WM_h1TZYdQA0d70_drEA@mail.gmail.com>
-References: <20221206024554.3826186-1-sdf@google.com>
- <20221206024554.3826186-4-sdf@google.com> <878rjhldv0.fsf@toke.dk>
- <CAKH8qBvgkTXFEhd9hOa+SFtqKAXuD=WM_h1TZYdQA0d70_drEA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 09 Dec 2022 01:07:37 +0100
-Message-ID: <87zgbxjv7a.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,35 +87,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stanislav Fomichev <sdf@google.com> writes:
-
->> Another UX thing I ran into is that libbpf will bail out if it can't
->> find the kfunc in the kernel vmlinux, even if the code calling the
->> function is behind an always-false if statement (which would be
->> eliminated as dead code from the verifier). This makes it a bit hard to
->> conditionally use them. Should libbpf just allow the load without
->> performing the relocation (and let the verifier worry about it), or
->> should we have a bpf_core_kfunc_exists() macro to use for checking?
->> Maybe both?
+On Thu, Dec 8, 2022 at 4:02 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
 >
-> I'm not sure how libbpf can allow the load without performing the
-> relocation; maybe I'm missing something.
-> IIUC, libbpf uses the kfunc name (from the relocation?) and replaces
-> it with the kfunc id, right?
+> Stanislav Fomichev <sdf@google.com> writes:
+>
+> > On Thu, Dec 8, 2022 at 2:59 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+> >>
+> >> Stanislav Fomichev <sdf@google.com> writes:
+> >>
+> >> > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >> >
+> >> > Support RX hash and timestamp metadata kfuncs. We need to pass in th=
+e cqe
+> >> > pointer to the mlx5e_skb_from* functions so it can be retrieved from=
+ the
+> >> > XDP ctx to do this.
+> >>
+> >> So I finally managed to get enough ducks in row to actually benchmark
+> >> this. With the caveat that I suddenly can't get the timestamp support =
+to
+> >> work (it was working in an earlier version, but now
+> >> timestamp_supported() just returns false). I'm not sure if this is an
+> >> issue with the enablement patch, or if I just haven't gotten the
+> >> hardware configured properly. I'll investigate some more, but figured
+> >> I'd post these results now:
+> >>
+> >> Baseline XDP_DROP:         25,678,262 pps / 38.94 ns/pkt
+> >> XDP_DROP + read metadata:  23,924,109 pps / 41.80 ns/pkt
+> >> Overhead:                   1,754,153 pps /  2.86 ns/pkt
+> >>
+> >> As per the above, this is with calling three kfuncs/pkt
+> >> (metadata_supported(), rx_hash_supported() and rx_hash()). So that's
+> >> ~0.95 ns per function call, which is a bit less, but not far off from
+> >> the ~1.2 ns that I'm used to. The tests where I accidentally called th=
+e
+> >> default kfuncs cut off ~1.3 ns for one less kfunc call, so it's
+> >> definitely in that ballpark.
+> >>
+> >> I'm not doing anything with the data, just reading it into an on-stack
+> >> buffer, so this is the smallest possible delta from just getting the
+> >> data out of the driver. I did confirm that the call instructions are
+> >> still in the BPF program bytecode when it's dumped back out from the
+> >> kernel.
+> >>
+> >> -Toke
+> >>
+> >
+> > Oh, that's great, thanks for running the numbers! Will definitely
+> > reference them in v4!
+> > Presumably, we should be able to at least unroll most of the
+> > _supported callbacks if we want, they should be relatively easy; but
+> > the numbers look fine as is?
+>
+> Well, this is for one (and a half) piece of metadata. If we extrapolate
+> it adds up quickly. Say we add csum and vlan tags, say, and maybe
+> another callback to get the type of hash (l3/l4). Those would probably
+> be relevant for most packets in a fairly common setup. Extrapolating
+> from the ~1 ns/call figure, that's 8 ns/pkt, which is 20% of the
+> baseline of 39 ns.
+>
+> So in that sense I still think unrolling makes sense. At least for the
+> _supported() calls, as eating a whole function call just for that is
+> probably a bit much (which I think was also Jakub's point in a sibling
+> thread somewhere).
 
-Yeah, so if it can't find the kfunc in vmlinux, just write an id of 0.
-This will trip the check at the top of fixup_kfunc_call() in the
-verifier, but if the code is hidden behind an always-false branch (an
-rodata variable set to zero, say) the instructions should get eliminated
-before they reach that point. That way you can at least turn it off at
-runtime (after having done some kind of feature detection) without
-having to compile it out of your program entirely.
+imo the overhead is tiny enough that we can wait until
+generic 'kfunc inlining' infra is ready.
 
-> Having bpf_core_kfunc_exists would help, but this probably needs
-> compiler work first to preserve some of the kfunc traces in vmlinux.h?
-
-I am not sure how the existing macros work, TBH. Hopefully someone else
-can chime in :)
-
--Toke
-
+We're planning to dual-compile some_kernel_file.c
+into native arch and into bpf arch.
+Then the verifier will automatically inline bpf asm
+of corresponding kfunc.
