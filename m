@@ -2,71 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 813276484DF
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 159626484E4
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 16:20:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbiLIPUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 10:20:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40916 "EHLO
+        id S230287AbiLIPUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 10:20:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230150AbiLIPUD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:20:03 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2368C86F69;
-        Fri,  9 Dec 2022 07:20:02 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id l11so3513154edb.4;
-        Fri, 09 Dec 2022 07:20:02 -0800 (PST)
+        with ESMTP id S229696AbiLIPUr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 10:20:47 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B286D86F69;
+        Fri,  9 Dec 2022 07:20:46 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id n21so12224466ejb.9;
+        Fri, 09 Dec 2022 07:20:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xXNJjFfBBaJNhkFhtPLNRdA2mpzp23T0XAuYEKh5TuQ=;
-        b=k3N4vqZh5GBtondRSKfFjNrkh4/4+6GCP7qzt9V7TYkYMhF3fYrX9acjKaO9+odkpR
-         JyUKfneLWengdirHfa8brzTqNXwgh/UwIe/UlvtDt+uulvf3TP7TExvu787LFJ12NfvW
-         jrzH0YJGFdR4TBGxotJplBssQo3O7PSSQQVwZjpSwMz7lJu1acuOTTecuw0voQsDFCQh
-         /MF7bYFInYgPWWLZxxSMD8n7cGP9JGFH4/REueMVit6wP8VHpE39wgHnQFKyQCq7b+hi
-         R1GECg1jPjFKg5YoBgB5Ghg96UASjnv5N76uWaoBvMifJcanWbNYx7QU/It0ZSSLpgbm
-         kzcQ==
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=aKeZ4tYHRTY5Y692xNjYg1a08hzNMUIopr7AUdLi5M4=;
+        b=PNBXApaESWpfGef9izBo29+Y5AnTu56H5yKCAcWs6WDFoLy3/XYpV+ELlq+HI4oEP7
+         czoq8uAjUybzA9JXkXLm3a2UozAKaYC4Bg6hzErN/yJEPG/ptNyaDIHDNp4lsFId7lCq
+         QKfAQNaE2XdK5bhUK0AgLoqC39AFlC1v4qHjX+nxljxPb1Y8D1Q8GgSfZMsSfurFrS+j
+         30QhV30swD4ZvyBhGdsGcY6/DIFez54YwBx379kmn4vXTGntK/ztnfDh0cxVD35lhNAe
+         gh+KHrNmTqrkFuCZS/wnsPfYGW8XuMfrlsxZTdJLQYWQMHFWueC21UG5ZtCNZ+8hYfTW
+         S9ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xXNJjFfBBaJNhkFhtPLNRdA2mpzp23T0XAuYEKh5TuQ=;
-        b=iQ8Kf2I137u8nzp39kqsFTyN4BKKMy1QQo/W/Ejbx9j638QqSzUpiCOMVfpI9FF6ZA
-         HKwqwoXQ17uBRSJFsCdmVx/hoOs9GITImAPRJ5kmkmXCRROaeinalf9/W4BfCo014YOQ
-         lVRUFL9457Ly2QSmIGzm0c85RO56/psjUnzuAOKv4kNYYZjAfmdoDnb5GwMv80Lj+ocf
-         DLE28QFl3oy6jARK4e1Mo+6IHbyVrzqbJESLizhqo9L7+C1041DMpurN0TBkss99ISkW
-         vea5celq12xSnsXkSA2dPb1wRi2mTqIV/yXn/NaZVRbMVYPzAdTBCNSgYWJkwuxlTqqq
-         ff+g==
-X-Gm-Message-State: ANoB5pnEPStAwORq8h8ml6RtmHXZ6LPvYpF1a7OCFUYjh4w9pTj5UvES
-        fnse8uhM9qMLLegYobBA2EU=
-X-Google-Smtp-Source: AA0mqf7FozdXR7N/YWSg435PNkpW4+4mp/3n/OqhCGtNCQA5iJJvd3H6Qni6mL8tGkpeHe6NNvdgyA==
-X-Received: by 2002:a05:6402:c2:b0:468:9bc4:1c7 with SMTP id i2-20020a05640200c200b004689bc401c7mr7497822edu.38.1670599200672;
-        Fri, 09 Dec 2022 07:20:00 -0800 (PST)
-Received: from skbuf ([188.27.185.190])
-        by smtp.gmail.com with ESMTPSA id d14-20020aa7c1ce000000b00461bacee867sm750208edp.25.2022.12.09.07.19.59
+        bh=aKeZ4tYHRTY5Y692xNjYg1a08hzNMUIopr7AUdLi5M4=;
+        b=iPiXBstnmFqcmHvuYfDiOl0XkzzOp+XRUlheC2Jb6dlzLPkZe+DYAGr4c/NCsi2PmC
+         zKe2gGS0BBm5GweCDcRBgXK8Xw2NtSmS5A23tGhvR2onDysAs36ELf2CT3gj/dN5lPky
+         oD5D7vGatzoZC3omI3HuIiTt8TW6h8WgYNzX3h5grLOKNormfBWHM0TSl3nCh2NkXG8C
+         KKvQP/fQMI+9ruKNQFOSqqcwHgivvIy/QTBL/fpql55WQ7OE7PbORtVTRLLsgdp1fyTL
+         0eNO7BzI84WvNuYFax96YFKmHHRkxTc5Dv8zmVQS3i67+WAhR9EXYd4CeMG9xdqr0vPQ
+         OSLw==
+X-Gm-Message-State: ANoB5pnrqeifzojA0MkkCib9dETmYm08aWM2BfaoprQGwOSk9JVcp0H0
+        OHAtQjFRWW7usyARdYZbjG0=
+X-Google-Smtp-Source: AA0mqf5pkWVFeQAqJ3SqwghDSS6FDSl+wzcpBiWvaMsTrudXR7RjxnRvElvwQmTw4QRXtDddlbdZ3Q==
+X-Received: by 2002:a17:906:6ad7:b0:78d:f455:3105 with SMTP id q23-20020a1709066ad700b0078df4553105mr4410582ejs.45.1670599245111;
+        Fri, 09 Dec 2022 07:20:45 -0800 (PST)
+Received: from krava (2001-1ae9-1c2-4c00-726e-c10f-8833-ff22.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:726e:c10f:8833:ff22])
+        by smtp.gmail.com with ESMTPSA id k17-20020a170906055100b007806c1474e1sm16983eja.127.2022.12.09.07.20.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 07:20:00 -0800 (PST)
-Date:   Fri, 9 Dec 2022 17:19:58 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com, richardcochran@gmail.com,
-        ceggers@arri.de
-Subject: Re: [Patch net-next v3 02/13] net: dsa: microchip: ptp: Initial
- hardware time stamping support
-Message-ID: <20221209151958.4zquauqbruthv74p@skbuf>
-References: <20221209072437.18373-1-arun.ramadoss@microchip.com>
- <20221209072437.18373-3-arun.ramadoss@microchip.com>
+        Fri, 09 Dec 2022 07:20:44 -0800 (PST)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Fri, 9 Dec 2022 16:20:42 +0100
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Song Liu <song@kernel.org>, Hao Sun <sunhao.th@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Yonghong Song <yhs@fb.com>, KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: BUG: unable to handle kernel paging request in bpf_dispatcher_xdp
+Message-ID: <Y5NSStSi7h9Vdo/j@krava>
+References: <CACkBjsbD4SWoAmhYFR2qkP1b6JHO3Og0Vyve0=FO-Jb2JGGRfw@mail.gmail.com>
+ <Y49dMUsX2YgHK0J+@krava>
+ <CAADnVQ+w-xtH=oWPYszG-TqxcHmbrKJK10C=P-o2Ouicx-9OUA@mail.gmail.com>
+ <CAADnVQJ+9oiPEJaSgoXOmZwUEq9FnyLR3Kp38E_vuQo2PmDsbg@mail.gmail.com>
+ <Y5Inw4HtkA2ql8GF@krava>
+ <Y5JkomOZaCETLDaZ@krava>
+ <Y5JtACA8ay5QNEi7@krava>
+ <Y5LfMGbOHpaBfuw4@krava>
+ <Y5MaffJOe1QtumSN@krava>
+ <Y5M9P95l85oMHki9@krava>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221209072437.18373-3-arun.ramadoss@microchip.com>
+In-Reply-To: <Y5M9P95l85oMHki9@krava>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -77,24 +95,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 09, 2022 at 12:54:26PM +0530, Arun Ramadoss wrote:
-> From: Christian Eggers <ceggers@arri.de>
+On Fri, Dec 09, 2022 at 02:50:55PM +0100, Jiri Olsa wrote:
+> On Fri, Dec 09, 2022 at 12:22:37PM +0100, Jiri Olsa wrote:
 > 
-> This patch adds the routine for get_ts_info, hwstamp_get, set. This enables
-> the PTP support towards userspace applications such as linuxptp.
+> SBIP
 > 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Co-developed-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> > > > > > > >
+> > > > > > > > I'm trying to understand the severity of the issues and
+> > > > > > > > whether we need to revert that commit asap since the merge window
+> > > > > > > > is about to start.
+> > > > > > > 
+> > > > > > > Jiri, Peter,
+> > > > > > > 
+> > > > > > > ping.
+> > > > > > > 
+> > > > > > > cc-ing Thorsten, since he's tracking it now.
+> > > > > > > 
+> > > > > > > The config has CONFIG_X86_KERNEL_IBT=y.
+> > > > > > > Is it related?
+> > > > > > 
+> > > > > > sorry for late reply.. I still did not find the reason,
+> > > > > > but I did not try with IBT yet, will test now
+> > > > > 
+> > > > > no difference with IBT enabled, can't reproduce the issue
+> > > > > 
+> > > > 
+> > > > ok, scratch that.. the reproducer got stuck on wifi init :-\
+> > > > 
+> > > > after I fix that I can now reproduce on my local config with
+> > > > IBT enabled or disabled.. it's something else
+> > > 
+> > > I'm getting the error also when reverting the static call change,
+> > > looking for good commit, bisecting
+> > > 
+> > > I'm getting fail with:
+> > >    f0c4d9fc9cc9 (tag: v6.1-rc4) Linux 6.1-rc4
+> > > 
+> > > v6.1-rc1 is ok
+> > 
+> > so far I narrowed it down between rc1 and rc3.. bisect got me nowhere so far
+> > 
+> > attaching some more logs
 > 
+> looking at the code.. how do we ensure that code running through
+> bpf_prog_run_xdp will not get dispatcher image changed while
+> it's being exetuted
+> 
+> we use 'the other half' of the image when we add/remove programs,
+> but could bpf_dispatcher_update race with bpf_prog_run_xdp like:
+> 
+> 
+> cpu 0:                                  cpu 1:
+> 
+> bpf_prog_run_xdp
+>    ...
+>    bpf_dispatcher_xdp_func
+>       start exec image at offset 0x0
+> 
+>                                         bpf_dispatcher_update
+>                                                 update image at offset 0x800
+>                                         bpf_dispatcher_update
+>                                                 update image at offset 0x0
+> 
+>       still in image at offset 0x0
+> 
+> 
+> that might explain why I wasn't able to trigger that on
+> bare metal just in qemu
 
-When you resend, could you also do something about these blank lines
-after your sign off, here and in other patches? They shouldn't be there.
-I think that a blank line will appear between this and other maintainer
-sign offs.
+I tried patch below and it fixes the issue for me and seems
+to confirm the race above.. but not sure it's the best fix
 
-> ---
-> v1 -> v2
-> - Declared the ksz_hwtstamp_get/set to NULL as macro if ptp is not
-> enabled
-> - Removed mutex lock in hwtstamp_set()
+jirka
+
+
+---
+diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
+index c19719f48ce0..6a2ced102fc7 100644
+--- a/kernel/bpf/dispatcher.c
++++ b/kernel/bpf/dispatcher.c
+@@ -124,6 +124,7 @@ static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
+ 	}
+ 
+ 	__BPF_DISPATCHER_UPDATE(d, new ?: (void *)&bpf_dispatcher_nop_func);
++	synchronize_rcu_tasks();
+ 
+ 	if (new)
+ 		d->image_off = noff;
