@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89D73647B6F
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 02:28:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FBD3647B78
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 02:31:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbiLIB2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 20:28:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37068 "EHLO
+        id S229879AbiLIBbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 20:31:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiLIB2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 20:28:24 -0500
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2959801CF;
-        Thu,  8 Dec 2022 17:28:22 -0800 (PST)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id 0C79924E1FF;
-        Fri,  9 Dec 2022 09:28:13 +0800 (CST)
-Received: from EXMBX173.cuchost.com (172.16.6.93) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 9 Dec
- 2022 09:28:13 +0800
-Received: from [192.168.120.49] (171.223.208.138) by EXMBX173.cuchost.com
- (172.16.6.93) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 9 Dec
- 2022 09:28:11 +0800
-Message-ID: <a2c6ff79-2d47-d0a1-d59a-716a1d212808@starfivetech.com>
-Date:   Fri, 9 Dec 2022 09:28:06 +0800
+        with ESMTP id S229997AbiLIBbE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 20:31:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF90E82F9D;
+        Thu,  8 Dec 2022 17:30:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DFBA6210A;
+        Fri,  9 Dec 2022 01:30:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DFD6C433EF;
+        Fri,  9 Dec 2022 01:30:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670549454;
+        bh=O3gqpaHAaVJ+VQYk3KlcocWeL7MxNJI9S3vqrlnG0Bw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OsALoXsh10Da1s1AEPa+oFbbLFFzlOlm3vbQRcHkv91I2trG2iMe4JzhVO8Qp64mB
+         z9zUQeJpAPGw+0KrcE6Jw6QkUY3+E56pypWi62g8tG7lq2tdJQYqXxQDkR2MNU0/ph
+         5gIBzClnT4IXgy/EqP+bVXi+F4Gho1/46Luu/sgR4tsfbSsOhtp1tFblWTrQ6b39lO
+         COyjWGkRmuK9+nbOaGdUDc33gFd43RLvTQGHlU/vL9Oon1mosxK3HluuqRpO3e/9go
+         iWjwArPMPMiQd4f2tzXPK+qhRgdgKmDDEP0YDOosXGHp3xodsdFyp5UUv7xJgY+SbC
+         OohIvtjrzj5iw==
+Date:   Thu, 8 Dec 2022 17:30:53 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        haoluo@google.com, jolsa@kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Anatoly Burakov <anatoly.burakov@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX kfuncs
+Message-ID: <20221208173053.1145a8cb@kernel.org>
+In-Reply-To: <CAKH8qBtAQe=b1BLR5RKu7mBynQf0arp4G9+DtvcWVNKNK_27vA@mail.gmail.com>
+References: <20221206024554.3826186-1-sdf@google.com>
+        <20221206024554.3826186-4-sdf@google.com>
+        <20221207210019.41dc9b6b@kernel.org>
+        <CAKH8qBtAQe=b1BLR5RKu7mBynQf0arp4G9+DtvcWVNKNK_27vA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH v1 7/7] riscv: dts: starfive: visionfive-v2: Add phy
- delay_chain configuration
-Content-Language: en-US
-To:     Conor Dooley <conor@kernel.org>
-CC:     <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20221201090242.2381-1-yanhong.wang@starfivetech.com>
- <20221201090242.2381-8-yanhong.wang@starfivetech.com> <Y4jpDvXo/uj9ygLR@spud>
- <Y4kAyAhBseNmmDo8@spud>
-From:   yanhong wang <yanhong.wang@starfivetech.com>
-In-Reply-To: <Y4kAyAhBseNmmDo8@spud>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX173.cuchost.com
- (172.16.6.93)
-X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,100 +65,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/12/2 3:30, Conor Dooley wrote:
-> On Thu, Dec 01, 2022 at 05:49:08PM +0000, Conor Dooley wrote:
->> On Thu, Dec 01, 2022 at 05:02:42PM +0800, Yanhong Wang wrote:
->> > riscv: dts: starfive: visionfive-v2: Add phy delay_chain configuration
->> > 
->> > Add phy delay_chain configuration to support motorcomm phy driver for
->> > StarFive VisionFive 2 board.
+On Thu, 8 Dec 2022 11:07:43 -0800 Stanislav Fomichev wrote:
+> > >       bpf_free_used_maps(aux);
+> > >       bpf_free_used_btfs(aux);
+> > > -     if (bpf_prog_is_offloaded(aux))
+> > > +     if (bpf_prog_is_dev_bound(aux))
+> > >               bpf_prog_offload_destroy(aux->prog);  
+> >
+> > This also looks a touch like a mix of terms (condition vs function
+> > called).  
 > 
-> nit: please re-word this commit next time around to actually say what
-> you're doing here. I didn't notice it initially, but this patch is doing
-> a lot more than adding `delay_chain` configuration. To my dwmac unaware
-> brain, there's nothing hits for that term outside of the changelog :(
+> Here, not sure, open to suggestions. These
+> bpf_prog_offload_init/bpf_prog_offload_destroy are generic enough
+> (now) that I'm calling them for both dev_bound/offloaded.
 > 
-
-I will re-word the commit message and add another dt-binding to describe the details that such as "rxc_dly_en","tx_inverted_10" etc.
-
-> Thanks,
-> Conor.
+> The following paths trigger for both offloaded/dev_bound cases:
 > 
->> > 
->> > Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
->> > ---
->> >  .../jh7110-starfive-visionfive-v2.dts         | 46 +++++++++++++++++++
->> >  1 file changed, 46 insertions(+)
->> > 
->> > diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
->> > index c8946cf3a268..2868ef4c74ef 100644
->> > --- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
->> > +++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-v2.dts
->> > @@ -15,6 +15,8 @@
->> >  
->> >  	aliases {
->> >  		serial0 = &uart0;
->> > +		ethernet0=&gmac0;
->> > +		ethernet1=&gmac1;
->> 
->> Please match the whitespace usage of the existing entry.
->> 
->> >  	};
->> >  
->> >  	chosen {
->> > @@ -114,3 +116,47 @@
->> >  	pinctrl-0 = <&uart0_pins>;
->> >  	status = "okay";
->> >  };
->> > +
->> > +&gmac0 {
->> > +	status = "okay";
->> > +	#address-cells = <1>;
->> > +	#size-cells = <0>;
->> > +	phy-handle = <&phy0>;
->> > +	status = "okay";
->> > +	mdio0 {
->> 
->> A line of whitespace before the child nodes too please :)
->> 
->> > +		#address-cells = <1>;
->> > +		#size-cells = <0>;
->> > +		compatible = "snps,dwmac-mdio";
->> > +		phy0: ethernet-phy@0 {
->> > +			reg = <0>;
->> > +			rxc_dly_en = <1>;
->> > +			tx_delay_sel_fe = <5>;
->> > +			tx_delay_sel = <0xa>;
->> > +			tx_inverted_10 = <0x1>;
->> > +			tx_inverted_100 = <0x1>;
->> > +			tx_inverted_1000 = <0x1>;
->> > +		};
->> > +	};
->> > +};
->> > +
->> > +&gmac1 {
->> > +	status = "okay";
->> > +	#address-cells = <1>;
->> > +	#size-cells = <0>;
->> > +	phy-handle = <&phy1>;
->> > +	status = "okay";
->> > +	mdio1 {
->> > +		#address-cells = <1>;
->> > +		#size-cells = <0>;
->> > +		compatible = "snps,dwmac-mdio";
->> > +		phy1: ethernet-phy@1 {
->> > +			reg = <1>;
->> > +			tx_delay_sel_fe = <5>;
->> > +			tx_delay_sel = <0>;
->> > +			rxc_dly_en = <0>;
->> > +			tx_inverted_10 = <0x1>;
->> > +			tx_inverted_100 = <0x1>;
->> > +			tx_inverted_1000 = <0x0>;
->> > +		};
->> > +	};
->> > +};
->> > -- 
->> > 2.17.1
->> > 
+> if (bpf_prog_is_dev_bound()) bpf_prog_offload_init();
+> if (bpf_prog_is_dev_bound()) bpf_prog_offload_destroy();
+> 
+> Do you think it's worth it having completely separate
+> dev_bound/offloaded paths? Or, alternatively, can rename to
+> bpf_prog_dev_bound_{init,destroy} but still handle both cases?
+
+Any offload should be bound, right? So I think functions which handle
+both can use the bound naming scheme, only the offload-specific ones 
+should explicitly use offload?
