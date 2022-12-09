@@ -2,184 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAC40648616
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:04:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54D6364864F
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 17:11:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbiLIQED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 11:04:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49132 "EHLO
+        id S229759AbiLIQLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 11:11:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229573AbiLIQEB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:04:01 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6329950D59;
-        Fri,  9 Dec 2022 08:03:59 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 98D88337F5;
-        Fri,  9 Dec 2022 16:03:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1670601838; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ACEb0peWm3spbIZkD6VxQeoNEBO3y0M6patrqqDV3Po=;
-        b=tBtgeiW1eSS/J9B9gcfYy+/v8vbO8NRaNKUU1zejqaPXv97ZTJaZK4xuAdsEOS1Lr0tAav
-        MSU8lMLDtNfRMUEoyp2Q47/FEwAYog1suVu8MBd1UU1/bwohc/fdQjbZFWyi9mGBkjtv8Y
-        64ox5KSY/AS4NHDKZD/D2fgykCfzTpA=
-Received: from suse.cz (unknown [10.100.201.202])
+        with ESMTP id S229460AbiLIQLH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 11:11:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AE660F7;
+        Fri,  9 Dec 2022 08:11:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id CF9042C142;
-        Fri,  9 Dec 2022 16:03:56 +0000 (UTC)
-Date:   Fri, 9 Dec 2022 17:03:54 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, xuqiang36@huawei.com, linux-edac@vger.kernel.org,
-        Tony Luck <tony.luck@intel.com>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: Re: [PATCH V3 08/11] EDAC/altera: Skip the panic notifier if kdump
- is loaded
-Message-ID: <Y5Ncaur0S4rEbath@alley>
-References: <20220819221731.480795-1-gpiccoli@igalia.com>
- <20220819221731.480795-9-gpiccoli@igalia.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CAE860EB0;
+        Fri,  9 Dec 2022 16:11:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B20FEC433EF;
+        Fri,  9 Dec 2022 16:11:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670602264;
+        bh=OclmnU1jYcdMFqciE3c6RyUB6hgvanpdH2l220bFhz4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lP5pQ24T3IT2YBfVVAYFE/vlA14kPUGpHI19DQSbfMFFqcLV6yfVQX2yzf3FWU9BJ
+         DEPOy15CleSzGVLHHvdVrCdctgS6AMOlWyxNMtd1UP4Jl6EFRe7WSmHsdwacu3KmIi
+         3gphHYn83fw+acEzH9vRCOj48wMtBY8ejFf/mJMd7kxsJCGH1dwZt2JHDO6M2WNy+F
+         RxYdcuexGpRtzv/r3df/M1OzYPk521V8CVwEXUXt0ZTCVSTYNw6OFG3RfFVHJS6f4s
+         Cy+bJUuWARFf6RP5DMfx0m0W7Y2ou/9vrV6yP2gJYTEe5AantjuQErI6+6QNzX5szc
+         v2qI3ygfSsAtw==
+Date:   Fri, 9 Dec 2022 08:11:01 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Benjamin Coddington <bcodding@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Christoph =?UTF-8?B?QsO2aG13?= =?UTF-8?B?YWxkZXI=?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Steve French <sfrench@samba.org>,
+        Christine Caulfield <ccaulfie@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Xiubo Li <xiubli@redhat.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org, nbd@other.debian.org,
+        linux-nvme@lists.infradead.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, cluster-devel@redhat.com,
+        ocfs2-devel@oss.oracle.com, v9fs-developer@lists.sourceforge.net,
+        ceph-devel@vger.kernel.org, linux-nfs@vger.kernel.org
+Subject: Re: [PATCH v1 2/3] Treewide: Stop corrupting socket's task_frag
+Message-ID: <20221209081101.7500478c@kernel.org>
+In-Reply-To: <d220402a232e204676d9100d6fe4c2ae08f753ee.camel@redhat.com>
+References: <cover.1669036433.git.bcodding@redhat.com>
+        <c2ec184226acd21a191ccc1aa46a1d7e43ca7104.1669036433.git.bcodding@redhat.com>
+        <d220402a232e204676d9100d6fe4c2ae08f753ee.camel@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819221731.480795-9-gpiccoli@igalia.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri 2022-08-19 19:17:28, Guilherme G. Piccoli wrote:
-> The altera_edac panic notifier performs some data collection with
-> regards errors detected; such code relies in the regmap layer to
-> perform reads/writes, so the code is abstracted and there is some
-> risk level to execute that, since the panic path runs in atomic
-> context, with interrupts/preemption and secondary CPUs disabled.
-> 
-> Users want the information collected in this panic notifier though,
-> so in order to balance the risk/benefit, let's skip the altera panic
-> notifier if kdump is loaded. While at it, remove a useless header
-> and encompass a macro inside the sole ifdef block it is used.
-> 
-> Cc: Borislav Petkov <bp@alien8.de>
-> Cc: Petr Mladek <pmladek@suse.com>
-> Cc: Tony Luck <tony.luck@intel.com>
-> Acked-by: Dinh Nguyen <dinguyen@kernel.org>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> 
-> ---
-> 
-> V3:
-> - added the ack tag from Dinh - thanks!
-> - had a good discussion with Boris about that in V2 [0],
-> hopefully we can continue and reach a consensus in this V3.
-> [0] https://lore.kernel.org/lkml/46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com/
-> 
-> V2:
-> - new patch, based on the discussion in [1].
-> [1] https://lore.kernel.org/lkml/62a63fc2-346f-f375-043a-fa21385279df@igalia.com/
-> 
-> 
->  drivers/edac/altera_edac.c | 16 ++++++++++++----
->  1 file changed, 12 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/edac/altera_edac.c b/drivers/edac/altera_edac.c
-> index e7e8e624a436..741fe5539154 100644
-> --- a/drivers/edac/altera_edac.c
-> +++ b/drivers/edac/altera_edac.c
-> @@ -16,7 +16,6 @@
->  #include <linux/kernel.h>
->  #include <linux/mfd/altera-sysmgr.h>
->  #include <linux/mfd/syscon.h>
-> -#include <linux/notifier.h>
->  #include <linux/of_address.h>
->  #include <linux/of_irq.h>
->  #include <linux/of_platform.h>
-> @@ -24,6 +23,7 @@
->  #include <linux/platform_device.h>
->  #include <linux/regmap.h>
->  #include <linux/types.h>
-> +#include <linux/kexec.h>
->  #include <linux/uaccess.h>
->  
->  #include "altera_edac.h"
-> @@ -2063,22 +2063,30 @@ static const struct irq_domain_ops a10_eccmgr_ic_ops = {
->  };
->  
->  /************** Stratix 10 EDAC Double Bit Error Handler ************/
-> -#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
-> -
->  #ifdef CONFIG_64BIT
->  /* panic routine issues reboot on non-zero panic_timeout */
->  extern int panic_timeout;
->  
-> +#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
-> +
->  /*
->   * The double bit error is handled through SError which is fatal. This is
->   * called as a panic notifier to printout ECC error info as part of the panic.
-> + *
-> + * Notice that if kdump is set, we take the risk avoidance approach and
-> + * skip the notifier, given that users are expected to have access to a
-> + * full vmcore.
->   */
->  static int s10_edac_dberr_handler(struct notifier_block *this,
->  				  unsigned long event, void *ptr)
->  {
-> -	struct altr_arria10_edac *edac = to_a10edac(this, panic_notifier);
-> +	struct altr_arria10_edac *edac;
->  	int err_addr, dberror;
->  
-> +	if (kexec_crash_loaded())
-> +		return NOTIFY_DONE;
+On Fri, 09 Dec 2022 13:37:08 +0100 Paolo Abeni wrote:
+> I think this is the most feasible way out of the existing issue, and I
+> think this patchset should go via the networking tree, targeting the
+> Linux 6.2.
 
-I have read the discussion about v2 [1] and this looks like a bad
-approach from my POV.
-
-My understanding is that the information provided by this notifier
-could not be found in the crashdump. It means that people really
-want to run this before crashdump in principle.
-
-Of course, there is the question how much safe this code is. I mean
-if the panic() code path might get blocked here.
-
-I see two possibilities.
-
-The best solution would be if we know that this is "always" safe or if
-it can be done a safe way. Then we could keep it as it is or implement
-the safe way.
-
-Alternative solution would be to create a kernel parameter that
-would enable/disable this particular report when kdump is enabled.
-The question would be the default. It would depend on how risky
-the code is and how useful the information is.
-
-[1] https://lore.kernel.org/r/20220719195325.402745-11-gpiccoli@igalia.com
-
-> +	edac = to_a10edac(this, panic_notifier);
->  	regmap_read(edac->ecc_mgr_map, S10_SYSMGR_ECC_INTSTAT_DERR_OFST,
->  		    &dberror);
->  	regmap_write(edac->ecc_mgr_map, S10_SYSMGR_UE_VAL_OFST, dberror);
-
-Best Regards,
-Petr
+FWIW some fields had been moved so this will not longer apply cleanly,
+see b534dc46c8ae016. But I think we can apply it to net since the merge
+window is upon us? Just a heads up.
