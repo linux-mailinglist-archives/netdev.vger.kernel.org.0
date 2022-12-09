@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DEBB647AA0
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:15:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4554647AA1
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 01:15:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiLIAP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 19:15:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
+        id S229841AbiLIAPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 19:15:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiLIAO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:14:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5BE8F716
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:14:48 -0800 (PST)
+        with ESMTP id S229591AbiLIAPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 19:15:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582EB8F726
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 16:14:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD09E620DA
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:14:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 041DAC433F1;
-        Fri,  9 Dec 2022 00:14:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBF25620F6
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:14:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30D68C433F0;
+        Fri,  9 Dec 2022 00:14:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670544887;
-        bh=B/9Vdv0b+Kpf/fcLXWbdgp157Jctbd9XNtF1MZnpSuE=;
+        s=k20201202; t=1670544888;
+        bh=ceRSfQXVNHlR9CV1E8V68at3rLAq7NWycSS7AAyyuH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qcft6F8aspmk3MHkJRY6R41NeH0p1XouAFS0DUftAVR5m9508R4txDlTLnJ72M8NU
-         MdcdbBowBiWmPIzGOGgy6weTCj2IJMgHnokGP4CPvMAoPRQ+K6APA484pCsVYesXvm
-         Gd82En0uI0DiyTF8bSYvPGo9g3EWCcxjkr6WWQc20M69qVzXAxtyW3lXq/4aMLazLh
-         GlYtoYpMgXaMNj4zUd+jrzYGmBWlN1UUFrWhFrCcW6vxQ3h1o1W/bwdoMpNbaEu0FH
-         9ARm5+kNcVNfLNf5QaMgZylcylmWUWMh47Dgd49XSWImyFzpV/8V2xQY+rO7pFMXaV
-         cE7zqCeM4Kzvw==
+        b=RyTzPhn7RqM89gOL3OP7g0D61ozbpoVGqgghnpSz53+mByD5gMMEYIX7uEMv14U0z
+         sjyIF9lwyDS854FcMNJS2MYWYs3Nd0+vV1WOeaf7LRonb/BrQzLuAY4xSJky+wqdZ6
+         6I6Ck0u589u7jKTWsvL5Ms6tdNiKT0Z6NAlcgVD/t/T6I8F+OefKbjhugQwLz4jps1
+         EcGZRu++ws3keTedYhFUz6DGxzRJ/dVPpsdib0Fj5441JmmOcAWsPho2PuiKr0X+h1
+         VaQ9nDEacIhYRPGWiDB/q8qIQxn0459v3Ae8yTIuQXJgtLB6iy7skrC95679QLpOFc
+         6yPzaTN0OkqHA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,11 +38,11 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Or Har-Toov <ohartoov@nvidia.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
         Maor Gottlieb <maorg@nvidia.com>
-Subject: [net-next 14/15] net/mlx5: Refactor and expand rep vport stat group
-Date:   Thu,  8 Dec 2022 16:14:19 -0800
-Message-Id: <20221209001420.142794-15-saeed@kernel.org>
+Subject: [net-next 15/15] net/mlx5: Expose steering dropped packets counter
+Date:   Thu,  8 Dec 2022 16:14:20 -0800
+Message-Id: <20221209001420.142794-16-saeed@kernel.org>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221209001420.142794-1-saeed@kernel.org>
 References: <20221209001420.142794-1-saeed@kernel.org>
@@ -57,187 +57,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Or Har-Toov <ohartoov@nvidia.com>
+From: Michael Guralnik <michaelgur@nvidia.com>
 
-Expand representor vport stat group to support all counters from the
-vport stat group, to count all the traffic passing through the vport.
+Add rx steering discarded packets counter to the vnic_diag debugfs.
 
-Fix current implementation where fill_stats and update_stats use
-different structs.
-
-Signed-off-by: Or Har-Toov <ohartoov@nvidia.com>
+Signed-off-by: Michael Guralnik <michaelgur@nvidia.com>
 Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 94 +++++++++++++++----
- .../ethernet/mellanox/mlx5/core/en_stats.h    | 16 ++++
- 2 files changed, 90 insertions(+), 20 deletions(-)
+ .../ethernet/mellanox/mlx5/core/esw/debugfs.c | 22 ++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 623886462c10..75b9e1528fd2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -85,18 +85,25 @@ static const struct counter_desc sw_rep_stats_desc[] = {
- 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_bytes) },
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/debugfs.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/debugfs.c
+index 2db13c71e88c..3d0bbcca1cb9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/debugfs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/debugfs.c
+@@ -12,10 +12,11 @@ enum vnic_diag_counter {
+ 	MLX5_VNIC_DIAG_CQ_OVERRUN,
+ 	MLX5_VNIC_DIAG_INVALID_COMMAND,
+ 	MLX5_VNIC_DIAG_QOUTA_EXCEEDED_COMMAND,
++	MLX5_VNIC_DIAG_RX_STEERING_DISCARD,
  };
  
--struct vport_stats {
--	u64 vport_rx_packets;
--	u64 vport_tx_packets;
--	u64 vport_rx_bytes;
--	u64 vport_tx_bytes;
--};
--
- static const struct counter_desc vport_rep_stats_desc[] = {
--	{ MLX5E_DECLARE_STAT(struct vport_stats, vport_rx_packets) },
--	{ MLX5E_DECLARE_STAT(struct vport_stats, vport_rx_bytes) },
--	{ MLX5E_DECLARE_STAT(struct vport_stats, vport_tx_packets) },
--	{ MLX5E_DECLARE_STAT(struct vport_stats, vport_tx_bytes) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats, vport_rx_packets) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats, vport_rx_bytes) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats, vport_tx_packets) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats, vport_tx_bytes) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats,
-+			     rx_vport_rdma_unicast_packets) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats, rx_vport_rdma_unicast_bytes) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats,
-+			     tx_vport_rdma_unicast_packets) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats, tx_vport_rdma_unicast_bytes) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats,
-+			     rx_vport_rdma_multicast_packets) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats,
-+			     rx_vport_rdma_multicast_bytes) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats,
-+			     tx_vport_rdma_multicast_packets) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_rep_stats,
-+			     tx_vport_rdma_multicast_bytes) },
- };
- 
- #define NUM_VPORT_REP_SW_COUNTERS ARRAY_SIZE(sw_rep_stats_desc)
-@@ -161,33 +168,80 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(vport_rep)
- 	int i;
- 
- 	for (i = 0; i < NUM_VPORT_REP_HW_COUNTERS; i++)
--		data[idx++] = MLX5E_READ_CTR64_CPU(&priv->stats.vf_vport,
-+		data[idx++] = MLX5E_READ_CTR64_CPU(&priv->stats.rep_stats,
- 						   vport_rep_stats_desc, i);
- 	return idx;
- }
- 
- static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(vport_rep)
+ static int mlx5_esw_query_vnic_diag(struct mlx5_vport *vport, enum vnic_diag_counter counter,
+-				    u32 *val)
++				    u64 *val)
  {
-+	struct mlx5e_rep_stats *rep_stats = &priv->stats.rep_stats;
-+	int outlen = MLX5_ST_SZ_BYTES(query_vport_counter_out);
- 	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
- 	struct mlx5e_rep_priv *rpriv = priv->ppriv;
- 	struct mlx5_eswitch_rep *rep = rpriv->rep;
--	struct rtnl_link_stats64 *vport_stats;
--	struct ifla_vf_stats vf_stats;
-+	u32 *out;
- 	int err;
- 
--	err = mlx5_eswitch_get_vport_stats(esw, rep->vport, &vf_stats);
-+	out = kvzalloc(outlen, GFP_KERNEL);
-+	if (!out)
-+		return;
-+
-+	err = mlx5_core_query_vport_counter(esw->dev, 1, rep->vport - 1, 0, out);
- 	if (err) {
- 		netdev_warn(priv->netdev, "vport %d error %d reading stats\n",
- 			    rep->vport, err);
- 		return;
+ 	u32 out[MLX5_ST_SZ_DW(query_vnic_env_out)] = {};
+ 	u32 in[MLX5_ST_SZ_DW(query_vnic_env_in)] = {};
+@@ -57,6 +58,10 @@ static int mlx5_esw_query_vnic_diag(struct mlx5_vport *vport, enum vnic_diag_cou
+ 	case MLX5_VNIC_DIAG_QOUTA_EXCEEDED_COMMAND:
+ 		*val = MLX5_GET(vnic_diagnostic_statistics, vnic_diag_out, quota_exceeded_command);
+ 		break;
++	case MLX5_VNIC_DIAG_RX_STEERING_DISCARD:
++		*val = MLX5_GET64(vnic_diagnostic_statistics, vnic_diag_out,
++				  nic_receive_steering_discard);
++		break;
  	}
  
--	vport_stats = &priv->stats.vf_vport;
-+	#define MLX5_GET_CTR(p, x) \
-+		MLX5_GET64(query_vport_counter_out, p, x)
- 	/* flip tx/rx as we are reporting the counters for the switch vport */
--	vport_stats->rx_packets = vf_stats.tx_packets;
--	vport_stats->rx_bytes   = vf_stats.tx_bytes;
--	vport_stats->tx_packets = vf_stats.rx_packets;
--	vport_stats->tx_bytes   = vf_stats.rx_bytes;
-+	rep_stats->vport_rx_packets =
-+		MLX5_GET_CTR(out, transmitted_ib_unicast.packets) +
-+		MLX5_GET_CTR(out, transmitted_eth_unicast.packets) +
-+		MLX5_GET_CTR(out, transmitted_ib_multicast.packets) +
-+		MLX5_GET_CTR(out, transmitted_eth_multicast.packets) +
-+		MLX5_GET_CTR(out, transmitted_eth_broadcast.packets);
-+
-+	rep_stats->vport_tx_packets =
-+		MLX5_GET_CTR(out, received_ib_unicast.packets) +
-+		MLX5_GET_CTR(out, received_eth_unicast.packets) +
-+		MLX5_GET_CTR(out, received_ib_multicast.packets) +
-+		MLX5_GET_CTR(out, received_eth_multicast.packets) +
-+		MLX5_GET_CTR(out, received_eth_broadcast.packets);
-+
-+	rep_stats->vport_rx_bytes =
-+		MLX5_GET_CTR(out, transmitted_ib_unicast.octets) +
-+		MLX5_GET_CTR(out, transmitted_eth_unicast.octets) +
-+		MLX5_GET_CTR(out, transmitted_ib_multicast.octets) +
-+		MLX5_GET_CTR(out, transmitted_eth_broadcast.octets);
-+
-+	rep_stats->vport_tx_bytes =
-+		MLX5_GET_CTR(out, received_ib_unicast.octets) +
-+		MLX5_GET_CTR(out, received_eth_unicast.octets) +
-+		MLX5_GET_CTR(out, received_ib_multicast.octets) +
-+		MLX5_GET_CTR(out, received_eth_multicast.octets) +
-+		MLX5_GET_CTR(out, received_eth_broadcast.octets);
-+
-+	rep_stats->rx_vport_rdma_unicast_packets =
-+		MLX5_GET_CTR(out, transmitted_ib_unicast.packets);
-+	rep_stats->tx_vport_rdma_unicast_packets =
-+		MLX5_GET_CTR(out, received_ib_unicast.packets);
-+	rep_stats->rx_vport_rdma_unicast_bytes =
-+		MLX5_GET_CTR(out, transmitted_ib_unicast.octets);
-+	rep_stats->tx_vport_rdma_unicast_bytes =
-+		MLX5_GET_CTR(out, received_ib_unicast.octets);
-+	rep_stats->rx_vport_rdma_multicast_packets =
-+		MLX5_GET_CTR(out, transmitted_ib_multicast.packets);
-+	rep_stats->tx_vport_rdma_multicast_packets =
-+		MLX5_GET_CTR(out, received_ib_multicast.packets);
-+	rep_stats->rx_vport_rdma_multicast_bytes =
-+		MLX5_GET_CTR(out, transmitted_ib_multicast.octets);
-+	rep_stats->tx_vport_rdma_multicast_bytes =
-+		MLX5_GET_CTR(out, received_ib_multicast.octets);
-+
-+	kvfree(out);
+ 	return 0;
+@@ -65,14 +70,14 @@ static int mlx5_esw_query_vnic_diag(struct mlx5_vport *vport, enum vnic_diag_cou
+ static int __show_vnic_diag(struct seq_file *file, struct mlx5_vport *vport,
+ 			    enum vnic_diag_counter type)
+ {
+-	u32 val = 0;
++	u64 val = 0;
+ 	int ret;
+ 
+ 	ret = mlx5_esw_query_vnic_diag(vport, type, &val);
+ 	if (ret)
+ 		return ret;
+ 
+-	seq_printf(file, "%d\n", val);
++	seq_printf(file, "%llu\n", val);
+ 	return 0;
  }
  
- static void mlx5e_rep_get_strings(struct net_device *dev,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-index cbc831ca646b..37df58ba958c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-@@ -463,6 +463,21 @@ struct mlx5e_ptp_cq_stats {
- 	u64 resync_event;
- };
+@@ -112,6 +117,11 @@ static int quota_exceeded_command_show(struct seq_file *file, void *priv)
+ 	return __show_vnic_diag(file, file->private, MLX5_VNIC_DIAG_QOUTA_EXCEEDED_COMMAND);
+ }
  
-+struct mlx5e_rep_stats {
-+	u64 vport_rx_packets;
-+	u64 vport_tx_packets;
-+	u64 vport_rx_bytes;
-+	u64 vport_tx_bytes;
-+	u64 rx_vport_rdma_unicast_packets;
-+	u64 tx_vport_rdma_unicast_packets;
-+	u64 rx_vport_rdma_unicast_bytes;
-+	u64 tx_vport_rdma_unicast_bytes;
-+	u64 rx_vport_rdma_multicast_packets;
-+	u64 tx_vport_rdma_multicast_packets;
-+	u64 rx_vport_rdma_multicast_bytes;
-+	u64 tx_vport_rdma_multicast_bytes;
-+};
++static int rx_steering_discard_show(struct seq_file *file, void *priv)
++{
++	return __show_vnic_diag(file, file->private, MLX5_VNIC_DIAG_RX_STEERING_DISCARD);
++}
 +
- struct mlx5e_stats {
- 	struct mlx5e_sw_stats sw;
- 	struct mlx5e_qcounter_stats qcnt;
-@@ -471,6 +486,7 @@ struct mlx5e_stats {
- 	struct mlx5e_pport_stats pport;
- 	struct rtnl_link_stats64 vf_vport;
- 	struct mlx5e_pcie_stats pcie;
-+	struct mlx5e_rep_stats rep_stats;
- };
+ DEFINE_SHOW_ATTRIBUTE(total_q_under_processor_handle);
+ DEFINE_SHOW_ATTRIBUTE(send_queue_priority_update_flow);
+ DEFINE_SHOW_ATTRIBUTE(comp_eq_overrun);
+@@ -119,6 +129,7 @@ DEFINE_SHOW_ATTRIBUTE(async_eq_overrun);
+ DEFINE_SHOW_ATTRIBUTE(cq_overrun);
+ DEFINE_SHOW_ATTRIBUTE(invalid_command);
+ DEFINE_SHOW_ATTRIBUTE(quota_exceeded_command);
++DEFINE_SHOW_ATTRIBUTE(rx_steering_discard);
  
- extern mlx5e_stats_grp_t mlx5e_nic_stats_grps[];
+ void mlx5_esw_vport_debugfs_destroy(struct mlx5_eswitch *esw, u16 vport_num)
+ {
+@@ -179,4 +190,9 @@ void mlx5_esw_vport_debugfs_create(struct mlx5_eswitch *esw, u16 vport_num, bool
+ 	if (MLX5_CAP_GEN(esw->dev, quota_exceeded_count))
+ 		debugfs_create_file("quota_exceeded_command", 0444, vnic_diag, vport,
+ 				    &quota_exceeded_command_fops);
++
++	if (MLX5_CAP_GEN(esw->dev, nic_receive_steering_discard))
++		debugfs_create_file("rx_steering_discard", 0444, vnic_diag, vport,
++				    &rx_steering_discard_fops);
++
+ }
 -- 
 2.38.1
 
