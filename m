@@ -2,69 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03DE7647EFC
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 09:09:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D3C8647F00
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 09:10:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229675AbiLIIJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 03:09:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59486 "EHLO
+        id S229896AbiLIIKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 03:10:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiLIIJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 03:09:15 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0A75C778
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:09:14 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id m14so4383973wrh.7
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 00:09:14 -0800 (PST)
+        with ESMTP id S229972AbiLIIJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 03:09:59 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0941E3DC
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 00:09:58 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id u12so4377780wrr.11
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 00:09:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=2KOkOgucQ711ynKTqc+6IMM+flOlcUVE7g4ZI5EOrFw=;
-        b=woHSTtiIrAj78Rz3ZxZG+nd8ruRPitAPzXWV9EoJUF7uMNH+n6vjPpQ2JgkV+9Rz1f
-         iFoeq3gaEzCYhjEIxQtuTr7CPcqeNIgCwAO4D7zTjDNkPOjpr2omaZ0kbUNfLX+47BGK
-         nBK6X1eYH4sSe+B+Des5qIuLPiv1DqCo5AwuQmho7n6y+ksnMba3bWnQtfkW80Z+20mT
-         +347qMWNPFeXmg8+/GSweKdbo6QYTGctQ/tsMuQ9ZFMKhlfTM4UTDM12fALJHwEWFHPy
-         qF/oBdGWDV9sQhC+SKkY5OLWUC9xtNAMq9gZybbzJEFsna5rW1okZxy234QExtSIKObY
-         1a0w==
+        bh=YCP7yxwum67RO4mEmEfrq5efv1zflTsiTTb912/2Cfo=;
+        b=1VWPNBAAOBd8w1VrQChHA0FhUz/nP/HQtm/dEuGg4NC0jn5kKCgyqPgAwrjvF5de2d
+         1P/tjbrdPGHukbd3bFmy2oQmeh8E9Si4WPMhcICddwdyrq/aJ1kGgXOXNUhbzd6kjsWx
+         AUnWRkN1xIn6Hy2Wxf63rlc67d3RjlZo4b5O5te2FCCUKuiaL2m+VChM4GPQe5YKWjla
+         huxFM4+WuUDNNz2FA8YrZnnM7hIzzZEgYRONYGF7iPyha0bIFBwk5r4x8BPW46nvUkYg
+         Yy/lUAwCFZS8amN+HSkMVa/afBXp2HM3II3ji46a2/VLL+bIMiYCNa5wzoOwqTKdFW6X
+         08PA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2KOkOgucQ711ynKTqc+6IMM+flOlcUVE7g4ZI5EOrFw=;
-        b=j5fBU+TsQxYXFCIUEkHGw6CixiaU51l6CM/3KUP/nCLi+TdEu9jZ2+bCnZmYIFh/Kt
-         7d+er6rj86OeKWIoDTXLsXX0Ij4RQt2aORVHDRKE7hsOo1/OEt70GndSMgSfhC1D9C3E
-         mYz29VWOID7YJkpQWTNybK6SKev6CH7/3fduQ55VrDrXYvZrnIM87QazYK0kU/gvUxfj
-         FAGZwM0DWLsKAfY4yblFC2toIE4WxoJPJD+tNpYC7gBQGxsgkCXXFHr/IXAZ5cgq5j8/
-         iRR2BxP9AuqXY/6ur8vslE+tXsXTh0Odq0vdf6Fu/JhM10gwD2TP06Lis5n1Jtsmv2wc
-         XIGA==
-X-Gm-Message-State: ANoB5pkOrUZyXIMC9C2ln/S0uZAHr5ygs4BL1ueCz/q2sjqA5F/nnv2c
-        y8s301agSBlUo+sAjLpw8n7bvw==
-X-Google-Smtp-Source: AA0mqf4gebLZ7CKK0zKLSWUvcFlaDAX5wXn+JpBsh/zfayLOQ0b+ztAnXAkkUem8OqhBKX6bQxmxaQ==
-X-Received: by 2002:adf:f604:0:b0:241:fb7d:2f15 with SMTP id t4-20020adff604000000b00241fb7d2f15mr3075499wrp.29.1670573352950;
-        Fri, 09 Dec 2022 00:09:12 -0800 (PST)
+        bh=YCP7yxwum67RO4mEmEfrq5efv1zflTsiTTb912/2Cfo=;
+        b=uTywD3jeQR8zTxrkjvdE/uX2TCQKqzf2TOtKLpCD5HvTZn2JCH4HYO47b0RXVbhaqR
+         VTx1C5SnXqzIgLWT7517bog0eQIFPWk+x3qlOzpPXYUK+n0ol8luj54KZHuZpYZL9KME
+         zlWoFR18bMmzhFhynxPNUsaMrpBrabLC6ejeMy1WhRU7l+uScOILhvSRRg+Jw1PELWxI
+         paS3tQFCFpgQFx7jnn5DoWDAXgWj0+IwWUAFb/5BYsOWSfd+P2RiSw8DRFZ29yYv+MIZ
+         z+bZupyi7OrFZM30RgtfILz57t8tcQQQh3A9oDBj9vv2R0KmxXyHPhk4LmTvHb8Hahi8
+         YA7Q==
+X-Gm-Message-State: ANoB5plazduodcHJAhGIFa/3cYphZagTs+fCAqGmkEerggTq5FJYk8QU
+        shp1cuAhAjgeaQt2faLcLNivXg==
+X-Google-Smtp-Source: AA0mqf69fghliXej6rg2YSUODN2Wz3GNtWmZ+vswMD6SZ/B4Vq907+sdJ7mgNp7y5Ik+O09d19SZiQ==
+X-Received: by 2002:adf:e64c:0:b0:242:2445:4a42 with SMTP id b12-20020adfe64c000000b0024224454a42mr3089985wrn.9.1670573396936;
+        Fri, 09 Dec 2022 00:09:56 -0800 (PST)
 Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
-        by smtp.gmail.com with ESMTPSA id f7-20020a5d50c7000000b00242209dd1ffsm720884wrt.41.2022.12.09.00.09.12
+        by smtp.gmail.com with ESMTPSA id m13-20020a056000180d00b002366f9bd717sm897086wrh.45.2022.12.09.00.09.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Dec 2022 00:09:12 -0800 (PST)
-Message-ID: <fabadfa4-b914-96b6-992e-dcebac1c0ef0@blackwall.org>
-Date:   Fri, 9 Dec 2022 10:09:11 +0200
+        Fri, 09 Dec 2022 00:09:56 -0800 (PST)
+Message-ID: <23a7a5b5-1fba-b1e0-cbe1-8b1e3b9dbab9@blackwall.org>
+Date:   Fri, 9 Dec 2022 10:09:55 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 13/14] selftests: forwarding: Rename bridge_mdb
- test
+Subject: Re: [PATCH net-next 14/14] selftests: forwarding: Add bridge MDB test
 Content-Language: en-US
 To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
         bridge@lists.linux-foundation.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, roopa@nvidia.com, mlxsw@nvidia.com
 References: <20221208152839.1016350-1-idosch@nvidia.com>
- <20221208152839.1016350-14-idosch@nvidia.com>
+ <20221208152839.1016350-15-idosch@nvidia.com>
 From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20221208152839.1016350-14-idosch@nvidia.com>
+In-Reply-To: <20221208152839.1016350-15-idosch@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,35 +76,63 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 08/12/2022 17:28, Ido Schimmel wrote:
-> The test is only concerned with host MDB entries and not with MDB
-> entries as a whole. Rename the test to reflect that.
+> Add a selftests that includes the following test cases:
 > 
-> Subsequent patches will add a more general test that will contain the
-> test cases for host MDB entries and remove the current test.
+> 1. Configuration tests. Both valid and invalid configurations are
+>    tested across all entry types (e.g., L2, IPv4).
+> 
+> 2. Forwarding tests. Both host and port group entries are tested across
+>    all entry types.
+> 
+> 3. Interaction between user installed MDB entries and IGMP / MLD control
+>    packets.
+> 
+> Example output:
+> 
+> INFO: # Host entries configuration tests
+> TEST: Common host entries configuration tests (IPv4)                [ OK ]
+> TEST: Common host entries configuration tests (IPv6)                [ OK ]
+> TEST: Common host entries configuration tests (L2)                  [ OK ]
+> 
+> INFO: # Port group entries configuration tests - (*, G)
+> TEST: Common port group entries configuration tests (IPv4 (*, G))   [ OK ]
+> TEST: Common port group entries configuration tests (IPv6 (*, G))   [ OK ]
+> TEST: IPv4 (*, G) port group entries configuration tests            [ OK ]
+> TEST: IPv6 (*, G) port group entries configuration tests            [ OK ]
+> 
+> INFO: # Port group entries configuration tests - (S, G)
+> TEST: Common port group entries configuration tests (IPv4 (S, G))   [ OK ]
+> TEST: Common port group entries configuration tests (IPv6 (S, G))   [ OK ]
+> TEST: IPv4 (S, G) port group entries configuration tests            [ OK ]
+> TEST: IPv6 (S, G) port group entries configuration tests            [ OK ]
+> 
+> INFO: # Port group entries configuration tests - L2
+> TEST: Common port group entries configuration tests (L2 (*, G))     [ OK ]
+> TEST: L2 (*, G) port group entries configuration tests              [ OK ]
+> 
+> INFO: # Forwarding tests
+> TEST: IPv4 host entries forwarding tests                            [ OK ]
+> TEST: IPv6 host entries forwarding tests                            [ OK ]
+> TEST: L2 host entries forwarding tests                              [ OK ]
+> TEST: IPv4 port group "exclude" entries forwarding tests            [ OK ]
+> TEST: IPv6 port group "exclude" entries forwarding tests            [ OK ]
+> TEST: IPv4 port group "include" entries forwarding tests            [ OK ]
+> TEST: IPv6 port group "include" entries forwarding tests            [ OK ]
+> TEST: L2 port entries forwarding tests                              [ OK ]
+> 
+> INFO: # Control packets tests
+> TEST: IGMPv3 MODE_IS_INCLUE tests                                   [ OK ]
+> TEST: MLDv2 MODE_IS_INCLUDE tests                                   [ OK ]
 > 
 > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 > ---
->  tools/testing/selftests/net/forwarding/Makefile                 | 2 +-
->  .../net/forwarding/{bridge_mdb.sh => bridge_mdb_host.sh}        | 0
->  2 files changed, 1 insertion(+), 1 deletion(-)
->  rename tools/testing/selftests/net/forwarding/{bridge_mdb.sh => bridge_mdb_host.sh} (100%)
+>  .../testing/selftests/net/forwarding/Makefile |    1 +
+>  .../selftests/net/forwarding/bridge_mdb.sh    | 1164 +++++++++++++++++
+>  2 files changed, 1165 insertions(+)
+>  create mode 100755 tools/testing/selftests/net/forwarding/bridge_mdb.sh
 > 
-> diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
-> index a9c5c1be5088..f2df81ca3179 100644
-> --- a/tools/testing/selftests/net/forwarding/Makefile
-> +++ b/tools/testing/selftests/net/forwarding/Makefile
-> @@ -2,7 +2,7 @@
->  
->  TEST_PROGS = bridge_igmp.sh \
->  	bridge_locked_port.sh \
-> -	bridge_mdb.sh \
-> +	bridge_mdb_host.sh \
->  	bridge_mdb_port_down.sh \
->  	bridge_mld.sh \
->  	bridge_port_isolation.sh \
-> diff --git a/tools/testing/selftests/net/forwarding/bridge_mdb.sh b/tools/testing/selftests/net/forwarding/bridge_mdb_host.sh
-> similarity index 100%
-> rename from tools/testing/selftests/net/forwarding/bridge_mdb.sh
-> rename to tools/testing/selftests/net/forwarding/bridge_mdb_host.sh
 
+Nice set of tests!
 Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+
+
