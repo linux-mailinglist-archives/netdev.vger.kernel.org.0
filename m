@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A157647C76
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 03:57:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4999E647C79
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 03:57:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiLIC5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Dec 2022 21:57:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
+        id S229876AbiLIC5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Dec 2022 21:57:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiLIC5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 21:57:45 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEC2645E
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 18:57:43 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id 82so2703210pgc.0
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 18:57:43 -0800 (PST)
+        with ESMTP id S229745AbiLIC5u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Dec 2022 21:57:50 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40621A822
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 18:57:48 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id d82so2743507pfd.11
+        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 18:57:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V/coKp9zjVolqjPGhEWNOnNKzYKGenInUZCSrBAK7Js=;
-        b=UNuiPncl/4ABZTPBsMCy21lPI0ozEf1DIzpIjE1GXMcF2d2ScJyC+GVuOrMYljfMyQ
-         dFcb74GMeuSyyZhxt9HFZXSdEFGv7JqjxdmGwyvrA7EJxMr9fUeTi/7WQqnmBA/IvJm5
-         +SPinmoqtD2r5iNdzt+pP4EWpLy1A+6pHRF/iPX4BQRdFoewVVpoFyHjBR7C/YC7mAF/
-         xtrkxyWHT7h2gAxBsBaFuENJdUCpivIG6FIOfvRhiTxrhlG/0ezeRbJbEtP/VKWAXTdT
-         yi4z+XvBs5Ucd/lPpM3v1Pw0vOOuz0Yc5FI+Kmr8brxHSeY1G4c3dZmMjxJVwVsfAvu3
-         W9Yw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZN6Ds0GTGoNBiJrF9Iw5CyP8TuCwXyyFiKu0u0AYj3o=;
+        b=GyiB/ru/0wWy627fKFRf5xcbvQS0BJ8wjivpjdLr/jysYEYsWgTjKhZgqS613S0SYH
+         3RH06S7roc5hcQ2Q/Rgsrc5POIfClXZ+C5qNT+Qf6u37GTguwWGJTo8ULTS9ZBAylSP/
+         GpLP4GiSwaQXLCtUNM0cU8NZhL3HVlColoQBwrIGxO72Vfl0/0rTkUw/JpfvvwSeFwNC
+         sBzbDLcEum7Z5NencBueTDev53cKyjRJ47rC92ZO6wpYXK0wjy7W1Q63xVUypB83ORRL
+         Bx3Iu9G9X3E9RysOQOzjN7nx5thaYbL8isfylMs8WJKUBrCnQENKOmcrX4J30rIfqvW8
+         BPKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=V/coKp9zjVolqjPGhEWNOnNKzYKGenInUZCSrBAK7Js=;
-        b=1Ul61HECFjYriJYTe+WrHF6CwnVp4SzYQHaeFGZ69lbgu+wv2UiYxnbFhboqGwjGSo
-         tisewxlDZpQgd/qluiT+Xgt6nz40s7yES3x2Soadv54RMGGE8HxZFfzTr6nm1GaxdF07
-         qeZwrQP+sIifeESXL51tYZ6IiHKPKycJbZmsXIgm2DGnnVc4X1Mzu2As3HgzDnsvYRpj
-         6wSBJkJCYL8Q6EmmkHNUtHXk8CmSoB/eshj9Kb40EV0tWvDMToV/iSkaXkfo7M+wBPx6
-         qc0oQuMXUdPmvUdx9KC6s2MTiY+cwdvKucSszd++q9QVVCNUiwnpTLDsWVgHhC/fOgBI
-         AzVw==
-X-Gm-Message-State: ANoB5pk9pdX5BNnvPalWXYy/NtWA3pGPHtXrACMNf9qbzWPRat1WE5hA
-        WL1UsLg+4wQOPCFC+34jmVTX8c/gr1I1vm2M6+Ia5w==
-X-Google-Smtp-Source: AA0mqf5B2Vx/YWatybv77hIV/HI/vXmQ6z8jU1ses4rarDwgiriBATr6FQaS2y4dwfTKLe2q7g2G0PRlWYP1FwAx20w=
-X-Received: by 2002:a63:1747:0:b0:478:1391:fd14 with SMTP id
- 7-20020a631747000000b004781391fd14mr46875607pgx.112.1670554662836; Thu, 08
- Dec 2022 18:57:42 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ZN6Ds0GTGoNBiJrF9Iw5CyP8TuCwXyyFiKu0u0AYj3o=;
+        b=X0V/rt75ccmeejuCaR1QMVQPB6WjJchtMVZ8do8oqUSVFsB5cWvpti/zPhTCHE6fwT
+         RIsBGccC57UfY4jQs26k0qPrUsFQCXk640ZczuwlFSOsn6yAhEKPHMcxYbjtgS1IDdCR
+         NbcpBpol2eYDNYaXiHX1T/rOSMmM92xWQDkMOinMb4HaI/Ha8yeRoasiQunLfle4Ks8P
+         mEbVtlYpysu2pZxQUeal4Rl+T2NF5zDRaoD2rcj9fW5YQKN+0gxliCvFPG3FU6zTXvCl
+         p/O3Y0VoDyGp6TZkwE/YCpT7p87c4SKqvx9osqCAFRdNvXMgta1MIPt/WRyH/xMeIUPK
+         lpXA==
+X-Gm-Message-State: ANoB5pkqWDu/gvdSDE2JiJTXtl1gWuqfxc31A3rcacW7ygk1w/voU8mL
+        8KFo6VwdBsneo+jQFiePiuHGScE0AiJjf1Es4LOYAQ==
+X-Google-Smtp-Source: AA0mqf6h7cGJ0arIuPLaA3bnYaBrIgzkzfJ4sPigj43qbYngE+KpkAKk8+NEqmPC3E2BU2h8mlvavmvG1riFJPLdpV0=
+X-Received: by 2002:a63:2160:0:b0:46f:f26e:e8ba with SMTP id
+ s32-20020a632160000000b0046ff26ee8bamr71539985pgm.250.1670554668099; Thu, 08
+ Dec 2022 18:57:48 -0800 (PST)
 MIME-Version: 1.0
 References: <20221206024554.3826186-1-sdf@google.com> <20221206024554.3826186-4-sdf@google.com>
- <878rjhldv0.fsf@toke.dk> <CAKH8qBvgkTXFEhd9hOa+SFtqKAXuD=WM_h1TZYdQA0d70_drEA@mail.gmail.com>
- <87zgbxjv7a.fsf@toke.dk>
-In-Reply-To: <87zgbxjv7a.fsf@toke.dk>
+ <20221207210019.41dc9b6b@kernel.org> <CAKH8qBtAQe=b1BLR5RKu7mBynQf0arp4G9+DtvcWVNKNK_27vA@mail.gmail.com>
+ <20221208173053.1145a8cb@kernel.org>
+In-Reply-To: <20221208173053.1145a8cb@kernel.org>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 8 Dec 2022 18:57:30 -0800
-Message-ID: <CAKH8qBsK1J5HeSgPN_sYzQRY2jZOO=-E+zyKsn4xJ22zv5HRFg@mail.gmail.com>
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX kfuncs
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Date:   Thu, 8 Dec 2022 18:57:36 -0800
+Message-ID: <CAKH8qBtV66xNT+Z1dR9=BmOHwv6=bd8dEjO7kXG2BWASGA0bhA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX kfuncs
+To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
         yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
         haoluo@google.com, jolsa@kernel.org,
         David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Willem de Bruijn <willemb@google.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Anatoly Burakov <anatoly.burakov@intel.com>,
@@ -70,7 +68,6 @@ Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
         netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -82,43 +79,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 8, 2022 at 4:07 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
+On Thu, Dec 8, 2022 at 5:30 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Stanislav Fomichev <sdf@google.com> writes:
->
-> >> Another UX thing I ran into is that libbpf will bail out if it can't
-> >> find the kfunc in the kernel vmlinux, even if the code calling the
-> >> function is behind an always-false if statement (which would be
-> >> eliminated as dead code from the verifier). This makes it a bit hard t=
-o
-> >> conditionally use them. Should libbpf just allow the load without
-> >> performing the relocation (and let the verifier worry about it), or
-> >> should we have a bpf_core_kfunc_exists() macro to use for checking?
-> >> Maybe both?
+> On Thu, 8 Dec 2022 11:07:43 -0800 Stanislav Fomichev wrote:
+> > > >       bpf_free_used_maps(aux);
+> > > >       bpf_free_used_btfs(aux);
+> > > > -     if (bpf_prog_is_offloaded(aux))
+> > > > +     if (bpf_prog_is_dev_bound(aux))
+> > > >               bpf_prog_offload_destroy(aux->prog);
+> > >
+> > > This also looks a touch like a mix of terms (condition vs function
+> > > called).
 > >
-> > I'm not sure how libbpf can allow the load without performing the
-> > relocation; maybe I'm missing something.
-> > IIUC, libbpf uses the kfunc name (from the relocation?) and replaces
-> > it with the kfunc id, right?
+> > Here, not sure, open to suggestions. These
+> > bpf_prog_offload_init/bpf_prog_offload_destroy are generic enough
+> > (now) that I'm calling them for both dev_bound/offloaded.
+> >
+> > The following paths trigger for both offloaded/dev_bound cases:
+> >
+> > if (bpf_prog_is_dev_bound()) bpf_prog_offload_init();
+> > if (bpf_prog_is_dev_bound()) bpf_prog_offload_destroy();
+> >
+> > Do you think it's worth it having completely separate
+> > dev_bound/offloaded paths? Or, alternatively, can rename to
+> > bpf_prog_dev_bound_{init,destroy} but still handle both cases?
 >
-> Yeah, so if it can't find the kfunc in vmlinux, just write an id of 0.
-> This will trip the check at the top of fixup_kfunc_call() in the
-> verifier, but if the code is hidden behind an always-false branch (an
-> rodata variable set to zero, say) the instructions should get eliminated
-> before they reach that point. That way you can at least turn it off at
-> runtime (after having done some kind of feature detection) without
-> having to compile it out of your program entirely.
->
-> > Having bpf_core_kfunc_exists would help, but this probably needs
-> > compiler work first to preserve some of the kfunc traces in vmlinux.h?
->
-> I am not sure how the existing macros work, TBH. Hopefully someone else
-> can chime in :)
+> Any offload should be bound, right? So I think functions which handle
+> both can use the bound naming scheme, only the offload-specific ones
+> should explicitly use offload?
 
-+1
-
-I think we need to poke Andrii as a follow up :-)
-
-> -Toke
->
+Agreed. Will rename the common ones to dev_offload!
