@@ -2,69 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3EF1647EB0
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 08:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73049647EC8
+	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 08:52:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbiLIHlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 02:41:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
+        id S229592AbiLIHw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 02:52:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiLIHlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 02:41:10 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F308645090
-        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 23:41:08 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id n9-20020a05600c3b8900b003d0944dba41so2767816wms.4
-        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 23:41:08 -0800 (PST)
+        with ESMTP id S229521AbiLIHw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 02:52:28 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F3A4FF9D
+        for <netdev@vger.kernel.org>; Thu,  8 Dec 2022 23:52:27 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id o15so2610498wmr.4
+        for <netdev@vger.kernel.org>; Thu, 08 Dec 2022 23:52:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=XjECm/4N2trZe4kiGn1Tlhopv0nTjHCSPh6BnIZekRc=;
-        b=GJC3UEEPsBIMK6B7wuyDLiQdilx7IUpryQMKON/j09pU5ACdzMID0Vk7DbFTJHbYJO
-         EBv1R3iqekj8rXA5waLmo4XRps+p2jAve1AP5WO7YxekxVmO3HURwiidvHjuzlghYvZ/
-         CmwiEUYRADvnBOff5qAbHk+vs30ycr5dNFs2P0KniG/XND06VmEjSG7Puxcrcc78SDX/
-         orisiLsTYK+idq6NCPvHmf655nX6b7j8RZHfpdB/fQ/RcGEyT9idbEy8dB6LB2WxvuB+
-         2da0NW66tdJlEjGcRk+4hNq6fDm3FFcfdvJIALuua1AtKZBYKmkeJfCxdD6Kn/eJNFxd
-         ZLZg==
+        bh=YQ4b+q/xAzhxcWk+HTn7pTbcjlOt6DHs6L/eJIRo8Q8=;
+        b=pu+MvrrIHTIpdKlGXc7Y8wpmxWZCc2c/of308f6qDqoYe8LDc2TlOQskHdzymywFJ5
+         oJ2FHsYAHH6CiiH0NtT7AaGqQSAnYZW5SMC2vEY0arM4Bosn+I8hSRu4Awzd2fRrpx0h
+         Z37H8EvBF7l431wVPIujQngZ1Sgf2goTC4BzlA+t9vcL/Bog8IaMQAIsCxGirUAjEhvk
+         ohMFWYEvpRdxVsYq+BDF1kZtvxwkGbcISJoTl92UA2QMnr6ePOOBi7pPZsugPy8eTasP
+         BW/qjjsOLv3IFB45D3Z49PaH07lijie0fElo2BqSEQ92T20pgxJ5nK2hQpVkNOKMP0qI
+         s5+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XjECm/4N2trZe4kiGn1Tlhopv0nTjHCSPh6BnIZekRc=;
-        b=KpEkR9riDmofv5wP41OfXc/9NSq04e9BUW6UAqGW5P8XaNPmihyLqfsElaidI0mHMv
-         NTwB9h665IQ57pCMyOEtGaLKgwUob5IFG5NP0/9ZbTQZBiZNeGzJzoVvBjRZo1+TfRyI
-         Czy4f/hFX8ORuECOKJI+3NhSxfBdOwDJ+bLxDV7DABwJDnqaAoXSbNSpUIlPXT5RRLkU
-         9tXgpfhC96jvFVQt1kVK7YcYwnzmJBa8Jz7xrIMP0HRKqz7gq94tq/aPW644pp3DBP18
-         PoCTSU4t3ezMdVI6rbnYUUhixMv7C429Yr7vMp6kIAdaUu+NatNCDI8i7sXBh+Y2ta9O
-         Ir3g==
-X-Gm-Message-State: ANoB5pnFXc4+MnRVFMwLcyxkWBTAtMbuJJWfn+H43xAEnnluVL91qFAK
-        xaQTb5IuOoKJ2o1cyzFrMJTzGQ==
-X-Google-Smtp-Source: AA0mqf6j0DYVtfB1vsCsCP7gP4JzIXjQ+lJfdXJYe29sHTy5lopwMtJ3+VH1Io9tl4f7T35S0/kyMg==
-X-Received: by 2002:a05:600c:4f96:b0:3d1:c895:930c with SMTP id n22-20020a05600c4f9600b003d1c895930cmr3838202wmq.35.1670571667415;
-        Thu, 08 Dec 2022 23:41:07 -0800 (PST)
+        bh=YQ4b+q/xAzhxcWk+HTn7pTbcjlOt6DHs6L/eJIRo8Q8=;
+        b=F+rnUYQoOv1lyLMw/U1WjlWaF2wLD0L2bHlYfJ3rGuEEnokVzyIHvPyFHl1kXFmamQ
+         6ZxbExk9j6Jd+VT1OrMjqPwv2B741+aINUWR3MnWjdwZnZ5B3i5+8ghrFcukuTP1d/yY
+         F+erHg8b1Ypm05bNSp8ZNLYYZ/JLCjgrRvM7XgraQ6lTsGyKpTw21Tbrv4UQ0qoTKx0m
+         MPt0lkBUW4ky0rkmDBNq20Vp1mxw8Ap9QlhG30Rw4pZ3rxO6dhpJsvcZ2ytDUPJ8rPTS
+         ZrpDH7SLT0uXW80KJ+WGWCrGDtetgueDYxH2a9vtrtutWl1A8p2TXKqOuQ8OTUl3UDH8
+         tb6Q==
+X-Gm-Message-State: ANoB5plsSCm+65tKsfiVUyt11Bd7l9J2CenNLen7Eb1+Vk5icm9mw93h
+        LC6bi90ocE+bX0XM8zVbpGoRLg==
+X-Google-Smtp-Source: AA0mqf5KRJd9O3z4wvu1gvbbgEqDZYjmIF65M+fMTtO4qqe+Tiu8dWPPKEHq0OyzjMUX+vkG5qFEnw==
+X-Received: by 2002:a05:600c:3b19:b0:3cf:5584:e714 with SMTP id m25-20020a05600c3b1900b003cf5584e714mr4023649wms.25.1670572345963;
+        Thu, 08 Dec 2022 23:52:25 -0800 (PST)
 Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
-        by smtp.gmail.com with ESMTPSA id j20-20020a05600c191400b003c6f1732f65sm8464582wmq.38.2022.12.08.23.41.06
+        by smtp.gmail.com with ESMTPSA id o30-20020a05600c511e00b003a3442f1229sm8287969wms.29.2022.12.08.23.52.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Dec 2022 23:41:06 -0800 (PST)
-Message-ID: <22583106-8f39-0c7e-1c61-47ec5c614418@blackwall.org>
-Date:   Fri, 9 Dec 2022 09:41:05 +0200
+        Thu, 08 Dec 2022 23:52:25 -0800 (PST)
+Message-ID: <ed2bb9b0-d3bd-604d-ef7d-ddd145ffd13b@blackwall.org>
+Date:   Fri, 9 Dec 2022 09:52:24 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.0
-Subject: Re: [PATCH net-next 09/14] bridge: mcast: Add support for (*, G) with
- a source list and filter mode
+Subject: Re: [PATCH net-next 10/14] bridge: mcast: Allow user space to add (*,
+ G) with a source list and filter mode
 Content-Language: en-US
 To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
         bridge@lists.linux-foundation.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, roopa@nvidia.com, mlxsw@nvidia.com
 References: <20221208152839.1016350-1-idosch@nvidia.com>
- <20221208152839.1016350-10-idosch@nvidia.com>
+ <20221208152839.1016350-11-idosch@nvidia.com>
 From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20221208152839.1016350-10-idosch@nvidia.com>
+In-Reply-To: <20221208152839.1016350-11-idosch@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,47 +77,67 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 08/12/2022 17:28, Ido Schimmel wrote:
-> In preparation for allowing user space to add (*, G) entries with a
-> source list and associated filter mode, add the necessary plumbing to
-> handle such requests.
+> Add new netlink attributes to the RTM_NEWMDB request that allow user
+> space to add (*, G) with a source list and filter mode.
 > 
-> Extend the MDB configuration structure with a currently empty source
-> array and filter mode that is currently hard coded to EXCLUDE.
+> The RTM_NEWMDB message can already dump such entries (created by the
+> kernel) so there is no need to add dump support. However, the message
+> contains a different set of attributes depending if it is a request or a
+> response. The naming and structure of the new attributes try to follow
+> the existing ones used in the response.
 > 
-> Add the source entries and the corresponding (S, G) entries before
-> making the new (*, G) port group entry visible to the data path.
+> Request:
 > 
-> Handle the creation of each source entry in a similar fashion to how it
-> is created from the data path in response to received Membership
-> Reports: Create the source entry, arm the source timer (if needed), add
-> a corresponding (S, G) forwarding entry and finally mark the source
-> entry as installed (by user space).
+> [ struct nlmsghdr ]
+> [ struct br_port_msg ]
+> [ MDBA_SET_ENTRY ]
+> 	struct br_mdb_entry
+> [ MDBA_SET_ENTRY_ATTRS ]
+> 	[ MDBE_ATTR_SOURCE ]
+> 		struct in_addr / struct in6_addr
+> 	[ MDBE_ATTR_SRC_LIST ]		// new
+> 		[ MDBE_SRC_LIST_ENTRY ]
+> 			[ MDBE_SRCATTR_ADDRESS ]
+> 				struct in_addr / struct in6_addr
+> 		[ ...]
+> 	[ MDBE_ATTR_GROUP_MODE ]	// new
+> 		u8
 > 
-> Add the (S, G) entry by populating an MDB configuration structure and
-> calling br_mdb_add_group_sg() as if a new entry is created by user
-> space, with the sole difference that the 'src_entry' field is set to
-> make sure that the group timer of such entries is never armed.
+> Response:
 > 
-> Note that it is not currently possible to add more than 32 source
-> entries to a port group entry. If this proves to be a problem we can
-> either increase 'PG_SRC_ENT_LIMIT' or avoid forcing a limit on entries
-> created by user space.
+> [ struct nlmsghdr ]
+> [ struct br_port_msg ]
+> [ MDBA_MDB ]
+> 	[ MDBA_MDB_ENTRY ]
+> 		[ MDBA_MDB_ENTRY_INFO ]
+> 			struct br_mdb_entry
+> 		[ MDBA_MDB_EATTR_TIMER ]
+> 			u32
+> 		[ MDBA_MDB_EATTR_SOURCE ]
+> 			struct in_addr / struct in6_addr
+> 		[ MDBA_MDB_EATTR_RTPROT ]
+> 			u8
+> 		[ MDBA_MDB_EATTR_SRC_LIST ]
+> 			[ MDBA_MDB_SRCLIST_ENTRY ]
+> 				[ MDBA_MDB_SRCATTR_ADDRESS ]
+> 					struct in_addr / struct in6_addr
+> 				[ MDBA_MDB_SRCATTR_TIMER ]
+> 					u8
+> 			[...]
+> 		[ MDBA_MDB_EATTR_GROUP_MODE ]
+> 			u8
 > 
-
-That can be tricky wrt EHT. If the limit is increased we have to consider the
-complexity and runtime, we might have to optimize it. In practice I think it's
-rare to have so many sources, but evpn might change that. :)
-
 > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 > ---
 > 
 > Notes:
 >     v1:
->     * Use an array instead of a list to store source entries.
+>     * Use an array instead of list to store source entries.
+>     * Drop br_mdb_config_attrs_fini().
 > 
->  net/bridge/br_mdb.c     | 128 +++++++++++++++++++++++++++++++++++++++-
->  net/bridge/br_private.h |   7 +++
->  2 files changed, 132 insertions(+), 3 deletions(-)
+>  include/uapi/linux/if_bridge.h |  20 +++++
+>  net/bridge/br_mdb.c            | 130 +++++++++++++++++++++++++++++++++
+>  2 files changed, 150 insertions(+)
 > 
 
 Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
