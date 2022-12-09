@@ -2,224 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAB3D648ADF
-	for <lists+netdev@lfdr.de>; Fri,  9 Dec 2022 23:47:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4ED648B3A
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 00:03:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbiLIWrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 17:47:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44538 "EHLO
+        id S229655AbiLIXDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 18:03:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiLIWrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 17:47:23 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B201C12A;
-        Fri,  9 Dec 2022 14:47:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670626042; x=1702162042;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version;
-  bh=kjBJ1T++jGq2uuDcVYJJloH539ccBnmbGCsz+c3/b0g=;
-  b=oWIjY+Ck9rbXsBoT7RajY5umG2wc3mWtv5LipU4Ov5YS49hAXT13gGWr
-   TJcBL3prhwfNqhtknE+fMqlytkKqTUJIwdcOzs32bGWESk6CUA4+95Xka
-   xjK3am8KnQcC6TIEXRM9Lt4VyVz/bNveP/b+70QINUod/aNu3/WZzgr76
-   BoxuMq4NFuxq1Dkq48JK8B4GjQm2ff8EFEQ7SK9TIJFlFOtlpIWSFlNte
-   MvUtK0ucvZ99fIJyaVc8oIbZirnQKam0goo+E7t+u39TC2ioZDYL2wLL9
-   NcWGF3xWoq7k8kk4Xq6JezYOCGUvmovr+tKieUxpjxG/mnmOQzMtPhRd6
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,232,1665471600"; 
-   d="scan'208";a="203381022"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2022 15:47:22 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 9 Dec 2022 15:47:21 -0700
-Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 9 Dec 2022 15:47:20 -0700
-From:   Jerry Ray <jerry.ray@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, <jbe@pengutronix.de>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux@armlinux.org.uk>, Jerry Ray <jerry.ray@microchip.com>
-Subject: [PATCH net-next v5 6/6] dsa: lan9303: Migrate to PHYLINK
-Date:   Fri, 9 Dec 2022 16:47:13 -0600
-Message-ID: <20221209224713.19980-7-jerry.ray@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221209224713.19980-1-jerry.ray@microchip.com>
-References: <20221209224713.19980-1-jerry.ray@microchip.com>
+        with ESMTP id S229828AbiLIXDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 18:03:06 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1B717E28
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 15:02:55 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id gh17so14818778ejb.6
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 15:02:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/aeKMFQU+iFrGssD2HzuTKSQiDy/WnYgEIq5mTFJ33E=;
+        b=jqWnXQKXNRdFIn+/lxGvv6ReoEWdXOkC3kGAPRxqUoEfsoSuxpPtCUTZn1XX6urYbM
+         qlsMTUTvVV4Qe47DsR/XpMnnvEDi4rr0aH/6lOVvDcP6HGR4R4UJvWA4EDUWUEfKRY8S
+         +Ax2O0ihI3fZ2XEG+5qdNzh4IVfnTRTuNNoi6DZ+/Uu6mZglsfdsrfa+B+9eti8r79Bf
+         E1jUqFLoxv5Isu6lMJUpMh+noQnIx8ZM5sG+EBpdKArDKd8FJ63IttxtTZ19l6ZSb7dW
+         XLAihCoLFnpbagKGJNpDygDR5W34AUl0t2SYfKeJSEPlXftDg3+VZUJs8PiEFRmGjZ9+
+         6s9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/aeKMFQU+iFrGssD2HzuTKSQiDy/WnYgEIq5mTFJ33E=;
+        b=d3XC4njKjNmDC8s5iA6iVWkikLEIV87KuuXer+LESE0Y3nfbe7Q6i1pSLXVVsp+qr2
+         Lu1ZC87BdnTydH3MEg4/O0lV9ZqxsCq8ZMyq9emR1DZNJQz8L8lX4fmpmwyiRsohkmbg
+         pvCnwFQo11NtLMb1nRnx2lzNJC4jQZnGIC8koGHsPflZd2WMLVg2ULlLaflDEVqOCIGL
+         2Ztf6+FH87XuJmk23Uy8/fQQCoktR4DxHVByYxu2mT1Ttx00uNQQRvP6IsfNc33CwS01
+         WLPhUuRXCpEnw1u495xhxm/yW30bVgYbIhJbW6dHf4iIiFdSgH//sGDj9+XpVnJFRKbT
+         7wOg==
+X-Gm-Message-State: ANoB5pn5CiJBcTshsMimLFkCqHfhnY8c9cGAJXopw25PAL6JPvSqEfga
+        xb6CiMxxVYkvtMoLIUt1V1ECjQu7sIo=
+X-Google-Smtp-Source: AA0mqf6N3/Y9WKhn0cX81FUbJP1YAGMyniNhEYzKnOaletdcP3MX2XADys1qRxXLbtYJTsNApUblsA==
+X-Received: by 2002:a17:906:a3c1:b0:7ad:a2ee:f8e6 with SMTP id ca1-20020a170906a3c100b007ada2eef8e6mr6271902ejb.15.1670626973608;
+        Fri, 09 Dec 2022 15:02:53 -0800 (PST)
+Received: from ?IPV6:2a01:c23:c56b:2400:e99f:52d8:9f37:ca2e? (dynamic-2a01-0c23-c56b-2400-e99f-52d8-9f37-ca2e.c23.pool.telefonica.de. [2a01:c23:c56b:2400:e99f:52d8:9f37:ca2e])
+        by smtp.googlemail.com with ESMTPSA id 14-20020a170906300e00b0073dd8e5a39fsm390130ejz.156.2022.12.09.15.02.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Dec 2022 15:02:52 -0800 (PST)
+Message-ID: <6de467f2-e811-afbb-ab6f-f43f5456a857@gmail.com>
+Date:   Sat, 10 Dec 2022 00:02:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Content-Language: en-US
+To:     Hau <hau@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>, Andrew Lunn <andrew@lunn.ch>
+References: <20221201143911.4449-1-hau@realtek.com>
+ <64a35b94-f062-ad12-728e-8409e7baeeca@gmail.com>
+ <df3bf48baf6946f4a75c5c4287e6efa7@realtek.com>
+ <4fa4980c-906b-8fda-b29f-b2125c31304c@gmail.com>
+ <cb897c69a9d74b77b34fc94b30dc6bdd@realtek.com>
+ <7f460a37-d6f5-603f-2a6c-c65bae56f76b@gmail.com>
+ <8b38c9f4552346ed84ba204b3e5edd5d@realtek.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v5] r8169: add support for rtl8168h(revid 0x2a) +
+ rtl8211fs fiber application
+In-Reply-To: <8b38c9f4552346ed84ba204b3e5edd5d@realtek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch replaces the adjust_link api with the phylink apis that provide
-equivalent functionality.
-
-The remaining functionality from the adjust_link is now covered in the
-phylink_mac_link_up api.
-
-Removes:
-.adjust_link
-Adds:
-.phylink_get_caps
-.phylink_mac_link_up
-
-Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
----
-v4->v5:
-  - Added various prep patches to better show the movement of the logic.
-v3->v4:
-  - Reworked the implementation to preserve the adjust_link functionality
-    by including it in the phylink_mac_link_up api.
-v2->v3:
-  Added back in disabling Turbo Mode on the CPU MII interface.
-  Removed the unnecessary clearing of the phy supported interfaces.
----
- drivers/net/dsa/lan9303-core.c | 104 ++++++++++++++++++++++-----------
- 1 file changed, 71 insertions(+), 33 deletions(-)
-
-diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-index 1d22e4b74308..810aef527fe1 100644
---- a/drivers/net/dsa/lan9303-core.c
-+++ b/drivers/net/dsa/lan9303-core.c
-@@ -1058,38 +1058,6 @@ static int lan9303_phy_write(struct dsa_switch *ds, int phy, int regnum,
- 	return chip->ops->phy_write(chip, phy, regnum, val);
- }
- 
--static void lan9303_adjust_link(struct dsa_switch *ds, int port,
--				struct phy_device *phydev)
--{
--	struct lan9303 *chip = ds->priv;
--	int ctl;
--
--	/* On this device, we are only interested in doing something here if
--	 * this is the CPU port. All other ports are 10/100 phys using MDIO
--	 * to control there link settings.
--	 */
--	if (!dsa_is_cpu_port(ds, port))
--		return;
--
--	ctl = lan9303_phy_read(ds, port, MII_BMCR);
--
--	ctl &= ~BMCR_ANENABLE;
--
--	if (phydev->speed == SPEED_100)
--		ctl |= BMCR_SPEED100;
--	else if (phydev->speed == SPEED_10)
--		ctl &= ~BMCR_SPEED100;
--	else
--		dev_err(ds->dev, "unsupported speed: %d\n", phydev->speed);
--
--	if (phydev->duplex == DUPLEX_FULL)
--		ctl |= BMCR_FULLDPLX;
--	else
--		ctl &= ~BMCR_FULLDPLX;
--
--	lan9303_phy_write(ds, port, MII_BMCR, ctl);
--}
--
- static int lan9303_port_enable(struct dsa_switch *ds, int port,
- 			       struct phy_device *phy)
- {
-@@ -1286,13 +1254,83 @@ static int lan9303_port_mdb_del(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
-+static void lan9303_phylink_get_caps(struct dsa_switch *ds, int port,
-+				     struct phylink_config *config)
-+{
-+	struct lan9303 *chip = ds->priv;
-+
-+	dev_dbg(chip->dev, "%s(%d) entered.", __func__, port);
-+
-+	config->mac_capabilities = MAC_10 | MAC_100 | MAC_ASYM_PAUSE |
-+				   MAC_SYM_PAUSE;
-+
-+	if (dsa_port_is_cpu(dsa_to_port(ds, port))) {
-+		/* cpu port */
-+		__set_bit(PHY_INTERFACE_MODE_RMII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_MII,
-+			  config->supported_interfaces);
-+	} else {
-+		/* internal ports */
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
-+		/* Compatibility for phylib's default interface type when the
-+		 * phy-mode property is absent
-+		 */
-+		__set_bit(PHY_INTERFACE_MODE_GMII,
-+			  config->supported_interfaces);
-+	}
-+
-+	/* This driver does not make use of the speed, duplex, pause or the
-+	 * advertisement in its mac_config, so it is safe to mark this driver
-+	 * as non-legacy.
-+	 */
-+	config->legacy_pre_march2020 = false;
-+}
-+
-+static void lan9303_phylink_mac_link_up(struct dsa_switch *ds, int port,
-+					unsigned int mode,
-+					phy_interface_t interface,
-+					struct phy_device *phydev, int speed,
-+					int duplex, bool tx_pause,
-+					bool rx_pause)
-+{
-+	u32 ctl;
-+
-+	/* On this device, we are only interested in doing something here if
-+	 * this is the CPU port. All other ports are 10/100 phys using MDIO
-+	 * to control there link settings.
-+	 */
-+	if (!dsa_is_cpu_port(ds, port))
-+		return;
-+
-+	ctl = lan9303_phy_read(ds, port, MII_BMCR);
-+
-+	ctl &= ~BMCR_ANENABLE;
-+
-+	if (speed == SPEED_100)
-+		ctl |= BMCR_SPEED100;
-+	else if (speed == SPEED_10)
-+		ctl &= ~BMCR_SPEED100;
-+	else
-+		dev_err(ds->dev, "unsupported speed: %d\n", speed);
-+
-+	if (duplex == DUPLEX_FULL)
-+		ctl |= BMCR_FULLDPLX;
-+	else
-+		ctl &= ~BMCR_FULLDPLX;
-+
-+	lan9303_phy_write(ds, port, MII_BMCR, ctl);
-+}
-+
- static const struct dsa_switch_ops lan9303_switch_ops = {
- 	.get_tag_protocol	= lan9303_get_tag_protocol,
- 	.setup			= lan9303_setup,
- 	.get_strings		= lan9303_get_strings,
- 	.phy_read		= lan9303_phy_read,
- 	.phy_write		= lan9303_phy_write,
--	.adjust_link		= lan9303_adjust_link,
-+	.phylink_get_caps	= lan9303_phylink_get_caps,
-+	.phylink_mac_link_up	= lan9303_phylink_mac_link_up,
- 	.get_ethtool_stats	= lan9303_get_ethtool_stats,
- 	.get_sset_count		= lan9303_get_sset_count,
- 	.port_enable		= lan9303_port_enable,
--- 
-2.17.1
+On 09.12.2022 16:29, Hau wrote:
+>>
+>> OK, I think I get a better idea of your setup.
+>> So it seems RTL8211FS indeed acts as media converter. Link status on MDI
+>> side of RTL8211FS reflects link status on fiber/serdes side.
+>> RTL8168H PHY has no idea whether it's connected to RJ45 magnetics or to the
+>> MDI side of a RTL8211FS.
+>>
+>> I think for configuring RTL8211FS you have two options:
+>> 1. Extend the Realtek PHY driver to support RTL8211FS fiber mode 2.
+>> Configure RTL8211FS from userspace (phytool, mii-tool, ..). However to be
+>> able to do this you may need to add a dummy netdevice
+>>    that RTL8211FS is attached to. When going with this option it may be better
+>> to avoid phylib taking control of RTL8211FS.
+>>    This can be done by setting the phy_mask of the bit-banged mii_bus.
+> 
+> Thanks for your advaice.
+> Is that possible for us to register a PHY fixup function(phy_register_fixup()) to setup rtl8211fs instead of setup it in PHY driver?
+> 
+From where would you like to register the PHY fixup? r8169 would be the wrong place here.
+There are very few drivers using a PHY fixup and AFAICS typically PHY drivers apply
+fixups from the config_init callback.
+Having said that, if possible I'd recommend to avoid using a PHY fixup.
 
