@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C32BF648B85
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:05:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D336648B86
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229779AbiLJAFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 19:05:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
+        id S229720AbiLJAGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 19:06:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiLJAFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:05:18 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5971B747DC
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:05:18 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id x28so4915799qtv.13
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 16:05:18 -0800 (PST)
+        with ESMTP id S229470AbiLJAGC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:06:02 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17903747E3
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:06:02 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id x28so4916762qtv.13
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 16:06:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=O3WGFJluYBsmSMJmjtXHpyJNTv/czbRLqRSXWFBOWmc=;
-        b=U5Xnnm6eB87cNSDme17a/CX2HpKEMq7a7kQkTNJ1pgsJpZbBEWukkSTFXonBYopxt7
-         p5wLrWOIhXBDC6bGBqXKFomprPTZYFX3gifO/cw6GiEHM5DLoti5juENiCjLKuWqouk0
-         nkrqEYymg2m4uw49Ob/r115Tw9TuZ+qA3nSEWeR6FHFk0F6PwJZQSK4AuYM3Ja8IhuF0
-         m/2DO6nlcgHXq45iGUAmvC41GXJtu3mEuh1FmJ9RQPzi+pjBXsey6Ex3E/AciuMQ6pUG
-         +TUybfIu6YSX6ZEkumfYf9eIDqtBskJ3RUn3Te1x15rXPd4szLZOTlrBXQI6DJUF5oax
-         m0Wg==
+        bh=6mTmyfu7f8hfKlf2DmFuM0mcl9VnAeJQ+G4/U1c7E1A=;
+        b=CGq/GSKoDnVWd6pU8fe13uQMYANKphpz6vI/FrBVrpaF2FI+SpHeSqW/fr7LkGt1fc
+         fmj/5F7Qjjzi18Pa2cqE4DGrTy3fU9giofAmOcy3g4fB2xnmkh3GHdxgPIyK6InrmMvP
+         m9lbWddF5M/9r0YaOEw5QcQ+3tayIQdWOfT2IIwfhM1C9HfG44Aan0JmrQuL9S1o9PBn
+         56Tig4AF5jAITUSnbKUS4OOqfltrAV9GG1h3bhwIlLbPVwMmT0oB5BsoTVeBzP9s6FIJ
+         gcVKS7QIFpo6BwopKcdziyQqPd/XAyT8RxsuJLdIDmR3/5Dur5u68Hx/PUm1MVLT3egm
+         R9lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=O3WGFJluYBsmSMJmjtXHpyJNTv/czbRLqRSXWFBOWmc=;
-        b=j5T7fvGPQHorcbPge8jGO1Nb3wleYuAGt/yZTgv9lRVRVxVJOhZ16OdS08Lr/aj2o9
-         ZrBUTpgwOInV3c9wz0wYJEVl5tpNaCvBaIYv4Ssy6WeU9IBmavlkSPzRQrwgYxesSkaX
-         umlgbOkhc3/2GlvEfLVWZKWTgIx/RIgWLIl/MKQ0Wa3H4SqTihujrk8gLzZtT9ZYlJEZ
-         jDYiSlZOtVdy5crpR9E4GnC/5DpTJPf9FvRojeq0KNOh25GMGN4WZ2dsSM0ra/EZmFCP
-         XxWRq3fl916AZR2URNpuHVHWUBIdWKd739zhpsy0Ekuqv8Dfo/uAPIMsabk5Oo52QV0n
-         iBuA==
-X-Gm-Message-State: ANoB5pla63fpPRvvQhaQoRKjHVhap2C8e0yFtooe2tnQ6vCF2l4MT2Fg
-        dyl3qaZ40UfzXE9kGEHFzzM=
-X-Google-Smtp-Source: AA0mqf4shkBLdtY9oTIiM4b2Cgy+l9g1hGTXEjxZVkedWkN4UGJuTTnLMrJGtG2dgqrMRO7p7obTmA==
-X-Received: by 2002:a05:622a:4a0d:b0:3a5:3230:5e6f with SMTP id fv13-20020a05622a4a0d00b003a532305e6fmr10881430qtb.8.1670630717368;
-        Fri, 09 Dec 2022 16:05:17 -0800 (PST)
+        bh=6mTmyfu7f8hfKlf2DmFuM0mcl9VnAeJQ+G4/U1c7E1A=;
+        b=kZ7SeFXTNYbmAUh5ITyl/2FAA+qwRUayzq6uZfFYvBVLQkUV5LJxdQGwJuLbEh/yrX
+         v73+w6dMpetdmL7NRqAFOqHfJd71Ctbcr79vDUW/Hp3PsWfMI3Ym2UVIc0yq7HHVFzpA
+         qg+jzLAaPedsyRlWxBPSgJNF+yvc4kVRegBQF+6zzF6DYH28uRbaQP7gQAi9dckuhHlx
+         qQjLiIz7i7AoD++wh53sobo7D9yARaUJGhdy/ZuHjOnlgeSmp2aGi2xlIjLj71blmVKz
+         kTFmQ7Wy5FzyJhwwdsyP/G6JeBs8bpE35g71ltUKa2rgFpXsIWG5pYSw3cVe6adIReEJ
+         PVGw==
+X-Gm-Message-State: ANoB5pmKuRnhxDwOm7Kc95xOzn5tqFzYW+c1nygkaUu/Gmhc/i8sfgU+
+        u6Hp66GpaOEWlpo4uZEpZ0U=
+X-Google-Smtp-Source: AA0mqf7uFoiOYAxJaQbFH5s+NmKOTFgkeQTi+dzRcQO55nTe+rCQrcUZKTtyYgzK9Dt7hH/rvCmlng==
+X-Received: by 2002:a05:622a:6112:b0:3a6:9c36:e3b1 with SMTP id hg18-20020a05622a611200b003a69c36e3b1mr9914375qtb.42.1670630761108;
+        Fri, 09 Dec 2022 16:06:01 -0800 (PST)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y8-20020a05620a25c800b006fa8299b4d5sm915941qko.100.2022.12.09.16.05.13
+        by smtp.googlemail.com with ESMTPSA id bs33-20020a05620a472100b006b61b2cb1d2sm982317qkb.46.2022.12.09.16.05.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Dec 2022 16:05:16 -0800 (PST)
-Message-ID: <09d11094-9f26-e1cb-9a00-dfd1dafa2fa9@gmail.com>
-Date:   Fri, 9 Dec 2022 16:05:11 -0800
+        Fri, 09 Dec 2022 16:06:00 -0800 (PST)
+Message-ID: <5e2c5dd0-4785-fa9f-205a-8dcf543e27ae@gmail.com>
+Date:   Fri, 9 Dec 2022 16:05:54 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.2
-Subject: Re: [PATCH v2 net-next 1/4] net: dsa: mv88e6xxx: remove ATU age out
- violation print
+Subject: Re: [PATCH v2 net-next 2/4] net: dsa: mv88e6xxx: read FID when
+ handling ATU violations
 Content-Language: en-US
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -66,9 +66,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         "Hans J. Schultz" <netdev@kapio-technology.com>,
         Saeed Mahameed <saeed@kernel.org>
 References: <20221209172817.371434-1-vladimir.oltean@nxp.com>
- <20221209172817.371434-2-vladimir.oltean@nxp.com>
+ <20221209172817.371434-3-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221209172817.371434-2-vladimir.oltean@nxp.com>
+In-Reply-To: <20221209172817.371434-3-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -82,12 +82,38 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/9/22 09:28, Vladimir Oltean wrote:
-> Currently, the MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT bit (interrupt on
-> age out) is not enabled by the driver, and as a result, the print for
-> age out violations is dead code.
+> From: "Hans J. Schultz" <netdev@kapio-technology.com>
 > 
-> Remove it until there is some way for this to be triggered.
+> When an ATU violation occurs, the switch uses the ATU FID register to
+> report the FID of the MAC address that incurred the violation. It would
+> be good for the driver to know the FID value for purposes such as
+> logging and CPU-based authentication.
 > 
+> Up until now, the driver has been calling the mv88e6xxx_g1_atu_op()
+> function to read ATU violations, but that doesn't do exactly what we
+> want, namely it calls mv88e6xxx_g1_atu_fid_write() with FID 0.
+> (side note, the documentation for the ATU Get/Clear Violation command
+> says that writes to the ATU FID register have no effect before the
+> operation starts, it's only that we disregard the value that this
+> register provides once the operation completes)
+> 
+> So mv88e6xxx_g1_atu_fid_write() is not what we want, but rather
+> mv88e6xxx_g1_atu_fid_read(). However, the latter doesn't exist, we need
+> to write it.
+> 
+> The remainder of mv88e6xxx_g1_atu_op() except for
+> mv88e6xxx_g1_atu_fid_write() is still needed, namely to send a
+> GET_CLR_VIOLATION command to the ATU. In principle we could have still
+> kept calling mv88e6xxx_g1_atu_op(), but the MDIO writes to the ATU FID
+> register are pointless, but in the interest of doing less CPU work per
+> interrupt, write a new function called mv88e6xxx_g1_read_atu_violation()
+> and call it.
+> 
+> The FID will be the port default FID as set by mv88e6xxx_port_set_fid()
+> if the VID from the packet cannot be found in the VTU. Otherwise it is
+> the FID derived from the VTU entry associated with that VID.
+> 
+> Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
