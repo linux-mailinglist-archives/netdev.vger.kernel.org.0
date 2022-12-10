@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D0F6648DC8
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 10:05:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0A7A648DCB
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 10:06:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbiLJJFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 04:05:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
+        id S230076AbiLJJGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 04:06:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229897AbiLJJEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 04:04:15 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116C125EF;
-        Sat, 10 Dec 2022 01:03:39 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id o1-20020a17090a678100b00219cf69e5f0so10654086pjj.2;
-        Sat, 10 Dec 2022 01:03:39 -0800 (PST)
+        with ESMTP id S229915AbiLJJFM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 04:05:12 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C09275D5;
+        Sat, 10 Dec 2022 01:03:46 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id 3-20020a17090a098300b00219041dcbe9so7382602pjo.3;
+        Sat, 10 Dec 2022 01:03:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=pa3DAHwWDelaMryXafO6tGBc9UO2GhBo2ljQmz+7iQs=;
-        b=M4QXAhvAH2eGt1ylyB64bOaFHwiFc+CBiEpoLnv4v1iGZPuAkFClsRom7OrmYnWnMG
-         wZSKDciH8kf2sSAyO6QAoSUWsulapheuNTWfnUWBpx7ozuE7iolVMdqD178hdqtH6+qL
-         fuKBbxroyOvt+Cpf268JUbrF3nOGNsI7YTTux0KSyf2aFyCobckTe5CtJrHGHGwr9HcH
-         fZjCCjklWCoz6sZen8INjEYsOqRnU1J67OkyJdytUGhd5L2HOlKPd00UKQUe9bf3hwXE
-         jQMR0jq9hI66lwRdhy/zsHxBqrcDfz+5s9gy3lAPiio3YYWGAbhMCFadZppsQTt+/Jng
-         XxDA==
+        bh=+JLuq6z6RC38yxJgv0nky22X6DCSZ/hpLwA+DNaYB3g=;
+        b=pYzKZaA9CAYA1lV0aFDqGItcg2wPbv7kFZNxnILtD51hI2Z0Slg+qdAQ8nV1HCcfSA
+         3p3xy/O3vBdiRfLdB+vj6Ksz9HnYQ4tndul1j1Kus7zt80bmzNr2C2YLRX/tZvXrfkDt
+         qUaV1cJq+DcbxSf1zI+/q5Joe+oQ87GTDXGlZFhO1vrjILUOHuORDxcE7IAswjElSI7d
+         le6Fl9k5YU3CJ3i6FnIn4RsAlFopeglX3XGEIIIgRNTu5/mqb+gTpi6IRJUwzMzelCed
+         facKMtOZwVa5+ygm2R2ua7ITJc3cKCdpWfxXJjFE0bq10g5KfSv9/5tMS9zsdbeoRnTO
+         3EGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=pa3DAHwWDelaMryXafO6tGBc9UO2GhBo2ljQmz+7iQs=;
-        b=MuxTGDOCmg4feQKMC7QEpM9yeMqer8QJiZyuy65SyTXo053B5IyMd/5AyJZm+VsO2V
-         RuiBv/MvzjSZ0yjkg4aVrY1+XilP63bNnoNBt7higFYQmTsH7zgVZ2TikwKqJW3UUORU
-         yNltwiPf1XE+npL8Soqy2jyofstu+ZI6EaTug7oblMz9A1fdsAQ+iI38A9TBahGIHma/
-         6az7+kVE9WZWw6Ig+7fMXm44Yu8GPWw+jCF6PMGJd3EqhdbbNKKQaj1UBjXTIA8uxOWc
-         EciBixy6NkKboSYw8rW6S8X3GQ6des535UYCbpOPwIVGoSzt8WEfZf091aZEwsk1PT6D
-         Odgg==
-X-Gm-Message-State: ANoB5pmaYnjRT6uM3TabeMx3upQ9gC/VBVkGaCaBP03P4N4jz0EhN0y5
-        aKZf9DQgtE+do0nr+RQjNfk=
-X-Google-Smtp-Source: AA0mqf7l6aaijQskDg/TUOxXIjLEe6zhoOOWBTpDEVkBrAma51dtyvuZYcEN85pbRkJ2fJDd1QLY2Q==
-X-Received: by 2002:a17:903:4094:b0:189:7548:20a7 with SMTP id z20-20020a170903409400b00189754820a7mr7429526plc.56.1670663018501;
-        Sat, 10 Dec 2022 01:03:38 -0800 (PST)
+        bh=+JLuq6z6RC38yxJgv0nky22X6DCSZ/hpLwA+DNaYB3g=;
+        b=Jh5Ic65uP4swDCyt6PC9bIF7UZf2cFCQjEseRPnM7Dh9beoDzT1r3qeC+vzUAgK4/L
+         GLyQFJR1jFB+Rvq31F3rP2PXGyq+K6cTWufqqwUOwS+UT109Zuuh8kKC4kc8tQ+KUzGL
+         oSfMelFoMMkUIlP5di3jqfK8vQ+CNCf31oUFLWzAmYzP9XLA+eS+uLdWe9nc1aC6jXEb
+         S2zyZhQ8eZyaGqblDHkeSr3fIcnkEYdOszQw44/yftxPZrH4YbtfMXDPhM0V0G3tyJs4
+         ckCrdx7FpjCnARLyifpVq52V720U9Ra4xRbnEt++Eom2qFmdK3J/jh14ItpKYqIjh7je
+         apLQ==
+X-Gm-Message-State: ANoB5plmAfaVw6oOYflOr4cDVW8RaGcdbtWal+2dtppzUhCTwr7Etjth
+        3vghoyYwpxGDFAYZkM2vGO4=
+X-Google-Smtp-Source: AA0mqf5GYgzbWRjQtqXiUGu1YTp8NbJSFZIcWwB5I4kyyqbNyUl5s6xLM9EWIeUdmcdrqCnGmQYpzg==
+X-Received: by 2002:a17:903:120b:b0:188:eec0:f1e with SMTP id l11-20020a170903120b00b00188eec00f1emr11952017plh.63.1670663025813;
+        Sat, 10 Dec 2022 01:03:45 -0800 (PST)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id u7-20020a17090282c700b00186a2444a43sm2549481plz.27.2022.12.10.01.03.31
+        by smtp.gmail.com with ESMTPSA id u7-20020a17090282c700b00186a2444a43sm2549481plz.27.2022.12.10.01.03.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Dec 2022 01:03:38 -0800 (PST)
+        Sat, 10 Dec 2022 01:03:45 -0800 (PST)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
@@ -89,9 +89,9 @@ Cc:     Oliver Neukum <oneukum@suse.com>,
         Alan Stern <stern@rowland.harvard.edu>,
         linux-usb@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v2 7/9] can: usb_8dev: usb_8dev_disconnect(): fix NULL pointer dereference
-Date:   Sat, 10 Dec 2022 18:01:55 +0900
-Message-Id: <20221210090157.793547-8-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v2 8/9] can: usb: remove useless check on driver data
+Date:   Sat, 10 Dec 2022 18:01:56 +0900
+Message-Id: <20221210090157.793547-9-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.37.4
 In-Reply-To: <20221210090157.793547-1-mailhol.vincent@wanadoo.fr>
 References: <20221203133159.94414-1-mailhol.vincent@wanadoo.fr>
@@ -108,41 +108,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-usb_8dev sets the driver's priv data to NULL before waiting for the
-completion of outsdanding urbs. This can results in NULL pointer
-dereference, c.f. [1] and [2].
+Many of the can usb drivers checks in their usb_driver::disconnect()
+whether the driver data is NULL or not. This check only makes sense if
+the disconnect function can be called more than one time. This is not
+the case for can usb drivers.
 
-Remove the call to usb_set_intfdata(intf, NULL). The core will take
-care of setting it to NULL after usb_8dev_disconnect() at [3].
+Remove all checks toward drivers priv data in disconnect().
 
-[1] c/27ef17849779 ("usb: add usb_set_intfdata() documentation")
-Link: https://git.kernel.org/gregkh/usb/c/27ef17849779
-
-[2] thread about usb_set_intfdata() on linux-usb mailing.
-Link: https://lore.kernel.org/linux-usb/Y4OD70GD4KnoRk0k@rowland.harvard.edu/
-
-[3] function usb_unbind_interface() from drivers/usb/core/driver.c
-Link: https://elixir.bootlin.com/linux/v6.0/source/drivers/usb/core/driver.c#L497
-
-Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- drivers/net/can/usb/usb_8dev.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/can/usb/ems_usb.c                    | 14 ++++++--------
+ drivers/net/can/usb/esd_usb.c                    | 16 +++++++---------
+ drivers/net/can/usb/gs_usb.c                     |  5 -----
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c |  7 +------
+ drivers/net/can/usb/ucan.c                       |  6 ++----
+ drivers/net/can/usb/usb_8dev.c                   | 11 ++++-------
+ 6 files changed, 20 insertions(+), 39 deletions(-)
 
+diff --git a/drivers/net/can/usb/ems_usb.c b/drivers/net/can/usb/ems_usb.c
+index c64cb40ac8de..8bd555eb741f 100644
+--- a/drivers/net/can/usb/ems_usb.c
++++ b/drivers/net/can/usb/ems_usb.c
+@@ -1062,18 +1062,16 @@ static void ems_usb_disconnect(struct usb_interface *intf)
+ {
+ 	struct ems_usb *dev = usb_get_intfdata(intf);
+ 
+-	if (dev) {
+-		unregister_netdev(dev->netdev);
++	unregister_netdev(dev->netdev);
+ 
+-		unlink_all_urbs(dev);
++	unlink_all_urbs(dev);
+ 
+-		usb_free_urb(dev->intr_urb);
++	usb_free_urb(dev->intr_urb);
+ 
+-		kfree(dev->intr_in_buffer);
+-		kfree(dev->tx_msg_buffer);
++	kfree(dev->intr_in_buffer);
++	kfree(dev->tx_msg_buffer);
+ 
+-		free_candev(dev->netdev);
+-	}
++	free_candev(dev->netdev);
+ }
+ 
+ /* usb specific object needed to register this driver with the usb subsystem */
+diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
+index f3006c6dc5d6..775ab704a295 100644
+--- a/drivers/net/can/usb/esd_usb.c
++++ b/drivers/net/can/usb/esd_usb.c
+@@ -1127,17 +1127,15 @@ static void esd_usb_disconnect(struct usb_interface *intf)
+ 	device_remove_file(&intf->dev, &dev_attr_hardware);
+ 	device_remove_file(&intf->dev, &dev_attr_nets);
+ 
+-	if (dev) {
+-		for (i = 0; i < dev->net_count; i++) {
+-			if (dev->nets[i]) {
+-				netdev = dev->nets[i]->netdev;
+-				unregister_netdev(netdev);
+-				free_candev(netdev);
+-			}
++	for (i = 0; i < dev->net_count; i++) {
++		if (dev->nets[i]) {
++			netdev = dev->nets[i]->netdev;
++			unregister_netdev(netdev);
++			free_candev(netdev);
+ 		}
+-		unlink_all_urbs(dev);
+-		kfree(dev);
+ 	}
++	unlink_all_urbs(dev);
++	kfree(dev);
+ }
+ 
+ /* usb specific object needed to register this driver with the usb subsystem */
+diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_usb.c
+index 97b1da8fd19f..40190816e313 100644
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -1458,11 +1458,6 @@ static void gs_usb_disconnect(struct usb_interface *intf)
+ 	struct gs_usb *dev = usb_get_intfdata(intf);
+ 	unsigned int i;
+ 
+-	if (!dev) {
+-		dev_err(&intf->dev, "Disconnect (nodata)\n");
+-		return;
+-	}
+-
+ 	for (i = 0; i < GS_MAX_INTF; i++)
+ 		if (dev->canch[i])
+ 			gs_destroy_candev(dev->canch[i]);
+diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
+index dad916b3288e..9e83b61db96b 100644
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
+@@ -979,12 +979,7 @@ static int kvaser_usb_probe(struct usb_interface *intf,
+ 
+ static void kvaser_usb_disconnect(struct usb_interface *intf)
+ {
+-	struct kvaser_usb *dev = usb_get_intfdata(intf);
+-
+-	if (!dev)
+-		return;
+-
+-	kvaser_usb_remove_interfaces(dev);
++	kvaser_usb_remove_interfaces(usb_get_intfdata(intf));
+ }
+ 
+ static struct usb_driver kvaser_usb_driver = {
+diff --git a/drivers/net/can/usb/ucan.c b/drivers/net/can/usb/ucan.c
+index 429b3519ee7f..205941122f9e 100644
+--- a/drivers/net/can/usb/ucan.c
++++ b/drivers/net/can/usb/ucan.c
+@@ -1579,10 +1579,8 @@ static void ucan_disconnect(struct usb_interface *intf)
+ {
+ 	struct ucan_priv *up = usb_get_intfdata(intf);
+ 
+-	if (up) {
+-		unregister_candev(up->netdev);
+-		free_candev(up->netdev);
+-	}
++	unregister_candev(up->netdev);
++	free_candev(up->netdev);
+ }
+ 
+ static struct usb_device_id ucan_table[] = {
 diff --git a/drivers/net/can/usb/usb_8dev.c b/drivers/net/can/usb/usb_8dev.c
-index 8a5596ce4e46..ae618809fc05 100644
+index ae618809fc05..4d80049ebff7 100644
 --- a/drivers/net/can/usb/usb_8dev.c
 +++ b/drivers/net/can/usb/usb_8dev.c
-@@ -990,8 +990,6 @@ static void usb_8dev_disconnect(struct usb_interface *intf)
+@@ -990,14 +990,11 @@ static void usb_8dev_disconnect(struct usb_interface *intf)
  {
  	struct usb_8dev_priv *priv = usb_get_intfdata(intf);
  
--	usb_set_intfdata(intf, NULL);
+-	if (priv) {
+-		netdev_info(priv->netdev, "device disconnected\n");
 -
- 	if (priv) {
- 		netdev_info(priv->netdev, "device disconnected\n");
+-		unregister_netdev(priv->netdev);
+-		unlink_all_urbs(priv);
+-		free_candev(priv->netdev);
+-	}
++	netdev_info(priv->netdev, "device disconnected\n");
  
++	unregister_netdev(priv->netdev);
++	unlink_all_urbs(priv);
++	free_candev(priv->netdev);
+ }
+ 
+ static struct usb_driver usb_8dev_driver = {
 -- 
 2.37.4
 
