@@ -2,82 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62EAB648D12
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 05:11:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2200648D15
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 05:14:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbiLJELc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 23:11:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54596 "EHLO
+        id S229481AbiLJEOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 23:14:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiLJELb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 23:11:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7685470B96
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 20:11:30 -0800 (PST)
+        with ESMTP id S229815AbiLJEN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 23:13:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214042FC09;
+        Fri,  9 Dec 2022 20:13:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C449D601BC
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 04:11:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F13DCC433F0;
-        Sat, 10 Dec 2022 04:11:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A694BB8282B;
+        Sat, 10 Dec 2022 04:13:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0796CC433D2;
+        Sat, 10 Dec 2022 04:13:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670645489;
-        bh=7EHxyJ4yUo3vl6S2WStImjLPO2WOPzY7RGUVjBF5k9w=;
+        s=k20201202; t=1670645634;
+        bh=8TwOUGgN5Iqvaj2/pS9j9BQVHmRbgPx3GEesx7wnsEM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=D4hfzPNpot0KUgm+NWm5DTvm1yYVYSr7jYmm8Qkzz3MNgxERJtVMfjfe6CQHc5dt1
-         3G0sH/+tOUHn31jU4TGwsdBw7iBzxS6FCHEqAPae5yLX6PrKens6Y3R1vjxJvk3QE8
-         GBFZ/cTG9yT9ZKR7ZDnv1SbkXIyGBVHP0hY66x9/hkB/RFxAsdKnrYTObnu9TDDTIQ
-         xcj6DT8qtOxjpVb2cEiqd1XkCYB2pS83xsjfAT5qBagewo2xTsHGxYIoYmUEhT8/XN
-         VAlVmi4LMIrsOFL9D+h1pwdl1NbyRDrabAj/pL2gV4hFyr1PqTZXlwuMQOZWLOk1py
-         4MZn9Cw31w9RA==
-Date:   Fri, 9 Dec 2022 20:11:27 -0800
+        b=tMeTBQUkDmWk8FVh0QZbL8qVbFYMi7bei1HS+jizCvxntTj78Gq/SqjgydD3/bh/g
+         v6zK36egf1d1WmtbAvSyXDDZTkm11rn9MfTY6NO3gpH/pa+pQ41mx7rdHfhTPKhHrc
+         blw+S6ykr+uIG+s3apYJgwYzXTuZfh3WPOblD/ObIVrL5znZeHWzvtNosbhRk4+3pr
+         haHZmzJdf4nQ4t4cQU7Y8vkm7XbGuhwrKo9Xps9xHwJzi32hqe58Uy7lbMnmOEGWK7
+         vqF00QVkHMERWaIVllTAdYxSxPkyqhzyWgK1zt5hnnf32Bh6RKjcCWP6URT38/bYzk
+         S95wkLJPFmzrg==
+Date:   Fri, 9 Dec 2022 20:13:53 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Benjamin Coddington <bcodding@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+To:     Jerry Ray <jerry.ray@microchip.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        Christoph =?UTF-8?B?QsO2aG13YWxkZXI=?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Valentina Manea <valentina.manea.m@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Steve French <sfrench@samba.org>,
-        Christine Caulfield <ccaulfie@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v2 1/3] net: Introduce sk_use_task_frag in struct
- sock.
-Message-ID: <20221209201127.65dc2cdb@kernel.org>
-In-Reply-To: <774369bc01dd625aec8202a47ba38008c43b003d.1670609077.git.bcodding@redhat.com>
-References: <cover.1670609077.git.bcodding@redhat.com>
-        <774369bc01dd625aec8202a47ba38008c43b003d.1670609077.git.bcodding@redhat.com>
+        "Paolo Abeni" <pabeni@redhat.com>, <jbe@pengutronix.de>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next v5 2/6] dsa: lan9303: move Turbo Mode bit
+ initialization
+Message-ID: <20221209201353.2d6f4852@kernel.org>
+In-Reply-To: <20221209224713.19980-3-jerry.ray@microchip.com>
+References: <20221209224713.19980-1-jerry.ray@microchip.com>
+        <20221209224713.19980-3-jerry.ray@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -90,13 +60,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  9 Dec 2022 13:19:23 -0500 Benjamin Coddington wrote:
-> +  *	@sk_use_task_frag: allow sk_page_frag() to use current->task_frag.
-> +			   Sockets that can be used under memory reclaim should
-> +			   set this to false.
+On Fri, 9 Dec 2022 16:47:09 -0600 Jerry Ray wrote:
+> In preparing to remove the .adjust_link api, I am moving the one-time
+> initialization of the device's Turbo Mode bit into a different execution
+> path. This code clears (disables) the Turbo Mode bit which is never used
+> by this driver. Turbo Mode is a non-standard mode that would allow the
+> 100Mbps RMII interface to run at 200Mbps.
 
-sorry to nit pick but kernel-doc does not like the lack of * at the
-start of these lines:
+> @@ -1073,14 +1079,6 @@ static void lan9303_adjust_link(struct dsa_switch *ds, int port,
+>  		ctl &= ~BMCR_FULLDPLX;
+>  
+>  	lan9303_phy_write(ds, port, MII_BMCR, ctl);
+> -
+> -	if (port == chip->phy_addr_base) {
+> -		/* Virtual Phy: Remove Turbo 200Mbit mode */
+> -		lan9303_read(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, &ctl);
+> -
+> -		ctl &= ~LAN9303_VIRT_SPECIAL_TURBO;
+> -		regmap_write(chip->regmap, LAN9303_VIRT_SPECIAL_CTRL, ctl);
+> -	}
+>  }
+>  
+>  static int lan9303_port_enable(struct dsa_switch *ds, int port,
 
-include/net/sock.h:322: warning: bad line:                            Sockets that can be used under memory reclaim should
-include/net/sock.h:323: warning: bad line:                            set this to false.
+The chip variable has to go, otherwise there will be a warning in
+bisection until patch 6 removes this entire function:
+
+drivers/net/dsa/lan9303-core.c:1059:18: warning: unused variable 'chip' [-Wunused-variable]
+        struct lan9303 *chip = ds->priv;
+                        ^
