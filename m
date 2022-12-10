@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D71648F5C
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 15:59:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E419648F5D
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 15:59:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbiLJO7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 09:59:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
+        id S229822AbiLJO7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 09:59:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbiLJO6l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 09:58:41 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2064.outbound.protection.outlook.com [40.107.92.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162B01A831
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 06:58:40 -0800 (PST)
+        with ESMTP id S229844AbiLJO6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 09:58:51 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2071.outbound.protection.outlook.com [40.107.92.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E7D1AF01
+        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 06:58:46 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WEGv8iWHje+a7c1SbwtfFhUy9ML7cGayYDdk1u8h1M24s24Bs060Y5Z1KSr+obzUMQxXxNl65Ltulroq3ZZmtdGBGLzUdZRiBXxbu/ejZmkwlJbk6ov7h++DoAkrKA1leTRxU/9mBgV2G0xLh3492syVxvUfKyi6yYOWvfWep9+GT+1vGZG4crWRum56rvU5Cp6MFlRgqqENfbSISyP/6DaEua7GIijxyv9d8DVPRP3BC8YARuqALOHW0tTEyg+r/X4CINnHT+NU4h7zsA4WkMxmhSNTZX5P6HuHYsU+lGAryobIli9p1zXh94o633wZsWmdA3SJLAhsEbdIDHI8tQ==
+ b=XjEMEDEcMktwOmyD/MJboyRU0Ph1w8xH5zQZyd4TsKKjo9mVpdR/vqa4Mo0OfMyhypmLxtr11DJ0Pp+Ulil6paRkczGAbedtwHrroLkGfS3oU4hYfuhnSlQiT/JubTY6vp5Kko7wAIhv9qGZqf5VBRAFXRQgvmlSUjMoLiq0CLXv/0+yjRLyP38zWdlWLf4ZQm0ceObPVgikkLqiXaXJ0aqjqylwQhqQ4FK+fgVPXAp0d1/UTc2+eQlU53z0mg3atmX2YyQCxjN7zvkAgMiJ+PyIgp74s3XimhSlFQnDMnjTHLhIL+Ow4PBJ+ni3ohGE6GnxPLSJq401hnQc2gcHFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9MKmMm0AJpZBp3RQtjob1AbqKhdrwCzF1aqPGmhskSc=;
- b=FjQp3c3b0oTN7KiaIWChl6B+hch962Bjtrgj3t91BV8f9G9FU9CSGPJis2McAwL9EirzOkTegj4gibtBbDdKYZhEb0+qhP4otHLW3uYN6rbMDuh4+8fzx5AAgCmXYy9XHOSHL1n4OKE+s7L4XoT7DPNuiukfXalj47fYJOqD65lZxYuH8RSU5X7rwXLPra5Qz5th6jX4byxol4ZaQFPdgBw54F/IZihXTMDQ2bIQmN97tg1DmiX56Bgl9JPnnyOkFG/FhJr/nKz627Q+yZaODYOPWaDQcU2Cl8Qo148yYpPgVFQhCTMLIgRL7CiWdIqA+znULKAV4ZAnECzLf7yLaA==
+ bh=/mwLfxSWuHXHhKMuieNDUM3tBBmhZ01RMiC5XcCnZss=;
+ b=TQUnDgTCw51qDsKqmt5z9GrhaB0sXzu57qUPHYF1y5la1wZIAm7Iz4mjYmT9orVhP1LFeyTWPuDOC5LNNbecfQonf9fvUAzOc2D2/L/n1VFUV7H7Q61UscX3PZYi0t9b1H+G80lB65LxhpTNatJlEA2QF3324p91D/NpZ+sTnMltuCDRom26qwrP0kigczBiHqunlctFGtrgkuoA4ciwE4CAjmbtS1VB0R3Po0ASXACpXd/UV917FdWiPRe6/LZRO0aUcrrHJdEdMXQ0HbtPqoGqjVTzHpAFTnh3pDwWOxDElkEbbuwk79FzqoWyZu8cR4zrGvEdAt49tlYUMVGs2Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9MKmMm0AJpZBp3RQtjob1AbqKhdrwCzF1aqPGmhskSc=;
- b=T8g0Kc5UIKfBVFo6WL6lcRqJUKPPXjGG3IMUskXMBGdLW5LzixSVqZ37JTTZJaK1sTU9pQMIkpbTxsb8olPqM4c4V9USWvX4dYy8ombRdk7v4oDm9EilGAynUwJova78arMM8yAFYhVxZt02GJcPFhiUYyP1xM9dinC+6omTeiofDWdqdGL0Q5wRUbO/IMMKcBTSeG6rt/mdUEl03gOEWE9g+bixFo4H3o3oi9S+0GxHwaGpYOXF0paEc53ToOjNfuKTLs+2jDP+FbySOf2DNO0bffBpQexaEo2Uap/aFuqvfquLhvYayHmnXWrlm7DsMrwvdWaw7bjGsxzOxe7Sog==
+ bh=/mwLfxSWuHXHhKMuieNDUM3tBBmhZ01RMiC5XcCnZss=;
+ b=tU0RshxEGC2gRj3vxZS2hsR8UeVpsM6cyZD5Q9bxWZZQ0Pk/WqRPn+hRYHQQAXqH3PHDP1MkJJA83TR+FnJuG78qpBWeV1+jz0Tp/pQbhRtF6RkNassKZ4vhPbJ6IU8q9tK66kdDF9Q32hfKpRzaMqq9qs2ZHBRUqIAUvhnigrN1XhL6UUAPdLx9nrNHb2DrtPoLZw1j5/G4Gn0ZB+HiWhu8cJ4pgyArJy8tPLunJoMvyOam+HLUQpJcBiojMZXM/ZjpiNcFgmifu42pKbFbC3eDXmiuxIN0Evze1ftNmVaPtdjHLp/6IqJUWtl7vwxpnbYny+6YxnlTRFppxpnoRw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by PH0PR12MB8128.namprd12.prod.outlook.com (2603:10b6:510:294::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Sat, 10 Dec
- 2022 14:58:38 +0000
+ 2022 14:58:45 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::a600:9252:615:d31a]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::a600:9252:615:d31a%3]) with mapi id 15.20.5880.014; Sat, 10 Dec 2022
- 14:58:38 +0000
+ 14:58:45 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, roopa@nvidia.com, razor@blackwall.org,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 12/14] bridge: mcast: Support replacement of MDB port group entries
-Date:   Sat, 10 Dec 2022 16:56:31 +0200
-Message-Id: <20221210145633.1328511-13-idosch@nvidia.com>
+Subject: [PATCH net-next v2 13/14] selftests: forwarding: Rename bridge_mdb test
+Date:   Sat, 10 Dec 2022 16:56:32 +0200
+Message-Id: <20221210145633.1328511-14-idosch@nvidia.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221210145633.1328511-1-idosch@nvidia.com>
 References: <20221210145633.1328511-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1P195CA0008.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:800:d0::18) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1P194CA0038.EURP194.PROD.OUTLOOK.COM
+ (2603:10a6:803:3c::27) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|PH0PR12MB8128:EE_
-X-MS-Office365-Filtering-Correlation-Id: 19ecb761-7ffb-43f9-f037-08dadabf04c6
+X-MS-Office365-Filtering-Correlation-Id: ab70e1fa-628c-4f35-f884-08dadabf08f0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oiKNBy9mXd1p/JdxCUgqHsj0BmFoBKhAjqYje5UEfvRa2CLJOWi8skED8lvEF26a1ngkhA5LT2r22+bg44Rq13SHvF+a01COrNytdwz3hMFXxuyGw60soStiw4vIqOmCEhcf6pnAJ42N5Bl5aRklcDQDGKUHH38u1PItUwBhnbPQ6lT09P8NKj+PqS5KFQL5eHjvXYh7FhT3mtZ2qNnSfaywoRbXXdpHt0hqeXYbQBA31kfhnM249k2mDjekIumrorRQWTJIMuTYCksYEkmFNFKQOhwA0uJqdRiWv7bjgHsbqddrsF6a1WJWpZkgo/qRnhjXf7xR+ZaRe1cIlEv759sVc6fh/elW15xRWFeDcEu4w3dnhNFVqPdqMPR6jB5/8ERyaI98r5JXRcpOZ+WpvMhiPpPF09NcNvdRqHejzTRk2zuxGJKiNSX1MCo4qs34tw/yt5n6QnF49wOanKAI3sjWAFWKiP2mVurFe73wGhvDraLlG3q85buxVPc/Cn82FGL4OsAiysF2USsJpMI76rZDQzO03aWTTjaukUNzhNG7wm8rQECPddQNoXIaS02W1DZIgNi5Qm/AG0CY0iw0VB+1tVOgjXDDRO8K0fNqb1955lB+j52r8iqqtVjEp7Ep44+bcUjy8fPJDWvf6TDqmA==
+X-Microsoft-Antispam-Message-Info: VyVKuP0aFZRr0wvyacN93B0dlysJ0sdPne9U+zUJDslPe7r0vGoCOogr9VM1Iw938ItO3YTOEQHk9wWbPwfSBnoDCSP2R7hFSRIrP/si4M/euewOIIQ0qQZHat/6o3G/i1+igfT1IneoLfq75sNjuNVin0fZxBRxuCsEHAYfmYGsqdhy1iWoiN5yAFODI4jLzeo9gFqk5EWSSvj5YFncAEPuLo/mElH2Vo10+bxAssu9DrRrlJ9vBYo1GOiOVqap7bT9JcmvFMQw2RHFrMdHvQDHmWDiseciPHqf7PplRYAHXZ1lIKCEC4UBD/T1iJBG3AfeKQAc57qYXpVMvQDRP5CwFnnQg3nxJBZUcSnZ2clj/ItcJW/t1KN45Blwi/DqhnXFFPTDLTpDVAc5NvYJGnwfICE/6T19s7flaY3FfwHdAFdej7kliTV6wTBjIcNMD/umd1bSmzRdu+S+cIzIEWL3ovWlLvzwDhpv1n2dd9LHSjmyXyqAAcmLOUSbSJkpFUnl6IcbfxMZd9UrHFVF5Ia+B27+12Tg/omrRoBTe6u4lHak/hycOtDosJnXTVb6r+g/iivMwN4JaGuMhify1mJ0pyCPhyaDX2LTFYBhn8A8vyf6Ffq35hS2qY5pOkVbC02KgfvKnmMO7jsBy3FvVg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(366004)(136003)(396003)(39860400002)(451199015)(36756003)(86362001)(38100700002)(83380400001)(1076003)(2616005)(6486002)(26005)(6512007)(186003)(478600001)(6666004)(107886003)(6506007)(316002)(41300700001)(4326008)(8676002)(8936002)(5660300002)(2906002)(66946007)(66556008)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?S8FE103Mu7L+99VG5KL6V2cOq2/D+bPAb82ayrxZ0szgcMZN7+88GZhqn2RQ?=
- =?us-ascii?Q?hOc92ybdZ3Vh/QVPMFwWLTFUJByVN7crH++eFCLBHNeQ+hM8fvrcuyqOyUzs?=
- =?us-ascii?Q?xWSz1MN06V4Omzs4B6rtYIVCfca/0vsYbYMFgFIdX533FUly0nEOztmwLRhl?=
- =?us-ascii?Q?jnOqxN+7Pbs+l4daQGxGH0t8dCkSnhXvWEjzCuDAgYAZpj2lBnpAVN7Cqs95?=
- =?us-ascii?Q?Wf7s/q1109emVavh1s7VhSXFE+eZIRRg2d4XOk52CdMwKHzy4f+j0WxuAEg3?=
- =?us-ascii?Q?98VKi81toLuEMenD/FNS8vi9fL7cLk25j1K4OTsr1t3IljuPxIjCOWK6Gw7w?=
- =?us-ascii?Q?1X8TBq9Xp1VLSuhBgeu1EHzvbLfJHKtHGpAYXi9wQmrsHQDaDe0piZkq9YMu?=
- =?us-ascii?Q?PUs5BjNBa650X/Gn2foryXt3ddizfRaSe1VW4B83ekcLrOCJcQkf03zQeEi6?=
- =?us-ascii?Q?7Eqqp8G46g0av+fJ10jpKMrI7/Ufwa4SNr4ZbrZJIf9vLGRjVYCA2XbSqBDP?=
- =?us-ascii?Q?cb1hfeyJuiHOc0oX29CIp+bRux8nbNjiwXBiDchn2muncwFyKbLma6aiBkp2?=
- =?us-ascii?Q?ooSfiYg0AweCwSOZLE5Y21OZqM/PIKybEE2b937BQE3E51luJKGYPCHdHJDy?=
- =?us-ascii?Q?soI13Wosujbi8VGpJmmtfv7YoBL6OElFo5A+8Cl+gaCjYLUQhiKE0kvxI2Tr?=
- =?us-ascii?Q?sbLUfkEyKtSjmpxKhVcdrvXX0DGXEpjMCQLQW6ej22rnF8v6hIrMPj8Ykpw3?=
- =?us-ascii?Q?+MvNOtlZ2teu368arno0N53Yuejgde7Jkjuw5P1BQpGfG4sr72Zqh7cKmI7/?=
- =?us-ascii?Q?yM0Uq1pyvzXn+QoeCm04lZzkc8aZPktGocvEzVvho3TYWhjKFyonJZp8VPTl?=
- =?us-ascii?Q?D+/EcK4IrxznWBw1OK/ROghTxkffi6tK0aSwEqUoKipyZ0t00uLvLPiZCuTu?=
- =?us-ascii?Q?X+nydwCS8mjub5QIXXLxBCOd9iXX+btYtmSILwkmiA79XAZgH2fiNnQ77tnb?=
- =?us-ascii?Q?B90ou1buIEtKpI2jfN+jpyg8urAgRRYUIf3QnreDtx7e7l0b49peN4AJXK8j?=
- =?us-ascii?Q?JyXSqgZkRa1t3NLC7t0aXd+9FVxB8G/EsYcKn8xWuQkTOAy10uv8GB560ZuM?=
- =?us-ascii?Q?zmt5qjfO1QAwoI4JvSiKdekW1EXyEma4o2IW7Eq1I55RJS6HPBtVeSIFX2Xy?=
- =?us-ascii?Q?QCoYg/xG811SxfXlDbYyPwZu2WA7wwMuHq0EQBaRlI4P91eWSk1/fhKax0iI?=
- =?us-ascii?Q?1Eao4/Zwrw0V/dCmm1NvKhqGHA9SezqyODqoqhhqICzvq70KVYWwHC1/IsNk?=
- =?us-ascii?Q?GwfLw34Ned38+b/Z+sSiLIcHm0UQol94du8ERxQAGhfGGdf7i4LzFh5WrNKE?=
- =?us-ascii?Q?dBX9ixHrNqPnKF+D2noZOM69qFg/c/+hkk7960Flv7N7dINIu3oVgiQJRCdB?=
- =?us-ascii?Q?2oWecOJJzReM3cfrfm8MlyAWvsnfcVPPu5e3d20pCxRskdE/Z5E9USudJYAF?=
- =?us-ascii?Q?mVT7/eN9WxFxcwwOvG0vRd50la5zZh9gCDOSqaz8vnFL0vU6QAtPBFatywqN?=
- =?us-ascii?Q?w1Qes6BCfcb+fJWDajIOIuVqfTjwRmz5My3i0+No?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y4xTPBY9YXQ+JTuBeP3ITPfHhmhOwJ7b+LlpGZs0sZepdEDi26cT4JOUIE9l?=
+ =?us-ascii?Q?z5Hl+Eu9k+kxqm7BnnXG9+/C3VfC6CFxqgjxZvNd0lfMUmNfjr8heINyQGoj?=
+ =?us-ascii?Q?1j5yhMJStTRGZ3uVmOovXQaoC6oI2Il3c+ZCSggb9Q5lm8weZSED2KDgK2Eq?=
+ =?us-ascii?Q?v7Vet0hTazqveK2O77+HU1MBGs3QMcdF1KD6+kHOL5Ng00m2j8sZsbXna/cl?=
+ =?us-ascii?Q?gz6XPVHcgjFk1CpYiov9UA+lgo//4IDFUkyU/MVhYGOM8sGxbtmEfAXnqzCr?=
+ =?us-ascii?Q?Yhmc9HqGRY9e6gErw92wUhSOgje2LJ0c0JpXGm1BzPnxiDEjEHKBce6jv/u8?=
+ =?us-ascii?Q?uQrRk4EZsNWzdmyw9D9l9O0BD2lp/Mk0KMuilghVZpNNx+WwksvDU6nPgHZc?=
+ =?us-ascii?Q?a+kWBwIvxKd63cDGX9zCpMSHHhXP3TJDWETv3nUULwjO1Ps1wNUKx8edwWBh?=
+ =?us-ascii?Q?rpgo83+nw/SC0DphC4J4qVfL/eL/IlZRvjB22tRzTLbCTJQLn/8t5PFCrccj?=
+ =?us-ascii?Q?SvzeUXlWa6c0vobXFc7yzy3eeMU0qUlQD//j0coRNjsIbl167dUP+2SYBSwA?=
+ =?us-ascii?Q?T/wzWslX+GwSa7oXthtvSz48LTQsebRfppcZ2KHarhvNLFfUNwRY7WMp8rn8?=
+ =?us-ascii?Q?zvgjPISteh3RsxXZ8FMN5OS1XyO4W5YgcmaV2gdWyjlGYqi/cc3KmyfSq9Em?=
+ =?us-ascii?Q?jR8p+nmCT/4Q1dEWWzB/8Z2m89khRAoPVuyVDKesD0EVx5Vacpe17zk55TEO?=
+ =?us-ascii?Q?V5AUgO+BjzkLetW2mkJvM6NVXrCrvy4dbGTuK2+EprDwM7h6AHhm2yKyoe6x?=
+ =?us-ascii?Q?VmkyKgEWQxKt9c73secx8TepXYesxM75RNhznq12qI2zdAi3t7V98YpPOM+p?=
+ =?us-ascii?Q?/RLOz0OoKlIl/yPkrJv9f3d4uhsG3A0IJsHpOeoJvTQlkfempArnV1/s0XrN?=
+ =?us-ascii?Q?CYoUrsg9BV/nHI2XapT7JmMIlMlGXo/FmQxrnTy1ldKR8BxEhengugwFP0pq?=
+ =?us-ascii?Q?Hwt0WRSD+cCwpVvabOW5nFLuPkS4rVLZgWENMCYvrC0K3OqWTqd3KeOYxD37?=
+ =?us-ascii?Q?aR8mXeHhQrQSb5jOy5O0Q/ndPwKg4Kqlg9ePfXnrH9maB5i9f0DBh6HLykaH?=
+ =?us-ascii?Q?e4hZ1XgMeiFkVzuFWwi9oS8x3y2w/IJusRwCadtOYUOQxyN1hLzXtg6qbfgA?=
+ =?us-ascii?Q?9c2BNTi7E9KzEvZ762tWf2kqubChEyZdkWwxD1Fxq4TpcWoMlUzfkl/q8hdS?=
+ =?us-ascii?Q?dfSUK0EKF0tuprLOS83lwdjbpR0eT/MP4pAjEVeowM4P+YeeQZXD4FCNzRAB?=
+ =?us-ascii?Q?9ebKCbbMfcApP5s2Fu/FpM3pbaJzWj522P/PXv09HAVVg/wo5jesWORNpXm3?=
+ =?us-ascii?Q?zmEEMJPjuGrSlZolNeCMmcTheq9cyB3h2xWFc2dn7w9ND9IkMwraXHSYvHxG?=
+ =?us-ascii?Q?6Cu2dvODLv/7Y3TzoyH4KPP1Re9pv2aCPpNDJBsxGeVJO5YEwfiE997RDLuj?=
+ =?us-ascii?Q?WrvqjaHtjvGwrTTxsoiOCs2Z4sXstQfRNUC7r3RfvsTL7EhWJNh+nR3iJ4dQ?=
+ =?us-ascii?Q?ML/a7i7QAF8mh6hmBbUUNPhoBkH1oCODLTZNqMM6?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19ecb761-7ffb-43f9-f037-08dadabf04c6
+X-MS-Exchange-CrossTenant-Network-Message-Id: ab70e1fa-628c-4f35-f884-08dadabf08f0
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Dec 2022 14:58:38.2288
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Dec 2022 14:58:45.0902
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XWmmggqUVhIzOiAW/Ggy2ddoF47ai8Sv9JxGe8Yp1Lrevus89vr5P6+MUy1Cxy/VhcQsifebODiOJWXeAi3GVg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: raBkfK1dhW0aAMOdz6Y5qdwajDUmxOnGMZfrPfCsHwUDZgfFfmakmBr5b5KT8CLk8zwAa/DB0i93NNwIuSjsmg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8128
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -114,220 +114,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that user space can specify additional attributes of port group
-entries such as filter mode and source list, it makes sense to allow
-user space to atomically modify these attributes by replacing entries
-instead of forcing user space to delete the entries and add them back.
+The test is only concerned with host MDB entries and not with MDB
+entries as a whole. Rename the test to reflect that.
 
-Replace MDB port group entries when the 'NLM_F_REPLACE' flag is
-specified in the netlink message header.
-
-When a (*, G) entry is replaced, update the following attributes: Source
-list, state, filter mode, protocol and flags. If the entry is temporary
-and in EXCLUDE mode, reset the group timer to the group membership
-interval. If the entry is temporary and in INCLUDE mode, reset the
-source timers of associated sources to the group membership interval.
-
-Examples:
-
- # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 permanent source_list 192.0.2.1,192.0.2.2 filter_mode include
- # bridge -d -s mdb show
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.2 permanent filter_mode include proto static     0.00
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto static     0.00
- dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode include source_list 192.0.2.2/0.00,192.0.2.1/0.00 proto static     0.00
-
- # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 permanent source_list 192.0.2.1,192.0.2.3 filter_mode exclude proto zebra
- # bridge -d -s mdb show
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.3 permanent filter_mode include proto zebra  blocked    0.00
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto zebra  blocked    0.00
- dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode exclude source_list 192.0.2.3/0.00,192.0.2.1/0.00 proto zebra     0.00
-
- # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 temp source_list 192.0.2.4,192.0.2.3 filter_mode include proto bgp
- # bridge -d -s mdb show
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.4 temp filter_mode include proto bgp     0.00
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.3 temp filter_mode include proto bgp     0.00
- dev br0 port dummy10 grp 239.1.1.1 temp filter_mode include source_list 192.0.2.4/259.44,192.0.2.3/259.44 proto bgp     0.00
+Subsequent patches will add a more general test that will contain the
+test cases for host MDB entries and remove the current test.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 ---
+ tools/testing/selftests/net/forwarding/Makefile                 | 2 +-
+ .../net/forwarding/{bridge_mdb.sh => bridge_mdb_host.sh}        | 0
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename tools/testing/selftests/net/forwarding/{bridge_mdb.sh => bridge_mdb_host.sh} (100%)
 
-Notes:
-    v2:
-    * Remove extack from br_mdb_replace_group_sg().
-    * Change 'nlflags' to u16 and move it after 'filter_mode' to pack the
-      structure.
-
- net/bridge/br_mdb.c     | 102 ++++++++++++++++++++++++++++++++++++++--
- net/bridge/br_private.h |   1 +
- 2 files changed, 98 insertions(+), 5 deletions(-)
-
-diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index 72d4e53193e5..00e5743647b0 100644
---- a/net/bridge/br_mdb.c
-+++ b/net/bridge/br_mdb.c
-@@ -802,6 +802,27 @@ __br_mdb_choose_context(struct net_bridge *br,
- 	return brmctx;
- }
+diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
+index a9c5c1be5088..f2df81ca3179 100644
+--- a/tools/testing/selftests/net/forwarding/Makefile
++++ b/tools/testing/selftests/net/forwarding/Makefile
+@@ -2,7 +2,7 @@
  
-+static int br_mdb_replace_group_sg(const struct br_mdb_config *cfg,
-+				   struct net_bridge_mdb_entry *mp,
-+				   struct net_bridge_port_group *pg,
-+				   struct net_bridge_mcast *brmctx,
-+				   unsigned char flags)
-+{
-+	unsigned long now = jiffies;
-+
-+	pg->flags = flags;
-+	pg->rt_protocol = cfg->rt_protocol;
-+	if (!(flags & MDB_PG_FLAGS_PERMANENT) && !cfg->src_entry)
-+		mod_timer(&pg->timer,
-+			  now + brmctx->multicast_membership_interval);
-+	else
-+		del_timer(&pg->timer);
-+
-+	br_mdb_notify(cfg->br->dev, mp, pg, RTM_NEWMDB);
-+
-+	return 0;
-+}
-+
- static int br_mdb_add_group_sg(const struct br_mdb_config *cfg,
- 			       struct net_bridge_mdb_entry *mp,
- 			       struct net_bridge_mcast *brmctx,
-@@ -816,8 +837,12 @@ static int br_mdb_add_group_sg(const struct br_mdb_config *cfg,
- 	     (p = mlock_dereference(*pp, cfg->br)) != NULL;
- 	     pp = &p->next) {
- 		if (p->key.port == cfg->p) {
--			NL_SET_ERR_MSG_MOD(extack, "(S, G) group is already joined by port");
--			return -EEXIST;
-+			if (!(cfg->nlflags & NLM_F_REPLACE)) {
-+				NL_SET_ERR_MSG_MOD(extack, "(S, G) group is already joined by port");
-+				return -EEXIST;
-+			}
-+			return br_mdb_replace_group_sg(cfg, mp, p, brmctx,
-+						       flags);
- 		}
- 		if ((unsigned long)p->key.port < (unsigned long)cfg->p)
- 			break;
-@@ -883,6 +908,7 @@ static int br_mdb_add_group_src_fwd(const struct br_mdb_config *cfg,
- 	sg_cfg.src_entry = true;
- 	sg_cfg.filter_mode = MCAST_INCLUDE;
- 	sg_cfg.rt_protocol = cfg->rt_protocol;
-+	sg_cfg.nlflags = cfg->nlflags;
- 	return br_mdb_add_group_sg(&sg_cfg, sgmp, brmctx, flags, extack);
- }
- 
-@@ -903,7 +929,7 @@ static int br_mdb_add_group_src(const struct br_mdb_config *cfg,
- 			NL_SET_ERR_MSG_MOD(extack, "Failed to add new source entry");
- 			return -ENOSPC;
- 		}
--	} else {
-+	} else if (!(cfg->nlflags & NLM_F_REPLACE)) {
- 		NL_SET_ERR_MSG_MOD(extack, "Source entry already exists");
- 		return -EEXIST;
- 	}
-@@ -961,6 +987,67 @@ static int br_mdb_add_group_srcs(const struct br_mdb_config *cfg,
- 	return err;
- }
- 
-+static int br_mdb_replace_group_srcs(const struct br_mdb_config *cfg,
-+				     struct net_bridge_port_group *pg,
-+				     struct net_bridge_mcast *brmctx,
-+				     struct netlink_ext_ack *extack)
-+{
-+	struct net_bridge_group_src *ent;
-+	struct hlist_node *tmp;
-+	int err;
-+
-+	hlist_for_each_entry(ent, &pg->src_list, node)
-+		ent->flags |= BR_SGRP_F_DELETE;
-+
-+	err = br_mdb_add_group_srcs(cfg, pg, brmctx, extack);
-+	if (err)
-+		goto err_clear_delete;
-+
-+	hlist_for_each_entry_safe(ent, tmp, &pg->src_list, node) {
-+		if (ent->flags & BR_SGRP_F_DELETE)
-+			br_multicast_del_group_src(ent, false);
-+	}
-+
-+	return 0;
-+
-+err_clear_delete:
-+	hlist_for_each_entry(ent, &pg->src_list, node)
-+		ent->flags &= ~BR_SGRP_F_DELETE;
-+	return err;
-+}
-+
-+static int br_mdb_replace_group_star_g(const struct br_mdb_config *cfg,
-+				       struct net_bridge_mdb_entry *mp,
-+				       struct net_bridge_port_group *pg,
-+				       struct net_bridge_mcast *brmctx,
-+				       unsigned char flags,
-+				       struct netlink_ext_ack *extack)
-+{
-+	unsigned long now = jiffies;
-+	int err;
-+
-+	err = br_mdb_replace_group_srcs(cfg, pg, brmctx, extack);
-+	if (err)
-+		return err;
-+
-+	pg->flags = flags;
-+	pg->filter_mode = cfg->filter_mode;
-+	pg->rt_protocol = cfg->rt_protocol;
-+	if (!(flags & MDB_PG_FLAGS_PERMANENT) &&
-+	    cfg->filter_mode == MCAST_EXCLUDE)
-+		mod_timer(&pg->timer,
-+			  now + brmctx->multicast_membership_interval);
-+	else
-+		del_timer(&pg->timer);
-+
-+	br_mdb_notify(cfg->br->dev, mp, pg, RTM_NEWMDB);
-+
-+	if (br_multicast_should_handle_mode(brmctx, cfg->group.proto))
-+		br_multicast_star_g_handle_mode(pg, cfg->filter_mode);
-+
-+	return 0;
-+}
-+
- static int br_mdb_add_group_star_g(const struct br_mdb_config *cfg,
- 				   struct net_bridge_mdb_entry *mp,
- 				   struct net_bridge_mcast *brmctx,
-@@ -976,8 +1063,12 @@ static int br_mdb_add_group_star_g(const struct br_mdb_config *cfg,
- 	     (p = mlock_dereference(*pp, cfg->br)) != NULL;
- 	     pp = &p->next) {
- 		if (p->key.port == cfg->p) {
--			NL_SET_ERR_MSG_MOD(extack, "(*, G) group is already joined by port");
--			return -EEXIST;
-+			if (!(cfg->nlflags & NLM_F_REPLACE)) {
-+				NL_SET_ERR_MSG_MOD(extack, "(*, G) group is already joined by port");
-+				return -EEXIST;
-+			}
-+			return br_mdb_replace_group_star_g(cfg, mp, p, brmctx,
-+							   flags, extack);
- 		}
- 		if ((unsigned long)p->key.port < (unsigned long)cfg->p)
- 			break;
-@@ -1223,6 +1314,7 @@ static int br_mdb_config_init(struct net *net, const struct nlmsghdr *nlh,
- 	memset(cfg, 0, sizeof(*cfg));
- 	cfg->filter_mode = MCAST_EXCLUDE;
- 	cfg->rt_protocol = RTPROT_STATIC;
-+	cfg->nlflags = nlh->nlmsg_flags;
- 
- 	bpm = nlmsg_data(nlh);
- 	if (!bpm->ifindex) {
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index cdc9e040f1f6..15ef7fd508ee 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -104,6 +104,7 @@ struct br_mdb_config {
- 	struct br_ip			group;
- 	bool				src_entry;
- 	u8				filter_mode;
-+	u16				nlflags;
- 	struct br_mdb_src_entry		*src_entries;
- 	int				num_src_entries;
- 	u8				rt_protocol;
+ TEST_PROGS = bridge_igmp.sh \
+ 	bridge_locked_port.sh \
+-	bridge_mdb.sh \
++	bridge_mdb_host.sh \
+ 	bridge_mdb_port_down.sh \
+ 	bridge_mld.sh \
+ 	bridge_port_isolation.sh \
+diff --git a/tools/testing/selftests/net/forwarding/bridge_mdb.sh b/tools/testing/selftests/net/forwarding/bridge_mdb_host.sh
+similarity index 100%
+rename from tools/testing/selftests/net/forwarding/bridge_mdb.sh
+rename to tools/testing/selftests/net/forwarding/bridge_mdb_host.sh
 -- 
 2.37.3
 
