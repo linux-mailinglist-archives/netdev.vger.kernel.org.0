@@ -2,101 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FAEB648B82
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 00:59:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F299648B83
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiLIX7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 18:59:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50944 "EHLO
+        id S229779AbiLJABS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 19:01:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiLIX7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 18:59:12 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F97AB07B2
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 15:59:11 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-3b10392c064so72647807b3.0
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 15:59:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=2UupccmiQ8izgiUvLjsZYz/7brYZNdAlH7Jmj1KGeU0=;
-        b=SJ0aO158dbxyl5JW6JY58Oc8c8GMnxNRra3UT2wSbTZGbzcfW/MI/Uj0qyxjyRZFDp
-         wLnxpNI+Zswi3y7+pDxZQi+CIgIJqRwNzWv0T0T4p/9MqTw+Elr8EBhLZRlX0+p+3IZ6
-         oiXdHwhp1ULCPgkBewSmU80m36yEqKCZUc12CXjQkX0CLB3njFyQizKxiTN2BsHBjCxE
-         dkPUfb04MkvNF4PUh8f7PC4hbG5ZHJIn9IbJXzDOQawO1fpuNQf0rnE2YxYPQfJ8QfUv
-         v9yHkqB71DPgmrsKng1H/IRsyEYSs5i1GBL5ZW2j89kgNqxBCU0aoFiyj4CvrLJ7cvx8
-         agGg==
+        with ESMTP id S229468AbiLJABQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:01:16 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393D4B1048
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:01:14 -0800 (PST)
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4C6BC3F176
+        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 00:01:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1670630470;
+        bh=dTla1/72IISFsTTkEGMVDbGGvj0mbLcbfVtUwN7qszE=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=NDuovwqYXIhnnIJ6XYafqe9c8BWnfPPH/XqdFhC59+PVv6P71tRPJFdfli7979X2n
+         2YxSslROOWZulaZShjvavjjMQr4zANyNKkr0BtQ062NAOhTeOhlaQWkDRFMrqp6KHA
+         YjdSOJAH/GhGspNfc4+7dxm/Ut9ND6xCwPE01ZkJ6mXtM9xqpTh/LeJfGDaXo3nUjG
+         5wToYqL3Dxik+LqEN4Zdc96fqmwh9GlzDB+2qprRSR05MpwvBtRkLXeGrKGc/QFPyZ
+         5DJdaYSSojtkAYEM2FhEHxZFIkwmWugZh/DftZ6e5mWkvu+9gFr2Jdb7SGuP83RBYu
+         H64rDI7WkyI8A==
+Received: by mail-pg1-f198.google.com with SMTP id o8-20020a6548c8000000b0047927da1501so1049003pgs.18
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 16:01:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2UupccmiQ8izgiUvLjsZYz/7brYZNdAlH7Jmj1KGeU0=;
-        b=1C/JjeDS4knW0x3ThKHV9TliiWfrNfky8uHf6uuEd0NT3lwFPfTC8aLv3E1IOWS5FW
-         zxTQERwbkqFGf59ziG3M6Izol7uVESh0YTP607ohrxWLEnqF9hS/R1542EK7CY8nffSx
-         vLtfhLaZi2tlNqDnmG3Cuj4IBdRSuCnmidMTzkLNkQNOIJv0ItkwnUpyrHnia9nQqxbA
-         gYbPLeeR/20yAgfDi/1SRVZKx6ygP4fA+QNNYGED0WAAFNgg4ycPdJPbM/JT1ixEIZ/o
-         UbqaYs2an4Rra+79DKrwKw4kb/aWu7w+0sIn5iEmItEfIJi/uXIPqy9u8bjvX3VJ4bhI
-         mENg==
-X-Gm-Message-State: ANoB5pm+s/8qMWElrCPtf8a+dsukC4m1EW9PoRU0gKGgGBr3Uvcv6AO5
-        DyTSKugaQvBOJ31s7FXakUTESWs5xK80fDSmekdMH/a3xx54I9XJ
-X-Google-Smtp-Source: AA0mqf4ZUh23l3/Oz+Wfl9fJjoxgPUPMka6nVw70gU8tUdn2mknwFyY0HXqZtL+AGa0yZf+LQIaNCcK1yTTjk7bUlSU=
-X-Received: by 2002:a81:1e44:0:b0:370:7a9a:564 with SMTP id
- e65-20020a811e44000000b003707a9a0564mr25482093ywe.278.1670630350351; Fri, 09
- Dec 2022 15:59:10 -0800 (PST)
-MIME-Version: 1.0
-References: <20221209101305.713073-1-liuhangbin@gmail.com> <20221209101305.713073-2-liuhangbin@gmail.com>
-In-Reply-To: <20221209101305.713073-2-liuhangbin@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 10 Dec 2022 00:58:59 +0100
-Message-ID: <CANn89iK8TEtpZa67-FfR6KFKAj_HCdtn3573Z9Cd7PG26WP3iA@mail.gmail.com>
-Subject: Re: [PATCH net 1/3] bonding: access curr_active_slave with rtnl_dereference
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dTla1/72IISFsTTkEGMVDbGGvj0mbLcbfVtUwN7qszE=;
+        b=TP5hUX+ZrIzktdwbNmIxhA+PTsatXdToShBaNd4S9AsmS8GgDaRJpD3WWAVk3tbG5K
+         q0kzILuyVUZHfOoFnqlwSibMTif2r0psn7mInl9/I6CYDqO7qB/HIn2OLzCphSY5niaw
+         PSzM1DvXkVsgMOX1AZlR4Hi+WoaGTVVgbLoHtAIi95Mz3sCOwCPoQE3XvycqUG7m0x1S
+         UGZ4J4a2afjko9SX4mQgxdDSAz9rrHx/a/LapyIdj9KGQdN5tW/em5oAmnCjLfsbrru8
+         T/BvCo45n5HGeC4nwlRpTDmiYLyO+SFJtQrM/7isKIr0ixWnX3q5WBYzDfqjebih3f0U
+         5QoA==
+X-Gm-Message-State: ANoB5pkUdhRfqItgYGK0AQXvZtT07CLaAQMSUZKqaoxciDlfDFwKrbSe
+        do+JaHAVCHl0RT1i3I4MYkCglYZS7yex4ArKSkZYA0in1cuNbSZwz6LvBsQmsdWs3I+3GLgANV8
+        Onbz0bcQwVQwhjJRiMr7o7WvnnrH3P8K5+Q==
+X-Received: by 2002:a17:903:240d:b0:187:4920:3a76 with SMTP id e13-20020a170903240d00b0018749203a76mr7944076plo.34.1670630468522;
+        Fri, 09 Dec 2022 16:01:08 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4NodzGSPYyR3Mma7TpZtNn35H3s7yrrltja7gzr0PN4a7/WNZbsMpa83XxpjB2SGzQKPIFtg==
+X-Received: by 2002:a17:903:240d:b0:187:4920:3a76 with SMTP id e13-20020a170903240d00b0018749203a76mr7944059plo.34.1670630468212;
+        Fri, 09 Dec 2022 16:01:08 -0800 (PST)
+Received: from famine.localdomain ([50.125.80.253])
+        by smtp.gmail.com with ESMTPSA id o37-20020a634e65000000b00478fbfd5276sm1448691pgl.15.2022.12.09.16.01.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 09 Dec 2022 16:01:07 -0800 (PST)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 4FF375FF12; Fri,  9 Dec 2022 16:01:07 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 487319FAA8;
+        Fri,  9 Dec 2022 16:01:07 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
 To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>, liali <liali@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, liali <liali@redhat.com>
+Subject: Re: [PATCH net 0/3] Bonding: fix high prio not effect issue
+In-reply-to: <20221209101305.713073-1-liuhangbin@gmail.com>
+References: <20221209101305.713073-1-liuhangbin@gmail.com>
+Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
+   message dated "Fri, 09 Dec 2022 18:13:02 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <9327.1670630467.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Fri, 09 Dec 2022 16:01:07 -0800
+Message-ID: <9328.1670630467@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 9, 2022 at 11:13 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+Hangbin Liu <liuhangbin@gmail.com> wrote:
+
+>When a high prio link up, if there has current link, it will not do
+>failover as we missed the check in link up event. Fix it in this patchset
+>and add a prio option test case.
 >
-> Looks commit 4740d6382790 ("bonding: add proper __rcu annotation for
-> curr_active_slave") missed rtnl_dereference for curr_active_slave
-> in bond_miimon_commit().
+>Hangbin Liu (2):
+>  bonding: access curr_active_slave with rtnl_dereference
+>  bonding: do failover when high prio link up
 >
-> Fixes: 4740d6382790 ("bonding: add proper __rcu annotation for curr_active_slave")
+>Liang Li (1):
+>  selftests: bonding: add bonding prio option test
+
+	For the series:
+
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+
+	The only comment I have is that since prio is a signed value, it
+would be nice if the selftest tested negative prio values.
+
+	-J
 
 
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  drivers/net/bonding/bond_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> drivers/net/bonding/bond_main.c               |   6 +-
+> .../selftests/drivers/net/bonding/Makefile    |   3 +-
+> .../drivers/net/bonding/option_prio.sh        | 246 ++++++++++++++++++
+> 3 files changed, 252 insertions(+), 3 deletions(-)
+> create mode 100755 tools/testing/selftests/drivers/net/bonding/option_pr=
+io.sh
 >
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index b9a882f182d2..2b6cc4dbb70e 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -2689,7 +2689,7 @@ static void bond_miimon_commit(struct bonding *bond)
+>-- =
+
+>2.38.1
 >
->                         bond_miimon_link_change(bond, slave, BOND_LINK_UP);
->
-> -                       if (!bond->curr_active_slave || slave == primary)
-> +                       if (!rtnl_dereference(bond->curr_active_slave) || slave == primary)
 
-We do not dereference the pointer here.
-
-If this is fixing a sparse issue, then use the correct RCU helper for this.
-
-( rcu_access_pointer())
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
