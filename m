@@ -2,170 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B09648EB7
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 13:47:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F4F9648EBF
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 14:06:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbiLJMrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 07:47:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
+        id S229524AbiLJM7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 07:59:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiLJMrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 07:47:49 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11C4BC05;
-        Sat, 10 Dec 2022 04:47:44 -0800 (PST)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NTncc0g3VzqSyh;
-        Sat, 10 Dec 2022 20:43:28 +0800 (CST)
-Received: from [10.67.111.176] (10.67.111.176) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Sat, 10 Dec 2022 20:47:40 +0800
-Message-ID: <40c4ace2-68f3-5e7d-2e68-7ea36a104a28@huawei.com>
-Date:   Sat, 10 Dec 2022 20:47:39 +0800
+        with ESMTP id S229482AbiLJM7n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 07:59:43 -0500
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A81210B6E
+        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 04:59:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1670677181; x=1702213181;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2RaANevEHe33/Lb9Q3L4J/alP20UlJyK+rus+iX268c=;
+  b=Bye3Tw5qhGUAi6wSdhWbtcbO+0Ld1PmkW3kU9/8kn4VVNogL4jxXQhn6
+   EbZwF59/Gk5Nw/KojbbT+/c8Nhzyuk4ne7YqRDdthGGZuS3zqb1AQOROw
+   BU67SCQwRK5i2k7fiiSdcezf8UV2NZIlxnaMtoQpMns2qIPnvFliwUA7K
+   o=;
+X-IronPort-AV: E=Sophos;i="5.96,234,1665446400"; 
+   d="scan'208";a="160008614"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-dc7c3f8b.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2022 12:59:39 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-m6i4x-dc7c3f8b.us-west-2.amazon.com (Postfix) with ESMTPS id A2E2CA29F2;
+        Sat, 10 Dec 2022 12:59:38 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Sat, 10 Dec 2022 12:59:37 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.134) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.20;
+ Sat, 10 Dec 2022 12:59:34 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <yangyingliang@huawei.com>
+CC:     <andrii@kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
+        <jakub@cloudflare.com>, <jiang.wang@bytedance.com>,
+        <john.fastabend@gmail.com>, <kuba@kernel.org>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Subject: Re: [PATCH net] af_unix: call proto_unregister() in the error path in af_unix_init()
+Date:   Sat, 10 Dec 2022 21:59:23 +0900
+Message-ID: <20221210125923.47456-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20221208150158.2396166-1-yangyingliang@huawei.com>
+References: <20221208150158.2396166-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in
- _rtl8812ae_phy_set_txpower_limit()
-Content-Language: en-US
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-CC:     "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
-        "linville@tuxdriver.com" <linville@tuxdriver.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20221207152319.3135500-1-lizetao1@huawei.com>
- <e985ead3ea7841b8b3a94201dfb18776@realtek.com>
-From:   Li Zetao <lizetao1@huawei.com>
-In-Reply-To: <e985ead3ea7841b8b3a94201dfb18776@realtek.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.176]
-X-ClientProxiedBy: dggpeml500012.china.huawei.com (7.185.36.15) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.134]
+X-ClientProxiedBy: EX13D43UWA003.ant.amazon.com (10.43.160.9) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ping-Ke,
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Date:   Thu, 8 Dec 2022 23:01:58 +0800
+> If register unix_stream_proto returns error, unix_dgram_proto needs
+> be unregistered.
+> 
+> Fixes: 94531cfcbe79 ("af_unix: Add unix_stream_proto for sockmap")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-On 2022/12/9 13:11, Ping-Ke Shih wrote:
->
->> -----Original Message-----
->> From: Li Zetao <lizetao1@huawei.com>
->> Sent: Wednesday, December 7, 2022 11:23 PM
->> To: Ping-Ke Shih <pkshih@realtek.com>; kvalo@kernel.org; davem@davemloft.net; edumazet@google.com;
->> kuba@kernel.org; pabeni@redhat.com
->> Cc: lizetao1@huawei.com; Larry.Finger@lwfinger.net; linville@tuxdriver.com;
->> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
->> Subject: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in _rtl8812ae_phy_set_txpower_limit()
->>
->> There is a global-out-of-bounds reported by KASAN:
->>
->>    BUG: KASAN: global-out-of-bounds in
->>    _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
->>    Read of size 1 at addr ffffffffa0773c43 by task NetworkManager/411
->>
->>    CPU: 6 PID: 411 Comm: NetworkManager Tainted: G      D
->>    6.1.0-rc8+ #144 e15588508517267d37
->>    Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
->>    Call Trace:
->>     <TASK>
->>     ...
->>     kasan_report+0xbb/0x1c0
->>     _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
->>     rtl8821ae_phy_bb_config.cold+0x346/0x641 [rtl8821ae]
->>     rtl8821ae_hw_init+0x1f5e/0x79b0 [rtl8821ae]
->>     ...
->>     </TASK>
->>
->> The root cause of the problem is that the comparison order of
->> "prate_section" in _rtl8812ae_phy_set_txpower_limit() is wrong. The
->> _rtl8812ae_eq_n_byte() is used to compare the first n bytes of the two
->> strings, so this requires the length of the two strings be greater
->> than or equal to n. In the  _rtl8812ae_phy_set_txpower_limit(), it was
->> originally intended to meet this requirement by carefully designing
->> the comparison order. For example, "pregulation" and "pbandwidth" are
->> compared in order of length from small to large, first is 3 and last
->> is 4. However, the comparison order of "prate_section" dose not obey
->> such order requirement, therefore when "prate_section" is "HT", it will
->> lead to access out of bounds in _rtl8812ae_eq_n_byte().
->>
->> Fix it by adding a length check in _rtl8812ae_eq_n_byte(). Although it
->> can be fixed by adjusting the comparison order of "prate_section", this
->> may cause the value of "rate_section" to not be from 0 to 5. In
->> addition, commit "21e4b0726dc6" not only moved driver from staging to
->> regular tree, but also added setting txpower limit function during the
->> driver config phase, so the problem was introduced by this commit.
->>
->> Fixes: 21e4b0726dc6 ("rtlwifi: rtl8821ae: Move driver from staging to regular tree")
->> Signed-off-by: Li Zetao <lizetao1@huawei.com>
->> ---
->>   drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
->> b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
->> index a29321e2fa72..720114a9ddb2 100644
->> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
->> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
->> @@ -1600,7 +1600,7 @@ static bool _rtl8812ae_get_integer_from_string(const char *str, u8 *pint)
->>
->>   static bool _rtl8812ae_eq_n_byte(const char *str1, const char *str2, u32 num)
->>   {
-> This can causes problem because it compares characters from tail to head, and
-> we can't simply replace this by strncmp() that does similar work. But, I also
-> don't like strlen() to loop 'str1' constantly.
->
-> How about having a simple loop to compare characters forward:
->
-> for (i = 0; i < num; i++)
->      if (str1[i] != str2[i])
->           return false;
->
-> return true;
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Thanks for your comment, but I don't think the problem has anything to 
-do with head-to-tail or
+Thanks for the patch.
 
-tail-to-head comparison. The problem is that num is the length of str2, 
-but the length of str1 may
-
-be less than num, which may lead to reading str1 out of bounds, for 
-example, when comparing
-
-"prate_section", str1 may be "HT", while str2 may by "CCK", and num is 
-3. So I think it is neccssary
-
-to check the length of str1 to ensure that will not read out of bounds.
+It's rare though, sock_register() and register_pernet_subsys() also could
+fail, and it will need another Fixes tag, so I'll send a follow-up patch
+after this is merged.
 
 
-Looking forward to your comments.
-
-
-With Best Regards,
-
-Li Zetao
-
->> -	if (num == 0)
->> +	if (num == 0 || strlen(str1) < num)
->>   		return false;
->>   	while (num > 0) {
->>   		num--;
->> --
->> 2.31.1
->>
->>
->> ------Please consider the environment before printing this e-mail.
+> ---
+>  net/unix/af_unix.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> index b3545fc68097..ede2b2a140a4 100644
+> --- a/net/unix/af_unix.c
+> +++ b/net/unix/af_unix.c
+> @@ -3738,6 +3738,7 @@ static int __init af_unix_init(void)
+>  	rc = proto_register(&unix_stream_proto, 1);
+>  	if (rc != 0) {
+>  		pr_crit("%s: Cannot create unix_sock SLAB cache!\n", __func__);
+> +		proto_unregister(&unix_dgram_proto);
+>  		goto out;
+>  	}
+>  
+> -- 
+> 2.25.1
