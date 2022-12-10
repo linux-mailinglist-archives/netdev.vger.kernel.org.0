@@ -2,77 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D336648B86
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:06:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F4A0648B87
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:06:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbiLJAGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 19:06:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
+        id S229798AbiLJAGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 19:06:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiLJAGC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:06:02 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17903747E3
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:06:02 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id x28so4916762qtv.13
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 16:06:02 -0800 (PST)
+        with ESMTP id S229470AbiLJAGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:06:21 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11FF747DC;
+        Fri,  9 Dec 2022 16:06:20 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id w15so6750999wrl.9;
+        Fri, 09 Dec 2022 16:06:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6mTmyfu7f8hfKlf2DmFuM0mcl9VnAeJQ+G4/U1c7E1A=;
-        b=CGq/GSKoDnVWd6pU8fe13uQMYANKphpz6vI/FrBVrpaF2FI+SpHeSqW/fr7LkGt1fc
-         fmj/5F7Qjjzi18Pa2cqE4DGrTy3fU9giofAmOcy3g4fB2xnmkh3GHdxgPIyK6InrmMvP
-         m9lbWddF5M/9r0YaOEw5QcQ+3tayIQdWOfT2IIwfhM1C9HfG44Aan0JmrQuL9S1o9PBn
-         56Tig4AF5jAITUSnbKUS4OOqfltrAV9GG1h3bhwIlLbPVwMmT0oB5BsoTVeBzP9s6FIJ
-         gcVKS7QIFpo6BwopKcdziyQqPd/XAyT8RxsuJLdIDmR3/5Dur5u68Hx/PUm1MVLT3egm
-         R9lw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=sQFo2vKeSpU6+jocEYDSE/k2q10Q8cwZtsjU6/rnL/k=;
+        b=egABX+VZ+RnE6SoIwjEqFoFzUkET4fUCEySh/Pm1qNIKpH7XNztPUzKRnRML2df0K2
+         PlmQGnQi9y1i1T9nKv1kmUzQqtBOVTaABpPAF74ig8BJAEIVDkpIWsD4j/VpCuj2fEO+
+         ycUYp36Tr/K0K2kn/HPFcjYzZ7tMwHx9bYXXtBV2KSoH2Kqk2bF+EXcqJ8zjd2zBvuoC
+         XAacXHJ2uYBWEjSP+G+7cf8d8PptaJFmjGBfWC8buh8CCsc93pLYK5+BmY7U+fFPvQ94
+         aFQnn/22rfL8sXJVerlUw+fTRsU5/Ms1gjjlhVA4Kg1HkS3DiXu2+iJjJ8dmTHitcK2t
+         ygjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6mTmyfu7f8hfKlf2DmFuM0mcl9VnAeJQ+G4/U1c7E1A=;
-        b=kZ7SeFXTNYbmAUh5ITyl/2FAA+qwRUayzq6uZfFYvBVLQkUV5LJxdQGwJuLbEh/yrX
-         v73+w6dMpetdmL7NRqAFOqHfJd71Ctbcr79vDUW/Hp3PsWfMI3Ym2UVIc0yq7HHVFzpA
-         qg+jzLAaPedsyRlWxBPSgJNF+yvc4kVRegBQF+6zzF6DYH28uRbaQP7gQAi9dckuhHlx
-         qQjLiIz7i7AoD++wh53sobo7D9yARaUJGhdy/ZuHjOnlgeSmp2aGi2xlIjLj71blmVKz
-         kTFmQ7Wy5FzyJhwwdsyP/G6JeBs8bpE35g71ltUKa2rgFpXsIWG5pYSw3cVe6adIReEJ
-         PVGw==
-X-Gm-Message-State: ANoB5pmKuRnhxDwOm7Kc95xOzn5tqFzYW+c1nygkaUu/Gmhc/i8sfgU+
-        u6Hp66GpaOEWlpo4uZEpZ0U=
-X-Google-Smtp-Source: AA0mqf7uFoiOYAxJaQbFH5s+NmKOTFgkeQTi+dzRcQO55nTe+rCQrcUZKTtyYgzK9Dt7hH/rvCmlng==
-X-Received: by 2002:a05:622a:6112:b0:3a6:9c36:e3b1 with SMTP id hg18-20020a05622a611200b003a69c36e3b1mr9914375qtb.42.1670630761108;
-        Fri, 09 Dec 2022 16:06:01 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id bs33-20020a05620a472100b006b61b2cb1d2sm982317qkb.46.2022.12.09.16.05.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Dec 2022 16:06:00 -0800 (PST)
-Message-ID: <5e2c5dd0-4785-fa9f-205a-8dcf543e27ae@gmail.com>
-Date:   Fri, 9 Dec 2022 16:05:54 -0800
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sQFo2vKeSpU6+jocEYDSE/k2q10Q8cwZtsjU6/rnL/k=;
+        b=LFKDhykzXpLTq5alsQOUvERoBxvNsv96YbT5BWKupQiSIkHwLBiW5g/ZHM6Wrr7WOq
+         Y8HsICMRUz4zNpuSfS9gR8Yxwo/p1sFsoHReNDVwEJju8hZf3Lb+aoAQD3opsQ3kxymZ
+         LXb7p2KwJK+QCa+9OHEGcfWzyNm+0MzvSsxBa/boZchsC9b6mLmxj3JIYDcFXhoJ/t5P
+         qZPYH6Tk84/AaquLP08aI2480FIFRTmQo1UnwBGA9c9TdA6dKmDVIWWdDDgvEu+6TwnL
+         SWreXbJkt/un6RHt+F3sUCJHqKUPlSgyb1NREc/vnb/rRoDZWdjzurtOP+8QRnt4QeUY
+         rLfQ==
+X-Gm-Message-State: ANoB5pmeHW/Q3CCOx8hagfCH6c9qX5mnTZcQfel3i3p94K+J85ENDMVe
+        n+Eimlgaejj9q/cGMH+EGyA=
+X-Google-Smtp-Source: AA0mqf7LEnm3JqCflD05e5cXhBQh5BI4XUP4N5ldaolsfK9dLZDDmeXoF4t3WM946HByMavZMlv91A==
+X-Received: by 2002:a5d:62cb:0:b0:241:fb10:9369 with SMTP id o11-20020a5d62cb000000b00241fb109369mr4321202wrv.21.1670630779035;
+        Fri, 09 Dec 2022 16:06:19 -0800 (PST)
+Received: from krava ([83.240.62.58])
+        by smtp.gmail.com with ESMTPSA id p7-20020adff207000000b002425dc49024sm2484012wro.43.2022.12.09.16.06.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Dec 2022 16:06:18 -0800 (PST)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Sat, 10 Dec 2022 01:06:16 +0100
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <olsajiri@gmail.com>, Yonghong Song <yhs@meta.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Song Liu <song@kernel.org>, Hao Sun <sunhao.th@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Yonghong Song <yhs@fb.com>, KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: BUG: unable to handle kernel paging request in bpf_dispatcher_xdp
+Message-ID: <Y5PNeFYJrC6D4P9p@krava>
+References: <Y5LfMGbOHpaBfuw4@krava>
+ <Y5MaffJOe1QtumSN@krava>
+ <Y5M9P95l85oMHki9@krava>
+ <Y5NSStSi7h9Vdo/j@krava>
+ <5c9d77bf-75f5-954a-c691-39869bb22127@meta.com>
+ <Y5OuQNmkoIvcV6IL@krava>
+ <ee2a087e-b8c5-fc3e-a114-232490a6c3be@iogearbox.net>
+ <Y5O/yxcjQLq5oDAv@krava>
+ <96b0d9d8-02a7-ce70-de1e-b275a01f5ff3@iogearbox.net>
+ <20221209153445.22182ca5@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2 net-next 2/4] net: dsa: mv88e6xxx: read FID when
- handling ATU violations
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Hans J. Schultz" <netdev@kapio-technology.com>,
-        Saeed Mahameed <saeed@kernel.org>
-References: <20221209172817.371434-1-vladimir.oltean@nxp.com>
- <20221209172817.371434-3-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221209172817.371434-3-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221209153445.22182ca5@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -81,42 +96,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/9/22 09:28, Vladimir Oltean wrote:
-> From: "Hans J. Schultz" <netdev@kapio-technology.com>
+On Fri, Dec 09, 2022 at 03:34:45PM -0800, Jakub Kicinski wrote:
+> On Sat, 10 Dec 2022 00:32:07 +0100 Daniel Borkmann wrote:
+> > fwiw, these should not be necessary, Documentation/RCU/checklist.rst :
+> > 
+> >    [...] One example of non-obvious pairing is the XDP feature in networking,
+> >    which calls BPF programs from network-driver NAPI (softirq) context. BPF
+> >    relies heavily on RCU protection for its data structures, but because the
+> >    BPF program invocation happens entirely within a single local_bh_disable()
+> >    section in a NAPI poll cycle, this usage is safe. The reason that this usage
+> >    is safe is that readers can use anything that disables BH when updaters use
+> >    call_rcu() or synchronize_rcu(). [...]
 > 
-> When an ATU violation occurs, the switch uses the ATU FID register to
-> report the FID of the MAC address that incurred the violation. It would
-> be good for the driver to know the FID value for purposes such as
-> logging and CPU-based authentication.
-> 
-> Up until now, the driver has been calling the mv88e6xxx_g1_atu_op()
-> function to read ATU violations, but that doesn't do exactly what we
-> want, namely it calls mv88e6xxx_g1_atu_fid_write() with FID 0.
-> (side note, the documentation for the ATU Get/Clear Violation command
-> says that writes to the ATU FID register have no effect before the
-> operation starts, it's only that we disregard the value that this
-> register provides once the operation completes)
-> 
-> So mv88e6xxx_g1_atu_fid_write() is not what we want, but rather
-> mv88e6xxx_g1_atu_fid_read(). However, the latter doesn't exist, we need
-> to write it.
-> 
-> The remainder of mv88e6xxx_g1_atu_op() except for
-> mv88e6xxx_g1_atu_fid_write() is still needed, namely to send a
-> GET_CLR_VIOLATION command to the ATU. In principle we could have still
-> kept calling mv88e6xxx_g1_atu_op(), but the MDIO writes to the ATU FID
-> register are pointless, but in the interest of doing less CPU work per
-> interrupt, write a new function called mv88e6xxx_g1_read_atu_violation()
-> and call it.
-> 
-> The FID will be the port default FID as set by mv88e6xxx_port_set_fid()
-> if the VID from the packet cannot be found in the VTU. Otherwise it is
-> the FID derived from the VTU entry associated with that VID.
-> 
-> Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> FWIW I sent a link to the thread to Paul and he confirmed 
+> the RCU will wait for just the BH.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+so IIUC we can omit the rcu_read_lock/unlock on bpf_prog_run_xdp side
 
+Paul,
+any thoughts on what we can use in here to synchronize bpf_dispatcher_change_prog
+with bpf_prog_run_xdp callers?
+
+with synchronize_rcu_tasks I'm getting splats like:
+  https://lore.kernel.org/bpf/20221209153445.22182ca5@kernel.org/T/#m0a869f93404a2744884d922bc96d497ffe8f579f
+
+synchronize_rcu_tasks_rude seems to work (patch below), but it also sounds special ;-)
+
+thanks,
+jirka
+
+
+---
+diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
+index c19719f48ce0..e6126f07e85b 100644
+--- a/kernel/bpf/dispatcher.c
++++ b/kernel/bpf/dispatcher.c
+@@ -124,6 +124,7 @@ static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
+ 	}
+ 
+ 	__BPF_DISPATCHER_UPDATE(d, new ?: (void *)&bpf_dispatcher_nop_func);
++	synchronize_rcu_tasks_rude();
+ 
+ 	if (new)
+ 		d->image_off = noff;
