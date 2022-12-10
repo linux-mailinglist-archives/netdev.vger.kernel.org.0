@@ -2,74 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C924B648E19
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 11:18:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36B38648E38
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 11:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbiLJKSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 05:18:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
+        id S229674AbiLJKiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 05:38:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiLJKSf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 05:18:35 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE8A22508;
-        Sat, 10 Dec 2022 02:18:34 -0800 (PST)
+        with ESMTP id S229512AbiLJKh6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 05:37:58 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB93513E05
+        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 02:37:56 -0800 (PST)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1670667511;
+        s=2020; t=1670668675;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Ty5wsGimI0tKO4tCsLTXg96lpBlywCG0/ZSuieeSBNw=;
-        b=z4YFhF/4tnkRVvjv/OClKIp/5pRw40DctYX83xCGrgIVgpabgHlXlTO5MirwipzH98lhqq
-        TRfavDq5zBiKwzwECYHlNm4VaCLNmUN1b1bW2ANkG5tjxuI1WDNw/3hUbmDLYchO+NWExq
-        /+3sUjxrNzDQfycwHZwbD91gSij7fOeJFvyn7ln/dCNjNhks8vJOYuuWCfFrSY3aOHuDLe
-        F8bgvPKrR6Z7NmjSO/5N6yGn/Lb3AWNxjltqgMp4kDTB9DkRhihJdiQquseUAod/KyHDkx
-        0GjMt/1BCftpv/mLax/KKu+NUOssKiFz61elqq05VLC9u0wmg6ywK2IuijQHAg==
+        bh=mnADdeTlGymlxNpd0Q+8eoVdPUdVQVNZ6bRoEM+YrxI=;
+        b=hh8BkCwoTkDeWDAw7iNn5vlIZu9e55ZV1AuPw9wxYgrXTVLvmjZU4fYrAjl3D4U25CeggM
+        H5+foGSOJtNZIC5yJQ8VwzivjJ/sf/IZcscrlmgRbi6PDD4sXsam+/eUx7jPGe/Zhnt2Om
+        cb3QkdxofyydHbbI6w6U0zbGtdxzKJC1I56qntb17chdeIyNFiP6ST67hgqE+jLFi0vnUW
+        d9IKBCK+K+VJxz0AhAIINIYj9K/m7xqkaJ0AKygRHn+nUZmk8nK1LUHW5ZP/B+JNPZqf7H
+        +Q/CJ/5pAZg0NPZCfVHq5X25ev/4hzKRg3paPz3Iqa4vNLdf6o4esreBv/KfJg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1670667511;
+        s=2020e; t=1670668675;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Ty5wsGimI0tKO4tCsLTXg96lpBlywCG0/ZSuieeSBNw=;
-        b=jUtHSXMT5MAJkecXlOrwudnyd6w97zyYvKRhYfEB1n79hLqdxZKcSt/HHrjSvQ/K6el/g/
-        RKMDdW7Dcwyd1OCA==
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
-Cc:     John Crispin <john@phrozen.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Marek Vasut <marex@denx.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        =?utf-8?B?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        =?utf-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        bh=mnADdeTlGymlxNpd0Q+8eoVdPUdVQVNZ6bRoEM+YrxI=;
+        b=cGpqXp+fK/XSJzBWqXGhor5BelmbjRqXuQpbC9MIxPyHCJhlpaqk7Es99WEFFZZ2qQuTU2
+        Tz+NucMTdmcobmAQ==
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        George McCollister <george.mccollister@gmail.com>
-Subject: Re: [PATCH v5 net-next 01/10] dt-bindings: dsa: sync with maintainers
-In-Reply-To: <20221210033033.662553-2-colin.foster@in-advantage.com>
-References: <20221210033033.662553-1-colin.foster@in-advantage.com>
- <20221210033033.662553-2-colin.foster@in-advantage.com>
-Date:   Sat, 10 Dec 2022 11:18:29 +0100
-Message-ID: <87o7sbh896.fsf@kurt>
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: don't call ptp_classify_raw() if
+ switch doesn't provide RX timestamping
+In-Reply-To: <20221209175840.390707-1-vladimir.oltean@nxp.com>
+References: <20221209175840.390707-1-vladimir.oltean@nxp.com>
+Date:   Sat, 10 Dec 2022 11:37:53 +0100
+Message-ID: <87fsdnk0hq.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
         micalg=pgp-sha512; protocol="application/pgp-signature"
@@ -84,88 +62,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 --=-=-=
 Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
 
-On Fri Dec 09 2022, Colin Foster wrote:
-> The MAINTAINERS file has Andrew Lunn, Florian Fainelli, and Vladimir Olte=
-an
-> listed as the maintainers for generic dsa bindings. Update dsa.yaml and
-> dsa-port.yaml accordingly.
->
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
->
-> ---
->
-> v5
->   * New patch
->
-> ---
->  Documentation/devicetree/bindings/net/dsa/dsa-port.yaml | 2 +-
->  Documentation/devicetree/bindings/net/dsa/dsa.yaml      | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml b/Do=
-cumentation/devicetree/bindings/net/dsa/dsa-port.yaml
-> index 9abb8eba5fad..2b8317911bef 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-> @@ -9,7 +9,7 @@ title: Ethernet Switch port Device Tree Bindings
->  maintainers:
->    - Andrew Lunn <andrew@lunn.ch>
->    - Florian Fainelli <f.fainelli@gmail.com>
-> -  - Vivien Didelot <vivien.didelot@gmail.com>
-> +  - Vladimir Oltean <olteanv@gmail.com>
->=20=20
->  description:
->    Ethernet switch port Description
-> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documen=
-tation/devicetree/bindings/net/dsa/dsa.yaml
-> index b9d48e357e77..5efc0ee8edcb 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> @@ -9,7 +9,7 @@ title: Ethernet Switch Device Tree Bindings
->  maintainers:
->    - Andrew Lunn <andrew@lunn.ch>
->    - Florian Fainelli <f.fainelli@gmail.com>
-> -  - Vivien Didelot <vivien.didelot@gmail.com>
-> +  - Vladimir Oltean <olteanv@gmail.com>
+On Fri Dec 09 2022, Vladimir Oltean wrote:
+> ptp_classify_raw() is not exactly cheap, since it invokes a BPF program
+> for every skb in the receive path.
 
-You can update the hellcreek binding as well. Thanks.
+Only if CONFIG_NET_PTP_CLASSIFY is set.
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek=
-.yaml b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
-index 73b774eadd0b..1d7dab31457d 100644
-=2D-- a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
-@@ -12,7 +12,7 @@ allOf:
- maintainers:
-   - Andrew Lunn <andrew@lunn.ch>
-   - Florian Fainelli <f.fainelli@gmail.com>
-=2D  - Vivien Didelot <vivien.didelot@gmail.com>
-+  - Vladimir Oltean <olteanv@gmail.com>
-   - Kurt Kanzenbach <kurt@linutronix.de>
-=20
- description:
+> For switches which do not provide ds->ops->port_rxtstamp(), running
+> ptp_classify_raw() provides precisely nothing, so check for the
+> presence of the function pointer first, since that is much cheaper.
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 
 --=-=-=
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmOUXPUTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgrQFD/4qzANLVIDNmAXq6YHaa1ML5D21go2L
-PrwddcGJRfn4INzwchv05dIML2gtqasZ6ug1NTpJ8ypmod396M/i/J62taZ7TEM/
-9DK9rARUgAUdXCeM95tdlV6pmA6M46Sf7iYYH/enczZNkTZI/qCQrRN/4qDq+WAs
-MVRNX4++Qw3ytahvNXrzlDrKoDY4N0NqpJ7kPyWvwqo5dSpAAlLKWhASXvh3qrae
-6ObFLssKhEFIfKNErR6iQdcqOREGRH/LJyKX4u7m/CNGDBz5x6riMDMOh5Rih1LG
-qeEZ7gJoTsISVySHQgJ58EU2LNdPpbr8y+DEFgDpxjnXDCW90vPzCxu9kbi8jwIR
-XrHaRTDagP+IQB4aOpbbxLpNHwa3yuYjSF0A1N7keXWWG9koyXU5MOruMOnveyXh
-O7Eu/47wTx8lY5i5n2Tbd3I/6i6zmTmVogL5RBjml9RgZvDuKi2Gmu/IFCdXVNEw
-6/uBpkTepOHRyhOOZbIcWfZX3hqeC6THGwHAf1pJHSsCTGDwFBWJ/z13wSa9ZBDI
-2OZGCV37dYLLxgLXbz4KOTNzUsTwlIztDZklGfEyHoHtqX7UdFuzlzL1+3Di0yHB
-zjpvFphD8FMokYY8pOfsyz5k5CpqXJISAZ15INvc5FUX6upDS8xGNGi5AJfZ71XR
-OvYRLoO2PCLRuA==
-=ti3Q
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmOUYYETHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgswUEACVJsEv1kbeLDXP5HxBY5efbs97WrL/
++g4y4Tl1uSkeZoi6mZIjHklrOtPzfhaaCyIx3IwSjUE4PKY/x/c0ZWlKqB/gmEXx
+Te7FMWCobAcz4AD5OPWV8gYeE7C2zGatGPgMq/ycQJU9NM+u2nvUCbOtPmKX58Bf
+vgUbG71Z/XS0MOyOmKNkTVmRVl9K9cAeP0MbD3DMo1+dzxiDM15qi3v2i8WMkdkA
+xSPVx1e9TwhoIxwfWtAEoVMvVycaotjp6inM8NlUCc6DWvG5GHOWY16KVIEdQ0xW
+L3ER8uxhp/qxRlDm2o64irCJLJHmf/eQhp635b01Xoxn7c9r7JG+3dPr+MUF0f75
+JGDghv/B9HxhekhXIon0NaGLVUplxhFCCy7njSY1bhkIDtYw9NGlAzsPojBDatfp
+WGvWKCFxO0emG4zzaKyF8T3P/hyaGUT22ZpTXA99nzigXjPhTqmKvKcRCS57zTzW
+zeMtdKdol6t7g9zR1l5k5UUFDKDlJMXhRrzWnXLk+5DuGcuFAxR1rEm9PgOJYKcD
+/UKJZoVgVIS+UncCVXk6W2++jXc/LNgjmSYrEr8oVXWMXWBoONY+VS9SIVC7cd4m
+GJVGlPiQdkPX3LyMCZC81QsHo0D8GaD5YSLuKKdKsTIc8SQHij6Lb8uKlyl8F6VK
+Fe9zwbqfus1P4A==
+=9nTA
 -----END PGP SIGNATURE-----
 --=-=-=--
