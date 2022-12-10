@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5D41648DB3
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 10:03:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23355648DB8
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 10:04:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbiLJJDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 04:03:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45728 "EHLO
+        id S229762AbiLJJES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 04:04:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiLJJDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 04:03:13 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEA01572D;
-        Sat, 10 Dec 2022 01:03:02 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id u15-20020a17090a3fcf00b002191825cf02so7395147pjm.2;
-        Sat, 10 Dec 2022 01:03:02 -0800 (PST)
+        with ESMTP id S229760AbiLJJDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 04:03:18 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E660EB4A8;
+        Sat, 10 Dec 2022 01:03:09 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id k88-20020a17090a4ce100b00219d0b857bcso7400920pjh.1;
+        Sat, 10 Dec 2022 01:03:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4DVtAm9qztHyZBrD4ZVLrTHR+RA9lfulcIIjDcTmdPQ=;
-        b=OrMCEYGTR/LDfFd3lfYST1dGQLTy+XYi+8lUHZpCR3sTtLTf9kTtLnjsWuiCo/yJFV
-         upDwACLmxAWYT2a2lDQHD9aJCiX07KYRm1ryqAEJcDgYAaLlO1b0Ut7lEJXdHK4Wc0Q+
-         T9UZxu5xe7+iN8wgO0VYDOZdP1RkyW4xPt+lACxYtk25rywKEo3T449w25za9Dw1Ym0U
-         4199KBxpnuhbsBLtatH8bMSnJwxlnShphA6Z1EM5Yaw/3Pdw/OeyjtDDfmrXiHHRlom7
-         z8PZvK98RQSU5VFhJoQVrZp6HVuqnA2VlPdLiqZmAHZVdQ2RMdKbFdv/cXl3HKiMQmnz
-         ZaOg==
+        bh=9Z10lP26tLNF8l9gnqOlj3ECah9AEf8DusZ0dGN4b5k=;
+        b=Le5Q1XRol57xXCFL5WsRZ+jh7djRMnNzZOh2uKS+gOEhZGfEksKmYMClZz3KdAgIlc
+         d6FJUW4xsKRXzt127nL1rcZi6QHP3CPekN242s3ws6X2YcCpSqLfoTNYvmRsAf49VkTb
+         vU1FvvVuPgqsAjti76/YProtW23B4agrbhwvygQ8DFlaCO0eoWRv1Qk2t0bG+rZCKqQJ
+         v61r1BmJN2x3oWYDE1SsiTkj165h+MhLtCbzNZMiDD4E84NvPjHns521xKXxT49oVEMi
+         zX4WqILrI6rfiIpdKnWMmeew8xlBkhMfJl8F3TGbKqg5fEe6bmmZgy+eAsS/jhh6D3b+
+         4Jrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=4DVtAm9qztHyZBrD4ZVLrTHR+RA9lfulcIIjDcTmdPQ=;
-        b=BxDSPqddc7mdnKRysFiF9b3UN5z28wXOwASur1R8f+u7EGjIb2YJC+uZxC4aajP2SU
-         KHmZVV5YzGbmmamyfhP/VrUFEbNPI0BdIlzq7ba3JOC76Q/1MpRqMyb/qU7wjKHxM9KM
-         4mmEUfT1A8I2n0s1lXPFuJt9TTcGencX7hIPk5pzi36Dl5Vxv8s5imaz4dtWZkhX09JG
-         jwURAA9jsZ74dWDu2wRCRo7zAx6EhwBJCP77ProKQigZAOOPi0T+fgFrqCRUNBnZ9k6Y
-         LtF50NEsD2ug3AHD4u8aqlzVjgCdIo4daZ378ReWY6H+L+Ed+HskLQJ1SvmTmONyqU8M
-         +GPQ==
-X-Gm-Message-State: ANoB5pkTU0dJLoqXda/nKA/BzO1p+Y9BrYawh7GsE3nVHy16CSgj4HQK
-        Y1LMtxUY6/8qHr+ax5ce38I=
-X-Google-Smtp-Source: AA0mqf4b370FMGctMLWBPB42Vhi2lbTxMKKU0lVOWD3OfcHBPeOclpu1y2MyDCcrZyPg9S/evE3B7g==
-X-Received: by 2002:a05:6a20:28a0:b0:ad:58d4:2a7a with SMTP id q32-20020a056a2028a000b000ad58d42a7amr484019pzf.22.1670662982080;
-        Sat, 10 Dec 2022 01:03:02 -0800 (PST)
+        bh=9Z10lP26tLNF8l9gnqOlj3ECah9AEf8DusZ0dGN4b5k=;
+        b=ua8vovFHv4EVGSGPaPJjo9ZiF/CJiXlA3xFu0/bstkFvLkWmYq3jSY0dcSDoYHBsNO
+         Q4POd1nsdcbpsqr4vtYgSXrZf1jvIlKdFZdJZKJXXw82Ig/v3ALYyv/5yhbp1CFpY1rS
+         B9LSy1JVKYf6nI2g6ZLFtkQwC+Rr9m65L48sgfqegDUmaj6l39UQKcF0mbYOa96b7HZf
+         2PdSpdHj4w55ZHeZG3yT+PsmAfHFfF+FY1KOLgef7rZDfeGG5ElPb5VKQpmk7BR1f9pb
+         NExpz6DeAmwtbWd2yunfjNFqMogTI7sYPj7YTX7nPblKEuRG9fG79YF/esRTxXJPrFcY
+         H2xA==
+X-Gm-Message-State: ANoB5pmxBnV7iKG9YFftNcVh+xbUMG/l9WTgFCf2zqetuEptkAKvgZI+
+        GeABUUskMyyKPGGmR1m68jM=
+X-Google-Smtp-Source: AA0mqf4b/LYnyg5qiFgH4xNHuQRlbshDKybh0+Th43y2MZQoCtFnsGzgcGN0jnhMPttQ+VG+ahTRQg==
+X-Received: by 2002:a17:902:e5cd:b0:188:f547:c0ed with SMTP id u13-20020a170902e5cd00b00188f547c0edmr12401925plf.38.1670662989326;
+        Sat, 10 Dec 2022 01:03:09 -0800 (PST)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id u7-20020a17090282c700b00186a2444a43sm2549481plz.27.2022.12.10.01.02.55
+        by smtp.gmail.com with ESMTPSA id u7-20020a17090282c700b00186a2444a43sm2549481plz.27.2022.12.10.01.03.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Dec 2022 01:03:01 -0800 (PST)
+        Sat, 10 Dec 2022 01:03:09 -0800 (PST)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
@@ -89,9 +89,9 @@ Cc:     Oliver Neukum <oneukum@suse.com>,
         Alan Stern <stern@rowland.harvard.edu>,
         linux-usb@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v2 2/9] can: esd_usb: esd_usb_disconnect(): fix NULL pointer dereference
-Date:   Sat, 10 Dec 2022 18:01:50 +0900
-Message-Id: <20221210090157.793547-3-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v2 3/9] can: gs_usb: gs_usb_disconnect(): fix NULL pointer dereference
+Date:   Sat, 10 Dec 2022 18:01:51 +0900
+Message-Id: <20221210090157.793547-4-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.37.4
 In-Reply-To: <20221210090157.793547-1-mailhol.vincent@wanadoo.fr>
 References: <20221203133159.94414-1-mailhol.vincent@wanadoo.fr>
@@ -108,12 +108,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-esd_usb sets the driver's priv data to NULL before waiting for the
+gs_usb sets the driver's priv data to NULL before waiting for the
 completion of outsdanding urbs. This can results in NULL pointer
 dereference, c.f. [1] and [2].
 
 Remove the call to usb_set_intfdata(intf, NULL). The core will take
-care of setting it to NULL after esd_usb_disconnect() at [3].
+care of setting it to NULL after gs_usb_disconnect() at [3].
 
 [1] c/27ef17849779 ("usb: add usb_set_intfdata() documentation")
 Link: https://git.kernel.org/gregkh/usb/c/27ef17849779
@@ -124,29 +124,25 @@ Link: https://lore.kernel.org/linux-usb/Y4OD70GD4KnoRk0k@rowland.harvard.edu/
 [3] function usb_unbind_interface() from drivers/usb/core/driver.c
 Link: https://elixir.bootlin.com/linux/v6.0/source/drivers/usb/core/driver.c#L497
 
-Fixes: 96d8e90382dc ("can: Add driver for esd CAN-USB/2 device")
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
-@stable team: the file was renamed from esd_usb2.c to esd_usb.c in [4].
-
-[4] 5e910bdedc84 ("can/esd_usb2: Rename esd_usb2.c to esd_usb.c")
----
- drivers/net/can/usb/esd_usb.c | 2 --
+ drivers/net/can/usb/gs_usb.c | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
-index 81b88e9e5bdc..f3006c6dc5d6 100644
---- a/drivers/net/can/usb/esd_usb.c
-+++ b/drivers/net/can/usb/esd_usb.c
-@@ -1127,8 +1127,6 @@ static void esd_usb_disconnect(struct usb_interface *intf)
- 	device_remove_file(&intf->dev, &dev_attr_hardware);
- 	device_remove_file(&intf->dev, &dev_attr_nets);
+diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_usb.c
+index 838744d2ce34..97b1da8fd19f 100644
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -1458,8 +1458,6 @@ static void gs_usb_disconnect(struct usb_interface *intf)
+ 	struct gs_usb *dev = usb_get_intfdata(intf);
+ 	unsigned int i;
  
 -	usb_set_intfdata(intf, NULL);
 -
- 	if (dev) {
- 		for (i = 0; i < dev->net_count; i++) {
- 			if (dev->nets[i]) {
+ 	if (!dev) {
+ 		dev_err(&intf->dev, "Disconnect (nodata)\n");
+ 		return;
 -- 
 2.37.4
 
