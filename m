@@ -2,105 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E56D6648B84
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:03:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C32BF648B85
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:05:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbiLJADk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 19:03:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52648 "EHLO
+        id S229779AbiLJAFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 19:05:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiLJADj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:03:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70626747D6
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:03:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A849623BF
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 00:03:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A40C433EF;
-        Sat, 10 Dec 2022 00:03:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670630617;
-        bh=GzAas7eEJZyXm2Z+bTg1UL9TsogMgSNhrKR8fNESggk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WjRZthdgT2U1JAfRVhWDaBMy6EfWZZGQc2aUFL4UNynQrsEnAm4KVxoTNSDTeP5K0
-         1Uc1NVXEyt2XgEWG3bF77bi0Eep7myMK/MjTrarU8fbGISqJI6i+V0jRKvx0z3MsG3
-         g3dFiw5c6kLErivjB/tJxqu+/Zj8RAu2oaU/zXBUj829lEqhze3Fcx4OSNJ/yQfejJ
-         O3b2ZqB+qtuZfKzDpc7Y5iiSg0JaNsZAE9NPJDY6jyLXC2NOs8w3XlVmQwb7gRsC8V
-         qBfbITusT9nu2P298jqC33TgYw+YDQSUOjlodmKj6gNoMc5HJTh8ksPOCJL3XNuVTk
-         3Z9b/5t+Bpy4Q==
-Date:   Fri, 9 Dec 2022 16:03:35 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, liali <liali@redhat.com>
-Subject: Re: [PATCH net 2/3] bonding: do failover when high prio link up
-Message-ID: <Y5PM1z1SEdWFgkui@x130>
-References: <20221209101305.713073-1-liuhangbin@gmail.com>
- <20221209101305.713073-3-liuhangbin@gmail.com>
+        with ESMTP id S229720AbiLJAFS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:05:18 -0500
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5971B747DC
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:05:18 -0800 (PST)
+Received: by mail-qt1-x82c.google.com with SMTP id x28so4915799qtv.13
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 16:05:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=O3WGFJluYBsmSMJmjtXHpyJNTv/czbRLqRSXWFBOWmc=;
+        b=U5Xnnm6eB87cNSDme17a/CX2HpKEMq7a7kQkTNJ1pgsJpZbBEWukkSTFXonBYopxt7
+         p5wLrWOIhXBDC6bGBqXKFomprPTZYFX3gifO/cw6GiEHM5DLoti5juENiCjLKuWqouk0
+         nkrqEYymg2m4uw49Ob/r115Tw9TuZ+qA3nSEWeR6FHFk0F6PwJZQSK4AuYM3Ja8IhuF0
+         m/2DO6nlcgHXq45iGUAmvC41GXJtu3mEuh1FmJ9RQPzi+pjBXsey6Ex3E/AciuMQ6pUG
+         +TUybfIu6YSX6ZEkumfYf9eIDqtBskJ3RUn3Te1x15rXPd4szLZOTlrBXQI6DJUF5oax
+         m0Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=O3WGFJluYBsmSMJmjtXHpyJNTv/czbRLqRSXWFBOWmc=;
+        b=j5T7fvGPQHorcbPge8jGO1Nb3wleYuAGt/yZTgv9lRVRVxVJOhZ16OdS08Lr/aj2o9
+         ZrBUTpgwOInV3c9wz0wYJEVl5tpNaCvBaIYv4Ssy6WeU9IBmavlkSPzRQrwgYxesSkaX
+         umlgbOkhc3/2GlvEfLVWZKWTgIx/RIgWLIl/MKQ0Wa3H4SqTihujrk8gLzZtT9ZYlJEZ
+         jDYiSlZOtVdy5crpR9E4GnC/5DpTJPf9FvRojeq0KNOh25GMGN4WZ2dsSM0ra/EZmFCP
+         XxWRq3fl916AZR2URNpuHVHWUBIdWKd739zhpsy0Ekuqv8Dfo/uAPIMsabk5Oo52QV0n
+         iBuA==
+X-Gm-Message-State: ANoB5pla63fpPRvvQhaQoRKjHVhap2C8e0yFtooe2tnQ6vCF2l4MT2Fg
+        dyl3qaZ40UfzXE9kGEHFzzM=
+X-Google-Smtp-Source: AA0mqf4shkBLdtY9oTIiM4b2Cgy+l9g1hGTXEjxZVkedWkN4UGJuTTnLMrJGtG2dgqrMRO7p7obTmA==
+X-Received: by 2002:a05:622a:4a0d:b0:3a5:3230:5e6f with SMTP id fv13-20020a05622a4a0d00b003a532305e6fmr10881430qtb.8.1670630717368;
+        Fri, 09 Dec 2022 16:05:17 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id y8-20020a05620a25c800b006fa8299b4d5sm915941qko.100.2022.12.09.16.05.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Dec 2022 16:05:16 -0800 (PST)
+Message-ID: <09d11094-9f26-e1cb-9a00-dfd1dafa2fa9@gmail.com>
+Date:   Fri, 9 Dec 2022 16:05:11 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20221209101305.713073-3-liuhangbin@gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2 net-next 1/4] net: dsa: mv88e6xxx: remove ATU age out
+ violation print
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Hans J. Schultz" <netdev@kapio-technology.com>,
+        Saeed Mahameed <saeed@kernel.org>
+References: <20221209172817.371434-1-vladimir.oltean@nxp.com>
+ <20221209172817.371434-2-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20221209172817.371434-2-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09 Dec 18:13, Hangbin Liu wrote:
->Currently, when a high prio link enslaved, or when current link down,
->the high prio port could be selected. But when high prio link up, the
->new active slave reselection is not triggered. Fix it by checking link's
->prio when getting up.
->
->Reported-by: Liang Li <liali@redhat.com>
->Fixes: 0a2ff7cc8ad4 ("Bonding: add per-port priority for failover re-selection")
->Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
->---
-> drivers/net/bonding/bond_main.c | 6 ++++--
-> 1 file changed, 4 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->index 2b6cc4dbb70e..dc6af790ff1e 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -2689,7 +2689,8 @@ static void bond_miimon_commit(struct bonding *bond)
->
-> 			bond_miimon_link_change(bond, slave, BOND_LINK_UP);
->
->-			if (!rtnl_dereference(bond->curr_active_slave) || slave == primary)
->+			if (!rtnl_dereference(bond->curr_active_slave) || slave == primary ||
->+			    slave->prio > rtnl_dereference(bond->curr_active_slave)->prio)
-> 				goto do_failover;
+On 12/9/22 09:28, Vladimir Oltean wrote:
+> Currently, the MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT bit (interrupt on
+> age out) is not enabled by the driver, and as a result, the print for
+> age out violations is dead code.
+> 
+> Remove it until there is some way for this to be triggered.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I am not really familiar with this prio logic, seems to be new. 
-Anyway, what if one of the next slaves has higher prio than this slave and the
-current active ? 
-I see that the loop over all the slaves continues even after the failover,
-but why would you do all these failovers until you settle on the highest
-prio one ? 
-
-shouldn't you do something similar to bond_choose_primary_or_current()
-outside the loop, once you've updated all the slaves link states 
-
-Please let me know if I am wandering in the wrong directions
-Anyway, LGTM:
-
-Reviewed-by: Saeed Mahameed <saeed@kernel.org>
-
-
-
-
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
 
