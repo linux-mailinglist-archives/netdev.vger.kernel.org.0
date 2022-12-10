@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DD2C648CF6
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 04:50:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 669B7648CF9
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 04:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbiLJDu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 22:50:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
+        id S229784AbiLJDub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 22:50:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbiLJDuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 22:50:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9F23B9D8
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 19:50:22 -0800 (PST)
+        with ESMTP id S229685AbiLJDu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 22:50:26 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB8A54349
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 19:50:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B2E262352
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 03:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 68D0AC433F0;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8CA06CE2B8E
+        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 03:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 71BCAC433D2;
         Sat, 10 Dec 2022 03:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1670644221;
-        bh=kC7lselYHmUTSvpxusDD510XN2F1Em6OLmg1AzaXicI=;
+        bh=chc1kqI6lUbWOYkupQlrpMId8GNvMQ5xMhLDq+e5R50=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Of+La4u1jqmM1KVuZbuWfhPsGJq9O5VejBuT0VtyJ5zvcBL5kV05m1so8fyVhb0db
-         ZttGhW2IkWnyvlvrxQ0Wey9BQXM5Fg15KTD8KtwVWjWFjvlb35ZV/tPTJhWjpa5PZO
-         byMhyNAzNDq8nmMvzzEpG5Z4XpwxXDXu0dhY4sNmGYo3z0/GymFtLxwD1t4cuPRlDV
-         aH/nUceFziu5+HYlQItrHxAlHQEGIyMsCiR7u5nHyX+f/VyuLubYq21xWzZOtz2YDF
-         CTVNvEcRIby4DtB6BQ5H+oBETs66sDfngF2WTCzkrk9DLDYzE7qKAw0/OjH8PMhnUN
-         YuduFzUpnFIMQ==
+        b=dnQq3FzjIDAlpKoHEx2mh/OXCnmNtji7qrQ56jW5mlzxvm9f/0meO5I1O/J7szQHT
+         UmEuJe4j3RhsWX1P87GW63SBHfgLX/QTNhoEaoq+DTmqlBEpcGxyWRr7ZiS1vIRw43
+         TkDHmhXS9cgVQZNFyP0URA9HY5r5OOqZ4lCVNXVt/sJc3EhgxdACyO1yDpkDOIBWYt
+         zz/T0RoEEaxkdNEE9Dzo1dviHyl0CR6JSYlkcVS5k7dpAf1o1UwCoc/4OX9jOh1Lqq
+         M0+Z2FA3H4wR+syRXZkNwTWUvkO4jizLhMuiYkyF+hT6RArRIfznbeVw62oIKs6eXd
+         LkqBDtF+7tVgg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3F4A6E1B4D9;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4C104C41612;
         Sat, 10 Dec 2022 03:50:21 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 00/14][pull request] Intel Wired LAN Driver
- Updates 2022-12-08 (ice)
+Subject: Re: [net-next 01/15] net/mlx5: mlx5_ifc updates for MATCH_DEFINER general
+ object
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167064422125.8448.14722355097534322892.git-patchwork-notify@kernel.org>
+Message-Id: <167064422130.8448.9639606216199415128.git-patchwork-notify@kernel.org>
 Date:   Sat, 10 Dec 2022 03:50:21 +0000
-References: <20221208213932.1274143-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20221208213932.1274143-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+References: <20221209001420.142794-2-saeed@kernel.org>
+In-Reply-To: <20221209001420.142794-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org,
-        jacob.e.keller@intel.com, richardcochran@gmail.com,
-        leon@kernel.org, saeed@kernel.org
+        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
+        tariqt@nvidia.com, kliteyn@nvidia.com, valex@nvidia.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,47 +60,51 @@ X-Mailing-List: netdev@vger.kernel.org
 Hello:
 
 This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+by Saeed Mahameed <saeedm@nvidia.com>:
 
-On Thu,  8 Dec 2022 13:39:18 -0800 you wrote:
-> Jacob Keller says:
+On Thu,  8 Dec 2022 16:14:06 -0800 you wrote:
+> From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 > 
-> This series of patches primarily consists of changes to fix some corner
-> cases that can cause Tx timestamp failures. The issues were discovered and
-> reported by Siddaraju DH and primarily affect E822 hardware, though this
-> series also includes some improvements that affect E810 hardware as well.
+> Update full structure of match definer and add an ID of
+> the SELECT match definer type.
+> 
+> Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+> Reviewed-by: Alex Vesker <valex@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v3,01/14] ice: Use more generic names for ice_ptp_tx fields
-    https://git.kernel.org/netdev/net-next/c/6b5cbc8c4ec7
-  - [net-next,v3,02/14] ice: Remove the E822 vernier "bypass" logic
-    https://git.kernel.org/netdev/net-next/c/0357d5cab8e4
-  - [net-next,v3,03/14] ice: Reset TS memory for all quads
-    https://git.kernel.org/netdev/net-next/c/407b66c07e98
-  - [net-next,v3,04/14] ice: fix misuse of "link err" with "link status"
-    https://git.kernel.org/netdev/net-next/c/11722c39c8d9
-  - [net-next,v3,05/14] ice: always call ice_ptp_link_change and make it void
-    https://git.kernel.org/netdev/net-next/c/6b1ff5d39228
-  - [net-next,v3,06/14] ice: handle discarding old Tx requests in ice_ptp_tx_tstamp
-    https://git.kernel.org/netdev/net-next/c/0dd928626392
-  - [net-next,v3,07/14] ice: check Tx timestamp memory register for ready timestamps
-    https://git.kernel.org/netdev/net-next/c/10e4b4a3a3e1
-  - [net-next,v3,08/14] ice: synchronize the misc IRQ when tearing down Tx tracker
-    https://git.kernel.org/netdev/net-next/c/f0ae124019fa
-  - [net-next,v3,09/14] ice: protect init and calibrating check in ice_ptp_request_ts
-    https://git.kernel.org/netdev/net-next/c/3ad5c10bf21d
-  - [net-next,v3,10/14] ice: cleanup allocations in ice_ptp_alloc_tx_tracker
-    https://git.kernel.org/netdev/net-next/c/c1f3414df2e8
-  - [net-next,v3,11/14] ice: handle flushing stale Tx timestamps in ice_ptp_tx_tstamp
-    https://git.kernel.org/netdev/net-next/c/d40fd6009332
-  - [net-next,v3,12/14] ice: only check set bits in ice_ptp_flush_tx_tracker
-    https://git.kernel.org/netdev/net-next/c/e3ba52486693
-  - [net-next,v3,13/14] ice: make Tx and Rx vernier offset calibration independent
-    https://git.kernel.org/netdev/net-next/c/f029a34394e7
-  - [net-next,v3,14/14] ice: reschedule ice_ptp_wait_for_offset_valid during reset
-    https://git.kernel.org/netdev/net-next/c/95af1f1c4c9f
+  - [net-next,01/15] net/mlx5: mlx5_ifc updates for MATCH_DEFINER general object
+    https://git.kernel.org/netdev/net-next/c/f1543c7abab2
+  - [net-next,02/15] net/mlx5: fs, add match on ranges API
+    https://git.kernel.org/netdev/net-next/c/38bf24c38d19
+  - [net-next,03/15] net/mlx5: DR, Add functions to create/destroy MATCH_DEFINER general object
+    https://git.kernel.org/netdev/net-next/c/e046b86e2900
+  - [net-next,04/15] net/mlx5: DR, Rework is_fw_table function
+    https://git.kernel.org/netdev/net-next/c/0a8c20e23ff2
+  - [net-next,05/15] net/mlx5: DR, Handle FT action in a separate function
+    https://git.kernel.org/netdev/net-next/c/c72a57ad6e91
+  - [net-next,06/15] net/mlx5: DR, Manage definers with refcounts
+    https://git.kernel.org/netdev/net-next/c/1339678fdde1
+  - [net-next,07/15] net/mlx5: DR, Some refactoring of miss address handling
+    https://git.kernel.org/netdev/net-next/c/f31bda789f1d
+  - [net-next,08/15] net/mlx5: DR, Add function that tells if STE miss addr has been initialized
+    https://git.kernel.org/netdev/net-next/c/1207a772c09d
+  - [net-next,09/15] net/mlx5: DR, Add support for range match action
+    https://git.kernel.org/netdev/net-next/c/be6d5daeaa3b
+  - [net-next,10/15] net/mlx5e: meter, refactor to allow multiple post meter tables
+    https://git.kernel.org/netdev/net-next/c/fd6fa761466c
+  - [net-next,11/15] net/mlx5e: meter, add mtu post meter tables
+    https://git.kernel.org/netdev/net-next/c/d56713250a59
+  - [net-next,12/15] net/mlx5e: TC, add support for meter mtu offload
+    https://git.kernel.org/netdev/net-next/c/6fda078d5f75
+  - [net-next,13/15] net/mlx5e: multipath, support routes with more than 2 nexthops
+    https://git.kernel.org/netdev/net-next/c/7c33e73995e9
+  - [net-next,14/15] net/mlx5: Refactor and expand rep vport stat group
+    https://git.kernel.org/netdev/net-next/c/64b68e369649
+  - [net-next,15/15] net/mlx5: Expose steering dropped packets counter
+    https://git.kernel.org/netdev/net-next/c/4fe1b3a5f8fe
 
 You are awesome, thank you!
 -- 
