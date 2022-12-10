@@ -2,62 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 267AA648C65
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 02:35:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06CBF648C7E
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 03:18:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbiLJBfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 20:35:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56544 "EHLO
+        id S229793AbiLJCQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 21:16:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiLJBfE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 20:35:04 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D6C11C17;
-        Fri,  9 Dec 2022 17:34:59 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id 65so4901624pfx.9;
-        Fri, 09 Dec 2022 17:34:59 -0800 (PST)
+        with ESMTP id S229785AbiLJCQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 21:16:24 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86392D1F2
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 18:16:22 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id b2so15455959eja.7
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 18:16:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=FMhFhgb+0nk1X+uerGnU1w0C7oX56b7VZ/Oltg4UOTo=;
-        b=ej4435v+YtLGWVm/FzWgt301MpIedNkXHAvXvw/60jFZ0RGE9ElOOkKKAFFq9+K49T
-         DPna69iVo/L7eHZneLqAfv9YmokALP8VaJIr3mjF1Zd4q4Pv1Wlen6QiMdNYGZb+SCNu
-         0o1D9i6E1+XTmMZ+X8Va0Dc/1ozK9hpmhrmlVWAsFHKwwXoPVSX3K7he4yD/R73mZbHe
-         4glTUbwR9eDCIkzjCYjLjFEceYjeU0JaiZk/7svSD7xep56L/ipONgO0CmXnzDmYtUKp
-         w3W8+OJhdmpQnwh31nPRgERCaG4E6KWggZ4putJmDIWnUSZtwg54NOrBOzy/L7HwpP/1
-         uM/g==
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=1R9VAANJlTrciJjQsKDvPNKmcff13RR4a7aIKJTOf9c=;
+        b=ZtuGuLaeoGZ3W8TVpK60hamKcRs18txIQWbzWmwyu2jUk7G+AMYijvhhZ3A7v1crOi
+         2me6j2AZMMGJZ+cx6ARcEPdceqbY8QEaMXhC5E51xRcu+r23edZBcTvzpKGT1eaTelWR
+         ZMbHBGit6peX4vQj0gqBRbgT9d6j4lv1lsUzzAR7Vt5nwge+OA+mO26GsQoLvoNfkr0+
+         HIH/HMOt0wZ8Eiw5MsTB8Yj6cXn5JOQ5WxFBZc0mvVdOSk8eROpUX22MtJ0ON+wGhSGC
+         oSRzSbN9fDf5T2TCnmlI0QhfL58lZq+0afb9lm5QynfTUMZ5kkUz1ZKi+iC9rflLpNP7
+         U1yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FMhFhgb+0nk1X+uerGnU1w0C7oX56b7VZ/Oltg4UOTo=;
-        b=oYmofRb9eQom9rMN4DRO0jsBz28A5b8ErBVXl852mAhBszmLAO07GOx2PDUrPoM3j7
-         Tp8dgo/oSj7Avws7qa8Y+ME55lwSuFInos7aE3pBDfUcXstpmhcBA9ZTlpm3LEHEDqtQ
-         iCyc80N2LLwp82wCVU2AkhrXmamhkMWFfb8ZCZWhJL1rVlhQdiUHZBy5+B8GWQKwLXhx
-         nUvd1S/rmdOBr3CDQttGqrmM2HxPrL9uUgB8bjFYTLQDbgyhdfbygGlZKMWW3Gij8Yj/
-         lltav73vIxMJQEb70d6uRdA5OtCgbznkUXtJAfawLm7tUHMYux8Ttur8v9AwBix/3ii8
-         b2SA==
-X-Gm-Message-State: ANoB5pnad9MXTUwFCXtzN0IDxQEM2cYh2nRRDYgds4T92SJsjJ/AVRTF
-        +IeK8YQXFG1cvm/a40/ZG9vrJlY15k7p/18A
-X-Google-Smtp-Source: AA0mqf66XXJwHufZjNxwxn//gziDWqu9GBuVnZXhbrNXwN5E82hQI/2YdtW86OjWe9Gw0maJ6VQy5w==
-X-Received: by 2002:aa7:9243:0:b0:56b:fa67:1f7f with SMTP id 3-20020aa79243000000b0056bfa671f7fmr7560792pfp.19.1670636098552;
-        Fri, 09 Dec 2022 17:34:58 -0800 (PST)
-Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
-        by smtp.gmail.com with ESMTPSA id v12-20020aa799cc000000b0056b2e70c2f5sm1790162pfi.25.2022.12.09.17.34.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 17:34:57 -0800 (PST)
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: pull request: bluetooth-next 2022-12-09
-Date:   Fri,  9 Dec 2022 17:34:56 -0800
-Message-Id: <20221210013456.1085082-1-luiz.dentz@gmail.com>
-X-Mailer: git-send-email 2.37.3
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1R9VAANJlTrciJjQsKDvPNKmcff13RR4a7aIKJTOf9c=;
+        b=X39RmfX1Iau9JdxOp2BX4Jh07faXLeX+lJlkUM+JLnmysUrvO4DsI3aF6UxgREPyMO
+         QKNx/7+beT03VnRFDOTzkGyQ4fLMiHsKTNrL0Uec3EJyTHH34sFQziFWbqHCJvdb4E1K
+         hvm9DoiDUwm3rgZep9Xuap5CzWAK3xIBRBqT2YCnRt3QnSQkY2dpg7mbdtQzkeqlhbis
+         6k9t5s+8z9cpngRfezRcAyRvzSxqCPjH+QcmoqHyFTTNvv9BAG3tmNfz357Ss/PLw40m
+         0cXSAYMi1cB2l1lP/XLJqwcaI6ylN6eUzsY/Y9oy4ppSxQRJJ1Vmf2mewrlWXMxn/7Su
+         ojhA==
+X-Gm-Message-State: ANoB5pkq9GJwVMO0xQzAvGKhS24t/zQiHqXE5lVLHUdc/G8EABV77l7e
+        lXFzFMFc0eb94uROo3544iLsXmKvjYBI6EAj8rhgwJg1T3uz4w==
+X-Google-Smtp-Source: AA0mqf6XJiZ+0Ps2gMOubRUyUKeiL0x+8antiPEGu+vjTjqFCBNXFV76V2hxvAg6ideAsXj67GLIPQYKOVas+/G4LAI=
+X-Received: by 2002:a17:906:65c4:b0:7ad:d250:b907 with SMTP id
+ z4-20020a17090665c400b007add250b907mr78888816ejn.737.1670638581277; Fri, 09
+ Dec 2022 18:16:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From:   Max Georgiev <glipus@gmail.com>
+Date:   Fri, 9 Dec 2022 19:16:10 -0700
+Message-ID: <CAP5jrPHr2UMpKK45NTUVLtW9OiBctZhWP-0yVvb9_SBO3pC7LA@mail.gmail.com>
+Subject: [PATCH ethtool] JSON output support for Netlink implementation of
+ --show-coalesce option
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -68,217 +63,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 681bf011b9b5989c6e9db6beb64494918aab9a43:
+JSON output support for Netlink implementation of --show-coalesce option
 
-  eth: pse: add missing static inlines (2022-10-03 21:52:33 -0700)
+Add --json support for Netlink implementation of --show-coalesce option
+No changes for non-JSON output for this feature.
 
-are available in the Git repository at:
+Example output without --json:
+$ sudo ./ethtool --show-coalesce enp9s0u2u1u2
+Coalesce parameters for enp9s0u2u1u2:
+Adaptive RX: n/a  TX: n/a
+stats-block-usecs: n/a
+sample-interval: n/a
+pkt-rate-low: n/a
+pkt-rate-high: n/a
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-12-09
+rx-usecs: 15000
+rx-frames: n/a
+rx-usecs-irq: n/a
+rx-frames-irq: n/a
 
-for you to fetch changes up to 7a637ef7e0c3308754d7ccf0edb0eec69f77bb81:
+tx-usecs: 0
+tx-frames: n/a
+tx-usecs-irq: n/a
+tx-frames-irq: n/a
 
-  Bluetooth: Wait for HCI_OP_WRITE_AUTH_PAYLOAD_TO to complete (2022-12-07 13:11:50 -0800)
+rx-usecs-low: n/a
+rx-frame-low: n/a
+tx-usecs-low: n/a
+tx-frame-low: n/a
 
-----------------------------------------------------------------
-bluetooth-next pull request for net-next:
+rx-usecs-high: n/a
+rx-frame-high: n/a
+tx-usecs-high: n/a
+tx-frame-high: n/a
 
- - Add a new VID/PID 0489/e0f2 for MT7922
- - Add Realtek RTL8852BE support ID 0x0cb8:0xc559
- - Add a new PID/VID 13d3/3549 for RTL8822CU
- - Add support for broadcom BCM43430A0 & BCM43430A1
- - Add CONFIG_BT_HCIBTUSB_POLL_SYNC
- - Add CONFIG_BT_LE_L2CAP_ECRED
- - Add support for CYW4373A0
- - Add support for RTL8723DS
- - Add more device IDs for WCN6855
- - Add Broadcom BCM4377 family PCIe Bluetooth
+CQE mode RX: n/a  TX: n/a
 
-----------------------------------------------------------------
-Andy Chi (1):
-      Bluetooth: btusb: Add a new VID/PID 0489/e0f2 for MT7922
+Same output with --json:
+$ sudo ./ethtool --json --show-coalesce enp9s0u2u1u2
+[ {
+        "ifname": "enp9s0u2u1u2",
+        "rx-usecs: ": 15000,
+        "tx-usecs: ": 0
+    } ]
 
-Archie Pusaka (2):
-      Bluetooth: btusb: Introduce generic USB reset
-      Bluetooth: hci_sync: cancel cmd_timer if hci_open failed
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Maxim Georgiev <glipus@gmail.com>
+---
+ ethtool.c          |  1 +
+ netlink/coalesce.c | 27 ++++++++++++++++++---------
+ netlink/netlink.h  | 19 +++++++++++++++----
+ 3 files changed, 34 insertions(+), 13 deletions(-)
 
-Artem Lukyanov (1):
-      Bluetooth: btusb: Add Realtek RTL8852BE support ID 0x0cb8:0xc559
+diff --git a/ethtool.c b/ethtool.c
+index 3207e49..3b8412c 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5694,6 +5694,7 @@ static const struct option args[] = {
+        },
+        {
+                .opts   = "-c|--show-coalesce",
++               .json   = true,
+                .func   = do_gcoalesce,
+                .nlfunc = nl_gcoalesce,
+                .help   = "Show coalesce options"
+diff --git a/netlink/coalesce.c b/netlink/coalesce.c
+index 15037c2..f003a5c 100644
+--- a/netlink/coalesce.c
++++ b/netlink/coalesce.c
+@@ -33,9 +33,12 @@ int coalesce_reply_cb(const struct nlmsghdr *nlhdr,
+void *data)
+        if (!dev_ok(nlctx))
+                return err_ret;
 
-Chen Zhongjin (1):
-      Bluetooth: Fix not cleanup led when bt_init fails
+-       if (silent)
++       open_json_object(NULL);
++
++       if (silent && !is_json_context())
+                putchar('\n');
+-       printf("Coalesce parameters for %s:\n", nlctx->devname);
++       print_string(PRINT_ANY, "ifname", "Coalesce parameters for %s:\n",
++                    nlctx->devname);
+        show_bool("rx", "Adaptive RX: %s  ",
+                  tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX]);
+        show_bool("tx", "TX: %s\n", tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_TX]);
+@@ -45,31 +48,33 @@ int coalesce_reply_cb(const struct nlmsghdr
+*nlhdr, void *data)
+                 "sample-interval: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_PKT_RATE_LOW], "pkt-rate-low: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_PKT_RATE_HIGH], "pkt-rate-high: ");
+-       putchar('\n');
++       show_cr();
+        show_u32(tb[ETHTOOL_A_COALESCE_RX_USECS], "rx-usecs: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES], "rx-frames: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_RX_USECS_IRQ], "rx-usecs-irq: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES_IRQ], "rx-frames-irq: ");
+-       putchar('\n');
++       show_cr();
+        show_u32(tb[ETHTOOL_A_COALESCE_TX_USECS], "tx-usecs: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES], "tx-frames: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_TX_USECS_IRQ], "tx-usecs-irq: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_IRQ], "tx-frames-irq: ");
+-       putchar('\n');
++       show_cr();
+        show_u32(tb[ETHTOOL_A_COALESCE_RX_USECS_LOW], "rx-usecs-low: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES_LOW], "rx-frame-low: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_TX_USECS_LOW], "tx-usecs-low: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_LOW], "tx-frame-low: ");
+-       putchar('\n');
++       show_cr();
+        show_u32(tb[ETHTOOL_A_COALESCE_RX_USECS_HIGH], "rx-usecs-high: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_RX_MAX_FRAMES_HIGH], "rx-frame-high: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_TX_USECS_HIGH], "tx-usecs-high: ");
+        show_u32(tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH], "tx-frame-high: ");
+-       putchar('\n');
++       show_cr();
+        show_bool("rx", "CQE mode RX: %s  ",
+                  tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX]);
+        show_bool("tx", "TX: %s\n", tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX]);
+-       putchar('\n');
++       show_cr();
++
++       close_json_object();
 
-Chethan T N (2):
-      Bluetooth: Remove codec id field in vendor codec definition
-      Bluetooth: Fix support for Read Local Supported Codecs V2
+        return MNL_CB_OK;
+ }
+@@ -92,7 +97,11 @@ int nl_gcoalesce(struct cmd_context *ctx)
+                                      ETHTOOL_A_COALESCE_HEADER, 0);
+        if (ret < 0)
+                return ret;
+-       return nlsock_send_get_request(nlsk, coalesce_reply_cb);
++
++       new_json_obj(ctx->json);
++       ret = nlsock_send_get_request(nlsk, coalesce_reply_cb);
++       delete_json_obj();
++       return ret;
+ }
 
-Chethan Tumkur Narayan (1):
-      btusb: Avoid reset of ISOC endpoint alt settings to zero
+ /* COALESCE_SET */
+diff --git a/netlink/netlink.h b/netlink/netlink.h
+index f43c1bf..3af104b 100644
+--- a/netlink/netlink.h
++++ b/netlink/netlink.h
+@@ -102,10 +102,15 @@ int dump_link_modes(struct nl_context *nlctx,
+const struct nlattr *bitset,
 
-Christophe JAILLET (1):
-      Bluetooth: Fix EALREADY and ELOOP cases in bt_status()
+ static inline void show_u32(const struct nlattr *attr, const char *label)
+ {
+-       if (attr)
+-               printf("%s%u\n", label, mnl_attr_get_u32(attr));
+-       else
+-               printf("%sn/a\n", label);
++       if (is_json_context()) {
++               if (attr)
++                       print_uint(PRINT_JSON, label, NULL,
+mnl_attr_get_u32(attr));
++       } else {
++               if (attr)
++                       printf("%s%u\n", label, mnl_attr_get_u32(attr));
++               else
++                       printf("%sn/a\n", label);
++       }
+ }
 
-Gongwei Li (1):
-      Bluetooth: btusb: Add a new PID/VID 13d3/3549 for RTL8822CU
+ static inline const char *u8_to_bool(const uint8_t *val)
+@@ -132,6 +137,12 @@ static inline void show_bool(const char *key,
+const char *fmt,
+        show_bool_val(key, fmt, attr ? mnl_attr_get_payload(attr) : NULL);
+ }
 
-Hawkins Jiawei (1):
-      Bluetooth: L2CAP: Fix memory leak in vhci_write
++static inline void show_cr(void)
++{
++       if (!is_json_context())
++               putchar('\n');
++}
++
+ /* misc */
 
-Hilda Wu (2):
-      Bluetooth: btrtl: Add btrealtek data struct
-      Bluetooth: btusb: Ignore zero length of USB packets on ALT 6 for specific chip
-
-Igor Skalkin (1):
-      virtio_bt: Fix alignment in configuration struct
-
-Inga Stotland (1):
-      Bluetooth: MGMT: Fix error report for ADD_EXT_ADV_PARAMS
-
-Ismael Ferreras Morezuelas (2):
-      Bluetooth: btusb: Fix CSR clones again by re-adding ERR_DATA_REPORTING quirk
-      Bluetooth: btusb: Add debug message for CSR controllers
-
-Jiapeng Chong (1):
-      Bluetooth: Use kzalloc instead of kmalloc/memset
-
-Kang Minchul (1):
-      Bluetooth: Use kzalloc instead of kmalloc/memset
-
-Luca Weiss (1):
-      dt-bindings: bluetooth: broadcom: add BCM43430A0 & BCM43430A1
-
-Luiz Augusto von Dentz (16):
-      Bluetooth: hci_sync: Fix not setting static address
-      Bluetooth: hci_sync: Fix not able to set force_static_address
-      Bluetooth: hci_conn: Fix not restoring ISO buffer count on disconnect
-      Bluetooth: btusb: Add CONFIG_BT_HCIBTUSB_POLL_SYNC
-      Bluetooth: btusb: Default CONFIG_BT_HCIBTUSB_POLL_SYNC=y
-      Bluetooth: Add CONFIG_BT_LE_L2CAP_ECRED
-      Bluetooth: L2CAP: Fix accepting connection request for invalid SPSM
-      Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm
-      Bluetooth: L2CAP: Fix attempting to access uninitialized memory
-      Bluetooth: Fix crash when replugging CSR fake controllers
-      Bluetooth: btusb: Fix new sparce warnings
-      Bluetooth: btusb: Fix existing sparce warning
-      Bluetooth: btintel: Fix existing sparce warnings
-      Bluetooth: hci_conn: Fix crash on hci_create_cis_sync
-      Bluetooth: ISO: Avoid circular locking dependency
-      Bluetooth: Wait for HCI_OP_WRITE_AUTH_PAYLOAD_TO to complete
-
-Marek Vasut (2):
-      dt-bindings: net: broadcom-bluetooth: Add CYW4373A0 DT binding
-      Bluetooth: hci_bcm: Add CYW4373A0 support
-
-Mateusz Jończyk (1):
-      Bluetooth: silence a dmesg error message in hci_request.c
-
-Maxim Mikityanskiy (1):
-      Bluetooth: L2CAP: Fix use-after-free caused by l2cap_reassemble_sdu
-
-Michael S. Tsirkin (1):
-      Bluetooth: virtio_bt: fix device removal
-
-Nicolas Cavallari (1):
-      Bluetooth: Work around SCO over USB HCI design defect
-
-Pauli Virtanen (2):
-      Bluetooth: hci_conn: Fix CIS connection dst_type handling
-      Bluetooth: hci_conn: use HCI dst_type values also for BIS
-
-Raman Varabets (1):
-      Bluetooth: btusb: Add Realtek 8761BUV support ID 0x2B89:0x8761
-
-Samuel Holland (1):
-      dt-bindings: net: realtek-bluetooth: Add RTL8723DS
-
-Shengyu Qu (1):
-      Bluetooth: btusb: Add more device IDs for WCN6855
-
-Soenke Huster (1):
-      Bluetooth: virtio_bt: Use skb_put to set length
-
-Sungwoo Kim (1):
-      Bluetooth: L2CAP: Fix u8 overflow
-
-Sven Peter (7):
-      dt-bindings: net: Add generic Bluetooth controller
-      dt-bindings: net: Add Broadcom BCM4377 family PCIe Bluetooth
-      arm64: dts: apple: t8103: Add Bluetooth controller
-      Bluetooth: hci_event: Ignore reserved bits in LE Extended Adv Report
-      Bluetooth: Add quirk to disable extended scanning
-      Bluetooth: Add quirk to disable MWS Transport Configuration
-      Bluetooth: hci_bcm4377: Add new driver for BCM4377 PCIe boards
-
-Wang ShaoBo (3):
-      Bluetooth: 6LoWPAN: add missing hci_dev_put() in get_l2cap_conn()
-      Bluetooth: hci_conn: add missing hci_dev_put() in iso_listen_bis()
-      Bluetooth: btintel: Fix missing free skb in btintel_setup_combined()
-
-Yang Yingliang (9):
-      Bluetooth: hci_core: fix error handling in hci_register_dev()
-      Bluetooth: hci_bcm4377: Fix missing pci_disable_device() on error in bcm4377_probe()
-      Bluetooth: btusb: don't call kfree_skb() under spin_lock_irqsave()
-      Bluetooth: hci_qca: don't call kfree_skb() under spin_lock_irqsave()
-      Bluetooth: hci_ll: don't call kfree_skb() under spin_lock_irqsave()
-      Bluetooth: hci_h5: don't call kfree_skb() under spin_lock_irqsave()
-      Bluetooth: hci_bcsp: don't call kfree_skb() under spin_lock_irqsave()
-      Bluetooth: hci_core: don't call kfree_skb() under spin_lock_irqsave()
-      Bluetooth: RFCOMM: don't call kfree_skb() under spin_lock_irqsave()
-
-Zhengchao Shao (1):
-      Bluetooth: L2CAP: fix use-after-free in l2cap_conn_del()
-
-Zhengping Jiang (1):
-      Bluetooth: hci_qca: only assign wakeup with serial port support
-
- .../devicetree/bindings/net/bluetooth.txt          |    5 -
- .../net/bluetooth/bluetooth-controller.yaml        |   29 +
- .../net/bluetooth/brcm,bcm4377-bluetooth.yaml      |   81 +
- .../net/{ => bluetooth}/qualcomm-bluetooth.yaml    |    6 +-
- .../bindings/net/broadcom-bluetooth.yaml           |    3 +
- .../devicetree/bindings/net/realtek-bluetooth.yaml |    1 +
- .../devicetree/bindings/soc/qcom/qcom,wcnss.yaml   |    8 +-
- MAINTAINERS                                        |    2 +
- arch/arm64/boot/dts/apple/t8103-j274.dts           |    4 +
- arch/arm64/boot/dts/apple/t8103-j293.dts           |    4 +
- arch/arm64/boot/dts/apple/t8103-j313.dts           |    4 +
- arch/arm64/boot/dts/apple/t8103-j456.dts           |    4 +
- arch/arm64/boot/dts/apple/t8103-j457.dts           |    4 +
- arch/arm64/boot/dts/apple/t8103-jxxx.dtsi          |    8 +
- drivers/bluetooth/Kconfig                          |   23 +
- drivers/bluetooth/Makefile                         |    1 +
- drivers/bluetooth/btintel.c                        |   21 +-
- drivers/bluetooth/btrtl.c                          |    7 +
- drivers/bluetooth/btrtl.h                          |   21 +
- drivers/bluetooth/btusb.c                          |  234 +-
- drivers/bluetooth/hci_bcm.c                        |   13 +-
- drivers/bluetooth/hci_bcm4377.c                    | 2514 ++++++++++++++++++++
- drivers/bluetooth/hci_bcsp.c                       |    2 +-
- drivers/bluetooth/hci_h5.c                         |    2 +-
- drivers/bluetooth/hci_ll.c                         |    2 +-
- drivers/bluetooth/hci_qca.c                        |    5 +-
- drivers/bluetooth/virtio_bt.c                      |   37 +-
- include/net/bluetooth/hci.h                        |   33 +-
- include/net/bluetooth/hci_core.h                   |    8 +-
- include/uapi/linux/virtio_bt.h                     |    8 +
- net/bluetooth/6lowpan.c                            |    1 +
- net/bluetooth/Kconfig                              |   11 +
- net/bluetooth/af_bluetooth.c                       |    4 +-
- net/bluetooth/hci_codec.c                          |   19 +-
- net/bluetooth/hci_conn.c                           |   35 +-
- net/bluetooth/hci_core.c                           |   12 +-
- net/bluetooth/hci_debugfs.c                        |    2 +-
- net/bluetooth/hci_event.c                          |   24 +-
- net/bluetooth/hci_request.c                        |    2 +-
- net/bluetooth/hci_sync.c                           |   40 +-
- net/bluetooth/iso.c                                |   82 +-
- net/bluetooth/l2cap_core.c                         |   91 +-
- net/bluetooth/lib.c                                |    4 +-
- net/bluetooth/mgmt.c                               |    2 +-
- net/bluetooth/rfcomm/core.c                        |    2 +-
- 45 files changed, 3265 insertions(+), 160 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/bluetooth.txt
- create mode 100644 Documentation/devicetree/bindings/net/bluetooth/bluetooth-controller.yaml
- create mode 100644 Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
- rename Documentation/devicetree/bindings/net/{ => bluetooth}/qualcomm-bluetooth.yaml (96%)
- create mode 100644 drivers/bluetooth/hci_bcm4377.c
+ static inline void copy_devname(char *dst, const char *src)
+-- 
+2.38.1
