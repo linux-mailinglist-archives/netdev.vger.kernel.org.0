@@ -2,100 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6EC8648DA7
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 10:02:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DFDB648DD4
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 10:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbiLJJC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 04:02:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45146 "EHLO
+        id S229678AbiLJJMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 04:12:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbiLJJC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 04:02:27 -0500
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE5526F9;
-        Sat, 10 Dec 2022 01:02:24 -0800 (PST)
-Received: by mail-pj1-f45.google.com with SMTP id w4-20020a17090ac98400b002186f5d7a4cso10679501pjt.0;
-        Sat, 10 Dec 2022 01:02:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mECpz9PO560rZEtmlTIIyNmHohjFDYglNrHTBIHy5Mk=;
-        b=bnWMSY42zrmurVmUXgTIz11OP6tZViFo9gF79h6m1ynb1eiQD2XUFVdaB4p/p+Ks1s
-         LzuFwNxyUxhdZfuKLXd3HRG9ZsGgAk3MQlCXkc3sCD2RNI2I73ZSnIEiMmZ95hfvdRXy
-         7JfWVaPHRoG4AgIAF8jwEaCZ5jDKYLwfj+Kqh3itelfIkKvcPn+TboTJwv0DicpZt9qG
-         RrP1/9hSiUs1ftqbfmp69veeMZnmTdIMd9trjG6DofpCYCX1d44yQuwMfKIcBaBjefah
-         9kO7HWHjx2BAKliLGIUgqmtmvx2zs9nJzAeSxERvVjXnc/KggCoPAhLtrO0rLQQ4Ysto
-         OldQ==
-X-Gm-Message-State: ANoB5plMH4YZ2hLy0K8DyyUcwuiaRoTI7ZjOTLGsmzIE/qE7wWvUAdF4
-        bvCEr6ToZ8BVzYJ1TYC0VJGcVRJIoc/ee7aAyD8=
-X-Google-Smtp-Source: AA0mqf5XfADBHlEewgMAO0oHreDg7KDhD3vofPsPaEMatJptU1XF4MljYrUhZIoRRaAEdgM7zROcqGxM2JQKP5t9/k4=
-X-Received: by 2002:a17:90b:1293:b0:21c:bc8b:b080 with SMTP id
- fw19-20020a17090b129300b0021cbc8bb080mr1821276pjb.19.1670662943811; Sat, 10
- Dec 2022 01:02:23 -0800 (PST)
+        with ESMTP id S230018AbiLJJLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 04:11:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9FD536C4C;
+        Sat, 10 Dec 2022 01:07:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35CC56023A;
+        Sat, 10 Dec 2022 09:07:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6384EC433EF;
+        Sat, 10 Dec 2022 09:07:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670663252;
+        bh=NaFpxIBHcluX/faYQxP/qdXrH/73a3B6ENni/WCKJgM=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=NVfD/EYy+R1kCJB7/QK2PNnA70zrogehL0NBbqhZ97QhRjJCr5dHIZe/t6yDCvSja
+         uJ553qfzFDaaPjuDO4ArWKXFSbtuDhKK08IKpr8+QW43lWeNABA9Zx3TlY9yEh/xMs
+         HoFrWq0ALv5QFBPw45xSgL5sLbNFcnoBqRkxYv7iZiZ/qDLZCnbm7rTF0Bn1MaK/FS
+         bh1Tsl1HmAGgq/EDWYjHtM+J8qgBfv1o9wZF59d9J7NO504xX+YVXadBQ90+/jTFpG
+         AQNaBuaVflWPtrsZQlB9dGgs1siTbtvNMFtSkKx2GKKGwazKWV4Z3mfs6ZtYwqILA/
+         3GK8KSTrTZamQ==
+Date:   Sat, 10 Dec 2022 10:07:31 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+cc:     Florent Revest <revest@chromium.org>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH HID for-next v3 0/5] HID: bpf: remove the need for
+ ALLOW_ERROR_INJECTION and Kconfig fixes
+In-Reply-To: <20221206145936.922196-1-benjamin.tissoires@redhat.com>
+Message-ID: <nycvar.YFH.7.76.2212101007030.9000@cbobk.fhfr.pm>
+References: <20221206145936.922196-1-benjamin.tissoires@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-References: <20221203133159.94414-1-mailhol.vincent@wanadoo.fr>
- <9493232b-c8fa-5612-fb13-fccf58b01942@suse.com> <CAMZ6RqJejJCOUk+MSvxjw9Us0gYhTuoOB4MUTk9jji6Bk=ix3A@mail.gmail.com>
- <b5df2262-7a4f-0dcf-6460-793dad02401d@suse.com> <CAMZ6RqL9eKco+fAMZoQ6X9PNE7dDK3KnFZoMCXrjgvx_ZU8=Ew@mail.gmail.com>
- <9d1fac95-d7e0-69a5-c6c1-9df5bd90bcb0@suse.com>
-In-Reply-To: <9d1fac95-d7e0-69a5-c6c1-9df5bd90bcb0@suse.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sat, 10 Dec 2022 18:02:10 +0900
-Message-ID: <CAMZ6RqKvJWBWOdCEve9cE9xGuVxTicZjn-5PROHsMdHn=eMqng@mail.gmail.com>
-Subject: Re: [PATCH 0/8] can: usb: remove all usb_set_intfdata(intf, NULL) in
- drivers' disconnect()
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Jungclaus <frank.jungclaus@esd.eu>, socketcan@esd.eu,
-        Yasushi SHOJI <yashi@spacecubics.com>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Hangyu Hua <hbh25y@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Peter Fink <pfink@christ-es.de>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        =?UTF-8?Q?Christoph_M=C3=B6hring?= <cmoehring@christ-es.de>,
-        John Whittington <git@jbrengineering.co.uk>,
-        Vasanth Sadhasivan <vasanth.sadhasivan@samsara.com>,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Anssi Hannula <anssi.hannula@bitwise.fi>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Sebastian Haas <haas@ems-wuensche.com>,
-        Maximilian Schneider <max@schneidersoft.net>,
-        Daniel Berglund <db@kvaser.com>,
-        Olivier Sobrie <olivier@sobrie.be>,
-        =?UTF-8?B?UmVtaWdpdXN6IEtvxYLFgsSFdGFq?= 
-        <remigiusz.kollataj@mobica.com>,
-        Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
-        Martin Elshuber <martin.elshuber@theobroma-systems.com>,
-        Bernd Krumboeck <b.krumboeck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alan Stern <stern@rowland.harvard.edu>,
-        linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 6 Dec 2022, Benjamin Tissoires wrote:
 
-Thanks Alan and Oliver for your patience, really appreciated. And
-sorry that it took me four messages to realize my mistake.
+> Compared to v2, I followed the review from Alexei which cleaned up the
+> code a little bit.
+> 
+> I also got a kbuild test bot complaining[3] so add a fix for that too.
+> 
+> For reference, here is the previous cover letter:
+> 
+> So this patch series aims at solving both [0] and [1].
+> 
+> The first one is bpf related and concerns the ALLOW_ERROR_INJECTION API.
+> It is considered as a hack to begin with, so introduce a proper kernel
+> API to declare when a BPF hook can have its return value changed.
+> 
+> The second one is related to the fact that
+> DYNAMIC_FTRACE_WITH_DIRECT_CALLS is currently not enabled on arm64, and
+> that means that the current HID-BPF implementation doesn't work there
+> for now.
+> 
+> The first patch actually touches the bpf core code, but it would be
+> easier if we could merge it through the hid tree in the for-6.2/hid-bpf
+> branch once we get the proper acks.
 
-I will send a v2 right now.
+For the series:
+
+	Reviewed-by: Jiri Kosina <jkosina@suse.cz>
+
+Thanks,
+
+-- 
+Jiri Kosina
+SUSE Labs
+
