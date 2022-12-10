@@ -2,87 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F299648B83
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:01:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E56D6648B84
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:03:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229779AbiLJABS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 19:01:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
+        id S229734AbiLJADk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 19:03:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiLJABQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:01:16 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393D4B1048
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:01:14 -0800 (PST)
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S229720AbiLJADj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:03:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70626747D6
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:03:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4C6BC3F176
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 00:01:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1670630470;
-        bh=dTla1/72IISFsTTkEGMVDbGGvj0mbLcbfVtUwN7qszE=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=NDuovwqYXIhnnIJ6XYafqe9c8BWnfPPH/XqdFhC59+PVv6P71tRPJFdfli7979X2n
-         2YxSslROOWZulaZShjvavjjMQr4zANyNKkr0BtQ062NAOhTeOhlaQWkDRFMrqp6KHA
-         YjdSOJAH/GhGspNfc4+7dxm/Ut9ND6xCwPE01ZkJ6mXtM9xqpTh/LeJfGDaXo3nUjG
-         5wToYqL3Dxik+LqEN4Zdc96fqmwh9GlzDB+2qprRSR05MpwvBtRkLXeGrKGc/QFPyZ
-         5DJdaYSSojtkAYEM2FhEHxZFIkwmWugZh/DftZ6e5mWkvu+9gFr2Jdb7SGuP83RBYu
-         H64rDI7WkyI8A==
-Received: by mail-pg1-f198.google.com with SMTP id o8-20020a6548c8000000b0047927da1501so1049003pgs.18
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 16:01:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dTla1/72IISFsTTkEGMVDbGGvj0mbLcbfVtUwN7qszE=;
-        b=TP5hUX+ZrIzktdwbNmIxhA+PTsatXdToShBaNd4S9AsmS8GgDaRJpD3WWAVk3tbG5K
-         q0kzILuyVUZHfOoFnqlwSibMTif2r0psn7mInl9/I6CYDqO7qB/HIn2OLzCphSY5niaw
-         PSzM1DvXkVsgMOX1AZlR4Hi+WoaGTVVgbLoHtAIi95Mz3sCOwCPoQE3XvycqUG7m0x1S
-         UGZ4J4a2afjko9SX4mQgxdDSAz9rrHx/a/LapyIdj9KGQdN5tW/em5oAmnCjLfsbrru8
-         T/BvCo45n5HGeC4nwlRpTDmiYLyO+SFJtQrM/7isKIr0ixWnX3q5WBYzDfqjebih3f0U
-         5QoA==
-X-Gm-Message-State: ANoB5pkUdhRfqItgYGK0AQXvZtT07CLaAQMSUZKqaoxciDlfDFwKrbSe
-        do+JaHAVCHl0RT1i3I4MYkCglYZS7yex4ArKSkZYA0in1cuNbSZwz6LvBsQmsdWs3I+3GLgANV8
-        Onbz0bcQwVQwhjJRiMr7o7WvnnrH3P8K5+Q==
-X-Received: by 2002:a17:903:240d:b0:187:4920:3a76 with SMTP id e13-20020a170903240d00b0018749203a76mr7944076plo.34.1670630468522;
-        Fri, 09 Dec 2022 16:01:08 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4NodzGSPYyR3Mma7TpZtNn35H3s7yrrltja7gzr0PN4a7/WNZbsMpa83XxpjB2SGzQKPIFtg==
-X-Received: by 2002:a17:903:240d:b0:187:4920:3a76 with SMTP id e13-20020a170903240d00b0018749203a76mr7944059plo.34.1670630468212;
-        Fri, 09 Dec 2022 16:01:08 -0800 (PST)
-Received: from famine.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id o37-20020a634e65000000b00478fbfd5276sm1448691pgl.15.2022.12.09.16.01.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 09 Dec 2022 16:01:07 -0800 (PST)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 4FF375FF12; Fri,  9 Dec 2022 16:01:07 -0800 (PST)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 487319FAA8;
-        Fri,  9 Dec 2022 16:01:07 -0800 (PST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A849623BF
+        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 00:03:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A40C433EF;
+        Sat, 10 Dec 2022 00:03:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670630617;
+        bh=GzAas7eEJZyXm2Z+bTg1UL9TsogMgSNhrKR8fNESggk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WjRZthdgT2U1JAfRVhWDaBMy6EfWZZGQc2aUFL4UNynQrsEnAm4KVxoTNSDTeP5K0
+         1Uc1NVXEyt2XgEWG3bF77bi0Eep7myMK/MjTrarU8fbGISqJI6i+V0jRKvx0z3MsG3
+         g3dFiw5c6kLErivjB/tJxqu+/Zj8RAu2oaU/zXBUj829lEqhze3Fcx4OSNJ/yQfejJ
+         O3b2ZqB+qtuZfKzDpc7Y5iiSg0JaNsZAE9NPJDY6jyLXC2NOs8w3XlVmQwb7gRsC8V
+         qBfbITusT9nu2P298jqC33TgYw+YDQSUOjlodmKj6gNoMc5HJTh8ksPOCJL3XNuVTk
+         3Z9b/5t+Bpy4Q==
+Date:   Fri, 9 Dec 2022 16:03:35 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
 To:     Hangbin Liu <liuhangbin@gmail.com>
-cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jonathan Toppins <jtoppins@redhat.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>, liali <liali@redhat.com>
-Subject: Re: [PATCH net 0/3] Bonding: fix high prio not effect issue
-In-reply-to: <20221209101305.713073-1-liuhangbin@gmail.com>
+Subject: Re: [PATCH net 2/3] bonding: do failover when high prio link up
+Message-ID: <Y5PM1z1SEdWFgkui@x130>
 References: <20221209101305.713073-1-liuhangbin@gmail.com>
-Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
-   message dated "Fri, 09 Dec 2022 18:13:02 +0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+ <20221209101305.713073-3-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <9327.1670630467.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 09 Dec 2022 16:01:07 -0800
-Message-ID: <9328.1670630467@famine>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20221209101305.713073-3-liuhangbin@gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,40 +57,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> wrote:
-
->When a high prio link up, if there has current link, it will not do
->failover as we missed the check in link up event. Fix it in this patchset
->and add a prio option test case.
+On 09 Dec 18:13, Hangbin Liu wrote:
+>Currently, when a high prio link enslaved, or when current link down,
+>the high prio port could be selected. But when high prio link up, the
+>new active slave reselection is not triggered. Fix it by checking link's
+>prio when getting up.
 >
->Hangbin Liu (2):
->  bonding: access curr_active_slave with rtnl_dereference
->  bonding: do failover when high prio link up
+>Reported-by: Liang Li <liali@redhat.com>
+>Fixes: 0a2ff7cc8ad4 ("Bonding: add per-port priority for failover re-selection")
+>Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+>---
+> drivers/net/bonding/bond_main.c | 6 ++++--
+> 1 file changed, 4 insertions(+), 2 deletions(-)
 >
->Liang Li (1):
->  selftests: bonding: add bonding prio option test
-
-	For the series:
-
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-
-	The only comment I have is that since prio is a signed value, it
-would be nice if the selftest tested negative prio values.
-
-	-J
-
-
-> drivers/net/bonding/bond_main.c               |   6 +-
-> .../selftests/drivers/net/bonding/Makefile    |   3 +-
-> .../drivers/net/bonding/option_prio.sh        | 246 ++++++++++++++++++
-> 3 files changed, 252 insertions(+), 3 deletions(-)
-> create mode 100755 tools/testing/selftests/drivers/net/bonding/option_pr=
-io.sh
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>index 2b6cc4dbb70e..dc6af790ff1e 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -2689,7 +2689,8 @@ static void bond_miimon_commit(struct bonding *bond)
 >
->-- =
-
->2.38.1
+> 			bond_miimon_link_change(bond, slave, BOND_LINK_UP);
 >
+>-			if (!rtnl_dereference(bond->curr_active_slave) || slave == primary)
+>+			if (!rtnl_dereference(bond->curr_active_slave) || slave == primary ||
+>+			    slave->prio > rtnl_dereference(bond->curr_active_slave)->prio)
+> 				goto do_failover;
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+I am not really familiar with this prio logic, seems to be new. 
+Anyway, what if one of the next slaves has higher prio than this slave and the
+current active ? 
+I see that the loop over all the slaves continues even after the failover,
+but why would you do all these failovers until you settle on the highest
+prio one ? 
+
+shouldn't you do something similar to bond_choose_primary_or_current()
+outside the loop, once you've updated all the slaves link states 
+
+Please let me know if I am wandering in the wrong directions
+Anyway, LGTM:
+
+Reviewed-by: Saeed Mahameed <saeed@kernel.org>
+
+
+
+
+
+
+
