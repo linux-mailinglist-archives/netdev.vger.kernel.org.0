@@ -2,62 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF071648D0B
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 05:00:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A09F648D0D
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 05:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbiLJEAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 23:00:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50852 "EHLO
+        id S229816AbiLJEBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 23:01:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiLJEAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 23:00:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293D057B53;
-        Fri,  9 Dec 2022 20:00:21 -0800 (PST)
+        with ESMTP id S229815AbiLJEBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 23:01:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1184567A2B
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 20:01:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D512FB82A4B;
-        Sat, 10 Dec 2022 04:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 78931C433EF;
-        Sat, 10 Dec 2022 04:00:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A01A261526
+        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 04:01:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E73D1C433EF;
+        Sat, 10 Dec 2022 04:01:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670644818;
-        bh=Rz+P4SaGHSIpmQsi3KIQXlPIq5hb6Gs+1inK2v4ojnI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mVRc8GNEm3ThZgLn47sVD2FOsXz5OhPQcQagxoFEqhhaxT+/zxO723gzOqpLKhFvr
-         xwsHbsZW/+vf2aafWyVXqsIu5kx2Ts5cyw7S+hzfkiodTa+hTArFWIOG9SXqKR/gzW
-         8gj/j3HwVwLz98tOtFjF+mg7Fk5AQJvFNwz/TAAxKRlvUD2j1Nk8u5OWTRTC5ecMzP
-         onfyGfdpRywRkKy+jjd8QePbW4e9vxT/nzrMLLHUH2RwPTxghDSK1fmYDzN/hGpFS+
-         9wSi/0B8xHd4JadPgcWEskDaYcAKCoJjtHAoOJLIyApA4lor6kn8HIhiwkc6TcjUzG
-         OGBUIaIzb6wFw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 41E41C41606;
-        Sat, 10 Dec 2022 04:00:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1670644911;
+        bh=+FKGa1oq72Oq+r910C1bHpgTL8ZhJFQ+saWR2Tg1X1I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MUaw7v5h5HPpjbiyWu/ADs1T0FxKv0GhryROLTIAyjfhM4Qis/3PmGcJG/ap3UX1V
+         GXFUFBOh0q1QZlZnmc+sgIUfkH+MoD04umkmqDWOAvtTZENpRJEcjwFbhPf46sSs3f
+         j2Sw6QS3gMCtA4CgyGuEi0gmK3ohbfmK+K3raeUAh7gwBUDZPk2JqbYsrd6opUrESt
+         2MrxLBTBp8/g1gM32A3wfVV+UHWWpzbkdh6PYyWR+84KN8LpuPLu8sKLtPA0n0zEZc
+         RrgfpwkBpCyUYL/oMP6VT1L0S2I35ehhN223EM7xniNppMRVvl+viy1f8nbmJ6h0pV
+         uAqE1wIAfJ5oQ==
+Date:   Fri, 9 Dec 2022 20:01:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Max Georgiev <glipus@gmail.com>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool] JSON output support for Netlink implementation
+ of --show-coalesce option
+Message-ID: <20221209200150.18490ed6@kernel.org>
+In-Reply-To: <CAP5jrPHr2UMpKK45NTUVLtW9OiBctZhWP-0yVvb9_SBO3pC7LA@mail.gmail.com>
+References: <CAP5jrPHr2UMpKK45NTUVLtW9OiBctZhWP-0yVvb9_SBO3pC7LA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3] skbuff: Introduce slab_build_skb()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167064481825.12189.4717731779203655380.git-patchwork-notify@kernel.org>
-Date:   Sat, 10 Dec 2022 04:00:18 +0000
-References: <20221208060256.give.994-kees@kernel.org>
-In-Reply-To: <20221208060256.give.994-kees@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kuba@kernel.org,
-        syzbot+fda18eaa8c12534ccb3b@syzkaller.appspotmail.com,
-        edumazet@google.com, davem@davemloft.net, pabeni@redhat.com,
-        asml.silence@gmail.com, soopthegoop@gmail.com, vbabka@suse.cz,
-        kasan-dev@googlegroups.com, andrii@kernel.org, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, haoluo@google.com,
-        hawk@kernel.org, john.fastabend@gmail.com, jolsa@kernel.org,
-        kpsingh@kernel.org, martin.lau@linux.dev, sdf@google.com,
-        song@kernel.org, yhs@fb.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rmody@marvell.com,
-        aelior@marvell.com, manishc@marvell.com, imagedong@tencent.com,
-        dsahern@kernel.org, richardbgobert@gmail.com, andreyknvl@gmail.com,
-        rientjes@google.com, GR-Linux-NIC-Dev@marvell.com,
-        linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -67,29 +52,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed,  7 Dec 2022 22:02:59 -0800 you wrote:
-> syzkaller reported:
+On Fri, 9 Dec 2022 19:16:10 -0700 Max Georgiev wrote:
+> JSON output support for Netlink implementation of --show-coalesce option
 > 
->   BUG: KASAN: slab-out-of-bounds in __build_skb_around+0x235/0x340 net/core/skbuff.c:294
->   Write of size 32 at addr ffff88802aa172c0 by task syz-executor413/5295
-> 
-> For bpf_prog_test_run_skb(), which uses a kmalloc()ed buffer passed to
-> build_skb().
-> 
-> [...]
+> Add --json support for Netlink implementation of --show-coalesce option
+> No changes for non-JSON output for this feature.
 
-Here is the summary with links:
-  - [net-next,v3] skbuff: Introduce slab_build_skb()
-    https://git.kernel.org/netdev/net-next/c/ce098da1497c
+Nice!
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Same output with --json:
+> $ sudo ./ethtool --json --show-coalesce enp9s0u2u1u2
+> [ {
+>         "ifname": "enp9s0u2u1u2",
+>         "rx-usecs: ": 15000,
+>         "tx-usecs: ": 0
 
+looks like we have double spurious ': ' in the key?
 
+> +       if (silent && !is_json_context())
+>                 putchar('\n');
+
+perhaps we can use show_cr() here as well?
+
+> +                       print_uint(PRINT_JSON, label, NULL,
+> mnl_attr_get_u32(attr));
+> +       } else {
+
+This looks line-wrapped, perhaps try git send-email for v2?
+Also subject should say [PATCH ethtool-next], since it's for
+the "next" release.
