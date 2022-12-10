@@ -2,46 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A1F2648F69
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 16:19:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BF84648FCB
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 17:26:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbiLJPTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 10:19:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59250 "EHLO
+        id S229665AbiLJQ0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 11:26:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiLJPTu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 10:19:50 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF6412AB9;
-        Sat, 10 Dec 2022 07:19:48 -0800 (PST)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NTs3w3X5qzJqKw;
-        Sat, 10 Dec 2022 23:18:52 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Sat, 10 Dec
- 2022 23:19:16 +0800
-From:   Li Zetao <lizetao1@huawei.com>
-To:     <pkshih@realtek.com>
-CC:     <Larry.Finger@lwfinger.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <kvalo@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
-        <linville@tuxdriver.com>, <lizetao1@huawei.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>
-Subject: [PATCH v2] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in _rtl8812ae_phy_set_txpower_limit()
-Date:   Sun, 11 Dec 2022 00:23:36 +0800
-Message-ID: <20221210162336.1383856-1-lizetao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <e985ead3ea7841b8b3a94201dfb18776@realtek.com>
-References: <e985ead3ea7841b8b3a94201dfb18776@realtek.com>
+        with ESMTP id S229548AbiLJQ0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 11:26:09 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D6D2DCA;
+        Sat, 10 Dec 2022 08:26:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1670689494; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=M7mVTda5GTqsOXhGbbWYwAh8gSAhWSRqvdJYbo7y1LW5r+qHT0qN4+90mjKuuiYeqXdxIcFt0HXKRSGcv0zsaPXEDtcu29cy/s9Adj87toiHT9zjGZsELLZQ8okDv+M8RMByeoGcRmrJ0mGBohJ6nLg6YOnvVYEHpvvJqiFRnzw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1670689494; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=AuxrhOcouOodCpiih51edJPpKil1toFz+E57gSw+0VQ=; 
+        b=ezJXQLJD12neIlyNa2jEdbjolhPcyRQaeOKdNSjI4R3hHt3N8YfyRnUBOOXL1/Qq+TNlYGZ9RhnwlJRMZBclkuFxjvpBX+Hx2gqPOaMxUp9H7rzMQ+bhIE9WuhPPUgSipt+r2bpved0SSwb8JhfNlCjBXSDhQmos3xFK1R8kIKs=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1670689494;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=AuxrhOcouOodCpiih51edJPpKil1toFz+E57gSw+0VQ=;
+        b=WcYaXZWKMSVvUIEUIJteLadKb5lBLZIW8nkLqECqShu0kboZ8ircbyTQz5Ks2xy1
+        mmpNIAjAEp/qtpLDRie0vrPFrVHEjN/oWUOvzAhkePilIdNBGJegTLyNHK8GijEyvX7
+        JKwuUvfGs3UOXLFzOe57iFHs1pgkH1t8EdO9Kt6I=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1670689491712607.4170178546929; Sat, 10 Dec 2022 08:24:51 -0800 (PST)
+Message-ID: <1df417b5-a924-33d4-a302-eb526f7124b4@arinc9.com>
+Date:   Sat, 10 Dec 2022 19:24:42 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v5 net-next 04/10] dt-bindings: net: dsa: utilize base
+ definitions for standard dsa switches
+To:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Cc:     John Crispin <john@phrozen.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Marek Vasut <marex@denx.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        George McCollister <george.mccollister@gmail.com>,
+        Rob Herring <robh@kernel.org>
+References: <20221210033033.662553-1-colin.foster@in-advantage.com>
+ <20221210033033.662553-5-colin.foster@in-advantage.com>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20221210033033.662553-5-colin.foster@in-advantage.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,150 +89,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a global-out-of-bounds reported by KASAN:
+On 10.12.2022 06:30, Colin Foster wrote:
+> DSA switches can fall into one of two categories: switches where all ports
+> follow standard '(ethernet-)?port' properties, and switches that have
+> additional properties for the ports.
+> 
+> The scenario where DSA ports are all standardized can be handled by
+> switches with a reference to the new 'dsa.yaml#/$defs/ethernet-ports'.
+> 
+> The scenario where DSA ports require additional properties can reference
+> '$dsa.yaml#' directly. This will allow switches to reference these standard
+> definitions of the DSA switch, but add additional properties under the port
+> nodes.
+> 
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Acked-by: Alvin Šipraga <alsi@bang-olufsen.dk> # realtek
+> Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+> 
+> v4 -> v5
+>    * Add Rob Reviewed, Arınç Acked
+>    * Defer the removal of "^(ethernet-)?switch(@.*)?$" in dsa.yaml until a
+>      later patch
+>    * Undo the move of ethernet switch ports description in mediatek,mt7530.yaml
+>    * Fix typos in commit message
+> 
+> v3 -> v4
+>    * Rename "$defs/base" to "$defs/ethernet-ports" to avoid implication of a
+>      "base class" and fix commit message accordingly
+>    * Add the following to the common etherent-ports node:
+>        "additionalProperties: false"
+>        "#address-cells" property
+>        "#size-cells" property
+>    * Fix "etherenet-ports@[0-9]+" to correctly be "ethernet-port@[0-9]+"
+>    * Remove unnecessary newline
+>    * Apply changes to mediatek,mt7530.yaml that were previously in a separate patch
+>    * Add Reviewed and Acked tags
+> 
+> v3
+>    * New patch
+> 
+> ---
+>   .../bindings/net/dsa/arrow,xrs700x.yaml       |  2 +-
+>   .../devicetree/bindings/net/dsa/brcm,b53.yaml |  2 +-
+>   .../devicetree/bindings/net/dsa/dsa.yaml      | 22 +++++++++++++++++++
+>   .../net/dsa/hirschmann,hellcreek.yaml         |  2 +-
+>   .../bindings/net/dsa/mediatek,mt7530.yaml     |  5 +----
+>   .../bindings/net/dsa/microchip,ksz.yaml       |  2 +-
+>   .../bindings/net/dsa/microchip,lan937x.yaml   |  2 +-
+>   .../bindings/net/dsa/mscc,ocelot.yaml         |  2 +-
+>   .../bindings/net/dsa/nxp,sja1105.yaml         |  2 +-
+>   .../devicetree/bindings/net/dsa/realtek.yaml  |  2 +-
+>   .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  2 +-
+>   11 files changed, 32 insertions(+), 13 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+> index 259a0c6547f3..5888e3a0169a 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   title: Arrow SpeedChips XRS7000 Series Switch Device Tree Bindings
+>   
+>   allOf:
+> -  - $ref: dsa.yaml#
+> +  - $ref: dsa.yaml#/$defs/ethernet-ports
+>   
+>   maintainers:
+>     - George McCollister <george.mccollister@gmail.com>
+> diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+> index 1219b830b1a4..5bef4128d175 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+> @@ -66,7 +66,7 @@ required:
+>     - reg
+>   
+>   allOf:
+> -  - $ref: dsa.yaml#
+> +  - $ref: dsa.yaml#/$defs/ethernet-ports
+>     - if:
+>         properties:
+>           compatible:
+> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> index 5efc0ee8edcb..9375cdcfbf96 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> @@ -58,4 +58,26 @@ oneOf:
+>   
+>   additionalProperties: true
+>   
+> +$defs:
+> +  ethernet-ports:
+> +    description: A DSA switch without any extra port properties
+> +    $ref: '#/'
+> +
+> +    patternProperties:
+> +      "^(ethernet-)?ports$":
+> +        type: object
+> +        additionalProperties: false
+> +
+> +        properties:
+> +          '#address-cells':
+> +            const: 1
+> +          '#size-cells':
+> +            const: 0
+> +
+> +        patternProperties:
+> +          "^(ethernet-)?port@[0-9]+$":
+> +            description: Ethernet switch ports
+> +            $ref: dsa-port.yaml#
+> +            unevaluatedProperties: false
 
-  BUG: KASAN: global-out-of-bounds in
-  _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
-  Read of size 1 at addr ffffffffa0773c43 by task NetworkManager/411
+I've got moderate experience in json-schema but shouldn't you put 'type: 
+object' here like you did for "^(ethernet-)?ports$"?
 
-  CPU: 6 PID: 411 Comm: NetworkManager Tainted: G      D
-  6.1.0-rc8+ #144 e15588508517267d37
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
-  Call Trace:
-   <TASK>
-   ...
-   kasan_report+0xbb/0x1c0
-   _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
-   rtl8821ae_phy_bb_config.cold+0x346/0x641 [rtl8821ae]
-   rtl8821ae_hw_init+0x1f5e/0x79b0 [rtl8821ae]
-   ...
-   </TASK>
+> +
+>   ...
+> diff --git a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+> index 73b774eadd0b..748ef9983ce2 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   title: Hirschmann Hellcreek TSN Switch Device Tree Bindings
+>   
+>   allOf:
+> -  - $ref: dsa.yaml#
+> +  - $ref: dsa.yaml#/$defs/ethernet-ports
+>   
+>   maintainers:
+>     - Andrew Lunn <andrew@lunn.ch>
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index f2e9ff3f580b..20312f5d1944 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -157,9 +157,6 @@ patternProperties:
+>       patternProperties:
+>         "^(ethernet-)?port@[0-9]+$":
+>           type: object
 
-The root cause of the problem is that the comparison order of
-"prate_section" in _rtl8812ae_phy_set_txpower_limit() is wrong. The
-_rtl8812ae_eq_n_byte() is used to compare the first n bytes of the two
-strings from tail to head, which causes the problem. In the
-_rtl8812ae_phy_set_txpower_limit(), it was originally intended to meet
-this requirement by carefully designing the comparison order.
-For example, "pregulation" and "pbandwidth" are compared in order of
-length from small to large, first is 3 and last is 4. However, the
-comparison order of "prate_section" dose not obey such order requirement,
-therefore when "prate_section" is "HT", when comparing from tail to head,
-it will lead to access out of bounds in _rtl8812ae_eq_n_byte(). As
-mentioned above, the _rtl8812ae_eq_n_byte() has the same function as
-strcmp(), so just strcmp() is enough.
+This line was being removed on the previous version. Must be related to 
+above.
 
-Fix it by replacing _rtl8812ae_eq_n_byte() with strcmp(). Although it
-can be fixed by adjusting the comparison order of "prate_section", this
-may cause the value of "rate_section" to not be from 0 to 5. In
-addition, commit "21e4b0726dc6" not only moved driver from staging to
-regular tree, but also added setting txpower limit function during the
-driver config phase, so the problem was introduced by this commit.
+> -        description: Ethernet switch ports
+> -
+> -        unevaluatedProperties: false
+>   
+>           properties:
+>             reg:
 
-Fixes: 21e4b0726dc6 ("rtlwifi: rtl8821ae: Move driver from staging to regular tree")
-Signed-off-by: Li Zetao <lizetao1@huawei.com>
----
-v1 was posted at: https://lore.kernel.org/all/20221207152319.3135500-1-lizetao1@huawei.com/
-v1 -> v2: delete the third parameter of _rtl8812ae_eq_n_byte() and use
-strcmp to replace loop comparison.
-
- .../wireless/realtek/rtlwifi/rtl8821ae/phy.c  | 51 ++++++++-----------
- 1 file changed, 22 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-index a29321e2fa72..14b569d7d8fa 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
-@@ -1598,16 +1598,9 @@ static bool _rtl8812ae_get_integer_from_string(const char *str, u8 *pint)
- 	return true;
- }
- 
--static bool _rtl8812ae_eq_n_byte(const char *str1, const char *str2, u32 num)
-+static bool _rtl8812ae_eq_n_byte(const char *str1, const char *str2)
- {
--	if (num == 0)
--		return false;
--	while (num > 0) {
--		num--;
--		if (str1[num] != str2[num])
--			return false;
--	}
--	return true;
-+	return strcmp(str1, str2) == 0;
- }
- 
- static s8 _rtl8812ae_phy_get_chnl_idx_of_txpwr_lmt(struct ieee80211_hw *hw,
-@@ -1659,42 +1652,42 @@ static void _rtl8812ae_phy_set_txpower_limit(struct ieee80211_hw *hw,
- 	power_limit = power_limit > MAX_POWER_INDEX ?
- 		      MAX_POWER_INDEX : power_limit;
- 
--	if (_rtl8812ae_eq_n_byte(pregulation, "FCC", 3))
-+	if (_rtl8812ae_eq_n_byte(pregulation, "FCC"))
- 		regulation = 0;
--	else if (_rtl8812ae_eq_n_byte(pregulation, "MKK", 3))
-+	else if (_rtl8812ae_eq_n_byte(pregulation, "MKK"))
- 		regulation = 1;
--	else if (_rtl8812ae_eq_n_byte(pregulation, "ETSI", 4))
-+	else if (_rtl8812ae_eq_n_byte(pregulation, "ETSI"))
- 		regulation = 2;
--	else if (_rtl8812ae_eq_n_byte(pregulation, "WW13", 4))
-+	else if (_rtl8812ae_eq_n_byte(pregulation, "WW13"))
- 		regulation = 3;
- 
--	if (_rtl8812ae_eq_n_byte(prate_section, "CCK", 3))
-+	if (_rtl8812ae_eq_n_byte(prate_section, "CCK"))
- 		rate_section = 0;
--	else if (_rtl8812ae_eq_n_byte(prate_section, "OFDM", 4))
-+	else if (_rtl8812ae_eq_n_byte(prate_section, "OFDM"))
- 		rate_section = 1;
--	else if (_rtl8812ae_eq_n_byte(prate_section, "HT", 2) &&
--		 _rtl8812ae_eq_n_byte(prf_path, "1T", 2))
-+	else if (_rtl8812ae_eq_n_byte(prate_section, "HT") &&
-+		 _rtl8812ae_eq_n_byte(prf_path, "1T"))
- 		rate_section = 2;
--	else if (_rtl8812ae_eq_n_byte(prate_section, "HT", 2) &&
--		 _rtl8812ae_eq_n_byte(prf_path, "2T", 2))
-+	else if (_rtl8812ae_eq_n_byte(prate_section, "HT") &&
-+		 _rtl8812ae_eq_n_byte(prf_path, "2T"))
- 		rate_section = 3;
--	else if (_rtl8812ae_eq_n_byte(prate_section, "VHT", 3) &&
--		 _rtl8812ae_eq_n_byte(prf_path, "1T", 2))
-+	else if (_rtl8812ae_eq_n_byte(prate_section, "VHT") &&
-+		 _rtl8812ae_eq_n_byte(prf_path, "1T"))
- 		rate_section = 4;
--	else if (_rtl8812ae_eq_n_byte(prate_section, "VHT", 3) &&
--		 _rtl8812ae_eq_n_byte(prf_path, "2T", 2))
-+	else if (_rtl8812ae_eq_n_byte(prate_section, "VHT") &&
-+		 _rtl8812ae_eq_n_byte(prf_path, "2T"))
- 		rate_section = 5;
- 
--	if (_rtl8812ae_eq_n_byte(pbandwidth, "20M", 3))
-+	if (_rtl8812ae_eq_n_byte(pbandwidth, "20M"))
- 		bandwidth = 0;
--	else if (_rtl8812ae_eq_n_byte(pbandwidth, "40M", 3))
-+	else if (_rtl8812ae_eq_n_byte(pbandwidth, "40M"))
- 		bandwidth = 1;
--	else if (_rtl8812ae_eq_n_byte(pbandwidth, "80M", 3))
-+	else if (_rtl8812ae_eq_n_byte(pbandwidth, "80M"))
- 		bandwidth = 2;
--	else if (_rtl8812ae_eq_n_byte(pbandwidth, "160M", 4))
-+	else if (_rtl8812ae_eq_n_byte(pbandwidth, "160M"))
- 		bandwidth = 3;
- 
--	if (_rtl8812ae_eq_n_byte(pband, "2.4G", 4)) {
-+	if (_rtl8812ae_eq_n_byte(pband, "2.4G")) {
- 		ret = _rtl8812ae_phy_get_chnl_idx_of_txpwr_lmt(hw,
- 							       BAND_ON_2_4G,
- 							       channel);
-@@ -1718,7 +1711,7 @@ static void _rtl8812ae_phy_set_txpower_limit(struct ieee80211_hw *hw,
- 			regulation, bandwidth, rate_section, channel_index,
- 			rtlphy->txpwr_limit_2_4g[regulation][bandwidth]
- 				[rate_section][channel_index][RF90_PATH_A]);
--	} else if (_rtl8812ae_eq_n_byte(pband, "5G", 2)) {
-+	} else if (_rtl8812ae_eq_n_byte(pband, "5G")) {
- 		ret = _rtl8812ae_phy_get_chnl_idx_of_txpwr_lmt(hw,
- 							       BAND_ON_5G,
- 							       channel);
--- 
-2.31.1
-
+Arınç
