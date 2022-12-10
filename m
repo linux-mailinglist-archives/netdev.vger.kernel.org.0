@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02C23648F57
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 15:58:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1332648F5A
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 15:58:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229815AbiLJO6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 09:58:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
+        id S229796AbiLJO64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 09:58:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbiLJO62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 09:58:28 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2060.outbound.protection.outlook.com [40.107.92.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102AA1A398
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 06:58:27 -0800 (PST)
+        with ESMTP id S229758AbiLJO6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 09:58:34 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2086.outbound.protection.outlook.com [40.107.96.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DA06141
+        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 06:58:33 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MZX26KGMaGC02GNsqrVRFifmaim9YoM+bfBlA/URCA0D55vZ7qC+AzBke6KqoinDu4L+3FfMS1+G5SEbQRD1eVZe+ZvQOJV6/fwC0oRtRg1jj0HgIDGHba6vPjzSKyBlepHC/TXVvwUofS+gjtTLbozYHUDJspuUk79IbdJ4T6p5GdetLVf4QphKjtSBz9z6bthO/I8oFp0z8+LJRxH2nBwln2VfRiyawkJbt/foPW0U4msEwQmg8hBcOhYzZQKD64jpJkO8rMeHkiUJ/RVvKEkff2n6DMMZ87pP5pP2DrV3JuVkmfGXOYRFRRYKijMS9JMAkmgT60xB3q7C6SL9rA==
+ b=Rxz9hwA9mlx6CerGaEd6NcodAJAdKSepSqQaXPf8uJP4H9fWyoc3AtEtJViTG2BJ0hXRCjm4wloNMMEGXrnuWn4x0A92OjyskZcEPNZVfYbs8qHMl3AWtLObuKd4OAhkf1XTGFjb/QGTIGkaSYa1vDsIZmBf2JUaJgwFa3Gr2KZxxFqKhJwojDCbUlwK0cmIe8LW3KL4+I3HIXuZH/inOLF9oR+sItw3yQvPY7jJMkLhonUgWY4of/B61wHOpNixqyUYoBbzhqVaWHINnUUu1DdxQsL5CprV2ClvdNSWIa3gDX2uB69vbkdiCXM4nj/vZrobnsjWJDB+NSBdxlPOaA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Prt3U8OQ1/aCcOV92KzZD0IF4LtS8oQDmLJTpiae5qI=;
- b=hYFCmXxvDO3bXkc9NsFgM8pyA05l0+05eqaOrHmv0nDx4E1upSamTS+7XiyaK2KbsUDnARj1j9AGSnpuchSsZBrC3hXFDYHGLdWOdGhWhTjxfCHhb9GVH2CNLzF99bu+Q3XNbzbARIOP0rxSZcfwIswRetOcVL18rdIgkOSVkD5aIkc5IBEbSFWOpC+6Sl1iBbgNCp5pjEj6xKUBzP8xIOSJRUBbxv5MahjtlBVzAKB+Sparqxg4adnLqIvAutqxiQpR/enm8ENxhJwAQwqhLtLqDoz3hKViMHHkQ5TY/fLfy9Ff5luUUiNTBkYx983CQHghMNYYtziqSqHrbNgu8w==
+ bh=CmPkmYqU6S/w4DNuMfccOzmIVcRK9UkjmIMlqvpPd4g=;
+ b=dqRoO0voxFu9F9hyCWCIvyaQdBXYTjN+ZCpAY/rrgmEb7XMyp4LUnKn773Wl1i7jRmrfq9cKrmk6Fvk2Czc+Un1yRlBf6/gAByGh/Bhh65RZW6QNsa942XCG65MwGv88GZ3Q6WA3qr2Mtdux5l2hPtiFJpAbf4KeNEh1KA1c79oackbV8wyx/SsiB72UWTluaKKhKOwQHqGCkxNan4/v3AAytIiPDHPXc32ANfwDD2aXY9wxLM+eWibDwnCP4FDyAWxOhFwenTcQr+vEl92Dxw5FRn/0ly0LLj7v89u7Sd61BHCjyxRDA96rZxpHW27qDz18G+uo7Stfchvtba5bnA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Prt3U8OQ1/aCcOV92KzZD0IF4LtS8oQDmLJTpiae5qI=;
- b=DsJ3Z9tx4jEen5KtN8+aqtaLQ712+DSRZIhDCPJLzKJG8FTKUitnfiqrShIF2ivNMjR8EXt62WjLzTIWZt1rdDRHjV0Pmf2oTyYnd+fmCRnUugGoBdc0zJtcqr1ZdBfCqLT59qFwXS6cS504tWAEmnzUTo931Vme7VqTeL1ZEp43w5OxeGvbLREcewXLiCQuzN24Fd5BA5w8gAW+eKqZ9vKVXcIdOl7LNzUnSEyi+DZQ3ezedxXERP8ASQ8ZVyAatPu1dOz0mzoxZct/EzUDFgqaBapZDAM1H5vvckeIXGJZtsVQ0oQUeVQFzjBouxVfvKifLPBhxOTOY8/dx4OjGw==
+ bh=CmPkmYqU6S/w4DNuMfccOzmIVcRK9UkjmIMlqvpPd4g=;
+ b=tr2/k4gFpqqkLH70il1XYLhBqYENgQzbH9RAPgfdehgXCVq3sORC4lp7lJzKHUQJWyADyqaSoe9BHWTWTsSDOMKh9BqbyvLpK9byA4AydO85pwyj46QEhJNLs5MXg0Tz/cWQE7VvA+SwsHBSg8snBvhI8mLm6M3AjK0heossSGIOL+2u8KzAcHCjB+s+Xio95fN1zcDOcbxYmV3UOSsaPs4v9W8IP+QQeHCQ6hEvk3bNrCSAiTLEgOXXj9QsU3iB6xZ6p7ZQk+gbBLPq6IVwIezzXzKD8OzAwCPXb5uTnP0bReNwougSr3rvtEew0hfnJlsZhzJGxa24nlsO8UEenQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by PH0PR12MB8128.namprd12.prod.outlook.com (2603:10b6:510:294::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Sat, 10 Dec
- 2022 14:58:25 +0000
+ 2022 14:58:31 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::a600:9252:615:d31a]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::a600:9252:615:d31a%3]) with mapi id 15.20.5880.014; Sat, 10 Dec 2022
- 14:58:25 +0000
+ 14:58:31 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, roopa@nvidia.com, razor@blackwall.org,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 10/14] bridge: mcast: Allow user space to add (*, G) with a source list and filter mode
-Date:   Sat, 10 Dec 2022 16:56:29 +0200
-Message-Id: <20221210145633.1328511-11-idosch@nvidia.com>
+Subject: [PATCH net-next v2 11/14] bridge: mcast: Allow user space to specify MDB entry routing protocol
+Date:   Sat, 10 Dec 2022 16:56:30 +0200
+Message-Id: <20221210145633.1328511-12-idosch@nvidia.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221210145633.1328511-1-idosch@nvidia.com>
 References: <20221210145633.1328511-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1P191CA0005.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:800:1ba::12) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR0802CA0012.eurprd08.prod.outlook.com
+ (2603:10a6:800:aa::22) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|PH0PR12MB8128:EE_
-X-MS-Office365-Filtering-Correlation-Id: af3825a2-5ef8-413e-d8c8-08dadabefd12
+X-MS-Office365-Filtering-Correlation-Id: 2e524bc3-76d9-489c-ba44-08dadabf010a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MrY3fGNyyDGmg4r1JOVyNvHaIHGZ1gqJSuy0kmHI+UzujpnOZQeaFjpSdXsD0z5JZxVG1SiloD5vuM97Fe4XR0Z7qZ/WIToSKfZtdtRavbxC0UPBwfddEe9RpAUpzyqWoMnUNz+bocMxNwQ2pGRIl/yGrpvPIexeIy9B0jEfeN+YEVZrc/Yk8O0gig7kvHCbFGjOJGEPCx3+tsZ1yh9+59DV1FOIZrix1keT/SfNdLHW87MEdJH7V0UQsuddpuI3jC86GrUARGVMfbzlAFD5hcimctfKt/8ZI7kxp4HIcef8q0VriPEGPKrdn9xkdOe4KK73vy3cjOs5jh3yyGJYRFymfNWuzdjnd5wgfKO6dDrLHbWpdEk0uBdC4uS4aEQx4nhNq6z3IlP3OljB8ODI4kmiHTxUGV4FCRcQv+QAtpyeYwqPq/jEnJBa3x+VENN3f4TJyGMa4lAs5SmiJL1Nzv/dD9xi+SIP2lJ19r3v+79fjaJJBi9pPJujloJUHEGNVw4gVcOH08hFa+Fhb4bfJC190Xq9++FT1jWRf8d+dQq8UPfFIU1X+ZsHi9sDdRl9pE70MWHicSaoBV9Ag+1AdxnVXAdWy7MvBum4qUHwo0exxYvqXU9an6YvlUPHkLKDhpGP/FcFkGrK0hm40dNRUw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(366004)(136003)(376002)(346002)(451199015)(6512007)(186003)(26005)(478600001)(2616005)(1076003)(6486002)(6506007)(107886003)(38100700002)(83380400001)(66946007)(66556008)(66476007)(8676002)(4326008)(41300700001)(316002)(2906002)(5660300002)(8936002)(86362001)(36756003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: lGm6vo81hoTMqZa50NUj7dcPuo8oSxpo3Hz9ApCLoEFtA0RsCk71Jy6kJZDFDdla0WceM/uI2/RNKs/zaCvwte8Hr3yRxaqmcopBOiUbcrm+gc7hpmIMrQ8e55J12m8drhEvRDc/wAc/Y/DuksDNFrNcnIeg4YmEYE6ufopgckMemRfFfhyBeHljXUtY6v5Tbr7M1jXRaeyLaicVILMY47DEkUEjrZdb8zMnyITGLpFMBRrpwsMlyGh38NEZ6KtIKQWgevbPP9b3kDtVgRhH3S7FfDkbK+s7ioX4z2VI1gEn1IIEY9gamrdDUBdInQ4T2F76W8d5E0v/XWt+QV3kl4mKaoFAFbuIb+tYCAAxsrTr//uDJc7YKFXR7C0uOEBK77jg6gxhGZ3cUcfNYPr3eZD9LxlELfjA+Z29SCW0GGWJkedViK9lnpoEZng00AZS1vkBoo7nomfFNP4b+niWvJB//F1+cc6vSjIYyadSgXng932+A2BmdUY5u9NyqBryflFlDq5RDNAZNYyjdCCbMQ0VhV87Z678U8SJuj0pxSRxW+Nj2PXCGKTHVlw/J8LF3SU9koGVWNtwpnQ4V8B4zkiTP0l7q1xkwhhm2ltbu1+/H0Vp827zW0M/zhClKyqgQEawSpDOsnKhZ0MUaGGTuQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(366004)(136003)(396003)(39860400002)(451199015)(36756003)(86362001)(38100700002)(83380400001)(1076003)(2616005)(6486002)(26005)(6512007)(186003)(478600001)(107886003)(6506007)(316002)(41300700001)(4326008)(8676002)(8936002)(5660300002)(2906002)(66946007)(66556008)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1jAHCJ1xh3OQ26ixjbU3J8cS8CkchZ3gTvR/uYtge1W7X4OoMYcX02E+9g7v?=
- =?us-ascii?Q?ccW3r4pfAhkE5oIQXGsBCDlaaOVm0WNmVsvL+cGTk3yHjtqT1E0ETheVWg79?=
- =?us-ascii?Q?5tfktdFx82BHpBteQIYEjxJOiFybXaEMhcH6xp5hjP85ti2CcIIivcx/St/b?=
- =?us-ascii?Q?pGKrlyatGWgzutXPRQXDIDmH9kuNSqXKkoxiXu0YK4hmhkuDuAxclvQ64pgz?=
- =?us-ascii?Q?Ky+Jm4yBf7t0/5WnDFfD0RiJcawqAvI4z7Le6DoUc2gQ54IJ59HzzmPm3AOV?=
- =?us-ascii?Q?QV0dkgDClI5XMPYrJ+Hv9g+B47zx/ch0LkeO3tYVs3frcmzwjg3BY1Gugofp?=
- =?us-ascii?Q?LL6u7u1fSUlkwSRSPz2q6j9Gxsrzwcv2KtR/UhdWryneyuA5SlSA9dQGsRf2?=
- =?us-ascii?Q?oDeZdyxBomyvYg54WdPr4YiBipNQfq2HeX2qrTDZWbvsLBSpN4YdxT7yx55C?=
- =?us-ascii?Q?HNQuTY4IIZRW1b4aCjqeS7t3KAJtl/UsPdYLi9SUnc4HCJVxkfDR662ZMsGE?=
- =?us-ascii?Q?kG1NMPBJhdOoBt0kU4JlkEuQtuAmUCAOjGKwspx/W+w43jViseoWj3GIQ2st?=
- =?us-ascii?Q?nZRJ4W4iDuvC3lABchMAy44cen2m5HGoW10rgLtKvVyknTYGIWtJDgB4zM91?=
- =?us-ascii?Q?LW+lzB6OE1rPZTuDQ9tXZ3mV4VnrRlQf6SY26x16KRuxARYdfw2fKEp/+l1D?=
- =?us-ascii?Q?lwzYLGjf2vJ6Nel4CEvNy8BWA8qDYGS8bIpfVmrTjO6OiIZNvkypMRi7cDvm?=
- =?us-ascii?Q?lFlaeYWYJiE1CCD1T/Frn0qTorkEYTIHiZTZwR2H2AS/pcDH8aDIZWRSe7B/?=
- =?us-ascii?Q?5A8FhggnDezPp4gYpSu4G1oU0CY54yd+eCLKeECuyImzQHwQ4jIXG8QWXkBo?=
- =?us-ascii?Q?WBrhW47t6hxY6gUnoy6hq6Ri63zZXoJ1gYYQMbeLLzXd+lfUwuVLUkkGt+/U?=
- =?us-ascii?Q?JAIw74hvTJ5MBgPPNjSkvSxfKl1BSCPkcbtse6nXhnQ0QwYGoyG0OOUP/sHX?=
- =?us-ascii?Q?gJiUpdoRhKxL7VfHzPMDHr5qXk3V6W5wv+RajvXBWkdMZdTl6nUBH7x1KTMN?=
- =?us-ascii?Q?OXU7NCgoxX/m3YV2ZIAvTCmuiK01GCm658vmgabA6IutMeZc+S0wtgnK8WMl?=
- =?us-ascii?Q?gu6w70v6k2vY0Kmx7zSFAIL1cu0bUr3wNacSbQ/Dx1wPW5f32tpWosKAx/iK?=
- =?us-ascii?Q?e5eAhW9/Tsyvn++SG+8d8ewCDi5s9YxcQHBkpTTF8Tr/l7CBkAid1/ze8Ggj?=
- =?us-ascii?Q?giZOAe5tfsieLqglMnQlSZVTObTeYotPVEGByYEJ8N94SfbJWWRmJbTycLxu?=
- =?us-ascii?Q?pO230po/wcEB9+7ovP0dLk1jJ4ErzsLk+UfMnjUuph2NoCUu8li7QKlaUYga?=
- =?us-ascii?Q?T+tRsSW4G4X3JImNxnRgCsBWoJhZpe8bgHL1wXb2idpdOAXlrlqklD4Nz00H?=
- =?us-ascii?Q?5TWqHsD/dOKclqWRUDBHS/WplbE3JIHL8UU5I0dxDDhXQ2c3UGVh7+WtVmaj?=
- =?us-ascii?Q?AAcnOyUQRpFfbNt7kTFVHUmQEKwfwAUhcro5txF3mhAjuHzpGWgQ8z3lU84V?=
- =?us-ascii?Q?RlkllXq0hprExgAoxdEOT6oVzs1vREKjyD77C+NZ?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uZAFknEZRxYZjrD1hqt7bGRwgJVNG8vYv7OpkRMNxJZn33d65JAkMoBhSvP5?=
+ =?us-ascii?Q?aW9DVmBi5vs5oOzPDGO5qK6hVdKZIjt5XSZVeNROI1x8iwOStp0y6VCE/LYu?=
+ =?us-ascii?Q?jAszD1AVrbubWpDPO4aToEMbBa2niiHhJuSbk21xNifKjqv520BVe57MjrhX?=
+ =?us-ascii?Q?A0AJ7XSSQbnopVVi7VEtVYOg2Fjew6p+jmIIv9FwN29JR59H+MnwbiPC5af3?=
+ =?us-ascii?Q?Tlow00OpNE0eCJ3/eu8pTcqv3Kw2/z/wZf6G9F4dw8CLnlBNE6azlBu8qnf/?=
+ =?us-ascii?Q?Mqx3y6Xh2wulQlhAtj719+HkCw3RDAxG9peWnkeT+wvIXEgtqVHHHpBXqUFP?=
+ =?us-ascii?Q?xSoFerFFAHTSiF6iLH5vQIqhdjW6ssDZTCeUAFEsPfVQxHF+j06srQkyQuUN?=
+ =?us-ascii?Q?YnHr3/XlYok6815p75tzLIK3n5DTK6dRGc/TwrEc826uJeYU+52bFBlJKuS2?=
+ =?us-ascii?Q?q8xdRE9kLYtFHNt5dUl0fHYAwwuv2byc0kRi7oCejx+GSNJiQtKikdVBZARV?=
+ =?us-ascii?Q?PxShl5SDzYcgGvHSi4R5diAQdN9qiYYemhPAwNgfZbOomiPhmJQU4oQp9iqV?=
+ =?us-ascii?Q?zU+3h8bdQbsOhZ1opjD1IzNNYv7KExFBpFXKbsHRieSXWd3gIlIDCiif3v3J?=
+ =?us-ascii?Q?ycN/boI+7gazuPcXbwduHrTEotDh3LpCzKBCyzH2PMXvcyGZiH22PPXMa4MS?=
+ =?us-ascii?Q?BcenKQ59ccx1n76G/8CKjboeovkC1ynREozRzt/uOwcc9Co0UY8sSP8D365c?=
+ =?us-ascii?Q?WjsrsrHZxJsyzfqAagdNimTW3bMYo3klJ3Xiwi2eB+eKLGq2L1hUlWPA705w?=
+ =?us-ascii?Q?N12FqmEG9ZCdEG8HwMO5kYwnGiMA34OW0kKRvFdJUebcKl0GfgfW7j+gFQm3?=
+ =?us-ascii?Q?nwBNGx99Y3dkLOmjGQasBR9lxeb+rGgkjVuLS9V3znBuwkQIGFUWbBcxOavM?=
+ =?us-ascii?Q?H4XBO5Lx7sMbADB/ron29wmYjaUoths8KVDhdIo7lGGVB8o0oX30dIxy4Kj+?=
+ =?us-ascii?Q?JLQ1abVf6i1NmWuS4INq2EWaebhkSw8aWoxAy1FW7Z3g+xYaUvDB2rpp1fyE?=
+ =?us-ascii?Q?yV8jHu0TvMusmv6Sp/lpSUV+irkgfKCG/61OlLJaiTQ1XvLpg35iJp062jvQ?=
+ =?us-ascii?Q?GAQbGG1JBeQi4yWLRXDzaityfk5ujdM4XUfEnfiKEuFdnrxvpGdtIiBdH/YS?=
+ =?us-ascii?Q?npKKDHmEqYsd7CewkLomq70mgV4kN1meJXAuYBAAXLOaLc5gQwzNSqj+RN1G?=
+ =?us-ascii?Q?sOGMPeRPLIplKwInfEw7uQVSvY263wy9t5tzq2GecaykEPS/7w5B6bf5Zqg0?=
+ =?us-ascii?Q?TFJhB5mE9Mco5bF+sdm6VDlqN5tFn6fdPWZJPTpODuOGqNhO/ra2uz24CZib?=
+ =?us-ascii?Q?cvBmNPiE2O8b65ct1/UzOeFZ95+DlvDg/ozVkuxKr7j41Traw5zkqX7rF78Y?=
+ =?us-ascii?Q?UkzizipTKpi1F1ow56q8fa4YfS5BQxQzd31q+QsUS/xbzfNAnL5RVAMIF/s4?=
+ =?us-ascii?Q?tcrPU/Mxmtv0S1aoT/ZA+YwOGde5x54tJQI9KzObiYw+ryKWBPF/Dnz1oupR?=
+ =?us-ascii?Q?psZSNB0C9H/VLUQkJdWaP6En0g58iccuDnRxEARw?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af3825a2-5ef8-413e-d8c8-08dadabefd12
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e524bc3-76d9-489c-ba44-08dadabf010a
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Dec 2022 14:58:25.3358
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Dec 2022 14:58:31.8216
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1xPnmjAdtePKN/1b7aFAXdt71fORgL1kues0ZRHZbIEuY2ubUCDi6FybdQ4ymidloCT6ufEo8TAXAi2NedEcvA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 37gprxUd5m4T9zhmRVAaoqKx5aSnUPDROjIbdpMoQE8Us0pNz10+pnb1JOZ+j8VhoFbKxfYYq25s21wejHt1cA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8128
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -114,55 +114,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new netlink attributes to the RTM_NEWMDB request that allow user
-space to add (*, G) with a source list and filter mode.
+Add the 'MDBE_ATTR_RTPORT' attribute to allow user space to specify the
+routing protocol of the MDB port group entry. Enforce a minimum value of
+'RTPROT_STATIC' to prevent user space from using protocol values that
+should only be set by the kernel (e.g., 'RTPROT_KERNEL'). Maintain
+backward compatibility by defaulting to 'RTPROT_STATIC'.
 
-The RTM_NEWMDB message can already dump such entries (created by the
-kernel) so there is no need to add dump support. However, the message
-contains a different set of attributes depending if it is a request or a
-response. The naming and structure of the new attributes try to follow
-the existing ones used in the response.
+The protocol is already visible to user space in RTM_NEWMDB responses
+and notifications via the 'MDBA_MDB_EATTR_RTPROT' attribute.
 
-Request:
+The routing protocol allows a routing daemon to distinguish between
+entries configured by it and those configured by the administrator. Once
+MDB flush is supported, the protocol can be used as a criterion
+according to which the flush is performed.
 
-[ struct nlmsghdr ]
-[ struct br_port_msg ]
-[ MDBA_SET_ENTRY ]
-	struct br_mdb_entry
-[ MDBA_SET_ENTRY_ATTRS ]
-	[ MDBE_ATTR_SOURCE ]
-		struct in_addr / struct in6_addr
-	[ MDBE_ATTR_SRC_LIST ]		// new
-		[ MDBE_SRC_LIST_ENTRY ]
-			[ MDBE_SRCATTR_ADDRESS ]
-				struct in_addr / struct in6_addr
-		[ ...]
-	[ MDBE_ATTR_GROUP_MODE ]	// new
-		u8
+Examples:
 
-Response:
+ # bridge mdb add dev br0 port dummy10 grp 239.1.1.1 permanent proto kernel
+ Error: integer out of range.
 
-[ struct nlmsghdr ]
-[ struct br_port_msg ]
-[ MDBA_MDB ]
-	[ MDBA_MDB_ENTRY ]
-		[ MDBA_MDB_ENTRY_INFO ]
-			struct br_mdb_entry
-		[ MDBA_MDB_EATTR_TIMER ]
-			u32
-		[ MDBA_MDB_EATTR_SOURCE ]
-			struct in_addr / struct in6_addr
-		[ MDBA_MDB_EATTR_RTPROT ]
-			u8
-		[ MDBA_MDB_EATTR_SRC_LIST ]
-			[ MDBA_MDB_SRCLIST_ENTRY ]
-				[ MDBA_MDB_SRCATTR_ADDRESS ]
-					struct in_addr / struct in6_addr
-				[ MDBA_MDB_SRCATTR_TIMER ]
-					u8
-			[...]
-		[ MDBA_MDB_EATTR_GROUP_MODE ]
-			u8
+ # bridge mdb add dev br0 port dummy10 grp 239.1.1.1 permanent proto static
+
+ # bridge mdb add dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent proto zebra
+
+ # bridge mdb add dev br0 port dummy10 grp 239.1.1.2 permanent source_list 198.51.100.1,198.51.100.2 filter_mode include proto 250
+
+ # bridge -d mdb show
+ dev br0 port dummy10 grp 239.1.1.2 src 198.51.100.2 permanent filter_mode include proto 250
+ dev br0 port dummy10 grp 239.1.1.2 src 198.51.100.1 permanent filter_mode include proto 250
+ dev br0 port dummy10 grp 239.1.1.2 permanent filter_mode include source_list 198.51.100.2/0.00,198.51.100.1/0.00 proto 250
+ dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto zebra
+ dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode exclude proto static
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
@@ -170,227 +152,97 @@ Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
 Notes:
     v1:
-    * Use an array instead of list to store source entries.
-    * Drop br_mdb_config_attrs_fini().
+    * Reject protocol for host entries.
 
- include/uapi/linux/if_bridge.h |  20 +++++
- net/bridge/br_mdb.c            | 130 +++++++++++++++++++++++++++++++++
- 2 files changed, 150 insertions(+)
+ include/uapi/linux/if_bridge.h |  1 +
+ net/bridge/br_mdb.c            | 15 +++++++++++++--
+ net/bridge/br_private.h        |  1 +
+ 3 files changed, 15 insertions(+), 2 deletions(-)
 
 diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index a86a7e7b811f..0d9fe73fc48c 100644
+index 0d9fe73fc48c..d9de241d90f9 100644
 --- a/include/uapi/linux/if_bridge.h
 +++ b/include/uapi/linux/if_bridge.h
-@@ -723,10 +723,30 @@ enum {
- enum {
- 	MDBE_ATTR_UNSPEC,
+@@ -725,6 +725,7 @@ enum {
  	MDBE_ATTR_SOURCE,
-+	MDBE_ATTR_SRC_LIST,
-+	MDBE_ATTR_GROUP_MODE,
+ 	MDBE_ATTR_SRC_LIST,
+ 	MDBE_ATTR_GROUP_MODE,
++	MDBE_ATTR_RTPROT,
  	__MDBE_ATTR_MAX,
  };
  #define MDBE_ATTR_MAX (__MDBE_ATTR_MAX - 1)
- 
-+/* per mdb entry source */
-+enum {
-+	MDBE_SRC_LIST_UNSPEC,
-+	MDBE_SRC_LIST_ENTRY,
-+	__MDBE_SRC_LIST_MAX,
-+};
-+#define MDBE_SRC_LIST_MAX (__MDBE_SRC_LIST_MAX - 1)
-+
-+/* per mdb entry per source attributes
-+ * these are embedded in MDBE_SRC_LIST_ENTRY
-+ */
-+enum {
-+	MDBE_SRCATTR_UNSPEC,
-+	MDBE_SRCATTR_ADDRESS,
-+	__MDBE_SRCATTR_MAX,
-+};
-+#define MDBE_SRCATTR_MAX (__MDBE_SRCATTR_MAX - 1)
-+
- /* Embedded inside LINK_XSTATS_TYPE_BRIDGE */
- enum {
- 	BRIDGE_XSTATS_UNSPEC,
 diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index e9a4b7e247e7..61d46b0a31b6 100644
+index 61d46b0a31b6..72d4e53193e5 100644
 --- a/net/bridge/br_mdb.c
 +++ b/net/bridge/br_mdb.c
-@@ -663,10 +663,25 @@ void br_rtr_notify(struct net_device *dev, struct net_bridge_mcast_port *pmctx,
- 	rtnl_set_sk_err(net, RTNLGRP_MDB, err);
- }
- 
-+static const struct nla_policy
-+br_mdbe_src_list_entry_pol[MDBE_SRCATTR_MAX + 1] = {
-+	[MDBE_SRCATTR_ADDRESS] = NLA_POLICY_RANGE(NLA_BINARY,
-+						  sizeof(struct in_addr),
-+						  sizeof(struct in6_addr)),
-+};
-+
-+static const struct nla_policy
-+br_mdbe_src_list_pol[MDBE_SRC_LIST_MAX + 1] = {
-+	[MDBE_SRC_LIST_ENTRY] = NLA_POLICY_NESTED(br_mdbe_src_list_entry_pol),
-+};
-+
- static const struct nla_policy br_mdbe_attrs_pol[MDBE_ATTR_MAX + 1] = {
- 	[MDBE_ATTR_SOURCE] = NLA_POLICY_RANGE(NLA_BINARY,
- 					      sizeof(struct in_addr),
- 					      sizeof(struct in6_addr)),
-+	[MDBE_ATTR_GROUP_MODE] = NLA_POLICY_RANGE(NLA_U8, MCAST_EXCLUDE,
-+						  MCAST_INCLUDE),
-+	[MDBE_ATTR_SRC_LIST] = NLA_POLICY_NESTED(br_mdbe_src_list_pol),
+@@ -682,6 +682,7 @@ static const struct nla_policy br_mdbe_attrs_pol[MDBE_ATTR_MAX + 1] = {
+ 	[MDBE_ATTR_GROUP_MODE] = NLA_POLICY_RANGE(NLA_U8, MCAST_EXCLUDE,
+ 						  MCAST_INCLUDE),
+ 	[MDBE_ATTR_SRC_LIST] = NLA_POLICY_NESTED(br_mdbe_src_list_pol),
++	[MDBE_ATTR_RTPROT] = NLA_POLICY_MIN(NLA_U8, RTPROT_STATIC),
  };
  
  static bool is_valid_mdb_entry(struct br_mdb_entry *entry,
-@@ -1051,6 +1066,76 @@ static int __br_mdb_add(const struct br_mdb_config *cfg,
- 	return ret;
+@@ -823,7 +824,7 @@ static int br_mdb_add_group_sg(const struct br_mdb_config *cfg,
+ 	}
+ 
+ 	p = br_multicast_new_port_group(cfg->p, &cfg->group, *pp, flags, NULL,
+-					MCAST_INCLUDE, RTPROT_STATIC);
++					MCAST_INCLUDE, cfg->rt_protocol);
+ 	if (unlikely(!p)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Couldn't allocate new (S, G) port group");
+ 		return -ENOMEM;
+@@ -881,6 +882,7 @@ static int br_mdb_add_group_src_fwd(const struct br_mdb_config *cfg,
+ 	sg_cfg.group = sg_ip;
+ 	sg_cfg.src_entry = true;
+ 	sg_cfg.filter_mode = MCAST_INCLUDE;
++	sg_cfg.rt_protocol = cfg->rt_protocol;
+ 	return br_mdb_add_group_sg(&sg_cfg, sgmp, brmctx, flags, extack);
  }
  
-+static int br_mdb_config_src_entry_init(struct nlattr *src_entry,
-+					struct br_mdb_src_entry *src,
-+					__be16 proto,
-+					struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[MDBE_SRCATTR_MAX + 1];
-+	int err;
-+
-+	err = nla_parse_nested(tb, MDBE_SRCATTR_MAX, src_entry,
-+			       br_mdbe_src_list_entry_pol, extack);
-+	if (err)
-+		return err;
-+
-+	if (NL_REQ_ATTR_CHECK(extack, src_entry, tb, MDBE_SRCATTR_ADDRESS))
-+		return -EINVAL;
-+
-+	if (!is_valid_mdb_source(tb[MDBE_SRCATTR_ADDRESS], proto, extack))
-+		return -EINVAL;
-+
-+	src->addr.proto = proto;
-+	nla_memcpy(&src->addr.src, tb[MDBE_SRCATTR_ADDRESS],
-+		   nla_len(tb[MDBE_SRCATTR_ADDRESS]));
-+
-+	return 0;
-+}
-+
-+static int br_mdb_config_src_list_init(struct nlattr *src_list,
-+				       struct br_mdb_config *cfg,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *src_entry;
-+	int rem, err;
-+	int i = 0;
-+
-+	nla_for_each_nested(src_entry, src_list, rem)
-+		cfg->num_src_entries++;
-+
-+	if (cfg->num_src_entries >= PG_SRC_ENT_LIMIT) {
-+		NL_SET_ERR_MSG_FMT_MOD(extack, "Exceeded maximum number of source entries (%u)",
-+				       PG_SRC_ENT_LIMIT - 1);
-+		return -EINVAL;
-+	}
-+
-+	cfg->src_entries = kcalloc(cfg->num_src_entries,
-+				   sizeof(struct br_mdb_src_entry), GFP_KERNEL);
-+	if (!cfg->src_entries)
-+		return -ENOMEM;
-+
-+	nla_for_each_nested(src_entry, src_list, rem) {
-+		err = br_mdb_config_src_entry_init(src_entry,
-+						   &cfg->src_entries[i],
-+						   cfg->entry->addr.proto,
-+						   extack);
-+		if (err)
-+			goto err_src_entry_init;
-+		i++;
-+	}
-+
-+	return 0;
-+
-+err_src_entry_init:
-+	kfree(cfg->src_entries);
-+	return err;
-+}
-+
-+static void br_mdb_config_src_list_fini(struct br_mdb_config *cfg)
-+{
-+	kfree(cfg->src_entries);
-+}
-+
- static int br_mdb_config_attrs_init(struct nlattr *set_attrs,
- 				    struct br_mdb_config *cfg,
- 				    struct netlink_ext_ack *extack)
-@@ -1070,6 +1155,44 @@ static int br_mdb_config_attrs_init(struct nlattr *set_attrs,
+@@ -982,7 +984,7 @@ static int br_mdb_add_group_star_g(const struct br_mdb_config *cfg,
+ 	}
  
- 	__mdb_entry_to_br_ip(cfg->entry, &cfg->group, mdb_attrs);
+ 	p = br_multicast_new_port_group(cfg->p, &cfg->group, *pp, flags, NULL,
+-					cfg->filter_mode, RTPROT_STATIC);
++					cfg->filter_mode, cfg->rt_protocol);
+ 	if (unlikely(!p)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Couldn't allocate new (*, G) port group");
+ 		return -ENOMEM;
+@@ -1193,6 +1195,14 @@ static int br_mdb_config_attrs_init(struct nlattr *set_attrs,
+ 		return -EINVAL;
+ 	}
  
-+	if (mdb_attrs[MDBE_ATTR_GROUP_MODE]) {
++	if (mdb_attrs[MDBE_ATTR_RTPROT]) {
 +		if (!cfg->p) {
-+			NL_SET_ERR_MSG_MOD(extack, "Filter mode cannot be set for host groups");
++			NL_SET_ERR_MSG_MOD(extack, "Protocol cannot be set for host groups");
 +			return -EINVAL;
 +		}
-+		if (!br_multicast_is_star_g(&cfg->group)) {
-+			NL_SET_ERR_MSG_MOD(extack, "Filter mode can only be set for (*, G) entries");
-+			return -EINVAL;
-+		}
-+		cfg->filter_mode = nla_get_u8(mdb_attrs[MDBE_ATTR_GROUP_MODE]);
-+	} else {
-+		cfg->filter_mode = MCAST_EXCLUDE;
-+	}
-+
-+	if (mdb_attrs[MDBE_ATTR_SRC_LIST]) {
-+		if (!cfg->p) {
-+			NL_SET_ERR_MSG_MOD(extack, "Source list cannot be set for host groups");
-+			return -EINVAL;
-+		}
-+		if (!br_multicast_is_star_g(&cfg->group)) {
-+			NL_SET_ERR_MSG_MOD(extack, "Source list can only be set for (*, G) entries");
-+			return -EINVAL;
-+		}
-+		if (!mdb_attrs[MDBE_ATTR_GROUP_MODE]) {
-+			NL_SET_ERR_MSG_MOD(extack, "Source list cannot be set without filter mode");
-+			return -EINVAL;
-+		}
-+		err = br_mdb_config_src_list_init(mdb_attrs[MDBE_ATTR_SRC_LIST],
-+						  cfg, extack);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (!cfg->num_src_entries && cfg->filter_mode == MCAST_INCLUDE) {
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot add (*, G) INCLUDE with an empty source list");
-+		return -EINVAL;
++		cfg->rt_protocol = nla_get_u8(mdb_attrs[MDBE_ATTR_RTPROT]);
 +	}
 +
  	return 0;
  }
  
-@@ -1162,6 +1285,11 @@ static int br_mdb_config_init(struct net *net, const struct nlmsghdr *nlh,
- 	return 0;
- }
+@@ -1212,6 +1222,7 @@ static int br_mdb_config_init(struct net *net, const struct nlmsghdr *nlh,
  
-+static void br_mdb_config_fini(struct br_mdb_config *cfg)
-+{
-+	br_mdb_config_src_list_fini(cfg);
-+}
-+
- static int br_mdb_add(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		      struct netlink_ext_ack *extack)
- {
-@@ -1220,6 +1348,7 @@ static int br_mdb_add(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	}
+ 	memset(cfg, 0, sizeof(*cfg));
+ 	cfg->filter_mode = MCAST_EXCLUDE;
++	cfg->rt_protocol = RTPROT_STATIC;
  
- out:
-+	br_mdb_config_fini(&cfg);
- 	return err;
- }
- 
-@@ -1295,6 +1424,7 @@ static int br_mdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		err = __br_mdb_del(&cfg);
- 	}
- 
-+	br_mdb_config_fini(&cfg);
- 	return err;
- }
+ 	bpm = nlmsg_data(nlh);
+ 	if (!bpm->ifindex) {
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 368f5f6fa42b..cdc9e040f1f6 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -106,6 +106,7 @@ struct br_mdb_config {
+ 	u8				filter_mode;
+ 	struct br_mdb_src_entry		*src_entries;
+ 	int				num_src_entries;
++	u8				rt_protocol;
+ };
+ #endif
  
 -- 
 2.37.3
