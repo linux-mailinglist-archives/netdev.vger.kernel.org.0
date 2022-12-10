@@ -2,112 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33DAA648BD4
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:42:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45BE1648BE3
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbiLJAma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 19:42:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
+        id S229828AbiLJArk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 19:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiLJAm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:42:29 -0500
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D383F97645;
-        Fri,  9 Dec 2022 16:42:27 -0800 (PST)
-Message-ID: <8fdc5438-9ca1-6c12-9909-c6f472c22f19@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1670632946;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=j4j7zCs4ite6CneM2hN33AekYFseDp5FZuluTmgM6C8=;
-        b=UQy+2H0bR4kY8GcTkMgDNeSmN6X9KwMzIfrBHnEbVb5W8eGty6p/MAzk5RWXpbkp1mPSPe
-        0R+uVG5iSnFGk00sGDOOhNJjrHY1hKBZ1nPkzE3OMY9z1uPpO74fkY6gIJWLXXp6YVD8Uc
-        cs49hY/iSGqCA87YpcG15Hp/zkUeaQM=
-Date:   Fri, 9 Dec 2022 16:42:19 -0800
+        with ESMTP id S229468AbiLJArj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:47:39 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68014DD0;
+        Fri,  9 Dec 2022 16:47:37 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id t17so15239637eju.1;
+        Fri, 09 Dec 2022 16:47:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uRnRrqGsFpngaI89ODUUTmQJOBbmZXvuzOkPrCLsszM=;
+        b=j7132LuMo5aHHPdlvEWbCPQmE1/OnzvHCr1zbaj91+ZEl3kRZLZtZP5WaRt8prNwsk
+         06SbQjIlWtRTafIoKdeQKKVPYqY/qiLJvbWSlHcx0QE9E6Ls+M9WzH6BYXss1X3S6SeF
+         oqHmen/fDSz3vy1aESM4VHRNCULDPpf1yeDAdZ2z0W22g1772tcHaZNO1Ya7CK+/K3zc
+         ISDz8RjQw0EGzvHGrFDUh4QFs5K3YzO+wre95dc4Eaf+y4YbBN4iBRzVbUYFNWJfGo/P
+         7XzSXNSnoc4brItBbDkwLsvSKwdtuUMGvJS6ELQpW8jAm6MI/LZHSLSml+9JCqutsok/
+         SjnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uRnRrqGsFpngaI89ODUUTmQJOBbmZXvuzOkPrCLsszM=;
+        b=ZShXGy+uvzokD0ijPwZQcwxkzYy8awyOyypfvTXg6XPVDHH9BTERv+8ZZoYXyQ11RS
+         1xR7fVVuj4tNe9oXNUQekp06YumuUH+MgMF/12NECerF/u/TFTi3Q64DQfqYUlz/7V0D
+         RmwzZFGazlcFRD3EQ2oiUp7sbi+Yw1HUG6RktVBGSBfJ4WMumN4IYEPp5w0IGQuyx9OB
+         diSV23F9MjbwM+8HuXnMQihBN3vnhqJW5EnCp6Xn9pd+9a8IpEMWmHP1FxE2unVFGdw2
+         nmI+qF3/APorYdfp28pITkSVgVKVd23ZgzRQZSY1tda56h6icQNlirlT+3eCifzw5NBR
+         D+xw==
+X-Gm-Message-State: ANoB5plk9k+B6fravfGgMb7BQaBuMH2kBJhrnJeXyU5WZAavuKGKFiz3
+        peIVS2U5E/DvOAE7gUIKfcPh2enRzly0yQ==
+X-Google-Smtp-Source: AA0mqf4FN60H3mOLSUeiSgAWP+9BKg3XqlbLAQ4LON1jjtFfV8L+aj0XkAgozjycPxluHPy4hPbijw==
+X-Received: by 2002:a17:907:3e91:b0:7c1:13b5:c434 with SMTP id hs17-20020a1709073e9100b007c113b5c434mr10137680ejc.35.1670633255959;
+        Fri, 09 Dec 2022 16:47:35 -0800 (PST)
+Received: from koshchanka.. (mm-144-58-120-178.brest.dynamic.pppoe.byfly.by. [178.120.58.144])
+        by smtp.gmail.com with ESMTPSA id 1-20020a170906318100b007c0688a68cbsm468739ejy.176.2022.12.09.16.47.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Dec 2022 16:47:35 -0800 (PST)
+From:   Uladzislau Koshchanka <koshchanka@gmail.com>
+To:     olteanv@gmail.com
+Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Uladzislau Koshchanka <koshchanka@gmail.com>
+Subject: [PATCH] lib: packing: replace bit_reverse() with bitrev8()
+Date:   Sat, 10 Dec 2022 03:44:23 +0300
+Message-Id: <20221210004423.32332-1-koshchanka@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221209220651.i43mxhz5aczhhjgs@skbuf>
+References: <20221209220651.i43mxhz5aczhhjgs@skbuf>
 MIME-Version: 1.0
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next v3 03/12] bpf: XDP metadata RX
- kfuncs
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org
-References: <20221206024554.3826186-1-sdf@google.com>
- <20221206024554.3826186-4-sdf@google.com> <878rjhldv0.fsf@toke.dk>
- <CAKH8qBvgkTXFEhd9hOa+SFtqKAXuD=WM_h1TZYdQA0d70_drEA@mail.gmail.com>
- <87zgbxjv7a.fsf@toke.dk>
- <CAKH8qBsK1J5HeSgPN_sYzQRY2jZOO=-E+zyKsn4xJ22zv5HRFg@mail.gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <CAKH8qBsK1J5HeSgPN_sYzQRY2jZOO=-E+zyKsn4xJ22zv5HRFg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/8/22 6:57 PM, Stanislav Fomichev wrote:
-> On Thu, Dec 8, 2022 at 4:07 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> Stanislav Fomichev <sdf@google.com> writes:
->>
->>>> Another UX thing I ran into is that libbpf will bail out if it can't
->>>> find the kfunc in the kernel vmlinux, even if the code calling the
->>>> function is behind an always-false if statement (which would be
->>>> eliminated as dead code from the verifier). This makes it a bit hard to
->>>> conditionally use them. Should libbpf just allow the load without
->>>> performing the relocation (and let the verifier worry about it), or
->>>> should we have a bpf_core_kfunc_exists() macro to use for checking?
->>>> Maybe both?
->>>
->>> I'm not sure how libbpf can allow the load without performing the
->>> relocation; maybe I'm missing something.
->>> IIUC, libbpf uses the kfunc name (from the relocation?) and replaces
->>> it with the kfunc id, right?
->>
->> Yeah, so if it can't find the kfunc in vmlinux, just write an id of 0.
->> This will trip the check at the top of fixup_kfunc_call() in the
->> verifier, but if the code is hidden behind an always-false branch (an
->> rodata variable set to zero, say) the instructions should get eliminated
->> before they reach that point. That way you can at least turn it off at
->> runtime (after having done some kind of feature detection) without
->> having to compile it out of your program entirely.
->>
->>> Having bpf_core_kfunc_exists would help, but this probably needs
->>> compiler work first to preserve some of the kfunc traces in vmlinux.h?
+Remove bit_reverse() function.  Instead use bitrev8() from linux/bitrev.h +
+bitshift.  Reduces code-repetition.
 
-hmm.... if I follow correctly, it wants the libbpf to accept a bpf prog using a 
-kfunc that does not exist in the running kernel?
+Signed-off-by: Uladzislau Koshchanka <koshchanka@gmail.com>
+---
+ lib/Kconfig   |  1 +
+ lib/packing.c | 16 ++--------------
+ 2 files changed, 3 insertions(+), 14 deletions(-)
 
-Have you tried "__weak":
-
-extern void dummy_kfunc(void) __ksym __weak;
-
-SEC("tc")
-int load(struct __sk_buff *skb)
-{
-	if (dummy_kfunc) {
-		dummy_kfunc();
-		return TC_ACT_SHOT;
-	}
-	return TC_ACT_UNSPEC;
-}
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 9bbf8a4b2108..cc969ef58a2a 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -24,6 +24,7 @@ config LINEAR_RANGES
+ 
+ config PACKING
+ 	bool "Generic bitfield packing and unpacking"
++	select BITREVERSE
+ 	default n
+ 	help
+ 	  This option provides the packing() helper function, which permits
+diff --git a/lib/packing.c b/lib/packing.c
+index 9a72f4bbf0e2..a96169237ae6 100644
+--- a/lib/packing.c
++++ b/lib/packing.c
+@@ -7,6 +7,7 @@
+ #include <linux/bitops.h>
+ #include <linux/errno.h>
+ #include <linux/types.h>
++#include <linux/bitrev.h>
+ 
+ static int get_le_offset(int offset)
+ {
+@@ -29,19 +30,6 @@ static int get_reverse_lsw32_offset(int offset, size_t len)
+ 	return word_index * 4 + offset;
+ }
+ 
+-static u64 bit_reverse(u64 val, unsigned int width)
+-{
+-	u64 new_val = 0;
+-	unsigned int bit;
+-	unsigned int i;
+-
+-	for (i = 0; i < width; i++) {
+-		bit = (val & (1 << i)) != 0;
+-		new_val |= (bit << (width - i - 1));
+-	}
+-	return new_val;
+-}
+-
+ static void adjust_for_msb_right_quirk(u64 *to_write, int *box_start_bit,
+ 				       int *box_end_bit, u8 *box_mask)
+ {
+@@ -49,7 +37,7 @@ static void adjust_for_msb_right_quirk(u64 *to_write, int *box_start_bit,
+ 	int new_box_start_bit, new_box_end_bit;
+ 
+ 	*to_write >>= *box_end_bit;
+-	*to_write = bit_reverse(*to_write, box_bit_width);
++	*to_write = bitrev8(*to_write) >> (8 - box_bit_width);
+ 	*to_write <<= *box_end_bit;
+ 
+ 	new_box_end_bit   = box_bit_width - *box_start_bit - 1;
+-- 
+2.34.1
 
