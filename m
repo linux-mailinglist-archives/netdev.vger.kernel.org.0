@@ -2,69 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55153648EEE
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 14:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C87648EF3
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 14:52:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbiLJNnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 08:43:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59368 "EHLO
+        id S229804AbiLJNwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 08:52:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiLJNnH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 08:43:07 -0500
-Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E3513D1E
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 05:43:06 -0800 (PST)
-Received: by mail-vk1-xa35.google.com with SMTP id z23so3450685vkb.12
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 05:43:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JJVlzrNzd/3zdP+2Sd2fTWkcgXHeQfr6iCBrZHbzQJM=;
-        b=VZAaImRRR7PkeIGU6DPAt3xmK0AZh7FyMTwzuPwvTO+Puj54SjBW8Z5I9ZzMG5Br5s
-         5zAIi86WkjDyTs5vWWxirxMoErDYcjRIeL9mau6lY8JzKvCl/L11HwMx7f0bpzDSRb3y
-         CUPl8Bmqu3VzzFST2JVySIRV3boeD0BNFBnxw48B5B9whPXHik5nf63pVeQakF+Tx9Dm
-         NUuF+1UKGV/7R+FJg3eY5M8IWtjpkHG+Qr64nkxMYpltHakXY8MTVIwpO45JD6yj3hQE
-         W0sN/umLMSgdtUAWJ6es6YiZszWkagN9jS38lEee7zBUFGvaTjF/oEOs49LdAtbAAT9G
-         1w6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JJVlzrNzd/3zdP+2Sd2fTWkcgXHeQfr6iCBrZHbzQJM=;
-        b=rFR2r/ciSm9liq/jB4RsiFoTj9cA2cSn4az1ZZ1VJJyOkttSSMxoUayX0GjfFyU/dS
-         kSmEv10bhUTb6QNegbRz0ix/S55ISIFPxuqM9uwGIZreQ6tw9TSz9+jh2LVvszw7iIzX
-         fd9py1RuCp3QZMdBXmbwnd919SUKe+dOpNmwxqoR9lQK8LdZtAQhINzX8Oxxm28JTsWZ
-         ZlmCv1fecZq9BfOcKzQXimX1CibLLax0+bv9Zm6six5Xpl5p0mJpLcancyQbj0llwpoE
-         uwX0vg/H4R9ZJlCIbmGzVWTx4i+gmUchqsw3ymK/3nrNno7w8NsZYIB8LuIxUZ3qx6Th
-         jrdQ==
-X-Gm-Message-State: ANoB5pnSIu+c4w+kQNLYb5/OhZWz7Xk6ufMR5ErxBZY77hpZpW4d+f8H
-        9fE+lySNfYIa+0+e9UJGF+luaHmti8RcaDczIETnBQL39YM=
-X-Google-Smtp-Source: AA0mqf5TSr/VvCV0YwCPrs0GippbxwvqvQktZCOApKjTJq/tEpIAPeyLsnGjBeL9LDcWw+C18mcJ1a94RZNwe9hIow4=
-X-Received: by 2002:a67:f882:0:b0:3b1:49aa:34f2 with SMTP id
- h2-20020a67f882000000b003b149aa34f2mr9941247vso.34.1670679315025; Sat, 10 Dec
- 2022 05:35:15 -0800 (PST)
+        with ESMTP id S229656AbiLJNwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 08:52:21 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D551B1C2;
+        Sat, 10 Dec 2022 05:52:18 -0800 (PST)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NTq6x0BLyzRpSN;
+        Sat, 10 Dec 2022 21:51:21 +0800 (CST)
+Received: from [10.67.111.176] (10.67.111.176) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Sat, 10 Dec 2022 21:52:15 +0800
+Message-ID: <030cca54-2e15-6723-7e07-9b393adc4d17@huawei.com>
+Date:   Sat, 10 Dec 2022 21:52:15 +0800
 MIME-Version: 1.0
-References: <Y44xdN3zH4f+BZCD@zwp-5820-Tower> <CADVnQykvAWHFOec_=DyU9GMLppK6mpeK-GqUVbktJffj1XA5rQ@mail.gmail.com>
- <87mt805181.fsf@cloudflare.com>
-In-Reply-To: <87mt805181.fsf@cloudflare.com>
-From:   Weiping Zhang <zwp10758@gmail.com>
-Date:   Sat, 10 Dec 2022 21:35:03 +0800
-Message-ID: <CAA70yB6LKf_xC-zH-9d1WT5eduz0Yv5PUSyZs=Wmh8oMBxmkUQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] tcp: correct srtt and mdev_us calculation
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Neal Cardwell <ncardwell@google.com>,
-        Weiping Zhang <zhangweiping@didiglobal.com>,
-        edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in
+ _rtl8812ae_phy_set_txpower_limit()
+Content-Language: en-US
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
+        "linville@tuxdriver.com" <linville@tuxdriver.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20221207152319.3135500-1-lizetao1@huawei.com>
+ <e985ead3ea7841b8b3a94201dfb18776@realtek.com>
+ <40c4ace2-68f3-5e7d-2e68-7ea36a104a28@huawei.com>
+ <4b0f5ddb6d5ccc2785f9c4e9f97eadd06a945ed7.camel@realtek.com>
+From:   Li Zetao <lizetao1@huawei.com>
+In-Reply-To: <4b0f5ddb6d5ccc2785f9c4e9f97eadd06a945ed7.camel@realtek.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.176]
+X-ClientProxiedBy: dggpeml500022.china.huawei.com (7.185.36.66) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,205 +61,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry to reply to late caused by bad cold,
+Hi Ping-Ke,
 
-
-On Tue, Dec 6, 2022 at 5:29 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+On 2022/12/10 21:15, Ping-Ke Shih wrote:
+> On Sat, 2022-12-10 at 20:47 +0800, Li Zetao wrote:
+>> Hi Ping-Ke,
+>>
+>> On 2022/12/9 13:11, Ping-Ke Shih wrote:
+>>>> -----Original Message-----
+>>>> From: Li Zetao <lizetao1@huawei.com>
+>>>> Sent: Wednesday, December 7, 2022 11:23 PM
+>>>> To: Ping-Ke Shih <pkshih@realtek.com>; kvalo@kernel.org; davem@davemloft.net;
+>>>> edumazet@google.com;
+>>>> kuba@kernel.org; pabeni@redhat.com
+>>>> Cc: lizetao1@huawei.com; Larry.Finger@lwfinger.net; linville@tuxdriver.com;
+>>>> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+>>>> Subject: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in
+>>>> _rtl8812ae_phy_set_txpower_limit()
+>>>>
+>>>> There is a global-out-of-bounds reported by KASAN:
+>>>>
+>>>>     BUG: KASAN: global-out-of-bounds in
+>>>>     _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
+>>>>     Read of size 1 at addr ffffffffa0773c43 by task NetworkManager/411
+>>>>
+>>>>     CPU: 6 PID: 411 Comm: NetworkManager Tainted: G      D
+>>>>     6.1.0-rc8+ #144 e15588508517267d37
+>>>>     Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+>>>>     Call Trace:
+>>>>      <TASK>
+>>>>      ...
+>>>>      kasan_report+0xbb/0x1c0
+>>>>      _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
+>>>>      rtl8821ae_phy_bb_config.cold+0x346/0x641 [rtl8821ae]
+>>>>      rtl8821ae_hw_init+0x1f5e/0x79b0 [rtl8821ae]
+>>>>      ...
+>>>>      </TASK>
+>>>>
+>>>> The root cause of the problem is that the comparison order of
+>>>> "prate_section" in _rtl8812ae_phy_set_txpower_limit() is wrong. The
+>>>> _rtl8812ae_eq_n_byte() is used to compare the first n bytes of the two
+>>>> strings, so this requires the length of the two strings be greater
+>>>> than or equal to n. In the  _rtl8812ae_phy_set_txpower_limit(), it was
+>>>> originally intended to meet this requirement by carefully designing
+>>>> the comparison order. For example, "pregulation" and "pbandwidth" are
+>>>> compared in order of length from small to large, first is 3 and last
+>>>> is 4. However, the comparison order of "prate_section" dose not obey
+>>>> such order requirement, therefore when "prate_section" is "HT", it will
+>>>> lead to access out of bounds in _rtl8812ae_eq_n_byte().
+>>>>
+>>>> Fix it by adding a length check in _rtl8812ae_eq_n_byte(). Although it
+>>>> can be fixed by adjusting the comparison order of "prate_section", this
+>>>> may cause the value of "rate_section" to not be from 0 to 5. In
+>>>> addition, commit "21e4b0726dc6" not only moved driver from staging to
+>>>> regular tree, but also added setting txpower limit function during the
+>>>> driver config phase, so the problem was introduced by this commit.
+>>>>
+>>>> Fixes: 21e4b0726dc6 ("rtlwifi: rtl8821ae: Move driver from staging to regular tree")
+>>>> Signed-off-by: Li Zetao <lizetao1@huawei.com>
+>>>> ---
+>>>>    drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c | 2 +-
+>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+>>>> b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+>>>> index a29321e2fa72..720114a9ddb2 100644
+>>>> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+>>>> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+>>>> @@ -1600,7 +1600,7 @@ static bool _rtl8812ae_get_integer_from_string(const char *str, u8
+>>>> *pint)
+>>>>
+>>>>    static bool _rtl8812ae_eq_n_byte(const char *str1, const char *str2, u32 num)
+>>>>    {
+>>> This can causes problem because it compares characters from tail to head, and
+>>> we can't simply replace this by strncmp() that does similar work. But, I also
+>>> don't like strlen() to loop 'str1' constantly.
+>>>
+>>> How about having a simple loop to compare characters forward:
+>>>
+>>> for (i = 0; i < num; i++)
+>>>       if (str1[i] != str2[i])
+>>>            return false;
+>>>
+>>> return true;
+>> Thanks for your comment, but I don't think the problem has anything to
+>> do with head-to-tail or
+>>
+>> tail-to-head comparison. The problem is that num is the length of str2,
+>> but the length of str1 may
+>>
+>> be less than num, which may lead to reading str1 out of bounds, for
+>> example, when comparing
+>>
+>> "prate_section", str1 may be "HT", while str2 may by "CCK", and num is
+>> 3. So I think it is neccssary
+>>
+>> to check the length of str1 to ensure that will not read out of bounds.
+>>
+> I know your point, and I believe your patch can work well, but I would like
+> to have simple code that can solve this specific problem.
 >
-> On Mon, Dec 05, 2022 at 02:15 PM -05, Neal Cardwell wrote:
-> > On Mon, Dec 5, 2022 at 1:02 PM Weiping Zhang
-> > <zhangweiping@didiglobal.com> wrote:
-> >>
-> >> From the comments we can see that, rtt =3D 7/8 rtt + 1/8 new,
-> >> but there is an mistake,
-> >>
-> >> m -=3D (srtt >> 3);
-> >> srtt +=3D m;
-> >>
-> >> explain:
-> >> m -=3D (srtt >> 3); //use t stands for new m
-> >> t =3D m - srtt/8;
-> >>
-> >> srtt =3D srtt + t
-> >> =3D srtt + m - srtt/8
-> >> =3D srtt 7/8 + m
-> >>
-> >> Test code:
-> >>
-> >>  #include<stdio.h>
-> >>
-> >>  #define u32 unsigned int
-> >>
-> >> static void test_old(u32 srtt, long mrtt_us)
-> >> {
-> >>         long m =3D mrtt_us;
-> >>         u32 old =3D srtt;
-> >>
-> >>         m -=3D (srtt >> 3);
-> >>         srtt +=3D m;
-> >>
-> >>         printf("%s old_srtt: %u mrtt_us: %ld new_srtt: %u\n", __func__=
-,  old, mrtt_us, srtt);
-> >> }
-> >>
-> >> static void test_new(u32 srtt, long mrtt_us)
-> >> {
-> >>         long m =3D mrtt_us;
-> >>         u32 old =3D srtt;
-> >>
-> >>         m =3D ((m - srtt) >> 3);
-> >>         srtt +=3D m;
-> >>
-> >>         printf("%s old_srtt: %u mrtt_us: %ld new_srtt: %u\n", __func__=
-,  old, mrtt_us, srtt);
-> >> }
-> >>
-> >> int main(int argc, char **argv)
-> >> {
-> >>         u32 srtt =3D 100;
-> >>         long mrtt_us =3D 90;
-> >>
-> >>         test_old(srtt, mrtt_us);
-> >>         test_new(srtt, mrtt_us);
-> >>
-> >>         return 0;
-> >> }
-> >>
-> >> ./a.out
-> >> test_old old_srtt: 100 mrtt_us: 90 new_srtt: 178
-> >> test_new old_srtt: 100 mrtt_us: 90 new_srtt: 98
-> >>
-> >> Signed-off-by: Weiping Zhang <zhangweiping@didiglobal.com>
-> >
-> > Please note that this analysis and this test program do not take
-> > account of the fact that srtt in the Linux kernel is maintained in a
-> > form where it is shifted left by 3 bits, to maintain a 3-bit
-> > fractional part. That is why at first glance it would seem there is a
-> > missing multiplication of the new sample by 1/8. By not shifting the
-> > new sample when it is added to srtt, the new sample is *implicitly*
-> > multiplied by 1/8.
+> Since both str1 and str2 are null-terminator strings, so str1[2]='\0' is
+> accessible if str1="HT", right? Then, if length of str1 and str2 is
+> different, null-terminator can help to break head-to-tail loop.
 >
-> Nifty. And it's documented.
+> Take "12" and "1234" as an example:
+> Then, num=4,
 >
-> struct tcp_sock {
->         =E2=80=A6
->         u32     srtt_us;        /* smoothed round trip time << 3 in usecs=
- */
+> head-to-tail                tail-to-head
+> -------------------        -------------------------------------------------
+> str1[0] == str2[0]          str1[3] >< str2[3]   (str1[3] is inaccessible)
+> str1[1] == str2[1]
+> str1[2] != str2[2]
 >
-> Thanks for the hint.
 >
-> >>  net/ipv4/tcp_input.c | 4 ++--
-> >>  1 file changed, 2 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> >> index 0640453fce54..0242bb31e1ce 100644
-> >> --- a/net/ipv4/tcp_input.c
-> >> +++ b/net/ipv4/tcp_input.c
-> >> @@ -848,7 +848,7 @@ static void tcp_rtt_estimator(struct sock *sk, lon=
-g mrtt_us)
-As comments by Neal, srtt use lowest 3bits for fraction part, the
-@mrtt_us does not include fraction part,
-so m - srtt is not suitable, since m -=3D (srtt >> 3) will get the delta
-which exclude fraction part, and m will also be
-used to calculate mdev_us.
-if we calculate srtt by: srtt =3D srtt *7/8 + (mrtt_us << 3)* 1 / 8,
-it's more readable, append 3bits 0 for fraction part.
-srtt =3D srtt *7/8 + (mrtt_us << 3)* 1 / 8
-srtt *7/8 =3D> srtt - srtt >> 3
-(mrtt_us << 3)* 1 / 8 =3D> mrtt_us
-then
-srtt =3D srtt - srtt >> 3 + mrtt_us;
-srtt =3D srtt + mrtt_us - srtt >> 3
-it's same as current code^_^
-my previous patch does not consider the fraction part, it generates a
-wrong result.
-
-I write a new test code to decode the fraction part:
-
-test_old old_srtt:         100 =3D>       12.4 mrtt_us:       90
-new_srtt:         178 =3D>       22.2
-test_new old_srtt:         100 =3D>       12.4 mrtt_us:       90
-new_srtt:          98 =3D>       12.2
-
-#include<stdio.h>
-#include<stdlib.h>
-
-#define u32 unsigned int
-
-static void test_old(u32 srtt, long mrtt_us)
-{
-long m =3D mrtt_us;
-u32 old =3D srtt;
-
-m -=3D (srtt >> 3);
-srtt +=3D m;
-
-printf("%s old_srtt:    %8u =3D> %8u.%u mrtt_us: %8ld new_srtt:    %8u
-=3D> %8u.%u\n", __func__,  old, old >> 3, old & 7, mrtt_us, srtt,
-srtt>>3, srtt & 7);
-//printf("%s old_srtt>>3: %8u mrtt_us: %8ld new_srtt>>3: %u\n",
-__func__,  old>>3, mrtt_us, srtt>>3);
-}
-
-static void test_new(u32 srtt, long mrtt_us)
-{
-long m =3D mrtt_us;
-u32 old =3D srtt;
-
-m =3D ((m - srtt) >> 3);
-srtt +=3D m;
-
-printf("%s old_srtt:    %8u =3D> %8u.%u mrtt_us: %8ld new_srtt:    %8u
-=3D> %8u.%u\n", __func__,  old, old >> 3, old & 7, mrtt_us, srtt,
-srtt>>3, srtt & 7);
-//printf("%s old_srtt>>3: %8u mrtt_us: %8ld new_srtt>>3: %u\n",
-__func__,  old>>3, mrtt_us, srtt>>3);
-}
-
-int main(int argc, char **argv)
-{
-u32 srtt =3D atoi(argv[1]);
-long mrtt_us =3D atoi(argv[2]);
-
-test_old(srtt, mrtt_us);
-test_new(srtt, mrtt_us);
-
-return 0;
-}
-
- > >>          * that VJ failed to avoid. 8)
-> >>          */
-> >>         if (srtt !=3D 0) {
-> >> -               m -=3D (srtt >> 3);       /* m is now error in rtt est=
- */
-> >> +               m =3D (m - srtt >> 3);    /* m is now error in rtt est=
- */
-> >>                 srtt +=3D m;              /* rtt =3D 7/8 rtt + 1/8 new=
- */
-> >>                 if (m < 0) {
-> >>                         m =3D -m;         /* m is now abs(error) */
-> >> @@ -864,7 +864,7 @@ static void tcp_rtt_estimator(struct sock *sk, lon=
-g mrtt_us)
-> >>                         if (m > 0)
-> >>                                 m >>=3D 3;
-> >>                 } else {
-> >> -                       m -=3D (tp->mdev_us >> 2);   /* similar update=
- on mdev */
-> >> +                       m =3D (m - tp->mdev_us >> 2);   /* similar upd=
-ate on mdev */
-> >>                 }
-> >>                 tp->mdev_us +=3D m;               /* mdev =3D 3/4 mdev=
- + 1/4 new */
-> >>                 if (tp->mdev_us > tp->mdev_max_us) {
-> >> --
-> >> 2.34.1
-> >
-> > AFAICT this proposed patch does not change the behavior of the code
-> > but merely expresses the same operations with slightly different
-> > syntax. Am I missing something?  :-)
+> I hope this can help to explain my point.
+Thank you, I get your point now.
 >
-> I've been wondering about that too. There's a change hiding behind
-> operator precedence. Would be better expressed with explicitly placed
-> parenthesis:
+> After I think deeper, it seems like third parameter 'u32 num' isn't necessary,
+> and then just strcmp(str1, str2) is enough.
 >
->         m =3D (m - srtt) >> 3;    /* m is now error in rtt est */
+> Ping-Ke
+
+I will replace _rtl8812ae_eq_n_byte with strcmp in the v2 and do a full 
+test.
+
+
+With Best Regards,
+
+Li Zetao
+
+>
