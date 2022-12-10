@@ -2,73 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2849648EA1
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 13:28:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B09648EB7
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 13:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiLJM2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 07:28:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41534 "EHLO
+        id S229738AbiLJMrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 07:47:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbiLJM23 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 07:28:29 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0676813F8A
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 04:28:29 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id q17-20020a17090aa01100b002194cba32e9so10983816pjp.1
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 04:28:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=khaFcQPgARo1xpJyDK3o+f2PSJeT9FNZ3ZSgfSykN5E=;
-        b=etD3+wZhpv5OqXPxUx+n5uvDC8vc8uCS5Ru+xsEPz963oXbnFkOiW87hi6F92ZF34G
-         IpAenyrFIL9/C6G+r0D1n7fuYNG/JjS4QzJRJjYtO5edrKNaY+ciFUaf5HDq3x6v2kOh
-         X9PSm4Sw2OFpLoIP6FJnfS5FEk+Bgi3AbQ/iYcSL2lB8jcax5/TjsYmkIaegy5te1dSG
-         DVFHF01AI5CXQf4NjrPqvhbB20/hSKYI0FeIk0yL/enJsNchV0AjVJH6N8R82L5EbWwl
-         G38aqlskHQGhHD/pWIBDW9NscprFcDvgycHS534Y4KuVHL5VsmVMEEFrEeVyzvKPeVnI
-         e18g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=khaFcQPgARo1xpJyDK3o+f2PSJeT9FNZ3ZSgfSykN5E=;
-        b=iXNPmNuPOAJlPRxZJQSlK58o6mRNyQIqcCXhY85aW0Z91JQPwafoEYw4HKciJCbelk
-         dtq8v5Y9HaOMQWh73YKXc/DRTlIa/FcgrDpAtiS8xrhHyPa/Y7Bd10U4OKE9ccFRtTH+
-         skrv5XHN9TZn9j9GQmBrL2zFXGE4XMu9wNyA3jITBpBOVS7/BPyw7nVAeSZRtvFn7flV
-         h6/zZ/N2LgXSHVW2H/qsiWPbvXk/Xr2Y01JPJEbCiaRsfcZj4xKTJn8OigHx46Mlvnsb
-         dBdBLwUEOPeHbv4ZfEWcyFbi+CPz9Kyxa8xbMO3y7xLnmNXNBSouYDdoLqvfJfxv0DZq
-         AO0A==
-X-Gm-Message-State: ANoB5pnw5Jo4Mv43hjzA2eVOpB1tU2mUuiI+2qw69Wm6Tz59opYVgCQI
-        Rp4H04zDllBprcIIhELNkqLWc7ItJKe4L2j5
-X-Google-Smtp-Source: AA0mqf5m1zWi9OIQJgluU5RVlG2dLgOHcszOKN3THswP3AIuHcitzdeosDvopxkTKG0WZ9iBG+mfJw==
-X-Received: by 2002:a17:902:cec4:b0:189:eec5:ff71 with SMTP id d4-20020a170902cec400b00189eec5ff71mr14280179plg.44.1670675308495;
-        Sat, 10 Dec 2022 04:28:28 -0800 (PST)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id q6-20020a170902dac600b00189a50d2a3esm2887719plx.241.2022.12.10.04.28.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Dec 2022 04:28:27 -0800 (PST)
-Date:   Sat, 10 Dec 2022 20:28:20 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>, liali <liali@redhat.com>
-Subject: Re: [PATCH net 1/3] bonding: access curr_active_slave with
- rtnl_dereference
-Message-ID: <Y5R7ZDfKkZKZe9j1@Laptop-X1>
-References: <20221209101305.713073-1-liuhangbin@gmail.com>
- <20221209101305.713073-2-liuhangbin@gmail.com>
- <CANn89iK8TEtpZa67-FfR6KFKAj_HCdtn3573Z9Cd7PG26WP3iA@mail.gmail.com>
+        with ESMTP id S229710AbiLJMrt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 07:47:49 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11C4BC05;
+        Sat, 10 Dec 2022 04:47:44 -0800 (PST)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NTncc0g3VzqSyh;
+        Sat, 10 Dec 2022 20:43:28 +0800 (CST)
+Received: from [10.67.111.176] (10.67.111.176) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Sat, 10 Dec 2022 20:47:40 +0800
+Message-ID: <40c4ace2-68f3-5e7d-2e68-7ea36a104a28@huawei.com>
+Date:   Sat, 10 Dec 2022 20:47:39 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iK8TEtpZa67-FfR6KFKAj_HCdtn3573Z9Cd7PG26WP3iA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in
+ _rtl8812ae_phy_set_txpower_limit()
+Content-Language: en-US
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+CC:     "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
+        "linville@tuxdriver.com" <linville@tuxdriver.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20221207152319.3135500-1-lizetao1@huawei.com>
+ <e985ead3ea7841b8b3a94201dfb18776@realtek.com>
+From:   Li Zetao <lizetao1@huawei.com>
+In-Reply-To: <e985ead3ea7841b8b3a94201dfb18776@realtek.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.176]
+X-ClientProxiedBy: dggpeml500012.china.huawei.com (7.185.36.15) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,50 +59,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 10, 2022 at 12:58:59AM +0100, Eric Dumazet wrote:
-> On Fri, Dec 9, 2022 at 11:13 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
-> >
-> > Looks commit 4740d6382790 ("bonding: add proper __rcu annotation for
-> > curr_active_slave") missed rtnl_dereference for curr_active_slave
-> > in bond_miimon_commit().
-> >
-> > Fixes: 4740d6382790 ("bonding: add proper __rcu annotation for curr_active_slave")
-> 
-> 
-> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> > ---
-> >  drivers/net/bonding/bond_main.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> > index b9a882f182d2..2b6cc4dbb70e 100644
-> > --- a/drivers/net/bonding/bond_main.c
-> > +++ b/drivers/net/bonding/bond_main.c
-> > @@ -2689,7 +2689,7 @@ static void bond_miimon_commit(struct bonding *bond)
-> >
-> >                         bond_miimon_link_change(bond, slave, BOND_LINK_UP);
-> >
-> > -                       if (!bond->curr_active_slave || slave == primary)
-> > +                       if (!rtnl_dereference(bond->curr_active_slave) || slave == primary)
-> 
-> We do not dereference the pointer here.
-> 
-> If this is fixing a sparse issue, then use the correct RCU helper for this.
-> 
-> ( rcu_access_pointer())
+Hi Ping-Ke,
 
-Hmm... I saw in 4740d6382790 ("bonding: add proper __rcu annotation for
- curr_active_slave") there are also some dereference like that. Should I also
-fix them at the same time? e.g.
+On 2022/12/9 13:11, Ping-Ke Shih wrote:
+>
+>> -----Original Message-----
+>> From: Li Zetao <lizetao1@huawei.com>
+>> Sent: Wednesday, December 7, 2022 11:23 PM
+>> To: Ping-Ke Shih <pkshih@realtek.com>; kvalo@kernel.org; davem@davemloft.net; edumazet@google.com;
+>> kuba@kernel.org; pabeni@redhat.com
+>> Cc: lizetao1@huawei.com; Larry.Finger@lwfinger.net; linville@tuxdriver.com;
+>> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+>> Subject: [PATCH] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in _rtl8812ae_phy_set_txpower_limit()
+>>
+>> There is a global-out-of-bounds reported by KASAN:
+>>
+>>    BUG: KASAN: global-out-of-bounds in
+>>    _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
+>>    Read of size 1 at addr ffffffffa0773c43 by task NetworkManager/411
+>>
+>>    CPU: 6 PID: 411 Comm: NetworkManager Tainted: G      D
+>>    6.1.0-rc8+ #144 e15588508517267d37
+>>    Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+>>    Call Trace:
+>>     <TASK>
+>>     ...
+>>     kasan_report+0xbb/0x1c0
+>>     _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
+>>     rtl8821ae_phy_bb_config.cold+0x346/0x641 [rtl8821ae]
+>>     rtl8821ae_hw_init+0x1f5e/0x79b0 [rtl8821ae]
+>>     ...
+>>     </TASK>
+>>
+>> The root cause of the problem is that the comparison order of
+>> "prate_section" in _rtl8812ae_phy_set_txpower_limit() is wrong. The
+>> _rtl8812ae_eq_n_byte() is used to compare the first n bytes of the two
+>> strings, so this requires the length of the two strings be greater
+>> than or equal to n. In the  _rtl8812ae_phy_set_txpower_limit(), it was
+>> originally intended to meet this requirement by carefully designing
+>> the comparison order. For example, "pregulation" and "pbandwidth" are
+>> compared in order of length from small to large, first is 3 and last
+>> is 4. However, the comparison order of "prate_section" dose not obey
+>> such order requirement, therefore when "prate_section" is "HT", it will
+>> lead to access out of bounds in _rtl8812ae_eq_n_byte().
+>>
+>> Fix it by adding a length check in _rtl8812ae_eq_n_byte(). Although it
+>> can be fixed by adjusting the comparison order of "prate_section", this
+>> may cause the value of "rate_section" to not be from 0 to 5. In
+>> addition, commit "21e4b0726dc6" not only moved driver from staging to
+>> regular tree, but also added setting txpower limit function during the
+>> driver config phase, so the problem was introduced by this commit.
+>>
+>> Fixes: 21e4b0726dc6 ("rtlwifi: rtl8821ae: Move driver from staging to regular tree")
+>> Signed-off-by: Li Zetao <lizetao1@huawei.com>
+>> ---
+>>   drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+>> b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+>> index a29321e2fa72..720114a9ddb2 100644
+>> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+>> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+>> @@ -1600,7 +1600,7 @@ static bool _rtl8812ae_get_integer_from_string(const char *str, u8 *pint)
+>>
+>>   static bool _rtl8812ae_eq_n_byte(const char *str1, const char *str2, u32 num)
+>>   {
+> This can causes problem because it compares characters from tail to head, and
+> we can't simply replace this by strncmp() that does similar work. But, I also
+> don't like strlen() to loop 'str1' constantly.
+>
+> How about having a simple loop to compare characters forward:
+>
+> for (i = 0; i < num; i++)
+>      if (str1[i] != str2[i])
+>           return false;
+>
+> return true;
 
-@@ -2607,8 +2612,8 @@ static void bond_ab_arp_commit(struct bonding *bond)
+Thanks for your comment, but I don't think the problem has anything to 
+do with head-to-tail or
 
-                case BOND_LINK_UP:
-                        trans_start = dev_trans_start(slave->dev);
--                       if (bond->curr_active_slave != slave ||
--                           (!bond->curr_active_slave &&
-+                       if (rtnl_dereference(bond->curr_active_slave) != slave ||
-+                           (!rtnl_dereference(bond->curr_active_slave) &&
+tail-to-head comparison. The problem is that num is the length of str2, 
+but the length of str1 may
 
-Thanks
-Hangbin
+be less than num, which may lead to reading str1 out of bounds, for 
+example, when comparing
+
+"prate_section", str1 may be "HT", while str2 may by "CCK", and num is 
+3. So I think it is neccssary
+
+to check the length of str1 to ensure that will not read out of bounds.
+
+
+Looking forward to your comments.
+
+
+With Best Regards,
+
+Li Zetao
+
+>> -	if (num == 0)
+>> +	if (num == 0 || strlen(str1) < num)
+>>   		return false;
+>>   	while (num > 0) {
+>>   		num--;
+>> --
+>> 2.31.1
+>>
+>>
+>> ------Please consider the environment before printing this e-mail.
