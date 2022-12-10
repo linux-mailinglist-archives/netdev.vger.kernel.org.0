@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1639B648B8C
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 205A7648B8D
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:08:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbiLJAIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 19:08:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54832 "EHLO
+        id S229840AbiLJAIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 19:08:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiLJAID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:08:03 -0500
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8E02FBE0
-        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:08:02 -0800 (PST)
-Received: by mail-qv1-xf30.google.com with SMTP id i12so4164525qvs.2
-        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 16:08:02 -0800 (PST)
+        with ESMTP id S229521AbiLJAIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:08:41 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A0A3D3A1
+        for <netdev@vger.kernel.org>; Fri,  9 Dec 2022 16:08:41 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id z12so1995744qtv.5
+        for <netdev@vger.kernel.org>; Fri, 09 Dec 2022 16:08:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=JGohJnbmLGZZUdmCKr1mOIe3CVpGMmtFLNYoDwB+tKA=;
-        b=D+sRxG4yq+fCE+2JSNCD/SPbd8ZLaemIezhvhsINHKhI+W5RHssxRuhdx/K/aB9VZk
-         NYYcHNsNu+fL4ZcF33kZg/qJs4K94QE9gd2LwSwNHQAq7z4JbNqD5jL7CFz0HCbVsn64
-         2atXDV9KZ3tjhPPM9hBMdJt+oUiGSfTCxpSwumLhrcIqbRFCUxyKtMRMXEQmr+PFv1wt
-         rhBPcaIVdejpV4MKxZt8x6nKYipbeQGJWiEdPPnX02fRAbRlYJjXpR0vmbDMj6t0QXBJ
-         FLNrZivbMN3z2PUTeCbVhdFGkjLpgXva30p+GpHlkQrJTMbQD3XrsFpOLKuAnhRCFmgv
-         2JZQ==
+        bh=q0E2Dcfo4EQHjfR/zJisrUPt7Z/LXDZE19kPiILMZFs=;
+        b=b7KrSCr6eZILbbRLjWG403Pb6Vci1rE0MV0RMmwMPpXo+fY34W0Pi7xlsSalMFTPAy
+         khLsuZCdH5V/lsbVzexrGjq3FQJGdNQjIHFfMaeVc/6niEA4/qgEqcGBq5a4/FcocXmB
+         kXCcdZuTC9B9chxNkFnZstJ3RWkPQm/lLwer54QTAxLXhqM8zF3EHEqWPeANJW2BBl5Q
+         +BiQ9atGE+TpOt+azMQz1M9ftR/9qYBgP4HPrgUVLfBWVHFK/nfzgvAd6qxuhoLuIMa1
+         VK2DUOCy4bvAcV81w/Zle8eVDdWr2uXhrpy6EAfLy3wPOmoxZABcnyR6Hc0hmvlFOSi7
+         MdBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JGohJnbmLGZZUdmCKr1mOIe3CVpGMmtFLNYoDwB+tKA=;
-        b=QKXfFI1duTU8pmpYaj9uU/Vbb8Ymqox00VpdWBQt+Z5bCN8O5a5i2xtMN7JiSRSIEt
-         ds97qkwi+UzY0oPm1XYl8OJ2oHTNoUmMIkIHybYjQGH65w+ba6oQopvmZSr7lZLmTDDK
-         kdlLsorT2+7e/lD+4ZQhpe+k+gTNKuNYX2aYKusB6A4eSOynntfB/xiuD0K2dzE+8t4i
-         x7d4Q2ilF/w/MqlLnQnQLTKv0DgY7YnWa36FcoHki2Mekaw1/nm5O7uG3BToyvbkDj64
-         u+HU4zTYMvxswoOfVRJXKZ21utZ5my8Z6Ru3WPHanJ+fMZPRjQ6IuBETud3ecVNkuu2s
-         j3Ug==
-X-Gm-Message-State: ANoB5pludoZRGsZpVCyZ1+1jdH+w5PuAOHQ2q3J+Tcy35/GL5gxVlyuC
-        nz3qgZSt6r62vUujQ6DputA=
-X-Google-Smtp-Source: AA0mqf7IVKhTQqu+gtAkV1Hvc7xUT3+Qv4lsMbOqQujGrp3VIiyL+jIdA4o+cjSZKzxMT6PtX4DAfw==
-X-Received: by 2002:a05:6214:1c1:b0:4b4:a3d6:7c16 with SMTP id c1-20020a05621401c100b004b4a3d67c16mr10552625qvt.46.1670630881789;
-        Fri, 09 Dec 2022 16:08:01 -0800 (PST)
+        bh=q0E2Dcfo4EQHjfR/zJisrUPt7Z/LXDZE19kPiILMZFs=;
+        b=bgplbpr6LeUpp1OSW07W4C4QCECg2LEIlIbeDxp7p+w4zSNUKdEhWfWDdT3euvfD5C
+         AcpH4zPMIRneBSqz2VZuoas9vpSXJclvxRfaDjQsiEP4oLb56pQXf1PBEJCp/Si0bDQD
+         UAkkni4ZSuOZrVF3wlR7nXCqyd3NfRKi2/IoOinM73G1ZEUp0W85kkMFRXsSFt7fjNRM
+         FAy4REvgkf3pYI8rFRA4ZTextivJniBL1DuAhtJlIXbKEvWJXPwGWyL/zNnFt363pwaJ
+         ROJpwu5y5kvkC2OUL4gnuyH6lAJe6OXJuKdganCrZxnQ9jVIbVy1yWC9R5VBQqVz7YVv
+         Wa+g==
+X-Gm-Message-State: ANoB5pkJVNmxuMN2ylh+47wEg3XiHN/nSf//29CEKtOky16yfl/EJn9/
+        mM1Xklla1mxaFYgK/aNd8PU=
+X-Google-Smtp-Source: AA0mqf6BrrldkuMgAwzCLYb4lfPqPHx/zZg/bhkpYXxjKU7O9BI3KiNIHs9VFc53rD8uAn6W9KHbKQ==
+X-Received: by 2002:ac8:110e:0:b0:3a5:f9cb:886f with SMTP id c14-20020ac8110e000000b003a5f9cb886fmr10725864qtj.29.1670630920089;
+        Fri, 09 Dec 2022 16:08:40 -0800 (PST)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h19-20020a05620a245300b006cebda00630sm993803qkn.60.2022.12.09.16.07.57
+        by smtp.googlemail.com with ESMTPSA id z20-20020ac84554000000b003a591194221sm1808984qtn.7.2022.12.09.16.08.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Dec 2022 16:08:01 -0800 (PST)
-Message-ID: <f077e15a-c924-fb4f-8fa1-229bad67c2ae@gmail.com>
-Date:   Fri, 9 Dec 2022 16:07:55 -0800
+        Fri, 09 Dec 2022 16:08:39 -0800 (PST)
+Message-ID: <3fd85490-0a78-2d2e-0156-22ca209420af@gmail.com>
+Date:   Fri, 9 Dec 2022 16:08:34 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.2
-Subject: Re: [PATCH v2 net-next 4/4] net: dsa: mv88e6xxx: replace VTU
- violation prints with trace points
+Subject: Re: [PATCH net-next] net: dsa: don't call ptp_classify_raw() if
+ switch doesn't provide RX timestamping
 Content-Language: en-US
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -63,12 +63,10 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "Hans J. Schultz" <netdev@kapio-technology.com>,
-        Saeed Mahameed <saeed@kernel.org>
-References: <20221209172817.371434-1-vladimir.oltean@nxp.com>
- <20221209172817.371434-5-vladimir.oltean@nxp.com>
+        Richard Cochran <richardcochran@gmail.com>
+References: <20221209175840.390707-1-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221209172817.371434-5-vladimir.oltean@nxp.com>
+In-Reply-To: <20221209175840.390707-1-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -81,21 +79,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/9/22 09:28, Vladimir Oltean wrote:
-> It is possible to trigger these VTU violation messages very easily,
-> it's only necessary to send packets with an unknown VLAN ID to a port
-> that belongs to a VLAN-aware bridge.
-> 
-> Do a similar thing as for ATU violation messages, and hide them in the
-> kernel's trace buffer.
-> 
-> New usage model:
-> 
-> $ trace-cmd list | grep mv88e6xxx
-> mv88e6xxx
-> mv88e6xxx:mv88e6xxx_vtu_miss_violation
-> mv88e6xxx:mv88e6xxx_vtu_member_violation
-> $ trace-cmd report
+On 12/9/22 09:58, Vladimir Oltean wrote:
+> ptp_classify_raw() is not exactly cheap, since it invokes a BPF program
+> for every skb in the receive path. For switches which do not provide
+> ds->ops->port_rxtstamp(), running ptp_classify_raw() provides precisely
+> nothing, so check for the presence of the function pointer first, since
+> that is much cheaper.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
