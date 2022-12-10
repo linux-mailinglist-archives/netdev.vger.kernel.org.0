@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CC4A649062
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 20:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 961C46490D3
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 22:32:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbiLJT0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Dec 2022 14:26:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
+        id S229661AbiLJV31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Dec 2022 16:29:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbiLJT0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 14:26:37 -0500
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7B5140CB
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 11:26:35 -0800 (PST)
-Received: by mail-qt1-x836.google.com with SMTP id h16so6116086qtu.2
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 11:26:35 -0800 (PST)
+        with ESMTP id S229475AbiLJV30 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Dec 2022 16:29:26 -0500
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C81C12604;
+        Sat, 10 Dec 2022 13:29:25 -0800 (PST)
+Received: by mail-qv1-xf36.google.com with SMTP id i12so5612237qvs.2;
+        Sat, 10 Dec 2022 13:29:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=9keNZ0RhWpm80fJ+6HQd3eTsL6/cMWIZJqgwBSVMw/8=;
-        b=AsnDh9ot6s1fEkVxMGlieHt+EfJ66tv2wPgVZGQWQB2v1xvCvtMRNiWnQGRkOyBjHM
-         V+zFoKMFfbLI2u/a4e4k/3sTCrriUYjrJzW2CuJcgA6D/pkvxGDzYhbpRBQ7mmYAZcFN
-         +LTQMS3rq3/35Xqu2xCHQiqWxlHaskORT42Qs=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JdVaQPw9JOmrwqEexVFYsBtyoX2EotPLNIQCPfCfLiw=;
+        b=q0B0d4K0Ja6GXp6d04BSemduO2nWMgxDxI/JHSo5D1qXw2k0jnKSFuEZBxoFVOeRhQ
+         qufGPl8Cn0IDuG8LzcVoTtPMcRTfmVDC73pRIAM/E42Q0j8c29GKf9XsHoCATbS+9JSg
+         W7OZ9n/eYNDYUcoJnj+ILXod3PCbpHSL6+HCsmCE8DQ941N5jVLqqfpkQKislslEmgFC
+         illdbWn551/AlYgKmECzBvuj35xWA0ksljm7Ho3kNLWP5GTTkME3zoHmKngtFjHYEsLH
+         mxqF/Fqw7ONjsSl/8JzIoqYG6V2bq9wITuilQwJ4aockyaB5OygtEk6w8uOpd/vEgamN
+         37KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9keNZ0RhWpm80fJ+6HQd3eTsL6/cMWIZJqgwBSVMw/8=;
-        b=wiaUhw/32ggxU5TWuPCA9kNuWsuU1ZY5N4pm3c0e2u7fu9yA/2jZ/+zFm7Z1wmy8uc
-         fMO1SuXpk+bhr119YD5JU+ctH2gQ523F1bn7W26WonBhx4gWIK6w9yhn5CrZ4RhrmFqr
-         t41Otx9XhE5N2n1wwcTgo4R9lVAJB/Unq2RtsCuEGok9k66Xv36YH7/X/U/fRl27THjd
-         EqWwSokEKKvTHrCFt22TxxDjtaBGXE+voRD6tj/jLAnF3Bcje9pHtZywAl2LbzhRDQIR
-         hZN/pqY3wW2RMlzAI+toLbv0TduqV40TyCYlAXqJh1SMgJcnnLlnBnykWUBvPma80x87
-         VYXw==
-X-Gm-Message-State: ANoB5pltdo6Woxa1Lygwsv5S8SmmUhCO3rLlQOrsIHgolMxkSkAhGV/w
-        YlcC8BIPsNWyVyB8hNRbTtT8kjSDmP1SU3Ic
-X-Google-Smtp-Source: AA0mqf7656dXx1cLVrT4xm8TNfy5HCXRYOwdkeRwrYij8e6ZsGh59a+HIEnI3Uvt3tcDsekuMKijjA==
-X-Received: by 2002:ac8:1117:0:b0:3a8:84f:1d3a with SMTP id c23-20020ac81117000000b003a8084f1d3amr5583970qtj.9.1670700393854;
-        Sat, 10 Dec 2022 11:26:33 -0800 (PST)
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com. [209.85.160.182])
-        by smtp.gmail.com with ESMTPSA id s18-20020ac85ed2000000b003a51e6b6c95sm3110004qtx.14.2022.12.10.11.26.32
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 10 Dec 2022 11:26:32 -0800 (PST)
-Received: by mail-qt1-f182.google.com with SMTP id cg5so6095174qtb.12
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 11:26:32 -0800 (PST)
-X-Received: by 2002:ac8:4992:0:b0:3a7:648d:23d4 with SMTP id
- f18-20020ac84992000000b003a7648d23d4mr18157067qtq.180.1670700392241; Sat, 10
- Dec 2022 11:26:32 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JdVaQPw9JOmrwqEexVFYsBtyoX2EotPLNIQCPfCfLiw=;
+        b=iLNIgB7lzJ+eZux2z8x6aoAaFMAkEac0YQHnai1AMXCLqAmJeQSZSsb/NaGsSmRe1V
+         cemLvp2fzD1nLHi3R9lJxCAaVdVYE5OQZBdfLXzThYZYROYDSAPYWG2QDG0JMYj86BWW
+         ev10Lt/vwDYp2MBzGnQKWjhwHsoZj8EuSEpwhyfLRgSFko/+x8eNM8yt7CmKv2RSx3wz
+         fTy7Zw5Xs9X5o8U/16N+s2PTK/eoVbT6y92TBwaolp7EpafguUUOSOAODa6ZNrfn82pL
+         mY6WaSKgvxKLXYYbkMtyaf6B5b5w5vYj4XRR+b8MIJR4MncQCrGPRFA/IW1LvyZ/a2rZ
+         euTw==
+X-Gm-Message-State: ANoB5pl37PpliUJss5wcB3zJLsp3Yb7aYqnrEcqXAA6WHKIo28OB+VHS
+        PQagBiCdKsJCZ1sSLaGJIDQ=
+X-Google-Smtp-Source: AA0mqf7a9Pvmy72ODR1r4WEB249eRbpr/11t/E1KInna+k14NinC6Dzm5Na2CS1qgEYWEmZyDpQkrw==
+X-Received: by 2002:a05:6214:2402:b0:4b4:a3d5:8ce8 with SMTP id fv2-20020a056214240200b004b4a3d58ce8mr22886075qvb.10.1670707764118;
+        Sat, 10 Dec 2022 13:29:24 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:f46d:8b68:f76c:52a5])
+        by smtp.gmail.com with ESMTPSA id x8-20020a05620a258800b006fef157c8aesm2865793qko.36.2022.12.10.13.29.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 10 Dec 2022 13:29:23 -0800 (PST)
+Date:   Sat, 10 Dec 2022 13:29:22 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Hawkins Jiawei <yin31149@gmail.com>
+Cc:     18801353760@163.com, cong.wang@bytedance.com, davem@davemloft.net,
+        dvyukov@google.com, edumazet@google.com, jhs@mojatatu.com,
+        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH v3] net: sched: fix memory leak in tcindex_set_parms
+Message-ID: <Y5T6Mrb7cs6o/BqS@pop-os.localdomain>
+References: <Y4uvQA2xxtJXltSM@pop-os.localdomain>
+ <20221205151956.28422-1-yin31149@gmail.com>
 MIME-Version: 1.0
-References: <b0901cba-3cb8-a309-701e-7b8cb13f0e8a@kernel.dk> <CAHk-=whgzBzTR5t6Dc6gZ_XS1q=UrqeiBf62op_fahbwns+xvQ@mail.gmail.com>
-In-Reply-To: <CAHk-=whgzBzTR5t6Dc6gZ_XS1q=UrqeiBf62op_fahbwns+xvQ@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 10 Dec 2022 11:26:16 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiT67DtHF8dSu8nJpA7h+T4jBxfAuR7rcp0iLpKfvF=tw@mail.gmail.com>
-Message-ID: <CAHk-=wiT67DtHF8dSu8nJpA7h+T4jBxfAuR7rcp0iLpKfvF=tw@mail.gmail.com>
-Subject: Re: [GIT PULL] Add support for epoll min wait time
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221205151956.28422-1-yin31149@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,40 +75,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 10, 2022 at 10:51 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Now, maybe there is some reason why the tty like VMIN/VTIME just isn't
-> relevant, but I do think that people have successfully used VMIN/VTIME
-> for long enough that it should be at least given some thought.
+On Mon, Dec 05, 2022 at 11:19:56PM +0800, Hawkins Jiawei wrote:
+> To be more specific, the simplified logic about original
+> tcindex_set_parms() is as below:
+> 
+> static int
+> tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+> 		  u32 handle, struct tcindex_data *p,
+> 		  struct tcindex_filter_result *r, struct nlattr **tb,
+> 		  struct nlattr *est, u32 flags, struct netlink_ext_ack *extack)
+> {
+> 	...
+> 	if (p->perfect) {
+> 		int i;
+> 
+> 		if (tcindex_alloc_perfect_hash(net, cp) < 0)
+> 			goto errout;
+> 		cp->alloc_hash = cp->hash;
+> 		for (i = 0; i < min(cp->hash, p->hash); i++)
+> 			cp->perfect[i].res = p->perfect[i].res;
+> 		balloc = 1;
+> 	}
+> 	cp->h = p->h;
+> 
+> 	...
+> 
+> 	if (cp->perfect)
+> 		r = cp->perfect + handle;
 
-Side note: another thing the tty layer model does is to make this be a
-per-tty thing.
+We can reach here if p->perfect is non-NULL.
 
-That's actually noticeable in regular 'poll()/select()' usage, so it
-has interesting semantics: if VTIME is 0 (ie there is no inter-event
-timeout), then poll/select will return "readable" only once you hit
-VMIN characters.
+> 	else
+> 		r = tcindex_lookup(cp, handle) ? : &new_filter_result;
+> 
+> 	if (old_r && old_r != r) {
+> 		err = tcindex_filter_result_init(old_r, cp, net);
+> 		if (err < 0) {
+> 			kfree(f);
+> 			goto errout_alloc;
+> 		}
+> 	}
+> 	...
+> }
+> 
+> - cp's h field is directly copied from p's h field
+> 
+> - if `old_r` is retrieved from struct tcindex_filter, in other word,
+> is retrieved from p's h field. Then the `r` should get the same value
+> from `tcindex_loopup(cp, handle)`.
 
-Maybe this isn't relevant for the epoll() situation, but it might be
-worth thinking about.
+See above, 'r' can be 'cp->perfect + handle' which is newly allocated,
+hence different from 'old_r'.
 
-It's most definitely not obvious that any epoll() timeout should be
-the same for different file descriptors.
+> 
+> - so `old_r == r` is true, code will never uses tcindex_filter_result_init()
+> to clear the old_r in such case.
 
-Willy already mentioned "urgent file descriptors", and making these
-things be per-fd would very naturally solve that whole situation too.
+Not always.
 
-Again: I don't want to in any way force a "tty-like" solution. I'm
-just saying that this kind of thing does have a long history, and I do
-get the feeling that the tty solution is the more flexible one.
+> 
+> So I think this patch still can fix this memory leak caused by 
+> tcindex_filter_result_init(), But maybe I need to improve my
+> commit message.
+> 
 
-And while the tty model is "per tty" (it's obviously hidden in the
-termios structure), any epoll equivalent would have to be different
-(presumably per-event or something).
+I think your patch may introduce other memory leaks and 'old_r' may
+be left as obsoleted too.
 
-So I'm also not advocating some 1:1 equivalence, just bringing up the
-whole "ttys do this similar thing but they seem to have a more
-flexible model".
-
-            Linus
+Thanks.
