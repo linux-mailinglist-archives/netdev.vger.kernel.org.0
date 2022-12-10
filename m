@@ -2,87 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E59C2648BF9
-	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 01:54:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B40648C3E
+	for <lists+netdev@lfdr.de>; Sat, 10 Dec 2022 02:12:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbiLJAys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Dec 2022 19:54:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
+        id S229849AbiLJBMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Dec 2022 20:12:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiLJAys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 19:54:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF8C9764F;
-        Fri,  9 Dec 2022 16:54:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25F99623C2;
-        Sat, 10 Dec 2022 00:54:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A419C433D2;
-        Sat, 10 Dec 2022 00:54:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670633686;
-        bh=FP1qLoUU0jd+2nXYMOllgA1lD6uDuIS62Q6du/B++M0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XZqF4zvTXtTvVVFsAGnuBfiFvso/jnHfd/eziHuArjtHt+s5JXLUTDp5I4AkkpLHy
-         ruCo2bxFp9cqtBUwvAhdzzUCalejLFBtRcLDnhwdFo/s/DGzO1hLUSUTRdL//JtP6e
-         G2QU/HzsVH8ABQKR3KMMYYTkscuWN8sRNhEH24BLjv+mizndCQd8z21Omu9dWtWlTT
-         4eNpZCMxkxmh44Y0ksmlwe9WoWuyHOKu01jQbvNKH1MMtj1O4QK6hJOs3tITP6hTAC
-         EJcZl2Ol1qtaubE669lpzktaF/zJBb+X8j3sC9npmNMgduR0S23DEZTCz7OuGjyRk9
-         NsGmgPKX49sow==
-Date:   Fri, 9 Dec 2022 16:54:44 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Roger Quadros <rogerq@kernel.org>
-Cc:     davem@davemloft.net, maciej.fijalkowski@intel.com, kuba@kernel.org,
-        andrew@lunn.ch, edumazet@google.com, pabeni@redhat.com,
-        vigneshr@ti.com, s-vadapalli@ti.com, linux-omap@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ethernet: ti: am65-cpsw: Fix PM runtime
- leakage in am65_cpsw_nuss_ndo_slave_open()
-Message-ID: <Y5PY1Cdp3px3vRqE@x130>
-References: <20221208105534.63709-1-rogerq@kernel.org>
+        with ESMTP id S229545AbiLJBMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Dec 2022 20:12:18 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC62F010;
+        Fri,  9 Dec 2022 17:12:16 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id fc4so15211590ejc.12;
+        Fri, 09 Dec 2022 17:12:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=w4ADGd8gswVi8TomaFcdrrYZPaXY9TBBtkDp4DMvfpE=;
+        b=FhYRYTfh2eMILidzjM694/ryObUQPSo+rBTbKNRcEgkG0KoU1Ef+6/M3CdKkb/U0su
+         RZMELU22J+MbnsrMTYEg0qlAPIDY/cBWMJiXFQP5ibBCJafyHdu0AHE3VBIbVA7DUOie
+         ykA4Szl+o8KGVKp5bjA5uH+9ZNsNfptqfeqBaX8yotccGoLRbnmRqpUyR8mL620ol0QU
+         4z6WCPZnhNRRY+PiNpIMtw5CZfZDAJ9uvuV4UXimn0kp7FdPE1QxZKG+/eHM+o8DDm5/
+         ctsBABnqrGtVTrRZTwB738FJm/MhrNf+Sgd3scdYTP/qOUW+8/+hvZP+hEid6bMcfMEx
+         8FcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=w4ADGd8gswVi8TomaFcdrrYZPaXY9TBBtkDp4DMvfpE=;
+        b=zbDwTbn9+4GuSACfTFtzBZz4VmXLkkw92KtnJL7+v0rYQE3IQ7vE0JYUp7qmDEmcFe
+         TdWcRgop+dIuX6HkCTvfC9YkY3U4Ci4LChFrTIfPM9U05fOi2IXh8JivMToWSnj6iECD
+         5KNdPNj7dwGLU9weKenLkZvyx/R9xgmmIqPgkzPmxXX11zcTI5UUlUVl6Y7fARWK7Mex
+         wkOVN9URIDhBWV0tjO33n1gKB3ZehQYrXKCsLlWXA+QaHwdBMTlSh+DgzZJcRayBLRnt
+         SrL7m2cozXf6eP9t04sHXAXMySwYbRujfHp6QlSeUvz9VzzcpDI5b9K/XTk5dKsZl2L6
+         8Uww==
+X-Gm-Message-State: ANoB5pltXJZ7+Uyc09GGv2EOXcPSqKMdYH9s3TKZjXR3KjDm0iS/54mJ
+        L5D2ml2jizfC9qo7WHaOJMk/A71PaCP8ogG4R34=
+X-Google-Smtp-Source: AA0mqf5aTKuKb/ygizN4hu5aKxFW2tN/RJZfTxdEPi61WR/NUIe7drXP/RIDZQsLAVsSj3am6WKF+wPcEUwhXbtDmOk=
+X-Received: by 2002:a17:906:4351:b0:78d:513d:f447 with SMTP id
+ z17-20020a170906435100b0078d513df447mr69635532ejm.708.1670634734892; Fri, 09
+ Dec 2022 17:12:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20221208105534.63709-1-rogerq@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <Y5LfMGbOHpaBfuw4@krava> <Y5MaffJOe1QtumSN@krava>
+ <Y5M9P95l85oMHki9@krava> <Y5NSStSi7h9Vdo/j@krava> <5c9d77bf-75f5-954a-c691-39869bb22127@meta.com>
+ <Y5OuQNmkoIvcV6IL@krava> <ee2a087e-b8c5-fc3e-a114-232490a6c3be@iogearbox.net>
+ <Y5O/yxcjQLq5oDAv@krava> <96b0d9d8-02a7-ce70-de1e-b275a01f5ff3@iogearbox.net>
+ <20221209153445.22182ca5@kernel.org> <Y5PNeFYJrC6D4P9p@krava>
+In-Reply-To: <Y5PNeFYJrC6D4P9p@krava>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 9 Dec 2022 17:12:03 -0800
+Message-ID: <CAADnVQKr9NYektHFq2sUKMxxXJVFHcMPWh=pKa08b-yM9cgAAQ@mail.gmail.com>
+Subject: Re: BUG: unable to handle kernel paging request in bpf_dispatcher_xdp
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@meta.com>, Song Liu <song@kernel.org>,
+        Hao Sun <sunhao.th@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Yonghong Song <yhs@fb.com>, KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Thorsten Leemhuis <regressions@leemhuis.info>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08 Dec 12:55, Roger Quadros wrote:
->Ensure pm_runtime_put() is issued in error path.
+On Fri, Dec 9, 2022 at 4:06 PM Jiri Olsa <olsajiri@gmail.com> wrote:
 >
->Reported-by: Jakub Kicinski <kuba@kernel.org>
->Signed-off-by: Roger Quadros <rogerq@kernel.org>
-
-
-Reviewed-by: Saeed Mahameed <saeed@kernel.org>
-
-
-[...]
-
->@@ -622,6 +623,10 @@ static int am65_cpsw_nuss_ndo_slave_open(struct net_device *ndev)
-> error_cleanup:
-> 	am65_cpsw_nuss_ndo_slave_stop(ndev);
-
-BTW, while looking at the ndo_slave_stop() call, it seems to abort if 
-am65_cpsw_nuss_common_stop() fails, but looking deeper at that and it seems 
-am65_cpsw_nuss_common_stop() can never fail, so you might want to fix that.
-
-> 	return ret;
->+
->+runtime_put:
->+	pm_runtime_put(common->dev);
->+	return ret;
-> }
+> On Fri, Dec 09, 2022 at 03:34:45PM -0800, Jakub Kicinski wrote:
+> > On Sat, 10 Dec 2022 00:32:07 +0100 Daniel Borkmann wrote:
+> > > fwiw, these should not be necessary, Documentation/RCU/checklist.rst :
+> > >
+> > >    [...] One example of non-obvious pairing is the XDP feature in networking,
+> > >    which calls BPF programs from network-driver NAPI (softirq) context. BPF
+> > >    relies heavily on RCU protection for its data structures, but because the
+> > >    BPF program invocation happens entirely within a single local_bh_disable()
+> > >    section in a NAPI poll cycle, this usage is safe. The reason that this usage
+> > >    is safe is that readers can use anything that disables BH when updaters use
+> > >    call_rcu() or synchronize_rcu(). [...]
+> >
+> > FWIW I sent a link to the thread to Paul and he confirmed
+> > the RCU will wait for just the BH.
 >
-> static void am65_cpsw_nuss_rx_cleanup(void *data, dma_addr_t desc_dma)
->-- 
->2.34.1
+> so IIUC we can omit the rcu_read_lock/unlock on bpf_prog_run_xdp side
 >
+> Paul,
+> any thoughts on what we can use in here to synchronize bpf_dispatcher_change_prog
+> with bpf_prog_run_xdp callers?
+>
+> with synchronize_rcu_tasks I'm getting splats like:
+>   https://lore.kernel.org/bpf/20221209153445.22182ca5@kernel.org/T/#m0a869f93404a2744884d922bc96d497ffe8f579f
+>
+> synchronize_rcu_tasks_rude seems to work (patch below), but it also sounds special ;-)
+
+Jiri,
+
+I haven't tried to repro this yet, but I feel you're on
+the wrong path here. The splat has this:
+? bpf_prog_run_xdp include/linux/filter.h:775 [inline]
+? bpf_test_run+0x2ce/0x990 net/bpf/test_run.c:400
+that test_run logic takes rcu_read_lock.
+See bpf_test_timer_enter.
+I suspect the addition of synchronize_rcu_tasks_rude
+only slows down the race.
+The synchronize_rcu_tasks_trace also behaves like synchronize_rcu.
+See our new and fancy rcu_trace_implies_rcu_gp(),
+but I'm not sure it applies to synchronize_rcu_tasks_rude.
+Have you tried with just synchronize_rcu() ?
+If your theory about the race is correct then
+the vanila sync_rcu should help.
+If not, the issue is some place else.
