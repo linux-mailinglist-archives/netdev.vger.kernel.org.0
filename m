@@ -2,74 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B6E649527
-	for <lists+netdev@lfdr.de>; Sun, 11 Dec 2022 18:05:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4F2649583
+	for <lists+netdev@lfdr.de>; Sun, 11 Dec 2022 19:06:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230310AbiLKRFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Dec 2022 12:05:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
+        id S229947AbiLKSGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Dec 2022 13:06:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbiLKRFA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 12:05:00 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D652BD3
-        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 09:04:59 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id gt4so7976407pjb.1
-        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 09:04:59 -0800 (PST)
+        with ESMTP id S229471AbiLKSGH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 13:06:07 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D05B860;
+        Sun, 11 Dec 2022 10:06:03 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id h11so9817311wrw.13;
+        Sun, 11 Dec 2022 10:06:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tiPM/BRwebzkgBF18G5ZPRXMBq5fC3tN6A1lbz1/cvs=;
-        b=r9NfusOGXcoeuDHYRxnkdlbWANyiTpT3vvKTAjLPUi8ZdSVGGwhnVJ8lweaB4pQp0o
-         rbPGNKBAuZmLKt6cj+sUZPnoYu8eSNC5mqD2GVjGp1iy9/K3qrDGqqCFxsevQmt6wy3y
-         3iGGX7/PrpiPmGTFx/IQZk8A8opFwf+CaJiyhR5itr04qV6If188cKxu5STAjqVeTORl
-         Yx9t3qLS2tP94/z8VezlE79EVRMwtxayoJxDlsaru91WL2NUoKQB8GyzmjzeF6V+5EhX
-         tzPcj8CgCnZQ0O8YhY7pD2MLBqJZ6P6sf7n1+qmcFwLhvWcSTmGK8+N4rk6RtByM20qy
-         uYsw==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sQB5wiJruuXEoFTRN35atj92efL08Shno7AmgnEzXsc=;
+        b=P56qAfeP+w12O11oIRnih8J4XusgmJe9MNlDEi1QNzv9j2kp79e0seqJBuPPD2DZ1+
+         k7sK4KafuyWHyBnNNfrbfFv8OUVbtqajUqx3fd8TmAMi6R8SHfatQ81zHKoUIz7qJaGL
+         t2RNvggN6SOy8QiiaEQG+RFM8j2AuW3Rv9NUnJgVtNA+be4SJiEebeYWE7yJ6qF1xZeG
+         8YrN0jbewqUyvnJsWg68KBG9kzBJLMsbamJR9fhzhTOXDv53x7YkZlBBgUzug67taNjE
+         A7ZEMyekJ33L+uivFSV9qxYSSsYmKsWaqof4xXT/hpzF5vROnUdrwip86PcsWcE1e7gg
+         CH0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tiPM/BRwebzkgBF18G5ZPRXMBq5fC3tN6A1lbz1/cvs=;
-        b=fsoOtRnjlLvWFXWSGDpOlwkmYSA0AWW7EzXfPvNqg9Oo9JuCTEOE881FBnD8zWUd9d
-         G1/K3wB59AzG2IhDAdvcgowxRBxyHCM9QVclJB2GrbVGOAssbFB3zsI+OKeFY1d+kIzw
-         QjkXNKTSrp9+wjX2/TJvhVDB4p9eanir6um4ZtadF2XwuXHQqomSbH4MkC0+nSDraZM2
-         adgLMiAemoEUMT2/tpYxupF0SG0MT6zs6q71bwC9E9v3+PzxdoB7FCO3jLPHjeD5+u99
-         +1l4LgTC/VM1arygFnXEjqDc2bkEksfNTZVNFBY0KwYj5LuhOT2/1tbo1Y+gdehvOc4/
-         IXlQ==
-X-Gm-Message-State: ANoB5pnjd7qCLgprYk/AoeX8aPi1yXCEfajHl75Ej1qNybxVCAz9JnAf
-        /F2dbsbu0bSYeV8XCrgGHwjb+g==
-X-Google-Smtp-Source: AA0mqf7J/9d6SEJapvnozyDK8hY6/HCM/PXMmiA2iZizk4Mh12UIRlMPW3QmoMk6HpfDDe/XrF8/oQ==
-X-Received: by 2002:a05:6a20:3d06:b0:9d:efbe:52c3 with SMTP id y6-20020a056a203d0600b0009defbe52c3mr23416500pzi.51.1670778299173;
-        Sun, 11 Dec 2022 09:04:59 -0800 (PST)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id x8-20020aa79ac8000000b0056da63c8515sm4320660pfp.91.2022.12.11.09.04.57
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sQB5wiJruuXEoFTRN35atj92efL08Shno7AmgnEzXsc=;
+        b=XNi7fodRIG1FnTSwpzSfYAH29JVZOUMC+Wm3YxfKf9cqQQojQrC7TVE6BOSYR+sjvq
+         ehLL0/cDTTY8OOaBLacRVkvxx9WBTwnIN5/+TFHKDe5Bc7mqdRH8tkD41a+ocjokMsCb
+         GTJTo2v9AjLr+9aCTo3iivfetJd+2zsJaqv57cXrH7uTezSJOZc2sj+lcz33yJBjZg1A
+         sYgF8mbjg8MiGeAHkRnJzOtZiVMOn5l0iXxbUNmtGNryRSIeE+NQOwLBrRBiKxPbgBIB
+         UR7sDCxJgErtwvNYuOjxw5v2ka9jZZ18Z3g7t1EhhNlsTMgV4V3uq0Dt4tXgnkfjzIWm
+         z29Q==
+X-Gm-Message-State: ANoB5pk64My8MZATBDX/jD8NgOnWJc/7nA3TkLQFYqBc9Ghg0ZhChL22
+        Xny/RK2AelY35BXdWFOGNQs=
+X-Google-Smtp-Source: AA0mqf4vol3XbU3xkW4XTS4BaX6Kz7y7qvyvsSTKIPtjxqDhlIBb5txCcSXwFwtlBsGTYb5u9HYl3A==
+X-Received: by 2002:adf:f145:0:b0:242:486:5037 with SMTP id y5-20020adff145000000b0024204865037mr8318366wro.32.1670781961502;
+        Sun, 11 Dec 2022 10:06:01 -0800 (PST)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id cl6-20020a5d5f06000000b0024274a5db0asm6953182wrb.2.2022.12.11.10.06.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Dec 2022 09:04:58 -0800 (PST)
-Date:   Sun, 11 Dec 2022 09:04:56 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Weiping Zhang <zhangweiping@didiglobal.com>,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        zwp10758@gmail.com
-Subject: Re: [RFC PATCH] tcp: correct srtt and mdev_us calculation
-Message-ID: <20221211090456.652eda22@hermes.local>
-In-Reply-To: <CANn89i+nT61qvE3iChGc-bYiTCzR=x2ZhvddRD0qDUTF6JuK+g@mail.gmail.com>
-References: <Y44xdN3zH4f+BZCD@zwp-5820-Tower>
-        <CADVnQykvAWHFOec_=DyU9GMLppK6mpeK-GqUVbktJffj1XA5rQ@mail.gmail.com>
-        <87mt805181.fsf@cloudflare.com>
-        <CANn89i+nT61qvE3iChGc-bYiTCzR=x2ZhvddRD0qDUTF6JuK+g@mail.gmail.com>
+        Sun, 11 Dec 2022 10:06:00 -0800 (PST)
+Date:   Sun, 11 Dec 2022 18:05:58 +0000
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     Gautam Dawar <gautam.dawar@amd.com>
+Cc:     linux-net-drivers@amd.com, netdev@vger.kernel.org,
+        jasowang@redhat.com, eperezma@redhat.com, tanuj.kamde@amd.com,
+        Koushik.Dutta@amd.com, harpreet.anand@amd.com,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 00/11] sfc: add vDPA support for EF100 devices
+Message-ID: <Y5YcBoDyAlT4DtLQ@gmail.com>
+Mail-Followup-To: Gautam Dawar <gautam.dawar@amd.com>,
+        linux-net-drivers@amd.com, netdev@vger.kernel.org,
+        jasowang@redhat.com, eperezma@redhat.com, tanuj.kamde@amd.com,
+        Koushik.Dutta@amd.com, harpreet.anand@amd.com,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        linux-kernel@vger.kernel.org
+References: <20221207145428.31544-1-gautam.dawar@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221207145428.31544-1-gautam.dawar@amd.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,26 +86,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 10 Dec 2022 18:45:56 +0100
-Eric Dumazet <edumazet@google.com> wrote:
+On Wed, Dec 07, 2022 at 08:24:16PM +0530, Gautam Dawar wrote:
+> Hi All,
+> 
+> This series adds the vdpa support for EF100 devices.
+> For now, only a network class of vdpa device is supported and
+> they can be created only on a VF. Each EF100 VF can have one
+> of the three function personalities (EF100, vDPA & None) at
+> any time with EF100 being the default. A VF's function personality
+> is changed to vDPA while creating the vdpa device using vdpa tool.
+> 
+> A vDPA management device is created per VF to allow selection of
+> the desired VF for vDPA device creation. The MAC address for the
+> target net device must be specified at the device creation time
+> via the `mac` parameter of the `vdpa dev add` command as the control
+> virtqueue is not supported yet.
+> 
+> To use with vhost-vdpa, QEMU version 6.1.0 or later must be used
+> as it fixes the incorrect feature negotiation (vhost-vdpa backend)
+> without which VIRTIO_F_IN_ORDER feature bit is negotiated but not
+> honored when using the guest kernel virtio driver.
+> 
+> Gautam Dawar (11):
+>   sfc: add function personality support for EF100 devices
+>   sfc: implement MCDI interface for vDPA operations
+>   sfc: implement init and fini functions for vDPA personality
+>   sfc: implement vDPA management device operations
+>   sfc: implement vdpa device config operations
+>   sfc: implement vdpa vring config operations
+>   sfc: implement filters for receiving traffic
+>   sfc: implement device status related vdpa config operations
+>   sfc: implement iova rbtree to store dma mappings
+>   sfc: implement vdpa config_ops for dma operations
+>   sfc: register the vDPA device
 
-> On Tue, Dec 6, 2022 at 10:29 AM Jakub Sitnicki <jakub@cloudflare.com> wro=
-te:
->=20
->=20
-> > Nifty. And it's documented.
-> >
-> > struct tcp_sock {
-> >         =E2=80=A6
-> >         u32     srtt_us;        /* smoothed round trip time << 3 in use=
-cs */
-> >
-> > Thanks for the hint. =20
->=20
-> The >> 3 is all over the place... So even without a formal comment,
-> anyone familiar with TCP stack would spot this...
+For the series:
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
 
-And it should be in every text book already and is in BSD as well.
-Maybe a link to the SIGCOMM paper would be good for those
-google deprived people?
-
+> 
+>  drivers/net/ethernet/sfc/Kconfig          |   8 +
+>  drivers/net/ethernet/sfc/Makefile         |   2 +
+>  drivers/net/ethernet/sfc/ef10.c           |   2 +-
+>  drivers/net/ethernet/sfc/ef100.c          |   6 +-
+>  drivers/net/ethernet/sfc/ef100_iova.c     | 205 +++++
+>  drivers/net/ethernet/sfc/ef100_iova.h     |  40 +
+>  drivers/net/ethernet/sfc/ef100_nic.c      | 126 ++-
+>  drivers/net/ethernet/sfc/ef100_nic.h      |  22 +
+>  drivers/net/ethernet/sfc/ef100_vdpa.c     | 693 +++++++++++++++++
+>  drivers/net/ethernet/sfc/ef100_vdpa.h     | 241 ++++++
+>  drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 897 ++++++++++++++++++++++
+>  drivers/net/ethernet/sfc/mcdi.h           |   7 +
+>  drivers/net/ethernet/sfc/mcdi_filters.c   |  51 +-
+>  drivers/net/ethernet/sfc/mcdi_functions.c |   9 +-
+>  drivers/net/ethernet/sfc/mcdi_functions.h |   3 +-
+>  drivers/net/ethernet/sfc/mcdi_vdpa.c      | 268 +++++++
+>  drivers/net/ethernet/sfc/mcdi_vdpa.h      |  84 ++
+>  drivers/net/ethernet/sfc/net_driver.h     |  19 +
+>  18 files changed, 2650 insertions(+), 33 deletions(-)
+>  create mode 100644 drivers/net/ethernet/sfc/ef100_iova.c
+>  create mode 100644 drivers/net/ethernet/sfc/ef100_iova.h
+>  create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.c
+>  create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.h
+>  create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+>  create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.c
+>  create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.h
+> 
+> -- 
+> 2.30.1
