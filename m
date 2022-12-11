@@ -2,108 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C5E64951A
-	for <lists+netdev@lfdr.de>; Sun, 11 Dec 2022 17:34:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B6E649527
+	for <lists+netdev@lfdr.de>; Sun, 11 Dec 2022 18:05:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbiLKQeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Dec 2022 11:34:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57732 "EHLO
+        id S230310AbiLKRFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Dec 2022 12:05:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiLKQeV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 11:34:21 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC0A647C;
-        Sun, 11 Dec 2022 08:34:20 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id vv4so22497227ejc.2;
-        Sun, 11 Dec 2022 08:34:20 -0800 (PST)
+        with ESMTP id S230014AbiLKRFA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 12:05:00 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D652BD3
+        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 09:04:59 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id gt4so7976407pjb.1
+        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 09:04:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ll6kCX33+8s5cf4iHgOPaW3i8Vl4DHq71YOPP4oWCdQ=;
-        b=RZ1RbDsik47vSTcGLGdHgmvZ8u1feKoyfhGemL8bPzoLg/g0Ex7Y/cYi7oqtU4vyje
-         bwNF35X2pvFByb7Fyd6+QYYRi2ycOQUI65VMF7ZVpdBynonHPfLtLv988vml5Sr9DAcc
-         5buFZC4d6vU+QQql4jddEb2CrqFgUe/cZpcAvNlyUEZvw1tjxcljTVtyicdSIkfvluj1
-         +2DqeEsZI1ZVGIJnOoFXeb6uDmmz+CmGYCd551xZ5dpgNgziTYbPsZNlU0FQIFmENINp
-         XptTlH8c3Be0qKtMJzIJEWAlNbz/N1h9+6S0VhKbac4SU2HuFdg7Fc6rpDqx3S8sSbi/
-         dGzA==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tiPM/BRwebzkgBF18G5ZPRXMBq5fC3tN6A1lbz1/cvs=;
+        b=r9NfusOGXcoeuDHYRxnkdlbWANyiTpT3vvKTAjLPUi8ZdSVGGwhnVJ8lweaB4pQp0o
+         rbPGNKBAuZmLKt6cj+sUZPnoYu8eSNC5mqD2GVjGp1iy9/K3qrDGqqCFxsevQmt6wy3y
+         3iGGX7/PrpiPmGTFx/IQZk8A8opFwf+CaJiyhR5itr04qV6If188cKxu5STAjqVeTORl
+         Yx9t3qLS2tP94/z8VezlE79EVRMwtxayoJxDlsaru91WL2NUoKQB8GyzmjzeF6V+5EhX
+         tzPcj8CgCnZQ0O8YhY7pD2MLBqJZ6P6sf7n1+qmcFwLhvWcSTmGK8+N4rk6RtByM20qy
+         uYsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ll6kCX33+8s5cf4iHgOPaW3i8Vl4DHq71YOPP4oWCdQ=;
-        b=1yHszkH1ZOjD9gQxcp0G/9Ab34znW6mRaMlUDxK4ql1S7t6esZ8qhizvaEDgAbHEDQ
-         RfmZDGBH/lMdbHKvgPtVvxNDzWWY6OTqEPVSzSqkR774V3ENCO4nKmP3RkG5hR2mSawB
-         gxDkBLvudnS3SW0zC9s/1neQTD3r+E44R3YDGMkRrVB7PGSkFBUVy73d7wwEN2KgzEkU
-         IJHJWXjGt/hrtEHEg3Ceh30JjaLqxloeZ+NEwDe5psXfaQ5y4UL5SYphXFLhzBTc6ecc
-         7BJbzgWDG1oxPoCy6ePNOJVvALrDJOtQ6AFRPdwJArwwJVqk6S8iN670L4dC4tYJWe45
-         RkqQ==
-X-Gm-Message-State: ANoB5pkBF0tH2w06pH17AO+GvO93zwxJOiP4PpQPaE/4RcSFGFCoQe5h
-        T0cVs1Qf3BZlsUt+ghgXYek=
-X-Google-Smtp-Source: AA0mqf4NXMwfkOs1mNO8pfQyBM2Z6bwdZcilrDNTObHD8PCILQSAy9nh4q09wCuWFweuwStpxFvaow==
-X-Received: by 2002:a17:906:5213:b0:7c1:3125:9564 with SMTP id g19-20020a170906521300b007c131259564mr10131461ejm.8.1670776459101;
-        Sun, 11 Dec 2022 08:34:19 -0800 (PST)
-Received: from ?IPV6:2a01:c23:b8e1:2200:1956:d6ee:60e0:6ee2? (dynamic-2a01-0c23-b8e1-2200-1956-d6ee-60e0-6ee2.c23.pool.telefonica.de. [2a01:c23:b8e1:2200:1956:d6ee:60e0:6ee2])
-        by smtp.googlemail.com with ESMTPSA id r1-20020a1709061ba100b007bb32e2d6f5sm2180719ejg.207.2022.12.11.08.34.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Dec 2022 08:34:18 -0800 (PST)
-Message-ID: <f04435d8-9af3-1fde-c2bf-fadd045b10a1@gmail.com>
-Date:   Sun, 11 Dec 2022 17:34:15 +0100
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=tiPM/BRwebzkgBF18G5ZPRXMBq5fC3tN6A1lbz1/cvs=;
+        b=fsoOtRnjlLvWFXWSGDpOlwkmYSA0AWW7EzXfPvNqg9Oo9JuCTEOE881FBnD8zWUd9d
+         G1/K3wB59AzG2IhDAdvcgowxRBxyHCM9QVclJB2GrbVGOAssbFB3zsI+OKeFY1d+kIzw
+         QjkXNKTSrp9+wjX2/TJvhVDB4p9eanir6um4ZtadF2XwuXHQqomSbH4MkC0+nSDraZM2
+         adgLMiAemoEUMT2/tpYxupF0SG0MT6zs6q71bwC9E9v3+PzxdoB7FCO3jLPHjeD5+u99
+         +1l4LgTC/VM1arygFnXEjqDc2bkEksfNTZVNFBY0KwYj5LuhOT2/1tbo1Y+gdehvOc4/
+         IXlQ==
+X-Gm-Message-State: ANoB5pnjd7qCLgprYk/AoeX8aPi1yXCEfajHl75Ej1qNybxVCAz9JnAf
+        /F2dbsbu0bSYeV8XCrgGHwjb+g==
+X-Google-Smtp-Source: AA0mqf7J/9d6SEJapvnozyDK8hY6/HCM/PXMmiA2iZizk4Mh12UIRlMPW3QmoMk6HpfDDe/XrF8/oQ==
+X-Received: by 2002:a05:6a20:3d06:b0:9d:efbe:52c3 with SMTP id y6-20020a056a203d0600b0009defbe52c3mr23416500pzi.51.1670778299173;
+        Sun, 11 Dec 2022 09:04:59 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id x8-20020aa79ac8000000b0056da63c8515sm4320660pfp.91.2022.12.11.09.04.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Dec 2022 09:04:58 -0800 (PST)
+Date:   Sun, 11 Dec 2022 09:04:56 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Weiping Zhang <zhangweiping@didiglobal.com>,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        zwp10758@gmail.com
+Subject: Re: [RFC PATCH] tcp: correct srtt and mdev_us calculation
+Message-ID: <20221211090456.652eda22@hermes.local>
+In-Reply-To: <CANn89i+nT61qvE3iChGc-bYiTCzR=x2ZhvddRD0qDUTF6JuK+g@mail.gmail.com>
+References: <Y44xdN3zH4f+BZCD@zwp-5820-Tower>
+        <CADVnQykvAWHFOec_=DyU9GMLppK6mpeK-GqUVbktJffj1XA5rQ@mail.gmail.com>
+        <87mt805181.fsf@cloudflare.com>
+        <CANn89i+nT61qvE3iChGc-bYiTCzR=x2ZhvddRD0qDUTF6JuK+g@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH] net: ipa: Remove redundant dev_err()
-To:     Kang Minchul <tegongkang@gmail.com>, Alex Elder <elder@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221211144722.754398-1-tegongkang@gmail.com>
-Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <20221211144722.754398-1-tegongkang@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11.12.2022 15:47, Kang Minchul wrote:
-> Function dev_err() is redundant because platform_get_irq_byname()
-> already prints an error.
-> 
-> Signed-off-by: Kang Minchul <tegongkang@gmail.com>
-> ---
->  drivers/net/ipa/gsi.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-> index 55226b264e3c..585cfd3f9ec0 100644
-> --- a/drivers/net/ipa/gsi.c
-> +++ b/drivers/net/ipa/gsi.c
-> @@ -1967,11 +1967,8 @@ int gsi_init(struct gsi *gsi, struct platform_device *pdev, bool prefetch,
->  
->  	/* Get the GSI IRQ and request for it to wake the system */
->  	ret = platform_get_irq_byname(pdev, "gsi");
-> -	if (ret <= 0) {
-> -		dev_err(gsi->dev,
-> -			"DT error %d getting \"gsi\" IRQ property\n", ret);
-> +	if (ret <= 0)
+On Sat, 10 Dec 2022 18:45:56 +0100
+Eric Dumazet <edumazet@google.com> wrote:
 
-According to the function description it can't return 0.
-You can further simplify the code.
-And you patch should be annotated net-next.
+> On Tue, Dec 6, 2022 at 10:29 AM Jakub Sitnicki <jakub@cloudflare.com> wro=
+te:
+>=20
+>=20
+> > Nifty. And it's documented.
+> >
+> > struct tcp_sock {
+> >         =E2=80=A6
+> >         u32     srtt_us;        /* smoothed round trip time << 3 in use=
+cs */
+> >
+> > Thanks for the hint. =20
+>=20
+> The >> 3 is all over the place... So even without a formal comment,
+> anyone familiar with TCP stack would spot this...
 
->  		return ret ? : -EINVAL;
-> -	}
->  	irq = ret;
->  
->  	ret = request_irq(irq, gsi_isr, 0, "gsi", gsi);
+And it should be in every text book already and is in BSD as well.
+Maybe a link to the SIGCOMM paper would be good for those
+google deprived people?
 
