@@ -2,88 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3313649336
-	for <lists+netdev@lfdr.de>; Sun, 11 Dec 2022 09:45:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9953A64934C
+	for <lists+netdev@lfdr.de>; Sun, 11 Dec 2022 10:26:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbiLKIpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Dec 2022 03:45:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
+        id S230025AbiLKJ0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Dec 2022 04:26:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiLKIpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 03:45:05 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A17DDFC3;
-        Sun, 11 Dec 2022 00:45:04 -0800 (PST)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BB6jRGV015337;
-        Sun, 11 Dec 2022 08:44:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : references : date : in-reply-to : message-id : mime-version :
- content-type; s=pp1; bh=0t+5Zv1W3aD2R4Ebr6eP+axBbcGNw5ggeuo2oOxENVQ=;
- b=XK7EgWOF8PbJeAmgqImL+L59pExqClaFDc7RDw9OGGM+YVU9WM8T7Yt1YRLYZmEOn6yK
- 1+f7OD/0mcxS5lBI6DPXrQX8GmixcHhKZthYd7+PGfn1c7TLmMhx34xl2mdl5s7SXvwz
- 78xIK/038IrO7xGuBoQ7zFx7KkrcaYSE8m8tLoOVwHbX2NpYVg+KFWwQq6OYWV5Gtro2
- DmmHY+71zjB/Dq27HaL1eicdhIVVowxl6Rrr8NalQVWxvKvC1nCsFTV+KJi37sLTApwK
- +A17+UK6DVnn+CkLuzo/dbcT1koxoPJqSsK+KakdD6a36/mYCs5Ax3PRCM6kAW7hsjPU qQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3md3shxtan-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 11 Dec 2022 08:44:41 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2BB8ieFN017015;
-        Sun, 11 Dec 2022 08:44:40 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3md3shxta7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 11 Dec 2022 08:44:40 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 2BB12xAb007894;
-        Sun, 11 Dec 2022 08:44:38 GMT
-Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
-        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3mchcf187x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 11 Dec 2022 08:44:38 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-        by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2BB8iacc44368144
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 11 Dec 2022 08:44:36 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E882220049;
-        Sun, 11 Dec 2022 08:44:35 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A2CBB20040;
-        Sun, 11 Dec 2022 08:44:35 +0000 (GMT)
-Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
-        by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-        Sun, 11 Dec 2022 08:44:35 +0000 (GMT)
-From:   Sven Schnelle <svens@linux.ibm.com>
-To:     Breno Leitao <leitao@debian.org>
-Cc:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, kuniyu@amazon.com, netdev@vger.kernel.org,
-        leit@fb.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] tcp: socket-specific version of WARN_ON_ONCE()
-References: <20221208154656.60623-1-leitao@debian.org>
-Date:   Sun, 11 Dec 2022 09:44:35 +0100
-In-Reply-To: <20221208154656.60623-1-leitao@debian.org> (Breno Leitao's
-        message of "Thu, 8 Dec 2022 07:46:56 -0800")
-Message-ID: <yt9dlenes51o.fsf@linux.ibm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        with ESMTP id S230018AbiLKJ0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 04:26:08 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BDED118
+        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 01:26:06 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id ud5so21141302ejc.4
+        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 01:26:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gVdahFE3VCsg1gB9d5/Q9u5eE8BPZK+mrYotqg2hIQI=;
+        b=WkJ0nrMo5rkcmbC0jEiEUWoe+lpYz8LMT2g3ETIXKai3ipMja/7APKVLpqDQ5mlCgl
+         HbexCGvC3+l/2WAvq+hJGNVrlSU4kAEDjh0deqWj++gGyme0xfljRvk1lWnXDqu4UZ0T
+         963d3O8QHVnzwC8G75/oReE1enUiEwJl3vWuZ3MIKv06V4uNRc8FsnW9gRyG1B6vg41I
+         36NAbQgBKtUJIpzlX1latn1u/kEmjiQu8w+5mZW0sLZGKIPUCX1VxYil6UgtLMsFhaCM
+         2r60v+u0HaNUdGNFyCnzGnBuDKzVS9viPwSCAuKKbVsH5d0GiV2G0HiQgPu8nnLRSf0U
+         Dn1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gVdahFE3VCsg1gB9d5/Q9u5eE8BPZK+mrYotqg2hIQI=;
+        b=U4LLFEyarBz1cCM+P6YL6aQP3W4Sxt7MCvtCfSNBFsBbHxGf92xBCBR3WAOUZqFwJP
+         Nb9iZiwsWxJW8I9NQ9Y+422V4GYqx5B7ZO05q2LW7ERYre34tGl0Gbz49SckMmJENRxk
+         N2VzDAwlNnEv+44HkTWvPzS7ll+OHaHKikkIlwTu8ko55gYMUFNC4pCrvuScaUAySa7M
+         tKcc/xmDvLB8HEVKyIAPdvffda63MSajZXBi3pL4IcCFuJ5EgQiVEScZ6D/xP/CQhXSV
+         viQ0AdBdTtyZXXLNB5Jpu3G1Q/EieVVTOIJ8vJB/3W3x1uhxz3acJuhTOdUYKZLxfmmn
+         vR6g==
+X-Gm-Message-State: ANoB5pnQ/f1mS43wW/3Pr2+vSNHCEVLvAWSuN/xSU/RH03DwwzqnHO+P
+        AIaCtnZnSkEhAKII7TYLjW8Wcw==
+X-Google-Smtp-Source: AA0mqf4QXZSjWDGz+Kl+7wOpCymcZnKpCnewBJSQ2/IG7stzl3vTV/T0TqdkYkqkFLmtYTqc5RnYQg==
+X-Received: by 2002:a17:907:2dab:b0:7c0:eba9:cf0f with SMTP id gt43-20020a1709072dab00b007c0eba9cf0fmr14222739ejc.30.1670750764415;
+        Sun, 11 Dec 2022 01:26:04 -0800 (PST)
+Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
+        by smtp.gmail.com with ESMTPSA id 23-20020a170906329700b00770812e2394sm1884703ejw.160.2022.12.11.01.26.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 11 Dec 2022 01:26:03 -0800 (PST)
+Message-ID: <90216c45-ce6d-8502-9158-636fbe247ebe@blackwall.org>
+Date:   Sun, 11 Dec 2022 11:26:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: BZgq7nMdeAAqcHY__5dyZycxX7JwhY4U
-X-Proofpoint-ORIG-GUID: tc4yxaiE8-F7n2e8ayWK0usAiBEj7MZJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-12-10_10,2022-12-08_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
- suspectscore=0 clxscore=1011 phishscore=0 malwarescore=0 mlxscore=0
- impostorscore=0 priorityscore=1501 mlxlogscore=834 lowpriorityscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2212110079
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH net-next v2 12/14] bridge: mcast: Support replacement of
+ MDB port group entries
+Content-Language: en-US
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, roopa@nvidia.com, mlxsw@nvidia.com
+References: <20221210145633.1328511-1-idosch@nvidia.com>
+ <20221210145633.1328511-13-idosch@nvidia.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20221210145633.1328511-13-idosch@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,107 +76,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Breno Leitao <leitao@debian.org> writes:
-
-> There are cases where we need relevant information about the socket
-> during a warning, so, it could help us to find bugs that happens and do
-> not have an easy repro.
->
-> This patch creates a TCP-socket specific version of WARN_ON_ONCE(), which
-> dumps revelant information about the TCP socket when it hits rare
-> warnings, which is super useful for debugging purposes.
->
-> Hooking this warning tcp_snd_cwnd_set() for now, but, the intent is to
-> convert more TCP warnings to this helper later.
->
-> Signed-off-by: Breno Leitao <leitao@debian.org>
+On 10/12/2022 16:56, Ido Schimmel wrote:
+> Now that user space can specify additional attributes of port group
+> entries such as filter mode and source list, it makes sense to allow
+> user space to atomically modify these attributes by replacing entries
+> instead of forcing user space to delete the entries and add them back.
+> 
+> Replace MDB port group entries when the 'NLM_F_REPLACE' flag is
+> specified in the netlink message header.
+> 
+> When a (*, G) entry is replaced, update the following attributes: Source
+> list, state, filter mode, protocol and flags. If the entry is temporary
+> and in EXCLUDE mode, reset the group timer to the group membership
+> interval. If the entry is temporary and in INCLUDE mode, reset the
+> source timers of associated sources to the group membership interval.
+> 
+> Examples:
+> 
+>  # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 permanent source_list 192.0.2.1,192.0.2.2 filter_mode include
+>  # bridge -d -s mdb show
+>  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.2 permanent filter_mode include proto static     0.00
+>  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto static     0.00
+>  dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode include source_list 192.0.2.2/0.00,192.0.2.1/0.00 proto static     0.00
+> 
+>  # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 permanent source_list 192.0.2.1,192.0.2.3 filter_mode exclude proto zebra
+>  # bridge -d -s mdb show
+>  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.3 permanent filter_mode include proto zebra  blocked    0.00
+>  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto zebra  blocked    0.00
+>  dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode exclude source_list 192.0.2.3/0.00,192.0.2.1/0.00 proto zebra     0.00
+> 
+>  # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 temp source_list 192.0.2.4,192.0.2.3 filter_mode include proto bgp
+>  # bridge -d -s mdb show
+>  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.4 temp filter_mode include proto bgp     0.00
+>  dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.3 temp filter_mode include proto bgp     0.00
+>  dev br0 port dummy10 grp 239.1.1.1 temp filter_mode include source_list 192.0.2.4/259.44,192.0.2.3/259.44 proto bgp     0.00
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 > ---
->  include/net/tcp.h       |  3 ++-
->  include/net/tcp_debug.h | 10 ++++++++++
->  net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
->  3 files changed, 42 insertions(+), 1 deletion(-)
->  create mode 100644 include/net/tcp_debug.h
->
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index 14d45661a84d..e490af8e6fdc 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -40,6 +40,7 @@
->  #include <net/inet_ecn.h>
->  #include <net/dst.h>
->  #include <net/mptcp.h>
-> +#include <net/tcp_debug.h>
->  
->  #include <linux/seq_file.h>
->  #include <linux/memcontrol.h>
-> @@ -1229,7 +1230,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
->  
->  static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
->  {
-> -	WARN_ON_ONCE((int)val <= 0);
-> +	TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
->  	tp->snd_cwnd = val;
->  }
->  
-> diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
-> new file mode 100644
-> index 000000000000..50e96d87d335
-> --- /dev/null
-> +++ b/include/net/tcp_debug.h
-> @@ -0,0 +1,10 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _LINUX_TCP_DEBUG_H
-> +#define _LINUX_TCP_DEBUG_H
-> +
-> +void tcp_sock_warn(const struct tcp_sock *tp);
-> +
-> +#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
-> +		DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
-> +
-> +#endif  /* _LINUX_TCP_DEBUG_H */
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 54836a6b81d6..5985ba9c4231 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -4705,6 +4705,36 @@ int tcp_abort(struct sock *sk, int err)
->  }
->  EXPORT_SYMBOL_GPL(tcp_abort);
->  
-> +void tcp_sock_warn(const struct tcp_sock *tp)
-> +{
-> +	const struct sock *sk = (const struct sock *)tp;
-> +	struct inet_sock *inet = inet_sk(sk);
-> +	struct inet_connection_sock *icsk = inet_csk(sk);
-> +
-> +	WARN_ON(1);
+> 
+> Notes:
+>     v2:
+>     * Remove extack from br_mdb_replace_group_sg().
+>     * Change 'nlflags' to u16 and move it after 'filter_mode' to pack the
+>       structure.
+> 
+>  net/bridge/br_mdb.c     | 102 ++++++++++++++++++++++++++++++++++++++--
+>  net/bridge/br_private.h |   1 +
+>  2 files changed, 98 insertions(+), 5 deletions(-)
+> 
 
-Never looked into the details of WARN_ON, but shouldn't that come at the
-end of the function? If one has kernel.panic_on_warn=1, the kernel
-would already panic in WARN_ON, and the lines below wouldn't be printed?
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
-> +
-> +	pr_warn("Socket Info: family=%u state=%d ccname=%s cwnd=%u",
-> +		sk->sk_family, sk->sk_state, icsk->icsk_ca_ops->name,
-> +		tcp_snd_cwnd(tp));
-> +
-> +	switch (sk->sk_family) {
-> +	case AF_INET:
-> +		pr_warn("saddr=%pI4:%u daddr=%pI4:%u", &inet->inet_saddr,
-> +			ntohs(inet->inet_sport), &inet->inet_daddr,
-> +			ntohs(inet->inet_dport));
-> +
-> +		break;
-> +#if IS_ENABLED(CONFIG_IPV6)
-> +	case AF_INET6:
-> +		pr_warn("saddr=[%pI6]:%u daddr=[%pI6]:%u", &sk->sk_v6_rcv_saddr,
-> +			ntohs(inet->inet_sport), &sk->sk_v6_daddr,
-> +			ntohs(inet->inet_dport));
-> +		break;
-> +#endif
-> +	}
-> +}
-> +EXPORT_SYMBOL_GPL(tcp_sock_warn);
-> +
->  extern struct tcp_congestion_ops tcp_reno;
->  
->  static __initdata unsigned long thash_entries;
+
