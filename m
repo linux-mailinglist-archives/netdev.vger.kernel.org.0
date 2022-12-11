@@ -2,189 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E183F64931D
-	for <lists+netdev@lfdr.de>; Sun, 11 Dec 2022 08:56:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3313649336
+	for <lists+netdev@lfdr.de>; Sun, 11 Dec 2022 09:45:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbiLKH4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Dec 2022 02:56:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
+        id S229929AbiLKIpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Dec 2022 03:45:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiLKH4E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 02:56:04 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2048.outbound.protection.outlook.com [40.107.94.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799DDE01D
-        for <netdev@vger.kernel.org>; Sat, 10 Dec 2022 23:56:02 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ko4H9y9ab805Bm5NqkCtzTu8sN3uhYaUlmCP27ryuLeeiFOq4//sViEuzmExHKYc2ZgkSU5N4lrsfhGZnMuDJzPeCuPkwOHfbWVQEIOBdGchNTGUaDS9WjhyMKwDdcihcw7+O1DpToimb0dnjWQfZQMiguYotYUk7N6+fFj6iUW2NtFo2Ri4a9WqpoGnK9UilO/oaJ/+UdeyuH0pWw5MzpD3hk6bFAJ51XKuC1/2qNafU6uOl3kZQ9jkcOXy9zadDgU0RocNYQXcdlrJ3AMPn3NyiuB6k2nW64vmxZcjoUgU8Sr6mpHER0m0wfo4aSKdPj0GXSFsudfoGiaYSSqiPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fDM/xKNvpK7hwZgnM75mGFlLB44SC4YVVOQRVh7u004=;
- b=Z4z393fw/r0uL7+IXt6hVm4ENXDR+btemGCDz3UO5JQmkCxOLEzn/qd9JuMtNS6Lv3wZD9+aqoy5w7wYZ+KW1WqLi+LzqR+GuMY0JLphGBERGdx9eFqmfwk8LxHDMrxlvPbcvEyN9GFfRm7mGtyUoSzGG6m6iql74UoYzi2JOwftKn/VT/KqfAhVrx+H8LPK51agY0ZOCXpq6GjHmWfBeYpmOlxUJNTxmOo7aIJO2rOGZoQWBejuqFiV6Cvpvoz/1XHDVId8CSC6ZcyZahevSA1sblMPwpD6N/xTe1N5mk+7h/txKrNVHyjrcG9exBIrOkiuKTmBgybt6w2TbR+VEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fDM/xKNvpK7hwZgnM75mGFlLB44SC4YVVOQRVh7u004=;
- b=Y2psiLMkCE9ojvj2ivRPxVqR/eQ/Jf/yW9Oc0NIEszrIJzkRGZ8GCFdazyhdGIjFgr+G/2/5wctVHsBqEGcXiy6a/uUFDXG+urt4rD08y0IlbDYI9CDU/rFjVVyYWvFGp0bp5yhC+eUeB26UMRsz08UaNSKaeJRyHs5dD17k7b9OGncE21V33fd0u/LqU3eIk3ZxHWGGiObq1nhy9zNrIQ7BzbxPxOvpe9do2Gcy3e6SeEns3x3q3aEELZzfBB/0LFURbXg5TYAGz1BpHTy5H90+QSKwrKKCAKL7TAkjqnySOZChphnBCeT+yyA3jiMlzjXW/ebQZYMQpaQIIQEWhg==
-Received: from BN8PR04CA0029.namprd04.prod.outlook.com (2603:10b6:408:70::42)
- by CY8PR12MB8213.namprd12.prod.outlook.com (2603:10b6:930:71::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Sun, 11 Dec
- 2022 07:55:59 +0000
-Received: from BN8NAM11FT075.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:70:cafe::d6) by BN8PR04CA0029.outlook.office365.com
- (2603:10b6:408:70::42) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19 via Frontend
- Transport; Sun, 11 Dec 2022 07:55:53 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN8NAM11FT075.mail.protection.outlook.com (10.13.176.208) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5901.20 via Frontend Transport; Sun, 11 Dec 2022 07:55:52 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sat, 10 Dec
- 2022 23:55:45 -0800
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Sat, 10 Dec 2022 23:55:45 -0800
-Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Sat, 10 Dec
- 2022 23:55:42 -0800
-From:   <ehakim@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <raeds@nvidia.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <sd@queasysnail.net>,
-        <atenart@kernel.org>, Emeel Hakim <ehakim@nvidia.com>
-Subject: [PATCH net] net: macsec: fix net device access prior to holding a lock
-Date:   Sun, 11 Dec 2022 09:55:32 +0200
-Message-ID: <20221211075532.28099-1-ehakim@nvidia.com>
-X-Mailer: git-send-email 2.21.3
+        with ESMTP id S229475AbiLKIpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 03:45:05 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A17DDFC3;
+        Sun, 11 Dec 2022 00:45:04 -0800 (PST)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BB6jRGV015337;
+        Sun, 11 Dec 2022 08:44:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : references : date : in-reply-to : message-id : mime-version :
+ content-type; s=pp1; bh=0t+5Zv1W3aD2R4Ebr6eP+axBbcGNw5ggeuo2oOxENVQ=;
+ b=XK7EgWOF8PbJeAmgqImL+L59pExqClaFDc7RDw9OGGM+YVU9WM8T7Yt1YRLYZmEOn6yK
+ 1+f7OD/0mcxS5lBI6DPXrQX8GmixcHhKZthYd7+PGfn1c7TLmMhx34xl2mdl5s7SXvwz
+ 78xIK/038IrO7xGuBoQ7zFx7KkrcaYSE8m8tLoOVwHbX2NpYVg+KFWwQq6OYWV5Gtro2
+ DmmHY+71zjB/Dq27HaL1eicdhIVVowxl6Rrr8NalQVWxvKvC1nCsFTV+KJi37sLTApwK
+ +A17+UK6DVnn+CkLuzo/dbcT1koxoPJqSsK+KakdD6a36/mYCs5Ax3PRCM6kAW7hsjPU qQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3md3shxtan-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 11 Dec 2022 08:44:41 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2BB8ieFN017015;
+        Sun, 11 Dec 2022 08:44:40 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3md3shxta7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 11 Dec 2022 08:44:40 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 2BB12xAb007894;
+        Sun, 11 Dec 2022 08:44:38 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3mchcf187x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 11 Dec 2022 08:44:38 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+        by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2BB8iacc44368144
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 11 Dec 2022 08:44:36 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E882220049;
+        Sun, 11 Dec 2022 08:44:35 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A2CBB20040;
+        Sun, 11 Dec 2022 08:44:35 +0000 (GMT)
+Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
+        by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+        Sun, 11 Dec 2022 08:44:35 +0000 (GMT)
+From:   Sven Schnelle <svens@linux.ibm.com>
+To:     Breno Leitao <leitao@debian.org>
+Cc:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, kuniyu@amazon.com, netdev@vger.kernel.org,
+        leit@fb.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net-next] tcp: socket-specific version of WARN_ON_ONCE()
+References: <20221208154656.60623-1-leitao@debian.org>
+Date:   Sun, 11 Dec 2022 09:44:35 +0100
+In-Reply-To: <20221208154656.60623-1-leitao@debian.org> (Breno Leitao's
+        message of "Thu, 8 Dec 2022 07:46:56 -0800")
+Message-ID: <yt9dlenes51o.fsf@linux.ibm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT075:EE_|CY8PR12MB8213:EE_
-X-MS-Office365-Filtering-Correlation-Id: b1c7bfac-e81f-4b30-4e3a-08dadb4d2066
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 86i6cb8LNTmF/UKB9GeGR8plPK+q9D1zdjLpMJ8DF78tR1cQSkDxRVpog4xGzUcM8NMLCJ75QHzhS327p4ieEfcuuLg2gDGijpBiJP6a8EeO+0cDl9+RuxLzjpEJtpdOmO8vryup8vEV6v1XU3QBztvcHKf0C+49kcBY37CAlkO/OIvCTSVviCItdI6Zc9KxhHsTKYPqBdeY28Gj10Rg1UUSWp7Cnhkg2sfrZfw4NP5svfpn7OcX+I8mVv2DDqde5w8WwlgcZUw5khnsKVG5tiYBwUd+dfCSHyiIfyrj/81RSlqV2A8VG1r5mVImjWGawoqovrd1ENmdmJroYrPw2V0zViHjZ+IbO8t91iFvVoLOSmsj5uTYuaJjnkkm0IyJjmbnoKV+EOZ+CGnUreV9Gs2IJkvDMeaX+hPi4AgDg8LhIpN4ZAC7aqb1hu53EaX6rFQKIha9SP4+df7U15VsCnKOqYNfWaZp8MJZ4WFA3F4qBYket8BIlmtxfdKf75U9L3D+tfNHi0tvQg2CbQafy0Cw/a+Aww6Ymbii2usABAk+egWc9AzI23FTtDeUuCxnt/EO/93DrhxJfzAqeq0j5EGVHmCvQf7YQ+xM1SKH9x9xLmtJmKSOfmQ46K8D0b7ZsJRNxDIIvYnhhfILPvFi03Lb3xLz+KBJEExYZ/cbhdtz431JJuwkWqW5byw9s4A3vBFu1wmMw8kK7f8aRGDjYQ==
-X-Forefront-Antispam-Report: CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(346002)(136003)(396003)(451199015)(40470700004)(46966006)(36840700001)(356005)(7636003)(82740400003)(36860700001)(5660300002)(86362001)(2906002)(40460700003)(2876002)(40480700001)(41300700001)(107886003)(6666004)(478600001)(4326008)(8676002)(70586007)(70206006)(6916009)(54906003)(316002)(426003)(47076005)(82310400005)(8936002)(83380400001)(26005)(186003)(7696005)(2616005)(336012)(1076003)(36756003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2022 07:55:52.6855
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1c7bfac-e81f-4b30-4e3a-08dadb4d2066
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT075.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8213
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: BZgq7nMdeAAqcHY__5dyZycxX7JwhY4U
+X-Proofpoint-ORIG-GUID: tc4yxaiE8-F7n2e8ayWK0usAiBEj7MZJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-10_10,2022-12-08_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
+ suspectscore=0 clxscore=1011 phishscore=0 malwarescore=0 mlxscore=0
+ impostorscore=0 priorityscore=1501 mlxlogscore=834 lowpriorityscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2212110079
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emeel Hakim <ehakim@nvidia.com>
+Breno Leitao <leitao@debian.org> writes:
 
-Currently macsec offload selection update routine accesses
-the net device prior to holding the relevant lock.
-Fix by holding the lock prior to the device access.
+> There are cases where we need relevant information about the socket
+> during a warning, so, it could help us to find bugs that happens and do
+> not have an easy repro.
+>
+> This patch creates a TCP-socket specific version of WARN_ON_ONCE(), which
+> dumps revelant information about the TCP socket when it hits rare
+> warnings, which is super useful for debugging purposes.
+>
+> Hooking this warning tcp_snd_cwnd_set() for now, but, the intent is to
+> convert more TCP warnings to this helper later.
+>
+> Signed-off-by: Breno Leitao <leitao@debian.org>
+> ---
+>  include/net/tcp.h       |  3 ++-
+>  include/net/tcp_debug.h | 10 ++++++++++
+>  net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
+>  3 files changed, 42 insertions(+), 1 deletion(-)
+>  create mode 100644 include/net/tcp_debug.h
+>
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 14d45661a84d..e490af8e6fdc 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -40,6 +40,7 @@
+>  #include <net/inet_ecn.h>
+>  #include <net/dst.h>
+>  #include <net/mptcp.h>
+> +#include <net/tcp_debug.h>
+>  
+>  #include <linux/seq_file.h>
+>  #include <linux/memcontrol.h>
+> @@ -1229,7 +1230,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
+>  
+>  static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
+>  {
+> -	WARN_ON_ONCE((int)val <= 0);
+> +	TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
+>  	tp->snd_cwnd = val;
+>  }
+>  
+> diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
+> new file mode 100644
+> index 000000000000..50e96d87d335
+> --- /dev/null
+> +++ b/include/net/tcp_debug.h
+> @@ -0,0 +1,10 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _LINUX_TCP_DEBUG_H
+> +#define _LINUX_TCP_DEBUG_H
+> +
+> +void tcp_sock_warn(const struct tcp_sock *tp);
+> +
+> +#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
+> +		DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
+> +
+> +#endif  /* _LINUX_TCP_DEBUG_H */
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 54836a6b81d6..5985ba9c4231 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -4705,6 +4705,36 @@ int tcp_abort(struct sock *sk, int err)
+>  }
+>  EXPORT_SYMBOL_GPL(tcp_abort);
+>  
+> +void tcp_sock_warn(const struct tcp_sock *tp)
+> +{
+> +	const struct sock *sk = (const struct sock *)tp;
+> +	struct inet_sock *inet = inet_sk(sk);
+> +	struct inet_connection_sock *icsk = inet_csk(sk);
+> +
+> +	WARN_ON(1);
 
-Fixes: dcb780fb2795 ("net: macsec: add nla support for changing the offloading selection")
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
----
- drivers/net/macsec.c | 34 +++++++++++++++++++++-------------
- 1 file changed, 21 insertions(+), 13 deletions(-)
+Never looked into the details of WARN_ON, but shouldn't that come at the
+end of the function? If one has kernel.panic_on_warn=1, the kernel
+would already panic in WARN_ON, and the lines below wouldn't be printed?
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 2fbac51b9b19..038a78794392 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -2593,7 +2593,7 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
- 	const struct macsec_ops *ops;
- 	struct macsec_context ctx;
- 	struct macsec_dev *macsec;
--	int ret;
-+	int ret = 0;
- 
- 	if (!attrs[MACSEC_ATTR_IFINDEX])
- 		return -EINVAL;
-@@ -2606,28 +2606,36 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
- 					macsec_genl_offload_policy, NULL))
- 		return -EINVAL;
- 
-+	rtnl_lock();
-+
- 	dev = get_dev_from_nl(genl_info_net(info), attrs);
--	if (IS_ERR(dev))
--		return PTR_ERR(dev);
-+	if (IS_ERR(dev)) {
-+		ret = PTR_ERR(dev);
-+		goto out;
-+	}
- 	macsec = macsec_priv(dev);
- 
--	if (!tb_offload[MACSEC_OFFLOAD_ATTR_TYPE])
--		return -EINVAL;
-+	if (!tb_offload[MACSEC_OFFLOAD_ATTR_TYPE]) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
- 
- 	offload = nla_get_u8(tb_offload[MACSEC_OFFLOAD_ATTR_TYPE]);
- 	if (macsec->offload == offload)
--		return 0;
-+		goto out;
- 
- 	/* Check if the offloading mode is supported by the underlying layers */
- 	if (offload != MACSEC_OFFLOAD_OFF &&
--	    !macsec_check_offload(offload, macsec))
--		return -EOPNOTSUPP;
-+	    !macsec_check_offload(offload, macsec)) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
- 
- 	/* Check if the net device is busy. */
--	if (netif_running(dev))
--		return -EBUSY;
--
--	rtnl_lock();
-+	if (netif_running(dev)) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
- 
- 	prev_offload = macsec->offload;
- 	macsec->offload = offload;
-@@ -2662,7 +2670,7 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
- 
- rollback:
- 	macsec->offload = prev_offload;
--
-+out:
- 	rtnl_unlock();
- 	return ret;
- }
--- 
-2.21.3
-
+> +
+> +	pr_warn("Socket Info: family=%u state=%d ccname=%s cwnd=%u",
+> +		sk->sk_family, sk->sk_state, icsk->icsk_ca_ops->name,
+> +		tcp_snd_cwnd(tp));
+> +
+> +	switch (sk->sk_family) {
+> +	case AF_INET:
+> +		pr_warn("saddr=%pI4:%u daddr=%pI4:%u", &inet->inet_saddr,
+> +			ntohs(inet->inet_sport), &inet->inet_daddr,
+> +			ntohs(inet->inet_dport));
+> +
+> +		break;
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	case AF_INET6:
+> +		pr_warn("saddr=[%pI6]:%u daddr=[%pI6]:%u", &sk->sk_v6_rcv_saddr,
+> +			ntohs(inet->inet_sport), &sk->sk_v6_daddr,
+> +			ntohs(inet->inet_dport));
+> +		break;
+> +#endif
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(tcp_sock_warn);
+> +
+>  extern struct tcp_congestion_ops tcp_reno;
+>  
+>  static __initdata unsigned long thash_entries;
