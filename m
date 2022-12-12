@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79F80649DE4
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 12:33:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA067649DE0
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 12:33:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232174AbiLLLcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 06:32:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42494 "EHLO
+        id S232167AbiLLLca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 06:32:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232200AbiLLLbT (ORCPT
+        with ESMTP id S232203AbiLLLbT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 06:31:19 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E0964E4
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 03:31:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167C5659F
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 03:31:14 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1p4h1b-0000or-Tz
-        for netdev@vger.kernel.org; Mon, 12 Dec 2022 12:31:11 +0100
+        id 1p4h1c-0000p9-6O
+        for netdev@vger.kernel.org; Mon, 12 Dec 2022 12:31:12 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 2C1E813CC81
+        by bjornoya.blackshift.org (Postfix) with SMTP id 4C0F113CC83
         for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 11:30:59 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 3C47613CC3C;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 6371513CC45;
         Mon, 12 Dec 2022 11:30:57 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 77881e3f;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 567fd8d7;
         Mon, 12 Dec 2022 11:30:48 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
@@ -38,9 +38,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de,
         Markus Schneider-Pargmann <msp@baylibre.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 37/39] can: tcan4x5x: Fix use of register error status mask
-Date:   Mon, 12 Dec 2022 12:30:43 +0100
-Message-Id: <20221212113045.222493-38-mkl@pengutronix.de>
+Subject: [PATCH net-next 38/39] can: tcan4x5x: Fix register range of first two blocks
+Date:   Mon, 12 Dec 2022 12:30:44 +0100
+Message-Id: <20221212113045.222493-39-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221212113045.222493-1-mkl@pengutronix.de>
 References: <20221212113045.222493-1-mkl@pengutronix.de>
@@ -61,61 +61,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 
-TCAN4X5X_ERROR_STATUS is not a status register that needs clearing
-during interrupt handling. Instead this is a masking register that masks
-error interrupts. Writing TCAN4X5X_CLEAR_ALL_INT to this register
-effectively masks everything.
+According to the datasheet 0x10 is the last register in the first block,
+not register 0x2c.
 
-Rename the register and mask all error interrupts only once by writing
-to the register in tcan4x5x_init.
+The datasheet lists the last register of the second block as 0x830, not
+0x83c.
 
-Fixes: 5443c226ba91 ("can: tcan4x5x: Add tcan4x5x driver to the kernel")
 Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-Link: https://lore.kernel.org/all/20221206115728.1056014-10-msp@baylibre.com
+Link: https://lore.kernel.org/all/20221206115728.1056014-11-msp@baylibre.com
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/m_can/tcan4x5x-core.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/can/m_can/tcan4x5x-regmap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/m_can/tcan4x5x-core.c b/drivers/net/can/m_can/tcan4x5x-core.c
-index a77f4d4f6299..2342aa011647 100644
---- a/drivers/net/can/m_can/tcan4x5x-core.c
-+++ b/drivers/net/can/m_can/tcan4x5x-core.c
-@@ -10,7 +10,7 @@
- #define TCAN4X5X_DEV_ID1 0x04
- #define TCAN4X5X_REV 0x08
- #define TCAN4X5X_STATUS 0x0C
--#define TCAN4X5X_ERROR_STATUS 0x10
-+#define TCAN4X5X_ERROR_STATUS_MASK 0x10
- #define TCAN4X5X_CONTROL 0x14
- 
- #define TCAN4X5X_CONFIG 0x800
-@@ -204,12 +204,7 @@ static int tcan4x5x_clear_interrupts(struct m_can_classdev *cdev)
- 	if (ret)
- 		return ret;
- 
--	ret = tcan4x5x_write_tcan_reg(cdev, TCAN4X5X_INT_FLAGS,
--				      TCAN4X5X_CLEAR_ALL_INT);
--	if (ret)
--		return ret;
--
--	return tcan4x5x_write_tcan_reg(cdev, TCAN4X5X_ERROR_STATUS,
-+	return tcan4x5x_write_tcan_reg(cdev, TCAN4X5X_INT_FLAGS,
- 				       TCAN4X5X_CLEAR_ALL_INT);
+diff --git a/drivers/net/can/m_can/tcan4x5x-regmap.c b/drivers/net/can/m_can/tcan4x5x-regmap.c
+index 26e212b8ca7a..33aed989e42a 100644
+--- a/drivers/net/can/m_can/tcan4x5x-regmap.c
++++ b/drivers/net/can/m_can/tcan4x5x-regmap.c
+@@ -91,8 +91,8 @@ static int tcan4x5x_regmap_read(void *context,
  }
  
-@@ -229,6 +224,11 @@ static int tcan4x5x_init(struct m_can_classdev *cdev)
- 	if (ret)
- 		return ret;
- 
-+	ret = tcan4x5x_write_tcan_reg(cdev, TCAN4X5X_ERROR_STATUS_MASK,
-+				      TCAN4X5X_CLEAR_ALL_INT);
-+	if (ret)
-+		return ret;
-+
- 	ret = regmap_update_bits(tcan4x5x->regmap, TCAN4X5X_CONFIG,
- 				 TCAN4X5X_MODE_SEL_MASK, TCAN4X5X_MODE_NORMAL);
- 	if (ret)
+ static const struct regmap_range tcan4x5x_reg_table_yes_range[] = {
+-	regmap_reg_range(0x0000, 0x002c),	/* Device ID and SPI Registers */
+-	regmap_reg_range(0x0800, 0x083c),	/* Device configuration registers and Interrupt Flags*/
++	regmap_reg_range(0x0000, 0x0010),	/* Device ID and SPI Registers */
++	regmap_reg_range(0x0800, 0x0830),	/* Device configuration registers and Interrupt Flags*/
+ 	regmap_reg_range(0x1000, 0x10fc),	/* M_CAN */
+ 	regmap_reg_range(0x8000, 0x87fc),	/* MRAM */
+ };
 -- 
 2.35.1
 
