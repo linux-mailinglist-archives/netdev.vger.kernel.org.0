@@ -2,114 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25E2D64A338
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 15:25:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE98364A31D
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 15:22:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232283AbiLLOZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 09:25:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
+        id S232072AbiLLOWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 09:22:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232016AbiLLOZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 09:25:18 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3499C11A21;
-        Mon, 12 Dec 2022 06:25:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=51T3cM0EFwbuKvphhMpq/225LyqI0jErFjDfuwBTyZg=; b=K5ryJ4SeFb8nf3RwRQx4hDjU4i
-        wsH4MHOGYBpfyNLVfz26VRXuv5WNM+bEAFAZCWEbzGhgLwtomr24hAMR/wI3LsouxmQP7b29PeV9k
-        ciom3+pReSXJVNyaqQ6jWNt3DAqCpwqI7rxm/BcY9fCio4C7ARC1DdhtnLXtiszQqf1E7ptVj11vp
-        p/h+HS6Kpjd15aYkpEBOvo6HqOuAS4yHEV/qkdsLgUMOrpB+ISEtb+g+ybG/0+soafWvRQvlt7sGQ
-        /777paRjT4iJWa+pUZQhdV8QKYuNhLAl5p+oDgg3BCV20xxdtuPd06horZlqvWeDHKsX6KeN4Yrhx
-        H6Sp622A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35680)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1p4jjp-0005iV-Qa; Mon, 12 Dec 2022 14:25:01 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1p4jjn-0005Za-Hl; Mon, 12 Dec 2022 14:24:59 +0000
-Date:   Mon, 12 Dec 2022 14:24:59 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Claudiu.Beznea@microchip.com
-Cc:     Nicolas.Ferre@microchip.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        andrew@lunn.ch, hkallweit1@gmail.com, Sergiu.Moga@microchip.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] net: phylink: init phydev on phylink_resume()
-Message-ID: <Y5c5uzpee1jrwWgz@shell.armlinux.org.uk>
-References: <20221212112845.73290-1-claudiu.beznea@microchip.com>
- <20221212112845.73290-2-claudiu.beznea@microchip.com>
- <Y5cizXwsEnJ3fX0y@shell.armlinux.org.uk>
- <b2f0994c-432f-9ac8-485e-ac9388619674@microchip.com>
+        with ESMTP id S232519AbiLLOWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 09:22:09 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF767644;
+        Mon, 12 Dec 2022 06:22:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1670854928; x=1702390928;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=7a2DuvLenxyuI7AqD6mHvsidXY3Z0leJSqLMjOih4cw=;
+  b=pl1+vsAMMs6/WcKrDFHue+AmtjhguDtJTVl4r9KGCucLIHT5xNxF9Meb
+   kAiEp7lGelhVJDbsFu2C6Z+WZx76jC7HbMamab17Oi01OSijt0sav2Dhu
+   hAz9QfPOSHEXp7qp+Ly9VTBQYljqFPZTuJYO+R6/uTVikwmxFtSPf9tVZ
+   9jq0RnGb6Cgog+uENiLQOdOk7nQPuvv/Z0+DrW+LiftkXPX3kHi/TqZZF
+   iSTZwKOT1K1uDzT9UnAH0pYDhW21kQSVXiX8joqCOwH6zXV0CLOPCvhLl
+   RN1aToSPBa0SGBueSkZcnX1w2DRY1P2JTKnpg4456Kg5QPACG8i0ATXYm
+   w==;
+X-IronPort-AV: E=Sophos;i="5.96,238,1665471600"; 
+   d="scan'208";a="191236976"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Dec 2022 07:22:07 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 12 Dec 2022 07:22:04 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.16 via Frontend
+ Transport; Mon, 12 Dec 2022 07:22:04 -0700
+Date:   Mon, 12 Dec 2022 15:27:12 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        <Steen.Hegelund@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <daniel.machon@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <lars.povlsen@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next v3 4/4] net: lan966x: Add ptp trap rules
+Message-ID: <20221212142712.majhp4yifg72y3b2@soft-dev3-1>
+References: <20221209125857.yhsqt4nj5kmavhmc@soft-dev3-1>
+ <20221209125611.m5cp3depjigs7452@skbuf>
+ <a821d62e2ed2c6ec7b305f7d34abf0ba@walle.cc>
+ <20221209142058.ww7aijhsr76y3h2t@soft-dev3-1>
+ <20221209144328.m54ksmoeitmcjo5f@skbuf>
+ <20221209145720.ahjmercylzqo5tla@soft-dev3-1>
+ <20221209145637.nr6favnsofmwo45s@skbuf>
+ <20221209153010.f4r577ilnlein77e@soft-dev3-1>
+ <20221209152713.qmbnovdookrmzvkx@skbuf>
+ <20221209150332.79a921fd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <b2f0994c-432f-9ac8-485e-ac9388619674@microchip.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221209150332.79a921fd@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 12, 2022 at 01:26:54PM +0000, Claudiu.Beznea@microchip.com wrote:
-> On 12.12.2022 14:47, Russell King (Oracle) wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > On Mon, Dec 12, 2022 at 01:28:44PM +0200, Claudiu Beznea wrote:
-> >> There are scenarios where PHY power is cut off on system suspend.
-> >> There are also MAC drivers which handles themselves the PHY on
-> >> suspend/resume path. For such drivers the
-> >> struct phy_device::mac_managed_phy is set to true and thus the
-> >> mdio_bus_phy_suspend()/mdio_bus_phy_resume() wouldn't do the
-> >> proper PHY suspend/resume. For such scenarios call phy_init_hw()
-> >> from phylink_resume().
-> >>
-> >> Suggested-by: Russell King (Oracle) <linux@armlinux.org.uk>
-> >> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> >> ---
-> >>
-> >> Hi, Russel,
-> >>
-> >> I let phy_init_hw() to execute for all devices. I can restrict it only
-> >> for PHYs that has struct phy_device::mac_managed_phy = true.
-> >>
-> >> Please let me know what you think.
-> > 
-> > I think it would be better to only do this in the path where we call
-> > phy_start() - if we do it in the WoL path (where the PHY remains
-> > running), then there is no phy_start() call, so phy_init_hw() could
-> > result in the PHY not working after a suspend/resume event.
+The 12/09/2022 15:03, Jakub Kicinski wrote:
 > 
-> This will not work all the time for MACB usage on AT91 devices.
+> On Fri, 9 Dec 2022 17:27:13 +0200 Vladimir Oltean wrote:
+> > > So for example, on a fresh started lan966x the user will add the following
+> > > rule:
+> > > tc filter add dev eth0 ingress chain 8000000 prio 1 handle 1 protocol
+> > > all flower skip_sw dst_mac 00:11:22:33:44:55/ff:ff:ff:ff:ff:ff action
+> > > trap action goto chain 8100000
+> > >
+> > > He expects this rule not to be hit as there is no rule in chain 0. Now if
+> > > PTP is started and it would enable vcap, then suddenly this rule may be
+> > > hit.
+> >
+> > Is it too restrictive to only allow adding offloaded filters to a chain
+> > that has a valid goto towards it, coming (perhaps indirectly) from chain 0?
 > 
-> As explained here [1] the scenario where:
-> - MACB is configured to handle WoL
-> - the system goes to a suspend mode (named backup and self-refresh (BSR) in
->   our case) with power cut off on PHY and limited wake-up source (few pins
->   and RTC alarms)
+> Right, we fumbled the review and let the chain oddness in.
+> Until recently the driver worked without any rules in chain 0 :(
 > 
-> is still valid. In this case MAC IP and MAC PHY are not powered. And in
-> those cases phylink_resume() will not hit phy_start().
+> Maybe adding and offload of the rules can be separated?
+> Only actually add the rules to the HW once the goto chain rule
+> has been added?
 
-If the MAC is handling WoL, how does the MAC receive the packet to
-wake up if the PHY has lost power?
-
-If the PHY loses power, the MAC won't be able to receive the magic
-packet, and so WoL will be non-functional, and therefore will be
-completely pointless to support in such a configuration.
-
-What am I missing?
+Yes, we would like to do something like this.
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+/Horatiu
