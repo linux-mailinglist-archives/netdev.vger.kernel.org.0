@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 226026497E8
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 03:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9D276497AD
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 02:31:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbiLLCOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Dec 2022 21:14:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
+        id S231128AbiLLBb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Dec 2022 20:31:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231245AbiLLCNy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 21:13:54 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4960F4C
-        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 18:13:53 -0800 (PST)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NVlT410r4zJpHV;
-        Mon, 12 Dec 2022 10:10:16 +0800 (CST)
-Received: from cgs.huawei.com (10.244.148.83) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Mon, 12 Dec 2022 10:13:51 +0800
-From:   Gaosheng Cui <cuigaosheng1@huawei.com>
-To:     <peppe.cavallaro@st.com>, <alexandre.torgue@foss.st.com>,
-        <joabreu@synopsys.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <mcoquelin.stm32@gmail.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>, <boon.leong.ong@intel.com>,
-        <cuigaosheng1@huawei.com>
-CC:     <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v2] net: stmmac: fix possible memory leak in stmmac_dvr_probe()
-Date:   Mon, 12 Dec 2022 10:13:50 +0800
-Message-ID: <20221212021350.3066631-1-cuigaosheng1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229475AbiLLBb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 20:31:28 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EF265A1;
+        Sun, 11 Dec 2022 17:31:26 -0800 (PST)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4NVkb86n73zmWZf;
+        Mon, 12 Dec 2022 09:30:28 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 12 Dec
+ 2022 09:31:23 +0800
+From:   Li Zetao <lizetao1@huawei.com>
+To:     <pkshih@realtek.com>
+CC:     <Larry.Finger@lwfinger.net>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <kvalo@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+        <linville@tuxdriver.com>, <lizetao1@huawei.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: [PATCH v3] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in _rtl8812ae_phy_set_txpower_limit()
+Date:   Mon, 12 Dec 2022 10:35:40 +0800
+Message-ID: <20221212023540.1540147-1-lizetao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <66c119cc4e184a36d525a07f2fbd092348839610.camel@realtek.com>
+References: <66c119cc4e184a36d525a07f2fbd092348839610.camel@realtek.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.244.148.83]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
  kwepemi500012.china.huawei.com (7.221.188.12)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
@@ -51,40 +49,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bitmap_free() should be called to free priv->af_xdp_zc_qps
-when create_singlethread_workqueue() fails, otherwise there will
-be a memory leak, so we add the err path error_wq_init to fix it.
+There is a global-out-of-bounds reported by KASAN:
 
-Fixes: bba2556efad6 ("net: stmmac: Enable RX via AF_XDP zero-copy")
-Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+  BUG: KASAN: global-out-of-bounds in
+  _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
+  Read of size 1 at addr ffffffffa0773c43 by task NetworkManager/411
+
+  CPU: 6 PID: 411 Comm: NetworkManager Tainted: G      D
+  6.1.0-rc8+ #144 e15588508517267d37
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+  Call Trace:
+   <TASK>
+   ...
+   kasan_report+0xbb/0x1c0
+   _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
+   rtl8821ae_phy_bb_config.cold+0x346/0x641 [rtl8821ae]
+   rtl8821ae_hw_init+0x1f5e/0x79b0 [rtl8821ae]
+   ...
+   </TASK>
+
+The root cause of the problem is that the comparison order of
+"prate_section" in _rtl8812ae_phy_set_txpower_limit() is wrong. The
+_rtl8812ae_eq_n_byte() is used to compare the first n bytes of the two
+strings from tail to head, which causes the problem. In the
+_rtl8812ae_phy_set_txpower_limit(), it was originally intended to meet
+this requirement by carefully designing the comparison order.
+For example, "pregulation" and "pbandwidth" are compared in order of
+length from small to large, first is 3 and last is 4. However, the
+comparison order of "prate_section" dose not obey such order requirement,
+therefore when "prate_section" is "HT", when comparing from tail to head,
+it will lead to access out of bounds in _rtl8812ae_eq_n_byte(). As
+mentioned above, the _rtl8812ae_eq_n_byte() has the same function as
+strcmp(), so just strcmp() is enough.
+
+Fix it by removing _rtl8812ae_eq_n_byte() and use strcmp() barely.
+Although it can be fixed by adjusting the comparison order of
+"prate_section", this may cause the value of "rate_section" to not be
+from 0 to 5. In addition, commit "21e4b0726dc6" not only moved driver
+from staging to regular tree, but also added setting txpower limit
+function during the driver config phase, so the problem was introduced
+by this commit.
+
+Fixes: 21e4b0726dc6 ("rtlwifi: rtl8821ae: Move driver from staging to regular tree")
+Signed-off-by: Li Zetao <lizetao1@huawei.com>
 ---
-v2:
-- Add the missing errno, thanks!
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+v1 -> v2: delete the third parameter of _rtl8812ae_eq_n_byte() and use
+strcmp to replace loop comparison.
+v2 -> v3: remove _rtl8812ae_eq_n_byte() and use strcmp() barely.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 18c7ca29da2c..46f51632c02a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7096,7 +7096,8 @@ int stmmac_dvr_probe(struct device *device,
- 	priv->wq = create_singlethread_workqueue("stmmac_wq");
- 	if (!priv->wq) {
- 		dev_err(priv->device, "failed to create workqueue\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto error_wq_init;
- 	}
+ .../wireless/realtek/rtlwifi/rtl8821ae/phy.c  | 52 +++++++------------
+ 1 file changed, 20 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+index a29321e2fa72..5323ead30db0 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+@@ -1598,18 +1598,6 @@ static bool _rtl8812ae_get_integer_from_string(const char *str, u8 *pint)
+ 	return true;
+ }
  
- 	INIT_WORK(&priv->service_task, stmmac_service_task);
-@@ -7324,6 +7325,7 @@ int stmmac_dvr_probe(struct device *device,
- 	stmmac_napi_del(ndev);
- error_hw_init:
- 	destroy_workqueue(priv->wq);
-+error_wq_init:
- 	bitmap_free(priv->af_xdp_zc_qps);
+-static bool _rtl8812ae_eq_n_byte(const char *str1, const char *str2, u32 num)
+-{
+-	if (num == 0)
+-		return false;
+-	while (num > 0) {
+-		num--;
+-		if (str1[num] != str2[num])
+-			return false;
+-	}
+-	return true;
+-}
+-
+ static s8 _rtl8812ae_phy_get_chnl_idx_of_txpwr_lmt(struct ieee80211_hw *hw,
+ 					      u8 band, u8 channel)
+ {
+@@ -1659,42 +1647,42 @@ static void _rtl8812ae_phy_set_txpower_limit(struct ieee80211_hw *hw,
+ 	power_limit = power_limit > MAX_POWER_INDEX ?
+ 		      MAX_POWER_INDEX : power_limit;
  
- 	return ret;
+-	if (_rtl8812ae_eq_n_byte(pregulation, "FCC", 3))
++	if (strcmp(pregulation, "FCC") == 0)
+ 		regulation = 0;
+-	else if (_rtl8812ae_eq_n_byte(pregulation, "MKK", 3))
++	else if (strcmp(pregulation, "MKK") == 0)
+ 		regulation = 1;
+-	else if (_rtl8812ae_eq_n_byte(pregulation, "ETSI", 4))
++	else if (strcmp(pregulation, "ETSI") == 0)
+ 		regulation = 2;
+-	else if (_rtl8812ae_eq_n_byte(pregulation, "WW13", 4))
++	else if (strcmp(pregulation, "WW13") == 0)
+ 		regulation = 3;
+ 
+-	if (_rtl8812ae_eq_n_byte(prate_section, "CCK", 3))
++	if (strcmp(prate_section, "CCK") == 0)
+ 		rate_section = 0;
+-	else if (_rtl8812ae_eq_n_byte(prate_section, "OFDM", 4))
++	else if (strcmp(prate_section, "OFDM") == 0)
+ 		rate_section = 1;
+-	else if (_rtl8812ae_eq_n_byte(prate_section, "HT", 2) &&
+-		 _rtl8812ae_eq_n_byte(prf_path, "1T", 2))
++	else if (strcmp(prate_section, "HT") == 0 &&
++		 strcmp(prf_path, "1T") == 0)
+ 		rate_section = 2;
+-	else if (_rtl8812ae_eq_n_byte(prate_section, "HT", 2) &&
+-		 _rtl8812ae_eq_n_byte(prf_path, "2T", 2))
++	else if (strcmp(prate_section, "HT") == 0 &&
++		 strcmp(prf_path, "2T") == 0)
+ 		rate_section = 3;
+-	else if (_rtl8812ae_eq_n_byte(prate_section, "VHT", 3) &&
+-		 _rtl8812ae_eq_n_byte(prf_path, "1T", 2))
++	else if (strcmp(prate_section, "VHT") == 0 &&
++		 strcmp(prf_path, "1T") == 0)
+ 		rate_section = 4;
+-	else if (_rtl8812ae_eq_n_byte(prate_section, "VHT", 3) &&
+-		 _rtl8812ae_eq_n_byte(prf_path, "2T", 2))
++	else if (strcmp(prate_section, "VHT") == 0 &&
++		 strcmp(prf_path, "2T") == 0)
+ 		rate_section = 5;
+ 
+-	if (_rtl8812ae_eq_n_byte(pbandwidth, "20M", 3))
++	if (strcmp(pbandwidth, "20M") == 0)
+ 		bandwidth = 0;
+-	else if (_rtl8812ae_eq_n_byte(pbandwidth, "40M", 3))
++	else if (strcmp(pbandwidth, "40M") == 0)
+ 		bandwidth = 1;
+-	else if (_rtl8812ae_eq_n_byte(pbandwidth, "80M", 3))
++	else if (strcmp(pbandwidth, "80M") == 0)
+ 		bandwidth = 2;
+-	else if (_rtl8812ae_eq_n_byte(pbandwidth, "160M", 4))
++	else if (strcmp(pbandwidth, "160M") == 0)
+ 		bandwidth = 3;
+ 
+-	if (_rtl8812ae_eq_n_byte(pband, "2.4G", 4)) {
++	if (strcmp(pband, "2.4G") == 0) {
+ 		ret = _rtl8812ae_phy_get_chnl_idx_of_txpwr_lmt(hw,
+ 							       BAND_ON_2_4G,
+ 							       channel);
+@@ -1718,7 +1706,7 @@ static void _rtl8812ae_phy_set_txpower_limit(struct ieee80211_hw *hw,
+ 			regulation, bandwidth, rate_section, channel_index,
+ 			rtlphy->txpwr_limit_2_4g[regulation][bandwidth]
+ 				[rate_section][channel_index][RF90_PATH_A]);
+-	} else if (_rtl8812ae_eq_n_byte(pband, "5G", 2)) {
++	} else if (strcmp(pband, "5G") == 0) {
+ 		ret = _rtl8812ae_phy_get_chnl_idx_of_txpwr_lmt(hw,
+ 							       BAND_ON_5G,
+ 							       channel);
 -- 
-2.25.1
+2.31.1
 
