@@ -2,162 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F13D76497B8
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 02:41:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27B286497D0
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 02:57:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231147AbiLLBlb convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Dec 2022 20:41:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
+        id S231197AbiLLB5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Dec 2022 20:57:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiLLBl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 20:41:29 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DA9D4BCA3;
-        Sun, 11 Dec 2022 17:41:28 -0800 (PST)
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2BC1akreF025606, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2BC1akreF025606
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 12 Dec 2022 09:36:46 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.9; Mon, 12 Dec 2022 09:37:34 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Mon, 12 Dec 2022 09:37:34 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b]) by
- RTEXMBS04.realtek.com.tw ([fe80::15b5:fc4b:72f3:424b%5]) with mapi id
- 15.01.2375.007; Mon, 12 Dec 2022 09:37:34 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Li Zetao <lizetao1@huawei.com>
-CC:     "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linville@tuxdriver.com" <linville@tuxdriver.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: RE: [PATCH v3] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in _rtl8812ae_phy_set_txpower_limit()
-Thread-Topic: [PATCH v3] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in
- _rtl8812ae_phy_set_txpower_limit()
-Thread-Index: AQHZDcmQLIWDqWxK5UWgWwHLimkfx65pd+XggAAAmuA=
-Date:   Mon, 12 Dec 2022 01:37:34 +0000
-Message-ID: <58dbf9a4aa57417bb40cbabc8ae9cd17@realtek.com>
-References: <66c119cc4e184a36d525a07f2fbd092348839610.camel@realtek.com>
- <20221212023540.1540147-1-lizetao1@huawei.com> 
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/12/11_=3F=3F_10:00:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S230461AbiLLB5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Dec 2022 20:57:13 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E38D10C
+        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 17:57:11 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id w4-20020a17090ac98400b002186f5d7a4cso14048334pjt.0
+        for <netdev@vger.kernel.org>; Sun, 11 Dec 2022 17:57:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gKxH5no78Aw3fUuIxx9FgLK2M2dw9VMtAOEtuM8aznQ=;
+        b=hmaGj8PpDnrF2D160EemGtwJLJZO8mMN6GKRMTb0AfQgr1zRDcbULF7jvPZOu7/Zjs
+         fBiMceEkephnBArfRW8qfXB5+IumP/9R7M3FMV+Bb+4gA4XgYF+yBZ58RPwnqoXql6xZ
+         KrKLlDeLS4WIVVmTfXiEpxFTTaX238+UtZt4cT435LsmcfFHvnY9+a3lzV9WEBDLaehb
+         YkWmGY+FhgsXGLtgxKQR3zqQEXR63ys2I8FimnG+8fLBsYQHWQXETfhqU0fKBNBVpMPZ
+         kKgEcp9dA9/HmMzN8FOBon//W17ctlD/9y4hc24WkJr+WRgxcXqt83BOBaWC5MFpeKoB
+         OwXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gKxH5no78Aw3fUuIxx9FgLK2M2dw9VMtAOEtuM8aznQ=;
+        b=l9K5Dn+Qm58AX4frR7VPo5GkzINfFygO5VIOGDxBLwYOgdbWc0xHwPLGWTrXgzdEY3
+         +bMWg340WLRv9xSDbRyxi+JE1XIZapj96ucvQbWiEP+gxSZOVlwfXQjqOVv4YbfTNaBB
+         hTot2Q3QGFKAgYwnNjDad6x1Qugldm2xL8gcKaOsOpOQbJituriEoZPlf14lZf7ej5Zb
+         hD9LIkzi35/pKS32dJRXIsOqttiNkzMqEw9ZOo7L2Srl+A0khvJgmqqlMpP9UNPzfHiI
+         qboc7QQJqqGFpYljOqZLTXOw49q966a+oWSJM//sdQJPJNALpktZBtR1d5f9uic6BSIr
+         lLgw==
+X-Gm-Message-State: ANoB5pmPtxVuE9OqFlDPoq45y8IAUfq+4rla5w6El0iBs1KtCl8TXjwi
+        J0y8CyISB04DXbJJmA3e7zk=
+X-Google-Smtp-Source: AA0mqf42od8aw1NDglX1AsNVUw2zccBye9ojF11kycvcoPaEWOF2ZQDIdPiSVw3rTCF/A04LMIjOOQ==
+X-Received: by 2002:a17:903:181:b0:189:9007:ecef with SMTP id z1-20020a170903018100b001899007ecefmr20808154plg.25.1670810231136;
+        Sun, 11 Dec 2022 17:57:11 -0800 (PST)
+Received: from Laptop-X1 ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id b8-20020a170902d50800b00174f61a7d09sm4950111plg.247.2022.12.11.17.57.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Dec 2022 17:57:09 -0800 (PST)
+Date:   Mon, 12 Dec 2022 09:57:05 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, liali <liali@redhat.com>
+Subject: Re: [PATCH net 1/3] bonding: access curr_active_slave with
+ rtnl_dereference
+Message-ID: <Y5aKcYFp9ounWJM1@Laptop-X1>
+References: <20221209101305.713073-1-liuhangbin@gmail.com>
+ <20221209101305.713073-2-liuhangbin@gmail.com>
+ <CANn89iK8TEtpZa67-FfR6KFKAj_HCdtn3573Z9Cd7PG26WP3iA@mail.gmail.com>
+ <Y5R7ZDfKkZKZe9j1@Laptop-X1>
+ <CANn89iKh3M+mL_Yh_oAX0T6b9mAu6_JZKZwunH377bJNusuTKA@mail.gmail.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iKh3M+mL_Yh_oAX0T6b9mAu6_JZKZwunH377bJNusuTKA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Dec 10, 2022 at 06:41:01PM +0100, Eric Dumazet wrote:
+> Now, you post a patch for bond_miimon_commit() which already has :
+> 
+> if (slave == rcu_access_pointer(bond->curr_active_slave))
+>       goto do_failover;
+> 
+> So really it is a matter of consistency in _this_ function, which is
+> run under RTNL for sure.
 
+Ah, thanks for the explanation.
 
-> -----Original Message-----
-> From: Ping-Ke Shih
-> Sent: Monday, December 12, 2022 9:35 AM
-> To: 'Li Zetao' <lizetao1@huawei.com>
-> Cc: Larry.Finger@lwfinger.net; davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> kvalo@kernel.org; linux-kernel@vger.kernel.org; linux-wireless@vger.kernel.org; linville@tuxdriver.com;
-> netdev@vger.kernel.org; pabeni@redhat.com
-> Subject: RE: [PATCH v3] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in
-> _rtl8812ae_phy_set_txpower_limit()
+> It is also a patch for net-next tree, because it fixes no bug.
 > 
-> 
-> 
-> > -----Original Message-----
-> > From: Li Zetao <lizetao1@huawei.com>
-> > Sent: Monday, December 12, 2022 10:36 AM
-> > To: Ping-Ke Shih <pkshih@realtek.com>
-> > Cc: Larry.Finger@lwfinger.net; davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> > kvalo@kernel.org; linux-kernel@vger.kernel.org; linux-wireless@vger.kernel.org;
-> linville@tuxdriver.com;
-> > lizetao1@huawei.com; netdev@vger.kernel.org; pabeni@redhat.com
-> > Subject: [PATCH v3] rtlwifi: rtl8821ae: Fix global-out-of-bounds bug in
-> _rtl8812ae_phy_set_txpower_limit()
+> I would not add a Fixes: tag to avoid dealing with useless backports.
 
-Oops. Subject prefix should be "wifi: rtlwifi: ...".
+OK, I will do as your suggest.
 
-If it isn't hard to you, please fix it, and add my acked-by along with v4.
-
-> >
-> > There is a global-out-of-bounds reported by KASAN:
-> >
-> >   BUG: KASAN: global-out-of-bounds in
-> >   _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
-> >   Read of size 1 at addr ffffffffa0773c43 by task NetworkManager/411
-> >
-> >   CPU: 6 PID: 411 Comm: NetworkManager Tainted: G      D
-> >   6.1.0-rc8+ #144 e15588508517267d37
-> >   Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
-> >   Call Trace:
-> >    <TASK>
-> >    ...
-> >    kasan_report+0xbb/0x1c0
-> >    _rtl8812ae_eq_n_byte.part.0+0x3d/0x84 [rtl8821ae]
-> >    rtl8821ae_phy_bb_config.cold+0x346/0x641 [rtl8821ae]
-> >    rtl8821ae_hw_init+0x1f5e/0x79b0 [rtl8821ae]
-> >    ...
-> >    </TASK>
-> >
-> > The root cause of the problem is that the comparison order of
-> > "prate_section" in _rtl8812ae_phy_set_txpower_limit() is wrong. The
-> > _rtl8812ae_eq_n_byte() is used to compare the first n bytes of the two
-> > strings from tail to head, which causes the problem. In the
-> > _rtl8812ae_phy_set_txpower_limit(), it was originally intended to meet
-> > this requirement by carefully designing the comparison order.
-> > For example, "pregulation" and "pbandwidth" are compared in order of
-> > length from small to large, first is 3 and last is 4. However, the
-> > comparison order of "prate_section" dose not obey such order requirement,
-> > therefore when "prate_section" is "HT", when comparing from tail to head,
-> > it will lead to access out of bounds in _rtl8812ae_eq_n_byte(). As
-> > mentioned above, the _rtl8812ae_eq_n_byte() has the same function as
-> > strcmp(), so just strcmp() is enough.
-> >
-> > Fix it by removing _rtl8812ae_eq_n_byte() and use strcmp() barely.
-> > Although it can be fixed by adjusting the comparison order of
-> > "prate_section", this may cause the value of "rate_section" to not be
-> > from 0 to 5. In addition, commit "21e4b0726dc6" not only moved driver
-> > from staging to regular tree, but also added setting txpower limit
-> > function during the driver config phase, so the problem was introduced
-> > by this commit.
-> >
-> > Fixes: 21e4b0726dc6 ("rtlwifi: rtl8821ae: Move driver from staging to regular tree")
-> > Signed-off-by: Li Zetao <lizetao1@huawei.com>
-> 
-> Thanks for your fix.
-> 
-> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
-> 
-> > ---
-> > v1 -> v2: delete the third parameter of _rtl8812ae_eq_n_byte() and use
-> > strcmp to replace loop comparison.
-> > v2 -> v3: remove _rtl8812ae_eq_n_byte() and use strcmp() barely.
-> >
-> >  .../wireless/realtek/rtlwifi/rtl8821ae/phy.c  | 52 +++++++------------
-> >  1 file changed, 20 insertions(+), 32 deletions(-)
-> >
-> 
-> [...]
-
+Cheers
+Hangbin
