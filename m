@@ -2,97 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47832649A36
-	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 09:42:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2F07649AC6
+	for <lists+netdev@lfdr.de>; Mon, 12 Dec 2022 10:11:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230434AbiLLImE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 03:42:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S231779AbiLLJLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 04:11:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231526AbiLLImC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 03:42:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A015EC779;
-        Mon, 12 Dec 2022 00:42:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S231766AbiLLJLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 04:11:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E897671
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 01:10:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1670836239;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=js5jlF3yTN3u8DK/CNDR5RCWPJzXAeH4KJeogte/M2c=;
+        b=fQbJEVuXs6zOX1A+HXNomLbQPw4h+/PVnCZ+15LVm9qgjIgTDRuW1zI8BNQUFIaokN8wv+
+        7y75CmyiLQL+4YoiE6TxJ94xrWqqrgTfikjatxj1Oh4WdH36I3v5g/T7x7POLmmCUp2/Ft
+        XA3duokg1ObVk55oStwm4bYSa79MBsM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-210-RVzAPNIxNYiHJkzms2wBpw-1; Mon, 12 Dec 2022 04:10:36 -0500
+X-MC-Unique: RVzAPNIxNYiHJkzms2wBpw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 558D1B80BA7;
-        Mon, 12 Dec 2022 08:42:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D89C433EF;
-        Mon, 12 Dec 2022 08:41:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1670834519;
-        bh=bp9hj0RVByKQktcC0dW/qzUFrg5xq9JprWMyU7tTG14=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iQcLCJ7aZQwe9+6zjZl79n61zWOtEzrvlyRFS1IxQ0qOhRvjjHH4mhH5YEbUQqiPB
-         WT4Y1hJABUHLJW2mUZ7fSej1hdbKx4jtK++PEaBOUoMIvedc/WJ/FavPwfaInmpgDa
-         lKwGagt0HpwSXYINnsdB7CP4dhu48s8V0BaS8KKTLckjse2E1WCS28BTsVZ6f2MH6g
-         xU7+bfVfkWm57KxjxqX94YqiU2GmN8zJGy8rkV9b17a7baqd8Ob1ON5Adh/zsweIno
-         k78qYH/dihM4JAKwwh+aWTPbNKd3HbE043YdYhVoK3PPR9Q5LC4JmXIqnk48/vkSmU
-         R57tb+YXlX7lg==
-Date:   Mon, 12 Dec 2022 10:41:54 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        sumit.semwal@linaro.org, christian.koenig@amd.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] net: ksz884x: Remove the unused function
- port_cfg_force_flow_ctrl()
-Message-ID: <Y5bpUnqOij8HduWh@unreal>
-References: <20221212035309.33507-1-jiapeng.chong@linux.alibaba.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0159B81173A;
+        Mon, 12 Dec 2022 09:10:36 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-12-186.pek2.redhat.com [10.72.12.186])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3082B2166B26;
+        Mon, 12 Dec 2022 09:10:31 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] virtio-net: correctly enable callback during start_xmit
+Date:   Mon, 12 Dec 2022 17:10:29 +0800
+Message-Id: <20221212091029.54390-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221212035309.33507-1-jiapeng.chong@linux.alibaba.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 12, 2022 at 11:53:09AM +0800, Jiapeng Chong wrote:
-> The function port_cfg_force_flow_ctrl() is defined in the ksz884x.c file,
-> but not called elsewhere, so remove this unused function.
-> 
-> drivers/net/ethernet/micrel/ksz884x.c:2212:20: warning: unused function 'port_cfg_force_flow_ctrl'.
-> 
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3418
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  drivers/net/ethernet/micrel/ksz884x.c | 6 ------
->  1 file changed, 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
-> index e6acd1e7b263..46f1fbf58b5a 100644
-> --- a/drivers/net/ethernet/micrel/ksz884x.c
-> +++ b/drivers/net/ethernet/micrel/ksz884x.c
-> @@ -2209,12 +2209,6 @@ static inline void port_cfg_back_pressure(struct ksz_hw *hw, int p, int set)
->  		KS8842_PORT_CTRL_2_OFFSET, PORT_BACK_PRESSURE, set);
->  }
->  
-> -static inline void port_cfg_force_flow_ctrl(struct ksz_hw *hw, int p, int set)
-> -{
-> -	port_cfg(hw, p,
-> -		KS8842_PORT_CTRL_2_OFFSET, PORT_FORCE_FLOW_CTRL, set);
-> -}
-> -
->  static inline int port_chk_back_pressure(struct ksz_hw *hw, int p)
+Commit a7766ef18b33("virtio_net: disable cb aggressively") enables
+virtqueue callback via the following statement:
 
-This function is not called too. Many functions in that file can be
-removed. Please do it in one patch.
+        do {
+           ......
+	} while (use_napi && kick &&
+               unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
 
-Thanks
+This will cause a missing call to virtqueue_enable_cb_delayed() when
+kick is false. Fixing this by removing the checking of the kick from
+the condition to make sure callback is enabled correctly.
 
->  {
->  	return port_chk(hw, p,
-> -- 
-> 2.20.1.7.g153144c
-> 
+Fixes: a7766ef18b33 ("virtio_net: disable cb aggressively")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+The patch is needed for -stable.
+---
+ drivers/net/virtio_net.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 86e52454b5b5..44d7daf0267b 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1834,8 +1834,8 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 		free_old_xmit_skbs(sq, false);
+ 
+-	} while (use_napi && kick &&
+-	       unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
++	} while (use_napi &&
++		 unlikely(!virtqueue_enable_cb_delayed(sq->vq)));
+ 
+ 	/* timestamp packet in software */
+ 	skb_tx_timestamp(skb);
+-- 
+2.25.1
+
