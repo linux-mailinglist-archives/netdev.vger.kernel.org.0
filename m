@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63DA364AB93
-	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 00:30:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15A5964AB95
+	for <lists+netdev@lfdr.de>; Tue, 13 Dec 2022 00:30:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234006AbiLLXaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Dec 2022 18:30:24 -0500
+        id S234010AbiLLXa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Dec 2022 18:30:27 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233744AbiLLXaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 18:30:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A521ADAB
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 15:30:19 -0800 (PST)
+        with ESMTP id S233288AbiLLXaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Dec 2022 18:30:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8735F1AA11
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 15:30:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8699961298
-        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 23:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EA235C433F1;
-        Mon, 12 Dec 2022 23:30:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CF92B80F93
+        for <netdev@vger.kernel.org>; Mon, 12 Dec 2022 23:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 00B1CC433EF;
+        Mon, 12 Dec 2022 23:30:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1670887818;
-        bh=iGRSSOoGM0SSodg+Ay5Zit9N2m46ln5I4GA2lAyVA/E=;
+        bh=org/44E0K7bBYc3qmQc/2s/8Q7ecnB4GHSUA15aVWY4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sfGlnRoTMV44nlFwsjDGOzw4ELX7UhtXPUP+2V6MwkX2fujEvMiXnaHrI0fr+dSL2
-         9E8aSy4SGxOC2kAdSXLFuvMcMeVOjIDYMJK2RzPH+gOP5L3BtlhF7ItgQG8uejK3n+
-         yFHgaMDkSxKhqPlWYNGRJsu5x4FqyfXXjB63m4ueRU7dNb2l8Io70V3hyvePPIKbQ+
-         zqNWu0WLj9FIajoCL+7NRyrd2bx15ut86G0/MSoVurUjkaQJ6kuK+2Q9vizyqSPzfb
-         OMgvjkEOvqrqjZNzgMmVf2XC1MZE6wZeWqBGJxAOH4E6o0/PGAJ6mGOb5uGimwpQz/
-         XDOrICV5D7NNA==
+        b=YAS50ad+bieGiXXOkk3ss6ryRVahuwJlfJFHxyKEXl0pEW7O0aYUUKH1TwvdKucZi
+         k29iwZJZ3bS/Hsgjk2zl8Kz5AjcmJh2MKy+/uTZxEsJugJHtUwghsYVaFs8KW0DRsd
+         +MJBSyfdWzerocvHUAu1MQnCM6TDAoRDOgibrOtsN0/cLH40iLt3omfd03ak7AaoSH
+         067/9ROCHE94x4qIseWs+ZEtgvTfsUgzJVXtBl7UPjdyd4/t4npTWqHK5S8Sjg/f15
+         U1/dnJHbj6Hh+BzfkT9iVjYQAlKriuA9YDifl249B1EWT1dBe4qdI3Udg5X4SJzVFj
+         BWGkEK0RYZtUA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D697BC41606;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DF3FDE21EF1;
         Mon, 12 Dec 2022 23:30:17 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] net: add IFF_NO_ADDRCONF to prevent ipv6
- addrconf
+Subject: Re: [PATCH net-next 1/1] i40e: allow toggling loopback mode via
+ ndo_set_features callback
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167088781787.32014.12569414144216569163.git-patchwork-notify@kernel.org>
+Message-Id: <167088781791.32014.18156951828766184387.git-patchwork-notify@kernel.org>
 Date:   Mon, 12 Dec 2022 23:30:17 +0000
-References: <cover.1670599241.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1670599241.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, jiri@resnulli.us,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        sridhar.samudrala@intel.com, stephen@networkplumber.org,
-        liali@redhat.com
+References: <20221209185553.2520088-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20221209185553.2520088-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, tirthendu.sarkar@intel.com,
+        netdev@vger.kernel.org, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com, alexandr.lobakin@intel.com,
+        leonro@nvidia.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,26 +61,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri,  9 Dec 2022 10:21:37 -0500 you wrote:
-> This patchset adds IFF_NO_ADDRCONF flag for dev->priv_flags
-> to prevent ipv6 addrconf, as Jiri Pirko's suggestion.
+On Fri,  9 Dec 2022 10:55:53 -0800 you wrote:
+> From: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
 > 
-> For Bonding it changes to use this flag instead of IFF_SLAVE
-> flag in Patch 1, and for Teaming and Net Failover it sets
-> this flag before calling dev_open() in Patch 2 and 3.
+> Add support for NETIF_F_LOOPBACK. This feature can be set via:
+> $ ethtool -K eth0 loopback <on|off>
+> 
+> This sets the MAC Tx->Rx loopback.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/3] net: add IFF_NO_ADDRCONF and use it in bonding to prevent ipv6 addrconf
-    https://git.kernel.org/netdev/net-next/c/8a321cf7becc
-  - [net-next,2/3] net: team: use IFF_NO_ADDRCONF flag to prevent ipv6 addrconf
-    https://git.kernel.org/netdev/net-next/c/0aa64df30b38
-  - [net-next,3/3] net: failover: use IFF_NO_ADDRCONF flag to prevent ipv6 addrconf
-    https://git.kernel.org/netdev/net-next/c/cb54d392279d
+  - [net-next,1/1] i40e: allow toggling loopback mode via ndo_set_features callback
+    https://git.kernel.org/netdev/net-next/c/b1746fbab15a
 
 You are awesome, thank you!
 -- 
